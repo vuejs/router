@@ -1,0 +1,12 @@
+{
+  "name": "vue-router",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.0.1"
+  },
+  "dependencies": {
+    "path-to-regexp": "^2.2.1"
+  }
+}
