@@ -1,10 +1,10 @@
 type TODO = any
 
-type ParamsType = Record<string, string | string[]>
+export type ParamsType = Record<string, string | string[]>
 
-interface PropsTransformer {
-  (params: ParamsType): any
-}
+// interface PropsTransformer {
+//   (params: ParamsType): any
+// }
 
 // export interface Location<PT extends PropsTransformer> {
 //   record: RouteRecord<PT>
@@ -16,14 +16,23 @@ interface PropsTransformer {
 // since in callbacks we don't know where we are coming from
 // and I don't thin it's possible to filter out the route
 // by any means
-export interface RouteRecord<PT extends PropsTransformer> {
+export interface RouteRecord {
   path: string | RegExp
   component: TODO
-  name: string
-  props: PT
+  name?: string
+  // props: PT
 }
 
 // TODO location should be an object
-export type Location = string
+export type Location =
+  | string
+  | {
+      path: string
+    }
+  | {
+      name: string
+      params?: Record<string, string>
+    }
+export type HistoryLocation = string
 
-export const START: Location = ''
+export const START: HistoryLocation = '/'
