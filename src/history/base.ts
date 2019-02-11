@@ -1,22 +1,41 @@
-import { START, HistoryLocation } from '../types/index'
-export interface NavigationCallback {
-  (to: HistoryLocation, from: HistoryLocation): void
-}
+import {
+  START,
+  HistoryLocation,
+  NavigationCallback,
+  RemoveListener,
+} from '../types/index'
 
 export default abstract class BaseHistory {
   // previousState: object
-  location: HistoryLocation
-  abstract push(to: HistoryLocation): void
-  abstract replace(to: HistoryLocation): void
-  abstract listen(callback: NavigationCallback): Function
+  location: HistoryLocation = START
+
   /**
-   * ensure the current location using the external source
-   * for example, in HTML5 and hash history, that would be
+   * Sync source with a different location.
+   * Adds an entry to the history
+   * @param to URL to go to
+   */
+  abstract push(to: HistoryLocation): void
+
+  /**
+   * Syncs source with a different location
+   * Replaces current entry in the history
+   * @param to URL to go to
+   */
+  abstract replace(to: HistoryLocation): void
+
+  /**
+   * Notifies back whenever the location changes due to user interactions
+   * outside of the applicaiton. For example, going back/forward on a
+   * web browser
+   * @param callback callback to be called whenever the route changes
+   * @returns
+   */
+  abstract listen(callback: NavigationCallback): RemoveListener
+
+  /**
+   * ensure the current location matches the external source
+   * For example, in HTML5 and hash history, that would be
    * location.pathname
    */
   abstract ensureLocation(): void
-
-  constructor() {
-    this.location = START
-  }
 }

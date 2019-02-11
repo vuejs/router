@@ -1,8 +1,12 @@
-import BaseHistory, { NavigationCallback } from './base'
-import { HistoryLocation } from '../types/index'
+import BaseHistory from './base'
+import { HistoryLocation, NavigationCallback } from '../types/index'
 
 export default class HTML5History extends BaseHistory {
   private history = window.history
+  private _popStateListener:
+    | null
+    | ((this: Window, ev: PopStateEvent) => any) = null
+
   constructor() {
     super()
   }
@@ -14,9 +18,11 @@ export default class HTML5History extends BaseHistory {
 
   replace(to: HistoryLocation) {
     if (to === this.location) return
+    console.log('replace', this.location, to)
     this.history.replaceState(
       {
-        ...(this.history.state || {}),
+        replacedState: this.history.state || {},
+        from: this.location,
         to,
       },
       '',
@@ -26,27 +32,30 @@ export default class HTML5History extends BaseHistory {
   }
 
   push(to: HistoryLocation) {
-    // TODO resolve url
-    // TODO compare current location to prevent navigation
+    // TODO: resolve url
+    // TODO: compare current location to prevent navigation
     if (to === this.location) return
     const state = {
       from: this.location,
       to,
     }
-    console.log('push', state)
+    console.log('push', this.location, to)
     this.history.pushState(state, '', to)
     this.location = to
   }
 
-  listen(callback: NavigationCallback): Function {
-    window.addEventListener('popstate', ({ state }) => {
+  listen(callback: NavigationCallback) {
+    this._popStateListener = ({ state }) => {
       const from = this.location
       // we have the state from the old entry, not the current one being removed
-      // TODO correctly parse pathname
+      // TODO: correctly parse pathname
       this.location = state ? state.to : window.location.pathname
       callback(this.location, from)
-    })
+    }
+    window.addEventListener('popstate', this._popStateListener)
 
-    return () => {}
+    return () => {
+      window.removeEventListener('popstate', this._popStateListener!)
+    }
   }
 }
