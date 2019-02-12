@@ -8,7 +8,7 @@ const r = new Router({
   routes: [
     { path: '/', component },
     { path: '/users/:id', name: 'user', component },
-    { path: /^\/about\/?$/, component },
+    // { path: /^\/about\/?$/, component },
   ],
 })
 
@@ -19,8 +19,14 @@ window.h = h
 window.r = r
 
 h.listen((to, from) => {
-  console.log({ to, from })
+  console.log('popstate', { to, from })
 })
+
+// h.push('/hey')
+// h.push('/hey?lol')
+// h.push('/foo')
+// h.push('/replace-me')
+// h.replace('/bar')
 
 r.push('/about')
 r.push({

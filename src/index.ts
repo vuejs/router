@@ -1,6 +1,6 @@
 import BaseHistory from './history/base'
 import pathToRegexp from 'path-to-regexp'
-import { Location, RouteRecord } from './types/index'
+import { Location, RouteRecord, ParamsType } from './types/index'
 
 interface RouterOptions {
   history: BaseHistory
@@ -9,6 +9,7 @@ interface RouterOptions {
 
 interface RouteMatcher {
   re: RegExp
+  resolve: (params: ParamsType) => string
   record: RouteRecord
   keys: string[]
 }
@@ -25,7 +26,12 @@ export class Router {
       const keys: pathToRegexp.Key[] = []
       // TODO: if children use option end: false ?
       const re = pathToRegexp(record.path, keys)
-      return { re, keys: keys.map(k => '' + k.name), record }
+      return {
+        re,
+        resolve: pathToRegexp.compile(record.path),
+        keys: keys.map(k => '' + k.name),
+        record,
+      }
     })
   }
 
@@ -57,15 +63,13 @@ export class Router {
     if (!('name' in location)) {
       // TODO: use current location
       // location = {...location, name: this.}
-      return '/heeey'
+      return '/using current location'
     }
     const matcher = this.routes.find(r => r.record.name === location.name)
     if (!matcher) {
       // TODO: error
       throw new Error('No match for' + location)
     }
-    matcher.re
-    return '/TODO'
-    // this.matcher.match(location)
+    return matcher.resolve(location.params || {})
   }
 }

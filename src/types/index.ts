@@ -17,7 +17,7 @@ export type ParamsType = Record<string, string | string[]>
 // and I don't thin it's possible to filter out the route
 // by any means
 export interface RouteRecord {
-  path: string | RegExp
+  path: string // | RegExp
   component: TODO
   name?: string
   // props: PT
@@ -33,6 +33,13 @@ export type Location =
       name: string
       params?: Record<string, string>
     }
+
 export type HistoryLocation = string
 
 export const START: HistoryLocation = '/'
+
+export interface NavigationCallback {
+  (to: HistoryLocation, from: HistoryLocation): void
+}
+
+export type RemoveListener = () => void
