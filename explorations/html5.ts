@@ -39,3 +39,16 @@ r.push({
     id: '6',
   },
 })
+
+r.push({
+  name: 'user',
+  params: {
+    id: '5',
+  },
+})
+
+r.push({
+  params: {
+    id: 'no-name',
+  },
+})

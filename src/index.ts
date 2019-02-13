@@ -1,6 +1,6 @@
 import BaseHistory from './history/base'
 import pathToRegexp from 'path-to-regexp'
-import { Location, RouteRecord, ParamsType } from './types/index'
+import { Location, RouteRecord, ParamsType, START_RECORD } from './types/index'
 
 interface RouterOptions {
   history: BaseHistory
@@ -14,25 +14,31 @@ interface RouteMatcher {
   keys: string[]
 }
 
+function generateMatcher(record: RouteRecord) {
+  const keys: pathToRegexp.Key[] = []
+  // TODO: if children use option end: false ?
+  const re = pathToRegexp(record.path, keys)
+  return {
+    re,
+    resolve: pathToRegexp.compile(record.path),
+    keys: keys.map(k => '' + k.name),
+    record,
+  }
+}
+
+const START_MATCHER = generateMatcher(START_RECORD)
+
 export class Router {
   protected history: BaseHistory
   private routes: RouteMatcher[]
+  currentRoute: RouteRecord = START_RECORD
+  currentMatcher: RouteMatcher = START_MATCHER
 
   constructor(options: RouterOptions) {
     this.history = options.history
     this.history.ensureLocation()
 
-    this.routes = options.routes.map(record => {
-      const keys: pathToRegexp.Key[] = []
-      // TODO: if children use option end: false ?
-      const re = pathToRegexp(record.path, keys)
-      return {
-        re,
-        resolve: pathToRegexp.compile(record.path),
-        keys: keys.map(k => '' + k.name),
-        record,
-      }
-    })
+    this.routes = options.routes.map(generateMatcher)
   }
 
   /**
@@ -53,23 +59,28 @@ export class Router {
    * passed, it returns the string itself
    * @param location Location to resolve to a url
    */
-  resolve(location: Location): string {
+  resolve(location: Readonly<Location>): string {
     if (typeof location === 'string') return location
     if ('path' in location) {
       // TODO: convert query, hash, warn params
       return location.path
     }
 
+    let matcher: RouteMatcher | void
     if (!('name' in location)) {
       // TODO: use current location
       // location = {...location, name: this.}
-      return '/using current location'
+      matcher = this.routes.find(r => r.record.name === this.currentRoute.name)
+      // return '/using current location'
+    } else {
+      matcher = this.routes.find(r => r.record.name === location.name)
     }
-    const matcher = this.routes.find(r => r.record.name === location.name)
+
     if (!matcher) {
       // TODO: error
       throw new Error('No match for' + location)
     }
+
     return matcher.resolve(location.params || {})
   }
 }

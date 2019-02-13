@@ -31,12 +31,20 @@ export type Location =
     }
   | {
       name: string
-      params?: Record<string, string>
+      params?: ParamsType
+    }
+  | {
+      params: ParamsType
     }
 
 export type HistoryLocation = string
 
 export const START: HistoryLocation = '/'
+export const START_RECORD: RouteRecord = {
+  path: '/',
+  // @ts-ignore
+  component: { render: h => h() },
+}
 
 export interface NavigationCallback {
   (to: HistoryLocation, from: HistoryLocation): void
