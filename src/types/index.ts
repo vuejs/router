@@ -6,7 +6,7 @@ export type ParamsType = Record<string, string | string[]>
 //   (params: ParamsType): any
 // }
 
-// export interface Location<PT extends PropsTransformer> {
+// export interface RouterLocation<PT extends PropsTransformer> {
 //   record: RouteRecord<PT>
 //   path: string
 //   params: ReturnType<PT>
@@ -23,8 +23,8 @@ export interface RouteRecord {
   // props: PT
 }
 
-// TODO location should be an object
-export type Location =
+// TODO: location should be an object
+export type RouterLocation =
   | string
   | {
       path: string
@@ -36,6 +36,14 @@ export type Location =
   | {
       params: ParamsType
     }
+
+export interface RouterLocationNormalized {
+  path: string
+  name?: string
+  params: ParamsType
+  query: TODO
+  hash: TODO
+}
 
 export type HistoryLocation = string
 

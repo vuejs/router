@@ -1,17 +1,13 @@
-import BaseHistory from './history/base'
 import pathToRegexp from 'path-to-regexp'
 import {
-  RouterLocation,
   RouteRecord,
   ParamsType,
   START_RECORD,
+  RouterLocation,
+  RouterLocationNormalized,
 } from './types/index'
 
-interface RouterOptions {
-  history: BaseHistory
-  routes: RouteRecord[]
-}
-
+// TODO: rename
 interface RouteMatcher {
   re: RegExp
   resolve: (params: ParamsType) => string
@@ -33,38 +29,24 @@ function generateMatcher(record: RouteRecord) {
 
 const START_MATCHER = generateMatcher(START_RECORD)
 
-export class Router {
-  protected history: BaseHistory
-  private routes: RouteMatcher[]
-  currentRoute: RouteRecord = START_RECORD
-  currentMatcher: RouteMatcher = START_MATCHER
+export class RouterMatcher {
+  private matchers: RouteMatcher[] = []
 
-  constructor(options: RouterOptions) {
-    this.history = options.history
-    this.history.ensureLocation()
-
-    this.routes = options.routes.map(generateMatcher)
+  constructor(routes: RouteRecord[]) {
+    this.matchers = routes.map(generateMatcher)
   }
 
   /**
-   * Trigger a navigation, should resolve all guards first
-   * @param to Where to go
+   * Normalize a RouterLocation into an object that is easier to handle
+   * @param location location to normalize
+   * @param currentLocation current location, to reuse params and location
    */
-  push(to: RouterLocation) {
-    // TODO: resolve URL
-    const path = this.resolve(to)
-    // TODO: call hooks, guards
-    this.history.push(
-      path +
-        // TODO: test purposes only
-        '?value=' +
-        Math.round(Math.random() * 10) +
-        '#e' +
-        Math.round(Math.random() * 10)
-    )
+  normalize(
+    location: Readonly<RouterLocation>,
+    currentLocation: Readonly<RouterLocationNormalized>
+  ): RouterLocationNormalized {
+    return {} as RouterLocationNormalized
   }
-
-  getRouteRecord(location: RouterLocation) {}
 
   /**
    * Transforms a RouterLocation object into a URL string. If a string is
