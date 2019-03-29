@@ -49,7 +49,14 @@ export class Router {
     // TODO: resolve URL
     const path = this.resolve(to)
     // TODO: call hooks, guards
-    this.history.push(path)
+    this.history.push(
+      path +
+        // TODO: test purposes only
+        '?value=' +
+        Math.round(Math.random() * 10) +
+        '#e' +
+        Math.round(Math.random() * 10)
+    )
   }
 
   getRouteRecord(location: Location) {}

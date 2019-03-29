@@ -12,14 +12,16 @@ const r = new Router({
   ],
 })
 
-const h = new HTML5History()
+// const h = new HTML5History()
+// @ts-ignore
+const h = r.history
 // @ts-ignore
 window.h = h
 // @ts-ignore
 window.r = r
 
-h.listen((to, from) => {
-  console.log('popstate', { to, from })
+h.listen((to, from, { type }) => {
+  console.log(`popstate(${type})`, { to, from })
 })
 
 // h.push('/hey')

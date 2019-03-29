@@ -8,13 +8,14 @@ import {
 export default abstract class BaseHistory {
   // previousState: object
   location: HistoryLocation = START
+  base: string = ''
 
   /**
    * Sync source with a different location.
    * Adds an entry to the history
    * @param to URL to go to
    */
-  abstract push(to: HistoryLocation): void
+  abstract push(to: HistoryLocation, data?: any): void
 
   /**
    * Syncs source with a different location
@@ -36,6 +37,7 @@ export default abstract class BaseHistory {
    * ensure the current location matches the external source
    * For example, in HTML5 and hash history, that would be
    * location.pathname
+   * TODO: is this necessary?
    */
   abstract ensureLocation(): void
 }
