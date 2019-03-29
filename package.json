@@ -8,10 +8,10 @@
     "dev": "webpack-dev-server --mode=development"
   },
   "devDependencies": {
-    "consola": "^2.5.7",
+    "consola": "^2.5.8",
     "html-webpack-plugin": "^3.2.0",
     "ts-loader": "^5.3.3",
-    "typescript": "^3.3.4000",
+    "typescript": "^3.4.1",
     "vue": "^2.6.10",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0",
