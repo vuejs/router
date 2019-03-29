@@ -35,7 +35,6 @@ export default class HTML5History extends BaseHistory {
       to
     )
     this.location = to
-    cs.warn('changed location to', this.location)
   }
 
   replace(to: HistoryLocation) {
@@ -54,7 +53,6 @@ export default class HTML5History extends BaseHistory {
       to
     )
     this.location = to
-    cs.warn('changed location to', this.location)
   }
 
   push(to: HistoryLocation, data?: HistoryState) {
@@ -78,7 +76,6 @@ export default class HTML5History extends BaseHistory {
     cs.info('push', this.location, '->', to, 'with state', state)
     this.history.pushState(state, '', to)
     this.location = to
-    cs.warn('changed location to', this.location)
   }
 
   listen(callback: NavigationCallback) {
@@ -93,7 +90,6 @@ export default class HTML5History extends BaseHistory {
       // we have the state from the old entry, not the current one being removed
       // TODO: correctly parse pathname
       this.location = state ? state._current : buildFullPath
-      cs.warn('changed location to', this.location)
       callback(this.location, from, {
         type:
           from === state._forward

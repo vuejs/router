@@ -1,16 +1,16 @@
 import pathToRegexp from 'path-to-regexp'
 import {
   RouteRecord,
-  ParamsType,
-  START_RECORD,
+  RouteParams,
   RouterLocation,
   RouterLocationNormalized,
 } from './types/index'
+import { stringifyQuery } from './uitls'
 
 // TODO: rename
 interface RouteMatcher {
   re: RegExp
-  resolve: (params: ParamsType) => string
+  resolve: (params: RouteParams) => string
   record: RouteRecord
   keys: string[]
 }
@@ -26,8 +26,6 @@ function generateMatcher(record: RouteRecord) {
     record,
   }
 }
-
-const START_MATCHER = generateMatcher(START_RECORD)
 
 export class RouterMatcher {
   private matchers: RouteMatcher[] = []
@@ -53,21 +51,36 @@ export class RouterMatcher {
    * passed, it returns the string itself
    * @param location RouterLocation to resolve to a url
    */
-  resolve(location: Readonly<RouterLocation>): string {
+  resolve(
+    location: Readonly<RouterLocation>,
+    currentLocation: RouterLocationNormalized
+  ): string {
     if (typeof location === 'string') return location
+
     if ('path' in location) {
-      // TODO: convert query, hash, warn params
-      return location.path
+      // TODO: warn missing params
+      return (
+        location.path + stringifyQuery(location.query) + (location.hash || '')
+      )
     }
 
     let matcher: RouteMatcher | void
     if (!('name' in location)) {
       // TODO: use current location
       // location = {...location, name: this.}
-      matcher = this.routes.find(r => r.record.name === this.currentRoute.name)
+      if (currentLocation.name) {
+        // we don't want to match an undefined name
+        matcher = this.matchers.find(
+          m => m.record.name === currentLocation.name
+        )
+      } else {
+        matcher = this.matchers.find(
+          m => m.record.path === currentLocation.path
+        )
+      }
       // return '/using current location'
     } else {
-      matcher = this.routes.find(r => r.record.name === location.name)
+      matcher = this.matchers.find(m => m.record.name === location.name)
     }
 
     if (!matcher) {

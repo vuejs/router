@@ -1,9 +1,10 @@
 type TODO = any
 
-export type ParamsType = Record<string, string | string[]>
+export type RouteParams = Record<string, string | string[]>
+export type RouteQuery = Record<string, string | null>
 
 // interface PropsTransformer {
-//   (params: ParamsType): any
+//   (params: RouteParams): any
 // }
 
 // export interface RouterLocation<PT extends PropsTransformer> {
@@ -28,19 +29,25 @@ export type RouterLocation =
   | string
   | {
       path: string
+      query?: RouteQuery
+      hash?: string
     }
   | {
       name: string
-      params?: ParamsType
+      params?: RouteParams
+      query?: RouteQuery
+      hash?: string
     }
   | {
-      params: ParamsType
+      params?: RouteParams
+      query?: RouteQuery
+      hash?: string
     }
 
 export interface RouterLocationNormalized {
   path: string
   name?: string
-  params: ParamsType
+  params: RouteParams
   query: TODO
   hash: TODO
 }
@@ -67,6 +74,13 @@ export const START_RECORD: RouteRecord = {
   path: '/',
   // @ts-ignore
   component: { render: h => h() },
+}
+
+export const START_LOCATION_NORMALIZED: RouterLocationNormalized = {
+  path: '/',
+  params: {},
+  query: {},
+  hash: '',
 }
 
 export enum NavigationType {

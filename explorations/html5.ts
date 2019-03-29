@@ -54,3 +54,7 @@ r.push({
     id: 'no-name',
   },
 })
+
+r.push({
+  hash: '#hey',
+})
