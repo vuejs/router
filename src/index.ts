@@ -30,9 +30,10 @@ export class Router {
    */
   push(to: RouterLocation) {
     // TODO: resolve URL
-    const path = this.matcher.resolve(to, this.currentRoute)
+    const location = this.matcher.resolve(to, this.currentRoute)
     // TODO: call hooks, guards
-    this.history.push(path)
+    this.history.push(location.fullPath)
+    this.currentRoute = location
   }
 
   getRouteRecord(location: RouterLocation) {}

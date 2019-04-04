@@ -46,13 +46,19 @@ export type RouterLocation =
 
 export interface RouterLocationNormalized {
   path: string
+  fullPath: string
   name?: string
   params: RouteParams
   query: TODO
-  hash: TODO
+  hash: string
 }
 
 export type HistoryLocation = string
+export interface HistoryURL {
+  path: string
+  search: Record<string, string>
+  hash: string
+}
 
 // pushState clones the state passed and do not accept everything
 // it doesn't accept symbols, nor functions. It also ignores Symbols as keys
@@ -81,6 +87,7 @@ export const START_LOCATION_NORMALIZED: RouterLocationNormalized = {
   params: {},
   query: {},
   hash: '',
+  fullPath: '/',
 }
 
 export enum NavigationType {

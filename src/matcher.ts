@@ -35,33 +35,37 @@ export class RouterMatcher {
   }
 
   /**
-   * Normalize a RouterLocation into an object that is easier to handle
-   * @param location location to normalize
-   * @param currentLocation current location, to reuse params and location
-   */
-  normalize(
-    location: Readonly<RouterLocation>,
-    currentLocation: Readonly<RouterLocationNormalized>
-  ): RouterLocationNormalized {
-    return {} as RouterLocationNormalized
-  }
-
-  /**
    * Transforms a RouterLocation object into a URL string. If a string is
    * passed, it returns the string itself
    * @param location RouterLocation to resolve to a url
    */
   resolve(
     location: Readonly<RouterLocation>,
-    currentLocation: RouterLocationNormalized
-  ): string {
-    if (typeof location === 'string') return location
+    currentLocation: Readonly<RouterLocationNormalized>
+  ): RouterLocationNormalized {
+    if (typeof location === 'string')
+      return {
+        path: location,
+        fullPath: location,
+        // TODO: resolve params, query and hash
+        params: {},
+        query: {},
+        hash: '',
+      }
 
     if ('path' in location) {
       // TODO: warn missing params
-      return (
-        location.path + stringifyQuery(location.query) + (location.hash || '')
-      )
+      // TODO: extract query and hash? warn about presence
+      return {
+        path: location.path,
+        query: location.query || {},
+        hash: location.hash || '',
+        params: {},
+        fullPath:
+          location.path +
+          stringifyQuery(location.query) +
+          (location.hash || ''),
+      }
     }
 
     let matcher: RouteMatcher | void
@@ -74,9 +78,7 @@ export class RouterMatcher {
           m => m.record.name === currentLocation.name
         )
       } else {
-        matcher = this.matchers.find(
-          m => m.record.path === currentLocation.path
-        )
+        matcher = this.matchers.find(m => m.re.test(currentLocation.path))
       }
       // return '/using current location'
     } else {
@@ -85,9 +87,19 @@ export class RouterMatcher {
 
     if (!matcher) {
       // TODO: error
-      throw new Error('No match for' + location)
+      throw new Error(
+        'No match for' + JSON.stringify({ ...currentLocation, ...location })
+      )
     }
 
-    return matcher.resolve(location.params || {})
+    // TODO: try catch to show missing params
+    const fullPath = matcher.resolve(location.params || {})
+    return {
+      path: fullPath, // TODO: extract path path, query, hash
+      fullPath,
+      query: {},
+      params: {},
+      hash: '',
+    }
   }
 }

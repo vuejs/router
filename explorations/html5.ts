@@ -55,6 +55,6 @@ r.push({
   },
 })
 
-r.push({
-  hash: '#hey',
-})
+// r.push({
+//   hash: '#hey',
+// })

@@ -3,6 +3,7 @@ import {
   HistoryLocation,
   NavigationCallback,
   RemoveListener,
+  HistoryURL,
 } from '../types/index'
 
 export default abstract class BaseHistory {
@@ -32,6 +33,13 @@ export default abstract class BaseHistory {
    * @returns
    */
   abstract listen(callback: NavigationCallback): RemoveListener
+
+  /**
+   * Transforms a URL into an object
+   * @param location location to normalize
+   * @param currentLocation current location, to reuse params and location
+   */
+  abstract parseURL(location: HistoryLocation): HistoryURL
 
   /**
    * ensure the current location matches the external source
