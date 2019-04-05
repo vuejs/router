@@ -6,7 +6,7 @@ import {
   HistoryState,
   NavigationType,
   HistoryURL,
-} from '../types/index'
+} from './base'
 
 const cs = consola.withTag('html5')
 

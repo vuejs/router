@@ -53,29 +53,6 @@ export interface RouterLocationNormalized {
   hash: string
 }
 
-export type HistoryLocation = string
-export interface HistoryURL {
-  path: string
-  search: Record<string, string>
-  hash: string
-}
-
-// pushState clones the state passed and do not accept everything
-// it doesn't accept symbols, nor functions. It also ignores Symbols as keys
-type HistoryStateValue =
-  | string
-  | number
-  | boolean
-  | HistoryState
-  | HistoryStateArray
-export interface HistoryState {
-  [x: number]: HistoryStateValue
-  [x: string]: HistoryStateValue
-}
-interface HistoryStateArray extends Array<HistoryStateValue> {}
-// export type HistoryState = Record<string | number, string | number | boolean | undefined | null |
-
-export const START: HistoryLocation = '/'
 export const START_RECORD: RouteRecord = {
   path: '/',
   // @ts-ignore
@@ -89,18 +66,3 @@ export const START_LOCATION_NORMALIZED: RouterLocationNormalized = {
   hash: '',
   fullPath: '/',
 }
-
-export enum NavigationType {
-  back,
-  forward,
-}
-
-export interface NavigationCallback {
-  (
-    to: HistoryLocation,
-    from: HistoryLocation,
-    info: { type: NavigationType }
-  ): void
-}
-
-export type RemoveListener = () => void
