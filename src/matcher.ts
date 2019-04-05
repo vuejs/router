@@ -5,7 +5,7 @@ import {
   RouterLocation,
   RouterLocationNormalized,
 } from './types/index'
-import { stringifyQuery } from './uitls'
+import { stringifyQuery } from './utils'
 
 // TODO: rename
 interface RouteMatcher {
