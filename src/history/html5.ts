@@ -36,7 +36,8 @@ function buildState(
 
 export class HTML5History extends BaseHistory {
   private history = window.history
-  private _popStateListeners: PopStateListener[] = []
+  location: HistoryLocation
+  private _popStateHandler: PopStateListener
   private _listeners: NavigationCallback[] = []
   private _teardowns: Array<() => void> = []
 
@@ -46,6 +47,7 @@ export class HTML5History extends BaseHistory {
     cs.log('created', to)
     this.history.replaceState(buildState(null, to, null), '', to)
     this.location = to
+    this._popStateHandler = this.setupPopStateListener()
   }
 
   // TODO: is this necessary
@@ -88,34 +90,11 @@ export class HTML5History extends BaseHistory {
   }
 
   listen(callback: NavigationCallback) {
-    // state is the same as history.state
-    const handler: PopStateListener = ({ state }: { state: StateEntry }) => {
-      cs.info('popstate fired', {
-        state,
-        location: this.location,
-      })
-      const from = this.location
-      // we have the state from the old entry, not the current one being removed
-      // TODO: correctly parse pathname
-      this.location = state ? state.current : buildFullPath()
-      callback(this.location, from, {
-        type:
-          from === state.forward ? NavigationType.back : NavigationType.forward,
-      })
-    }
-
     // settup the listener and prepare teardown callbacks
-    this._popStateListeners.push(handler)
     this._listeners.push(callback)
-    window.addEventListener('popstate', handler)
 
     const teardown = () => {
-      this._popStateListeners.splice(
-        this._popStateListeners.indexOf(handler),
-        1
-      )
       this._listeners.splice(this._listeners.indexOf(callback), 1)
-      window.removeEventListener('popstate', handler)
     }
 
     this._teardowns.push(teardown)
@@ -161,9 +140,45 @@ export class HTML5History extends BaseHistory {
     }
   }
 
+  /**
+   * Remove all listeners attached to the history and cleanups the history
+   * instance
+   */
   destroy() {
     for (const teardown of this._teardowns) teardown()
     this._teardowns = []
+    if (this._popStateHandler)
+      window.removeEventListener('popstate', this._popStateHandler)
+  }
+
+  /**
+   * Setups the popstate event listener. It's important to setup only
+   * one to ensure the same parameters are passed to every listener
+   */
+  private setupPopStateListener() {
+    const handler: PopStateListener = ({ state }: { state: StateEntry }) => {
+      cs.info('popstate fired', {
+        state,
+        location: this.location,
+      })
+      const from = this.location
+      // we have the state from the old entry, not the current one being removed
+      // TODO: correctly parse pathname
+      this.location = state ? state.current : buildFullPath()
+
+      // call all listeners
+      const navigationInfo = {
+        type:
+          from === state.forward ? NavigationType.back : NavigationType.forward,
+      }
+      this._listeners.forEach(listener =>
+        listener(this.location, from, navigationInfo)
+      )
+    }
+
+    // settup the listener and prepare teardown callbacks
+    window.addEventListener('popstate', handler)
+    return handler
   }
 }
 

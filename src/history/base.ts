@@ -24,8 +24,9 @@ interface HistoryStateArray extends Array<HistoryStateValue> {}
 export const START: HistoryLocation = '/'
 
 export enum NavigationType {
-  back,
-  forward,
+  // NOTE: is it better to have strings?
+  back = 'back',
+  forward = 'forward',
 }
 
 export interface NavigationCallback {
