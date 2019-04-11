@@ -5,7 +5,6 @@ import {
   NavigationCallback,
   HistoryState,
   NavigationType,
-  HistoryURL,
 } from './base'
 
 const cs = consola.withTag('html5')
@@ -99,45 +98,6 @@ export class HTML5History extends BaseHistory {
 
     this._teardowns.push(teardown)
     return teardown
-  }
-
-  parseURL(location: string): HistoryURL {
-    let path = '',
-      search: HistoryURL['search'] = {},
-      searchString = '',
-      hash = ''
-
-    // Could use URL and URLSearchParams but IE 11 doesn't support it
-    const searchPos = location.indexOf('?')
-    const hashPos = location.indexOf(location, searchPos > -1 ? searchPos : 0)
-    if (searchPos > -1) {
-      path = location.slice(0, searchPos)
-      searchString = location.slice(
-        searchPos + 1,
-        hashPos > -1 ? hashPos : location.length - 1
-      )
-
-      // TODO: properly do this in a util function
-      search = searchString.split('&').reduce((search, entry) => {
-        const [key, value] = entry.split('=')
-        search[key] = value
-        return search
-      }, search)
-    }
-
-    if (hashPos > -1) {
-      path = path || location.slice(0, hashPos)
-      hash = location.slice(hashPos, location.length - 1)
-    }
-
-    path = path || location
-
-    return {
-      path,
-      // TODO: transform searchString
-      search,
-      hash,
-    }
   }
 
   /**

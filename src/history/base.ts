@@ -1,7 +1,7 @@
 export type HistoryLocation = string
 export interface HistoryURL {
   path: string
-  search: Record<string, string>
+  query: Record<string, string> // TODO: handle arrays
   hash: string
 }
 
@@ -72,7 +72,45 @@ export abstract class BaseHistory {
    * @param location location to normalize
    * @param currentLocation current location, to reuse params and location
    */
-  abstract parseURL(location: HistoryLocation): HistoryURL
+  parseURL(location: string): HistoryURL {
+    let path = '',
+      query: HistoryURL['query'] = {},
+      searchString = '',
+      hash = ''
+
+    // Could use URL and URLSearchParams but IE 11 doesn't support it
+    // TODO: move this utility to base.ts so it can be used by any history implementation
+    const searchPos = location.indexOf('?')
+    const hashPos = location.indexOf('#', searchPos > -1 ? searchPos : 0)
+    if (searchPos > -1) {
+      path = location.slice(0, searchPos)
+      searchString = location.slice(
+        searchPos + 1,
+        hashPos > -1 ? hashPos : location.length
+      )
+
+      // TODO: properly do this in a util function
+      query = searchString.split('&').reduce((query, entry) => {
+        const [key, value] = entry.split('=')
+        query[key] = value
+        return query
+      }, query)
+    }
+
+    if (hashPos > -1) {
+      path = path || location.slice(0, hashPos)
+      hash = location.slice(hashPos, location.length)
+    }
+
+    path = path || location
+
+    return {
+      path,
+      // TODO: transform searchString
+      query,
+      hash,
+    }
+  }
 
   /**
    * ensure the current location matches the external source
