@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "test:unit": "jest --coverage",
+    "test:unit:watch": "yarn run test:unit --watchAll",
     "dev": "webpack-dev-server --mode=development"
   },
   "devDependencies": {

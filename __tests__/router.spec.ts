@@ -1,7 +1,8 @@
 import { HTML5History } from '../src/history/html5'
+import { Router } from '../src/router'
 import { JSDOM } from 'jsdom'
 
-describe('History HTMl5', () => {
+describe('Router', () => {
   beforeAll(() => {
     // TODO: move to utils for tests that need DOM
     const dom = new JSDOM(
@@ -19,6 +20,13 @@ describe('History HTMl5', () => {
 
   it('can be instantiated', () => {
     const history = new HTML5History()
-    expect(history.location).toBe('/')
+    const router = new Router({ history, routes: [] })
+    expect(router.currentRoute).toEqual({
+      fullPath: '/',
+      hash: '',
+      params: {},
+      path: '/',
+      query: {},
+    })
   })
 })

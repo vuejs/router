@@ -12,7 +12,7 @@ const cs = consola.withTag('html5')
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 
-export class HTML5History extends BaseHistory {
+export class AbstractHistory extends BaseHistory {
   private history = window.history
   private _popStateListeners: PopStateListener[] = []
   private _listeners: NavigationCallback[] = []

@@ -1,5 +1,4 @@
-import HTML5History from '../src/history/html5'
-import { Router } from '../src'
+import { Router, HTML5History } from '../src'
 
 const component = null
 

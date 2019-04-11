@@ -37,7 +37,7 @@ export interface NavigationCallback {
 
 export type RemoveListener = () => void
 
-export default abstract class BaseHistory {
+export abstract class BaseHistory {
   // previousState: object
   location: HistoryLocation = START
   base: string = ''
