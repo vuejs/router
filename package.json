@@ -5,11 +5,17 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "test:unit": "jest --coverage",
     "dev": "webpack-dev-server --mode=development"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.11",
+    "@types/jsdom": "^12.2.3",
     "consola": "^2.5.8",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^24.7.1",
+    "jsdom": "^14.0.0",
+    "ts-jest": "^24.0.1",
     "ts-loader": "^5.3.3",
     "typescript": "^3.4.1",
     "vue": "^2.6.10",
