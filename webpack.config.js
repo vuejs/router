@@ -2,7 +2,7 @@ const { resolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 
-const outputPath = resolve(__dirname, 'dist')
+const outputPath = resolve(__dirname, 'examples_dist')
 
 module.exports = {
   mode: 'development',
