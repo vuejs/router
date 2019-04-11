@@ -12,6 +12,28 @@ const cs = consola.withTag('html5')
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 
+interface StateEntry {
+  back: HistoryLocation | null
+  current: HistoryLocation
+  forward: HistoryLocation | null
+  replaced: boolean
+}
+
+// TODO: pretty useless right now except for typing
+function buildState(
+  back: HistoryLocation | null,
+  current: HistoryLocation,
+  forward: HistoryLocation | null,
+  replaced: boolean = false
+): StateEntry {
+  return {
+    back,
+    current,
+    forward,
+    replaced,
+  }
+}
+
 export class HTML5History extends BaseHistory {
   private history = window.history
   private _popStateListeners: PopStateListener[] = []
@@ -20,36 +42,22 @@ export class HTML5History extends BaseHistory {
 
   constructor() {
     super()
+    const to = buildFullPath()
+    cs.log('created', to)
+    this.history.replaceState(buildState(null, to, null), '', to)
+    this.location = to
   }
 
   // TODO: is this necessary
-  ensureLocation() {
-    const to = buildFullPath()
-    cs.log('ensureLocation', to)
-    this.history.replaceState(
-      {
-        _back: null,
-        _current: to,
-        _forward: null,
-      },
-      '',
-      to
-    )
-    this.location = to
-  }
+  ensureLocation() {}
 
   replace(to: HistoryLocation) {
     if (to === this.location) return
     cs.info('replace', this.location, to)
     this.history.replaceState(
-      {
-        // TODO: this should be user's responsibility
-        // _replacedState: this.history.state || null,
-        _back: this.location,
-        _current: to,
-        _forward: null,
-        _replaced: true,
-      },
+      // TODO: this should be user's responsibility
+      // _replacedState: this.history.state || null,
+      buildState(this.history.state.back, to, null, true),
       '',
       to
     )
@@ -59,19 +67,19 @@ export class HTML5History extends BaseHistory {
   push(to: HistoryLocation, data?: HistoryState) {
     // replace current entry state to add the forward value
     this.history.replaceState(
-      {
-        ...this.history.state,
-        _forward: to,
-      },
+      buildState(
+        this.history.state.back,
+        this.history.state.current,
+        to,
+        this.history.state.replaced
+      ),
       ''
     )
     // TODO: compare current location to prevent navigation
     // NEW NOTE: I think it shouldn't be history responsibility to check that
     // if (to === this.location) return
     const state = {
-      _back: this.location,
-      _current: to,
-      _forward: null,
+      ...buildState(this.location, to, null),
       ...data,
     }
     cs.info('push', this.location, '->', to, 'with state', state)
@@ -81,8 +89,7 @@ export class HTML5History extends BaseHistory {
 
   listen(callback: NavigationCallback) {
     // state is the same as history.state
-    const handler: PopStateListener = ({ state }) => {
-      cs.log(this)
+    const handler: PopStateListener = ({ state }: { state: StateEntry }) => {
       cs.info('popstate fired', {
         state,
         location: this.location,
@@ -90,12 +97,10 @@ export class HTML5History extends BaseHistory {
       const from = this.location
       // we have the state from the old entry, not the current one being removed
       // TODO: correctly parse pathname
-      this.location = state ? state._current : buildFullPath
+      this.location = state ? state.current : buildFullPath()
       callback(this.location, from, {
         type:
-          from === state._forward
-            ? NavigationType.back
-            : NavigationType.forward,
+          from === state.forward ? NavigationType.back : NavigationType.forward,
       })
     }
 

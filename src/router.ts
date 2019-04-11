@@ -19,9 +19,14 @@ export class Router {
 
   constructor(options: RouterOptions) {
     this.history = options.history
-    this.history.ensureLocation()
+    // this.history.ensureLocation()
 
     this.matcher = new RouterMatcher(options.routes)
+
+    this.history.listen((to, from, info) => {
+      // TODO: check navigation guards
+      this.currentRoute = this.matcher.resolve(to, this.currentRoute)
+    })
   }
 
   /**

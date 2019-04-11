@@ -11,6 +11,7 @@ type HistoryStateValue =
   | string
   | number
   | boolean
+  | null
   | HistoryState
   | HistoryStateArray
 export interface HistoryState {
