@@ -1,3 +1,5 @@
+import './helper.js'
+import expect from 'expect'
 import { BaseHistory } from '../src/history/base'
 
 const parseURL = BaseHistory.prototype.parseURL

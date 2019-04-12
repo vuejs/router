@@ -1,3 +1,5 @@
+import './helper.js'
+import expect from 'expect'
 import { HTML5History } from '../src/history/html5'
 import { Router } from '../src/router'
 import { JSDOM } from 'jsdom'

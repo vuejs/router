@@ -1,31 +1,19 @@
 # VueRouter
 
-## API
+## Developping
 
-### `Router`
+Use `yarn`
 
-```js
-import { html5 as history, Router } from 'vue-router'
+### Faster unit testing with watch mode
 
-const router = new Router({
-  history,
-})
+Use mocha for TDD, its watching is much faster than jest
+
+```sh
+yarn run test:mocha:dev
 ```
 
-```html
-<Router :history="html5">
-  <Route component="Home" path="/" name="home" />
-  <Route component="User" path="/users" name="user" />
-</Router>
-```
+Run jest for final tests
 
-```html
-<div class="user">
-  <Router>
-    <Route component="UserList" path="" name="list" />
-    <Route component="UserDetail" path=":id" name="detail" />
-    <Route component="UserNew" path="new" name="new" />
-    <Route component="UserEdit" path=":id/edit" name="edit" props/>
-  </Router>
-</div>
+```sh
+yarn run test:unit
 ```
