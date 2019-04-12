@@ -39,6 +39,8 @@ export interface NavigationCallback {
 
 export type RemoveListener = () => void
 
+const PERCENT_RE = /%/g
+
 export abstract class BaseHistory {
   // previousState: object
   location: HistoryLocation = START
@@ -111,6 +113,37 @@ export abstract class BaseHistory {
       hash,
     }
   }
+
+  /**
+   * Stringify a URL object
+   * @param location
+   */
+  stringifyURL(location: HistoryURL): string {
+    let url = location.path
+    let query = '?'
+    // TODO: util function?
+    for (const key in location.query) {
+      if (query.length > 1) query += '&'
+      // TODO: handle array
+      query += `${key}=${location.query[key]}`
+    }
+
+    if (query.length > 1) url += query
+
+    return url + location.hash
+  }
+
+  /**
+   * Prepare a URI string to be passed to pushState
+   * @param uri
+   */
+  prepareURI(uri: string) {
+    // encode the % symbol so it also works on IE
+    return uri.replace(PERCENT_RE, '%25')
+  }
+
+  // use regular decodeURI
+  decodeURI = decodeURI
 
   /**
    * ensure the current location matches the external source

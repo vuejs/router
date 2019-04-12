@@ -53,6 +53,7 @@ export class HTML5History extends BaseHistory {
   ensureLocation() {}
 
   replace(to: HistoryLocation) {
+    // TODO: standarize URL
     if (to === this.location) return
     cs.info('replace', this.location, to)
     this.history.replaceState(

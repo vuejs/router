@@ -10,6 +10,7 @@ export class AbstractHistory extends BaseHistory {
 
   constructor() {
     super()
+    cs.info('created')
   }
 
   // TODO: is this necessary
