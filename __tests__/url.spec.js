@@ -1,3 +1,4 @@
+// @ts-check
 require('./helper')
 const expect = require('expect')
 const { BaseHistory } = require('../src/history/base')

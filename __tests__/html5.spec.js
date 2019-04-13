@@ -1,7 +1,8 @@
-import './helper.js'
-import expect from 'expect'
-import { HTML5History } from '../src/history/html5'
-import { JSDOM } from 'jsdom'
+// @ts-check
+require('./helper')
+const expect = require('expect')
+const { HTML5History } = require('../src/history/html5')
+const { JSDOM } = require('jsdom')
 
 describe('History HTMl5', () => {
   beforeAll(() => {
