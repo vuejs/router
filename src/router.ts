@@ -25,7 +25,8 @@ export class Router {
 
     this.history.listen((to, from, info) => {
       // TODO: check navigation guards
-      this.currentRoute = this.matcher.resolve(to, this.currentRoute)
+      const url = this.history.parseURL(to)
+      this.currentRoute = this.matcher.resolve(url, this.currentRoute)
     })
   }
 
@@ -35,7 +36,8 @@ export class Router {
    */
   push(to: RouterLocation) {
     // TODO: resolve URL
-    const location = this.matcher.resolve(to, this.currentRoute)
+    const url = typeof to === 'string' ? this.history.parseURL(to) : to
+    const location = this.matcher.resolve(url, this.currentRoute)
     // TODO: call hooks, guards
     this.history.push(location.fullPath)
     this.currentRoute = location

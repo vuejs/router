@@ -1,7 +1,12 @@
 export type HistoryLocation = string
 export interface HistoryURL {
+  // full path (like href)
+  fullPath: string
+  // pathname section
   path: string
+  // search string parsed
   query: Record<string, string> // TODO: handle arrays
+  // hash with the #
   hash: string
 }
 
@@ -107,6 +112,7 @@ export abstract class BaseHistory {
     path = path || location
 
     return {
+      fullPath: location,
       path,
       // TODO: transform searchString
       query,

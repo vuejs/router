@@ -8,6 +8,7 @@ const parseURL = BaseHistory.prototype.parseURL
 describe('URL parsing', () => {
   it('works with no query no hash', () => {
     expect(parseURL('/foo')).toEqual({
+      fullPath: '/foo',
       path: '/foo',
       hash: '',
       query: {},
@@ -16,6 +17,7 @@ describe('URL parsing', () => {
 
   it('extracts the query', () => {
     expect(parseURL('/foo?a=one&b=two')).toEqual({
+      fullPath: '/foo?a=one&b=two',
       path: '/foo',
       hash: '',
       query: {
@@ -27,6 +29,7 @@ describe('URL parsing', () => {
 
   it('extracts the hash', () => {
     expect(parseURL('/foo#bar')).toEqual({
+      fullPath: '/foo#bar',
       path: '/foo',
       hash: '#bar',
       query: {},
@@ -35,6 +38,7 @@ describe('URL parsing', () => {
 
   it('extracts query and hash', () => {
     expect(parseURL('/foo?a=one#bar')).toEqual({
+      fullPath: '/foo?a=one#bar',
       path: '/foo',
       hash: '#bar',
       query: { a: 'one' },

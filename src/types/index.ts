@@ -1,3 +1,5 @@
+import { HistoryURL } from '../history/base'
+
 type TODO = any
 
 export type RouteParams = Record<string, string | string[]>
@@ -24,9 +26,7 @@ export interface RouteRecord {
   // props: PT
 }
 
-// TODO: location should be an object
-export type RouterLocation =
-  | string
+type RouteObjectLocation =
   | {
       path: string
       query?: RouteQuery
@@ -44,12 +44,17 @@ export type RouterLocation =
       hash?: string
     }
 
+// TODO: location should be an object
+export type MatcherLocation = HistoryURL | RouteObjectLocation
+
+export type RouterLocation = string | RouteObjectLocation
+
 export interface RouterLocationNormalized {
   path: string
   fullPath: string
   name?: string
   params: RouteParams
-  query: TODO
+  query: RouteQuery
   hash: string
 }
 

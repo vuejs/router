@@ -2,7 +2,7 @@ import pathToRegexp from 'path-to-regexp'
 import {
   RouteRecord,
   RouteParams,
-  RouterLocation,
+  MatcherLocation,
   RouterLocationNormalized,
 } from './types/index'
 import { stringifyQuery } from './utils'
@@ -35,12 +35,11 @@ export class RouterMatcher {
   }
 
   /**
-   * Transforms a RouterLocation object into a URL string. If a string is
-   * passed, it returns the string itself
-   * @param location RouterLocation to resolve to a url
+   * Transforms a MatcherLocation object into a normalized location
+   * @param location MatcherLocation to resolve to a url
    */
   resolve(
-    location: Readonly<RouterLocation>,
+    location: Readonly<MatcherLocation>,
     currentLocation: Readonly<RouterLocationNormalized>
   ): RouterLocationNormalized {
     if (typeof location === 'string')
