@@ -44,4 +44,13 @@ describe('URL parsing', () => {
       query: { a: 'one' },
     })
   })
+
+  it('extracts multiple query paramenters as an array', () => {
+    expect(parseURL('/foo?a=one&a=two&a=three')).toEqual({
+      fullPath: '/foo?a=one&a=two&a=three',
+      path: '/foo',
+      hash: '',
+      query: { a: ['one', 'two', 'three'] },
+    })
+  })
 })

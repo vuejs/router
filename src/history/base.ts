@@ -1,11 +1,13 @@
 export type HistoryLocation = string
+
+export type HistoryQuery = Record<string, string | string[]>
 export interface HistoryURL {
   // full path (like href)
   fullPath: string
   // pathname section
   path: string
   // search string parsed
-  query: Record<string, string> // TODO: handle arrays
+  query: HistoryQuery
   // hash with the #
   hash: string
 }
@@ -99,7 +101,17 @@ export abstract class BaseHistory {
       // TODO: properly do this in a util function
       query = searchString.split('&').reduce((query, entry) => {
         const [key, value] = entry.split('=')
-        query[key] = value
+        if (key in query) {
+          // an extra variable for ts types
+          let currentValue = query[key]
+          if (!Array.isArray(currentValue)) {
+            currentValue = query[key] = [currentValue]
+          }
+          currentValue.push(value)
+        } else {
+          query[key] = value
+        }
+
         return query
       }, query)
     }

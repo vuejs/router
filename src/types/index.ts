@@ -3,7 +3,7 @@ import { HistoryURL } from '../history/base'
 type TODO = any
 
 export type RouteParams = Record<string, string | string[]>
-export type RouteQuery = Record<string, string | null>
+export type RouteQuery = Record<string, string | string[] | null>
 
 // interface PropsTransformer {
 //   (params: RouteParams): any

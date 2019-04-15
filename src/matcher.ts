@@ -42,14 +42,15 @@ export class RouterMatcher {
     location: Readonly<MatcherLocation>,
     currentLocation: Readonly<RouterLocationNormalized>
   ): RouterLocationNormalized {
-    if (typeof location === 'string')
+    // TODO: type guard HistoryURL
+    if ('fullPath' in location)
       return {
-        path: location,
-        fullPath: location,
+        path: location.path,
+        fullPath: location.fullPath,
         // TODO: resolve params, query and hash
         params: {},
-        query: {},
-        hash: '',
+        query: location.query,
+        hash: location.hash,
       }
 
     if ('path' in location) {
@@ -57,6 +58,7 @@ export class RouterMatcher {
       // TODO: extract query and hash? warn about presence
       return {
         path: location.path,
+        // TODO: normalize query?
         query: location.query || {},
         hash: location.hash || '',
         params: {},

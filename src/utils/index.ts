@@ -5,6 +5,7 @@ export function stringifyQuery(query: RouteQuery | void): string {
 
   let search = '?'
   for (const key in query) {
+    // TODO: handle arrays
     search += `${key}=${query[key]}`
   }
 
