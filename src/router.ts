@@ -29,6 +29,11 @@ export class Router {
       const matchedRoute = this.matcher.resolve(to, this.currentRoute)
       console.log({ to, matchedRoute })
       // TODO: navigate
+
+      this.currentRoute = {
+        ...to,
+        ...matchedRoute,
+      }
     })
   }
 
