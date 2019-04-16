@@ -43,7 +43,7 @@ export class HTML5History extends BaseHistory {
   constructor() {
     super()
     const to = buildFullPath()
-    cs.log('created', to)
+    // cs.log('created', to)
     this.history.replaceState(buildState(null, to, null), '', to)
     this.location = to
     this._popStateHandler = this.setupPopStateListener()
