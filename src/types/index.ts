@@ -1,3 +1,5 @@
+import { HistoryQuery } from '../history/base'
+
 type TODO = any
 
 // TODO: support numbers for easier writing but cast them
@@ -28,16 +30,12 @@ export type RouteLocation =
   | RouteQueryAndHash & LocationAsName
   | RouteQueryAndHash & LocationAsRelative
 
-// the matcher doesn't care about query and hash
-export type MatcherLocation =
-  | LocationAsPath
-  | LocationAsName
-  | LocationAsRelative
-
 // exposed to the user in a very consistant way
 export interface RouteLocationNormalized
   extends Required<RouteQueryAndHash & LocationAsRelative & LocationAsPath> {
   fullPath: string
+  query: HistoryQuery // the normalized version cannot have numbers
+  // TODO: do the same for params
   name: string | void
 }
 
@@ -68,6 +66,7 @@ export const START_RECORD: RouteRecord = {
   component: { render: h => h() },
 }
 
+// TODO: this should probably be generate by ensureLocation
 export const START_LOCATION_NORMALIZED: RouteLocationNormalized = {
   path: '/',
   name: undefined,
@@ -78,8 +77,12 @@ export const START_LOCATION_NORMALIZED: RouteLocationNormalized = {
 }
 
 // Matcher types
-// TODO: can probably have types with no record, path and others
-// should be an & type
+// the matcher doesn't care about query and hash
+export type MatcherLocation =
+  | LocationAsPath
+  | LocationAsName
+  | LocationAsRelative
+
 export interface MatcherLocationNormalized {
   name: RouteLocationNormalized['name']
   path: string
