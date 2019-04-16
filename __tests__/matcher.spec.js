@@ -47,6 +47,25 @@ describe('Router Matcher', () => {
       expect(result).toEqual(resolved)
     }
 
+    /**
+     *
+     * @param {import('../src/types').RouteRecord} record
+     * @param {import('../src/types').MatcherLocation} location
+     * @param {import('../src/types').MatcherLocationNormalized} start
+     * @returns {any} error
+     */
+    function assertErrorMatch(
+      record,
+      location,
+      start = START_LOCATION_NORMALIZED
+    ) {
+      try {
+        assertRecordMatch(record, location, {}, start)
+      } catch (error) {
+        return error
+      }
+    }
+
     describe('LocationAsPath', () => {
       it('resolves a normal path', () => {
         assertRecordMatch(
@@ -87,6 +106,14 @@ describe('Router Matcher', () => {
           { name: undefined, params: { id: 'posva', other: 'hey' } }
         )
       })
+
+      it('throws if the path does not exists', () => {
+        expect(
+          assertErrorMatch({ path: '/', component }, { path: '/foo' })
+        ).toMatchInlineSnapshot(
+          `[Error: No match for {"path":"/foo","params":{},"query":{},"hash":"","fullPath":"/"}]`
+        )
+      })
     })
 
     describe('LocationAsName', () => {
@@ -103,6 +130,14 @@ describe('Router Matcher', () => {
           { path: '/users/:id/m/:role', name: 'UserEdit', component },
           { name: 'UserEdit', params: { id: 'posva', role: 'admin' } },
           { name: 'UserEdit', path: '/users/posva/m/admin' }
+        )
+      })
+
+      it('throws if the named route does not exists', () => {
+        expect(
+          assertErrorMatch({ path: '/', component }, { name: 'Home' })
+        ).toMatchInlineSnapshot(
+          `[Error: No match for {"path":"/","name":"Home","params":{},"query":{},"hash":"","fullPath":"/"}]`
         )
       })
     })
@@ -174,6 +209,18 @@ describe('Router Matcher', () => {
             name: undefined,
             params: { id: 'ed', role: 'user' },
           }
+        )
+      })
+
+      it('throws if the current named route does not exists', () => {
+        expect(
+          assertErrorMatch(
+            { path: '/', component },
+            {},
+            { name: 'home', params: {}, path: '/' }
+          )
+        ).toMatchInlineSnapshot(
+          `[Error: No match for {"name":"home","params":{},"path":"/"}]`
         )
       })
     })
