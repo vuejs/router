@@ -81,7 +81,7 @@ export function stringifyURL(location: HistoryLocation): string {
   let url = location.path
   let query = location.query ? stringifyQuery(location.query) : ''
 
-  return url + (query.length && '?' + query) + (location.hash || '')
+  return url + (query && '?' + query) + (location.hash || '')
 }
 
 /**

@@ -79,7 +79,7 @@ export class HTML5History extends BaseHistory {
       ...buildState(this.location, normalized, null),
       ...data,
     }
-    cs.info('push', this.location, '->', to, 'with state', state)
+    cs.info('push', this.location, '->', normalized, 'with state', state)
     this.history.pushState(state, '', normalized.fullPath)
     this.location = normalized
   }

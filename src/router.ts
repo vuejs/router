@@ -49,11 +49,8 @@ export class Router {
       url = this.history.utils.normalizeLocation(location)
     }
 
-    console.log(location)
-    console.log('---')
     // TODO: call hooks, guards
-    // TODO: navigate
-    // this.history.push(location.fullPath)
+    this.history.push(url)
     this.currentRoute = {
       ...url,
       ...location,
