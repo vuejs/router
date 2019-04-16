@@ -51,8 +51,9 @@ export class Router {
       // named or relative route
       // we need to resolve first
       location = this.matcher.resolve(to, this.currentRoute)
+      // intentionally drop current query and hash
       url = this.history.utils.normalizeLocation({
-        query: this.history.utils.normalizeQuery(to.query || {}),
+        query: to.query ? this.history.utils.normalizeQuery(to.query) : {},
         hash: to.hash,
         ...location,
       })
