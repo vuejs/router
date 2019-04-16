@@ -1,9 +1,7 @@
 // @ts-check
 require('./helper')
 const expect = require('expect')
-const { BaseHistory } = require('../src/history/base')
-
-const parseURL = BaseHistory.prototype.parseURL
+const { parseURL } = require('../src/history/utils')
 
 describe('URL parsing', () => {
   it('works with no query no hash', () => {

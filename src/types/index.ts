@@ -35,13 +35,10 @@ export type MatcherLocation =
   | LocationAsRelative
 
 // exposed to the user in a very consistant way
-export interface RouteLocationNormalized {
-  path: string
+export interface RouteLocationNormalized
+  extends Required<RouteQueryAndHash & LocationAsRelative & LocationAsPath> {
   fullPath: string
   name: string | void
-  params: RouteParams
-  query: RouteQuery
-  hash: string
 }
 
 // interface PropsTransformer {

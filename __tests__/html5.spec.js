@@ -22,6 +22,11 @@ describe('History HTMl5', () => {
 
   it('can be instantiated', () => {
     const history = new HTML5History()
-    expect(history.location).toBe('/')
+    expect(history.location).toEqual({
+      fullPath: '/',
+      path: '/',
+      query: {},
+      hash: '',
+    })
   })
 })

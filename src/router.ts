@@ -1,11 +1,11 @@
-import { BaseHistory } from './history/base'
+import { BaseHistory, HistoryLocationNormalized } from './history/base'
 import { RouterMatcher } from './matcher'
 import {
   RouteLocation,
   RouteRecord,
   START_LOCATION_NORMALIZED,
   RouteLocationNormalized,
-  RouteQuery,
+  MatcherLocationNormalized,
 } from './types/index'
 
 interface RouterOptions {
@@ -26,9 +26,8 @@ export class Router {
 
     this.history.listen((to, from, info) => {
       // TODO: check navigation guards
-      const url = this.history.parseURL(to)
-      const matchedRoute = this.matcher.resolve(url, this.currentRoute)
-      console.log({ url, matchedRoute })
+      const matchedRoute = this.matcher.resolve(to, this.currentRoute)
+      console.log({ to, matchedRoute })
       // TODO: navigate
     })
   }
@@ -38,42 +37,27 @@ export class Router {
    * @param to Where to go
    */
   push(to: RouteLocation) {
-    // TODO: resolve URL
-    let url, fullPath: string, query: RouteQuery, hash: string
-    if (typeof to === 'string') {
-      url = this.history.parseURL(to)
-      fullPath = url.fullPath
-      query = url.query
-      hash = url.hash
-    } else if ('path' in to) {
-      fullPath = this.history.stringifyURL(to)
-      query = to.query || {}
-      hash = to.hash || ''
-      url = to
-    } else if ('name' in to) {
-      // we need to resolve first
-      url = to
+    let url: HistoryLocationNormalized
+    let location: MatcherLocationNormalized
+    if (typeof to === 'string' || 'path' in to) {
+      url = this.history.utils.normalizeLocation(to)
+      location = this.matcher.resolve(url, this.currentRoute)
     } else {
+      // named or relative route
       // we need to resolve first
-      url = to
+      location = this.matcher.resolve(to, this.currentRoute)
+      url = this.history.utils.normalizeLocation(location)
     }
-    console.log('going to', to)
-    const location = this.matcher.resolve(url, this.currentRoute)
 
     console.log(location)
-    // @ts-ignore
-    console.log({ fullPath, query, hash })
     console.log('---')
     // TODO: call hooks, guards
     // TODO: navigate
     // this.history.push(location.fullPath)
-    // this.currentRoute = {
-    //   ...url,
-    //   ...location,
-    //   fullPath,
-    //   query,
-    //   hash,
-    // }
+    this.currentRoute = {
+      ...url,
+      ...location,
+    }
   }
 
   getRouteRecord(location: RouteLocation) {}

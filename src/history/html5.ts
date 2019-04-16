@@ -1,28 +1,23 @@
 import consola from 'consola'
-import { BaseHistory } from './base'
-import {
-  HistoryLocation,
-  NavigationCallback,
-  HistoryState,
-  NavigationType,
-} from './base'
+import { BaseHistory, HistoryLocationNormalized, HistoryLocation } from './base'
+import { NavigationCallback, HistoryState, NavigationType } from './base'
 
 const cs = consola.withTag('html5')
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 
 interface StateEntry {
-  back: HistoryLocation | null
-  current: HistoryLocation
-  forward: HistoryLocation | null
+  back: HistoryLocationNormalized | null
+  current: HistoryLocationNormalized
+  forward: HistoryLocationNormalized | null
   replaced: boolean
 }
 
 // TODO: pretty useless right now except for typing
 function buildState(
-  back: HistoryLocation | null,
-  current: HistoryLocation,
-  forward: HistoryLocation | null,
+  back: HistoryLocationNormalized | null,
+  current: HistoryLocationNormalized,
+  forward: HistoryLocationNormalized | null,
   replaced: boolean = false
 ): StateEntry {
   return {
@@ -35,7 +30,6 @@ function buildState(
 
 export class HTML5History extends BaseHistory {
   private history = window.history
-  location: HistoryLocation
   private _popStateHandler: PopStateListener
   private _listeners: NavigationCallback[] = []
   private _teardowns: Array<() => void> = []
@@ -44,7 +38,7 @@ export class HTML5History extends BaseHistory {
     super()
     const to = buildFullPath()
     // cs.log('created', to)
-    this.history.replaceState(buildState(null, to, null), '', to)
+    this.history.replaceState(buildState(null, to, null), '', to.fullPath)
     this.location = to
     this._popStateHandler = this.setupPopStateListener()
   }
@@ -53,26 +47,27 @@ export class HTML5History extends BaseHistory {
   ensureLocation() {}
 
   replace(to: HistoryLocation) {
-    // TODO: standarize URL
-    if (to === this.location) return
-    cs.info('replace', this.location, to)
+    const normalized = this.utils.normalizeLocation(to)
+    if (normalized.fullPath === this.location.fullPath) return
+    cs.info('replace', this.location, normalized)
     this.history.replaceState(
       // TODO: this should be user's responsibility
       // _replacedState: this.history.state || null,
-      buildState(this.history.state.back, to, null, true),
+      buildState(this.history.state.back, normalized, null, true),
       '',
-      to
+      normalized.fullPath
     )
-    this.location = to
+    this.location = normalized
   }
 
   push(to: HistoryLocation, data?: HistoryState) {
     // replace current entry state to add the forward value
+    const normalized = this.utils.normalizeLocation(to)
     this.history.replaceState(
       buildState(
         this.history.state.back,
         this.history.state.current,
-        to,
+        normalized,
         this.history.state.replaced
       ),
       ''
@@ -81,12 +76,12 @@ export class HTML5History extends BaseHistory {
     // NEW NOTE: I think it shouldn't be history responsibility to check that
     // if (to === this.location) return
     const state = {
-      ...buildState(this.location, to, null),
+      ...buildState(this.location, normalized, null),
       ...data,
     }
     cs.info('push', this.location, '->', to, 'with state', state)
-    this.history.pushState(state, '', to)
-    this.location = to
+    this.history.pushState(state, '', normalized.fullPath)
+    this.location = normalized
   }
 
   listen(callback: NavigationCallback) {
@@ -143,5 +138,12 @@ export class HTML5History extends BaseHistory {
   }
 }
 
-const buildFullPath = () =>
-  window.location.pathname + window.location.search + window.location.hash
+const buildFullPath = () => {
+  const { location } = window
+  return {
+    fullPath: location.pathname + location.search + location.hash,
+    path: location.pathname,
+    query: {}, // TODO: parseQuery
+    hash: location.hash,
+  }
+}

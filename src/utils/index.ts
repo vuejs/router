@@ -1,5 +1,7 @@
 import { RouteQuery } from '../types'
 
+// TODO: merge with existing function from history/base.ts and more to
+// history utils
 export function stringifyQuery(query: RouteQuery | void): string {
   if (!query) return ''
 

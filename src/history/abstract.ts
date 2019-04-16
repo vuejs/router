@@ -1,6 +1,6 @@
 import consola from 'consola'
-import { BaseHistory } from './base'
-import { HistoryLocation, NavigationCallback, HistoryState } from './base'
+import { BaseHistory, HistoryLocationNormalized } from './base'
+import { NavigationCallback, HistoryState } from './base'
 
 const cs = consola.withTag('abstract')
 
@@ -16,9 +16,9 @@ export class AbstractHistory extends BaseHistory {
   // TODO: is this necessary
   ensureLocation() {}
 
-  replace(to: HistoryLocation) {}
+  replace(to: HistoryLocationNormalized) {}
 
-  push(to: HistoryLocation, data?: HistoryState) {}
+  push(to: HistoryLocationNormalized, data?: HistoryState) {}
 
   listen(callback: NavigationCallback) {
     return () => {}

@@ -1,19 +1,22 @@
-export type HistoryLocation = string
+import * as utils from './utils'
 
 export type HistoryQuery = Record<string, string | string[]>
-export interface HistoryURL {
-  // full path (like href)
-  fullPath: string
+
+export interface HistoryLocation {
   // pathname section
   path: string
   // search string parsed
-  query: HistoryQuery
+  query?: HistoryQuery
   // hash with the #
-  hash: string
+  hash?: string
+}
+export interface HistoryLocationNormalized extends Required<HistoryLocation> {
+  // full path (like href)
+  fullPath: string
 }
 
 // pushState clones the state passed and do not accept everything
-// it doesn't accept symbols, nor functions. It also ignores Symbols as keys
+// it doesn't accept symbols, nor functions as values. It also ignores Symbols as keys
 type HistoryStateValue =
   | string
   | number
@@ -28,7 +31,12 @@ export interface HistoryState {
 interface HistoryStateArray extends Array<HistoryStateValue> {}
 // export type HistoryState = Record<string | number, string | number | boolean | undefined | null |
 
-export const START: HistoryLocation = '/'
+export const START: HistoryLocationNormalized = {
+  fullPath: '/',
+  path: '/',
+  query: {},
+  hash: '',
+}
 
 export enum NavigationType {
   // NOTE: is it better to have strings?
@@ -38,20 +46,19 @@ export enum NavigationType {
 
 export interface NavigationCallback {
   (
-    to: HistoryLocation,
-    from: HistoryLocation,
+    to: HistoryLocationNormalized,
+    from: HistoryLocationNormalized,
     info: { type: NavigationType }
   ): void
 }
 
 export type RemoveListener = () => void
 
-const PERCENT_RE = /%/g
-
 export abstract class BaseHistory {
   // previousState: object
-  location: HistoryLocation = START
+  location: HistoryLocationNormalized = START
   base: string = ''
+  utils = utils
 
   /**
    * Sync source with a different location.
@@ -75,104 +82,6 @@ export abstract class BaseHistory {
    * @returns
    */
   abstract listen(callback: NavigationCallback): RemoveListener
-
-  /**
-   * Transforms a URL into an object
-   * @param location location to normalize
-   * @param currentLocation current location, to reuse params and location
-   */
-  parseURL(location: string): HistoryURL {
-    let path = '',
-      query: HistoryURL['query'] = {},
-      searchString = '',
-      hash = ''
-
-    // Could use URL and URLSearchParams but IE 11 doesn't support it
-    // TODO: move this utility to base.ts so it can be used by any history implementation
-    const searchPos = location.indexOf('?')
-    const hashPos = location.indexOf('#', searchPos > -1 ? searchPos : 0)
-    if (searchPos > -1) {
-      path = location.slice(0, searchPos)
-      searchString = location.slice(
-        searchPos + 1,
-        hashPos > -1 ? hashPos : location.length
-      )
-
-      // TODO: properly do this in a util function
-      query = searchString.split('&').reduce((query, entry) => {
-        const [key, value] = entry.split('=')
-        if (key in query) {
-          // an extra variable for ts types
-          let currentValue = query[key]
-          if (!Array.isArray(currentValue)) {
-            currentValue = query[key] = [currentValue]
-          }
-          currentValue.push(value)
-        } else {
-          query[key] = value
-        }
-
-        return query
-      }, query)
-    }
-
-    if (hashPos > -1) {
-      path = path || location.slice(0, hashPos)
-      hash = location.slice(hashPos, location.length)
-    }
-
-    path = path || location
-
-    return {
-      fullPath: location,
-      path,
-      query,
-      hash,
-    }
-  }
-
-  /**
-   * Stringify a URL object
-   * @param location
-   */
-  stringifyURL(location: {
-    path: string
-    query?: HistoryQuery
-    hash?: string
-  }): string {
-    let url = location.path
-    let query = '?'
-    // TODO: util function?
-    for (const key in location.query) {
-      if (query.length > 1) query += '&'
-      // TODO: handle array
-      const value = location.query[key]
-      if (Array.isArray(value)) {
-        query += `${key}=${value[0]}`
-        for (let i = 1; i < value.length; i++) {
-          query += `&${key}=${value[i]}`
-        }
-      } else {
-        query += `${key}=${location.query[key]}`
-      }
-    }
-
-    if (query.length > 1) url += query
-
-    return url + (location.hash || '')
-  }
-
-  /**
-   * Prepare a URI string to be passed to pushState
-   * @param uri
-   */
-  prepareURI(uri: string) {
-    // encode the % symbol so it also works on IE
-    return uri.replace(PERCENT_RE, '%25')
-  }
-
-  // use regular decodeURI
-  decodeURI = decodeURI
 
   /**
    * ensure the current location matches the external source
