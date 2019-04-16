@@ -135,7 +135,11 @@ export abstract class BaseHistory {
    * Stringify a URL object
    * @param location
    */
-  stringifyURL(location: HistoryURL): string {
+  stringifyURL(location: {
+    path: string
+    query?: HistoryQuery
+    hash?: string
+  }): string {
     let url = location.path
     let query = '?'
     // TODO: util function?
@@ -155,7 +159,7 @@ export abstract class BaseHistory {
 
     if (query.length > 1) url += query
 
-    return url + location.hash
+    return url + (location.hash || '')
   }
 
   /**

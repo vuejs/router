@@ -5,6 +5,7 @@ import {
   RouteRecord,
   START_LOCATION_NORMALIZED,
   RouteLocationNormalized,
+  RouteQuery,
 } from './types/index'
 
 interface RouterOptions {
@@ -38,13 +39,41 @@ export class Router {
    */
   push(to: RouteLocation) {
     // TODO: resolve URL
-    const url = typeof to === 'string' ? this.history.parseURL(to) : to
+    let url, fullPath: string, query: RouteQuery, hash: string
+    if (typeof to === 'string') {
+      url = this.history.parseURL(to)
+      fullPath = url.fullPath
+      query = url.query
+      hash = url.hash
+    } else if ('path' in to) {
+      fullPath = this.history.stringifyURL(to)
+      query = to.query || {}
+      hash = to.hash || ''
+      url = to
+    } else if ('name' in to) {
+      // we need to resolve first
+      url = to
+    } else {
+      // we need to resolve first
+      url = to
+    }
+    console.log('going to', to)
     const location = this.matcher.resolve(url, this.currentRoute)
+
     console.log(location)
+    // @ts-ignore
+    console.log({ fullPath, query, hash })
+    console.log('---')
     // TODO: call hooks, guards
     // TODO: navigate
     // this.history.push(location.fullPath)
-    // this.currentRoute = location
+    // this.currentRoute = {
+    //   ...url,
+    //   ...location,
+    //   fullPath,
+    //   query,
+    //   hash,
+    // }
   }
 
   getRouteRecord(location: RouteLocation) {}
