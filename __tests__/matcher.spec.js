@@ -56,6 +56,14 @@ describe('Router Matcher', () => {
         )
       })
 
+      it('resolves a normal path without name', () => {
+        assertRecordMatch(
+          { path: '/', component },
+          { path: '/' },
+          { name: undefined, path: '/', params: {} }
+        )
+      })
+
       it('resolves a path with params', () => {
         assertRecordMatch(
           { path: '/users/:id', name: 'User', component },
@@ -69,6 +77,14 @@ describe('Router Matcher', () => {
           { path: '/users/:id/:other', name: 'User', component },
           { path: '/users/posva/hey' },
           { name: 'User', params: { id: 'posva', other: 'hey' } }
+        )
+      })
+
+      it('resolves a path with multiple params but no name', () => {
+        assertRecordMatch(
+          { path: '/users/:id/:other', component },
+          { path: '/users/posva/hey' },
+          { name: undefined, params: { id: 'posva', other: 'hey' } }
         )
       })
     })
@@ -101,6 +117,19 @@ describe('Router Matcher', () => {
         )
       })
 
+      it('replace params even with no name', () => {
+        assertRecordMatch(
+          { path: '/users/:id/m/:role', component },
+          { params: { id: 'posva', role: 'admin' } },
+          { name: undefined, path: '/users/posva/m/admin' },
+          {
+            path: '/users/ed/m/user',
+            name: undefined,
+            params: { id: 'ed', role: 'user' },
+          }
+        )
+      })
+
       it('replace params', () => {
         assertRecordMatch(
           { path: '/users/:id/m/:role', name: 'UserEdit', component },
@@ -126,6 +155,23 @@ describe('Router Matcher', () => {
           {
             path: '/users/ed/m/user',
             name: 'UserEdit',
+            params: { id: 'ed', role: 'user' },
+          }
+        )
+      })
+
+      it('keep params if not provided even with no name', () => {
+        assertRecordMatch(
+          { path: '/users/:id/m/:role', component },
+          {},
+          {
+            name: undefined,
+            path: '/users/ed/m/user',
+            params: { id: 'ed', role: 'user' },
+          },
+          {
+            path: '/users/ed/m/user',
+            name: undefined,
             params: { id: 'ed', role: 'user' },
           }
         )

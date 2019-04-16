@@ -24,7 +24,7 @@ h.listen((to, from, { type }) => {
   console.log(`popstate(${type})`, { to, from })
 })
 
-r.push('/multiple/one/two')
+// r.push('/multiple/one/two')
 
 // h.push('/hey')
 // h.push('/hey?lol')
@@ -33,30 +33,30 @@ r.push('/multiple/one/two')
 // h.replace('/bar')
 
 // r.push('/about')
-// r.push({
-//   path: '/',
-// })
+r.push({
+  path: '/',
+})
 
-// r.push({
-//   name: 'user',
-//   params: {
-//     id: '6',
-//   },
-// })
+r.push({
+  name: 'user',
+  params: {
+    id: '6',
+  },
+})
 
-// r.push({
-//   name: 'user',
-//   params: {
-//     id: '5',
-//   },
-// })
+r.push({
+  name: 'user',
+  params: {
+    id: '5',
+  },
+})
 
-// r.push({
-//   params: {
-//     id: 'no-name',
-//   },
-// })
+r.push({
+  params: {
+    id: 'no-name',
+  },
+})
 
-// r.push({
-//   hash: '#hey',
-// })
+r.push({
+  hash: '#hey',
+})
