@@ -113,6 +113,23 @@ describe('Router Matcher', () => {
           }
         )
       })
+
+      it('keep params if not provided', () => {
+        assertRecordMatch(
+          { path: '/users/:id/m/:role', name: 'UserEdit', component },
+          {},
+          {
+            name: 'UserEdit',
+            path: '/users/ed/m/user',
+            params: { id: 'ed', role: 'user' },
+          },
+          {
+            path: '/users/ed/m/user',
+            name: 'UserEdit',
+            params: { id: 'ed', role: 'user' },
+          }
+        )
+      })
     })
   })
 })

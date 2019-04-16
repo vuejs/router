@@ -105,10 +105,12 @@ export class RouterMatcher {
 
     if (!matcher) throw new NoRouteMatchError(currentLocation, location)
 
+    let params = location.params ? location.params : currentLocation.params
+
     return {
       name: currentLocation.name,
-      path: matcher.resolve(location.params),
-      params: location.params || {},
+      path: matcher.resolve(params),
+      params,
     }
   }
 }
