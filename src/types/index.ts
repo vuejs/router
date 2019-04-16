@@ -28,17 +28,20 @@ export interface RouteRecord {
 
 type RouteObjectLocation =
   | {
+      // no params because they must be provided by the user
       path: string
       query?: RouteQuery
       hash?: string
     }
   | {
+      // named location
       name: string
       params?: RouteParams
       query?: RouteQuery
       hash?: string
     }
   | {
+      // relative location
       params?: RouteParams
       query?: RouteQuery
       hash?: string

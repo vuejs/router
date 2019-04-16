@@ -126,7 +126,6 @@ export abstract class BaseHistory {
     return {
       fullPath: location,
       path,
-      // TODO: transform searchString
       query,
       hash,
     }
@@ -143,7 +142,15 @@ export abstract class BaseHistory {
     for (const key in location.query) {
       if (query.length > 1) query += '&'
       // TODO: handle array
-      query += `${key}=${location.query[key]}`
+      const value = location.query[key]
+      if (Array.isArray(value)) {
+        query += `${key}=${value[0]}`
+        for (let i = 1; i < value.length; i++) {
+          query += `&${key}=${value[i]}`
+        }
+      } else {
+        query += `${key}=${location.query[key]}`
+      }
     }
 
     if (query.length > 1) url += query
