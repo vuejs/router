@@ -1,9 +1,9 @@
 // @ts-check
 require('./helper')
 const expect = require('expect')
-const { parseURL } = require('../src/history/utils')
+const { parseURL, stringifyURL } = require('../src/history/utils')
 
-describe('URL parsing', () => {
+describe('parseURL', () => {
   it('works with no query no hash', () => {
     expect(parseURL('/foo')).toEqual({
       fullPath: '/foo',
@@ -50,5 +50,61 @@ describe('URL parsing', () => {
       hash: '',
       query: { a: ['one', 'two', 'three'] },
     })
+  })
+})
+
+describe('stringifyURL', () => {
+  it('stringifies a path', () => {
+    expect(
+      stringifyURL({
+        path: '/some-path',
+      })
+    ).toBe('/some-path')
+  })
+
+  it('stringifies a query with arrays', () => {
+    expect(
+      stringifyURL({
+        path: '/path',
+        query: {
+          foo: ['a1', 'a2'],
+          bar: 'b',
+        },
+      })
+    ).toBe('/path?foo=a1&foo=a2&bar=b')
+  })
+
+  it('stringifies a query', () => {
+    expect(
+      stringifyURL({
+        path: '/path',
+        query: {
+          foo: 'a',
+          bar: 'b',
+        },
+      })
+    ).toBe('/path?foo=a&bar=b')
+  })
+
+  it('stringifies a hash', () => {
+    expect(
+      stringifyURL({
+        path: '/path',
+        hash: '#hey',
+      })
+    ).toBe('/path#hey')
+  })
+
+  it('stringifies a query and a hash', () => {
+    expect(
+      stringifyURL({
+        path: '/path',
+        query: {
+          foo: 'a',
+          bar: 'b',
+        },
+        hash: '#hey',
+      })
+    ).toBe('/path?foo=a&bar=b#hey')
   })
 })
