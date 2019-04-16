@@ -51,7 +51,11 @@ export class Router {
       // named or relative route
       // we need to resolve first
       location = this.matcher.resolve(to, this.currentRoute)
-      url = this.history.utils.normalizeLocation(location)
+      url = this.history.utils.normalizeLocation({
+        query: this.history.utils.normalizeQuery(to.query || {}),
+        hash: to.hash,
+        ...location,
+      })
     }
 
     // TODO: call hooks, guards

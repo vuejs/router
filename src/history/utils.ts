@@ -3,6 +3,7 @@ import {
   HistoryQuery,
   HistoryLocation,
 } from './base'
+import { RouteQuery } from '../types'
 
 const PERCENT_RE = /%/g
 
@@ -106,6 +107,11 @@ export function stringifyQuery(query: HistoryQuery): string {
   }
 
   return search
+}
+
+export function normalizeQuery(query: RouteQuery): HistoryQuery {
+  // TODO: implem
+  return query as HistoryQuery
 }
 
 /**
