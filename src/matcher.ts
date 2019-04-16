@@ -3,14 +3,14 @@ import {
   RouteRecord,
   RouteParams,
   MatcherLocation,
-  RouterLocationNormalized,
+  MatcherLocationNormalized,
 } from './types/index'
-import { stringifyQuery } from './utils'
+import { NoRouteMatchError } from './errors'
 
 // TODO: rename
 interface RouteMatcher {
   re: RegExp
-  resolve: (params: RouteParams) => string
+  resolve: (params?: RouteParams) => string
   record: RouteRecord
   keys: string[]
 }
@@ -40,67 +40,75 @@ export class RouterMatcher {
    */
   resolve(
     location: Readonly<MatcherLocation>,
-    currentLocation: Readonly<RouterLocationNormalized>
-  ): RouterLocationNormalized {
-    // TODO: type guard HistoryURL
-    if ('fullPath' in location)
-      return {
-        path: location.path,
-        fullPath: location.fullPath,
-        // TODO: resolve params, query and hash
-        params: {},
-        query: location.query,
-        hash: location.hash,
-      }
+    currentLocation: Readonly<MatcherLocationNormalized>
+    // TODO: return type is wrong, should contain fullPath and record/matched
+  ): MatcherLocationNormalized {
+    let matcher: RouteMatcher | void
+    // TODO: refactor with type guards
 
     if ('path' in location) {
-      // TODO: warn missing params
-      // TODO: extract query and hash? warn about presence
+      // we don't even need currentLocation here
+      matcher = this.matchers.find(m => m.re.test(location.path))
+
+      if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+
+      const params: RouteParams = {}
+      const result = matcher.re.exec(location.path)
+      if (!result) {
+        throw new Error(`Error parsing path "${location.path}"`)
+      }
+
+      for (let i = 0; i < matcher.keys.length; i++) {
+        const key = matcher.keys[i]
+        const value = result[i + 1]
+        if (!value) {
+          throw new Error(
+            `Error parsing path "${
+              location.path
+            }" when looking for key "${key}"`
+          )
+        }
+        params[key] = value
+      }
+
       return {
+        name: matcher.record.name,
+        /// no need to resolve the path with the matcher as it was provided
         path: location.path,
-        // TODO: normalize query?
-        query: location.query || {},
-        hash: location.hash || '',
-        params: {},
-        fullPath:
-          location.path +
-          stringifyQuery(location.query) +
-          (location.hash || ''),
+        params,
       }
     }
 
-    let matcher: RouteMatcher | void
-    if (!('name' in location)) {
-      // TODO: use current location
-      // location = {...location, name: this.}
-      if (currentLocation.name) {
-        // we don't want to match an undefined name
-        matcher = this.matchers.find(
-          m => m.record.name === currentLocation.name
-        )
-      } else {
-        matcher = this.matchers.find(m => m.re.test(currentLocation.path))
-      }
-      // return '/using current location'
-    } else {
+    // named route
+    if ('name' in location) {
       matcher = this.matchers.find(m => m.record.name === location.name)
+
+      if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+
+      // TODO: try catch for resolve -> missing params
+
+      return {
+        name: location.name,
+        path: matcher.resolve(location.params),
+        params: location.params || {}, // TODO: normalize params
+      }
     }
 
-    if (!matcher) {
-      // TODO: error
-      throw new Error(
-        'No match for' + JSON.stringify({ ...currentLocation, ...location })
-      )
+    // location is a relative path
+    if (currentLocation.name) {
+      // we don't want to match an undefined name
+      matcher = this.matchers.find(m => m.record.name === currentLocation.name)
+    } else {
+      // match by path
+      matcher = this.matchers.find(m => m.re.test(currentLocation.path))
     }
 
-    // TODO: try catch to show missing params
-    const fullPath = matcher.resolve(location.params || {})
+    if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+
     return {
-      path: fullPath, // TODO: extract path path, query, hash
-      fullPath,
-      query: {},
-      params: {},
-      hash: '',
+      name: currentLocation.name,
+      path: matcher.resolve(location.params),
+      params: location.params || {},
     }
   }
 }

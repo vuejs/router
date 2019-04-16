@@ -1,10 +1,10 @@
 import { BaseHistory } from './history/base'
 import { RouterMatcher } from './matcher'
 import {
-  RouterLocation,
+  RouteLocation,
   RouteRecord,
   START_LOCATION_NORMALIZED,
-  RouterLocationNormalized,
+  RouteLocationNormalized,
 } from './types/index'
 
 interface RouterOptions {
@@ -15,7 +15,7 @@ interface RouterOptions {
 export class Router {
   protected history: BaseHistory
   private matcher: RouterMatcher
-  currentRoute: RouterLocationNormalized = START_LOCATION_NORMALIZED
+  currentRoute: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
 
   constructor(options: RouterOptions) {
     this.history = options.history
@@ -26,7 +26,9 @@ export class Router {
     this.history.listen((to, from, info) => {
       // TODO: check navigation guards
       const url = this.history.parseURL(to)
-      this.currentRoute = this.matcher.resolve(url, this.currentRoute)
+      const matchedRoute = this.matcher.resolve(url, this.currentRoute)
+      console.log({ url, matchedRoute })
+      // TODO: navigate
     })
   }
 
@@ -34,14 +36,16 @@ export class Router {
    * Trigger a navigation, should resolve all guards first
    * @param to Where to go
    */
-  push(to: RouterLocation) {
+  push(to: RouteLocation) {
     // TODO: resolve URL
     const url = typeof to === 'string' ? this.history.parseURL(to) : to
     const location = this.matcher.resolve(url, this.currentRoute)
+    console.log(location)
     // TODO: call hooks, guards
-    this.history.push(location.fullPath)
-    this.currentRoute = location
+    // TODO: navigate
+    // this.history.push(location.fullPath)
+    // this.currentRoute = location
   }
 
-  getRouteRecord(location: RouterLocation) {}
+  getRouteRecord(location: RouteLocation) {}
 }
