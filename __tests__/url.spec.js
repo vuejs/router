@@ -1,7 +1,11 @@
 // @ts-check
 require('./helper')
 const expect = require('expect')
-const { parseURL, stringifyURL } = require('../src/history/utils')
+const {
+  parseURL,
+  stringifyURL,
+  normalizeLocation,
+} = require('../src/history/utils')
 
 describe('parseURL', () => {
   it('works with no query no hash', () => {
@@ -106,5 +110,34 @@ describe('stringifyURL', () => {
         hash: '#hey',
       })
     ).toBe('/path?foo=a&bar=b#hey')
+  })
+})
+
+describe('normalizeLocation', () => {
+  it('works with string', () => {
+    expect(normalizeLocation('/foo')).toEqual(parseURL('/foo'))
+  })
+
+  it('works with objects', () => {
+    expect(
+      normalizeLocation({
+        path: '/foo',
+      })
+    ).toEqual({ path: '/foo', fullPath: '/foo', query: {}, hash: '' })
+  })
+
+  it('works with objects and keeps query and hash', () => {
+    expect(
+      normalizeLocation({
+        path: '/foo',
+        query: { foo: 'a' },
+        hash: '#hey',
+      })
+    ).toEqual({
+      path: '/foo',
+      fullPath: '/foo?foo=a#hey',
+      query: { foo: 'a' },
+      hash: '#hey',
+    })
   })
 })
