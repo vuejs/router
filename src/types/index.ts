@@ -1,6 +1,8 @@
 import { HistoryQuery } from '../history/base'
 
-type TODO = any
+export type TODO = any
+
+export type ListenerRemover = () => void
 
 // TODO: support numbers for easier writing but cast them
 export type RouteParams = Record<string, string | string[]>
@@ -88,4 +90,16 @@ export interface MatcherLocationNormalized {
   path: string
   // record?
   params: RouteLocationNormalized['params']
+}
+
+export interface NavigationGuardCallback {
+  (): void
+  (valid: false): void
+}
+export interface NavigationGuard {
+  (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    next: NavigationGuardCallback
+  ): any
 }

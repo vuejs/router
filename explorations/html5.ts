@@ -12,6 +12,12 @@ const r = new Router({
   ],
 })
 
+r.beforeEach((to, from, next) => {
+  console.log(`Guard from ${from.fullPath} to ${to.fullPath}`)
+  if (to.params.id === 'no-name') return next(false)
+  next()
+})
+
 // const h = new HTML5History()
 // @ts-ignore
 const h = r.history
@@ -23,40 +29,47 @@ window.r = r
 h.listen((to, from, { type }) => {
   console.log(`popstate(${type})`, { to, from })
 })
+async function run() {
+  // r.push('/multiple/one/two')
 
-// r.push('/multiple/one/two')
+  // h.push('/hey')
+  // h.push('/hey?lol')
+  // h.push('/foo')
+  // h.push('/replace-me')
+  // h.replace('/bar')
 
-// h.push('/hey')
-// h.push('/hey?lol')
-// h.push('/foo')
-// h.push('/replace-me')
-// h.replace('/bar')
+  // r.push('/about')
+  await r.push({
+    path: '/',
+  })
 
-// r.push('/about')
-r.push({
-  path: '/',
-})
+  await r.push({
+    name: 'user',
+    params: {
+      id: '6',
+    },
+  })
 
-r.push({
-  name: 'user',
-  params: {
-    id: '6',
-  },
-})
+  await r.push({
+    name: 'user',
+    params: {
+      id: '5',
+    },
+  })
 
-r.push({
-  name: 'user',
-  params: {
-    id: '5',
-  },
-})
+  try {
+    await r.push({
+      params: {
+        id: 'no-name',
+      },
+    })
+  } catch (err) {
+    console.log('Navigation aborted', err)
+  }
 
-r.push({
-  params: {
-    id: 'no-name',
-  },
-})
+  await r.push({
+    hash: '#hey',
+  })
+}
 
-r.push({
-  hash: '#hey',
-})
+run()

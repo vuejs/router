@@ -1,4 +1,5 @@
 import * as utils from './utils'
+import { ListenerRemover } from '../types'
 
 export type HistoryQuery = Record<string, string | string[]>
 
@@ -52,8 +53,6 @@ export interface NavigationCallback {
   ): void
 }
 
-export type RemoveListener = () => void
-
 export abstract class BaseHistory {
   // previousState: object
   location: HistoryLocationNormalized = START
@@ -81,7 +80,7 @@ export abstract class BaseHistory {
    * @param callback callback to be called whenever the route changes
    * @returns
    */
-  abstract listen(callback: NavigationCallback): RemoveListener
+  abstract listen(callback: NavigationCallback): ListenerRemover
 
   /**
    * ensure the current location matches the external source

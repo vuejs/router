@@ -6,9 +6,13 @@ import {
   START_LOCATION_NORMALIZED,
   RouteLocationNormalized,
   MatcherLocationNormalized,
+  ListenerRemover,
+  NavigationGuard,
+  TODO,
+  NavigationGuardCallback,
 } from './types/index'
 
-interface RouterOptions {
+export interface RouterOptions {
   history: BaseHistory
   routes: RouteRecord[]
 }
@@ -16,6 +20,7 @@ interface RouterOptions {
 export class Router {
   protected history: BaseHistory
   private matcher: RouterMatcher
+  private beforeGuards: NavigationGuard[] = []
   currentRoute: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
 
   constructor(options: RouterOptions) {
@@ -41,7 +46,7 @@ export class Router {
    * Trigger a navigation, should resolve all guards first
    * @param to Where to go
    */
-  push(to: RouteLocation) {
+  async push(to: RouteLocation) {
     let url: HistoryLocationNormalized
     let location: MatcherLocationNormalized
     if (typeof to === 'string' || 'path' in to) {
@@ -59,13 +64,46 @@ export class Router {
       })
     }
 
-    // TODO: call hooks, guards
+    // TODO: refactor in a function, some kind of queue
+    const toLocation: RouteLocationNormalized = { ...url, ...location }
+    await this.navigate(toLocation, this.currentRoute)
     this.history.push(url)
-    this.currentRoute = {
-      ...url,
-      ...location,
+    this.currentRoute = toLocation
+  }
+
+  async navigate(
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized
+  ): Promise<TODO> {
+    // TODO: Will probably need to be some kind of queue in the future that allows to remove
+    // elements and other stuff
+    const guards: Promise<any>[] = []
+
+    for (const guard of this.beforeGuards) {
+      guards.push(
+        new Promise((resolve, reject) => {
+          const next: NavigationGuardCallback = (valid?: boolean) => {
+            if (valid === false) reject(new Error('Aborted'))
+            else resolve()
+          }
+
+          guard(to, from, next)
+        })
+      )
+    }
+
+    console.log('Guarding against', guards.length, 'guards')
+    for (const guard of guards) {
+      await guard
     }
   }
 
   getRouteRecord(location: RouteLocation) {}
+
+  beforeEach(guard: NavigationGuard): ListenerRemover {
+    this.beforeGuards.push(guard)
+    return () => {
+      this.beforeGuards.splice(this.beforeGuards.indexOf(guard), 1)
+    }
+  }
 }

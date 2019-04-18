@@ -125,7 +125,10 @@ export class HTML5History extends BaseHistory {
       // call all listeners
       const navigationInfo = {
         type:
-          from === state.forward ? NavigationType.back : NavigationType.forward,
+          // TODO: we should save somekind of id to detect the navigation type
+          state.forward && from.fullPath === state.forward.fullPath
+            ? NavigationType.back
+            : NavigationType.forward,
       }
       this._listeners.forEach(listener =>
         listener(this.location, from, navigationInfo)
