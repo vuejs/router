@@ -2,6 +2,9 @@ if (typeof global !== 'undefined' && typeof global.beforeAll === 'undefined') {
   global.beforeAll = global.before
   global.afterAll = global.after
 
+  const mocks = require('jest-mock')
+  global.jest = mocks
+
   const expect = require('expect')
   // monkey patch jest snapshots
   expect.extend({
