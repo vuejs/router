@@ -6,6 +6,8 @@ const { Router } = require('../src/router')
 const { JSDOM } = require('jsdom')
 const fakePromise = require('faked-promise')
 
+const tick = () => new Promise(resolve => process.nextTick(resolve))
+
 /**
  * @param {Partial<import('../src/router').RouterOptions> & { routes: import('../src/types').RouteRecord[]}} options
  */
@@ -60,6 +62,36 @@ describe('navigation guards', () => {
     expect(router.currentRoute.fullPath).toBe('/')
     resolve()
     await p
+    expect(router.currentRoute.fullPath).toBe('/foo')
+  })
+
+  it('waits in the right order', async () => {
+    const [p1, r1] = fakePromise()
+    const [p2, r2] = fakePromise()
+    const router = createRouter({ routes })
+    const guard1 = jest.fn(async (to, from, next) => {
+      await p1
+      next()
+    })
+    router.beforeEach(guard1)
+    const guard2 = jest.fn(async (to, from, next) => {
+      await p2
+      next()
+    })
+    router.beforeEach(guard2)
+    let navigation = router.push('/foo')
+    expect(router.currentRoute.fullPath).toBe('/')
+    expect(guard1).toHaveBeenCalled()
+    expect(guard2).not.toHaveBeenCalled()
+    r1()
+    // wait until the guard is called
+    await tick()
+    await tick()
+    expect(guard2).toHaveBeenCalled()
+    r2()
+    expect(router.currentRoute.fullPath).toBe('/')
+    await navigation
+    expect(guard2).toHaveBeenCalled()
     expect(router.currentRoute.fullPath).toBe('/foo')
   })
 })

@@ -71,30 +71,32 @@ export class Router {
     this.currentRoute = toLocation
   }
 
-  async navigate(
+  private async navigate(
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
   ): Promise<TODO> {
     // TODO: Will probably need to be some kind of queue in the future that allows to remove
     // elements and other stuff
-    const guards: Promise<any>[] = []
+    const guards: Array<() => Promise<any>> = []
 
     for (const guard of this.beforeGuards) {
       guards.push(
-        new Promise((resolve, reject) => {
-          const next: NavigationGuardCallback = (valid?: boolean) => {
-            if (valid === false) reject(new Error('Aborted'))
-            else resolve()
-          }
+        () =>
+          new Promise((resolve, reject) => {
+            const next: NavigationGuardCallback = (valid?: boolean) => {
+              // TODO: better error
+              if (valid === false) reject(new Error('Aborted'))
+              else resolve()
+            }
 
-          guard(to, from, next)
-        })
+            guard(to, from, next)
+          })
       )
     }
 
     console.log('Guarding against', guards.length, 'guards')
     for (const guard of guards) {
-      await guard
+      await guard()
     }
   }
 
