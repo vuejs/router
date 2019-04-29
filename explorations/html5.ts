@@ -18,6 +18,11 @@ r.beforeEach((to, from, next) => {
   next()
 })
 
+r.beforeEach((to, from, next) => {
+  console.log('second guard')
+  next()
+})
+
 // const h = new HTML5History()
 // @ts-ignore
 const h = r.history
