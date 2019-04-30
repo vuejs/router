@@ -103,3 +103,7 @@ export interface NavigationGuard {
     next: NavigationGuardCallback
   ): any
 }
+
+export interface PostNavigationGuard {
+  (to: RouteLocationNormalized, from: RouteLocationNormalized): any
+}

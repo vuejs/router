@@ -10,6 +10,7 @@ import {
   NavigationGuard,
   TODO,
   NavigationGuardCallback,
+  PostNavigationGuard,
 } from './types/index'
 
 export interface RouterOptions {
@@ -21,6 +22,7 @@ export class Router {
   protected history: BaseHistory
   private matcher: RouterMatcher
   private beforeGuards: NavigationGuard[] = []
+  private afterGuards: PostNavigationGuard[] = []
   currentRoute: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
 
   constructor(options: RouterOptions) {
@@ -32,7 +34,7 @@ export class Router {
     this.history.listen((to, from, info) => {
       // TODO: check navigation guards
       const matchedRoute = this.matcher.resolve(to, this.currentRoute)
-      console.log({ to, matchedRoute })
+      // console.log({ to, matchedRoute })
       // TODO: navigate
 
       this.currentRoute = {
@@ -68,7 +70,11 @@ export class Router {
     const toLocation: RouteLocationNormalized = { ...url, ...location }
     await this.navigate(toLocation, this.currentRoute)
     this.history.push(url)
+    const from = this.currentRoute
     this.currentRoute = toLocation
+
+    // navigation is confirmed, call afterGuards
+    for (const guard of this.afterGuards) guard(toLocation, from)
   }
 
   private async navigate(
@@ -94,7 +100,7 @@ export class Router {
       )
     }
 
-    console.log('Guarding against', guards.length, 'guards')
+    // console.log('Guarding against', guards.length, 'guards')
     for (const guard of guards) {
       await guard()
     }
@@ -102,10 +108,25 @@ export class Router {
 
   getRouteRecord(location: RouteLocation) {}
 
+  /**
+   * Add a global beforeGuard that can confirm, abort or modify a navigation
+   * @param guard
+   */
   beforeEach(guard: NavigationGuard): ListenerRemover {
     this.beforeGuards.push(guard)
     return () => {
       this.beforeGuards.splice(this.beforeGuards.indexOf(guard), 1)
+    }
+  }
+
+  /**
+   * Add a global after guard that is called once the navigation is confirmed
+   * @param guard
+   */
+  afterEach(guard: PostNavigationGuard): ListenerRemover {
+    this.afterGuards.push(guard)
+    return () => {
+      this.afterGuards.splice(this.afterGuards.indexOf(guard), 1)
     }
   }
 }
