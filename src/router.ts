@@ -110,12 +110,18 @@ export class Router {
 
     // check in-component beforeRouteEnter
     guards = []
+    // TODO: is it okay to resolve all matched component or should we do it in order
     await Promise.all(
       to.matched.map(async ({ component }) => {
-        // TODO: handle async routes
-        if (component.beforeRouteEnter) {
+        // TODO: cache async routes per record
+        const resolvedComponent = await (typeof component === 'function'
+          ? component()
+          : component)
+        if (resolvedComponent.beforeRouteEnter) {
           // TODO: handle the next callback
-          guards.push(guardToPromiseFn(component.beforeRouteEnter, to, from))
+          guards.push(
+            guardToPromiseFn(resolvedComponent.beforeRouteEnter, to, from)
+          )
         }
       })
     )

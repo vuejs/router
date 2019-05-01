@@ -1,5 +1,7 @@
 import { HistoryQuery } from '../history/base'
 
+type Lazy<T> = () => Promise<T>
+
 export type TODO = any
 
 export type ListenerRemover = () => void
@@ -67,7 +69,7 @@ export type RouteComponent = {
 // by any means
 export interface RouteRecord {
   path: string // | RegExp
-  component: RouteComponent
+  component: RouteComponent | Lazy<RouteComponent>
   name?: string
   beforeEnter?: NavigationGuard
   // props: PT

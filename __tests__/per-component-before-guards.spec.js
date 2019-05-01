@@ -65,9 +65,28 @@ describe('navigation guards', () => {
     expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
   })
 
-  it.skip('calls beforeEnter guards on replace', () => {})
+  it('resolves async components before guarding', async () => {
+    const spy = jest.fn((to, from, next) => next())
+    const component = {
+      template: `<div></div>`,
+      beforeRouteEnter: spy,
+    }
+    const [promise, resolve] = fakePromise()
+    const router = createRouter({
+      routes: [...routes, { path: '/async', component: () => promise }],
+    })
+    const pushPromise = router.push('/async')
+    expect(spy).not.toHaveBeenCalled()
+    resolve(component)
+    await pushPromise
 
-  it.skip('waits before navigating', async () => {
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
+  it.skip('calls beforeRouteEnter guards on replace', () => {})
+  it.skip('does not call beforeRouteEnter if we were already on the page', () => {})
+
+  it('waits before navigating', async () => {
     const [promise, resolve] = fakePromise()
     const router = createRouter({ routes })
     beforeRouteEnter.mockImplementationOnce(async (to, from, next) => {
