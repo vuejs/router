@@ -39,6 +39,7 @@ export interface RouteLocationNormalized
   query: HistoryQuery // the normalized version cannot have numbers
   // TODO: do the same for params
   name: string | void
+  matched: RouteRecord[] // non-enumerable
 }
 
 // interface PropsTransformer {
@@ -59,6 +60,7 @@ export interface RouteRecord {
   path: string // | RegExp
   component: TODO
   name?: string
+  beforeEnter?: NavigationGuard
   // props: PT
 }
 
@@ -76,7 +78,13 @@ export const START_LOCATION_NORMALIZED: RouteLocationNormalized = {
   query: {},
   hash: '',
   fullPath: '/',
+  matched: [],
 }
+
+// make matched non enumerable for easy printing
+Object.defineProperty(START_LOCATION_NORMALIZED, 'matched', {
+  enumerable: false,
+})
 
 // Matcher types
 // the matcher doesn't care about query and hash
@@ -90,6 +98,7 @@ export interface MatcherLocationNormalized {
   path: string
   // record?
   params: RouteLocationNormalized['params']
+  matched: RouteRecord[]
 }
 
 export interface NavigationGuardCallback {

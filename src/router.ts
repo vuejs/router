@@ -83,24 +83,27 @@ export class Router {
   ): Promise<TODO> {
     // TODO: Will probably need to be some kind of queue in the future that allows to remove
     // elements and other stuff
-    const guards: Array<() => Promise<any>> = []
+    let guards: Array<() => Promise<any>> = []
 
+    // check global guards first
     for (const guard of this.beforeGuards) {
-      guards.push(
-        () =>
-          new Promise((resolve, reject) => {
-            const next: NavigationGuardCallback = (valid?: boolean) => {
-              // TODO: better error
-              if (valid === false) reject(new Error('Aborted'))
-              else resolve()
-            }
-
-            guard(to, from, next)
-          })
-      )
+      guards.push(guardToPromiseFn(guard, to, from))
     }
 
     // console.log('Guarding against', guards.length, 'guards')
+    for (const guard of guards) {
+      await guard()
+    }
+
+    // check the route beforeEnter
+    // TODO: check children. Should we also check reused routes guards
+    guards = []
+    for (const record of to.matched) {
+      if (record.beforeEnter)
+        guards.push(guardToPromiseFn(record.beforeEnter, to, from))
+    }
+
+    // run the queue of guards
     for (const guard of guards) {
       await guard()
     }
@@ -129,4 +132,21 @@ export class Router {
       this.afterGuards.splice(this.afterGuards.indexOf(guard), 1)
     }
   }
+}
+
+function guardToPromiseFn(
+  guard: NavigationGuard,
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized
+): () => Promise<void> {
+  return () =>
+    new Promise((resolve, reject) => {
+      const next: NavigationGuardCallback = (valid?: boolean) => {
+        // TODO: better error
+        if (valid === false) reject(new Error('Aborted'))
+        else resolve()
+      }
+
+      guard(to, from, next)
+    })
 }

@@ -29,6 +29,9 @@ describe('Router Matcher', () => {
         resolved.path = location.path
       }
 
+      // use one single record
+      if (!('matched' in resolved)) resolved.matched = [record]
+
       // allows not passing params
       if ('params' in location) {
         resolved.params = resolved.params || location.params
@@ -144,43 +147,57 @@ describe('Router Matcher', () => {
 
     describe('LocationAsRelative', () => {
       it('matches with nothing', () => {
+        const record = { path: '/home', name: 'Home', component }
         assertRecordMatch(
-          { path: '/home', name: 'Home', component },
+          record,
           {},
           { name: 'Home', path: '/home' },
-          { name: 'Home', params: {}, path: '/home' }
+          { name: 'Home', params: {}, path: '/home', matched: [record] }
         )
       })
 
       it('replace params even with no name', () => {
+        const record = { path: '/users/:id/m/:role', component }
         assertRecordMatch(
-          { path: '/users/:id/m/:role', component },
+          record,
           { params: { id: 'posva', role: 'admin' } },
           { name: undefined, path: '/users/posva/m/admin' },
           {
             path: '/users/ed/m/user',
             name: undefined,
             params: { id: 'ed', role: 'user' },
+            matched: [record],
           }
         )
       })
 
       it('replace params', () => {
+        const record = {
+          path: '/users/:id/m/:role',
+          name: 'UserEdit',
+          component,
+        }
         assertRecordMatch(
-          { path: '/users/:id/m/:role', name: 'UserEdit', component },
+          record,
           { params: { id: 'posva', role: 'admin' } },
           { name: 'UserEdit', path: '/users/posva/m/admin' },
           {
             path: '/users/ed/m/user',
             name: 'UserEdit',
             params: { id: 'ed', role: 'user' },
+            matched: [],
           }
         )
       })
 
       it('keep params if not provided', () => {
+        const record = {
+          path: '/users/:id/m/:role',
+          name: 'UserEdit',
+          component,
+        }
         assertRecordMatch(
-          { path: '/users/:id/m/:role', name: 'UserEdit', component },
+          record,
           {},
           {
             name: 'UserEdit',
@@ -191,13 +208,15 @@ describe('Router Matcher', () => {
             path: '/users/ed/m/user',
             name: 'UserEdit',
             params: { id: 'ed', role: 'user' },
+            matched: [record],
           }
         )
       })
 
       it('keep params if not provided even with no name', () => {
+        const record = { path: '/users/:id/m/:role', component }
         assertRecordMatch(
-          { path: '/users/:id/m/:role', component },
+          record,
           {},
           {
             name: undefined,
@@ -208,18 +227,17 @@ describe('Router Matcher', () => {
             path: '/users/ed/m/user',
             name: undefined,
             params: { id: 'ed', role: 'user' },
+            matched: [record],
           }
         )
       })
 
       it('throws if the current named route does not exists', () => {
-        expect(
-          assertErrorMatch(
-            { path: '/', component },
-            {},
-            { name: 'home', params: {}, path: '/' }
-          )
-        ).toMatchInlineSnapshot(
+        const record = { path: '/', component }
+        const start = { name: 'home', params: {}, path: '/', matched: [record] }
+        // the property should be non enumerable
+        Object.defineProperty(start, 'matched', { enumerable: false })
+        expect(assertErrorMatch(record, {}, start)).toMatchInlineSnapshot(
           `[Error: No match for {"name":"home","params":{},"path":"/"}]`
         )
       })

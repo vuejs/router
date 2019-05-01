@@ -8,6 +8,15 @@ const r = new Router({
     { path: '/', component },
     { path: '/users/:id', name: 'user', component },
     { path: '/multiple/:a/:b', name: 'user', component },
+    {
+      path: '/with-guard/:n',
+      name: 'guarded',
+      component,
+      beforeEnter: (to, from, next) => {
+        if (to.params.n !== 'valid') next(false)
+        next()
+      },
+    },
     // { path: /^\/about\/?$/, component },
   ],
 })

@@ -51,6 +51,8 @@ export class RouterMatcher {
       matcher = this.matchers.find(m => m.re.test(location.path))
 
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+      // TODO: build up the array with children based on current location
+      const matched = [matcher.record]
 
       const params: RouteParams = {}
       const result = matcher.re.exec(location.path)
@@ -76,6 +78,7 @@ export class RouterMatcher {
         /// no need to resolve the path with the matcher as it was provided
         path: location.path,
         params,
+        matched,
       }
     }
 
@@ -84,6 +87,8 @@ export class RouterMatcher {
       matcher = this.matchers.find(m => m.record.name === location.name)
 
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+      // TODO: build up the array with children based on current location
+      const matched = [matcher.record]
 
       // TODO: try catch for resolve -> missing params
 
@@ -91,6 +96,7 @@ export class RouterMatcher {
         name: location.name,
         path: matcher.resolve(location.params),
         params: location.params || {}, // TODO: normalize params
+        matched,
       }
     }
 
@@ -104,6 +110,8 @@ export class RouterMatcher {
     }
 
     if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+    // TODO: build up the array with children based on current location
+    const matched = [matcher.record]
 
     let params = location.params ? location.params : currentLocation.params
 
@@ -111,6 +119,7 @@ export class RouterMatcher {
       name: currentLocation.name,
       path: matcher.resolve(params),
       params,
+      matched,
     }
   }
 }
