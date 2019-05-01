@@ -1,6 +1,8 @@
 import { Router, HTML5History } from '../src'
 
-const component = null
+const component = {
+  template: `<div>A component</div>`,
+}
 
 const r = new Router({
   history: new HTML5History(),

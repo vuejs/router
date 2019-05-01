@@ -52,13 +52,22 @@ export interface RouteLocationNormalized
 //   params: ReturnType<PT>
 // }
 
+export interface RouteComponentInterface {
+  beforeRouteEnter?: NavigationGuard
+}
+// TODO: have a real type with augmented properties
+// export type RouteComponent = TODO & RouteComponentInterface
+export type RouteComponent = {
+  template?: string
+} & RouteComponentInterface
+
 // NOTE not sure the whole PropsTransformer thing can be usefull
 // since in callbacks we don't know where we are coming from
 // and I don't thin it's possible to filter out the route
 // by any means
 export interface RouteRecord {
   path: string // | RegExp
-  component: TODO
+  component: RouteComponent
   name?: string
   beforeEnter?: NavigationGuard
   // props: PT

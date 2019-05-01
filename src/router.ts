@@ -103,7 +103,24 @@ export class Router {
         guards.push(guardToPromiseFn(record.beforeEnter, to, from))
     }
 
-    // run the queue of guards
+    // run the queue of per route beforeEnter guards
+    for (const guard of guards) {
+      await guard()
+    }
+
+    // check in-component beforeRouteEnter
+    guards = []
+    await Promise.all(
+      to.matched.map(async ({ component }) => {
+        // TODO: handle async routes
+        if (component.beforeRouteEnter) {
+          // TODO: handle the next callback
+          guards.push(guardToPromiseFn(component.beforeRouteEnter, to, from))
+        }
+      })
+    )
+
+    // run the queue of per route beforeEnter guards
     for (const guard of guards) {
       await guard()
     }

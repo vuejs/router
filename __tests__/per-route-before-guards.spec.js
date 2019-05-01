@@ -21,10 +21,16 @@ function createRouter(options) {
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
+const beforeEnter = jest.fn()
 /** @type {import('../src/types').RouteRecord[]} */
 const routes = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },
+  {
+    path: '/guard/:n',
+    component: Foo,
+    beforeEnter,
+  },
 ]
 
 describe('navigation guards', () => {
@@ -44,23 +50,13 @@ describe('navigation guards', () => {
   })
 
   it('calls beforeEnter guards on push', async () => {
-    const spy = jest.fn()
-    const router = createRouter({
-      routes: [
-        ...routes,
-        {
-          path: '/guard/:n',
-          component: Foo,
-          beforeEnter: spy,
-        },
-      ],
-    })
-    spy.mockImplementationOnce((to, from, next) => {
+    const router = createRouter({ routes })
+    beforeEnter.mockImplementationOnce((to, from, next) => {
       if (to.params.n !== 'valid') return next(false)
       next()
     })
     await router.push('/guard/valid')
-    expect(spy).toHaveBeenCalledTimes(1)
+    expect(beforeEnter).toHaveBeenCalledTimes(1)
   })
 
   it.skip('calls beforeEnter guards on replace', () => {})
@@ -68,7 +64,7 @@ describe('navigation guards', () => {
   it('waits before navigating', async () => {
     const [promise, resolve] = fakePromise()
     const router = createRouter({ routes })
-    router.beforeEach(async (to, from, next) => {
+    beforeEnter.mockImplementationOnce(async (to, from, next) => {
       await promise
       next()
     })
@@ -76,36 +72,6 @@ describe('navigation guards', () => {
     expect(router.currentRoute.fullPath).toBe('/')
     resolve()
     await p
-    expect(router.currentRoute.fullPath).toBe('/foo')
-  })
-
-  it('waits in the right order', async () => {
-    const [p1, r1] = fakePromise()
-    const [p2, r2] = fakePromise()
-    const router = createRouter({ routes })
-    const guard1 = jest.fn(async (to, from, next) => {
-      await p1
-      next()
-    })
-    router.beforeEach(guard1)
-    const guard2 = jest.fn(async (to, from, next) => {
-      await p2
-      next()
-    })
-    router.beforeEach(guard2)
-    let navigation = router.push('/foo')
-    expect(router.currentRoute.fullPath).toBe('/')
-    expect(guard1).toHaveBeenCalled()
-    expect(guard2).not.toHaveBeenCalled()
-    r1()
-    // wait until the guard is called
-    await tick()
-    await tick()
-    expect(guard2).toHaveBeenCalled()
-    r2()
-    expect(router.currentRoute.fullPath).toBe('/')
-    await navigation
-    expect(guard2).toHaveBeenCalled()
     expect(router.currentRoute.fullPath).toBe('/foo')
   })
 })
