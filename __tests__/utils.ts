@@ -20,3 +20,9 @@ export function createDom(options?: ConstructorOptions) {
 
   return dom
 }
+
+export const components = {
+  Home: { template: `<div>Home</div>` },
+  Foo: { template: `<div>Foo</div>` },
+  Bar: { template: `<div>Bar</div>` },
+}

@@ -35,6 +35,11 @@ export class RouterMatcher {
   }
 
   /**
+   * Resolve a location without doing redirections so it can be used for anchors
+   */
+  resolveAsPath() {}
+
+  /**
    * Transforms a MatcherLocation object into a normalized location
    * @param location MatcherLocation to resolve to a url
    */

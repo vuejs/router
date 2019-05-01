@@ -45,8 +45,9 @@ export class Router {
   }
 
   /**
-   * Trigger a navigation, should resolve all guards first
-   * @param to Where to go
+   * Trigger a navigation, adding an entry to the history stack. Also apply all navigation
+   * guards first
+   * @param to where to go
    */
   async push(to: RouteLocation) {
     let url: HistoryLocationNormalized
@@ -69,7 +70,8 @@ export class Router {
     // TODO: refactor in a function, some kind of queue
     const toLocation: RouteLocationNormalized = { ...url, ...location }
     await this.navigate(toLocation, this.currentRoute)
-    this.history.push(url)
+    if (to.replace === true) this.history.replace(url)
+    else this.history.push(url)
     const from = this.currentRoute
     this.currentRoute = toLocation
 
@@ -77,6 +79,11 @@ export class Router {
     for (const guard of this.afterGuards) guard(toLocation, from)
   }
 
+  /**
+   * Trigger a navigation, replacing current entry in history. Also apply all navigation
+   * guards first
+   * @param to where to go
+   */
   replace(to: RouteLocation) {
     const location = typeof to === 'string' ? { path: to } : to
     return this.push({ ...location, replace: true })
