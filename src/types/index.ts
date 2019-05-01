@@ -27,12 +27,16 @@ export interface LocationAsRelative {
   params?: RouteParams
 }
 
+interface RouteLocationOptions {
+  replace?: boolean
+}
+
 // User level location
 export type RouteLocation =
   | string
-  | RouteQueryAndHash & LocationAsPath
-  | RouteQueryAndHash & LocationAsName
-  | RouteQueryAndHash & LocationAsRelative
+  | RouteQueryAndHash & LocationAsPath & RouteLocationOptions
+  | RouteQueryAndHash & LocationAsName & RouteLocationOptions
+  | RouteQueryAndHash & LocationAsRelative & RouteLocationOptions
 
 // exposed to the user in a very consistant way
 export interface RouteLocationNormalized

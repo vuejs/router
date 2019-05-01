@@ -77,6 +77,11 @@ export class Router {
     for (const guard of this.afterGuards) guard(toLocation, from)
   }
 
+  replace(to: RouteLocation) {
+    const location = typeof to === 'string' ? { path: to } : to
+    return this.push({ ...location, replace: true })
+  }
+
   private async navigate(
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
@@ -131,8 +136,6 @@ export class Router {
       await guard()
     }
   }
-
-  getRouteRecord(location: RouteLocation) {}
 
   /**
    * Add a global beforeGuard that can confirm, abort or modify a navigation
