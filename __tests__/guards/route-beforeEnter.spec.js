@@ -33,7 +33,7 @@ const routes = [
   },
 ]
 
-describe('navigation guards', () => {
+describe('beforeEnter', () => {
   beforeAll(() => {
     // TODO: move to utils for tests that need DOM
     const dom = new JSDOM(

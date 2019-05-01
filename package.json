@@ -6,8 +6,8 @@
   "license": "MIT",
   "scripts": {
     "test:unit": "jest --coverage",
-    "test:mocha": "mocha -r ts-node/register __tests__/**/*.spec.js",
-    "test:mocha:dev": "yarn run test:mocha -w --extension ts",
+    "test:mocha": "NODE_ENV=test mocha -r ts-node/register __tests__/**/*.spec.js __tests__/*.spec.js",
+    "test:mocha:dev": "yarn run test:mocha -w --extension ts --reporter min",
     "test:mocha:cov": "nyc -r lcov -e .ts -x \"*.spec.ts\" mocha -r ts-node/register __tests__/**/*.spec.ts && nyc report",
     "test": "yarn run test:unit",
     "dev": "webpack-dev-server --mode=development"

@@ -39,7 +39,7 @@ beforeEach(() => {
   beforeRouteEnter.mockReset()
 })
 
-describe('navigation guards', () => {
+describe('beforeRouteEnter', () => {
   beforeAll(() => {
     // TODO: move to utils for tests that need DOM
     const dom = new JSDOM(

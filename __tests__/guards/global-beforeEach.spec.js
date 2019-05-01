@@ -27,7 +27,7 @@ const routes = [
   { path: '/foo', component: Foo },
 ]
 
-describe('navigation guards', () => {
+describe('router.beforeEach', () => {
   beforeAll(() => {
     // TODO: move to utils for tests that need DOM
     const dom = new JSDOM(
