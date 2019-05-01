@@ -4,9 +4,6 @@ const expect = require('expect')
 const { HTML5History } = require('../src/history/html5')
 const { Router } = require('../src/router')
 const { JSDOM } = require('jsdom')
-const fakePromise = require('faked-promise')
-
-const tick = () => new Promise(resolve => process.nextTick(resolve))
 
 /**
  * @param {Partial<import('../src/router').RouterOptions> & { routes: import('../src/types').RouteRecord[]}} options
@@ -53,6 +50,17 @@ describe('router.afterEach', () => {
       expect.objectContaining({ fullPath: '/foo' }),
       expect.objectContaining({ fullPath: '/' })
     )
+  })
+
+  it('does not call afterEach if navigation is cancelled', async () => {
+    const spy = jest.fn()
+    const router = createRouter({ routes })
+    router.afterEach(spy)
+    router.beforeEach((to, from, next) => {
+      next(false) // cancel the navigation
+    })
+    await router.push('/foo').catch(err => {}) // ignore the error
+    expect(spy).not.toHaveBeenCalled()
   })
 
   it.skip('calls afterEach guards on replace', async () => {

@@ -18,6 +18,14 @@ r.beforeEach((to, from, next) => {
   next()
 })
 
+r.afterEach((to, from) => {
+  console.log(
+    `After guard: from ${from.fullPath} to ${
+      to.fullPath
+    } | location = ${location.href.replace(location.origin, '')}`
+  )
+})
+
 r.beforeEach((to, from, next) => {
   console.log('second guard')
   next()
