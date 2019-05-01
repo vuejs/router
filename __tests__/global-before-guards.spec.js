@@ -51,6 +51,9 @@ describe('navigation guards', () => {
     expect(spy).toHaveBeenCalledTimes(1)
   })
 
+  it.skip('calls beforeEach guards on replace', () => {})
+  it.skip('does not call beforeEach guard if we were already on the page', () => {})
+
   it('waits before navigating', async () => {
     const [promise, resolve] = fakePromise()
     const router = createRouter({ routes })

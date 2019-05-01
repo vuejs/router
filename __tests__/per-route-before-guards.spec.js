@@ -60,6 +60,7 @@ describe('navigation guards', () => {
   })
 
   it.skip('calls beforeEnter guards on replace', () => {})
+  it.skip('does not call beforeEnter guard if we were already on the page', () => {})
 
   it('waits before navigating', async () => {
     const [promise, resolve] = fakePromise()
