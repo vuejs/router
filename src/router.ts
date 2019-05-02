@@ -100,7 +100,30 @@ export class Router {
     // elements and other stuff
     let guards: Array<() => Promise<any>> = []
 
+    // TODO: ensure we are leaving since we could just be changing params or not changing anything
+    // TODO: is it okay to resolve all matched component or should we do it in order
+    await Promise.all(
+      from.matched.map(async ({ component }) => {
+        // TODO: cache async routes per record
+        const resolvedComponent = await (typeof component === 'function'
+          ? component()
+          : component)
+        if (resolvedComponent.beforeRouteLeave) {
+          // TODO: handle the next callback
+          guards.push(
+            guardToPromiseFn(resolvedComponent.beforeRouteLeave, to, from)
+          )
+        }
+      })
+    )
+
+    // run the queue of per route beforeEnter guards
+    for (const guard of guards) {
+      await guard()
+    }
+
     // check global guards first
+    guards = []
     for (const guard of this.beforeGuards) {
       guards.push(guardToPromiseFn(guard, to, from))
     }

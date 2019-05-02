@@ -1,7 +1,18 @@
 import { Router, HTML5History } from '../src'
+import { RouteComponent } from '../src/types'
 
-const component = {
+const component: RouteComponent = {
   template: `<div>A component</div>`,
+}
+
+const GuardedWithLeave: RouteComponent = {
+  template: `<div>
+    <p>try to leave</p>
+  </div>`,
+  beforeRouteLeave(to, from, next) {
+    if (window.confirm()) next()
+    else next(false)
+  },
 }
 
 const r = new Router({
@@ -14,11 +25,12 @@ const r = new Router({
       path: '/with-guard/:n',
       name: 'guarded',
       component,
-      beforeEnter: (to, from, next) => {
+      beforeEnter(to, from, next) {
         if (to.params.n !== 'valid') next(false)
         next()
       },
     },
+    { path: '/cant-leave', component: GuardedWithLeave },
     // { path: /^\/about\/?$/, component },
   ],
 })

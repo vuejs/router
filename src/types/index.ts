@@ -58,8 +58,10 @@ export interface RouteLocationNormalized
 //   params: ReturnType<PT>
 // }
 
+// TODO: type this for beforeRouteUpdate and beforeRouteLeave
 export interface RouteComponentInterface {
   beforeRouteEnter?: NavigationGuard
+  beforeRouteLeave?: NavigationGuard<void>
 }
 // TODO: have a real type with augmented properties
 // export type RouteComponent = TODO & RouteComponentInterface
@@ -120,8 +122,10 @@ export interface NavigationGuardCallback {
   (): void
   (valid: false): void
 }
-export interface NavigationGuard {
+
+export interface NavigationGuard<V = void> {
   (
+    this: V,
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
     next: NavigationGuardCallback
