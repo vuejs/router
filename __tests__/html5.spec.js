@@ -2,22 +2,11 @@
 require('./helper')
 const expect = require('expect')
 const { HTML5History } = require('../src/history/html5')
-const { JSDOM } = require('jsdom')
+const { createDom } = require('./utils')
 
 describe.skip('History HTMl5', () => {
   beforeAll(() => {
-    // TODO: move to utils for tests that need DOM
-    const dom = new JSDOM(
-      `<!DOCTYPE html><html><head></head><body></body></html>`,
-      {
-        url: 'https://example.org/',
-        referrer: 'https://example.com/',
-        contentType: 'text/html',
-      }
-    )
-
-    // @ts-ignore
-    global.window = dom.window
+    createDom()
   })
 
   it('can be instantiated', () => {
