@@ -103,16 +103,20 @@ export class Router {
     // TODO: ensure we are leaving since we could just be changing params or not changing anything
     // TODO: is it okay to resolve all matched component or should we do it in order
     await Promise.all(
-      from.matched.map(async ({ component }) => {
+      from.matched.map(async record => {
         // TODO: cache async routes per record
-        const resolvedComponent = await (typeof component === 'function'
-          ? component()
-          : component)
-        if (resolvedComponent.beforeRouteLeave) {
-          // TODO: handle the next callback
-          guards.push(
-            guardToPromiseFn(resolvedComponent.beforeRouteLeave, to, from)
-          )
+        // TODO: handle components version. Probably repfactor in extractComponentGuards
+        if ('component' in record) {
+          const { component } = record
+          const resolvedComponent = await (typeof component === 'function'
+            ? component()
+            : component)
+          if (resolvedComponent.beforeRouteLeave) {
+            // TODO: handle the next callback
+            guards.push(
+              guardToPromiseFn(resolvedComponent.beforeRouteLeave, to, from)
+            )
+          }
         }
       })
     )
@@ -157,18 +161,21 @@ export class Router {
     await Promise.all(
       to.matched.map(async record => {
         // TODO: cache async routes per record
-        const { component } = record
-        const resolvedComponent = await (typeof component === 'function'
-          ? component()
-          : component)
-        if (
-          resolvedComponent.beforeRouteEnter &&
-          from.matched.indexOf(record)
-        ) {
-          // TODO: handle the next callback
-          guards.push(
-            guardToPromiseFn(resolvedComponent.beforeRouteEnter, to, from)
-          )
+        // TODO: handle components version. Probably repfactor in extractComponentGuards
+        if ('component' in record) {
+          const { component } = record
+          const resolvedComponent = await (typeof component === 'function'
+            ? component()
+            : component)
+          if (
+            resolvedComponent.beforeRouteEnter &&
+            from.matched.indexOf(record)
+          ) {
+            // TODO: handle the next callback
+            guards.push(
+              guardToPromiseFn(resolvedComponent.beforeRouteEnter, to, from)
+            )
+          }
         }
       })
     )
