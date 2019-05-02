@@ -94,6 +94,7 @@ describe('router.beforeEach', () => {
         expect(guard2).not.toHaveBeenCalled()
         r1() // resolve the first guard
         await tick() // wait a tick
+        await tick() // mocha requires an extra tick here
         expect(guard1).toHaveBeenCalled()
         // we haven't resolved the second gurad yet
         expect(router.currentRoute.fullPath).toBe('/')

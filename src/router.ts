@@ -54,6 +54,7 @@ export class Router {
     let location: MatcherLocationNormalized
     if (typeof to === 'string' || 'path' in to) {
       url = this.history.utils.normalizeLocation(to)
+      // TODO: should allow a non matching url to allow dynamic routing to work
       location = this.matcher.resolve(url, this.currentRoute)
     } else {
       // named or relative route
@@ -98,27 +99,15 @@ export class Router {
   ): Promise<TODO> {
     // TODO: Will probably need to be some kind of queue in the future that allows to remove
     // elements and other stuff
-    let guards: Array<() => Promise<any>> = []
+    let guards: Array<() => Promise<any>>
 
     // TODO: ensure we are leaving since we could just be changing params or not changing anything
     // TODO: is it okay to resolve all matched component or should we do it in order
-    await Promise.all(
-      from.matched.map(async record => {
-        // TODO: cache async routes per record
-        // TODO: handle components version. Probably repfactor in extractComponentGuards
-        if ('component' in record) {
-          const { component } = record
-          const resolvedComponent = await (typeof component === 'function'
-            ? component()
-            : component)
-          if (resolvedComponent.beforeRouteLeave) {
-            // TODO: handle the next callback
-            guards.push(
-              guardToPromiseFn(resolvedComponent.beforeRouteLeave, to, from)
-            )
-          }
-        }
-      })
+    guards = await extractComponentGuards(
+      from.matched,
+      'beforeRouteLeave',
+      to,
+      from
     )
 
     // run the queue of per route beforeEnter guards
@@ -142,29 +131,11 @@ export class Router {
     }
 
     // check in components beforeRouteUpdate
-    guards = []
-    await Promise.all(
-      to.matched.map(async record => {
-        // TODO: cache async routes per record
-        // TODO: handle components version. Probably repfactor in extractComponentGuards
-        if ('component' in record) {
-          const { component } = record
-          const resolvedComponent = await (typeof component === 'function'
-            ? component()
-            : component)
-          // trigger on reused views
-          // TODO: should we avoid triggering if no param changed on this route?
-          if (
-            resolvedComponent.beforeRouteUpdate &&
-            from.matched.indexOf(record) > -1
-          ) {
-            // TODO: handle the next callback
-            guards.push(
-              guardToPromiseFn(resolvedComponent.beforeRouteUpdate, to, from)
-            )
-          }
-        }
-      })
+    guards = await extractComponentGuards(
+      to.matched.filter(record => from.matched.indexOf(record) > -1),
+      'beforeRouteUpdate',
+      to,
+      from
     )
 
     // run the queue of per route beforeEnter guards
@@ -187,29 +158,12 @@ export class Router {
     }
 
     // check in-component beforeRouteEnter
-    guards = []
     // TODO: is it okay to resolve all matched component or should we do it in order
-    await Promise.all(
-      to.matched.map(async record => {
-        // TODO: cache async routes per record
-        // TODO: handle components version. Probably repfactor in extractComponentGuards
-        if ('component' in record) {
-          const { component } = record
-          const resolvedComponent = await (typeof component === 'function'
-            ? component()
-            : component)
-          // do not trigger beforeRouteEnter on reused views
-          if (
-            resolvedComponent.beforeRouteEnter &&
-            from.matched.indexOf(record) < 0
-          ) {
-            // TODO: handle the next callback
-            guards.push(
-              guardToPromiseFn(resolvedComponent.beforeRouteEnter, to, from)
-            )
-          }
-        }
-      })
+    guards = await extractComponentGuards(
+      to.matched.filter(record => from.matched.indexOf(record) < 0),
+      'beforeRouteEnter',
+      to,
+      from
     )
 
     // run the queue of per route beforeEnter guards
@@ -241,6 +195,8 @@ export class Router {
   }
 }
 
+// UTILS
+
 function guardToPromiseFn(
   guard: NavigationGuard,
   to: RouteLocationNormalized,
@@ -250,6 +206,7 @@ function guardToPromiseFn(
     new Promise((resolve, reject) => {
       const next: NavigationGuardCallback = (valid?: boolean) => {
         // TODO: better error
+        // TODO: handle callback
         if (valid === false) reject(new Error('Aborted'))
         else resolve()
       }
@@ -260,4 +217,32 @@ function guardToPromiseFn(
 
 function last<T>(array: T[]): T {
   return array[array.length - 1]
+}
+
+type GuardType = 'beforeRouteEnter' | 'beforeRouteUpdate' | 'beforeRouteLeave'
+async function extractComponentGuards(
+  matched: RouteRecord[],
+  guardType: GuardType,
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized
+) {
+  const guards: Array<() => Promise<void>> = []
+  await Promise.all(
+    matched.map(async record => {
+      // TODO: cache async routes per record
+      if ('component' in record) {
+        const { component } = record
+        const resolvedComponent = await (typeof component === 'function'
+          ? component()
+          : component)
+
+        const guard = resolvedComponent[guardType]
+        if (guard) {
+          guards.push(guardToPromiseFn(guard, to, from))
+        }
+      }
+    })
+  )
+
+  return guards
 }
