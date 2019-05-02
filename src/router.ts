@@ -102,8 +102,8 @@ export class Router {
     // elements and other stuff
     let guards: Array<() => Promise<any>>
 
-    // TODO: ensure we are leaving since we could just be changing params or not changing anything
     // TODO: is it okay to resolve all matched component or should we do it in order
+    // TODO: use only components that we are leaving (children)
     guards = await extractComponentsGuards(
       from.matched,
       'beforeRouteLeave',
@@ -119,6 +119,7 @@ export class Router {
     // check global guards beforeEach
     // avoid if we are not changing route
     // TODO: trigger on child navigation
+    // TODO: should we completely avoid a navigation towards the same route?
     if (last(to.matched) !== last(from.matched)) {
       guards = []
       for (const guard of this.beforeGuards) {
