@@ -72,7 +72,16 @@ describe('beforeRouteEnter', () => {
         expect(spy).toHaveBeenCalledTimes(1)
       })
 
-      it.skip('does not call beforeRouteEnter if we were already on the page', () => {})
+      it('does not call beforeRouteEnter if we were already on the page', async () => {
+        const router = createRouter({ routes })
+        beforeRouteEnter.mockImplementation((to, from, next) => {
+          next()
+        })
+        await router.push('/guard/one')
+        expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
+        await router[navigationMethod]('/guard/one')
+        expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
+      })
 
       it('waits before navigating', async () => {
         const [promise, resolve] = fakePromise()

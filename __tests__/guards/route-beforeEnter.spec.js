@@ -52,8 +52,16 @@ describe('beforeEnter', () => {
         expect(beforeEnter).toHaveBeenCalledTimes(1)
       })
 
-      it.skip('calls beforeEnter guards on replace', () => {})
-      it.skip('does not call beforeEnter guard if we were already on the page', () => {})
+      it('does not call beforeEnter guard if we were already on the page', async () => {
+        const router = createRouter({ routes })
+        beforeEnter.mockImplementation((to, from, next) => {
+          next()
+        })
+        await router.push('/guard/one')
+        expect(beforeEnter).toHaveBeenCalledTimes(1)
+        await router[navigationMethod]('/guard/one')
+        expect(beforeEnter).toHaveBeenCalledTimes(1)
+      })
 
       it('waits before navigating', async () => {
         const [promise, resolve] = fakePromise()

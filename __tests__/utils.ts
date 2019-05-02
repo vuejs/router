@@ -17,6 +17,10 @@ export function createDom(options?: ConstructorOptions) {
 
   // @ts-ignore
   global.window = dom.window
+  // @ts-ignore
+  global.location = dom.window.location
+  // @ts-ignore
+  global.document = dom.window.document
 
   return dom
 }

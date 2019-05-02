@@ -122,22 +122,27 @@ export class Router {
       await guard()
     }
 
-    // check global guards first
-    guards = []
-    for (const guard of this.beforeGuards) {
-      guards.push(guardToPromiseFn(guard, to, from))
-    }
+    // check global guards beforeEach
+    // avoid if we are not changing route
+    // TODO: trigger on child navigation
+    if (last(to.matched) !== last(from.matched)) {
+      guards = []
+      for (const guard of this.beforeGuards) {
+        guards.push(guardToPromiseFn(guard, to, from))
+      }
 
-    // console.log('Guarding against', guards.length, 'guards')
-    for (const guard of guards) {
-      await guard()
+      // console.log('Guarding against', guards.length, 'guards')
+      for (const guard of guards) {
+        await guard()
+      }
     }
 
     // check the route beforeEnter
     // TODO: check children. Should we also check reused routes guards
     guards = []
     for (const record of to.matched) {
-      if (record.beforeEnter)
+      // do not trigger beforeEnter on reused views
+      if (record.beforeEnter && from.matched.indexOf(record) < 0)
         guards.push(guardToPromiseFn(record.beforeEnter, to, from))
     }
 
@@ -150,12 +155,16 @@ export class Router {
     guards = []
     // TODO: is it okay to resolve all matched component or should we do it in order
     await Promise.all(
-      to.matched.map(async ({ component }) => {
+      to.matched.map(async record => {
         // TODO: cache async routes per record
+        const { component } = record
         const resolvedComponent = await (typeof component === 'function'
           ? component()
           : component)
-        if (resolvedComponent.beforeRouteEnter) {
+        if (
+          resolvedComponent.beforeRouteEnter &&
+          from.matched.indexOf(record)
+        ) {
           // TODO: handle the next callback
           guards.push(
             guardToPromiseFn(resolvedComponent.beforeRouteEnter, to, from)
@@ -208,4 +217,8 @@ function guardToPromiseFn(
 
       guard(to, from, next)
     })
+}
+
+function last<T>(array: T[]): T {
+  return array[array.length - 1]
 }

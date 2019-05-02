@@ -43,7 +43,17 @@ describe('router.beforeEach', () => {
         expect(spy).toHaveBeenCalledTimes(1)
       })
 
-      it.skip('does not call beforeEach guard if we were already on the page', () => {})
+      it('does not call beforeEach guard if we were already on the page', async () => {
+        const spy = jest.fn()
+        const router = createRouter({ routes })
+        await router.push('/foo')
+        router.beforeEach(spy)
+        spy.mockImplementationOnce((to, from, next) => {
+          next()
+        })
+        await router[navigationMethod]('/foo')
+        expect(spy).not.toHaveBeenCalled()
+      })
 
       it('waits before navigating', async () => {
         const [promise, resolve] = fakePromise()
