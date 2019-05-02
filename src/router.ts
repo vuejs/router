@@ -9,9 +9,10 @@ import {
   ListenerRemover,
   NavigationGuard,
   TODO,
-  NavigationGuardCallback,
   PostNavigationGuard,
 } from './types/index'
+
+import { guardToPromiseFn, last, extractComponentsGuards } from './utils'
 
 export interface RouterOptions {
   history: BaseHistory
@@ -103,7 +104,7 @@ export class Router {
 
     // TODO: ensure we are leaving since we could just be changing params or not changing anything
     // TODO: is it okay to resolve all matched component or should we do it in order
-    guards = await extractComponentGuards(
+    guards = await extractComponentsGuards(
       from.matched,
       'beforeRouteLeave',
       to,
@@ -131,7 +132,7 @@ export class Router {
     }
 
     // check in components beforeRouteUpdate
-    guards = await extractComponentGuards(
+    guards = await extractComponentsGuards(
       to.matched.filter(record => from.matched.indexOf(record) > -1),
       'beforeRouteUpdate',
       to,
@@ -159,7 +160,7 @@ export class Router {
 
     // check in-component beforeRouteEnter
     // TODO: is it okay to resolve all matched component or should we do it in order
-    guards = await extractComponentGuards(
+    guards = await extractComponentsGuards(
       to.matched.filter(record => from.matched.indexOf(record) < 0),
       'beforeRouteEnter',
       to,
@@ -193,56 +194,4 @@ export class Router {
       this.afterGuards.splice(this.afterGuards.indexOf(guard), 1)
     }
   }
-}
-
-// UTILS
-
-function guardToPromiseFn(
-  guard: NavigationGuard,
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized
-): () => Promise<void> {
-  return () =>
-    new Promise((resolve, reject) => {
-      const next: NavigationGuardCallback = (valid?: boolean) => {
-        // TODO: better error
-        // TODO: handle callback
-        if (valid === false) reject(new Error('Aborted'))
-        else resolve()
-      }
-
-      guard(to, from, next)
-    })
-}
-
-function last<T>(array: T[]): T {
-  return array[array.length - 1]
-}
-
-type GuardType = 'beforeRouteEnter' | 'beforeRouteUpdate' | 'beforeRouteLeave'
-async function extractComponentGuards(
-  matched: RouteRecord[],
-  guardType: GuardType,
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized
-) {
-  const guards: Array<() => Promise<void>> = []
-  await Promise.all(
-    matched.map(async record => {
-      // TODO: cache async routes per record
-      if ('component' in record) {
-        const { component } = record
-        const resolvedComponent = await (typeof component === 'function'
-          ? component()
-          : component)
-
-        const guard = resolvedComponent[guardType]
-        if (guard) {
-          guards.push(guardToPromiseFn(guard, to, from))
-        }
-      }
-    })
-  )
-
-  return guards
 }

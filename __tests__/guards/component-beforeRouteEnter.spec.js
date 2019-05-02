@@ -20,6 +20,10 @@ const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
 const beforeRouteEnter = jest.fn()
+const named = {
+  default: jest.fn(),
+  other: jest.fn(),
+}
 /** @type {import('../../src/types').RouteRecord[]} */
 const routes = [
   { path: '/', component: Home },
@@ -31,10 +35,25 @@ const routes = [
       beforeRouteEnter,
     },
   },
+  {
+    path: '/named',
+    components: {
+      default: {
+        ...Home,
+        beforeRouteEnter: named.default,
+      },
+      other: {
+        ...Foo,
+        beforeRouteEnter: named.other,
+      },
+    },
+  },
 ]
 
 beforeEach(() => {
   beforeRouteEnter.mockReset()
+  named.default.mockReset()
+  named.other.mockReset()
 })
 
 describe('beforeRouteEnter', () => {
@@ -52,6 +71,27 @@ describe('beforeRouteEnter', () => {
         })
         await router[navigationMethod]('/guard/valid')
         expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
+      })
+
+      it('calls beforeRouteEnter guards on navigation for named views', async () => {
+        const router = createRouter({ routes })
+        named.default.mockImplementationOnce(noGuard)
+        named.other.mockImplementationOnce(noGuard)
+        await router[navigationMethod]('/named')
+        expect(named.default).toHaveBeenCalledTimes(1)
+        expect(named.other).toHaveBeenCalledTimes(1)
+        expect(router.currentRoute.fullPath).toBe('/named')
+      })
+
+      it('aborts navigation if one of the named views aborts', async () => {
+        const router = createRouter({ routes })
+        named.default.mockImplementationOnce((to, from, next) => {
+          next(false)
+        })
+        named.other.mockImplementationOnce(noGuard)
+        await router[navigationMethod]('/named').catch(err => {}) // catch abort
+        expect(named.default).toHaveBeenCalledTimes(1)
+        expect(router.currentRoute.fullPath).not.toBe('/named')
       })
 
       it('resolves async components before guarding', async () => {
