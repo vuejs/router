@@ -141,6 +141,37 @@ export class Router {
       }
     }
 
+    // check in components beforeRouteUpdate
+    guards = []
+    await Promise.all(
+      to.matched.map(async record => {
+        // TODO: cache async routes per record
+        // TODO: handle components version. Probably repfactor in extractComponentGuards
+        if ('component' in record) {
+          const { component } = record
+          const resolvedComponent = await (typeof component === 'function'
+            ? component()
+            : component)
+          // trigger on reused views
+          // TODO: should we avoid triggering if no param changed on this route?
+          if (
+            resolvedComponent.beforeRouteUpdate &&
+            from.matched.indexOf(record) > -1
+          ) {
+            // TODO: handle the next callback
+            guards.push(
+              guardToPromiseFn(resolvedComponent.beforeRouteUpdate, to, from)
+            )
+          }
+        }
+      })
+    )
+
+    // run the queue of per route beforeEnter guards
+    for (const guard of guards) {
+      await guard()
+    }
+
     // check the route beforeEnter
     // TODO: check children. Should we also check reused routes guards
     guards = []
@@ -167,9 +198,10 @@ export class Router {
           const resolvedComponent = await (typeof component === 'function'
             ? component()
             : component)
+          // do not trigger beforeRouteEnter on reused views
           if (
             resolvedComponent.beforeRouteEnter &&
-            from.matched.indexOf(record)
+            from.matched.indexOf(record) < 0
           ) {
             // TODO: handle the next callback
             guards.push(

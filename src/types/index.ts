@@ -73,9 +73,13 @@ export interface RouteComponentInterface {
    * Guard called whenever the route that renders this component has changed but
    * it is reused for the new route. This allows you to guard for changes in params,
    * the query or the hash.
+   * @param to RouteLocation we are navigating to
+   * @param from RouteLocation we are navigating from
+   * @param next function to validate, cancel or modify (by redirectering) the navigation
    */
   beforeRouteUpdate?: NavigationGuard<void>
 }
+
 // TODO: have a real type with augmented properties
 // export type RouteComponent = TODO & RouteComponentInterface
 export type RouteComponent = {
