@@ -147,6 +147,7 @@ export interface MatcherLocationNormalized {
 
 export interface NavigationGuardCallback {
   (): void
+  (location: RouteLocation): void
   (valid: false): void
 }
 
