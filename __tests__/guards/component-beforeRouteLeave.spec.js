@@ -57,6 +57,25 @@ describe('beforeRouteLeave', () => {
         expect(beforeRouteLeave).toHaveBeenCalledTimes(1)
       })
 
+      it('works when a lazy loaded component', async () => {
+        const router = createRouter({
+          routes: [
+            ...routes,
+            {
+              path: '/lazy',
+              component: () => Promise.resolve({ ...Foo, beforeRouteLeave }),
+            },
+          ],
+        })
+        beforeRouteLeave.mockImplementationOnce((to, from, next) => {
+          next()
+        })
+        await router.push('/lazy')
+        expect(beforeRouteLeave).not.toHaveBeenCalled()
+        await router[navigationMethod]('/foo')
+        expect(beforeRouteLeave).toHaveBeenCalledTimes(1)
+      })
+
       it('can cancel navigation', async () => {
         const router = createRouter({ routes })
         beforeRouteLeave.mockImplementationOnce(async (to, from, next) => {
