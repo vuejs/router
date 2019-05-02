@@ -67,11 +67,14 @@ export class Router {
       })
     }
 
-    // TODO: refactor in a function, some kind of queue
     const toLocation: RouteLocationNormalized = { ...url, ...location }
+    // trigger all guards, throw if navigation is rejected
     await this.navigate(toLocation, this.currentRoute)
+
+    // change URL
     if (to.replace === true) this.history.replace(url)
     else this.history.push(url)
+
     const from = this.currentRoute
     this.currentRoute = toLocation
 
