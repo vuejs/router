@@ -23,6 +23,7 @@ const beforeEnter = jest.fn()
 /** @type {import('../../src/types').RouteRecord[]} */
 const routes = [
   { path: '/', component: Home },
+  { path: '/home', component: Home, beforeEnter },
   { path: '/foo', component: Foo },
   {
     path: '/guard/:n',
@@ -46,6 +47,15 @@ describe('beforeEnter', () => {
         const router = createRouter({ routes })
         beforeEnter.mockImplementationOnce(noGuard)
         await router[navigationMethod]('/guard/valid')
+        expect(beforeEnter).toHaveBeenCalledTimes(1)
+      })
+
+      it('calls beforeEnter different records, same component', async () => {
+        const router = createRouter({ routes })
+        beforeEnter.mockImplementationOnce(noGuard)
+        await router.push('/')
+        expect(beforeEnter).not.toHaveBeenCalled()
+        await router[navigationMethod]('/home')
         expect(beforeEnter).toHaveBeenCalledTimes(1)
       })
 
