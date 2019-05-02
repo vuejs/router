@@ -61,7 +61,20 @@ export interface RouteLocationNormalized
 // TODO: type this for beforeRouteUpdate and beforeRouteLeave
 export interface RouteComponentInterface {
   beforeRouteEnter?: NavigationGuard
+  /**
+   * Guard called when the router is navigating away from the current route
+   * that is rendering this component.
+   * @param to RouteLocation we are navigating to
+   * @param from RouteLocation we are navigating from
+   * @param next function to validate, cancel or modify (by redirectering) the navigation
+   */
   beforeRouteLeave?: NavigationGuard<void>
+  /**
+   * Guard called whenever the route that renders this component has changed but
+   * it is reused for the new route. This allows you to guard for changes in params,
+   * the query or the hash.
+   */
+  beforeRouteUpdate?: NavigationGuard<void>
 }
 // TODO: have a real type with augmented properties
 // export type RouteComponent = TODO & RouteComponentInterface
