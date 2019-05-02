@@ -4,7 +4,7 @@ const expect = require('expect')
 const { HTML5History } = require('../../src/history/html5')
 const { Router } = require('../../src/router')
 const fakePromise = require('faked-promise')
-const { NAVIGATION_TYPES, createDom, tick } = require('../utils')
+const { NAVIGATION_TYPES, createDom, tick, noGuard } = require('../utils')
 
 /**
  * @param {Partial<import('../../src/router').RouterOptions> & { routes: import('../../src/types').RouteRecord[]}} options
@@ -36,9 +36,7 @@ describe('router.beforeEach', () => {
         const spy = jest.fn()
         const router = createRouter({ routes })
         router.beforeEach(spy)
-        spy.mockImplementationOnce((to, from, next) => {
-          next()
-        })
+        spy.mockImplementationOnce(noGuard)
         await router[navigationMethod]('/foo')
         expect(spy).toHaveBeenCalledTimes(1)
       })
@@ -48,9 +46,7 @@ describe('router.beforeEach', () => {
         const router = createRouter({ routes })
         await router.push('/foo')
         router.beforeEach(spy)
-        spy.mockImplementationOnce((to, from, next) => {
-          next()
-        })
+        spy.mockImplementationOnce(noGuard)
         await router[navigationMethod]('/foo')
         expect(spy).not.toHaveBeenCalled()
       })

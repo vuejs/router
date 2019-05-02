@@ -4,7 +4,7 @@ const expect = require('expect')
 const { HTML5History } = require('../../src/history/html5')
 const { Router } = require('../../src/router')
 const fakePromise = require('faked-promise')
-const { NAVIGATION_TYPES, createDom } = require('../utils')
+const { NAVIGATION_TYPES, createDom, noGuard } = require('../utils')
 
 /**
  * @param {Partial<import('../../src/router').RouterOptions> & { routes: import('../../src/types').RouteRecord[]}} options
@@ -44,19 +44,14 @@ describe('beforeEnter', () => {
     describe(navigationMethod, () => {
       it('calls beforeEnter guards on navigation', async () => {
         const router = createRouter({ routes })
-        beforeEnter.mockImplementationOnce((to, from, next) => {
-          if (to.params.n !== 'valid') return next(false)
-          next()
-        })
+        beforeEnter.mockImplementationOnce(noGuard)
         await router[navigationMethod]('/guard/valid')
         expect(beforeEnter).toHaveBeenCalledTimes(1)
       })
 
       it('does not call beforeEnter guard if we were already on the page', async () => {
         const router = createRouter({ routes })
-        beforeEnter.mockImplementation((to, from, next) => {
-          next()
-        })
+        beforeEnter.mockImplementation(noGuard)
         await router.push('/guard/one')
         expect(beforeEnter).toHaveBeenCalledTimes(1)
         await router[navigationMethod]('/guard/one')

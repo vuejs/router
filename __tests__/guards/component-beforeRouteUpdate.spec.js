@@ -4,7 +4,7 @@ const expect = require('expect')
 const { HTML5History } = require('../../src/history/html5')
 const { Router } = require('../../src/router')
 const fakePromise = require('faked-promise')
-const { NAVIGATION_TYPES, createDom } = require('../utils')
+const { NAVIGATION_TYPES, createDom, noGuard } = require('../utils')
 
 /**
  * @param {Partial<import('../../src/router').RouterOptions> & { routes: import('../../src/types').RouteRecord[]}} options
@@ -46,9 +46,7 @@ describe('beforeRouteUpdate', () => {
     describe(navigationMethod, () => {
       it('calls beforeRouteUpdate guards when changing params', async () => {
         const router = createRouter({ routes })
-        beforeRouteUpdate.mockImplementationOnce((to, from, next) => {
-          next()
-        })
+        beforeRouteUpdate.mockImplementationOnce(noGuard)
         await router[navigationMethod]('/guard/valid')
         // not called on initial navigation
         expect(beforeRouteUpdate).not.toHaveBeenCalled()
