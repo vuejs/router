@@ -1,4 +1,6 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
+import {} from '../src/types'
+import { NavigationGuard } from '../../vue-router/types'
 
 export const tick = () => new Promise(resolve => process.nextTick(resolve))
 
@@ -23,6 +25,10 @@ export function createDom(options?: ConstructorOptions) {
   global.document = dom.window.document
 
   return dom
+}
+
+export const noGuard: NavigationGuard = (to, from, next) => {
+  next()
 }
 
 export const components = {

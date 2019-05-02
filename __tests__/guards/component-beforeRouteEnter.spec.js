@@ -4,7 +4,7 @@ const expect = require('expect')
 const { HTML5History } = require('../../src/history/html5')
 const { Router } = require('../../src/router')
 const fakePromise = require('faked-promise')
-const { NAVIGATION_TYPES, createDom } = require('../utils')
+const { NAVIGATION_TYPES, createDom, noGuard } = require('../utils')
 
 /**
  * @param {Partial<import('../../src/router').RouterOptions> & { routes: import('../../src/types').RouteRecord[]}} options
@@ -55,7 +55,7 @@ describe('beforeRouteEnter', () => {
       })
 
       it('resolves async components before guarding', async () => {
-        const spy = jest.fn((to, from, next) => next())
+        const spy = jest.fn(noGuard)
         const component = {
           template: `<div></div>`,
           beforeRouteEnter: spy,
@@ -74,9 +74,7 @@ describe('beforeRouteEnter', () => {
 
       it('does not call beforeRouteEnter if we were already on the page', async () => {
         const router = createRouter({ routes })
-        beforeRouteEnter.mockImplementation((to, from, next) => {
-          next()
-        })
+        beforeRouteEnter.mockImplementation(noGuard)
         await router.push('/guard/one')
         expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
         await router[navigationMethod]('/guard/one')
