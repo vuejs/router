@@ -1,6 +1,6 @@
 import { HistoryQuery } from '../history/base'
 
-type Lazy<T> = () => Promise<T>
+export type Lazy<T> = () => Promise<T>
 
 export type TODO = any
 

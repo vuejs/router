@@ -23,6 +23,8 @@ const Foo = { template: `<div>Foo</div>` }
 const routes = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },
+  { path: '/other', component: Foo },
+  { path: '/n/:i', name: 'n', component: Home },
 ]
 
 describe('router.beforeEach', () => {
@@ -48,6 +50,86 @@ describe('router.beforeEach', () => {
         router.beforeEach(spy)
         spy.mockImplementationOnce(noGuard)
         await router[navigationMethod]('/foo')
+        expect(spy).not.toHaveBeenCalled()
+      })
+
+      it('can redirect to a different location', async () => {
+        const spy = jest.fn()
+        const router = createRouter({ routes })
+        await router.push('/foo')
+        spy.mockImplementation((to, from, next) => {
+          // only allow going to /other
+          if (to.fullPath !== '/other') next('/other')
+          else next()
+        })
+        router.beforeEach(spy)
+        expect(spy).not.toHaveBeenCalled()
+        await router[navigationMethod]('/')
+        expect(spy).toHaveBeenCalledTimes(2)
+        // called before redirect
+        expect(spy).toHaveBeenNthCalledWith(
+          1,
+          expect.objectContaining({ path: '/' }),
+          expect.objectContaining({ path: '/foo' }),
+          expect.any(Function)
+        )
+        expect(spy).toHaveBeenNthCalledWith(
+          2,
+          expect.objectContaining({ path: '/other' }),
+          expect.objectContaining({ path: '/foo' }),
+          expect.any(Function)
+        )
+        expect(router.currentRoute.fullPath).toBe('/other')
+      })
+
+      async function assertRedirect(redirectFn) {
+        const spy = jest.fn()
+        const router = createRouter({ routes })
+        await router.push('/')
+        spy.mockImplementation((to, from, next) => {
+          // only allow going to /other
+          const i = Number(to.params.i)
+          if (i >= 3) next()
+          else next(redirectFn(i + 1))
+        })
+        router.beforeEach(spy)
+        expect(spy).not.toHaveBeenCalled()
+        await router[navigationMethod]('/n/0')
+        expect(spy).toHaveBeenCalledTimes(4)
+        expect(router.currentRoute.fullPath).toBe('/n/3')
+      }
+
+      it('can redirect multiple times with string redirect', async () => {
+        await assertRedirect(i => '/n/' + i)
+      })
+
+      it('can redirect multiple times with path object', async () => {
+        await assertRedirect(i => ({ path: '/n/' + i }))
+      })
+
+      it('can redirect multiple times with named route', async () => {
+        await assertRedirect(i => ({ name: 'n', params: { i } }))
+      })
+
+      it('is called when changing params', async () => {
+        const spy = jest.fn()
+        const router = createRouter({ routes: [...routes] })
+        await router.push('/n/2')
+        spy.mockImplementation(noGuard)
+        router.beforeEach(spy)
+        spy.mockImplementationOnce(noGuard)
+        await router[navigationMethod]('/n/1')
+        expect(spy).toHaveBeenCalledTimes(1)
+      })
+
+      it('is not called with same params', async () => {
+        const spy = jest.fn()
+        const router = createRouter({ routes: [...routes] })
+        await router.push('/n/2')
+        spy.mockImplementation(noGuard)
+        router.beforeEach(spy)
+        spy.mockImplementationOnce(noGuard)
+        await router[navigationMethod]('/n/2')
         expect(spy).not.toHaveBeenCalled()
       })
 

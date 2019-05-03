@@ -6,6 +6,7 @@ import {
 } from '../types'
 
 import { isRouteLocation } from './index'
+import { RedirectError } from '../errors'
 
 export function guardToPromiseFn(
   guard: NavigationGuard,
@@ -22,6 +23,7 @@ export function guardToPromiseFn(
         if (valid === false) reject(new Error('Aborted'))
         else if (isRouteLocation(valid)) {
           // TODO: redirect
+          reject(new RedirectError(to, valid))
         } else resolve()
       }
 

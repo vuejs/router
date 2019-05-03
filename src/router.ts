@@ -10,9 +10,11 @@ import {
   NavigationGuard,
   TODO,
   PostNavigationGuard,
+  Lazy,
 } from './types/index'
 
-import { guardToPromiseFn, last, extractComponentsGuards } from './utils'
+import { guardToPromiseFn, extractComponentsGuards } from './utils'
+import { RedirectError } from './errors'
 
 export interface RouterOptions {
   history: BaseHistory
@@ -50,7 +52,7 @@ export class Router {
    * guards first
    * @param to where to go
    */
-  async push(to: RouteLocation) {
+  async push(to: RouteLocation): Promise<RouteLocationNormalized> {
     let url: HistoryLocationNormalized
     let location: MatcherLocationNormalized
     if (typeof to === 'string' || 'path' in to) {
@@ -69,9 +71,21 @@ export class Router {
       })
     }
 
+    // TODO: should we throw an error as the navigation was aborted
+    if (this.currentRoute.fullPath === url.fullPath) return this.currentRoute
+
     const toLocation: RouteLocationNormalized = { ...url, ...location }
     // trigger all guards, throw if navigation is rejected
-    await this.navigate(toLocation, this.currentRoute)
+    try {
+      await this.navigate(toLocation, this.currentRoute)
+    } catch (error) {
+      if (error instanceof RedirectError) {
+        // TODO: setup redirect stack
+        return this.push(error.to)
+      } else {
+        throw error
+      }
+    }
 
     // change URL
     if (to.replace === true) this.history.replace(url)
@@ -82,6 +96,8 @@ export class Router {
 
     // navigation is confirmed, call afterGuards
     for (const guard of this.afterGuards) guard(toLocation, from)
+
+    return this.currentRoute
   }
 
   /**
@@ -94,13 +110,24 @@ export class Router {
     return this.push({ ...location, replace: true })
   }
 
+  /**
+   * Runs a guard queue and handles redirects, rejections
+   * @param guards Array of guards converted to functions that return a promise
+   * @returns {boolean} true if the navigation should be cancelled false otherwise
+   */
+  private async runGuardQueue(guards: Lazy<any>[]): Promise<void> {
+    for (const guard of guards) {
+      await guard()
+    }
+  }
+
   private async navigate(
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
   ): Promise<TODO> {
     // TODO: Will probably need to be some kind of queue in the future that allows to remove
     // elements and other stuff
-    let guards: Array<() => Promise<any>>
+    let guards: Lazy<any>[]
 
     // TODO: is it okay to resolve all matched component or should we do it in order
     // TODO: use only components that we are leaving (children)
@@ -112,25 +139,18 @@ export class Router {
     )
 
     // run the queue of per route beforeEnter guards
-    for (const guard of guards) {
-      await guard()
-    }
+    await this.runGuardQueue(guards)
 
     // check global guards beforeEach
     // avoid if we are not changing route
     // TODO: trigger on child navigation
-    // TODO: should we completely avoid a navigation towards the same route?
-    if (last(to.matched) !== last(from.matched)) {
-      guards = []
-      for (const guard of this.beforeGuards) {
-        guards.push(guardToPromiseFn(guard, to, from))
-      }
-
-      // console.log('Guarding against', guards.length, 'guards')
-      for (const guard of guards) {
-        await guard()
-      }
+    guards = []
+    for (const guard of this.beforeGuards) {
+      guards.push(guardToPromiseFn(guard, to, from))
     }
+
+    // console.log('Guarding against', guards.length, 'guards')
+    await this.runGuardQueue(guards)
 
     // check in components beforeRouteUpdate
     guards = await extractComponentsGuards(
@@ -141,9 +161,7 @@ export class Router {
     )
 
     // run the queue of per route beforeEnter guards
-    for (const guard of guards) {
-      await guard()
-    }
+    await this.runGuardQueue(guards)
 
     // check the route beforeEnter
     // TODO: check children. Should we also check reused routes guards
@@ -155,9 +173,7 @@ export class Router {
     }
 
     // run the queue of per route beforeEnter guards
-    for (const guard of guards) {
-      await guard()
-    }
+    await this.runGuardQueue(guards)
 
     // check in-component beforeRouteEnter
     // TODO: is it okay to resolve all matched component or should we do it in order
@@ -169,9 +185,7 @@ export class Router {
     )
 
     // run the queue of per route beforeEnter guards
-    for (const guard of guards) {
-      await guard()
-    }
+    await this.runGuardQueue(guards)
   }
 
   /**
