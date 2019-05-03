@@ -15,7 +15,7 @@ interface RouteMatcher {
   keys: string[]
 }
 
-function generateMatcher(record: RouteRecord) {
+function generateMatcher(record: RouteRecord): RouteMatcher {
   const keys: pathToRegexp.Key[] = []
   // TODO: if children use option end: false ?
   const re = pathToRegexp(record.path, keys)
@@ -57,6 +57,9 @@ export class RouterMatcher {
 
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
       // TODO: build up the array with children based on current location
+
+      if ('redirect' in matcher.record) throw new Error('TODO')
+
       const matched = [matcher.record]
 
       const params: RouteParams = {}
@@ -92,6 +95,8 @@ export class RouterMatcher {
       matcher = this.matchers.find(m => m.record.name === location.name)
 
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+      if ('redirect' in matcher.record) throw new Error('TODO')
+
       // TODO: build up the array with children based on current location
       const matched = [matcher.record]
 
@@ -115,6 +120,8 @@ export class RouterMatcher {
     }
 
     if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+    if ('redirect' in matcher.record) throw new Error('TODO')
+
     // TODO: build up the array with children based on current location
     const matched = [matcher.record]
 

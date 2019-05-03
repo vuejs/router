@@ -39,13 +39,15 @@ export type RouteLocation =
   | RouteQueryAndHash & LocationAsRelative & RouteLocationOptions
 
 // exposed to the user in a very consistant way
+export type MatchedRouteRecord = Exclude<RouteRecord, RouteRecordRedirect>
+
 export interface RouteLocationNormalized
   extends Required<RouteQueryAndHash & LocationAsRelative & LocationAsPath> {
   fullPath: string
   query: HistoryQuery // the normalized version cannot have numbers
   // TODO: do the same for params
   name: string | void
-  matched: RouteRecord[] // non-enumerable
+  matched: MatchedRouteRecord[] // non-enumerable
 }
 
 // interface PropsTransformer {
@@ -98,6 +100,11 @@ interface RouteRecordCommon {
   beforeEnter?: NavigationGuard
 }
 
+type DynamicRedirect = (to: RouteLocationNormalized) => RouteLocation
+interface RouteRecordRedirect extends RouteRecordCommon {
+  redirect: RouteLocation | DynamicRedirect
+}
+
 interface RouteRecordSingleView extends RouteRecordCommon {
   component: RouteComponent | Lazy<RouteComponent>
 }
@@ -106,7 +113,10 @@ interface RouteRecordMultipleViews extends RouteRecordCommon {
   components: Record<string, RouteComponent | Lazy<RouteComponent>>
 }
 
-export type RouteRecord = RouteRecordSingleView | RouteRecordMultipleViews
+export type RouteRecord =
+  | RouteRecordSingleView
+  | RouteRecordMultipleViews
+  | RouteRecordRedirect
 
 export const START_RECORD: RouteRecord = {
   path: '/',
@@ -142,7 +152,7 @@ export interface MatcherLocationNormalized {
   path: string
   // record?
   params: RouteLocationNormalized['params']
-  matched: RouteRecord[]
+  matched: MatchedRouteRecord[]
 }
 
 export interface NavigationGuardCallback {
