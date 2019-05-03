@@ -11,6 +11,7 @@ import {
   TODO,
   PostNavigationGuard,
   Lazy,
+  MatcherLocation,
 } from './types/index'
 
 import { guardToPromiseFn, extractComponentsGuards } from './utils'
@@ -36,7 +37,7 @@ export class Router {
 
     this.history.listen((to, from, info) => {
       // TODO: check navigation guards
-      const matchedRoute = this.matcher.resolve(to, this.currentRoute)
+      const matchedRoute = this.matchLocation(to, this.currentRoute)
       // console.log({ to, matchedRoute })
       // TODO: navigate
 
@@ -45,6 +46,43 @@ export class Router {
         ...matchedRoute,
       }
     })
+  }
+
+  private matchLocation(
+    location: MatcherLocation,
+    currentLocation: MatcherLocationNormalized
+  ): MatcherLocationNormalized {
+    const matchedRoute = this.matcher.resolve(location, currentLocation)
+    if ('redirect' in matchedRoute) {
+      const { redirect, normalizedLocation } = matchedRoute
+      // TODO: add from to a redirect stack?
+      if (typeof redirect === 'string') {
+        // match the redirect instead
+        return this.matchLocation(
+          this.history.utils.normalizeLocation(redirect),
+          currentLocation
+        )
+      } else if (typeof redirect === 'function') {
+        const url = this.history.utils.normalizeLocation(normalizedLocation)
+        const newLocation = redirect({
+          ...normalizedLocation,
+          ...url,
+        })
+
+        if (typeof newLocation === 'string') {
+          return this.matchLocation(
+            this.history.utils.normalizeLocation(newLocation),
+            currentLocation
+          )
+        }
+
+        return this.matchLocation(newLocation, currentLocation)
+      } else {
+        return this.matchLocation(redirect, currentLocation)
+      }
+    } else {
+      return matchedRoute
+    }
   }
 
   /**
@@ -58,11 +96,11 @@ export class Router {
     if (typeof to === 'string' || 'path' in to) {
       url = this.history.utils.normalizeLocation(to)
       // TODO: should allow a non matching url to allow dynamic routing to work
-      location = this.matcher.resolve(url, this.currentRoute)
+      location = this.matchLocation(url, this.currentRoute)
     } else {
       // named or relative route
       // we need to resolve first
-      location = this.matcher.resolve(to, this.currentRoute)
+      location = this.matchLocation(to, this.currentRoute)
       // intentionally drop current query and hash
       url = this.history.utils.normalizeLocation({
         query: to.query ? this.history.utils.normalizeQuery(to.query) : {},

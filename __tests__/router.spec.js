@@ -10,9 +10,11 @@ function mockHistory() {
   return new HTML5History()
 }
 
+/** @type {import('../src/types').RouteRecord[]} */
 const routes = [
   { path: '/', component: components.Home },
   { path: '/foo', component: components.Foo },
+  { path: '/to-foo', redirect: '/foo' },
 ]
 
 describe('Router', () => {
@@ -59,4 +61,6 @@ describe('Router', () => {
       hash: '',
     })
   })
+
+  // it('redirects with route record redirect')
 })

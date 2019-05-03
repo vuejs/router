@@ -4,10 +4,10 @@ import {
   RouteParams,
   MatcherLocation,
   MatcherLocationNormalized,
+  MatcherLocationRedirect,
 } from './types/index'
 import { NoRouteMatchError } from './errors'
 
-// TODO: rename
 interface RouteMatcher {
   re: RegExp
   resolve: (params?: RouteParams) => string
@@ -46,8 +46,7 @@ export class RouterMatcher {
   resolve(
     location: Readonly<MatcherLocation>,
     currentLocation: Readonly<MatcherLocationNormalized>
-    // TODO: return type is wrong, should contain fullPath and record/matched
-  ): MatcherLocationNormalized {
+  ): MatcherLocationNormalized | MatcherLocationRedirect {
     let matcher: RouteMatcher | void
     // TODO: refactor with type guards
 
@@ -56,11 +55,6 @@ export class RouterMatcher {
       matcher = this.matchers.find(m => m.re.test(location.path))
 
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
-      // TODO: build up the array with children based on current location
-
-      if ('redirect' in matcher.record) throw new Error('TODO')
-
-      const matched = [matcher.record]
 
       const params: RouteParams = {}
       const result = matcher.re.exec(location.path)
@@ -80,6 +74,28 @@ export class RouterMatcher {
         }
         params[key] = value
       }
+
+      if ('redirect' in matcher.record) {
+        const { redirect } = matcher.record
+        return {
+          redirect,
+          normalizedLocation: {
+            name: matcher.record.name,
+            path: location.path,
+            matched: [],
+            params,
+          },
+        }
+        // if redirect is a function we do not have enough information, so we throw
+        // TODO: not use a throw
+        // throw new RedirectInRecord(typeof redirect === 'function' ? {
+        //   redirect,
+        //   route: { name: matcher.record.name, path: location.path, params, matched: [] }
+        // } : redirect)
+      }
+
+      // TODO: build up the array with children based on current location
+      const matched = [matcher.record]
 
       return {
         name: matcher.record.name,

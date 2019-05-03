@@ -100,9 +100,11 @@ interface RouteRecordCommon {
   beforeEnter?: NavigationGuard
 }
 
-type DynamicRedirect = (to: RouteLocationNormalized) => RouteLocation
+export type RouteRecordRedirectOption =
+  | RouteLocation
+  | ((to: RouteLocationNormalized) => RouteLocation)
 interface RouteRecordRedirect extends RouteRecordCommon {
-  redirect: RouteLocation | DynamicRedirect
+  redirect: RouteRecordRedirectOption
 }
 
 interface RouteRecordSingleView extends RouteRecordCommon {
@@ -153,6 +155,15 @@ export interface MatcherLocationNormalized {
   // record?
   params: RouteLocationNormalized['params']
   matched: MatchedRouteRecord[]
+}
+
+// used when the route records requires a redirection
+// with a function call. The matcher isn't able to do it
+// by itself, so it dispatches the information so the router
+// can pick it up
+export interface MatcherLocationRedirect {
+  redirect: RouteRecordRedirectOption
+  normalizedLocation: MatcherLocationNormalized
 }
 
 export interface NavigationGuardCallback {

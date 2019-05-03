@@ -6,14 +6,19 @@ const { START_LOCATION_NORMALIZED } = require('../src/types')
 
 const component = null
 
+/** @typedef {import('../src/types').RouteRecord} RouteRecord */
+/** @typedef {import('../src/types').MatcherLocation} MatcherLocation */
+/** @typedef {import('../src/types').MatcherLocationRedirect} MatcherLocationRedirect */
+/** @typedef {import('../src/types').MatcherLocationNormalized} MatcherLocationNormalized */
+
 describe('Router Matcher', () => {
   describe('resolve', () => {
     /**
      *
-     * @param {import('../src/types').RouteRecord} record
-     * @param {import('../src/types').MatcherLocation} location
-     * @param {Partial<import('../src/types').MatcherLocationNormalized>} resolved
-     * @param {import('../src/types').MatcherLocationNormalized} start
+     * @param {RouteRecord | RouteRecord[]} record Record or records we are testing the matcher against
+     * @param {MatcherLocation} location location we want to reolve against
+     * @param {Partial<MatcherLocationNormalized>} resolved Expected resolved location given by the matcher
+     * @param {MatcherLocationNormalized} [start] Optional currentLocation used when resolving
      */
     function assertRecordMatch(
       record,
@@ -21,7 +26,8 @@ describe('Router Matcher', () => {
       resolved,
       start = START_LOCATION_NORMALIZED
     ) {
-      const matcher = new RouterMatcher([record])
+      record = Array.isArray(record) ? record : [record]
+      const matcher = new RouterMatcher(record)
       const targetLocation = {}
 
       // add location if provided as it should be the same value
@@ -29,8 +35,12 @@ describe('Router Matcher', () => {
         resolved.path = location.path
       }
 
-      // use one single record
-      if (!('matched' in resolved)) resolved.matched = [record]
+      if ('redirect' in record) {
+      } else {
+        // use one single record
+        // @ts-ignore
+        if (!('matched' in resolved)) resolved.matched = record
+      }
 
       // allows not passing params
       if ('params' in location) {
@@ -52,9 +62,9 @@ describe('Router Matcher', () => {
 
     /**
      *
-     * @param {import('../src/types').RouteRecord} record
-     * @param {import('../src/types').MatcherLocation} location
-     * @param {import('../src/types').MatcherLocationNormalized} start
+     * @param {RouteRecord | RouteRecord[]} record Record or records we are testing the matcher against
+     * @param {MatcherLocation} location location we want to reolve against
+     * @param {MatcherLocationNormalized} [start] Optional currentLocation used when resolving
      * @returns {any} error
      */
     function assertErrorMatch(
@@ -232,9 +242,164 @@ describe('Router Matcher', () => {
         )
       })
 
+      describe('redirects', () => {
+        /**
+         *
+         * @param {RouteRecord[]} records Record or records we are testing the matcher against
+         * @param {MatcherLocation} location location we want to reolve against
+         * @param {MatcherLocationNormalized | MatcherLocationRedirect} expected Expected resolved location given by the matcher
+         * @param {MatcherLocationNormalized} [currentLocation] Optional currentLocation used when resolving
+         */
+        function assertRedirect(
+          records,
+          location,
+          expected,
+          currentLocation = START_LOCATION_NORMALIZED
+        ) {
+          const matcher = new RouterMatcher(records)
+          const resolved = matcher.resolve(location, currentLocation)
+          expect(resolved).toEqual(expected)
+          return resolved
+        }
+
+        // FIXME: refactor the tests into the function, probably use a common set of routes
+        // tests named routes and relatives routes
+        // move to different folder
+
+        it('resolves a redirect string', () => {
+          const records = [
+            { path: '/home', component },
+            { path: '/redirect', redirect: '/home' },
+          ]
+          assertRedirect(
+            records,
+            {
+              name: undefined,
+              path: '/redirect',
+            },
+            {
+              redirect: '/home',
+              normalizedLocation: {
+                path: '/redirect',
+                params: {},
+                name: undefined,
+                matched: [],
+              },
+            }
+          )
+        })
+
+        it('resolves a redirect function that returns a string', () => {
+          const redirect = () => '/home'
+          const records = [
+            { path: '/home', component },
+            { path: '/redirect', redirect },
+          ]
+          assertRedirect(
+            records,
+            {
+              name: undefined,
+              path: '/redirect',
+            },
+            {
+              redirect,
+              normalizedLocation: {
+                path: '/redirect',
+                params: {},
+                name: undefined,
+                matched: [],
+              },
+            }
+          )
+        })
+
+        it('resolves a redirect function that returns an object route', () => {
+          const redirect = () => {
+            path: '/home'
+          }
+          const records = [
+            { path: '/home', component },
+            { path: '/redirect', redirect },
+          ]
+          assertRedirect(
+            records,
+            {
+              name: undefined,
+              path: '/redirect',
+            },
+            {
+              redirect,
+              normalizedLocation: {
+                path: '/redirect',
+                params: {},
+                name: undefined,
+                matched: [],
+              },
+            }
+          )
+        })
+
+        it('resolves a redirect as an object', () => {
+          const records = [
+            { path: '/home', component },
+            { path: '/redirect', redirect: { path: 'home' } },
+          ]
+          assertRedirect(
+            records,
+            {
+              name: undefined,
+              path: '/redirect',
+            },
+            {
+              redirect: { path: 'home' },
+              normalizedLocation: {
+                path: '/redirect',
+                params: {},
+                name: undefined,
+                matched: [],
+              },
+            }
+          )
+        })
+
+        it('normalize a location when redirecting', () => {
+          const redirect = to => ({ name: 'b', params: to.params })
+          const records = [
+            { path: '/home', component },
+            {
+              path: '/a/:a',
+              name: 'a',
+              redirect,
+            },
+            { path: '/b/:a', name: 'b', component },
+          ]
+          assertRedirect(
+            records,
+            {
+              name: undefined,
+              path: '/a/foo',
+            },
+            {
+              redirect,
+              normalizedLocation: {
+                path: '/a/foo',
+                params: { a: 'foo' },
+                name: 'a',
+                matched: [],
+              },
+            }
+          )
+        })
+      })
+
       it('throws if the current named route does not exists', () => {
         const record = { path: '/', component }
-        const start = { name: 'home', params: {}, path: '/', matched: [record] }
+        const start = {
+          name: 'home',
+          params: {},
+          path: '/',
+          matched: [record],
+        }
         // the property should be non enumerable
         Object.defineProperty(start, 'matched', { enumerable: false })
         expect(assertErrorMatch(record, {}, start)).toMatchInlineSnapshot(
