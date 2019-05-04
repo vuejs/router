@@ -4,6 +4,7 @@ import { NavigationCallback, HistoryState, NavigationType } from './base'
 
 const cs = consola.withTag('html5')
 
+// @ts-ignore
 if (process.env.NODE_ENV === 'test') cs.mockTypes(() => jest.fn())
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any

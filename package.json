@@ -8,7 +8,6 @@
     "test:unit": "jest --coverage",
     "test:mocha": "NODE_ENV=test mocha -r ts-node/register __tests__/**/*.spec.js __tests__/*.spec.js",
     "test:mocha:dev": "yarn run test:mocha -w --extension ts --reporter min",
-    "test:mocha:cov": "nyc -r lcov -e .ts -x \"*.spec.ts\" mocha -r ts-node/register __tests__/**/*.spec.ts && nyc report",
     "test": "yarn run test:unit",
     "dev": "webpack-dev-server --mode=development"
   },
@@ -21,9 +20,8 @@
     "faked-promise": "^2.1.0",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^24.7.1",
-    "jsdom": "^14.0.0",
+    "jsdom": "^15.0.0",
     "mocha": "^6.1.3",
-    "nyc": "^13.3.0",
     "prettier": "^1.17.0",
     "ts-jest": "^24.0.2",
     "ts-loader": "^5.3.3",
