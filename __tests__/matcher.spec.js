@@ -358,6 +358,48 @@ describe('Router Matcher', () => {
           )
         })
 
+        it('works with a named location', () => {
+          const records = [
+            { path: '/home', component },
+            { path: '/redirect', name: 'redirect', redirect: { path: 'home' } },
+          ]
+          assertRedirect(
+            records,
+            {
+              name: 'redirect',
+            },
+            {
+              redirect: { path: 'home' },
+              normalizedLocation: {
+                path: '/redirect',
+                params: {},
+                name: 'redirect',
+                matched: [],
+              },
+            }
+          )
+        })
+
+        it('throws if relative location when redirecting', () => {
+          const records = [
+            { path: '/home', component },
+            { path: '/redirect', redirect: '/home' },
+          ]
+          expect(
+            assertErrorMatch(
+              { path: '/redirect', redirect: '/home' },
+              { params: {} },
+              { path: '/redirect', params: {}, matched: [], name: undefined }
+            )
+          ).toMatchInlineSnapshot(`
+            [Error: Cannot redirect using a relative location:
+            {
+              "params": {}
+            }
+            Use the function redirect and explicitely provide a name]
+          `)
+        })
+
         it('normalize a location when redirecting', () => {
           const redirect = to => ({ name: 'b', params: to.params })
           const records = [

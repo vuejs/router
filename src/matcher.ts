@@ -6,7 +6,7 @@ import {
   MatcherLocationNormalized,
   MatcherLocationRedirect,
 } from './types/index'
-import { NoRouteMatchError } from './errors'
+import { NoRouteMatchError, InvalidRouteMatch } from './errors'
 
 interface RouteMatcher {
   re: RegExp
@@ -86,12 +86,6 @@ export class RouterMatcher {
             params,
           },
         }
-        // if redirect is a function we do not have enough information, so we throw
-        // TODO: not use a throw
-        // throw new RedirectInRecord(typeof redirect === 'function' ? {
-        //   redirect,
-        //   route: { name: matcher.record.name, path: location.path, params, matched: [] }
-        // } : redirect)
       }
 
       // TODO: build up the array with children based on current location
@@ -111,7 +105,19 @@ export class RouterMatcher {
       matcher = this.matchers.find(m => m.record.name === location.name)
 
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
-      if ('redirect' in matcher.record) throw new Error('TODO')
+
+      if ('redirect' in matcher.record) {
+        const { redirect } = matcher.record
+        return {
+          redirect,
+          normalizedLocation: {
+            name: matcher.record.name,
+            path: matcher.resolve(location.params),
+            matched: [],
+            params: location.params || {}, // TODO: normalize params
+          },
+        }
+      }
 
       // TODO: build up the array with children based on current location
       const matched = [matcher.record]
@@ -136,7 +142,10 @@ export class RouterMatcher {
     }
 
     if (!matcher) throw new NoRouteMatchError(currentLocation, location)
-    if ('redirect' in matcher.record) throw new Error('TODO')
+
+    // this should never happen because it will mean that the user ended up in a route
+    // that redirects but ended up not redirecting
+    if ('redirect' in matcher.record) throw new InvalidRouteMatch(location)
 
     // TODO: build up the array with children based on current location
     const matched = [matcher.record]

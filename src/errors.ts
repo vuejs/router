@@ -8,6 +8,21 @@ export class NoRouteMatchError extends Error {
 }
 
 /**
+ * Error used when the matcher fails to resolve a location
+ */
+export class InvalidRouteMatch extends Error {
+  constructor(location: any) {
+    // TODO: improve the error to include currentLocation and use it for more cases
+    super(
+      `Cannot redirect using a relative location:\n${stringifyRoute(
+        location
+      )}\nUse the function redirect and explicitely provide a name`
+    )
+    Object.setPrototypeOf(this, new.target.prototype)
+  }
+}
+
+/**
  * Error used when rejecting a navigation because of a redirection. Contains
  * information about where we where trying to go and where we are going instead
  */
@@ -30,5 +45,5 @@ export class RedirectError extends Error {
 function stringifyRoute(to: RouteLocation): string {
   if (typeof to === 'string') return to
   if ('path' in to) return to.path
-  return 'TODO'
+  return JSON.stringify(to, null, 2)
 }
