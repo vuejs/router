@@ -24,6 +24,14 @@ const named = {
   default: jest.fn(),
   other: jest.fn(),
 }
+const nested = {
+  parent: jest.fn(),
+  nestedEmpty: jest.fn(),
+  nestedA: jest.fn(),
+  nestedAbs: jest.fn(),
+  nestedNested: jest.fn(),
+  nestedNestedFoo: jest.fn(),
+}
 /** @type {import('../../src/types').RouteRecord[]} */
 const routes = [
   { path: '/', component: Home },
@@ -48,12 +56,56 @@ const routes = [
       },
     },
   },
+  {
+    path: '/nested',
+    component: Home,
+    beforeEnter: nested.parent,
+    children: [
+      {
+        path: '',
+        name: 'nested-empty-path',
+        component: Home,
+        beforeEnter: nested.nestedEmpty,
+      },
+      {
+        path: 'a',
+        name: 'nested-path',
+        component: Home,
+        beforeEnter: nested.nestedA,
+      },
+      {
+        path: '/abs-nested',
+        name: 'absolute-nested',
+        component: Home,
+        beforeEnter: nested.nestedAbs,
+      },
+      {
+        path: 'nested',
+        name: 'nested-nested',
+        component: Home,
+        beforeEnter: nested.nestedNested,
+        children: [
+          {
+            path: 'foo',
+            name: 'nested-nested-foo',
+            component: Home,
+            beforeEnter: nested.nestedNestedFoo,
+          },
+        ],
+      },
+    ],
+  },
 ]
 
 beforeEach(() => {
   beforeRouteEnter.mockReset()
-  named.default.mockReset()
-  named.other.mockReset()
+  for (const key in named) {
+    named[key].mockReset()
+  }
+  for (const key in nested) {
+    nested[key].mockReset()
+    nested[key].mockImplementation(noGuard)
+  }
 })
 
 describe('beforeRouteEnter', () => {
@@ -71,6 +123,24 @@ describe('beforeRouteEnter', () => {
         })
         await router[navigationMethod]('/guard/valid')
         expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
+      })
+
+      it('calls beforeRouteEnter guards on navigation for nested views', async () => {
+        const router = createRouter({ routes })
+        await router[navigationMethod]('/nested/nested/foo')
+        expect(nested.parent).toHaveBeenCalledTimes(1)
+        expect(nested.nestedNested).toHaveBeenCalledTimes(1)
+        expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
+        expect(nested.nestedAbs).not.toHaveBeenCalled()
+        expect(nested.nestedA).not.toHaveBeenCalled()
+      })
+
+      it('calls beforeRouteEnter guards on navigation for nested views', async () => {
+        const router = createRouter({ routes })
+        await router[navigationMethod]('/nested/nested/foo')
+        expect(nested.parent).toHaveBeenCalledTimes(1)
+        expect(nested.nestedNested).toHaveBeenCalledTimes(1)
+        expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
       })
 
       it('calls beforeRouteEnter guards on navigation for named views', async () => {
