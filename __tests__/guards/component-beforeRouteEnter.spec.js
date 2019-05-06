@@ -31,6 +31,7 @@ const nested = {
   nestedAbs: jest.fn(),
   nestedNested: jest.fn(),
   nestedNestedFoo: jest.fn(),
+  nestedNestedParam: jest.fn(),
 }
 /** @type {import('../../src/types').RouteRecord[]} */
 const routes = [
@@ -58,38 +59,40 @@ const routes = [
   },
   {
     path: '/nested',
-    component: Home,
-    beforeEnter: nested.parent,
+    component: {
+      ...Home,
+      beforeRouteEnter: nested.parent,
+    },
     children: [
       {
         path: '',
         name: 'nested-empty-path',
-        component: Home,
-        beforeEnter: nested.nestedEmpty,
+        component: { ...Home, beforeRouteEnter: nested.nestedEmpty },
       },
       {
         path: 'a',
         name: 'nested-path',
-        component: Home,
-        beforeEnter: nested.nestedA,
+        component: { ...Home, beforeRouteEnter: nested.nestedA },
       },
       {
         path: '/abs-nested',
         name: 'absolute-nested',
-        component: Home,
-        beforeEnter: nested.nestedAbs,
+        component: { ...Home, beforeRouteEnter: nested.nestedAbs },
       },
       {
         path: 'nested',
         name: 'nested-nested',
-        component: Home,
-        beforeEnter: nested.nestedNested,
+        component: { ...Home, beforeRouteEnter: nested.nestedNested },
         children: [
           {
             path: 'foo',
             name: 'nested-nested-foo',
-            component: Home,
-            beforeEnter: nested.nestedNestedFoo,
+            component: { ...Home, beforeRouteEnter: nested.nestedNestedFoo },
+          },
+          {
+            path: 'param/:p',
+            name: 'nested-nested-param',
+            component: { ...Home, beforeRouteEnter: nested.nestedNestedParam },
           },
         ],
       },
@@ -97,7 +100,7 @@ const routes = [
   },
 ]
 
-beforeEach(() => {
+function resetMocks() {
   beforeRouteEnter.mockReset()
   for (const key in named) {
     named[key].mockReset()
@@ -106,6 +109,10 @@ beforeEach(() => {
     nested[key].mockReset()
     nested[key].mockImplementation(noGuard)
   }
+}
+
+beforeEach(() => {
+  resetMocks()
 })
 
 describe('beforeRouteEnter', () => {
@@ -141,6 +148,26 @@ describe('beforeRouteEnter', () => {
         expect(nested.parent).toHaveBeenCalledTimes(1)
         expect(nested.nestedNested).toHaveBeenCalledTimes(1)
         expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
+      })
+
+      it('calls beforeRouteEnter guards on non-entered nested routes', async () => {
+        const router = createRouter({ routes })
+        await router.push('/nested/nested')
+        resetMocks()
+        await router[navigationMethod]('/nested/nested/foo')
+        expect(nested.parent).not.toHaveBeenCalled()
+        expect(nested.nestedNested).not.toHaveBeenCalled()
+        expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
+      })
+
+      it('does not call beforeRouteEnter guards on param change', async () => {
+        const router = createRouter({ routes })
+        await router.push('/nested/nested/param/1')
+        resetMocks()
+        await router[navigationMethod]('/nested/nested/param/2')
+        expect(nested.parent).not.toHaveBeenCalled()
+        expect(nested.nestedNested).not.toHaveBeenCalled()
+        expect(nested.nestedNestedParam).not.toHaveBeenCalled()
       })
 
       it('calls beforeRouteEnter guards on navigation for named views', async () => {
