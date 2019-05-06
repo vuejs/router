@@ -83,7 +83,17 @@ describe('router.beforeEach', () => {
         spy.mockImplementation(noGuard)
         await router[navigationMethod]('/nested/home')
         expect(spy).toHaveBeenCalledTimes(1)
+        expect(spy).toHaveBeenLastCalledWith(
+          expect.objectContaining({ name: 'nested-home' }),
+          expect.objectContaining({ name: 'nested-default' }),
+          expect.any(Function)
+        )
         await router[navigationMethod]('/nested')
+        expect(spy).toHaveBeenLastCalledWith(
+          expect.objectContaining({ name: 'nested-default' }),
+          expect.objectContaining({ name: 'nested-home' }),
+          expect.any(Function)
+        )
         expect(spy).toHaveBeenCalledTimes(2)
       })
 
