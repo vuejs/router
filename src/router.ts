@@ -169,7 +169,7 @@ export class Router {
 
     // TODO: is it okay to resolve all matched component or should we do it in order
     guards = await extractComponentsGuards(
-      from.matched.filter(record => to.matched.indexOf(record) < 0),
+      from.matched.filter(record => to.matched.indexOf(record) < 0).reverse(),
       'beforeRouteLeave',
       to,
       from

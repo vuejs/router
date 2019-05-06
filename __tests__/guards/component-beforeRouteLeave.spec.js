@@ -150,7 +150,7 @@ describe('beforeRouteLeave', () => {
         )
       })
 
-      it.skip('calls beforeRouteLeave guard on navigation between children in order', async () => {
+      it('calls beforeRouteLeave guard on navigation between children in order', async () => {
         const router = createRouter({ routes })
         await router.push({ name: 'nested-nested-foo' })
         resetMocks()
