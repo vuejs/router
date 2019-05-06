@@ -504,6 +504,64 @@ describe('Router Matcher', () => {
           }
         )
       })
+
+      it('resolves nested children with named location', () => {
+        const Foo = {
+          path: '/foo',
+          name: 'Foo',
+          component,
+          children: [Nested],
+        }
+        assertRecordMatch(
+          Foo,
+          { name: 'nested-child-a' },
+          {
+            name: 'nested-child-a',
+            path: '/foo/nested/a',
+            params: {},
+            matched: [
+              Foo,
+              { ...Nested, path: `${Foo.path}/${Nested.path}` },
+              {
+                ...NestedChildA,
+                path: `${Foo.path}/${Nested.path}/${NestedChildA.path}`,
+              },
+            ],
+          }
+        )
+      })
+
+      it('resolves nested children with relative location', () => {
+        const Foo = {
+          path: '/foo',
+          name: 'Foo',
+          component,
+          children: [Nested],
+        }
+        assertRecordMatch(
+          Foo,
+          {},
+          {
+            name: 'nested-child-a',
+            path: '/foo/nested/a',
+            params: {},
+            matched: [
+              Foo,
+              { ...Nested, path: `${Foo.path}/${Nested.path}` },
+              {
+                ...NestedChildA,
+                path: `${Foo.path}/${Nested.path}/${NestedChildA.path}`,
+              },
+            ],
+          },
+          {
+            name: 'nested-child-a',
+            matched: [],
+            params: {},
+            path: '/foo/nested/a',
+          }
+        )
+      })
     })
   })
 })

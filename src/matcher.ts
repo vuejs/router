@@ -70,7 +70,7 @@ export class RouterMatcher {
       record: recordCopy,
       re,
       keys: keys.map(k => '' + k.name),
-      resolve: pathToRegexp.compile(record.path),
+      resolve: pathToRegexp.compile(recordCopy.path),
     }
 
     // TODO: if children use option end: false ?
@@ -98,16 +98,24 @@ export class RouterMatcher {
     currentLocation: Readonly<MatcherLocationNormalized>
   ): MatcherLocationNormalized | MatcherLocationRedirect {
     let matcher: RouteMatcher | void
+    let params: RouteParams = {}
+    let path: MatcherLocationNormalized['path']
+    let name: MatcherLocationNormalized['name']
+
     // TODO: refactor with type guards
 
     if ('path' in location) {
       // we don't even need currentLocation here
       matcher = this.matchers.find(m => m.re.test(location.path))
+      // no need to resolve the path with the matcher as it was provided
+      path = location.path
 
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
 
-      const params: RouteParams = {}
-      const result = matcher.re.exec(location.path)
+      name = matcher.record.name
+
+      const result = matcher.re.exec(path)
+
       if (!result) {
         throw new Error(`Error parsing path "${location.path}"`)
       }
@@ -130,8 +138,8 @@ export class RouterMatcher {
         return {
           redirect,
           normalizedLocation: {
-            name: matcher.record.name,
-            path: location.path,
+            name,
+            path,
             matched: [],
             params,
           },
@@ -139,82 +147,106 @@ export class RouterMatcher {
       }
 
       // put the parents of the matched record first
-      const matched: MatcherLocationNormalized['matched'] = [matcher.record]
-      let parentMatcher: RouteMatcher | void = matcher.parent
-      while (parentMatcher) {
-        // reversed order so parents are at the beginning
-        // TODO: should be doable by typing RouteMatcher in a different way
-        if ('redirect' in parentMatcher.record) throw new Error('TODO')
-        matched.unshift(parentMatcher.record)
-        parentMatcher = parentMatcher.parent
-      }
+      const matched = extractMatchedRecord(matcher)
 
       return {
-        name: matcher.record.name,
-        /// no need to resolve the path with the matcher as it was provided
-        path: location.path,
+        name,
+        path,
         params,
         matched,
       }
     }
 
     // named route
-    if ('name' in location) {
+    else if ('name' in location) {
       matcher = this.matchers.find(m => m.record.name === location.name)
 
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+      // TODO: check missing params
+      params = location.params || {} // TODO: normalize params
+
+      name = matcher.record.name
+      path = matcher.resolve(params)
 
       if ('redirect' in matcher.record) {
         const { redirect } = matcher.record
         return {
           redirect,
           normalizedLocation: {
-            name: matcher.record.name,
-            path: matcher.resolve(location.params),
+            name,
+            path,
             matched: [],
-            params: location.params || {}, // TODO: normalize params
+            params,
           },
         }
       }
 
-      // TODO: build up the array with children based on current location
-      const matched = [matcher.record]
-
-      // TODO: try catch for resolve -> missing params
+      const matched = extractMatchedRecord(matcher)
 
       return {
-        name: location.name,
-        path: matcher.resolve(location.params),
-        params: location.params || {}, // TODO: normalize params
+        name,
+        path,
+        params,
         matched,
       }
     }
 
     // location is a relative path
-    if (currentLocation.name) {
+    else if (currentLocation.name) {
       // we don't want to match an undefined name
+      params = location.params ? location.params : currentLocation.params
       matcher = this.matchers.find(m => m.record.name === currentLocation.name)
+      if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+      path = matcher.resolve(params)
+      name = matcher.record.name
     } else {
       // match by path
+      params = location.params ? location.params : currentLocation.params
       matcher = this.matchers.find(m => m.re.test(currentLocation.path))
+      if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+      path = matcher.resolve(params)
+      name = matcher.record.name
     }
 
+    // TODO: allow match without matching record (matched: [])
     if (!matcher) throw new NoRouteMatchError(currentLocation, location)
 
     // this should never happen because it will mean that the user ended up in a route
     // that redirects but ended up not redirecting
     if ('redirect' in matcher.record) throw new InvalidRouteMatch(location)
 
-    // TODO: build up the array with children based on current location
-    const matched = [matcher.record]
-
-    let params = location.params ? location.params : currentLocation.params
+    const matched = extractMatchedRecord(matcher)
 
     return {
-      name: currentLocation.name,
-      path: matcher.resolve(params),
+      name,
+      path,
       params,
       matched,
     }
   }
+}
+
+/**
+ * Generate the array of the matched array. This is an array containing
+ * all records matching a route, from parent to child. If there are no children
+ * in the matched record matcher, the array only contains one element
+ * @param matcher
+ * @returns an array of MatcherLocationNormalized
+ */
+function extractMatchedRecord(
+  matcher: RouteMatcher
+): MatcherLocationNormalized['matched'] {
+  if ('redirect' in matcher.record) throw new Error('TODO')
+
+  const matched: MatcherLocationNormalized['matched'] = [matcher.record]
+  let parentMatcher: RouteMatcher | void = matcher.parent
+  while (parentMatcher) {
+    // reversed order so parents are at the beginning
+    // TODO: should be doable by typing RouteMatcher in a different way
+    if ('redirect' in parentMatcher.record) throw new Error('TODO')
+    matched.unshift(parentMatcher.record)
+    parentMatcher = parentMatcher.parent
+  }
+
+  return matched
 }
