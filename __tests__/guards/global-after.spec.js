@@ -17,11 +17,20 @@ function createRouter(options) {
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
+const Nested = { template: `<div>Nested<router-view/></div>` }
 
 /** @type {import('../../src/types').RouteRecord[]} */
 const routes = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },
+  {
+    path: '/nested',
+    component: Nested,
+    children: [
+      { path: '', name: 'nested-default', component: Foo },
+      { path: 'home', name: 'nested-home', component: Home },
+    ],
+  },
 ]
 
 describe('router.afterEach', () => {
@@ -50,6 +59,25 @@ describe('router.afterEach', () => {
         remove()
         await router[navigationMethod]('/foo')
         expect(spy).not.toHaveBeenCalled()
+      })
+
+      it('calls afterEach guards on push', async () => {
+        const spy = jest.fn()
+        const router = createRouter({ routes })
+        await router.push('/nested')
+        router.afterEach(spy)
+        await router[navigationMethod]('/nested/home')
+        expect(spy).toHaveBeenCalledTimes(1)
+        expect(spy).toHaveBeenLastCalledWith(
+          expect.objectContaining({ name: 'nested-home' }),
+          expect.objectContaining({ name: 'nested-default' })
+        )
+        await router[navigationMethod]('/nested')
+        expect(spy).toHaveBeenLastCalledWith(
+          expect.objectContaining({ name: 'nested-default' }),
+          expect.objectContaining({ name: 'nested-home' })
+        )
+        expect(spy).toHaveBeenCalledTimes(2)
       })
 
       it('does not call afterEach if navigation is cancelled', async () => {

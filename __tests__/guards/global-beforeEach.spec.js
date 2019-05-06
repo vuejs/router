@@ -20,8 +20,8 @@ function createRouter(options) {
 }
 
 const Home = { template: `<div>Home</div>` }
-const Nested = { template: `<div>Nested<router-view/></div>` }
 const Foo = { template: `<div>Foo</div>` }
+const Nested = { template: `<div>Nested<router-view/></div>` }
 
 /** @type {RouteRecord[]} */
 const routes = [
