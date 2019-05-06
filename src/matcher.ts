@@ -11,27 +11,77 @@ import { NoRouteMatchError, InvalidRouteMatch } from './errors'
 interface RouteMatcher {
   re: RegExp
   resolve: (params?: RouteParams) => string
-  record: RouteRecord
+  record: RouteRecord // TODO: NormalizedRouteRecord?
+  parent: RouteMatcher | void
   keys: string[]
 }
 
-function generateMatcher(record: RouteRecord): RouteMatcher {
-  const keys: pathToRegexp.Key[] = []
-  // TODO: if children use option end: false ?
-  const re = pathToRegexp(record.path, keys)
-  return {
-    re,
-    resolve: pathToRegexp.compile(record.path),
-    keys: keys.map(k => '' + k.name),
-    record,
-  }
-}
+// function generateMatcher(record: RouteRecord): RouteMatcher {
+//   const keys: pathToRegexp.Key[] = []
+
+//   const options: pathToRegexp.RegExpOptions = {}
+//   let children: RouteMatcher[] = []
+//   // TODO: if children use option end: false ?
+//   // TODO: why is the isArray check necessary for ts?
+//   if ('children' in record && Array.isArray(record.children)) {
+//     children = record.children.map(generateMatcher)
+//     options.end = false // match for partial url
+//   }
+
+//   const re = pathToRegexp(record.path, keys, options)
+
+//   return {
+//     re,
+//     resolve: pathToRegexp.compile(record.path),
+//     keys: keys.map(k => '' + k.name),
+//     record,
+//   }
+// }
 
 export class RouterMatcher {
   private matchers: RouteMatcher[] = []
 
   constructor(routes: RouteRecord[]) {
-    this.matchers = routes.map(generateMatcher)
+    for (const route of routes) {
+      this.addRouteRecord(route)
+    }
+  }
+
+  private addRouteRecord(
+    record: Readonly<RouteRecord>,
+    parent?: RouteMatcher
+  ): void {
+    const keys: pathToRegexp.Key[] = []
+    const options: pathToRegexp.RegExpOptions = {}
+
+    const recordCopy = { ...record }
+    if (parent) {
+      // if the child isn't an absolute route
+      if (record.path[0] !== '/') {
+        recordCopy.path = parent.record.path + '/' + record.path // TODO: check for trailing slash?
+      }
+    }
+
+    const re = pathToRegexp(recordCopy.path, keys, options)
+
+    // create the object before hand so it can be passed to children
+    const matcher: RouteMatcher = {
+      parent,
+      record: recordCopy,
+      re,
+      keys: keys.map(k => '' + k.name),
+      resolve: pathToRegexp.compile(record.path),
+    }
+
+    // TODO: if children use option end: false ?
+    // TODO: why is the isArray check necessary for ts?
+    if ('children' in record && Array.isArray(record.children)) {
+      for (const childRecord of record.children) {
+        this.addRouteRecord(childRecord, matcher)
+      }
+    }
+
+    this.matchers.push(matcher)
   }
 
   /**
@@ -88,8 +138,16 @@ export class RouterMatcher {
         }
       }
 
-      // TODO: build up the array with children based on current location
-      const matched = [matcher.record]
+      // put the parents of the matched record first
+      const matched: MatcherLocationNormalized['matched'] = [matcher.record]
+      let parentMatcher: RouteMatcher | void = matcher.parent
+      while (parentMatcher) {
+        // reversed order so parents are at the beginning
+        // TODO: should be doable by typing RouteMatcher in a different way
+        if ('redirect' in parentMatcher.record) throw new Error('TODO')
+        matched.unshift(parentMatcher.record)
+        parentMatcher = parentMatcher.parent
+      }
 
       return {
         name: matcher.record.name,

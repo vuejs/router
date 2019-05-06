@@ -109,6 +109,7 @@ export interface RouteRecordRedirect extends RouteRecordCommon {
 
 interface RouteRecordSingleView extends RouteRecordCommon {
   component: RouteComponent | Lazy<RouteComponent>
+  children?: RouteRecord[]
 }
 
 interface RouteRecordMultipleViews extends RouteRecordCommon {
