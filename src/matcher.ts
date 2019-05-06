@@ -106,15 +106,16 @@ export class RouterMatcher {
 
     if ('path' in location) {
       matcher = this.matchers.find(m => m.re.test(location.path))
-      // no need to resolve the path with the matcher as it was provided
-      path = location.path
 
       // TODO: should go away but stop matching
       // TODO: warning of unused params if provided
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
 
+      // no need to resolve the path with the matcher as it was provided
+      path = location.path
       name = matcher.record.name
 
+      // fill params
       const result = matcher.re.exec(path)
 
       if (!result) {
@@ -163,11 +164,11 @@ export class RouterMatcher {
       matcher = this.matchers.find(m => m.record.name === location.name)
 
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
-      // TODO: check missing params
-      params = location.params || {} // TODO: normalize params
 
       name = matcher.record.name
+      params = location.params || {} // TODO: normalize params
       path = matcher.resolve(params)
+      // TODO: check missing params
 
       if ('redirect' in matcher.record) {
         const { redirect } = matcher.record
@@ -195,18 +196,18 @@ export class RouterMatcher {
     // location is a relative path
     else if (currentLocation.name) {
       // we don't want to match an undefined name
-      params = location.params ? location.params : currentLocation.params
       matcher = this.matchers.find(m => m.record.name === currentLocation.name)
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
-      path = matcher.resolve(params)
       name = matcher.record.name
+      params = location.params || currentLocation.params
+      path = matcher.resolve(params)
     } else {
       // match by path
-      params = location.params ? location.params : currentLocation.params
       matcher = this.matchers.find(m => m.re.test(currentLocation.path))
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
-      path = matcher.resolve(params)
       name = matcher.record.name
+      params = location.params || currentLocation.params
+      path = matcher.resolve(params)
     }
 
     // TODO: allow match without matching record (matched: [])
