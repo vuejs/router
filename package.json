@@ -9,12 +9,12 @@
     "test:mocha": "NODE_ENV=test mocha -r ts-node/register __tests__/**/*.spec.js __tests__/*.spec.js",
     "test:mocha:dev": "yarn run test:mocha -w --extension ts --reporter min",
     "test": "yarn run test:unit",
+    "build:esm": "yarn tsc -d -t ESNEXT -m ESNext",
     "dev": "webpack-dev-server --mode=development"
   },
   "devDependencies": {
     "@types/jest": "^24.0.11",
     "@types/jsdom": "^12.2.3",
-    "@types/mocha": "^5.2.6",
     "consola": "^2.5.8",
     "expect": "^24.7.1",
     "faked-promise": "^2.1.0",
