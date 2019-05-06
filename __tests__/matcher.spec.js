@@ -490,6 +490,56 @@ describe('Router Matcher', () => {
         )
       })
 
+      it('resolves children with empty paths', () => {
+        const Nested = { path: '', name: 'nested', component }
+        const Foo = {
+          path: '/foo',
+          name: 'Foo',
+          component,
+          children: [Nested],
+        }
+        assertRecordMatch(
+          Foo,
+          { path: '/foo' },
+          {
+            name: 'nested',
+            path: '/foo',
+            params: {},
+            matched: [Foo, { ...Nested, path: `${Foo.path}` }],
+          }
+        )
+      })
+
+      it('resolves nested children with empty paths', () => {
+        const NestedNested = { path: '', name: 'nested', component }
+        const Nested = {
+          path: '',
+          name: 'nested-nested',
+          component,
+          children: [NestedNested],
+        }
+        const Foo = {
+          path: '/foo',
+          name: 'Foo',
+          component,
+          children: [Nested],
+        }
+        assertRecordMatch(
+          Foo,
+          { path: '/foo' },
+          {
+            name: 'nested',
+            path: '/foo',
+            params: {},
+            matched: [
+              Foo,
+              { ...Nested, path: `${Foo.path}` },
+              { ...NestedNested, path: `${Foo.path}` },
+            ],
+          }
+        )
+      })
+
       it('resolves nested children', () => {
         const Foo = {
           path: '/foo',

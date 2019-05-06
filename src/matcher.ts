@@ -36,7 +36,11 @@ export class RouterMatcher {
     if (parent) {
       // if the child isn't an absolute route
       if (record.path[0] !== '/') {
-        recordCopy.path = parent.record.path + '/' + record.path // TODO: check for trailing slash?
+        let path = parent.record.path
+        // only add the / delimiter if the child path isn't empty
+        if (recordCopy.path) path += '/'
+        path += record.path // TODO: check for trailing slash?
+        recordCopy.path = path
       }
     }
 
@@ -163,7 +167,15 @@ export class RouterMatcher {
     // that redirects but ended up not redirecting
     if ('redirect' in matcher.record) throw new InvalidRouteMatch(location)
 
-    const matched = extractMatchedRecord(matcher)
+    const matched: MatcherLocationNormalized['matched'] = [matcher.record]
+    let parentMatcher: RouteMatcher | void = matcher.parent
+    while (parentMatcher) {
+      // reversed order so parents are at the beginning
+      // TODO: should be doable by typing RouteMatcher in a different way
+      if ('redirect' in parentMatcher.record) throw new Error('TODO')
+      matched.unshift(parentMatcher.record)
+      parentMatcher = parentMatcher.parent
+    }
 
     return {
       name,
@@ -172,29 +184,4 @@ export class RouterMatcher {
       matched,
     }
   }
-}
-
-/**
- * Generate the array of the matched array. This is an array containing
- * all records matching a route, from parent to child. If there are no children
- * in the matched record matcher, the array only contains one element
- * @param matcher
- * @returns an array of MatcherLocationNormalized
- */
-function extractMatchedRecord(
-  matcher: RouteMatcher
-): MatcherLocationNormalized['matched'] {
-  if ('redirect' in matcher.record) throw new Error('TODO')
-
-  const matched: MatcherLocationNormalized['matched'] = [matcher.record]
-  let parentMatcher: RouteMatcher | void = matcher.parent
-  while (parentMatcher) {
-    // reversed order so parents are at the beginning
-    // TODO: should be doable by typing RouteMatcher in a different way
-    if ('redirect' in parentMatcher.record) throw new Error('TODO')
-    matched.unshift(parentMatcher.record)
-    parentMatcher = parentMatcher.parent
-  }
-
-  return matched
 }
