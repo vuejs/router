@@ -16,28 +16,6 @@ interface RouteMatcher {
   keys: string[]
 }
 
-// function generateMatcher(record: RouteRecord): RouteMatcher {
-//   const keys: pathToRegexp.Key[] = []
-
-//   const options: pathToRegexp.RegExpOptions = {}
-//   let children: RouteMatcher[] = []
-//   // TODO: if children use option end: false ?
-//   // TODO: why is the isArray check necessary for ts?
-//   if ('children' in record && Array.isArray(record.children)) {
-//     children = record.children.map(generateMatcher)
-//     options.end = false // match for partial url
-//   }
-
-//   const re = pathToRegexp(record.path, keys, options)
-
-//   return {
-//     re,
-//     resolve: pathToRegexp.compile(record.path),
-//     keys: keys.map(k => '' + k.name),
-//     record,
-//   }
-// }
-
 export class RouterMatcher {
   private matchers: RouteMatcher[] = []
 
@@ -102,12 +80,11 @@ export class RouterMatcher {
     let path: MatcherLocationNormalized['path']
     let name: MatcherLocationNormalized['name']
 
-    // TODO: refactor with type guards
-
     if ('path' in location) {
       matcher = this.matchers.find(m => m.re.test(location.path))
 
-      // TODO: should go away but stop matching
+      // TODO: if no matcher, return the location with an empty matched array
+      // to allow non existent matches
       // TODO: warning of unused params if provided
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
 
@@ -129,7 +106,7 @@ export class RouterMatcher {
           throw new Error(
             `Error parsing path "${
               location.path
-            }" when looking for key "${key}"`
+            }" when looking for param "${key}"`
           )
         }
         params[key] = value
@@ -147,10 +124,8 @@ export class RouterMatcher {
           },
         }
       }
-    }
-
-    // named route
-    else if ('name' in location) {
+      // named route
+    } else if ('name' in location) {
       matcher = this.matchers.find(m => m.record.name === location.name)
 
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
@@ -172,27 +147,17 @@ export class RouterMatcher {
           },
         }
       }
-    }
-
-    // location is a relative path
-    else if (currentLocation.name) {
-      // we don't want to match an undefined name
-      matcher = this.matchers.find(m => m.record.name === currentLocation.name)
-      if (!matcher) throw new NoRouteMatchError(currentLocation, location)
-      name = matcher.record.name
-      params = location.params || currentLocation.params
-      path = matcher.resolve(params)
+      // location is a relative path
     } else {
-      // match by path
-      matcher = this.matchers.find(m => m.re.test(currentLocation.path))
+      // match by name or path of current route
+      matcher = currentLocation.name
+        ? this.matchers.find(m => m.record.name === currentLocation.name)
+        : this.matchers.find(m => m.re.test(currentLocation.path))
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
       name = matcher.record.name
       params = location.params || currentLocation.params
       path = matcher.resolve(params)
     }
-
-    // TODO: allow match without matching record (matched: [])
-    if (!matcher) throw new NoRouteMatchError(currentLocation, location)
 
     // this should never happen because it will mean that the user ended up in a route
     // that redirects but ended up not redirecting
