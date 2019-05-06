@@ -6,8 +6,11 @@ const { Router } = require('../../src/router')
 const fakePromise = require('faked-promise')
 const { NAVIGATION_TYPES, createDom, tick, noGuard } = require('../utils')
 
+/** @typedef {import('../../src/types').RouteRecord} RouteRecord */
+/** @typedef {import('../../src/router').RouterOptions} RouterOptions */
+
 /**
- * @param {Partial<import('../../src/router').RouterOptions> & { routes: import('../../src/types').RouteRecord[]}} options
+ * @param {Partial<RouterOptions> & { routes: RouteRecord[]}} options
  */
 function createRouter(options) {
   return new Router({
@@ -17,14 +20,23 @@ function createRouter(options) {
 }
 
 const Home = { template: `<div>Home</div>` }
+const Nested = { template: `<div>Nested<router-view/></div>` }
 const Foo = { template: `<div>Foo</div>` }
 
-/** @type {import('../../src/types').RouteRecord[]} */
+/** @type {RouteRecord[]} */
 const routes = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },
   { path: '/other', component: Foo },
   { path: '/n/:i', name: 'n', component: Home },
+  {
+    path: '/nested',
+    component: Nested,
+    children: [
+      { path: '', name: 'nested-default', component: Foo },
+      { path: 'home', name: 'nested-home', component: Home },
+    ],
+  },
 ]
 
 describe('router.beforeEach', () => {
@@ -61,6 +73,18 @@ describe('router.beforeEach', () => {
         spy.mockImplementationOnce(noGuard)
         await router[navigationMethod]('/foo')
         expect(spy).not.toHaveBeenCalled()
+      })
+
+      it('calls beforeEach guards on navigation between children routes', async () => {
+        const spy = jest.fn()
+        const router = createRouter({ routes })
+        await router.push('/nested')
+        router.beforeEach(spy)
+        spy.mockImplementation(noGuard)
+        await router[navigationMethod]('/nested/home')
+        expect(spy).toHaveBeenCalledTimes(1)
+        await router[navigationMethod]('/nested')
+        expect(spy).toHaveBeenCalledTimes(2)
       })
 
       it('can redirect to a different location', async () => {
