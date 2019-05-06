@@ -179,8 +179,6 @@ export class Router {
     await this.runGuardQueue(guards)
 
     // check global guards beforeEach
-    // avoid if we are not changing route
-    // TODO: trigger on child navigation
     guards = []
     for (const guard of this.beforeGuards) {
       guards.push(guardToPromiseFn(guard, to, from))
@@ -201,12 +199,17 @@ export class Router {
     await this.runGuardQueue(guards)
 
     // check the route beforeEnter
-    // TODO: check children. Should we also check reused routes guards
     guards = []
     for (const record of to.matched) {
       // do not trigger beforeEnter on reused views
-      if (record.beforeEnter && from.matched.indexOf(record) < 0)
-        guards.push(guardToPromiseFn(record.beforeEnter, to, from))
+      if (record.beforeEnter && from.matched.indexOf(record) < 0) {
+        if (Array.isArray(record.beforeEnter)) {
+          for (const beforeEnter of record.beforeEnter)
+            guards.push(guardToPromiseFn(beforeEnter, to, from))
+        } else {
+          guards.push(guardToPromiseFn(record.beforeEnter, to, from))
+        }
+      }
     }
 
     // run the queue of per route beforeEnter guards

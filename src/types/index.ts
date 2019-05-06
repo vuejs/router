@@ -97,7 +97,7 @@ export type RouteComponent = {
 interface RouteRecordCommon {
   path: string // | RegExp
   name?: string
-  beforeEnter?: NavigationGuard
+  beforeEnter?: NavigationGuard | NavigationGuard[]
 }
 
 export type RouteRecordRedirectOption =
@@ -120,12 +120,6 @@ export type RouteRecord =
   | RouteRecordSingleView
   | RouteRecordMultipleViews
   | RouteRecordRedirect
-
-export const START_RECORD: RouteRecord = {
-  path: '/',
-  // @ts-ignore
-  component: { render: h => h() },
-}
 
 // TODO: this should probably be generate by ensureLocation
 export const START_LOCATION_NORMALIZED: RouteLocationNormalized = {
