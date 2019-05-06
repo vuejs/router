@@ -105,11 +105,12 @@ export class RouterMatcher {
     // TODO: refactor with type guards
 
     if ('path' in location) {
-      // we don't even need currentLocation here
       matcher = this.matchers.find(m => m.re.test(location.path))
       // no need to resolve the path with the matcher as it was provided
       path = location.path
 
+      // TODO: should go away but stop matching
+      // TODO: warning of unused params if provided
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
 
       name = matcher.record.name
