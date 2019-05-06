@@ -6,6 +6,8 @@ const { START_LOCATION_NORMALIZED } = require('../src/types')
 const { components } = require('./utils')
 
 /** @typedef {import('../src/types').RouteRecord} RouteRecord */
+/** @typedef {import('../src/types').MatchedRouteRecord} MatchedRouteRecord */
+/** @typedef {import('../src/types').RouteRecordRedirect} RouteRecordRedirect */
 
 const beforeRouteEnter = jest.fn()
 
@@ -31,8 +33,8 @@ const SingleGuardNamed = {
 
 /**
  *
- * @param {RouteRecord} record
- * @returns {RouteRecord}
+ * @param {MatchedRouteRecord} record
+ * @returns {MatchedRouteRecord}
  */
 function makeAsync(record) {
   if ('components' in record) {
@@ -64,7 +66,7 @@ beforeEach(() => {
 
 /**
  *
- * @param {import('../src/types').RouteRecord[]} components
+ * @param {MatchedRouteRecord[]} components
  */
 async function checkGuards(components, n) {
   beforeRouteEnter.mockClear()
