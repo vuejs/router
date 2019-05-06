@@ -147,16 +147,6 @@ export class RouterMatcher {
           },
         }
       }
-
-      // put the parents of the matched record first
-      const matched = extractMatchedRecord(matcher)
-
-      return {
-        name,
-        path,
-        params,
-        matched,
-      }
     }
 
     // named route
@@ -181,15 +171,6 @@ export class RouterMatcher {
             params,
           },
         }
-      }
-
-      const matched = extractMatchedRecord(matcher)
-
-      return {
-        name,
-        path,
-        params,
-        matched,
       }
     }
 
