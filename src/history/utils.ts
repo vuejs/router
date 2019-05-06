@@ -54,24 +54,22 @@ export function parseURL(location: string): HistoryLocationNormalized {
 export function parseQuery(search: string): HistoryQuery {
   // TODO: optimize by using a for loop
   const hasLeadingIM = search[0] === '?'
-  return (hasLeadingIM ? search.slice(1) : search).split('&').reduce(
-    (query: HistoryQuery, entry: string) => {
-      const [key, value] = entry.split('=')
-      if (key in query) {
-        // an extra variable for ts types
-        let currentValue = query[key]
-        if (!Array.isArray(currentValue)) {
-          currentValue = query[key] = [currentValue]
-        }
-        currentValue.push(value)
-      } else {
-        query[key] = value
+  const query: HistoryQuery = {}
+  const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
+  for (let i = 0; i < searchParams.length; ++i) {
+    const [key, value] = searchParams[i].split('=')
+    if (key in query) {
+      // an extra variable for ts types
+      let currentValue = query[key]
+      if (!Array.isArray(currentValue)) {
+        currentValue = query[key] = [currentValue]
       }
-
-      return query
-    },
-    {} as HistoryQuery
-  )
+      currentValue.push(value)
+    } else {
+      query[key] = value
+    }
+  }
+  return query
 }
 
 /**

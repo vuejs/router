@@ -39,7 +39,7 @@ export class RouterMatcher {
         let path = parent.record.path
         // only add the / delimiter if the child path isn't empty
         if (recordCopy.path) path += '/'
-        path += record.path // TODO: check for trailing slash?
+        path += record.path
         recordCopy.path = path
       }
     }
@@ -55,7 +55,6 @@ export class RouterMatcher {
       resolve: pathToRegexp.compile(recordCopy.path),
     }
 
-    // TODO: if children use option end: false ?
     // TODO: why is the isArray check necessary for ts?
     if ('children' in record && Array.isArray(record.children)) {
       for (const childRecord of record.children) {

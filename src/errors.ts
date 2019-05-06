@@ -26,7 +26,7 @@ export class InvalidRouteMatch extends Error {
  * Error used when rejecting a navigation because of a redirection. Contains
  * information about where we where trying to go and where we are going instead
  */
-export class RedirectError extends Error {
+export class NavigationGuardRedirect extends Error {
   from: RouteLocationNormalized
   to: RouteLocation
   constructor(from: RouteLocationNormalized, to: RouteLocation) {

@@ -15,7 +15,7 @@ import {
 } from './types/index'
 
 import { guardToPromiseFn, extractComponentsGuards } from './utils'
-import { RedirectError } from './errors'
+import { NavigationGuardRedirect } from './errors'
 
 export interface RouterOptions {
   history: BaseHistory
@@ -36,10 +36,9 @@ export class Router {
     this.matcher = new RouterMatcher(options.routes)
 
     this.history.listen((to, from, info) => {
-      // TODO: check navigation guards
       const matchedRoute = this.matchLocation(to, this.currentRoute)
       // console.log({ to, matchedRoute })
-      // TODO: navigate
+      // TODO: navigate & guards
 
       this.currentRoute = {
         ...to,
@@ -117,7 +116,7 @@ export class Router {
     try {
       await this.navigate(toLocation, this.currentRoute)
     } catch (error) {
-      if (error instanceof RedirectError) {
+      if (error instanceof NavigationGuardRedirect) {
         // TODO: setup redirect stack
         return this.push(error.to)
       } else {
@@ -163,8 +162,6 @@ export class Router {
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
   ): Promise<TODO> {
-    // TODO: Will probably need to be some kind of queue in the future that allows to remove
-    // elements and other stuff
     let guards: Lazy<any>[]
 
     // TODO: is it okay to resolve all matched component or should we do it in order
