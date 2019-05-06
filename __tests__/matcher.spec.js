@@ -604,6 +604,37 @@ describe('Router Matcher', () => {
           }
         )
       })
+
+      it('resolves nested children with params with named location', () => {
+        const Foo = {
+          path: '/foo',
+          name: 'Foo',
+          component,
+          children: [NestedWithParam],
+        }
+        assertRecordMatch(
+          Foo,
+          { name: 'nested-child-params', params: { p: 'a', n: 'b' } },
+          {
+            name: 'nested-child-params',
+            path: '/foo/nested/b/a',
+            params: { p: 'a', n: 'b' },
+            matched: [
+              Foo,
+              {
+                ...NestedWithParam,
+                path: `${Foo.path}/${NestedWithParam.path}`,
+              },
+              {
+                ...NestedChildWithParam,
+                path: `${Foo.path}/${NestedWithParam.path}/${
+                  NestedChildWithParam.path
+                }`,
+              },
+            ],
+          }
+        )
+      })
     })
   })
 })
