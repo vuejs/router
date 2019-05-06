@@ -6,8 +6,11 @@ const { Router } = require('../../src/router')
 const fakePromise = require('faked-promise')
 const { NAVIGATION_TYPES, createDom, noGuard } = require('../utils')
 
+/** @typedef {import('../../src/types').RouteRecord} RouteRecord */
+/** @typedef {import('../../src/router').RouterOptions} RouterOptions */
+
 /**
- * @param {Partial<import('../../src/router').RouterOptions> & { routes: import('../../src/types').RouteRecord[]}} options
+ * @param {Partial<RouterOptions> & { routes: RouteRecord[]}} options
  */
 function createRouter(options) {
   return new Router({
@@ -24,6 +27,7 @@ const named = {
   default: jest.fn(),
   other: jest.fn(),
 }
+
 const nested = {
   parent: jest.fn(),
   nestedEmpty: jest.fn(),
@@ -33,7 +37,8 @@ const nested = {
   nestedNestedFoo: jest.fn(),
   nestedNestedParam: jest.fn(),
 }
-/** @type {import('../../src/types').RouteRecord[]} */
+
+/** @type {RouteRecord[]} */
 const routes = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },
