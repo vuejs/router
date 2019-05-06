@@ -450,6 +450,11 @@ describe('Router Matcher', () => {
       const ChildA = { path: 'a', name: 'child-a', component }
       const ChildB = { path: 'b', name: 'child-b', component }
       const ChildC = { path: 'c', name: 'child-c', component }
+      const ChildWithParam = { path: ':p', name: 'child-params', component }
+      const NestedChildWithParam = {
+        ...ChildWithParam,
+        name: 'nested-child-params',
+      }
       const NestedChildA = { ...ChildA, name: 'nested-child-a' }
       const NestedChildB = { ...ChildB, name: 'nested-child-b' }
       const NestedChildC = { ...ChildC, name: 'nested-child-c' }
@@ -458,6 +463,12 @@ describe('Router Matcher', () => {
         name: 'nested',
         component,
         children: [NestedChildA, NestedChildB, NestedChildC],
+      }
+      const NestedWithParam = {
+        path: 'nested/:n',
+        name: 'nested',
+        component,
+        children: [NestedChildWithParam],
       }
 
       it('resolves children', () => {
@@ -559,6 +570,37 @@ describe('Router Matcher', () => {
             matched: [],
             params: {},
             path: '/foo/nested/a',
+          }
+        )
+      })
+
+      it('resolves nested children with params', () => {
+        const Foo = {
+          path: '/foo',
+          name: 'Foo',
+          component,
+          children: [NestedWithParam],
+        }
+        assertRecordMatch(
+          Foo,
+          { path: '/foo/nested/a/b' },
+          {
+            name: 'nested-child-params',
+            path: '/foo/nested/a/b',
+            params: { p: 'b', n: 'a' },
+            matched: [
+              Foo,
+              {
+                ...NestedWithParam,
+                path: `${Foo.path}/${NestedWithParam.path}`,
+              },
+              {
+                ...NestedChildWithParam,
+                path: `${Foo.path}/${NestedWithParam.path}/${
+                  NestedChildWithParam.path
+                }`,
+              },
+            ],
           }
         )
       })
