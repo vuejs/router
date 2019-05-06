@@ -43,6 +43,15 @@ describe('router.afterEach', () => {
         )
       })
 
+      it('can be removed', async () => {
+        const spy = jest.fn()
+        const router = createRouter({ routes })
+        const remove = router.afterEach(spy)
+        remove()
+        await router[navigationMethod]('/foo')
+        expect(spy).not.toHaveBeenCalled()
+      })
+
       it('does not call afterEach if navigation is cancelled', async () => {
         const spy = jest.fn()
         const router = createRouter({ routes })
