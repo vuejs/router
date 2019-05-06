@@ -168,9 +168,8 @@ export class Router {
     let guards: Lazy<any>[]
 
     // TODO: is it okay to resolve all matched component or should we do it in order
-    // TODO: use only components that we are leaving (children)
     guards = await extractComponentsGuards(
-      from.matched,
+      from.matched.filter(record => to.matched.indexOf(record) < 0),
       'beforeRouteLeave',
       to,
       from

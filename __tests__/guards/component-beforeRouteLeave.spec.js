@@ -22,6 +22,16 @@ function createRouter(options) {
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
+const nested = {
+  parent: jest.fn(),
+  nestedEmpty: jest.fn(),
+  nestedA: jest.fn(),
+  nestedB: jest.fn(),
+  nestedAbs: jest.fn(),
+  nestedNested: jest.fn(),
+  nestedNestedFoo: jest.fn(),
+  nestedNestedParam: jest.fn(),
+}
 const beforeRouteLeave = jest.fn()
 
 /** @type {RouteRecord[]} */
@@ -35,10 +45,64 @@ const routes = [
       beforeRouteLeave,
     },
   },
+  {
+    path: '/nested',
+    component: {
+      ...Home,
+      beforeRouteLeave: nested.parent,
+    },
+    children: [
+      {
+        path: '',
+        name: 'nested-empty-path',
+        component: { ...Home, beforeRouteLeave: nested.nestedEmpty },
+      },
+      {
+        path: 'a',
+        name: 'nested-path',
+        component: { ...Home, beforeRouteLeave: nested.nestedA },
+      },
+      {
+        path: 'b',
+        name: 'nested-path-b',
+        component: { ...Home, beforeRouteLeave: nested.nestedB },
+      },
+      {
+        path: '/abs-nested',
+        name: 'absolute-nested',
+        component: { ...Home, beforeRouteLeave: nested.nestedAbs },
+      },
+      {
+        path: 'nested',
+        name: 'nested-nested',
+        component: { ...Home, beforeRouteLeave: nested.nestedNested },
+        children: [
+          {
+            path: 'foo',
+            name: 'nested-nested-foo',
+            component: { ...Home, beforeRouteLeave: nested.nestedNestedFoo },
+          },
+          {
+            path: 'param/:p',
+            name: 'nested-nested-param',
+            component: { ...Home, beforeRouteLeave: nested.nestedNestedParam },
+          },
+        ],
+      },
+    ],
+  },
 ]
 
-beforeEach(() => {
+function resetMocks() {
   beforeRouteLeave.mockReset()
+  for (const key in nested) {
+    nested[key].mockReset()
+    nested[key].mockImplementation(noGuard)
+  }
+}
+
+beforeEach(() => {
+  resetMocks()
 })
 
 describe('beforeRouteLeave', () => {
@@ -59,6 +123,55 @@ describe('beforeRouteLeave', () => {
 
         await router[navigationMethod]('/foo')
         expect(beforeRouteLeave).toHaveBeenCalledTimes(1)
+      })
+
+      it('calls beforeRouteLeave guard on navigation between children', async () => {
+        const router = createRouter({ routes })
+        await router.push({ name: 'nested-path' })
+        resetMocks()
+        await router[navigationMethod]({ name: 'nested-path-b' })
+        expect(nested.nestedEmpty).not.toHaveBeenCalled()
+        expect(nested.nestedAbs).not.toHaveBeenCalled()
+        expect(nested.nestedB).not.toHaveBeenCalled()
+        expect(nested.nestedNestedFoo).not.toHaveBeenCalled()
+        expect(nested.parent).not.toHaveBeenCalled()
+        expect(nested.nestedNested).not.toHaveBeenCalled()
+        expect(nested.nestedA).toHaveBeenCalledTimes(1)
+        expect(nested.nestedA).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'nested-path-b',
+            fullPath: '/nested/b',
+          }),
+          expect.objectContaining({
+            name: 'nested-path',
+            fullPath: '/nested/a',
+          }),
+          expect.any(Function)
+        )
+      })
+
+      it.skip('calls beforeRouteLeave guard on navigation between children in order', async () => {
+        const router = createRouter({ routes })
+        await router.push({ name: 'nested-nested-foo' })
+        resetMocks()
+        let count = 0
+        nested.nestedNestedFoo.mockImplementation((to, from, next) => {
+          expect(count++).toBe(0)
+          next()
+        })
+        nested.nestedNested.mockImplementation((to, from, next) => {
+          expect(count++).toBe(1)
+          next()
+        })
+        nested.parent.mockImplementation((to, from, next) => {
+          expect(count++).toBe(2)
+          next()
+        })
+
+        await router[navigationMethod]('/')
+        expect(nested.parent).toHaveBeenCalledTimes(1)
+        expect(nested.nestedNested).toHaveBeenCalledTimes(1)
+        expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
       })
 
       it('works when a lazy loaded component', async () => {
