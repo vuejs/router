@@ -6,15 +6,30 @@ if (typeof global !== 'undefined' && typeof global.beforeAll === 'undefined') {
   const mocks = require('jest-mock')
   global.jest = mocks
 
+  const INITIAL_WS_RE = /^\s+/
+
   const expect = require('expect')
   // monkey patch jest snapshots
   expect.extend({
     toMatchInlineSnapshot(received, snapshot) {
       const text = `[${received.toString()}]`
-      const pass = text === snapshot
+
+      const match = INITIAL_WS_RE.exec(snapshot)
+      let expected = snapshot
+      if (match) {
+        // remove the initial linefeed
+        const pad = match[0].replace(/^\n/, '')
+        expected = snapshot
+          .split('\n')
+          .map(chunk => chunk.slice(pad.length))
+          .join('\n')
+          .trim()
+      }
+      const pass = text === expected
       return {
         pass,
-        message: () => 'Snapshot not maching: ' + text,
+        message: () =>
+          `Snapshot not maching.\nExpected:\n${expected}\nReceived:\n${text}`,
       }
     },
   })

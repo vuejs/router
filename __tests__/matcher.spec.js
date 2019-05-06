@@ -262,10 +262,6 @@ describe('Router Matcher', () => {
           return resolved
         }
 
-        // FIXME: refactor the tests into the function, probably use a common set of routes
-        // tests named routes and relatives routes
-        // move to different folder
-
         it('resolves a redirect string', () => {
           const records = [
             { path: '/home', component },
