@@ -31,6 +31,15 @@ const r = new Router({
       },
     },
     { path: '/cant-leave', component: GuardedWithLeave },
+    {
+      path: '/children',
+      component,
+      children: [
+        { path: '', name: 'default-child', component },
+        { path: 'a', name: 'a-child', component },
+        { path: 'b', name: 'b-child', component },
+      ],
+    },
     // { path: /^\/about\/?$/, component },
   ],
 })
@@ -106,6 +115,11 @@ async function run() {
   await r.push({
     hash: '#hey',
   })
+
+  await r.push('/children')
+  await r.push('/children/a')
+  await r.push('/children/b')
+  await r.push({ name: 'a-child' })
 }
 
 run()
