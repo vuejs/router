@@ -47,10 +47,6 @@ export async function extractComponentsGuards(
   return guards
 }
 
-export function last<T>(array: T[]): T {
-  return array[array.length - 1]
-}
-
 export function isRouteLocation(route: any): route is RouteLocation {
   return typeof route === 'string' || (route && typeof route === 'object')
 }
