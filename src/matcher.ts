@@ -55,8 +55,7 @@ export class RouterMatcher {
       resolve: pathToRegexp.compile(recordCopy.path),
     }
 
-    // TODO: why is the isArray check necessary for ts?
-    if ('children' in record && Array.isArray(record.children)) {
+    if ('children' in record && record.children) {
       for (const childRecord of record.children) {
         this.addRouteRecord(childRecord, matcher)
       }

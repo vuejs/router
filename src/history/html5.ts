@@ -4,6 +4,8 @@ import { NavigationCallback, HistoryState, NavigationType } from './base'
 
 const cs = consola.withTag('html5')
 
+// TODO: implement the mock instead
+/* istanbul ignore next */
 // @ts-ignore
 if (process.env.NODE_ENV === 'test') cs.mockTypes(() => jest.fn())
 
