@@ -1,6 +1,5 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
-import {} from '../src/types'
-import { NavigationGuard } from '../../vue-router/types'
+import { NavigationGuard } from '../src/types'
 
 export const tick = () => new Promise(resolve => process.nextTick(resolve))
 
