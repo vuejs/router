@@ -1,6 +1,13 @@
 import { Router, HTML5History } from '../src'
 import { RouteComponent } from '../src/types'
 
+declare global {
+  interface Window {
+    cancel: boolean
+  }
+}
+window.cancel = false
+
 const component: RouteComponent = {
   template: `<div>A component</div>`,
 }
@@ -20,6 +27,7 @@ const r = new Router({
   routes: [
     { path: '/', component },
     { path: '/users/:id', name: 'user', component },
+    { path: '/n/:n', name: 'increment', component },
     { path: '/multiple/:a/:b', name: 'user', component },
     {
       path: '/with-guard/:n',
@@ -50,6 +58,11 @@ r.beforeEach((to, from, next) => {
   next()
 })
 
+r.beforeEach((to, from, next) => {
+  if (window.cancel) return next(false)
+  next()
+})
+
 r.afterEach((to, from) => {
   console.log(
     `After guard: from ${from.fullPath} to ${
@@ -74,6 +87,7 @@ window.r = r
 h.listen((to, from, { type }) => {
   console.log(`popstate(${type})`, { to, from })
 })
+
 async function run() {
   // r.push('/multiple/one/two')
 

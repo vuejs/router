@@ -57,6 +57,7 @@ export abstract class BaseHistory {
   // previousState: object
   location: HistoryLocationNormalized = START
   base: string = ''
+  paused: boolean = false
   utils = utils
 
   /**
@@ -72,6 +73,13 @@ export abstract class BaseHistory {
    * @param to URL to go to
    */
   abstract replace(to: HistoryLocation): void
+
+  /**
+   * Goes back in history log. Should trigger any listener added via
+   * `listen`. If we are on the first entry, behaviour may change depending
+   * on implementation
+   */
+  abstract back(): void
 
   /**
    * Notifies back whenever the location changes due to user interactions

@@ -13,6 +13,8 @@ interface RouteMatcher {
   resolve: (params?: RouteParams) => string
   record: RouteRecord // TODO: NormalizedRouteRecord?
   parent: RouteMatcher | void
+  // TODO: children so they can be removed
+  // children: RouteMatcher[]
   keys: string[]
 }
 

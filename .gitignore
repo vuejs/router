@@ -3,3 +3,4 @@ examples_dist
 node_modules
 coverage
 .nyc_output
+.rpt2_cache

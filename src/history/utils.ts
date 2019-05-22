@@ -52,7 +52,6 @@ export function parseURL(location: string): HistoryLocationNormalized {
  * @param search
  */
 export function parseQuery(search: string): HistoryQuery {
-  // TODO: optimize by using a for loop
   const hasLeadingIM = search[0] === '?'
   const query: HistoryQuery = {}
   const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')

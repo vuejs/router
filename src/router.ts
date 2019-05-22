@@ -1,4 +1,8 @@
-import { BaseHistory, HistoryLocationNormalized } from './history/base'
+import {
+  BaseHistory,
+  HistoryLocationNormalized,
+  NavigationType,
+} from './history/base'
 import { RouterMatcher } from './matcher'
 import {
   RouteLocation,
@@ -35,14 +39,39 @@ export class Router {
 
     this.matcher = new RouterMatcher(options.routes)
 
-    this.history.listen((to, from, info) => {
+    this.history.listen(async (to, from, info) => {
       const matchedRoute = this.matchLocation(to, this.currentRoute)
       // console.log({ to, matchedRoute })
       // TODO: navigate & guards
+      const toLocation: RouteLocationNormalized = { ...to, ...matchedRoute }
 
-      this.currentRoute = {
-        ...to,
-        ...matchedRoute,
+      try {
+        await this.navigate(toLocation, this.currentRoute)
+
+        // accept current navigation
+        this.currentRoute = {
+          ...to,
+          ...matchedRoute,
+        }
+      } catch (error) {
+        // TODO: use the push/replace techieque with any navigation to
+        // preserve history when moving forward
+        if (error instanceof NavigationGuardRedirect) {
+          this.push(error.to)
+        } else {
+          // TODO: handle abort and redirect correctly
+          // if we were going back, we push and discard the rest of the history
+          if (info.type === NavigationType.back) {
+            this.history.push(from)
+          } else {
+            // TODO: go back because we cancelled, then
+            // or replace and not discard the rest of history. Check issues, there was one talking about this
+            // behaviour, maybe we can do better
+            this.history.paused = true
+            this.history.back()
+            this.history.paused = false
+          }
+        }
       }
     })
   }
@@ -84,6 +113,13 @@ export class Router {
     }
   }
 
+  async push(to: RouteLocation): Promise<RouteLocationNormalized> {
+    // match the location
+    const { url, location } =
+    let url: HistoryLocationNormalized
+      let location: MatcherLocationNormalized
+  }
+
   /**
    * Trigger a navigation, adding an entry to the history stack. Also apply all navigation
    * guards first
@@ -92,6 +128,7 @@ export class Router {
   async push(to: RouteLocation): Promise<RouteLocationNormalized> {
     let url: HistoryLocationNormalized
     let location: MatcherLocationNormalized
+    // TODO: refactor into matchLocation to return location and url
     if (typeof to === 'string' || 'path' in to) {
       url = this.history.utils.normalizeLocation(to)
       // TODO: should allow a non matching url to allow dynamic routing to work
@@ -232,7 +269,8 @@ export class Router {
   beforeEach(guard: NavigationGuard): ListenerRemover {
     this.beforeGuards.push(guard)
     return () => {
-      this.beforeGuards.splice(this.beforeGuards.indexOf(guard), 1)
+      const i = this.beforeGuards.indexOf(guard)
+      if (i > -1) this.beforeGuards.splice(i, 1)
     }
   }
 
@@ -243,7 +281,8 @@ export class Router {
   afterEach(guard: PostNavigationGuard): ListenerRemover {
     this.afterGuards.push(guard)
     return () => {
-      this.afterGuards.splice(this.afterGuards.indexOf(guard), 1)
+      const i = this.afterGuards.indexOf(guard)
+      if (i > -1) this.afterGuards.splice(i, 1)
     }
   }
 }

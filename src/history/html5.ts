@@ -67,6 +67,8 @@ export class HTML5History extends BaseHistory {
 
   push(to: HistoryLocation, data?: HistoryState) {
     // replace current entry state to add the forward value
+    // TODO: should be removed and let the user normalize the location?
+    // or make it fast so normalization on a normalized object is fast
     const normalized = this.utils.normalizeLocation(to)
     this.history.replaceState(
       buildState(
@@ -87,6 +89,11 @@ export class HTML5History extends BaseHistory {
     cs.info('push', this.location, '->', normalized, 'with state', state)
     this.history.pushState(state, '', normalized.fullPath)
     this.location = normalized
+  }
+
+  back() {
+    // TODO: do not trigger listen
+    this.history.back()
   }
 
   listen(callback: NavigationCallback) {
@@ -122,6 +129,10 @@ export class HTML5History extends BaseHistory {
         state,
         location: this.location,
       })
+      if (this.paused) {
+        cs.info('Ignored beacuse paused')
+        return
+      }
       const from = this.location
       // we have the state from the old entry, not the current one being removed
       // TODO: correctly parse pathname
