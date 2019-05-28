@@ -87,12 +87,13 @@ export class Router {
     const matchedRoute = this.matcher.resolve(location, currentLocation)
 
     if ('redirect' in matchedRoute) {
-      const { redirect, normalizedLocation } = matchedRoute
+      const { redirect } = matchedRoute
       // target location normalized, used if we want to redirect again
-      // TODO: rename into normalizedLocation
-      const normalizedLocationForRedirect: RouteLocationNormalized = {
-        ...normalizedLocation,
-        fullPath: this.history.utils.stringifyURL(normalizedLocation),
+      const normalizedLocation: RouteLocationNormalized = {
+        ...matchedRoute.normalizedLocation,
+        fullPath: this.history.utils.stringifyURL(
+          matchedRoute.normalizedLocation
+        ),
         query: this.history.utils.normalizeQuery(location.query || {}),
         hash: location.hash,
         redirectedFrom,
@@ -103,16 +104,16 @@ export class Router {
         return this.matchLocation(
           this.history.utils.normalizeLocation(redirect),
           currentLocation,
-          normalizedLocationForRedirect
+          normalizedLocation
         )
       } else if (typeof redirect === 'function') {
-        const newLocation = redirect(normalizedLocationForRedirect)
+        const newLocation = redirect(normalizedLocation)
 
         if (typeof newLocation === 'string') {
           return this.matchLocation(
             this.history.utils.normalizeLocation(newLocation),
             currentLocation,
-            normalizedLocationForRedirect
+            normalizedLocation
           )
         }
 
@@ -123,7 +124,7 @@ export class Router {
             hash: newLocation.hash || '',
           },
           currentLocation,
-          normalizedLocationForRedirect
+          normalizedLocation
         )
       } else {
         return this.matchLocation(
@@ -133,7 +134,7 @@ export class Router {
             hash: redirect.hash || '',
           },
           currentLocation,
-          normalizedLocationForRedirect
+          normalizedLocation
         )
       }
     } else {
