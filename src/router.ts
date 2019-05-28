@@ -16,6 +16,7 @@ import {
   PostNavigationGuard,
   Lazy,
   MatcherLocation,
+  RouteQueryAndHash,
 } from './types/index'
 
 import { guardToPromiseFn, extractComponentsGuards } from './utils'
@@ -42,7 +43,7 @@ export class Router {
     this.history.listen(async (to, from, info) => {
       const matchedRoute = this.matchLocation(to, this.currentRoute)
       // console.log({ to, matchedRoute })
-      // TODO: navigate & guards
+
       const toLocation: RouteLocationNormalized = { ...to, ...matchedRoute }
 
       try {
@@ -76,48 +77,72 @@ export class Router {
     })
   }
 
+  // TODO: rename to resolveLocation?
   private matchLocation(
-    location: MatcherLocation,
-    currentLocation: MatcherLocationNormalized
-  ): MatcherLocationNormalized {
+    location: MatcherLocation & Required<RouteQueryAndHash>,
+    currentLocation: RouteLocationNormalized,
+    redirectedFrom?: RouteLocationNormalized
+    // ensure when returning that the redirectedFrom is a normalized location
+  ): MatcherLocationNormalized & { redirectedFrom?: RouteLocationNormalized } {
     const matchedRoute = this.matcher.resolve(location, currentLocation)
+
     if ('redirect' in matchedRoute) {
       const { redirect, normalizedLocation } = matchedRoute
-      // TODO: add from to a redirect stack?
+      // target location normalized, used if we want to redirect again
+      // TODO: rename into normalizedLocation
+      const normalizedLocationForRedirect: RouteLocationNormalized = {
+        ...normalizedLocation,
+        fullPath: this.history.utils.stringifyURL(normalizedLocation),
+        query: this.history.utils.normalizeQuery(location.query || {}),
+        hash: location.hash,
+        redirectedFrom,
+      }
+
       if (typeof redirect === 'string') {
         // match the redirect instead
         return this.matchLocation(
           this.history.utils.normalizeLocation(redirect),
-          currentLocation
+          currentLocation,
+          normalizedLocationForRedirect
         )
       } else if (typeof redirect === 'function') {
-        const url = this.history.utils.normalizeLocation(normalizedLocation)
-        const newLocation = redirect({
-          ...normalizedLocation,
-          ...url,
-        })
+        const newLocation = redirect(normalizedLocationForRedirect)
 
         if (typeof newLocation === 'string') {
           return this.matchLocation(
             this.history.utils.normalizeLocation(newLocation),
-            currentLocation
+            currentLocation,
+            normalizedLocationForRedirect
           )
         }
 
-        return this.matchLocation(newLocation, currentLocation)
+        return this.matchLocation(
+          {
+            ...newLocation,
+            query: this.history.utils.normalizeQuery(newLocation.query || {}),
+            hash: newLocation.hash || '',
+          },
+          currentLocation,
+          normalizedLocationForRedirect
+        )
       } else {
-        return this.matchLocation(redirect, currentLocation)
+        return this.matchLocation(
+          {
+            ...redirect,
+            query: this.history.utils.normalizeQuery(redirect.query || {}),
+            hash: redirect.hash || '',
+          },
+          currentLocation,
+          normalizedLocationForRedirect
+        )
       }
     } else {
-      return matchedRoute
+      // add the redirectedFrom field
+      return {
+        ...matchedRoute,
+        redirectedFrom,
+      }
     }
-  }
-
-  async push(to: RouteLocation): Promise<RouteLocationNormalized> {
-    // match the location
-    const { url, location } =
-    let url: HistoryLocationNormalized
-      let location: MatcherLocationNormalized
   }
 
   /**
@@ -127,7 +152,9 @@ export class Router {
    */
   async push(to: RouteLocation): Promise<RouteLocationNormalized> {
     let url: HistoryLocationNormalized
-    let location: MatcherLocationNormalized
+    let location: MatcherLocationNormalized & {
+      redirectedFrom?: RouteLocationNormalized
+    }
     // TODO: refactor into matchLocation to return location and url
     if (typeof to === 'string' || 'path' in to) {
       url = this.history.utils.normalizeLocation(to)
@@ -135,17 +162,20 @@ export class Router {
       location = this.matchLocation(url, this.currentRoute)
     } else {
       // named or relative route
+      const query = to.query ? this.history.utils.normalizeQuery(to.query) : {}
+      const hash = to.hash || ''
       // we need to resolve first
-      location = this.matchLocation(to, this.currentRoute)
+      location = this.matchLocation({ ...to, query, hash }, this.currentRoute)
       // intentionally drop current query and hash
       url = this.history.utils.normalizeLocation({
-        query: to.query ? this.history.utils.normalizeQuery(to.query) : {},
-        hash: to.hash,
+        query,
+        hash,
         ...location,
       })
     }
 
     // TODO: should we throw an error as the navigation was aborted
+    // TODO: needs a proper check because order could be different
     if (this.currentRoute.fullPath === url.fullPath) return this.currentRoute
 
     const toLocation: RouteLocationNormalized = { ...url, ...location }
@@ -201,7 +231,7 @@ export class Router {
   ): Promise<TODO> {
     let guards: Lazy<any>[]
 
-    // TODO: is it okay to resolve all matched component or should we do it in order
+    // all components here have been resolved once because we are leaving
     guards = await extractComponentsGuards(
       from.matched.filter(record => to.matched.indexOf(record) < 0).reverse(),
       'beforeRouteLeave',
@@ -209,7 +239,7 @@ export class Router {
       from
     )
 
-    // run the queue of per route beforeEnter guards
+    // run the queue of per route beforeRouteLeave guards
     await this.runGuardQueue(guards)
 
     // check global guards beforeEach

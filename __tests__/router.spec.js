@@ -13,8 +13,12 @@ function mockHistory() {
 /** @type {import('../src/types').RouteRecord[]} */
 const routes = [
   { path: '/', component: components.Home },
-  { path: '/foo', component: components.Foo },
+  { path: '/foo', component: components.Foo, name: 'Foo' },
   { path: '/to-foo', redirect: '/foo' },
+  { path: '/to-foo-named', redirect: { name: 'Foo' } },
+  { path: '/to-foo2', redirect: '/to-foo' },
+  { path: '/p/:p', component: components.Bar },
+  { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
 ]
 
 describe('Router', () => {
@@ -59,6 +63,41 @@ describe('Router', () => {
       path: '/foo',
       query: {},
       hash: '',
+    })
+  })
+
+  describe('matcher', () => {
+    it('handles one redirect from route record', async () => {
+      const history = mockHistory()
+      const router = new Router({ history, routes })
+      const loc = await router.push('/to-foo')
+      expect(loc.name).toBe('Foo')
+      expect(loc.redirectedFrom).toMatchObject({
+        path: '/to-foo',
+      })
+    })
+
+    it('allows object in redirect', async () => {
+      const history = mockHistory()
+      const router = new Router({ history, routes })
+      const loc = await router.push('/to-foo-named')
+      expect(loc.name).toBe('Foo')
+      expect(loc.redirectedFrom).toMatchObject({
+        path: '/to-foo-named',
+      })
+    })
+
+    it('handles multiple redirect fields in route record', async () => {
+      const history = mockHistory()
+      const router = new Router({ history, routes })
+      const loc = await router.push('/to-foo2')
+      expect(loc.name).toBe('Foo')
+      expect(loc.redirectedFrom).toMatchObject({
+        path: '/to-foo',
+        redirectedFrom: {
+          path: '/to-foo2',
+        },
+      })
     })
   })
 

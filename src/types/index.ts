@@ -48,6 +48,7 @@ export interface RouteLocationNormalized
   // TODO: do the same for params
   name: string | void
   matched: MatchedRouteRecord[] // non-enumerable
+  redirectedFrom?: RouteLocationNormalized
 }
 
 // interface PropsTransformer {
@@ -150,6 +151,7 @@ export interface MatcherLocationNormalized {
   // record?
   params: RouteLocationNormalized['params']
   matched: MatchedRouteRecord[]
+  redirectedFrom?: MatcherLocationNormalized
 }
 
 // used when the route records requires a redirection
