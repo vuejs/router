@@ -19,6 +19,14 @@ const routes = [
   { path: '/to-foo2', redirect: '/to-foo' },
   { path: '/p/:p', component: components.Bar },
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
+  {
+    path: '/inc-query-hash',
+    redirect: to => ({
+      name: 'Foo',
+      query: { n: to.query.n + '-2' },
+      hash: to.hash + '-2',
+    }),
+  },
 ]
 
 describe('Router', () => {
@@ -77,6 +85,18 @@ describe('Router', () => {
       })
     })
 
+    it('drops query and params on redirect if not provided', async () => {
+      const history = mockHistory()
+      const router = new Router({ history, routes })
+      const loc = await router.push('/to-foo?hey=foo#fa')
+      expect(loc.name).toBe('Foo')
+      expect(loc.query).toEqual({})
+      expect(loc.hash).toBe('')
+      expect(loc.redirectedFrom).toMatchObject({
+        path: '/to-foo',
+      })
+    })
+
     it('allows object in redirect', async () => {
       const history = mockHistory()
       const router = new Router({ history, routes })
@@ -84,6 +104,23 @@ describe('Router', () => {
       expect(loc.name).toBe('Foo')
       expect(loc.redirectedFrom).toMatchObject({
         path: '/to-foo-named',
+      })
+    })
+
+    it('can pass on query and hash when redirecting', async () => {
+      const history = mockHistory()
+      const router = new Router({ history, routes })
+      const loc = await router.push('/inc-query-hash?n=3#fa')
+      expect(loc).toMatchObject({
+        name: 'Foo',
+        query: {
+          n: '3-2',
+        },
+        hash: '#fa-2',
+      })
+      expect(loc.redirectedFrom).toMatchObject({
+        fullPath: '/inc-query-hash?n=2#fa',
+        path: '/inc-query-hash',
       })
     })
 

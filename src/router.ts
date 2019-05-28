@@ -9,7 +9,6 @@ import {
   RouteRecord,
   START_LOCATION_NORMALIZED,
   RouteLocationNormalized,
-  MatcherLocationNormalized,
   ListenerRemover,
   NavigationGuard,
   TODO,
@@ -83,7 +82,7 @@ export class Router {
     currentLocation: RouteLocationNormalized,
     redirectedFrom?: RouteLocationNormalized
     // ensure when returning that the redirectedFrom is a normalized location
-  ): MatcherLocationNormalized & { redirectedFrom?: RouteLocationNormalized } {
+  ): RouteLocationNormalized {
     const matchedRoute = this.matcher.resolve(location, currentLocation)
 
     if ('redirect' in matchedRoute) {
@@ -117,6 +116,10 @@ export class Router {
           )
         }
 
+        // TODO: should we allow partial redirects? I think we should because it's impredictable if
+        // there was a redirect before
+        // if (!('path' in newLocation) && !('name' in newLocation)) throw new Error('TODO: redirect canot be relative')
+
         return this.matchLocation(
           {
             ...newLocation,
@@ -139,8 +142,14 @@ export class Router {
       }
     } else {
       // add the redirectedFrom field
+      const url = this.history.utils.normalizeLocation({
+        path: matchedRoute.path,
+        query: location.query,
+        hash: location.hash,
+      })
       return {
         ...matchedRoute,
+        ...url,
         redirectedFrom,
       }
     }
@@ -153,9 +162,7 @@ export class Router {
    */
   async push(to: RouteLocation): Promise<RouteLocationNormalized> {
     let url: HistoryLocationNormalized
-    let location: MatcherLocationNormalized & {
-      redirectedFrom?: RouteLocationNormalized
-    }
+    let location: RouteLocationNormalized
     // TODO: refactor into matchLocation to return location and url
     if (typeof to === 'string' || 'path' in to) {
       url = this.history.utils.normalizeLocation(to)
@@ -179,7 +186,7 @@ export class Router {
     // TODO: needs a proper check because order could be different
     if (this.currentRoute.fullPath === url.fullPath) return this.currentRoute
 
-    const toLocation: RouteLocationNormalized = { ...url, ...location }
+    const toLocation: RouteLocationNormalized = location
     // trigger all guards, throw if navigation is rejected
     try {
       await this.navigate(toLocation, this.currentRoute)

@@ -2,18 +2,20 @@ import * as utils from './utils'
 import { ListenerRemover } from '../types'
 
 export type HistoryQuery = Record<string, string | string[]>
+export type RawHistoryQuery = Record<string, string | string[] | null>
 
 export interface HistoryLocation {
   // pathname section
   path: string
   // search string parsed
-  query?: HistoryQuery
+  query?: RawHistoryQuery
   // hash with the #
   hash?: string
 }
 export interface HistoryLocationNormalized extends Required<HistoryLocation> {
   // full path (like href)
   fullPath: string
+  query: HistoryQuery
 }
 
 // pushState clones the state passed and do not accept everything

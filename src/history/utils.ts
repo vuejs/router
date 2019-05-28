@@ -2,8 +2,8 @@ import {
   HistoryLocationNormalized,
   HistoryQuery,
   HistoryLocation,
+  RawHistoryQuery,
 } from './base'
-import { RouteQuery } from '../types'
 
 const PERCENT_RE = /%/g
 
@@ -86,7 +86,7 @@ export function stringifyURL(location: HistoryLocation): string {
  * Stringify an object query. Works like URLSearchParams. Doesn't prepend a `?`
  * @param query
  */
-export function stringifyQuery(query: HistoryQuery): string {
+export function stringifyQuery(query: RawHistoryQuery): string {
   let search = ''
   // TODO: util function?
   for (const key in query) {
@@ -106,7 +106,7 @@ export function stringifyQuery(query: HistoryQuery): string {
   return search
 }
 
-export function normalizeQuery(query: RouteQuery): HistoryQuery {
+export function normalizeQuery(query: RawHistoryQuery): HistoryQuery {
   // TODO: implem
   return query as HistoryQuery
 }
@@ -136,7 +136,7 @@ export function normalizeLocation(
     return {
       fullPath: stringifyURL(location),
       path: location.path,
-      query: location.query || {},
+      query: location.query ? normalizeQuery(location.query) : {},
       hash: location.hash || '',
     }
 }

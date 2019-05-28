@@ -1,4 +1,4 @@
-import { HistoryQuery } from '../history/base'
+import { HistoryQuery, RawHistoryQuery } from '../history/base'
 
 export type Lazy<T> = () => Promise<T>
 
@@ -8,10 +8,9 @@ export type ListenerRemover = () => void
 
 // TODO: support numbers for easier writing but cast them
 export type RouteParams = Record<string, string | string[]>
-export type RouteQuery = Record<string, string | string[] | null>
 
 export interface RouteQueryAndHash {
-  query?: RouteQuery
+  query?: RawHistoryQuery
   hash?: string
 }
 export interface LocationAsPath {
