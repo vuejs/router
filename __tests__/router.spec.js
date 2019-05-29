@@ -119,7 +119,7 @@ describe('Router', () => {
         hash: '#fa-2',
       })
       expect(loc.redirectedFrom).toMatchObject({
-        fullPath: '/inc-query-hash?n=2#fa',
+        fullPath: '/inc-query-hash?n=3#fa',
         path: '/inc-query-hash',
       })
     })

@@ -90,9 +90,11 @@ export class Router {
       // target location normalized, used if we want to redirect again
       const normalizedLocation: RouteLocationNormalized = {
         ...matchedRoute.normalizedLocation,
-        fullPath: this.history.utils.stringifyURL(
-          matchedRoute.normalizedLocation
-        ),
+        fullPath: this.history.utils.stringifyURL({
+          path: matchedRoute.normalizedLocation.path,
+          query: location.query,
+          hash: location.hash,
+        }),
         query: this.history.utils.normalizeQuery(location.query || {}),
         hash: location.hash,
         redirectedFrom,
