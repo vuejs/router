@@ -62,7 +62,7 @@ export interface RouteLocationNormalized
 
 // TODO: type this for beforeRouteUpdate and beforeRouteLeave
 export interface RouteComponentInterface {
-  beforeRouteEnter?: NavigationGuard
+  beforeRouteEnter?: NavigationGuard<void>
   /**
    * Guard called when the router is navigating away from the current route
    * that is rendering this component.
