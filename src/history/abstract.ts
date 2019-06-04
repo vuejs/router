@@ -49,6 +49,4 @@ export class AbstractHistory extends BaseHistory {
     for (const teardown of this.teardowns) teardown()
     this.teardowns = []
   }
-
-  back() {}
 }
