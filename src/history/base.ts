@@ -55,6 +55,8 @@ export interface NavigationCallback {
   ): void
 }
 
+// TODO: should BaseHistory be just an interface instead?
+
 export abstract class BaseHistory {
   // previousState: object
   location: HistoryLocationNormalized = START
