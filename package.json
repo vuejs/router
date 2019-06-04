@@ -5,32 +5,33 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "test:types": "tsc --build tsconfig.json",
     "test:unit": "jest --coverage",
     "test:mocha": "NODE_ENV=test mocha -r ts-node/register __tests__/**/*.spec.js __tests__/*.spec.js",
     "test:mocha:dev": "yarn run test:mocha -w --extension ts --reporter min",
-    "test": "yarn run test:unit",
+    "test": "yarn run test:types && yarn run test:unit",
     "build:esm": "yarn tsc -d -t ESNEXT -m ESNext",
     "dev": "webpack-dev-server --mode=development"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",
     "@types/jsdom": "^12.2.3",
-    "consola": "^2.6.2",
+    "consola": "^2.7.1",
     "expect": "^24.8.0",
     "faked-promise": "^2.1.0",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^24.8.0",
-    "jsdom": "^15.1.0",
+    "jsdom": "^15.1.1",
     "mocha": "^6.1.3",
     "prettier": "^1.17.1",
     "ts-jest": "^24.0.2",
-    "ts-loader": "^6.0.1",
-    "ts-node": "^8.1.1",
-    "typescript": "^3.4.3",
+    "ts-loader": "^6.0.2",
+    "ts-node": "^8.2.0",
+    "typescript": "^3.5.1",
     "vue": "^2.6.10",
     "webpack": "^4.32.2",
     "webpack-cli": "^3.3.2",
-    "webpack-dev-server": "^3.4.1"
+    "webpack-dev-server": "^3.5.1"
   },
   "dependencies": {
     "path-to-regexp": "^3.0.0"
