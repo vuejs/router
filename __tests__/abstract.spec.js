@@ -1,4 +1,5 @@
 // @ts-check
+
 require('./helper')
 const expect = require('expect')
 const { AbstractHistory } = require('../src/history/abstract')
@@ -29,17 +30,19 @@ const normaliezedLoc2 = {
 describe('Abstract/in memory history', () => {
   it('starts at /', () => {
     const history = new AbstractHistory()
+    expect(history.location).toEqual(START)
     expect(history.location).toEqual({
       fullPath: '/',
       path: '/',
       query: {},
       hash: '',
     })
+    expect(history.queue).toHaveLength(1)
   })
 
   it('can push a location', () => {
     const history = new AbstractHistory()
-    // normalized version
+    // partial version
     history.push({ path: '/somewhere', hash: '#hey', query: { foo: 'foo' } })
     expect(history.location).toEqual({
       fullPath: '/somewhere?foo=foo#hey',
@@ -65,13 +68,12 @@ describe('Abstract/in memory history', () => {
 
   it('add entries to the queue', () => {
     const history = new AbstractHistory()
-    expect(history.queue).toHaveLength(0)
     history.push(loc)
-    expect(history.queue).toHaveLength(1)
-    expect(history.queue[0]).toEqual(normaliezedLoc)
-    history.push(loc2)
     expect(history.queue).toHaveLength(2)
-    expect(history.queue[1]).toEqual(normaliezedLoc2)
+    expect(history.queue[1]).toEqual(normaliezedLoc)
+    history.push(loc2)
+    expect(history.queue).toHaveLength(3)
+    expect(history.queue[2]).toEqual(normaliezedLoc2)
   })
 
   it('can go back', () => {
@@ -79,17 +81,51 @@ describe('Abstract/in memory history', () => {
     history.push(loc)
     history.push(loc2)
     history.back()
-    expect(history.queue).toHaveLength(1)
+    expect(history.queue).toHaveLength(3)
     expect(history.location).toEqual(normaliezedLoc)
     history.back()
-    expect(history.queue).toHaveLength(0)
+    expect(history.queue).toHaveLength(3)
     expect(history.location).toEqual(START)
   })
 
-  it('does nothing with back if queue is empty', () => {
+  it('does nothing with back if queue contains only one element', () => {
     const history = new AbstractHistory()
     history.back()
     expect(history.location).toEqual(START)
   })
-  it('does nothing with forward if at end of log', () => {})
+
+  it('does nothing with forward if at end of log', () => {
+    const history = new AbstractHistory()
+    history.forward()
+    expect(history.location).toEqual(START)
+  })
+
+  it('can moves back and forth in history queue', () => {
+    const history = new AbstractHistory()
+    history.push(loc)
+    history.push(loc2)
+    history.back()
+    history.back()
+    expect(history.location).toEqual(START)
+    history.forward()
+    expect(history.location).toEqual(normaliezedLoc)
+    history.forward()
+    expect(history.location).toEqual(normaliezedLoc2)
+  })
+
+  it('can push in the middle of the history', () => {
+    const history = new AbstractHistory()
+    history.push(loc)
+    history.push(loc2)
+    history.back()
+    history.back()
+    expect(history.location).toEqual(START)
+    history.push(loc2)
+    expect(history.queue).toHaveLength(2)
+    expect(history.location).toEqual(normaliezedLoc2)
+    // does nothing
+    history.forward()
+    expect(history.queue).toHaveLength(2)
+    expect(history.location).toEqual(normaliezedLoc2)
+  })
 })

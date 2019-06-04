@@ -86,6 +86,13 @@ export abstract class BaseHistory {
   abstract back(): void
 
   /**
+   * Goes forward in history log. Should trigger any listener added via
+   * `listen`. If we are on the last entry, behaviour may change depending
+   * on implementation
+   */
+  abstract forward(): void
+
+  /**
    * Notifies back whenever the location changes due to user interactions
    * outside of the applicaiton. For example, going back/forward on a
    * web browser

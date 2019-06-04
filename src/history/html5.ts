@@ -95,6 +95,10 @@ export class HTML5History extends BaseHistory {
     // TODO: do not trigger listen
     this.history.back()
   }
+  forward() {
+    // TODO: do not trigger listen
+    this.history.forward()
+  }
 
   listen(callback: NavigationCallback) {
     // settup the listener and prepare teardown callbacks
