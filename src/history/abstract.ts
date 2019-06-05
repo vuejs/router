@@ -1,5 +1,10 @@
 // import consola from 'consola'
-import { BaseHistory, HistoryLocation, HistoryLocationNormalized } from './base'
+import {
+  BaseHistory,
+  HistoryLocation,
+  HistoryLocationNormalized,
+  NavigationType,
+} from './base'
 import { NavigationCallback, HistoryState, START } from './base'
 
 // const cs = consola.withTag('abstract')
@@ -7,6 +12,7 @@ import { NavigationCallback, HistoryState, START } from './base'
 export class AbstractHistory extends BaseHistory {
   // private _listeners: NavigationCallback[] = []
   private teardowns: Array<() => void> = []
+  private listeners: NavigationCallback[] = []
   public queue: HistoryLocationNormalized[] = [START]
   public position: number = 0
 
@@ -25,7 +31,11 @@ export class AbstractHistory extends BaseHistory {
   }
 
   listen(callback: NavigationCallback) {
-    return () => {}
+    this.listeners.push(callback)
+    return () => {
+      const index = this.listeners.indexOf(callback)
+      if (index > -1) this.listeners.splice(index, 1)
+    }
   }
 
   get location() {
@@ -48,15 +58,30 @@ export class AbstractHistory extends BaseHistory {
   }
 
   back() {
+    const from = this.location
     if (this.position > 0) this.position--
+    this.triggerListeners(this.location, from, { type: NavigationType.back })
   }
 
   forward() {
+    const from = this.location
     if (this.position < this.queue.length - 1) this.position++
+    this.triggerListeners(this.location, from, { type: NavigationType.forward })
   }
 
   destroy() {
     for (const teardown of this.teardowns) teardown()
     this.teardowns = []
+  }
+
+  private triggerListeners(
+    to: HistoryLocationNormalized,
+    from: HistoryLocationNormalized,
+    { type }: { type: NavigationType }
+  ): void {
+    const info = { type }
+    for (let callback of this.listeners) {
+      callback(to, from, info)
+    }
   }
 }

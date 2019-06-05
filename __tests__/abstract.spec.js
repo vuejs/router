@@ -64,6 +64,7 @@ describe('Abstract/in memory history', () => {
   it('saves forward information', () => {})
 
   it('can replace a location', () => {})
+
   it('can simulate a navigation', () => {})
 
   it('add entries to the queue', () => {
@@ -127,5 +128,37 @@ describe('Abstract/in memory history', () => {
     history.forward()
     expect(history.queue).toHaveLength(2)
     expect(history.location).toEqual(normaliezedLoc2)
+  })
+
+  it('can listen to navigations', () => {
+    const history = new AbstractHistory()
+    const spy = jest.fn()
+    history.listen(spy)
+    history.push(loc)
+    history.back()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledWith(START, normaliezedLoc, { type: 'back' })
+    history.forward()
+    expect(spy).toHaveBeenCalledTimes(2)
+    expect(spy).toHaveBeenLastCalledWith(normaliezedLoc, START, {
+      type: 'forward',
+    })
+  })
+
+  it('can stop listening to navigation', () => {
+    const history = new AbstractHistory()
+    const spy = jest.fn()
+    const spy2 = jest.fn()
+    // remove right away
+    history.listen(spy)()
+    const remove = history.listen(spy2)
+    history.push(loc)
+    history.back()
+    expect(spy).not.toHaveBeenCalled()
+    expect(spy2).toHaveBeenCalledTimes(1)
+    remove()
+    history.forward()
+    expect(spy).not.toHaveBeenCalled()
+    expect(spy2).toHaveBeenCalledTimes(1)
   })
 })
