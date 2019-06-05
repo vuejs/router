@@ -61,11 +61,47 @@ describe('Abstract/in memory history', () => {
     })
   })
 
-  it('saves forward information', () => {})
+  it('can replace a location', () => {
+    const history = new AbstractHistory()
+    // partial version
+    history.replace({ path: '/somewhere', hash: '#hey', query: { foo: 'foo' } })
+    expect(history.location).toEqual({
+      fullPath: '/somewhere?foo=foo#hey',
+      path: '/somewhere',
+      query: { foo: 'foo' },
+      hash: '#hey',
+    })
+    expect(history.position).toEqual(0)
+    expect(history.queue).toHaveLength(1)
+    history.push(loc)
 
-  it('can replace a location', () => {})
+    // partial version
+    history.replace({ path: '/path', hash: '#ho' })
+    expect(history.location).toEqual({
+      fullPath: '/path#ho',
+      path: '/path',
+      query: {},
+      hash: '#ho',
+    })
+    expect(history.position).toEqual(1)
+    expect(history.queue).toHaveLength(2)
+  })
 
-  it('can simulate a navigation', () => {})
+  it('does not trigger listeners with push', () => {
+    const history = new AbstractHistory()
+    const spy = jest.fn()
+    history.listen(spy)
+    history.push(loc)
+    expect(spy).not.toHaveBeenCalled()
+  })
+
+  it('does not trigger listeners with replace', () => {
+    const history = new AbstractHistory()
+    const spy = jest.fn()
+    history.listen(spy)
+    history.replace(loc)
+    expect(spy).not.toHaveBeenCalled()
+  })
 
   it('add entries to the queue', () => {
     const history = new AbstractHistory()
@@ -160,5 +196,35 @@ describe('Abstract/in memory history', () => {
     history.forward()
     expect(spy).not.toHaveBeenCalled()
     expect(spy2).toHaveBeenCalledTimes(1)
+  })
+
+  it('removing the same listener is a noop', () => {
+    const history = new AbstractHistory()
+    const spy = jest.fn()
+    const spy2 = jest.fn()
+    const rem = history.listen(spy)
+    const rem2 = history.listen(spy2)
+    rem()
+    rem()
+    history.push(loc)
+    history.back()
+    expect(spy).not.toHaveBeenCalled()
+    expect(spy2).toHaveBeenCalledTimes(1)
+    rem2()
+    rem2()
+    history.forward()
+    expect(spy).not.toHaveBeenCalled()
+    expect(spy2).toHaveBeenCalledTimes(1)
+  })
+
+  it('removes all listeners with destroy', () => {
+    const history = new AbstractHistory()
+    const spy = jest.fn()
+    history.listen(spy)
+    // @ts-ignore
+    expect(history.listeners).toHaveLength(1)
+    history.destroy()
+    // @ts-ignore
+    expect(history.listeners).toHaveLength(0)
   })
 })

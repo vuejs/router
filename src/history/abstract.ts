@@ -10,8 +10,6 @@ import { NavigationCallback, HistoryState, START } from './base'
 // const cs = consola.withTag('abstract')
 
 export class AbstractHistory extends BaseHistory {
-  // private _listeners: NavigationCallback[] = []
-  private teardowns: Array<() => void> = []
   private listeners: NavigationCallback[] = []
   public queue: HistoryLocationNormalized[] = [START]
   public position: number = 0
@@ -23,7 +21,12 @@ export class AbstractHistory extends BaseHistory {
   // TODO: is this necessary
   ensureLocation() {}
 
-  replace(to: HistoryLocation) {}
+  replace(to: HistoryLocation) {
+    const toNormalized = this.utils.normalizeLocation(to)
+    // remove current entry and decrement position
+    this.queue.splice(this.position--, 1)
+    this.location = toNormalized
+  }
 
   push(to: HistoryLocation, data?: HistoryState) {
     const toNormalized = this.utils.normalizeLocation(to)
@@ -70,8 +73,7 @@ export class AbstractHistory extends BaseHistory {
   }
 
   destroy() {
-    for (const teardown of this.teardowns) teardown()
-    this.teardowns = []
+    this.listeners = []
   }
 
   private triggerListeners(
