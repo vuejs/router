@@ -92,13 +92,17 @@ export class HTML5History extends BaseHistory {
   }
 
   back(triggerListeners: boolean = true) {
-    // TODO: do not trigger listen
+    const paused = this.paused
+    if (!triggerListeners) this.paused = true
     this.history.back()
+    this.paused = paused
   }
 
   forward(triggerListeners: boolean = true) {
-    // TODO: do not trigger listen
+    const paused = this.paused
+    if (!triggerListeners) this.paused = true
     this.history.forward()
+    this.paused = paused
   }
 
   listen(callback: NavigationCallback) {

@@ -67,9 +67,7 @@ export class Router {
             // TODO: go back because we cancelled, then
             // or replace and not discard the rest of history. Check issues, there was one talking about this
             // behaviour, maybe we can do better
-            this.history.paused = true
-            this.history.back()
-            this.history.paused = false
+            this.history.back(false)
           }
         }
       }
