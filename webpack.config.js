@@ -28,6 +28,9 @@ module.exports = {
     ],
   },
   resolve: {
+    alias: {
+      vue: resolve(__dirname, './node_modules/vue/dist/vue.esm.js'),
+    },
     // Add `.ts` and `.tsx` as a resolvable extension.
     extensions: ['.ts', '.tsx', '.js'],
   },

@@ -1,11 +1,14 @@
 import { Router, HTML5History } from '../src'
 import { RouteComponent } from '../src/types'
+import Vue from 'vue'
 
 declare global {
   interface Window {
     cancel: boolean
+    vm: Vue
   }
 }
+
 window.cancel = false
 
 const component: RouteComponent = {
@@ -135,5 +138,13 @@ async function run() {
   await r.push('/children/b')
   await r.push({ name: 'a-child' })
 }
+
+window.vm = new Vue({
+  el: '#app',
+  // router,
+  data: {
+    message: 'hello',
+  },
+})
 
 run()
