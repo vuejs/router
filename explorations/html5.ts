@@ -1,4 +1,4 @@
-import { Router, HTML5History } from '../src'
+import { Router, HTML5History, plugin } from '../src'
 import { RouteComponent } from '../src/types'
 import Vue from 'vue'
 
@@ -25,7 +25,7 @@ const GuardedWithLeave: RouteComponent = {
   },
 }
 
-const r = new Router({
+const router = new Router({
   history: new HTML5History(),
   routes: [
     { path: '/', component },
@@ -54,6 +54,8 @@ const r = new Router({
     // { path: /^\/about\/?$/, component },
   ],
 })
+
+const r = router
 
 r.beforeEach((to, from, next) => {
   console.log(`Guard from ${from.fullPath} to ${to.fullPath}`)
@@ -105,43 +107,47 @@ async function run() {
     path: '/',
   })
 
-  await r.push({
-    name: 'user',
-    params: {
-      id: '6',
-    },
-  })
+  // await r.push({
+  //   name: 'user',
+  //   params: {
+  //     id: '6',
+  //   },
+  // })
 
-  await r.push({
-    name: 'user',
-    params: {
-      id: '5',
-    },
-  })
+  // await r.push({
+  //   name: 'user',
+  //   params: {
+  //     id: '5',
+  //   },
+  // })
 
-  try {
-    await r.push({
-      params: {
-        id: 'no-name',
-      },
-    })
-  } catch (err) {
-    console.log('Navigation aborted', err)
-  }
+  // try {
+  //   await r.push({
+  //     params: {
+  //       id: 'no-name',
+  //     },
+  //   })
+  // } catch (err) {
+  //   console.log('Navigation aborted', err)
+  // }
 
-  await r.push({
-    hash: '#hey',
-  })
+  // await r.push({
+  //   hash: '#hey',
+  // })
 
-  await r.push('/children')
-  await r.push('/children/a')
-  await r.push('/children/b')
-  await r.push({ name: 'a-child' })
+  // await r.push('/children')
+  // await r.push('/children/a')
+  // await r.push('/children/b')
+  // await r.push({ name: 'a-child' })
 }
+
+// use the router
+Vue.use(plugin)
 
 window.vm = new Vue({
   el: '#app',
-  // router,
+  // @ts-ignore
+  router,
   data: {
     message: 'hello',
   },
