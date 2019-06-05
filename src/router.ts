@@ -1,7 +1,7 @@
 import {
   BaseHistory,
   HistoryLocationNormalized,
-  NavigationType,
+  NavigationDirection,
 } from './history/base'
 import { RouterMatcher } from './matcher'
 import {
@@ -61,7 +61,7 @@ export class Router {
         } else {
           // TODO: handle abort and redirect correctly
           // if we were going back, we push and discard the rest of the history
-          if (info.type === NavigationType.back) {
+          if (info.direction === NavigationDirection.back) {
             this.history.push(from)
           } else {
             // TODO: go back because we cancelled, then

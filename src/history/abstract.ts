@@ -3,7 +3,7 @@ import {
   BaseHistory,
   HistoryLocation,
   HistoryLocationNormalized,
-  NavigationType,
+  NavigationDirection,
 } from './base'
 import { NavigationCallback, HistoryState, START } from './base'
 
@@ -63,13 +63,17 @@ export class AbstractHistory extends BaseHistory {
   back() {
     const from = this.location
     if (this.position > 0) this.position--
-    this.triggerListeners(this.location, from, { type: NavigationType.back })
+    this.triggerListeners(this.location, from, {
+      direction: NavigationDirection.back,
+    })
   }
 
   forward() {
     const from = this.location
     if (this.position < this.queue.length - 1) this.position++
-    this.triggerListeners(this.location, from, { type: NavigationType.forward })
+    this.triggerListeners(this.location, from, {
+      direction: NavigationDirection.forward,
+    })
   }
 
   destroy() {
@@ -79,9 +83,9 @@ export class AbstractHistory extends BaseHistory {
   private triggerListeners(
     to: HistoryLocationNormalized,
     from: HistoryLocationNormalized,
-    { type }: { type: NavigationType }
+    { direction }: { direction: NavigationDirection }
   ): void {
-    const info = { type }
+    const info = { direction }
     for (let callback of this.listeners) {
       callback(to, from, info)
     }

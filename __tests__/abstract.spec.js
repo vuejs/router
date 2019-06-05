@@ -173,11 +173,11 @@ describe('Abstract/in memory history', () => {
     history.push(loc)
     history.back()
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(spy).toHaveBeenCalledWith(START, normaliezedLoc, { type: 'back' })
+    expect(spy).toHaveBeenCalledWith(START, normaliezedLoc, { direction: 'back' })
     history.forward()
     expect(spy).toHaveBeenCalledTimes(2)
     expect(spy).toHaveBeenLastCalledWith(normaliezedLoc, START, {
-      type: 'forward',
+      direction: 'forward',
     })
   })
 

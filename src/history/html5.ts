@@ -1,6 +1,6 @@
 import consola from 'consola'
 import { BaseHistory, HistoryLocationNormalized, HistoryLocation } from './base'
-import { NavigationCallback, HistoryState, NavigationType } from './base'
+import { NavigationCallback, HistoryState, NavigationDirection } from './base'
 
 const cs = consola.withTag('html5')
 
@@ -144,10 +144,10 @@ export class HTML5History extends BaseHistory {
 
       // call all listeners
       const navigationInfo = {
-        type:
+        direction:
           state.forward && from.fullPath === state.forward.fullPath
-            ? NavigationType.back
-            : NavigationType.forward,
+            ? NavigationDirection.back
+            : NavigationDirection.forward,
       }
       this._listeners.forEach(listener =>
         listener(this.location, from, navigationInfo)

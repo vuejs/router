@@ -41,7 +41,7 @@ export const START: HistoryLocationNormalized = {
   hash: '',
 }
 
-export enum NavigationType {
+export enum NavigationDirection {
   // NOTE: is it better to have strings?
   back = 'back',
   forward = 'forward',
@@ -51,7 +51,7 @@ export interface NavigationCallback {
   (
     to: HistoryLocationNormalized,
     from: HistoryLocationNormalized,
-    info: { type: NavigationType }
+    info: { direction: NavigationDirection }
   ): void
 }
 
