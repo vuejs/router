@@ -82,15 +82,17 @@ export abstract class BaseHistory {
    * Goes back in history log. Should trigger any listener added via
    * `listen`. If we are on the first entry, behaviour may change depending
    * on implementation
+   * @param triggerListeners should default to true. If false, won't trigger listeners added via .listen()
    */
-  abstract back(): void
+  abstract back(triggerListeners?: boolean): void
 
   /**
    * Goes forward in history log. Should trigger any listener added via
    * `listen`. If we are on the last entry, behaviour may change depending
    * on implementation
+   * @param triggerListeners should default to true. If false, won't trigger listeners added via .listen()
    */
-  abstract forward(): void
+  abstract forward(triggerListeners?: boolean): void
 
   /**
    * Notifies back whenever the location changes due to user interactions

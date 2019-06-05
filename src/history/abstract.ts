@@ -60,20 +60,24 @@ export class AbstractHistory extends BaseHistory {
     }
   }
 
-  back() {
+  back(triggerListeners: boolean = true) {
     const from = this.location
     if (this.position > 0) this.position--
-    this.triggerListeners(this.location, from, {
-      direction: NavigationDirection.back,
-    })
+    if (triggerListeners) {
+      this.triggerListeners(this.location, from, {
+        direction: NavigationDirection.back,
+      })
+    }
   }
 
-  forward() {
+  forward(triggerListeners: boolean = true) {
     const from = this.location
     if (this.position < this.queue.length - 1) this.position++
-    this.triggerListeners(this.location, from, {
-      direction: NavigationDirection.forward,
-    })
+    if (triggerListeners) {
+      this.triggerListeners(this.location, from, {
+        direction: NavigationDirection.forward,
+      })
+    }
   }
 
   destroy() {

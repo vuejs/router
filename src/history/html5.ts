@@ -91,11 +91,12 @@ export class HTML5History extends BaseHistory {
     this.location = normalized
   }
 
-  back() {
+  back(triggerListeners: boolean = true) {
     // TODO: do not trigger listen
     this.history.back()
   }
-  forward() {
+
+  forward(triggerListeners: boolean = true) {
     // TODO: do not trigger listen
     this.history.forward()
   }

@@ -173,7 +173,9 @@ describe('Abstract/in memory history', () => {
     history.push(loc)
     history.back()
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(spy).toHaveBeenCalledWith(START, normaliezedLoc, { direction: 'back' })
+    expect(spy).toHaveBeenCalledWith(START, normaliezedLoc, {
+      direction: 'back',
+    })
     history.forward()
     expect(spy).toHaveBeenCalledTimes(2)
     expect(spy).toHaveBeenLastCalledWith(normaliezedLoc, START, {
@@ -226,5 +228,16 @@ describe('Abstract/in memory history', () => {
     history.destroy()
     // @ts-ignore
     expect(history.listeners).toHaveLength(0)
+  })
+
+  it('can avoid listeners with back and forward', () => {
+    const history = new AbstractHistory()
+    const spy = jest.fn()
+    history.listen(spy)
+    history.push(loc)
+    history.back(false)
+    expect(spy).not.toHaveBeenCalled()
+    history.forward(false)
+    expect(spy).not.toHaveBeenCalled()
   })
 })
