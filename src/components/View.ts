@@ -17,6 +17,8 @@ const View: FunctionalComponentOptions = {
     // @ts-ignore
     const route = parent.$route
 
+    console.log('rendering', route)
+
     // TODO: support nested router-views
     const matched = route.matched[0]
 

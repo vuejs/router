@@ -14,7 +14,17 @@ const plugin: PluginFunction<void> = Vue => {
         this._router = this.$options.router
         // this._router.init(this)
         // @ts-ignore
-        Vue.util.defineReactive(this, '_route', this._router.currentRoute)
+        this._router.app = this
+        // @ts-ignore
+        Vue.util.defineReactive(
+          // @ts-ignore
+          this,
+          '_route',
+          // @ts-ignore
+          this._router.currentRoute
+          // undefined,
+          // true
+        )
       } else {
         // @ts-ignore
         this._routerRoot = (this.$parent && this.$parent._routerRoot) || this

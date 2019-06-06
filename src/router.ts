@@ -32,6 +32,7 @@ export class Router {
   private beforeGuards: NavigationGuard[] = []
   private afterGuards: PostNavigationGuard[] = []
   currentRoute: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
+  private app: any
 
   constructor(options: RouterOptions) {
     this.history = options.history
@@ -53,8 +54,9 @@ export class Router {
           ...to,
           ...matchedRoute,
         }
+        this.updateReactiveRoute()
       } catch (error) {
-        // TODO: use the push/replace techieque with any navigation to
+        // TODO: use the push/replace technique with any navigation to
         // preserve history when moving forward
         if (error instanceof NavigationGuardRedirect) {
           this.push(error.to)
@@ -184,7 +186,11 @@ export class Router {
 
     // TODO: should we throw an error as the navigation was aborted
     // TODO: needs a proper check because order could be different
-    if (this.currentRoute.fullPath === url.fullPath) return this.currentRoute
+    if (
+      this.currentRoute !== START_LOCATION_NORMALIZED &&
+      this.currentRoute.fullPath === url.fullPath
+    )
+      return this.currentRoute
 
     const toLocation: RouteLocationNormalized = location
     // trigger all guards, throw if navigation is rejected
@@ -205,6 +211,7 @@ export class Router {
 
     const from = this.currentRoute
     this.currentRoute = toLocation
+    this.updateReactiveRoute()
 
     // navigation is confirmed, call afterGuards
     for (const guard of this.afterGuards) guard(toLocation, from)
@@ -322,5 +329,10 @@ export class Router {
       const i = this.afterGuards.indexOf(guard)
       if (i > -1) this.afterGuards.splice(i, 1)
     }
+  }
+
+  private updateReactiveRoute() {
+    if (!this.app) return
+    this.app._route = this.currentRoute
   }
 }

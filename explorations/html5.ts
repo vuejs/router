@@ -15,6 +15,14 @@ const component: RouteComponent = {
   template: `<div>A component</div>`,
 }
 
+const Home: RouteComponent = {
+  template: `<div>Home</div>`,
+}
+
+const User: RouteComponent = {
+  template: `<div>User: {{ $route.params.id }}</div>`,
+}
+
 const GuardedWithLeave: RouteComponent = {
   template: `<div>
     <p>try to leave</p>
@@ -28,8 +36,8 @@ const GuardedWithLeave: RouteComponent = {
 const router = new Router({
   history: new HTML5History(),
   routes: [
-    { path: '/', component },
-    { path: '/users/:id', name: 'user', component },
+    { path: '/', component: Home },
+    { path: '/users/:id', name: 'user', component: User },
     { path: '/n/:n', name: 'increment', component },
     { path: '/multiple/:a/:b', name: 'user', component },
     {
@@ -107,19 +115,19 @@ async function run() {
     path: '/',
   })
 
-  // await r.push({
-  //   name: 'user',
-  //   params: {
-  //     id: '6',
-  //   },
-  // })
+  await r.push({
+    name: 'user',
+    params: {
+      id: '6',
+    },
+  })
 
-  // await r.push({
-  //   name: 'user',
-  //   params: {
-  //     id: '5',
-  //   },
-  // })
+  await r.push({
+    name: 'user',
+    params: {
+      id: '5',
+    },
+  })
 
   // try {
   //   await r.push({
