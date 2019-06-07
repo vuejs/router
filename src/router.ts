@@ -77,7 +77,7 @@ export class Router {
   }
 
   // TODO: rename to resolveLocation?
-  private matchLocation(
+  matchLocation(
     location: MatcherLocation & Required<RouteQueryAndHash>,
     currentLocation: RouteLocationNormalized,
     redirectedFrom?: RouteLocationNormalized

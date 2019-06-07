@@ -2,6 +2,7 @@ import { Router } from './router'
 import { HTML5History } from './history/html5'
 import { PluginFunction } from 'vue'
 import View from './components/View'
+import Link from './components/Link'
 
 const plugin: PluginFunction<void> = Vue => {
   Vue.mixin({
@@ -46,6 +47,8 @@ const plugin: PluginFunction<void> = Vue => {
 
   // @ts-ignore
   Vue.component('RouterView', View)
+  // @ts-ignore
+  Vue.component('RouterLink', Link)
   // Vue.component('RouterLink', Link)
 
   const strats = Vue.config.optionMergeStrategies

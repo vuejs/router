@@ -135,7 +135,7 @@ export class RouterMatcher {
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
 
       name = matcher.record.name
-      params = location.params || {} // TODO: normalize params
+      params = location.params || currentLocation.params // TODO: normalize params
       path = matcher.resolve(params)
       // TODO: check missing params
 

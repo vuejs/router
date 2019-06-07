@@ -38,6 +38,7 @@ const router = new Router({
   routes: [
     { path: '/', component: Home },
     { path: '/users/:id', name: 'user', component: User },
+    { path: '/documents/:id', name: 'docs', component: User },
     { path: '/n/:n', name: 'increment', component },
     { path: '/multiple/:a/:b', name: 'user', component },
     {
@@ -111,23 +112,21 @@ async function run() {
   // h.replace('/bar')
 
   // r.push('/about')
-  await r.push({
-    path: '/',
-  })
+  await r.push('/')
 
-  await r.push({
-    name: 'user',
-    params: {
-      id: '6',
-    },
-  })
+  // await r.push({
+  //   name: 'user',
+  //   params: {
+  //     id: '6',
+  //   },
+  // })
 
-  await r.push({
-    name: 'user',
-    params: {
-      id: '5',
-    },
-  })
+  // await r.push({
+  //   name: 'user',
+  //   params: {
+  //     id: '5',
+  //   },
+  // })
 
   // try {
   //   await r.push({

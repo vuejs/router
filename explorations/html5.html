@@ -9,10 +9,28 @@
   <body>
     <div id="app">
       <h2>{{ message }}</h2>
+      <pre>{{ $route }}</pre>
       <label>
         <input type="checkbox" onchange="cancel = !cancel" /> Cancel Next
         Navigation
       </label>
+      <ul>
+        <li>
+          <router-link to="/">/</router-link>
+        </li>
+        <li>
+          <router-link to="/users/5">/users/5</router-link>
+        </li>
+        <li>
+          <router-link
+            :to="{ name: 'user', params: { id: Number($route.params.id || 0) + 1 }}"
+            >/users/{{ Number($route.params.id || 0) + 1 }}</router-link
+          >
+        </li>
+        <!-- <li>
+          <router-link :to="{ name: 'docs' }">Doc with same id</router-link>
+        </li> -->
+      </ul>
       <router-view></router-view>
     </div>
   </body>
