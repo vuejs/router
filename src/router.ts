@@ -333,6 +333,9 @@ export class Router {
 
   private updateReactiveRoute() {
     if (!this.app) return
-    this.app._route = this.currentRoute
+    // TODO: matched should be non enumerable and the defineProperty here shouldn't be necessary
+    const route = { ...this.currentRoute }
+    Object.defineProperty(route, 'matched', { enumerable: false })
+    this.app._route = Object.freeze(route)
   }
 }
