@@ -74,7 +74,10 @@ r.beforeEach(async (to, from, next) => {
   if (to.params.id === 'no-name') return next(false)
 
   const time = Number(to.query.delay)
-  if (time > 0) await delay(time)
+  if (time > 0) {
+    console.log('⏳ waiting ' + time + 'ms')
+    await delay(time)
+  }
   next()
 })
 
