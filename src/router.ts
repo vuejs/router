@@ -236,6 +236,11 @@ export class Router {
       } else {
         // TODO: write tests
         // triggerError as well
+        if (this.pendingLocation !== toLocation) {
+          // TODO: trigger onError as well
+          throw new NavigationCancelled(toLocation, this.currentRoute)
+        }
+
         throw error
       }
     }

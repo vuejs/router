@@ -5,6 +5,7 @@ const fakePromise = require('faked-promise')
 const { HTML5History } = require('../src/history/html5')
 const { AbstractHistory } = require('../src/history/abstract')
 const { Router } = require('../src/router')
+const { NavigationCancelled } = require('../src/errors')
 const { createDom, components, tick } = require('./utils')
 
 function mockHistory() {
@@ -77,7 +78,7 @@ describe('Router', () => {
   })
 
   describe('navigation', () => {
-    async function checkNavigationCancelledOnPush(target, expectation) {
+    async function checkNavigationCancelledOnPush(target) {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
       const history = mockHistory()
@@ -99,26 +100,26 @@ describe('Router', () => {
       // the second one will have already been resolved
       r2()
       await pB
-      expect(router.currentRoute.fullPath).toBe(expectation)
+      expect(router.currentRoute.fullPath).toBe('/p/b')
       r1()
       try {
         await pA
       } catch (err) {
-        // TODO: expect error
+        expect(err).toBeInstanceOf(NavigationCancelled)
       }
-      expect(router.currentRoute.fullPath).toBe(expectation)
+      expect(router.currentRoute.fullPath).toBe('/p/b')
     }
 
     it('cancels navigation abort if a newer one is finished on push', async () => {
-      await checkNavigationCancelledOnPush(false, '/p/b')
+      await checkNavigationCancelledOnPush(false)
     })
 
     it('cancels pending in-guard navigations if a newer one is finished on push', async () => {
-      await checkNavigationCancelledOnPush('/foo', '/p/b')
+      await checkNavigationCancelledOnPush('/foo')
     })
 
     it('cancels pending navigations if a newer one is finished on push', async () => {
-      await checkNavigationCancelledOnPush(undefined, '/p/b')
+      await checkNavigationCancelledOnPush(undefined)
     })
 
     async function checkNavigationCancelledOnPopstate(target) {
