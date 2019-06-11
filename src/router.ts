@@ -30,6 +30,8 @@ export interface RouterOptions {
   routes: RouteRecord[]
 }
 
+type ErrorHandler = (error: any) => any
+
 export class Router {
   protected history: BaseHistory
   private matcher: RouterMatcher
@@ -38,6 +40,7 @@ export class Router {
   currentRoute: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
   pendingLocation: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
   private app: any
+  private errorHandlers: ErrorHandler[] = []
 
   constructor(options: RouterOptions) {
     this.history = options.history
@@ -50,9 +53,15 @@ export class Router {
       // console.log({ to, matchedRoute })
 
       const toLocation: RouteLocationNormalized = { ...to, ...matchedRoute }
+      this.pendingLocation = toLocation
 
       try {
         await this.navigate(toLocation, this.currentRoute)
+
+        // a more recent navigation took place
+        if (this.pendingLocation !== toLocation) {
+          throw new NavigationCancelled(toLocation, this.currentRoute)
+        }
 
         // accept current navigation
         this.currentRoute = {
@@ -64,6 +73,16 @@ export class Router {
         // TODO: use the push/replace technique with any navigation to
         // preserve history when moving forward
         if (error instanceof NavigationGuardRedirect) {
+          // TODO: refactor the duplication of new NavigationCancelled by
+          // checking instanceof NavigationError (it's another TODO)
+          // a more recent navigation took place
+          if (this.pendingLocation !== toLocation) {
+            return this.triggerError(
+              new NavigationCancelled(toLocation, this.currentRoute)
+            )
+          }
+
+          // TODO: handle errors
           this.push(error.to)
         } else if (error instanceof NavigationAborted) {
           // TODO: test on different browsers ensure consistent behavior
@@ -352,6 +371,25 @@ export class Router {
     return () => {
       const i = this.afterGuards.indexOf(guard)
       if (i > -1) this.afterGuards.splice(i, 1)
+    }
+  }
+
+  /**
+   * Add an error handler to catch errors during navigation
+   * TODO: return a remover like beforeEach
+   * @param handler error handler
+   */
+  onError(handler: ErrorHandler): void {
+    this.errorHandlers.push(handler)
+  }
+
+  /**
+   * Trigger all registered error handlers
+   * @param error thrown error
+   */
+  private triggerError(error: any): void {
+    for (const handler of this.errorHandlers) {
+      handler(error)
     }
   }
 

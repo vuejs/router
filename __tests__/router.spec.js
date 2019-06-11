@@ -3,8 +3,9 @@ require('./helper')
 const expect = require('expect')
 const fakePromise = require('faked-promise')
 const { HTML5History } = require('../src/history/html5')
+const { AbstractHistory } = require('../src/history/abstract')
 const { Router } = require('../src/router')
-const { createDom, components } = require('./utils')
+const { createDom, components, tick } = require('./utils')
 
 function mockHistory() {
   // TODO: actually do a mock
@@ -76,7 +77,7 @@ describe('Router', () => {
   })
 
   describe('navigation', () => {
-    it('waits before navigating in an array of beforeEnter', async () => {
+    it('cancels pending navigations if a newer one is finished on push', async () => {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
       const history = mockHistory()
@@ -87,6 +88,7 @@ describe('Router', () => {
             path: '/a',
             component: components.Home,
             async beforeEnter(to, from, next) {
+              expect(from.fullPath).toBe('/')
               await p1
               next()
             },
@@ -96,6 +98,7 @@ describe('Router', () => {
             component: components.Foo,
             name: 'Foo',
             async beforeEnter(to, from, next) {
+              expect(from.fullPath).toBe('/')
               await p2
               next()
             },
@@ -116,6 +119,87 @@ describe('Router', () => {
         // TODO: expect error
       }
       expect(router.currentRoute.fullPath).toBe('/b')
+    })
+
+    it('cancels pending navigations if a newer one is finished on user navigation (from history)', async () => {
+      const [p1, r1] = fakePromise()
+      const [p2, r2] = fakePromise()
+      const history = new AbstractHistory()
+      const router = new Router({ history, routes })
+      // navigate first to add entries to the history stack
+      await router.push('/p/initial')
+      await router.push('/p/a')
+      await router.push('/p/b')
+
+      router.beforeEach(async (to, from, next) => {
+        if (to.fullPath === '/p/initial') {
+          // because we delay navigation, we are coming from /p/b
+          expect(from.fullPath).toBe('/p/b')
+          await p1
+        } else {
+          expect(from.fullPath).toBe('/p/b')
+          await p2
+        }
+        next()
+      })
+
+      // trigger to history.back()
+      history.back()
+      history.back()
+
+      expect(router.currentRoute.fullPath).toBe('/p/b')
+      // resolves the last call to history.back() first
+      // so we end up on /p/initial
+      r1()
+      await tick()
+      expect(router.currentRoute.fullPath).toBe('/p/initial')
+      // resolves the pending navigation, this should be cancelled
+      r2()
+      await tick()
+      expect(router.currentRoute.fullPath).toBe('/p/initial')
+    })
+
+    it('cancels pending in-guard navigations if a newer one is finished on user navigation (from history)', async () => {
+      const [p1, r1] = fakePromise()
+      const [p2, r2] = fakePromise()
+      const history = new AbstractHistory()
+      const router = new Router({ history, routes })
+      // navigate first to add entries to the history stack
+      await router.push('/p/initial')
+      await router.push('/p/a')
+      await router.push('/p/b')
+
+      router.beforeEach(async (to, from, next) => {
+        console.log('going to', to.fullPath, 'from', from.fullPath)
+        if (to.fullPath === '/p/initial') {
+          console.log('waiting for p1')
+          await p1
+          console.log('done with p1')
+          next()
+        } else if (from.fullPath === '/p/b') {
+          console.log('waiting for p2')
+          await p2
+          console.log('done with p2')
+          next('/p/other-place')
+        } else {
+          next()
+        }
+      })
+
+      // trigger to history.back()
+      history.back()
+      history.back()
+
+      expect(router.currentRoute.fullPath).toBe('/p/b')
+      // resolves the last call to history.back() first
+      // so we end up on /p/initial
+      r1()
+      await tick()
+      expect(router.currentRoute.fullPath).toBe('/p/initial')
+      // resolves the pending navigation, this should be cancelled
+      r2()
+      await tick()
+      expect(router.currentRoute.fullPath).toBe('/p/initial')
     })
   })
 
