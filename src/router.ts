@@ -84,11 +84,15 @@ export class Router {
               false
             )
           }
+          this.triggerError(error, false)
 
-          // TODO: tests
-          this.push(error.to).catch(error => this.triggerError(error, false))
+          // the error is already handled by router.push
+          // we just want to avoid logging the error
+          this.push(error.to).catch(() => {})
         } else if (error instanceof NavigationAborted) {
           // TODO: test on different browsers ensure consistent behavior
+          // TODO: this doesn't work if the user directly calls window.history.go(-n) with n > 1
+          // We can override the go method to retrieve the number but not sure if all browsers allow that
           if (info.direction === NavigationDirection.back) {
             this.history.forward(false)
           } else {
