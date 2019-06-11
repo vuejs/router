@@ -40,6 +40,7 @@ export class Router {
   currentRoute: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
   pendingLocation: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
   private app: any
+  // TODO: should these be triggered before or after route.push().catch()
   private errorHandlers: ErrorHandler[] = []
 
   constructor(options: RouterOptions) {
@@ -95,15 +96,8 @@ export class Router {
             this.history.back(false)
           }
         } else {
-          // if we were going back, we push and discard the rest of the history
-          if (info.direction === NavigationDirection.back) {
-            this.history.push(from)
-          } else {
-            // TODO: go back because we cancelled, then
-            // or replace and not discard the rest of history. Check issues, there was one talking about this
-            // behaviour, maybe we can do better
-            this.history.back(false)
-          }
+          // TODO: write test
+          this.triggerError(error)
         }
       }
     })
@@ -234,11 +228,14 @@ export class Router {
       if (error instanceof NavigationGuardRedirect) {
         // push was called while waiting in guards
         if (this.pendingLocation !== toLocation) {
+          // TODO: trigger onError as well
           throw new NavigationCancelled(toLocation, this.currentRoute)
         }
         // TODO: setup redirect stack
         return this.push(error.to)
       } else {
+        // TODO: write tests
+        // triggerError as well
         throw error
       }
     }

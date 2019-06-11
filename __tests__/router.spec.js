@@ -19,7 +19,7 @@ const routes = [
   { path: '/to-foo', redirect: '/foo' },
   { path: '/to-foo-named', redirect: { name: 'Foo' } },
   { path: '/to-foo2', redirect: '/to-foo' },
-  { path: '/p/:p', component: components.Bar },
+  { path: '/p/:p', name: 'Param', component: components.Bar },
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
   {
     path: '/inc-query-hash',
@@ -77,70 +77,71 @@ describe('Router', () => {
   })
 
   describe('navigation', () => {
-    it('cancels pending navigations if a newer one is finished on push', async () => {
+    async function checkNavigationCancelledOnPush(target, expectation) {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
       const history = mockHistory()
-      const router = new Router({
-        history,
-        routes: [
-          {
-            path: '/a',
-            component: components.Home,
-            async beforeEnter(to, from, next) {
-              expect(from.fullPath).toBe('/')
-              await p1
-              next()
-            },
-          },
-          {
-            path: '/b',
-            component: components.Foo,
-            name: 'Foo',
-            async beforeEnter(to, from, next) {
-              expect(from.fullPath).toBe('/')
-              await p2
-              next()
-            },
-          },
-        ],
+      const router = new Router({ history, routes })
+      router.beforeEach(async (to, from, next) => {
+        if (to.name !== 'Param') return next()
+        if (to.params.p === 'a') {
+          await p1
+          next(target)
+        } else {
+          await p2
+          next()
+        }
       })
-      const pA = router.push('/a')
-      const pB = router.push('/b')
+      const pA = router.push('/p/a')
+      const pB = router.push('/p/b')
       // we resolve the second navigation first then the first one
-      // and the first navigation should be ignored
+      // and the first navigation should be ignored because at that time
+      // the second one will have already been resolved
       r2()
       await pB
-      expect(router.currentRoute.fullPath).toBe('/b')
+      expect(router.currentRoute.fullPath).toBe(expectation)
       r1()
       try {
         await pA
       } catch (err) {
         // TODO: expect error
       }
-      expect(router.currentRoute.fullPath).toBe('/b')
+      expect(router.currentRoute.fullPath).toBe(expectation)
+    }
+
+    it('cancels navigation abort if a newer one is finished on push', async () => {
+      await checkNavigationCancelledOnPush(false, '/p/b')
     })
 
-    it('cancels pending navigations if a newer one is finished on user navigation (from history)', async () => {
+    it('cancels pending in-guard navigations if a newer one is finished on push', async () => {
+      await checkNavigationCancelledOnPush('/foo', '/p/b')
+    })
+
+    it('cancels pending navigations if a newer one is finished on push', async () => {
+      await checkNavigationCancelledOnPush(undefined, '/p/b')
+    })
+
+    async function checkNavigationCancelledOnPopstate(target) {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
       const history = new AbstractHistory()
       const router = new Router({ history, routes })
       // navigate first to add entries to the history stack
-      await router.push('/p/initial')
+      await router.push('/foo')
       await router.push('/p/a')
       await router.push('/p/b')
 
       router.beforeEach(async (to, from, next) => {
-        if (to.fullPath === '/p/initial') {
-          // because we delay navigation, we are coming from /p/b
-          expect(from.fullPath).toBe('/p/b')
+        if (to.name !== 'Param') return next()
+        if (to.fullPath === '/foo') {
           await p1
-        } else {
-          expect(from.fullPath).toBe('/p/b')
+          next()
+        } else if (from.fullPath === '/p/b') {
           await p2
+          next(target)
+        } else {
+          next()
         }
-        next()
       })
 
       // trigger to history.back()
@@ -152,54 +153,23 @@ describe('Router', () => {
       // so we end up on /p/initial
       r1()
       await tick()
-      expect(router.currentRoute.fullPath).toBe('/p/initial')
+      expect(router.currentRoute.fullPath).toBe('/foo')
       // resolves the pending navigation, this should be cancelled
       r2()
       await tick()
-      expect(router.currentRoute.fullPath).toBe('/p/initial')
+      expect(router.currentRoute.fullPath).toBe('/foo')
+    }
+
+    it('cancels pending navigations if a newer one is finished on user navigation (from history)', async () => {
+      await checkNavigationCancelledOnPopstate(undefined)
     })
 
     it('cancels pending in-guard navigations if a newer one is finished on user navigation (from history)', async () => {
-      const [p1, r1] = fakePromise()
-      const [p2, r2] = fakePromise()
-      const history = new AbstractHistory()
-      const router = new Router({ history, routes })
-      // navigate first to add entries to the history stack
-      await router.push('/p/initial')
-      await router.push('/p/a')
-      await router.push('/p/b')
+      await checkNavigationCancelledOnPopstate('/p/other-place')
+    })
 
-      router.beforeEach(async (to, from, next) => {
-        console.log('going to', to.fullPath, 'from', from.fullPath)
-        if (to.fullPath === '/p/initial') {
-          console.log('waiting for p1')
-          await p1
-          console.log('done with p1')
-          next()
-        } else if (from.fullPath === '/p/b') {
-          console.log('waiting for p2')
-          await p2
-          console.log('done with p2')
-          next('/p/other-place')
-        } else {
-          next()
-        }
-      })
-
-      // trigger to history.back()
-      history.back()
-      history.back()
-
-      expect(router.currentRoute.fullPath).toBe('/p/b')
-      // resolves the last call to history.back() first
-      // so we end up on /p/initial
-      r1()
-      await tick()
-      expect(router.currentRoute.fullPath).toBe('/p/initial')
-      // resolves the pending navigation, this should be cancelled
-      r2()
-      await tick()
-      expect(router.currentRoute.fullPath).toBe('/p/initial')
+    it('cancels navigation abort if a newer one is finished on user navigation (from history)', async () => {
+      await checkNavigationCancelledOnPush(undefined, '/p/b')
     })
   })
 
