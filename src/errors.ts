@@ -42,6 +42,45 @@ export class NavigationGuardRedirect extends Error {
   }
 }
 
+/**
+ * Navigation aborted by next(false)
+ */
+export class NavigationAborted extends Error {
+  to: RouteLocationNormalized
+  from: RouteLocationNormalized
+  constructor(to: RouteLocationNormalized, from: RouteLocationNormalized) {
+    super(
+      `Navigation aborted from "${from.fullPath}" to "${
+        to.fullPath
+      }" via a navigation guard`
+    )
+    Object.setPrototypeOf(this, new.target.prototype)
+
+    this.from = from
+    this.to = to
+  }
+}
+
+/**
+ * Navigation canceled by the user by pushing/replacing a new location
+ * TODO: is the name good?
+ */
+export class NavigationCancelled extends Error {
+  to: RouteLocationNormalized
+  from: RouteLocationNormalized
+  constructor(to: RouteLocationNormalized, from: RouteLocationNormalized) {
+    super(
+      `Navigation cancelled from "${from.fullPath}" to "${
+        to.fullPath
+      }" with a new \`push\` or \`replace\``
+    )
+    Object.setPrototypeOf(this, new.target.prototype)
+
+    this.from = from
+    this.to = to
+  }
+}
+
 function stringifyRoute(to: RouteLocation): string {
   if (typeof to === 'string') return to
   if ('path' in to) return to.path

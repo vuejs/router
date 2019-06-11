@@ -1,6 +1,7 @@
 // @ts-check
 require('./helper')
 const expect = require('expect')
+const fakePromise = require('faked-promise')
 const { HTML5History } = require('../src/history/html5')
 const { Router } = require('../src/router')
 const { createDom, components } = require('./utils')
@@ -71,6 +72,50 @@ describe('Router', () => {
       path: '/foo',
       query: {},
       hash: '',
+    })
+  })
+
+  describe('navigation', () => {
+    it('waits before navigating in an array of beforeEnter', async () => {
+      const [p1, r1] = fakePromise()
+      const [p2, r2] = fakePromise()
+      const history = mockHistory()
+      const router = new Router({
+        history,
+        routes: [
+          {
+            path: '/a',
+            component: components.Home,
+            async beforeEnter(to, from, next) {
+              await p1
+              next()
+            },
+          },
+          {
+            path: '/b',
+            component: components.Foo,
+            name: 'Foo',
+            async beforeEnter(to, from, next) {
+              await p2
+              next()
+            },
+          },
+        ],
+      })
+      const pA = router.push('/a')
+      const pB = router.push('/b')
+      // we resolve the second navigation first then the first one
+      // and the first navigation should be ignored
+      r2()
+      await pB
+      expect(router.currentRoute.fullPath).toBe('/b')
+      r1()
+      try {
+        await pA
+      } catch (err) {
+        // TODO: expect error
+      }
+      expect(router.currentRoute.fullPath).toBe('/b')
     })
   })
 

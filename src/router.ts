@@ -19,7 +19,11 @@ import {
 } from './types/index'
 
 import { guardToPromiseFn, extractComponentsGuards } from './utils'
-import { NavigationGuardRedirect } from './errors'
+import {
+  NavigationGuardRedirect,
+  NavigationAborted,
+  NavigationCancelled,
+} from './errors'
 
 export interface RouterOptions {
   history: BaseHistory
@@ -32,6 +36,7 @@ export class Router {
   private beforeGuards: NavigationGuard[] = []
   private afterGuards: PostNavigationGuard[] = []
   currentRoute: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
+  pendingLocation: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
   private app: any
 
   constructor(options: RouterOptions) {
@@ -60,8 +65,17 @@ export class Router {
         // preserve history when moving forward
         if (error instanceof NavigationGuardRedirect) {
           this.push(error.to)
+        } else if (error instanceof NavigationAborted) {
+          // TODO: test on different browsers ensure consistent behavior
+          if (info.direction === NavigationDirection.back) {
+            this.history.forward(false)
+          } else {
+            // TODO: go back because we cancelled, then
+            // or replace and not discard the rest of history. Check issues, there was one talking about this
+            // behaviour, maybe we can do better
+            this.history.back(false)
+          }
         } else {
-          // TODO: handle abort and redirect correctly
           // if we were going back, we push and discard the rest of the history
           if (info.direction === NavigationDirection.back) {
             this.history.push(from)
@@ -193,16 +207,26 @@ export class Router {
       return this.currentRoute
 
     const toLocation: RouteLocationNormalized = location
+    this.pendingLocation = toLocation
     // trigger all guards, throw if navigation is rejected
     try {
       await this.navigate(toLocation, this.currentRoute)
     } catch (error) {
       if (error instanceof NavigationGuardRedirect) {
+        // push was called while waiting in guards
+        if (this.pendingLocation !== toLocation) {
+          throw new NavigationCancelled(toLocation, this.currentRoute)
+        }
         // TODO: setup redirect stack
         return this.push(error.to)
       } else {
         throw error
       }
+    }
+
+    // push was called while waiting in guards
+    if (this.pendingLocation !== toLocation) {
+      throw new NavigationCancelled(toLocation, this.currentRoute)
     }
 
     // change URL
