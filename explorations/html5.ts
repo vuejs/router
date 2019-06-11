@@ -4,12 +4,13 @@ import Vue from 'vue'
 
 declare global {
   interface Window {
-    cancel: boolean
     vm: Vue
   }
 }
 
-window.cancel = false
+const shared = {
+  cancel: false,
+}
 
 const component: RouteComponent = {
   template: `<div>A component</div>`,
@@ -66,14 +67,19 @@ const router = new Router({
 
 const r = router
 
-r.beforeEach((to, from, next) => {
+const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
+
+r.beforeEach(async (to, from, next) => {
   console.log(`Guard from ${from.fullPath} to ${to.fullPath}`)
   if (to.params.id === 'no-name') return next(false)
+
+  const time = Number(to.query.delay)
+  if (time > 0) await delay(time)
   next()
 })
 
 r.beforeEach((to, from, next) => {
-  if (window.cancel) return next(false)
+  if (shared.cancel) return next(false)
   next()
 })
 
@@ -157,6 +163,7 @@ window.vm = new Vue({
   router,
   data: {
     message: 'hello',
+    shared,
   },
 })
 

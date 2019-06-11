@@ -11,8 +11,7 @@
       <h2>{{ message }}</h2>
       <pre>{{ $route }}</pre>
       <label>
-        <input type="checkbox" onchange="cancel = !cancel" /> Cancel Next
-        Navigation
+        <input type="checkbox" v-model="shared.cancel" /> Cancel Next Navigation
       </label>
       <ul>
         <li>
