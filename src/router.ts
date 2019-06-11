@@ -61,7 +61,10 @@ export class Router {
 
         // a more recent navigation took place
         if (this.pendingLocation !== toLocation) {
-          throw new NavigationCancelled(toLocation, this.currentRoute)
+          return this.triggerError(
+            new NavigationCancelled(toLocation, this.currentRoute),
+            false
+          )
         }
 
         // accept current navigation
@@ -71,20 +74,19 @@ export class Router {
         }
         this.updateReactiveRoute()
       } catch (error) {
-        // TODO: use the push/replace technique with any navigation to
-        // preserve history when moving forward
         if (error instanceof NavigationGuardRedirect) {
           // TODO: refactor the duplication of new NavigationCancelled by
           // checking instanceof NavigationError (it's another TODO)
           // a more recent navigation took place
           if (this.pendingLocation !== toLocation) {
             return this.triggerError(
-              new NavigationCancelled(toLocation, this.currentRoute)
+              new NavigationCancelled(toLocation, this.currentRoute),
+              false
             )
           }
 
-          // TODO: handle errors
-          this.push(error.to)
+          // TODO: tests
+          this.push(error.to).catch(error => this.triggerError(error, false))
         } else if (error instanceof NavigationAborted) {
           // TODO: test on different browsers ensure consistent behavior
           if (info.direction === NavigationDirection.back) {
@@ -96,8 +98,7 @@ export class Router {
             this.history.back(false)
           }
         } else {
-          // TODO: write test
-          this.triggerError(error)
+          this.triggerError(error, false)
         }
       }
     })
@@ -241,7 +242,7 @@ export class Router {
           throw new NavigationCancelled(toLocation, this.currentRoute)
         }
 
-        throw error
+        this.triggerError(error)
       }
     }
 
@@ -388,11 +389,13 @@ export class Router {
   /**
    * Trigger all registered error handlers
    * @param error thrown error
+   * @param shouldThrow set to false to not throw the error
    */
-  private triggerError(error: any): void {
+  private triggerError(error: any, shouldThrow: boolean = true): void {
     for (const handler of this.errorHandlers) {
       handler(error)
     }
+    if (shouldThrow) throw error
   }
 
   private updateReactiveRoute() {
