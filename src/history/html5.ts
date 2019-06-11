@@ -33,11 +33,21 @@ function buildState(
   }
 }
 
+interface PauseState {
+  currentLocation: HistoryLocationNormalized
+  // location we are going to after pausing
+  to: HistoryLocationNormalized
+}
+
 export class HTML5History extends BaseHistory {
   private history = window.history
   private _popStateHandler: PopStateListener
   private _listeners: NavigationCallback[] = []
   private _teardowns: Array<() => void> = []
+
+  // TODO: should it be a stack? a Dict. Check if the popstate listener
+  // can trigger twice
+  private pauseState: PauseState | null = null
 
   constructor() {
     super()
@@ -92,17 +102,20 @@ export class HTML5History extends BaseHistory {
   }
 
   back(triggerListeners: boolean = true) {
-    const paused = this.paused
-    if (!triggerListeners) this.paused = true
+    // TODO: check if we can go back
+    const previvousLocation = this.history.state
+      .back as HistoryLocationNormalized
+    if (!triggerListeners) this.pauseListeners(previvousLocation)
     this.history.back()
-    this.paused = paused
   }
 
   forward(triggerListeners: boolean = true) {
-    const paused = this.paused
-    if (!triggerListeners) this.paused = true
+    // TODO: check if we can go forward
+    const previvousLocation = this.history.state
+      .forward as HistoryLocationNormalized
+    if (!previvousLocation) throw new Error('Cannot go forward')
+    if (!triggerListeners) this.pauseListeners(previvousLocation)
     this.history.forward()
-    this.paused = paused
   }
 
   listen(callback: NavigationCallback) {
@@ -138,14 +151,25 @@ export class HTML5History extends BaseHistory {
         state,
         location: this.location,
       })
-      if (this.paused) {
-        cs.info('Ignored beacuse paused')
-        return
-      }
+
+      // TODO: handle go(-2) and go(2) (skipping entries)
+
       const from = this.location
       // we have the state from the old entry, not the current one being removed
       // TODO: correctly parse pathname
-      this.location = state ? state.current : buildFullPath()
+      const to = state ? state.current : buildFullPath()
+      this.location = to
+
+      if (
+        this.pauseState &&
+        this.pauseState.to &&
+        this.pauseState.to.fullPath === to.fullPath
+      ) {
+        cs.info('Ignored beacuse paused')
+        // reset pauseState
+        this.pauseState = null
+        return
+      }
 
       // call all listeners
       const navigationInfo = {
@@ -162,6 +186,13 @@ export class HTML5History extends BaseHistory {
     // settup the listener and prepare teardown callbacks
     window.addEventListener('popstate', handler)
     return handler
+  }
+
+  private pauseListeners(to: HistoryLocationNormalized) {
+    this.pauseState = {
+      currentLocation: this.location,
+      to,
+    }
   }
 }
 

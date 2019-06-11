@@ -27,8 +27,10 @@ export class InvalidRouteMatch extends Error {
  * information about where we where trying to go and where we are going instead
  */
 export class NavigationGuardRedirect extends Error {
-  from: RouteLocationNormalized
   to: RouteLocation
+  from: RouteLocationNormalized
+  // TODO: refactor order of argumnets
+  // TODO: refactor into parent class NavigationError
   constructor(from: RouteLocationNormalized, to: RouteLocation) {
     super(
       `Redirected from "${from.fullPath}" to "${stringifyRoute(
