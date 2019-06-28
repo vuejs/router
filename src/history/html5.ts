@@ -51,7 +51,7 @@ export class HTML5History extends BaseHistory {
 
   constructor() {
     super()
-    const to = buildFullPath()
+    const to = this.createCurrentLocation()
     // cs.log('created', to)
     this.history.replaceState(buildState(null, to, null), '', to.fullPath)
     this.location = to
@@ -157,7 +157,7 @@ export class HTML5History extends BaseHistory {
       const from = this.location
       // we have the state from the old entry, not the current one being removed
       // TODO: correctly parse pathname
-      const to = state ? state.current : buildFullPath()
+      const to = state ? state.current : this.createCurrentLocation()
       this.location = to
 
       if (
@@ -194,14 +194,14 @@ export class HTML5History extends BaseHistory {
       to,
     }
   }
-}
 
-const buildFullPath = () => {
-  const { location } = window
-  return {
-    fullPath: location.pathname + location.search + location.hash,
-    path: location.pathname,
-    query: {}, // TODO: parseQuery
-    hash: location.hash,
+  createCurrentLocation(): HistoryLocationNormalized {
+    const { location } = window
+    return {
+      fullPath: location.pathname + location.search + location.hash,
+      path: location.pathname,
+      query: this.utils.parseQuery(location.search),
+      hash: location.hash,
+    }
   }
 }

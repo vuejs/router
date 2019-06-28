@@ -14,7 +14,7 @@ const plugin: PluginFunction<void> = Vue => {
         // @ts-ignore
         this._routerRoot = this
         // @ts-ignore
-        this._router = this.$options.router
+        this._router = this.$options.router as Router
         // this._router.init(this)
         // @ts-ignore
         this._router.app = this
@@ -28,6 +28,9 @@ const plugin: PluginFunction<void> = Vue => {
           // undefined,
           // true
         )
+
+        // @ts-ignore
+        this._router.doInitialNavigation()
       } else {
         // @ts-ignore
         this._routerRoot = (this.$parent && this.$parent._routerRoot) || this

@@ -32,6 +32,8 @@ export interface RouterOptions {
 
 type ErrorHandler = (error: any) => any
 
+// resolve, reject arguments of Promise constructor
+type OnReadyCallback = [() => void, (reason?: any) => void]
 export class Router {
   protected history: BaseHistory
   private matcher: RouterMatcher
@@ -42,6 +44,8 @@ export class Router {
   private app: any
   // TODO: should these be triggered before or after route.push().catch()
   private errorHandlers: ErrorHandler[] = []
+  private ready: boolean = false
+  private onReadyCbs: OnReadyCallback[] = []
 
   constructor(options: RouterOptions) {
     this.history = options.history
@@ -217,7 +221,7 @@ export class Router {
     }
 
     // TODO: should we throw an error as the navigation was aborted
-    // TODO: needs a proper check because order could be different
+    // TODO: needs a proper check because order in query could be different
     if (
       this.currentRoute !== START_LOCATION_NORMALIZED &&
       this.currentRoute.fullPath === url.fullPath
@@ -408,5 +412,83 @@ export class Router {
     const route = { ...this.currentRoute }
     Object.defineProperty(route, 'matched', { enumerable: false })
     this.app._route = Object.freeze(route)
+  }
+
+  /**
+   * Returns a Promise that resolves once the router is ready to be used for navigation
+   * Eg: Calling router.push() or router.replace(). This is necessary because we have to
+   * wait for the Vue root instance to be created
+   */
+  onReady(): Promise<void> {
+    if (this.ready) return Promise.resolve()
+    return new Promise((resolve, reject) => {
+      this.onReadyCbs.push([resolve, reject])
+    })
+  }
+
+  /**
+   * Mark the router as ready. This function is used internal and should not be called
+   * by the developper. You can optionally provide an error.
+   * This will trigger all onReady callbacks and empty the array
+   * @param {*} err
+   */
+  protected markAsReady(err?: any): void {
+    if (this.ready) return
+    for (const [resolve, reject] of this.onReadyCbs) {
+      if (err) reject(err)
+      else resolve()
+    }
+    this.onReadyCbs = []
+    this.ready = true
+  }
+
+  async doInitialNavigation(): Promise<RouteLocationNormalized> {
+    // TODO: refactor code that was duplicated from push method
+    const toLocation: RouteLocationNormalized = this.resolveLocation(
+      this.history.location,
+      this.currentRoute
+    )
+
+    this.pendingLocation = toLocation
+    // trigger all guards, throw if navigation is rejected
+    try {
+      await this.navigate(toLocation, this.currentRoute)
+    } catch (error) {
+      if (error instanceof NavigationGuardRedirect) {
+        // push was called while waiting in guards
+        if (this.pendingLocation !== toLocation) {
+          // TODO: trigger onError as well
+          throw new NavigationCancelled(toLocation, this.currentRoute)
+        }
+        // TODO: setup redirect stack
+        return this.push(error.to)
+      } else {
+        // TODO: write tests
+        // triggerError as well
+        if (this.pendingLocation !== toLocation) {
+          // TODO: trigger onError as well
+          throw new NavigationCancelled(toLocation, this.currentRoute)
+        }
+
+        this.triggerError(error)
+      }
+    }
+
+    // push was called while waiting in guards
+    if (this.pendingLocation !== toLocation) {
+      throw new NavigationCancelled(toLocation, this.currentRoute)
+    }
+
+    // NOTE: here we removed the pushing to history part as the history
+    // already contains current location
+
+    const from = this.currentRoute
+    this.currentRoute = toLocation
+    this.updateReactiveRoute()
+
+    // navigation is confirmed, call afterGuards
+    for (const guard of this.afterGuards) guard(toLocation, from)
+
+    return this.currentRoute
   }
 }
