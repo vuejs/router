@@ -1,11 +1,11 @@
 // @ts-check
 
-require('./helper')
+require('../helper')
 const expect = require('expect')
-const { AbstractHistory } = require('../src/history/abstract')
-const { START } = require('../src/history/base')
+const { AbstractHistory } = require('../../src/history/abstract')
+const { START } = require('../../src/history/base')
 
-/** @type {import('../src/history/base').HistoryLocation} */
+/** @type {import('../../src/history/base').HistoryLocation} */
 const loc = {
   path: '/foo',
 }

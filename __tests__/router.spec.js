@@ -8,7 +8,13 @@ const { Router } = require('../src/router')
 const { NavigationCancelled } = require('../src/errors')
 const { createDom, components, tick } = require('./utils')
 
-function mockHistory() {
+/**
+ * Created a mocked version of the history
+ * @param {string} [start] starting locationh
+ */
+function mockHistory(start) {
+  // @ts-ignore
+  if (start) window.location = start
   // TODO: actually do a mock
   return new HTML5History()
 }
@@ -16,6 +22,7 @@ function mockHistory() {
 /** @type {import('../src/types').RouteRecord[]} */
 const routes = [
   { path: '/', component: components.Home },
+  { path: '/search', component: components.Home },
   { path: '/foo', component: components.Foo, name: 'Foo' },
   { path: '/to-foo', redirect: '/foo' },
   { path: '/to-foo-named', redirect: { name: 'Foo' } },
@@ -49,6 +56,19 @@ describe('Router', () => {
     })
   })
 
+  // TODO: should do other checks not based on history implem
+  it.skip('takes browser location', () => {
+    const history = mockHistory('/search?q=dog#footer')
+    const router = new Router({ history, routes })
+    expect(router.currentRoute).toEqual({
+      fullPath: '/search?q=dog#footer',
+      hash: '#footer',
+      params: {},
+      path: '/search',
+      query: { q: 'dog' },
+    })
+  })
+
   it('calls history.push with router.push', async () => {
     const history = mockHistory()
     const router = new Router({ history, routes })
@@ -68,6 +88,20 @@ describe('Router', () => {
     const router = new Router({ history, routes })
     jest.spyOn(history, 'replace')
     await router.replace('/foo')
+    expect(history.replace).toHaveBeenCalledTimes(1)
+    expect(history.replace).toHaveBeenCalledWith({
+      fullPath: '/foo',
+      path: '/foo',
+      query: {},
+      hash: '',
+    })
+  })
+
+  it('can pass replace option to push', async () => {
+    const history = mockHistory()
+    const router = new Router({ history, routes })
+    jest.spyOn(history, 'replace')
+    await router.push({ path: '/foo', replace: true })
     expect(history.replace).toHaveBeenCalledTimes(1)
     expect(history.replace).toHaveBeenCalledWith({
       fullPath: '/foo',
@@ -170,7 +204,7 @@ describe('Router', () => {
     })
 
     it('cancels navigation abort if a newer one is finished on user navigation (from history)', async () => {
-      await checkNavigationCancelledOnPush(undefined, '/p/b')
+      await checkNavigationCancelledOnPush(undefined)
     })
   })
 
