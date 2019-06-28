@@ -113,30 +113,25 @@ h.listen((to, from, { direction }) => {
 
 async function run() {
   // r.push('/multiple/one/two')
-
   // h.push('/hey')
   // h.push('/hey?lol')
   // h.push('/foo')
   // h.push('/replace-me')
   // h.replace('/bar')
-
   // r.push('/about')
-  await r.push('/')
-
+  // await r.push('/')
   // await r.push({
   //   name: 'user',
   //   params: {
   //     id: '6',
   //   },
   // })
-
   // await r.push({
   //   name: 'user',
   //   params: {
   //     id: '5',
   //   },
   // })
-
   // try {
   //   await r.push({
   //     params: {
@@ -146,11 +141,9 @@ async function run() {
   // } catch (err) {
   //   console.log('Navigation aborted', err)
   // }
-
   // await r.push({
   //   hash: '#hey',
   // })
-
   // await r.push('/children')
   // await r.push('/children/a')
   // await r.push('/children/b')
