@@ -14,7 +14,7 @@
     "test:mocha": "NODE_ENV=test mocha -r ts-node/register __tests__/**/*.spec.js __tests__/*.spec.js",
     "test:mocha:dev": "yarn run test:mocha -w --extension ts --reporter min",
     "test": "yarn run test:types && yarn run test:unit",
-    "build:esm": "yarn tsc -d -t ESNEXT -m ESNext",
+    "build": "yarn rollup -c rollup.config.js",
     "dev": "webpack-dev-server --mode=development"
   },
   "devDependencies": {
