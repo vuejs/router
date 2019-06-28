@@ -1,6 +1,8 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
 import { NavigationGuard } from '../src/types'
 
+export { HistoryMock } from './HistoryMock'
+
 export const tick = () => new Promise(resolve => process.nextTick(resolve))
 
 export const NAVIGATION_TYPES = ['push', 'replace']

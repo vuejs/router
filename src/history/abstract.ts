@@ -10,7 +10,7 @@ import { NavigationCallback, HistoryState, START } from './base'
 // const cs = consola.withTag('abstract')
 
 export class AbstractHistory extends BaseHistory {
-  private listeners: NavigationCallback[] = []
+  protected listeners: NavigationCallback[] = []
   public queue: HistoryLocationNormalized[] = [START]
   public position: number = 0
 
@@ -84,7 +84,7 @@ export class AbstractHistory extends BaseHistory {
     this.listeners = []
   }
 
-  private triggerListeners(
+  protected triggerListeners(
     to: HistoryLocationNormalized,
     from: HistoryLocationNormalized,
     { direction }: { direction: NavigationDirection }

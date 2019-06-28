@@ -6,18 +6,7 @@ const { HTML5History } = require('../src/history/html5')
 const { AbstractHistory } = require('../src/history/abstract')
 const { Router } = require('../src/router')
 const { NavigationCancelled } = require('../src/errors')
-const { createDom, components, tick } = require('./utils')
-
-/**
- * Created a mocked version of the history
- * @param {string} [start] starting locationh
- */
-function mockHistory(start) {
-  // @ts-ignore
-  if (start) window.location = start
-  // TODO: actually do a mock
-  return new HTML5History()
-}
+const { createDom, components, tick, HistoryMock } = require('./utils')
 
 /** @type {import('../src/types').RouteRecord[]} */
 const routes = [
@@ -45,7 +34,7 @@ describe('Router', () => {
   })
 
   it('can be instantiated', () => {
-    const history = mockHistory()
+    const history = new HistoryMock()
     const router = new Router({ history, routes })
     expect(router.currentRoute).toEqual({
       fullPath: '/',
@@ -58,7 +47,7 @@ describe('Router', () => {
 
   // TODO: should do other checks not based on history implem
   it.skip('takes browser location', () => {
-    const history = mockHistory('/search?q=dog#footer')
+    const history = new HistoryMock('/search?q=dog#footer')
     const router = new Router({ history, routes })
     expect(router.currentRoute).toEqual({
       fullPath: '/search?q=dog#footer',
@@ -70,7 +59,7 @@ describe('Router', () => {
   })
 
   it('calls history.push with router.push', async () => {
-    const history = mockHistory()
+    const history = new HistoryMock()
     const router = new Router({ history, routes })
     jest.spyOn(history, 'push')
     await router.push('/foo')
@@ -84,7 +73,7 @@ describe('Router', () => {
   })
 
   it('calls history.replace with router.replace', async () => {
-    const history = mockHistory()
+    const history = new HistoryMock()
     const router = new Router({ history, routes })
     jest.spyOn(history, 'replace')
     await router.replace('/foo')
@@ -98,7 +87,7 @@ describe('Router', () => {
   })
 
   it('can pass replace option to push', async () => {
-    const history = mockHistory()
+    const history = new HistoryMock()
     const router = new Router({ history, routes })
     jest.spyOn(history, 'replace')
     await router.push({ path: '/foo', replace: true })
@@ -115,7 +104,7 @@ describe('Router', () => {
     async function checkNavigationCancelledOnPush(target) {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
-      const history = mockHistory()
+      const history = new HistoryMock()
       const router = new Router({ history, routes })
       router.beforeEach(async (to, from, next) => {
         if (to.name !== 'Param') return next()
@@ -210,7 +199,7 @@ describe('Router', () => {
 
   describe('matcher', () => {
     it('handles one redirect from route record', async () => {
-      const history = mockHistory()
+      const history = new HistoryMock()
       const router = new Router({ history, routes })
       const loc = await router.push('/to-foo')
       expect(loc.name).toBe('Foo')
@@ -220,7 +209,7 @@ describe('Router', () => {
     })
 
     it('drops query and params on redirect if not provided', async () => {
-      const history = mockHistory()
+      const history = new HistoryMock()
       const router = new Router({ history, routes })
       const loc = await router.push('/to-foo?hey=foo#fa')
       expect(loc.name).toBe('Foo')
@@ -232,7 +221,7 @@ describe('Router', () => {
     })
 
     it('allows object in redirect', async () => {
-      const history = mockHistory()
+      const history = new HistoryMock()
       const router = new Router({ history, routes })
       const loc = await router.push('/to-foo-named')
       expect(loc.name).toBe('Foo')
@@ -242,7 +231,7 @@ describe('Router', () => {
     })
 
     it('can pass on query and hash when redirecting', async () => {
-      const history = mockHistory()
+      const history = new HistoryMock()
       const router = new Router({ history, routes })
       const loc = await router.push('/inc-query-hash?n=3#fa')
       expect(loc).toMatchObject({
@@ -259,7 +248,7 @@ describe('Router', () => {
     })
 
     it('handles multiple redirect fields in route record', async () => {
-      const history = mockHistory()
+      const history = new HistoryMock()
       const router = new Router({ history, routes })
       const loc = await router.push('/to-foo2')
       expect(loc.name).toBe('Foo')
