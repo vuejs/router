@@ -1,3 +1,4 @@
+import replace from 'rollup-plugin-replace'
 import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 import ts from 'rollup-plugin-typescript2'
@@ -6,61 +7,102 @@ import { terser } from 'rollup-plugin-terser'
 import pkg from './package.json'
 import path from 'path'
 
+const banner = `/*!
+  * ${pkg.name} v${pkg.version}
+  * (c) ${new Date().getFullYear()} Eduardo San Martin Morote
+  * @license MIT
+  */`
+
+const exportName = 'VueRouter'
+
+function createEntry(
+  {
+    format, // Rollup format (iife, umd, cjs, es)
+    external, // Rollup external option
+    input = 'src/index.ts', // entry point
+    env = 'development', // NODE_ENV variable
+    minify = false,
+    isBrowser = false, // produce a browser module version or not
+  } = {
+    input: 'src/index.ts',
+    env: 'development',
+    minify: false,
+    isBrowser: false,
+  }
+) {
+  // force production mode when minifying
+  if (minify) env = 'production'
+
+  const config = {
+    input,
+    plugins: [
+      replace({
+        __VERSION__: pkg.version,
+        'process.env.NODE_ENV': `'${env}'`,
+      }),
+      alias({
+        resolve: ['ts'],
+        consola: path.resolve(__dirname, './src/consola.ts'),
+      }),
+    ],
+    output: {
+      banner,
+      file: 'dist/vue-router.other.js',
+      format,
+    },
+  }
+
+  if (format === 'iife') {
+    config.input = 'src/entries/iife.ts'
+    config.output.file = pkg.unpkg
+    config.output.name = exportName
+  } else if (format === 'es') {
+    config.output.file = isBrowser ? pkg.browser : pkg.module
+  } else if (format === 'cjs') {
+    config.output.file = 'dist/vue-router.cjs.js'
+  }
+
+  if (!external) {
+    config.plugins.push(resolve(), commonjs())
+  } else {
+    config.external = external
+  }
+
+  config.plugins.push(
+    ts({
+      // only check once, during the es version with browser (it includes external libs)
+      check: format === 'es' && isBrowser && !minify,
+      tsconfigOverride: {
+        compilerOptions: {
+          // same for d.ts files
+          declaration: format === 'es' && isBrowser && !minify,
+          target: format === 'iife' || format === 'cjs' ? 'es3' : 'esnext',
+        },
+      },
+    })
+  )
+
+  if (minify) {
+    config.plugins.push(
+      terser({
+        module: format === 'es',
+        output: {
+          preamble: banner,
+        },
+      })
+    )
+    config.output.file = config.output.file.replace(/\.js$/i, '.min.js')
+  }
+
+  return config
+}
+
 export default [
   // browser-friendly UMD build
-  {
-    input: 'src/entries/iife.ts',
-    output: {
-      name: 'VueRouter',
-      file: pkg.unpkg,
-      format: 'iife',
-    },
-    plugins: [
-      alias({
-        resolve: ['ts'],
-        consola: path.resolve(__dirname, './src/consola.ts'),
-      }),
-      resolve(), // so Rollup can find `ms`
-      commonjs(), // so Rollup can convert `ms` to an ES module
-      ts(), // so Rollup can convert TypeScript to JavaScript
-    ],
-  },
-
-  // CommonJS and ESM builds
-  {
-    input: 'src/entries/iife.ts',
-    output: {
-      name: 'VueRouter',
-      file: 'dist/vue-router.min.js',
-      format: 'iife',
-    },
-    plugins: [
-      alias({
-        resolve: ['ts'],
-        consola: path.resolve(__dirname, './src/consola.ts'),
-      }),
-      resolve(), // so Rollup can find `ms`
-      commonjs(), // so Rollup can convert `ms` to an ES module
-      ts(), // so Rollup can convert TypeScript to JavaScript
-      terser({
-        module: false,
-      }),
-    ],
-  },
-
-  {
-    input: 'src/index.ts',
-    external: ['path-to-regexp'],
-    plugins: [
-      alias({
-        resolve: ['ts'],
-        consola: path.resolve(__dirname, './src/consola.ts'),
-      }),
-      ts(), // so Rollup can convert TypeScript to JavaScript
-    ],
-    output: [
-      { file: 'dist/vue-router.cjs.js', format: 'cjs' },
-      { file: pkg.module, format: 'es' },
-    ],
-  },
+  createEntry({ format: 'iife' }),
+  createEntry({ format: 'iife', minify: true }),
+  createEntry({ format: 'cjs', external: ['path-to-regexp'] }),
+  createEntry({ format: 'es', external: ['path-to-regexp'] }),
+  createEntry({ format: 'es', isBrowser: true }),
+  createEntry({ format: 'es', isBrowser: true, minify: true }),
 ]

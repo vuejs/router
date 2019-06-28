@@ -1,24 +1,14 @@
-import { Router as BaseRouter, plugin, HTML5History } from '../index'
-import { RouterOptions } from '../router'
-import { VueConstructor } from 'vue'
+import VueRouter from // Router
+// plugin,
+// HTML5History,
+'../index'
 
-export default class VueRouter extends BaseRouter {
-  static install = plugin
-  static version = '__VERSION__'
+// declare module '../index' {
+//   interface BackwardsCompatibleRouter {
+//     Router: BaseRouter
+//     install: typeof plugin
+//     HTML5History: HTML5History
+//   }
+// }
 
-  // TODO: handle mode in a retro compatible way
-  constructor(options: RouterOptions & { mode: 'string' }) {
-    super({
-      history: new HTML5History(),
-      ...options,
-    })
-  }
-}
-
-declare global {
-  interface Window {
-    Vue?: VueConstructor
-  }
-}
-
-if (window.Vue) window.Vue.use(VueRouter)
+export default VueRouter

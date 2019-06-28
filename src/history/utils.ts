@@ -121,7 +121,10 @@ export function prepareURI(uri: string) {
 }
 
 // use regular decodeURI
-export const decodeURI = global.decodeURI
+// Use a renamed export instead of global.decodeURI
+// to support node and browser at the same time
+const originalDecodeURI = decodeURI
+export { originalDecodeURI as decodeURI }
 
 /**
  * Normalize a History location into an object that looks like
