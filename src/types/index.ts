@@ -180,3 +180,5 @@ export interface NavigationGuard<V = void> {
 export interface PostNavigationGuard {
   (to: RouteLocationNormalized, from: RouteLocationNormalized): any
 }
+
+export * from './type-guards'

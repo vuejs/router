@@ -1,8 +1,4 @@
-import {
-  RouteLocationNormalized,
-  RouteLocation,
-  MatchedRouteRecord,
-} from '../types'
+import { RouteLocationNormalized, MatchedRouteRecord } from '../types'
 import { guardToPromiseFn } from './guardToPromiseFn'
 
 export * from './guardToPromiseFn'
@@ -45,8 +41,4 @@ export async function extractComponentsGuards(
   )
 
   return guards
-}
-
-export function isRouteLocation(route: any): route is RouteLocation {
-  return typeof route === 'string' || (route && typeof route === 'object')
 }

@@ -5,7 +5,7 @@ import {
   RouteLocation,
 } from '../types'
 
-import { isRouteLocation } from './index'
+import { isRouteLocation } from '../types'
 import { NavigationGuardRedirect, NavigationAborted } from '../errors'
 
 export function guardToPromiseFn(
