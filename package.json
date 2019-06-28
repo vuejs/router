@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.15",
-    "@types/jsdom": "^12.2.3",
+    "@types/jsdom": "^12.2.4",
     "consola": "^2.9.0",
     "expect": "^24.8.0",
     "faked-promise": "^2.1.0",
