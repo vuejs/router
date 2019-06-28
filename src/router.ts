@@ -50,7 +50,7 @@ export class Router {
     this.matcher = new RouterMatcher(options.routes)
 
     this.history.listen(async (to, from, info) => {
-      const matchedRoute = this.matchLocation(to, this.currentRoute)
+      const matchedRoute = this.resolveLocation(to, this.currentRoute)
       // console.log({ to, matchedRoute })
 
       const toLocation: RouteLocationNormalized = { ...to, ...matchedRoute }
@@ -109,7 +109,7 @@ export class Router {
   }
 
   // TODO: rename to resolveLocation?
-  matchLocation(
+  resolveLocation(
     location: MatcherLocation & Required<RouteQueryAndHash>,
     currentLocation: RouteLocationNormalized,
     redirectedFrom?: RouteLocationNormalized
@@ -134,7 +134,7 @@ export class Router {
 
       if (typeof redirect === 'string') {
         // match the redirect instead
-        return this.matchLocation(
+        return this.resolveLocation(
           this.history.utils.normalizeLocation(redirect),
           currentLocation,
           normalizedLocation
@@ -143,7 +143,7 @@ export class Router {
         const newLocation = redirect(normalizedLocation)
 
         if (typeof newLocation === 'string') {
-          return this.matchLocation(
+          return this.resolveLocation(
             this.history.utils.normalizeLocation(newLocation),
             currentLocation,
             normalizedLocation
@@ -154,7 +154,7 @@ export class Router {
         // there was a redirect before
         // if (!('path' in newLocation) && !('name' in newLocation)) throw new Error('TODO: redirect canot be relative')
 
-        return this.matchLocation(
+        return this.resolveLocation(
           {
             ...newLocation,
             query: this.history.utils.normalizeQuery(newLocation.query || {}),
@@ -164,7 +164,7 @@ export class Router {
           normalizedLocation
         )
       } else {
-        return this.matchLocation(
+        return this.resolveLocation(
           {
             ...redirect,
             query: this.history.utils.normalizeQuery(redirect.query || {}),
@@ -201,13 +201,13 @@ export class Router {
     if (typeof to === 'string' || 'path' in to) {
       url = this.history.utils.normalizeLocation(to)
       // TODO: should allow a non matching url to allow dynamic routing to work
-      location = this.matchLocation(url, this.currentRoute)
+      location = this.resolveLocation(url, this.currentRoute)
     } else {
       // named or relative route
       const query = to.query ? this.history.utils.normalizeQuery(to.query) : {}
       const hash = to.hash || ''
       // we need to resolve first
-      location = this.matchLocation({ ...to, query, hash }, this.currentRoute)
+      location = this.resolveLocation({ ...to, query, hash }, this.currentRoute)
       // intentionally drop current query and hash
       url = this.history.utils.normalizeLocation({
         query,

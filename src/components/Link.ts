@@ -26,7 +26,7 @@ const Link: Component = {
       // @ts-ignore
       url = router.history.utils.normalizeLocation(to)
       // TODO: should allow a non matching url to allow dynamic routing to work
-      location = router.matchLocation(url, from)
+      location = router.resolveLocation(url, from)
     } else {
       // named or relative route
       // @ts-ignore
@@ -35,7 +35,7 @@ const Link: Component = {
       )
       const hash = to.hash || ''
       // we need to resolve first
-      location = router.matchLocation({ ...to, query, hash }, from)
+      location = router.resolveLocation({ ...to, query, hash }, from)
       // intentionally drop current query and hash
       // @ts-ignore
       url = router.history.utils.normalizeLocation({
@@ -44,7 +44,7 @@ const Link: Component = {
         ...location,
       })
     }
-    const route = router.matchLocation(url, from)
+    const route = router.resolveLocation(url, from)
 
     // TODO: active classes
     // TODO: handle replace prop
