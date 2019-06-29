@@ -1,3 +1,4 @@
+'use strict'
 // make tests compatible with mocha so we can write using jest syntax
 if (typeof global !== 'undefined' && typeof global.beforeAll === 'undefined') {
   global.beforeAll = global.before

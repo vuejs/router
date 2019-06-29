@@ -1,8 +1,8 @@
 // @ts-nocheck
 
-import { FunctionalComponentOptions } from 'vue'
+import { Component } from 'vue'
 
-const View: FunctionalComponentOptions = {
+const View: Component = {
   name: 'RouterView',
   functional: true,
 
@@ -16,8 +16,6 @@ const View: FunctionalComponentOptions = {
     const h = parent.$createElement
     // @ts-ignore
     const route = parent.$route
-
-    console.log('rendering', route)
 
     // TODO: support nested router-views
     const matched = route.matched[0]

@@ -1,5 +1,6 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
 import { NavigationGuard } from '../src/types'
+import { Component } from 'vue'
 
 export { HistoryMock } from './HistoryMock'
 
@@ -32,8 +33,14 @@ export const noGuard: NavigationGuard = (to, from, next) => {
   next()
 }
 
-export const components = {
-  Home: { template: `<div>Home</div>` },
-  Foo: { template: `<div>Foo</div>` },
-  Bar: { template: `<div>Bar</div>` },
+export const components: Record<string, Component> = {
+  Home: { render: h => h('div', {}, 'Home') },
+  Foo: { render: h => h('div', {}, 'Foo') },
+  Bar: { render: h => h('div', {}, 'Bar') },
 }
+
+// allow using a .jest modifider to skip some tests on mocha
+// specifically, skip component tests as they are a pain to correctly
+// adapt to mocha
+// @ts-ignore
+export const isMocha = () => typeof global.before === 'function'
