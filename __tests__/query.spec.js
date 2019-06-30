@@ -15,4 +15,11 @@ describe('parseQuery', () => {
       foo: 'a',
     })
   })
+
+  it('works with an empty string', () => {
+    const emptyQuery = parseQuery('')
+    expect(Object.keys(emptyQuery)).toHaveLength(0)
+    expect(emptyQuery).toEqual({})
+    expect(parseQuery('?')).toEqual({})
+  })
 })

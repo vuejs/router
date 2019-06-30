@@ -54,6 +54,9 @@ export function parseURL(location: string): HistoryLocationNormalized {
 export function parseQuery(search: string): HistoryQuery {
   const hasLeadingIM = search[0] === '?'
   const query: HistoryQuery = {}
+  // avoid creating an object with an empty key and empty value
+  // because of split('&')
+  if (search === '' || search === '?') return query
   const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
   for (let i = 0; i < searchParams.length; ++i) {
     const [key, value] = searchParams[i].split('=')
