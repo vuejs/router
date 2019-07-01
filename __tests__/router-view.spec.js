@@ -22,6 +22,16 @@ const routes = {
     // meta: {},
     matched: [{ components: { default: components.Home }, path: '/' }],
   },
+  named: {
+    fullPath: '/',
+    name: undefined,
+    path: '/',
+    query: {},
+    params: {},
+    hash: '',
+    // meta: {},
+    matched: [{ components: { foo: components.Foo }, path: '/' }],
+  },
 }
 
 describe('RouterView', () => {
@@ -33,10 +43,15 @@ describe('RouterView', () => {
   /**
    *
    * @param {RouteLocationNormalized} $route
+   * @param {Object} [props]
    */
-  function factory($route) {
+  function factory($route, props = {}) {
     // @ts-ignore cannot mount functional component?
     const wrapper = mount(RouterView, {
+      context: {
+        // https://github.com/vuejs/vue-test-utils/issues/918
+        props,
+      },
       mocks: { $route },
     })
     return wrapper
@@ -45,5 +60,10 @@ describe('RouterView', () => {
   it('displays current route component', async () => {
     const wrapper = factory(routes.root)
     expect(wrapper.html()).toMatchInlineSnapshot(`"<div>Home</div>"`)
+  })
+
+  it('displays named views', async () => {
+    const wrapper = factory(routes.named, { name: 'foo' })
+    expect(wrapper.html()).toMatchInlineSnapshot(`"<div>Foo</div>"`)
   })
 })
