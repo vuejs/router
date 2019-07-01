@@ -9,11 +9,13 @@
   "types": "dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "test:types": "tsc --build tsconfig.json",
+    "test:types:src": "tsc --build tsconfig.check-types.json",
+    "test:types:test": "tsc --build __tests__/tsconfig.json",
+    "test:types": "yarn test:types:src && yarn test:types:test",
     "test:unit": "jest --coverage",
     "test:mocha": "NODE_ENV=test mocha -r ts-node/register __tests__/**/*.spec.js __tests__/*.spec.js",
     "test:mocha:dev": "yarn run test:mocha -w --extension ts --reporter min",
-    "test": "yarn run test:types && yarn run test:unit",
+    "test": "yarn run test:types && yarn run test:unit && yarn build",
     "build": "yarn rollup -c rollup.config.js",
     "dev": "webpack-dev-server --mode=development"
   },

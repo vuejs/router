@@ -1,8 +1,12 @@
 {
-  "include": ["./**/*.ts"],
+  "include": ["./**/*.ts", "./**/*.js"],
+  "exclude": ["./helper.js"],
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
-    "allowJs": true
+    "noEmit": true,
+    "checkJs": true,
+    "allowJs": true,
+    "esModuleInterop": true
   }
 }

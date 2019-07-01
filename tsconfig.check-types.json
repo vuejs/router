@@ -1,0 +1,25 @@
+{
+  "include": ["src/**/*.ts"],
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    // "lib": ["es2017.object"] ,
+    "allowJs": true,
+    "checkJs": true,
+    // "declaration": true ,
+    // "sourceMap": true ,
+    // "outFile": "./",                       /* Concatenate and emit output to single file. */
+    // "outDir": "./dist" ,
+    // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    // "composite": true,                     /* Enable project compilation */
+    "noEmit": true,
+
+    "strict": true,
+    "noUnusedLocals": true,
+    // "noUnusedParameters": true,
+    "noImplicitReturns": true,
+
+    "moduleResolution": "node",
+    "esModuleInterop": true
+  }
+}
