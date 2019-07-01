@@ -17,7 +17,7 @@ describe('Router Matcher', () => {
      *
      * @param {RouteRecord | RouteRecord[]} record Record or records we are testing the matcher against
      * @param {MatcherLocation} location location we want to reolve against
-     * @param {Partial<MatcherLocationNormalized>} resolved Expected resolved location given by the matcher
+     * @param {Partial<MatcherLocationNormalized & { component: any }>} resolved Expected resolved location given by the matcher
      * @param {MatcherLocationNormalized} [start] Optional currentLocation used when resolving
      */
     function assertRecordMatch(
@@ -47,6 +47,15 @@ describe('Router Matcher', () => {
         resolved.params = resolved.params || location.params
       } else {
         resolved.params = resolved.params || {}
+      }
+
+      for (const matched of resolved.matched) {
+        if ('component' in matched) {
+          // @ts-ignore
+          matched.components = { default: matched.component }
+          // @ts-ignore
+          delete matched.component
+        }
       }
 
       const result = matcher.resolve(
@@ -646,9 +655,7 @@ describe('Router Matcher', () => {
               },
               {
                 ...NestedChildWithParam,
-                path: `${Foo.path}/${NestedWithParam.path}/${
-                  NestedChildWithParam.path
-                }`,
+                path: `${Foo.path}/${NestedWithParam.path}/${NestedChildWithParam.path}`,
               },
             ],
           }
@@ -677,9 +684,7 @@ describe('Router Matcher', () => {
               },
               {
                 ...NestedChildWithParam,
-                path: `${Foo.path}/${NestedWithParam.path}/${
-                  NestedChildWithParam.path
-                }`,
+                path: `${Foo.path}/${NestedWithParam.path}/${NestedChildWithParam.path}`,
               },
             ],
           }

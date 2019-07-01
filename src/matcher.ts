@@ -5,17 +5,40 @@ import {
   MatcherLocation,
   MatcherLocationNormalized,
   MatcherLocationRedirect,
+  // TODO: add it to matched
+  // MatchedRouteRecord,
 } from './types/index'
 import { NoRouteMatchError, InvalidRouteMatch } from './errors'
+
+type NormalizedRouteRecord = Exclude<RouteRecord, { component: any }> // normalize component/components into components
 
 interface RouteMatcher {
   re: RegExp
   resolve: (params?: RouteParams) => string
-  record: RouteRecord // TODO: NormalizedRouteRecord?
+  record: NormalizedRouteRecord
   parent: RouteMatcher | void
   // TODO: children so they can be removed
   // children: RouteMatcher[]
   keys: string[]
+}
+
+/**
+ * Normalizes a RouteRecord into a MatchedRouteRecord. Creates a copy
+ * @param record
+ * @returns the normalized version
+ */
+export function normalizeRecord(
+  record: Readonly<RouteRecord>
+): NormalizedRouteRecord {
+  if ('component' in record) {
+    const { component, ...rest } = record
+    // @ts-ignore
+    rest.components = { default: component }
+    return rest as NormalizedRouteRecord
+  }
+
+  // otherwise just create a copy
+  return { ...record }
 }
 
 export class RouterMatcher {
@@ -34,7 +57,8 @@ export class RouterMatcher {
     const keys: pathToRegexp.Key[] = []
     const options: pathToRegexp.RegExpOptions = {}
 
-    const recordCopy = { ...record }
+    const recordCopy = normalizeRecord(record)
+
     if (parent) {
       // if the child isn't an absolute route
       if (record.path[0] !== '/') {
@@ -108,9 +132,7 @@ export class RouterMatcher {
         const value = result[i + 1]
         if (!value) {
           throw new Error(
-            `Error parsing path "${
-              location.path
-            }" when looking for param "${key}"`
+            `Error parsing path "${location.path}" when looking for param "${key}"`
           )
         }
         params[key] = value

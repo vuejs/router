@@ -6,7 +6,14 @@ const View: Component = {
   name: 'RouterView',
   functional: true,
 
-  render(_, { children, parent, data }) {
+  props: {
+    name: {
+      type: String,
+      default: 'default',
+    },
+  },
+
+  render(_, { children, parent, data, props }) {
     // used by devtools to display a router-view badge
     // @ts-ignore
     data.routerView = true
@@ -23,7 +30,7 @@ const View: Component = {
     // render empty node if no matched route
     if (!matched) return h()
 
-    const component = matched.component
+    const component = matched.components[props.name]
 
     return h(component, data, children)
   },

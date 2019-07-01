@@ -14,8 +14,8 @@ export async function extractComponentsGuards(
   await Promise.all(
     matched.map(async record => {
       // TODO: cache async routes per record
-      if ('component' in record) {
-        const { component } = record
+      for (const name in record.components) {
+        const component = record.components[name]
         const resolvedComponent = await (typeof component === 'function'
           ? component()
           : component)
@@ -23,18 +23,6 @@ export async function extractComponentsGuards(
         const guard = resolvedComponent[guardType]
         if (guard) {
           guards.push(guardToPromiseFn(guard, to, from))
-        }
-      } else {
-        for (const name in record.components) {
-          const component = record.components[name]
-          const resolvedComponent = await (typeof component === 'function'
-            ? component()
-            : component)
-
-          const guard = resolvedComponent[guardType]
-          if (guard) {
-            guards.push(guardToPromiseFn(guard, to, from))
-          }
         }
       }
     })

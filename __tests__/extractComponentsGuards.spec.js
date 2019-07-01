@@ -1,6 +1,7 @@
 // @ts-check
 require('./helper')
 const expect = require('expect')
+const { normalizeRecord } = require('../src/matcher')
 const { extractComponentsGuards } = require('../src/utils')
 const { START_LOCATION_NORMALIZED } = require('../src/types')
 const { components } = require('./utils')
@@ -66,12 +67,14 @@ beforeEach(() => {
 
 /**
  *
- * @param {MatchedRouteRecord[]} components
+ * @param {Exclude<RouteRecord, RouteRecordRedirect>[]} components
  */
 async function checkGuards(components, n) {
   beforeRouteEnter.mockClear()
+  const ncomps = components.map(normalizeRecord)
   const guards = await extractComponentsGuards(
-    components,
+    // type is fine as we excluded RouteRecordRedirect in components argument
+    components.map(normalizeRecord),
     'beforeRouteEnter',
     to,
     from

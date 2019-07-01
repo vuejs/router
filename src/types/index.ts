@@ -37,8 +37,12 @@ export type RouteLocation =
   | RouteQueryAndHash & LocationAsName & RouteLocationOptions
   | RouteQueryAndHash & LocationAsRelative & RouteLocationOptions
 
-// exposed to the user in a very consistant way
-export type MatchedRouteRecord = Exclude<RouteRecord, RouteRecordRedirect>
+// A matched record cannot be a redirection and must contain
+// a normalized version of components with { default: Component } instead of `component`
+export type MatchedRouteRecord = Exclude<
+  RouteRecord,
+  RouteRecordRedirect | RouteRecordSingleView
+>
 
 export interface RouteLocationNormalized
   extends Required<RouteQueryAndHash & LocationAsRelative & LocationAsPath> {
@@ -114,6 +118,8 @@ interface RouteRecordSingleView extends RouteRecordCommon {
 
 interface RouteRecordMultipleViews extends RouteRecordCommon {
   components: Record<string, RouteComponent | Lazy<RouteComponent>>
+  // TODO: add tests
+  children?: RouteRecord[]
 }
 
 export type RouteRecord =
