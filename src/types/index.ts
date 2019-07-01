@@ -4,6 +4,7 @@ import { HistoryQuery, RawHistoryQuery } from '../history/base'
 // type Component = ComponentOptions<Vue> | typeof Vue | AsyncComponent
 
 export type Lazy<T> = () => Promise<T>
+export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
 
 export type TODO = any
 

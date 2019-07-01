@@ -5,6 +5,7 @@ const { RouterMatcher } = require('../src/matcher')
 const { START_LOCATION_NORMALIZED } = require('../src/types')
 const { normalizeRouteRecord } = require('./utils')
 
+/** @type {RouteComponent} */
 const component = null
 
 /** @typedef {import('../src/types').RouteRecord} RouteRecord */
@@ -20,8 +21,8 @@ describe('Router Matcher', () => {
      *
      * @param {RouteRecord | RouteRecord[]} record Record or records we are testing the matcher against
      * @param {MatcherLocation} location location we want to reolve against
-     * @param {Partial<MatcherLocationNormalized & { component: any }>} resolved Expected resolved location given by the matcher
-     * @param {MatcherLocationNormalized | (MatcherLocationNormalized & { matched: Array<MatchedRouteRecord | Exclude<RouteRecord, { redirect: any}>> })} [start] Optional currentLocation used when resolving
+     * @param {Partial<import('../src/types').Override<MatcherLocationNormalized, { matched: Array<Exclude<RouteRecord, { redirect: any}>> }>>} resolved Expected resolved location given by the matcher
+     * @param {import('../src/types').Override<MatcherLocationNormalized, { matched: Array<Exclude<RouteRecord, { redirect: any}>> }>} [start] Optional currentLocation used when resolving
      */
     function assertRecordMatch(
       record,
@@ -39,10 +40,12 @@ describe('Router Matcher', () => {
       }
 
       if ('redirect' in record) {
+        throw new Error('not handled')
       } else {
         // use one single record
         if (!('matched' in resolved))
           resolved.matched = record.map(normalizeRouteRecord)
+        else resolved.matched = resolved.matched.map(normalizeRouteRecord)
       }
 
       // allows not passing params
@@ -51,8 +54,6 @@ describe('Router Matcher', () => {
       } else {
         resolved.params = resolved.params || {}
       }
-
-      if (!('matched' in resolved)) resolved.matched = []
 
       const startCopy = {
         ...start,
@@ -179,7 +180,7 @@ describe('Router Matcher', () => {
             name: 'Home',
             params: {},
             path: '/home',
-            matched: [normalizeRouteRecord(record)],
+            matched: [record],
           }
         )
       })
@@ -194,7 +195,7 @@ describe('Router Matcher', () => {
             path: '/users/ed/m/user',
             name: undefined,
             params: { id: 'ed', role: 'user' },
-            matched: [record].map(normalizeRouteRecord),
+            matched: [record],
           }
         )
       })
@@ -236,7 +237,7 @@ describe('Router Matcher', () => {
             path: '/users/ed/m/user',
             name: 'UserEdit',
             params: { id: 'ed', role: 'user' },
-            matched: [record].map(normalizeRouteRecord),
+            matched: [record],
           }
         )
       })
@@ -255,7 +256,7 @@ describe('Router Matcher', () => {
             path: '/users/ed/m/user',
             name: undefined,
             params: { id: 'ed', role: 'user' },
-            matched: [record].map(normalizeRouteRecord),
+            matched: [record],
           }
         )
       })
@@ -454,11 +455,17 @@ describe('Router Matcher', () => {
           name: 'home',
           params: {},
           path: '/',
-          matched: [record].map(normalizeRouteRecord),
+          matched: [record],
         }
         // the property should be non enumerable
         Object.defineProperty(start, 'matched', { enumerable: false })
-        expect(assertErrorMatch(record, {}, start)).toMatchInlineSnapshot(
+        expect(
+          assertErrorMatch(
+            record,
+            {},
+            { ...start, matched: start.matched.map(normalizeRouteRecord) }
+          )
+        ).toMatchInlineSnapshot(
           `[Error: No match for {"name":"home","params":{},"path":"/"}]`
         )
       })
@@ -503,10 +510,7 @@ describe('Router Matcher', () => {
             name: 'child-b',
             path: '/foo/b',
             params: {},
-            matched: [
-              Foo,
-              { ...ChildB, path: `${Foo.path}/${ChildB.path}` },
-            ].map(normalizeRouteRecord),
+            matched: [Foo, { ...ChildB, path: `${Foo.path}/${ChildB.path}` }],
           }
         )
       })
@@ -558,7 +562,7 @@ describe('Router Matcher', () => {
               Foo,
               { ...Nested, path: `${Foo.path}` },
               { ...NestedNested, path: `${Foo.path}` },
-            ].map(normalizeRouteRecord),
+            ],
           }
         )
       })
@@ -584,7 +588,7 @@ describe('Router Matcher', () => {
                 ...NestedChildA,
                 path: `${Foo.path}/${Nested.path}/${NestedChildA.path}`,
               },
-            ].map(normalizeRouteRecord),
+            ],
           }
         )
       })
@@ -610,7 +614,7 @@ describe('Router Matcher', () => {
                 ...NestedChildA,
                 path: `${Foo.path}/${Nested.path}/${NestedChildA.path}`,
               },
-            ].map(normalizeRouteRecord),
+            ],
           }
         )
       })
@@ -636,7 +640,7 @@ describe('Router Matcher', () => {
                 ...NestedChildA,
                 path: `${Foo.path}/${Nested.path}/${NestedChildA.path}`,
               },
-            ].map(normalizeRouteRecord),
+            ],
           },
           {
             name: 'nested-child-a',
@@ -671,7 +675,7 @@ describe('Router Matcher', () => {
                 ...NestedChildWithParam,
                 path: `${Foo.path}/${NestedWithParam.path}/${NestedChildWithParam.path}`,
               },
-            ].map(normalizeRouteRecord),
+            ],
           }
         )
       })
@@ -700,7 +704,7 @@ describe('Router Matcher', () => {
                 ...NestedChildWithParam,
                 path: `${Foo.path}/${NestedWithParam.path}/${NestedChildWithParam.path}`,
               },
-            ].map(normalizeRouteRecord),
+            ],
           }
         )
       })
