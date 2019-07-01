@@ -5,6 +5,8 @@ import Vue from 'vue'
 declare global {
   interface Window {
     vm: Vue
+    h: HTML5History
+    r: Router
   }
 }
 
@@ -34,8 +36,9 @@ const GuardedWithLeave: RouteComponent = {
   },
 }
 
+const html5History = new HTML5History()
 const router = new Router({
-  history: new HTML5History(),
+  history: html5History,
   routes: [
     { path: '/', component: Home },
     { path: '/users/:id', name: 'user', component: User },
@@ -65,7 +68,11 @@ const router = new Router({
   ],
 })
 
+// for testing purposes
 const r = router
+const h = html5History
+window.h = h
+window.r = r
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
@@ -98,14 +105,6 @@ r.beforeEach((to, from, next) => {
   console.log('second guard')
   next()
 })
-
-// const h = new HTML5History()
-// @ts-ignore
-const h = r.history
-// @ts-ignore
-window.h = h
-// @ts-ignore
-window.r = r
 
 h.listen((to, from, { direction }) => {
   console.log(`popstate(${direction})`, { to, from })

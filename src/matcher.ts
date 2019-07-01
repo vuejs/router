@@ -32,7 +32,12 @@ export function normalizeRecord(
 ): NormalizedRouteRecord {
   if ('component' in record) {
     const { component, ...rest } = record
-    // @ts-ignore
+    // @ts-ignore I could do it type safe by copying again rest:
+    // return {
+    //   ...rest,
+    //   components: { default: component }
+    // }
+    // but it's slower
     rest.components = { default: component }
     return rest as NormalizedRouteRecord
   }

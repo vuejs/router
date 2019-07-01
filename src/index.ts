@@ -9,30 +9,28 @@ import Link from './components/Link'
 const plugin: PluginFunction<void> = Vue => {
   Vue.mixin({
     beforeCreate() {
-      // @ts-ignore
-      if (this.$options.router) {
-        // @ts-ignore
+      if ('router' in this.$options) {
+        // @ts-ignore we are adding this
         this._routerRoot = this
-        // @ts-ignore
-        this._router = this.$options.router as Router
+        // @ts-ignore should be able to be removed once we add the typing
+        const router = this.$options.router as Router
+        // @ts-ignore _router is internal
+        this._router = router
         // this._router.init(this)
         // @ts-ignore
         this._router.app = this
-        // @ts-ignore
+        // @ts-ignore we can use but should not be used by others
         Vue.util.defineReactive(
-          // @ts-ignore
           this,
           '_route',
-          // @ts-ignore
-          this._router.currentRoute
+          router.currentRoute
           // undefined,
           // true
         )
 
-        // @ts-ignore
-        this._router.doInitialNavigation()
+        router.doInitialNavigation()
       } else {
-        // @ts-ignore
+        // @ts-ignore we are adding this
         this._routerRoot = (this.$parent && this.$parent._routerRoot) || this
       }
     },
@@ -50,9 +48,9 @@ const plugin: PluginFunction<void> = Vue => {
     },
   })
 
-  // @ts-ignore
+  // @ts-ignore FIXME: should work
   Vue.component('RouterView', View)
-  // @ts-ignore
+  // @ts-ignore FIXME: should work
   Vue.component('RouterLink', Link)
   // Vue.component('RouterLink', Link)
 

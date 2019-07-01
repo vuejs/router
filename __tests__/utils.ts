@@ -7,6 +7,17 @@ export const tick = () => new Promise(resolve => process.nextTick(resolve))
 
 export const NAVIGATION_TYPES = ['push', 'replace']
 
+declare global {
+  namespace NodeJS {
+    interface Global {
+      window: JSDOM['window']
+      location: JSDOM['window']['location']
+      document: JSDOM['window']['document']
+      before?: Function
+    }
+  }
+}
+
 export function createDom(options?: ConstructorOptions) {
   const dom = new JSDOM(
     `<!DOCTYPE html><html><head></head><body></body></html>`,
@@ -18,11 +29,8 @@ export function createDom(options?: ConstructorOptions) {
     }
   )
 
-  // @ts-ignore
   global.window = dom.window
-  // @ts-ignore
   global.location = dom.window.location
-  // @ts-ignore
   global.document = dom.window.document
 
   return dom
@@ -41,7 +49,6 @@ export const components = {
 // allow using a .jest modifider to skip some tests on mocha
 // specifically, skip component tests as they are a pain to correctly
 // adapt to mocha
-// @ts-ignore
 export const isMocha = () => typeof global.before === 'function'
 
 /**

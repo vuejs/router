@@ -14,14 +14,13 @@ const View: Component = {
   },
 
   render(_, { children, parent, data, props }) {
-    // used by devtools to display a router-view badge
-    // @ts-ignore
+    // @ts-ignore used by devtools to display a router-view badge
     data.routerView = true
 
     // directly use parent context's createElement() function
     // so that components rendered by router-view can resolve named slots
     const h = parent.$createElement
-    // @ts-ignore
+    // @ts-ignore $route is added by our typings
     const route = parent.$route
 
     // TODO: support nested router-views

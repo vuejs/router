@@ -32,13 +32,14 @@ const routes = [
 
 const onError = jest.fn()
 function createRouter() {
+  const history = new AbstractHistory()
   const router = new Router({
-    history: new AbstractHistory(),
+    history,
     routes,
   })
 
   router.onError(onError)
-  return router
+  return { router, history }
 }
 
 describe('Errors', () => {
@@ -47,7 +48,7 @@ describe('Errors', () => {
   })
 
   it('triggers onError when navigation is aborted', async () => {
-    const router = createRouter()
+    const { router } = createRouter()
     router.beforeEach((to, from, next) => {
       next(false)
     })
@@ -61,7 +62,7 @@ describe('Errors', () => {
   })
 
   it('triggers erros caused by new navigations of a next(redirect) trigered by history', async () => {
-    const router = createRouter()
+    const { router, history } = createRouter()
     await router.push('/p/0')
     await router.push('/p/other')
 
@@ -71,8 +72,7 @@ describe('Errors', () => {
       else next({ name: 'Param', params: { p: '' + p } })
     })
 
-    // @ts-ignore
-    router.history.back()
+    history.back()
     await tick()
 
     expect(onError).toHaveBeenCalledTimes(2)

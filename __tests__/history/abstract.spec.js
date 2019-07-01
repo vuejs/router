@@ -223,10 +223,10 @@ describe('Abstract/in memory history', () => {
     const history = new AbstractHistory()
     const spy = jest.fn()
     history.listen(spy)
-    // @ts-ignore
+    // @ts-ignore we need to check internals here
     expect(history.listeners).toHaveLength(1)
     history.destroy()
-    // @ts-ignore
+    // @ts-ignore we need to check internals here
     expect(history.listeners).toHaveLength(0)
   })
 

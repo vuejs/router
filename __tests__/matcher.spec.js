@@ -8,6 +8,7 @@ const { normalizeRouteRecord } = require('./utils')
 const component = null
 
 /** @typedef {import('../src/types').RouteRecord} RouteRecord */
+/** @typedef {import('../src/types').RouteComponent} RouteComponent */
 /** @typedef {import('../src/types').MatchedRouteRecord} MatchedRouteRecord */
 /** @typedef {import('../src/types').MatcherLocation} MatcherLocation */
 /** @typedef {import('../src/types').MatcherLocationRedirect} MatcherLocationRedirect */
@@ -20,7 +21,7 @@ describe('Router Matcher', () => {
      * @param {RouteRecord | RouteRecord[]} record Record or records we are testing the matcher against
      * @param {MatcherLocation} location location we want to reolve against
      * @param {Partial<MatcherLocationNormalized & { component: any }>} resolved Expected resolved location given by the matcher
-     * @param {MatcherLocationNormalized} [start] Optional currentLocation used when resolving
+     * @param {MatcherLocationNormalized | (MatcherLocationNormalized & { matched: Array<MatchedRouteRecord | Exclude<RouteRecord, { redirect: any}>> })} [start] Optional currentLocation used when resolving
      */
     function assertRecordMatch(
       record,
@@ -40,8 +41,8 @@ describe('Router Matcher', () => {
       if ('redirect' in record) {
       } else {
         // use one single record
-        // @ts-ignore
-        if (!('matched' in resolved)) resolved.matched = record
+        if (!('matched' in resolved))
+          resolved.matched = record.map(normalizeRouteRecord)
       }
 
       // allows not passing params
@@ -51,14 +52,15 @@ describe('Router Matcher', () => {
         resolved.params = resolved.params || {}
       }
 
-      for (const matched of resolved.matched) {
-        if ('component' in matched) {
-          // @ts-ignore
-          matched.components = { default: matched.component }
-          // @ts-ignore
-          delete matched.component
-        }
+      if (!('matched' in resolved)) resolved.matched = []
+
+      const startCopy = {
+        ...start,
+        matched: start.matched.map(normalizeRouteRecord),
       }
+
+      // make matched non enumerable
+      Object.defineProperty(startCopy, 'matched', { enumerable: false })
 
       const result = matcher.resolve(
         {
@@ -66,7 +68,7 @@ describe('Router Matcher', () => {
           // override anything provided in location
           ...location,
         },
-        start
+        startCopy
       )
       expect(result).toEqual(resolved)
     }

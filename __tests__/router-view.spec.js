@@ -35,7 +35,7 @@ describe('RouterView', () => {
    * @param {RouteLocationNormalized} $route
    */
   function factory($route) {
-    // @ts-ignore
+    // @ts-ignore cannot mount functional component?
     const wrapper = mount(RouterView, {
       mocks: { $route },
     })
