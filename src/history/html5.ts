@@ -61,16 +61,34 @@ export class HTML5History extends BaseHistory {
   // TODO: is this necessary
   ensureLocation() {}
 
+  private changeLocation(
+    state: StateEntry,
+    title: string,
+    url: string,
+    replace: boolean
+  ): void {
+    try {
+      // BROWSER QUIRK
+      // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds
+      this.history[replace ? 'replaceState' : 'pushState'](state, title, url)
+    } catch (err) {
+      console.log('Error with push/replace State', err)
+      // Force the navigation, this also resets the call count
+      location[replace ? 'replace' : 'assign'](url)
+    }
+  }
+
   replace(to: HistoryLocation) {
     const normalized = this.utils.normalizeLocation(to)
     if (normalized.fullPath === this.location.fullPath) return
     cs.info('replace', this.location, normalized)
-    this.history.replaceState(
+    this.changeLocation(
       // TODO: this should be user's responsibility
       // _replacedState: this.history.state || null,
       buildState(this.history.state.back, normalized, null, true),
       '',
-      normalized.fullPath
+      normalized.fullPath,
+      true
     )
     this.location = normalized
   }
@@ -80,14 +98,16 @@ export class HTML5History extends BaseHistory {
     // TODO: should be removed and let the user normalize the location?
     // or make it fast so normalization on a normalized object is fast
     const normalized = this.utils.normalizeLocation(to)
-    this.history.replaceState(
+    this.changeLocation(
       buildState(
         this.history.state.back,
         this.history.state.current,
         normalized,
         this.history.state.replaced
       ),
-      ''
+      '',
+      this.location.fullPath,
+      true
     )
     // TODO: compare current location to prevent navigation
     // NEW NOTE: I think it shouldn't be history responsibility to check that
@@ -97,7 +117,7 @@ export class HTML5History extends BaseHistory {
       ...data,
     }
     cs.info('push', this.location, '->', normalized, 'with state', state)
-    this.history.pushState(state, '', normalized.fullPath)
+    this.changeLocation(state, '', normalized.fullPath, false)
     this.location = normalized
   }
 
