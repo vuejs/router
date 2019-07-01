@@ -1,6 +1,5 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
-import { NavigationGuard } from '../src/types'
-import { Component } from 'vue'
+import { NavigationGuard, RouteRecord, MatchedRouteRecord } from '../src/types'
 
 export { HistoryMock } from './HistoryMock'
 
@@ -33,10 +32,10 @@ export const noGuard: NavigationGuard = (to, from, next) => {
   next()
 }
 
-export const components: Record<string, Component> = {
-  Home: { render: h => h('div', {}, 'Home') },
-  Foo: { render: h => h('div', {}, 'Foo') },
-  Bar: { render: h => h('div', {}, 'Bar') },
+export const components = {
+  Home: { render: (h: Function) => h('div', {}, 'Home') },
+  Foo: { render: (h: Function) => h('div', {}, 'Foo') },
+  Bar: { render: (h: Function) => h('div', {}, 'Bar') },
 }
 
 // allow using a .jest modifider to skip some tests on mocha
@@ -44,3 +43,21 @@ export const components: Record<string, Component> = {
 // adapt to mocha
 // @ts-ignore
 export const isMocha = () => typeof global.before === 'function'
+
+/**
+ * Copies and normalizes the record so it always contains an object of `components`
+ *
+ * @param record
+ * @returns a normalized copy
+ */
+export function normalizeRouteRecord(
+  record: Exclude<RouteRecord, { redirect: any }>
+): MatchedRouteRecord {
+  if ('components' in record) return { ...record }
+  const { component, ...rest } = record
+
+  return {
+    ...rest,
+    components: { default: component },
+  }
+}

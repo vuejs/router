@@ -1,10 +1,9 @@
 // @ts-check
 require('./helper')
 const expect = require('expect')
-const { normalizeRecord } = require('../src/matcher')
 const { extractComponentsGuards } = require('../src/utils')
 const { START_LOCATION_NORMALIZED } = require('../src/types')
-const { components } = require('./utils')
+const { components, normalizeRouteRecord } = require('./utils')
 
 /** @typedef {import('../src/types').RouteRecord} RouteRecord */
 /** @typedef {import('../src/types').MatchedRouteRecord} MatchedRouteRecord */
@@ -34,7 +33,7 @@ const SingleGuardNamed = {
 
 /**
  *
- * @param {MatchedRouteRecord} record
+ * @param {Exclude<RouteRecord, { redirect: any}>} record
  * @returns {MatchedRouteRecord}
  */
 function makeAsync(record) {
@@ -49,11 +48,15 @@ function makeAsync(record) {
     )
     return copy
   } else {
-    if (typeof record.component === 'function') return { ...record }
-    // @ts-ignore
+    const { component, ...copy } = record
+    if (typeof component === 'function')
+      return { ...copy, components: { default: component } }
+
     return {
-      ...record,
-      component: () => Promise.resolve(record.component),
+      ...copy,
+      components: {
+        default: () => Promise.resolve(component),
+      },
     }
   }
 }
@@ -67,14 +70,14 @@ beforeEach(() => {
 
 /**
  *
- * @param {Exclude<RouteRecord, RouteRecordRedirect>[]} components
+ * @param {Exclude<RouteRecord, { redirect: any }>[]} components
+ * @param {number} n
  */
 async function checkGuards(components, n) {
   beforeRouteEnter.mockClear()
-  const ncomps = components.map(normalizeRecord)
   const guards = await extractComponentsGuards(
     // type is fine as we excluded RouteRecordRedirect in components argument
-    components.map(normalizeRecord),
+    components.map(normalizeRouteRecord),
     'beforeRouteEnter',
     to,
     from

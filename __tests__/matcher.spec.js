@@ -3,10 +3,12 @@ require('./helper')
 const expect = require('expect')
 const { RouterMatcher } = require('../src/matcher')
 const { START_LOCATION_NORMALIZED } = require('../src/types')
+const { normalizeRouteRecord } = require('./utils')
 
 const component = null
 
 /** @typedef {import('../src/types').RouteRecord} RouteRecord */
+/** @typedef {import('../src/types').MatchedRouteRecord} MatchedRouteRecord */
 /** @typedef {import('../src/types').MatcherLocation} MatcherLocation */
 /** @typedef {import('../src/types').MatcherLocationRedirect} MatcherLocationRedirect */
 /** @typedef {import('../src/types').MatcherLocationNormalized} MatcherLocationNormalized */
@@ -171,7 +173,12 @@ describe('Router Matcher', () => {
           record,
           {},
           { name: 'Home', path: '/home' },
-          { name: 'Home', params: {}, path: '/home', matched: [record] }
+          {
+            name: 'Home',
+            params: {},
+            path: '/home',
+            matched: [normalizeRouteRecord(record)],
+          }
         )
       })
 
@@ -185,7 +192,7 @@ describe('Router Matcher', () => {
             path: '/users/ed/m/user',
             name: undefined,
             params: { id: 'ed', role: 'user' },
-            matched: [record],
+            matched: [record].map(normalizeRouteRecord),
           }
         )
       })
@@ -227,7 +234,7 @@ describe('Router Matcher', () => {
             path: '/users/ed/m/user',
             name: 'UserEdit',
             params: { id: 'ed', role: 'user' },
-            matched: [record],
+            matched: [record].map(normalizeRouteRecord),
           }
         )
       })
@@ -246,7 +253,7 @@ describe('Router Matcher', () => {
             path: '/users/ed/m/user',
             name: undefined,
             params: { id: 'ed', role: 'user' },
-            matched: [record],
+            matched: [record].map(normalizeRouteRecord),
           }
         )
       })
@@ -445,7 +452,7 @@ describe('Router Matcher', () => {
           name: 'home',
           params: {},
           path: '/',
-          matched: [record],
+          matched: [record].map(normalizeRouteRecord),
         }
         // the property should be non enumerable
         Object.defineProperty(start, 'matched', { enumerable: false })
@@ -494,7 +501,10 @@ describe('Router Matcher', () => {
             name: 'child-b',
             path: '/foo/b',
             params: {},
-            matched: [Foo, { ...ChildB, path: `${Foo.path}/${ChildB.path}` }],
+            matched: [
+              Foo,
+              { ...ChildB, path: `${Foo.path}/${ChildB.path}` },
+            ].map(normalizeRouteRecord),
           }
         )
       })
@@ -514,7 +524,9 @@ describe('Router Matcher', () => {
             name: 'nested',
             path: '/foo',
             params: {},
-            matched: [Foo, { ...Nested, path: `${Foo.path}` }],
+            matched: [Foo, { ...Nested, path: `${Foo.path}` }].map(
+              normalizeRouteRecord
+            ),
           }
         )
       })
@@ -544,7 +556,7 @@ describe('Router Matcher', () => {
               Foo,
               { ...Nested, path: `${Foo.path}` },
               { ...NestedNested, path: `${Foo.path}` },
-            ],
+            ].map(normalizeRouteRecord),
           }
         )
       })
@@ -570,7 +582,7 @@ describe('Router Matcher', () => {
                 ...NestedChildA,
                 path: `${Foo.path}/${Nested.path}/${NestedChildA.path}`,
               },
-            ],
+            ].map(normalizeRouteRecord),
           }
         )
       })
@@ -596,7 +608,7 @@ describe('Router Matcher', () => {
                 ...NestedChildA,
                 path: `${Foo.path}/${Nested.path}/${NestedChildA.path}`,
               },
-            ],
+            ].map(normalizeRouteRecord),
           }
         )
       })
@@ -622,7 +634,7 @@ describe('Router Matcher', () => {
                 ...NestedChildA,
                 path: `${Foo.path}/${Nested.path}/${NestedChildA.path}`,
               },
-            ],
+            ].map(normalizeRouteRecord),
           },
           {
             name: 'nested-child-a',
@@ -657,7 +669,7 @@ describe('Router Matcher', () => {
                 ...NestedChildWithParam,
                 path: `${Foo.path}/${NestedWithParam.path}/${NestedChildWithParam.path}`,
               },
-            ],
+            ].map(normalizeRouteRecord),
           }
         )
       })
@@ -686,7 +698,7 @@ describe('Router Matcher', () => {
                 ...NestedChildWithParam,
                 path: `${Foo.path}/${NestedWithParam.path}/${NestedChildWithParam.path}`,
               },
-            ],
+            ].map(normalizeRouteRecord),
           }
         )
       })

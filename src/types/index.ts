@@ -1,4 +1,7 @@
 import { HistoryQuery, RawHistoryQuery } from '../history/base'
+// import Vue, { ComponentOptions, AsyncComponent } from 'vue'
+
+// type Component = ComponentOptions<Vue> | typeof Vue | AsyncComponent
 
 export type Lazy<T> = () => Promise<T>
 
@@ -87,11 +90,13 @@ export interface RouteComponentInterface {
 }
 
 // TODO: have a real type with augmented properties
-// export type RouteComponent = TODO & RouteComponentInterface
-export type RouteComponent = {
+// export type RouteComponent = Component & RouteComponentInterface
+type Component = {
   template?: string
   render?: Function
 } & RouteComponentInterface
+
+export type RouteComponent = Component | Lazy<Component>
 
 // NOTE not sure the whole PropsTransformer thing can be usefull
 // since in callbacks we don't know where we are coming from
@@ -112,12 +117,12 @@ export interface RouteRecordRedirect extends RouteRecordCommon {
 }
 
 interface RouteRecordSingleView extends RouteRecordCommon {
-  component: RouteComponent | Lazy<RouteComponent>
+  component: RouteComponent
   children?: RouteRecord[]
 }
 
 interface RouteRecordMultipleViews extends RouteRecordCommon {
-  components: Record<string, RouteComponent | Lazy<RouteComponent>>
+  components: Record<string, RouteComponent>
   // TODO: add tests
   children?: RouteRecord[]
 }

@@ -16,6 +16,8 @@ export async function extractComponentsGuards(
       // TODO: cache async routes per record
       for (const name in record.components) {
         const component = record.components[name]
+        // TODO: handle Vue.extend views
+        // if ('options' in component) throw new Error('TODO')
         const resolvedComponent = await (typeof component === 'function'
           ? component()
           : component)
