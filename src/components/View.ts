@@ -23,8 +23,29 @@ const View: Component = {
     // @ts-ignore $route is added by our typings
     const route = parent.$route
 
+    // determine current view depth, also check to see if the tree
+    // has been toggled inactive but kept-alive.
+    let depth = 0
+    // let inactive = false
+    // @ts-ignore
+    while (parent && parent._routerRoot !== parent) {
+      const vnodeData = parent.$vnode && parent.$vnode.data
+      if (vnodeData) {
+        // @ts-ignore
+        if (vnodeData.routerView) {
+          depth++
+        }
+        // if (vnodeData.keepAlive && parent._inactive) {
+        //   inactive = true
+        // }
+      }
+      parent = parent.$parent
+    }
+    // @ts-ignore for devtools
+    data.routerViewDepth = depth
+
     // TODO: support nested router-views
-    const matched = route.matched[0]
+    const matched = route.matched[depth]
 
     // render empty node if no matched route
     if (!matched) return h()

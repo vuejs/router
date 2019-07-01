@@ -44,6 +44,10 @@ export const components = {
   Home: { render: (h: Function) => h('div', {}, 'Home') },
   Foo: { render: (h: Function) => h('div', {}, 'Foo') },
   Bar: { render: (h: Function) => h('div', {}, 'Bar') },
+  Nested: {
+    render: (h: Function) =>
+      h('div', {}, [h('h2', {}, 'Nested'), h('RouterView')]),
+  },
 }
 
 // allow using a .jest modifider to skip some tests on mocha
