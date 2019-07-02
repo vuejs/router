@@ -41,7 +41,7 @@ const Link: Component = {
         ...location,
       })
     }
-    const route = router.resolveLocation(url, from)
+    const route = location
 
     // TODO: active classes
     // TODO: handle replace prop
@@ -79,9 +79,8 @@ function guardEvent(e: MouseEvent) {
     if (/\b_blank\b/i.test(target)) return
   }
   // this may be a Weex event which doesn't have this method
-  if (e.preventDefault) {
-    e.preventDefault()
-  }
+  if (e.preventDefault) e.preventDefault()
+
   return true
 }
 
