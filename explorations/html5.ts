@@ -160,6 +160,16 @@ window.vm = new Vue({
     message: 'hello',
     shared,
   },
+
+  // try out watchers
+  // watch: {
+  //   '$route.params.id' (id) {
+  //     console.log('id changed', id)
+  //   },
+  //   '$route.name' (name) {
+  //     console.log('name changed', name)
+  //   }
+  // }
 })
 
 run()
