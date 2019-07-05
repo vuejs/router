@@ -1,4 +1,4 @@
-import consola from 'consola'
+import consola from '../consola'
 import { BaseHistory, HistoryLocationNormalized, HistoryLocation } from './base'
 import { NavigationCallback, HistoryState, NavigationDirection } from './base'
 

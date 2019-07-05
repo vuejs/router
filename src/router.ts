@@ -78,7 +78,7 @@ export class Router {
         }
         this.updateReactiveRoute()
       } catch (error) {
-        if (error instanceof NavigationGuardRedirect) {
+        if (NavigationGuardRedirect.is(error)) {
           // TODO: refactor the duplication of new NavigationCancelled by
           // checking instanceof NavigationError (it's another TODO)
           // a more recent navigation took place
@@ -93,7 +93,7 @@ export class Router {
           // the error is already handled by router.push
           // we just want to avoid logging the error
           this.push(error.to).catch(() => {})
-        } else if (error instanceof NavigationAborted) {
+        } else if (NavigationAborted.is(error)) {
           // TODO: test on different browsers ensure consistent behavior
           // TODO: this doesn't work if the user directly calls window.history.go(-n) with n > 1
           // We can override the go method to retrieve the number but not sure if all browsers allow that
@@ -234,7 +234,7 @@ export class Router {
     try {
       await this.navigate(toLocation, this.currentRoute)
     } catch (error) {
-      if (error instanceof NavigationGuardRedirect) {
+      if (NavigationGuardRedirect.is(error)) {
         // push was called while waiting in guards
         if (this.pendingLocation !== toLocation) {
           // TODO: trigger onError as well
@@ -454,7 +454,7 @@ export class Router {
     try {
       await this.navigate(toLocation, this.currentRoute)
     } catch (error) {
-      if (error instanceof NavigationGuardRedirect) {
+      if (NavigationGuardRedirect.is(error)) {
         // push was called while waiting in guards
         if (this.pendingLocation !== toLocation) {
           // TODO: trigger onError as well

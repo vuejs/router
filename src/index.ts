@@ -1,5 +1,8 @@
 import { Router, RouterOptions } from './router'
 import { HTML5History } from './history/html5'
+import { HashHistory } from './history/hash'
+import { AbstractHistory } from './history/abstract'
+import { BaseHistory } from './history/base'
 import { PluginFunction, VueConstructor } from 'vue'
 import View from './components/View'
 import Link from './components/Link'
@@ -60,7 +63,14 @@ const plugin: PluginFunction<void> = Vue => {
     strats.created
 }
 
-export { Router, HTML5History, plugin }
+export {
+  Router,
+  HTML5History,
+  HashHistory,
+  AbstractHistory,
+  BaseHistory,
+  plugin,
+}
 
 export default class VueRouter extends Router {
   static install = plugin

@@ -393,10 +393,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-11.13.0.tgz#b0df8d6ef9b5001b2be3a94d909ce3c29a80f9e1"
   integrity sha512-rx29MMkRdVmzunmiA4lzBYJNnXsW/PhG4kMBy2ATsYaDjGGR75dCFEVVROKpNwlVdcUX3xxlghKQOeDPBJobng==
 
-"@types/node@^12.0.8":
-  version "12.0.10"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.10.tgz#51babf9c7deadd5343620055fc8aff7995c8b031"
-  integrity sha512-LcsGbPomWsad6wmMNv7nBLw7YYYyfdYcz6xryKYQhx89c3XXan+8Q6AJ43G5XDIaklaVkK3mE4fCb0SBvMiPSQ==
+"@types/node@^12.0.10":
+  version "12.0.12"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.12.tgz#cc791b402360db1eaf7176479072f91ee6c6c7ca"
+  integrity sha512-Uy0PN4R5vgBUXFoJrKryf5aTk3kJ8Rv3PdlHjl6UaX+Cqp1QE0yPQ68MPXGrZOfG7gZVNDIJZYyot0B9ubXUrQ==
 
 "@types/resolve@0.0.8":
   version "0.0.8"
@@ -5313,13 +5313,14 @@ rollup-plugin-replace@^2.2.0:
     magic-string "^0.25.2"
     rollup-pluginutils "^2.6.0"
 
-rollup-plugin-terser@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-terser/-/rollup-plugin-terser-5.0.0.tgz#ac50fdb703b580447a7e6b1692aeed515a6be8cf"
-  integrity sha512-W+jJ4opYnlmNyVW0vtRufs+EGf68BIJ7bnOazgz8mgz8pA9lUyrEifAhPs5y9M16wFeAyBGaRjKip4dnFBtXaw==
+rollup-plugin-terser@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-terser/-/rollup-plugin-terser-5.1.0.tgz#82e637613d5af6c85ac4319b508b1c065d64075c"
+  integrity sha512-tvJweguo+f9T1SBcSmEMaArCUM07mIg61ArqPj3Fty9OdwTLCxBUBdxS3e1cU68Z1lXf52JBhbt3yRuQoHLtQg==
   dependencies:
     "@babel/code-frame" "^7.0.0"
     jest-worker "^24.6.0"
+    rollup-pluginutils "^2.8.1"
     serialize-javascript "^1.7.0"
     terser "^4.0.0"
 
@@ -5348,13 +5349,13 @@ rollup-pluginutils@^2.6.0, rollup-pluginutils@^2.8.1:
   dependencies:
     estree-walker "^0.6.1"
 
-rollup@^1.16.3:
-  version "1.16.3"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-1.16.3.tgz#9b8bcf31523efc83447a9624bd2fe6ca58caa1e7"
-  integrity sha512-iXINUUEk2NTZXE3GcUtLQt2cvfQsAUXBQ8AFsDK8tg7Wp5bwTKdZXPdzB2IJQwHpdUNfsIgYMAfajurh7SVTnA==
+rollup@^1.16.6:
+  version "1.16.6"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-1.16.6.tgz#0d979e3edd14a27e5436a145c7f1fcef35e0083b"
+  integrity sha512-oM3iKkzPCq9Da95wCnNfS8YlNZjgCD5c/TceKnJIthI9FOeJqnO3PUr/C5Suv9Kjzh0iphKL02PLeja3A5AMIA==
   dependencies:
     "@types/estree" "0.0.39"
-    "@types/node" "^12.0.8"
+    "@types/node" "^12.0.10"
     acorn "^6.1.1"
 
 rsvp@^4.8.4:

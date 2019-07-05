@@ -77,7 +77,7 @@ function createEntry(
           // same for d.ts files
           declaration: format === 'es' && isBrowser && !minify,
           module: 'esnext', // we need to override it because mocha requires this value to be commonjs
-          target: format === 'iife' || format === 'cjs' ? 'es3' : 'esnext',
+          target: format === 'iife' || format === 'cjs' ? 'es5' : 'esnext',
         },
       },
     })
