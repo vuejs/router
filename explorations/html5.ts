@@ -1,11 +1,22 @@
-import { Router, HTML5History, plugin } from '../src'
+import {
+  Router,
+  // @ts-ignore
+  HTML5History,
+  // @ts-ignore
+  HashHistory,
+  // @ts-ignore
+  AbstractHistory,
+  plugin,
+  BaseHistory,
+} from '../src'
 import { RouteComponent } from '../src/types'
 import Vue from 'vue'
 
 declare global {
   interface Window {
     vm: Vue
-    h: HTML5History
+    // h: HTML5History
+    h: BaseHistory
     r: Router
   }
 }
@@ -36,9 +47,10 @@ const GuardedWithLeave: RouteComponent = {
   },
 }
 
-const html5History = new HTML5History()
+// const hist = new HTML5History()
+const hist = new HashHistory()
 const router = new Router({
-  history: html5History,
+  history: hist,
   routes: [
     { path: '/', component: Home },
     { path: '/users/:id', name: 'user', component: User },
@@ -70,7 +82,7 @@ const router = new Router({
 
 // for testing purposes
 const r = router
-const h = html5History
+const h = hist
 window.h = h
 window.r = r
 
