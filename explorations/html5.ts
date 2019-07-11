@@ -56,7 +56,7 @@ const router = new Router({
     { path: '/users/:id', name: 'user', component: User },
     { path: '/documents/:id', name: 'docs', component: User },
     { path: '/n/:n', name: 'increment', component },
-    { path: '/multiple/:a/:b', name: 'user', component },
+    { path: '/multiple/:a/:b', name: 'multiple', component },
     {
       path: '/with-guard/:n',
       name: 'guarded',

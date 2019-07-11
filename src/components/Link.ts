@@ -19,6 +19,7 @@ const Link: Component = {
     const from = this.$route as RouteLocationNormalized
     // @ts-ignore can't get `this`
     const to = this.to as RouteLocation
+
     // @ts-ignore can't get `this`
     const history = router.history
     let url: HistoryLocationNormalized

@@ -175,7 +175,9 @@ export function createRouteMatcher(
       }
     }
 
-    function scoreForSegment(group: pathToRegexp.Token): number {
+    const scoreForSegment = function scoreForSegment(
+      group: pathToRegexp.Token
+    ): number {
       let score = PathScore.Segment
       if (typeof group === 'string') {
         score += group === '/' ? PathScore.Root : PathScore.Static
@@ -190,7 +192,9 @@ export function createRouteMatcher(
       return score
     }
 
-    function scoreForSubSegment(group: pathToRegexp.Token): number {
+    const scoreForSubSegment = function scoreForSubSegment(
+      group: pathToRegexp.Token
+    ): number {
       let score = 0
       if (typeof group === 'string') {
         // in a sub segment, it doesn't matter if it's root or not
