@@ -52,6 +52,7 @@ enum PathScore {
   SubSegment = 2, // /multiple-:things-in-one-:segment
   Static = 3, // /static
   Dynamic = 2, // /:someId
+  DynamicCustomRegexp = 2.5, // /:someId(\\d+)
   Wildcard = -1, // /:namedWildcard(.*)
   SubWildcard = 1, // Wildcard as a subsegment
   Repeatable = -0.5, // /:w+ or /:w*
@@ -59,6 +60,9 @@ enum PathScore {
   SubOptional = -0.1, // optional inside a subsegment /a-:w? or /a-:w*
   Root = 1, // just /
 }
+
+// allows to check if the user provided a custom regexp
+const isDefaultPathRegExpRE = /^\[\^[^\]]+\]\+\?$/
 
 export function createRouteMatcher(
   record: Readonly<NormalizedRouteRecord>,
@@ -182,7 +186,12 @@ export function createRouteMatcher(
       if (typeof group === 'string') {
         score += group === '/' ? PathScore.Root : PathScore.Static
       } else {
-        score += group.pattern === '.*' ? PathScore.Wildcard : PathScore.Dynamic
+        score +=
+          group.pattern === '.*'
+            ? PathScore.Wildcard
+            : isDefaultPathRegExpRE.test(group.pattern)
+            ? PathScore.Dynamic
+            : PathScore.DynamicCustomRegexp
         score +=
           +group.optional * PathScore.Optional +
           +group.repeat * PathScore.Repeatable
@@ -201,7 +210,11 @@ export function createRouteMatcher(
         score += PathScore.Static
       } else {
         score +=
-          group.pattern === '.*' ? PathScore.SubWildcard : PathScore.Dynamic
+          group.pattern === '.*'
+            ? PathScore.SubWildcard
+            : isDefaultPathRegExpRE.test(group.pattern)
+            ? PathScore.Dynamic
+            : PathScore.DynamicCustomRegexp
         score += +group.optional * PathScore.SubOptional
         if (typeof group.name === 'number') throw new Error('Name your param')
         // keys.push(group.name)

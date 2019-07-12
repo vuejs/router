@@ -24,6 +24,10 @@ describe('createRouteMatcher', () => {
    */
   function checkPathOrder(paths, options = {}) {
     const matchers = paths
+      .slice()
+      // Because sorting order is conserved, allows to mismatch order on
+      // routes with the same ranking
+      .reverse()
       .map(path =>
         createRouteMatcher(
           {
@@ -72,20 +76,23 @@ describe('createRouteMatcher', () => {
     checkPathOrder(['/', '/:rest(.*)'])
   })
 
+  it('prioritises custom regex', () => {
+    checkPathOrder(['/:a(\\d+)', '/:a', '/:a(.*)'])
+    checkPathOrder(['/b-:a(\\d+)', '/b-:a', '/b-:a(.*)'])
+  })
+
   it('handles sub segments optional params', () => {
     // TODO: /a/c should be be bigger than /a/c/:b?
-    checkPathOrder(['/a/d/c', '/a/b/c:b', '/a/c/:b?', '/a/c'])
+    checkPathOrder(['/a/d/c', '/a/b/c:b', '/a/c/:b', '/a/c/:b?', '/a/c'])
   })
 
   it('handles optional in sub segments', () => {
     checkPathOrder([
-      '/a/__',
       '/a/_2_',
-      '/a/_:b\\_', // the _ is escaped
       // something like /a/_23_
       '/a/_:b(\\d)?_',
+      '/a/_:b\\_', // the _ is escaped but b can be also letters
       '/a/a_:b',
-      '/a/_:b_', // the _ is part of the identifier
     ])
   })
 
