@@ -39,8 +39,21 @@ describe('createRouteMatcher', () => {
         )
       )
       .sort((a, b) => b.score - a.score)
-      .map(matcher => matcher.record.path)
-    expect(matchers).toEqual(paths)
+
+    expect(matchers.map(matcher => matcher.record.path)).toEqual(paths)
+
+    // Fail if two consecutive records have the same record
+    for (let i = 1; i < matchers.length; i++) {
+      const a = matchers[i - 1]
+      const b = matchers[i]
+      try {
+        expect(a.score).not.toBe(b.score)
+      } catch (e) {
+        throw new Error(
+          `Record "${a.record.path}" and "${b.record.path}" have the same score: ${a.score}. Avoid putting routes with the same score on the same test`
+        )
+      }
+    }
   }
 
   it('orders a rest param with root', () => {
