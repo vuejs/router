@@ -56,6 +56,7 @@ enum PathScore {
   Wildcard = -1, // /:namedWildcard(.*)
   SubWildcard = 1, // Wildcard as a subsegment
   Repeatable = -0.5, // /:w+ or /:w*
+  Strict = 0.5, // when options strict: true is passed, as the regex omits \/?
   Optional = -4, // /:w? or /:w*
   SubOptional = -0.1, // optional inside a subsegment /a-:w? or /a-:w*
   Root = 1, // just /
@@ -77,7 +78,7 @@ export function createRouteMatcher(
   // to compute the score of routes
   const resolve = pathToRegexp.tokensToFunction([...tokens])
 
-  let score = 0
+  let score = options.strict ? PathScore.Strict : 0
 
   // console.log(tokens)
   // console.log('--- GROUPING ---')
@@ -266,7 +267,11 @@ export class RouterMatcher {
     record: Readonly<RouteRecord>,
     parent?: RouteMatcher
   ): void {
-    const options: pathToRegexp.RegExpOptions = {}
+    const options: pathToRegexp.RegExpOptions = {
+      // NOTE: should we make strict by default and redirect /users/ to /users
+      // so that it's the same from SEO perspective?
+      strict: false,
+    }
 
     const recordCopy = normalizeRecord(record)
 

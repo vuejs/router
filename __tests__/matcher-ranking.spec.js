@@ -16,21 +16,31 @@ const component = null
 /** @typedef {import('../src/types').MatcherLocationNormalized} MatcherLocationNormalized */
 /** @typedef {import('path-to-regexp').RegExpOptions} RegExpOptions */
 
+function stringifyOptions(options) {
+  return Object.keys(options).length ? ` (${JSON.stringify(options)})` : ''
+}
+
 describe('createRouteMatcher', () => {
   /**
    *
-   * @param {string[]} paths
+   * @param {Array<string | [string, RegExpOptions]>} paths
    * @param {RegExpOptions} options
    */
   function checkPathOrder(paths, options = {}) {
-    const matchers = paths
+    const normalizedPaths = paths.map(pathOrCombined => {
+      if (Array.isArray(pathOrCombined))
+        return [pathOrCombined[0], { ...options, ...pathOrCombined[1] }]
+      return [pathOrCombined, options]
+    })
+    const matchers = normalizedPaths
       .slice()
       // Because sorting order is conserved, allows to mismatch order on
       // routes with the same ranking
       .reverse()
-      .map(path =>
+      .map(([path, options]) =>
         createRouteMatcher(
           {
+            // @ts-ignore types are correct
             path,
             components: { default: component },
           },
@@ -40,7 +50,9 @@ describe('createRouteMatcher', () => {
       )
       .sort((a, b) => b.score - a.score)
 
-    expect(matchers.map(matcher => matcher.record.path)).toEqual(paths)
+    expect(matchers.map(matcher => matcher.record.path)).toEqual(
+      normalizedPaths.map(([path]) => path)
+    )
 
     // Fail if two consecutive records have the same record
     for (let i = 1; i < matchers.length; i++) {
@@ -50,7 +62,13 @@ describe('createRouteMatcher', () => {
         expect(a.score).not.toBe(b.score)
       } catch (e) {
         throw new Error(
-          `Record "${a.record.path}" and "${b.record.path}" have the same score: ${a.score}. Avoid putting routes with the same score on the same test`
+          `Record "${a.record.path}"${stringifyOptions(
+            normalizedPaths[i - 1][1]
+          )} and "${b.record.path}"${stringifyOptions(
+            normalizedPaths[i][1]
+          )} have the same score: ${
+            a.score
+          }. Avoid putting routes with the same score on the same test`
         )
       }
     }
@@ -115,6 +133,27 @@ describe('createRouteMatcher', () => {
       '/:k-foo/b/c/d/e',
       '/:k/b/c/d/e',
       '/:k/b/c/d/:j',
+    ])
+  })
+
+  it('prioritizes ending slashes', () => {
+    checkPathOrder([
+      // no strict
+      '/a/b/',
+      '/a/b',
+      '/a/',
+      '/a',
+    ])
+
+    checkPathOrder([
+      ['/a/b/', { strict: true }],
+      '/a/b/',
+      ['/a/b', { strict: true }],
+      '/a/b',
+      ['/a/', { strict: true }],
+      '/a/',
+      ['/a', { strict: true }],
+      '/a',
     ])
   })
 })
