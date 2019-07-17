@@ -12,7 +12,7 @@ import { NoRouteMatchError, InvalidRouteMatch } from './errors'
 
 type NormalizedRouteRecord = Exclude<RouteRecord, { component: any }> // normalize component/components into components
 
-interface RouteMatcher {
+export interface RouteMatcher {
   re: RegExp
   resolve: (params?: RouteParams) => string
   record: NormalizedRouteRecord
@@ -57,6 +57,7 @@ enum PathScore {
   SubWildcard = 1, // Wildcard as a subsegment
   Repeatable = -0.5, // /:w+ or /:w*
   Strict = 0.5, // when options strict: true is passed, as the regex omits \/?
+  CaseSensitive = 0.25, // when options strict: true is passed, as the regex omits \/?
   Optional = -4, // /:w? or /:w*
   SubOptional = -0.1, // optional inside a subsegment /a-:w? or /a-:w*
   Root = 1, // just /
@@ -78,14 +79,16 @@ export function createRouteMatcher(
   // to compute the score of routes
   const resolve = pathToRegexp.tokensToFunction([...tokens])
 
-  let score = options.strict ? PathScore.Strict : 0
+  let score =
+    (options.strict ? PathScore.Strict : 0) +
+    (options.sensitive ? PathScore.CaseSensitive : 0)
 
   // console.log(tokens)
   // console.log('--- GROUPING ---')
 
   // special case for root path
   if (tokens.length === 1 && tokens[0] === '/') {
-    score = 5
+    score = PathScore.Segment + PathScore.Root
   } else {
     // allows us to group tokens into one single segment
     // it will point to the first token of the current group
@@ -293,6 +296,10 @@ export class RouterMatcher {
       for (const childRecord of record.children) {
         this.addRouteRecord(childRecord, matcher)
       }
+      // TODO: the parent is special, we should match their children. They
+      // reference to the parent so we can render the parent
+      //
+      // matcher.score = -10
     }
 
     this.insertMatcher(matcher)

@@ -2,8 +2,6 @@
 require('./helper')
 const expect = require('expect')
 const { createRouteMatcher } = require('../src/matcher')
-const { START_LOCATION_NORMALIZED } = require('../src/types')
-const { normalizeRouteRecord } = require('./utils')
 
 /** @type {RouteComponent} */
 const component = null
@@ -14,6 +12,7 @@ const component = null
 /** @typedef {import('../src/types').MatcherLocation} MatcherLocation */
 /** @typedef {import('../src/types').MatcherLocationRedirect} MatcherLocationRedirect */
 /** @typedef {import('../src/types').MatcherLocationNormalized} MatcherLocationNormalized */
+/** @typedef {import('../src/matcher').RouteMatcher} RouteMatcher */
 /** @typedef {import('path-to-regexp').RegExpOptions} RegExpOptions */
 
 function stringifyOptions(options) {
@@ -32,13 +31,15 @@ describe('createRouteMatcher', () => {
         return [pathOrCombined[0], { ...options, ...pathOrCombined[1] }]
       return [pathOrCombined, options]
     })
+
+    /** @type {Array<RouteMatcher & { _options: RegExpOptions }>} */
     const matchers = normalizedPaths
       .slice()
       // Because sorting order is conserved, allows to mismatch order on
       // routes with the same ranking
       .reverse()
-      .map(([path, options]) =>
-        createRouteMatcher(
+      .map(([path, options]) => ({
+        ...createRouteMatcher(
           {
             // @ts-ignore types are correct
             path,
@@ -46,8 +47,10 @@ describe('createRouteMatcher', () => {
           },
           null,
           options
-        )
-      )
+        ),
+        // add original options
+        _options: options,
+      }))
       .sort((a, b) => b.score - a.score)
 
     expect(matchers.map(matcher => matcher.record.path)).toEqual(
@@ -63,9 +66,9 @@ describe('createRouteMatcher', () => {
       } catch (e) {
         throw new Error(
           `Record "${a.record.path}"${stringifyOptions(
-            normalizedPaths[i - 1][1]
+            matchers[i - 1]._options
           )} and "${b.record.path}"${stringifyOptions(
-            normalizedPaths[i][1]
+            matchers[i]._options
           )} have the same score: ${
             a.score
           }. Avoid putting routes with the same score on the same test`
@@ -136,6 +139,14 @@ describe('createRouteMatcher', () => {
     ])
   })
 
+  it('ending slashes less than params', () => {
+    checkPathOrder([
+      ['/a/:b/', { strict: true }],
+      ['/a/b', { strict: false }],
+      ['/a/:b', { strict: true }],
+    ])
+  })
+
   it('prioritizes ending slashes', () => {
     checkPathOrder([
       // no strict
@@ -154,6 +165,15 @@ describe('createRouteMatcher', () => {
       '/a/',
       ['/a', { strict: true }],
       '/a',
+    ])
+  })
+
+  it('prioritizes case sensitive', () => {
+    checkPathOrder([
+      ['/a/', { sensitive: true }],
+      '/a/', // explicit ending slash
+      ['/a', { sensitive: true }],
+      '/a', // also matches /A
     ])
   })
 })
