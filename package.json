@@ -30,7 +30,7 @@
     "html-webpack-plugin": "^3.2.0",
     "jest": "^24.8.0",
     "jsdom": "^15.1.1",
-    "mocha": "^6.1.3",
+    "mocha": "^6.2.0",
     "prettier": "^1.18.2",
     "rollup": "^1.17.0",
     "rollup-plugin-alias": "^1.5.2",
