@@ -1,6 +1,7 @@
 import consola from '../consola'
 import { BaseHistory, HistoryLocationNormalized, HistoryLocation } from './base'
 import { NavigationCallback, HistoryState, NavigationDirection } from './base'
+import { computeScrollPosition, ScrollToPosition } from '../utils/scroll'
 
 const cs = consola.withTag('html5')
 
@@ -16,6 +17,7 @@ interface StateEntry {
   current: HistoryLocationNormalized
   forward: HistoryLocationNormalized | null
   replaced: boolean
+  scroll: ScrollToPosition
 }
 
 // TODO: pretty useless right now except for typing
@@ -30,6 +32,7 @@ function buildState(
     current,
     forward,
     replaced,
+    scroll: computeScrollPosition(),
   }
 }
 

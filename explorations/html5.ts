@@ -37,6 +37,19 @@ const User: RouteComponent = {
   template: `<div>User: {{ $route.params.id }}</div>`,
 }
 
+const LongView: RouteComponent = {
+  template: `
+  <section>
+    <div class="long">This one is long: {{ $route.params.n }}. Go down to click on a link</div>
+    <p class="long">
+      <router-link
+        :to="{ name: 'long', params: { n: Number($route.params.n || 0) + 1 }}"
+        >/long-{{ Number($route.params.n || 0) + 1 }}</router-link>
+    </p>
+  </section>
+  `,
+}
+
 const GuardedWithLeave: RouteComponent = {
   template: `<div>
     <p>try to leave</p>
@@ -47,8 +60,35 @@ const GuardedWithLeave: RouteComponent = {
   },
 }
 
-// const hist = new HTML5History()
-const hist = new HashHistory()
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual'
+}
+
+class ScrollQueue {
+  private resolve: (() => void) | null = null
+  private promise: Promise<any> | null = null
+
+  add() {
+    this.promise = new Promise(resolve => {
+      this.resolve = resolve
+    })
+  }
+
+  flush() {
+    this.resolve && this.resolve()
+    this.resolve = null
+    this.promise = null
+  }
+
+  async wait() {
+    await this.promise
+  }
+}
+
+const scrollWaiter = new ScrollQueue()
+
+const hist = new HTML5History()
+// const hist = new HashHistory()
 const router = new Router({
   history: hist,
   routes: [
@@ -57,6 +97,7 @@ const router = new Router({
     { path: '/documents/:id', name: 'docs', component: User },
     { path: '/n/:n', name: 'increment', component },
     { path: '/multiple/:a/:b', name: 'multiple', component },
+    { path: '/long-:n', name: 'long', component: LongView },
     {
       path: '/with-guard/:n',
       name: 'guarded',
@@ -78,6 +119,14 @@ const router = new Router({
     },
     // { path: /^\/about\/?$/, component },
   ],
+  async scrollBehavior(to, from, savedPosition) {
+    await scrollWaiter.wait()
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { x: 0, y: 0 }
+    }
+  },
 })
 
 // for testing purposes
@@ -171,6 +220,15 @@ window.vm = new Vue({
   data: {
     message: 'hello',
     shared,
+  },
+
+  methods: {
+    flushWaiter() {
+      scrollWaiter.flush()
+    },
+    setupWaiter() {
+      scrollWaiter.add()
+    },
   },
 
   // try out watchers

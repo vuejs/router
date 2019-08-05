@@ -17,6 +17,11 @@ import {
   MatcherLocation,
   RouteQueryAndHash,
 } from './types/index'
+import {
+  ScrollToPosition,
+  ScrollPosition,
+  scrollToPosition,
+} from './utils/scroll'
 
 import { guardToPromiseFn, extractComponentsGuards } from './utils'
 import {
@@ -25,9 +30,19 @@ import {
   NavigationCancelled,
 } from './errors'
 
+interface ScrollBehavior {
+  (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    savedPosition: ScrollToPosition
+  ): ScrollPosition | Promise<ScrollPosition>
+}
+
 export interface RouterOptions {
   history: BaseHistory
   routes: RouteRecord[]
+  // TODO: async version
+  scrollBehavior?: ScrollBehavior
 }
 
 type ErrorHandler = (error: any) => any
@@ -46,10 +61,12 @@ export class Router {
   private errorHandlers: ErrorHandler[] = []
   private ready: boolean = false
   private onReadyCbs: OnReadyCallback[] = []
+  private scrollBehavior?: ScrollBehavior
 
   constructor(options: RouterOptions) {
     this.history = options.history
     // this.history.ensureLocation()
+    this.scrollBehavior = options.scrollBehavior
 
     this.matcher = new RouterMatcher(options.routes)
 
@@ -77,6 +94,7 @@ export class Router {
           ...matchedRoute,
         }
         this.updateReactiveRoute()
+        this.handleScroll(toLocation, this.pendingLocation)
       } catch (error) {
         if (NavigationGuardRedirect.is(error)) {
           // TODO: refactor the duplication of new NavigationCancelled by
@@ -112,7 +130,6 @@ export class Router {
     })
   }
 
-  // TODO: rename to resolveLocation?
   resolveLocation(
     location: MatcherLocation & Required<RouteQueryAndHash>,
     currentLocation: RouteLocationNormalized,
@@ -490,5 +507,22 @@ export class Router {
     for (const guard of this.afterGuards) guard(toLocation, from)
 
     return this.currentRoute
+  }
+
+  private async handleScroll(
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized
+  ) {
+    if (!this.scrollBehavior) return
+    // TODO: handle other histories
+    const { state } = window.history
+    if (!state) return
+    const scroll: ScrollToPosition | void = state.scroll
+    if (!scroll) return
+
+    await this.app.$nextTick()
+    const position = await this.scrollBehavior(to, from, scroll)
+    console.log('scrolling to', position)
+    scrollToPosition(position)
   }
 }
