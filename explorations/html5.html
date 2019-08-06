@@ -66,7 +66,7 @@
       <transition
         name="fade"
         mode="out-in"
-        @after-enter="flushWaiter"
+        @before-enter="flushWaiter"
         @before-leave="setupWaiter"
       >
         <router-view></router-view>
