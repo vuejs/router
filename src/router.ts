@@ -94,7 +94,9 @@ export class Router {
           ...matchedRoute,
         }
         this.updateReactiveRoute()
-        this.handleScroll(toLocation, this.pendingLocation)
+        this.handleScroll(toLocation, this.currentRoute).catch(err =>
+          this.triggerError(err, false)
+        )
       } catch (error) {
         if (NavigationGuardRedirect.is(error)) {
           // TODO: refactor the duplication of new NavigationCancelled by
@@ -283,6 +285,9 @@ export class Router {
     const from = this.currentRoute
     this.currentRoute = toLocation
     this.updateReactiveRoute()
+    this.handleScroll(toLocation, from).catch(err =>
+      this.triggerError(err, false)
+    )
 
     // navigation is confirmed, call afterGuards
     for (const guard of this.afterGuards) guard(toLocation, from)
