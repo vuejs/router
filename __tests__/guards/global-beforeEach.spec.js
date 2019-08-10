@@ -225,6 +225,18 @@ describe('router.beforeEach', () => {
         expect(guard2).toHaveBeenCalled()
         expect(router.currentRoute.fullPath).toBe('/foo')
       })
+
+      it('adds meta information', async () => {
+        const spy = jest.fn()
+        const router = createRouter({ routes })
+        router.beforeEach(spy)
+        spy.mockImplementationOnce(noGuard)
+        await router[navigationMethod]('/n/2')
+        expect(spy).toHaveBeenCalledTimes(1)
+        expect(spy).toHaveBeenCalledWith(
+          expect.objectContaining({ meta: { requiresLogin: true } })
+        )
+      })
     })
   })
 })
