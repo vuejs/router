@@ -153,6 +153,7 @@ export class Router {
         query: this.history.utils.normalizeQuery(location.query || {}),
         hash: location.hash,
         redirectedFrom,
+        meta: {},
       }
 
       if (typeof redirect === 'string') {
@@ -208,6 +209,7 @@ export class Router {
         ...matchedRoute,
         ...url,
         redirectedFrom,
+        meta: {},
       }
     }
   }

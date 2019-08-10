@@ -28,7 +28,7 @@ const routes = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },
   { path: '/other', component: Foo },
-  { path: '/n/:i', name: 'n', component: Home },
+  { path: '/n/:i', name: 'n', component: Home, meta: { requiresLogin: true } },
   {
     path: '/nested',
     component: Nested,

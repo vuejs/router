@@ -37,11 +37,13 @@ describe('Router', () => {
     const history = new HistoryMock()
     const router = new Router({ history, routes })
     expect(router.currentRoute).toEqual({
+      name: undefined,
       fullPath: '/',
       hash: '',
       params: {},
       path: '/',
       query: {},
+      meta: {},
     })
   })
 

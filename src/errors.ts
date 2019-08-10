@@ -52,6 +52,7 @@ export class NoRouteMatchError extends RouterError {
   private [isNoRouteMatchError] = true
 
   constructor(currentLocation: any, location: any) {
+    // TODO: change the merge to provide information that is useful only
     super('No match for ' + JSON.stringify({ ...currentLocation, ...location }))
   }
 
@@ -196,8 +197,19 @@ export class NavigationCancelled extends RouterError {
   }
 }
 
+const propertiesToLog: (keyof RouteLocationNormalized)[] = [
+  'params',
+  'query',
+  'hash',
+]
+
 function stringifyRoute(to: RouteLocation): string {
   if (typeof to === 'string') return to
   if ('path' in to) return to.path
-  return JSON.stringify(to, null, 2)
+  const location: Partial<RouteLocationNormalized> = {}
+  for (const key of propertiesToLog) {
+    // @ts-ignore
+    if (key in to) location[key] = to[key]
+  }
+  return JSON.stringify(location, null, 2)
 }

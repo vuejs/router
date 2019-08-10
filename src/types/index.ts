@@ -56,6 +56,7 @@ export interface RouteLocationNormalized
   name: string | void
   matched: MatchedRouteRecord[] // non-enumerable
   redirectedFrom?: RouteLocationNormalized
+  meta: Record<string | number | symbol, any>
 }
 
 // interface PropsTransformer {
@@ -108,6 +109,7 @@ interface RouteRecordCommon {
   path: string // | RegExp
   name?: string
   beforeEnter?: NavigationGuard | NavigationGuard[]
+  meta?: Record<string | number | symbol, any>
 }
 
 export type RouteRecordRedirectOption =
@@ -142,6 +144,7 @@ export const START_LOCATION_NORMALIZED: RouteLocationNormalized = {
   hash: '',
   fullPath: '/',
   matched: [],
+  meta: {},
 }
 
 // make matched non enumerable for easy printing
