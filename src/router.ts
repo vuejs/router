@@ -209,7 +209,6 @@ export class Router {
         ...matchedRoute,
         ...url,
         redirectedFrom,
-        meta: {},
       }
     }
   }

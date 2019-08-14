@@ -234,7 +234,9 @@ describe('router.beforeEach', () => {
         await router[navigationMethod]('/n/2')
         expect(spy).toHaveBeenCalledTimes(1)
         expect(spy).toHaveBeenCalledWith(
-          expect.objectContaining({ meta: { requiresLogin: true } })
+          expect.objectContaining({ meta: { requiresLogin: true } }),
+          expect.objectContaining({ meta: {} }),
+          expect.any(Function)
         )
       })
     })

@@ -166,6 +166,7 @@ export interface MatcherLocationNormalized {
   params: RouteLocationNormalized['params']
   matched: MatchedRouteRecord[]
   redirectedFrom?: MatcherLocationNormalized
+  meta: RouteLocationNormalized['meta']
 }
 
 // used when the route records requires a redirection

@@ -34,6 +34,10 @@ describe('Router Matcher', () => {
       const matcher = new RouterMatcher(record)
       const targetLocation = {}
 
+      if (!('meta' in resolved)) {
+        resolved.meta = record[0].meta || {}
+      }
+
       // add location if provided as it should be the same value
       if ('path' in location) {
         resolved.path = location.path
@@ -138,7 +142,7 @@ describe('Router Matcher', () => {
         expect(
           assertErrorMatch({ path: '/', component }, { path: '/foo' })
         ).toMatchInlineSnapshot(
-          `[NoRouteMatchError: No match for {"path":"/foo","params":{},"query":{},"hash":"","fullPath":"/","meta":{}}]`
+          `[NoRouteMatchError: No match for {"path":"/foo","params":{},"query":{},"hash":"","fullPath":"/"}]`
         )
       })
     })
@@ -164,7 +168,7 @@ describe('Router Matcher', () => {
         expect(
           assertErrorMatch({ path: '/', component }, { name: 'Home' })
         ).toMatchInlineSnapshot(
-          `[NoRouteMatchError: No match for {"path":"/","name":"Home","params":{},"query":{},"hash":"","fullPath":"/","meta":{}}]`
+          `[NoRouteMatchError: No match for {"path":"/","name":"Home","params":{},"query":{},"hash":"","fullPath":"/"}]`
         )
       })
     })
@@ -181,6 +185,7 @@ describe('Router Matcher', () => {
             params: {},
             path: '/home',
             matched: [record],
+            meta: {},
           }
         )
       })
@@ -196,6 +201,7 @@ describe('Router Matcher', () => {
             name: undefined,
             params: { id: 'ed', role: 'user' },
             matched: [record],
+            meta: {},
           }
         )
       })
@@ -215,6 +221,7 @@ describe('Router Matcher', () => {
             name: 'UserEdit',
             params: { id: 'ed', role: 'user' },
             matched: [],
+            meta: {},
           }
         )
       })
@@ -238,6 +245,7 @@ describe('Router Matcher', () => {
             name: 'UserEdit',
             params: { id: 'ed', role: 'user' },
             matched: [record],
+            meta: {},
           }
         )
       })
@@ -257,6 +265,7 @@ describe('Router Matcher', () => {
             name: undefined,
             params: { id: 'ed', role: 'user' },
             matched: [record],
+            meta: {},
           }
         )
       })
@@ -299,6 +308,7 @@ describe('Router Matcher', () => {
                 params: {},
                 name: undefined,
                 matched: [],
+                meta: {},
               },
             }
           )
@@ -323,6 +333,7 @@ describe('Router Matcher', () => {
                 params: {},
                 name: undefined,
                 matched: [],
+                meta: {},
               },
             }
           )
@@ -349,6 +360,7 @@ describe('Router Matcher', () => {
                 params: {},
                 name: undefined,
                 matched: [],
+                meta: {},
               },
             }
           )
@@ -372,6 +384,7 @@ describe('Router Matcher', () => {
                 params: {},
                 name: undefined,
                 matched: [],
+                meta: {},
               },
             }
           )
@@ -394,6 +407,7 @@ describe('Router Matcher', () => {
                 params: {},
                 name: 'redirect',
                 matched: [],
+                meta: {},
               },
             }
           )
@@ -408,15 +422,21 @@ describe('Router Matcher', () => {
             assertErrorMatch(
               { path: '/redirect', redirect: '/home' },
               { params: {} },
-              { path: '/redirect', params: {}, matched: [], name: undefined }
+              {
+                path: '/redirect',
+                params: {},
+                matched: [],
+                name: undefined,
+                meta: {},
+              }
             )
           ).toMatchInlineSnapshot(`
-                                    [InvalidRouteMatch: Cannot redirect using a relative location:
-                                    {
-                                      "params": {}
-                                    }
-                                    Use the function redirect and explicitely provide a name]
-                              `)
+                                                [InvalidRouteMatch: Cannot redirect using a relative location:
+                                                {
+                                                  "params": {}
+                                                }
+                                                Use the function redirect and explicitely provide a name]
+                                        `)
         })
 
         it('normalize a location when redirecting', () => {
@@ -443,6 +463,7 @@ describe('Router Matcher', () => {
                 params: { a: 'foo' },
                 name: 'a',
                 matched: [],
+                meta: {},
               },
             }
           )
@@ -463,7 +484,11 @@ describe('Router Matcher', () => {
           assertErrorMatch(
             record,
             {},
-            { ...start, matched: start.matched.map(normalizeRouteRecord) }
+            {
+              ...start,
+              matched: start.matched.map(normalizeRouteRecord),
+              meta: {},
+            }
           )
         ).toMatchInlineSnapshot(
           `[NoRouteMatchError: No match for {"name":"home","params":{},"path":"/"}]`
@@ -647,6 +672,7 @@ describe('Router Matcher', () => {
             matched: [],
             params: {},
             path: '/foo/nested/a',
+            meta: {},
           }
         )
       })

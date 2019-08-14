@@ -1,4 +1,9 @@
-import { RouteLocationNormalized, RouteLocation } from './types'
+import {
+  RouteLocationNormalized,
+  RouteLocation,
+  MatcherLocationNormalized,
+  MatcherLocation,
+} from './types'
 
 // we could use symbols, but this is for IE9 only and there is
 // not Symbol support anyway
@@ -51,9 +56,15 @@ export class NoRouteMatchError extends RouterError {
   // @ts-ignore for IE inheritance support
   private [isNoRouteMatchError] = true
 
-  constructor(currentLocation: any, location: any) {
+  constructor(
+    currentLocation: MatcherLocationNormalized,
+    location: MatcherLocation
+  ) {
     // TODO: change the merge to provide information that is useful only
-    super('No match for ' + JSON.stringify({ ...currentLocation, ...location }))
+    super(
+      'No match for ' +
+        JSON.stringify(mergeMatcherLocations(currentLocation, location))
+    )
   }
 
   static is(error: Error): error is NoRouteMatchError {
@@ -212,4 +223,13 @@ function stringifyRoute(to: RouteLocation): string {
     if (key in to) location[key] = to[key]
   }
   return JSON.stringify(location, null, 2)
+}
+
+function mergeMatcherLocations(
+  currentLocation: MatcherLocationNormalized,
+  location: MatcherLocation
+) {
+  const merged = { ...currentLocation, ...location }
+  delete merged.meta
+  return merged
 }

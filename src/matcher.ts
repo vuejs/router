@@ -369,6 +369,7 @@ export class RouterMatcher {
             path,
             matched: [],
             params,
+            meta: matcher.record.meta || {},
           },
         }
       }
@@ -392,6 +393,7 @@ export class RouterMatcher {
             path,
             matched: [],
             params,
+            meta: matcher.record.meta || {},
           },
         }
       }
@@ -426,6 +428,7 @@ export class RouterMatcher {
       path,
       params,
       matched,
+      meta: matcher.record.meta || {},
     }
   }
 }
