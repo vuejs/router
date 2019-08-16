@@ -50,21 +50,6 @@ describe('URL Encoding', () => {
       )
     })
 
-    it('encodes params when resolving', async () => {
-      const history = createHistory('/')
-      const router = new Router({ history, routes })
-      await router.doInitialNavigation()
-      await router.push({ name: 'params', params: { p: '%€' } })
-      expect(router.currentRoute).toEqual(
-        expect.objectContaining({
-          name: 'params',
-          fullPath: encodeURI('/p/%€'),
-          params: { p: '%€' },
-          path: encodeURI('/p/%€'),
-        })
-      )
-    })
-
     it('allows navigating to valid unencoded params (IE and Edge)', async () => {
       const history = createHistory('/p/€')
       const router = new Router({ history, routes })
@@ -131,6 +116,59 @@ describe('URL Encoding', () => {
             q: '€%notvalid',
           },
           path: '/',
+        })
+      )
+    })
+
+    // TODO: we don't do this in current version of vue-router
+    // should we do it? it seems to be a bit different as it allows using % without
+    // encoding it. To be safe we would have to encode everything
+    it.skip('decodes hash', async () => {
+      const history = createHistory('/#%25%E2%82%AC')
+      const router = new Router({ history, routes })
+      await router.doInitialNavigation()
+      expect(router.currentRoute).toEqual(
+        expect.objectContaining({
+          name: 'home',
+          fullPath: '/#' + encodeURIComponent('%€'),
+          hash: '#%€',
+          path: '/',
+        })
+      )
+    })
+
+    it('allow unencoded params in query (IE Edge)', async () => {
+      const spy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+      const history = createHistory('/?q=€%notvalid')
+      const router = new Router({ history, routes })
+      await router.doInitialNavigation()
+      expect(spy).toHaveBeenCalledTimes(1)
+      spy.mockRestore()
+      expect(router.currentRoute).toEqual(
+        expect.objectContaining({
+          name: 'home',
+          fullPath: '/?q=' + encodeURIComponent('€%notvalid'),
+          query: {
+            q: '€%notvalid',
+          },
+          path: '/',
+        })
+      )
+    })
+  })
+
+  describe('resolving locations', () => {
+    it('encodes params when resolving', async () => {
+      const history = createHistory('/')
+      const router = new Router({ history, routes })
+      await router.doInitialNavigation()
+      await router.push({ name: 'params', params: { p: '%€' } })
+      expect(router.currentRoute).toEqual(
+        expect.objectContaining({
+          name: 'params',
+          fullPath: encodeURI('/p/%€'),
+          params: { p: '%€' },
+          path: encodeURI('/p/%€'),
         })
       )
     })
