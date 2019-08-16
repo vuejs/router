@@ -9,7 +9,7 @@ const routes = [
   { path: '/', name: 'home', component: components.Home },
   { path: '/%25', name: 'percent', component: components.Home },
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
-  { path: '/p/:p', component: components.Bar },
+  { path: '/p/:p', component: components.Bar, name: 'params' },
 ]
 
 function createHistory(initialUrl) {
@@ -42,10 +42,25 @@ describe('URL Encoding', () => {
       await router.doInitialNavigation()
       expect(router.currentRoute).toEqual(
         expect.objectContaining({
-          name: undefined,
+          name: 'params',
           fullPath: encodeURI('/p/€'),
           params: { p: '€' },
           path: encodeURI('/p/€'),
+        })
+      )
+    })
+
+    it('encodes params when resolving', async () => {
+      const history = createHistory('/')
+      const router = new Router({ history, routes })
+      await router.doInitialNavigation()
+      await router.push({ name: 'params', params: { p: '%€' } })
+      expect(router.currentRoute).toEqual(
+        expect.objectContaining({
+          name: 'params',
+          fullPath: encodeURI('/p/%€'),
+          params: { p: '%€' },
+          path: encodeURI('/p/%€'),
         })
       )
     })
@@ -56,7 +71,7 @@ describe('URL Encoding', () => {
       await router.doInitialNavigation()
       expect(router.currentRoute).toEqual(
         expect.objectContaining({
-          name: undefined,
+          name: 'params',
           // unfortunately, we cannot encode the path as we cannot know if it already encoded
           // so comparing fullPath and path here is pointless
           // fullPath: '/p/€',
@@ -75,7 +90,7 @@ describe('URL Encoding', () => {
       spy.mockRestore()
       expect(router.currentRoute).toEqual(
         expect.objectContaining({
-          name: undefined,
+          name: 'params',
           // unfortunately, we cannot encode the path as we cannot know if it already encoded
           // so comparing fullPath and path here is pointless
           // fullPath: '/p/€',
