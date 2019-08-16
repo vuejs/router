@@ -17,7 +17,7 @@ interface StateEntry {
   current: HistoryLocationNormalized
   forward: HistoryLocationNormalized | null
   replaced: boolean
-  scroll: ScrollToPosition
+  scroll: ScrollToPosition | null
 }
 
 // TODO: pretty useless right now except for typing
@@ -25,14 +25,15 @@ function buildState(
   back: HistoryLocationNormalized | null,
   current: HistoryLocationNormalized,
   forward: HistoryLocationNormalized | null,
-  replaced: boolean = false
+  replaced: boolean = false,
+  computeScroll: boolean = false
 ): StateEntry {
   return {
     back,
     current,
     forward,
     replaced,
-    scroll: computeScrollPosition(),
+    scroll: computeScroll ? computeScrollPosition() : null,
   }
 }
 
@@ -106,7 +107,9 @@ export class HTML5History extends BaseHistory {
         this.history.state.back,
         this.history.state.current,
         normalized,
-        this.history.state.replaced
+        this.history.state.replaced,
+        // TODO: this is just not enough to only save the scroll position when not pushing or replacing
+        true
       ),
       '',
       this.location.fullPath,

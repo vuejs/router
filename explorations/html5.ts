@@ -95,6 +95,7 @@ const router = new Router({
     { path: '/', component: Home },
     { path: '/users/:id', name: 'user', component: User },
     { path: '/documents/:id', name: 'docs', component: User },
+    { path: '/n/€', name: 'euro', component },
     { path: '/n/:n', name: 'increment', component },
     { path: '/multiple/:a/:b', name: 'multiple', component },
     { path: '/long-:n', name: 'long', component: LongView },

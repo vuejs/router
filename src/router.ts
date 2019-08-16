@@ -34,7 +34,7 @@ interface ScrollBehavior {
   (
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
-    savedPosition: ScrollToPosition
+    savedPosition: ScrollToPosition | null
   ): ScrollPosition | Promise<ScrollPosition>
 }
 
@@ -94,8 +94,11 @@ export class Router {
           ...matchedRoute,
         }
         this.updateReactiveRoute()
-        this.handleScroll(toLocation, this.currentRoute).catch(err =>
-          this.triggerError(err, false)
+        // TODO: refactor with a state getter
+        // const { scroll } = this.history.state
+        const { state } = window.history
+        this.handleScroll(toLocation, this.currentRoute, state.scroll).catch(
+          err => this.triggerError(err, false)
         )
       } catch (error) {
         if (NavigationGuardRedirect.is(error)) {
@@ -517,17 +520,13 @@ export class Router {
 
   private async handleScroll(
     to: RouteLocationNormalized,
-    from: RouteLocationNormalized
+    from: RouteLocationNormalized,
+    scrollPosition?: ScrollToPosition
   ) {
     if (!this.scrollBehavior) return
-    // TODO: handle other histories
-    const { state } = window.history
-    if (!state) return
-    const scroll: ScrollToPosition | void = state.scroll
-    if (!scroll) return
 
     await this.app.$nextTick()
-    const position = await this.scrollBehavior(to, from, scroll)
+    const position = await this.scrollBehavior(to, from, scrollPosition || null)
     console.log('scrolling to', position)
     scrollToPosition(position)
   }
