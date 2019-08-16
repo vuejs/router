@@ -25,7 +25,7 @@ const Link: Component = {
     let url: HistoryLocationNormalized
     let location: RouteLocationNormalized
     // TODO: refactor router code and use its function istead of having a copied version here
-    if (typeof to === 'string' || 'path' in to) {
+    if (typeof to === 'string' || ('path' in to && !('name' in to))) {
       url = history.utils.normalizeLocation(to)
       // TODO: should allow a non matching url to allow dynamic routing to work
       location = router.resolveLocation(url, from)

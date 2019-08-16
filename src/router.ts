@@ -225,7 +225,7 @@ export class Router {
     let url: HistoryLocationNormalized
     let location: RouteLocationNormalized
     // TODO: refactor into matchLocation to return location and url
-    if (typeof to === 'string' || 'path' in to) {
+    if (typeof to === 'string' || ('path' in to && !('name' in to))) {
       url = this.history.utils.normalizeLocation(to)
       // TODO: should allow a non matching url to allow dynamic routing to work
       location = this.resolveLocation(url, this.currentRoute)

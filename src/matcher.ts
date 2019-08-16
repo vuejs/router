@@ -330,7 +330,33 @@ export class RouterMatcher {
     let path: MatcherLocationNormalized['path']
     let name: MatcherLocationNormalized['name']
 
-    if ('path' in location) {
+    if ('name' in location && location.name) {
+      matcher = this.matchers.find(m => m.record.name === location.name)
+
+      if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+
+      name = matcher.record.name
+      // TODO: merge params
+      params = location.params || currentLocation.params
+      // params are automatically encoded
+      // TODO: try catch to provide better error messages
+      path = matcher.resolve(params)
+      // TODO: check missing params
+
+      if ('redirect' in matcher.record) {
+        const { redirect } = matcher.record
+        return {
+          redirect,
+          normalizedLocation: {
+            name,
+            path,
+            matched: [],
+            params,
+            meta: matcher.record.meta || {},
+          },
+        }
+      }
+    } else if ('path' in location) {
       matcher = this.matchers.find(m => m.re.test(location.path))
 
       // TODO: if no matcher, return the location with an empty matched array
@@ -346,43 +372,32 @@ export class RouterMatcher {
       const result = matcher.re.exec(path)
 
       if (!result) {
+        // TODO: redo message: matching path against X
         throw new Error(`Error parsing path "${location.path}"`)
       }
 
       for (let i = 0; i < matcher.keys.length; i++) {
         const key = matcher.keys[i]
-        const value = result[i + 1]
+        let value: string = result[i + 1]
+        try {
+          value = decodeURIComponent(value)
+        } catch (err) {
+          if (err instanceof URIError) {
+            console.warn(
+              `[vue-router] failed decoding param "${key}" with value "${value}". When providing a string location or the "path" property, URL must be properly encoded (TODO: link). Falling back to unencoded value`
+            )
+          } else {
+            throw err
+          }
+        }
         if (!value) {
+          // TODO: handle optional params
           throw new Error(
             `Error parsing path "${location.path}" when looking for param "${key}"`
           )
         }
         params[key] = value
       }
-
-      if ('redirect' in matcher.record) {
-        const { redirect } = matcher.record
-        return {
-          redirect,
-          normalizedLocation: {
-            name,
-            path,
-            matched: [],
-            params,
-            meta: matcher.record.meta || {},
-          },
-        }
-      }
-      // named route
-    } else if ('name' in location) {
-      matcher = this.matchers.find(m => m.record.name === location.name)
-
-      if (!matcher) throw new NoRouteMatchError(currentLocation, location)
-
-      name = matcher.record.name
-      params = location.params || currentLocation.params // TODO: normalize params
-      path = matcher.resolve(params)
-      // TODO: check missing params
 
       if ('redirect' in matcher.record) {
         const { redirect } = matcher.record

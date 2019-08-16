@@ -453,7 +453,6 @@ describe('Router Matcher', () => {
           assertRedirect(
             records,
             {
-              name: undefined,
               path: '/a/foo',
             },
             {
