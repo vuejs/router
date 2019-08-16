@@ -28,7 +28,7 @@ export function parseURL(location: string): HistoryLocationNormalized {
       hashPos > -1 ? hashPos : location.length
     )
 
-    query = parseQuery(searchString)
+    query = normalizeQuery(parseQuery(searchString))
   }
 
   if (hashPos > -1) {
@@ -59,7 +59,15 @@ export function parseQuery(search: string): HistoryQuery {
   if (search === '' || search === '?') return query
   const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
   for (let i = 0; i < searchParams.length; ++i) {
-    const [key, value] = searchParams[i].split('=')
+    let [key, value] = searchParams[i].split('=')
+    try {
+      value = decodeURIComponent(value)
+    } catch (err) {
+      // TODO: handling only URIError?
+      console.warn(
+        `[vue-router] error decoding "${value}" while parsing query. Sticking to the original value.`
+      )
+    }
     if (key in query) {
       // an extra variable for ts types
       let currentValue = query[key]
@@ -94,15 +102,26 @@ export function stringifyQuery(query: RawHistoryQuery): string {
   // TODO: util function?
   for (const key in query) {
     if (search.length > 1) search += '&'
-    // TODO: handle array
     const value = query[key]
-    if (Array.isArray(value)) {
-      search += `${key}=${value[0]}`
-      for (let i = 1; i < value.length; i++) {
-        search += `&${key}=${value[i]}`
-      }
-    } else {
-      search += `${key}=${query[key]}`
+    if (value === null) {
+      // TODO: should we just add the empty string value?
+      search += key
+      continue
+    }
+
+    let values: string[] = Array.isArray(value) ? value : [value]
+    try {
+      values = values.map(encodeURIComponent)
+    } catch (err) {
+      // TODO: handling only URIError?
+
+      console.warn(
+        `[vue-router] invalid query parameter while stringifying query: "${key}": "${values}"`
+      )
+    }
+    search += `${key}=${values[0]}`
+    for (let i = 1; i < values.length; i++) {
+      search += `&${key}=${values[i]}`
     }
   }
 
@@ -111,7 +130,13 @@ export function stringifyQuery(query: RawHistoryQuery): string {
 
 export function normalizeQuery(query: RawHistoryQuery): HistoryQuery {
   // TODO: implem
-  return query as HistoryQuery
+  const normalizedQuery: HistoryQuery = {}
+  for (const key in query) {
+    const value = query[key]
+    if (value === null) normalizedQuery[key] = ''
+    else normalizedQuery[key] = value
+  }
+  return normalizedQuery
 }
 
 /**

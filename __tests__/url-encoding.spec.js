@@ -6,7 +6,8 @@ const { createDom, components, tick, HistoryMock } = require('./utils')
 
 /** @type {import('../src/types').RouteRecord[]} */
 const routes = [
-  { path: '/%25', name: 'home', component: components.Home },
+  { path: '/', name: 'home', component: components.Home },
+  { path: '/%25', name: 'percent', component: components.Home },
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
   { path: '/p/:p', component: components.Bar },
 ]
@@ -27,7 +28,7 @@ describe('URL Encoding', () => {
       await router.doInitialNavigation()
       expect(router.currentRoute).toEqual(
         expect.objectContaining({
-          name: 'home',
+          name: 'percent',
           fullPath: '/%25',
           path: '/%25',
         })
@@ -80,6 +81,41 @@ describe('URL Encoding', () => {
           // fullPath: '/p/€',
           // only the params matter
           params: { p: '%notvalid' },
+        })
+      )
+    })
+
+    it('decodes params in query', async () => {
+      const history = createHistory('/?q=%25%E2%82%AC')
+      const router = new Router({ history, routes })
+      await router.doInitialNavigation()
+      expect(router.currentRoute).toEqual(
+        expect.objectContaining({
+          name: 'home',
+          fullPath: '/?q=' + encodeURIComponent('%€'),
+          query: {
+            q: '%€',
+          },
+          path: '/',
+        })
+      )
+    })
+
+    it('allow unencoded params in query (IE Edge)', async () => {
+      const spy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+      const history = createHistory('/?q=€%notvalid')
+      const router = new Router({ history, routes })
+      await router.doInitialNavigation()
+      expect(spy).toHaveBeenCalledTimes(1)
+      spy.mockRestore()
+      expect(router.currentRoute).toEqual(
+        expect.objectContaining({
+          name: 'home',
+          fullPath: '/?q=' + encodeURIComponent('€%notvalid'),
+          query: {
+            q: '€%notvalid',
+          },
+          path: '/',
         })
       )
     })

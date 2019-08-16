@@ -2,6 +2,8 @@ import * as utils from './utils'
 import { ListenerRemover } from '../types'
 
 export type HistoryQuery = Record<string, string | string[]>
+// TODO: is it reall worth allowing null to form queries like ?q&b&c
+// When parsing using URLSearchParams, `q&c=` yield an empty string for q and c
 export type RawHistoryQuery = Record<string, string | string[] | null>
 
 export interface HistoryLocation {
