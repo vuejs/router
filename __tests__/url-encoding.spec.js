@@ -101,6 +101,22 @@ describe('URL Encoding', () => {
       )
     })
 
+    it('decodes params keys in query', async () => {
+      const history = createHistory('/?%E2%82%AC=euro')
+      const router = new Router({ history, routes })
+      await router.doInitialNavigation()
+      expect(router.currentRoute).toEqual(
+        expect.objectContaining({
+          name: 'home',
+          fullPath: '/?' + encodeURIComponent('€') + '=euro',
+          query: {
+            '€': 'euro',
+          },
+          path: '/',
+        })
+      )
+    })
+
     it('allow unencoded params in query (IE Edge)', async () => {
       const spy = jest.spyOn(console, 'warn').mockImplementation(() => {})
       const history = createHistory('/?q=€%notvalid')

@@ -61,11 +61,19 @@ export function parseQuery(search: string): HistoryQuery {
   for (let i = 0; i < searchParams.length; ++i) {
     let [key, value] = searchParams[i].split('=')
     try {
+      key = decodeURIComponent(key)
+    } catch (err) {
+      // TODO: handling only URIError?
+      console.warn(
+        `[vue-router] error decoding query key "${value}" while parsing query. Sticking to the original key.`
+      )
+    }
+    try {
       value = decodeURIComponent(value)
     } catch (err) {
       // TODO: handling only URIError?
       console.warn(
-        `[vue-router] error decoding "${value}" while parsing query. Sticking to the original value.`
+        `[vue-router] error decoding query value "${value}" while parsing query. Sticking to the original value.`
       )
     }
     if (key in query) {
@@ -108,6 +116,17 @@ export function stringifyQuery(query: RawHistoryQuery): string {
       search += key
       continue
     }
+    let encodedKey: string = key
+    try {
+      encodedKey = encodeURIComponent(key)
+    } catch (err) {
+      // TODO: handling only URIError?
+      // TODO: refactor all encoded handling in a custom function
+
+      console.warn(
+        `[vue-router] invalid query parameter while stringifying query: "${key}": "${value}"`
+      )
+    }
 
     let values: string[] = Array.isArray(value) ? value : [value]
     try {
@@ -119,9 +138,9 @@ export function stringifyQuery(query: RawHistoryQuery): string {
         `[vue-router] invalid query parameter while stringifying query: "${key}": "${values}"`
       )
     }
-    search += `${key}=${values[0]}`
+    search += `${encodedKey}=${values[0]}`
     for (let i = 1; i < values.length; i++) {
-      search += `&${key}=${values[i]}`
+      search += `&${encodedKey}=${values[i]}`
     }
   }
 
