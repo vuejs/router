@@ -20,7 +20,7 @@ const routes = {
     query: {},
     params: {},
     hash: '',
-    // meta: {},
+    meta: {},
     matched: [{ components: { default: components.Home }, path: '/' }],
   },
   nested: {
@@ -30,7 +30,7 @@ const routes = {
     query: {},
     params: {},
     hash: '',
-    // meta: {},
+    meta: {},
     matched: [
       { components: { default: components.Nested }, path: '/' },
       { components: { default: components.Foo }, path: 'a' },
@@ -43,7 +43,7 @@ const routes = {
     query: {},
     params: {},
     hash: '',
-    // meta: {},
+    meta: {},
     matched: [
       { components: { default: components.Nested }, path: '/' },
       { components: { default: components.Nested }, path: 'a' },
@@ -57,7 +57,7 @@ const routes = {
     query: {},
     params: {},
     hash: '',
-    // meta: {},
+    meta: {},
     matched: [{ components: { foo: components.Foo }, path: '/' }],
   },
 }
