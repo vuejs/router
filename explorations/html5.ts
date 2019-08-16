@@ -92,10 +92,10 @@ const hist = new HTML5History()
 const router = new Router({
   history: hist,
   routes: [
-    { path: '/', component: Home },
+    { path: '/', component: Home, name: 'home' },
     { path: '/users/:id', name: 'user', component: User },
     { path: '/documents/:id', name: 'docs', component: User },
-    { path: '/n/€', name: 'euro', component },
+    { path: encodeURI('/n/€'), name: 'euro', component },
     { path: '/n/:n', name: 'increment', component },
     { path: '/multiple/:a/:b', name: 'multiple', component },
     { path: '/long-:n', name: 'long', component: LongView },
