@@ -48,5 +48,22 @@ describe('URL Encoding', () => {
         })
       )
     })
+
+    it('allows navigating to valid unencoded params (IE and Edge)', async () => {
+      // /p/€
+      const history = createHistory('/p/€')
+      const router = new Router({ history, routes })
+      await router.doInitialNavigation()
+      expect(router.currentRoute).toEqual(
+        expect.objectContaining({
+          name: undefined,
+          // unfortunately, we cannot encode the path as we cannot know if it already encoded
+          // so comparing fullPath and path here is pointless
+          // fullPath: '/p/€',
+          // only the params matter
+          params: { p: '€' },
+        })
+      )
+    })
   })
 })
