@@ -46,6 +46,32 @@ export function parseURL(location: string): HistoryLocationNormalized {
   }
 }
 
+function safeDecodeUriComponent(value: string): string {
+  try {
+    value = decodeURIComponent(value)
+  } catch (err) {
+    // TODO: handling only URIError?
+    console.warn(
+      `[vue-router] error decoding query "${value}". Keeping the original value.`
+    )
+  }
+
+  return value
+}
+
+function safeEncodeUriComponent(value: string): string {
+  try {
+    value = encodeURIComponent(value)
+  } catch (err) {
+    // TODO: handling only URIError?
+    console.warn(
+      `[vue-router] error encoding query "${value}". Keeping the original value.`
+    )
+  }
+
+  return value
+}
+
 /**
  * Transform a queryString into a query object. Accept both, a version with the leading `?` and without
  * Should work as URLSearchParams
@@ -60,22 +86,8 @@ export function parseQuery(search: string): HistoryQuery {
   const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
   for (let i = 0; i < searchParams.length; ++i) {
     let [key, value] = searchParams[i].split('=')
-    try {
-      key = decodeURIComponent(key)
-    } catch (err) {
-      // TODO: handling only URIError?
-      console.warn(
-        `[vue-router] error decoding query key "${value}" while parsing query. Sticking to the original key.`
-      )
-    }
-    try {
-      value = decodeURIComponent(value)
-    } catch (err) {
-      // TODO: handling only URIError?
-      console.warn(
-        `[vue-router] error decoding query value "${value}" while parsing query. Sticking to the original value.`
-      )
-    }
+    key = safeDecodeUriComponent(key)
+    value = safeDecodeUriComponent(value)
     if (key in query) {
       // an extra variable for ts types
       let currentValue = query[key]
@@ -116,28 +128,10 @@ export function stringifyQuery(query: RawHistoryQuery): string {
       search += key
       continue
     }
-    let encodedKey: string = key
-    try {
-      encodedKey = encodeURIComponent(key)
-    } catch (err) {
-      // TODO: handling only URIError?
-      // TODO: refactor all encoded handling in a custom function
-
-      console.warn(
-        `[vue-router] invalid query parameter while stringifying query: "${key}": "${value}"`
-      )
-    }
-
+    let encodedKey = safeEncodeUriComponent(key)
     let values: string[] = Array.isArray(value) ? value : [value]
-    try {
-      values = values.map(encodeURIComponent)
-    } catch (err) {
-      // TODO: handling only URIError?
+    values = values.map(safeEncodeUriComponent)
 
-      console.warn(
-        `[vue-router] invalid query parameter while stringifying query: "${key}": "${values}"`
-      )
-    }
     search += `${encodedKey}=${values[0]}`
     for (let i = 1; i < values.length; i++) {
       search += `&${encodedKey}=${values[i]}`
