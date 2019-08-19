@@ -25,7 +25,7 @@
     "@vue/test-utils": "^1.0.0-beta.29",
     "codecov": "^3.5.0",
     "consola": "^2.10.1",
-    "expect": "^24.8.0",
+    "expect": "^24.9.0",
     "faked-promise": "^2.1.0",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^24.8.0",
