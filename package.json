@@ -28,7 +28,7 @@
     "expect": "^24.9.0",
     "faked-promise": "^2.1.0",
     "html-webpack-plugin": "^3.2.0",
-    "jest": "^24.8.0",
+    "jest": "^24.9.0",
     "jsdom": "^15.1.1",
     "mocha": "^6.2.0",
     "prettier": "^1.18.2",
