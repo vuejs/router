@@ -4,7 +4,6 @@
 #
 version: 2
 
-
 jobs:
   build:
     docker:
@@ -15,12 +14,11 @@ jobs:
     steps:
       - checkout
 
-      # Download and cache dependencies
       - restore_cache:
           keys:
-          - dependencies-cache-{{ checksum "yarn.lock" }}
-          # fallback to using the latest cache if no exact match is found
-          - dependencies-cache-
+            - dependencies-cache-{{ checksum "yarn.lock" }}
+            # fallback to using the latest cache if no exact match is found
+            - dependencies-cache-
 
       - run: yarn install
 
@@ -29,8 +27,10 @@ jobs:
             - node_modules
           key: dependencies-cache-{{ checksum "yarn.lock" }}
 
-      # run tests!
-      - run: yarn run test
+      - run:
+          - yarn run test:types
+          - yarn run test:unit --maxWorkers=2
+          - yarn build
 
       - run:
           name: Send code coverage
