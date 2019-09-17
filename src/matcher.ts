@@ -47,20 +47,21 @@ export function normalizeRecord(
   return { ...record }
 }
 
-enum PathScore {
-  Segment = 4, // /a-segment
-  SubSegment = 2, // /multiple-:things-in-one-:segment
-  Static = 3, // /static
-  Dynamic = 2, // /:someId
-  DynamicCustomRegexp = 2.5, // /:someId(\\d+)
-  Wildcard = -1, // /:namedWildcard(.*)
-  SubWildcard = 1, // Wildcard as a subsegment
-  Repeatable = -0.5, // /:w+ or /:w*
-  Strict = 0.5, // when options strict: true is passed, as the regex omits \/?
-  CaseSensitive = 0.25, // when options strict: true is passed, as the regex omits \/?
-  Optional = -4, // /:w? or /:w*
-  SubOptional = -0.1, // optional inside a subsegment /a-:w? or /a-:w*
-  Root = 1, // just /
+const enum PathScore {
+  _multiplier = 10,
+  Segment = 4 * _multiplier, // /a-segment
+  SubSegment = 2 * _multiplier, // /multiple-:things-in-one-:segment
+  Static = 3 * _multiplier, // /static
+  Dynamic = 2 * _multiplier, // /:someId
+  DynamicCustomRegexp = 2.5 * _multiplier, // /:someId(\\d+)
+  Wildcard = -1 * _multiplier, // /:namedWildcard(.*)
+  SubWildcard = 1 * _multiplier, // Wildcard as a subsegment
+  Repeatable = -0.5 * _multiplier, // /:w+ or /:w*
+  Strict = 0.7 * _multiplier, // when options strict: true is passed, as the regex omits \/?
+  CaseSensitive = 0.25 * _multiplier, // when options strict: true is passed, as the regex omits \/?
+  Optional = -4 * _multiplier, // /:w? or /:w*
+  SubOptional = -0.1 * _multiplier, // optional inside a subsegment /a-:w? or /a-:w*
+  Root = 1 * _multiplier, // just /
 }
 
 // allows to check if the user provided a custom regexp
@@ -155,12 +156,10 @@ export function createRouteMatcher(
             currentSegment = i
           }
         }
-      } else {
-        if (token.prefix.charAt(0) === '/') {
-          // finalize previous group and start a new one
-          groups.push(tokens.slice(currentSegment, i))
-          currentSegment = i
-        }
+      } else if (token.prefix.charAt(0) === '/') {
+        // finalize previous group and start a new one
+        groups.push(tokens.slice(currentSegment, i))
+        currentSegment = i
       }
     }
 
@@ -199,7 +198,9 @@ export function createRouteMatcher(
         score +=
           +group.optional * PathScore.Optional +
           +group.repeat * PathScore.Repeatable
-        if (typeof group.name === 'number') throw new Error('Name your param')
+        // if (typeof group.name === 'number') {
+        //   throw new TypeError('Name your param')
+        // }
         // keys.push(group.name)
       }
       return score
@@ -220,7 +221,9 @@ export function createRouteMatcher(
             ? PathScore.Dynamic
             : PathScore.DynamicCustomRegexp
         score += +group.optional * PathScore.SubOptional
-        if (typeof group.name === 'number') throw new Error('Name your param')
+        if (typeof group.name === 'number') {
+          throw new TypeError('Name your param')
+        }
         // keys.push(group.name)
       }
       return score
@@ -248,7 +251,7 @@ export function createRouteMatcher(
   // create the object before hand so it can be passed to children
   return {
     parent,
-    record: record,
+    record,
     re,
     // TODO: handle numbers differently. Maybe take the max one and say there are x unnamed keys
     keys: keys.map(key => String(key.name)),
