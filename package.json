@@ -44,6 +44,7 @@
     "ts-node": "^8.4.1",
     "typescript": "^3.6.3",
     "vue": "^2.6.10",
+    "vue-server-renderer": "^2.6.10",
     "vue-template-compiler": "^2.6.10",
     "webpack": "^4.40.2",
     "webpack-cli": "^3.3.8",

@@ -13,7 +13,10 @@ if (typeof global !== 'undefined' && typeof global.beforeAll === 'undefined') {
   // monkey patch jest snapshots
   expect.extend({
     toMatchInlineSnapshot(received, snapshot) {
-      const text = `[${received.toString()}]`
+      const text =
+        typeof received === 'string'
+          ? JSON.stringify(received)
+          : `[${received.toString()}]`
 
       const match = INITIAL_WS_RE.exec(snapshot)
       let expected = snapshot

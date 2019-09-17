@@ -31,7 +31,7 @@ const plugin: PluginFunction<void> = Vue => {
           // true
         )
 
-        router.doInitialNavigation()
+        router.doInitialNavigation().catch(() => {})
       } else {
         // @ts-ignore we are adding this
         this._routerRoot = (this.$parent && this.$parent._routerRoot) || this
@@ -72,23 +72,37 @@ export {
   plugin,
 }
 
+// TODO: refactor somewhere else
+const inBrowser = typeof window !== 'undefined'
+
+const HistoryMode = {
+  history: HTML5History,
+  hash: HashHistory,
+  abstract: AbstractHistory,
+}
+
 export default class VueRouter extends Router {
   static install = plugin
   static version = '__VERSION__'
 
   // TODO: handle mode in a retro compatible way
-  constructor(options: RouterOptions & { mode: 'string' }) {
+  constructor(
+    options: Partial<RouterOptions & { mode: 'history' | 'abstract' | 'hash' }>
+  ) {
+    let { mode } = options
+    if (!inBrowser) mode = 'abstract'
     super({
-      history: new HTML5History(),
       ...options,
+      routes: options.routes || [],
+      history: new HistoryMode[mode || 'hash'](),
     })
   }
 }
 
 declare global {
   interface Window {
-    Vue?: VueConstructor
+    Vue: VueConstructor
   }
 }
 
-if (window.Vue) window.Vue.use(VueRouter)
+if (typeof window !== 'undefined' && window.Vue) window.Vue.use(VueRouter)
