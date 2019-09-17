@@ -135,9 +135,21 @@ export class Router {
     })
   }
 
-  resolve(to: RouteLocation, currentLocation?: RouteLocationNormalized/*, append?: boolean */) {
-    if (typeof to === 'string') return this.resolveLocation(this.history.utils.normalizeLocation(to), currentLocation)
-    return this.resolveLocation(to)
+  resolve(
+    to: RouteLocation,
+    currentLocation?: RouteLocationNormalized /*, append?: boolean */
+  ) {
+    if (typeof to === 'string')
+      return this.resolveLocation(
+        this.history.utils.normalizeLocation(to),
+        currentLocation
+      )
+    return this.resolveLocation({
+      // TODO: refactor with url utils
+      query: {},
+      hash: '',
+      ...to,
+    })
   }
 
   resolveLocation(
