@@ -31,7 +31,7 @@ const plugin: PluginFunction<void> = Vue => {
           // true
         )
 
-        router.doInitialNavigation()
+        router.doInitialNavigation().catch(() => {})
       } else {
         // @ts-ignore we are adding this
         this._routerRoot = (this.$parent && this.$parent._routerRoot) || this

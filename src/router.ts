@@ -497,9 +497,13 @@ export class Router {
    */
   protected markAsReady(err?: any): void {
     if (this.ready) return
-    for (const [resolve, reject] of this.onReadyCbs) {
-      if (err) reject(err)
-      else resolve()
+    for (const [resolve] of this.onReadyCbs) {
+      // TODO: is this okay?
+      // always resolve, as the router is ready even if there was an error
+      // @ts-ignore
+      resolve(err)
+      // if (err) reject(err)
+      // else resolve()
     }
     this.onReadyCbs = []
     this.ready = true
@@ -517,6 +521,7 @@ export class Router {
     try {
       await this.navigate(toLocation, this.currentRoute)
     } catch (error) {
+      this.markAsReady(error)
       if (NavigationGuardRedirect.is(error)) {
         // push was called while waiting in guards
         if (this.pendingLocation !== toLocation) {
@@ -533,13 +538,16 @@ export class Router {
           throw new NavigationCancelled(toLocation, this.currentRoute)
         }
 
+        // this throws, so nothing ahead happens
         this.triggerError(error)
       }
     }
 
     // push was called while waiting in guards
     if (this.pendingLocation !== toLocation) {
-      throw new NavigationCancelled(toLocation, this.currentRoute)
+      const error = new NavigationCancelled(toLocation, this.currentRoute)
+      this.markAsReady(error)
+      throw error
     }
 
     // NOTE: here we removed the pushing to history part as the history
@@ -552,6 +560,7 @@ export class Router {
     // navigation is confirmed, call afterGuards
     for (const guard of this.afterGuards) guard(toLocation, from)
 
+    this.markAsReady()
     return this.currentRoute
   }
 
