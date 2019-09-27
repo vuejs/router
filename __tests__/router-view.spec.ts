@@ -1,16 +1,16 @@
 /**
  * @jest-environment jsdom
  */
-// @ts-check
 // NOTE: these tests only run when using jest `yarn jest --watch`
-const { default: RouterView } = require('../src/components/View')
-const { components, isMocha } = require('./utils')
-const { START_LOCATION_NORMALIZED } = require('../src/types')
+import RouterView from '../src/components/View'
+import { components } from './utils'
+import {
+  START_LOCATION_NORMALIZED,
+  RouteLocationNormalized,
+} from '../src/types'
+import { mount } from '@vue/test-utils'
 
-/** @typedef {import('../src/types').RouteLocationNormalized} RouteLocationNormalized */
-
-/** @type {Record<string, RouteLocationNormalized>} */
-const routes = {
+const routes: Record<string, RouteLocationNormalized> = {
   root: {
     fullPath: '/',
     name: undefined,
@@ -61,17 +61,7 @@ const routes = {
 }
 
 describe('RouterView', () => {
-  // skip these tests on mocha because @vue/test-utils
-  // do not work correctly
-  if (isMocha()) return
-  const { mount } = require('@vue/test-utils')
-
-  /**
-   *
-   * @param {RouteLocationNormalized} $route
-   * @param {Object} [props]
-   */
-  function factory($route, props = {}) {
+  function factory($route: RouteLocationNormalized, props: any = {}) {
     // @ts-ignore cannot mount functional component?
     const wrapper = mount(RouterView, {
       context: {

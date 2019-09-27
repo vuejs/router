@@ -5,7 +5,8 @@ export { HistoryMock } from './HistoryMock'
 
 export const tick = () => new Promise(resolve => process.nextTick(resolve))
 
-export const NAVIGATION_TYPES = ['push', 'replace']
+export type NAVIGATION_METHOD = 'push' | 'replace'
+export const NAVIGATION_TYPES: NAVIGATION_METHOD[] = ['push', 'replace']
 
 declare global {
   namespace NodeJS {
@@ -49,11 +50,6 @@ export const components = {
       h('div', {}, [h('h2', {}, 'Nested'), h('RouterView')]),
   },
 }
-
-// allow using a .jest modifider to skip some tests on mocha
-// specifically, skip component tests as they are a pain to correctly
-// adapt to mocha
-export const isMocha = () => typeof global.before === 'function'
 
 /**
  * Copies and normalizes the record so it always contains an object of `components`

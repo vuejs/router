@@ -1,12 +1,12 @@
-// @ts-check
-const { HTML5History } = require('../../src/history/html5')
-const { Router } = require('../../src/router')
-const { NAVIGATION_TYPES, createDom } = require('../utils')
+import { HTML5History } from '../../src/history/html5'
+import { Router } from '../../src/router'
+import { NAVIGATION_TYPES, createDom } from '../utils'
 
-/**
- * @param {Partial<import('../../src/router').RouterOptions> & { routes: import('../../src/types').RouteRecord[]}} options
- */
-function createRouter(options) {
+function createRouter(
+  options: Partial<import('../../src/router').RouterOptions> & {
+    routes: import('../../src/types').RouteRecord[]
+  }
+) {
   return new Router({
     history: new HTML5History(),
     ...options,

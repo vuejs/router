@@ -1,16 +1,12 @@
-// @ts-check
-const { HTML5History } = require('../../src/history/html5')
-const { Router } = require('../../src/router')
-const fakePromise = require('faked-promise')
-const { NAVIGATION_TYPES, createDom, noGuard, tick } = require('../utils')
+import { HTML5History } from '../../src/history/html5'
+import { Router, RouterOptions } from '../../src/router'
+import fakePromise from 'faked-promise'
+import { NAVIGATION_TYPES, createDom, noGuard, tick } from '../utils'
+import { RouteRecord } from '../../src/types'
 
-/** @typedef {import('../../src/types').RouteRecord} RouteRecord */
-/** @typedef {import('../../src/router').RouterOptions} RouterOptions */
-
-/**
- * @param {Partial<RouterOptions> & { routes: RouteRecord[]}} options
- */
-function createRouter(options) {
+function createRouter(
+  options: Partial<RouterOptions> & { routes: RouteRecord[] }
+) {
   return new Router({
     history: new HTML5History(),
     ...options,
@@ -97,8 +93,8 @@ function resetMocks() {
     spy.mockImplementationOnce(noGuard)
   })
   for (const key in nested) {
-    nested[key].mockReset()
-    nested[key].mockImplementation(noGuard)
+    nested[key as keyof typeof nested].mockReset()
+    nested[key as keyof typeof nested].mockImplementation(noGuard)
   }
 }
 

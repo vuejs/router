@@ -1,16 +1,12 @@
-// @ts-check
-const { HTML5History } = require('../../src/history/html5')
-const { Router } = require('../../src/router')
-const fakePromise = require('faked-promise')
-const { NAVIGATION_TYPES, createDom, tick, noGuard } = require('../utils')
+import { HTML5History } from '../../src/history/html5'
+import { Router, RouterOptions } from '../../src/router'
+import fakePromise from 'faked-promise'
+import { NAVIGATION_TYPES, createDom, tick, noGuard } from '../utils'
+import { RouteRecord, RouteLocation } from '../../src/types'
 
-/** @typedef {import('../../src/types').RouteRecord} RouteRecord */
-/** @typedef {import('../../src/router').RouterOptions} RouterOptions */
-
-/**
- * @param {Partial<RouterOptions> & { routes: RouteRecord[]}} options
- */
-function createRouter(options) {
+function createRouter(
+  options: Partial<RouterOptions> & { routes: RouteRecord[] }
+) {
   return new Router({
     history: new HTML5History(),
     ...options,
@@ -124,7 +120,7 @@ describe('router.beforeEach', () => {
         expect(router.currentRoute.fullPath).toBe('/other')
       })
 
-      async function assertRedirect(redirectFn) {
+      async function assertRedirect(redirectFn: (i: string) => RouteLocation) {
         const spy = jest.fn()
         const router = createRouter({ routes })
         await router.push('/')
@@ -132,7 +128,7 @@ describe('router.beforeEach', () => {
           // only allow going to /other
           const i = Number(to.params.i)
           if (i >= 3) next()
-          else next(redirectFn(i + 1))
+          else next(redirectFn(String(i + 1)))
         })
         router.beforeEach(spy)
         expect(spy).not.toHaveBeenCalled()

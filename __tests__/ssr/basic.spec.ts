@@ -1,5 +1,4 @@
-// @ts-check
-const { renderApp, renderer } = require('./shared')
+import { renderApp, renderer } from './shared'
 
 describe('SSR: basicRenderer', () => {
   it('renders the view', async () => {
@@ -45,9 +44,7 @@ describe('SSR: basicRenderer', () => {
         },
         components: {
           test: {
-            render() {
-              return this.$createElement('div', { class: ['a'] }, 'test')
-            },
+            template: `<div class="a">test</div>`,
           },
           testAsync(resolve) {
             resolve({

@@ -1,7 +1,10 @@
-// @ts-check
-const { extractComponentsGuards } = require('../src/utils')
-const { START_LOCATION_NORMALIZED } = require('../src/types')
-const { components, normalizeRouteRecord } = require('./utils')
+import { extractComponentsGuards } from '../src/utils'
+import {
+  START_LOCATION_NORMALIZED,
+  RouteRecord,
+  MatchedRouteRecord,
+} from '../src/types'
+import { components, normalizeRouteRecord } from './utils'
 
 /** @typedef {import('../src/types').RouteRecord} RouteRecord */
 /** @typedef {import('../src/types').MatchedRouteRecord} MatchedRouteRecord */
@@ -13,15 +16,12 @@ const beforeRouteEnter = jest.fn()
 const to = START_LOCATION_NORMALIZED
 const from = START_LOCATION_NORMALIZED
 
-/** @type {RouteRecord} */
-const NoGuard = { path: '/', component: components.Home }
-/** @type {RouteRecord} */
-const SingleGuard = {
+const NoGuard: RouteRecord = { path: '/', component: components.Home }
+const SingleGuard: RouteRecord = {
   path: '/',
   component: { ...components.Home, beforeRouteEnter },
 }
-/** @type {RouteRecord} */
-const SingleGuardNamed = {
+const SingleGuardNamed: RouteRecord = {
   path: '/',
   components: {
     default: { ...components.Home, beforeRouteEnter },
@@ -29,20 +29,18 @@ const SingleGuardNamed = {
   },
 }
 
-/**
- *
- * @param {Exclude<RouteRecord, { redirect: any}>} record
- * @returns {MatchedRouteRecord}
- */
-function makeAsync(record) {
+function makeAsync(
+  record: Exclude<RouteRecord, { redirect: any }>
+): MatchedRouteRecord {
   if ('components' in record) {
     const copy = { ...record }
     copy.components = Object.keys(record.components).reduce(
       (components, name) => {
+        // @ts-ignore
         components[name] = () => Promise.resolve(record.components[name])
         return components
       },
-      {}
+      {} as typeof record['components']
     )
     return copy
   } else {
@@ -66,12 +64,10 @@ beforeEach(() => {
   })
 })
 
-/**
- *
- * @param {Exclude<RouteRecord, { redirect: any }>[]} components
- * @param {number} n
- */
-async function checkGuards(components, n) {
+async function checkGuards(
+  components: Exclude<RouteRecord, { redirect: any }>[],
+  n: number
+) {
   beforeRouteEnter.mockClear()
   const guards = await extractComponentsGuards(
     // type is fine as we excluded RouteRecordRedirect in components argument

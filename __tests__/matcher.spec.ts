@@ -1,32 +1,27 @@
-// @ts-check
-const { RouterMatcher } = require('../src/matcher')
-const { START_LOCATION_NORMALIZED } = require('../src/types')
-const { normalizeRouteRecord } = require('./utils')
+import { RouterMatcher } from '../src/matcher'
+import {
+  START_LOCATION_NORMALIZED,
+  RouteComponent,
+  RouteRecord,
+  MatcherLocation,
+  MatcherLocationNormalized,
+  MatcherLocationRedirect,
+} from '../src/types'
+import { normalizeRouteRecord } from './utils'
 
-/** @type {RouteComponent} */
-const component = null
+// @ts-ignore
+const component: RouteComponent = null
 
-/** @typedef {import('../src/types').RouteRecord} RouteRecord */
-/** @typedef {import('../src/types').RouteComponent} RouteComponent */
-/** @typedef {import('../src/types').MatchedRouteRecord} MatchedRouteRecord */
-/** @typedef {import('../src/types').MatcherLocation} MatcherLocation */
-/** @typedef {import('../src/types').MatcherLocationRedirect} MatcherLocationRedirect */
-/** @typedef {import('../src/types').MatcherLocationNormalized} MatcherLocationNormalized */
+// for normalized records
+const components = { default: component }
 
 describe('Router Matcher', () => {
   describe('resolve', () => {
-    /**
-     *
-     * @param {RouteRecord | RouteRecord[]} record Record or records we are testing the matcher against
-     * @param {MatcherLocation} location location we want to reolve against
-     * @param {Partial<import('../src/types').Override<MatcherLocationNormalized, { matched: Array<Exclude<RouteRecord, { redirect: any}>> }>>} resolved Expected resolved location given by the matcher
-     * @param {import('../src/types').Override<MatcherLocationNormalized, { matched: Array<Exclude<RouteRecord, { redirect: any}>> }>} [start] Optional currentLocation used when resolving
-     */
     function assertRecordMatch(
-      record,
-      location,
-      resolved,
-      start = START_LOCATION_NORMALIZED
+      record: RouteRecord | RouteRecord[],
+      location: MatcherLocation,
+      resolved: Partial<MatcherLocationNormalized>,
+      start: MatcherLocationNormalized = START_LOCATION_NORMALIZED
     ) {
       record = Array.isArray(record) ? record : [record]
       const matcher = new RouterMatcher(record)
@@ -45,7 +40,8 @@ describe('Router Matcher', () => {
         throw new Error('not handled')
       } else {
         // use one single record
-        if (!('matched' in resolved))
+        if (!resolved.matched)
+          // @ts-ignore
           resolved.matched = record.map(normalizeRouteRecord)
         else resolved.matched = resolved.matched.map(normalizeRouteRecord)
       }
@@ -84,9 +80,9 @@ describe('Router Matcher', () => {
      * @returns {any} error
      */
     function assertErrorMatch(
-      record,
-      location,
-      start = START_LOCATION_NORMALIZED
+      record: RouteRecord | RouteRecord[],
+      location: MatcherLocation,
+      start: MatcherLocationNormalized = START_LOCATION_NORMALIZED
     ) {
       try {
         assertRecordMatch(record, location, {}, start)
@@ -98,7 +94,7 @@ describe('Router Matcher', () => {
     describe('LocationAsPath', () => {
       it('resolves a normal path', () => {
         assertRecordMatch(
-          { path: '/', name: 'Home', component },
+          { path: '/', name: 'Home', components },
           { path: '/' },
           { name: 'Home', path: '/', params: {} }
         )
@@ -106,7 +102,7 @@ describe('Router Matcher', () => {
 
       it('resolves a normal path without name', () => {
         assertRecordMatch(
-          { path: '/', component },
+          { path: '/', components },
           { path: '/' },
           { name: undefined, path: '/', params: {} }
         )
@@ -114,7 +110,7 @@ describe('Router Matcher', () => {
 
       it('resolves a path with params', () => {
         assertRecordMatch(
-          { path: '/users/:id', name: 'User', component },
+          { path: '/users/:id', name: 'User', components },
           { path: '/users/posva' },
           { name: 'User', params: { id: 'posva' } }
         )
@@ -122,7 +118,7 @@ describe('Router Matcher', () => {
 
       it('resolves a path with multiple params', () => {
         assertRecordMatch(
-          { path: '/users/:id/:other', name: 'User', component },
+          { path: '/users/:id/:other', name: 'User', components },
           { path: '/users/posva/hey' },
           { name: 'User', params: { id: 'posva', other: 'hey' } }
         )
@@ -130,7 +126,7 @@ describe('Router Matcher', () => {
 
       it('resolves a path with multiple params but no name', () => {
         assertRecordMatch(
-          { path: '/users/:id/:other', component },
+          { path: '/users/:id/:other', components },
           { path: '/users/posva/hey' },
           { name: undefined, params: { id: 'posva', other: 'hey' } }
         )
@@ -138,7 +134,7 @@ describe('Router Matcher', () => {
 
       it('throws if the path does not exists', () => {
         expect(
-          assertErrorMatch({ path: '/', component }, { path: '/foo' })
+          assertErrorMatch({ path: '/', components }, { path: '/foo' })
         ).toMatchInlineSnapshot(
           `[NoRouteMatchError: No match for {"path":"/foo","params":{},"query":{},"hash":"","fullPath":"/"}]`
         )
@@ -148,7 +144,7 @@ describe('Router Matcher', () => {
     describe('LocationAsName', () => {
       it('matches a name', () => {
         assertRecordMatch(
-          { path: '/home', name: 'Home', component },
+          { path: '/home', name: 'Home', components },
           { name: 'Home' },
           { name: 'Home', path: '/home' }
         )
@@ -156,7 +152,7 @@ describe('Router Matcher', () => {
 
       it('matches a name and fill params', () => {
         assertRecordMatch(
-          { path: '/users/:id/m/:role', name: 'UserEdit', component },
+          { path: '/users/:id/m/:role', name: 'UserEdit', components },
           { name: 'UserEdit', params: { id: 'posva', role: 'admin' } },
           { name: 'UserEdit', path: '/users/posva/m/admin' }
         )
@@ -164,7 +160,7 @@ describe('Router Matcher', () => {
 
       it('throws if the named route does not exists', () => {
         expect(
-          assertErrorMatch({ path: '/', component }, { name: 'Home' })
+          assertErrorMatch({ path: '/', components }, { name: 'Home' })
         ).toMatchInlineSnapshot(
           `[NoRouteMatchError: No match for {"path":"/","name":"Home","params":{},"query":{},"hash":"","fullPath":"/"}]`
         )
@@ -173,7 +169,7 @@ describe('Router Matcher', () => {
 
     describe('LocationAsRelative', () => {
       it('matches with nothing', () => {
-        const record = { path: '/home', name: 'Home', component }
+        const record = { path: '/home', name: 'Home', components }
         assertRecordMatch(
           record,
           {},
@@ -189,7 +185,7 @@ describe('Router Matcher', () => {
       })
 
       it('replace params even with no name', () => {
-        const record = { path: '/users/:id/m/:role', component }
+        const record = { path: '/users/:id/m/:role', components }
         assertRecordMatch(
           record,
           { params: { id: 'posva', role: 'admin' } },
@@ -208,7 +204,7 @@ describe('Router Matcher', () => {
         const record = {
           path: '/users/:id/m/:role',
           name: 'UserEdit',
-          component,
+          components,
         }
         assertRecordMatch(
           record,
@@ -228,7 +224,7 @@ describe('Router Matcher', () => {
         const record = {
           path: '/users/:id/m/:role',
           name: 'UserEdit',
-          component,
+          components,
         }
         assertRecordMatch(
           record,
@@ -249,7 +245,7 @@ describe('Router Matcher', () => {
       })
 
       it('keep params if not provided even with no name', () => {
-        const record = { path: '/users/:id/m/:role', component }
+        const record = { path: '/users/:id/m/:role', components }
         assertRecordMatch(
           record,
           {},
@@ -269,18 +265,11 @@ describe('Router Matcher', () => {
       })
 
       describe('redirects', () => {
-        /**
-         *
-         * @param {RouteRecord[]} records Record or records we are testing the matcher against
-         * @param {MatcherLocation} location location we want to reolve against
-         * @param {MatcherLocationNormalized | MatcherLocationRedirect} expected Expected resolved location given by the matcher
-         * @param {MatcherLocationNormalized} [currentLocation] Optional currentLocation used when resolving
-         */
         function assertRedirect(
-          records,
-          location,
-          expected,
-          currentLocation = START_LOCATION_NORMALIZED
+          records: RouteRecord[],
+          location: MatcherLocation,
+          expected: MatcherLocationNormalized | MatcherLocationRedirect,
+          currentLocation: MatcherLocationNormalized = START_LOCATION_NORMALIZED
         ) {
           const matcher = new RouterMatcher(records)
           const resolved = matcher.resolve(location, currentLocation)
@@ -290,7 +279,7 @@ describe('Router Matcher', () => {
 
         it('resolves a redirect string', () => {
           const records = [
-            { path: '/home', component },
+            { path: '/home', components },
             { path: '/redirect', redirect: '/home' },
           ]
           assertRedirect(
@@ -315,7 +304,7 @@ describe('Router Matcher', () => {
         it('resolves a redirect function that returns a string', () => {
           const redirect = () => '/home'
           const records = [
-            { path: '/home', component },
+            { path: '/home', components },
             { path: '/redirect', redirect },
           ]
           assertRedirect(
@@ -342,7 +331,7 @@ describe('Router Matcher', () => {
             path: '/home'
           }
           const records = [
-            { path: '/home', component },
+            { path: '/home', components },
             { path: '/redirect', redirect },
           ]
           assertRedirect(
@@ -366,7 +355,7 @@ describe('Router Matcher', () => {
 
         it('resolves a redirect as an object', () => {
           const records = [
-            { path: '/home', component },
+            { path: '/home', components },
             { path: '/redirect', redirect: { path: 'home' } },
           ]
           assertRedirect(
@@ -390,7 +379,7 @@ describe('Router Matcher', () => {
 
         it('works with a named location', () => {
           const records = [
-            { path: '/home', component },
+            { path: '/home', components },
             { path: '/redirect', name: 'redirect', redirect: { path: 'home' } },
           ]
           assertRedirect(
@@ -412,10 +401,6 @@ describe('Router Matcher', () => {
         })
 
         it('throws if relative location when redirecting', () => {
-          const records = [
-            { path: '/home', component },
-            { path: '/redirect', redirect: '/home' },
-          ]
           expect(
             assertErrorMatch(
               { path: '/redirect', redirect: '/home' },
@@ -438,15 +423,15 @@ describe('Router Matcher', () => {
         })
 
         it('normalize a location when redirecting', () => {
-          const redirect = to => ({ name: 'b', params: to.params })
+          const redirect = (to: any) => ({ name: 'b', params: to.params })
           const records = [
-            { path: '/home', component },
+            { path: '/home', components },
             {
               path: '/a/:a',
               name: 'a',
               redirect,
             },
-            { path: '/b/:a', name: 'b', component },
+            { path: '/b/:a', name: 'b', components },
           ]
           assertRedirect(
             records,
@@ -468,7 +453,7 @@ describe('Router Matcher', () => {
       })
 
       it('throws if the current named route does not exists', () => {
-        const record = { path: '/', component }
+        const record = { path: '/', components }
         const start = {
           name: 'home',
           params: {},
@@ -494,10 +479,10 @@ describe('Router Matcher', () => {
     })
 
     describe('children', () => {
-      const ChildA = { path: 'a', name: 'child-a', component }
-      const ChildB = { path: 'b', name: 'child-b', component }
-      const ChildC = { path: 'c', name: 'child-c', component }
-      const ChildWithParam = { path: ':p', name: 'child-params', component }
+      const ChildA = { path: 'a', name: 'child-a', components }
+      const ChildB = { path: 'b', name: 'child-b', components }
+      const ChildC = { path: 'c', name: 'child-c', components }
+      const ChildWithParam = { path: ':p', name: 'child-params', components }
       const NestedChildWithParam = {
         ...ChildWithParam,
         name: 'nested-child-params',
@@ -508,13 +493,13 @@ describe('Router Matcher', () => {
       const Nested = {
         path: 'nested',
         name: 'nested',
-        component,
+        components,
         children: [NestedChildA, NestedChildB, NestedChildC],
       }
       const NestedWithParam = {
         path: 'nested/:n',
         name: 'nested',
-        component,
+        components,
         children: [NestedChildWithParam],
       }
 
@@ -522,7 +507,7 @@ describe('Router Matcher', () => {
         const Foo = {
           path: '/foo',
           name: 'Foo',
-          component,
+          components,
           children: [ChildA, ChildB, ChildC],
         }
         assertRecordMatch(
@@ -538,11 +523,11 @@ describe('Router Matcher', () => {
       })
 
       it('resolves children with empty paths', () => {
-        const Nested = { path: '', name: 'nested', component }
+        const Nested = { path: '', name: 'nested', components }
         const Foo = {
           path: '/foo',
           name: 'Foo',
-          component,
+          components,
           children: [Nested],
         }
         assertRecordMatch(
@@ -560,17 +545,17 @@ describe('Router Matcher', () => {
       })
 
       it('resolves nested children with empty paths', () => {
-        const NestedNested = { path: '', name: 'nested', component }
+        const NestedNested = { path: '', name: 'nested', components }
         const Nested = {
           path: '',
           name: 'nested-nested',
-          component,
+          components,
           children: [NestedNested],
         }
         const Foo = {
           path: '/foo',
           name: 'Foo',
-          component,
+          components,
           children: [Nested],
         }
         assertRecordMatch(
@@ -593,7 +578,7 @@ describe('Router Matcher', () => {
         const Foo = {
           path: '/foo',
           name: 'Foo',
-          component,
+          components,
           children: [Nested],
         }
         assertRecordMatch(
@@ -619,7 +604,7 @@ describe('Router Matcher', () => {
         const Foo = {
           path: '/foo',
           name: 'Foo',
-          component,
+          components,
           children: [Nested],
         }
         assertRecordMatch(
@@ -645,7 +630,7 @@ describe('Router Matcher', () => {
         const Foo = {
           path: '/foo',
           name: 'Foo',
-          component,
+          components,
           children: [Nested],
         }
         assertRecordMatch(
@@ -678,7 +663,7 @@ describe('Router Matcher', () => {
         const Foo = {
           path: '/foo',
           name: 'Foo',
-          component,
+          components,
           children: [NestedWithParam],
         }
         assertRecordMatch(
@@ -707,7 +692,7 @@ describe('Router Matcher', () => {
         const Foo = {
           path: '/foo',
           name: 'Foo',
-          component,
+          components,
           children: [NestedWithParam],
         }
         assertRecordMatch(

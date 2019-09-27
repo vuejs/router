@@ -1,16 +1,10 @@
-// @ts-check
-const fakePromise = require('faked-promise')
-const { AbstractHistory } = require('../src/history/abstract')
-const { Router } = require('../src/router')
-const {
-  NavigationAborted,
-  NavigationCancelled,
-  NavigationGuardRedirect,
-} = require('../src/errors')
-const { components, tick } = require('./utils')
+import { AbstractHistory } from '../src/history/abstract'
+import { Router } from '../src/router'
+import { NavigationAborted, NavigationGuardRedirect } from '../src/errors'
+import { components, tick } from './utils'
+import { RouteRecord } from '../src/types'
 
-/** @type {import('../src/types').RouteRecord[]} */
-const routes = [
+const routes: RouteRecord[] = [
   { path: '/', component: components.Home },
   { path: '/foo', component: components.Foo, name: 'Foo' },
   { path: '/to-foo', redirect: '/foo' },

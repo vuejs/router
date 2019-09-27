@@ -2236,10 +2236,10 @@ extsprintf@^1.2.0:
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
   integrity sha1-4mifjzVvrWLMplo6kcXfX5VRaS8=
 
-faked-promise@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/faked-promise/-/faked-promise-2.1.0.tgz#988dd6f7e1c30638be2cd0d67e944b51d5dbbaeb"
-  integrity sha512-p5QCxMj8OsHjBs0aIEbg1WFW019Tib3LIWpz6Fyl5uVf4A3FRJzcMrJgiTgwVB5k99k3M566U6NUa/rEi473fA==
+faked-promise@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/faked-promise/-/faked-promise-2.2.2.tgz#c89dd11d29a561bb03229813e3aa13a369df137c"
+  integrity sha512-1kaSWavyNHJw83/aJ0dZAhKWID/FAED9vlgBa43kW8Vb61BSXORXf8f9W6NJ7qepTtlPSaJc557qkpxT1HCUBw==
 
 fast-deep-equal@^2.0.1:
   version "2.0.1"

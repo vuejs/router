@@ -1,5 +1,4 @@
-// @ts-check
-const { parseQuery } = require('../src/history/utils')
+import { parseQuery } from '../src/history/utils'
 
 describe('parseQuery', () => {
   it('works with leading ?', () => {

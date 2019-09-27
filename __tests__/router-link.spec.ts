@@ -1,20 +1,25 @@
 /**
  * @jest-environment jsdom
  */
-// @ts-check
 // NOTE: these tests only run when using jest `yarn jest --watch`
-const { default: RouterLink } = require('../src/components/Link')
-const { components, isMocha, HistoryMock } = require('./utils')
-const { START_LOCATION_NORMALIZED } = require('../src/types')
+import RouterLink from '../src/components/Link'
+import { HistoryMock } from './utils'
+import {
+  START_LOCATION_NORMALIZED,
+  RouteQueryAndHash,
+  MatcherLocation,
+  RouteLocationNormalized,
+} from '../src/types'
+import { mount } from '@vue/test-utils'
 
-/** @typedef {import('../src/types').RouteLocationNormalized} RouteLocationNormalized */
-/** @typedef {import('../src/types').RouteRecord} RouteRecord */
-/** @typedef {import('../src/types').RouteLocation} RouteLocation */
-/** @typedef {import('../src/types').MatcherLocation} MatcherLocation */
-/** @typedef {import('../src/types').RouteQueryAndHash} RouteQueryAndHash */
-
-/** @type {Record<string, { string: string, normalized: RouteLocationNormalized, toResolve?: MatcherLocation & Required<RouteQueryAndHash> }>} */
-const locations = {
+const locations: Record<
+  string,
+  {
+    string: string
+    normalized: RouteLocationNormalized
+    toResolve?: MatcherLocation & Required<RouteQueryAndHash>
+  }
+> = {
   basic: {
     string: '/home',
     // toResolve: { path: '/home', fullPath: '/home', undefined, query: {}, hash: '' },
@@ -46,18 +51,11 @@ const locations = {
 }
 
 describe('RouterLink', () => {
-  // skip these tests on mocha because @vue/test-utils
-  // do not work correctly
-  if (isMocha()) return
-  const { mount } = require('@vue/test-utils')
-
-  /**
-   *
-   * @param {RouteLocationNormalized} currentLocation
-   * @param {Object} propsData
-   * @param {RouteLocationNormalized} resolvedLocation
-   */
-  function factory(currentLocation, propsData, resolvedLocation) {
+  function factory(
+    currentLocation: RouteLocationNormalized,
+    propsData: any,
+    resolvedLocation: RouteLocationNormalized
+  ) {
     const router = {
       history: new HistoryMock(),
       resolve: jest.fn(),

@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue, { ComponentOptions } from 'vue'
 import Router from '../../src'
 import { components } from '../utils'
 
@@ -51,7 +51,7 @@ export function createApp(
 export function renderApp(
   context: { url: string },
   routerOptions?: Partial<RouterOptions>,
-  vueOptions?: any
+  vueOptions?: ComponentOptions<Vue>
 ) {
   return new Promise<ReturnType<typeof createApp>['app']>((resolve, reject) => {
     const { app, router } = createApp(routerOptions, vueOptions)

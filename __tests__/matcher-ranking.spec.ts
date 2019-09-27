@@ -1,29 +1,19 @@
-// @ts-check
-const { createRouteMatcher } = require('../src/matcher')
+import { createRouteMatcher } from '../src/matcher'
+import { RegExpOptions } from 'path-to-regexp'
+import { RouteComponent } from '../src/types'
 
-/** @type {RouteComponent} */
-const component = null
+// @ts-ignore
+const component: RouteComponent = null
 
-/** @typedef {import('../src/types').RouteRecord} RouteRecord */
-/** @typedef {import('../src/types').RouteComponent} RouteComponent */
-/** @typedef {import('../src/types').MatchedRouteRecord} MatchedRouteRecord */
-/** @typedef {import('../src/types').MatcherLocation} MatcherLocation */
-/** @typedef {import('../src/types').MatcherLocationRedirect} MatcherLocationRedirect */
-/** @typedef {import('../src/types').MatcherLocationNormalized} MatcherLocationNormalized */
-/** @typedef {import('../src/matcher').RouteMatcher} RouteMatcher */
-/** @typedef {import('path-to-regexp').RegExpOptions} RegExpOptions */
-
-function stringifyOptions(options) {
+function stringifyOptions(options: any) {
   return Object.keys(options).length ? ` (${JSON.stringify(options)})` : ''
 }
 
 describe('createRouteMatcher', () => {
-  /**
-   *
-   * @param {Array<string | [string, RegExpOptions]>} paths
-   * @param {RegExpOptions} options
-   */
-  function checkPathOrder(paths, options = {}) {
+  function checkPathOrder(
+    paths: Array<string | [string, RegExpOptions]>,
+    options: RegExpOptions = {}
+  ) {
     const normalizedPaths = paths.map(pathOrCombined => {
       if (Array.isArray(pathOrCombined))
         return [pathOrCombined[0], { ...options, ...pathOrCombined[1] }]

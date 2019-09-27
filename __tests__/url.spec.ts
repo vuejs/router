@@ -1,9 +1,8 @@
-// @ts-check
-const {
+import {
   parseURL,
   stringifyURL,
   normalizeLocation,
-} = require('../src/history/utils')
+} from '../src/history/utils'
 
 describe('parseURL', () => {
   it('works with no query no hash', () => {

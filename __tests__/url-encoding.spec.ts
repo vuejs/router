@@ -1,17 +1,18 @@
-// @ts-check
-const { Router } = require('../src/router')
-const { createDom, components, tick, HistoryMock } = require('./utils')
+import { Router } from '../src/router'
+import { createDom, components, HistoryMock } from './utils'
+import { RouteRecord } from '../src/types'
 
-/** @type {import('../src/types').RouteRecord[]} */
-const routes = [
+const routes: RouteRecord[] = [
   { path: '/', name: 'home', component: components.Home },
   { path: '/%25', name: 'percent', component: components.Home },
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
   { path: '/p/:p', component: components.Bar, name: 'params' },
 ]
 
-function createHistory(initialUrl) {
-  return new HistoryMock(initialUrl)
+// this function is meant to easy refactor in the future as Histories are going to be
+// function-based
+function createHistory(...args: ConstructorParameters<typeof HistoryMock>) {
+  return new HistoryMock(...args)
 }
 
 describe('URL Encoding', () => {

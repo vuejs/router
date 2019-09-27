@@ -1,7 +1,6 @@
-// @ts-check
 
-const { AbstractHistory } = require('../../src/history/abstract')
-const { START } = require('../../src/history/base')
+import { AbstractHistory } from '../../src/history/abstract'
+import { START } from '../../src/history/base'
 
 /** @type {import('../../src/history/base').HistoryLocation} */
 const loc = {

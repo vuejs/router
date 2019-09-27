@@ -1,13 +1,11 @@
-// @ts-check
-const fakePromise = require('faked-promise')
-const { HTML5History } = require('../src/history/html5')
-const { AbstractHistory } = require('../src/history/abstract')
-const { Router } = require('../src/router')
-const { NavigationCancelled } = require('../src/errors')
-const { createDom, components, tick, HistoryMock } = require('./utils')
+import fakePromise from 'faked-promise'
+import { AbstractHistory } from '../src/history/abstract'
+import { Router } from '../src/router'
+import { NavigationCancelled } from '../src/errors'
+import { createDom, components, tick, HistoryMock } from './utils'
+import { RouteRecord, RouteLocation } from '../src/types'
 
-/** @type {import('../src/types').RouteRecord[]} */
-const routes = [
+const routes: RouteRecord[] = [
   { path: '/', component: components.Home },
   { path: '/search', component: components.Home },
   { path: '/foo', component: components.Foo, name: 'Foo' },
@@ -101,7 +99,9 @@ describe('Router', () => {
   })
 
   describe('navigation', () => {
-    async function checkNavigationCancelledOnPush(target) {
+    async function checkNavigationCancelledOnPush(
+      target?: RouteLocation | false | ((vm: any) => void)
+    ) {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
       const history = new HistoryMock()
@@ -110,7 +110,8 @@ describe('Router', () => {
         if (to.name !== 'Param') return next()
         if (to.params.p === 'a') {
           await p1
-          next(target)
+          // @ts-ignore: for some reason it's not handling the string here
+          target == null ? next() : next(target)
         } else {
           await p2
           next()
@@ -145,7 +146,9 @@ describe('Router', () => {
       await checkNavigationCancelledOnPush(undefined)
     })
 
-    async function checkNavigationCancelledOnPopstate(target) {
+    async function checkNavigationCancelledOnPopstate(
+      target?: RouteLocation | false | ((vm: any) => void)
+    ) {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
       const history = new AbstractHistory()
@@ -162,6 +165,7 @@ describe('Router', () => {
           next()
         } else if (from.fullPath === '/p/b') {
           await p2
+          // @ts-ignore: same as function above
           next(target)
         } else {
           next()
