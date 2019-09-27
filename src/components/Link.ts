@@ -1,7 +1,6 @@
 import { Component } from 'vue'
 import { Router } from '../router'
 import { RouteLocationNormalized, RouteLocation } from '../types'
-import { HistoryLocationNormalized } from '../history/base'
 
 const Link: Component = {
   name: 'RouterLink',
@@ -20,29 +19,7 @@ const Link: Component = {
     // @ts-ignore can't get `this`
     const to = this.to as RouteLocation
 
-    // @ts-ignore can't get `this`
-    const history = router.history
-    let url: HistoryLocationNormalized
-    let location: RouteLocationNormalized
-    // TODO: refactor router code and use its function istead of having a copied version here
-    if (typeof to === 'string' || ('path' in to && !('name' in to))) {
-      url = history.utils.normalizeLocation(to)
-      // TODO: should allow a non matching url to allow dynamic routing to work
-      location = router.resolveLocation(url, from)
-    } else {
-      // named or relative route
-      const query = history.utils.normalizeQuery(to.query ? to.query : {})
-      const hash = to.hash || ''
-      // we need to resolve first
-      location = router.resolveLocation({ ...to, query, hash }, from)
-      // intentionally drop current query and hash
-      url = history.utils.normalizeLocation({
-        query,
-        hash,
-        ...location,
-      })
-    }
-    const route = location
+    const route = router.resolve(to)
 
     // TODO: active classes
     // TODO: handle replace prop

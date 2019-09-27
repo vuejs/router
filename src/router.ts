@@ -152,7 +152,7 @@ export class Router {
     })
   }
 
-  resolveLocation(
+  private resolveLocation(
     location: MatcherLocation & Required<RouteQueryAndHash>,
     currentLocation?: RouteLocationNormalized,
     redirectedFrom?: RouteLocationNormalized

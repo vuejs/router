@@ -62,11 +62,11 @@ describe('RouterLink', () => {
   function factory(currentLocation, propsData, resolvedLocation) {
     const router = {
       history: new HistoryMock(),
-      resolveLocation: jest.fn(),
+      resolve: jest.fn(),
       push: jest.fn(),
     }
 
-    router.resolveLocation.mockReturnValueOnce(resolvedLocation)
+    router.resolve.mockReturnValueOnce(resolvedLocation)
     // @ts-ignore TODO: Some information are missing on RouterLink
     const wrapper = mount(RouterLink, {
       propsData,
@@ -107,11 +107,8 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(router.resolveLocation).toHaveBeenCalledTimes(1)
-    expect(router.resolveLocation).toHaveBeenCalledWith(
-      expect.objectContaining({ path: locations.basic.string }),
-      START_LOCATION_NORMALIZED
-    )
+    expect(router.resolve).toHaveBeenCalledTimes(1)
+    expect(router.resolve).toHaveBeenCalledWith(locations.basic.string)
   })
 
   it('calls router.push when clicked', () => {
@@ -129,11 +126,8 @@ describe('RouterLink', () => {
     const { router } = factory(
       START_LOCATION_NORMALIZED,
       { to: locations.withQuery.string },
-      locations.withQuery.normalized // it doesn't matter as we want to check what resolveLocation is called with
+      locations.withQuery.normalized // it doesn't matter as we want to check what resolve is called with
     )
-    expect(router.resolveLocation).toHaveBeenCalledWith(
-      expect.objectContaining({ query: locations.withQuery.normalized.query }),
-      START_LOCATION_NORMALIZED
-    )
+    expect(router.resolve).toHaveBeenCalledWith(locations.withQuery.string)
   })
 })
