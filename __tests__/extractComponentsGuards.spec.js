@@ -1,6 +1,4 @@
 // @ts-check
-require('./helper')
-const expect = require('expect')
 const { extractComponentsGuards } = require('../src/utils')
 const { START_LOCATION_NORMALIZED } = require('../src/types')
 const { components, normalizeRouteRecord } = require('./utils')

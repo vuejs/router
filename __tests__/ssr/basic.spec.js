@@ -1,6 +1,4 @@
 // @ts-check
-require('../helper')
-const expect = require('expect')
 const { renderApp, renderer } = require('./shared')
 
 describe('SSR: basicRenderer', () => {

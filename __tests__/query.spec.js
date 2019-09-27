@@ -1,6 +1,4 @@
 // @ts-check
-require('./helper')
-const expect = require('expect')
 const { parseQuery } = require('../src/history/utils')
 
 describe('parseQuery', () => {

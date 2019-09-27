@@ -1,7 +1,5 @@
 // @ts-check
 
-require('../helper')
-const expect = require('expect')
 const { AbstractHistory } = require('../../src/history/abstract')
 const { START } = require('../../src/history/base')
 

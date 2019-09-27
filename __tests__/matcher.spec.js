@@ -1,6 +1,4 @@
 // @ts-check
-require('./helper')
-const expect = require('expect')
 const { RouterMatcher } = require('../src/matcher')
 const { START_LOCATION_NORMALIZED } = require('../src/types')
 const { normalizeRouteRecord } = require('./utils')

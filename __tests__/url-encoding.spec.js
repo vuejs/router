@@ -1,6 +1,4 @@
 // @ts-check
-require('./helper')
-const expect = require('expect')
 const { Router } = require('../src/router')
 const { createDom, components, tick, HistoryMock } = require('./utils')
 

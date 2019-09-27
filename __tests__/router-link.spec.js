@@ -3,8 +3,6 @@
  */
 // @ts-check
 // NOTE: these tests only run when using jest `yarn jest --watch`
-require('./helper')
-const expect = require('expect')
 const { default: RouterLink } = require('../src/components/Link')
 const { components, isMocha, HistoryMock } = require('./utils')
 const { START_LOCATION_NORMALIZED } = require('../src/types')

@@ -1,6 +1,4 @@
 // @ts-check
-require('./helper')
-const expect = require('expect')
 const { createRouteMatcher } = require('../src/matcher')
 
 /** @type {RouteComponent} */

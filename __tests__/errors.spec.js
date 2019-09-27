@@ -1,6 +1,4 @@
 // @ts-check
-require('./helper')
-const expect = require('expect')
 const fakePromise = require('faked-promise')
 const { AbstractHistory } = require('../src/history/abstract')
 const { Router } = require('../src/router')

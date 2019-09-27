@@ -4,12 +4,16 @@
 
 Use `yarn`
 
-### Faster unit testing with watch mode
-
-Use mocha for TDD, its watching is much faster than jest
+Run local app at [`http://localhost:8080`](http://localhost:8080)
 
 ```sh
-yarn run test:mocha:dev
+yarn run dev
+```
+
+### Testing with watch mode
+
+```sh
+yarn run jest --watch
 ```
 
 Run jest for final tests
