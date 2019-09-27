@@ -60,6 +60,23 @@ const GuardedWithLeave: RouteComponent = {
   },
 }
 
+const ComponentWithData: RouteComponent = {
+  template: `<div>
+    <p>Here is the data: {{ data }}</p>
+  </div>`,
+  // @ts-ignore
+  data: () => ({ data: 'nope' }),
+  beforeRouteEnter(to, from, next) {
+    console.log('this in beforeRouteEnter', this)
+    setTimeout(() => {
+      next(vm => {
+        console.log('got vm', vm)
+        vm.data = 'Hola'
+      })
+    }, 300)
+  },
+}
+
 if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual'
 }
@@ -118,6 +135,7 @@ const router = new Router({
         { path: 'b', name: 'b-child', component },
       ],
     },
+    { path: '/with-data', component: ComponentWithData, name: 'WithData' },
     // { path: /^\/about\/?$/, component },
   ],
   async scrollBehavior(to, from, savedPosition) {

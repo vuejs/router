@@ -182,6 +182,7 @@ export interface NavigationGuardCallback {
   (): void
   (location: RouteLocation): void
   (valid: false): void
+  (cb: (vm: any) => void): void
 }
 
 export interface NavigationGuard<V = void> {
