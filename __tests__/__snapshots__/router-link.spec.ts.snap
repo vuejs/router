@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RouterLink displays a link with a string prop 1`] = `"<a href=\\"/home\\">a link</a>"`;
+
+exports[`RouterLink displays a link with an object with path prop 1`] = `"<a href=\\"/home\\">a link</a>"`;

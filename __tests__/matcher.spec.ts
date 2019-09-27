@@ -135,9 +135,7 @@ describe('Router Matcher', () => {
       it('throws if the path does not exists', () => {
         expect(
           assertErrorMatch({ path: '/', components }, { path: '/foo' })
-        ).toMatchInlineSnapshot(
-          `[NoRouteMatchError: No match for {"path":"/foo","params":{},"query":{},"hash":"","fullPath":"/"}]`
-        )
+        ).toMatchSnapshot()
       })
     })
 
@@ -161,9 +159,7 @@ describe('Router Matcher', () => {
       it('throws if the named route does not exists', () => {
         expect(
           assertErrorMatch({ path: '/', components }, { name: 'Home' })
-        ).toMatchInlineSnapshot(
-          `[NoRouteMatchError: No match for {"path":"/","name":"Home","params":{},"query":{},"hash":"","fullPath":"/"}]`
-        )
+        ).toMatchSnapshot()
       })
     })
 
@@ -413,13 +409,7 @@ describe('Router Matcher', () => {
                 meta: {},
               }
             )
-          ).toMatchInlineSnapshot(`
-                                                [InvalidRouteMatch: Cannot redirect using a relative location:
-                                                {
-                                                  "params": {}
-                                                }
-                                                Use the function redirect and explicitely provide a name]
-                                        `)
+          ).toMatchSnapshot()
         })
 
         it('normalize a location when redirecting', () => {
@@ -472,9 +462,7 @@ describe('Router Matcher', () => {
               meta: {},
             }
           )
-        ).toMatchInlineSnapshot(
-          `[NoRouteMatchError: No match for {"name":"home","params":{},"path":"/"}]`
-        )
+        ).toMatchSnapshot()
       })
     })
 

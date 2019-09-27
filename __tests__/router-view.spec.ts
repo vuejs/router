@@ -76,31 +76,27 @@ describe('RouterView', () => {
 
   it('displays current route component', async () => {
     const wrapper = factory(routes.root)
-    expect(wrapper.html()).toMatchInlineSnapshot(`"<div>Home</div>"`)
+    expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('displays named views', async () => {
     const wrapper = factory(routes.named, { name: 'foo' })
-    expect(wrapper.html()).toMatchInlineSnapshot(`"<div>Foo</div>"`)
+    expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('displays nothing when route is unmatched', async () => {
     const wrapper = factory(START_LOCATION_NORMALIZED)
     // NOTE: I wonder if this will stay stable in future releases
-    expect(wrapper.html()).toMatchInlineSnapshot(`undefined`)
+    expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('displays nested views', async () => {
     const wrapper = factory(routes.nested)
-    expect(wrapper.html()).toMatchInlineSnapshot(
-      `"<div><h2>Nested</h2><div>Foo</div></div>"`
-    )
+    expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('displays deeply nested views', async () => {
     const wrapper = factory(routes.nestedNested)
-    expect(wrapper.html()).toMatchInlineSnapshot(
-      `"<div><h2>Nested</h2><div><h2>Nested</h2><div>Foo</div></div></div>"`
-    )
+    expect(wrapper.html()).toMatchSnapshot()
   })
 })

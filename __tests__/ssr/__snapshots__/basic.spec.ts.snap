@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SSR: basicRenderer renders the view 1`] = `"<div data-server-rendered=\\"true\\"><div>Home</div></div>"`;

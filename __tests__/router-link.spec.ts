@@ -81,9 +81,7 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(wrapper.html()).toMatchInlineSnapshot(
-      `"<a href=\\"/home\\">a link</a>"`
-    )
+    expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('displays a link with an object with path prop', () => {
@@ -92,9 +90,7 @@ describe('RouterLink', () => {
       { to: { path: locations.basic.string } },
       locations.basic.normalized
     )
-    expect(wrapper.html()).toMatchInlineSnapshot(
-      `"<a href=\\"/home\\">a link</a>"`
-    )
+    expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('calls ensureLocation', () => {

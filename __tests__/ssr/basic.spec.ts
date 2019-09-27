@@ -4,9 +4,7 @@ describe('SSR: basicRenderer', () => {
   it('renders the view', async () => {
     const app = await renderApp({ url: '/' })
     const result = await renderer.renderToString(app)
-    expect(result).toMatchInlineSnapshot(
-      `"<div data-server-rendered=\\"true\\"><div>Home</div></div>"`
-    )
+    expect(result).toMatchSnapshot()
   })
 
   /**
