@@ -2,24 +2,27 @@ import { HTML5History } from '../../src/history/html5'
 import { Router, RouterOptions } from '../../src/router'
 import fakePromise from 'faked-promise'
 import { NAVIGATION_TYPES, createDom, noGuard } from '../utils'
-import { RouteRecord } from '../../src/types'
+import { RouteRecord, NavigationGuard } from '../../src/types'
 
 function createRouter(
   options: Partial<RouterOptions> & { routes: RouteRecord[] }
 ) {
   return new Router({
     history: new HTML5History(),
-    ...options,
+    ...options
   })
 }
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
-const beforeRouteEnter = jest.fn()
+const beforeRouteEnter = jest.fn<
+  ReturnType<NavigationGuard>,
+  Parameters<NavigationGuard>
+>()
 const named = {
   default: jest.fn(),
-  other: jest.fn(),
+  other: jest.fn()
 }
 
 const nested = {
@@ -29,7 +32,7 @@ const nested = {
   nestedAbs: jest.fn(),
   nestedNested: jest.fn(),
   nestedNestedFoo: jest.fn(),
-  nestedNestedParam: jest.fn(),
+  nestedNestedParam: jest.fn()
 }
 
 const routes: RouteRecord[] = [
@@ -39,43 +42,43 @@ const routes: RouteRecord[] = [
     path: '/guard/:n',
     component: {
       ...Foo,
-      beforeRouteEnter,
-    },
+      beforeRouteEnter
+    }
   },
   {
     path: '/named',
     components: {
       default: {
         ...Home,
-        beforeRouteEnter: named.default,
+        beforeRouteEnter: named.default
       },
       other: {
         ...Foo,
-        beforeRouteEnter: named.other,
-      },
-    },
+        beforeRouteEnter: named.other
+      }
+    }
   },
   {
     path: '/nested',
     component: {
       ...Home,
-      beforeRouteEnter: nested.parent,
+      beforeRouteEnter: nested.parent
     },
     children: [
       {
         path: '',
         name: 'nested-empty-path',
-        component: { ...Home, beforeRouteEnter: nested.nestedEmpty },
+        component: { ...Home, beforeRouteEnter: nested.nestedEmpty }
       },
       {
         path: 'a',
         name: 'nested-path',
-        component: { ...Home, beforeRouteEnter: nested.nestedA },
+        component: { ...Home, beforeRouteEnter: nested.nestedA }
       },
       {
         path: '/abs-nested',
         name: 'absolute-nested',
-        component: { ...Home, beforeRouteEnter: nested.nestedAbs },
+        component: { ...Home, beforeRouteEnter: nested.nestedAbs }
       },
       {
         path: 'nested',
@@ -85,17 +88,17 @@ const routes: RouteRecord[] = [
           {
             path: 'foo',
             name: 'nested-nested-foo',
-            component: { ...Home, beforeRouteEnter: nested.nestedNestedFoo },
+            component: { ...Home, beforeRouteEnter: nested.nestedNestedFoo }
           },
           {
             path: 'param/:p',
             name: 'nested-nested-param',
-            component: { ...Home, beforeRouteEnter: nested.nestedNestedParam },
-          },
-        ],
-      },
-    ],
-  },
+            component: { ...Home, beforeRouteEnter: nested.nestedNestedParam }
+          }
+        ]
+      }
+    ]
+  }
 ]
 
 function resetMocks() {
@@ -193,11 +196,11 @@ describe('beforeRouteEnter', () => {
         const spy = jest.fn(noGuard)
         const component = {
           template: `<div></div>`,
-          beforeRouteEnter: spy,
+          beforeRouteEnter: spy
         }
         const [promise, resolve] = fakePromise<typeof component>()
         const router = createRouter({
-          routes: [...routes, { path: '/async', component: () => promise }],
+          routes: [...routes, { path: '/async', component: () => promise }]
         })
         const pushPromise = router[navigationMethod]('/async')
         expect(spy).not.toHaveBeenCalled()
@@ -228,6 +231,33 @@ describe('beforeRouteEnter', () => {
         resolve()
         await p
         expect(router.currentRoute.fullPath).toBe('/foo')
+      })
+
+      // not implemented yet as it depends on Vue 3 Suspense
+      it.skip('calls next callback', done => {
+        const router = createRouter({ routes })
+        beforeRouteEnter.mockImplementationOnce((to, from, next) => {
+          next(vm => {
+            expect(router.currentRoute.fullPath).toBe('/foo')
+            expect(vm).toBeTruthy()
+            done()
+          })
+        })
+      })
+
+      it.skip('calls next callback after waiting', async done => {
+        const [promise, resolve] = fakePromise()
+        const router = createRouter({ routes })
+        beforeRouteEnter.mockImplementationOnce(async (to, from, next) => {
+          await promise
+          next(vm => {
+            expect(router.currentRoute.fullPath).toBe('/foo')
+            expect(vm).toBeTruthy()
+            done()
+          })
+        })
+        router[navigationMethod]('/foo')
+        resolve()
       })
     })
   })

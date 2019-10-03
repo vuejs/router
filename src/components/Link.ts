@@ -25,6 +25,7 @@ const Link: Component = {
     // TODO: handle replace prop
 
     const handler = (e: MouseEvent) => {
+      // TODO: handle navigate with empty parameters for scoped slot and composition api
       if (guardEvent(e)) {
         router.push(route)
       }

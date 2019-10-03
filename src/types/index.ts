@@ -178,6 +178,8 @@ export interface MatcherLocationRedirect {
   normalizedLocation: MatcherLocationNormalized
 }
 
+// TODO: remove any to type vm and use a generic that comes from the component
+// where the navigation guard callback is defined
 export interface NavigationGuardCallback {
   (): void
   (location: RouteLocation): void
