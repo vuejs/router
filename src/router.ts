@@ -1,8 +1,10 @@
 import {
-  BaseHistory,
-  HistoryLocationNormalized,
-  NavigationDirection,
-} from './history/base'
+  normalizeLocation,
+  RouterHistory,
+  stringifyURL,
+  normalizeQuery,
+  HistoryLocationNormalized
+} from './history/common'
 import { RouterMatcher } from './matcher'
 import {
   RouteLocation,
@@ -15,19 +17,19 @@ import {
   PostNavigationGuard,
   Lazy,
   MatcherLocation,
-  RouteQueryAndHash,
+  RouteQueryAndHash
 } from './types/index'
 import {
   ScrollToPosition,
   ScrollPosition,
-  scrollToPosition,
+  scrollToPosition
 } from './utils/scroll'
 
 import { guardToPromiseFn, extractComponentsGuards } from './utils'
 import {
   NavigationGuardRedirect,
   NavigationAborted,
-  NavigationCancelled,
+  NavigationCancelled
 } from './errors'
 
 interface ScrollBehavior {
@@ -39,7 +41,7 @@ interface ScrollBehavior {
 }
 
 export interface RouterOptions {
-  history: BaseHistory
+  history: RouterHistory
   routes: RouteRecord[]
   // TODO: async version
   scrollBehavior?: ScrollBehavior
@@ -50,7 +52,7 @@ type ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor
 type OnReadyCallback = [() => void, (reason?: any) => void]
 export class Router {
-  protected history: BaseHistory
+  protected history: RouterHistory
   private matcher: RouterMatcher
   private beforeGuards: NavigationGuard[] = []
   private afterGuards: PostNavigationGuard[] = []
@@ -91,7 +93,7 @@ export class Router {
         // accept current navigation
         this.currentRoute = {
           ...to,
-          ...matchedRoute,
+          ...matchedRoute
         }
         this.updateReactiveRoute()
         // TODO: refactor with a state getter
@@ -118,16 +120,17 @@ export class Router {
           this.push(error.to).catch(() => {})
         } else if (NavigationAborted.is(error)) {
           // TODO: test on different browsers ensure consistent behavior
+          // Maybe we could write the length the first time we do a navigation and use that for direction
           // TODO: this doesn't work if the user directly calls window.history.go(-n) with n > 1
           // We can override the go method to retrieve the number but not sure if all browsers allow that
-          if (info.direction === NavigationDirection.back) {
-            this.history.forward(false)
-          } else {
-            // TODO: go back because we cancelled, then
-            // or replace and not discard the rest of history. Check issues, there was one talking about this
-            // behaviour, maybe we can do better
-            this.history.back(false)
-          }
+          // if (info.direction === NavigationDirection.back) {
+          // this.history.forward(false)
+          // } else {
+          // TODO: go back because we cancelled, then
+          // or replace and not discard the rest of history. Check issues, there was one talking about this
+          // behaviour, maybe we can do better
+          // this.history.back(false)
+          // }
         } else {
           this.triggerError(error, false)
         }
@@ -141,14 +144,15 @@ export class Router {
   ) {
     if (typeof to === 'string')
       return this.resolveLocation(
-        this.history.utils.normalizeLocation(to),
+        // TODO: refactor and remove import
+        normalizeLocation(to),
         currentLocation
       )
     return this.resolveLocation({
       // TODO: refactor with url utils
       query: {},
       hash: '',
-      ...to,
+      ...to
     })
   }
 
@@ -166,21 +170,21 @@ export class Router {
       // target location normalized, used if we want to redirect again
       const normalizedLocation: RouteLocationNormalized = {
         ...matchedRoute.normalizedLocation,
-        fullPath: this.history.utils.stringifyURL({
+        fullPath: stringifyURL({
           path: matchedRoute.normalizedLocation.path,
           query: location.query,
-          hash: location.hash,
+          hash: location.hash
         }),
-        query: this.history.utils.normalizeQuery(location.query || {}),
+        query: normalizeQuery(location.query || {}),
         hash: location.hash,
         redirectedFrom,
-        meta: {},
+        meta: {}
       }
 
       if (typeof redirect === 'string') {
         // match the redirect instead
         return this.resolveLocation(
-          this.history.utils.normalizeLocation(redirect),
+          normalizeLocation(redirect),
           currentLocation,
           normalizedLocation
         )
@@ -189,7 +193,7 @@ export class Router {
 
         if (typeof newLocation === 'string') {
           return this.resolveLocation(
-            this.history.utils.normalizeLocation(newLocation),
+            normalizeLocation(newLocation),
             currentLocation,
             normalizedLocation
           )
@@ -202,8 +206,8 @@ export class Router {
         return this.resolveLocation(
           {
             ...newLocation,
-            query: this.history.utils.normalizeQuery(newLocation.query || {}),
-            hash: newLocation.hash || '',
+            query: normalizeQuery(newLocation.query || {}),
+            hash: newLocation.hash || ''
           },
           currentLocation,
           normalizedLocation
@@ -212,8 +216,8 @@ export class Router {
         return this.resolveLocation(
           {
             ...redirect,
-            query: this.history.utils.normalizeQuery(redirect.query || {}),
-            hash: redirect.hash || '',
+            query: normalizeQuery(redirect.query || {}),
+            hash: redirect.hash || ''
           },
           currentLocation,
           normalizedLocation
@@ -221,15 +225,15 @@ export class Router {
       }
     } else {
       // add the redirectedFrom field
-      const url = this.history.utils.normalizeLocation({
+      const url = normalizeLocation({
         path: matchedRoute.path,
         query: location.query,
-        hash: location.hash,
+        hash: location.hash
       })
       return {
         ...matchedRoute,
         ...url,
-        redirectedFrom,
+        redirectedFrom
       }
     }
   }
@@ -263,20 +267,20 @@ export class Router {
     let location: RouteLocationNormalized
     // TODO: refactor into matchLocation to return location and url
     if (typeof to === 'string' || ('path' in to && !('name' in to))) {
-      url = this.history.utils.normalizeLocation(to)
+      url = normalizeLocation(to)
       // TODO: should allow a non matching url to allow dynamic routing to work
       location = this.resolveLocation(url, this.currentRoute)
     } else {
       // named or relative route
-      const query = to.query ? this.history.utils.normalizeQuery(to.query) : {}
+      const query = to.query ? normalizeQuery(to.query) : {}
       const hash = to.hash || ''
       // we need to resolve first
       location = this.resolveLocation({ ...to, query, hash }, this.currentRoute)
       // intentionally drop current query and hash
-      url = this.history.utils.normalizeLocation({
+      url = normalizeLocation({
         query,
         hash,
-        ...location,
+        ...location
       })
     }
 

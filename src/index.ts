@@ -4,6 +4,7 @@ import { HashHistory } from './history/hash'
 import { AbstractHistory } from './history/abstract'
 import { BaseHistory } from './history/base'
 import { PluginFunction, VueConstructor } from 'vue'
+import createHistory from './history/html5.2'
 import View from './components/View'
 import Link from './components/Link'
 
@@ -73,13 +74,15 @@ export {
 }
 
 // TODO: refactor somewhere else
-const inBrowser = typeof window !== 'undefined'
+// const inBrowser = typeof window !== 'undefined'
 
-const HistoryMode = {
-  history: HTML5History,
-  hash: HashHistory,
-  abstract: AbstractHistory,
-}
+// const HistoryMode = {
+//   history: HTML5History,
+//   hash: HashHistory,
+//   abstract: AbstractHistory
+// }
+
+export { createHistory }
 
 export default class VueRouter extends Router {
   static install = plugin
@@ -89,12 +92,14 @@ export default class VueRouter extends Router {
   constructor(
     options: Partial<RouterOptions & { mode: 'history' | 'abstract' | 'hash' }>
   ) {
-    let { mode } = options
-    if (!inBrowser) mode = 'abstract'
+    // let { mode } = options
+    // if (!inBrowser) mode = 'abstract'
     super({
       ...options,
       routes: options.routes || [],
-      history: new HistoryMode[mode || 'hash'](),
+      // FIXME: change when possible
+      history: createHistory(),
+      // history: new HistoryMode[mode || 'hash'](),
     })
   }
 }

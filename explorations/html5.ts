@@ -7,7 +7,7 @@ import {
   // @ts-ignore
   AbstractHistory,
   plugin,
-  BaseHistory,
+  createHistory,
 } from '../src'
 import { RouteComponent } from '../src/types'
 import Vue from 'vue'
@@ -16,10 +16,13 @@ declare global {
   interface Window {
     vm: Vue
     // h: HTML5History
-    h: BaseHistory
+    h: ReturnType<typeof createHistory>
     r: Router
   }
 }
+
+const routerHistory = createHistory()
+window.h = routerHistory
 
 const shared = {
   cancel: false,
@@ -104,10 +107,10 @@ class ScrollQueue {
 
 const scrollWaiter = new ScrollQueue()
 
-const hist = new HTML5History()
+// const hist = new HTML5History()
 // const hist = new HashHistory()
 const router = new Router({
-  history: hist,
+  history: routerHistory,
   routes: [
     { path: '/', component: Home, name: 'home' },
     { path: '/users/:id', name: 'user', component: User },
@@ -149,14 +152,11 @@ const router = new Router({
 })
 
 // for testing purposes
-const r = router
-const h = hist
-window.h = h
-window.r = r
+window.r = router
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
-r.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   console.log(`Guard from ${from.fullPath} to ${to.fullPath}`)
   if (to.params.id === 'no-name') return next(false)
 
@@ -168,12 +168,12 @@ r.beforeEach(async (to, from, next) => {
   next()
 })
 
-r.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
   if (shared.cancel) return next(false)
   next()
 })
 
-r.afterEach((to, from) => {
+router.afterEach((to, from) => {
   console.log(
     `After guard: from ${from.fullPath} to ${
       to.fullPath
@@ -181,38 +181,38 @@ r.afterEach((to, from) => {
   )
 })
 
-r.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
   console.log('second guard')
   next()
 })
 
-h.listen((to, from, { direction }) => {
-  console.log(`popstate(${direction})`, { to, from })
+routerHistory.listen((to, from, info) => {
+  console.log(`popstate(${info})`, { to, from })
 })
 
 async function run() {
-  // r.push('/multiple/one/two')
+  // router.push('/multiple/one/two')
   // h.push('/hey')
   // h.push('/hey?lol')
   // h.push('/foo')
   // h.push('/replace-me')
   // h.replace('/bar')
-  // r.push('/about')
-  // await r.push('/')
-  // await r.push({
+  // router.push('/about')
+  // await router.push('/')
+  // await router.push({
   //   name: 'user',
   //   params: {
   //     id: '6',
   //   },
   // })
-  // await r.push({
+  // await router.push({
   //   name: 'user',
   //   params: {
   //     id: '5',
   //   },
   // })
   // try {
-  //   await r.push({
+  //   await router.push({
   //     params: {
   //       id: 'no-name',
   //     },
@@ -220,13 +220,13 @@ async function run() {
   // } catch (err) {
   //   console.log('Navigation aborted', err)
   // }
-  // await r.push({
+  // await router.push({
   //   hash: '#hey',
   // })
-  // await r.push('/children')
-  // await r.push('/children/a')
-  // await r.push('/children/b')
-  // await r.push({ name: 'a-child' })
+  // await router.push('/children')
+  // await router.push('/children/a')
+  // await router.push('/children/b')
+  // await router.push({ name: 'a-child' })
 }
 
 // use the router
@@ -262,5 +262,3 @@ window.vm = new Vue({
 })
 
 run()
-
-

@@ -9,7 +9,7 @@ function createRouter(
 ) {
   return new Router({
     history: new HTML5History(),
-    ...options
+    ...options,
   })
 }
 
@@ -22,7 +22,7 @@ const beforeRouteEnter = jest.fn<
 >()
 const named = {
   default: jest.fn(),
-  other: jest.fn()
+  other: jest.fn(),
 }
 
 const nested = {
@@ -32,7 +32,7 @@ const nested = {
   nestedAbs: jest.fn(),
   nestedNested: jest.fn(),
   nestedNestedFoo: jest.fn(),
-  nestedNestedParam: jest.fn()
+  nestedNestedParam: jest.fn(),
 }
 
 const routes: RouteRecord[] = [
@@ -42,43 +42,43 @@ const routes: RouteRecord[] = [
     path: '/guard/:n',
     component: {
       ...Foo,
-      beforeRouteEnter
-    }
+      beforeRouteEnter,
+    },
   },
   {
     path: '/named',
     components: {
       default: {
         ...Home,
-        beforeRouteEnter: named.default
+        beforeRouteEnter: named.default,
       },
       other: {
         ...Foo,
-        beforeRouteEnter: named.other
-      }
-    }
+        beforeRouteEnter: named.other,
+      },
+    },
   },
   {
     path: '/nested',
     component: {
       ...Home,
-      beforeRouteEnter: nested.parent
+      beforeRouteEnter: nested.parent,
     },
     children: [
       {
         path: '',
         name: 'nested-empty-path',
-        component: { ...Home, beforeRouteEnter: nested.nestedEmpty }
+        component: { ...Home, beforeRouteEnter: nested.nestedEmpty },
       },
       {
         path: 'a',
         name: 'nested-path',
-        component: { ...Home, beforeRouteEnter: nested.nestedA }
+        component: { ...Home, beforeRouteEnter: nested.nestedA },
       },
       {
         path: '/abs-nested',
         name: 'absolute-nested',
-        component: { ...Home, beforeRouteEnter: nested.nestedAbs }
+        component: { ...Home, beforeRouteEnter: nested.nestedAbs },
       },
       {
         path: 'nested',
@@ -88,17 +88,17 @@ const routes: RouteRecord[] = [
           {
             path: 'foo',
             name: 'nested-nested-foo',
-            component: { ...Home, beforeRouteEnter: nested.nestedNestedFoo }
+            component: { ...Home, beforeRouteEnter: nested.nestedNestedFoo },
           },
           {
             path: 'param/:p',
             name: 'nested-nested-param',
-            component: { ...Home, beforeRouteEnter: nested.nestedNestedParam }
-          }
-        ]
-      }
-    ]
-  }
+            component: { ...Home, beforeRouteEnter: nested.nestedNestedParam },
+          },
+        ],
+      },
+    ],
+  },
 ]
 
 function resetMocks() {
@@ -196,11 +196,11 @@ describe('beforeRouteEnter', () => {
         const spy = jest.fn(noGuard)
         const component = {
           template: `<div></div>`,
-          beforeRouteEnter: spy
+          beforeRouteEnter: spy,
         }
         const [promise, resolve] = fakePromise<typeof component>()
         const router = createRouter({
-          routes: [...routes, { path: '/async', component: () => promise }]
+          routes: [...routes, { path: '/async', component: () => promise }],
         })
         const pushPromise = router[navigationMethod]('/async')
         expect(spy).not.toHaveBeenCalled()
