@@ -6,6 +6,8 @@ import {
   normalizeLocation,
   HistoryLocationNormalized,
   HistoryState,
+  NavigationType,
+  NavigationDirection,
 } from './common'
 
 // TODO: implement navigation direction in listeners
@@ -28,6 +30,21 @@ export default function createAbstractHistory(): RouterHistory {
       // we are in the middle, we remove everything from here in the queue
       queue.splice(position)
       queue.push(location)
+    }
+  }
+
+  function triggerListeners(
+    to: HistoryLocationNormalized,
+    from: HistoryLocationNormalized,
+    { direction }: { direction: NavigationDirection }
+  ): void {
+    // TODO: proper type
+    const info: Parameters<NavigationCallback>[2] = {
+      direction,
+      type: NavigationType.pop,
+    }
+    for (let callback of listeners) {
+      callback(to, from, info)
     }
   }
 
@@ -57,26 +74,30 @@ export default function createAbstractHistory(): RouterHistory {
       listeners = []
     },
 
-    // back(triggerListeners: boolean = true) {
-    //   const from = this.location
-    //   if (this.position > 0) this.position--
-    //   if (triggerListeners) {
-    //     this.triggerListeners(this.location, from, {
-    //       direction: NavigationDirection.back,
-    //     })
-    //   }
-    // },
+    back(shouldTrigger = true) {
+      const from = this.location
+      if (position > 0) position--
+      if (shouldTrigger) {
+        triggerListeners(this.location, from, {
+          direction: NavigationDirection.back,
+        })
+      }
+    },
 
-    // forward(triggerListeners: boolean = true) {
-    //   const from = this.location
-    //   if (this.position < this.queue.length - 1) this.position++
-    //   if (triggerListeners) {
-    //     this.triggerListeners(this.location, from, {
-    //       direction: NavigationDirection.forward,
-    //     })
-    //   }
-    // },
+    forward(shouldTrigger: boolean = true) {
+      const from = this.location
+      if (position < queue.length - 1) position++
+      if (shouldTrigger) {
+        triggerListeners(this.location, from, {
+          direction: NavigationDirection.forward,
+        })
+      }
+    },
   }
+
+  Object.defineProperty(routerHistory, 'location', {
+    get: () => queue[position],
+  })
 
   return routerHistory
 }

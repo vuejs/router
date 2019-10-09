@@ -73,11 +73,11 @@ export interface RouterHistory {
   location: HistoryLocationNormalized
   push(to: RawHistoryLocation, data?: any): void
   replace(to: RawHistoryLocation): void
+
+  back(triggerListeners?: boolean): void
+  forward(triggerListeners?: boolean): void
+
   listen(callback: NavigationCallback): ListenerRemover
-
-  // back(triggerListeners?: boolean): void
-  // forward(triggerListeners?: boolean): void
-
   destroy(): void
 }
 
