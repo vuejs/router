@@ -35,7 +35,7 @@ type HistoryStateValue =
   | HistoryState
   | HistoryStateArray
 
-interface HistoryState {
+export interface HistoryState {
   [x: number]: HistoryStateValue
   [x: string]: HistoryStateValue
 }
@@ -58,6 +58,15 @@ export interface NavigationCallback {
     from: HistoryLocationNormalized,
     information: { type: NavigationType; direction: NavigationDirection }
   ): void
+}
+
+// starting point for abstract history
+const START_PATH = ''
+export const START: HistoryLocationNormalized = {
+  fullPath: START_PATH,
+  path: START_PATH,
+  query: {},
+  hash: '',
 }
 
 export interface RouterHistory {

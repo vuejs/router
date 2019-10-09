@@ -5,8 +5,9 @@ import {
   normalizeLocation,
   NavigationType,
   NavigationDirection,
+  HistoryLocationNormalized,
+  HistoryState,
 } from './common'
-import { HistoryLocationNormalized, HistoryState } from './base'
 import { computeScrollPosition, ScrollToPosition } from '../utils/scroll'
 // import consola from 'consola'
 
@@ -139,13 +140,14 @@ export default function createHistory(): RouterHistory {
     }
   }
 
-  return {
+  const routerHistory: RouterHistory = {
+    // it's overriden right after
     location,
 
     replace(to) {
       const normalized = normalizeLocation(to)
 
-      cs.info('replace', location, normalized)
+      // cs.info('replace', location, normalized)
 
       const state: StateEntry = buildState(
         historyState.back,
@@ -168,6 +170,8 @@ export default function createHistory(): RouterHistory {
       const normalized = normalizeLocation(to)
 
       // Add to current entry the information of where we are going
+      // as well as saving the current position
+      // TODO: the scroll position computation should be customizable
       const currentState = {
         ...historyState,
         forward: normalized,
@@ -181,14 +185,14 @@ export default function createHistory(): RouterHistory {
         ...data,
       }
 
-      cs.info(
-        'push',
-        location.fullPath,
-        '->',
-        normalized.fullPath,
-        'with state',
-        state
-      )
+      // cs.info(
+      //   'push',
+      //   location.fullPath,
+      //   '->',
+      //   normalized.fullPath,
+      //   'with state',
+      //   state
+      // )
 
       changeLocation(state, '', normalized.fullPath, false)
       location = normalized
@@ -213,4 +217,10 @@ export default function createHistory(): RouterHistory {
       window.removeEventListener('popstate', popStateHandler)
     },
   }
+
+  Object.defineProperty(routerHistory, 'location', {
+    get: () => location,
+  })
+
+  return routerHistory
 }
