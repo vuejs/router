@@ -1,18 +1,18 @@
 import Vue, { ComponentOptions } from 'vue'
-import Router from '../../src'
+import { Router, createMemoryHistory, plugin } from '../../src'
 import { components } from '../utils'
 
 import { createRenderer } from 'vue-server-renderer'
 import { RouterOptions } from '../../src/router'
 
-Vue.use(Router)
+Vue.use(plugin)
 
 export const renderer = createRenderer()
 
 export function createRouter(options?: Partial<RouterOptions>) {
   // TODO: a more complex routing that can be used for most tests
   return new Router({
-    mode: 'history',
+    history: createMemoryHistory(),
     routes: [
       {
         path: '/',
@@ -57,7 +57,9 @@ export function renderApp(
     const { app, router } = createApp(routerOptions, vueOptions)
 
     // set server-side router's location
-    router.push(context.url).catch(err => {})
+    router.push(context.url).catch(err => {
+      console.error('ssr push failed', err)
+    })
 
     // wait until router has resolved possible async components and hooks
     // TODO: rename the promise one to isReady

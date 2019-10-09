@@ -1,14 +1,14 @@
-import { HTML5History } from '../../src/history/html5'
-import { Router, RouterOptions } from '../../src/router'
+import { RouterOptions } from '../../src/router'
 import fakePromise from 'faked-promise'
 import { NAVIGATION_TYPES, createDom, tick, noGuard } from '../utils'
 import { RouteRecord, RouteLocation } from '../../src/types'
+import { createHistory, Router } from '../../src'
 
 function createRouter(
   options: Partial<RouterOptions> & { routes: RouteRecord[] }
 ) {
   return new Router({
-    history: new HTML5History(),
+    history: createHistory(),
     ...options,
   })
 }
@@ -17,8 +17,7 @@ const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 const Nested = { template: `<div>Nested<router-view/></div>` }
 
-/** @type {RouteRecord[]} */
-const routes = [
+const routes: RouteRecord[] = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },
   { path: '/other', component: Foo },

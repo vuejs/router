@@ -1,14 +1,14 @@
-import { HTML5History } from '../../src/history/html5'
-import { Router, RouterOptions } from '../../src/router'
+import { RouterOptions, Router } from '../../src/router'
 import fakePromise from 'faked-promise'
 import { NAVIGATION_TYPES, createDom, noGuard, tick } from '../utils'
 import { RouteRecord } from '../../src/types'
+import { createHistory } from '../../src'
 
 function createRouter(
   options: Partial<RouterOptions> & { routes: RouteRecord[] }
 ) {
   return new Router({
-    history: new HTML5History(),
+    history: createHistory(),
     ...options,
   })
 }
@@ -28,8 +28,7 @@ const nested = {
   nestedNestedParam: jest.fn(),
 }
 
-/** @type {RouteRecord[]} */
-const routes = [
+const routes: RouteRecord[] = [
   { path: '/', component: Home },
   { path: '/home', component: Home, beforeEnter },
   { path: '/foo', component: Foo },

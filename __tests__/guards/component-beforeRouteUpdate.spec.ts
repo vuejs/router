@@ -1,7 +1,7 @@
-import { HTML5History } from '../../src/history/html5'
-import { Router } from '../../src/router'
 import fakePromise from 'faked-promise'
 import { NAVIGATION_TYPES, createDom, noGuard } from '../utils'
+import { Router, createHistory } from '../../src'
+import { RouteRecord } from '../../src/types'
 
 function createRouter(
   options: Partial<import('../../src/router').RouterOptions> & {
@@ -9,7 +9,7 @@ function createRouter(
   }
 ) {
   return new Router({
-    history: new HTML5History(),
+    history: createHistory(),
     ...options,
   })
 }
@@ -18,8 +18,7 @@ const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
 const beforeRouteUpdate = jest.fn()
-/** @type {import('../../src/types').RouteRecord[]} */
-const routes = [
+const routes: RouteRecord[] = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },
   {

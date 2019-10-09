@@ -1,14 +1,14 @@
-import { HTML5History } from '../../src/history/html5'
-import { Router, RouterOptions } from '../../src/router'
+import { RouterOptions } from '../../src/router'
 import fakePromise from 'faked-promise'
 import { NAVIGATION_TYPES, createDom, noGuard } from '../utils'
 import { RouteRecord, NavigationGuard } from '../../src/types'
+import { Router, createHistory } from '../../src'
 
 function createRouter(
   options: Partial<RouterOptions> & { routes: RouteRecord[] }
 ) {
   return new Router({
-    history: new HTML5History(),
+    history: createHistory(),
     ...options,
   })
 }

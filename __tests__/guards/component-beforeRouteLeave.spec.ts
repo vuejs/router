@@ -1,14 +1,14 @@
-import { HTML5History } from '../../src/history/html5'
-import { Router, RouterOptions } from '../../src/router'
+import { RouterOptions, Router } from '../../src/router'
 import { NAVIGATION_TYPES, createDom, noGuard } from '../utils'
 import { RouteRecord } from '../../src/types'
+import { createHistory } from '../../src'
 
 // TODO: refactor in utils
 function createRouter(
   options: Partial<RouterOptions> & { routes: RouteRecord[] }
 ) {
   return new Router({
-    history: new HTML5History(),
+    history: createHistory(),
     ...options,
   })
 }

@@ -1,8 +1,7 @@
 import fakePromise from 'faked-promise'
-import { AbstractHistory } from '../src/history/abstract'
-import { Router } from '../src/router'
+import { Router, createMemoryHistory } from '../src'
 import { NavigationCancelled } from '../src/errors'
-import { createDom, components, tick, HistoryMock } from './utils'
+import { createDom, components, tick } from './utils'
 import { RouteRecord, RouteLocation } from '../src/types'
 
 const routes: RouteRecord[] = [
@@ -30,7 +29,7 @@ describe('Router', () => {
   })
 
   it('can be instantiated', () => {
-    const history = new HistoryMock()
+    const history = createMemoryHistory()
     const router = new Router({ history, routes })
     expect(router.currentRoute).toEqual({
       name: undefined,
@@ -45,7 +44,8 @@ describe('Router', () => {
 
   // TODO: should do other checks not based on history implem
   it.skip('takes browser location', () => {
-    const history = new HistoryMock('/search?q=dog#footer')
+    const history = createMemoryHistory()
+    history.replace('/search?q=dog#footer')
     const router = new Router({ history, routes })
     expect(router.currentRoute).toEqual({
       fullPath: '/search?q=dog#footer',
@@ -57,7 +57,7 @@ describe('Router', () => {
   })
 
   it('calls history.push with router.push', async () => {
-    const history = new HistoryMock()
+    const history = createMemoryHistory()
     const router = new Router({ history, routes })
     jest.spyOn(history, 'push')
     await router.push('/foo')
@@ -71,7 +71,7 @@ describe('Router', () => {
   })
 
   it('calls history.replace with router.replace', async () => {
-    const history = new HistoryMock()
+    const history = createMemoryHistory()
     const router = new Router({ history, routes })
     jest.spyOn(history, 'replace')
     await router.replace('/foo')
@@ -85,7 +85,7 @@ describe('Router', () => {
   })
 
   it('can pass replace option to push', async () => {
-    const history = new HistoryMock()
+    const history = createMemoryHistory()
     const router = new Router({ history, routes })
     jest.spyOn(history, 'replace')
     await router.push({ path: '/foo', replace: true })
@@ -104,7 +104,7 @@ describe('Router', () => {
     ) {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
-      const history = new HistoryMock()
+      const history = createMemoryHistory()
       const router = new Router({ history, routes })
       router.beforeEach(async (to, from, next) => {
         if (to.name !== 'Param') return next()
@@ -151,7 +151,7 @@ describe('Router', () => {
     ) {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
-      const history = new AbstractHistory()
+      const history = createMemoryHistory()
       const router = new Router({ history, routes })
       // navigate first to add entries to the history stack
       await router.push('/foo')
@@ -203,7 +203,7 @@ describe('Router', () => {
 
   describe('matcher', () => {
     it('handles one redirect from route record', async () => {
-      const history = new HistoryMock()
+      const history = createMemoryHistory()
       const router = new Router({ history, routes })
       const loc = await router.push('/to-foo')
       expect(loc.name).toBe('Foo')
@@ -213,7 +213,7 @@ describe('Router', () => {
     })
 
     it('drops query and params on redirect if not provided', async () => {
-      const history = new HistoryMock()
+      const history = createMemoryHistory()
       const router = new Router({ history, routes })
       const loc = await router.push('/to-foo?hey=foo#fa')
       expect(loc.name).toBe('Foo')
@@ -225,7 +225,7 @@ describe('Router', () => {
     })
 
     it('allows object in redirect', async () => {
-      const history = new HistoryMock()
+      const history = createMemoryHistory()
       const router = new Router({ history, routes })
       const loc = await router.push('/to-foo-named')
       expect(loc.name).toBe('Foo')
@@ -235,7 +235,7 @@ describe('Router', () => {
     })
 
     it('can pass on query and hash when redirecting', async () => {
-      const history = new HistoryMock()
+      const history = createMemoryHistory()
       const router = new Router({ history, routes })
       const loc = await router.push('/inc-query-hash?n=3#fa')
       expect(loc).toMatchObject({
@@ -252,7 +252,7 @@ describe('Router', () => {
     })
 
     it('handles multiple redirect fields in route record', async () => {
-      const history = new HistoryMock()
+      const history = createMemoryHistory()
       const router = new Router({ history, routes })
       const loc = await router.push('/to-foo2')
       expect(loc.name).toBe('Foo')

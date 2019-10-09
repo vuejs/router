@@ -1,6 +1,5 @@
-import { HTML5History } from '../../src/history/html5'
-import { Router } from '../../src/router'
 import { NAVIGATION_TYPES, createDom } from '../utils'
+import { createHistory, Router } from '../../src'
 
 function createRouter(
   options: Partial<import('../../src/router').RouterOptions> & {
@@ -8,7 +7,7 @@ function createRouter(
   }
 ) {
   return new Router({
-    history: new HTML5History(),
+    history: createHistory(),
     ...options,
   })
 }
