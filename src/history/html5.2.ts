@@ -3,7 +3,8 @@ import {
   NavigationCallback,
   parseQuery,
   normalizeLocation,
-  NavigationType
+  NavigationType,
+  NavigationDirection,
 } from './common'
 import { HistoryLocationNormalized, HistoryState } from './base'
 import { computeScrollPosition, ScrollToPosition } from '../utils/scroll'
@@ -17,6 +18,7 @@ interface StateEntry {
   back: HistoryLocationNormalized | null
   current: HistoryLocationNormalized
   forward: HistoryLocationNormalized | null
+  position: number
   replaced: boolean
   scroll: ScrollToPosition | null
 }
@@ -36,7 +38,7 @@ export default function createHistory(): RouterHistory {
       fullPath: location.pathname + location.search + location.hash,
       path: location.pathname,
       query: parseQuery(location.search),
-      hash: location.hash
+      hash: location.hash,
     }
   }
 
@@ -55,21 +57,40 @@ export default function createHistory(): RouterHistory {
       current,
       forward,
       replaced,
-      scroll: computeScroll ? computeScrollPosition() : null
+      position: window.history.length,
+      scroll: computeScroll ? computeScrollPosition() : null,
     }
   }
 
-  // private state of History
-  let location: HistoryLocationNormalized = normalizeLocation(
-    window.location.href
+  // private variables
+  let location: HistoryLocationNormalized = createCurrentLocation(
+    window.location
   )
+  let historyState: StateEntry = history.state
+  // build current history entry as this is a fresh navigation
+  if (!historyState) {
+    changeLocation(
+      {
+        back: null,
+        current: location,
+        forward: null,
+        // the length is off by one, we need to decrease it
+        position: history.length - 1,
+        replaced: true,
+        scroll: computeScrollPosition(),
+      },
+      '',
+      location.fullPath,
+      true
+    )
+  }
   let listeners: NavigationCallback[] = []
   let teardowns: Array<() => void> = []
   // TODO: should it be a stack? a Dict. Check if the popstate listener
   // can trigger twice
 
   const popStateHandler: PopStateListener = ({
-    state
+    state,
   }: {
     state: StateEntry
   }) => {
@@ -78,12 +99,21 @@ export default function createHistory(): RouterHistory {
     // TODO: handle go(-2) and go(2) (skipping entries)
 
     const from = location
+    const fromState = historyState
     location = createCurrentLocation(window.location)
-
+    historyState = state
+    const deltaFromCurrent = fromState
+      ? state.position - fromState.position
+      : ''
     // call all listeners
     listeners.forEach(listener =>
       listener(location, from, {
-        type: NavigationType.pop
+        type: NavigationType.pop,
+        direction: deltaFromCurrent
+          ? deltaFromCurrent > 0
+            ? NavigationDirection.forward
+            : NavigationDirection.back
+          : NavigationDirection.unknown,
       })
     )
   }
@@ -101,6 +131,7 @@ export default function createHistory(): RouterHistory {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds
       history[replace ? 'replaceState' : 'pushState'](state, title, url)
+      historyState = state
     } catch (err) {
       cs.log('[vue-router]: Error with push/replace State', err)
       // Force the navigation, this also resets the call count
@@ -116,8 +147,16 @@ export default function createHistory(): RouterHistory {
 
       cs.info('replace', location, normalized)
 
+      const state: StateEntry = buildState(
+        historyState.back,
+        normalized,
+        historyState.forward,
+        true
+      )
+      if (historyState) state.position = historyState.position
       changeLocation(
-        buildState(history.state.back, normalized, null, true),
+        // TODO: refactor state building
+        state,
         '',
         normalized.fullPath,
         true
@@ -129,14 +168,27 @@ export default function createHistory(): RouterHistory {
       const normalized = normalizeLocation(to)
 
       // Add to current entry the information of where we are going
-      history.state.forward = normalized
+      const currentState = {
+        ...historyState,
+        forward: normalized,
+        scroll: computeScrollPosition(),
+      }
+      changeLocation(currentState, '', currentState.current.fullPath, true)
 
-      const state = {
+      const state: StateEntry = {
         ...buildState(location, normalized, null),
-        ...data
+        position: currentState.position + 1,
+        ...data,
       }
 
-      cs.info('push', location, '->', normalized, 'with state', state)
+      cs.info(
+        'push',
+        location.fullPath,
+        '->',
+        normalized.fullPath,
+        'with state',
+        state
+      )
 
       changeLocation(state, '', normalized.fullPath, false)
       location = normalized
@@ -159,6 +211,6 @@ export default function createHistory(): RouterHistory {
       for (const teardown of teardowns) teardown()
       teardowns = []
       window.removeEventListener('popstate', popStateHandler)
-    }
+    },
   }
 }

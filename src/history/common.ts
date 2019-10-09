@@ -46,11 +46,17 @@ export enum NavigationType {
   push = 'push',
 }
 
+export enum NavigationDirection {
+  back = 'back',
+  forward = 'forward',
+  unknown = '',
+}
+
 export interface NavigationCallback {
   (
     to: HistoryLocationNormalized,
     from: HistoryLocationNormalized,
-    information: { type: NavigationType }
+    information: { type: NavigationType; direction: NavigationDirection }
   ): void
 }
 

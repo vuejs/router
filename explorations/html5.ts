@@ -70,10 +70,10 @@ const ComponentWithData: RouteComponent = {
   // @ts-ignore
   data: () => ({ data: 'nope' }),
   beforeRouteEnter(to, from, next) {
-    console.log('this in beforeRouteEnter', this)
+    // console.log('this in beforeRouteEnter', this)
     setTimeout(() => {
       next(vm => {
-        console.log('got vm', vm)
+        // console.log('got vm', vm)
         vm.data = 'Hola'
       })
     }, 300)
@@ -157,7 +157,7 @@ window.r = router
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
 router.beforeEach(async (to, from, next) => {
-  console.log(`Guard from ${from.fullPath} to ${to.fullPath}`)
+  // console.log(`Guard from ${from.fullPath} to ${to.fullPath}`)
   if (to.params.id === 'no-name') return next(false)
 
   const time = Number(to.query.delay)
@@ -174,20 +174,25 @@ router.beforeEach((to, from, next) => {
 })
 
 router.afterEach((to, from) => {
-  console.log(
-    `After guard: from ${from.fullPath} to ${
-      to.fullPath
-    } | location = ${location.href.replace(location.origin, '')}`
-  )
+  // console.log(
+  //   `After guard: from ${from.fullPath} to ${
+  //     to.fullPath
+  //   } | location = ${location.href.replace(location.origin, '')}`
+  // )
 })
 
 router.beforeEach((to, from, next) => {
-  console.log('second guard')
+  // console.log('second guard')
   next()
 })
 
+const dirLog = {
+  '': '？',
+  back: '⏪',
+  forward: '⏩',
+}
 routerHistory.listen((to, from, info) => {
-  console.log(`popstate(${info})`, { to, from })
+  console.log(`${dirLog[info.direction]} as a ${info.type}`)
 })
 
 async function run() {
