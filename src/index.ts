@@ -5,6 +5,7 @@ import { AbstractHistory } from './history/abstract'
 import { BaseHistory } from './history/base'
 import { PluginFunction, VueConstructor } from 'vue'
 import createHistory from './history/html5.2'
+import createMemoryHistory from './history/abstract.2'
 import View from './components/View'
 import Link from './components/Link'
 
@@ -82,7 +83,7 @@ export {
 //   abstract: AbstractHistory
 // }
 
-export { createHistory }
+export { createHistory, createMemoryHistory }
 
 export default class VueRouter extends Router {
   static install = plugin

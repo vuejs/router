@@ -3,7 +3,8 @@ import {
   RouterHistory,
   stringifyURL,
   normalizeQuery,
-  HistoryLocationNormalized
+  HistoryLocationNormalized,
+  START,
 } from './history/common'
 import { RouterMatcher } from './matcher'
 import {
@@ -17,19 +18,19 @@ import {
   PostNavigationGuard,
   Lazy,
   MatcherLocation,
-  RouteQueryAndHash
+  RouteQueryAndHash,
 } from './types/index'
 import {
   ScrollToPosition,
   ScrollPosition,
-  scrollToPosition
+  scrollToPosition,
 } from './utils/scroll'
 
 import { guardToPromiseFn, extractComponentsGuards } from './utils'
 import {
   NavigationGuardRedirect,
   NavigationAborted,
-  NavigationCancelled
+  NavigationCancelled,
 } from './errors'
 
 interface ScrollBehavior {
@@ -93,7 +94,7 @@ export class Router {
         // accept current navigation
         this.currentRoute = {
           ...to,
-          ...matchedRoute
+          ...matchedRoute,
         }
         this.updateReactiveRoute()
         // TODO: refactor with a state getter
@@ -152,7 +153,7 @@ export class Router {
       // TODO: refactor with url utils
       query: {},
       hash: '',
-      ...to
+      ...to,
     })
   }
 
@@ -173,12 +174,12 @@ export class Router {
         fullPath: stringifyURL({
           path: matchedRoute.normalizedLocation.path,
           query: location.query,
-          hash: location.hash
+          hash: location.hash,
         }),
         query: normalizeQuery(location.query || {}),
         hash: location.hash,
         redirectedFrom,
-        meta: {}
+        meta: {},
       }
 
       if (typeof redirect === 'string') {
@@ -207,7 +208,7 @@ export class Router {
           {
             ...newLocation,
             query: normalizeQuery(newLocation.query || {}),
-            hash: newLocation.hash || ''
+            hash: newLocation.hash || '',
           },
           currentLocation,
           normalizedLocation
@@ -217,7 +218,7 @@ export class Router {
           {
             ...redirect,
             query: normalizeQuery(redirect.query || {}),
-            hash: redirect.hash || ''
+            hash: redirect.hash || '',
           },
           currentLocation,
           normalizedLocation
@@ -228,12 +229,12 @@ export class Router {
       const url = normalizeLocation({
         path: matchedRoute.path,
         query: location.query,
-        hash: location.hash
+        hash: location.hash,
       })
       return {
         ...matchedRoute,
         ...url,
-        redirectedFrom
+        redirectedFrom,
       }
     }
   }
@@ -280,7 +281,7 @@ export class Router {
       url = normalizeLocation({
         query,
         hash,
-        ...location
+        ...location,
       })
     }
 
@@ -475,6 +476,7 @@ export class Router {
 
   private updateReactiveRoute() {
     if (!this.app) return
+    this.markAsReady()
     // TODO: matched should be non enumerable and the defineProperty here shouldn't be necessary
     const route = { ...this.currentRoute }
     Object.defineProperty(route, 'matched', { enumerable: false })
@@ -513,7 +515,9 @@ export class Router {
     this.ready = true
   }
 
-  async doInitialNavigation(): Promise<RouteLocationNormalized> {
+  async doInitialNavigation(): Promise<void> {
+    if (this.history.location === START) return
+    console.log('doing initial navigation')
     // TODO: refactor code that was duplicated from push method
     const toLocation: RouteLocationNormalized = this.resolveLocation(
       this.history.location,
@@ -533,7 +537,8 @@ export class Router {
           throw new NavigationCancelled(toLocation, this.currentRoute)
         }
         // TODO: setup redirect stack
-        return this.push(error.to)
+        await this.push(error.to)
+        return
       } else {
         // TODO: write tests
         // triggerError as well
@@ -565,7 +570,6 @@ export class Router {
     for (const guard of this.afterGuards) guard(toLocation, from)
 
     this.markAsReady()
-    return this.currentRoute
   }
 
   private async handleScroll(
