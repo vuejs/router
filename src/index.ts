@@ -33,7 +33,9 @@ const plugin: PluginFunction<void> = Vue => {
           // true
         )
 
-        router.doInitialNavigation().catch(() => {})
+        router.doInitialNavigation().catch(err => {
+          console.error('Unhandled error', err)
+        })
       } else {
         // @ts-ignore we are adding this
         this._routerRoot = (this.$parent && this.$parent._routerRoot) || this

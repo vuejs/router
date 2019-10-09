@@ -24,6 +24,12 @@ interface StateEntry {
   scroll: ScrollToPosition | null
 }
 
+interface PauseState {
+  currentLocation: HistoryLocationNormalized
+  // location we are going to after pausing
+  to: HistoryLocationNormalized
+}
+
 export default function createHistory(): RouterHistory {
   const { history } = window
 
@@ -89,6 +95,9 @@ export default function createHistory(): RouterHistory {
   let teardowns: Array<() => void> = []
   // TODO: should it be a stack? a Dict. Check if the popstate listener
   // can trigger twice
+  let pauseState: PauseState | null = null
+  // TODO: should it be a stack? a Dict. Check if the popstate listener
+  // can trigger twice
 
   const popStateHandler: PopStateListener = ({
     state,
@@ -101,7 +110,16 @@ export default function createHistory(): RouterHistory {
 
     const from = location
     const fromState = historyState
-    location = createCurrentLocation(window.location)
+    const to = createCurrentLocation(window.location)
+
+    if (pauseState && pauseState.to && pauseState.to.fullPath === to.fullPath) {
+      cs.info('Ignored beacuse paused')
+      // reset pauseState
+      pauseState = null
+      return
+    }
+
+    location = to
     historyState = state
     const deltaFromCurrent = fromState
       ? state.position - fromState.position
@@ -137,6 +155,13 @@ export default function createHistory(): RouterHistory {
       cs.log('[vue-router]: Error with push/replace State', err)
       // Force the navigation, this also resets the call count
       window.location[replace ? 'replace' : 'assign'](url)
+    }
+  }
+
+  function pauseListeners(to: HistoryLocationNormalized) {
+    pauseState = {
+      currentLocation: location,
+      to,
     }
   }
 
@@ -196,6 +221,20 @@ export default function createHistory(): RouterHistory {
 
       changeLocation(state, '', normalized.fullPath, false)
       location = normalized
+    },
+
+    back(triggerListeners = true) {
+      const to = historyState.back
+      if (!to) throw new Error('Cannot go back')
+      if (!triggerListeners) pauseListeners(to)
+      history.back()
+    },
+
+    forward(triggerListeners = true) {
+      const to = historyState.forward
+      if (!to) throw new Error('Cannot go forward')
+      if (!triggerListeners) pauseListeners(to)
+      history.forward()
     },
 
     listen(callback) {
