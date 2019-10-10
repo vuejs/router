@@ -306,6 +306,7 @@ export class Router {
           throw new NavigationCancelled(toLocation, this.currentRoute)
         }
         // TODO: setup redirect stack
+        // TODO: shouldn't we trigger the error as well
         return this.push(error.to)
       } else {
         // TODO: write tests
@@ -476,11 +477,11 @@ export class Router {
 
   private updateReactiveRoute() {
     if (!this.app) return
-    this.markAsReady()
     // TODO: matched should be non enumerable and the defineProperty here shouldn't be necessary
     const route = { ...this.currentRoute }
     Object.defineProperty(route, 'matched', { enumerable: false })
     this.app._route = Object.freeze(route)
+    this.markAsReady()
   }
 
   /**
@@ -496,10 +497,10 @@ export class Router {
   }
 
   /**
-   * Mark the router as ready. This function is used internal and should not be called
+   * Mark the router as ready. This function is used internally and should not be called
    * by the developper. You can optionally provide an error.
    * This will trigger all onReady callbacks and empty the array
-   * @param {*} err
+   * @param err optional error if navigation failed
    */
   protected markAsReady(err?: any): void {
     if (this.ready) return
@@ -515,9 +516,10 @@ export class Router {
     this.ready = true
   }
 
+  // TODO: rename to ensureInitialLocation
   async doInitialNavigation(): Promise<void> {
+    // let the user call replace or push on SSR
     if (this.history.location === START) return
-    console.log('doing initial navigation')
     // TODO: refactor code that was duplicated from push method
     const toLocation: RouteLocationNormalized = this.resolveLocation(
       this.history.location,
