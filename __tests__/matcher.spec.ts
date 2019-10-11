@@ -74,16 +74,16 @@ describe('Router Matcher', () => {
 
     /**
      *
-     * @param {RouteRecord | RouteRecord[]} record Record or records we are testing the matcher against
-     * @param {MatcherLocation} location location we want to reolve against
-     * @param {MatcherLocationNormalized} [start] Optional currentLocation used when resolving
-     * @returns {any} error
+     * @param record Record or records we are testing the matcher against
+     * @param location location we want to reolve against
+     * @param [start] Optional currentLocation used when resolving
+     * @returns error
      */
     function assertErrorMatch(
       record: RouteRecord | RouteRecord[],
       location: MatcherLocation,
       start: MatcherLocationNormalized = START_LOCATION_NORMALIZED
-    ) {
+    ): any {
       try {
         assertRecordMatch(record, location, {}, start)
       } catch (error) {

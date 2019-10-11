@@ -1,4 +1,4 @@
-import { createRouteMatcher } from '../src/matcher'
+import { createRouteMatcher, RouteMatcher } from '../src/matcher'
 import { RegExpOptions } from 'path-to-regexp'
 import { RouteComponent } from '../src/types'
 
@@ -20,8 +20,9 @@ describe('createRouteMatcher', () => {
       return [pathOrCombined, options]
     })
 
-    /** @type {Array<RouteMatcher & { _options: RegExpOptions }>} */
-    const matchers = normalizedPaths
+    const matchers: Array<
+      RouteMatcher & { _options: RegExpOptions }
+    > = normalizedPaths
       .slice()
       // Because sorting order is conserved, allows to mismatch order on
       // routes with the same ranking
@@ -162,6 +163,17 @@ describe('createRouteMatcher', () => {
       '/a/', // explicit ending slash
       ['/a', { sensitive: true }],
       '/a', // also matches /A
+    ])
+  })
+
+  it('ranks repeated params properly', () => {
+    checkPathOrder([
+      '/:a',
+      '/:a+',
+      '/:a?',
+      '/:a*',
+      // FIXME: this one should appear here but it appears before /:a*
+      // '/:a(.*)'
     ])
   })
 })
