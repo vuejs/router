@@ -76,7 +76,9 @@ export const START: HistoryLocationNormalized = {
 }
 
 export interface RouterHistory {
-  location: HistoryLocationNormalized
+  readonly base: string
+  readonly location: HistoryLocationNormalized
+
   push(to: RawHistoryLocation, data?: any): void
   replace(to: RawHistoryLocation): void
 

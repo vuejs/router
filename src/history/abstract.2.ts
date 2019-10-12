@@ -11,8 +11,6 @@ import {
   NavigationInformation,
 } from './common'
 
-// TODO: implement navigation direction in listeners
-
 // const cs = console
 // const cs = consola.withTag('abstract')
 
@@ -55,6 +53,8 @@ export default function createMemoryHistory(): RouterHistory {
   const routerHistory: RouterHistory = {
     // rewritten by Object.defineProperty
     location: START,
+    // TODO: implement it
+    base: '/',
 
     replace(to) {
       const toNormalized = normalizeLocation(to)

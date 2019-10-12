@@ -90,8 +90,6 @@ export default function createHistory(): RouterHistory {
   // TODO: should it be a stack? a Dict. Check if the popstate listener
   // can trigger twice
   let pauseState: HistoryLocationNormalized | null = null
-  // TODO: should it be a stack? a Dict. Check if the popstate listener
-  // can trigger twice
 
   const popStateHandler: PopStateListener = ({
     state,
@@ -100,8 +98,6 @@ export default function createHistory(): RouterHistory {
   }) => {
     cs.info('popstate fired', state)
     cs.info('currentState', historyState)
-
-    // TODO: handle go(-2) and go(2) (skipping entries)
 
     const from = location
     const fromState = historyState
@@ -163,6 +159,8 @@ export default function createHistory(): RouterHistory {
   const routerHistory: RouterHistory = {
     // it's overriden right after
     location,
+    // TODO: implement it
+    base: '/',
 
     replace(to) {
       const normalized = normalizeLocation(to)
