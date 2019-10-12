@@ -330,6 +330,7 @@ export class RouterMatcher {
   /**
    * Transforms a MatcherLocation object into a normalized location
    * @param location MatcherLocation to resolve to a url
+   * @param currentLocation MatcherLocationNormalized of the current location
    */
   resolve(
     location: Readonly<MatcherLocation>,

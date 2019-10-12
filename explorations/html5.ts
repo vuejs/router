@@ -139,6 +139,7 @@ const router = new Router({
       ],
     },
     { path: '/with-data', component: ComponentWithData, name: 'WithData' },
+    { path: '/rep/:a*', component: component, name: 'repeat' },
     // { path: /^\/about\/?$/, component },
   ],
   async scrollBehavior(to, from, savedPosition) {

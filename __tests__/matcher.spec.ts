@@ -116,6 +116,31 @@ describe('Router Matcher', () => {
         )
       })
 
+      it('resolves an array of params for a repeatable params', () => {
+        assertRecordMatch(
+          { path: '/a/:p+', name: 'a', components },
+          { name: 'a', params: { p: ['b', 'c', 'd'] } },
+          { name: 'a', path: '/a/b/c/d', params: { p: ['b', 'c', 'd'] } }
+        )
+      })
+
+      it('resolves single params for a repeatable params', () => {
+        assertRecordMatch(
+          { path: '/a/:p+', name: 'a', components },
+          { name: 'a', params: { p: 'b' } },
+          { name: 'a', path: '/a/b', params: { p: 'b' } }
+        )
+      })
+
+      it('keeps repeated params as a single one when provided through path', () => {
+        assertRecordMatch(
+          { path: '/a/:p+', name: 'a', components },
+          { path: '/a/b/c' },
+          // TODO: maybe it should consistently be an array for repeated params
+          { name: 'a', params: { p: 'b/c' } }
+        )
+      })
+
       it('resolves a path with multiple params', () => {
         assertRecordMatch(
           { path: '/users/:id/:other', name: 'User', components },
