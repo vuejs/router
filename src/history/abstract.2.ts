@@ -16,7 +16,7 @@ import {
 // const cs = console
 // const cs = consola.withTag('abstract')
 
-export default function createAbstractHistory(): RouterHistory {
+export default function createMemoryHistory(): RouterHistory {
   let listeners: NavigationCallback[] = []
   // TODO: make sure this is right as the first location is nowhere so maybe this should be empty instead
   let queue: HistoryLocationNormalized[] = [START]

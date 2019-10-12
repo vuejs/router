@@ -3,7 +3,6 @@
  */
 // NOTE: these tests only run when using jest `yarn jest --watch`
 import RouterLink from '../src/components/Link'
-import { HistoryMock } from './utils'
 import {
   START_LOCATION_NORMALIZED,
   RouteQueryAndHash,
@@ -11,6 +10,7 @@ import {
   RouteLocationNormalized,
 } from '../src/types'
 import { mount } from '@vue/test-utils'
+import { createMemoryHistory } from '../src'
 
 const locations: Record<
   string,
@@ -57,7 +57,7 @@ describe('RouterLink', () => {
     resolvedLocation: RouteLocationNormalized
   ) {
     const router = {
-      history: new HistoryMock(),
+      history: createMemoryHistory(),
       resolve: jest.fn(),
       push: jest.fn(),
     }

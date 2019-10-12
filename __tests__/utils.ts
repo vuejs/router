@@ -1,8 +1,6 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
 import { NavigationGuard, RouteRecord, MatchedRouteRecord } from '../src/types'
 
-export { HistoryMock } from './HistoryMock'
-
 export const tick = () => new Promise(resolve => process.nextTick(resolve))
 
 export type NAVIGATION_METHOD = 'push' | 'replace'
