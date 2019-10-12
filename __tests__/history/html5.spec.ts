@@ -1,4 +1,4 @@
-import createHistory from '../../src/history/html5.2'
+import createHistory from '../../src/history/html5'
 import { createDom } from '../utils'
 
 // TODO: is it really worth testing this implementation on jest or is it

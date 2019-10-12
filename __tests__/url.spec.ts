@@ -2,7 +2,7 @@ import {
   parseURL,
   stringifyURL,
   normalizeLocation,
-} from '../src/history/utils'
+} from '../src/history/common'
 
 describe('parseURL', () => {
   it('works with no query no hash', () => {

@@ -1,4 +1,4 @@
-import { parseQuery } from '../src/history/utils'
+import { parseQuery } from '../src/history/common'
 
 describe('parseQuery', () => {
   it('works with leading ?', () => {

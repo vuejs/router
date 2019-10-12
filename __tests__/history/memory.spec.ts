@@ -1,4 +1,4 @@
-import createMemoryHistory from '../../src/history/abstract.2'
+import createMemoryHistory from '../../src/history/memory'
 import {
   START,
   HistoryLocationNormalized,

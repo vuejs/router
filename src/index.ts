@@ -1,7 +1,7 @@
 import { Router, RouterOptions } from './router'
 import { PluginFunction, VueConstructor } from 'vue'
-import createHistory from './history/html5.2'
-import createMemoryHistory from './history/abstract.2'
+import createHistory from './history/html5'
+import createMemoryHistory from './history/memory'
 import View from './components/View'
 import Link from './components/Link'
 
