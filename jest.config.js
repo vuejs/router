@@ -1,5 +1,10 @@
 module.exports = {
   preset: 'ts-jest',
+  globals: {
+    __DEV__: true,
+  },
+  coverageDirectory: 'coverage',
+  coverageReporters: ['html', 'lcov', 'text'],
   collectCoverageFrom: ['src/**/*.ts'],
   coveragePathIgnorePatterns: [
     '/node_modules/',
@@ -7,10 +12,6 @@ module.exports = {
     'src/entries',
     'src/consola.ts',
   ],
-  testMatch: [
-    '**/__tests__/**/*.spec.ts?(x)',
-    // '**/__tests__/**/*.spec.[jt]s?(x)',
-    // '**/?(*.)+(spec|test).[jt]s?(x)',
-  ],
+  testMatch: ['<rootDir>/__tests__/**/*.spec.ts?(x)'],
   testEnvironment: 'node',
 }

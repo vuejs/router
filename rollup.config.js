@@ -32,13 +32,20 @@ function createEntry(
 ) {
   // force production mode when minifying
   if (minify) env = 'production'
+  const isProductionBuild =
+    process.env.__DEV__ === 'false' || env === 'production'
+  const isBundlerESMBuild = format === 'es'
 
   const config = {
     input,
     plugins: [
       replace({
-        __VERSION__: pkg.version,
-        'process.env.NODE_ENV': `'${env}'`,
+        __VERSION__: JSON.stringify(pkg.version),
+        __DEV__: isBundlerESMBuild
+          ? // preserve to be handled by bundlers
+            `process.env.NODE_ENV !== 'production'`
+          : // hard coded dev/prod builds
+            !isProductionBuild,
       }),
       alias({
         resolve: ['ts'],
