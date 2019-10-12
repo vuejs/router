@@ -1,30 +1,32 @@
 import createMemoryHistory from '../../src/history/abstract.2'
-import { START } from '../../src/history/common'
+import {
+  START,
+  HistoryLocationNormalized,
+  RawHistoryLocation,
+} from '../../src/history/common'
 
-/** @type {import('../../src/history/base').HistoryLocation} */
-const loc = {
+const loc: RawHistoryLocation = {
   path: '/foo',
 }
-const loc2 = {
+const loc2: RawHistoryLocation = {
   path: '/bar',
 }
 
-const normaliezedLoc = {
+const normaliezedLoc: HistoryLocationNormalized = {
   path: '/foo',
   query: {},
   hash: '',
   fullPath: '/foo',
 }
 
-const normaliezedLoc2 = {
+const normaliezedLoc2: HistoryLocationNormalized = {
   path: '/bar',
   query: {},
   hash: '',
   fullPath: '/bar',
 }
 
-// TODO: figure out how to run these tests now
-describe('Abstract/in memory history', () => {
+describe('Memory history', () => {
   it('starts in nowhere', () => {
     const history = createMemoryHistory()
     expect(history.location).toEqual(START)

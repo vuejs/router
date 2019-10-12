@@ -1,12 +1,12 @@
 import { ListenerRemover } from '../types'
 
-type HistoryQuery = Record<string, string | string[]>
+export type HistoryQuery = Record<string, string | string[]>
 // TODO: is it reall worth allowing null to form queries like ?q&b&c
 // When parsing using URLSearchParams, `q&c=` yield an empty string for q and c
 // I think it's okay to allow this by default and allow extending it
 // a more permissive history query
 // TODO: allow numbers
-type RawHistoryQuery = Record<string, string | string[] | null>
+export type RawHistoryQuery = Record<string, string | string[] | null>
 
 interface HistoryLocation {
   // pathname section
@@ -17,7 +17,7 @@ interface HistoryLocation {
   hash?: string
 }
 
-type RawHistoryLocation = HistoryLocation | string
+export type RawHistoryLocation = HistoryLocation | string
 
 export interface HistoryLocationNormalized extends Required<HistoryLocation> {
   // full path (like href)

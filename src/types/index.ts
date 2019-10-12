@@ -1,4 +1,4 @@
-import { HistoryQuery, RawHistoryQuery } from '../history/base'
+import { HistoryQuery, RawHistoryQuery } from '../history/common'
 // import Vue, { ComponentOptions, AsyncComponent } from 'vue'
 
 // type Component = ComponentOptions<Vue> | typeof Vue | AsyncComponent
