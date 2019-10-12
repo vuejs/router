@@ -111,6 +111,8 @@ export default function createHistory(): RouterHistory {
     const from = location
     const fromState = historyState
     const to = createCurrentLocation(window.location)
+    location = to
+    historyState = state
 
     if (pauseState && pauseState.to && pauseState.to.fullPath === to.fullPath) {
       cs.info('Ignored beacuse paused')
@@ -119,8 +121,6 @@ export default function createHistory(): RouterHistory {
       return
     }
 
-    location = to
-    historyState = state
     const deltaFromCurrent = fromState
       ? state.position - fromState.position
       : ''
