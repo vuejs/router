@@ -24,13 +24,6 @@ interface StateEntry {
   scroll: ScrollToPosition | null
 }
 
-interface PauseState {
-  currentLocation: HistoryLocationNormalized
-  // location we are going to after pausing
-  distance: number
-  // to: HistoryLocationNormalized
-}
-
 export default function createHistory(): RouterHistory {
   const { history } = window
 
@@ -96,7 +89,7 @@ export default function createHistory(): RouterHistory {
   let teardowns: Array<() => void> = []
   // TODO: should it be a stack? a Dict. Check if the popstate listener
   // can trigger twice
-  let pauseState: PauseState | null = null
+  let pauseState: HistoryLocationNormalized | null = null
   // TODO: should it be a stack? a Dict. Check if the popstate listener
   // can trigger twice
 
@@ -116,10 +109,10 @@ export default function createHistory(): RouterHistory {
     location = to
     historyState = state
 
-    if (pauseState && pauseState.currentLocation.fullPath === from.fullPath) {
-      cs.info('❌ Ignored beacuse paused for', pauseState.distance)
+    if (pauseState && pauseState.fullPath === from.fullPath) {
+      cs.info('❌ Ignored beacuse paused for', pauseState.fullPath)
       // reset pauseState
-      if (--pauseState.distance < 1) pauseState = null
+      pauseState = null
       return
     }
 
@@ -162,12 +155,9 @@ export default function createHistory(): RouterHistory {
     }
   }
 
-  function pauseListeners(distance: number) {
-    cs.info(`⏸ for ${distance} steps at ${location.fullPath}`)
-    pauseState = {
-      currentLocation: location,
-      distance,
-    }
+  function pauseListeners() {
+    cs.info(`⏸ for ${location.fullPath}`)
+    pauseState = location
   }
 
   const routerHistory: RouterHistory = {
@@ -237,7 +227,7 @@ export default function createHistory(): RouterHistory {
     },
 
     go(distance, triggerListeners = true) {
-      if (!triggerListeners) pauseListeners(1)
+      if (!triggerListeners) pauseListeners()
       history.go(distance)
     },
 
