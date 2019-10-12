@@ -5,7 +5,6 @@ import {
   normalizeQuery,
   HistoryLocationNormalized,
   START,
-  NavigationDirection,
 } from './history/common'
 import { RouterMatcher } from './matcher'
 import {
@@ -120,18 +119,20 @@ export class Router {
           // we just want to avoid logging the error
           this.push(error.to).catch(() => {})
         } else if (NavigationAborted.is(error)) {
+          console.log('Cancelled, going to', -info.distance)
+          this.history.go(-info.distance, false)
           // TODO: test on different browsers ensure consistent behavior
           // Maybe we could write the length the first time we do a navigation and use that for direction
           // TODO: this doesn't work if the user directly calls window.history.go(-n) with n > 1
           // We can override the go method to retrieve the number but not sure if all browsers allow that
-          if (info.direction === NavigationDirection.back) {
-            this.history.forward(false)
-          } else {
-            // TODO: go back because we cancelled, then
-            // or replace and not discard the rest of history. Check issues, there was one talking about this
-            // behaviour, maybe we can do better
-            this.history.back(false)
-          }
+          // if (info.direction === NavigationDirection.back) {
+          //   this.history.forward(false)
+          // } else {
+          // TODO: go back because we cancelled, then
+          // or replace and not discard the rest of history. Check issues, there was one talking about this
+          // behaviour, maybe we can do better
+          // this.history.back(false)
+          // }
         } else {
           this.triggerError(error, false)
         }

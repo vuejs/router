@@ -27,7 +27,8 @@ interface StateEntry {
 interface PauseState {
   currentLocation: HistoryLocationNormalized
   // location we are going to after pausing
-  to: HistoryLocationNormalized
+  distance: number
+  // to: HistoryLocationNormalized
 }
 
 export default function createHistory(): RouterHistory {
@@ -104,7 +105,8 @@ export default function createHistory(): RouterHistory {
   }: {
     state: StateEntry
   }) => {
-    cs.info('popstate fired', { state, location })
+    cs.info('popstate fired', state)
+    cs.info('currentState', historyState)
 
     // TODO: handle go(-2) and go(2) (skipping entries)
 
@@ -114,19 +116,21 @@ export default function createHistory(): RouterHistory {
     location = to
     historyState = state
 
-    if (pauseState && pauseState.to && pauseState.to.fullPath === to.fullPath) {
-      cs.info('Ignored beacuse paused')
+    if (pauseState && pauseState.currentLocation.fullPath === from.fullPath) {
+      cs.info('❌ Ignored beacuse paused for', pauseState.distance)
       // reset pauseState
-      pauseState = null
+      if (--pauseState.distance < 1) pauseState = null
       return
     }
 
     const deltaFromCurrent = fromState
       ? state.position - fromState.position
       : ''
+    console.log({ deltaFromCurrent })
     // call all listeners
     listeners.forEach(listener =>
       listener(location, from, {
+        distance: deltaFromCurrent || 0,
         type: NavigationType.pop,
         direction: deltaFromCurrent
           ? deltaFromCurrent > 0
@@ -158,10 +162,11 @@ export default function createHistory(): RouterHistory {
     }
   }
 
-  function pauseListeners(to: HistoryLocationNormalized) {
+  function pauseListeners(distance: number) {
+    cs.info(`⏸ for ${distance} steps at ${location.fullPath}`)
     pauseState = {
       currentLocation: location,
-      to,
+      distance,
     }
   }
 
@@ -224,17 +229,16 @@ export default function createHistory(): RouterHistory {
     },
 
     back(triggerListeners = true) {
-      const to = historyState.back
-      if (!to) throw new Error('Cannot go back')
-      if (!triggerListeners) pauseListeners(to)
-      history.back()
+      this.go(-1, triggerListeners)
     },
 
     forward(triggerListeners = true) {
-      const to = historyState.forward
-      if (!to) throw new Error('Cannot go forward')
-      if (!triggerListeners) pauseListeners(to)
-      history.forward()
+      this.go(1, triggerListeners)
+    },
+
+    go(distance, triggerListeners = true) {
+      if (!triggerListeners) pauseListeners(1)
+      history.go(distance)
     },
 
     listen(callback) {

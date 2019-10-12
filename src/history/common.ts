@@ -52,11 +52,17 @@ export enum NavigationDirection {
   unknown = '',
 }
 
+export interface NavigationInformation {
+  type: NavigationType
+  direction: NavigationDirection
+  distance: number
+}
+
 export interface NavigationCallback {
   (
     to: HistoryLocationNormalized,
     from: HistoryLocationNormalized,
-    information: { type: NavigationType; direction: NavigationDirection }
+    information: NavigationInformation
   ): void
 }
 
@@ -76,6 +82,7 @@ export interface RouterHistory {
 
   back(triggerListeners?: boolean): void
   forward(triggerListeners?: boolean): void
+  go(distance: number, triggerListeners?: boolean): void
 
   listen(callback: NavigationCallback): ListenerRemover
   destroy(): void
