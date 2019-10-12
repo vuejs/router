@@ -8,6 +8,7 @@ import {
   HistoryState,
   NavigationType,
   NavigationDirection,
+  NavigationInformation,
 } from './common'
 
 // TODO: implement navigation direction in listeners
@@ -36,11 +37,14 @@ export default function createAbstractHistory(): RouterHistory {
   function triggerListeners(
     to: HistoryLocationNormalized,
     from: HistoryLocationNormalized,
-    { direction }: { direction: NavigationDirection }
-  ): void {
-    // TODO: proper type
-    const info: Parameters<NavigationCallback>[2] = {
+    {
       direction,
+      distance,
+    }: Pick<NavigationInformation, 'direction' | 'distance'>
+  ): void {
+    const info: NavigationInformation = {
+      direction,
+      distance,
       type: NavigationType.pop,
     }
     for (let callback of listeners) {
@@ -75,21 +79,25 @@ export default function createAbstractHistory(): RouterHistory {
     },
 
     back(shouldTrigger = true) {
-      const from = this.location
-      if (position > 0) position--
-      if (shouldTrigger) {
-        triggerListeners(this.location, from, {
-          direction: NavigationDirection.back,
-        })
-      }
+      this.go(-1, shouldTrigger)
     },
 
-    forward(shouldTrigger: boolean = true) {
+    forward(shouldTrigger = true) {
+      this.go(1, shouldTrigger)
+    },
+
+    go(distance, shouldTrigger = true) {
       const from = this.location
-      if (position < queue.length - 1) position++
+      const direction: NavigationDirection =
+        // we are considering distance === 0 going forward, but in abstract mode
+        // using 0 for the distance doesn't make sense like it does in html5 where
+        // it reloads the page
+        distance < 0 ? NavigationDirection.back : NavigationDirection.forward
+      position = Math.max(0, Math.min(position + distance, queue.length - 1))
       if (shouldTrigger) {
         triggerListeners(this.location, from, {
-          direction: NavigationDirection.forward,
+          direction,
+          distance,
         })
       }
     },
