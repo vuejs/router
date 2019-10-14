@@ -1,13 +1,12 @@
 import {
   Router,
-  // @ts-ignore
-  HTML5History,
-  // @ts-ignore
-  HashHistory,
-  // @ts-ignore
-  AbstractHistory,
   plugin,
+  // @ts-ignore
   createHistory,
+  // @ts-ignore
+  createMemoryHistory,
+  // @ts-ignore
+  createHashHistory,
 } from '../src'
 import { RouteComponent } from '../src/types'
 import Vue from 'vue'
@@ -21,7 +20,8 @@ declare global {
   }
 }
 
-const routerHistory = createHistory()
+const routerHistory = createHistory('/app')
+// const routerHistory = createHashHistory()
 window.h = routerHistory
 
 const shared = {
