@@ -2,6 +2,7 @@ import { Router, RouterOptions } from './router'
 import { PluginFunction, VueConstructor } from 'vue'
 import createHistory from './history/html5'
 import createMemoryHistory from './history/memory'
+import createHashHistory from './history/hash'
 import View from './components/View'
 import Link from './components/Link'
 
@@ -63,7 +64,7 @@ const plugin: PluginFunction<void> = Vue => {
     strats.created
 }
 
-export { Router, createHistory, createMemoryHistory, plugin }
+export { Router, createHistory, createMemoryHistory, createHashHistory, plugin }
 
 // TODO: refactor somewhere else
 // const inBrowser = typeof window !== 'undefined'

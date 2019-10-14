@@ -143,7 +143,7 @@ export class Router {
   resolve(
     to: RouteLocation,
     currentLocation?: RouteLocationNormalized /*, append?: boolean */
-  ) {
+  ): RouteLocationNormalized {
     if (typeof to === 'string')
       return this.resolveLocation(
         // TODO: refactor and remove import
@@ -156,6 +156,10 @@ export class Router {
       hash: '',
       ...to,
     })
+  }
+
+  createHref(to: RouteLocationNormalized): string {
+    return this.history.base + to.fullPath
   }
 
   private resolveLocation(

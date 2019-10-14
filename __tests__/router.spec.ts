@@ -1,5 +1,5 @@
 import fakePromise from 'faked-promise'
-import { Router, createMemoryHistory } from '../src'
+import { Router, createMemoryHistory, createHistory } from '../src'
 import { NavigationCancelled } from '../src/errors'
 import { createDom, components, tick } from './utils'
 import { RouteRecord, RouteLocation } from '../src/types'
@@ -262,6 +262,52 @@ describe('Router', () => {
           path: '/to-foo2',
         },
       })
+    })
+  })
+
+  it('allows base option in abstract history', async () => {
+    const history = createMemoryHistory('/app/')
+    const router = new Router({ history, routes })
+    expect(router.currentRoute).toEqual({
+      name: undefined,
+      fullPath: '/',
+      hash: '',
+      params: {},
+      path: '/',
+      query: {},
+      meta: {},
+    })
+    await router.replace('/foo')
+    expect(router.currentRoute).toMatchObject({
+      name: 'Foo',
+      fullPath: '/foo',
+      hash: '',
+      params: {},
+      path: '/foo',
+      query: {},
+    })
+  })
+
+  it('allows base option with html5 history', async () => {
+    const history = createHistory('/app/')
+    const router = new Router({ history, routes })
+    expect(router.currentRoute).toEqual({
+      name: undefined,
+      fullPath: '/',
+      hash: '',
+      params: {},
+      path: '/',
+      query: {},
+      meta: {},
+    })
+    await router.replace('/foo')
+    expect(router.currentRoute).toMatchObject({
+      name: 'Foo',
+      fullPath: '/foo',
+      hash: '',
+      params: {},
+      path: '/foo',
+      query: {},
     })
   })
 

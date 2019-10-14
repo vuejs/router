@@ -20,6 +20,7 @@ const Link: Component = {
     const to = this.to as RouteLocation
 
     const route = router.resolve(to)
+    const href = router.createHref(route)
 
     // TODO: active classes
     // TODO: handle replace prop
@@ -35,7 +36,7 @@ const Link: Component = {
 
     const data: any = {
       on,
-      attrs: { href: route.fullPath },
+      attrs: { href },
     }
 
     // @ts-ignore

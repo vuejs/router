@@ -3,10 +3,12 @@ import {
   NavigationCallback,
   parseQuery,
   normalizeLocation,
+  stripBase,
   NavigationType,
   NavigationDirection,
   HistoryLocationNormalized,
   HistoryState,
+  parseURL,
 } from './common'
 import { computeScrollPosition, ScrollToPosition } from '../utils/scroll'
 // import consola from 'consola'
@@ -24,7 +26,7 @@ interface StateEntry {
   scroll: ScrollToPosition | null
 }
 
-export default function createHistory(): RouterHistory {
+export default function createHistory(base: string = ''): RouterHistory {
   const { history } = window
 
   /**
@@ -35,11 +37,18 @@ export default function createHistory(): RouterHistory {
   function createCurrentLocation(
     location: Location
   ): HistoryLocationNormalized {
+    const { pathname, search, hash } = location
+    // allows hash based url
+    if (base.indexOf('#') > -1) {
+      // prepend the starting slash to hash so the url starts with /#
+      return parseURL(stripBase('/' + hash, base))
+    }
+    const path = stripBase(pathname, base)
     return {
-      fullPath: location.pathname + location.search + location.hash,
-      path: location.pathname,
-      query: parseQuery(location.search),
-      hash: location.hash,
+      fullPath: path + search + hash,
+      path,
+      query: parseQuery(search),
+      hash: hash,
     }
   }
 
@@ -136,9 +145,10 @@ export default function createHistory(): RouterHistory {
   function changeLocation(
     state: StateEntry,
     title: string,
-    url: string,
+    fullPath: string,
     replace: boolean
   ): void {
+    const url = base + fullPath
     try {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds
@@ -159,8 +169,7 @@ export default function createHistory(): RouterHistory {
   const routerHistory: RouterHistory = {
     // it's overriden right after
     location,
-    // TODO: implement it
-    base: '/',
+    base,
 
     replace(to) {
       const normalized = normalizeLocation(to)

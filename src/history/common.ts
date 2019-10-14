@@ -277,3 +277,15 @@ export function normalizeLocation(
       hash: location.hash || '',
     }
 }
+
+/**
+ * Strips off the base from the beginning of a location.pathname
+ * @param pathname location.pathname
+ * @param base base to strip off
+ */
+export function stripBase(pathname: string, base: string): string {
+  return (
+    (base && pathname.indexOf(base) === 0 && pathname.replace(base, '')) ||
+    pathname
+  )
+}

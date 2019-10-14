@@ -58,6 +58,9 @@ describe('RouterLink', () => {
   ) {
     const router = {
       history: createMemoryHistory(),
+      createHref(to: RouteLocationNormalized): string {
+        return this.history.base + to.fullPath
+      },
       resolve: jest.fn(),
       push: jest.fn(),
     }
