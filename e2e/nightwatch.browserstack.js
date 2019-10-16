@@ -6,8 +6,8 @@ const BS_USER = process.env.BS_USER
 const BS_KEY = process.env.BS_KEY
 
 const nwConf = {
-  src_folders: ['test/e2e/specs'],
-  output_folder: 'test/e2e/reports',
+  src_folders: ['e2e/specs'],
+  output_folder: 'e2e/reports',
   custom_commands_path: ['node_modules/nightwatch-helpers/commands'],
   custom_assertions_path: ['node_modules/nightwatch-helpers/assertions'],
   // set to true when testing on multiple browsers (-e chrome,firefox) to display tests as they pass instead of waiting for everything to be finished
@@ -19,7 +19,7 @@ const nwConf = {
   selenium: {
     start_process: false,
     host: 'hub-cloud.browserstack.com',
-    port: 80
+    port: 80,
   },
 
   common_capabilities: {
@@ -29,7 +29,7 @@ const nwConf = {
     'browserstack.local': true,
     'browserstack.video': false,
     acceptSslCerts: true,
-    resolution: '1024x768'
+    resolution: '1024x768',
   },
 
   test_settings: {
@@ -37,21 +37,21 @@ const nwConf = {
 
     chrome: {
       desiredCapabilities: {
-        browser: 'chrome'
-      }
+        browser: 'chrome',
+      },
     },
 
     chromeQt: {
       desiredCapabilities: {
         browser: 'chrome',
-        browser_version: '49.0'
-      }
+        browser_version: '49.0',
+      },
     },
 
     firefox: {
       desiredCapabilities: {
-        browser: 'firefox'
-      }
+        browser: 'firefox',
+      },
     },
 
     safari: {
@@ -59,8 +59,8 @@ const nwConf = {
         os: 'OS X',
         os_version: 'Mojave',
         browser: 'Safari',
-        browser_version: '12.0'
-      }
+        browser_version: '12.0',
+      },
     },
 
     safari6: {
@@ -68,44 +68,35 @@ const nwConf = {
         os: 'OS X',
         os_version: 'Lion',
         browser: 'Safari',
-        browser_version: '6.0'
-      }
-    },
-
-    ie9: {
-      desiredCapabilities: {
-        browser: 'internet explorer',
-        browser_version: '9'
-        // name: 'Bstack-[Nightwatch] Vue Router',
-        // 'browserstack.video': true
-      }
+        browser_version: '6.0',
+      },
     },
 
     ie: {
       desiredCapabilities: {
         browser: 'internet explorer',
-        browser_version: '11'
+        browser_version: '11',
         // name: 'Bstack-[Nightwatch] Vue Router',
         // 'browserstack.video': true
-      }
+      },
     },
 
     android44: {
       desiredCapabilities: {
         device: 'Google Nexus 5',
         realMobile: 'true',
-        os_version: '4.4'
-      }
+        os_version: '4.4',
+      },
     },
 
     ios7: {
       desiredCapabilities: {
         device: 'iPhone 7',
         realMobile: 'true',
-        os_version: '10'
-      }
-    }
-  }
+        os_version: '10',
+      },
+    },
+  },
 }
 
 // Code to copy seleniumhost/port into test settings

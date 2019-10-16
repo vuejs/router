@@ -2,22 +2,22 @@
  * Running tests
  *
  * By default tests are run locally on chrome headless
- * $ node test/e2e/runner.js
+ * $ node e2e/runner.js
  *
  * You can run a specific test by passing it, or pass various tests
- * $ node test/e2e/runner.js test/e2e/specs/basic.js test/e2e/specs/redirect.js
+ * $ node e2e/runner.js e2e/specs/basic.js e2e/specs/redirect.js
  *
  * You can specify a list of browsers to run from nightwatch.config.js with -e separated by a comma
- * $ node test/e2e/runner.js -e safari,firefox
+ * $ node e2e/runner.js -e safari,firefox
  *
  * If you are already running the dev server with `yarn run serve`, you can pass the --dev option to avoid launching the server
- * $ node test/e2e/runner.js --dev
+ * $ node e2e/runner.js --dev
  * **Make sure to pass the option at the end**
  *
  * __For maintainers only__
  * You can trigger tests on Browserstack on other browsers by passing the --local option
  * It's also required to pass the list of browsers to test on to avoid launching too many tests. Available options are located inside nightwatch.browserstack.js
- * $ node test/e2e/runner.js --local -e ie,chrome50
+ * $ node e2e/runner.js --local -e ie,chrome50
  */
 
 require('dotenv').config()
@@ -60,7 +60,7 @@ if (args.indexOf('-c') < 0) {
 
 function adaptArgv(argv) {
   // take every remaining argument and treat it as a test file
-  // this allows to run `node test/e2e/runner.js test/e2e/basic.js`
+  // this allows to run `node e2e/runner.js test/e2e/basic.js`
   argv.retries = 1
   argv.test = argv['_'].slice(0)
 

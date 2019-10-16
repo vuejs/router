@@ -5,3 +5,7 @@ coverage
 .nyc_output
 .rpt2_cache
 .env
+local.log
+.DS_Store
+e2e/reports
+e2e/screenshots
