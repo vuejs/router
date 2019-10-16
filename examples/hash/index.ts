@@ -1,4 +1,4 @@
-import { Router, plugin, createHistory } from '../../src'
+import { Router, plugin, createHashHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
 import Vue from 'vue'
 
@@ -15,7 +15,7 @@ const Document: RouteComponent = {
 }
 
 const router = new Router({
-  history: createHistory('/' + __dirname),
+  history: createHashHistory('/' + __dirname),
   routes: [
     { path: '/', component: Home, name: 'home' },
     { path: '/documents/:id', name: 'docs', component: Document },

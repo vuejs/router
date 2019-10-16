@@ -61,7 +61,7 @@ if (args.indexOf('-c') < 0) {
 function adaptArgv(argv) {
   // take every remaining argument and treat it as a test file
   // this allows to run `node e2e/runner.js test/e2e/basic.js`
-  argv.retries = 1
+  // argv.retries = 1
   argv.test = argv['_'].slice(0)
 
   if (argv.c === DEFAULT_CONFIG && argv.config === DEFAULT_CONFIG) {

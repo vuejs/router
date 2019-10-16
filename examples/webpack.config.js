@@ -1,9 +1,18 @@
+// @ts-check
 const fs = require('fs')
 const { resolve, join } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 
-const outputPath = resolve(__dirname, '__build__')
+/** @type {string[]} */
+let examples = []
+fs.readdirSync(__dirname).forEach(dir => {
+  const fullDir = join(__dirname, dir)
+  const entry = join(fullDir, 'index.ts')
+  if (fs.statSync(fullDir).isDirectory() && fs.existsSync(entry)) {
+    examples.push(dir)
+  }
+})
 
 module.exports = {
   // Expose __dirname to allow automatically setting basename.
@@ -18,14 +27,26 @@ module.exports = {
   devServer: {
     // contentBase: outputPath,
     historyApiFallback: {
-      rewrites: [{ from: /^\/encoding(?:\/?|\/.*)$/, to: '/encoding.html' }],
+      rewrites: examples.map(name => ({
+        from: new RegExp(`^/${name}(?:\\/?|/.*)$`),
+        to: `/${name}.html`,
+      })),
+      // rewrites: [
+      //   { from: /^\/encoding(?:\/?|\/.*)$/, to: '/encoding.html' },
+      //   { from: /^\/hash(?:\/?|\/.*)$/, to: '/hash.html' },
+      // ],
     },
     // hot: true,
   },
 
-  entry: {
-    encoding: resolve(__dirname, 'encoding/index.ts'),
-  },
+  entry: examples.reduce((entries, name) => {
+    entries[name] = resolve(__dirname, name, 'index.ts')
+    return entries
+  }, {}),
+  // entry: {
+  //   encoding: resolve(__dirname, 'encoding/index.ts'),
+  //   hash: resolve(__dirname, 'hash/index.ts'),
+  // },
   // entry: fs.readdirSync(__dirname).reduce((entries, dir) => {
   //   const fullDir = path.join(__dirname, dir)
   //   const entry = path.join(fullDir, 'index.ts')
@@ -60,13 +81,14 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js'],
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      // inject: false,
-      // chunks: ['encoding'],
-      filename: 'encoding.html',
-      title: 'Vue Router Examples - encoding',
-      template: resolve(__dirname, 'encoding/index.html'),
-    }),
+    ...examples.map(
+      name =>
+        new HtmlWebpackPlugin({
+          filename: `${name}.html`,
+          chunks: [name],
+          template: resolve(__dirname, name, 'index.html'),
+        })
+    ),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),

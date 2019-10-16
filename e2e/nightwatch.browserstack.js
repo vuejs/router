@@ -28,6 +28,8 @@ const nwConf = {
     name: 'Bstack-[Nightwatch] Vue Router Parallel Test',
     'browserstack.local': true,
     'browserstack.video': false,
+    // useful to get visual logs
+    // 'browserstack.debug': true,
     acceptSslCerts: true,
     resolution: '1024x768',
   },
