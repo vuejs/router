@@ -34,12 +34,48 @@
         opacity: 0;
         transform: translate(-30px, 0);
       }
+
+      .info pre {
+        display: inline;
+      }
     </style>
   </head>
   <body>
     <div id="app">
       <h2>{{ message }}</h2>
       <pre>{{ $route }}</pre>
+      <section class="info">
+        Name:
+        <pre id="name">{{ $route.name }}</pre>
+      </section>
+
+      <section class="info">
+        Params:
+        <pre id="params">{{ $route.params }}</pre>
+      </section>
+
+      <section class="info">
+        Query:
+        <pre id="query">{{ $route.query }}</pre>
+      </section>
+
+      <section class="info">
+        Hash:
+        <pre id="hash">{{ $route.hash }}</pre>
+      </section>
+
+      <section class="info">
+        FullPath:
+        <pre id="fullPath">{{ $route.fullPath }}</pre>
+      </section>
+
+      <section class="info">
+        path:
+        <pre id="path">{{ $route.path }}</pre>
+      </section>
+
+      <hr />
+
       <label>
         <input type="checkbox" v-model="shared.cancel" /> Cancel Next Navigation
       </label>

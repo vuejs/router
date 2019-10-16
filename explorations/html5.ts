@@ -20,8 +20,9 @@ declare global {
   }
 }
 
-const routerHistory = createHistory('/app')
+// const routerHistory = createHistory('/app')
 // const routerHistory = createHashHistory()
+const routerHistory = createHistory()
 window.h = routerHistory
 
 const shared = {
