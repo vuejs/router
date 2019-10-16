@@ -14,6 +14,8 @@ fs.readdirSync(__dirname).forEach(dir => {
   }
 })
 
+const globalCss = resolve(__dirname, 'global.css')
+
 module.exports = {
   // Expose __dirname to allow automatically setting basename.
   context: __dirname,
@@ -36,10 +38,10 @@ module.exports = {
 
   entry: examples.reduce(
     (entries, name) => {
-      entries[name] = resolve(__dirname, name, 'index.ts')
+      entries[name] = [globalCss, resolve(__dirname, name, 'index.ts')]
       return entries
     },
-    { index: resolve(__dirname, 'index.ts') }
+    { index: [globalCss, resolve(__dirname, 'index.ts')] }
   ),
 
   output: {
@@ -54,6 +56,10 @@ module.exports = {
       {
         test: /\.ts$/,
         use: 'ts-loader',
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },
