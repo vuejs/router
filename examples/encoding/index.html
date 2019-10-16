@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Vue Router Examples - Encoding</title>
+    <!-- TODO: replace with local imports for promises and anything else needed -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2Ces2015"></script>
+  </head>
+  <body>
+    <div id="app">
+      <section class="info">
+        Name:
+        <pre id="name">{{ $route.name }}</pre>
+      </section>
+
+      <section class="info">
+        Params:
+        <pre id="params">{{ $route.params }}</pre>
+      </section>
+
+      <section class="info">
+        Query:
+        <pre id="query">{{ $route.query }}</pre>
+      </section>
+
+      <section class="info">
+        Hash:
+        <pre id="hash">{{ $route.hash }}</pre>
+      </section>
+
+      <section class="info">
+        FullPath:
+        <pre id="fullPath">{{ $route.fullPath }}</pre>
+      </section>
+
+      <section class="info">
+        path:
+        <pre id="path">{{ $route.path }}</pre>
+      </section>
+
+      <hr />
+
+      <ul>
+        <li>
+          <router-link to="/">/</router-link>
+        </li>
+        <li>
+          <!-- <router-link to="/n/€">/n/€</!-->
+          -->
+        </li>
+        <li>
+          <router-link to="/documents/%E2%82%AC"
+            >/documents/%E2%82%AC</router-link
+          >
+        </li>
+        <li>
+          <router-link :to="{ name: 'docs', params: { id: '€uro' }}"
+            >/documents/€uro (object)</router-link
+          >
+        </li>
+        <li>
+          <router-link
+            :to="{ name: 'home', query: { currency: '€uro', 'é': 'e' }}"
+            >/currency=€uro&é=e (object)</router-link
+          >
+        </li>
+        <li>
+          <a href="/n/%E2%82%AC">/n/%E2%82%AC (force reload)</a>
+        </li>
+        <li>
+          <a href="/n/€">/n/€ (force reload): not valid tho</a>
+        </li>
+      </ul>
+
+      <router-view></router-view>
+    </div>
+  </body>
+</html>

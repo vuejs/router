@@ -1,0 +1,23 @@
+{
+  "include": ["*/*ts"],
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    // "lib": ["es2017.object"] /* Specify library files to be included in the compilation. */,
+    "declaration": true,
+    // "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "removeComments": false,
+    "noEmit": false,
+
+    "strict": true,
+
+    "noUnusedLocals": true,
+    // "noUnusedParameters": true,
+    "noImplicitReturns": true,
+
+    "moduleResolution": "node",
+    "esModuleInterop": true
+  }
+}
