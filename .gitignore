@@ -9,3 +9,4 @@ local.log
 .DS_Store
 e2e/reports
 e2e/screenshots
+examples/__build__

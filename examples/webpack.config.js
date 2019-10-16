@@ -23,39 +23,24 @@ module.exports = {
 
   mode: process.env.NODE_ENV || 'development',
 
-  // devtool: 'inline-source-map',
+  devtool: 'inline-source-map',
   devServer: {
-    // contentBase: outputPath,
     historyApiFallback: {
       rewrites: examples.map(name => ({
         from: new RegExp(`^/${name}(?:\\/?|/.*)$`),
         to: `/${name}.html`,
       })),
-      // rewrites: [
-      //   { from: /^\/encoding(?:\/?|\/.*)$/, to: '/encoding.html' },
-      //   { from: /^\/hash(?:\/?|\/.*)$/, to: '/hash.html' },
-      // ],
     },
-    // hot: true,
+    hot: true,
   },
 
-  entry: examples.reduce((entries, name) => {
-    entries[name] = resolve(__dirname, name, 'index.ts')
-    return entries
-  }, {}),
-  // entry: {
-  //   encoding: resolve(__dirname, 'encoding/index.ts'),
-  //   hash: resolve(__dirname, 'hash/index.ts'),
-  // },
-  // entry: fs.readdirSync(__dirname).reduce((entries, dir) => {
-  //   const fullDir = path.join(__dirname, dir)
-  //   const entry = path.join(fullDir, 'index.ts')
-  //   if (fs.statSync(fullDir).isDirectory() && fs.existsSync(entry)) {
-  //     entries[dir] = ['es6-promise/auto', entry]
-  //   }
-
-  //   return entries
-  // }, {}),
+  entry: examples.reduce(
+    (entries, name) => {
+      entries[name] = resolve(__dirname, name, 'index.ts')
+      return entries
+    },
+    { index: resolve(__dirname, 'index.ts') }
+  ),
 
   output: {
     path: join(__dirname, '__build__'),
@@ -89,6 +74,11 @@ module.exports = {
           template: resolve(__dirname, name, 'index.html'),
         })
     ),
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      chunks: ['index'],
+      template: resolve(__dirname, 'index.html'),
+    }),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),

@@ -19,6 +19,8 @@
   "devDependencies": {
     "@types/jest": "^24.0.18",
     "@types/jsdom": "^12.2.4",
+    "@types/webpack": "^4.39.3",
+    "@types/webpack-env": "^1.14.1",
     "@vue/test-utils": "^1.0.0-beta.29",
     "axios": "^0.19.0",
     "browserstack-local": "^1.4.2",
