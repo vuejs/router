@@ -185,7 +185,8 @@ router.afterEach((to, from) => {
 
 router.beforeEach((to, from, next) => {
   // console.log('second guard')
-  next()
+  if (to.query.to) next(to.query.to as string)
+  else next()
 })
 
 const dirLog = {
