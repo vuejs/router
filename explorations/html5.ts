@@ -113,7 +113,7 @@ const scrollWaiter = new ScrollQueue()
 const router = new Router({
   history: routerHistory,
   routes: [
-    { path: '/', component: Home, name: 'home' },
+    { path: '/', component: Home, name: 'home', alias: '/home' },
     { path: '/users/:id', name: 'user', component: User },
     { path: '/documents/:id', name: 'docs', component: User },
     { path: encodeURI('/n/€'), name: 'euro', component },

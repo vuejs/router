@@ -105,8 +105,9 @@ export type RouteComponent = Component | Lazy<Component>
 // and I don't thin it's possible to filter out the route
 // by any means
 
-interface RouteRecordCommon {
-  path: string // | RegExp
+export interface RouteRecordCommon {
+  path: string
+  alias?: string | string[]
   name?: string
   beforeEnter?: NavigationGuard | NavigationGuard[]
   meta?: Record<string | number | symbol, any>
@@ -119,12 +120,12 @@ export interface RouteRecordRedirect extends RouteRecordCommon {
   redirect: RouteRecordRedirectOption
 }
 
-interface RouteRecordSingleView extends RouteRecordCommon {
+export interface RouteRecordSingleView extends RouteRecordCommon {
   component: RouteComponent
   children?: RouteRecord[]
 }
 
-interface RouteRecordMultipleViews extends RouteRecordCommon {
+export interface RouteRecordMultipleViews extends RouteRecordCommon {
   components: Record<string, RouteComponent>
   // TODO: add tests
   children?: RouteRecord[]
@@ -201,3 +202,7 @@ export interface PostNavigationGuard {
 }
 
 export * from './type-guards'
+
+export type Mutable<T> = {
+  -readonly [P in keyof T]: T[P]
+}

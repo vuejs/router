@@ -5,12 +5,19 @@ import {
   MatcherLocation,
   MatcherLocationNormalized,
   MatcherLocationRedirect,
+  RouteRecordRedirect,
+  RouteRecordMultipleViews,
+  RouteRecordSingleView,
+  Mutable,
   // TODO: add it to matched
   // MatchedRouteRecord,
 } from './types/index'
 import { NoRouteMatchError, InvalidRouteMatch } from './errors'
 
-type NormalizedRouteRecord = Exclude<RouteRecord, { component: any }> // normalize component/components into components
+// normalize component/components into components
+type NormalizedRouteRecord =
+  | Omit<RouteRecordRedirect, 'alias'>
+  | Omit<RouteRecordMultipleViews, 'alias'>
 
 export interface RouteMatcher {
   re: RegExp
@@ -19,10 +26,41 @@ export interface RouteMatcher {
   parent: RouteMatcher | void
   // TODO: children so they can be removed
   // children: RouteMatcher[]
+  // TODO: needs information like optional, repeatable
   keys: string[]
   score: number
 }
 
+function copyObject<T extends Object, K extends keyof T>(
+  a: T,
+  keys: K[]
+): Mutable<Pick<T, K>> {
+  const copy: Pick<T, K> = {} as Pick<T, K>
+
+  for (const key of keys) {
+    if (!a.hasOwnProperty(key)) continue
+    if (key in a) copy[key] = a[key]
+  }
+
+  return copy
+}
+
+const ROUTE_RECORD_REDIRECT_KEYS: (keyof RouteRecordRedirect)[] = [
+  'path',
+  'name',
+  'beforeEnter',
+  'redirect',
+  'meta',
+]
+const ROUTE_RECORD_MULTIPLE_VIEWS_KEYS: (keyof (
+  | RouteRecordMultipleViews
+  | RouteRecordSingleView))[] = [
+  'path',
+  'name',
+  'beforeEnter',
+  'children',
+  'meta',
+]
 /**
  * Normalizes a RouteRecord into a MatchedRouteRecord. Creates a copy
  * @param record
@@ -31,20 +69,18 @@ export interface RouteMatcher {
 export function normalizeRecord(
   record: Readonly<RouteRecord>
 ): NormalizedRouteRecord {
-  if ('component' in record) {
-    const { component, ...rest } = record
-    // @ts-ignore I could do it type safe by copying again rest:
-    // return {
-    //   ...rest,
-    //   components: { default: component }
-    // }
-    // but it's slower
-    rest.components = { default: component }
-    return rest as NormalizedRouteRecord
+  // TODO: could be refactored to improve typings
+  if ('redirect' in record) {
+    return copyObject(record, ROUTE_RECORD_REDIRECT_KEYS)
+  } else {
+    const copy: RouteRecordMultipleViews = copyObject(
+      record,
+      ROUTE_RECORD_MULTIPLE_VIEWS_KEYS
+    ) as RouteRecordMultipleViews
+    copy.components =
+      'components' in record ? record.components : { default: record.component }
+    return copy
   }
-
-  // otherwise just create a copy
-  return { ...record }
 }
 
 const enum PathScore {
@@ -286,33 +322,47 @@ export class RouterMatcher {
       strict: false,
     }
 
-    const recordCopy = normalizeRecord(record)
+    // generate an array of records to correctly handle aliases
+    const normalizedRecords = [normalizeRecord(record)]
+    if ('alias' in record && record.alias) {
+      const aliases =
+        typeof record.alias === 'string' ? [record.alias] : record.alias
+      for (const alias of aliases) {
+        const copyForAlias = normalizeRecord(record)
+        copyForAlias.path = alias
+        normalizedRecords.push(copyForAlias)
+      }
+    }
 
     if (parent) {
       // if the child isn't an absolute route
       if (record.path[0] !== '/') {
         let path = parent.record.path
         // only add the / delimiter if the child path isn't empty
-        if (recordCopy.path) path += '/'
-        path += record.path
-        recordCopy.path = path
+        for (const normalizedRecord of normalizedRecords) {
+          if (normalizedRecord.path) path += '/'
+          path += record.path
+          normalizedRecord.path = path
+        }
       }
     }
 
-    // create the object before hand so it can be passed to children
-    const matcher = createRouteMatcher(recordCopy, parent, options)
+    for (const normalizedRecord of normalizedRecords) {
+      // create the object before hand so it can be passed to children
+      const matcher = createRouteMatcher(normalizedRecord, parent, options)
 
-    if ('children' in record && record.children) {
-      for (const childRecord of record.children) {
-        this.addRouteRecord(childRecord, matcher)
+      if ('children' in record && record.children) {
+        for (const childRecord of record.children) {
+          this.addRouteRecord(childRecord, matcher)
+        }
+        // TODO: the parent is special, we should match their children. They
+        // reference to the parent so we can render the parent
+        //
+        // matcher.score = -10
       }
-      // TODO: the parent is special, we should match their children. They
-      // reference to the parent so we can render the parent
-      //
-      // matcher.score = -10
-    }
 
-    this.insertMatcher(matcher)
+      this.insertMatcher(matcher)
+    }
   }
 
   private insertMatcher(matcher: RouteMatcher) {
@@ -376,6 +426,7 @@ export class RouterMatcher {
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
 
       // no need to resolve the path with the matcher as it was provided
+      // this also allows the user to control the encoding
       path = location.path
       name = matcher.record.name
 

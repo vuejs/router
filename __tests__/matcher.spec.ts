@@ -25,14 +25,13 @@ describe('Router Matcher', () => {
     ) {
       record = Array.isArray(record) ? record : [record]
       const matcher = new RouterMatcher(record)
-      const targetLocation = {}
 
       if (!('meta' in resolved)) {
         resolved.meta = record[0].meta || {}
       }
 
       // add location if provided as it should be the same value
-      if ('path' in location) {
+      if ('path' in location && !('path' in resolved)) {
         resolved.path = location.path
       }
 
@@ -61,14 +60,7 @@ describe('Router Matcher', () => {
       // make matched non enumerable
       Object.defineProperty(startCopy, 'matched', { enumerable: false })
 
-      const result = matcher.resolve(
-        {
-          ...targetLocation,
-          // override anything provided in location
-          ...location,
-        },
-        startCopy
-      )
+      const result = matcher.resolve(location, startCopy)
       expect(result).toEqual(resolved)
     }
 
@@ -90,6 +82,35 @@ describe('Router Matcher', () => {
         return error
       }
     }
+
+    describe('alias', () => {
+      it('resolves an alias', () => {
+        assertRecordMatch(
+          {
+            path: '/',
+            alias: '/home',
+            name: 'Home',
+            components,
+            meta: { foo: true },
+          },
+          { path: '/home' },
+          {
+            name: 'Home',
+            path: '/home',
+            params: {},
+            meta: { foo: true },
+            matched: [
+              {
+                path: '/home',
+                name: 'Home',
+                components,
+                meta: { foo: true },
+              },
+            ],
+          }
+        )
+      })
+    })
 
     describe('LocationAsPath', () => {
       it('resolves a normal path', () => {
