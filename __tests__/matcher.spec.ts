@@ -110,6 +110,28 @@ describe('Router Matcher', () => {
           }
         )
       })
+
+      it('resolves an alias with children', () => {
+        const children = [{ path: 'one', component, name: 'nested' }]
+        assertRecordMatch(
+          {
+            path: '/parent',
+            alias: '/p',
+            component,
+            children,
+          },
+          { path: '/p/one' },
+          {
+            path: '/p/one',
+            name: 'nested',
+            params: {},
+            matched: [
+              { path: '/p', children, components },
+              { path: '/p/one', name: 'nested', components },
+            ],
+          }
+        )
+      })
     })
 
     describe('LocationAsPath', () => {
