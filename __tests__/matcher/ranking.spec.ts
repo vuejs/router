@@ -1,9 +1,7 @@
-import {
-  createRouteMatcher,
-  RouteRecordMatcher,
-} from '../../src/matcher/path-ranker'
+import { createRouteMatcher } from '../../src/matcher/path-ranker'
 import { RegExpOptions } from 'path-to-regexp'
 import { RouteComponent } from '../../src/types'
+import { RouteRecordMatcher } from '../../src/matcher/types'
 
 // @ts-ignore
 const component: RouteComponent = null
