@@ -1,4 +1,7 @@
-import { createRouteMatcher, RouteMatcher } from '../../src/matcher'
+import {
+  createRouteMatcher,
+  RouteRecordMatcher,
+} from '../../src/matcher/path-ranker'
 import { RegExpOptions } from 'path-to-regexp'
 import { RouteComponent } from '../../src/types'
 
@@ -21,7 +24,7 @@ describe('createRouteMatcher', () => {
     })
 
     const matchers: Array<
-      RouteMatcher & { _options: RegExpOptions }
+      RouteRecordMatcher & { _options: RegExpOptions }
     > = normalizedPaths
       .slice()
       // Because sorting order is conserved, allows to mismatch order on
