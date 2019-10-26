@@ -1,6 +1,6 @@
-import { createRouteMatcher, RouteMatcher } from '../src/matcher'
+import { createRouteMatcher, RouteMatcher } from '../../src/matcher'
 import { RegExpOptions } from 'path-to-regexp'
-import { RouteComponent } from '../src/types'
+import { RouteComponent } from '../../src/types'
 
 // @ts-ignore
 const component: RouteComponent = null

@@ -1,4 +1,4 @@
-import { RouterMatcher } from '../src/matcher'
+import { RouterMatcher } from '../../src/matcher'
 import {
   START_LOCATION_NORMALIZED,
   RouteComponent,
@@ -6,11 +6,15 @@ import {
   MatcherLocation,
   MatcherLocationNormalized,
   MatcherLocationRedirect,
-} from '../src/types'
-import { normalizeRouteRecord } from './utils'
+} from '../../src/types'
+import { normalizeRouteRecord } from '../utils'
 
 // @ts-ignore
 const component: RouteComponent = null
+
+function createRouterMatcher(records: RouteRecord[]) {
+  return new RouterMatcher(records)
+}
 
 // for normalized records
 const components = { default: component }
@@ -24,7 +28,7 @@ describe('Router Matcher', () => {
       start: MatcherLocationNormalized = START_LOCATION_NORMALIZED
     ) {
       record = Array.isArray(record) ? record : [record]
-      const matcher = new RouterMatcher(record)
+      const matcher = createRouterMatcher(record)
 
       if (!('meta' in resolved)) {
         resolved.meta = record[0].meta || {}
@@ -335,7 +339,7 @@ describe('Router Matcher', () => {
           expected: MatcherLocationNormalized | MatcherLocationRedirect,
           currentLocation: MatcherLocationNormalized = START_LOCATION_NORMALIZED
         ) {
-          const matcher = new RouterMatcher(records)
+          const matcher = createRouterMatcher(records)
           const resolved = matcher.resolve(location, currentLocation)
           expect(resolved).toEqual(expected)
           return resolved
