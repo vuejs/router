@@ -89,7 +89,7 @@ const enum PathScore {
 // allows to check if the user provided a custom regexp
 const isDefaultPathRegExpRE = /^\[\^[^\]]+\]\+\?$/
 
-export function createRouteMatcher(
+export function createRouteRecordMatcher(
   record: Readonly<NormalizedRouteRecord>,
   parent: RouteRecordMatcher | void,
   options: pathToRegexp.RegExpOptions

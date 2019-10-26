@@ -6,7 +6,7 @@ import {
   HistoryLocationNormalized,
   START,
 } from './history/common'
-import { RouterMatcher } from './matcher'
+import { createRouterMatcher } from './matcher'
 import {
   RouteLocation,
   RouteRecord,
@@ -53,7 +53,7 @@ type ErrorHandler = (error: any) => any
 type OnReadyCallback = [() => void, (reason?: any) => void]
 export class Router {
   protected history: RouterHistory
-  private matcher: RouterMatcher
+  private matcher: ReturnType<typeof createRouterMatcher>
   private beforeGuards: NavigationGuard[] = []
   private afterGuards: PostNavigationGuard[] = []
   currentRoute: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
@@ -70,7 +70,7 @@ export class Router {
     // this.history.ensureLocation()
     this.scrollBehavior = options.scrollBehavior
 
-    this.matcher = new RouterMatcher(options.routes)
+    this.matcher = createRouterMatcher(options.routes)
 
     this.history.listen(async (to, from, info) => {
       const matchedRoute = this.resolveLocation(to, this.currentRoute)

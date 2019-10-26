@@ -9,19 +9,21 @@ import {
   // MatchedRouteRecord,
 } from '../types'
 import { NoRouteMatchError, InvalidRouteMatch } from '../errors'
-import { createRouteMatcher, normalizeRouteRecord } from './path-ranker'
+import { createRouteRecordMatcher, normalizeRouteRecord } from './path-ranker'
 import { RouteRecordMatcher } from './types'
 
-export class RouterMatcher {
-  private matchers: RouteRecordMatcher[] = []
+interface RouterMatcher {
+  addRoute: (record: Readonly<RouteRecord>, parent?: RouteRecordMatcher) => void
+  resolve: (
+    location: Readonly<MatcherLocation>,
+    currentLocation: Readonly<MatcherLocationNormalized>
+  ) => MatcherLocationNormalized | MatcherLocationRedirect
+}
 
-  constructor(routes: RouteRecord[]) {
-    for (const route of routes) {
-      this.addRouteRecord(route)
-    }
-  }
+export function createRouterMatcher(routes: RouteRecord[]): RouterMatcher {
+  const matchers: RouteRecordMatcher[] = []
 
-  private addRouteRecord(
+  function addRoute(
     record: Readonly<RouteRecord>,
     parent?: RouteRecordMatcher
   ): void {
@@ -58,11 +60,15 @@ export class RouterMatcher {
 
     for (const normalizedRecord of normalizedRecords) {
       // create the object before hand so it can be passed to children
-      const matcher = createRouteMatcher(normalizedRecord, parent, options)
+      const matcher = createRouteRecordMatcher(
+        normalizedRecord,
+        parent,
+        options
+      )
 
       if ('children' in record && record.children) {
         for (const childRecord of record.children) {
-          this.addRouteRecord(childRecord, matcher)
+          addRoute(childRecord, matcher)
         }
         // TODO: the parent is special, we should match their children. They
         // reference to the parent so we can render the parent
@@ -70,28 +76,22 @@ export class RouterMatcher {
         // matcher.score = -10
       }
 
-      this.insertMatcher(matcher)
+      insertMatcher(matcher)
     }
   }
 
-  private insertMatcher(matcher: RouteRecordMatcher) {
+  function insertMatcher(matcher: RouteRecordMatcher) {
     let i = 0
-    while (i < this.matchers.length && matcher.score <= this.matchers[i].score)
-      i++
-    this.matchers.splice(i, 0, matcher)
+    while (i < matchers.length && matcher.score <= matchers[i].score) i++
+    matchers.splice(i, 0, matcher)
   }
 
   /**
-   * Resolve a location without doing redirections so it can be used for anchors
-   */
-  resolveAsPath() {}
-
-  /**
-   * Transforms a MatcherLocation object into a normalized location
+   * Resolves a location. Gives access to the route record that corresponds to the actual path as well as filling the corresponding params objects
    * @param location MatcherLocation to resolve to a url
    * @param currentLocation MatcherLocationNormalized of the current location
    */
-  resolve(
+  function resolve(
     location: Readonly<MatcherLocation>,
     currentLocation: Readonly<MatcherLocationNormalized>
   ): MatcherLocationNormalized | MatcherLocationRedirect {
@@ -101,7 +101,7 @@ export class RouterMatcher {
     let name: MatcherLocationNormalized['name']
 
     if ('name' in location && location.name) {
-      matcher = this.matchers.find(m => m.record.name === location.name)
+      matcher = matchers.find(m => m.record.name === location.name)
 
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
 
@@ -127,7 +127,7 @@ export class RouterMatcher {
         }
       }
     } else if ('path' in location) {
-      matcher = this.matchers.find(m => m.re.test(location.path))
+      matcher = matchers.find(m => m.re.test(location.path))
 
       // TODO: if no matcher, return the location with an empty matched array
       // to allow non existent matches
@@ -187,8 +187,8 @@ export class RouterMatcher {
     } else {
       // match by name or path of current route
       matcher = currentLocation.name
-        ? this.matchers.find(m => m.record.name === currentLocation.name)
-        : this.matchers.find(m => m.re.test(currentLocation.path))
+        ? matchers.find(m => m.record.name === currentLocation.name)
+        : matchers.find(m => m.re.test(currentLocation.path))
       if (!matcher) throw new NoRouteMatchError(currentLocation, location)
       name = matcher.record.name
       params = location.params || currentLocation.params
@@ -217,4 +217,11 @@ export class RouterMatcher {
       meta: matcher.record.meta || {},
     }
   }
+
+  // add initial routes
+  for (const route of routes) {
+    addRoute(route)
+  }
+
+  return { addRoute, resolve }
 }

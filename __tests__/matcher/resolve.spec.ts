@@ -1,4 +1,4 @@
-import { RouterMatcher } from '../../src/matcher'
+import { createRouterMatcher } from '../../src/matcher'
 import {
   START_LOCATION_NORMALIZED,
   RouteComponent,
@@ -11,10 +11,6 @@ import { normalizeRouteRecord } from '../utils'
 
 // @ts-ignore
 const component: RouteComponent = null
-
-function createRouterMatcher(records: RouteRecord[]) {
-  return new RouterMatcher(records)
-}
 
 // for normalized records
 const components = { default: component }

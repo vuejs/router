@@ -1,4 +1,4 @@
-import { createRouteMatcher } from '../../src/matcher/path-ranker'
+import { createRouteRecordMatcher } from '../../src/matcher/path-ranker'
 import { RegExpOptions } from 'path-to-regexp'
 import { RouteComponent } from '../../src/types'
 import { RouteRecordMatcher } from '../../src/matcher/types'
@@ -10,7 +10,7 @@ function stringifyOptions(options: any) {
   return Object.keys(options).length ? ` (${JSON.stringify(options)})` : ''
 }
 
-describe('createRouteMatcher', () => {
+describe('createRouteRecordMatcher', () => {
   function checkPathOrder(
     paths: Array<string | [string, RegExpOptions]>,
     options: RegExpOptions = {}
@@ -29,7 +29,7 @@ describe('createRouteMatcher', () => {
       // routes with the same ranking
       .reverse()
       .map(([path, options]) => ({
-        ...createRouteMatcher(
+        ...createRouteRecordMatcher(
           {
             // @ts-ignore types are correct
             path,
