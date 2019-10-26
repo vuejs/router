@@ -75,9 +75,12 @@ export const START: HistoryLocationNormalized = {
   hash: '',
 }
 
+export type ValueContainer<T> = { value: T }
+
 export interface RouterHistory {
   readonly base: string
   readonly location: HistoryLocationNormalized
+  // readonly location: ValueContainer<HistoryLocationNormalized>
 
   push(to: RawHistoryLocation, data?: any): void
   replace(to: RawHistoryLocation): void
@@ -235,7 +238,7 @@ export function stringifyQuery(query: RawHistoryQuery): string {
 }
 
 export function normalizeQuery(query: RawHistoryQuery): HistoryQuery {
-  // TODO: implem
+  // TODO: properly test
   const normalizedQuery: HistoryQuery = {}
   for (const key in query) {
     const value = query[key]
@@ -245,6 +248,7 @@ export function normalizeQuery(query: RawHistoryQuery): HistoryQuery {
   return normalizedQuery
 }
 
+// FIXME: not used
 /**
  * Prepare a URI string to be passed to pushState
  * @param uri
@@ -261,8 +265,7 @@ const originalDecodeURI = decodeURI
 export { originalDecodeURI as decodeURI }
 
 /**
- * Normalize a History location into an object that looks like
- * the one at window.location
+ * Normalize a History location object or string into a HistoryLocationNoramlized
  * @param location
  */
 export function normalizeLocation(
