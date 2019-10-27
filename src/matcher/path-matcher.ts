@@ -1,64 +1,40 @@
 import pathToRegexp from 'path-to-regexp'
 import {
   RouteRecord,
-  RouteRecordRedirect,
-  RouteRecordMultipleViews,
-  RouteRecordSingleView,
-  Mutable,
   // TODO: add it to matched
   // MatchedRouteRecord,
 } from '../types'
-import { NormalizedRouteRecord, RouteRecordMatcher } from './types'
+import { RouteRecordNormalized, RouteRecordMatcher } from './types'
 
-function copyObject<T extends Object, K extends keyof T>(
-  a: T,
-  keys: K[]
-): Mutable<Pick<T, K>> {
-  const copy: Pick<T, K> = {} as Pick<T, K>
-
-  for (const key of keys) {
-    if (!a.hasOwnProperty(key)) continue
-    if (key in a) copy[key] = a[key]
-  }
-
-  return copy
-}
-
-const ROUTE_RECORD_REDIRECT_KEYS: (keyof RouteRecordRedirect)[] = [
-  'path',
-  'name',
-  'beforeEnter',
-  'redirect',
-  'meta',
-]
-const ROUTE_RECORD_MULTIPLE_VIEWS_KEYS: (keyof (
-  | RouteRecordMultipleViews
-  | RouteRecordSingleView))[] = [
-  'path',
-  'name',
-  'beforeEnter',
-  'children',
-  'meta',
-]
 /**
- * Normalizes a RouteRecord into a MatchedRouteRecord. Creates a copy
+ * Normalizes a RouteRecord into a MatchedRouteRecord. It also ensures removes
+ * traling slashes Returns a copy
  * @param record
  * @returns the normalized version
  */
 export function normalizeRouteRecord(
   record: Readonly<RouteRecord>
-): NormalizedRouteRecord {
-  // TODO: could be refactored to improve typings
+): RouteRecordNormalized {
   if ('redirect' in record) {
-    return copyObject(record, ROUTE_RECORD_REDIRECT_KEYS)
+    return {
+      path: record.path,
+      redirect: record.redirect,
+      name: record.name,
+      beforeEnter: record.beforeEnter,
+      meta: record.meta,
+    }
   } else {
-    const copy: RouteRecordMultipleViews = copyObject(
-      record,
-      ROUTE_RECORD_MULTIPLE_VIEWS_KEYS
-    ) as RouteRecordMultipleViews
-    copy.components =
-      'components' in record ? record.components : { default: record.component }
-    return copy
+    return {
+      path: record.path,
+      components:
+        'components' in record
+          ? record.components
+          : { default: record.component },
+      children: record.children,
+      name: record.name,
+      beforeEnter: record.beforeEnter,
+      meta: record.meta,
+    }
   }
 }
 
@@ -90,8 +66,8 @@ const enum PathScore {
 const isDefaultPathRegExpRE = /^\[\^[^\]]+\]\+\?$/
 
 export function createRouteRecordMatcher(
-  record: Readonly<NormalizedRouteRecord>,
-  parent: RouteRecordMatcher | void,
+  record: Readonly<RouteRecordNormalized>,
+  parent: RouteRecordMatcher | undefined,
   options: pathToRegexp.RegExpOptions
 ): RouteRecordMatcher {
   const keys: pathToRegexp.Key[] = []
