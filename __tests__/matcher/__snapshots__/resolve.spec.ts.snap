@@ -1,8 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Router Matcher resolve LocationAsName throws if the named route does not exists 1`] = `[NoRouteMatchError: No match for {"path":"/","name":"Home","params":{},"query":{},"hash":"","fullPath":"/"}]`;
+exports[`Router Matcher resolve LocationAsName throws if the named route does not exists 1`] = `
+[NoRouteMatchError: No match for
+{"name":"Home"}]
+`;
 
-exports[`Router Matcher resolve LocationAsPath throws if the path does not exists 1`] = `[NoRouteMatchError: No match for {"path":"/foo","params":{},"query":{},"hash":"","fullPath":"/"}]`;
+exports[`Router Matcher resolve LocationAsPath disallows multiple trailing slashes 1`] = `
+[NoRouteMatchError: No match for
+{"path":"/home//"}]
+`;
+
+exports[`Router Matcher resolve LocationAsPath throws if the path does not exists 1`] = `
+[NoRouteMatchError: No match for
+{"path":"/foo"}]
+`;
 
 exports[`Router Matcher resolve LocationAsRelative redirects throws if relative location when redirecting 1`] = `
 [InvalidRouteMatch: Cannot redirect using a relative location:
@@ -12,4 +23,9 @@ exports[`Router Matcher resolve LocationAsRelative redirects throws if relative 
 Use the function redirect and explicitely provide a name]
 `;
 
-exports[`Router Matcher resolve LocationAsRelative throws if the current named route does not exists 1`] = `[NoRouteMatchError: No match for {"name":"home","params":{},"path":"/"}]`;
+exports[`Router Matcher resolve LocationAsRelative throws if the current named route does not exists 1`] = `
+[NoRouteMatchError: No match for
+{"params":{"a":"foo"}}
+while being at
+{"name":"home","params":{},"path":"/","meta":{}}]
+`;

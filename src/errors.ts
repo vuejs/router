@@ -57,13 +57,15 @@ export class NoRouteMatchError extends RouterError {
   private [isNoRouteMatchError] = true
 
   constructor(
-    currentLocation: MatcherLocationNormalized,
-    location: MatcherLocation
+    location: MatcherLocation,
+    currentLocation?: MatcherLocationNormalized
   ) {
-    // TODO: change the merge to provide information that is useful only
     super(
-      'No match for ' +
-        JSON.stringify(mergeMatcherLocations(currentLocation, location))
+      'No match for\n' +
+        JSON.stringify(location) +
+        (currentLocation
+          ? '\nwhile being at\n' + JSON.stringify(currentLocation)
+          : '')
     )
   }
 
@@ -223,13 +225,4 @@ function stringifyRoute(to: RouteLocation): string {
     if (key in to) location[key] = to[key]
   }
   return JSON.stringify(location, null, 2)
-}
-
-function mergeMatcherLocations(
-  currentLocation: MatcherLocationNormalized,
-  location: MatcherLocation
-) {
-  const merged = { ...currentLocation, ...location }
-  delete merged.meta
-  return merged
 }

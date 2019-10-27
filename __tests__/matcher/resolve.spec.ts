@@ -524,7 +524,7 @@ describe('Router Matcher', () => {
         expect(
           assertErrorMatch(
             record,
-            {},
+            { params: { a: 'foo' } },
             {
               ...start,
               matched: start.matched.map(normalizeRouteRecord),

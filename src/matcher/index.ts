@@ -103,7 +103,7 @@ export function createRouterMatcher(routes: RouteRecord[]): RouterMatcher {
     if ('name' in location && location.name) {
       matcher = matchers.find(m => m.record.name === location.name)
 
-      if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+      if (!matcher) throw new NoRouteMatchError(location)
 
       name = matcher.record.name
       // TODO: merge params
@@ -132,7 +132,7 @@ export function createRouterMatcher(routes: RouteRecord[]): RouterMatcher {
       // TODO: if no matcher, return the location with an empty matched array
       // to allow non existent matches
       // TODO: warning of unused params if provided
-      if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+      if (!matcher) throw new NoRouteMatchError(location)
 
       // no need to resolve the path with the matcher as it was provided
       // this also allows the user to control the encoding
@@ -189,7 +189,7 @@ export function createRouterMatcher(routes: RouteRecord[]): RouterMatcher {
       matcher = currentLocation.name
         ? matchers.find(m => m.record.name === currentLocation.name)
         : matchers.find(m => m.re.test(currentLocation.path))
-      if (!matcher) throw new NoRouteMatchError(currentLocation, location)
+      if (!matcher) throw new NoRouteMatchError(location, currentLocation)
       name = matcher.record.name
       params = location.params || currentLocation.params
       path = matcher.resolve(params)
