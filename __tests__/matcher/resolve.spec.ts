@@ -81,6 +81,7 @@ describe('Router Matcher', () => {
       } catch (error) {
         return error
       }
+      throw new Error('Expected Error to be thrown')
     }
 
     describe('alias', () => {

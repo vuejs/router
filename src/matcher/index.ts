@@ -9,7 +9,7 @@ import {
   // MatchedRouteRecord,
 } from '../types'
 import { NoRouteMatchError, InvalidRouteMatch } from '../errors'
-import { createRouteRecordMatcher, normalizeRouteRecord } from './path-ranker'
+import { createRouteRecordMatcher, normalizeRouteRecord } from './path-matcher'
 import { RouteRecordMatcher } from './types'
 
 interface RouterMatcher {

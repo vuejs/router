@@ -1,4 +1,4 @@
-import { createRouteRecordMatcher } from '../../src/matcher/path-ranker'
+import { createRouteRecordMatcher } from '../../src/matcher/path-matcher'
 import { RegExpOptions } from 'path-to-regexp'
 import { RouteComponent } from '../../src/types'
 import { RouteRecordMatcher } from '../../src/matcher/types'
