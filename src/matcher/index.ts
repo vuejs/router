@@ -10,7 +10,7 @@ import {
 } from '../types'
 import { NoRouteMatchError, InvalidRouteMatch } from '../errors'
 import { createRouteRecordMatcher, normalizeRouteRecord } from './path-matcher'
-import { RouteRecordMatcher } from './types'
+import { RouteRecordMatcher, RouteRecordNormalized } from './types'
 
 interface RouterMatcher {
   addRoute: (record: Readonly<RouteRecord>, parent?: RouteRecordMatcher) => void
@@ -20,28 +20,43 @@ interface RouterMatcher {
   ) => MatcherLocationNormalized | MatcherLocationRedirect
 }
 
-export function createRouterMatcher(routes: RouteRecord[]): RouterMatcher {
+const TRAILING_SLASH_RE = /(.)\/+$/
+function removeTrailingSlash(path: string): string {
+  return path.replace(TRAILING_SLASH_RE, '$1')
+}
+
+const DEFAULT_REGEX_OPTIONS: pathToRegexp.RegExpOptions = {
+  // NOTE: should we make strict by default and redirect /users/ to /users
+  // so that it's the same from SEO perspective?
+  strict: false,
+}
+
+export function createRouterMatcher(
+  routes: RouteRecord[],
+  globalOptions: pathToRegexp.RegExpOptions = DEFAULT_REGEX_OPTIONS
+): RouterMatcher {
   const matchers: RouteRecordMatcher[] = []
 
   function addRoute(
     record: Readonly<RouteRecord>,
     parent?: RouteRecordMatcher
   ): void {
-    const options: pathToRegexp.RegExpOptions = {
-      // NOTE: should we make strict by default and redirect /users/ to /users
-      // so that it's the same from SEO perspective?
-      strict: false,
-    }
-
+    const mainNormalizedRecord: RouteRecordNormalized = normalizeRouteRecord(
+      record
+    )
+    const options = { ...globalOptions, ...record.options }
+    if (!options.strict)
+      mainNormalizedRecord.path = removeTrailingSlash(mainNormalizedRecord.path)
     // generate an array of records to correctly handle aliases
-    const normalizedRecords = [normalizeRouteRecord(record)]
+    const normalizedRecords: RouteRecordNormalized[] = [mainNormalizedRecord]
     if ('alias' in record && record.alias) {
       const aliases =
         typeof record.alias === 'string' ? [record.alias] : record.alias
       for (const alias of aliases) {
-        const copyForAlias = normalizeRouteRecord(record)
-        copyForAlias.path = alias
-        normalizedRecords.push(copyForAlias)
+        normalizedRecords.push({
+          ...mainNormalizedRecord,
+          path: alias,
+        })
       }
     }
 

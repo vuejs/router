@@ -42,7 +42,9 @@ describe('Router Matcher', () => {
         if (!resolved.matched)
           // @ts-ignore
           resolved.matched = record.map(normalizeRouteRecord)
-        else resolved.matched = resolved.matched.map(normalizeRouteRecord)
+        // allow passing an expect.any(Array)
+        else if (Array.isArray(resolved.matched))
+          resolved.matched = resolved.matched.map(normalizeRouteRecord)
       }
 
       // allows not passing params
@@ -205,6 +207,50 @@ describe('Router Matcher', () => {
         expect(
           assertErrorMatch({ path: '/', components }, { path: '/foo' })
         ).toMatchSnapshot()
+      })
+
+      it('disallows multiple trailing slashes', () => {
+        expect(
+          assertErrorMatch({ path: '/home/', components }, { path: '/home//' })
+        ).toMatchSnapshot()
+      })
+
+      it('allows an optional trailing slash', () => {
+        assertRecordMatch(
+          { path: '/home/', name: 'Home', components },
+          { path: '/home/' },
+          { name: 'Home', path: '/home/', matched: expect.any(Array) }
+        )
+      })
+
+      it('keeps required trailing slash (strict: true)', () => {
+        const record = {
+          path: '/home/',
+          name: 'Home',
+          components,
+          options: { strict: true },
+        }
+        assertRecordMatch(
+          record,
+          { path: '/home/' },
+          { name: 'Home', path: '/home/', matched: expect.any(Array) }
+        )
+        assertErrorMatch(record, { path: '/home' })
+      })
+
+      it('rejects a trailing slash when strict', () => {
+        const record = {
+          path: '/home',
+          name: 'Home',
+          components,
+          options: { strict: true },
+        }
+        assertRecordMatch(
+          record,
+          { path: '/home' },
+          { name: 'Home', path: '/home', matched: expect.any(Array) }
+        )
+        assertErrorMatch(record, { path: '/home/' })
       })
     })
 
