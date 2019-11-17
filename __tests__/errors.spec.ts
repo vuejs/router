@@ -1,4 +1,4 @@
-import { Router, createMemoryHistory } from '../src'
+import { createRouter as newRouter, createMemoryHistory } from '../src'
 import { NavigationAborted, NavigationGuardRedirect } from '../src/errors'
 import { components, tick } from './utils'
 import { RouteRecord } from '../src/types'
@@ -24,7 +24,7 @@ const routes: RouteRecord[] = [
 const onError = jest.fn()
 function createRouter() {
   const history = createMemoryHistory()
-  const router = new Router({
+  const router = newRouter({
     history,
     routes,
   })

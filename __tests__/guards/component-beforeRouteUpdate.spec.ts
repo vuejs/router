@@ -1,6 +1,6 @@
 import fakePromise from 'faked-promise'
 import { NAVIGATION_TYPES, createDom, noGuard } from '../utils'
-import { Router, createHistory } from '../../src'
+import { createRouter as newRouter, createHistory } from '../../src'
 import { RouteRecord } from '../../src/types'
 
 function createRouter(
@@ -8,7 +8,7 @@ function createRouter(
     routes: import('../../src/types').RouteRecord[]
   }
 ) {
-  return new Router({
+  return newRouter({
     history: createHistory(),
     ...options,
   })

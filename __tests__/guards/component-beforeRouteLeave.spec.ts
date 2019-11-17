@@ -1,4 +1,4 @@
-import { RouterOptions, Router } from '../../src/router'
+import { RouterOptions, createRouter as newRouter } from '../../src/router'
 import { NAVIGATION_TYPES, createDom, noGuard } from '../utils'
 import { RouteRecord } from '../../src/types'
 import { createHistory } from '../../src'
@@ -7,7 +7,7 @@ import { createHistory } from '../../src'
 function createRouter(
   options: Partial<RouterOptions> & { routes: RouteRecord[] }
 ) {
-  return new Router({
+  return newRouter({
     history: createHistory(),
     ...options,
   })

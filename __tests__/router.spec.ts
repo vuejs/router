@@ -1,5 +1,5 @@
 import fakePromise from 'faked-promise'
-import { Router, createMemoryHistory, createHistory } from '../src'
+import { createRouter, createMemoryHistory, createHistory } from '../src'
 import { NavigationCancelled } from '../src/errors'
 import { createDom, components, tick } from './utils'
 import { RouteRecord, RouteLocation } from '../src/types'
@@ -22,10 +22,6 @@ const routes: RouteRecord[] = [
     }),
   },
 ]
-
-function createRouter(...options: ConstructorParameters<typeof Router>) {
-  return new Router(...options)
-}
 
 describe('Router', () => {
   beforeAll(() => {

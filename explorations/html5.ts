@@ -1,5 +1,5 @@
 import {
-  Router,
+  createRouter,
   plugin,
   // @ts-ignore
   createHistory,
@@ -16,7 +16,7 @@ declare global {
     vm: Vue
     // h: HTML5History
     h: ReturnType<typeof createHistory>
-    r: Router
+    r: ReturnType<typeof createRouter>
   }
 }
 
@@ -31,6 +31,10 @@ const shared = {
 
 const component: RouteComponent = {
   template: `<div>A component</div>`,
+}
+
+const NotFound: RouteComponent = {
+  template: `<div>Not Found: {{ $route.fullPath }}</div>`,
 }
 
 const Home: RouteComponent = {
@@ -110,7 +114,7 @@ const scrollWaiter = new ScrollQueue()
 
 // const hist = new HTML5History()
 // const hist = new HashHistory()
-const router = new Router({
+const router = createRouter({
   history: routerHistory,
   routes: [
     { path: '/', component: Home, name: 'home', alias: '/home' },
@@ -141,7 +145,7 @@ const router = new Router({
     },
     { path: '/with-data', component: ComponentWithData, name: 'WithData' },
     { path: '/rep/:a*', component: component, name: 'repeat' },
-    // { path: /^\/about\/?$/, component },
+    { path: '/:data(.*)', component: NotFound, name: 'NotFound' },
   ],
   async scrollBehavior(to, from, savedPosition) {
     await scrollWaiter.wait()

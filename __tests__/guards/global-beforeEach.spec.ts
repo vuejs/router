@@ -2,12 +2,12 @@ import { RouterOptions } from '../../src/router'
 import fakePromise from 'faked-promise'
 import { NAVIGATION_TYPES, createDom, tick, noGuard } from '../utils'
 import { RouteRecord, RouteLocation } from '../../src/types'
-import { createHistory, Router } from '../../src'
+import { createHistory, createRouter as newRouter } from '../../src'
 
 function createRouter(
   options: Partial<RouterOptions> & { routes: RouteRecord[] }
 ) {
-  return new Router({
+  return newRouter({
     history: createHistory(),
     ...options,
   })

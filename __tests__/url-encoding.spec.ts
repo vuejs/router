@@ -1,4 +1,4 @@
-import { Router } from '../src/router'
+import { createRouter } from '../src/router'
 import { createDom, components } from './utils'
 import { RouteRecord } from '../src/types'
 import { createMemoryHistory } from '../src'
@@ -25,7 +25,7 @@ describe('URL Encoding', () => {
   describe('initial navigation', () => {
     it('decodes path', async () => {
       const history = createHistory()
-      const router = new Router({ history, routes })
+      const router = createRouter({ history, routes })
       await router.replace('/%25')
       expect(router.currentRoute).toEqual(
         expect.objectContaining({
@@ -39,7 +39,7 @@ describe('URL Encoding', () => {
     it('decodes params in path', async () => {
       // /p/€
       const history = createHistory()
-      const router = new Router({ history, routes })
+      const router = createRouter({ history, routes })
       await router.push('/p/%E2%82%AC')
       expect(router.currentRoute).toEqual(
         expect.objectContaining({
@@ -53,7 +53,7 @@ describe('URL Encoding', () => {
 
     it('allows navigating to valid unencoded params (IE and Edge)', async () => {
       const history = createHistory()
-      const router = new Router({ history, routes })
+      const router = createRouter({ history, routes })
       await router.push('/p/€')
       expect(router.currentRoute).toEqual(
         expect.objectContaining({
@@ -70,7 +70,7 @@ describe('URL Encoding', () => {
     it('allows navigating to invalid unencoded params (IE and Edge)', async () => {
       const spy = jest.spyOn(console, 'warn').mockImplementation(() => {})
       const history = createHistory()
-      const router = new Router({ history, routes })
+      const router = createRouter({ history, routes })
       await router.push('/p/%notvalid')
       expect(spy).toHaveBeenCalledTimes(1)
       spy.mockRestore()
@@ -88,7 +88,7 @@ describe('URL Encoding', () => {
 
     it('decodes params in query', async () => {
       const history = createHistory()
-      const router = new Router({ history, routes })
+      const router = createRouter({ history, routes })
       await router.push('/?q=%25%E2%82%AC')
       expect(router.currentRoute).toEqual(
         expect.objectContaining({
@@ -104,7 +104,7 @@ describe('URL Encoding', () => {
 
     it('decodes params keys in query', async () => {
       const history = createHistory()
-      const router = new Router({ history, routes })
+      const router = createRouter({ history, routes })
       await router.push('/?%E2%82%AC=euro')
       expect(router.currentRoute).toEqual(
         expect.objectContaining({
@@ -121,7 +121,7 @@ describe('URL Encoding', () => {
     it('allow unencoded params in query (IE Edge)', async () => {
       const spy = jest.spyOn(console, 'warn').mockImplementation(() => {})
       const history = createHistory()
-      const router = new Router({ history, routes })
+      const router = createRouter({ history, routes })
       await router.push('/?q=€%notvalid')
       expect(spy).toHaveBeenCalledTimes(1)
       spy.mockRestore()
@@ -142,7 +142,7 @@ describe('URL Encoding', () => {
     // encoding it. To be safe we would have to encode everything
     it.skip('decodes hash', async () => {
       const history = createHistory()
-      const router = new Router({ history, routes })
+      const router = createRouter({ history, routes })
       await router.push('/#%25%E2%82%AC')
       expect(router.currentRoute).toEqual(
         expect.objectContaining({
@@ -157,7 +157,7 @@ describe('URL Encoding', () => {
     it('allow unencoded params in query (IE Edge)', async () => {
       const spy = jest.spyOn(console, 'warn').mockImplementation(() => {})
       const history = createHistory()
-      const router = new Router({ history, routes })
+      const router = createRouter({ history, routes })
       await router.push('/?q=€%notvalid')
       expect(spy).toHaveBeenCalledTimes(1)
       spy.mockRestore()
@@ -177,7 +177,7 @@ describe('URL Encoding', () => {
   describe('resolving locations', () => {
     it('encodes params when resolving', async () => {
       const history = createHistory()
-      const router = new Router({ history, routes })
+      const router = createRouter({ history, routes })
       await router.push({ name: 'params', params: { p: '%€' } })
       expect(router.currentRoute).toEqual(
         expect.objectContaining({

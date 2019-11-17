@@ -1,5 +1,5 @@
-import { Router, RouterOptions } from './router'
-import { PluginFunction, VueConstructor } from 'vue'
+import { createRouter, Router } from './router'
+import { PluginFunction } from 'vue'
 import createHistory from './history/html5'
 import createMemoryHistory from './history/memory'
 import createHashHistory from './history/hash'
@@ -19,8 +19,7 @@ const plugin: PluginFunction<void> = Vue => {
         // @ts-ignore _router is internal
         this._router = router
         // this._router.init(this)
-        // @ts-ignore
-        this._router.app = this
+        router.setActiveApp(this)
         // @ts-ignore we can use but should not be used by others
         Vue.util.defineReactive(
           this,
@@ -64,7 +63,13 @@ const plugin: PluginFunction<void> = Vue => {
     strats.created
 }
 
-export { Router, createHistory, createMemoryHistory, createHashHistory, plugin }
+export {
+  createRouter,
+  createHistory,
+  createMemoryHistory,
+  createHashHistory,
+  plugin,
+}
 
 // TODO: refactor somewhere else
 // const inBrowser = typeof window !== 'undefined'
@@ -75,30 +80,30 @@ export { Router, createHistory, createMemoryHistory, createHashHistory, plugin }
 //   abstract: AbstractHistory
 // }
 
-export default class VueRouter extends Router {
-  static install = plugin
-  static version = '__VERSION__'
+// export default class VueRouter extends Router {
+//   static install = plugin
+//   static version = '__VERSION__'
 
-  // TODO: handle mode in a retro compatible way
-  constructor(
-    options: Partial<RouterOptions & { mode: 'history' | 'abstract' | 'hash' }>
-  ) {
-    // let { mode } = options
-    // if (!inBrowser) mode = 'abstract'
-    super({
-      ...options,
-      routes: options.routes || [],
-      // FIXME: change when possible
-      history: createHistory(),
-      // history: new HistoryMode[mode || 'hash'](),
-    })
-  }
-}
+//   // TODO: handle mode in a retro compatible way
+//   constructor(
+//     options: Partial<RouterOptions & { mode: 'history' | 'abstract' | 'hash' }>
+//   ) {
+//     // let { mode } = options
+//     // if (!inBrowser) mode = 'abstract'
+//     super({
+//       ...options,
+//       routes: options.routes || [],
+//       // FIXME: change when possible
+//       history: createHistory(),
+//       // history: new HistoryMode[mode || 'hash'](),
+//     })
+//   }
+// }
 
-declare global {
-  interface Window {
-    Vue: VueConstructor
-  }
-}
+// declare global {
+//   interface Window {
+//     Vue: VueConstructor
+//   }
+// }
 
-if (typeof window !== 'undefined' && window.Vue) window.Vue.use(VueRouter)
+// if (typeof window !== 'undefined' && window.Vue) window.Vue.use(VueRouter)

@@ -14,6 +14,7 @@ import { RouteRecordMatcher, RouteRecordNormalized } from './types'
 
 interface RouterMatcher {
   addRoute: (record: Readonly<RouteRecord>, parent?: RouteRecordMatcher) => void
+  // TODO: remove route
   resolve: (
     location: Readonly<MatcherLocation>,
     currentLocation: Readonly<MatcherLocationNormalized>

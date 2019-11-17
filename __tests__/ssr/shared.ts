@@ -1,5 +1,9 @@
 import Vue, { ComponentOptions } from 'vue'
-import { Router, createMemoryHistory, plugin } from '../../src'
+import {
+  createRouter as newRouter,
+  createMemoryHistory,
+  plugin,
+} from '../../src'
 import { components } from '../utils'
 
 import { createRenderer } from 'vue-server-renderer'
@@ -11,7 +15,7 @@ export const renderer = createRenderer()
 
 export function createRouter(options?: Partial<RouterOptions>) {
   // TODO: a more complex routing that can be used for most tests
-  return new Router({
+  return newRouter({
     history: createMemoryHistory(),
     routes: [
       {
@@ -56,11 +60,6 @@ export function renderApp(
   return new Promise<ReturnType<typeof createApp>['app']>((resolve, reject) => {
     const { app, router } = createApp(routerOptions, vueOptions)
 
-    // set server-side router's location
-    router.push(context.url).catch(err => {
-      console.error('ssr push failed', err)
-    })
-
     // wait until router has resolved possible async components and hooks
     // TODO: rename the promise one to isReady
     router.onReady().then(() => {
@@ -74,5 +73,10 @@ export function renderApp(
       // the Promise should resolve to the app instance so it can be rendered
       resolve(app)
     }, reject)
+
+    // set server-side router's location
+    router.push(context.url).catch(err => {
+      console.error('ssr push failed', err)
+    })
   })
 }

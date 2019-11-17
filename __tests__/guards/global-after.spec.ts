@@ -1,12 +1,12 @@
 import { NAVIGATION_TYPES, createDom } from '../utils'
-import { createHistory, Router } from '../../src'
+import { createHistory, createRouter as newRouter } from '../../src'
 
 function createRouter(
   options: Partial<import('../../src/router').RouterOptions> & {
     routes: import('../../src/types').RouteRecord[]
   }
 ) {
-  return new Router({
+  return newRouter({
     history: createHistory(),
     ...options,
   })
