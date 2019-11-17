@@ -60,7 +60,7 @@ function createEntry(
   }
 
   if (format === 'iife') {
-    config.input = 'src/entries/iife.ts'
+    // config.input = 'src/entries/iife.ts'
     config.output.file = pkg.unpkg
     config.output.name = exportName
   } else if (format === 'es') {
