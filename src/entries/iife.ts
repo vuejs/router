@@ -1,7 +1,4 @@
-import VueRouter from // Router
-// plugin,
-// HTML5History,
-'../index'
+import * as VueRouter from '../index'
 
 // declare module '../index' {
 //   interface BackwardsCompatibleRouter {
