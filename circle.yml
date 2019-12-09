@@ -27,6 +27,7 @@ jobs:
             - node_modules
           key: dependencies-cache-{{ checksum "yarn.lock" }}
 
+      - run: yarn run lint
       - run: yarn run test:types
       - run: yarn run test:unit --maxWorkers=2
       - run: yarn build
