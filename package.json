@@ -37,7 +37,7 @@
     "nightwatch": "^1.2.4",
     "nightwatch-helpers": "^1.2.0",
     "prettier": "^1.18.2",
-    "rollup": "^1.21.4",
+    "rollup": "^1.27.9",
     "rollup-plugin-alias": "^2.0.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
