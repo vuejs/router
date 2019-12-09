@@ -3,7 +3,7 @@ const axios = require('axios')
 const BS_USER = process.env.BS_USER
 const BS_KEY = process.env.BS_KEY
 
-function getKey (client) {
+function getKey(client) {
   // const { capabilities, currentTest } = client
   // originally i wanted to use this but it turns out the information changes
   // on the afterEach, making the key non valid. But because every environment
@@ -17,7 +17,7 @@ function getKey (client) {
   return `${client.currentTest.module}: ${client.currentTest.name}`
 }
 
-function shouldSkipBrowserstackReporting (client) {
+function shouldSkipBrowserstackReporting(client) {
   return !BS_USER || !BS_KEY || client.options.selenium_port !== 80
 }
 
@@ -26,11 +26,11 @@ function shouldSkipBrowserstackReporting (client) {
  * to every test suite. It cannot be added globably because these must be
  * executed before each test (instead of each test suite as it does in globalModules)
  */
-module.exports = function sendStatus () {
+module.exports = function sendStatus() {
   const sessionMap = Object.create(null)
 
   return {
-    beforeEach (browser, cb) {
+    beforeEach(browser, cb) {
       // avoid running if missing credentials
       if (shouldSkipBrowserstackReporting(this.client)) return cb()
       // retrieve the session and save it to the map
@@ -41,7 +41,7 @@ module.exports = function sendStatus () {
       })
     },
 
-    afterEach (browser, cb) {
+    afterEach(browser, cb) {
       // avoid running if missing credentials
       if (shouldSkipBrowserstackReporting(this.client)) return cb()
       const key = getKey(this.client)
@@ -63,13 +63,13 @@ module.exports = function sendStatus () {
               // change the name so it's easier to find
               name: key,
               status: 'failed',
-              reason
+              reason,
             },
             {
               auth: {
                 username: BS_USER,
-                password: BS_KEY
-              }
+                password: BS_KEY,
+              },
             }
           )
           .catch(err => {
@@ -82,6 +82,6 @@ module.exports = function sendStatus () {
       } else {
         cb()
       }
-    }
+    },
   }
 }

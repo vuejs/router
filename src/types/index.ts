@@ -38,9 +38,9 @@ interface RouteLocationOptions {
 // User level location
 export type RouteLocation =
   | string
-  | RouteQueryAndHash & LocationAsPath & RouteLocationOptions
-  | RouteQueryAndHash & LocationAsName & RouteLocationOptions
-  | RouteQueryAndHash & LocationAsRelative & RouteLocationOptions
+  | (RouteQueryAndHash & LocationAsPath & RouteLocationOptions)
+  | (RouteQueryAndHash & LocationAsName & RouteLocationOptions)
+  | (RouteQueryAndHash & LocationAsRelative & RouteLocationOptions)
 
 // A matched record cannot be a redirection and must contain
 // a normalized version of components with { default: Component } instead of `component`

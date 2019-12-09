@@ -21,9 +21,9 @@ describe('createRouteRecordMatcher', () => {
       return [pathOrCombined, options]
     })
 
-    const matchers: Array<
-      RouteRecordMatcher & { _options: RegExpOptions }
-    > = normalizedPaths
+    const matchers: Array<RouteRecordMatcher & {
+      _options: RegExpOptions
+    }> = normalizedPaths
       .slice()
       // Because sorting order is conserved, allows to mismatch order on
       // routes with the same ranking

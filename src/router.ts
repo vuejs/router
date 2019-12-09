@@ -82,12 +82,8 @@ export function createRouter({
   )
   const beforeGuards: NavigationGuard[] = []
   const afterGuards: PostNavigationGuard[] = []
-  let currentRoute: Readonly<
-    RouteLocationNormalized
-  > = START_LOCATION_NORMALIZED
-  let pendingLocation: Readonly<
-    RouteLocationNormalized
-  > = START_LOCATION_NORMALIZED
+  let currentRoute: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
+  let pendingLocation: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
   let onReadyCbs: OnReadyCallback[] = []
   // TODO: should these be triggered before or after route.push().catch()
   let errorHandlers: ErrorHandler[] = []

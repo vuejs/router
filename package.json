@@ -12,7 +12,8 @@
     "build": "yarn rollup -c rollup.config.js",
     "dev": "webpack-dev-server --mode=development",
     "dev:examples": "webpack-dev-server --mode=development --config examples/webpack.config.js",
-    "lint": "prettier --write --parser typescript \"src/**/*.ts?(x)\"",
+    "lint": "prettier -c --parser typescript \"{src,__tests__,e2e}/**/*.[jt]s?(x)\"",
+    "lint:fix": "yarn run lint --write",
     "test:types": "tsc --build tsconfig.json",
     "test:unit": "jest --coverage",
     "test": "yarn run test:types && yarn run test:unit && yarn build"
