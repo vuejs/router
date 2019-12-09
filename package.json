@@ -9,12 +9,13 @@
   "types": "dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "test:types": "tsc --build tsconfig.json",
-    "test:unit": "jest --coverage",
-    "test": "yarn run test:types && yarn run test:unit && yarn build",
     "build": "yarn rollup -c rollup.config.js",
     "dev": "webpack-dev-server --mode=development",
-    "dev:examples": "webpack-dev-server --mode=development --config examples/webpack.config.js"
+    "dev:examples": "webpack-dev-server --mode=development --config examples/webpack.config.js",
+    "lint": "prettier --write --parser typescript \"src/**/*.ts?(x)\"",
+    "test:types": "tsc --build tsconfig.json",
+    "test:unit": "jest --coverage",
+    "test": "yarn run test:types && yarn run test:unit && yarn build"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^2.2.0",
@@ -39,7 +40,7 @@
     "jsdom": "^15.2.1",
     "nightwatch": "^1.3.2",
     "nightwatch-helpers": "^1.2.0",
-    "prettier": "^1.18.2",
+    "prettier": "^1.19.1",
     "rollup": "^1.27.9",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-terser": "^5.1.2",
