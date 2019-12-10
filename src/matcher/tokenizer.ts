@@ -6,6 +6,7 @@ export const enum TokenType {
 const enum TokenizerState {
   Static,
   Param,
+  ParamRegExp, // custom re for a param
   EscapeNext,
 }
 
@@ -16,13 +17,7 @@ interface TokenStatic {
 
 interface TokenParam {
   type: TokenType.Param
-  regex?: string
-  value: string
-}
-
-interface TokenParam {
-  type: TokenType.Param
-  regex?: string
+  regexp?: string
   value: string
   optional: boolean
   repeatable: boolean
@@ -64,6 +59,8 @@ export function tokenizePath(path: string): Array<Token[]> {
   let char: string
   // buffer of the value read
   let buffer: string = ''
+  // custom regexp for a param
+  let customRe: string = ''
 
   function consumeBuffer() {
     if (!buffer) return
@@ -73,10 +70,14 @@ export function tokenizePath(path: string): Array<Token[]> {
         type: TokenType.Static,
         value: buffer,
       })
-    } else if (state === TokenizerState.Param) {
+    } else if (
+      state === TokenizerState.Param ||
+      state === TokenizerState.ParamRegExp
+    ) {
       segment.push({
         type: TokenType.Param,
         value: buffer,
+        regexp: customRe,
         repeatable: char === '*' || char === '+',
         optional: char === '*' || char === '?',
       })
@@ -93,7 +94,7 @@ export function tokenizePath(path: string): Array<Token[]> {
   while (i < path.length) {
     char = path[i++]
 
-    if (char === '\\') {
+    if (char === '\\' && state !== TokenizerState.ParamRegExp) {
       previousState = state
       state = TokenizerState.EscapeNext
       continue
@@ -123,7 +124,8 @@ export function tokenizePath(path: string): Array<Token[]> {
 
       case TokenizerState.Param:
         if (char === '(') {
-          // TODO: start custom regex
+          state = TokenizerState.ParamRegExp
+          customRe = ''
         } else if (VALID_PARAM_RE.test(char)) {
           addCharToBuffer()
         } else {
@@ -134,11 +136,23 @@ export function tokenizePath(path: string): Array<Token[]> {
         }
         break
 
+      case TokenizerState.ParamRegExp:
+        if (char === ')') {
+          consumeBuffer()
+          state = TokenizerState.Static
+        } else {
+          customRe += char
+        }
+        break
+
       default:
         crash('Unkwnonw state')
         break
     }
   }
+
+  if (state === TokenizerState.ParamRegExp)
+    crash(`Unfinished custom RegExp for param "${buffer}"`)
 
   consumeBuffer()
   finalizeSegment()
@@ -151,6 +165,8 @@ interface PathParser {
   score: number
   keys: string[]
 }
+
+const BASE_PARAM_PATTERN = '[^/]+?'
 
 export function tokensToRegExp(segments: Array<Token[]>): PathParser {
   let score = 0
@@ -165,8 +181,9 @@ export function tokensToRegExp(segments: Array<Token[]>): PathParser {
         pattern += token.value
       } else if (token.type === TokenType.Param) {
         keys.push(token.value)
-        pattern += `([^/]+)`
-        // TODO: repeatable and others
+        const re = token.regexp ? token.regexp : BASE_PARAM_PATTERN
+        pattern += token.repeatable ? `((?:${re})(?:/(?:${re}))*)` : `(${re})`
+        if (token.optional) pattern += '?'
       }
     }
   }

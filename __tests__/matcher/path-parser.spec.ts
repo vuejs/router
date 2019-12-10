@@ -30,6 +30,21 @@ describe('Path parser', () => {
           {
             type: TokenType.Param,
             value: 'id',
+            regexp: '',
+            repeatable: false,
+            optional: false,
+          },
+        ],
+      ])
+    })
+
+    it('param custom re', () => {
+      expect(tokenizePath('/:id(\\d+)')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '\\d+',
             repeatable: false,
             optional: false,
           },
@@ -43,6 +58,7 @@ describe('Path parser', () => {
           {
             type: TokenType.Param,
             value: 'id',
+            regexp: '',
             repeatable: false,
             optional: true,
           },
@@ -51,7 +67,7 @@ describe('Path parser', () => {
     })
 
     it('param single+', () => {
-      expect(tokenizePath('/:id+')).toEqual([
+      expect(tokenizePath('/:id+')).toMatchObject([
         [
           {
             type: TokenType.Param,
@@ -64,7 +80,7 @@ describe('Path parser', () => {
     })
 
     it('param single*', () => {
-      expect(tokenizePath('/:id*')).toEqual([
+      expect(tokenizePath('/:id*')).toMatchObject([
         [
           {
             type: TokenType.Param,
@@ -77,7 +93,7 @@ describe('Path parser', () => {
     })
 
     it('param multiple', () => {
-      expect(tokenizePath('/:id/:other')).toEqual([
+      expect(tokenizePath('/:id/:other')).toMatchObject([
         [
           {
             type: TokenType.Param,
@@ -97,8 +113,33 @@ describe('Path parser', () => {
       ])
     })
 
+    it('param multiple together', () => {
+      expect(tokenizePath('/:id:other:more')).toMatchObject([
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            repeatable: false,
+            optional: false,
+          },
+          {
+            type: TokenType.Param,
+            value: 'other',
+            repeatable: false,
+            optional: false,
+          },
+          {
+            type: TokenType.Param,
+            value: 'more',
+            repeatable: false,
+            optional: false,
+          },
+        ],
+      ])
+    })
+
     it('param with static in between', () => {
-      expect(tokenizePath('/:id-:other')).toEqual([
+      expect(tokenizePath('/:id-:other')).toMatchObject([
         [
           {
             type: TokenType.Param,
@@ -121,7 +162,7 @@ describe('Path parser', () => {
     })
 
     it('param with static beginning', () => {
-      expect(tokenizePath('/hey-:id')).toEqual([
+      expect(tokenizePath('/hey-:id')).toMatchObject([
         [
           {
             type: TokenType.Static,
@@ -138,7 +179,7 @@ describe('Path parser', () => {
     })
 
     it('param with static end', () => {
-      expect(tokenizePath('/:id-end')).toEqual([
+      expect(tokenizePath('/:id-end')).toMatchObject([
         [
           {
             type: TokenType.Param,
@@ -162,16 +203,30 @@ describe('Path parser', () => {
     ) {
       const pathParser = tokensToRegExp(...args)
       expect(expectedRe).toBe(
-        pathParser.re.toString().replace(/(:?^\/|\\|\/$)/g, '')
+        pathParser.re
+          .toString()
+          .replace(/(:?^\/|\/$)/g, '')
+          .replace(/\\\//g, '/')
       )
     }
 
-    it('static', () => {
+    it('static single', () => {
+      matchRegExp('^/$', [[]])
+    })
+
+    it('static single', () => {
       matchRegExp('^/home$', [[{ type: TokenType.Static, value: 'home' }]])
     })
 
-    it('param simple', () => {
-      matchRegExp('^/([^/]+)$', [
+    it('static multiple', () => {
+      matchRegExp('^/home/other$', [
+        [{ type: TokenType.Static, value: 'home' }],
+        [{ type: TokenType.Static, value: 'other' }],
+      ])
+    })
+
+    it('param single', () => {
+      matchRegExp('^/([^/]+?)$', [
         [
           {
             type: TokenType.Param,
@@ -182,5 +237,69 @@ describe('Path parser', () => {
         ],
       ])
     })
+
+    it('param multiple', () => {
+      matchRegExp('^/([^/]+?)/([^/]+?)$', [
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            repeatable: false,
+            optional: false,
+          },
+        ],
+        [
+          {
+            type: TokenType.Param,
+            value: 'two',
+            repeatable: false,
+            optional: false,
+          },
+        ],
+      ])
+    })
+
+    it('param*', () => {
+      matchRegExp('^/((?:\\d+)(?:/(?:\\d+))*)?$', [
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '\\d+',
+            repeatable: true,
+            optional: true,
+          },
+        ],
+      ])
+    })
+
+    it('param?', () => {
+      matchRegExp('^/(\\d+)?$', [
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '\\d+',
+            repeatable: false,
+            optional: true,
+          },
+        ],
+      ])
+    })
+
+    it('param+', () => {
+      matchRegExp('^/((?:\\d+)(?:/(?:\\d+))*)$', [
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '\\d+',
+            repeatable: true,
+            optional: false,
+          },
+        ],
+      ])
+    })
+    // end of describe
   })
 })
