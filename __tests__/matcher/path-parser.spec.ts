@@ -1,7 +1,7 @@
 import {
   tokenizePath,
   TokenType,
-  tokensToRegExp,
+  tokensToParser,
 } from '../../src/matcher/tokenizer'
 
 describe('Path parser', () => {
@@ -196,12 +196,12 @@ describe('Path parser', () => {
     })
   })
 
-  describe('tokensToRegexp', () => {
+  describe('tokensToParser', () => {
     function matchRegExp(
       expectedRe: string,
-      ...args: Parameters<typeof tokensToRegExp>
+      ...args: Parameters<typeof tokensToParser>
     ) {
-      const pathParser = tokensToRegExp(...args)
+      const pathParser = tokensToParser(...args)
       expect(expectedRe).toBe(
         pathParser.re
           .toString()
@@ -301,5 +301,63 @@ describe('Path parser', () => {
       ])
     })
     // end of describe
+  })
+
+  describe('parsing urls', () => {
+    function matchParams(
+      path: string,
+      pathToTest: string,
+      params: ReturnType<ReturnType<typeof tokensToParser>['parse']>
+    ) {
+      const pathParser = tokensToParser(tokenizePath(path))
+
+      expect(pathParser.parse(pathToTest)).toEqual(params)
+    }
+
+    it('returns null if no match', () => {
+      matchParams('/home', '/', null)
+    })
+
+    it('returns an empty object with no keys', () => {
+      matchParams('/home', '/home', {})
+    })
+
+    it('param single', () => {
+      matchParams('/:id', '/a', { id: 'a' })
+    })
+
+    it('param combined', () => {
+      matchParams('/hey:a', '/heyedu', {
+        a: 'edu',
+      })
+    })
+
+    it('param multiple', () => {
+      matchParams('/:a-:b-:c', '/one-two-three', {
+        a: 'one',
+        b: 'two',
+        c: 'three',
+      })
+    })
+
+    it('param optional', () => {
+      matchParams('/:a?', '/', {
+        a: '',
+      })
+      matchParams('/:a*', '/', {
+        a: '',
+      })
+    })
+
+    it('param repeatable', () => {
+      matchParams('/:a+', '/one/two', {
+        a: ['one', 'two'],
+      })
+      matchParams('/:a*', '/one/two', {
+        a: ['one', 'two'],
+      })
+    })
+
+    // end of parsing urls
   })
 })

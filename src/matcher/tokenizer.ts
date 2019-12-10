@@ -74,6 +74,10 @@ export function tokenizePath(path: string): Array<Token[]> {
       state === TokenizerState.Param ||
       state === TokenizerState.ParamRegExp
     ) {
+      if (segment.length > 1 && (char === '*' || char === '+'))
+        crash(
+          `A repeatable param (${buffer}) must be alone in its segment. eg: '/:ids+.`
+        )
       segment.push({
         type: TokenType.Param,
         value: buffer,
@@ -132,7 +136,9 @@ export function tokenizePath(path: string): Array<Token[]> {
           consumeBuffer()
           state = TokenizerState.Static
           // go back one character if we were not modifying
-          if (char !== '*' && char !== '?' && char !== '+') i--
+          if (char !== '*' && char !== '?' && char !== '+') {
+            i--
+          }
         }
         break
 
@@ -160,18 +166,28 @@ export function tokenizePath(path: string): Array<Token[]> {
   return tokens
 }
 
+type Params = Record<string, string | string[]>
+
+interface ParamKey {
+  name: string
+  repeatable: boolean
+  optional: boolean
+}
+
 interface PathParser {
   re: RegExp
   score: number
-  keys: string[]
+  keys: ParamKey[]
+  parse(path: string): Params | null
+  stringify(params: Params): string
 }
 
 const BASE_PARAM_PATTERN = '[^/]+?'
 
-export function tokensToRegExp(segments: Array<Token[]>): PathParser {
+export function tokensToParser(segments: Array<Token[]>): PathParser {
   let score = 0
   let pattern = '^'
-  const keys: string[] = []
+  const keys: ParamKey[] = []
 
   for (const segment of segments) {
     pattern += '/'
@@ -180,7 +196,11 @@ export function tokensToRegExp(segments: Array<Token[]>): PathParser {
       if (token.type === TokenType.Static) {
         pattern += token.value
       } else if (token.type === TokenType.Param) {
-        keys.push(token.value)
+        keys.push({
+          name: token.value,
+          repeatable: token.repeatable,
+          optional: token.optional,
+        })
         const re = token.regexp ? token.regexp : BASE_PARAM_PATTERN
         pattern += token.repeatable ? `((?:${re})(?:/(?:${re}))*)` : `(${re})`
         if (token.optional) pattern += '?'
@@ -190,9 +210,35 @@ export function tokensToRegExp(segments: Array<Token[]>): PathParser {
 
   pattern += '$'
 
+  const re = new RegExp(pattern)
+
+  function parse(path: string): Params | null {
+    const match = path.match(re)
+    const params: Params = {}
+
+    if (!match) return null
+
+    for (let i = 1; i < match.length; i++) {
+      const value: string = match[i] || ''
+      const key = keys[i - 1]
+      params[key.name] = value && key.repeatable ? value.split('/') : value
+    }
+
+    return params
+  }
+
+  function stringify(params: Params): string {
+    let path = ''
+    // TODO: implem
+
+    return path
+  }
+
   return {
-    re: new RegExp(pattern),
+    re,
     score,
     keys,
+    parse,
+    stringify,
   }
 }
