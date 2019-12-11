@@ -7,6 +7,7 @@ const enum TokenizerState {
   Static,
   Param,
   ParamRegExp, // custom re for a param
+  ParamRegExpEnd, // check if there is any ? + *
   EscapeNext,
 }
 
@@ -72,7 +73,8 @@ export function tokenizePath(path: string): Array<Token[]> {
       })
     } else if (
       state === TokenizerState.Param ||
-      state === TokenizerState.ParamRegExp
+      state === TokenizerState.ParamRegExp ||
+      state === TokenizerState.ParamRegExpEnd
     ) {
       if (segment.length > 1 && (char === '*' || char === '+'))
         crash(
@@ -136,19 +138,24 @@ export function tokenizePath(path: string): Array<Token[]> {
           consumeBuffer()
           state = TokenizerState.Static
           // go back one character if we were not modifying
-          if (char !== '*' && char !== '?' && char !== '+') {
-            i--
-          }
+          if (char !== '*' && char !== '?' && char !== '+') i--
         }
         break
 
       case TokenizerState.ParamRegExp:
         if (char === ')') {
-          consumeBuffer()
-          state = TokenizerState.Static
+          state = TokenizerState.ParamRegExpEnd
         } else {
           customRe += char
         }
+        break
+
+      case TokenizerState.ParamRegExpEnd:
+        // same as finalizing a param
+        consumeBuffer()
+        state = TokenizerState.Static
+        // go back one character if we were not modifying
+        if (char !== '*' && char !== '?' && char !== '+') i--
         break
 
       default:
@@ -202,6 +209,15 @@ export function tokensToParser(segments: Array<Token[]>): PathParser {
           optional: token.optional,
         })
         const re = token.regexp ? token.regexp : BASE_PARAM_PATTERN
+        if (re !== BASE_PARAM_PATTERN) {
+          try {
+            new RegExp(re)
+          } catch (err) {
+            throw new Error(
+              `Invalid custom RegExp for param "${token.value}": ` + err.message
+            )
+          }
+        }
         pattern += token.repeatable ? `((?:${re})(?:/(?:${re}))*)` : `(${re})`
         if (token.optional) pattern += '?'
       }

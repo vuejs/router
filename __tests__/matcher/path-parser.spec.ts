@@ -52,6 +52,96 @@ describe('Path parser', () => {
       ])
     })
 
+    it('param custom re followed by static', () => {
+      expect(tokenizePath('/:id(\\d+)hey')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '\\d+',
+            repeatable: false,
+            optional: false,
+          },
+          {
+            type: TokenType.Static,
+            value: 'hey',
+          },
+        ],
+      ])
+    })
+
+    it('param custom re followed by new segment', () => {
+      expect(tokenizePath('/:id(\\d+)/new')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '\\d+',
+            repeatable: false,
+            optional: false,
+          },
+        ],
+        [
+          {
+            type: TokenType.Static,
+            value: 'new',
+          },
+        ],
+      ])
+    })
+
+    it('param custom re?', () => {
+      expect(tokenizePath('/:id(\\d+)?')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '\\d+',
+            repeatable: false,
+            optional: true,
+          },
+        ],
+      ])
+    })
+
+    it('param custom re? followed by static', () => {
+      expect(tokenizePath('/:id(\\d+)?hey')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '\\d+',
+            repeatable: false,
+            optional: true,
+          },
+          {
+            type: TokenType.Static,
+            value: 'hey',
+          },
+        ],
+      ])
+    })
+
+    it('param custom re? followed by new segment', () => {
+      expect(tokenizePath('/:id(\\d+)?/new')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '\\d+',
+            repeatable: false,
+            optional: true,
+          },
+        ],
+        [
+          {
+            type: TokenType.Static,
+            value: 'new',
+          },
+        ],
+      ])
+    })
+
     it('param single?', () => {
       expect(tokenizePath('/:id?')).toEqual([
         [
