@@ -245,7 +245,32 @@ export function tokensToParser(segments: Array<Token[]>): PathParser {
 
   function stringify(params: Params): string {
     let path = ''
-    // TODO: implem
+    let avoidDuplicatedSlash = false
+    for (const segment of segments) {
+      if (!avoidDuplicatedSlash || path[path.length - 1] !== '/') path += '/'
+      avoidDuplicatedSlash = false
+
+      for (const token of segment) {
+        const { value } = token
+        if (token.type === TokenType.Static) {
+          path += value
+        } else if (token.type === TokenType.Param) {
+          const param: string | string[] = value in params ? params[value] : ''
+
+          if (Array.isArray(param) && !token.repeatable)
+            throw new Error(
+              `Provided param "${value}" is an array but it is not repeatable (* or + modifiers)`
+            )
+          const text: string = Array.isArray(param) ? param.join('/') : param
+          if (!text) {
+            if (!token.optional)
+              throw new Error(`Missing required param "${value}"`)
+            else avoidDuplicatedSlash = true
+          }
+          path += text
+        }
+      }
+    }
 
     return path
   }

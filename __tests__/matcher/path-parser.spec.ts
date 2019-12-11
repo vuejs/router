@@ -422,6 +422,18 @@ describe('Path parser', () => {
       })
     })
 
+    it('catch all', () => {
+      matchParams('/:rest(.*)', '/a/b/c', { rest: 'a/b/c' })
+      matchParams('/:rest(.*)/no', '/a/b/c/no', { rest: 'a/b/c' })
+    })
+
+    it('catch all non-greedy', () => {
+      matchParams('/:rest(.*?)/b/:other(.*)', '/a/b/c', {
+        rest: 'a',
+        other: 'c',
+      })
+    })
+
     it('param multiple', () => {
       matchParams('/:a-:b-:c', '/one-two-three', {
         a: 'one',
@@ -449,5 +461,58 @@ describe('Path parser', () => {
     })
 
     // end of parsing urls
+  })
+
+  describe('generating urls', () => {
+    function matchStringify(
+      path: string,
+      params: Exclude<
+        ReturnType<ReturnType<typeof tokensToParser>['parse']>,
+        null
+      >,
+      expectedUrl: string
+    ) {
+      const pathParser = tokensToParser(tokenizePath(path))
+
+      expect(pathParser.stringify(params)).toEqual(expectedUrl)
+    }
+
+    it('no params one segment', () => {
+      matchStringify('/home', {}, '/home')
+    })
+
+    it('single param one segment', () => {
+      matchStringify('/:id', { id: 'one' }, '/one')
+    })
+
+    it('multiple param one segment', () => {
+      matchStringify('/:a-:b', { a: 'one', b: 'two' }, '/one-two')
+    })
+
+    it('repeatable params+', () => {
+      matchStringify('/:a+', { a: ['one', 'two'] }, '/one/two')
+    })
+
+    it('repeatable params*', () => {
+      matchStringify('/:a*', { a: ['one', 'two'] }, '/one/two')
+    })
+
+    it('optional param?', () => {
+      matchStringify('/:a?/other', { a: '' }, '/other')
+      matchStringify('/:a?/other', {}, '/other')
+    })
+
+    it('optional param? with static segment', () => {
+      matchStringify('/b-:a?/other', { a: '' }, '/b-/other')
+      matchStringify('/b-:a?/other', {}, '/b-/other')
+    })
+
+    it('optional param*', () => {
+      matchStringify('/:a*/other', { a: '' }, '/other')
+      matchStringify('/:a*/other', { a: [] }, '/other')
+      matchStringify('/:a*/other', {}, '/other')
+    })
+
+    // end of stringifying urls
   })
 })
