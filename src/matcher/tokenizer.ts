@@ -218,7 +218,7 @@ export function tokensToParser(segments: Array<Token[]>): PathParser {
         const re = token.regexp ? token.regexp : BASE_PARAM_PATTERN
         if (re !== BASE_PARAM_PATTERN) {
           try {
-            new RegExp(re)
+            new RegExp(`(${re})`)
           } catch (err) {
             throw new Error(
               `Invalid custom RegExp for param "${token.value}": ` + err.message

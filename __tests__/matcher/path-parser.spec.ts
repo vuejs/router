@@ -16,6 +16,19 @@ describe('Path parser', () => {
       ])
     })
 
+    it('escapes {', () => {
+      expect(tokenizePath('/\\{')).toEqual([
+        [{ type: TokenType.Static, value: '{' }],
+      ])
+    })
+
+    // TODO: add test when groups exist
+    it.skip('escapes } inside group', () => {
+      expect(tokenizePath('/{\\{}')).toEqual([
+        [{ type: TokenType.Static, value: '{' }],
+      ])
+    })
+
     it('escapes ( inside custom re', () => {
       expect(tokenizePath('/:a(\\))')).toEqual([
         [
@@ -442,6 +455,14 @@ describe('Path parser', () => {
       })
     })
 
+    // TODO: better syntax? like /a/{b-:param}+
+    // also to allow repeatable because otherwise groups are meaningless
+    it('group', () => {
+      matchParams('/a/:a(?:b-([^/]+\\)?)', '/a/b-one', {
+        a: 'one',
+      })
+    })
+
     it('catch all', () => {
       matchParams('/:rest(.*)', '/a/b/c', { rest: 'a/b/c' })
       matchParams('/:rest(.*)/no', '/a/b/c/no', { rest: 'a/b/c' })
@@ -503,6 +524,10 @@ describe('Path parser', () => {
 
     it('single param one segment', () => {
       matchStringify('/:id', { id: 'one' }, '/one')
+    })
+
+    it('params with custom regexp', () => {
+      matchStringify('/:id(\\d+)-:w(\\w+)', { id: '2', w: 'hey' }, '/2-hey')
     })
 
     it('multiple param one segment', () => {
