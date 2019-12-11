@@ -10,6 +10,26 @@ describe('Path parser', () => {
       expect(tokenizePath('/')).toEqual([[]])
     })
 
+    it('escapes :', () => {
+      expect(tokenizePath('/\\:')).toEqual([
+        [{ type: TokenType.Static, value: ':' }],
+      ])
+    })
+
+    it('escapes ( inside custom re', () => {
+      expect(tokenizePath('/:a(\\))')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'a',
+            regexp: ')',
+            optional: false,
+            repeatable: false,
+          },
+        ],
+      ])
+    })
+
     it('static single', () => {
       expect(tokenizePath('/home')).toEqual([
         [{ type: TokenType.Static, value: 'home' }],
@@ -491,6 +511,10 @@ describe('Path parser', () => {
 
     it('repeatable params+', () => {
       matchStringify('/:a+', { a: ['one', 'two'] }, '/one/two')
+    })
+
+    it('repeatable params+ with extra segment', () => {
+      matchStringify('/:a+/other', { a: ['one', 'two'] }, '/one/two/other')
     })
 
     it('repeatable params*', () => {

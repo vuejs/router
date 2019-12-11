@@ -144,7 +144,10 @@ export function tokenizePath(path: string): Array<Token[]> {
 
       case TokenizerState.ParamRegExp:
         if (char === ')') {
-          state = TokenizerState.ParamRegExpEnd
+          // handle the escaped )
+          if (customRe[customRe.length - 1] == '\\')
+            customRe = customRe.slice(0, -1) + char
+          else state = TokenizerState.ParamRegExpEnd
         } else {
           customRe += char
         }
@@ -190,6 +193,10 @@ interface PathParser {
 }
 
 const BASE_PARAM_PATTERN = '[^/]+?'
+
+/**
+ * TODO: add options strict, sensitive, encode, decode
+ */
 
 export function tokensToParser(segments: Array<Token[]>): PathParser {
   let score = 0
