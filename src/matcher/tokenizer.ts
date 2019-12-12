@@ -192,15 +192,60 @@ interface PathParser {
   stringify(params: Params): string
 }
 
+interface PathParserOptions {
+  /**
+   * Makes the RegExp case sensitive. Defaults to false
+   */
+  sensitive?: boolean
+  /**
+   * Should we allow a trailing slash. Defaults to true
+   */
+  strict?: boolean
+  /**
+   * Should the RegExp match from the beginning by prepending a ^. Defaults to true
+   */
+  start?: boolean
+  /**
+   * Should the RegExp match until the end by appending a $. Defaults to true
+   */
+  end?: boolean
+  /**
+   * Encodes a static value. This is used to encode params for them to be valid on the URL
+   */
+  encode?: (value: string) => string
+  /**
+   * Decodes a static value. This allows to produce decoded params when parsing an URL
+   */
+  decode?: (value: string) => string
+}
+
 const BASE_PARAM_PATTERN = '[^/]+?'
+
+const BASE_PATH_PARSER_OPTIONS: Required<PathParserOptions> = {
+  sensitive: false,
+  strict: false,
+  start: true,
+  end: true,
+  // TODO: implement real ones
+  encode: v => v,
+  decode: v => v,
+}
 
 /**
  * TODO: add options strict, sensitive, encode, decode
  */
 
-export function tokensToParser(segments: Array<Token[]>): PathParser {
+export function tokensToParser(
+  segments: Array<Token[]>,
+  extraOptions?: PathParserOptions
+): PathParser {
+  const options = {
+    ...BASE_PATH_PARSER_OPTIONS,
+    ...extraOptions,
+  }
+
   let score = 0
-  let pattern = '^'
+  let pattern = options.start ? '^' : ''
   const keys: ParamKey[] = []
 
   for (const segment of segments) {
@@ -231,9 +276,9 @@ export function tokensToParser(segments: Array<Token[]>): PathParser {
     }
   }
 
-  pattern += '$'
+  pattern += options.end ? '$' : ''
 
-  const re = new RegExp(pattern)
+  const re = new RegExp(pattern, options.sensitive ? '' : 'i')
 
   function parse(path: string): Params | null {
     const match = path.match(re)

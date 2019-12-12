@@ -328,7 +328,7 @@ describe('Path parser', () => {
       expect(expectedRe).toBe(
         pathParser.re
           .toString()
-          .replace(/(:?^\/|\/$)/g, '')
+          .replace(/(:?^\/|\/\w*$)/g, '')
           .replace(/\\\//g, '/')
       )
     }
@@ -430,15 +430,35 @@ describe('Path parser', () => {
     function matchParams(
       path: string,
       pathToTest: string,
-      params: ReturnType<ReturnType<typeof tokensToParser>['parse']>
+      params: ReturnType<ReturnType<typeof tokensToParser>['parse']>,
+      options?: Parameters<typeof tokensToParser>[1]
     ) {
-      const pathParser = tokensToParser(tokenizePath(path))
+      const pathParser = tokensToParser(tokenizePath(path), options)
 
       expect(pathParser.parse(pathToTest)).toEqual(params)
     }
 
     it('returns null if no match', () => {
       matchParams('/home', '/', null)
+    })
+
+    it('is insensitive by default', () => {
+      matchParams('/home', '/HOMe', {})
+    })
+
+    it('can be sensitive', () => {
+      matchParams('/home', '/HOMe', null, { sensitive: true })
+      matchParams('/home', '/home', {}, { sensitive: true })
+    })
+
+    it('can not match the beginning', () => {
+      matchParams('/home', '/other/home', null, { start: true })
+      matchParams('/home', '/other/home', {}, { start: false })
+    })
+
+    it('can not match the end', () => {
+      matchParams('/home', '/home/other', null, { end: true })
+      matchParams('/home', '/home/other', {}, { end: false })
     })
 
     it('returns an empty object with no keys', () => {
