@@ -484,12 +484,30 @@ describe('Path parser', () => {
     })
 
     it('param optional', () => {
-      matchParams('/:a?', '/', {
-        a: '',
-      })
-      matchParams('/:a*', '/', {
-        a: '',
-      })
+      matchParams('/:a?', '/one', { a: 'one' })
+      matchParams('/:a*', '/one', { a: ['one'] })
+    })
+
+    it('empty param optional', () => {
+      matchParams('/:a?', '/', { a: '' })
+      matchParams('/:a*', '/', { a: '' })
+    })
+
+    it('static then param optional', () => {
+      matchParams('/one/:a?', '/one/two', { a: 'two' })
+      matchParams('/one/:a?', '/one/', { a: '' })
+      // can only match one time
+      matchParams('/one/:a?', '/one/two/three', null)
+      matchParams('/one/:a*', '/one/two', { a: ['two'] })
+    })
+
+    it('param optional followed by static', () => {
+      matchParams('/:a?/one', '/two/one', { a: 'two' })
+      // the second one is never matched
+      matchParams('/:a?/one', '/one', null)
+      // can only match one time
+      matchParams('/:a?/one', '/two/three/one', null)
+      matchParams('/:a*/one', '/two/one', { a: ['two'] })
     })
 
     it('param repeatable', () => {
@@ -498,6 +516,21 @@ describe('Path parser', () => {
       })
       matchParams('/:a*', '/one/two', {
         a: ['one', 'two'],
+      })
+    })
+
+    it('param repeatable with static', () => {
+      matchParams('/one/:a+', '/one/two', {
+        a: ['two'],
+      })
+      matchParams('/one/:a+', '/one/two/three', {
+        a: ['two', 'three'],
+      })
+      matchParams('/one/:a*', '/one/two', {
+        a: ['two'],
+      })
+      matchParams('/one/:a*', '/one/two/three', {
+        a: ['two', 'three'],
       })
     })
 
