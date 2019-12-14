@@ -7,7 +7,13 @@ import {
 describe('Path parser', () => {
   describe('tokenizer', () => {
     it('root', () => {
-      expect(tokenizePath('/')).toEqual([[]])
+      expect(tokenizePath('/')).toEqual([
+        [{ type: TokenType.Static, value: '' }],
+      ])
+    })
+
+    it('empty', () => {
+      expect(tokenizePath('')).toEqual([[]])
     })
 
     it('escapes :', () => {
@@ -342,7 +348,17 @@ describe('Path parser', () => {
     }
 
     it('static single', () => {
-      matchRegExp('^/$', [[]])
+      matchRegExp('^/?$', [[]], { strict: false })
+    })
+
+    it('empty path', () => {
+      matchRegExp('^$', [[]], { strict: true })
+    })
+
+    it('strict /', () => {
+      matchRegExp('^/$', [[{ type: TokenType.Static, value: '' }]], {
+        strict: true,
+      })
     })
 
     it('static single', () => {
@@ -490,6 +506,15 @@ describe('Path parser', () => {
       matchParams('/home', '/', null)
     })
 
+    it('allows an empty rooot', () => {
+      matchParams('', '/', {})
+    })
+
+    it('makes the difference between "" and "/" when strict', () => {
+      matchParams('', '/', null, { strict: true })
+      matchParams('/', '', null, { strict: true })
+    })
+
     it('allow a trailing slash', () => {
       matchParams('/home', '/home/', {})
       matchParams('/a/b', '/a/b/', {})
@@ -542,7 +567,7 @@ describe('Path parser', () => {
 
     // TODO: better syntax? like /a/{b-:param}+
     // also to allow repeatable because otherwise groups are meaningless
-    it('group', () => {
+    it('group+', () => {
       matchParams('/a/:a(?:b-([^/]+\\)?)', '/a/b-one', {
         a: 'one',
       })

@@ -34,9 +34,10 @@ type Token = TokenStatic | TokenParam
 const VALID_PARAM_RE = /[a-zA-Z0-9_]/
 
 export function tokenizePath(path: string): Array<Token[]> {
-  if (path === '/') return [[]]
+  if (!path) return [[]]
+  if (path === '/') return [[{ type: TokenType.Static, value: '' }]]
   // remove the leading slash
-  if (!path) throw new Error('An empty path cannot be tokenized')
+  if (path[0] !== '/') throw new Error('A non-empty path must start with "/"')
 
   function crash(message: string) {
     throw new Error(`ERR (${state})/"${buffer}": ${message}`)
@@ -249,7 +250,8 @@ export function tokensToParser(
   const keys: ParamKey[] = []
 
   for (const segment of segments) {
-    if (!segment.length) pattern += '/'
+    // allow an empty path to be different from slash
+    // if (!segment.length) pattern += '/'
 
     for (let tokenIndex = 0; tokenIndex < segment.length; tokenIndex++) {
       const token = segment[tokenIndex]
