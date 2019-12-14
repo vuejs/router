@@ -325,12 +325,19 @@ describe('Path parser', () => {
       ...args: Parameters<typeof tokensToParser>
     ) {
       const pathParser = tokensToParser(...args)
-      expect(expectedRe).toBe(
+      const options = args[1] || {}
+      // console.log(pathParser.re)
+      expect(
         pathParser.re
           .toString()
+          // remove the starting and ending slash of RegExp as well as any modifier
+          // /^\\/home$/i -> ^\\@home$
           .replace(/(:?^\/|\/\w*$)/g, '')
+          // remove escaped / to make it easier to write in tests
           .replace(/\\\//g, '/')
-      )
+          // only check the trailing slash if we provided a strict option
+          .replace(/\/\?\$?$/, 'strict' in options ? '$&' : '$')
+      ).toBe(expectedRe)
     }
 
     it('static single', () => {
