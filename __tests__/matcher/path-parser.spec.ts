@@ -449,6 +449,23 @@ describe('Path parser', () => {
       matchParams('/home', '/', null)
     })
 
+    it('allow a trailing slash', () => {
+      matchParams('/home', '/home/', {})
+      matchParams('/a/b', '/a/b/', {})
+    })
+
+    it('allow a trailing slash in repeated params', () => {
+      matchParams('/a/:id+', '/a/b/c/d/', { id: ['b', 'c', 'd'] })
+      matchParams('/a/:id*', '/a/b/c/d/', { id: ['b', 'c', 'd'] })
+      matchParams('/a/:id*', '/a/', { id: '' })
+      matchParams('/a/:id*', '/a', { id: '' })
+    })
+
+    it('allow no slash', () => {
+      matchParams('/home', '/home/', null, { strict: true })
+      matchParams('/home', '/home', {}, { strict: true })
+    })
+
     it('is insensitive by default', () => {
       matchParams('/home', '/HOMe', {})
     })

@@ -249,10 +249,13 @@ export function tokensToParser(
   const keys: ParamKey[] = []
 
   for (const segment of segments) {
-    pattern += '/'
+    if (!segment.length) pattern += '/'
 
-    for (const token of segment) {
+    for (let tokenIndex = 0; tokenIndex < segment.length; tokenIndex++) {
+      const token = segment[tokenIndex]
       if (token.type === TokenType.Static) {
+        // prepend the slash if we are starting a new segment
+        if (!tokenIndex) pattern += '/'
         pattern += token.value
       } else if (token.type === TokenType.Param) {
         keys.push({
@@ -270,13 +273,24 @@ export function tokensToParser(
             )
           }
         }
-        pattern += token.repeatable ? `((?:${re})(?:/(?:${re}))*)` : `(${re})`
-        if (token.optional) pattern += '?'
+        // (?:\/((?:${re})(?:\/(?:${re}))*))
+        let subPattern = token.repeatable
+          ? `((?:${re})(?:/(?:${re}))*)`
+          : `(${re})`
+
+        if (!tokenIndex)
+          subPattern = token.optional ? `(?:/${subPattern})?` : '/' + subPattern
+        else subPattern += token.optional ? '?' : ''
+
+        pattern += subPattern
       }
     }
   }
 
-  pattern += options.end ? '$' : ''
+  // TODO: warn double trailing slash
+  if (!options.strict) pattern += '/?'
+
+  if (options.end) pattern += '$'
 
   const re = new RegExp(pattern, options.sensitive ? '' : 'i')
 
