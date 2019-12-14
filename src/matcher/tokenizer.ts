@@ -185,7 +185,7 @@ interface ParamKey {
   optional: boolean
 }
 
-interface PathParser {
+export interface PathParser {
   re: RegExp
   score: number[]
   keys: ParamKey[]
@@ -232,10 +232,46 @@ const BASE_PATH_PARSER_OPTIONS: Required<PathParserOptions> = {
   decode: v => v,
 }
 
-/**
- * TODO: add options strict, sensitive, encode, decode
- */
+// const enum PathScore {
+//   _multiplier = 10,
+//   Segment = 4 * _multiplier, // /a-segment
+//   SubSegment = 2 * _multiplier, // /multiple-:things-in-one-:segment
+//   Static = 3 * _multiplier, // /static
+//   Dynamic = 2 * _multiplier, // /:someId
+//   DynamicCustomRegexp = 2.5 * _multiplier, // /:someId(\\d+)
+//   Wildcard = -1 * _multiplier, // /:namedWildcard(.*)
+//   SubWildcard = 1 * _multiplier, // Wildcard as a subsegment
+//   Repeatable = -0.5 * _multiplier, // /:w+ or /:w*
+//   // these two have to be under 0.1 so a strict /:page is still lower than /:a-:b
+//   Strict = 0.07 * _multiplier, // when options strict: true is passed, as the regex omits \/?
+//   CaseSensitive = 0.025 * _multiplier, // when options strict: true is passed, as the regex omits \/?
+//   Optional = -4 * _multiplier, // /:w? or /:w*
+//   SubOptional = -0.1 * _multiplier, // optional inside a subsegment /a-:w? or /a-:w*
+//   Root = 1 * _multiplier, // just /
+// }
 
+const enum PathScore {
+  _multiplier = 10,
+  Root = 8 * _multiplier, // just /
+  Segment = 4 * _multiplier, // /a-segment
+  SubSegment = 2 * _multiplier, // /multiple-:things-in-one-:segment
+  Static = 3 * _multiplier, // /static
+  Dynamic = 2 * _multiplier, // /:someId
+  BonusCustomRegExp = 1 * _multiplier, // /:someId(\\d+)
+  BonusWildcard = -3 * _multiplier, // /:namedWildcard(.*)
+  BonusRepeatable = -0.5 * _multiplier, // /:w+ or /:w*
+  BonusOptional = -4 * _multiplier, // /:w? or /:w*
+  // these two have to be under 0.1 so a strict /:page is still lower than /:a-:b
+  BonusStrict = 0.07 * _multiplier, // when options strict: true is passed, as the regex omits \/?
+  BonusCaseSensitive = 0.025 * _multiplier, // when options strict: true is passed, as the regex omits \/?
+}
+
+/**
+ * Creates a path parser from an array of Segments (a segment is an array of Tokens)
+ *
+ * @param segments array of segments returned by tokenizePath
+ * @param extraOptions optional options for the regexp
+ */
 export function tokensToParser(
   segments: Array<Token[]>,
   extraOptions?: PathParserOptions
@@ -245,6 +281,7 @@ export function tokensToParser(
     ...extraOptions,
   }
 
+  // the amount of scores is the same as the length of segments
   let score: number[] = []
   let pattern = options.start ? '^' : ''
   const keys: ParamKey[] = []
@@ -253,12 +290,21 @@ export function tokensToParser(
     // allow an empty path to be different from slash
     // if (!segment.length) pattern += '/'
 
+    // TODO: add strict and sensitive
+    let segmentScore = segment.length
+      ? segment.length > 1
+        ? PathScore.SubSegment
+        : PathScore.Segment
+      : PathScore.Root
+
     for (let tokenIndex = 0; tokenIndex < segment.length; tokenIndex++) {
       const token = segment[tokenIndex]
       if (token.type === TokenType.Static) {
         // prepend the slash if we are starting a new segment
         if (!tokenIndex) pattern += '/'
         pattern += token.value
+
+        segmentScore += PathScore.Static
       } else if (token.type === TokenType.Param) {
         keys.push({
           name: token.value,
@@ -267,6 +313,7 @@ export function tokensToParser(
         })
         const re = token.regexp ? token.regexp : BASE_PARAM_PATTERN
         if (re !== BASE_PARAM_PATTERN) {
+          segmentScore += PathScore.BonusCustomRegExp
           try {
             new RegExp(`(${re})`)
           } catch (err) {
@@ -285,8 +332,13 @@ export function tokensToParser(
         else subPattern += token.optional ? '?' : ''
 
         pattern += subPattern
+
+        segmentScore += PathScore.Dynamic
+        if (re === '.*') segmentScore += PathScore.BonusWildcard
       }
     }
+
+    score.push(segmentScore)
   }
 
   // TODO: warn double trailing slash
@@ -350,16 +402,4 @@ export function tokensToParser(
     parse,
     stringify,
   }
-}
-
-export function comparePathParser(a: PathParser, b: PathParser): number {
-  let i = 0
-  while (i < a.score.length && i < b.score.length) {
-    if (a.score[i] < b.score[i]) return -1
-    else if (a.score[i] > b.score[i]) 1
-
-    i++
-  }
-
-  return 0
 }
