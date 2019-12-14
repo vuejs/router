@@ -187,7 +187,7 @@ interface ParamKey {
 
 interface PathParser {
   re: RegExp
-  score: number
+  score: number[]
   keys: ParamKey[]
   parse(path: string): Params | null
   stringify(params: Params): string
@@ -245,7 +245,7 @@ export function tokensToParser(
     ...extraOptions,
   }
 
-  let score = 0
+  let score: number[] = []
   let pattern = options.start ? '^' : ''
   const keys: ParamKey[] = []
 
@@ -350,4 +350,16 @@ export function tokensToParser(
     parse,
     stringify,
   }
+}
+
+export function comparePathParser(a: PathParser, b: PathParser): number {
+  let i = 0
+  while (i < a.score.length && i < b.score.length) {
+    if (a.score[i] < b.score[i]) return -1
+    else if (a.score[i] > b.score[i]) 1
+
+    i++
+  }
+
+  return 0
 }
