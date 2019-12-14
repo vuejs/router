@@ -317,6 +317,7 @@ describe('Path parser', () => {
         ],
       ])
     })
+    // end of describe token
   })
 
   describe('tokensToParser', () => {
@@ -390,7 +391,7 @@ describe('Path parser', () => {
     })
 
     it('param*', () => {
-      matchRegExp('^/((?:\\d+)(?:/(?:\\d+))*)?$', [
+      matchRegExp('^(?:/((?:\\d+)(?:/(?:\\d+))*))?$', [
         [
           {
             type: TokenType.Param,
@@ -404,7 +405,27 @@ describe('Path parser', () => {
     })
 
     it('param?', () => {
-      matchRegExp('^/(\\d+)?$', [
+      matchRegExp('^(?:/(\\d+))?$', [
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '\\d+',
+            repeatable: false,
+            optional: true,
+          },
+        ],
+      ])
+    })
+
+    it('static and param?', () => {
+      matchRegExp('^/ab(?:/(\\d+))?$', [
+        [
+          {
+            type: TokenType.Static,
+            value: 'ab',
+          },
+        ],
         [
           {
             type: TokenType.Param,
@@ -419,6 +440,26 @@ describe('Path parser', () => {
 
     it('param+', () => {
       matchRegExp('^/((?:\\d+)(?:/(?:\\d+))*)$', [
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '\\d+',
+            repeatable: true,
+            optional: false,
+          },
+        ],
+      ])
+    })
+
+    it('static and param+', () => {
+      matchRegExp('^/ab/((?:\\d+)(?:/(?:\\d+))*)$', [
+        [
+          {
+            type: TokenType.Static,
+            value: 'ab',
+          },
+        ],
         [
           {
             type: TokenType.Param,
@@ -547,8 +588,9 @@ describe('Path parser', () => {
 
     it('param optional followed by static', () => {
       matchParams('/:a?/one', '/two/one', { a: 'two' })
-      // the second one is never matched
-      matchParams('/:a?/one', '/one', null)
+      // since the first one is optional
+      matchParams('/:a?/one', '/one', { a: '' })
+      matchParams('/:a?/one', '/two', null)
       // can only match one time
       matchParams('/:a?/one', '/two/three/one', null)
       matchParams('/:a*/one', '/two/one', { a: ['two'] })
@@ -588,15 +630,21 @@ describe('Path parser', () => {
         ReturnType<ReturnType<typeof tokensToParser>['parse']>,
         null
       >,
-      expectedUrl: string
+      expectedUrl: string,
+      options?: Parameters<typeof tokensToParser>[1]
     ) {
-      const pathParser = tokensToParser(tokenizePath(path))
+      const pathParser = tokensToParser(tokenizePath(path), options)
 
       expect(pathParser.stringify(params)).toEqual(expectedUrl)
     }
 
     it('no params one segment', () => {
       matchStringify('/home', {}, '/home')
+    })
+
+    it('works with trailing slash', () => {
+      matchStringify('/home/', {}, '/home/')
+      matchStringify('/home/', {}, '/home/', { strict: true })
     })
 
     it('single param one segment', () => {
