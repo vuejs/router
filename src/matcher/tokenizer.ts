@@ -297,6 +297,8 @@ export function tokensToParser(
         : PathScore.Segment
       : PathScore.Root
 
+    if (options.sensitive) segmentScore += PathScore.BonusCaseSensitive
+
     for (let tokenIndex = 0; tokenIndex < segment.length; tokenIndex++) {
       const token = segment[tokenIndex]
       if (token.type === TokenType.Static) {
@@ -342,6 +344,9 @@ export function tokensToParser(
 
     score.push(segmentScore)
   }
+
+  // only apply the strict bonus to the last score
+  if (options.strict) score[score.length - 1] += PathScore.BonusStrict
 
   // TODO: warn double trailing slash
   if (!options.strict) pattern += '/?'

@@ -96,6 +96,9 @@ describe('Path ranking', () => {
       '/a/:b/c',
       '/a/:b',
       '/a',
+      '/:a/:b',
+      '/:w',
+      '/:w+',
       // '/:a/-:b',
       // '/:a/:b',
       // '/a-:b',
@@ -116,16 +119,42 @@ describe('Path ranking', () => {
     })
   })
 
+  it('sensitive should go before non sensitive', () => {
+    checkPathOrder([
+      ['/Home', { sensitive: true }],
+      ['/home', {}],
+    ])
+    checkPathOrder([
+      ['/:w', { sensitive: true }],
+      ['/:w', {}],
+    ])
+  })
+
+  it('strict should go before non strict', () => {
+    checkPathOrder([
+      ['/home', { strict: true }],
+      ['/home', {}],
+    ])
+  })
+
   it('orders repeteable and optional', () => {
-    checkPathOrder(['/:w', '/:w+'])
+    possibleOptions.forEach(options => {
+      checkPathOrder(['/:w', ['/:w?', options]])
+      checkPathOrder(['/:w?', ['/:w+', options]])
+      checkPathOrder(['/:w?', ['/:w*', options]])
+    })
   })
 
   it('orders static before params', () => {
-    checkPathOrder(['/a', '/:id'])
+    possibleOptions.forEach(options => {
+      checkPathOrder(['/a', ['/:id', options]])
+    })
   })
 
   it('empty path before slash', () => {
-    checkPathOrder(['', '/'])
+    possibleOptions.forEach(options => {
+      checkPathOrder(['', ['/', options]])
+    })
   })
 
   it('works with long paths', () => {
@@ -149,9 +178,8 @@ describe('Path ranking', () => {
       '/a/b',
     ])
 
-    // does this really make sense?
-    // checkPathOrder([['/a/', { strict: true }], '/a/'])
-    // checkPathOrder([['/a', { strict: true }], '/a'])
+    checkPathOrder([['/a/', { strict: true }], '/a/'])
+    checkPathOrder([['/a', { strict: true }], '/a'])
   })
 
   it('puts the wildcard at the end', () => {
