@@ -258,9 +258,9 @@ const enum PathScore {
   Static = 3 * _multiplier, // /static
   Dynamic = 2 * _multiplier, // /:someId
   BonusCustomRegExp = 1 * _multiplier, // /:someId(\\d+)
-  BonusWildcard = -3 * _multiplier, // /:namedWildcard(.*)
-  BonusRepeatable = -0.5 * _multiplier, // /:w+ or /:w*
-  BonusOptional = -4 * _multiplier, // /:w? or /:w*
+  BonusWildcard = -4 * _multiplier - BonusCustomRegExp, // /:namedWildcard(.*) we remove the bonus added by the custom regexp
+  BonusRepeatable = -2 * _multiplier, // /:w+ or /:w*
+  BonusOptional = -1 * _multiplier, // /:w? or /:w*
   // these two have to be under 0.1 so a strict /:page is still lower than /:a-:b
   BonusStrict = 0.07 * _multiplier, // when options strict: true is passed, as the regex omits \/?
   BonusCaseSensitive = 0.025 * _multiplier, // when options strict: true is passed, as the regex omits \/?
@@ -334,6 +334,8 @@ export function tokensToParser(
         pattern += subPattern
 
         segmentScore += PathScore.Dynamic
+        if (token.optional) segmentScore += PathScore.BonusOptional
+        if (token.repeatable) segmentScore += PathScore.BonusRepeatable
         if (re === '.*') segmentScore += PathScore.BonusWildcard
       }
     }

@@ -89,6 +89,37 @@ describe('Path ranking', () => {
     }
   }
 
+  it('works', () => {
+    checkPathOrder([
+      '/a/b/c',
+      '/a/b',
+      '/a/:b/c',
+      '/a/:b',
+      '/a',
+      // '/:a/-:b',
+      // '/:a/:b',
+      // '/a-:b',
+      // '/a-:w(.*)',
+      // '/:a-b',
+      // '/:a-:b-:c',
+      // '/:a-:b',
+      // '/:a-:b(.*)',
+    ])
+  })
+
+  it('puts the slash before optional paramateres', () => {
+    possibleOptions.forEach(options => {
+      checkPathOrder(['/', ['/:a?', options]])
+      checkPathOrder(['/', ['/:a*', options]])
+      checkPathOrder(['/', ['/:a(\\d+)?', options]])
+      checkPathOrder(['/', ['/:a(\\d+)*', options]])
+    })
+  })
+
+  it('orders repeteable and optional', () => {
+    checkPathOrder(['/:w', '/:w+'])
+  })
+
   it('orders static before params', () => {
     checkPathOrder(['/a', '/:id'])
   })
