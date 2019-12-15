@@ -21,40 +21,68 @@ describe('Path ranking', () => {
     })
   })
 
+  const possibleOptions: PathParserOptions[] = [
+    undefined,
+    { strict: true, sensitive: false },
+    { strict: false, sensitive: true },
+    { strict: true, sensitive: true },
+  ]
+
   function checkPathOrder(paths: Array<string | [string, PathParserOptions]>) {
-    const pathsAsStrings = paths.map(path =>
-      typeof path === 'string' ? path : path[0] + JSON.stringify(path[1])
-    )
-    // reverse the array to force some reordering
-    const parsers = paths.reverse().map(path => {
-      const parser =
-        typeof path === 'string'
-          ? tokensToParser(tokenizePath(path))
-          : tokensToParser(tokenizePath(path[0]), path[1])
-      // @ts-ignore
-      parser.path =
-        typeof path === 'string' ? path : path[0] + JSON.stringify(path[1])
-      return parser
+    const normalizedPaths = paths.map(pathOrArray => {
+      let path: string
+      let options: PathParserOptions
+      if (typeof pathOrArray === 'string') {
+        path = pathOrArray
+      } else {
+        path = pathOrArray[0]
+        options = pathOrArray[1]
+      }
+
+      return {
+        id: path + (options ? JSON.stringify(options) : ''),
+        path,
+        options,
+      }
     })
+
+    // reverse the array to force some reordering
+    const parsers = normalizedPaths
+      .slice()
+      .reverse()
+      .map(({ id, path, options }) => ({
+        ...tokensToParser(tokenizePath(path), options),
+        id,
+      }))
 
     parsers.sort((a, b) => comparePathParserScore(a.score, b.score))
 
-    try {
-      expect(
-        parsers.map(
-          parser =>
-            // @ts-ignore
-            parser.path
+    for (let i = 0; i < parsers.length - 1; i++) {
+      const a = parsers[i]
+      const b = parsers[i + 1]
+
+      try {
+        expect(a.score).not.toEqual(b.score)
+      } catch (err) {
+        console.warn(
+          'Different routes should not have the same score:\n' +
+            `${a.id} -> [${a.score.join(', ')}]\n${b.id} -> [${b.score.join(
+              ', '
+            )}]`
         )
-      ).toEqual(pathsAsStrings)
+
+        throw err
+      }
+    }
+
+    try {
+      expect(parsers.map(parser => parser.id)).toEqual(
+        normalizedPaths.map(path => path.id)
+      )
     } catch (err) {
-      console.log(
+      console.warn(
         parsers
-          .map(
-            parser =>
-              // @ts-ignore
-              `${parser.path} -> [${parser.score.join(', ')}]`
-          )
+          .map(parser => `${parser.id} -> [${parser.score.join(', ')}]`)
           .join('\n')
       )
       throw err
@@ -96,13 +124,6 @@ describe('Path ranking', () => {
   })
 
   it('puts the wildcard at the end', () => {
-    const possibleOptions: PathParserOptions[] = [
-      {},
-      { strict: true, sensitive: false },
-      { strict: false, sensitive: true },
-      { strict: true, sensitive: true },
-    ]
-
     possibleOptions.forEach(options => {
       checkPathOrder([['', options], '/:rest(.*)'])
       checkPathOrder([['/', options], '/:rest(.*)'])
