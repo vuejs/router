@@ -73,12 +73,6 @@ describe('Path ranking', () => {
     checkPathOrder(['/a/b/c/d/e', '/:k/b/c/d/e', '/:k/b/c/d/:j'])
   })
 
-  it('puts the wildcard at the end', () => {
-    checkPathOrder(['/', '/:rest(.*)'])
-    checkPathOrder(['/static', '/:rest(.*)'])
-    checkPathOrder(['/:other', '/:rest(.*)'])
-  })
-
   it('prioritises custom regex', () => {
     checkPathOrder(['/:a(\\d+)', '/:a', '/:a(.*)'])
     checkPathOrder(['/b-:a(\\d+)', '/b-:a', '/b-:a(.*)'])
@@ -99,5 +93,28 @@ describe('Path ranking', () => {
     // does this really make sense?
     // checkPathOrder([['/a/', { strict: true }], '/a/'])
     // checkPathOrder([['/a', { strict: true }], '/a'])
+  })
+
+  it('puts the wildcard at the end', () => {
+    const possibleOptions: PathParserOptions[] = [
+      {},
+      { strict: true, sensitive: false },
+      { strict: false, sensitive: true },
+      { strict: true, sensitive: true },
+    ]
+
+    possibleOptions.forEach(options => {
+      checkPathOrder([['', options], '/:rest(.*)'])
+      checkPathOrder([['/', options], '/:rest(.*)'])
+      checkPathOrder([['/ab', options], '/:rest(.*)'])
+      checkPathOrder([['/:a', options], '/:rest(.*)'])
+      checkPathOrder([['/:a?', options], '/:rest(.*)'])
+      checkPathOrder([['/:a+', options], '/:rest(.*)'])
+      checkPathOrder([['/:a*', options], '/:rest(.*)'])
+      checkPathOrder([['/:a(\\d+)', options], '/:rest(.*)'])
+      checkPathOrder([['/:a(\\d+)?', options], '/:rest(.*)'])
+      checkPathOrder([['/:a(\\d+)+', options], '/:rest(.*)'])
+      checkPathOrder([['/:a(\\d+)*', options], '/:rest(.*)'])
+    })
   })
 })
