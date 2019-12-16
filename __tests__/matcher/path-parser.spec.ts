@@ -28,6 +28,21 @@ describe('Path parser', () => {
       ])
     })
 
+    it.skip('groups', () => {
+      expect(tokenizePath('/one{-b_:id}')).toEqual([
+        [
+          { type: TokenType.Static, value: 'one' },
+          {
+            type: TokenType.Group,
+            groups: [
+              { type: TokenType.Static, value: '-b_' },
+              { type: TokenType.Param, value: 'id' },
+            ],
+          },
+        ],
+      ])
+    })
+
     // TODO: add test when groups exist
     it.skip('escapes } inside group', () => {
       expect(tokenizePath('/{\\{}')).toEqual([

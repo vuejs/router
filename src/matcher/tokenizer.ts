@@ -1,6 +1,7 @@
 export const enum TokenType {
   Static,
   Param,
+  Group,
 }
 
 const enum TokenizerState {
@@ -24,18 +25,23 @@ interface TokenParam {
   repeatable: boolean
 }
 
-type Token = TokenStatic | TokenParam
+interface TokenGroup {
+  type: TokenType.Group
+  value: Exclude<Token, TokenGroup>[]
+}
 
-// const ROOT_TOKEN: Token = {
-//   type: TokenType.Static,
-//   value: '/',
-// }
+type Token = TokenStatic | TokenParam | TokenGroup
+
+const ROOT_TOKEN: Token = {
+  type: TokenType.Static,
+  value: '',
+}
 
 const VALID_PARAM_RE = /[a-zA-Z0-9_]/
 
 export function tokenizePath(path: string): Array<Token[]> {
   if (!path) return [[]]
-  if (path === '/') return [[{ type: TokenType.Static, value: '' }]]
+  if (path === '/') return [[ROOT_TOKEN]]
   // remove the leading slash
   if (path[0] !== '/') throw new Error('A non-empty path must start with "/"')
 
@@ -119,6 +125,7 @@ export function tokenizePath(path: string): Array<Token[]> {
           state = TokenizerState.Param
         } else if (char === '{') {
           // TODO: handle group
+          addCharToBuffer()
         } else {
           addCharToBuffer()
         }
@@ -290,7 +297,6 @@ export function tokensToParser(
     // allow an empty path to be different from slash
     // if (!segment.length) pattern += '/'
 
-    // TODO: add strict and sensitive
     let segmentScore = segment.length
       ? segment.length > 1
         ? PathScore.SubSegment
@@ -308,36 +314,35 @@ export function tokensToParser(
 
         segmentScore += PathScore.Static
       } else if (token.type === TokenType.Param) {
+        const { value, repeatable, optional, regexp } = token
         keys.push({
-          name: token.value,
-          repeatable: token.repeatable,
-          optional: token.optional,
+          name: value,
+          repeatable: repeatable,
+          optional: optional,
         })
-        const re = token.regexp ? token.regexp : BASE_PARAM_PATTERN
+        const re = regexp ? regexp : BASE_PARAM_PATTERN
         if (re !== BASE_PARAM_PATTERN) {
           segmentScore += PathScore.BonusCustomRegExp
           try {
             new RegExp(`(${re})`)
           } catch (err) {
             throw new Error(
-              `Invalid custom RegExp for param "${token.value}": ` + err.message
+              `Invalid custom RegExp for param "${value}": ` + err.message
             )
           }
         }
         // (?:\/((?:${re})(?:\/(?:${re}))*))
-        let subPattern = token.repeatable
-          ? `((?:${re})(?:/(?:${re}))*)`
-          : `(${re})`
+        let subPattern = repeatable ? `((?:${re})(?:/(?:${re}))*)` : `(${re})`
 
         if (!tokenIndex)
-          subPattern = token.optional ? `(?:/${subPattern})?` : '/' + subPattern
-        else subPattern += token.optional ? '?' : ''
+          subPattern = optional ? `(?:/${subPattern})?` : '/' + subPattern
+        else subPattern += optional ? '?' : ''
 
         pattern += subPattern
 
         segmentScore += PathScore.Dynamic
-        if (token.optional) segmentScore += PathScore.BonusOptional
-        if (token.repeatable) segmentScore += PathScore.BonusRepeatable
+        if (optional) segmentScore += PathScore.BonusOptional
+        if (repeatable) segmentScore += PathScore.BonusRepeatable
         if (re === '.*') segmentScore += PathScore.BonusWildcard
       }
     }
@@ -378,20 +383,19 @@ export function tokensToParser(
       avoidDuplicatedSlash = false
 
       for (const token of segment) {
-        const { value } = token
         if (token.type === TokenType.Static) {
-          path += value
+          path += token.value
         } else if (token.type === TokenType.Param) {
+          const { value, repeatable, optional } = token
           const param: string | string[] = value in params ? params[value] : ''
 
-          if (Array.isArray(param) && !token.repeatable)
+          if (Array.isArray(param) && !repeatable)
             throw new Error(
               `Provided param "${value}" is an array but it is not repeatable (* or + modifiers)`
             )
           const text: string = Array.isArray(param) ? param.join('/') : param
           if (!text) {
-            if (!token.optional)
-              throw new Error(`Missing required param "${value}"`)
+            if (!optional) throw new Error(`Missing required param "${value}"`)
             else avoidDuplicatedSlash = true
           }
           path += text
