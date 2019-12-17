@@ -194,7 +194,7 @@ interface ParamKey {
 
 export interface PathParser {
   re: RegExp
-  score: number[]
+  score: Array<number[]>
   keys: ParamKey[]
   parse(path: string): Params | null
   stringify(params: Params): string
@@ -239,35 +239,17 @@ const BASE_PATH_PARSER_OPTIONS: Required<PathParserOptions> = {
   decode: v => v,
 }
 
-// const enum PathScore {
-//   _multiplier = 10,
-//   Segment = 4 * _multiplier, // /a-segment
-//   SubSegment = 2 * _multiplier, // /multiple-:things-in-one-:segment
-//   Static = 3 * _multiplier, // /static
-//   Dynamic = 2 * _multiplier, // /:someId
-//   DynamicCustomRegexp = 2.5 * _multiplier, // /:someId(\\d+)
-//   Wildcard = -1 * _multiplier, // /:namedWildcard(.*)
-//   SubWildcard = 1 * _multiplier, // Wildcard as a subsegment
-//   Repeatable = -0.5 * _multiplier, // /:w+ or /:w*
-//   // these two have to be under 0.1 so a strict /:page is still lower than /:a-:b
-//   Strict = 0.07 * _multiplier, // when options strict: true is passed, as the regex omits \/?
-//   CaseSensitive = 0.025 * _multiplier, // when options strict: true is passed, as the regex omits \/?
-//   Optional = -4 * _multiplier, // /:w? or /:w*
-//   SubOptional = -0.1 * _multiplier, // optional inside a subsegment /a-:w? or /a-:w*
-//   Root = 1 * _multiplier, // just /
-// }
-
 const enum PathScore {
   _multiplier = 10,
-  Root = 8 * _multiplier, // just /
+  Root = 9 * _multiplier, // just /
   Segment = 4 * _multiplier, // /a-segment
-  SubSegment = 2 * _multiplier, // /multiple-:things-in-one-:segment
-  Static = 3 * _multiplier, // /static
+  SubSegment = 3 * _multiplier, // /multiple-:things-in-one-:segment
+  Static = 4 * _multiplier, // /static
   Dynamic = 2 * _multiplier, // /:someId
   BonusCustomRegExp = 1 * _multiplier, // /:someId(\\d+)
   BonusWildcard = -4 * _multiplier - BonusCustomRegExp, // /:namedWildcard(.*) we remove the bonus added by the custom regexp
   BonusRepeatable = -2 * _multiplier, // /:w+ or /:w*
-  BonusOptional = -1 * _multiplier, // /:w? or /:w*
+  BonusOptional = -0.8 * _multiplier, // /:w? or /:w*
   // these two have to be under 0.1 so a strict /:page is still lower than /:a-:b
   BonusStrict = 0.07 * _multiplier, // when options strict: true is passed, as the regex omits \/?
   BonusCaseSensitive = 0.025 * _multiplier, // when options strict: true is passed, as the regex omits \/?
@@ -289,7 +271,7 @@ export function tokensToParser(
   }
 
   // the amount of scores is the same as the length of segments
-  let score: number[] = []
+  let score: Array<number[]> = []
   let pattern = options.start ? '^' : ''
   const keys: ParamKey[] = []
 
@@ -297,22 +279,20 @@ export function tokensToParser(
     // allow an empty path to be different from slash
     // if (!segment.length) pattern += '/'
 
-    let segmentScore = segment.length
-      ? segment.length > 1
-        ? PathScore.SubSegment
-        : PathScore.Segment
-      : PathScore.Root
-
-    if (options.sensitive) segmentScore += PathScore.BonusCaseSensitive
+    const segmentScores: number[] = segment.length ? [] : [PathScore.Root]
 
     for (let tokenIndex = 0; tokenIndex < segment.length; tokenIndex++) {
       const token = segment[tokenIndex]
+      // resets the score if we are inside a sub segment /:a-other-:b
+      let subSegmentScore: number =
+        PathScore.Segment +
+        (options.sensitive ? PathScore.BonusCaseSensitive : 0)
+
       if (token.type === TokenType.Static) {
         // prepend the slash if we are starting a new segment
         if (!tokenIndex) pattern += '/'
         pattern += token.value
-
-        segmentScore += PathScore.Static
+        subSegmentScore += PathScore.Static
       } else if (token.type === TokenType.Param) {
         const { value, repeatable, optional, regexp } = token
         keys.push({
@@ -322,7 +302,7 @@ export function tokensToParser(
         })
         const re = regexp ? regexp : BASE_PARAM_PATTERN
         if (re !== BASE_PARAM_PATTERN) {
-          segmentScore += PathScore.BonusCustomRegExp
+          subSegmentScore += PathScore.BonusCustomRegExp
           try {
             new RegExp(`(${re})`)
           } catch (err) {
@@ -340,18 +320,23 @@ export function tokensToParser(
 
         pattern += subPattern
 
-        segmentScore += PathScore.Dynamic
-        if (optional) segmentScore += PathScore.BonusOptional
-        if (repeatable) segmentScore += PathScore.BonusRepeatable
-        if (re === '.*') segmentScore += PathScore.BonusWildcard
+        subSegmentScore += PathScore.Dynamic
+        if (optional) subSegmentScore += PathScore.BonusOptional
+        if (repeatable) subSegmentScore += PathScore.BonusRepeatable
+        if (re === '.*') subSegmentScore += PathScore.BonusWildcard
       }
+
+      segmentScores.push(subSegmentScore)
     }
 
-    score.push(segmentScore)
+    score.push(segmentScores)
   }
 
   // only apply the strict bonus to the last score
-  if (options.strict) score[score.length - 1] += PathScore.BonusStrict
+  if (options.strict) {
+    const i = score.length - 1
+    score[i][score[i].length - 1] += PathScore.BonusStrict
+  }
 
   // TODO: warn double trailing slash
   if (!options.strict) pattern += '/?'
@@ -413,4 +398,50 @@ export function tokensToParser(
     parse,
     stringify,
   }
+}
+
+export function compareScoreArray(a: number[], b: number[]): number {
+  let i = 0
+  while (i < a.length && i < b.length) {
+    if (a[i] < b[i]) return 1
+    if (a[i] > b[i]) return -1
+
+    i++
+  }
+
+  // if the last subsegment was Static, the shorter
+  if (a.length < b.length) {
+    return a.length === 1 && a[0] === PathScore.Static + PathScore.Segment
+      ? -1
+      : 1
+  } else if (a.length > b.length) {
+    return b.length === 1 && b[0] === PathScore.Static + PathScore.Segment
+      ? 1
+      : -1
+  }
+
+  return 0
+}
+
+export function comparePathParserScore(a: PathParser, b: PathParser): number {
+  let i = 0
+  const aScore = a.score
+  const bScore = b.score
+  while (i < aScore.length && i < bScore.length) {
+    const comp = compareScoreArray(aScore[i], bScore[i])
+    // do not return if both are equal
+    if (comp) return comp
+
+    i++
+  }
+
+  // TODO: one is this way the other the opposite it's more complicated than
+  // that because with subsegments the length matters while with segment it
+  // doesnt (1 vs 1+). So I need to treat the first entry of each array
+  // differently
+  return aScore.length < bScore.length
+    ? 1
+    : aScore.length > bScore.length
+    ? -1
+    : 0
 }
