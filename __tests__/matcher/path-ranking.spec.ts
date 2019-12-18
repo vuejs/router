@@ -7,20 +7,43 @@ import {
 type PathParserOptions = Parameters<typeof tokensToParser>[1]
 
 describe('Path ranking', () => {
-  describe.skip('comparePathParser', () => {
-    // it('same length', () => {
-    //   expect(comparePathParserScore([[2]], [[3]])).toEqual(1)
-    //   expect(comparePathParserScore([2], [2])).toEqual(0)
-    //   expect(comparePathParserScore([4], [3])).toEqual(-1)
-    // })
-    // it('longer', () => {
-    //   expect(comparePathParserScore([2], [3, 1])).toEqual(1)
-    //   // TODO: we are assuming we never pass end: false
-    //   expect(comparePathParserScore([3], [3, 1])).toEqual(1)
-    //   expect(comparePathParserScore([1, 3], [2])).toEqual(1)
-    //   expect(comparePathParserScore([4], [3])).toEqual(-1)
-    //   expect(comparePathParserScore([], [3])).toEqual(1)
-    // })
+  describe('comparePathParser', () => {
+    function compare(a: number[][], b: number[][]): number {
+      return comparePathParserScore(
+        {
+          score: a,
+          re: /a/,
+          // @ts-ignore
+          stringify: v => v,
+          // @ts-ignore
+          parse: v => v,
+          keys: [],
+        },
+        {
+          score: b,
+          re: /a/,
+          // @ts-ignore
+          stringify: v => v,
+          // @ts-ignore
+          parse: v => v,
+          keys: [],
+        }
+      )
+    }
+
+    it('same length', () => {
+      expect(compare([[2]], [[3]])).toEqual(1)
+      expect(compare([[2]], [[2]])).toEqual(0)
+      expect(compare([[4]], [[3]])).toEqual(-1)
+    })
+    it('longer', () => {
+      expect(compare([[2]], [[3, 1]])).toEqual(1)
+      // TODO: we are assuming we never pass end: false
+      expect(compare([[3]], [[3, 1]])).toEqual(1)
+      expect(compare([[1, 3]], [[2]])).toEqual(1)
+      expect(compare([[4]], [[3]])).toEqual(-1)
+      expect(compare([], [[3]])).toEqual(1)
+    })
   })
 
   const possibleOptions: PathParserOptions[] = [
