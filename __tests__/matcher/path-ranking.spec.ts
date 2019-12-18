@@ -123,17 +123,16 @@ describe('Path ranking', () => {
       '/a/:b/c',
       '/a/:b',
       '/a',
+      '/a-:b-:c',
+      '/a-:b',
+      '/a-:w(.*)',
+      '/:a-:b-:c',
+      '/:a-:b',
+      '/:a-:b(.*)',
+      '/:a/-:b',
       '/:a/:b',
       '/:w',
       '/:w+',
-      // '/:a/-:b',
-      // '/:a/:b',
-      // '/a-:b',
-      // '/a-:w(.*)',
-      // '/:a-b',
-      // '/:a-:b-:c',
-      // '/:a-:b',
-      // '/:a-:b(.*)',
     ])
   })
 
@@ -168,7 +167,8 @@ describe('Path ranking', () => {
     possibleOptions.forEach(options => {
       checkPathOrder(['/:w', ['/:w?', options]])
       checkPathOrder(['/:w?', ['/:w+', options]])
-      checkPathOrder(['/:w?', ['/:w*', options]])
+      checkPathOrder(['/:w+', ['/:w*', options]])
+      checkPathOrder(['/:w+', ['/:w(.*)', options]])
     })
   })
 
@@ -248,6 +248,14 @@ describe('Path ranking', () => {
       '/a/_:b(\\d)?-other',
       '/a/_:b(\\d)+-other',
       '/a/_:b(\\d)*-other',
+    ])
+  })
+
+  it('ending slashes less than params', () => {
+    checkPathOrder([
+      ['/a/b', { strict: false }],
+      ['/a/:b', { strict: true }],
+      ['/a/:b/', { strict: true }],
     ])
   })
 })
