@@ -1,8 +1,5 @@
-import {
-  tokenizePath,
-  TokenType,
-  tokensToParser,
-} from '../../src/matcher/tokenizer'
+import { tokenizePath, TokenType } from '../../src/matcher/path-tokenizer'
+import { tokensToParser } from '../../src/matcher/path-parser-ranker'
 
 describe('Path parser', () => {
   describe('tokenizer', () => {
@@ -28,6 +25,8 @@ describe('Path parser', () => {
       ])
     })
 
+    // not sure how useful this is and if it's worth supporting because of the
+    // cost to support the ranking as well
     it.skip('groups', () => {
       expect(tokenizePath('/one{-b_:id}')).toEqual([
         [
@@ -43,7 +42,7 @@ describe('Path parser', () => {
       ])
     })
 
-    // TODO: add test when groups exist
+    // same as above
     it.skip('escapes } inside group', () => {
       expect(tokenizePath('/{\\{}')).toEqual([
         [{ type: TokenType.Static, value: '{' }],

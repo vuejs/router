@@ -1,8 +1,8 @@
+import { tokenizePath } from '../../src/matcher/path-tokenizer'
 import {
   tokensToParser,
-  tokenizePath,
   comparePathParserScore,
-} from '../../src/matcher/tokenizer'
+} from '../../src/matcher/path-parser-ranker'
 
 type PathParserOptions = Parameters<typeof tokensToParser>[1]
 
