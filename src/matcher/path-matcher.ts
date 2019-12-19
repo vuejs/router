@@ -1,42 +1,5 @@
 import pathToRegexp from 'path-to-regexp'
-import {
-  RouteRecord,
-  // TODO: add it to matched
-  // MatchedRouteRecord,
-} from '../types'
 import { RouteRecordNormalized, RouteRecordMatcher } from './types'
-
-/**
- * Normalizes a RouteRecord into a MatchedRouteRecord. It also ensures removes
- * traling slashes Returns a copy
- * @param record
- * @returns the normalized version
- */
-export function normalizeRouteRecord(
-  record: Readonly<RouteRecord>
-): RouteRecordNormalized {
-  if ('redirect' in record) {
-    return {
-      path: record.path,
-      redirect: record.redirect,
-      name: record.name,
-      beforeEnter: record.beforeEnter,
-      meta: record.meta,
-    }
-  } else {
-    return {
-      path: record.path,
-      components:
-        'components' in record
-          ? record.components
-          : { default: record.component },
-      children: record.children,
-      name: record.name,
-      beforeEnter: record.beforeEnter,
-      meta: record.meta,
-    }
-  }
-}
 
 const enum PathScore {
   _multiplier = 10,

@@ -24,6 +24,7 @@ export type RouteRecordNormalized =
   | RouteRecordRedirectNormalized
   | RouteRecordViewNormalized
 
+// TODO: move to a different file
 export interface RouteRecordMatcher {
   re: RegExp
   resolve: (params?: RouteParams) => string

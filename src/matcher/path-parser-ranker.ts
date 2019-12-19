@@ -1,6 +1,6 @@
 import { Token, TokenType } from './path-tokenizer'
 
-type Params = Record<string, string | string[]>
+export type PathParams = Record<string, string | string[]>
 
 /**
  * @description A key
@@ -32,16 +32,16 @@ export interface PathParser {
    * @returns a Params object, empty if there are no params. `null` if there is
    * no match
    */
-  parse(path: string): Params | null
+  parse(path: string): PathParams | null
   /**
    * Creates a string version of the url
    * @param params object of params
    * @returns a url
    */
-  stringify(params: Params): string
+  stringify(params: PathParams): string
 }
 
-interface PathParserOptions {
+export interface PathParserOptions {
   /**
    * Makes the RegExp case sensitive. Defaults to false
    */
@@ -178,6 +178,9 @@ export function tokensToParser(
       segmentScores.push(subSegmentScore)
     }
 
+    // an empty array like /home/ -> [[{home}], []]
+    // if (!segment.length) pattern += '/'
+
     score.push(segmentScores)
   }
 
@@ -194,9 +197,9 @@ export function tokensToParser(
 
   const re = new RegExp(pattern, options.sensitive ? '' : 'i')
 
-  function parse(path: string): Params | null {
+  function parse(path: string): PathParams | null {
     const match = path.match(re)
-    const params: Params = {}
+    const params: PathParams = {}
 
     if (!match) return null
 
@@ -209,7 +212,7 @@ export function tokensToParser(
     return params
   }
 
-  function stringify(params: Params): string {
+  function stringify(params: PathParams): string {
     let path = ''
     // for optional parameters to allow to be empty
     let avoidDuplicatedSlash: boolean = false

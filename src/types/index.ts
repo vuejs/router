@@ -1,5 +1,5 @@
 import { HistoryQuery, RawHistoryQuery } from '../history/common'
-import { RegExpOptions } from 'path-to-regexp'
+import { PathParserOptions } from '../matcher/path-parser-ranker'
 // import Vue, { ComponentOptions, AsyncComponent } from 'vue'
 
 // type Component = ComponentOptions<Vue> | typeof Vue | AsyncComponent
@@ -112,7 +112,8 @@ export interface RouteRecordCommon {
   name?: string
   beforeEnter?: NavigationGuard | NavigationGuard[]
   meta?: Record<string | number | symbol, any>
-  options?: RegExpOptions
+  // TODO: only allow a subset?
+  options?: PathParserOptions
 }
 
 export type RouteRecordRedirectOption =

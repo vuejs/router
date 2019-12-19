@@ -1,7 +1,5 @@
-import pathToRegexp from 'path-to-regexp'
 import {
   RouteRecord,
-  RouteParams,
   MatcherLocation,
   MatcherLocationNormalized,
   MatcherLocationRedirect,
@@ -9,8 +7,17 @@ import {
   // MatchedRouteRecord,
 } from '../types'
 import { NoRouteMatchError, InvalidRouteMatch } from '../errors'
-import { createRouteRecordMatcher, normalizeRouteRecord } from './path-matcher'
-import { RouteRecordMatcher, RouteRecordNormalized } from './types'
+// import { createRouteRecordMatcher } from './path-matcher'
+import {
+  createRouteRecordMatcher,
+  RouteRecordMatcher,
+} from './new-path-matcher'
+import { RouteRecordNormalized } from './types'
+import {
+  PathParams,
+  comparePathParserScore,
+  PathParserOptions,
+} from './path-parser-ranker'
 
 interface RouterMatcher {
   addRoute: (record: Readonly<RouteRecord>, parent?: RouteRecordMatcher) => void
@@ -26,15 +33,9 @@ function removeTrailingSlash(path: string): string {
   return path.replace(TRAILING_SLASH_RE, '$1')
 }
 
-const DEFAULT_REGEX_OPTIONS: pathToRegexp.RegExpOptions = {
-  // NOTE: should we make strict by default and redirect /users/ to /users
-  // so that it's the same from SEO perspective?
-  strict: false,
-}
-
 export function createRouterMatcher(
   routes: RouteRecord[],
-  globalOptions: pathToRegexp.RegExpOptions = DEFAULT_REGEX_OPTIONS
+  globalOptions?: PathParserOptions
 ): RouterMatcher {
   const matchers: RouteRecordMatcher[] = []
 
@@ -45,7 +46,8 @@ export function createRouterMatcher(
     const mainNormalizedRecord: RouteRecordNormalized = normalizeRouteRecord(
       record
     )
-    const options = { ...globalOptions, ...record.options }
+    const options: PathParserOptions = { ...globalOptions, ...record.options }
+    // TODO: can probably be removed now that we have our own parser and we handle this correctly
     if (!options.strict)
       mainNormalizedRecord.path = removeTrailingSlash(mainNormalizedRecord.path)
     // generate an array of records to correctly handle aliases
@@ -61,6 +63,7 @@ export function createRouterMatcher(
       }
     }
 
+    // build up the path for nested routes
     if (parent) {
       // if the child isn't an absolute route
       if (record.path[0] !== '/') {
@@ -98,7 +101,14 @@ export function createRouterMatcher(
 
   function insertMatcher(matcher: RouteRecordMatcher) {
     let i = 0
-    while (i < matchers.length && matcher.score <= matchers[i].score) i++
+    // console.log('i is', { i })
+    while (
+      i < matchers.length &&
+      comparePathParserScore(matcher, matchers[i]) >= 0
+    )
+      i++
+    // console.log('END i is', { i })
+    // while (i < matchers.length && matcher.score <= matchers[i].score) i++
     matchers.splice(i, 0, matcher)
   }
 
@@ -112,7 +122,7 @@ export function createRouterMatcher(
     currentLocation: Readonly<MatcherLocationNormalized>
   ): MatcherLocationNormalized | MatcherLocationRedirect {
     let matcher: RouteRecordMatcher | void
-    let params: RouteParams = {}
+    let params: PathParams = {}
     let path: MatcherLocationNormalized['path']
     let name: MatcherLocationNormalized['name']
 
@@ -126,8 +136,7 @@ export function createRouterMatcher(
       params = location.params || currentLocation.params
       // params are automatically encoded
       // TODO: try catch to provide better error messages
-      path = matcher.resolve(params)
-      // TODO: check missing params
+      path = matcher.stringify(params)
 
       if ('redirect' in matcher.record) {
         const { redirect } = matcher.record
@@ -144,47 +153,19 @@ export function createRouterMatcher(
       }
     } else if ('path' in location) {
       matcher = matchers.find(m => m.re.test(location.path))
+      // matcher should have a value after the loop
 
       // TODO: if no matcher, return the location with an empty matched array
       // to allow non existent matches
       // TODO: warning of unused params if provided
       if (!matcher) throw new NoRouteMatchError(location)
 
+      params = matcher.parse(location.path)!
       // no need to resolve the path with the matcher as it was provided
       // this also allows the user to control the encoding
+      // TODO: check if the note above regarding encoding is still true
       path = location.path
       name = matcher.record.name
-
-      // fill params
-      const result = matcher.re.exec(path)
-
-      if (!result) {
-        // TODO: redo message: matching path against X
-        throw new Error(`Error parsing path "${location.path}"`)
-      }
-
-      for (let i = 0; i < matcher.keys.length; i++) {
-        const key = matcher.keys[i]
-        let value: string = result[i + 1]
-        try {
-          value = decodeURIComponent(value)
-        } catch (err) {
-          if (err instanceof URIError) {
-            console.warn(
-              `[vue-router] failed decoding param "${key}" with value "${value}". When providing a string location or the "path" property, URL must be properly encoded (TODO: link). Falling back to unencoded value`
-            )
-          } else {
-            throw err
-          }
-        }
-        if (!value) {
-          // TODO: handle optional params
-          throw new Error(
-            `Error parsing path "${location.path}" when looking for param "${key}"`
-          )
-        }
-        params[key] = value
-      }
 
       if ('redirect' in matcher.record) {
         const { redirect } = matcher.record
@@ -193,6 +174,7 @@ export function createRouterMatcher(
           normalizedLocation: {
             name,
             path,
+            // TODO: verify this is good or add a comment
             matched: [],
             params,
             meta: matcher.record.meta || {},
@@ -208,7 +190,7 @@ export function createRouterMatcher(
       if (!matcher) throw new NoRouteMatchError(location, currentLocation)
       name = matcher.record.name
       params = location.params || currentLocation.params
-      path = matcher.resolve(params)
+      path = matcher.stringify(params)
     }
 
     // this should never happen because it will mean that the user ended up in a route
@@ -240,4 +222,36 @@ export function createRouterMatcher(
   }
 
   return { addRoute, resolve }
+}
+
+/**
+ * Normalizes a RouteRecord into a MatchedRouteRecord. It also ensures removes
+ * traling slashes Returns a copy
+ * @param record
+ * @returns the normalized version
+ */
+export function normalizeRouteRecord(
+  record: Readonly<RouteRecord>
+): RouteRecordNormalized {
+  if ('redirect' in record) {
+    return {
+      path: record.path,
+      redirect: record.redirect,
+      name: record.name,
+      beforeEnter: record.beforeEnter,
+      meta: record.meta,
+    }
+  } else {
+    return {
+      path: record.path,
+      components:
+        'components' in record
+          ? record.components
+          : { default: record.component },
+      children: record.children,
+      name: record.name,
+      beforeEnter: record.beforeEnter,
+      meta: record.meta,
+    }
+  }
 }
