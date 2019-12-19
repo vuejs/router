@@ -8,10 +8,7 @@ import {
 } from '../types'
 import { NoRouteMatchError, InvalidRouteMatch } from '../errors'
 // import { createRouteRecordMatcher } from './path-matcher'
-import {
-  createRouteRecordMatcher,
-  RouteRecordMatcher,
-} from './new-path-matcher'
+import { createRouteRecordMatcher, RouteRecordMatcher } from './path-matcher'
 import { RouteRecordNormalized } from './types'
 import {
   PathParams,
