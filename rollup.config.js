@@ -109,8 +109,8 @@ export default [
   // browser-friendly UMD build
   createEntry({ format: 'iife' }),
   createEntry({ format: 'iife', minify: true }),
-  createEntry({ format: 'cjs', external: ['path-to-regexp'] }),
-  createEntry({ format: 'es', external: ['path-to-regexp'] }),
+  createEntry({ format: 'cjs' }),
+  createEntry({ format: 'es' }),
   createEntry({ format: 'es', isBrowser: true }),
   createEntry({ format: 'es', isBrowser: true, minify: true }),
 ]
