@@ -1236,12 +1236,12 @@ browserify-zlib@^0.2.0:
   dependencies:
     pako "~1.0.5"
 
-browserstack-local@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/browserstack-local/-/browserstack-local-1.4.2.tgz#5d2248384b8aa0fc521df32001127f010a92458d"
-  integrity sha512-fRaynjF0MvtyyfPRy2NFnVwxLyNtD28K/v9xRsIjUVf7xLc80NIm7Nfr3KXlFmWizhG91PL/UAOXlHkoxQjaNw==
+browserstack-local@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/browserstack-local/-/browserstack-local-1.4.3.tgz#f5710f31f25f4efe0bf3193e8683f88c96f614f9"
+  integrity sha512-T7MEgo3PLJWhZiL269YezAAc9xud4TWiHSxyZ074RA2JJgPa7hxxeLXH6v+5L8isD/zzaxg/AxHUx/DWSyKEFw==
   dependencies:
-    https-proxy-agent "^2.2.1"
+    https-proxy-agent "^2.2.3"
     is-running "^2.0.0"
     ps-tree "=1.1.1"
     temp-fs "^0.9.9"
@@ -3296,7 +3296,7 @@ https-browserify@^1.0.0:
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
   integrity sha1-7AbBDgo0wPL68Zn3/X/Hj//QPHM=
 
-https-proxy-agent@^2.2.1:
+https-proxy-agent@^2.2.1, https-proxy-agent@^2.2.3:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.4.tgz#4ee7a737abd92678a293d9b34a1af4d0d08c787b"
   integrity sha512-OmvfoQ53WLjtA9HeYP9RNrWMJzzAz1JGaSFr1nijg0PVR1JaD/xbJq1mdEIIlxGpXp9eSe/O2LgU9DJmTPd0Eg==
