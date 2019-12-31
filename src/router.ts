@@ -68,8 +68,7 @@ export interface Router {
 
   // TODO: also return a ListenerRemover
   onError(handler: ErrorHandler): void
-  // TODO: change to isReady
-  onReady(): Promise<void>
+  isReady(): Promise<void>
 }
 
 export function createRouter({
@@ -456,7 +455,7 @@ export function createRouter({
     markAsReady()
   }
 
-  function onReady(): Promise<void> {
+  function isReady(): Promise<void> {
     if (ready && currentRoute !== START_LOCATION_NORMALIZED)
       return Promise.resolve()
     return new Promise((resolve, reject) => {
@@ -563,7 +562,7 @@ export function createRouter({
     afterEach,
     createHref,
     onError,
-    onReady,
+    isReady,
 
     doInitialNavigation,
     setActiveApp,

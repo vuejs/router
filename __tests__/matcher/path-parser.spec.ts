@@ -581,7 +581,7 @@ describe('Path parser', () => {
 
     // TODO: better syntax? like /a/{b-:param}+
     // also to allow repeatable because otherwise groups are meaningless
-    it('group+', () => {
+    it('groups (extract a part of the param)', () => {
       matchParams('/a/:a(?:b-([^/]+\\)?)', '/a/b-one', {
         a: 'one',
       })

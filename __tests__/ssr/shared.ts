@@ -61,8 +61,7 @@ export function renderApp(
     const { app, router } = createApp(routerOptions, vueOptions)
 
     // wait until router has resolved possible async components and hooks
-    // TODO: rename the promise one to isReady
-    router.onReady().then(() => {
+    router.isReady().then(() => {
       // const matchedComponents = router.getMatchedComponents()
       const matchedComponents = router.currentRoute.matched
       // no matched routes, reject with 404
