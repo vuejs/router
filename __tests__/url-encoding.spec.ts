@@ -17,7 +17,7 @@ function createHistory() {
   return routerHistory
 }
 
-// TODO: add encoding
+// TODO: test by spying on encode functions since things are already tested by encoding.spec.ts
 describe.skip('URL Encoding', () => {
   beforeAll(() => {
     createDom()
