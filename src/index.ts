@@ -6,8 +6,6 @@ import createHashHistory from './history/hash'
 import View from './components/View'
 import Link from './components/Link'
 
-// TODO: type things
-
 const plugin: PluginFunction<void> = Vue => {
   Vue.mixin({
     beforeCreate() {
