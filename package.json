@@ -31,7 +31,7 @@
     "browserstack-local": "^1.4.3",
     "chromedriver": "^78.0.1",
     "codecov": "^3.6.1",
-    "consola": "^2.11.2",
+    "consola": "^2.11.3",
     "css-loader": "^3.4.0",
     "dotenv": "^8.2.0",
     "expect": "^24.9.0",
