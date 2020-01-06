@@ -17,17 +17,17 @@
 
 const HASH_RE = /#/g // %23
 const AMPERSAND_RE = /&/g // %26
+const SLASH_RE = /\//g // %2F
 const EQUAL_RE = /=/g // %3D
 const IM_RE = /\?/g // %3F
-const SLASH_RE = /\//g // %2F
 
 const ENC_BRACKET_OPEN_RE = /%5B/g // [
 const ENC_BRACKET_CLOSE_RE = /%5D/g // ]
 const ENC_CARET_RE = /%5E/g // ^
+const ENC_BACKTICK_RE = /%60/g // `
 const ENC_CURLY_OPEN_RE = /%7B/g // {
 const ENC_PIPE_RE = /%7C/g // |
 const ENC_CURLY_CLOSE_RE = /%7D/g // }
-const ENC_BACKTICK_RE = /%60/g // `
 
 function commonEncode(text: string): string {
   return encodeURI(text)
