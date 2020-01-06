@@ -42,7 +42,7 @@
     "nightwatch": "^1.3.2",
     "nightwatch-helpers": "^1.2.0",
     "prettier": "^1.19.1",
-    "rollup": "^1.27.14",
+    "rollup": "^1.28.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-terser": "^5.1.2",
     "rollup-plugin-typescript2": "^0.25.3",
