@@ -27,7 +27,7 @@
     "@types/webpack": "^4.41.0",
     "@types/webpack-env": "^1.15.0",
     "@vue/test-utils": "^1.0.0-beta.30",
-    "axios": "^0.19.0",
+    "axios": "^0.19.1",
     "browserstack-local": "^1.4.3",
     "chromedriver": "^78.0.1",
     "codecov": "^3.6.1",
