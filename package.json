@@ -44,7 +44,7 @@
     "prettier": "^1.19.1",
     "rollup": "^1.29.0",
     "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-terser": "^5.1.2",
+    "rollup-plugin-terser": "^5.2.0",
     "rollup-plugin-typescript2": "^0.25.3",
     "selenium-server": "^3.141.59",
     "style-loader": "^1.1.2",
