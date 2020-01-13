@@ -24,7 +24,7 @@
     "@rollup/plugin-replace": "^2.3.0",
     "@types/jest": "^24.0.25",
     "@types/jsdom": "^12.2.4",
-    "@types/webpack": "^4.41.0",
+    "@types/webpack": "^4.41.2",
     "@types/webpack-env": "^1.15.0",
     "@vue/test-utils": "^1.0.0-beta.30",
     "axios": "^0.19.1",
