@@ -49,6 +49,7 @@ export interface RouterOptions {
   history: RouterHistory
   routes: RouteRecord[]
   scrollBehavior?: ScrollBehavior
+  // TODO: allow customizing encoding functions
 }
 
 export interface Router {

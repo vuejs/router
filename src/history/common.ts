@@ -1,4 +1,5 @@
 import { ListenerRemover } from '../types'
+import { encodeQueryProperty, encodeHash, encodePath } from '../utils/encoding'
 
 export type HistoryQuery = Record<string, string | string[]>
 // TODO: is it reall worth allowing null to form queries like ?q&b&c
@@ -95,9 +96,6 @@ export interface RouterHistory {
 
 // Generic utils
 
-// needed for the global flag
-const PERCENT_RE = /%/g
-
 /**
  * Transforms an URI into a normalized history location
  * @param location URI to normalize
@@ -141,6 +139,9 @@ export function parseURL(location: string): HistoryLocationNormalized {
   }
 }
 
+// TODO: the encoding would be handled at a router level instead where encoding functions can be customized
+// that way the matcher can encode/decode params properly
+
 function safeDecodeUriComponent(value: string): string {
   try {
     value = decodeURIComponent(value)
@@ -182,8 +183,6 @@ export function parseQuery(search: string): HistoryQuery {
   const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
   for (let i = 0; i < searchParams.length; ++i) {
     let [key, value] = searchParams[i].split('=')
-    key = safeDecodeUriComponent(key)
-    value = safeDecodeUriComponent(value)
     if (key in query) {
       // an extra variable for ts types
       let currentValue = query[key]
@@ -206,7 +205,9 @@ export function stringifyURL(location: HistoryLocation): string {
   let url = location.path
   let query = location.query ? stringifyQuery(location.query) : ''
 
-  return url + (query && '?' + query) + (location.hash || '')
+  return (
+    encodePath(url) + (query && '?' + query) + encodeHash(location.hash || '')
+  )
 }
 
 /**
@@ -215,7 +216,6 @@ export function stringifyURL(location: HistoryLocation): string {
  */
 export function stringifyQuery(query: RawHistoryQuery): string {
   let search = ''
-  // TODO: util function?
   for (const key in query) {
     if (search.length > 1) search += '&'
     const value = query[key]
@@ -224,13 +224,13 @@ export function stringifyQuery(query: RawHistoryQuery): string {
       search += key
       continue
     }
-    let encodedKey = safeEncodeUriComponent(key)
+    const encodedKey = encodeQueryProperty(key)
     let values: string[] = Array.isArray(value) ? value : [value]
-    values = values.map(safeEncodeUriComponent)
+    const encodedValues = values.map(encodeQueryProperty)
 
     search += `${encodedKey}=${values[0]}`
     for (let i = 1; i < values.length; i++) {
-      search += `&${encodedKey}=${values[i]}`
+      search += `&${encodedKey}=${encodedValues[i]}`
     }
   }
 
@@ -246,16 +246,6 @@ export function normalizeQuery(query: RawHistoryQuery): HistoryQuery {
     else normalizedQuery[key] = value
   }
   return normalizedQuery
-}
-
-// FIXME: not used
-/**
- * Prepare a URI string to be passed to pushState
- * @param uri
- */
-export function prepareURI(uri: string) {
-  // encode the % symbol so it also works on IE
-  return uri.replace(PERCENT_RE, '%25')
 }
 
 // use regular decodeURI

@@ -54,11 +54,14 @@ export function encodeQueryProperty(text: string): string {
     .replace(ENC_CARET_RE, '^')
 }
 
-export function encodeParam(text: string): string {
+export function encodePath(text: string): string {
   return commonEncode(text)
-    .replace(SLASH_RE, '%2F')
     .replace(HASH_RE, '%23')
     .replace(IM_RE, '%3F')
+}
+
+export function encodeParam(text: string): string {
+  return encodePath(text).replace(SLASH_RE, '%2F')
 }
 
 export const decode = decodeURIComponent
