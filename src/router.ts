@@ -32,6 +32,8 @@ import {
 } from './errors'
 import { extractComponentsGuards, guardToPromiseFn } from './utils'
 import Vue from 'vue'
+import { encodeParam } from './utils/encoding'
+import { decode } from './utils/encoding'
 
 type ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor
@@ -78,7 +80,10 @@ export function createRouter({
   scrollBehavior,
 }: RouterOptions): Router {
   const matcher: ReturnType<typeof createRouterMatcher> = createRouterMatcher(
-    routes
+    routes,
+    {},
+    encodeParam,
+    decode
   )
   const beforeGuards: NavigationGuard[] = []
   const afterGuards: PostNavigationGuard[] = []

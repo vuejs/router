@@ -1,5 +1,5 @@
 import { ListenerRemover } from '../types'
-import { encodeQueryProperty, encodeHash, encodePath } from '../utils/encoding'
+import { encodeQueryProperty, encodeHash } from '../utils/encoding'
 
 export type HistoryQuery = Record<string, string | string[]>
 // TODO: is it reall worth allowing null to form queries like ?q&b&c
@@ -142,31 +142,31 @@ export function parseURL(location: string): HistoryLocationNormalized {
 // TODO: the encoding would be handled at a router level instead where encoding functions can be customized
 // that way the matcher can encode/decode params properly
 
-function safeDecodeUriComponent(value: string): string {
-  try {
-    value = decodeURIComponent(value)
-  } catch (err) {
-    // TODO: handling only URIError?
-    console.warn(
-      `[vue-router] error decoding query "${value}". Keeping the original value.`
-    )
-  }
+// function safeDecodeUriComponent(value: string): string {
+//   try {
+//     value = decodeURIComponent(value)
+//   } catch (err) {
+//     // TODO: handling only URIError?
+//     console.warn(
+//       `[vue-router] error decoding query "${value}". Keeping the original value.`
+//     )
+//   }
 
-  return value
-}
+//   return value
+// }
 
-function safeEncodeUriComponent(value: string): string {
-  try {
-    value = encodeURIComponent(value)
-  } catch (err) {
-    // TODO: handling only URIError?
-    console.warn(
-      `[vue-router] error encoding query "${value}". Keeping the original value.`
-    )
-  }
+// function safeEncodeUriComponent(value: string): string {
+//   try {
+//     value = encodeURIComponent(value)
+//   } catch (err) {
+//     // TODO: handling only URIError?
+//     console.warn(
+//       `[vue-router] error encoding query "${value}". Keeping the original value.`
+//     )
+//   }
 
-  return value
-}
+//   return value
+// }
 
 /**
  * Transform a queryString into a query object. Accept both, a version with the leading `?` and without
@@ -205,9 +205,7 @@ export function stringifyURL(location: HistoryLocation): string {
   let url = location.path
   let query = location.query ? stringifyQuery(location.query) : ''
 
-  return (
-    encodePath(url) + (query && '?' + query) + encodeHash(location.hash || '')
-  )
+  return url + (query && '?' + query) + encodeHash(location.hash || '')
 }
 
 /**
