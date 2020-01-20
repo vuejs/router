@@ -32,7 +32,7 @@
     "chromedriver": "^78.0.1",
     "codecov": "^3.6.1",
     "consola": "^2.11.3",
-    "css-loader": "^3.4.1",
+    "css-loader": "^3.4.2",
     "dotenv": "^8.2.0",
     "expect": "^24.9.0",
     "faked-promise": "^2.2.2",
