@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div>
     <pre>{{ currentLocation }}</pre>
     <section class="info">
       Name:
