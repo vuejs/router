@@ -29,7 +29,7 @@
     "@vue/compiler-sfc": "^3.0.0-alpha.2",
     "axios": "^0.19.1",
     "browserstack-local": "^1.4.4",
-    "chromedriver": "^78.0.1",
+    "chromedriver": "^79.0.0",
     "codecov": "^3.6.1",
     "consola": "^2.11.3",
     "css-loader": "^3.4.2",
