@@ -26,6 +26,7 @@
     "@types/jsdom": "^12.2.4",
     "@types/webpack": "^4.41.2",
     "@types/webpack-env": "^1.15.0",
+    "@vue/compiler-sfc": "^3.0.0-alpha.2",
     "axios": "^0.19.1",
     "browserstack-local": "^1.4.4",
     "chromedriver": "^78.0.1",
@@ -52,6 +53,7 @@
     "ts-node": "^8.6.2",
     "typescript": "^3.7.4",
     "vue": "^3.0.0-alpha.2",
+    "vue-loader": "^16.0.0-alpha.2",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.9.0"

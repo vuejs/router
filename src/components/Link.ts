@@ -1,4 +1,5 @@
-import { defineComponent, h, PropType, inject, computed } from 'vue'
+import { defineComponent, h, PropType, inject } from '@vue/runtime-core'
+import { computed } from '@vue/reactivity'
 import { Router } from '../router'
 import { RouteLocation } from '../types'
 

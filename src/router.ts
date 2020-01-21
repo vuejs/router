@@ -33,7 +33,7 @@ import {
 import { extractComponentsGuards, guardToPromiseFn } from './utils'
 import { encodeParam } from './utils/encoding'
 import { decode } from './utils/encoding'
-import { ref, Ref } from 'vue'
+import { ref, Ref } from '@vue/reactivity'
 
 type ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor

@@ -1,5 +1,5 @@
 import { createRouter, Router } from './router'
-import { App } from 'vue'
+import { App } from '@vue/runtime-core'
 import createHistory from './history/html5'
 import createMemoryHistory from './history/memory'
 import createHashHistory from './history/hash'

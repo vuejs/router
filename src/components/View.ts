@@ -1,4 +1,4 @@
-import { h, inject, FunctionalComponent } from 'vue'
+import { h, FunctionalComponent, inject } from '@vue/runtime-core'
 import { Router } from '../'
 
 interface Props {
@@ -21,6 +21,7 @@ const View: FunctionalComponent<Props> = (props, { slots, attrs }) => {
   const component = matched.components[props.name || 'default']
 
   // TODO: remove any
+  // const children = typeof slots.default === 'function' ? slots.default() : []
   return h(component as any, attrs, slots.default)
 }
 
