@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-// NOTE: these tests only run when using jest `yarn jest --watch`
 import RouterLink from '../src/components/Link'
 import {
   START_LOCATION_NORMALIZED,
@@ -9,7 +8,6 @@ import {
   MatcherLocation,
   RouteLocationNormalized,
 } from '../src/types'
-import { mount } from '@vue/test-utils'
 import { createMemoryHistory } from '../src'
 
 const locations: Record<

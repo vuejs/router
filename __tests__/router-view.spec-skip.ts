@@ -1,14 +1,12 @@
 /**
  * @jest-environment jsdom
  */
-// NOTE: these tests only run when using jest `yarn jest --watch`
 import RouterView from '../src/components/View'
 import { components } from './utils'
 import {
   START_LOCATION_NORMALIZED,
   RouteLocationNormalized,
 } from '../src/types'
-import { mount } from '@vue/test-utils'
 
 const routes: Record<string, RouteLocationNormalized> = {
   root: {
