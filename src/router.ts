@@ -33,7 +33,7 @@ import {
 import { extractComponentsGuards, guardToPromiseFn } from './utils'
 import { encodeParam } from './utils/encoding'
 import { decode } from './utils/encoding'
-import { ref, Ref } from '@vue/reactivity'
+import { ref, Ref, markNonReactive } from '@vue/reactivity'
 
 type ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor
@@ -269,7 +269,7 @@ export function createRouter({
     else history.push(url)
 
     const from = currentRoute.value
-    currentRoute.value = toLocation
+    currentRoute.value = markNonReactive(toLocation)
     updateReactiveRoute()
     handleScroll(toLocation, from).catch(err => triggerError(err, false))
 
@@ -376,10 +376,10 @@ export function createRouter({
       }
 
       // accept current navigation
-      currentRoute.value = {
+      currentRoute.value = markNonReactive({
         ...to,
         ...matchedRoute,
-      }
+      })
       updateReactiveRoute()
       // TODO: refactor with a state getter
       // const { scroll } = history.state
@@ -532,7 +532,7 @@ export function createRouter({
     // already contains current location
 
     const from = currentRoute.value
-    currentRoute.value = toLocation
+    currentRoute.value = markNonReactive(toLocation)
     updateReactiveRoute()
 
     // navigation is confirmed, call afterGuards

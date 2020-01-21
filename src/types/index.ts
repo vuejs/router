@@ -1,5 +1,6 @@
 import { HistoryQuery, RawHistoryQuery } from '../history/common'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
+import { markNonReactive } from '@vue/reactivity'
 
 // type Component = ComponentOptions<Vue> | typeof Vue | AsyncComponent
 
@@ -135,16 +136,18 @@ export type RouteRecord =
   | RouteRecordRedirect
 
 // TODO: this should probably be generate by ensureLocation
-export const START_LOCATION_NORMALIZED: RouteLocationNormalized = {
-  path: '/',
-  name: undefined,
-  params: {},
-  query: {},
-  hash: '',
-  fullPath: '/',
-  matched: [],
-  meta: {},
-}
+export const START_LOCATION_NORMALIZED: RouteLocationNormalized = markNonReactive(
+  {
+    path: '/',
+    name: undefined,
+    params: {},
+    query: {},
+    hash: '',
+    fullPath: '/',
+    matched: [],
+    meta: {},
+  }
+)
 
 // make matched non enumerable for easy printing
 Object.defineProperty(START_LOCATION_NORMALIZED, 'matched', {
