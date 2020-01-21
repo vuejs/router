@@ -103,7 +103,8 @@ describe('extractComponentsGuards', () => {
     await checkGuards([SingleGuardNamed, SingleGuardNamed], 4)
   })
 
-  it('works with async components', async () => {
+  // TODO: async components
+  it.skip('works with async components', async () => {
     await checkGuards([makeAsync(NoGuard)], 0)
     await checkGuards([makeAsync(SingleGuard)], 1)
     await checkGuards([makeAsync(SingleGuard), makeAsync(SingleGuardNamed)], 3)

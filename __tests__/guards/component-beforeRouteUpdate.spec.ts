@@ -51,7 +51,8 @@ describe('beforeRouteUpdate', () => {
         expect(beforeRouteUpdate).toHaveBeenCalledTimes(1)
       })
 
-      it('resolves async components before guarding', async () => {
+      // TODO: add async component
+      it.skip('resolves async components before guarding', async () => {
         const spy = jest.fn((to, from, next) => next())
         const component = {
           template: `<div></div>`,
@@ -78,10 +79,10 @@ describe('beforeRouteUpdate', () => {
         })
         await router[navigationMethod]('/guard/one')
         const p = router[navigationMethod]('/guard/foo')
-        expect(router.currentRoute.fullPath).toBe('/guard/one')
+        expect(router.currentRoute.value.fullPath).toBe('/guard/one')
         resolve()
         await p
-        expect(router.currentRoute.fullPath).toBe('/guard/foo')
+        expect(router.currentRoute.value.fullPath).toBe('/guard/foo')
       })
     })
   })

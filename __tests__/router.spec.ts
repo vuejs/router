@@ -31,7 +31,7 @@ describe('Router', () => {
   it('can be instantiated', () => {
     const history = createMemoryHistory()
     const router = createRouter({ history, routes })
-    expect(router.currentRoute).toEqual({
+    expect(router.currentRoute.value).toEqual({
       name: undefined,
       fullPath: '/',
       hash: '',
@@ -124,14 +124,14 @@ describe('Router', () => {
       // the second one will have already been resolved
       r2()
       await pB
-      expect(router.currentRoute.fullPath).toBe('/p/b')
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
       r1()
       try {
         await pA
       } catch (err) {
         expect(err).toBeInstanceOf(NavigationCancelled)
       }
-      expect(router.currentRoute.fullPath).toBe('/p/b')
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
     }
 
     it('cancels navigation abort if a newer one is finished on push', async () => {
@@ -176,16 +176,16 @@ describe('Router', () => {
       history.back()
       history.back()
 
-      expect(router.currentRoute.fullPath).toBe('/p/b')
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
       // resolves the last call to history.back() first
       // so we end up on /p/initial
       r1()
       await tick()
-      expect(router.currentRoute.fullPath).toBe('/foo')
+      expect(router.currentRoute.value.fullPath).toBe('/foo')
       // resolves the pending navigation, this should be cancelled
       r2()
       await tick()
-      expect(router.currentRoute.fullPath).toBe('/foo')
+      expect(router.currentRoute.value.fullPath).toBe('/foo')
     }
 
     it('cancels pending navigations if a newer one is finished on user navigation (from history)', async () => {
@@ -268,7 +268,7 @@ describe('Router', () => {
   it('allows base option in abstract history', async () => {
     const history = createMemoryHistory('/app/')
     const router = createRouter({ history, routes })
-    expect(router.currentRoute).toEqual({
+    expect(router.currentRoute.value).toEqual({
       name: undefined,
       fullPath: '/',
       hash: '',
@@ -278,7 +278,7 @@ describe('Router', () => {
       meta: {},
     })
     await router.replace('/foo')
-    expect(router.currentRoute).toMatchObject({
+    expect(router.currentRoute.value).toMatchObject({
       name: 'Foo',
       fullPath: '/foo',
       hash: '',
@@ -291,7 +291,7 @@ describe('Router', () => {
   it('allows base option with html5 history', async () => {
     const history = createHistory('/app/')
     const router = createRouter({ history, routes })
-    expect(router.currentRoute).toEqual({
+    expect(router.currentRoute.value).toEqual({
       name: undefined,
       fullPath: '/',
       hash: '',
@@ -301,7 +301,7 @@ describe('Router', () => {
       meta: {},
     })
     await router.replace('/foo')
-    expect(router.currentRoute).toMatchObject({
+    expect(router.currentRoute.value).toMatchObject({
       name: 'Foo',
       fullPath: '/foo',
       hash: '',

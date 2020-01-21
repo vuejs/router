@@ -90,7 +90,7 @@ describe('URL Encoding', () => {
     it('encodes params when resolving', async () => {
       const router = createRouter()
       await router.push({ name: 'params', params: { p: '%€' } })
-      const { currentRoute } = router
+      const currentRoute = router.currentRoute.value
       expect(currentRoute.path).toBe(encodeURI('/p/%€'))
       expect(currentRoute.fullPath).toBe(encodeURI('/p/%€'))
       expect(currentRoute.query).toEqual({

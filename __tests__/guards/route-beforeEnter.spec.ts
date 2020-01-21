@@ -174,10 +174,10 @@ describe('beforeEnter', () => {
           next()
         })
         const p = router[navigationMethod]('/foo')
-        expect(router.currentRoute.fullPath).toBe('/')
+        expect(router.currentRoute.value.fullPath).toBe('/')
         resolve()
         await p
-        expect(router.currentRoute.fullPath).toBe('/foo')
+        expect(router.currentRoute.value.fullPath).toBe('/foo')
       })
 
       it('waits before navigating in an array of beforeEnter', async () => {
@@ -193,14 +193,14 @@ describe('beforeEnter', () => {
           next()
         })
         const p = router[navigationMethod]('/multiple')
-        expect(router.currentRoute.fullPath).toBe('/')
+        expect(router.currentRoute.value.fullPath).toBe('/')
         expect(beforeEnters[1]).not.toHaveBeenCalled()
         r1()
         await p1
         await tick()
         r2()
         await p
-        expect(router.currentRoute.fullPath).toBe('/multiple')
+        expect(router.currentRoute.value.fullPath).toBe('/multiple')
       })
     })
   })

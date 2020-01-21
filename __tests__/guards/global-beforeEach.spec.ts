@@ -116,7 +116,7 @@ describe('router.beforeEach', () => {
           expect.objectContaining({ path: '/foo' }),
           expect.any(Function)
         )
-        expect(router.currentRoute.fullPath).toBe('/other')
+        expect(router.currentRoute.value.fullPath).toBe('/other')
       })
 
       async function assertRedirect(redirectFn: (i: string) => RouteLocation) {
@@ -133,7 +133,7 @@ describe('router.beforeEach', () => {
         expect(spy).not.toHaveBeenCalled()
         await router[navigationMethod]('/n/0')
         expect(spy).toHaveBeenCalledTimes(4)
-        expect(router.currentRoute.fullPath).toBe('/n/3')
+        expect(router.currentRoute.value.fullPath).toBe('/n/3')
       }
 
       it('can redirect multiple times with string redirect', async () => {
@@ -178,10 +178,10 @@ describe('router.beforeEach', () => {
           next()
         })
         const p = router[navigationMethod]('/foo')
-        expect(router.currentRoute.fullPath).toBe('/')
+        expect(router.currentRoute.value.fullPath).toBe('/')
         resolve()
         await p
-        expect(router.currentRoute.fullPath).toBe('/foo')
+        expect(router.currentRoute.value.fullPath).toBe('/foo')
       })
 
       it('waits in the right order', async () => {
@@ -204,7 +204,7 @@ describe('router.beforeEach', () => {
         })
         router.beforeEach(guard2)
         let navigation = router[navigationMethod]('/foo')
-        expect(router.currentRoute.fullPath).toBe('/')
+        expect(router.currentRoute.value.fullPath).toBe('/')
         expect(guard1).not.toHaveBeenCalled()
         expect(guard2).not.toHaveBeenCalled()
         r1() // resolve the first guard
@@ -212,11 +212,11 @@ describe('router.beforeEach', () => {
         await tick() // mocha requires an extra tick here
         expect(guard1).toHaveBeenCalled()
         // we haven't resolved the second gurad yet
-        expect(router.currentRoute.fullPath).toBe('/')
+        expect(router.currentRoute.value.fullPath).toBe('/')
         r2()
         await navigation
         expect(guard2).toHaveBeenCalled()
-        expect(router.currentRoute.fullPath).toBe('/foo')
+        expect(router.currentRoute.value.fullPath).toBe('/foo')
       })
 
       it('adds meta information', async () => {

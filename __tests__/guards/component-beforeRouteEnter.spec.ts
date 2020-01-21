@@ -178,7 +178,7 @@ describe('beforeRouteEnter', () => {
         await router[navigationMethod]('/named')
         expect(named.default).toHaveBeenCalledTimes(1)
         expect(named.other).toHaveBeenCalledTimes(1)
-        expect(router.currentRoute.fullPath).toBe('/named')
+        expect(router.currentRoute.value.fullPath).toBe('/named')
       })
 
       it('aborts navigation if one of the named views aborts', async () => {
@@ -189,10 +189,11 @@ describe('beforeRouteEnter', () => {
         named.other.mockImplementationOnce(noGuard)
         await router[navigationMethod]('/named').catch(err => {}) // catch abort
         expect(named.default).toHaveBeenCalledTimes(1)
-        expect(router.currentRoute.fullPath).not.toBe('/named')
+        expect(router.currentRoute.value.fullPath).not.toBe('/named')
       })
 
-      it('resolves async components before guarding', async () => {
+      // TODO: async components
+      it.skip('resolves async components before guarding', async () => {
         const spy = jest.fn(noGuard)
         const component = {
           template: `<div></div>`,
@@ -227,10 +228,10 @@ describe('beforeRouteEnter', () => {
           next()
         })
         const p = router[navigationMethod]('/foo')
-        expect(router.currentRoute.fullPath).toBe('/')
+        expect(router.currentRoute.value.fullPath).toBe('/')
         resolve()
         await p
-        expect(router.currentRoute.fullPath).toBe('/foo')
+        expect(router.currentRoute.value.fullPath).toBe('/foo')
       })
 
       // not implemented yet as it depends on Vue 3 Suspense
@@ -238,7 +239,7 @@ describe('beforeRouteEnter', () => {
         const router = createRouter({ routes })
         beforeRouteEnter.mockImplementationOnce((to, from, next) => {
           next(vm => {
-            expect(router.currentRoute.fullPath).toBe('/foo')
+            expect(router.currentRoute.value.fullPath).toBe('/foo')
             expect(vm).toBeTruthy()
             done()
           })
@@ -251,7 +252,7 @@ describe('beforeRouteEnter', () => {
         beforeRouteEnter.mockImplementationOnce(async (to, from, next) => {
           await promise
           next(vm => {
-            expect(router.currentRoute.fullPath).toBe('/foo')
+            expect(router.currentRoute.value.fullPath).toBe('/foo')
             expect(vm).toBeTruthy()
             done()
           })
