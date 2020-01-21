@@ -18,7 +18,7 @@ const exportName = 'VueRouter'
 function createEntry(
   {
     format, // Rollup format (iife, umd, cjs, es)
-    external, // Rollup external option
+    external = ['vue', '@vue/reactivity', '@vue/runtime-core'], // Rollup external option
     input = 'src/index.ts', // entry point
     env = 'development', // NODE_ENV variable
     minify = false,
