@@ -18,9 +18,11 @@ export async function extractComponentsGuards(
         const component = record.components[name]
         // TODO: handle Vue.extend views
         // if ('options' in component) throw new Error('TODO')
-        const resolvedComponent = await (typeof component === 'function'
-          ? component()
-          : component)
+        const resolvedComponent = component
+        // TODO: handle async component
+        // const resolvedComponent = await (typeof component === 'function'
+        //   ? component()
+        //   : component)
 
         const guard = resolvedComponent[guardType]
         if (guard) {

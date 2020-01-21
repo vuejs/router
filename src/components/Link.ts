@@ -1,48 +1,42 @@
-import { Component } from 'vue'
+import { defineComponent, h, PropType, inject, computed } from 'vue'
 import { Router } from '../router'
-import { RouteLocationNormalized, RouteLocation } from '../types'
+import { RouteLocation } from '../types'
 
-const Link: Component = {
+const Link = defineComponent({
   name: 'RouterLink',
   props: {
     to: {
-      type: [String, Object],
+      type: [String, Object] as PropType<RouteLocation>,
       required: true,
     },
   },
 
-  render(h) {
-    // @ts-ignore can't get `this`
-    const router = this.$router as Router
-    // @ts-ignore can't get `this`
-    const from = this.$route as RouteLocationNormalized
-    // @ts-ignore can't get `this`
-    const to = this.to as RouteLocation
+  setup(props, context) {
+    const router = inject<Router>('router')!
 
-    const route = router.resolve(to)
-    const href = router.createHref(route)
+    const route = computed(() => router.resolve(props.to))
 
     // TODO: active classes
     // TODO: handle replace prop
 
-    const handler = (e: MouseEvent) => {
+    const onClick = (e: MouseEvent) => {
       // TODO: handle navigate with empty parameters for scoped slot and composition api
       if (guardEvent(e)) {
-        router.push(route)
+        router.push(route.value)
       }
     }
 
-    const on = { click: handler }
-
-    const data: any = {
-      on,
-      attrs: { href },
-    }
-
-    // @ts-ignore
-    return h('a', data, this.$slots.default)
+    return () =>
+      h(
+        'a',
+        {
+          onClick,
+          href: router.createHref(route.value),
+        },
+        context.slots.default()
+      )
   },
-}
+})
 
 function guardEvent(e: MouseEvent) {
   // don't redirect with control keys

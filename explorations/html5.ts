@@ -1,19 +1,25 @@
 import {
   createRouter,
-  plugin,
+  RouterPlugin,
   // @ts-ignore
   createHistory,
   // @ts-ignore
   createMemoryHistory,
   // @ts-ignore
   createHashHistory,
+  RouteLocationNormalized,
 } from '../src'
-import { RouteComponent } from '../src/types'
-import Vue from 'vue'
+import {
+  defineComponent,
+  computed,
+  createApp,
+  inject,
+  reactive,
+  Ref,
+} from 'vue'
 
 declare global {
   interface Window {
-    vm: Vue
     // h: HTML5History
     h: ReturnType<typeof createHistory>
     r: ReturnType<typeof createRouter>
@@ -25,65 +31,82 @@ declare global {
 const routerHistory = createHistory()
 window.h = routerHistory
 
-const shared = {
-  cancel: false,
-}
-
-const component: RouteComponent = {
+const component = defineComponent({
+  name: 'GenericComponent',
   template: `<div>A component</div>`,
-}
+})
 
-const NotFound: RouteComponent = {
-  template: `<div>Not Found: {{ $route.fullPath }}</div>`,
-}
+const NotFound = defineComponent({
+  name: 'NotFound',
+  setup() {
+    const route = inject('route')
+    return { route }
+  },
+  template: `<div>Not Found: {{ route.fullPath }}</div>`,
+})
 
-const Home: RouteComponent = {
+const Home = defineComponent({
+  name: 'Home',
   template: `<div>Home</div>`,
-}
+})
 
-const User: RouteComponent = {
-  template: `<div>User: {{ $route.params.id }}</div>`,
-}
+const User = defineComponent({
+  name: 'User',
+  setup() {
+    const route = inject('route')
+    console.log({ route })
+    return { route }
+  },
+  template: `<div>User: {{ route.params.id }}</div>`,
+})
 
-const LongView: RouteComponent = {
+const LongView = defineComponent({
+  name: 'LongView',
+  setup() {
+    const route = inject('route')
+    return { route }
+  },
   template: `
   <section>
-    <div class="long">This one is long: {{ $route.params.n }}. Go down to click on a link</div>
+    <div class="long">This one is long: {{ route.params.n }}. Go down to click on a link</div>
     <p class="long">
       <router-link
-        :to="{ name: 'long', params: { n: Number($route.params.n || 0) + 1 }}"
-        >/long-{{ Number($route.params.n || 0) + 1 }}</router-link>
+        :to="{ name: 'long', params: { n: Number(route.params.n || 0) + 1 }}"
+        >/long-{{ Number(route.params.n || 0) + 1 }}</router-link>
     </p>
   </section>
   `,
-}
+})
 
-const GuardedWithLeave: RouteComponent = {
+const GuardedWithLeave = defineComponent({
+  name: 'GuardedWithLeave',
   template: `<div>
     <p>try to leave</p>
   </div>`,
+  // @ts-ignore
   beforeRouteLeave(to, from, next) {
     if (window.confirm()) next()
     else next(false)
   },
-}
+})
 
-const ComponentWithData: RouteComponent = {
+const ComponentWithData = defineComponent({
+  name: 'ComponentWithData',
   template: `<div>
     <p>Here is the data: {{ data }}</p>
   </div>`,
-  // @ts-ignore
   data: () => ({ data: 'nope' }),
+  // @ts-ignore
   beforeRouteEnter(to, from, next) {
     // console.log('this in beforeRouteEnter', this)
-    setTimeout(() => {
-      next(vm => {
-        // console.log('got vm', vm)
-        vm.data = 'Hola'
-      })
-    }, 300)
+    // setTimeout(() => {
+    // next(vm => {
+    //   // console.log('got vm', vm)
+    //   vm.data = 'Hola'
+    // })
+    // }, 300)
   },
-}
+})
 
 if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual'
@@ -175,7 +198,7 @@ router.beforeEach(async (to, from, next) => {
 })
 
 router.beforeEach((to, from, next) => {
-  if (shared.cancel) return next(false)
+  if (globalState.cancelNextNavigation) return next(false)
   next()
 })
 
@@ -241,36 +264,68 @@ async function run() {
   // await router.push({ name: 'a-child' })
 }
 
-// use the router
-Vue.use(plugin)
-
-window.vm = new Vue({
-  el: '#app',
-  // @ts-ignore
-  router,
-  data: {
-    message: 'hello',
-    shared,
-  },
-
-  methods: {
-    flushWaiter() {
-      scrollWaiter.flush()
-    },
-    setupWaiter() {
-      scrollWaiter.add()
-    },
-  },
-
-  // try out watchers
-  // watch: {
-  //   '$route.params.id' (id) {
-  //     console.log('id changed', id)
-  //   },
-  //   '$route.name' (name) {
-  //     console.log('name changed', name)
-  //   }
-  // }
+const globalState = reactive({
+  cancelNextNavigation: false,
 })
+
+const App = defineComponent({
+  name: 'App',
+  setup() {
+    // TODO: should be a computed property or a readonly ref
+    const route = inject<Ref<RouteLocationNormalized>>('route')!
+    const state = inject<typeof globalState>('state')!
+    const currentLocation = computed(() => {
+      const { matched, ...rest } = route.value
+      return rest
+    })
+
+    function flushWaiter() {
+      scrollWaiter.flush()
+    }
+    function setupWaiter() {
+      scrollWaiter.add()
+    }
+
+    const nextUserLink = computed(
+      () =>
+        '/users/' +
+        String((Number(router.currentRoute.value.params.id) || 0) + 1)
+    )
+
+    return { currentLocation, nextUserLink, state, flushWaiter, setupWaiter }
+  },
+  template: document.getElementById('app')?.innerHTML,
+})
+
+const app = createApp()
+app.provide('state', globalState)
+app.use(RouterPlugin, router)
+
+app.mount(App, '#app')
+
+// use the router
+// Vue.use(plugin)
+
+// window.vm = new Vue({
+// el: '#app',
+// @ts-ignore
+// router,
+// data: {
+//   message: 'hello',
+//   shared,
+// },
+
+// methods: {
+
+// try out watchers
+// watch: {
+//   'route.params.id' (id) {
+//     console.log('id changed', id)
+//   },
+//   'route.name' (name) {
+//     console.log('name changed', name)
+//   }
+// }
+// })
 
 run()

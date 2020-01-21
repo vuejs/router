@@ -31,9 +31,9 @@ import {
   NavigationAborted,
 } from './errors'
 import { extractComponentsGuards, guardToPromiseFn } from './utils'
-import Vue from 'vue'
 import { encodeParam } from './utils/encoding'
 import { decode } from './utils/encoding'
+import { ref, Ref } from 'vue'
 
 type ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor
@@ -55,7 +55,7 @@ export interface RouterOptions {
 }
 
 export interface Router {
-  currentRoute: Readonly<RouteLocationNormalized>
+  currentRoute: Ref<RouteLocationNormalized>
 
   resolve(to: RouteLocation): RouteLocationNormalized
   createHref(to: RouteLocationNormalized): string
@@ -64,7 +64,7 @@ export interface Router {
 
   // TODO: find a way to remove it
   doInitialNavigation(): Promise<void>
-  setActiveApp(vm: Vue): void
+  setActiveApp(vm: TODO): void
 
   beforeEach(guard: NavigationGuard): ListenerRemover
   afterEach(guard: PostNavigationGuard): ListenerRemover
@@ -87,12 +87,12 @@ export function createRouter({
   )
   const beforeGuards: NavigationGuard[] = []
   const afterGuards: PostNavigationGuard[] = []
-  let currentRoute: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
+  const currentRoute = ref<RouteLocationNormalized>(START_LOCATION_NORMALIZED)
   let pendingLocation: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
   let onReadyCbs: OnReadyCallback[] = []
   // TODO: should these be triggered before or after route.push().catch()
   let errorHandlers: ErrorHandler[] = []
-  let app: Vue
+  let app: TODO
   let ready: boolean = false
 
   function resolve(
@@ -126,7 +126,7 @@ export function createRouter({
     redirectedFrom?: RouteLocationNormalized
     // ensure when returning that the redirectedFrom is a normalized location
   ): RouteLocationNormalized {
-    currentLocation = currentLocation || currentRoute
+    currentLocation = currentLocation || currentRoute.value
     const matchedRoute = matcher.resolve(location, currentLocation)
 
     if ('redirect' in matchedRoute) {
@@ -209,13 +209,13 @@ export function createRouter({
     if (typeof to === 'string' || ('path' in to && !('name' in to))) {
       url = normalizeLocation(to)
       // TODO: should allow a non matching url to allow dynamic routing to work
-      location = resolveLocation(url, currentRoute)
+      location = resolveLocation(url, currentRoute.value)
     } else {
       // named or relative route
       const query = to.query ? normalizeQuery(to.query) : {}
       const hash = to.hash || ''
       // we need to resolve first
-      location = resolveLocation({ ...to, query, hash }, currentRoute)
+      location = resolveLocation({ ...to, query, hash }, currentRoute.value)
       // intentionally drop current query and hash
       url = normalizeLocation({
         query,
@@ -227,22 +227,22 @@ export function createRouter({
     // TODO: should we throw an error as the navigation was aborted
     // TODO: needs a proper check because order in query could be different
     if (
-      currentRoute !== START_LOCATION_NORMALIZED &&
-      currentRoute.fullPath === url.fullPath
+      currentRoute.value !== START_LOCATION_NORMALIZED &&
+      currentRoute.value.fullPath === url.fullPath
     )
-      return currentRoute
+      return currentRoute.value
 
     const toLocation: RouteLocationNormalized = location
     pendingLocation = toLocation
     // trigger all guards, throw if navigation is rejected
     try {
-      await navigate(toLocation, currentRoute)
+      await navigate(toLocation, currentRoute.value)
     } catch (error) {
       if (NavigationGuardRedirect.is(error)) {
         // push was called while waiting in guards
         if (pendingLocation !== toLocation) {
           // TODO: trigger onError as well
-          throw new NavigationCancelled(toLocation, currentRoute)
+          throw new NavigationCancelled(toLocation, currentRoute.value)
         }
         // TODO: setup redirect stack
         // TODO: shouldn't we trigger the error as well
@@ -252,7 +252,7 @@ export function createRouter({
         // triggerError as well
         if (pendingLocation !== toLocation) {
           // TODO: trigger onError as well
-          throw new NavigationCancelled(toLocation, currentRoute)
+          throw new NavigationCancelled(toLocation, currentRoute.value)
         }
 
         triggerError(error)
@@ -261,22 +261,22 @@ export function createRouter({
 
     // push was called while waiting in guards
     if (pendingLocation !== toLocation) {
-      throw new NavigationCancelled(toLocation, currentRoute)
+      throw new NavigationCancelled(toLocation, currentRoute.value)
     }
 
     // change URL
     if (to.replace === true) history.replace(url)
     else history.push(url)
 
-    const from = currentRoute
-    currentRoute = toLocation
+    const from = currentRoute.value
+    currentRoute.value = toLocation
     updateReactiveRoute()
     handleScroll(toLocation, from).catch(err => triggerError(err, false))
 
     // navigation is confirmed, call afterGuards
     for (const guard of afterGuards) guard(toLocation, from)
 
-    return currentRoute
+    return currentRoute.value
   }
 
   function replace(to: RouteLocation) {
@@ -358,25 +358,25 @@ export function createRouter({
   }
 
   history.listen(async (to, from, info) => {
-    const matchedRoute = resolveLocation(to, currentRoute)
+    const matchedRoute = resolveLocation(to, currentRoute.value)
     // console.log({ to, matchedRoute })
 
     const toLocation: RouteLocationNormalized = { ...to, ...matchedRoute }
     pendingLocation = toLocation
 
     try {
-      await navigate(toLocation, currentRoute)
+      await navigate(toLocation, currentRoute.value)
 
       // a more recent navigation took place
       if (pendingLocation !== toLocation) {
         return triggerError(
-          new NavigationCancelled(toLocation, currentRoute),
+          new NavigationCancelled(toLocation, currentRoute.value),
           false
         )
       }
 
       // accept current navigation
-      currentRoute = {
+      currentRoute.value = {
         ...to,
         ...matchedRoute,
       }
@@ -384,7 +384,7 @@ export function createRouter({
       // TODO: refactor with a state getter
       // const { scroll } = history.state
       const { state } = window.history
-      handleScroll(toLocation, currentRoute, state.scroll).catch(err =>
+      handleScroll(toLocation, currentRoute.value, state.scroll).catch(err =>
         triggerError(err, false)
       )
     } catch (error) {
@@ -394,7 +394,7 @@ export function createRouter({
         // a more recent navigation took place
         if (pendingLocation !== toLocation) {
           return triggerError(
-            new NavigationCancelled(toLocation, currentRoute),
+            new NavigationCancelled(toLocation, currentRoute.value),
             false
           )
         }
@@ -454,7 +454,7 @@ export function createRouter({
   function updateReactiveRoute() {
     if (!app) return
     // TODO: matched should be non enumerable and the defineProperty here shouldn't be necessary
-    const route = { ...currentRoute }
+    const route = { ...currentRoute.value }
     Object.defineProperty(route, 'matched', { enumerable: false })
     // @ts-ignore
     app._route = Object.freeze(route)
@@ -462,7 +462,7 @@ export function createRouter({
   }
 
   function isReady(): Promise<void> {
-    if (ready && currentRoute !== START_LOCATION_NORMALIZED)
+    if (ready && currentRoute.value !== START_LOCATION_NORMALIZED)
       return Promise.resolve()
     return new Promise((resolve, reject) => {
       onReadyCbs.push([resolve, reject])
@@ -470,7 +470,7 @@ export function createRouter({
   }
 
   function markAsReady(err?: any): void {
-    if (ready || currentRoute === START_LOCATION_NORMALIZED) return
+    if (ready || currentRoute.value === START_LOCATION_NORMALIZED) return
     ready = true
     for (const [resolve] of onReadyCbs) {
       // TODO: is this okay?
@@ -490,20 +490,20 @@ export function createRouter({
     // TODO: refactor code that was duplicated from push method
     const toLocation: RouteLocationNormalized = resolveLocation(
       history.location,
-      currentRoute
+      currentRoute.value
     )
 
     pendingLocation = toLocation
     // trigger all guards, throw if navigation is rejected
     try {
-      await navigate(toLocation, currentRoute)
+      await navigate(toLocation, currentRoute.value)
     } catch (error) {
       markAsReady(error)
       if (NavigationGuardRedirect.is(error)) {
         // push was called while waiting in guards
         if (pendingLocation !== toLocation) {
           // TODO: trigger onError as well
-          throw new NavigationCancelled(toLocation, currentRoute)
+          throw new NavigationCancelled(toLocation, currentRoute.value)
         }
         // TODO: setup redirect stack
         await push(error.to)
@@ -513,7 +513,7 @@ export function createRouter({
         // triggerError as well
         if (pendingLocation !== toLocation) {
           // TODO: trigger onError as well
-          throw new NavigationCancelled(toLocation, currentRoute)
+          throw new NavigationCancelled(toLocation, currentRoute.value)
         }
 
         // this throws, so nothing ahead happens
@@ -523,7 +523,7 @@ export function createRouter({
 
     // push was called while waiting in guards
     if (pendingLocation !== toLocation) {
-      const error = new NavigationCancelled(toLocation, currentRoute)
+      const error = new NavigationCancelled(toLocation, currentRoute.value)
       markAsReady(error)
       throw error
     }
@@ -531,8 +531,8 @@ export function createRouter({
     // NOTE: here we removed the pushing to history part as the history
     // already contains current location
 
-    const from = currentRoute
-    currentRoute = toLocation
+    const from = currentRoute.value
+    currentRoute.value = toLocation
     updateReactiveRoute()
 
     // navigation is confirmed, call afterGuards
@@ -554,7 +554,7 @@ export function createRouter({
     scrollToPosition(position)
   }
 
-  function setActiveApp(vm: Vue) {
+  function setActiveApp(vm: TODO) {
     app = vm
     updateReactiveRoute()
   }
@@ -573,10 +573,6 @@ export function createRouter({
     doInitialNavigation,
     setActiveApp,
   }
-
-  Object.defineProperty(router, 'currentRoute', {
-    get: () => currentRoute,
-  })
 
   return router
 }

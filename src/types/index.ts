@@ -1,6 +1,5 @@
 import { HistoryQuery, RawHistoryQuery } from '../history/common'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
-// import Vue, { ComponentOptions, AsyncComponent } from 'vue'
 
 // type Component = ComponentOptions<Vue> | typeof Vue | AsyncComponent
 
@@ -93,13 +92,9 @@ export interface RouteComponentInterface {
 }
 
 // TODO: have a real type with augmented properties
-// export type RouteComponent = Component & RouteComponentInterface
-type Component = {
-  template?: string
-  render?: Function
-} & RouteComponentInterface
-
-export type RouteComponent = Component | Lazy<Component>
+// add async component
+// export type RouteComponent = (Component | ReturnType<typeof defineComponent>) & RouteComponentInterface
+export type RouteComponent = TODO
 
 // NOTE not sure the whole PropsTransformer thing can be usefull
 // since in callbacks we don't know where we are coming from
