@@ -5,9 +5,24 @@ import createMemoryHistory from './history/memory'
 import createHashHistory from './history/hash'
 import View from './components/View'
 import Link from './components/Link'
+import { RouteLocationNormalized } from './types'
 
-export { RouteLocationNormalized } from './types'
-export { Router } from './router'
+declare module '@vue/runtime-core' {
+  function inject(name: 'router'): Router
+  function inject(name: 'route'): RouteLocationNormalized
+}
+
+// @ts-ignore: we are not importing it so it complains
+declare module '@vue/runtime-dom' {
+  function inject(name: 'router'): Router
+  function inject(name: 'route'): RouteLocationNormalized
+}
+
+// @ts-ignore: we are not importing it so it complains
+declare module 'vue' {
+  function inject(name: 'router'): Router
+  function inject(name: 'route'): RouteLocationNormalized
+}
 
 export function RouterPlugin(app: App, router: Router) {
   // TODO: remove as any
@@ -34,4 +49,11 @@ export function RouterPlugin(app: App, router: Router) {
   app.provide('route', router.currentRoute)
 }
 
-export { createHistory, createMemoryHistory, createHashHistory, createRouter }
+export {
+  createHistory,
+  createMemoryHistory,
+  createHashHistory,
+  createRouter,
+  RouteLocationNormalized,
+  Router,
+}

@@ -259,6 +259,10 @@ function useHistoryStateNavigation(base: string) {
 }
 
 export default function createHistory(base: string = ''): RouterHistory {
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual'
+  }
+
   const historyNavigation = useHistoryStateNavigation(base)
   const historyListeners = useHistoryListeners(
     base,

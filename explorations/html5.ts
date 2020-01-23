@@ -16,10 +16,6 @@ declare global {
 window.h = routerHistory
 window.r = router
 
-if ('scrollRestoration' in history) {
-  history.scrollRestoration = 'manual'
-}
-
 const app = createApp()
 app.provide('state', globalState)
 app.use(RouterPlugin, router)
