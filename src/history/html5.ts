@@ -259,7 +259,7 @@ function useHistoryStateNavigation(base: string) {
 }
 
 export default function createHistory(base: string = ''): RouterHistory {
-  if ('scrollRestoration' in history) {
+  if ('scrollRestoration' in window.history) {
     history.scrollRestoration = 'manual'
   }
 

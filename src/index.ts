@@ -5,7 +5,10 @@ import createMemoryHistory from './history/memory'
 import createHashHistory from './history/hash'
 import View from './components/View'
 import Link from './components/Link'
-import { RouteLocationNormalized } from './types'
+import {
+  RouteLocationNormalized,
+  START_LOCATION_NORMALIZED as START_LOCATION,
+} from './types'
 
 declare module '@vue/runtime-core' {
   function inject(name: 'router'): Router
@@ -30,12 +33,15 @@ export function RouterPlugin(app: App, router: Router) {
   app.component('RouterView', View as any)
 
   let started = false
+  // TODO: can we use something that isn't a mixin?
   app.mixin({
     beforeCreate() {
       if (!started) {
         router.setActiveApp(this)
 
-        router.doInitialNavigation().catch(err => {
+        // TODO: this initial navigation is only necessary on client, on server it doesn't make sense
+        // because it will create an extra unecessary navigation and could lead to problems
+        router.push(router.history.location).catch(err => {
           console.error('Unhandled error', err)
         })
         started = true
@@ -56,4 +62,5 @@ export {
   createRouter,
   RouteLocationNormalized,
   Router,
+  START_LOCATION,
 }

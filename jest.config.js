@@ -13,5 +13,6 @@ module.exports = {
     'src/consola.ts',
   ],
   testMatch: ['<rootDir>/__tests__/**/*.spec.ts?(x)'],
+  watchPathIgnorePatterns: ['<rootDir>/node_modules'],
   testEnvironment: 'node',
 }

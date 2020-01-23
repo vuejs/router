@@ -2,7 +2,12 @@ import fakePromise from 'faked-promise'
 import { createRouter, createMemoryHistory, createHistory } from '../src'
 import { NavigationCancelled } from '../src/errors'
 import { createDom, components, tick } from './utils'
-import { RouteRecord, RouteLocation } from '../src/types'
+import {
+  RouteRecord,
+  RouteLocation,
+  START_LOCATION_NORMALIZED,
+} from '../src/types'
+import { RouterHistory } from '../src/history/common'
 
 const routes: RouteRecord[] = [
   { path: '/', component: components.Home },
@@ -23,6 +28,14 @@ const routes: RouteRecord[] = [
   },
 ]
 
+async function newRouter({ history }: { history?: RouterHistory } = {}) {
+  history = history || createMemoryHistory()
+  const router = createRouter({ history, routes })
+  await router.push('/')
+
+  return { history, router }
+}
+
 describe('Router', () => {
   beforeAll(() => {
     createDom()
@@ -31,22 +44,15 @@ describe('Router', () => {
   it('can be instantiated', () => {
     const history = createMemoryHistory()
     const router = createRouter({ history, routes })
-    expect(router.currentRoute.value).toEqual({
-      name: undefined,
-      fullPath: '/',
-      hash: '',
-      params: {},
-      path: '/',
-      query: {},
-      meta: {},
-    })
+    expect(router.currentRoute.value).toEqual(START_LOCATION_NORMALIZED)
   })
 
   // TODO: should do other checks not based on history implem
-  it.skip('takes browser location', () => {
+  it.skip('takes browser location', async () => {
     const history = createMemoryHistory()
     history.replace('/search?q=dog#footer')
-    const router = createRouter({ history, routes })
+    const { router } = await newRouter({ history })
+    await router.push(history.location)
     expect(router.currentRoute).toEqual({
       fullPath: '/search?q=dog#footer',
       hash: '#footer',
@@ -57,8 +63,7 @@ describe('Router', () => {
   })
 
   it('calls history.push with router.push', async () => {
-    const history = createMemoryHistory()
-    const router = createRouter({ history, routes })
+    const { router, history } = await newRouter()
     jest.spyOn(history, 'push')
     await router.push('/foo')
     expect(history.push).toHaveBeenCalledTimes(1)
@@ -72,7 +77,7 @@ describe('Router', () => {
 
   it('calls history.replace with router.replace', async () => {
     const history = createMemoryHistory()
-    const router = createRouter({ history, routes })
+    const { router } = await newRouter({ history })
     jest.spyOn(history, 'replace')
     await router.replace('/foo')
     expect(history.replace).toHaveBeenCalledTimes(1)
@@ -85,8 +90,7 @@ describe('Router', () => {
   })
 
   it('can pass replace option to push', async () => {
-    const history = createMemoryHistory()
-    const router = createRouter({ history, routes })
+    const { router, history } = await newRouter()
     jest.spyOn(history, 'replace')
     await router.push({ path: '/foo', replace: true })
     expect(history.replace).toHaveBeenCalledTimes(1)
@@ -153,6 +157,7 @@ describe('Router', () => {
       const [p2, r2] = fakePromise()
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
+
       // navigate first to add entries to the history stack
       await router.push('/foo')
       await router.push('/p/a')

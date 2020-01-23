@@ -17,7 +17,6 @@ import {
   stringifyURL,
   normalizeQuery,
   HistoryLocationNormalized,
-  START,
 } from './history/common'
 import {
   ScrollToPosition,
@@ -55,6 +54,7 @@ export interface RouterOptions {
 }
 
 export interface Router {
+  history: RouterHistory
   currentRoute: Ref<RouteLocationNormalized>
 
   resolve(to: RouteLocation): RouteLocationNormalized
@@ -63,7 +63,6 @@ export interface Router {
   replace(to: RouteLocation): Promise<RouteLocationNormalized>
 
   // TODO: find a way to remove it
-  doInitialNavigation(): Promise<void>
   setActiveApp(vm: TODO): void
 
   beforeEach(guard: NavigationGuard): ListenerRemover
@@ -232,12 +231,17 @@ export function createRouter({
     )
       return currentRoute.value
 
+    const isFirstNavigation =
+      currentRoute.value === START_LOCATION_NORMALIZED &&
+      to === history.location
+
     const toLocation: RouteLocationNormalized = location
     pendingLocation = toLocation
     // trigger all guards, throw if navigation is rejected
     try {
       await navigate(toLocation, currentRoute.value)
     } catch (error) {
+      if (isFirstNavigation) markAsReady(error)
       if (NavigationGuardRedirect.is(error)) {
         // push was called while waiting in guards
         if (pendingLocation !== toLocation) {
@@ -261,20 +265,27 @@ export function createRouter({
 
     // push was called while waiting in guards
     if (pendingLocation !== toLocation) {
-      throw new NavigationCancelled(toLocation, currentRoute.value)
+      const error = new NavigationCancelled(toLocation, currentRoute.value)
+      // TODO: refactor errors to be more lightweight
+      if (isFirstNavigation) markAsReady(error)
+      throw error
     }
 
     // change URL
-    if (to.replace === true) history.replace(url)
-    else history.push(url)
+    if (!isFirstNavigation) {
+      if (to.replace === true) history.replace(url)
+      else history.push(url)
+    }
 
     const from = currentRoute.value
     currentRoute.value = markNonReactive(toLocation)
-    updateReactiveRoute()
-    handleScroll(toLocation, from).catch(err => triggerError(err, false))
+    if (!isFirstNavigation)
+      handleScroll(toLocation, from).catch(err => triggerError(err, false))
 
     // navigation is confirmed, call afterGuards
     for (const guard of afterGuards) guard(toLocation, from)
+
+    markAsReady()
 
     return currentRoute.value
   }
@@ -380,7 +391,6 @@ export function createRouter({
         ...to,
         ...matchedRoute,
       })
-      updateReactiveRoute()
       // TODO: refactor with a state getter
       // const { scroll } = history.state
       const { state } = window.history
@@ -451,16 +461,6 @@ export function createRouter({
     if (shouldThrow) throw error
   }
 
-  function updateReactiveRoute() {
-    if (!app) return
-    // TODO: matched should be non enumerable and the defineProperty here shouldn't be necessary
-    const route = { ...currentRoute.value }
-    Object.defineProperty(route, 'matched', { enumerable: false })
-    // @ts-ignore
-    app._route = Object.freeze(route)
-    markAsReady()
-  }
-
   function isReady(): Promise<void> {
     if (ready && currentRoute.value !== START_LOCATION_NORMALIZED)
       return Promise.resolve()
@@ -470,7 +470,7 @@ export function createRouter({
   }
 
   function markAsReady(err?: any): void {
-    if (ready || currentRoute.value === START_LOCATION_NORMALIZED) return
+    if (ready) return
     ready = true
     for (const [resolve] of onReadyCbs) {
       // TODO: is this okay?
@@ -482,63 +482,6 @@ export function createRouter({
       // else resolve()
     }
     onReadyCbs = []
-  }
-
-  async function doInitialNavigation(): Promise<void> {
-    // let the user call replace or push on SSR
-    if (history.location === START) return
-    // TODO: refactor code that was duplicated from push method
-    const toLocation: RouteLocationNormalized = resolveLocation(
-      history.location,
-      currentRoute.value
-    )
-
-    pendingLocation = toLocation
-    // trigger all guards, throw if navigation is rejected
-    try {
-      await navigate(toLocation, currentRoute.value)
-    } catch (error) {
-      markAsReady(error)
-      if (NavigationGuardRedirect.is(error)) {
-        // push was called while waiting in guards
-        if (pendingLocation !== toLocation) {
-          // TODO: trigger onError as well
-          throw new NavigationCancelled(toLocation, currentRoute.value)
-        }
-        // TODO: setup redirect stack
-        await push(error.to)
-        return
-      } else {
-        // TODO: write tests
-        // triggerError as well
-        if (pendingLocation !== toLocation) {
-          // TODO: trigger onError as well
-          throw new NavigationCancelled(toLocation, currentRoute.value)
-        }
-
-        // this throws, so nothing ahead happens
-        triggerError(error)
-      }
-    }
-
-    // push was called while waiting in guards
-    if (pendingLocation !== toLocation) {
-      const error = new NavigationCancelled(toLocation, currentRoute.value)
-      markAsReady(error)
-      throw error
-    }
-
-    // NOTE: here we removed the pushing to history part as the history
-    // already contains current location
-
-    const from = currentRoute.value
-    currentRoute.value = markNonReactive(toLocation)
-    updateReactiveRoute()
-
-    // navigation is confirmed, call afterGuards
-    for (const guard of afterGuards) guard(toLocation, from)
-
-    markAsReady()
   }
 
   async function handleScroll(
@@ -556,7 +499,6 @@ export function createRouter({
 
   function setActiveApp(vm: TODO) {
     app = vm
-    updateReactiveRoute()
   }
 
   const router: Router = {
@@ -570,7 +512,7 @@ export function createRouter({
     onError,
     isReady,
 
-    doInitialNavigation,
+    history,
     setActiveApp,
   }
 
