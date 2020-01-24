@@ -126,6 +126,7 @@ export function createRouter({
     // ensure when returning that the redirectedFrom is a normalized location
   ): RouteLocationNormalized {
     currentLocation = currentLocation || currentRoute.value
+    // TODO: still return a normalized location with no matched records if no location is found
     const matchedRoute = matcher.resolve(location, currentLocation)
 
     if ('redirect' in matchedRoute) {

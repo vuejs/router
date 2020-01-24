@@ -7,6 +7,7 @@ interface UseLinkProps {
   replace?: Ref<boolean> | boolean
 }
 
+// TODO: what should be accepted as arguments?
 export function useLink(props: UseLinkProps) {
   const router = inject('router')
 
