@@ -13,8 +13,6 @@ export function mount(
   const app = createApp()
   app.provide('router', router)
 
-  // app.use(RouterPlugin, router)
-
   const rootEl = document.createElement('div')
   document.body.appendChild(rootEl)
 

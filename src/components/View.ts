@@ -16,7 +16,7 @@ const View: FunctionalComponent<Props> = (props, { slots, attrs }) => {
   const matched = route.matched[depth]
 
   // render empty node if no matched route
-  if (!matched) return null
+  if (!matched) return []
 
   const component = matched.components[props.name || 'default']
 
@@ -26,5 +26,6 @@ const View: FunctionalComponent<Props> = (props, { slots, attrs }) => {
 }
 
 // View.props =
+// View.name = 'RouterView'
 
 export default View

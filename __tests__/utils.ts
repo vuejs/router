@@ -1,5 +1,6 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
 import { NavigationGuard, RouteRecord, MatchedRouteRecord } from '../src/types'
+import { h } from '@vue/runtime-core'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
@@ -44,12 +45,11 @@ export const noGuard: NavigationGuard = (to, from, next) => {
 }
 
 export const components = {
-  Home: { render: (h: Function) => h('div', {}, 'Home') },
-  Foo: { render: (h: Function) => h('div', {}, 'Foo') },
-  Bar: { render: (h: Function) => h('div', {}, 'Bar') },
+  Home: { render: () => h('div', {}, 'Home') },
+  Foo: { render: () => h('div', {}, 'Foo') },
+  Bar: { render: () => h('div', {}, 'Bar') },
   Nested: {
-    render: (h: Function) =>
-      h('div', {}, [h('h2', {}, 'Nested'), h('RouterView')]),
+    render: () => h('div', {}, [h('h2', {}, 'Nested'), h('RouterView')]),
   },
 }
 
