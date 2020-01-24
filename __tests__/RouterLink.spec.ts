@@ -10,7 +10,7 @@ import {
 } from '../src/types'
 import { createMemoryHistory } from '../src'
 import { mount, tick } from './mount'
-import { ref, markNonReactive } from 'vue'
+import { ref, markNonReactive, isRef } from 'vue'
 
 const locations: Record<
   string,
@@ -26,6 +26,20 @@ const locations: Record<
     normalized: {
       fullPath: '/home',
       path: '/home',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [],
+      name: undefined,
+    },
+  },
+  foo: {
+    string: '/foo',
+    // toResolve: { path: '/home', fullPath: '/home', undefined, query: {}, hash: '' },
+    normalized: {
+      fullPath: '/foo',
+      path: '/foo',
       params: {},
       meta: {},
       query: {},
@@ -72,7 +86,7 @@ describe('RouterLink', () => {
       template: `<RouterLink :to="to">a link</RouterLink>`,
       components: { RouterLink } as any,
       setup() {
-        const to = ref(propsData.to)
+        const to = isRef(propsData.to) ? propsData.to : ref(propsData.to)
 
         return { to }
       },
@@ -88,6 +102,20 @@ describe('RouterLink', () => {
       locations.basic.normalized
     )
     expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
+  })
+
+  it('can change the value', async () => {
+    const to = ref(locations.basic.string)
+    const { el, router } = factory(
+      START_LOCATION_NORMALIZED,
+      { to },
+      locations.basic.normalized
+    )
+    expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
+    router.resolve.mockReturnValueOnce(locations.foo.normalized)
+    to.value = locations.foo.string
+    await tick()
+    expect(el.innerHTML).toBe('<a class="" href="/foo">a link</a>')
   })
 
   it('displays a link with an object with path prop', () => {

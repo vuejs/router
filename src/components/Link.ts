@@ -2,10 +2,17 @@ import { defineComponent, h, PropType, inject } from '@vue/runtime-core'
 import { computed, reactive, isRef, Ref } from '@vue/reactivity'
 import { RouteLocation } from '../types'
 
-export function useLink(to: Ref<RouteLocation> | RouteLocation) {
+interface UseLinkProps {
+  to: Ref<RouteLocation> | RouteLocation
+  replace?: Ref<boolean> | boolean
+}
+
+export function useLink(props: UseLinkProps) {
   const router = inject('router')
 
-  const route = computed(() => router.resolve(isRef(to) ? to.value : to))
+  const route = computed(() =>
+    router.resolve(isRef(props.to) ? props.to.value : props.to)
+  )
   const href = computed(() => router.createHref(route.value))
   const isActive = computed<boolean>(
     () => router.currentRoute.value.path.indexOf(route.value.path) === 0
@@ -13,7 +20,7 @@ export function useLink(to: Ref<RouteLocation> | RouteLocation) {
 
   // TODO: handle replace prop
 
-  function navigate(e: MouseEvent) {
+  function navigate(e: MouseEvent = {} as MouseEvent) {
     // TODO: handle navigate with empty parameters for scoped slot and composition api
     if (guardEvent(e)) router.push(route.value)
   }
@@ -36,7 +43,7 @@ const Link = defineComponent({
   },
 
   setup(props, { slots, attrs }) {
-    const { route, isActive, href, navigate } = useLink(props.to)
+    const { route, isActive, href, navigate } = useLink(props)
 
     const elClass = computed(() => ({
       'router-link-active': isActive.value,
