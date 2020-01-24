@@ -1475,10 +1475,10 @@ browserify-zlib@^0.2.0:
   dependencies:
     pako "~1.0.5"
 
-browserstack-local@^1.4.4:
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/browserstack-local/-/browserstack-local-1.4.4.tgz#993cf7860509e78eb3aa44888b3b5cb1aec60156"
-  integrity sha512-RAnOqO6/l1JVBLkhG2kfy8gUPpAXnWlgVN7VT7CrTkxpqKjBmZXy0jX6+3ES9XeY6l8yIKYbSOq3Jsg2ye9XUg==
+browserstack-local@^1.4.5:
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/browserstack-local/-/browserstack-local-1.4.5.tgz#115153ce1d08d58b7575ecf4381d54d10b42d2cf"
+  integrity sha512-0/VdSv2YVXmcnwBb64XThMvjM1HnZJnPdv7CUgQbC5y/N9Wsr0Fu+j1oknE9fC/VPx9CpoSC6CJ0kza42skMSA==
   dependencies:
     https-proxy-agent "^4.0.0"
     is-running "^2.1.0"
@@ -6514,10 +6514,10 @@ rollup-pluginutils@^2.6.0, rollup-pluginutils@^2.8.1, rollup-pluginutils@^2.8.2:
   dependencies:
     estree-walker "^0.6.1"
 
-rollup@^1.29.0:
-  version "1.29.0"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-1.29.0.tgz#6a1a79eea43ca9d3d79a90c15a1ceecedc72097b"
-  integrity sha512-V63Iz0dSdI5qPPN5HmCN6OBRzBFhMqNWcvwgq863JtSCTU6Vdvqq6S2fYle/dSCyoPrBkIP3EIr1RVs3HTRqqg==
+rollup@^1.29.1:
+  version "1.29.1"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-1.29.1.tgz#8715d0a4ca439be3079f8095989ec8aa60f637bc"
+  integrity sha512-dGQ+b9d1FOX/gluiggTAVnTvzQZUEkCi/TwZcax7ujugVRHs0nkYJlV9U4hsifGEMojnO+jvEML2CJQ6qXgbHA==
   dependencies:
     "@types/estree" "*"
     "@types/node" "*"

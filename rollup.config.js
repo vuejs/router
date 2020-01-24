@@ -34,18 +34,18 @@ function createEntry(
   if (minify) env = 'production'
   const isProductionBuild =
     process.env.__DEV__ === 'false' || env === 'production'
-  const isBundlerESMBuild = format === 'es'
 
   const config = {
     input,
     plugins: [
       replace({
         __VERSION__: JSON.stringify(pkg.version),
-        __DEV__: isBundlerESMBuild
-          ? // preserve to be handled by bundlers
-            `process.env.NODE_ENV !== 'production'`
-          : // hard coded dev/prod builds
-            !isProductionBuild,
+        __DEV__:
+          (format === 'es' && !isBrowser) || format === 'cjs'
+            ? // preserve to be handled by bundlers
+              `process.env.NODE_ENV !== 'production'`
+            : // hard coded dev/prod builds
+              !isProductionBuild,
       }),
       alias({
         resolve: ['ts'],
@@ -56,6 +56,11 @@ function createEntry(
       banner,
       file: 'dist/vue-router.other.js',
       format,
+      globals: {
+        '@vue/reactivity': 'Vue',
+        '@vue/runtime-core': 'Vue',
+        vue: 'Vue',
+      },
     },
   }
 
@@ -94,9 +99,9 @@ function createEntry(
     config.plugins.push(
       terser({
         module: format === 'es',
-        output: {
-          preamble: banner,
-        },
+        // output: {
+        //   preamble: banner,
+        // },
       })
     )
     config.output.file = config.output.file.replace(/\.js$/i, '.min.js')
@@ -110,7 +115,7 @@ export default [
   createEntry({ format: 'iife' }),
   createEntry({ format: 'iife', minify: true }),
   createEntry({ format: 'cjs' }),
+  // TODO: prod vs env
   createEntry({ format: 'es' }),
   createEntry({ format: 'es', isBrowser: true }),
-  createEntry({ format: 'es', isBrowser: true, minify: true }),
 ]
