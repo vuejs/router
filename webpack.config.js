@@ -19,7 +19,7 @@ module.exports = {
     publicPath: '/',
     filename: 'bundle.js',
   },
-  entry: [resolve(__dirname, 'explorations/html5.ts')],
+  entry: [resolve(__dirname, 'playground/main.ts')],
   module: {
     rules: [
       {
@@ -46,7 +46,7 @@ module.exports = {
   plugins: [
     new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
-      template: resolve(__dirname, 'explorations/html5.html'),
+      template: resolve(__dirname, 'playground/index.html'),
     }),
     new webpack.DefinePlugin({
       'process.env': {
