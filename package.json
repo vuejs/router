@@ -6,7 +6,13 @@
   "unpkg": "dist/vue-router.js",
   "module": "dist/vue-router.esm-bundler.js",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
   "license": "MIT",
+  "files": [
+    "dist",
+    "playground",
+    "README.md"
+  ],
   "scripts": {
     "build": "yarn rollup -c rollup.config.js",
     "dev": "webpack-dev-server --mode=development",
@@ -16,7 +22,8 @@
     "lint:fix": "yarn run lint --write",
     "test:types": "tsc --build tsconfig.json",
     "test:unit": "jest --coverage",
-    "test": "yarn run test:types && yarn run test:unit && yarn build"
+    "test": "yarn run test:types && yarn run test:unit && yarn build",
+    "prepublishOnly": "yarn run build"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^3.0.0",
