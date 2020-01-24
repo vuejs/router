@@ -3,15 +3,18 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
 const webpack = require('webpack')
 
-const outputPath = resolve(__dirname, 'examples_dist')
+const outputPath = resolve(__dirname, 'playground_dist')
 
-module.exports = {
-  mode: 'development',
-  devtool: 'inline-source-map',
+/** @type {import('webpack').ConfigurationFactory} */
+const config = (env = {}) => ({
+  mode: env.prod ? 'production' : 'development',
+  devtool: env.prod ? 'source-map' : 'inline-source-map',
+
   devServer: {
     contentBase: outputPath,
     historyApiFallback: true,
     hot: true,
+    stats: 'minimal',
   },
 
   output: {
@@ -19,6 +22,7 @@ module.exports = {
     publicPath: '/',
     filename: 'bundle.js',
   },
+
   entry: [resolve(__dirname, 'playground/main.ts')],
   module: {
     rules: [
@@ -54,4 +58,6 @@ module.exports = {
       },
     }),
   ],
-}
+})
+
+module.exports = config

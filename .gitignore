@@ -10,3 +10,4 @@ local.log
 e2e/reports
 e2e/screenshots
 examples/__build__
+playground_dist
