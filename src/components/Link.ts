@@ -1,7 +1,30 @@
 import { defineComponent, h, PropType, inject } from '@vue/runtime-core'
-import { computed } from '@vue/reactivity'
-import { Router } from '../router'
+import { computed, reactive, isRef, Ref } from '@vue/reactivity'
 import { RouteLocation } from '../types'
+
+export function useLink(to: Ref<RouteLocation> | RouteLocation) {
+  const router = inject('router')
+
+  const route = computed(() => router.resolve(isRef(to) ? to.value : to))
+  const href = computed(() => router.createHref(route.value))
+  const isActive = computed<boolean>(
+    () => router.currentRoute.value.path.indexOf(route.value.path) === 0
+  )
+
+  // TODO: handle replace prop
+
+  function navigate(e: MouseEvent) {
+    // TODO: handle navigate with empty parameters for scoped slot and composition api
+    if (guardEvent(e)) router.push(route.value)
+  }
+
+  return {
+    route,
+    href,
+    isActive,
+    navigate,
+  }
+}
 
 const Link = defineComponent({
   name: 'RouterLink',
@@ -12,30 +35,28 @@ const Link = defineComponent({
     },
   },
 
-  setup(props, context) {
-    const router = inject<Router>('router')!
+  setup(props, { slots, attrs }) {
+    const { route, isActive, href, navigate } = useLink(props.to)
 
-    const route = computed(() => router.resolve(props.to))
+    const elClass = computed(() => ({
+      'router-link-active': isActive.value,
+    }))
 
-    // TODO: active classes
+    // TODO: exact active classes
     // TODO: handle replace prop
 
-    const onClick = (e: MouseEvent) => {
-      // TODO: handle navigate with empty parameters for scoped slot and composition api
-      if (guardEvent(e)) {
-        router.push(route.value)
-      }
-    }
-
-    return () =>
-      h(
+    return () => {
+      return h(
         'a',
         {
-          onClick,
-          href: router.createHref(route.value),
+          class: elClass.value,
+          onClick: navigate,
+          href: href.value,
+          ...attrs,
         },
-        context.slots.default()
+        slots.default(reactive({ route, href, isActive }))
       )
+    }
   },
 })
 

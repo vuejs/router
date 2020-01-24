@@ -87,7 +87,7 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe('<a href="/home">a link</a>')
+    expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
   })
 
   it('displays a link with an object with path prop', () => {
@@ -96,7 +96,18 @@ describe('RouterLink', () => {
       { to: { path: locations.basic.string } },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe('<a href="/home">a link</a>')
+    expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
+  })
+
+  it('can be active', () => {
+    const { el } = factory(
+      locations.basic.normalized,
+      { to: locations.basic.string },
+      locations.basic.normalized
+    )
+    expect(el.innerHTML).toBe(
+      '<a class="router-link-active" href="/home">a link</a>'
+    )
   })
 
   it('calls ensureLocation', () => {
@@ -120,5 +131,51 @@ describe('RouterLink', () => {
     await tick()
     expect(router.push).toHaveBeenCalledTimes(1)
     expect(router.push).toHaveBeenCalledWith(locations.basic.normalized)
+  })
+
+  describe('v-slot', () => {
+    function factory(
+      currentLocation: RouteLocationNormalized,
+      propsData: any,
+      resolvedLocation: RouteLocationNormalized
+    ) {
+      const router = {
+        history: createMemoryHistory(),
+        createHref(to: RouteLocationNormalized): string {
+          return this.history.base + to.fullPath
+        },
+        resolve: jest.fn(),
+        push: jest.fn().mockResolvedValue(resolvedLocation),
+        currentRoute: ref(markNonReactive(currentLocation)),
+        setActiveApp: jest.fn(),
+      }
+
+      router.resolve.mockReturnValueOnce(resolvedLocation)
+      const { app, el } = mount(router as any, {
+        template: `<RouterLink :to="to" v-slot="data">
+        route: {{ JSON.stringify(data.route) }}
+        href: "{{ data.href }}"
+        isActive: "{{ data.isActive }}"
+      </RouterLink>`,
+        components: { RouterLink } as any,
+        setup() {
+          const to = ref(propsData.to)
+
+          return { to }
+        },
+      })
+
+      return { app, router, el }
+    }
+
+    it('provides information on v-slot', () => {
+      const { el } = factory(
+        locations.basic.normalized,
+        { to: locations.basic.string },
+        locations.basic.normalized
+      )
+
+      expect(el.innerHTML).toMatchSnapshot()
+    })
   })
 })
