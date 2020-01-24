@@ -1,31 +1,38 @@
-import { h, FunctionalComponent, inject } from '@vue/runtime-core'
-import { Router } from '../'
+import {
+  h,
+  inject,
+  provide,
+  defineComponent,
+  PropType,
+  computed,
+  Component,
+} from '@vue/runtime-core'
 
-interface Props {
-  name: string
-}
+const View = defineComponent({
+  name: 'RouterView',
+  props: {
+    name: {
+      type: String as PropType<string>,
+      default: 'default',
+    },
+  },
 
-const View: FunctionalComponent<Props> = (props, { slots, attrs }) => {
-  const router = inject<Router>('router')!
+  setup(props, { attrs }) {
+    const router = inject('router')
+    const depth: number = inject('routerViewDepth', 0)
+    provide('routerViewDepth', depth + 1)
 
-  const route = router.currentRoute.value
+    const ViewComponent = computed<Component | void>(() => {
+      const matched = router.currentRoute.value.matched[depth]
 
-  let depth = 0
+      if (!matched) return null
 
-  // TODO: support nested router-views
-  const matched = route.matched[depth]
+      return matched.components[props.name]
+    })
 
-  // render empty node if no matched route
-  if (!matched) return []
-
-  const component = matched.components[props.name || 'default']
-
-  // TODO: remove any
-  // const children = typeof slots.default === 'function' ? slots.default() : []
-  return h(component as any, attrs, slots.default)
-}
-
-// View.props =
-// View.name = 'RouterView'
+    return () =>
+      ViewComponent.value ? h(ViewComponent.value as any, attrs) : []
+  },
+})
 
 export default View

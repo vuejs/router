@@ -1,4 +1,4 @@
-import { Component, createApp } from 'vue'
+import { Component, createApp, nextTick } from 'vue'
 import * as runtimeDom from '@vue/runtime-dom'
 import { compile } from '@vue/compiler-dom'
 import { Router } from '../src'
@@ -7,16 +7,24 @@ export function mount(
   router: Router,
   Component: Component & {
     template: string
+    components?: Record<string, Component>
   },
   rootProps = {}
 ) {
   const app = createApp()
   app.provide('router', router)
 
+  const { template, components, ...ComponentWithoutTemplate } = Component
+
+  // @ts-ignore
+  ComponentWithoutTemplate.components = {}
+  for (const componentName in components) {
+    app.component(componentName, components[componentName])
+  }
+
   const rootEl = document.createElement('div')
   document.body.appendChild(rootEl)
 
-  const { template, ...ComponentWithoutTemplate } = Component
   const codegen = compile(template, {
     mode: 'function',
     hoistStatic: true,
@@ -32,3 +40,8 @@ export function mount(
 
   return { app, el: rootEl }
 }
+
+export const tick = () =>
+  new Promise(resolve => {
+    nextTick(resolve)
+  })

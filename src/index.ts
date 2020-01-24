@@ -13,6 +13,7 @@ import {
 declare module '@vue/runtime-core' {
   function inject(name: 'router'): Router
   function inject(name: 'route'): RouteLocationNormalized
+  function inject(name: 'routerViewDepth'): number
 }
 
 // @ts-ignore: we are not importing it so it complains

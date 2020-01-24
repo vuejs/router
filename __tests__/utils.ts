@@ -1,6 +1,6 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
 import { NavigationGuard, RouteRecord, MatchedRouteRecord } from '../src/types'
-import { h } from '@vue/runtime-core'
+import { h, resolveComponent } from '@vue/runtime-core'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
@@ -49,7 +49,13 @@ export const components = {
   Foo: { render: () => h('div', {}, 'Foo') },
   Bar: { render: () => h('div', {}, 'Bar') },
   Nested: {
-    render: () => h('div', {}, [h('h2', {}, 'Nested'), h('RouterView')]),
+    render: () => {
+      const RouterView = resolveComponent('RouterView')
+      return h('div', {}, [
+        h('h2', {}, 'Nested'),
+        RouterView ? h(RouterView as any) : [],
+      ])
+    },
   },
 }
 

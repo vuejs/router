@@ -8,7 +8,7 @@ import {
   RouteLocationNormalized,
 } from '../src/types'
 import { ref, markNonReactive } from 'vue'
-import { mount } from './mount'
+import { mount, tick } from './mount'
 
 const routes: Record<string, RouteLocationNormalized> = {
   root: {
@@ -20,6 +20,16 @@ const routes: Record<string, RouteLocationNormalized> = {
     hash: '',
     meta: {},
     matched: [{ components: { default: components.Home }, path: '/' }],
+  },
+  foo: {
+    fullPath: '/foo',
+    name: undefined,
+    path: '/foo',
+    query: {},
+    params: {},
+    hash: '',
+    meta: {},
+    matched: [{ components: { default: components.Foo }, path: '/foo' }],
   },
   nested: {
     fullPath: '/a',
@@ -97,19 +107,26 @@ describe('RouterView', () => {
   it('displays nothing when route is unmatched', () => {
     const { el } = factory(START_LOCATION_NORMALIZED)
     // NOTE: I wonder if this will stay stable in future releases
-    expect(el.innerHTML).toBe(`<!--fragment-0-start--><!--fragment-0-end-->`)
+    expect(el.childElementCount).toBe(0)
   })
 
-  // TODO: nested routes
-  it.skip('displays nested views', () => {
+  it('displays nested views', () => {
     const { el } = factory(routes.nested)
     expect(el.innerHTML).toBe(`<div><h2>Nested</h2><div>Foo</div></div>`)
   })
 
-  it.skip('displays deeply nested views', () => {
+  it('displays deeply nested views', () => {
     const { el } = factory(routes.nestedNested)
     expect(el.innerHTML).toBe(
       `<div><h2>Nested</h2><div><h2>Nested</h2><div>Foo</div></div></div>`
     )
+  })
+
+  it('renders when the location changes', async () => {
+    const { el, router } = factory(routes.root)
+    expect(el.innerHTML).toBe(`<div>Home</div>`)
+    router.currentRoute.value = routes.foo
+    await tick()
+    expect(el.innerHTML).toBe(`<div>Foo</div>`)
   })
 })

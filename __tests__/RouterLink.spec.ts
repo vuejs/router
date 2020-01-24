@@ -9,9 +9,8 @@ import {
   RouteLocationNormalized,
 } from '../src/types'
 import { createMemoryHistory } from '../src'
-import { mount } from './mount'
+import { mount, tick } from './mount'
 import { ref, markNonReactive } from 'vue'
-import { tick } from './utils'
 
 const locations: Record<
   string,
@@ -71,7 +70,7 @@ describe('RouterLink', () => {
     router.resolve.mockReturnValueOnce(resolvedLocation)
     const { app, el } = mount(router as any, {
       template: `<RouterLink :to="to">a link</RouterLink>`,
-      components: { RouterLink },
+      components: { RouterLink } as any,
       setup() {
         const to = ref(propsData.to)
 
