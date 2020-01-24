@@ -9,6 +9,9 @@ import {
   RouteLocationNormalized,
 } from '../src/types'
 import { createMemoryHistory } from '../src'
+import { mount } from './mount'
+import { ref, markNonReactive } from 'vue'
+import { tick } from './utils'
 
 const locations: Record<
   string,
@@ -60,38 +63,41 @@ describe('RouterLink', () => {
         return this.history.base + to.fullPath
       },
       resolve: jest.fn(),
-      push: jest.fn(),
+      push: jest.fn().mockResolvedValue(resolvedLocation),
+      currentRoute: ref(markNonReactive(currentLocation)),
+      setActiveApp: jest.fn(),
     }
 
     router.resolve.mockReturnValueOnce(resolvedLocation)
-    // @ts-ignore TODO: Some information are missing on RouterLink
-    const wrapper = mount(RouterLink, {
-      propsData,
-      slots: {
-        default: 'a link',
+    const { app, el } = mount(router as any, {
+      template: `<RouterLink :to="to">a link</RouterLink>`,
+      components: { RouterLink },
+      setup() {
+        const to = ref(propsData.to)
+
+        return { to }
       },
-      // stubs: { RouterLink },
-      mocks: { $route: currentLocation, $router: router },
     })
-    return { wrapper, router }
+
+    return { app, router, el }
   }
 
   it('displays a link with a string prop', () => {
-    const { wrapper } = factory(
+    const { el } = factory(
       START_LOCATION_NORMALIZED,
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(wrapper.html()).toMatchSnapshot()
+    expect(el.innerHTML).toBe('<a href="/home">a link</a>')
   })
 
   it('displays a link with an object with path prop', () => {
-    const { wrapper } = factory(
+    const { el } = factory(
       START_LOCATION_NORMALIZED,
       { to: { path: locations.basic.string } },
       locations.basic.normalized
     )
-    expect(wrapper.html()).toMatchSnapshot()
+    expect(el.innerHTML).toBe('<a href="/home">a link</a>')
   })
 
   it('calls ensureLocation', () => {
@@ -104,23 +110,16 @@ describe('RouterLink', () => {
     expect(router.resolve).toHaveBeenCalledWith(locations.basic.string)
   })
 
-  it('calls router.push when clicked', () => {
-    const { router, wrapper } = factory(
+  // TODO: call when we can test this
+  it.skip('calls router.push when clicked', async () => {
+    const { router, el } = factory(
       START_LOCATION_NORMALIZED,
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    wrapper.trigger('click', {})
+    el.click()
+    await tick()
     expect(router.push).toHaveBeenCalledTimes(1)
     expect(router.push).toHaveBeenCalledWith(locations.basic.normalized)
-  })
-
-  it('normalizes query with path', () => {
-    const { router } = factory(
-      START_LOCATION_NORMALIZED,
-      { to: locations.withQuery.string },
-      locations.withQuery.normalized // it doesn't matter as we want to check what resolve is called with
-    )
-    expect(router.resolve).toHaveBeenCalledWith(locations.withQuery.string)
   })
 })

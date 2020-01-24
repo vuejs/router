@@ -1,7 +1,11 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
 import { NavigationGuard, RouteRecord, MatchedRouteRecord } from '../src/types'
 
-export const tick = () => new Promise(resolve => process.nextTick(resolve))
+export const tick = (time?: number) =>
+  new Promise(resolve => {
+    if (time) setTimeout(resolve, time)
+    else process.nextTick(resolve)
+  })
 
 export type NAVIGATION_METHOD = 'push' | 'replace'
 export const NAVIGATION_TYPES: NAVIGATION_METHOD[] = ['push', 'replace']
