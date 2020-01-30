@@ -11,12 +11,14 @@ export function mount(
   },
   rootProps = {}
 ) {
+  // TODO: update with alpha-4
   const app = createApp()
   app.provide('router', router)
+  app.provide('route', router.currentRoute)
 
   const { template, components, ...ComponentWithoutTemplate } = Component
 
-  // @ts-ignore
+  // @ts-ignore TODO: remove?
   ComponentWithoutTemplate.components = {}
   for (const componentName in components) {
     app.component(componentName, components[componentName])

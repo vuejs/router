@@ -61,7 +61,12 @@
         <a href="/documents/€">/documents/€ (force reload): not valid tho</a>
       </li>
       <li>
-        <router-link to="/">/</router-link>
+        <router-link to="/">Home</router-link>
+      </li>
+      <li>
+        <router-link to="/nested/nested/nested"
+          >/nested/nested/nested</router-link
+        >
       </li>
       <li>
         <router-link to="/long-0">/long-0</router-link>
@@ -85,14 +90,14 @@
         <router-link to="/with-data">/with-data</router-link>
       </li>
     </ul>
-    <transition
+    <!-- <transition
       name="fade"
       mode="out-in"
       @before-enter="flushWaiter"
       @before-leave="setupWaiter"
-    >
-      <router-view></router-view>
-    </transition>
+    > -->
+    <router-view></router-view>
+    <!-- </transition> -->
   </div>
 </template>
 

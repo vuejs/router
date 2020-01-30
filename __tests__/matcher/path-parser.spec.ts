@@ -9,6 +9,14 @@ describe('Path parser', () => {
       ])
     })
 
+    // TODO: refactor trailing slash cases
+    it.skip('trailing slash', () => {
+      expect(tokenizePath('/foo/')).toEqual([
+        [{ type: TokenType.Static, value: 'foo' }],
+        [{ type: TokenType.Static, value: '' }],
+      ])
+    })
+
     it('empty', () => {
       expect(tokenizePath('')).toEqual([[]])
     })
@@ -363,10 +371,7 @@ describe('Path parser', () => {
 
     it('static single', () => {
       matchRegExp('^/?$', [[]], { strict: false })
-    })
-
-    it('empty path', () => {
-      matchRegExp('^$', [[]], { strict: true })
+      matchRegExp('^/$', [[]], { strict: true })
     })
 
     it('strict /', () => {
@@ -525,13 +530,17 @@ describe('Path parser', () => {
     })
 
     it('makes the difference between "" and "/" when strict', () => {
-      matchParams('', '/', null, { strict: true })
-      matchParams('/', '', null, { strict: true })
+      matchParams('/foo', '/foo/', null, { strict: true })
+      matchParams('/foo/', '/foo', null, { strict: true })
     })
 
-    it('allow a trailing slash', () => {
+    it('allows a trailing slash', () => {
       matchParams('/home', '/home/', {})
       matchParams('/a/b', '/a/b/', {})
+    })
+
+    it('enforces a trailing slash', () => {
+      matchParams('/home/', '/home', null, { strict: true })
     })
 
     it('allow a trailing slash in repeated params', () => {

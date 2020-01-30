@@ -9,6 +9,7 @@ export default defineComponent({
   name: 'User',
   setup() {
     const route = inject('route')
+    console.log('calling setup in User')
     return { route }
   },
 })

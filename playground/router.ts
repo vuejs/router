@@ -1,5 +1,6 @@
 import { createRouter, createHistory } from '../src'
 import Home from './views/Home.vue'
+import Nested from './views/Nested.vue'
 import User from './views/User.vue'
 import NotFound from './views/NotFound.vue'
 import component from './views/Generic.vue'
@@ -44,6 +45,18 @@ export const router = createRouter({
     { path: '/with-data', component: ComponentWithData, name: 'WithData' },
     { path: '/rep/:a*', component: component, name: 'repeat' },
     { path: '/:data(.*)', component: NotFound, name: 'NotFound' },
+    {
+      path: '/nested',
+      component: Nested,
+      name: 'Nested',
+      children: [
+        {
+          path: 'nested',
+          component: Nested,
+          children: [{ path: 'nested', component: Nested }],
+        },
+      ],
+    },
   ],
   async scrollBehavior(to, from, savedPosition) {
     await scrollWaiter.wait()

@@ -125,6 +125,8 @@ export function tokensToParser(
     // the root segment needs special treatment
     const segmentScores: number[] = segment.length ? [] : [PathScore.Root]
 
+    // allow trailing slash
+    if (options.strict && !segment.length) pattern += '/'
     for (let tokenIndex = 0; tokenIndex < segment.length; tokenIndex++) {
       const token = segment[tokenIndex]
       // resets the score if we are inside a sub segment /:a-other-:b

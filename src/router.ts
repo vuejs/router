@@ -33,6 +33,7 @@ import { extractComponentsGuards, guardToPromiseFn } from './utils'
 import { encodeParam } from './utils/encoding'
 import { decode } from './utils/encoding'
 import { ref, Ref, markNonReactive } from '@vue/reactivity'
+import { nextTick } from '@vue/runtime-core'
 
 type ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor
@@ -62,9 +63,6 @@ export interface Router {
   push(to: RouteLocation): Promise<RouteLocationNormalized>
   replace(to: RouteLocation): Promise<RouteLocationNormalized>
 
-  // TODO: find a way to remove it
-  setActiveApp(vm: TODO): void
-
   beforeEach(guard: NavigationGuard): ListenerRemover
   afterEach(guard: PostNavigationGuard): ListenerRemover
 
@@ -91,7 +89,6 @@ export function createRouter({
   let onReadyCbs: OnReadyCallback[] = []
   // TODO: should these be triggered before or after route.push().catch()
   let errorHandlers: ErrorHandler[] = []
-  let app: TODO
   let ready: boolean = false
 
   function resolve(
@@ -492,14 +489,10 @@ export function createRouter({
   ) {
     if (!scrollBehavior) return
 
-    await app.$nextTick()
+    await nextTick()
     const position = await scrollBehavior(to, from, scrollPosition || null)
     console.log('scrolling to', position)
     scrollToPosition(position)
-  }
-
-  function setActiveApp(vm: TODO) {
-    app = vm
   }
 
   const router: Router = {
@@ -514,7 +507,6 @@ export function createRouter({
     isReady,
 
     history,
-    setActiveApp,
   }
 
   return router

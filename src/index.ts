@@ -1,5 +1,5 @@
 import { createRouter, Router } from './router'
-import { App } from '@vue/runtime-core'
+import { App, Ref } from '@vue/runtime-core'
 import createHistory from './history/html5'
 import createMemoryHistory from './history/memory'
 import createHashHistory from './history/hash'
@@ -12,8 +12,7 @@ import {
 
 declare module '@vue/runtime-core' {
   function inject(name: 'router'): Router
-  function inject(name: 'route'): RouteLocationNormalized
-  function inject(name: 'routerViewDepth'): number
+  function inject(name: 'route'): Ref<RouteLocationNormalized>
 }
 
 // @ts-ignore: we are not importing it so it complains
@@ -38,8 +37,6 @@ export function RouterPlugin(app: App, router: Router) {
   app.mixin({
     beforeCreate() {
       if (!started) {
-        router.setActiveApp(this)
-
         // TODO: this initial navigation is only necessary on client, on server it doesn't make sense
         // because it will create an extra unecessary navigation and could lead to problems
         router.push(router.history.location).catch(err => {

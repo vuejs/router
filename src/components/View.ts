@@ -18,20 +18,21 @@ const View = defineComponent({
   },
 
   setup(props, { attrs }) {
-    const router = inject('router')
+    const route = inject('route')
     const depth: number = inject('routerViewDepth', 0)
     provide('routerViewDepth', depth + 1)
 
-    const ViewComponent = computed<Component | void>(() => {
-      const matched = router.currentRoute.value.matched[depth]
+    const ViewComponent = computed<Component | undefined>(() => {
+      const matched = route.value.matched[depth]
 
-      if (!matched) return null
-
-      return matched.components[props.name]
+      return matched && matched.components[props.name]
     })
 
-    return () =>
-      ViewComponent.value ? h(ViewComponent.value as any, attrs) : []
+    return () => {
+      return ViewComponent.value
+        ? h(ViewComponent.value as any, { ...attrs })
+        : null
+    }
   },
 })
 
