@@ -120,14 +120,28 @@ function useHistoryListeners(
     return teardown
   }
 
+  function beforeUnloadListener() {
+    const { history } = window
+    if (!history.state) return
+    history.replaceState(
+      {
+        ...history.state,
+        scroll: computeScrollPosition(),
+      },
+      ''
+    )
+  }
+
   function destroy() {
     for (const teardown of teardowns) teardown()
     teardowns = []
     window.removeEventListener('popstate', popStateHandler)
+    window.removeEventListener('beforeunload', beforeUnloadListener)
   }
 
-  // settup the listener and prepare teardown callbacks
+  // settup the listeners and prepare teardown callbacks
   window.addEventListener('popstate', popStateHandler)
+  window.addEventListener('beforeunload', beforeUnloadListener)
 
   return {
     pauseListeners,
@@ -259,10 +273,6 @@ function useHistoryStateNavigation(base: string) {
 }
 
 export default function createHistory(base: string = ''): RouterHistory {
-  if ('scrollRestoration' in window.history) {
-    history.scrollRestoration = 'manual'
-  }
-
   const historyNavigation = useHistoryStateNavigation(base)
   const historyListeners = useHistoryListeners(
     base,

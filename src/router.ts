@@ -71,6 +71,8 @@ export interface Router {
   isReady(): Promise<void>
 }
 
+const isClient = typeof window !== 'undefined'
+
 export function createRouter({
   history,
   routes,
@@ -90,6 +92,10 @@ export function createRouter({
   // TODO: should these be triggered before or after route.push().catch()
   let errorHandlers: ErrorHandler[] = []
   let ready: boolean = false
+
+  if (isClient && 'scrollRestoration' in window.history) {
+    window.history.scrollRestoration = 'manual'
+  }
 
   function resolve(
     to: RouteLocation,
@@ -160,7 +166,7 @@ export function createRouter({
           )
         }
 
-        // TODO: should we allow partial redirects? I think we should because it's impredictable if
+        // TODO: should we allow partial redirects? I think we should not because it's impredictable if
         // there was a redirect before
         // if (!('path' in newLocation) && !('name' in newLocation)) throw new Error('TODO: redirect canot be relative')
 
@@ -277,6 +283,7 @@ export function createRouter({
 
     const from = currentRoute.value
     currentRoute.value = markNonReactive(toLocation)
+    // TODO: this doesn't work on first load. Moving it to RouterView could allow automatically handling transitions too maybe
     if (!isFirstNavigation)
       handleScroll(toLocation, from).catch(err => triggerError(err, false))
 
