@@ -12,14 +12,12 @@ export function mount(
   rootProps = {}
 ) {
   // TODO: update with alpha-4
-  const app = createApp()
+  const { template, components, ...ComponentWithoutTemplate } = Component
+
+  const app = createApp(ComponentWithoutTemplate as any, rootProps)
   app.provide('router', router)
   app.provide('route', router.currentRoute)
 
-  const { template, components, ...ComponentWithoutTemplate } = Component
-
-  // @ts-ignore TODO: remove?
-  ComponentWithoutTemplate.components = {}
   for (const componentName in components) {
     app.component(componentName, components[componentName])
   }
@@ -38,7 +36,7 @@ export function mount(
   // @ts-ignore
   ComponentWithoutTemplate.render = render
 
-  app.mount(ComponentWithoutTemplate as any, rootEl, rootProps)
+  app.mount(rootEl)
 
   return { app, el: rootEl }
 }

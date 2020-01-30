@@ -16,8 +16,8 @@ declare global {
 window.h = routerHistory
 window.r = router
 
-const app = createApp()
+const app = createApp(App)
 app.provide('state', globalState)
 app.use(RouterPlugin, router)
 
-app.mount(App, '#app')
+app.mount('#app')
