@@ -18,5 +18,5 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
     return
   }
 
-  matched.leaveGuards.push(leaveGuard.bind(instance!.proxy))
+  matched.leaveGuards.push(leaveGuard.bind(instance.proxy))
 }

@@ -1,3 +1,5 @@
+import { warn } from 'vue'
+
 /**
  * Encoding Rules
  * ␣ = Space
@@ -64,4 +66,11 @@ export function encodeParam(text: string): string {
   return encodePath(text).replace(SLASH_RE, '%2F')
 }
 
-export const decode = decodeURIComponent
+export function decode(text: string): string {
+  try {
+    return decodeURIComponent(text)
+  } catch (err) {
+    __DEV__ && warn(`Error decoding "${text}". Using original value`)
+  }
+  return text
+}

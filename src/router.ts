@@ -17,7 +17,6 @@ import {
   normalizeLocation,
   stringifyURL,
   normalizeQuery,
-  HistoryLocationNormalized,
 } from './history/common'
 import {
   ScrollToPosition,
@@ -140,6 +139,9 @@ export function createRouter({
     return resolveLocation(
       {
         // TODO: refactor with url utils
+        // TODO: query must be encoded by normalizeLocation
+        // refactor the whole thing so it uses the same overridable functions
+        // sent to history
         query: {},
         hash: '',
         ...to,
@@ -236,36 +238,16 @@ export function createRouter({
   }
 
   async function push(to: RouteLocation): Promise<RouteLocationNormalized> {
-    let url: HistoryLocationNormalized
-    let location: RouteLocationNormalized
-    // TODO: refactor into matchLocation to return location and url
-    if (typeof to === 'string' || ('path' in to && !('name' in to))) {
-      url = normalizeLocation(to)
-      // TODO: should allow a non matching url to allow dynamic routing to work
-      location = resolveLocation(url, currentRoute.value)
-    } else {
-      // named or relative route
-      const query = to.query ? normalizeQuery(to.query) : {}
-      const hash = to.hash || ''
-      // we need to resolve first
-      location = resolveLocation({ ...to, query, hash }, currentRoute.value)
-      // intentionally drop current query and hash
-      url = normalizeLocation({
-        query,
-        hash,
-        ...location,
-      })
-    }
+    const toLocation: RouteLocationNormalized = (pendingLocation = resolve(to))
 
     // TODO: should we throw an error as the navigation was aborted
     // TODO: needs a proper check because order in query could be different
     if (
       currentRoute.value !== START_LOCATION_NORMALIZED &&
-      currentRoute.value.fullPath === url.fullPath
+      currentRoute.value.fullPath === toLocation.fullPath
     )
       return currentRoute.value
 
-    const toLocation: RouteLocationNormalized = (pendingLocation = location)
     // trigger all guards, throw if navigation is rejected
     try {
       await navigate(toLocation, currentRoute.value)
