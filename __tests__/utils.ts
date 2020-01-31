@@ -1,6 +1,12 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
-import { NavigationGuard, RouteRecord } from '../src/types'
-import { h, resolveComponent } from '@vue/runtime-core'
+import {
+  NavigationGuard,
+  RouteRecord,
+  RouteRecordMultipleViews,
+  MatcherLocationNormalized,
+  RouteLocationNormalized,
+} from '../src/types'
+import { h, resolveComponent } from 'vue'
 import { RouteRecordMatched } from '../src/matcher/types'
 
 export const tick = (time?: number) =>
@@ -11,6 +17,35 @@ export const tick = (time?: number) =>
 
 export type NAVIGATION_METHOD = 'push' | 'replace'
 export const NAVIGATION_TYPES: NAVIGATION_METHOD[] = ['push', 'replace']
+
+export interface RouteRecordViewLoose
+  extends Pick<
+    RouteRecordMultipleViews,
+    'path' | 'name' | 'components' | 'children' | 'meta' | 'beforeEnter'
+  > {
+  leaveGuards?: any
+}
+
+// @ts-ignore we are intentionally overriding the type
+export interface RouteLocationNormalizedLoose extends RouteLocationNormalized {
+  name: string | undefined
+  path: string
+  // record?
+  params: any
+  redirectedFrom?: Partial<MatcherLocationNormalized>
+  meta: any
+  matched: Partial<RouteRecordViewLoose>[]
+}
+
+export interface MatcherLocationNormalizedLoose {
+  name: string
+  path: string
+  // record?
+  params: any
+  redirectedFrom?: Partial<MatcherLocationNormalized>
+  meta: any
+  matched: Partial<RouteRecordViewLoose>[]
+}
 
 declare global {
   namespace NodeJS {

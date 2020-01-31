@@ -53,6 +53,7 @@ const config = (env = {}) => ({
       template: resolve(__dirname, 'playground/index.html'),
     }),
     new webpack.DefinePlugin({
+      __DEV__: JSON.stringify(!env.prod),
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
       },

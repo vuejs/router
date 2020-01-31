@@ -6,30 +6,14 @@ import {
   MatcherLocation,
   MatcherLocationNormalized,
   MatcherLocationRedirect,
-  RouteRecordMultipleViews,
 } from '../../src/types'
-import { normalizeRouteRecord } from '../utils'
+import { normalizeRouteRecord, MatcherLocationNormalizedLoose } from '../utils'
 
 // @ts-ignore
 const component: RouteComponent = null
 
 // for normalized records
 const components = { default: component }
-
-interface MatcherLocationNormalizedLoose {
-  name: string
-  path: string
-  // record?
-  params: any
-  redirectedFrom?: Partial<MatcherLocationNormalized>
-  meta: any
-  matched: Partial<RouteRecordViewLoose>[]
-}
-
-type RouteRecordViewLoose = Pick<
-  RouteRecordMultipleViews,
-  'path' | 'name' | 'components' | 'children' | 'meta' | 'beforeEnter'
->
 
 describe('Router Matcher', () => {
   describe('resolve', () => {

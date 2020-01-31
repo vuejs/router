@@ -1,6 +1,6 @@
 import { HistoryQuery, RawHistoryQuery } from '../history/common'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
-import { markNonReactive } from '@vue/reactivity'
+import { markNonReactive } from 'vue'
 import { RouteRecordMatched } from '../matcher/types'
 
 // type Component = ComponentOptions<Vue> | typeof Vue | AsyncComponent
@@ -54,7 +54,7 @@ export interface RouteLocationNormalized
   fullPath: string
   query: HistoryQuery // the normalized version cannot have numbers
   // TODO: do the same for params
-  name: string | void
+  name: string | null | undefined
   matched: RouteRecordMatched[] // non-enumerable
   redirectedFrom?: RouteLocationNormalized
   meta: Record<string | number | symbol, any>
@@ -135,7 +135,6 @@ export type RouteRecord =
   | RouteRecordMultipleViews
   | RouteRecordRedirect
 
-// TODO: this should probably be generate by ensureLocation
 export const START_LOCATION_NORMALIZED: RouteLocationNormalized = markNonReactive(
   {
     path: '/',

@@ -8,7 +8,7 @@
 <script>
 // @ts-check
 import { defineComponent } from 'vue'
-import { onRouteLeave } from '../../src'
+import { onBeforeRouteLeave } from '../../src'
 
 export default defineComponent({
   name: 'GuardedWithLeave',
@@ -16,7 +16,7 @@ export default defineComponent({
 
   setup() {
     console.log('setup in cant leave')
-    onRouteLeave(function(to, from, next) {
+    onBeforeRouteLeave(function(to, from, next) {
       if (window.confirm()) next()
       else {
         // @ts-ignore

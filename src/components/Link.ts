@@ -1,5 +1,13 @@
-import { defineComponent, h, PropType, inject } from '@vue/runtime-core'
-import { computed, reactive, isRef, Ref } from '@vue/reactivity'
+import {
+  defineComponent,
+  h,
+  PropType,
+  inject,
+  computed,
+  reactive,
+  isRef,
+  Ref,
+} from 'vue'
 import { RouteLocation } from '../types'
 
 interface UseLinkProps {

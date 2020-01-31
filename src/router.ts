@@ -10,6 +10,7 @@ import {
   RouteQueryAndHash,
   Lazy,
   TODO,
+  Immutable,
 } from './types'
 import {
   RouterHistory,
@@ -33,8 +34,7 @@ import { extractComponentsGuards, guardToPromiseFn } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam } from './utils/encoding'
 import { decode } from './utils/encoding'
-import { ref, Ref, markNonReactive } from '@vue/reactivity'
-import { nextTick } from '@vue/runtime-core'
+import { ref, Ref, markNonReactive, nextTick } from 'vue'
 import { RouteRecordMatched } from './matcher/types'
 
 type ErrorHandler = (error: any) => any
@@ -58,7 +58,7 @@ export interface RouterOptions {
 
 export interface Router {
   history: RouterHistory
-  currentRoute: Ref<RouteLocationNormalized>
+  currentRoute: Ref<Immutable<RouteLocationNormalized>>
 
   resolve(to: RouteLocation): RouteLocationNormalized
   createHref(to: RouteLocationNormalized): string
@@ -117,7 +117,7 @@ export function createRouter({
   const beforeGuards = useCallbacks<NavigationGuard>()
   const afterGuards = useCallbacks<PostNavigationGuard>()
   const currentRoute = ref<RouteLocationNormalized>(START_LOCATION_NORMALIZED)
-  let pendingLocation: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
+  let pendingLocation: Immutable<RouteLocationNormalized> = START_LOCATION_NORMALIZED
 
   if (isClient && 'scrollRestoration' in window.history) {
     window.history.scrollRestoration = 'manual'

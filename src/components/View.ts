@@ -6,9 +6,15 @@ import {
   PropType,
   computed,
   Component,
-} from '@vue/runtime-core'
+  InjectionKey,
+  Ref,
+} from 'vue'
+import { RouteRecordMatched } from '../matcher/types'
 
-const View = defineComponent({
+// TODO: make it work with no symbols too for IE
+export const matchedRouteKey = Symbol() as InjectionKey<Ref<RouteRecordMatched>>
+
+export const View = defineComponent({
   name: 'RouterView',
   props: {
     name: {
@@ -27,7 +33,7 @@ const View = defineComponent({
       () => matchedRoute.value && matchedRoute.value.components[props.name]
     )
 
-    provide('matchedRoute', matchedRoute)
+    provide(matchedRouteKey, matchedRoute)
 
     return () => {
       return ViewComponent.value
@@ -36,5 +42,3 @@ const View = defineComponent({
     }
   },
 })
-
-export default View

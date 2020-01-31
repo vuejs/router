@@ -1,16 +1,13 @@
 /**
  * @jest-environment jsdom
  */
-import RouterView from '../src/components/View'
-import { components } from './utils'
-import {
-  START_LOCATION_NORMALIZED,
-  RouteLocationNormalized,
-} from '../src/types'
+import { View as RouterView } from '../src/components/View'
+import { components, RouteLocationNormalizedLoose } from './utils'
+import { START_LOCATION_NORMALIZED } from '../src/types'
 import { ref, markNonReactive } from 'vue'
 import { mount, tick } from './mount'
 
-const routes: Record<string, RouteLocationNormalized> = {
+const routes: Record<string, RouteLocationNormalizedLoose> = {
   root: {
     fullPath: '/',
     name: undefined,
@@ -71,7 +68,7 @@ const routes: Record<string, RouteLocationNormalized> = {
 }
 
 describe('RouterView', () => {
-  function factory(route: RouteLocationNormalized, props: any = {}) {
+  function factory(route: RouteLocationNormalizedLoose, props: any = {}) {
     const router = {
       currentRoute: ref(markNonReactive(route)),
     }
@@ -105,7 +102,7 @@ describe('RouterView', () => {
   })
 
   it('displays nothing when route is unmatched', () => {
-    const { el } = factory(START_LOCATION_NORMALIZED)
+    const { el } = factory(START_LOCATION_NORMALIZED as any)
     // NOTE: I wonder if this will stay stable in future releases
     expect(el.childElementCount).toBe(0)
   })

@@ -4,7 +4,7 @@ import {
   NavigationGuard,
 } from '../types'
 
-interface RouteRecordNormalizedCommon {
+export interface RouteRecordNormalizedCommon {
   leaveGuards: NavigationGuard[]
 }
 
