@@ -3,8 +3,6 @@ import {
   MatcherLocation,
   MatcherLocationNormalized,
   MatcherLocationRedirect,
-  // TODO: add it to matched
-  // MatchedRouteRecord,
 } from '../types'
 import { NoRouteMatchError, InvalidRouteMatch } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './path-matcher'
