@@ -45,7 +45,7 @@ const config = (env = {}) => ({
       vue: '@vue/runtime-dom',
     },
     // Add `.ts` and `.tsx` as a resolvable extension.
-    extensions: ['.ts', '.tsx', '.js', '.vue'],
+    extensions: ['.ts', 'd.ts', '.tsx', '.js', '.vue'],
   },
   plugins: [
     new VueLoaderPlugin(),
