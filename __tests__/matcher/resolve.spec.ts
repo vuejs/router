@@ -6,6 +6,7 @@ import {
   MatcherLocation,
   MatcherLocationNormalized,
   MatcherLocationRedirect,
+  RouteRecordMultipleViews,
 } from '../../src/types'
 import { normalizeRouteRecord } from '../utils'
 
@@ -15,12 +16,27 @@ const component: RouteComponent = null
 // for normalized records
 const components = { default: component }
 
+interface MatcherLocationNormalizedLoose {
+  name: string
+  path: string
+  // record?
+  params: any
+  redirectedFrom?: Partial<MatcherLocationNormalized>
+  meta: any
+  matched: Partial<RouteRecordViewLoose>[]
+}
+
+type RouteRecordViewLoose = Pick<
+  RouteRecordMultipleViews,
+  'path' | 'name' | 'components' | 'children' | 'meta' | 'beforeEnter'
+>
+
 describe('Router Matcher', () => {
   describe('resolve', () => {
     function assertRecordMatch(
       record: RouteRecord | RouteRecord[],
       location: MatcherLocation,
-      resolved: Partial<MatcherLocationNormalized>,
+      resolved: Partial<MatcherLocationNormalizedLoose>,
       start: MatcherLocationNormalized = START_LOCATION_NORMALIZED
     ) {
       record = Array.isArray(record) ? record : [record]
@@ -49,7 +65,7 @@ describe('Router Matcher', () => {
           resolved.matched = record.map(normalizeRouteRecord)
         // allow passing an expect.any(Array)
         else if (Array.isArray(resolved.matched))
-          resolved.matched = resolved.matched.map(normalizeRouteRecord)
+          resolved.matched = resolved.matched.map(normalizeRouteRecord as any)
       }
 
       // allows not passing params
@@ -294,7 +310,7 @@ describe('Router Matcher', () => {
             name: 'Home',
             params: {},
             path: '/home',
-            matched: [record],
+            matched: [record] as any,
             meta: {},
           }
         )
@@ -310,7 +326,7 @@ describe('Router Matcher', () => {
             path: '/users/ed/m/user',
             name: undefined,
             params: { id: 'ed', role: 'user' },
-            matched: [record],
+            matched: [record] as any,
             meta: {},
           }
         )
@@ -354,7 +370,7 @@ describe('Router Matcher', () => {
             path: '/users/ed/m/user',
             name: 'UserEdit',
             params: { id: 'ed', role: 'user' },
-            matched: [record],
+            matched: [record] as any,
             meta: {},
           }
         )
@@ -374,7 +390,7 @@ describe('Router Matcher', () => {
             path: '/users/ed/m/user',
             name: undefined,
             params: { id: 'ed', role: 'user' },
-            matched: [record],
+            matched: [record] as any,
             meta: {},
           }
         )

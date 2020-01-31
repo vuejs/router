@@ -116,7 +116,7 @@ beforeEach(() => {
   resetMocks()
 })
 
-describe('beforeRouteEnter', () => {
+describe.skip('beforeRouteEnter', () => {
   beforeAll(() => {
     createDom()
   })

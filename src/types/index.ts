@@ -1,11 +1,16 @@
 import { HistoryQuery, RawHistoryQuery } from '../history/common'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
 import { markNonReactive } from '@vue/reactivity'
+import { RouteRecordMatched } from '../matcher/types'
 
 // type Component = ComponentOptions<Vue> | typeof Vue | AsyncComponent
 
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
+
+export type Immutable<T> = {
+  readonly [P in keyof T]: Immutable<T[P]>
+}
 
 export type TODO = any
 
@@ -43,11 +48,6 @@ export type RouteLocation =
   | (RouteQueryAndHash & LocationAsRelative & RouteLocationOptions)
 
 // A matched record cannot be a redirection and must contain
-// a normalized version of components with { default: Component } instead of `component`
-export type MatchedRouteRecord = Exclude<
-  RouteRecord,
-  RouteRecordRedirect | RouteRecordSingleView
->
 
 export interface RouteLocationNormalized
   extends Required<RouteQueryAndHash & LocationAsRelative & LocationAsPath> {
@@ -55,7 +55,7 @@ export interface RouteLocationNormalized
   query: HistoryQuery // the normalized version cannot have numbers
   // TODO: do the same for params
   name: string | void
-  matched: MatchedRouteRecord[] // non-enumerable
+  matched: RouteRecordMatched[] // non-enumerable
   redirectedFrom?: RouteLocationNormalized
   meta: Record<string | number | symbol, any>
 }
@@ -166,7 +166,7 @@ export interface MatcherLocationNormalized {
   path: string
   // record?
   params: RouteLocationNormalized['params']
-  matched: MatchedRouteRecord[]
+  matched: RouteRecordMatched[]
   redirectedFrom?: MatcherLocationNormalized
   meta: RouteLocationNormalized['meta']
 }
@@ -192,14 +192,17 @@ export interface NavigationGuardCallback {
 export interface NavigationGuard<V = void> {
   (
     this: V,
-    to: RouteLocationNormalized,
-    from: RouteLocationNormalized,
+    to: Immutable<RouteLocationNormalized>,
+    from: Immutable<RouteLocationNormalized>,
     next: NavigationGuardCallback
   ): any
 }
 
 export interface PostNavigationGuard {
-  (to: RouteLocationNormalized, from: RouteLocationNormalized): any
+  (
+    to: Immutable<RouteLocationNormalized>,
+    from: Immutable<RouteLocationNormalized>
+  ): any
 }
 
 export * from './type-guards'

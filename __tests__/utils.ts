@@ -1,6 +1,7 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
-import { NavigationGuard, RouteRecord, MatchedRouteRecord } from '../src/types'
+import { NavigationGuard, RouteRecord } from '../src/types'
 import { h, resolveComponent } from '@vue/runtime-core'
+import { RouteRecordMatched } from '../src/matcher/types'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
@@ -59,19 +60,32 @@ export const components = {
   },
 }
 
+const DEFAULT_COMMON_RECORD_PROPERTIES = {
+  beforeEnter: undefined,
+  leaveGuards: [],
+  meta: undefined,
+}
+
 /**
- * Copies and normalizes the record so it always contains an object of `components`
+ * Adds missing properties
  *
  * @param record
  * @returns a normalized copy
  */
 export function normalizeRouteRecord(
+  // cannot be a redirect record
   record: Exclude<RouteRecord, { redirect: any }>
-): MatchedRouteRecord {
-  if ('components' in record) return { ...record }
+): RouteRecordMatched {
+  if ('components' in record)
+    return {
+      ...DEFAULT_COMMON_RECORD_PROPERTIES,
+      ...record,
+    }
+
   const { component, ...rest } = record
 
   return {
+    ...DEFAULT_COMMON_RECORD_PROPERTIES,
     ...rest,
     components: { default: component },
   }

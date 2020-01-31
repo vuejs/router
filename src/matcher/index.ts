@@ -7,7 +7,6 @@ import {
   // MatchedRouteRecord,
 } from '../types'
 import { NoRouteMatchError, InvalidRouteMatch } from '../errors'
-// import { createRouteRecordMatcher } from './path-matcher'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './path-matcher'
 import { RouteRecordNormalized } from './types'
 import {
@@ -17,7 +16,7 @@ import {
 } from './path-parser-ranker'
 
 interface RouterMatcher {
-  addRoute: (record: Readonly<RouteRecord>, parent?: RouteRecordMatcher) => void
+  addRoute: (record: RouteRecord, parent?: RouteRecordMatcher) => void
   // TODO: remove route
   resolve: (
     location: Readonly<MatcherLocation>,
@@ -135,7 +134,7 @@ export function createRouterMatcher(
     location: Readonly<MatcherLocation>,
     currentLocation: Readonly<MatcherLocationNormalized>
   ): MatcherLocationNormalized | MatcherLocationRedirect {
-    let matcher: RouteRecordMatcher | void
+    let matcher: RouteRecordMatcher | undefined
     let params: PathParams = {}
     let path: MatcherLocationNormalized['path']
     let name: MatcherLocationNormalized['name']
@@ -254,6 +253,7 @@ export function normalizeRouteRecord(
       name: record.name,
       beforeEnter: record.beforeEnter,
       meta: record.meta,
+      leaveGuards: [],
     }
   } else {
     return {
@@ -266,6 +266,7 @@ export function normalizeRouteRecord(
       name: record.name,
       beforeEnter: record.beforeEnter,
       meta: record.meta,
+      leaveGuards: [],
     }
   }
 }

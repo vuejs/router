@@ -87,19 +87,24 @@ function useHistoryListeners(
     const deltaFromCurrent = fromState
       ? state.position - fromState.position
       : ''
+    const distance = deltaFromCurrent || 0
     console.log({ deltaFromCurrent })
+    // Here we could also revert the navigation by calling history.go(-distance)
+    // this listener will have to be adapted to not trigger again and to wait for the url
+    // to be updated before triggering the listeners. Some kind of validation function would also
+    // need to be passed to the listeners so the navigation can be accepted
     // call all listeners
-    listeners.forEach(listener =>
+    listeners.forEach(listener => {
       listener(location.value, from, {
-        distance: deltaFromCurrent || 0,
+        distance,
         type: NavigationType.pop,
-        direction: deltaFromCurrent
-          ? deltaFromCurrent > 0
+        direction: distance
+          ? distance > 0
             ? NavigationDirection.forward
             : NavigationDirection.back
           : NavigationDirection.unknown,
       })
-    )
+    })
   }
 
   function pauseListeners() {

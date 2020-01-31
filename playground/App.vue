@@ -89,6 +89,9 @@
       <li>
         <router-link to="/with-data">/with-data</router-link>
       </li>
+      <li>
+        <router-link to="/cant-leave">/cant-leave</router-link>
+      </li>
     </ul>
     <!-- <transition
       name="fade"

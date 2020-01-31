@@ -34,7 +34,7 @@ beforeEach(() => {
   beforeRouteUpdate.mockReset()
 })
 
-describe('beforeRouteUpdate', () => {
+describe.skip('beforeRouteUpdate', () => {
   beforeAll(() => {
     createDom()
   })

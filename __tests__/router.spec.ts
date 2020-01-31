@@ -67,12 +67,14 @@ describe('Router', () => {
     jest.spyOn(history, 'push')
     await router.push('/foo')
     expect(history.push).toHaveBeenCalledTimes(1)
-    expect(history.push).toHaveBeenCalledWith({
-      fullPath: '/foo',
-      path: '/foo',
-      query: {},
-      hash: '',
-    })
+    expect(history.push).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fullPath: '/foo',
+        path: '/foo',
+        query: {},
+        hash: '',
+      })
+    )
   })
 
   it('calls history.replace with router.replace', async () => {
@@ -81,12 +83,14 @@ describe('Router', () => {
     jest.spyOn(history, 'replace')
     await router.replace('/foo')
     expect(history.replace).toHaveBeenCalledTimes(1)
-    expect(history.replace).toHaveBeenCalledWith({
-      fullPath: '/foo',
-      path: '/foo',
-      query: {},
-      hash: '',
-    })
+    expect(history.replace).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fullPath: '/foo',
+        path: '/foo',
+        query: {},
+        hash: '',
+      })
+    )
   })
 
   it('can pass replace option to push', async () => {
@@ -94,12 +98,14 @@ describe('Router', () => {
     jest.spyOn(history, 'replace')
     await router.push({ path: '/foo', replace: true })
     expect(history.replace).toHaveBeenCalledTimes(1)
-    expect(history.replace).toHaveBeenCalledWith({
-      fullPath: '/foo',
-      path: '/foo',
-      query: {},
-      hash: '',
-    })
+    expect(history.replace).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fullPath: '/foo',
+        path: '/foo',
+        query: {},
+        hash: '',
+      })
+    )
   })
 
   describe('navigation', () => {

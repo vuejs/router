@@ -1,11 +1,12 @@
-import { RouteLocationNormalized, MatchedRouteRecord } from '../types'
+import { RouteLocationNormalized } from '../types'
 import { guardToPromiseFn } from './guardToPromiseFn'
+import { RouteRecordMatched } from '../matcher/types'
 
 export * from './guardToPromiseFn'
 
 type GuardType = 'beforeRouteEnter' | 'beforeRouteUpdate' | 'beforeRouteLeave'
 export async function extractComponentsGuards(
-  matched: MatchedRouteRecord[],
+  matched: RouteRecordMatched[],
   guardType: GuardType,
   to: RouteLocationNormalized,
   from: RouteLocationNormalized

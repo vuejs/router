@@ -98,7 +98,7 @@ beforeEach(() => {
   resetMocks()
 })
 
-describe('beforeRouteLeave', () => {
+describe.skip('beforeRouteLeave', () => {
   beforeAll(() => {
     createDom()
   })

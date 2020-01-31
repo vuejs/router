@@ -1,21 +1,30 @@
-import { RouteRecordMultipleViews, RouteRecordRedirect } from '../types'
+import {
+  RouteRecordMultipleViews,
+  RouteRecordRedirect,
+  NavigationGuard,
+} from '../types'
 
-interface RouteRecordRedirectNormalized {
-  path: RouteRecordRedirect['path']
-  name: RouteRecordRedirect['name']
-  redirect: RouteRecordRedirect['redirect']
-  meta: RouteRecordRedirect['meta']
-  beforeEnter: RouteRecordRedirect['beforeEnter']
+interface RouteRecordNormalizedCommon {
+  leaveGuards: NavigationGuard[]
 }
-interface RouteRecordViewNormalized {
-  path: RouteRecordMultipleViews['path']
-  name: RouteRecordMultipleViews['name']
-  components: RouteRecordMultipleViews['components']
-  children: RouteRecordMultipleViews['children']
-  meta: RouteRecordMultipleViews['meta']
-  beforeEnter: RouteRecordMultipleViews['beforeEnter']
-}
+
+type RouteRecordRedirectNormalized = RouteRecordNormalizedCommon &
+  Pick<
+    RouteRecordRedirect,
+    'path' | 'name' | 'redirect' | 'beforeEnter' | 'meta'
+  >
+
+type RouteRecordViewNormalized = RouteRecordNormalizedCommon &
+  Pick<
+    RouteRecordMultipleViews,
+    'path' | 'name' | 'components' | 'children' | 'meta' | 'beforeEnter'
+  >
+
 // normalize component/components into components
+// How are RouteRecords stored in a matcher
 export type RouteRecordNormalized =
   | RouteRecordRedirectNormalized
   | RouteRecordViewNormalized
+
+// When Matching a location, only RouteRecordView is possible, because redirections never end up in `matched`
+export type RouteRecordMatched = RouteRecordViewNormalized

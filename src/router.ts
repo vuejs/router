@@ -30,10 +30,12 @@ import {
   NavigationAborted,
 } from './errors'
 import { extractComponentsGuards, guardToPromiseFn } from './utils'
+import { useCallbacks } from './utils/callbacks'
 import { encodeParam } from './utils/encoding'
 import { decode } from './utils/encoding'
 import { ref, Ref, markNonReactive } from '@vue/reactivity'
 import { nextTick } from '@vue/runtime-core'
+import { RouteRecordMatched } from './matcher/types'
 
 type ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor
@@ -73,6 +75,33 @@ export interface Router {
 
 const isClient = typeof window !== 'undefined'
 
+async function runGuardQueue(guards: Lazy<any>[]): Promise<void> {
+  for (const guard of guards) {
+    await guard()
+  }
+}
+
+function extractChangingRecords(
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized
+) {
+  const leavingRecords: RouteRecordMatched[] = []
+  const updatingRecords: RouteRecordMatched[] = []
+  const enteringRecords: RouteRecordMatched[] = []
+
+  // TODO: could be optimized with one single for loop
+  for (const record of from.matched) {
+    if (to.matched.indexOf(record) < 0) leavingRecords.push(record)
+    else updatingRecords.push(record)
+  }
+
+  for (const record of to.matched) {
+    if (from.matched.indexOf(record) < 0) enteringRecords.push(record)
+  }
+
+  return [leavingRecords, updatingRecords, enteringRecords]
+}
+
 export function createRouter({
   history,
   routes,
@@ -84,14 +113,11 @@ export function createRouter({
     encodeParam,
     decode
   )
-  const beforeGuards: NavigationGuard[] = []
-  const afterGuards: PostNavigationGuard[] = []
+
+  const beforeGuards = useCallbacks<NavigationGuard>()
+  const afterGuards = useCallbacks<PostNavigationGuard>()
   const currentRoute = ref<RouteLocationNormalized>(START_LOCATION_NORMALIZED)
   let pendingLocation: Readonly<RouteLocationNormalized> = START_LOCATION_NORMALIZED
-  let onReadyCbs: OnReadyCallback[] = []
-  // TODO: should these be triggered before or after route.push().catch()
-  let errorHandlers: ErrorHandler[] = []
-  let ready: boolean = false
 
   if (isClient && 'scrollRestoration' in window.history) {
     window.history.scrollRestoration = 'manual'
@@ -235,22 +261,16 @@ export function createRouter({
     )
       return currentRoute.value
 
-    const isFirstNavigation =
-      currentRoute.value === START_LOCATION_NORMALIZED &&
-      to === history.location
-
-    const toLocation: RouteLocationNormalized = location
-    pendingLocation = toLocation
+    const toLocation: RouteLocationNormalized = (pendingLocation = location)
     // trigger all guards, throw if navigation is rejected
     try {
       await navigate(toLocation, currentRoute.value)
     } catch (error) {
-      if (isFirstNavigation) markAsReady(error)
       if (NavigationGuardRedirect.is(error)) {
         // push was called while waiting in guards
         if (pendingLocation !== toLocation) {
           // TODO: trigger onError as well
-          throw new NavigationCancelled(toLocation, currentRoute.value)
+          triggerError(new NavigationCancelled(toLocation, currentRoute.value))
         }
         // TODO: setup redirect stack
         // TODO: shouldn't we trigger the error as well
@@ -260,37 +280,13 @@ export function createRouter({
         // triggerError as well
         if (pendingLocation !== toLocation) {
           // TODO: trigger onError as well
-          throw new NavigationCancelled(toLocation, currentRoute.value)
+          triggerError(new NavigationCancelled(toLocation, currentRoute.value))
         }
-
-        triggerError(error)
       }
+      triggerError(error)
     }
 
-    // push was called while waiting in guards
-    if (pendingLocation !== toLocation) {
-      const error = new NavigationCancelled(toLocation, currentRoute.value)
-      // TODO: refactor errors to be more lightweight
-      if (isFirstNavigation) markAsReady(error)
-      throw error
-    }
-
-    // change URL
-    if (!isFirstNavigation) {
-      if (to.replace === true) history.replace(url)
-      else history.push(url)
-    }
-
-    const from = currentRoute.value
-    currentRoute.value = markNonReactive(toLocation)
-    // TODO: this doesn't work on first load. Moving it to RouterView could allow automatically handling transitions too maybe
-    if (!isFirstNavigation)
-      handleScroll(toLocation, from).catch(err => triggerError(err, false))
-
-    // navigation is confirmed, call afterGuards
-    for (const guard of afterGuards) guard(toLocation, from)
-
-    markAsReady()
+    finalizeNavigation(toLocation, true, to.replace === true)
 
     return currentRoute.value
   }
@@ -300,12 +296,6 @@ export function createRouter({
     return push({ ...location, replace: true })
   }
 
-  async function runGuardQueue(guards: Lazy<any>[]): Promise<void> {
-    for (const guard of guards) {
-      await guard()
-    }
-  }
-
   async function navigate(
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
@@ -313,6 +303,7 @@ export function createRouter({
     let guards: Lazy<any>[]
 
     // all components here have been resolved once because we are leaving
+    // TODO: refactor both together
     guards = await extractComponentsGuards(
       from.matched.filter(record => to.matched.indexOf(record) < 0).reverse(),
       'beforeRouteLeave',
@@ -320,12 +311,24 @@ export function createRouter({
       from
     )
 
+    const [
+      leavingRecords,
+      // updatingRecords,
+      // enteringRecords,
+    ] = extractChangingRecords(to, from)
+
+    for (const record of leavingRecords) {
+      for (const guard of record.leaveGuards) {
+        guards.push(guardToPromiseFn(guard, to, from))
+      }
+    }
+
     // run the queue of per route beforeRouteLeave guards
     await runGuardQueue(guards)
 
     // check global guards beforeEach
     guards = []
-    for (const guard of beforeGuards) {
+    for (const guard of beforeGuards.list()) {
       guards.push(guardToPromiseFn(guard, to, from))
     }
 
@@ -373,6 +376,50 @@ export function createRouter({
     await runGuardQueue(guards)
   }
 
+  /**
+   * - Cleans up any navigation guards
+   * - Changes the url if necessary
+   * - Calls the scrollBehavior
+   */
+  function finalizeNavigation(
+    toLocation: RouteLocationNormalized,
+    isPush: boolean,
+    replace?: boolean
+  ) {
+    const from = currentRoute.value
+    // a more recent navigation took place
+    if (pendingLocation !== toLocation) {
+      return triggerError(new NavigationCancelled(toLocation, from), isPush)
+    }
+
+    // remove registered guards from removed matched records
+    const [leavingRecords] = extractChangingRecords(toLocation, from)
+    for (const record of leavingRecords) {
+      record.leaveGuards = []
+    }
+
+    // change URL only if the user did a push/replace
+    if (isPush) {
+      if (replace) history.replace(toLocation)
+      else history.push(toLocation)
+    }
+
+    // accept current navigation
+    currentRoute.value = markNonReactive(toLocation)
+    // TODO: this doesn't work on first load. Moving it to RouterView could allow automatically handling transitions too maybe
+    // TODO: refactor with a state getter
+    const state = isPush ? {} : window.history.state
+    handleScroll(toLocation, from, state && state.scroll).catch(err =>
+      triggerError(err, false)
+    )
+
+    // navigation is confirmed, call afterGuards
+    for (const guard of afterGuards.list()) guard(toLocation, from)
+
+    markAsReady()
+  }
+
+  // attach listener to history to trigger navigations
   history.listen(async (to, from, info) => {
     const matchedRoute = resolveLocation(to, currentRoute.value)
     // console.log({ to, matchedRoute })
@@ -382,26 +429,7 @@ export function createRouter({
 
     try {
       await navigate(toLocation, currentRoute.value)
-
-      // a more recent navigation took place
-      if (pendingLocation !== toLocation) {
-        return triggerError(
-          new NavigationCancelled(toLocation, currentRoute.value),
-          false
-        )
-      }
-
-      // accept current navigation
-      currentRoute.value = markNonReactive({
-        ...to,
-        ...matchedRoute,
-      })
-      // TODO: refactor with a state getter
-      // const { scroll } = history.state
-      const { state } = window.history
-      handleScroll(toLocation, currentRoute.value, state.scroll).catch(err =>
-        triggerError(err, false)
-      )
+      finalizeNavigation(toLocation, false)
     } catch (error) {
       if (NavigationGuardRedirect.is(error)) {
         // TODO: refactor the duplication of new NavigationCancelled by
@@ -420,74 +448,63 @@ export function createRouter({
         push(error.to).catch(() => {})
       } else if (NavigationAborted.is(error)) {
         console.log('Cancelled, going to', -info.distance)
-        history.go(-info.distance, false)
         // TODO: test on different browsers ensure consistent behavior
-        // Maybe we could write the length the first time we do a navigation and use that for direction
-        // TODO: this doesn't work if the user directly calls window.history.go(-n) with n > 1
-        // We can override the go method to retrieve the number but not sure if all browsers allow that
-        // if (info.direction === NavigationDirection.back) {
-        //   history.forward(false)
-        // } else {
-        // TODO: go back because we cancelled, then
-        // or replace and not discard the rest of history. Check issues, there was one talking about this
-        // behaviour, maybe we can do better
-        // history.back(false)
-        // }
+        history.go(-info.distance, false)
       } else {
         triggerError(error, false)
       }
     }
   })
 
-  function beforeEach(guard: NavigationGuard): ListenerRemover {
-    beforeGuards.push(guard)
-    return () => {
-      const i = beforeGuards.indexOf(guard)
-      if (i > -1) beforeGuards.splice(i, 1)
-    }
-  }
+  // Initialization and Errors
 
-  function afterEach(guard: PostNavigationGuard): ListenerRemover {
-    afterGuards.push(guard)
-    return () => {
-      const i = afterGuards.indexOf(guard)
-      if (i > -1) afterGuards.splice(i, 1)
-    }
-  }
+  let readyHandlers = useCallbacks<OnReadyCallback>()
+  // TODO: should these be triggered before or after route.push().catch()
+  let errorHandlers = useCallbacks<ErrorHandler>()
+  let ready: boolean
 
-  function onError(handler: ErrorHandler): void {
-    errorHandlers.push(handler)
-  }
-
+  /**
+   * Trigger errorHandlers added via onError and throws the error as well
+   * @param error error to throw
+   * @param shouldThrow defaults to true. Pass false to not throw the error
+   */
   function triggerError(error: any, shouldThrow: boolean = true): void {
-    for (const handler of errorHandlers) {
-      handler(error)
-    }
+    markAsReady(error)
+    errorHandlers.list().forEach(handler => handler(error))
     if (shouldThrow) throw error
   }
 
+  /**
+   * Returns a Promise that resolves or reject when the router has finished its
+   * initial navigation. This will be automatic on client but requires an
+   * explicit `router.push` call on the server. This behavior can change
+   * depending on the history implementation used e.g. the defaults history
+   * implementation (client only) triggers this automatically but the memory one
+   * (should be used on server) doesn't
+   */
   function isReady(): Promise<void> {
     if (ready && currentRoute.value !== START_LOCATION_NORMALIZED)
       return Promise.resolve()
     return new Promise((resolve, reject) => {
-      onReadyCbs.push([resolve, reject])
+      readyHandlers.add([resolve, reject])
     })
   }
 
+  /**
+   * Mark the router as ready, resolving the promised returned by isReady(). Can
+   * only be called once, otherwise does nothing.
+   * @param err optional error
+   */
   function markAsReady(err?: any): void {
     if (ready) return
     ready = true
-    for (const [resolve] of onReadyCbs) {
-      // TODO: is this okay?
-      // always resolve, as the router is ready even if there was an error
-      // @ts-ignore
-      resolve(err)
-      // TODO: try catch the on ready?
-      // if (err) reject(err)
-      // else resolve()
-    }
-    onReadyCbs = []
+    readyHandlers
+      .list()
+      .forEach(([resolve, reject]) => (err ? reject(err) : resolve()))
+    readyHandlers.reset()
   }
+
+  // Scroll behavior
 
   async function handleScroll(
     to: RouteLocationNormalized,
@@ -507,10 +524,10 @@ export function createRouter({
     push,
     replace,
     resolve,
-    beforeEach,
-    afterEach,
+    beforeEach: beforeGuards.add,
+    afterEach: afterGuards.add,
     createHref,
-    onError,
+    onError: errorHandlers.add,
     isReady,
 
     history,

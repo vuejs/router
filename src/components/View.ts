@@ -22,11 +22,12 @@ const View = defineComponent({
     const depth: number = inject('routerViewDepth', 0)
     provide('routerViewDepth', depth + 1)
 
-    const ViewComponent = computed<Component | undefined>(() => {
-      const matched = route.value.matched[depth]
+    const matchedRoute = computed(() => route.value.matched[depth])
+    const ViewComponent = computed<Component | undefined>(
+      () => matchedRoute.value && matchedRoute.value.components[props.name]
+    )
 
-      return matched && matched.components[props.name]
-    })
+    provide('matchedRoute', matchedRoute)
 
     return () => {
       return ViewComponent.value
