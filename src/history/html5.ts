@@ -1,14 +1,12 @@
 import {
   RouterHistory,
   NavigationCallback,
-  parseQuery,
   normalizeLocation,
   stripBase,
   NavigationType,
   NavigationDirection,
   HistoryLocationNormalized,
   HistoryState,
-  parseURL,
   RawHistoryLocation,
   ValueContainer,
 } from './common'
@@ -30,7 +28,6 @@ interface StateEntry {
 
 /**
  * Creates a noramlized history location from a window.location object
- * TODO: encoding is not handled like this
  * @param location
  */
 function createCurrentLocation(
@@ -41,15 +38,10 @@ function createCurrentLocation(
   // allows hash based url
   if (base.indexOf('#') > -1) {
     // prepend the starting slash to hash so the url starts with /#
-    return parseURL(stripBase('/' + hash, base))
+    return normalizeLocation(stripBase('/' + hash, base))
   }
   const path = stripBase(pathname, base)
-  return {
-    fullPath: path + search + hash,
-    path,
-    query: parseQuery(search),
-    hash: hash,
-  }
+  return normalizeLocation(path + search + hash)
 }
 
 function useHistoryListeners(

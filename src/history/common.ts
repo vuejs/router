@@ -1,19 +1,14 @@
 import { ListenerRemover } from '../types'
-import { encodeQueryProperty, encodeHash } from '../utils/encoding'
+// import { encodeQueryProperty, encodeHash } from '../utils/encoding'
 
-export type HistoryQuery = Record<string, string | string[]>
-// TODO: is it reall worth allowing null to form queries like ?q&b&c
-// When parsing using URLSearchParams, `q&c=` yield an empty string for q and c
-// I think it's okay to allow this by default and allow extending it
-// a more permissive history query
 // TODO: allow numbers
-export type RawHistoryQuery = Record<string, string | string[] | null>
+export type HistoryQuery = Record<string, string | string[]>
 
 interface HistoryLocation {
   // pathname section
   path: string
   // search string parsed
-  query?: RawHistoryQuery
+  query?: HistoryQuery
   // hash with the #
   hash?: string
 }
@@ -119,7 +114,7 @@ export function parseURL(location: string): HistoryLocationNormalized {
     )
 
     // TODO: can we remove the normalize call?
-    query = normalizeQuery(parseQuery(searchString))
+    query = parseQuery(searchString)
   }
 
   if (hashPos > -1) {
@@ -139,34 +134,16 @@ export function parseURL(location: string): HistoryLocationNormalized {
   }
 }
 
-// TODO: the encoding would be handled at a router level instead where encoding functions can be customized
-// that way the matcher can encode/decode params properly
+/**
+ * Stringify a URL object
+ * @param location
+ */
+export function stringifyURL(location: HistoryLocation): string {
+  let url = location.path
+  let query = location.query ? stringifyQuery(location.query) : ''
 
-// function safeDecodeUriComponent(value: string): string {
-//   try {
-//     value = decodeURIComponent(value)
-//   } catch (err) {
-//     // TODO: handling only URIError?
-//     console.warn(
-//       `[vue-router] error decoding query "${value}". Keeping the original value.`
-//     )
-//   }
-
-//   return value
-// }
-
-// function safeEncodeUriComponent(value: string): string {
-//   try {
-//     value = encodeURIComponent(value)
-//   } catch (err) {
-//     // TODO: handling only URIError?
-//     console.warn(
-//       `[vue-router] error encoding query "${value}". Keeping the original value.`
-//     )
-//   }
-
-//   return value
-// }
+  return url + (query && '?' + query) + (location.hash || '')
+}
 
 /**
  * Transform a queryString into a query object. Accept both, a version with the leading `?` and without
@@ -196,23 +173,11 @@ export function parseQuery(search: string): HistoryQuery {
   }
   return query
 }
-
-/**
- * Stringify a URL object
- * @param location
- */
-export function stringifyURL(location: HistoryLocation): string {
-  let url = location.path
-  let query = location.query ? stringifyQuery(location.query) : ''
-
-  return url + (query && '?' + query) + encodeHash(location.hash || '')
-}
-
 /**
  * Stringify an object query. Works like URLSearchParams. Doesn't prepend a `?`
  * @param query
  */
-export function stringifyQuery(query: RawHistoryQuery): string {
+export function stringifyQuery(query: HistoryQuery): string {
   let search = ''
   for (const key in query) {
     if (search.length > 1) search += '&'
@@ -222,35 +187,18 @@ export function stringifyQuery(query: RawHistoryQuery): string {
       search += key
       continue
     }
-    const encodedKey = encodeQueryProperty(key)
+    // const encodedKey = encodeQueryProperty(key)
     let values: string[] = Array.isArray(value) ? value : [value]
-    const encodedValues = values.map(encodeQueryProperty)
+    // const encodedValues = values.map(encodeQueryProperty)
 
-    search += `${encodedKey}=${values[0]}`
+    search += `${key}=${values[0]}`
     for (let i = 1; i < values.length; i++) {
-      search += `&${encodedKey}=${encodedValues[i]}`
+      search += `&${key}=${values[i]}`
     }
   }
 
   return search
 }
-
-export function normalizeQuery(query: RawHistoryQuery): HistoryQuery {
-  // TODO: properly test
-  const normalizedQuery: HistoryQuery = {}
-  for (const key in query) {
-    const value = query[key]
-    if (value === null) normalizedQuery[key] = ''
-    else normalizedQuery[key] = value
-  }
-  return normalizedQuery
-}
-
-// use regular decodeURI
-// Use a renamed export instead of global.decodeURI
-// to support node and browser at the same time
-const originalDecodeURI = decodeURI
-export { originalDecodeURI as decodeURI }
 
 /**
  * Normalize a History location object or string into a HistoryLocationNoramlized
@@ -264,7 +212,7 @@ export function normalizeLocation(
     return {
       fullPath: stringifyURL(location),
       path: location.path,
-      query: location.query ? normalizeQuery(location.query) : {},
+      query: location.query || {},
       hash: location.hash || '',
     }
 }

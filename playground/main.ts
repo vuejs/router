@@ -1,3 +1,5 @@
+// necessary for webpack
+///<reference path="../src/global.d.ts"/>
 import { createApp } from 'vue'
 import { router, routerHistory } from './router'
 import { globalState } from './store'

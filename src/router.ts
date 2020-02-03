@@ -12,12 +12,7 @@ import {
   TODO,
   Immutable,
 } from './types'
-import {
-  RouterHistory,
-  normalizeLocation,
-  stringifyURL,
-  normalizeQuery,
-} from './history/common'
+import { RouterHistory, normalizeLocation } from './history/common'
 import {
   ScrollToPosition,
   ScrollPosition,
@@ -31,8 +26,7 @@ import {
 } from './errors'
 import { extractComponentsGuards, guardToPromiseFn } from './utils'
 import { useCallbacks } from './utils/callbacks'
-import { encodeParam } from './utils/encoding'
-import { decode } from './utils/encoding'
+import { encodeParam, decode } from './utils/encoding'
 import { ref, Ref, markNonReactive, nextTick, App } from 'vue'
 import { RouteRecordMatched } from './matcher/types'
 import Link from './components/Link'
@@ -169,13 +163,11 @@ export function createRouter({
       // target location normalized, used if we want to redirect again
       const normalizedLocation: RouteLocationNormalized = {
         ...matchedRoute.normalizedLocation,
-        fullPath: stringifyURL({
+        ...normalizeLocation({
           path: matchedRoute.normalizedLocation.path,
           query: location.query,
           hash: location.hash,
         }),
-        query: normalizeQuery(location.query || {}),
-        hash: location.hash,
         redirectedFrom,
         meta: {},
       }
@@ -205,7 +197,7 @@ export function createRouter({
         return resolveLocation(
           {
             ...newLocation,
-            query: normalizeQuery(newLocation.query || {}),
+            query: newLocation.query || {},
             hash: newLocation.hash || '',
           },
           currentLocation,
@@ -215,7 +207,7 @@ export function createRouter({
         return resolveLocation(
           {
             ...redirect,
-            query: normalizeQuery(redirect.query || {}),
+            query: redirect.query || {},
             hash: redirect.hash || '',
           },
           currentLocation,
@@ -384,9 +376,13 @@ export function createRouter({
       record.leaveGuards = []
     }
 
-    // change URL only if the user did a push/replace
+    // only consider as push if it's not the first navigation
+    const isFirstNavigation = from === START_LOCATION_NORMALIZED
+
+    // change URL only if the user did a push/replace and if it's not the initial navigation because
+    // it's just reflecting the url
     if (isPush) {
-      if (replace) history.replace(toLocation)
+      if (replace || isFirstNavigation) history.replace(toLocation)
       else history.push(toLocation)
     }
 

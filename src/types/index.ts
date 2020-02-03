@@ -1,4 +1,4 @@
-import { HistoryQuery, RawHistoryQuery } from '../history/common'
+import { HistoryQuery } from '../history/common'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
 import { markNonReactive } from 'vue'
 import { RouteRecordMatched } from '../matcher/types'
@@ -20,7 +20,7 @@ export type ListenerRemover = () => void
 export type RouteParams = Record<string, string | string[]>
 
 export interface RouteQueryAndHash {
-  query?: RawHistoryQuery
+  query?: HistoryQuery
   hash?: string
 }
 export interface LocationAsPath {

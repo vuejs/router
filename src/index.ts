@@ -9,9 +9,6 @@ import {
 } from './types'
 import { onBeforeRouteLeave } from './navigationGuards'
 
-// necessary for webpack
-///<reference path="global.d.ts"/>
-
 declare module 'vue' {
   function inject<T>(key: InjectionKey<T> | string): T | undefined
   function inject<T>(key: InjectionKey<T> | string, defaultValue: T): T
