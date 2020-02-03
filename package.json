@@ -61,6 +61,6 @@
     "vue-loader": "^16.0.0-alpha.2",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.9.0"
+    "webpack-dev-server": "^3.10.2"
   }
 }
