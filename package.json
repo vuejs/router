@@ -28,7 +28,7 @@
   "devDependencies": {
     "@rollup/plugin-alias": "^3.0.1",
     "@rollup/plugin-node-resolve": "^7.1.0",
-    "@rollup/plugin-replace": "^2.3.0",
+    "@rollup/plugin-replace": "^2.3.1",
     "@types/jest": "^24.9.1",
     "@types/jsdom": "^12.2.4",
     "@types/webpack": "^4.41.4",
