@@ -37,7 +37,7 @@
     "axios": "^0.19.2",
     "browserstack-local": "^1.4.5",
     "chromedriver": "^79.0.0",
-    "codecov": "^3.6.2",
+    "codecov": "^3.6.4",
     "consola": "^2.11.3",
     "css-loader": "^3.4.2",
     "dotenv": "^8.2.0",
