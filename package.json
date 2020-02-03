@@ -44,7 +44,7 @@
     "faked-promise": "^2.2.2",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^25.1.0",
-    "nightwatch": "^1.3.3",
+    "nightwatch": "^1.3.4",
     "nightwatch-helpers": "^1.2.0",
     "prettier": "^1.19.1",
     "rollup": "^1.31.0",
