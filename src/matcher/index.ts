@@ -27,26 +27,25 @@ function removeTrailingSlash(path: string): string {
   return path.replace(TRAILING_SLASH_RE, '$1')
 }
 
-function applyToParam(
-  fn: (v: string) => string,
-  params: PathParams
-): PathParams {
-  const newParams: PathParams = {}
+// TODO: this should now be used by the router
+// function applyToParam(
+//   fn: (v: string) => string,
+//   params: PathParams
+// ): PathParams {
+//   const newParams: PathParams = {}
 
-  // TODO: could also normalize values like numbers and stuff
-  for (const key in params) {
-    const value = params[key]
-    newParams[key] = Array.isArray(value) ? value.map(fn) : fn(value)
-  }
+//   // TODO: could also normalize values like numbers and stuff
+//   for (const key in params) {
+//     const value = params[key]
+//     newParams[key] = Array.isArray(value) ? value.map(fn) : fn(value)
+//   }
 
-  return newParams
-}
+//   return newParams
+// }
 
 export function createRouterMatcher(
   routes: RouteRecord[],
-  globalOptions: PathParserOptions,
-  encodeParam: (param: string) => string,
-  decodeParam: (param: string) => string
+  globalOptions: PathParserOptions
 ): RouterMatcher {
   const matchers: RouteRecordMatcher[] = []
 
@@ -147,7 +146,7 @@ export function createRouterMatcher(
       params = location.params || currentLocation.params
       // params are automatically encoded
       // TODO: try catch to provide better error messages
-      path = matcher.stringify(applyToParam(encodeParam, params))
+      path = matcher.stringify(params)
 
       if ('redirect' in matcher.record) {
         const { redirect } = matcher.record
@@ -171,7 +170,7 @@ export function createRouterMatcher(
       // TODO: warning of unused params if provided
       if (!matcher) throw new NoRouteMatchError(location)
 
-      params = applyToParam(decodeParam, matcher.parse(location.path)!)
+      params = matcher.parse(location.path)!
       // no need to resolve the path with the matcher as it was provided
       // this also allows the user to control the encoding
       // TODO: check if the note above regarding encoding is still true
@@ -201,7 +200,7 @@ export function createRouterMatcher(
       if (!matcher) throw new NoRouteMatchError(location, currentLocation)
       name = matcher.record.name
       params = location.params || currentLocation.params
-      path = matcher.stringify(applyToParam(encodeParam, params))
+      path = matcher.stringify(params)
     }
 
     // this should never happen because it will mean that the user ended up in a route
