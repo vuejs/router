@@ -70,11 +70,11 @@ const routes: Record<string, RouteLocationNormalizedLoose> = {
 describe('RouterView', () => {
   function factory(route: RouteLocationNormalizedLoose, props: any = {}) {
     const router = {
-      ...createRouter({ 
+      ...createRouter({
         history: createMemoryHistory(),
-        routes: [{ path: '', component() {}} ]
+        routes: [{ path: '', component() {} }],
       }),
-      currentRoute: ref(markNonReactive(route))
+      currentRoute: ref(markNonReactive(route)),
     }
 
     const { app, el } = mount(

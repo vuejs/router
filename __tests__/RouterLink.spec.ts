@@ -71,9 +71,9 @@ describe('RouterLink', () => {
     resolvedLocation: RouteLocationNormalized
   ) {
     const router = {
-      ...createRouter({ 
+      ...createRouter({
         history: createMemoryHistory(),
-        routes: [{ path: '', component() {}} ]
+        routes: [{ path: '', component() {} }],
       }),
       createHref(to: RouteLocationNormalized): string {
         return this.history.base + to.fullPath

@@ -32,5 +32,5 @@ export {
   START_LOCATION,
   onBeforeRouteLeave,
   View,
-  Link
+  Link,
 }

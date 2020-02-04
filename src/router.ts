@@ -535,7 +535,9 @@ export function createRouter({
     isReady,
 
     history,
-    install(app: App) { applyRouterPlugin(app, this) }
+    install(app: App) {
+      applyRouterPlugin(app, this)
+    },
   }
 
   return router
@@ -543,7 +545,7 @@ export function createRouter({
 
 function applyRouterPlugin(app: App, router: Router) {
   // Already installed
-  if (app.component('RouterLink') || app.component('RouterView')) return;
+  if (app.component('RouterLink') || app.component('RouterView')) return
 
   // TODO: remove as any
   app.component('RouterLink', Link as any)
