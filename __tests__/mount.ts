@@ -15,8 +15,7 @@ export function mount(
   const { template, components, ...ComponentWithoutTemplate } = Component
 
   const app = createApp(ComponentWithoutTemplate as any, rootProps)
-  app.provide('router', router)
-  app.provide('route', router.currentRoute)
+  app.use(router)
 
   for (const componentName in components) {
     app.component(componentName, components[componentName])

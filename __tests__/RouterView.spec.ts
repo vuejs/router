@@ -1,11 +1,11 @@
 /**
  * @jest-environment jsdom
  */
-import { View as RouterView } from '../src/components/View'
 import { components, RouteLocationNormalizedLoose } from './utils'
 import { START_LOCATION_NORMALIZED } from '../src/types'
 import { ref, markNonReactive } from 'vue'
 import { mount, tick } from './mount'
+import { createRouter, createMemoryHistory } from '../src'
 
 const routes: Record<string, RouteLocationNormalizedLoose> = {
   root: {
@@ -70,14 +70,17 @@ const routes: Record<string, RouteLocationNormalizedLoose> = {
 describe('RouterView', () => {
   function factory(route: RouteLocationNormalizedLoose, props: any = {}) {
     const router = {
-      currentRoute: ref(markNonReactive(route)),
+      ...createRouter({ 
+        history: createMemoryHistory(),
+        routes: [{ path: '', component() {}} ]
+      }),
+      currentRoute: ref(markNonReactive(route))
     }
 
     const { app, el } = mount(
       router as any,
       {
         template: `<RouterView :name="name"></RouterView>`,
-        components: { RouterView },
         setup() {
           const name = ref(props.name)
 

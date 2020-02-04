@@ -8,7 +8,7 @@ import {
   MatcherLocation,
   RouteLocationNormalized,
 } from '../src/types'
-import { createMemoryHistory } from '../src'
+import { createMemoryHistory, createRouter } from '../src'
 import { mount, tick } from './mount'
 import { ref, markNonReactive } from 'vue'
 
@@ -71,7 +71,10 @@ describe('RouterLink', () => {
     resolvedLocation: RouteLocationNormalized
   ) {
     const router = {
-      history: createMemoryHistory(),
+      ...createRouter({ 
+        history: createMemoryHistory(),
+        routes: [{ path: '', component() {}} ]
+      }),
       createHref(to: RouteLocationNormalized): string {
         return this.history.base + to.fullPath
       },
