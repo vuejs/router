@@ -5,24 +5,15 @@ import {
   RawHistoryLocation,
 } from '../../src/history/common'
 
-const loc: RawHistoryLocation = {
-  path: '/foo',
-}
-const loc2: RawHistoryLocation = {
-  path: '/bar',
-}
+const loc: RawHistoryLocation = '/foo'
+
+const loc2: RawHistoryLocation = '/bar'
 
 const normaliezedLoc: HistoryLocationNormalized = {
-  path: '/foo',
-  query: {},
-  hash: '',
   fullPath: '/foo',
 }
 
 const normaliezedLoc2: HistoryLocationNormalized = {
-  path: '/bar',
-  query: {},
-  hash: '',
   fullPath: '/bar',
 }
 
@@ -34,34 +25,18 @@ describe('Memory history', () => {
 
   it('can push a location', () => {
     const history = createMemoryHistory()
-    // partial version
-    history.push({ path: '/somewhere', hash: '#hey', query: { foo: 'foo' } })
+    history.push('/somewhere?foo=foo#hey')
     expect(history.location).toEqual({
       fullPath: '/somewhere?foo=foo#hey',
-      path: '/somewhere',
-      query: { foo: 'foo' },
-      hash: '#hey',
-    })
-
-    // partial version
-    history.push({ path: '/path', hash: '#ho' })
-    expect(history.location).toEqual({
-      fullPath: '/path#ho',
-      path: '/path',
-      query: {},
-      hash: '#ho',
     })
   })
 
   it('can replace a location', () => {
     const history = createMemoryHistory()
     // partial version
-    history.replace({ path: '/somewhere', hash: '#hey', query: { foo: 'foo' } })
+    history.replace('/somewhere?foo=foo#hey')
     expect(history.location).toEqual({
       fullPath: '/somewhere?foo=foo#hey',
-      path: '/somewhere',
-      query: { foo: 'foo' },
-      hash: '#hey',
     })
   })
 

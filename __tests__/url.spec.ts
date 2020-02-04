@@ -1,10 +1,14 @@
 import {
-  parseURL,
-  stringifyURL,
-  normalizeLocation,
+  parseURL as originalParseURL,
+  stringifyURL as originalStringifyURL,
+  parseQuery,
+  stringifyQuery,
+  normalizeHistoryLocation as normalizeLocation,
 } from '../src/history/common'
 
 describe('parseURL', () => {
+  let parseURL = originalParseURL.bind(null, parseQuery)
+
   it('works with no query no hash', () => {
     expect(parseURL('/foo')).toEqual({
       fullPath: '/foo',
@@ -55,6 +59,8 @@ describe('parseURL', () => {
 })
 
 describe('stringifyURL', () => {
+  let stringifyURL = originalStringifyURL.bind(null, stringifyQuery)
+
   it('stringifies a path', () => {
     expect(
       stringifyURL({
@@ -112,29 +118,14 @@ describe('stringifyURL', () => {
 
 describe('normalizeLocation', () => {
   it('works with string', () => {
-    expect(normalizeLocation('/foo')).toEqual(parseURL('/foo'))
+    expect(normalizeLocation('/foo')).toEqual({ fullPath: '/foo' })
   })
 
   it('works with objects', () => {
     expect(
       normalizeLocation({
-        path: '/foo',
+        fullPath: '/foo',
       })
-    ).toEqual({ path: '/foo', fullPath: '/foo', query: {}, hash: '' })
-  })
-
-  it('works with objects and keeps query and hash', () => {
-    expect(
-      normalizeLocation({
-        path: '/foo',
-        query: { foo: 'a' },
-        hash: '#hey',
-      })
-    ).toEqual({
-      path: '/foo',
-      fullPath: '/foo?foo=a#hey',
-      query: { foo: 'a' },
-      hash: '#hey',
-    })
+    ).toEqual({ fullPath: '/foo' })
   })
 })

@@ -166,6 +166,7 @@ export interface MatcherLocationNormalized {
   // record?
   params: RouteLocationNormalized['params']
   matched: RouteRecordMatched[]
+  // TODO: remove optional and allow null as value (monomorphic)
   redirectedFrom?: MatcherLocationNormalized
   meta: RouteLocationNormalized['meta']
 }

@@ -1,23 +1,24 @@
 import { ListenerRemover } from '../types'
 // import { encodeQueryProperty, encodeHash } from '../utils/encoding'
 
-// TODO: allow numbers
 export type HistoryQuery = Record<string, string | string[]>
 
 interface HistoryLocation {
-  // pathname section
-  path: string
-  // search string parsed
-  query?: HistoryQuery
-  // hash with the #
-  hash?: string
+  fullPath: string
+  state?: HistoryState
 }
 
 export type RawHistoryLocation = HistoryLocation | string
-
-export interface HistoryLocationNormalized extends Required<HistoryLocation> {
-  // full path (like href)
+export type HistoryLocationNormalized = Pick<HistoryLocation, 'fullPath'>
+export interface LocationPartial {
+  path: string
+  query?: HistoryQuery
+  hash?: string
+}
+export interface LocationNormalized {
+  path: string
   fullPath: string
+  hash: string
   query: HistoryQuery
 }
 
@@ -66,9 +67,6 @@ export interface NavigationCallback {
 const START_PATH = ''
 export const START: HistoryLocationNormalized = {
   fullPath: START_PATH,
-  path: START_PATH,
-  query: {},
-  hash: '',
 }
 
 export type ValueContainer<T> = { value: T }
@@ -78,7 +76,7 @@ export interface RouterHistory {
   readonly location: HistoryLocationNormalized
   // readonly location: ValueContainer<HistoryLocationNormalized>
 
-  push(to: RawHistoryLocation, data?: any): void
+  push(to: RawHistoryLocation): void
   replace(to: RawHistoryLocation): void
 
   back(triggerListeners?: boolean): void
@@ -93,10 +91,14 @@ export interface RouterHistory {
 
 /**
  * Transforms an URI into a normalized history location
+ * @param parseQuery
  * @param location URI to normalize
  * @returns a normalized history location
  */
-export function parseURL(location: string): HistoryLocationNormalized {
+export function parseURL(
+  parseQuery: (search: string) => HistoryQuery,
+  location: string
+): LocationNormalized {
   let path = '',
     query: HistoryQuery = {},
     searchString = '',
@@ -113,7 +115,6 @@ export function parseURL(location: string): HistoryLocationNormalized {
       hashPos > -1 ? hashPos : location.length
     )
 
-    // TODO: can we remove the normalize call?
     query = parseQuery(searchString)
   }
 
@@ -136,13 +137,15 @@ export function parseURL(location: string): HistoryLocationNormalized {
 
 /**
  * Stringify a URL object
+ * @param stringifyQuery
  * @param location
  */
-export function stringifyURL(location: HistoryLocation): string {
-  let url = location.path
-  let query = location.query ? stringifyQuery(location.query) : ''
-
-  return url + (query && '?' + query) + (location.hash || '')
+export function stringifyURL(
+  stringifyQuery: (query: HistoryQuery) => string,
+  location: LocationPartial
+): string {
+  let query: string = location.query ? stringifyQuery(location.query) : ''
+  return location.path + (query && '?') + query + (location.hash || '')
 }
 
 /**
@@ -152,11 +155,11 @@ export function stringifyURL(location: HistoryLocation): string {
  * @returns a query object
  */
 export function parseQuery(search: string): HistoryQuery {
-  const hasLeadingIM = search[0] === '?'
   const query: HistoryQuery = {}
   // avoid creating an object with an empty key and empty value
   // because of split('&')
   if (search === '' || search === '?') return query
+  const hasLeadingIM = search[0] === '?'
   const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
   for (let i = 0; i < searchParams.length; ++i) {
     let [key, value] = searchParams[i].split('=')
@@ -201,23 +204,6 @@ export function stringifyQuery(query: HistoryQuery): string {
 }
 
 /**
- * Normalize a History location object or string into a HistoryLocationNoramlized
- * @param location
- */
-export function normalizeLocation(
-  location: RawHistoryLocation
-): HistoryLocationNormalized {
-  if (typeof location === 'string') return parseURL(location)
-  else
-    return {
-      fullPath: stringifyURL(location),
-      path: location.path,
-      query: location.query || {},
-      hash: location.hash || '',
-    }
-}
-
-/**
  * Strips off the base from the beginning of a location.pathname
  * @param pathname location.pathname
  * @param base base to strip off
@@ -227,4 +213,13 @@ export function stripBase(pathname: string, base: string): string {
     (base && pathname.indexOf(base) === 0 && pathname.replace(base, '')) ||
     pathname
   )
+}
+
+export function normalizeHistoryLocation(
+  location: RawHistoryLocation
+): HistoryLocationNormalized {
+  return {
+    // to avoid doing a typeof or in that is quite long
+    fullPath: (location as HistoryLocation).fullPath || (location as string),
+  }
 }

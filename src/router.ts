@@ -6,13 +6,19 @@ import {
   ListenerRemover,
   PostNavigationGuard,
   START_LOCATION_NORMALIZED,
-  MatcherLocation,
-  RouteQueryAndHash,
   Lazy,
   TODO,
   Immutable,
+  RouteParams,
+  MatcherLocationNormalized,
 } from './types'
-import { RouterHistory, normalizeLocation } from './history/common'
+import {
+  RouterHistory,
+  parseQuery,
+  parseURL,
+  stringifyQuery,
+  stringifyURL,
+} from './history/common'
 import {
   ScrollToPosition,
   ScrollPosition,
@@ -120,114 +126,162 @@ export function createRouter({
     window.history.scrollRestoration = 'manual'
   }
 
-  function resolve(
-    to: RouteLocation,
-    currentLocation?: RouteLocationNormalized /*, append?: boolean */
-  ): RouteLocationNormalized {
-    if (typeof to === 'string')
-      return resolveLocation(
-        // TODO: refactor and remove import
-        normalizeLocation(to),
-        currentLocation
-      )
-    return resolveLocation(
-      {
-        // TODO: refactor with url utils
-        // TODO: query must be encoded by normalizeLocation
-        // refactor the whole thing so it uses the same overridable functions
-        // sent to history
-        query: {},
-        hash: '',
-        ...to,
-      },
-      currentLocation
-    )
-  }
-
   function createHref(to: RouteLocationNormalized): string {
     return history.base + to.fullPath
   }
 
-  function resolveLocation(
-    location: MatcherLocation & Required<RouteQueryAndHash>,
-    currentLocation?: RouteLocationNormalized,
-    redirectedFrom?: RouteLocationNormalized
-    // ensure when returning that the redirectedFrom is a normalized location
+  function encodeParams(params: RouteParams): RouteParams {
+    // TODO:
+    return params
+  }
+
+  function decodeParams(params: RouteParams): RouteParams {
+    // TODO:
+    return params
+  }
+
+  function resolve(
+    to: RouteLocation,
+    from?: RouteLocationNormalized
   ): RouteLocationNormalized {
-    currentLocation = currentLocation || currentRoute.value
-    // TODO: still return a normalized location with no matched records if no location is found
-    const matchedRoute = matcher.resolve(location, currentLocation)
+    return resolveLocation(to, from || currentRoute.value)
+  }
 
-    if ('redirect' in matchedRoute) {
-      const { redirect } = matchedRoute
-      // target location normalized, used if we want to redirect again
-      const normalizedLocation: RouteLocationNormalized = {
-        ...matchedRoute.normalizedLocation,
-        ...normalizeLocation({
-          path: matchedRoute.normalizedLocation.path,
-          query: location.query,
-          hash: location.hash,
-        }),
-        redirectedFrom,
-        meta: {},
-      }
+  function resolveLocation(
+    location: RouteLocation,
+    currentLocation: RouteLocationNormalized,
+    // TODO: we should benefit from this with navigation guards
+    // https://github.com/vuejs/vue-router/issues/1822
+    redirectedFrom?: RouteLocationNormalized
+  ): RouteLocationNormalized {
+    // const objectLocation = routerLocationAsObject(location)
+    if (typeof location === 'string') {
+      // TODO: remove as cast when redirect is removed from matcher
+      // TODO: ensure parseURL encodes the query in fullPath but not in query object
+      let locationNormalized = parseURL(parseQuery, location)
+      let matchedRoute = matcher.resolve(
+        { path: locationNormalized.path },
+        currentLocation
+      ) as MatcherLocationNormalized
 
-      if (typeof redirect === 'string') {
-        // match the redirect instead
-        return resolveLocation(
-          normalizeLocation(redirect),
-          currentLocation,
-          normalizedLocation
-        )
-      } else if (typeof redirect === 'function') {
-        const newLocation = redirect(normalizedLocation)
-
-        if (typeof newLocation === 'string') {
-          return resolveLocation(
-            normalizeLocation(newLocation),
-            currentLocation,
-            normalizedLocation
-          )
-        }
-
-        // TODO: should we allow partial redirects? I think we should not because it's impredictable if
-        // there was a redirect before
-        // if (!('path' in newLocation) && !('name' in newLocation)) throw new Error('TODO: redirect canot be relative')
-
-        return resolveLocation(
-          {
-            ...newLocation,
-            query: newLocation.query || {},
-            hash: newLocation.hash || '',
-          },
-          currentLocation,
-          normalizedLocation
-        )
-      } else {
-        return resolveLocation(
-          {
-            ...redirect,
-            query: redirect.query || {},
-            hash: redirect.hash || '',
-          },
-          currentLocation,
-          normalizedLocation
-        )
-      }
-    } else {
-      // add the redirectedFrom field
-      const url = normalizeLocation({
-        path: matchedRoute.path,
-        query: location.query,
-        hash: location.hash,
-      })
       return {
+        ...locationNormalized,
         ...matchedRoute,
-        ...url,
         redirectedFrom,
       }
     }
+
+    const hasParams = 'params' in location
+
+    // relative or named location, path is ignored
+    // for same reason TS thinks location.params can be undefined
+    // TODO: remove cast like above
+    let matchedRoute = matcher.resolve(
+      hasParams
+        ? // we know we have the params attribute
+          { ...location, params: encodeParams((location as any).params) }
+        : location,
+      currentLocation
+    ) as MatcherLocationNormalized
+
+    // put back the unencoded params as given by the user (avoid the cost of decoding them)
+    matchedRoute.params = hasParams
+      ? // we know we have the params attribute
+        (location as any).params!
+      : decodeParams(matchedRoute.params)
+
+    return {
+      fullPath: stringifyURL(stringifyQuery, {
+        ...location,
+        path: matchedRoute.path,
+      }),
+      hash: location.hash || '',
+      query: location.query || {},
+      ...matchedRoute,
+      redirectedFrom,
+    }
   }
+
+  // function oldresolveLocation(
+  //   location: MatcherLocation & Required<RouteQueryAndHash>,
+  //   currentLocation?: RouteLocationNormalized,
+  //   redirectedFrom?: RouteLocationNormalized
+  //   // ensure when returning that the redirectedFrom is a normalized location
+  // ): RouteLocationNormalized {
+  //   currentLocation = currentLocation || currentRoute.value
+  //   // TODO: still return a normalized location with no matched records if no location is found
+  //   const matchedRoute = matcher.resolve(location, currentLocation)
+
+  //   if ('redirect' in matchedRoute) {
+  //     const { redirect } = matchedRoute
+  //     // target location normalized, used if we want to redirect again
+  //     const normalizedLocation: RouteLocationNormalized = {
+  //       ...matchedRoute.normalizedLocation,
+  //       ...normalizeLocation({
+  //         path: matchedRoute.normalizedLocation.path,
+  //         query: location.query,
+  //         hash: location.hash,
+  //       }),
+  //       redirectedFrom,
+  //       meta: {},
+  //     }
+
+  //     if (typeof redirect === 'string') {
+  //       // match the redirect instead
+  //       return resolveLocation(
+  //         normalizeLocation(redirect),
+  //         currentLocation,
+  //         normalizedLocation
+  //       )
+  //     } else if (typeof redirect === 'function') {
+  //       const newLocation = redirect(normalizedLocation)
+
+  //       if (typeof newLocation === 'string') {
+  //         return resolveLocation(
+  //           normalizeLocation(newLocation),
+  //           currentLocation,
+  //           normalizedLocation
+  //         )
+  //       }
+
+  //       // TODO: should we allow partial redirects? I think we should not because it's impredictable if
+  //       // there was a redirect before
+  //       // if (!('path' in newLocation) && !('name' in newLocation)) throw new Error('TODO: redirect canot be relative')
+
+  //       return resolveLocation(
+  //         {
+  //           ...newLocation,
+  //           query: newLocation.query || {},
+  //           hash: newLocation.hash || '',
+  //         },
+  //         currentLocation,
+  //         normalizedLocation
+  //       )
+  //     } else {
+  //       return resolveLocation(
+  //         {
+  //           ...redirect,
+  //           query: redirect.query || {},
+  //           hash: redirect.hash || '',
+  //         },
+  //         currentLocation,
+  //         normalizedLocation
+  //       )
+  //     }
+  //   } else {
+  //     // add the redirectedFrom field
+  //     const url = normalizeLocation({
+  //       path: matchedRoute.path,
+  //       query: location.query,
+  //       hash: location.hash,
+  //     })
+  //     return {
+  //       ...matchedRoute,
+  //       ...url,
+  //       redirectedFrom,
+  //     }
+  //   }
+  // }
 
   async function push(to: RouteLocation): Promise<RouteLocationNormalized> {
     const toLocation: RouteLocationNormalized = (pendingLocation = resolve(to))
@@ -403,10 +457,9 @@ export function createRouter({
 
   // attach listener to history to trigger navigations
   history.listen(async (to, from, info) => {
-    const matchedRoute = resolveLocation(to, currentRoute.value)
+    const toLocation = resolve(to.fullPath)
     // console.log({ to, matchedRoute })
 
-    const toLocation: RouteLocationNormalized = { ...to, ...matchedRoute }
     pendingLocation = toLocation
 
     try {
@@ -533,7 +586,7 @@ function applyRouterPlugin(app: App, router: Router) {
       if (!started) {
         // TODO: this initial navigation is only necessary on client, on server it doesn't make sense
         // because it will create an extra unecessary navigation and could lead to problems
-        router.push(router.history.location).catch(err => {
+        router.push(router.history.location.fullPath).catch(err => {
           console.error('Unhandled error', err)
         })
         started = true

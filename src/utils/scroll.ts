@@ -1,6 +1,6 @@
 // import { RouteLocationNormalized } from '../types'
 
-export interface ScrollToPosition {
+export type ScrollToPosition = {
   x: number
   y: number
 }

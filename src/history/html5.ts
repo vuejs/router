@@ -1,11 +1,11 @@
 import {
   RouterHistory,
   NavigationCallback,
-  normalizeLocation,
   stripBase,
   NavigationType,
   NavigationDirection,
   HistoryLocationNormalized,
+  normalizeHistoryLocation,
   HistoryState,
   RawHistoryLocation,
   ValueContainer,
@@ -17,7 +17,7 @@ const cs = console
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 
-interface StateEntry {
+interface StateEntry extends HistoryState {
   back: HistoryLocationNormalized | null
   current: HistoryLocationNormalized
   forward: HistoryLocationNormalized | null
@@ -38,10 +38,10 @@ function createCurrentLocation(
   // allows hash based url
   if (base.indexOf('#') > -1) {
     // prepend the starting slash to hash so the url starts with /#
-    return normalizeLocation(stripBase('/' + hash, base))
+    return normalizeHistoryLocation(stripBase('/' + hash, base))
   }
   const path = stripBase(pathname, base)
-  return normalizeLocation(path + search + hash)
+  return normalizeHistoryLocation(path + search + hash)
 }
 
 function useHistoryListeners(
@@ -178,6 +178,7 @@ function useHistoryStateNavigation(base: string) {
   // build current history entry as this is a fresh navigation
   if (!historyState.value) {
     changeLocation(
+      location.value,
       {
         back: null,
         current: location.value,
@@ -187,26 +188,23 @@ function useHistoryStateNavigation(base: string) {
         replaced: true,
         scroll: computeScrollPosition(),
       },
-      '',
-      location.value.fullPath,
       true
     )
   }
 
   function changeLocation(
+    to: HistoryLocationNormalized,
     state: StateEntry,
-    title: string,
-    fullPath: string,
     replace: boolean
   ): void {
-    const url = base + fullPath
+    const url = base + to.fullPath
     try {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds
       const newState: StateEntry = replace
         ? { ...historyState.value, ...state }
         : state
-      history[replace ? 'replaceState' : 'pushState'](newState, title, url)
+      history[replace ? 'replaceState' : 'pushState'](newState, '', url)
       historyState.value = state
     } catch (err) {
       cs.log('[vue-router]: Error with push/replace State', err)
@@ -215,9 +213,9 @@ function useHistoryStateNavigation(base: string) {
     }
   }
 
+  // TODO: allow data as well
   function replace(to: RawHistoryLocation) {
-    const normalized = normalizeLocation(to)
-
+    const normalized = normalizeHistoryLocation(to)
     // cs.info('replace', location, normalized)
 
     const state: StateEntry = buildState(
@@ -227,18 +225,13 @@ function useHistoryStateNavigation(base: string) {
       true
     )
     if (historyState) state.position = historyState.value.position
-    changeLocation(
-      // TODO: refactor state building
-      state,
-      '',
-      normalized.fullPath,
-      true
-    )
+
+    changeLocation(normalized, state, true)
     location.value = normalized
   }
 
   function push(to: RawHistoryLocation, data?: HistoryState) {
-    const normalized = normalizeLocation(to)
+    const normalized = normalizeHistoryLocation(to)
 
     // Add to current entry the information of where we are going
     // as well as saving the current position
@@ -248,7 +241,7 @@ function useHistoryStateNavigation(base: string) {
       forward: normalized,
       scroll: computeScrollPosition(),
     }
-    changeLocation(currentState, '', currentState.current.fullPath, true)
+    changeLocation(normalized, currentState, true)
 
     const state: StateEntry = {
       ...buildState(location.value, normalized, null),
@@ -256,7 +249,7 @@ function useHistoryStateNavigation(base: string) {
       ...data,
     }
 
-    changeLocation(state, '', normalized.fullPath, false)
+    changeLocation(normalized, state, false)
     location.value = normalized
   }
 

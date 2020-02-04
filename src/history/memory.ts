@@ -3,7 +3,7 @@ import {
   RouterHistory,
   NavigationCallback,
   START,
-  normalizeLocation,
+  normalizeHistoryLocation,
   HistoryLocationNormalized,
   HistoryState,
   NavigationType,
@@ -63,14 +63,14 @@ export default function createMemoryHistory(base: string = ''): RouterHistory {
     base,
 
     replace(to) {
-      const toNormalized = normalizeLocation(to)
+      const toNormalized = normalizeHistoryLocation(to)
       // remove current entry and decrement position
       queue.splice(position--, 1)
       setLocation(toNormalized)
     },
 
     push(to, data?: HistoryState) {
-      setLocation(normalizeLocation(to))
+      setLocation(normalizeHistoryLocation(to))
     },
 
     listen(callback) {
