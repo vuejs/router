@@ -545,7 +545,7 @@ export function createRouter({
 
 function applyRouterPlugin(app: App, router: Router) {
   // Already installed
-  if (app.component('RouterLink') || app.component('RouterView')) return
+  if (app.component('RouterLink')) return
 
   // TODO: remove as any
   app.component('RouterLink', Link as any)
