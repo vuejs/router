@@ -24,12 +24,7 @@ describe('Router Matcher', () => {
       start: MatcherLocationNormalized = START_LOCATION_NORMALIZED
     ) {
       record = Array.isArray(record) ? record : [record]
-      const matcher = createRouterMatcher(
-        record,
-        {},
-        v => v,
-        v => v
-      )
+      const matcher = createRouterMatcher(record, {})
 
       if (!('meta' in resolved)) {
         resolved.meta = record[0].meta || {}
@@ -387,12 +382,7 @@ describe('Router Matcher', () => {
           expected: MatcherLocationNormalized | MatcherLocationRedirect,
           currentLocation: MatcherLocationNormalized = START_LOCATION_NORMALIZED
         ) {
-          const matcher = createRouterMatcher(
-            records,
-            {},
-            v => v,
-            v => v
-          )
+          const matcher = createRouterMatcher(records, {})
           const resolved = matcher.resolve(location, currentLocation)
           expect(resolved).toEqual(expected)
           return resolved
