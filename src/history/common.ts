@@ -1,4 +1,5 @@
 import { ListenerRemover } from '../types'
+import { decode, encodeQueryProperty } from '../utils/encoding'
 // import { encodeQueryProperty, encodeHash } from '../utils/encoding'
 
 export type HistoryQuery = Record<string, string | string[]>
@@ -163,6 +164,8 @@ export function parseQuery(search: string): HistoryQuery {
   const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
   for (let i = 0; i < searchParams.length; ++i) {
     let [key, value] = searchParams[i].split('=')
+    key = decode(key)
+    value = decode(value)
     if (key in query) {
       // an extra variable for ts types
       let currentValue = query[key]
@@ -182,9 +185,10 @@ export function parseQuery(search: string): HistoryQuery {
  */
 export function stringifyQuery(query: HistoryQuery): string {
   let search = ''
-  for (const key in query) {
+  for (let key in query) {
     if (search.length > 1) search += '&'
     const value = query[key]
+    key = encodeQueryProperty(key)
     if (value === null) {
       // TODO: should we just add the empty string value?
       search += key
@@ -194,9 +198,9 @@ export function stringifyQuery(query: HistoryQuery): string {
     let values: string[] = Array.isArray(value) ? value : [value]
     // const encodedValues = values.map(encodeQueryProperty)
 
-    search += `${key}=${values[0]}`
+    search += `${key}=${encodeQueryProperty(values[0])}`
     for (let i = 1; i < values.length; i++) {
-      search += `&${key}=${values[i]}`
+      search += `&${key}=${encodeQueryProperty(values[i])}`
     }
   }
 
