@@ -2,7 +2,7 @@ import {
   RouteRecord,
   MatcherLocation,
   MatcherLocationNormalized,
-  MatcherLocationRedirect,
+  RouteRecordRedirect,
 } from '../types'
 import { NoRouteMatchError, InvalidRouteMatch } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './path-matcher'
@@ -19,7 +19,7 @@ interface RouterMatcher {
   resolve: (
     location: Readonly<MatcherLocation>,
     currentLocation: Readonly<MatcherLocationNormalized>
-  ) => MatcherLocationNormalized | MatcherLocationRedirect
+  ) => MatcherLocationNormalized
 }
 
 const TRAILING_SLASH_RE = /(.)\/+$/
@@ -47,21 +47,22 @@ export function createRouterMatcher(
   routes: RouteRecord[],
   globalOptions: PathParserOptions
 ): RouterMatcher {
+  // normalized ordered array of matchers
   const matchers: RouteRecordMatcher[] = []
 
   function addRoute(
     record: Readonly<RouteRecord>,
     parent?: RouteRecordMatcher
   ): void {
-    const mainNormalizedRecord: RouteRecordNormalized = normalizeRouteRecord(
-      record
-    )
+    const mainNormalizedRecord = normalizeRouteRecord(record)
     const options: PathParserOptions = { ...globalOptions, ...record.options }
     // TODO: can probably be removed now that we have our own parser and we handle this correctly
     if (!options.strict)
       mainNormalizedRecord.path = removeTrailingSlash(mainNormalizedRecord.path)
     // generate an array of records to correctly handle aliases
-    const normalizedRecords: RouteRecordNormalized[] = [mainNormalizedRecord]
+    const normalizedRecords: Array<
+      RouteRecordNormalized | RouteRecordRedirect
+    > = [mainNormalizedRecord]
     if ('alias' in record && record.alias) {
       const aliases =
         typeof record.alias === 'string' ? [record.alias] : record.alias
@@ -130,7 +131,7 @@ export function createRouterMatcher(
   function resolve(
     location: Readonly<MatcherLocation>,
     currentLocation: Readonly<MatcherLocationNormalized>
-  ): MatcherLocationNormalized | MatcherLocationRedirect {
+  ): MatcherLocationNormalized {
     let matcher: RouteRecordMatcher | undefined
     let params: PathParams = {}
     let path: MatcherLocationNormalized['path']
@@ -147,20 +148,6 @@ export function createRouterMatcher(
       // params are automatically encoded
       // TODO: try catch to provide better error messages
       path = matcher.stringify(params)
-
-      if ('redirect' in matcher.record) {
-        const { redirect } = matcher.record
-        return {
-          redirect,
-          normalizedLocation: {
-            name,
-            path,
-            matched: [],
-            params,
-            meta: matcher.record.meta || {},
-          },
-        }
-      }
     } else if ('path' in location) {
       matcher = matchers.find(m => m.re.test(location.path))
       // matcher should have a value after the loop
@@ -177,20 +164,6 @@ export function createRouterMatcher(
       path = location.path
       name = matcher.record.name
 
-      if ('redirect' in matcher.record) {
-        const { redirect } = matcher.record
-        return {
-          redirect,
-          normalizedLocation: {
-            name,
-            path,
-            // TODO: verify this is good or add a comment
-            matched: [],
-            params,
-            meta: matcher.record.meta || {},
-          },
-        }
-      }
       // location is a relative path
     } else {
       // match by name or path of current route
@@ -242,16 +215,10 @@ export function createRouterMatcher(
  */
 export function normalizeRouteRecord(
   record: Readonly<RouteRecord>
-): RouteRecordNormalized {
+): RouteRecordNormalized | RouteRecordRedirect {
   if ('redirect' in record) {
-    return {
-      path: record.path,
-      redirect: record.redirect,
-      name: record.name,
-      beforeEnter: record.beforeEnter,
-      meta: record.meta,
-      leaveGuards: [],
-    }
+    // TODO: transform redirect into beforeEnter and remove type above
+    return record
   } else {
     return {
       path: record.path,

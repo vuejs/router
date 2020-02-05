@@ -107,9 +107,11 @@ export interface RouteRecordCommon {
   path: string
   alias?: string | string[]
   name?: string
+  // TODO: beforeEnter has no effect with redirect, move and test
   beforeEnter?: NavigationGuard | NavigationGuard[]
   meta?: Record<string | number | symbol, any>
   // TODO: only allow a subset?
+  // TODO: RFC: remove this and only allow global options
   options?: PathParserOptions
 }
 

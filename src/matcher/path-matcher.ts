@@ -5,6 +5,7 @@ import {
   PathParserOptions,
 } from './path-parser-ranker'
 import { tokenizePath } from './path-tokenizer'
+import { RouteRecordRedirect } from '../types'
 
 export interface RouteRecordMatcher extends PathParser {
   record: RouteRecordNormalized
@@ -14,7 +15,7 @@ export interface RouteRecordMatcher extends PathParser {
 }
 
 export function createRouteRecordMatcher(
-  record: Readonly<RouteRecordNormalized>,
+  record: Readonly<RouteRecordNormalized | RouteRecordRedirect>,
   parent: RouteRecordMatcher | undefined,
   options?: PathParserOptions
 ): RouteRecordMatcher {
@@ -22,6 +23,7 @@ export function createRouteRecordMatcher(
 
   return {
     ...parser,
+    // @ts-ignore: TODO: adapt tokenstoparser
     record,
     parent,
   }

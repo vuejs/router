@@ -375,7 +375,8 @@ describe('Router Matcher', () => {
         )
       })
 
-      describe('redirects', () => {
+      // TODO: replace tests with a transformation check to the `beforeEnter` guard
+      describe.skip('redirects', () => {
         function assertRedirect(
           records: RouteRecord[],
           location: MatcherLocation,
