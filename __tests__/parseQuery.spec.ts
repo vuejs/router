@@ -9,6 +9,13 @@ describe('parseQuery', () => {
     })
   })
 
+  it('parses empty string values', () => {
+    expect(parseQuery('e=&c=a')).toEqual({
+      e: '',
+      c: 'a',
+    })
+  })
+
   it('decodes empty values as null', () => {
     expect(parseQuery('e&b&c=a')).toEqual({
       e: null,
@@ -17,7 +24,7 @@ describe('parseQuery', () => {
     })
   })
 
-  it('decodes empty values as null in arrays', () => {
+  it('parses empty values as null in arrays', () => {
     expect(parseQuery('e&e&e=a')).toEqual({
       e: [null, null, 'a'],
     })
