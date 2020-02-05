@@ -172,10 +172,13 @@ export function parseQuery(search: string): HistoryQuery {
   const hasLeadingIM = search[0] === '?'
   const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
   for (let i = 0; i < searchParams.length; ++i) {
-    let [key, value] = searchParams[i].split('=')
+    let [key, rawValue] = searchParams[i].split('=') as [
+      string,
+      string | undefined
+    ]
     key = decode(key)
     // avoid decoding null
-    value = value && decode(value)
+    let value = rawValue == null ? null : decode(rawValue)
     if (key in query) {
       // an extra variable for ts types
       let currentValue = query[key]

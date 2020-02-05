@@ -9,6 +9,20 @@ describe('parseQuery', () => {
     })
   })
 
+  it('decodes empty values as null', () => {
+    expect(parseQuery('e&b&c=a')).toEqual({
+      e: null,
+      b: null,
+      c: 'a',
+    })
+  })
+
+  it('decodes empty values as null in arrays', () => {
+    expect(parseQuery('e&e&e=a')).toEqual({
+      e: [null, null, 'a'],
+    })
+  })
+
   it('decodes array values in query', () => {
     expect(parseQuery('e=%25&e=%22')).toEqual({
       e: ['%', '"'],
