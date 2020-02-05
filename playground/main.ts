@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 import { router, routerHistory } from './router'
 import { globalState } from './store'
-import { RouterPlugin } from '../src'
 import App from './App.vue'
 
 declare global {
@@ -18,6 +17,6 @@ window.r = router
 
 const app = createApp(App)
 app.provide('state', globalState)
-app.use(RouterPlugin, router)
+app.use(router)
 
 app.mount('#app')
