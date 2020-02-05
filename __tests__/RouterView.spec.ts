@@ -6,7 +6,6 @@ import { components, RouteLocationNormalizedLoose } from './utils'
 import { START_LOCATION_NORMALIZED } from '../src/types'
 import { ref, markNonReactive } from 'vue'
 import { mount, tick } from './mount'
-import { createRouter, createMemoryHistory } from '../src'
 
 const routes: Record<string, RouteLocationNormalizedLoose> = {
   root: {
@@ -71,10 +70,6 @@ const routes: Record<string, RouteLocationNormalizedLoose> = {
 describe('RouterView', () => {
   function factory(route: RouteLocationNormalizedLoose, props: any = {}) {
     const router = {
-      ...createRouter({
-        history: createMemoryHistory(),
-        routes: [{ path: '', component() {} }],
-      }),
       currentRoute: ref(markNonReactive(route)),
     }
 
