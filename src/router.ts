@@ -479,18 +479,19 @@ function applyRouterPlugin(app: App, router: Router) {
 
   let started = false
   // TODO: can we use something that isn't a mixin?
-  app.mixin({
-    beforeCreate() {
-      if (!started) {
-        // TODO: this initial navigation is only necessary on client, on server it doesn't make sense
-        // because it will create an extra unecessary navigation and could lead to problems
-        router.push(router.history.location.fullPath).catch(err => {
-          console.error('Unhandled error', err)
-        })
-        started = true
-      }
-    },
-  })
+  // TODO: this initial navigation is only necessary on client, on server it doesn't make sense
+  // because it will create an extra unecessary navigation and could lead to problems
+  if (isClient)
+    app.mixin({
+      beforeCreate() {
+        if (!started) {
+          router.push(router.history.location.fullPath).catch(err => {
+            console.error('Unhandled error', err)
+          })
+          started = true
+        }
+      },
+    })
 
   // TODO: merge strats?
   app.provide('router', router)
