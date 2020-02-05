@@ -47,21 +47,6 @@ describe('Router', () => {
     expect(router.currentRoute.value).toEqual(START_LOCATION_NORMALIZED)
   })
 
-  // TODO: should do other checks not based on history implem
-  it.skip('takes browser location', async () => {
-    const history = createMemoryHistory()
-    history.replace('/search?q=dog#footer')
-    const { router } = await newRouter({ history })
-    await router.push(history.location.fullPath)
-    expect(router.currentRoute).toEqual({
-      fullPath: '/search?q=dog#footer',
-      hash: '#footer',
-      params: {},
-      path: '/search',
-      query: { q: 'dog' },
-    })
-  })
-
   it('calls history.push with router.push', async () => {
     const { router, history } = await newRouter()
     jest.spyOn(history, 'push')

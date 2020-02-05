@@ -102,7 +102,7 @@ describe('RouterLink', () => {
     expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
   })
 
-  // TODO: not sure why this breaks. We should probably move to @vue/test-runtime
+  // TODO: not sure why this breaks. We could take a look at @vue/test-runtime
   it.skip('can change the value', async () => {
     const to = ref(locations.basic.string)
     const { el, router } = factory(
