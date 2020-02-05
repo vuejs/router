@@ -27,22 +27,6 @@ function removeTrailingSlash(path: string): string {
   return path.replace(TRAILING_SLASH_RE, '$1')
 }
 
-// TODO: this should now be used by the router
-// function applyToParam(
-//   fn: (v: string) => string,
-//   params: PathParams
-// ): PathParams {
-//   const newParams: PathParams = {}
-
-//   // TODO: could also normalize values like numbers and stuff
-//   for (const key in params) {
-//     const value = params[key]
-//     newParams[key] = Array.isArray(value) ? value.map(fn) : fn(value)
-//   }
-
-//   return newParams
-// }
-
 export function createRouterMatcher(
   routes: RouteRecord[],
   globalOptions: PathParserOptions

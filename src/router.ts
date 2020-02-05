@@ -9,7 +9,6 @@ import {
   Lazy,
   TODO,
   Immutable,
-  RouteParams,
 } from './types'
 import { RouterHistory, parseURL, stringifyURL } from './history/common'
 import {
@@ -23,7 +22,11 @@ import {
   NavigationGuardRedirect,
   NavigationAborted,
 } from './errors'
-import { extractComponentsGuards, guardToPromiseFn } from './utils'
+import {
+  extractComponentsGuards,
+  guardToPromiseFn,
+  applyToParams,
+} from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
 import { normalizeQuery, parseQuery, stringifyQuery } from './utils/query'
@@ -94,28 +97,8 @@ export function createRouter({
     return history.base + to.fullPath
   }
 
-  // TODO: move these two somewhere else
-  function encodeParams(params: RouteParams): RouteParams {
-    const newParams: RouteParams = {}
-    for (const key in params) {
-      const value = params[key]
-      newParams[key] = Array.isArray(value)
-        ? value.map(encodeParam)
-        : encodeParam(value)
-    }
-
-    return newParams
-  }
-
-  function decodeParams(params: RouteParams): RouteParams {
-    const newParams: RouteParams = {}
-    for (const key in params) {
-      const value = params[key]
-      newParams[key] = Array.isArray(value) ? value.map(decode) : decode(value)
-    }
-
-    return newParams
-  }
+  const encodeParams = applyToParams.bind(null, encodeParam)
+  const decodeParams = applyToParams.bind(null, decode)
 
   function resolve(
     to: RouteLocation,
@@ -336,7 +319,7 @@ export function createRouter({
     currentRoute.value = markNonReactive(toLocation)
     // TODO: this doesn't work on first load. Moving it to RouterView could allow automatically handling transitions too maybe
     // TODO: refactor with a state getter
-    const state = isPush ? {} : window.history.state
+    const state = isPush || !isClient ? {} : window.history.state
     handleScroll(toLocation, from, state && state.scroll).catch(err =>
       triggerError(err, false)
     )

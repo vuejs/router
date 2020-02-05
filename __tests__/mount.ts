@@ -11,7 +11,6 @@ export function mount(
   },
   rootProps = {}
 ) {
-  // TODO: update with alpha-4
   const { template, components, ...ComponentWithoutTemplate } = Component
 
   const app = createApp(ComponentWithoutTemplate as any, rootProps)

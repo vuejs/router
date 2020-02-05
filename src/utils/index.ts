@@ -1,4 +1,4 @@
-import { RouteLocationNormalized } from '../types'
+import { RouteLocationNormalized, RouteParams } from '../types'
 import { guardToPromiseFn } from './guardToPromiseFn'
 import { RouteRecordMatched } from '../matcher/types'
 
@@ -34,4 +34,18 @@ export async function extractComponentsGuards(
   )
 
   return guards
+}
+
+export function applyToParams(
+  fn: (v: string) => string,
+  params: RouteParams
+): RouteParams {
+  const newParams: RouteParams = {}
+
+  for (const key in params) {
+    const value = params[key]
+    newParams[key] = Array.isArray(value) ? value.map(fn) : fn(value)
+  }
+
+  return newParams
 }
