@@ -2,7 +2,16 @@ import { ListenerRemover } from '../types'
 import { decode, encodeQueryProperty } from '../utils/encoding'
 // import { encodeQueryProperty, encodeHash } from '../utils/encoding'
 
-export type HistoryQuery = Record<string, string | string[]>
+type HistoryQueryValue = string | null
+type RawHistoryQueryValue = HistoryQueryValue | number | undefined
+export type HistoryQuery = Record<
+  string,
+  HistoryQueryValue | HistoryQueryValue[]
+>
+export type RawHistoryQuery = Record<
+  string | number,
+  RawHistoryQueryValue | RawHistoryQueryValue[]
+>
 
 interface HistoryLocation {
   fullPath: string
@@ -13,7 +22,7 @@ export type RawHistoryLocation = HistoryLocation | string
 export type HistoryLocationNormalized = Pick<HistoryLocation, 'fullPath'>
 export interface LocationPartial {
   path: string
-  query?: HistoryQuery
+  query?: RawHistoryQuery
   hash?: string
 }
 export interface LocationNormalized {
@@ -142,7 +151,7 @@ export function parseURL(
  * @param location
  */
 export function stringifyURL(
-  stringifyQuery: (query: HistoryQuery) => string,
+  stringifyQuery: (query: RawHistoryQuery) => string,
   location: LocationPartial
 ): string {
   let query: string = location.query ? stringifyQuery(location.query) : ''
@@ -165,7 +174,8 @@ export function parseQuery(search: string): HistoryQuery {
   for (let i = 0; i < searchParams.length; ++i) {
     let [key, value] = searchParams[i].split('=')
     key = decode(key)
-    value = decode(value)
+    // avoid decoding null
+    value = value && decode(value)
     if (key in query) {
       // an extra variable for ts types
       let currentValue = query[key]
@@ -183,28 +193,53 @@ export function parseQuery(search: string): HistoryQuery {
  * Stringify an object query. Works like URLSearchParams. Doesn't prepend a `?`
  * @param query
  */
-export function stringifyQuery(query: HistoryQuery): string {
+export function stringifyQuery(query: RawHistoryQuery): string {
   let search = ''
   for (let key in query) {
-    if (search.length > 1) search += '&'
+    if (search.length) search += '&'
     const value = query[key]
     key = encodeQueryProperty(key)
-    if (value === null) {
-      // TODO: should we just add the empty string value?
-      search += key
+    if (value == null) {
+      // only null adds the value
+      if (value !== undefined) search += key
       continue
     }
-    // const encodedKey = encodeQueryProperty(key)
-    let values: string[] = Array.isArray(value) ? value : [value]
-    // const encodedValues = values.map(encodeQueryProperty)
+    // keep null values
+    let values: RawHistoryQueryValue[] = Array.isArray(value)
+      ? value.map(v => v && encodeQueryProperty(v))
+      : [value && encodeQueryProperty(value)]
 
-    search += `${key}=${encodeQueryProperty(values[0])}`
-    for (let i = 1; i < values.length; i++) {
-      search += `&${key}=${encodeQueryProperty(values[i])}`
+    for (let i = 0; i < values.length; i++) {
+      // only append & with i > 0
+      search += (i ? '&' : '') + key
+      if (values[i] != null) search += ('=' + values[i]) as string
     }
   }
 
   return search
+}
+
+/**
+ * Transforms a RawQuery intoe a NormalizedQuery by casting numbers into
+ * strings, removing keys with an undefined value and replacing undefined with
+ * null in arrays
+ * @param query
+ */
+export function normalizeQuery(query: RawHistoryQuery): HistoryQuery {
+  const normalizedQuery: HistoryQuery = {}
+
+  for (let key in query) {
+    let value = query[key]
+    if (value !== undefined) {
+      normalizedQuery[key] = Array.isArray(value)
+        ? value.map(v => (v == null ? null : '' + v))
+        : value == null
+        ? value
+        : '' + value
+    }
+  }
+
+  return normalizedQuery
 }
 
 /**

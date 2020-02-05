@@ -18,6 +18,7 @@ import {
   parseURL,
   stringifyQuery,
   stringifyURL,
+  normalizeQuery,
 } from './history/common'
 import {
   ScrollToPosition,
@@ -207,7 +208,7 @@ export function createRouter({
         path: matchedRoute.path,
       }),
       hash: location.hash || '',
-      query: location.query || {},
+      query: normalizeQuery(location.query || {}),
       ...matchedRoute,
       redirectedFrom,
     }
