@@ -56,6 +56,13 @@ describe('parseURL', () => {
       query: { a: ['one', 'two', 'three'] },
     })
   })
+
+  it('calls parseQuery', () => {
+    const parseQuery = jest.fn()
+    originalParseURL(parseQuery, '/?é=é&é=a')
+    expect(parseQuery).toHaveBeenCalledTimes(1)
+    expect(parseQuery).toHaveBeenCalledWith('é=é&é=a')
+  })
 })
 
 describe('stringifyURL', () => {
@@ -113,6 +120,16 @@ describe('stringifyURL', () => {
         hash: '#hey',
       })
     ).toBe('/path?foo=a&bar=b#hey')
+  })
+
+  it('calls stringifyQuery', () => {
+    const stringifyQuery = jest.fn()
+    originalStringifyURL(stringifyQuery, {
+      path: '/',
+      query: { é: 'é', b: 'a' },
+    })
+    expect(stringifyQuery).toHaveBeenCalledTimes(1)
+    expect(stringifyQuery).toHaveBeenCalledWith({ é: 'é', b: 'a' })
   })
 })
 

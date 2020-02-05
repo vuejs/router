@@ -168,7 +168,6 @@ export function createRouter({
     // const objectLocation = routerLocationAsObject(location)
     if (typeof location === 'string') {
       // TODO: remove as cast when redirect is removed from matcher
-      // TODO: ensure parseURL encodes the query in fullPath but not in query object
       let locationNormalized = parseURL(parseQuery, location)
       let matchedRoute = matcher.resolve(
         { path: locationNormalized.path },
