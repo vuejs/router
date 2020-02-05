@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+import { View as RouterView } from '../src/components/View'
 import { components, RouteLocationNormalizedLoose } from './utils'
 import { START_LOCATION_NORMALIZED } from '../src/types'
 import { ref, markNonReactive } from 'vue'
@@ -81,6 +82,7 @@ describe('RouterView', () => {
       router as any,
       {
         template: `<RouterView :name="name"></RouterView>`,
+        components: { RouterView },
         setup() {
           const name = ref(props.name)
 

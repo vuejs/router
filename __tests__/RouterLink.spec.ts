@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+import RouterLink from '../src/components/Link'
 import {
   START_LOCATION_NORMALIZED,
   RouteQueryAndHash,
@@ -70,10 +71,10 @@ describe('RouterLink', () => {
     resolvedLocation: RouteLocationNormalized
   ) {
     const router = {
-      ...createRouter({
-        history: createMemoryHistory(),
-        routes: [{ path: '', component() {} }],
-      }),
+      // ...createRouter({
+        // routes: [{ path: '', component() {} }],
+      // }),
+      history: createMemoryHistory(),
       createHref(to: RouteLocationNormalized): string {
         return this.history.base + to.fullPath
       },
@@ -86,6 +87,7 @@ describe('RouterLink', () => {
     router.resolve.mockReturnValueOnce(resolvedLocation)
     const { app, el } = mount(router as any, {
       template: `<RouterLink :to="to">a link</RouterLink>`,
+      components: { RouterLink } as any,
       setup() {
         return { to: propsData.to }
       },
@@ -188,6 +190,7 @@ describe('RouterLink', () => {
         href: "{{ data.href }}"
         isActive: "{{ data.isActive }}"
       </RouterLink>`,
+        components: { RouterLink } as any,
         setup() {
           const to = ref(propsData.to)
 
