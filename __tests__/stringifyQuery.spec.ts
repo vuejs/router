@@ -1,4 +1,4 @@
-import { stringifyQuery } from '../src/history/common'
+import { stringifyQuery } from '../src/utils/query'
 import { mockWarn } from './mockWarn'
 
 describe('stringifyQuery', () => {

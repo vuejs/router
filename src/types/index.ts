@@ -1,4 +1,4 @@
-import { HistoryQuery, RawHistoryQuery } from '../history/common'
+import { HistoryQuery, RawHistoryQuery } from '../utils/query'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
 import { markNonReactive } from 'vue'
 import { RouteRecordMatched } from '../matcher/types'

@@ -1,8 +1,28 @@
-import { parseQuery } from '../src/history/common'
+import { parseQuery } from '../src/utils/query'
 import { mockWarn } from './mockWarn'
 
 describe('parseQuery', () => {
   mockWarn()
+
+  it('works with leading ?', () => {
+    expect(parseQuery('?foo=a')).toEqual({
+      foo: 'a',
+    })
+  })
+
+  it('works without leading ?', () => {
+    expect(parseQuery('foo=a')).toEqual({
+      foo: 'a',
+    })
+  })
+
+  it('works with an empty string', () => {
+    const emptyQuery = parseQuery('')
+    expect(Object.keys(emptyQuery)).toHaveLength(0)
+    expect(emptyQuery).toEqual({})
+    expect(parseQuery('?')).toEqual({})
+  })
+
   it('decodes values in query', () => {
     expect(parseQuery('e=%25')).toEqual({
       e: '%',

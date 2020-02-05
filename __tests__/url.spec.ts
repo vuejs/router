@@ -1,10 +1,9 @@
 import {
   parseURL as originalParseURL,
   stringifyURL as originalStringifyURL,
-  parseQuery,
-  stringifyQuery,
   normalizeHistoryLocation as normalizeLocation,
 } from '../src/history/common'
+import { parseQuery, stringifyQuery } from '../src/utils/query'
 
 describe('parseURL', () => {
   let parseURL = originalParseURL.bind(null, parseQuery)

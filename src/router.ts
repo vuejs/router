@@ -11,14 +11,7 @@ import {
   Immutable,
   RouteParams,
 } from './types'
-import {
-  RouterHistory,
-  parseQuery,
-  parseURL,
-  stringifyQuery,
-  stringifyURL,
-  normalizeQuery,
-} from './history/common'
+import { RouterHistory, parseURL, stringifyURL } from './history/common'
 import {
   ScrollToPosition,
   ScrollPosition,
@@ -33,6 +26,7 @@ import {
 import { extractComponentsGuards, guardToPromiseFn } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
+import { normalizeQuery, parseQuery, stringifyQuery } from './utils/query'
 import { ref, Ref, markNonReactive, nextTick, App } from 'vue'
 import { RouteRecordMatched } from './matcher/types'
 import Link from './components/Link'
