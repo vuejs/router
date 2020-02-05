@@ -72,30 +72,69 @@ describe('URL Encoding', () => {
     ])
   })
 
-  it('calls decodeParam with a path', async () => {
+  it('calls decode with a path', async () => {
     const router = createRouter()
-    await router.push({ name: 'repeat', params: { p: ['foo', 'bar'] } })
-    expect(encoding.encodeParam).toHaveBeenCalledTimes(2)
-    expect(encoding.encodeParam).toHaveBeenNthCalledWith(1, 'foo', 0, [
-      'foo',
-      'bar',
-    ])
-    expect(encoding.encodeParam).toHaveBeenNthCalledWith(2, 'bar', 1, [
-      'foo',
-      'bar',
-    ])
+    await router.push('/p/foo')
+    expect(encoding.decode).toHaveBeenCalledTimes(1)
+    expect(encoding.decode).toHaveBeenNthCalledWith(1, 'foo')
   })
 
-  describe.skip('resolving locations', () => {
-    it('encodes params when resolving', async () => {
-      const router = createRouter()
-      await router.push({ name: 'params', params: { p: '%€' } })
-      const currentRoute = router.currentRoute.value
-      expect(currentRoute.path).toBe(encodeURI('/p/%€'))
-      expect(currentRoute.fullPath).toBe(encodeURI('/p/%€'))
-      expect(currentRoute.query).toEqual({
-        p: '%€',
-      })
+  it('calls decode with a path with repeatable params', async () => {
+    const router = createRouter()
+    await router.push('/p/foo/bar')
+    expect(encoding.decode).toHaveBeenCalledTimes(2)
+    expect(encoding.decode).toHaveBeenNthCalledWith(1, 'foo', 0, ['foo', 'bar'])
+    expect(encoding.decode).toHaveBeenNthCalledWith(2, 'bar', 1, ['foo', 'bar'])
+  })
+
+  it('keeps decoded values in params', async () => {
+    // @ts-ignore: override to make the difference
+    encoding.decode = () => 'd'
+    // @ts-ignore
+    encoding.encodeParam = () => 'e'
+    const router = createRouter()
+    await router.push({ name: 'params', params: { p: '%' } })
+    expect(router.currentRoute.value).toMatchObject({
+      fullPath: '/p/e',
+      params: { p: '%' },
+    })
+  })
+
+  it('calls encodeQueryProperty with query', async () => {
+    const router = createRouter()
+    await router.push({ name: 'home', query: { p: 'foo' } })
+    expect(encoding.encodeQueryProperty).toHaveBeenCalledTimes(2)
+    expect(encoding.encodeQueryProperty).toHaveBeenNthCalledWith(1, 'p')
+    expect(encoding.encodeQueryProperty).toHaveBeenNthCalledWith(2, 'foo')
+  })
+
+  it('calls decode with query', async () => {
+    const router = createRouter()
+    await router.push('/?p=foo')
+    expect(encoding.decode).toHaveBeenCalledTimes(2)
+    expect(encoding.decode).toHaveBeenNthCalledWith(1, 'p')
+    expect(encoding.decode).toHaveBeenNthCalledWith(2, 'foo')
+  })
+
+  it('calls encodeQueryProperty with arrays in query', async () => {
+    const router = createRouter()
+    await router.push({ name: 'home', query: { p: ['foo', 'bar'] } })
+    expect(encoding.encodeQueryProperty).toHaveBeenCalledTimes(3)
+    expect(encoding.encodeQueryProperty).toHaveBeenNthCalledWith(1, 'p')
+    expect(encoding.encodeQueryProperty).toHaveBeenNthCalledWith(2, 'foo')
+    expect(encoding.encodeQueryProperty).toHaveBeenNthCalledWith(3, 'bar')
+  })
+
+  it('keeps decoded values in query', async () => {
+    // @ts-ignore: override to make the difference
+    encoding.decode = () => 'd'
+    // @ts-ignore
+    encoding.encodeQueryProperty = () => 'e'
+    const router = createRouter()
+    await router.push({ name: 'home', query: { p: '%' } })
+    expect(router.currentRoute.value).toMatchObject({
+      fullPath: '/?e=e',
+      query: { p: '%' },
     })
   })
 })
