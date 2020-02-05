@@ -3,8 +3,6 @@ import { Ref, InjectionKey } from 'vue'
 import createHistory from './history/html5'
 import createMemoryHistory from './history/memory'
 import createHashHistory from './history/hash'
-import { View } from './components/View'
-import Link from './components/Link'
 import {
   RouteLocationNormalized,
   START_LOCATION_NORMALIZED as START_LOCATION,
@@ -30,7 +28,5 @@ export {
   RouteLocationNormalized,
   Router,
   START_LOCATION,
-  onBeforeRouteLeave,
-  View,
-  Link,
+  onBeforeRouteLeave
 }
