@@ -13,6 +13,11 @@ describe('stringifyQuery', () => {
     expect(stringifyQuery({ e: null, b: null })).toEqual('e&b')
   })
 
+  it('stringifies null values in arrays', () => {
+    expect(stringifyQuery({ e: [null] })).toEqual('e')
+    expect(stringifyQuery({ e: [null, 'c'] })).toEqual('e&e=c')
+  })
+
   it('stringifies numbers', () => {
     expect(stringifyQuery({ e: 2 })).toEqual('e=2')
     expect(stringifyQuery({ e: [2, 'b'] })).toEqual('e=2&e=b')
