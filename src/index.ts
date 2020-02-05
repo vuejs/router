@@ -28,5 +28,5 @@ export {
   RouteLocationNormalized,
   Router,
   START_LOCATION,
-  onBeforeRouteLeave
+  onBeforeRouteLeave,
 }
