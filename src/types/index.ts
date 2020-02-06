@@ -117,7 +117,7 @@ export interface RouteRecordCommon {
 
 export type RouteRecordRedirectOption =
   | RouteLocation
-  | ((to: RouteLocationNormalized) => RouteLocation)
+  | ((to: Immutable<RouteLocationNormalized>) => RouteLocation)
 export interface RouteRecordRedirect extends RouteRecordCommon {
   redirect: RouteRecordRedirectOption
 }

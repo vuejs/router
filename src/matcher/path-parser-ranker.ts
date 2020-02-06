@@ -58,14 +58,6 @@ export interface PathParserOptions {
    * Should the RegExp match until the end by appending a $. Defaults to true
    */
   end?: boolean
-  /**
-   * Encodes a static value. This is used to encode params for them to be valid on the URL
-   */
-  encode?: (value: string) => string
-  /**
-   * Decodes a static value. This allows to produce decoded params when parsing an URL
-   */
-  decode?: (value: string) => string
 }
 
 // default pattern for a param: non greedy everything but /
@@ -76,9 +68,6 @@ const BASE_PATH_PARSER_OPTIONS: Required<PathParserOptions> = {
   strict: false,
   start: true,
   end: true,
-  // TODO: implement real ones
-  encode: v => v,
-  decode: v => v,
 }
 
 // Scoring values used in tokensToParser
@@ -233,7 +222,6 @@ export function tokensToParser(
             throw new Error(
               `Provided param "${value}" is an array but it is not repeatable (* or + modifiers)`
             )
-          // TODO: encode, decode values, make sure that wilcard regexp do not encode the `/`
           const text: string = Array.isArray(param) ? param.join('/') : param
           if (!text) {
             // do not append a slash on the next iteration

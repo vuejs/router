@@ -2,9 +2,8 @@ import {
   RouteRecord,
   MatcherLocation,
   MatcherLocationNormalized,
-  RouteRecordRedirect,
 } from '../types'
-import { NoRouteMatchError, InvalidRouteMatch } from '../errors'
+import { NoRouteMatchError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './path-matcher'
 import { RouteRecordNormalized } from './types'
 import {
@@ -15,7 +14,10 @@ import {
 
 interface RouterMatcher {
   addRoute: (record: RouteRecord, parent?: RouteRecordMatcher) => void
-  // TODO: remove route
+  removeRoute: (name: Required<RouteRecord>['name']) => void
+  // TODO:
+  // getRoutes: () => RouteRecordMatcher
+  // hasRoute: (name: Required<RouteRecord>['name']) => boolean
   resolve: (
     location: Readonly<MatcherLocation>,
     currentLocation: Readonly<MatcherLocationNormalized>
@@ -33,6 +35,7 @@ export function createRouterMatcher(
 ): RouterMatcher {
   // normalized ordered array of matchers
   const matchers: RouteRecordMatcher[] = []
+  const matcherMap = new Map<string | symbol, RouteRecordMatcher>()
 
   function addRoute(
     record: Readonly<RouteRecord>,
@@ -44,9 +47,8 @@ export function createRouterMatcher(
     if (!options.strict)
       mainNormalizedRecord.path = removeTrailingSlash(mainNormalizedRecord.path)
     // generate an array of records to correctly handle aliases
-    const normalizedRecords: Array<
-      RouteRecordNormalized | RouteRecordRedirect
-    > = [mainNormalizedRecord]
+    const normalizedRecords: RouteRecordNormalized[] = [mainNormalizedRecord]
+    // TODO: remember aliases in records to allow active in router-link
     if ('alias' in record && record.alias) {
       const aliases =
         typeof record.alias === 'string' ? [record.alias] : record.alias
@@ -58,21 +60,14 @@ export function createRouterMatcher(
       }
     }
 
-    // build up the path for nested routes
-    if (parent) {
-      // if the child isn't an absolute route
-      if (record.path[0] !== '/') {
-        let path = parent.record.path
-        // only add the / delimiter if the child path isn't empty
-        for (const normalizedRecord of normalizedRecords) {
-          if (normalizedRecord.path) path += '/'
-          path += record.path
-          normalizedRecord.path = path
-        }
-      }
-    }
-
     for (const normalizedRecord of normalizedRecords) {
+      let { path } = normalizedRecord
+      // build up the path for nested routes if the child isn't an absolute route
+      // only add the / delimiter if the child path isn't empty
+      if (parent && path[0] !== '/') {
+        normalizedRecord.path = parent.record.path + (path && '/' + path)
+      }
+
       // create the object before hand so it can be passed to children
       const matcher = createRouteRecordMatcher(
         normalizedRecord,
@@ -80,17 +75,30 @@ export function createRouterMatcher(
         options
       )
 
-      if ('children' in record && record.children) {
-        for (const childRecord of record.children) {
+      if ('children' in record) {
+        for (const childRecord of record.children!)
           addRoute(childRecord, matcher)
-        }
-        // TODO: the parent is special, we should match their children. They
-        // reference to the parent so we can render the parent
-        //
-        // matcher.score = -10
       }
 
       insertMatcher(matcher)
+    }
+  }
+
+  function removeRoute(matcherRef: string | RouteRecordMatcher) {
+    if (typeof matcherRef === 'string') {
+      const matcher = matcherMap.get(name)
+      if (matcher) {
+        matcherMap.delete(name)
+        matchers.splice(matchers.indexOf(matcher), 1)
+        matcher.children.forEach(removeRoute)
+      }
+    } else {
+      let index = matchers.indexOf(matcherRef)
+      if (index > -1) {
+        matchers.splice(index, 1)
+        if (matcherRef.record.name) matcherMap.delete(matcherRef.record.name)
+        matcherRef.children.forEach(removeRoute)
+      }
     }
   }
 
@@ -105,6 +113,7 @@ export function createRouterMatcher(
     // console.log('END i is', { i })
     // while (i < matchers.length && matcher.score <= matchers[i].score) i++
     matchers.splice(i, 0, matcher)
+    if (matcher.record.name) matcherMap.set(matcher.record.name, matcher)
   }
 
   /**
@@ -122,7 +131,7 @@ export function createRouterMatcher(
     let name: MatcherLocationNormalized['name']
 
     if ('name' in location && location.name) {
-      matcher = matchers.find(m => m.record.name === location.name)
+      matcher = matcherMap.get(location.name)
 
       if (!matcher) throw new NoRouteMatchError(location)
 
@@ -152,7 +161,7 @@ export function createRouterMatcher(
     } else {
       // match by name or path of current route
       matcher = currentLocation.name
-        ? matchers.find(m => m.record.name === currentLocation.name)
+        ? matcherMap.get(currentLocation.name)
         : matchers.find(m => m.re.test(currentLocation.path))
       if (!matcher) throw new NoRouteMatchError(location, currentLocation)
       name = matcher.record.name
@@ -160,19 +169,13 @@ export function createRouterMatcher(
       path = matcher.stringify(params)
     }
 
-    // this should never happen because it will mean that the user ended up in a route
-    // that redirects but ended up not redirecting
-    if ('redirect' in matcher.record) throw new InvalidRouteMatch(location)
-
-    const matched: MatcherLocationNormalized['matched'] = [matcher.record]
-    let parentMatcher: RouteRecordMatcher | void = matcher.parent
-    while (parentMatcher) {
+    const matched: MatcherLocationNormalized['matched'] = []
+    let parentMatcher: RouteRecordMatcher | void = matcher
+    do {
       // reversed order so parents are at the beginning
-      // TODO: should be doable by typing RouteRecordMatcher in a different way
-      if ('redirect' in parentMatcher.record) throw new Error('TODO')
       matched.unshift(parentMatcher.record)
       parentMatcher = parentMatcher.parent
-    }
+    } while (parentMatcher)
 
     return {
       name,
@@ -184,37 +187,41 @@ export function createRouterMatcher(
   }
 
   // add initial routes
-  for (const route of routes) {
-    addRoute(route)
-  }
+  routes.forEach(route => addRoute(route))
 
-  return { addRoute, resolve }
+  return { addRoute, resolve, removeRoute }
 }
 
 /**
- * Normalizes a RouteRecord into a MatchedRouteRecord. It also ensures removes
- * traling slashes Returns a copy
+ * Normalizes a RouteRecord. Transforms the `redirect` option into a `beforeEnter`
  * @param record
  * @returns the normalized version
  */
 export function normalizeRouteRecord(
   record: Readonly<RouteRecord>
-): RouteRecordNormalized | RouteRecordRedirect {
+): RouteRecordNormalized {
+  let components: RouteRecordNormalized['components']
+  let beforeEnter: RouteRecordNormalized['beforeEnter']
   if ('redirect' in record) {
-    // TODO: transform redirect into beforeEnter and remove type above
-    return record
-  } else {
-    return {
-      path: record.path,
-      components:
-        'components' in record
-          ? record.components
-          : { default: record.component },
-      children: record.children,
-      name: record.name,
-      beforeEnter: record.beforeEnter,
-      meta: record.meta,
-      leaveGuards: [],
+    components = {}
+    let { redirect } = record
+    beforeEnter = (to, from, next) => {
+      next(typeof redirect === 'function' ? redirect(to) : redirect)
     }
+  } else {
+    components =
+      'components' in record ? record.components : { default: record.component }
+    beforeEnter = record.beforeEnter
+  }
+
+  return {
+    path: record.path,
+    components,
+    // fallback to empty array for monomorphic objects
+    children: (record as any).children,
+    name: record.name,
+    beforeEnter,
+    meta: record.meta,
+    leaveGuards: [],
   }
 }

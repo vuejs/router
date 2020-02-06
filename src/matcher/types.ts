@@ -7,6 +7,7 @@ export interface RouteRecordNormalizedCommon {
 // TODO: rename or refactor the duplicated type
 // normalize component/components into components
 export type RouteRecordNormalized = RouteRecordNormalizedCommon &
+  // TODO: make it required (monomorphic)
   Pick<
     RouteRecordMultipleViews,
     'path' | 'name' | 'components' | 'children' | 'meta' | 'beforeEnter'
