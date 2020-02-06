@@ -171,11 +171,11 @@ export function createRouterMatcher(
 
     const matched: MatcherLocationNormalized['matched'] = []
     let parentMatcher: RouteRecordMatcher | void = matcher
-    do {
+    while (parentMatcher) {
       // reversed order so parents are at the beginning
       matched.unshift(parentMatcher.record)
       parentMatcher = parentMatcher.parent
-    } while (parentMatcher)
+    }
 
     return {
       name,
