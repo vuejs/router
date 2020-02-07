@@ -29,14 +29,14 @@
     "@rollup/plugin-alias": "^3.0.1",
     "@rollup/plugin-node-resolve": "^7.1.0",
     "@rollup/plugin-replace": "^2.3.1",
-    "@types/jest": "^24.9.1",
+    "@types/jest": "^25.1.2",
     "@types/jsdom": "^12.2.4",
-    "@types/webpack": "^4.41.4",
+    "@types/webpack": "^4.41.5",
     "@types/webpack-env": "^1.15.0",
     "@vue/compiler-sfc": "^3.0.0-alpha.3",
     "axios": "^0.19.2",
     "browserstack-local": "^1.4.5",
-    "chromedriver": "^79.0.2",
+    "chromedriver": "^80.0.0",
     "codecov": "^3.6.4",
     "consola": "^2.11.3",
     "css-loader": "^3.4.2",
@@ -58,10 +58,10 @@
     "ts-loader": "^6.2.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5",
-    "vue": "^3.0.0-alpha.3",
-    "vue-loader": "^16.0.0-alpha.2",
+    "vue": "next",
+    "vue-loader": "next",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.2"
+    "webpack-dev-server": "^3.10.3"
   }
 }
