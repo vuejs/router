@@ -586,6 +586,7 @@ describe('Router Matcher', () => {
       const ChildA = { path: 'a', name: 'child-a', components }
       const ChildB = { path: 'b', name: 'child-b', components }
       const ChildC = { path: 'c', name: 'child-c', components }
+      const ChildD = { path: '/absolute', name: 'absolute', components }
       const ChildWithParam = { path: ':p', name: 'child-params', components }
       const NestedChildWithParam = {
         ...ChildWithParam,
@@ -817,6 +818,25 @@ describe('Router Matcher', () => {
                 path: `${Foo.path}/${NestedWithParam.path}/${NestedChildWithParam.path}`,
               },
             ],
+          }
+        )
+      })
+
+      it('resolves absolute path children', () => {
+        const Foo = {
+          path: '/foo',
+          name: 'Foo',
+          components,
+          children: [ChildA, ChildD],
+        }
+        assertRecordMatch(
+          Foo,
+          { path: '/absolute' },
+          {
+            name: 'absolute',
+            path: '/absolute',
+            params: {},
+            matched: [Foo, ChildD],
           }
         )
       })

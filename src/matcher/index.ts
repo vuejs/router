@@ -2,6 +2,7 @@ import {
   RouteRecord,
   MatcherLocation,
   MatcherLocationNormalized,
+  ListenerRemover,
 } from '../types'
 import { NoRouteMatchError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './path-matcher'
@@ -13,8 +14,14 @@ import {
 } from './path-parser-ranker'
 
 interface RouterMatcher {
-  addRoute: (record: RouteRecord, parent?: RouteRecordMatcher) => void
-  removeRoute: (name: Required<RouteRecord>['name']) => void
+  addRoute: (
+    record: RouteRecord,
+    parent?: RouteRecordMatcher
+  ) => ListenerRemover
+  removeRoute: {
+    (matcher: RouteRecordMatcher): void
+    (name: Required<RouteRecord>['name']): void
+  }
   // TODO:
   // getRoutes: () => RouteRecordMatcher
   // hasRoute: (name: Required<RouteRecord>['name']) => boolean
@@ -40,7 +47,7 @@ export function createRouterMatcher(
   function addRoute(
     record: Readonly<RouteRecord>,
     parent?: RouteRecordMatcher
-  ): void {
+  ) {
     const mainNormalizedRecord = normalizeRouteRecord(record)
     const options: PathParserOptions = { ...globalOptions, ...record.options }
     // TODO: can probably be removed now that we have our own parser and we handle this correctly
@@ -59,6 +66,8 @@ export function createRouterMatcher(
         })
       }
     }
+
+    let addedMatchers: RouteRecordMatcher[] = []
 
     for (const normalizedRecord of normalizedRecords) {
       let { path } = normalizedRecord
@@ -81,14 +90,20 @@ export function createRouterMatcher(
       }
 
       insertMatcher(matcher)
+      addedMatchers.push(matcher)
+    }
+
+    return () => {
+      // TODO: not the good method because it should work when passing a string too
+      addedMatchers.forEach(removeRoute)
     }
   }
 
   function removeRoute(matcherRef: string | RouteRecordMatcher) {
     if (typeof matcherRef === 'string') {
-      const matcher = matcherMap.get(name)
+      const matcher = matcherMap.get(matcherRef)
       if (matcher) {
-        matcherMap.delete(name)
+        matcherMap.delete(matcherRef)
         matchers.splice(matchers.indexOf(matcher), 1)
         matcher.children.forEach(removeRoute)
       }
