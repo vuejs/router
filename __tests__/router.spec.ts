@@ -10,7 +10,15 @@ import {
 import { RouterHistory } from '../src/history/common'
 
 const routes: RouteRecord[] = [
-  { path: '/', component: components.Home },
+  { path: '/', component: components.Home, name: 'home' },
+  { path: '/home', redirect: '/' },
+  {
+    path: '/home-before',
+    component: components.Home,
+    beforeEnter: (to, from, next) => {
+      next('/')
+    },
+  },
   { path: '/search', component: components.Home },
   { path: '/foo', component: components.Foo, name: 'Foo' },
   { path: '/to-foo', redirect: '/foo' },
@@ -194,6 +202,32 @@ describe('Router', () => {
 
     it('cancels navigation abort if a newer one is finished on user navigation (from history)', async () => {
       await checkNavigationCancelledOnPush(undefined)
+    })
+  })
+
+  describe('redirectedFrom', () => {
+    it('adds a redirectedFrom property with a redirect in record', async () => {
+      const { router } = await newRouter({ history: createMemoryHistory() })
+      // go to a different route first
+      await router.push('/foo')
+      await router.push('/home')
+      expect(router.currentRoute.value).toMatchObject({
+        path: '/',
+        name: 'home',
+        redirectedFrom: { path: '/home' },
+      })
+    })
+
+    it('adds a redirectedFrom property with beforeEnter', async () => {
+      const { router } = await newRouter({ history: createMemoryHistory() })
+      // go to a different route first
+      await router.push('/foo')
+      await router.push('/home-before')
+      expect(router.currentRoute.value).toMatchObject({
+        path: '/',
+        name: 'home',
+        redirectedFrom: { path: '/home-before' },
+      })
     })
   })
 

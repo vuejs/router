@@ -184,7 +184,7 @@ export function tokensToParser(
     score[i][score[i].length - 1] += PathScore.BonusStrict
   }
 
-  // TODO: warn double trailing slash
+  // TODO: dev only warn double trailing slash
   if (!options.strict) pattern += '/?'
 
   if (options.end) pattern += '$'

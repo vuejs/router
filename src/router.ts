@@ -101,20 +101,11 @@ export function createRouter({
   const decodeParams = applyToParams.bind(null, decode)
 
   function resolve(
-    to: RouteLocation,
-    from?: RouteLocationNormalized
-  ): RouteLocationNormalized {
-    return resolveLocation(to, from || currentRoute.value)
-  }
-
-  function resolveLocation(
     location: RouteLocation,
-    currentLocation: RouteLocationNormalized,
-    // TODO: we should benefit from this with navigation guards
-    // https://github.com/vuejs/vue-router/issues/1822
-    redirectedFrom?: RouteLocationNormalized
+    currentLocation?: RouteLocationNormalized
   ): RouteLocationNormalized {
     // const objectLocation = routerLocationAsObject(location)
+    currentLocation = currentLocation || currentRoute.value
     if (typeof location === 'string') {
       let locationNormalized = parseURL(parseQuery, location)
       let matchedRoute = matcher.resolve(
@@ -126,7 +117,7 @@ export function createRouter({
         ...locationNormalized,
         ...matchedRoute,
         params: decodeParams(matchedRoute.params),
-        redirectedFrom,
+        redirectedFrom: undefined,
       }
     }
 
@@ -156,44 +147,52 @@ export function createRouter({
       hash: location.hash || '',
       query: normalizeQuery(location.query || {}),
       ...matchedRoute,
-      redirectedFrom,
+      redirectedFrom: undefined,
     }
   }
 
-  async function push(to: RouteLocation): Promise<RouteLocationNormalized> {
+  function push(to: RouteLocation): Promise<RouteLocationNormalized> {
+    return pushWithRedirect(to, undefined)
+  }
+
+  async function pushWithRedirect(
+    to: RouteLocation,
+    redirectedFrom: RouteLocationNormalized | undefined
+  ): Promise<RouteLocationNormalized> {
     const toLocation: RouteLocationNormalized = (pendingLocation = resolve(to))
+    const from: RouteLocationNormalized = currentRoute.value
 
     // TODO: should we throw an error as the navigation was aborted
     // TODO: needs a proper check because order in query could be different
     if (
-      currentRoute.value !== START_LOCATION_NORMALIZED &&
-      currentRoute.value.fullPath === toLocation.fullPath
+      from !== START_LOCATION_NORMALIZED &&
+      from.fullPath === toLocation.fullPath
     )
-      return currentRoute.value
+      return from
+
+    toLocation.redirectedFrom = redirectedFrom
 
     // trigger all guards, throw if navigation is rejected
     try {
-      await navigate(toLocation, currentRoute.value)
+      await navigate(toLocation, from)
     } catch (error) {
       if (NavigationGuardRedirect.is(error)) {
         // push was called while waiting in guards
         if (pendingLocation !== toLocation) {
-          triggerError(new NavigationCancelled(toLocation, currentRoute.value))
+          triggerError(new NavigationCancelled(toLocation, from))
         }
-        // TODO: setup redirect stack
-        // TODO: shouldn't we trigger the error as well
-        return push(error.to)
+        // preserve the original redirectedFrom if any
+        return pushWithRedirect(error.to, redirectedFrom || toLocation)
       } else {
         // TODO: write tests
         if (pendingLocation !== toLocation) {
-          // TODO: trigger onError as well
-          triggerError(new NavigationCancelled(toLocation, currentRoute.value))
+          triggerError(new NavigationCancelled(toLocation, from))
         }
       }
       triggerError(error)
     }
 
-    finalizeNavigation(toLocation, true, to.replace === true)
+    finalizeNavigation(toLocation, from, true, to.replace === true)
 
     return currentRoute.value
   }
@@ -290,10 +289,10 @@ export function createRouter({
    */
   function finalizeNavigation(
     toLocation: RouteLocationNormalized,
+    from: RouteLocationNormalized,
     isPush: boolean,
     replace?: boolean
   ) {
-    const from = currentRoute.value
     // a more recent navigation took place
     if (pendingLocation !== toLocation) {
       return triggerError(new NavigationCancelled(toLocation, from), isPush)
@@ -331,31 +330,29 @@ export function createRouter({
   }
 
   // attach listener to history to trigger navigations
-  history.listen(async (to, from, info) => {
+  history.listen(async (to, _from, info) => {
     const toLocation = resolve(to.fullPath)
     // console.log({ to, matchedRoute })
 
     pendingLocation = toLocation
+    const from = currentRoute.value
 
     try {
-      await navigate(toLocation, currentRoute.value)
-      finalizeNavigation(toLocation, false)
+      await navigate(toLocation, from)
+      finalizeNavigation(toLocation, from, false)
     } catch (error) {
       if (NavigationGuardRedirect.is(error)) {
         // TODO: refactor the duplication of new NavigationCancelled by
         // checking instanceof NavigationError (it's another TODO)
         // a more recent navigation took place
         if (pendingLocation !== toLocation) {
-          return triggerError(
-            new NavigationCancelled(toLocation, currentRoute.value),
-            false
-          )
+          return triggerError(new NavigationCancelled(toLocation, from), false)
         }
         triggerError(error, false)
 
         // the error is already handled by router.push
         // we just want to avoid logging the error
-        push(error.to).catch(() => {})
+        pushWithRedirect(error.to, toLocation).catch(() => {})
       } else if (NavigationAborted.is(error)) {
         console.log('Cancelled, going to', -info.distance)
         // TODO: test on different browsers ensure consistent behavior
@@ -369,7 +366,6 @@ export function createRouter({
   // Initialization and Errors
 
   let readyHandlers = useCallbacks<OnReadyCallback>()
-  // TODO: should these be triggered before or after route.push().catch()
   let errorHandlers = useCallbacks<ErrorHandler>()
   let ready: boolean
 

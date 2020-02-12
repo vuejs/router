@@ -64,8 +64,8 @@ export interface RouteLocationNormalized {
   name: string | null | undefined
   params: RouteParams
   matched: RouteRecordNormalized[] // non-enumerable
-  // TODO: make non optional
-  redirectedFrom?: RouteLocationNormalized
+  // TODO: make it an array?
+  redirectedFrom: RouteLocationNormalized | undefined
   meta: Record<string | number | symbol, any>
 }
 
@@ -154,6 +154,7 @@ export const START_LOCATION_NORMALIZED: RouteLocationNormalized = markNonReactiv
     fullPath: '/',
     matched: [],
     meta: {},
+    redirectedFrom: undefined,
   }
 )
 
@@ -173,7 +174,7 @@ export type MatcherLocation =
 export interface MatcherLocationNormalized
   extends Pick<
     RouteLocationNormalized,
-    'name' | 'path' | 'params' | 'matched' | 'redirectedFrom' | 'meta'
+    'name' | 'path' | 'params' | 'matched' | 'meta'
   > {}
 
 // used when the route records requires a redirection
