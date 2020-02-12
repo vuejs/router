@@ -1,7 +1,7 @@
 import { HistoryQuery, RawHistoryQuery } from '../utils/query'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
 import { markNonReactive } from 'vue'
-import { RouteRecordMatched } from '../matcher/types'
+import { RouteRecordNormalized } from '../matcher/types'
 
 // type Component = ComponentOptions<Vue> | typeof Vue | AsyncComponent
 
@@ -56,7 +56,7 @@ export interface RouteLocationNormalized
   query: HistoryQuery
   // TODO: do the same for params
   name: string | null | undefined
-  matched: RouteRecordMatched[] // non-enumerable
+  matched: RouteRecordNormalized[] // non-enumerable
   redirectedFrom?: RouteLocationNormalized
   meta: Record<string | number | symbol, any>
 }
@@ -168,7 +168,7 @@ export interface MatcherLocationNormalized {
   path: string
   // record?
   params: RouteLocationNormalized['params']
-  matched: RouteRecordMatched[]
+  matched: RouteRecordNormalized[]
   // TODO: remove optional and allow null as value (monomorphic)
   redirectedFrom?: MatcherLocationNormalized
   meta: RouteLocationNormalized['meta']

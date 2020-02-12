@@ -42,7 +42,7 @@ export function useLink(props: UseLinkProps) {
   }
 }
 
-const Link = defineComponent({
+export const Link = defineComponent({
   name: 'RouterLink',
   props: {
     to: {
@@ -95,5 +95,3 @@ function guardEvent(e: MouseEvent) {
 
   return true
 }
-
-export default Link

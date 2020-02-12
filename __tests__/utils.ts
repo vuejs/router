@@ -7,7 +7,7 @@ import {
   RouteLocationNormalized,
 } from '../src/types'
 import { h, resolveComponent } from 'vue'
-import { RouteRecordMatched } from '../src/matcher/types'
+import { RouteRecordNormalized } from '../src/matcher/types'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
@@ -110,7 +110,7 @@ const DEFAULT_COMMON_RECORD_PROPERTIES = {
 export function normalizeRouteRecord(
   // cannot be a redirect record
   record: Exclude<RouteRecord, { redirect: any }>
-): RouteRecordMatched {
+): RouteRecordNormalized {
   if ('components' in record)
     return {
       ...DEFAULT_COMMON_RECORD_PROPERTIES,

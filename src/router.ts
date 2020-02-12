@@ -31,8 +31,8 @@ import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
 import { normalizeQuery, parseQuery, stringifyQuery } from './utils/query'
 import { ref, Ref, markNonReactive, nextTick, App } from 'vue'
-import { RouteRecordMatched } from './matcher/types'
-import Link from './components/Link'
+import { RouteRecordNormalized } from './matcher/types'
+import { Link } from './components/Link'
 import { View } from './components/View'
 
 type ErrorHandler = (error: any) => any
@@ -485,9 +485,9 @@ function extractChangingRecords(
   to: RouteLocationNormalized,
   from: RouteLocationNormalized
 ) {
-  const leavingRecords: RouteRecordMatched[] = []
-  const updatingRecords: RouteRecordMatched[] = []
-  const enteringRecords: RouteRecordMatched[] = []
+  const leavingRecords: RouteRecordNormalized[] = []
+  const updatingRecords: RouteRecordNormalized[] = []
+  const enteringRecords: RouteRecordNormalized[] = []
 
   // TODO: could be optimized with one single for loop
   for (const record of from.matched) {

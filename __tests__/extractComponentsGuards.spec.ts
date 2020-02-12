@@ -1,7 +1,7 @@
 import { extractComponentsGuards } from '../src/utils'
 import { START_LOCATION_NORMALIZED, RouteRecord } from '../src/types'
 import { components, normalizeRouteRecord } from './utils'
-import { RouteRecordMatched } from '../src/matcher/types'
+import { RouteRecordNormalized } from '../src/matcher/types'
 
 const beforeRouteEnter = jest.fn()
 
@@ -24,7 +24,7 @@ const SingleGuardNamed: RouteRecord = {
 
 function makeAsync(
   record: Exclude<RouteRecord, { redirect: any }>
-): RouteRecordMatched {
+): RouteRecordNormalized {
   if ('components' in record) {
     const copy = { ...record }
     copy.components = Object.keys(record.components).reduce(

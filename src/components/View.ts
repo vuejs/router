@@ -9,10 +9,12 @@ import {
   InjectionKey,
   Ref,
 } from 'vue'
-import { RouteRecordMatched } from '../matcher/types'
+import { RouteRecordNormalized } from '../matcher/types'
 
 // TODO: make it work with no symbols too for IE
-export const matchedRouteKey = Symbol() as InjectionKey<Ref<RouteRecordMatched>>
+export const matchedRouteKey = Symbol() as InjectionKey<
+  Ref<RouteRecordNormalized>
+>
 
 export const View = defineComponent({
   name: 'RouterView',
