@@ -181,8 +181,7 @@ export function createRouterMatcher(
       path,
       params,
       matched,
-      // TODO: merge all meta properties from parent to child
-      meta: (matcher && matcher.record.meta) || {},
+      meta: matcher ? matcher.record.meta : {},
     }
   }
 
@@ -221,7 +220,7 @@ export function normalizeRouteRecord(
     children: (record as any).children,
     name: record.name,
     beforeEnter,
-    meta: record.meta,
+    meta: record.meta || {},
     leaveGuards: [],
   }
 }

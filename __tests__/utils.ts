@@ -1,13 +1,11 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
 import {
   NavigationGuard,
-  RouteRecord,
   RouteRecordMultipleViews,
   MatcherLocationNormalized,
   RouteLocationNormalized,
 } from '../src/types'
 import { h, resolveComponent } from 'vue'
-import { RouteRecordNormalized } from '../src/matcher/types'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
@@ -93,35 +91,4 @@ export const components = {
       ])
     },
   },
-}
-
-const DEFAULT_COMMON_RECORD_PROPERTIES = {
-  beforeEnter: undefined,
-  leaveGuards: [],
-  meta: undefined,
-}
-
-/**
- * Adds missing properties
- *
- * @param record
- * @returns a normalized copy
- */
-export function normalizeRouteRecord(
-  // cannot be a redirect record
-  record: Exclude<RouteRecord, { redirect: any }>
-): RouteRecordNormalized {
-  if ('components' in record)
-    return {
-      ...DEFAULT_COMMON_RECORD_PROPERTIES,
-      ...record,
-    }
-
-  const { component, ...rest } = record
-
-  return {
-    ...DEFAULT_COMMON_RECORD_PROPERTIES,
-    ...rest,
-    components: { default: component },
-  }
 }

@@ -1,4 +1,4 @@
-import { createRouterMatcher } from '../../src/matcher'
+import { createRouterMatcher, normalizeRouteRecord } from '../../src/matcher'
 import {
   START_LOCATION_NORMALIZED,
   RouteComponent,
@@ -7,7 +7,7 @@ import {
   MatcherLocationNormalized,
   MatcherLocationRedirect,
 } from '../../src/types'
-import { normalizeRouteRecord, MatcherLocationNormalizedLoose } from '../utils'
+import { MatcherLocationNormalizedLoose } from '../utils'
 
 // @ts-ignore
 const component: RouteComponent = null
@@ -28,6 +28,10 @@ describe('Router Matcher', () => {
 
       if (!('meta' in resolved)) {
         resolved.meta = record[0].meta || {}
+      }
+
+      if (!('name' in resolved)) {
+        resolved.name = undefined
       }
 
       // add location if provided as it should be the same value

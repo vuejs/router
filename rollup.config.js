@@ -49,7 +49,6 @@ function createEntry(
       }),
       alias({
         resolve: ['ts'],
-        consola: path.resolve(__dirname, './src/consola.ts'),
       }),
     ],
     output: {

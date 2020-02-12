@@ -11,7 +11,7 @@ describe('normalizeRouteRecord', () => {
       children: undefined,
       components: { default: {} },
       leaveGuards: [],
-      meta: undefined,
+      meta: {},
       name: undefined,
       path: '/home',
     })
@@ -88,7 +88,7 @@ describe('normalizeRouteRecord', () => {
       children: undefined,
       components: {},
       leaveGuards: [],
-      meta: undefined,
+      meta: {},
       name: undefined,
       path: '/redirect',
     })
