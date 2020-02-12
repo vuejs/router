@@ -1,4 +1,3 @@
-// import consola from 'consola'
 import {
   RouterHistory,
   NavigationCallback,
@@ -10,9 +9,6 @@ import {
   NavigationDirection,
   NavigationInformation,
 } from './common'
-
-// const cs = console
-// const cs = consola.withTag('abstract')
 
 /**
  * Creates a in-memory based history. The main purporse of this history is to handle SSR. It starts in a special location that is nowhere.

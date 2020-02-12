@@ -38,7 +38,6 @@
     "browserstack-local": "^1.4.5",
     "chromedriver": "^80.0.0",
     "codecov": "^3.6.5",
-    "consola": "^2.11.3",
     "css-loader": "^3.4.2",
     "dotenv": "^8.2.0",
     "faked-promise": "^2.2.2",

@@ -11,7 +11,6 @@ import {
   ValueContainer,
 } from './common'
 import { computeScrollPosition, ScrollToPosition } from '../utils/scroll'
-// import consola from 'consola'
 
 const cs = console
 
