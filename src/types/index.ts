@@ -16,8 +16,15 @@ export type TODO = any
 
 export type ListenerRemover = () => void
 
-// TODO: support numbers for easier writing but cast them
-export type RouteParams = Record<string, string | string[]>
+type RouteParamValue = string
+// TODO: should we allow more values like numbers and normalize them to strings?
+// type RouteParamValueRaw = RouteParamValue | number
+export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
+export type RouteParamsRaw = RouteParams
+// export type RouteParamsRaw = Record<
+//   string,
+//   RouteParamValueRaw | RouteParamValueRaw[]
+// >
 
 export interface RouteQueryAndHash {
   query?: LocationQueryRaw
@@ -29,7 +36,7 @@ export interface LocationAsPath {
 
 export interface LocationAsName {
   name: string
-  params?: RouteParams
+  params?: RouteParamsRaw
 }
 
 export interface LocationAsRelative {
@@ -49,14 +56,15 @@ export type RouteLocation =
 
 // A matched record cannot be a redirection and must contain
 
-export interface RouteLocationNormalized
-  extends Required<RouteQueryAndHash & LocationAsRelative & LocationAsPath> {
+export interface RouteLocationNormalized {
+  path: string
   fullPath: string
-  // the normalized version cannot have numbers or undefined
   query: LocationQuery
-  // TODO: do the same for params
+  hash: string
   name: string | null | undefined
+  params: RouteParams
   matched: RouteRecordNormalized[] // non-enumerable
+  // TODO: make non optional
   redirectedFrom?: RouteLocationNormalized
   meta: Record<string | number | symbol, any>
 }
@@ -98,11 +106,7 @@ export interface RouteComponentInterface {
 // export type RouteComponent = (Component | ReturnType<typeof defineComponent>) & RouteComponentInterface
 export type RouteComponent = TODO
 
-// NOTE not sure the whole PropsTransformer thing can be usefull
-// since in callbacks we don't know where we are coming from
-// and I don't thin it's possible to filter out the route
-// by any means
-
+// TODO: could this be moved to matcher?
 export interface RouteRecordCommon {
   path: string
   alias?: string | string[]
@@ -120,6 +124,9 @@ export type RouteRecordRedirectOption =
   | ((to: Immutable<RouteLocationNormalized>) => RouteLocation)
 export interface RouteRecordRedirect extends RouteRecordCommon {
   redirect: RouteRecordRedirectOption
+  beforeEnter?: never
+  component?: never
+  components?: never
 }
 
 export interface RouteRecordSingleView extends RouteRecordCommon {
@@ -129,7 +136,6 @@ export interface RouteRecordSingleView extends RouteRecordCommon {
 
 export interface RouteRecordMultipleViews extends RouteRecordCommon {
   components: Record<string, RouteComponent>
-  // TODO: add tests
   children?: RouteRecord[]
 }
 
@@ -163,16 +169,12 @@ export type MatcherLocation =
   | LocationAsName
   | LocationAsRelative
 
-export interface MatcherLocationNormalized {
-  name: RouteLocationNormalized['name']
-  path: string
-  // record?
-  params: RouteLocationNormalized['params']
-  matched: RouteRecordNormalized[]
-  // TODO: remove optional and allow null as value (monomorphic)
-  redirectedFrom?: MatcherLocationNormalized
-  meta: RouteLocationNormalized['meta']
-}
+// TODO: should probably be the other way around: RouteLocationNormalized extending from MatcherLocationNormalized
+export interface MatcherLocationNormalized
+  extends Pick<
+    RouteLocationNormalized,
+    'name' | 'path' | 'params' | 'matched' | 'redirectedFrom' | 'meta'
+  > {}
 
 // used when the route records requires a redirection
 // with a function call. The matcher isn't able to do it
