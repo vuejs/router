@@ -1,23 +1,16 @@
-# VueRouter
+# vue-router-next [![CircleCI](https://circleci.com/gh/vuejs/vue-router-next.svg?style=svg)](https://circleci.com/gh/vuejs/vue-router-next)
 
-## Developping
+## Status: Alpha
 
-Use `yarn`
+The current codebase has most of the existing features on Vue Router v3.x and is usable. It supports all the [merged RFCs](https://github.com/vuejs/rfcs/pulls?q=is%3Apr+is%3Amerged+label%3Arouter).
 
-Run local app at [`http://localhost:8080`](http://localhost:8080)
+Since the library is still unstable **and because we want feedback** on bugs and missing features, **it will probably go through a few breaking changes**.
 
-```sh
-yarn run dev
-```
+## Known issues
 
-### Testing with watch mode
+- `keep-alive` is not yet supported
+- no `beforeRouteEnter`
 
-```sh
-yarn run jest --watch
-```
+## Contributing
 
-Run jest for final tests
-
-```sh
-yarn run test:unit
-```
+See [Contributing Guide](https://github.com/vuejs/vue-router-next/blob/master/.github/contributing.md).
