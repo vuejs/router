@@ -1,5 +1,5 @@
 import { ListenerRemover } from '../types'
-import { RawHistoryQuery, HistoryQuery } from '../utils/query'
+import { LocationQueryRaw, LocationQuery } from '../utils/query'
 
 interface HistoryLocation {
   fullPath: string
@@ -10,14 +10,14 @@ export type RawHistoryLocation = HistoryLocation | string
 export type HistoryLocationNormalized = Pick<HistoryLocation, 'fullPath'>
 export interface LocationPartial {
   path: string
-  query?: RawHistoryQuery
+  query?: LocationQueryRaw
   hash?: string
 }
 export interface LocationNormalized {
   path: string
   fullPath: string
   hash: string
-  query: HistoryQuery
+  query: LocationQuery
 }
 
 // pushState clones the state passed and do not accept everything
@@ -94,11 +94,11 @@ export interface RouterHistory {
  * @returns a normalized history location
  */
 export function parseURL(
-  parseQuery: (search: string) => HistoryQuery,
+  parseQuery: (search: string) => LocationQuery,
   location: string
 ): LocationNormalized {
   let path = '',
-    query: HistoryQuery = {},
+    query: LocationQuery = {},
     searchString = '',
     hash = ''
 
@@ -139,7 +139,7 @@ export function parseURL(
  * @param location
  */
 export function stringifyURL(
-  stringifyQuery: (query: RawHistoryQuery) => string,
+  stringifyQuery: (query: LocationQueryRaw) => string,
   location: LocationPartial
 ): string {
   let query: string = location.query ? stringifyQuery(location.query) : ''

@@ -1,14 +1,14 @@
 import { decode, encodeQueryProperty } from '../utils/encoding'
 
-type HistoryQueryValue = string | null
-type RawHistoryQueryValue = HistoryQueryValue | number | undefined
-export type HistoryQuery = Record<
+type LocationQueryValue = string | null
+type LocationQueryValueRaw = LocationQueryValue | number | undefined
+export type LocationQuery = Record<
   string,
-  HistoryQueryValue | HistoryQueryValue[]
+  LocationQueryValue | LocationQueryValue[]
 >
-export type RawHistoryQuery = Record<
+export type LocationQueryRaw = Record<
   string | number,
-  RawHistoryQueryValue | RawHistoryQueryValue[]
+  LocationQueryValueRaw | LocationQueryValueRaw[]
 >
 
 /**
@@ -17,8 +17,8 @@ export type RawHistoryQuery = Record<
  * @param search
  * @returns a query object
  */
-export function parseQuery(search: string): HistoryQuery {
-  const query: HistoryQuery = {}
+export function parseQuery(search: string): LocationQuery {
+  const query: LocationQuery = {}
   // avoid creating an object with an empty key and empty value
   // because of split('&')
   if (search === '' || search === '?') return query
@@ -50,7 +50,7 @@ export function parseQuery(search: string): HistoryQuery {
  * Stringify an object query. Works like URLSearchParams. Doesn't prepend a `?`
  * @param query
  */
-export function stringifyQuery(query: RawHistoryQuery): string {
+export function stringifyQuery(query: LocationQueryRaw): string {
   let search = ''
   for (let key in query) {
     if (search.length) search += '&'
@@ -62,7 +62,7 @@ export function stringifyQuery(query: RawHistoryQuery): string {
       continue
     }
     // keep null values
-    let values: RawHistoryQueryValue[] = Array.isArray(value)
+    let values: LocationQueryValueRaw[] = Array.isArray(value)
       ? value.map(v => v && encodeQueryProperty(v))
       : [value && encodeQueryProperty(value)]
 
@@ -82,8 +82,8 @@ export function stringifyQuery(query: RawHistoryQuery): string {
  * null in arrays
  * @param query
  */
-export function normalizeQuery(query: RawHistoryQuery): HistoryQuery {
-  const normalizedQuery: HistoryQuery = {}
+export function normalizeQuery(query: LocationQueryRaw): LocationQuery {
+  const normalizedQuery: LocationQuery = {}
 
   for (let key in query) {
     let value = query[key]
