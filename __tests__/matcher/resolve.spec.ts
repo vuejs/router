@@ -202,16 +202,12 @@ describe('Router Matcher', () => {
         )
       })
 
-      it('throws if the path does not exists', () => {
-        expect(
-          assertErrorMatch({ path: '/', components }, { path: '/foo' })
-        ).toMatchSnapshot()
-      })
-
-      it('disallows multiple trailing slashes', () => {
-        expect(
-          assertErrorMatch({ path: '/home/', components }, { path: '/home//' })
-        ).toMatchSnapshot()
+      it('returns an empty match when the path does not exist', () => {
+        assertRecordMatch(
+          { path: '/', components },
+          { path: '/foo' },
+          { name: undefined, params: {}, path: '/foo', matched: [] }
+        )
       })
 
       it('allows an optional trailing slash', () => {

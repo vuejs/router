@@ -212,17 +212,20 @@ function useHistoryStateNavigation(base: string) {
     }
   }
 
-  // TODO: allow data as well
-  function replace(to: RawHistoryLocation) {
+  function replace(to: RawHistoryLocation, data?: HistoryState) {
     const normalized = normalizeHistoryLocation(to)
     // cs.info('replace', location, normalized)
 
-    const state: StateEntry = buildState(
-      historyState.value.back,
-      normalized,
-      historyState.value.forward,
-      true
-    )
+    const state: StateEntry = {
+      ...buildState(
+        historyState.value.back,
+        // keep back and forward entries but override current position
+        normalized,
+        historyState.value.forward,
+        true
+      ),
+      ...data,
+    }
     if (historyState) state.position = historyState.value.position
 
     changeLocation(normalized, state, true)

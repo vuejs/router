@@ -31,11 +31,6 @@ interface RouterMatcher {
   ) => MatcherLocationNormalized
 }
 
-const TRAILING_SLASH_RE = /(.)\/+$/
-function removeTrailingSlash(path: string): string {
-  return path.replace(TRAILING_SLASH_RE, '$1')
-}
-
 export function createRouterMatcher(
   routes: RouteRecord[],
   globalOptions: PathParserOptions
@@ -50,15 +45,12 @@ export function createRouterMatcher(
   ) {
     const mainNormalizedRecord = normalizeRouteRecord(record)
     const options: PathParserOptions = { ...globalOptions, ...record.options }
-    // TODO: can probably be removed now that we have our own parser and we handle this correctly
-    if (!options.strict)
-      mainNormalizedRecord.path = removeTrailingSlash(mainNormalizedRecord.path)
     // generate an array of records to correctly handle aliases
     const normalizedRecords: RouteRecordNormalized[] = [mainNormalizedRecord]
     // TODO: remember aliases in records to allow active in router-link
-    if ('alias' in record && record.alias) {
+    if ('alias' in record) {
       const aliases =
-        typeof record.alias === 'string' ? [record.alias] : record.alias
+        typeof record.alias === 'string' ? [record.alias] : record.alias!
       for (const alias of aliases) {
         normalizedRecords.push({
           ...mainNormalizedRecord,
@@ -67,7 +59,7 @@ export function createRouterMatcher(
       }
     }
 
-    let addedMatchers: RouteRecordMatcher[] = []
+    let matcher: RouteRecordMatcher
 
     for (const normalizedRecord of normalizedRecords) {
       let { path } = normalizedRecord
@@ -78,11 +70,7 @@ export function createRouterMatcher(
       }
 
       // create the object before hand so it can be passed to children
-      const matcher = createRouteRecordMatcher(
-        normalizedRecord,
-        parent,
-        options
-      )
+      matcher = createRouteRecordMatcher(normalizedRecord, parent, options)
 
       if ('children' in record) {
         for (const childRecord of record.children!)
@@ -90,16 +78,16 @@ export function createRouterMatcher(
       }
 
       insertMatcher(matcher)
-      addedMatchers.push(matcher)
     }
 
     return () => {
-      // TODO: not the good method because it should work when passing a string too
-      addedMatchers.forEach(removeRoute)
+      // since other matchers are aliases, they should should be removed by any of the matchers
+      removeRoute(matcher)
     }
   }
 
   function removeRoute(matcherRef: string | RouteRecordMatcher) {
+    // TODO: remove aliases (needs to keep them in the RouteRecordMatcher first)
     if (typeof matcherRef === 'string') {
       const matcher = matcherMap.get(matcherRef)
       if (matcher) {
@@ -152,26 +140,22 @@ export function createRouterMatcher(
 
       name = matcher.record.name
       // TODO: merge params with current location. Should this be done by name. I think there should be some kind of relationship between the records like children of a parent should keep parent props but not the rest
+      // needs an RFC if breaking change
       params = location.params || currentLocation.params
-      // params are automatically encoded
-      // TODO: try catch to provide better error messages
+      // throws if cannot be stringified
       path = matcher.stringify(params)
     } else if ('path' in location) {
       matcher = matchers.find(m => m.re.test(location.path))
       // matcher should have a value after the loop
 
-      // TODO: if no matcher, return the location with an empty matched array
-      // to allow non existent matches
-      // TODO: warning of unused params if provided
-      if (!matcher) throw new NoRouteMatchError(location)
-
-      params = matcher.parse(location.path)!
       // no need to resolve the path with the matcher as it was provided
       // this also allows the user to control the encoding
-      // TODO: check if the note above regarding encoding is still true
       path = location.path
-      name = matcher.record.name
-
+      if (matcher) {
+        // TODO: dev warning of unused params if provided
+        params = matcher.parse(location.path)!
+        name = matcher.record.name
+      }
       // location is a relative path
     } else {
       // match by name or path of current route
@@ -197,7 +181,8 @@ export function createRouterMatcher(
       path,
       params,
       matched,
-      meta: matcher.record.meta || {},
+      // TODO: merge all meta properties from parent to child
+      meta: (matcher && matcher.record.meta) || {},
     }
   }
 

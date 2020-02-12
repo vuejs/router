@@ -5,16 +5,6 @@ exports[`Router Matcher resolve LocationAsName throws if the named route does no
 {"name":"Home"}]
 `;
 
-exports[`Router Matcher resolve LocationAsPath disallows multiple trailing slashes 1`] = `
-[NoRouteMatchError: No match for
-{"path":"/home//"}]
-`;
-
-exports[`Router Matcher resolve LocationAsPath throws if the path does not exists 1`] = `
-[NoRouteMatchError: No match for
-{"path":"/foo"}]
-`;
-
 exports[`Router Matcher resolve LocationAsRelative redirects throws if relative location when redirecting 1`] = `
 [InvalidRouteMatch: Cannot redirect using a relative location:
 {

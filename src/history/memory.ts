@@ -55,7 +55,6 @@ export default function createMemoryHistory(base: string = ''): RouterHistory {
   const routerHistory: RouterHistory = {
     // rewritten by Object.defineProperty
     location: START,
-    // TODO: acutally use it
     base,
 
     replace(to) {

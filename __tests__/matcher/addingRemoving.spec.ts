@@ -19,9 +19,10 @@ describe('normalizeRouteRecord', () => {
       const matcher = createRouterMatcher([], {})
       const remove = matcher.addRoute({ path: '/', component, name: 'home' })
       remove()
-      expect(() => {
-        matcher.resolve({ path: '/' }, currentLocation)
-      }).toThrow()
+      expect(matcher.resolve({ path: '/' }, currentLocation)).toMatchObject({
+        name: undefined,
+        matched: [],
+      })
     })
 
     it.todo('remove aliases')
@@ -33,10 +34,10 @@ describe('normalizeRouteRecord', () => {
     const matcher = createRouterMatcher([], {})
     matcher.addRoute({ path: '/', component, name: 'home' })
     matcher.removeRoute('home')
-    // TODO: this sholud probably return an empty `matched` instead. It needs extra refactoring
-    expect(() => {
-      matcher.resolve({ path: '/' }, currentLocation)
-    }).toThrow()
+    expect(matcher.resolve({ path: '/' }, currentLocation)).toMatchObject({
+      name: undefined,
+      matched: [],
+    })
   })
 
   it('removes children', () => {
@@ -52,9 +53,10 @@ describe('normalizeRouteRecord', () => {
     })
 
     matcher.removeRoute('home')
-    expect(() => {
-      matcher.resolve({ path: '/about' }, currentLocation)
-    }).toThrow()
+    expect(matcher.resolve({ path: '/about' }, currentLocation)).toMatchObject({
+      name: undefined,
+      matched: [],
+    })
   })
 
   it.todo('removes alias by name')
