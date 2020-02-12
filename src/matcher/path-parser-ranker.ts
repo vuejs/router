@@ -87,6 +87,9 @@ const enum PathScore {
   BonusCaseSensitive = 0.025 * _multiplier, // when options strict: true is passed, as the regex omits \/?
 }
 
+// Special Regex characters that must be escaped in static tokens
+const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\]/g
+
 /**
  * Creates a path parser from an array of Segments (a segment is an array of Tokens)
  *
@@ -126,7 +129,7 @@ export function tokensToParser(
       if (token.type === TokenType.Static) {
         // prepend the slash if we are starting a new segment
         if (!tokenIndex) pattern += '/'
-        pattern += token.value
+        pattern += token.value.replace(REGEX_CHARS_RE, '\\$&')
         subSegmentScore += PathScore.Static
       } else if (token.type === TokenType.Param) {
         const { value, repeatable, optional, regexp } = token

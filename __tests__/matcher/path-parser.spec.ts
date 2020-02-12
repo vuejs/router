@@ -374,6 +374,33 @@ describe('Path parser', () => {
       matchRegExp('^/$', [[]], { strict: true })
     })
 
+    it('regex special characters', () => {
+      matchRegExp('^/foo\\+\\.\\*\\?$', [
+        [{ type: TokenType.Static, value: 'foo+.*?' }],
+      ])
+      matchRegExp('^/foo\\$\\^$', [
+        [{ type: TokenType.Static, value: 'foo$^' }],
+      ])
+      matchRegExp('^/foo\\[ea\\]$', [
+        [{ type: TokenType.Static, value: 'foo[ea]' }],
+      ])
+      matchRegExp('^/foo\\(e|a\\)$', [
+        [{ type: TokenType.Static, value: 'foo(e|a)' }],
+      ])
+      matchRegExp('^/(\\d+)\\{2\\}$', [
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '\\d+',
+            repeatable: false,
+            optional: false,
+          },
+          { type: TokenType.Static, value: '{2}' },
+        ],
+      ])
+    })
+
     it('strict /', () => {
       matchRegExp('^/$', [[{ type: TokenType.Static, value: '' }]], {
         strict: true,
