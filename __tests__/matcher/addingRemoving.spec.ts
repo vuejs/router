@@ -14,6 +14,22 @@ describe('normalizeRouteRecord', () => {
     })
   })
 
+  it('adds children', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({ path: '/parent', component, name: 'home' })
+    const parent = matcher.getRecordMatcher('home')
+    matcher.addRoute({ path: 'foo', component, name: 'foo' }, parent)
+    expect(
+      matcher.resolve({ path: '/parent/foo' }, currentLocation)
+    ).toMatchObject({
+      name: 'foo',
+      matched: [
+        expect.objectContaining({ name: 'home' }),
+        expect.objectContaining({ name: 'foo' }),
+      ],
+    })
+  })
+
   describe('addRoute returned function', () => {
     it('remove records', () => {
       const matcher = createRouterMatcher([], {})
@@ -26,8 +42,34 @@ describe('normalizeRouteRecord', () => {
     })
 
     it.todo('remove aliases')
-    it.todo('remove children')
     it.todo('remove aliases children')
+
+    it('remove children when removing the parent', () => {
+      const matcher = createRouterMatcher([], {})
+      const remove = matcher.addRoute({
+        path: '/',
+        component,
+        name: 'home',
+        children: [
+          // absolute path so it can work out
+          { path: '/about', name: 'child', component },
+        ],
+      })
+
+      remove()
+
+      expect(
+        matcher.resolve({ path: '/about' }, currentLocation)
+      ).toMatchObject({
+        name: undefined,
+        matched: [],
+      })
+
+      expect(matcher.getRecordMatcher('child')).toBe(undefined)
+      expect(() => {
+        matcher.resolve({ name: 'child' }, currentLocation)
+      }).toThrow()
+    })
   })
 
   it('can remove records by name', () => {
@@ -40,7 +82,7 @@ describe('normalizeRouteRecord', () => {
     })
   })
 
-  it('removes children', () => {
+  it('removes children when removing the parent', () => {
     const matcher = createRouterMatcher([], {})
     matcher.addRoute({
       path: '/',
@@ -48,7 +90,7 @@ describe('normalizeRouteRecord', () => {
       name: 'home',
       children: [
         // absolute path so it can work out
-        { path: '/about', component },
+        { path: '/about', name: 'child', component },
       ],
     })
 
@@ -57,9 +99,44 @@ describe('normalizeRouteRecord', () => {
       name: undefined,
       matched: [],
     })
+
+    expect(matcher.getRecordMatcher('child')).toBe(undefined)
+    expect(() => {
+      matcher.resolve({ name: 'child' }, currentLocation)
+    }).toThrow()
   })
 
   it.todo('removes alias by name')
-  it.todo('removes children by name')
+  it('removes children by name', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({
+      path: '/',
+      component,
+      name: 'home',
+      children: [
+        // absolute path so it can work out
+        { path: '/about', name: 'child', component },
+      ],
+    })
+
+    matcher.removeRoute('child')
+
+    expect(matcher.resolve({ path: '/about' }, currentLocation)).toMatchObject({
+      name: undefined,
+      matched: [],
+    })
+
+    expect(matcher.getRecordMatcher('child')).toBe(undefined)
+    expect(() => {
+      matcher.resolve({ name: 'child' }, currentLocation)
+    }).toThrow()
+
+    expect(matcher.resolve({ path: '/' }, currentLocation)).toMatchObject({
+      name: 'home',
+    })
+  })
+
+  it.todo('removes children by name from parent')
+
   it.todo('removes children alias by name')
 })

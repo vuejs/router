@@ -840,6 +840,50 @@ describe('Router Matcher', () => {
           }
         )
       })
+
+      it('resolves children with root as the parent', () => {
+        const Nested = { path: 'nested', name: 'nested', components }
+        const Parent = {
+          path: '/',
+          name: 'parent',
+          components,
+          children: [Nested],
+        }
+        assertRecordMatch(
+          Parent,
+          { path: '/nested' },
+          {
+            name: 'nested',
+            path: '/nested',
+            params: {},
+            matched: [Parent, { ...Nested, path: `/nested` }].map(
+              normalizeRouteRecord
+            ),
+          }
+        )
+      })
+
+      it('resolves children with parent with trailing slash', () => {
+        const Nested = { path: 'nested', name: 'nested', components }
+        const Parent = {
+          path: '/parent/',
+          name: 'parent',
+          components,
+          children: [Nested],
+        }
+        assertRecordMatch(
+          Parent,
+          { path: '/parent/nested' },
+          {
+            name: 'nested',
+            path: '/parent/nested',
+            params: {},
+            matched: [Parent, { ...Nested, path: `/parent/nested` }].map(
+              normalizeRouteRecord
+            ),
+          }
+        )
+      })
     })
   })
 })

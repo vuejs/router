@@ -23,8 +23,10 @@ interface RouterMatcher {
     (name: Required<RouteRecord>['name']): void
   }
   // TODO:
-  // getRoutes: () => RouteRecordMatcher
-  // hasRoute: (name: Required<RouteRecord>['name']) => boolean
+  // getRoutes: () => RouteRecordMatcher[]
+  getRecordMatcher: (
+    name: Required<RouteRecord>['name']
+  ) => RouteRecordMatcher | undefined
   resolve: (
     location: Readonly<MatcherLocation>,
     currentLocation: Readonly<MatcherLocationNormalized>
@@ -38,6 +40,10 @@ export function createRouterMatcher(
   // normalized ordered array of matchers
   const matchers: RouteRecordMatcher[] = []
   const matcherMap = new Map<string | symbol, RouteRecordMatcher>()
+
+  function getRecordMatcher(name: string) {
+    return matcherMap.get(name)
+  }
 
   function addRoute(
     record: Readonly<RouteRecord>,
@@ -63,10 +69,15 @@ export function createRouterMatcher(
 
     for (const normalizedRecord of normalizedRecords) {
       let { path } = normalizedRecord
-      // build up the path for nested routes if the child isn't an absolute route
-      // only add the / delimiter if the child path isn't empty
+      // Build up the path for nested routes if the child isn't an absolute
+      // route. Only add the / delimiter if the child path isn't empty and if the
+      // parent path doesn't have a trailing slash
       if (parent && path[0] !== '/') {
-        normalizedRecord.path = parent.record.path + (path && '/' + path)
+        let parentPath = parent.record.path
+        let connectingSlash =
+          parentPath[parentPath.length - 1] === '/' ? '' : '/'
+        normalizedRecord.path =
+          parent.record.path + (path && connectingSlash + path)
       }
 
       // create the object before hand so it can be passed to children
@@ -188,7 +199,7 @@ export function createRouterMatcher(
   // add initial routes
   routes.forEach(route => addRoute(route))
 
-  return { addRoute, resolve, removeRoute }
+  return { addRoute, resolve, removeRoute, getRecordMatcher }
 }
 
 /**
