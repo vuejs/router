@@ -5,7 +5,6 @@ import ts from 'rollup-plugin-typescript2'
 import alias from '@rollup/plugin-alias'
 import { terser } from 'rollup-plugin-terser'
 import pkg from './package.json'
-import path from 'path'
 
 const banner = `/*!
   * ${pkg.name} v${pkg.version}
