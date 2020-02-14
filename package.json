@@ -5,7 +5,7 @@
   "browser": "dist/vue-router.esm.js",
   "unpkg": "dist/vue-router.js",
   "module": "dist/vue-router.esm-bundler.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "sideEffects": false,
   "license": "MIT",
   "files": [
