@@ -12,16 +12,16 @@ Messages must be matched by the following regex:
 
 #### Examples
 
-Appears under "Features" header, `compiler` subheader:
+Appears under "Features" header, `link` subheader:
 
 ```
-feat(compiler): add 'comments' option
+feat(link): add `force` option
 ```
 
-Appears under "Bug Fixes" header, `v-model` subheader, with a link to issue #28:
+Appears under "Bug Fixes" header, `view` subheader, with a link to issue #28:
 
 ```
-fix(v-model): handle events on blur
+fix(view): handle keep-alive with aborted navigations
 
 close #28
 ```
@@ -29,9 +29,9 @@ close #28
 Appears under "Performance Improvements" header, and under "Breaking Changes" with the breaking change explanation:
 
 ```
-perf(core): improve vdom diffing by removing 'foo' option
+perf: improve guard extraction
 
-BREAKING CHANGE: The 'foo' option has been removed.
+BREAKING CHANGE: The 'beforeRouteEnter' option has been removed.
 ```
 
 The following commit and commit `667ecc1` do not appear in the changelog if they are under the same release. If not, the revert commit appears under the "Reverts" header.
