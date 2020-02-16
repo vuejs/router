@@ -25,6 +25,9 @@
     "test": "yarn run test:types && yarn run test:unit && yarn build",
     "prepublishOnly": "yarn run build"
   },
+  "peerDependencies": {
+    "vue": "^3.0.0-alpha.4"
+  },
   "devDependencies": {
     "@rollup/plugin-alias": "^3.0.1",
     "@rollup/plugin-node-resolve": "^7.1.1",
