@@ -10,7 +10,8 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
     return
   }
 
-  const matched = inject(matchedRouteKey, {}).value
+  // TODO: fix wrong type
+  const matched = inject(matchedRouteKey, {} as any).value
 
   if (!matched) {
     __DEV__ &&
@@ -18,5 +19,6 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
     return
   }
 
+  // @ts-ignore
   matched.leaveGuards.push(leaveGuard.bind(instance.proxy))
 }

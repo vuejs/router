@@ -9,6 +9,7 @@ import {
   Ref,
 } from 'vue'
 import { RouteLocation } from '../types'
+import { routerKey } from '../injectKeys'
 
 interface UseLinkProps {
   to: Ref<RouteLocation> | RouteLocation
@@ -17,7 +18,7 @@ interface UseLinkProps {
 
 // TODO: what should be accepted as arguments?
 export function useLink(props: UseLinkProps) {
-  const router = inject('router')
+  const router = inject(routerKey)!
 
   const route = computed(() =>
     router.resolve(isRef(props.to) ? props.to.value : props.to)

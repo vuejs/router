@@ -235,3 +235,5 @@ export function normalizeRouteRecord(
     leaveGuards: [],
   }
 }
+
+export { PathParserOptions }

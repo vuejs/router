@@ -92,6 +92,11 @@
       <li>
         <router-link to="/cant-leave">/cant-leave</router-link>
       </li>
+      <li>
+        <router-link :to="{ name: 'docs', params: { id: 'é' } }"
+          >/docs/é</router-link
+        >
+      </li>
     </ul>
     <!-- <transition
       name="fade"
@@ -104,17 +109,21 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, inject, computed } from 'vue'
 import { scrollWaiter } from './scrollWaiter'
+import { routeKey, routerKey } from '../src'
 
 export default defineComponent({
   name: 'App',
   setup() {
-    const router = inject('router')
+    const router = inject(routerKey)!
+    const route = inject(routeKey)!
+    const a = inject('idk')
     const state = inject('state')
+
     const currentLocation = computed(() => {
-      const { matched, ...rest } = router.currentRoute.value
+      const { matched, ...rest } = route.value
       return rest
     })
 
@@ -126,12 +135,18 @@ export default defineComponent({
     }
 
     const nextUserLink = computed(
-      () =>
-        '/users/' +
-        String((Number(router.currentRoute.value.params.id) || 0) + 1)
+      () => '/users/' + String((Number(route.value.params.id) || 0) + 1)
     )
 
-    return { currentLocation, nextUserLink, state, flushWaiter, setupWaiter }
+    return {
+      currentLocation,
+      nextUserLink,
+      state,
+      flushWaiter,
+      setupWaiter,
+      router,
+      a,
+    }
   },
 })
 </script>

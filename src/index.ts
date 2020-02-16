@@ -1,5 +1,4 @@
 import { createRouter, Router } from './router'
-import { Ref, InjectionKey } from 'vue'
 import createHistory from './history/html5'
 import createMemoryHistory from './history/memory'
 import createHashHistory from './history/hash'
@@ -9,13 +8,22 @@ import {
 } from './types'
 import { onBeforeRouteLeave } from './navigationGuards'
 
-declare module 'vue' {
-  function inject<T>(key: InjectionKey<T> | string): T | undefined
-  function inject<T>(key: InjectionKey<T> | string, defaultValue: T): T
-  function inject(key: InjectionKey<any> | string, defaultValue?: unknown): any
-  function inject(name: 'router'): Router
-  function inject(name: 'route'): Ref<RouteLocationNormalized>
-}
+export { PathParserOptions } from './matcher'
+export { RouteLocationOptions } from './types/index'
+
+// declare module '@vue/runtime-core' {
+//   interface Inject {
+//     (name: 'router'): Router
+//     (name: 'route'): Ref<RouteLocationNormalized>
+//   }
+// function inject<T>(key: InjectionKey<T> | string): T | undefined
+// function inject<T>(key: InjectionKey<T> | string, defaultValue: T): T
+// function inject(key: InjectionKey<any> | string, defaultValue?: unknown): any
+// export function inject(name: 'router'): Router
+// export function inject(name: 'route'): Ref<RouteLocationNormalized>
+// }
+
+export * from './injectKeys'
 
 export {
   createHistory,

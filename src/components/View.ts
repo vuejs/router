@@ -10,6 +10,7 @@ import {
   Ref,
 } from 'vue'
 import { RouteRecordNormalized } from '../matcher/types'
+import { routeKey } from '../injectKeys'
 
 // TODO: make it work with no symbols too for IE
 export const matchedRouteKey = Symbol() as InjectionKey<
@@ -26,7 +27,7 @@ export const View = defineComponent({
   },
 
   setup(props, { attrs }) {
-    const route = inject('route')
+    const route = inject(routeKey)!
     const depth: number = inject('routerViewDepth', 0)
     provide('routerViewDepth', depth + 1)
 
