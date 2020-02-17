@@ -43,7 +43,7 @@ export interface LocationAsRelative {
   params?: RouteParams
 }
 
-interface RouteLocationOptions {
+export interface RouteLocationOptions {
   replace?: boolean
 }
 
