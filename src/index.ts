@@ -8,9 +8,6 @@ import {
 } from './types'
 import { onBeforeRouteLeave } from './navigationGuards'
 
-export { PathParserOptions } from './matcher'
-export { RouteLocationOptions } from './types/index'
-
 // declare module '@vue/runtime-core' {
 //   interface Inject {
 //     (name: 'router'): Router
