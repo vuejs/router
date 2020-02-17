@@ -1,6 +1,6 @@
 {
   "name": "@posva/vue-router-next",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "main": "dist/vue-router.cjs.js",
   "browser": "dist/vue-router.esm.js",
   "unpkg": "dist/vue-router.js",
