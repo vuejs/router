@@ -112,14 +112,12 @@
 <script lang="ts">
 import { defineComponent, inject, computed } from 'vue'
 import { scrollWaiter } from './scrollWaiter'
-import { routeKey, routerKey } from '../src'
+import { useRoute } from '../src'
 
 export default defineComponent({
   name: 'App',
   setup() {
-    const router = inject(routerKey)!
-    const route = inject(routeKey)!
-    const a = inject('idk')
+    const route = useRoute()
     const state = inject('state')
 
     const currentLocation = computed(() => {
@@ -144,8 +142,6 @@ export default defineComponent({
       state,
       flushWaiter,
       setupWaiter,
-      router,
-      a,
     }
   },
 })
