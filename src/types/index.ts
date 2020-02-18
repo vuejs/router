@@ -198,6 +198,7 @@ export interface NavigationGuardCallback {
 export interface NavigationGuard<V = void> {
   (
     this: V,
+    // TODO: we could maybe add extra information like replace: true/false
     to: Immutable<RouteLocationNormalized>,
     from: Immutable<RouteLocationNormalized>,
     next: NavigationGuardCallback
