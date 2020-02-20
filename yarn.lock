@@ -719,7 +719,7 @@
   dependencies:
     "@vue/compiler-core" "3.0.0-alpha.4"
 
-"@vue/compiler-sfc@^3.0.0-alpha.3":
+"@vue/compiler-sfc@3.0.0-alpha.4":
   version "3.0.0-alpha.4"
   resolved "https://registry.yarnpkg.com/@vue/compiler-sfc/-/compiler-sfc-3.0.0-alpha.4.tgz#5013249b00f5c81ee1f247bc1b128f3233af4f96"
   integrity sha512-JlER3RUHC8seCMHV3dZgqDf48IrEGZ6HKrCWOi/ed3N825pJQAgmwJBe5XkPKNMmFBjiWypT4NYAkBU0YbLkhg==
@@ -7797,7 +7797,7 @@ vue-loader@next:
     merge-source-map "^1.1.0"
     source-map "^0.6.1"
 
-vue@next:
+vue@3.0.0-alpha.4:
   version "3.0.0-alpha.4"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.0.0-alpha.4.tgz#c0aa2a175820cb52dde4ca3e1b659df44ff5b2a5"
   integrity sha512-hQ8bwl5tneFHjlomZ7DcwUZoB4yseM+6phOhjBQciKmPp2sYapGHNHB1O3pl/2IUFD/RtrGeZtI7BiHk9wfxxA==

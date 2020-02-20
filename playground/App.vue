@@ -109,7 +109,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent, inject, computed } from 'vue'
 import { scrollWaiter } from './scrollWaiter'
 import { useRoute } from '../src'

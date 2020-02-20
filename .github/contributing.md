@@ -1,4 +1,4 @@
-# Vue.js Contributing Guide
+# Vue.js Router Contributing Guide
 
 Hi! I'm really excited that you are interested in contributing to Vue.js. Before submitting your contribution, please make sure to take a moment and read through the following guidelines:
 
