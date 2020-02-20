@@ -1,6 +1,6 @@
-# Vue.js Router Contributing Guide
+# Vue Router Contributing Guide
 
-Hi! I'm really excited that you are interested in contributing to Vue.js. Before submitting your contribution, please make sure to take a moment and read through the following guidelines:
+Hi! I'm really excited that you are interested in contributing to Vue Router. Before submitting your contribution, please make sure to take a moment and read through the following guidelines:
 
 - [Code of Conduct](https://github.com/vuejs/vue/blob/dev/.github/CODE_OF_CONDUCT.md)
 - [Issue Reporting Guidelines](#issue-reporting-guidelines)
@@ -87,17 +87,27 @@ $ yarn jest --watch
 
 ## Project Structure
 
+Vue Router source code can be found in the `src` directory:
+
+- `src/components`: RouterLink and RouterView components.
+- `src/history`: history implementations that are instantianble with `create*History()`. This folder contains code related to using the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
+- `src/matcher`: RouteMatcher implementation. Contains the code that transforms paths like `/users/:id` into regexes and handle the transformation of locations like `{ name: 'UserDetail', params: { id: '2' } }` to strings. It contains path ranking logic and the part of dynamic routing that concerns matching urls in the right order.
+- `src/utils`: contains util functions that are used accross other sections of the router but are not contained by them.
+- `src/router`: contains the router creation, navigation execution, using the matcher, the history implementation.
+- `src/index`: contains all public API as exports.
+- `src/types`: contains global types that are used across multiple sections of the router.
+
 ## Contributing Tests
 
 Unit tests are located inside `__tests__`. Consult the [Jest docs](https://jestjs.io/docs/en/using-matchers) and existing test cases for how to write new test specs. Here are some additional guidelines:
 
 - Use the minimal API needed for a test case. For example, if a test can be written without involving the reactivity system or a component, it should be written so. This limits the test's exposure to changes in unrelated parts and makes it more stable.
 - Use the minimal API needed for a test case. For example, if a test concerns the `router-link` component, don't create a router instance, mock the needed properties instead.
-
-- If a test is specific to a browser, make sure to indicate it on the test. TODO: example
+- Write a unit test whenever possible
+- If a test is specific to a browser, create an e2e (end to end) test and make sure to indicate it on the test
 
 ## Credits
 
-Thank you to all the people who have already contributed to Vue.js!
+Thank you to all the people who have already contributed to Vue Router!
 
 <a href="https://github.com/vuejs/vue/graphs/contributors"><img src="https://opencollective.com/vuejs/contributors.svg?width=890" /></a>
