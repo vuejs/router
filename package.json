@@ -1,5 +1,5 @@
 {
-  "name": "@posva/vue-router-next",
+  "name": "vue-router",
   "version": "4.0.0-alpha.0",
   "main": "dist/vue-router.cjs.js",
   "browser": "dist/vue-router.esm.js",
