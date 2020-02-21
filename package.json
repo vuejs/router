@@ -1,6 +1,6 @@
 {
   "name": "@posva/vue-router-next",
-  "version": "0.0.12",
+  "version": "4.0.0-alpha.0",
   "main": "dist/vue-router.cjs.js",
   "browser": "dist/vue-router.esm.js",
   "unpkg": "dist/vue-router.js",
@@ -16,6 +16,7 @@
   "scripts": {
     "build": "yarn rollup -c rollup.config.js",
     "dev": "webpack-dev-server --mode=development",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "build:playground": "webpack --env.prod",
     "dev:examples": "webpack-dev-server --mode=development --config examples/webpack.config.js",
     "lint": "prettier -c --parser typescript \"{src,__tests__,e2e}/**/*.[jt]s?(x)\"",
@@ -41,6 +42,7 @@
     "browserstack-local": "^1.4.5",
     "chromedriver": "^80.0.1",
     "codecov": "^3.6.5",
+    "conventional-changelog-cli": "^2.0.31",
     "css-loader": "^3.4.2",
     "dotenv": "^8.2.0",
     "faked-promise": "^2.2.2",
