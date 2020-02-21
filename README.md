@@ -8,8 +8,15 @@ Since the library is still unstable **and because we want feedback** on bugs and
 
 ## Known issues
 
+### Breaking changes compared to vue-router@3.x
+
+- `mode: 'history'` -> `history: createWebHistory()`
+- Catch all routes (`/*`) must now be defined using a parameter with a custom regex: `/:catchAll(.*)`
+
+### Missing features
+
 - `keep-alive` is not yet supported
-- no `beforeRouteEnter`
+- Partail support of per-component navigation guards. No `beforeRouteEnter`
 
 ## Contributing
 

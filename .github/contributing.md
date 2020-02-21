@@ -93,7 +93,7 @@ Vue Router source code can be found in the `src` directory:
 - `src/history`: history implementations that are instantianble with `create*History()`. This folder contains code related to using the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
 - `src/matcher`: RouteMatcher implementation. Contains the code that transforms paths like `/users/:id` into regexes and handle the transformation of locations like `{ name: 'UserDetail', params: { id: '2' } }` to strings. It contains path ranking logic and the part of dynamic routing that concerns matching urls in the right order.
 - `src/utils`: contains util functions that are used accross other sections of the router but are not contained by them.
-- `src/router`: contains the router creation, navigation execution, using the matcher, the history implementation.
+- `src/router`: contains the router creation, navigation execution, using the matcher, the history implementation. It runs navigation guards.
 - `src/index`: contains all public API as exports.
 - `src/types`: contains global types that are used across multiple sections of the router.
 
