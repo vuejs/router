@@ -16,7 +16,7 @@ Since the library is still unstable **and because we want feedback** on bugs and
 ### Missing features
 
 - `keep-alive` is not yet supported
-- Partail support of per-component navigation guards. No `beforeRouteEnter`
+- Partial support of per-component navigation guards. No `beforeRouteEnter`
 
 ## Contributing
 
