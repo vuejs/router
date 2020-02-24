@@ -26,7 +26,7 @@ interface StateEntry extends HistoryState {
 }
 
 /**
- * Creates a noramlized history location from a window.location object
+ * Creates a normalized history location from a window.location object
  * @param location
  */
 function createCurrentLocation(
@@ -69,7 +69,7 @@ function useHistoryListeners(
     historyState.value = state
 
     if (pauseState && pauseState.fullPath === from.fullPath) {
-      cs.info('❌ Ignored beacuse paused for', pauseState.fullPath)
+      cs.info('❌ Ignored because paused for', pauseState.fullPath)
       // reset pauseState
       pauseState = null
       return
@@ -104,7 +104,7 @@ function useHistoryListeners(
   }
 
   function listen(callback: NavigationCallback) {
-    // settup the listener and prepare teardown callbacks
+    // setup the listener and prepare teardown callbacks
     listeners.push(callback)
 
     const teardown = () => {
@@ -135,7 +135,7 @@ function useHistoryListeners(
     window.removeEventListener('beforeunload', beforeUnloadListener)
   }
 
-  // settup the listeners and prepare teardown callbacks
+  // setup the listeners and prepare teardown callbacks
   window.addEventListener('popstate', popStateHandler)
   window.addEventListener('beforeunload', beforeUnloadListener)
 
