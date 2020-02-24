@@ -170,7 +170,7 @@ export function tokenizePath(path: string): Array<Token[]> {
         break
 
       default:
-        crash('Unkwnonw state')
+        crash('Unknown state')
         break
     }
   }

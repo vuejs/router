@@ -39,7 +39,7 @@ export class RouterError extends Error {
     // only IE9 seems to break the inheritance chain
     // and set Error as the name
     if (error.name === 'Error') {
-      // @ts-ignore for IE inheritance suport
+      // @ts-ignore for IE inheritance support
       return error[isRouterError]
     } else {
       return error instanceof RouterError
@@ -73,7 +73,7 @@ export class NoRouteMatchError extends RouterError {
     // only IE9 seems to break the inheritance chain
     // and set Error as the name
     if (error.name === 'Error') {
-      // @ts-ignore for IE inheritance suport
+      // @ts-ignore for IE inheritance support
       return error[isNoRouteMatchError]
     } else {
       return error instanceof NoRouteMatchError
@@ -94,7 +94,7 @@ export class InvalidRouteMatch extends RouterError {
     super(
       `Cannot redirect using a relative location:\n${stringifyRoute(
         location
-      )}\nUse the function redirect and explicitely provide a name`
+      )}\nUse the function redirect and explicitly provide a name`
     )
   }
 
@@ -102,7 +102,7 @@ export class InvalidRouteMatch extends RouterError {
     // only IE9 seems to break the inheritance chain
     // and set Error as the name
     if (error.name === 'Error') {
-      // @ts-ignore for IE inheritance suport
+      // @ts-ignore for IE inheritance support
       return error[isInvalidRouteMatch]
     } else {
       return error instanceof InvalidRouteMatch
@@ -121,7 +121,7 @@ export class NavigationGuardRedirect extends RouterError {
 
   to: RouteLocation
   from: RouteLocationNormalized
-  // TODO: refactor order of argumnets
+  // TODO: refactor order of arguments
   // TODO: refactor into parent class NavigationError
   constructor(from: RouteLocationNormalized, to: RouteLocation) {
     super(
@@ -138,7 +138,7 @@ export class NavigationGuardRedirect extends RouterError {
     // only IE9 seems to break the inheritance chain
     // and set Error as the name
     if (error.name === 'Error') {
-      // @ts-ignore for IE inheritance suport
+      // @ts-ignore for IE inheritance support
       return error[isNavigationGuardRedirect]
     } else {
       return error instanceof NavigationGuardRedirect
@@ -169,7 +169,7 @@ export class NavigationAborted extends RouterError {
     // only IE9 seems to break the inheritance chain
     // and set Error as the name
     if (error.name === 'Error') {
-      // @ts-ignore for IE inheritance suport
+      // @ts-ignore for IE inheritance support
       return error[isNavigationAborted]
     } else {
       return error instanceof NavigationAborted
@@ -202,7 +202,7 @@ export class NavigationCancelled extends RouterError {
     // only IE9 seems to break the inheritance chain
     // and set Error as the name
     if (error.name === 'Error') {
-      // @ts-ignore for IE inheritance suport
+      // @ts-ignore for IE inheritance support
       return error[isNavigationCancelled]
     } else {
       return error instanceof NavigationCancelled
