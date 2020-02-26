@@ -179,7 +179,7 @@ export function tokensToParser(
   }
 
   // only apply the strict bonus to the last score
-  if (options.strict) {
+  if (options.strict && options.end) {
     const i = score.length - 1
     score[i][score[i].length - 1] += PathScore.BonusStrict
   }
@@ -188,6 +188,8 @@ export function tokensToParser(
   if (!options.strict) pattern += '/?'
 
   if (options.end) pattern += '$'
+  // allow paths like /dynamic to only match dynamic or dynamic/... but not dynamic_somethingelse
+  else if (options.strict) pattern += '(?:/|$)'
 
   const re = new RegExp(pattern, options.sensitive ? '' : 'i')
 

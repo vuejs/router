@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from '../src'
 import Home from './views/Home.vue'
 import Nested from './views/Nested.vue'
+import Dynamic from './views/Dynamic.vue'
 import User from './views/User.vue'
 import NotFound from './views/NotFound.vue'
 import component from './views/Generic.vue'
@@ -9,6 +10,7 @@ import GuardedWithLeave from './views/GuardedWithLeave.vue'
 import ComponentWithData from './views/ComponentWithData.vue'
 import { globalState } from './store'
 import { scrollWaiter } from './scrollWaiter'
+let removeRoute: (() => void) | undefined
 
 // const hist = new HTML5History()
 // const hist = new HashHistory()
@@ -56,6 +58,21 @@ export const router = createRouter({
           children: [{ path: 'nested', component: Nested }],
         },
       ],
+    },
+    {
+      path: '/dynamic',
+      name: 'dynamic',
+      component: Nested,
+      options: { end: false, strict: true },
+      beforeEnter(to, from, next) {
+        if (!removeRoute) {
+          removeRoute = router.addRoute('dynamic', {
+            path: 'child',
+            component: Dynamic,
+          })
+          next(to.fullPath)
+        } else next()
+      },
     },
   ],
   async scrollBehavior(to, from, savedPosition) {

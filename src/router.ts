@@ -29,8 +29,13 @@ import {
 } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
-import { normalizeQuery, parseQuery, stringifyQuery } from './utils/query'
-import { ref, Ref, markNonReactive, nextTick, App } from 'vue'
+import {
+  normalizeQuery,
+  parseQuery,
+  stringifyQuery,
+  LocationQueryValue,
+} from './utils/query'
+import { ref, Ref, markNonReactive, nextTick, App, warn } from 'vue'
 import { RouteRecordNormalized } from './matcher/types'
 import { Link } from './components/Link'
 import { View } from './components/View'
@@ -57,6 +62,11 @@ export interface RouterOptions {
 export interface Router {
   history: RouterHistory
   currentRoute: Ref<Immutable<RouteLocationNormalized>>
+
+  addRoute(parentName: string, route: RouteRecord): () => void
+  addRoute(route: RouteRecord): () => void
+  removeRoute(name: string): void
+  getRoutes(): RouteRecordNormalized[]
 
   resolve(to: RouteLocation): RouteLocationNormalized
   createHref(to: RouteLocationNormalized): string
@@ -99,6 +109,33 @@ export function createRouter({
 
   const encodeParams = applyToParams.bind(null, encodeParam)
   const decodeParams = applyToParams.bind(null, decode)
+
+  function addRoute(parentOrRoute: string | RouteRecord, route?: RouteRecord) {
+    let parent: Parameters<typeof matcher['addRoute']>[1] | undefined
+    let record: RouteRecord
+    if (typeof parentOrRoute === 'string') {
+      parent = matcher.getRecordMatcher(parentOrRoute)
+      record = route!
+    } else {
+      record = parentOrRoute
+    }
+
+    return matcher.addRoute(record, parent)
+  }
+
+  function removeRoute(name: string) {
+    let recordMatcher = matcher.getRecordMatcher(name)
+    if (recordMatcher) {
+      matcher.removeRoute(recordMatcher)
+    } else if (__DEV__) {
+      // TODO: adapt if we allow Symbol as a name
+      warn(`Cannot remove non-existant route "${name}"`)
+    }
+  }
+
+  function getRoutes(): RouteRecordNormalized[] {
+    return matcher.getRoutes().map(routeMatcher => routeMatcher.record)
+  }
 
   function resolve(
     location: RouteLocation,
@@ -161,14 +198,12 @@ export function createRouter({
   ): Promise<RouteLocationNormalized> {
     const toLocation: RouteLocationNormalized = (pendingLocation = resolve(to))
     const from: RouteLocationNormalized = currentRoute.value
+    // @ts-ignore: no need to check the string as force do not exist on a string
+    const force: boolean | undefined = to.force
 
     // TODO: should we throw an error as the navigation was aborted
     // TODO: needs a proper check because order in query could be different
-    if (
-      from !== START_LOCATION_NORMALIZED &&
-      from.fullPath === toLocation.fullPath
-    )
-      return from
+    if (!force && isSameLocation(from, toLocation)) return from
 
     toLocation.redirectedFrom = redirectedFrom
 
@@ -427,12 +462,19 @@ export function createRouter({
 
   const router: Router = {
     currentRoute,
+
+    addRoute,
+    removeRoute,
+    getRoutes,
+
     push,
     replace,
     resolve,
+
     beforeEach: beforeGuards.add,
     afterEach: afterGuards.add,
     createHref,
+
     onError: errorHandlers.add,
     isReady,
 
@@ -496,4 +538,45 @@ function extractChangingRecords(
   }
 
   return [leavingRecords, updatingRecords, enteringRecords]
+}
+
+function isSameLocation(
+  a: RouteLocationNormalized,
+  b: RouteLocationNormalized
+): boolean {
+  return (
+    a.name === b.name &&
+    a.path === b.path &&
+    a.hash === b.hash &&
+    isSameLocationQuery(a.query, b.query)
+  )
+}
+
+function isSameLocationQuery(
+  a: RouteLocationNormalized['query'],
+  b: RouteLocationNormalized['query']
+): boolean {
+  const aKeys = Object.keys(a)
+  const bKeys = Object.keys(b)
+  if (aKeys.length !== bKeys.length) return false
+  let i = 0
+  let key: string
+  while (i < aKeys.length) {
+    key = aKeys[i]
+    if (key !== bKeys[i]) return false
+    if (!isSameLocationQueryValue(a[key], b[key])) return false
+    i++
+  }
+
+  return true
+}
+
+function isSameLocationQueryValue(
+  a: LocationQueryValue | LocationQueryValue[],
+  b: LocationQueryValue | LocationQueryValue[]
+): boolean {
+  if (typeof a !== typeof b) return false
+  if (Array.isArray(a))
+    return a.every((value, i) => value === (b as LocationQueryValue[])[i])
+  return a === b
 }

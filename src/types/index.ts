@@ -44,7 +44,14 @@ export interface LocationAsRelative {
 }
 
 export interface RouteLocationOptions {
+  /**
+   * Replace the entry in the history instead of pushing a new entry
+   */
   replace?: boolean
+  /**
+   * Triggers the navigation even if the location is the same as the current one
+   */
+  force?: boolean
 }
 
 // User level location

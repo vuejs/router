@@ -333,4 +333,121 @@ describe('Router', () => {
   })
 
   // it('redirects with route record redirect')
+
+  describe('Dynamic Routing', () => {
+    it('resolves new added routes', async () => {
+      const { router } = await newRouter()
+      expect(router.resolve('/new-route')).toMatchObject({
+        name: undefined,
+        matched: [],
+      })
+      router.addRoute({
+        path: '/new-route',
+        component: components.Foo,
+        name: 'new route',
+      })
+      expect(router.resolve('/new-route')).toMatchObject({
+        name: 'new route',
+      })
+    })
+
+    it('can redirect to children in the middle of navigation', async () => {
+      const { router } = await newRouter()
+      expect(router.resolve('/new-route')).toMatchObject({
+        name: undefined,
+        matched: [],
+      })
+      let removeRoute: (() => void) | undefined
+      router.addRoute({
+        path: '/dynamic',
+        component: components.Nested,
+        name: 'dynamic parent',
+        options: { end: false, strict: true },
+        beforeEnter(to, from, next) {
+          if (!removeRoute) {
+            removeRoute = router.addRoute('dynamic parent', {
+              path: 'child',
+              name: 'dynamic child',
+              component: components.Foo,
+            })
+            next(to.fullPath)
+          } else next()
+        },
+      })
+
+      router.push('/dynamic/child').catch(() => {})
+      await tick()
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'dynamic child',
+      })
+    })
+
+    it('can reroute when adding a new route', async () => {
+      const { router } = await newRouter()
+      await router.push('/p/p')
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Param',
+      })
+      router.addRoute({
+        path: '/p/p',
+        component: components.Foo,
+        name: 'pp',
+      })
+      await router.replace(router.currentRoute.value.fullPath)
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'pp',
+      })
+    })
+
+    it('stops resolving removed routes', async () => {
+      const { router } = await newRouter()
+      // regular route
+      router.removeRoute('Foo')
+      expect(router.resolve('/foo')).toMatchObject({
+        name: undefined,
+        matched: [],
+      })
+      // dynamic route
+      const removeRoute = router.addRoute({
+        path: '/new-route',
+        component: components.Foo,
+        name: 'new route',
+      })
+      removeRoute()
+      expect(router.resolve('/new-route')).toMatchObject({
+        name: undefined,
+        matched: [],
+      })
+    })
+
+    it('can reroute when removing route', async () => {
+      const { router } = await newRouter()
+      router.addRoute({
+        path: '/p/p',
+        component: components.Foo,
+        name: 'pp',
+      })
+      await router.push('/p/p')
+      router.removeRoute('pp')
+      await router.replace(router.currentRoute.value.fullPath)
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Param',
+      })
+    })
+
+    it('can reroute when removing route through returned function', async () => {
+      const { router } = await newRouter()
+      const remove = router.addRoute({
+        path: '/p/p',
+        component: components.Foo,
+        name: 'pp',
+      })
+      await router.push('/p/p')
+      remove()
+      await router.push('/p/p')
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Param',
+      })
+    })
+  })
 })

@@ -22,8 +22,7 @@ interface RouterMatcher {
     (matcher: RouteRecordMatcher): void
     (name: Required<RouteRecord>['name']): void
   }
-  // TODO:
-  // getRoutes: () => RouteRecordMatcher[]
+  getRoutes: () => RouteRecordMatcher[]
   getRecordMatcher: (
     name: Required<RouteRecord>['name']
   ) => RouteRecordMatcher | undefined
@@ -45,6 +44,7 @@ export function createRouterMatcher(
     return matcherMap.get(name)
   }
 
+  // TODO: add routes to children of parent
   function addRoute(
     record: Readonly<RouteRecord>,
     parent?: RouteRecordMatcher
@@ -114,6 +114,10 @@ export function createRouterMatcher(
         matcherRef.children.forEach(removeRoute)
       }
     }
+  }
+
+  function getRoutes() {
+    return matchers
   }
 
   function insertMatcher(matcher: RouteRecordMatcher) {
@@ -199,7 +203,7 @@ export function createRouterMatcher(
   // add initial routes
   routes.forEach(route => addRoute(route))
 
-  return { addRoute, resolve, removeRoute, getRecordMatcher }
+  return { addRoute, resolve, removeRoute, getRoutes, getRecordMatcher }
 }
 
 /**

@@ -1,6 +1,6 @@
 import { decode, encodeQueryProperty } from '../utils/encoding'
 
-type LocationQueryValue = string | null
+export type LocationQueryValue = string | null
 type LocationQueryValueRaw = LocationQueryValue | number | undefined
 export type LocationQuery = Record<
   string,
