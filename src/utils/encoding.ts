@@ -74,8 +74,7 @@ export function encodePath(text: string): string {
 }
 
 export function encodeParam(text: string): string {
-  return encodePath(text)
-    .replace(RE_MAP['/'], ENC_MAP['/'])
+  return encodePath(text).replace(RE_MAP['/'], ENC_MAP['/'])
 }
 
 export function decode(text: string): string {
