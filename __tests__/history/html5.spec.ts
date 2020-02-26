@@ -1,4 +1,4 @@
-import createHistory from '../../src/history/html5'
+import createWebHistory from '../../src/history/html5'
 import { createDom } from '../utils'
 
 // TODO: is it really worth testing this implementation on jest or is it
@@ -9,7 +9,7 @@ describe.skip('History HTMl5', () => {
   })
 
   it('can be instantiated', () => {
-    const history = createHistory()
+    const history = createWebHistory()
     expect(history.location).toEqual({
       fullPath: '/',
       path: '/',

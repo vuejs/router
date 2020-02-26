@@ -1,5 +1,5 @@
 import fakePromise from 'faked-promise'
-import { createRouter, createMemoryHistory, createHistory } from '../src'
+import { createRouter, createMemoryHistory, createWebHistory } from '../src'
 import { NavigationCancelled } from '../src/errors'
 import { createDom, components, tick } from './utils'
 import {
@@ -310,7 +310,7 @@ describe('Router', () => {
   })
 
   it('allows base option with html5 history', async () => {
-    const history = createHistory('/app/')
+    const history = createWebHistory('/app/')
     const router = createRouter({ history, routes })
     expect(router.currentRoute.value).toEqual({
       name: undefined,

@@ -1,4 +1,4 @@
-import { createRouter, createHistory } from '../src'
+import { createRouter, createWebHistory } from '../src'
 import Home from './views/Home.vue'
 import Nested from './views/Nested.vue'
 import User from './views/User.vue'
@@ -12,7 +12,7 @@ import { scrollWaiter } from './scrollWaiter'
 
 // const hist = new HTML5History()
 // const hist = new HashHistory()
-export const routerHistory = createHistory()
+export const routerHistory = createWebHistory()
 export const router = createRouter({
   history: routerHistory,
   routes: [

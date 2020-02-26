@@ -264,7 +264,7 @@ function useHistoryStateNavigation(base: string) {
   }
 }
 
-export default function createHistory(base: string = ''): RouterHistory {
+export default function createWebHistory(base: string = ''): RouterHistory {
   const historyNavigation = useHistoryStateNavigation(base)
   const historyListeners = useHistoryListeners(
     base,

@@ -16,13 +16,13 @@ const routes: RouteRecord[] = [
 
 // this function is meant to easy refactor in the future as Histories are going to be
 // function-based
-function createHistory() {
+function createWebHistory() {
   const routerHistory = createMemoryHistory()
   return routerHistory
 }
 
 function createRouter() {
-  const history = createHistory()
+  const history = createWebHistory()
   const router = newRouter({ history, routes })
   return router
 }

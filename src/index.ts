@@ -1,6 +1,6 @@
-import createHistory from './history/html5'
+import createWebHistory from './history/html5'
 import createMemoryHistory from './history/memory'
-import createHashHistory from './history/hash'
+import createWebHashHistory from './history/hash'
 
 export {
   RouteLocationNormalized,
@@ -15,4 +15,4 @@ export { useRoute, useRouter } from './injectKeys'
 export { Link } from './components/Link'
 export { View } from './components/View'
 
-export { createHistory, createMemoryHistory, createHashHistory }
+export { createWebHistory, createMemoryHistory, createWebHashHistory }
