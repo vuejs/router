@@ -27,7 +27,7 @@
     "prepublishOnly": "yarn run build"
   },
   "peerDependencies": {
-    "vue": "^3.0.0-alpha.4"
+    "vue": "^3.0.0-alpha.6"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^3.0.1",
@@ -37,7 +37,7 @@
     "@types/jsdom": "^16.1.0",
     "@types/webpack": "^4.41.6",
     "@types/webpack-env": "^1.15.0",
-    "@vue/compiler-sfc": "3.0.0-alpha.4",
+    "@vue/compiler-sfc": "3.0.0-alpha.6",
     "axios": "^0.19.2",
     "browserstack-local": "^1.4.5",
     "chromedriver": "^80.0.1",
@@ -62,7 +62,7 @@
     "ts-loader": "^6.2.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.2",
-    "vue": "3.0.0-alpha.4",
+    "vue": "next",
     "vue-loader": "next",
     "webpack": "^4.41.6",
     "webpack-cli": "^3.3.11",
