@@ -9,6 +9,7 @@ import {
   Lazy,
   TODO,
   Immutable,
+  MatcherLocationNormalized,
 } from './types'
 import { RouterHistory, parseURL, stringifyURL } from './history/common'
 import {
@@ -25,16 +26,12 @@ import {
 import {
   extractComponentsGuards,
   guardToPromiseFn,
+  isSameLocationObject,
   applyToParams,
 } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
-import {
-  normalizeQuery,
-  parseQuery,
-  stringifyQuery,
-  LocationQueryValue,
-} from './utils/query'
+import { normalizeQuery, parseQuery, stringifyQuery } from './utils/query'
 import { ref, Ref, markNonReactive, nextTick, App, warn } from 'vue'
 import { RouteRecordNormalized } from './matcher/types'
 import { Link } from './components/Link'
@@ -158,23 +155,21 @@ export function createRouter({
       }
     }
 
-    const hasParams = 'params' in location
-
-    // relative or named location, path is ignored
-    // for same reason TS thinks location.params can be undefined
-    let matchedRoute = matcher.resolve(
-      hasParams
-        ? // we know we have the params attribute
-          { ...location, params: encodeParams((location as any).params) }
-        : location,
-      currentLocation
-    )
+    let matchedRoute: MatcherLocationNormalized = // relative or named location, path is ignored
+      // for same reason TS thinks location.params can be undefined
+      matcher.resolve(
+        'params' in location
+          ? { ...location, params: encodeParams(location.params) }
+          : location,
+        currentLocation
+      )
 
     // put back the unencoded params as given by the user (avoid the cost of decoding them)
-    matchedRoute.params = hasParams
-      ? // we know we have the params attribute
-        (location as any).params!
-      : decodeParams(matchedRoute.params)
+    // TODO: normalize params if we accept numbers as raw values
+    matchedRoute.params =
+      'params' in location
+        ? location.params!
+        : decodeParams(matchedRoute.params)
 
     return {
       fullPath: stringifyURL(stringifyQuery, {
@@ -541,42 +536,13 @@ function extractChangingRecords(
 }
 
 function isSameLocation(
-  a: RouteLocationNormalized,
-  b: RouteLocationNormalized
+  a: Immutable<RouteLocationNormalized>,
+  b: Immutable<RouteLocationNormalized>
 ): boolean {
   return (
     a.name === b.name &&
     a.path === b.path &&
     a.hash === b.hash &&
-    isSameLocationQuery(a.query, b.query)
+    isSameLocationObject(a.query, b.query)
   )
-}
-
-function isSameLocationQuery(
-  a: RouteLocationNormalized['query'],
-  b: RouteLocationNormalized['query']
-): boolean {
-  const aKeys = Object.keys(a)
-  const bKeys = Object.keys(b)
-  if (aKeys.length !== bKeys.length) return false
-  let i = 0
-  let key: string
-  while (i < aKeys.length) {
-    key = aKeys[i]
-    if (key !== bKeys[i]) return false
-    if (!isSameLocationQueryValue(a[key], b[key])) return false
-    i++
-  }
-
-  return true
-}
-
-function isSameLocationQueryValue(
-  a: LocationQueryValue | LocationQueryValue[],
-  b: LocationQueryValue | LocationQueryValue[]
-): boolean {
-  if (typeof a !== typeof b) return false
-  if (Array.isArray(a))
-    return a.every((value, i) => value === (b as LocationQueryValue[])[i])
-  return a === b
 }

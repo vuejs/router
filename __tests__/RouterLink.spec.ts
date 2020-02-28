@@ -11,6 +11,12 @@ import {
 import { createMemoryHistory } from '../src'
 import { mount, tick } from './mount'
 import { ref, markNonReactive } from 'vue'
+import { RouteRecordNormalized } from '../src/matcher/types'
+
+const records = {
+  home: {} as RouteRecordNormalized,
+  foo: {} as RouteRecordNormalized,
+}
 
 const locations: Record<
   string,
@@ -30,7 +36,7 @@ const locations: Record<
       meta: {},
       query: {},
       hash: '',
-      matched: [],
+      matched: [records.home],
       redirectedFrom: undefined,
       name: undefined,
     },
@@ -45,7 +51,7 @@ const locations: Record<
       meta: {},
       query: {},
       hash: '',
-      matched: [],
+      matched: [records.foo],
       redirectedFrom: undefined,
       name: undefined,
     },
@@ -60,7 +66,7 @@ const locations: Record<
       meta: {},
       query: { foo: 'a', bar: 'b' },
       hash: '',
-      matched: [],
+      matched: [records.home],
       redirectedFrom: undefined,
       name: undefined,
     },
@@ -102,7 +108,7 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
+    expect(el.querySelector('a')!.getAttribute('href')).toBe('/home')
   })
 
   // TODO: not sure why this breaks. We could take a look at @vue/test-runtime
@@ -126,7 +132,7 @@ describe('RouterLink', () => {
       { to: { path: locations.basic.string } },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
+    expect(el.querySelector('a')!.getAttribute('href')).toBe('/home')
   })
 
   it('can be active', () => {
@@ -135,8 +141,17 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe(
-      '<a class="router-link-active" href="/home">a link</a>'
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+  })
+
+  it('can be exact-active', () => {
+    const { el } = factory(
+      locations.basic.normalized,
+      { to: locations.basic.string },
+      locations.basic.normalized
+    )
+    expect(el.querySelector('a')!.className).toContain(
+      'router-link-exact-active'
     )
   })
 

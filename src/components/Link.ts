@@ -5,30 +5,83 @@ import {
   inject,
   computed,
   reactive,
-  isRef,
   Ref,
+  unref,
 } from 'vue'
-import { RouteLocation } from '../types'
+import { RouteLocation, RouteLocationNormalized, Immutable } from '../types'
+import { isSameLocationObject } from '../utils'
 import { routerKey } from '../injectKeys'
+import { RouteRecordNormalized } from '../matcher/types'
 
-interface UseLinkProps {
-  to: Ref<RouteLocation> | RouteLocation
-  replace?: Ref<boolean> | boolean
+type VueUseOptions<T> = {
+  [k in keyof T]: Ref<T[k]> | T[k]
+}
+
+interface LinkProps {
+  to: RouteLocation
+  // TODO: refactor using extra options allowed in router.push
+  replace?: boolean
+}
+
+type UseLinkOptions = VueUseOptions<LinkProps>
+
+function isSameRouteRecord(
+  a: Immutable<RouteRecordNormalized>,
+  b: Immutable<RouteRecordNormalized>
+): boolean {
+  // TODO: handle aliases
+  return a === b
+}
+
+function includesParams(
+  outter: Immutable<RouteLocationNormalized['params']>,
+  inner: Immutable<RouteLocationNormalized['params']>
+): boolean {
+  for (let key in inner) {
+    let innerValue = inner[key]
+    let outterValue = outter[key]
+    if (typeof innerValue === 'string') {
+      if (innerValue !== outterValue) return false
+    } else {
+      if (
+        !Array.isArray(outterValue) ||
+        innerValue.some((value, i) => value !== outterValue[i])
+      )
+        return false
+    }
+  }
+
+  return true
 }
 
 // TODO: what should be accepted as arguments?
-export function useLink(props: UseLinkProps) {
+export function useLink(props: UseLinkOptions) {
   const router = inject(routerKey)!
 
-  const route = computed(() =>
-    router.resolve(isRef(props.to) ? props.to.value : props.to)
-  )
+  const route = computed(() => router.resolve(unref(props.to)))
   const href = computed(() => router.createHref(route.value))
+
+  const activeRecordIndex = computed<number>(() => {
+    const currentMatched = route.value.matched[route.value.matched.length - 1]
+    return router.currentRoute.value.matched.findIndex(
+      isSameRouteRecord.bind(null, currentMatched)
+    )
+  })
+
   const isActive = computed<boolean>(
-    () => router.currentRoute.value.path.indexOf(route.value.path) === 0
+    () =>
+      activeRecordIndex.value > -1 &&
+      includesParams(router.currentRoute.value.params, route.value.params)
+  )
+  const isExactActive = computed<boolean>(
+    () =>
+      activeRecordIndex.value ===
+        router.currentRoute.value.matched.length - 1 &&
+      isSameLocationObject(router.currentRoute.value.params, route.value.params)
   )
 
   // TODO: handle replace prop
+  // const method = unref(rep)
 
   function navigate(e: MouseEvent = {} as MouseEvent) {
     // TODO: handle navigate with empty parameters for scoped slot and composition api
@@ -39,6 +92,7 @@ export function useLink(props: UseLinkProps) {
     route,
     href,
     isActive,
+    isExactActive,
     navigate,
   }
 }
@@ -53,10 +107,11 @@ export const Link = defineComponent({
   },
 
   setup(props, { slots, attrs }) {
-    const { route, isActive, href, navigate } = useLink(props)
+    const { route, isActive, isExactActive, href, navigate } = useLink(props)
 
     const elClass = computed(() => ({
       'router-link-active': isActive.value,
+      'router-link-exact-active': isExactActive.value,
     }))
 
     // TODO: exact active classes

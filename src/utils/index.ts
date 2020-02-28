@@ -1,6 +1,7 @@
-import { RouteLocationNormalized, RouteParams } from '../types'
+import { RouteLocationNormalized, RouteParams, Immutable } from '../types'
 import { guardToPromiseFn } from './guardToPromiseFn'
 import { RouteRecordNormalized } from '../matcher/types'
+import { LocationQueryValue } from './query'
 
 export * from './guardToPromiseFn'
 
@@ -38,7 +39,7 @@ export async function extractComponentsGuards(
 
 export function applyToParams(
   fn: (v: string) => string,
-  params: RouteParams
+  params: RouteParams | undefined
 ): RouteParams {
   const newParams: RouteParams = {}
 
@@ -48,4 +49,54 @@ export function applyToParams(
   }
 
   return newParams
+}
+
+export function isSameLocationObject(
+  a: Immutable<RouteLocationNormalized['query']>,
+  b: Immutable<RouteLocationNormalized['query']>
+): boolean
+export function isSameLocationObject(
+  a: Immutable<RouteLocationNormalized['params']>,
+  b: Immutable<RouteLocationNormalized['params']>
+): boolean
+export function isSameLocationObject(
+  a: Immutable<RouteLocationNormalized['query' | 'params']>,
+  b: Immutable<RouteLocationNormalized['query' | 'params']>
+): boolean {
+  const aKeys = Object.keys(a)
+  const bKeys = Object.keys(b)
+  if (aKeys.length !== bKeys.length) return false
+  let i = 0
+  let key: string
+  while (i < aKeys.length) {
+    key = aKeys[i]
+    if (key !== bKeys[i]) return false
+    if (!isSameLocationObjectValue(a[key], b[key])) return false
+    i++
+  }
+
+  return true
+}
+
+function isSameLocationObjectValue(
+  a: Immutable<LocationQueryValue | LocationQueryValue[]>,
+  b: Immutable<LocationQueryValue | LocationQueryValue[]>
+): boolean
+function isSameLocationObjectValue(
+  a: Immutable<RouteParams | RouteParams[]>,
+  b: Immutable<RouteParams | RouteParams[]>
+): boolean
+function isSameLocationObjectValue(
+  a: Immutable<
+    LocationQueryValue | LocationQueryValue[] | RouteParams | RouteParams[]
+  >,
+  b: Immutable<
+    LocationQueryValue | LocationQueryValue[] | RouteParams | RouteParams[]
+  >
+): boolean {
+  if (typeof a !== typeof b) return false
+  // both a and b are arrays
+  if (Array.isArray(a))
+    return a.every((value, i) => value === (b as LocationQueryValue[])[i])
+  return a === b
 }

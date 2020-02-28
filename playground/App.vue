@@ -61,7 +61,16 @@
         <a href="/documents/€">/documents/€ (force reload): not valid tho</a>
       </li>
       <li>
-        <router-link to="/">Home</router-link>
+        <router-link to="/">Home (redirects)</router-link>
+      </li>
+      <li>
+        <router-link to="/home">Home</router-link>
+      </li>
+      <li>
+        <router-link to="/nested">/nested</router-link>
+      </li>
+      <li>
+        <router-link to="/nested/nested">/nested/nested</router-link>
       </li>
       <li>
         <router-link to="/nested/nested/nested"
@@ -78,7 +87,7 @@
         <router-link
           :to="{
             name: 'user',
-            params: { id: Number(currentLocation.params.id || 0) + 1 },
+            params: { id: '' + (Number(currentLocation.params.id || 0) + 1) },
           }"
           >/users/{{ Number(currentLocation.params.id || 0) + 1 }}</router-link
         >

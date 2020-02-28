@@ -16,7 +16,7 @@ export type TODO = any
 
 export type ListenerRemover = () => void
 
-type RouteParamValue = string
+export type RouteParamValue = string
 // TODO: should we allow more values like numbers and normalize them to strings?
 // type RouteParamValueRaw = RouteParamValue | number
 export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
