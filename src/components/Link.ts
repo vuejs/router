@@ -54,7 +54,6 @@ function includesParams(
   return true
 }
 
-// TODO: what should be accepted as arguments?
 export function useLink(props: UseLinkOptions) {
   const router = inject(routerKey)!
 
@@ -107,26 +106,23 @@ export const Link = defineComponent({
   },
 
   setup(props, { slots, attrs }) {
-    const { route, isActive, isExactActive, href, navigate } = useLink(props)
+    const link = reactive(useLink(props))
 
     const elClass = computed(() => ({
-      'router-link-active': isActive.value,
-      'router-link-exact-active': isExactActive.value,
+      'router-link-active': link.isActive,
+      'router-link-exact-active': link.isExactActive,
     }))
-
-    // TODO: exact active classes
-    // TODO: handle replace prop
 
     return () => {
       return h(
         'a',
         {
           class: elClass.value,
-          onClick: navigate,
-          href: href.value,
+          onClick: link.navigate,
+          href: link.href,
           ...attrs,
         },
-        slots.default(reactive({ route, href, isActive }))
+        slots.default(link)
       )
     }
   },

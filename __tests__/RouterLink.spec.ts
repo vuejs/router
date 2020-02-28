@@ -111,19 +111,18 @@ describe('RouterLink', () => {
     expect(el.querySelector('a')!.getAttribute('href')).toBe('/home')
   })
 
-  // TODO: not sure why this breaks. We could take a look at @vue/test-runtime
-  it.skip('can change the value', async () => {
+  it('can change the value', async () => {
     const to = ref(locations.basic.string)
     const { el, router } = factory(
       START_LOCATION_NORMALIZED,
       { to },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
+    expect(el.querySelector('a')!.getAttribute('href')).toBe('/home')
     router.resolve.mockReturnValueOnce(locations.foo.normalized)
     to.value = locations.foo.string
     await tick()
-    expect(el.innerHTML).toBe('<a class="" href="/foo">a link</a>')
+    expect(el.querySelector('a')!.getAttribute('href')).toBe('/foo')
   })
 
   it('displays a link with an object with path prop', () => {
@@ -143,6 +142,10 @@ describe('RouterLink', () => {
     )
     expect(el.querySelector('a')!.className).toContain('router-link-active')
   })
+
+  it.todo('is active when a child is active')
+  it.todo('only the ')
+  it.todo('is not active if the parent is active')
 
   it('can be exact-active', () => {
     const { el } = factory(
@@ -201,6 +204,7 @@ describe('RouterLink', () => {
         route: {{ JSON.stringify(data.route) }}
         href: "{{ data.href }}"
         isActive: "{{ data.isActive }}"
+        isExactActive: "{{ data.isExactActive }}"
       </RouterLink>`,
         components: { RouterLink } as any,
         setup() {
