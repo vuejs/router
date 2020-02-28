@@ -82,7 +82,9 @@ export function stringifyQuery(query: LocationQueryRaw): string {
  * null in arrays
  * @param query
  */
-export function normalizeQuery(query: LocationQueryRaw): LocationQuery {
+export function normalizeQuery(
+  query: LocationQueryRaw | undefined
+): LocationQuery {
   const normalizedQuery: LocationQuery = {}
 
   for (let key in query) {

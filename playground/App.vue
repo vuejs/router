@@ -106,6 +106,15 @@
           >/docs/é</router-link
         >
       </li>
+      <li>
+        <router-link to="/rep">/rep</router-link>
+      </li>
+      <li>
+        <router-link to="/rep/a">/rep/a</router-link>
+      </li>
+      <li>
+        <router-link to="/rep/a/b">/rep/a/b</router-link>
+      </li>
     </ul>
     <!-- <transition
       name="fade"

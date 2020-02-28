@@ -71,6 +71,34 @@ const locations: Record<
       name: undefined,
     },
   },
+  repeatedParams2: {
+    string: '/p/1/2',
+    normalized: {
+      fullPath: '/p/1/2',
+      path: '/p/1/2',
+      params: { p: ['1', '2'] },
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.home],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+  repeatedParams3: {
+    string: '/p/1/2/3',
+    normalized: {
+      fullPath: '/p/1/2/3',
+      path: '/p/1/2/3',
+      params: { p: ['1', '2', '3'] },
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.home],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
 }
 
 describe('RouterLink', () => {
@@ -141,6 +169,24 @@ describe('RouterLink', () => {
       locations.basic.normalized
     )
     expect(el.querySelector('a')!.className).toContain('router-link-active')
+  })
+
+  it('is not active with more repeated params', () => {
+    const { el } = factory(
+      locations.repeatedParams2.normalized,
+      { to: locations.repeatedParams3.string },
+      locations.repeatedParams3.normalized
+    )
+    expect(el.querySelector('a')!.className).toBe('')
+  })
+
+  it('is not active with partial repeated params', () => {
+    const { el } = factory(
+      locations.repeatedParams3.normalized,
+      { to: locations.repeatedParams2.string },
+      locations.repeatedParams2.normalized
+    )
+    expect(el.querySelector('a')!.className).toBe('')
   })
 
   it.todo('can be active as an alias')

@@ -382,6 +382,52 @@ describe('Router', () => {
       })
     })
 
+    it('can reroute to a replaced route with the same component', async () => {
+      const { router } = await newRouter()
+      router.addRoute({
+        path: '/new/foo',
+        component: components.Foo,
+        name: 'new',
+      })
+      // navigate to the route we just added
+      await router.replace({ name: 'new' })
+      // replace it
+      router.addRoute({
+        path: '/new/bar',
+        component: components.Foo,
+        name: 'new',
+      })
+      // navigate again
+      await router.replace({ name: 'new' })
+      expect(router.currentRoute.value).toMatchObject({
+        path: '/new/bar',
+        name: 'new',
+      })
+    })
+
+    it('can reroute to child', async () => {
+      const { router } = await newRouter()
+      router.addRoute({
+        path: '/new',
+        component: components.Foo,
+        children: [],
+        name: 'new',
+      })
+      // navigate to the route we just added
+      await router.replace('/new/child')
+      // replace it
+      router.addRoute('new', {
+        path: 'child',
+        component: components.Bar,
+        name: 'new-child',
+      })
+      // navigate again
+      await router.replace('/new/child')
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'new-child',
+      })
+    })
+
     it('can reroute when adding a new route', async () => {
       const { router } = await newRouter()
       await router.push('/p/p')

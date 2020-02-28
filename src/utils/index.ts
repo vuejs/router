@@ -51,6 +51,14 @@ export function applyToParams(
   return newParams
 }
 
+export function isSameRouteRecord(
+  a: Immutable<RouteRecordNormalized>,
+  b: Immutable<RouteRecordNormalized>
+): boolean {
+  // TODO: handle aliases
+  return a === b
+}
+
 export function isSameLocationObject(
   a: Immutable<RouteLocationNormalized['query']>,
   b: Immutable<RouteLocationNormalized['query']>
@@ -97,6 +105,9 @@ function isSameLocationObjectValue(
   if (typeof a !== typeof b) return false
   // both a and b are arrays
   if (Array.isArray(a))
-    return a.every((value, i) => value === (b as LocationQueryValue[])[i])
+    return (
+      a.length === (b as any[]).length &&
+      a.every((value, i) => value === (b as LocationQueryValue[])[i])
+    )
   return a === b
 }

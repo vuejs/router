@@ -9,9 +9,8 @@ import {
   unref,
 } from 'vue'
 import { RouteLocation, RouteLocationNormalized, Immutable } from '../types'
-import { isSameLocationObject } from '../utils'
+import { isSameLocationObject, isSameRouteRecord } from '../utils'
 import { routerKey } from '../injectKeys'
-import { RouteRecordNormalized } from '../matcher/types'
 
 type VueUseOptions<T> = {
   [k in keyof T]: Ref<T[k]> | T[k]
@@ -24,35 +23,6 @@ interface LinkProps {
 }
 
 type UseLinkOptions = VueUseOptions<LinkProps>
-
-function isSameRouteRecord(
-  a: Immutable<RouteRecordNormalized>,
-  b: Immutable<RouteRecordNormalized>
-): boolean {
-  // TODO: handle aliases
-  return a === b
-}
-
-function includesParams(
-  outter: Immutable<RouteLocationNormalized['params']>,
-  inner: Immutable<RouteLocationNormalized['params']>
-): boolean {
-  for (let key in inner) {
-    let innerValue = inner[key]
-    let outterValue = outter[key]
-    if (typeof innerValue === 'string') {
-      if (innerValue !== outterValue) return false
-    } else {
-      if (
-        !Array.isArray(outterValue) ||
-        innerValue.some((value, i) => value !== outterValue[i])
-      )
-        return false
-    }
-  }
-
-  return true
-}
 
 export function useLink(props: UseLinkOptions) {
   const router = inject(routerKey)!
@@ -144,6 +114,28 @@ function guardEvent(e: MouseEvent) {
   }
   // this may be a Weex event which doesn't have this method
   if (e.preventDefault) e.preventDefault()
+
+  return true
+}
+
+function includesParams(
+  outter: Immutable<RouteLocationNormalized['params']>,
+  inner: Immutable<RouteLocationNormalized['params']>
+): boolean {
+  for (let key in inner) {
+    let innerValue = inner[key]
+    let outterValue = outter[key]
+    if (typeof innerValue === 'string') {
+      if (innerValue !== outterValue) return false
+    } else {
+      if (
+        !Array.isArray(outterValue) ||
+        outterValue.length !== innerValue.length ||
+        innerValue.some((value, i) => value !== outterValue[i])
+      )
+        return false
+    }
+  }
 
   return true
 }

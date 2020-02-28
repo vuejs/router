@@ -28,6 +28,7 @@ import {
   guardToPromiseFn,
   isSameLocationObject,
   applyToParams,
+  isSameRouteRecord,
 } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
@@ -177,7 +178,7 @@ export function createRouter({
         path: matchedRoute.path,
       }),
       hash: location.hash || '',
-      query: normalizeQuery(location.query || {}),
+      query: normalizeQuery(location.query),
       ...matchedRoute,
       redirectedFrom: undefined,
     }
@@ -197,7 +198,6 @@ export function createRouter({
     const force: boolean | undefined = to.force
 
     // TODO: should we throw an error as the navigation was aborted
-    // TODO: needs a proper check because order in query could be different
     if (!force && isSameLocation(from, toLocation)) return from
 
     toLocation.redirectedFrom = redirectedFrom
@@ -543,6 +543,8 @@ function isSameLocation(
     a.name === b.name &&
     a.path === b.path &&
     a.hash === b.hash &&
-    isSameLocationObject(a.query, b.query)
+    isSameLocationObject(a.query, b.query) &&
+    a.matched.length === b.matched.length &&
+    a.matched.every((record, i) => isSameRouteRecord(record, b.matched[i]))
   )
 }
