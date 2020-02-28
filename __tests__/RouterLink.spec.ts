@@ -143,8 +143,10 @@ describe('RouterLink', () => {
     expect(el.querySelector('a')!.className).toContain('router-link-active')
   })
 
+  it.todo('can be active as an alias')
+  it.todo('can be exact-active as an alias')
   it.todo('is active when a child is active')
-  it.todo('only the ')
+  it.todo('only the children is exact-active')
   it.todo('is not active if the parent is active')
 
   it('can be exact-active', () => {
