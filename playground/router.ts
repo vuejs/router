@@ -18,7 +18,7 @@ export const routerHistory = createWebHistory()
 export const router = createRouter({
   history: routerHistory,
   routes: [
-    { path: '/', component: Home, name: 'home', alias: '/home' },
+    { path: '/', component: Home },
     { path: '/users/:id', name: 'user', component: User },
     { path: '/documents/:id', name: 'docs', component: User },
     { path: encodeURI('/n/€'), name: 'euro', component },

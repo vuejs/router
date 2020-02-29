@@ -70,6 +70,13 @@ describe('Router', () => {
     )
   })
 
+  it('can do initial navigation to /', async () => {
+    const router = createRouter({ history: createMemoryHistory(), routes: [] })
+    expect(router.currentRoute.value).toBe(START_LOCATION_NORMALIZED)
+    await router.push('/')
+    expect(router.currentRoute.value).not.toBe(START_LOCATION_NORMALIZED)
+  })
+
   it('calls history.replace with router.replace', async () => {
     const history = createMemoryHistory()
     const { router } = await newRouter({ history })

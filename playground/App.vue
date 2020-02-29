@@ -47,7 +47,7 @@
         >
       </li>
       <li>
-        <router-link :to="{ name: 'home', query: { currency: '€uro', é: 'e' } }"
+        <router-link :to="{ path: '/', query: { currency: '€uro', é: 'e' } }"
           >/currency=€uro&é=e (object)</router-link
         >
       </li>
