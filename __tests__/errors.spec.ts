@@ -49,7 +49,9 @@ describe('Errors', () => {
     } catch (err) {
       expect(err.code).toBe(ErrorCodes.NAVIGATION_ABORTED)
     }
-    expect(onError).toHaveBeenCalledWith(expect.objectContaining({ code: ErrorCodes.NAVIGATION_ABORTED }))
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ code: ErrorCodes.NAVIGATION_ABORTED })
+    )
   })
 
   it('triggers erros caused by new navigations of a next(redirect) trigered by history', async () => {
@@ -74,7 +76,10 @@ describe('Errors', () => {
     expect(onError.mock.calls[0]).toMatchObject([
       { to: { params: { p: '1' } }, from: { fullPath: '/p/0' } },
     ])
-    expect(onError).toHaveBeenNthCalledWith(2, expect.objectContaining({ code: ErrorCodes.NAVIGATION_ABORTED}))
+    expect(onError).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ code: ErrorCodes.NAVIGATION_ABORTED })
+    )
     expect(onError.mock.calls[1]).toMatchObject([
       { to: { params: { p: '1' } }, from: { params: { p: 'other' } } },
     ])
