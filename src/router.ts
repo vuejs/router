@@ -17,11 +17,7 @@ import {
   scrollToPosition,
 } from './utils/scroll'
 import { createRouterMatcher } from './matcher'
-import {
-  NavigationCancelled,
-  NavigationGuardRedirect,
-  NavigationAborted,
-} from './errors'
+import { createRouterError, ErrorCodes } from './errors-new'
 import {
   extractComponentsGuards,
   guardToPromiseFn,
@@ -211,17 +207,21 @@ export function createRouter({
     try {
       await navigate(toLocation, from)
     } catch (error) {
-      if (NavigationGuardRedirect.is(error)) {
+      if (error.code === ErrorCodes.NAVIGATION_GUARD_REDIRECT) {
         // push was called while waiting in guards
         if (pendingLocation !== toLocation) {
-          triggerError(new NavigationCancelled(toLocation, from))
+          triggerError(
+            createRouterError(ErrorCodes.NAVIGATION_CANCELLED, from, toLocation)
+          )
         }
         // preserve the original redirectedFrom if any
         return pushWithRedirect(error.to, redirectedFrom || toLocation)
       } else {
         // TODO: write tests
         if (pendingLocation !== toLocation) {
-          triggerError(new NavigationCancelled(toLocation, from))
+          triggerError(
+            createRouterError(ErrorCodes.NAVIGATION_CANCELLED, from, toLocation)
+          )
         }
       }
       triggerError(error)
@@ -330,7 +330,10 @@ export function createRouter({
   ) {
     // a more recent navigation took place
     if (pendingLocation !== toLocation) {
-      return triggerError(new NavigationCancelled(toLocation, from), isPush)
+      return triggerError(
+        createRouterError(ErrorCodes.NAVIGATION_CANCELLED, toLocation, from),
+        isPush
+      )
     }
 
     // remove registered guards from removed matched records
@@ -376,19 +379,26 @@ export function createRouter({
       await navigate(toLocation, from)
       finalizeNavigation(toLocation, from, false)
     } catch (error) {
-      if (NavigationGuardRedirect.is(error)) {
+      if (error.code === ErrorCodes.NAVIGATION_GUARD_REDIRECT) {
         // TODO: refactor the duplication of new NavigationCancelled by
         // checking instanceof NavigationError (it's another TODO)
         // a more recent navigation took place
         if (pendingLocation !== toLocation) {
-          return triggerError(new NavigationCancelled(toLocation, from), false)
+          return triggerError(
+            createRouterError(
+              ErrorCodes.NAVIGATION_CANCELLED,
+              toLocation,
+              from
+            ),
+            false
+          )
         }
         triggerError(error, false)
 
         // the error is already handled by router.push
         // we just want to avoid logging the error
         pushWithRedirect(error.to, toLocation).catch(() => {})
-      } else if (NavigationAborted.is(error)) {
+      } else if (error.code === ErrorCodes.NAVIGATION_ABORTED) {
         console.log('Cancelled, going to', -info.distance)
         // TODO: test on different browsers ensure consistent behavior
         history.go(-info.distance, false)

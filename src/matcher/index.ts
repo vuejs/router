@@ -4,7 +4,7 @@ import {
   MatcherLocationNormalized,
   ListenerRemover,
 } from '../types'
-import { NoRouteMatchError } from '../errors'
+import { createRouterError, ErrorCodes } from '../errors-new'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './path-matcher'
 import { RouteRecordNormalized } from './types'
 import {
@@ -151,7 +151,7 @@ export function createRouterMatcher(
     if ('name' in location && location.name) {
       matcher = matcherMap.get(location.name)
 
-      if (!matcher) throw new NoRouteMatchError(location)
+      if (!matcher) throw createRouterError(ErrorCodes.NO_ROUTE_MATCH, location)
 
       name = matcher.record.name
       // TODO: merge params with current location. Should this be done by name. I think there should be some kind of relationship between the records like children of a parent should keep parent props but not the rest
@@ -177,7 +177,12 @@ export function createRouterMatcher(
       matcher = currentLocation.name
         ? matcherMap.get(currentLocation.name)
         : matchers.find(m => m.re.test(currentLocation.path))
-      if (!matcher) throw new NoRouteMatchError(location, currentLocation)
+      if (!matcher)
+        throw createRouterError(
+          ErrorCodes.NO_ROUTE_MATCH,
+          location,
+          currentLocation
+        )
       name = matcher.record.name
       params = location.params || currentLocation.params
       path = matcher.stringify(params)

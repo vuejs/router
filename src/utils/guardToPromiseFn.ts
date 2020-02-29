@@ -6,7 +6,7 @@ import {
 } from '../types'
 
 import { isRouteLocation } from '../types'
-import { NavigationGuardRedirect, NavigationAborted } from '../errors'
+import { createRouterError, ErrorCodes } from '../errors-new'
 
 export function guardToPromiseFn(
   guard: NavigationGuard,
@@ -19,9 +19,12 @@ export function guardToPromiseFn(
         valid?: boolean | RouteLocation
       ) => {
         // TODO: handle callback
-        if (valid === false) reject(new NavigationAborted(to, from))
+        if (valid === false)
+          reject(createRouterError(ErrorCodes.NAVIGATION_ABORTED, from, to))
         else if (isRouteLocation(valid)) {
-          reject(new NavigationGuardRedirect(to, valid))
+          reject(
+            createRouterError(ErrorCodes.NAVIGATION_GUARD_REDIRECT, to, valid)
+          )
         } else resolve()
       }
 
