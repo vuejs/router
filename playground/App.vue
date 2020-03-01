@@ -78,6 +78,17 @@
         >
       </li>
       <li>
+        <router-link to="/anidado">/anidado</router-link>
+      </li>
+      <li>
+        <router-link to="/anidado/nested">/anidado/nested</router-link>
+      </li>
+      <li>
+        <router-link to="/anidado/nested/nested"
+          >/anidado/nested/nested</router-link
+        >
+      </li>
+      <li>
         <router-link to="/long-0">/long-0</router-link>
       </li>
       <li>

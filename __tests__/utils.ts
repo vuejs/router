@@ -22,6 +22,7 @@ export interface RouteRecordViewLoose
     'path' | 'name' | 'components' | 'children' | 'meta' | 'beforeEnter'
   > {
   leaveGuards?: any
+  aliasOf: RouteRecordViewLoose | undefined
 }
 
 // @ts-ignore we are intentionally overriding the type

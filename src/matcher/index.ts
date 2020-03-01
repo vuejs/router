@@ -53,7 +53,6 @@ export function createRouterMatcher(
     const options: PathParserOptions = { ...globalOptions, ...record.options }
     // generate an array of records to correctly handle aliases
     const normalizedRecords: RouteRecordNormalized[] = [mainNormalizedRecord]
-    // TODO: remember aliases in records to allow active in router-link
     if ('alias' in record) {
       const aliases =
         typeof record.alias === 'string' ? [record.alias] : record.alias!
@@ -61,6 +60,7 @@ export function createRouterMatcher(
         normalizedRecords.push({
           ...mainNormalizedRecord,
           path: alias,
+          aliasOf: mainNormalizedRecord,
         })
       }
     }
@@ -131,7 +131,9 @@ export function createRouterMatcher(
     // console.log('END i is', { i })
     // while (i < matchers.length && matcher.score <= matchers[i].score) i++
     matchers.splice(i, 0, matcher)
-    if (matcher.record.name) matcherMap.set(matcher.record.name, matcher)
+    // only add the original record to the name map
+    if (matcher.record.name && !matcher.record.aliasOf)
+      matcherMap.set(matcher.record.name, matcher)
   }
 
   /**
@@ -187,6 +189,8 @@ export function createRouterMatcher(
     let parentMatcher: RouteRecordMatcher | void = matcher
     while (parentMatcher) {
       // reversed order so parents are at the beginning
+      // const { record } = parentMatcher
+      // TODO: check resolving child routes by path when parent has an alias
       matched.unshift(parentMatcher.record)
       parentMatcher = parentMatcher.parent
     }
@@ -237,6 +241,7 @@ export function normalizeRouteRecord(
     beforeEnter,
     meta: record.meta || {},
     leaveGuards: [],
+    aliasOf: undefined,
   }
 }
 

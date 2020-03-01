@@ -9,4 +9,5 @@ export interface RouteRecordNormalized {
   meta: Exclude<RouteRecordMultipleViews['meta'], void>
   beforeEnter: RouteRecordMultipleViews['beforeEnter']
   leaveGuards: NavigationGuard[]
+  aliasOf: RouteRecordNormalized | undefined
 }

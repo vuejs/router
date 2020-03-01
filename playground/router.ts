@@ -49,6 +49,7 @@ export const router = createRouter({
     { path: '/:data(.*)', component: NotFound, name: 'NotFound' },
     {
       path: '/nested',
+      alias: '/anidado',
       component: Nested,
       name: 'Nested',
       children: [
