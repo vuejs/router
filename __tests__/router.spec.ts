@@ -71,7 +71,10 @@ describe('Router', () => {
   })
 
   it('can do initial navigation to /', async () => {
-    const router = createRouter({ history: createMemoryHistory(), routes: [] })
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/', component: components.Home }],
+    })
     expect(router.currentRoute.value).toBe(START_LOCATION_NORMALIZED)
     await router.push('/')
     expect(router.currentRoute.value).not.toBe(START_LOCATION_NORMALIZED)
