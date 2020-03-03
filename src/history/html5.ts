@@ -243,7 +243,7 @@ function useHistoryStateNavigation(base: string) {
       forward: normalized,
       scroll: computeScrollPosition(),
     }
-    changeLocation(normalized, currentState, true)
+    changeLocation(currentState.current, currentState, true)
 
     const state: StateEntry = {
       ...buildState(location.value, normalized, null),
