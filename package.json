@@ -27,6 +27,20 @@
     "test": "yarn run test:types && yarn run test:unit && yarn build",
     "prepublishOnly": "yarn run build"
   },
+  "gitHooks": {
+    "pre-commit": "lint-staged",
+    "commit-msg": "node scripts/verifyCommit.js"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write",
+      "git add"
+    ]
+  },
   "peerDependencies": {
     "vue": "^3.0.0-alpha.6"
   },
@@ -41,6 +55,7 @@
     "@vue/compiler-sfc": "3.0.0-alpha.7",
     "axios": "^0.19.2",
     "browserstack-local": "^1.4.5",
+    "chalk": "^3.0.0",
     "chromedriver": "^80.0.1",
     "codecov": "^3.6.5",
     "conventional-changelog-cli": "^2.0.31",
@@ -68,6 +83,7 @@
     "vue-loader": "next",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+    "webpack-dev-server": "^3.10.3",
+    "yorkie": "^2.0.0"
   }
 }
