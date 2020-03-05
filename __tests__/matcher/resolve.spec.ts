@@ -48,7 +48,10 @@ describe('Router Matcher', () => {
           resolved.matched = record.map(normalizeRouteRecord)
         // allow passing an expect.any(Array)
         else if (Array.isArray(resolved.matched))
-          resolved.matched = resolved.matched.map(normalizeRouteRecord as any)
+          resolved.matched = resolved.matched.map(m => ({
+            ...normalizeRouteRecord(m as any),
+            aliasOf: m.aliasOf,
+          }))
       }
 
       // allows not passing params
@@ -60,7 +63,10 @@ describe('Router Matcher', () => {
 
       const startCopy = {
         ...start,
-        matched: start.matched.map(normalizeRouteRecord),
+        matched: start.matched.map(m => ({
+          ...normalizeRouteRecord(m),
+          aliasOf: m.aliasOf,
+        })),
       }
 
       // make matched non enumerable
@@ -111,6 +117,38 @@ describe('Router Matcher', () => {
                 path: '/home',
                 name: 'Home',
                 components,
+                aliasOf: expect.objectContaining({ name: 'Home', path: '/' }),
+                meta: { foo: true },
+              },
+            ],
+          }
+        )
+      })
+
+      it.todo('multiple aliases')
+      it.todo('resolve named child with parent with alias')
+
+      it('resolves the original record by name', () => {
+        assertRecordMatch(
+          {
+            path: '/',
+            alias: '/home',
+            name: 'Home',
+            components,
+            meta: { foo: true },
+          },
+          { name: 'Home' },
+          {
+            name: 'Home',
+            path: '/',
+            params: {},
+            meta: { foo: true },
+            matched: [
+              {
+                path: '/',
+                name: 'Home',
+                components,
+                aliasOf: undefined,
                 meta: { foo: true },
               },
             ],
@@ -133,7 +171,12 @@ describe('Router Matcher', () => {
             name: 'nested',
             params: {},
             matched: [
-              { path: '/p', children, components },
+              {
+                path: '/p',
+                children,
+                components,
+                aliasOf: expect.objectContaining({ path: '/parent' }),
+              },
               { path: '/p/one', name: 'nested', components },
             ],
           }

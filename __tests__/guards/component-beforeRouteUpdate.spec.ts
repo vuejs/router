@@ -1,6 +1,6 @@
 import fakePromise from 'faked-promise'
 import { NAVIGATION_TYPES, createDom, noGuard } from '../utils'
-import { createRouter as newRouter, createHistory } from '../../src'
+import { createRouter as newRouter, createWebHistory } from '../../src'
 import { RouteRecord } from '../../src/types'
 
 function createRouter(
@@ -9,7 +9,7 @@ function createRouter(
   }
 ) {
   return newRouter({
-    history: createHistory(),
+    history: createWebHistory(),
     ...options,
   })
 }

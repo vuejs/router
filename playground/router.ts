@@ -1,6 +1,7 @@
-import { createRouter, createHistory } from '../src'
+import { createRouter, createWebHistory } from '../src'
 import Home from './views/Home.vue'
 import Nested from './views/Nested.vue'
+import Dynamic from './views/Dynamic.vue'
 import User from './views/User.vue'
 import NotFound from './views/NotFound.vue'
 import component from './views/Generic.vue'
@@ -9,14 +10,15 @@ import GuardedWithLeave from './views/GuardedWithLeave.vue'
 import ComponentWithData from './views/ComponentWithData.vue'
 import { globalState } from './store'
 import { scrollWaiter } from './scrollWaiter'
+let removeRoute: (() => void) | undefined
 
 // const hist = new HTML5History()
 // const hist = new HashHistory()
-export const routerHistory = createHistory()
+export const routerHistory = createWebHistory()
 export const router = createRouter({
   history: routerHistory,
   routes: [
-    { path: '/', component: Home, name: 'home', alias: '/home' },
+    { path: '/', component: Home },
     { path: '/users/:id', name: 'user', component: User },
     { path: '/documents/:id', name: 'docs', component: User },
     { path: encodeURI('/n/€'), name: 'euro', component },
@@ -47,15 +49,38 @@ export const router = createRouter({
     { path: '/:data(.*)', component: NotFound, name: 'NotFound' },
     {
       path: '/nested',
+      alias: '/anidado',
       component: Nested,
       name: 'Nested',
       children: [
         {
           path: 'nested',
+          name: 'NestedNested',
           component: Nested,
-          children: [{ path: 'nested', component: Nested }],
+          children: [
+            {
+              name: 'NestedNestedNested',
+              path: 'nested',
+              component: Nested,
+            },
+          ],
         },
       ],
+    },
+    {
+      path: '/dynamic',
+      name: 'dynamic',
+      component: Nested,
+      options: { end: false, strict: true },
+      beforeEnter(to, from, next) {
+        if (!removeRoute) {
+          removeRoute = router.addRoute('dynamic', {
+            path: 'child',
+            component: Dynamic,
+          })
+          next(to.fullPath)
+        } else next()
+      },
     },
   ],
   async scrollBehavior(to, from, savedPosition) {

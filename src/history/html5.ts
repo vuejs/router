@@ -243,7 +243,7 @@ function useHistoryStateNavigation(base: string) {
       forward: normalized,
       scroll: computeScrollPosition(),
     }
-    changeLocation(normalized, currentState, true)
+    changeLocation(currentState.current, currentState, true)
 
     const state: StateEntry = {
       ...buildState(location.value, normalized, null),
@@ -264,7 +264,7 @@ function useHistoryStateNavigation(base: string) {
   }
 }
 
-export default function createHistory(base: string = ''): RouterHistory {
+export default function createWebHistory(base: string = ''): RouterHistory {
   const historyNavigation = useHistoryStateNavigation(base)
   const historyListeners = useHistoryListeners(
     base,

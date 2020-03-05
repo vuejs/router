@@ -47,7 +47,7 @@
         >
       </li>
       <li>
-        <router-link :to="{ name: 'home', query: { currency: '€uro', é: 'e' } }"
+        <router-link :to="{ path: '/', query: { currency: '€uro', é: 'e' } }"
           >/currency=€uro&é=e (object)</router-link
         >
       </li>
@@ -61,11 +61,31 @@
         <a href="/documents/€">/documents/€ (force reload): not valid tho</a>
       </li>
       <li>
-        <router-link to="/">Home</router-link>
+        <router-link to="/">Home (redirects)</router-link>
+      </li>
+      <li>
+        <router-link to="/home">Home</router-link>
+      </li>
+      <li>
+        <router-link to="/nested">/nested</router-link>
+      </li>
+      <li>
+        <router-link to="/nested/nested">/nested/nested</router-link>
       </li>
       <li>
         <router-link to="/nested/nested/nested"
           >/nested/nested/nested</router-link
+        >
+      </li>
+      <li>
+        <router-link to="/anidado">/anidado</router-link>
+      </li>
+      <li>
+        <router-link to="/anidado/nested">/anidado/nested</router-link>
+      </li>
+      <li>
+        <router-link to="/anidado/nested/nested"
+          >/anidado/nested/nested</router-link
         >
       </li>
       <li>
@@ -78,7 +98,7 @@
         <router-link
           :to="{
             name: 'user',
-            params: { id: Number(currentLocation.params.id || 0) + 1 },
+            params: { id: '' + (Number(currentLocation.params.id || 0) + 1) },
           }"
           >/users/{{ Number(currentLocation.params.id || 0) + 1 }}</router-link
         >
@@ -96,6 +116,15 @@
         <router-link :to="{ name: 'docs', params: { id: 'é' } }"
           >/docs/é</router-link
         >
+      </li>
+      <li>
+        <router-link to="/rep">/rep</router-link>
+      </li>
+      <li>
+        <router-link to="/rep/a">/rep/a</router-link>
+      </li>
+      <li>
+        <router-link to="/rep/a/b">/rep/a/b</router-link>
       </li>
     </ul>
     <!-- <transition

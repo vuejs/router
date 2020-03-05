@@ -11,6 +11,12 @@ import {
 import { createMemoryHistory } from '../src'
 import { mount, tick } from './mount'
 import { ref, markNonReactive } from 'vue'
+import { RouteRecordNormalized } from '../src/matcher/types'
+
+const records = {
+  home: {} as RouteRecordNormalized,
+  foo: {} as RouteRecordNormalized,
+}
 
 const locations: Record<
   string,
@@ -30,7 +36,7 @@ const locations: Record<
       meta: {},
       query: {},
       hash: '',
-      matched: [],
+      matched: [records.home],
       redirectedFrom: undefined,
       name: undefined,
     },
@@ -45,7 +51,7 @@ const locations: Record<
       meta: {},
       query: {},
       hash: '',
-      matched: [],
+      matched: [records.foo],
       redirectedFrom: undefined,
       name: undefined,
     },
@@ -60,7 +66,35 @@ const locations: Record<
       meta: {},
       query: { foo: 'a', bar: 'b' },
       hash: '',
-      matched: [],
+      matched: [records.home],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+  repeatedParams2: {
+    string: '/p/1/2',
+    normalized: {
+      fullPath: '/p/1/2',
+      path: '/p/1/2',
+      params: { p: ['1', '2'] },
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.home],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+  repeatedParams3: {
+    string: '/p/1/2/3',
+    normalized: {
+      fullPath: '/p/1/2/3',
+      path: '/p/1/2/3',
+      params: { p: ['1', '2', '3'] },
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.home],
       redirectedFrom: undefined,
       name: undefined,
     },
@@ -102,22 +136,21 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
+    expect(el.querySelector('a')!.getAttribute('href')).toBe('/home')
   })
 
-  // TODO: not sure why this breaks. We could take a look at @vue/test-runtime
-  it.skip('can change the value', async () => {
+  it('can change the value', async () => {
     const to = ref(locations.basic.string)
     const { el, router } = factory(
       START_LOCATION_NORMALIZED,
       { to },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
+    expect(el.querySelector('a')!.getAttribute('href')).toBe('/home')
     router.resolve.mockReturnValueOnce(locations.foo.normalized)
     to.value = locations.foo.string
     await tick()
-    expect(el.innerHTML).toBe('<a class="" href="/foo">a link</a>')
+    expect(el.querySelector('a')!.getAttribute('href')).toBe('/foo')
   })
 
   it('displays a link with an object with path prop', () => {
@@ -126,7 +159,7 @@ describe('RouterLink', () => {
       { to: { path: locations.basic.string } },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
+    expect(el.querySelector('a')!.getAttribute('href')).toBe('/home')
   })
 
   it('can be active', () => {
@@ -135,8 +168,41 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe(
-      '<a class="router-link-active" href="/home">a link</a>'
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+  })
+
+  it('is not active with more repeated params', () => {
+    const { el } = factory(
+      locations.repeatedParams2.normalized,
+      { to: locations.repeatedParams3.string },
+      locations.repeatedParams3.normalized
+    )
+    expect(el.querySelector('a')!.className).toBe('')
+  })
+
+  it('is not active with partial repeated params', () => {
+    const { el } = factory(
+      locations.repeatedParams3.normalized,
+      { to: locations.repeatedParams2.string },
+      locations.repeatedParams2.normalized
+    )
+    expect(el.querySelector('a')!.className).toBe('')
+  })
+
+  it.todo('can be active as an alias')
+  it.todo('can be exact-active as an alias')
+  it.todo('is active when a child is active')
+  it.todo('only the children is exact-active')
+  it.todo('is not active if the parent is active')
+
+  it('can be exact-active', () => {
+    const { el } = factory(
+      locations.basic.normalized,
+      { to: locations.basic.string },
+      locations.basic.normalized
+    )
+    expect(el.querySelector('a')!.className).toContain(
+      'router-link-exact-active'
     )
   })
 
@@ -186,6 +252,7 @@ describe('RouterLink', () => {
         route: {{ JSON.stringify(data.route) }}
         href: "{{ data.href }}"
         isActive: "{{ data.isActive }}"
+        isExactActive: "{{ data.isExactActive }}"
       </RouterLink>`,
         components: { RouterLink } as any,
         setup() {

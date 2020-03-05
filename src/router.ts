@@ -9,6 +9,7 @@ import {
   Lazy,
   TODO,
   Immutable,
+  MatcherLocationNormalized,
 } from './types'
 import { RouterHistory, parseURL, stringifyURL } from './history/common'
 import {
@@ -25,12 +26,14 @@ import {
 import {
   extractComponentsGuards,
   guardToPromiseFn,
+  isSameLocationObject,
   applyToParams,
+  isSameRouteRecord,
 } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
 import { normalizeQuery, parseQuery, stringifyQuery } from './utils/query'
-import { ref, Ref, markNonReactive, nextTick, App } from 'vue'
+import { ref, Ref, markNonReactive, nextTick, App, warn } from 'vue'
 import { RouteRecordNormalized } from './matcher/types'
 import { Link } from './components/Link'
 import { View } from './components/View'
@@ -57,6 +60,11 @@ export interface RouterOptions {
 export interface Router {
   history: RouterHistory
   currentRoute: Ref<Immutable<RouteLocationNormalized>>
+
+  addRoute(parentName: string, route: RouteRecord): () => void
+  addRoute(route: RouteRecord): () => void
+  removeRoute(name: string): void
+  getRoutes(): RouteRecordNormalized[]
 
   resolve(to: RouteLocation): RouteLocationNormalized
   createHref(to: RouteLocationNormalized): string
@@ -100,6 +108,33 @@ export function createRouter({
   const encodeParams = applyToParams.bind(null, encodeParam)
   const decodeParams = applyToParams.bind(null, decode)
 
+  function addRoute(parentOrRoute: string | RouteRecord, route?: RouteRecord) {
+    let parent: Parameters<typeof matcher['addRoute']>[1] | undefined
+    let record: RouteRecord
+    if (typeof parentOrRoute === 'string') {
+      parent = matcher.getRecordMatcher(parentOrRoute)
+      record = route!
+    } else {
+      record = parentOrRoute
+    }
+
+    return matcher.addRoute(record, parent)
+  }
+
+  function removeRoute(name: string) {
+    let recordMatcher = matcher.getRecordMatcher(name)
+    if (recordMatcher) {
+      matcher.removeRoute(recordMatcher)
+    } else if (__DEV__) {
+      // TODO: adapt if we allow Symbol as a name
+      warn(`Cannot remove non-existant route "${name}"`)
+    }
+  }
+
+  function getRoutes(): RouteRecordNormalized[] {
+    return matcher.getRoutes().map(routeMatcher => routeMatcher.record)
+  }
+
   function resolve(
     location: RouteLocation,
     currentLocation?: RouteLocationNormalized
@@ -121,23 +156,21 @@ export function createRouter({
       }
     }
 
-    const hasParams = 'params' in location
-
-    // relative or named location, path is ignored
-    // for same reason TS thinks location.params can be undefined
-    let matchedRoute = matcher.resolve(
-      hasParams
-        ? // we know we have the params attribute
-          { ...location, params: encodeParams((location as any).params) }
-        : location,
-      currentLocation
-    )
+    let matchedRoute: MatcherLocationNormalized = // relative or named location, path is ignored
+      // for same reason TS thinks location.params can be undefined
+      matcher.resolve(
+        'params' in location
+          ? { ...location, params: encodeParams(location.params) }
+          : location,
+        currentLocation
+      )
 
     // put back the unencoded params as given by the user (avoid the cost of decoding them)
-    matchedRoute.params = hasParams
-      ? // we know we have the params attribute
-        (location as any).params!
-      : decodeParams(matchedRoute.params)
+    // TODO: normalize params if we accept numbers as raw values
+    matchedRoute.params =
+      'params' in location
+        ? location.params!
+        : decodeParams(matchedRoute.params)
 
     return {
       fullPath: stringifyURL(stringifyQuery, {
@@ -145,7 +178,7 @@ export function createRouter({
         path: matchedRoute.path,
       }),
       hash: location.hash || '',
-      query: normalizeQuery(location.query || {}),
+      query: normalizeQuery(location.query),
       ...matchedRoute,
       redirectedFrom: undefined,
     }
@@ -161,14 +194,11 @@ export function createRouter({
   ): Promise<RouteLocationNormalized> {
     const toLocation: RouteLocationNormalized = (pendingLocation = resolve(to))
     const from: RouteLocationNormalized = currentRoute.value
+    // @ts-ignore: no need to check the string as force do not exist on a string
+    const force: boolean | undefined = to.force
 
     // TODO: should we throw an error as the navigation was aborted
-    // TODO: needs a proper check because order in query could be different
-    if (
-      from !== START_LOCATION_NORMALIZED &&
-      from.fullPath === toLocation.fullPath
-    )
-      return from
+    if (!force && isSameLocation(from, toLocation)) return from
 
     toLocation.redirectedFrom = redirectedFrom
 
@@ -427,12 +457,19 @@ export function createRouter({
 
   const router: Router = {
     currentRoute,
+
+    addRoute,
+    removeRoute,
+    getRoutes,
+
     push,
     replace,
     resolve,
+
     beforeEach: beforeGuards.add,
     afterEach: afterGuards.add,
     createHref,
+
     onError: errorHandlers.add,
     isReady,
 
@@ -496,4 +533,18 @@ function extractChangingRecords(
   }
 
   return [leavingRecords, updatingRecords, enteringRecords]
+}
+
+function isSameLocation(
+  a: Immutable<RouteLocationNormalized>,
+  b: Immutable<RouteLocationNormalized>
+): boolean {
+  return (
+    a.name === b.name &&
+    a.path === b.path &&
+    a.hash === b.hash &&
+    isSameLocationObject(a.query, b.query) &&
+    a.matched.length === b.matched.length &&
+    a.matched.every((record, i) => isSameRouteRecord(record, b.matched[i]))
+  )
 }
