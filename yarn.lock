@@ -712,6 +712,15 @@
     estree-walker "^0.8.1"
     source-map "^0.6.1"
 
+"@vue/compiler-core@3.0.0-alpha.7":
+  version "3.0.0-alpha.7"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-core/-/compiler-core-3.0.0-alpha.7.tgz#8e6e71134221f04ae420e76fe68feab87651fc51"
+  integrity sha512-IAhE2G2y4qqLo5D/AFxWnBeQcttnTF6kkgnmjoqTLsDAu47bmeawdJG5MViXi1yIvhYHSYjGk7dQS8wXF/63fA==
+  dependencies:
+    acorn "^7.1.0"
+    estree-walker "^0.8.1"
+    source-map "^0.6.1"
+
 "@vue/compiler-dom@3.0.0-alpha.6":
   version "3.0.0-alpha.6"
   resolved "https://registry.yarnpkg.com/@vue/compiler-dom/-/compiler-dom-3.0.0-alpha.6.tgz#dba4ac5a622de651448e6ac1aa39f4644bad545d"
@@ -719,13 +728,20 @@
   dependencies:
     "@vue/compiler-core" "3.0.0-alpha.6"
 
-"@vue/compiler-sfc@3.0.0-alpha.6":
-  version "3.0.0-alpha.6"
-  resolved "https://registry.yarnpkg.com/@vue/compiler-sfc/-/compiler-sfc-3.0.0-alpha.6.tgz#d42036f0135ccabcb054a744e0baa93f2a73af6f"
-  integrity sha512-i3SPUHHDHuyXkM+yA7SPn/JBcfnvgMhefyEuhMv3adUpjECwsjludyDCIKUw3MvITHXXRmGQ0eL5TXXaYICp/w==
+"@vue/compiler-dom@3.0.0-alpha.7":
+  version "3.0.0-alpha.7"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-dom/-/compiler-dom-3.0.0-alpha.7.tgz#ddd7f4c23e80ba67c5f40d0747cc5901ba0b6ee9"
+  integrity sha512-NsC5CcbgiXuqxsAQwj7dkB082WMHL7KhQPnf/BtD0UO5OQ3ooptEOUYCW/bPHXjOcOxuCE0PL5xn4xxD9290zg==
   dependencies:
-    "@vue/compiler-core" "3.0.0-alpha.6"
-    "@vue/compiler-dom" "3.0.0-alpha.6"
+    "@vue/compiler-core" "3.0.0-alpha.7"
+
+"@vue/compiler-sfc@3.0.0-alpha.7":
+  version "3.0.0-alpha.7"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-sfc/-/compiler-sfc-3.0.0-alpha.7.tgz#4f60b7fef97fe4b973a59316e398fe8800cfc908"
+  integrity sha512-CWksD0Vcl2z+zsYnrX2K38K9hHQU/IVjmD2zugjhLSgScNsXVFMU9DaB93oVqFEScdxeqfqj8P/56J/LbFIRPw==
+  dependencies:
+    "@vue/compiler-core" "3.0.0-alpha.7"
+    "@vue/compiler-dom" "3.0.0-alpha.7"
     consolidate "^0.15.1"
     hash-sum "^2.0.0"
     lru-cache "^5.1.1"
@@ -8580,7 +8596,7 @@ vue-loader@next:
     merge-source-map "^1.1.0"
     source-map "^0.6.1"
 
-vue@next:
+vue@^3.0.0-alpha.6:
   version "3.0.0-alpha.6"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.0.0-alpha.6.tgz#d530dd195c3aa98f5315a481d9927846151e7bd4"
   integrity sha512-cfjFcYSMKtL/xQwKTjElXpDcyqt+SvMbfcbD+hh8mMLO/htLWZP/ThmjzfAeYWeDmy0iBpTeVHQgWiKd2pctlw==
@@ -8722,10 +8738,10 @@ webpack-sources@^1.4.0, webpack-sources@^1.4.1:
     source-list-map "^2.0.0"
     source-map "~0.6.1"
 
-webpack@^4.41.6:
-  version "4.41.6"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.41.6.tgz#12f2f804bf6542ef166755050d4afbc8f66ba7e1"
-  integrity sha512-yxXfV0Zv9WMGRD+QexkZzmGIh54bsvEs+9aRWxnN8erLWEOehAKUTeNBoUbA6HPEZPlRo7KDi2ZcNveoZgK9MA==
+webpack@^4.42.0:
+  version "4.42.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.42.0.tgz#b901635dd6179391d90740a63c93f76f39883eb8"
+  integrity sha512-EzJRHvwQyBiYrYqhyjW9AqM90dE4+s1/XtCfn7uWg6cS72zH+2VPFAlsnW0+W0cDi0XRjNKUMoJtpSi50+Ph6w==
   dependencies:
     "@webassemblyjs/ast" "1.8.5"
     "@webassemblyjs/helper-module-context" "1.8.5"
