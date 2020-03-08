@@ -92,7 +92,7 @@ export const Link = defineComponent({
           href: link.href,
           ...attrs,
         },
-        slots.default(link)
+        slots.default && slots.default(link)
       )
     }
   },
