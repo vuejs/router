@@ -1,0 +1,149 @@
+# test 
+
+
+## guards
+## history
+## matcher
+## main
+- [x] encoding.spec
+  - [x] Encoding
+    - [x] params
+      - [x] does not encode safe chars
+      - [x] encodes a specific charset
+      - [x] encodes non-ascii
+      - [x] encodes non-printable ascii
+      - [x] does not encode a safe set
+    - [x] query params
+        - [x] does not encode a safe set
+        - [x] does not encode safe chars
+        - [x] encodes non-ascii
+        - [x] encodes non-printable ascii
+        - [x] encodes a specific charset
+    - [x] hash
+        - [x] does not encode a safe set
+        - [x] does not encode safe chars
+        - [x] encodes non-ascii
+        - [x] encodes non-printable ascii
+        - [x] encodes a specific charset
+- [x] error.spec
+  - [x] triggers onError when navigation is aborted
+  - [x] triggers erros caused by new navigations of a next(redirect) trigered by history
+  > typo: triggers error caused by new navigations of a next(redirect) triggered by history
+                                                                                                                                                            >
+                                                                                                                                                            >
+- [x] extractComponentsGuards.spec
+  - [x] extractComponentsGuards
+    - [x] extracts guards from one single component
+    - [x] handles mixed things
+    - [x] extracts guards from multiple components (named views)
+    - [x] handles no guards
+    
+- mount.spec
+
+- [x] parseQuery.spec
+  - [x] parseQuery
+    - [x] works with leading ?
+    - [x] works without leading ?
+    - [x] works with an empty string
+    - [x] decodes values in query
+    - [x] parses empty string values
+    - [x] decodes empty values as null
+    - [x] parses empty values as null in arrays
+    - [x] decodes array values in query
+    - [x] keep invalid values as is
+- [x] router.spec
+  - [x] Router
+    - [x] navigation
+      - [x] cancels pending in-guard navigations if a newer one is finished on push
+      - [x] cancels navigation abort if a newer one is finished on push
+      - [x] cancels pending navigations if a newer one is finished on push
+      - [x] cancels pending navigations if a newer one is finished on user navigation (from history)
+      - [x] cancels pending in-guard navigations if a newer one is finished on user navigation (from history)
+      - [x] cancels navigation abort if a newer one is finished on user navigation (from history)
+    - [x] allows base option with html5 history  
+    - [x] can be instantiated
+    - [x] Dynamic Routing
+      - [x] resolves new added routes
+      - [x] can redirect to children in the middle of navigation
+      - [x] can reroute to child
+      - [x] stops resolving removed routes
+      - [x] can reroute to a replaced route with the same component
+      - [x] can reroute when adding a new route
+      - [x] can reroute when removing route
+      - [x] can reroute when removing route through returned function
+    - [x] calls history.push with router.push
+    - [x] calls history.replace with router.replace  
+    - [x] can pass replace option to push  
+    - [x]   
+    - [x] redirectedFrom
+      - [x] adds a redirectedFrom property with a redirect in record   
+      - [x] adds a redirectedFrom property with beforeEnter
+    - [x] can do initial navigation to   
+    - [x] allows base option in abstract history  
+- :heavy_multiplication_x: RouterLink.spec
+  - `v-slot`
+    - `provides information on v-slot `
+  - `calls ensureLocation`
+  - `can be active`
+  - `can be active as an alias`
+  - `can be exact-active`
+  - `can be exact-active as an alias`
+  - `can change the value`
+  - `displays a link with a string prop`
+  - `displays a link with an object with path prop`
+  - `is active when a child is active`
+  - `is not active if the parent is active`
+  - `is not active with more repeated params`
+  - `is not active with partial repeated params`
+  - `only the children is exact-active'`
+- :heavy_multiplication_x:  RouterView.spec
+  - RouterView
+    - displays current route component
+    - displays named views
+    - displays named views
+    - displays nested views
+    - [x] displays nothing when route is unmatched
+    - renders when the location changes
+- [x] stringifyQuery.spec
+  - [x] stringifyQuery
+    - [x] stringifies multiple values
+    - [x] stringifies null values
+    - [x] stringifies null values in arrays
+    - [x] stringifies numbers
+    - [x] ignores undefined values
+    - [x] stringifies arrays 
+    - [x] encodes values
+    - [x] encodes values in arrays 
+- [x] url.spec
+  - [x] parseURL
+    - [x] works with no query no hash
+    - [x] extracts the query
+    - [x] extracts multiple query paramenters as an array 
+    - [x] extracts the hash 
+    - [x] extracts query and hash
+    - [x] calls parseQuery
+  - [x] stringifyURL
+    - [x] stringifies a hash
+    - [x] stringifies a path
+    - [x] stringifies a query with arrays
+    - [x] stringifies a query
+    - [x] stringifies a hash
+    - [x] stringifies a query and a hash
+    - [x] calls stringifyQuery
+  - [x] normalizeLocation
+    - [x] works with objects
+    - [x] works with string
+- url-encoding.spec
+  - [x] URL Encoding'
+    - [x] calls encodeParam with params object
+    - [x] calls encodeParam with relative location
+    - [x] calls encodeParam with params object with arrays
+    - [x] calls decode with a path
+    - [x] calls decode with a path with repeatable params
+    - [x] keeps decoded values in params
+    - [x] calls encodeQueryProperty with query
+    - [x] calls decode with query
+    - [x] calls encodeQueryProperty with arrays in query
+    - [x] keeps decoded values in query
+
+- utils
