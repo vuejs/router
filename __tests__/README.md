@@ -128,33 +128,38 @@
     - [x] keep invalid values as is
 - [x] router.spec
   - [x] Router
+    - [x] can be instantiated
+    - [x] calls history.push with router.push
+    - [x] can do initial navigation to /
+    - [x] calls history.replace with router.replace  
+    - [x] can pass replace option to push  
     - [x] navigation
-      - [x] cancels pending in-guard navigations if a newer one is finished on push
       - [x] cancels navigation abort if a newer one is finished on push
+      - [x] cancels pending in-guard navigations if a newer one is finished on push
       - [x] cancels pending navigations if a newer one is finished on push
       - [x] cancels pending navigations if a newer one is finished on user navigation (from history)
       - [x] cancels pending in-guard navigations if a newer one is finished on user navigation (from history)
       - [x] cancels navigation abort if a newer one is finished on user navigation (from history)
-    - [x] allows base option with html5 history  
-    - [x] can be instantiated
-    - [x] Dynamic Routing
-      - [x] resolves new added routes
-      - [x] can redirect to children in the middle of navigation
-      - [x] can reroute to child
-      - [x] stops resolving removed routes
-      - [x] can reroute to a replaced route with the same component
-      - [x] can reroute when adding a new route
-      - [x] can reroute when removing route
-      - [x] can reroute when removing route through returned function
-    - [x] calls history.push with router.push
-    - [x] calls history.replace with router.replace  
-    - [x] can pass replace option to push  
-    - [x]   
     - [x] redirectedFrom
       - [x] adds a redirectedFrom property with a redirect in record   
       - [x] adds a redirectedFrom property with beforeEnter
-    - [x] can do initial navigation to   
+    - matcher
+      - handles one redirect from route record
+      - drops query and params on redirect if not provided
+      - allows object in redirect
+      - can pass on query and hash when redirecting
     - [x] allows base option in abstract history  
+    - [x] allows base option with html5 history  
+    - [x] Dynamic Routing
+      - [x] resolves new added routes
+      - [x] can redirect to children in the middle of navigation
+      - [x] can reroute to a replaced route with the same component
+      - [x] can reroute to child
+      - [x] can reroute when adding a new route
+      - [x] stops resolving removed routes
+      - [x] can reroute when removing route
+      - [x] can reroute when removing route through returned function
+    
 - :heavy_multiplication_x: RouterLink.spec
   - `v-slot`
     - `provides information on v-slot `
