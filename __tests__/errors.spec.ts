@@ -1,5 +1,5 @@
 import { createRouter as newRouter, createMemoryHistory } from '../src'
-import { ErrorCodes } from '../src/errors-new'
+import { ErrorTypes } from '../src/errors-new'
 import { components, tick } from './utils'
 import { RouteRecord } from '../src/types'
 
@@ -47,10 +47,10 @@ describe('Errors', () => {
     try {
       await router.push('/foo')
     } catch (err) {
-      expect(err.code).toBe(ErrorCodes.NAVIGATION_ABORTED)
+      expect(err.type).toBe(ErrorTypes.NAVIGATION_ABORTED)
     }
     expect(onError).toHaveBeenCalledWith(
-      expect.objectContaining({ code: ErrorCodes.NAVIGATION_ABORTED })
+      expect.objectContaining({ type: ErrorTypes.NAVIGATION_ABORTED })
     )
   })
 
@@ -71,14 +71,14 @@ describe('Errors', () => {
     expect(onError).toHaveBeenCalledTimes(2)
     expect(onError).toHaveBeenNthCalledWith(
       1,
-      expect.objectContaining({ code: ErrorCodes.NAVIGATION_GUARD_REDIRECT })
+      expect.objectContaining({ type: ErrorTypes.NAVIGATION_GUARD_REDIRECT })
     )
     expect(onError.mock.calls[0]).toMatchObject([
       { to: { params: { p: '1' } }, from: { fullPath: '/p/0' } },
     ])
     expect(onError).toHaveBeenNthCalledWith(
       2,
-      expect.objectContaining({ code: ErrorCodes.NAVIGATION_ABORTED })
+      expect.objectContaining({ type: ErrorTypes.NAVIGATION_ABORTED })
     )
     expect(onError.mock.calls[1]).toMatchObject([
       { to: { params: { p: '1' } }, from: { params: { p: 'other' } } },

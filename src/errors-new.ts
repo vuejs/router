@@ -7,7 +7,7 @@ import {
 
 // Using string enums because error codes are exposed to developers
 // and number enums could collide with other error codes in runtime
-export enum ErrorCodes {
+export enum ErrorTypes {
   NO_ROUTE_MATCH = 'NO_ROUTE_MATCH',
   INVALID_ROUTE_MATCH = 'INVALID_ROUTE_MATCH',
   NAVIGATION_GUARD_REDIRECT = 'NAVIGATION_GUARD_REDIRECT',
@@ -16,14 +16,14 @@ export enum ErrorCodes {
 }
 
 interface RouterError {
-  code: ErrorCodes
+  type: ErrorTypes
   message: string
   from?: RouteLocation
   to?: RouteLocation
 }
 
 const ErrorTypeMessages = {
-  [ErrorCodes.NO_ROUTE_MATCH](
+  [ErrorTypes.NO_ROUTE_MATCH](
     location: MatcherLocation,
     currentLocation?: MatcherLocationNormalized
   ) {
@@ -33,12 +33,12 @@ const ErrorTypeMessages = {
         : ''
     }`
   },
-  [ErrorCodes.INVALID_ROUTE_MATCH](location: any) {
+  [ErrorTypes.INVALID_ROUTE_MATCH](location: any) {
     return `Cannot redirect using a relative location:\n${stringifyRoute(
       location
     )}\nUse the function redirect and explicitly provide a name`
   },
-  [ErrorCodes.NAVIGATION_GUARD_REDIRECT](
+  [ErrorTypes.NAVIGATION_GUARD_REDIRECT](
     from: RouteLocationNormalized,
     to: RouteLocation
   ) {
@@ -46,13 +46,13 @@ const ErrorTypeMessages = {
       to
     )}" via a navigation guard`
   },
-  [ErrorCodes.NAVIGATION_ABORTED](
+  [ErrorTypes.NAVIGATION_ABORTED](
     from: RouteLocationNormalized,
     to: RouteLocationNormalized
   ) {
     return `Navigation aborted from "${from.fullPath}" to "${to.fullPath}" via a navigation guard`
   },
-  [ErrorCodes.NAVIGATION_CANCELLED](
+  [ErrorTypes.NAVIGATION_CANCELLED](
     from: RouteLocationNormalized,
     to: RouteLocationNormalized
   ) {
@@ -60,19 +60,19 @@ const ErrorTypeMessages = {
   },
 }
 
-export function createRouterError<Code extends ErrorCodes>(
-  code: Code,
-  ...messageArgs: Parameters<typeof ErrorTypeMessages[Code]>
+export function createRouterError<Type extends ErrorTypes>(
+  type: Type,
+  ...messageArgs: Parameters<typeof ErrorTypeMessages[Type]>
 ): RouterError {
-  const message = (ErrorTypeMessages[code] as any)(...messageArgs)
+  const message = (ErrorTypeMessages[type] as any)(...messageArgs)
   const error: RouterError = {
-    code,
+    type: type,
     message,
   }
   if (
-    code === ErrorCodes.NAVIGATION_ABORTED ||
-    code === ErrorCodes.NAVIGATION_CANCELLED ||
-    code === ErrorCodes.NAVIGATION_GUARD_REDIRECT
+    type === ErrorTypes.NAVIGATION_ABORTED ||
+    type === ErrorTypes.NAVIGATION_CANCELLED ||
+    type === ErrorTypes.NAVIGATION_GUARD_REDIRECT
   ) {
     error.from = messageArgs[0]
     error.to = messageArgs[1]

@@ -1,6 +1,6 @@
 import fakePromise from 'faked-promise'
 import { createRouter, createMemoryHistory, createWebHistory } from '../src'
-import { ErrorCodes } from '../src/errors-new'
+import { ErrorTypes } from '../src/errors-new'
 import { createDom, components, tick } from './utils'
 import {
   RouteRecord,
@@ -132,7 +132,7 @@ describe('Router', () => {
       try {
         await pA
       } catch (err) {
-        expect(err.code).toBe(ErrorCodes.NAVIGATION_CANCELLED)
+        expect(err.type).toBe(ErrorTypes.NAVIGATION_CANCELLED)
       }
       expect(router.currentRoute.value.fullPath).toBe('/p/b')
     }

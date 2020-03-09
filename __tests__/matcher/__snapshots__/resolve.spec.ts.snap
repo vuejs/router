@@ -2,9 +2,9 @@
 
 exports[`Router Matcher resolve LocationAsName throws if the named route does not exists 1`] = `
 Object {
-  "code": "NO_ROUTE_MATCH",
   "message": "No match for
  {\\"name\\":\\"Home\\"}",
+  "type": "NO_ROUTE_MATCH",
 }
 `;
 
@@ -18,10 +18,10 @@ Use the function redirect and explicitely provide a name]
 
 exports[`Router Matcher resolve LocationAsRelative throws if the current named route does not exists 1`] = `
 Object {
-  "code": "NO_ROUTE_MATCH",
   "message": "No match for
  {\\"params\\":{\\"a\\":\\"foo\\"}}
 while being at
 {\\"name\\":\\"home\\",\\"params\\":{},\\"path\\":\\"/\\",\\"meta\\":{}}",
+  "type": "NO_ROUTE_MATCH",
 }
 `;
