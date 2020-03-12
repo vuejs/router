@@ -87,10 +87,10 @@ export const Link = defineComponent({
       return h(
         'a',
         {
+          ...attrs,
           class: elClass.value,
           onClick: link.navigate,
           href: link.href,
-          ...attrs,
         },
         slots.default && slots.default(link)
       )
