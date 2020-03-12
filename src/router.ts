@@ -361,6 +361,7 @@ export function createRouter({
 
   // attach listener to history to trigger navigations
   history.listen(async (to, _from, info) => {
+    // TODO: try catch to correctly log the matcher error
     const toLocation = resolve(to.fullPath)
     // console.log({ to, matchedRoute })
 
