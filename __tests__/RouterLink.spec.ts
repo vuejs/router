@@ -105,7 +105,8 @@ describe('RouterLink', () => {
   function factory(
     currentLocation: RouteLocationNormalized,
     propsData: any,
-    resolvedLocation: RouteLocationNormalized
+    resolvedLocation: RouteLocationNormalized,
+    template: string = `<RouterLink :to="to">a link</RouterLink>`
   ) {
     const router = {
       history: createMemoryHistory(),
@@ -120,7 +121,7 @@ describe('RouterLink', () => {
 
     router.resolve.mockReturnValueOnce(resolvedLocation)
     const { app, el } = mount(router as any, {
-      template: `<RouterLink :to="to">a link</RouterLink>`,
+      template,
       components: { RouterLink } as any,
       setup() {
         return { to: propsData.to }
@@ -169,6 +170,17 @@ describe('RouterLink', () => {
       locations.basic.normalized
     )
     expect(el.querySelector('a')!.className).toContain('router-link-active')
+  })
+
+  it('can be active with custom class', () => {
+    const { el } = factory(
+      locations.basic.normalized,
+      { to: locations.basic.string },
+      locations.basic.normalized,
+      `<RouterLink class="nav-item" :to="to">a link</RouterLink>`
+    )
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).toContain('nav-item')
   })
 
   it('is not active with more repeated params', () => {
