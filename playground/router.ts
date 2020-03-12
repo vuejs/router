@@ -55,6 +55,7 @@ export const router = createRouter({
       children: [
         {
           path: 'nested',
+          alias: 'a',
           name: 'NestedNested',
           component: Nested,
           children: [
