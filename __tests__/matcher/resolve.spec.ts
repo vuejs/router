@@ -156,7 +156,7 @@ describe('Router Matcher', () => {
         )
       })
 
-      it('resolves an alias with children', () => {
+      it('resolves an alias with children to the alias when using the path', () => {
         const children = [{ path: 'one', component, name: 'nested' }]
         assertRecordMatch(
           {
@@ -178,6 +178,33 @@ describe('Router Matcher', () => {
                 aliasOf: expect.objectContaining({ path: '/parent' }),
               },
               { path: '/p/one', name: 'nested', components },
+            ],
+          }
+        )
+      })
+
+      it('resolves the original path of the named children of a route with an alias', () => {
+        const children = [{ path: 'one', component, name: 'nested' }]
+        assertRecordMatch(
+          {
+            path: '/parent',
+            alias: '/p',
+            component,
+            children,
+          },
+          { name: 'nested' },
+          {
+            path: '/parent/one',
+            name: 'nested',
+            params: {},
+            matched: [
+              {
+                path: '/parent',
+                children,
+                components,
+                aliasOf: undefined,
+              },
+              { path: '/parent/one', name: 'nested', components },
             ],
           }
         )

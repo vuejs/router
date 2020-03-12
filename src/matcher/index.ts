@@ -132,7 +132,7 @@ export function createRouterMatcher(
     // while (i < matchers.length && matcher.score <= matchers[i].score) i++
     matchers.splice(i, 0, matcher)
     // only add the original record to the name map
-    if (matcher.record.name && !matcher.record.aliasOf)
+    if (matcher.record.name && !isAliasRecord(matcher))
       matcherMap.set(matcher.record.name, matcher)
   }
 
@@ -243,6 +243,19 @@ export function normalizeRouteRecord(
     leaveGuards: [],
     aliasOf: undefined,
   }
+}
+
+/**
+ * Checks if a record or any of its parent is an alias
+ * @param record
+ */
+function isAliasRecord(record: RouteRecordMatcher | undefined): boolean {
+  while (record) {
+    if (record.record.aliasOf) return true
+    record = record.parent
+  }
+
+  return false
 }
 
 export { PathParserOptions }

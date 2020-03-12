@@ -184,15 +184,19 @@ export function createRouter({
     }
   }
 
-  function push(to: RouteLocation): Promise<RouteLocationNormalized> {
+  function push(
+    to: RouteLocation | RouteLocationNormalized
+  ): Promise<RouteLocationNormalized> {
     return pushWithRedirect(to, undefined)
   }
 
   async function pushWithRedirect(
-    to: RouteLocation,
+    to: RouteLocation | RouteLocationNormalized,
     redirectedFrom: RouteLocationNormalized | undefined
   ): Promise<RouteLocationNormalized> {
-    const toLocation: RouteLocationNormalized = (pendingLocation = resolve(to))
+    const toLocation: RouteLocationNormalized = (pendingLocation =
+      // Some functions will pass a normalized location and we don't need to resolve it again
+      typeof to === 'object' && 'matched' in to ? to : resolve(to))
     const from: RouteLocationNormalized = currentRoute.value
     // @ts-ignore: no need to check the string as force do not exist on a string
     const force: boolean | undefined = to.force
@@ -222,12 +226,18 @@ export function createRouter({
       triggerError(error)
     }
 
-    finalizeNavigation(toLocation, from, true, to.replace === true)
+    finalizeNavigation(
+      toLocation,
+      from,
+      true,
+      // RouteLocationNormalized will give undefined
+      (to as RouteLocation).replace === true
+    )
 
     return currentRoute.value
   }
 
-  function replace(to: RouteLocation) {
+  function replace(to: RouteLocation | RouteLocationNormalized) {
     const location = typeof to === 'string' ? { path: to } : to
     return push({ ...location, replace: true })
   }
