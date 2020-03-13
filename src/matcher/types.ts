@@ -5,7 +5,7 @@ export interface RouteRecordNormalized {
   path: RouteRecordMultipleViews['path']
   name: RouteRecordMultipleViews['name']
   components: RouteRecordMultipleViews['components']
-  children: RouteRecordMultipleViews['children']
+  children: Exclude<RouteRecordMultipleViews['children'], void>
   meta: Exclude<RouteRecordMultipleViews['meta'], void>
   beforeEnter: RouteRecordMultipleViews['beforeEnter']
   leaveGuards: NavigationGuard[]

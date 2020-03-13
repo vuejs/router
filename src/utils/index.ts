@@ -55,11 +55,10 @@ export function isSameRouteRecord(
   a: Immutable<RouteRecordNormalized>,
   b: Immutable<RouteRecordNormalized>
 ): boolean {
-  return (
-    a === b || a.aliasOf === b || b.aliasOf === a
-    // TODO: doesn't work if not named and parent is an alias but child is not
-    // || (!!a.name && a.name === b.name)
-  )
+  // since the original record has an undefined value for aliasOf
+  // but all aliases point to the original record, this will always compare
+  // the original record
+  return (a.aliasOf || a) === (b.aliasOf || b)
 }
 
 export function isSameLocationObject(

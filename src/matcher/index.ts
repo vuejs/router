@@ -47,9 +47,12 @@ export function createRouterMatcher(
   // TODO: add routes to children of parent
   function addRoute(
     record: Readonly<RouteRecord>,
-    parent?: RouteRecordMatcher
+    parent?: RouteRecordMatcher,
+    originalRecord?: RouteRecordMatcher
   ) {
-    const mainNormalizedRecord = normalizeRouteRecord(record)
+    let mainNormalizedRecord = normalizeRouteRecord(record)
+    // we might be the child of an alias
+    mainNormalizedRecord.aliasOf = originalRecord && originalRecord.record
     const options: PathParserOptions = { ...globalOptions, ...record.options }
     // generate an array of records to correctly handle aliases
     const normalizedRecords: RouteRecordNormalized[] = [mainNormalizedRecord]
@@ -60,7 +63,10 @@ export function createRouterMatcher(
         normalizedRecords.push({
           ...mainNormalizedRecord,
           path: alias,
-          aliasOf: mainNormalizedRecord,
+          // we might be the child of an alias
+          aliasOf: originalRecord
+            ? originalRecord.record
+            : mainNormalizedRecord,
         })
       }
     }
@@ -83,10 +89,18 @@ export function createRouterMatcher(
       // create the object before hand so it can be passed to children
       matcher = createRouteRecordMatcher(normalizedRecord, parent, options)
 
-      if ('children' in record) {
-        for (const childRecord of record.children!)
-          addRoute(childRecord, matcher)
+      let children = mainNormalizedRecord.children
+      for (let i = 0; i < children.length; i++) {
+        addRoute(
+          children[i],
+          matcher,
+          originalRecord && originalRecord.children[i]
+        )
       }
+
+      // if there was no original record, then the first one was not an alias and all
+      // other alias (if any) need to reference this record when adding children
+      originalRecord = originalRecord || matcher
 
       insertMatcher(matcher)
     }
@@ -235,8 +249,8 @@ export function normalizeRouteRecord(
   return {
     path: record.path,
     components,
-    // fallback to empty array for monomorphic objects
-    children: (record as any).children,
+    // record is an object and if it has a children property, it's an array
+    children: (record as any).children || [],
     name: record.name,
     beforeEnter,
     meta: record.meta || {},

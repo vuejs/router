@@ -177,10 +177,322 @@ describe('Router Matcher', () => {
                 components,
                 aliasOf: expect.objectContaining({ path: '/parent' }),
               },
-              { path: '/p/one', name: 'nested', components },
+              {
+                path: '/p/one',
+                name: 'nested',
+                components,
+                aliasOf: expect.objectContaining({ path: '/parent/one' }),
+              },
             ],
           }
         )
+      })
+
+      describe('nested aliases', () => {
+        const children = [
+          {
+            path: 'one',
+            component,
+            name: 'nested',
+            alias: 'o',
+            children: [
+              { path: 'two', alias: 't', name: 'nestednested', component },
+            ],
+          },
+          {
+            path: 'other',
+            alias: 'otherAlias',
+            component,
+            name: 'other',
+          },
+        ]
+        const record = {
+          path: '/parent',
+          name: 'parent',
+          alias: '/p',
+          component,
+          children,
+        }
+
+        it('resolves the parent as an alias', () => {
+          assertRecordMatch(
+            record,
+            { path: '/p' },
+            expect.objectContaining({
+              path: '/p',
+              name: 'parent',
+              matched: [
+                expect.objectContaining({
+                  path: '/p',
+                  aliasOf: expect.objectContaining({ path: '/parent' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        describe('multiple children', () => {
+          // tests concerning the /parent/other path and its aliases
+
+          it('resolves the alias parent', () => {
+            assertRecordMatch(
+              record,
+              { path: '/p/other' },
+              expect.objectContaining({
+                path: '/p/other',
+                name: 'other',
+                matched: [
+                  expect.objectContaining({
+                    path: '/p',
+                    aliasOf: expect.objectContaining({ path: '/parent' }),
+                  }),
+                  expect.objectContaining({
+                    path: '/p/other',
+                    aliasOf: expect.objectContaining({ path: '/parent/other' }),
+                  }),
+                ],
+              })
+            )
+          })
+
+          it('resolves the alias child', () => {
+            assertRecordMatch(
+              record,
+              { path: '/parent/otherAlias' },
+              expect.objectContaining({
+                path: '/parent/otherAlias',
+                name: 'other',
+                matched: [
+                  expect.objectContaining({
+                    path: '/parent',
+                    aliasOf: undefined,
+                  }),
+                  expect.objectContaining({
+                    path: '/parent/otherAlias',
+                    aliasOf: expect.objectContaining({ path: '/parent/other' }),
+                  }),
+                ],
+              })
+            )
+          })
+
+          it('resolves the alias parent and child', () => {
+            assertRecordMatch(
+              record,
+              { path: '/p/otherAlias' },
+              expect.objectContaining({
+                path: '/p/otherAlias',
+                name: 'other',
+                matched: [
+                  expect.objectContaining({
+                    path: '/p',
+                    aliasOf: expect.objectContaining({ path: '/parent' }),
+                  }),
+                  expect.objectContaining({
+                    path: '/p/otherAlias',
+                    aliasOf: expect.objectContaining({ path: '/parent/other' }),
+                  }),
+                ],
+              })
+            )
+          })
+        })
+
+        it('resolves the original one with no aliases', () => {
+          assertRecordMatch(
+            record,
+            { path: '/parent/one/two' },
+            expect.objectContaining({
+              path: '/parent/one/two',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/parent',
+                  aliasOf: undefined,
+                }),
+                expect.objectContaining({
+                  path: '/parent/one',
+                  aliasOf: undefined,
+                }),
+                expect.objectContaining({
+                  path: '/parent/one/two',
+                  aliasOf: undefined,
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves when parent is an alias', () => {
+          assertRecordMatch(
+            record,
+            { path: '/p/one/two' },
+            expect.objectContaining({
+              path: '/p/one/two',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/p',
+                  aliasOf: expect.objectContaining({ path: '/parent' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/one',
+                  aliasOf: expect.objectContaining({ path: '/parent/one' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/one/two',
+                  aliasOf: expect.objectContaining({ path: '/parent/one/two' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves a different child when parent is an alias', () => {
+          assertRecordMatch(
+            record,
+            { path: '/p/other' },
+            expect.objectContaining({
+              path: '/p/other',
+              name: 'other',
+              matched: [
+                expect.objectContaining({
+                  path: '/p',
+                  aliasOf: expect.objectContaining({ path: '/parent' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/other',
+                  aliasOf: expect.objectContaining({ path: '/parent/other' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves when the first child is an alias', () => {
+          assertRecordMatch(
+            record,
+            { path: '/parent/o/two' },
+            expect.objectContaining({
+              path: '/parent/o/two',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/parent',
+                  aliasOf: undefined,
+                }),
+                expect.objectContaining({
+                  path: '/parent/o',
+                  aliasOf: expect.objectContaining({ path: '/parent/one' }),
+                }),
+                expect.objectContaining({
+                  path: '/parent/o/two',
+                  aliasOf: expect.objectContaining({ path: '/parent/one/two' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves when the second child is an alias', () => {
+          assertRecordMatch(
+            record,
+            { path: '/parent/one/t' },
+            expect.objectContaining({
+              path: '/parent/one/t',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/parent',
+                  aliasOf: undefined,
+                }),
+                expect.objectContaining({
+                  path: '/parent/one',
+                  aliasOf: undefined,
+                }),
+                expect.objectContaining({
+                  path: '/parent/one/t',
+                  aliasOf: expect.objectContaining({ path: '/parent/one/two' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves when the two last children are aliases', () => {
+          assertRecordMatch(
+            record,
+            { path: '/parent/o/t' },
+            expect.objectContaining({
+              path: '/parent/o/t',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/parent',
+                  aliasOf: undefined,
+                }),
+                expect.objectContaining({
+                  path: '/parent/o',
+                  aliasOf: expect.objectContaining({ path: '/parent/one' }),
+                }),
+                expect.objectContaining({
+                  path: '/parent/o/t',
+                  aliasOf: expect.objectContaining({ path: '/parent/one/two' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves when all are aliases', () => {
+          assertRecordMatch(
+            record,
+            { path: '/p/o/t' },
+            expect.objectContaining({
+              path: '/p/o/t',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/p',
+                  aliasOf: expect.objectContaining({ path: '/parent' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/o',
+                  aliasOf: expect.objectContaining({ path: '/parent/one' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/o/t',
+                  aliasOf: expect.objectContaining({ path: '/parent/one/two' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves when first and last are aliases', () => {
+          assertRecordMatch(
+            record,
+            { path: '/p/one/t' },
+            expect.objectContaining({
+              path: '/p/one/t',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/p',
+                  aliasOf: expect.objectContaining({ path: '/parent' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/one',
+                  aliasOf: expect.objectContaining({ path: '/parent/one' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/one/t',
+                  aliasOf: expect.objectContaining({ path: '/parent/one/two' }),
+                }),
+              ],
+            })
+          )
+        })
       })
 
       it('resolves the original path of the named children of a route with an alias', () => {
