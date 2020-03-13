@@ -8,7 +8,8 @@ describe('normalizeRouteRecord', () => {
     })
     expect(record).toEqual({
       beforeEnter: undefined,
-      children: undefined,
+      children: [],
+      aliasOf: undefined,
       components: { default: {} },
       leaveGuards: [],
       meta: {},
@@ -48,7 +49,8 @@ describe('normalizeRouteRecord', () => {
 
     expect(record).toEqual({
       beforeEnter: expect.any(Function),
-      children: undefined,
+      children: [],
+      aliasOf: undefined,
       components: {},
       leaveGuards: [],
       meta: { foo: true },
@@ -85,7 +87,8 @@ describe('normalizeRouteRecord', () => {
     })
     expect(record).toEqual({
       beforeEnter: expect.any(Function),
-      children: undefined,
+      children: [],
+      aliasOf: undefined,
       components: {},
       leaveGuards: [],
       meta: {},
