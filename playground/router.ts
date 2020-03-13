@@ -66,6 +66,12 @@ export const router = createRouter({
             },
           ],
         },
+        {
+          path: 'other',
+          alias: 'otherAlias',
+          component: Nested,
+          name: 'NestedOther',
+        },
       ],
     },
     {

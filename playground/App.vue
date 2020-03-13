@@ -70,35 +70,7 @@
         <router-link to="/nested">/nested</router-link>
       </li>
       <li>
-        <router-link to="/nested/nested">/nested/nested</router-link>
-      </li>
-      <li>
-        <router-link to="/nested/nested/nested"
-          >/nested/nested/nested</router-link
-        >
-      </li>
-      <li>
         <router-link to="/anidado">/anidado</router-link>
-      </li>
-      <li>
-        <router-link to="/anidado/nested">/anidado/nested</router-link>
-      </li>
-      <li>
-        <router-link to="/anidado/nested/nested"
-          >/anidado/nested/nested</router-link
-        >
-      </li>
-      <li>
-        <router-link to="/anidado/a">/anidado/a</router-link>
-      </li>
-      <li>
-        <router-link to="/nested/a">/nested/a</router-link>
-      </li>
-      <li>
-        <router-link to="/anidado/a/nested">/anidado/a/nested</router-link>
-      </li>
-      <li>
-        <router-link to="/nested/a/nested">/nested/a/nested</router-link>
       </li>
       <li>
         <router-link to="/long-0">/long-0</router-link>
@@ -115,9 +87,6 @@
           >/users/{{ Number(currentLocation.params.id || 0) + 1 }}</router-link
         >
       </li>
-      <!-- <li>
-          <router-link :to="{ name: 'docs' }">Doc with same id</router-link>
-        </li> -->
       <li>
         <router-link to="/with-data">/with-data</router-link>
       </li>
