@@ -5,7 +5,6 @@ import {
   RouteRecord,
   MatcherLocation,
   MatcherLocationNormalized,
-  MatcherLocationRedirect,
 } from '../../src/types'
 import { MatcherLocationNormalizedLoose } from '../utils'
 
@@ -125,8 +124,73 @@ describe('Router Matcher', () => {
         )
       })
 
-      it.todo('multiple aliases')
-      it.todo('resolve named child with parent with alias')
+      it('multiple aliases', () => {
+        const record = {
+          path: '/',
+          alias: ['/home', '/start'],
+          name: 'Home',
+          components,
+          meta: { foo: true },
+        }
+
+        assertRecordMatch(
+          record,
+          { path: '/' },
+          {
+            name: 'Home',
+            path: '/',
+            params: {},
+            meta: { foo: true },
+            matched: [
+              {
+                path: '/',
+                name: 'Home',
+                components,
+                aliasOf: undefined,
+                meta: { foo: true },
+              },
+            ],
+          }
+        )
+        assertRecordMatch(
+          record,
+          { path: '/home' },
+          {
+            name: 'Home',
+            path: '/home',
+            params: {},
+            meta: { foo: true },
+            matched: [
+              {
+                path: '/home',
+                name: 'Home',
+                components,
+                aliasOf: expect.objectContaining({ name: 'Home', path: '/' }),
+                meta: { foo: true },
+              },
+            ],
+          }
+        )
+        assertRecordMatch(
+          record,
+          { path: '/start' },
+          {
+            name: 'Home',
+            path: '/start',
+            params: {},
+            meta: { foo: true },
+            matched: [
+              {
+                path: '/start',
+                name: 'Home',
+                components,
+                aliasOf: expect.objectContaining({ name: 'Home', path: '/' }),
+                meta: { foo: true },
+              },
+            ],
+          }
+        )
+      })
 
       it('resolves the original record by name', () => {
         assertRecordMatch(
@@ -755,189 +819,6 @@ describe('Router Matcher', () => {
             meta: {},
           }
         )
-      })
-
-      // TODO: replace tests with a transformation check to the `beforeEnter` guard
-      describe.skip('redirects', () => {
-        function assertRedirect(
-          records: RouteRecord[],
-          location: MatcherLocation,
-          expected: MatcherLocationNormalized | MatcherLocationRedirect,
-          currentLocation: MatcherLocationNormalized = START_LOCATION_NORMALIZED
-        ) {
-          const matcher = createRouterMatcher(records, {})
-          const resolved = matcher.resolve(location, currentLocation)
-          expect(resolved).toEqual(expected)
-          return resolved
-        }
-
-        it('resolves a redirect string', () => {
-          const records = [
-            { path: '/home', components },
-            { path: '/redirect', redirect: '/home' },
-          ]
-          assertRedirect(
-            records,
-            {
-              name: undefined,
-              path: '/redirect',
-            },
-            {
-              redirect: '/home',
-              normalizedLocation: {
-                path: '/redirect',
-                params: {},
-                name: undefined,
-                matched: [],
-                meta: {},
-              },
-            }
-          )
-        })
-
-        it('resolves a redirect function that returns a string', () => {
-          const redirect = () => '/home'
-          const records = [
-            { path: '/home', components },
-            { path: '/redirect', redirect },
-          ]
-          assertRedirect(
-            records,
-            {
-              name: undefined,
-              path: '/redirect',
-            },
-            {
-              redirect,
-              normalizedLocation: {
-                path: '/redirect',
-                params: {},
-                name: undefined,
-                matched: [],
-                meta: {},
-              },
-            }
-          )
-        })
-
-        it('resolves a redirect function that returns an object route', () => {
-          const redirect = () => {
-            path: '/home'
-          }
-          const records = [
-            { path: '/home', components },
-            { path: '/redirect', redirect },
-          ]
-          assertRedirect(
-            records,
-            {
-              name: undefined,
-              path: '/redirect',
-            },
-            {
-              redirect,
-              normalizedLocation: {
-                path: '/redirect',
-                params: {},
-                name: undefined,
-                matched: [],
-                meta: {},
-              },
-            }
-          )
-        })
-
-        it('resolves a redirect as an object', () => {
-          const records = [
-            { path: '/home', components },
-            { path: '/redirect', redirect: { path: 'home' } },
-          ]
-          assertRedirect(
-            records,
-            {
-              name: undefined,
-              path: '/redirect',
-            },
-            {
-              redirect: { path: 'home' },
-              normalizedLocation: {
-                path: '/redirect',
-                params: {},
-                name: undefined,
-                matched: [],
-                meta: {},
-              },
-            }
-          )
-        })
-
-        it('works with a named location', () => {
-          const records = [
-            { path: '/home', components },
-            { path: '/redirect', name: 'redirect', redirect: { path: 'home' } },
-          ]
-          assertRedirect(
-            records,
-            {
-              name: 'redirect',
-            },
-            {
-              redirect: { path: 'home' },
-              normalizedLocation: {
-                path: '/redirect',
-                params: {},
-                name: 'redirect',
-                matched: [],
-                meta: {},
-              },
-            }
-          )
-        })
-
-        it('throws if relative location when redirecting', () => {
-          expect(
-            assertErrorMatch(
-              { path: '/redirect', redirect: '/home' },
-              { params: {} },
-              {
-                path: '/redirect',
-                params: {},
-                matched: [],
-                name: undefined,
-                meta: {},
-              }
-            )
-          ).toMatchSnapshot()
-        })
-
-        it('normalize a location when redirecting', () => {
-          const redirect = (to: any) => ({ name: 'b', params: to.params })
-          const records = [
-            { path: '/home', components },
-            {
-              path: '/a/:a',
-              name: 'a',
-              redirect,
-            },
-            { path: '/b/:a', name: 'b', components },
-          ]
-          assertRedirect(
-            records,
-            {
-              path: '/a/foo',
-            },
-            {
-              redirect,
-              normalizedLocation: {
-                path: '/a/foo',
-                params: { a: 'foo' },
-                name: 'a',
-                matched: [],
-                meta: {},
-              },
-            }
-          )
-        })
       })
 
       it('throws if the current named route does not exists', () => {
