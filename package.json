@@ -5,16 +5,18 @@
   "browser": "dist/vue-router.esm.js",
   "unpkg": "dist/vue-router.js",
   "module": "dist/vue-router.esm-bundler.js",
-  "types": "dist/src/index.d.ts",
+  "types": "dist/vue-router.d.ts",
   "sideEffects": false,
   "license": "MIT",
   "files": [
-    "dist",
+    "dist/*.js",
+    "dist/vue-router.d.ts",
     "playground",
     "README.md"
   ],
   "scripts": {
     "build": "yarn rollup -c rollup.config.js",
+    "build:dts": "yarn rollup -c rollup.config.js",
     "dev": "webpack-dev-server --mode=development",
     "release": "bash scripts/release.sh",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 2",
@@ -25,12 +27,13 @@
     "test:types": "tsc --build tsconfig.json",
     "test:unit": "jest --coverage",
     "test": "yarn run test:types && yarn run test:unit && yarn build",
-    "prepublishOnly": "yarn run build"
+    "prepublishOnly": "yarn run build && yarn run build:dts"
   },
   "peerDependencies": {
     "vue": "^3.0.0-alpha.6"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.7.8",
     "@rollup/plugin-alias": "^3.0.1",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@rollup/plugin-replace": "^2.3.1",
