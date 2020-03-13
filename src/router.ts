@@ -87,10 +87,7 @@ export function createRouter({
   routes,
   scrollBehavior,
 }: RouterOptions): Router {
-  const matcher: ReturnType<typeof createRouterMatcher> = createRouterMatcher(
-    routes,
-    {}
-  )
+  const matcher = createRouterMatcher(routes, {})
 
   const beforeGuards = useCallbacks<NavigationGuard>()
   const afterGuards = useCallbacks<PostNavigationGuard>()
