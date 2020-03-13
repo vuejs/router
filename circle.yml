@@ -69,6 +69,7 @@ jobs:
 
   coverage:
     <<: *defaults
+    steps:
       - run:
           name: Send code coverage
           command: yarn run codecov
