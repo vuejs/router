@@ -70,6 +70,8 @@ jobs:
   coverage:
     <<: *defaults
     steps:
+      - attach_workspace:
+          at: ~/project
       - run:
           name: Send code coverage
           command: yarn run codecov
