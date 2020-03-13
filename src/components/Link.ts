@@ -87,10 +87,11 @@ export const Link = defineComponent({
       return h(
         'a',
         {
-          ...attrs,
-          class: elClass.value,
+          'aria-current': link.isExactActive ? 'page' : null,
           onClick: link.navigate,
           href: link.href,
+          ...attrs,
+          class: elClass.value,
         },
         slots.default && slots.default(link)
       )
