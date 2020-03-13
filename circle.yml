@@ -2,40 +2,95 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
+version: 2.0
+
+defaults: &defaults
+  working_directory: ~/project/vue-router
+  docker:
+    - image: circleci/node:lts-browsers
 
 jobs:
-  build:
-    docker:
-      - image: circleci/node:lts-browsers
-
-    working_directory: ~/repo
-
+  install:
+    <<: *defaults
     steps:
       - checkout
-
       - restore_cache:
           keys:
-            - dependencies-cache-{{ checksum "yarn.lock" }}
-            # fallback to using the latest cache if no exact match is found
-            - dependencies-cache-
-
+            - v1-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - v1-dependencies-cache-{{ .Branch }}-
+            - v1-dependencies-cache-
       - run: yarn install
-
       - save_cache:
+          key: v1-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
-          key: dependencies-cache-{{ checksum "yarn.lock" }}
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - vue-router
 
-      - run: yarn run lint
-      - run: yarn run test:types
-      - run: yarn run build
-      - run: yarn run build:dts
-      - run: yarn run test:tsd
-      - run: yarn run test:unit --maxWorkers=2
+  build-e2e:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/project
       - run: yarn run build:e2e
-      - run: yarn run test:e2e:ci
+      - store_artifacts:
+          path: e2e/__build__
 
+  test-unit:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run: yarn test:unit  --maxWorkers=2
+      - store_artifacts:
+          path: coverage
+
+  test-e2e:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run: yarn test:e2e
+      - store_artifacts:
+          path: coverage
+
+  build-lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run: yarn lint
+      - run: yarn test:types
+      - run: yarn build
+      - run: yarn build:dts
+      - run: yarn run test:tsd
+
+  coverage:
+    <<: *defaults
       - run:
           name: Send code coverage
           command: yarn run codecov
+
+workflows:
+  version: 2
+  install-and-parallel-test:
+    jobs:
+      - install
+      - build-lint:
+          requires:
+            - install
+      - build-e2e:
+          requires:
+            - install
+      - test-unit:
+          requires:
+            - install
+      - test-e2e:
+          requires:
+            - build-e2e
+      - coverage:
+          requires:
+            - build
+            - test-unit
