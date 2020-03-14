@@ -1,3 +1,7 @@
+# [4.0.0-alpha.3](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.2...v4.0.0-alpha.3) (2020-03-14)
+
+
+
 # [4.0.0-alpha.2](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.1...v4.0.0-alpha.2) (2020-03-14)
 
 
