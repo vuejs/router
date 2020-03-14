@@ -34,6 +34,26 @@ const routes: RouteRecord[] = [
       hash: to.hash + '-2',
     }),
   },
+  {
+    path: '/basic',
+    alias: '/basic-alias',
+    component: components.Foo,
+  },
+  {
+    path: '/aliases',
+    alias: ['/aliases1', '/aliases2'],
+    component: components.Nested,
+    children: [
+      {
+        path: 'one',
+        alias: ['o', 'o2'],
+        component: components.Foo,
+        children: [
+          { path: 'two', alias: ['t', 't2'], component: components.Bar },
+        ],
+      },
+    ],
+  },
 ]
 
 async function newRouter({ history }: { history?: RouterHistory } = {}) {
@@ -109,6 +129,55 @@ describe('Router', () => {
         hash: '',
       })
     )
+  })
+
+  // FIXME:
+  it.skip('navigates if the location does not exist', async () => {
+    const { router } = await newRouter()
+    const spy = jest.fn((to, from, next) => next())
+    router.beforeEach(spy)
+    await router.push('/idontexist')
+    spy.mockReset()
+    await router.push('/me-neither')
+    expect(spy).not.toHaveBeenCalled()
+  })
+
+  describe('alias', () => {
+    it('does not navigate to alias if already on original record', async () => {
+      const { router } = await newRouter()
+      const spy = jest.fn((to, from, next) => next())
+      router.beforeEach(spy)
+      await router.push('/basic')
+      spy.mockReset()
+      await router.push('/basic-alias')
+      expect(spy).not.toHaveBeenCalled()
+    })
+
+    it('does not navigate to alias with children if already on original record', async () => {
+      const { router } = await newRouter()
+      const spy = jest.fn((to, from, next) => next())
+      router.beforeEach(spy)
+      await router.push('/aliases')
+      spy.mockReset()
+      await router.push('/aliases1')
+      expect(spy).not.toHaveBeenCalled()
+      await router.push('/aliases2')
+      expect(spy).not.toHaveBeenCalled()
+    })
+
+    it('does not navigate to child alias if already on original record', async () => {
+      const { router } = await newRouter()
+      const spy = jest.fn((to, from, next) => next())
+      router.beforeEach(spy)
+      await router.push('/aliases/one')
+      spy.mockReset()
+      await router.push('/aliases1/one')
+      expect(spy).not.toHaveBeenCalled()
+      await router.push('/aliases2/one')
+      expect(spy).not.toHaveBeenCalled()
+      await router.push('/aliases2/o')
+      expect(spy).not.toHaveBeenCalled()
+    })
   })
 
   describe('navigation', () => {

@@ -26,9 +26,9 @@ import {
 import {
   extractComponentsGuards,
   guardToPromiseFn,
-  isSameLocationObject,
   applyToParams,
   isSameRouteRecord,
+  isSameLocationObject,
 } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
@@ -199,7 +199,7 @@ export function createRouter({
     const force: boolean | undefined = to.force
 
     // TODO: should we throw an error as the navigation was aborted
-    if (!force && isSameLocation(from, toLocation)) return from
+    if (!force && isSameRouteLocation(from, toLocation)) return from
 
     toLocation.redirectedFrom = redirectedFrom
 
@@ -543,16 +543,31 @@ function extractChangingRecords(
   return [leavingRecords, updatingRecords, enteringRecords]
 }
 
-function isSameLocation(
-  a: Immutable<RouteLocationNormalized>,
-  b: Immutable<RouteLocationNormalized>
+// function isSameLocation(
+//   a: Immutable<RouteLocationNormalized>,
+//   b: Immutable<RouteLocationNormalized>
+// ): boolean {
+//   return (
+//     a.name === b.name &&
+//     a.path === b.path &&
+//     a.hash === b.hash &&
+//     isSameLocationObject(a.query, b.query) &&
+//     a.matched.length === b.matched.length &&
+//     a.matched.every((record, i) => isSameRouteRecord(record, b.matched[i]))
+//   )
+// }
+
+function isSameRouteLocation(
+  a: RouteLocationNormalized,
+  b: RouteLocationNormalized
 ): boolean {
+  let aLastIndex = a.matched.length - 1
+  let bLastIndex = b.matched.length - 1
+
   return (
-    a.name === b.name &&
-    a.path === b.path &&
-    a.hash === b.hash &&
-    isSameLocationObject(a.query, b.query) &&
-    a.matched.length === b.matched.length &&
-    a.matched.every((record, i) => isSameRouteRecord(record, b.matched[i]))
+    aLastIndex > -1 &&
+    aLastIndex === bLastIndex &&
+    isSameRouteRecord(a.matched[aLastIndex], b.matched[bLastIndex]) &&
+    isSameLocationObject(a.params, b.params)
   )
 }
