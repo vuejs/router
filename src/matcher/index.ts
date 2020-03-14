@@ -13,6 +13,8 @@ import {
   PathParserOptions,
 } from './path-parser-ranker'
 
+let noop = () => {}
+
 interface RouterMatcher {
   addRoute: (
     record: RouteRecord,
@@ -72,6 +74,7 @@ export function createRouterMatcher(
     }
 
     let matcher: RouteRecordMatcher
+    let originalMatcher: RouteRecordMatcher | undefined
 
     for (const normalizedRecord of normalizedRecords) {
       let { path } = normalizedRecord
@@ -89,6 +92,16 @@ export function createRouterMatcher(
       // create the object before hand so it can be passed to children
       matcher = createRouteRecordMatcher(normalizedRecord, parent, options)
 
+      // if we are an alias we must tell the original record that we exist
+      // so we can be removed
+      if (originalRecord) {
+        originalRecord.alias.push(matcher)
+      } else {
+        // otherwise, the first record is the original and others are aliases
+        originalMatcher = originalMatcher || matcher
+        if (originalMatcher !== matcher) originalMatcher.alias.push(matcher)
+      }
+
       let children = mainNormalizedRecord.children
       for (let i = 0; i < children.length; i++) {
         addRoute(
@@ -105,20 +118,22 @@ export function createRouterMatcher(
       insertMatcher(matcher)
     }
 
-    return () => {
-      // since other matchers are aliases, they should should be removed by any of the matchers
-      removeRoute(matcher)
-    }
+    return originalMatcher
+      ? () => {
+          // since other matchers are aliases, they should be removed by the original matcher
+          removeRoute(originalMatcher!)
+        }
+      : noop
   }
 
   function removeRoute(matcherRef: string | RouteRecordMatcher) {
-    // TODO: remove aliases (needs to keep them in the RouteRecordMatcher first)
     if (typeof matcherRef === 'string') {
       const matcher = matcherMap.get(matcherRef)
       if (matcher) {
         matcherMap.delete(matcherRef)
         matchers.splice(matchers.indexOf(matcher), 1)
         matcher.children.forEach(removeRoute)
+        matcher.alias.forEach(removeRoute)
       }
     } else {
       let index = matchers.indexOf(matcherRef)
@@ -126,6 +141,7 @@ export function createRouterMatcher(
         matchers.splice(index, 1)
         if (matcherRef.record.name) matcherMap.delete(matcherRef.record.name)
         matcherRef.children.forEach(removeRoute)
+        matcherRef.alias.forEach(removeRoute)
       }
     }
   }

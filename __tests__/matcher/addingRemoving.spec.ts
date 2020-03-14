@@ -60,8 +60,70 @@ describe('normalizeRouteRecord', () => {
       })
     })
 
-    it.todo('remove aliases')
-    it.todo('remove aliases children')
+    it('remove aliases', () => {
+      const matcher = createRouterMatcher([], {})
+      const remove = matcher.addRoute({
+        path: '/',
+        component,
+        name: 'home',
+        alias: ['/home', '/start'],
+      })
+      remove()
+      expect(matcher.resolve({ path: '/' }, currentLocation)).toMatchObject({
+        path: '/',
+        name: undefined,
+        matched: [],
+      })
+      expect(matcher.resolve({ path: '/home' }, currentLocation)).toMatchObject(
+        {
+          path: '/home',
+          name: undefined,
+          matched: [],
+        }
+      )
+      expect(
+        matcher.resolve({ path: '/start' }, currentLocation)
+      ).toMatchObject({
+        path: '/start',
+        name: undefined,
+        matched: [],
+      })
+    })
+
+    it('remove aliases children', () => {
+      const matcher = createRouterMatcher([], {})
+      const remove = matcher.addRoute({
+        path: '/',
+        component,
+        name: 'home',
+        alias: ['/home', '/start'],
+        children: [
+          {
+            path: 'one',
+            alias: ['o, o2'],
+            component,
+            children: [{ path: 'two', alias: ['t', 't2'], component }],
+          },
+        ],
+      })
+      remove()
+      ;[
+        '/',
+        '/start',
+        '/home',
+        '/one/two',
+        '/start/one/two',
+        '/home/o/two',
+        '/home/one/t2',
+        '/o2/t',
+      ].forEach(path => {
+        expect(matcher.resolve({ path }, currentLocation)).toMatchObject({
+          path,
+          name: undefined,
+          matched: [],
+        })
+      })
+    })
 
     it('remove children when removing the parent', () => {
       const matcher = createRouterMatcher([], {})
@@ -176,7 +238,95 @@ describe('normalizeRouteRecord', () => {
     expect(matcher.getRecordMatcher('child')).toBe(undefined)
   })
 
-  it.todo('removes alias by name')
+  it('removes alias (and original) by name', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({
+      path: '/',
+      alias: '/start',
+      component,
+      name: 'home',
+    })
 
-  it.todo('removes children alias by name')
+    matcher.removeRoute('home')
+
+    expect(matcher.resolve({ path: '/start' }, currentLocation)).toMatchObject({
+      name: undefined,
+      matched: [],
+    })
+  })
+
+  it('removes all children alias when removing parent by name', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({
+      path: '/',
+      alias: ['/start', '/home'],
+      component,
+      name: 'home',
+      children: [
+        {
+          path: 'one',
+          alias: ['o', 'o2'],
+          component,
+          children: [{ path: 'two', alias: ['t', 't2'], component }],
+        },
+      ],
+    })
+
+    matcher.removeRoute('home')
+    ;[
+      '/',
+      '/start',
+      '/home',
+      '/one/two',
+      '/start/one/two',
+      '/home/o/two',
+      '/home/one/t2',
+      '/o2/t',
+    ].forEach(path => {
+      expect(matcher.resolve({ path }, currentLocation)).toMatchObject({
+        path,
+        name: undefined,
+        matched: [],
+      })
+    })
+  })
+
+  it('removes children alias (and original) by name', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({
+      path: '/',
+      alias: '/start',
+      component,
+      name: 'home',
+      children: [{ path: 'about', alias: 'two', name: 'child', component }],
+    })
+
+    matcher.removeRoute('child')
+
+    expect(matcher.resolve({ path: '/about' }, currentLocation)).toMatchObject({
+      name: undefined,
+      matched: [],
+    })
+
+    expect(matcher.resolve({ path: '/two' }, currentLocation)).toMatchObject({
+      name: undefined,
+      matched: [],
+    })
+
+    expect(
+      matcher.resolve({ path: '/start/about' }, currentLocation)
+    ).toMatchObject({
+      name: undefined,
+      matched: [],
+    })
+
+    expect(
+      matcher.resolve({ path: '/start/two' }, currentLocation)
+    ).toMatchObject({
+      name: undefined,
+      matched: [],
+    })
+
+    expect(matcher.getRecordMatcher('child')).toBe(undefined)
+  })
 })

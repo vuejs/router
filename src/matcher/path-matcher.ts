@@ -10,6 +10,8 @@ export interface RouteRecordMatcher extends PathParser {
   record: RouteRecordNormalized
   parent: RouteRecordMatcher | undefined
   children: RouteRecordMatcher[]
+  // aliases that must be removed when removing this record
+  alias: RouteRecordMatcher[]
 }
 
 export function createRouteRecordMatcher(
@@ -25,6 +27,7 @@ export function createRouteRecordMatcher(
     parent,
     // these needs to be populated by the parent
     children: [],
+    alias: [],
   }
 
   if (parent) {
