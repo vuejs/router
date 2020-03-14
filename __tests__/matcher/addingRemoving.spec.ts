@@ -299,6 +299,10 @@ describe('normalizeRouteRecord', () => {
       '/x2/zzz',
       '/x2/z',
       '/x2/z2',
+      '/start/xxx/yyy',
+      '/home/xxx/yyy',
+      '/home/xxx/z2',
+      '/home/x2/z2',
     ].forEach(path => {
       expect(matcher.resolve({ path }, currentLocation)).toMatchObject({
         path,
