@@ -1,6 +1,6 @@
 {
   "name": "vue-router",
-  "version": "4.0.0-alpha.2",
+  "version": "4.0.0-alpha.3",
   "main": "dist/vue-router.cjs.js",
   "browser": "dist/vue-router.esm.js",
   "unpkg": "dist/vue-router.js",
