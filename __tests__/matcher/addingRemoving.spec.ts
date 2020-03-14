@@ -269,6 +269,15 @@ describe('normalizeRouteRecord', () => {
           component,
           children: [{ path: 'two', alias: ['t', 't2'], component }],
         },
+        {
+          path: 'xxx',
+          alias: ['x', 'x2'],
+          component,
+          children: [
+            { path: 'yyy', alias: ['y', 'y2'], component },
+            { path: 'zzz', alias: ['z', 'z2'], component },
+          ],
+        },
       ],
     })
 
@@ -282,6 +291,14 @@ describe('normalizeRouteRecord', () => {
       '/home/o/two',
       '/home/one/t2',
       '/o2/t',
+      '/xxx/yyy',
+      '/x/yyy',
+      '/x2/yyy',
+      '/x2/y',
+      '/x2/y2',
+      '/x2/zzz',
+      '/x2/z',
+      '/x2/z2',
     ].forEach(path => {
       expect(matcher.resolve({ path }, currentLocation)).toMatchObject({
         path,
