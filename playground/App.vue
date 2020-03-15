@@ -114,7 +114,14 @@
       @before-enter="flushWaiter"
       @before-leave="setupWaiter"
     > -->
-    <router-view></router-view>
+    <Suspense>
+      <template #default>
+        <router-view></router-view>
+      </template>
+      <template #fallback>
+        Loading...
+      </template>
+    </Suspense>
     <!-- </transition> -->
   </div>
 </template>

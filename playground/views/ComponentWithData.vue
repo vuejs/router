@@ -1,23 +1,31 @@
 <template>
   <div>
-    <p>Here is the data: {{ data }}</p>
+    <p>Here is the data: {{ fromApi }}</p>
+    other {{ other }}
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, toRefs, reactive, inject } from 'vue'
+import { getData, delay } from '../api'
 
 export default defineComponent({
   name: 'ComponentWithData',
-  data: () => ({ data: 'nope' }),
-  beforeRouteEnter(to, from, next) {
-    // console.log('this in beforeRouteEnter', this)
-    // setTimeout(() => {
-    // next(vm => {
-    //   // console.log('got vm', vm)
-    //   vm.data = 'Hola'
-    // })
-    // }, 300)
+  async setup() {
+    const data = reactive({ other: null })
+    data.fromApi = await getData()
+
+    return {
+      ...toRefs(data),
+    }
+  },
+  async beforeRouteEnter(to, from, next) {
+    console.log('this in beforeRouteEnter', this)
+    await delay(300)
+    next(vm => {
+      console.log('got vm', vm)
+      vm.other = 'Hola'
+    })
   },
 })
 </script>
