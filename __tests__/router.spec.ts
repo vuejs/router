@@ -368,7 +368,7 @@ describe('Router', () => {
   it('allows base option in abstract history', async () => {
     const history = createMemoryHistory('/app/')
     const router = createRouter({ history, routes })
-    expect(router.currentRoute.value).toEqual({
+    expect(router.currentRoute.value).toMatchObject({
       name: undefined,
       fullPath: '/',
       hash: '',
@@ -391,7 +391,7 @@ describe('Router', () => {
   it('allows base option with html5 history', async () => {
     const history = createWebHistory('/app/')
     const router = createRouter({ history, routes })
-    expect(router.currentRoute.value).toEqual({
+    expect(router.currentRoute.value).toMatchObject({
       name: undefined,
       fullPath: '/',
       hash: '',

@@ -15,6 +15,8 @@ export default defineComponent({
     const data = reactive({ other: null })
     data.fromApi = await getData()
 
+    // TODO: add sample with onBeforeRouteUpdate()
+
     return {
       ...toRefs(data),
     }

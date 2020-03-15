@@ -15,6 +15,7 @@ describe('normalizeRouteRecord', () => {
       meta: {},
       name: undefined,
       path: '/home',
+      props: false,
     })
   })
 
@@ -36,6 +37,7 @@ describe('normalizeRouteRecord', () => {
       meta: { foo: true },
       name: 'name',
       path: '/home',
+      props: false,
     })
   })
 
@@ -56,6 +58,7 @@ describe('normalizeRouteRecord', () => {
       meta: { foo: true },
       name: 'name',
       path: '/redirect',
+      props: false,
     })
   })
 
@@ -77,6 +80,7 @@ describe('normalizeRouteRecord', () => {
       meta: { foo: true },
       name: 'name',
       path: '/home',
+      props: false,
     })
   })
 
@@ -94,6 +98,7 @@ describe('normalizeRouteRecord', () => {
       meta: {},
       name: undefined,
       path: '/redirect',
+      props: false,
     })
   })
 
