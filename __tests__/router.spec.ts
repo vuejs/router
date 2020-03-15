@@ -7,7 +7,6 @@ import {
   RouteLocation,
   START_LOCATION_NORMALIZED,
 } from '../src/types'
-import { RouterHistory } from '../src/history/common'
 
 const routes: RouteRecord[] = [
   { path: '/', component: components.Home, name: 'home' },
@@ -37,7 +36,6 @@ const routes: RouteRecord[] = [
 ]
 
 async function newRouter({ history, ...args }: Partial<Parameters<typeof createRouter>[0]> = {}) {
-// async function newRouter({ history }: { history?: RouterHistory } = {}) {
   history = history || createMemoryHistory()
   const router = createRouter({ history, routes, ...args })
   await router.push('/')
@@ -74,7 +72,7 @@ describe('Router', () => {
   it('can allows the end use to override parseQuery', async () => {
     const customQueryParser = jest.fn()
     const { router } = await newRouter({ parseQuery: customQueryParser })
-    router.resolve('/foo')
+    router.resolve('/foo?bar=baz')
     expect(customQueryParser).toHaveBeenCalled()
   })
 
