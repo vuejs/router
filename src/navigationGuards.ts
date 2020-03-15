@@ -1,6 +1,7 @@
 import { NavigationGuard } from './types'
 import { inject, getCurrentInstance, warn } from 'vue'
 import { matchedRouteKey } from './components/View'
+import { RouteRecordNormalized } from './matcher/types'
 
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
   const instance = getCurrentInstance()
@@ -10,15 +11,19 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
     return
   }
 
-  // TODO: fix wrong type
-  const matched = inject(matchedRouteKey, {} as any).value
+  const activeRecord: RouteRecordNormalized | undefined = inject(
+    matchedRouteKey,
+    {} as any
+  ).value
 
-  if (!matched) {
+  if (!activeRecord) {
     __DEV__ &&
       warn('onRouteLeave must be called at the top of a setup function')
     return
   }
 
-  // @ts-ignore
-  matched.leaveGuards.push(leaveGuard.bind(instance.proxy))
+  activeRecord.leaveGuards.push(
+    // @ts-ignore do we even want to allow that? Passing the context in a composition api hook doesn't make sense
+    leaveGuard.bind(instance.proxy)
+  )
 }
