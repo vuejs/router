@@ -26,9 +26,9 @@ import {
 import {
   extractComponentsGuards,
   guardToPromiseFn,
-  isSameLocationObject,
   applyToParams,
   isSameRouteRecord,
+  isSameLocationObject,
 } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
@@ -87,10 +87,7 @@ export function createRouter({
   routes,
   scrollBehavior,
 }: RouterOptions): Router {
-  const matcher: ReturnType<typeof createRouterMatcher> = createRouterMatcher(
-    routes,
-    {}
-  )
+  const matcher = createRouterMatcher(routes, {})
 
   const beforeGuards = useCallbacks<NavigationGuard>()
   const afterGuards = useCallbacks<PostNavigationGuard>()
@@ -184,21 +181,25 @@ export function createRouter({
     }
   }
 
-  function push(to: RouteLocation): Promise<RouteLocationNormalized> {
+  function push(
+    to: RouteLocation | RouteLocationNormalized
+  ): Promise<RouteLocationNormalized> {
     return pushWithRedirect(to, undefined)
   }
 
   async function pushWithRedirect(
-    to: RouteLocation,
+    to: RouteLocation | RouteLocationNormalized,
     redirectedFrom: RouteLocationNormalized | undefined
   ): Promise<RouteLocationNormalized> {
-    const toLocation: RouteLocationNormalized = (pendingLocation = resolve(to))
+    const toLocation: RouteLocationNormalized = (pendingLocation =
+      // Some functions will pass a normalized location and we don't need to resolve it again
+      typeof to === 'object' && 'matched' in to ? to : resolve(to))
     const from: RouteLocationNormalized = currentRoute.value
     // @ts-ignore: no need to check the string as force do not exist on a string
     const force: boolean | undefined = to.force
 
     // TODO: should we throw an error as the navigation was aborted
-    if (!force && isSameLocation(from, toLocation)) return from
+    if (!force && isSameRouteLocation(from, toLocation)) return from
 
     toLocation.redirectedFrom = redirectedFrom
 
@@ -222,12 +223,18 @@ export function createRouter({
       triggerError(error)
     }
 
-    finalizeNavigation(toLocation, from, true, to.replace === true)
+    finalizeNavigation(
+      toLocation,
+      from,
+      true,
+      // RouteLocationNormalized will give undefined
+      (to as RouteLocation).replace === true
+    )
 
     return currentRoute.value
   }
 
-  function replace(to: RouteLocation) {
+  function replace(to: RouteLocation | RouteLocationNormalized) {
     const location = typeof to === 'string' ? { path: to } : to
     return push({ ...location, replace: true })
   }
@@ -361,6 +368,7 @@ export function createRouter({
 
   // attach listener to history to trigger navigations
   history.listen(async (to, _from, info) => {
+    // TODO: try catch to correctly log the matcher error
     const toLocation = resolve(to.fullPath)
     // console.log({ to, matchedRoute })
 
@@ -535,16 +543,31 @@ function extractChangingRecords(
   return [leavingRecords, updatingRecords, enteringRecords]
 }
 
-function isSameLocation(
-  a: Immutable<RouteLocationNormalized>,
-  b: Immutable<RouteLocationNormalized>
+// function isSameLocation(
+//   a: Immutable<RouteLocationNormalized>,
+//   b: Immutable<RouteLocationNormalized>
+// ): boolean {
+//   return (
+//     a.name === b.name &&
+//     a.path === b.path &&
+//     a.hash === b.hash &&
+//     isSameLocationObject(a.query, b.query) &&
+//     a.matched.length === b.matched.length &&
+//     a.matched.every((record, i) => isSameRouteRecord(record, b.matched[i]))
+//   )
+// }
+
+function isSameRouteLocation(
+  a: RouteLocationNormalized,
+  b: RouteLocationNormalized
 ): boolean {
+  let aLastIndex = a.matched.length - 1
+  let bLastIndex = b.matched.length - 1
+
   return (
-    a.name === b.name &&
-    a.path === b.path &&
-    a.hash === b.hash &&
-    isSameLocationObject(a.query, b.query) &&
-    a.matched.length === b.matched.length &&
-    a.matched.every((record, i) => isSameRouteRecord(record, b.matched[i]))
+    aLastIndex > -1 &&
+    aLastIndex === bLastIndex &&
+    isSameRouteRecord(a.matched[aLastIndex], b.matched[bLastIndex]) &&
+    isSameLocationObject(a.params, b.params)
   )
 }

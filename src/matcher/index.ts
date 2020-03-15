@@ -13,6 +13,8 @@ import {
   PathParserOptions,
 } from './path-parser-ranker'
 
+let noop = () => {}
+
 interface RouterMatcher {
   addRoute: (
     record: RouteRecord,
@@ -47,9 +49,12 @@ export function createRouterMatcher(
   // TODO: add routes to children of parent
   function addRoute(
     record: Readonly<RouteRecord>,
-    parent?: RouteRecordMatcher
+    parent?: RouteRecordMatcher,
+    originalRecord?: RouteRecordMatcher
   ) {
-    const mainNormalizedRecord = normalizeRouteRecord(record)
+    let mainNormalizedRecord = normalizeRouteRecord(record)
+    // we might be the child of an alias
+    mainNormalizedRecord.aliasOf = originalRecord && originalRecord.record
     const options: PathParserOptions = { ...globalOptions, ...record.options }
     // generate an array of records to correctly handle aliases
     const normalizedRecords: RouteRecordNormalized[] = [mainNormalizedRecord]
@@ -60,12 +65,16 @@ export function createRouterMatcher(
         normalizedRecords.push({
           ...mainNormalizedRecord,
           path: alias,
-          aliasOf: mainNormalizedRecord,
+          // we might be the child of an alias
+          aliasOf: originalRecord
+            ? originalRecord.record
+            : mainNormalizedRecord,
         })
       }
     }
 
     let matcher: RouteRecordMatcher
+    let originalMatcher: RouteRecordMatcher | undefined
 
     for (const normalizedRecord of normalizedRecords) {
       let { path } = normalizedRecord
@@ -83,28 +92,48 @@ export function createRouterMatcher(
       // create the object before hand so it can be passed to children
       matcher = createRouteRecordMatcher(normalizedRecord, parent, options)
 
-      if ('children' in record) {
-        for (const childRecord of record.children!)
-          addRoute(childRecord, matcher)
+      // if we are an alias we must tell the original record that we exist
+      // so we can be removed
+      if (originalRecord) {
+        originalRecord.alias.push(matcher)
+      } else {
+        // otherwise, the first record is the original and others are aliases
+        originalMatcher = originalMatcher || matcher
+        if (originalMatcher !== matcher) originalMatcher.alias.push(matcher)
       }
+
+      let children = mainNormalizedRecord.children
+      for (let i = 0; i < children.length; i++) {
+        addRoute(
+          children[i],
+          matcher,
+          originalRecord && originalRecord.children[i]
+        )
+      }
+
+      // if there was no original record, then the first one was not an alias and all
+      // other alias (if any) need to reference this record when adding children
+      originalRecord = originalRecord || matcher
 
       insertMatcher(matcher)
     }
 
-    return () => {
-      // since other matchers are aliases, they should should be removed by any of the matchers
-      removeRoute(matcher)
-    }
+    return originalMatcher
+      ? () => {
+          // since other matchers are aliases, they should be removed by the original matcher
+          removeRoute(originalMatcher!)
+        }
+      : noop
   }
 
   function removeRoute(matcherRef: string | RouteRecordMatcher) {
-    // TODO: remove aliases (needs to keep them in the RouteRecordMatcher first)
     if (typeof matcherRef === 'string') {
       const matcher = matcherMap.get(matcherRef)
       if (matcher) {
         matcherMap.delete(matcherRef)
         matchers.splice(matchers.indexOf(matcher), 1)
         matcher.children.forEach(removeRoute)
+        matcher.alias.forEach(removeRoute)
       }
     } else {
       let index = matchers.indexOf(matcherRef)
@@ -112,6 +141,7 @@ export function createRouterMatcher(
         matchers.splice(index, 1)
         if (matcherRef.record.name) matcherMap.delete(matcherRef.record.name)
         matcherRef.children.forEach(removeRoute)
+        matcherRef.alias.forEach(removeRoute)
       }
     }
   }
@@ -132,7 +162,7 @@ export function createRouterMatcher(
     // while (i < matchers.length && matcher.score <= matchers[i].score) i++
     matchers.splice(i, 0, matcher)
     // only add the original record to the name map
-    if (matcher.record.name && !matcher.record.aliasOf)
+    if (matcher.record.name && !isAliasRecord(matcher))
       matcherMap.set(matcher.record.name, matcher)
   }
 
@@ -235,14 +265,28 @@ export function normalizeRouteRecord(
   return {
     path: record.path,
     components,
-    // fallback to empty array for monomorphic objects
-    children: (record as any).children,
+    // record is an object and if it has a children property, it's an array
+    children: (record as any).children || [],
     name: record.name,
     beforeEnter,
+    props: record.props || false,
     meta: record.meta || {},
     leaveGuards: [],
     aliasOf: undefined,
   }
+}
+
+/**
+ * Checks if a record or any of its parent is an alias
+ * @param record
+ */
+function isAliasRecord(record: RouteRecordMatcher | undefined): boolean {
+  while (record) {
+    if (record.record.aliasOf) return true
+    record = record.parent
+  }
+
+  return false
 }
 
 export { PathParserOptions }

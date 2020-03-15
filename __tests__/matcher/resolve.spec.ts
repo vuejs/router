@@ -5,7 +5,6 @@ import {
   RouteRecord,
   MatcherLocation,
   MatcherLocationNormalized,
-  MatcherLocationRedirect,
 } from '../../src/types'
 import { MatcherLocationNormalizedLoose } from '../utils'
 
@@ -125,8 +124,73 @@ describe('Router Matcher', () => {
         )
       })
 
-      it.todo('multiple aliases')
-      it.todo('resolve named child with parent with alias')
+      it('multiple aliases', () => {
+        const record = {
+          path: '/',
+          alias: ['/home', '/start'],
+          name: 'Home',
+          components,
+          meta: { foo: true },
+        }
+
+        assertRecordMatch(
+          record,
+          { path: '/' },
+          {
+            name: 'Home',
+            path: '/',
+            params: {},
+            meta: { foo: true },
+            matched: [
+              {
+                path: '/',
+                name: 'Home',
+                components,
+                aliasOf: undefined,
+                meta: { foo: true },
+              },
+            ],
+          }
+        )
+        assertRecordMatch(
+          record,
+          { path: '/home' },
+          {
+            name: 'Home',
+            path: '/home',
+            params: {},
+            meta: { foo: true },
+            matched: [
+              {
+                path: '/home',
+                name: 'Home',
+                components,
+                aliasOf: expect.objectContaining({ name: 'Home', path: '/' }),
+                meta: { foo: true },
+              },
+            ],
+          }
+        )
+        assertRecordMatch(
+          record,
+          { path: '/start' },
+          {
+            name: 'Home',
+            path: '/start',
+            params: {},
+            meta: { foo: true },
+            matched: [
+              {
+                path: '/start',
+                name: 'Home',
+                components,
+                aliasOf: expect.objectContaining({ name: 'Home', path: '/' }),
+                meta: { foo: true },
+              },
+            ],
+          }
+        )
+      })
 
       it('resolves the original record by name', () => {
         assertRecordMatch(
@@ -156,7 +220,7 @@ describe('Router Matcher', () => {
         )
       })
 
-      it('resolves an alias with children', () => {
+      it('resolves an alias with children to the alias when using the path', () => {
         const children = [{ path: 'one', component, name: 'nested' }]
         assertRecordMatch(
           {
@@ -177,7 +241,346 @@ describe('Router Matcher', () => {
                 components,
                 aliasOf: expect.objectContaining({ path: '/parent' }),
               },
-              { path: '/p/one', name: 'nested', components },
+              {
+                path: '/p/one',
+                name: 'nested',
+                components,
+                aliasOf: expect.objectContaining({ path: '/parent/one' }),
+              },
+            ],
+          }
+        )
+      })
+
+      describe('nested aliases', () => {
+        const children = [
+          {
+            path: 'one',
+            component,
+            name: 'nested',
+            alias: 'o',
+            children: [
+              { path: 'two', alias: 't', name: 'nestednested', component },
+            ],
+          },
+          {
+            path: 'other',
+            alias: 'otherAlias',
+            component,
+            name: 'other',
+          },
+        ]
+        const record = {
+          path: '/parent',
+          name: 'parent',
+          alias: '/p',
+          component,
+          children,
+        }
+
+        it('resolves the parent as an alias', () => {
+          assertRecordMatch(
+            record,
+            { path: '/p' },
+            expect.objectContaining({
+              path: '/p',
+              name: 'parent',
+              matched: [
+                expect.objectContaining({
+                  path: '/p',
+                  aliasOf: expect.objectContaining({ path: '/parent' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        describe('multiple children', () => {
+          // tests concerning the /parent/other path and its aliases
+
+          it('resolves the alias parent', () => {
+            assertRecordMatch(
+              record,
+              { path: '/p/other' },
+              expect.objectContaining({
+                path: '/p/other',
+                name: 'other',
+                matched: [
+                  expect.objectContaining({
+                    path: '/p',
+                    aliasOf: expect.objectContaining({ path: '/parent' }),
+                  }),
+                  expect.objectContaining({
+                    path: '/p/other',
+                    aliasOf: expect.objectContaining({ path: '/parent/other' }),
+                  }),
+                ],
+              })
+            )
+          })
+
+          it('resolves the alias child', () => {
+            assertRecordMatch(
+              record,
+              { path: '/parent/otherAlias' },
+              expect.objectContaining({
+                path: '/parent/otherAlias',
+                name: 'other',
+                matched: [
+                  expect.objectContaining({
+                    path: '/parent',
+                    aliasOf: undefined,
+                  }),
+                  expect.objectContaining({
+                    path: '/parent/otherAlias',
+                    aliasOf: expect.objectContaining({ path: '/parent/other' }),
+                  }),
+                ],
+              })
+            )
+          })
+
+          it('resolves the alias parent and child', () => {
+            assertRecordMatch(
+              record,
+              { path: '/p/otherAlias' },
+              expect.objectContaining({
+                path: '/p/otherAlias',
+                name: 'other',
+                matched: [
+                  expect.objectContaining({
+                    path: '/p',
+                    aliasOf: expect.objectContaining({ path: '/parent' }),
+                  }),
+                  expect.objectContaining({
+                    path: '/p/otherAlias',
+                    aliasOf: expect.objectContaining({ path: '/parent/other' }),
+                  }),
+                ],
+              })
+            )
+          })
+        })
+
+        it('resolves the original one with no aliases', () => {
+          assertRecordMatch(
+            record,
+            { path: '/parent/one/two' },
+            expect.objectContaining({
+              path: '/parent/one/two',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/parent',
+                  aliasOf: undefined,
+                }),
+                expect.objectContaining({
+                  path: '/parent/one',
+                  aliasOf: undefined,
+                }),
+                expect.objectContaining({
+                  path: '/parent/one/two',
+                  aliasOf: undefined,
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves when parent is an alias', () => {
+          assertRecordMatch(
+            record,
+            { path: '/p/one/two' },
+            expect.objectContaining({
+              path: '/p/one/two',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/p',
+                  aliasOf: expect.objectContaining({ path: '/parent' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/one',
+                  aliasOf: expect.objectContaining({ path: '/parent/one' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/one/two',
+                  aliasOf: expect.objectContaining({ path: '/parent/one/two' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves a different child when parent is an alias', () => {
+          assertRecordMatch(
+            record,
+            { path: '/p/other' },
+            expect.objectContaining({
+              path: '/p/other',
+              name: 'other',
+              matched: [
+                expect.objectContaining({
+                  path: '/p',
+                  aliasOf: expect.objectContaining({ path: '/parent' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/other',
+                  aliasOf: expect.objectContaining({ path: '/parent/other' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves when the first child is an alias', () => {
+          assertRecordMatch(
+            record,
+            { path: '/parent/o/two' },
+            expect.objectContaining({
+              path: '/parent/o/two',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/parent',
+                  aliasOf: undefined,
+                }),
+                expect.objectContaining({
+                  path: '/parent/o',
+                  aliasOf: expect.objectContaining({ path: '/parent/one' }),
+                }),
+                expect.objectContaining({
+                  path: '/parent/o/two',
+                  aliasOf: expect.objectContaining({ path: '/parent/one/two' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves when the second child is an alias', () => {
+          assertRecordMatch(
+            record,
+            { path: '/parent/one/t' },
+            expect.objectContaining({
+              path: '/parent/one/t',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/parent',
+                  aliasOf: undefined,
+                }),
+                expect.objectContaining({
+                  path: '/parent/one',
+                  aliasOf: undefined,
+                }),
+                expect.objectContaining({
+                  path: '/parent/one/t',
+                  aliasOf: expect.objectContaining({ path: '/parent/one/two' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves when the two last children are aliases', () => {
+          assertRecordMatch(
+            record,
+            { path: '/parent/o/t' },
+            expect.objectContaining({
+              path: '/parent/o/t',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/parent',
+                  aliasOf: undefined,
+                }),
+                expect.objectContaining({
+                  path: '/parent/o',
+                  aliasOf: expect.objectContaining({ path: '/parent/one' }),
+                }),
+                expect.objectContaining({
+                  path: '/parent/o/t',
+                  aliasOf: expect.objectContaining({ path: '/parent/one/two' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves when all are aliases', () => {
+          assertRecordMatch(
+            record,
+            { path: '/p/o/t' },
+            expect.objectContaining({
+              path: '/p/o/t',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/p',
+                  aliasOf: expect.objectContaining({ path: '/parent' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/o',
+                  aliasOf: expect.objectContaining({ path: '/parent/one' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/o/t',
+                  aliasOf: expect.objectContaining({ path: '/parent/one/two' }),
+                }),
+              ],
+            })
+          )
+        })
+
+        it('resolves when first and last are aliases', () => {
+          assertRecordMatch(
+            record,
+            { path: '/p/one/t' },
+            expect.objectContaining({
+              path: '/p/one/t',
+              name: 'nestednested',
+              matched: [
+                expect.objectContaining({
+                  path: '/p',
+                  aliasOf: expect.objectContaining({ path: '/parent' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/one',
+                  aliasOf: expect.objectContaining({ path: '/parent/one' }),
+                }),
+                expect.objectContaining({
+                  path: '/p/one/t',
+                  aliasOf: expect.objectContaining({ path: '/parent/one/two' }),
+                }),
+              ],
+            })
+          )
+        })
+      })
+
+      it('resolves the original path of the named children of a route with an alias', () => {
+        const children = [{ path: 'one', component, name: 'nested' }]
+        assertRecordMatch(
+          {
+            path: '/parent',
+            alias: '/p',
+            component,
+            children,
+          },
+          { name: 'nested' },
+          {
+            path: '/parent/one',
+            name: 'nested',
+            params: {},
+            matched: [
+              {
+                path: '/parent',
+                children,
+                components,
+                aliasOf: undefined,
+              },
+              { path: '/parent/one', name: 'nested', components },
             ],
           }
         )
@@ -416,189 +819,6 @@ describe('Router Matcher', () => {
             meta: {},
           }
         )
-      })
-
-      // TODO: replace tests with a transformation check to the `beforeEnter` guard
-      describe.skip('redirects', () => {
-        function assertRedirect(
-          records: RouteRecord[],
-          location: MatcherLocation,
-          expected: MatcherLocationNormalized | MatcherLocationRedirect,
-          currentLocation: MatcherLocationNormalized = START_LOCATION_NORMALIZED
-        ) {
-          const matcher = createRouterMatcher(records, {})
-          const resolved = matcher.resolve(location, currentLocation)
-          expect(resolved).toEqual(expected)
-          return resolved
-        }
-
-        it('resolves a redirect string', () => {
-          const records = [
-            { path: '/home', components },
-            { path: '/redirect', redirect: '/home' },
-          ]
-          assertRedirect(
-            records,
-            {
-              name: undefined,
-              path: '/redirect',
-            },
-            {
-              redirect: '/home',
-              normalizedLocation: {
-                path: '/redirect',
-                params: {},
-                name: undefined,
-                matched: [],
-                meta: {},
-              },
-            }
-          )
-        })
-
-        it('resolves a redirect function that returns a string', () => {
-          const redirect = () => '/home'
-          const records = [
-            { path: '/home', components },
-            { path: '/redirect', redirect },
-          ]
-          assertRedirect(
-            records,
-            {
-              name: undefined,
-              path: '/redirect',
-            },
-            {
-              redirect,
-              normalizedLocation: {
-                path: '/redirect',
-                params: {},
-                name: undefined,
-                matched: [],
-                meta: {},
-              },
-            }
-          )
-        })
-
-        it('resolves a redirect function that returns an object route', () => {
-          const redirect = () => {
-            path: '/home'
-          }
-          const records = [
-            { path: '/home', components },
-            { path: '/redirect', redirect },
-          ]
-          assertRedirect(
-            records,
-            {
-              name: undefined,
-              path: '/redirect',
-            },
-            {
-              redirect,
-              normalizedLocation: {
-                path: '/redirect',
-                params: {},
-                name: undefined,
-                matched: [],
-                meta: {},
-              },
-            }
-          )
-        })
-
-        it('resolves a redirect as an object', () => {
-          const records = [
-            { path: '/home', components },
-            { path: '/redirect', redirect: { path: 'home' } },
-          ]
-          assertRedirect(
-            records,
-            {
-              name: undefined,
-              path: '/redirect',
-            },
-            {
-              redirect: { path: 'home' },
-              normalizedLocation: {
-                path: '/redirect',
-                params: {},
-                name: undefined,
-                matched: [],
-                meta: {},
-              },
-            }
-          )
-        })
-
-        it('works with a named location', () => {
-          const records = [
-            { path: '/home', components },
-            { path: '/redirect', name: 'redirect', redirect: { path: 'home' } },
-          ]
-          assertRedirect(
-            records,
-            {
-              name: 'redirect',
-            },
-            {
-              redirect: { path: 'home' },
-              normalizedLocation: {
-                path: '/redirect',
-                params: {},
-                name: 'redirect',
-                matched: [],
-                meta: {},
-              },
-            }
-          )
-        })
-
-        it('throws if relative location when redirecting', () => {
-          expect(
-            assertErrorMatch(
-              { path: '/redirect', redirect: '/home' },
-              { params: {} },
-              {
-                path: '/redirect',
-                params: {},
-                matched: [],
-                name: undefined,
-                meta: {},
-              }
-            )
-          ).toMatchSnapshot()
-        })
-
-        it('normalize a location when redirecting', () => {
-          const redirect = (to: any) => ({ name: 'b', params: to.params })
-          const records = [
-            { path: '/home', components },
-            {
-              path: '/a/:a',
-              name: 'a',
-              redirect,
-            },
-            { path: '/b/:a', name: 'b', components },
-          ]
-          assertRedirect(
-            records,
-            {
-              path: '/a/foo',
-            },
-            {
-              redirect,
-              normalizedLocation: {
-                path: '/a/foo',
-                params: { a: 'foo' },
-                name: 'a',
-                matched: [],
-                meta: {},
-              },
-            }
-          )
-        })
       })
 
       it('throws if the current named route does not exists', () => {

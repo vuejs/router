@@ -8,12 +8,14 @@ describe('normalizeRouteRecord', () => {
     })
     expect(record).toEqual({
       beforeEnter: undefined,
-      children: undefined,
+      children: [],
+      aliasOf: undefined,
       components: { default: {} },
       leaveGuards: [],
       meta: {},
       name: undefined,
       path: '/home',
+      props: false,
     })
   })
 
@@ -35,6 +37,7 @@ describe('normalizeRouteRecord', () => {
       meta: { foo: true },
       name: 'name',
       path: '/home',
+      props: false,
     })
   })
 
@@ -48,12 +51,14 @@ describe('normalizeRouteRecord', () => {
 
     expect(record).toEqual({
       beforeEnter: expect.any(Function),
-      children: undefined,
+      children: [],
+      aliasOf: undefined,
       components: {},
       leaveGuards: [],
       meta: { foo: true },
       name: 'name',
       path: '/redirect',
+      props: false,
     })
   })
 
@@ -75,6 +80,7 @@ describe('normalizeRouteRecord', () => {
       meta: { foo: true },
       name: 'name',
       path: '/home',
+      props: false,
     })
   })
 
@@ -85,12 +91,14 @@ describe('normalizeRouteRecord', () => {
     })
     expect(record).toEqual({
       beforeEnter: expect.any(Function),
-      children: undefined,
+      children: [],
+      aliasOf: undefined,
       components: {},
       leaveGuards: [],
       meta: {},
       name: undefined,
       path: '/redirect',
+      props: false,
     })
   })
 

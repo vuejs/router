@@ -118,6 +118,7 @@ export interface RouteRecordCommon {
   path: string
   alias?: string | string[]
   name?: string
+  props?: boolean
   // TODO: beforeEnter has no effect with redirect, move and test
   beforeEnter?: NavigationGuard | NavigationGuard[]
   meta?: Record<string | number | symbol, any>
@@ -166,9 +167,10 @@ export const START_LOCATION_NORMALIZED: RouteLocationNormalized = markNonReactiv
 )
 
 // make matched non enumerable for easy printing
-Object.defineProperty(START_LOCATION_NORMALIZED, 'matched', {
-  enumerable: false,
-})
+// NOTE: commented for tests at RouterView.spec
+// Object.defineProperty(START_LOCATION_NORMALIZED, 'matched', {
+//   enumerable: false,
+// })
 
 // Matcher types
 // the matcher doesn't care about query and hash

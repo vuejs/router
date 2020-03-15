@@ -1,5 +1,5 @@
 <template>
-  <div>User: {{ route.params.id }}</div>
+  <div>User: {{ id }}</div>
 </template>
 
 <script>
@@ -7,10 +7,8 @@ import { defineComponent, inject } from 'vue'
 
 export default defineComponent({
   name: 'User',
-  setup() {
-    const route = inject('route')
-    console.log('calling setup in User')
-    return { route }
+  props: {
+    id: String,
   },
 })
 </script>
