@@ -269,6 +269,7 @@ export function normalizeRouteRecord(
     children: (record as any).children || [],
     name: record.name,
     beforeEnter,
+    props: record.props || false,
     meta: record.meta || {},
     leaveGuards: [],
     aliasOf: undefined,

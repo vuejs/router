@@ -4,8 +4,9 @@ import {
   RouteRecordMultipleViews,
   MatcherLocationNormalized,
   RouteLocationNormalized,
+  RouteRecordCommon,
 } from '../src/types'
-import { h, resolveComponent } from 'vue'
+import { h, resolveComponent, defineComponent } from 'vue'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
@@ -22,6 +23,7 @@ export interface RouteRecordViewLoose
     'path' | 'name' | 'components' | 'children' | 'meta' | 'beforeEnter'
   > {
   leaveGuards?: any
+  props?: RouteRecordCommon['props']
   aliasOf: RouteRecordViewLoose | undefined
 }
 
@@ -83,6 +85,16 @@ export const components = {
   Home: { render: () => h('div', {}, 'Home') },
   Foo: { render: () => h('div', {}, 'Foo') },
   Bar: { render: () => h('div', {}, 'Bar') },
+  User: defineComponent({
+    props: {
+      id: {
+        default: 'default',
+      },
+    },
+    render() {
+      return h('div', {}, 'User: ' + this.id)
+    },
+  }),
   Nested: {
     render: () => {
       const RouterView = resolveComponent('RouterView')

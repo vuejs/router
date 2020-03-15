@@ -6,8 +6,16 @@ import { components, RouteLocationNormalizedLoose } from './utils'
 import { START_LOCATION_NORMALIZED } from '../src/types'
 import { ref, markNonReactive } from 'vue'
 import { mount, tick } from './mount'
+import { mockWarn } from 'jest-mock-warn'
 
-const routes: Record<string, RouteLocationNormalizedLoose> = {
+// to have autocompletion
+function createRoutes<T extends Record<string, RouteLocationNormalizedLoose>>(
+  routes: T
+): T {
+  return routes
+}
+
+const routes = createRoutes({
   root: {
     fullPath: '/',
     name: undefined,
@@ -65,12 +73,30 @@ const routes: Record<string, RouteLocationNormalizedLoose> = {
     meta: {},
     matched: [{ components: { foo: components.Foo }, path: '/' }],
   },
-}
+  withParams: {
+    fullPath: '/users/3',
+    name: undefined,
+    path: '/users/3',
+    query: {},
+    params: { id: '1' },
+    hash: '',
+    meta: {},
+    matched: [
+      {
+        components: { default: components.User },
+        path: '/users/:id',
+        props: true,
+      },
+    ],
+  },
+})
 
 describe('RouterView', () => {
+  mockWarn()
+
   function factory(route: RouteLocationNormalizedLoose, props: any = {}) {
     const router = {
-      currentRoute: ref(markNonReactive(route)),
+      currentRoute: ref(markNonReactive({ ...route })),
     }
 
     const { app, el } = mount(
@@ -104,6 +130,7 @@ describe('RouterView', () => {
   it('displays nothing when route is unmatched', () => {
     const { el } = factory(START_LOCATION_NORMALIZED as any)
     // NOTE: I wonder if this will stay stable in future releases
+    expect('Router').not.toHaveBeenWarned()
     expect(el.childElementCount).toBe(0)
   })
 
@@ -125,5 +152,25 @@ describe('RouterView', () => {
     router.currentRoute.value = routes.foo
     await tick()
     expect(el.innerHTML).toBe(`<div>Foo</div>`)
+  })
+
+  it('does not pass params as props by default', async () => {
+    let noPropsWithParams = {
+      ...routes.withParams,
+      matched: [{ ...routes.withParams.matched[0], props: false }],
+    }
+    const { el, router } = factory(noPropsWithParams)
+    expect(el.innerHTML).toBe(`<div>User: default</div>`)
+    router.currentRoute.value = { ...noPropsWithParams, params: { id: '4' } }
+    await tick()
+    expect(el.innerHTML).toBe(`<div>User: default</div>`)
+  })
+
+  it('passes params as props with props: true', async () => {
+    const { el, router } = factory(routes.withParams)
+    expect(el.innerHTML).toBe(`<div>User: 1</div>`)
+    router.currentRoute.value = { ...routes.withParams, params: { id: '4' } }
+    await tick()
+    expect(el.innerHTML).toBe(`<div>User: 4</div>`)
   })
 })

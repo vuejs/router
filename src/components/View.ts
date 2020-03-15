@@ -36,11 +36,17 @@ export const View = defineComponent({
       () => matchedRoute.value && matchedRoute.value.components[props.name]
     )
 
+    const propsData = computed(() => {
+      if (!matchedRoute.value.props) return {}
+
+      return route.value.params
+    })
+
     provide(matchedRouteKey, matchedRoute)
 
     return () => {
       return ViewComponent.value
-        ? h(ViewComponent.value as any, { ...attrs })
+        ? h(ViewComponent.value as any, { ...propsData.value, ...attrs })
         : null
     }
   },
