@@ -36,9 +36,10 @@ const routes: RouteRecord[] = [
   },
 ]
 
-async function newRouter({ history }: { history?: RouterHistory } = {}) {
+async function newRouter({ history, ...args }: Partial<Parameters<typeof createRouter>[0]> = {}) {
+// async function newRouter({ history }: { history?: RouterHistory } = {}) {
   history = history || createMemoryHistory()
-  const router = createRouter({ history, routes })
+  const router = createRouter({ history, routes, ...args })
   await router.push('/')
 
   return { history, router }
@@ -68,6 +69,13 @@ describe('Router', () => {
         hash: '',
       })
     )
+  })
+
+  it('can allows the end use to override parseQuery', async () => {
+    const customQueryParser = jest.fn()
+    const { router } = await newRouter({ parseQuery: customQueryParser })
+    router.resolve('/foo')
+    expect(customQueryParser).toHaveBeenCalled()
   })
 
   it('can do initial navigation to /', async () => {
