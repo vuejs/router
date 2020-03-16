@@ -76,10 +76,10 @@ describe('Router', () => {
     expect(parseQuery).toHaveBeenCalled()
   })
   
-  it('can allows the end user to stringify the Query', async () => {
+  it('can allows the end user to stringify the query', async () => {
     const stringifyQuery = jest.fn()
     const { router } = await newRouter({ stringifyQuery: stringifyQuery })
-    router.resolve('/foo?bar=baz')
+    router.resolve({})
     expect(stringifyQuery).toHaveBeenCalled()
   })
 
