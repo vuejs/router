@@ -192,6 +192,47 @@ describe('Lazy Loading', () => {
     expect(spy).toHaveBeenCalledTimes(1)
   })
 
+  it('beforeRouteLeave works on a lazy loaded component', async () => {
+    const { promise, resolve } = createLazyComponent()
+    const spy = jest.fn((to, from, next) => next())
+    const component = jest.fn(() =>
+      promise.then(() => ({ beforeRouteLeave: spy }))
+    )
+    const { router } = newRouter({
+      routes: [
+        { path: '/foo', component },
+        { path: '/', component: {} },
+      ],
+    })
+
+    resolve()
+    await router.push('/foo')
+    expect(component).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledTimes(0)
+
+    await router.push('/')
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
+  it('beforeRouteUpdate works on a lazy loaded component', async () => {
+    const { promise, resolve } = createLazyComponent()
+    const spy = jest.fn((to, from, next) => next())
+    const component = jest.fn(() =>
+      promise.then(() => ({ beforeRouteUpdate: spy }))
+    )
+    const { router } = newRouter({
+      routes: [{ path: '/:id', component }],
+    })
+
+    resolve()
+    await router.push('/foo')
+    expect(component).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledTimes(0)
+
+    await router.push('/bar')
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
   it('aborts the navigation if async fails', async () => {
     const { component, reject } = createLazyComponent()
     const { router } = newRouter({
