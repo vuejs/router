@@ -15,6 +15,12 @@ export const tick = (time?: number) =>
     else process.nextTick(resolve)
   })
 
+export async function ticks(n: number) {
+  for (let i = 0; i < n; i++) {
+    await tick()
+  }
+}
+
 export type NAVIGATION_METHOD = 'push' | 'replace'
 export const NAVIGATION_TYPES: NAVIGATION_METHOD[] = ['push', 'replace']
 

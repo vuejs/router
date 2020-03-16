@@ -18,14 +18,13 @@ function isESModule(obj: any): obj is { default: RouteComponent } {
 }
 
 type GuardType = 'beforeRouteEnter' | 'beforeRouteUpdate' | 'beforeRouteLeave'
-// TODO: remove async
-export async function extractComponentsGuards(
+
+export function extractComponentsGuards(
   matched: RouteRecordNormalized[],
   guardType: GuardType,
   to: RouteLocationNormalized,
   from: RouteLocationNormalized
 ) {
-  // TODO: test to avoid redundant requests for aliases. It should work because we are holding a copy of the `components` option when we create aliases
   const guards: Array<() => Promise<void>> = []
 
   for (const record of matched) {
@@ -33,9 +32,10 @@ export async function extractComponentsGuards(
       const rawComponent = record.components[name]
       if (typeof rawComponent === 'function') {
         // start requesting the chunk already
-        const componentPromise = rawComponent()
+        const componentPromise = rawComponent().catch(() => null)
         guards.push(async () => {
           const resolved = await componentPromise
+          if (!resolved) throw new Error('TODO: error while fetching')
           const resolvedComponent = isESModule(resolved)
             ? resolved.default
             : resolved

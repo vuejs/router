@@ -250,7 +250,7 @@ export function createRouter({
 
     // all components here have been resolved once because we are leaving
     // TODO: refactor both together
-    guards = await extractComponentsGuards(
+    guards = extractComponentsGuards(
       from.matched.filter(record => to.matched.indexOf(record) < 0).reverse(),
       'beforeRouteLeave',
       to,
@@ -282,7 +282,7 @@ export function createRouter({
     await runGuardQueue(guards)
 
     // check in components beforeRouteUpdate
-    guards = await extractComponentsGuards(
+    guards = extractComponentsGuards(
       to.matched.filter(record => from.matched.indexOf(record as any) > -1),
       'beforeRouteUpdate',
       to,
@@ -312,7 +312,7 @@ export function createRouter({
     // TODO: at this point to.matched is normalized and does not contain any () => Promise<Component>
 
     // check in-component beforeRouteEnter
-    guards = await extractComponentsGuards(
+    guards = extractComponentsGuards(
       // the type does'nt matter as we are comparing an object per reference
       to.matched.filter(record => from.matched.indexOf(record as any) < 0),
       'beforeRouteEnter',
