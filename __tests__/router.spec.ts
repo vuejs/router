@@ -131,24 +131,25 @@ describe('Router', () => {
     )
   })
 
-  // FIXME:
-  it.skip('navigates if the location does not exist', async () => {
+  it('navigates if the location does not exist', async () => {
     const { router } = await newRouter()
     const spy = jest.fn((to, from, next) => next())
     router.beforeEach(spy)
     await router.push('/idontexist')
-    spy.mockReset()
+    expect(spy).toHaveBeenCalled()
+    expect(router.currentRoute.value).toMatchObject({ matched: [] })
+    spy.mockClear()
     await router.push('/me-neither')
-    expect(spy).not.toHaveBeenCalled()
+    expect(router.currentRoute.value).toMatchObject({ matched: [] })
+    expect(spy).toHaveBeenCalled()
   })
 
   describe('alias', () => {
     it('does not navigate to alias if already on original record', async () => {
       const { router } = await newRouter()
       const spy = jest.fn((to, from, next) => next())
-      router.beforeEach(spy)
       await router.push('/basic')
-      spy.mockReset()
+      router.beforeEach(spy)
       await router.push('/basic-alias')
       expect(spy).not.toHaveBeenCalled()
     })
@@ -156,9 +157,8 @@ describe('Router', () => {
     it('does not navigate to alias with children if already on original record', async () => {
       const { router } = await newRouter()
       const spy = jest.fn((to, from, next) => next())
-      router.beforeEach(spy)
       await router.push('/aliases')
-      spy.mockReset()
+      router.beforeEach(spy)
       await router.push('/aliases1')
       expect(spy).not.toHaveBeenCalled()
       await router.push('/aliases2')
@@ -168,9 +168,8 @@ describe('Router', () => {
     it('does not navigate to child alias if already on original record', async () => {
       const { router } = await newRouter()
       const spy = jest.fn((to, from, next) => next())
-      router.beforeEach(spy)
       await router.push('/aliases/one')
-      spy.mockReset()
+      router.beforeEach(spy)
       await router.push('/aliases1/one')
       expect(spy).not.toHaveBeenCalled()
       await router.push('/aliases2/one')
