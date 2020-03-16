@@ -5,8 +5,9 @@ import {
   MatcherLocationNormalized,
   RouteLocationNormalized,
   RouteRecordCommon,
+  RouteComponent,
 } from '../src/types'
-import { h, resolveComponent, defineComponent } from 'vue'
+import { h, resolveComponent, ComponentOptions } from 'vue'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
@@ -85,17 +86,18 @@ export const components = {
   Home: { render: () => h('div', {}, 'Home') },
   Foo: { render: () => h('div', {}, 'Foo') },
   Bar: { render: () => h('div', {}, 'Bar') },
-  User: defineComponent({
+  User: {
     props: {
       id: {
         default: 'default',
       },
     },
     render() {
+      // @ts-ignore
       return h('div', {}, 'User: ' + this.id)
     },
-  }),
-  WithProps: defineComponent({
+  } as ComponentOptions,
+  WithProps: {
     props: {
       id: {
         default: 'default',
@@ -105,9 +107,10 @@ export const components = {
       },
     },
     render() {
+      // @ts-ignore
       return h('div', {}, `id:${this.id};other:${this.other}`)
     },
-  }),
+  } as RouteComponent,
   Nested: {
     render: () => {
       const RouterView = resolveComponent('RouterView')
