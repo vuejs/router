@@ -95,6 +95,19 @@ export const components = {
       return h('div', {}, 'User: ' + this.id)
     },
   }),
+  WithProps: defineComponent({
+    props: {
+      id: {
+        default: 'default',
+      },
+      other: {
+        default: 'other',
+      },
+    },
+    render() {
+      return h('div', {}, `id:${this.id};other:${this.other}`)
+    },
+  }),
   Nested: {
     render: () => {
       const RouterView = resolveComponent('RouterView')

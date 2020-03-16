@@ -37,9 +37,11 @@ export const View = defineComponent({
     )
 
     const propsData = computed(() => {
-      if (!matchedRoute.value.props) return {}
+      const { props } = matchedRoute.value
+      if (!props) return {}
+      if (props === true) return route.value.params
 
-      return route.value.params
+      return props
     })
 
     provide(matchedRouteKey, matchedRoute)

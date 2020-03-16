@@ -74,9 +74,9 @@ const routes = createRoutes({
     matched: [{ components: { foo: components.Foo }, path: '/' }],
   },
   withParams: {
-    fullPath: '/users/3',
+    fullPath: '/users/1',
     name: undefined,
-    path: '/users/3',
+    path: '/users/1',
     query: {},
     params: { id: '1' },
     hash: '',
@@ -86,6 +86,22 @@ const routes = createRoutes({
         components: { default: components.User },
         path: '/users/:id',
         props: true,
+      },
+    ],
+  },
+  withIdAndOther: {
+    fullPath: '/props/1',
+    name: undefined,
+    path: '/props/1',
+    query: {},
+    params: { id: '1' },
+    hash: '',
+    meta: {},
+    matched: [
+      {
+        components: { default: components.WithProps },
+        path: '/users/:id',
+        props: { id: 'foo', other: 'fixed' },
       },
     ],
   },
@@ -172,5 +188,10 @@ describe('RouterView', () => {
     router.currentRoute.value = { ...routes.withParams, params: { id: '4' } }
     await tick()
     expect(el.innerHTML).toBe(`<div>User: 4</div>`)
+  })
+
+  it('can pass an object as props', async () => {
+    const { el } = factory(routes.withIdAndOther)
+    expect(el.innerHTML).toBe(`<div>id:foo;other:fixed</div>`)
   })
 })

@@ -118,7 +118,7 @@ export interface RouteRecordCommon {
   path: string
   alias?: string | string[]
   name?: string
-  props?: boolean
+  props?: boolean | Record<string, any>
   // TODO: beforeEnter has no effect with redirect, move and test
   beforeEnter?: NavigationGuard | NavigationGuard[]
   meta?: Record<string | number | symbol, any>
