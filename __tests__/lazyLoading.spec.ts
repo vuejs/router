@@ -176,6 +176,22 @@ describe('Lazy Loading', () => {
     expect(component).toHaveBeenCalledTimes(0)
   })
 
+  it('invokes beforeRouteEnter after lazy loading the component', async () => {
+    const { promise, resolve } = createLazyComponent()
+    const spy = jest.fn((to, from, next) => next())
+    const component = jest.fn(() =>
+      promise.then(() => ({ beforeRouteEnter: spy }))
+    )
+    const { router } = newRouter({
+      routes: [{ path: '/foo', component }],
+    })
+
+    resolve()
+    await router.push('/foo')
+    expect(component).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
   it('aborts the navigation if async fails', async () => {
     const { component, reject } = createLazyComponent()
     const { router } = newRouter({

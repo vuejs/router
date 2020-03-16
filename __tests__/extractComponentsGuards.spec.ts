@@ -1,7 +1,6 @@
 import { extractComponentsGuards } from '../src/utils'
 import { START_LOCATION_NORMALIZED, RouteRecord } from '../src/types'
 import { components } from './utils'
-import { RouteRecordNormalized } from '../src/matcher/types'
 import { normalizeRouteRecord } from '../src/matcher'
 
 const beforeRouteEnter = jest.fn()
@@ -21,37 +20,6 @@ const SingleGuardNamed: RouteRecord = {
     default: { ...components.Home, beforeRouteEnter },
     other: { ...components.Foo, beforeRouteEnter },
   },
-}
-
-function makeAsync(
-  record: Exclude<RouteRecord, { redirect: any }>
-): RouteRecordNormalized {
-  if ('components' in record) {
-    const copy = { ...record }
-    copy.components = Object.keys(record.components).reduce(
-      (components, name) => {
-        // @ts-ignore
-        components[name] = () => Promise.resolve(record.components[name])
-        return components
-      },
-      {} as typeof record['components']
-    )
-    return normalizeRouteRecord(copy)
-  } else {
-    const { component, ...copy } = record
-    if (typeof component === 'function')
-      return normalizeRouteRecord({
-        ...copy,
-        components: { default: component },
-      })
-
-    return normalizeRouteRecord({
-      ...copy,
-      components: {
-        default: () => Promise.resolve(component),
-      },
-    })
-  }
 }
 
 beforeEach(() => {
@@ -99,22 +67,5 @@ describe('extractComponentsGuards', () => {
     await checkGuards([SingleGuard, SingleGuardNamed], 3)
     await checkGuards([SingleGuard, SingleGuard], 2)
     await checkGuards([SingleGuardNamed, SingleGuardNamed], 4)
-  })
-
-  it('works with async components', async () => {
-    await checkGuards([makeAsync(NoGuard)], 0, 1)
-    await checkGuards([makeAsync(NoGuard), makeAsync(NoGuard)], 0, 2)
-    await checkGuards([makeAsync(SingleGuard)], 1, 1)
-    await checkGuards([makeAsync(SingleGuard), makeAsync(NoGuard)], 1, 2)
-    await checkGuards(
-      [makeAsync(SingleGuard), makeAsync(SingleGuardNamed)],
-      3,
-      3
-    )
-    await checkGuards([makeAsync(SingleGuard), makeAsync(SingleGuard)], 2)
-    await checkGuards(
-      [makeAsync(SingleGuardNamed), makeAsync(SingleGuardNamed)],
-      4
-    )
   })
 })
