@@ -310,9 +310,8 @@ describe('Router', () => {
     })
   })
 
-  describe('matcher', () => {
-    // TODO: rewrite after redirect refactor
-    it.skip('handles one redirect from route record', async () => {
+  describe('redirect', () => {
+    it('handles one redirect from route record', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
       const loc = await router.push('/to-foo')
@@ -322,8 +321,17 @@ describe('Router', () => {
       })
     })
 
-    // TODO: rewrite after redirect refactor
-    it.skip('drops query and params on redirect if not provided', async () => {
+    it('handles a double redirect from route record', async () => {
+      const history = createMemoryHistory()
+      const router = createRouter({ history, routes })
+      const loc = await router.push('/to-foo2')
+      expect(loc.name).toBe('Foo')
+      expect(loc.redirectedFrom).toMatchObject({
+        path: '/to-foo2',
+      })
+    })
+
+    it('drops query and params on redirect if not provided', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
       const loc = await router.push('/to-foo?hey=foo#fa')
@@ -335,8 +343,7 @@ describe('Router', () => {
       })
     })
 
-    // TODO: rewrite after redirect refactor
-    it.skip('allows object in redirect', async () => {
+    it('allows object in redirect', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
       const loc = await router.push('/to-foo-named')
@@ -346,8 +353,7 @@ describe('Router', () => {
       })
     })
 
-    // TODO: rewrite after redirect refactor
-    it.skip('can pass on query and hash when redirecting', async () => {
+    it('can pass on query and hash when redirecting', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
       const loc = await router.push('/inc-query-hash?n=3#fa')
@@ -360,6 +366,8 @@ describe('Router', () => {
       })
       expect(loc.redirectedFrom).toMatchObject({
         fullPath: '/inc-query-hash?n=3#fa',
+        query: { n: '3' },
+        hash: '#fa',
         path: '/inc-query-hash',
       })
     })
