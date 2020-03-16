@@ -69,11 +69,11 @@ describe('Router', () => {
     )
   })
 
-  it('can allows the end use to override parseQuery', async () => {
-    const customQueryParser = jest.fn()
-    const { router } = await newRouter({ parseQuery: customQueryParser })
+  it('can allows the end user to override parseQuery', async () => {
+    const parseQuery = jest.fn()
+    const { router } = await newRouter({ parseQuery: parseQuery })
     router.resolve('/foo?bar=baz')
-    expect(customQueryParser).toHaveBeenCalled()
+    expect(parseQuery).toHaveBeenCalled()
   })
 
   it('can do initial navigation to /', async () => {

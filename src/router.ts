@@ -32,7 +32,7 @@ import {
 } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
-import { normalizeQuery, parseQuery as originalParseQuery, stringifyQuery } from './utils/query'
+import { normalizeQuery, parseQuery as originalParseQuery, stringifyQuery as originalStringifyQuery } from './utils/query'
 import { ref, Ref, markNonReactive, nextTick, App, warn } from 'vue'
 import { RouteRecordNormalized } from './matcher/types'
 import { Link } from './components/Link'
@@ -55,6 +55,7 @@ export interface RouterOptions {
   routes: RouteRecord[]
   scrollBehavior?: ScrollBehavior
   parseQuery?: typeof originalParseQuery
+  stringifyQuery?: typeof originalStringifyQuery
   // TODO: allow customizing encoding functions
 }
 
@@ -66,7 +67,6 @@ export interface Router {
   addRoute(route: RouteRecord): () => void
   removeRoute(name: string): void
   getRoutes(): RouteRecordNormalized[]
-  
 
   resolve(to: RouteLocation): RouteLocationNormalized
   createHref(to: RouteLocationNormalized): string
@@ -88,7 +88,8 @@ export function createRouter({
   history,
   routes,
   scrollBehavior,
-  parseQuery = originalParseQuery
+  parseQuery = originalParseQuery,
+  stringifyQuery = originalStringifyQuery
 }: RouterOptions): Router {
   const matcher: ReturnType<typeof createRouterMatcher> = createRouterMatcher(
     routes,
