@@ -1,38 +1,55 @@
-import { RouteLocationNormalized, RouteParams, Immutable } from '../types'
+import {
+  RouteLocationNormalized,
+  RouteParams,
+  Immutable,
+  RouteComponent,
+} from '../types'
 import { guardToPromiseFn } from './guardToPromiseFn'
 import { RouteRecordNormalized } from '../matcher/types'
 import { LocationQueryValue } from './query'
 
 export * from './guardToPromiseFn'
 
+const hasSymbol =
+  typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol'
+
+function isESModule(obj: any): obj is { default: RouteComponent } {
+  return obj.__esModule || (hasSymbol && obj[Symbol.toStringTag] === 'Module')
+}
+
 type GuardType = 'beforeRouteEnter' | 'beforeRouteUpdate' | 'beforeRouteLeave'
+// TODO: remove async
 export async function extractComponentsGuards(
   matched: RouteRecordNormalized[],
   guardType: GuardType,
   to: RouteLocationNormalized,
   from: RouteLocationNormalized
 ) {
+  // TODO: test to avoid redundant requests for aliases. It should work because we are holding a copy of the `components` option when we create aliases
   const guards: Array<() => Promise<void>> = []
-  await Promise.all(
-    matched.map(async record => {
-      // TODO: cache async routes per record
-      for (const name in record.components) {
-        const component = record.components[name]
-        // TODO: handle Vue.extend views
-        // if ('options' in component) throw new Error('TODO')
-        const resolvedComponent = component
-        // TODO: handle async component
-        // const resolvedComponent = await (typeof component === 'function'
-        //   ? component()
-        //   : component)
 
-        const guard = resolvedComponent[guardType]
-        if (guard) {
-          guards.push(guardToPromiseFn(guard, to, from))
-        }
+  for (const record of matched) {
+    for (const name in record.components) {
+      const rawComponent = record.components[name]
+      if (typeof rawComponent === 'function') {
+        // start requesting the chunk already
+        const componentPromise = rawComponent()
+        guards.push(async () => {
+          const resolved = await componentPromise
+          const resolvedComponent = isESModule(resolved)
+            ? resolved.default
+            : resolved
+          // replace the function with the resolved component
+          record.components[name] = resolvedComponent
+          const guard = resolvedComponent[guardType]
+          return guard && guardToPromiseFn(guard, to, from)()
+        })
+      } else {
+        const guard = rawComponent[guardType]
+        guard && guards.push(guardToPromiseFn(guard, to, from))
       }
-    })
-  )
+    }
+  }
 
   return guards
 }

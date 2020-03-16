@@ -64,6 +64,11 @@ export function createRouterMatcher(
       for (const alias of aliases) {
         normalizedRecords.push({
           ...mainNormalizedRecord,
+          // this allows us to hold a copy of the `components` option
+          // so that async components cache is hold on the original record
+          components: originalRecord
+            ? originalRecord.record.components
+            : mainNormalizedRecord.components,
           path: alias,
           // we might be the child of an alias
           aliasOf: originalRecord

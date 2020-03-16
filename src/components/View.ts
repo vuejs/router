@@ -5,12 +5,12 @@ import {
   defineComponent,
   PropType,
   computed,
-  Component,
   InjectionKey,
   Ref,
 } from 'vue'
 import { RouteRecordNormalized } from '../matcher/types'
 import { routeKey } from '../injectKeys'
+import { RouteComponent } from '../types'
 
 // TODO: make it work with no symbols too for IE
 export const matchedRouteKey = Symbol() as InjectionKey<
@@ -32,7 +32,7 @@ export const View = defineComponent({
     provide('routerViewDepth', depth + 1)
 
     const matchedRoute = computed(() => route.value.matched[depth])
-    const ViewComponent = computed<Component | undefined>(
+    const ViewComponent = computed<RouteComponent | undefined>(
       () => matchedRoute.value && matchedRoute.value.components[props.name]
     )
 

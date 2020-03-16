@@ -1,9 +1,7 @@
 import { LocationQuery, LocationQueryRaw } from '../utils/query'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
-import { markNonReactive } from 'vue'
+import { markNonReactive, ComponentOptions } from 'vue'
 import { RouteRecordNormalized } from '../matcher/types'
-
-// type Component = ComponentOptions<Vue> | typeof Vue | AsyncComponent
 
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
@@ -61,7 +59,24 @@ export type RouteLocation =
   | (RouteQueryAndHash & LocationAsName & RouteLocationOptions)
   | (RouteQueryAndHash & LocationAsRelative & RouteLocationOptions)
 
+export interface RouteLocationMatched extends RouteRecordNormalized {
+  components: Record<string, RouteComponent>
+}
+
 // A matched record cannot be a redirection and must contain
+
+// matched contains resolved components
+export interface RouteLocationNormalizedResolved {
+  path: string
+  fullPath: string
+  query: LocationQuery
+  hash: string
+  name: string | null | undefined
+  params: RouteParams
+  matched: RouteLocationMatched[] // non-enumerable
+  redirectedFrom: RouteLocationNormalized | undefined
+  meta: Record<string | number | symbol, any>
+}
 
 export interface RouteLocationNormalized {
   path: string
@@ -108,10 +123,9 @@ export interface RouteComponentInterface {
   beforeRouteUpdate?: NavigationGuard<void>
 }
 
-// TODO: have a real type with augmented properties
-// add async component
-// export type RouteComponent = (Component | ReturnType<typeof defineComponent>) & RouteComponentInterface
-export type RouteComponent = TODO
+// TODO: allow defineComponent export type RouteComponent = (Component | ReturnType<typeof defineComponent>) &
+export type RouteComponent = ComponentOptions & RouteComponentInterface
+export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
 
 // TODO: could this be moved to matcher?
 export interface RouteRecordCommon {
@@ -141,12 +155,12 @@ export interface RouteRecordRedirect extends RouteRecordCommon {
 }
 
 export interface RouteRecordSingleView extends RouteRecordCommon {
-  component: RouteComponent
+  component: RawRouteComponent
   children?: RouteRecord[]
 }
 
 export interface RouteRecordMultipleViews extends RouteRecordCommon {
-  components: Record<string, RouteComponent>
+  components: Record<string, RawRouteComponent>
   children?: RouteRecord[]
 }
 
@@ -155,7 +169,7 @@ export type RouteRecord =
   | RouteRecordMultipleViews
   | RouteRecordRedirect
 
-export const START_LOCATION_NORMALIZED: RouteLocationNormalized = markNonReactive(
+export const START_LOCATION_NORMALIZED: RouteLocationNormalizedResolved = markNonReactive(
   {
     path: '/',
     name: undefined,

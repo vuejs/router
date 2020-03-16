@@ -26,6 +26,13 @@ export const router = createRouter({
     { path: '/multiple/:a/:b', name: 'multiple', component },
     { path: '/long-:n', name: 'long', component: LongView },
     {
+      path: '/lazy',
+      component: async () => {
+        await delay(500)
+        return component
+      },
+    },
+    {
       path: '/with-guard/:n',
       name: 'guarded',
       component,
