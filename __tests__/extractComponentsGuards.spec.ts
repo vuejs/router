@@ -63,7 +63,8 @@ beforeEach(() => {
 
 async function checkGuards(
   components: Exclude<RouteRecord, { redirect: any }>[],
-  n: number
+  n: number,
+  guardsLength: number = n
 ) {
   beforeRouteEnter.mockClear()
   const guards = await extractComponentsGuards(
@@ -73,7 +74,7 @@ async function checkGuards(
     to,
     from
   )
-  expect(guards).toHaveLength(n)
+  expect(guards).toHaveLength(guardsLength)
   for (const guard of guards) {
     expect(guard).toBeInstanceOf(Function)
     expect(await guard())
@@ -100,11 +101,16 @@ describe('extractComponentsGuards', () => {
     await checkGuards([SingleGuardNamed, SingleGuardNamed], 4)
   })
 
-  // TODO: async components
-  it.skip('works with async components', async () => {
-    await checkGuards([makeAsync(NoGuard)], 0)
-    await checkGuards([makeAsync(SingleGuard)], 1)
-    await checkGuards([makeAsync(SingleGuard), makeAsync(SingleGuardNamed)], 3)
+  it('works with async components', async () => {
+    await checkGuards([makeAsync(NoGuard)], 0, 1)
+    await checkGuards([makeAsync(NoGuard), makeAsync(NoGuard)], 0, 2)
+    await checkGuards([makeAsync(SingleGuard)], 1, 1)
+    await checkGuards([makeAsync(SingleGuard), makeAsync(NoGuard)], 1, 2)
+    await checkGuards(
+      [makeAsync(SingleGuard), makeAsync(SingleGuardNamed)],
+      3,
+      3
+    )
     await checkGuards([makeAsync(SingleGuard), makeAsync(SingleGuard)], 2)
     await checkGuards(
       [makeAsync(SingleGuardNamed), makeAsync(SingleGuardNamed)],
