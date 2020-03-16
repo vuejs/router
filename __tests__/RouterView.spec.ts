@@ -100,8 +100,25 @@ const routes = createRoutes({
     matched: [
       {
         components: { default: components.WithProps },
-        path: '/users/:id',
+        path: '/props/:id',
         props: { id: 'foo', other: 'fixed' },
+      },
+    ],
+  },
+
+  withFnProps: {
+    fullPath: '/props/1',
+    name: undefined,
+    path: '/props/1',
+    query: { q: 'page' },
+    params: { id: '1' },
+    hash: '',
+    meta: {},
+    matched: [
+      {
+        components: { default: components.WithProps },
+        path: '/props/:id',
+        props: to => ({ id: Number(to.params.id) * 2, other: to.query.q }),
       },
     ],
   },
@@ -193,5 +210,10 @@ describe('RouterView', () => {
   it('can pass an object as props', async () => {
     const { el } = factory(routes.withIdAndOther)
     expect(el.innerHTML).toBe(`<div>id:foo;other:fixed</div>`)
+  })
+
+  it('can pass a function as props', async () => {
+    const { el } = factory(routes.withFnProps)
+    expect(el.innerHTML).toBe(`<div>id:2;other:page</div>`)
   })
 })

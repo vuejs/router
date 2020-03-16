@@ -41,7 +41,7 @@ export const View = defineComponent({
       if (!props) return {}
       if (props === true) return route.value.params
 
-      return props
+      return typeof props === 'object' ? props : props(route.value)
     })
 
     provide(matchedRouteKey, matchedRoute)
