@@ -57,7 +57,7 @@ const ErrorTypeMessages = {
   },
   [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationError) {
     return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new \`push\` or \`replace\``
-  }
+  },
 }
 
 export function createRouterError<Type extends ErrorTypes>(
