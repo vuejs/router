@@ -217,9 +217,11 @@ export interface MatcherLocationRedirect {
 export interface NavigationGuardCallback {
   (): void
   (location: RouteLocation): void
-  (valid: false): void
+  (valid: boolean): void
   (cb: (vm: any) => void): void
 }
+
+export type NavigationGuardNextCallback = (vm: any) => any
 
 export interface NavigationGuard<V = void> {
   (
