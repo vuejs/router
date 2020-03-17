@@ -1,7 +1,6 @@
 import { extractComponentsGuards } from '../src/utils'
 import { START_LOCATION_NORMALIZED, RouteRecord } from '../src/types'
 import { components } from './utils'
-import { RouteRecordNormalized } from '../src/matcher/types'
 import { normalizeRouteRecord } from '../src/matcher'
 
 const beforeRouteEnter = jest.fn()
@@ -23,37 +22,6 @@ const SingleGuardNamed: RouteRecord = {
   },
 }
 
-function makeAsync(
-  record: Exclude<RouteRecord, { redirect: any }>
-): RouteRecordNormalized {
-  if ('components' in record) {
-    const copy = { ...record }
-    copy.components = Object.keys(record.components).reduce(
-      (components, name) => {
-        // @ts-ignore
-        components[name] = () => Promise.resolve(record.components[name])
-        return components
-      },
-      {} as typeof record['components']
-    )
-    return normalizeRouteRecord(copy)
-  } else {
-    const { component, ...copy } = record
-    if (typeof component === 'function')
-      return normalizeRouteRecord({
-        ...copy,
-        components: { default: component },
-      })
-
-    return normalizeRouteRecord({
-      ...copy,
-      components: {
-        default: () => Promise.resolve(component),
-      },
-    })
-  }
-}
-
 beforeEach(() => {
   beforeRouteEnter.mockReset()
   beforeRouteEnter.mockImplementation((to, from, next) => {
@@ -63,7 +31,8 @@ beforeEach(() => {
 
 async function checkGuards(
   components: Exclude<RouteRecord, { redirect: any }>[],
-  n: number
+  n: number,
+  guardsLength: number = n
 ) {
   beforeRouteEnter.mockClear()
   const guards = await extractComponentsGuards(
@@ -73,7 +42,7 @@ async function checkGuards(
     to,
     from
   )
-  expect(guards).toHaveLength(n)
+  expect(guards).toHaveLength(guardsLength)
   for (const guard of guards) {
     expect(guard).toBeInstanceOf(Function)
     expect(await guard())
@@ -98,17 +67,5 @@ describe('extractComponentsGuards', () => {
     await checkGuards([SingleGuard, SingleGuardNamed], 3)
     await checkGuards([SingleGuard, SingleGuard], 2)
     await checkGuards([SingleGuardNamed, SingleGuardNamed], 4)
-  })
-
-  // TODO: async components
-  it.skip('works with async components', async () => {
-    await checkGuards([makeAsync(NoGuard)], 0)
-    await checkGuards([makeAsync(SingleGuard)], 1)
-    await checkGuards([makeAsync(SingleGuard), makeAsync(SingleGuardNamed)], 3)
-    await checkGuards([makeAsync(SingleGuard), makeAsync(SingleGuard)], 2)
-    await checkGuards(
-      [makeAsync(SingleGuardNamed), makeAsync(SingleGuardNamed)],
-      4
-    )
   })
 })

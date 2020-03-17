@@ -1,44 +1,62 @@
-import { RouteLocationNormalized, RouteParams } from '../types'
+import {
+  RouteLocationNormalized,
+  RouteParams,
+  Immutable,
+  RouteComponent,
+} from '../types'
 import { guardToPromiseFn } from './guardToPromiseFn'
 import { RouteRecordNormalized } from '../matcher/types'
+import { LocationQueryValue } from './query'
 
 export * from './guardToPromiseFn'
 
+const hasSymbol =
+  typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol'
+
+function isESModule(obj: any): obj is { default: RouteComponent } {
+  return obj.__esModule || (hasSymbol && obj[Symbol.toStringTag] === 'Module')
+}
+
 type GuardType = 'beforeRouteEnter' | 'beforeRouteUpdate' | 'beforeRouteLeave'
-export async function extractComponentsGuards(
+
+export function extractComponentsGuards(
   matched: RouteRecordNormalized[],
   guardType: GuardType,
   to: RouteLocationNormalized,
   from: RouteLocationNormalized
 ) {
   const guards: Array<() => Promise<void>> = []
-  await Promise.all(
-    matched.map(async record => {
-      // TODO: cache async routes per record
-      for (const name in record.components) {
-        const component = record.components[name]
-        // TODO: handle Vue.extend views
-        // if ('options' in component) throw new Error('TODO')
-        const resolvedComponent = component
-        // TODO: handle async component
-        // const resolvedComponent = await (typeof component === 'function'
-        //   ? component()
-        //   : component)
 
-        const guard = resolvedComponent[guardType]
-        if (guard) {
-          guards.push(guardToPromiseFn(guard, to, from))
-        }
+  for (const record of matched) {
+    for (const name in record.components) {
+      const rawComponent = record.components[name]
+      if (typeof rawComponent === 'function') {
+        // start requesting the chunk already
+        const componentPromise = rawComponent().catch(() => null)
+        guards.push(async () => {
+          const resolved = await componentPromise
+          if (!resolved) throw new Error('TODO: error while fetching')
+          const resolvedComponent = isESModule(resolved)
+            ? resolved.default
+            : resolved
+          // replace the function with the resolved component
+          record.components[name] = resolvedComponent
+          const guard = resolvedComponent[guardType]
+          return guard && guardToPromiseFn(guard, to, from)()
+        })
+      } else {
+        const guard = rawComponent[guardType]
+        guard && guards.push(guardToPromiseFn(guard, to, from))
       }
-    })
-  )
+    }
+  }
 
   return guards
 }
 
 export function applyToParams(
   fn: (v: string) => string,
-  params: RouteParams
+  params: RouteParams | undefined
 ): RouteParams {
   const newParams: RouteParams = {}
 
@@ -48,4 +66,67 @@ export function applyToParams(
   }
 
   return newParams
+}
+
+export function isSameRouteRecord(
+  a: Immutable<RouteRecordNormalized>,
+  b: Immutable<RouteRecordNormalized>
+): boolean {
+  // since the original record has an undefined value for aliasOf
+  // but all aliases point to the original record, this will always compare
+  // the original record
+  return (a.aliasOf || a) === (b.aliasOf || b)
+}
+
+export function isSameLocationObject(
+  a: Immutable<RouteLocationNormalized['query']>,
+  b: Immutable<RouteLocationNormalized['query']>
+): boolean
+export function isSameLocationObject(
+  a: Immutable<RouteLocationNormalized['params']>,
+  b: Immutable<RouteLocationNormalized['params']>
+): boolean
+export function isSameLocationObject(
+  a: Immutable<RouteLocationNormalized['query' | 'params']>,
+  b: Immutable<RouteLocationNormalized['query' | 'params']>
+): boolean {
+  const aKeys = Object.keys(a)
+  const bKeys = Object.keys(b)
+  if (aKeys.length !== bKeys.length) return false
+  let i = 0
+  let key: string
+  while (i < aKeys.length) {
+    key = aKeys[i]
+    if (key !== bKeys[i]) return false
+    if (!isSameLocationObjectValue(a[key], b[key])) return false
+    i++
+  }
+
+  return true
+}
+
+function isSameLocationObjectValue(
+  a: Immutable<LocationQueryValue | LocationQueryValue[]>,
+  b: Immutable<LocationQueryValue | LocationQueryValue[]>
+): boolean
+function isSameLocationObjectValue(
+  a: Immutable<RouteParams | RouteParams[]>,
+  b: Immutable<RouteParams | RouteParams[]>
+): boolean
+function isSameLocationObjectValue(
+  a: Immutable<
+    LocationQueryValue | LocationQueryValue[] | RouteParams | RouteParams[]
+  >,
+  b: Immutable<
+    LocationQueryValue | LocationQueryValue[] | RouteParams | RouteParams[]
+  >
+): boolean {
+  if (typeof a !== typeof b) return false
+  // both a and b are arrays
+  if (Array.isArray(a))
+    return (
+      a.length === (b as any[]).length &&
+      a.every((value, i) => value === (b as LocationQueryValue[])[i])
+    )
+  return a === b
 }

@@ -4,14 +4,22 @@ import {
   RouteRecordMultipleViews,
   MatcherLocationNormalized,
   RouteLocationNormalized,
+  RouteRecordCommon,
+  RouteComponent,
 } from '../src/types'
-import { h, resolveComponent } from 'vue'
+import { h, resolveComponent, ComponentOptions } from 'vue'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
     if (time) setTimeout(resolve, time)
     else process.nextTick(resolve)
   })
+
+export async function ticks(n: number) {
+  for (let i = 0; i < n; i++) {
+    await tick()
+  }
+}
 
 export type NAVIGATION_METHOD = 'push' | 'replace'
 export const NAVIGATION_TYPES: NAVIGATION_METHOD[] = ['push', 'replace']
@@ -22,6 +30,8 @@ export interface RouteRecordViewLoose
     'path' | 'name' | 'components' | 'children' | 'meta' | 'beforeEnter'
   > {
   leaveGuards?: any
+  props?: RouteRecordCommon['props']
+  aliasOf: RouteRecordViewLoose | undefined
 }
 
 // @ts-ignore we are intentionally overriding the type
@@ -82,6 +92,31 @@ export const components = {
   Home: { render: () => h('div', {}, 'Home') },
   Foo: { render: () => h('div', {}, 'Foo') },
   Bar: { render: () => h('div', {}, 'Bar') },
+  User: {
+    props: {
+      id: {
+        default: 'default',
+      },
+    },
+    render() {
+      // @ts-ignore
+      return h('div', {}, 'User: ' + this.id)
+    },
+  } as ComponentOptions,
+  WithProps: {
+    props: {
+      id: {
+        default: 'default',
+      },
+      other: {
+        default: 'other',
+      },
+    },
+    render() {
+      // @ts-ignore
+      return h('div', {}, `id:${this.id};other:${this.other}`)
+    },
+  } as RouteComponent,
   Nested: {
     render: () => {
       const RouterView = resolveComponent('RouterView')

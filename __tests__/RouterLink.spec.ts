@@ -11,6 +11,22 @@ import {
 import { createMemoryHistory } from '../src'
 import { mount, tick } from './mount'
 import { ref, markNonReactive } from 'vue'
+import { RouteRecordNormalized } from '../src/matcher/types'
+
+const records = {
+  home: {} as RouteRecordNormalized,
+  homeAlias: {} as RouteRecordNormalized,
+  foo: {} as RouteRecordNormalized,
+  parent: {} as RouteRecordNormalized,
+  child: {} as RouteRecordNormalized,
+  parentAlias: {} as RouteRecordNormalized,
+  childAlias: {} as RouteRecordNormalized,
+}
+
+// fix the aliasOf
+records.homeAlias = { aliasOf: records.home } as RouteRecordNormalized
+records.parentAlias = { aliasOf: records.parent } as RouteRecordNormalized
+records.childAlias = { aliasOf: records.child } as RouteRecordNormalized
 
 const locations: Record<
   string,
@@ -30,7 +46,7 @@ const locations: Record<
       meta: {},
       query: {},
       hash: '',
-      matched: [],
+      matched: [records.home],
       redirectedFrom: undefined,
       name: undefined,
     },
@@ -45,7 +61,7 @@ const locations: Record<
       meta: {},
       query: {},
       hash: '',
-      matched: [],
+      matched: [records.foo],
       redirectedFrom: undefined,
       name: undefined,
     },
@@ -60,7 +76,136 @@ const locations: Record<
       meta: {},
       query: { foo: 'a', bar: 'b' },
       hash: '',
-      matched: [],
+      matched: [records.home],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+  repeatedParams2: {
+    string: '/p/1/2',
+    normalized: {
+      fullPath: '/p/1/2',
+      path: '/p/1/2',
+      params: { p: ['1', '2'] },
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.home],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+  repeatedParams3: {
+    string: '/p/1/2/3',
+    normalized: {
+      fullPath: '/p/1/2/3',
+      path: '/p/1/2/3',
+      params: { p: ['1', '2', '3'] },
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.home],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+  alias: {
+    string: '/alias',
+    normalized: {
+      fullPath: '/alias',
+      path: '/alias',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.homeAlias],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+
+  // nested routes
+  parent: {
+    string: '/parent',
+    normalized: {
+      fullPath: '/parent',
+      path: '/parent',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.parent],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+  parentAlias: {
+    string: '/p',
+    normalized: {
+      fullPath: '/p',
+      path: '/p',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.parentAlias],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+
+  child: {
+    string: '/parent/child',
+    normalized: {
+      fullPath: '/parent/child',
+      path: '/parent/child',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.parent, records.child],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+  childParentAlias: {
+    string: '/p/child',
+    normalized: {
+      fullPath: '/p/child',
+      path: '/p/child',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.parentAlias, records.child],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+  childAlias: {
+    string: '/parent/c',
+    normalized: {
+      fullPath: '/parent/c',
+      path: '/parent/c',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.parent, records.childAlias],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+  childDoubleAlias: {
+    string: '/p/c',
+    normalized: {
+      fullPath: '/p/c',
+      path: '/p/c',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.parentAlias, records.childAlias],
       redirectedFrom: undefined,
       name: undefined,
     },
@@ -71,7 +216,8 @@ describe('RouterLink', () => {
   function factory(
     currentLocation: RouteLocationNormalized,
     propsData: any,
-    resolvedLocation: RouteLocationNormalized
+    resolvedLocation: RouteLocationNormalized,
+    template: string = `<RouterLink :to="to">a link</RouterLink>`
   ) {
     const router = {
       history: createMemoryHistory(),
@@ -86,7 +232,7 @@ describe('RouterLink', () => {
 
     router.resolve.mockReturnValueOnce(resolvedLocation)
     const { app, el } = mount(router as any, {
-      template: `<RouterLink :to="to">a link</RouterLink>`,
+      template,
       components: { RouterLink } as any,
       setup() {
         return { to: propsData.to }
@@ -102,22 +248,21 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
+    expect(el.querySelector('a')!.getAttribute('href')).toBe('/home')
   })
 
-  // TODO: not sure why this breaks. We could take a look at @vue/test-runtime
-  it.skip('can change the value', async () => {
+  it('can change the value', async () => {
     const to = ref(locations.basic.string)
     const { el, router } = factory(
       START_LOCATION_NORMALIZED,
       { to },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
+    expect(el.querySelector('a')!.getAttribute('href')).toBe('/home')
     router.resolve.mockReturnValueOnce(locations.foo.normalized)
     to.value = locations.foo.string
     await tick()
-    expect(el.innerHTML).toBe('<a class="" href="/foo">a link</a>')
+    expect(el.querySelector('a')!.getAttribute('href')).toBe('/foo')
   })
 
   it('displays a link with an object with path prop', () => {
@@ -126,7 +271,7 @@ describe('RouterLink', () => {
       { to: { path: locations.basic.string } },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe('<a class="" href="/home">a link</a>')
+    expect(el.querySelector('a')!.getAttribute('href')).toBe('/home')
   })
 
   it('can be active', () => {
@@ -135,8 +280,168 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(el.innerHTML).toBe(
-      '<a class="router-link-active" href="/home">a link</a>'
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+  })
+
+  it('can be active with custom class', () => {
+    const { el } = factory(
+      locations.basic.normalized,
+      { to: locations.basic.string },
+      locations.basic.normalized,
+      `<RouterLink class="nav-item" :to="to">a link</RouterLink>`
+    )
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).toContain('nav-item')
+  })
+
+  it('is not active with more repeated params', () => {
+    const { el } = factory(
+      locations.repeatedParams2.normalized,
+      { to: locations.repeatedParams3.string },
+      locations.repeatedParams3.normalized
+    )
+    expect(el.querySelector('a')!.className).toBe('')
+  })
+
+  it('is not active with partial repeated params', () => {
+    const { el } = factory(
+      locations.repeatedParams3.normalized,
+      { to: locations.repeatedParams2.string },
+      locations.repeatedParams2.normalized
+    )
+    expect(el.querySelector('a')!.className).toBe('')
+  })
+
+  it('can be active as an alias', () => {
+    let { el } = factory(
+      locations.basic.normalized,
+      { to: locations.alias.string },
+      locations.alias.normalized
+    )
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).toContain(
+      'router-link-exact-active'
+    )
+    el = factory(
+      locations.alias.normalized,
+      { to: locations.basic.string },
+      locations.basic.normalized
+    ).el
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).toContain(
+      'router-link-exact-active'
+    )
+  })
+
+  it('is active when a child is active', () => {
+    const { el } = factory(
+      locations.child.normalized,
+      { to: locations.parent.string },
+      locations.parent.normalized
+    )
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+  })
+
+  it('only the children is exact-active', () => {
+    const { el } = factory(
+      locations.child.normalized,
+      { to: locations.child.string },
+      locations.child.normalized
+    )
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).toContain(
+      'router-link-exact-active'
+    )
+  })
+
+  it('child is not active if the parent is active', () => {
+    const { el } = factory(
+      locations.parent.normalized,
+      { to: locations.child.string },
+      locations.child.normalized
+    )
+    expect(el.querySelector('a')!.className).not.toContain('router-link-active')
+    expect(el.querySelector('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+  })
+
+  it('alias parent is active when a child is active', () => {
+    let { el } = factory(
+      locations.child.normalized,
+      { to: locations.parentAlias.string },
+      locations.parentAlias.normalized
+    )
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+    el = factory(
+      locations.childDoubleAlias.normalized,
+      { to: locations.parentAlias.string },
+      locations.parentAlias.normalized
+    ).el
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+  })
+
+  it('alias parent is active', () => {
+    let { el } = factory(
+      locations.parent.normalized,
+      { to: locations.parentAlias.string },
+      locations.parentAlias.normalized
+    )
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).toContain(
+      'router-link-exact-active'
+    )
+
+    el = factory(
+      locations.parentAlias.normalized,
+      { to: locations.parent.string },
+      locations.parent.normalized
+    ).el
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).toContain(
+      'router-link-exact-active'
+    )
+  })
+
+  it('child and parent with alias', () => {
+    let { el } = factory(
+      locations.child.normalized,
+      { to: locations.childDoubleAlias.string },
+      locations.childDoubleAlias.normalized
+    )
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).toContain(
+      'router-link-exact-active'
+    )
+
+    el = factory(
+      locations.child.normalized,
+      { to: locations.childParentAlias.string },
+      locations.childParentAlias.normalized
+    ).el
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).toContain(
+      'router-link-exact-active'
+    )
+  })
+
+  it('can be exact-active', () => {
+    const { el } = factory(
+      locations.basic.normalized,
+      { to: locations.basic.string },
+      locations.basic.normalized
+    )
+    expect(el.querySelector('a')!.className).toContain(
+      'router-link-exact-active'
     )
   })
 
@@ -186,6 +491,7 @@ describe('RouterLink', () => {
         route: {{ JSON.stringify(data.route) }}
         href: "{{ data.href }}"
         isActive: "{{ data.isActive }}"
+        isExactActive: "{{ data.isExactActive }}"
       </RouterLink>`,
         components: { RouterLink } as any,
         setup() {

@@ -7,7 +7,6 @@ import {
   RouteLocation,
   START_LOCATION_NORMALIZED,
 } from '../src/types'
-import { RouterHistory } from '../src/history/common'
 
 const routes: RouteRecord[] = [
   { path: '/', component: components.Home, name: 'home' },
@@ -34,11 +33,34 @@ const routes: RouteRecord[] = [
       hash: to.hash + '-2',
     }),
   },
+  {
+    path: '/basic',
+    alias: '/basic-alias',
+    component: components.Foo,
+  },
+  {
+    path: '/aliases',
+    alias: ['/aliases1', '/aliases2'],
+    component: components.Nested,
+    children: [
+      {
+        path: 'one',
+        alias: ['o', 'o2'],
+        component: components.Foo,
+        children: [
+          { path: 'two', alias: ['t', 't2'], component: components.Bar },
+        ],
+      },
+    ],
+  },
 ]
 
-async function newRouter({ history }: { history?: RouterHistory } = {}) {
+async function newRouter({
+  history,
+  ...args
+}: Partial<Parameters<typeof createRouter>[0]> = {}) {
   history = history || createMemoryHistory()
-  const router = createRouter({ history, routes })
+  const router = createRouter({ history, routes, ...args })
   await router.push('/')
 
   return { history, router }
@@ -70,6 +92,30 @@ describe('Router', () => {
     )
   })
 
+  it('can allows the end user to override parseQuery', async () => {
+    const parseQuery = jest.fn()
+    const { router } = await newRouter({ parseQuery: parseQuery })
+    router.resolve('/foo?bar=baz')
+    expect(parseQuery).toHaveBeenCalled()
+  })
+
+  it('can allows the end user to stringify the query', async () => {
+    const stringifyQuery = jest.fn()
+    const { router } = await newRouter({ stringifyQuery: stringifyQuery })
+    router.resolve({ query: { foo: 'bar' } })
+    expect(stringifyQuery).toHaveBeenCalled()
+  })
+
+  it('can do initial navigation to /', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/', component: components.Home }],
+    })
+    expect(router.currentRoute.value).toBe(START_LOCATION_NORMALIZED)
+    await router.push('/')
+    expect(router.currentRoute.value).not.toBe(START_LOCATION_NORMALIZED)
+  })
+
   it('calls history.replace with router.replace', async () => {
     const history = createMemoryHistory()
     const { router } = await newRouter({ history })
@@ -99,6 +145,54 @@ describe('Router', () => {
         hash: '',
       })
     )
+  })
+
+  it('navigates if the location does not exist', async () => {
+    const { router } = await newRouter()
+    const spy = jest.fn((to, from, next) => next())
+    router.beforeEach(spy)
+    await router.push('/idontexist')
+    expect(spy).toHaveBeenCalled()
+    expect(router.currentRoute.value).toMatchObject({ matched: [] })
+    spy.mockClear()
+    await router.push('/me-neither')
+    expect(router.currentRoute.value).toMatchObject({ matched: [] })
+    expect(spy).toHaveBeenCalled()
+  })
+
+  describe('alias', () => {
+    it('does not navigate to alias if already on original record', async () => {
+      const { router } = await newRouter()
+      const spy = jest.fn((to, from, next) => next())
+      await router.push('/basic')
+      router.beforeEach(spy)
+      await router.push('/basic-alias')
+      expect(spy).not.toHaveBeenCalled()
+    })
+
+    it('does not navigate to alias with children if already on original record', async () => {
+      const { router } = await newRouter()
+      const spy = jest.fn((to, from, next) => next())
+      await router.push('/aliases')
+      router.beforeEach(spy)
+      await router.push('/aliases1')
+      expect(spy).not.toHaveBeenCalled()
+      await router.push('/aliases2')
+      expect(spy).not.toHaveBeenCalled()
+    })
+
+    it('does not navigate to child alias if already on original record', async () => {
+      const { router } = await newRouter()
+      const spy = jest.fn((to, from, next) => next())
+      await router.push('/aliases/one')
+      router.beforeEach(spy)
+      await router.push('/aliases1/one')
+      expect(spy).not.toHaveBeenCalled()
+      await router.push('/aliases2/one')
+      expect(spy).not.toHaveBeenCalled()
+      await router.push('/aliases2/o')
+      expect(spy).not.toHaveBeenCalled()
+    })
   })
 
   describe('navigation', () => {
@@ -231,9 +325,8 @@ describe('Router', () => {
     })
   })
 
-  describe('matcher', () => {
-    // TODO: rewrite after redirect refactor
-    it.skip('handles one redirect from route record', async () => {
+  describe('redirect', () => {
+    it('handles one redirect from route record', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
       const loc = await router.push('/to-foo')
@@ -243,8 +336,17 @@ describe('Router', () => {
       })
     })
 
-    // TODO: rewrite after redirect refactor
-    it.skip('drops query and params on redirect if not provided', async () => {
+    it('handles a double redirect from route record', async () => {
+      const history = createMemoryHistory()
+      const router = createRouter({ history, routes })
+      const loc = await router.push('/to-foo2')
+      expect(loc.name).toBe('Foo')
+      expect(loc.redirectedFrom).toMatchObject({
+        path: '/to-foo2',
+      })
+    })
+
+    it('drops query and params on redirect if not provided', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
       const loc = await router.push('/to-foo?hey=foo#fa')
@@ -256,8 +358,7 @@ describe('Router', () => {
       })
     })
 
-    // TODO: rewrite after redirect refactor
-    it.skip('allows object in redirect', async () => {
+    it('allows object in redirect', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
       const loc = await router.push('/to-foo-named')
@@ -267,8 +368,7 @@ describe('Router', () => {
       })
     })
 
-    // TODO: rewrite after redirect refactor
-    it.skip('can pass on query and hash when redirecting', async () => {
+    it('can pass on query and hash when redirecting', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
       const loc = await router.push('/inc-query-hash?n=3#fa')
@@ -281,6 +381,8 @@ describe('Router', () => {
       })
       expect(loc.redirectedFrom).toMatchObject({
         fullPath: '/inc-query-hash?n=3#fa',
+        query: { n: '3' },
+        hash: '#fa',
         path: '/inc-query-hash',
       })
     })
@@ -289,7 +391,7 @@ describe('Router', () => {
   it('allows base option in abstract history', async () => {
     const history = createMemoryHistory('/app/')
     const router = createRouter({ history, routes })
-    expect(router.currentRoute.value).toEqual({
+    expect(router.currentRoute.value).toMatchObject({
       name: undefined,
       fullPath: '/',
       hash: '',
@@ -312,7 +414,7 @@ describe('Router', () => {
   it('allows base option with html5 history', async () => {
     const history = createWebHistory('/app/')
     const router = createRouter({ history, routes })
-    expect(router.currentRoute.value).toEqual({
+    expect(router.currentRoute.value).toMatchObject({
       name: undefined,
       fullPath: '/',
       hash: '',
@@ -379,6 +481,52 @@ describe('Router', () => {
       await tick()
       expect(router.currentRoute.value).toMatchObject({
         name: 'dynamic child',
+      })
+    })
+
+    it('can reroute to a replaced route with the same component', async () => {
+      const { router } = await newRouter()
+      router.addRoute({
+        path: '/new/foo',
+        component: components.Foo,
+        name: 'new',
+      })
+      // navigate to the route we just added
+      await router.replace({ name: 'new' })
+      // replace it
+      router.addRoute({
+        path: '/new/bar',
+        component: components.Foo,
+        name: 'new',
+      })
+      // navigate again
+      await router.replace({ name: 'new' })
+      expect(router.currentRoute.value).toMatchObject({
+        path: '/new/bar',
+        name: 'new',
+      })
+    })
+
+    it('can reroute to child', async () => {
+      const { router } = await newRouter()
+      router.addRoute({
+        path: '/new',
+        component: components.Foo,
+        children: [],
+        name: 'new',
+      })
+      // navigate to the route we just added
+      await router.replace('/new/child')
+      // replace it
+      router.addRoute('new', {
+        path: 'child',
+        component: components.Bar,
+        name: 'new-child',
+      })
+      // navigate again
+      await router.replace('/new/child')
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'new-child',
       })
     })
 
