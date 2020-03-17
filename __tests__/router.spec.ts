@@ -7,7 +7,6 @@ import {
   RouteLocation,
   START_LOCATION_NORMALIZED,
 } from '../src/types'
-import { RouterHistory } from '../src/history/common'
 
 const routes: RouteRecord[] = [
   { path: '/', component: components.Home, name: 'home' },
@@ -56,9 +55,12 @@ const routes: RouteRecord[] = [
   },
 ]
 
-async function newRouter({ history }: { history?: RouterHistory } = {}) {
+async function newRouter({
+  history,
+  ...args
+}: Partial<Parameters<typeof createRouter>[0]> = {}) {
   history = history || createMemoryHistory()
-  const router = createRouter({ history, routes })
+  const router = createRouter({ history, routes, ...args })
   await router.push('/')
 
   return { history, router }
@@ -88,6 +90,20 @@ describe('Router', () => {
         hash: '',
       })
     )
+  })
+
+  it('can allows the end user to override parseQuery', async () => {
+    const parseQuery = jest.fn()
+    const { router } = await newRouter({ parseQuery: parseQuery })
+    router.resolve('/foo?bar=baz')
+    expect(parseQuery).toHaveBeenCalled()
+  })
+
+  it('can allows the end user to stringify the query', async () => {
+    const stringifyQuery = jest.fn()
+    const { router } = await newRouter({ stringifyQuery: stringifyQuery })
+    router.resolve({ query: { foo: 'bar' } })
+    expect(stringifyQuery).toHaveBeenCalled()
   })
 
   it('can do initial navigation to /', async () => {
