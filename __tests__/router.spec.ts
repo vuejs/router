@@ -35,7 +35,10 @@ const routes: RouteRecord[] = [
   },
 ]
 
-async function newRouter({ history, ...args }: Partial<Parameters<typeof createRouter>[0]> = {}) {
+async function newRouter({
+  history,
+  ...args
+}: Partial<Parameters<typeof createRouter>[0]> = {}) {
   history = history || createMemoryHistory()
   const router = createRouter({ history, routes, ...args })
   await router.push('/')
@@ -75,11 +78,11 @@ describe('Router', () => {
     router.resolve('/foo?bar=baz')
     expect(parseQuery).toHaveBeenCalled()
   })
-  
+
   it('can allows the end user to stringify the query', async () => {
     const stringifyQuery = jest.fn()
     const { router } = await newRouter({ stringifyQuery: stringifyQuery })
-    router.resolve({query: { foo: 'bar'}})
+    router.resolve({ query: { foo: 'bar' } })
     expect(stringifyQuery).toHaveBeenCalled()
   })
 
