@@ -55,12 +55,11 @@ const routes: RouteRecord[] = [
   },
 ]
 
-async function newRouter({
-  history,
-  ...args
-}: Partial<Parameters<typeof createRouter>[0]> = {}) {
-  history = history || createMemoryHistory()
-  const router = createRouter({ history, routes, ...args })
+async function newRouter(
+  options: Partial<Parameters<typeof createRouter>[0]> = {}
+) {
+  const history = options.history || createMemoryHistory()
+  const router = createRouter({ history, routes, ...options })
   await router.push('/')
 
   return { history, router }
@@ -92,18 +91,18 @@ describe('Router', () => {
     )
   })
 
-  it('can allows the end user to override parseQuery', async () => {
+  it('allows to customize parseQuery', async () => {
     const parseQuery = jest.fn()
-    const { router } = await newRouter({ parseQuery: parseQuery })
+    const { router } = await newRouter({ parseQuery })
     router.resolve('/foo?bar=baz')
-    expect(parseQuery).toHaveBeenCalled()
+    expect(parseQuery).toHaveBeenCalledWith('bar=baz')
   })
 
-  it('can allows the end user to stringify the query', async () => {
+  it('allows to customize stringifyQuery', async () => {
     const stringifyQuery = jest.fn()
-    const { router } = await newRouter({ stringifyQuery: stringifyQuery })
+    const { router } = await newRouter({ stringifyQuery })
     router.resolve({ query: { foo: 'bar' } })
-    expect(stringifyQuery).toHaveBeenCalled()
+    expect(stringifyQuery).toHaveBeenCalledWith({ foo: 'bar' })
   })
 
   it('can do initial navigation to /', async () => {
