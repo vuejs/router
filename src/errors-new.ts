@@ -9,7 +9,6 @@ import {
 // and number enums could collide with other error codes in runtime
 export enum ErrorTypes {
   MATCHER_NOT_FOUND = 'MATCHER_NOT_FOUND',
-  INVALID_ROUTE_MATCH = 'INVALID_ROUTE_MATCH',
   NAVIGATION_GUARD_REDIRECT = 'NAVIGATION_GUARD_REDIRECT',
   NAVIGATION_ABORTED = 'NAVIGATION_ABORTED',
   NAVIGATION_CANCELLED = 'NAVIGATION_CANCELLED',
@@ -20,7 +19,7 @@ interface RouterError extends Error {
 }
 
 interface MatcherError extends RouterError {
-  type: ErrorTypes.MATCHER_NOT_FOUND | ErrorTypes.INVALID_ROUTE_MATCH
+  type: ErrorTypes.MATCHER_NOT_FOUND
   location: MatcherLocation
   currentLocation?: MatcherLocationNormalized
 }
@@ -48,11 +47,6 @@ const ErrorTypeMessages = {
         : ''
     }`
   },
-  [ErrorTypes.INVALID_ROUTE_MATCH]({ location }: MatcherError) {
-    return `Cannot redirect using a relative location:\n${stringifyRoute(
-      location
-    )}\nUse the function redirect and explicitly provide a name`
-  },
   [ErrorTypes.NAVIGATION_GUARD_REDIRECT]({ from, to }: NavigationError) {
     return `Redirected from "${from.fullPath}" to "${stringifyRoute(
       to
@@ -63,7 +57,7 @@ const ErrorTypeMessages = {
   },
   [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationError) {
     return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new \`push\` or \`replace\``
-  },
+  }
 }
 
 export function createRouterError<Type extends ErrorTypes>(
