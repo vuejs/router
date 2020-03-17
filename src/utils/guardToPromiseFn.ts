@@ -25,7 +25,7 @@ export function guardToPromiseFn(
           reject(
             createRouterError(ErrorTypes.NAVIGATION_GUARD_REDIRECT, {
               from: to,
-              to: valid as RouteLocationNormalized, // todo: remove as
+              to: valid,
             })
           )
         } else resolve()

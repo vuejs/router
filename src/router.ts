@@ -353,8 +353,8 @@ export function createRouter({
     if (pendingLocation !== toLocation) {
       return triggerError(
         createRouterError(ErrorTypes.NAVIGATION_CANCELLED, {
-          from: toLocation,
-          to: from,
+          from,
+          to: toLocation,
         }),
         isPush
       )
@@ -416,8 +416,8 @@ export function createRouter({
         if (pendingLocation !== toLocation) {
           return triggerError(
             createRouterError(ErrorTypes.NAVIGATION_CANCELLED, {
-              from: toLocation,
-              to: from,
+              from,
+              to: toLocation,
             }),
             false
           )

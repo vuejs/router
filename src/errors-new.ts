@@ -30,7 +30,7 @@ interface NavigationError extends RouterError {
     | ErrorTypes.NAVIGATION_ABORTED
     | ErrorTypes.NAVIGATION_CANCELLED
   from: RouteLocationNormalized
-  to: RouteLocationNormalized
+  to: RouteLocation | RouteLocationNormalized
 }
 
 type InferErrorType<Type extends ErrorTypes> = Type extends MatcherError['type']
@@ -57,10 +57,14 @@ const ErrorTypeMessages = __DEV__
         )}" via a navigation guard`
       },
       [ErrorTypes.NAVIGATION_ABORTED]({ from, to }: NavigationError) {
-        return `Navigation aborted from "${from.fullPath}" to "${to.fullPath}" via a navigation guard`
+        return `Navigation aborted from "${from.fullPath}" to "${stringifyRoute(
+          to
+        )}" via a navigation guard`
       },
       [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationError) {
-        return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new \`push\` or \`replace\``
+        return `Navigation cancelled from "${
+          from.fullPath
+        }" to "${stringifyRoute(to)}" with a new \`push\` or \`replace\``
       },
     }
   : undefined
@@ -74,14 +78,14 @@ export function createRouterError<Type extends ErrorTypes>(
   return (error as unknown) as InferErrorType<Type>
 }
 
-const propertiesToLog = ['params', 'query', 'hash']
+const propertiesToLog = ['params', 'query', 'hash'] as const
 
-function stringifyRoute(to: RouteLocation): string {
+function stringifyRoute(to: RouteLocation | RouteLocationNormalized): string {
   if (typeof to === 'string') return to
+  if ('fullPath' in to) return to.fullPath
   if ('path' in to) return to.path
-  const location: Partial<RouteLocationNormalized> = {}
+  const location = {} as Record<string, unknown>
   for (const key of propertiesToLog) {
-    // @ts-ignore
     if (key in to) location[key] = to[key]
   }
   return JSON.stringify(location, null, 2)
