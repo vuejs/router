@@ -39,32 +39,37 @@ type InferErrorType<Type extends ErrorTypes> = Type extends MatcherError['type']
   ? NavigationError
   : never
 
-const ErrorTypeMessages = {
-  [ErrorTypes.MATCHER_NOT_FOUND]({ location, currentLocation }: MatcherError) {
-    return `No match for\n ${JSON.stringify(location)}${
-      currentLocation
-        ? '\nwhile being at\n' + JSON.stringify(currentLocation)
-        : ''
-    }`
-  },
-  [ErrorTypes.NAVIGATION_GUARD_REDIRECT]({ from, to }: NavigationError) {
-    return `Redirected from "${from.fullPath}" to "${stringifyRoute(
-      to
-    )}" via a navigation guard`
-  },
-  [ErrorTypes.NAVIGATION_ABORTED]({ from, to }: NavigationError) {
-    return `Navigation aborted from "${from.fullPath}" to "${to.fullPath}" via a navigation guard`
-  },
-  [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationError) {
-    return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new \`push\` or \`replace\``
-  },
-}
+const ErrorTypeMessages = __DEV__
+  ? {
+      [ErrorTypes.MATCHER_NOT_FOUND]({
+        location,
+        currentLocation,
+      }: MatcherError) {
+        return `No match for\n ${JSON.stringify(location)}${
+          currentLocation
+            ? '\nwhile being at\n' + JSON.stringify(currentLocation)
+            : ''
+        }`
+      },
+      [ErrorTypes.NAVIGATION_GUARD_REDIRECT]({ from, to }: NavigationError) {
+        return `Redirected from "${from.fullPath}" to "${stringifyRoute(
+          to
+        )}" via a navigation guard`
+      },
+      [ErrorTypes.NAVIGATION_ABORTED]({ from, to }: NavigationError) {
+        return `Navigation aborted from "${from.fullPath}" to "${to.fullPath}" via a navigation guard`
+      },
+      [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationError) {
+        return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new \`push\` or \`replace\``
+      },
+    }
+  : undefined
 
 export function createRouterError<Type extends ErrorTypes>(
   type: Type,
   params: Omit<InferErrorType<Type>, 'type' | keyof Error>
 ): InferErrorType<Type> {
-  const message = (ErrorTypeMessages[type] as any)(params)
+  const message = __DEV__ ? (ErrorTypeMessages as any)[type](params) : undefined
   const error = Object.assign(new Error(message), { type }, params)
   return (error as unknown) as InferErrorType<Type>
 }
