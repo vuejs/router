@@ -211,7 +211,10 @@ export function createRouter({
         // push was called while waiting in guards
         if (pendingLocation !== toLocation) {
           triggerError(
-            createRouterError(ErrorTypes.NAVIGATION_CANCELLED, from, toLocation)
+            createRouterError(ErrorTypes.NAVIGATION_CANCELLED, {
+              from,
+              to: toLocation,
+            })
           )
         }
         // preserve the original redirectedFrom if any
@@ -220,7 +223,10 @@ export function createRouter({
         // TODO: write tests
         if (pendingLocation !== toLocation) {
           triggerError(
-            createRouterError(ErrorTypes.NAVIGATION_CANCELLED, from, toLocation)
+            createRouterError(ErrorTypes.NAVIGATION_CANCELLED, {
+              from,
+              to: toLocation,
+            })
           )
         }
       }
@@ -331,7 +337,10 @@ export function createRouter({
     // a more recent navigation took place
     if (pendingLocation !== toLocation) {
       return triggerError(
-        createRouterError(ErrorTypes.NAVIGATION_CANCELLED, toLocation, from),
+        createRouterError(ErrorTypes.NAVIGATION_CANCELLED, {
+          from: toLocation,
+          to: from,
+        }),
         isPush
       )
     }
@@ -385,11 +394,10 @@ export function createRouter({
         // a more recent navigation took place
         if (pendingLocation !== toLocation) {
           return triggerError(
-            createRouterError(
-              ErrorTypes.NAVIGATION_CANCELLED,
-              toLocation,
-              from
-            ),
+            createRouterError(ErrorTypes.NAVIGATION_CANCELLED, {
+              from: toLocation,
+              to: from,
+            }),
             false
           )
         }

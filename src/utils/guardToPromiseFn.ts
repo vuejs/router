@@ -20,10 +20,13 @@ export function guardToPromiseFn(
       ) => {
         // TODO: handle callback
         if (valid === false)
-          reject(createRouterError(ErrorTypes.NAVIGATION_ABORTED, from, to))
+          reject(createRouterError(ErrorTypes.NAVIGATION_ABORTED, { from, to }))
         else if (isRouteLocation(valid)) {
           reject(
-            createRouterError(ErrorTypes.NAVIGATION_GUARD_REDIRECT, to, valid)
+            createRouterError(ErrorTypes.NAVIGATION_GUARD_REDIRECT, {
+              from: to,
+              to: valid as RouteLocationNormalized, // todo: remove as
+            })
           )
         } else resolve()
       }
