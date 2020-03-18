@@ -13,7 +13,7 @@ import {
   ErrorTypes,
   NavigationError,
   NavigationRedirectError,
-} from '../errors-new'
+} from '../errors'
 
 export function guardToPromiseFn(
   guard: NavigationGuard,

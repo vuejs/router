@@ -1,5 +1,5 @@
 import { createRouter as newRouter, createMemoryHistory } from '../src'
-import { ErrorTypes } from '../src/errors-new'
+import { ErrorTypes } from '../src/errors'
 import { components, tick } from './utils'
 import { RouteRecord } from '../src/types'
 

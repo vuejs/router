@@ -4,7 +4,7 @@ import {
   MatcherLocationNormalized,
   ListenerRemover,
 } from '../types'
-import { createRouterError, ErrorTypes, MatcherError } from '../errors-new'
+import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './path-matcher'
 import { RouteRecordNormalized } from './types'
 import {

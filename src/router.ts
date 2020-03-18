@@ -19,7 +19,7 @@ import {
   scrollToPosition,
 } from './utils/scroll'
 import { createRouterMatcher } from './matcher'
-import { createRouterError, ErrorTypes, NavigationError } from './errors-new'
+import { createRouterError, ErrorTypes, NavigationError } from './errors'
 import {
   extractComponentsGuards,
   guardToPromiseFn,

@@ -1,6 +1,6 @@
 import fakePromise from 'faked-promise'
 import { createRouter, createMemoryHistory, createWebHistory } from '../src'
-import { ErrorTypes } from '../src/errors-new'
+import { ErrorTypes } from '../src/errors'
 import { createDom, components, tick } from './utils'
 import {
   RouteRecord,
