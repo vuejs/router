@@ -2,7 +2,7 @@
   "include": ["src/global.d.ts", "src/**/*.ts", "__tests__/**/*.ts"],
   "compilerOptions": {
     "target": "esnext",
-    "module": "commonjs",
+    "module": "esnext",
     // "lib": ["es2017.object"] /* Specify library files to be included in the compilation. */,
     "declaration": true,
     "declarationMap": true,
