@@ -30,11 +30,18 @@ interface NavigationError extends RouterError {
     | ErrorTypes.NAVIGATION_ABORTED
     | ErrorTypes.NAVIGATION_CANCELLED
   from: RouteLocationNormalized
-  to: RouteLocation | RouteLocationNormalized
+  to: RouteLocationNormalized
+}
+
+interface NavigationRedirectError extends Omit<NavigationError, 'to'> {
+  type: ErrorTypes.NAVIGATION_GUARD_REDIRECT
+  to: RouteLocation
 }
 
 type InferErrorType<Type extends ErrorTypes> = Type extends MatcherError['type']
   ? MatcherError
+  : Type extends NavigationRedirectError['type']
+  ? NavigationRedirectError
   : Type extends NavigationError['type']
   ? NavigationError
   : never
@@ -51,20 +58,19 @@ const ErrorTypeMessages = __DEV__
             : ''
         }`
       },
-      [ErrorTypes.NAVIGATION_GUARD_REDIRECT]({ from, to }: NavigationError) {
+      [ErrorTypes.NAVIGATION_GUARD_REDIRECT]({
+        from,
+        to,
+      }: NavigationRedirectError) {
         return `Redirected from "${from.fullPath}" to "${stringifyRoute(
           to
         )}" via a navigation guard`
       },
       [ErrorTypes.NAVIGATION_ABORTED]({ from, to }: NavigationError) {
-        return `Navigation aborted from "${from.fullPath}" to "${stringifyRoute(
-          to
-        )}" via a navigation guard`
+        return `Navigation aborted from "${from.fullPath}" to "${to.fullPath}" via a navigation guard`
       },
       [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationError) {
-        return `Navigation cancelled from "${
-          from.fullPath
-        }" to "${stringifyRoute(to)}" with a new \`push\` or \`replace\``
+        return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new \`push\` or \`replace\``
       },
     }
   : undefined
@@ -80,9 +86,8 @@ export function createRouterError<Type extends ErrorTypes>(
 
 const propertiesToLog = ['params', 'query', 'hash'] as const
 
-function stringifyRoute(to: RouteLocation | RouteLocationNormalized): string {
+function stringifyRoute(to: RouteLocation): string {
   if (typeof to === 'string') return to
-  if ('fullPath' in to) return to.fullPath
   if ('path' in to) return to.path
   const location = {} as Record<string, unknown>
   for (const key of propertiesToLog) {
