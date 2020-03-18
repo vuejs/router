@@ -19,7 +19,7 @@ import {
   scrollToPosition,
 } from './utils/scroll'
 import { createRouterMatcher } from './matcher'
-import { createRouterError, ErrorTypes } from './errors-new'
+import { createRouterError, ErrorTypes, NavigationError } from './errors-new'
 import {
   extractComponentsGuards,
   guardToPromiseFn,
@@ -214,29 +214,23 @@ export function createRouter({
     try {
       await navigate(toLocation, from)
     } catch (error) {
+      // push was called while waiting in guards
+      // TODO: write tests
+      if (pendingLocation !== toLocation) {
+        triggerError(
+          createRouterError<NavigationError>(ErrorTypes.NAVIGATION_CANCELLED, {
+            from,
+            to: toLocation,
+          })
+        )
+      }
+
       if (error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT) {
-        // push was called while waiting in guards
-        if (pendingLocation !== toLocation) {
-          triggerError(
-            createRouterError(ErrorTypes.NAVIGATION_CANCELLED, {
-              from,
-              to: toLocation,
-            })
-          )
-        }
         // preserve the original redirectedFrom if any
         return pushWithRedirect(error.to, redirectedFrom || toLocation)
-      } else {
-        // TODO: write tests
-        if (pendingLocation !== toLocation) {
-          triggerError(
-            createRouterError(ErrorTypes.NAVIGATION_CANCELLED, {
-              from,
-              to: toLocation,
-            })
-          )
-        }
       }
+
+      // unkwnown error
       triggerError(error)
     }
 
@@ -352,7 +346,7 @@ export function createRouter({
     // a more recent navigation took place
     if (pendingLocation !== toLocation) {
       return triggerError(
-        createRouterError(ErrorTypes.NAVIGATION_CANCELLED, {
+        createRouterError<NavigationError>(ErrorTypes.NAVIGATION_CANCELLED, {
           from,
           to: toLocation,
         }),
@@ -415,10 +409,13 @@ export function createRouter({
         // a more recent navigation took place
         if (pendingLocation !== toLocation) {
           return triggerError(
-            createRouterError(ErrorTypes.NAVIGATION_CANCELLED, {
-              from,
-              to: toLocation,
-            }),
+            createRouterError<NavigationError>(
+              ErrorTypes.NAVIGATION_CANCELLED,
+              {
+                from,
+                to: toLocation,
+              }
+            ),
             false
           )
         }

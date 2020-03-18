@@ -8,7 +8,12 @@ import {
 } from '../types'
 
 import { isRouteLocation } from '../types'
-import { createRouterError, ErrorTypes } from '../errors-new'
+import {
+  createRouterError,
+  ErrorTypes,
+  NavigationError,
+  NavigationRedirectError,
+} from '../errors-new'
 
 export function guardToPromiseFn(
   guard: NavigationGuard,
@@ -22,13 +27,21 @@ export function guardToPromiseFn(
         valid?: boolean | RouteLocation | NavigationGuardNextCallback
       ) => {
         if (valid === false)
-          reject(createRouterError(ErrorTypes.NAVIGATION_ABORTED, { from, to }))
+          reject(
+            createRouterError<NavigationError>(ErrorTypes.NAVIGATION_ABORTED, {
+              from,
+              to,
+            })
+          )
         else if (isRouteLocation(valid)) {
           reject(
-            createRouterError(ErrorTypes.NAVIGATION_GUARD_REDIRECT, {
-              from: to,
-              to: valid,
-            })
+            createRouterError<NavigationRedirectError>(
+              ErrorTypes.NAVIGATION_GUARD_REDIRECT,
+              {
+                from: to,
+                to: valid,
+              }
+            )
           )
         } else if (!valid || valid === true) {
           resolve()
