@@ -4,11 +4,10 @@ import createWebHashHistory from './history/hash'
 
 export {
   RouteLocationNormalized,
-  START_LOCATION_NORMALIZED as START_LOCATION,
-  // needed for types, should probably be removed by changing the
   RouteLocationOptions,
+  START_LOCATION_NORMALIZED as START_LOCATION,
 } from './types'
-export { createRouter, Router } from './router'
+export { createRouter, Router, RouterOptions } from './router'
 
 export { onBeforeRouteLeave } from './navigationGuards'
 export { useRoute, useRouter } from './injectKeys'

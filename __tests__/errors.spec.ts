@@ -1,5 +1,5 @@
 import { createRouter as newRouter, createMemoryHistory } from '../src'
-import { NavigationAborted, NavigationGuardRedirect } from '../src/errors'
+import { ErrorTypes } from '../src/errors'
 import { components, tick } from './utils'
 import { RouteRecord } from '../src/types'
 
@@ -47,9 +47,11 @@ describe('Errors', () => {
     try {
       await router.push('/foo')
     } catch (err) {
-      expect(err).toBeInstanceOf(NavigationAborted)
+      expect(err.type).toBe(ErrorTypes.NAVIGATION_ABORTED)
     }
-    expect(onError).toHaveBeenCalledWith(expect.any(NavigationAborted))
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ type: ErrorTypes.NAVIGATION_ABORTED })
+    )
   })
 
   it('triggers erros caused by new navigations of a next(redirect) trigered by history', async () => {
@@ -69,12 +71,15 @@ describe('Errors', () => {
     expect(onError).toHaveBeenCalledTimes(2)
     expect(onError).toHaveBeenNthCalledWith(
       1,
-      expect.any(NavigationGuardRedirect)
+      expect.objectContaining({ type: ErrorTypes.NAVIGATION_GUARD_REDIRECT })
     )
     expect(onError.mock.calls[0]).toMatchObject([
       { to: { params: { p: '1' } }, from: { fullPath: '/p/0' } },
     ])
-    expect(onError).toHaveBeenNthCalledWith(2, expect.any(NavigationAborted))
+    expect(onError).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ type: ErrorTypes.NAVIGATION_ABORTED })
+    )
     expect(onError.mock.calls[1]).toMatchObject([
       { to: { params: { p: '1' } }, from: { params: { p: 'other' } } },
     ])
