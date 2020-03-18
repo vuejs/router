@@ -215,8 +215,8 @@ describe('beforeRouteEnter', () => {
         expect(router.currentRoute.value.fullPath).toBe('/foo')
       })
 
-      // not implemented yet as it depends on Vue 3 Suspense
-      it.skip('calls next callback', done => {
+      // TODO:
+      it.skip('calls next callback', async done => {
         const router = createRouter({ routes })
         beforeRouteEnter.mockImplementationOnce((to, from, next) => {
           next(vm => {
@@ -225,6 +225,9 @@ describe('beforeRouteEnter', () => {
             done()
           })
         })
+
+        await router.push('/')
+        await router.push('/guard/2')
       })
 
       it.skip('calls next callback after waiting', async done => {

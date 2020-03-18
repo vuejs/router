@@ -3,6 +3,8 @@ import {
   RouteLocationNormalized,
   NavigationGuardCallback,
   RouteLocation,
+  RouteLocationNormalizedResolved,
+  NavigationGuardNextCallback,
 } from '../types'
 
 import { isRouteLocation } from '../types'
@@ -11,14 +13,14 @@ import { createRouterError, ErrorTypes } from '../errors-new'
 export function guardToPromiseFn(
   guard: NavigationGuard,
   to: RouteLocationNormalized,
-  from: RouteLocationNormalized
+  from: RouteLocationNormalizedResolved
+  // record?: RouteRecordNormalized
 ): () => Promise<void> {
   return () =>
     new Promise((resolve, reject) => {
       const next: NavigationGuardCallback = (
-        valid?: boolean | RouteLocation
+        valid?: boolean | RouteLocation | NavigationGuardNextCallback
       ) => {
-        // TODO: handle callback
         if (valid === false)
           reject(createRouterError(ErrorTypes.NAVIGATION_ABORTED, { from, to }))
         else if (isRouteLocation(valid)) {
@@ -28,7 +30,13 @@ export function guardToPromiseFn(
               to: valid,
             })
           )
-        } else resolve()
+        } else if (!valid || valid === true) {
+          resolve()
+        } else {
+          // TODO: call the in component enter callbacks. Maybe somewhere else
+          // record && record.enterCallbacks.push(valid)
+          resolve()
+        }
       }
 
       guard(to, from, next)

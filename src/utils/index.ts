@@ -3,6 +3,7 @@ import {
   RouteParams,
   Immutable,
   RouteComponent,
+  RouteLocationNormalizedResolved,
 } from '../types'
 import { guardToPromiseFn } from './guardToPromiseFn'
 import { RouteRecordNormalized } from '../matcher/types'
@@ -23,7 +24,7 @@ export function extractComponentsGuards(
   matched: RouteRecordNormalized[],
   guardType: GuardType,
   to: RouteLocationNormalized,
-  from: RouteLocationNormalized
+  from: RouteLocationNormalizedResolved
 ) {
   const guards: Array<() => Promise<void>> = []
 
