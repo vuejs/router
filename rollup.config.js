@@ -7,6 +7,12 @@ import commonjs from 'rollup-plugin-commonjs'
 const pkg = require('./package.json')
 const name = pkg.name
 
+const banner = `/*!
+  * ${pkg.name} v${pkg.version}
+  * (c) ${new Date().getFullYear()} Eduardo San Martin Morote
+  * @license MIT
+  */`
+
 // ensure TS checks only once for each build
 let hasTSChecked = false
 
@@ -56,6 +62,7 @@ function createConfig(format, output, plugins = []) {
   }
 
   output.sourcemap = true
+  output.banner = banner
   output.externalLiveBindings = false
   output.globals = { vue: 'Vue' }
 
