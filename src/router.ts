@@ -74,7 +74,7 @@ export interface Router {
   push(to: RouteLocation): Promise<RouteLocationNormalizedResolved>
   replace(to: RouteLocation): Promise<RouteLocationNormalizedResolved>
 
-  beforeEach(guard: NavigationGuard): ListenerRemover
+  beforeEach(guard: NavigationGuard<undefined>): ListenerRemover
   afterEach(guard: PostNavigationGuard): ListenerRemover
 
   onError(handler: ErrorHandler): ListenerRemover
@@ -94,7 +94,7 @@ export function createRouter({
 }: RouterOptions): Router {
   const matcher = createRouterMatcher(routes, {})
 
-  const beforeGuards = useCallbacks<NavigationGuard>()
+  const beforeGuards = useCallbacks<NavigationGuard<undefined>>()
   const afterGuards = useCallbacks<PostNavigationGuard>()
   const currentRoute = ref<RouteLocationNormalizedResolved>(
     START_LOCATION_NORMALIZED
@@ -275,6 +275,9 @@ export function createRouter({
       for (const guard of record.leaveGuards) {
         guards.push(guardToPromiseFn(guard, to, from))
       }
+
+      // free the references
+      record.instances = {}
     }
 
     // run the queue of per route beforeRouteLeave guards

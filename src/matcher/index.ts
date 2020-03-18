@@ -284,6 +284,7 @@ export function normalizeRouteRecord(
     props: record.props || false,
     meta: record.meta || {},
     leaveGuards: [],
+    instances: {},
     aliasOf: undefined,
   }
 }

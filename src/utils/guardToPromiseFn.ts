@@ -14,12 +14,21 @@ import {
   NavigationError,
   NavigationRedirectError,
 } from '../errors'
+import { ComponentPublicInstance } from 'vue'
 
 export function guardToPromiseFn(
-  guard: NavigationGuard,
+  guard: NavigationGuard<undefined>,
   to: RouteLocationNormalized,
-  from: RouteLocationNormalizedResolved
-  // record?: RouteRecordNormalized
+  from: RouteLocationNormalizedResolved,
+  instance?: undefined
+): () => Promise<void>
+export function guardToPromiseFn<
+  ThisType extends ComponentPublicInstance | undefined
+>(
+  guard: NavigationGuard<ThisType>,
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalizedResolved,
+  instance: ThisType
 ): () => Promise<void> {
   return () =>
     new Promise((resolve, reject) => {
@@ -52,6 +61,6 @@ export function guardToPromiseFn(
         }
       }
 
-      guard(to, from, next)
+      guard.call(instance, to, from, next)
     })
 }

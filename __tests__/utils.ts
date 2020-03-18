@@ -30,6 +30,7 @@ export interface RouteRecordViewLoose
     'path' | 'name' | 'components' | 'children' | 'meta' | 'beforeEnter'
   > {
   leaveGuards?: any
+  instances: Record<string, any>
   props?: RouteRecordCommon['props']
   aliasOf: RouteRecordViewLoose | undefined
 }
@@ -53,6 +54,7 @@ export interface MatcherLocationNormalizedLoose {
   redirectedFrom?: Partial<MatcherLocationNormalized>
   meta: any
   matched: Partial<RouteRecordViewLoose>[]
+  instances: Record<string, any>
 }
 
 declare global {

@@ -65,6 +65,11 @@ describe('beforeRouteUpdate', () => {
         await p
         expect(router.currentRoute.value.fullPath).toBe('/guard/foo')
       })
+
+      it.todo('invokes with the component context')
+      it.todo('invokes with the component context with named views')
+      it.todo('invokes with the component context with nested views')
+      it.todo('invokes with the component context with nested named views')
     })
   })
 })

@@ -13,6 +13,8 @@ export interface RouteRecordNormalized {
   meta: Exclude<RouteRecordMultipleViews['meta'], void>
   props: Exclude<RouteRecordCommon['props'], void>
   beforeEnter: RouteRecordMultipleViews['beforeEnter']
-  leaveGuards: NavigationGuard[]
+  leaveGuards: NavigationGuard<undefined>[]
+  // TODO: should be ComponentPublicInstance but breaks Immutable type
+  instances: Record<string, {} | undefined | null>
   aliasOf: RouteRecordNormalized | undefined
 }

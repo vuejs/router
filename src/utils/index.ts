@@ -43,11 +43,16 @@ export function extractComponentsGuards(
           // replace the function with the resolved component
           record.components[name] = resolvedComponent
           const guard = resolvedComponent[guardType]
-          return guard && guardToPromiseFn(guard, to, from)()
+          return (
+            // @ts-ignore: the guard matcheds the instance type
+            guard && guardToPromiseFn(guard, to, from, record.instances[name])()
+          )
         })
       } else {
         const guard = rawComponent[guardType]
-        guard && guards.push(guardToPromiseFn(guard, to, from))
+        guard &&
+          // @ts-ignore: the guard matcheds the instance type
+          guards.push(guardToPromiseFn(guard, to, from, record.instances[name]))
       }
     }
   }

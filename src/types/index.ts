@@ -1,6 +1,6 @@
 import { LocationQuery, LocationQueryRaw } from '../utils/query'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
-import { markNonReactive, ComponentOptions } from 'vue'
+import { markNonReactive, ComponentOptions, ComponentPublicInstance } from 'vue'
 import { RouteRecordNormalized } from '../matcher/types'
 
 export type Lazy<T> = () => Promise<T>
@@ -102,8 +102,9 @@ export interface RouteLocationNormalized {
 // }
 
 // TODO: type this for beforeRouteUpdate and beforeRouteLeave
+// TODO: support arrays
 export interface RouteComponentInterface {
-  beforeRouteEnter?: NavigationGuard<void>
+  beforeRouteEnter?: NavigationGuard<undefined>
   /**
    * Guard called when the router is navigating away from the current route
    * that is rendering this component.
@@ -111,7 +112,7 @@ export interface RouteComponentInterface {
    * @param from RouteLocation we are navigating from
    * @param next function to validate, cancel or modify (by redirectering) the navigation
    */
-  beforeRouteLeave?: NavigationGuard<void>
+  beforeRouteLeave?: NavigationGuard
   /**
    * Guard called whenever the route that renders this component has changed but
    * it is reused for the new route. This allows you to guard for changes in params,
@@ -120,7 +121,7 @@ export interface RouteComponentInterface {
    * @param from RouteLocation we are navigating from
    * @param next function to validate, cancel or modify (by redirectering) the navigation
    */
-  beforeRouteUpdate?: NavigationGuard<void>
+  beforeRouteUpdate?: NavigationGuard
 }
 
 // TODO: allow defineComponent export type RouteComponent = (Component | ReturnType<typeof defineComponent>) &
@@ -137,7 +138,7 @@ export interface RouteRecordCommon {
     | Record<string, any>
     | ((to: RouteLocationNormalized) => Record<string, any>)
   // TODO: beforeEnter has no effect with redirect, move and test
-  beforeEnter?: NavigationGuard | NavigationGuard[]
+  beforeEnter?: NavigationGuard<undefined> | NavigationGuard<undefined>[]
   meta?: Record<string | number | symbol, any>
   // TODO: only allow a subset?
   // TODO: RFC: remove this and only allow global options
@@ -223,7 +224,7 @@ export interface NavigationGuardCallback {
 
 export type NavigationGuardNextCallback = (vm: any) => any
 
-export interface NavigationGuard<V = void> {
+export interface NavigationGuard<V = ComponentPublicInstance> {
   (
     this: V,
     // TODO: we could maybe add extra information like replace: true/false

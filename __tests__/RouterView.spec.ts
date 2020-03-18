@@ -24,7 +24,9 @@ const routes = createRoutes({
     params: {},
     hash: '',
     meta: {},
-    matched: [{ components: { default: components.Home }, path: '/' }],
+    matched: [
+      { components: { default: components.Home }, instances: {}, path: '/' },
+    ],
   },
   foo: {
     fullPath: '/foo',
@@ -34,7 +36,9 @@ const routes = createRoutes({
     params: {},
     hash: '',
     meta: {},
-    matched: [{ components: { default: components.Foo }, path: '/foo' }],
+    matched: [
+      { components: { default: components.Foo }, instances: {}, path: '/foo' },
+    ],
   },
   nested: {
     fullPath: '/a',
@@ -45,8 +49,8 @@ const routes = createRoutes({
     hash: '',
     meta: {},
     matched: [
-      { components: { default: components.Nested }, path: '/' },
-      { components: { default: components.Foo }, path: 'a' },
+      { components: { default: components.Nested }, instances: {}, path: '/' },
+      { components: { default: components.Foo }, instances: {}, path: 'a' },
     ],
   },
   nestedNested: {
@@ -58,9 +62,9 @@ const routes = createRoutes({
     hash: '',
     meta: {},
     matched: [
-      { components: { default: components.Nested }, path: '/' },
-      { components: { default: components.Nested }, path: 'a' },
-      { components: { default: components.Foo }, path: 'b' },
+      { components: { default: components.Nested }, instances: {}, path: '/' },
+      { components: { default: components.Nested }, instances: {}, path: 'a' },
+      { components: { default: components.Foo }, instances: {}, path: 'b' },
     ],
   },
   named: {
@@ -71,7 +75,9 @@ const routes = createRoutes({
     params: {},
     hash: '',
     meta: {},
-    matched: [{ components: { foo: components.Foo }, path: '/' }],
+    matched: [
+      { components: { foo: components.Foo }, instances: {}, path: '/' },
+    ],
   },
   withParams: {
     fullPath: '/users/1',
@@ -84,6 +90,8 @@ const routes = createRoutes({
     matched: [
       {
         components: { default: components.User },
+
+        instances: {},
         path: '/users/:id',
         props: true,
       },
@@ -100,6 +108,8 @@ const routes = createRoutes({
     matched: [
       {
         components: { default: components.WithProps },
+
+        instances: {},
         path: '/props/:id',
         props: { id: 'foo', other: 'fixed' },
       },
@@ -117,6 +127,8 @@ const routes = createRoutes({
     matched: [
       {
         components: { default: components.WithProps },
+
+        instances: {},
         path: '/props/:id',
         props: to => ({ id: Number(to.params.id) * 2, other: to.query.q }),
       },
@@ -129,7 +141,13 @@ describe('RouterView', () => {
 
   function factory(route: RouteLocationNormalizedLoose, props: any = {}) {
     const router = {
-      currentRoute: ref(markNonReactive({ ...route })),
+      currentRoute: ref(
+        markNonReactive({
+          ...route,
+          // reset the instances everytime
+          matched: route.matched.map(match => ({ ...match, instances: {} })),
+        })
+      ),
     }
 
     const { app, el } = mount(

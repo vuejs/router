@@ -12,7 +12,7 @@ import { getData, delay } from '../api'
 export default defineComponent({
   name: 'ComponentWithData',
   async setup() {
-    const data = reactive({ other: null })
+    const data = reactive({ other: 'old' })
     data.fromApi = await getData()
 
     // TODO: add sample with onBeforeRouteUpdate()
