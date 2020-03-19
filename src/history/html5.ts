@@ -35,9 +35,12 @@ function createCurrentLocation(
 ): HistoryLocationNormalized {
   const { pathname, search, hash } = location
   // allows hash based url
-  if (base.indexOf('#') > -1) {
+  const hashPos = base.indexOf('#')
+  if (hashPos > -1) {
     // prepend the starting slash to hash so the url starts with /#
-    return normalizeHistoryLocation(stripBase('/' + hash, base))
+    let pathFromHash = hash.slice(1)
+    if (pathFromHash.charAt(0) !== '/') pathFromHash = '/' + pathFromHash
+    return normalizeHistoryLocation(stripBase(pathFromHash, ''))
   }
   const path = stripBase(pathname, base)
   return normalizeHistoryLocation(path + search + hash)
@@ -59,6 +62,8 @@ function useHistoryListeners(
   }: {
     state: StateEntry
   }) => {
+    // TODO: state can be null when using links with a `hash` in hash mode
+    // maybe we should trigger a plain navigation in that case
     cs.info('popstate fired', state)
     cs.info('currentState', historyState)
 
