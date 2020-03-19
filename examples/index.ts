@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import { createApp, ComponentPublicInstance } from 'vue'
 
 const context = require.context('.', true, /^.{2,}\/index\.ts$/)
 const DIR_RE = /^\.\/([^/]+)\//
@@ -11,7 +11,16 @@ context.keys().forEach(path => {
 })
 examples.sort()
 
-new Vue({
-  el: '#app',
-  data: { examples },
+declare global {
+  interface Window {
+    app: typeof app
+    vm: ComponentPublicInstance
+  }
+}
+
+const app = createApp({
+  data: () => ({ examples }),
 })
+
+app.mount('#app')
+window.app = app

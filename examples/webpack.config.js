@@ -34,6 +34,7 @@ module.exports = {
       })),
     },
     hot: true,
+    stats: 'minimal',
   },
 
   entry: examples.reduce(
@@ -72,6 +73,13 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js'],
   },
   plugins: [
+    new webpack.DefinePlugin({
+      __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
+      __BROWSER__: `typeof window !== 'undefined'`,
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+      },
+    }),
     ...examples.map(
       name =>
         new HtmlWebpackPlugin({
@@ -84,11 +92,6 @@ module.exports = {
       filename: 'index.html',
       chunks: ['index'],
       template: resolve(__dirname, 'index.html'),
-    }),
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-      },
     }),
   ],
 }

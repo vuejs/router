@@ -12,32 +12,32 @@
     <div id="app">
       <section class="info">
         Name:
-        <pre id="name">{{ $route.name }}</pre>
+        <pre id="name">{{ route.name }}</pre>
       </section>
 
       <section class="info">
         Params:
-        <pre id="params">{{ $route.params }}</pre>
+        <pre id="params">{{ route.params }}</pre>
       </section>
 
       <section class="info">
         Query:
-        <pre id="query">{{ $route.query }}</pre>
+        <pre id="query">{{ route.query }}</pre>
       </section>
 
       <section class="info">
         Hash:
-        <pre id="hash">{{ $route.hash }}</pre>
+        <pre id="hash">{{ route.hash }}</pre>
       </section>
 
       <section class="info">
         FullPath:
-        <pre id="fullPath">{{ $route.fullPath }}</pre>
+        <pre id="fullPath">{{ route.fullPath }}</pre>
       </section>
 
       <section class="info">
         path:
-        <pre id="path">{{ $route.path }}</pre>
+        <pre id="path">{{ route.path }}</pre>
       </section>
 
       <hr />
@@ -63,10 +63,14 @@
           >
         </li>
         <li>
-          <a href="/encoding/n/%E2%82%AC">/n/%E2%82%AC (force reload)</a>
+          <a href="/encoding/documents/%E2%82%AC"
+            >/n/%E2%82%AC (force reload)</a
+          >
         </li>
         <li>
-          <a href="/encoding/n/€">/n/€ (force reload): not valid tho</a>
+          <a href="/encoding/documents/€"
+            >/n/€ (force reload. not valid but should not crash the router)</a
+          >
         </li>
       </ul>
 

@@ -1,6 +1,6 @@
-import { Router, plugin, createHashHistory } from '../../src'
+import { createRouter, createWebHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
-import Vue from 'vue'
+import { createApp } from 'vue'
 
 const component: RouteComponent = {
   template: `<div>A component</div>`,
@@ -14,8 +14,8 @@ const Document: RouteComponent = {
   template: `<div>Document: {{ $route.params.id }}</div>`,
 }
 
-const router = new Router({
-  history: createHashHistory('/' + __dirname),
+const router = createRouter({
+  history: createWebHistory('/' + __dirname),
   routes: [
     { path: '/', component: Home, name: 'home' },
     { path: '/documents/:id', name: 'docs', component: Document },
@@ -23,12 +23,7 @@ const router = new Router({
   ],
 })
 
-// use the router
-Vue.use(plugin)
+const app = createApp({})
+app.use(router)
 
-// @ts-ignore
-window.vm = new Vue({
-  el: '#app',
-  // @ts-ignore
-  router,
-})
+window.vm = app.mount('#app')

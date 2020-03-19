@@ -22,3 +22,10 @@ a {
 a:hover {
   color: #4fc08d;
 }
+
+.router-link-active {
+  color: darkorange;
+}
+.router-link-exact-active {
+  color: red;
+}

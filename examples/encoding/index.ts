@@ -1,6 +1,6 @@
-import { Router, plugin, createHistory } from '../../src'
+import { createRouter, createWebHistory, useRoute } from '../../src'
 import { RouteComponent } from '../../src/types'
-import Vue from 'vue'
+import { createApp } from 'vue'
 
 const component: RouteComponent = {
   template: `<div>A component</div>`,
@@ -11,11 +11,14 @@ const Home: RouteComponent = {
 }
 
 const Document: RouteComponent = {
-  template: `<div>Document: {{ $route.params.id }}</div>`,
+  template: `<div>Document: {{ route.params.id }}</div>`,
+  setup() {
+    return { route: useRoute() }
+  },
 }
 
-const router = new Router({
-  history: createHistory('/' + __dirname),
+const router = createRouter({
+  history: createWebHistory('/' + __dirname),
   routes: [
     { path: '/', component: Home, name: 'home' },
     { path: '/documents/:id', name: 'docs', component: Document },
@@ -23,12 +26,12 @@ const router = new Router({
   ],
 })
 
-// use the router
-Vue.use(plugin)
-
-// @ts-ignore
-window.vm = new Vue({
-  el: '#app',
-  // @ts-ignore
-  router,
+const app = createApp({
+  setup() {
+    const route = useRoute()
+    return { route }
+  },
 })
+app.use(router)
+
+window.vm = app.mount('#app')
