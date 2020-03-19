@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from '../../src'
+import { createRouter, useRoute, createWebHashHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
 import { createApp } from 'vue'
 
@@ -11,11 +11,15 @@ const Home: RouteComponent = {
 }
 
 const Document: RouteComponent = {
-  template: `<div>Document: {{ $route.params.id }}</div>`,
+  setup() {
+    const route = useRoute()
+    return { route }
+  },
+  template: `<div>Document: {{ route.params.id }}</div>`,
 }
 
 const router = createRouter({
-  history: createWebHistory('/' + __dirname),
+  history: createWebHashHistory('/' + __dirname),
   routes: [
     { path: '/', component: Home, name: 'home' },
     { path: '/documents/:id', name: 'docs', component: Document },
@@ -23,7 +27,12 @@ const router = createRouter({
   ],
 })
 
-const app = createApp({})
+const app = createApp({
+  setup() {
+    const route = useRoute()
+    return { route }
+  },
+})
 app.use(router)
 
 window.vm = app.mount('#app')
