@@ -152,10 +152,8 @@ export function stringifyURL(
  * @param base base to strip off
  */
 export function stripBase(pathname: string, base: string): string {
-  return (
-    (base && pathname.indexOf(base) === 0 && pathname.replace(base, '')) ||
-    pathname
-  )
+  if (!base || pathname.indexOf(base) !== 0) return pathname
+  return pathname.replace(base, '') || '/'
 }
 
 export function normalizeHistoryLocation(

@@ -11,6 +11,8 @@ module.exports = {
   basic(browser) {
     browser
       .url(baseURL)
+      // TODO: move this test to a different spec
+      .assert.urlEquals(baseURL + '/')
       .waitForElementVisible('#app', 1000)
 
       .click('li:nth-child(3) a')
@@ -20,18 +22,12 @@ module.exports = {
       .assert.containsText('#params', JSON.stringify({ id: '€uro' }, null, 2))
 
       // check initial visit
-      .url(baseURL + '/encoding/documents/%E2%82%ACuro')
+      .url(baseURL + '/documents/%E2%82%ACuro')
       .waitForElementVisible('#app', 1000)
       .assert.containsText('#fullPath', '/documents/%E2%82%ACuro')
       .assert.containsText('#path', '/documents/%E2%82%ACuro')
-    // .assert.containsText('#params', JSON.stringify({ id: '€uro' }, null, 2))
-    // .assert.containsText('#params', JSON.stringify({ id: '€uro' }, null, 2))
+      .assert.containsText('#params', JSON.stringify({ id: '€uro' }, null, 2))
 
-    browser
-      .getText('#params', function(res) {
-        this.assert.equal(res.value, JSON.stringify({ id: '€uro' }, null, 2))
-        console.log(res.state)
-      })
       .end()
   },
 }
