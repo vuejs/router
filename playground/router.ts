@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from '../src'
 import Home from './views/Home.vue'
 import Nested from './views/Nested.vue'
+import NestedWithId from './views/NestedWithId.vue'
 import Dynamic from './views/Dynamic.vue'
 import User from './views/User.vue'
 import NotFound from './views/NotFound.vue'
@@ -18,7 +19,14 @@ export const routerHistory = createWebHistory()
 export const router = createRouter({
   history: routerHistory,
   routes: [
+    { path: '/home', redirect: '/' },
     { path: '/', component: Home },
+    {
+      path: '/always-redirect',
+      component: Home,
+      beforeEnter: (to, from, next) =>
+        next('/users/' + Math.round(Math.random() * 100)),
+    },
     { path: '/users/:id', name: 'user', component: User, props: true },
     { path: '/documents/:id', name: 'docs', component: User },
     { path: encodeURI('/n/€'), name: 'euro', component },
@@ -79,6 +87,28 @@ export const router = createRouter({
           component: Nested,
           name: 'NestedOther',
         },
+        {
+          path: 'also-as-absolute',
+          alias: '/absolute',
+          name: 'absolute-child',
+          component: Nested,
+        },
+      ],
+    },
+
+    {
+      path: '/parent/:id',
+      name: 'parent',
+      component: NestedWithId,
+      props: true,
+      alias: '/p/:id',
+      children: [
+        // empty child
+        { path: '', component },
+        // child with absolute path. we need to add an `id` because the parent needs it
+        { path: '/p_:id/absolute-a', alias: 'as-absolute-a', component },
+        // same as above but the alias is absolute
+        { path: 'as-absolute-b', alias: '/p_:id/absolute-b', component },
       ],
     },
     {

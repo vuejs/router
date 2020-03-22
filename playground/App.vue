@@ -61,10 +61,13 @@
         <a href="/documents/€">/documents/€ (force reload): not valid tho</a>
       </li>
       <li>
-        <router-link to="/">Home (redirects)</router-link>
+        <router-link to="/home">Home (redirects)</router-link>
       </li>
       <li>
-        <router-link to="/home">Home</router-link>
+        <router-link to="/">Home</router-link>
+      </li>
+      <li>
+        <router-link to="/always-redirect">/always-redirect</router-link>
       </li>
       <li>
         <router-link to="/nested">/nested</router-link>
@@ -106,6 +109,23 @@
       </li>
       <li>
         <router-link to="/rep/a/b">/rep/a/b</router-link>
+      </li>
+      <li>
+        <router-link to="/parent/1">/parent/1</router-link>
+      </li>
+      <li>
+        <router-link to="/p/1">/p/1</router-link>
+      </li>
+      <li>
+        <router-link to="/parent/1/as-absolute-a"
+          >/parent/1/as-absolute-a</router-link
+        >
+      </li>
+      <li>
+        <router-link to="/p/1/as-absolute-a">/p/1/as-absolute-a</router-link>
+      </li>
+      <li>
+        <router-link to="/p_1/absolute-a">/p_1/absolute-a</router-link>
       </li>
     </ul>
     <!-- <transition

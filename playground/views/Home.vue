@@ -3,6 +3,7 @@
     <div>Home</div>
     <p>My Data is: {{ someData }}</p>
     toggle: {{ log(toggle) }}
+    <button @click="counter++">{{ counter }}</button>
   </div>
 </template>
 
@@ -14,6 +15,7 @@ export default defineComponent({
   name: 'Home',
   data: () => ({
     toggle: false,
+    counter: 0,
   }),
 
   setup() {
