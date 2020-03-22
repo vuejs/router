@@ -31,6 +31,7 @@ export function useLink(props: UseLinkOptions) {
   const href = computed(() => router.createHref(route.value))
 
   const activeRecordIndex = computed<number>(() => {
+    // TODO: handle children with empty path: they should relate to their parent
     const currentMatched = route.value.matched[route.value.matched.length - 1]
     return router.currentRoute.value.matched.findIndex(
       isSameRouteRecord.bind(null, currentMatched)

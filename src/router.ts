@@ -275,9 +275,6 @@ export function createRouter({
       for (const guard of record.leaveGuards) {
         guards.push(guardToPromiseFn(guard, to, from))
       }
-
-      // free the references
-      record.instances = {}
     }
 
     // run the queue of per route beforeRouteLeave guards
@@ -333,6 +330,14 @@ export function createRouter({
 
     // run the queue of per route beforeEnter guards
     await runGuardQueue(guards)
+
+    // TODO: add tests
+    //  this should be done only if the navigation succeeds
+    // if we redirect, it shouldn't be done because we don't know
+    for (const record of leavingRecords) {
+      // free the references
+      record.instances = {}
+    }
   }
 
   /**
