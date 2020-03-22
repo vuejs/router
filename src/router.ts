@@ -38,6 +38,7 @@ import { ref, Ref, markNonReactive, nextTick, App, warn } from 'vue'
 import { RouteRecordNormalized } from './matcher/types'
 import { Link } from './components/Link'
 import { View } from './components/View'
+import { routerKey, routeLocationKey } from './utils/injectionSymbols'
 
 type ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor
@@ -553,8 +554,8 @@ function applyRouterPlugin(app: App, router: Router) {
     })
 
   // TODO: merge strats?
-  app.provide('router', router)
-  app.provide('route', router.currentRoute)
+  app.provide(routerKey, router)
+  app.provide(routeLocationKey, router.currentRoute)
 }
 
 async function runGuardQueue(guards: Lazy<any>[]): Promise<void> {

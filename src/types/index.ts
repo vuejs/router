@@ -136,7 +136,7 @@ export interface RouteRecordCommon {
   props?:
     | boolean
     | Record<string, any>
-    | ((to: RouteLocationNormalized) => Record<string, any>)
+    | ((to: Immutable<RouteLocationNormalized>) => Record<string, any>)
   // TODO: beforeEnter has no effect with redirect, move and test
   beforeEnter?: NavigationGuard<undefined> | NavigationGuard<undefined>[]
   meta?: Record<string | number | symbol, any>

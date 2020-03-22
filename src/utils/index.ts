@@ -8,11 +8,9 @@ import {
 import { guardToPromiseFn } from './guardToPromiseFn'
 import { RouteRecordNormalized } from '../matcher/types'
 import { LocationQueryValue } from './query'
+import { hasSymbol } from './injectionSymbols'
 
 export * from './guardToPromiseFn'
-
-const hasSymbol =
-  typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol'
 
 function isESModule(obj: any): obj is { default: RouteComponent } {
   return obj.__esModule || (hasSymbol && obj[Symbol.toStringTag] === 'Module')

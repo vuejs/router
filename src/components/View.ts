@@ -5,18 +5,15 @@ import {
   defineComponent,
   PropType,
   computed,
-  InjectionKey,
   ref,
   ComponentPublicInstance,
-  ComputedRef,
 } from 'vue'
-import { routeKey } from '../injectKeys'
 import { RouteLocationMatched } from '../types'
-
-// TODO: make it work with no symbols too for IE
-export const matchedRouteKey = Symbol() as InjectionKey<
-  ComputedRef<RouteLocationMatched | undefined>
->
+import {
+  matchedRouteKey,
+  viewDepthKey,
+  routeLocationKey,
+} from '../utils/injectionSymbols'
 
 export const View = defineComponent({
   name: 'RouterView',
@@ -28,9 +25,9 @@ export const View = defineComponent({
   },
 
   setup(props, { attrs }) {
-    const route = inject(routeKey)!
-    const depth: number = inject('routerViewDepth', 0)
-    provide('routerViewDepth', depth + 1)
+    const route = inject(routeLocationKey)!
+    const depth: number = inject(viewDepthKey, 0)
+    provide(viewDepthKey, depth + 1)
 
     const matchedRoute = computed(
       () => route.value.matched[depth] as RouteLocationMatched | undefined

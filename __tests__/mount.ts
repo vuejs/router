@@ -2,6 +2,7 @@ import { Component, createApp, nextTick } from 'vue'
 import * as runtimeDom from '@vue/runtime-dom'
 import { compile } from '@vue/compiler-dom'
 import { Router } from '../src'
+import { routerKey, routeLocationKey } from '../src/utils/injectionSymbols'
 
 export function mount(
   router: Router,
@@ -14,8 +15,8 @@ export function mount(
   const { template, components, ...ComponentWithoutTemplate } = Component
 
   const app = createApp(ComponentWithoutTemplate as any, rootProps)
-  app.provide('router', router)
-  app.provide('route', router.currentRoute)
+  app.provide(routerKey, router)
+  app.provide(routeLocationKey, router.currentRoute)
 
   for (const componentName in components) {
     app.component(componentName, components[componentName])

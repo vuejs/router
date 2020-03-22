@@ -1,7 +1,7 @@
 import { NavigationGuard } from './types'
 import { inject, getCurrentInstance, warn } from 'vue'
-import { matchedRouteKey } from './components/View'
 import { RouteRecordNormalized } from './matcher/types'
+import { matchedRouteKey } from './utils/injectionSymbols'
 
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
   const instance = getCurrentInstance()
