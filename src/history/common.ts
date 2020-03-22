@@ -90,7 +90,7 @@ export interface RouterHistory {
 /**
  * Transforms an URI into a normalized history location
  * @param parseQuery
- * @param location URI to normalize
+ * @param location - URI to normalize
  * @returns a normalized history location
  */
 export function parseURL(
@@ -148,8 +148,8 @@ export function stringifyURL(
 
 /**
  * Strips off the base from the beginning of a location.pathname
- * @param pathname location.pathname
- * @param base base to strip off
+ * @param pathname - location.pathname
+ * @param base - base to strip off
  */
 export function stripBase(pathname: string, base: string): string {
   if (!base || pathname.indexOf(base) !== 0) return pathname

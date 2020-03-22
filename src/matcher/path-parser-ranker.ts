@@ -28,14 +28,14 @@ export interface PathParser {
    * Parses a url and returns the matched params or nul if it doesn't match. An
    * optional param that isn't preset will be an empty string. A repeatable
    * param will be an array if there is at least one value.
-   * @param path url to parse
+   * @param path - url to parse
    * @returns a Params object, empty if there are no params. `null` if there is
    * no match
    */
   parse(path: string): PathParams | null
   /**
    * Creates a string version of the url
-   * @param params object of params
+   * @param params - object of params
    * @returns a url
    */
   stringify(params: PathParams): string
@@ -93,8 +93,8 @@ const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\]/g
 /**
  * Creates a path parser from an array of Segments (a segment is an array of Tokens)
  *
- * @param segments array of segments returned by tokenizePath
- * @param extraOptions optional options for the regexp
+ * @param segments - array of segments returned by tokenizePath
+ * @param extraOptions - optional options for the regexp
  * @returns a PathParser
  */
 export function tokensToParser(
@@ -253,8 +253,8 @@ export function tokensToParser(
 /**
  * Compares an array of numbers as used in PathParser.score and returns a
  * number. This function can be used to `sort` an array
- * @param a first array of numbers
- * @param b second array of numbers
+ * @param a - first array of numbers
+ * @param b - second array of numbers
  * @returns 0 if both are equal, < 0 if a should be sorted first, > 0 if b
  * should be sorted first
  */
@@ -285,8 +285,8 @@ function compareScoreArray(a: number[], b: number[]): number {
 
 /**
  * Compare function that can be used with `sort` to sort an array of PathParser
- * @param a first PathParser
- * @param b second PathParser
+ * @param a - first PathParser
+ * @param b - second PathParser
  * @returns 0 if both are equal, < 0 if a should be sorted first, > 0 if b
  */
 export function comparePathParserScore(a: PathParser, b: PathParser): number {

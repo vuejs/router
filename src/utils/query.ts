@@ -14,7 +14,7 @@ export type LocationQueryRaw = Record<
 /**
  * Transform a queryString into a query object. Accept both, a version with the leading `?` and without
  * Should work as URLSearchParams
- * @param search
+ * @param search - search string to parse
  * @returns a query object
  */
 export function parseQuery(search: string): LocationQuery {
@@ -48,7 +48,7 @@ export function parseQuery(search: string): LocationQuery {
 
 /**
  * Stringify an object query. Works like URLSearchParams. Doesn't prepend a `?`
- * @param query
+ * @param query - query object to stringify
  */
 export function stringifyQuery(query: LocationQueryRaw): string {
   let search = ''
@@ -80,7 +80,7 @@ export function stringifyQuery(query: LocationQueryRaw): string {
  * Transforms a RawQuery intoe a NormalizedQuery by casting numbers into
  * strings, removing keys with an undefined value and replacing undefined with
  * null in arrays
- * @param query
+ * @param query - query object to normalize
  */
 export function normalizeQuery(
   query: LocationQueryRaw | undefined

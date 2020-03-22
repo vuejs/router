@@ -4,6 +4,8 @@ import createWebHashHistory from './history/hash'
 import { inject } from 'vue'
 import { routerKey, routeLocationKey } from './utils/injectionSymbols'
 
+export { RouterHistory } from './history/common'
+
 export {
   RouteLocationNormalized,
   RouteLocationOptions,

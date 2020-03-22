@@ -173,8 +173,8 @@ export function createRouterMatcher(
 
   /**
    * Resolves a location. Gives access to the route record that corresponds to the actual path as well as filling the corresponding params objects
-   * @param location MatcherLocation to resolve to a url
-   * @param currentLocation MatcherLocationNormalized of the current location
+   * @param location - MatcherLocation to resolve to a url
+   * @param currentLocation - MatcherLocationNormalized of the current location
    */
   function resolve(
     location: Readonly<MatcherLocation>,

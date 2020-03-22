@@ -451,8 +451,8 @@ export function createRouter({
 
   /**
    * Trigger errorHandlers added via onError and throws the error as well
-   * @param error error to throw
-   * @param shouldThrow defaults to true. Pass false to not throw the error
+   * @param error - error to throw
+   * @param shouldThrow - defaults to true. Pass false to not throw the error
    */
   function triggerError(error: any, shouldThrow: boolean = true): void {
     markAsReady(error)
@@ -479,7 +479,7 @@ export function createRouter({
   /**
    * Mark the router as ready, resolving the promised returned by isReady(). Can
    * only be called once, otherwise does nothing.
-   * @param err optional error
+   * @param err - optional error
    */
   function markAsReady(err?: any): void {
     if (ready) return
