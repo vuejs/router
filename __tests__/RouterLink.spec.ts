@@ -369,6 +369,9 @@ describe('RouterLink', () => {
     )
   })
 
+  it.todo('parent is active if the child is an absolute path')
+  it.todo('alias parent is active if the child is an absolute path')
+
   it('alias parent is active when a child is active', () => {
     let { el } = factory(
       locations.child.normalized,

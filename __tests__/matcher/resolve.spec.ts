@@ -387,6 +387,10 @@ describe('Router Matcher', () => {
           )
         })
 
+        it.todo(
+          'resolves when parent is an alias and child has an absolute path'
+        )
+
         it('resolves when parent is an alias', () => {
           assertRecordMatch(
             record,
