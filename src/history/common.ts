@@ -1,4 +1,3 @@
-import { ListenerRemover } from '../types'
 import { LocationQueryRaw, LocationQuery } from '../utils/query'
 
 interface HistoryLocation {
@@ -81,7 +80,7 @@ export interface RouterHistory {
   forward(triggerListeners?: boolean): void
   go(distance: number, triggerListeners?: boolean): void
 
-  listen(callback: NavigationCallback): ListenerRemover
+  listen(callback: NavigationCallback): () => void
   destroy(): void
 }
 

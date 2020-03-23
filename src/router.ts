@@ -3,7 +3,6 @@ import {
   RouteRecord,
   RouteLocation,
   NavigationGuard,
-  ListenerRemover,
   PostNavigationGuard,
   START_LOCATION_NORMALIZED,
   Lazy,
@@ -40,7 +39,11 @@ import { Link } from './components/Link'
 import { View } from './components/View'
 import { routerKey, routeLocationKey } from './utils/injectionSymbols'
 
-type ErrorHandler = (error: any) => any
+/**
+ * Internal type to define an ErrorHandler
+ * @internal
+ */
+export type ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor
 type OnReadyCallback = [() => void, (reason?: any) => void]
 
@@ -75,10 +78,10 @@ export interface Router {
   push(to: RouteLocation): Promise<RouteLocationNormalizedResolved>
   replace(to: RouteLocation): Promise<RouteLocationNormalizedResolved>
 
-  beforeEach(guard: NavigationGuard<undefined>): ListenerRemover
-  afterEach(guard: PostNavigationGuard): ListenerRemover
+  beforeEach(guard: NavigationGuard<undefined>): () => void
+  afterEach(guard: PostNavigationGuard): () => void
 
-  onError(handler: ErrorHandler): ListenerRemover
+  onError(handler: ErrorHandler): () => void
   isReady(): Promise<void>
 
   install(app: App): void

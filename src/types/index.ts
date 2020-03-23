@@ -12,8 +12,6 @@ export type Immutable<T> = {
 
 export type TODO = any
 
-export type ListenerRemover = () => void
-
 export type RouteParamValue = string
 // TODO: should we allow more values like numbers and normalize them to strings?
 // type RouteParamValueRaw = RouteParamValue | number
@@ -38,7 +36,7 @@ export interface LocationAsName {
 }
 
 export interface LocationAsRelative {
-  params?: RouteParams
+  params?: RouteParamsRaw
 }
 
 export interface RouteLocationOptions {

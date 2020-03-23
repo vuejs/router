@@ -2,7 +2,6 @@ import {
   RouteRecord,
   MatcherLocation,
   MatcherLocationNormalized,
-  ListenerRemover,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './path-matcher'
@@ -16,10 +15,7 @@ import {
 let noop = () => {}
 
 interface RouterMatcher {
-  addRoute: (
-    record: RouteRecord,
-    parent?: RouteRecordMatcher
-  ) => ListenerRemover
+  addRoute: (record: RouteRecord, parent?: RouteRecordMatcher) => () => void
   removeRoute: {
     (matcher: RouteRecordMatcher): void
     (name: Required<RouteRecord>['name']): void
