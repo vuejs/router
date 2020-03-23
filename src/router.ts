@@ -533,9 +533,8 @@ export function createRouter({
 }
 
 function applyRouterPlugin(app: App, router: Router) {
-  // TODO: remove as any
-  app.component('RouterLink', Link as any)
-  app.component('RouterView', View as any)
+  app.component('RouterLink', Link)
+  app.component('RouterView', View)
 
   let started = false
   // TODO: can we use something that isn't a mixin?
