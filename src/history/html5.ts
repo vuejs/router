@@ -297,5 +297,9 @@ export default function createWebHistory(base: string = ''): RouterHistory {
     get: () => historyNavigation.location.value,
   })
 
+  Object.defineProperty(routerHistory, 'state', {
+    get: () => historyNavigation.state.value,
+  })
+
   return routerHistory
 }

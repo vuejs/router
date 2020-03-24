@@ -71,6 +71,7 @@ export type ValueContainer<T> = { value: T }
 export interface RouterHistory {
   readonly base: string
   readonly location: HistoryLocationNormalized
+  readonly state: HistoryState
   // readonly location: ValueContainer<HistoryLocationNormalized>
 
   push(to: RawHistoryLocation, data?: HistoryState): void
