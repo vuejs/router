@@ -11,8 +11,7 @@ import {
   ValueContainer,
 } from './common'
 import { computeScrollPosition, ScrollToPosition } from '../utils/scroll'
-
-const cs = console
+import { warn } from 'vue'
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 
@@ -49,7 +48,8 @@ function createCurrentLocation(
 function useHistoryListeners(
   base: string,
   historyState: ValueContainer<StateEntry>,
-  location: ValueContainer<HistoryLocationNormalized>
+  location: ValueContainer<HistoryLocationNormalized>,
+  replace: RouterHistory['replace']
 ) {
   let listeners: NavigationCallback[] = []
   let teardowns: Array<() => void> = []
@@ -60,22 +60,19 @@ function useHistoryListeners(
   const popStateHandler: PopStateListener = ({
     state,
   }: {
-    state: StateEntry
+    state: StateEntry | null
   }) => {
-    // TODO: state can be null when using links with a `hash` in hash mode
-    // maybe we should trigger a plain navigation in that case
-    cs.info('popstate fired', state)
-    cs.info('currentState', historyState)
+    const to = createCurrentLocation(base, window.location)
+
+    if (!state) return replace(to.fullPath)
 
     const from: HistoryLocationNormalized = location.value
     const fromState: StateEntry = historyState.value
-    const to = createCurrentLocation(base, window.location)
     location.value = to
     historyState.value = state
 
+    // ignore the popstate and reset the pauseState
     if (pauseState && pauseState.fullPath === from.fullPath) {
-      cs.info('❌ Ignored because paused for', pauseState.fullPath)
-      // reset pauseState
       pauseState = null
       return
     }
@@ -84,7 +81,7 @@ function useHistoryListeners(
       ? state.position - fromState.position
       : ''
     const distance = deltaFromCurrent || 0
-    console.log({ deltaFromCurrent })
+    // console.log({ deltaFromCurrent })
     // Here we could also revert the navigation by calling history.go(-distance)
     // this listener will have to be adapted to not trigger again and to wait for the url
     // to be updated before triggering the listeners. Some kind of validation function would also
@@ -104,7 +101,6 @@ function useHistoryListeners(
   }
 
   function pauseListeners() {
-    cs.info(`⏸ for ${location.value.fullPath}`)
     pauseState = location.value
   }
 
@@ -151,28 +147,28 @@ function useHistoryListeners(
   }
 }
 
+/**
+ * Creates a state object
+ */
+function buildState(
+  back: HistoryLocationNormalized | null,
+  current: HistoryLocationNormalized,
+  forward: HistoryLocationNormalized | null,
+  replaced: boolean = false,
+  computeScroll: boolean = false
+): StateEntry {
+  return {
+    back,
+    current,
+    forward,
+    replaced,
+    position: window.history.length,
+    scroll: computeScroll ? computeScrollPosition() : null,
+  }
+}
+
 function useHistoryStateNavigation(base: string) {
   const { history } = window
-
-  /**
-   * Creates a state object
-   */
-  function buildState(
-    back: HistoryLocationNormalized | null,
-    current: HistoryLocationNormalized,
-    forward: HistoryLocationNormalized | null,
-    replaced: boolean = false,
-    computeScroll: boolean = false
-  ): StateEntry {
-    return {
-      back,
-      current,
-      forward,
-      replaced,
-      position: window.history.length,
-      scroll: computeScroll ? computeScrollPosition() : null,
-    }
-  }
 
   // private variables
   let location: ValueContainer<HistoryLocationNormalized> = {
@@ -205,13 +201,10 @@ function useHistoryStateNavigation(base: string) {
     try {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds
-      const newState: StateEntry = replace
-        ? { ...historyState.value, ...state }
-        : state
-      history[replace ? 'replaceState' : 'pushState'](newState, '', url)
+      history[replace ? 'replaceState' : 'pushState'](state, '', url)
       historyState.value = state
     } catch (err) {
-      cs.log('[vue-router]: Error with push/replace State', err)
+      warn('[vue-router]: Error with push/replace State', err)
       // Force the navigation, this also resets the call count
       window.location[replace ? 'replace' : 'assign'](url)
     }
@@ -219,7 +212,6 @@ function useHistoryStateNavigation(base: string) {
 
   function replace(to: RawHistoryLocation, data?: HistoryState) {
     const normalized = normalizeHistoryLocation(to)
-    // cs.info('replace', location, normalized)
 
     const state: StateEntry = {
       ...buildState(
@@ -229,6 +221,7 @@ function useHistoryStateNavigation(base: string) {
         historyState.value.forward,
         true
       ),
+      ...history.state,
       ...data,
     }
     if (historyState) state.position = historyState.value.position
@@ -244,7 +237,7 @@ function useHistoryStateNavigation(base: string) {
     // as well as saving the current position
     // TODO: the scroll position computation should be customizable
     const currentState: StateEntry = {
-      ...historyState.value,
+      ...history.state,
       forward: normalized,
       scroll: computeScrollPosition(),
     }
@@ -274,7 +267,8 @@ export default function createWebHistory(base: string = ''): RouterHistory {
   const historyListeners = useHistoryListeners(
     base,
     historyNavigation.state,
-    historyNavigation.location
+    historyNavigation.location,
+    historyNavigation.replace
   )
   function back(triggerListeners = true) {
     go(-1, triggerListeners)

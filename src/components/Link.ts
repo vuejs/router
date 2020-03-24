@@ -11,6 +11,7 @@ import {
 import { RouteLocation, RouteLocationNormalized, Immutable } from '../types'
 import { isSameLocationObject, isSameRouteRecord } from '../utils'
 import { routerKey } from '../utils/injectionSymbols'
+import { RouteRecordNormalized } from '../matcher/types'
 
 type VueUseOptions<T> = {
   [k in keyof T]: Ref<T[k]> | T[k]
@@ -33,7 +34,9 @@ export function useLink(props: UseLinkOptions) {
 
   const activeRecordIndex = computed<number>(() => {
     // TODO: handle children with empty path: they should relate to their parent
-    const currentMatched = route.value.matched[route.value.matched.length - 1]
+    const currentMatched: RouteRecordNormalized | undefined =
+      route.value.matched[route.value.matched.length - 1]
+    if (!currentMatched) return -1
     return currentRoute.value.matched.findIndex(
       isSameRouteRecord.bind(null, currentMatched)
     )

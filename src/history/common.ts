@@ -73,8 +73,8 @@ export interface RouterHistory {
   readonly location: HistoryLocationNormalized
   // readonly location: ValueContainer<HistoryLocationNormalized>
 
-  push(to: RawHistoryLocation): void
-  replace(to: RawHistoryLocation): void
+  push(to: RawHistoryLocation, data?: HistoryState): void
+  replace(to: RawHistoryLocation, data?: HistoryState): void
 
   back(triggerListeners?: boolean): void
   forward(triggerListeners?: boolean): void
