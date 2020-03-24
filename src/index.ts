@@ -1,8 +1,9 @@
 import createWebHistory from './history/html5'
 import createMemoryHistory from './history/memory'
 import createWebHashHistory from './history/hash'
-import { inject } from 'vue'
+import { inject, computed, reactive } from 'vue'
 import { routerKey, routeLocationKey } from './utils/injectionSymbols'
+import { RouteLocationNormalizedResolved } from './types'
 
 export { LocationQuery, parseQuery, stringifyQuery } from './utils/query'
 
@@ -23,8 +24,8 @@ export {
 export { createRouter, Router, RouterOptions, ErrorHandler } from './router'
 
 export { onBeforeRouteLeave } from './navigationGuards'
-export { Link } from './components/Link'
-export { View } from './components/View'
+export { Link, useLink } from './components/Link'
+export { View, useView } from './components/View'
 
 export { createWebHistory, createMemoryHistory, createWebHashHistory }
 
@@ -33,5 +34,11 @@ export function useRouter() {
 }
 
 export function useRoute() {
-  return inject(routeLocationKey)!
+  const route = inject(routeLocationKey)!
+  const ret = {} as RouteLocationNormalizedResolved
+  for (let key in route.value) {
+    // @ts-ignore
+    ret[key] = computed(() => route.value[key])
+  }
+  return reactive(ret)
 }

@@ -49,7 +49,7 @@ module.exports = {
   },
 
   /** @type {import('nightwatch').NightwatchTest} */
-  'should not keep the modal when reloading'(browser) {
+  'can keep the modal when reloading'(browser) {
     browser
       .url(baseURL)
       .waitForElementVisible('#app', 1000)
@@ -58,35 +58,13 @@ module.exports = {
       .click('li:nth-child(2) button')
       .assert.visible('dialog')
       .refresh()
-      .assert.containsText('h1', 'User #1')
       .assert.urlEquals(baseURL + '/users/1')
+      .assert.containsText('h1', 'Home')
+      .assert.visible('dialog')
       .back()
-      // FIXME: reload
-      // .assert.urlEquals(baseURL + '/')
-      // .assert.containsText('h1', 'Home')
-      // .assert.not.visible('dialog')
-
-      .end()
-  },
-
-  'should not keep the modal when reloading and navigating to home again'(
-    browser
-  ) {
-    browser
-      .url(baseURL)
-      .waitForElementVisible('#app', 1000)
-      .assert.containsText('h1', 'Home')
-
-      .click('li:nth-child(2) button')
-      .assert.visible('dialog')
-      .refresh()
-      .assert.containsText('h1', 'User #1')
-      .assert.urlEquals(baseURL + '/users/1')
-      .click('#app a')
       .assert.urlEquals(baseURL + '/')
       .assert.containsText('h1', 'Home')
-      // FIXME: reload
-      // .assert.not.visible('dialog')
+      .assert.not.visible('dialog')
 
       .end()
   },
@@ -102,13 +80,13 @@ module.exports = {
       .click('li:nth-child(2) a')
       .assert.urlEquals(baseURL + '/users/1')
       .assert.containsText('h1', 'User #1')
-      .click('a')
+      .click('#app a')
       .assert.urlEquals(baseURL + '/')
       .assert.containsText('h1', 'Home')
       .click('li:nth-child(3) a')
       .assert.urlEquals(baseURL + '/users/2')
       .assert.containsText('h1', 'User #2')
-      .click('a')
+      .click('#app a')
       .assert.urlEquals(baseURL + '/')
       .assert.containsText('h1', 'Home')
       .click('li:nth-child(2) button')

@@ -8,6 +8,7 @@ import {
   ComputedRef,
 } from 'vue'
 import { RouteRecordNormalized } from '../matcher/types'
+import { HistoryState } from '../history/common'
 
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
@@ -58,6 +59,10 @@ export interface RouteLocationOptions {
    * Triggers the navigation even if the location is the same as the current one
    */
   force?: boolean
+  /**
+   * State to save using the History API. This cannot contain any reactive values and some primitives like Symbols are forbidden. More info at TODO: link mdn
+   */
+  state?: HistoryState
 }
 
 // User level location

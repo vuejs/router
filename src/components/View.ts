@@ -9,6 +9,7 @@ import {
   ComponentPublicInstance,
   unref,
   SetupContext,
+  toRefs,
 } from 'vue'
 import {
   RouteLocationMatched,
@@ -85,7 +86,8 @@ export const View = defineComponent({
 
   setup(props, { attrs }) {
     const route = inject(routeLocationKey)!
-    const renderView = useView({ route, name: props.name })
+    const renderView = useView({ route, name: toRefs(props).name })
+
     return () => renderView(attrs)
   },
 })

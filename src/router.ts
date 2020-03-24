@@ -11,7 +11,12 @@ import {
   MatcherLocationNormalized,
   RouteLocationNormalizedResolved,
 } from './types'
-import { RouterHistory, parseURL, stringifyURL } from './history/common'
+import {
+  RouterHistory,
+  parseURL,
+  stringifyURL,
+  HistoryState,
+} from './history/common'
 import {
   ScrollToPosition,
   ScrollPosition,
@@ -74,7 +79,7 @@ export interface Router {
   getRoutes(): RouteRecordNormalized[]
 
   resolve(to: RouteLocation): RouteLocationNormalized
-  createHref(to: RouteLocationNormalized): string
+  createHref(to: Immutable<RouteLocationNormalized>): string
   push(to: RouteLocation): Promise<RouteLocationNormalizedResolved>
   replace(to: RouteLocation): Promise<RouteLocationNormalizedResolved>
 
@@ -193,6 +198,7 @@ export function createRouter({
   }
 
   function push(
+    // TODO: should not allow normalized version
     to: RouteLocation | RouteLocationNormalized
   ): Promise<RouteLocationNormalizedResolved> {
     return pushWithRedirect(to, undefined)
@@ -206,6 +212,7 @@ export function createRouter({
       // Some functions will pass a normalized location and we don't need to resolve it again
       typeof to === 'object' && 'matched' in to ? to : resolve(to))
     const from: RouteLocationNormalizedResolved = currentRoute.value
+    const data: HistoryState | undefined = (to as any).state
     // @ts-ignore: no need to check the string as force do not exist on a string
     const force: boolean | undefined = to.force
 
@@ -243,7 +250,8 @@ export function createRouter({
       from,
       true,
       // RouteLocationNormalized will give undefined
-      (to as RouteLocation).replace === true
+      (to as RouteLocation).replace === true,
+      data
     )
 
     return currentRoute.value
@@ -353,7 +361,8 @@ export function createRouter({
     toLocation: RouteLocationNormalizedResolved,
     from: RouteLocationNormalizedResolved,
     isPush: boolean,
-    replace?: boolean
+    replace?: boolean,
+    data?: HistoryState
   ) {
     // a more recent navigation took place
     if (pendingLocation !== toLocation) {
@@ -378,8 +387,8 @@ export function createRouter({
     // change URL only if the user did a push/replace and if it's not the initial navigation because
     // it's just reflecting the url
     if (isPush) {
-      if (replace || isFirstNavigation) history.replace(toLocation)
-      else history.push(toLocation)
+      if (replace || isFirstNavigation) history.replace(toLocation, data)
+      else history.push(toLocation, data)
     }
 
     // accept current navigation
