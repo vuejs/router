@@ -12,7 +12,8 @@
  *
  * If you are already running the dev server with `yarn run serve`, you can pass the --dev option to avoid launching the server
  * $ node e2e/runner.js --dev
- * **Make sure to pass the option at the end**
+ * **Make sure to pass the option at the end:**
+ * $ node e2e/runner.js e2e/specs/basic.js --dev
  *
  * __For maintainers only__
  * You can trigger tests on Browserstack on other browsers by passing the --local option
