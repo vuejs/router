@@ -223,8 +223,8 @@ function useHistoryStateNavigation(base: string) {
       ),
       ...history.state,
       ...data,
+      position: historyState.value.position,
     }
-    if (historyState) state.position = historyState.value.position
 
     changeLocation(normalized, state, true)
     location.value = normalized

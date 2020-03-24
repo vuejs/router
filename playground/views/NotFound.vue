@@ -4,11 +4,12 @@
 
 <script>
 import { defineComponent, inject } from 'vue'
+import { useRoute } from '../../src'
 
 export default defineComponent({
   name: 'NotFound',
   setup() {
-    const route = inject('route')
+    const route = useRoute()
     return { route }
   },
 })

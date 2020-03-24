@@ -5,17 +5,17 @@ import {
   inject,
   computed,
   reactive,
-  Ref,
   unref,
 } from 'vue'
-import { RouteLocation, RouteLocationNormalized, Immutable } from '../types'
+import {
+  RouteLocation,
+  RouteLocationNormalized,
+  Immutable,
+  VueUseOptions,
+} from '../types'
 import { isSameLocationObject, isSameRouteRecord } from '../utils'
 import { routerKey } from '../utils/injectionSymbols'
 import { RouteRecordNormalized } from '../matcher/types'
-
-type VueUseOptions<T> = {
-  [k in keyof T]: Ref<T[k]> | T[k]
-}
 
 interface LinkProps {
   to: RouteLocation

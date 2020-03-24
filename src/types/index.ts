@@ -1,6 +1,12 @@
 import { LocationQuery, LocationQueryRaw } from '../utils/query'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
-import { markNonReactive, ComponentOptions, ComponentPublicInstance } from 'vue'
+import {
+  markNonReactive,
+  ComponentOptions,
+  ComponentPublicInstance,
+  Ref,
+  ComputedRef,
+} from 'vue'
 import { RouteRecordNormalized } from '../matcher/types'
 
 export type Lazy<T> = () => Promise<T>
@@ -8,6 +14,10 @@ export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
 
 export type Immutable<T> = {
   readonly [P in keyof T]: Immutable<T[P]>
+}
+
+export type VueUseOptions<T> = {
+  [k in keyof T]: Ref<T[k]> | T[k] | ComputedRef<T[k]>
 }
 
 export type TODO = any
