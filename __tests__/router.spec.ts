@@ -87,7 +87,8 @@ describe('Router', () => {
         path: '/foo',
         query: {},
         hash: '',
-      })
+      }),
+      undefined
     )
   })
 
@@ -127,7 +128,8 @@ describe('Router', () => {
         path: '/foo',
         query: {},
         hash: '',
-      })
+      }),
+      undefined
     )
   })
 
@@ -142,7 +144,8 @@ describe('Router', () => {
         path: '/foo',
         query: {},
         hash: '',
-      })
+      }),
+      undefined
     )
   })
 

@@ -15,9 +15,6 @@ describe('History HTMl5', () => {
     const history = createWebHistory()
     expect(history.location).toEqual({
       fullPath: '/',
-      path: '/',
-      query: {},
-      hash: '',
     })
   })
 })
