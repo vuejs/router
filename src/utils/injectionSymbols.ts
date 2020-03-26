@@ -1,4 +1,4 @@
-import { InjectionKey, ComputedRef, Ref } from 'vue'
+import { InjectionKey, ComputedRef } from 'vue'
 import {
   RouteLocationMatched,
   Immutable,
@@ -24,5 +24,5 @@ export const viewDepthKey = PolySymbol('rvd') as InjectionKey<number>
 export const routerKey = PolySymbol('r') as InjectionKey<Router>
 // rt = route location
 export const routeLocationKey = PolySymbol('rl') as InjectionKey<
-  Ref<Immutable<RouteLocationNormalizedResolved>>
+  Immutable<RouteLocationNormalizedResolved>
 >

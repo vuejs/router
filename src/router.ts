@@ -38,7 +38,17 @@ import {
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
 } from './utils/query'
-import { ref, Ref, markNonReactive, nextTick, App, warn } from 'vue'
+import {
+  ref,
+  Ref,
+  markNonReactive,
+  nextTick,
+  App,
+  warn,
+  computed,
+  reactive,
+  ComputedRef,
+} from 'vue'
 import { RouteRecordNormalized } from './matcher/types'
 import { Link } from './components/Link'
 import { View } from './components/View'
@@ -564,9 +574,19 @@ function applyRouterPlugin(app: App, router: Router) {
       },
     })
 
+  const reactiveRoute = {} as {
+    [k in keyof RouteLocationNormalizedResolved]: ComputedRef<
+      RouteLocationNormalizedResolved[k]
+    >
+  }
+  for (let key in START_LOCATION_NORMALIZED) {
+    // @ts-ignore: the key matches
+    reactiveRoute[key] = computed(() => router.currentRoute.value[key])
+  }
+
   // TODO: merge strats?
   app.provide(routerKey, router)
-  app.provide(routeLocationKey, router.currentRoute)
+  app.provide(routeLocationKey, reactive(reactiveRoute))
 }
 
 async function runGuardQueue(guards: Lazy<any>[]): Promise<void> {

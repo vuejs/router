@@ -158,7 +158,7 @@ export default defineComponent({
     const state = inject('state')
 
     const currentLocation = computed(() => {
-      const { matched, ...rest } = route.value
+      const { matched, ...rest } = route
       return rest
     })
 
