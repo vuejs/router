@@ -15,7 +15,6 @@ import {
   RouteLocationMatched,
   VueUseOptions,
   RouteLocationNormalizedResolved,
-  Immutable,
 } from '../types'
 import {
   matchedRouteKey,
@@ -24,7 +23,7 @@ import {
 } from '../utils/injectionSymbols'
 
 interface ViewProps {
-  route: Immutable<RouteLocationNormalizedResolved>
+  route: RouteLocationNormalizedResolved
   name: string
 }
 

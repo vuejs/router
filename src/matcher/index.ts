@@ -25,8 +25,8 @@ interface RouterMatcher {
     name: Required<RouteRecord>['name']
   ) => RouteRecordMatcher | undefined
   resolve: (
-    location: Readonly<MatcherLocation>,
-    currentLocation: Readonly<MatcherLocationNormalized>
+    location: MatcherLocation,
+    currentLocation: MatcherLocationNormalized
   ) => MatcherLocationNormalized
 }
 

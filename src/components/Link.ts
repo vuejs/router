@@ -7,12 +7,7 @@ import {
   reactive,
   unref,
 } from 'vue'
-import {
-  RouteLocation,
-  RouteLocationNormalized,
-  Immutable,
-  VueUseOptions,
-} from '../types'
+import { RouteLocation, RouteLocationNormalized, VueUseOptions } from '../types'
 import { isSameLocationObject, isSameRouteRecord } from '../utils'
 import { routerKey } from '../utils/injectionSymbols'
 import { RouteRecordNormalized } from '../matcher/types'
@@ -124,8 +119,8 @@ function guardEvent(e: MouseEvent) {
 }
 
 function includesParams(
-  outter: Immutable<RouteLocationNormalized['params']>,
-  inner: Immutable<RouteLocationNormalized['params']>
+  outter: RouteLocationNormalized['params'],
+  inner: RouteLocationNormalized['params']
 ): boolean {
   for (let key in inner) {
     let innerValue = inner[key]

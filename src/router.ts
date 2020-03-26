@@ -7,7 +7,6 @@ import {
   START_LOCATION_NORMALIZED,
   Lazy,
   TODO,
-  Immutable,
   MatcherLocationNormalized,
   RouteLocationNormalizedResolved,
 } from './types'
@@ -81,7 +80,7 @@ export interface RouterOptions {
 
 export interface Router {
   history: RouterHistory
-  currentRoute: Ref<Immutable<RouteLocationNormalizedResolved>>
+  currentRoute: Ref<RouteLocationNormalizedResolved>
 
   addRoute(parentName: string, route: RouteRecord): () => void
   addRoute(route: RouteRecord): () => void
@@ -89,7 +88,7 @@ export interface Router {
   getRoutes(): RouteRecordNormalized[]
 
   resolve(to: RouteLocation): RouteLocationNormalized
-  createHref(to: Immutable<RouteLocationNormalized>): string
+  createHref(to: RouteLocationNormalized): string
   push(to: RouteLocation): Promise<RouteLocationNormalizedResolved>
   replace(to: RouteLocation): Promise<RouteLocationNormalizedResolved>
 
@@ -118,7 +117,7 @@ export function createRouter({
   const currentRoute = ref<RouteLocationNormalizedResolved>(
     START_LOCATION_NORMALIZED
   )
-  let pendingLocation: Immutable<RouteLocationNormalized> = START_LOCATION_NORMALIZED
+  let pendingLocation: RouteLocationNormalized = START_LOCATION_NORMALIZED
 
   if (isClient && 'scrollRestoration' in window.history) {
     window.history.scrollRestoration = 'manual'
@@ -217,11 +216,11 @@ export function createRouter({
   async function pushWithRedirect(
     to: RouteLocation | RouteLocationNormalized,
     redirectedFrom: RouteLocationNormalized | undefined
-  ): Promise<RouteLocationNormalizedResolved> {
+  ): Promise<TODO> {
     const toLocation: RouteLocationNormalized = (pendingLocation =
       // Some functions will pass a normalized location and we don't need to resolve it again
       typeof to === 'object' && 'matched' in to ? to : resolve(to))
-    const from: RouteLocationNormalizedResolved = currentRoute.value
+    const from = currentRoute.value
     const data: HistoryState | undefined = (to as any).state
     // @ts-ignore: no need to check the string as force do not exist on a string
     const force: boolean | undefined = to.force
@@ -616,20 +615,6 @@ function extractChangingRecords(
 
   return [leavingRecords, updatingRecords, enteringRecords]
 }
-
-// function isSameLocation(
-//   a: Immutable<RouteLocationNormalized>,
-//   b: Immutable<RouteLocationNormalized>
-// ): boolean {
-//   return (
-//     a.name === b.name &&
-//     a.path === b.path &&
-//     a.hash === b.hash &&
-//     isSameLocationObject(a.query, b.query) &&
-//     a.matched.length === b.matched.length &&
-//     a.matched.every((record, i) => isSameRouteRecord(record, b.matched[i]))
-//   )
-// }
 
 function isSameRouteLocation(
   a: RouteLocationNormalized,

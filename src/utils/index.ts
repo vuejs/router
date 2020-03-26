@@ -1,7 +1,6 @@
 import {
   RouteLocationNormalized,
   RouteParams,
-  Immutable,
   RouteComponent,
   RouteLocationNormalizedResolved,
 } from '../types'
@@ -73,8 +72,8 @@ export function applyToParams(
 }
 
 export function isSameRouteRecord(
-  a: Immutable<RouteRecordNormalized>,
-  b: Immutable<RouteRecordNormalized>
+  a: RouteRecordNormalized,
+  b: RouteRecordNormalized
 ): boolean {
   // since the original record has an undefined value for aliasOf
   // but all aliases point to the original record, this will always compare
@@ -83,16 +82,16 @@ export function isSameRouteRecord(
 }
 
 export function isSameLocationObject(
-  a: Immutable<RouteLocationNormalized['query']>,
-  b: Immutable<RouteLocationNormalized['query']>
+  a: RouteLocationNormalized['query'],
+  b: RouteLocationNormalized['query']
 ): boolean
 export function isSameLocationObject(
-  a: Immutable<RouteLocationNormalized['params']>,
-  b: Immutable<RouteLocationNormalized['params']>
+  a: RouteLocationNormalized['params'],
+  b: RouteLocationNormalized['params']
 ): boolean
 export function isSameLocationObject(
-  a: Immutable<RouteLocationNormalized['query' | 'params']>,
-  b: Immutable<RouteLocationNormalized['query' | 'params']>
+  a: RouteLocationNormalized['query' | 'params'],
+  b: RouteLocationNormalized['query' | 'params']
 ): boolean {
   const aKeys = Object.keys(a)
   const bKeys = Object.keys(b)
@@ -110,20 +109,13 @@ export function isSameLocationObject(
 }
 
 function isSameLocationObjectValue(
-  a: Immutable<LocationQueryValue | LocationQueryValue[]>,
-  b: Immutable<LocationQueryValue | LocationQueryValue[]>
+  a: LocationQueryValue | LocationQueryValue[],
+  b: LocationQueryValue | LocationQueryValue[]
 ): boolean
+function isSameLocationObjectValue(a: RouteParams, b: RouteParams): boolean
 function isSameLocationObjectValue(
-  a: Immutable<RouteParams | RouteParams[]>,
-  b: Immutable<RouteParams | RouteParams[]>
-): boolean
-function isSameLocationObjectValue(
-  a: Immutable<
-    LocationQueryValue | LocationQueryValue[] | RouteParams | RouteParams[]
-  >,
-  b: Immutable<
-    LocationQueryValue | LocationQueryValue[] | RouteParams | RouteParams[]
-  >
+  a: LocationQueryValue | LocationQueryValue[] | RouteParams,
+  b: LocationQueryValue | LocationQueryValue[] | RouteParams
 ): boolean {
   if (typeof a !== typeof b) return false
   // both a and b are arrays

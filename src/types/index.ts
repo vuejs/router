@@ -13,6 +13,7 @@ import { HistoryState } from '../history/common'
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
 
+// TODO: find a better way to type readonly types. Readonly<T> is non recursive, maybe we should use it at multiple places. It would also allow preventing the problem Immutable create.
 export type Immutable<T> = {
   readonly [P in keyof T]: Immutable<T[P]>
 }
@@ -149,7 +150,7 @@ export interface RouteRecordCommon {
   props?:
     | boolean
     | Record<string, any>
-    | ((to: Immutable<RouteLocationNormalized>) => Record<string, any>)
+    | ((to: RouteLocationNormalized) => Record<string, any>)
   // TODO: beforeEnter has no effect with redirect, move and test
   beforeEnter?: NavigationGuard<undefined> | NavigationGuard<undefined>[]
   meta?: Record<string | number | symbol, any>
@@ -160,7 +161,7 @@ export interface RouteRecordCommon {
 
 export type RouteRecordRedirectOption =
   | RouteLocation
-  | ((to: Immutable<RouteLocationNormalized>) => RouteLocation)
+  | ((to: RouteLocationNormalized) => RouteLocation)
 export interface RouteRecordRedirect extends RouteRecordCommon {
   redirect: RouteRecordRedirectOption
   beforeEnter?: never
@@ -241,17 +242,14 @@ export interface NavigationGuard<V = ComponentPublicInstance> {
   (
     this: V,
     // TODO: we could maybe add extra information like replace: true/false
-    to: Immutable<RouteLocationNormalized>,
-    from: Immutable<RouteLocationNormalized>,
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
     next: NavigationGuardCallback
   ): any
 }
 
 export interface PostNavigationGuard {
-  (
-    to: Immutable<RouteLocationNormalized>,
-    from: Immutable<RouteLocationNormalized>
-  ): any
+  (to: RouteLocationNormalized, from: RouteLocationNormalized): any
 }
 
 export * from './type-guards'
