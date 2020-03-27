@@ -4,13 +4,21 @@ import createWebHashHistory from './history/hash'
 import { inject } from 'vue'
 import { routerKey, routeLocationKey } from './utils/injectionSymbols'
 
-export { LocationQuery, parseQuery, stringifyQuery } from './utils/query'
+export {
+  LocationQuery,
+  parseQuery,
+  stringifyQuery,
+  LocationQueryRaw,
+  LocationQueryValue,
+} from './utils/query'
 
 export { RouterHistory } from './history/common'
 
 export { RouteRecordNormalized } from './matcher/types'
 
 export {
+  RouteLocation,
+  RouteLocationMatched,
   RouteLocationNormalized,
   RouteLocationNormalizedResolved,
   START_LOCATION_NORMALIZED as START_LOCATION,

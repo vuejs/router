@@ -1,19 +1,42 @@
 import { decode, encodeQueryProperty } from '../utils/encoding'
 
+/**
+ * Possible values in normalized {@link LocationQuery}
+ *
+ * @internal
+ */
 export type LocationQueryValue = string | null
+/**
+ * Possible values when definining a query
+ *
+ * @internal
+ */
 type LocationQueryValueRaw = LocationQueryValue | number | undefined
+/**
+ * Normalized query object that appears in {@link RouteLocationNormalized}
+ *
+ * @public
+ */
 export type LocationQuery = Record<
   string,
   LocationQueryValue | LocationQueryValue[]
 >
+/**
+ * Loose {@link LocationQuery} object that can be passed to functions like
+ * {@link Router.push} and {@link Router.replace} or anywhere when creating a
+ * {@link RouteLocation}
+ *
+ * @public
+ */
 export type LocationQueryRaw = Record<
   string | number,
   LocationQueryValueRaw | LocationQueryValueRaw[]
 >
 
 /**
- * Transform a queryString into a query object. Accept both, a version with the leading `?` and without
- * Should work as URLSearchParams
+ * Transforms a queryString into a {@link LocationQuery} object. Accept both, a
+ * version with the leading `?` and without Should work as URLSearchParams
+ *
  * @param search - search string to parse
  * @returns a query object
  */
@@ -47,8 +70,11 @@ export function parseQuery(search: string): LocationQuery {
 }
 
 /**
- * Stringify an object query. Works like URLSearchParams. Doesn't prepend a `?`
+ * Stringifies a {@link LocationQueryRaw} object. Like `URLSearchParams`, it
+ * doesn't prepend a `?`
+ *
  * @param query - query object to stringify
+ * @returns string verion of the query without the leading `?`
  */
 export function stringifyQuery(query: LocationQueryRaw): string {
   let search = ''
@@ -77,10 +103,12 @@ export function stringifyQuery(query: LocationQueryRaw): string {
 }
 
 /**
- * Transforms a RawQuery intoe a NormalizedQuery by casting numbers into
- * strings, removing keys with an undefined value and replacing undefined with
- * null in arrays
+ * Transforms a {@link LocationQueryRaw} into a {@link LocationQuery} by casting
+ * numbers into strings, removing keys with an undefined value and replacing
+ * undefined with null in arrays
+ *
  * @param query - query object to normalize
+ * @returns a normalized query object
  */
 export function normalizeQuery(
   query: LocationQueryRaw | undefined
