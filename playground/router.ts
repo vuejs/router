@@ -23,9 +23,10 @@ export const router = createRouter({
     { path: '/', component: Home },
     {
       path: '/always-redirect',
-      component: Home,
-      beforeEnter: (to, from, next) =>
-        next('/users/' + Math.round(Math.random() * 100)),
+      redirect: () => ({
+        name: 'user',
+        params: { id: String(Math.round(Math.random() * 100)) },
+      }),
     },
     { path: '/users/:id', name: 'user', component: User, props: true },
     { path: '/documents/:id', name: 'docs', component: User },
