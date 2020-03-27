@@ -213,6 +213,11 @@ export function createRouter({
     return pushWithRedirect(to, undefined)
   }
 
+  function replace(to: RouteLocation | RouteLocationNormalized) {
+    const location = typeof to === 'string' ? { path: to } : to
+    return push({ ...location, replace: true })
+  }
+
   async function pushWithRedirect(
     to: RouteLocation | RouteLocationNormalized,
     redirectedFrom: RouteLocationNormalized | undefined
@@ -264,11 +269,6 @@ export function createRouter({
     )
 
     return currentRoute.value
-  }
-
-  function replace(to: RouteLocation | RouteLocationNormalized) {
-    const location = typeof to === 'string' ? { path: to } : to
-    return push({ ...location, replace: true })
   }
 
   async function navigate(

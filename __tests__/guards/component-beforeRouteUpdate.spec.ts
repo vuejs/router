@@ -1,5 +1,5 @@
 import fakePromise from 'faked-promise'
-import { NAVIGATION_TYPES, createDom, noGuard } from '../utils'
+import { createDom, noGuard } from '../utils'
 import { createRouter as newRouter, createWebHistory } from '../../src'
 import { RouteRecord } from '../../src/types'
 
@@ -39,37 +39,33 @@ describe('beforeRouteUpdate', () => {
     createDom()
   })
 
-  NAVIGATION_TYPES.forEach(navigationMethod => {
-    describe(navigationMethod, () => {
-      it('calls beforeRouteUpdate guards when changing params', async () => {
-        const router = createRouter({ routes })
-        beforeRouteUpdate.mockImplementationOnce(noGuard)
-        await router[navigationMethod]('/guard/valid')
-        // not called on initial navigation
-        expect(beforeRouteUpdate).not.toHaveBeenCalled()
-        await router[navigationMethod]('/guard/other')
-        expect(beforeRouteUpdate).toHaveBeenCalledTimes(1)
-      })
-
-      it('waits before navigating', async () => {
-        const [promise, resolve] = fakePromise()
-        const router = createRouter({ routes })
-        beforeRouteUpdate.mockImplementationOnce(async (to, from, next) => {
-          await promise
-          next()
-        })
-        await router[navigationMethod]('/guard/one')
-        const p = router[navigationMethod]('/guard/foo')
-        expect(router.currentRoute.value.fullPath).toBe('/guard/one')
-        resolve()
-        await p
-        expect(router.currentRoute.value.fullPath).toBe('/guard/foo')
-      })
-
-      it.todo('invokes with the component context')
-      it.todo('invokes with the component context with named views')
-      it.todo('invokes with the component context with nested views')
-      it.todo('invokes with the component context with nested named views')
-    })
+  it('calls beforeRouteUpdate guards when changing params', async () => {
+    const router = createRouter({ routes })
+    beforeRouteUpdate.mockImplementationOnce(noGuard)
+    await router.push('/guard/valid')
+    // not called on initial navigation
+    expect(beforeRouteUpdate).not.toHaveBeenCalled()
+    await router.push('/guard/other')
+    expect(beforeRouteUpdate).toHaveBeenCalledTimes(1)
   })
+
+  it('waits before navigating', async () => {
+    const [promise, resolve] = fakePromise()
+    const router = createRouter({ routes })
+    beforeRouteUpdate.mockImplementationOnce(async (to, from, next) => {
+      await promise
+      next()
+    })
+    await router.push('/guard/one')
+    const p = router.push('/guard/foo')
+    expect(router.currentRoute.value.fullPath).toBe('/guard/one')
+    resolve()
+    await p
+    expect(router.currentRoute.value.fullPath).toBe('/guard/foo')
+  })
+
+  it.todo('invokes with the component context')
+  it.todo('invokes with the component context with named views')
+  it.todo('invokes with the component context with nested views')
+  it.todo('invokes with the component context with nested named views')
 })

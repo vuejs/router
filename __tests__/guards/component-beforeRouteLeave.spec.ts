@@ -1,5 +1,5 @@
 import { RouterOptions, createRouter as newRouter } from '../../src/router'
-import { NAVIGATION_TYPES, createDom, noGuard } from '../utils'
+import { createDom, noGuard } from '../utils'
 import { RouteRecord } from '../../src/types'
 import { createWebHistory } from '../../src'
 
@@ -103,87 +103,83 @@ describe('beforeRouteLeave', () => {
     createDom()
   })
 
-  NAVIGATION_TYPES.forEach(navigationMethod => {
-    describe(navigationMethod, () => {
-      it('calls beforeRouteLeave guard on navigation', async () => {
-        const router = createRouter({ routes })
-        beforeRouteLeave.mockImplementationOnce((to, from, next) => {
-          if (to.path === 'foo') next(false)
-          else next()
-        })
-        await router.push('/guard')
-        expect(beforeRouteLeave).not.toHaveBeenCalled()
-
-        await router[navigationMethod]('/foo')
-        expect(beforeRouteLeave).toHaveBeenCalledTimes(1)
-      })
-
-      it('calls beforeRouteLeave guard on navigation between children', async () => {
-        const router = createRouter({ routes })
-        await router.push({ name: 'nested-path' })
-        resetMocks()
-        await router[navigationMethod]({ name: 'nested-path-b' })
-        expect(nested.nestedEmpty).not.toHaveBeenCalled()
-        expect(nested.nestedAbs).not.toHaveBeenCalled()
-        expect(nested.nestedB).not.toHaveBeenCalled()
-        expect(nested.nestedNestedFoo).not.toHaveBeenCalled()
-        expect(nested.parent).not.toHaveBeenCalled()
-        expect(nested.nestedNested).not.toHaveBeenCalled()
-        expect(nested.nestedA).toHaveBeenCalledTimes(1)
-        expect(nested.nestedA).toHaveBeenCalledWith(
-          expect.objectContaining({
-            name: 'nested-path-b',
-            fullPath: '/nested/b',
-          }),
-          expect.objectContaining({
-            name: 'nested-path',
-            fullPath: '/nested/a',
-          }),
-          expect.any(Function)
-        )
-      })
-
-      it('calls beforeRouteLeave guard on navigation between children in order', async () => {
-        const router = createRouter({ routes })
-        await router.push({ name: 'nested-nested-foo' })
-        resetMocks()
-        let count = 0
-        nested.nestedNestedFoo.mockImplementation((to, from, next) => {
-          expect(count++).toBe(0)
-          next()
-        })
-        nested.nestedNested.mockImplementation((to, from, next) => {
-          expect(count++).toBe(1)
-          next()
-        })
-        nested.parent.mockImplementation((to, from, next) => {
-          expect(count++).toBe(2)
-          next()
-        })
-
-        await router[navigationMethod]('/')
-        expect(nested.parent).toHaveBeenCalledTimes(1)
-        expect(nested.nestedNested).toHaveBeenCalledTimes(1)
-        expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
-      })
-
-      it('can cancel navigation', async () => {
-        const router = createRouter({ routes })
-        beforeRouteLeave.mockImplementationOnce(async (to, from, next) => {
-          next(false)
-        })
-        await router.push('/guard')
-        const p = router[navigationMethod]('/')
-        const currentRoute = router.currentRoute.value
-        expect(currentRoute.fullPath).toBe('/guard')
-        await p.catch(err => {}) // catch the navigation abortion
-        expect(currentRoute.fullPath).toBe('/guard')
-      })
-
-      it.todo('invokes with the component context')
-      it.todo('invokes with the component context with named views')
-      it.todo('invokes with the component context with nested views')
-      it.todo('invokes with the component context with nested named views')
+  it('calls beforeRouteLeave guard on navigation', async () => {
+    const router = createRouter({ routes })
+    beforeRouteLeave.mockImplementationOnce((to, from, next) => {
+      if (to.path === 'foo') next(false)
+      else next()
     })
+    await router.push('/guard')
+    expect(beforeRouteLeave).not.toHaveBeenCalled()
+
+    await router.push('/foo')
+    expect(beforeRouteLeave).toHaveBeenCalledTimes(1)
   })
+
+  it('calls beforeRouteLeave guard on navigation between children', async () => {
+    const router = createRouter({ routes })
+    await router.push({ name: 'nested-path' })
+    resetMocks()
+    await router.push({ name: 'nested-path-b' })
+    expect(nested.nestedEmpty).not.toHaveBeenCalled()
+    expect(nested.nestedAbs).not.toHaveBeenCalled()
+    expect(nested.nestedB).not.toHaveBeenCalled()
+    expect(nested.nestedNestedFoo).not.toHaveBeenCalled()
+    expect(nested.parent).not.toHaveBeenCalled()
+    expect(nested.nestedNested).not.toHaveBeenCalled()
+    expect(nested.nestedA).toHaveBeenCalledTimes(1)
+    expect(nested.nestedA).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'nested-path-b',
+        fullPath: '/nested/b',
+      }),
+      expect.objectContaining({
+        name: 'nested-path',
+        fullPath: '/nested/a',
+      }),
+      expect.any(Function)
+    )
+  })
+
+  it('calls beforeRouteLeave guard on navigation between children in order', async () => {
+    const router = createRouter({ routes })
+    await router.push({ name: 'nested-nested-foo' })
+    resetMocks()
+    let count = 0
+    nested.nestedNestedFoo.mockImplementation((to, from, next) => {
+      expect(count++).toBe(0)
+      next()
+    })
+    nested.nestedNested.mockImplementation((to, from, next) => {
+      expect(count++).toBe(1)
+      next()
+    })
+    nested.parent.mockImplementation((to, from, next) => {
+      expect(count++).toBe(2)
+      next()
+    })
+
+    await router.push('/')
+    expect(nested.parent).toHaveBeenCalledTimes(1)
+    expect(nested.nestedNested).toHaveBeenCalledTimes(1)
+    expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
+  })
+
+  it('can cancel navigation', async () => {
+    const router = createRouter({ routes })
+    beforeRouteLeave.mockImplementationOnce(async (to, from, next) => {
+      next(false)
+    })
+    await router.push('/guard')
+    const p = router.push('/')
+    const currentRoute = router.currentRoute.value
+    expect(currentRoute.fullPath).toBe('/guard')
+    await p.catch(err => {}) // catch the navigation abortion
+    expect(currentRoute.fullPath).toBe('/guard')
+  })
+
+  it.todo('invokes with the component context')
+  it.todo('invokes with the component context with named views')
+  it.todo('invokes with the component context with nested views')
+  it.todo('invokes with the component context with nested named views')
 })

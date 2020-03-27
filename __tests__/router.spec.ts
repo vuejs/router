@@ -149,6 +149,38 @@ describe('Router', () => {
     )
   })
 
+  it('can replaces current location with a string location', async () => {
+    const { router, history } = await newRouter()
+    jest.spyOn(history, 'replace')
+    await router.replace('/foo')
+    expect(history.replace).toHaveBeenCalledTimes(1)
+    expect(history.replace).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fullPath: '/foo',
+        path: '/foo',
+        query: {},
+        hash: '',
+      }),
+      undefined
+    )
+  })
+
+  it('can replaces current location with an object location', async () => {
+    const { router, history } = await newRouter()
+    jest.spyOn(history, 'replace')
+    await router.replace({ path: '/foo' })
+    expect(history.replace).toHaveBeenCalledTimes(1)
+    expect(history.replace).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fullPath: '/foo',
+        path: '/foo',
+        query: {},
+        hash: '',
+      }),
+      undefined
+    )
+  })
+
   it('navigates if the location does not exist', async () => {
     const { router } = await newRouter()
     const spy = jest.fn((to, from, next) => next())

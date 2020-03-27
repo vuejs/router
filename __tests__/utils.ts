@@ -21,9 +21,6 @@ export async function ticks(n: number) {
   }
 }
 
-export type NAVIGATION_METHOD = 'push' | 'replace'
-export const NAVIGATION_TYPES: NAVIGATION_METHOD[] = ['push', 'replace']
-
 export interface RouteRecordViewLoose
   extends Pick<
     RouteRecordMultipleViews,

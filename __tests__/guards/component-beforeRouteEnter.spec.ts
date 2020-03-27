@@ -1,6 +1,6 @@
 import { RouterOptions, createRouter as newRouter } from '../../src/router'
 import fakePromise from 'faked-promise'
-import { NAVIGATION_TYPES, createDom, noGuard } from '../utils'
+import { createDom, noGuard } from '../utils'
 import { RouteRecord, NavigationGuard } from '../../src/types'
 import { createWebHistory } from '../../src'
 
@@ -121,129 +121,125 @@ describe('beforeRouteEnter', () => {
     createDom()
   })
 
-  NAVIGATION_TYPES.forEach(navigationMethod => {
-    describe(navigationMethod, () => {
-      it('calls beforeRouteEnter guards on navigation', async () => {
-        const router = createRouter({ routes })
-        beforeRouteEnter.mockImplementationOnce((to, from, next) => {
-          if (to.params.n !== 'valid') return next(false)
-          next()
-        })
-        await router[navigationMethod]('/guard/valid')
-        expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
-      })
+  it('calls beforeRouteEnter guards on navigation', async () => {
+    const router = createRouter({ routes })
+    beforeRouteEnter.mockImplementationOnce((to, from, next) => {
+      if (to.params.n !== 'valid') return next(false)
+      next()
+    })
+    await router.push('/guard/valid')
+    expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
+  })
 
-      it('calls beforeRouteEnter guards on navigation for nested views', async () => {
-        const router = createRouter({ routes })
-        await router[navigationMethod]('/nested/nested/foo')
-        expect(nested.parent).toHaveBeenCalledTimes(1)
-        expect(nested.nestedNested).toHaveBeenCalledTimes(1)
-        expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
-        expect(nested.nestedAbs).not.toHaveBeenCalled()
-        expect(nested.nestedA).not.toHaveBeenCalled()
-      })
+  it('calls beforeRouteEnter guards on navigation for nested views', async () => {
+    const router = createRouter({ routes })
+    await router.push('/nested/nested/foo')
+    expect(nested.parent).toHaveBeenCalledTimes(1)
+    expect(nested.nestedNested).toHaveBeenCalledTimes(1)
+    expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
+    expect(nested.nestedAbs).not.toHaveBeenCalled()
+    expect(nested.nestedA).not.toHaveBeenCalled()
+  })
 
-      it('calls beforeRouteEnter guards on navigation for nested views', async () => {
-        const router = createRouter({ routes })
-        await router[navigationMethod]('/nested/nested/foo')
-        expect(nested.parent).toHaveBeenCalledTimes(1)
-        expect(nested.nestedNested).toHaveBeenCalledTimes(1)
-        expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
-      })
+  it('calls beforeRouteEnter guards on navigation for nested views', async () => {
+    const router = createRouter({ routes })
+    await router.push('/nested/nested/foo')
+    expect(nested.parent).toHaveBeenCalledTimes(1)
+    expect(nested.nestedNested).toHaveBeenCalledTimes(1)
+    expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
+  })
 
-      it('calls beforeRouteEnter guards on non-entered nested routes', async () => {
-        const router = createRouter({ routes })
-        await router.push('/nested/nested')
-        resetMocks()
-        await router[navigationMethod]('/nested/nested/foo')
-        expect(nested.parent).not.toHaveBeenCalled()
-        expect(nested.nestedNested).not.toHaveBeenCalled()
-        expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
-      })
+  it('calls beforeRouteEnter guards on non-entered nested routes', async () => {
+    const router = createRouter({ routes })
+    await router.push('/nested/nested')
+    resetMocks()
+    await router.push('/nested/nested/foo')
+    expect(nested.parent).not.toHaveBeenCalled()
+    expect(nested.nestedNested).not.toHaveBeenCalled()
+    expect(nested.nestedNestedFoo).toHaveBeenCalledTimes(1)
+  })
 
-      it('does not call beforeRouteEnter guards on param change', async () => {
-        const router = createRouter({ routes })
-        await router.push('/nested/nested/param/1')
-        resetMocks()
-        await router[navigationMethod]('/nested/nested/param/2')
-        expect(nested.parent).not.toHaveBeenCalled()
-        expect(nested.nestedNested).not.toHaveBeenCalled()
-        expect(nested.nestedNestedParam).not.toHaveBeenCalled()
-      })
+  it('does not call beforeRouteEnter guards on param change', async () => {
+    const router = createRouter({ routes })
+    await router.push('/nested/nested/param/1')
+    resetMocks()
+    await router.push('/nested/nested/param/2')
+    expect(nested.parent).not.toHaveBeenCalled()
+    expect(nested.nestedNested).not.toHaveBeenCalled()
+    expect(nested.nestedNestedParam).not.toHaveBeenCalled()
+  })
 
-      it('calls beforeRouteEnter guards on navigation for named views', async () => {
-        const router = createRouter({ routes })
-        named.default.mockImplementationOnce(noGuard)
-        named.other.mockImplementationOnce(noGuard)
-        await router[navigationMethod]('/named')
-        expect(named.default).toHaveBeenCalledTimes(1)
-        expect(named.other).toHaveBeenCalledTimes(1)
-        expect(router.currentRoute.value.fullPath).toBe('/named')
-      })
+  it('calls beforeRouteEnter guards on navigation for named views', async () => {
+    const router = createRouter({ routes })
+    named.default.mockImplementationOnce(noGuard)
+    named.other.mockImplementationOnce(noGuard)
+    await router.push('/named')
+    expect(named.default).toHaveBeenCalledTimes(1)
+    expect(named.other).toHaveBeenCalledTimes(1)
+    expect(router.currentRoute.value.fullPath).toBe('/named')
+  })
 
-      it('aborts navigation if one of the named views aborts', async () => {
-        const router = createRouter({ routes })
-        named.default.mockImplementationOnce((to, from, next) => {
-          next(false)
-        })
-        named.other.mockImplementationOnce(noGuard)
-        await router[navigationMethod]('/named').catch(err => {}) // catch abort
-        expect(named.default).toHaveBeenCalledTimes(1)
-        expect(router.currentRoute.value.fullPath).not.toBe('/named')
-      })
+  it('aborts navigation if one of the named views aborts', async () => {
+    const router = createRouter({ routes })
+    named.default.mockImplementationOnce((to, from, next) => {
+      next(false)
+    })
+    named.other.mockImplementationOnce(noGuard)
+    await router.push('/named').catch(err => {}) // catch abort
+    expect(named.default).toHaveBeenCalledTimes(1)
+    expect(router.currentRoute.value.fullPath).not.toBe('/named')
+  })
 
-      it('does not call beforeRouteEnter if we were already on the page', async () => {
-        const router = createRouter({ routes })
-        beforeRouteEnter.mockImplementation(noGuard)
-        await router.push('/guard/one')
-        expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
-        await router[navigationMethod]('/guard/one')
-        expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
-      })
+  it('does not call beforeRouteEnter if we were already on the page', async () => {
+    const router = createRouter({ routes })
+    beforeRouteEnter.mockImplementation(noGuard)
+    await router.push('/guard/one')
+    expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
+    await router.push('/guard/one')
+    expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
+  })
 
-      it('waits before navigating', async () => {
-        const [promise, resolve] = fakePromise()
-        const router = createRouter({ routes })
-        beforeRouteEnter.mockImplementationOnce(async (to, from, next) => {
-          await promise
-          next()
-        })
-        const p = router[navigationMethod]('/foo')
-        expect(router.currentRoute.value.fullPath).toBe('/')
-        resolve()
-        await p
+  it('waits before navigating', async () => {
+    const [promise, resolve] = fakePromise()
+    const router = createRouter({ routes })
+    beforeRouteEnter.mockImplementationOnce(async (to, from, next) => {
+      await promise
+      next()
+    })
+    const p = router.push('/foo')
+    expect(router.currentRoute.value.fullPath).toBe('/')
+    resolve()
+    await p
+    expect(router.currentRoute.value.fullPath).toBe('/foo')
+  })
+
+  // TODO:
+  it.skip('calls next callback', async done => {
+    const router = createRouter({ routes })
+    beforeRouteEnter.mockImplementationOnce((to, from, next) => {
+      next(vm => {
         expect(router.currentRoute.value.fullPath).toBe('/foo')
-      })
-
-      // TODO:
-      it.skip('calls next callback', async done => {
-        const router = createRouter({ routes })
-        beforeRouteEnter.mockImplementationOnce((to, from, next) => {
-          next(vm => {
-            expect(router.currentRoute.value.fullPath).toBe('/foo')
-            expect(vm).toBeTruthy()
-            done()
-          })
-        })
-
-        await router.push('/')
-        await router.push('/guard/2')
-      })
-
-      it.skip('calls next callback after waiting', async done => {
-        const [promise, resolve] = fakePromise()
-        const router = createRouter({ routes })
-        beforeRouteEnter.mockImplementationOnce(async (to, from, next) => {
-          await promise
-          next(vm => {
-            expect(router.currentRoute.value.fullPath).toBe('/foo')
-            expect(vm).toBeTruthy()
-            done()
-          })
-        })
-        router[navigationMethod]('/foo')
-        resolve()
+        expect(vm).toBeTruthy()
+        done()
       })
     })
+
+    await router.push('/')
+    await router.push('/guard/2')
+  })
+
+  it.skip('calls next callback after waiting', async done => {
+    const [promise, resolve] = fakePromise()
+    const router = createRouter({ routes })
+    beforeRouteEnter.mockImplementationOnce(async (to, from, next) => {
+      await promise
+      next(vm => {
+        expect(router.currentRoute.value.fullPath).toBe('/foo')
+        expect(vm).toBeTruthy()
+        done()
+      })
+    })
+    router.push('/foo')
+    resolve()
   })
 })
