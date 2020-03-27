@@ -2,7 +2,7 @@ import path from 'path'
 import ts from 'rollup-plugin-typescript2'
 import replace from '@rollup/plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
-import commonjs from 'rollup-plugin-commonjs'
+import commonjs from '@rollup/plugin-commonjs'
 
 const pkg = require('./package.json')
 const name = pkg.name
