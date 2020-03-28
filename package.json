@@ -1,6 +1,6 @@
 {
   "name": "vue-router",
-  "version": "4.0.0-alpha.3",
+  "version": "4.0.0-alpha.4",
   "main": "dist/vue-router.cjs.js",
   "browser": "dist/vue-router.esm.js",
   "unpkg": "dist/vue-router.global.js",
@@ -19,15 +19,14 @@
     "build:dts": "api-extractor run --local --verbose",
     "dev": "webpack-dev-server --mode=development",
     "release": "bash scripts/release.sh",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 2",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 1",
     "build:playground": "webpack --env.prod",
     "dev:e2e": "webpack-dev-server --mode=development --config e2e/webpack.config.js",
     "lint": "prettier -c --parser typescript \"{src,__tests__,e2e}/**/*.[jt]s?(x)\"",
     "lint:fix": "yarn run lint --write",
     "test:types": "tsc --build tsconfig.json",
     "test:unit": "jest --coverage",
-    "test": "yarn run test:types && yarn run test:unit",
-    "prepublishOnly": "yarn run build && yarn run build:dts"
+    "test": "yarn run test:types && yarn run test:unit"
   },
   "gitHooks": {
     "pre-commit": "lint-staged",
