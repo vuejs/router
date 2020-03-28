@@ -13,6 +13,12 @@ Since the library is still unstable **and because we want feedback** on bugs and
 - `mode: 'history'` -> `history: createWebHistory()`
 - Catch all routes (`/*`) must now be defined using a parameter with a custom regex: `/:catchAll(.*)`
 
+#### Improvements
+
+These are technically breaking changes but they fix an inconsistent behavior.
+
+- Pushing or resolving a non existant named route throws an error instead of navigating to `/` and displaying nothing.
+
 ### Missing features
 
 - `keep-alive` is not yet supported
