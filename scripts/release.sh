@@ -1,4 +1,5 @@
 set -e
+echo "Current version:" $(grep version package.json | sed -E 's/^.*"(4[^"]+)".*$/\1/')
 echo "Enter alpha version e.g., 2 will generate 4.0.0-alpha.2: "
 read ALPHA
 
