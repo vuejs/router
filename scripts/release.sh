@@ -12,15 +12,25 @@ then
   echo "Releasing v$VERSION ..."
   npm test
 
-  # commit
-  yarn publish --tag next --new-version $VERSION
+  yarn build
+  yarn build:dts
+
+  # generate the version so that the changelog can be generated too
+  yarn version --no-git-tag-version --no-commit-hooks --new-version $VERSION
 
   # changelog
   yarn run changelog
   echo "Please check the git history and the changelog and press enter"
   read OKAY
-  git add CHANGELOG.md
-  git commit -m "chore(changelog): $VERSION"
+
+  # commit and tag
+  git add CHANGELOG.md package.json
+  git commit -m "realese: v$VERSION"
+  git tag "v$VERSION"
+
+  # commit
+  # TODO: make sure this works the next time
+  yarn publish --tag next --new-version $VERSION --no-commit-hooks --no-git-tag-version
 
   # publish
   git push origin refs/tags/v$VERSION
