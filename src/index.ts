@@ -1,8 +1,6 @@
 import createWebHistory from './history/html5'
 import createMemoryHistory from './history/memory'
 import createWebHashHistory from './history/hash'
-import { inject } from 'vue'
-import { routerKey, routeLocationKey } from './utils/injectionSymbols'
 
 export {
   LocationQuery,
@@ -36,10 +34,4 @@ export { View, useView } from './components/View'
 
 export { createWebHistory, createMemoryHistory, createWebHashHistory }
 
-export function useRouter() {
-  return inject(routerKey)!
-}
-
-export function useRoute() {
-  return inject(routeLocationKey)!
-}
+export * from './useApi'
