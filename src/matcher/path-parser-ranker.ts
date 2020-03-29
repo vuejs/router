@@ -28,6 +28,7 @@ export interface PathParser {
    * Parses a url and returns the matched params or nul if it doesn't match. An
    * optional param that isn't preset will be an empty string. A repeatable
    * param will be an array if there is at least one value.
+   *
    * @param path - url to parse
    * @returns a Params object, empty if there are no params. `null` if there is
    * no match
@@ -35,6 +36,7 @@ export interface PathParser {
   parse(path: string): PathParams | null
   /**
    * Creates a string version of the url
+   *
    * @param params - object of params
    * @returns a url
    */
