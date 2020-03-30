@@ -44,7 +44,7 @@
     "vue": "^3.0.0-alpha.6"
   },
   "devDependencies": {
-    "@microsoft/api-documenter": "^7.7.14",
+    "@microsoft/api-documenter": "^7.7.16",
     "@microsoft/api-extractor": "^7.7.10",
     "@rollup/plugin-alias": "^3.0.1",
     "@rollup/plugin-commonjs": "^11.0.2",
