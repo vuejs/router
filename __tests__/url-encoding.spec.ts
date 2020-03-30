@@ -1,12 +1,12 @@
 import { createRouter as newRouter } from '../src/router'
 import { createDom, components } from './utils'
-import { RouteRecord } from '../src/types'
+import { RouteRecordRaw } from '../src/types'
 import { createMemoryHistory } from '../src'
 import * as encoding from '../src/utils/encoding'
 
 jest.mock('../src/utils/encoding')
 
-const routes: RouteRecord[] = [
+const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: components.Home },
   { path: '/%25', name: 'percent', component: components.Home },
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },

@@ -2,10 +2,10 @@ import {
   RouteLocationNormalized,
   RouteParams,
   RouteComponent,
-  RouteLocationNormalizedResolved,
+  RouteLocationNormalizedLoaded,
 } from '../types'
 import { guardToPromiseFn } from './guardToPromiseFn'
-import { RouteRecordNormalized } from '../matcher/types'
+import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { LocationQueryValue } from './query'
 import { hasSymbol } from './injectionSymbols'
 
@@ -21,7 +21,7 @@ export function extractComponentsGuards(
   matched: RouteRecordNormalized[],
   guardType: GuardType,
   to: RouteLocationNormalized,
-  from: RouteLocationNormalizedResolved
+  from: RouteLocationNormalizedLoaded
 ) {
   const guards: Array<() => Promise<void>> = []
 
@@ -71,10 +71,7 @@ export function applyToParams(
   return newParams
 }
 
-export function isSameRouteRecord(
-  a: RouteRecordNormalized,
-  b: RouteRecordNormalized
-): boolean {
+export function isSameRouteRecord(a: RouteRecord, b: RouteRecord): boolean {
   // since the original record has an undefined value for aliasOf
   // but all aliases point to the original record, this will always compare
   // the original record

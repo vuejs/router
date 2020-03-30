@@ -3,12 +3,12 @@ import { createRouter, createMemoryHistory, createWebHistory } from '../src'
 import { ErrorTypes } from '../src/errors'
 import { createDom, components, tick } from './utils'
 import {
-  RouteRecord,
-  RouteLocation,
+  RouteRecordRaw,
+  RouteLocationRaw,
   START_LOCATION_NORMALIZED,
 } from '../src/types'
 
-const routes: RouteRecord[] = [
+const routes: RouteRecordRaw[] = [
   { path: '/', component: components.Home, name: 'home' },
   { path: '/home', redirect: '/' },
   {
@@ -25,6 +25,7 @@ const routes: RouteRecord[] = [
   { path: '/to-foo2', redirect: '/to-foo' },
   { path: '/p/:p', name: 'Param', component: components.Bar },
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
+  { path: '/before-leave', component: components.BeforeLeave },
   {
     path: '/inc-query-hash',
     redirect: to => ({
@@ -231,7 +232,7 @@ describe('Router', () => {
 
   describe('navigation', () => {
     async function checkNavigationCancelledOnPush(
-      target?: RouteLocation | false | ((vm: any) => void)
+      target?: RouteLocationRaw | false | ((vm: any) => void)
     ) {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
@@ -278,7 +279,7 @@ describe('Router', () => {
     })
 
     async function checkNavigationCancelledOnPopstate(
-      target?: RouteLocation | false | ((vm: any) => void)
+      target?: RouteLocationRaw | false | ((vm: any) => void)
     ) {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
@@ -370,6 +371,20 @@ describe('Router', () => {
       })
     })
 
+    it('only triggers guards once with a redirect option', async () => {
+      const history = createMemoryHistory()
+      const router = createRouter({ history, routes })
+      const spy = jest.fn((to, from, next) => next())
+      router.beforeEach(spy)
+      await router.push('/to-foo')
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({ path: '/foo' }),
+        expect.objectContaining({ path: '/' }),
+        expect.any(Function)
+      )
+    })
+
     it('handles a double redirect from route record', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
@@ -405,7 +420,8 @@ describe('Router', () => {
     it('can pass on query and hash when redirecting', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
-      const loc = await router.push('/inc-query-hash?n=3#fa')
+      await router.push('/inc-query-hash?n=3#fa')
+      const loc = router.currentRoute.value
       expect(loc).toMatchObject({
         name: 'Foo',
         query: {

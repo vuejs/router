@@ -1,11 +1,11 @@
 import { RouterOptions, createRouter as newRouter } from '../../src/router'
 import { createDom, noGuard } from '../utils'
-import { RouteRecord } from '../../src/types'
+import { RouteRecordRaw } from '../../src/types'
 import { createWebHistory } from '../../src'
 
 // TODO: refactor in utils
 function createRouter(
-  options: Partial<RouterOptions> & { routes: RouteRecord[] }
+  options: Partial<RouterOptions> & { routes: RouteRecordRaw[] }
 ) {
   return newRouter({
     history: createWebHistory(),
@@ -28,7 +28,7 @@ const nested = {
 }
 const beforeRouteLeave = jest.fn()
 
-const routes: RouteRecord[] = [
+const routes: RouteRecordRaw[] = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },
   {

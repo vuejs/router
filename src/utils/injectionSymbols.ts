@@ -1,6 +1,7 @@
 import { InjectionKey, ComputedRef } from 'vue'
-import { RouteLocationMatched, RouteLocationNormalizedResolved } from '../types'
+import { RouteLocationNormalizedLoaded } from '../types'
 import { Router } from '../router'
+import { RouteRecordNormalized } from '../matcher/types'
 
 export const hasSymbol =
   typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol'
@@ -11,7 +12,7 @@ export const PolySymbol = (name: string) =>
 
 // rvlm = Router View Location Matched
 export const matchedRouteKey = PolySymbol('rvlm') as InjectionKey<
-  ComputedRef<RouteLocationMatched | undefined>
+  ComputedRef<RouteRecordNormalized | undefined>
 >
 // rvd = Router View Depth
 export const viewDepthKey = PolySymbol('rvd') as InjectionKey<number>
@@ -20,5 +21,5 @@ export const viewDepthKey = PolySymbol('rvd') as InjectionKey<number>
 export const routerKey = PolySymbol('r') as InjectionKey<Router>
 // rt = route location
 export const routeLocationKey = PolySymbol('rl') as InjectionKey<
-  RouteLocationNormalizedResolved
+  RouteLocationNormalizedLoaded
 >

@@ -1,14 +1,15 @@
 import {
   RouteLocationNormalized,
-  RouteRecord,
-  RouteLocation,
+  RouteRecordRaw,
+  RouteLocationRaw,
   NavigationGuard,
   PostNavigationGuard,
   START_LOCATION_NORMALIZED,
   Lazy,
   TODO,
-  MatcherLocationNormalized,
-  RouteLocationNormalizedResolved,
+  MatcherLocation,
+  RouteLocationNormalizedLoaded,
+  RouteLocation,
 } from './types'
 import {
   RouterHistory,
@@ -48,7 +49,7 @@ import {
   reactive,
   ComputedRef,
 } from 'vue'
-import { RouteRecordNormalized } from './matcher/types'
+import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import { Link } from './components/Link'
 import { View } from './components/View'
 import { routerKey, routeLocationKey } from './utils/injectionSymbols'
@@ -64,14 +65,14 @@ type OnReadyCallback = [() => void, (reason?: any) => void]
 interface ScrollBehavior {
   (
     to: RouteLocationNormalized,
-    from: RouteLocationNormalizedResolved,
+    from: RouteLocationNormalizedLoaded,
     savedPosition: ScrollToPosition | null
   ): ScrollPosition | Promise<ScrollPosition>
 }
 
 export interface RouterOptions {
   history: RouterHistory
-  routes: RouteRecord[]
+  routes: RouteRecordRaw[]
   scrollBehavior?: ScrollBehavior
   parseQuery?: typeof originalParseQuery
   stringifyQuery?: typeof originalStringifyQuery
@@ -80,17 +81,17 @@ export interface RouterOptions {
 
 export interface Router {
   history: RouterHistory
-  currentRoute: Ref<RouteLocationNormalizedResolved>
+  currentRoute: Ref<RouteLocationNormalizedLoaded>
 
-  addRoute(parentName: string, route: RouteRecord): () => void
-  addRoute(route: RouteRecord): () => void
+  addRoute(parentName: string, route: RouteRecordRaw): () => void
+  addRoute(route: RouteRecordRaw): () => void
   removeRoute(name: string): void
-  getRoutes(): RouteRecordNormalized[]
+  getRoutes(): RouteRecord[]
 
-  resolve(to: RouteLocation): RouteLocationNormalized
-  createHref(to: RouteLocationNormalized): string
-  push(to: RouteLocation): Promise<RouteLocationNormalizedResolved>
-  replace(to: RouteLocation): Promise<RouteLocationNormalizedResolved>
+  resolve(to: RouteLocationRaw): RouteLocation
+  createHref(to: RouteLocation): string
+  push(to: RouteLocationRaw): Promise<TODO>
+  replace(to: RouteLocationRaw): Promise<TODO>
 
   beforeEach(guard: NavigationGuard<undefined>): () => void
   afterEach(guard: PostNavigationGuard): () => void
@@ -114,25 +115,28 @@ export function createRouter({
 
   const beforeGuards = useCallbacks<NavigationGuard<undefined>>()
   const afterGuards = useCallbacks<PostNavigationGuard>()
-  const currentRoute = ref<RouteLocationNormalizedResolved>(
+  const currentRoute = ref<RouteLocationNormalizedLoaded>(
     START_LOCATION_NORMALIZED
   )
-  let pendingLocation: RouteLocationNormalized = START_LOCATION_NORMALIZED
+  let pendingLocation: RouteLocation = START_LOCATION_NORMALIZED
 
   if (isClient && 'scrollRestoration' in window.history) {
     window.history.scrollRestoration = 'manual'
   }
 
-  function createHref(to: RouteLocationNormalized): string {
+  function createHref(to: RouteLocation): string {
     return history.base + to.fullPath
   }
 
   const encodeParams = applyToParams.bind(null, encodeParam)
   const decodeParams = applyToParams.bind(null, decode)
 
-  function addRoute(parentOrRoute: string | RouteRecord, route?: RouteRecord) {
+  function addRoute(
+    parentOrRoute: string | RouteRecordRaw,
+    route?: RouteRecordRaw
+  ) {
     let parent: Parameters<typeof matcher['addRoute']>[1] | undefined
-    let record: RouteRecord
+    let record: RouteRecordRaw
     if (typeof parentOrRoute === 'string') {
       parent = matcher.getRecordMatcher(parentOrRoute)
       record = route!
@@ -153,14 +157,14 @@ export function createRouter({
     }
   }
 
-  function getRoutes(): RouteRecordNormalized[] {
+  function getRoutes() {
     return matcher.getRoutes().map(routeMatcher => routeMatcher.record)
   }
 
   function resolve(
-    location: RouteLocation,
-    currentLocation?: RouteLocationNormalizedResolved
-  ): RouteLocationNormalized {
+    location: RouteLocationRaw,
+    currentLocation?: RouteLocationNormalizedLoaded
+  ): RouteLocation {
     // const objectLocation = routerLocationAsObject(location)
     currentLocation = currentLocation || currentRoute.value
     if (typeof location === 'string') {
@@ -178,7 +182,7 @@ export function createRouter({
       }
     }
 
-    let matchedRoute: MatcherLocationNormalized = // relative or named location, path is ignored
+    let matchedRoute: MatcherLocation = // relative or named location, path is ignored
       // for same reason TS thinks location.params can be undefined
       matcher.resolve(
         'params' in location
@@ -206,23 +210,20 @@ export function createRouter({
     }
   }
 
-  function push(
-    // TODO: should not allow normalized version
-    to: RouteLocation | RouteLocationNormalized
-  ): Promise<RouteLocationNormalizedResolved> {
+  function push(to: RouteLocationRaw | RouteLocation): Promise<TODO> {
     return pushWithRedirect(to, undefined)
   }
 
-  function replace(to: RouteLocation | RouteLocationNormalized) {
+  function replace(to: RouteLocationRaw | RouteLocationNormalized) {
     const location = typeof to === 'string' ? { path: to } : to
     return push({ ...location, replace: true })
   }
 
   async function pushWithRedirect(
-    to: RouteLocation | RouteLocationNormalized,
-    redirectedFrom: RouteLocationNormalized | undefined
+    to: RouteLocationRaw | RouteLocation,
+    redirectedFrom: RouteLocation | undefined
   ): Promise<TODO> {
-    const toLocation: RouteLocationNormalized = (pendingLocation =
+    const targetLocation: RouteLocation = (pendingLocation =
       // Some functions will pass a normalized location and we don't need to resolve it again
       typeof to === 'object' && 'matched' in to ? to : resolve(to))
     const from = currentRoute.value
@@ -231,7 +232,21 @@ export function createRouter({
     const force: boolean | undefined = to.force
 
     // TODO: should we throw an error as the navigation was aborted
-    if (!force && isSameRouteLocation(from, toLocation)) return from
+    if (!force && isSameRouteLocation(from, targetLocation)) return from
+
+    const lastMatched =
+      targetLocation.matched[targetLocation.matched.length - 1]
+    if (lastMatched && 'redirect' in lastMatched) {
+      const { redirect } = lastMatched
+      return pushWithRedirect(
+        typeof redirect === 'function' ? redirect(targetLocation) : redirect,
+        // keep original redirectedFrom if it exists
+        redirectedFrom || targetLocation
+      )
+    }
+
+    // if it was a redirect we already called `pushWithRedirect` above
+    const toLocation = targetLocation as RouteLocationNormalized
 
     toLocation.redirectedFrom = redirectedFrom
 
@@ -260,11 +275,11 @@ export function createRouter({
     }
 
     finalizeNavigation(
-      toLocation as RouteLocationNormalizedResolved,
+      toLocation as RouteLocationNormalizedLoaded,
       from,
       true,
       // RouteLocationNormalized will give undefined
-      (to as RouteLocation).replace === true,
+      (to as RouteLocationRaw).replace === true,
       data
     )
 
@@ -273,7 +288,7 @@ export function createRouter({
 
   async function navigate(
     to: RouteLocationNormalized,
-    from: RouteLocationNormalizedResolved
+    from: RouteLocationNormalizedLoaded
   ): Promise<TODO> {
     let guards: Lazy<any>[]
 
@@ -355,7 +370,7 @@ export function createRouter({
     // TODO: add tests
     //  this should be done only if the navigation succeeds
     // if we redirect, it shouldn't be done because we don't know
-    for (const record of leavingRecords) {
+    for (const record of leavingRecords as RouteRecordNormalized[]) {
       // free the references
       record.instances = {}
     }
@@ -367,8 +382,8 @@ export function createRouter({
    * - Calls the scrollBehavior
    */
   function finalizeNavigation(
-    toLocation: RouteLocationNormalizedResolved,
-    from: RouteLocationNormalizedResolved,
+    toLocation: RouteLocationNormalizedLoaded,
+    from: RouteLocationNormalizedLoaded,
     isPush: boolean,
     replace?: boolean,
     data?: HistoryState
@@ -418,7 +433,8 @@ export function createRouter({
   // attach listener to history to trigger navigations
   history.listen(async (to, _from, info) => {
     // TODO: try catch to correctly log the matcher error
-    const toLocation = resolve(to.fullPath)
+    // cannot be a redirect route because it was in history
+    const toLocation = resolve(to.fullPath) as RouteLocationNormalized
     // console.log({ to, matchedRoute })
 
     pendingLocation = toLocation
@@ -428,7 +444,7 @@ export function createRouter({
       await navigate(toLocation, from)
       finalizeNavigation(
         // after navigation, all matched components are resolved
-        toLocation as RouteLocationNormalizedResolved,
+        toLocation as RouteLocationNormalizedLoaded,
         from,
         false
       )
@@ -514,8 +530,8 @@ export function createRouter({
   // Scroll behavior
 
   async function handleScroll(
-    to: RouteLocationNormalizedResolved,
-    from: RouteLocationNormalizedResolved,
+    to: RouteLocationNormalizedLoaded,
+    from: RouteLocationNormalizedLoaded,
     scrollPosition?: ScrollToPosition
   ) {
     if (!scrollBehavior) return
@@ -574,8 +590,8 @@ function applyRouterPlugin(app: App, router: Router) {
     })
 
   const reactiveRoute = {} as {
-    [k in keyof RouteLocationNormalizedResolved]: ComputedRef<
-      RouteLocationNormalizedResolved[k]
+    [k in keyof RouteLocationNormalizedLoaded]: ComputedRef<
+      RouteLocationNormalizedLoaded[k]
     >
   }
   for (let key in START_LOCATION_NORMALIZED) {
@@ -596,7 +612,7 @@ async function runGuardQueue(guards: Lazy<any>[]): Promise<void> {
 
 function extractChangingRecords(
   to: RouteLocationNormalized,
-  from: RouteLocationNormalizedResolved
+  from: RouteLocationNormalizedLoaded
 ) {
   const leavingRecords: RouteRecordNormalized[] = []
   const updatingRecords: RouteRecordNormalized[] = []
@@ -616,10 +632,7 @@ function extractChangingRecords(
   return [leavingRecords, updatingRecords, enteringRecords]
 }
 
-function isSameRouteLocation(
-  a: RouteLocationNormalized,
-  b: RouteLocationNormalized
-): boolean {
+function isSameRouteLocation(a: RouteLocation, b: RouteLocation): boolean {
   let aLastIndex = a.matched.length - 1
   let bLastIndex = b.matched.length - 1
 

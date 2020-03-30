@@ -2,9 +2,9 @@ import { createRouterMatcher, normalizeRouteRecord } from '../../src/matcher'
 import {
   START_LOCATION_NORMALIZED,
   RouteComponent,
-  RouteRecord,
+  RouteRecordRaw,
+  MatcherLocationRaw,
   MatcherLocation,
-  MatcherLocationNormalized,
 } from '../../src/types'
 import { MatcherLocationNormalizedLoose } from '../utils'
 
@@ -17,10 +17,10 @@ const components = { default: component }
 describe('Router Matcher', () => {
   describe('resolve', () => {
     function assertRecordMatch(
-      record: RouteRecord | RouteRecord[],
-      location: MatcherLocation,
+      record: RouteRecordRaw | RouteRecordRaw[],
+      location: MatcherLocationRaw,
       resolved: Partial<MatcherLocationNormalizedLoose>,
-      start: MatcherLocationNormalized = START_LOCATION_NORMALIZED
+      start: MatcherLocation = START_LOCATION_NORMALIZED
     ) {
       record = Array.isArray(record) ? record : [record]
       const matcher = createRouterMatcher(record, {})
@@ -60,12 +60,12 @@ describe('Router Matcher', () => {
         resolved.params = resolved.params || {}
       }
 
-      const startCopy = {
+      const startCopy: MatcherLocation = {
         ...start,
         matched: start.matched.map(m => ({
           ...normalizeRouteRecord(m),
           aliasOf: m.aliasOf,
-        })),
+        })) as MatcherLocation['matched'],
       }
 
       // make matched non enumerable
@@ -83,9 +83,9 @@ describe('Router Matcher', () => {
      * @returns error
      */
     function assertErrorMatch(
-      record: RouteRecord | RouteRecord[],
-      location: MatcherLocation,
-      start: MatcherLocationNormalized = START_LOCATION_NORMALIZED
+      record: RouteRecordRaw | RouteRecordRaw[],
+      location: MatcherLocationRaw,
+      start: MatcherLocation = START_LOCATION_NORMALIZED
     ): any {
       try {
         assertRecordMatch(record, location, {}, start)
@@ -909,9 +909,7 @@ describe('Router Matcher', () => {
             name: 'nested',
             path: '/foo',
             params: {},
-            matched: [Foo, { ...Nested, path: `${Foo.path}` }].map(
-              normalizeRouteRecord
-            ),
+            matched: [Foo, { ...Nested, path: `${Foo.path}` }],
           }
         )
       })
@@ -1123,9 +1121,7 @@ describe('Router Matcher', () => {
             name: 'nested',
             path: '/nested',
             params: {},
-            matched: [Parent, { ...Nested, path: `/nested` }].map(
-              normalizeRouteRecord
-            ),
+            matched: [Parent, { ...Nested, path: `/nested` }],
           }
         )
       })
@@ -1145,9 +1141,7 @@ describe('Router Matcher', () => {
             name: 'nested',
             path: '/parent/nested',
             params: {},
-            matched: [Parent, { ...Nested, path: `/parent/nested` }].map(
-              normalizeRouteRecord
-            ),
+            matched: [Parent, { ...Nested, path: `/parent/nested` }],
           }
         )
       })

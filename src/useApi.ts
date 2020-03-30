@@ -1,12 +1,12 @@
 import { inject } from 'vue'
 import { routerKey, routeLocationKey } from './utils/injectionSymbols'
 import { Router } from './router'
-import { RouteLocationNormalizedResolved } from './types'
+import { RouteLocationNormalizedLoaded } from './types'
 
 export function useRouter(): Router {
   return inject(routerKey)!
 }
 
-export function useRoute(): RouteLocationNormalizedResolved {
+export function useRoute(): RouteLocationNormalizedLoaded {
   return inject(routeLocationKey)!
 }

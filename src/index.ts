@@ -12,17 +12,17 @@ export {
 
 export { RouterHistory } from './history/common'
 
-export { RouteRecordNormalized } from './matcher/types'
+export { RouteRecord, RouteRecordNormalized } from './matcher/types'
 
 export {
-  RouteLocation,
-  RouteLocationMatched,
+  RouteLocationRaw,
   RouteLocationNormalized,
-  RouteLocationNormalizedResolved,
+  RouteLocationNormalizedLoaded,
   START_LOCATION_NORMALIZED as START_LOCATION,
   RouteParams,
+  RouteLocationMatched,
   RouteLocationOptions,
-  RouteRecord,
+  RouteRecordRaw,
   NavigationGuard,
   PostNavigationGuard,
 } from './types'

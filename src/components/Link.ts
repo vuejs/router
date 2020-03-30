@@ -7,13 +7,13 @@ import {
   reactive,
   unref,
 } from 'vue'
-import { RouteLocation, RouteLocationNormalized, VueUseOptions } from '../types'
+import { RouteLocationRaw, VueUseOptions, RouteLocation } from '../types'
 import { isSameLocationObject, isSameRouteRecord } from '../utils'
 import { routerKey } from '../utils/injectionSymbols'
-import { RouteRecordNormalized } from '../matcher/types'
+import { RouteRecord } from '../matcher/types'
 
 interface LinkProps {
-  to: RouteLocation
+  to: RouteLocationRaw
   // TODO: refactor using extra options allowed in router.push
   replace?: boolean
 }
@@ -29,7 +29,7 @@ export function useLink(props: UseLinkOptions) {
 
   const activeRecordIndex = computed<number>(() => {
     // TODO: handle children with empty path: they should relate to their parent
-    const currentMatched: RouteRecordNormalized | undefined =
+    const currentMatched: RouteRecord | undefined =
       route.value.matched[route.value.matched.length - 1]
     if (!currentMatched) return -1
     return currentRoute.value.matched.findIndex(
@@ -69,7 +69,7 @@ export const Link = defineComponent({
   name: 'RouterLink',
   props: {
     to: {
-      type: [String, Object] as PropType<RouteLocation>,
+      type: [String, Object] as PropType<RouteLocationRaw>,
       required: true,
     },
   },
@@ -119,8 +119,8 @@ function guardEvent(e: MouseEvent) {
 }
 
 function includesParams(
-  outter: RouteLocationNormalized['params'],
-  inner: RouteLocationNormalized['params']
+  outter: RouteLocation['params'],
+  inner: RouteLocation['params']
 ): boolean {
   for (let key in inner) {
     let innerValue = inner[key]

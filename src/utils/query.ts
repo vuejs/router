@@ -24,7 +24,7 @@ export type LocationQuery = Record<
 /**
  * Loose {@link LocationQuery} object that can be passed to functions like
  * {@link Router.push} and {@link Router.replace} or anywhere when creating a
- * {@link RouteLocation}
+ * {@link RouteLocationRaw}
  *
  * @public
  */

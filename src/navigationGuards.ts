@@ -1,6 +1,5 @@
 import { NavigationGuard } from './types'
 import { inject, getCurrentInstance, warn } from 'vue'
-import { RouteRecordNormalized } from './matcher/types'
 import { matchedRouteKey } from './utils/injectionSymbols'
 
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
@@ -11,10 +10,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
     return
   }
 
-  const activeRecord: RouteRecordNormalized | undefined = inject(
-    matchedRouteKey,
-    {} as any
-  ).value
+  const activeRecord = inject(matchedRouteKey, {} as any).value
 
   if (!activeRecord) {
     __DEV__ &&

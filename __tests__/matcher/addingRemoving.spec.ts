@@ -1,7 +1,7 @@
 import { createRouterMatcher } from '../../src/matcher'
-import { MatcherLocationNormalized } from '../../src/types'
+import { MatcherLocation } from '../../src/types'
 
-const currentLocation = { path: '/' } as MatcherLocationNormalized
+const currentLocation = { path: '/' } as MatcherLocation
 // @ts-ignore
 const component: RouteComponent = null
 

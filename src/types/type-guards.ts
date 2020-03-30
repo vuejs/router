@@ -1,5 +1,5 @@
-import { RouteLocation } from './index'
+import { RouteLocationRaw } from './index'
 
-export function isRouteLocation(route: any): route is RouteLocation {
+export function isRouteLocation(route: any): route is RouteLocationRaw {
   return typeof route === 'string' || (route && typeof route === 'object')
 }

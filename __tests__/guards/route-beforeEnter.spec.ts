@@ -1,11 +1,11 @@
 import { RouterOptions, createRouter as newRouter } from '../../src/router'
 import fakePromise from 'faked-promise'
 import { createDom, noGuard, tick } from '../utils'
-import { RouteRecord } from '../../src/types'
+import { RouteRecordRaw } from '../../src/types'
 import { createWebHistory } from '../../src'
 
 function createRouter(
-  options: Partial<RouterOptions> & { routes: RouteRecord[] }
+  options: Partial<RouterOptions> & { routes: RouteRecordRaw[] }
 ) {
   return newRouter({
     history: createWebHistory(),
@@ -28,7 +28,7 @@ const nested = {
   nestedNestedParam: jest.fn(),
 }
 
-const routes: RouteRecord[] = [
+const routes: RouteRecordRaw[] = [
   { path: '/', component: Home },
   { path: '/home', component: Home, beforeEnter },
   { path: '/foo', component: Foo },

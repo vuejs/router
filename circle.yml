@@ -31,6 +31,7 @@ jobs:
       - run: yarn run test:types
       - run: yarn run test:unit --maxWorkers=2
       - run: yarn build
+      - run: yarn build:dts
 
       - run:
           name: Send code coverage

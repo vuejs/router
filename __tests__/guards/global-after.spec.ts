@@ -1,9 +1,10 @@
 import { createDom } from '../utils'
 import { createWebHistory, createRouter as newRouter } from '../../src'
+import { RouteRecordRaw } from 'src/types'
 
 function createRouter(
   options: Partial<import('../../src/router').RouterOptions> & {
-    routes: import('../../src/types').RouteRecord[]
+    routes: import('../../src/types').RouteRecordRaw[]
   }
 ) {
   return newRouter({
@@ -16,8 +17,7 @@ const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 const Nested = { template: `<div>Nested<router-view/></div>` }
 
-/** @type {import('../../src/types').RouteRecord[]} */
-const routes = [
+const routes: RouteRecordRaw[] = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },
   {

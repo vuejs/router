@@ -1,7 +1,8 @@
 import { extractComponentsGuards } from '../src/utils'
-import { START_LOCATION_NORMALIZED, RouteRecord } from '../src/types'
+import { START_LOCATION_NORMALIZED, RouteRecordRaw } from '../src/types'
 import { components } from './utils'
 import { normalizeRouteRecord } from '../src/matcher'
+import { RouteRecordNormalized } from 'src/matcher/types'
 
 const beforeRouteEnter = jest.fn()
 
@@ -9,12 +10,12 @@ const beforeRouteEnter = jest.fn()
 const to = START_LOCATION_NORMALIZED
 const from = START_LOCATION_NORMALIZED
 
-const NoGuard: RouteRecord = { path: '/', component: components.Home }
-const SingleGuard: RouteRecord = {
+const NoGuard: RouteRecordRaw = { path: '/', component: components.Home }
+const SingleGuard: RouteRecordRaw = {
   path: '/',
   component: { ...components.Home, beforeRouteEnter },
 }
-const SingleGuardNamed: RouteRecord = {
+const SingleGuardNamed: RouteRecordRaw = {
   path: '/',
   components: {
     default: { ...components.Home, beforeRouteEnter },
@@ -30,14 +31,14 @@ beforeEach(() => {
 })
 
 async function checkGuards(
-  components: Exclude<RouteRecord, { redirect: any }>[],
+  components: Exclude<RouteRecordRaw, { redirect: any }>[],
   n: number,
   guardsLength: number = n
 ) {
   beforeRouteEnter.mockClear()
   const guards = await extractComponentsGuards(
     // type is fine as we excluded RouteRecordRedirect in components argument
-    components.map(normalizeRouteRecord),
+    components.map(normalizeRouteRecord) as RouteRecordNormalized[],
     'beforeRouteEnter',
     to,
     from

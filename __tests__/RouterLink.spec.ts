@@ -5,8 +5,9 @@ import { Link as RouterLink } from '../src/components/Link'
 import {
   START_LOCATION_NORMALIZED,
   RouteQueryAndHash,
-  MatcherLocation,
+  MatcherLocationRaw,
   RouteLocationNormalized,
+  RouteLocation,
 } from '../src/types'
 import { createMemoryHistory } from '../src'
 import { mount, tick } from './mount'
@@ -25,7 +26,9 @@ const records = {
 
 // fix the aliasOf
 records.homeAlias = { aliasOf: records.home } as RouteRecordNormalized
-records.parentAlias = { aliasOf: records.parent } as RouteRecordNormalized
+records.parentAlias = {
+  aliasOf: records.parent,
+} as RouteRecordNormalized
 records.childAlias = { aliasOf: records.child } as RouteRecordNormalized
 
 const locations: Record<
@@ -33,7 +36,7 @@ const locations: Record<
   {
     string: string
     normalized: RouteLocationNormalized
-    toResolve?: MatcherLocation & Required<RouteQueryAndHash>
+    toResolve?: MatcherLocationRaw & Required<RouteQueryAndHash>
   }
 > = {
   basic: {
@@ -216,7 +219,7 @@ describe('RouterLink', () => {
   function factory(
     currentLocation: RouteLocationNormalized,
     propsData: any,
-    resolvedLocation: RouteLocationNormalized,
+    resolvedLocation: RouteLocation,
     template: string = `<RouterLink :to="to">a link</RouterLink>`
   ) {
     const router = {

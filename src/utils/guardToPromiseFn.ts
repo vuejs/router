@@ -2,12 +2,12 @@ import {
   NavigationGuard,
   RouteLocationNormalized,
   NavigationGuardCallback,
-  RouteLocation,
-  RouteLocationNormalizedResolved,
+  RouteLocationRaw,
+  RouteLocationNormalizedLoaded,
   NavigationGuardNextCallback,
+  isRouteLocation,
 } from '../types'
 
-import { isRouteLocation } from '../types'
 import {
   createRouterError,
   ErrorTypes,
@@ -19,7 +19,7 @@ import { ComponentPublicInstance } from 'vue'
 export function guardToPromiseFn(
   guard: NavigationGuard<undefined>,
   to: RouteLocationNormalized,
-  from: RouteLocationNormalizedResolved,
+  from: RouteLocationNormalizedLoaded,
   instance?: undefined
 ): () => Promise<void>
 export function guardToPromiseFn<
@@ -27,13 +27,13 @@ export function guardToPromiseFn<
 >(
   guard: NavigationGuard<ThisType>,
   to: RouteLocationNormalized,
-  from: RouteLocationNormalizedResolved,
+  from: RouteLocationNormalizedLoaded,
   instance: ThisType
 ): () => Promise<void> {
   return () =>
     new Promise((resolve, reject) => {
       const next: NavigationGuardCallback = (
-        valid?: boolean | RouteLocation | NavigationGuardNextCallback
+        valid?: boolean | RouteLocationRaw | NavigationGuardNextCallback
       ) => {
         if (valid === false)
           reject(

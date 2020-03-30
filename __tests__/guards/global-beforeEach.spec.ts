@@ -1,11 +1,11 @@
 import { RouterOptions } from '../../src/router'
 import fakePromise from 'faked-promise'
 import { createDom, tick, noGuard } from '../utils'
-import { RouteRecord, RouteLocation } from '../../src/types'
+import { RouteRecordRaw, RouteLocationRaw } from '../../src/types'
 import { createWebHistory, createRouter as newRouter } from '../../src'
 
 function createRouter(
-  options: Partial<RouterOptions> & { routes: RouteRecord[] }
+  options: Partial<RouterOptions> & { routes: RouteRecordRaw[] }
 ) {
   return newRouter({
     history: createWebHistory(),
@@ -17,7 +17,7 @@ const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 const Nested = { template: `<div>Nested<router-view/></div>` }
 
-const routes: RouteRecord[] = [
+const routes: RouteRecordRaw[] = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },
   { path: '/other', component: Foo },
@@ -117,7 +117,7 @@ describe('router.beforeEach', () => {
     expect(router.currentRoute.value.fullPath).toBe('/other')
   })
 
-  async function assertRedirect(redirectFn: (i: string) => RouteLocation) {
+  async function assertRedirect(redirectFn: (i: string) => RouteLocationRaw) {
     const spy = jest.fn()
     const router = createRouter({ routes })
     await router.push('/')

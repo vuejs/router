@@ -8,7 +8,7 @@ import {
 } from 'vue'
 import * as runtimeDom from '@vue/runtime-dom'
 import { compile } from '@vue/compiler-dom'
-import { Router, RouteLocationNormalizedResolved } from '../src'
+import { Router, RouteLocationNormalizedLoaded } from '../src'
 import { routerKey, routeLocationKey } from '../src/utils/injectionSymbols'
 
 export function mount(
@@ -24,8 +24,8 @@ export function mount(
   const app = createApp(ComponentWithoutTemplate as any, rootProps)
 
   const reactiveRoute = {} as {
-    [k in keyof RouteLocationNormalizedResolved]: ComputedRef<
-      RouteLocationNormalizedResolved[k]
+    [k in keyof RouteLocationNormalizedLoaded]: ComputedRef<
+      RouteLocationNormalizedLoaded[k]
     >
   }
   for (let key in router.currentRoute.value) {

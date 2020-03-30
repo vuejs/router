@@ -2,9 +2,9 @@ import { JSDOM, ConstructorOptions } from 'jsdom'
 import {
   NavigationGuard,
   RouteRecordMultipleViews,
-  MatcherLocationNormalized,
+  MatcherLocation,
   RouteLocationNormalized,
-  RouteRecordCommon,
+  _RouteRecordBase,
   RouteComponent,
 } from '../src/types'
 import { h, resolveComponent, ComponentOptions } from 'vue'
@@ -28,7 +28,7 @@ export interface RouteRecordViewLoose
   > {
   leaveGuards?: any
   instances: Record<string, any>
-  props?: RouteRecordCommon['props']
+  props?: _RouteRecordBase['props']
   aliasOf: RouteRecordViewLoose | undefined
 }
 
@@ -38,7 +38,7 @@ export interface RouteLocationNormalizedLoose extends RouteLocationNormalized {
   path: string
   // record?
   params: any
-  redirectedFrom?: Partial<MatcherLocationNormalized>
+  redirectedFrom?: Partial<MatcherLocation>
   meta: any
   matched: Partial<RouteRecordViewLoose>[]
 }
@@ -48,7 +48,7 @@ export interface MatcherLocationNormalizedLoose {
   path: string
   // record?
   params: any
-  redirectedFrom?: Partial<MatcherLocationNormalized>
+  redirectedFrom?: Partial<MatcherLocation>
   meta: any
   matched: Partial<RouteRecordViewLoose>[]
   instances: Record<string, any>
@@ -125,4 +125,10 @@ export const components = {
       ])
     },
   },
+  BeforeLeave: {
+    render: () => h('div', {}, 'before leave'),
+    beforeRouteLeave(to, from, next) {
+      next()
+    },
+  } as RouteComponent,
 }

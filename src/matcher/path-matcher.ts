@@ -1,4 +1,4 @@
-import { RouteRecordNormalized } from './types'
+import { RouteRecord } from './types'
 import {
   tokensToParser,
   PathParser,
@@ -7,7 +7,7 @@ import {
 import { tokenizePath } from './path-tokenizer'
 
 export interface RouteRecordMatcher extends PathParser {
-  record: RouteRecordNormalized
+  record: RouteRecord
   parent: RouteRecordMatcher | undefined
   children: RouteRecordMatcher[]
   // aliases that must be removed when removing this record
@@ -15,12 +15,11 @@ export interface RouteRecordMatcher extends PathParser {
 }
 
 export function createRouteRecordMatcher(
-  record: Readonly<RouteRecordNormalized>,
+  record: Readonly<RouteRecord>,
   parent: RouteRecordMatcher | undefined,
   options?: PathParserOptions
 ): RouteRecordMatcher {
   const parser = tokensToParser(tokenizePath(record.path), options)
-
   const matcher: RouteRecordMatcher = {
     ...parser,
     record,

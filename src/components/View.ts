@@ -11,11 +11,7 @@ import {
   SetupContext,
   toRefs,
 } from 'vue'
-import {
-  RouteLocationMatched,
-  VueUseOptions,
-  RouteLocationNormalizedResolved,
-} from '../types'
+import { VueUseOptions, RouteLocationNormalizedLoaded } from '../types'
 import {
   matchedRouteKey,
   viewDepthKey,
@@ -23,7 +19,7 @@ import {
 } from '../utils/injectionSymbols'
 
 interface ViewProps {
-  route: RouteLocationNormalizedResolved
+  route: RouteLocationNormalizedLoaded
   name: string
 }
 
@@ -35,7 +31,9 @@ export function useView(options: UseViewOptions) {
 
   const matchedRoute = computed(
     () =>
-      unref(options.route).matched[depth] as RouteLocationMatched | undefined
+      unref(options.route).matched[depth] as
+        | ViewProps['route']['matched'][any]
+        | undefined
   )
   const ViewComponent = computed(
     () =>

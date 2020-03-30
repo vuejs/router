@@ -1,7 +1,7 @@
 import {
+  MatcherLocationRaw,
   MatcherLocation,
-  MatcherLocationNormalized,
-  RouteLocation,
+  RouteLocationRaw,
   RouteLocationNormalized,
 } from './types'
 
@@ -24,8 +24,8 @@ interface RouterErrorBase extends Error {
 
 export interface MatcherError extends RouterErrorBase {
   type: ErrorTypes.MATCHER_NOT_FOUND
-  location: MatcherLocation
-  currentLocation?: MatcherLocationNormalized
+  location: MatcherLocationRaw
+  currentLocation?: MatcherLocation
 }
 
 export interface NavigationError extends RouterErrorBase {
@@ -37,7 +37,7 @@ export interface NavigationError extends RouterErrorBase {
 export interface NavigationRedirectError
   extends Omit<NavigationError, 'to' | 'type'> {
   type: ErrorTypes.NAVIGATION_GUARD_REDIRECT
-  to: RouteLocation
+  to: RouteLocationRaw
 }
 
 // DEV only debug messages
@@ -87,7 +87,7 @@ export function createRouterError<E extends RouterError>(
 
 const propertiesToLog = ['params', 'query', 'hash'] as const
 
-function stringifyRoute(to: RouteLocation): string {
+function stringifyRoute(to: RouteLocationRaw): string {
   if (typeof to === 'string') return to
   if ('path' in to) return to.path
   const location = {} as Record<string, unknown>

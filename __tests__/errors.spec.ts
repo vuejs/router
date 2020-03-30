@@ -1,9 +1,9 @@
 import { createRouter as newRouter, createMemoryHistory } from '../src'
 import { ErrorTypes } from '../src/errors'
 import { components, tick } from './utils'
-import { RouteRecord } from '../src/types'
+import { RouteRecordRaw } from '../src/types'
 
-const routes: RouteRecord[] = [
+const routes: RouteRecordRaw[] = [
   { path: '/', component: components.Home },
   { path: '/foo', component: components.Foo, name: 'Foo' },
   { path: '/to-foo', redirect: '/foo' },
