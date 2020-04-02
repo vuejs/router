@@ -7,7 +7,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:lts-browsers
 
     working_directory: ~/repo
 
@@ -29,9 +29,11 @@ jobs:
 
       - run: yarn run lint
       - run: yarn run test:types
-      - run: yarn run test:unit --maxWorkers=2
       - run: yarn build
       - run: yarn build:dts
+      - run: yarn run test:unit --maxWorkers=2
+      - run: yarn run build:e2e
+      - run: yarn run test:e2e
 
       - run:
           name: Send code coverage
