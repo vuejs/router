@@ -1,8 +1,5 @@
 import { createRouter, createWebHistory, useRoute, useView } from '../../src'
-import {
-  RouteComponent,
-  RouteLocationNormalizedResolved,
-} from '../../src/types'
+import { RouteComponent, RouteLocationNormalizedLoaded } from '../../src/types'
 import { createApp, readonly, ref, watchEffect, computed, toRefs } from 'vue'
 
 const users = readonly([
@@ -134,7 +131,7 @@ const app = createApp({
       if (historyState.value.backgroundView) {
         return router.resolve(
           historyState.value.backgroundView
-        ) as RouteLocationNormalizedResolved
+        ) as RouteLocationNormalizedLoaded
       } else {
         return route
       }
