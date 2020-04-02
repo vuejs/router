@@ -25,12 +25,6 @@ jobs:
           paths:
             - vue-router
 
-  save-cache:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/project
-
   build-e2e:
     <<: *defaults
     steps:
@@ -48,14 +42,8 @@ jobs:
       - attach_workspace:
           at: ~/project
       - run: yarn test:unit  --maxWorkers=2
-      - run: yarn run codecov
       - store_artifacts:
           path: coverage
-      # Save cache after unit test is done. At this point e2e is still running
-      - save_cache:
-          key: v2-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - node_modules
 
   test-e2e:
     <<: *defaults
@@ -74,15 +62,26 @@ jobs:
       - run: yarn build
       - run: yarn build:dts
       - run: yarn run test:tsd
+      # Save cache after this task. At this point e2e are still running
+      - save_cache:
+          key: v2-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+
+  coverage:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Send code coverage
+          command: yarn run codecov
 
 workflows:
   version: 2
   install-and-parallel-test:
     jobs:
       - install
-      - build-lint:
-          requires:
-            - install
       - build-e2e:
           requires:
             - install
@@ -92,6 +91,9 @@ workflows:
       - test-e2e:
           requires:
             - build-e2e
-      - save-cache:
+      - build-lint:
+          requires:
+            - install
+      - coverage:
           requires:
             - test-unit
