@@ -29,14 +29,26 @@ jobs:
           paths:
             - vue-router
 
+  save-cache:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - save_cache:
+          key: v1-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+
   build-e2e:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/project
       - run: yarn run build:e2e
-      - store_artifacts:
-          path: e2e/__build__
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - vue-router/e2e/__build__
 
   test-unit:
     <<: *defaults
@@ -53,8 +65,6 @@ jobs:
       - attach_workspace:
           at: ~/project
       - run: yarn test:e2e
-      - store_artifacts:
-          path: coverage
 
   build-lint:
     <<: *defaults
@@ -96,3 +106,6 @@ workflows:
       - coverage:
           requires:
             - test-unit
+      - save-cache:
+          requires:
+            - test-e2e
