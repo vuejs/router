@@ -9,7 +9,7 @@ local.log
 .DS_Store
 e2e/reports
 e2e/screenshots
-examples/__build__
+__build__
 playground_dist
 yarn-error.log
 temp

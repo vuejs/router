@@ -1,7 +1,6 @@
 const axios = require('axios')
 
-const BS_USER = process.env.BS_USER
-const BS_KEY = process.env.BS_KEY
+const { BS_USER, BS_KEY } = process.env
 
 function getKey(client) {
   // const { capabilities, currentTest } = client

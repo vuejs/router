@@ -2,8 +2,7 @@
  * Running tests on remote browsers
  */
 
-const BS_USER = process.env.BS_USER
-const BS_KEY = process.env.BS_KEY
+const { BS_USER, BS_KEY } = process.env
 
 const nwConf = {
   src_folders: ['e2e/specs'],
@@ -79,7 +78,7 @@ const nwConf = {
         browser: 'internet explorer',
         browser_version: '11',
         // name: 'Bstack-[Nightwatch] Vue Router',
-        // 'browserstack.video': true
+        // 'browserstack.video': true,
       },
     },
 

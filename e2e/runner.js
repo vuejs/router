@@ -27,7 +27,12 @@ const Nightwatch = require('nightwatch')
 const args = process.argv.slice(2)
 
 // if we are running yarn dev locally, we can pass --dev to avoid launching another server instance
-const server = args.indexOf('--dev') > -1 ? null : require('./server')
+const server =
+  args.indexOf('--dev') > -1
+    ? null
+    : process.env.CI || args.indexOf('--ci') > -1
+    ? require('./staticServer')
+    : require('./devServer')
 
 // allow running browserstack local
 const isLocal = args.indexOf('--local') > -1
