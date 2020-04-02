@@ -11,12 +11,7 @@ import {
   RouteLocationNormalizedLoaded,
   RouteLocation,
 } from './types'
-import {
-  RouterHistory,
-  parseURL,
-  stringifyURL,
-  HistoryState,
-} from './history/common'
+import { RouterHistory, HistoryState } from './history/common'
 import {
   ScrollToPosition,
   ScrollPosition,
@@ -53,6 +48,7 @@ import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import { Link } from './components/Link'
 import { View } from './components/View'
 import { routerKey, routeLocationKey } from './utils/injectionSymbols'
+import { parseURL, stringifyURL } from './utils/location'
 
 /**
  * Internal type to define an ErrorHandler

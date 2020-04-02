@@ -1,9 +1,10 @@
+import { normalizeHistoryLocation as normalizeLocation } from '../src/history/common'
+import { parseQuery, stringifyQuery } from '../src/utils/query'
 import {
   parseURL as originalParseURL,
   stringifyURL as originalStringifyURL,
-  normalizeHistoryLocation as normalizeLocation,
-} from '../src/history/common'
-import { parseQuery, stringifyQuery } from '../src/utils/query'
+  stripBase,
+} from '../src/utils/location'
 
 describe('parseURL', () => {
   let parseURL = originalParseURL.bind(null, parseQuery)
@@ -143,5 +144,19 @@ describe('normalizeLocation', () => {
         fullPath: '/foo',
       })
     ).toEqual({ fullPath: '/foo' })
+  })
+})
+
+describe('stripBase', () => {
+  it('returns the pathname if no base', () => {
+    expect(stripBase('', '')).toBe('')
+    expect(stripBase('/', '')).toBe('/')
+    expect(stripBase('/thing', '')).toBe('/thing')
+  })
+
+  it('returns the pathname without the base', () => {
+    expect(stripBase('/base', '/base')).toBe('/')
+    expect(stripBase('/base/', '/base')).toBe('/')
+    expect(stripBase('/base/foo', '/base')).toBe('/foo')
   })
 })

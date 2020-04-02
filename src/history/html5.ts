@@ -1,7 +1,6 @@
 import {
   RouterHistory,
   NavigationCallback,
-  stripBase,
   NavigationType,
   NavigationDirection,
   HistoryLocationNormalized,
@@ -12,6 +11,7 @@ import {
 } from './common'
 import { computeScrollPosition, ScrollToPosition } from '../utils/scroll'
 import { warn } from 'vue'
+import { stripBase } from '../utils/location'
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 
