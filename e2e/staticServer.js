@@ -17,11 +17,10 @@ fs.readdirSync(buildDir).forEach(file => {
 
 const server = http.createServer((request, response) => {
   return handler(request, response, {
-    public: '__build__',
+    public: path.join(__dirname, '__build__'),
     cleanUrls: true,
     rewrites: examples.map(name => ({
       source: `${name}/**`,
-      trailingSlash: true,
       destination: `${name}.html`,
     })),
   })
