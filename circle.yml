@@ -16,14 +16,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - v1-dependencies-cache-{{ .Branch }}-
-            - v1-dependencies-cache-
+            - v2-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - v2-dependencies-cache-{{ .Branch }}-
+            - v2-dependencies-cache-
       - run: yarn install
-      - save_cache:
-          key: v1-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - node_modules
       - persist_to_workspace:
           root: ~/project
           paths:
@@ -34,10 +30,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/project
-      - save_cache:
-          key: v1-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - node_modules
 
   build-e2e:
     <<: *defaults
@@ -56,8 +48,14 @@ jobs:
       - attach_workspace:
           at: ~/project
       - run: yarn test:unit  --maxWorkers=2
+      - run: yarn run codecov
       - store_artifacts:
           path: coverage
+      # Save cache after unit test is done. At this point e2e is still running
+      - save_cache:
+          key: v2-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
 
   test-e2e:
     <<: *defaults
@@ -77,15 +75,6 @@ jobs:
       - run: yarn build:dts
       - run: yarn run test:tsd
 
-  coverage:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/project
-      - run:
-          name: Send code coverage
-          command: yarn run codecov
-
 workflows:
   version: 2
   install-and-parallel-test:
@@ -103,9 +92,6 @@ workflows:
       - test-e2e:
           requires:
             - build-e2e
-      - coverage:
-          requires:
-            - test-unit
       - save-cache:
           requires:
-            - coverage
+            - test-unit
