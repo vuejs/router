@@ -144,7 +144,7 @@ describe('RouterView', () => {
       currentRoute: ref(
         markNonReactive({
           ...route,
-          // reset the instances everytime
+          // reset the instances every time
           matched: route.matched.map(match => ({ ...match, instances: {} })),
         })
       ),

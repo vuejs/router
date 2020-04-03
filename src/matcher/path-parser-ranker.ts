@@ -190,7 +190,7 @@ export function tokensToParser(
   if (!options.strict) pattern += '/?'
 
   if (options.end) pattern += '$'
-  // allow paths like /dynamic to only match dynamic or dynamic/... but not dynamic_somethingelse
+  // allow paths like /dynamic to only match dynamic or dynamic/... but not dynamic_something_else
   else if (options.strict) pattern += '(?:/|$)'
 
   const re = new RegExp(pattern, options.sensitive ? '' : 'i')

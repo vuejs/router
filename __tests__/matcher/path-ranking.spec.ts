@@ -136,7 +136,7 @@ describe('Path ranking', () => {
     ])
   })
 
-  it('puts the slash before optional paramateres', () => {
+  it('puts the slash before optional parameters', () => {
     possibleOptions.forEach(options => {
       checkPathOrder(['/', ['/:a?', options]])
       checkPathOrder(['/', ['/:a*', options]])
@@ -163,7 +163,7 @@ describe('Path ranking', () => {
     ])
   })
 
-  it('orders repeteable and optional', () => {
+  it('orders repeatable and optional', () => {
     possibleOptions.forEach(options => {
       checkPathOrder(['/:w', ['/:w?', options]])
       checkPathOrder(['/:w?', ['/:w+', options]])
@@ -188,7 +188,7 @@ describe('Path ranking', () => {
     checkPathOrder(['/a/b/c/d/e', '/:k/b/c/d/e', '/:k/b/c/d/:j'])
   })
 
-  it('prioritises custom regex', () => {
+  it('prioritizes custom regex', () => {
     checkPathOrder(['/:a(\\d+)', '/:a', '/:a(.*)'])
     checkPathOrder(['/b-:a(\\d+)', '/b-:a', '/b-:a(.*)'])
   })

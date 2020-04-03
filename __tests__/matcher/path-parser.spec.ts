@@ -552,7 +552,7 @@ describe('Path parser', () => {
       matchParams('/home', '/', null)
     })
 
-    it('allows an empty rooot', () => {
+    it('allows an empty root', () => {
       matchParams('', '/', {})
     })
 
@@ -624,6 +624,7 @@ describe('Path parser', () => {
       matchParams('/a/:a(?:b-([^/]+\\)?)', '/a/b-', {
         a: '',
       })
+      // non optional
       matchParams('/a/:a(?:b-([^/]+\\))', '/a/b-one', {
         a: 'one',
       })
@@ -768,6 +769,6 @@ describe('Path parser', () => {
       matchStringify('/:a*/other', {}, '/other')
     })
 
-    // end of stringifying urls
+    // end of generating urls
   })
 })

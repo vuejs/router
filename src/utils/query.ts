@@ -7,7 +7,7 @@ import { decode, encodeQueryProperty } from '../utils/encoding'
  */
 export type LocationQueryValue = string | null
 /**
- * Possible values when definining a query
+ * Possible values when defining a query
  *
  * @internal
  */
@@ -74,7 +74,7 @@ export function parseQuery(search: string): LocationQuery {
  * doesn't prepend a `?`
  *
  * @param query - query object to stringify
- * @returns string verion of the query without the leading `?`
+ * @returns string version of the query without the leading `?`
  */
 export function stringifyQuery(query: LocationQueryRaw): string {
   let search = ''

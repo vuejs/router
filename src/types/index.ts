@@ -153,7 +153,7 @@ export interface RouteComponentInterface {
    * that is rendering this component.
    * @param to - RouteLocationRaw we are navigating to
    * @param from - RouteLocationRaw we are navigating from
-   * @param next - function to validate, cancel or modify (by redirectering) the navigation
+   * @param next - function to validate, cancel or modify (by redirecting) the navigation
    */
   beforeRouteLeave?: NavigationGuard
   /**
@@ -162,7 +162,7 @@ export interface RouteComponentInterface {
    * the query or the hash.
    * @param to - RouteLocationRaw we are navigating to
    * @param from - RouteLocationRaw we are navigating from
-   * @param next - function to validate, cancel or modify (by redirectering) the navigation
+   * @param next - function to validate, cancel or modify (by redirecting) the navigation
    */
   beforeRouteUpdate?: NavigationGuard
 }
@@ -201,7 +201,7 @@ export interface _RouteRecordBase {
   // TODO: beforeEnter has no effect with redirect, move and test
   beforeEnter?: NavigationGuard<undefined> | NavigationGuard<undefined>[]
   /**
-   * Arbitraty data attached to the record.
+   * Arbitrary data attached to the record.
    */
   meta?: Record<string | number | symbol, any>
   // TODO: only allow a subset?

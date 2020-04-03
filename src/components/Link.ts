@@ -119,19 +119,19 @@ function guardEvent(e: MouseEvent) {
 }
 
 function includesParams(
-  outter: RouteLocation['params'],
+  outer: RouteLocation['params'],
   inner: RouteLocation['params']
 ): boolean {
   for (let key in inner) {
     let innerValue = inner[key]
-    let outterValue = outter[key]
+    let outerValue = outer[key]
     if (typeof innerValue === 'string') {
-      if (innerValue !== outterValue) return false
+      if (innerValue !== outerValue) return false
     } else {
       if (
-        !Array.isArray(outterValue) ||
-        outterValue.length !== innerValue.length ||
-        innerValue.some((value, i) => value !== outterValue[i])
+        !Array.isArray(outerValue) ||
+        outerValue.length !== innerValue.length ||
+        innerValue.some((value, i) => value !== outerValue[i])
       )
         return false
     }

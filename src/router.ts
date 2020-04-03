@@ -576,7 +576,7 @@ function applyRouterPlugin(app: App, router: Router) {
   let started = false
   // TODO: can we use something that isn't a mixin?
   // TODO: this initial navigation is only necessary on client, on server it doesn't make sense
-  // because it will create an extra unecessary navigation and could lead to problems
+  // because it will create an extra unnecessary navigation and could lead to problems
   if (isClient)
     app.mixin({
       beforeCreate() {

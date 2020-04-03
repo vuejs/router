@@ -281,7 +281,7 @@ export default function createWebHistory(base: string = ''): RouterHistory {
     history.go(distance)
   }
   const routerHistory: RouterHistory = {
-    // it's overriden right after
+    // it's overridden right after
     // @ts-ignore
     location: historyNavigation.location.value,
     base,

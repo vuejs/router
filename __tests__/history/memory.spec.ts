@@ -9,11 +9,11 @@ const loc: RawHistoryLocation = '/foo'
 
 const loc2: RawHistoryLocation = '/bar'
 
-const normaliezedLoc: HistoryLocationNormalized = {
+const normalizedLoc: HistoryLocationNormalized = {
   fullPath: '/foo',
 }
 
-const normaliezedLoc2: HistoryLocationNormalized = {
+const normalizedLoc2: HistoryLocationNormalized = {
   fullPath: '/bar',
 }
 
@@ -61,7 +61,7 @@ describe('Memory history', () => {
     history.push(loc)
     history.push(loc2)
     history.back()
-    expect(history.location).toEqual(normaliezedLoc)
+    expect(history.location).toEqual(normalizedLoc)
     history.back()
     expect(history.location).toEqual(START)
   })
@@ -86,9 +86,9 @@ describe('Memory history', () => {
     history.back()
     expect(history.location).toEqual(START)
     history.forward()
-    expect(history.location).toEqual(normaliezedLoc)
+    expect(history.location).toEqual(normalizedLoc)
     history.forward()
-    expect(history.location).toEqual(normaliezedLoc2)
+    expect(history.location).toEqual(normalizedLoc2)
   })
 
   it('can push in the middle of the history', () => {
@@ -99,10 +99,10 @@ describe('Memory history', () => {
     history.back()
     expect(history.location).toEqual(START)
     history.push(loc2)
-    expect(history.location).toEqual(normaliezedLoc2)
+    expect(history.location).toEqual(normalizedLoc2)
     // does nothing
     history.forward()
-    expect(history.location).toEqual(normaliezedLoc2)
+    expect(history.location).toEqual(normalizedLoc2)
   })
 
   it('can listen to navigations', () => {
@@ -112,14 +112,14 @@ describe('Memory history', () => {
     history.push(loc)
     history.back()
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(spy).toHaveBeenCalledWith(START, normaliezedLoc, {
+    expect(spy).toHaveBeenCalledWith(START, normalizedLoc, {
       direction: 'back',
       distance: -1,
       type: 'pop',
     })
     history.forward()
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(spy).toHaveBeenLastCalledWith(normaliezedLoc, START, {
+    expect(spy).toHaveBeenLastCalledWith(normalizedLoc, START, {
       direction: 'forward',
       distance: 1,
       type: 'pop',
