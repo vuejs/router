@@ -195,6 +195,22 @@ describe('Router', () => {
     expect(spy).toHaveBeenCalled()
   })
 
+  it('navigates to same route record but different query', async () => {
+    const { router } = await newRouter()
+    await router.push('/?q=1')
+    expect(router.currentRoute.value.query).toEqual({ q: '1' })
+    await router.push('/?q=2')
+    expect(router.currentRoute.value.query).toEqual({ q: '2' })
+  })
+
+  it('navigates to same route record but different hash', async () => {
+    const { router } = await newRouter()
+    await router.push('/#one')
+    expect(router.currentRoute.value.hash).toBe('#one')
+    await router.push('/#two')
+    expect(router.currentRoute.value.hash).toBe('#two')
+  })
+
   describe('alias', () => {
     it('does not navigate to alias if already on original record', async () => {
       const { router } = await newRouter()
@@ -483,8 +499,6 @@ describe('Router', () => {
       query: {},
     })
   })
-
-  // it('redirects with route record redirect')
 
   describe('Dynamic Routing', () => {
     it('resolves new added routes', async () => {

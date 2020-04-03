@@ -632,6 +632,7 @@ function extractChangingRecords(
   return [leavingRecords, updatingRecords, enteringRecords]
 }
 
+// TODO: move to utils and test
 function isSameRouteLocation(a: RouteLocation, b: RouteLocation): boolean {
   let aLastIndex = a.matched.length - 1
   let bLastIndex = b.matched.length - 1
@@ -640,6 +641,8 @@ function isSameRouteLocation(a: RouteLocation, b: RouteLocation): boolean {
     aLastIndex > -1 &&
     aLastIndex === bLastIndex &&
     isSameRouteRecord(a.matched[aLastIndex], b.matched[bLastIndex]) &&
-    isSameLocationObject(a.params, b.params)
+    isSameLocationObject(a.params, b.params) &&
+    isSameLocationObject(a.query, b.query) &&
+    a.hash === b.hash
   )
 }
