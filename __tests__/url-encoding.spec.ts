@@ -1,5 +1,5 @@
 import { createRouter as newRouter } from '../src/router'
-import { createDom, components } from './utils'
+import { components } from './utils'
 import { RouteRecordRaw } from '../src/types'
 import { createMemoryHistory } from '../src'
 import * as encoding from '../src/utils/encoding'
@@ -14,25 +14,13 @@ const routes: RouteRecordRaw[] = [
   { path: '/p/:p+', component: components.Bar, name: 'repeat' },
 ]
 
-// this function is meant to easy refactor in the future as Histories are going to be
-// function-based
-function createWebHistory() {
-  const routerHistory = createMemoryHistory()
-  return routerHistory
-}
-
 function createRouter() {
-  const history = createWebHistory()
+  const history = createMemoryHistory()
   const router = newRouter({ history, routes })
   return router
 }
 
-// TODO: test by spying on encode functions since things are already tested by encoding.spec.ts
 describe('URL Encoding', () => {
-  beforeAll(() => {
-    createDom()
-  })
-
   beforeEach(() => {
     // mock all encoding functions
     for (const key in encoding) {

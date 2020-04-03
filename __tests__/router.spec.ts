@@ -71,7 +71,7 @@ describe('Router', () => {
     createDom()
   })
 
-  it('can be instantiated', () => {
+  it('starts at START_LOCATION', () => {
     const history = createMemoryHistory()
     const router = createRouter({ history, routes })
     expect(router.currentRoute.value).toEqual(START_LOCATION_NORMALIZED)
@@ -83,6 +83,23 @@ describe('Router', () => {
     await router.push('/foo')
     expect(history.push).toHaveBeenCalledTimes(1)
     expect(history.push).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fullPath: '/foo',
+        path: '/foo',
+        query: {},
+        hash: '',
+      }),
+      undefined
+    )
+  })
+
+  it('calls history.replace with router.replace', async () => {
+    const history = createMemoryHistory()
+    const { router } = await newRouter({ history })
+    jest.spyOn(history, 'replace')
+    await router.replace('/foo')
+    expect(history.replace).toHaveBeenCalledTimes(1)
+    expect(history.replace).toHaveBeenCalledWith(
       expect.objectContaining({
         fullPath: '/foo',
         path: '/foo',
@@ -115,23 +132,6 @@ describe('Router', () => {
     expect(router.currentRoute.value).toBe(START_LOCATION_NORMALIZED)
     await router.push('/')
     expect(router.currentRoute.value).not.toBe(START_LOCATION_NORMALIZED)
-  })
-
-  it('calls history.replace with router.replace', async () => {
-    const history = createMemoryHistory()
-    const { router } = await newRouter({ history })
-    jest.spyOn(history, 'replace')
-    await router.replace('/foo')
-    expect(history.replace).toHaveBeenCalledTimes(1)
-    expect(history.replace).toHaveBeenCalledWith(
-      expect.objectContaining({
-        fullPath: '/foo',
-        path: '/foo',
-        query: {},
-        hash: '',
-      }),
-      undefined
-    )
   })
 
   it('can pass replace option to push', async () => {
@@ -187,12 +187,12 @@ describe('Router', () => {
     const spy = jest.fn((to, from, next) => next())
     router.beforeEach(spy)
     await router.push('/idontexist')
-    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
     expect(router.currentRoute.value).toMatchObject({ matched: [] })
     spy.mockClear()
     await router.push('/me-neither')
     expect(router.currentRoute.value).toMatchObject({ matched: [] })
-    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
   })
 
   it('navigates to same route record but different query', async () => {
@@ -246,7 +246,7 @@ describe('Router', () => {
     })
   })
 
-  describe('navigation', () => {
+  describe('navigation cancelled', () => {
     async function checkNavigationCancelledOnPush(
       target?: RouteLocationRaw | false | ((vm: any) => void)
     ) {
