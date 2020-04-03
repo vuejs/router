@@ -8,7 +8,7 @@ module.exports = {
   '@tags': ['history'],
 
   /** @type {import('nightwatch').NightwatchTest} */
-  'changes the url'(browser) {
+  'changes the url': function(browser) {
     browser
       .url(baseURL)
       .waitForElementVisible('#app', 1000)

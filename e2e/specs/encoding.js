@@ -8,7 +8,7 @@ module.exports = {
   '@tags': ['history', 'encoding'],
 
   /** @type {import('nightwatch').NightwatchTest} */
-  basic(browser) {
+  'encodes values': function(browser) {
     browser
       .url(baseURL)
       // TODO: move this test to a different spec
