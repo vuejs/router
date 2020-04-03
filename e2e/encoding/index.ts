@@ -35,3 +35,4 @@ const app = createApp({
 app.use(router)
 
 window.vm = app.mount('#app')
+window.r = router

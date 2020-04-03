@@ -1,4 +1,5 @@
 import { createApp, ComponentPublicInstance } from 'vue'
+import { Router } from '../src'
 
 const context = require.context('.', true, /^.{2,}\/index\.ts$/)
 const DIR_RE = /^\.\/([^/]+)\//
@@ -15,6 +16,7 @@ declare global {
   interface Window {
     app: typeof app
     vm: ComponentPublicInstance
+    r: Router
   }
 }
 
