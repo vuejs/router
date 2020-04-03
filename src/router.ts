@@ -153,7 +153,7 @@ export function createRouter({
       matcher.removeRoute(recordMatcher)
     } else if (__DEV__) {
       // TODO: adapt if we allow Symbol as a name
-      warn(`Cannot remove non-existant route "${name}"`)
+      warn(`Cannot remove non-existent route "${name}"`)
     }
   }
 
@@ -270,7 +270,7 @@ export function createRouter({
         return pushWithRedirect(error.to, redirectedFrom || toLocation)
       }
 
-      // unkwnown error
+      // unknown error
       triggerError(error)
     }
 
@@ -357,7 +357,7 @@ export function createRouter({
 
     // check in-component beforeRouteEnter
     guards = extractComponentsGuards(
-      // the type does'nt matter as we are comparing an object per reference
+      // the type doesn't matter as we are comparing an object per reference
       to.matched.filter(record => from.matched.indexOf(record as any) < 0),
       'beforeRouteEnter',
       to,
