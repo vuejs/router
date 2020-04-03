@@ -48,7 +48,7 @@ describe('parseURL', () => {
     })
   })
 
-  it('extracts multiple query paramenters as an array', () => {
+  it('extracts multiple query parameters as an array', () => {
     expect(parseURL('/foo?a=one&a=two&a=three')).toEqual({
       fullPath: '/foo?a=one&a=two&a=three',
       path: '/foo',
