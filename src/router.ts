@@ -58,12 +58,16 @@ export type ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor
 type OnReadyCallback = [() => void, (reason?: any) => void]
 
-interface ScrollBehavior {
+export interface ScrollBehavior {
   (
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
     savedPosition: ScrollToPosition | null
-  ): ScrollPosition | Promise<ScrollPosition>
+  ): // TODO: implement false nad refactor promise based type
+  | ScrollPosition
+    | Promise<ScrollPosition | false | undefined>
+    | false
+    | undefined
 }
 
 export interface RouterOptions {
@@ -535,7 +539,7 @@ export function createRouter({
     await nextTick()
     const position = await scrollBehavior(to, from, scrollPosition || null)
     console.log('scrolling to', position)
-    scrollToPosition(position)
+    position && scrollToPosition(position)
   }
 
   const router: Router = {

@@ -26,7 +26,13 @@ export {
   NavigationGuard,
   PostNavigationGuard,
 } from './types'
-export { createRouter, Router, RouterOptions, ErrorHandler } from './router'
+export {
+  createRouter,
+  Router,
+  RouterOptions,
+  ErrorHandler,
+  ScrollBehavior,
+} from './router'
 
 export { onBeforeRouteLeave } from './navigationGuards'
 export { Link, useLink } from './components/Link'
