@@ -621,6 +621,12 @@ describe('Path parser', () => {
       matchParams('/a/:a(?:b-([^/]+\\)?)', '/a/b-one', {
         a: 'one',
       })
+      matchParams('/a/:a(?:b-([^/]+\\)?)', '/a/b-', {
+        a: '',
+      })
+      matchParams('/a/:a(?:b-([^/]+\\))', '/a/b-one', {
+        a: 'one',
+      })
     })
 
     it('catch all', () => {

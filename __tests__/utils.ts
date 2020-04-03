@@ -6,8 +6,10 @@ import {
   RouteLocationNormalized,
   _RouteRecordBase,
   RouteComponent,
+  RouteRecordRaw,
 } from '../src/types'
 import { h, resolveComponent, ComponentOptions } from 'vue'
+import { RouterOptions, createWebHistory, createRouter } from '../src'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
@@ -131,4 +133,13 @@ export const components = {
       next()
     },
   } as RouteComponent,
+}
+
+export function newRouter(
+  options: Partial<RouterOptions> & { routes: RouteRecordRaw[] }
+) {
+  return createRouter({
+    history: options.history || createWebHistory(),
+    ...options,
+  })
 }

@@ -1,17 +1,5 @@
-import { createDom } from '../utils'
-import { createWebHistory, createRouter as newRouter } from '../../src'
+import { createDom, newRouter as createRouter } from '../utils'
 import { RouteRecordRaw } from 'src/types'
-
-function createRouter(
-  options: Partial<import('../../src/router').RouterOptions> & {
-    routes: import('../../src/types').RouteRecordRaw[]
-  }
-) {
-  return newRouter({
-    history: createWebHistory(),
-    ...options,
-  })
-}
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }

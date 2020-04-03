@@ -83,11 +83,4 @@ describe('normalizeRouteRecord', () => {
       props: false,
     })
   })
-
-  // TODO: move to router
-  it.todo('beforeEnter is called with the string redirect')
-
-  it.todo('beforeEnter is called with object redirect')
-
-  it.todo('function redirect is invoked by beforeEnter')
 })

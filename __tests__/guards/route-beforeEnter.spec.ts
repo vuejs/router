@@ -1,17 +1,6 @@
-import { RouterOptions, createRouter as newRouter } from '../../src/router'
 import fakePromise from 'faked-promise'
-import { createDom, noGuard, tick } from '../utils'
+import { createDom, noGuard, tick, newRouter as createRouter } from '../utils'
 import { RouteRecordRaw } from '../../src/types'
-import { createWebHistory } from '../../src'
-
-function createRouter(
-  options: Partial<RouterOptions> & { routes: RouteRecordRaw[] }
-) {
-  return newRouter({
-    history: createWebHistory(),
-    ...options,
-  })
-}
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }

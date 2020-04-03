@@ -1,17 +1,5 @@
-import { RouterOptions, createRouter as newRouter } from '../../src/router'
-import { createDom, noGuard } from '../utils'
+import { createDom, noGuard, newRouter as createRouter } from '../utils'
 import { RouteRecordRaw } from '../../src/types'
-import { createWebHistory } from '../../src'
-
-// TODO: refactor in utils
-function createRouter(
-  options: Partial<RouterOptions> & { routes: RouteRecordRaw[] }
-) {
-  return newRouter({
-    history: createWebHistory(),
-    ...options,
-  })
-}
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }

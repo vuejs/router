@@ -54,7 +54,7 @@ describe('Errors', () => {
     )
   })
 
-  it('triggers erros caused by new navigations of a next(redirect) trigered by history', async () => {
+  it('triggers errors caused by new navigations of a next(redirect) triggered by history', async () => {
     const { router, history } = createRouter()
     await router.push('/p/0')
     await router.push('/p/other')
