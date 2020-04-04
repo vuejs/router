@@ -6,7 +6,7 @@ module.exports = {
   '@tags': ['history'],
   // TODO: position is not saved when navigating back using browser buttons and
   // therefore navigating forward does not restore position as it should
-  '@disabled': true,
+  // '@disabled': true,
 
   'scroll behavior': function(browser) {
     const TIMEOUT = 2000
@@ -34,7 +34,43 @@ module.exports = {
           return window.pageYOffset === 100
         },
         null,
-        'restore scroll position on back with manual restoration'
+        'restore scroll position on back'
+      )
+
+      // with auto scroll restoration. This allows the forward to work even
+      // though no scroll position is saved by the router. The problem comes
+      // from the timing of popstate events: when they happen the history.state
+      // entry is the new location we are trying to navigate to, which means we
+      // cannot save the scroll position before navigating away unless we undo
+      // the navigation which is not always possible and quite hacky. We could
+      // instead save the forwardScroll/backwardScroll on the current entry and
+      // restore it on popstate by reading the RouterHistory.state property,
+      // which contains the state before popstate, so it contains the previous
+      // state. This, however is only a partial solution, as it would only work
+      // in simple situations (`abs(distance) === 1`). If the user uses
+      // `history.go(-3)`, then we won't have access to the scroll position, so
+      // instead we need to store scroll positions in a different place instead
+      // of history.state
+      // https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
+      .execute(function() {
+        window.scrollTo(0, 100)
+        history.scrollRestoration = 'auto'
+      })
+      .click('li:nth-child(2) a')
+      .waitForElementPresent('.view.foo', TIMEOUT)
+      .assert.containsText('.view', 'foo')
+      .execute(function() {
+        window.scrollTo(0, 200)
+        window.history.back()
+      })
+      .waitForElementPresent('.view.home', TIMEOUT)
+      .assert.containsText('.view', 'home')
+      .assert.evaluate(
+        function() {
+          return window.pageYOffset === 100
+        },
+        null,
+        'restore scroll position on back with scrollRestoration set to auto'
       )
 
       // scroll on a popped entry
@@ -51,6 +87,9 @@ module.exports = {
         null,
         'restore scroll position on forward'
       )
+      .execute(function() {
+        history.scrollRestoration = 'manual'
+      })
 
       .execute(function() {
         window.history.back()
@@ -63,16 +102,6 @@ module.exports = {
         },
         null,
         'restore scroll position on back again'
-      )
-
-      .click('li:nth-child(2) a')
-      .waitForElementPresent('.view.bar', TIMEOUT)
-      .assert.evaluate(
-        function() {
-          return window.pageYOffset === 50
-        },
-        null,
-        'keeps scroll on new entry with no scrollToTop'
       )
 
       .click('li:nth-child(3) a')
