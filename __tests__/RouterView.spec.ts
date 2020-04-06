@@ -12,7 +12,13 @@ import { mockWarn } from 'jest-mock-warn'
 function createRoutes<T extends Record<string, RouteLocationNormalizedLoose>>(
   routes: T
 ): T {
-  return routes
+  let nonReactiveRoutes: T = {} as T
+
+  for (let key in routes) {
+    nonReactiveRoutes[key] = markNonReactive(routes[key])
+  }
+
+  return nonReactiveRoutes
 }
 
 const routes = createRoutes({
@@ -212,7 +218,10 @@ describe('RouterView', () => {
     }
     const { el, router } = factory(noPropsWithParams)
     expect(el.innerHTML).toBe(`<div>User: default</div>`)
-    router.currentRoute.value = { ...noPropsWithParams, params: { id: '4' } }
+    router.currentRoute.value = markNonReactive({
+      ...noPropsWithParams,
+      params: { id: '4' },
+    })
     await tick()
     expect(el.innerHTML).toBe(`<div>User: default</div>`)
   })
@@ -220,7 +229,10 @@ describe('RouterView', () => {
   it('passes params as props with props: true', async () => {
     const { el, router } = factory(routes.withParams)
     expect(el.innerHTML).toBe(`<div>User: 1</div>`)
-    router.currentRoute.value = { ...routes.withParams, params: { id: '4' } }
+    router.currentRoute.value = markNonReactive({
+      ...routes.withParams,
+      params: { id: '4' },
+    })
     await tick()
     expect(el.innerHTML).toBe(`<div>User: 4</div>`)
   })

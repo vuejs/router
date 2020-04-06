@@ -29,7 +29,7 @@ export const router = createRouter({
       }),
     },
     { path: '/users/:id', name: 'user', component: User, props: true },
-    { path: '/documents/:id', name: 'docs', component: User },
+    { path: '/documents/:id', name: 'docs', component: User, props: true },
     { path: encodeURI('/n/€'), name: 'euro', component },
     { path: '/n/:n', name: 'increment', component },
     { path: '/multiple/:a/:b', name: 'multiple', component },
