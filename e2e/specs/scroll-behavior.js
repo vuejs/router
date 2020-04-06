@@ -4,9 +4,9 @@ module.exports = {
   ...bsStatus(),
 
   '@tags': ['history'],
-  // TODO: position is not saved when navigating back using browser buttons and
-  // therefore navigating forward does not restore position as it should
-  // '@disabled': true,
+  // NOTE: position is not saved when navigating back using browser buttons and
+  // therefore navigating forward does not restore position unless we use native
+  // browser behavior `window.scrollRestoration = 'auto'`
 
   'scroll behavior': function(browser) {
     const TIMEOUT = 2000
