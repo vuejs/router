@@ -3,7 +3,6 @@ const fs = require('fs')
 const { resolve, join } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
-const { VueLoaderPlugin } = require('vue-loader')
 
 /** @type {string[]} */
 let examples = []
@@ -60,10 +59,6 @@ const config = (env = {}) => ({
         use: 'ts-loader',
       },
       {
-        test: /\.vue$/,
-        use: 'vue-loader',
-      },
-      {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
       },
@@ -78,7 +73,6 @@ const config = (env = {}) => ({
     extensions: ['.ts', '.tsx', '.js', '.vue'],
   },
   plugins: [
-    new VueLoaderPlugin(),
     new webpack.DefinePlugin({
       __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
       __BROWSER__: `typeof window !== 'undefined'`,

@@ -1,22 +1,35 @@
-import { createRouter, createWebHistory, useRoute } from '../../src'
+import { createRouter, createWebHistory, onBeforeRouteLeave } from '../../src'
 import { RouteComponent } from '../../src/types'
-import { createApp } from 'vue'
-import GuardedWithLeave from './GuardedWithLeave'
-
-// const component: RouteComponent = {
-//   template: `<div>A component</div>`,
-// }
+import { createApp, ref } from 'vue'
 
 const Home: RouteComponent = {
   template: `<div>Home</div>`,
 }
 
-// const Document: RouteComponent = {
-//   template: `<div>Document: {{ route.params.id }}</div>`,
-//   setup() {
-//     return { route: useRoute() }
-//   },
-// }
+const GuardedWithLeave: RouteComponent = {
+  name: 'GuardedWithLeave',
+
+  template: `
+  <div>
+    <p>try to leave</p>
+    <p id="tries">So far, you tried {{ tries }} times</p>
+  </div>
+  `,
+
+  setup() {
+    console.log('setup in cant leave')
+    const tries = ref(0)
+
+    onBeforeRouteLeave(function(to, from, next) {
+      if (window.confirm()) next()
+      else {
+        tries.value++
+        next(false)
+      }
+    })
+    return { tries }
+  },
+}
 
 const router = createRouter({
   history: createWebHistory('/' + __dirname),
@@ -26,12 +39,7 @@ const router = createRouter({
   ],
 })
 
-const app = createApp({
-  setup() {
-    const route = useRoute()
-    return { route }
-  },
-})
+const app = createApp({})
 app.use(router)
 
 window.vm = app.mount('#app')
