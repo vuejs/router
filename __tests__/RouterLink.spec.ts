@@ -576,5 +576,26 @@ describe('RouterLink', () => {
 
       expect(el.innerHTML).toMatchSnapshot()
     })
+
+    it('renders an anchor by default', () => {
+      const { el } = factory(
+        locations.basic.normalized,
+        { to: locations.basic.string },
+        locations.basic.normalized
+      )
+
+      expect(el.children[0].tagName).toBe('A')
+      expect(el.children).toHaveLength(1)
+    })
+
+    it('can customize the rendering and remove the wrapping `a`', () => {
+      const { el } = factory(
+        locations.basic.normalized,
+        { to: locations.basic.string, custom: true },
+        locations.basic.normalized
+      )
+
+      expect(el.innerHTML).not.toContain('</a>')
+    })
   })
 })

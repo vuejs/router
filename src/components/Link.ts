@@ -80,6 +80,7 @@ export const Link = defineComponent({
       type: String,
       default: 'router-link-exact-active',
     },
+    custom: Boolean,
   },
 
   setup(props, { slots, attrs }) {
@@ -91,17 +92,20 @@ export const Link = defineComponent({
     }))
 
     return () => {
-      return h(
-        'a',
-        {
-          'aria-current': link.isExactActive ? 'page' : null,
-          onClick: link.navigate,
-          href: link.href,
-          ...attrs,
-          class: elClass.value,
-        },
-        slots.default && slots.default(link)
-      )
+      const children = slots.default && slots.default(link)
+      return props.custom
+        ? children
+        : h(
+            'a',
+            {
+              'aria-current': link.isExactActive ? 'page' : null,
+              onClick: link.navigate,
+              href: link.href,
+              ...attrs,
+              class: elClass.value,
+            },
+            children
+          )
     }
   },
 })
