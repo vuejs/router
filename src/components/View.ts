@@ -58,6 +58,7 @@ export function useView(options: UseViewOptions) {
     // if we mount, there is a matched record
     matchedRoute.value!.instances[unref(options.name)] = viewRef.value
     // TODO: trigger beforeRouteEnter hooks
+    // TODO: watch name to update the instance record
   }
 
   return (attrs: SetupContext['attrs']) => {

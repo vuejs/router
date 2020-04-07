@@ -211,6 +211,13 @@ describe('Router', () => {
     expect(router.currentRoute.value.hash).toBe('#two')
   })
 
+  it('fails if required params are missing', async () => {
+    const { router } = await newRouter()
+    await expect(
+      router.push({ name: 'Param', params: {} })
+    ).rejects.toThrowError(/missing required param "p"/i)
+  })
+
   describe('alias', () => {
     it('does not navigate to alias if already on original record', async () => {
       const { router } = await newRouter()
