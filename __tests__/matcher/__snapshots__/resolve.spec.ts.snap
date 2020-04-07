@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Router Matcher resolve LocationAsName throws if the named route does not exists 1`] = `
+exports[`RouterMatcher.resolve LocationAsName throws if the named route does not exists 1`] = `
 [Error: No match for
  {"name":"Home"}]
 `;
 
-exports[`Router Matcher resolve LocationAsRelative throws if the current named route does not exists 1`] = `
+exports[`RouterMatcher.resolve LocationAsRelative throws if the current named route does not exists 1`] = `
 [Error: No match for
  {"params":{"a":"foo"}}
 while being at
