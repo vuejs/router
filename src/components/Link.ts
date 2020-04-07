@@ -72,14 +72,22 @@ export const Link = defineComponent({
       type: [String, Object] as PropType<RouteLocationRaw>,
       required: true,
     },
+    activeClass: {
+      type: String,
+      default: 'router-link-active',
+    },
+    exactActiveClass: {
+      type: String,
+      default: 'router-link-exact-active',
+    },
   },
 
   setup(props, { slots, attrs }) {
     const link = reactive(useLink(props))
 
     const elClass = computed(() => ({
-      'router-link-active': link.isActive,
-      'router-link-exact-active': link.isExactActive,
+      [props.activeClass]: link.isActive,
+      [props.exactActiveClass]: link.isExactActive,
     }))
 
     return () => {

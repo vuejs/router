@@ -220,7 +220,7 @@ describe('RouterLink', () => {
     currentLocation: RouteLocationNormalized,
     propsData: any,
     resolvedLocation: RouteLocation,
-    template: string = `<RouterLink :to="to">a link</RouterLink>`
+    template: string = `<RouterLink v-bind="propsData">a link</RouterLink>`
   ) {
     const router = {
       history: createMemoryHistory(),
@@ -238,7 +238,7 @@ describe('RouterLink', () => {
       template,
       components: { RouterLink } as any,
       setup() {
-        return { to: propsData.to }
+        return { propsData }
       },
     })
 
@@ -286,12 +286,34 @@ describe('RouterLink', () => {
     expect(el.querySelector('a')!.className).toContain('router-link-active')
   })
 
+  it('can customize active class', () => {
+    const { el } = factory(
+      locations.basic.normalized,
+      { to: locations.basic.string, activeClass: 'is-active' },
+      locations.basic.normalized
+    )
+    expect(el.querySelector('a')!.className).not.toContain('router-link-active')
+    expect(el.querySelector('a')!.className).toContain('is-active')
+  })
+
+  it('can customize exact active class', () => {
+    const { el } = factory(
+      locations.basic.normalized,
+      { to: locations.basic.string, exactActiveClass: 'is-active' },
+      locations.basic.normalized
+    )
+    expect(el.querySelector('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+    expect(el.querySelector('a')!.className).toContain('is-active')
+  })
+
   it('can be active with custom class', () => {
     const { el } = factory(
       locations.basic.normalized,
       { to: locations.basic.string },
       locations.basic.normalized,
-      `<RouterLink class="nav-item" :to="to">a link</RouterLink>`
+      `<RouterLink class="nav-item" :to="propsData.to">a link</RouterLink>`
     )
     expect(el.querySelector('a')!.className).toContain('router-link-active')
     expect(el.querySelector('a')!.className).toContain('nav-item')
