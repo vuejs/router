@@ -10,6 +10,8 @@ import {
   MatcherLocation,
   RouteLocationNormalizedLoaded,
   RouteLocation,
+  RouteRecordName,
+  isRouteName,
 } from './types'
 import { RouterHistory, HistoryState } from './history/common'
 import {
@@ -83,9 +85,10 @@ export interface Router {
   history: RouterHistory
   currentRoute: Ref<RouteLocationNormalizedLoaded>
 
-  addRoute(parentName: string, route: RouteRecordRaw): () => void
+  addRoute(parentName: RouteRecordName, route: RouteRecordRaw): () => void
   addRoute(route: RouteRecordRaw): () => void
-  removeRoute(name: string): void
+  removeRoute(name: RouteRecordName): void
+  // TODO: hasRoute()
   getRoutes(): RouteRecord[]
 
   resolve(to: RouteLocationRaw): RouteLocation
@@ -132,12 +135,12 @@ export function createRouter({
   const decodeParams = applyToParams.bind(null, decode)
 
   function addRoute(
-    parentOrRoute: string | RouteRecordRaw,
+    parentOrRoute: RouteRecordName | RouteRecordRaw,
     route?: RouteRecordRaw
   ) {
     let parent: Parameters<typeof matcher['addRoute']>[1] | undefined
     let record: RouteRecordRaw
-    if (typeof parentOrRoute === 'string') {
+    if (isRouteName(parentOrRoute)) {
       parent = matcher.getRecordMatcher(parentOrRoute)
       record = route!
     } else {
@@ -147,13 +150,13 @@ export function createRouter({
     return matcher.addRoute(record, parent)
   }
 
-  function removeRoute(name: string) {
+  function removeRoute(name: RouteRecordName) {
     let recordMatcher = matcher.getRecordMatcher(name)
     if (recordMatcher) {
       matcher.removeRoute(recordMatcher)
     } else if (__DEV__) {
       // TODO: adapt if we allow Symbol as a name
-      warn(`Cannot remove non-existent route "${name}"`)
+      warn(`Cannot remove non-existent route "${String(name)}"`)
     }
   }
 

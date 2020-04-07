@@ -1,4 +1,10 @@
-import { RouteRecordRaw, MatcherLocationRaw, MatcherLocation } from '../types'
+import {
+  RouteRecordRaw,
+  MatcherLocationRaw,
+  MatcherLocation,
+  isRouteName,
+  RouteRecordName,
+} from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './path-matcher'
 import { RouteRecordRedirect, RouteRecordNormalized } from './types'
@@ -14,12 +20,10 @@ interface RouterMatcher {
   addRoute: (record: RouteRecordRaw, parent?: RouteRecordMatcher) => () => void
   removeRoute: {
     (matcher: RouteRecordMatcher): void
-    (name: Required<RouteRecordRaw>['name']): void
+    (name: RouteRecordName): void
   }
   getRoutes: () => RouteRecordMatcher[]
-  getRecordMatcher: (
-    name: Required<RouteRecordRaw>['name']
-  ) => RouteRecordMatcher | undefined
+  getRecordMatcher: (name: RouteRecordName) => RouteRecordMatcher | undefined
   resolve: (
     location: MatcherLocationRaw,
     currentLocation: MatcherLocation
@@ -32,9 +36,9 @@ export function createRouterMatcher(
 ): RouterMatcher {
   // normalized ordered array of matchers
   const matchers: RouteRecordMatcher[] = []
-  const matcherMap = new Map<string | symbol, RouteRecordMatcher>()
+  const matcherMap = new Map<RouteRecordName, RouteRecordMatcher>()
 
-  function getRecordMatcher(name: string) {
+  function getRecordMatcher(name: RouteRecordName) {
     return matcherMap.get(name)
   }
 
@@ -130,8 +134,8 @@ export function createRouterMatcher(
       : noop
   }
 
-  function removeRoute(matcherRef: string | RouteRecordMatcher) {
-    if (typeof matcherRef === 'string') {
+  function removeRoute(matcherRef: RouteRecordName | RouteRecordMatcher) {
+    if (isRouteName(matcherRef)) {
       const matcher = matcherMap.get(matcherRef)
       if (matcher) {
         matcherMap.delete(matcherRef)

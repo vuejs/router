@@ -43,7 +43,7 @@ export interface LocationAsPath {
 }
 
 export interface LocationAsName {
-  name: string
+  name: RouteRecordName
   params?: RouteParamsRaw
 }
 
@@ -90,7 +90,7 @@ export interface _RouteLocationBase {
   fullPath: string
   query: LocationQuery
   hash: string
-  name: string | null | undefined
+  name: RouteRecordName | null | undefined
   params: RouteParams
   // TODO: make it an array?
   redirectedFrom: RouteLocation | undefined
@@ -171,6 +171,8 @@ export interface RouteComponentInterface {
 export type RouteComponent = ComponentOptions & RouteComponentInterface
 export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
 
+export type RouteRecordName = string | symbol
+
 // TODO: could this be moved to matcher?
 /**
  * Common properties among all kind of {@link RouteRecordRaw}
@@ -190,7 +192,7 @@ export interface _RouteRecordBase {
   /**
    * Name for the route record.
    */
-  name?: string
+  name?: RouteRecordName
   /**
    * Allow passing down params as props to the component rendered by `router-view`.
    */
