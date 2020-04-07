@@ -171,6 +171,20 @@ const locations: Record<
       name: undefined,
     },
   },
+  childAsAbsolute: {
+    string: '/absolute-child',
+    normalized: {
+      fullPath: '/absolute-child',
+      path: '/absolute-child',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.parent, records.child],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
   childParentAlias: {
     string: '/p/child',
     normalized: {
@@ -394,8 +408,29 @@ describe('RouterLink', () => {
     )
   })
 
-  it.todo('parent is active if the child is an absolute path')
-  it.todo('alias parent is active if the child is an absolute path')
+  it('parent is active if the child is an absolute path', () => {
+    const { el } = factory(
+      locations.childAsAbsolute.normalized,
+      { to: locations.parent.string },
+      locations.parent.normalized
+    )
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+  })
+
+  it('alias parent is active if the child is an absolute path', () => {
+    const { el } = factory(
+      locations.childAsAbsolute.normalized,
+      { to: locations.parentAlias.string },
+      locations.parentAlias.normalized
+    )
+    expect(el.querySelector('a')!.className).toContain('router-link-active')
+    expect(el.querySelector('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+  })
 
   it('alias parent is active when a child is active', () => {
     let { el } = factory(
@@ -515,17 +550,17 @@ describe('RouterLink', () => {
 
       router.resolve.mockReturnValueOnce(resolvedLocation)
       const { app, el } = mount(router as any, {
-        template: `<RouterLink :to="to" v-slot="data">
-        route: {{ JSON.stringify(data.route) }}
-        href: "{{ data.href }}"
-        isActive: "{{ data.isActive }}"
-        isExactActive: "{{ data.isExactActive }}"
+        template: `<RouterLink v-bind="propsData" v-slot="data">
+        <span>
+          route: {{ JSON.stringify(data.route) }}
+          href: "{{ data.href }}"
+          isActive: "{{ data.isActive }}"
+          isExactActive: "{{ data.isExactActive }}"
+        </span>
       </RouterLink>`,
         components: { RouterLink } as any,
         setup() {
-          const to = ref(propsData.to)
-
-          return { to }
+          return { propsData }
         },
       })
 
