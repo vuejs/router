@@ -5,6 +5,7 @@ import {
   stringifyURL as originalStringifyURL,
   stripBase,
 } from '../src/utils/location'
+import { isSameLocationObject } from '../src/utils'
 
 describe('parseURL', () => {
   let parseURL = originalParseURL.bind(null, parseQuery)
@@ -158,5 +159,36 @@ describe('stripBase', () => {
     expect(stripBase('/base', '/base')).toBe('/')
     expect(stripBase('/base/', '/base')).toBe('/')
     expect(stripBase('/base/foo', '/base')).toBe('/foo')
+  })
+})
+
+describe('isSameLocationObject', () => {
+  it('compare simple values', () => {
+    expect(isSameLocationObject({ a: '2' }, { a: '2' })).toBe(true)
+    expect(isSameLocationObject({ a: '3' }, { a: '2' })).toBe(false)
+    // different order
+    expect(isSameLocationObject({ a: '2', b: '3' }, { b: '3', a: '2' })).toBe(
+      true
+    )
+    expect(isSameLocationObject({ a: '3', b: '3' }, { b: '3', a: '2' })).toBe(
+      false
+    )
+  })
+
+  it('compare array values', () => {
+    expect(isSameLocationObject({ a: ['2'] }, { a: ['2'] })).toBe(true)
+    expect(isSameLocationObject({ a: ['3'] }, { a: ['2'] })).toBe(false)
+    // different order
+    expect(
+      isSameLocationObject({ a: ['2'], b: ['3'] }, { b: ['3'], a: ['2'] })
+    ).toBe(true)
+    expect(
+      isSameLocationObject({ a: ['3'], b: ['3'] }, { b: ['3'], a: ['2'] })
+    ).toBe(false)
+  })
+
+  it('considers arrays of one item same as the item itself', () => {
+    expect(isSameLocationObject({ a: ['2'] }, { a: '2' })).toBe(true)
+    expect(isSameLocationObject({ a: ['3'] }, { a: '2' })).toBe(false)
   })
 })

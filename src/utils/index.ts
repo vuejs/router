@@ -3,6 +3,7 @@ import {
   RouteParams,
   RouteComponent,
   RouteLocationNormalizedLoaded,
+  RouteParamValue,
 } from '../types'
 import { guardToPromiseFn } from './guardToPromiseFn'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
@@ -90,16 +91,10 @@ export function isSameLocationObject(
   a: RouteLocationNormalized['query' | 'params'],
   b: RouteLocationNormalized['query' | 'params']
 ): boolean {
-  const aKeys = Object.keys(a)
-  const bKeys = Object.keys(b)
-  if (aKeys.length !== bKeys.length) return false
-  let i = 0
-  let key: string
-  while (i < aKeys.length) {
-    key = aKeys[i]
-    if (key !== bKeys[i]) return false
+  if (Object.keys(a).length !== Object.keys(b).length) return false
+
+  for (let key in a) {
     if (!isSameLocationObjectValue(a[key], b[key])) return false
-    i++
   }
 
   return true
@@ -109,17 +104,38 @@ function isSameLocationObjectValue(
   a: LocationQueryValue | LocationQueryValue[],
   b: LocationQueryValue | LocationQueryValue[]
 ): boolean
-function isSameLocationObjectValue(a: RouteParams, b: RouteParams): boolean
 function isSameLocationObjectValue(
-  a: LocationQueryValue | LocationQueryValue[] | RouteParams,
-  b: LocationQueryValue | LocationQueryValue[] | RouteParams
+  a: RouteParamValue | RouteParamValue[],
+  b: RouteParamValue | RouteParamValue[]
+): boolean
+function isSameLocationObjectValue(
+  a:
+    | LocationQueryValue
+    | LocationQueryValue[]
+    | RouteParamValue
+    | RouteParamValue[],
+  b:
+    | LocationQueryValue
+    | LocationQueryValue[]
+    | RouteParamValue
+    | RouteParamValue[]
 ): boolean {
-  if (typeof a !== typeof b) return false
-  // both a and b are arrays
-  if (Array.isArray(a))
-    return (
-      a.length === (b as any[]).length &&
-      a.every((value, i) => value === (b as LocationQueryValue[])[i])
-    )
-  return a === b
+  return Array.isArray(a)
+    ? isEquivalentArray(a, b)
+    : Array.isArray(b)
+    ? isEquivalentArray(b, a)
+    : a === b
+}
+
+/**
+ * Check if two arrays are the same or if an array with one single entry is the
+ * same as another primitive value. Used to check query and parameters
+ *
+ * @param a array of values
+ * @param b array of values or a single value
+ */
+function isEquivalentArray<T>(a: T[], b: T[] | T): boolean {
+  return Array.isArray(b)
+    ? a.length === b.length && a.every((value, i) => value === b[i])
+    : a.length === 1 && a[0] === b
 }
