@@ -5,7 +5,7 @@ const currentLocation = { path: '/' } as MatcherLocation
 // @ts-ignore
 const component: RouteComponent = null
 
-describe('normalizeRouteRecord', () => {
+describe('Matcher: adding and removing records', () => {
   it('can add records', () => {
     const matcher = createRouterMatcher([], {})
     matcher.addRoute({ path: '/', component, name: 'home' })
