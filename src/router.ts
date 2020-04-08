@@ -324,7 +324,6 @@ export function createRouter({
       guards.push(guardToPromiseFn(guard, to, from))
     }
 
-    // console.log('Guarding against', guards.length, 'guards')
     await runGuardQueue(guards)
 
     // check in components beforeRouteUpdate
@@ -437,7 +436,6 @@ export function createRouter({
     // TODO: try catch to correctly log the matcher error
     // cannot be a redirect route because it was in history
     const toLocation = resolve(to.fullPath) as RouteLocationNormalized
-    // console.log({ to, matchedRoute })
 
     pendingLocation = toLocation
     const from = currentRoute.value
@@ -473,7 +471,6 @@ export function createRouter({
         // we just want to avoid logging the error
         pushWithRedirect(error.to, toLocation).catch(() => {})
       } else if (error.type === ErrorTypes.NAVIGATION_ABORTED) {
-        console.log('Cancelled, going to', -info.distance)
         // TODO: test on different browsers ensure consistent behavior
         history.go(-info.distance, false)
       } else {
@@ -540,7 +537,6 @@ export function createRouter({
 
     await nextTick()
     const position = await scrollBehavior(to, from, scrollPosition || null)
-    console.log('scrolling to', position)
     position && scrollToPosition(position)
   }
 
@@ -584,7 +580,9 @@ function applyRouterPlugin(app: App, router: Router) {
       beforeCreate() {
         if (!started) {
           router.push(router.history.location.fullPath).catch(err => {
-            console.error('Unhandled error', err)
+            if (__DEV__)
+              console.error('Unhandled error when starting the router', err)
+            else return err
           })
           started = true
         }
