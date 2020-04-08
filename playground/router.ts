@@ -133,8 +133,13 @@ export const router = createRouter({
     if (savedPosition) {
       return savedPosition
     } else {
-      return { x: 0, y: 0 }
+      // TODO: check if parent in common that works with alias
+      if (to.matched.every((record, i) => from.matched[i] !== record))
+        return { x: 0, y: 0 }
     }
+    // leave scroll as it is by not returning anything
+    // https://github.com/Microsoft/TypeScript/issues/18319
+    return false
   },
 })
 

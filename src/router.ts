@@ -60,16 +60,15 @@ export type ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor
 type OnReadyCallback = [() => void, (reason?: any) => void]
 
+type Awaitable<T> = T | Promise<T>
+
 export interface ScrollBehavior {
   (
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
     savedPosition: ScrollToPosition | null
   ): // TODO: implement false nad refactor promise based type
-  | ScrollPosition
-    | Promise<ScrollPosition | false | undefined>
-    | false
-    | undefined
+  Awaitable<ScrollPosition | false | void>
 }
 
 export interface RouterOptions {

@@ -20,6 +20,8 @@ interface LinkProps {
 
 type UseLinkOptions = VueUseOptions<LinkProps>
 
+// TODO: we could allow currentRoute as a prop to expose `isActive` and
+// `isExactActive` behavior should go through an RFC
 export function useLink(props: UseLinkOptions) {
   const router = inject(routerKey)!
   const currentRoute = router.currentRoute
