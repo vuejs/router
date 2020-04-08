@@ -46,6 +46,7 @@ export function useLink(props: UseLinkOptions) {
   )
   const isExactActive = computed<boolean>(
     () =>
+      activeRecordIndex.value > -1 &&
       activeRecordIndex.value === currentRoute.value.matched.length - 1 &&
       isSameLocationObject(currentRoute.value.params, route.value.params)
   )

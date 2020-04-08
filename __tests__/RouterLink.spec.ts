@@ -227,6 +227,20 @@ const locations: Record<
       name: undefined,
     },
   },
+  notFound: {
+    string: '/not-found',
+    normalized: {
+      fullPath: '/not-found',
+      path: '/not-found',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
 }
 
 describe('RouterLink', () => {
@@ -331,6 +345,15 @@ describe('RouterLink', () => {
     )
     expect(el.querySelector('a')!.className).toContain('router-link-active')
     expect(el.querySelector('a')!.className).toContain('nav-item')
+  })
+
+  it('is not active on a non matched location', () => {
+    const { el } = factory(
+      locations.notFound.normalized,
+      { to: locations.basic.string },
+      locations.basic.normalized
+    )
+    expect(el.querySelector('a')!.className).toBe('')
   })
 
   it('is not active with more repeated params', () => {
