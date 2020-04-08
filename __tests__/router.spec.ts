@@ -501,52 +501,53 @@ describe('Router', () => {
     })
   })
 
-  it('allows base option in abstract history', async () => {
-    const history = createMemoryHistory('/app/')
-    const router = createRouter({ history, routes })
-    expect(router.currentRoute.value).toMatchObject({
-      name: undefined,
-      fullPath: '/',
-      hash: '',
-      params: {},
-      path: '/',
-      query: {},
-      meta: {},
+  describe('base', () => {
+    it('allows base option in abstract history', async () => {
+      const history = createMemoryHistory('/app/')
+      const router = createRouter({ history, routes })
+      expect(router.currentRoute.value).toMatchObject({
+        name: undefined,
+        fullPath: '/',
+        hash: '',
+        params: {},
+        path: '/',
+        query: {},
+        meta: {},
+      })
+      await router.replace('/foo')
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Foo',
+        fullPath: '/foo',
+        hash: '',
+        params: {},
+        path: '/foo',
+        query: {},
+      })
     })
-    await router.replace('/foo')
-    expect(router.currentRoute.value).toMatchObject({
-      name: 'Foo',
-      fullPath: '/foo',
-      hash: '',
-      params: {},
-      path: '/foo',
-      query: {},
+
+    it('allows base option with html5 history', async () => {
+      const history = createWebHistory('/app/')
+      const router = createRouter({ history, routes })
+      expect(router.currentRoute.value).toMatchObject({
+        name: undefined,
+        fullPath: '/',
+        hash: '',
+        params: {},
+        path: '/',
+        query: {},
+        meta: {},
+      })
+      await router.replace('/foo')
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Foo',
+        fullPath: '/foo',
+        hash: '',
+        params: {},
+        path: '/foo',
+        query: {},
+      })
     })
   })
-
-  it('allows base option with html5 history', async () => {
-    const history = createWebHistory('/app/')
-    const router = createRouter({ history, routes })
-    expect(router.currentRoute.value).toMatchObject({
-      name: undefined,
-      fullPath: '/',
-      hash: '',
-      params: {},
-      path: '/',
-      query: {},
-      meta: {},
-    })
-    await router.replace('/foo')
-    expect(router.currentRoute.value).toMatchObject({
-      name: 'Foo',
-      fullPath: '/foo',
-      hash: '',
-      params: {},
-      path: '/foo',
-      query: {},
-    })
-  })
-
   describe('Dynamic Routing', () => {
     it('resolves new added routes', async () => {
       const { router } = await newRouter()
