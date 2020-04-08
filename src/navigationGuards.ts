@@ -59,7 +59,7 @@ export function guardToPromiseFn<
   return () =>
     new Promise((resolve, reject) => {
       const next: NavigationGuardCallback = (
-        valid?: boolean | RouteLocationRaw | NavigationGuardNextCallback
+        valid?: boolean | RouteLocationRaw | NavigationGuardNextCallback | Error
       ) => {
         if (valid === false)
           reject(
@@ -68,7 +68,9 @@ export function guardToPromiseFn<
               to,
             })
           )
-        else if (isRouteLocation(valid)) {
+        else if (valid instanceof Error) {
+          reject(valid)
+        } else if (isRouteLocation(valid)) {
           reject(
             createRouterError<NavigationRedirectError>(
               ErrorTypes.NAVIGATION_GUARD_REDIRECT,
@@ -78,8 +80,6 @@ export function guardToPromiseFn<
               }
             )
           )
-        } else if (valid instanceof Error) {
-          // TODO
         } else {
           // TODO: call the in component enter callbacks. Maybe somewhere else
           // record && record.enterCallbacks.push(valid)
@@ -87,7 +87,7 @@ export function guardToPromiseFn<
         }
       }
 
-      // TODO: write tests
+      // wrapping with Promise.resolve allows it to work with both async and sync guards
       Promise.resolve(guard.call(instance, to, from, next)).catch(err =>
         reject(err)
       )

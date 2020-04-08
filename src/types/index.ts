@@ -274,6 +274,7 @@ export interface MatcherLocation
 // where the navigation guard callback is defined
 export interface NavigationGuardCallback {
   (): void
+  (error: Error): void
   (location: RouteLocationRaw): void
   (valid: boolean): void
   (cb: (vm: any) => void): void
