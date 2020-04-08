@@ -271,7 +271,7 @@ export function createRouter({
         return pushWithRedirect(error.to, redirectedFrom || toLocation)
       }
 
-      // unknown error
+      // unknown error, throws
       triggerError(error)
     }
 
@@ -448,31 +448,27 @@ export function createRouter({
         false
       )
     } catch (error) {
-      if (error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT) {
-        // TODO: refactor the duplication of new NavigationCancelled by
-        // checking instanceof NavigationError (it's another TODO)
-        // a more recent navigation took place
-        if (pendingLocation !== toLocation) {
-          return triggerError(
-            createRouterError<NavigationError>(
-              ErrorTypes.NAVIGATION_CANCELLED,
-              {
-                from,
-                to: toLocation,
-              }
-            ),
-            false
-          )
-        }
-        triggerError(error, false)
+      // if a different navigation is happening, abort this one
+      if (pendingLocation !== toLocation) {
+        return triggerError(
+          createRouterError<NavigationError>(ErrorTypes.NAVIGATION_CANCELLED, {
+            from,
+            to: toLocation,
+          }),
+          false
+        )
+      }
 
-        // the error is already handled by router.push
-        // we just want to avoid logging the error
-        pushWithRedirect(error.to, toLocation).catch(() => {})
-      } else if (error.type === ErrorTypes.NAVIGATION_ABORTED) {
-        // TODO: test on different browsers ensure consistent behavior
-        history.go(-info.distance, false)
-      } else {
+      if (error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT) {
+        // the error is already handled by router.push we just want to avoid
+        // logging the error
+        return pushWithRedirect(error.to, toLocation).catch(() => {})
+      }
+
+      // TODO: test on different browsers ensure consistent behavior
+      history.go(-info.distance, false)
+      // unrecognized error, transfer to the global handler
+      if (error.type !== ErrorTypes.NAVIGATION_ABORTED) {
         triggerError(error, false)
       }
     }
