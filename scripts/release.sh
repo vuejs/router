@@ -10,10 +10,10 @@ echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   echo "Releasing v$VERSION ..."
-  npm test
+  yarn run test
 
-  yarn build
-  yarn build:dts
+  yarn run build
+  yarn run build:dts
 
   # generate the version so that the changelog can be generated too
   yarn version --no-git-tag-version --no-commit-hooks --new-version $VERSION
