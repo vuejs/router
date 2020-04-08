@@ -1,3 +1,35 @@
+# [4.0.0-alpha.5](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.4...v4.0.0-alpha.5) (2020-04-08)
+
+
+### Bug Fixes
+
+* **link:** not active when matched is empty ([acd644d](https://github.com/vuejs/vue-router-next/commit/acd644db70793da7719b321b2dcdd537ec358f9c))
+* check query and hash when navigating ([3862ad9](https://github.com/vuejs/vue-router-next/commit/3862ad924bbc734a835577c3a3c71bc3550db29c))
+* ignore order of keys in query and params ([643bd15](https://github.com/vuejs/vue-router-next/commit/643bd15ceaf9d6314434b15b169171b599b58e1c))
+* skip initial guards with static redirect ([c76bb93](https://github.com/vuejs/vue-router-next/commit/c76bb938a2c9a1790be98b6ce44ccd153a342141))
+* **types:** add missing exported types ([ec241f7](https://github.com/vuejs/vue-router-next/commit/ec241f7a93107815d9ffd25d36cbf00b47cb7318)), closes [#147](https://github.com/vuejs/vue-router-next/issues/147)
+
+
+### Features
+
+* allow symbols as route record name ([f42ab3f](https://github.com/vuejs/vue-router-next/commit/f42ab3fecfaecddcef0ccf8bb0f7f44ca24d6160))
+* **link:** activeClass and exactActiveClass props ([d53b383](https://github.com/vuejs/vue-router-next/commit/d53b3832b50131cb83b8c567015780e60addb6c8))
+* **link:** allow `custom` prop ([874510b](https://github.com/vuejs/vue-router-next/commit/874510be69c3b068970e8a90ae251cf487d6acf9))
+
+
+### BREAKING CHANGES
+
+* Renamed types by removing suffix Normalized and using Raw instead
+  - `RouteLocation` -> `RouteLocationRaw`
+  - `RouteLocationNormalized` -> `RouteLocation`
+  - `RouteLocationNormalized` is now a location that can be displayed (not a static redirect)
+  - `RouteLocationNormalizedResolved` -> `RouteLocationNormalizedLoaded`
+  - `RouteRecord` -> `RouteRecordRaw`
+  - `RouteRecordNormalized` -> `RouteRecord`
+  - `RouteRecordNormalized` is now a record that is not a static redirect
+
+
+
 # [4.0.0-alpha.4](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.3...v4.0.0-alpha.4) (2020-03-28)
 
 
