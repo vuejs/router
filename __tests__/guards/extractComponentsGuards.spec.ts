@@ -1,7 +1,7 @@
-import { extractComponentsGuards } from '../src/utils'
-import { START_LOCATION_NORMALIZED, RouteRecordRaw } from '../src/types'
-import { components } from './utils'
-import { normalizeRouteRecord } from '../src/matcher'
+import { extractComponentsGuards } from '../../src/navigationGuards'
+import { START_LOCATION_NORMALIZED, RouteRecordRaw } from '../../src/types'
+import { components } from '../utils'
+import { normalizeRouteRecord } from '../../src/matcher'
 import { RouteRecordNormalized } from 'src/matcher/types'
 
 const beforeRouteEnter = jest.fn()
