@@ -25,12 +25,11 @@ then
 
   # commit and tag
   git add CHANGELOG.md package.json
-  git commit -m "realese: v$VERSION"
+  git commit -m "release: v$VERSION"
   git tag "v$VERSION"
 
   # commit
-  # TODO: make sure this works the next time
-  yarn publish --tag next --new-version $VERSION --no-commit-hooks --no-git-tag-version
+  yarn publish --tag next --new-version "$VERSION" --no-commit-hooks --no-git-tag-version
 
   # publish
   git push origin refs/tags/v$VERSION
