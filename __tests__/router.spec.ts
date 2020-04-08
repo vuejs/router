@@ -24,6 +24,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/to-foo-named', redirect: { name: 'Foo' } },
   { path: '/to-foo2', redirect: '/to-foo' },
   { path: '/p/:p', name: 'Param', component: components.Bar },
+  { path: '/repeat/:r+', name: 'repeat', component: components.Bar },
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
   { path: '/before-leave', component: components.BeforeLeave },
   {
@@ -213,9 +214,48 @@ describe('Router', () => {
 
   it('fails if required params are missing', async () => {
     const { router } = await newRouter()
-    await expect(
-      router.push({ name: 'Param', params: {} })
-    ).rejects.toThrowError(/missing required param "p"/i)
+    expect(() => router.resolve({ name: 'Param', params: {} })).toThrowError(
+      /missing required param "p"/i
+    )
+    expect(() =>
+      router.resolve({ name: 'Param', params: { p: 'po' } })
+    ).not.toThrow()
+  })
+
+  it('fails if required repeated params are missing', async () => {
+    const { router } = await newRouter()
+    expect(() => router.resolve({ name: 'repeat', params: {} })).toThrowError(
+      /missing required param "r"/i
+    )
+    expect(() =>
+      router.resolve({ name: 'repeat', params: { r: [] } })
+    ).toThrowError(/missing required param "r"/i)
+    expect(() =>
+      router.resolve({ name: 'repeat', params: { r: ['a'] } })
+    ).not.toThrow()
+  })
+
+  it('fails with arrays for non repeatable params', async () => {
+    const { router } = await newRouter()
+    router.addRoute({ path: '/r1/:r', name: 'r1', component: components.Bar })
+    router.addRoute({ path: '/r2/:r?', name: 'r2', component: components.Bar })
+    expect(() =>
+      router.resolve({ name: 'r1', params: { r: [] } })
+    ).toThrowError(/"r" is an array but it is not repeatable/i)
+    expect(() =>
+      router.resolve({ name: 'r2', params: { r: [] } })
+    ).toThrowError(/"r" is an array but it is not repeatable/i)
+    expect(() =>
+      router.resolve({ name: 'r1', params: { r: 'a' } })
+    ).not.toThrow()
+  })
+
+  it('does not fail for optional params', async () => {
+    const { router } = await newRouter()
+    router.addRoute({ path: '/r1/:r*', name: 'r1', component: components.Bar })
+    router.addRoute({ path: '/r2/:r?', name: 'r2', component: components.Bar })
+    expect(() => router.resolve({ name: 'r1', params: {} })).not.toThrow()
+    expect(() => router.resolve({ name: 'r2', params: {} })).not.toThrow()
   })
 
   describe('alias', () => {
