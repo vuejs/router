@@ -548,6 +548,7 @@ describe('Router', () => {
       })
     })
   })
+
   describe('Dynamic Routing', () => {
     it('resolves new added routes', async () => {
       const { router } = await newRouter()
@@ -563,6 +564,19 @@ describe('Router', () => {
       expect(router.resolve('/new-route')).toMatchObject({
         name: 'new route',
       })
+    })
+
+    it('checks if a route exists', async () => {
+      const { router } = await newRouter()
+      router.addRoute({
+        name: 'new-route',
+        path: '/new-route',
+        component: components.Foo,
+      })
+      expect(router.hasRoute('new-route')).toBe(true)
+      expect(router.hasRoute('no')).toBe(false)
+      router.removeRoute('new-route')
+      expect(router.hasRoute('new-route')).toBe(false)
     })
 
     it('can redirect to children in the middle of navigation', async () => {

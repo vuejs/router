@@ -87,7 +87,7 @@ export interface Router {
   addRoute(parentName: RouteRecordName, route: RouteRecordRaw): () => void
   addRoute(route: RouteRecordRaw): () => void
   removeRoute(name: RouteRecordName): void
-  // TODO: hasRoute()
+  hasRoute(name: RouteRecordName): boolean
   getRoutes(): RouteRecord[]
 
   resolve(to: RouteLocationRaw): RouteLocation
@@ -161,6 +161,10 @@ export function createRouter({
 
   function getRoutes() {
     return matcher.getRoutes().map(routeMatcher => routeMatcher.record)
+  }
+
+  function hasRoute(name: RouteRecordName): boolean {
+    return !!matcher.getRecordMatcher(name)
   }
 
   function resolve(
@@ -545,6 +549,7 @@ export function createRouter({
 
     addRoute,
     removeRoute,
+    hasRoute,
     getRoutes,
 
     push,
