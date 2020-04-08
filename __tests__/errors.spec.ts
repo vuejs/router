@@ -53,35 +53,4 @@ describe('Errors', () => {
       expect.objectContaining({ type: ErrorTypes.NAVIGATION_ABORTED })
     )
   })
-
-  it('triggers errors caused by new navigations of a next(redirect) triggered by history', async () => {
-    const { router, history } = createRouter()
-    await router.push('/p/0')
-    await router.push('/p/other')
-
-    router.beforeEach((to, from, next) => {
-      const p = (Number(to.params.p) || 0) + 1
-      if (p === 2) next(false)
-      else next({ name: 'Param', params: { p: '' + p } })
-    })
-
-    history.back()
-    await tick()
-
-    expect(onError).toHaveBeenCalledTimes(2)
-    expect(onError).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({ type: ErrorTypes.NAVIGATION_GUARD_REDIRECT })
-    )
-    expect(onError.mock.calls[0]).toMatchObject([
-      { to: { params: { p: '1' } }, from: { fullPath: '/p/0' } },
-    ])
-    expect(onError).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({ type: ErrorTypes.NAVIGATION_ABORTED })
-    )
-    expect(onError.mock.calls[1]).toMatchObject([
-      { to: { params: { p: '1' } }, from: { params: { p: 'other' } } },
-    ])
-  })
 })
