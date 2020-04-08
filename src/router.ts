@@ -21,13 +21,7 @@ import {
 } from './utils/scroll'
 import { createRouterMatcher } from './matcher'
 import { createRouterError, ErrorTypes, NavigationError } from './errors'
-import {
-  extractComponentsGuards,
-  guardToPromiseFn,
-  applyToParams,
-  isSameRouteRecord,
-  isSameLocationObject,
-} from './utils'
+import { applyToParams, isSameRouteRecord, isSameLocationObject } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
 import {
@@ -51,6 +45,7 @@ import { Link } from './components/Link'
 import { View } from './components/View'
 import { routerKey, routeLocationKey } from './utils/injectionSymbols'
 import { parseURL, stringifyURL } from './utils/location'
+import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
 
 /**
  * Internal type to define an ErrorHandler
