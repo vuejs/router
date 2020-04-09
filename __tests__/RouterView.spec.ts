@@ -4,8 +4,8 @@
 import { View as RouterView } from '../src/components/View'
 import { components, RouteLocationNormalizedLoose } from './utils'
 import { START_LOCATION_NORMALIZED } from '../src/types'
-import { ref, markNonReactive } from 'vue'
-import { mount, tick } from './mount'
+import { markNonReactive } from 'vue'
+import { mount, createMockedRoute } from './mount2'
 import { mockWarn } from 'jest-mock-warn'
 
 // to have autocompletion
@@ -145,70 +145,54 @@ const routes = createRoutes({
 describe('RouterView', () => {
   mockWarn()
 
-  function factory(route: RouteLocationNormalizedLoose, props: any = {}) {
-    const router = {
-      currentRoute: ref(
-        markNonReactive({
-          ...route,
-          // reset the instances every time
-          matched: route.matched.map(match => ({ ...match, instances: {} })),
-        })
-      ),
-    }
+  async function factory(
+    initialRoute: RouteLocationNormalizedLoose,
+    propsData: any = {}
+  ) {
+    const route = createMockedRoute(initialRoute)
+    const wrapper = await mount(RouterView, {
+      propsData,
+      provide: route.provides,
+      components: { RouterView },
+    })
 
-    const { app, el } = mount(
-      router as any,
-      {
-        template: `<RouterView :name="name"></RouterView>`,
-        components: { RouterView },
-        setup() {
-          const name = ref(props.name)
-
-          return {
-            name,
-          }
-        },
-      } as any
-    )
-
-    return { app, router, el }
+    return { route, wrapper }
   }
 
-  it('displays current route component', () => {
-    const { el } = factory(routes.root)
-    expect(el.innerHTML).toBe(`<div>Home</div>`)
+  it('displays current route component', async () => {
+    const { wrapper } = await factory(routes.root)
+    expect(wrapper.html()).toBe(`<div>Home</div>`)
   })
 
-  it('displays named views', () => {
-    const { el } = factory(routes.named, { name: 'foo' })
-    expect(el.innerHTML).toBe(`<div>Foo</div>`)
+  it('displays named views', async () => {
+    const { wrapper } = await factory(routes.named, { name: 'foo' })
+    expect(wrapper.html()).toBe(`<div>Foo</div>`)
   })
 
-  it('displays nothing when route is unmatched', () => {
-    const { el } = factory(START_LOCATION_NORMALIZED as any)
+  it('displays nothing when route is unmatched', async () => {
+    const { wrapper } = await factory(START_LOCATION_NORMALIZED as any)
     // NOTE: I wonder if this will stay stable in future releases
     expect('Router').not.toHaveBeenWarned()
-    expect(el.childElementCount).toBe(0)
+    expect(wrapper.rootEl.childElementCount).toBe(0)
   })
 
-  it('displays nested views', () => {
-    const { el } = factory(routes.nested)
-    expect(el.innerHTML).toBe(`<div><h2>Nested</h2><div>Foo</div></div>`)
+  it('displays nested views', async () => {
+    const { wrapper } = await factory(routes.nested)
+    expect(wrapper.html()).toBe(`<div><h2>Nested</h2><div>Foo</div></div>`)
   })
 
-  it('displays deeply nested views', () => {
-    const { el } = factory(routes.nestedNested)
-    expect(el.innerHTML).toBe(
+  it('displays deeply nested views', async () => {
+    const { wrapper } = await factory(routes.nestedNested)
+    expect(wrapper.html()).toBe(
       `<div><h2>Nested</h2><div><h2>Nested</h2><div>Foo</div></div></div>`
     )
   })
 
   it('renders when the location changes', async () => {
-    const { el, router } = factory(routes.root)
-    expect(el.innerHTML).toBe(`<div>Home</div>`)
-    router.currentRoute.value = routes.foo
-    await tick()
-    expect(el.innerHTML).toBe(`<div>Foo</div>`)
+    const { route, wrapper } = await factory(routes.root)
+    expect(wrapper.html()).toBe(`<div>Home</div>`)
+    await route.set(routes.foo)
+    expect(wrapper.html()).toBe(`<div>Foo</div>`)
   })
 
   it('does not pass params as props by default', async () => {
@@ -216,34 +200,44 @@ describe('RouterView', () => {
       ...routes.withParams,
       matched: [{ ...routes.withParams.matched[0], props: false }],
     }
-    const { el, router } = factory(noPropsWithParams)
-    expect(el.innerHTML).toBe(`<div>User: default</div>`)
-    router.currentRoute.value = markNonReactive({
+    const { wrapper, route } = await factory(noPropsWithParams)
+    expect(wrapper.html()).toBe(`<div>User: default</div>`)
+    await route.set({
       ...noPropsWithParams,
       params: { id: '4' },
     })
-    await tick()
-    expect(el.innerHTML).toBe(`<div>User: default</div>`)
+    expect(wrapper.html()).toBe(`<div>User: default</div>`)
   })
 
   it('passes params as props with props: true', async () => {
-    const { el, router } = factory(routes.withParams)
-    expect(el.innerHTML).toBe(`<div>User: 1</div>`)
-    router.currentRoute.value = markNonReactive({
+    const { wrapper, route } = await factory(routes.withParams)
+    expect(wrapper.html()).toBe(`<div>User: 1</div>`)
+    await route.set({
       ...routes.withParams,
       params: { id: '4' },
     })
-    await tick()
-    expect(el.innerHTML).toBe(`<div>User: 4</div>`)
+    expect(wrapper.html()).toBe(`<div>User: 4</div>`)
+  })
+
+  it('passes params as props with props: true', async () => {
+    const { wrapper, route } = await factory(routes.withParams)
+
+    expect(wrapper.html()).toBe(`<div>User: 1</div>`)
+
+    await route.set({
+      ...routes.withParams,
+      params: { id: '4' },
+    })
+    expect(wrapper.html()).toBe(`<div>User: 4</div>`)
   })
 
   it('can pass an object as props', async () => {
-    const { el } = factory(routes.withIdAndOther)
-    expect(el.innerHTML).toBe(`<div>id:foo;other:fixed</div>`)
+    const { wrapper } = await factory(routes.withIdAndOther)
+    expect(wrapper.html()).toBe(`<div>id:foo;other:fixed</div>`)
   })
 
   it('can pass a function as props', async () => {
-    const { el } = factory(routes.withFnProps)
-    expect(el.innerHTML).toBe(`<div>id:2;other:page</div>`)
+    const { wrapper } = await factory(routes.withFnProps)
+    expect(wrapper.html()).toBe(`<div>id:2;other:page</div>`)
   })
 })
