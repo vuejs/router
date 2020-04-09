@@ -13,16 +13,20 @@ import {
   markNonReactive,
   App,
   ComponentOptionsWithProps,
+  VNode,
 } from 'vue'
+import { compile } from '@vue/compiler-dom'
+import * as runtimeDom from '@vue/runtime-dom'
 import { RouteLocationNormalizedLoose } from './utils'
 import { routeLocationKey } from '../src/utils/injectionSymbols'
 
-interface MountOptions {
+export interface MountOptions {
   propsData: Record<string, any>
   provide: Record<string | symbol, any>
   components: ComponentOptionsWithProps['components']
+  slots: Record<string, string>
 }
-// { app, vm: instance!, el: rootEl, setProps, provide }
+
 interface Wrapper {
   app: App
   vm: ComponentPublicInstance
@@ -66,18 +70,24 @@ export function mount(
       return nextTick()
     }
 
+    let slots: Record<string, (propsData: any) => VNode> = {}
+
     const Wrapper = defineComponent({
       setup(_props, { emit }) {
         const componentInstanceRef = ref<ComponentPublicInstance>()
 
         return () => {
-          return h(TargetComponent, {
-            ref: componentInstanceRef,
-            onVnodeMounted() {
-              emit('ready', componentInstanceRef.value)
+          return h(
+            TargetComponent,
+            {
+              ref: componentInstanceRef,
+              onVnodeMounted() {
+                emit('ready', componentInstanceRef.value)
+              },
+              ...propsData,
             },
-            ...propsData,
-          })
+            slots
+          )
         }
       },
     })
@@ -99,6 +109,12 @@ export function mount(
     if (options.components) {
       for (let key in options.components) {
         app.component(key, options.components[key])
+      }
+    }
+
+    if (options.slots) {
+      for (let key in options.slots) {
+        slots[key] = compileSlot(options.slots[key])
       }
     }
 
@@ -150,4 +166,25 @@ export function createMockedRoute(initialValue: RouteLocationNormalizedLoose) {
       [routeLocationKey as symbol]: value,
     },
   }
+}
+
+function compileSlot(template: string) {
+  const codegen = compile(template, {
+    mode: 'function',
+    hoistStatic: true,
+    prefixIdentifiers: true,
+  })
+
+  const render = new Function('Vue', codegen.code)(runtimeDom)
+
+  const ToRender = defineComponent({
+    render,
+    inheritAttrs: false,
+
+    setup(props, { attrs }) {
+      return { ...attrs }
+    },
+  })
+
+  return (propsData: any) => h(ToRender, { ...propsData })
 }
