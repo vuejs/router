@@ -10,7 +10,7 @@ import {
   RouteLocation,
 } from '../src/types'
 import { createMemoryHistory } from '../src'
-import { mount } from './mount2'
+import { mount } from './mount'
 import { ref, markNonReactive, nextTick } from 'vue'
 import { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/utils/injectionSymbols'

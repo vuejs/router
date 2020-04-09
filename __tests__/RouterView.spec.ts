@@ -5,7 +5,7 @@ import { View as RouterView } from '../src/components/View'
 import { components, RouteLocationNormalizedLoose } from './utils'
 import { START_LOCATION_NORMALIZED } from '../src/types'
 import { markNonReactive } from 'vue'
-import { mount, createMockedRoute } from './mount2'
+import { mount, createMockedRoute } from './mount'
 import { mockWarn } from 'jest-mock-warn'
 
 // to have autocompletion
