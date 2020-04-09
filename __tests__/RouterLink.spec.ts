@@ -10,8 +10,8 @@ import {
   RouteLocation,
 } from '../src/types'
 import { createMemoryHistory } from '../src'
-import { mount } from './mount'
-import { ref, markNonReactive, nextTick } from 'vue'
+import { mount, createMockedRoute } from './mount'
+import { nextTick } from 'vue'
 import { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/utils/injectionSymbols'
 
@@ -250,7 +250,7 @@ async function factory(
   resolvedLocation: RouteLocation,
   slotTemplate: string = ''
 ) {
-  // const route = createMockedRoute(initialRoute)
+  const route = createMockedRoute(currentLocation)
   const router = {
     history: createMemoryHistory(),
     createHref(to: RouteLocationNormalized): string {
@@ -258,7 +258,6 @@ async function factory(
     },
     resolve: jest.fn(),
     push: jest.fn().mockResolvedValue(resolvedLocation),
-    currentRoute: ref(markNonReactive(currentLocation)),
   }
   router.resolve.mockReturnValueOnce(resolvedLocation)
 
@@ -266,11 +265,12 @@ async function factory(
     propsData,
     provide: {
       [routerKey as any]: router,
+      ...route.provides,
     },
     slots: { default: slotTemplate },
   })
 
-  return { router, wrapper }
+  return { router, wrapper, route }
 }
 
 describe('RouterLink', () => {
@@ -297,18 +297,16 @@ describe('RouterLink', () => {
   })
 
   it('can change the value', async () => {
-    const to = ref(locations.basic.string)
     const { wrapper, router } = await factory(
       START_LOCATION_NORMALIZED,
-      { to },
+      { to: locations.basic.string },
       locations.basic.normalized
     )
     expect(wrapper.rootEl.querySelector('a')!.getAttribute('href')).toBe(
       '/home'
     )
     router.resolve.mockReturnValueOnce(locations.foo.normalized)
-    to.value = locations.foo.string
-    await nextTick()
+    await wrapper.setProps({ to: locations.foo.string })
     expect(wrapper.rootEl.querySelector('a')!.getAttribute('href')).toBe('/foo')
   })
 

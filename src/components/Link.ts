@@ -9,7 +9,7 @@ import {
 } from 'vue'
 import { RouteLocationRaw, VueUseOptions, RouteLocation } from '../types'
 import { isSameLocationObject, isSameRouteRecord } from '../utils'
-import { routerKey } from '../utils/injectionSymbols'
+import { routerKey, routeLocationKey } from '../utils/injectionSymbols'
 import { RouteRecord } from '../matcher/types'
 
 interface LinkProps {
@@ -24,7 +24,7 @@ type UseLinkOptions = VueUseOptions<LinkProps>
 // `isExactActive` behavior should go through an RFC
 export function useLink(props: UseLinkOptions) {
   const router = inject(routerKey)!
-  const currentRoute = router.currentRoute
+  const currentRoute = inject(routeLocationKey)!
 
   const route = computed(() => router.resolve(unref(props.to)))
   const href = computed(() => router.createHref(route.value))
@@ -34,7 +34,7 @@ export function useLink(props: UseLinkOptions) {
     const currentMatched: RouteRecord | undefined =
       route.value.matched[route.value.matched.length - 1]
     if (!currentMatched) return -1
-    return currentRoute.value.matched.findIndex(
+    return currentRoute.matched.findIndex(
       isSameRouteRecord.bind(null, currentMatched)
     )
   })
@@ -42,13 +42,13 @@ export function useLink(props: UseLinkOptions) {
   const isActive = computed<boolean>(
     () =>
       activeRecordIndex.value > -1 &&
-      includesParams(currentRoute.value.params, route.value.params)
+      includesParams(currentRoute.params, route.value.params)
   )
   const isExactActive = computed<boolean>(
     () =>
       activeRecordIndex.value > -1 &&
-      activeRecordIndex.value === currentRoute.value.matched.length - 1 &&
-      isSameLocationObject(currentRoute.value.params, route.value.params)
+      activeRecordIndex.value === currentRoute.matched.length - 1 &&
+      isSameLocationObject(currentRoute.params, route.value.params)
   )
 
   // TODO: handle replace prop

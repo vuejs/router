@@ -7,6 +7,7 @@ import {
   _RouteRecordBase,
   RouteComponent,
   RouteRecordRaw,
+  RouteRecordName,
 } from '../src/types'
 import { h, resolveComponent, ComponentOptions } from 'vue'
 import { RouterOptions, createWebHistory, createRouter } from '../src'
@@ -36,7 +37,7 @@ export interface RouteRecordViewLoose
 
 // @ts-ignore we are intentionally overriding the type
 export interface RouteLocationNormalizedLoose extends RouteLocationNormalized {
-  name: string | undefined
+  name: RouteRecordName | null | undefined
   path: string
   // record?
   params: any
