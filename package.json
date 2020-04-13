@@ -64,7 +64,7 @@
     "chromedriver": "^80.0.2",
     "codecov": "^3.6.5",
     "conventional-changelog-cli": "^2.0.31",
-    "css-loader": "^3.4.2",
+    "css-loader": "^3.5.2",
     "dotenv": "^8.2.0",
     "faked-promise": "^2.2.2",
     "html-webpack-plugin": "^4.2.0",
