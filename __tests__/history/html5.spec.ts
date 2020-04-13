@@ -68,4 +68,14 @@ describe('History HTMl5', () => {
     expect(createWebHistory('/foo/').base).toBe('/foo')
     expect(createWebHistory('/foo').base).toBe('/foo')
   })
+
+  it('handles a single hash base', () => {
+    expect(createWebHistory('#').base).toBe('#')
+    expect(createWebHistory('#/').base).toBe('#')
+  })
+
+  it('handles a non-empty hash base', () => {
+    expect(createWebHistory('#/bar').base).toBe('#/bar')
+    expect(createWebHistory('#/bar/').base).toBe('#/bar')
+  })
 })

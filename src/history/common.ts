@@ -145,3 +145,32 @@ export function normalizeHistoryLocation(
     fullPath: (location as HistoryLocation).fullPath || (location as string),
   }
 }
+
+/**
+ * Normalizes a base by removing any trailing slash and reading the base tag if
+ * present.
+ *
+ * @param base base to normalize
+ */
+export function normalizeBase(base?: string): string {
+  if (!base) {
+    if (__BROWSER__) {
+      // respect <base> tag
+      const baseEl = document.querySelector('base')
+      base = (baseEl && baseEl.getAttribute('href')) || '/'
+      // strip full URL origin
+      base = base.replace(/^\w+:\/\/[^\/]+/, '')
+    } else {
+      base = '/'
+    }
+  }
+
+  // ensure leading slash when it was removed by the regex above avoid leading
+  // slash with hash because the file could be read from the disk like file://
+  // and the leading slash would cause problems
+  if (base.charAt(0) !== '/' && base.charAt(0) !== '#') base = '/' + base
+
+  // remove the trailing slash so all other method can just do `base + fullPath`
+  // to build an href
+  return base.replace(/\/$/, '')
+}

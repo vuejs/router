@@ -8,6 +8,7 @@ import {
   HistoryState,
   RawHistoryLocation,
   ValueContainer,
+  normalizeBase,
 } from './common'
 import { computeScrollPosition, ScrollToPosition } from '../utils/scroll'
 import { warn } from 'vue'
@@ -260,33 +261,6 @@ function useHistoryStateNavigation(base: string) {
     push,
     replace,
   }
-}
-
-/**
- * Normalizes a base by removing any trailing slash and reading the base tag if
- * present.
- *
- * @param base base to normalize
- */
-function normalizeBase(base?: string): string {
-  if (!base) {
-    if (__BROWSER__) {
-      // respect <base> tag
-      const baseEl = document.querySelector('base')
-      base = (baseEl && baseEl.getAttribute('href')) || '/'
-      // strip full URL origin
-      base = base.replace(/^\w+:\/\/[^\/]+/, '')
-    } else {
-      base = '/'
-    }
-  }
-
-  // ensure leading slash when it was removed by the regex above
-  if (base.charAt(0) !== '/') base = '/' + base
-
-  // remove the trailing slash so all other method can just do `base + fullPath`
-  // to build an href
-  return base.replace(/\/$/, '')
 }
 
 export default function createWebHistory(base?: string): RouterHistory {
