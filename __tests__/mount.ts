@@ -33,6 +33,7 @@ interface Wrapper {
   rootEl: HTMLDivElement
   setProps(props: MountOptions['propsData']): Promise<void>
   html(): string
+  find: typeof document['querySelector']
 }
 
 function initialProps<P>(propsOption: ComponentObjectPropsOptions<P>) {
@@ -50,6 +51,13 @@ function initialProps<P>(propsOption: ComponentObjectPropsOptions<P>) {
   return copy
 }
 
+// cleanup wrappers after a suite runs
+let activeWrapperRemovers: Array<() => void> = []
+afterAll(() => {
+  activeWrapperRemovers.forEach(remove => remove())
+  activeWrapperRemovers = []
+})
+
 export function mount(
   // TODO: generic?
   targetComponent: Parameters<typeof createApp>[0],
@@ -57,7 +65,7 @@ export function mount(
 ): Promise<Wrapper> {
   const TargetComponent = targetComponent as Component
   return new Promise(resolve => {
-    // TODO: props can only be an object
+    // NOTE: only supports props as an object
     const propsData = reactive(
       Object.assign(
         initialProps(TargetComponent.props || {}),
@@ -94,7 +102,7 @@ export function mount(
 
     const app = createApp(Wrapper, {
       onReady: (instance: ComponentPublicInstance) => {
-        resolve({ app, vm: instance!, rootEl, setProps, html })
+        resolve({ app, vm: instance!, rootEl, setProps, html, find })
       },
     })
 
@@ -126,7 +134,15 @@ export function mount(
       return rootEl.innerHTML
     }
 
+    function find(selector: string) {
+      return rootEl.querySelector(selector)
+    }
+
     app.mount(rootEl)
+
+    activeWrapperRemovers.push(() => {
+      app.unmount(rootEl)
+    })
   })
 }
 

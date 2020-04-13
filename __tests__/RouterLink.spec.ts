@@ -280,9 +280,7 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.getAttribute('href')).toBe(
-      '/home'
-    )
+    expect(wrapper.find('a')!.getAttribute('href')).toBe('/home')
   })
 
   it('displays a link with a string prop', async () => {
@@ -291,9 +289,7 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.getAttribute('href')).toBe(
-      '/home'
-    )
+    expect(wrapper.find('a')!.getAttribute('href')).toBe('/home')
   })
 
   it('can change the value', async () => {
@@ -302,12 +298,10 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.getAttribute('href')).toBe(
-      '/home'
-    )
+    expect(wrapper.find('a')!.getAttribute('href')).toBe('/home')
     router.resolve.mockReturnValueOnce(locations.foo.normalized)
     await wrapper.setProps({ to: locations.foo.string })
-    expect(wrapper.rootEl.querySelector('a')!.getAttribute('href')).toBe('/foo')
+    expect(wrapper.find('a')!.getAttribute('href')).toBe('/foo')
   })
 
   it('displays a link with an object with path prop', async () => {
@@ -316,9 +310,7 @@ describe('RouterLink', () => {
       { to: { path: locations.basic.string } },
       locations.basic.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.getAttribute('href')).toBe(
-      '/home'
-    )
+    expect(wrapper.find('a')!.getAttribute('href')).toBe('/home')
   })
 
   it('can be active', async () => {
@@ -327,9 +319,7 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
   })
 
   it('can customize active class', async () => {
@@ -338,10 +328,8 @@ describe('RouterLink', () => {
       { to: locations.basic.string, activeClass: 'is-active' },
       locations.basic.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).not.toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain('is-active')
+    expect(wrapper.find('a')!.className).not.toContain('router-link-active')
+    expect(wrapper.find('a')!.className).toContain('is-active')
   })
 
   it('can customize exact active class', async () => {
@@ -350,10 +338,10 @@ describe('RouterLink', () => {
       { to: locations.basic.string, exactActiveClass: 'is-active' },
       locations.basic.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).not.toContain(
+    expect(wrapper.find('a')!.className).not.toContain(
       'router-link-exact-active'
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain('is-active')
+    expect(wrapper.find('a')!.className).toContain('is-active')
   })
 
   it('can be active with custom class', async () => {
@@ -362,10 +350,8 @@ describe('RouterLink', () => {
       { to: locations.basic.string, class: 'nav-item' },
       locations.basic.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain('nav-item')
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).toContain('nav-item')
   })
 
   it('is not active on a non matched location', async () => {
@@ -374,7 +360,7 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toBe('')
+    expect(wrapper.find('a')!.className).toBe('')
   })
 
   it('is not active with more repeated params', async () => {
@@ -383,7 +369,7 @@ describe('RouterLink', () => {
       { to: locations.repeatedParams3.string },
       locations.repeatedParams3.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toBe('')
+    expect(wrapper.find('a')!.className).toBe('')
   })
 
   it('is not active with partial repeated params', async () => {
@@ -392,7 +378,7 @@ describe('RouterLink', () => {
       { to: locations.repeatedParams2.string },
       locations.repeatedParams2.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toBe('')
+    expect(wrapper.find('a')!.className).toBe('')
   })
 
   it('can be active as an alias', async () => {
@@ -401,12 +387,8 @@ describe('RouterLink', () => {
       { to: locations.alias.string },
       locations.alias.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-exact-active'
-    )
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).toContain('router-link-exact-active')
     wrapper = (
       await factory(
         locations.alias.normalized,
@@ -414,12 +396,8 @@ describe('RouterLink', () => {
         locations.basic.normalized
       )
     ).wrapper
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-exact-active'
-    )
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).toContain('router-link-exact-active')
   })
 
   it('is active when a child is active', async () => {
@@ -428,10 +406,8 @@ describe('RouterLink', () => {
       { to: locations.parent.string },
       locations.parent.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).not.toContain(
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).not.toContain(
       'router-link-exact-active'
     )
   })
@@ -442,12 +418,8 @@ describe('RouterLink', () => {
       { to: locations.child.string },
       locations.child.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-exact-active'
-    )
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).toContain('router-link-exact-active')
   })
 
   it('child is not active if the parent is active', async () => {
@@ -456,10 +428,8 @@ describe('RouterLink', () => {
       { to: locations.child.string },
       locations.child.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).not.toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).not.toContain(
+    expect(wrapper.find('a')!.className).not.toContain('router-link-active')
+    expect(wrapper.find('a')!.className).not.toContain(
       'router-link-exact-active'
     )
   })
@@ -470,10 +440,8 @@ describe('RouterLink', () => {
       { to: locations.parent.string },
       locations.parent.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).not.toContain(
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).not.toContain(
       'router-link-exact-active'
     )
   })
@@ -484,10 +452,8 @@ describe('RouterLink', () => {
       { to: locations.parentAlias.string },
       locations.parentAlias.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).not.toContain(
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).not.toContain(
       'router-link-exact-active'
     )
   })
@@ -498,10 +464,8 @@ describe('RouterLink', () => {
       { to: locations.parentAlias.string },
       locations.parentAlias.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).not.toContain(
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).not.toContain(
       'router-link-exact-active'
     )
     wrapper = (
@@ -511,10 +475,8 @@ describe('RouterLink', () => {
         locations.parentAlias.normalized
       )
     ).wrapper
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).not.toContain(
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).not.toContain(
       'router-link-exact-active'
     )
   })
@@ -525,12 +487,8 @@ describe('RouterLink', () => {
       { to: locations.parentAlias.string },
       locations.parentAlias.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-exact-active'
-    )
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).toContain('router-link-exact-active')
 
     wrapper = (
       await factory(
@@ -539,12 +497,8 @@ describe('RouterLink', () => {
         locations.parent.normalized
       )
     ).wrapper
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-exact-active'
-    )
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).toContain('router-link-exact-active')
   })
 
   it('child and parent with alias', async () => {
@@ -553,12 +507,8 @@ describe('RouterLink', () => {
       { to: locations.childDoubleAlias.string },
       locations.childDoubleAlias.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-exact-active'
-    )
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).toContain('router-link-exact-active')
 
     wrapper = (
       await factory(
@@ -567,12 +517,8 @@ describe('RouterLink', () => {
         locations.childParentAlias.normalized
       )
     ).wrapper
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-active'
-    )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-exact-active'
-    )
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).toContain('router-link-exact-active')
   })
 
   it('can be exact-active', async () => {
@@ -581,9 +527,7 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(wrapper.rootEl.querySelector('a')!.className).toContain(
-      'router-link-exact-active'
-    )
+    expect(wrapper.find('a')!.className).toContain('router-link-exact-active')
   })
 
   it('calls ensureLocation', async () => {
@@ -602,7 +546,7 @@ describe('RouterLink', () => {
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    wrapper.rootEl.querySelector('a')!.click()
+    wrapper.find('a')!.click()
     await nextTick()
     expect(router.push).toHaveBeenCalledTimes(1)
     expect(router.push).toHaveBeenCalledWith(locations.basic.normalized)
