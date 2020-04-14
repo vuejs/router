@@ -246,7 +246,7 @@ export function createRouterMatcher(
       path,
       params,
       matched,
-      meta: matcher ? matcher.record.meta : {},
+      meta: mergeMetaFields(matched),
     }
   }
 
@@ -304,6 +304,21 @@ function isAliasRecord(record: RouteRecordMatcher | undefined): boolean {
   }
 
   return false
+}
+
+/**
+ * Merge meta fields of an array of records
+ *
+ * @param matched array of matched records
+ */
+function mergeMetaFields(matched: MatcherLocation['matched']) {
+  return matched.reduce(
+    (meta, record) => ({
+      ...meta,
+      ...record.meta,
+    }),
+    {} as MatcherLocation['meta']
+  )
 }
 
 export { PathParserOptions }

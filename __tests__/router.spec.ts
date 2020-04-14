@@ -28,6 +28,14 @@ const routes: RouteRecordRaw[] = [
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
   { path: '/before-leave', component: components.BeforeLeave },
   {
+    path: '/parent',
+    meta: { fromParent: 'foo' },
+    component: components.Foo,
+    children: [
+      { path: 'child', meta: { fromChild: 'bar' }, component: components.Foo },
+    ],
+  },
+  {
     path: '/inc-query-hash',
     redirect: to => ({
       name: 'Foo',
@@ -123,6 +131,16 @@ describe('Router', () => {
     const { router } = await newRouter({ stringifyQuery })
     router.resolve({ query: { foo: 'bar' } })
     expect(stringifyQuery).toHaveBeenCalledWith({ foo: 'bar' })
+  })
+
+  it('merges meta properties from parent to child', async () => {
+    const { router } = await newRouter()
+    expect(router.resolve('/parent')).toMatchObject({
+      meta: { fromParent: 'foo' },
+    })
+    expect(router.resolve('/parent/child')).toMatchObject({
+      meta: { fromParent: 'foo', fromChild: 'bar' },
+    })
   })
 
   it('can do initial navigation to /', async () => {
