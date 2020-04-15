@@ -33,7 +33,7 @@ jobs:
       - run: yarn run build:dts
       - run: yarn run test:unit --maxWorkers=2
       - run: yarn run build:e2e
-      - run: yarn run test:e2e
+      - run: yarn run test:e2e:ci
 
       - run:
           name: Send code coverage
