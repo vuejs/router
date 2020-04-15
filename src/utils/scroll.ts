@@ -65,3 +65,24 @@ export function scrollToPosition(position: ScrollPosition): void {
     window.scrollTo(normalizedPosition.x, normalizedPosition.y)
   }
 }
+
+/**
+ * TODO: refactor the scroll behavior so it can be tree shaken
+ */
+
+export const scrollPositions = new Map<string, ScrollToPosition>()
+
+export function getScrollKey(path: string, distance: number): string {
+  const position: number = history.state
+    ? history.state.position - distance
+    : -1
+  return position + path
+}
+
+export function saveScrollOnLeave(key: string) {
+  scrollPositions.set(key, computeScrollPosition())
+}
+
+export function getSavedScroll(key: string) {
+  return scrollPositions.get(key)
+}

@@ -18,6 +18,9 @@ import {
   ScrollToPosition,
   ScrollPosition,
   scrollToPosition,
+  saveScrollOnLeave,
+  getScrollKey,
+  getSavedScroll,
 } from './utils/scroll'
 import { createRouterMatcher } from './matcher'
 import { createRouterError, ErrorTypes, NavigationError } from './errors'
@@ -420,9 +423,12 @@ export function createRouter({
     // TODO: this doesn't work on first load. Moving it to RouterView could allow automatically handling transitions too maybe
     // TODO: refactor with a state getter
     const state = isPush || !isClient ? {} : window.history.state
-    handleScroll(toLocation, from, state && state.scroll).catch(err =>
-      triggerError(err, false)
-    )
+    const savedScroll = getSavedScroll(getScrollKey(toLocation.fullPath, 0))
+    handleScroll(
+      toLocation,
+      from,
+      savedScroll || (state && state.scroll)
+    ).catch(err => triggerError(err, false))
 
     // navigation is confirmed, call afterGuards
     for (const guard of afterGuards.list()) guard(toLocation, from)
@@ -438,6 +444,8 @@ export function createRouter({
 
     pendingLocation = toLocation
     const from = currentRoute.value
+
+    saveScrollOnLeave(getScrollKey(from.fullPath, info.distance))
 
     try {
       await navigate(toLocation, from)
