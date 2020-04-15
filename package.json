@@ -28,8 +28,8 @@
     "test:types": "tsc --build tsconfig.json",
     "test:unit": "jest --coverage",
     "test": "yarn run test:types && yarn run test:unit",
-    "test:e2e": "node e2e/runner.js",
-    "test:e2e:ci": "node e2e/runner.js --local -e ie,android44 -c e2e/nightwatch.browserstack.js e2e/specs/basic.js"
+    "test:e2e": "node e2e/runner.js -e chrome",
+    "test:e2e:ci": "node e2e/runner.js --local -e ie,android44 -c e2e/nightwatch.browserstack.js e2e/specs/encoding.js"
   },
   "gitHooks": {
     "pre-commit": "lint-staged",

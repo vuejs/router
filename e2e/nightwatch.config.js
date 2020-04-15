@@ -1,5 +1,18 @@
 // yarn nightwatch -e chrome,safari,firefox
 
+/** @type {import('nightwatch').NightwatchTestSettingScreenshots} */
+const browserDefaults = {
+  selenium_port: 4444,
+  selenium_host: 'localhost',
+  silent: true,
+  screenshots: {
+    enabled: true,
+    on_failure: true,
+    on_error: false,
+    path: 'e2e/screenshots',
+  },
+}
+
 /** @type {import('nightwatch').NightwatchOptions} */
 module.exports = {
   src_folders: ['e2e/specs'],
@@ -11,38 +24,27 @@ module.exports = {
 
   selenium: {
     start_process: true,
-    server_path: require('selenium-server').path,
+    start_session: true,
     host: '127.0.0.1',
     port: 4444,
+    server_path: require('selenium-server').path,
     cli_args: {
       'webdriver.chrome.driver': require('chromedriver').path,
-      // 'webdriver.gecko.driver': require('geckodriver').path
+      // 'webdriver.gecko.driver': require('geckodriver').path,
     },
+  },
+
+  webdriver: {
+    start_process: false,
   },
 
   test_settings: {
     default: {
-      selenium_port: 4444,
-      selenium_host: 'localhost',
-      silent: true,
-      screenshots: {
-        enabled: true,
-        on_failure: true,
-        on_error: false,
-        path: 'e2e/screenshots',
-      },
-      desiredCapabilities: {
-        browserName: 'chrome',
-        acceptSslCerts: true,
-        chromeOptions: {
-          // https://github.com/nightwatchjs/nightwatch/releases/tag/v1.1.12
-          w3c: false,
-          args: ['window-size=1280,800'],
-        },
-      },
+      launch_url: 'https://nightwatchjs.org',
     },
 
     chrome: {
+      ...browserDefaults,
       desiredCapabilities: {
         browserName: 'chrome',
         acceptSslCerts: true,
@@ -54,8 +56,8 @@ module.exports = {
       },
     },
 
-    // TODO: generate these and add skip tags
     'chrome-headless': {
+      ...browserDefaults,
       desiredCapabilities: {
         browserName: 'chrome',
         acceptSslCerts: true,
@@ -67,22 +69,22 @@ module.exports = {
     },
 
     safari: {
+      ...browserDefaults,
       desiredCapabilities: {
         browserName: 'safari',
         acceptSslCerts: true,
       },
     },
 
+    // TODO: not working
     firefox: {
+      ...browserDefaults,
       desiredCapabilities: {
         browserName: 'firefox',
         acceptSslCerts: true,
-      },
-    },
-
-    ie: {
-      desiredCapabilities: {
-        browser: 'internet explorer',
+        'moz:firefoxOptions': {
+          args: [],
+        },
       },
     },
   },

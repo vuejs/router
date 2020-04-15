@@ -42,10 +42,10 @@ const NW_CONFIG = isLocal
   ? resolve(__dirname, './nightwatch.browserstack.js')
   : resolve(__dirname, './nightwatch.config.js')
 
-// check -c option is passed when usig multiple environments
+// check -c option is passed when using multiple environments
 if (args.indexOf('-c') < 0) {
   // check if multiple envs are provided. The way Nightwatch works
-  // requires to explicitely provide the conf
+  // requires to explicitly provide the conf
   const envs = args[args.indexOf('-e') + 1]
   if (envs && envs.indexOf(',') > -1) {
     console.warn(
