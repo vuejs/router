@@ -30,9 +30,11 @@ const Parent: RouteComponent = {
     <div class="parent">
       <h2>Parent</h2>
       {{ transitionName }}
-      <transition :name="transitionName">
-        <router-view class="child-view"></router-view>
-      </transition>
+      <router-view class="child-view" v-slot="{ Component, props }">
+        <transition :name="transitionName">
+          <component :is="Component" v-bind="props" />
+        </transition>
+      </router-view>
     </div>
   `,
 }
