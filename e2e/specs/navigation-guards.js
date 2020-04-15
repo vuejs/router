@@ -10,7 +10,7 @@ module.exports = {
     browser
       .url(baseURL)
       .assert.urlEquals(baseURL + '/')
-      .waitForElementVisible('#app', 1000)
+      .waitForElementPresent('#app > *', 1000)
       .click('li:nth-child(2) a')
       .assert.urlEquals(baseURL + '/cant-leave')
       .assert.containsText('#tries', '0 times')

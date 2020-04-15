@@ -4,7 +4,7 @@ function createScrollWaiter() {
 
   function add() {
     promise = new Promise(r => {
-      resolve = resolve
+      resolve = r
     })
   }
 

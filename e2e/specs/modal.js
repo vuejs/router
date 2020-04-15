@@ -11,7 +11,7 @@ module.exports = {
   'changes the url': function(browser) {
     browser
       .url(baseURL)
-      .waitForElementVisible('#app', 1000)
+      .waitForElementPresent('#app > *', 1000)
       .assert.containsText('h1', 'Home')
       .assert.not.visible('dialog')
 
@@ -27,7 +27,7 @@ module.exports = {
   'can close and reopen the modal through history'(browser) {
     browser
       .url(baseURL)
-      .waitForElementVisible('#app', 1000)
+      .waitForElementPresent('#app > *', 1000)
       .assert.containsText('h1', 'Home')
 
       .click('li:nth-child(2) button')
@@ -52,7 +52,7 @@ module.exports = {
   'can keep the modal when reloading'(browser) {
     browser
       .url(baseURL)
-      .waitForElementVisible('#app', 1000)
+      .waitForElementPresent('#app > *', 1000)
       .assert.containsText('h1', 'Home')
 
       .click('li:nth-child(2) button')
@@ -73,7 +73,7 @@ module.exports = {
   'can pass through the modal and then back'(browser) {
     browser
       .url(baseURL)
-      .waitForElementVisible('#app', 1000)
+      .waitForElementPresent('#app > *', 1000)
       .assert.containsText('h1', 'Home')
       .assert.not.visible('dialog')
 
@@ -132,7 +132,7 @@ module.exports = {
   'can navigate away from the modal then come back'(browser) {
     browser
       .url(baseURL)
-      .waitForElementVisible('#app', 1000)
+      .waitForElementPresent('#app > *', 1000)
       .assert.containsText('h1', 'Home')
 
       .click('li:nth-child(2) button')

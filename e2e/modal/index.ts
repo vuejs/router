@@ -141,6 +141,12 @@ const app = createApp({
 
     return { route, ViewComponent, historyState, ...toRefs(route) }
   },
+
+  template: `
+    <div id="app">
+      <component :is="ViewComponent"></component>
+    </div>
+  `,
 })
 app.use(router)
 

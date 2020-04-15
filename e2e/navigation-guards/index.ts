@@ -39,7 +39,22 @@ const router = createRouter({
   ],
 })
 
-const app = createApp({})
+const app = createApp({
+  template: `
+  <div id="app">
+    <ul>
+      <li>
+        <router-link to="/">/</router-link>
+      </li>
+      <li>
+        <router-link to="/cant-leave">/cant-leave</router-link>
+      </li>
+    </ul>
+
+    <router-view></router-view>
+  </div>
+     `,
+})
 app.use(router)
 
 window.vm = app.mount('#app')

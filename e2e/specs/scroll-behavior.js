@@ -13,7 +13,7 @@ module.exports = {
 
     browser
       .url('http://localhost:8080/scroll-behavior/')
-      .waitForElementVisible('#app', 1000)
+      .waitForElementPresent('#app > *', 1000)
       .assert.count('li a', 6)
       .assert.containsText('.view', 'home')
 

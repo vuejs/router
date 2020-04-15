@@ -10,7 +10,7 @@ module.exports = {
 
     browser
       .url('http://localhost:8080/transitions/')
-      .waitForElementVisible('#app', 1000)
+      .waitForElementPresent('#app > *', 1000)
 
       .click('li:nth-child(2) a')
       .assert.cssClassPresent('.view.home', 'fade-leave-active')

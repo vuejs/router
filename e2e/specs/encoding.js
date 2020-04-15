@@ -11,9 +11,8 @@ module.exports = {
   'encodes values': function(browser) {
     browser
       .url(baseURL)
-      // TODO: move this test to a different spec
       .assert.urlEquals(baseURL + '/')
-      .waitForElementVisible('#app', 1000)
+      .waitForElementPresent('#app > *', 1000)
 
       .click('li:nth-child(3) a')
       .assert.urlEquals(baseURL + '/documents/%E2%82%ACuro')
@@ -23,10 +22,17 @@ module.exports = {
 
       // check initial visit
       .url(baseURL + '/documents/%E2%82%ACuro')
-      .waitForElementVisible('#app', 1000)
+      .waitForElementPresent('#app > *', 1000)
       .assert.containsText('#fullPath', '/documents/%E2%82%ACuro')
       .assert.containsText('#path', '/documents/%E2%82%ACuro')
       .assert.containsText('#params', JSON.stringify({ id: '€uro' }, null, 2))
+
+      // TODO: invalid in safari, tests on those where this is valid
+      // .url(baseURL + '/unicode/€uro')
+      // .waitForElementPresent('#app > *', 1000)
+      // navigation to unencoded value
+      // depending on the browser the value will be encoded or not
+      // .assert.containsText('#params', JSON.stringify({ id: '€uro' }, null, 2))
 
       .end()
   },

@@ -68,6 +68,23 @@ const app = createApp({
       route: useRoute(),
     }
   },
+
+  template: `
+    <div id="app">
+      <h1>Transitions</h1>
+      <ul>
+        <li><router-link to="/">/</router-link></li>
+        <li><router-link to="/parent">/parent</router-link></li>
+        <li><router-link to="/parent/foo">/parent/foo</router-link></li>
+        <li><router-link to="/parent/bar">/parent/bar</router-link></li>
+      </ul>
+      <router-view class="view" v-slot="{ Component, props }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" v-bind="props"></component>
+        </transition>
+      </router-view>
+    </div>
+  `,
 })
 app.use(router)
 
