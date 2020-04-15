@@ -19,6 +19,8 @@ module.exports = {
       .assert.urlEquals(baseURL + '/users/1')
       .assert.visible('dialog')
       .assert.containsText('dialog', 'User #1')
+
+      .end()
   },
 
   /** @type {import('nightwatch').NightwatchTest} */
@@ -42,6 +44,8 @@ module.exports = {
       .forward()
       .assert.visible('dialog')
       .assert.urlEquals(baseURL + '/users/1')
+
+      .end()
   },
 
   /** @type {import('nightwatch').NightwatchTest} */
@@ -61,6 +65,8 @@ module.exports = {
       .assert.urlEquals(baseURL + '/')
       .assert.containsText('h1', 'Home')
       .assert.not.visible('dialog')
+
+      .end()
   },
 
   /** @type {import('nightwatch').NightwatchTest} */
@@ -118,6 +124,8 @@ module.exports = {
       .forward()
       .assert.urlEquals(baseURL + '/users/1')
       .assert.visible('dialog')
+
+      .end()
   },
 
   /** @type {import('nightwatch').NightwatchTest} */
