@@ -1,5 +1,7 @@
 // import { RouteLocationNormalized } from '../types'
 
+import { isBrowser } from './env'
+
 export type ScrollToPosition = {
   x: number
   y: number
@@ -73,9 +75,8 @@ export function scrollToPosition(position: ScrollPosition): void {
 export const scrollPositions = new Map<string, ScrollToPosition>()
 
 export function getScrollKey(path: string, distance: number): string {
-  const position: number = history.state
-    ? history.state.position - distance
-    : -1
+  const position: number =
+    isBrowser && history.state ? history.state.position - distance : -1
   return position + path
 }
 
