@@ -61,7 +61,7 @@
     "axios": "^0.19.2",
     "browserstack-local": "^1.4.5",
     "chalk": "^4.0.0",
-    "chromedriver": "^80.0.2",
+    "chromedriver": "^81.0.0",
     "codecov": "^3.6.5",
     "conventional-changelog-cli": "^2.0.31",
     "css-loader": "^3.5.2",

@@ -49,7 +49,7 @@ module.exports = {
         chromeOptions: {
           // https://github.com/nightwatchjs/nightwatch/releases/tag/v1.1.12
           w3c: false,
-          args: ['window-size=1280,800', 'no-sandbox', 'disable-dev-shm-usage'],
+          args: ['window-size=1280,800'],
         },
       },
     },
