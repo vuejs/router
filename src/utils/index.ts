@@ -8,6 +8,8 @@ import { RouteRecord } from '../matcher/types'
 import { LocationQueryValue } from './query'
 import { hasSymbol } from './injectionSymbols'
 
+export * from './env'
+
 export function isESModule(obj: any): obj is { default: RouteComponent } {
   return obj.__esModule || (hasSymbol && obj[Symbol.toStringTag] === 'Module')
 }

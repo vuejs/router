@@ -61,15 +61,31 @@ export function useView(options: UseViewOptions) {
     // TODO: watch name to update the instance record
   }
 
-  return (attrs: SetupContext['attrs']) => {
-    return ViewComponent.value
-      ? h(ViewComponent.value as any, {
-          ...propsData.value,
-          ...attrs,
-          onVnodeMounted,
-          ref: viewRef,
-        })
-      : null
+  return (_props: any, { attrs, slots }: SetupContext) => {
+    // we nee the value at the time we render because when we unmount, we
+    // navigated to a different location so the value is different
+    const currentMatched = matchedRoute.value
+    const name = unref(options.name)
+    function onVnodeUnmounted() {
+      if (currentMatched) {
+        // remove the instance reference to prevent leak
+        currentMatched.instances[name] = null
+      }
+    }
+
+    let Component = ViewComponent.value
+    const props: Parameters<typeof h>[1] = {
+      ...(Component && propsData.value),
+      ...attrs,
+      onVnodeMounted,
+      onVnodeUnmounted,
+      ref: viewRef,
+    }
+
+    const children =
+      Component && slots.default && slots.default({ Component, props })
+
+    return children ? children : Component ? h(Component, props) : null
   }
 }
 
@@ -82,10 +98,10 @@ export const View = defineComponent({
     },
   },
 
-  setup(props, { attrs }) {
+  setup(props, context) {
     const route = inject(routeLocationKey)!
     const renderView = useView({ route, name: toRefs(props).name })
 
-    return () => renderView(attrs)
+    return () => renderView(null, context)
   },
 })

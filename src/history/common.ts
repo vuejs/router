@@ -1,3 +1,5 @@
+import { isBrowser } from '../utils'
+
 interface HistoryLocation {
   fullPath: string
   state?: HistoryState
@@ -154,7 +156,7 @@ export function normalizeHistoryLocation(
  */
 export function normalizeBase(base?: string): string {
   if (!base) {
-    if (__BROWSER__) {
+    if (isBrowser) {
       // respect <base> tag
       const baseEl = document.querySelector('base')
       base = (baseEl && baseEl.getAttribute('href')) || '/'
