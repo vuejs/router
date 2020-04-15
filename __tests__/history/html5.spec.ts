@@ -2,6 +2,12 @@ import { JSDOM } from 'jsdom'
 import createWebHistory from '../../src/history/html5'
 import { createDom } from '../utils'
 
+// override the value of isBrowser because the variable is created before JSDOM
+// is created
+jest.mock('../../src/utils/env', () => ({
+  isBrowser: true,
+}))
+
 // These unit tests are supposed to tests very specific scenarios that are easier to setup
 // on a unit test than an e2e tests
 describe('History HTMl5', () => {

@@ -4,6 +4,11 @@ import createWebHistory from '../../src/history/html5'
 import { createDom } from '../utils'
 
 jest.mock('../../src/history/html5')
+// override the value of isBrowser because the variable is created before JSDOM
+// is created
+jest.mock('../../src/utils/env', () => ({
+  isBrowser: true,
+}))
 
 describe('History Hash', () => {
   let dom: JSDOM
