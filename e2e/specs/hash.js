@@ -37,8 +37,6 @@ module.exports = {
       // the unencoded version, no check for the url because changes based on browser
       .click('li:nth-child(5) a')
       .assert.containsText('#param', 'é')
-
-      .end()
   },
 
   /** @type {import('nightwatch').NightwatchTest} */

@@ -54,6 +54,18 @@ module.exports = {
       },
     },
 
+    // TODO: generate these and add skip tags
+    'chrome-headless': {
+      desiredCapabilities: {
+        browserName: 'chrome',
+        acceptSslCerts: true,
+        chromeOptions: {
+          w3c: false,
+          args: ['window-size=1280,800', 'headless'],
+        },
+      },
+    },
+
     safari: {
       desiredCapabilities: {
         browserName: 'safari',
