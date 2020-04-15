@@ -1,5 +1,6 @@
 // yarn nightwatch -e chrome,safari,firefox
 
+/** @type {import('nightwatch').NightwatchOptions} */
 module.exports = {
   src_folders: ['e2e/specs'],
   output_folder: 'e2e/reports',
@@ -36,7 +37,7 @@ module.exports = {
         chromeOptions: {
           // https://github.com/nightwatchjs/nightwatch/releases/tag/v1.1.12
           w3c: false,
-          args: ['window-size=1280,800', 'headless'],
+          args: ['window-size=1280,800'],
         },
       },
     },
