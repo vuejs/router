@@ -1,7 +1,7 @@
 import { LocationQuery, LocationQueryRaw } from '../utils/query'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
 import {
-  markNonReactive,
+  markRaw,
   ComponentOptions,
   ComponentPublicInstance,
   Ref,
@@ -236,7 +236,7 @@ export type RouteRecordRaw =
   | RouteRecordMultipleViews
   | RouteRecordRedirectRaw
 
-export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = markNonReactive(
+export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = markRaw(
   {
     path: '/',
     name: undefined,
