@@ -195,8 +195,7 @@ describe('RouterView', () => {
     expect(wrapper.html()).toBe(`<div>Foo</div>`)
   })
 
-  // TODO: waiting for r13 with fixed bug
-  it.skip('does not pass params as props by default', async () => {
+  it('does not pass params as props by default', async () => {
     // TODO: rewrite so it is by default instead of explicitly stated
     let noPropsWithParams = {
       ...routes.withParams,
