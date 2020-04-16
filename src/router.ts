@@ -578,20 +578,17 @@ function applyRouterPlugin(app: App, router: Router) {
   app.component('RouterLink', Link)
   app.component('RouterView', View)
 
+  // TODO: add tests
+  // @ts-ignore
+  app.config.globalProperties.$router = router
+  Object.defineProperty(app.config.globalProperties, '$route', {
+    get: () => router.currentRoute.value,
+  })
+
   let started = false
   // TODO: can we use something that isn't a mixin? Like adding an onMount hook here
   app.mixin({
     beforeCreate() {
-      // TODO: add tests
-      this.$router = this.$parent ? this.$parent.$router : router
-      // TODO: find a way to allow $route without having to write $route.value
-      // this.$route = this.$parent ? this.$parent.$route : this.route
-
-      // this doesn't work because `this` is a Proxy
-      // Object.defineProperty(this, '$route', {
-      //   get: () => router.currentRoute.value,
-      // })
-
       if (isBrowser && !started) {
         // this initial navigation is only necessary on client, on server it doesn't make sense
         // because it will create an extra unnecessary navigation and could lead to problems
