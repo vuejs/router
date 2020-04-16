@@ -24,7 +24,12 @@ import {
 } from './utils/scroll'
 import { createRouterMatcher } from './matcher'
 import { createRouterError, ErrorTypes, NavigationError } from './errors'
-import { applyToParams, isSameRouteRecord, isSameLocationObject } from './utils'
+import {
+  applyToParams,
+  isSameRouteRecord,
+  isSameLocationObject,
+  isBrowser,
+} from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
 import {
@@ -102,8 +107,6 @@ export interface Router {
   install(app: App): void
 }
 
-const isClient = typeof window !== 'undefined'
-
 export function createRouter({
   history,
   routes,
@@ -120,7 +123,7 @@ export function createRouter({
   )
   let pendingLocation: RouteLocation = START_LOCATION_NORMALIZED
 
-  if (isClient && 'scrollRestoration' in window.history) {
+  if (isBrowser && 'scrollRestoration' in window.history) {
     window.history.scrollRestoration = 'manual'
   }
 
@@ -422,7 +425,7 @@ export function createRouter({
     currentRoute.value = markNonReactive(toLocation)
     // TODO: this doesn't work on first load. Moving it to RouterView could allow automatically handling transitions too maybe
     // TODO: refactor with a state getter
-    const state = isPush || !isClient ? {} : window.history.state
+    const state = isPush || !isBrowser ? {} : window.history.state
     const savedScroll = getSavedScroll(getScrollKey(toLocation.fullPath, 0))
     handleScroll(
       toLocation,
@@ -576,22 +579,31 @@ function applyRouterPlugin(app: App, router: Router) {
   app.component('RouterView', View)
 
   let started = false
-  // TODO: can we use something that isn't a mixin?
-  // TODO: this initial navigation is only necessary on client, on server it doesn't make sense
-  // because it will create an extra unnecessary navigation and could lead to problems
-  if (isClient)
-    app.mixin({
-      beforeCreate() {
-        if (!started) {
-          router.push(router.history.location.fullPath).catch(err => {
-            if (__DEV__)
-              console.error('Unhandled error when starting the router', err)
-            else return err
-          })
-          started = true
-        }
-      },
-    })
+  // TODO: can we use something that isn't a mixin? Like adding an onMount hook here
+  app.mixin({
+    beforeCreate() {
+      // TODO: add tests
+      this.$router = this.$parent ? this.$parent.$router : router
+      // TODO: find a way to allow $route without having to write $route.value
+      // this.$route = this.$parent ? this.$parent.$route : this.route
+
+      // this doesn't work because `this` is a Proxy
+      // Object.defineProperty(this, '$route', {
+      //   get: () => router.currentRoute.value,
+      // })
+
+      if (isBrowser && !started) {
+        // this initial navigation is only necessary on client, on server it doesn't make sense
+        // because it will create an extra unnecessary navigation and could lead to problems
+        router.push(router.history.location.fullPath).catch(err => {
+          if (__DEV__)
+            console.error('Unhandled error when starting the router', err)
+          else return err
+        })
+        started = true
+      }
+    },
+  })
 
   const reactiveRoute = {} as {
     [k in keyof RouteLocationNormalizedLoaded]: ComputedRef<
