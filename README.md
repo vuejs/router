@@ -12,6 +12,13 @@ Since the library is still unstable **and because we want feedback** on bugs and
 
 - `mode: 'history'` -> `history: createWebHistory()`
 - Catch all routes (`/*`) must now be defined using a parameter with a custom regex: `/:catchAll(.*)`
+- `router.match` and `router.resolve` are merged together into `router.resolve` with a slightly different signature
+- `router.getMatchedComponents` is now removed as they can be retrieved from `router.currentRoute.value.matched`:
+  ```js
+  router.currentRoute.value.matched
+    .map(record => Object.values(record.components))
+    .flat()
+  ```
 
 #### Improvements
 
