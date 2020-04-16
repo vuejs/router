@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, useRoute, useView } from '../../src'
+import { createRouter, createWebHistory, useRoute } from '../../src'
 import { RouteComponent, RouteLocationNormalizedLoaded } from '../../src/types'
 import { createApp, readonly, ref, watchEffect, computed, toRefs } from 'vue'
 
@@ -137,14 +137,13 @@ const app = createApp({
       }
     })
     const historyState = computed(() => route.fullPath && window.history.state)
-    const ViewComponent = useView({ route: routeWithModal, name: 'default' })
 
-    return { route, ViewComponent, historyState, ...toRefs(route) }
+    return { route, routeWithModal, historyState, ...toRefs(route) }
   },
 
   template: `
     <div id="app">
-      <component :is="ViewComponent"></component>
+      <router-view :route="routeWithModal"></router-view>
     </div>
   `,
 })

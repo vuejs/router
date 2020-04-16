@@ -7,87 +7,13 @@ import {
   computed,
   ref,
   ComponentPublicInstance,
-  unref,
-  SetupContext,
-  toRefs,
 } from 'vue'
-import { VueUseOptions, RouteLocationNormalizedLoaded } from '../types'
+import { RouteLocationNormalizedLoaded } from '../types'
 import {
   matchedRouteKey,
   viewDepthKey,
   routeLocationKey,
 } from '../utils/injectionSymbols'
-
-interface ViewProps {
-  route: RouteLocationNormalizedLoaded
-  name: string
-}
-
-type UseViewOptions = VueUseOptions<ViewProps>
-
-export function useView(options: UseViewOptions) {
-  const depth: number = inject(viewDepthKey, 0)
-  provide(viewDepthKey, depth + 1)
-
-  const matchedRoute = computed(
-    () =>
-      unref(options.route).matched[depth] as
-        | ViewProps['route']['matched'][any]
-        | undefined
-  )
-  const ViewComponent = computed(
-    () =>
-      matchedRoute.value && matchedRoute.value.components[unref(options.name)]
-  )
-
-  const propsData = computed(() => {
-    // propsData only gets called if ViewComponent.value exists and it depends on matchedRoute.value
-    const { props } = matchedRoute.value!
-    if (!props) return {}
-    const route = unref(options.route)
-    if (props === true) return route.params
-
-    return typeof props === 'object' ? props : props(route)
-  })
-
-  provide(matchedRouteKey, matchedRoute)
-
-  const viewRef = ref<ComponentPublicInstance>()
-
-  function onVnodeMounted() {
-    // if we mount, there is a matched record
-    matchedRoute.value!.instances[unref(options.name)] = viewRef.value
-    // TODO: trigger beforeRouteEnter hooks
-    // TODO: watch name to update the instance record
-  }
-
-  return (_props: any, { attrs, slots }: SetupContext) => {
-    // we nee the value at the time we render because when we unmount, we
-    // navigated to a different location so the value is different
-    const currentMatched = matchedRoute.value
-    const name = unref(options.name)
-    function onVnodeUnmounted() {
-      if (currentMatched) {
-        // remove the instance reference to prevent leak
-        currentMatched.instances[name] = null
-      }
-    }
-
-    let Component = ViewComponent.value
-    const props: Parameters<typeof h>[1] = {
-      ...(Component && propsData.value),
-      ...attrs,
-      onVnodeMounted,
-      onVnodeUnmounted,
-      ref: viewRef,
-    }
-
-    const children =
-      Component && slots.default && slots.default({ Component, props })
-
-    return children ? children : Component ? h(Component, props) : null
-  }
-}
 
 export const View = defineComponent({
   name: 'RouterView',
@@ -96,12 +22,76 @@ export const View = defineComponent({
       type: String as PropType<string>,
       default: 'default',
     },
+    route: Object as PropType<RouteLocationNormalizedLoaded>,
   },
 
-  setup(props, context) {
-    const route = inject(routeLocationKey)!
-    const renderView = useView({ route, name: toRefs(props).name })
+  setup(props, { attrs, slots }) {
+    const realRoute = inject(routeLocationKey)!
+    const route = computed(() => props.route || realRoute)
 
-    return () => renderView(null, context)
+    const depth: number = inject(viewDepthKey, 0)
+    provide(viewDepthKey, depth + 1)
+
+    const matchedRoute = computed(
+      () =>
+        route.value.matched[depth] as
+          | RouteLocationNormalizedLoaded['matched'][any]
+          | undefined
+    )
+    const ViewComponent = computed(
+      () => matchedRoute.value && matchedRoute.value.components[props.name]
+    )
+
+    const propsData = computed(() => {
+      // propsData only gets called if ViewComponent.value exists and it depends on matchedRoute.value
+      const { props } = matchedRoute.value!
+      if (!props) return {}
+      if (props === true) return route.value.params
+
+      return typeof props === 'object' ? props : props(route.value)
+    })
+
+    provide(matchedRouteKey, matchedRoute)
+
+    const viewRef = ref<ComponentPublicInstance>()
+
+    function onVnodeMounted() {
+      // if we mount, there is a matched record
+      matchedRoute.value!.instances[props.name] = viewRef.value
+      // TODO: trigger beforeRouteEnter hooks
+      // TODO: watch name to update the instance record
+    }
+
+    return () => {
+      // we nee the value at the time we render because when we unmount, we
+      // navigated to a different location so the value is different
+      const currentMatched = matchedRoute.value
+      function onVnodeUnmounted() {
+        if (currentMatched) {
+          // remove the instance reference to prevent leak
+          currentMatched.instances[props.name] = null
+        }
+      }
+
+      let Component = ViewComponent.value
+      const componentProps: Parameters<typeof h>[1] = {
+        ...(Component && propsData.value),
+        ...attrs,
+        onVnodeMounted,
+        onVnodeUnmounted,
+        ref: viewRef,
+      }
+
+      const children =
+        Component &&
+        slots.default &&
+        slots.default({ Component, props: componentProps })
+
+      return children
+        ? children
+        : Component
+        ? h(Component, componentProps)
+        : null
+    }
   },
 })

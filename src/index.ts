@@ -36,7 +36,7 @@ export {
 
 export { onBeforeRouteLeave } from './navigationGuards'
 export { Link, useLink } from './components/Link'
-export { View, useView } from './components/View'
+export { View } from './components/View'
 
 export { createWebHistory, createMemoryHistory, createWebHashHistory }
 
