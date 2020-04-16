@@ -273,12 +273,6 @@ export default function createWebHistory(base?: string): RouterHistory {
     historyNavigation.location,
     historyNavigation.replace
   )
-  function back(triggerListeners = true) {
-    go(-1, triggerListeners)
-  }
-  function forward(triggerListeners = true) {
-    go(1, triggerListeners)
-  }
   function go(distance: number, triggerListeners = true) {
     if (!triggerListeners) historyListeners.pauseListeners()
     history.go(distance)
@@ -288,8 +282,6 @@ export default function createWebHistory(base?: string): RouterHistory {
     // @ts-ignore
     location: '',
     base,
-    back,
-    forward,
     go,
 
     ...historyNavigation,

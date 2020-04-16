@@ -81,14 +81,6 @@ export default function createMemoryHistory(base: string = ''): RouterHistory {
       listeners = []
     },
 
-    back(shouldTrigger = true) {
-      this.go(-1, shouldTrigger)
-    },
-
-    forward(shouldTrigger = true) {
-      this.go(1, shouldTrigger)
-    },
-
     go(distance, shouldTrigger = true) {
       const from = this.location
       const direction: NavigationDirection =

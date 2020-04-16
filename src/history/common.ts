@@ -101,21 +101,13 @@ export interface RouterHistory {
   replace(to: RawHistoryLocation, data?: HistoryState): void
 
   /**
-   * Goes back in history
+   * Traverses history in a given direction.
    *
-   * @param triggerListeners - whether this should trigger listeners attached to
-   * the history
-   */
-  back(triggerListeners?: boolean): void
-  /**
-   * Goes forward in history
-   *
-   * @param triggerListeners - whether this should trigger listeners attached to
-   * the history
-   */
-  forward(triggerListeners?: boolean): void
-  /**
-   * Traverses history in a given direction
+   * @example
+   * ```js
+   * myHistory.go(-1) // equivalent to window.history.back()
+   * myHistory.go(1) // equivalent to window.history.forward()
+   * ```
    *
    * @param distance - distance to travel. If distance is \< 0, it will go back,
    * if it's \> 0, it will go forward

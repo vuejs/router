@@ -387,8 +387,8 @@ describe('Router', () => {
       })
 
       // trigger to history.back()
-      history.back()
-      history.back()
+      history.go(-1)
+      history.go(-1)
 
       expect(router.currentRoute.value.fullPath).toBe('/p/b')
       // resolves the last call to history.back() first
