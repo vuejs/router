@@ -34,6 +34,8 @@ export {
   ScrollBehavior,
 } from './router'
 
+export { NavigationFailureType, NavigationFailure } from './errors'
+
 export { onBeforeRouteLeave } from './navigationGuards'
 export { Link, useLink } from './components/Link'
 export { View } from './components/View'

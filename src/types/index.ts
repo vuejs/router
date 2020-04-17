@@ -277,7 +277,7 @@ export interface NavigationGuardCallback {
   (error: Error): void
   (location: RouteLocationRaw): void
   (valid: boolean): void
-  (cb: (vm: any) => void): void
+  (cb: NavigationGuardNextCallback): void
 }
 
 export type NavigationGuardNextCallback = (vm: any) => any
@@ -293,7 +293,12 @@ export interface NavigationGuard<V = ComponentPublicInstance> {
 }
 
 export interface PostNavigationGuard {
-  (to: RouteLocationNormalized, from: RouteLocationNormalized): any
+  (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    // TODO: move these types to a different file
+    failure?: TODO
+  ): any
 }
 
 export * from './type-guards'

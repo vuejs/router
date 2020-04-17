@@ -63,7 +63,7 @@ export function scrollToPosition(position: ScrollPosition): void {
     }
   }
 
-  if (normalizedPosition) {
+  if (isBrowser && normalizedPosition) {
     window.scrollTo(normalizedPosition.x, normalizedPosition.y)
   }
 }
@@ -81,7 +81,7 @@ export function getScrollKey(path: string, distance: number): string {
 }
 
 export function saveScrollOnLeave(key: string) {
-  scrollPositions.set(key, computeScrollPosition())
+  scrollPositions.set(key, isBrowser ? computeScrollPosition() : { x: 0, y: 0 })
 }
 
 export function getSavedScroll(key: string) {

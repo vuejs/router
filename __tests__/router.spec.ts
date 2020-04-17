@@ -1,6 +1,6 @@
 import fakePromise from 'faked-promise'
 import { createRouter, createMemoryHistory, createWebHistory } from '../src'
-import { ErrorTypes } from '../src/errors'
+import { NavigationFailureType } from '../src/errors'
 import { createDom, components, tick } from './utils'
 import {
   RouteRecordRaw,
@@ -313,37 +313,37 @@ describe('Router', () => {
 
   describe('navigation cancelled', () => {
     async function checkNavigationCancelledOnPush(
-      target?: RouteLocationRaw | false | ((vm: any) => void)
+      target?: RouteLocationRaw | false | ((vm: any) => any)
     ) {
       const [p1, r1] = fakePromise()
-      const [p2, r2] = fakePromise()
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
       router.beforeEach(async (to, from, next) => {
         if (to.name !== 'Param') return next()
+        // the first navigation gets passed target
         if (to.params.p === 'a') {
           await p1
-          // @ts-ignore: for some reason it's not handling the string here
-          target == null ? next() : next(target)
+          target ? next(target) : next()
         } else {
-          await p2
+          // the second one just passes
           next()
         }
       })
+      const from = router.currentRoute.value
       const pA = router.push('/p/a')
-      const pB = router.push('/p/b')
       // we resolve the second navigation first then the first one
       // and the first navigation should be ignored because at that time
       // the second one will have already been resolved
-      r2()
-      await pB
+      await expect(router.push('/p/b')).resolves.toEqual(undefined)
       expect(router.currentRoute.value.fullPath).toBe('/p/b')
       r1()
-      try {
-        await pA
-      } catch (err) {
-        expect(err.type).toBe(ErrorTypes.NAVIGATION_CANCELLED)
-      }
+      await expect(pA).resolves.toEqual(
+        expect.objectContaining({
+          to: expect.objectContaining({ path: '/p/a' }),
+          from,
+          type: NavigationFailureType.cancelled,
+        })
+      )
       expect(router.currentRoute.value.fullPath).toBe('/p/b')
     }
 
@@ -445,7 +445,8 @@ describe('Router', () => {
     it('handles one redirect from route record', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
-      const loc = await router.push('/to-foo')
+      await expect(router.push('/to-foo')).resolves.toEqual(undefined)
+      const loc = router.currentRoute.value
       expect(loc.name).toBe('Foo')
       expect(loc.redirectedFrom).toMatchObject({
         path: '/to-foo',
@@ -469,7 +470,8 @@ describe('Router', () => {
     it('handles a double redirect from route record', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
-      const loc = await router.push('/to-foo2')
+      await expect(router.push('/to-foo2')).resolves.toEqual(undefined)
+      const loc = router.currentRoute.value
       expect(loc.name).toBe('Foo')
       expect(loc.redirectedFrom).toMatchObject({
         path: '/to-foo2',
@@ -479,7 +481,10 @@ describe('Router', () => {
     it('drops query and params on redirect if not provided', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
-      const loc = await router.push('/to-foo?hey=foo#fa')
+      await expect(router.push('/to-foo?hey=foo#fa')).resolves.toEqual(
+        undefined
+      )
+      const loc = router.currentRoute.value
       expect(loc.name).toBe('Foo')
       expect(loc.query).toEqual({})
       expect(loc.hash).toBe('')
@@ -491,7 +496,8 @@ describe('Router', () => {
     it('allows object in redirect', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
-      const loc = await router.push('/to-foo-named')
+      await expect(router.push('/to-foo-named')).resolves.toEqual(undefined)
+      const loc = router.currentRoute.value
       expect(loc.name).toBe('Foo')
       expect(loc.redirectedFrom).toMatchObject({
         path: '/to-foo-named',

@@ -23,7 +23,12 @@ import {
   getSavedScroll,
 } from './utils/scroll'
 import { createRouterMatcher } from './matcher'
-import { createRouterError, ErrorTypes, NavigationError } from './errors'
+import {
+  createRouterError,
+  ErrorTypes,
+  NavigationFailure,
+  NavigationRedirectError,
+} from './errors'
 import {
   applyToParams,
   isSameRouteRecord,
@@ -95,8 +100,8 @@ export interface Router {
 
   resolve(to: RouteLocationRaw): RouteLocation & { href: string }
 
-  push(to: RouteLocationRaw): Promise<TODO>
-  replace(to: RouteLocationRaw): Promise<TODO>
+  push(to: RouteLocationRaw): Promise<NavigationFailure | void>
+  replace(to: RouteLocationRaw): Promise<NavigationFailure | void>
 
   beforeEach(guard: NavigationGuard<undefined>): () => void
   afterEach(guard: PostNavigationGuard): () => void
@@ -151,7 +156,6 @@ export function createRouter({
     if (recordMatcher) {
       matcher.removeRoute(recordMatcher)
     } else if (__DEV__) {
-      // TODO: adapt if we allow Symbol as a name
       warn(`Cannot remove non-existent route "${String(name)}"`)
     }
   }
@@ -224,7 +228,7 @@ export function createRouter({
     }
   }
 
-  function push(to: RouteLocationRaw | RouteLocation): Promise<TODO> {
+  function push(to: RouteLocationRaw | RouteLocation) {
     return pushWithRedirect(to, undefined)
   }
 
@@ -236,17 +240,14 @@ export function createRouter({
   async function pushWithRedirect(
     to: RouteLocationRaw | RouteLocation,
     redirectedFrom: RouteLocation | undefined
-  ): Promise<TODO> {
-    const targetLocation: RouteLocation = (pendingLocation =
-      // Some functions will pass a normalized location and we don't need to resolve it again
-      typeof to === 'object' && 'matched' in to ? to : resolve(to))
+  ): Promise<NavigationFailure | void> {
+    const targetLocation: RouteLocation = (pendingLocation = resolve(to))
     const from = currentRoute.value
     const data: HistoryState | undefined = (to as any).state
     // @ts-ignore: no need to check the string as force do not exist on a string
     const force: boolean | undefined = to.force
 
-    // TODO: should we throw an error as the navigation was aborted
-    if (!force && isSameRouteLocation(from, targetLocation)) return from
+    if (!force && isSameRouteLocation(from, targetLocation)) return
 
     const lastMatched =
       targetLocation.matched[targetLocation.matched.length - 1]
@@ -263,41 +264,50 @@ export function createRouter({
     const toLocation = targetLocation as RouteLocationNormalized
 
     toLocation.redirectedFrom = redirectedFrom
+    let failure: NavigationFailure | void
 
     // trigger all guards, throw if navigation is rejected
     try {
       await navigate(toLocation, from)
     } catch (error) {
-      // push was called while waiting in guards
-      // TODO: write tests
+      // a more recent navigation took place
       if (pendingLocation !== toLocation) {
-        triggerError(
-          createRouterError<NavigationError>(ErrorTypes.NAVIGATION_CANCELLED, {
+        failure = createRouterError<NavigationFailure>(
+          ErrorTypes.NAVIGATION_CANCELLED,
+          {
             from,
             to: toLocation,
-          })
+          }
         )
-      }
-
-      if (error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT) {
+      } else if (error.type === ErrorTypes.NAVIGATION_ABORTED) {
+        failure = error as NavigationFailure
+      } else if (error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT) {
         // preserve the original redirectedFrom if any
-        return pushWithRedirect(error.to, redirectedFrom || toLocation)
+        return pushWithRedirect(
+          (error as NavigationRedirectError).to,
+          redirectedFrom || toLocation
+        )
+      } else {
+        // unknown error, throws
+        triggerError(error, true)
       }
-
-      // unknown error, throws
-      triggerError(error)
     }
 
-    finalizeNavigation(
-      toLocation as RouteLocationNormalizedLoaded,
-      from,
-      true,
-      // RouteLocationNormalized will give undefined
-      (to as RouteLocationRaw).replace === true,
-      data
-    )
+    // if we fail we don't finalize the navigation
+    failure =
+      failure ||
+      finalizeNavigation(
+        toLocation as RouteLocationNormalizedLoaded,
+        from,
+        true,
+        // RouteLocationNormalized will give undefined
+        (to as RouteLocationRaw).replace === true,
+        data
+      )
 
-    return currentRoute.value
+    triggerAfterEach(toLocation as RouteLocationNormalizedLoaded, from, failure)
+
+    return failure
   }
 
   async function navigate(
@@ -379,14 +389,16 @@ export function createRouter({
 
     // run the queue of per route beforeEnter guards
     await runGuardQueue(guards)
+  }
 
-    // TODO: add tests
-    //  this should be done only if the navigation succeeds
-    // if we redirect, it shouldn't be done because we don't know
-    for (const record of leavingRecords as RouteRecordNormalized[]) {
-      // free the references
-      record.instances = {}
-    }
+  function triggerAfterEach(
+    to: RouteLocationNormalizedLoaded,
+    from: RouteLocationNormalizedLoaded,
+    failure?: NavigationFailure | void
+  ): void {
+    // navigation is confirmed, call afterGuards
+    // TODO: wrap with error handlers
+    for (const guard of afterGuards.list()) guard(to, from, failure)
   }
 
   /**
@@ -400,22 +412,26 @@ export function createRouter({
     isPush: boolean,
     replace?: boolean,
     data?: HistoryState
-  ) {
+  ): NavigationFailure | void {
     // a more recent navigation took place
     if (pendingLocation !== toLocation) {
-      return triggerError(
-        createRouterError<NavigationError>(ErrorTypes.NAVIGATION_CANCELLED, {
+      return createRouterError<NavigationFailure>(
+        ErrorTypes.NAVIGATION_CANCELLED,
+        {
           from,
           to: toLocation,
-        }),
-        isPush
+        }
       )
     }
 
-    // remove registered guards from removed matched records
     const [leavingRecords] = extractChangingRecords(toLocation, from)
     for (const record of leavingRecords) {
+      // remove registered guards from removed matched records
       record.leaveGuards = []
+      // free the references
+
+      // TODO: add tests
+      record.instances = {}
     }
 
     // only consider as push if it's not the first navigation
@@ -438,10 +454,7 @@ export function createRouter({
       toLocation,
       from,
       savedScroll || (state && state.scroll)
-    ).catch(err => triggerError(err, false))
-
-    // navigation is confirmed, call afterGuards
-    for (const guard of afterGuards.list()) guard(toLocation, from)
+    ).catch(err => triggerError(err))
 
     markAsReady()
   }
@@ -457,39 +470,52 @@ export function createRouter({
 
     saveScrollOnLeave(getScrollKey(from.fullPath, info.distance))
 
+    let failure: NavigationFailure | void
+
     try {
+      // TODO: refactor using then/catch because no need for async/await + try catch
       await navigate(toLocation, from)
+    } catch (error) {
+      // a more recent navigation took place
+      if (pendingLocation !== toLocation) {
+        failure = createRouterError<NavigationFailure>(
+          ErrorTypes.NAVIGATION_CANCELLED,
+          {
+            from,
+            to: toLocation,
+          }
+        )
+      } else if (error.type === ErrorTypes.NAVIGATION_ABORTED) {
+        failure = error as NavigationFailure
+      } else if (error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT) {
+        history.go(-info.distance, false)
+        // the error is already handled by router.push we just want to avoid
+        // logging the error
+        return pushWithRedirect(
+          (error as NavigationRedirectError).to,
+          toLocation
+        ).catch(() => {})
+      } else {
+        // TODO: test on different browsers ensure consistent behavior
+        history.go(-info.distance, false)
+        // unrecognized error, transfer to the global handler
+        return triggerError(error)
+      }
+    }
+
+    failure =
+      failure ||
       finalizeNavigation(
         // after navigation, all matched components are resolved
         toLocation as RouteLocationNormalizedLoaded,
         from,
         false
       )
-    } catch (error) {
-      // if a different navigation is happening, abort this one
-      if (pendingLocation !== toLocation) {
-        return triggerError(
-          createRouterError<NavigationError>(ErrorTypes.NAVIGATION_CANCELLED, {
-            from,
-            to: toLocation,
-          }),
-          false
-        )
-      }
 
-      if (error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT) {
-        // the error is already handled by router.push we just want to avoid
-        // logging the error
-        return pushWithRedirect(error.to, toLocation).catch(() => {})
-      }
+    // revert the navigation
+    if (failure) history.go(-info.distance, false)
 
-      // TODO: test on different browsers ensure consistent behavior
-      history.go(-info.distance, false)
-      // unrecognized error, transfer to the global handler
-      if (error.type !== ErrorTypes.NAVIGATION_ABORTED) {
-        triggerError(error, false)
-      }
-    }
+    triggerAfterEach(toLocation as RouteLocationNormalizedLoaded, from, failure)
   })
 
   // Initialization and Errors
@@ -501,9 +527,10 @@ export function createRouter({
   /**
    * Trigger errorHandlers added via onError and throws the error as well
    * @param error - error to throw
-   * @param shouldThrow - defaults to true. Pass false to not throw the error
+   * @param shouldThrow - defaults to false. Pass true rethrow the error
+   * @returns the error (unless shouldThrow is true)
    */
-  function triggerError(error: any, shouldThrow: boolean = true): void {
+  function triggerError(error: any, shouldThrow: boolean = false): void {
     markAsReady(error)
     errorHandlers.list().forEach(handler => handler(error))
     if (shouldThrow) throw error

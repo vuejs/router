@@ -31,7 +31,8 @@ describe('router.afterEach', () => {
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenCalledWith(
       expect.objectContaining({ fullPath: '/foo' }),
-      expect.objectContaining({ fullPath: '/' })
+      expect.objectContaining({ fullPath: '/' }),
+      undefined
     )
   })
 
@@ -44,7 +45,7 @@ describe('router.afterEach', () => {
     expect(spy).not.toHaveBeenCalled()
   })
 
-  it('calls afterEach guards on push', async () => {
+  it('calls afterEach guards on multiple push', async () => {
     const spy = jest.fn()
     const router = createRouter({ routes })
     await router.push('/nested')
@@ -53,24 +54,15 @@ describe('router.afterEach', () => {
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenLastCalledWith(
       expect.objectContaining({ name: 'nested-home' }),
-      expect.objectContaining({ name: 'nested-default' })
+      expect.objectContaining({ name: 'nested-default' }),
+      undefined
     )
     await router.push('/nested')
     expect(spy).toHaveBeenLastCalledWith(
       expect.objectContaining({ name: 'nested-default' }),
-      expect.objectContaining({ name: 'nested-home' })
+      expect.objectContaining({ name: 'nested-home' }),
+      undefined
     )
     expect(spy).toHaveBeenCalledTimes(2)
-  })
-
-  it('does not call afterEach if navigation is cancelled', async () => {
-    const spy = jest.fn()
-    const router = createRouter({ routes })
-    router.afterEach(spy)
-    router.beforeEach((to, from, next) => {
-      next(false) // cancel the navigation
-    })
-    await router.push('/foo').catch(err => {}) // ignore the error
-    expect(spy).not.toHaveBeenCalled()
   })
 })

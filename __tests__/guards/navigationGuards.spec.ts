@@ -13,18 +13,20 @@ const from = {
 describe('guardToPromiseFn', () => {
   it('calls the guard with to, from and, next', async () => {
     const spy = jest.fn((to, from, next) => next())
-    await expect(guardToPromiseFn(spy, to, from)()).resolves
+    await expect(guardToPromiseFn(spy, to, from)()).resolves.toEqual(undefined)
     expect(spy).toHaveBeenCalledWith(to, from, expect.any(Function))
   })
 
   it('resolves if next is called with no arguments', async () => {
-    await expect(guardToPromiseFn((to, from, next) => next(), to, from)())
-      .resolves
+    await expect(
+      guardToPromiseFn((to, from, next) => next(), to, from)()
+    ).resolves.toEqual(undefined)
   })
 
   it('resolves if next is called with true', async () => {
-    await expect(guardToPromiseFn((to, from, next) => next(true), to, from)())
-      .resolves
+    await expect(
+      guardToPromiseFn((to, from, next) => next(true), to, from)()
+    ).resolves.toEqual(undefined)
   })
 
   it('rejects if next is called with false', async () => {

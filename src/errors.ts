@@ -28,14 +28,18 @@ export interface MatcherError extends RouterErrorBase {
   currentLocation?: MatcherLocation
 }
 
-export interface NavigationError extends RouterErrorBase {
+export enum NavigationFailureType {
+  cancelled = ErrorTypes.NAVIGATION_CANCELLED,
+  aborted = ErrorTypes.NAVIGATION_ABORTED,
+}
+export interface NavigationFailure extends RouterErrorBase {
   type: ErrorTypes.NAVIGATION_ABORTED | ErrorTypes.NAVIGATION_CANCELLED
   from: RouteLocationNormalized
   to: RouteLocationNormalized
 }
 
 export interface NavigationRedirectError
-  extends Omit<NavigationError, 'to' | 'type'> {
+  extends Omit<NavigationFailure, 'to' | 'type'> {
   type: ErrorTypes.NAVIGATION_GUARD_REDIRECT
   to: RouteLocationRaw
 }
@@ -57,18 +61,16 @@ const ErrorTypeMessages = {
       to
     )}" via a navigation guard`
   },
-  [ErrorTypes.NAVIGATION_ABORTED]({ from, to }: NavigationError) {
+  [ErrorTypes.NAVIGATION_ABORTED]({ from, to }: NavigationFailure) {
     return `Navigation aborted from "${from.fullPath}" to "${to.fullPath}" via a navigation guard`
   },
-  [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationError) {
+  [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationFailure) {
     return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new \`push\` or \`replace\``
   },
 }
 
 // Possible internal errors
-type RouterError = NavigationError | NavigationRedirectError | MatcherError
-// Public errors, TBD
-//  export type PublicRouterError = NavigationError
+type RouterError = NavigationFailure | NavigationRedirectError | MatcherError
 
 export function createRouterError<E extends RouterError>(
   type: E['type'],

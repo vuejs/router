@@ -11,7 +11,7 @@ import {
 import {
   createRouterError,
   ErrorTypes,
-  NavigationError,
+  NavigationFailure,
   NavigationRedirectError,
 } from './errors'
 import { ComponentPublicInstance } from 'vue'
@@ -63,10 +63,13 @@ export function guardToPromiseFn<
       ) => {
         if (valid === false)
           reject(
-            createRouterError<NavigationError>(ErrorTypes.NAVIGATION_ABORTED, {
-              from,
-              to,
-            })
+            createRouterError<NavigationFailure>(
+              ErrorTypes.NAVIGATION_ABORTED,
+              {
+                from,
+                to,
+              }
+            )
           )
         else if (valid instanceof Error) {
           reject(valid)
