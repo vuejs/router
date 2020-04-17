@@ -40,7 +40,7 @@ import {
 import {
   ref,
   Ref,
-  markNonReactive,
+  markRaw,
   nextTick,
   App,
   warn,
@@ -422,7 +422,7 @@ export function createRouter({
     }
 
     // accept current navigation
-    currentRoute.value = markNonReactive(toLocation)
+    currentRoute.value = markRaw(toLocation)
     // TODO: this doesn't work on first load. Moving it to RouterView could allow automatically handling transitions too maybe
     // TODO: refactor with a state getter
     const state = isPush || !isBrowser ? {} : window.history.state

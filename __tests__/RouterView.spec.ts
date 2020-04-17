@@ -4,7 +4,7 @@
 import { View as RouterView } from '../src/components/View'
 import { components, RouteLocationNormalizedLoose } from './utils'
 import { START_LOCATION_NORMALIZED } from '../src/types'
-import { markNonReactive } from 'vue'
+import { markRaw } from 'vue'
 import { mount, createMockedRoute } from './mount'
 import { mockWarn } from 'jest-mock-warn'
 
@@ -15,7 +15,7 @@ function createRoutes<T extends Record<string, RouteLocationNormalizedLoose>>(
   let nonReactiveRoutes: T = {} as T
 
   for (let key in routes) {
-    nonReactiveRoutes[key] = markNonReactive(routes[key])
+    nonReactiveRoutes[key] = markRaw(routes[key])
   }
 
   return nonReactiveRoutes

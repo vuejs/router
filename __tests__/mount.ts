@@ -10,7 +10,7 @@ import {
   ComponentObjectPropsOptions,
   ComputedRef,
   computed,
-  markNonReactive,
+  markRaw,
   App,
   ComponentOptionsWithProps,
   VNode,
@@ -159,10 +159,10 @@ export function createMockedRoute(initialValue: RouteLocationNormalizedLoose) {
     >
   }
 
-  const routeRef = ref(markNonReactive(initialValue))
+  const routeRef = ref(markRaw(initialValue))
 
   function set(newRoute: RouteLocationNormalizedLoose) {
-    routeRef.value = markNonReactive(newRoute)
+    routeRef.value = markRaw(newRoute)
     return nextTick()
   }
 
