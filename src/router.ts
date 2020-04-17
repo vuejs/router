@@ -93,8 +93,8 @@ export interface Router {
   hasRoute(name: RouteRecordName): boolean
   getRoutes(): RouteRecord[]
 
-  resolve(to: RouteLocationRaw): RouteLocation
-  createHref(to: RouteLocation): string
+  resolve(to: RouteLocationRaw): RouteLocation & { href: string }
+
   push(to: RouteLocationRaw): Promise<TODO>
   replace(to: RouteLocationRaw): Promise<TODO>
 
@@ -125,10 +125,6 @@ export function createRouter({
 
   if (isBrowser && 'scrollRestoration' in window.history) {
     window.history.scrollRestoration = 'manual'
-  }
-
-  function createHref(to: RouteLocation): string {
-    return history.base + to.fullPath
   }
 
   const encodeParams = applyToParams.bind(null, encodeParam)
@@ -171,7 +167,7 @@ export function createRouter({
   function resolve(
     location: RouteLocationRaw,
     currentLocation?: RouteLocationNormalizedLoaded
-  ): RouteLocation {
+  ): RouteLocation & { href: string } {
     // const objectLocation = routerLocationAsObject(location)
     currentLocation = currentLocation || currentRoute.value
     if (typeof location === 'string') {
@@ -182,10 +178,18 @@ export function createRouter({
       )
 
       return {
+        // fullPath: locationNormalized.fullPath,
+        // query: locationNormalized.query,
+        // hash: locationNormalized.hash,
         ...locationNormalized,
         ...matchedRoute,
+        // path: matchedRoute.path,
+        // name: matchedRoute.name,
+        // meta: matchedRoute.meta,
+        // matched: matchedRoute.matched,
         params: decodeParams(matchedRoute.params),
         redirectedFrom: undefined,
+        href: history.base + locationNormalized.fullPath,
       }
     }
 
@@ -205,15 +209,18 @@ export function createRouter({
         ? location.params!
         : decodeParams(matchedRoute.params)
 
+    const fullPath = stringifyURL(stringifyQuery, {
+      ...location,
+      path: matchedRoute.path,
+    })
+
     return {
-      fullPath: stringifyURL(stringifyQuery, {
-        ...location,
-        path: matchedRoute.path,
-      }),
+      fullPath,
       hash: location.hash || '',
       query: normalizeQuery(location.query),
       ...matchedRoute,
       redirectedFrom: undefined,
+      href: history.base + fullPath,
     }
   }
 
@@ -560,7 +567,6 @@ export function createRouter({
 
     beforeEach: beforeGuards.add,
     afterEach: afterGuards.add,
-    createHref,
 
     onError: errorHandlers.add,
     isReady,

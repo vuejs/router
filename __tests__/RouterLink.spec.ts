@@ -7,7 +7,6 @@ import {
   RouteQueryAndHash,
   MatcherLocationRaw,
   RouteLocationNormalized,
-  RouteLocation,
 } from '../src/types'
 import { createMemoryHistory } from '../src'
 import { mount, createMockedRoute } from './mount'
@@ -32,11 +31,13 @@ records.parentAlias = {
 } as RouteRecordNormalized
 records.childAlias = { aliasOf: records.child } as RouteRecordNormalized
 
+type RouteLocationResolved = RouteLocationNormalized & { href: string }
+
 const locations: Record<
   string,
   {
     string: string
-    normalized: RouteLocationNormalized
+    normalized: RouteLocationResolved
     toResolve?: MatcherLocationRaw & Required<RouteQueryAndHash>
   }
 > = {
@@ -44,6 +45,7 @@ const locations: Record<
     string: '/home',
     // toResolve: { path: '/home', fullPath: '/home', undefined, query: {}, hash: '' },
     normalized: {
+      href: '/home',
       fullPath: '/home',
       path: '/home',
       params: {},
@@ -60,6 +62,7 @@ const locations: Record<
     // toResolve: { path: '/home', fullPath: '/home', undefined, query: {}, hash: '' },
     normalized: {
       fullPath: '/foo',
+      href: '/foo',
       path: '/foo',
       params: {},
       meta: {},
@@ -75,6 +78,7 @@ const locations: Record<
     // toResolve: { path: '/home', fullPath: '/home', undefined, query: {}, hash: '' },
     normalized: {
       fullPath: '/home?foo=a&bar=b',
+      href: '/home?foo=a&bar=b',
       path: '/home',
       params: {},
       meta: {},
@@ -89,6 +93,7 @@ const locations: Record<
     string: '/p/1/2',
     normalized: {
       fullPath: '/p/1/2',
+      href: '/p/1/2',
       path: '/p/1/2',
       params: { p: ['1', '2'] },
       meta: {},
@@ -103,6 +108,7 @@ const locations: Record<
     string: '/p/1/2/3',
     normalized: {
       fullPath: '/p/1/2/3',
+      href: '/p/1/2/3',
       path: '/p/1/2/3',
       params: { p: ['1', '2', '3'] },
       meta: {},
@@ -117,6 +123,7 @@ const locations: Record<
     string: '/alias',
     normalized: {
       fullPath: '/alias',
+      href: '/alias',
       path: '/alias',
       params: {},
       meta: {},
@@ -133,6 +140,7 @@ const locations: Record<
     string: '/parent',
     normalized: {
       fullPath: '/parent',
+      href: '/parent',
       path: '/parent',
       params: {},
       meta: {},
@@ -147,6 +155,7 @@ const locations: Record<
     string: '/p',
     normalized: {
       fullPath: '/p',
+      href: '/p',
       path: '/p',
       params: {},
       meta: {},
@@ -162,6 +171,7 @@ const locations: Record<
     string: '/parent/child',
     normalized: {
       fullPath: '/parent/child',
+      href: '/parent/child',
       path: '/parent/child',
       params: {},
       meta: {},
@@ -176,6 +186,7 @@ const locations: Record<
     string: '/absolute-child',
     normalized: {
       fullPath: '/absolute-child',
+      href: '/absolute-child',
       path: '/absolute-child',
       params: {},
       meta: {},
@@ -190,6 +201,7 @@ const locations: Record<
     string: '/p/child',
     normalized: {
       fullPath: '/p/child',
+      href: '/p/child',
       path: '/p/child',
       params: {},
       meta: {},
@@ -204,6 +216,7 @@ const locations: Record<
     string: '/parent/c',
     normalized: {
       fullPath: '/parent/c',
+      href: '/parent/c',
       path: '/parent/c',
       params: {},
       meta: {},
@@ -218,6 +231,7 @@ const locations: Record<
     string: '/p/c',
     normalized: {
       fullPath: '/p/c',
+      href: '/p/c',
       path: '/p/c',
       params: {},
       meta: {},
@@ -232,6 +246,7 @@ const locations: Record<
     string: '/not-found',
     normalized: {
       fullPath: '/not-found',
+      href: '/not-found',
       path: '/not-found',
       params: {},
       meta: {},
@@ -247,7 +262,7 @@ const locations: Record<
 async function factory(
   currentLocation: RouteLocationNormalized,
   propsData: any,
-  resolvedLocation: RouteLocation,
+  resolvedLocation: RouteLocationResolved,
   slotTemplate: string = ''
 ) {
   const route = createMockedRoute(currentLocation)

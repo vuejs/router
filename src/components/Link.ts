@@ -27,7 +27,6 @@ export function useLink(props: UseLinkOptions) {
   const currentRoute = inject(routeLocationKey)!
 
   const route = computed(() => router.resolve(unref(props.to)))
-  const href = computed(() => router.createHref(route.value))
 
   const activeRecordIndex = computed<number>(() => {
     // TODO: handle children with empty path: they should relate to their parent
@@ -61,7 +60,7 @@ export function useLink(props: UseLinkOptions) {
 
   return {
     route,
-    href,
+    href: computed(() => route.value.href),
     isActive,
     isExactActive,
     navigate,
