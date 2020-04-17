@@ -647,6 +647,17 @@ declare module '@vue/runtime-core' {
      */
     beforeRouteLeave?: NavigationGuard
   }
+
+  interface ComponentCustomProperties {
+    /**
+     * Normalized current location. See {@link RouteLocationNormalizedLoaded}.
+     */
+    $route: RouteLocationNormalizedLoaded
+    /**
+     * {@link Router} instance used by the application.
+     */
+    $router: Router
+  }
 }
 
 function applyRouterPlugin(app: App, router: Router) {
