@@ -75,7 +75,7 @@ export interface RouteLocationMatched extends RouteRecordNormalized {
 }
 
 /**
- * Base properties for a normalized route location
+ * Base properties for a normalized route location.
  *
  * @internal
  */
