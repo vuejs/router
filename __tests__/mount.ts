@@ -12,7 +12,6 @@ import {
   computed,
   markRaw,
   App,
-  ComponentOptionsWithProps,
   VNode,
 } from 'vue'
 import { compile } from '@vue/compiler-dom'
@@ -23,7 +22,7 @@ import { routeLocationKey } from '../src/utils/injectionSymbols'
 export interface MountOptions {
   propsData: Record<string, any>
   provide: Record<string | symbol, any>
-  components: ComponentOptionsWithProps['components']
+  components: Record<string, Component>
   slots: Record<string, string>
 }
 

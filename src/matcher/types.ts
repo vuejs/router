@@ -15,7 +15,7 @@ export interface RouteRecordNormalized {
   meta: Exclude<RouteRecordMultipleViews['meta'], void>
   props: Exclude<_RouteRecordBase['props'], void>
   beforeEnter: RouteRecordMultipleViews['beforeEnter']
-  leaveGuards: NavigationGuard<undefined>[]
+  leaveGuards: NavigationGuard[]
   instances: Record<string, ComponentPublicInstance | undefined | null>
   // can only be of of the same type as this record
   aliasOf: RouteRecordNormalized | undefined

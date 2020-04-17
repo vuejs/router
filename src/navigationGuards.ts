@@ -6,6 +6,8 @@ import {
   RouteLocationNormalizedLoaded,
   NavigationGuardNextCallback,
   isRouteLocation,
+  Lazy,
+  RouteComponent,
 } from './types'
 
 import {
@@ -43,18 +45,10 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
 }
 
 export function guardToPromiseFn(
-  guard: NavigationGuard<undefined>,
+  guard: NavigationGuard,
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded,
-  instance?: undefined
-): () => Promise<void>
-export function guardToPromiseFn<
-  ThisType extends ComponentPublicInstance | undefined
->(
-  guard: NavigationGuard<ThisType>,
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalizedLoaded,
-  instance: ThisType
+  instance?: ComponentPublicInstance | undefined
 ): () => Promise<void> {
   return () =>
     new Promise((resolve, reject) => {
@@ -112,7 +106,9 @@ export function extractComponentsGuards(
       const rawComponent = record.components[name]
       if (typeof rawComponent === 'function') {
         // start requesting the chunk already
-        const componentPromise = rawComponent().catch(() => null)
+        const componentPromise = (rawComponent as Lazy<RouteComponent>)().catch(
+          () => null
+        )
         guards.push(async () => {
           const resolved = await componentPromise
           if (!resolved) throw new Error('TODO: error while fetching')
@@ -121,7 +117,8 @@ export function extractComponentsGuards(
             : resolved
           // replace the function with the resolved component
           record.components[name] = resolvedComponent
-          const guard = resolvedComponent[guardType]
+          // @ts-ignore: the options types are not propagated to Component
+          const guard: NavigationGuard = resolvedComponent[guardType]
           return (
             // @ts-ignore: the guards matched the instance type
             guard && guardToPromiseFn(guard, to, from, record.instances[name])()

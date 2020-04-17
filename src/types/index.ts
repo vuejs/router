@@ -1,12 +1,6 @@
 import { LocationQuery, LocationQueryRaw } from '../utils/query'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
-import {
-  markRaw,
-  ComponentOptions,
-  ComponentPublicInstance,
-  Ref,
-  ComputedRef,
-} from 'vue'
+import { markRaw, Ref, ComputedRef, Component } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 
@@ -134,41 +128,7 @@ export interface RouteLocationNormalized extends _RouteLocationBase {
   matched: RouteRecordNormalized[] // non-enumerable
 }
 
-// interface PropsTransformer {
-//   (params: RouteParams): any
-// }
-
-// export interface RouterLocation<PT extends PropsTransformer> {
-//   record: RouteRecordRaw<PT>
-//   path: string
-//   params: ReturnType<PT>
-// }
-
-// TODO: type this for beforeRouteUpdate and beforeRouteLeave
-// TODO: support arrays
-export interface RouteComponentInterface {
-  beforeRouteEnter?: NavigationGuard<undefined>
-  /**
-   * Guard called when the router is navigating away from the current route
-   * that is rendering this component.
-   * @param to - RouteLocationRaw we are navigating to
-   * @param from - RouteLocationRaw we are navigating from
-   * @param next - function to validate, cancel or modify (by redirecting) the navigation
-   */
-  beforeRouteLeave?: NavigationGuard
-  /**
-   * Guard called whenever the route that renders this component has changed but
-   * it is reused for the new route. This allows you to guard for changes in params,
-   * the query or the hash.
-   * @param to - RouteLocationRaw we are navigating to
-   * @param from - RouteLocationRaw we are navigating from
-   * @param next - function to validate, cancel or modify (by redirecting) the navigation
-   */
-  beforeRouteUpdate?: NavigationGuard
-}
-
-// TODO: allow defineComponent export type RouteComponent = (Component | ReturnType<typeof defineComponent>) &
-export type RouteComponent = ComponentOptions & RouteComponentInterface
+export type RouteComponent = Component
 export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
 
 export type RouteRecordName = string | symbol
@@ -201,7 +161,9 @@ export interface _RouteRecordBase {
     | Record<string, any>
     | ((to: RouteLocationNormalized) => Record<string, any>)
   // TODO: beforeEnter has no effect with redirect, move and test
-  beforeEnter?: NavigationGuard<undefined> | NavigationGuard<undefined>[]
+  beforeEnter?:
+    | NavigationGuardWithThis<undefined>
+    | NavigationGuardWithThis<undefined>[]
   /**
    * Arbitrary data attached to the record.
    */
@@ -282,10 +244,18 @@ export interface NavigationGuardCallback {
 
 export type NavigationGuardNextCallback = (vm: any) => any
 
-export interface NavigationGuard<V = ComponentPublicInstance> {
+export interface NavigationGuard {
   (
-    this: V,
     // TODO: we could maybe add extra information like replace: true/false
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    next: NavigationGuardCallback
+  ): any
+}
+
+export interface NavigationGuardWithThis<T> {
+  (
+    this: T,
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
     next: NavigationGuardCallback

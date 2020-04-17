@@ -7,6 +7,7 @@ import {
   computed,
   ref,
   ComponentPublicInstance,
+  Component,
 } from 'vue'
 import { RouteLocationNormalizedLoaded } from '../types'
 import {
@@ -15,7 +16,7 @@ import {
   routeLocationKey,
 } from '../utils/injectionSymbols'
 
-export const View = defineComponent({
+export const View = (defineComponent({
   name: 'RouterView',
   props: {
     name: {
@@ -94,4 +95,4 @@ export const View = defineComponent({
         : null
     }
   },
-})
+}) as unknown) as Component

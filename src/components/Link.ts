@@ -6,6 +6,7 @@ import {
   computed,
   reactive,
   unref,
+  Component,
 } from 'vue'
 import { RouteLocationRaw, VueUseOptions, RouteLocation } from '../types'
 import { isSameLocationObject, isSameRouteRecord } from '../utils'
@@ -67,7 +68,7 @@ export function useLink(props: UseLinkOptions) {
   }
 }
 
-export const Link = defineComponent({
+export const Link = (defineComponent({
   name: 'RouterLink',
   props: {
     to: {
@@ -110,7 +111,7 @@ export const Link = defineComponent({
           )
     }
   },
-})
+}) as unknown) as Component
 
 function guardEvent(e: MouseEvent) {
   // don't redirect with control keys
