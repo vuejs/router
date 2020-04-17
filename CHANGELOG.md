@@ -1,3 +1,24 @@
+# [4.0.0-alpha.7](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.6...v4.0.0-alpha.7) (2020-04-17)
+
+
+### Features
+
+* add `$route` and `$router` types ([a4f80aa](https://github.com/vuejs/vue-router-next/commit/a4f80aaaafb1bf29a3f4d992e8c6a2bec0f70d62))
+* add guards types ([c7ccd5a](https://github.com/vuejs/vue-router-next/commit/c7ccd5a0e67d88467fc661474308fbdf55b947ec))
+* refactor navigation to comply with vuejs/rfcs[#150](https://github.com/vuejs/vue-router-next/issues/150) ([290c3be](https://github.com/vuejs/vue-router-next/commit/290c3be1f6cb476016f23b77d6fc49987dd84751))
+
+
+### BREAKING CHANGES
+
+* This follows the RFC at https://github.com/vuejs/rfcs/pull/150
+  Summary: `router.afterEach` and `router.onError` are now the global equivalent of
+  `router.push`/`router.replace` as well as navigation through the interface
+  (`history.go()`). A navigation only rejects if there was an unexpected error.
+  A navigation failure will still resolve the promise returned by `router.push`
+  and be exposed as the resolved value.
+
+
+
 # [4.0.0-alpha.6](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.5...v4.0.0-alpha.6) (2020-04-17)
 
 
