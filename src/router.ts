@@ -579,7 +579,6 @@ function applyRouterPlugin(app: App, router: Router) {
   app.component('RouterView', View)
 
   // TODO: add tests
-  // @ts-ignore
   app.config.globalProperties.$router = router
   Object.defineProperty(app.config.globalProperties, '$route', {
     get: () => router.currentRoute.value,
@@ -587,20 +586,22 @@ function applyRouterPlugin(app: App, router: Router) {
 
   let started = false
   // TODO: can we use something that isn't a mixin? Like adding an onMount hook here
-  app.mixin({
-    beforeCreate() {
-      if (isBrowser && !started) {
-        // this initial navigation is only necessary on client, on server it doesn't make sense
-        // because it will create an extra unnecessary navigation and could lead to problems
-        router.push(router.history.location.fullPath).catch(err => {
-          if (__DEV__)
-            console.error('Unhandled error when starting the router', err)
-          else return err
-        })
-        started = true
-      }
-    },
-  })
+  if (isBrowser) {
+    app.mixin({
+      beforeCreate() {
+        if (!started) {
+          // this initial navigation is only necessary on client, on server it doesn't make sense
+          // because it will create an extra unnecessary navigation and could lead to problems
+          router.push(router.history.location.fullPath).catch(err => {
+            if (__DEV__)
+              console.error('Unhandled error when starting the router', err)
+            else return err
+          })
+          started = true
+        }
+      },
+    })
+  }
 
   const reactiveRoute = {} as {
     [k in keyof RouteLocationNormalizedLoaded]: ComputedRef<
@@ -612,9 +613,9 @@ function applyRouterPlugin(app: App, router: Router) {
     reactiveRoute[key] = computed(() => router.currentRoute.value[key])
   }
 
-  // TODO: merge strats?
   app.provide(routerKey, router)
   app.provide(routeLocationKey, reactive(reactiveRoute))
+  // TODO: merge strats for beforeRoute hooks
 }
 
 async function runGuardQueue(guards: Lazy<any>[]): Promise<void> {
