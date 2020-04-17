@@ -1,3 +1,41 @@
+# [4.0.0-alpha.6](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.5...v4.0.0-alpha.6) (2020-04-17)
+
+
+### Bug Fixes
+
+* **history:** allow base with / and base tag ([d7c71b5](https://github.com/vuejs/vue-router-next/commit/d7c71b55ee4a11ecaf3a72f25eb126d118829d3f)), closes [#164](https://github.com/vuejs/vue-router-next/issues/164)
+* **history:** allow hash history with no origin ([760d216](https://github.com/vuejs/vue-router-next/commit/760d21672051b6338d40f2cdfdac80dc16209e13)), closes [#163](https://github.com/vuejs/vue-router-next/issues/163)
+* **scroll:** only apply on browser ([cf53192](https://github.com/vuejs/vue-router-next/commit/cf53192b77d619b1e43c8decda76d4083d9c17ea))
+* revert history navigation if navigation is cancelled ([d8a0d11](https://github.com/vuejs/vue-router-next/commit/d8a0d117dbede9b177f06c8ebab201d12dfca0c0))
+
+
+### Code Refactoring
+
+* **router:** merge createHref into resolve ([66b2db9](https://github.com/vuejs/vue-router-next/commit/66b2db95b6b73433dc3abbe6c6f7f07959429d78))
+
+
+### Features
+
+* add this.$route ([92dc18d](https://github.com/vuejs/vue-router-next/commit/92dc18d448ffeb57d9b3f3b303b8ec2991175eb5))
+* add this.$router ([1807f30](https://github.com/vuejs/vue-router-next/commit/1807f301053ac93db1e50991f67dcf532990d5c9))
+* **scroll:** handle scroll on popstate ([181efe9](https://github.com/vuejs/vue-router-next/commit/181efe9f29a200b03e2d8f4759e7854047936824))
+* merge meta fields ([72a052f](https://github.com/vuejs/vue-router-next/commit/72a052fdf4a198e3ac72779f1b7b8b80d0ac018d))
+* **guards:** support errors in navigation guards ([23ed08d](https://github.com/vuejs/vue-router-next/commit/23ed08d983f308b7b118f2a235e58d29bf1994ec))
+* **router:** hasRoute ([ca02444](https://github.com/vuejs/vue-router-next/commit/ca02444c91c8f6b21caf6a71dee5d0f2e3f7e51b))
+
+
+### Reverts
+
+* Revert "test: only call browser.end on the last test" ([d3221f1](https://github.com/vuejs/vue-router-next/commit/d3221f16978186b09531f7ea0cb5b92b20147181))
+
+
+### BREAKING CHANGES
+
+* **router:** createHref is removed from the router. Instead, resolve
+returns a location object with the corresponding `href` property
+
+
+
 # [4.0.0-alpha.5](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.4...v4.0.0-alpha.5) (2020-04-08)
 
 
