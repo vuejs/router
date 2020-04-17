@@ -84,8 +84,8 @@ export interface RouterOptions {
 }
 
 export interface Router {
-  history: RouterHistory
-  currentRoute: Ref<RouteLocationNormalizedLoaded>
+  readonly history: RouterHistory
+  readonly currentRoute: Ref<RouteLocationNormalizedLoaded>
 
   addRoute(parentName: RouteRecordName, route: RouteRecordRaw): () => void
   addRoute(route: RouteRecordRaw): () => void
