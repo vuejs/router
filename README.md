@@ -28,8 +28,8 @@ These are technically breaking changes but they fix an inconsistent behavior.
 
 ### Missing features
 
-- `keep-alive` is not yet supported
-- Partial support of per-component navigation guards. No `beforeRouteEnter`
+- `KeepAlive` is only partially supported. Namely, the context (`this`) is not working properly
+- Partial support of per-component navigation guards. `beforeRouteEnter` doesn't invoke its callback
 
 ## Contributing
 
