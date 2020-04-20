@@ -5,7 +5,10 @@ import NestedWithId from './views/NestedWithId.vue'
 import Dynamic from './views/Dynamic.vue'
 import User from './views/User.vue'
 import NotFound from './views/NotFound.vue'
-import component from './views/Generic.vue'
+const component = () => {
+  console.log('fetching component')
+  return import('./views/Generic.vue')
+}
 import LongView from './views/LongView.vue'
 import GuardedWithLeave from './views/GuardedWithLeave.vue'
 import ComponentWithData from './views/ComponentWithData.vue'
@@ -13,14 +16,16 @@ import { globalState } from './store'
 import { scrollWaiter } from './scrollWaiter'
 let removeRoute: (() => void) | undefined
 
-// const hist = new HTML5History()
-// const hist = new HashHistory()
 export const routerHistory = createWebHistory()
 export const router = createRouter({
   history: routerHistory,
   routes: [
     { path: '/home', redirect: '/' },
-    { path: '/', component: Home },
+    {
+      path: '/',
+      components: { default: Home, other: component },
+      props: to => ({ waited: to.meta.waitedFor }),
+    },
     {
       path: '/always-redirect',
       redirect: () => ({
@@ -38,7 +43,7 @@ export const router = createRouter({
       path: '/lazy',
       component: async () => {
         await delay(500)
-        return component
+        return component()
       },
     },
     {
@@ -152,6 +157,7 @@ router.beforeEach(async (to, from, next) => {
   const time = Number(to.query.delay)
   if (time > 0) {
     console.log('⏳ waiting ' + time + 'ms')
+    to.meta.waitedFor = time
     await delay(time)
   }
   next()
