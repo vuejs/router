@@ -3,6 +3,8 @@ IMPORTANT: Please use the following link to create a new issue:
 
   https://new-issue.vuejs.org/?repo=vuejs/vue-router-next
 
+Here is a reproduction template when reporting bugs: https://codesandbox.io/s/vue-router-v4-reproduction-tk1y7
+
 If your issue was not created using the app above, it will be closed immediately.
 
 中文用户请注意：

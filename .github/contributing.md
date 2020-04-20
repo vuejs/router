@@ -13,6 +13,7 @@ Hi! I'm really excited that you are interested in contributing to Vue Router. Be
 ## Issue Reporting Guidelines
 
 - Always use [https://new-issue.vuejs.org/](https://new-issue.vuejs.org/) to create new issues.
+- Here is a template to report a bug: [https://codesandbox.io/s/vue-router-v4-reproduction-tk1y7](https://codesandbox.io/s/vue-router-v4-reproduction-tk1y7). Please use it when reporting a bug
 
 ## Pull Request Guidelines
 
