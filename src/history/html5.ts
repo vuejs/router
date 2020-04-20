@@ -215,6 +215,7 @@ function useHistoryStateNavigation(base: string) {
     const normalized = normalizeHistoryLocation(to)
 
     const state: StateEntry = {
+      ...history.state,
       ...buildState(
         historyState.value.back,
         // keep back and forward entries but override current position
@@ -222,7 +223,6 @@ function useHistoryStateNavigation(base: string) {
         historyState.value.forward,
         true
       ),
-      ...history.state,
       ...data,
       position: historyState.value.position,
     }

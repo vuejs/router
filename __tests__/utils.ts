@@ -62,6 +62,7 @@ declare global {
     interface Global {
       window: JSDOM['window']
       location: JSDOM['window']['location']
+      history: JSDOM['window']['history']
       document: JSDOM['window']['document']
       before?: Function
     }
@@ -81,6 +82,7 @@ export function createDom(options?: ConstructorOptions) {
 
   global.window = dom.window
   global.location = dom.window.location
+  global.history = dom.window.history
   global.document = dom.window.document
 
   return dom
