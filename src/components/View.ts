@@ -67,10 +67,11 @@ export const View = (defineComponent({
       // we nee the value at the time we render because when we unmount, we
       // navigated to a different location so the value is different
       const currentMatched = matchedRoute.value
+      const currentName = props.name
       function onVnodeUnmounted() {
         if (currentMatched) {
           // remove the instance reference to prevent leak
-          currentMatched.instances[props.name] = null
+          currentMatched.instances[currentName] = null
         }
       }
 

@@ -119,6 +119,25 @@ describe('Router', () => {
     )
   })
 
+  it('replaces if a guard redirects', async () => {
+    const history = createMemoryHistory()
+    const { router } = await newRouter({ history })
+    // move somewhere else
+    await router.push('/search')
+    jest.spyOn(history, 'replace')
+    await router.replace('/home-before')
+    expect(history.replace).toHaveBeenCalledTimes(1)
+    expect(history.replace).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fullPath: '/',
+        path: '/',
+        query: {},
+        hash: '',
+      }),
+      undefined
+    )
+  })
+
   it('allows to customize parseQuery', async () => {
     const parseQuery = jest.fn()
     const { router } = await newRouter({ parseQuery })

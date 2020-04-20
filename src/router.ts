@@ -13,6 +13,7 @@ import {
   RouteRecordName,
   isRouteName,
   NavigationGuardWithThis,
+  RouteLocationOptions,
 } from './types'
 import { RouterHistory, HistoryState } from './history/common'
 import {
@@ -249,9 +250,10 @@ export function createRouter({
   ): Promise<NavigationFailure | void> {
     const targetLocation: RouteLocation = (pendingLocation = resolve(to))
     const from = currentRoute.value
-    const data: HistoryState | undefined = (to as any).state
-    const force: boolean | undefined = (to as any).force
-    const replace: boolean | undefined = (to as any).replace === true
+    const data: HistoryState | undefined = (to as RouteLocationOptions).state
+    const force: boolean | undefined = (to as RouteLocationOptions).force
+    // to could be a string where `replace` is a function
+    const replace = (to as RouteLocationOptions).replace === true
 
     if (!force && isSameRouteLocation(from, targetLocation)) return
 
@@ -294,7 +296,13 @@ export function createRouter({
       } else if (error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT) {
         // preserve the original redirectedFrom if any
         return pushWithRedirect(
-          (error as NavigationRedirectError).to,
+          // keep options
+          {
+            ...locationAsObject((error as NavigationRedirectError).to),
+            state: data,
+            force,
+            replace,
+          },
           redirectedFrom || toLocation
         )
       } else {
@@ -503,6 +511,7 @@ export function createRouter({
         return pushWithRedirect(
           (error as NavigationRedirectError).to,
           toLocation
+          // TODO: in dev show warning, in prod noop, same as initial navigation
         ).catch(() => {})
       } else {
         // TODO: test on different browsers ensure consistent behavior

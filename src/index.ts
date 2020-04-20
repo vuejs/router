@@ -16,6 +16,7 @@ export { RouteRecord, RouteRecordNormalized } from './matcher/types'
 
 export {
   RouteLocationRaw,
+  RouteLocation,
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
   START_LOCATION_NORMALIZED as START_LOCATION,

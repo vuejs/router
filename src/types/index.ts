@@ -1,6 +1,6 @@
 import { LocationQuery, LocationQueryRaw } from '../utils/query'
 import { PathParserOptions } from '../matcher/path-parser-ranker'
-import { markRaw, Ref, ComputedRef, Component } from 'vue'
+import { markRaw, Ref, ComputedRef, ComponentOptions } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 
@@ -128,7 +128,7 @@ export interface RouteLocationNormalized extends _RouteLocationBase {
   matched: RouteRecordNormalized[] // non-enumerable
 }
 
-export type RouteComponent = Component
+export type RouteComponent = ComponentOptions
 export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
 
 export type RouteRecordName = string | symbol
