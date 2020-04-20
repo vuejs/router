@@ -229,24 +229,29 @@ export function createRouter({
     }
   }
 
+  function locationAsObject(
+    to: RouteLocationRaw | RouteLocationNormalized
+  ): Exclude<RouteLocationRaw, string> | RouteLocationNormalized {
+    return typeof to === 'string' ? { path: to } : to
+  }
+
   function push(to: RouteLocationRaw | RouteLocation) {
-    return pushWithRedirect(to, undefined)
+    return pushWithRedirect(to)
   }
 
   function replace(to: RouteLocationRaw | RouteLocationNormalized) {
-    const location = typeof to === 'string' ? { path: to } : to
-    return push({ ...location, replace: true })
+    return push({ ...locationAsObject(to), replace: true })
   }
 
   async function pushWithRedirect(
     to: RouteLocationRaw | RouteLocation,
-    redirectedFrom: RouteLocation | undefined
+    redirectedFrom?: RouteLocation
   ): Promise<NavigationFailure | void> {
     const targetLocation: RouteLocation = (pendingLocation = resolve(to))
     const from = currentRoute.value
     const data: HistoryState | undefined = (to as any).state
-    // @ts-ignore: no need to check the string as force do not exist on a string
-    const force: boolean | undefined = to.force
+    const force: boolean | undefined = (to as any).force
+    const replace: boolean | undefined = (to as any).replace === true
 
     if (!force && isSameRouteLocation(from, targetLocation)) return
 
@@ -254,8 +259,12 @@ export function createRouter({
       targetLocation.matched[targetLocation.matched.length - 1]
     if (lastMatched && 'redirect' in lastMatched) {
       const { redirect } = lastMatched
+      // transform it into an object to pass the original RouteLocaleOptions
+      let newTargetLocation = locationAsObject(
+        typeof redirect === 'function' ? redirect(targetLocation) : redirect
+      )
       return pushWithRedirect(
-        typeof redirect === 'function' ? redirect(targetLocation) : redirect,
+        { ...newTargetLocation, state: data, force, replace },
         // keep original redirectedFrom if it exists
         redirectedFrom || targetLocation
       )
@@ -301,8 +310,7 @@ export function createRouter({
         toLocation as RouteLocationNormalizedLoaded,
         from,
         true,
-        // RouteLocationNormalized will give undefined
-        (to as RouteLocationRaw).replace === true,
+        replace,
         data
       )
 

@@ -10,7 +10,7 @@ import {
   RouteRecordName,
 } from '../src/types'
 import { h, resolveComponent, ComponentOptions } from 'vue'
-import { RouterOptions, createWebHistory, createRouter } from '../src'
+import { RouterOptions, createWebHistory, createRouter, Router } from '../src'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
@@ -22,6 +22,21 @@ export async function ticks(n: number) {
   for (let i = 0; i < n; i++) {
     await tick()
   }
+}
+
+export function nextNavigation(router: Router) {
+  return new Promise((resolve, reject) => {
+    let removeAfter = router.afterEach((_to, _from, failure) => {
+      removeAfter()
+      removeError()
+      resolve(failure)
+    })
+    let removeError = router.onError(err => {
+      removeAfter()
+      removeError()
+      reject(err)
+    })
+  })
 }
 
 export interface RouteRecordViewLoose

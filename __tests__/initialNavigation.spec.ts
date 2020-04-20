@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
-import { createRouter, createWebHistory, Router } from '../src'
-import { createDom, components } from './utils'
+import { createRouter, createWebHistory } from '../src'
+import { createDom, components, nextNavigation } from './utils'
 import { RouteRecordRaw } from '../src/types'
 
 // override the value of isBrowser because the variable is created before JSDOM
@@ -38,21 +38,6 @@ describe('Initial Navigation', () => {
     const router = createRouter({ history, routes, ...options })
 
     return { history, router }
-  }
-
-  function nextNavigation(router: Router) {
-    return new Promise((resolve, reject) => {
-      let removeAfter = router.afterEach((_to, _from, failure) => {
-        removeAfter()
-        removeError()
-        resolve(failure)
-      })
-      let removeError = router.onError(err => {
-        removeAfter()
-        removeError()
-        reject(err)
-      })
-    })
   }
 
   beforeAll(() => {

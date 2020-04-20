@@ -160,7 +160,10 @@ export interface _RouteRecordBase {
     | boolean
     | Record<string, any>
     | ((to: RouteLocationNormalized) => Record<string, any>)
-  // TODO: beforeEnter has no effect with redirect, move and test
+  /**
+   * Before Enter guard specific to this record. Note `beforeEnter` has no
+   * effect if the record has a `redirect` property.
+   */
   beforeEnter?:
     | NavigationGuardWithThis<undefined>
     | NavigationGuardWithThis<undefined>[]

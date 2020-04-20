@@ -1,7 +1,7 @@
 import fakePromise from 'faked-promise'
 import { createRouter, createMemoryHistory, createWebHistory } from '../src'
 import { NavigationFailureType } from '../src/errors'
-import { createDom, components, tick } from './utils'
+import { createDom, components, tick, nextNavigation } from './utils'
 import {
   RouteRecordRaw,
   RouteLocationRaw,
@@ -501,6 +501,24 @@ describe('Router', () => {
       expect(loc.name).toBe('Foo')
       expect(loc.redirectedFrom).toMatchObject({
         path: '/to-foo-named',
+      })
+    })
+
+    it('keeps original replace if redirect', async () => {
+      const history = createMemoryHistory()
+      const router = createRouter({ history, routes })
+      await router.push('/search')
+
+      await expect(router.replace('/to-foo')).resolves.toEqual(undefined)
+      expect(router.currentRoute.value).toMatchObject({
+        path: '/foo',
+        redirectedFrom: expect.objectContaining({ path: '/to-foo' }),
+      })
+
+      history.go(-1)
+      await nextNavigation(router)
+      expect(router.currentRoute.value).not.toMatchObject({
+        path: '/search',
       })
     })
 
