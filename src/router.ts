@@ -77,10 +77,51 @@ export interface ScrollBehavior {
 }
 
 export interface RouterOptions {
+  /**
+   * History implementation used by the router. Most web applications should use
+   * `createWebHistory` but it requires the server to be properly configured.
+   * You can also use a _hash_ based history with `createWebHashHistory` that
+   * does not require any configuration on the server but isn't handled at all
+   * by search engines and does poorly on SEO.
+   *
+   * @example
+   * ```js
+   * createRouter({
+   *   history: createWebHistory(),
+   *   // other options...
+   * })
+   * ```
+   */
   history: RouterHistory
+  /**
+   * Initial list of routes that should be added to the router.
+   */
   routes: RouteRecordRaw[]
+  /**
+   * Function to control scrolling when navigating between pages.
+   */
   scrollBehavior?: ScrollBehavior
+  /**
+   * Custom implementation to parse a query.
+   *
+   * @example
+   * Let's say you want to use the package {@link https://github.com/ljharb/qs | `qs`}
+   * to parse queries, you would need to provide both `parseQuery` and
+   * {@link RouterOptions.stringifyQuery | `stringifyQuery`}:
+   * ```js
+   * import qs from 'qs'
+   *
+   * createRouter({
+   *   // other options...
+   *   parse: qs.parse,
+   *   stringifyQuery: qs.stringify,
+   * })
+   * ```
+   */
   parseQuery?: typeof originalParseQuery
+  /**
+   * {@link RouterOptions.parseQuery | `parseQuery`} counterpart to handle query parsing.
+   */
   stringifyQuery?: typeof originalStringifyQuery
   // TODO: allow customizing encoding functions
 }
@@ -114,6 +155,11 @@ export interface Router {
   install(app: App): void
 }
 
+/**
+ * Create a Router instance that can be used on a Vue app.
+ *
+ * @param options {@link RouterOptions}
+ */
 export function createRouter({
   history,
   routes,
