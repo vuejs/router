@@ -104,6 +104,11 @@ export interface Router {
 
   push(to: RouteLocationRaw): Promise<NavigationFailure | void>
   replace(to: RouteLocationRaw): Promise<NavigationFailure | void>
+  // TODO: return a promise when https://github.com/vuejs/rfcs/pull/150 is
+  // merged
+  back(): void
+  forward(): void
+  go(distance: number): void
 
   beforeEach(guard: NavigationGuardWithThis<undefined>): () => void
   afterEach(guard: PostNavigationGuard): () => void
@@ -605,10 +610,13 @@ export function createRouter({
     removeRoute,
     hasRoute,
     getRoutes,
+    resolve,
 
     push,
     replace,
-    resolve,
+    go: history.go,
+    back: () => history.go(-1),
+    forward: () => history.go(1),
 
     beforeEach: beforeGuards.add,
     afterEach: afterGuards.add,
