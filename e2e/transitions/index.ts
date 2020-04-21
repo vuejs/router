@@ -80,7 +80,7 @@ const app = createApp({
       </ul>
       <router-view class="view" v-slot="{ Component, props }">
         <transition name="fade" mode="out-in">
-          <component :is="Component" v-bind="props"></component>
+          <component v-if="Component" :is="Component" v-bind="props"></component>
         </transition>
       </router-view>
     </div>

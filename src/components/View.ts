@@ -44,7 +44,8 @@ export const View = (defineComponent({
     )
 
     const propsData = computed(() => {
-      // propsData only gets called if ViewComponent.value exists and it depends on matchedRoute.value
+      // propsData only gets called if ViewComponent.value exists and it depends
+      // on matchedRoute.value
       const { props } = matchedRoute.value!
       if (!props) return {}
       if (props === true) return route.value.params
@@ -77,6 +78,7 @@ export const View = (defineComponent({
 
       let Component = ViewComponent.value
       const componentProps: Parameters<typeof h>[1] = {
+        // only compute props if there is a matched record
         ...(Component && propsData.value),
         ...attrs,
         onVnodeMounted,
@@ -84,10 +86,9 @@ export const View = (defineComponent({
         ref: viewRef,
       }
 
+      // NOTE: we could also not render if there is no route match
       const children =
-        Component &&
-        slots.default &&
-        slots.default({ Component, props: componentProps })
+        slots.default && slots.default({ Component, props: componentProps })
 
       return children
         ? children
