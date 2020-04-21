@@ -56,7 +56,7 @@ export function useLink(props: UseLinkOptions) {
 
   function navigate(e: MouseEvent = {} as MouseEvent) {
     // TODO: handle navigate with empty parameters for scoped slot and composition api
-    if (guardEvent(e)) router.push(route.value)
+    if (guardEvent(e)) router.push(unref(props.to))
   }
 
   return {

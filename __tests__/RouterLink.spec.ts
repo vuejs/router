@@ -54,7 +54,7 @@ const locations: Record<
       hash: '',
       matched: [records.home],
       redirectedFrom: undefined,
-      name: undefined,
+      name: 'home',
     },
   },
   foo: {
@@ -131,7 +131,7 @@ const locations: Record<
       hash: '',
       matched: [records.homeAlias],
       redirectedFrom: undefined,
-      name: undefined,
+      name: 'home',
     },
   },
 
@@ -564,7 +564,24 @@ describe('RouterLink', () => {
     wrapper.find('a')!.click()
     await nextTick()
     expect(router.push).toHaveBeenCalledTimes(1)
-    expect(router.push).toHaveBeenCalledWith(locations.basic.normalized)
+  })
+
+  it('calls router.push with the correct location for aliases', async () => {
+    const { router, wrapper } = await factory(
+      START_LOCATION_NORMALIZED,
+      { to: locations.alias.string },
+      locations.alias.normalized
+    )
+    wrapper.find('a')!.click()
+    await nextTick()
+    expect(router.push).toHaveBeenCalledTimes(1)
+    expect(router.push).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        // this is the original name but if we push with this location, we will
+        // not have the alias on the url
+        name: 'home',
+      })
+    )
   })
 
   describe('v-slot', () => {
