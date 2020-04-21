@@ -9,7 +9,7 @@ import {
   Component,
 } from 'vue'
 import { RouteLocationRaw, VueUseOptions, RouteLocation } from '../types'
-import { isSameLocationObject, isSameRouteRecord } from '../utils'
+import { isSameLocationObject, isSameRouteRecord } from '../utils/location'
 import { routerKey, routeLocationKey } from '../utils/injectionSymbols'
 import { RouteRecord } from '../matcher/types'
 

@@ -4,8 +4,8 @@ import {
   parseURL as originalParseURL,
   stringifyURL as originalStringifyURL,
   stripBase,
+  isSameLocationObject,
 } from '../src/utils/location'
-import { isSameLocationObject } from '../src/utils'
 
 describe('parseURL', () => {
   let parseURL = originalParseURL.bind(null, parseQuery)

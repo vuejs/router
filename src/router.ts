@@ -31,12 +31,7 @@ import {
   NavigationFailure,
   NavigationRedirectError,
 } from './errors'
-import {
-  applyToParams,
-  isSameRouteRecord,
-  isSameLocationObject,
-  isBrowser,
-} from './utils'
+import { applyToParams, isBrowser } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode } from './utils/encoding'
 import {
@@ -59,7 +54,7 @@ import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import { Link } from './components/Link'
 import { View } from './components/View'
 import { routerKey, routeLocationKey } from './utils/injectionSymbols'
-import { parseURL, stringifyURL } from './utils/location'
+import { parseURL, stringifyURL, isSameRouteLocation } from './utils/location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
 
 /**
@@ -755,19 +750,4 @@ function extractChangingRecords(
   }
 
   return [leavingRecords, updatingRecords, enteringRecords]
-}
-
-// TODO: move to utils and test
-function isSameRouteLocation(a: RouteLocation, b: RouteLocation): boolean {
-  let aLastIndex = a.matched.length - 1
-  let bLastIndex = b.matched.length - 1
-
-  return (
-    aLastIndex > -1 &&
-    aLastIndex === bLastIndex &&
-    isSameRouteRecord(a.matched[aLastIndex], b.matched[bLastIndex]) &&
-    isSameLocationObject(a.params, b.params) &&
-    isSameLocationObject(a.query, b.query) &&
-    a.hash === b.hash
-  )
 }
