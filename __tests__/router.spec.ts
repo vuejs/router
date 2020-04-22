@@ -7,6 +7,9 @@ import {
   RouteLocationRaw,
   START_LOCATION_NORMALIZED,
 } from '../src/types'
+import { mockWarn } from 'jest-mock-warn'
+
+declare var __DEV__: boolean
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: components.Home, name: 'home' },
@@ -293,6 +296,29 @@ describe('Router', () => {
     router.addRoute({ path: '/r2/:r?', name: 'r2', component: components.Bar })
     expect(() => router.resolve({ name: 'r1', params: {} })).not.toThrow()
     expect(() => router.resolve({ name: 'r2', params: {} })).not.toThrow()
+  })
+
+  describe('Warnings', () => {
+    mockWarn()
+
+    it.skip('avoid infinite redirection loops', async () => {
+      const history = createMemoryHistory()
+      let calls = 0
+      const beforeEnter = jest.fn((to, from, next) => {
+        if (++calls > 1000) throw new Error('1000 calls')
+        next(to.path)
+      })
+      console.log('dev', __DEV__)
+      const { router } = await newRouter({
+        history,
+        routes: [{ path: '/foo', component: components.Home, beforeEnter }],
+      })
+      await expect(router.push('/foo')).resolves.toBe(undefined)
+    })
+
+    it.todo('avoid infinite redirection loops when doing router.back()')
+
+    it.todo('warns if `next` is called twice')
   })
 
   describe('alias', () => {
