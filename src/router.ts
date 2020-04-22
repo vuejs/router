@@ -314,7 +314,13 @@ export function createRouter({
         typeof redirect === 'function' ? redirect(targetLocation) : redirect
       )
       return pushWithRedirect(
-        { ...newTargetLocation, state: data, force, replace },
+        {
+          ...targetLocation,
+          ...newTargetLocation,
+          state: data,
+          force,
+          replace,
+        },
         // keep original redirectedFrom if it exists
         redirectedFrom || targetLocation
       )

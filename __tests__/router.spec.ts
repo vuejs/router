@@ -26,6 +26,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/to-foo', redirect: '/foo' },
   { path: '/to-foo-named', redirect: { name: 'Foo' } },
   { path: '/to-foo2', redirect: '/to-foo' },
+  { path: '/to-p/:p', redirect: { name: 'Param' } },
   { path: '/p/:p', name: 'Param', component: components.Bar },
   { path: '/repeat/:r+', name: 'repeat', component: components.Bar },
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
@@ -523,18 +524,38 @@ describe('Router', () => {
       })
     })
 
-    it('drops query and params on redirect if not provided', async () => {
+    it('keeps query and hash when redirect is a string', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
       await expect(router.push('/to-foo?hey=foo#fa')).resolves.toEqual(
         undefined
       )
-      const loc = router.currentRoute.value
-      expect(loc.name).toBe('Foo')
-      expect(loc.query).toEqual({})
-      expect(loc.hash).toBe('')
-      expect(loc.redirectedFrom).toMatchObject({
-        path: '/to-foo',
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Foo',
+        path: '/foo',
+        params: {},
+        query: { hey: 'foo' },
+        hash: '#fa',
+        redirectedFrom: expect.objectContaining({
+          fullPath: '/to-foo?hey=foo#fa',
+        }),
+      })
+    })
+
+    it('keeps params, query and hash from targetLocation on redirect', async () => {
+      const history = createMemoryHistory()
+      const router = createRouter({ history, routes })
+      await expect(router.push('/to-p/1?hey=foo#fa')).resolves.toEqual(
+        undefined
+      )
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Param',
+        params: { p: '1' },
+        query: { hey: 'foo' },
+        hash: '#fa',
+        redirectedFrom: expect.objectContaining({
+          fullPath: '/to-p/1?hey=foo#fa',
+        }),
       })
     })
 
