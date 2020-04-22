@@ -10,18 +10,17 @@ const component = {
 
 describe('beforeRouteLeave', () => {
   it('invokes with the component context', async () => {
-    let componentInstance: any
+    expect.assertions(2)
     const spy = jest
       .fn()
       .mockImplementationOnce(function(this: any, to, from, next) {
-        expect(this).toBe(componentInstance)
+        expect(typeof this.counter).toBe('number')
         next()
       })
     const WithLeave = defineComponent({
       template: `text`,
-      created() {
-        componentInstance = this
-      },
+      // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
+      data: () => ({ counter: 0 }),
       beforeRouteLeave: spy,
     })
 
