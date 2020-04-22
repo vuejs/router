@@ -723,6 +723,36 @@ describe('RouterMatcher.resolve', () => {
         assertErrorMatch({ path: '/', components }, { name: 'Home' })
       ).toMatchSnapshot()
     })
+
+    it('merges params', () => {
+      assertRecordMatch(
+        { path: '/:a/:b', name: 'p', components },
+        { name: 'p', params: { b: 'b' } },
+        { name: 'p', path: '/a/b', params: { a: 'a', b: 'b' } },
+        {
+          params: { a: 'a' },
+          path: '/a',
+          matched: [],
+          meta: {},
+          name: undefined,
+        }
+      )
+    })
+
+    it('only keep existing params', () => {
+      assertRecordMatch(
+        { path: '/:a/:b', name: 'p', components },
+        { name: 'p', params: { b: 'b' } },
+        { name: 'p', path: '/a/b', params: { a: 'a', b: 'b' } },
+        {
+          params: { a: 'a', c: 'c' },
+          path: '/a',
+          matched: [],
+          meta: {},
+          name: undefined,
+        }
+      )
+    })
   })
 
   describe('LocationAsRelative', () => {
@@ -817,6 +847,21 @@ describe('RouterMatcher.resolve', () => {
           name: undefined,
           params: { id: 'ed', role: 'user' },
           matched: [record] as any,
+          meta: {},
+        }
+      )
+    })
+
+    it('merges params', () => {
+      assertRecordMatch(
+        { path: '/:a/:b?', name: 'p', components },
+        { params: { b: 'b' } },
+        { name: 'p', path: '/a/b', params: { a: 'a', b: 'b' } },
+        {
+          name: 'p',
+          params: { a: 'a' },
+          path: '/a',
+          matched: [],
           meta: {},
         }
       )

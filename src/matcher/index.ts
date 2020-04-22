@@ -198,9 +198,13 @@ export function createRouterMatcher(
         })
 
       name = matcher.record.name
-      // TODO: merge params with current location. Should this be done by name. I think there should be some kind of relationship between the records like children of a parent should keep parent props but not the rest
-      // needs an RFC if breaking change
-      params = location.params || currentLocation.params
+      params = {
+        ...paramsFromLocation(
+          currentLocation.params,
+          matcher.keys.map(k => k.name)
+        ),
+        ...location.params,
+      }
       // throws if cannot be stringified
       path = matcher.stringify(params)
     } else if ('path' in location) {
@@ -227,7 +231,9 @@ export function createRouterMatcher(
           currentLocation,
         })
       name = matcher.record.name
-      params = location.params || currentLocation.params
+      // since we are navigating to the same location, we don't need to pick the
+      // params like when `name` is provided
+      params = { ...currentLocation.params, ...location.params }
       path = matcher.stringify(params)
     }
 
@@ -254,6 +260,19 @@ export function createRouterMatcher(
   routes.forEach(route => addRoute(route))
 
   return { addRoute, resolve, removeRoute, getRoutes, getRecordMatcher }
+}
+
+function paramsFromLocation(
+  params: MatcherLocation['params'],
+  keys: string[]
+): MatcherLocation['params'] {
+  let newParams = {} as MatcherLocation['params']
+
+  for (let key of keys) {
+    if (key in params) newParams[key] = params[key]
+  }
+
+  return newParams
 }
 
 /**
