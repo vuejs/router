@@ -3,8 +3,8 @@ import {
   tokensToParser,
   PathParser,
   PathParserOptions,
-} from './path-parser-ranker'
-import { tokenizePath } from './path-tokenizer'
+} from './pathParserRanker'
+import { tokenizePath } from './pathTokenizer'
 
 export interface RouteRecordMatcher extends PathParser {
   record: RouteRecord

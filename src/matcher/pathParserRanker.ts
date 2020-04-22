@@ -1,4 +1,4 @@
-import { Token, TokenType } from './path-tokenizer'
+import { Token, TokenType } from './pathTokenizer'
 
 export type PathParams = Record<string, string | string[]>
 

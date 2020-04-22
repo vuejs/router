@@ -1,5 +1,5 @@
 import { LocationQuery, LocationQueryRaw } from '../utils/query'
-import { PathParserOptions } from '../matcher/path-parser-ranker'
+import { PathParserOptions } from '../matcher/pathParserRanker'
 import { markRaw, Ref, ComputedRef, ComponentOptions } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
@@ -274,7 +274,7 @@ export interface PostNavigationGuard {
   ): any
 }
 
-export * from './type-guards'
+export * from './typeGuards'
 
 export type Mutable<T> = {
   -readonly [P in keyof T]: T[P]

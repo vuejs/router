@@ -6,13 +6,13 @@ import {
   RouteRecordName,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
-import { createRouteRecordMatcher, RouteRecordMatcher } from './path-matcher'
+import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
 import { RouteRecordRedirect, RouteRecordNormalized } from './types'
 import {
   PathParams,
   comparePathParserScore,
   PathParserOptions,
-} from './path-parser-ranker'
+} from './pathParserRanker'
 
 let noop = () => {}
 

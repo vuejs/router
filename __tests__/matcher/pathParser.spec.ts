@@ -1,5 +1,5 @@
-import { tokenizePath, TokenType } from '../../src/matcher/path-tokenizer'
-import { tokensToParser } from '../../src/matcher/path-parser-ranker'
+import { tokenizePath, TokenType } from '../../src/matcher/pathTokenizer'
+import { tokensToParser } from '../../src/matcher/pathParserRanker'
 
 describe('Path parser', () => {
   describe('tokenizer', () => {
