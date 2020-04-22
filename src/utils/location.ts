@@ -95,7 +95,8 @@ export function stringifyURL(
  * @param base - base to strip off
  */
 export function stripBase(pathname: string, base: string): string {
-  if (!base || pathname.indexOf(base) !== 0) return pathname
+  // no base or base is not found at the begining
+  if (!base || pathname.indexOf(base)) return pathname
   return pathname.replace(base, '') || '/'
 }
 

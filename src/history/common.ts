@@ -162,7 +162,7 @@ export function normalizeBase(base?: string): string {
   // ensure leading slash when it was removed by the regex above avoid leading
   // slash with hash because the file could be read from the disk like file://
   // and the leading slash would cause problems
-  if (base.charAt(0) !== '/' && base.charAt(0) !== '#') base = '/' + base
+  if (base[0] !== '/' && base[0] !== '#') base = '/' + base
 
   // remove the trailing slash so all other method can just do `base + fullPath`
   // to build an href

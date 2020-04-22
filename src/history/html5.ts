@@ -39,7 +39,7 @@ function createCurrentLocation(
   if (hashPos > -1) {
     // prepend the starting slash to hash so the url starts with /#
     let pathFromHash = hash.slice(1)
-    if (pathFromHash.charAt(0) !== '/') pathFromHash = '/' + pathFromHash
+    if (pathFromHash[0] !== '/') pathFromHash = '/' + pathFromHash
     return normalizeHistoryLocation(stripBase(pathFromHash, ''))
   }
   const path = stripBase(pathname, base)
