@@ -147,6 +147,7 @@ export interface Router {
   go(distance: number): void
 
   beforeEach(guard: NavigationGuardWithThis<undefined>): () => void
+  beforeResolve(guard: NavigationGuardWithThis<undefined>): () => void
   afterEach(guard: PostNavigationGuard): () => void
 
   onError(handler: ErrorHandler): () => void
@@ -170,6 +171,7 @@ export function createRouter({
   const matcher = createRouterMatcher(routes, {})
 
   const beforeGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
+  const beforeResolveGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
   const afterGuards = useCallbacks<PostNavigationGuard>()
   const currentRoute = ref<RouteLocationNormalizedLoaded>(
     START_LOCATION_NORMALIZED
@@ -452,6 +454,14 @@ export function createRouter({
 
     // run the queue of per route beforeEnter guards
     await runGuardQueue(guards)
+
+    // check global guards beforeEach
+    guards = []
+    for (const guard of beforeResolveGuards.list()) {
+      guards.push(guardToPromiseFn(guard, to, from))
+    }
+
+    await runGuardQueue(guards)
   }
 
   function triggerAfterEach(
@@ -660,6 +670,7 @@ export function createRouter({
     forward: () => history.go(1),
 
     beforeEach: beforeGuards.add,
+    beforeResolve: beforeResolveGuards.add,
     afterEach: afterGuards.add,
 
     onError: errorHandlers.add,
