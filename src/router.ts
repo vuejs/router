@@ -158,7 +158,7 @@ export interface Router {
 /**
  * Create a Router instance that can be used on a Vue app.
  *
- * @param options {@link RouterOptions}
+ * @param options - {@link RouterOptions}
  */
 export function createRouter({
   history,

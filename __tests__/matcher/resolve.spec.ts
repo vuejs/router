@@ -76,8 +76,8 @@ describe('RouterMatcher.resolve', () => {
 
   /**
    *
-   * @param record Record or records we are testing the matcher against
-   * @param location location we want to reolve against
+   * @param record - Record or records we are testing the matcher against
+   * @param location - location we want to reolve against
    * @param [start] Optional currentLocation used when resolving
    * @returns error
    */
