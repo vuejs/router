@@ -138,7 +138,7 @@
             @before-enter="flushWaiter"
             @before-leave="setupWaiter"
           > -->
-          <component :is="Component" v-bind="props" />
+          <component v-if="Component" :is="Component" v-bind="props" />
           <!-- </transition> -->
         </router-view>
       </template>
