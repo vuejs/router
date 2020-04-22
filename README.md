@@ -11,6 +11,7 @@ Since the library is still unstable **and because we want feedback** on bugs and
 ### Breaking changes compared to vue-router@3.x
 
 - `mode: 'history'` -> `history: createWebHistory()`
+- `base` option is now passed as the first argument to `createWebHistory` (and other histories)
 - Catch all routes (`/*`) must now be defined using a parameter with a custom regex: `/:catchAll(.*)`
 - `router.match` and `router.resolve` are merged together into `router.resolve` with a slightly different signature
 - `router.getMatchedComponents` is now removed as they can be retrieved from `router.currentRoute.value.matched`:
@@ -19,6 +20,7 @@ Since the library is still unstable **and because we want feedback** on bugs and
     .map(record => Object.values(record.components))
     .flat()
   ```
+- _resolving_(`router.resolve`) or _pushing_ (`router.push`) a location with missing params no longer warns and produces an invalid URL, but throws an Error instead
 
 #### Improvements
 
