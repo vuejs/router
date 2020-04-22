@@ -165,9 +165,4 @@ describe('beforeRouteLeave', () => {
     await p.catch(err => {}) // catch the navigation abortion
     expect(currentRoute.fullPath).toBe('/guard')
   })
-
-  it.todo('invokes with the component context')
-  it.todo('invokes with the component context with named views')
-  it.todo('invokes with the component context with nested views')
-  it.todo('invokes with the component context with nested named views')
 })
