@@ -21,6 +21,22 @@ Since the library is still unstable **and because we want feedback** on bugs and
     .flat()
   ```
 - _resolving_(`router.resolve`) or _pushing_ (`router.push`) a location with missing params no longer warns and produces an invalid URL, but throws an Error instead
+- Relative children path `redirect` are not supported. Use named routes instead:
+  ```js
+  // replace
+  let routes = {
+    path: '/parent/',
+    children: [{ path: '', redirect: 'home' }, { path: 'home' }],
+  }
+  // with
+  let routes = {
+    path: '/parent/',
+    children: [
+      { path: '', redirect: { name: 'home' } },
+      { path: 'home', name: 'home' },
+    ],
+  }
+  ```
 
 #### Improvements
 
