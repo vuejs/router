@@ -2,7 +2,6 @@ import {
   RouteLocationNormalized,
   RouteRecordRaw,
   RouteLocationRaw,
-  NavigationGuard,
   PostNavigationGuard,
   START_LOCATION_NORMALIZED,
   Lazy,
@@ -40,23 +39,11 @@ import {
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
 } from './utils/query'
-import {
-  ref,
-  Ref,
-  markRaw,
-  nextTick,
-  App,
-  warn,
-  computed,
-  reactive,
-  ComputedRef,
-} from 'vue'
+import { ref, Ref, markRaw, nextTick, App, warn } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
-import { Link } from './components/Link'
-import { View } from './components/View'
-import { routerKey, routeLocationKey } from './utils/injectionSymbols'
 import { parseURL, stringifyURL, isSameRouteLocation } from './utils/location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
+import { applyRouterPlugin } from './install'
 
 /**
  * Internal type to define an ErrorHandler
@@ -711,93 +698,6 @@ export function createRouter({
   }
 
   return router
-}
-
-declare module '@vue/runtime-core' {
-  interface ComponentCustomOptions {
-    /**
-     * Guard called when the router is navigating to the route that is rendering
-     * this component from a different route. Differently from `beforeRouteUpdate`
-     * and `beforeRouteLeave`, `beforeRouteEnter` does not have access to the
-     * component instance through `this` because it triggers before the component
-     * is even mounted.
-     *
-     * @param to - RouteLocationRaw we are navigating to
-     * @param from - RouteLocationRaw we are navigating from
-     * @param next - function to validate, cancel or modify (by redirecting) the
-     * navigation
-     */
-    beforeRouteEnter?: NavigationGuardWithThis<undefined>
-
-    /**
-     * Guard called whenever the route that renders this component has changed but
-     * it is reused for the new route. This allows you to guard for changes in
-     * params, the query or the hash.
-     *
-     * @param to - RouteLocationRaw we are navigating to
-     * @param from - RouteLocationRaw we are navigating from
-     * @param next - function to validate, cancel or modify (by redirecting) the
-     * navigation
-     */
-    beforeRouteUpdate?: NavigationGuard
-
-    /**
-     * Guard called when the router is navigating away from the current route that
-     * is rendering this component.
-     *
-     * @param to - RouteLocationRaw we are navigating to
-     * @param from - RouteLocationRaw we are navigating from
-     * @param next - function to validate, cancel or modify (by redirecting) the
-     * navigation
-     */
-    beforeRouteLeave?: NavigationGuard
-  }
-
-  interface ComponentCustomProperties {
-    /**
-     * Normalized current location. See {@link RouteLocationNormalizedLoaded}.
-     */
-    $route: RouteLocationNormalizedLoaded
-    /**
-     * {@link Router} instance used by the application.
-     */
-    $router: Router
-  }
-}
-
-function applyRouterPlugin(app: App, router: Router) {
-  app.component('RouterLink', Link)
-  app.component('RouterView', View)
-
-  // TODO: add tests
-  app.config.globalProperties.$router = router
-  Object.defineProperty(app.config.globalProperties, '$route', {
-    get: () => router.currentRoute.value,
-  })
-
-  // this initial navigation is only necessary on client, on server it doesn't
-  // make sense because it will create an extra unnecessary navigation and could
-  // lead to problems
-  if (isBrowser && router.currentRoute.value === START_LOCATION_NORMALIZED) {
-    router.push(router.history.location.fullPath).catch(err => {
-      if (__DEV__)
-        console.error('Unhandled error when starting the router', err)
-    })
-  }
-
-  const reactiveRoute = {} as {
-    [k in keyof RouteLocationNormalizedLoaded]: ComputedRef<
-      RouteLocationNormalizedLoaded[k]
-    >
-  }
-  for (let key in START_LOCATION_NORMALIZED) {
-    // @ts-ignore: the key matches
-    reactiveRoute[key] = computed(() => router.currentRoute.value[key])
-  }
-
-  app.provide(routerKey, router)
-  app.provide(routeLocationKey, reactive(reactiveRoute))
-  // TODO: merge strats for beforeRoute hooks
 }
 
 async function runGuardQueue(guards: Lazy<any>[]): Promise<void> {

@@ -22,7 +22,7 @@ export interface ScrollPositionElement {
    * - `.content:first-child`
    * - `#marker`
    * - `#marker~with~symbols`
-   * - `#marker.with.dot` -> selects `id="marker.with.dot"`, not `class="with dot" id="marker"`
+   * - `#marker.with.dot`: selects `id="marker.with.dot"`, not `class="with dot" id="marker"`
    *
    */
   selector: string
