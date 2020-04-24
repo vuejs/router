@@ -39,7 +39,7 @@ import {
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
 } from './query'
-import { ref, Ref, markRaw, nextTick, App, warn } from 'vue'
+import { shallowRef, Ref, nextTick, App, warn } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import { parseURL, stringifyURL, isSameRouteLocation } from './location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
@@ -161,7 +161,7 @@ export function createRouter({
   const beforeGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
   const beforeResolveGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
   const afterGuards = useCallbacks<PostNavigationGuard>()
-  const currentRoute = ref<RouteLocationNormalizedLoaded>(
+  const currentRoute = shallowRef<RouteLocationNormalizedLoaded>(
     START_LOCATION_NORMALIZED
   )
   let pendingLocation: RouteLocation = START_LOCATION_NORMALIZED
@@ -525,7 +525,7 @@ export function createRouter({
     }
 
     // accept current navigation
-    currentRoute.value = markRaw(toLocation)
+    currentRoute.value = toLocation
     // TODO: this doesn't work on first load. Moving it to RouterView could allow automatically handling transitions too maybe
     // TODO: refactor with a state getter
     if (isBrowser) {

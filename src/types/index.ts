@@ -1,6 +1,6 @@
 import { LocationQuery, LocationQueryRaw } from '../query'
 import { PathParserOptions } from '../matcher/pathParserRanker'
-import { markRaw, Ref, ComputedRef, ComponentOptions } from 'vue'
+import { Ref, ComputedRef, ComponentOptions } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 
@@ -201,19 +201,17 @@ export type RouteRecordRaw =
   | RouteRecordMultipleViews
   | RouteRecordRedirectRaw
 
-export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = markRaw(
-  {
-    path: '/',
-    name: undefined,
-    params: {},
-    query: {},
-    hash: '',
-    fullPath: '/',
-    matched: [],
-    meta: {},
-    redirectedFrom: undefined,
-  }
-)
+export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = {
+  path: '/',
+  name: undefined,
+  params: {},
+  query: {},
+  hash: '',
+  fullPath: '/',
+  matched: [],
+  meta: {},
+  redirectedFrom: undefined,
+}
 
 // make matched non enumerable for easy printing
 // NOTE: commented for tests at RouterView.spec
