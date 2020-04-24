@@ -10,7 +10,10 @@ import {
   ValueContainer,
   normalizeBase,
 } from './common'
-import { computeScrollPosition, ScrollToPosition } from '../utils/scroll'
+import {
+  computeScrollPosition,
+  ScrollPositionCoordinates,
+} from '../scrollBehavior'
 import { warn } from 'vue'
 import { stripBase } from '../utils/location'
 
@@ -22,7 +25,7 @@ interface StateEntry extends HistoryState {
   forward: HistoryLocationNormalized | null
   position: number
   replaced: boolean
-  scroll: ScrollToPosition | null
+  scroll: Required<ScrollPositionCoordinates> | null | false
 }
 
 /**

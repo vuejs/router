@@ -559,10 +559,12 @@ export function createRouter({
     pendingLocation = toLocation
     const from = currentRoute.value
 
-    saveScrollPosition(
-      getScrollKey(from.fullPath, info.distance),
-      computeScrollPosition()
-    )
+    if (isBrowser) {
+      saveScrollPosition(
+        getScrollKey(from.fullPath, info.distance),
+        computeScrollPosition()
+      )
+    }
 
     let failure: NavigationFailure | void
 

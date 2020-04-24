@@ -119,7 +119,7 @@ describe('Router', () => {
         query: {},
         hash: '',
       }),
-      undefined
+      expect.anything()
     )
   })
 
@@ -138,7 +138,7 @@ describe('Router', () => {
         query: {},
         hash: '',
       }),
-      undefined
+      expect.anything()
     )
   })
 
@@ -188,7 +188,7 @@ describe('Router', () => {
         query: {},
         hash: '',
       }),
-      undefined
+      expect.anything()
     )
   })
 
@@ -204,7 +204,7 @@ describe('Router', () => {
         query: {},
         hash: '',
       }),
-      undefined
+      expect.anything()
     )
   })
 
@@ -220,7 +220,7 @@ describe('Router', () => {
         query: {},
         hash: '',
       }),
-      undefined
+      expect.anything()
     )
   })
 
