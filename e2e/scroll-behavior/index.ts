@@ -71,12 +71,20 @@ const router = createRouter({
     { path: '/bar', component: Bar, meta: { scrollToTop: true } },
   ],
 })
+
+scrollWaiter.add()
+
 const app = createApp({
   setup() {
     return {
       flushWaiter: scrollWaiter.flush,
       setupWaiter: scrollWaiter.add,
     }
+  },
+
+  // because we don't have an appear prop on transition, we need to manually trigger these
+  mounted() {
+    scrollWaiter.flush()
   },
 
   template: `
@@ -105,4 +113,4 @@ const app = createApp({
 })
 app.use(router)
 
-window.vm = app.mount('#app')
+router.isReady().then(() => (window.vm = app.mount('#app')))

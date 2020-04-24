@@ -17,13 +17,14 @@ import {
 } from './types'
 import { RouterHistory, HistoryState } from './history/common'
 import {
-  ScrollToPosition,
+  ScrollPositionCoordinates,
   ScrollPosition,
-  scrollToPosition,
-  saveScrollOnLeave,
+  getSavedScrollPosition,
   getScrollKey,
-  getSavedScroll,
-} from './utils/scroll'
+  saveScrollPosition,
+  computeScrollPosition,
+  scrollToPosition,
+} from './scrollBehavior'
 import { createRouterMatcher } from './matcher'
 import {
   createRouterError,
@@ -71,7 +72,7 @@ export interface ScrollBehavior {
   (
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
-    savedPosition: ScrollToPosition | null
+    savedPosition: Required<ScrollPositionCoordinates> | null
   ): // TODO: implement false nad refactor promise based type
   Awaitable<ScrollPosition | false | void>
 }
@@ -303,6 +304,7 @@ export function createRouter({
     // to could be a string where `replace` is a function
     const replace = (to as RouteLocationOptions).replace === true
 
+    // TODO: create navigation failure
     if (!force && isSameRouteLocation(from, targetLocation)) return
 
     const lastMatched =
@@ -515,11 +517,18 @@ export function createRouter({
 
     // only consider as push if it's not the first navigation
     const isFirstNavigation = from === START_LOCATION_NORMALIZED
+    const state = !isBrowser ? {} : window.history.state
 
     // change URL only if the user did a push/replace and if it's not the initial navigation because
     // it's just reflecting the url
     if (isPush) {
-      if (replace || isFirstNavigation) history.replace(toLocation, data)
+      // on the initial navigation, we want to reuse the scroll position from
+      // history state if it exists
+      if (replace || isFirstNavigation)
+        history.replace(toLocation, {
+          scroll: isFirstNavigation && state && state.scroll,
+          ...data,
+        })
       else history.push(toLocation, data)
     }
 
@@ -527,13 +536,16 @@ export function createRouter({
     currentRoute.value = markRaw(toLocation)
     // TODO: this doesn't work on first load. Moving it to RouterView could allow automatically handling transitions too maybe
     // TODO: refactor with a state getter
-    const state = isPush || !isBrowser ? {} : window.history.state
-    const savedScroll = getSavedScroll(getScrollKey(toLocation.fullPath, 0))
-    handleScroll(
-      toLocation,
-      from,
-      savedScroll || (state && state.scroll)
-    ).catch(err => triggerError(err))
+    if (isBrowser) {
+      const savedScroll = getSavedScrollPosition(
+        getScrollKey(toLocation.fullPath, 0)
+      )
+      handleScroll(
+        toLocation,
+        from,
+        savedScroll || ((isFirstNavigation || !isPush) && state && state.scroll)
+      ).catch(err => triggerError(err))
+    }
 
     markAsReady()
   }
@@ -547,7 +559,10 @@ export function createRouter({
     pendingLocation = toLocation
     const from = currentRoute.value
 
-    saveScrollOnLeave(getScrollKey(from.fullPath, info.distance))
+    saveScrollPosition(
+      getScrollKey(from.fullPath, info.distance),
+      computeScrollPosition()
+    )
 
     let failure: NavigationFailure | void
 
@@ -651,7 +666,7 @@ export function createRouter({
   async function handleScroll(
     to: RouteLocationNormalizedLoaded,
     from: RouteLocationNormalizedLoaded,
-    scrollPosition?: ScrollToPosition
+    scrollPosition?: Required<ScrollPositionCoordinates>
   ) {
     if (!scrollBehavior) return
 
@@ -753,22 +768,13 @@ function applyRouterPlugin(app: App, router: Router) {
     get: () => router.currentRoute.value,
   })
 
-  let started = false
-  // TODO: can we use something that isn't a mixin? Like adding an onMount hook here
-  if (isBrowser) {
-    app.mixin({
-      beforeCreate() {
-        if (!started) {
-          // this initial navigation is only necessary on client, on server it doesn't make sense
-          // because it will create an extra unnecessary navigation and could lead to problems
-          router.push(router.history.location.fullPath).catch(err => {
-            if (__DEV__)
-              console.error('Unhandled error when starting the router', err)
-            else return err
-          })
-          started = true
-        }
-      },
+  // this initial navigation is only necessary on client, on server it doesn't
+  // make sense because it will create an extra unnecessary navigation and could
+  // lead to problems
+  if (isBrowser && router.currentRoute.value === START_LOCATION_NORMALIZED) {
+    router.push(router.history.location.fullPath).catch(err => {
+      if (__DEV__)
+        console.error('Unhandled error when starting the router', err)
     })
   }
 

@@ -236,7 +236,6 @@ function useHistoryStateNavigation(base: string) {
 
     // Add to current entry the information of where we are going
     // as well as saving the current position
-    // TODO: the scroll position computation should be customizable
     const currentState: StateEntry = {
       ...history.state,
       forward: normalized,
