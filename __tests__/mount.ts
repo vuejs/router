@@ -3,16 +3,15 @@ import {
   createApp,
   defineComponent,
   h,
-  ref,
   ComponentPublicInstance,
   reactive,
   nextTick,
   ComponentObjectPropsOptions,
   ComputedRef,
   computed,
-  markRaw,
   App,
   VNode,
+  shallowRef,
 } from 'vue'
 import { compile } from '@vue/compiler-dom'
 import * as runtimeDom from '@vue/runtime-dom'
@@ -81,7 +80,7 @@ export function mount(
 
     const Wrapper = defineComponent({
       setup(_props, { emit }) {
-        const componentInstanceRef = ref<ComponentPublicInstance>()
+        const componentInstanceRef = shallowRef<ComponentPublicInstance>()
 
         return () => {
           return h(
@@ -158,10 +157,10 @@ export function createMockedRoute(initialValue: RouteLocationNormalizedLoose) {
     >
   }
 
-  const routeRef = ref(markRaw(initialValue))
+  const routeRef = shallowRef(initialValue)
 
   function set(newRoute: RouteLocationNormalizedLoose) {
-    routeRef.value = markRaw(newRoute)
+    routeRef.value = newRoute
     return nextTick()
   }
 

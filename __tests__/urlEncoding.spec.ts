@@ -4,7 +4,7 @@ import { RouteRecordRaw } from '../src/types'
 import { createMemoryHistory } from '../src'
 import * as encoding from '../src/encoding'
 
-jest.mock('../src/utils/encoding')
+jest.mock('../src/encoding')
 
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: components.Home },
