@@ -14,6 +14,7 @@ type HistoryStateValue =
   | number
   | boolean
   | null
+  | undefined
   | HistoryState
   | HistoryStateArray
 
