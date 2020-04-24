@@ -48,7 +48,7 @@ export function guardToPromiseFn(
   guard: NavigationGuard,
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded,
-  instance?: ComponentPublicInstance | undefined
+  instance?: ComponentPublicInstance | undefined | null
 ): () => Promise<void> {
   return () =>
     new Promise((resolve, reject) => {
@@ -109,24 +109,28 @@ export function extractComponentsGuards(
         const componentPromise = (rawComponent as Lazy<RouteComponent>)().catch(
           () => null
         )
-        guards.push(async () => {
-          const resolved = await componentPromise
-          if (!resolved)
-            throw new Error(
-              `Couldn't resolve component "${name}" for the following record with path "${record.path}"`
+        guards.push(() =>
+          componentPromise.then(resolved => {
+            if (!resolved)
+              return Promise.reject(
+                new Error(
+                  `Couldn't resolve component "${name}" for the following record with path "${record.path}"`
+                )
+              )
+            const resolvedComponent = isESModule(resolved)
+              ? resolved.default
+              : resolved
+            // replace the function with the resolved component
+            record.components[name] = resolvedComponent
+            // @ts-ignore: the options types are not propagated to Component
+            const guard: NavigationGuard = resolvedComponent[guardType]
+            return (
+              // @ts-ignore: the guards matched the instance type
+              guard &&
+              guardToPromiseFn(guard, to, from, record.instances[name])()
             )
-          const resolvedComponent = isESModule(resolved)
-            ? resolved.default
-            : resolved
-          // replace the function with the resolved component
-          record.components[name] = resolvedComponent
-          // @ts-ignore: the options types are not propagated to Component
-          const guard: NavigationGuard = resolvedComponent[guardType]
-          return (
-            // @ts-ignore: the guards matched the instance type
-            guard && guardToPromiseFn(guard, to, from, record.instances[name])()
-          )
-        })
+          })
+        )
       } else {
         const guard = rawComponent[guardType]
         guard &&
