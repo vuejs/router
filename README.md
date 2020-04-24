@@ -37,6 +37,13 @@ Since the library is still unstable **and because we want feedback** on bugs and
     ],
   }
   ```
+- If you use a `transition`, you need to wait for the router to be _ready_ before mounting the app:
+  ```js
+  app.use(router)
+  // Note: on Server Side, you need to manually push the initial location
+  router.isReady().then(() => app.mount('#app'))
+  ```
+  Otherwise there will be an initial transition as if you provided the `appear` prop to `transition`
 
 #### Improvements
 
