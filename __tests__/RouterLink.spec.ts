@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { RouterLink } from '../src/components/Link'
+import { RouterLink } from '../src/RouterLink'
 import {
   START_LOCATION_NORMALIZED,
   RouteQueryAndHash,
@@ -12,7 +12,7 @@ import { createMemoryHistory } from '../src'
 import { mount, createMockedRoute } from './mount'
 import { nextTick } from 'vue'
 import { RouteRecordNormalized } from '../src/matcher/types'
-import { routerKey } from '../src/utils/injectionSymbols'
+import { routerKey } from '../src/injectionSymbols'
 
 const records = {
   home: {} as RouteRecordNormalized,

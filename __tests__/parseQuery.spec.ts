@@ -1,4 +1,4 @@
-import { parseQuery } from '../src/utils/query'
+import { parseQuery } from '../src/query'
 import { mockWarn } from 'jest-mock-warn'
 
 describe('parseQuery', () => {

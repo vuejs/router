@@ -15,7 +15,7 @@ import {
   ScrollPositionCoordinates,
 } from '../scrollBehavior'
 import { warn } from 'vue'
-import { stripBase } from '../utils/location'
+import { stripBase } from '../location'
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 

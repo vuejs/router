@@ -1,7 +1,7 @@
 import { App, ComputedRef, reactive } from 'vue'
 import { Router } from './router'
-import { RouterLink } from './components/Link'
-import { RouterView } from './components/View'
+import { RouterLink } from './RouterLink'
+import { RouterView } from './RouterView'
 import { isBrowser } from './utils'
 import {
   START_LOCATION_NORMALIZED,
@@ -9,7 +9,7 @@ import {
   NavigationGuardWithThis,
   NavigationGuard,
 } from './types'
-import { routerKey, routeLocationKey } from './utils/injectionSymbols'
+import { routerKey, routeLocationKey } from './injectionSymbols'
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomOptions {

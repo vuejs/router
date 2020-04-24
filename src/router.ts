@@ -33,15 +33,15 @@ import {
 } from './errors'
 import { applyToParams, isBrowser } from './utils'
 import { useCallbacks } from './utils/callbacks'
-import { encodeParam, decode } from './utils/encoding'
+import { encodeParam, decode } from './encoding'
 import {
   normalizeQuery,
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
-} from './utils/query'
+} from './query'
 import { ref, Ref, markRaw, nextTick, App, warn } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
-import { parseURL, stringifyURL, isSameRouteLocation } from './utils/location'
+import { parseURL, stringifyURL, isSameRouteLocation } from './location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
 import { applyRouterPlugin } from './install'
 

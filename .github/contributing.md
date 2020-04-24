@@ -34,7 +34,7 @@ Hi! I'm really excited that you are interested in contributing to Vue Router. Be
 
 - Make sure tests pass!
 
-- Commit messages must follow the [commit message convention](./commit-convention.md) so that changelogs can be automatically generated. Commit messages are automatically validated before commit (by invoking [Git Hooks](https://git-scm.com/docs/githooks) via [yorkie](https://github.com/yyx990803/yorkie)).
+- Commit messages must follow the [commit message convention](./commit-convention.md) so that the changelog can be automatically generated. Commit messages are automatically validated before commit (by invoking [Git Hooks](https://git-scm.com/docs/githooks) via [yorkie](https://github.com/yyx990803/yorkie)).
 
 - No need to worry about code style as long as you have installed the dev dependencies - modified files are automatically formatted with Prettier on commit (by invoking [Git Hooks](https://git-scm.com/docs/githooks) via [yorkie](https://github.com/yyx990803/yorkie)).
 
@@ -90,11 +90,13 @@ $ yarn jest --watch
 
 Vue Router source code can be found in the `src` directory:
 
-- `src/components`: RouterLink and RouterView components.
 - `src/history`: history implementations that are instantiable with `create*History()`. This folder contains code related to using the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
-- `src/matcher`: RouteMatcher implementation. Contains the code that transforms paths like `/users/:id` into regexes and handle the transformation of locations like `{ name: 'UserDetail', params: { id: '2' } }` to strings. It contains path ranking logic and the part of dynamic routing that concerns matching urls in the right order.
-- `src/utils`: contains util functions that are used accross other sections of the router but are not contained by them.
+- `src/matcher`: RouteMatcher implementation. Contains the code that transforms paths like `/users/:id` into regexps and handle the transformation of locations like `{ name: 'UserDetail', params: { id: '2' } }` to strings. It contains path ranking logic and the part of dynamic routing that concerns matching urls in the right order.
+- `src/utils`: contains small utility functions that are used across other sections of the router but are not contained by them.
 - `src/router`: contains the router creation, navigation execution, using the matcher, the history implementation. It runs navigation guards.
+- `src/location`: helpers related to route location and urls
+- `src/encoding`: helpers related to url encoding
+- `src/errors`: different internal and external errors with their messages
 - `src/index`: contains all public API as exports.
 - `src/types`: contains global types that are used across multiple sections of the router.
 

@@ -8,10 +8,10 @@ import {
   unref,
   Component,
 } from 'vue'
-import { RouteLocationRaw, VueUseOptions, RouteLocation } from '../types'
-import { isSameLocationObject, isSameRouteRecord } from '../utils/location'
-import { routerKey, routeLocationKey } from '../utils/injectionSymbols'
-import { RouteRecord } from '../matcher/types'
+import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types'
+import { isSameLocationObject, isSameRouteRecord } from './location'
+import { routerKey, routeLocationKey } from './injectionSymbols'
+import { RouteRecord } from './matcher/types'
 
 interface LinkProps {
   to: RouteLocationRaw

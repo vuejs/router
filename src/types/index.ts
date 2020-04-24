@@ -1,4 +1,4 @@
-import { LocationQuery, LocationQueryRaw } from '../utils/query'
+import { LocationQuery, LocationQueryRaw } from '../query'
 import { PathParserOptions } from '../matcher/pathParserRanker'
 import { markRaw, Ref, ComputedRef, ComponentOptions } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'

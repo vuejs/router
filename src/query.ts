@@ -1,4 +1,4 @@
-import { decode, encodeQueryProperty } from '../utils/encoding'
+import { decode, encodeQueryProperty } from './encoding'
 
 /**
  * Possible values in normalized {@link LocationQuery}

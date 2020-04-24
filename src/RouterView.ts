@@ -9,12 +9,12 @@ import {
   ComponentPublicInstance,
   Component,
 } from 'vue'
-import { RouteLocationNormalizedLoaded } from '../types'
+import { RouteLocationNormalizedLoaded } from './types'
 import {
   matchedRouteKey,
   viewDepthKey,
   routeLocationKey,
-} from '../utils/injectionSymbols'
+} from './injectionSymbols'
 
 export const RouterView = (defineComponent({
   name: 'RouterView',

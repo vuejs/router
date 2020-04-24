@@ -17,7 +17,7 @@ import {
 import { compile } from '@vue/compiler-dom'
 import * as runtimeDom from '@vue/runtime-dom'
 import { RouteLocationNormalizedLoose } from './utils'
-import { routeLocationKey } from '../src/utils/injectionSymbols'
+import { routeLocationKey } from '../src/injectionSymbols'
 
 export interface MountOptions {
   propsData: Record<string, any>

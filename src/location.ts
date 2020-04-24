@@ -3,8 +3,8 @@ import {
   RouteLocation,
   RouteLocationNormalized,
   RouteParamValue,
-} from '../types'
-import { RouteRecord } from '../matcher/types'
+} from './types'
+import { RouteRecord } from './matcher/types'
 
 /**
  * Location object returned by {@link `parseURL`}.

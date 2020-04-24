@@ -1,7 +1,7 @@
 import { InjectionKey, ComputedRef } from 'vue'
-import { RouteLocationNormalizedLoaded } from '../types'
-import { Router } from '../router'
-import { RouteRecordNormalized } from '../matcher/types'
+import { RouteLocationNormalizedLoaded } from './types'
+import { Router } from './router'
+import { RouteRecordNormalized } from './matcher/types'
 
 export const hasSymbol =
   typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol'

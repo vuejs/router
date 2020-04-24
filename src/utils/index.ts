@@ -1,5 +1,5 @@
 import { RouteParams, RouteComponent } from '../types'
-import { hasSymbol } from './injectionSymbols'
+import { hasSymbol } from '../injectionSymbols'
 
 export * from './env'
 

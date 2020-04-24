@@ -1,4 +1,4 @@
-import { stringifyQuery } from '../src/utils/query'
+import { stringifyQuery } from '../src/query'
 import { mockWarn } from 'jest-mock-warn'
 
 describe('stringifyQuery', () => {

@@ -3,7 +3,7 @@ import {
   encodeParam,
   encodeQueryProperty,
   // decode,
-} from '../src/utils/encoding'
+} from '../src/encoding'
 
 describe('Encoding', () => {
   // all ascii chars with a non ascii char at the beginning

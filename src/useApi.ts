@@ -1,5 +1,5 @@
 import { inject } from 'vue'
-import { routerKey, routeLocationKey } from './utils/injectionSymbols'
+import { routerKey, routeLocationKey } from './injectionSymbols'
 import { Router } from './router'
 import { RouteLocationNormalizedLoaded } from './types'
 

@@ -8,7 +8,7 @@ export {
   stringifyQuery,
   LocationQueryRaw,
   LocationQueryValue,
-} from './utils/query'
+} from './query'
 
 export { RouterHistory } from './history/common'
 
@@ -38,8 +38,8 @@ export {
 export { NavigationFailureType, NavigationFailure } from './errors'
 
 export { onBeforeRouteLeave } from './navigationGuards'
-export { RouterLink, useLink } from './components/Link'
-export { RouterView } from './components/View'
+export { RouterLink, useLink } from './RouterLink'
+export { RouterView } from './RouterView'
 
 export { createWebHistory, createMemoryHistory, createWebHashHistory }
 

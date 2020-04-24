@@ -2,7 +2,7 @@ import { createRouter as newRouter } from '../src/router'
 import { components } from './utils'
 import { RouteRecordRaw } from '../src/types'
 import { createMemoryHistory } from '../src'
-import * as encoding from '../src/utils/encoding'
+import * as encoding from '../src/encoding'
 
 jest.mock('../src/utils/encoding')
 

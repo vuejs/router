@@ -18,7 +18,7 @@ import {
 } from './errors'
 import { ComponentPublicInstance } from 'vue'
 import { inject, getCurrentInstance, warn } from 'vue'
-import { matchedRouteKey } from './utils/injectionSymbols'
+import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
 import { isESModule } from './utils'
 
@@ -111,7 +111,10 @@ export function extractComponentsGuards(
         )
         guards.push(async () => {
           const resolved = await componentPromise
-          if (!resolved) throw new Error('TODO: error while fetching')
+          if (!resolved)
+            throw new Error(
+              `Couldn't resolve component "${name}" for the following record with path "${record.path}"`
+            )
           const resolvedComponent = isESModule(resolved)
             ? resolved.default
             : resolved
