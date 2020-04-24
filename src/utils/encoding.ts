@@ -85,9 +85,7 @@ export function encodeQueryProperty(text: string | number): string {
  * @returns encoded string
  */
 export function encodePath(text: string): string {
-  return commonEncode(text)
-    .replace(HASH_RE, '%23')
-    .replace(IM_RE, '%3F')
+  return commonEncode(text).replace(HASH_RE, '%23').replace(IM_RE, '%3F')
 }
 
 /**

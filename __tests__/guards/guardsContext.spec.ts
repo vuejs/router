@@ -13,7 +13,7 @@ describe('beforeRouteLeave', () => {
     expect.assertions(2)
     const spy = jest
       .fn()
-      .mockImplementationOnce(function(this: any, to, from, next) {
+      .mockImplementationOnce(function (this: any, to, from, next) {
         expect(typeof this.counter).toBe('number')
         next()
       })
@@ -55,7 +55,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: jest
         .fn()
-        .mockImplementationOnce(function(this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
           next()
         }),
@@ -66,7 +66,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: jest
         .fn()
-        .mockImplementationOnce(function(this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
           next()
         }),
@@ -109,7 +109,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: jest
         .fn()
-        .mockImplementationOnce(function(this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
           next()
         }),
@@ -120,7 +120,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: jest
         .fn()
-        .mockImplementationOnce(function(this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
           next()
         }),
@@ -168,7 +168,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: jest
         .fn()
-        .mockImplementationOnce(function(this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
           next()
         }),
@@ -179,7 +179,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: jest
         .fn()
-        .mockImplementationOnce(function(this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
           next()
         }),
@@ -190,7 +190,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: jest
         .fn()
-        .mockImplementationOnce(function(this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
           next()
         }),

@@ -8,7 +8,7 @@ module.exports = {
   '@tags': ['history', 'encoding'],
 
   /** @type {import('nightwatch').NightwatchTest} */
-  'encodes values': function(browser) {
+  'encodes values': function (browser) {
     browser
       .url(baseURL)
       .assert.urlEquals(baseURL + '/')

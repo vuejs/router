@@ -30,10 +30,7 @@ describe('Encoding', () => {
     const encodedToEncode = toEncode
       .split('')
       .map(c => {
-        const hex = c
-          .charCodeAt(0)
-          .toString(16)
-          .toUpperCase()
+        const hex = c.charCodeAt(0).toString(16).toUpperCase()
         return '%' + (hex.length > 1 ? hex : '0' + hex)
       })
       .join('')
@@ -65,10 +62,7 @@ describe('Encoding', () => {
     const encodedToEncode = toEncode
       .split('')
       .map(c => {
-        const hex = c
-          .charCodeAt(0)
-          .toString(16)
-          .toUpperCase()
+        const hex = c.charCodeAt(0).toString(16).toUpperCase()
         return '%' + (hex.length > 1 ? hex : '0' + hex)
       })
       .join('')
@@ -102,10 +96,7 @@ describe('Encoding', () => {
     const encodedToEncode = toEncode
       .split('')
       .map(c => {
-        const hex = c
-          .charCodeAt(0)
-          .toString(16)
-          .toUpperCase()
+        const hex = c.charCodeAt(0).toString(16).toUpperCase()
         return '%' + (hex.length > 1 ? hex : '0' + hex)
       })
       .join('')

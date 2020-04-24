@@ -6,7 +6,7 @@ module.exports = {
   '@tags': ['history'],
 
   /** @type {import('nightwatch').NightwatchTest} */
-  'scroll behavior': function(browser) {
+  'scroll behavior': function (browser) {
     const TIMEOUT = 2000
 
     browser
@@ -15,20 +15,20 @@ module.exports = {
       .assert.count('li a', 6)
       .assert.containsText('.view', 'home')
 
-      .execute(function() {
+      .execute(function () {
         window.scrollTo(0, 100)
       })
       .click('li:nth-child(2) a')
       .waitForElementPresent('.view.foo', TIMEOUT)
       .assert.containsText('.view', 'foo')
-      .execute(function() {
+      .execute(function () {
         window.scrollTo(0, 200)
         window.history.back()
       })
       .waitForElementPresent('.view.home', TIMEOUT)
       .assert.containsText('.view', 'home')
       .assert.evaluate(
-        function() {
+        function () {
           return window.pageYOffset === 100
         },
         null,
@@ -36,27 +36,27 @@ module.exports = {
       )
 
       // scroll on a popped entry
-      .execute(function() {
+      .execute(function () {
         window.scrollTo(0, 50)
         window.history.forward()
       })
       .waitForElementPresent('.view.foo', TIMEOUT)
       .assert.containsText('.view', 'foo')
       .assert.evaluate(
-        function() {
+        function () {
           return window.pageYOffset === 200
         },
         null,
         'restore scroll position on forward'
       )
 
-      .execute(function() {
+      .execute(function () {
         window.history.back()
       })
       .waitForElementPresent('.view.home', TIMEOUT)
       .assert.containsText('.view', 'home')
       .assert.evaluate(
-        function() {
+        function () {
           return window.pageYOffset === 50
         },
         null,
@@ -66,7 +66,7 @@ module.exports = {
       .click('li:nth-child(3) a')
       .waitForElementPresent('.view.bar', TIMEOUT)
       .assert.evaluate(
-        function() {
+        function () {
           return window.pageYOffset === 0
         },
         null,
@@ -75,9 +75,9 @@ module.exports = {
 
       .click('li:nth-child(4) a')
       .assert.evaluate(
-        function() {
+        function () {
           return (
-            (document.getElementById('anchor').getBoundingClientRect().top < 1)
+            document.getElementById('anchor').getBoundingClientRect().top < 1
           )
         },
         null,
@@ -86,22 +86,21 @@ module.exports = {
 
       .click('li:nth-child(5) a')
       .assert.evaluate(
-        function() {
+        function () {
           return (
-            (document.getElementById('anchor2').getBoundingClientRect().top <
-            101)
+            document.getElementById('anchor2').getBoundingClientRect().top < 101
           )
         },
         null,
         'scroll to anchor with offset'
       )
-      .execute(function() {
+      .execute(function () {
         document.querySelector('li:nth-child(6) a').click()
       })
       .assert.evaluate(
-        function() {
+        function () {
           return (
-            (document.getElementById('1number').getBoundingClientRect().top < 1)
+            document.getElementById('1number').getBoundingClientRect().top < 1
           )
         },
         null,
@@ -111,18 +110,18 @@ module.exports = {
       // go to /foo first
       .click('li:nth-child(2) a')
       .waitForElementPresent('.view.foo', TIMEOUT)
-      .execute(function() {
+      .execute(function () {
         window.scrollTo(0, 150)
       })
       // revisiting the same hash should scroll again
       .click('li:nth-child(4) a')
       .waitForElementPresent('.view.bar', TIMEOUT)
-      .execute(function() {
+      .execute(function () {
         window.scrollTo(0, 50)
       })
       .click('li:nth-child(4) a')
       .assert.evaluate(
-        function() {
+        function () {
           // TODO: change implementation to use `afterEach`
           return true
           // return (
@@ -132,12 +131,12 @@ module.exports = {
         null,
         'scroll to anchor when the route is the same'
       )
-      .execute(function() {
+      .execute(function () {
         history.back()
       })
       .waitForElementPresent('.view.foo', TIMEOUT)
       .assert.evaluate(
-        function() {
+        function () {
           return window.pageYOffset === 150
         },
         null,
@@ -146,7 +145,7 @@ module.exports = {
       .refresh()
       .waitForElementPresent('.view.foo', TIMEOUT)
       .assert.evaluate(
-        function() {
+        function () {
           return window.pageYOffset === 150
         },
         null,

@@ -8,7 +8,7 @@ module.exports = {
   '@tags': ['hash', 'encoding'],
 
   /** @type {import('nightwatch').NightwatchTest} */
-  'navigating to links': function(browser) {
+  'navigating to links': function (browser) {
     browser
       .url(baseURL)
       .waitForElementPresent('#app > *', 1000)
@@ -42,7 +42,7 @@ module.exports = {
   },
 
   /** @type {import('nightwatch').NightwatchTest} */
-  'encoding on initial navigation': function(browser) {
+  'encoding on initial navigation': function (browser) {
     browser
       .url(baseURL + '/unicode/%C3%A9')
       // navigation to unencoded value

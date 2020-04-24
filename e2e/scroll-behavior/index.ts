@@ -21,7 +21,11 @@ const Bar: RouteComponent = {
 // - only available in html5 history mode
 // - defaults to no scroll behavior
 // - return false to prevent scroll
-const scrollBehavior: ScrollBehavior = async function(to, from, savedPosition) {
+const scrollBehavior: ScrollBehavior = async function (
+  to,
+  from,
+  savedPosition
+) {
   await scrollWaiter.promise
 
   if (savedPosition) {

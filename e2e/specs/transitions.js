@@ -5,7 +5,7 @@ module.exports = {
 
   '@tags': ['no-headless'],
 
-  transitions: function(browser) {
+  transitions: function (browser) {
     const TIMEOUT = 2000
 
     browser
