@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { Link as RouterLink } from '../src/components/Link'
+import { RouterLink } from '../src/components/Link'
 import {
   START_LOCATION_NORMALIZED,
   RouteQueryAndHash,

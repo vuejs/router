@@ -16,7 +16,7 @@ import {
   routeLocationKey,
 } from '../utils/injectionSymbols'
 
-export const View = (defineComponent({
+export const RouterView = (defineComponent({
   name: 'RouterView',
   props: {
     name: {

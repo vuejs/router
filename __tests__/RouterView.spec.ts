@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { View as RouterView } from '../src/components/View'
+import { RouterView } from '../src/components/View'
 import { components, RouteLocationNormalizedLoose } from './utils'
 import { START_LOCATION_NORMALIZED } from '../src/types'
 import { markRaw } from 'vue'

@@ -38,8 +38,8 @@ export {
 export { NavigationFailureType, NavigationFailure } from './errors'
 
 export { onBeforeRouteLeave } from './navigationGuards'
-export { Link, useLink } from './components/Link'
-export { View } from './components/View'
+export { RouterLink, useLink } from './components/Link'
+export { RouterView } from './components/View'
 
 export { createWebHistory, createMemoryHistory, createWebHashHistory }
 

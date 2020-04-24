@@ -68,7 +68,7 @@ export function useLink(props: UseLinkOptions) {
   }
 }
 
-export const Link = (defineComponent({
+export const RouterLink = (defineComponent({
   name: 'RouterLink',
   props: {
     to: {

@@ -1,7 +1,7 @@
 import { App, ComputedRef, reactive } from 'vue'
 import { Router } from './router'
-import { Link } from './components/Link'
-import { View } from './components/View'
+import { RouterLink } from './components/Link'
+import { RouterView } from './components/View'
 import { isBrowser } from './utils'
 import {
   START_LOCATION_NORMALIZED,
@@ -64,8 +64,8 @@ declare module '@vue/runtime-core' {
 }
 
 export function applyRouterPlugin(app: App, router: Router) {
-  app.component('RouterLink', Link)
-  app.component('RouterView', View)
+  app.component('RouterLink', RouterLink)
+  app.component('RouterView', RouterView)
 
   // TODO: add tests
   app.config.globalProperties.$router = router
