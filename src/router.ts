@@ -304,9 +304,6 @@ export function createRouter({
     // to could be a string where `replace` is a function
     const replace = (to as RouteLocationOptions).replace === true
 
-    // TODO: create navigation failure
-    if (!force && isSameRouteLocation(from, targetLocation)) return
-
     const lastMatched =
       targetLocation.matched[targetLocation.matched.length - 1]
     if (lastMatched && 'redirect' in lastMatched) {
@@ -334,36 +331,44 @@ export function createRouter({
     toLocation.redirectedFrom = redirectedFrom
     let failure: NavigationFailure | void
 
-    // trigger all guards, throw if navigation is rejected
-    try {
-      await navigate(toLocation, from)
-    } catch (error) {
-      // a more recent navigation took place
-      if (pendingLocation !== toLocation) {
-        failure = createRouterError<NavigationFailure>(
-          ErrorTypes.NAVIGATION_CANCELLED,
-          {
-            from,
-            to: toLocation,
-          }
-        )
-      } else if (error.type === ErrorTypes.NAVIGATION_ABORTED) {
-        failure = error as NavigationFailure
-      } else if (error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT) {
-        // preserve the original redirectedFrom if any
-        return pushWithRedirect(
-          // keep options
-          {
-            ...locationAsObject((error as NavigationRedirectError).to),
-            state: data,
-            force,
-            replace,
-          },
-          redirectedFrom || toLocation
-        )
-      } else {
-        // unknown error, throws
-        triggerError(error, true)
+    if (!force && isSameRouteLocation(from, targetLocation))
+      failure = createRouterError<NavigationFailure>(
+        ErrorTypes.NAVIGATION_DUPLICATED,
+        { to: toLocation, from }
+      )
+
+    if (!failure) {
+      // trigger all guards, throw if navigation is rejected
+      try {
+        await navigate(toLocation, from)
+      } catch (error) {
+        // a more recent navigation took place
+        if (pendingLocation !== toLocation) {
+          failure = createRouterError<NavigationFailure>(
+            ErrorTypes.NAVIGATION_CANCELLED,
+            {
+              from,
+              to: toLocation,
+            }
+          )
+        } else if (error.type === ErrorTypes.NAVIGATION_ABORTED) {
+          failure = error as NavigationFailure
+        } else if (error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT) {
+          // preserve the original redirectedFrom if any
+          return pushWithRedirect(
+            // keep options
+            {
+              ...locationAsObject((error as NavigationRedirectError).to),
+              state: data,
+              force,
+              replace,
+            },
+            redirectedFrom || toLocation
+          )
+        } else {
+          // unknown error, throws
+          triggerError(error, true)
+        }
       }
     }
 

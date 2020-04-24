@@ -39,6 +39,30 @@ describe('Errors & Navigation failures', () => {
     )
   })
 
+  it('Duplicated navigation triggers afterEach', async () => {
+    let expectedFailure = expect.objectContaining({
+      type: NavigationFailureType.duplicated,
+      to: expect.objectContaining({ path: '/' }),
+      from: expect.objectContaining({ path: '/' }),
+    })
+
+    const { router } = createRouter()
+
+    await expect(router.push('/')).resolves.toEqual(undefined)
+    expect(afterEach).toHaveBeenCalledTimes(1)
+    expect(onError).toHaveBeenCalledTimes(0)
+
+    await expect(router.push('/')).resolves.toEqual(expectedFailure)
+    expect(afterEach).toHaveBeenCalledTimes(2)
+    expect(onError).toHaveBeenCalledTimes(0)
+
+    expect(afterEach).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.any(Object),
+      expectedFailure
+    )
+  })
+
   it('next("/location") triggers afterEach', async () => {
     await testNavigation(
       ((to, from, next) => {

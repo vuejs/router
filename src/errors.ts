@@ -10,12 +10,7 @@ export const enum ErrorTypes {
   NAVIGATION_GUARD_REDIRECT,
   NAVIGATION_ABORTED,
   NAVIGATION_CANCELLED,
-  // Using string enums because error codes are exposed to developers
-  // and number enums could collide with other error codes in runtime
-  // MATCHER_NOT_FOUND = 'MATCHER_NOT_FOUND',
-  // NAVIGATION_GUARD_REDIRECT = 'NAVIGATION_GUARD_REDIRECT',
-  // NAVIGATION_ABORTED = 'NAVIGATION_ABORTED',
-  // NAVIGATION_CANCELLED = 'NAVIGATION_CANCELLED',
+  NAVIGATION_DUPLICATED,
 }
 
 interface RouterErrorBase extends Error {
@@ -31,9 +26,13 @@ export interface MatcherError extends RouterErrorBase {
 export enum NavigationFailureType {
   cancelled = ErrorTypes.NAVIGATION_CANCELLED,
   aborted = ErrorTypes.NAVIGATION_ABORTED,
+  duplicated = ErrorTypes.NAVIGATION_DUPLICATED,
 }
 export interface NavigationFailure extends RouterErrorBase {
-  type: ErrorTypes.NAVIGATION_ABORTED | ErrorTypes.NAVIGATION_CANCELLED
+  type:
+    | ErrorTypes.NAVIGATION_CANCELLED
+    | ErrorTypes.NAVIGATION_ABORTED
+    | ErrorTypes.NAVIGATION_DUPLICATED
   from: RouteLocationNormalized
   to: RouteLocationNormalized
 }
@@ -66,6 +65,9 @@ const ErrorTypeMessages = {
   },
   [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationFailure) {
     return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new \`push\` or \`replace\``
+  },
+  [ErrorTypes.NAVIGATION_DUPLICATED]({ from, to }: NavigationFailure) {
+    return `Avoided redundant navigation to current location: "${from.fullPath}"`
   },
 }
 
