@@ -1,65 +1,71 @@
 const { resolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const { VueLoaderPlugin } = require('vue-loader')
 const webpack = require('webpack')
 
 const outputPath = resolve(__dirname, 'playground_dist')
 
 /** @type {import('webpack').ConfigurationFactory} */
-const config = (env = {}) => ({
-  mode: env.prod ? 'production' : 'development',
-  devtool: env.prod ? 'source-map' : 'inline-source-map',
+const config = (env = {}) => {
+  const extraPlugins = env.prod ? [new BundleAnalyzerPlugin()] : []
 
-  devServer: {
-    contentBase: outputPath,
-    historyApiFallback: true,
-    hot: true,
-    stats: 'minimal',
-  },
+  return {
+    mode: env.prod ? 'production' : 'development',
+    devtool: env.prod ? 'source-map' : 'inline-source-map',
 
-  output: {
-    path: outputPath,
-    publicPath: '/',
-    filename: 'bundle.js',
-  },
-
-  entry: [resolve(__dirname, 'playground/main.ts')],
-  module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        use: 'ts-loader',
-      },
-      {
-        test: /\.vue$/,
-        use: 'vue-loader',
-      },
-    ],
-  },
-  resolve: {
-    alias: {
-      // this isn't technically needed, since the default `vue` entry for bundlers
-      // is a simple `export * from '@vue/runtime-dom`. However having this
-      // extra re-export somehow causes webpack to always invalidate the module
-      // on the first HMR update and causes the page to reload.
-      vue: '@vue/runtime-dom',
+    devServer: {
+      contentBase: outputPath,
+      historyApiFallback: true,
+      hot: true,
+      stats: 'minimal',
     },
-    // Add `.ts` and `.tsx` as a resolvable extension.
-    extensions: ['.ts', 'd.ts', '.tsx', '.js', '.vue'],
-  },
-  plugins: [
-    new VueLoaderPlugin(),
-    new HtmlWebpackPlugin({
-      template: resolve(__dirname, 'playground/index.html'),
-    }),
-    new webpack.DefinePlugin({
-      __DEV__: JSON.stringify(!env.prod),
-      __BROWSER__: 'true',
-      'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+
+    output: {
+      path: outputPath,
+      publicPath: '/',
+      filename: 'bundle.js',
+    },
+
+    entry: [resolve(__dirname, 'playground/main.ts')],
+    module: {
+      rules: [
+        {
+          test: /\.ts$/,
+          use: 'ts-loader',
+        },
+        {
+          test: /\.vue$/,
+          use: 'vue-loader',
+        },
+      ],
+    },
+    resolve: {
+      alias: {
+        // this isn't technically needed, since the default `vue` entry for bundlers
+        // is a simple `export * from '@vue/runtime-dom`. However having this
+        // extra re-export somehow causes webpack to always invalidate the module
+        // on the first HMR update and causes the page to reload.
+        vue: '@vue/runtime-dom',
       },
-    }),
-  ],
-})
+      // Add `.ts` and `.tsx` as a resolvable extension.
+      extensions: ['.ts', 'd.ts', '.tsx', '.js', '.vue'],
+    },
+    plugins: [
+      new VueLoaderPlugin(),
+      new HtmlWebpackPlugin({
+        template: resolve(__dirname, 'playground/index.html'),
+      }),
+      new webpack.DefinePlugin({
+        __DEV__: JSON.stringify(!env.prod),
+        __BROWSER__: 'true',
+        'process.env': {
+          NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        },
+      }),
+      ...extraPlugins,
+    ],
+  }
+}
 
 module.exports = config
