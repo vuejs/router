@@ -27,7 +27,7 @@ import { isESModule } from './utils'
  * left. Similarly to {@link beforeRouteLeave}, it has access to the
  * component instance as `this`.
  *
- * @param leaveGuard {@link NavigationGuard}
+ * @param leaveGuard - {@link NavigationGuard}
  */
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
   const instance = getCurrentInstance()
@@ -59,7 +59,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
  * updated. Similarly to {@link beforeRouteUpdate}, it has access to the
  * component instance as `this`.
  *
- * @param updateGuard {@link NavigationGuard}
+ * @param updateGuard - {@link NavigationGuard}
  */
 export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
   const instance = getCurrentInstance()
