@@ -114,14 +114,14 @@ describe('Memory history', () => {
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenCalledWith(START, normalizedLoc, {
       direction: 'back',
-      distance: -1,
+      delta: -1,
       type: 'pop',
     })
     history.go(1)
     expect(spy).toHaveBeenCalledTimes(2)
     expect(spy).toHaveBeenLastCalledWith(normalizedLoc, START, {
       direction: 'forward',
-      distance: 1,
+      delta: 1,
       type: 'pop',
     })
   })

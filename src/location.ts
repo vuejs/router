@@ -27,6 +27,10 @@ interface LocationPartial {
   hash?: string
 }
 
+const TRAILING_SLASH_RE = /\/$/
+export const removeTrailingSlash = (path: string) =>
+  path.replace(TRAILING_SLASH_RE, '')
+
 /**
  * Transforms an URI into a normalized history location
  *

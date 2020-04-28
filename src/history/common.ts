@@ -1,4 +1,5 @@
 import { isBrowser } from '../utils'
+import { removeTrailingSlash } from '../location'
 
 interface HistoryLocation {
   fullPath: string
@@ -167,5 +168,5 @@ export function normalizeBase(base?: string): string {
 
   // remove the trailing slash so all other method can just do `base + fullPath`
   // to build an href
-  return base.replace(/\/$/, '')
+  return removeTrailingSlash(base)
 }
