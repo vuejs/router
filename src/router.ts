@@ -33,7 +33,7 @@ import {
 } from './errors'
 import { applyToParams, isBrowser } from './utils'
 import { useCallbacks } from './utils/callbacks'
-import { encodeParam, decode } from './encoding'
+import { encodeParam, decode, encodeHash } from './encoding'
 import {
   normalizeQuery,
   parseQuery as originalParseQuery,
@@ -244,6 +244,8 @@ export function createRouter({
         currentLocation
       )
 
+    const hash = encodeHash(location.hash || '')
+
     // put back the unencoded params as given by the user (avoid the cost of decoding them)
     // TODO: normalize params if we accept numbers as raw values
     matchedRoute.params =
@@ -253,12 +255,15 @@ export function createRouter({
 
     const fullPath = stringifyURL(stringifyQuery, {
       ...location,
+      hash,
       path: matchedRoute.path,
     })
 
     return {
       fullPath,
-      hash: location.hash || '',
+      // keep the hash encoded so fullPath is effectively path + encodedQuery +
+      // hash
+      hash,
       query: normalizeQuery(location.query),
       ...matchedRoute,
       redirectedFrom: undefined,
