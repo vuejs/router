@@ -22,6 +22,13 @@ import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
 import { isESModule } from './utils'
 
+/**
+ * Add a navigation guard that triggers whenever the current location is
+ * left. Similarly to {@link beforeRouteLeave}, it has access to the
+ * component instance as `this`.
+ *
+ * @param leaveGuard {@link NavigationGuard}
+ */
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
   const instance = getCurrentInstance()
   if (!instance) {
@@ -47,6 +54,13 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
   )
 }
 
+/**
+ * Add a navigation guard that triggers whenever the current location is
+ * updated. Similarly to {@link beforeRouteUpdate}, it has access to the
+ * component instance as `this`.
+ *
+ * @param updateGuard {@link NavigationGuard}
+ */
 export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
   const instance = getCurrentInstance()
   if (!instance) {
