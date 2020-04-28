@@ -84,19 +84,19 @@ function useHistoryListeners(
     const deltaFromCurrent = fromState
       ? state.position - fromState.position
       : ''
-    const distance = deltaFromCurrent || 0
+    const delta = deltaFromCurrent || 0
     // console.log({ deltaFromCurrent })
-    // Here we could also revert the navigation by calling history.go(-distance)
+    // Here we could also revert the navigation by calling history.go(-delta)
     // this listener will have to be adapted to not trigger again and to wait for the url
     // to be updated before triggering the listeners. Some kind of validation function would also
     // need to be passed to the listeners so the navigation can be accepted
     // call all listeners
     listeners.forEach(listener => {
       listener(location.value, from, {
-        distance,
+        delta,
         type: NavigationType.pop,
-        direction: distance
-          ? distance > 0
+        direction: delta
+          ? delta > 0
             ? NavigationDirection.forward
             : NavigationDirection.back
           : NavigationDirection.unknown,
@@ -275,9 +275,9 @@ export default function createWebHistory(base?: string): RouterHistory {
     historyNavigation.location,
     historyNavigation.replace
   )
-  function go(distance: number, triggerListeners = true) {
+  function go(delta: number, triggerListeners = true) {
     if (!triggerListeners) historyListeners.pauseListeners()
-    history.go(distance)
+    history.go(delta)
   }
   const routerHistory: RouterHistory = {
     // it's overridden right after

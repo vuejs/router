@@ -37,14 +37,11 @@ export default function createMemoryHistory(base: string = ''): RouterHistory {
   function triggerListeners(
     to: HistoryLocationNormalized,
     from: HistoryLocationNormalized,
-    {
-      direction,
-      distance,
-    }: Pick<NavigationInformation, 'direction' | 'distance'>
+    { direction, delta }: Pick<NavigationInformation, 'direction' | 'delta'>
   ): void {
     const info: NavigationInformation = {
       direction,
-      distance,
+      delta,
       type: NavigationType.pop,
     }
     for (let callback of listeners) {
@@ -81,18 +78,18 @@ export default function createMemoryHistory(base: string = ''): RouterHistory {
       listeners = []
     },
 
-    go(distance, shouldTrigger = true) {
+    go(delta, shouldTrigger = true) {
       const from = this.location
       const direction: NavigationDirection =
-        // we are considering distance === 0 going forward, but in abstract mode
-        // using 0 for the distance doesn't make sense like it does in html5 where
+        // we are considering delta === 0 going forward, but in abstract mode
+        // using 0 for the delta doesn't make sense like it does in html5 where
         // it reloads the page
-        distance < 0 ? NavigationDirection.back : NavigationDirection.forward
-      position = Math.max(0, Math.min(position + distance, queue.length - 1))
+        delta < 0 ? NavigationDirection.back : NavigationDirection.forward
+      position = Math.max(0, Math.min(position + delta, queue.length - 1))
       if (shouldTrigger) {
         triggerListeners(this.location, from, {
           direction,
-          distance,
+          delta,
         })
       }
     },

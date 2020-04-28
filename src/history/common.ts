@@ -38,7 +38,7 @@ export enum NavigationDirection {
 export interface NavigationInformation {
   type: NavigationType
   direction: NavigationDirection
-  distance: number
+  delta: number
 }
 
 export interface NavigationCallback {
@@ -110,12 +110,12 @@ export interface RouterHistory {
    * myHistory.go(1) // equivalent to window.history.forward()
    * ```
    *
-   * @param distance - distance to travel. If distance is \< 0, it will go back,
-   * if it's \> 0, it will go forward
+   * @param delta - distance to travel. If delta is \< 0, it will go back,
+   * if it's \> 0, it will go forward by that amount of entries.
    * @param triggerListeners - whether this should trigger listeners attached to
    * the history
    */
-  go(distance: number, triggerListeners?: boolean): void
+  go(delta: number, triggerListeners?: boolean): void
 
   /**
    * Attach a listener to the History implementation that is triggered when the

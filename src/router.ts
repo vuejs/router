@@ -132,7 +132,7 @@ export interface Router {
   // merged
   back(): void
   forward(): void
-  go(distance: number): void
+  go(delta: number): void
 
   beforeEach(guard: NavigationGuardWithThis<undefined>): () => void
   beforeResolve(guard: NavigationGuardWithThis<undefined>): () => void
@@ -574,7 +574,7 @@ export function createRouter({
 
     if (isBrowser) {
       saveScrollPosition(
-        getScrollKey(from.fullPath, info.distance),
+        getScrollKey(from.fullPath, info.delta),
         computeScrollPosition()
       )
     }
@@ -595,7 +595,7 @@ export function createRouter({
           return error as NavigationFailure
         }
         if (error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT) {
-          history.go(-info.distance, false)
+          history.go(-info.delta, false)
           // the error is already handled by router.push we just want to avoid
           // logging the error
           pushWithRedirect(
@@ -607,7 +607,7 @@ export function createRouter({
           return Promise.reject()
         }
         // TODO: test on different browsers ensure consistent behavior
-        history.go(-info.distance, false)
+        history.go(-info.delta, false)
         // unrecognized error, transfer to the global handler
         return triggerError(error)
       })
@@ -622,7 +622,7 @@ export function createRouter({
           )
 
         // revert the navigation
-        if (failure) history.go(-info.distance, false)
+        if (failure) history.go(-info.delta, false)
 
         triggerAfterEach(
           toLocation as RouteLocationNormalizedLoaded,
