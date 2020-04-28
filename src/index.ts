@@ -37,7 +37,7 @@ export {
 
 export { NavigationFailureType, NavigationFailure } from './errors'
 
-export { onBeforeRouteLeave } from './navigationGuards'
+export { onBeforeRouteLeave, onBeforeRouteUpdate } from './navigationGuards'
 export { RouterLink, useLink } from './RouterLink'
 export { RouterView } from './RouterView'
 

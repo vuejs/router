@@ -395,7 +395,7 @@ export function createRouter({
 
     const [
       leavingRecords,
-      // updatingRecords,
+      updatingRecords,
       // enteringRecords,
     ] = extractChangingRecords(to, from)
 
@@ -424,6 +424,12 @@ export function createRouter({
           to,
           from
         )
+
+        for (const record of updatingRecords) {
+          for (const guard of record.updateGuards) {
+            guards.push(guardToPromiseFn(guard, to, from))
+          }
+        }
 
         // run the queue of per route beforeEnter guards
         return runGuardQueue(guards)

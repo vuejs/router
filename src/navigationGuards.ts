@@ -26,21 +26,49 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
   const instance = getCurrentInstance()
   if (!instance) {
     __DEV__ &&
-      warn('onRouteLeave must be called at the top of a setup function')
+      warn('onBeforeRouteLeave must be called at the top of a setup function')
     return
   }
 
-  const activeRecord = inject(matchedRouteKey, {} as any).value
+  const activeRecord: RouteRecordNormalized | undefined = inject(
+    matchedRouteKey,
+    {} as any
+  ).value
 
   if (!activeRecord) {
     __DEV__ &&
-      warn('onRouteLeave must be called at the top of a setup function')
+      warn('onBeforeRouteLeave must be called at the top of a setup function')
     return
   }
 
   activeRecord.leaveGuards.push(
     // @ts-ignore do we even want to allow that? Passing the context in a composition api hook doesn't make sense
     leaveGuard.bind(instance.proxy)
+  )
+}
+
+export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
+  const instance = getCurrentInstance()
+  if (!instance) {
+    __DEV__ &&
+      warn('onBeforeRouteUpdate must be called at the top of a setup function')
+    return
+  }
+
+  const activeRecord: RouteRecordNormalized | undefined = inject(
+    matchedRouteKey,
+    {} as any
+  ).value
+
+  if (!activeRecord) {
+    __DEV__ &&
+      warn('onBeforeRouteUpdate must be called at the top of a setup function')
+    return
+  }
+
+  activeRecord.updateGuards.push(
+    // @ts-ignore do we even want to allow that? Passing the context in a composition api hook doesn't make sense
+    updateGuard.bind(instance.proxy)
   )
 }
 

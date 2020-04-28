@@ -304,6 +304,7 @@ export function normalizeRouteRecord(
       children: record.children || [],
       instances: {},
       leaveGuards: [],
+      updateGuards: [],
       components:
         'components' in record
           ? record.components
