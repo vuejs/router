@@ -82,15 +82,12 @@ workflows:
   install-and-parallel-test:
     jobs:
       - install
-      - build-e2e:
-          requires:
-            - install
       - test-unit:
           requires:
             - install
       - test-e2e:
           requires:
-            - build-e2e
+            - install
       - build-lint:
           requires:
             - install
