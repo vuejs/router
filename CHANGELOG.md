@@ -1,3 +1,50 @@
+# [4.0.0-alpha.8](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.7...v4.0.0-alpha.8) (2020-04-29)
+
+
+### Bug Fixes
+
+* default matcher options ([cea397b](https://github.com/vuejs/vue-router-next/commit/cea397b7402cd27ff06013f846bf35966aff6952))
+* **guards:** preserve navigation options when redirecting ([9effd81](https://github.com/vuejs/vue-router-next/commit/9effd816c51b58cb1103d878799aed6992f78454))
+* **html5:** correctly preserve current history.state ([0586394](https://github.com/vuejs/vue-router-next/commit/05863948ee86e0f1c9c9ec31c02ad7af17923743)), closes [#180](https://github.com/vuejs/vue-router-next/issues/180)
+* **link:** make alias of empty child active ([cfe5993](https://github.com/vuejs/vue-router-next/commit/cfe5993332cc7dc94c5de2f2edb7f2e15c9b7049))
+* encode hash ([85bb7e1](https://github.com/vuejs/vue-router-next/commit/85bb7e11b1a4326f5048a823ae7d49654b308cdd))
+* **link:** preserve the alias path ([fffa585](https://github.com/vuejs/vue-router-next/commit/fffa58585ac89e9fb6b648e61e499a9ee3a9e217))
+* **matcher:** merge params ([d8a6b25](https://github.com/vuejs/vue-router-next/commit/d8a6b2591ac2e37388fb7f4ce8c70922389cedb5)), closes [#189](https://github.com/vuejs/vue-router-next/issues/189)
+* **router:** make redirect relative to target location ([e878e91](https://github.com/vuejs/vue-router-next/commit/e878e91af217fde6d2e934857ce895e7abbd5920))
+* **router:** preserve navigation options with redirects ([9732758](https://github.com/vuejs/vue-router-next/commit/9732758d076eef252f2940ffa44e44fa94e794a0))
+* **view:** render slot with no match ([5873296](https://github.com/vuejs/vue-router-next/commit/5873296ec96df15f13b0cf02b685ebb36f4e0a41))
+
+
+### Code Refactoring
+
+* Link and View renamed to RouterLink and RouterView ([030bbc4](https://github.com/vuejs/vue-router-next/commit/030bbc4c3f68d29a9e9d23ee01603394427427a3))
+
+
+### Features
+
+* **link:** make empty child active with adjacent children ([4b813b1](https://github.com/vuejs/vue-router-next/commit/4b813b1ec387f8be9506f1400b7e83fd5794c7af))
+* **router:** add global pathOptions ([7383564](https://github.com/vuejs/vue-router-next/commit/73835649f450ffc378b906c72aa5ae8a6a03feb2))
+* add navigation duplicated failure ([9570416](https://github.com/vuejs/vue-router-next/commit/9570416c75f904a172af07bcf10956fe3385ec13))
+* add onBeforeRouteUpdate ([96c9503](https://github.com/vuejs/vue-router-next/commit/96c95035653a52f94781808fccbf262a02a3cd79))
+* resolve relative paths ([eae833e](https://github.com/vuejs/vue-router-next/commit/eae833e0fc1c8e549f2b4cd47b3dcb90484d17d5))
+* **router:** add back,forward,go ([5e927b5](https://github.com/vuejs/vue-router-next/commit/5e927b5ab8a09c2941edbec7c6af145323c6d3eb))
+* **router:** add beforeResolve ([9697134](https://github.com/vuejs/vue-router-next/commit/9697134c05f0f4c6fde48a773880946074e95666))
+* **scroll:** handle scroll on reload ([617f131](https://github.com/vuejs/vue-router-next/commit/617f131d2473952072f345000c3d43556dfe9761))
+
+
+### Performance Improvements
+
+* use index access for strings ([971fea4](https://github.com/vuejs/vue-router-next/commit/971fea415fcce84ce86d8ace67b65115af3b7ac2))
+
+
+### BREAKING CHANGES
+
+* exported components Link and View have been renamed to be
+include the _Router_ prefix and to have the same export name as their component
+name
+
+
+
 # [4.0.0-alpha.7](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.6...v4.0.0-alpha.7) (2020-04-17)
 
 
