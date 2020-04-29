@@ -31,6 +31,7 @@ jobs:
       - run: yarn run test:types
       - run: yarn run build
       - run: yarn run build:dts
+      - run: yarn run test:tsd
       - run: yarn run test:unit --maxWorkers=2
       - run: yarn run build:e2e
       - run: yarn run test:e2e:ci

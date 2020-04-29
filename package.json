@@ -5,7 +5,10 @@
   "browser": "dist/vue-router.esm.js",
   "unpkg": "dist/vue-router.global.js",
   "module": "dist/vue-router.esm-bundler.js",
-  "typings": "dist/vue-router.d.ts",
+  "types": "dist/vue-router.d.ts",
+  "tsd": {
+    "directory": "test-dts"
+  },
   "sideEffects": false,
   "license": "MIT",
   "files": [
@@ -27,6 +30,7 @@
     "lint": "prettier -c --parser typescript \"{src,__tests__,e2e}/**/*.[jt]s?(x)\"",
     "lint:fix": "yarn run lint --write",
     "test:types": "tsc --build tsconfig.json",
+    "test:tsd": "tsd",
     "test:unit": "jest --coverage",
     "test": "yarn run test:types && yarn run test:unit && yarn run build && yarn run build:dts && yarn run test:e2e",
     "test:e2e": "node e2e/runner.js -e chrome",
@@ -94,6 +98,7 @@
     "ts-jest": "^25.4.0",
     "ts-loader": "^7.0.1",
     "ts-node": "^8.9.1",
+    "tsd": "^0.11.0",
     "typescript": "^3.8.3",
     "vue": "^3.0.0-beta.4",
     "vue-loader": "^16.0.0-alpha.3",
