@@ -61,7 +61,7 @@ function createConfig(format, output, plugins = []) {
     process.exit(1)
   }
 
-  output.sourcemap = true
+  output.sourcemap = !!process.env.SOURCE_MAP
   output.banner = banner
   output.externalLiveBindings = false
   output.globals = { vue: 'Vue' }
