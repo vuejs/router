@@ -80,7 +80,5 @@ describe('History Hash', () => {
         expect.stringMatching(/^#\/?$/)
       )
     })
-
-    it.todo('warns if we provide a base with file://')
   })
 })

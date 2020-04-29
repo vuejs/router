@@ -196,10 +196,15 @@ describe('RouterView', () => {
   })
 
   it('does not pass params as props by default', async () => {
-    // TODO: rewrite so it is by default instead of explicitly stated
     let noPropsWithParams = {
       ...routes.withParams,
-      matched: [{ ...routes.withParams.matched[0], props: false }],
+      matched: [
+        {
+          components: { default: components.User },
+          instances: {},
+          path: '/users/:id',
+        },
+      ],
     }
     const { wrapper, route } = await factory(noPropsWithParams)
     expect(wrapper.html()).toBe(`<div>User: default</div>`)

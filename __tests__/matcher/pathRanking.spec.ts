@@ -38,7 +38,7 @@ describe('Path ranking', () => {
     })
     it('longer', () => {
       expect(compare([[2]], [[3, 1]])).toEqual(1)
-      // TODO: we are assuming we never pass end: false
+      // NOTE: we are assuming we never pass end: false
       expect(compare([[3]], [[3, 1]])).toEqual(1)
       expect(compare([[1, 3]], [[2]])).toEqual(1)
       expect(compare([[4]], [[3]])).toEqual(-1)

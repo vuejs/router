@@ -123,9 +123,6 @@ export function tokenizePath(path: string): Array<Token[]> {
         } else if (char === ':') {
           consumeBuffer()
           state = TokenizerState.Param
-          // } else if (char === '{') {
-          // TODO: handle group (or drop it)
-          // addCharToBuffer()
         } else {
           addCharToBuffer()
         }

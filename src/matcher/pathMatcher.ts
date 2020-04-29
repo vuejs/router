@@ -35,7 +35,6 @@ export function createRouteRecordMatcher(
     // passing originalRecord in Matcher.addRoute
     if (!matcher.record.aliasOf === !parent.record.aliasOf)
       parent.children.push(matcher)
-    // else TODO: save alias children to be able to remove them
   }
 
   return matcher

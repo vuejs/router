@@ -51,12 +51,10 @@ export function useLink(props: UseLinkOptions) {
       isSameLocationObject(currentRoute.params, route.value.params)
   )
 
-  // TODO: handle replace prop
-  // const method = unref(rep)
-
-  function navigate(e: MouseEvent = {} as MouseEvent) {
-    // TODO: handle navigate with empty parameters for scoped slot and composition api
-    if (guardEvent(e)) router.push(unref(props.to))
+  function navigate(e: MouseEvent = {} as MouseEvent): Promise<any> {
+    if (guardEvent(e))
+      return router[unref(props.replace) ? 'replace' : 'push'](unref(props.to))
+    return Promise.resolve()
   }
 
   return {

@@ -9,14 +9,6 @@ describe('Path parser', () => {
       ])
     })
 
-    // TODO: refactor trailing slash cases
-    it.skip('trailing slash', () => {
-      expect(tokenizePath('/foo/')).toEqual([
-        [{ type: TokenType.Static, value: 'foo' }],
-        [{ type: TokenType.Static, value: '' }],
-      ])
-    })
-
     it('empty', () => {
       expect(tokenizePath('')).toEqual([[]])
     })

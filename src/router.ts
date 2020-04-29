@@ -5,7 +5,6 @@ import {
   PostNavigationGuard,
   START_LOCATION_NORMALIZED,
   Lazy,
-  TODO,
   MatcherLocation,
   RouteLocationNormalizedLoaded,
   RouteLocation,
@@ -60,8 +59,7 @@ export interface ScrollBehavior {
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
     savedPosition: Required<ScrollPositionCoordinates> | null
-  ): // TODO: implement false nad refactor promise based type
-  Awaitable<ScrollPosition | false | void>
+  ): Awaitable<ScrollPosition | false | void>
 }
 
 export interface RouterOptions {
@@ -405,11 +403,10 @@ export function createRouter({
   function navigate(
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded
-  ): Promise<TODO> {
+  ): Promise<any> {
     let guards: Lazy<any>[]
 
     // all components here have been resolved once because we are leaving
-    // TODO: refactor both together
     guards = extractComponentsGuards(
       from.matched.filter(record => to.matched.indexOf(record) < 0).reverse(),
       'beforeRouteLeave',
@@ -477,7 +474,7 @@ export function createRouter({
         return runGuardQueue(guards)
       })
       .then(() => {
-        // TODO: at this point to.matched is normalized and does not contain any () => Promise<Component>
+        // NOTE: at this point to.matched is normalized and does not contain any () => Promise<Component>
 
         // check in-component beforeRouteEnter
         guards = extractComponentsGuards(
@@ -541,7 +538,7 @@ export function createRouter({
       record.leaveGuards = []
       // free the references
 
-      // TODO: add tests
+      // TODO: to refactor once keep-alive and transition can be supported
       record.instances = {}
     }
 
@@ -564,8 +561,9 @@ export function createRouter({
 
     // accept current navigation
     currentRoute.value = toLocation
-    // TODO: this doesn't work on first load. Moving it to RouterView could allow automatically handling transitions too maybe
-    // TODO: refactor with a state getter
+    // TODO: call handleScroll in afterEach so it can also be triggered on
+    // duplicated navigation (e.g. same anchor navigation). It needs exposing
+    // the navigation information (type, direction)
     if (isBrowser) {
       const savedScroll = getSavedScrollPosition(
         getScrollKey(toLocation.fullPath, 0)
@@ -620,8 +618,9 @@ export function createRouter({
           pushWithRedirect(
             (error as NavigationRedirectError).to,
             toLocation
+          ).catch(() => {
             // TODO: in dev show warning, in prod noop, same as initial navigation
-          )
+          })
           // avoid the then branch
           return Promise.reject()
         }
@@ -649,7 +648,9 @@ export function createRouter({
           failure
         )
       })
-      .catch(() => {})
+      .catch(() => {
+        // TODO: same as above: in dev show warning, in prod noop, same as initial navigation
+      })
   })
 
   // Initialization and Errors

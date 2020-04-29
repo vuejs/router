@@ -12,10 +12,9 @@ export default defineComponent({
   },
 
   beforeRouteUpdate(to, from, next) {
-    // TODO: these do not work yet
-    console.log('this', this)
+    console.log('in beforeRouteUpdate this', this)
     next(vm => {
-      console.log('in next', vm)
+      console.log('in next callback', vm)
     })
   },
 })

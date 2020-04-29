@@ -3,6 +3,7 @@ import { PathParserOptions } from '../matcher/pathParserRanker'
 import { Ref, ComputedRef, ComponentOptions } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
+import { NavigationFailure } from '../errors'
 
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
@@ -86,7 +87,6 @@ export interface _RouteLocationBase {
   hash: string
   name: RouteRecordName | null | undefined
   params: RouteParams
-  // TODO: make it an array?
   redirectedFrom: RouteLocation | undefined
   meta: Record<string | number | symbol, any>
 }
@@ -233,8 +233,6 @@ export interface MatcherLocation
     'name' | 'path' | 'params' | 'matched' | 'meta'
   > {}
 
-// TODO: remove any to type vm and use a generic that comes from the component
-// where the navigation guard callback is defined
 export interface NavigationGuardCallback {
   (): void
   (error: Error): void
@@ -268,7 +266,7 @@ export interface PostNavigationGuard {
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
     // TODO: move these types to a different file
-    failure?: TODO
+    failure?: NavigationFailure | void
   ): any
 }
 

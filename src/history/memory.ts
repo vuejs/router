@@ -18,7 +18,6 @@ import {
  */
 export default function createMemoryHistory(base: string = ''): RouterHistory {
   let listeners: NavigationCallback[] = []
-  // TODO: make sure this is right as the first location is nowhere so maybe this should be empty instead
   let queue: HistoryLocationNormalized[] = [START]
   let position: number = 0
 
@@ -52,7 +51,6 @@ export default function createMemoryHistory(base: string = ''): RouterHistory {
   const routerHistory: RouterHistory = {
     // rewritten by Object.defineProperty
     location: START,
-    // TODO:
     state: {},
     base,
 

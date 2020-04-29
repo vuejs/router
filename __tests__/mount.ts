@@ -41,7 +41,6 @@ function initialProps<P>(propsOption: ComponentObjectPropsOptions<P>) {
     const prop = propsOption[key]!
     // @ts-ignore
     if (!prop.required && prop.default)
-      // TODO: function value
       // @ts-ignore
       copy[key] = prop.default
   }
@@ -57,7 +56,6 @@ afterAll(() => {
 })
 
 export function mount(
-  // TODO: generic?
   targetComponent: Parameters<typeof createApp>[0],
   options: Partial<MountOptions> = {}
 ): Promise<Wrapper> {
@@ -124,7 +122,6 @@ export function mount(
       }
     }
 
-    // TODO: how to cleanup?
     const rootEl = document.createElement('div')
     document.body.appendChild(rootEl)
 
@@ -140,6 +137,7 @@ export function mount(
 
     activeWrapperRemovers.push(() => {
       app.unmount(rootEl)
+      rootEl.remove()
     })
   })
 }

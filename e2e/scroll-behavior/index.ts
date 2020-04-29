@@ -40,8 +40,7 @@ const scrollBehavior: ScrollBehavior = async function (
 
       // specify offset of the element
       if (to.hash === '#anchor2') {
-        // TODO: allow partial { y: 100 }
-        position.offset = { x: 0, y: 100 }
+        position.offset = { y: 100 }
       }
 
       // bypass #1number check

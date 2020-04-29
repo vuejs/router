@@ -95,5 +95,4 @@ export function applyRouterPlugin(app: App, router: Router) {
 
   app.provide(routerKey, router)
   app.provide(routeLocationKey, reactive(reactiveRoute))
-  // TODO: merge strats for beforeRoute hooks
 }

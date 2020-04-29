@@ -43,7 +43,6 @@ export function createRouterMatcher(
     return matcherMap.get(name)
   }
 
-  // TODO: add routes to children of parent
   function addRoute(
     record: RouteRecordRaw,
     parent?: RouteRecordMatcher,
@@ -250,7 +249,6 @@ export function createRouterMatcher(
     while (parentMatcher) {
       // reversed order so parents are at the beginning
 
-      // TODO: check resolving child routes by path when parent has an alias
       matched.unshift(parentMatcher.record)
       parentMatcher = parentMatcher.parent
     }

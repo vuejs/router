@@ -8,14 +8,18 @@
 <script>
 import { defineComponent, toRefs, reactive, inject } from 'vue'
 import { getData, delay } from '../api'
+import { onBeforeRouteUpdate } from '../../src'
 
 export default defineComponent({
   name: 'ComponentWithData',
   async setup() {
-    const data = reactive({ other: 'old' })
+    const data = reactive({ other: 'old', fromApi: null })
     data.fromApi = await getData()
 
-    // TODO: add sample with onBeforeRouteUpdate()
+    onBeforeRouteUpdate(async (to, from, next) => {
+      data.fromApi = await getData()
+      next()
+    })
 
     return {
       ...toRefs(data),
