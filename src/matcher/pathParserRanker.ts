@@ -49,7 +49,7 @@ export interface PathParserOptions {
    */
   sensitive?: boolean
   /**
-   * Should we allow a trailing slash. Defaults to true
+   * Should we disallow a trailing slash. Defaults to false
    */
   strict?: boolean
   /**

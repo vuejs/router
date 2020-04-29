@@ -20,36 +20,42 @@ Since the library is still unstable **and because we want feedback** on bugs and
     .map(record => Object.values(record.components))
     .flat()
   ```
-- _resolving_(`router.resolve`) or _pushing_ (`router.push`) a location with missing params no longer warns and produces an invalid URL, but throws an Error instead
-- Relative children path `redirect` are not supported. Use named routes instead:
-  ```js
-  // replace
-  let routes = {
-    path: '/parent/',
-    children: [{ path: '', redirect: 'home' }, { path: 'home' }],
-  }
-  // with
-  let routes = {
-    path: '/parent/',
-    children: [
-      { path: '', redirect: { name: 'home' } },
-      { path: 'home', name: 'home' },
-    ],
-  }
-  ```
 - If you use a `transition`, you need to wait for the router to be _ready_ before mounting the app:
   ```js
   app.use(router)
   // Note: on Server Side, you need to manually push the initial location
   router.isReady().then(() => app.mount('#app'))
   ```
-  Otherwise there will be an initial transition as if you provided the `appear` prop to `transition`
+  Otherwise there will be an initial transition as if you provided the `appear` prop to `transition` because the router displays its initial location (nothing)
 
 #### Improvements
 
 These are technically breaking changes but they fix an inconsistent behavior.
 
 - Pushing or resolving a non existent named route throws an error instead of navigating to `/` and displaying nothing.
+- _resolving_(`router.resolve`) or _pushing_ (`router.push`) a location with missing params no longer warns and produces an invalid URL (`/`), but explicitly throws an Error instead.
+- Empty children `path` does not append a trailing slash (`/`) anymore to make it consistent across all routes:
+  - By default no route has a trailing slash but also works with a trailing slash
+  - Adding `strict: true` to a route record or `pathOptions: { strict: true }` to the router options (alongside `routes`) will disallow an optional trailing slash
+  - Combining the point above with a trailing slash in your routes allows you to enforce a trailing slash in your routes
+  - To redirect the user to trailing slash routes (or the opposite), you can setup a `beforeEach` navigation guard that ensures the presence of a trailing slash
+- Because of the change above, relative children path `redirect` on an empty path are not supported anymore. Use named routes instead:
+  ```js
+  // replace
+  let routes = {
+    path: '/parent',
+    children: [{ path: '', redirect: 'home' }, { path: 'home' }],
+  }
+  // with
+  let routes = {
+    path: '/parent',
+    children: [
+      { path: '', redirect: { name: 'home' } },
+      { path: 'home', name: 'home' },
+    ],
+  }
+  ```
+  Note this will work if `path` was `/parent/` as the relative location `home` to `/parent/` is indeed `/parent/home` but the relative location of `home` to `/parent` is `/home`
 
 ### Missing features
 
