@@ -30,13 +30,29 @@ export function useLink(props: UseLinkOptions) {
   const route = computed(() => router.resolve(unref(props.to)))
 
   const activeRecordIndex = computed<number>(() => {
-    // TODO: handle children with empty path: they should relate to their parent
-    const currentMatched: RouteRecord | undefined =
-      route.value.matched[route.value.matched.length - 1]
-    if (!currentMatched) return -1
-    return currentRoute.matched.findIndex(
-      isSameRouteRecord.bind(null, currentMatched)
+    let { matched } = route.value
+    let { length } = matched
+    const routeMatched: RouteRecord | undefined = matched[length - 1]
+    let currentMatched = currentRoute.matched
+    if (!routeMatched || !currentMatched.length) return -1
+    let index = currentMatched.findIndex(
+      isSameRouteRecord.bind(null, routeMatched)
     )
+    if (index > -1) return index
+    // possible parent record
+    let parentRecord = matched[length - 2]
+    if (
+      length > 1 &&
+      // if the have the same path, this link is referring to the empty child
+      // are we currently are on a different child of the same parent
+      routeMatched.path === parentRecord.path &&
+      // avoid comparing the child with its parent
+      currentMatched[currentMatched.length - 1].path !== parentRecord.path
+    )
+      return currentMatched.findIndex(
+        isSameRouteRecord.bind(null, matched[length - 2])
+      )
+    return index
   })
 
   const isActive = computed<boolean>(

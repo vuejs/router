@@ -59,6 +59,7 @@ export const router = createRouter({
     { path: '/cant-leave', component: GuardedWithLeave },
     {
       path: '/children',
+      name: 'WithChildren',
       component,
       children: [
         { path: '', name: 'default-child', component },

@@ -19,6 +19,7 @@ const records = {
   homeAlias: {} as RouteRecordNormalized,
   foo: {} as RouteRecordNormalized,
   parent: {} as RouteRecordNormalized,
+  childEmpty: {} as RouteRecordNormalized,
   child: {} as RouteRecordNormalized,
   parentAlias: {} as RouteRecordNormalized,
   childAlias: {} as RouteRecordNormalized,
@@ -33,14 +34,20 @@ records.childAlias = { aliasOf: records.child } as RouteRecordNormalized
 
 type RouteLocationResolved = RouteLocationNormalized & { href: string }
 
-const locations: Record<
-  string,
-  {
-    string: string
-    normalized: RouteLocationResolved
-    toResolve?: MatcherLocationRaw & Required<RouteQueryAndHash>
-  }
-> = {
+function createLocations<
+  T extends Record<
+    string,
+    {
+      string: string
+      normalized: RouteLocationResolved
+      toResolve?: MatcherLocationRaw & Required<RouteQueryAndHash>
+    }
+  >
+>(locs: T) {
+  return locs
+}
+
+const locations = createLocations({
   basic: {
     string: '/home',
     // toResolve: { path: '/home', fullPath: '/home', undefined, query: {}, hash: '' },
@@ -167,6 +174,21 @@ const locations: Record<
     },
   },
 
+  childEmpty: {
+    string: '/parent',
+    normalized: {
+      fullPath: '/parent',
+      href: '/parent',
+      path: '/parent',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.parent, records.childEmpty],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
   child: {
     string: '/parent/child',
     normalized: {
@@ -257,6 +279,14 @@ const locations: Record<
       name: undefined,
     },
   },
+})
+
+// add paths to records because they are used to check isActive
+for (let record in records) {
+  let location = locations[record as keyof typeof locations]
+  if (location) {
+    records[record as keyof typeof records].path = location.normalized.path
+  }
 }
 
 async function factory(
@@ -454,6 +484,18 @@ describe('RouterLink', () => {
       locations.childAsAbsolute.normalized,
       { to: locations.parent.string },
       locations.parent.normalized
+    )
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+  })
+
+  it('empty path child is active as if it was the parent when on adjacent child', async () => {
+    const { wrapper } = await factory(
+      locations.child.normalized,
+      { to: locations.childEmpty.string },
+      locations.childEmpty.normalized
     )
     expect(wrapper.find('a')!.className).toContain('router-link-active')
     expect(wrapper.find('a')!.className).not.toContain(

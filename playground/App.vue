@@ -70,6 +70,25 @@
         <router-link to="/always-redirect">/always-redirect</router-link>
       </li>
       <li>
+        <router-link to="/children">/children</router-link>
+      </li>
+      <li>
+        <router-link :to="{ name: 'default-child' }"
+          >/children (child named)</router-link
+        >
+      </li>
+      <li>
+        <router-link :to="{ name: 'WithChildren' }"
+          >/children (parent named)</router-link
+        >
+      </li>
+      <li>
+        <router-link to="/children/a">/children/a</router-link>
+      </li>
+      <li>
+        <router-link to="/children/b">/children/b</router-link>
+      </li>
+      <li>
         <router-link to="/nested">/nested</router-link>
       </li>
       <li>
