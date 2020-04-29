@@ -51,7 +51,7 @@ export function createRouterMatcher(
     let mainNormalizedRecord = normalizeRouteRecord(record)
     // we might be the child of an alias
     mainNormalizedRecord.aliasOf = originalRecord && originalRecord.record
-    const options: PathParserOptions = { ...globalOptions, ...record.options }
+    const options: PathParserOptions = mergeOptions(globalOptions, record)
     // generate an array of records to correctly handle aliases
     const normalizedRecords: typeof mainNormalizedRecord[] = [
       mainNormalizedRecord,
@@ -347,4 +347,14 @@ function mergeMetaFields(matched: MatcherLocation['matched']) {
   )
 }
 
-export { PathParserOptions }
+function mergeOptions<T>(defaults: T, partialOptions: Partial<T>): T {
+  let options = {} as T
+  for (let key in defaults) {
+    options[key] =
+      key in partialOptions ? partialOptions[key] : (defaults[key] as any)
+  }
+
+  return options
+}
+
+export { PathParserOptionsPublic as PathParserOptions } from './pathParserRanker'

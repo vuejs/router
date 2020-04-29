@@ -19,7 +19,7 @@ let removeRoute: (() => void) | undefined
 export const routerHistory = createWebHistory()
 export const router = createRouter({
   history: routerHistory,
-  pathOptions: { strict: true },
+  strict: true,
   routes: [
     { path: '/home', redirect: '/' },
     {
@@ -132,7 +132,8 @@ export const router = createRouter({
       path: '/dynamic',
       name: 'dynamic',
       component: Nested,
-      options: { end: false, strict: true },
+      end: false,
+      strict: true,
       beforeEnter(to, from, next) {
         if (!removeRoute) {
           removeRoute = router.addRoute('dynamic', {

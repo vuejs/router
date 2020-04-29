@@ -62,6 +62,11 @@ export interface PathParserOptions {
   end?: boolean
 }
 
+export type PathParserOptionsPublic = Pick<
+  PathParserOptions,
+  'end' | 'sensitive' | 'strict'
+>
+
 // default pattern for a param: non greedy everything but /
 const BASE_PARAM_PATTERN = '[^/]+?'
 

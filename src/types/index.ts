@@ -1,5 +1,5 @@
 import { LocationQuery, LocationQueryRaw } from '../query'
-import { PathParserOptions } from '../matcher/pathParserRanker'
+import { PathParserOptions } from '../matcher'
 import { Ref, ComputedRef, ComponentOptions } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
@@ -137,7 +137,7 @@ export type RouteRecordName = string | symbol
 /**
  * Common properties among all kind of {@link RouteRecordRaw}
  */
-export interface _RouteRecordBase {
+export interface _RouteRecordBase extends PathParserOptions {
   /**
    * Path of the record. Should start with `/` unless the record is the child of
    * another record.
@@ -171,9 +171,6 @@ export interface _RouteRecordBase {
    * Arbitrary data attached to the record.
    */
   meta?: Record<string | number | symbol, any>
-  // TODO: only allow a subset?
-  // TODO: RFC: remove this and only allow global options
-  options?: PathParserOptions
 }
 
 export type RouteRecordRedirectOption =
