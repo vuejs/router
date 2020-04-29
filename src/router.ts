@@ -24,7 +24,7 @@ import {
   computeScrollPosition,
   scrollToPosition,
 } from './scrollBehavior'
-import { createRouterMatcher } from './matcher'
+import { createRouterMatcher, PathParserOptions } from './matcher'
 import {
   createRouterError,
   ErrorTypes,
@@ -111,7 +111,11 @@ export interface RouterOptions {
    * {@link RouterOptions.parseQuery | `parseQuery`} counterpart to handle query parsing.
    */
   stringifyQuery?: typeof originalStringifyQuery
-  // TODO: allow customizing encoding functions
+
+  /**
+   * Global matcher rules applied to every route record.
+   */
+  pathOptions?: PathParserOptions
 }
 
 export interface Router {
@@ -155,8 +159,9 @@ export function createRouter({
   scrollBehavior,
   parseQuery = originalParseQuery,
   stringifyQuery = originalStringifyQuery,
+  pathOptions = {},
 }: RouterOptions): Router {
-  const matcher = createRouterMatcher(routes, {})
+  const matcher = createRouterMatcher(routes, pathOptions)
 
   const beforeGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
   const beforeResolveGuards = useCallbacks<NavigationGuardWithThis<undefined>>()

@@ -19,6 +19,7 @@ let removeRoute: (() => void) | undefined
 export const routerHistory = createWebHistory()
 export const router = createRouter({
   history: routerHistory,
+  pathOptions: { strict: true },
   routes: [
     { path: '/home', redirect: '/' },
     {
@@ -149,6 +150,15 @@ export const router = createRouter({
 })
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
+
+// remove trailing slashes
+router.beforeEach((to, from, next) => {
+  if (/.\/$/.test(to.path)) {
+    to.meta.redirectCode = 301
+    next(to.path.replace(/\/$/, ''))
+  } else next()
+  // next()
+})
 
 router.beforeEach(async (to, from, next) => {
   // console.log(`Guard from ${from.fullPath} to ${to.fullPath}`)
