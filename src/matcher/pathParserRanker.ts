@@ -43,7 +43,7 @@ export interface PathParser {
   stringify(params: PathParams): string
 }
 
-export interface PathParserOptions {
+export interface _PathParserOptions {
   /**
    * Makes the RegExp case sensitive. Defaults to false
    */
@@ -62,15 +62,15 @@ export interface PathParserOptions {
   end?: boolean
 }
 
-export type PathParserOptionsPublic = Pick<
-  PathParserOptions,
+export type PathParserOptions = Pick<
+  _PathParserOptions,
   'end' | 'sensitive' | 'strict'
 >
 
 // default pattern for a param: non greedy everything but /
 const BASE_PARAM_PATTERN = '[^/]+?'
 
-const BASE_PATH_PARSER_OPTIONS: Required<PathParserOptions> = {
+const BASE_PATH_PARSER_OPTIONS: Required<_PathParserOptions> = {
   sensitive: false,
   strict: false,
   start: true,
@@ -106,7 +106,7 @@ const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\]/g
  */
 export function tokensToParser(
   segments: Array<Token[]>,
-  extraOptions?: PathParserOptions
+  extraOptions?: _PathParserOptions
 ): PathParser {
   const options = {
     ...BASE_PATH_PARSER_OPTIONS,

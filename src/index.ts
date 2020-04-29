@@ -13,6 +13,10 @@ export {
 export { RouterHistory } from './history/common'
 
 export { RouteRecord, RouteRecordNormalized } from './matcher/types'
+export {
+  PathParserOptions,
+  _PathParserOptions,
+} from './matcher/pathParserRanker'
 
 export {
   RouteLocationRaw,

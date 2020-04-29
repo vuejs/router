@@ -12,7 +12,7 @@ import {
   PathParams,
   comparePathParserScore,
   PathParserOptions,
-  PathParserOptionsPublic,
+  _PathParserOptions,
 } from './pathParserRanker'
 import { warn } from 'vue'
 
@@ -40,7 +40,7 @@ export function createRouterMatcher(
   const matchers: RouteRecordMatcher[] = []
   const matcherMap = new Map<RouteRecordName, RouteRecordMatcher>()
   globalOptions = mergeOptions(
-    { strict: false, end: true, sensitive: false } as PathParserOptionsPublic,
+    { strict: false, end: true, sensitive: false } as PathParserOptions,
     globalOptions
   )
 
@@ -362,4 +362,4 @@ function mergeOptions<T>(defaults: T, partialOptions: Partial<T>): T {
   return options
 }
 
-export { PathParserOptionsPublic as PathParserOptions }
+export { PathParserOptions, _PathParserOptions }
