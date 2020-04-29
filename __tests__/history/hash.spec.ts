@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
-import createWebHashHistory from '../../src/history/hash'
-import createWebHistory from '../../src/history/html5'
+import { createWebHashHistory } from '../../src/history/hash'
+import { createWebHistory } from '../../src/history/html5'
 import { createDom } from '../utils'
 
 jest.mock('../../src/history/html5')
