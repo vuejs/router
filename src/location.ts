@@ -36,13 +36,16 @@ export const removeTrailingSlash = (path: string) =>
  *
  * @param parseQuery
  * @param location - URI to normalize
+ * @param currentLocation - current absolute location. Allows resolving relative
+ * paths. Must start with `/`. Defaults to `/`
  * @returns a normalized history location
  */
 export function parseURL(
   parseQuery: (search: string) => LocationQuery,
-  location: string
+  location: string,
+  currentLocation: string = '/'
 ): LocationNormalized {
-  let path = '',
+  let path: string | undefined,
     query: LocationQuery = {},
     searchString = '',
     hash = ''
@@ -68,10 +71,19 @@ export function parseURL(
   }
 
   // no search and no query
-  path = path || location
+  path = path != null ? path : location
+  // empty path means a relative query or hash `?foo=f`, `#thing`
+  if (!path) {
+    path = currentLocation + path
+  } else if (path[0] !== '/') {
+    // relative to current location. Currently we only support simple relative
+    // but no `..`, `.`, or complex like `../.././..`. We will always leave the
+    // leading slash so we can safely append path
+    path = currentLocation.replace(/[^\/]*$/, '') + path
+  }
 
   return {
-    fullPath: location,
+    fullPath: path + (searchString && '?') + searchString + hash,
     path,
     query,
     hash,

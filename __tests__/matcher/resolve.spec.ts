@@ -7,6 +7,7 @@ import {
   MatcherLocation,
 } from '../../src/types'
 import { MatcherLocationNormalizedLoose } from '../utils'
+import { mockWarn } from 'jest-mock-warn'
 
 // @ts-ignore
 const component: RouteComponent = null
@@ -756,6 +757,26 @@ describe('RouterMatcher.resolve', () => {
   })
 
   describe('LocationAsRelative', () => {
+    mockWarn()
+    it('warns if a path isn not absolute', () => {
+      const record = {
+        path: '/parent',
+        components,
+      }
+      const matcher = createRouterMatcher([record], {})
+      matcher.resolve(
+        { path: 'two' },
+        {
+          path: '/parent/one',
+          name: undefined,
+          params: {},
+          matched: [] as any,
+          meta: {},
+        }
+      )
+      expect('received "two"').toHaveBeenWarned()
+    })
+
     it('matches with nothing', () => {
       const record = { path: '/home', name: 'Home', components }
       assertRecordMatch(

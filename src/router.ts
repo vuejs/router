@@ -207,13 +207,17 @@ export function createRouter({
   }
 
   function resolve(
-    location: RouteLocationRaw,
-    currentLocation?: RouteLocationNormalizedLoaded
+    location: Readonly<RouteLocationRaw>,
+    currentLocation?: Readonly<RouteLocationNormalizedLoaded>
   ): RouteLocation & { href: string } {
     // const objectLocation = routerLocationAsObject(location)
     currentLocation = currentLocation || currentRoute.value
     if (typeof location === 'string') {
-      let locationNormalized = parseURL(parseQuery, location)
+      let locationNormalized = parseURL(
+        parseQuery,
+        location,
+        currentLocation.path
+      )
       let matchedRoute = matcher.resolve(
         { path: locationNormalized.path },
         currentLocation
@@ -232,6 +236,16 @@ export function createRouter({
         params: decodeParams(matchedRoute.params),
         redirectedFrom: undefined,
         href: history.base + locationNormalized.fullPath,
+      }
+    }
+
+    // TODO: dev warning if params and path at the same time
+
+    // path could be relative in object as well
+    if ('path' in location) {
+      location = {
+        ...location,
+        path: parseURL(parseQuery, location.path, currentLocation.path).path,
       }
     }
 
@@ -473,7 +487,7 @@ export function createRouter({
         return runGuardQueue(guards)
       })
       .then(() => {
-        // check global guards beforeEach
+        // check global guards beforeResolve
         guards = []
         for (const guard of beforeResolveGuards.list()) {
           guards.push(guardToPromiseFn(guard, to, from))

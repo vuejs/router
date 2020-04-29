@@ -13,6 +13,7 @@ import {
   comparePathParserScore,
   PathParserOptions,
 } from './pathParserRanker'
+import { warn } from 'vue'
 
 let noop = () => {}
 
@@ -208,15 +209,22 @@ export function createRouterMatcher(
       // throws if cannot be stringified
       path = matcher.stringify(params)
     } else if ('path' in location) {
-      matcher = matchers.find(m => m.re.test(location.path))
-      // matcher should have a value after the loop
-
       // no need to resolve the path with the matcher as it was provided
       // this also allows the user to control the encoding
       path = location.path
+
+      if (__DEV__ && path[0] !== '/') {
+        warn(
+          `The Matcher cannot resolve relative paths but received "${path}". Unless you directly called \`matcher.resolve("${path}")\`, this is probably a bug in vue-router. Please open an issue at https://new-issue.vuejs.org/?repo=vuejs/vue-router-next.`
+        )
+      }
+
+      matcher = matchers.find(m => m.re.test(path))
+      // matcher should have a value after the loop
+
       if (matcher) {
         // TODO: dev warning of unused params if provided
-        params = matcher.parse(location.path)!
+        params = matcher.parse(path)!
         name = matcher.record.name
       }
       // location is a relative path
