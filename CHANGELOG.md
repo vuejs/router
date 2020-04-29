@@ -1,3 +1,7 @@
+# [4.0.0-alpha.9](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.8...v4.0.0-alpha.9) (2020-04-29)
+
+- Removed sourcemaps from build
+
 # [4.0.0-alpha.8](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.7...v4.0.0-alpha.8) (2020-04-29)
 
 ### Bug Fixes
