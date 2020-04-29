@@ -62,9 +62,18 @@ export const router = createRouter({
       name: 'WithChildren',
       component,
       children: [
-        { path: '', name: 'default-child', component },
+        { path: '', alias: 'alias', name: 'default-child', component },
         { path: 'a', name: 'a-child', component },
-        { path: 'b', name: 'b-child', component },
+        {
+          path: 'b',
+          name: 'b-child',
+          component,
+          children: [
+            { path: '', component },
+            { path: 'a2', component },
+            { path: 'b2', component },
+          ],
+        },
       ],
     },
     { path: '/with-data', component: ComponentWithData, name: 'WithData' },

@@ -20,7 +20,9 @@ const records = {
   foo: {} as RouteRecordNormalized,
   parent: {} as RouteRecordNormalized,
   childEmpty: {} as RouteRecordNormalized,
+  childEmptyAlias: {} as RouteRecordNormalized,
   child: {} as RouteRecordNormalized,
+  childChild: {} as RouteRecordNormalized,
   parentAlias: {} as RouteRecordNormalized,
   childAlias: {} as RouteRecordNormalized,
 }
@@ -31,6 +33,7 @@ records.parentAlias = {
   aliasOf: records.parent,
 } as RouteRecordNormalized
 records.childAlias = { aliasOf: records.child } as RouteRecordNormalized
+records.childEmptyAlias.aliasOf = records.childEmpty
 
 type RouteLocationResolved = RouteLocationNormalized & { href: string }
 
@@ -189,6 +192,21 @@ const locations = createLocations({
       name: undefined,
     },
   },
+  childEmptyAlias: {
+    string: '/parent/alias',
+    normalized: {
+      fullPath: '/parent/alias',
+      href: '/parent/alias',
+      path: '/parent/alias',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.parent, records.childEmptyAlias],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
   child: {
     string: '/parent/child',
     normalized: {
@@ -200,6 +218,21 @@ const locations = createLocations({
       query: {},
       hash: '',
       matched: [records.parent, records.child],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
+  childChild: {
+    string: '/parent/child/child',
+    normalized: {
+      fullPath: '/parent/child/child',
+      href: '/parent/child/child',
+      path: '/parent/child/child',
+      params: {},
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.parent, records.child, records.childChild],
       redirectedFrom: undefined,
       name: undefined,
     },
@@ -496,6 +529,42 @@ describe('RouterLink', () => {
       locations.child.normalized,
       { to: locations.childEmpty.string },
       locations.childEmpty.normalized
+    )
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+  })
+
+  it('alias of empty path child is active as if it was the parent when on adjacent child', async () => {
+    const { wrapper } = await factory(
+      locations.child.normalized,
+      { to: locations.childEmptyAlias.string },
+      locations.childEmptyAlias.normalized
+    )
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+  })
+
+  it('empty path child is active as if it was the parent when on adjacent nested child', async () => {
+    const { wrapper } = await factory(
+      locations.childChild.normalized,
+      { to: locations.childEmpty.string },
+      locations.childEmpty.normalized
+    )
+    expect(wrapper.find('a')!.className).toContain('router-link-active')
+    expect(wrapper.find('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+  })
+
+  it('alias of empty path child is active as if it was the parent when on adjacent nested nested child', async () => {
+    const { wrapper } = await factory(
+      locations.childChild.normalized,
+      { to: locations.childEmptyAlias.string },
+      locations.childEmptyAlias.normalized
     )
     expect(wrapper.find('a')!.className).toContain('router-link-active')
     expect(wrapper.find('a')!.className).not.toContain(

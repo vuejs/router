@@ -40,19 +40,22 @@ export function useLink(props: UseLinkOptions) {
     )
     if (index > -1) return index
     // possible parent record
-    let parentRecord = matched[length - 2]
-    if (
-      length > 1 &&
-      // if the have the same path, this link is referring to the empty child
-      // are we currently are on a different child of the same parent
-      routeMatched.path === parentRecord.path &&
-      // avoid comparing the child with its parent
-      currentMatched[currentMatched.length - 1].path !== parentRecord.path
+    let parentRecordPath = getOriginalPath(
+      matched[length - 2] as RouteRecord | undefined
     )
-      return currentMatched.findIndex(
-        isSameRouteRecord.bind(null, matched[length - 2])
-      )
-    return index
+    return (
+      // we are dealing with nested routes
+      length > 1 &&
+        // if the have the same path, this link is referring to the empty child
+        // are we currently are on a different child of the same parent
+        getOriginalPath(routeMatched) === parentRecordPath &&
+        // avoid comparing the child with its parent
+        currentMatched[currentMatched.length - 1].path !== parentRecordPath
+        ? currentMatched.findIndex(
+            isSameRouteRecord.bind(null, matched[length - 2])
+          )
+        : index
+    )
   })
 
   const isActive = computed<boolean>(
@@ -167,4 +170,12 @@ function includesParams(
   }
 
   return true
+}
+
+/**
+ * Get the original path value of a record by following its aliasOf
+ * @param record
+ */
+function getOriginalPath(record: RouteRecord | undefined): string {
+  return record ? (record.aliasOf ? record.aliasOf.path : record.path) : ''
 }

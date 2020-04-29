@@ -73,6 +73,9 @@
         <router-link to="/children">/children</router-link>
       </li>
       <li>
+        <router-link to="/children/alias">/children/alias</router-link>
+      </li>
+      <li>
         <router-link :to="{ name: 'default-child' }"
           >/children (child named)</router-link
         >
@@ -87,6 +90,12 @@
       </li>
       <li>
         <router-link to="/children/b">/children/b</router-link>
+      </li>
+      <li>
+        <router-link to="/children/b/a2">/children/b/a2</router-link>
+      </li>
+      <li>
+        <router-link to="/children/b/b2">/children/b/b2</router-link>
       </li>
       <li>
         <router-link to="/nested">/nested</router-link>
