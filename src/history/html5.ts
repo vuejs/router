@@ -9,6 +9,7 @@ import {
   RawHistoryLocation,
   ValueContainer,
   normalizeBase,
+  CreateHistoryFunction,
 } from './common'
 import {
   computeScrollPosition,
@@ -265,7 +266,7 @@ function useHistoryStateNavigation(base: string) {
   }
 }
 
-export default function createWebHistory(base?: string): RouterHistory {
+export const createWebHistory: CreateHistoryFunction = (base?: string) => {
   base = normalizeBase(base)
 
   const historyNavigation = useHistoryStateNavigation(base)

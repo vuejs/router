@@ -8,6 +8,7 @@ import {
   NavigationType,
   NavigationDirection,
   NavigationInformation,
+  CreateHistoryFunction,
 } from './common'
 
 /**
@@ -16,7 +17,9 @@ import {
  * @param base - Base applied to all urls, defaults to '/'
  * @returns a history object that can be passed to the router constructor
  */
-export default function createMemoryHistory(base: string = ''): RouterHistory {
+export const createMemoryHistory: CreateHistoryFunction = (
+  base: string = ''
+) => {
   let listeners: NavigationCallback[] = []
   // TODO: make sure this is right as the first location is nowhere so maybe this should be empty instead
   let queue: HistoryLocationNormalized[] = [START]

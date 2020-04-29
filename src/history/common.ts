@@ -59,6 +59,8 @@ export const START: HistoryLocationNormalized = {
 
 export type ValueContainer<T> = { value: T }
 
+export type CreateHistoryFunction = (base?: string) => RouterHistory
+
 /**
  * Interface implemented by History implementations that can be passed to the
  * router as {@link Router.history}

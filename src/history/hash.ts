@@ -1,7 +1,6 @@
-import { RouterHistory, normalizeBase } from './common'
-import createWebHistory from './html5'
+import { normalizeBase, CreateHistoryFunction } from './common'
+import { createWebHistory } from './html5'
 
-export default function createWebHashHistory(base?: string): RouterHistory {
+export const createWebHashHistory: CreateHistoryFunction = (base?: string) =>
   // Make sure this implementation is fine in terms of encoding, specially for IE11
-  return createWebHistory(location.host ? normalizeBase(base) + '/#' : '#')
-}
+  createWebHistory(location.host ? normalizeBase(base) + '/#' : '#')
