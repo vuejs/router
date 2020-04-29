@@ -698,7 +698,8 @@ describe('Router', () => {
         path: '/dynamic',
         component: components.Nested,
         name: 'dynamic parent',
-        options: { end: false, strict: true },
+        end: false,
+        strict: true,
         beforeEnter(to, from, next) {
           if (!removeRoute) {
             removeRoute = router.addRoute('dynamic parent', {
