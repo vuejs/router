@@ -8,7 +8,7 @@ import {
   MatcherLocationRaw,
   RouteLocationNormalized,
 } from '../src/types'
-import { createMemoryHistory } from '../src'
+import { createMemoryHistory, RouterOptions } from '../src'
 import { mount, createMockedRoute } from './mount'
 import { nextTick } from 'vue'
 import { RouteRecordNormalized } from '../src/matcher/types'
@@ -334,6 +334,7 @@ async function factory(
     createHref(to: RouteLocationNormalized): string {
       return this.history.base + to.fullPath
     },
+    options: {} as Partial<RouterOptions>,
     resolve: jest.fn(),
     push: jest.fn().mockResolvedValue(resolvedLocation),
   }
