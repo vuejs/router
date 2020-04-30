@@ -92,23 +92,32 @@ export const RouterLink = (defineComponent({
       type: [String, Object] as PropType<RouteLocationRaw>,
       required: true,
     },
-    activeClass: {
-      type: String,
-      default: 'router-link-active',
-    },
-    exactActiveClass: {
-      type: String,
-      default: 'router-link-exact-active',
-    },
+    activeClass: String,
+    // inactiveClass: String,
+    exactActiveClass: String,
     custom: Boolean,
   },
 
   setup(props, { slots, attrs }) {
     const link = reactive(useLink(props))
+    const { options } = inject(routerKey)!
 
     const elClass = computed(() => ({
-      [props.activeClass]: link.isActive,
-      [props.exactActiveClass]: link.isExactActive,
+      [getLinkClass(
+        props.activeClass,
+        options.linkActiveClass,
+        'router-link-active'
+      )]: link.isActive,
+      // [getLinkClass(
+      //   props.inactiveClass,
+      //   options.linkInactiveClass,
+      //   'router-link-inactive'
+      // )]: !link.isExactActive,
+      [getLinkClass(
+        props.exactActiveClass,
+        options.linkExactActiveClass,
+        'router-link-exact-active'
+      )]: link.isExactActive,
     }))
 
     return () => {
@@ -179,3 +188,20 @@ function includesParams(
 function getOriginalPath(record: RouteRecord | undefined): string {
   return record ? (record.aliasOf ? record.aliasOf.path : record.path) : ''
 }
+
+/**
+ * Utility class to get the active class based on defaults.
+ * @param propClass
+ * @param globalClass
+ * @param defaultClass
+ */
+let getLinkClass = (
+  propClass: string | undefined,
+  globalClass: string | undefined,
+  defaultClass: string
+): string =>
+  propClass != null
+    ? propClass
+    : globalClass != null
+    ? globalClass
+    : defaultClass

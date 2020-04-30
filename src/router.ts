@@ -109,11 +109,27 @@ export interface RouterOptions extends PathParserOptions {
    * {@link RouterOptions.parseQuery | `parseQuery`} counterpart to handle query parsing.
    */
   stringifyQuery?: typeof originalStringifyQuery
+  /**
+   * Default class applied to active {@link RouterLink}. If none is provided,
+   * `router-link-active` will be applied.
+   */
+  linkActiveClass?: string
+  /**
+   * Default class applied to exact active {@link RouterLink}. If none is provided,
+   * `router-link-exact-active` will be applied.
+   */
+  linkExactActiveClass?: string
+  /**
+   * Default class applied to non active {@link RouterLink}. If none is provided,
+   * `router-link-inactive` will be applied.
+   */
+  // linkInactiveClass?: string
 }
 
 export interface Router {
   readonly history: RouterHistory
   readonly currentRoute: Ref<RouteLocationNormalizedLoaded>
+  readonly options: RouterOptions
 
   addRoute(parentName: RouteRecordName, route: RouteRecordRaw): () => void
   addRoute(route: RouteRecordRaw): () => void
@@ -714,6 +730,7 @@ export function createRouter(options: RouterOptions): Router {
     hasRoute,
     getRoutes,
     resolve,
+    options,
 
     push,
     replace,

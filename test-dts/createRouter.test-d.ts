@@ -5,10 +5,10 @@ const component = defineComponent({})
 
 const router = createRouter({
   history: createWebHistory(),
-  strict: true,
   routes: [{ path: '/', component }],
   parseQuery: search => ({}),
   stringifyQuery: query => '',
+  strict: true,
   end: true,
   sensitive: true,
   scrollBehavior(to, from, savedPosition) {},
