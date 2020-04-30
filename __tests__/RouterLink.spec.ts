@@ -411,6 +411,64 @@ describe('RouterLink', () => {
     expect(wrapper.find('a')!.className).toContain('is-active')
   })
 
+  it('prop classes take over global', async () => {
+    const { wrapper, router } = await factory(
+      locations.basic.normalized,
+      // wrong location to set it later
+      {
+        to: locations.foo.string,
+        activeClass: 'is-active',
+        exactActiveClass: 'is-exact',
+      },
+      locations.foo.normalized
+    )
+    router.options.linkActiveClass = 'custom'
+    router.options.linkExactActiveClass = 'custom-exact'
+    // force render because options is not reactive
+    router.resolve.mockReturnValueOnce(locations.basic.normalized)
+    await wrapper.setProps({ to: locations.basic.string })
+    expect(wrapper.find('a')!.className).not.toContain('router-link-active')
+    expect(wrapper.find('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+    expect(wrapper.find('a')!.className).not.toContain('custom')
+    expect(wrapper.find('a')!.className).not.toContain('custom-exact')
+    expect(wrapper.find('a')!.className).toContain('is-active')
+    expect(wrapper.find('a')!.className).toContain('is-exact')
+  })
+
+  it('can globally customize active class', async () => {
+    const { wrapper, router } = await factory(
+      locations.basic.normalized,
+      // wrong location to set it later
+      { to: locations.foo.string },
+      locations.foo.normalized
+    )
+    router.options.linkActiveClass = 'custom'
+    // force render because options is not reactive
+    router.resolve.mockReturnValueOnce(locations.basic.normalized)
+    await wrapper.setProps({ to: locations.basic.string })
+    expect(wrapper.find('a')!.className).not.toContain('router-link-active')
+    expect(wrapper.find('a')!.className).toContain('custom')
+  })
+
+  it('can globally customize exact active class', async () => {
+    const { wrapper, router } = await factory(
+      locations.basic.normalized,
+      // wrong location to set it later
+      { to: locations.foo.string },
+      locations.foo.normalized
+    )
+    router.options.linkExactActiveClass = 'custom'
+    // force render because options is not reactive
+    router.resolve.mockReturnValueOnce(locations.basic.normalized)
+    await wrapper.setProps({ to: locations.basic.string })
+    expect(wrapper.find('a')!.className).not.toContain(
+      'router-link-exact-active'
+    )
+    expect(wrapper.find('a')!.className).toContain('custom')
+  })
+
   it('can customize exact active class', async () => {
     const { wrapper } = await factory(
       locations.basic.normalized,
