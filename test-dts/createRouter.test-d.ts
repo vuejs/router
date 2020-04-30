@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from './index'
-import { createApp } from 'vue'
+import { createApp, defineComponent } from 'vue'
+
+const component = defineComponent({})
 
 const router = createRouter({
   history: createWebHistory(),
   strict: true,
-  routes: [],
+  routes: [{ path: '/', component }],
   parseQuery: search => ({}),
   stringifyQuery: query => '',
   end: true,

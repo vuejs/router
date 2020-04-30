@@ -19,6 +19,8 @@ export {
 } from './matcher/pathParserRanker'
 
 export {
+  _RouteLocationBase,
+  _RouteRecordBase,
   RouteLocationRaw,
   RouteLocation,
   RouteLocationNormalized,

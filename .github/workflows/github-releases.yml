@@ -22,3 +22,5 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           prerelease: true
+          body: |
+            Please refer to [CHANGELOG.md](https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md) for details.
