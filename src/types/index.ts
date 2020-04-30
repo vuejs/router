@@ -20,14 +20,12 @@ export type VueUseOptions<T> = {
 export type TODO = any
 
 export type RouteParamValue = string
-// TODO: should we allow more values like numbers and normalize them to strings?
-// type RouteParamValueRaw = RouteParamValue | number
+export type RouteParamValueRaw = RouteParamValue | number
 export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
-export type RouteParamsRaw = RouteParams
-// export type RouteParamsRaw = Record<
-//   string,
-//   RouteParamValueRaw | RouteParamValueRaw[]
-// >
+export type RouteParamsRaw = Record<
+  string,
+  RouteParamValueRaw | RouteParamValueRaw[]
+>
 
 export interface RouteQueryAndHash {
   query?: LocationQueryRaw

@@ -253,6 +253,16 @@ describe('Router', () => {
     expect(router.currentRoute.value.hash).toBe('#two')
   })
 
+  it('allow param value to be number', async () => {
+    const { router } = await newRouter()
+    router.addRoute({ path: '/r1/:r', name: 'r1', component: components.Bar })
+    expect(router.resolve({ name: 'r1', params: { r: 1 } })).toMatchObject({
+      name: 'r1',
+      path: '/r1/1',
+      params: { r: '1' },
+    })
+  })
+
   it('fails if required params are missing', async () => {
     const { router } = await newRouter()
     expect(() => router.resolve({ name: 'Param', params: {} })).toThrowError(

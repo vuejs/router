@@ -5,6 +5,7 @@ import {
   isRouteName,
   RouteRecordName,
 } from '../types'
+import { applyToParamsRaw } from '../utils'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
 import { RouteRecordRedirect, RouteRecordNormalized } from './types'
@@ -208,7 +209,7 @@ export function createRouterMatcher(
           currentLocation.params,
           matcher.keys.map(k => k.name)
         ),
-        ...location.params,
+        ...applyToParamsRaw(location.params),
       }
       // throws if cannot be stringified
       path = matcher.stringify(params)
@@ -245,7 +246,10 @@ export function createRouterMatcher(
       name = matcher.record.name
       // since we are navigating to the same location, we don't need to pick the
       // params like when `name` is provided
-      params = { ...currentLocation.params, ...location.params }
+      params = {
+        ...currentLocation.params,
+        ...applyToParamsRaw(location.params),
+      }
       path = matcher.stringify(params)
     }
 

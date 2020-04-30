@@ -30,7 +30,7 @@ import {
   NavigationFailure,
   NavigationRedirectError,
 } from './errors'
-import { applyToParams, isBrowser } from './utils'
+import { applyToParams, isBrowser, applyToParamsRaw } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
 import {
@@ -264,7 +264,10 @@ export function createRouter(options: RouterOptions): Router {
       // for same reason TS thinks rawLocation.params can be undefined
       matcher.resolve(
         'params' in rawLocation
-          ? { ...rawLocation, params: encodeParams(rawLocation.params) }
+          ? {
+              ...rawLocation,
+              params: encodeParams(applyToParamsRaw(rawLocation.params)),
+            }
           : rawLocation,
         currentLocation
       )
@@ -275,7 +278,7 @@ export function createRouter(options: RouterOptions): Router {
     // TODO: normalize params if we accept numbers as raw values
     matchedRoute.params =
       'params' in rawLocation
-        ? rawLocation.params!
+        ? applyToParamsRaw(rawLocation.params)!
         : decodeParams(matchedRoute.params)
 
     const fullPath = stringifyURL(stringifyQuery, {
