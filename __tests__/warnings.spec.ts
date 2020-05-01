@@ -49,6 +49,28 @@ describe('warnings', () => {
     ).toHaveBeenWarned()
   })
 
+  it('warns if a child with absolute path is missing a parent param', async () => {
+    createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        {
+          path: '/:a',
+          component,
+          children: [
+            {
+              path: ':b',
+              component,
+              children: [{ path: '/:a/b', component }],
+            },
+          ],
+        },
+      ],
+    })
+    expect(
+      `Absolute path "/:a/b" should have the exact same param named "b" as its parent "/:a/:b".`
+    ).toHaveBeenWarned()
+  })
+
   it('warns if an alias has a param with the same name but different', async () => {
     createRouter({
       history: createMemoryHistory(),
