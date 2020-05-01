@@ -38,4 +38,34 @@ describe('warnings', () => {
     router.resolve({ path: '/p', name: 'p', params: { p: 'p' } })
     expect('Path "/" was passed with params').not.toHaveBeenWarned()
   })
+
+  it('warns if an alias is missing params', async () => {
+    createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/:p/:c', alias: ['/:p/c'], component }],
+    })
+    expect(
+      'Alias "/:p/c" and the original record: "/:p/:c" should have the exact same param named "c"'
+    ).toHaveBeenWarned()
+  })
+
+  it('warns if an alias has a param with the same name but different', async () => {
+    createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/:p/:c', alias: ['/:p/:c+'], component }],
+    })
+    expect(
+      'Alias "/:p/:c+" and the original record: "/:p/:c" should have the exact same param named "c"'
+    ).toHaveBeenWarned()
+  })
+
+  it('warns if an alias has extra params', async () => {
+    createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/:p/c', alias: ['/:p/:c'], component }],
+    })
+    expect(
+      'Alias "/:p/:c" and the original record: "/:p/c" should have the exact same param named "c"'
+    ).toHaveBeenWarned()
+  })
 })

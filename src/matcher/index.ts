@@ -106,6 +106,9 @@ export function createRouterMatcher(
       // so we can be removed
       if (originalRecord) {
         originalRecord.alias.push(matcher)
+        if (__DEV__) {
+          checkSameParams(originalRecord, matcher)
+        }
       } else {
         // otherwise, the first record is the original and others are aliases
         originalMatcher = originalMatcher || matcher
@@ -360,6 +363,31 @@ function mergeOptions<T>(defaults: T, partialOptions: Partial<T>): T {
   }
 
   return options
+}
+
+type ParamKey = RouteRecordMatcher['keys'][number]
+
+function isSameParam(a: ParamKey, b: ParamKey): boolean {
+  return (
+    a.name === b.name &&
+    a.optional === b.optional &&
+    a.repeatable === b.repeatable
+  )
+}
+
+function checkSameParams(a: RouteRecordMatcher, b: RouteRecordMatcher) {
+  for (let key of a.keys) {
+    if (!b.keys.find(isSameParam.bind(null, key)))
+      return warn(
+        `Alias "${b.record.path}" and the original record: "${a.record.path}" should have the exact same param named "${key.name}"`
+      )
+  }
+  for (let key of b.keys) {
+    if (!a.keys.find(isSameParam.bind(null, key)))
+      return warn(
+        `Alias "${b.record.path}" and the original record: "${a.record.path}" should have the exact same param named "${key.name}"`
+      )
+  }
 }
 
 export { PathParserOptions, _PathParserOptions }
