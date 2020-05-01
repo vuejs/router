@@ -251,10 +251,16 @@ export function createRouter(options: RouterOptions): Router {
 
     // path could be relative in object as well
     if ('path' in rawLocation) {
-      if (__DEV__ && 'params' in rawLocation) {
+      if (
+        __DEV__ &&
+        'params' in rawLocation &&
+        !('name' in rawLocation) &&
+        Object.keys((rawLocation as any).params).length
+      ) {
         warn(
-          // @ts-ignore
-          `Path "${rawLocation.path}" was passed with params but they will be ignored. Use a named route instead or build the path yourself`
+          `Path "${
+            (rawLocation as any).path
+          }" was passed with params but they will be ignored. Use a named route alongside params instead.`
         )
       }
       rawLocation = {
@@ -332,8 +338,29 @@ export function createRouter(options: RouterOptions): Router {
       let newTargetLocation = locationAsObject(
         typeof redirect === 'function' ? redirect(targetLocation) : redirect
       )
+
+      if (
+        __DEV__ &&
+        !('path' in newTargetLocation) &&
+        !('name' in newTargetLocation)
+      ) {
+        warn(
+          `Invalid redirect found:\n${JSON.stringify(
+            newTargetLocation,
+            null,
+            2
+          )}\n when navigating to "${
+            targetLocation.fullPath
+          }". A redirect must contain a name or path.`
+        )
+      }
       return pushWithRedirect(
         {
+          // having a path here would be a problem with relative locations but
+          // at the same time it doesn't make sense for a redirect to be
+          // relative (no name, no path) because it would create an infinite
+          // loop. Since newTargetLocation must either have a `path` or a
+          // `name`, this will never happen
           ...targetLocation,
           ...newTargetLocation,
           state: data,

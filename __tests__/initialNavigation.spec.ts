@@ -51,7 +51,7 @@ describe('Initial Navigation', () => {
   it('handles initial navigation with redirect', async () => {
     const { history, router } = newRouter('/home')
     expect(history.location.fullPath).toBe('/home')
-    // this is done automatically on mount but there is no mount here
+    // this is done automatically on install but there is none here
     await router.push(history.location.fullPath)
     expect(router.currentRoute.value).toMatchObject({ path: '/' })
     await router.push('/foo')
