@@ -50,7 +50,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/project
-      - run: yarn test:e2e
+      - run: yarn test:e2e:ci
 
   build-lint:
     <<: *defaults
