@@ -38,11 +38,12 @@ import {
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
 } from './query'
-import { shallowRef, Ref, nextTick, App, warn } from 'vue'
+import { shallowRef, Ref, nextTick, App } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import { parseURL, stringifyURL, isSameRouteLocation } from './location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
 import { applyRouterPlugin } from './install'
+import { warn } from './warning'
 
 /**
  * Internal type to define an ErrorHandler
@@ -248,10 +249,14 @@ export function createRouter(options: RouterOptions): Router {
       }
     }
 
-    // TODO: dev warning if params and path at the same time
-
     // path could be relative in object as well
     if ('path' in rawLocation) {
+      if (__DEV__ && 'params' in rawLocation) {
+        warn(
+          // @ts-ignore
+          `Path "${rawLocation.path}" was passed with params but they will be ignored. Use a named route instead or build the path yourself`
+        )
+      }
       rawLocation = {
         ...rawLocation,
         path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path,

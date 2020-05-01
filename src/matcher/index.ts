@@ -14,7 +14,7 @@ import {
   PathParserOptions,
   _PathParserOptions,
 } from './pathParserRanker'
-import { warn } from 'vue'
+import { warn } from '../warning'
 
 let noop = () => {}
 
