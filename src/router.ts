@@ -353,6 +353,7 @@ export function createRouter(options: RouterOptions): Router {
             targetLocation.fullPath
           }". A redirect must contain a name or path.`
         )
+        return Promise.reject(new Error('Invalid redirect'))
       }
       return pushWithRedirect(
         {
