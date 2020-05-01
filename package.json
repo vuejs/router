@@ -4,6 +4,7 @@
   "main": "dist/vue-router.cjs.js",
   "browser": "dist/vue-router.esm.js",
   "unpkg": "dist/vue-router.global.js",
+  "jsdelivr": "dist/vue-router.global.js",
   "module": "dist/vue-router.esm-bundler.js",
   "types": "dist/vue-router.d.ts",
   "tsd": {
