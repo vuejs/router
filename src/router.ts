@@ -573,9 +573,11 @@ export function createRouter(options: RouterOptions): Router {
     // duplicated navigation (e.g. same anchor navigation). It needs exposing
     // the navigation information (type, direction)
     if (isBrowser) {
-      const savedScroll = getSavedScrollPosition(
-        getScrollKey(toLocation.fullPath, 0)
-      )
+      // if we are pushing, we cannot have a saved position. This is important
+      // when visiting /b from /a, scrolling, going back to /a by with the back
+      // button and then clicking on a link to /b instead of the forward button
+      const savedScroll =
+        !isPush && getSavedScrollPosition(getScrollKey(toLocation.fullPath, 0))
       handleScroll(
         toLocation,
         from,

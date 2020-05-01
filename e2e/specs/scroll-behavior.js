@@ -152,6 +152,31 @@ module.exports = {
         'restores scroll position when reloading'
       )
 
+      // going again to a popped entry should not restore the saved position
+      .click('li:nth-child(1) a')
+      .waitForElementPresent('.view.home', TIMEOUT)
+      .click('li:nth-child(4) a')
+      .waitForElementPresent('.view.bar', TIMEOUT)
+      // at this point we scrolled to the anchor, scroll again somewhere else
+      // and then go back
+      .execute(function () {
+        window.scrollTo(0, 100)
+        window.history.back()
+      })
+      .waitForElementPresent('.view.home', TIMEOUT)
+      // go to the same location again but without using history.forward
+      .click('li:nth-child(4) a')
+      .waitForElementPresent('.view.bar', TIMEOUT)
+      .assert.evaluate(
+        function () {
+          return (
+            document.getElementById('anchor').getBoundingClientRect().top < 1
+          )
+        },
+        null,
+        'scroll to anchor'
+      )
+
       .end()
   },
 }
