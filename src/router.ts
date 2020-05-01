@@ -139,13 +139,11 @@ export interface Router {
 
   resolve(to: RouteLocationRaw): RouteLocation & { href: string }
 
-  push(to: RouteLocationRaw): Promise<NavigationFailure | void>
-  replace(to: RouteLocationRaw): Promise<NavigationFailure | void>
-  // TODO: return a promise when https://github.com/vuejs/rfcs/pull/150 is
-  // merged
-  back(): void
-  forward(): void
-  go(delta: number): void
+  push(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+  replace(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+  back(): Promise<NavigationFailure | void | undefined>
+  forward(): Promise<NavigationFailure | void | undefined>
+  go(delta: number): Promise<NavigationFailure | void | undefined>
 
   beforeEach(guard: NavigationGuardWithThis<undefined>): () => void
   beforeResolve(guard: NavigationGuardWithThis<undefined>): () => void
@@ -313,7 +311,7 @@ export function createRouter(options: RouterOptions): Router {
   function pushWithRedirect(
     to: RouteLocationRaw | RouteLocation,
     redirectedFrom?: RouteLocation
-  ): Promise<NavigationFailure | void> {
+  ): Promise<NavigationFailure | void | undefined> {
     const targetLocation: RouteLocation = (pendingLocation = resolve(to))
     const from = currentRoute.value
     const data: HistoryState | undefined = (to as RouteLocationOptions).state
@@ -346,7 +344,7 @@ export function createRouter(options: RouterOptions): Router {
     const toLocation = targetLocation as RouteLocationNormalized
 
     toLocation.redirectedFrom = redirectedFrom
-    let failure: NavigationFailure | void
+    let failure: NavigationFailure | void | undefined
 
     if (!force && isSameRouteLocation(from, targetLocation))
       failure = createRouterError<NavigationFailure>(
@@ -629,7 +627,7 @@ export function createRouter(options: RouterOptions): Router {
             (error as NavigationRedirectError).to,
             toLocation
           ).catch(() => {
-            // TODO: in dev show warning, in prod noop, same as initial navigation
+            // TODO: in dev show warning, in prod triggerError, same as initial navigation
           })
           // avoid the then branch
           return Promise.reject()
@@ -659,7 +657,7 @@ export function createRouter(options: RouterOptions): Router {
         )
       })
       .catch(() => {
-        // TODO: same as above: in dev show warning, in prod noop, same as initial navigation
+        // TODO: same as above
       })
   })
 
@@ -724,6 +722,25 @@ export function createRouter(options: RouterOptions): Router {
       .then(position => position && scrollToPosition(position))
   }
 
+  function go(delta: number) {
+    return new Promise<NavigationFailure | void | undefined>(
+      (resolve, reject) => {
+        let removeError = errorHandlers.add(err => {
+          removeError()
+          removeAfterEach()
+          reject(err)
+        })
+        let removeAfterEach = afterGuards.add((_to, _from, failure) => {
+          removeError()
+          removeAfterEach()
+          resolve(failure)
+        })
+
+        routerHistory.go(delta)
+      }
+    )
+  }
+
   const router: Router = {
     currentRoute,
 
@@ -736,9 +753,9 @@ export function createRouter(options: RouterOptions): Router {
 
     push,
     replace,
-    go: routerHistory.go,
-    back: () => routerHistory.go(-1),
-    forward: () => routerHistory.go(1),
+    go,
+    back: () => go(-1),
+    forward: () => go(1),
 
     beforeEach: beforeGuards.add,
     beforeResolve: beforeResolveGuards.add,
