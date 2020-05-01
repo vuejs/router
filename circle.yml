@@ -36,6 +36,13 @@ jobs:
           paths:
             - vue-router/e2e/__build__
 
+  test-e2e:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run: yarn test:e2e:ci
+
   test-unit:
     <<: *defaults
     steps:
@@ -44,13 +51,6 @@ jobs:
       - run: yarn test:unit  --maxWorkers=2
       - store_artifacts:
           path: coverage
-
-  test-e2e:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/project
-      - run: yarn test:e2e:ci
 
   build-lint:
     <<: *defaults
@@ -82,10 +82,10 @@ workflows:
   install-and-parallel-test:
     jobs:
       - install
-      - test-unit:
+      - test-e2e:
           requires:
             - install
-      - test-e2e:
+      - test-unit:
           requires:
             - install
       - build-lint:
