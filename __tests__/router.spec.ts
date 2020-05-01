@@ -255,11 +255,10 @@ describe('Router', () => {
 
   it('cast number params to string', async () => {
     const { router } = await newRouter()
-    router.addRoute({ path: '/r1/:r', name: 'r1', component: components.Bar })
-    expect(router.resolve({ name: 'r1', params: { r: 1 } })).toMatchObject({
-      name: 'r1',
-      path: '/r1/1',
-      params: { r: '1' },
+    expect(router.resolve({ name: 'Param', params: { p: 1 } })).toMatchObject({
+      name: 'Param',
+      path: '/p/1',
+      params: { p: '1' },
     })
   })
 
