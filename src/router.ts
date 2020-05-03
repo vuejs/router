@@ -284,6 +284,12 @@ export function createRouter(options: RouterOptions): Router {
 
     const hash = encodeHash(rawLocation.hash || '')
 
+    if (__DEV__ && hash && hash[0] !== '#') {
+      warn(
+        `A \`hash\` should always start with the character "#". Replace "${hash}" with "#${hash}".`
+      )
+    }
+
     // put back the unencoded params as given by the user (avoid the cost of decoding them)
     matchedRoute.params =
       'params' in rawLocation
