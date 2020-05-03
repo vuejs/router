@@ -5,13 +5,13 @@ import {
   PostNavigationGuard,
   START_LOCATION_NORMALIZED,
   Lazy,
-  MatcherLocation,
   RouteLocationNormalizedLoaded,
   RouteLocation,
   RouteRecordName,
   isRouteName,
   NavigationGuardWithThis,
   RouteLocationOptions,
+  MatcherLocationRaw,
 } from './types'
 import { RouterHistory, HistoryState } from './history/common'
 import {
@@ -180,6 +180,10 @@ export function createRouter(options: RouterOptions): Router {
     history.scrollRestoration = 'manual'
   }
 
+  const normalizeParams = applyToParams.bind(
+    null,
+    paramValue => '' + paramValue
+  )
   const encodeParams = applyToParams.bind(null, encodeParam)
   const decodeParams = applyToParams.bind(null, decode)
 
@@ -249,6 +253,8 @@ export function createRouter(options: RouterOptions): Router {
       }
     }
 
+    let matcherLocation: MatcherLocationRaw
+
     // path could be relative in object as well
     if ('path' in rawLocation) {
       if (
@@ -263,28 +269,25 @@ export function createRouter(options: RouterOptions): Router {
           }" was passed with params but they will be ignored. Use a named route alongside params instead.`
         )
       }
-      rawLocation = {
+      matcherLocation = {
         ...rawLocation,
         path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path,
       }
+    } else {
+      matcherLocation = {
+        ...rawLocation,
+        params: encodeParams(rawLocation.params),
+      }
     }
 
-    let matchedRoute: MatcherLocation = // relative or named location, path is ignored
-      // for same reason TS thinks rawLocation.params can be undefined
-      matcher.resolve(
-        'params' in rawLocation
-          ? { ...rawLocation, params: encodeParams(rawLocation.params) }
-          : rawLocation,
-        currentLocation
-      )
+    let matchedRoute = matcher.resolve(matcherLocation, currentLocation)
 
     const hash = encodeHash(rawLocation.hash || '')
 
     // put back the unencoded params as given by the user (avoid the cost of decoding them)
-    // TODO: normalize params if we accept numbers as raw values
     matchedRoute.params =
       'params' in rawLocation
-        ? rawLocation.params!
+        ? normalizeParams(rawLocation.params)
         : decodeParams(matchedRoute.params)
 
     const fullPath = stringifyURL(stringifyQuery, {

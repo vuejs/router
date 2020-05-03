@@ -84,7 +84,7 @@ export function encodeQueryProperty(text: string | number): string {
  * @param text - string to encode
  * @returns encoded string
  */
-export function encodePath(text: string): string {
+export function encodePath(text: string | number): string {
   return commonEncode(text).replace(HASH_RE, '%23').replace(IM_RE, '%3F')
 }
 
@@ -96,7 +96,7 @@ export function encodePath(text: string): string {
  * @param text - string to encode
  * @returns encoded string
  */
-export function encodeParam(text: string): string {
+export function encodeParam(text: string | number): string {
   return encodePath(text).replace(SLASH_RE, '%2F')
 }
 
@@ -107,11 +107,11 @@ export function encodeParam(text: string): string {
  * @param text - string to decode
  * @returns decoded string
  */
-export function decode(text: string): string {
+export function decode(text: string | number): string {
   try {
-    return decodeURIComponent(text)
+    return decodeURIComponent('' + text)
   } catch (err) {
     __DEV__ && warn(`Error decoding "${text}". Using original value`)
   }
-  return text
+  return '' + text
 }

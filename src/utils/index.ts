@@ -1,4 +1,4 @@
-import { RouteParams, RouteComponent } from '../types'
+import { RouteParams, RouteComponent, RouteParamsRaw } from '../types'
 import { hasSymbol } from '../injectionSymbols'
 
 export * from './env'
@@ -8,8 +8,8 @@ export function isESModule(obj: any): obj is { default: RouteComponent } {
 }
 
 export function applyToParams(
-  fn: (v: string) => string,
-  params: RouteParams | undefined
+  fn: (v: string | number) => string,
+  params: RouteParamsRaw | undefined
 ): RouteParams {
   const newParams: RouteParams = {}
 

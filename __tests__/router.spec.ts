@@ -254,6 +254,12 @@ describe('Router', () => {
     expect(spy).toHaveBeenCalledTimes(1)
   })
 
+  it('casts number params to string', async () => {
+    const { router } = await newRouter()
+    await router.push({ name: 'Param', params: { p: 0 } })
+    expect(router.currentRoute.value).toMatchObject({ params: { p: '0' } })
+  })
+
   it('navigates to same route record but different query', async () => {
     const { router } = await newRouter()
     await router.push('/?q=1')

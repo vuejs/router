@@ -20,14 +20,12 @@ export type VueUseOptions<T> = {
 export type TODO = any
 
 export type RouteParamValue = string
-// TODO: should we allow more values like numbers and normalize them to strings?
-// type RouteParamValueRaw = RouteParamValue | number
+export type RouteParamValueRaw = RouteParamValue | number
 export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
-export type RouteParamsRaw = RouteParams
-// export type RouteParamsRaw = Record<
-//   string,
-//   RouteParamValueRaw | RouteParamValueRaw[]
-// >
+export type RouteParamsRaw = Record<
+  string,
+  RouteParamValueRaw | RouteParamValueRaw[]
+>
 
 export interface RouteQueryAndHash {
   query?: LocationQueryRaw
@@ -37,13 +35,22 @@ export interface LocationAsPath {
   path: string
 }
 
-export interface LocationAsName {
+export interface LocationAsNameRaw {
   name: RouteRecordName
   params?: RouteParamsRaw
 }
 
-export interface LocationAsRelative {
+export interface LocationAsName {
+  name: RouteRecordName
+  params?: RouteParams
+}
+
+export interface LocationAsRelativeRaw {
   params?: RouteParamsRaw
+}
+
+export interface LocationAsRelative {
+  params?: RouteParams
 }
 
 export interface RouteLocationOptions {
@@ -67,8 +74,8 @@ export interface RouteLocationOptions {
 export type RouteLocationRaw =
   | string
   | (RouteQueryAndHash & LocationAsPath & RouteLocationOptions)
-  | (RouteQueryAndHash & LocationAsName & RouteLocationOptions)
-  | (RouteQueryAndHash & LocationAsRelative & RouteLocationOptions)
+  | (RouteQueryAndHash & LocationAsNameRaw & RouteLocationOptions)
+  | (RouteQueryAndHash & LocationAsRelativeRaw & RouteLocationOptions)
 
 export interface RouteLocationMatched extends RouteRecordNormalized {
   // components cannot be Lazy<RouteComponent>
