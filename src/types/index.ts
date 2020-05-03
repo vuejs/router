@@ -59,14 +59,16 @@ export interface RouteLocationOptions {
   state?: HistoryState
 }
 
+export type RouteLocationAs<T> = RouteQueryAndHash & RouteLocationOptions & T
+
 /**
  * User-level route location
  */
 export type RouteLocationRaw =
   | string
-  | (RouteQueryAndHash & LocationAsPath & RouteLocationOptions)
-  | (RouteQueryAndHash & LocationAsName & RouteLocationOptions)
-  | (RouteQueryAndHash & LocationAsRelative & RouteLocationOptions)
+  | RouteLocationAs<LocationAsPath>
+  | RouteLocationAs<LocationAsName>
+  | RouteLocationAs<LocationAsRelative>
 
 export interface RouteLocationMatched extends RouteRecordNormalized {
   // components cannot be Lazy<RouteComponent>

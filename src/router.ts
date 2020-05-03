@@ -12,6 +12,7 @@ import {
   isRouteName,
   NavigationGuardWithThis,
   RouteLocationOptions,
+  RouteParams,
 } from './types'
 import { RouterHistory, HistoryState } from './history/common'
 import {
@@ -30,7 +31,13 @@ import {
   NavigationFailure,
   NavigationRedirectError,
 } from './errors'
-import { applyToParams, isBrowser, applyToParamsRaw } from './utils'
+import {
+  applyToParams,
+  isBrowser,
+  normalizeParams,
+  isRouteLocationPath,
+  isRouteLocationRelative,
+} from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
 import {
@@ -181,7 +188,10 @@ export function createRouter(options: RouterOptions): Router {
     history.scrollRestoration = 'manual'
   }
 
-  const encodeParams = applyToParams.bind(null, encodeParam)
+  const encodeParams = applyToParams.bind(null, encodeParam) as (
+    // bind doesn't infer the correct generic type
+    params: Record<string, string | number | (string | number)[]> | undefined
+  ) => Record<string, string | string[]>
   const decodeParams = applyToParams.bind(null, decode)
 
   function addRoute(
@@ -249,24 +259,30 @@ export function createRouter(options: RouterOptions): Router {
         href: routerHistory.base + locationNormalized.fullPath,
       }
     }
-
     // TODO: dev warning if params and path at the same time
 
     // path could be relative in object as well
-    if ('path' in rawLocation) {
+    if (isRouteLocationPath(rawLocation)) {
       rawLocation = {
         ...rawLocation,
         path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path,
       }
     }
 
+    if (isRouteLocationRelative(rawLocation)) {
+      rawLocation = {
+        ...rawLocation,
+        params: normalizeParams(rawLocation.params),
+      }
+    }
+
     let matchedRoute: MatcherLocation = // relative or named location, path is ignored
       // for same reason TS thinks rawLocation.params can be undefined
       matcher.resolve(
-        'params' in rawLocation
+        isRouteLocationRelative(rawLocation)
           ? {
               ...rawLocation,
-              params: encodeParams(applyToParamsRaw(rawLocation.params)),
+              params: encodeParams(rawLocation.params),
             }
           : rawLocation,
         currentLocation
@@ -275,11 +291,9 @@ export function createRouter(options: RouterOptions): Router {
     const hash = encodeHash(rawLocation.hash || '')
 
     // put back the unencoded params as given by the user (avoid the cost of decoding them)
-    // TODO: normalize params if we accept numbers as raw values
-    matchedRoute.params =
-      'params' in rawLocation
-        ? applyToParamsRaw(rawLocation.params)!
-        : decodeParams(matchedRoute.params)
+    matchedRoute.params = isRouteLocationRelative(rawLocation)
+      ? (rawLocation.params as RouteParams) // already normalized
+      : decodeParams(matchedRoute.params)
 
     const fullPath = stringifyURL(stringifyQuery, {
       ...rawLocation,
