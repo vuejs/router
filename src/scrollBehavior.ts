@@ -1,5 +1,5 @@
 import { RouteLocationNormalized, RouteLocationNormalizedLoaded } from './types'
-import { warn } from 'vue'
+import { warn } from './warning'
 
 export type ScrollPositionCoordinates = {
   /**

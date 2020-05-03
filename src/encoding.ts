@@ -1,4 +1,4 @@
-import { warn } from 'vue'
+import { warn } from './warning'
 
 /**
  * Encoding Rules ␣ = Space Path: ␣ " < > # ? { } Query: ␣ " < > # & = Hash: ␣ "

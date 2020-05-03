@@ -14,7 +14,7 @@ import {
   computeScrollPosition,
   ScrollPositionCoordinates,
 } from '../scrollBehavior'
-import { warn } from 'vue'
+import { warn } from '../warning'
 import { stripBase } from '../location'
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
@@ -81,10 +81,7 @@ function useHistoryListeners(
       return
     }
 
-    const deltaFromCurrent = fromState
-      ? state.position - fromState.position
-      : ''
-    const delta = deltaFromCurrent || 0
+    const delta = fromState ? state.position - fromState.position : 0
     // console.log({ deltaFromCurrent })
     // Here we could also revert the navigation by calling history.go(-delta)
     // this listener will have to be adapted to not trigger again and to wait for the url
@@ -208,7 +205,7 @@ function useHistoryStateNavigation(base: string) {
       history[replace ? 'replaceState' : 'pushState'](state, '', url)
       historyState.value = state
     } catch (err) {
-      warn('[vue-router]: Error with push/replace State', err)
+      warn('Error with push/replace State', err)
       // Force the navigation, this also resets the call count
       window.location[replace ? 'replace' : 'assign'](url)
     }

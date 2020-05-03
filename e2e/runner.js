@@ -30,9 +30,9 @@ const args = process.argv.slice(2)
 const server =
   args.indexOf('--dev') > -1
     ? null
-    : process.env.CI || args.indexOf('--ci') > -1
-    ? require('./staticServer')
-    : require('./devServer')
+    : // : process.env.CI || args.indexOf('--ci') > -1
+      // ? require('./staticServer')
+      require('./devServer')
 
 // allow running browserstack local
 const isLocal = args.indexOf('--local') > -1

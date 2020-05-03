@@ -45,11 +45,12 @@ import {
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
 } from './query'
-import { shallowRef, Ref, nextTick, App, warn } from 'vue'
+import { shallowRef, Ref, nextTick, App } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import { parseURL, stringifyURL, isSameRouteLocation } from './location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
 import { applyRouterPlugin } from './install'
+import { warn } from './warning'
 
 /**
  * Internal type to define an ErrorHandler
@@ -146,13 +147,11 @@ export interface Router {
 
   resolve(to: RouteLocationRaw): RouteLocation & { href: string }
 
-  push(to: RouteLocationRaw): Promise<NavigationFailure | void>
-  replace(to: RouteLocationRaw): Promise<NavigationFailure | void>
-  // TODO: return a promise when https://github.com/vuejs/rfcs/pull/150 is
-  // merged
-  back(): void
-  forward(): void
-  go(delta: number): void
+  push(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+  replace(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+  back(): Promise<NavigationFailure | void | undefined>
+  forward(): Promise<NavigationFailure | void | undefined>
+  go(delta: number): Promise<NavigationFailure | void | undefined>
 
   beforeEach(guard: NavigationGuardWithThis<undefined>): () => void
   beforeResolve(guard: NavigationGuardWithThis<undefined>): () => void
@@ -259,10 +258,20 @@ export function createRouter(options: RouterOptions): Router {
         href: routerHistory.base + locationNormalized.fullPath,
       }
     }
-    // TODO: dev warning if params and path at the same time
 
     // path could be relative in object as well
     if (isRouteLocationPath(rawLocation)) {
+      if (
+        __DEV__ &&
+        isRouteLocationRelative(rawLocation) &&
+        // 'params' in rawLocation &&
+        !('name' in rawLocation) &&
+        Object.keys((rawLocation as any).params).length
+      ) {
+        warn(
+          `Path "${rawLocation.path}" was passed with params but they will be ignored. Use a named route alongside params instead.`
+        )
+      }
       rawLocation = {
         ...rawLocation,
         path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path,
@@ -330,7 +339,7 @@ export function createRouter(options: RouterOptions): Router {
   function pushWithRedirect(
     to: RouteLocationRaw | RouteLocation,
     redirectedFrom?: RouteLocation
-  ): Promise<NavigationFailure | void> {
+  ): Promise<NavigationFailure | void | undefined> {
     const targetLocation: RouteLocation = (pendingLocation = resolve(to))
     const from = currentRoute.value
     const data: HistoryState | undefined = (to as RouteLocationOptions).state
@@ -346,8 +355,30 @@ export function createRouter(options: RouterOptions): Router {
       let newTargetLocation = locationAsObject(
         typeof redirect === 'function' ? redirect(targetLocation) : redirect
       )
+
+      if (
+        __DEV__ &&
+        !('path' in newTargetLocation) &&
+        !('name' in newTargetLocation)
+      ) {
+        warn(
+          `Invalid redirect found:\n${JSON.stringify(
+            newTargetLocation,
+            null,
+            2
+          )}\n when navigating to "${
+            targetLocation.fullPath
+          }". A redirect must contain a name or path.`
+        )
+        return Promise.reject(new Error('Invalid redirect'))
+      }
       return pushWithRedirect(
         {
+          // having a path here would be a problem with relative locations but
+          // at the same time it doesn't make sense for a redirect to be
+          // relative (no name, no path) because it would create an infinite
+          // loop. Since newTargetLocation must either have a `path` or a
+          // `name`, this will never happen
           ...targetLocation,
           ...newTargetLocation,
           state: data,
@@ -363,7 +394,7 @@ export function createRouter(options: RouterOptions): Router {
     const toLocation = targetLocation as RouteLocationNormalized
 
     toLocation.redirectedFrom = redirectedFrom
-    let failure: NavigationFailure | void
+    let failure: NavigationFailure | void | undefined
 
     if (!force && isSameRouteLocation(from, targetLocation))
       failure = createRouterError<NavigationFailure>(
@@ -590,9 +621,11 @@ export function createRouter(options: RouterOptions): Router {
     // duplicated navigation (e.g. same anchor navigation). It needs exposing
     // the navigation information (type, direction)
     if (isBrowser) {
-      const savedScroll = getSavedScrollPosition(
-        getScrollKey(toLocation.fullPath, 0)
-      )
+      // if we are pushing, we cannot have a saved position. This is important
+      // when visiting /b from /a, scrolling, going back to /a by with the back
+      // button and then clicking on a link to /b instead of the forward button
+      const savedScroll =
+        !isPush && getSavedScrollPosition(getScrollKey(toLocation.fullPath, 0))
       handleScroll(
         toLocation,
         from,
@@ -644,7 +677,7 @@ export function createRouter(options: RouterOptions): Router {
             (error as NavigationRedirectError).to,
             toLocation
           ).catch(() => {
-            // TODO: in dev show warning, in prod noop, same as initial navigation
+            // TODO: in dev show warning, in prod triggerError, same as initial navigation
           })
           // avoid the then branch
           return Promise.reject()
@@ -674,7 +707,7 @@ export function createRouter(options: RouterOptions): Router {
         )
       })
       .catch(() => {
-        // TODO: same as above: in dev show warning, in prod noop, same as initial navigation
+        // TODO: same as above
       })
   })
 
@@ -739,6 +772,25 @@ export function createRouter(options: RouterOptions): Router {
       .then(position => position && scrollToPosition(position))
   }
 
+  function go(delta: number) {
+    return new Promise<NavigationFailure | void | undefined>(
+      (resolve, reject) => {
+        let removeError = errorHandlers.add(err => {
+          removeError()
+          removeAfterEach()
+          reject(err)
+        })
+        let removeAfterEach = afterGuards.add((_to, _from, failure) => {
+          removeError()
+          removeAfterEach()
+          resolve(failure)
+        })
+
+        routerHistory.go(delta)
+      }
+    )
+  }
+
   const router: Router = {
     currentRoute,
 
@@ -751,9 +803,9 @@ export function createRouter(options: RouterOptions): Router {
 
     push,
     replace,
-    go: routerHistory.go,
-    back: () => routerHistory.go(-1),
-    forward: () => routerHistory.go(1),
+    go,
+    back: () => go(-1),
+    forward: () => go(1),
 
     beforeEach: beforeGuards.add,
     beforeResolve: beforeResolveGuards.add,
