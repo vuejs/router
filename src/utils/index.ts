@@ -6,6 +6,7 @@ import {
   RouteLocationAs,
   LocationAsPath,
   LocationAsRelative,
+  LocationAsName,
 } from '../types'
 import { hasSymbol } from '../injectionSymbols'
 
@@ -56,4 +57,10 @@ export function isRouteLocationRelative(
   r: any
 ): r is RouteLocationAs<LocationAsRelative> {
   return 'params' in r && r.params
+}
+
+export function isRouteLocationName(
+  r: any
+): r is RouteLocationAs<LocationAsName> {
+  return 'name' in r && r.name
 }

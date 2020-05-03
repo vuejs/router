@@ -4,8 +4,15 @@ import {
   MatcherLocation,
   isRouteName,
   RouteRecordName,
+  RouteParams,
+  LocationAsRelative,
 } from '../types'
-import { applyToParamsRaw } from '../utils'
+import {
+  normalizeParams,
+  isRouteLocationPath,
+  isRouteLocationRelative,
+  isRouteLocationName,
+} from '../utils'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
 import { RouteRecordRedirect, RouteRecordNormalized } from './types'
@@ -201,7 +208,14 @@ export function createRouterMatcher(
     let path: MatcherLocation['path']
     let name: MatcherLocation['name']
 
-    if ('name' in location && location.name) {
+    if (isRouteLocationRelative(location)) {
+      location = {
+        ...location,
+        params: normalizeParams(location.params),
+      }
+    }
+
+    if (isRouteLocationName(location)) {
       matcher = matcherMap.get(location.name)
 
       if (!matcher)
@@ -215,11 +229,11 @@ export function createRouterMatcher(
           currentLocation.params,
           matcher.keys.map(k => k.name)
         ),
-        ...applyToParamsRaw(location.params),
+        ...(location.params as RouteParams),
       }
       // throws if cannot be stringified
       path = matcher.stringify(params)
-    } else if ('path' in location) {
+    } else if (isRouteLocationPath(location)) {
       // no need to resolve the path with the matcher as it was provided
       // this also allows the user to control the encoding
       path = location.path
@@ -254,7 +268,7 @@ export function createRouterMatcher(
       // params like when `name` is provided
       params = {
         ...currentLocation.params,
-        ...applyToParamsRaw(location.params),
+        ...((location as LocationAsRelative).params as RouteParams),
       }
       path = matcher.stringify(params)
     }
