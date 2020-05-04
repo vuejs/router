@@ -82,7 +82,7 @@
     "css-loader": "^3.5.3",
     "dotenv": "^8.2.0",
     "faked-promise": "^2.2.2",
-    "html-webpack-plugin": "^4.2.0",
+    "html-webpack-plugin": "^4.3.0",
     "jest": "^25.4.0",
     "jest-mock-warn": "^1.0.1",
     "lint-staged": "^10.1.7",
