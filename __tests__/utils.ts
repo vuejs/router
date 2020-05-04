@@ -9,8 +9,14 @@ import {
   RouteRecordRaw,
   RouteRecordName,
 } from '../src/types'
-import { h, resolveComponent, ComponentOptions } from 'vue'
-import { RouterOptions, createWebHistory, createRouter, Router } from '../src'
+import { h, ComponentOptions } from 'vue'
+import {
+  RouterOptions,
+  createWebHistory,
+  createRouter,
+  Router,
+  RouterView,
+} from '../src'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
@@ -118,7 +124,6 @@ export const components = {
       },
     },
     render() {
-      // @ts-ignore
       return h('div', {}, 'User: ' + this.id)
     },
   } as ComponentOptions,
@@ -132,16 +137,14 @@ export const components = {
       },
     },
     render() {
-      // @ts-ignore
       return h('div', {}, `id:${this.id};other:${this.other}`)
     },
   } as RouteComponent,
   Nested: {
     render: () => {
-      const RouterView = resolveComponent('RouterView')
       return h('div', {}, [
         h('h2', {}, 'Nested'),
-        RouterView ? h(RouterView as any) : [],
+        RouterView ? h(RouterView) : [],
       ])
     },
   },

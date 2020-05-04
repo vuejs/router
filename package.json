@@ -58,7 +58,7 @@
     }
   ],
   "peerDependencies": {
-    "vue": "^3.0.0-beta.5"
+    "vue": "^3.0.0-beta.6"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.7.19",
@@ -72,7 +72,7 @@
     "@types/jsdom": "^16.2.1",
     "@types/webpack": "^4.41.12",
     "@types/webpack-env": "^1.15.2",
-    "@vue/compiler-sfc": "3.0.0-beta.5",
+    "@vue/compiler-sfc": "3.0.0-beta.6",
     "axios": "^0.19.2",
     "browserstack-local": "^1.4.5",
     "chalk": "^4.0.0",
@@ -101,7 +101,7 @@
     "ts-node": "^8.9.1",
     "tsd": "^0.11.0",
     "typescript": "^3.8.3",
-    "vue": "^3.0.0-beta.5",
+    "vue": "^3.0.0-beta.6",
     "vue-loader": "^16.0.0-alpha.3",
     "webpack": "^4.43.0",
     "webpack-bundle-analyzer": "^3.7.0",
