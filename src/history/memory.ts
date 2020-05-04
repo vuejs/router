@@ -16,7 +16,7 @@ import {
  * @param base - Base applied to all urls, defaults to '/'
  * @returns a history object that can be passed to the router constructor
  */
-export default function createMemoryHistory(base: string = ''): RouterHistory {
+export function createMemoryHistory(base: string = ''): RouterHistory {
   let listeners: NavigationCallback[] = []
   let queue: HistoryLocationNormalized[] = [START]
   let position: number = 0

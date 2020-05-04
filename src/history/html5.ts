@@ -262,7 +262,7 @@ function useHistoryStateNavigation(base: string) {
   }
 }
 
-export default function createWebHistory(base?: string): RouterHistory {
+export function createWebHistory(base?: string): RouterHistory {
   base = normalizeBase(base)
 
   const historyNavigation = useHistoryStateNavigation(base)

@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom'
-import createWebHistory from '../../src/history/html5'
+import { createWebHistory } from '../../src/history/html5'
 import { createDom } from '../utils'
 
 // override the value of isBrowser because the variable is created before JSDOM

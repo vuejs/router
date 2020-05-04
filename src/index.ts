@@ -1,6 +1,6 @@
-import createWebHistory from './history/html5'
-import createMemoryHistory from './history/memory'
-import createWebHashHistory from './history/hash'
+export { createWebHistory } from './history/html5'
+export { createMemoryHistory } from './history/memory'
+export { createWebHashHistory } from './history/hash'
 
 export {
   LocationQuery,
@@ -46,7 +46,5 @@ export { NavigationFailureType, NavigationFailure } from './errors'
 export { onBeforeRouteLeave, onBeforeRouteUpdate } from './navigationGuards'
 export { RouterLink, useLink } from './RouterLink'
 export { RouterView } from './RouterView'
-
-export { createWebHistory, createMemoryHistory, createWebHashHistory }
 
 export * from './useApi'
