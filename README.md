@@ -20,13 +20,23 @@ Since the library is still unstable **and because we want feedback** on bugs and
     .map(record => Object.values(record.components))
     .flat()
   ```
-- If you use a `transition`, you need to wait for the router to be _ready_ before mounting the app:
+- If you use a `transition`, you may need to wait for the router to be _ready_ before mounting the app:
   ```js
   app.use(router)
   // Note: on Server Side, you need to manually push the initial location
   router.isReady().then(() => app.mount('#app'))
   ```
-  Otherwise there will be an initial transition as if you provided the `appear` prop to `transition` because the router displays its initial location (nothing)
+  Otherwise there will be an initial transition as if you provided the `appear` prop to `transition` because the router displays its initial location (nothing) and then displays the first location. This happens because navigations are all asynchronous now. **If you have navigation guards upon the initial navigation**, you might not want to block the app render until they are resolved.
+- On SSR, you need to manually pass the appropriate history by using a ternary:
+  ```js
+  let history = isServer ? createMemoryHistory() : createWebHistory()
+  let router = createRouter({ routes, history })
+  // on server only
+  router.push(req.url) // request url
+  router.isReady().then(() => {
+    // resolve the request
+  })
+  ```
 
 #### Improvements
 
@@ -36,8 +46,16 @@ These are technically breaking changes but they fix an inconsistent behavior.
 - _resolving_(`router.resolve`) or _pushing_ (`router.push`) a location with missing params no longer warns and produces an invalid URL (`/`), but explicitly throws an Error instead.
 - Empty children `path` does not append a trailing slash (`/`) anymore to make it consistent across all routes:
   - By default no route has a trailing slash but also works with a trailing slash
-  - Adding `strict: true` to a route record or `pathOptions: { strict: true }` to the router options (alongside `routes`) will disallow an optional trailing slash
-  - Combining the point above with a trailing slash in your routes allows you to enforce a trailing slash in your routes
+  - Adding `strict: true` to a route record or to the router options (alongside `routes`) will disallow an optional trailing slash
+  - Combining the point above with a trailing slash in your routes allows you to enforce a trailing slash in your routes. In the case of nested routes, make sure to add the trailing slash to the parent:
+    ```js
+    let routes = [
+      {
+        path: '/parent/',
+        children: [{ path: '' }, { path: 'child1/' }, { path: 'child2/' }],
+      },
+    ]
+    ```
   - To redirect the user to trailing slash routes (or the opposite), you can setup a `beforeEach` navigation guard that ensures the presence of a trailing slash
 - Because of the change above, relative children path `redirect` on an empty path are not supported anymore. Use named routes instead:
   ```js
