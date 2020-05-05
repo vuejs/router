@@ -122,11 +122,9 @@ module.exports = {
       .click('li:nth-child(4) a')
       .assert.evaluate(
         function () {
-          // TODO: change implementation to use `afterEach`
-          return true
-          // return (
-          //   document.getElementById('anchor').getBoundingClientRect().top < 1
-          // )
+          return (
+            document.getElementById('anchor').getBoundingClientRect().top < 1
+          )
         },
         null,
         'scroll to anchor when the route is the same'
@@ -197,6 +195,18 @@ module.exports = {
         },
         null,
         'scroll to anchor'
+      )
+
+      .url('http://localhost:8080/scroll-behavior/bar#anchor')
+      .waitForElementPresent('.view.bar', TIMEOUT)
+      .assert.evaluate(
+        function () {
+          return (
+            document.getElementById('anchor').getBoundingClientRect().top < 1
+          )
+        },
+        null,
+        'scroll to anchor when directly navigating to it'
       )
 
       .end()

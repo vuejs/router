@@ -187,7 +187,9 @@ function useHistoryStateNavigation(base: string) {
         // the length is off by one, we need to decrease it
         position: history.length - 1,
         replaced: true,
-        scroll: computeScrollPosition(),
+        // don't add a scroll as the user may have an anchor and we want
+        // scrollBehavior to be triggered without a saved position
+        scroll: null,
       },
       true
     )

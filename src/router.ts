@@ -388,11 +388,23 @@ export function createRouter(options: RouterOptions): Router {
     toLocation.redirectedFrom = redirectedFrom
     let failure: NavigationFailure | void | undefined
 
-    if (!force && isSameRouteLocation(from, targetLocation))
+    if (!force && isSameRouteLocation(from, targetLocation)) {
       failure = createRouterError<NavigationFailure>(
         ErrorTypes.NAVIGATION_DUPLICATED,
         { to: toLocation, from }
       )
+      // trigger scroll to allow scrolling to the same anchor
+      handleScroll(
+        from,
+        from,
+        // this is a push, the only way for it to be triggered from a
+        // history.listen is with a redirect, which makes it become a pus
+        true,
+        // This cannot be the first navigation because the initial location
+        // cannot be manually navigated to
+        false
+      )
+    }
 
     return (failure ? Promise.resolve(failure) : navigate(toLocation, from))
       .catch((error: NavigationFailure | NavigationRedirectError) => {
@@ -609,23 +621,7 @@ export function createRouter(options: RouterOptions): Router {
 
     // accept current navigation
     currentRoute.value = toLocation
-    // TODO: call handleScroll in afterEach so it can also be triggered on
-    // duplicated navigation (e.g. same anchor navigation). It needs exposing
-    // the navigation information (type, direction)
-    if (isBrowser) {
-      // if we are pushing, we cannot have a saved position. This is important
-      // when visiting /b from /a, scrolling, going back to /a by with the back
-      // button and then clicking on a link to /b instead of the forward button
-      const savedScroll =
-        !isPush && getSavedScrollPosition(getScrollKey(toLocation.fullPath, 0))
-      handleScroll(
-        toLocation,
-        from,
-        savedScroll || ((isFirstNavigation || !isPush) && state && state.scroll)
-      ).catch(err => {
-        triggerError(err)
-      })
-    }
+    handleScroll(toLocation, from, isPush, isFirstNavigation)
 
     markAsReady()
   }
@@ -751,17 +747,25 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   // Scroll behavior
-
   function handleScroll(
     to: RouteLocationNormalizedLoaded,
     from: RouteLocationNormalizedLoaded,
-    scrollPosition?: Required<ScrollPositionCoordinates>
-  ) {
-    if (!scrollBehavior) return Promise.resolve()
+    isPush: boolean,
+    isFirstNavigation: boolean
+  ): Promise<any> {
+    if (!isBrowser || !scrollBehavior) return Promise.resolve()
+
+    let scrollPosition: Required<ScrollPositionCoordinates> | null =
+      (!isPush && getSavedScrollPosition(getScrollKey(to.fullPath, 0))) ||
+      ((isFirstNavigation || !isPush) &&
+        (history.state as HistoryState) &&
+        history.state.scroll) ||
+      null
 
     return nextTick()
-      .then(() => scrollBehavior!(to, from, scrollPosition || null))
+      .then(() => scrollBehavior!(to, from, scrollPosition))
       .then(position => position && scrollToPosition(position))
+      .catch(triggerError)
   }
 
   function go(delta: number) {
