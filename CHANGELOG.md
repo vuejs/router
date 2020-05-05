@@ -1,3 +1,20 @@
+# [4.0.0-alpha.10](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.9...v4.0.0-alpha.10) (2020-05-05)
+
+### Bug Fixes
+
+- **scroll:** do not restore on push ([3f79195](https://github.com/vuejs/vue-router-next/commit/3f7919585117048c379b6dee8af1cc1de5996af0))
+
+### Features
+
+- **warn:** warn invalid hash ([fcf2365](https://github.com/vuejs/vue-router-next/commit/fcf2365556dffa87153c13d31a684070f123ea0e))
+- allow numbers as params ([ef0920a](https://github.com/vuejs/vue-router-next/commit/ef0920a86574bca10836214015c2317ed11a29b7)), closes [#206](https://github.com/vuejs/vue-router-next/issues/206)
+- **router:** allow global router classes ([388735b](https://github.com/vuejs/vue-router-next/commit/388735bc752852e2a9a24f971207fd81fae45fcf))
+- **router:** go, back and forward can be awaited ([eb87757](https://github.com/vuejs/vue-router-next/commit/eb87757ed189958c8c9955a10ece9306fa99f6d8))
+- **warn:** detect missing param in nested absolute paths ([f5b5949](https://github.com/vuejs/vue-router-next/commit/f5b59493a4e27bf07bd5a0d2e109bc6750f6f1a9))
+- **warn:** warn for invalid path+params and redirect ([91f4de9](https://github.com/vuejs/vue-router-next/commit/91f4de9aab99231fb39ed4cc5b4052979afda216))
+- **warn:** warn missing params in alias ([186e275](https://github.com/vuejs/vue-router-next/commit/186e2755ec0488ff80bdde11a53b0ddc9ee9fc03))
+- **warn:** warn when params are provided alongside path ([8a8ddf1](https://github.com/vuejs/vue-router-next/commit/8a8ddf1a5e5f2d29733da4fe25e4ddb447b0df30))
+
 # [4.0.0-alpha.9](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.8...v4.0.0-alpha.9) (2020-04-29)
 
 - Removed sourcemaps from build
