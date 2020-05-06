@@ -90,4 +90,27 @@ describe('warnings', () => {
       'Alias "/:p/:c" and the original record: "/:p/c" should have the exact same param named "c"'
     ).toHaveBeenWarned()
   })
+
+  it('warns if next is called multiple times in one navigation guard', done => {
+    expect.assertions(3)
+    let router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/', name: 'a', component },
+        { path: '/b', name: 'a', component },
+      ],
+    })
+
+    router.beforeEach((to, from, next) => {
+      next()
+      expect('').not.toHaveBeenWarned()
+      next()
+      expect('called more than once').toHaveBeenWarnedTimes(1)
+      next()
+      expect('called more than once').toHaveBeenWarnedTimes(1)
+      done()
+    })
+
+    router.push('/b')
+  })
 })

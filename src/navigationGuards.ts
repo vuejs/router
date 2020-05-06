@@ -127,10 +127,30 @@ export function guardToPromiseFn(
       }
 
       // wrapping with Promise.resolve allows it to work with both async and sync guards
-      Promise.resolve(guard.call(instance, to, from, next)).catch(err =>
-        reject(err)
-      )
+      Promise.resolve(
+        guard.call(
+          instance,
+          to,
+          from,
+          __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
+        )
+      ).catch(err => reject(err))
     })
+}
+
+function canOnlyBeCalledOnce(
+  next: NavigationGuardCallback,
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized
+): NavigationGuardCallback {
+  let called = 0
+  return function () {
+    if (called++ === 1)
+      warn(
+        `The "next" callback was called more than once in one navigation guard when going from "${from.fullPath}" to "${to.fullPath}". It should be called exactly one time in each navigation guard. This will fail in production.`
+      )
+    if (called === 1) next.apply(null, arguments as any)
+  }
 }
 
 type GuardType = 'beforeRouteEnter' | 'beforeRouteUpdate' | 'beforeRouteLeave'
