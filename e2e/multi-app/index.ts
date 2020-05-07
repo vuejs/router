@@ -3,19 +3,25 @@ import { RouteComponent } from '../../src/types'
 import { createApp, ref, watchEffect } from 'vue'
 
 const Home: RouteComponent = {
-  template: `<div>Home</div>`,
+  template: `<div class="home">Home</div>`,
 }
 
 const User: RouteComponent = {
-  template: `<div>User: {{ $route.params.id }}</div>`,
+  template: `<div class="user">User {{ $route.params.id }}</div>`,
 }
 
 // path popstate listeners to track the call count
 let activePopStateListeners = ref(0)
-const countDiv = document.getElementById('count')!
+let guardCallCount = ref(0)
+const popCountDiv = document.getElementById('popcount')!
+const guardCountDiv = document.getElementById('guardcount')!
 
 watchEffect(() => {
-  countDiv.innerHTML = '' + activePopStateListeners.value
+  popCountDiv.innerHTML = '' + activePopStateListeners.value
+})
+
+watchEffect(() => {
+  guardCountDiv.innerHTML = '' + guardCallCount.value
 })
 
 const originalAddEventListener = window.addEventListener
@@ -32,12 +38,18 @@ window.removeEventListener = function (name: string, handler: any) {
   }
   return originalRemoveEventListener.call(this, name, handler)
 }
+
 const router = createRouter({
   history: createWebHistory('/' + __dirname),
   routes: [
     { path: '/', component: Home },
     { path: '/users/:id', component: User },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  guardCallCount.value++
+  next()
 })
 
 let looper = [1, 2, 3]
