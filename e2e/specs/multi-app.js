@@ -56,15 +56,28 @@ module.exports = {
 
       // navigation on app 1
       .click('#app-1 li:nth-child(2) a')
+      .assert.containsText('#guardcount', '2')
       .assert.containsText('#app-1 .user', 'User 1')
       .assert.containsText('#app-2 .user', 'User 1')
       .assert.containsText('#app-3 .user', 'User 1')
 
       // navigation on app 2
       .click('#app-2 li:nth-child(3) a')
+      .assert.containsText('#guardcount', '3')
       .assert.containsText('#app-1 .user', 'User 2')
       .assert.containsText('#app-2 .user', 'User 2')
       .assert.containsText('#app-3 .user', 'User 2')
+
+      // should trigger the guard only once
+      .back()
+      .assert.containsText('#guardcount', '4')
+
+      /**
+       * TODO:
+       * - add in-component guards and check each one of them is called
+       * - check `this` is the actual instance by injecting a global property
+       *   per app equal to their id and using it somewhere in the template
+       */
 
       // unmounting apps should end up removing the popstate listener
       // .click('#unmount1')
