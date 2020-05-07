@@ -10,6 +10,7 @@ import {
   NavigationGuard,
 } from './types'
 import { routerKey, routeLocationKey } from './injectionSymbols'
+import { warn } from './warning'
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomOptions {
@@ -86,8 +87,7 @@ export function applyRouterPlugin(app: App, router: Router) {
     // @ts-ignore: see above
     router._started = true
     router.push(router.history.location.fullPath).catch(err => {
-      if (__DEV__)
-        console.error('Unhandled error when starting the router', err)
+      if (__DEV__) warn('Unexpected error when starting the router:', err)
     })
   }
 

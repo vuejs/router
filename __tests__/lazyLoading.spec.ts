@@ -3,6 +3,7 @@ import { createRouter, createMemoryHistory } from '../src'
 import { RouterOptions } from '../src/router'
 import { RouteComponent } from '../src/types'
 import { ticks } from './utils'
+import { FunctionalComponent, h } from 'vue'
 
 function newRouter(options: Partial<RouterOptions> = {}) {
   let history = createMemoryHistory()
@@ -277,5 +278,16 @@ describe('Lazy Loading', () => {
       path: '/',
       matched: [],
     })
+  })
+
+  it('works with functional components', async () => {
+    const Functional: FunctionalComponent = () => h('div', 'functional')
+    Functional.displayName = 'Functional'
+
+    const { router } = newRouter({
+      routes: [{ path: '/foo', component: Functional }],
+    })
+
+    await expect(router.push('/foo')).resolves.toBe(undefined)
   })
 })

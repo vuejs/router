@@ -1,6 +1,6 @@
 import { mockWarn } from 'jest-mock-warn'
 import { createMemoryHistory, createRouter } from '../src'
-import { defineComponent } from 'vue'
+import { defineComponent, FunctionalComponent, h } from 'vue'
 
 let component = defineComponent({})
 
@@ -112,5 +112,18 @@ describe('warnings', () => {
     })
 
     router.push('/b')
+  })
+
+  it('warns if a non valid function is passed as a component', async () => {
+    const Functional: FunctionalComponent = () => h('div', 'functional')
+    // Functional should have a displayName to avoid the warning
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/foo', component: Functional }],
+    })
+
+    await expect(router.push('/foo')).resolves.toBe(undefined)
+    expect('with path "/foo" is a function').toHaveBeenWarned()
   })
 })
