@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Vue Router e2e tests - Multi app</title>
+    <!-- TODO: replace with local imports for promises and anything else needed -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2Ces2015"></script>
+  </head>
+  <body>
+    <a href="/">&lt;&lt; Back to Homepage</a>
+    <hr />
+
+    <button id="mount1">Mount App 1</button>
+    <button id="mount2">Mount App 2</button>
+    <button id="mount3">Mount App 3</button>
+
+    <br />
+
+    <button id="unmount1">Unmount App 1</button>
+    <button id="unmount2">Unmount App 2</button>
+    <button id="unmount3">Unmount App 3</button>
+
+    <hr />
+
+    popstate count: <span id="count"></span>
+
+    <div id="app-1"></div>
+    <div id="app-2"></div>
+    <div id="app-3"></div>
+  </body>
+</html>
