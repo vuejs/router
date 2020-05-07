@@ -63,6 +63,10 @@ declare module '@vue/runtime-core' {
   }
 }
 
+// used for the initial navigation client side to avoid pushing multiple times
+// when the router is used in multiple apps
+let installed: boolean | undefined
+
 export function applyRouterPlugin(app: App, router: Router) {
   app.component('RouterLink', RouterLink)
   app.component('RouterView', RouterView)
@@ -76,7 +80,12 @@ export function applyRouterPlugin(app: App, router: Router) {
   // this initial navigation is only necessary on client, on server it doesn't
   // make sense because it will create an extra unnecessary navigation and could
   // lead to problems
-  if (isBrowser && router.currentRoute.value === START_LOCATION_NORMALIZED) {
+  if (
+    isBrowser &&
+    !installed &&
+    router.currentRoute.value === START_LOCATION_NORMALIZED
+  ) {
+    installed = true
     router.push(router.history.location.fullPath).catch(err => {
       if (__DEV__)
         console.error('Unhandled error when starting the router', err)

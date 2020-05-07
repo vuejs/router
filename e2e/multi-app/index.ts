@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
-import { createApp, ref, watchEffect } from 'vue'
+import { createApp, ref, watchEffect, App } from 'vue'
 
 const Home: RouteComponent = {
   template: `<div class="home">Home</div>`,
@@ -54,9 +54,15 @@ router.beforeEach((to, from, next) => {
 
 let looper = [1, 2, 3]
 
-let apps = looper.map(i =>
-  createApp({
-    template: `
+let apps: Array<App | null> = [null, null, null]
+
+looper.forEach((n, i) => {
+  let mountBtn = document.getElementById('mount' + n)!
+  let unmountBtn = document.getElementById('unmount' + n)!
+
+  mountBtn.addEventListener('click', () => {
+    let app = (apps[i] = createApp({
+      template: `
     <div id="app-${i}">
       <ul>
         <li><router-link to="/">Home</router-link></li>
@@ -67,22 +73,13 @@ let apps = looper.map(i =>
       <router-view></router-view>
     </div>
   `,
-  })
-)
-
-looper.forEach((n, i) => {
-  let mountBtn = document.getElementById('mount' + n)!
-  let unmountBtn = document.getElementById('unmount' + n)!
-
-  let app = apps[i]
-
-  app.use(router)
-
-  mountBtn.addEventListener('click', () => {
+    }))
+    app.use(router)
     app.mount('#app-' + n)
   })
 
   unmountBtn.addEventListener('click', () => {
-    app.unmount('#app-' + n)
+    let app = apps[i]
+    app && app.unmount('#app-' + n)
   })
 })
