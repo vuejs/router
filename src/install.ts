@@ -63,10 +63,6 @@ declare module '@vue/runtime-core' {
   }
 }
 
-// used for the initial navigation client side to avoid pushing multiple times
-// when the router is used in multiple apps
-let installed: boolean | undefined
-
 export function applyRouterPlugin(app: App, router: Router) {
   app.component('RouterLink', RouterLink)
   app.component('RouterView', RouterView)
@@ -82,10 +78,13 @@ export function applyRouterPlugin(app: App, router: Router) {
   // lead to problems
   if (
     isBrowser &&
-    !installed &&
+    // @ts-ignore: used for the initial navigation client side to avoid pushing
+    // multiple times when the router is used in multiple apps
+    !router._started &&
     router.currentRoute.value === START_LOCATION_NORMALIZED
   ) {
-    installed = true
+    // @ts-ignore: see above
+    router._started = true
     router.push(router.history.location.fullPath).catch(err => {
       if (__DEV__)
         console.error('Unhandled error when starting the router', err)
