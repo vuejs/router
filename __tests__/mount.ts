@@ -12,6 +12,7 @@ import {
   App,
   VNode,
   shallowRef,
+  ComponentOptions,
 } from 'vue'
 import { compile } from '@vue/compiler-dom'
 import * as runtimeDom from '@vue/runtime-dom'
@@ -21,7 +22,7 @@ import { routeLocationKey } from '../src/injectionSymbols'
 export interface MountOptions {
   propsData: Record<string, any>
   provide: Record<string | symbol, any>
-  components: Record<string, Component>
+  components: ComponentOptions['components']
   slots: Record<string, string>
 }
 

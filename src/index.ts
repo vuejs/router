@@ -44,7 +44,7 @@ export {
 export { NavigationFailureType, NavigationFailure } from './errors'
 
 export { onBeforeRouteLeave, onBeforeRouteUpdate } from './navigationGuards'
-export { RouterLink, useLink } from './RouterLink'
-export { RouterView } from './RouterView'
+export { RouterLink, useLink, RouterLinkProps } from './RouterLink'
+export { RouterView, RouterViewProps } from './RouterView'
 
 export * from './useApi'

@@ -7,16 +7,22 @@ import {
   computed,
   ref,
   ComponentPublicInstance,
-  Component,
+  VNodeProps,
 } from 'vue'
-import { RouteLocationNormalizedLoaded } from './types'
+import { RouteLocationNormalizedLoaded, RouteLocationNormalized } from './types'
 import {
   matchedRouteKey,
   viewDepthKey,
   routeLocationKey,
 } from './injectionSymbols'
 
-export const RouterView = (defineComponent({
+export interface RouterViewProps {
+  name?: string
+  // allow looser type for user facing api
+  route?: RouteLocationNormalized
+}
+
+export const RouterViewImpl = defineComponent({
   name: 'RouterView',
   props: {
     name: {
@@ -97,4 +103,12 @@ export const RouterView = (defineComponent({
         : null
     }
   },
-}) as unknown) as Component
+})
+
+// export the public type for h/tsx inference
+// also to avoid inline import() in generated d.ts files
+export const RouterView = (RouterViewImpl as any) as {
+  new (): {
+    $props: VNodeProps & RouterViewProps
+  }
+}

@@ -6,20 +6,20 @@ import {
   computed,
   reactive,
   unref,
-  Component,
+  VNodeProps,
 } from 'vue'
 import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types'
 import { isSameLocationObject, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 
-interface LinkProps {
+export interface RouterLinkProps {
   to: RouteLocationRaw
-  // TODO: refactor using extra options allowed in router.push
+  // TODO: refactor using extra options allowed in router.push. Needs RFC
   replace?: boolean
 }
 
-type UseLinkOptions = VueUseOptions<LinkProps>
+type UseLinkOptions = VueUseOptions<RouterLinkProps>
 
 // TODO: we could allow currentRoute as a prop to expose `isActive` and
 // `isExactActive` behavior should go through an RFC
@@ -85,7 +85,7 @@ export function useLink(props: UseLinkOptions) {
   }
 }
 
-export const RouterLink = (defineComponent({
+export const RouterLinkImpl = defineComponent({
   name: 'RouterLink',
   props: {
     to: {
@@ -137,7 +137,15 @@ export const RouterLink = (defineComponent({
           )
     }
   },
-}) as unknown) as Component
+})
+
+// export the public type for h/tsx inference
+// also to avoid inline import() in generated d.ts files
+export const RouterLink = (RouterLinkImpl as any) as {
+  new (): {
+    $props: VNodeProps & RouterLinkProps
+  }
+}
 
 function guardEvent(e: MouseEvent) {
   // don't redirect with control keys
