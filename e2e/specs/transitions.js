@@ -6,7 +6,7 @@ module.exports = {
   '@tags': ['no-headless'],
 
   transitions: function (browser) {
-    const TIMEOUT = 2000
+    const TIMEOUT = 3000
 
     browser
       .url('http://localhost:8080/transitions/')
