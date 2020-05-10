@@ -20,12 +20,15 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {},
 })
 
-export const loggedInGuard: NavigationGuard = (
+export const loggedInGuard: NavigationGuard = (to, from, next) => next('/')
+function beforeGuardFn(
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
   next: NavigationGuardCallback
-) => next('/')
+) {}
+
 router.beforeEach(loggedInGuard)
+router.beforeEach(beforeGuardFn)
 
 const app = createApp({})
 app.use(router)
