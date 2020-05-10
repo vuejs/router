@@ -176,7 +176,8 @@ export function createRouter(options: RouterOptions): Router {
   )
   let pendingLocation: RouteLocation = START_LOCATION_NORMALIZED
 
-  if (isBrowser && 'scrollRestoration' in history) {
+  // leave the scrollRestoration if no scrollBehavior is provided
+  if (isBrowser && scrollBehavior && 'scrollRestoration' in history) {
     history.scrollRestoration = 'manual'
   }
 
