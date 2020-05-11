@@ -58,16 +58,16 @@ const ErrorTypeMessages = {
   }: NavigationRedirectError) {
     return `Redirected from "${from.fullPath}" to "${stringifyRoute(
       to
-    )}" via a navigation guard`
+    )}" via a navigation guard.`
   },
   [ErrorTypes.NAVIGATION_ABORTED]({ from, to }: NavigationFailure) {
-    return `Navigation aborted from "${from.fullPath}" to "${to.fullPath}" via a navigation guard`
+    return `Navigation aborted from "${from.fullPath}" to "${to.fullPath}" via a navigation guard.`
   },
   [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationFailure) {
-    return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new \`push\` or \`replace\``
+    return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new navigation.`
   },
   [ErrorTypes.NAVIGATION_DUPLICATED]({ from, to }: NavigationFailure) {
-    return `Avoided redundant navigation to current location: "${from.fullPath}"`
+    return `Avoided redundant navigation to current location: "${from.fullPath}".`
   },
 }
 
