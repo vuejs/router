@@ -1,4 +1,10 @@
-import { createRouter, createWebHistory } from './index'
+import {
+  createRouter,
+  createWebHistory,
+  NavigationGuard,
+  NavigationGuardCallback,
+  RouteLocationNormalized,
+} from './index'
 import { createApp, defineComponent } from 'vue'
 
 const component = defineComponent({})
@@ -13,6 +19,16 @@ const router = createRouter({
   sensitive: true,
   scrollBehavior(to, from, savedPosition) {},
 })
+
+export const loggedInGuard: NavigationGuard = (to, from, next) => next('/')
+function beforeGuardFn(
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardCallback
+) {}
+
+router.beforeEach(loggedInGuard)
+router.beforeEach(beforeGuardFn)
 
 const app = createApp({})
 app.use(router)
