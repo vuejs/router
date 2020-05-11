@@ -31,7 +31,7 @@ export {
   RouteLocationOptions,
   RouteRecordRaw,
   NavigationGuard,
-  NavigationGuardCallback,
+  NavigationGuardNext,
   PostNavigationGuard,
 } from './types'
 export {

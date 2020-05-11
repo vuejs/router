@@ -1,7 +1,7 @@
 import {
   NavigationGuard,
   RouteLocationNormalized,
-  NavigationGuardCallback,
+  NavigationGuardNext,
   RouteLocationRaw,
   RouteLocationNormalizedLoaded,
   NavigationGuardNextCallback,
@@ -95,7 +95,7 @@ export function guardToPromiseFn(
 ): () => Promise<void> {
   return () =>
     new Promise((resolve, reject) => {
-      const next: NavigationGuardCallback = (
+      const next: NavigationGuardNext = (
         valid?: boolean | RouteLocationRaw | NavigationGuardNextCallback | Error
       ) => {
         if (valid === false)
@@ -140,10 +140,10 @@ export function guardToPromiseFn(
 }
 
 function canOnlyBeCalledOnce(
-  next: NavigationGuardCallback,
+  next: NavigationGuardNext,
   to: RouteLocationNormalized,
   from: RouteLocationNormalized
-): NavigationGuardCallback {
+): NavigationGuardNext {
   let called = 0
   return function () {
     if (called++ === 1)

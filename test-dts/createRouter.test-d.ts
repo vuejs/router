@@ -2,7 +2,7 @@ import {
   createRouter,
   createWebHistory,
   NavigationGuard,
-  NavigationGuardCallback,
+  NavigationGuardNext,
   RouteLocationNormalized,
 } from './index'
 import { createApp, defineComponent } from 'vue'
@@ -24,7 +24,7 @@ export const loggedInGuard: NavigationGuard = (to, from, next) => next('/')
 function beforeGuardFn(
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
-  next: NavigationGuardCallback
+  next: NavigationGuardNext
 ) {}
 
 router.beforeEach(loggedInGuard)

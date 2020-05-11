@@ -237,7 +237,7 @@ export interface MatcherLocation
     'name' | 'path' | 'params' | 'matched' | 'meta'
   > {}
 
-export interface NavigationGuardCallback {
+export interface NavigationGuardNext {
   (): void
   (error: Error): void
   (location: RouteLocationRaw): void
@@ -252,7 +252,7 @@ export interface NavigationGuard {
     // TODO: we could maybe add extra information like replace: true/false
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
-    next: NavigationGuardCallback
+    next: NavigationGuardNext
   ): any
 }
 
@@ -261,7 +261,7 @@ export interface NavigationGuardWithThis<T> {
     this: T,
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
-    next: NavigationGuardCallback
+    next: NavigationGuardNext
   ): any
 }
 
