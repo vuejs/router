@@ -1,3 +1,21 @@
+# [4.0.0-alpha.11](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.10...v4.0.0-alpha.11) (2020-05-12)
+
+### Bug Fixes
+
+- **scroll:** change scrollRestoration if scrollBehavior is provided ([5cf2e61](https://github.com/vuejs/vue-router-next/commit/5cf2e611de2477e92699121573cb162ff98a7b8d))
+- match base in a non-sensitive way ([7087bbc](https://github.com/vuejs/vue-router-next/commit/7087bbc9c479f2955381d8a823a3ef8f9eed7b5a))
+- **router:** allow multiple router instance ([24d3d49](https://github.com/vuejs/vue-router-next/commit/24d3d49babcdea751f4c4e7e9a87625f8744a122))
+- **router:** unique first navigation with multi app ([33172af](https://github.com/vuejs/vue-router-next/commit/33172aff03b7c302699753a8abe5750094bdde26))
+
+### Features
+
+- **types:** export NavigationGuardNext ([#229](https://github.com/vuejs/vue-router-next/issues/229)) ([888bf4d](https://github.com/vuejs/vue-router-next/commit/888bf4df33d718d74e5835e99d0f1ac4ce3a0ccf))
+- explicit injection symbols in dev mode ([#228](https://github.com/vuejs/vue-router-next/issues/228)) ([fab88ee](https://github.com/vuejs/vue-router-next/commit/fab88ee261c49b739545918deab583757aab561e))
+- support jsx and tsx for RouterLink and RouterView ([1d3dce3](https://github.com/vuejs/vue-router-next/commit/1d3dce3106af700fc95a403f1c229644fe8d85b8)), closes [#226](https://github.com/vuejs/vue-router-next/issues/226)
+- **router:** allow functional components for routes ([096d864](https://github.com/vuejs/vue-router-next/commit/096d86498e954345c6bd4d8e82fe54c37d3f869b))
+- **scroll:** scroll to the same location like regular links ([5f22d4f](https://github.com/vuejs/vue-router-next/commit/5f22d4fa39171906802cc20ada00ec57bdfce880))
+- **warn:** warn if next was called multiple times ([dce2612](https://github.com/vuejs/vue-router-next/commit/dce2612e495b1d5789cd993a54d24599967a8cf4))
+
 # [4.0.0-alpha.10](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.9...v4.0.0-alpha.10) (2020-05-05)
 
 ### Bug Fixes
