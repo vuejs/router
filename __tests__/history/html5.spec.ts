@@ -27,16 +27,6 @@ describe('History HTMl5', () => {
       element.remove()
   })
 
-  // this problem is very common on hash history when using a regular link
-  // it will push an entry into the history stack with no state.
-  // When navigating back, we will try to read `state` but it will be null
-  it('should not fail if an entry has an empty state', () => {
-    const history = createWebHistory()
-    expect(history.location).toEqual({
-      fullPath: '/',
-    })
-  })
-
   it('handles a basic base', () => {
     expect(createWebHistory().base).toBe('')
     expect(createWebHistory('/').base).toBe('')
