@@ -19,6 +19,8 @@ import { stripBase } from '../location'
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 
+let createBaseLocation = () => location.protocol + '//' + location.host
+
 interface StateEntry extends HistoryState {
   back: HistoryLocationNormalized | null
   current: HistoryLocationNormalized
@@ -200,7 +202,7 @@ function useHistoryStateNavigation(base: string) {
     state: StateEntry,
     replace: boolean
   ): void {
-    const url = base + to.fullPath
+    const url = createBaseLocation() + base + to.fullPath
     try {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds
