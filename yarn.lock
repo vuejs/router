@@ -972,6 +972,14 @@
     "@vue/shared" "3.0.0-beta.12"
     csstype "^2.6.8"
 
+"@vue/server-renderer@^3.0.0-beta.12":
+  version "3.0.0-beta.12"
+  resolved "https://registry.yarnpkg.com/@vue/server-renderer/-/server-renderer-3.0.0-beta.12.tgz#a649aa5704cfc6b0140c9e90a3801f15c4b467e9"
+  integrity sha512-ssuF4VNDoCTQ/upeT195bfplgOlg2MMgI46C41v93QrrWs/21O2ksnsdfMWhe+qu+XdhFiZLe/Q7KWLCLgL5wA==
+  dependencies:
+    "@vue/compiler-ssr" "3.0.0-beta.12"
+    "@vue/shared" "3.0.0-beta.12"
+
 "@vue/shared@3.0.0-beta.12":
   version "3.0.0-beta.12"
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.0.0-beta.12.tgz#cb7a2bb047919d2c944bf822032b0a8aa869ba1d"

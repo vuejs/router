@@ -75,6 +75,7 @@
     "@types/webpack": "^4.41.12",
     "@types/webpack-env": "^1.15.2",
     "@vue/compiler-sfc": "3.0.0-beta.12",
+    "@vue/server-renderer": "^3.0.0-beta.12",
     "axios": "^0.19.2",
     "browserstack-local": "^1.4.5",
     "chalk": "^4.0.0",
