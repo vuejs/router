@@ -238,6 +238,14 @@ export function createRouter(options: RouterOptions): Router {
         currentLocation
       )
 
+      if (__DEV__) {
+        let href = routerHistory.base + locationNormalized.fullPath
+        if (href.startsWith('//'))
+          warn(
+            `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
+          )
+      }
+
       return {
         // fullPath: locationNormalized.fullPath,
         // query: locationNormalized.query,
@@ -302,6 +310,14 @@ export function createRouter(options: RouterOptions): Router {
       hash,
       path: matchedRoute.path,
     })
+
+    if (__DEV__) {
+      let href = routerHistory.base + fullPath
+      if (href.startsWith('//'))
+        warn(
+          `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
+        )
+    }
 
     return {
       fullPath,

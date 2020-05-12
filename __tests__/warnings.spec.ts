@@ -126,4 +126,24 @@ describe('warnings', () => {
     await expect(router.push('/foo')).resolves.toBe(undefined)
     expect('with path "/foo" is a function').toHaveBeenWarned()
   })
+
+  it('should warn if multiple leading slashes with raw location', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/foo', component }],
+    })
+
+    await expect(router.push('//not-valid')).resolves.toBe(undefined)
+    expect('cannot start with multiple slashes').toHaveBeenWarned()
+  })
+
+  it('should warn if multiple leading slashes with object location', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/foo', component }],
+    })
+
+    await expect(router.push({ path: '//not-valid' })).resolves.toBe(undefined)
+    expect('cannot start with multiple slashes').toHaveBeenWarned()
+  })
 })
