@@ -60,18 +60,22 @@ These are technically breaking changes but they fix an inconsistent behavior.
 - Because of the change above, relative children path `redirect` on an empty path are not supported anymore. Use named routes instead:
   ```js
   // replace
-  let routes = {
-    path: '/parent',
-    children: [{ path: '', redirect: 'home' }, { path: 'home' }],
-  }
+  let routes = [
+    {
+      path: '/parent',
+      children: [{ path: '', redirect: 'home' }, { path: 'home' }],
+    }
+  ]
   // with
-  let routes = {
-    path: '/parent',
-    children: [
-      { path: '', redirect: { name: 'home' } },
-      { path: 'home', name: 'home' },
-    ],
-  }
+  let routes = [
+    {
+      path: '/parent',
+      children: [
+        { path: '', redirect: { name: 'home' } },
+        { path: 'home', name: 'home' },
+      ],
+    }
+   ]
   ```
   Note this will work if `path` was `/parent/` as the relative location `home` to `/parent/` is indeed `/parent/home` but the relative location of `home` to `/parent` is `/home`
 
