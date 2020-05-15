@@ -36,7 +36,7 @@ describe('History Hash', () => {
       dom.reconfigure({ url: 'https://example.com' })
     })
 
-    it('should use a correct', () => {
+    it('should use a correct base', () => {
       createWebHashHistory()
       expect(createWebHistory).toHaveBeenCalledWith('/#')
     })
@@ -48,15 +48,7 @@ describe('History Hash', () => {
 
     it('should be able to provide a base with no trailing slash', () => {
       createWebHashHistory('/folder')
-      expect(createWebHistory).toHaveBeenCalledWith('/folder/#')
-    })
-
-    it('should read the base tag', () => {
-      const baseEl = document.createElement('base')
-      baseEl.href = '/foo/'
-      document.head.appendChild(baseEl)
-      createWebHashHistory()
-      expect(createWebHistory).toHaveBeenCalledWith('/foo/#')
+      expect(createWebHistory).toHaveBeenCalledWith('/folder#')
     })
 
     it('should use the base option over the base tag', () => {
