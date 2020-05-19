@@ -6,6 +6,8 @@ The current codebase has most of the existing features on Vue Router v3.x and is
 
 Since the library is still unstable **and because we want feedback** on bugs and missing features, **it will probably go through a few breaking changes**.
 
+Check the [playground](https://github.com/vuejs/vue-router-next/tree/master/playground) or [e2e tests](https://github.com/vuejs/vue-router-next/tree/master/e2e/modal) for a usage example.
+
 ## Known issues
 
 ### Breaking changes compared to vue-router@3.x
@@ -64,7 +66,7 @@ These are technically breaking changes but they fix an inconsistent behavior.
     {
       path: '/parent',
       children: [{ path: '', redirect: 'home' }, { path: 'home' }],
-    }
+    },
   ]
   // with
   let routes = [
@@ -74,8 +76,8 @@ These are technically breaking changes but they fix an inconsistent behavior.
         { path: '', redirect: { name: 'home' } },
         { path: 'home', name: 'home' },
       ],
-    }
-   ]
+    },
+  ]
   ```
   Note this will work if `path` was `/parent/` as the relative location `home` to `/parent/` is indeed `/parent/home` but the relative location of `home` to `/parent` is `/home`
 
