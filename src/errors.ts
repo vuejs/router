@@ -5,12 +5,15 @@ import {
   RouteLocationNormalized,
 } from './types'
 
+/**
+ * order is important to make it backwards compatible with v3
+ */
 export const enum ErrorTypes {
-  MATCHER_NOT_FOUND,
-  NAVIGATION_GUARD_REDIRECT,
-  NAVIGATION_ABORTED,
-  NAVIGATION_CANCELLED,
-  NAVIGATION_DUPLICATED,
+  MATCHER_NOT_FOUND = 0,
+  NAVIGATION_GUARD_REDIRECT = 1,
+  NAVIGATION_ABORTED = 2,
+  NAVIGATION_CANCELLED = 3,
+  NAVIGATION_DUPLICATED = 4,
 }
 
 interface RouterErrorBase extends Error {
