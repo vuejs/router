@@ -24,8 +24,8 @@ export interface MatcherError extends RouterErrorBase {
 }
 
 export enum NavigationFailureType {
-  cancelled = ErrorTypes.NAVIGATION_CANCELLED,
   aborted = ErrorTypes.NAVIGATION_ABORTED,
+  cancelled = ErrorTypes.NAVIGATION_CANCELLED,
   duplicated = ErrorTypes.NAVIGATION_DUPLICATED,
 }
 export interface NavigationFailure extends RouterErrorBase {
