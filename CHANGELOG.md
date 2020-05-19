@@ -1,3 +1,27 @@
+# [4.0.0-alpha.12](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.11...v4.0.0-alpha.12) (2020-05-19)
+
+### Bug Fixes
+
+- **hash:** allow base with non trailing slash ([f5cc050](https://github.com/vuejs/vue-router-next/commit/f5cc0505f9e0cc30ff94e362ceb24d300afd684d)), closes [#247](https://github.com/vuejs/vue-router-next/issues/247)
+- prevent error on initial navigation to //invalid ([e72e4ba](https://github.com/vuejs/vue-router-next/commit/e72e4ba1cc7b80aa44d3958db259d9e3a351d0fd))
+
+### Features
+
+- **warn:** warn multiple leading slashes ([87c5e53](https://github.com/vuejs/vue-router-next/commit/87c5e53b43c218c83f9db986ac7538d74525ea5b))
+
+### BREAKING CHANGES
+
+- **hash:** When providing a base for hash histories, it is now necessary
+  to include a trailing slash to create a url that starts with `/#/`, otherwise it
+  will result in a url starting with `#/`. This allows users to use the routing
+  system directly in simple files without needing to configure a server at all:
+  - `https://example.com/file.html` + `base: 'file.html` will produce a final
+    url of `https://example.com/file.html#/`
+  - `https://example.com/folder` + `base: 'folder` will produce a final url of
+    `https://example.com/folder#/`
+  - `https://example.com/folder` + `base: 'folder/` will produce a final url of
+    `https://example.com/folder/#/`
+
 # [4.0.0-alpha.11](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.10...v4.0.0-alpha.11) (2020-05-12)
 
 ### Bug Fixes
