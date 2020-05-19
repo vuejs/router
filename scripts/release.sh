@@ -10,7 +10,6 @@ echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   echo "Releasing v$VERSION ..."
-  yarn run test
 
   yarn run build
   yarn run build:dts
