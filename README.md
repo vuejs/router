@@ -6,6 +6,24 @@ The current codebase has most of the existing features on Vue Router v3.x and is
 
 Since the library is still unstable **and because we want feedback** on bugs and missing features, **it will probably go through a few breaking changes**.
 
+## Accessing Route and Routing in the setup function
+
+The new `useRoute` and `useRouter` functions are used to access the route and router in the setup function.
+
+```
+import { useRoute, useRouter } from 'vue-router';
+
+export default {
+  setup(){
+    const route = useRoute();
+    const router = useRouter();
+    //...
+  }
+}
+```
+
+Note: because they rely on injection, these functions should be used early in the setup function.  If they are used in a promise chain or after `await` is used, they will fail.
+
 ## Known issues
 
 ### Breaking changes compared to vue-router@3.x
