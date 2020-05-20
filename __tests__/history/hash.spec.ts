@@ -37,8 +37,16 @@ describe('History Hash', () => {
     })
 
     it('should use a correct base', () => {
+      dom.reconfigure({ url: 'https://esm.dev' })
+      console.log(location.host, location.pathname)
       createWebHashHistory()
+      // starts with a `/`
       expect(createWebHistory).toHaveBeenCalledWith('/#')
+    })
+
+    it('does not append a # if the user provides one', () => {
+      createWebHashHistory('/#/app')
+      expect(createWebHistory).toHaveBeenCalledWith('/#/app')
     })
 
     it('should be able to provide a base', () => {
@@ -58,6 +66,26 @@ describe('History Hash', () => {
       createWebHashHistory('/bar/')
       expect(createWebHistory).toHaveBeenCalledWith('/bar/#')
     })
+
+    describe('url with pathname', () => {
+      it('keeps the pathname as base', () => {
+        dom.reconfigure({ url: 'https://esm.dev/subfolder' })
+        createWebHashHistory()
+        expect(createWebHistory).toHaveBeenCalledWith('/subfolder#')
+      })
+
+      it('keeps the pathname without a trailing slash as base', () => {
+        dom.reconfigure({ url: 'https://esm.dev/subfolder#/foo' })
+        createWebHashHistory()
+        expect(createWebHistory).toHaveBeenCalledWith('/subfolder#')
+      })
+
+      it('keeps the pathname with trailing slash as base', () => {
+        dom.reconfigure({ url: 'https://esm.dev/subfolder/#/foo' })
+        createWebHashHistory()
+        expect(createWebHistory).toHaveBeenCalledWith('/subfolder/#')
+      })
+    })
   })
 
   describe('file://', () => {
@@ -68,9 +96,7 @@ describe('History Hash', () => {
     it('should use a correct base', () => {
       createWebHashHistory()
       // both, a trailing / and none work
-      expect(createWebHistory).toHaveBeenCalledWith(
-        expect.stringMatching(/^#\/?$/)
-      )
+      expect(createWebHistory).toHaveBeenCalledWith('/usr/some-file.html#')
     })
   })
 })

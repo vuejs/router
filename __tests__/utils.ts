@@ -94,7 +94,7 @@ export function createDom(options?: ConstructorOptions) {
   const dom = new JSDOM(
     `<!DOCTYPE html><html><head></head><body></body></html>`,
     {
-      url: 'https://example.org/',
+      url: 'https://example.com/',
       referrer: 'https://example.com/',
       contentType: 'text/html',
       ...options,

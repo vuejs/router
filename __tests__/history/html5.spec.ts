@@ -74,4 +74,35 @@ describe('History HTMl5', () => {
     expect(createWebHistory('#/bar').base).toBe('#/bar')
     expect(createWebHistory('#/bar/').base).toBe('#/bar')
   })
+
+  it('prepends the host to support // urls', () => {
+    let history = createWebHistory()
+    let spy = jest.spyOn(window.history, 'pushState')
+    history.push('/foo')
+    expect(spy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'https://example.com/foo'
+    )
+    history.push('//foo')
+    expect(spy).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'https://example.com//foo'
+    )
+    spy.mockRestore()
+  })
+
+  it('works with file:/// urls and a base', () => {
+    dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+    let history = createWebHistory('/usr/etc/index.html#/')
+    let spy = jest.spyOn(window.history, 'pushState')
+    history.push('/foo')
+    expect(spy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'file:///usr/etc/index.html#/foo'
+    )
+    spy.mockRestore()
+  })
 })
