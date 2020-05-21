@@ -7,7 +7,7 @@ module.exports = {
 
   /** @type {import('nightwatch').NightwatchTest} */
   'scroll behavior': function (browser) {
-    const TIMEOUT = 2000
+    const TIMEOUT = 3000
 
     browser
       .url('http://localhost:8080/scroll-behavior/')
@@ -17,8 +17,10 @@ module.exports = {
 
       .execute(function () {
         window.scrollTo(0, 100)
+        // works in Safari
+        document.querySelector('li:nth-child(2) a').click()
       })
-      .click('li:nth-child(2) a')
+      // .click('li:nth-child(2) a')
       .waitForElementPresent('.view.foo', TIMEOUT)
       .assert.containsText('.view', 'foo')
       .execute(function () {
@@ -63,7 +65,10 @@ module.exports = {
         'restore scroll position on back again'
       )
 
-      .click('li:nth-child(3) a')
+      .execute(function () {
+        // for Safari...
+        document.querySelector('li:nth-child(3) a').click()
+      })
       .waitForElementPresent('.view.bar', TIMEOUT)
       .assert.evaluate(
         function () {
@@ -112,14 +117,14 @@ module.exports = {
       .waitForElementPresent('.view.foo', TIMEOUT)
       .execute(function () {
         window.scrollTo(0, 150)
+        // revisiting the same hash should scroll again
+        document.querySelector('li:nth-child(4) a').click()
       })
-      // revisiting the same hash should scroll again
-      .click('li:nth-child(4) a')
       .waitForElementPresent('.view.bar', TIMEOUT)
       .execute(function () {
         window.scrollTo(0, 50)
+        document.querySelector('li:nth-child(4) a').click()
       })
-      .click('li:nth-child(4) a')
       .assert.evaluate(
         function () {
           return (
@@ -151,7 +156,9 @@ module.exports = {
       )
 
       // going to an anchor entry, scrolling, then back then forward restores the position
-      .click('li:nth-child(4) a')
+      .execute(function () {
+        document.querySelector('li:nth-child(4) a').click()
+      })
       .waitForElementPresent('.view.bar', TIMEOUT)
       // at this point we scrolled to the anchor, scroll again somewhere else
       // and then go back
@@ -173,7 +180,9 @@ module.exports = {
       )
 
       // going again to a popped entry should not restore the saved position
-      .click('li:nth-child(1) a')
+      .execute(function () {
+        document.querySelector('li:nth-child(1) a').click()
+      })
       .waitForElementPresent('.view.home', TIMEOUT)
       .click('li:nth-child(4) a')
       .waitForElementPresent('.view.bar', TIMEOUT)
