@@ -12,7 +12,18 @@ Check the [playground](https://github.com/vuejs/vue-router-next/tree/master/play
 
 ### Breaking changes compared to vue-router@3.x
 
-- `mode: 'history'` -> `history: createWebHistory()`
+- The `mode: 'history'` option has been replaced with a more flexible one named `history`:
+
+  ```js
+  import { createRouter, createWebHistory } from 'vue-router'
+  // there is also createWebHashHistory and createMemoryHistory
+
+  createRouter({
+    history: createWebHistory(),
+    routes: [],
+  })
+  ```
+
 - `base` option is now passed as the first argument to `createWebHistory` (and other histories)
 - Catch all routes (`/*`) must now be defined using a parameter with a custom regex: `/:catchAll(.*)`
 - `router.match` and `router.resolve` are merged together into `router.resolve` with a slightly different signature
