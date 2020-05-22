@@ -40,6 +40,16 @@ Check the [playground](https://github.com/vuejs/vue-router-next/tree/master/play
   })
   ```
 
+### Typings
+
+To make typings more consistent and expressive, some types have been renamed. Keep in mind these can change until stable release to ensure consistency. Some types might have changed as well.
+
+| `vue-router@3` | `vue-router@4`          |
+| -------------- | ----------------------- |
+| RouteConfig    | RouteRecordRaw          |
+| Location       | RouteLocation           |
+| Route          | RouteLocationNormalized |
+
 #### Improvements
 
 These are technically breaking changes but they fix an inconsistent behavior.
