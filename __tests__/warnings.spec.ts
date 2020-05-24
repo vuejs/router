@@ -146,4 +146,21 @@ describe('warnings', () => {
     await expect(router.push({ path: '//not-valid' })).resolves.toBe(undefined)
     expect('cannot start with multiple slashes').toHaveBeenWarned()
   })
+
+  it('warns if path contains the same param multiple times', () => {
+    const history = createMemoryHistory()
+    createRouter({
+      history,
+      routes: [
+        {
+          path: '/:id',
+          component,
+          children: [{ path: ':id', component }],
+        },
+      ],
+    })
+    expect(
+      'duplicated params with name "id" for path "/:id/:id"'
+    ).toHaveBeenWarned()
+  })
 })
