@@ -166,7 +166,16 @@ export function extractComponentsGuards(
 
   for (const record of matched) {
     for (const name in record.components) {
-      const rawComponent = record.components[name]
+      let rawComponent = record.components[name]
+      // warn if user wrote import('/component.vue') instead of () => import('./component.vue')
+      if (__DEV__ && 'then' in rawComponent) {
+        warn(
+          `Component "${name}" in record with path "${record.path}" is a Promise instead of a function that returns a Promise. Did you write "import('./MyPage.vue')" instead of "() => import('./MyPage.vue')"? This will break in production if not fixed.`
+        )
+        let promise = rawComponent
+        rawComponent = () => promise
+      }
+
       if (isRouteComponent(rawComponent)) {
         // __vccOpts is added by vue-class-component and contain the regular options
         let options: ComponentOptions =
@@ -182,7 +191,7 @@ export function extractComponentsGuards(
 
         if (__DEV__ && !('catch' in componentPromise)) {
           warn(
-            `Component "${name}" at record with path "${record.path}" is a function that does not return a Promise. If you were passing a functional component, make sure to add a "displayName" to the component. This will break in production if not fixed.`
+            `Component "${name}" in record with path "${record.path}" is a function that does not return a Promise. If you were passing a functional component, make sure to add a "displayName" to the component. This will break in production if not fixed.`
           )
           componentPromise = Promise.resolve(componentPromise as RouteComponent)
         } else {

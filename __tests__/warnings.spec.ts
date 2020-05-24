@@ -163,4 +163,15 @@ describe('warnings', () => {
       'duplicated params with name "id" for path "/:id/:id"'
     ).toHaveBeenWarned()
   })
+
+  it('warns if component is a promise instead of a function that returns a promise', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      // simulates import('./component.vue')
+      routes: [{ path: '/foo', component: Promise.resolve(component) }],
+    })
+
+    await expect(router.push({ path: '/foo' })).resolves.toBe(undefined)
+    expect('"/foo" is a Promise instead of a function').toHaveBeenWarned()
+  })
 })
