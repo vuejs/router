@@ -11,6 +11,23 @@ const Home: RouteComponent = {
   `,
 }
 
+// override existing style on dev with shorter times
+if (!__CI__) {
+  const transitionDuration = '0.5s'
+  const styleEl = document.createElement('style')
+  styleEl.innerHTML = `
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity ${transitionDuration} ease;
+}
+.child-view {
+  position: absolute;
+  transition: all ${transitionDuration} cubic-bezier(0.55, 0, 0.1, 1);
+}
+`
+  document.head.append(styleEl)
+}
+
 const Parent: RouteComponent = {
   data() {
     return {
