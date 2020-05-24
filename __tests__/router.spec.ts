@@ -332,7 +332,6 @@ describe('Router', () => {
         if (++calls > 1000) throw new Error('1000 calls')
         next(to.path)
       })
-      console.log('dev', __DEV__)
       const { router } = await newRouter({
         history,
         routes: [{ path: '/foo', component: components.Home, beforeEnter }],

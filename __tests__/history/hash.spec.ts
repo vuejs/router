@@ -38,7 +38,6 @@ describe('History Hash', () => {
 
     it('should use a correct base', () => {
       dom.reconfigure({ url: 'https://esm.dev' })
-      console.log(location.host, location.pathname)
       createWebHashHistory()
       // starts with a `/`
       expect(createWebHistory).toHaveBeenCalledWith('/#')

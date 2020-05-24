@@ -347,7 +347,6 @@ describe('Path parser', () => {
     ) {
       const pathParser = tokensToParser(...args)
       const options = args[1] || {}
-      // console.log(pathParser.re)
       expect(
         pathParser.re
           .toString()
