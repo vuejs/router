@@ -652,6 +652,7 @@ export function createRouter(options: RouterOptions): Router {
     pendingLocation = toLocation
     const from = currentRoute.value
 
+    // TODO: should be moved to web history?
     if (isBrowser) {
       saveScrollPosition(
         getScrollKey(from.fullPath, info.delta),

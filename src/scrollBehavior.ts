@@ -123,7 +123,10 @@ export function saveScrollPosition(
 }
 
 export function getSavedScrollPosition(key: string) {
-  return scrollPositions.get(key)
+  const scroll = scrollPositions.get(key)
+  // consume it so it's not used again
+  scrollPositions.delete(key)
+  return scroll
 }
 
 // TODO: RFC about how to save scroll position
