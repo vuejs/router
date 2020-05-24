@@ -53,6 +53,8 @@ export function createRouterMatcher(
     parent?: RouteRecordMatcher,
     originalRecord?: RouteRecordMatcher
   ) {
+    // used later on to remove by name
+    let isRootAdd = !originalRecord
     let mainNormalizedRecord = normalizeRouteRecord(record)
     // we might be the child of an alias
     mainNormalizedRecord.aliasOf = originalRecord && originalRecord.record
@@ -133,6 +135,9 @@ export function createRouterMatcher(
       // if there was no original record, then the first one was not an alias and all
       // other alias (if any) need to reference this record when adding children
       originalRecord = originalRecord || matcher
+
+      // remove the route if named and only for the top record (avoid in nested calls)
+      if (isRootAdd && record.name) removeRoute(record.name)
 
       insertMatcher(matcher)
     }

@@ -360,6 +360,16 @@ describe('Matcher: adding and removing records', () => {
     expect(matcher.getRecordMatcher('child')).toBe(undefined)
   })
 
+  it('removes existing record when adding with the same name', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({ path: '/', component, name: 'home' })
+    matcher.addRoute({ path: '/home', component, name: 'home' })
+    expect(matcher.getRoutes()).toHaveLength(1)
+    expect(matcher.resolve({ path: '/home' }, currentLocation)).toMatchObject({
+      name: 'home',
+    })
+  })
+
   describe('warnings', () => {
     mockWarn()
 
