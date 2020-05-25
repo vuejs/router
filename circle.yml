@@ -2,7 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2.0
+version: 2.1
 
 defaults: &defaults
   working_directory: ~/project/vue-router
