@@ -106,4 +106,5 @@ const app = createApp({
 })
 app.use(router)
 
-window.vm = app.mount('#app')
+// wait to avoid initial transition
+router.isReady().then(() => (window.vm = app.mount('#app')))

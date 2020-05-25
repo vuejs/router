@@ -46,6 +46,8 @@ jobs:
           path: e2e/reports
       - store_artifacts:
           path: e2e/screenshots
+      - store_test_result:
+          path: e2e/reports
 
   test-unit:
     <<: *defaults
