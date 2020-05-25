@@ -118,6 +118,11 @@ export function createRouterMatcher(
         // otherwise, the first record is the original and others are aliases
         originalMatcher = originalMatcher || matcher
         if (originalMatcher !== matcher) originalMatcher.alias.push(matcher)
+
+        // remove the route if named and only for the top record (avoid in nested calls)
+        // this works because the original record is the first one
+        if (isRootAdd && record.name && !isAliasRecord(matcher))
+          removeRoute(record.name)
       }
 
       // only non redirect records have children
@@ -135,9 +140,6 @@ export function createRouterMatcher(
       // if there was no original record, then the first one was not an alias and all
       // other alias (if any) need to reference this record when adding children
       originalRecord = originalRecord || matcher
-
-      // remove the route if named and only for the top record (avoid in nested calls)
-      if (isRootAdd && record.name) removeRoute(record.name)
 
       insertMatcher(matcher)
     }
