@@ -79,7 +79,7 @@
     "axios": "^0.19.2",
     "browserstack-local": "^1.4.5",
     "chalk": "^4.0.0",
-    "chromedriver": "^81.0.0",
+    "chromedriver": "^83.0.0",
     "codecov": "^3.7.0",
     "conventional-changelog-cli": "^2.0.34",
     "css-loader": "^3.5.3",
