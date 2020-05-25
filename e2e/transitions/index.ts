@@ -89,6 +89,7 @@ const app = createApp({
   template: `
     <div id="app">
       <h1>Transitions</h1>
+      <pre>CI: ${__CI__}</pre>
       <ul>
         <li><router-link to="/">/</router-link></li>
         <li><router-link to="/parent">/parent</router-link></li>
