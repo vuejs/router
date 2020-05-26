@@ -68,26 +68,37 @@ export function scrollToPosition(position: ScrollPosition): void {
 
   if ('selector' in position) {
     /**
-     * `id`s can accept pretty much any characters, including CSS combinators like >
-     * or ~. It's still possible to retrieve elements using
+     * `id`s can accept pretty much any characters, including CSS combinators
+     * like `>` or `~`. It's still possible to retrieve elements using
      * `document.getElementById('~')` but it needs to be escaped when using
-     * `document.querySelector('#\\~')` for it to be valid. The only requirements
-     * for `id`s are them to be unique on the page and to not be empty (`id=""`).
-     * Because of that, when passing an `id` selector, it shouldn't have any other
-     * selector attached to it (like a class or an attribute) because it wouldn't
-     * have any effect anyway. We are therefore considering any selector starting
-     * with a `#` to be an `id` selector so we can directly use `getElementById`
-     * instead of `querySelector`, allowing users to write simpler selectors like:
-     * `#1-thing` or `#with~symbols` without having to manually escape them to valid
-     * CSS selectors: `#\31 -thing` and `#with\\~symbols`.
+     * `document.querySelector('#\\~')` for it to be valid. The only
+     * requirements for `id`s are them to be unique on the page and to not be
+     * empty (`id=""`). Because of that, when passing an id selector, it should
+     * be properly escaped for it to work with `querySelector`. We could check
+     * for the id selector to be simple (no CSS combinators `+ >~`) but that
+     * would make things inconsistent since they are valid characters for an
+     * `id` but would need to be escaped when using `querySelector`, breaking
+     * their usage and ending up in no selector returned. Selectors need to be
+     * escaped:
+     *
+     * - `#1-thing` becomes `#\31 -thing`
+     * - `#with~symbols` becomes `#with\\~symbols`
      *
      * - More information about  the topic can be found at
      *   https://mathiasbynens.be/notes/html5-id-class.
      * - Practical example: https://mathiasbynens.be/demo/html5-id
      */
-    const el = position.selector.startsWith('#')
-      ? document.getElementById(position.selector.slice(1))
-      : document.querySelector(position.selector)
+    if (__DEV__) {
+      try {
+        document.querySelector(position.selector)
+      } catch {
+        warn(
+          `The selector "${position.selector}" is invalid. If you are using an id selector, make sure to escape it. You can find more information about escaping characters in selectors at https://mathiasbynens.be/notes/css-escapes.`
+        )
+      }
+    }
+
+    const el = document.querySelector(position.selector)
 
     if (!el) {
       __DEV__ &&
