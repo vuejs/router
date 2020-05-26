@@ -44,27 +44,6 @@ export interface ScrollBehaviorHandler<T> {
   ): Awaitable<ScrollPosition | false | void>
 }
 
-/**
- * `id`s can accept pretty much any characters, including CSS combinators like >
- * or ~. It's still possible to retrieve elements using
- * `document.getElementById('~')` but it needs to be escaped when using
- * `document.querySelector('#\\~')` for it to be valid. The only requirements
- * for `id`s are them to be unique on the page and to not be empty (`id=""`).
- * Because of that, when passing an `id` selector, it shouldn't have any other
- * selector attached to it (like a class or an attribute) because it wouldn't
- * have any effect anyway. We are therefore considering any selector starting
- * with a `#` to be an `id` selector so we can directly use `getElementById`
- * instead of `querySelector`, allowing users to write simpler selectors like:
- * `#1-thing` or `#with~symbols` without having to manually escape them to valid
- * CSS selectors: `#\31 -thing` and `#with\\~symbols`.
- *
- * - More information about  the topic can be found at
- *   https://mathiasbynens.be/notes/html5-id-class.
- * - Practical example: https://mathiasbynens.be/demo/html5-id
- */
-
-const startsWithHashRE = /^#/
-
 function getElementPosition(
   el: Element,
   offset: ScrollPositionCoordinates
@@ -88,7 +67,25 @@ export function scrollToPosition(position: ScrollPosition): void {
   let normalizedPosition: ScrollPositionCoordinates
 
   if ('selector' in position) {
-    const el = startsWithHashRE.test(position.selector)
+    /**
+     * `id`s can accept pretty much any characters, including CSS combinators like >
+     * or ~. It's still possible to retrieve elements using
+     * `document.getElementById('~')` but it needs to be escaped when using
+     * `document.querySelector('#\\~')` for it to be valid. The only requirements
+     * for `id`s are them to be unique on the page and to not be empty (`id=""`).
+     * Because of that, when passing an `id` selector, it shouldn't have any other
+     * selector attached to it (like a class or an attribute) because it wouldn't
+     * have any effect anyway. We are therefore considering any selector starting
+     * with a `#` to be an `id` selector so we can directly use `getElementById`
+     * instead of `querySelector`, allowing users to write simpler selectors like:
+     * `#1-thing` or `#with~symbols` without having to manually escape them to valid
+     * CSS selectors: `#\31 -thing` and `#with\\~symbols`.
+     *
+     * - More information about  the topic can be found at
+     *   https://mathiasbynens.be/notes/html5-id-class.
+     * - Practical example: https://mathiasbynens.be/demo/html5-id
+     */
+    const el = position.selector.startsWith('#')
       ? document.getElementById(position.selector.slice(1))
       : document.querySelector(position.selector)
 
