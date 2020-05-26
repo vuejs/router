@@ -32,16 +32,15 @@ export type _ScrollPositionNormalized = {
 
 export interface ScrollPositionElement {
   /**
-   * A valid CSS selector.
-   *
+   * A valid CSS selector. Note some characters must be escaped in id selectors (https://mathiasbynens.be/notes/css-escapes).
    * @example
    * Here are a few examples:
    *
    * - `.title`
    * - `.content:first-child`
    * - `#marker`
-   * - `#marker~with~symbols`
-   * - `#marker.with.dot`: selects `id="marker.with.dot"`, not `class="with dot" id="marker"`
+   * - `#marker\~with\~symbols`
+   * - `#marker.with.dot`: selects `class="with dot" id="marker"`, not `id="marker.with.dot"`
    *
    */
   selector: string
