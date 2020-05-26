@@ -25,7 +25,7 @@ export const router = createRouter({
     {
       path: '/',
       components: { default: Home, other: component },
-      props: to => ({ waited: to.meta.waitedFor }),
+      props: { default: to => ({ waited: to.meta.waitedFor }) },
     },
     {
       path: '/always-redirect',
@@ -60,18 +60,18 @@ export const router = createRouter({
     {
       path: '/children',
       name: 'WithChildren',
-      component,
+      component: Nested,
       children: [
-        { path: '', alias: 'alias', name: 'default-child', component },
-        { path: 'a', name: 'a-child', component },
+        { path: '', alias: 'alias', name: 'default-child', component: Nested },
+        { path: 'a', name: 'a-child', component: Nested },
         {
           path: 'b',
           name: 'b-child',
-          component,
+          component: Nested,
           children: [
-            { path: '', component },
-            { path: 'a2', component },
-            { path: 'b2', component },
+            { path: '', component: Nested },
+            { path: 'a2', component: Nested },
+            { path: 'b2', component: Nested },
           ],
         },
       ],

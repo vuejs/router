@@ -3,6 +3,7 @@ import {
   NavigationGuard,
   _RouteRecordBase,
   RouteRecordRedirectRaw,
+  _RouteRecordProps,
 } from '../types'
 import { ComponentPublicInstance } from 'vue'
 
@@ -13,7 +14,10 @@ export interface RouteRecordNormalized {
   components: RouteRecordMultipleViews['components']
   children: Exclude<RouteRecordMultipleViews['children'], void>
   meta: Exclude<RouteRecordMultipleViews['meta'], void>
-  props: Exclude<_RouteRecordBase['props'], void>
+  /**
+   * Object of props options with the same keys as `components`
+   */
+  props: Record<string, _RouteRecordProps>
   beforeEnter: RouteRecordMultipleViews['beforeEnter']
   leaveGuards: NavigationGuard[]
   updateGuards: NavigationGuard[]

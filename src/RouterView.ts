@@ -52,11 +52,14 @@ export const RouterViewImpl = defineComponent({
     const propsData = computed(() => {
       // propsData only gets called if ViewComponent.value exists and it depends
       // on matchedRoute.value
-      const { props } = matchedRoute.value!
-      if (!props) return {}
-      if (props === true) return route.value.params
+      const componentProps = matchedRoute.value!.props[props.name]
+      if (!componentProps) return {}
+      // TODO: only add props declared in the component. all if no props
+      if (componentProps === true) return route.value.params
 
-      return typeof props === 'object' ? props : props(route.value)
+      return typeof componentProps === 'object'
+        ? componentProps
+        : componentProps(route.value)
     })
 
     provide(matchedRouteKey, matchedRoute)

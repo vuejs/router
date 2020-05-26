@@ -17,7 +17,7 @@ describe('normalizeRouteRecord', () => {
       meta: {},
       name: undefined,
       path: '/home',
-      props: false,
+      props: { default: false },
     })
   })
 
@@ -41,7 +41,7 @@ describe('normalizeRouteRecord', () => {
       meta: { foo: true },
       name: 'name',
       path: '/home',
-      props: false,
+      props: { default: false },
     })
   })
 
@@ -83,7 +83,7 @@ describe('normalizeRouteRecord', () => {
       meta: { foo: true },
       name: 'name',
       path: '/home',
-      props: false,
+      props: { one: false },
     })
   })
 })

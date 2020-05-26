@@ -8,6 +8,7 @@ import {
   RouteComponent,
   RouteRecordRaw,
   RouteRecordName,
+  _RouteRecordProps,
 } from '../src/types'
 import { h, ComponentOptions } from 'vue'
 import {
@@ -52,7 +53,7 @@ export interface RouteRecordViewLoose
   > {
   leaveGuards?: any
   instances: Record<string, any>
-  props?: _RouteRecordBase['props']
+  props: Record<string, _RouteRecordProps>
   aliasOf: RouteRecordViewLoose | undefined
 }
 

@@ -140,6 +140,14 @@ export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
 
 export type RouteRecordName = string | symbol
 
+/**
+ * @internal
+ */
+export type _RouteRecordProps =
+  | boolean
+  | Record<string, any>
+  | ((to: RouteLocationNormalized) => Record<string, any>)
+
 // TODO: could this be moved to matcher?
 /**
  * Common properties among all kind of {@link RouteRecordRaw}
@@ -160,13 +168,6 @@ export interface _RouteRecordBase extends PathParserOptions {
    * Name for the route record.
    */
   name?: RouteRecordName
-  /**
-   * Allow passing down params as props to the component rendered by `router-view`.
-   */
-  props?:
-    | boolean
-    | Record<string, any>
-    | ((to: RouteLocationNormalized) => Record<string, any>)
   /**
    * Before Enter guard specific to this record. Note `beforeEnter` has no
    * effect if the record has a `redirect` property.
@@ -193,11 +194,21 @@ export interface RouteRecordRedirectRaw extends _RouteRecordBase {
 export interface RouteRecordSingleView extends _RouteRecordBase {
   component: RawRouteComponent
   children?: RouteRecordRaw[]
+  /**
+   * Allow passing down params as props to the component rendered by `router-view`.
+   */
+  props?: _RouteRecordProps
 }
 
 export interface RouteRecordMultipleViews extends _RouteRecordBase {
   components: Record<string, RawRouteComponent>
   children?: RouteRecordRaw[]
+  /**
+   * Allow passing down params as props to the component rendered by
+   * `router-view`. Should be an object with the same keys as `components` or a
+   * boolean to be applied to every component.
+   */
+  props?: Record<string, _RouteRecordProps> | boolean
 }
 
 export type RouteRecordRaw =
