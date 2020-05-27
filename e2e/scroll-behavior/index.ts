@@ -40,7 +40,7 @@ const scrollBehavior: ScrollBehavior = async function (
 
       // specify offset of the element
       if (to.hash === '#anchor2') {
-        position.offset = { y: 100 }
+        position.offset = { top: 100 }
       }
 
       if (document.querySelector(position.selector)) {
@@ -56,7 +56,7 @@ const scrollBehavior: ScrollBehavior = async function (
     if (to.matched.some(m => m.meta.scrollToTop)) {
       // coords will be used if no selector is provided,
       // or if the selector didn't match any element.
-      return { x: 0, y: 0 }
+      return { left: 0, top: 0 }
     }
 
     return false

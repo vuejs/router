@@ -50,6 +50,7 @@ Check the [playground](https://github.com/vuejs/vue-router-next/tree/master/play
     // resolve the request
   })
   ```
+- The object returned in `scrollBehavior` is now similar to [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions): `x` is renamed to `left` and `y` is renamed to `top`.
 
 ### Typings
 

@@ -15,13 +15,13 @@ import {
 } from './types'
 import { RouterHistory, HistoryState } from './history/common'
 import {
-  ScrollPositionCoordinates,
   ScrollPosition,
   getSavedScrollPosition,
   getScrollKey,
   saveScrollPosition,
   computeScrollPosition,
   scrollToPosition,
+  _ScrollPositionNormalized,
 } from './scrollBehavior'
 import { createRouterMatcher, PathParserOptions } from './matcher'
 import {
@@ -59,7 +59,7 @@ export interface ScrollBehavior {
   (
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
-    savedPosition: Required<ScrollPositionCoordinates> | null
+    savedPosition: _ScrollPositionNormalized | null
   ): Awaitable<ScrollPosition | false | void>
 }
 
@@ -773,7 +773,7 @@ export function createRouter(options: RouterOptions): Router {
   ): Promise<any> {
     if (!isBrowser || !scrollBehavior) return Promise.resolve()
 
-    let scrollPosition: Required<ScrollPositionCoordinates> | null =
+    let scrollPosition: _ScrollPositionNormalized | null =
       (!isPush && getSavedScrollPosition(getScrollKey(to.fullPath, 0))) ||
       ((isFirstNavigation || !isPush) &&
         (history.state as HistoryState) &&

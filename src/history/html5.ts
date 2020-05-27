@@ -12,7 +12,7 @@ import {
 } from './common'
 import {
   computeScrollPosition,
-  ScrollPositionCoordinates,
+  _ScrollPositionNormalized,
 } from '../scrollBehavior'
 import { warn } from '../warning'
 import { stripBase } from '../location'
@@ -27,7 +27,7 @@ interface StateEntry extends HistoryState {
   forward: HistoryLocationNormalized | null
   position: number
   replaced: boolean
-  scroll: Required<ScrollPositionCoordinates> | null | false
+  scroll: _ScrollPositionNormalized | null | false
 }
 
 /**

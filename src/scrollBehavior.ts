@@ -1,15 +1,33 @@
-import { RouteLocationNormalized, RouteLocationNormalizedLoaded } from './types'
+import {
+  RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+  _RouteLocationBase,
+} from './types'
 import { warn } from './warning'
 
+// we use types instead of interfaces to make it work with HistoryStateValue type
+
+/**
+ * Scroll position similar to
+ * {@link https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions | `ScrollToOptions`}.
+ * Note that not all browsers support `behavior`.
+ */
 export type ScrollPositionCoordinates = {
-  /**
-   * x position. 0 if not provided
-   */
-  x?: number
-  /**
-   * y position. 0 if not provided
-   */
-  y?: number
+  behavior?: ScrollOptions['behavior']
+  left?: number
+  top?: number
+}
+
+/**
+ * Internal normalized version of {@link ScrollPositionCoordinates} that always
+ * has `left` and `top` coordinates.
+ *
+ * @internal
+ */
+export type _ScrollPositionNormalized = {
+  behavior?: ScrollOptions['behavior']
+  left: number
+  top: number
 }
 
 export interface ScrollPositionElement {
@@ -47,24 +65,25 @@ export interface ScrollBehaviorHandler<T> {
 function getElementPosition(
   el: Element,
   offset: ScrollPositionCoordinates
-): Required<ScrollPositionCoordinates> {
+): _ScrollPositionNormalized {
   const docRect = document.documentElement.getBoundingClientRect()
   const elRect = el.getBoundingClientRect()
 
   return {
-    x: elRect.left - docRect.left - (offset.x || 0),
-    y: elRect.top - docRect.top - (offset.y || 0),
+    behavior: offset.behavior,
+    left: elRect.left - docRect.left - (offset.left || 0),
+    top: elRect.top - docRect.top - (offset.top || 0),
   }
 }
 
 export const computeScrollPosition = () =>
   ({
-    x: window.pageXOffset,
-    y: window.pageYOffset,
-  } as Required<ScrollPositionCoordinates>)
+    left: window.pageXOffset,
+    top: window.pageYOffset,
+  } as _ScrollPositionNormalized)
 
 export function scrollToPosition(position: ScrollPosition): void {
-  let normalizedPosition: ScrollPositionCoordinates
+  let scrollToOptions: ScrollPositionCoordinates
 
   if ('selector' in position) {
     /**
@@ -105,12 +124,14 @@ export function scrollToPosition(position: ScrollPosition): void {
         warn(`Couldn't find element with selector "${position.selector}"`)
       return
     }
-    normalizedPosition = getElementPosition(el, position.offset || {})
+    scrollToOptions = getElementPosition(el, position.offset || {})
   } else {
-    normalizedPosition = position
+    scrollToOptions = position
   }
 
-  window.scrollTo(normalizedPosition.x || 0, normalizedPosition.y || 0)
+  if ('scrollBehavior' in document.documentElement.style)
+    window.scrollTo(scrollToOptions)
+  else window.scrollTo(scrollToOptions.left || 0, scrollToOptions.top || 0)
 }
 
 export function getScrollKey(path: string, delta: number): string {
@@ -118,14 +139,11 @@ export function getScrollKey(path: string, delta: number): string {
   return position + path
 }
 
-export const scrollPositions = new Map<
-  string,
-  Required<ScrollPositionCoordinates>
->()
+export const scrollPositions = new Map<string, _ScrollPositionNormalized>()
 
 export function saveScrollPosition(
   key: string,
-  scrollPosition: Required<ScrollPositionCoordinates>
+  scrollPosition: _ScrollPositionNormalized
 ) {
   scrollPositions.set(key, scrollPosition)
 }
