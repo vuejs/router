@@ -322,6 +322,40 @@ describe('Router', () => {
     expect(() => router.resolve({ name: 'r2', params: {} })).not.toThrow()
   })
 
+  it('can redirect to a star route when encoding the param', () => {
+    const history = createMemoryHistory()
+    const router = createRouter({
+      history,
+      routes: [
+        { name: 'notfound', path: '/:path(.*)+', component: components.Home },
+      ],
+    })
+    let path = 'not/found%2Fha'
+    let href = '/' + path
+    expect(router.resolve(href)).toMatchObject({
+      name: 'notfound',
+      fullPath: href,
+      path: href,
+      href: href,
+    })
+    expect(
+      router.resolve({
+        name: 'notfound',
+        params: {
+          path: path
+            .split('/')
+            // we need to provide the value unencoded
+            .map(segment => segment.replace('%2F', '/')),
+        },
+      })
+    ).toMatchObject({
+      name: 'notfound',
+      fullPath: href,
+      path: href,
+      href: href,
+    })
+  })
+
   describe('Warnings', () => {
     mockWarn()
 

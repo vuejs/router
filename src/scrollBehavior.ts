@@ -32,7 +32,8 @@ export type _ScrollPositionNormalized = {
 
 export interface ScrollPositionElement {
   /**
-   * A simple _id_ selector with a leading `#` or a valid CSS selector **not starting** with a `#`.
+   * A valid CSS selector.
+   *
    * @example
    * Here are a few examples:
    *
@@ -131,7 +132,10 @@ export function scrollToPosition(position: ScrollPosition): void {
 
   if ('scrollBehavior' in document.documentElement.style)
     window.scrollTo(scrollToOptions)
-  else window.scrollTo(scrollToOptions.left || 0, scrollToOptions.top || 0)
+  else {
+    // TODO: pass the current value instead of 0 using computeScroll
+    window.scrollTo(scrollToOptions.left || 0, scrollToOptions.top || 0)
+  }
 }
 
 export function getScrollKey(path: string, delta: number): string {
@@ -160,9 +164,11 @@ export function getSavedScrollPosition(key: string) {
  * ScrollBehavior instance used by the router to compute and restore the scroll
  * position when navigating.
  */
-// export interface ScrollHandler<T> {
-//   compute(): T
-//   scroll(position: T): void
+// export interface ScrollHandler<ScrollPositionEntry extends HistoryStateValue, ScrollPosition extends ScrollPositionEntry> {
+//   // returns a scroll position that can be saved in history
+//   compute(): ScrollPositionEntry
+//   // can take an extended ScrollPositionEntry
+//   scroll(position: ScrollPosition): void
 // }
 
 // export const scrollHandler: ScrollHandler<ScrollPosition> = {
