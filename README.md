@@ -26,7 +26,7 @@ Check the [playground](https://github.com/vuejs/vue-router-next/tree/master/play
 
 - `base` option is now passed as the first argument to `createWebHistory` (and other histories)
 - Catch all routes (`/*`) must now be defined using a parameter with a custom regex: `/:catchAll(.*)`
-- `router.match` and `router.resolve` are merged together into `router.resolve` with a slightly different signature
+- `router.match` and `router.resolve` are merged together into `router.resolve` with a slightly different signature. Check it's typing through autocomplete or [Router's `resolve` method](https://github.com/vuejs/vue-router-next/blob/master/src/router.ts)
 - `router.getMatchedComponents` is now removed as they can be retrieved from `router.currentRoute.value.matched`:
   ```js
   router.currentRoute.value.matched
@@ -42,9 +42,10 @@ Check the [playground](https://github.com/vuejs/vue-router-next/tree/master/play
   Otherwise there will be an initial transition as if you provided the `appear` prop to `transition` because the router displays its initial location (nothing) and then displays the first location. This happens because navigations are all asynchronous now. **If you have navigation guards upon the initial navigation**, you might not want to block the app render until they are resolved.
 - On SSR, you need to manually pass the appropriate history by using a ternary:
   ```js
+  // router.js
   let history = isServer ? createMemoryHistory() : createWebHistory()
   let router = createRouter({ routes, history })
-  // on server only
+  // somewhere in your server-entry.js
   router.push(req.url) // request url
   router.isReady().then(() => {
     // resolve the request
@@ -54,7 +55,7 @@ Check the [playground](https://github.com/vuejs/vue-router-next/tree/master/play
 
 ### Typings
 
-To make typings more consistent and expressive, some types have been renamed. Keep in mind these can change until stable release to ensure consistency. Some types might have changed as well.
+To make typings more consistent and expressive, some types have been renamed. Keep in mind these can change until stable release to ensure consistency. Some type properties might have changed as well.
 
 | `vue-router@3` | `vue-router@4`          |
 | -------------- | ----------------------- |
@@ -71,7 +72,7 @@ These are technically breaking changes but they fix an inconsistent behavior.
 - Empty children `path` does not append a trailing slash (`/`) anymore to make it consistent across all routes:
   - By default no route has a trailing slash but also works with a trailing slash
   - Adding `strict: true` to a route record or to the router options (alongside `routes`) will disallow an optional trailing slash
-  - Combining the point above with a trailing slash in your routes allows you to enforce a trailing slash in your routes. In the case of nested routes, make sure to add the trailing slash to the parent:
+  - Combining `strict: true` with a trailing slash in your routes allows you to enforce a trailing slash in your routes. In the case of nested routes, make sure to add the trailing slash to the parent **and not the empty child**:
     ```js
     let routes = [
       {
@@ -80,14 +81,24 @@ These are technically breaking changes but they fix an inconsistent behavior.
       },
     ]
     ```
-  - To redirect the user to trailing slash routes (or the opposite), you can setup a `beforeEach` navigation guard that ensures the presence of a trailing slash
+  - To redirect the user to trailing slash routes (or the opposite), you can setup a `beforeEach` navigation guard that ensures the presence of a trailing slash:
+    ```js
+    router.beforeEach((to, from, next) => {
+      if (to.path.endsWith('/')) next()
+      else next({ path: to.path + '/', query: to.query, hash: to.hash })
+    })
+    ```
 - Because of the change above, relative children path `redirect` on an empty path are not supported anymore. Use named routes instead:
   ```js
   // replace
   let routes = [
     {
       path: '/parent',
-      children: [{ path: '', redirect: 'home' }, { path: 'home' }],
+      children: [
+        // this would now redirect to `/home` instead of `/parent/home`
+        { path: '', redirect: 'home' },
+        { path: 'home' },
+      ],
     },
   ]
   // with
