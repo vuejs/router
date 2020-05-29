@@ -25,8 +25,8 @@ describe('warnings', () => {
       history,
       routes: [{ path: '/:p', name: 'p', component }],
     })
-    router.resolve({ path: '/', params: { p: 'p' } })
-    expect('Path "/" was passed with params').toHaveBeenWarned()
+    router.resolve({ path: '/p', params: { p: 'p' } })
+    expect('Path "/p" was passed with params').toHaveBeenWarned()
   })
 
   it('does not warn when resolving a route with path, params and name', async () => {
@@ -130,7 +130,7 @@ describe('warnings', () => {
   it('should warn if multiple leading slashes with raw location', async () => {
     const router = createRouter({
       history: createMemoryHistory(),
-      routes: [{ path: '/foo', component }],
+      routes: [{ path: '/', component }],
     })
 
     await expect(router.push('//not-valid')).resolves.toBe(undefined)
@@ -140,7 +140,7 @@ describe('warnings', () => {
   it('should warn if multiple leading slashes with object location', async () => {
     const router = createRouter({
       history: createMemoryHistory(),
-      routes: [{ path: '/foo', component }],
+      routes: [{ path: '/', component }],
     })
 
     await expect(router.push({ path: '//not-valid' })).resolves.toBe(undefined)
@@ -173,5 +173,18 @@ describe('warnings', () => {
 
     await expect(router.push({ path: '/foo' })).resolves.toBe(undefined)
     expect('"/foo" is a Promise instead of a function').toHaveBeenWarned()
+  })
+
+  it('warns if no route matched', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/', name: 'a', component }],
+    })
+
+    await expect(router.push('/foo')).resolves.toBe(undefined)
+    expect(`No match found for location with path "/foo"`).toHaveBeenWarned()
+
+    await expect(router.push({ path: '/foo2' })).resolves.toBe(undefined)
+    expect(`No match found for location with path "/foo2"`).toHaveBeenWarned()
   })
 })
