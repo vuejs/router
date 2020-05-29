@@ -27,6 +27,7 @@ describe('warnings', () => {
     })
     router.resolve({ path: '/', params: { p: 'p' } })
     expect('Path "/" was passed with params').toHaveBeenWarned()
+    expect(`No route matched`).toHaveBeenWarned()
   })
 
   it('does not warn when resolving a route with path, params and name', async () => {
@@ -135,6 +136,7 @@ describe('warnings', () => {
 
     await expect(router.push('//not-valid')).resolves.toBe(undefined)
     expect('cannot start with multiple slashes').toHaveBeenWarned()
+    expect(`No route matched`).toHaveBeenWarned()
   })
 
   it('should warn if multiple leading slashes with object location', async () => {
@@ -145,6 +147,7 @@ describe('warnings', () => {
 
     await expect(router.push({ path: '//not-valid' })).resolves.toBe(undefined)
     expect('cannot start with multiple slashes').toHaveBeenWarned()
+    expect(`No route matched`).toHaveBeenWarned()
   })
 
   it('warns if path contains the same param multiple times', () => {
