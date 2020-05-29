@@ -130,7 +130,7 @@ describe('warnings', () => {
   it('should warn if multiple leading slashes with raw location', async () => {
     const router = createRouter({
       history: createMemoryHistory(),
-      routes: [{ path: '//not-valid', component }],
+      routes: [{ path: '/', component }],
     })
 
     await expect(router.push('//not-valid')).resolves.toBe(undefined)
@@ -140,7 +140,7 @@ describe('warnings', () => {
   it('should warn if multiple leading slashes with object location', async () => {
     const router = createRouter({
       history: createMemoryHistory(),
-      routes: [{ path: '//not-valid', component }],
+      routes: [{ path: '/', component }],
     })
 
     await expect(router.push({ path: '//not-valid' })).resolves.toBe(undefined)
