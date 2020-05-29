@@ -239,7 +239,7 @@ export function createRouter(options: RouterOptions): Router {
       )
 
       if (__DEV__) {
-        if (matchedRoute.matched.length === 0) {
+        if (!matchedRoute.matched.length) {
           warn(`No route matched for "${rawLocation}"`)
         }
 
@@ -294,7 +294,7 @@ export function createRouter(options: RouterOptions): Router {
     }
 
     let matchedRoute = matcher.resolve(matcherLocation, currentLocation)
-    if (matchedRoute.matched.length === 0) {
+    if (__DEV__ && !matchedRoute.matched.length) {
       warn(
         `No route matched for "${
           'path' in rawLocation ? rawLocation.path : rawLocation

@@ -25,9 +25,8 @@ describe('warnings', () => {
       history,
       routes: [{ path: '/:p', name: 'p', component }],
     })
-    router.resolve({ path: '/', params: { p: 'p' } })
-    expect('Path "/" was passed with params').toHaveBeenWarned()
-    expect(`No route matched`).toHaveBeenWarned()
+    router.resolve({ path: '/p', params: { p: 'p' } })
+    expect('Path "/p" was passed with params').toHaveBeenWarned()
   })
 
   it('does not warn when resolving a route with path, params and name', async () => {
