@@ -239,15 +239,14 @@ export function createRouter(options: RouterOptions): Router {
       )
 
       if (__DEV__) {
-        if (!matchedRoute.matched.length) {
-          warn(`No route matched for "${rawLocation}"`)
-        }
-
         let href = routerHistory.base + locationNormalized.fullPath
         if (href.startsWith('//'))
           warn(
             `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
           )
+        else if (!matchedRoute.matched.length) {
+          warn(`No match found for location with path "${rawLocation}"`)
+        }
       }
 
       return {
@@ -294,14 +293,6 @@ export function createRouter(options: RouterOptions): Router {
     }
 
     let matchedRoute = matcher.resolve(matcherLocation, currentLocation)
-    if (__DEV__ && !matchedRoute.matched.length) {
-      warn(
-        `No route matched for "${
-          'path' in rawLocation ? rawLocation.path : rawLocation
-        }"`
-      )
-    }
-
     const hash = encodeHash(rawLocation.hash || '')
 
     if (__DEV__ && hash && hash[0] !== '#') {
@@ -328,6 +319,13 @@ export function createRouter(options: RouterOptions): Router {
         warn(
           `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
         )
+      else if (!matchedRoute.matched.length) {
+        warn(
+          `No match found for location with path "${
+            'path' in rawLocation ? rawLocation.path : rawLocation
+          }"`
+        )
+      }
     }
 
     return {

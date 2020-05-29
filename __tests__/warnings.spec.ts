@@ -130,23 +130,21 @@ describe('warnings', () => {
   it('should warn if multiple leading slashes with raw location', async () => {
     const router = createRouter({
       history: createMemoryHistory(),
-      routes: [{ path: '/foo', component }],
+      routes: [{ path: '//not-valid', component }],
     })
 
     await expect(router.push('//not-valid')).resolves.toBe(undefined)
     expect('cannot start with multiple slashes').toHaveBeenWarned()
-    expect(`No route matched`).toHaveBeenWarned()
   })
 
   it('should warn if multiple leading slashes with object location', async () => {
     const router = createRouter({
       history: createMemoryHistory(),
-      routes: [{ path: '/foo', component }],
+      routes: [{ path: '//not-valid', component }],
     })
 
     await expect(router.push({ path: '//not-valid' })).resolves.toBe(undefined)
     expect('cannot start with multiple slashes').toHaveBeenWarned()
-    expect(`No route matched`).toHaveBeenWarned()
   })
 
   it('warns if path contains the same param multiple times', () => {
@@ -184,9 +182,9 @@ describe('warnings', () => {
     })
 
     await expect(router.push('/foo')).resolves.toBe(undefined)
-    expect(`No route matched for "/foo"`).toHaveBeenWarned()
+    expect(`No match found for location with path "/foo"`).toHaveBeenWarned()
 
     await expect(router.push({ path: '/foo2' })).resolves.toBe(undefined)
-    expect(`No route matched for "/foo2"`).toHaveBeenWarned()
+    expect(`No match found for location with path "/foo2"`).toHaveBeenWarned()
   })
 })
