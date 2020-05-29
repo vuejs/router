@@ -239,6 +239,10 @@ export function createRouter(options: RouterOptions): Router {
       )
 
       if (__DEV__) {
+        if (matchedRoute.matched.length === 0) {
+          warn(`No route matched for "${rawLocation}"`)
+        }
+
         let href = routerHistory.base + locationNormalized.fullPath
         if (href.startsWith('//'))
           warn(
@@ -290,6 +294,13 @@ export function createRouter(options: RouterOptions): Router {
     }
 
     let matchedRoute = matcher.resolve(matcherLocation, currentLocation)
+    if (matchedRoute.matched.length === 0) {
+      warn(
+        `No route matched for "${
+          'path' in rawLocation ? rawLocation.path : rawLocation
+        }"`
+      )
+    }
 
     const hash = encodeHash(rawLocation.hash || '')
 

@@ -174,4 +174,17 @@ describe('warnings', () => {
     await expect(router.push({ path: '/foo' })).resolves.toBe(undefined)
     expect('"/foo" is a Promise instead of a function').toHaveBeenWarned()
   })
+
+  it('warns if no route matched', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/', name: 'a', component }],
+    })
+
+    await expect(router.push('/foo')).resolves.toBe(undefined)
+    expect(`No route matched for "/foo"`).toHaveBeenWarned()
+
+    await expect(router.push({ path: '/foo2' })).resolves.toBe(undefined)
+    expect(`No route matched for "/foo2"`).toHaveBeenWarned()
+  })
 })
