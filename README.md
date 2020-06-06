@@ -30,8 +30,7 @@ Check the [playground](https://github.com/vuejs/vue-router-next/tree/master/play
 - `router.getMatchedComponents` is now removed as they can be retrieved from `router.currentRoute.value.matched`:
   ```js
   router.currentRoute.value.matched
-    .map(record => Object.values(record.components))
-    .flat()
+    .flatMap(record => Object.values(record.components))
   ```
 - If you use a `transition`, you may need to wait for the router to be _ready_ before mounting the app:
   ```js
