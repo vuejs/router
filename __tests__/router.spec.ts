@@ -80,6 +80,8 @@ async function newRouter(
 }
 
 describe('Router', () => {
+  mockWarn()
+
   beforeAll(() => {
     createDom()
   })
@@ -252,6 +254,7 @@ describe('Router', () => {
     await router.push('/me-neither')
     expect(router.currentRoute.value).toMatchObject({ matched: [] })
     expect(spy).toHaveBeenCalledTimes(1)
+    expect('No match found').toHaveBeenWarnedTimes(2)
   })
 
   it('casts number params to string', async () => {
@@ -357,8 +360,6 @@ describe('Router', () => {
   })
 
   describe('Warnings', () => {
-    mockWarn()
-
     it.skip('avoid infinite redirection loops', async () => {
       const history = createMemoryHistory()
       let calls = 0
@@ -720,6 +721,7 @@ describe('Router', () => {
         name: undefined,
         matched: [],
       })
+      expect('No match found').toHaveBeenWarned()
       router.addRoute({
         path: '/new-route',
         component: components.Foo,
@@ -749,6 +751,7 @@ describe('Router', () => {
         name: undefined,
         matched: [],
       })
+      expect('No match found').toHaveBeenWarned()
       let removeRoute: (() => void) | undefined
       router.addRoute({
         path: '/dynamic',
@@ -816,6 +819,7 @@ describe('Router', () => {
       })
       // navigate again
       await router.replace('/new/child')
+      expect('No match found').toHaveBeenWarned()
       expect(router.currentRoute.value).toMatchObject({
         name: 'new-child',
       })
@@ -857,6 +861,7 @@ describe('Router', () => {
         name: undefined,
         matched: [],
       })
+      expect('No match found').toHaveBeenWarned()
     })
 
     it('can reroute when removing route', async () => {

@@ -8,6 +8,8 @@ const routes: RouteRecordRaw[] = [
   { path: '/', component: components.Home },
   { path: '/redirect', redirect: '/' },
   { path: '/foo', component: components.Foo, name: 'Foo' },
+  // prevent the log of no match warnings
+  { path: '/:pathMatch(.*)', component: components.Home },
 ]
 
 const onError = jest.fn()
