@@ -30,7 +30,7 @@ export type _ScrollPositionNormalized = {
   top: number
 }
 
-export interface ScrollPositionElement {
+export interface ScrollPositionElement extends ScrollToOptions {
   /**
    * A valid CSS selector. Note some characters must be escaped in id selectors (https://mathiasbynens.be/notes/css-escapes).
    * @example
@@ -43,11 +43,7 @@ export interface ScrollPositionElement {
    * - `#marker.with.dot`: selects `class="with dot" id="marker"`, not `id="marker.with.dot"`
    *
    */
-  selector: string
-  /**
-   * Relative offset to the `selector` in {@link ScrollPositionCoordinates}
-   */
-  offset?: ScrollPositionCoordinates
+  el: string | Element
 }
 
 export type ScrollPosition = ScrollPositionCoordinates | ScrollPositionElement
@@ -85,7 +81,10 @@ export const computeScrollPosition = () =>
 export function scrollToPosition(position: ScrollPosition): void {
   let scrollToOptions: ScrollPositionCoordinates
 
-  if ('selector' in position) {
+  if ('el' in position) {
+    let positionEl = position.el
+    const isIdSelector =
+      typeof positionEl === 'string' && positionEl.startsWith('#')
     /**
      * `id`s can accept pretty much any characters, including CSS combinators
      * like `>` or `~`. It's still possible to retrieve elements using
@@ -107,24 +106,39 @@ export function scrollToPosition(position: ScrollPosition): void {
      *   https://mathiasbynens.be/notes/html5-id-class.
      * - Practical example: https://mathiasbynens.be/demo/html5-id
      */
-    if (__DEV__) {
-      try {
-        document.querySelector(position.selector)
-      } catch {
-        warn(
-          `The selector "${position.selector}" is invalid. If you are using an id selector, make sure to escape it. You can find more information about escaping characters in selectors at https://mathiasbynens.be/notes/css-escapes.`
-        )
+    if (__DEV__ && typeof position.el === 'string') {
+      if (!isIdSelector || !document.getElementById(position.el.slice(1))) {
+        try {
+          let foundEl = document.querySelector(position.el)
+          if (isIdSelector && foundEl) {
+            warn(
+              `The selector "${position.el}" should be passed as "el: document.querySelector('${position.el}')" because it starts with "#".`
+            )
+            // return to avoid other warnings
+            return
+          }
+        } catch {
+          warn(
+            `The selector "${position.el}" is invalid. If you are using an id selector, make sure to escape it. You can find more information about escaping characters in selectors at https://mathiasbynens.be/notes/css-escapes or use CSS.escape (https://developer.mozilla.org/en-US/docs/Web/API/CSS/escape).`
+          )
+          // return to avoid other warnings
+          return
+        }
       }
     }
 
-    const el = document.querySelector(position.selector)
+    const el =
+      typeof positionEl === 'string'
+        ? isIdSelector
+          ? document.getElementById(positionEl.slice(1))
+          : document.querySelector(positionEl)
+        : positionEl
 
     if (!el) {
-      __DEV__ &&
-        warn(`Couldn't find element with selector "${position.selector}"`)
+      __DEV__ && warn(`Couldn't find element using selector "${position.el}"`)
       return
     }
-    scrollToOptions = getElementPosition(el, position.offset || {})
+    scrollToOptions = getElementPosition(el, position)
   } else {
     scrollToOptions = position
   }
@@ -132,8 +146,10 @@ export function scrollToPosition(position: ScrollPosition): void {
   if ('scrollBehavior' in document.documentElement.style)
     window.scrollTo(scrollToOptions)
   else {
-    // TODO: pass the current value instead of 0 using computeScroll
-    window.scrollTo(scrollToOptions.left || 0, scrollToOptions.top || 0)
+    window.scrollTo(
+      scrollToOptions.left != null ? scrollToOptions.left : window.pageXOffset,
+      scrollToOptions.top != null ? scrollToOptions.top : window.pageYOffset
+    )
   }
 }
 

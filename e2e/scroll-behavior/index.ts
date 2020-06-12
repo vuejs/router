@@ -40,20 +40,15 @@ const scrollBehavior: ScrollBehavior = async function (
 
     // scroll to anchor by returning the selector
     if (to.hash) {
-      position = { selector: decodeURI(to.hash), offset: { behavior } }
+      position = { el: decodeURI(to.hash), behavior }
 
       // specify offset of the element
       if (to.hash === '#anchor2') {
-        position.offset = { top: 100, behavior }
+        position.top = 100
+        position.behavior = behavior
       }
 
-      if (document.querySelector(position.selector)) {
-        return position
-      }
-
-      // if the returned position is falsy or an empty object,
-      // will retain current scroll position.
-      return false
+      return position
     }
 
     // check if any matched route config has meta that requires scrolling to top
@@ -86,7 +81,7 @@ const app = createApp({
   setup() {
     return {
       smoothScroll,
-      hashWithNumber: { path: '/bar', hash: '#\\31 number' },
+      hashWithNumber: { path: '/bar', hash: '#1number' },
       flushWaiter: scrollWaiter.flush,
       setupWaiter: scrollWaiter.add,
     }
