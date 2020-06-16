@@ -12,6 +12,7 @@ import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types'
 import { isSameLocationObject, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
+import { assign } from './utils'
 
 export interface RouterLinkProps {
   to: RouteLocationRaw
@@ -126,13 +127,17 @@ export const RouterLinkImpl = defineComponent({
         ? children
         : h(
             'a',
-            {
-              'aria-current': link.isExactActive ? 'page' : null,
-              onClick: link.navigate,
-              href: link.href,
-              ...attrs,
-              class: elClass.value,
-            },
+            assign(
+              {
+                'aria-current': link.isExactActive ? 'page' : null,
+                onClick: link.navigate,
+                href: link.href,
+              },
+              attrs,
+              {
+                class: elClass.value,
+              }
+            ),
             children
           )
     }
