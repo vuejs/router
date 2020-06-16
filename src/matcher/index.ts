@@ -18,7 +18,7 @@ import {
   _PathParserOptions,
 } from './pathParserRanker'
 import { warn } from '../warning'
-import { assign } from 'src/utils'
+import { assign } from '../utils'
 
 let noop = () => {}
 
