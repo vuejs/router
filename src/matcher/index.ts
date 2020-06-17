@@ -222,6 +222,7 @@ export function createRouterMatcher(
 
       name = matcher.record.name
       params = assign(
+        // paramsFromLocation is a new object
         paramsFromLocation(
           currentLocation.params,
           matcher.keys.map(k => k.name)

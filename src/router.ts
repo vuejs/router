@@ -249,6 +249,7 @@ export function createRouter(options: RouterOptions): Router {
         }
       }
 
+      // locationNormalized is always a new object
       return assign(locationNormalized, matchedRoute, {
         params: decodeParams(matchedRoute.params),
         redirectedFrom: undefined,
@@ -387,6 +388,7 @@ export function createRouter(options: RouterOptions): Router {
       }
       return pushWithRedirect(
         assign(
+          {},
           // having a path here would be a problem with relative locations but
           // at the same time it doesn't make sense for a redirect to be
           // relative (no name, no path) because it would create an infinite
