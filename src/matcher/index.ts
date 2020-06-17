@@ -72,7 +72,7 @@ export function createRouterMatcher(
         typeof record.alias === 'string' ? [record.alias] : record.alias!
       for (const alias of aliases) {
         normalizedRecords.push(
-          assign(mainNormalizedRecord, {
+          assign({}, mainNormalizedRecord, {
             // this allows us to hold a copy of the `components` option
             // so that async components cache is hold on the original record
             components: originalRecord

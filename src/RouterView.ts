@@ -88,14 +88,15 @@ export const RouterViewImpl = defineComponent({
 
       let Component = ViewComponent.value
       const componentProps: Parameters<typeof h>[1] = assign(
+        {},
+        // only compute props if there is a matched record
+        Component && propsData.value,
+        attrs,
         {
           onVnodeMounted,
           onVnodeUnmounted,
           ref: viewRef,
-        },
-        // only compute props if there is a matched record
-        Component && propsData.value,
-        attrs
+        }
       )
 
       // NOTE: we could also not render if there is no route match
