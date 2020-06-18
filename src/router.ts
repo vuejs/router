@@ -30,7 +30,7 @@ import {
   NavigationFailure,
   NavigationRedirectError,
 } from './errors'
-import { applyToParams, isBrowser } from './utils'
+import { applyToParams, isBrowser, assign } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
 import {
@@ -249,20 +249,12 @@ export function createRouter(options: RouterOptions): Router {
         }
       }
 
-      return {
-        // fullPath: locationNormalized.fullPath,
-        // query: locationNormalized.query,
-        // hash: locationNormalized.hash,
-        ...locationNormalized,
-        ...matchedRoute,
-        // path: matchedRoute.path,
-        // name: matchedRoute.name,
-        // meta: matchedRoute.meta,
-        // matched: matchedRoute.matched,
+      // locationNormalized is always a new object
+      return assign(locationNormalized, matchedRoute, {
         params: decodeParams(matchedRoute.params),
         redirectedFrom: undefined,
         href: routerHistory.base + locationNormalized.fullPath,
-      }
+      })
     }
 
     let matcherLocation: MatcherLocationRaw
@@ -281,15 +273,13 @@ export function createRouter(options: RouterOptions): Router {
           }" was passed with params but they will be ignored. Use a named route alongside params instead.`
         )
       }
-      matcherLocation = {
-        ...rawLocation,
+      matcherLocation = assign({}, rawLocation, {
         path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path,
-      }
+      })
     } else {
-      matcherLocation = {
-        ...rawLocation,
+      matcherLocation = assign({}, rawLocation, {
         params: encodeParams(rawLocation.params),
-      }
+      })
     }
 
     let matchedRoute = matcher.resolve(matcherLocation, currentLocation)
@@ -307,11 +297,13 @@ export function createRouter(options: RouterOptions): Router {
         ? normalizeParams(rawLocation.params)
         : decodeParams(matchedRoute.params)
 
-    const fullPath = stringifyURL(stringifyQuery, {
-      ...rawLocation,
-      hash,
-      path: matchedRoute.path,
-    })
+    const fullPath = stringifyURL(
+      stringifyQuery,
+      assign({}, rawLocation, {
+        hash,
+        path: matchedRoute.path,
+      })
+    )
 
     if (__DEV__) {
       let href = routerHistory.base + fullPath
@@ -328,22 +320,26 @@ export function createRouter(options: RouterOptions): Router {
       }
     }
 
-    return {
-      fullPath,
-      // keep the hash encoded so fullPath is effectively path + encodedQuery +
-      // hash
-      hash,
-      query: normalizeQuery(rawLocation.query),
-      ...matchedRoute,
-      redirectedFrom: undefined,
-      href: routerHistory.base + fullPath,
-    }
+    return assign(
+      {
+        fullPath,
+        // keep the hash encoded so fullPath is effectively path + encodedQuery +
+        // hash
+        hash,
+        query: normalizeQuery(rawLocation.query),
+      },
+      matchedRoute,
+      {
+        redirectedFrom: undefined,
+        href: routerHistory.base + fullPath,
+      }
+    )
   }
 
   function locationAsObject(
     to: RouteLocationRaw | RouteLocationNormalized
   ): Exclude<RouteLocationRaw, string> | RouteLocationNormalized {
-    return typeof to === 'string' ? { path: to } : to
+    return typeof to === 'string' ? { path: to } : assign({}, to)
   }
 
   function push(to: RouteLocationRaw | RouteLocation) {
@@ -351,7 +347,7 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   function replace(to: RouteLocationRaw | RouteLocationNormalized) {
-    return push({ ...locationAsObject(to), replace: true })
+    return push(assign(locationAsObject(to), { replace: true }))
   }
 
   function pushWithRedirect(
@@ -391,18 +387,21 @@ export function createRouter(options: RouterOptions): Router {
         return Promise.reject(new Error('Invalid redirect'))
       }
       return pushWithRedirect(
-        {
+        assign(
+          {},
           // having a path here would be a problem with relative locations but
           // at the same time it doesn't make sense for a redirect to be
           // relative (no name, no path) because it would create an infinite
           // loop. Since newTargetLocation must either have a `path` or a
           // `name`, this will never happen
-          ...targetLocation,
-          ...newTargetLocation,
-          state: data,
-          force,
-          replace,
-        },
+          targetLocation,
+          newTargetLocation,
+          {
+            state: data,
+            force,
+            replace,
+          }
+        ),
         // keep original redirectedFrom if it exists
         redirectedFrom || targetLocation
       )
@@ -459,12 +458,11 @@ export function createRouter(options: RouterOptions): Router {
             // preserve the original redirectedFrom if any
             return pushWithRedirect(
               // keep options
-              {
-                ...locationAsObject(failure.to),
+              assign(locationAsObject(failure.to), {
                 state: data,
                 force,
                 replace,
-              },
+              }),
               redirectedFrom || toLocation
             )
         } else {
@@ -638,10 +636,15 @@ export function createRouter(options: RouterOptions): Router {
       // on the initial navigation, we want to reuse the scroll position from
       // history state if it exists
       if (replace || isFirstNavigation)
-        routerHistory.replace(toLocation, {
-          scroll: isFirstNavigation && state && state.scroll,
-          ...data,
-        })
+        routerHistory.replace(
+          toLocation,
+          assign(
+            {
+              scroll: isFirstNavigation && state && state.scroll,
+            },
+            data
+          )
+        )
       else routerHistory.push(toLocation, data)
     }
 

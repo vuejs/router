@@ -18,6 +18,7 @@ import {
   _PathParserOptions,
 } from './pathParserRanker'
 import { warn } from '../warning'
+import { assign } from '../utils'
 
 let noop = () => {}
 
@@ -70,21 +71,22 @@ export function createRouterMatcher(
       const aliases =
         typeof record.alias === 'string' ? [record.alias] : record.alias!
       for (const alias of aliases) {
-        normalizedRecords.push({
-          ...mainNormalizedRecord,
-          // this allows us to hold a copy of the `components` option
-          // so that async components cache is hold on the original record
-          components: originalRecord
-            ? originalRecord.record.components
-            : mainNormalizedRecord.components,
-          path: alias,
-          // we might be the child of an alias
-          aliasOf: originalRecord
-            ? originalRecord.record
-            : mainNormalizedRecord,
-          // the aliases are always of the same kind as the original since they
-          // are defined on the same record
-        } as typeof mainNormalizedRecord)
+        normalizedRecords.push(
+          assign({}, mainNormalizedRecord, {
+            // this allows us to hold a copy of the `components` option
+            // so that async components cache is hold on the original record
+            components: originalRecord
+              ? originalRecord.record.components
+              : mainNormalizedRecord.components,
+            path: alias,
+            // we might be the child of an alias
+            aliasOf: originalRecord
+              ? originalRecord.record
+              : mainNormalizedRecord,
+            // the aliases are always of the same kind as the original since they
+            // are defined on the same record
+          }) as typeof mainNormalizedRecord
+        )
       }
     }
 
@@ -219,13 +221,14 @@ export function createRouterMatcher(
         })
 
       name = matcher.record.name
-      params = {
-        ...paramsFromLocation(
+      params = assign(
+        // paramsFromLocation is a new object
+        paramsFromLocation(
           currentLocation.params,
           matcher.keys.map(k => k.name)
         ),
-        ...location.params,
-      }
+        location.params
+      )
       // throws if cannot be stringified
       path = matcher.stringify(params)
     } else if ('path' in location) {
@@ -261,7 +264,7 @@ export function createRouterMatcher(
       name = matcher.record.name
       // since we are navigating to the same location, we don't need to pick the
       // params like when `name` is provided
-      params = { ...currentLocation.params, ...location.params }
+      params = assign({}, currentLocation.params, location.params)
       path = matcher.stringify(params)
     }
 
@@ -303,7 +306,8 @@ function paramsFromLocation(
 }
 
 /**
- * Normalizes a RouteRecordRaw. Transforms the `redirect` option into a `beforeEnter`
+ * Normalizes a RouteRecordRaw. Transforms the `redirect` option into a
+ * `beforeEnter`. This function creates a copy
  * @param record
  * @returns the normalized version
  */
@@ -319,15 +323,11 @@ export function normalizeRouteRecord(
   }
 
   if ('redirect' in record) {
-    return {
-      ...commonInitialValues,
-      redirect: record.redirect,
-    }
+    return assign(commonInitialValues, { redirect: record.redirect })
   } else {
     const components =
       'components' in record ? record.components : { default: record.component }
-    return {
-      ...commonInitialValues,
+    return assign(commonInitialValues, {
       beforeEnter: record.beforeEnter,
       props: normalizeRecordProps(record),
       children: record.children || [],
@@ -335,7 +335,7 @@ export function normalizeRouteRecord(
       leaveGuards: [],
       updateGuards: [],
       components,
-    }
+    })
   }
 }
 
@@ -381,10 +381,7 @@ function isAliasRecord(record: RouteRecordMatcher | undefined): boolean {
  */
 function mergeMetaFields(matched: MatcherLocation['matched']) {
   return matched.reduce(
-    (meta, record) => ({
-      ...meta,
-      ...record.meta,
-    }),
+    (meta, record) => assign(meta, record.meta),
     {} as MatcherLocation['meta']
   )
 }

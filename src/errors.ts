@@ -4,6 +4,7 @@ import {
   RouteLocationRaw,
   RouteLocationNormalized,
 } from './types'
+import { assign } from './utils'
 
 /**
  * order is important to make it backwards compatible with v3
@@ -82,13 +83,13 @@ export function createRouterError<E extends RouterError>(
   params: Omit<E, 'type' | keyof Error>
 ): E {
   if (__DEV__ || !__BROWSER__) {
-    return Object.assign(
+    return assign(
       new Error(ErrorTypeMessages[type](params as any)),
       { type },
       params
     ) as E
   } else {
-    return Object.assign(new Error(), { type }, params) as E
+    return assign(new Error(), { type }, params) as E
   }
 }
 

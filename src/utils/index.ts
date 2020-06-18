@@ -7,6 +7,8 @@ export function isESModule(obj: any): obj is { default: RouteComponent } {
   return obj.__esModule || (hasSymbol && obj[Symbol.toStringTag] === 'Module')
 }
 
+export const assign = Object.assign
+
 export function applyToParams(
   fn: (v: string | number) => string,
   params: RouteParamsRaw | undefined

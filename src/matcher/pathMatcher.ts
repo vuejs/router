@@ -6,6 +6,7 @@ import {
 } from './pathParserRanker'
 import { tokenizePath } from './pathTokenizer'
 import { warn } from '../warning'
+import { assign } from '../utils'
 
 export interface RouteRecordMatcher extends PathParser {
   record: RouteRecord
@@ -34,14 +35,13 @@ export function createRouteRecordMatcher(
     }
   }
 
-  const matcher: RouteRecordMatcher = {
-    ...parser,
+  const matcher: RouteRecordMatcher = assign(parser, {
     record,
     parent,
     // these needs to be populated by the parent
     children: [],
     alias: [],
-  }
+  })
 
   if (parent) {
     // both are aliases or both are not aliases

@@ -16,6 +16,7 @@ import {
 } from '../scrollBehavior'
 import { warn } from '../warning'
 import { stripBase } from '../location'
+import { assign } from '../utils'
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 
@@ -124,10 +125,7 @@ function useHistoryListeners(
     const { history } = window
     if (!history.state) return
     history.replaceState(
-      {
-        ...history.state,
-        scroll: computeScrollPosition(),
-      },
+      assign({}, history.state, { scroll: computeScrollPosition() }),
       ''
     )
   }
@@ -218,18 +216,19 @@ function useHistoryStateNavigation(base: string) {
   function replace(to: RawHistoryLocation, data?: HistoryState) {
     const normalized = normalizeHistoryLocation(to)
 
-    const state: StateEntry = {
-      ...history.state,
-      ...buildState(
+    const state: StateEntry = assign(
+      {},
+      history.state,
+      buildState(
         historyState.value.back,
         // keep back and forward entries but override current position
         normalized,
         historyState.value.forward,
         true
       ),
-      ...data,
-      position: historyState.value.position,
-    }
+      data,
+      { position: historyState.value.position }
+    )
 
     changeLocation(normalized, state, true)
     location.value = normalized
@@ -240,18 +239,20 @@ function useHistoryStateNavigation(base: string) {
 
     // Add to current entry the information of where we are going
     // as well as saving the current position
-    const currentState: StateEntry = {
-      ...history.state,
+    const currentState: StateEntry = assign({}, history.state, {
       forward: normalized,
       scroll: computeScrollPosition(),
-    }
+    })
     changeLocation(currentState.current, currentState, true)
 
-    const state: StateEntry = {
-      ...buildState(location.value, normalized, null),
-      position: currentState.position + 1,
-      ...data,
-    }
+    const state: StateEntry = assign(
+      {},
+      buildState(location.value, normalized, null),
+      {
+        position: currentState.position + 1,
+      },
+      data
+    )
 
     changeLocation(normalized, state, false)
     location.value = normalized
@@ -280,16 +281,18 @@ export function createWebHistory(base?: string): RouterHistory {
     if (!triggerListeners) historyListeners.pauseListeners()
     history.go(delta)
   }
-  const routerHistory: RouterHistory = {
-    // it's overridden right after
-    // @ts-ignore
-    location: '',
-    base,
-    go,
 
-    ...historyNavigation,
-    ...historyListeners,
-  }
+  const routerHistory: RouterHistory = assign(
+    {
+      // it's overridden right after
+      location: ('' as unknown) as HistoryLocationNormalized,
+      base,
+      go,
+    },
+
+    historyNavigation,
+    historyListeners
+  )
 
   Object.defineProperty(routerHistory, 'location', {
     get: () => historyNavigation.location.value,
