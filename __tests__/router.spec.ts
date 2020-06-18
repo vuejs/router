@@ -664,6 +664,30 @@ describe('Router', () => {
         path: '/inc-query-hash',
       })
     })
+
+    it('allows a redirect with children', async () => {
+      const history = createMemoryHistory()
+      const router = createRouter({
+        history,
+        routes: [
+          {
+            path: '/parent',
+            redirect: { name: 'child' },
+            component: components.Home,
+            name: 'parent',
+            children: [{ name: 'child', path: '', component: components.Home }],
+          },
+        ],
+      })
+      await expect(router.push({ name: 'parent' })).resolves.toEqual(undefined)
+      const loc = router.currentRoute.value
+      expect(loc.name).toBe('child')
+      expect(loc.path).toBe('/parent')
+      expect(loc.redirectedFrom).toMatchObject({
+        name: 'parent',
+        path: '/parent',
+      })
+    })
   })
 
   describe('base', () => {

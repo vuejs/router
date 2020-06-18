@@ -53,7 +53,7 @@ describe('normalizeRouteRecord', () => {
       name: 'name',
     })
 
-    expect(record).toEqual({
+    expect(record).toMatchObject({
       aliasOf: undefined,
       components: {},
       meta: { foo: true },

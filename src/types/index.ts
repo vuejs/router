@@ -159,6 +159,16 @@ export interface _RouteRecordBase extends PathParserOptions {
    */
   path: string
   /**
+   * Where to redirect if the route is directly matched. The redirection happens
+   * before any navigation guard and triggers a new navigation with the new
+   * target location.
+   */
+  redirect?: RouteRecordRedirectOption
+  /**
+   * Array of nested routes.
+   */
+  children?: RouteRecordRaw[]
+  /**
    * Aliases for the record. Allows defining extra paths that will behave like a
    * copy of the record. Allows having paths shorthands like `/users/:id` and
    * `/u/:id`. All `alias` and `path` values must share the same params.
@@ -184,16 +194,12 @@ export interface _RouteRecordBase extends PathParserOptions {
 export type RouteRecordRedirectOption =
   | RouteLocationRaw
   | ((to: RouteLocation) => RouteLocationRaw)
-export interface RouteRecordRedirectRaw extends _RouteRecordBase {
-  redirect: RouteRecordRedirectOption
-  beforeEnter?: never
-  component?: never
-  components?: never
-}
 
 export interface RouteRecordSingleView extends _RouteRecordBase {
+  /**
+   * Component to display when the URL matches this route.
+   */
   component: RawRouteComponent
-  children?: RouteRecordRaw[]
   /**
    * Allow passing down params as props to the component rendered by `router-view`.
    */
@@ -201,8 +207,10 @@ export interface RouteRecordSingleView extends _RouteRecordBase {
 }
 
 export interface RouteRecordMultipleViews extends _RouteRecordBase {
+  /**
+   * Components to display when the URL matches this route. Allow using named views.
+   */
   components: Record<string, RawRouteComponent>
-  children?: RouteRecordRaw[]
   /**
    * Allow passing down params as props to the component rendered by
    * `router-view`. Should be an object with the same keys as `components` or a
@@ -211,10 +219,25 @@ export interface RouteRecordMultipleViews extends _RouteRecordBase {
   props?: Record<string, _RouteRecordProps> | boolean
 }
 
+export interface RouteRecordRedirect extends _RouteRecordBase {
+  /**
+   * @inheritdoc
+   */
+  redirect: RouteRecordRedirectOption
+  component?: never
+  components?: never
+  children?: never
+}
+
+export interface RouteRecordRedirectWithChildren extends _RouteRecordBase {
+  component?: never
+  children: Exclude<_RouteRecordBase['children'], undefined>
+}
+
 export type RouteRecordRaw =
   | RouteRecordSingleView
   | RouteRecordMultipleViews
-  | RouteRecordRedirectRaw
+  | RouteRecordRedirect
 
 export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = {
   path: '/',

@@ -5,12 +5,10 @@ import {
   isRouteName,
   RouteRecordName,
   _RouteRecordProps,
-  RouteRecordSingleView,
-  RouteRecordMultipleViews,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
-import { RouteRecordRedirect, RouteRecordNormalized } from './types'
+import { RouteRecordNormalized } from './types'
 import {
   PathParams,
   comparePathParserScore,
@@ -130,7 +128,6 @@ export function createRouterMatcher(
           removeRoute(record.name)
       }
 
-      // only non redirect records have children
       if ('children' in mainNormalizedRecord) {
         let children = mainNormalizedRecord.children
         for (let i = 0; i < children.length; i++) {
@@ -306,36 +303,30 @@ function paramsFromLocation(
 }
 
 /**
- * Normalizes a RouteRecordRaw. Transforms the `redirect` option into a
- * `beforeEnter`. This function creates a copy
+ * Normalizes a RouteRecordRaw. Creates a copy
+ *
  * @param record
  * @returns the normalized version
  */
 export function normalizeRouteRecord(
   record: RouteRecordRaw
-): RouteRecordNormalized | RouteRecordRedirect {
-  const commonInitialValues = {
+): RouteRecordNormalized {
+  return {
     path: record.path,
+    redirect: record.redirect,
     name: record.name,
     meta: record.meta || {},
     aliasOf: undefined,
-    components: {},
-  }
-
-  if ('redirect' in record) {
-    return assign(commonInitialValues, { redirect: record.redirect })
-  } else {
-    const components =
-      'components' in record ? record.components : { default: record.component }
-    return assign(commonInitialValues, {
-      beforeEnter: record.beforeEnter,
-      props: normalizeRecordProps(record),
-      children: record.children || [],
-      instances: {},
-      leaveGuards: [],
-      updateGuards: [],
-      components,
-    })
+    beforeEnter: record.beforeEnter,
+    props: normalizeRecordProps(record),
+    children: record.children || [],
+    instances: {},
+    leaveGuards: [],
+    updateGuards: [],
+    components:
+      'components' in record
+        ? record.components || {}
+        : { default: record.component! },
   }
 }
 
@@ -345,10 +336,11 @@ export function normalizeRouteRecord(
  * @param record
  */
 function normalizeRecordProps(
-  record: RouteRecordSingleView | RouteRecordMultipleViews
+  record: RouteRecordRaw
 ): Record<string, _RouteRecordProps> {
   const propsObject = {} as Record<string, _RouteRecordProps>
-  const props = record.props || false
+  // props does not exist on redirect records but we can set false directly
+  const props = (record as any).props || false
   if ('component' in record) {
     propsObject.default = props
   } else {

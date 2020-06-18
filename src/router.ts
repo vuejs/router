@@ -363,7 +363,7 @@ export function createRouter(options: RouterOptions): Router {
 
     const lastMatched =
       targetLocation.matched[targetLocation.matched.length - 1]
-    if (lastMatched && 'redirect' in lastMatched) {
+    if (lastMatched && lastMatched.redirect) {
       const { redirect } = lastMatched
       // transform it into an object to pass the original RouteLocaleOptions
       let newTargetLocation = locationAsObject(

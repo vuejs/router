@@ -2,7 +2,6 @@ import {
   RouteRecordMultipleViews,
   NavigationGuard,
   _RouteRecordBase,
-  RouteRecordRedirectRaw,
   _RouteRecordProps,
 } from '../types'
 import { ComponentPublicInstance } from 'vue'
@@ -10,6 +9,7 @@ import { ComponentPublicInstance } from 'vue'
 // normalize component/components into components and make every property always present
 export interface RouteRecordNormalized {
   path: RouteRecordMultipleViews['path']
+  redirect: _RouteRecordBase['redirect'] | undefined
   name: RouteRecordMultipleViews['name']
   components: RouteRecordMultipleViews['components']
   children: Exclude<RouteRecordMultipleViews['children'], void>
@@ -26,15 +26,4 @@ export interface RouteRecordNormalized {
   aliasOf: RouteRecordNormalized | undefined
 }
 
-export interface RouteRecordRedirect {
-  path: RouteRecordMultipleViews['path']
-  name: RouteRecordMultipleViews['name']
-  redirect: RouteRecordRedirectRaw['redirect']
-  // can only be of of the same type as this record
-  aliasOf: RouteRecordRedirect | undefined
-  meta: Exclude<RouteRecordMultipleViews['meta'], void>
-  // this object will always be empty but it simplifies things
-  components: RouteRecordMultipleViews['components']
-}
-
-export type RouteRecord = RouteRecordNormalized | RouteRecordRedirect
+export type RouteRecord = RouteRecordNormalized
