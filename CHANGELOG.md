@@ -1,3 +1,43 @@
+# [4.0.0-alpha.13](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.12...v4.0.0-alpha.13) (2020-06-18)
+
+### Bug Fixes
+
+- allow arbitrary selectors starting with # ([14b859d](https://github.com/vuejs/vue-router-next/commit/14b859dfa6fa5ccefe42c6f834ddd24dd9921a1b))
+- use assign to align with Vue browser support ([#311](https://github.com/vuejs/vue-router-next/issues/311)) ([f80b670](https://github.com/vuejs/vue-router-next/commit/f80b670d4dac30323221fcb2f93137ffd874c51b)), closes [#304](https://github.com/vuejs/vue-router-next/issues/304)
+- **hash:** use location.pathname ([0078147](https://github.com/vuejs/vue-router-next/commit/007814745dd98bb8cfa53f44d5c308193b2fbb60)), closes [#261](https://github.com/vuejs/vue-router-next/issues/261)
+- **matcher:** correct check when removing existing records on add ([2c267f5](https://github.com/vuejs/vue-router-next/commit/2c267f5aceec899c84514571e4fa75dc61441ed4))
+- **matcher:** override records by name when adding ([07100fc](https://github.com/vuejs/vue-router-next/commit/07100fc1386fb636da3eb1c8196a36f6538eb91f))
+- **scroll:** avoid reusing scroll position ([dfc1fb3](https://github.com/vuejs/vue-router-next/commit/dfc1fb34a761138a3390ccd5a8a042863018222a))
+
+### Features
+
+- **scroll:** allow passing behavior option ([12e9209](https://github.com/vuejs/vue-router-next/commit/12e92094df46129ddf75d0fa8e3d9816644200de))
+- **scroll:** replace selector with el ([ab8a01c](https://github.com/vuejs/vue-router-next/commit/ab8a01c0a6eda1bafc293b39cb6c77ed10fb359e))
+- **warn:** warn if component is a promise ([4b2bfa8](https://github.com/vuejs/vue-router-next/commit/4b2bfa80cd3440441d71e690ca85d0532a4b8428))
+- **warn:** warn when routes are not found ([#279](https://github.com/vuejs/vue-router-next/issues/279)) ([d125356](https://github.com/vuejs/vue-router-next/commit/d125356e0f67f906f5f602f0b485f9e1e4f5bf51))
+- allow props for named views ([dbe2344](https://github.com/vuejs/vue-router-next/commit/dbe2344af5fed39aa4aa8fbfe48b195580d9538b))
+- **warn:** warn multiple params with same name ([5c8cd6e](https://github.com/vuejs/vue-router-next/commit/5c8cd6e8ae1223e9871252cc617b19424f01c5c2))
+
+### BREAKING CHANGES
+
+- **scroll:** this change follows the RFC at
+  https://github.com/vuejs/rfcs/pull/176:
+
+* `selector` is renamed into `el`
+* `el` also accepts an `Element`
+* `left` and `top` are passed along `el` instead of inside an object
+  passed as `offset`
+
+- **scroll:** `scrollBehavior` doesn't accept an object with `x` and `y`
+  coordinates anymore. Instead it accepts an object like
+  [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions)
+  with `left` and `top` properties. You can now also pass the
+  [`behavior`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions/behavior)
+  property to enable smooth scrolling in most browsers.
+- It is now necessary to escape id selectors like
+  explained at https://mathiasbynens.be/notes/css-escapes. This was
+  necessary to allow selectors like `#container > child`.
+
 # [4.0.0-alpha.12](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.11...v4.0.0-alpha.12) (2020-05-19)
 
 ### Bug Fixes
