@@ -158,6 +158,7 @@ describe('Matcher: adding and removing records', () => {
     const matcher = createRouterMatcher([], {})
     matcher.addRoute({ path: '/', component, name: 'home' })
     matcher.removeRoute('home')
+    expect(matcher.getRoutes()).toHaveLength(0)
     expect(matcher.resolve({ path: '/' }, currentLocation)).toMatchObject({
       name: undefined,
       matched: [],
@@ -200,7 +201,9 @@ describe('Matcher: adding and removing records', () => {
       ],
     })
 
+    expect(matcher.getRoutes()).toHaveLength(2)
     matcher.removeRoute('child')
+    expect(matcher.getRoutes()).toHaveLength(1)
 
     expect(matcher.resolve({ path: '/about' }, currentLocation)).toMatchObject({
       name: undefined,
@@ -230,6 +233,7 @@ describe('Matcher: adding and removing records', () => {
     })
 
     matcher.removeRoute('home')
+    expect(matcher.getRoutes()).toHaveLength(0)
 
     expect(matcher.resolve({ path: '/about' }, currentLocation)).toMatchObject({
       name: undefined,
@@ -249,6 +253,7 @@ describe('Matcher: adding and removing records', () => {
     })
 
     matcher.removeRoute('home')
+    expect(matcher.getRoutes()).toHaveLength(0)
 
     expect(matcher.resolve({ path: '/start' }, currentLocation)).toMatchObject({
       name: undefined,
@@ -283,6 +288,7 @@ describe('Matcher: adding and removing records', () => {
     })
 
     matcher.removeRoute('home')
+    expect(matcher.getRoutes()).toHaveLength(0)
     ;[
       '/',
       '/start',
@@ -325,6 +331,8 @@ describe('Matcher: adding and removing records', () => {
 
     matcher.removeRoute('child')
 
+    expect(matcher.getRoutes()).toHaveLength(2)
+
     expect(matcher.resolve({ path: '/about' }, currentLocation)).toMatchObject({
       name: undefined,
       matched: [],
@@ -350,6 +358,16 @@ describe('Matcher: adding and removing records', () => {
     })
 
     expect(matcher.getRecordMatcher('child')).toBe(undefined)
+  })
+
+  it('removes existing record when adding with the same name', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({ path: '/', component, name: 'home' })
+    matcher.addRoute({ path: '/home', component, name: 'home' })
+    expect(matcher.getRoutes()).toHaveLength(1)
+    expect(matcher.resolve({ path: '/home' }, currentLocation)).toMatchObject({
+      name: 'home',
+    })
   })
 
   describe('warnings', () => {

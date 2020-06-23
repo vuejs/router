@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom'
-import createWebHistory from '../../src/history/html5'
+import { createWebHistory } from '../../src/history/html5'
 import { createDom } from '../utils'
 
 // override the value of isBrowser because the variable is created before JSDOM
@@ -25,16 +25,6 @@ describe('History HTMl5', () => {
     // respected
     for (let element of Array.from(document.getElementsByTagName('base')))
       element.remove()
-  })
-
-  // this problem is very common on hash history when using a regular link
-  // it will push an entry into the history stack with no state.
-  // When navigating back, we will try to read `state` but it will be null
-  it('should not fail if an entry has an empty state', () => {
-    const history = createWebHistory()
-    expect(history.location).toEqual({
-      fullPath: '/',
-    })
   })
 
   it('handles a basic base', () => {
@@ -83,5 +73,36 @@ describe('History HTMl5', () => {
   it('handles a non-empty hash base', () => {
     expect(createWebHistory('#/bar').base).toBe('#/bar')
     expect(createWebHistory('#/bar/').base).toBe('#/bar')
+  })
+
+  it('prepends the host to support // urls', () => {
+    let history = createWebHistory()
+    let spy = jest.spyOn(window.history, 'pushState')
+    history.push('/foo')
+    expect(spy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'https://example.com/foo'
+    )
+    history.push('//foo')
+    expect(spy).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'https://example.com//foo'
+    )
+    spy.mockRestore()
+  })
+
+  it('works with file:/// urls and a base', () => {
+    dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+    let history = createWebHistory('/usr/etc/index.html#/')
+    let spy = jest.spyOn(window.history, 'pushState')
+    history.push('/foo')
+    expect(spy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'file:///usr/etc/index.html#/foo'
+    )
+    spy.mockRestore()
   })
 })

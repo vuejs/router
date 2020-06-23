@@ -1,3 +1,102 @@
+# [4.0.0-alpha.13](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.12...v4.0.0-alpha.13) (2020-06-18)
+
+### Bug Fixes
+
+- allow arbitrary selectors starting with # ([14b859d](https://github.com/vuejs/vue-router-next/commit/14b859dfa6fa5ccefe42c6f834ddd24dd9921a1b))
+- use assign to align with Vue browser support ([#311](https://github.com/vuejs/vue-router-next/issues/311)) ([f80b670](https://github.com/vuejs/vue-router-next/commit/f80b670d4dac30323221fcb2f93137ffd874c51b)), closes [#304](https://github.com/vuejs/vue-router-next/issues/304)
+- **hash:** use location.pathname ([0078147](https://github.com/vuejs/vue-router-next/commit/007814745dd98bb8cfa53f44d5c308193b2fbb60)), closes [#261](https://github.com/vuejs/vue-router-next/issues/261)
+- **matcher:** correct check when removing existing records on add ([2c267f5](https://github.com/vuejs/vue-router-next/commit/2c267f5aceec899c84514571e4fa75dc61441ed4))
+- **matcher:** override records by name when adding ([07100fc](https://github.com/vuejs/vue-router-next/commit/07100fc1386fb636da3eb1c8196a36f6538eb91f))
+- **scroll:** avoid reusing scroll position ([dfc1fb3](https://github.com/vuejs/vue-router-next/commit/dfc1fb34a761138a3390ccd5a8a042863018222a))
+
+### Features
+
+- **scroll:** allow passing behavior option ([12e9209](https://github.com/vuejs/vue-router-next/commit/12e92094df46129ddf75d0fa8e3d9816644200de))
+- **scroll:** replace selector with el ([ab8a01c](https://github.com/vuejs/vue-router-next/commit/ab8a01c0a6eda1bafc293b39cb6c77ed10fb359e))
+- **warn:** warn if component is a promise ([4b2bfa8](https://github.com/vuejs/vue-router-next/commit/4b2bfa80cd3440441d71e690ca85d0532a4b8428))
+- **warn:** warn when routes are not found ([#279](https://github.com/vuejs/vue-router-next/issues/279)) ([d125356](https://github.com/vuejs/vue-router-next/commit/d125356e0f67f906f5f602f0b485f9e1e4f5bf51))
+- allow props for named views ([dbe2344](https://github.com/vuejs/vue-router-next/commit/dbe2344af5fed39aa4aa8fbfe48b195580d9538b))
+- **warn:** warn multiple params with same name ([5c8cd6e](https://github.com/vuejs/vue-router-next/commit/5c8cd6e8ae1223e9871252cc617b19424f01c5c2))
+
+### BREAKING CHANGES
+
+- **scroll:** this change follows the RFC at
+  https://github.com/vuejs/rfcs/pull/176:
+
+* `selector` is renamed into `el`
+* `el` also accepts an `Element`
+* `left` and `top` are passed along `el` instead of inside an object
+  passed as `offset`
+
+- **scroll:** `scrollBehavior` doesn't accept an object with `x` and `y`
+  coordinates anymore. Instead it accepts an object like
+  [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions)
+  with `left` and `top` properties. You can now also pass the
+  [`behavior`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions/behavior)
+  property to enable smooth scrolling in most browsers.
+- It is now necessary to escape id selectors like
+  explained at https://mathiasbynens.be/notes/css-escapes. This was
+  necessary to allow selectors like `#container > child`.
+
+# [4.0.0-alpha.12](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.11...v4.0.0-alpha.12) (2020-05-19)
+
+### Bug Fixes
+
+- **hash:** allow base with non trailing slash ([f5cc050](https://github.com/vuejs/vue-router-next/commit/f5cc0505f9e0cc30ff94e362ceb24d300afd684d)), closes [#247](https://github.com/vuejs/vue-router-next/issues/247)
+- prevent error on initial navigation to //invalid ([e72e4ba](https://github.com/vuejs/vue-router-next/commit/e72e4ba1cc7b80aa44d3958db259d9e3a351d0fd))
+
+### Features
+
+- **warn:** warn multiple leading slashes ([87c5e53](https://github.com/vuejs/vue-router-next/commit/87c5e53b43c218c83f9db986ac7538d74525ea5b))
+
+### BREAKING CHANGES
+
+- **hash:** When providing a base for hash histories, it is now necessary
+  to include a trailing slash to create a url that starts with `/#/`, otherwise it
+  will result in a url starting with `#/`. This allows users to use the routing
+  system directly in simple files without needing to configure a server at all:
+  - `https://example.com/file.html` + `base: 'file.html` will produce a final
+    url of `https://example.com/file.html#/`
+  - `https://example.com/folder` + `base: 'folder` will produce a final url of
+    `https://example.com/folder#/`
+  - `https://example.com/folder` + `base: 'folder/` will produce a final url of
+    `https://example.com/folder/#/`
+
+# [4.0.0-alpha.11](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.10...v4.0.0-alpha.11) (2020-05-12)
+
+### Bug Fixes
+
+- **scroll:** change scrollRestoration if scrollBehavior is provided ([5cf2e61](https://github.com/vuejs/vue-router-next/commit/5cf2e611de2477e92699121573cb162ff98a7b8d))
+- match base in a non-sensitive way ([7087bbc](https://github.com/vuejs/vue-router-next/commit/7087bbc9c479f2955381d8a823a3ef8f9eed7b5a))
+- **router:** allow multiple router instance ([24d3d49](https://github.com/vuejs/vue-router-next/commit/24d3d49babcdea751f4c4e7e9a87625f8744a122))
+- **router:** unique first navigation with multi app ([33172af](https://github.com/vuejs/vue-router-next/commit/33172aff03b7c302699753a8abe5750094bdde26))
+
+### Features
+
+- **types:** export NavigationGuardNext ([#229](https://github.com/vuejs/vue-router-next/issues/229)) ([888bf4d](https://github.com/vuejs/vue-router-next/commit/888bf4df33d718d74e5835e99d0f1ac4ce3a0ccf))
+- explicit injection symbols in dev mode ([#228](https://github.com/vuejs/vue-router-next/issues/228)) ([fab88ee](https://github.com/vuejs/vue-router-next/commit/fab88ee261c49b739545918deab583757aab561e))
+- support jsx and tsx for RouterLink and RouterView ([1d3dce3](https://github.com/vuejs/vue-router-next/commit/1d3dce3106af700fc95a403f1c229644fe8d85b8)), closes [#226](https://github.com/vuejs/vue-router-next/issues/226)
+- **router:** allow functional components for routes ([096d864](https://github.com/vuejs/vue-router-next/commit/096d86498e954345c6bd4d8e82fe54c37d3f869b))
+- **scroll:** scroll to the same location like regular links ([5f22d4f](https://github.com/vuejs/vue-router-next/commit/5f22d4fa39171906802cc20ada00ec57bdfce880))
+- **warn:** warn if next was called multiple times ([dce2612](https://github.com/vuejs/vue-router-next/commit/dce2612e495b1d5789cd993a54d24599967a8cf4))
+
+# [4.0.0-alpha.10](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.9...v4.0.0-alpha.10) (2020-05-05)
+
+### Bug Fixes
+
+- **scroll:** do not restore on push ([3f79195](https://github.com/vuejs/vue-router-next/commit/3f7919585117048c379b6dee8af1cc1de5996af0))
+
+### Features
+
+- **warn:** warn invalid hash ([fcf2365](https://github.com/vuejs/vue-router-next/commit/fcf2365556dffa87153c13d31a684070f123ea0e))
+- allow numbers as params ([ef0920a](https://github.com/vuejs/vue-router-next/commit/ef0920a86574bca10836214015c2317ed11a29b7)), closes [#206](https://github.com/vuejs/vue-router-next/issues/206)
+- **router:** allow global router classes ([388735b](https://github.com/vuejs/vue-router-next/commit/388735bc752852e2a9a24f971207fd81fae45fcf))
+- **router:** go, back and forward can be awaited ([eb87757](https://github.com/vuejs/vue-router-next/commit/eb87757ed189958c8c9955a10ece9306fa99f6d8))
+- **warn:** detect missing param in nested absolute paths ([f5b5949](https://github.com/vuejs/vue-router-next/commit/f5b59493a4e27bf07bd5a0d2e109bc6750f6f1a9))
+- **warn:** warn for invalid path+params and redirect ([91f4de9](https://github.com/vuejs/vue-router-next/commit/91f4de9aab99231fb39ed4cc5b4052979afda216))
+- **warn:** warn missing params in alias ([186e275](https://github.com/vuejs/vue-router-next/commit/186e2755ec0488ff80bdde11a53b0ddc9ee9fc03))
+- **warn:** warn when params are provided alongside path ([8a8ddf1](https://github.com/vuejs/vue-router-next/commit/8a8ddf1a5e5f2d29733da4fe25e4ddb447b0df30))
+
 # [4.0.0-alpha.9](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.8...v4.0.0-alpha.9) (2020-04-29)
 
 - Removed sourcemaps from build

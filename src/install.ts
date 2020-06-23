@@ -10,6 +10,7 @@ import {
   NavigationGuard,
 } from './types'
 import { routerKey, routeLocationKey } from './injectionSymbols'
+import { warn } from './warning'
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomOptions {
@@ -76,10 +77,17 @@ export function applyRouterPlugin(app: App, router: Router) {
   // this initial navigation is only necessary on client, on server it doesn't
   // make sense because it will create an extra unnecessary navigation and could
   // lead to problems
-  if (isBrowser && router.currentRoute.value === START_LOCATION_NORMALIZED) {
+  if (
+    isBrowser &&
+    // @ts-ignore: used for the initial navigation client side to avoid pushing
+    // multiple times when the router is used in multiple apps
+    !router._started &&
+    router.currentRoute.value === START_LOCATION_NORMALIZED
+  ) {
+    // @ts-ignore: see above
+    router._started = true
     router.push(router.history.location.fullPath).catch(err => {
-      if (__DEV__)
-        console.error('Unhandled error when starting the router', err)
+      if (__DEV__) warn('Unexpected error when starting the router:', err)
     })
   }
 

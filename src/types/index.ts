@@ -3,7 +3,7 @@ import { PathParserOptions } from '../matcher'
 import {
   Ref,
   ComputedRef,
-  ComponentOptions,
+  Component,
   ComponentPublicInstance,
 } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
@@ -25,14 +25,12 @@ export type VueUseOptions<T> = {
 export type TODO = any
 
 export type RouteParamValue = string
-// TODO: should we allow more values like numbers and normalize them to strings?
-// type RouteParamValueRaw = RouteParamValue | number
+export type RouteParamValueRaw = RouteParamValue | number
 export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
-export type RouteParamsRaw = RouteParams
-// export type RouteParamsRaw = Record<
-//   string,
-//   RouteParamValueRaw | RouteParamValueRaw[]
-// >
+export type RouteParamsRaw = Record<
+  string,
+  RouteParamValueRaw | RouteParamValueRaw[]
+>
 
 export interface RouteQueryAndHash {
   query?: LocationQueryRaw
@@ -42,13 +40,22 @@ export interface LocationAsPath {
   path: string
 }
 
-export interface LocationAsName {
+export interface LocationAsNameRaw {
   name: RouteRecordName
   params?: RouteParamsRaw
 }
 
-export interface LocationAsRelative {
+export interface LocationAsName {
+  name: RouteRecordName
+  params?: RouteParams
+}
+
+export interface LocationAsRelativeRaw {
   params?: RouteParamsRaw
+}
+
+export interface LocationAsRelative {
+  params?: RouteParams
 }
 
 export interface RouteLocationOptions {
@@ -72,8 +79,8 @@ export interface RouteLocationOptions {
 export type RouteLocationRaw =
   | string
   | (RouteQueryAndHash & LocationAsPath & RouteLocationOptions)
-  | (RouteQueryAndHash & LocationAsName & RouteLocationOptions)
-  | (RouteQueryAndHash & LocationAsRelative & RouteLocationOptions)
+  | (RouteQueryAndHash & LocationAsNameRaw & RouteLocationOptions)
+  | (RouteQueryAndHash & LocationAsRelativeRaw & RouteLocationOptions)
 
 export interface RouteLocationMatched extends RouteRecordNormalized {
   // components cannot be Lazy<RouteComponent>
@@ -133,10 +140,18 @@ export interface RouteLocationNormalized extends _RouteLocationBase {
   matched: RouteRecordNormalized[] // non-enumerable
 }
 
-export type RouteComponent = ComponentOptions
+export type RouteComponent = Component
 export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
 
 export type RouteRecordName = string | symbol
+
+/**
+ * @internal
+ */
+export type _RouteRecordProps =
+  | boolean
+  | Record<string, any>
+  | ((to: RouteLocationNormalized) => Record<string, any>)
 
 // TODO: could this be moved to matcher?
 /**
@@ -149,6 +164,16 @@ export interface _RouteRecordBase extends PathParserOptions {
    */
   path: string
   /**
+   * Where to redirect if the route is directly matched. The redirection happens
+   * before any navigation guard and triggers a new navigation with the new
+   * target location.
+   */
+  redirect?: RouteRecordRedirectOption
+  /**
+   * Array of nested routes.
+   */
+  children?: RouteRecordRaw[]
+  /**
    * Aliases for the record. Allows defining extra paths that will behave like a
    * copy of the record. Allows having paths shorthands like `/users/:id` and
    * `/u/:id`. All `alias` and `path` values must share the same params.
@@ -158,13 +183,6 @@ export interface _RouteRecordBase extends PathParserOptions {
    * Name for the route record.
    */
   name?: RouteRecordName
-  /**
-   * Allow passing down params as props to the component rendered by `router-view`.
-   */
-  props?:
-    | boolean
-    | Record<string, any>
-    | ((to: RouteLocationNormalized) => Record<string, any>)
   /**
    * Before Enter guard specific to this record. Note `beforeEnter` has no
    * effect if the record has a `redirect` property.
@@ -181,27 +199,50 @@ export interface _RouteRecordBase extends PathParserOptions {
 export type RouteRecordRedirectOption =
   | RouteLocationRaw
   | ((to: RouteLocation) => RouteLocationRaw)
-export interface RouteRecordRedirectRaw extends _RouteRecordBase {
-  redirect: RouteRecordRedirectOption
-  beforeEnter?: never
-  component?: never
-  components?: never
-}
 
 export interface RouteRecordSingleView extends _RouteRecordBase {
+  /**
+   * Component to display when the URL matches this route.
+   */
   component: RawRouteComponent
-  children?: RouteRecordRaw[]
+  /**
+   * Allow passing down params as props to the component rendered by `router-view`.
+   */
+  props?: _RouteRecordProps
 }
 
 export interface RouteRecordMultipleViews extends _RouteRecordBase {
+  /**
+   * Components to display when the URL matches this route. Allow using named views.
+   */
   components: Record<string, RawRouteComponent>
-  children?: RouteRecordRaw[]
+  /**
+   * Allow passing down params as props to the component rendered by
+   * `router-view`. Should be an object with the same keys as `components` or a
+   * boolean to be applied to every component.
+   */
+  props?: Record<string, _RouteRecordProps> | boolean
+}
+
+export interface RouteRecordRedirect extends _RouteRecordBase {
+  /**
+   * @inheritdoc
+   */
+  redirect: RouteRecordRedirectOption
+  component?: never
+  components?: never
+  children?: never
+}
+
+export interface RouteRecordRedirectWithChildren extends _RouteRecordBase {
+  component?: never
+  children: Exclude<_RouteRecordBase['children'], undefined>
 }
 
 export type RouteRecordRaw =
   | RouteRecordSingleView
   | RouteRecordMultipleViews
-  | RouteRecordRedirectRaw
+  | RouteRecordRedirect
 
 export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = {
   path: '/',
@@ -235,7 +276,7 @@ export interface MatcherLocation
     'name' | 'path' | 'params' | 'matched' | 'meta'
   > {}
 
-export interface NavigationGuardCallback {
+export interface NavigationGuardNext {
   (): void
   (error: Error): void
   (location: RouteLocationRaw): void
@@ -243,14 +284,14 @@ export interface NavigationGuardCallback {
   (cb: NavigationGuardNextCallback): void
 }
 
-export type NavigationGuardNextCallback = (vm: ComponentPublicInstance) => void
+export type NavigationGuardNextCallback = (vm: ComponentPublicInstance) => any
 
 export interface NavigationGuard {
   (
     // TODO: we could maybe add extra information like replace: true/false
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
-    next: NavigationGuardCallback
+    next: NavigationGuardNext
   ): any
 }
 
@@ -259,7 +300,7 @@ export interface NavigationGuardWithThis<T> {
     this: T,
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
-    next: NavigationGuardCallback
+    next: NavigationGuardNext
   ): any
 }
 

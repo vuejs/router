@@ -17,7 +17,7 @@ describe('normalizeRouteRecord', () => {
       meta: {},
       name: undefined,
       path: '/home',
-      props: false,
+      props: { default: false },
     })
   })
 
@@ -41,7 +41,7 @@ describe('normalizeRouteRecord', () => {
       meta: { foo: true },
       name: 'name',
       path: '/home',
-      props: false,
+      props: { default: false },
     })
   })
 
@@ -53,7 +53,7 @@ describe('normalizeRouteRecord', () => {
       name: 'name',
     })
 
-    expect(record).toEqual({
+    expect(record).toMatchObject({
       aliasOf: undefined,
       components: {},
       meta: { foo: true },
@@ -83,7 +83,7 @@ describe('normalizeRouteRecord', () => {
       meta: { foo: true },
       name: 'name',
       path: '/home',
-      props: false,
+      props: { one: false },
     })
   })
 })

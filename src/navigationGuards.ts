@@ -1,13 +1,14 @@
 import {
   NavigationGuard,
   RouteLocationNormalized,
-  NavigationGuardCallback,
+  NavigationGuardNext,
   RouteLocationRaw,
   RouteLocationNormalizedLoaded,
   NavigationGuardNextCallback,
   isRouteLocation,
   Lazy,
   RouteComponent,
+  RawRouteComponent,
 } from './types'
 
 import {
@@ -16,7 +17,7 @@ import {
   NavigationFailure,
   NavigationRedirectError,
 } from './errors'
-import { ComponentPublicInstance } from 'vue'
+import { ComponentPublicInstance, ComponentOptions } from 'vue'
 import { inject, getCurrentInstance, warn } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
@@ -94,7 +95,7 @@ export function guardToPromiseFn(
 ): () => Promise<void> {
   return () =>
     new Promise((resolve, reject) => {
-      const next: NavigationGuardCallback = (
+      const next: NavigationGuardNext = (
         valid?: boolean | RouteLocationRaw | NavigationGuardNextCallback | Error
       ) => {
         if (valid === false)
@@ -127,10 +128,30 @@ export function guardToPromiseFn(
       }
 
       // wrapping with Promise.resolve allows it to work with both async and sync guards
-      Promise.resolve(guard.call(instance, to, from, next)).catch(err =>
-        reject(err)
-      )
+      Promise.resolve(
+        guard.call(
+          instance,
+          to,
+          from,
+          __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
+        )
+      ).catch(err => reject(err))
     })
+}
+
+function canOnlyBeCalledOnce(
+  next: NavigationGuardNext,
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized
+): NavigationGuardNext {
+  let called = 0
+  return function () {
+    if (called++ === 1)
+      warn(
+        `The "next" callback was called more than once in one navigation guard when going from "${from.fullPath}" to "${to.fullPath}". It should be called exactly one time in each navigation guard. This will fail in production.`
+      )
+    if (called === 1) next.apply(null, arguments as any)
+  }
 }
 
 type GuardType = 'beforeRouteEnter' | 'beforeRouteUpdate' | 'beforeRouteLeave'
@@ -145,12 +166,38 @@ export function extractComponentsGuards(
 
   for (const record of matched) {
     for (const name in record.components) {
-      const rawComponent = record.components[name]
-      if (typeof rawComponent === 'function') {
-        // start requesting the chunk already
-        const componentPromise = (rawComponent as Lazy<RouteComponent>)().catch(
-          () => null
+      let rawComponent = record.components[name]
+      // warn if user wrote import('/component.vue') instead of () => import('./component.vue')
+      if (__DEV__ && 'then' in rawComponent) {
+        warn(
+          `Component "${name}" in record with path "${record.path}" is a Promise instead of a function that returns a Promise. Did you write "import('./MyPage.vue')" instead of "() => import('./MyPage.vue')"? This will break in production if not fixed.`
         )
+        let promise = rawComponent
+        rawComponent = () => promise
+      }
+
+      if (isRouteComponent(rawComponent)) {
+        // __vccOpts is added by vue-class-component and contain the regular options
+        let options: ComponentOptions =
+          (rawComponent as any).__vccOpts || rawComponent
+        const guard = options[guardType]
+        guard &&
+          guards.push(guardToPromiseFn(guard, to, from, record.instances[name]))
+      } else {
+        // start requesting the chunk already
+        let componentPromise: Promise<RouteComponent | null> = (rawComponent as Lazy<
+          RouteComponent
+        >)()
+
+        if (__DEV__ && !('catch' in componentPromise)) {
+          warn(
+            `Component "${name}" in record with path "${record.path}" is a function that does not return a Promise. If you were passing a functional component, make sure to add a "displayName" to the component. This will break in production if not fixed.`
+          )
+          componentPromise = Promise.resolve(componentPromise as RouteComponent)
+        } else {
+          componentPromise = componentPromise.catch(() => null)
+        }
+
         guards.push(() =>
           componentPromise.then(resolved => {
             if (!resolved)
@@ -167,20 +214,29 @@ export function extractComponentsGuards(
             // @ts-ignore: the options types are not propagated to Component
             const guard: NavigationGuard = resolvedComponent[guardType]
             return (
-              // @ts-ignore: the guards matched the instance type
               guard &&
               guardToPromiseFn(guard, to, from, record.instances[name])()
             )
           })
         )
-      } else {
-        const guard = rawComponent[guardType]
-        guard &&
-          // @ts-ignore: the guards matched the instance type
-          guards.push(guardToPromiseFn(guard, to, from, record.instances[name]))
       }
     }
   }
 
   return guards
+}
+
+/**
+ * Allows differentiating lazy components from functional components and vue-class-component
+ * @param component
+ */
+function isRouteComponent(
+  component: RawRouteComponent
+): component is RouteComponent {
+  return (
+    typeof component === 'object' ||
+    'displayName' in component ||
+    'props' in component ||
+    '__vccOpts' in component
+  )
 }

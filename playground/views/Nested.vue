@@ -1,7 +1,7 @@
 <template>
   <div>
     <p>Nested level {{ level }}</p>
-    <ul v-if="level === 1">
+    <ul v-if="level === 1 && $route.name === 'Nested'">
       <li>
         <router-link to="/nested/nested">/nested/nested</router-link>
       </li>

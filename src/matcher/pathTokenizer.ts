@@ -38,12 +38,18 @@ const ROOT_TOKEN: Token = {
 }
 
 const VALID_PARAM_RE = /[a-zA-Z0-9_]/
+// After some profiling, the cache seems to be unnecessary because tokenizePath
+// (the slowest part of adding a route) is very fast
+
+// const tokenCache = new Map<string, Token[][]>()
 
 export function tokenizePath(path: string): Array<Token[]> {
   if (!path) return [[]]
   if (path === '/') return [[ROOT_TOKEN]]
   // remove the leading slash
   if (path[0] !== '/') throw new Error('A non-empty path must start with "/"')
+
+  // if (tokenCache.has(path)) return tokenCache.get(path)!
 
   function crash(message: string) {
     throw new Error(`ERR (${state})/"${buffer}": ${message}`)
@@ -177,6 +183,8 @@ export function tokenizePath(path: string): Array<Token[]> {
 
   consumeBuffer()
   finalizeSegment()
+
+  // tokenCache.set(path, tokens)
 
   return tokens
 }

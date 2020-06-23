@@ -227,6 +227,15 @@ describe('stripBase', () => {
     expect(stripBase('/thing', '')).toBe('/thing')
   })
 
+  it('is case insensitive', () => {
+    expect(stripBase('/Base/foo', '/base')).toBe('/foo')
+    expect(stripBase('/Basé/foo', '/base')).toBe('/Basé/foo')
+    expect(stripBase('/Basé/foo', '/basé')).toBe('/foo')
+    expect(stripBase('/base/foo', '/Base')).toBe('/foo')
+    expect(stripBase('/base/foo', '/Basé')).toBe('/base/foo')
+    expect(stripBase('/basé/foo', '/Basé')).toBe('/foo')
+  })
+
   it('returns the pathname without the base', () => {
     expect(stripBase('/base', '/base')).toBe('/')
     expect(stripBase('/base/', '/base')).toBe('/')

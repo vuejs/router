@@ -11,6 +11,23 @@ const Home: RouteComponent = {
   `,
 }
 
+// override existing style on dev with shorter times
+if (!__CI__) {
+  const transitionDuration = '0.5s'
+  const styleEl = document.createElement('style')
+  styleEl.innerHTML = `
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity ${transitionDuration} ease;
+}
+.child-view {
+  position: absolute;
+  transition: all ${transitionDuration} cubic-bezier(0.55, 0, 0.1, 1);
+}
+`
+  document.head.append(styleEl)
+}
+
 const Parent: RouteComponent = {
   data() {
     return {
@@ -72,6 +89,7 @@ const app = createApp({
   template: `
     <div id="app">
       <h1>Transitions</h1>
+      <pre>CI: ${__CI__}</pre>
       <ul>
         <li><router-link to="/">/</router-link></li>
         <li><router-link to="/parent">/parent</router-link></li>
@@ -88,4 +106,5 @@ const app = createApp({
 })
 app.use(router)
 
-window.vm = app.mount('#app')
+// wait to avoid initial transition
+router.isReady().then(() => (window.vm = app.mount('#app')))

@@ -3,7 +3,10 @@
  */
 import { RouterView } from '../src/RouterView'
 import { components, RouteLocationNormalizedLoose } from './utils'
-import { START_LOCATION_NORMALIZED } from '../src/types'
+import {
+  START_LOCATION_NORMALIZED,
+  RouteLocationNormalized,
+} from '../src/types'
 import { markRaw } from 'vue'
 import { mount, createMockedRoute } from './mount'
 import { mockWarn } from 'jest-mock-warn'
@@ -21,6 +24,8 @@ function createRoutes<T extends Record<string, RouteLocationNormalizedLoose>>(
   return nonReactiveRoutes
 }
 
+const props = { default: false }
+
 const routes = createRoutes({
   root: {
     fullPath: '/',
@@ -31,7 +36,12 @@ const routes = createRoutes({
     hash: '',
     meta: {},
     matched: [
-      { components: { default: components.Home }, instances: {}, path: '/' },
+      {
+        components: { default: components.Home },
+        instances: {},
+        path: '/',
+        props,
+      },
     ],
   },
   foo: {
@@ -43,7 +53,12 @@ const routes = createRoutes({
     hash: '',
     meta: {},
     matched: [
-      { components: { default: components.Foo }, instances: {}, path: '/foo' },
+      {
+        components: { default: components.Foo },
+        instances: {},
+        path: '/foo',
+        props,
+      },
     ],
   },
   nested: {
@@ -55,8 +70,18 @@ const routes = createRoutes({
     hash: '',
     meta: {},
     matched: [
-      { components: { default: components.Nested }, instances: {}, path: '/' },
-      { components: { default: components.Foo }, instances: {}, path: 'a' },
+      {
+        components: { default: components.Nested },
+        instances: {},
+        path: '/',
+        props,
+      },
+      {
+        components: { default: components.Foo },
+        instances: {},
+        path: 'a',
+        props,
+      },
     ],
   },
   nestedNested: {
@@ -68,9 +93,24 @@ const routes = createRoutes({
     hash: '',
     meta: {},
     matched: [
-      { components: { default: components.Nested }, instances: {}, path: '/' },
-      { components: { default: components.Nested }, instances: {}, path: 'a' },
-      { components: { default: components.Foo }, instances: {}, path: 'b' },
+      {
+        components: { default: components.Nested },
+        instances: {},
+        path: '/',
+        props,
+      },
+      {
+        components: { default: components.Nested },
+        instances: {},
+        path: 'a',
+        props,
+      },
+      {
+        components: { default: components.Foo },
+        instances: {},
+        path: 'b',
+        props,
+      },
     ],
   },
   named: {
@@ -82,7 +122,7 @@ const routes = createRoutes({
     hash: '',
     meta: {},
     matched: [
-      { components: { foo: components.Foo }, instances: {}, path: '/' },
+      { components: { foo: components.Foo }, instances: {}, path: '/', props },
     ],
   },
   withParams: {
@@ -99,7 +139,7 @@ const routes = createRoutes({
 
         instances: {},
         path: '/users/:id',
-        props: true,
+        props: { default: true },
       },
     ],
   },
@@ -117,7 +157,7 @@ const routes = createRoutes({
 
         instances: {},
         path: '/props/:id',
-        props: { id: 'foo', other: 'fixed' },
+        props: { default: { id: 'foo', other: 'fixed' } },
       },
     ],
   },
@@ -136,7 +176,12 @@ const routes = createRoutes({
 
         instances: {},
         path: '/props/:id',
-        props: to => ({ id: Number(to.params.id) * 2, other: to.query.q }),
+        props: {
+          default: (to: RouteLocationNormalized) => ({
+            id: Number(to.params.id) * 2,
+            other: to.query.q,
+          }),
+        },
       },
     ],
   },
@@ -203,6 +248,7 @@ describe('RouterView', () => {
           components: { default: components.User },
           instances: {},
           path: '/users/:id',
+          props,
         },
       ],
     }

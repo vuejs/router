@@ -1,4 +1,5 @@
 import { Token, TokenType } from './pathTokenizer'
+import { assign } from '../utils'
 
 export type PathParams = Record<string, string | string[]>
 
@@ -108,10 +109,7 @@ export function tokensToParser(
   segments: Array<Token[]>,
   extraOptions?: _PathParserOptions
 ): PathParser {
-  const options = {
-    ...BASE_PATH_PARSER_OPTIONS,
-    ...extraOptions,
-  }
+  const options = assign({}, BASE_PATH_PARSER_OPTIONS, extraOptions)
 
   // the amount of scores is the same as the length of segments except for the root segment "/"
   let score: Array<number[]> = []

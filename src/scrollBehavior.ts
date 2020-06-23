@@ -1,35 +1,49 @@
-import { RouteLocationNormalized, RouteLocationNormalizedLoaded } from './types'
-import { warn } from 'vue'
+import {
+  RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+  _RouteLocationBase,
+} from './types'
+import { warn } from './warning'
 
+// we use types instead of interfaces to make it work with HistoryStateValue type
+
+/**
+ * Scroll position similar to
+ * {@link https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions | `ScrollToOptions`}.
+ * Note that not all browsers support `behavior`.
+ */
 export type ScrollPositionCoordinates = {
-  /**
-   * x position. 0 if not provided
-   */
-  x?: number
-  /**
-   * y position. 0 if not provided
-   */
-  y?: number
+  behavior?: ScrollOptions['behavior']
+  left?: number
+  top?: number
 }
 
-export interface ScrollPositionElement {
+/**
+ * Internal normalized version of {@link ScrollPositionCoordinates} that always
+ * has `left` and `top` coordinates.
+ *
+ * @internal
+ */
+export type _ScrollPositionNormalized = {
+  behavior?: ScrollOptions['behavior']
+  left: number
+  top: number
+}
+
+export interface ScrollPositionElement extends ScrollToOptions {
   /**
-   * A simple _id_ selector with a leading `#` or a valid CSS selector **not starting** with a `#`.
+   * A valid CSS selector. Note some characters must be escaped in id selectors (https://mathiasbynens.be/notes/css-escapes).
    * @example
    * Here are a few examples:
    *
    * - `.title`
    * - `.content:first-child`
    * - `#marker`
-   * - `#marker~with~symbols`
-   * - `#marker.with.dot`: selects `id="marker.with.dot"`, not `class="with dot" id="marker"`
+   * - `#marker\~with\~symbols`
+   * - `#marker.with.dot`: selects `class="with dot" id="marker"`, not `id="marker.with.dot"`
    *
    */
-  selector: string
-  /**
-   * Relative offset to the `selector` in {@link ScrollPositionCoordinates}
-   */
-  offset?: ScrollPositionCoordinates
+  el: string | Element
 }
 
 export type ScrollPosition = ScrollPositionCoordinates | ScrollPositionElement
@@ -44,65 +58,99 @@ export interface ScrollBehaviorHandler<T> {
   ): Awaitable<ScrollPosition | false | void>
 }
 
-/**
- * `id`s can accept pretty much any characters, including CSS combinators like >
- * or ~. It's still possible to retrieve elements using
- * `document.getElementById('~')` but it needs to be escaped when using
- * `document.querySelector('#\\~')` for it to be valid. The only requirements
- * for `id`s are them to be unique on the page and to not be empty (`id=""`).
- * Because of that, when passing an `id` selector, it shouldn't have any other
- * selector attached to it (like a class or an attribute) because it wouldn't
- * have any effect anyway. We are therefore considering any selector starting
- * with a `#` to be an `id` selector so we can directly use `getElementById`
- * instead of `querySelector`, allowing users to write simpler selectors like:
- * `#1-thing` or `#with~symbols` without having to manually escape them to valid
- * CSS selectors: `#\31 -thing` and `#with\\~symbols`.
- *
- * - More information about  the topic can be found at
- *   https://mathiasbynens.be/notes/html5-id-class.
- * - Practical example: https://mathiasbynens.be/demo/html5-id
- */
-
-const startsWithHashRE = /^#/
-
 function getElementPosition(
   el: Element,
   offset: ScrollPositionCoordinates
-): Required<ScrollPositionCoordinates> {
+): _ScrollPositionNormalized {
   const docRect = document.documentElement.getBoundingClientRect()
   const elRect = el.getBoundingClientRect()
 
   return {
-    x: elRect.left - docRect.left - (offset.x || 0),
-    y: elRect.top - docRect.top - (offset.y || 0),
+    behavior: offset.behavior,
+    left: elRect.left - docRect.left - (offset.left || 0),
+    top: elRect.top - docRect.top - (offset.top || 0),
   }
 }
 
 export const computeScrollPosition = () =>
   ({
-    x: window.pageXOffset,
-    y: window.pageYOffset,
-  } as Required<ScrollPositionCoordinates>)
+    left: window.pageXOffset,
+    top: window.pageYOffset,
+  } as _ScrollPositionNormalized)
 
 export function scrollToPosition(position: ScrollPosition): void {
-  let normalizedPosition: ScrollPositionCoordinates
+  let scrollToOptions: ScrollPositionCoordinates
 
-  if ('selector' in position) {
-    const el = startsWithHashRE.test(position.selector)
-      ? document.getElementById(position.selector.slice(1))
-      : document.querySelector(position.selector)
+  if ('el' in position) {
+    let positionEl = position.el
+    const isIdSelector =
+      typeof positionEl === 'string' && positionEl.startsWith('#')
+    /**
+     * `id`s can accept pretty much any characters, including CSS combinators
+     * like `>` or `~`. It's still possible to retrieve elements using
+     * `document.getElementById('~')` but it needs to be escaped when using
+     * `document.querySelector('#\\~')` for it to be valid. The only
+     * requirements for `id`s are them to be unique on the page and to not be
+     * empty (`id=""`). Because of that, when passing an id selector, it should
+     * be properly escaped for it to work with `querySelector`. We could check
+     * for the id selector to be simple (no CSS combinators `+ >~`) but that
+     * would make things inconsistent since they are valid characters for an
+     * `id` but would need to be escaped when using `querySelector`, breaking
+     * their usage and ending up in no selector returned. Selectors need to be
+     * escaped:
+     *
+     * - `#1-thing` becomes `#\31 -thing`
+     * - `#with~symbols` becomes `#with\\~symbols`
+     *
+     * - More information about  the topic can be found at
+     *   https://mathiasbynens.be/notes/html5-id-class.
+     * - Practical example: https://mathiasbynens.be/demo/html5-id
+     */
+    if (__DEV__ && typeof position.el === 'string') {
+      if (!isIdSelector || !document.getElementById(position.el.slice(1))) {
+        try {
+          let foundEl = document.querySelector(position.el)
+          if (isIdSelector && foundEl) {
+            warn(
+              `The selector "${position.el}" should be passed as "el: document.querySelector('${position.el}')" because it starts with "#".`
+            )
+            // return to avoid other warnings
+            return
+          }
+        } catch {
+          warn(
+            `The selector "${position.el}" is invalid. If you are using an id selector, make sure to escape it. You can find more information about escaping characters in selectors at https://mathiasbynens.be/notes/css-escapes or use CSS.escape (https://developer.mozilla.org/en-US/docs/Web/API/CSS/escape).`
+          )
+          // return to avoid other warnings
+          return
+        }
+      }
+    }
+
+    const el =
+      typeof positionEl === 'string'
+        ? isIdSelector
+          ? document.getElementById(positionEl.slice(1))
+          : document.querySelector(positionEl)
+        : positionEl
 
     if (!el) {
-      __DEV__ &&
-        warn(`Couldn't find element with selector "${position.selector}"`)
+      __DEV__ && warn(`Couldn't find element using selector "${position.el}"`)
       return
     }
-    normalizedPosition = getElementPosition(el, position.offset || {})
+    scrollToOptions = getElementPosition(el, position)
   } else {
-    normalizedPosition = position
+    scrollToOptions = position
   }
 
-  window.scrollTo(normalizedPosition.x || 0, normalizedPosition.y || 0)
+  if ('scrollBehavior' in document.documentElement.style)
+    window.scrollTo(scrollToOptions)
+  else {
+    window.scrollTo(
+      scrollToOptions.left != null ? scrollToOptions.left : window.pageXOffset,
+      scrollToOptions.top != null ? scrollToOptions.top : window.pageYOffset
+    )
+  }
 }
 
 export function getScrollKey(path: string, delta: number): string {
@@ -110,20 +158,20 @@ export function getScrollKey(path: string, delta: number): string {
   return position + path
 }
 
-export const scrollPositions = new Map<
-  string,
-  Required<ScrollPositionCoordinates>
->()
+export const scrollPositions = new Map<string, _ScrollPositionNormalized>()
 
 export function saveScrollPosition(
   key: string,
-  scrollPosition: Required<ScrollPositionCoordinates>
+  scrollPosition: _ScrollPositionNormalized
 ) {
   scrollPositions.set(key, scrollPosition)
 }
 
 export function getSavedScrollPosition(key: string) {
-  return scrollPositions.get(key)
+  const scroll = scrollPositions.get(key)
+  // consume it so it's not used again
+  scrollPositions.delete(key)
+  return scroll
 }
 
 // TODO: RFC about how to save scroll position
@@ -131,9 +179,11 @@ export function getSavedScrollPosition(key: string) {
  * ScrollBehavior instance used by the router to compute and restore the scroll
  * position when navigating.
  */
-// export interface ScrollHandler<T> {
-//   compute(): T
-//   scroll(position: T): void
+// export interface ScrollHandler<ScrollPositionEntry extends HistoryStateValue, ScrollPosition extends ScrollPositionEntry> {
+//   // returns a scroll position that can be saved in history
+//   compute(): ScrollPositionEntry
+//   // can take an extended ScrollPositionEntry
+//   scroll(position: ScrollPosition): void
 // }
 
 // export const scrollHandler: ScrollHandler<ScrollPosition> = {

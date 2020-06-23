@@ -105,15 +105,17 @@ export function stringifyURL(
 }
 
 /**
- * Strips off the base from the beginning of a location.pathname
+ * Strips off the base from the beginning of a location.pathname in a non
+ * case-sensitive way.
  *
  * @param pathname - location.pathname
  * @param base - base to strip off
  */
 export function stripBase(pathname: string, base: string): string {
-  // no base or base is not found at the begining
-  if (!base || pathname.indexOf(base)) return pathname
-  return pathname.replace(base, '') || '/'
+  // no base or base is not found at the beginning
+  if (!base || pathname.toLowerCase().indexOf(base.toLowerCase()))
+    return pathname
+  return pathname.slice(base.length) || '/'
 }
 
 /**

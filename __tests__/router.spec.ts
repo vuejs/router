@@ -80,6 +80,8 @@ async function newRouter(
 }
 
 describe('Router', () => {
+  mockWarn()
+
   beforeAll(() => {
     createDom()
   })
@@ -176,6 +178,23 @@ describe('Router', () => {
     expect(router.currentRoute.value).not.toBe(START_LOCATION_NORMALIZED)
   })
 
+  it('can await router.go', async () => {
+    const { router } = await newRouter()
+    await router.push('/foo')
+    let currentRoute = router.currentRoute.value
+    const [p1, r1] = fakePromise()
+    router.beforeEach(async (to, from, next) => {
+      await p1
+      next()
+    })
+    let p = router.go(-1)
+    expect(router.currentRoute.value).toBe(currentRoute)
+    r1()
+    // resolves to undefined as a working navigation
+    await expect(p).resolves.toBe(undefined)
+    expect(router.currentRoute.value).not.toBe(currentRoute)
+  })
+
   it('can pass replace option to push', async () => {
     const { router, history } = await newRouter()
     jest.spyOn(history, 'replace')
@@ -235,6 +254,13 @@ describe('Router', () => {
     await router.push('/me-neither')
     expect(router.currentRoute.value).toMatchObject({ matched: [] })
     expect(spy).toHaveBeenCalledTimes(1)
+    expect('No match found').toHaveBeenWarnedTimes(2)
+  })
+
+  it('casts number params to string', async () => {
+    const { router } = await newRouter()
+    await router.push({ name: 'Param', params: { p: 0 } })
+    expect(router.currentRoute.value).toMatchObject({ params: { p: '0' } })
   })
 
   it('navigates to same route record but different query', async () => {
@@ -299,9 +325,41 @@ describe('Router', () => {
     expect(() => router.resolve({ name: 'r2', params: {} })).not.toThrow()
   })
 
-  describe('Warnings', () => {
-    mockWarn()
+  it('can redirect to a star route when encoding the param', () => {
+    const history = createMemoryHistory()
+    const router = createRouter({
+      history,
+      routes: [
+        { name: 'notfound', path: '/:path(.*)+', component: components.Home },
+      ],
+    })
+    let path = 'not/found%2Fha'
+    let href = '/' + path
+    expect(router.resolve(href)).toMatchObject({
+      name: 'notfound',
+      fullPath: href,
+      path: href,
+      href: href,
+    })
+    expect(
+      router.resolve({
+        name: 'notfound',
+        params: {
+          path: path
+            .split('/')
+            // we need to provide the value unencoded
+            .map(segment => segment.replace('%2F', '/')),
+        },
+      })
+    ).toMatchObject({
+      name: 'notfound',
+      fullPath: href,
+      path: href,
+      href: href,
+    })
+  })
 
+  describe('Warnings', () => {
     it.skip('avoid infinite redirection loops', async () => {
       const history = createMemoryHistory()
       let calls = 0
@@ -309,7 +367,6 @@ describe('Router', () => {
         if (++calls > 1000) throw new Error('1000 calls')
         next(to.path)
       })
-      console.log('dev', __DEV__)
       const { router } = await newRouter({
         history,
         routes: [{ path: '/foo', component: components.Home, beforeEnter }],
@@ -607,6 +664,30 @@ describe('Router', () => {
         path: '/inc-query-hash',
       })
     })
+
+    it('allows a redirect with children', async () => {
+      const history = createMemoryHistory()
+      const router = createRouter({
+        history,
+        routes: [
+          {
+            path: '/parent',
+            redirect: { name: 'child' },
+            component: components.Home,
+            name: 'parent',
+            children: [{ name: 'child', path: '', component: components.Home }],
+          },
+        ],
+      })
+      await expect(router.push({ name: 'parent' })).resolves.toEqual(undefined)
+      const loc = router.currentRoute.value
+      expect(loc.name).toBe('child')
+      expect(loc.path).toBe('/parent')
+      expect(loc.redirectedFrom).toMatchObject({
+        name: 'parent',
+        path: '/parent',
+      })
+    })
   })
 
   describe('base', () => {
@@ -664,6 +745,7 @@ describe('Router', () => {
         name: undefined,
         matched: [],
       })
+      expect('No match found').toHaveBeenWarned()
       router.addRoute({
         path: '/new-route',
         component: components.Foo,
@@ -693,6 +775,7 @@ describe('Router', () => {
         name: undefined,
         matched: [],
       })
+      expect('No match found').toHaveBeenWarned()
       let removeRoute: (() => void) | undefined
       router.addRoute({
         path: '/dynamic',
@@ -760,6 +843,7 @@ describe('Router', () => {
       })
       // navigate again
       await router.replace('/new/child')
+      expect('No match found').toHaveBeenWarned()
       expect(router.currentRoute.value).toMatchObject({
         name: 'new-child',
       })
@@ -801,6 +885,7 @@ describe('Router', () => {
         name: undefined,
         matched: [],
       })
+      expect('No match found').toHaveBeenWarned()
     })
 
     it('can reroute when removing route', async () => {

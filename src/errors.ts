@@ -4,13 +4,17 @@ import {
   RouteLocationRaw,
   RouteLocationNormalized,
 } from './types'
+import { assign } from './utils'
 
+/**
+ * order is important to make it backwards compatible with v3
+ */
 export const enum ErrorTypes {
-  MATCHER_NOT_FOUND,
-  NAVIGATION_GUARD_REDIRECT,
-  NAVIGATION_ABORTED,
-  NAVIGATION_CANCELLED,
-  NAVIGATION_DUPLICATED,
+  MATCHER_NOT_FOUND = 0,
+  NAVIGATION_GUARD_REDIRECT = 1,
+  NAVIGATION_ABORTED = 2,
+  NAVIGATION_CANCELLED = 3,
+  NAVIGATION_DUPLICATED = 4,
 }
 
 interface RouterErrorBase extends Error {
@@ -24,8 +28,8 @@ export interface MatcherError extends RouterErrorBase {
 }
 
 export enum NavigationFailureType {
-  cancelled = ErrorTypes.NAVIGATION_CANCELLED,
   aborted = ErrorTypes.NAVIGATION_ABORTED,
+  cancelled = ErrorTypes.NAVIGATION_CANCELLED,
   duplicated = ErrorTypes.NAVIGATION_DUPLICATED,
 }
 export interface NavigationFailure extends RouterErrorBase {
@@ -58,16 +62,16 @@ const ErrorTypeMessages = {
   }: NavigationRedirectError) {
     return `Redirected from "${from.fullPath}" to "${stringifyRoute(
       to
-    )}" via a navigation guard`
+    )}" via a navigation guard.`
   },
   [ErrorTypes.NAVIGATION_ABORTED]({ from, to }: NavigationFailure) {
-    return `Navigation aborted from "${from.fullPath}" to "${to.fullPath}" via a navigation guard`
+    return `Navigation aborted from "${from.fullPath}" to "${to.fullPath}" via a navigation guard.`
   },
   [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationFailure) {
-    return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new \`push\` or \`replace\``
+    return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new navigation.`
   },
   [ErrorTypes.NAVIGATION_DUPLICATED]({ from, to }: NavigationFailure) {
-    return `Avoided redundant navigation to current location: "${from.fullPath}"`
+    return `Avoided redundant navigation to current location: "${from.fullPath}".`
   },
 }
 
@@ -79,13 +83,13 @@ export function createRouterError<E extends RouterError>(
   params: Omit<E, 'type' | keyof Error>
 ): E {
   if (__DEV__ || !__BROWSER__) {
-    return Object.assign(
+    return assign(
       new Error(ErrorTypeMessages[type](params as any)),
       { type },
       params
     ) as E
   } else {
-    return Object.assign(new Error(), { type }, params) as E
+    return assign(new Error(), { type }, params) as E
   }
 }
 

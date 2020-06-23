@@ -25,7 +25,7 @@ export const router = createRouter({
     {
       path: '/',
       components: { default: Home, other: component },
-      props: to => ({ waited: to.meta.waitedFor }),
+      props: { default: to => ({ waited: to.meta.waitedFor }) },
     },
     {
       path: '/always-redirect',
@@ -60,18 +60,18 @@ export const router = createRouter({
     {
       path: '/children',
       name: 'WithChildren',
-      component,
+      component: Nested,
       children: [
-        { path: '', alias: 'alias', name: 'default-child', component },
-        { path: 'a', name: 'a-child', component },
+        { path: '', alias: 'alias', name: 'default-child', component: Nested },
+        { path: 'a', name: 'a-child', component: Nested },
         {
           path: 'b',
           name: 'b-child',
-          component,
+          component: Nested,
           children: [
-            { path: '', component },
-            { path: 'a2', component },
-            { path: 'b2', component },
+            { path: '', component: Nested },
+            { path: 'a2', component: Nested },
+            { path: 'b2', component: Nested },
           ],
         },
       ],
@@ -152,7 +152,7 @@ export const router = createRouter({
     } else {
       // TODO: check if parent in common that works with alias
       if (to.matched.every((record, i) => from.matched[i] !== record))
-        return { x: 0, y: 0 }
+        return { left: 0, top: 0 }
     }
     // leave scroll as it is by not returning anything
     // https://github.com/Microsoft/TypeScript/issues/18319

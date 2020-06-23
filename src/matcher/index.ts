@@ -4,17 +4,19 @@ import {
   MatcherLocation,
   isRouteName,
   RouteRecordName,
+  _RouteRecordProps,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
-import { RouteRecordRedirect, RouteRecordNormalized } from './types'
+import { RouteRecordNormalized } from './types'
 import {
   PathParams,
   comparePathParserScore,
   PathParserOptions,
   _PathParserOptions,
 } from './pathParserRanker'
-import { warn } from 'vue'
+import { warn } from '../warning'
+import { assign } from '../utils'
 
 let noop = () => {}
 
@@ -53,6 +55,8 @@ export function createRouterMatcher(
     parent?: RouteRecordMatcher,
     originalRecord?: RouteRecordMatcher
   ) {
+    // used later on to remove by name
+    let isRootAdd = !originalRecord
     let mainNormalizedRecord = normalizeRouteRecord(record)
     // we might be the child of an alias
     mainNormalizedRecord.aliasOf = originalRecord && originalRecord.record
@@ -65,21 +69,22 @@ export function createRouterMatcher(
       const aliases =
         typeof record.alias === 'string' ? [record.alias] : record.alias!
       for (const alias of aliases) {
-        normalizedRecords.push({
-          ...mainNormalizedRecord,
-          // this allows us to hold a copy of the `components` option
-          // so that async components cache is hold on the original record
-          components: originalRecord
-            ? originalRecord.record.components
-            : mainNormalizedRecord.components,
-          path: alias,
-          // we might be the child of an alias
-          aliasOf: originalRecord
-            ? originalRecord.record
-            : mainNormalizedRecord,
-          // the aliases are always of the same kind as the original since they
-          // are defined on the same record
-        } as typeof mainNormalizedRecord)
+        normalizedRecords.push(
+          assign({}, mainNormalizedRecord, {
+            // this allows us to hold a copy of the `components` option
+            // so that async components cache is hold on the original record
+            components: originalRecord
+              ? originalRecord.record.components
+              : mainNormalizedRecord.components,
+            path: alias,
+            // we might be the child of an alias
+            aliasOf: originalRecord
+              ? originalRecord.record
+              : mainNormalizedRecord,
+            // the aliases are always of the same kind as the original since they
+            // are defined on the same record
+          }) as typeof mainNormalizedRecord
+        )
       }
     }
 
@@ -102,17 +107,27 @@ export function createRouterMatcher(
       // create the object before hand so it can be passed to children
       matcher = createRouteRecordMatcher(normalizedRecord, parent, options)
 
+      if (__DEV__ && parent && path[0] === '/')
+        checkMissingParamsInAbsolutePath(matcher, parent)
+
       // if we are an alias we must tell the original record that we exist
       // so we can be removed
       if (originalRecord) {
         originalRecord.alias.push(matcher)
+        if (__DEV__) {
+          checkSameParams(originalRecord, matcher)
+        }
       } else {
         // otherwise, the first record is the original and others are aliases
         originalMatcher = originalMatcher || matcher
         if (originalMatcher !== matcher) originalMatcher.alias.push(matcher)
+
+        // remove the route if named and only for the top record (avoid in nested calls)
+        // this works because the original record is the first one
+        if (isRootAdd && record.name && !isAliasRecord(matcher))
+          removeRoute(record.name)
       }
 
-      // only non redirect records have children
       if ('children' in mainNormalizedRecord) {
         let children = mainNormalizedRecord.children
         for (let i = 0; i < children.length; i++) {
@@ -203,13 +218,14 @@ export function createRouterMatcher(
         })
 
       name = matcher.record.name
-      params = {
-        ...paramsFromLocation(
+      params = assign(
+        // paramsFromLocation is a new object
+        paramsFromLocation(
           currentLocation.params,
           matcher.keys.map(k => k.name)
         ),
-        ...location.params,
-      }
+        location.params
+      )
       // throws if cannot be stringified
       path = matcher.stringify(params)
     } else if ('path' in location) {
@@ -245,7 +261,7 @@ export function createRouterMatcher(
       name = matcher.record.name
       // since we are navigating to the same location, we don't need to pick the
       // params like when `name` is provided
-      params = { ...currentLocation.params, ...location.params }
+      params = assign({}, currentLocation.params, location.params)
       path = matcher.stringify(params)
     }
 
@@ -287,41 +303,54 @@ function paramsFromLocation(
 }
 
 /**
- * Normalizes a RouteRecordRaw. Transforms the `redirect` option into a `beforeEnter`
+ * Normalizes a RouteRecordRaw. Creates a copy
+ *
  * @param record
  * @returns the normalized version
  */
 export function normalizeRouteRecord(
   record: RouteRecordRaw
-): RouteRecordNormalized | RouteRecordRedirect {
-  const commonInitialValues = {
+): RouteRecordNormalized {
+  return {
     path: record.path,
+    redirect: record.redirect,
     name: record.name,
     meta: record.meta || {},
     aliasOf: undefined,
-    components: {},
+    beforeEnter: record.beforeEnter,
+    props: normalizeRecordProps(record),
+    children: record.children || [],
+    instances: {},
+    leaveGuards: [],
+    updateGuards: [],
+    components:
+      'components' in record
+        ? record.components || {}
+        : { default: record.component! },
+  }
+}
+
+/**
+ * Normalize the optional `props` in a record to always be an object similar to
+ * components. Also accept a boolean for components.
+ * @param record
+ */
+function normalizeRecordProps(
+  record: RouteRecordRaw
+): Record<string, _RouteRecordProps> {
+  const propsObject = {} as Record<string, _RouteRecordProps>
+  // props does not exist on redirect records but we can set false directly
+  const props = (record as any).props || false
+  if ('component' in record) {
+    propsObject.default = props
+  } else {
+    // NOTE: we could also allow a function to be applied to every component.
+    // Would need user feedback for use cases
+    for (let name in record.components)
+      propsObject[name] = typeof props === 'boolean' ? props : props[name]
   }
 
-  if ('redirect' in record) {
-    return {
-      ...commonInitialValues,
-      redirect: record.redirect,
-    }
-  } else {
-    return {
-      ...commonInitialValues,
-      beforeEnter: record.beforeEnter,
-      props: record.props || false,
-      children: record.children || [],
-      instances: {},
-      leaveGuards: [],
-      updateGuards: [],
-      components:
-        'components' in record
-          ? record.components
-          : { default: record.component },
-    }
-  }
+  return propsObject
 }
 
 /**
@@ -344,10 +373,7 @@ function isAliasRecord(record: RouteRecordMatcher | undefined): boolean {
  */
 function mergeMetaFields(matched: MatcherLocation['matched']) {
   return matched.reduce(
-    (meta, record) => ({
-      ...meta,
-      ...record.meta,
-    }),
+    (meta, record) => assign(meta, record.meta),
     {} as MatcherLocation['meta']
   )
 }
@@ -360,6 +386,43 @@ function mergeOptions<T>(defaults: T, partialOptions: Partial<T>): T {
   }
 
   return options
+}
+
+type ParamKey = RouteRecordMatcher['keys'][number]
+
+function isSameParam(a: ParamKey, b: ParamKey): boolean {
+  return (
+    a.name === b.name &&
+    a.optional === b.optional &&
+    a.repeatable === b.repeatable
+  )
+}
+
+function checkSameParams(a: RouteRecordMatcher, b: RouteRecordMatcher) {
+  for (let key of a.keys) {
+    if (!b.keys.find(isSameParam.bind(null, key)))
+      return warn(
+        `Alias "${b.record.path}" and the original record: "${a.record.path}" should have the exact same param named "${key.name}"`
+      )
+  }
+  for (let key of b.keys) {
+    if (!a.keys.find(isSameParam.bind(null, key)))
+      return warn(
+        `Alias "${b.record.path}" and the original record: "${a.record.path}" should have the exact same param named "${key.name}"`
+      )
+  }
+}
+
+function checkMissingParamsInAbsolutePath(
+  record: RouteRecordMatcher,
+  parent: RouteRecordMatcher
+) {
+  for (let key of parent.keys) {
+    if (!record.keys.find(isSameParam.bind(null, key)))
+      return warn(
+        `Absolute path "${record.record.path}" should have the exact same param named "${key.name}" as its parent "${parent.record.path}".`
+      )
+  }
 }
 
 export { PathParserOptions, _PathParserOptions }

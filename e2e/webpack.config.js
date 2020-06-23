@@ -75,6 +75,7 @@ const config = (env = {}) => ({
   plugins: [
     new webpack.DefinePlugin({
       __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
+      __CI__: JSON.stringify(process.env.CI || false),
       __BROWSER__: 'true',
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),

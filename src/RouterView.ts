@@ -7,16 +7,23 @@ import {
   computed,
   ref,
   ComponentPublicInstance,
-  Component,
+  VNodeProps,
 } from 'vue'
-import { RouteLocationNormalizedLoaded } from './types'
+import { RouteLocationNormalizedLoaded, RouteLocationNormalized } from './types'
 import {
   matchedRouteKey,
   viewDepthKey,
   routeLocationKey,
 } from './injectionSymbols'
+import { assign } from './utils'
 
-export const RouterView = (defineComponent({
+export interface RouterViewProps {
+  name?: string
+  // allow looser type for user facing api
+  route?: RouteLocationNormalized
+}
+
+export const RouterViewImpl = defineComponent({
   name: 'RouterView',
   props: {
     name: {
@@ -46,11 +53,14 @@ export const RouterView = (defineComponent({
     const propsData = computed(() => {
       // propsData only gets called if ViewComponent.value exists and it depends
       // on matchedRoute.value
-      const { props } = matchedRoute.value!
-      if (!props) return {}
-      if (props === true) return route.value.params
+      const componentProps = matchedRoute.value!.props[props.name]
+      if (!componentProps) return {}
+      // TODO: only add props declared in the component. all if no props
+      if (componentProps === true) return route.value.params
 
-      return typeof props === 'object' ? props : props(route.value)
+      return typeof componentProps === 'object'
+        ? componentProps
+        : componentProps(route.value)
     })
 
     provide(matchedRouteKey, matchedRoute)
@@ -77,14 +87,17 @@ export const RouterView = (defineComponent({
       }
 
       let Component = ViewComponent.value
-      const componentProps: Parameters<typeof h>[1] = {
+      const componentProps: Parameters<typeof h>[1] = assign(
+        {},
         // only compute props if there is a matched record
-        ...(Component && propsData.value),
-        ...attrs,
-        onVnodeMounted,
-        onVnodeUnmounted,
-        ref: viewRef,
-      }
+        Component && propsData.value,
+        attrs,
+        {
+          onVnodeMounted,
+          onVnodeUnmounted,
+          ref: viewRef,
+        }
+      )
 
       // NOTE: we could also not render if there is no route match
       const children =
@@ -97,4 +110,12 @@ export const RouterView = (defineComponent({
         : null
     }
   },
-}) as unknown) as Component
+})
+
+// export the public type for h/tsx inference
+// also to avoid inline import() in generated d.ts files
+export const RouterView = (RouterViewImpl as any) as {
+  new (): {
+    $props: VNodeProps & RouterViewProps
+  }
+}
