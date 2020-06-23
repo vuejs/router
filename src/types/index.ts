@@ -220,9 +220,6 @@ export interface RouteRecordMultipleViews extends _RouteRecordBase {
 }
 
 export interface RouteRecordRedirect extends _RouteRecordBase {
-  /**
-   * @inheritdoc
-   */
   redirect: RouteRecordRedirectOption
   component?: never
   components?: never
