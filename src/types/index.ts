@@ -1,11 +1,6 @@
 import { LocationQuery, LocationQueryRaw } from '../query'
 import { PathParserOptions } from '../matcher'
-import {
-  Ref,
-  ComputedRef,
-  Component,
-  ComponentPublicInstance,
-} from 'vue'
+import { Ref, ComputedRef, Component, ComponentPublicInstance } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
