@@ -43,7 +43,7 @@ const app = createApp({
         <li><router-link to="/foo">/foo</router-link></li>
         <li><router-link to="/bar">/bar</router-link></li>
         <li><router-link :to="{ name: 'encoded' }">/n/é</router-link></li>
-        <li><router-link to="/unicode/é">/unicode/é</router-link></li>
+        <li><router-link to="/unicode/é">/unicode/é (not properly encoded, fails on some browsers)</router-link></li>
         <li>
           <router-link :to="{ name: 'unicode', params: { id: 'é' }}"
             >/unicode/é (correctly encoded)</router-link

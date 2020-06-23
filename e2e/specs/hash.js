@@ -17,7 +17,7 @@ module.exports = {
       .assert.attributeContains('li:nth-child(3) a', 'href', '/hash/#/bar')
       .assert.attributeContains('li:nth-child(4) a', 'href', '/hash/#/n/%C3%A9')
       .assert.attributeContains(
-        'li:nth-child(5) a',
+        'li:nth-child(6) a',
         'href',
         '/hash/#/unicode/%C3%A9'
       )

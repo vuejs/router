@@ -82,6 +82,13 @@ const nwConf = {
       },
     },
 
+    edge_pre_chrome: {
+      desiredCapabilities: {
+        browser: 'Edge',
+        browser_version: '18',
+      },
+    },
+
     android44: {
       desiredCapabilities: {
         device: 'Google Nexus 5',
