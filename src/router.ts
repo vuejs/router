@@ -38,12 +38,22 @@ import {
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
 } from './query'
-import { shallowRef, Ref, nextTick, App } from 'vue'
+import {
+  shallowRef,
+  Ref,
+  nextTick,
+  App,
+  ComputedRef,
+  reactive,
+  unref,
+} from 'vue'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import { parseURL, stringifyURL, isSameRouteLocation } from './location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
-import { applyRouterPlugin } from './install'
 import { warn } from './warning'
+import { RouterLink } from './RouterLink'
+import { RouterView } from './RouterView'
+import { routerKey, routeLocationKey } from './injectionSymbols'
 
 /**
  * Internal type to define an ErrorHandler
@@ -817,6 +827,8 @@ export function createRouter(options: RouterOptions): Router {
     )
   }
 
+  let started: boolean | undefined
+
   const router: Router = {
     currentRoute,
 
@@ -842,7 +854,45 @@ export function createRouter(options: RouterOptions): Router {
 
     history: routerHistory,
     install(app: App) {
-      applyRouterPlugin(app, this)
+      const router = this
+      app.component('RouterLink', RouterLink)
+      app.component('RouterView', RouterView)
+
+      // TODO: add tests
+      app.config.globalProperties.$router = router
+      Object.defineProperty(app.config.globalProperties, '$route', {
+        get: () => unref(currentRoute),
+      })
+
+      // this initial navigation is only necessary on client, on server it doesn't
+      // make sense because it will create an extra unnecessary navigation and could
+      // lead to problems
+      if (
+        isBrowser &&
+        // used for the initial navigation client side to avoid pushing
+        // multiple times when the router is used in multiple apps
+        !started &&
+        currentRoute.value === START_LOCATION_NORMALIZED
+      ) {
+        // see above
+        started = true
+        push(routerHistory.location.fullPath).catch(err => {
+          if (__DEV__) warn('Unexpected error when starting the router:', err)
+        })
+      }
+
+      const reactiveRoute = {} as {
+        [k in keyof RouteLocationNormalizedLoaded]: ComputedRef<
+          RouteLocationNormalizedLoaded[k]
+        >
+      }
+      for (let key in START_LOCATION_NORMALIZED) {
+        // @ts-ignore: the key matches
+        reactiveRoute[key] = computed(() => currentRoute.value[key])
+      }
+
+      app.provide(routerKey, router)
+      app.provide(routeLocationKey, reactive(reactiveRoute))
     },
   }
 
