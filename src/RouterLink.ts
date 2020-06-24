@@ -9,7 +9,7 @@ import {
   VNodeProps,
 } from 'vue'
 import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types'
-import { isSameLocationObject, isSameRouteRecord } from './location'
+import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { assign } from './utils'
@@ -68,7 +68,7 @@ export function useLink(props: UseLinkOptions) {
     () =>
       activeRecordIndex.value > -1 &&
       activeRecordIndex.value === currentRoute.matched.length - 1 &&
-      isSameLocationObject(currentRoute.params, route.value.params)
+      isSameRouteLocationParams(currentRoute.params, route.value.params)
   )
 
   function navigate(e: MouseEvent = {} as MouseEvent): Promise<any> {

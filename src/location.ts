@@ -137,8 +137,8 @@ export function isSameRouteLocation(
     aLastIndex > -1 &&
     aLastIndex === bLastIndex &&
     isSameRouteRecord(a.matched[aLastIndex], b.matched[bLastIndex]) &&
-    isSameLocationObject(a.params, b.params) &&
-    isSameLocationObject(a.query, b.query) &&
+    isSameRouteLocationParams(a.params, b.params) &&
+    isSameRouteLocationParams(a.query, b.query) &&
     a.hash === b.hash
   )
 }
@@ -157,36 +157,36 @@ export function isSameRouteRecord(a: RouteRecord, b: RouteRecord): boolean {
   return (a.aliasOf || a) === (b.aliasOf || b)
 }
 
-export function isSameLocationObject(
+export function isSameRouteLocationParams(
   a: RouteLocationNormalized['query'],
   b: RouteLocationNormalized['query']
 ): boolean
-export function isSameLocationObject(
+export function isSameRouteLocationParams(
   a: RouteLocationNormalized['params'],
   b: RouteLocationNormalized['params']
 ): boolean
-export function isSameLocationObject(
+export function isSameRouteLocationParams(
   a: RouteLocationNormalized['query' | 'params'],
   b: RouteLocationNormalized['query' | 'params']
 ): boolean {
   if (Object.keys(a).length !== Object.keys(b).length) return false
 
   for (let key in a) {
-    if (!isSameLocationObjectValue(a[key], b[key])) return false
+    if (!isSameRouteLocationParamsValue(a[key], b[key])) return false
   }
 
   return true
 }
 
-function isSameLocationObjectValue(
+function isSameRouteLocationParamsValue(
   a: LocationQueryValue | LocationQueryValue[],
   b: LocationQueryValue | LocationQueryValue[]
 ): boolean
-function isSameLocationObjectValue(
+function isSameRouteLocationParamsValue(
   a: RouteParamValue | RouteParamValue[],
   b: RouteParamValue | RouteParamValue[]
 ): boolean
-function isSameLocationObjectValue(
+function isSameRouteLocationParamsValue(
   a:
     | LocationQueryValue
     | LocationQueryValue[]
