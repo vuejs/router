@@ -427,7 +427,7 @@ export function createRouter(options: RouterOptions): Router {
     toLocation.redirectedFrom = redirectedFrom
     let failure: NavigationFailure | void | undefined
 
-    if (!force && isSameRouteLocation(from, targetLocation)) {
+    if (!force && isSameRouteLocation(stringifyQuery, from, targetLocation)) {
       failure = createRouterError<NavigationFailure>(
         ErrorTypes.NAVIGATION_DUPLICATED,
         { to: toLocation, from }

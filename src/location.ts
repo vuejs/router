@@ -1,4 +1,4 @@
-import { LocationQuery, LocationQueryRaw, LocationQueryValue } from './query'
+import { LocationQuery, LocationQueryRaw } from './query'
 import {
   RouteLocation,
   RouteLocationNormalized,
@@ -127,6 +127,7 @@ export function stripBase(pathname: string, base: string): string {
  * @param b second {@link RouteLocation}
  */
 export function isSameRouteLocation(
+  stringifyQuery: (query: LocationQueryRaw) => string,
   a: RouteLocation,
   b: RouteLocation
 ): boolean {
@@ -138,7 +139,7 @@ export function isSameRouteLocation(
     aLastIndex === bLastIndex &&
     isSameRouteRecord(a.matched[aLastIndex], b.matched[bLastIndex]) &&
     isSameRouteLocationParams(a.params, b.params) &&
-    isSameRouteLocationParams(a.query, b.query) &&
+    stringifyQuery(a.query) === stringifyQuery(b.query) &&
     a.hash === b.hash
   )
 }
@@ -158,16 +159,8 @@ export function isSameRouteRecord(a: RouteRecord, b: RouteRecord): boolean {
 }
 
 export function isSameRouteLocationParams(
-  a: RouteLocationNormalized['query'],
-  b: RouteLocationNormalized['query']
-): boolean
-export function isSameRouteLocationParams(
   a: RouteLocationNormalized['params'],
   b: RouteLocationNormalized['params']
-): boolean
-export function isSameRouteLocationParams(
-  a: RouteLocationNormalized['query' | 'params'],
-  b: RouteLocationNormalized['query' | 'params']
 ): boolean {
   if (Object.keys(a).length !== Object.keys(b).length) return false
 
@@ -179,24 +172,8 @@ export function isSameRouteLocationParams(
 }
 
 function isSameRouteLocationParamsValue(
-  a: LocationQueryValue | LocationQueryValue[],
-  b: LocationQueryValue | LocationQueryValue[]
-): boolean
-function isSameRouteLocationParamsValue(
   a: RouteParamValue | RouteParamValue[],
   b: RouteParamValue | RouteParamValue[]
-): boolean
-function isSameRouteLocationParamsValue(
-  a:
-    | LocationQueryValue
-    | LocationQueryValue[]
-    | RouteParamValue
-    | RouteParamValue[],
-  b:
-    | LocationQueryValue
-    | LocationQueryValue[]
-    | RouteParamValue
-    | RouteParamValue[]
 ): boolean {
   return Array.isArray(a)
     ? isEquivalentArray(a, b)

@@ -5,7 +5,9 @@ import {
   stringifyURL as originalStringifyURL,
   stripBase,
   isSameRouteLocationParams,
+  isSameRouteLocation,
 } from '../src/location'
+import { RouteLocationNormalizedLoaded } from 'src'
 
 describe('parseURL', () => {
   let parseURL = originalParseURL.bind(null, parseQuery)
@@ -271,5 +273,28 @@ describe('isSameRouteLocationParams', () => {
   it('considers arrays of one item same as the item itself', () => {
     expect(isSameRouteLocationParams({ a: ['2'] }, { a: '2' })).toBe(true)
     expect(isSameRouteLocationParams({ a: ['3'] }, { a: '2' })).toBe(false)
+  })
+})
+
+describe('isSameRouteLocation', () => {
+  it('compares queries as strings', () => {
+    const location: RouteLocationNormalizedLoaded = {
+      path: '/',
+      params: {},
+      name: 'home',
+      matched: [{} as any],
+      fullPath: '/',
+      hash: '',
+      meta: {},
+      query: {},
+      redirectedFrom: undefined,
+    }
+    expect(
+      isSameRouteLocation(
+        () => 'fake query',
+        { ...location, query: { a: 'a' } },
+        { ...location, query: { b: 'b' } }
+      )
+    ).toBe(true)
   })
 })
