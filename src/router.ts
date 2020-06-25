@@ -37,6 +37,7 @@ import {
   normalizeQuery,
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
+  LocationQuery,
 } from './query'
 import {
   shallowRef,
@@ -340,7 +341,15 @@ export function createRouter(options: RouterOptions): Router {
         // keep the hash encoded so fullPath is effectively path + encodedQuery +
         // hash
         hash,
-        query: normalizeQuery(rawLocation.query),
+        query:
+          // if the user is using a custom query lib like qs, we might have
+          // nested objects, so we keep the query as is, meaning it can contain
+          // numbers at `$route.query`, but at the point, the user will have to
+          // use their own type anyway.
+          // https://github.com/vuejs/vue-router-next/issues/328#issuecomment-649481567
+          stringifyQuery === originalStringifyQuery
+            ? normalizeQuery(rawLocation.query)
+            : (rawLocation.query as LocationQuery),
       },
       matchedRoute,
       {
@@ -396,7 +405,7 @@ export function createRouter(options: RouterOptions): Router {
             2
           )}\n when navigating to "${
             targetLocation.fullPath
-          }". A redirect must contain a name or path.`
+          }". A redirect must contain a name or path. This will break in production.`
         )
         return Promise.reject(new Error('Invalid redirect'))
       }
