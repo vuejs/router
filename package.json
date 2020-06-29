@@ -71,7 +71,7 @@
     "@size-limit/preset-small-lib": "^4.5.2",
     "@types/jest": "^26.0.3",
     "@types/jsdom": "^16.2.3",
-    "@types/webpack": "^4.41.17",
+    "@types/webpack": "^4.41.18",
     "@types/webpack-env": "^1.15.2",
     "@vue/compiler-sfc": "3.0.0-beta.15",
     "@vue/server-renderer": "^3.0.0-beta.15",
