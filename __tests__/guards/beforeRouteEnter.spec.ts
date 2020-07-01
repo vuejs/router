@@ -202,7 +202,7 @@ describe('beforeRouteEnter', () => {
     expect(router.currentRoute.value.fullPath).toBe('/foo')
   })
 
-  // TODO:
+  // TODO: wait until we have something working with keep-alive and transition first
   it.skip('calls next callback', async done => {
     const router = createRouter({ routes })
     beforeRouteEnter.mockImplementationOnce((to, from, next) => {
