@@ -157,7 +157,7 @@ export function normalizeHistoryLocation(
  * Normalizes a base by removing any trailing slash and reading the base tag if
  * present.
  *
- * @param base base to normalize
+ * @param base - base to normalize
  */
 export function normalizeBase(base?: string): string {
   if (!base) {
