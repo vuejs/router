@@ -1,3 +1,16 @@
+# [4.0.0-alpha.14](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.13...v4.0.0-alpha.14) (2020-07-01)
+
+### Bug Fixes
+
+- **hash:** use relative links in hash mode ([32c9590](https://github.com/vuejs/vue-router-next/commit/32c9590db89e69c8f7c61905a5eaf19df2054e42)), closes [#342](https://github.com/vuejs/vue-router-next/issues/342)
+- **query:** do not normalize query with custom stringifyQuery ([ea65066](https://github.com/vuejs/vue-router-next/commit/ea65066e8511d8320ad8de37b32ea9a8028fa9d5)), closes [#328](https://github.com/vuejs/vue-router-next/issues/328)
+- **query:** isSameRouteLocation compares queries by string ([6e1f0ea](https://github.com/vuejs/vue-router-next/commit/6e1f0eacf60c7e3d465dd0af68f79dc649269b17)), closes [#328](https://github.com/vuejs/vue-router-next/issues/328)
+
+### Features
+
+- **redirect:** allow redirect on routes witch children ([e57b875](https://github.com/vuejs/vue-router-next/commit/e57b875dd9d375778a847627434803f4ec79a818))
+- **router:** support multiple apps at the same time ([565ec9d](https://github.com/vuejs/vue-router-next/commit/565ec9d489b4aad347ee466b781ca85aff76bf2d))
+
 # [4.0.0-alpha.13](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.12...v4.0.0-alpha.13) (2020-06-18)
 
 ### Bug Fixes
