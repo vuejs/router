@@ -110,4 +110,126 @@ describe('guardToPromiseFn', () => {
       expect(err).toBe(error)
     }
   })
+
+  describe('no next argument', () => {
+    it('rejects if returns false', async () => {
+      expect.assertions(1)
+      try {
+        await guardToPromiseFn((to, from) => false, to, from)()
+      } catch (err) {
+        expect(err).toMatchObject({
+          from,
+          to,
+          type: ErrorTypes.NAVIGATION_ABORTED,
+        })
+      }
+    })
+
+    it('resolves no value is returned', async () => {
+      await expect(
+        guardToPromiseFn((to, from) => {}, to, from)()
+      ).resolves.toEqual(undefined)
+    })
+
+    it('resolves if true is returned', async () => {
+      await expect(
+        guardToPromiseFn((to, from) => true, to, from)()
+      ).resolves.toEqual(undefined)
+    })
+
+    it('rejects if false is returned', async () => {
+      expect.assertions(1)
+      try {
+        await guardToPromiseFn((to, from) => false, to, from)()
+      } catch (err) {
+        expect(err).toMatchObject({
+          from,
+          to,
+          type: ErrorTypes.NAVIGATION_ABORTED,
+        })
+      }
+    })
+
+    it('rejects if async false is returned', async () => {
+      expect.assertions(1)
+      try {
+        await guardToPromiseFn(async (to, from) => false, to, from)()
+      } catch (err) {
+        expect(err).toMatchObject({
+          from,
+          to,
+          type: ErrorTypes.NAVIGATION_ABORTED,
+        })
+      }
+    })
+
+    it('rejects if a string location is returned', async () => {
+      expect.assertions(1)
+      try {
+        await guardToPromiseFn((to, from) => '/new', to, from)()
+      } catch (err) {
+        expect(err).toMatchObject({
+          from: to,
+          to: '/new',
+          type: ErrorTypes.NAVIGATION_GUARD_REDIRECT,
+        })
+      }
+    })
+
+    it('rejects if an object location is returned', async () => {
+      expect.assertions(1)
+      let redirectTo = { path: '/new' }
+      try {
+        await guardToPromiseFn((to, from) => redirectTo, to, from)()
+      } catch (err) {
+        expect(err).toMatchObject({
+          from: to,
+          to: redirectTo,
+          type: ErrorTypes.NAVIGATION_GUARD_REDIRECT,
+        })
+      }
+    })
+
+    it('rejects if an error is returned', async () => {
+      expect.assertions(1)
+      let error = new Error('nope')
+      try {
+        await guardToPromiseFn((to, from) => error, to, from)()
+      } catch (err) {
+        expect(err).toBe(error)
+      }
+    })
+
+    it('rejects if guard rejects a Promise', async () => {
+      expect.assertions(1)
+      let error = new Error('nope')
+      try {
+        await guardToPromiseFn(
+          async (to, from) => {
+            throw error
+          },
+          to,
+          from
+        )()
+      } catch (err) {
+        expect(err).toBe(error)
+      }
+    })
+
+    it('rejects if guard throws an error', async () => {
+      expect.assertions(1)
+      let error = new Error('nope')
+      try {
+        await guardToPromiseFn(
+          (to, from) => {
+            throw error
+          },
+          to,
+          from
+        )()
+      } catch (err) {
+        expect(err).toBe(error)
+      }
+    })
+  })
 })
