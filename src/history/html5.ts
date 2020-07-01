@@ -9,6 +9,7 @@ import {
   RawHistoryLocation,
   ValueContainer,
   normalizeBase,
+  createHref,
 } from './common'
 import {
   computeScrollPosition,
@@ -288,6 +289,7 @@ export function createWebHistory(base?: string): RouterHistory {
       location: ('' as unknown) as HistoryLocationNormalized,
       base,
       go,
+      createHref: createHref.bind(null, base),
     },
 
     historyNavigation,

@@ -128,6 +128,17 @@ export interface RouterHistory {
    * @returns a callback to remove the listener
    */
   listen(callback: NavigationCallback): () => void
+
+  /**
+   * Generates the corresponding href to be used in an anchor tag.
+   *
+   * @param location
+   */
+  createHref(location: HistoryLocationNormalized): string
+
+  /**
+   * Clears any event listener attached by the history implementation.
+   */
   destroy(): void
 }
 
@@ -169,4 +180,13 @@ export function normalizeBase(base?: string): string {
   // remove the trailing slash so all other method can just do `base + fullPath`
   // to build an href
   return removeTrailingSlash(base)
+}
+
+// remove any character before the hash
+const BEFORE_HASH_RE = /^[^#]+#/
+export function createHref(
+  base: string,
+  location: HistoryLocationNormalized
+): string {
+  return base.replace(BEFORE_HASH_RE, '#') + location.fullPath
 }

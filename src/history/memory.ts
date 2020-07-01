@@ -8,6 +8,7 @@ import {
   NavigationType,
   NavigationDirection,
   NavigationInformation,
+  createHref,
 } from './common'
 
 // TODO: verify base is working for SSR
@@ -55,6 +56,7 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
     location: START,
     state: {},
     base,
+    createHref: createHref.bind(null, base),
 
     replace(to) {
       const toNormalized = normalizeHistoryLocation(to)

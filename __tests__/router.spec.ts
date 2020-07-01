@@ -1,5 +1,10 @@
 import fakePromise from 'faked-promise'
-import { createRouter, createMemoryHistory, createWebHistory } from '../src'
+import {
+  createRouter,
+  createMemoryHistory,
+  createWebHistory,
+  createWebHashHistory,
+} from '../src'
 import { NavigationFailureType } from '../src/errors'
 import { createDom, components, tick, nextNavigation } from './utils'
 import {
@@ -176,6 +181,27 @@ describe('Router', () => {
     expect(router.currentRoute.value).toBe(START_LOCATION_NORMALIZED)
     await router.push('/')
     expect(router.currentRoute.value).not.toBe(START_LOCATION_NORMALIZED)
+  })
+
+  it('resolves hash history as a relative hash link', async () => {
+    let history = createWebHashHistory()
+    let { router } = await newRouter({ history })
+    expect(router.resolve('/foo?bar=baz#hey')).toMatchObject({
+      fullPath: '/foo?bar=baz#hey',
+      href: '#/foo?bar=baz#hey',
+    })
+    history = createWebHashHistory('/with/base/')
+    ;({ router } = await newRouter({ history }))
+    expect(router.resolve('/foo?bar=baz#hey')).toMatchObject({
+      fullPath: '/foo?bar=baz#hey',
+      href: '#/foo?bar=baz#hey',
+    })
+    history = createWebHashHistory('/with/#/base/')
+    ;({ router } = await newRouter({ history }))
+    expect(router.resolve('/foo?bar=baz#hey')).toMatchObject({
+      fullPath: '/foo?bar=baz#hey',
+      href: '#/base/foo?bar=baz#hey',
+    })
   })
 
   it('can await router.go', async () => {

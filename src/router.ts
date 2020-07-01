@@ -253,8 +253,8 @@ export function createRouter(options: RouterOptions): Router {
         currentLocation
       )
 
+      let href = routerHistory.createHref(locationNormalized)
       if (__DEV__) {
-        let href = routerHistory.base + locationNormalized.fullPath
         if (href.startsWith('//'))
           warn(
             `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
@@ -268,7 +268,7 @@ export function createRouter(options: RouterOptions): Router {
       return assign(locationNormalized, matchedRoute, {
         params: decodeParams(matchedRoute.params),
         redirectedFrom: undefined,
-        href: routerHistory.base + locationNormalized.fullPath,
+        href,
       })
     }
 
@@ -300,7 +300,7 @@ export function createRouter(options: RouterOptions): Router {
     let matchedRoute = matcher.resolve(matcherLocation, currentLocation)
     const hash = encodeHash(rawLocation.hash || '')
 
-    if (__DEV__ && hash && hash[0] !== '#') {
+    if (__DEV__ && hash && !hash.startsWith('#')) {
       warn(
         `A \`hash\` should always start with the character "#". Replace "${hash}" with "#${hash}".`
       )
@@ -320,8 +320,8 @@ export function createRouter(options: RouterOptions): Router {
       })
     )
 
+    let href = routerHistory.createHref({ fullPath })
     if (__DEV__) {
-      let href = routerHistory.base + fullPath
       if (href.startsWith('//'))
         warn(
           `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
@@ -354,7 +354,7 @@ export function createRouter(options: RouterOptions): Router {
       matchedRoute,
       {
         redirectedFrom: undefined,
-        href: routerHistory.base + fullPath,
+        href,
       }
     )
   }
