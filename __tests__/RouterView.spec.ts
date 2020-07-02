@@ -293,6 +293,89 @@ describe('RouterView', () => {
     expect(wrapper.html()).toBe(`<div>id:2;other:page</div>`)
   })
 
+  describe('warnings', () => {
+    it('does not warn RouterView is wrapped', async () => {
+      const route = createMockedRoute(routes.root)
+      const wrapper = await mount(
+        {
+          template: `
+        <div>
+          <router-view/>
+        </div>
+        `,
+        },
+        {
+          propsData: {},
+          provide: route.provides,
+          components: { RouterView },
+        }
+      )
+      expect(wrapper.html()).toBe(`<div><div>Home</div></div>`)
+      expect('can no longer be used directly inside').not.toHaveBeenWarned()
+    })
+    it('warns if KeepAlive wraps a RouterView', async () => {
+      const route = createMockedRoute(routes.root)
+      const wrapper = await mount(
+        {
+          template: `
+        <keep-alive>
+          <router-view/>
+        </keep-alive>
+        `,
+        },
+        {
+          propsData: {},
+          provide: route.provides,
+          components: { RouterView },
+        }
+      )
+      expect(wrapper.html()).toBe(`<div>Home</div>`)
+      expect('can no longer be used directly inside').toHaveBeenWarned()
+    })
+
+    it('warns if KeepAlive and Transition wrap a RouterView', async () => {
+      const route = createMockedRoute(routes.root)
+      const wrapper = await mount(
+        {
+          template: `
+        <transition>
+          <keep-alive>
+            <router-view/>
+          </keep-alive>
+        </transition>
+        `,
+        },
+        {
+          propsData: {},
+          provide: route.provides,
+          components: { RouterView },
+        }
+      )
+      expect(wrapper.html()).toBe(`<div>Home</div>`)
+      expect('can no longer be used directly inside').toHaveBeenWarned()
+    })
+
+    it('warns if Transition wraps a RouterView', async () => {
+      const route = createMockedRoute(routes.root)
+      const wrapper = await mount(
+        {
+          template: `
+        <transition>
+          <router-view/>
+        </transition>
+        `,
+        },
+        {
+          propsData: {},
+          provide: route.provides,
+          components: { RouterView },
+        }
+      )
+      expect(wrapper.html()).toBe(`<div>Home</div>`)
+      expect('can no longer be used directly inside').toHaveBeenWarned()
+    })
+  })
+
   describe('KeepAlive', () => {
     async function factory(
       initialRoute: RouteLocationNormalizedLoose,

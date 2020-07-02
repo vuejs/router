@@ -115,7 +115,10 @@ export const RouterView = (RouterViewImpl as any) as {
 function warnDeprecatedUsage() {
   const instance = getCurrentInstance()!
   const parentName = instance.parent && instance.parent.type.name
-  if (parentName === 'KeepAlive' || parentName === 'Transition') {
+  if (
+    parentName &&
+    (parentName === 'KeepAlive' || parentName.includes('Transition'))
+  ) {
     const comp = parentName === 'KeepAlive' ? 'keep-alive' : 'transition'
     warn(
       `<router-view> can no longer be used directly inside <transition> or <keep-alive>.\n` +
