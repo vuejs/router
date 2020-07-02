@@ -25,9 +25,12 @@ module.exports = {
       .click('#change-query')
       .assert.containsText('#update-count', '1')
       .back()
+      .assert.containsText('#update-count', '2')
+      .assert.containsText('#leave-count', '0')
+      .back()
       .assert.containsText('#counter', '1')
       .forward()
-      .assert.containsText('#update-count', '1')
+      .assert.containsText('#update-count', '2')
       .assert.containsText('#leave-count', '1')
 
       .end()
