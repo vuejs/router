@@ -159,14 +159,14 @@
     <button @click="toggleViewName">Toggle view</button>
     <Suspense>
       <template #default>
-        <router-view :name="viewName" v-slot="{ Component, props }">
+        <router-view :name="viewName" v-slot="{ Component }">
           <!-- <transition
             name="fade"
             mode="out-in"
             @before-enter="flushWaiter"
             @before-leave="setupWaiter"
           > -->
-          <component v-if="Component" :is="Component" v-bind="props" />
+          <component :is="Component" />
           <!-- </transition> -->
         </router-view>
       </template>

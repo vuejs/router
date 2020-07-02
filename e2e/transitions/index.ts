@@ -47,9 +47,9 @@ const Parent: RouteComponent = {
     <div class="parent">
       <h2>Parent</h2>
       {{ transitionName }}
-      <router-view class="child-view" v-slot="{ Component, props }">
+      <router-view class="child-view" v-slot="{ Component }">
         <transition :name="transitionName">
-          <component :is="Component" v-bind="props" />
+          <component :is="Component" />
         </transition>
       </router-view>
     </div>
@@ -96,9 +96,9 @@ const app = createApp({
         <li><router-link to="/parent/foo">/parent/foo</router-link></li>
         <li><router-link to="/parent/bar">/parent/bar</router-link></li>
       </ul>
-      <router-view class="view" v-slot="{ Component, props }">
+      <router-view class="view" v-slot="{ Component }">
         <transition name="fade" mode="out-in">
-          <component v-if="Component" :is="Component" v-bind="props"></component>
+          <component :is="Component" />
         </transition>
       </router-view>
     </div>
