@@ -21,8 +21,10 @@ module.exports = {
       .assert.containsText('#counter', '1')
 
       .click('li:nth-child(3) a')
+      .assert.containsText('#enter-count', '1')
       .assert.containsText('#update-count', '0')
       .click('#change-query')
+      .assert.containsText('#enter-count', '1')
       .assert.containsText('#update-count', '1')
       .back()
       .assert.containsText('#update-count', '2')
@@ -30,6 +32,7 @@ module.exports = {
       .back()
       .assert.containsText('#counter', '1')
       .forward()
+      .assert.containsText('#enter-count', '2')
       .assert.containsText('#update-count', '2')
       .assert.containsText('#leave-count', '1')
 

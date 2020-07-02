@@ -5,17 +5,24 @@ import {
   RouteLocationNormalized,
 } from './types'
 import { assign } from './utils'
+import { PolySymbol } from './injectionSymbols'
 
 /**
- * order is important to make it backwards compatible with v3
+ * Flags so we can combine them when checking for multiple errors
  */
 export const enum ErrorTypes {
-  MATCHER_NOT_FOUND = 0,
-  NAVIGATION_GUARD_REDIRECT = 1,
-  NAVIGATION_ABORTED = 2,
-  NAVIGATION_CANCELLED = 3,
-  NAVIGATION_DUPLICATED = 4,
+  // they must be literals to be used as values so we can't write
+  // 1 << 2
+  MATCHER_NOT_FOUND = 1,
+  NAVIGATION_GUARD_REDIRECT = 2,
+  NAVIGATION_ABORTED = 4,
+  NAVIGATION_CANCELLED = 8,
+  NAVIGATION_DUPLICATED = 16,
 }
+
+const NavigationFailureSymbol = PolySymbol(
+  __DEV__ ? 'navigation failure' : 'nf'
+)
 
 interface RouterErrorBase extends Error {
   type: ErrorTypes
@@ -85,12 +92,40 @@ export function createRouterError<E extends RouterError>(
   if (__DEV__ || !__BROWSER__) {
     return assign(
       new Error(ErrorTypeMessages[type](params as any)),
-      { type },
+      {
+        type,
+        [NavigationFailureSymbol]: true,
+      } as { type: typeof type },
       params
     ) as E
   } else {
-    return assign(new Error(), { type }, params) as E
+    return assign(
+      new Error(),
+      {
+        type,
+        [NavigationFailureSymbol]: true,
+      } as { type: typeof type },
+      params
+    ) as E
   }
+}
+
+export function isNavigationFailure(
+  error: any,
+  type: ErrorTypes.NAVIGATION_GUARD_REDIRECT
+): error is NavigationRedirectError
+export function isNavigationFailure(
+  error: any,
+  type: ErrorTypes
+): error is NavigationFailure
+export function isNavigationFailure(
+  error: any,
+  type?: number
+): error is NavigationFailure {
+  return (
+    NavigationFailureSymbol in error &&
+    (type == null || !!((error as NavigationFailure).type & type))
+  )
 }
 
 const propertiesToLog = ['params', 'query', 'hash'] as const

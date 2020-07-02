@@ -53,6 +53,7 @@ export interface RouteRecordViewLoose
   > {
   leaveGuards?: any
   instances: Record<string, any>
+  enterCallbacks: Function[]
   props: Record<string, _RouteRecordProps>
   aliasOf: RouteRecordViewLoose | undefined
 }

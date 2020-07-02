@@ -91,8 +91,11 @@ export function guardToPromiseFn(
   guard: NavigationGuard,
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded,
-  instance?: ComponentPublicInstance | undefined | null
+  instance?: ComponentPublicInstance | undefined | null,
+  record?: RouteRecordNormalized
 ): () => Promise<void> {
+  // keep a reference to the enterCallbackArray to prevent pushing callbacks if a new navigation took place
+  const enterCallbackArray = record && record.enterCallbacks
   return () =>
     new Promise((resolve, reject) => {
       const next: NavigationGuardNext = (
@@ -121,8 +124,12 @@ export function guardToPromiseFn(
             )
           )
         } else {
-          // TODO: call the in component enter callbacks. Maybe somewhere else
-          // record && record.enterCallbacks.push(valid)
+          if (
+            record &&
+            record.enterCallbacks === enterCallbackArray &&
+            typeof valid === 'function'
+          )
+            enterCallbackArray.push(valid)
           resolve()
         }
       }
@@ -182,7 +189,9 @@ export function extractComponentsGuards(
           (rawComponent as any).__vccOpts || rawComponent
         const guard = options[guardType]
         guard &&
-          guards.push(guardToPromiseFn(guard, to, from, record.instances[name]))
+          guards.push(
+            guardToPromiseFn(guard, to, from, record.instances[name], record)
+          )
       } else {
         // start requesting the chunk already
         let componentPromise: Promise<RouteComponent | null> = (rawComponent as Lazy<
@@ -215,7 +224,13 @@ export function extractComponentsGuards(
             const guard: NavigationGuard = resolvedComponent[guardType]
             return (
               guard &&
-              guardToPromiseFn(guard, to, from, record.instances[name])()
+              guardToPromiseFn(
+                guard,
+                to,
+                from,
+                record.instances[name],
+                record
+              )()
             )
           })
         )

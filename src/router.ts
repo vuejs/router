@@ -29,6 +29,7 @@ import {
   ErrorTypes,
   NavigationFailure,
   NavigationRedirectError,
+  isNavigationFailure,
 } from './errors'
 import { applyToParams, isBrowser, assign } from './utils'
 import { useCallbacks } from './utils/callbacks'
@@ -365,6 +366,21 @@ export function createRouter(options: RouterOptions): Router {
     return typeof to === 'string' ? { path: to } : assign({}, to)
   }
 
+  function checkCanceledNavigation(
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized
+  ): NavigationFailure | void {
+    if (pendingLocation !== to) {
+      return createRouterError<NavigationFailure>(
+        ErrorTypes.NAVIGATION_CANCELLED,
+        {
+          from,
+          to,
+        }
+      )
+    }
+  }
+
   function push(to: RouteLocationRaw | RouteLocation) {
     return pushWithRedirect(to)
   }
@@ -456,19 +472,13 @@ export function createRouter(options: RouterOptions): Router {
 
     return (failure ? Promise.resolve(failure) : navigate(toLocation, from))
       .catch((error: NavigationFailure | NavigationRedirectError) => {
-        // a more recent navigation took place
-        if (pendingLocation !== toLocation) {
-          return createRouterError<NavigationFailure>(
-            ErrorTypes.NAVIGATION_CANCELLED,
-            {
-              from,
-              to: toLocation,
-            }
-          )
-        }
         if (
-          error.type === ErrorTypes.NAVIGATION_ABORTED ||
-          error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT
+          isNavigationFailure(
+            error,
+            ErrorTypes.NAVIGATION_ABORTED |
+              ErrorTypes.NAVIGATION_CANCELLED |
+              ErrorTypes.NAVIGATION_GUARD_REDIRECT
+          )
         ) {
           return error
         }
@@ -477,7 +487,9 @@ export function createRouter(options: RouterOptions): Router {
       })
       .then((failure: NavigationFailure | NavigationRedirectError | void) => {
         if (failure) {
-          if (failure.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT)
+          if (
+            isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
+          )
             // preserve the original redirectedFrom if any
             return pushWithRedirect(
               // keep options
@@ -507,6 +519,21 @@ export function createRouter(options: RouterOptions): Router {
       })
   }
 
+  /**
+   * Helper to reject and skip all navigation guards if a new navigation happened
+   * @param to
+   * @param from
+   */
+  function checkCanceledNavigationAndReject(
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized
+  ): Promise<void> {
+    const error = checkCanceledNavigation(to, from)
+    return error ? Promise.reject(error) : Promise.resolve()
+  }
+
+  // TODO: refactor the whole before guards by internally using router.beforeEach
+
   function navigate(
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded
@@ -533,77 +560,105 @@ export function createRouter(options: RouterOptions): Router {
       }
     }
 
+    const canceledNavigationCheck = checkCanceledNavigationAndReject.bind(
+      null,
+      to,
+      from
+    )
+
+    guards.push(canceledNavigationCheck)
+
     // run the queue of per route beforeRouteLeave guards
-    return runGuardQueue(guards)
-      .then(() => {
-        // check global guards beforeEach
-        guards = []
-        for (const guard of beforeGuards.list()) {
-          guards.push(guardToPromiseFn(guard, to, from))
-        }
-
-        return runGuardQueue(guards)
-      })
-      .then(() => {
-        // check in components beforeRouteUpdate
-        guards = extractComponentsGuards(
-          to.matched.filter(record => from.matched.indexOf(record as any) > -1),
-          'beforeRouteUpdate',
-          to,
-          from
-        )
-
-        for (const record of updatingRecords) {
-          for (const guard of record.updateGuards) {
+    return (
+      runGuardQueue(guards)
+        .then(() => {
+          // check global guards beforeEach
+          guards = []
+          for (const guard of beforeGuards.list()) {
             guards.push(guardToPromiseFn(guard, to, from))
           }
-        }
+          guards.push(canceledNavigationCheck)
 
-        // run the queue of per route beforeEnter guards
-        return runGuardQueue(guards)
-      })
-      .then(() => {
-        // check the route beforeEnter
-        guards = []
-        for (const record of to.matched) {
-          // do not trigger beforeEnter on reused views
-          if (record.beforeEnter && from.matched.indexOf(record as any) < 0) {
-            if (Array.isArray(record.beforeEnter)) {
-              for (const beforeEnter of record.beforeEnter)
-                guards.push(guardToPromiseFn(beforeEnter, to, from))
-            } else {
-              guards.push(guardToPromiseFn(record.beforeEnter, to, from))
+          return runGuardQueue(guards)
+        })
+        .then(() => {
+          // check in components beforeRouteUpdate
+          guards = extractComponentsGuards(
+            to.matched.filter(
+              record => from.matched.indexOf(record as any) > -1
+            ),
+            'beforeRouteUpdate',
+            to,
+            from
+          )
+
+          for (const record of updatingRecords) {
+            for (const guard of record.updateGuards) {
+              guards.push(guardToPromiseFn(guard, to, from))
             }
           }
-        }
+          guards.push(canceledNavigationCheck)
 
-        // run the queue of per route beforeEnter guards
-        return runGuardQueue(guards)
-      })
-      .then(() => {
-        // NOTE: at this point to.matched is normalized and does not contain any () => Promise<Component>
+          // run the queue of per route beforeEnter guards
+          return runGuardQueue(guards)
+        })
+        .then(() => {
+          // check the route beforeEnter
+          guards = []
+          for (const record of to.matched) {
+            // do not trigger beforeEnter on reused views
+            if (record.beforeEnter && from.matched.indexOf(record as any) < 0) {
+              if (Array.isArray(record.beforeEnter)) {
+                for (const beforeEnter of record.beforeEnter)
+                  guards.push(guardToPromiseFn(beforeEnter, to, from))
+              } else {
+                guards.push(guardToPromiseFn(record.beforeEnter, to, from))
+              }
+            }
+          }
+          guards.push(canceledNavigationCheck)
 
-        // check in-component beforeRouteEnter
-        guards = extractComponentsGuards(
-          // the type doesn't matter as we are comparing an object per reference
-          to.matched.filter(record => from.matched.indexOf(record as any) < 0),
-          'beforeRouteEnter',
-          to,
-          from
+          // run the queue of per route beforeEnter guards
+          return runGuardQueue(guards)
+        })
+        .then(() => {
+          // NOTE: at this point to.matched is normalized and does not contain any () => Promise<Component>
+
+          // clear existing enterCallbacks, these are added by extractComponentsGuards
+          to.matched.forEach(record => (record.enterCallbacks = []))
+
+          // check in-component beforeRouteEnter
+          guards = extractComponentsGuards(
+            // the type doesn't matter as we are comparing an object per reference
+            to.matched.filter(
+              record => from.matched.indexOf(record as any) < 0
+            ),
+            'beforeRouteEnter',
+            to,
+            from
+          )
+          guards.push(canceledNavigationCheck)
+
+          // run the queue of per route beforeEnter guards
+          return runGuardQueue(guards)
+        })
+        .then(() => {
+          // check global guards beforeResolve
+          guards = []
+          for (const guard of beforeResolveGuards.list()) {
+            guards.push(guardToPromiseFn(guard, to, from))
+          }
+          guards.push(canceledNavigationCheck)
+
+          return runGuardQueue(guards)
+        })
+        // catch any navigation canceled
+        .catch(err =>
+          isNavigationFailure(err, ErrorTypes.NAVIGATION_CANCELLED)
+            ? err
+            : Promise.reject(err)
         )
-
-        // run the queue of per route beforeEnter guards
-        return runGuardQueue(guards)
-      })
-      .then(() => {
-        // check global guards beforeResolve
-        guards = []
-        for (const guard of beforeResolveGuards.list()) {
-          guards.push(guardToPromiseFn(guard, to, from))
-        }
-
-        return runGuardQueue(guards)
-      })
+    )
   }
 
   function triggerAfterEach(
@@ -629,15 +684,8 @@ export function createRouter(options: RouterOptions): Router {
     data?: HistoryState
   ): NavigationFailure | void {
     // a more recent navigation took place
-    if (pendingLocation !== toLocation) {
-      return createRouterError<NavigationFailure>(
-        ErrorTypes.NAVIGATION_CANCELLED,
-        {
-          from,
-          to: toLocation,
-        }
-      )
-    }
+    const error = checkCanceledNavigation(toLocation, from)
+    if (error) return error
 
     const [leavingRecords] = extractChangingRecords(toLocation, from)
     for (const record of leavingRecords) {
@@ -699,20 +747,17 @@ export function createRouter(options: RouterOptions): Router {
 
       navigate(toLocation, from)
         .catch((error: NavigationFailure | NavigationRedirectError) => {
-          // a more recent navigation took place
-          if (pendingLocation !== toLocation) {
-            return createRouterError<NavigationFailure>(
-              ErrorTypes.NAVIGATION_CANCELLED,
-              {
-                from,
-                to: toLocation,
-              }
+          if (
+            isNavigationFailure(
+              error,
+              ErrorTypes.NAVIGATION_ABORTED | ErrorTypes.NAVIGATION_CANCELLED
             )
+          ) {
+            return error
           }
-          if (error.type === ErrorTypes.NAVIGATION_ABORTED) {
-            return error as NavigationFailure
-          }
-          if (error.type === ErrorTypes.NAVIGATION_GUARD_REDIRECT) {
+          if (
+            isNavigationFailure(error, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
+          ) {
             routerHistory.go(-info.delta, false)
             // the error is already handled by router.push we just want to avoid
             // logging the error

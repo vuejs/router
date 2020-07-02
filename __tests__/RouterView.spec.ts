@@ -39,6 +39,7 @@ const routes = createRoutes({
       {
         components: { default: components.Home },
         instances: {},
+        enterCallbacks: [],
         path: '/',
         props,
       },
@@ -56,6 +57,7 @@ const routes = createRoutes({
       {
         components: { default: components.Foo },
         instances: {},
+        enterCallbacks: [],
         path: '/foo',
         props,
       },
@@ -73,12 +75,14 @@ const routes = createRoutes({
       {
         components: { default: components.Nested },
         instances: {},
+        enterCallbacks: [],
         path: '/',
         props,
       },
       {
         components: { default: components.Foo },
         instances: {},
+        enterCallbacks: [],
         path: 'a',
         props,
       },
@@ -96,18 +100,21 @@ const routes = createRoutes({
       {
         components: { default: components.Nested },
         instances: {},
+        enterCallbacks: [],
         path: '/',
         props,
       },
       {
         components: { default: components.Nested },
         instances: {},
+        enterCallbacks: [],
         path: 'a',
         props,
       },
       {
         components: { default: components.Foo },
         instances: {},
+        enterCallbacks: [],
         path: 'b',
         props,
       },
@@ -122,7 +129,13 @@ const routes = createRoutes({
     hash: '',
     meta: {},
     matched: [
-      { components: { foo: components.Foo }, instances: {}, path: '/', props },
+      {
+        components: { foo: components.Foo },
+        instances: {},
+        enterCallbacks: [],
+        path: '/',
+        props,
+      },
     ],
   },
   withParams: {
@@ -138,6 +151,7 @@ const routes = createRoutes({
         components: { default: components.User },
 
         instances: {},
+        enterCallbacks: [],
         path: '/users/:id',
         props: { default: true },
       },
@@ -156,6 +170,7 @@ const routes = createRoutes({
         components: { default: components.WithProps },
 
         instances: {},
+        enterCallbacks: [],
         path: '/props/:id',
         props: { default: { id: 'foo', other: 'fixed' } },
       },
@@ -175,6 +190,7 @@ const routes = createRoutes({
         components: { default: components.WithProps },
 
         instances: {},
+        enterCallbacks: [],
         path: '/props/:id',
         props: {
           default: (to: RouteLocationNormalized) => ({
@@ -247,6 +263,7 @@ describe('RouterView', () => {
         {
           components: { default: components.User },
           instances: {},
+          enterCallbacks: [],
           path: '/users/:id',
           props,
         },

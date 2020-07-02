@@ -21,11 +21,18 @@ const Foo: RouteComponent = { template: '<div class="foo">foo</div>' }
 
 const WithGuards: RouteComponent = {
   template: `<div>
+    <p>Enter Count <span id="enter-count">{{ enterCount }}</span></p>
     <p>Update Count <span id="update-count">{{ updateCount }}</span></p>
     <p>Leave Count <span id="leave-count">{{ leaveCount }}</span></p>
     <button id="change-query" @click="changeQuery">Change query</button>
     <button id="reset" @click="reset">Reset</button>
     </div>`,
+
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      ;(vm as any).enterCount++
+    })
+  },
 
   beforeRouteUpdate(to, from, next) {
     this.updateCount++
@@ -37,11 +44,13 @@ const WithGuards: RouteComponent = {
   },
 
   setup() {
+    const enterCount = ref(0)
     const updateCount = ref(0)
     const leaveCount = ref(0)
     const router = useRouter()
 
     function reset() {
+      enterCount.value = 0
       updateCount.value = 0
       leaveCount.value = 0
     }
@@ -52,6 +61,7 @@ const WithGuards: RouteComponent = {
     return {
       reset,
       changeQuery,
+      enterCount,
       updateCount,
       leaveCount,
     }

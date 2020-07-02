@@ -323,6 +323,7 @@ export function normalizeRouteRecord(
     instances: {},
     leaveGuards: [],
     updateGuards: [],
+    enterCallbacks: [],
     components:
       'components' in record
         ? record.components || {}

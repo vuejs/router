@@ -6,7 +6,7 @@ describe('normalizeRouteRecord', () => {
       path: '/home',
       component: {},
     })
-    expect(record).toEqual({
+    expect(record).toMatchObject({
       beforeEnter: undefined,
       children: [],
       aliasOf: undefined,
@@ -31,7 +31,7 @@ describe('normalizeRouteRecord', () => {
       name: 'name',
       component: {},
     })
-    expect(record).toEqual({
+    expect(record).toMatchObject({
       beforeEnter,
       children: [{ path: '/child' }],
       components: { default: {} },
@@ -73,7 +73,7 @@ describe('normalizeRouteRecord', () => {
       name: 'name',
       components: { one: {} },
     })
-    expect(record).toEqual({
+    expect(record).toMatchObject({
       beforeEnter,
       children: [{ path: '/child' }],
       components: { one: {} },

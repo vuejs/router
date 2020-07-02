@@ -201,34 +201,4 @@ describe('beforeRouteEnter', () => {
     await p
     expect(router.currentRoute.value.fullPath).toBe('/foo')
   })
-
-  // TODO: wait until we have something working with keep-alive and transition first
-  it.skip('calls next callback', async done => {
-    const router = createRouter({ routes })
-    beforeRouteEnter.mockImplementationOnce((to, from, next) => {
-      next(vm => {
-        expect(router.currentRoute.value.fullPath).toBe('/foo')
-        expect(vm).toBeTruthy()
-        done()
-      })
-    })
-
-    await router.push('/')
-    await router.push('/guard/2')
-  })
-
-  it.skip('calls next callback after waiting', async done => {
-    const [promise, resolve] = fakePromise()
-    const router = createRouter({ routes })
-    beforeRouteEnter.mockImplementationOnce(async (to, from, next) => {
-      await promise
-      next(vm => {
-        expect(router.currentRoute.value.fullPath).toBe('/foo')
-        expect(vm).toBeTruthy()
-        done()
-      })
-    })
-    router.push('/foo')
-    resolve()
-  })
 })

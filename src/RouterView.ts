@@ -75,7 +75,9 @@ export const RouterViewImpl = defineComponent({
       const currentName = props.name
       const onVnodeMounted = () => {
         matchedRoute.instances[currentName] = viewRef.value
-        // TODO: trigger beforeRouteEnter hooks
+        matchedRoute.enterCallbacks.forEach(callback =>
+          callback(viewRef.value!)
+        )
       }
       const onVnodeUnmounted = () => {
         // remove the instance reference to prevent leak

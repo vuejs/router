@@ -3,6 +3,7 @@ import {
   NavigationGuard,
   _RouteRecordBase,
   _RouteRecordProps,
+  NavigationGuardNextCallback,
 } from '../types'
 import { ComponentPublicInstance } from 'vue'
 
@@ -21,6 +22,7 @@ export interface RouteRecordNormalized {
   beforeEnter: RouteRecordMultipleViews['beforeEnter']
   leaveGuards: NavigationGuard[]
   updateGuards: NavigationGuard[]
+  enterCallbacks: NavigationGuardNextCallback[]
   instances: Record<string, ComponentPublicInstance | undefined | null>
   // can only be of of the same type as this record
   aliasOf: RouteRecordNormalized | undefined

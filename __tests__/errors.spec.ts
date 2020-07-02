@@ -101,8 +101,8 @@ describe('Errors & Navigation failures', () => {
     // should hang
     let navigationPromise = router.push('/foo')
 
+    expect(afterEach).toHaveBeenCalledTimes(0)
     await expect(router.push('/')).resolves.toEqual(undefined)
-    expect(afterEach).toHaveBeenCalledTimes(1)
     expect(onError).toHaveBeenCalledTimes(0)
 
     resolve()
@@ -110,7 +110,8 @@ describe('Errors & Navigation failures', () => {
     expect(afterEach).toHaveBeenCalledTimes(2)
     expect(onError).toHaveBeenCalledTimes(0)
 
-    expect(afterEach).toHaveBeenLastCalledWith(
+    expect(afterEach).toHaveBeenNthCalledWith(
+      1,
       expect.objectContaining({ path: '/foo' }),
       from,
       expect.objectContaining({ type: NavigationFailureType.cancelled })
@@ -159,18 +160,12 @@ describe('Errors & Navigation failures', () => {
       let navigationPromise = router.push('/bar')
 
       // goes from /foo to /
+      expect(afterEach).toHaveBeenCalledTimes(0)
       history.go(-1)
 
       await tick()
 
-      expect(afterEach).toHaveBeenCalledTimes(1)
       expect(onError).toHaveBeenCalledTimes(0)
-      expect(afterEach).toHaveBeenLastCalledWith(
-        expect.objectContaining({ path: '/' }),
-        from,
-        undefined
-      )
-
       resolve()
       await expect(navigationPromise).resolves.toEqual(
         expect.objectContaining({ type: NavigationFailureType.cancelled })
@@ -179,10 +174,18 @@ describe('Errors & Navigation failures', () => {
       expect(afterEach).toHaveBeenCalledTimes(2)
       expect(onError).toHaveBeenCalledTimes(0)
 
-      expect(afterEach).toHaveBeenLastCalledWith(
+      expect(afterEach).toHaveBeenNthCalledWith(
+        1,
         expect.objectContaining({ path: '/bar' }),
         from,
         expect.objectContaining({ type: NavigationFailureType.cancelled })
+      )
+
+      expect(afterEach).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ path: '/' }),
+        from,
+        undefined
       )
     })
 
