@@ -16,9 +16,7 @@ import {
   _PathParserOptions,
 } from './pathParserRanker'
 import { warn } from '../warning'
-import { assign } from '../utils'
-
-let noop = () => {}
+import { assign, noop } from '../utils'
 
 interface RouterMatcher {
   addRoute: (record: RouteRecordRaw, parent?: RouteRecordMatcher) => () => void

@@ -31,7 +31,7 @@ import {
   NavigationRedirectError,
   isNavigationFailure,
 } from './errors'
-import { applyToParams, isBrowser, assign } from './utils'
+import { applyToParams, isBrowser, assign, noop } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
 import {
@@ -692,8 +692,6 @@ export function createRouter(options: RouterOptions): Router {
       // remove registered guards from removed matched records
       record.leaveGuards = []
       // free the references
-
-      // TODO: to refactor once keep-alive and transition can be supported
       record.instances = {}
     }
 
@@ -730,7 +728,6 @@ export function createRouter(options: RouterOptions): Router {
   // attach listener to history to trigger navigations
   function setupListeners() {
     removeHistoryListener = routerHistory.listen((to, _from, info) => {
-      // TODO: in dev try catch to correctly log the matcher error
       // cannot be a redirect route because it was in history
       const toLocation = resolve(to.fullPath) as RouteLocationNormalized
 
@@ -764,9 +761,8 @@ export function createRouter(options: RouterOptions): Router {
             pushWithRedirect(
               (error as NavigationRedirectError).to,
               toLocation
-            ).catch(() => {
-              // TODO: in dev show warning, in prod triggerError, same as initial navigation
-            })
+              // avoid an uncaught rejection
+            ).catch(noop)
             // avoid the then branch
             return Promise.reject()
           }
@@ -794,9 +790,7 @@ export function createRouter(options: RouterOptions): Router {
             failure
           )
         })
-        .catch(() => {
-          // TODO: same as above
-        })
+        .catch(noop)
     })
   }
 
@@ -921,7 +915,6 @@ export function createRouter(options: RouterOptions): Router {
       app.component('RouterLink', RouterLink)
       app.component('RouterView', RouterView)
 
-      // TODO: add tests
       app.config.globalProperties.$router = router
       Object.defineProperty(app.config.globalProperties, '$route', {
         get: () => unref(currentRoute),
