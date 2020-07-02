@@ -2,7 +2,7 @@ on:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
-      - 'v4.0.0-alpha.*'
+      - 'v4.0.0-beta.*'
 
 name: Create Github Release
 
