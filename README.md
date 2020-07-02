@@ -29,8 +29,9 @@ Check the [playground](https://github.com/vuejs/vue-router-next/tree/master/play
 - `router.match` and `router.resolve` are merged together into `router.resolve` with a slightly different signature. Check it's typing through autocomplete or [Router's `resolve` method](https://github.com/vuejs/vue-router-next/blob/master/src/router.ts)
 - `router.getMatchedComponents` is now removed as they can be retrieved from `router.currentRoute.value.matched`:
   ```js
-  router.currentRoute.value.matched
-    .flatMap(record => Object.values(record.components))
+  router.currentRoute.value.matched.flatMap(record =>
+    Object.values(record.components)
+  )
   ```
 - If you use a `transition`, you may need to wait for the router to be _ready_ before mounting the app:
   ```js
@@ -112,11 +113,6 @@ These are technically breaking changes but they fix an inconsistent behavior.
   ]
   ```
   Note this will work if `path` was `/parent/` as the relative location `home` to `/parent/` is indeed `/parent/home` but the relative location of `home` to `/parent` is `/home`
-
-### Missing features
-
-- `KeepAlive` is only partially supported. Namely, the context (`this`) is not working properly
-- Partial support of per-component navigation guards. `beforeRouteEnter` doesn't invoke its callback
 
 ## Contributing
 
