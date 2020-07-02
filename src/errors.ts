@@ -110,19 +110,45 @@ export function createRouterError<E extends RouterError>(
   }
 }
 
+/**
+ * Check if an object is a {@link NavigationFailure}.
+ *
+ * @example
+ * ```js
+ * import { isNavigationFailure, NavigationFailureType } from 'vue-router'
+ *
+ * router.afterEach((to, from, failure) => {
+ *   // Any kind of navigation failure
+ *   if (isNavigationFailure(failure)) {
+ *     // ...
+ *   }
+ *   // Only duplicated navigations
+ *   if (isNavigationFailure(failure, NavigationFailureType.duplicated)) {
+ *     // ...
+ *   }
+ *   // Aborted or canceled navigations
+ *   if (isNavigationFailure(failure, NavigationFailureType.aborted | NavigationFailureType.canceled)) {
+ *     // ...
+ *   }
+ * })
+ * ```
+ * @param error - possible {@link NavigationFailure}
+ * @param type - optional types to check for
+ */
 export function isNavigationFailure(
   error: any,
-  type: ErrorTypes.NAVIGATION_GUARD_REDIRECT
+  type?: ErrorTypes.NAVIGATION_GUARD_REDIRECT
 ): error is NavigationRedirectError
 export function isNavigationFailure(
   error: any,
-  type: ErrorTypes
+  type?: ErrorTypes | NavigationFailureType
 ): error is NavigationFailure
 export function isNavigationFailure(
   error: any,
   type?: number
 ): error is NavigationFailure {
   return (
+    error instanceof Error &&
     NavigationFailureSymbol in error &&
     (type == null || !!((error as NavigationFailure).type & type))
   )

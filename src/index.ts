@@ -49,6 +49,7 @@ export {
   ScrollBehavior,
 } from './router'
 
+// waititng for RFC isNavigationFailure
 export { NavigationFailureType, NavigationFailure } from './errors'
 
 export { onBeforeRouteLeave, onBeforeRouteUpdate } from './navigationGuards'
