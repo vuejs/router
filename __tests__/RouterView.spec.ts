@@ -292,4 +292,35 @@ describe('RouterView', () => {
     const { wrapper } = await factory(routes.withFnProps)
     expect(wrapper.html()).toBe(`<div>id:2;other:page</div>`)
   })
+
+  describe('KeepAlive', () => {
+    async function factory(
+      initialRoute: RouteLocationNormalizedLoose,
+      propsData: any = {}
+    ) {
+      const route = createMockedRoute(initialRoute)
+      const wrapper = await mount(RouterView, {
+        propsData,
+        provide: route.provides,
+        components: { RouterView },
+        slots: {
+          default: `
+          <keep-alive>
+            <component :is="Component"/>
+          </keep-alive>
+        `,
+        },
+      })
+
+      return { route, wrapper }
+    }
+
+    // TODO: maybe migrating to VTU 2 to handle this properly
+    it.skip('works', async () => {
+      const { route, wrapper } = await factory(routes.root)
+      expect(wrapper.html()).toMatchInlineSnapshot(`"<div>Home</div>"`)
+      await route.set(routes.foo)
+      expect(wrapper.html()).toMatchInlineSnapshot(`"<div>Foo</div>"`)
+    })
+  })
 })
