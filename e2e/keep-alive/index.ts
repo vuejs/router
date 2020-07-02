@@ -1,0 +1,92 @@
+import { createRouter, createWebHistory, useRouter } from '../../src'
+import { RouteComponent } from '../../src/types'
+import { createApp, ref } from 'vue'
+
+const Home: RouteComponent = {
+  template: `
+    <div class="home">
+      <h2>Home</h2>
+      <p>Counter: <span id="counter">{{ n }}</span></p>
+      <button @click="n++" id="increment">Increment</button>
+    </div>
+  `,
+  setup() {
+    return {
+      n: ref(0),
+    }
+  },
+}
+
+const Foo: RouteComponent = { template: '<div class="foo">foo</div>' }
+
+const WithGuards: RouteComponent = {
+  template: `<div>
+    <p>Update Count <span id="update-count">{{ updateCount }}</span></p>
+    <p>Leave Count <span id="leave-count">{{ leaveCount }}</span></p>
+    <button id="change-query" @click="changeQuery">Change query</button>
+    <button id="reset" @click="reset">Reset</button>
+    </div>`,
+
+  beforeRouteUpdate(to, from, next) {
+    this.updateCount++
+    next()
+  },
+  beforeRouteLeave(to, from, next) {
+    this.leaveCount++
+    next()
+  },
+
+  setup() {
+    const updateCount = ref(0)
+    const leaveCount = ref(0)
+    const router = useRouter()
+
+    function reset() {
+      updateCount.value = 0
+      leaveCount.value = 0
+    }
+
+    function changeQuery() {
+      router.push({ query: { q: Date.now() } })
+    }
+    return {
+      reset,
+      changeQuery,
+      updateCount,
+      leaveCount,
+    }
+  },
+}
+
+const webHistory = createWebHistory('/' + __dirname)
+const router = createRouter({
+  history: webHistory,
+  routes: [
+    { path: '/', component: Home },
+    { path: '/with-guards', component: WithGuards },
+    {
+      path: '/foo',
+      component: Foo,
+    },
+  ],
+})
+const app = createApp({
+  template: `
+    <div id="app">
+      <h1>KeepAlive</h1>
+      <ul>
+        <li><router-link to="/">/</router-link></li>
+        <li><router-link to="/foo">/foo</router-link></li>
+        <li><router-link to="/with-guards">/with-guards</router-link></li>
+      </ul>
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component class="view" :is="Component" />
+        </keep-alive>
+      </router-view>
+    </div>
+  `,
+})
+app.use(router)
+
+app.mount('#app')

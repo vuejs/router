@@ -159,15 +159,17 @@
     <button @click="toggleViewName">Toggle view</button>
     <Suspense>
       <template #default>
-        <router-view :name="viewName" v-slot="{ Component, props }">
-          <!-- <transition
+        <router-view :name="viewName" v-slot="{ Component }">
+          <transition
             name="fade"
             mode="out-in"
             @before-enter="flushWaiter"
             @before-leave="setupWaiter"
-          > -->
-          <component v-if="Component" :is="Component" v-bind="props" />
-          <!-- </transition> -->
+          >
+            <keep-alive>
+              <component :is="Component" />
+            </keep-alive>
+          </transition>
         </router-view>
       </template>
       <template #fallback>

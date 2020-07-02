@@ -4,18 +4,20 @@ import {
   provide,
   defineComponent,
   PropType,
-  computed,
   ref,
   ComponentPublicInstance,
   VNodeProps,
+  getCurrentInstance,
+  computed,
 } from 'vue'
-import { RouteLocationNormalizedLoaded, RouteLocationNormalized } from './types'
+import { RouteLocationNormalized, RouteLocationNormalizedLoaded } from './types'
 import {
   matchedRouteKey,
   viewDepthKey,
   routeLocationKey,
 } from './injectionSymbols'
 import { assign } from './utils'
+import { warn } from './warning'
 
 export interface RouterViewProps {
   name?: string
@@ -34,80 +36,68 @@ export const RouterViewImpl = defineComponent({
   },
 
   setup(props, { attrs, slots }) {
-    const realRoute = inject(routeLocationKey)!
-    const route = computed(() => props.route || realRoute)
+    __DEV__ && warnDeprecatedUsage()
 
-    const depth: number = inject(viewDepthKey, 0)
+    const route = inject(routeLocationKey)!
+    const depth = inject(viewDepthKey, 0)
+    const matchedRouteRef = computed(
+      () => (props.route || route).matched[depth]
+    )
+
     provide(viewDepthKey, depth + 1)
-
-    const matchedRoute = computed(
-      () =>
-        route.value.matched[depth] as
-          | RouteLocationNormalizedLoaded['matched'][any]
-          | undefined
-    )
-    const ViewComponent = computed(
-      () => matchedRoute.value && matchedRoute.value.components[props.name]
-    )
-
-    const propsData = computed(() => {
-      // propsData only gets called if ViewComponent.value exists and it depends
-      // on matchedRoute.value
-      const componentProps = matchedRoute.value!.props[props.name]
-      if (!componentProps) return {}
-      // TODO: only add props declared in the component. all if no props
-      if (componentProps === true) return route.value.params
-
-      return typeof componentProps === 'object'
-        ? componentProps
-        : componentProps(route.value)
-    })
-
-    provide(matchedRouteKey, matchedRoute)
+    provide(matchedRouteKey, matchedRouteRef)
 
     const viewRef = ref<ComponentPublicInstance>()
 
-    function onVnodeMounted() {
-      // if we mount, there is a matched record
-      matchedRoute.value!.instances[props.name] = viewRef.value
-      // TODO: trigger beforeRouteEnter hooks
-      // TODO: watch name to update the instance record
-    }
-
     return () => {
-      // we nee the value at the time we render because when we unmount, we
-      // navigated to a different location so the value is different
-      const currentMatched = matchedRoute.value
-      const currentName = props.name
-      function onVnodeUnmounted() {
-        if (currentMatched) {
-          // remove the instance reference to prevent leak
-          currentMatched.instances[currentName] = null
-        }
+      const matchedRoute = matchedRouteRef.value
+      if (!matchedRoute) {
+        return null
       }
 
-      let Component = ViewComponent.value
-      const componentProps: Parameters<typeof h>[1] = assign(
-        {},
-        // only compute props if there is a matched record
-        Component && propsData.value,
-        attrs,
-        {
+      const ViewComponent = matchedRoute.components[props.name]
+      if (!ViewComponent) {
+        return null
+      }
+
+      // props from route configration
+      const routePropsOption = matchedRoute.props[props.name]
+      const routeProps = routePropsOption
+        ? routePropsOption === true
+          ? route.params
+          : typeof routePropsOption === 'function'
+          ? routePropsOption(route)
+          : routePropsOption
+        : null
+
+      // we nee the value at the time we render because when we unmount, we
+      // navigated to a different location so the value is different
+      const currentName = props.name
+      const onVnodeMounted = () => {
+        matchedRoute.instances[currentName] = viewRef.value
+        // TODO: trigger beforeRouteEnter hooks
+      }
+      const onVnodeUnmounted = () => {
+        // remove the instance reference to prevent leak
+        matchedRoute.instances[currentName] = null
+      }
+
+      const component = h(
+        ViewComponent,
+        assign({}, routeProps, attrs, {
           onVnodeMounted,
           onVnodeUnmounted,
           ref: viewRef,
-        }
+        })
       )
 
-      // NOTE: we could also not render if there is no route match
-      const children =
-        slots.default && slots.default({ Component, props: componentProps })
-
-      return children
-        ? children
-        : Component
-        ? h(Component, componentProps)
-        : null
+      return (
+        // pass the vnode to the slot as a prop.
+        // h and <component :is="..."> both accept vnodes
+        slots.default
+          ? slots.default({ Component: component, route: matchedRoute })
+          : component
+      )
     }
   },
 })
@@ -117,5 +107,24 @@ export const RouterViewImpl = defineComponent({
 export const RouterView = (RouterViewImpl as any) as {
   new (): {
     $props: VNodeProps & RouterViewProps
+  }
+}
+
+// warn against deprecated usage with <transition> & <keep-alive>
+// due to functional component being no longer eager in Vue 3
+function warnDeprecatedUsage() {
+  const instance = getCurrentInstance()!
+  const parentName = instance.parent && instance.parent.type.name
+  if (parentName === 'KeepAlive' || parentName === 'Transition') {
+    const comp = parentName === 'KeepAlive' ? 'keep-alive' : 'transition'
+    warn(
+      `<router-view> can no longer be used directly inside <transition> or <keep-alive>.\n` +
+        `Use slot props instead:\n\n` +
+        `<router-view v-slot="{ Component }>\n` +
+        `  <${comp}>\n` +
+        `    <component :is="Component" />\n` +
+        `  </${comp}>\n` +
+        `</router-view>`
+    )
   }
 }
