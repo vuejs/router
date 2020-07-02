@@ -94,7 +94,9 @@ export const RouterViewImpl = defineComponent({
       return (
         // pass the vnode to the slot as a prop.
         // h and <component :is="..."> both accept vnodes
-        (slots.default && slots.default({ Component: component })) || component
+        slots.default
+          ? slots.default({ Component: component, route: matchedRoute })
+          : component
       )
     }
   },
