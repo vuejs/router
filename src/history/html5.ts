@@ -71,21 +71,24 @@ function useHistoryListeners(
     state: StateEntry | null
   }) => {
     const to = createCurrentLocation(base, window.location)
-
-    if (!state) return replace(to.fullPath)
-
     const from: HistoryLocationNormalized = location.value
     const fromState: StateEntry = historyState.value
-    location.value = to
-    historyState.value = state
+    let delta = 0
 
-    // ignore the popstate and reset the pauseState
-    if (pauseState && pauseState.fullPath === from.fullPath) {
-      pauseState = null
-      return
+    if (state) {
+      location.value = to
+      historyState.value = state
+
+      // ignore the popstate and reset the pauseState
+      if (pauseState && pauseState.fullPath === from.fullPath) {
+        pauseState = null
+        return
+      }
+      delta = fromState ? state.position - fromState.position : 0
+    } else {
+      replace(to.fullPath)
     }
 
-    const delta = fromState ? state.position - fromState.position : 0
     // console.log({ deltaFromCurrent })
     // Here we could also revert the navigation by calling history.go(-delta)
     // this listener will have to be adapted to not trigger again and to wait for the url

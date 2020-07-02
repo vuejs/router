@@ -23,6 +23,7 @@ module.exports = {
       )
       .click('li:nth-child(3) a')
       .assert.urlEquals(baseURL + '/bar')
+      .assert.containsText('.view', 'Bar')
       .click('li:nth-child(2) a')
       .assert.urlEquals(baseURL + '/foo')
       .click('li:nth-child(4) a')
@@ -37,6 +38,12 @@ module.exports = {
       // the unencoded version, no check for the url because changes based on browser
       .click('li:nth-child(5) a')
       .assert.containsText('#param', 'é')
+
+      // regular links should not break navigation
+      .click('li:nth-child(10) a')
+      .assert.urlEquals(baseURL + '/foo')
+      .assert.containsText('#path', '/foo')
+      .assert.containsText('.view', 'Foo')
 
       .end()
   },

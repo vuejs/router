@@ -6,8 +6,8 @@ const Home: RouteComponent = {
   template: `<div>home</div>`,
 }
 
-const Foo: RouteComponent = { template: '<div>foo</div>' }
-const Bar: RouteComponent = { template: '<div>bar</div>' }
+const Foo: RouteComponent = { template: '<div>Foo</div>' }
+const Bar: RouteComponent = { template: '<div>Bar</div>' }
 
 const Unicode: RouteComponent = {
   setup() {
@@ -65,6 +65,7 @@ const app = createApp({
             router)</a
           >
         </li>
+        <li><a href="#/foo">/foo (regular hash)</a></li>
       </ul>
 
       <p>
@@ -75,7 +76,7 @@ const app = createApp({
         hash: <code id="hash">{{ route.hash }}</code>
       </p>
 
-      <router-view></router-view>
+      <router-view class="view"></router-view>
     </div>
   `,
 })

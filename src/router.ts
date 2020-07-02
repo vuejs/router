@@ -755,7 +755,8 @@ export function createRouter(options: RouterOptions): Router {
           if (
             isNavigationFailure(error, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
           ) {
-            routerHistory.go(-info.delta, false)
+            // do not restore history on unknown direction
+            if (info.delta) routerHistory.go(-info.delta, false)
             // the error is already handled by router.push we just want to avoid
             // logging the error
             pushWithRedirect(
@@ -766,8 +767,8 @@ export function createRouter(options: RouterOptions): Router {
             // avoid the then branch
             return Promise.reject()
           }
-          // TODO: test on different browsers ensure consistent behavior
-          routerHistory.go(-info.delta, false)
+          // do not restore history on unknown direction
+          if (info.delta) routerHistory.go(-info.delta, false)
           // unrecognized error, transfer to the global handler
           return triggerError(error)
         })
@@ -782,7 +783,7 @@ export function createRouter(options: RouterOptions): Router {
             )
 
           // revert the navigation
-          if (failure) routerHistory.go(-info.delta, false)
+          if (failure && info.delta) routerHistory.go(-info.delta, false)
 
           triggerAfterEach(
             toLocation as RouteLocationNormalizedLoaded,
