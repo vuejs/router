@@ -1,4 +1,3 @@
-import { normalizeHistoryLocation as normalizeLocation } from '../src/history/common'
 import { parseQuery, stringifyQuery } from '../src/query'
 import {
   parseURL as originalParseURL,
@@ -205,20 +204,6 @@ describe('stringifyURL', () => {
     })
     expect(stringifyQuery).toHaveBeenCalledTimes(1)
     expect(stringifyQuery).toHaveBeenCalledWith({ é: 'é', b: 'a' })
-  })
-})
-
-describe('normalizeLocation', () => {
-  it('works with string', () => {
-    expect(normalizeLocation('/foo')).toEqual({ fullPath: '/foo' })
-  })
-
-  it('works with objects', () => {
-    expect(
-      normalizeLocation({
-        fullPath: '/foo',
-      })
-    ).toEqual({ fullPath: '/foo' })
   })
 })
 

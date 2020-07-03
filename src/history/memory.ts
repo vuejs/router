@@ -2,13 +2,12 @@ import {
   RouterHistory,
   NavigationCallback,
   START,
-  normalizeHistoryLocation,
-  HistoryLocationNormalized,
   HistoryState,
   NavigationType,
   NavigationDirection,
   NavigationInformation,
   createHref,
+  HistoryLocation,
 } from './common'
 
 // TODO: verify base is working for SSR
@@ -21,10 +20,10 @@ import {
  */
 export function createMemoryHistory(base: string = ''): RouterHistory {
   let listeners: NavigationCallback[] = []
-  let queue: HistoryLocationNormalized[] = [START]
+  let queue: HistoryLocation[] = [START]
   let position: number = 0
 
-  function setLocation(location: HistoryLocationNormalized) {
+  function setLocation(location: HistoryLocation) {
     position++
     if (position === queue.length) {
       // we are at the end, we can simply append a new entry
@@ -37,8 +36,8 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
   }
 
   function triggerListeners(
-    to: HistoryLocationNormalized,
-    from: HistoryLocationNormalized,
+    to: HistoryLocation,
+    from: HistoryLocation,
     { direction, delta }: Pick<NavigationInformation, 'direction' | 'delta'>
   ): void {
     const info: NavigationInformation = {
@@ -59,14 +58,13 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
     createHref: createHref.bind(null, base),
 
     replace(to) {
-      const toNormalized = normalizeHistoryLocation(to)
       // remove current entry and decrement position
       queue.splice(position--, 1)
-      setLocation(toNormalized)
+      setLocation(to)
     },
 
     push(to, data?: HistoryState) {
-      setLocation(normalizeHistoryLocation(to))
+      setLocation(to)
     },
 
     listen(callback) {

@@ -254,7 +254,7 @@ export function createRouter(options: RouterOptions): Router {
         currentLocation
       )
 
-      let href = routerHistory.createHref(locationNormalized)
+      let href = routerHistory.createHref(locationNormalized.fullPath)
       if (__DEV__) {
         if (href.startsWith('//'))
           warn(
@@ -321,7 +321,7 @@ export function createRouter(options: RouterOptions): Router {
       })
     )
 
-    let href = routerHistory.createHref({ fullPath })
+    let href = routerHistory.createHref(fullPath)
     if (__DEV__) {
       if (href.startsWith('//'))
         warn(
@@ -706,7 +706,7 @@ export function createRouter(options: RouterOptions): Router {
       // history state if it exists
       if (replace || isFirstNavigation)
         routerHistory.replace(
-          toLocation,
+          toLocation.fullPath,
           assign(
             {
               scroll: isFirstNavigation && state && state.scroll,
@@ -714,7 +714,7 @@ export function createRouter(options: RouterOptions): Router {
             data
           )
         )
-      else routerHistory.push(toLocation, data)
+      else routerHistory.push(toLocation.fullPath, data)
     }
 
     // accept current navigation
@@ -729,7 +729,7 @@ export function createRouter(options: RouterOptions): Router {
   function setupListeners() {
     removeHistoryListener = routerHistory.listen((to, _from, info) => {
       // cannot be a redirect route because it was in history
-      const toLocation = resolve(to.fullPath) as RouteLocationNormalized
+      const toLocation = resolve(to) as RouteLocationNormalized
 
       pendingLocation = toLocation
       const from = currentRoute.value
@@ -933,7 +933,7 @@ export function createRouter(options: RouterOptions): Router {
       ) {
         // see above
         started = true
-        push(routerHistory.location.fullPath).catch(err => {
+        push(routerHistory.location).catch(err => {
           if (__DEV__) warn('Unexpected error when starting the router:', err)
         })
       }

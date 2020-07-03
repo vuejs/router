@@ -1,21 +1,9 @@
 import { createMemoryHistory } from '../../src/history/memory'
-import {
-  START,
-  HistoryLocationNormalized,
-  RawHistoryLocation,
-} from '../../src/history/common'
+import { START, HistoryLocation } from '../../src/history/common'
 
-const loc: RawHistoryLocation = '/foo'
+const loc: HistoryLocation = '/foo'
 
-const loc2: RawHistoryLocation = '/bar'
-
-const normalizedLoc: HistoryLocationNormalized = {
-  fullPath: '/foo',
-}
-
-const normalizedLoc2: HistoryLocationNormalized = {
-  fullPath: '/bar',
-}
+const loc2: HistoryLocation = '/bar'
 
 describe('Memory history', () => {
   it('starts in nowhere', () => {
@@ -26,18 +14,14 @@ describe('Memory history', () => {
   it('can push a location', () => {
     const history = createMemoryHistory()
     history.push('/somewhere?foo=foo#hey')
-    expect(history.location).toEqual({
-      fullPath: '/somewhere?foo=foo#hey',
-    })
+    expect(history.location).toEqual('/somewhere?foo=foo#hey')
   })
 
   it('can replace a location', () => {
     const history = createMemoryHistory()
     // partial version
     history.replace('/somewhere?foo=foo#hey')
-    expect(history.location).toEqual({
-      fullPath: '/somewhere?foo=foo#hey',
-    })
+    expect(history.location).toEqual('/somewhere?foo=foo#hey')
   })
 
   it('does not trigger listeners with push', () => {
@@ -61,7 +45,7 @@ describe('Memory history', () => {
     history.push(loc)
     history.push(loc2)
     history.go(-1)
-    expect(history.location).toEqual(normalizedLoc)
+    expect(history.location).toEqual(loc)
     history.go(-1)
     expect(history.location).toEqual(START)
   })
@@ -86,9 +70,9 @@ describe('Memory history', () => {
     history.go(-1)
     expect(history.location).toEqual(START)
     history.go(1)
-    expect(history.location).toEqual(normalizedLoc)
+    expect(history.location).toEqual(loc)
     history.go(1)
-    expect(history.location).toEqual(normalizedLoc2)
+    expect(history.location).toEqual(loc2)
   })
 
   it('can push in the middle of the history', () => {
@@ -99,10 +83,10 @@ describe('Memory history', () => {
     history.go(-1)
     expect(history.location).toEqual(START)
     history.push(loc2)
-    expect(history.location).toEqual(normalizedLoc2)
+    expect(history.location).toEqual(loc2)
     // does nothing
     history.go(1)
-    expect(history.location).toEqual(normalizedLoc2)
+    expect(history.location).toEqual(loc2)
   })
 
   it('can listen to navigations', () => {
@@ -112,14 +96,14 @@ describe('Memory history', () => {
     history.push(loc)
     history.go(-1)
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(spy).toHaveBeenCalledWith(START, normalizedLoc, {
+    expect(spy).toHaveBeenCalledWith(START, loc, {
       direction: 'back',
       delta: -1,
       type: 'pop',
     })
     history.go(1)
     expect(spy).toHaveBeenCalledTimes(2)
-    expect(spy).toHaveBeenLastCalledWith(normalizedLoc, START, {
+    expect(spy).toHaveBeenLastCalledWith(loc, START, {
       direction: 'forward',
       delta: 1,
       type: 'pop',

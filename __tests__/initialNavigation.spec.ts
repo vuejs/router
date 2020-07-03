@@ -50,9 +50,9 @@ describe('Initial Navigation', () => {
 
   it('handles initial navigation with redirect', async () => {
     const { history, router } = newRouter('/home')
-    expect(history.location.fullPath).toBe('/home')
+    expect(history.location).toBe('/home')
     // this is done automatically on install but there is none here
-    await router.push(history.location.fullPath)
+    await router.push(history.location)
     expect(router.currentRoute.value).toMatchObject({ path: '/' })
     await router.push('/foo')
     expect(router.currentRoute.value).toMatchObject({ path: '/foo' })
@@ -63,9 +63,9 @@ describe('Initial Navigation', () => {
 
   it('handles initial navigation with beforEnter', async () => {
     const { history, router } = newRouter('/home-before')
-    expect(history.location.fullPath).toBe('/home-before')
+    expect(history.location).toBe('/home-before')
     // this is done automatically on mount but there is no mount here
-    await router.push(history.location.fullPath)
+    await router.push(history.location)
     expect(router.currentRoute.value).toMatchObject({ path: '/' })
     await router.push('/foo')
     expect(router.currentRoute.value).toMatchObject({ path: '/foo' })
