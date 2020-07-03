@@ -13,9 +13,12 @@ let router = createRouter({
 
 // RouterLink
 expectError(<RouterLink />)
+expectError(<RouterLink to="/" custom="text" />)
+expectError(<RouterLink to="/" replace="text" />)
 expectType<JSX.Element>(<RouterLink to="/foo" replace />)
 expectType<JSX.Element>(<RouterLink to="/foo" />)
 expectType<JSX.Element>(<RouterLink to={{ path: '/foo' }} />)
+expectType<JSX.Element>(<RouterLink to={{ path: '/foo' }} custom />)
 
 // RouterView
 expectType<JSX.Element>(<RouterView />)

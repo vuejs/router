@@ -14,13 +14,17 @@ import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { assign } from './utils'
 
-export interface RouterLinkProps {
+export interface RouterLinkOptions {
   to: RouteLocationRaw
   // TODO: refactor using extra options allowed in router.push. Needs RFC
   replace?: boolean
 }
 
-type UseLinkOptions = VueUseOptions<RouterLinkProps>
+export interface RouterLinkProps extends RouterLinkOptions {
+  custom?: boolean
+}
+
+type UseLinkOptions = VueUseOptions<RouterLinkOptions>
 
 // TODO: we could allow currentRoute as a prop to expose `isActive` and
 // `isExactActive` behavior should go through an RFC

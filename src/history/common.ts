@@ -132,7 +132,7 @@ export interface RouterHistory {
   /**
    * Generates the corresponding href to be used in an anchor tag.
    *
-   * @param location
+   * @param location - history location that should create an href
    */
   createHref(location: HistoryLocationNormalized): string
 
