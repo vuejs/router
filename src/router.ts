@@ -144,7 +144,7 @@ export interface Router {
   /**
    * @internal
    */
-  readonly history: RouterHistory
+  // readonly history: RouterHistory
   readonly currentRoute: Ref<RouteLocationNormalizedLoaded>
   readonly options: RouterOptions
 
@@ -910,7 +910,6 @@ export function createRouter(options: RouterOptions): Router {
     onError: errorHandlers.add,
     isReady,
 
-    history: routerHistory,
     install(app: App) {
       const router = this
       app.component('RouterLink', RouterLink)
