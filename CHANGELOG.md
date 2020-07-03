@@ -1,3 +1,40 @@
+# [4.0.0-beta.1](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.14...v4.0.0-beta.1) (2020-07-03)
+
+### Bug Fixes
+
+- **hash:** manual changes should trigger a navigation ([93891ab](https://github.com/vuejs/vue-router-next/commit/93891abf02fc24d66c6f43926a28f275560fb714)), closes [#346](https://github.com/vuejs/vue-router-next/issues/346)
+- **router-link:** add missing prop custom in jsx ([c6274ae](https://github.com/vuejs/vue-router-next/commit/c6274aeaf5ad4ba4f97c82aad3e1819ef20f5d69))
+- **router-view:** preserve keep-alive route guard this context ([#344](https://github.com/vuejs/vue-router-next/issues/344)) ([994c073](https://github.com/vuejs/vue-router-next/commit/994c073fd90add30bf16b5268332277f8b082a74))
+- **warn:** warn when RouterView is wrapped with transition ([e4b3fbe](https://github.com/vuejs/vue-router-next/commit/e4b3fbe8b799b6621537afe365267a18eab9d3cd))
+
+### Code Refactoring
+
+- **history:** simplify location as a string ([10a071c](https://github.com/vuejs/vue-router-next/commit/10a071c85c62b6674929162aa36220bd8c167f27))
+- **router:** remove history property ([aba3a3f](https://github.com/vuejs/vue-router-next/commit/aba3a3f3a0d860f76d75938ae09616a329c7c13c))
+
+### Features
+
+- **guards:** next callback beforeRouteEnter ([d9dad0b](https://github.com/vuejs/vue-router-next/commit/d9dad0b9467fee9478406899043ee35f30cdf1fb))
+
+### BREAKING CHANGES
+
+- **router:** the history property was marked as internal already. Since we
+  need to pass the history instance to the router, we always have access to it,
+  differently from Vue Router 3 where the history was instantiated internally.
+  The history API was also internal (it wasn't documented), so this change
+  shouldn't be a problem as people shouldn't be relying on `router.history` in
+  their apps. If you think this property is needed, please open an issue to
+  discuss the use case. Note it's already accessible as you have to create it:
+
+```js
+export const history = createWebHistory()
+export const router = createRouter({ history, routes: [] })
+```
+
+- **history:** HistoryLocation is just a string now. It was pretty much an
+  internal property but it could be used inside `history.state`. It used to be an
+  object `{ fullPath: '/the-url' }`. And it's now just the `fullPath` property.
+
 # [4.0.0-alpha.14](https://github.com/vuejs/vue-router-next/compare/v4.0.0-alpha.13...v4.0.0-alpha.14) (2020-07-01)
 
 ### Bug Fixes
