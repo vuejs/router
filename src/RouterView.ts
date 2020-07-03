@@ -125,7 +125,7 @@ function warnDeprecatedUsage() {
     warn(
       `<router-view> can no longer be used directly inside <transition> or <keep-alive>.\n` +
         `Use slot props instead:\n\n` +
-        `<router-view v-slot="{ Component }>\n` +
+        `<router-view v-slot="{ Component }">\n` +
         `  <${comp}>\n` +
         `    <component :is="Component" />\n` +
         `  </${comp}>\n` +
