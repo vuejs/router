@@ -26,7 +26,7 @@ Check the [playground](https://github.com/vuejs/vue-router-next/tree/master/play
 
 - `base` option is now passed as the first argument to `createWebHistory` (and other histories)
 - Catch all routes (`/*`) must now be defined using a parameter with a custom regex: `/:catchAll(.*)`
-- `router.match` and `router.resolve` are merged together into `router.resolve` with a slightly different signature. Check it's typing through autocomplete or [Router's `resolve` method](https://github.com/vuejs/vue-router-next/blob/master/src/router.ts)
+- `router.match` and `router.resolve` are merged together into `router.resolve` with a slightly different signature. Check its typing through autocomplete or [Router's `resolve` method](https://github.com/vuejs/vue-router-next/blob/master/src/router.ts)
 - `router.getMatchedComponents` is now removed as they can be retrieved from `router.currentRoute.value.matched`:
   ```js
   router.currentRoute.value.matched.flatMap(record =>
