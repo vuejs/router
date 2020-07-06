@@ -232,7 +232,6 @@ describe('Router', () => {
     await router.push('/me-neither')
     expect(router.currentRoute.value).toMatchObject({ matched: [] })
     expect(spy).toHaveBeenCalledTimes(1)
-    expect('No match found').toHaveBeenWarnedTimes(2)
   })
 
   it('casts number params to string', async () => {
@@ -723,7 +722,6 @@ describe('Router', () => {
         name: undefined,
         matched: [],
       })
-      expect('No match found').toHaveBeenWarned()
       router.addRoute({
         path: '/new-route',
         component: components.Foo,
@@ -753,7 +751,6 @@ describe('Router', () => {
         name: undefined,
         matched: [],
       })
-      expect('No match found').toHaveBeenWarned()
       let removeRoute: (() => void) | undefined
       router.addRoute({
         path: '/dynamic',
@@ -821,7 +818,6 @@ describe('Router', () => {
       })
       // navigate again
       await router.replace('/new/child')
-      expect('No match found').toHaveBeenWarned()
       expect(router.currentRoute.value).toMatchObject({
         name: 'new-child',
       })
@@ -863,7 +859,6 @@ describe('Router', () => {
         name: undefined,
         matched: [],
       })
-      expect('No match found').toHaveBeenWarned()
     })
 
     it('can reroute when removing route', async () => {

@@ -255,14 +255,10 @@ export function createRouter(options: RouterOptions): Router {
       )
 
       let href = routerHistory.createHref(locationNormalized.fullPath)
-      if (__DEV__) {
-        if (href.startsWith('//'))
-          warn(
-            `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
-          )
-        else if (!matchedRoute.matched.length) {
-          warn(`No match found for location with path "${rawLocation}"`)
-        }
+      if (__DEV__ && href.startsWith('//')) {
+        warn(
+          `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
+        )
       }
 
       // locationNormalized is always a new object
@@ -322,18 +318,10 @@ export function createRouter(options: RouterOptions): Router {
     )
 
     let href = routerHistory.createHref(fullPath)
-    if (__DEV__) {
-      if (href.startsWith('//'))
-        warn(
-          `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
-        )
-      else if (!matchedRoute.matched.length) {
-        warn(
-          `No match found for location with path "${
-            'path' in rawLocation ? rawLocation.path : rawLocation
-          }"`
-        )
-      }
+    if (__DEV__ && href.startsWith('//')) {
+      warn(
+        `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
+      )
     }
 
     return assign(
