@@ -1,6 +1,14 @@
 import { createRouter, createWebHistory, useRoute } from '../../src'
 import { RouteComponent, RouteLocationNormalizedLoaded } from '../../src/types'
-import { createApp, readonly, ref, watchEffect, computed, toRefs } from 'vue'
+import {
+  createApp,
+  readonly,
+  ref,
+  watchEffect,
+  computed,
+  toRefs,
+  defineComponent,
+} from 'vue'
 
 const users = readonly([
   { name: 'John' },
@@ -94,7 +102,7 @@ const About: RouteComponent = {
   },
 }
 
-const UserDetails: RouteComponent = {
+const UserDetails = defineComponent({
   template: `<div>
     <h1>User #{{ id }}</h1>
     <p>
@@ -102,9 +110,14 @@ const UserDetails: RouteComponent = {
     </p>
     <router-link to="/">Back home</router-link>
   </div>`,
-  props: ['id'],
+  props: {
+    id: {
+      type: String,
+      required: true,
+    },
+  },
   data: () => ({ users }),
-}
+})
 
 const webHistory = createWebHistory('/' + __dirname)
 const router = createRouter({
