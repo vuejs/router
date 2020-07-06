@@ -7,11 +7,18 @@ import {
 } from './index'
 import { createApp, defineComponent } from 'vue'
 
-const component = defineComponent({})
+const component = defineComponent({
+  props: {
+    userId: {
+      type: String,
+      required: true,
+    },
+  },
+})
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: [{ path: '/', component }],
+  routes: [{ path: '/', component, props: true }],
   parseQuery: search => ({}),
   stringifyQuery: query => '',
   strict: true,
