@@ -1,6 +1,15 @@
 import { createRouter, createWebHistory, useRoute } from '../../src'
-import { RouteComponent, RouteLocationNormalizedLoaded } from '../../src/types'
-import { createApp, readonly, ref, watchEffect, computed, toRefs } from 'vue'
+import { RouteLocationNormalizedLoaded } from '../../src/types'
+import {
+  createApp,
+  readonly,
+  ref,
+  watchEffect,
+  computed,
+  toRefs,
+  defineComponent,
+  PropType,
+} from 'vue'
 
 const users = readonly([
   { name: 'John' },
@@ -23,7 +32,7 @@ function closeUserModal() {
   history.back()
 }
 
-const Home: RouteComponent = {
+const Home = defineComponent({
   template: `<div>
   <h1>Home</h1>
   <p>Select a user</p>
@@ -80,9 +89,9 @@ const Home: RouteComponent = {
       users,
     }
   },
-}
+})
 
-const About: RouteComponent = {
+const About = defineComponent({
   template: `<div>
     <h1>About</h1>
     <button @click="back">Back</button>
@@ -92,9 +101,9 @@ const About: RouteComponent = {
   methods: {
     back: () => history.back(),
   },
-}
+})
 
-const UserDetails: RouteComponent = {
+const UserDetails = defineComponent({
   template: `<div>
     <h1>User #{{ id }}</h1>
     <p>
@@ -102,9 +111,15 @@ const UserDetails: RouteComponent = {
     </p>
     <router-link to="/">Back home</router-link>
   </div>`,
-  props: ['id'],
+  props: {
+    id: {
+      type: String,
+      // FIXME: setting this to true fails with props: true, as if it didn't fit the definition of RouteComponent
+      required: false,
+    },
+  },
   data: () => ({ users }),
-}
+})
 
 const webHistory = createWebHistory('/' + __dirname)
 const router = createRouter({
