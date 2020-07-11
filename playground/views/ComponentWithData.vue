@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { defineComponent, toRefs, reactive, inject } from 'vue'
+import { defineComponent, toRefs, reactive } from 'vue'
 import { getData, delay } from '../api'
 import { onBeforeRouteUpdate } from '../../src'
 

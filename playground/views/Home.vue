@@ -9,8 +9,7 @@
 </template>
 
 <script>
-import { defineComponent, getCurrentInstance, inject, ref } from 'vue'
-// import { guardSymbol } from '../../src/components/View'
+import { defineComponent, getCurrentInstance, ref } from 'vue'
 
 export default defineComponent({
   name: 'Home',
@@ -22,10 +21,6 @@ export default defineComponent({
 
   setup() {
     const me = getCurrentInstance()
-    // const registerGuard = inject(guardSymbol)
-    // console.log('calling setup in Home')
-    // await registerGuard(me)
-    // emit('registerGuard', getCurrentInstance())
 
     function log(value) {
       console.log(value)

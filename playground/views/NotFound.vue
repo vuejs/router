@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { defineComponent, inject } from 'vue'
+import { defineComponent } from 'vue'
 import { useRoute } from '../../src'
 
 export default defineComponent({
