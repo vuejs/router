@@ -8,7 +8,6 @@ import {
   computed,
   toRefs,
   defineComponent,
-  PropType,
 } from 'vue'
 
 const users = readonly([
