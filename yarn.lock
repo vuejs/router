@@ -2198,15 +2198,16 @@ chrome-trace-event@^1.0.2:
   dependencies:
     tslib "^1.9.0"
 
-chromedriver@^83.0.0:
-  version "83.0.0"
-  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-83.0.0.tgz#75d7d838e58014658c3990089464166fef951926"
-  integrity sha512-AePp9ykma+z4aKPRqlbzvVlc22VsQ6+rgF+0aL3B5onHOncK18dWSkLrSSJMczP/mXILN9ohGsvpuTwoRSj6OQ==
+chromedriver@^83.0.1:
+  version "83.0.1"
+  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-83.0.1.tgz#c4cf9b3f7076fea5e9ef787e65907cd035ffbd10"
+  integrity sha512-51/YsLIMRF+L0ooMlM4aZjyoOpDs0gDXGlT6+/CwWEnvK53PUyef9FkotKbzknCaUeL/qUw3ic3IMmsNc+SUxg==
   dependencies:
     "@testim/chrome-version" "^1.0.7"
     axios "^0.19.2"
     del "^5.1.0"
     extract-zip "^2.0.0"
+    https-proxy-agent "^2.2.4"
     mkdirp "^1.0.4"
     tcp-port-used "^1.0.1"
 
@@ -4878,6 +4879,14 @@ https-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
   integrity sha1-7AbBDgo0wPL68Zn3/X/Hj//QPHM=
+
+https-proxy-agent@^2.2.4:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.4.tgz#4ee7a737abd92678a293d9b34a1af4d0d08c787b"
+  integrity sha512-OmvfoQ53WLjtA9HeYP9RNrWMJzzAz1JGaSFr1nijg0PVR1JaD/xbJq1mdEIIlxGpXp9eSe/O2LgU9DJmTPd0Eg==
+  dependencies:
+    agent-base "^4.3.0"
+    debug "^3.1.0"
 
 https-proxy-agent@^3.0.0:
   version "3.0.1"
