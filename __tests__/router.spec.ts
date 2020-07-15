@@ -354,7 +354,17 @@ describe('Router', () => {
 
     it.todo('avoid infinite redirection loops when doing router.back()')
 
-    it.todo('warns if `next` is called twice')
+    it('warns if `next` is called twice', async () => {
+      const { router } = await newRouter()
+      router.beforeEach((to, from, next) => {
+        next()
+        next()
+      })
+      await router.push('/foo')
+      expect(
+        'It should be called exactly one time in each navigation guard'
+      ).toHaveBeenWarned()
+    })
   })
 
   describe('alias', () => {
