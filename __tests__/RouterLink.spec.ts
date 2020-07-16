@@ -530,7 +530,7 @@ describe('RouterLink', () => {
     expect(wrapper.find('a')!.className).toBe('')
   })
 
-  it('is not active with not match repeated params', async () => {
+  it('is not active with different repeated params', async () => {
     const { wrapper } = await factory(
       locations.repeatedParams2.normalized,
       { to: locations.anotherRepeatedParams2.string },
