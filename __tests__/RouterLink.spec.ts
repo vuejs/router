@@ -129,6 +129,21 @@ const locations = createLocations({
       name: undefined,
     },
   },
+  anotherRepeatedParams2: {
+    string: '/p/1/3',
+    normalized: {
+      fullPath: '/p/1/3',
+      href: '/p/1/3',
+      path: '/p/1/3',
+      params: { p: ['1', '3'] },
+      meta: {},
+      query: {},
+      hash: '',
+      matched: [records.home],
+      redirectedFrom: undefined,
+      name: undefined,
+    },
+  },
   repeatedParams3: {
     string: '/p/1/2/3',
     normalized: {
@@ -511,6 +526,15 @@ describe('RouterLink', () => {
       locations.repeatedParams2.normalized,
       { to: locations.singleStringParams.string },
       locations.singleStringParams.normalized
+    )
+    expect(wrapper.find('a')!.className).toBe('')
+  })
+
+  it('is not active with different repeated params', async () => {
+    const { wrapper } = await factory(
+      locations.repeatedParams2.normalized,
+      { to: locations.anotherRepeatedParams2.string },
+      locations.anotherRepeatedParams2.normalized
     )
     expect(wrapper.find('a')!.className).toBe('')
   })
