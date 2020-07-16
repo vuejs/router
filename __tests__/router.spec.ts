@@ -167,13 +167,13 @@ describe('Router', () => {
       href: '#/foo?bar=baz#hey',
     })
     history = createWebHashHistory('/with/base/')
-    ;({ router } = await newRouter({ history }))
+      ; ({ router } = await newRouter({ history }))
     expect(router.resolve('/foo?bar=baz#hey')).toMatchObject({
       fullPath: '/foo?bar=baz#hey',
       href: '#/foo?bar=baz#hey',
     })
     history = createWebHashHistory('/with/#/base/')
-    ;({ router } = await newRouter({ history }))
+      ; ({ router } = await newRouter({ history }))
     expect(router.resolve('/foo?bar=baz#hey')).toMatchObject({
       fullPath: '/foo?bar=baz#hey',
       href: '#/base/foo?bar=baz#hey',
@@ -352,7 +352,33 @@ describe('Router', () => {
       await expect(router.push('/foo')).resolves.toBe(undefined)
     })
 
-    it.todo('avoid infinite redirection loops when doing router.back()')
+    it.skip('avoid infinite redirection loops when doing router.back()', async () => {
+      const history = createMemoryHistory()
+      let calls = 0
+      const beforeEnter = jest.fn((to, from, next) => {
+        if (++calls > 1000) throw new Error('1000 calls')
+        next(to.path)
+      })
+      const { router } = await newRouter({
+        history,
+        routes: [{ path: '/foo', component: components.Home, beforeEnter }],
+      })
+      await expect(router.back()).resolves.toBe(undefined)
+    })
+
+    it.skip('avoid infinite redirection loops when doing router.forward()', async () => {
+      const history = createMemoryHistory()
+      let calls = 0
+      const beforeEnter = jest.fn((to, from, next) => {
+        if (++calls > 1000) throw new Error('1000 calls')
+        next(to.path)
+      })
+      const { router } = await newRouter({
+        history,
+        routes: [{ path: '/foo', component: components.Home, beforeEnter }],
+      })
+      await expect(router.forward()).resolves.toBe(undefined)
+    })
 
     it('warns if `next` is called twice', async () => {
       const { router } = await newRouter()
@@ -783,7 +809,7 @@ describe('Router', () => {
         },
       })
 
-      router.push('/dynamic/child').catch(() => {})
+      router.push('/dynamic/child').catch(() => { })
       await tick()
       expect(router.currentRoute.value).toMatchObject({
         name: 'dynamic child',
