@@ -11,6 +11,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
   echo "Releasing v$VERSION ..."
 
+  # clear existing ts cache
+  rm -rf node_modules/.rts2_cache
   yarn run build
   yarn run build:dts
 
