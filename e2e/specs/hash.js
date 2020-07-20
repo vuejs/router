@@ -49,6 +49,33 @@ module.exports = {
   },
 
   /** @type {import('nightwatch').NightwatchTest} */
+  'initial navigation with search': function (browser) {
+    browser
+      .url('http://localhost:8080/hash/?code=auth#')
+      .waitForElementPresent('#app > *', 1000)
+      .assert.urlEquals('http://localhost:8080/hash/?code=auth#/')
+
+      .url('http://localhost:8080/hash/?code=auth#/foo')
+      .assert.urlEquals('http://localhost:8080/hash/?code=auth#/foo')
+      // manually remove the search from the URL
+      .waitForElementPresent('#app > *', 1000)
+      .execute(function () {
+        window.history.replaceState(history.state, '', '/hash/#/foo')
+      })
+      .click('li:nth-child(3) a')
+      .assert.urlEquals(baseURL + '/bar')
+      .back()
+      .assert.urlEquals(baseURL + '/foo')
+
+      // with slash between the pathname and search
+      .url('http://localhost:8080/hash/?code=auth#')
+      .waitForElementPresent('#app > *', 1000)
+      .assert.urlEquals('http://localhost:8080/hash/?code=auth#/')
+
+      .end()
+  },
+
+  /** @type {import('nightwatch').NightwatchTest} */
   'encoding on initial navigation': function (browser) {
     browser
       .url(baseURL + '/unicode/%C3%A9')

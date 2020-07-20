@@ -2,6 +2,7 @@ import { JSDOM } from 'jsdom'
 import { createWebHashHistory } from '../../src/history/hash'
 import { createWebHistory } from '../../src/history/html5'
 import { createDom } from '../utils'
+import { mockWarn } from 'jest-mock-warn'
 
 jest.mock('../../src/history/html5')
 // override the value of isBrowser because the variable is created before JSDOM
@@ -15,6 +16,7 @@ describe('History Hash', () => {
   beforeAll(() => {
     dom = createDom()
   })
+  mockWarn()
 
   beforeEach(() => {
     ;(createWebHistory as jest.Mock).mockClear()
@@ -43,9 +45,13 @@ describe('History Hash', () => {
       expect(createWebHistory).toHaveBeenCalledWith('/#')
     })
 
-    it('does not append a # if the user provides one', () => {
+    it('warns if there is anything but a slash after the # in a provided base', () => {
+      createWebHashHistory('/#/')
+      createWebHashHistory('/#')
+      createWebHashHistory('/base/#')
+      expect('').not.toHaveBeenWarned()
       createWebHashHistory('/#/app')
-      expect(createWebHistory).toHaveBeenCalledWith('/#/app')
+      expect('should be "/#"').toHaveBeenWarned()
     })
 
     it('should be able to provide a base', () => {

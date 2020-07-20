@@ -54,7 +54,7 @@ function createCurrentLocation(
 function useHistoryListeners(
   base: string,
   historyState: ValueContainer<StateEntry>,
-  location: ValueContainer<HistoryLocation>,
+  currentLocation: ValueContainer<HistoryLocation>,
   replace: RouterHistory['replace']
 ) {
   let listeners: NavigationCallback[] = []
@@ -68,13 +68,13 @@ function useHistoryListeners(
   }: {
     state: StateEntry | null
   }) => {
-    const to = createCurrentLocation(base, window.location)
-    const from: HistoryLocation = location.value
+    const to = createCurrentLocation(base, location)
+    const from: HistoryLocation = currentLocation.value
     const fromState: StateEntry = historyState.value
     let delta = 0
 
     if (state) {
-      location.value = to
+      currentLocation.value = to
       historyState.value = state
 
       // ignore the popstate and reset the pauseState
@@ -94,7 +94,7 @@ function useHistoryListeners(
     // need to be passed to the listeners so the navigation can be accepted
     // call all listeners
     listeners.forEach(listener => {
-      listener(location.value, from, {
+      listener(currentLocation.value, from, {
         delta,
         type: NavigationType.pop,
         direction: delta
@@ -107,7 +107,7 @@ function useHistoryListeners(
   }
 
   function pauseListeners() {
-    pauseState = location.value
+    pauseState = currentLocation.value
   }
 
   function listen(callback: NavigationCallback) {
@@ -171,20 +171,20 @@ function buildState(
 }
 
 function useHistoryStateNavigation(base: string) {
-  const { history } = window
+  const { history, location } = window
 
   // private variables
-  let location: ValueContainer<HistoryLocation> = {
-    value: createCurrentLocation(base, window.location),
+  let currentLocation: ValueContainer<HistoryLocation> = {
+    value: createCurrentLocation(base, location),
   }
   let historyState: ValueContainer<StateEntry> = { value: history.state }
   // build current history entry as this is a fresh navigation
   if (!historyState.value) {
     changeLocation(
-      location.value,
+      currentLocation.value,
       {
         back: null,
-        current: location.value,
+        current: currentLocation.value,
         forward: null,
         // the length is off by one, we need to decrease it
         position: history.length - 1,
@@ -202,7 +202,13 @@ function useHistoryStateNavigation(base: string) {
     state: StateEntry,
     replace: boolean
   ): void {
-    const url = createBaseLocation() + base + to
+    const url =
+      createBaseLocation() +
+      // preserve any existing query when base has a hash
+      (base.indexOf('#') > -1 && location.search
+        ? location.pathname + location.search + '#'
+        : base) +
+      to
     try {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds
@@ -211,7 +217,7 @@ function useHistoryStateNavigation(base: string) {
     } catch (err) {
       warn('Error with push/replace State', err)
       // Force the navigation, this also resets the call count
-      window.location[replace ? 'replace' : 'assign'](url)
+      location[replace ? 'replace' : 'assign'](url)
     }
   }
 
@@ -231,7 +237,7 @@ function useHistoryStateNavigation(base: string) {
     )
 
     changeLocation(to, state, true)
-    location.value = to
+    currentLocation.value = to
   }
 
   function push(to: HistoryLocation, data?: HistoryState) {
@@ -245,7 +251,7 @@ function useHistoryStateNavigation(base: string) {
 
     const state: StateEntry = assign(
       {},
-      buildState(location.value, to, null),
+      buildState(currentLocation.value, to, null),
       {
         position: currentState.position + 1,
       },
@@ -253,11 +259,11 @@ function useHistoryStateNavigation(base: string) {
     )
 
     changeLocation(to, state, false)
-    location.value = to
+    currentLocation.value = to
   }
 
   return {
-    location,
+    location: currentLocation,
     state: historyState,
 
     push,

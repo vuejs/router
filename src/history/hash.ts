@@ -1,5 +1,6 @@
 import { RouterHistory } from './common'
 import { createWebHistory } from './html5'
+import { warn } from '../warning'
 
 /**
  * Creates a hash history.
@@ -30,5 +31,14 @@ export function createWebHashHistory(base?: string): RouterHistory {
   base = location.host ? base || location.pathname : location.pathname
   // allow the user to provide a `#` in the middle: `/base/#/app`
   if (base.indexOf('#') < 0) base += '#'
+
+  if (__DEV__ && !base.endsWith('#/') && !base.endsWith('#')) {
+    warn(
+      `A hash base must end with a "#":\n"${base}" should be "${base.replace(
+        /#.*$/,
+        '#'
+      )}".`
+    )
+  }
   return createWebHistory(base)
 }

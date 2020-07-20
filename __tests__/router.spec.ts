@@ -172,12 +172,6 @@ describe('Router', () => {
       fullPath: '/foo?bar=baz#hey',
       href: '#/foo?bar=baz#hey',
     })
-    history = createWebHashHistory('/with/#/base/')
-    ;({ router } = await newRouter({ history }))
-    expect(router.resolve('/foo?bar=baz#hey')).toMatchObject({
-      fullPath: '/foo?bar=baz#hey',
-      href: '#/base/foo?bar=baz#hey',
-    })
   })
 
   it('can await router.go', async () => {
