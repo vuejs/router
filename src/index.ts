@@ -49,7 +49,8 @@ export {
   ScrollBehavior,
 } from './router'
 
-// waiting for RFC isNavigationFailure
+// waiting for RFC isNavigationFailure to be merged
+// https://github.com/vuejs/rfcs/pull/184
 export { NavigationFailureType, NavigationFailure } from './errors'
 
 export { onBeforeRouteLeave, onBeforeRouteUpdate } from './navigationGuards'
