@@ -34,7 +34,6 @@ export interface RouteRecordNormalized {
    */
   meta: Exclude<_RouteRecordBase['meta'], void>
   /**
-   * Object of props options with the same keys as `components`
    * {@inheritDoc RouteRecordMultipleViews.props}
    */
   props: Record<string, _RouteRecordProps>
