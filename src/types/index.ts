@@ -278,13 +278,20 @@ export interface NavigationGuardNext {
 
 export type NavigationGuardNextCallback = (vm: ComponentPublicInstance) => any
 
+export type NavigationGuardReturn =
+  | void
+  | Error
+  | RouteLocationRaw
+  | boolean
+  | NavigationGuardNextCallback
+
 export interface NavigationGuard {
   (
     // TODO: we could maybe add extra information like replace: true/false
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
     next: NavigationGuardNext
-  ): any
+  ): NavigationGuardReturn | Promise<NavigationGuardReturn>
 }
 
 export interface NavigationGuardWithThis<T> {
@@ -293,7 +300,7 @@ export interface NavigationGuardWithThis<T> {
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
     next: NavigationGuardNext
-  ): any
+  ): NavigationGuardReturn | Promise<NavigationGuardReturn>
 }
 
 export interface PostNavigationGuard {
