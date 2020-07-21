@@ -691,6 +691,7 @@ export function createRouter(options: RouterOptions): Router {
     for (const record of leavingRecords) {
       // remove registered guards from removed matched records
       record.leaveGuards = []
+      record.updateGuards = []
       // free the references
       record.instances = {}
       record.enterCallbacks = {}
