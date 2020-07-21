@@ -100,13 +100,36 @@ describe('beforeRouteLeave', () => {
     await router.push('/guard')
     expect(beforeRouteLeave).not.toHaveBeenCalled()
 
+    // simulate a mounted route component
+    router.currentRoute.value.matched[0].instances.default = {} as any
+
     await router.push('/foo')
     expect(beforeRouteLeave).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not call beforeRouteLeave guard if the view is not mounted', async () => {
+    const router = createRouter({ routes })
+    beforeRouteLeave.mockImplementationOnce((to, from, next) => {
+      next()
+    })
+    await router.push('/guard')
+    expect(beforeRouteLeave).not.toHaveBeenCalled()
+
+    // usually we would have to simulate a mounted route component
+    // router.currentRoute.value.matched[0].instances.default = {} as any
+
+    await router.push('/foo')
+    expect(beforeRouteLeave).not.toHaveBeenCalled()
   })
 
   it('calls beforeRouteLeave guard on navigation between children', async () => {
     const router = createRouter({ routes })
     await router.push({ name: 'nested-path' })
+
+    // simulate a mounted route component
+    router.currentRoute.value.matched[0].instances.default = {} as any
+    router.currentRoute.value.matched[1].instances.default = {} as any
+
     resetMocks()
     await router.push({ name: 'nested-path-b' })
     expect(nested.nestedEmpty).not.toHaveBeenCalled()
@@ -146,6 +169,11 @@ describe('beforeRouteLeave', () => {
       expect(count++).toBe(2)
       next()
     })
+
+    // simulate a mounted route component
+    router.currentRoute.value.matched[0].instances.default = {} as any
+    router.currentRoute.value.matched[1].instances.default = {} as any
+    router.currentRoute.value.matched[2].instances.default = {} as any
 
     await router.push('/')
     expect(nested.parent).toHaveBeenCalledTimes(1)

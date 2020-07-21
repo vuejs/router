@@ -44,13 +44,14 @@ let looper = [1, 2, 3]
 const NamedViews: RouteComponent[] = looper.map(i => ({
   name: 'part-' + i,
 
-  template: `<div class="named part-${i}">Part ${i}. Updated <span class="count">{{ count }}</span></div>`,
+  template: `<div class="named" id="part-${i}">Part ${i}. Updated <span class="count">{{ count }}</span></div>`,
 
   data: () => ({ count: 0 }),
 
   beforeRouteUpdate(to, from, next) {
+    console.log('update of', i)
     // @ts-ignore
-    // this.count++
+    this.count++
     next()
   },
 }))
@@ -118,7 +119,6 @@ looper.forEach((n, i) => {
   mountBtn.addEventListener('click', () => {
     let app = (apps[i] = createApp({
       template: `
-    <div id="app-${i}">
       <ul>
         <li><router-link to="/">Home</router-link></li>
         <li><router-link to="/users/1">User 1</router-link></li>
@@ -127,7 +127,6 @@ looper.forEach((n, i) => {
 
       <router-view></router-view>
       <router-view name="part-${n}"></router-view>
-    </div>
   `,
     }))
     app.use(router)

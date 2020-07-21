@@ -33,8 +33,22 @@ describe('beforeRouteUpdate', () => {
     await router.push('/guard/valid')
     // not called on initial navigation
     expect(beforeRouteUpdate).not.toHaveBeenCalled()
+    // simulate a mounted route component
+    router.currentRoute.value.matched[0].instances.default = {} as any
     await router.push('/guard/other')
     expect(beforeRouteUpdate).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not call beforeRouteUpdate guard if the view is not mounted', async () => {
+    const router = createRouter({ routes })
+    beforeRouteUpdate.mockImplementationOnce(noGuard)
+    await router.push('/guard/valid')
+    // not called on initial navigation
+    expect(beforeRouteUpdate).not.toHaveBeenCalled()
+    // usually we would have to simulate a mounted route component
+    // router.currentRoute.value.matched[0].instances.default = {} as any
+    await router.push('/guard/other')
+    expect(beforeRouteUpdate).not.toHaveBeenCalled()
   })
 
   it('waits before navigating', async () => {

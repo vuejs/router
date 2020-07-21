@@ -211,6 +211,9 @@ describe('Lazy Loading', () => {
     expect(component).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenCalledTimes(0)
 
+    // simulate a mounted route component
+    router.currentRoute.value.matched[0].instances.default = {} as any
+
     await router.push('/')
     expect(spy).toHaveBeenCalledTimes(1)
   })
@@ -229,6 +232,9 @@ describe('Lazy Loading', () => {
     await router.push('/foo')
     expect(component).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenCalledTimes(0)
+
+    // simulate a mounted route component
+    router.currentRoute.value.matched[0].instances.default = {} as any
 
     await router.push('/bar')
     expect(spy).toHaveBeenCalledTimes(1)

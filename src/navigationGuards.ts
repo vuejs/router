@@ -200,6 +200,9 @@ export function extractComponentsGuards(
         rawComponent = () => promise
       }
 
+      // skip update and leave guards if the route component is not mounted
+      if (guardType !== 'beforeRouteEnter' && !record.instances[name]) continue
+
       if (isRouteComponent(rawComponent)) {
         // __vccOpts is added by vue-class-component and contain the regular options
         let options: ComponentOptions =

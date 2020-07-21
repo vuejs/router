@@ -109,16 +109,16 @@ module.exports = {
       .assert.containsText('#app-1 .home', 'Home')
       // toggle multiple times
       .click('#app-1 li:nth-child(2) a')
-      .assert.containsText('#app-1 .count', '0')
+      .assert.containsText('#part-1 .count', '0')
       .click('#app-1 li:nth-child(3) a')
-      .assert.containsText('#app-1 .count', '1')
+      .assert.containsText('#part-1 .count', '1')
       .click('#mount2')
-      .assert.containsText('#app-2 .user', 'User 2')
+      .assert.containsText('#app-2 .user', 'User')
       .click('#app-1 li:nth-child(2) a')
       // first one keeps updating
-      .assert.containsText('#app-1 .count', '2')
+      .assert.containsText('#part-1 .count', '2')
       // second app only updated once
-      .assert.containsText('#app-2 .count', '1')
+      .assert.containsText('#part-2 .count', '1')
       .click('#mount3')
   },
 }
