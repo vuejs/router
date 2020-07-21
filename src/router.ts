@@ -985,15 +985,19 @@ function extractChangingRecords(
   const updatingRecords: RouteRecordNormalized[] = []
   const enteringRecords: RouteRecordNormalized[] = []
 
-  // TODO: could be optimized with one single for loop
-  for (const record of from.matched) {
-    if (to.matched.indexOf(record) < 0) leavingRecords.push(record)
-    else updatingRecords.push(record)
-  }
-
-  for (const record of to.matched) {
-    // the type doesn't matter because we are comparing per reference
-    if (from.matched.indexOf(record as any) < 0) enteringRecords.push(record)
+  const len = Math.max(from.matched.length, to.matched.length)
+  for (let i = 0; i < len; i++) {
+    const recordFrom = from.matched[i]
+    if (recordFrom) {
+      if (to.matched.indexOf(recordFrom) < 0) leavingRecords.push(recordFrom)
+      else updatingRecords.push(recordFrom)
+    }
+    const recordTo = to.matched[i]
+    if (recordTo) {
+      // the type doesn't matter because we are comparing per reference
+      if (from.matched.indexOf(recordTo as any) < 0)
+        enteringRecords.push(recordTo)
+    }
   }
 
   return [leavingRecords, updatingRecords, enteringRecords]
