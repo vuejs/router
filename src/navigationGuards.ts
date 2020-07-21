@@ -152,14 +152,17 @@ export function guardToPromiseFn(
       }
 
       // wrapping with Promise.resolve allows it to work with both async and sync guards
-      Promise.resolve(
+      let guardCall = Promise.resolve(
         guard.call(
           record && record.instances[name!],
           to,
           from,
           __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
         )
-      ).catch(err => reject(err))
+      )
+
+      if (guard.length < 3) guardCall.then(next)
+      guardCall.catch(err => reject(err))
     })
 }
 
