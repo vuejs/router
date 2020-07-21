@@ -23,6 +23,12 @@ export interface RouteRecordNormalized {
   leaveGuards: NavigationGuard[]
   updateGuards: NavigationGuard[]
   enterCallbacks: NavigationGuardNextCallback[]
+  // having the instances on the record mean beforeRouteUpdate and
+  // beforeRouteLeave guards can only be invoked with the latest mounted app
+  // instance if there are multiple application instances rendering the same
+  // view, basically duplicating the content on the page, which shouldn't happen
+  // in practice. It will work if multiple apps are rendering different named
+  // views.
   instances: Record<string, ComponentPublicInstance | undefined | null>
   // can only be of of the same type as this record
   aliasOf: RouteRecordNormalized | undefined

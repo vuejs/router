@@ -70,7 +70,7 @@ export const RouterViewImpl = defineComponent({
           : routePropsOption
         : null
 
-      // we nee the value at the time we render because when we unmount, we
+      // we need the value at the time we render because when we unmount, we
       // navigated to a different location so the value is different
       const currentName = props.name
       const onVnodeMounted = () => {
