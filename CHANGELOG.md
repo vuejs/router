@@ -1,3 +1,18 @@
+# [4.0.0-beta.3](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2020-07-21)
+
+### Bug Fixes
+
+- **guards:** call beforeRouteEnter once per named view ([f2846ff](https://github.com/vuejs/vue-router-next/commit/f2846ff2a0796e58a9b04593909f7a30b7b68bb1))
+- **guards:** remove registered update guards after leaving ([41bffda](https://github.com/vuejs/vue-router-next/commit/41bffda49c24d560cfe555aa88bcebbbd1d03d68))
+- **guards:** skip update and leave guards of unmounted views ([f22e70a](https://github.com/vuejs/vue-router-next/commit/f22e70a6d15ce9834c9eb841d9fe9547c5d21e24))
+- **hash:** allow url to contain search params before hash ([ae8b289](https://github.com/vuejs/vue-router-next/commit/ae8b28934b1c9a092174ebd6fb5aa10aefe1de44)), closes [#378](https://github.com/vuejs/vue-router-next/issues/378)
+
+### Features
+
+- **errors:** export isNavigationFailure ([28a9b25](https://github.com/vuejs/vue-router-next/commit/28a9b25d976c325d3193cada8034a6e42297e665))
+- **guards:** allow guards to return a value instead of calling next ([#343](https://github.com/vuejs/vue-router-next/issues/343)) ([5cb209f](https://github.com/vuejs/vue-router-next/commit/5cb209f3bb53ac0ddf62152f695da610facf4724))
+- **guards:** wip context support in multi apps ([34d7390](https://github.com/vuejs/vue-router-next/commit/34d7390b946644a128ab6fd03fd821a91fd4782c))
+
 # [4.0.0-beta.2](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-07-07)
 
 Fix build cache issues
