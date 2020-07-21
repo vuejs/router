@@ -88,13 +88,39 @@ export interface RouteLocationMatched extends RouteRecordNormalized {
  * @internal
  */
 export interface _RouteLocationBase {
+  /**
+   * Percentage encoded pathname section of the URL.
+   */
   path: string
+  /**
+   * The whole location including the `search` and `hash`. This string is
+   * percentage encoded.
+   */
   fullPath: string
+  /**
+   * Object representation of the `search` property of the current location.
+   */
   query: LocationQuery
+  /**
+   * Hash of the current location. If present, starts with a `#`.
+   */
   hash: string
+  /**
+   * Name of the matched record
+   */
   name: RouteRecordName | null | undefined
+  /**
+   * Object of decoded params extracted from the `path`.
+   */
   params: RouteParams
+  /**
+   * Contains the location we were initially trying to access before ending up
+   * on the current location.
+   */
   redirectedFrom: RouteLocation | undefined
+  /**
+   * Merged `meta` properties from all of the matched route records.
+   */
   meta: Record<string | number | symbol, any>
 }
 
@@ -156,6 +182,8 @@ export interface _RouteRecordBase extends PathParserOptions {
   /**
    * Path of the record. Should start with `/` unless the record is the child of
    * another record.
+   *
+   * @example `/users/:id` matches `/users/1` as well as `/users/posva`.
    */
   path: string
   /**
