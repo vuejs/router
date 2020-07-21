@@ -1,5 +1,44 @@
 # vue-router-next [![CircleCI](https://circleci.com/gh/vuejs/vue-router-next.svg?style=svg)](https://circleci.com/gh/vuejs/vue-router-next)
 
+## Install as a package for your vue3 project
+
+```bash
+npm i @posva/vue-router-next --save
+```
+
+or
+
+```bash
+yarn add @posva/vue-router-next
+```
+
+### Installation
+
+(Yarn reccomended)
+
+Clone the repo:
+
+```bash
+  git clone https://github.com/vuejs/vue-router-next.git
+```
+
+or
+Download [here](https://github.com/vuejs/vue-router-next/archive/master.zip):
+
+Open the terminal and inside the project run:
+
+```bash
+  yarn install
+```
+
+then run
+
+```bash
+  yarn run dev
+```
+
+Navigate to `http://localhost:8080/`.
+
 ## Status: Beta
 
 The current codebase has most of the existing features on Vue Router v3.x and is usable. It supports all the [merged RFCs](https://github.com/vuejs/rfcs/pulls?q=is%3Apr+is%3Amerged+label%3Arouter).
