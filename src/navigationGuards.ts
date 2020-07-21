@@ -260,3 +260,16 @@ function isRouteComponent(
     '__vccOpts' in component
   )
 }
+
+/**
+ * 1. beforeRouteEnter callbacks
+ * 2. Dictionary of instances per view name
+ */
+export type GuardManagerEntry = [
+  NavigationGuardNextCallback[],
+  Record<string, ComponentPublicInstance | undefined | null>
+]
+
+export function createGuardManager() {
+  return new Map<RouteRecordNormalized, GuardManagerEntry>()
+}

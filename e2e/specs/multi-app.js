@@ -97,4 +97,28 @@ module.exports = {
 
       .end()
   },
+
+  /** @type {import('nightwatch').NightwatchTest} */
+  'supports navigation guards context with multiple apps': function (browser) {
+    browser
+      .url(baseURL)
+      .assert.urlEquals(baseURL + '/')
+
+      // mount multiple apps and expect to have one listener only
+      .click('#mount1')
+      .assert.containsText('#app-1 .home', 'Home')
+      // toggle multiple times
+      .click('#app-1 li:nth-child(2) a')
+      .assert.containsText('#app-1 .count', '0')
+      .click('#app-1 li:nth-child(3) a')
+      .assert.containsText('#app-1 .count', '1')
+      .click('#mount2')
+      .assert.containsText('#app-2 .user', 'User 2')
+      .click('#app-1 li:nth-child(2) a')
+      // first one keeps updating
+      .assert.containsText('#app-1 .count', '2')
+      // second app only updated once
+      .assert.containsText('#app-2 .count', '1')
+      .click('#mount3')
+  },
 }

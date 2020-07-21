@@ -1,14 +1,59 @@
-import { createRouter, createWebHistory } from '../../src'
+import { createRouter, createWebHistory, onBeforeRouteUpdate } from '../../src'
 import { RouteComponent } from '../../src/types'
-import { createApp, ref, watchEffect, App } from 'vue'
+import { createApp, ref, watchEffect, App, inject } from 'vue'
 
 const Home: RouteComponent = {
   template: `<div class="home">Home</div>`,
 }
 
 const User: RouteComponent = {
-  template: `<div class="user">User {{ $route.params.id }}</div>`,
+  template: `<div class="user">User {{ $route.params.id }}. Updated <span class="count">{{ count }}</span></div>`,
+  data: () => ({ count: 0 }),
+
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // @ts-ignore
+      console.log('enter from ', vm.id)
+      // @ts-ignore
+    })
+  },
+
+  beforeRouteUpdate(to, from, next) {
+    // this.count++
+    next()
+  },
+
+  setup() {
+    const id = inject('id')!
+
+    if (id !== 1)
+      onBeforeRouteUpdate(function (to, from, next) {
+        // @ts-ignore
+        console.log('update from ', id, this.id)
+        // @ts-ignore
+        // this.count++
+        next()
+      })
+
+    return { id }
+  },
 }
+
+let looper = [1, 2, 3]
+
+const NamedViews: RouteComponent[] = looper.map(i => ({
+  name: 'part-' + i,
+
+  template: `<div class="named part-${i}">Part ${i}. Updated <span class="count">{{ count }}</span></div>`,
+
+  data: () => ({ count: 0 }),
+
+  beforeRouteUpdate(to, from, next) {
+    // @ts-ignore
+    // this.count++
+    next()
+  },
+}))
 
 // path popstate listeners to track the call count
 let activePopStateListeners = ref(0)
@@ -43,7 +88,19 @@ const router = createRouter({
   history: createWebHistory('/' + __dirname),
   routes: [
     { path: '/', component: Home },
-    { path: '/users/:id', component: User },
+    {
+      path: '/users/:id',
+      components: {
+        default: User,
+        ...NamedViews.reduce(
+          (routeComponents, component) => ({
+            ...routeComponents,
+            [component.name!]: component,
+          }),
+          {} as Record<string, RouteComponent>
+        ),
+      },
+    },
   ],
 })
 
@@ -51,8 +108,6 @@ router.beforeEach((to, from, next) => {
   guardCallCount.value++
   next()
 })
-
-let looper = [1, 2, 3]
 
 let apps: Array<App | null> = [null, null, null]
 
@@ -71,10 +126,12 @@ looper.forEach((n, i) => {
       </ul>
 
       <router-view></router-view>
+      <router-view name="part-${n}"></router-view>
     </div>
   `,
     }))
     app.use(router)
+    app.provide('id', n)
     app.mount('#app-' + n)
   })
 
