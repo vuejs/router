@@ -75,7 +75,7 @@ export const RouterViewImpl = defineComponent({
       const currentName = props.name
       const onVnodeMounted = () => {
         matchedRoute.instances[currentName] = viewRef.value
-        matchedRoute.enterCallbacks.forEach(callback =>
+        ;(matchedRoute.enterCallbacks[currentName] || []).forEach(callback =>
           callback(viewRef.value!)
         )
       }

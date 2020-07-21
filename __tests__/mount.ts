@@ -18,12 +18,14 @@ import { compile } from '@vue/compiler-dom'
 import * as runtimeDom from '@vue/runtime-dom'
 import { RouteLocationNormalizedLoose } from './utils'
 import { routeLocationKey } from '../src/injectionSymbols'
+import { Router } from '../src'
 
 export interface MountOptions {
   propsData: Record<string, any>
   provide: Record<string | symbol, any>
   components: ComponentOptions['components']
   slots: Record<string, string>
+  router?: Router
 }
 
 interface Wrapper {
@@ -133,6 +135,8 @@ export function mount(
     function find(selector: string) {
       return rootEl.querySelector(selector)
     }
+
+    if (options.router) app.use(options.router)
 
     app.mount(rootEl)
 

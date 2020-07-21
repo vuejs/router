@@ -17,7 +17,7 @@ import {
   NavigationFailure,
   NavigationRedirectError,
 } from './errors'
-import { ComponentPublicInstance, ComponentOptions } from 'vue'
+import { ComponentOptions } from 'vue'
 import { inject, getCurrentInstance, warn } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
@@ -90,12 +90,28 @@ export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
 export function guardToPromiseFn(
   guard: NavigationGuard,
   to: RouteLocationNormalized,
+  from: RouteLocationNormalizedLoaded
+): () => Promise<void>
+export function guardToPromiseFn(
+  guard: NavigationGuard,
+  to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded,
-  instance?: ComponentPublicInstance | undefined | null,
-  record?: RouteRecordNormalized
+  record: RouteRecordNormalized,
+  name: string
+): () => Promise<void>
+export function guardToPromiseFn(
+  guard: NavigationGuard,
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalizedLoaded,
+  record?: RouteRecordNormalized,
+  name?: string
 ): () => Promise<void> {
   // keep a reference to the enterCallbackArray to prevent pushing callbacks if a new navigation took place
-  const enterCallbackArray = record && record.enterCallbacks
+  const enterCallbackArray =
+    record &&
+    // name is defined if record is because of the function overload
+    (record.enterCallbacks[name!] = record.enterCallbacks[name!] || [])
+
   return () =>
     new Promise((resolve, reject) => {
       const next: NavigationGuardNext = (
@@ -125,8 +141,9 @@ export function guardToPromiseFn(
           )
         } else {
           if (
-            record &&
-            record.enterCallbacks === enterCallbackArray &&
+            enterCallbackArray &&
+            // since enterCallbackArray is truthy, both record and name also are
+            record!.enterCallbacks[name!] === enterCallbackArray &&
             typeof valid === 'function'
           )
             enterCallbackArray.push(valid)
@@ -137,7 +154,7 @@ export function guardToPromiseFn(
       // wrapping with Promise.resolve allows it to work with both async and sync guards
       Promise.resolve(
         guard.call(
-          instance,
+          record && record.instances[name!],
           to,
           from,
           __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
@@ -188,10 +205,7 @@ export function extractComponentsGuards(
         let options: ComponentOptions =
           (rawComponent as any).__vccOpts || rawComponent
         const guard = options[guardType]
-        guard &&
-          guards.push(
-            guardToPromiseFn(guard, to, from, record.instances[name], record)
-          )
+        guard && guards.push(guardToPromiseFn(guard, to, from, record, name))
       } else {
         // start requesting the chunk already
         let componentPromise: Promise<RouteComponent | null> = (rawComponent as Lazy<
@@ -222,16 +236,7 @@ export function extractComponentsGuards(
             record.components[name] = resolvedComponent
             // @ts-ignore: the options types are not propagated to Component
             const guard: NavigationGuard = resolvedComponent[guardType]
-            return (
-              guard &&
-              guardToPromiseFn(
-                guard,
-                to,
-                from,
-                record.instances[name],
-                record
-              )()
-            )
+            return guard && guardToPromiseFn(guard, to, from, record, name)()
           })
         )
       }

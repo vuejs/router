@@ -22,7 +22,7 @@ export interface RouteRecordNormalized {
   beforeEnter: RouteRecordMultipleViews['beforeEnter']
   leaveGuards: NavigationGuard[]
   updateGuards: NavigationGuard[]
-  enterCallbacks: NavigationGuardNextCallback[]
+  enterCallbacks: Record<string, NavigationGuardNextCallback[]>
   // having the instances on the record mean beforeRouteUpdate and
   // beforeRouteLeave guards can only be invoked with the latest mounted app
   // instance if there are multiple application instances rendering the same
