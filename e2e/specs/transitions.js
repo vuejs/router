@@ -43,6 +43,12 @@ module.exports = {
       .assert.cssClassPresent('.view.home', 'fade-enter-active')
       .waitForElementNotPresent('.view.home.fade-enter-active', TIMEOUT)
 
+      .click('li:nth-child(5) a')
+      .assert.cssClassPresent('.view.home', 'fade-leave-active')
+      .waitForElementNotPresent('.view.home', TIMEOUT)
+      .click('li:nth-child(2) a')
+      .assert.cssClassPresent('.view.parent', 'fade-enter-active')
+
       .end()
   },
 }
