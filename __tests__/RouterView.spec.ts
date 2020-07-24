@@ -29,7 +29,7 @@ const props = { default: false }
 const routes = createRoutes({
   root: {
     fullPath: '/',
-    name: undefined,
+    name: 'home',
     path: '/',
     query: {},
     params: {},
@@ -330,6 +330,7 @@ describe('RouterView', () => {
       expect(wrapper.html()).toBe(`<div><div>Home</div></div>`)
       expect('can no longer be used directly inside').not.toHaveBeenWarned()
     })
+
     it('warns if KeepAlive wraps a RouterView', async () => {
       const route = createMockedRoute(routes.root)
       const wrapper = await mount(
@@ -390,6 +391,33 @@ describe('RouterView', () => {
       )
       expect(wrapper.html()).toBe(`<div>Home</div>`)
       expect('can no longer be used directly inside').toHaveBeenWarned()
+    })
+  })
+
+  describe('v-slot', () => {
+    async function factory(
+      initialRoute: RouteLocationNormalizedLoose,
+      propsData: any = {}
+    ) {
+      const route = createMockedRoute(initialRoute)
+      const wrapper = await mount(RouterView, {
+        propsData,
+        provide: route.provides,
+        components: { RouterView },
+        slots: {
+          default: `
+          <span>{{ route.name }}</span>
+          <component :is="Component"/>
+        `,
+        },
+      })
+
+      return { route, wrapper }
+    }
+
+    it('passes a Component and route', async () => {
+      const { wrapper } = await factory(routes.root)
+      expect(wrapper.html()).toBe(`<span>home</span><div>Home</div>`)
     })
   })
 
