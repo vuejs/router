@@ -113,7 +113,7 @@ export function scrollToPosition(position: ScrollPosition): void {
             // return to avoid other warnings
             return
           }
-        } catch {
+        } catch (err) {
           warn(
             `The selector "${position.el}" is invalid. If you are using an id selector, make sure to escape it. You can find more information about escaping characters in selectors at https://mathiasbynens.be/notes/css-escapes or use CSS.escape (https://developer.mozilla.org/en-US/docs/Web/API/CSS/escape).`
           )
