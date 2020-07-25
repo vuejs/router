@@ -1,3 +1,10 @@
+# [4.0.0-beta.4](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2020-07-25)
+
+### Bug Fixes
+
+- **router-view:** render the slot when there is no match ([bae42d4](https://github.com/vuejs/vue-router-next/commit/bae42d41c2240947e5b649e568cad274214c6346)), closes [#385](https://github.com/vuejs/vue-router-next/issues/385)
+- work on Edge by adding an argument to catch ([#383](https://github.com/vuejs/vue-router-next/issues/383)) ([9580bea](https://github.com/vuejs/vue-router-next/commit/9580bead1f03f1be95473e965daa1f1ee78921f3))
+
 # [4.0.0-beta.3](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2020-07-21)
 
 ### Bug Fixes
