@@ -2,13 +2,12 @@
 
 ## Status: Beta
 
-The current codebase has most of the existing features on Vue Router v3.x and is usable. It supports all the [merged RFCs](https://github.com/vuejs/rfcs/pulls?q=is%3Apr+is%3Amerged+label%3Arouter).
+- Most RFCs have been merged.
+- All [merged RFCs](https://github.com/vuejs/rfcs/pulls?q=is%3Apr+is%3Amerged+label%3A3.x+label%3Arouter) have been implemented.
+- Vue CLI now has experimental support via [vue-cli-plugin-vue-next](https://github.com/vuejs/vue-cli-plugin-vue-next).
+- Check the [playground](https://github.com/vuejs/vue-router-next/tree/master/playground) or [e2e tests](https://github.com/vuejs/vue-router-next/tree/master/e2e/modal) for a usage example.
 
-Since the library is still unstable **and because we want feedback** on bugs and missing features, **it will probably go through a few breaking changes**.
-
-Check the [playground](https://github.com/vuejs/vue-router-next/tree/master/playground) or [e2e tests](https://github.com/vuejs/vue-router-next/tree/master/e2e/modal) for a usage example.
-
-## Known issues
+## Know issues
 
 ### Breaking changes compared to vue-router@3.x
 
