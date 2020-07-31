@@ -164,9 +164,9 @@ export function guardToPromiseFn(
         )
       )
 
-      if (guard.length < 3) guardCall.then(next)
+      if (guard.length < 3) guardCall = guardCall.then(next)
       if (__DEV__ && guard.length > 2)
-        guardCall.then(() => {
+        guardCall = guardCall.then(() => {
           // @ts-ignore: _called is added at canOnlyBeCalledOnce
           if (!next._called)
             warn(
@@ -174,7 +174,7 @@ export function guardToPromiseFn(
                 guard.name ? '"' + guard.name + '"' : ''
               }:\n${guard.toString()}\n. If you are returning a value instead of calling "next", make sure to remove the "next" parameter from your function.`
             )
-          reject(new Error('Invalid navigation guard'))
+          return Promise.reject(new Error('Invalid navigation guard'))
         })
       guardCall.catch(err => reject(err))
     })
