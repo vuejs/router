@@ -51,6 +51,17 @@
   })
   ```
 - The object returned in `scrollBehavior` is now similar to [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions): `x` is renamed to `left` and `y` is renamed to `top`.
+- `transition` and `keep-alive` must now be used **inside** of `RouterView` via the `v-slot` API:
+  ```vue
+  <router-view v-slot="{ Component }">
+    <transition>
+      <keep-alive>
+        <component :is="Component" />
+      </keep-alive>
+    </transition>
+  </router-view>
+  ```
+  See more on the [KeepAlive](https://github.com/vuejs/vue-router-next/blob/master/e2e/keep-alive/index.ts) and the [Transition](https://github.com/vuejs/vue-router-next/blob/master/e2e/transitions/index.ts) examples.
 
 ### Typings
 
