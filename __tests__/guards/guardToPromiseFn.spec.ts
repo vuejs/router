@@ -1,6 +1,7 @@
 import { guardToPromiseFn } from '../../src/navigationGuards'
 import { START_LOCATION_NORMALIZED } from '../../src/types'
 import { ErrorTypes } from '../../src/errors'
+import { mockWarn } from 'jest-mock-warn'
 
 // stub those two
 const to = START_LOCATION_NORMALIZED
@@ -11,6 +12,7 @@ const from = {
 }
 
 describe('guardToPromiseFn', () => {
+  mockWarn()
   it('calls the guard with to, from and, next', async () => {
     const spy = jest.fn((to, from, next) => next())
     await expect(guardToPromiseFn(spy, to, from)()).resolves.toEqual(undefined)
@@ -231,5 +233,20 @@ describe('guardToPromiseFn', () => {
         expect(err).toBe(error)
       }
     })
+  })
+
+  it('warns if guard resolves without calling next', async () => {
+    expect.assertions(2)
+    await expect(
+      guardToPromiseFn((to, from, next) => false, to, from)()
+    ).rejects.toEqual(expect.any(Error))
+
+    // try {
+    //   await guardToPromiseFn((to, from, next) => false, to, from)()
+    // } catch (error) {
+    //   expect(error).toEqual(expect.any(Error))
+    // }
+
+    expect('callback was never called').toHaveBeenWarned()
   })
 })

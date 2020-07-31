@@ -302,6 +302,13 @@ export interface NavigationGuardNext {
   (location: RouteLocationRaw): void
   (valid: boolean): void
   (cb: NavigationGuardNextCallback): void
+  /**
+   * Allows to detect if `next` isn't called in a resolved guard. Used
+   * internally in DEV mode to emit a warning. Commented out to simplify
+   * typings.
+   * @internal
+   */
+  // _called: boolean
 }
 
 export type NavigationGuardNextCallback = (vm: ComponentPublicInstance) => any

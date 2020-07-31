@@ -165,6 +165,17 @@ export function guardToPromiseFn(
       )
 
       if (guard.length < 3) guardCall.then(next)
+      if (__DEV__ && guard.length > 2)
+        guardCall.then(() => {
+          // @ts-ignore: _called is added at canOnlyBeCalledOnce
+          if (!next._called)
+            warn(
+              `The "next" callback was never called inside of ${
+                guard.name ? '"' + guard.name + '"' : ''
+              }:\n${guard.toString()}\n. If you are returning a value instead of calling "next", make sure to remove the "next" parameter from your function.`
+            )
+          reject(new Error('Invalid navigation guard'))
+        })
       guardCall.catch(err => reject(err))
     })
 }
@@ -180,6 +191,8 @@ function canOnlyBeCalledOnce(
       warn(
         `The "next" callback was called more than once in one navigation guard when going from "${from.fullPath}" to "${to.fullPath}". It should be called exactly one time in each navigation guard. This will fail in production.`
       )
+    // @ts-ignore: we put it in the original one because it's easier to check
+    next._called = true
     if (called === 1) next.apply(null, arguments as any)
   }
 }
