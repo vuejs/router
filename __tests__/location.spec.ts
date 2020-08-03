@@ -5,8 +5,10 @@ import {
   stripBase,
   isSameRouteLocationParams,
   isSameRouteLocation,
+  resolveRelativePath,
 } from '../src/location'
 import { RouteLocationNormalizedLoaded } from 'src'
+import { mockWarn } from 'jest-mock-warn'
 
 describe('parseURL', () => {
   let parseURL = originalParseURL.bind(null, parseQuery)
@@ -281,5 +283,63 @@ describe('isSameRouteLocation', () => {
         { ...location, query: { b: 'b' } }
       )
     ).toBe(true)
+  })
+})
+
+describe('resolveRelativePath', () => {
+  mockWarn()
+  it('resolves relative direct path', () => {
+    expect(resolveRelativePath('add', '/users/posva')).toBe('/users/add')
+    expect(resolveRelativePath('add', '/users/posva/')).toBe('/users/posva/add')
+    expect(resolveRelativePath('add', '/users/posva/thing')).toBe(
+      '/users/posva/add'
+    )
+  })
+
+  it('resolves relative direct path with .', () => {
+    expect(resolveRelativePath('./add', '/users/posva')).toBe('/users/add')
+    expect(resolveRelativePath('./add', '/users/posva/')).toBe(
+      '/users/posva/add'
+    )
+    expect(resolveRelativePath('./add', '/users/posva/thing')).toBe(
+      '/users/posva/add'
+    )
+  })
+
+  it('resolves relative path with ..', () => {
+    expect(resolveRelativePath('../add', '/users/posva')).toBe('/add')
+    expect(resolveRelativePath('../add', '/users/posva/')).toBe('/users/add')
+    expect(resolveRelativePath('../add', '/users/posva/thing')).toBe(
+      '/users/add'
+    )
+  })
+
+  it('resolves multiple relative paths with ..', () => {
+    expect(resolveRelativePath('../../add', '/users/posva')).toBe('/add')
+    expect(resolveRelativePath('../../add', '/users/posva/')).toBe('/add')
+    expect(resolveRelativePath('../../add', '/users/posva/thing')).toBe('/add')
+    expect(resolveRelativePath('../../../add', '/users/posva')).toBe('/add')
+  })
+
+  it('works with the root', () => {
+    expect(resolveRelativePath('add', '/')).toBe('/add')
+    expect(resolveRelativePath('./add', '/')).toBe('/add')
+    expect(resolveRelativePath('../add', '/')).toBe('/add')
+    expect(resolveRelativePath('.././add', '/')).toBe('/add')
+    expect(resolveRelativePath('./../add', '/')).toBe('/add')
+    expect(resolveRelativePath('../../add', '/')).toBe('/add')
+    expect(resolveRelativePath('../../../add', '/')).toBe('/add')
+  })
+
+  it('ignores it location is absolute', () => {
+    expect(resolveRelativePath('/add', '/users/posva')).toBe('/add')
+  })
+
+  it('warns if from path is not absolute', () => {
+    resolveRelativePath('path', 'other')
+    resolveRelativePath('path', './other')
+    resolveRelativePath('path', '../other')
+
+    expect('Cannot resolve').toHaveBeenWarnedTimes(3)
   })
 })
