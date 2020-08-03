@@ -26,12 +26,26 @@ interface RouterMatcher {
   }
   getRoutes: () => RouteRecordMatcher[]
   getRecordMatcher: (name: RouteRecordName) => RouteRecordMatcher | undefined
+
+  /**
+   * Resolves a location. Gives access to the route record that corresponds to the actual path as well as filling the corresponding params objects
+   *
+   * @param location - MatcherLocationRaw to resolve to a url
+   * @param currentLocation - MatcherLocation of the current location
+   */
   resolve: (
     location: MatcherLocationRaw,
     currentLocation: MatcherLocation
   ) => MatcherLocation
 }
 
+/**
+ * Creates a Router Matcher.
+ *
+ * @internal
+ * @param routes - array of initial routes
+ * @param globalOptions - global route options
+ */
 export function createRouterMatcher(
   routes: RouteRecordRaw[],
   globalOptions: PathParserOptions
@@ -192,12 +206,6 @@ export function createRouterMatcher(
       matcherMap.set(matcher.record.name, matcher)
   }
 
-  /**
-   * Resolves a location. Gives access to the route record that corresponds to the actual path as well as filling the corresponding params objects
-   *
-   * @param location - MatcherLocationRaw to resolve to a url
-   * @param currentLocation - MatcherLocation of the current location
-   */
   function resolve(
     location: Readonly<MatcherLocationRaw>,
     currentLocation: Readonly<MatcherLocation>
