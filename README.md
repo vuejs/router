@@ -62,10 +62,6 @@
   </router-view>
   ```
   See more on the [KeepAlive](https://github.com/vuejs/vue-router-next/blob/master/e2e/keep-alive/index.ts) and the [Transition](https://github.com/vuejs/vue-router-next/blob/master/e2e/transitions/index.ts) examples.
-- Encoding is now more consistent. The initial navigation should yield the same results are in-app navigations.
-  - Values in `path`, `fullPath` are not decoded anymore. They will appear as provided by the browser (most browsers provide them encoded).
-  - `params`, `query` and `hash` are now all decoded
-  - When using `push`, `resolve` and `replace` and providing a `string` location or a `path` property in an object, **it must be encoded**. `params`, `query` and `hash` must be provided in its decoded version.
 
 ### Typings
 
@@ -127,6 +123,10 @@ These are technically breaking changes but they fix an inconsistent behavior.
   ]
   ```
   Note this will work if `path` was `/parent/` as the relative location `home` to `/parent/` is indeed `/parent/home` but the relative location of `home` to `/parent` is `/home`
+- Encoding is now more consistent. The initial navigation should yield the same results are in-app navigations.
+  - Values in `path`, `fullPath` are not decoded anymore. They will appear as provided by the browser (most browsers provide them encoded).
+  - `params`, `query` and `hash` are now all decoded
+  - When using `push`, `resolve` and `replace` and providing a `string` location or a `path` property in an object, **it must be encoded**. `params`, `query` and `hash` must be provided in its decoded version.
 
 ## Contributing
 
