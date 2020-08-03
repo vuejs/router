@@ -1,3 +1,11 @@
+# [4.0.0-beta.5](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.4...v4.0.0-beta.5) (2020-08-03)
+
+### Features
+
+- resolve simple relative links ([af1deaa](https://github.com/vuejs/vue-router-next/commit/af1deaab5e0fd1597a7cf7ee9a6d01cac507970d))
+- **url:** simple resolve relative location ([69c44db](https://github.com/vuejs/vue-router-next/commit/69c44db3fd5363a833675b4b0ef14f97ac691af6))
+- **warn:** warn if guard returns without calling next ([6e16bdd](https://github.com/vuejs/vue-router-next/commit/6e16bdd6338ea3b7da1f8a0b3000ec880be840d6))
+
 # [4.0.0-beta.4](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2020-07-25)
 
 ### Bug Fixes
