@@ -21,6 +21,7 @@ then
 
   # changelog
   yarn run changelog
+  yarn prettier --write CHANGELOG.md
   echo "Please check the git history and the changelog and press enter"
   read OKAY
 
