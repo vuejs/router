@@ -335,6 +335,12 @@ describe('resolveRelativePath', () => {
     expect(resolveRelativePath('/add', '/users/posva')).toBe('/add')
   })
 
+  it('resolves empty path', () => {
+    expect(resolveRelativePath('', '/users/posva')).toBe('/users/posva')
+    expect(resolveRelativePath('', '/users')).toBe('/users')
+    expect(resolveRelativePath('', '/')).toBe('/')
+  })
+
   it('warns if from path is not absolute', () => {
     resolveRelativePath('path', 'other')
     resolveRelativePath('path', './other')

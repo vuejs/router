@@ -72,6 +72,7 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  { path: '/:pathMatch(.*)', component: components.Home, name: 'catch-all' },
 ]
 
 async function newRouter(
@@ -329,6 +330,26 @@ describe('Router', () => {
       path: href,
       href: href,
     })
+  })
+
+  it('resolves relative locations', async () => {
+    const { router } = await newRouter()
+    await router.push('/users/posva')
+    await router.push('add')
+    expect(router.currentRoute.value.path).toBe('/users/add')
+    await router.push('/users/posva')
+    await router.push('./add')
+    expect(router.currentRoute.value.path).toBe('/users/add')
+  })
+
+  it('resolves parent relative locations', async () => {
+    const { router } = await newRouter()
+    await router.push('/users/posva')
+    await router.push('../add')
+    expect(router.currentRoute.value.path).toBe('/add')
+    await router.push('/users/posva')
+    await router.push('../../../add')
+    expect(router.currentRoute.value.path).toBe('/add')
   })
 
   describe('Warnings', () => {

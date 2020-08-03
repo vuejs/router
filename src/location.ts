@@ -72,16 +72,8 @@ export function parseURL(
   }
 
   // no search and no query
-  path = path != null ? path : location
+  path = resolveRelativePath(path != null ? path : location, currentLocation)
   // empty path means a relative query or hash `?foo=f`, `#thing`
-  if (!path) {
-    path = currentLocation + path
-  } else if (path[0] !== '/') {
-    // relative to current location. Currently we only support simple relative
-    // but no `..`, `.`, or complex like `../.././..`. We will always leave the
-    // leading slash so we can safely append path
-    path = currentLocation.replace(/[^\/]*$/, '') + path
-  }
 
   return {
     fullPath: path + (searchString && '?') + searchString + hash,
@@ -210,6 +202,8 @@ export function resolveRelativePath(to: string, from: string): string {
     )
     return to
   }
+
+  if (!to) return from
 
   const fromSegments = from.split('/')
   const toSegments = to.split('/')
