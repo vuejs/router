@@ -62,6 +62,10 @@
   </router-view>
   ```
   See more on the [KeepAlive](https://github.com/vuejs/vue-router-next/blob/master/e2e/keep-alive/index.ts) and the [Transition](https://github.com/vuejs/vue-router-next/blob/master/e2e/transitions/index.ts) examples.
+- `parent` is removed from Route locations (`this.$route` and object returned by `router.resolve`). You can still access it via the `matched` array:
+  ```js
+  const parent = this.$route.matched[this.$route.matched.length -1]
+  ```
 
 ### Typings
 
