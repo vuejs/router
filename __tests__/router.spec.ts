@@ -217,7 +217,7 @@ describe('Router', () => {
   })
 
   it('navigates if the location does not exist', async () => {
-    const { router } = await newRouter()
+    const { router } = await newRouter({ routes: [routes[0]] })
     const spy = jest.fn((to, from, next) => next())
     router.beforeEach(spy)
     await router.push('/idontexist')
@@ -689,6 +689,26 @@ describe('Router', () => {
       expect(loc.redirectedFrom).toMatchObject({
         name: 'parent',
         path: '/parent',
+      })
+    })
+
+    // https://github.com/vuejs/vue-router-next/issues/404
+    it('works with named routes', async () => {
+      const history = createMemoryHistory()
+      const router = createRouter({
+        history,
+        routes: [
+          { name: 'foo', path: '/foo', redirect: '/bar' },
+          { path: '/bar', component: components.Bar },
+        ],
+      })
+      await expect(router.push('/foo')).resolves.toEqual(undefined)
+      const loc = router.currentRoute.value
+      expect(loc.name).toBe(undefined)
+      expect(loc.path).toBe('/bar')
+      expect(loc.redirectedFrom).toMatchObject({
+        name: 'foo',
+        path: '/foo',
       })
     })
   })

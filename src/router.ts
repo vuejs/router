@@ -427,13 +427,11 @@ export function createRouter(options: RouterOptions): Router {
       }
       return pushWithRedirect(
         assign(
-          {},
-          // having a path here would be a problem with relative locations but
-          // at the same time it doesn't make sense for a redirect to be
-          // relative (no name, no path) because it would create an infinite
-          // loop. Since newTargetLocation must either have a `path` or a
-          // `name`, this will never happen
-          targetLocation,
+          {
+            query: targetLocation.query,
+            hash: targetLocation.hash,
+            params: targetLocation.params,
+          },
           newTargetLocation,
           {
             state: data,
