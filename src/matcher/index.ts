@@ -228,6 +228,8 @@ export function createRouterMatcher(
         // paramsFromLocation is a new object
         paramsFromLocation(
           currentLocation.params,
+          // only keep params that exist in the resolved location
+          // TODO: only keep optional params coming from a parent record
           matcher.keys.map(k => k.name)
         ),
         location.params
