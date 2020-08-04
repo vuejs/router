@@ -32,6 +32,12 @@
     Object.values(record.components)
   )
   ```
+  - The `append` argument has been removed. You can manually concatenate the value to an existing `path` instead.
+- `RouterLink`
+  - `append` prop has been removed as well. Use the same workaround as above.
+  - `event` prop has been removed. Use the `v-slot` API instead. See [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0021-router-link-scoped-slot.md).
+  - `tag` prop has been removed. Use the `v-slot` API instead. See [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0021-router-link-scoped-slot.md).
+  - `exact` prop has been removed. The caveat it was fixing is no longer present. See [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0028-router-active-link.md).
 - If you use a `transition`, you may need to wait for the router to be _ready_ before mounting the app:
   ```js
   app.use(router)
