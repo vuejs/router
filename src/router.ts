@@ -425,6 +425,17 @@ export function createRouter(options: RouterOptions): Router {
         )
         return Promise.reject(new Error('Invalid redirect'))
       }
+
+      // if targetLocation has name, but newTargetLocation only has path,
+      // it would create an infinite loop.
+      newTargetLocation = assign(
+        {
+          path: '',
+          name: '',
+        },
+        newTargetLocation
+      )
+
       return pushWithRedirect(
         assign(
           {},
