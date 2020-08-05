@@ -4,7 +4,7 @@ import { assign } from '../utils'
 export type PathParams = Record<string, string | string[]>
 
 /**
- * @description A key
+ * A param in a url like `/users/:id`
  */
 interface PathParserParamKey {
   name: string
