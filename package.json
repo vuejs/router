@@ -58,7 +58,7 @@
     }
   ],
   "peerDependencies": {
-    "vue": "^3.0.0-beta.20"
+    "vue": "^3.0.0-rc.5"
   },
   "vetur": {
     "tags": "vetur/tags.json",
@@ -76,8 +76,8 @@
     "@types/jsdom": "^16.2.3",
     "@types/webpack": "^4.41.21",
     "@types/webpack-env": "^1.15.2",
-    "@vue/compiler-sfc": "3.0.0-rc.2",
-    "@vue/server-renderer": "^3.0.0-rc.2",
+    "@vue/compiler-sfc": "3.0.0-rc.5",
+    "@vue/server-renderer": "^3.0.0-rc.5",
     "axios": "^0.19.2",
     "browserstack-local": "^1.4.5",
     "chalk": "^4.1.0",
@@ -105,7 +105,7 @@
     "ts-loader": "^8.0.2",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7",
-    "vue": "^3.0.0-beta.20",
+    "vue": "^3.0.0-rc.5",
     "vue-loader": "^16.0.0-beta.4",
     "webpack": "^4.44.1",
     "webpack-bundle-analyzer": "^3.8.0",
