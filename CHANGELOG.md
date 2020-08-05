@@ -1,3 +1,14 @@
+# [4.0.0-beta.6](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.5...v4.0.0-beta.6) (2020-08-05)
+
+### Bug Fixes
+
+- **router:** stack overflow with redirect ([3594011](https://github.com/vuejs/vue-router-next/commit/359401107078348f0410abbd36cffb3b8d4d8f85)), closes [#404](https://github.com/vuejs/vue-router-next/issues/404)
+
+### Features
+
+- **router-link:** add ariaCurrentValue prop ([23e6e9c](https://github.com/vuejs/vue-router-next/commit/23e6e9c10b4f9cb9f074ebb4f56d2d99acac9097))
+- add Vetur support ([1f1189f](https://github.com/vuejs/vue-router-next/commit/1f1189fd23dc6ec318edd5d7e8f225b467d4d386)), closes [#381](https://github.com/vuejs/vue-router-next/issues/381)
+
 # [4.0.0-beta.5](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.4...v4.0.0-beta.5) (2020-08-03)
 
 ### Features
