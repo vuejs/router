@@ -13,6 +13,7 @@ import { mount, createMockedRoute } from './mount'
 import { nextTick } from 'vue'
 import { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/injectionSymbols'
+import { tick } from './utils'
 
 const records = {
   home: {} as RouteRecordNormalized,
@@ -420,6 +421,27 @@ describe('RouterLink', () => {
       locations.basic.normalized
     )
     expect(wrapper.find('a')!.className).toContain('router-link-active')
+  })
+
+  it('sets aria-current to page by default when exact active', async () => {
+    const { wrapper, route } = await factory(
+      locations.parent.normalized,
+      { to: locations.parent.string },
+      locations.parent.normalized
+    )
+    expect(wrapper.find('a')!.getAttribute('aria-current')).toBe('page')
+    route.set(locations.child.normalized)
+    await tick()
+    expect(wrapper.find('a')!.getAttribute('aria-current')).not.toBe('page')
+  })
+
+  it('can customize aria-current value', async () => {
+    const { wrapper } = await factory(
+      locations.basic.normalized,
+      { to: locations.basic.string, ariaCurrentValue: 'time' },
+      locations.basic.normalized
+    )
+    expect(wrapper.find('a')!.getAttribute('aria-current')).toBe('time')
   })
 
   it('can customize active class', async () => {
