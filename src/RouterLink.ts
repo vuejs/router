@@ -15,13 +15,41 @@ import { RouteRecord } from './matcher/types'
 import { assign } from './utils'
 
 export interface RouterLinkOptions {
+  /**
+   * Location the link should navigate to when clicked on.
+   */
   to: RouteLocationRaw
-  // TODO: refactor using extra options allowed in router.push. Needs RFC
+  /**
+   * Calls `router.replace` instead of `router.push`.
+   */
   replace?: boolean
+  // TODO: refactor using extra options allowed in router.push. Needs RFC
 }
 
 export interface RouterLinkProps extends RouterLinkOptions {
+  /**
+   * Whether RouterLink should not wrap its content in an `a` tag.
+   */
   custom?: boolean
+  /**
+   * Class to apply when the link is active
+   */
+  activeClass?: string
+  /**
+   * Class to apply when the link is exact active
+   */
+  exactActiveClass?: string
+  /**
+   * Value passed to the attribute `aria-current` when the link is exact active. Defaults to "page"
+   */
+  ariaCurrentValue?:
+    | 'page'
+    | 'step'
+    | 'location'
+    | 'date'
+    | 'time'
+    | 'true'
+    | 'false'
 }
 
 type UseLinkOptions = VueUseOptions<RouterLinkOptions>
@@ -101,6 +129,10 @@ export const RouterLinkImpl = defineComponent({
     // inactiveClass: String,
     exactActiveClass: String,
     custom: Boolean,
+    ariaCurrentValue: {
+      type: String as PropType<RouterLinkProps['ariaCurrentValue']>,
+      default: 'page',
+    },
   },
 
   setup(props, { slots, attrs }) {
@@ -133,7 +165,9 @@ export const RouterLinkImpl = defineComponent({
             'a',
             assign(
               {
-                'aria-current': link.isExactActive ? 'page' : null,
+                'aria-current': link.isExactActive
+                  ? props.ariaCurrentValue
+                  : null,
                 onClick: link.navigate,
                 href: link.href,
               },
