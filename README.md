@@ -45,7 +45,7 @@
   router.isReady().then(() => app.mount('#app'))
   ```
   Otherwise there will be an initial transition as if you provided the `appear` prop to `transition` because the router displays its initial location (nothing) and then displays the first location. This happens because navigations are all asynchronous now. **If you have navigation guards upon the initial navigation**, you might not want to block the app render until they are resolved.
-- On SSR, you need to manually pass the appropriate history by using a ternary:
+- On SSR, you need to manually pass the appropriate history:
   ```js
   // router.js
   let history = isServer ? createMemoryHistory() : createWebHistory()
@@ -56,7 +56,7 @@
     // resolve the request
   })
   ```
-- The object returned in `scrollBehavior` is now similar to [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions): `x` is renamed to `left` and `y` is renamed to `top`.
+- The object returned in `scrollBehavior` is now similar to [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions): `x` is renamed to `left` and `y` is renamed to `top`. See [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0035-router-scroll-position.md).
 - `transition` and `keep-alive` must now be used **inside** of `RouterView` via the `v-slot` API:
   ```vue
   <router-view v-slot="{ Component }">
@@ -67,10 +67,10 @@
     </transition>
   </router-view>
   ```
-  See more on the [KeepAlive](https://github.com/vuejs/vue-router-next/blob/master/e2e/keep-alive/index.ts) and the [Transition](https://github.com/vuejs/vue-router-next/blob/master/e2e/transitions/index.ts) examples.
+  See more on the [KeepAlive](https://github.com/vuejs/vue-router-next/blob/master/e2e/keep-alive/index.ts) and the [Transition](https://github.com/vuejs/vue-router-next/blob/master/e2e/transitions/index.ts) examples. See [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0034-router-view-keep-alive-transitions.md).
 - `parent` is removed from Route locations (`this.$route` and object returned by `router.resolve`). You can still access it via the `matched` array:
   ```js
-  const parent = this.$route.matched[this.$route.matched.length -1]
+  const parent = this.$route.matched[this.$route.matched.length - 2]
   ```
 
 ### Typings
