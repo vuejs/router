@@ -763,7 +763,7 @@ describe('Router', () => {
 
   describe('Dynamic Routing', () => {
     it('resolves new added routes', async () => {
-      const { router } = await newRouter()
+      const { router } = await newRouter({ routes: [] })
       expect(router.resolve('/new-route')).toMatchObject({
         name: undefined,
         matched: [],
@@ -793,7 +793,7 @@ describe('Router', () => {
     })
 
     it('can redirect to children in the middle of navigation', async () => {
-      const { router } = await newRouter()
+      const { router } = await newRouter({ routes: [] })
       expect(router.resolve('/new-route')).toMatchObject({
         name: undefined,
         matched: [],
@@ -849,7 +849,7 @@ describe('Router', () => {
     })
 
     it('can reroute to child', async () => {
-      const { router } = await newRouter()
+      const { router } = await newRouter({ routes: [] })
       router.addRoute({
         path: '/new',
         component: components.Foo,
@@ -890,7 +890,9 @@ describe('Router', () => {
     })
 
     it('stops resolving removed routes', async () => {
-      const { router } = await newRouter()
+      const { router } = await newRouter({
+        routes: [routes.find(route => route.name === 'Foo')!],
+      })
       // regular route
       router.removeRoute('Foo')
       expect(router.resolve('/foo')).toMatchObject({
