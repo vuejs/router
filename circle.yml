@@ -67,7 +67,7 @@ jobs:
       - run: yarn test:types
       - run: yarn build
       - run: yarn build:dts
-      - run: yarn run test:tsd
+      - run: yarn run test:dts
       # Save cache after this task. At this point e2e are still running
       - save_cache:
           key: v2-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}

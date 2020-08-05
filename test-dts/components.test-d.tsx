@@ -1,9 +1,10 @@
-import { expectError, expectType } from 'tsd'
 import {
   RouterLink,
   RouterView,
   createRouter,
   createMemoryHistory,
+  expectError,
+  expectType,
 } from './index'
 
 let router = createRouter({
@@ -12,8 +13,11 @@ let router = createRouter({
 })
 
 // RouterLink
+// @ts-expect-error
 expectError(<RouterLink />)
+// @ts-expect-error
 expectError(<RouterLink to="/" custom="text" />)
+// @ts-expect-error
 expectError(<RouterLink to="/" replace="text" />)
 expectType<JSX.Element>(<RouterLink to="/foo" replace />)
 expectType<JSX.Element>(<RouterLink to="/foo" />)
