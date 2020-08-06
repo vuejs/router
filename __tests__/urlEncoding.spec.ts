@@ -12,6 +12,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
   { path: '/p/:p', component: components.Bar, name: 'params' },
   { path: '/p/:p+', component: components.Bar, name: 'repeat' },
+  { path: '/optional/:a/:b?', component: components.Bar, name: 'optional' },
 ]
 
 function createRouter() {
@@ -42,7 +43,8 @@ describe('URL Encoding', () => {
     const router = createRouter()
     await router.push('/p/bar')
     await router.push({ params: { p: 'foo' } })
-    expect(encoding.encodeParam).toHaveBeenCalledTimes(1)
+    expect(encoding.encodeParam).toHaveBeenCalledTimes(2)
+    expect(encoding.encodeParam).toHaveBeenCalledWith('bar')
     expect(encoding.encodeParam).toHaveBeenCalledWith('foo')
   })
 
@@ -75,16 +77,17 @@ describe('URL Encoding', () => {
     expect(encoding.decode).toHaveBeenNthCalledWith(2, 'bar', 1, ['foo', 'bar'])
   })
 
-  it('keeps decoded values in params', async () => {
+  it('decodes values in params', async () => {
     // @ts-ignore: override to make the difference
     encoding.decode = () => 'd'
     // @ts-ignore
     encoding.encodeParam = () => 'e'
     const router = createRouter()
-    await router.push({ name: 'params', params: { p: '%' } })
+    await router.push({ name: 'optional', params: { a: 'a%' } })
+    await router.push({ params: { b: 'b%' } })
     expect(router.currentRoute.value).toMatchObject({
-      fullPath: '/p/e',
-      params: { p: '%' },
+      fullPath: '/optional/e/e',
+      params: { b: 'd', a: 'd' },
     })
   })
 

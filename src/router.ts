@@ -239,10 +239,11 @@ export function createRouter(options: RouterOptions): Router {
 
   function resolve(
     rawLocation: Readonly<RouteLocationRaw>,
-    currentLocation?: Readonly<RouteLocationNormalizedLoaded>
+    currentLocation?: RouteLocationNormalizedLoaded
   ): RouteLocation & { href: string } {
     // const objectLocation = routerLocationAsObject(rawLocation)
-    currentLocation = currentLocation || currentRoute.value
+    // we create a copy to modify it later
+    currentLocation = { ...(currentLocation || currentRoute.value) }
     if (typeof rawLocation === 'string') {
       let locationNormalized = parseURL(
         parseQuery,
@@ -293,9 +294,13 @@ export function createRouter(options: RouterOptions): Router {
         path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path,
       })
     } else {
+      // pass encoded values to the matcher so it can produce encoded path and fullPath
       matcherLocation = assign({}, rawLocation, {
         params: encodeParams(rawLocation.params),
       })
+      // current location params are decoded, we need to encode them in case the
+      // matcher merges the params
+      currentLocation.params = encodeParams(currentLocation.params)
     }
 
     let matchedRoute = matcher.resolve(matcherLocation, currentLocation)
@@ -307,11 +312,9 @@ export function createRouter(options: RouterOptions): Router {
       )
     }
 
-    // put back the unencoded params as given by the user (avoid the cost of decoding them)
-    matchedRoute.params =
-      'params' in rawLocation
-        ? normalizeParams(rawLocation.params)
-        : decodeParams(matchedRoute.params)
+    // decoding them) the matcher might have merged current location params so
+    // we need to run the decoding again
+    matchedRoute.params = normalizeParams(decodeParams(matchedRoute.params))
 
     const fullPath = stringifyURL(
       stringifyQuery,
