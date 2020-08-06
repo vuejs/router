@@ -157,9 +157,6 @@ export function guardToPromiseFn(
           record && record.instances[name!],
           to,
           from,
-          // TODO: could wrap in dev to check if the guard returns before
-          // calling next with 3 or more arguments. This would help people
-          // forgetting to remove the `next` argument
           __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
         )
       )

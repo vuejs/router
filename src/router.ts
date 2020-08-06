@@ -490,8 +490,31 @@ export function createRouter(options: RouterOptions): Router {
         if (failure) {
           if (
             isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
-          )
-            // preserve the original redirectedFrom if any
+          ) {
+            if (
+              __DEV__ &&
+              // we are redirecting to the same location we were already at
+              isSameRouteLocation(
+                stringifyQuery,
+                resolve(failure.to),
+                toLocation
+              ) &&
+              // and we have done it a couple of times
+              redirectedFrom &&
+              // @ts-ignore
+              (redirectedFrom._count = redirectedFrom._count
+                ? // @ts-ignore
+                  redirectedFrom._count + 1
+                : 1) > 10
+            ) {
+              warn(
+                `Detected an infinite redirection in a navigation guard when going from "${from.fullPath}" to "${toLocation.fullPath}". Aborting to avoid a Stack Overflow. This will break in production if not fixed.`
+              )
+              return Promise.reject(
+                new Error('Infinite redirect in navigation guard')
+              )
+            }
+
             return pushWithRedirect(
               // keep options
               assign(locationAsObject(failure.to), {
@@ -499,8 +522,10 @@ export function createRouter(options: RouterOptions): Router {
                 force,
                 replace,
               }),
+              // preserve the original redirectedFrom if any
               redirectedFrom || toLocation
             )
+          }
         } else {
           // if we fail we don't finalize the navigation
           failure = finalizeNavigation(
