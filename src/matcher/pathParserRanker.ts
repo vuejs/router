@@ -218,7 +218,7 @@ export function tokensToParser(
     // for optional parameters to allow to be empty
     let avoidDuplicatedSlash: boolean = false
     for (const segment of segments) {
-      if (!avoidDuplicatedSlash || path[path.length - 1] !== '/') path += '/'
+      if (!avoidDuplicatedSlash || !path.endsWith('/')) path += '/'
       avoidDuplicatedSlash = false
 
       for (const token of segment) {
@@ -234,9 +234,12 @@ export function tokensToParser(
             )
           const text: string = Array.isArray(param) ? param.join('/') : param
           if (!text) {
-            // do not append a slash on the next iteration
-            if (optional) avoidDuplicatedSlash = true
-            else throw new Error(`Missing required param "${value}"`)
+            if (optional) {
+              // remove the last slash
+              if (path.endsWith('/')) path = path.slice(0, -1)
+              // do not append a slash on the next iteration
+              else avoidDuplicatedSlash = true
+            } else throw new Error(`Missing required param "${value}"`)
           }
           path += text
         }

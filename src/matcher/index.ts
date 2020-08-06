@@ -230,7 +230,7 @@ export function createRouterMatcher(
           currentLocation.params,
           // only keep params that exist in the resolved location
           // TODO: only keep optional params coming from a parent record
-          matcher.keys.map(k => k.name)
+          matcher.keys.filter(k => !k.optional).map(k => k.name)
         ),
         location.params
       )

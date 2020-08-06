@@ -458,17 +458,21 @@ describe('Path parser', () => {
     })
 
     it('param?', () => {
-      matchRegExp('^(?:/(\\d+))?$', [
+      matchRegExp(
+        '^(?:/(\\d+))?/?$',
         [
-          {
-            type: TokenType.Param,
-            value: 'id',
-            regexp: '\\d+',
-            repeatable: false,
-            optional: true,
-          },
+          [
+            {
+              type: TokenType.Param,
+              value: 'id',
+              regexp: '\\d+',
+              repeatable: false,
+              optional: true,
+            },
+          ],
         ],
-      ])
+        { strict: false }
+      )
     })
 
     it('static and param?', () => {
@@ -651,6 +655,15 @@ describe('Path parser', () => {
       matchParams('/:a*', '/', { a: '' })
     })
 
+    it('static then empty param optional', () => {
+      matchParams('/a/:a?', '/a', { a: '' })
+      matchParams('/a/:a?', '/a/a', { a: 'a' })
+      matchParams('/a/:a?', '/a/a/', { a: 'a' })
+      matchParams('/a/:a?', '/a/', { a: '' })
+      matchParams('/a/:a*', '/a', { a: '' })
+      matchParams('/a/:a*', '/a/', { a: '' })
+    })
+
     it('static then param optional', () => {
       matchParams('/one/:a?', '/one/two', { a: 'two' })
       matchParams('/one/:a?', '/one/', { a: '' })
@@ -742,6 +755,11 @@ describe('Path parser', () => {
 
     it('repeatable params*', () => {
       matchStringify('/:a*', { a: ['one', 'two'] }, '/one/two')
+    })
+
+    it('static then optional param?', () => {
+      matchStringify('/a/:a?', { a: '' }, '/a')
+      matchStringify('/a/:a?', {}, '/a')
     })
 
     it('optional param?', () => {

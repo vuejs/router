@@ -54,11 +54,8 @@ describe('RouterMatcher.resolve', () => {
     }
 
     // allows not passing params
-    if ('params' in location) {
-      resolved.params = resolved.params || location.params
-    } else {
-      resolved.params = resolved.params || {}
-    }
+    resolved.params =
+      resolved.params || ('params' in location ? location.params : {})
 
     const startCopy: MatcherLocation = {
       ...start,
@@ -670,6 +667,32 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
+    it('allows an optional trailing slash with optional param', () => {
+      assertRecordMatch(
+        { path: '/:a', components, name: 'a' },
+        { path: '/a/' },
+        { path: '/a/', params: { a: 'a' }, name: 'a' }
+      )
+      assertRecordMatch(
+        { path: '/a/:a', components, name: 'a' },
+        { path: '/a/a/' },
+        { path: '/a/a/', params: { a: 'a' }, name: 'a' }
+      )
+    })
+
+    it('allows an optional trailing slash with missing optional param', () => {
+      assertRecordMatch(
+        { path: '/:a?', components, name: 'a' },
+        { path: '/' },
+        { path: '/', params: { a: '' }, name: 'a' }
+      )
+      assertRecordMatch(
+        { path: '/a/:a?', components, name: 'a' },
+        { path: '/a/' },
+        { path: '/a/', params: { a: '' }, name: 'a' }
+      )
+    })
+
     // FIXME:
     it.skip('keeps required trailing slash (strict: true)', () => {
       const record = {
@@ -747,6 +770,21 @@ describe('RouterMatcher.resolve', () => {
         { name: 'p', path: '/a/b', params: { a: 'a', b: 'b' } },
         {
           params: { a: 'a', c: 'c' },
+          path: '/a',
+          matched: [],
+          meta: {},
+          name: undefined,
+        }
+      )
+    })
+
+    it('drops optional params', () => {
+      assertRecordMatch(
+        { path: '/:a/:b?', name: 'p', components },
+        { name: 'p', params: { a: 'b' } },
+        { name: 'p', path: '/b', params: { a: 'b' } },
+        {
+          params: { a: 'a', b: 'b' },
           path: '/a',
           matched: [],
           meta: {},
@@ -882,6 +920,36 @@ describe('RouterMatcher.resolve', () => {
           name: 'p',
           params: { a: 'a' },
           path: '/a',
+          matched: [],
+          meta: {},
+        }
+      )
+    })
+
+    it('keep optional params', () => {
+      assertRecordMatch(
+        { path: '/:a/:b?', name: 'p', components },
+        {},
+        { name: 'p', path: '/a/b', params: { a: 'a', b: 'b' } },
+        {
+          name: 'p',
+          params: { a: 'a', b: 'b' },
+          path: '/a/b',
+          matched: [],
+          meta: {},
+        }
+      )
+    })
+
+    it('merges optional params', () => {
+      assertRecordMatch(
+        { path: '/:a/:b?', name: 'p', components },
+        { params: { a: 'c' } },
+        { name: 'p', path: '/c/b', params: { a: 'c', b: 'b' } },
+        {
+          name: 'p',
+          params: { a: 'a', b: 'b' },
+          path: '/a/b',
           matched: [],
           meta: {},
         }
