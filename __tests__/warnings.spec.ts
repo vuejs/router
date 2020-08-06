@@ -207,4 +207,22 @@ describe('warnings', () => {
       'Detected an infinite redirection in a navigation guard when going from "/" to "/b"'
     ).toHaveBeenWarned()
   })
+
+  it('warns if `next` is called twice', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/', component },
+        { path: '/foo', component },
+      ],
+    })
+    router.beforeEach((to, from, next) => {
+      next()
+      next()
+    })
+    await router.push('/foo')
+    expect(
+      'It should be called exactly one time in each navigation guard'
+    ).toHaveBeenWarned()
+  })
 })
