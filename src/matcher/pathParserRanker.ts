@@ -235,7 +235,7 @@ export function tokensToParser(
           const text: string = Array.isArray(param) ? param.join('/') : param
           if (!text) {
             if (optional) {
-              // remove the last slash
+              // remove the last slash as we could be at the end
               if (path.endsWith('/')) path = path.slice(0, -1)
               // do not append a slash on the next iteration
               else avoidDuplicatedSlash = true
