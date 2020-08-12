@@ -63,7 +63,7 @@ export { RouterView, RouterViewProps } from './RouterView'
 export * from './useApi'
 
 declare module '@vue/runtime-core' {
-  interface ComponentCustomOptions {
+  export interface ComponentCustomOptions {
     /**
      * Guard called when the router is navigating to the route that is rendering
      * this component from a different route. Differently from `beforeRouteUpdate`
@@ -102,7 +102,7 @@ declare module '@vue/runtime-core' {
     beforeRouteLeave?: NavigationGuard
   }
 
-  interface ComponentCustomProperties {
+  export interface ComponentCustomProperties {
     /**
      * Normalized current location. See {@link RouteLocationNormalizedLoaded}.
      */
