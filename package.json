@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "build": "rollup -c rollup.config.js",
-    "build:dts": "api-extractor run --local --verbose",
+    "build:dts": "api-extractor run --local --verbose && tail -n +7 src/globalExtensions.ts >> dist/vue-router.d.ts",
     "dev": "webpack-dev-server --mode=development",
     "release": "bash scripts/release.sh",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 1",

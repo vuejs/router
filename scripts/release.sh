@@ -15,6 +15,7 @@ then
   rm -rf node_modules/.rts2_cache
   yarn run build
   yarn run build:dts
+  yarn run test:dts
 
   # generate the version so that the changelog can be generated too
   yarn version --no-git-tag-version --no-commit-hooks --new-version $VERSION
