@@ -9,6 +9,7 @@ import {
   VNodeProps,
   getCurrentInstance,
   computed,
+  Component,
 } from 'vue'
 import { RouteLocationNormalized, RouteLocationNormalizedLoaded } from './types'
 import {
@@ -52,7 +53,8 @@ export const RouterViewImpl = defineComponent({
     return () => {
       const route = props.route || injectedRoute
       const matchedRoute = matchedRouteRef.value
-      const ViewComponent = matchedRoute && matchedRoute.components[props.name]
+      const ViewComponent =
+        matchedRoute && (matchedRoute.components[props.name] as Component)
 
       if (!ViewComponent) {
         return slots.default

@@ -5,13 +5,29 @@ import {
   NavigationGuardNext,
   RouteLocationNormalized,
 } from './index'
-import { createApp, defineComponent } from 'vue'
+import { createApp, defineComponent, h } from 'vue'
 
 const component = defineComponent({})
+const Foo = defineComponent({
+  props: {
+    test: String,
+  },
+  setup() {
+    return {
+      title: 'homepage',
+    }
+  },
+  render() {
+    return h('div', `${this.title}: ${this.test}`)
+  },
+})
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: [{ path: '/', component }],
+  routes: [
+    { path: '/', component },
+    { path: '/foo', component: Foo },
+  ],
   parseQuery: search => ({}),
   stringifyQuery: query => '',
   strict: true,
