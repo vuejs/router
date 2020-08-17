@@ -1,12 +1,6 @@
 import { LocationQuery, LocationQueryRaw } from '../query'
 import { PathParserOptions } from '../matcher'
-import {
-  Ref,
-  ComputedRef,
-  ComponentPublicInstance,
-  defineComponent,
-  Component,
-} from 'vue'
+import { Ref, ComputedRef, ComponentPublicInstance, Component } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
@@ -167,7 +161,7 @@ export interface RouteLocationNormalized extends _RouteLocationBase {
   matched: RouteRecordNormalized[] // non-enumerable
 }
 
-type PublicAPIComponent = Component | ReturnType<typeof defineComponent>
+type PublicAPIComponent = Component | { new (): ComponentPublicInstance }
 
 export type RouteComponent = PublicAPIComponent
 export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
