@@ -94,7 +94,7 @@
     "nightwatch": "^1.3.7",
     "nightwatch-helpers": "^1.2.0",
     "prettier": "^2.0.5",
-    "rollup": "^2.23.1",
+    "rollup": "^2.26.3",
     "rollup-plugin-terser": "^6.1.0",
     "rollup-plugin-typescript2": "^0.27.2",
     "selenium-server": "^3.141.59",
