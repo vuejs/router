@@ -1,3 +1,16 @@
+# [4.0.0-beta.7](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.6...v4.0.0-beta.7) (2020-08-19)
+
+### Bug Fixes
+
+- **encoding:** encode partial params ([eb04117](https://github.com/vuejs/vue-router-next/commit/eb041175c02ab0dac093823574a85bbbbf2056eb))
+- **matcher:** avoid trailing slash with optional params ([faf0aab](https://github.com/vuejs/vue-router-next/commit/faf0aab6451848e5b4330e1d01033137a0c42a5a))
+- **types:** append declare module ([50ad404](https://github.com/vuejs/vue-router-next/commit/50ad404ae45086f051b01ac552e4a3ab98535633)), closes [#419](https://github.com/vuejs/vue-router-next/issues/419)
+- **vetur:** update tags/attributes definition ([#408](https://github.com/vuejs/vue-router-next/issues/408)) ([df8b2b1](https://github.com/vuejs/vue-router-next/commit/df8b2b140155d1e4ad5d00cd17d57ab2046a75e2))
+
+### Features
+
+- **warn:** warn against infinite redirections ([e3dcc8d](https://github.com/vuejs/vue-router-next/commit/e3dcc8d9477e17f9b92e22787b750edc4658b77a))
+
 # [4.0.0-beta.6](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.5...v4.0.0-beta.6) (2020-08-05)
 
 ### Bug Fixes
