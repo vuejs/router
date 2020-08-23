@@ -9,6 +9,7 @@ import {
   VNodeProps,
   getCurrentInstance,
   computed,
+  HTMLAttributes,
 } from 'vue'
 import { RouteLocationNormalized, RouteLocationNormalizedLoaded } from './types'
 import {
@@ -108,7 +109,7 @@ export const RouterViewImpl = defineComponent({
 // also to avoid inline import() in generated d.ts files
 export const RouterView = (RouterViewImpl as any) as {
   new (): {
-    $props: VNodeProps & RouterViewProps
+    $props: HTMLAttributes & VNodeProps & RouterViewProps
   }
 }
 
