@@ -7,7 +7,8 @@ import {
   reactive,
   unref,
   VNodeProps,
-  HTMLAttributes,
+  AllowedComponentProps,
+  ComponentCustomProps,
 } from 'vue'
 import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
@@ -187,7 +188,10 @@ export const RouterLinkImpl = defineComponent({
 // also to avoid inline import() in generated d.ts files
 export const RouterLink = (RouterLinkImpl as any) as {
   new (): {
-    $props: HTMLAttributes & VNodeProps & RouterLinkProps
+    $props: AllowedComponentProps &
+      ComponentCustomProps &
+      VNodeProps &
+      RouterLinkProps
   }
 }
 
