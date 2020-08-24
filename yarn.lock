@@ -495,15 +495,15 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@microsoft/api-documenter@^7.8.27":
-  version "7.8.27"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-documenter/-/api-documenter-7.8.27.tgz#aa18e975013171085b379dab01fad4b6ad0ccb69"
-  integrity sha512-fELVHf3qgnTm3doAkfiO5AN/5gUgBvhMw97dEG4OdHL/5kL2rnaowU8iHJnZgPyTfOoEX8dmzHKVT5uQp8JDmw==
+"@microsoft/api-documenter@^7.8.33":
+  version "7.8.33"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-documenter/-/api-documenter-7.8.33.tgz#515c9c81dc4787992c4221424b96fccdd6e1e927"
+  integrity sha512-LW6I5LDz1V9dOUadaDTUtKj2UMynxTgvc4M6Cc/7UckkTDPjZeX/2MtqOpzPY++rtcvSQ0kWuAbsM9Kaez5BpA==
   dependencies:
-    "@microsoft/api-extractor-model" "7.8.15"
+    "@microsoft/api-extractor-model" "7.8.17"
     "@microsoft/tsdoc" "0.12.19"
-    "@rushstack/node-core-library" "3.27.0"
-    "@rushstack/ts-command-line" "4.4.8"
+    "@rushstack/node-core-library" "3.29.0"
+    "@rushstack/ts-command-line" "4.6.2"
     colors "~1.2.1"
     js-yaml "~3.13.1"
     resolve "~1.17.0"
@@ -516,13 +516,13 @@
     "@microsoft/tsdoc" "0.12.19"
     "@rushstack/node-core-library" "3.19.7"
 
-"@microsoft/api-extractor-model@7.8.15":
-  version "7.8.15"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.8.15.tgz#a9ade86180157aead2e63e5edb439c4d8f158049"
-  integrity sha512-z81RLrvZdCxPMDBH6JVtZAMMrxDsDGz4mW7GM6OGxPlooTtSVtPH9RNhZFbA6zp7/4ANgBlqURl8zIsxvFeppA==
+"@microsoft/api-extractor-model@7.8.17":
+  version "7.8.17"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.8.17.tgz#a0286ee8ae22ee69bc8dca763e65feae39155eb5"
+  integrity sha512-iyVdA1WTlwgddDJwJTedTFcpGjDoV9grq/JGP7rK2t4yo4kOE5XhLbi+BlZ3t5vuggFJf8LawDyomEb8tGtwRQ==
   dependencies:
     "@microsoft/tsdoc" "0.12.19"
-    "@rushstack/node-core-library" "3.27.0"
+    "@rushstack/node-core-library" "3.29.0"
 
 "@microsoft/api-extractor@^7.8.1":
   version "7.8.1"
@@ -628,14 +628,15 @@
     timsort "~0.3.0"
     z-schema "~3.18.3"
 
-"@rushstack/node-core-library@3.27.0":
-  version "3.27.0"
-  resolved "https://registry.yarnpkg.com/@rushstack/node-core-library/-/node-core-library-3.27.0.tgz#474446d29dcb5166946af2cd9ec86d58e1444b58"
-  integrity sha512-6fS7wqcxL4XGVFkhECMCqsqXouPRDWKMgNpyrmXJRS0PPumRMW+9m2knVK/kgTrMwcnbGysqxX/77PiFErw8wg==
+"@rushstack/node-core-library@3.29.0":
+  version "3.29.0"
+  resolved "https://registry.yarnpkg.com/@rushstack/node-core-library/-/node-core-library-3.29.0.tgz#07202a2b807afd6ff556a376de176e6b27696897"
+  integrity sha512-8mEfn7mUqqzANnOvi4/xTc0tJ6coQs3qywlOl86jiqZUaB4sRLo0MtzUQz0VtyRfan2fFuxKzIleJGtNTAwYQQ==
   dependencies:
     "@types/node" "10.17.13"
     colors "~1.2.1"
     fs-extra "~7.0.1"
+    import-lazy "~4.0.0"
     jju "~1.4.0"
     semver "~7.3.0"
     timsort "~0.3.0"
@@ -650,14 +651,15 @@
     argparse "~1.0.9"
     colors "~1.2.1"
 
-"@rushstack/ts-command-line@4.4.8":
-  version "4.4.8"
-  resolved "https://registry.yarnpkg.com/@rushstack/ts-command-line/-/ts-command-line-4.4.8.tgz#46559932c7e9a70ea071c3ce376a2e7ad0d2e9b1"
-  integrity sha512-giyVXuyI2BAID0BINp8TbxcTf5MEao+UPadAMfCuuS64mSE1E76S8wzhjqEy3WaTSpgyRDi7dMlEegNnD/97Gw==
+"@rushstack/ts-command-line@4.6.2":
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/@rushstack/ts-command-line/-/ts-command-line-4.6.2.tgz#2981a44ac6a6911cec53be7841697f03a47292ac"
+  integrity sha512-wMjCrgiVYO5L1VkRKWv6EmisxduWuthOP4OghUPkl1kbbw9z2yZzQd9uk9rIqmGwOg8hjFX+0HrZCCXGHtABIQ==
   dependencies:
     "@types/argparse" "1.0.38"
     argparse "~1.0.9"
     colors "~1.2.1"
+    string-argv "~0.3.1"
 
 "@sinonjs/commons@^1.7.0":
   version "1.7.2"
@@ -4843,6 +4845,11 @@ import-fresh@^3.1.0, import-fresh@^3.2.1:
   dependencies:
     parent-module "^1.0.0"
     resolve-from "^4.0.0"
+
+import-lazy@~4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/import-lazy/-/import-lazy-4.0.0.tgz#e8eb627483a0a43da3c03f3e35548be5cb0cc153"
+  integrity sha512-rKtvo6a868b5Hu3heneU+L4yEQ4jYKLtjpnPeUdK7h0yzXGmyBTypknlkCvHFBqfX9YlorEiMM6Dnq/5atfHkw==
 
 import-local@^2.0.0:
   version "2.0.0"
@@ -9161,7 +9168,7 @@ stream-shift@^1.0.0:
   resolved "https://registry.yarnpkg.com/stream-shift/-/stream-shift-1.0.1.tgz#d7088281559ab2778424279b0877da3c392d5a3d"
   integrity sha512-AiisoFqQ0vbGcZgQPY1cdP2I76glaVA/RauYR4G4thNFgkTqr90yXTo4LYX60Jl+sIlPNHHdGSwo01AvbKUSVQ==
 
-string-argv@0.3.1:
+string-argv@0.3.1, string-argv@~0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/string-argv/-/string-argv-0.3.1.tgz#95e2fbec0427ae19184935f816d74aaa4c5c19da"
   integrity sha512-a1uQGz7IyVy9YwhqjZIZu1c8JO8dNIe20xBmSS6qu9kv++k3JGzCVmprbNN5Kn+BgzD5E7YYwg1CcjuJMRNsvg==
