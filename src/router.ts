@@ -243,7 +243,7 @@ export function createRouter(options: RouterOptions): Router {
   ): RouteLocation & { href: string } {
     // const objectLocation = routerLocationAsObject(rawLocation)
     // we create a copy to modify it later
-    currentLocation = { ...(currentLocation || currentRoute.value) }
+    currentLocation = assign({}, currentLocation || currentRoute.value)
     if (typeof rawLocation === 'string') {
       let locationNormalized = parseURL(
         parseQuery,
