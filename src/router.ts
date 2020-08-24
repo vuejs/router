@@ -580,6 +580,7 @@ export function createRouter(options: RouterOptions): Router {
       from
     )
 
+    // leavingRecords is already reversed
     for (const record of leavingRecords) {
       for (const guard of record.leaveGuards) {
         guards.push(guardToPromiseFn(guard, to, from))
