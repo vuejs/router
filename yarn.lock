@@ -665,25 +665,25 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@size-limit/file@4.5.6":
-  version "4.5.6"
-  resolved "https://registry.yarnpkg.com/@size-limit/file/-/file-4.5.6.tgz#6d4c620df37f7cbd58b361302ff2cd4e5f269dd1"
-  integrity sha512-6USNLtFRwNXrrvWDTJ5vhF7cDTuDm9YD+8prDEmid504ShYO7ZYptJEhTKsilgsXYtBNQ4lpVWQsKUYu/1JBzw==
+"@size-limit/file@4.5.7":
+  version "4.5.7"
+  resolved "https://registry.yarnpkg.com/@size-limit/file/-/file-4.5.7.tgz#29ce728aa83e3d7ee48421a32894cdf4954405ca"
+  integrity sha512-OCbJsYMELJORRSX386rPWUKoXvF4XNBFZob3amDl/2y1ox7DKdh1hinAWYndJdpZaFRI6rHoR+AXQ9dvWe9Ofg==
   dependencies:
     semver "7.3.2"
 
-"@size-limit/preset-small-lib@^4.5.6":
-  version "4.5.6"
-  resolved "https://registry.yarnpkg.com/@size-limit/preset-small-lib/-/preset-small-lib-4.5.6.tgz#7ccc4cca795ecadf1ab49f466724587b02e1b29a"
-  integrity sha512-J5lAL7g+06LuLMy80pB8VQPVLZsMNeWMPOjtlcfX61Xe1nyE6AzQkXcYYyt3mAwR7PWF8GHIiQFFi4MHQ58QyQ==
+"@size-limit/preset-small-lib@^4.5.7":
+  version "4.5.7"
+  resolved "https://registry.yarnpkg.com/@size-limit/preset-small-lib/-/preset-small-lib-4.5.7.tgz#db903c7a446eaa932e92d502c3b4e7a18ca3a335"
+  integrity sha512-8aRxacxXLeCzvGmAA62F0baRcaKlwDmxR/cofCQFGCtVBC3f9O2Tlk1/K5qu9bqTcCI1nnCA3WFVkQae4irACA==
   dependencies:
-    "@size-limit/file" "4.5.6"
-    "@size-limit/webpack" "4.5.6"
+    "@size-limit/file" "4.5.7"
+    "@size-limit/webpack" "4.5.7"
 
-"@size-limit/webpack@4.5.6":
-  version "4.5.6"
-  resolved "https://registry.yarnpkg.com/@size-limit/webpack/-/webpack-4.5.6.tgz#ed496700919a41ad70e1901cf9c711d08cfccd3e"
-  integrity sha512-6cphzivIpOcCrZy2he+e6eYNAyB6g2jTWDjTuj9nned77tyBdkbOCzTG8gRRdo2/TDVdHHRdkPaPeJx4ZROJ8g==
+"@size-limit/webpack@4.5.7":
+  version "4.5.7"
+  resolved "https://registry.yarnpkg.com/@size-limit/webpack/-/webpack-4.5.7.tgz#3b1210a486ff1c2b31e6adaa7c8f1e56711b17ba"
+  integrity sha512-S7dg4YR26y431+jWw0TPm6PEuWP5Lh8GFlfmY7smOaZFHvXfpSYhtK/d699/RgxegBDV7UCSj19ZE9RgE3a/Pg==
   dependencies:
     css-loader "^4.2.1"
     escape-string-regexp "^4.0.0"
@@ -8809,10 +8809,10 @@ sisteransi@^1.0.4:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
-size-limit@^4.5.6:
-  version "4.5.6"
-  resolved "https://registry.yarnpkg.com/size-limit/-/size-limit-4.5.6.tgz#3eab946c865a09bb2ee7acfec3a6ceb55f23658b"
-  integrity sha512-xqtAa6ibB+tmGW6Slc+ip/+QeqCrZBGHQ7W4e605YUuQANqNc91aiSiZR8UKP0UYLE3//ggZHH62bGONml7gDA==
+size-limit@^4.5.7:
+  version "4.5.7"
+  resolved "https://registry.yarnpkg.com/size-limit/-/size-limit-4.5.7.tgz#0bfb8b3bddad0c38388bd0bd3d98bbd7d5b7daee"
+  integrity sha512-ANvwaaTvMPGyvsoYnzw7AUUA1Xcj0kC4Pu/Mvvii0RS78TVE7mLL/F0kyVXOw0ytdcq0HoPnT2OaXhwxLlvsyA==
   dependencies:
     bytes "^3.1.0"
     chokidar "^3.4.2"
