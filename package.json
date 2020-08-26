@@ -105,7 +105,7 @@
     "style-loader": "^1.2.1",
     "ts-jest": "^26.2.0",
     "ts-loader": "^8.0.2",
-    "ts-node": "^8.10.2",
+    "ts-node": "^9.0.0",
     "typescript": "^3.9.7",
     "vitepress": "^0.5.0",
     "vue": "^3.0.0-rc.5",
