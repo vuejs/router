@@ -11,6 +11,7 @@ import {
   computed,
   AllowedComponentProps,
   ComponentCustomProps,
+  watch,
 } from 'vue'
 import { RouteLocationNormalized, RouteLocationNormalizedLoaded } from './types'
 import {
@@ -20,6 +21,7 @@ import {
 } from './injectionSymbols'
 import { assign } from './utils'
 import { warn } from './warning'
+import { isSameRouteRecord } from './location'
 
 export interface RouterViewProps {
   name?: string
@@ -50,6 +52,25 @@ export const RouterViewImpl = defineComponent({
     provide(matchedRouteKey, matchedRouteRef)
 
     const viewRef = ref<ComponentPublicInstance>()
+
+    // when the same component is used in different routes, the onVnodeMounted
+    // hook doesn't trigger, so we need to observe the changing route to update
+    // the instance on the record
+    watch(matchedRouteRef, (to, from) => {
+      const currentName = props.name
+      if (!to.instances[currentName]) {
+        to.instances[currentName] = viewRef.value
+        // trigger enter callbacks when different routes only
+        // TODO: could also just be if viewRef.value ?
+        if (from && !isSameRouteRecord(to, from)) {
+          ;(to.enterCallbacks[currentName] || []).forEach(callback =>
+            callback(viewRef.value!)
+          )
+          // avoid double calls since watch is called before the onVnodeMounted
+          to.enterCallbacks[currentName] = []
+        }
+      }
+    })
 
     return () => {
       const route = props.route || injectedRoute
