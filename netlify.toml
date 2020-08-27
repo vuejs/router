@@ -1,0 +1,4 @@
+[build]
+  ignore = "git diff --quiet HEAD^ HEAD ./docs/ && ! git diff HEAD^ HEAD ./yarn.lock | grep vite"
+  publish = "docs/.vuepress/dist"
+  command = "yarn run docs:build"
