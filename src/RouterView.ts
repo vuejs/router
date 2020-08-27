@@ -11,9 +11,12 @@ import {
   computed,
   AllowedComponentProps,
   ComponentCustomProps,
-  watch,
 } from 'vue'
-import { RouteLocationNormalized, RouteLocationNormalizedLoaded } from './types'
+import {
+  RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+  RouteLocationMatched,
+} from './types'
 import {
   matchedRouteKey,
   viewDepthKey,
@@ -43,7 +46,7 @@ export const RouterViewImpl = defineComponent({
 
     const injectedRoute = inject(routeLocationKey)!
     const depth = inject(viewDepthKey, 0)
-    const matchedRouteRef = computed(
+    const matchedRouteRef = computed<RouteLocationMatched | undefined>(
       () => (props.route || injectedRoute).matched[depth]
     )
 
@@ -55,35 +58,39 @@ export const RouterViewImpl = defineComponent({
     // when the same component is used in different routes, the onVnodeMounted
     // hook doesn't trigger, so we need to observe the changing route to update
     // the instance on the record
-    watch(matchedRouteRef, to => {
-      const currentName = props.name
-      // to can be null if there isn't a matched route, e.g. not found
-      if (to && !to.instances[currentName]) {
-        to.instances[currentName] = viewRef.value
-        // trigger enter callbacks when different routes only
-        if (viewRef.value) {
-          ;(to.enterCallbacks[currentName] || []).forEach(callback =>
-            callback(viewRef.value!)
-          )
-          // avoid double calls since watch is called before the onVnodeMounted
-          to.enterCallbacks[currentName] = []
-        }
-      }
-    })
+    // watch(matchedRouteRef, to => {
+    //   const currentName = props.name
+    //   // to can be null if there isn't a matched route, e.g. not found
+    //   if (to && !to.instances[currentName]) {
+    //     to.instances[currentName] = viewRef.value
+    //     // trigger enter callbacks when different routes only
+    //     if (viewRef.value) {
+    //       ;(to.enterCallbacks[currentName] || []).forEach(callback =>
+    //         callback(viewRef.value!)
+    //       )
+    //       // avoid double calls since watch is called before the onVnodeMounted
+    //       to.enterCallbacks[currentName] = []
+    //     }
+    //   }
+    // })
 
     return () => {
       const route = props.route || injectedRoute
       const matchedRoute = matchedRouteRef.value
       const ViewComponent = matchedRoute && matchedRoute.components[props.name]
+      // we need the value at the time we render because when we unmount, we
+      // navigated to a different location so the value is different
+      const currentName = props.name
+      const key = matchedRoute && currentName + matchedRoute.path
 
       if (!ViewComponent) {
         return slots.default
-          ? slots.default({ Component: ViewComponent, route })
+          ? slots.default({ Component: ViewComponent, route, key })
           : null
       }
 
       // props from route configuration
-      const routePropsOption = matchedRoute.props[props.name]
+      const routePropsOption = matchedRoute!.props[props.name]
       const routeProps = routePropsOption
         ? routePropsOption === true
           ? route.params
@@ -92,23 +99,20 @@ export const RouterViewImpl = defineComponent({
           : routePropsOption
         : null
 
-      // we need the value at the time we render because when we unmount, we
-      // navigated to a different location so the value is different
-      const currentName = props.name
       const onVnodeMounted = () => {
-        matchedRoute.instances[currentName] = viewRef.value
-        ;(matchedRoute.enterCallbacks[currentName] || []).forEach(callback =>
+        matchedRoute!.instances[currentName] = viewRef.value
+        ;(matchedRoute!.enterCallbacks[currentName] || []).forEach(callback =>
           callback(viewRef.value!)
         )
       }
       const onVnodeUnmounted = () => {
         // remove the instance reference to prevent leak
-        matchedRoute.instances[currentName] = null
+        matchedRoute!.instances[currentName] = null
       }
 
       const component = h(
         ViewComponent,
-        assign({}, routeProps, attrs, {
+        assign({ key }, routeProps, attrs, {
           onVnodeMounted,
           onVnodeUnmounted,
           ref: viewRef,
@@ -119,7 +123,7 @@ export const RouterViewImpl = defineComponent({
         // pass the vnode to the slot as a prop.
         // h and <component :is="..."> both accept vnodes
         slots.default
-          ? slots.default({ Component: component, route })
+          ? slots.default({ Component: component, route, key })
           : component
       )
     }

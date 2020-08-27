@@ -5,13 +5,13 @@ function testCase(browser) {
     .click('li:nth-child(2) a')
     .assert.containsText('.view', 'foo 1')
     .click('li:nth-child(3) a')
-    .assert.containsText('.view', 'foo 2')
+    .assert.containsText('.view', 'foo 1')
     .click('li:nth-child(4) a')
-    .assert.containsText('.view', 'foo 2')
+    .assert.containsText('.view', 'foo 1')
     .click('li:nth-child(5) a')
-    .assert.containsText('.view', 'foo 2')
+    .assert.containsText('.view', 'foo 1')
     .click('li:nth-child(2) a')
-    .assert.containsText('.view', 'foo 3')
+    .assert.containsText('.view', 'foo')
     .assert.containsText(
       '#logs',
       [
@@ -64,23 +64,28 @@ module.exports = {
       .click('li:nth-child(1) a')
       // keep alive keeps the correct instance
       .click('li:nth-child(2) a')
+      .assert.containsText('.view', 'foo 3')
+      .click('li:nth-child(1) a')
+      .click('li:nth-child(2) a')
       .assert.containsText('.view', 'foo 4')
+      .click('li:nth-child(3) a')
+      .assert.containsText('.view', 'foo 2')
 
     browser.end()
   },
 
-  // /** @type {import('nightwatch').NightwatchTest} */
-  // 'guards instances transition': function (browser) {
-  //   browser
-  //     .url('http://localhost:8080/guards-instances/')
-  //     .waitForElementPresent('#app > *', 1000)
+  /** @type {import('nightwatch').NightwatchTest} */
+  'guards instances transition': function (browser) {
+    browser
+      .url('http://localhost:8080/guards-instances/')
+      .waitForElementPresent('#app > *', 1000)
 
-  //     .click('#test-transition')
+      .click('#test-transition')
 
-  //   testCase(browser)
+    testCase(browser)
 
-  //   browser.end()
-  // },
+    browser.end()
+  },
 
   /** @type {import('nightwatch').NightwatchTest} */
   'guards instances keyed': function (browser) {
@@ -97,6 +102,13 @@ module.exports = {
       // the query is used as a key resetting the enter count
       .click('li:nth-child(6) a')
       .assert.containsText('.view', 'foo 0')
+      // changing both the route and mounting the component
+      .click('li:nth-child(2) a')
+      .assert.containsText('.view', 'foo 1')
+      .click('li:nth-child(6) a')
+      .assert.containsText('.view', 'foo 1')
+      .click('li:nth-child(2) a')
+      .assert.containsText('.view', 'foo 1')
 
     browser.end()
   },
@@ -112,18 +124,25 @@ module.exports = {
     testCase(browser)
 
     browser
+      .click('li:nth-child(1) a')
+      // keep alive keeps the correct instance
+      .click('li:nth-child(2) a')
+      .assert.containsText('.view', 'foo 3')
+      .click('li:nth-child(1) a')
+      .click('li:nth-child(2) a')
+      .assert.containsText('.view', 'foo 4')
+      .click('li:nth-child(3) a')
+      .assert.containsText('.view', 'foo 2')
+
       .click('li:nth-child(5) a')
       // the query is used as a key resetting the enter count
       .click('li:nth-child(6) a')
       .assert.containsText('.view', 'foo 0')
-      // going back to /foo
-      .click('li:nth-child(2) a')
-      .assert.containsText('.view', 'foo 5')
       .click('li:nth-child(1) a')
       .click('li:nth-child(6) a')
       .assert.containsText('.view', 'foo 1')
       .click('li:nth-child(5) a')
-      .assert.containsText('.view', 'foo 5')
+      .assert.containsText('.view', 'foo 2')
 
     browser.end()
   },

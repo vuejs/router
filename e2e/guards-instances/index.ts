@@ -1,4 +1,9 @@
-import { createRouter, createWebHistory } from '../../src'
+import {
+  createRouter,
+  createWebHistory,
+  onBeforeRouteUpdate,
+  onBeforeRouteLeave,
+} from '../../src'
 import { createApp, ref, reactive, defineComponent } from 'vue'
 
 // override existing style on dev with shorter times
@@ -57,6 +62,16 @@ const Foo = defineComponent({
     if (!this || this.key !== 'Foo') throw new Error('no this')
     state.leave++
     logs.value.push(`leave ${from.path} - ${to.path}`)
+  },
+
+  setup() {
+    onBeforeRouteUpdate((to, from) => {
+      console.log(`setup update ${from.path} - ${to.path}`)
+    })
+    onBeforeRouteLeave((to, from) => {
+      console.log(`setup leave ${from.path} - ${to.path}`)
+    })
+    return {}
   },
 })
 
@@ -121,9 +136,9 @@ leaves: {{ state.leave }}
         <router-view :key="$route.query.foo" class="view" />
       </template>
       <template v-else-if="testCase === 'keepalivekeyed'">
-        <router-view v-slot="{ Component }" >
+        <router-view v-slot="{ Component, key }" >
           <keep-alive>
-            <component :is="Component" :key="$route.query.foo" class="view" />
+            <component :is="Component" :key="$route.query.foo || key" class="view" />
           </keep-alive>
         </router-view>
       </template>
