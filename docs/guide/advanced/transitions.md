@@ -1,13 +1,13 @@
 # Transitions
 
-TODO: redo this page once it's good to use in Vue router
-
 Since the `<router-view>` is essentially a dynamic component, we can apply transition effects to it the same way using the `<transition>` component:
 
 ```html
-<transition>
-  <router-view></router-view>
-</transition>
+  <router-view v-slot="{ Component }">
+    <transition>
+      <component :is="Component" />
+    </transition>
+  </router-view>
 ```
 
 [All transition APIs](https://vuejs.org/guide/transitions.html) work the same here.
