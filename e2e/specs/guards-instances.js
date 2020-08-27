@@ -16,7 +16,9 @@ module.exports = {
       .click('li:nth-child(3) a')
       .assert.containsText('.view', 'foo 2')
       .click('li:nth-child(4) a')
-      .assert.containsText('.view', 'foo')
+      .assert.containsText('.view', 'foo 2')
+      .click('li:nth-child(5) a')
+      .assert.containsText('.view', 'foo 2')
       .click('li:nth-child(2) a')
       .assert.containsText('.view', 'foo 3')
       .assert.containsText(
@@ -26,6 +28,7 @@ module.exports = {
           'leave /foo - /f/1',
           'enter /foo - /f/1',
           'update /f/1 - /f/2',
+          'update /f/2 - /f/2',
           'leave /f/2 - /foo',
           'enter /f/2 - /foo',
         ].join('\n')

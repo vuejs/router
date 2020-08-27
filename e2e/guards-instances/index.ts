@@ -72,6 +72,7 @@ const app = createApp({
         <li><router-link to="/foo">/foo</router-link></li>
         <li><router-link to="/f/1">/f/1</router-link></li>
         <li><router-link to="/f/2">/f/2</router-link></li>
+        <li><router-link to="/f/2?foo">/f/2?foo</router-link></li>
       </ul>
       <router-view class="view" />
     </div>
