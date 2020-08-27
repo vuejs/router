@@ -21,7 +21,6 @@ import {
 } from './injectionSymbols'
 import { assign } from './utils'
 import { warn } from './warning'
-import { isSameRouteRecord } from './location'
 
 export interface RouterViewProps {
   name?: string
@@ -58,11 +57,10 @@ export const RouterViewImpl = defineComponent({
     // the instance on the record
     watch(matchedRouteRef, (to, from) => {
       const currentName = props.name
-      if (!to.instances[currentName]) {
+      if (to && !to.instances[currentName]) {
         to.instances[currentName] = viewRef.value
         // trigger enter callbacks when different routes only
-        // TODO: could also just be if viewRef.value ?
-        if (from && !isSameRouteRecord(to, from)) {
+        if (viewRef.value) {
           ;(to.enterCallbacks[currentName] || []).forEach(callback =>
             callback(viewRef.value!)
           )
