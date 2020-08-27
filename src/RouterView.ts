@@ -55,7 +55,7 @@ export const RouterViewImpl = defineComponent({
     // when the same component is used in different routes, the onVnodeMounted
     // hook doesn't trigger, so we need to observe the changing route to update
     // the instance on the record
-    watch(matchedRouteRef, (to, from) => {
+    watch(matchedRouteRef, to => {
       const currentName = props.name
       // to can be null if there isn't a matched route, e.g. not found
       if (to && !to.instances[currentName]) {
