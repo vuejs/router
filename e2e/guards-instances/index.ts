@@ -59,6 +59,8 @@ const app = createApp({
   template: `
     <div id="app">
       <h1>Instances</h1>
+      <button id="test-keep-alive" @click="testCase = 'keepalive'">Use Keep Alive</button>
+      <button id="test-normal" @click="testCase = ''">Use Normal</button>
       <pre>
       route: {{ $route.fullPath }}
       enters: {{ state.enter }}
@@ -74,11 +76,24 @@ const app = createApp({
         <li><router-link to="/f/2">/f/2</router-link></li>
         <li><router-link to="/f/2?foo">/f/2?foo</router-link></li>
       </ul>
-      <router-view class="view" />
+
+      <template v-if="testCase === 'keepalive'">
+        <router-view v-slot="{ Component }" >
+          <keep-alive>
+            <component :is="Component" class="view" />
+          </keep-alive>
+        </router-view>
+      </template>
+      <template v-else>
+        <router-view class="view" />
+      </template>
+
     </div>
   `,
   setup() {
-    return { state, logs }
+    const testCase = ref('')
+
+    return { state, logs, testCase }
   },
 })
 app.use(router)
