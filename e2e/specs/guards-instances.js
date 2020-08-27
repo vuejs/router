@@ -38,7 +38,16 @@ module.exports = {
       .waitForElementPresent('#app > *', 1000)
 
       .click('#test-normal')
-    testCase(browser).end()
+
+    testCase(browser)
+
+    browser
+      .click('li:nth-child(1) a')
+      // the enters are reset when leaving a reused component
+      .click('li:nth-child(2) a')
+      .assert.containsText('.view', 'foo 1')
+
+    browser.end()
   },
 
   /** @type {import('nightwatch').NightwatchTest} */
@@ -47,7 +56,75 @@ module.exports = {
       .url('http://localhost:8080/guards-instances/')
       .waitForElementPresent('#app > *', 1000)
 
-      .click('#test-keep-alive')
-    testCase(browser).end()
+      .click('#test-keepalive')
+
+    testCase(browser)
+
+    browser
+      .click('li:nth-child(1) a')
+      // keep alive keeps the correct instance
+      .click('li:nth-child(2) a')
+      .assert.containsText('.view', 'foo 4')
+
+    browser.end()
+  },
+
+  // /** @type {import('nightwatch').NightwatchTest} */
+  // 'guards instances transition': function (browser) {
+  //   browser
+  //     .url('http://localhost:8080/guards-instances/')
+  //     .waitForElementPresent('#app > *', 1000)
+
+  //     .click('#test-transition')
+
+  //   testCase(browser)
+
+  //   browser.end()
+  // },
+
+  /** @type {import('nightwatch').NightwatchTest} */
+  'guards instances keyed': function (browser) {
+    browser
+      .url('http://localhost:8080/guards-instances/')
+      .waitForElementPresent('#app > *', 1000)
+
+      .click('#test-keyed')
+
+    testCase(browser)
+
+    browser
+      .click('li:nth-child(5) a')
+      // the query is used as a key resetting the enter count
+      .click('li:nth-child(6) a')
+      .assert.containsText('.view', 'foo 0')
+
+    browser.end()
+  },
+
+  /** @type {import('nightwatch').NightwatchTest} */
+  'guards instances keepalive keyed': function (browser) {
+    browser
+      .url('http://localhost:8080/guards-instances/')
+      .waitForElementPresent('#app > *', 1000)
+
+      .click('#test-keepalivekeyed')
+
+    testCase(browser)
+
+    browser
+      .click('li:nth-child(5) a')
+      // the query is used as a key resetting the enter count
+      .click('li:nth-child(6) a')
+      .assert.containsText('.view', 'foo 0')
+      // going back to /foo
+      .click('li:nth-child(2) a')
+      .assert.containsText('.view', 'foo 5')
+      .click('li:nth-child(1) a')
+      .click('li:nth-child(6) a')
+      .assert.containsText('.view', 'foo 1')
+      .click('li:nth-child(5) a')
+      .assert.containsText('.view', 'foo 5')
+
+    browser.end()
   },
 }

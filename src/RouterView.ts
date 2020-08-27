@@ -57,6 +57,7 @@ export const RouterViewImpl = defineComponent({
     // the instance on the record
     watch(matchedRouteRef, (to, from) => {
       const currentName = props.name
+      // to can be null if there isn't a matched route, e.g. not found
       if (to && !to.instances[currentName]) {
         to.instances[currentName] = viewRef.value
         // trigger enter callbacks when different routes only
