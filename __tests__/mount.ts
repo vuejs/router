@@ -1,5 +1,4 @@
 import {
-  Component,
   createApp,
   defineComponent,
   h,
@@ -62,12 +61,15 @@ export function mount(
   targetComponent: Parameters<typeof createApp>[0],
   options: Partial<MountOptions> = {}
 ): Promise<Wrapper> {
-  const TargetComponent = targetComponent as Component
+  const TargetComponent = targetComponent
   return new Promise(resolve => {
     // NOTE: only supports props as an object
     const propsData = reactive(
       Object.assign(
-        initialProps(TargetComponent.props || {}),
+        initialProps(
+          // @ts-ignore
+          TargetComponent.props || {}
+        ),
         options.propsData
       )
     )
@@ -85,7 +87,7 @@ export function mount(
 
         return () => {
           return h(
-            TargetComponent,
+            TargetComponent as any,
             {
               ref: componentInstanceRef,
               onVnodeMounted() {

@@ -103,6 +103,7 @@ export function createDom(options?: ConstructorOptions) {
     }
   )
 
+  // @ts-ignore: TODO: remove this line then?
   global.window = dom.window
   global.location = dom.window.location
   global.history = dom.window.history

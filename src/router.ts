@@ -243,7 +243,7 @@ export function createRouter(options: RouterOptions): Router {
   ): RouteLocation & { href: string } {
     // const objectLocation = routerLocationAsObject(rawLocation)
     // we create a copy to modify it later
-    currentLocation = { ...(currentLocation || currentRoute.value) }
+    currentLocation = assign({}, currentLocation || currentRoute.value)
     if (typeof rawLocation === 'string') {
       let locationNormalized = parseURL(
         parseQuery,
@@ -566,20 +566,21 @@ export function createRouter(options: RouterOptions): Router {
   ): Promise<any> {
     let guards: Lazy<any>[]
 
+    const [
+      leavingRecords,
+      updatingRecords,
+      enteringRecords,
+    ] = extractChangingRecords(to, from)
+
     // all components here have been resolved once because we are leaving
     guards = extractComponentsGuards(
-      from.matched.filter(record => to.matched.indexOf(record) < 0).reverse(),
+      leavingRecords.reverse(),
       'beforeRouteLeave',
       to,
       from
     )
 
-    const [
-      leavingRecords,
-      updatingRecords,
-      // enteringRecords,
-    ] = extractChangingRecords(to, from)
-
+    // leavingRecords is already reversed
     for (const record of leavingRecords) {
       for (const guard of record.leaveGuards) {
         guards.push(guardToPromiseFn(guard, to, from))
@@ -610,9 +611,7 @@ export function createRouter(options: RouterOptions): Router {
         .then(() => {
           // check in components beforeRouteUpdate
           guards = extractComponentsGuards(
-            to.matched.filter(
-              record => from.matched.indexOf(record as any) > -1
-            ),
+            updatingRecords,
             'beforeRouteUpdate',
             to,
             from
@@ -655,10 +654,7 @@ export function createRouter(options: RouterOptions): Router {
 
           // check in-component beforeRouteEnter
           guards = extractComponentsGuards(
-            // the type doesn't matter as we are comparing an object per reference
-            to.matched.filter(
-              record => from.matched.indexOf(record as any) < 0
-            ),
+            enteringRecords,
             'beforeRouteEnter',
             to,
             from
