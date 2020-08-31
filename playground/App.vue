@@ -159,22 +159,23 @@
     <button @click="toggleViewName">Toggle view</button>
     <Suspense>
       <template #default>
-        <router-view :name="viewName" v-slot="{ Component }">
+        <router-view :name="viewName" v-slot="{ Component, route }">
           <transition
-            name="fade"
+            :name="route.meta.transition || 'fade'"
             mode="out-in"
             @before-enter="flushWaiter"
             @before-leave="setupWaiter"
           >
             <keep-alive>
-              <component :is="Component" />
+              <component
+                :is="Component"
+                :key="route.name === 'repeat' ? route.path : undefined"
+              />
             </keep-alive>
           </transition>
         </router-view>
       </template>
-      <template #fallback>
-        Loading...
-      </template>
+      <template #fallback> Loading... </template>
     </Suspense>
   </div>
 </template>

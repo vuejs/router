@@ -14,6 +14,7 @@ import GuardedWithLeave from './views/GuardedWithLeave.vue'
 import ComponentWithData from './views/ComponentWithData.vue'
 import { globalState } from './store'
 import { scrollWaiter } from './scrollWaiter'
+import RepeatedParams from './views/RepeatedParams.vue'
 let removeRoute: (() => void) | undefined
 
 export const routerHistory = createWebHistory()
@@ -42,6 +43,7 @@ export const router = createRouter({
     { path: '/long-:n', name: 'long', component: LongView },
     {
       path: '/lazy',
+      meta: { transition: 'slide-left' },
       component: async () => {
         await delay(500)
         return component()
@@ -77,7 +79,7 @@ export const router = createRouter({
       ],
     },
     { path: '/with-data', component: ComponentWithData, name: 'WithData' },
-    { path: '/rep/:a*', component: component, name: 'repeat' },
+    { path: '/rep/:a*', component: RepeatedParams, name: 'repeat' },
     { path: '/:data(.*)', component: NotFound, name: 'NotFound' },
     {
       path: '/nested',
@@ -187,6 +189,14 @@ router.beforeEach(async (to, from, next) => {
 router.beforeEach((to, from, next) => {
   if (globalState.cancelNextNavigation) return next(false)
   next()
+})
+
+router.afterEach((to, from) => {
+  if (to.name === from.name && to.name === 'repeat') {
+    const toDepth = to.path.split('/').length
+    const fromDepth = from.path.split('/').length
+    to.meta.transition = toDepth < fromDepth ? 'slide-right' : 'slide-left'
+  }
 })
 
 router.afterEach((to, from) => {

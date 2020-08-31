@@ -1,60 +1,59 @@
 # Transitions
 
-Since the `<router-view>` is essentially a dynamic component, we can apply transition effects to it the same way using the `<transition>` component:
+In order to use transitions on your route components and animate navigations, you need to use the [v-slot API](../../api#v-slot):
 
 ```html
-  <router-view v-slot="{ Component }">
-    <transition>
-      <component :is="Component" />
-    </transition>
-  </router-view>
+<router-view v-slot="{ Component }">
+  <transition name="fade">
+    <component :is="Component" />
+  </transition>
+</router-view>
 ```
 
 [All transition APIs](https://vuejs.org/guide/transitions.html) work the same here.
 
 ## Per-Route Transition
 
-The above usage will apply the same transition for all routes. If you want each route's component to have different transitions, you can instead use `<transition>` with different names inside each route component:
+The above usage will apply the same transition for all routes. If you want each route's component to have different transitions, you can instead combine [meta fields](./meta.md) and a dynamic `name` on `<transition>`:
 
 ```js
-const Foo = {
-  template: `
-    <transition name="slide">
-      <div class="foo">...</div>
-    </transition>
-  `
-}
+const routes = [
+  { path: '/custom-transition', meta: { transition: 'slide-left' } },
+  { path: '/other-transition', meta: { transition: 'slide-right' } },
+]
+```
 
-const Bar = {
-  template: `
-    <transition name="fade">
-      <div class="bar">...</div>
-    </transition>
-  `
-}
+```html
+<router-view v-slot="{ Component, route }">
+  <!-- Use any custom transition and fallback to `fade` -->
+  <transition :name="route.meta.transition || 'fade'">
+    <component :is="Component" />
+  </transition>
+</router-view>
 ```
 
 ## Route-Based Dynamic Transition
 
-It is also possible to determine the transition to use dynamically based on the relationship between the target route and current route:
+It is also possible to determine the transition to use dynamically based on the relationship between the target route and current route. Using a very similar snippet to the one just before:
 
 ```html
 <!-- use a dynamic transition name -->
-<transition :name="transitionName">
-  <router-view></router-view>
-</transition>
+<router-view v-slot="{ Component, route }">
+  <transition :name="route.meta.transition">
+    <component :is="Component" />
+  </transition>
+</router-view>
 ```
+
+We can add an [after navigation hook](./navigation-guards.md#global-after-hooks) to dynamically add information to the `meta` field based on the depth of the route
 
 ```js
-// then, in the parent component,
-// watch the `$route` to determine the transition to use
-watch: {
-  '$route' (to, from) {
-    const toDepth = to.path.split('/').length
-    const fromDepth = from.path.split('/').length
-    this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
-  }
-}
+router.afterEach((to, from) => {
+  const toDepth = to.path.split('/').length
+  const fromDepth = from.path.split('/').length
+  to.meta.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
+})
 ```
 
-See full example [here](https://github.com/vuejs/vue-router/blob/dev/examples/transitions/app.js).
+<!-- TODO: interactive example -->
+<!-- See full example [here](https://github.com/vuejs/vue-router/blob/dev/examples/transitions/app.js). -->
