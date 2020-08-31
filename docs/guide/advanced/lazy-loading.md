@@ -1,14 +1,26 @@
 # Lazy Loading Routes
 
-When building apps with a bundler, the JavaScript bundle can become quite large, and thus affect the page load time. It would be more efficient if we can split each route's components into a separate chunk, and only load them when the route is visited.
+When building apps with a bundler, the JavaScript bundle can become quite large, and thus affect the page load time. It would be more efficient if we can split each route's components into a separate chunks, and only load them when the route is visited.
 
 <!-- TODO: fix links -->
 
-TODO: make it clear that this also works with other bundlers, not only with webpack
+<!-- TODO: make it clear that this also works with other bundlers, not only with webpack -->
 
-Combining Vue's [async component feature](https://vuejs.org/guide/components.html#Async-Components) and webpack's [code splitting feature](https://webpack.js.org/guides/code-splitting-async/), it's trivially easy to lazy-load route components.
+Vue Router supports [dynamic imports](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#Dynamic_Imports) out of the box, meaning you can replace static imports with dynamic ones:
 
-First, an async component can be defined as a factory function that returns a Promise (which should resolve to the component itself):
+```js
+// replace
+// import UserDetails from './views/UserDetails'
+// with
+const UserDetails = () => import('./views/UserDetails')
+
+const router = createRouter({
+  // ...
+  routes: [{ path: '/users/:id', component: UserDetails }],
+})
+```
+
+The `component` (and `components`) option accepts a function that returns a Promise of a component and Vue Router **will only fetch it when entering the page for the first time**, then use the cached version. Which means you can also have more complex functions as long as they return a Promise:
 
 ```js
 const UserDetails = () =>
@@ -17,29 +29,15 @@ const UserDetails = () =>
   })
 ```
 
-Second, in webpack 2, we can use the [dynamic import](https://github.com/tc39/proposal-dynamic-import) syntax to indicate a code-split point:
-
-```js
-import('./UserDetails.vue') // returns a Promise
-```
+In general, it's a good idea **to always use dynamic imports** for all your routes.
 
 ::: tip Note
-if you are using Babel, you will need to add the [syntax-dynamic-import](https://babeljs.io/docs/plugins/syntax-dynamic-import/) plugin so that Babel can properly parse the syntax.
+Do **not** use [Async components](https://v3.vuejs.org/guide/component-dynamic-async.html#async-components) for routes. Async components can still be used inside route components but route component themselves are just dynamic imports.
 :::
 
-Combining the two, this is how to define an async component that will be automatically code-split by webpack:
+When using a bundler like webpack, this will automatically benefit from [code splitting](https://webpack.js.org/guides/code-splitting/)
 
-```js
-const UserDetails = () => import('./UserDetails.vue')
-```
-
-Nothing needs to change in the route config, just use `UserDetails` as usual:
-
-```js
-const router = createRouter({
-  routes: [{ path: '/users/:id', component: UserDetails }]
-})
-```
+When using Babel, you will need to add the [syntax-dynamic-import](https://babeljs.io/docs/plugins/syntax-dynamic-import/) plugin so that Babel can properly parse the syntax.
 
 ## Grouping Components in the Same Chunk
 

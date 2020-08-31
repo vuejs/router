@@ -1,5 +1,8 @@
 /** @type {import('vitepress').UserConfig} */
 const config = {
+  lang: 'en-US',
+  title: 'Vue Router',
+  description: 'The official router for Vue.js.',
   locales: {
     '/': {
       lang: 'en-US',
