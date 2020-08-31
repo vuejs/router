@@ -16,8 +16,8 @@ export default defineComponent({
 
   setup() {
     console.log('setup in cant leave')
-    onBeforeRouteLeave(function(to, from, next) {
-      if (window.confirm()) next()
+    onBeforeRouteLeave(function (to, from, next) {
+      if (window.confirm('Do you really want to leave?')) next()
       else {
         // @ts-ignore
         this.tries++
