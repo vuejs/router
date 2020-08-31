@@ -8,6 +8,16 @@ import {
 import { createApp, defineComponent, h } from 'vue'
 
 const component = defineComponent({})
+
+const WithProps = defineComponent({
+  props: {
+    id: {
+      type: String,
+      required: true,
+    },
+  },
+})
+
 const Foo = defineComponent({
   props: {
     test: String,
@@ -27,6 +37,7 @@ const router = createRouter({
   routes: [
     { path: '/', component },
     { path: '/foo', component: Foo },
+    { path: '/', component: WithProps },
   ],
   parseQuery: search => ({}),
   stringifyQuery: query => '',
