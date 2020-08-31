@@ -17,13 +17,9 @@ Let's assume we have a `Post` component that needs to fetch the data for a post 
 ```html
 <template>
   <div class="post">
-    <div v-if="loading" class="loading">
-      Loading...
-    </div>
+    <div v-if="loading" class="loading">Loading...</div>
 
-    <div v-if="error" class="error">
-      {{ error }}
-    </div>
+    <div v-if="error" class="error">{{ error }}</div>
 
     <div v-if="post" class="content">
       <h2>{{ post.title }}</h2>
@@ -39,7 +35,7 @@ export default {
     return {
       loading: false,
       post: null,
-      error: null
+      error: null,
     }
   },
   created() {
@@ -49,7 +45,7 @@ export default {
   },
   watch: {
     // call again the method if the route changes
-    $route: 'fetchData'
+    $route: 'fetchData',
   },
   methods: {
     fetchData() {
@@ -64,8 +60,8 @@ export default {
           this.post = post
         }
       })
-    }
-  }
+    },
+  },
 }
 ```
 
@@ -79,7 +75,7 @@ export default {
   data() {
     return {
       post: null,
-      error: null
+      error: null,
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -89,27 +85,19 @@ export default {
   },
   // when route changes and this component is already rendered,
   // the logic will be slightly different.
-  beforeRouteUpdate(to, from, next) {
+  async beforeRouteUpdate(to, from) {
     this.post = null
-    getPost(to.params.id, (err, post) => {
-      this.setData(err, post)
-      next()
-    })
-  },
-  methods: {
-    setData(err, post) {
-      if (err) {
-        this.error = err.toString()
-      } else {
-        this.post = post
-      }
+    try {
+      this.post = await getPost(to.params.id)
+    } catch (error) {
+      this.error = error.toString()
     }
-  }
+  },
 }
 ```
 
 The user will stay on the previous view while the resource is being fetched for the incoming view. It is therefore recommended to display a progress bar or some kind of indicator while the data is being fetched. If the data fetch fails, it's also necessary to display some kind of global warning message.
 
-### Using Composition API
+<!-- ### Using Composition API -->
 
-TODO:
+<!-- TODO: -->
