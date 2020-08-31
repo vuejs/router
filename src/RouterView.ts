@@ -62,7 +62,7 @@ export const RouterViewImpl = defineComponent({
           : null
       }
 
-      // props from route configration
+      // props from route configuration
       const routePropsOption = matchedRoute.props[props.name]
       const routeProps = routePropsOption
         ? routePropsOption === true
