@@ -161,9 +161,7 @@ export interface RouteLocationNormalized extends _RouteLocationBase {
   matched: RouteRecordNormalized[] // non-enumerable
 }
 
-type PublicAPIComponent = Component | { new (): ComponentPublicInstance }
-
-export type RouteComponent = PublicAPIComponent
+export type RouteComponent = Component
 export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
 
 export type RouteRecordName = string | symbol
