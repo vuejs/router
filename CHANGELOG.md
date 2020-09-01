@@ -1,3 +1,7 @@
+# [4.0.0-beta.9](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.8...v4.0.0-beta.9) (2020-09-01)
+
+Build related fixes
+
 # [4.0.0-beta.8](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.7...v4.0.0-beta.8) (2020-09-01)
 
 ### Bug Fixes
