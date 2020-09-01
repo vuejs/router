@@ -14,12 +14,13 @@ export default defineComponent({
   name: 'ComponentWithData',
   async setup() {
     const data = reactive({ other: 'old', fromApi: null })
-    data.fromApi = await getData()
 
     onBeforeRouteUpdate(async (to, from, next) => {
       data.fromApi = await getData()
       next()
     })
+
+    data.fromApi = await getData()
 
     return {
       ...toRefs(data),

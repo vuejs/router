@@ -57,26 +57,34 @@ export const RouterViewImpl = defineComponent({
 
     const viewRef = ref<ComponentPublicInstance>()
 
+    // watch at the same time the component instance, the route record we are
+    // rendering, and the name
     watch(
       () => [viewRef.value, matchedRouteRef.value, props.name] as const,
       ([instance, to, name], [oldInstance, from, oldName]) => {
         // copy reused instances
         if (to) {
+          // this will update the instance for new instances as well as reused
+          // instances when navigating to a new route
           to.instances[name] = instance
-          // the component instance is reused for a different route or name
+          // the component instance is reused for a different route or name so
+          // we copy any saved update or leave guards
           if (from && instance === oldInstance) {
             to.leaveGuards = from.leaveGuards
             to.updateGuards = from.updateGuards
           }
         }
 
+        // trigger beforeRouteEnter next callbacks
         if (
           instance &&
           to &&
+          // if there is no instance but to and from are the same this might be
+          // the first visit
           (!from || !isSameRouteRecord(to, from) || !oldInstance)
         ) {
           ;(to.enterCallbacks[name] || []).forEach(callback =>
-            callback(viewRef.value!)
+            callback(instance)
           )
         }
       }
