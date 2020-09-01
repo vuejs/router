@@ -66,10 +66,10 @@ const Foo = defineComponent({
 
   setup() {
     onBeforeRouteUpdate((to, from) => {
-      console.log(`setup update ${from.path} - ${to.path}`)
+      logs.value.push(`setup:update ${from.path} - ${to.path}`)
     })
     onBeforeRouteLeave((to, from) => {
-      console.log(`setup leave ${from.path} - ${to.path}`)
+      logs.value.push(`setup:leave ${from.path} - ${to.path}`)
     })
     return {}
   },

@@ -17,7 +17,7 @@ import {
   NavigationFailure,
   NavigationRedirectError,
 } from './errors'
-import { ComponentOptions } from 'vue'
+import { ComponentOptions, onUnmounted } from 'vue'
 import { inject, getCurrentInstance, warn } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
@@ -49,10 +49,14 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
     return
   }
 
-  activeRecord.leaveGuards.push(
-    // @ts-ignore do we even want to allow that? Passing the context in a composition api hook doesn't make sense
-    leaveGuard.bind(instance.proxy)
-  )
+  // @ts-ignore do we even want to allow that? Passing the context in a composition api hook doesn't make sense
+  const fn = leaveGuard.bind(instance.proxy)
+  onUnmounted(() => {
+    const index = activeRecord.leaveGuards.indexOf(fn)
+    if (index > -1) activeRecord.leaveGuards.splice(index, 1)
+  })
+
+  activeRecord.leaveGuards.push(fn)
 }
 
 /**
@@ -81,10 +85,14 @@ export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
     return
   }
 
-  activeRecord.updateGuards.push(
-    // @ts-ignore do we even want to allow that? Passing the context in a composition api hook doesn't make sense
-    updateGuard.bind(instance.proxy)
-  )
+  // @ts-ignore do we even want to allow that? Passing the context in a composition api hook doesn't make sense
+  const fn = updateGuard.bind(instance.proxy)
+  onUnmounted(() => {
+    const index = activeRecord.updateGuards.indexOf(fn)
+    if (index > -1) activeRecord.updateGuards.splice(index, 1)
+  })
+
+  activeRecord.updateGuards.push(fn)
 }
 
 export function guardToPromiseFn(

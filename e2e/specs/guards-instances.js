@@ -17,10 +17,14 @@ function testCase(browser) {
       [
         'enter / - /foo',
         'leave /foo - /f/1',
+        'setup:leave /foo - /f/1',
         'enter /foo - /f/1',
         'update /f/1 - /f/2',
+        'setup:update /f/1 - /f/2',
         'update /f/2 - /f/2',
+        'setup:update /f/2 - /f/2',
         'leave /f/2 - /foo',
+        'setup:leave /f/2 - /foo',
         'enter /f/2 - /foo',
       ].join('\n')
     )
@@ -70,6 +74,21 @@ module.exports = {
       .assert.containsText('.view', 'foo 4')
       .click('li:nth-child(3) a')
       .assert.containsText('.view', 'foo 2')
+      // leave the update view and enter it again
+      .click('li:nth-child(1) a')
+      .click('li:nth-child(3) a')
+      .click('#resetLogs')
+      .click('li:nth-child(4) a')
+      .click('li:nth-child(1) a')
+      .assert.containsText(
+        '#logs',
+        [
+          'update /f/1 - /f/2',
+          'setup:update /f/1 - /f/2',
+          'leave /f/2 - /',
+          'setup:leave /f/2 - /',
+        ].join('\n')
+      )
 
     browser.end()
   },

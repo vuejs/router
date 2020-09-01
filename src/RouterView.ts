@@ -55,25 +55,6 @@ export const RouterViewImpl = defineComponent({
 
     const viewRef = ref<ComponentPublicInstance>()
 
-    // when the same component is used in different routes, the onVnodeMounted
-    // hook doesn't trigger, so we need to observe the changing route to update
-    // the instance on the record
-    // watch(matchedRouteRef, to => {
-    //   const currentName = props.name
-    //   // to can be null if there isn't a matched route, e.g. not found
-    //   if (to && !to.instances[currentName]) {
-    //     to.instances[currentName] = viewRef.value
-    //     // trigger enter callbacks when different routes only
-    //     if (viewRef.value) {
-    //       ;(to.enterCallbacks[currentName] || []).forEach(callback =>
-    //         callback(viewRef.value!)
-    //       )
-    //       // avoid double calls since watch is called before the onVnodeMounted
-    //       to.enterCallbacks[currentName] = []
-    //     }
-    //   }
-    // })
-
     return () => {
       const route = props.route || injectedRoute
       const matchedRoute = matchedRouteRef.value
