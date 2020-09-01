@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, onBeforeRouteUpdate } from '../../src'
+import { createRouter, createWebHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
 import { createApp, ref, watchEffect, App, inject } from 'vue'
 
@@ -25,15 +25,6 @@ const User: RouteComponent = {
 
   setup() {
     const id = inject('id')!
-
-    if (id !== 1)
-      onBeforeRouteUpdate(function (to, from, next) {
-        // @ts-ignore
-        console.log('update from ', id, this.id)
-        // @ts-ignore
-        // this.count++
-        next()
-      })
 
     return { id }
   },
