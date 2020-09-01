@@ -26,7 +26,7 @@
     "build:e2e": "webpack --env.prod --config e2e/webpack.config.js",
     "dev:e2e": "webpack-dev-server --mode=development --config e2e/webpack.config.js",
     "docs": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
+    "docs:build": "patch-package && vitepress build docs",
     "size": "size-limit",
     "lint": "prettier -c --parser typescript \"{src,__tests__,e2e}/**/*.[jt]s?(x)\"",
     "lint:fix": "yarn run lint --write",
@@ -37,8 +37,7 @@
     "test:e2e": "yarn run test:e2e:headless && yarn run test:e2e:native",
     "test:e2e:headless": "node e2e/runner.js -e chrome-headless --skiptags no-headless",
     "test:e2e:native": "node e2e/runner.js -e chrome --tag no-headless",
-    "test:e2e:ci": "node e2e/runner.js -e firefox --retries 2",
-    "postinstall": "patch-package"
+    "test:e2e:ci": "node e2e/runner.js -e firefox --retries 2"
   },
   "gitHooks": {
     "pre-commit": "lint-staged",
@@ -97,7 +96,6 @@
     "nightwatch": "^1.3.7",
     "nightwatch-helpers": "^1.2.0",
     "patch-package": "^6.2.2",
-    "postinstall-postinstall": "^2.1.0",
     "prettier": "^2.0.5",
     "rollup": "^2.26.9",
     "rollup-plugin-terser": "^7.0.1",
