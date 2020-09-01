@@ -241,7 +241,7 @@ export function createRouterMatcher(
       // this also allows the user to control the encoding
       path = location.path
 
-      if (__DEV__ && path[0] !== '/') {
+      if (__DEV__ && !path.startsWith('/')) {
         warn(
           `The Matcher cannot resolve relative paths but received "${path}". Unless you directly called \`matcher.resolve("${path}")\`, this is probably a bug in vue-router. Please open an issue at https://new-issue.vuejs.org/?repo=vuejs/vue-router-next.`
         )
@@ -252,6 +252,7 @@ export function createRouterMatcher(
 
       if (matcher) {
         // TODO: dev warning of unused params if provided
+        // we know the matcher works because we tested the regexp
         params = matcher.parse(path)!
         name = matcher.record.name
       }
