@@ -17,11 +17,28 @@ import {
   NavigationFailure,
   NavigationRedirectError,
 } from './errors'
-import { ComponentOptions } from 'vue'
+import { ComponentOptions, onUnmounted, onActivated, onDeactivated } from 'vue'
 import { inject, getCurrentInstance, warn } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
 import { isESModule } from './utils'
+
+function registerGuard(list: NavigationGuard[], guard: NavigationGuard) {
+  const removeFromList = () => {
+    const index = list.indexOf(guard)
+    if (index > -1) list.splice(index, 1)
+  }
+
+  onUnmounted(removeFromList)
+  onDeactivated(removeFromList)
+
+  onActivated(() => {
+    const index = list.indexOf(guard)
+    if (index < 0) list.push(guard)
+  })
+
+  list.push(guard)
+}
 
 /**
  * Add a navigation guard that triggers whenever the current location is
@@ -31,10 +48,8 @@ import { isESModule } from './utils'
  * @param leaveGuard - {@link NavigationGuard}
  */
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
-  const instance = getCurrentInstance()
-  if (!instance) {
-    __DEV__ &&
-      warn('onBeforeRouteLeave must be called at the top of a setup function')
+  if (__DEV__ && !getCurrentInstance()) {
+    warn('onBeforeRouteLeave must be called at the top of a setup function')
     return
   }
 
@@ -49,10 +64,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
     return
   }
 
-  activeRecord.leaveGuards.push(
-    // @ts-ignore do we even want to allow that? Passing the context in a composition api hook doesn't make sense
-    leaveGuard.bind(instance.proxy)
-  )
+  registerGuard(activeRecord.leaveGuards, leaveGuard)
 }
 
 /**
@@ -63,10 +75,8 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
  * @param updateGuard - {@link NavigationGuard}
  */
 export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
-  const instance = getCurrentInstance()
-  if (!instance) {
-    __DEV__ &&
-      warn('onBeforeRouteUpdate must be called at the top of a setup function')
+  if (__DEV__ && !getCurrentInstance()) {
+    warn('onBeforeRouteUpdate must be called at the top of a setup function')
     return
   }
 
@@ -81,10 +91,7 @@ export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
     return
   }
 
-  activeRecord.updateGuards.push(
-    // @ts-ignore do we even want to allow that? Passing the context in a composition api hook doesn't make sense
-    updateGuard.bind(instance.proxy)
-  )
+  registerGuard(activeRecord.updateGuards, updateGuard)
 }
 
 export function guardToPromiseFn(

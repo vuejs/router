@@ -709,16 +709,6 @@ export function createRouter(options: RouterOptions): Router {
     const error = checkCanceledNavigation(toLocation, from)
     if (error) return error
 
-    const [leavingRecords] = extractChangingRecords(toLocation, from)
-    for (const record of leavingRecords) {
-      // remove registered guards from removed matched records
-      record.leaveGuards = []
-      record.updateGuards = []
-      // free the references
-      record.instances = {}
-      record.enterCallbacks = {}
-    }
-
     // only consider as push if it's not the first navigation
     const isFirstNavigation = from === START_LOCATION_NORMALIZED
     const state = !isBrowser ? {} : history.state

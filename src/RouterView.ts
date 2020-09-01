@@ -11,8 +11,13 @@ import {
   computed,
   AllowedComponentProps,
   ComponentCustomProps,
+  watch,
 } from 'vue'
-import { RouteLocationNormalized, RouteLocationNormalizedLoaded } from './types'
+import {
+  RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+  RouteLocationMatched,
+} from './types'
 import {
   matchedRouteKey,
   viewDepthKey,
@@ -20,6 +25,7 @@ import {
 } from './injectionSymbols'
 import { assign } from './utils'
 import { warn } from './warning'
+import { isSameRouteRecord } from './location'
 
 export interface RouterViewProps {
   name?: string
@@ -42,7 +48,7 @@ export const RouterViewImpl = defineComponent({
 
     const injectedRoute = inject(routeLocationKey)!
     const depth = inject(viewDepthKey, 0)
-    const matchedRouteRef = computed(
+    const matchedRouteRef = computed<RouteLocationMatched | undefined>(
       () => (props.route || injectedRoute).matched[depth]
     )
 
@@ -51,10 +57,46 @@ export const RouterViewImpl = defineComponent({
 
     const viewRef = ref<ComponentPublicInstance>()
 
+    // watch at the same time the component instance, the route record we are
+    // rendering, and the name
+    watch(
+      () => [viewRef.value, matchedRouteRef.value, props.name] as const,
+      ([instance, to, name], [oldInstance, from, oldName]) => {
+        // copy reused instances
+        if (to) {
+          // this will update the instance for new instances as well as reused
+          // instances when navigating to a new route
+          to.instances[name] = instance
+          // the component instance is reused for a different route or name so
+          // we copy any saved update or leave guards
+          if (from && instance === oldInstance) {
+            to.leaveGuards = from.leaveGuards
+            to.updateGuards = from.updateGuards
+          }
+        }
+
+        // trigger beforeRouteEnter next callbacks
+        if (
+          instance &&
+          to &&
+          // if there is no instance but to and from are the same this might be
+          // the first visit
+          (!from || !isSameRouteRecord(to, from) || !oldInstance)
+        ) {
+          ;(to.enterCallbacks[name] || []).forEach(callback =>
+            callback(instance)
+          )
+        }
+      }
+    )
+
     return () => {
       const route = props.route || injectedRoute
       const matchedRoute = matchedRouteRef.value
       const ViewComponent = matchedRoute && matchedRoute.components[props.name]
+      // we need the value at the time we render because when we unmount, we
+      // navigated to a different location so the value is different
+      const currentName = props.name
 
       if (!ViewComponent) {
         return slots.default
@@ -63,7 +105,7 @@ export const RouterViewImpl = defineComponent({
       }
 
       // props from route configuration
-      const routePropsOption = matchedRoute.props[props.name]
+      const routePropsOption = matchedRoute!.props[props.name]
       const routeProps = routePropsOption
         ? routePropsOption === true
           ? route.params
@@ -72,24 +114,16 @@ export const RouterViewImpl = defineComponent({
           : routePropsOption
         : null
 
-      // we need the value at the time we render because when we unmount, we
-      // navigated to a different location so the value is different
-      const currentName = props.name
-      const onVnodeMounted = () => {
-        matchedRoute.instances[currentName] = viewRef.value
-        ;(matchedRoute.enterCallbacks[currentName] || []).forEach(callback =>
-          callback(viewRef.value!)
-        )
-      }
-      const onVnodeUnmounted = () => {
+      const onVnodeUnmounted: VNodeProps['onVnodeUnmounted'] = vnode => {
         // remove the instance reference to prevent leak
-        matchedRoute.instances[currentName] = null
+        if (vnode.component!.isUnmounted) {
+          matchedRoute!.instances[currentName] = null
+        }
       }
 
       const component = h(
         ViewComponent,
         assign({}, routeProps, attrs, {
-          onVnodeMounted,
           onVnodeUnmounted,
           ref: viewRef,
         })
