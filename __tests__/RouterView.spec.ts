@@ -288,18 +288,6 @@ describe('RouterView', () => {
     expect(wrapper.html()).toBe(`<div>User: 4</div>`)
   })
 
-  it('passes params as props with props: true', async () => {
-    const { wrapper, route } = await factory(routes.withParams)
-
-    expect(wrapper.html()).toBe(`<div>User: 1</div>`)
-
-    await route.set({
-      ...routes.withParams,
-      params: { id: '4' },
-    })
-    expect(wrapper.html()).toBe(`<div>User: 4</div>`)
-  })
-
   it('can pass an object as props', async () => {
     const { wrapper } = await factory(routes.withIdAndOther)
     expect(wrapper.html()).toBe(`<div>id:foo;other:fixed</div>`)
