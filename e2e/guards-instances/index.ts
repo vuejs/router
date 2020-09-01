@@ -42,8 +42,15 @@ const state = reactive({
 })
 
 const Foo = defineComponent({
-  template: '<div>foo {{ enterCallback }}</div>',
-  data: () => ({ key: 'Foo', enterCallback: 0 }),
+  template: `
+    <div>
+    foo
+    <p id="enterCbs">{{ enterCallback }}</p>
+    <p id="update">{{ selfUpdates }}</p>
+    <p id="leave">{{ selfLeaves }}</p>
+    </div>
+  `,
+  data: () => ({ key: 'Foo', enterCallback: 0, selfUpdates: 0, selfLeaves: 0 }),
   // mounted() {
   //   console.log('mounted Foo')
   // },
@@ -58,11 +65,13 @@ const Foo = defineComponent({
   beforeRouteUpdate(to, from) {
     if (!this || this.key !== 'Foo') throw new Error('no this')
     state.update++
+    this.selfUpdates++
     logs.value.push(`update ${from.path} - ${to.path}`)
   },
   beforeRouteLeave(to, from) {
     if (!this || this.key !== 'Foo') throw new Error('no this')
     state.leave++
+    this.selfLeaves++
     logs.value.push(`leave ${from.path} - ${to.path}`)
   },
 
