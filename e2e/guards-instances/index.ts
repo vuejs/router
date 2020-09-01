@@ -3,8 +3,10 @@ import {
   createWebHistory,
   onBeforeRouteUpdate,
   onBeforeRouteLeave,
+  useRoute,
+  useRouter,
 } from '../../src'
-import { createApp, ref, reactive, defineComponent } from 'vue'
+import { createApp, ref, reactive, defineComponent, computed } from 'vue'
 
 // override existing style on dev with shorter times
 if (!__CI__) {
@@ -42,9 +44,9 @@ const state = reactive({
 const Foo = defineComponent({
   template: '<div>foo {{ enterCallback }}</div>',
   data: () => ({ key: 'Foo', enterCallback: 0 }),
-  mounted() {
-    console.log('mounted Foo')
-  },
+  // mounted() {
+  //   console.log('mounted Foo')
+  // },
   beforeRouteEnter(to, from, next) {
     state.enter++
     logs.value.push(`enter ${from.path} - ${to.path}`)
@@ -91,6 +93,29 @@ const router = createRouter({
   ],
 })
 
+// preserve existing query
+const originalPush = router.push
+router.push = to => {
+  if (typeof to === 'string') {
+    const resolved = router.resolve(to)
+    return router.push({
+      path: to,
+      query: {
+        testCase: router.currentRoute.value.query.testCase,
+        ...resolved.query,
+      },
+    })
+  } else {
+    return originalPush({
+      ...to,
+      query: {
+        testCase: router.currentRoute.value.query.testCase,
+        ...to.query,
+      },
+    })
+  }
+}
+
 const app = createApp({
   template: `
     <div id="app">
@@ -136,9 +161,9 @@ leaves: {{ state.leave }}
         <router-view :key="$route.query.foo" class="view" />
       </template>
       <template v-else-if="testCase === 'keepalivekeyed'">
-        <router-view v-slot="{ Component, key }" >
+        <router-view v-slot="{ Component }" >
           <keep-alive>
-            <component :is="Component" :key="$route.query.foo || key" class="view" />
+            <component :is="Component" :key="$route.query.foo" class="view" />
           </keep-alive>
         </router-view>
       </template>
@@ -149,7 +174,18 @@ leaves: {{ state.leave }}
     </div>
   `,
   setup() {
-    const testCase = ref('')
+    const router = useRouter()
+    const route = useRoute()
+
+    const testCase = computed<string>({
+      get: () => {
+        let { testCase } = route.query
+        return !testCase || Array.isArray(testCase) ? '' : testCase
+      },
+      set(testCase) {
+        router.push({ query: { ...route.query, testCase } })
+      },
+    })
 
     return { state, logs, testCase }
   },

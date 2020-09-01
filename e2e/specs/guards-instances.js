@@ -5,15 +5,15 @@ function testCase(browser) {
     .click('li:nth-child(2) a')
     .assert.containsText('.view', 'foo 1')
     .click('li:nth-child(3) a')
-    .assert.containsText('.view', 'foo 1')
+    .assert.containsText('.view', 'foo 2')
     .click('li:nth-child(4) a')
-    .assert.containsText('.view', 'foo 1')
+    .assert.containsText('.view', 'foo 2')
     .click('li:nth-child(5) a')
-    .assert.containsText('.view', 'foo 1')
+    .assert.containsText('.view', 'foo 2')
     .click('li:nth-child(2) a')
-    .assert.containsText('.view', 'foo')
-    .assert.containsText(
-      '#logs',
+    .assert.containsText('.view', 'foo 3')
+    .expect.element('#logs')
+    .text.to.equal(
       [
         'enter / - /foo',
         'leave /foo - /f/1',
@@ -68,20 +68,22 @@ module.exports = {
       .click('li:nth-child(1) a')
       // keep alive keeps the correct instance
       .click('li:nth-child(2) a')
-      .assert.containsText('.view', 'foo 3')
+      .expect.element('.view')
+      .text.equals('foo 4')
+    browser
       .click('li:nth-child(1) a')
       .click('li:nth-child(2) a')
-      .assert.containsText('.view', 'foo 4')
+      .assert.containsText('.view', 'foo 5')
       .click('li:nth-child(3) a')
-      .assert.containsText('.view', 'foo 2')
+      .assert.containsText('.view', 'foo 6')
       // leave the update view and enter it again
       .click('li:nth-child(1) a')
       .click('li:nth-child(3) a')
       .click('#resetLogs')
       .click('li:nth-child(4) a')
       .click('li:nth-child(1) a')
-      .assert.containsText(
-        '#logs',
+      .expect.element('#logs')
+      .text.to.equal(
         [
           'update /f/1 - /f/2',
           'setup:update /f/1 - /f/2',
@@ -146,12 +148,12 @@ module.exports = {
       .click('li:nth-child(1) a')
       // keep alive keeps the correct instance
       .click('li:nth-child(2) a')
-      .assert.containsText('.view', 'foo 3')
+      .assert.containsText('.view', 'foo 4')
       .click('li:nth-child(1) a')
       .click('li:nth-child(2) a')
-      .assert.containsText('.view', 'foo 4')
+      .assert.containsText('.view', 'foo 5')
       .click('li:nth-child(3) a')
-      .assert.containsText('.view', 'foo 2')
+      .assert.containsText('.view', 'foo 6')
 
       .click('li:nth-child(5) a')
       // the query is used as a key resetting the enter count
@@ -161,6 +163,10 @@ module.exports = {
       .click('li:nth-child(6) a')
       .assert.containsText('.view', 'foo 1')
       .click('li:nth-child(5) a')
+      .assert.containsText('.view', 'foo 6')
+      // on reused instance
+      .click('li:nth-child(2) a')
+      .click('li:nth-child(6) a')
       .assert.containsText('.view', 'foo 2')
 
     browser.end()
