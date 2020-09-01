@@ -72,6 +72,7 @@
   ```js
   const parent = this.$route.matched[this.$route.matched.length - 2]
   ```
+- `pathToRegexpOptions` and `caseSensitive` have been replaced with `sensitive` and `strict` options. They can also be directly passed when creating the router with `createRouter()`. Any other option has been removed as `path-to-regexp` is no longer used to parse paths.
 
 ### Typings
 
