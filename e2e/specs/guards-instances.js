@@ -130,6 +130,15 @@ module.exports = {
       .assert.containsText('.view', 'foo 1')
       .click('li:nth-child(2) a')
       .assert.containsText('.view', 'foo 1')
+      .click('li:nth-child(6) a')
+      .click('#resetLogs')
+      .click('li:nth-child(7) a')
+      .assert.containsText('.view', 'foo 0')
+      .expect.element('#logs')
+      .text.to.equal(
+        ['update /f/2 - /f/2', 'setup:update /f/2 - /f/2'].join('\n')
+      )
+    browser.click('li:nth-child(6) a').assert.containsText('.view', 'foo 0')
 
     browser.end()
   },
@@ -168,6 +177,27 @@ module.exports = {
       .click('li:nth-child(2) a')
       .click('li:nth-child(6) a')
       .assert.containsText('.view', 'foo 2')
+      .click('#resetLogs')
+      .click('li:nth-child(7) a')
+      .assert.containsText('.view', 'foo 0')
+      .expect.element('#logs')
+      // should only trigger active guards
+      .text.to.equal(
+        ['update /f/2 - /f/2', 'setup:update /f/2 - /f/2'].join('\n')
+      )
+    browser
+      .click('li:nth-child(6) a')
+      .assert.containsText('.view', 'foo 2')
+      .expect.element('#logs')
+      .text.to.equal(
+        [
+          'update /f/2 - /f/2',
+          'setup:update /f/2 - /f/2',
+          // we won't see the update guard because the instance is not available
+          // 'update /f/2 - /f/2',
+          'setup:update /f/2 - /f/2',
+        ].join('\n')
+      )
 
     browser.end()
   },

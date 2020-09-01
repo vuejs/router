@@ -141,6 +141,7 @@ leaves: {{ state.leave }}
         <li><router-link to="/f/2">/f/2</router-link></li>
         <li><router-link to="/f/2?bar=foo">/f/2?bar=foo</router-link></li>
         <li><router-link to="/f/2?foo=key">/f/2?foo=key</router-link></li>
+        <li><router-link to="/f/2?foo=key2">/f/2?foo=key2</router-link></li>
       </ul>
 
       <template v-if="testCase === 'keepalive'">

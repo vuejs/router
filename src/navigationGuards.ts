@@ -17,16 +17,24 @@ import {
   NavigationFailure,
   NavigationRedirectError,
 } from './errors'
-import { ComponentOptions, onUnmounted } from 'vue'
+import { ComponentOptions, onUnmounted, onActivated, onDeactivated } from 'vue'
 import { inject, getCurrentInstance, warn } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
 import { isESModule } from './utils'
 
 function registerGuard(list: NavigationGuard[], guard: NavigationGuard) {
-  onUnmounted(() => {
+  const removeFromList = () => {
     const index = list.indexOf(guard)
     if (index > -1) list.splice(index, 1)
+  }
+
+  onUnmounted(removeFromList)
+  onDeactivated(removeFromList)
+
+  onActivated(() => {
+    const index = list.indexOf(guard)
+    if (index < 0) list.push(guard)
   })
 
   list.push(guard)
