@@ -4,13 +4,13 @@ Very often we will need to map routes with the given pattern to the same compone
 
 ```js
 const User = {
-  template: '<div>User</div>'
+  template: '<div>User</div>',
 }
 
 // these are passed to `createRouter`
 const routes = [
   // dynamic segments start with a colon
-  { path: '/user/:id', component: User }
+  { path: '/user/:id', component: User },
 ]
 ```
 
@@ -20,7 +20,7 @@ A _param_ is denoted by a colon `:`. When a route is matched, the value of its _
 
 ```js
 const User = {
-  template: '<div>User {{ $route.params.id }}</div>'
+  template: '<div>User {{ $route.params.id }}</div>',
 }
 ```
 
@@ -41,16 +41,19 @@ In addition to `$route.params`, the `$route` object also exposes other useful in
 
 One thing to note when using routes with params is that when the user navigates from `/user/johnny` to `/user/jolyne`, **the same component instance will be reused**. Since both routes render the same component, this is more efficient than destroying the old instance and then creating a new one. **However, this also means that the lifecycle hooks of the component will not be called**.
 
-To react to params changes in the same component, you can simply watch the `$route` object:
+To react to params changes in the same component, you can simply watch anything on the `$route` object, in this scenario, the `$route.params`:
 
 ```js
 const User = {
   template: '...',
-  watch: {
-    $route(to, from) {
-      // react to route changes...
-    }
-  }
+  created() {
+    this.$watch(
+      () => this.$route.params,
+      (toParams, previousParams) => {
+        // react to route changes...
+      }
+    )
+  },
 }
 ```
 
@@ -59,10 +62,10 @@ Or, use the `beforeRouteUpdate` [navigation guard](../advanced/navigation-guards
 ```js
 const User = {
   template: '...',
-  beforeRouteUpdate(to, from, next) {
+  async beforeRouteUpdate(to, from) {
     // react to route changes...
-    // don't forget to call next()
-  }
+    this.userData = await fetchUser(to.params.id)
+  },
 }
 ```
 
