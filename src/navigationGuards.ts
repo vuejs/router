@@ -159,27 +159,38 @@ export function guardToPromiseFn(
       }
 
       // wrapping with Promise.resolve allows it to work with both async and sync guards
-      let guardCall = Promise.resolve(
-        guard.call(
-          record && record.instances[name!],
-          to,
-          from,
-          __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
-        )
+      const guardReturn = guard.call(
+        record && record.instances[name!],
+        to,
+        from,
+        __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
       )
+      let guardCall = Promise.resolve(guardReturn)
 
       if (guard.length < 3) guardCall = guardCall.then(next)
-      if (__DEV__ && guard.length > 2)
-        guardCall = guardCall.then(() => {
+      if (__DEV__ && guard.length > 2) {
+        const message = `The "next" callback was never called inside of ${
+          guard.name ? '"' + guard.name + '"' : ''
+        }:\n${guard.toString()}\n. If you are returning a value instead of calling "next", make sure to remove the "next" parameter from your function.`
+        if (typeof guardReturn === 'object' && 'then' in guardReturn) {
+          guardCall = guardCall.then(resolvedValue => {
+            // @ts-ignore: _called is added at canOnlyBeCalledOnce
+            if (!next._called) {
+              warn(message)
+              return Promise.reject(new Error('Invalid navigation guard'))
+            }
+            return resolvedValue
+          })
+          // TODO: test me!
+        } else if (guardReturn !== undefined) {
           // @ts-ignore: _called is added at canOnlyBeCalledOnce
-          if (!next._called)
-            warn(
-              `The "next" callback was never called inside of ${
-                guard.name ? '"' + guard.name + '"' : ''
-              }:\n${guard.toString()}\n. If you are returning a value instead of calling "next", make sure to remove the "next" parameter from your function.`
-            )
-          return Promise.reject(new Error('Invalid navigation guard'))
-        })
+          if (!next._called) {
+            warn(message)
+            reject(new Error('Invalid navigation guard'))
+            return
+          }
+        }
+      }
       guardCall.catch(err => reject(err))
     })
 }

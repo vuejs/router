@@ -229,9 +229,53 @@ describe('guardToPromiseFn', () => {
   it('warns if guard resolves without calling next', async () => {
     expect.assertions(2)
     await expect(
+      guardToPromiseFn(
+        async (to, from, next) => {
+          // oops not called next
+        },
+        to,
+        from
+      )()
+    ).rejects.toThrowError()
+    expect('callback was never called').toHaveBeenWarned()
+  })
+
+  it('does not warn if guard rejects without calling next', async () => {
+    expect.assertions(2)
+    await expect(
+      guardToPromiseFn(
+        async (to, from, next) => {
+          // oops not called next
+          throw new Error('nope')
+        },
+        to,
+        from
+      )()
+    ).rejects.toThrowError()
+    expect('callback was never called').not.toHaveBeenWarned()
+  })
+
+  it('warns if guard returns without calling next', async () => {
+    expect.assertions(2)
+    await expect(
       guardToPromiseFn((to, from, next) => false, to, from)()
     ).rejects.toThrowError()
-
     expect('callback was never called').toHaveBeenWarned()
+  })
+
+  it('does not warn if guard returns undefined', async () => {
+    expect.assertions(2)
+    await expect(
+      guardToPromiseFn(
+        (to, from, next) => {
+          // there could be a callback somewhere
+          setTimeout(next, 10)
+        },
+        to,
+        from
+      )()
+    ).resolves.toEqual(undefined)
+
+    expect('callback was never called').not.toHaveBeenWarned()
   })
 })
