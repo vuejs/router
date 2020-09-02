@@ -18,7 +18,7 @@ import {
 import { warn } from '../warning'
 import { assign, noop } from '../utils'
 
-interface RouterMatcher {
+export interface RouterMatcher {
   addRoute: (record: RouteRecordRaw, parent?: RouteRecordMatcher) => () => void
   removeRoute: {
     (matcher: RouteRecordMatcher): void

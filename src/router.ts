@@ -1106,7 +1106,7 @@ export function createRouter(options: RouterOptions): Router {
       }
 
       if (__DEV__) {
-        addDevtools(app, router)
+        addDevtools(app, router, matcher)
       }
     },
   }
