@@ -120,6 +120,10 @@ const config = {
               },
             ],
           },
+          {
+            text: 'Migrating from Vue 2',
+            link: '/guide/migration/',
+          },
         ],
       },
     },
