@@ -119,6 +119,10 @@ const config = {
                 text: 'Lazy Loading Routes',
               },
               {
+                link: '/guide/advanced/extending-router-link',
+                text: 'Extending RouterLink',
+              },
+              {
                 link: '/guide/advanced/navigation-failures',
                 text: 'Navigation Failures',
               },

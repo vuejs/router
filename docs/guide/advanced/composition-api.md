@@ -76,4 +76,32 @@ export default {
 }
 ```
 
-<!-- TODO: useLink -->
+Composition API guards can also be used anywhere, they don't have to be used directly on the route component as in-component guards.
+
+## `useLink`
+
+Vue Router exposes the internal behavior of RouterLink as a Composition API function. It gives access the same properties as the [`v-slot` API](#TODO):
+
+```js
+import { RouterLink, useLink } from 'vue-router'
+
+export default {
+  name: 'AppLink',
+
+  props: {
+    // add @ts-ignore if using TypeScript
+    ...RouterLink.props,
+    inactiveClass: String,
+  },
+
+  setup(props) {
+    const { route, href, isActive, isExactActive, navigate } = useLink(props)
+
+    const isExternalLink = computed(
+      () => typeof props.to === 'string' && props.to.startsWith('http')
+    )
+
+    return { isExternalLink, href, navigate, isActive }
+  },
+}
+```
