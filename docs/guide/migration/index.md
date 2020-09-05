@@ -9,12 +9,10 @@ Some of new features to keep an eye on in Vue Router 4 include:
 <!-- TODO: links -->
 
 - Dynamic Routing
-- Composition API
+- [Composition API](/guide/advanced/composition-api.md)
 - Custom History implementation
 
-## Breaking Changes
-
-### Improvements
+## Breaking Changes: Improvements
 
 The following changes should not be a problem for you but they are technically breaking changes that will show a different behavior and might break parts of your application.
 
@@ -99,7 +97,9 @@ Given any [normalized route location](#TODO):
 
 **Reason**: This allows to easily copy existing properties of a location when calling `router.push()` and `router.resolve()`. Learn more about encoding [in the cookbook](/cookbook/encoding.md).
 
-### Changed API
+## Breaking Changes: API Changes
+
+The following changes will require you to adapt your code
 
 ### New `history` option to replace `mode`
 
@@ -166,7 +166,7 @@ router.resolve({
 }).href // '/not/found'
 ```
 
-**Reason**: Vue Router doesn't use `path-to-regexp` anymore, instead it implements its own parsing system that allows route ranking and enables dynamic routing.
+**Reason**: Vue Router doesn't use `path-to-regexp` anymore, instead it implements its own parsing system that allows route ranking and enables dynamic routing. Since we usually add one single catch-all route per project, there is no big benefit in supporting a special syntax for `*`.
 
 ### Removal of `router.match` and changes to `router.resolve`
 
@@ -194,10 +194,19 @@ The `append` prop has been removed from `<router-link>`. You can manually concat
 replace
 <router-link to="child-route" append>to relative child</router-link>
 with
-<router-link :to="$route.path + '/child-route'">to relative child</router-link>
+<router-link :to="append($route.path, 'child-route')">
+  to relative child
+</router-link>
 ```
 
-**Reason**: `append` wasn't used very often and is easy to replicate in user land.
+You must define a global `append` function on your _App_ instance:
+
+```js
+app.config.globalProperties.append = (path, pathToAppend) =>
+  path + (path.endsWith('/') ? '' : '/') + pathToAppend
+```
+
+**Reason**: `append` wasn't used very often, is easy to replicate in user land.
 
 ### Removal of `event` and `tag` props in `<router-link>`
 
@@ -270,7 +279,7 @@ The `pathToRegexpOptions` and `caseSensitive` properties of route records have b
 
 ### TypeScript
 
-To make typings more consistent and expressive, some types have been renamed.
+To make typings more consistent and expressive, some types have been renamed:
 
 | `vue-router@3` | `vue-router@4`          |
 | -------------- | ----------------------- |

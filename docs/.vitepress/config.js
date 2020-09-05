@@ -99,12 +99,16 @@ const config = {
               },
               { link: '/guide/advanced/meta', text: 'Route Meta Fields' },
               {
-                link: '/guide/advanced/transitions',
-                text: 'Transitions',
-              },
-              {
                 link: '/guide/advanced/data-fetching',
                 text: 'Data Fetching',
+              },
+              {
+                link: '/guide/advanced/composition-api',
+                text: 'Composition API',
+              },
+              {
+                link: '/guide/advanced/transitions',
+                text: 'Transitions',
               },
               {
                 link: '/guide/advanced/scroll-behavior',

@@ -225,24 +225,7 @@ beforeRouteLeave (to, from) {
 
 ### Using the composition API
 
-If you are writing your component using the [composition API and a `setup` function](https://v3.vuejs.org/guide/composition-api-setup.html#setup), you can add update and leave guards:
-
-```js
-import { onBeforeRouteUpdate, onBeforeRouteLeave } from 'vue-router'
-
-const UserDetails = {
-  template: `...`,
-  setup() {
-    onBeforeRouteUpdate((to, from) => {
-      // same as the beforeRouteUpdate option but with no access to `this`
-    })
-
-    onBeforeRouteLeave((to, from) => {
-      // same as the beforeRouteLeave option but with no access to `this`
-    })
-  },
-}
-```
+If you are writing your component using the [composition API and a `setup` function](https://v3.vuejs.org/guide/composition-api-setup.html#setup), you can add update and leave guards through `onBeforeRouteUpdate` and `onBeforeRouteLeave` respectively. Please refer to the [Composition API section](./composition-api.md#navigation-guards) for more details.
 
 ## The Full Navigation Resolution Flow
 

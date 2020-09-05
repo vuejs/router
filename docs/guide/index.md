@@ -50,7 +50,7 @@ const About = { template: '<div>About</div>' }
 // We'll talk about nested routes later.
 const routes = [
   { path: '/', component: Home },
-  { path: '/about', component: About }
+  { path: '/about', component: About },
 ]
 
 // 3. Create the router instance and pass the `routes` option
@@ -59,7 +59,7 @@ const routes = [
 const router = VueRouter.createRouter({
   // 4. Provide the history implementation to use. We are using the hash history for simplicity here.
   history: VueRouter.createWebHashHistory(),
-  routes // short for `routes: routes`
+  routes, // short for `routes: routes`
 })
 
 // 4. Create and mount the root instance.
@@ -82,13 +82,17 @@ export default {
     username() {
       // We will see what `params` is shortly
       return this.$route.params.username
-    }
+    },
   },
   methods: {
-    goBack() {
-      window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/')
-    }
-  }
+    goToDashboard() {
+      if (isAuthenticated) {
+        this.$router.push('/dashboard')
+      } else {
+        this.$router.push('/login')
+      }
+    },
+  },
 }
 ```
 
@@ -105,13 +109,19 @@ export default {
     const route = useRoute()
 
     const username = computed(() => route.params.username)
-    function goBack() {
-      window.history.length > 1 ? router.go(-1) : router.push('/')
+    function goToDashboard() {
+      if (isAuthenticated) {
+        router.push('/dashboard')
+      } else {
+        router.push('/login')
+      }
     }
 
-    return { username, goBack }
-  }
+    return { username, goToDashboard }
+  },
 }
 ```
+
+We will learn more about this in [the Composition API](/guide/advanced/composition-api.md)
 
 Throughout the docs, we will often use the `router` instance. Keep in mind that `this.$router` is exactly the same as directly using the `router` instance created through `createRouter`. The reason we use `this.$router` is because we don't want to import the router in every single component that needs to manipulate routing.

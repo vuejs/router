@@ -9,6 +9,8 @@
 
 ## Know issues
 
+<!-- TODO: put a link to the documentation instead -->
+
 ### Breaking changes compared to vue-router@3.x
 
 - The `mode: 'history'` option has been replaced with a more flexible one named `history`:

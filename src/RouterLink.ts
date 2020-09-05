@@ -18,7 +18,7 @@ import { assign } from './utils'
 
 export interface RouterLinkOptions {
   /**
-   * Location the link should navigate to when clicked on.
+   * Route Location the link should navigate to when clicked on.
    */
   to: RouteLocationRaw
   /**
@@ -30,7 +30,8 @@ export interface RouterLinkOptions {
 
 export interface RouterLinkProps extends RouterLinkOptions {
   /**
-   * Whether RouterLink should not wrap its content in an `a` tag.
+   * Whether RouterLink should not wrap its content in an `a` tag. Useful when
+   * using `v-slot` to create a custom RouterLink
    */
   custom?: boolean
   /**
@@ -81,8 +82,9 @@ export function useLink(props: UseLinkOptions) {
     return (
       // we are dealing with nested routes
       length > 1 &&
-        // if the have the same path, this link is referring to the empty child
-        // are we currently are on a different child of the same parent
+        // if the parent and matched route have the same path, this link is
+        // referring to the empty child. Or we currently are on a different
+        // child of the same parent
         getOriginalPath(routeMatched) === parentRecordPath &&
         // avoid comparing the child with its parent
         currentMatched[currentMatched.length - 1].path !== parentRecordPath
