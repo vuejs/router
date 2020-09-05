@@ -121,7 +121,7 @@ export interface _RouteLocationBase {
   /**
    * Merged `meta` properties from all of the matched route records.
    */
-  meta: Record<string | number | symbol, any>
+  meta: RouteMeta
 }
 
 // matched contains resolved components
@@ -216,8 +216,10 @@ export interface _RouteRecordBase extends PathParserOptions {
   /**
    * Arbitrary data attached to the record.
    */
-  meta?: Record<string | number | symbol, any>
+  meta?: RouteMeta
 }
+
+export interface RouteMeta extends Record<string | number | symbol, any> {}
 
 export type RouteRecordRedirectOption =
   | RouteLocationRaw

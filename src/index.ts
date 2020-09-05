@@ -20,6 +20,7 @@ export {
 } from './matcher/pathParserRanker'
 
 export {
+  RouteMeta,
   _RouteLocationBase,
   _RouteRecordBase,
   RouteLocationRaw,
