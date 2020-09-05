@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { RouterLink } from '../src/RouterLink'
+import { RouterLink, RouterLinkProps } from '../src/RouterLink'
 import {
   START_LOCATION_NORMALIZED,
   RouteQueryAndHash,
@@ -10,7 +10,7 @@ import {
 } from '../src/types'
 import { createMemoryHistory, RouterOptions } from '../src'
 import { mount, createMockedRoute } from './mount'
-import { nextTick } from 'vue'
+import { defineComponent, nextTick, PropType } from 'vue'
 import { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/injectionSymbols'
 import { tick } from './utils'
@@ -857,6 +857,98 @@ describe('RouterLink', () => {
       )
 
       expect(wrapper.html()).not.toContain('</a>')
+    })
+
+    describe('Extending RouterLink', () => {
+      const AppLink = defineComponent({
+        template: `
+<a v-if="isExternalLink" v-bind="$attrs" :href="to">
+  <slot />
+</a>
+<router-link v-else v-bind="$props" custom v-slot="{ isActive, href, navigate }">
+  <a
+    v-bind="$attrs"
+    :href="href"
+    @click="navigate"
+    :class="isActive ? activeClass : inactiveClass"
+  >
+    <slot />
+  </a>
+</router-link>
+        `,
+        components: { RouterLink },
+        name: 'AppLink',
+
+        // @ts-ignore
+        props: {
+          ...((RouterLink as any).props as RouterLinkProps),
+          inactiveClass: String as PropType<string>,
+        },
+
+        computed: {
+          isExternalLink(): boolean {
+            // @ts-ignore
+            return typeof this.to === 'string' && this.to.startsWith('http')
+          },
+        },
+      })
+
+      async function factoryCustom(
+        currentLocation: RouteLocationNormalized,
+        propsData: any,
+        resolvedLocation: RouteLocationResolved,
+        slotTemplate: string = ''
+      ) {
+        const route = createMockedRoute(currentLocation)
+        const router = {
+          history: createMemoryHistory(),
+          createHref(to: RouteLocationNormalized): string {
+            return this.history.base + to.fullPath
+          },
+          options: {} as Partial<RouterOptions>,
+          resolve: jest.fn(),
+          push: jest.fn().mockResolvedValue(resolvedLocation),
+        }
+        router.resolve.mockReturnValueOnce(resolvedLocation)
+
+        const wrapper = await mount(AppLink, {
+          propsData,
+          provide: {
+            [routerKey as any]: router,
+            ...route.provides,
+          },
+          slots: { default: slotTemplate },
+        })
+
+        return { router, wrapper, route }
+      }
+
+      it('can extend RouterLink with inactive class', async () => {
+        const { wrapper } = await factoryCustom(
+          locations.basic.normalized,
+          {
+            to: locations.basic.string,
+            inactiveClass: 'inactive',
+            activeClass: 'active',
+          },
+          locations.foo.normalized
+        )
+
+        expect(wrapper.find('a')!.className).toEqual('inactive')
+      })
+
+      it('can extend RouterLink with external link', async () => {
+        const { wrapper } = await factoryCustom(
+          locations.basic.normalized,
+          {
+            to: 'https://esm.dev',
+          },
+          locations.foo.normalized
+        )
+
+        expect(wrapper.find('a')!.className).toEqual('')
+        expect(wrapper.find('a')!.href).toEqual('https://esm.dev/')
+      })
     })
   })
 })
