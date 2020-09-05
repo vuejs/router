@@ -29,25 +29,32 @@
 - Catch all routes (`/*`) must now be defined using a parameter with a custom regex: `/:catchAll(.*)`
 - `router.match` and `router.resolve` are merged together into `router.resolve` with a slightly different signature. Check its typing through autocomplete or [Router's `resolve` method](https://github.com/vuejs/vue-router-next/blob/master/src/router.ts)
 - `router.getMatchedComponents` is now removed as they can be retrieved from `router.currentRoute.value.matched`:
+
   ```js
   router.currentRoute.value.matched.flatMap(record =>
     Object.values(record.components)
   )
   ```
+
   - The `append` argument has been removed. You can manually concatenate the value to an existing `path` instead.
+
 - `RouterLink`
   - `append` prop has been removed as well. Use the same workaround as above.
   - `event` prop has been removed. Use the `v-slot` API instead. See [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0021-router-link-scoped-slot.md).
   - `tag` prop has been removed. Use the `v-slot` API instead. See [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0021-router-link-scoped-slot.md).
   - `exact` prop has been removed. The caveat it was fixing is no longer present. See [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0028-router-active-link.md).
 - If you use a `transition`, you may need to wait for the router to be _ready_ before mounting the app:
+
   ```js
   app.use(router)
   // Note: on Server Side, you need to manually push the initial location
   router.isReady().then(() => app.mount('#app'))
   ```
+
   Otherwise there will be an initial transition as if you provided the `appear` prop to `transition` because the router displays its initial location (nothing) and then displays the first location. This happens because navigations are all asynchronous now. **If you have navigation guards upon the initial navigation**, you might not want to block the app render until they are resolved.
+
 - On SSR, you need to manually pass the appropriate history:
+
   ```js
   // router.js
   let history = isServer ? createMemoryHistory() : createWebHistory()
@@ -58,8 +65,10 @@
     // resolve the request
   })
   ```
+
 - The object returned in `scrollBehavior` is now similar to [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions): `x` is renamed to `left` and `y` is renamed to `top`. See [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0035-router-scroll-position.md).
 - `transition` and `keep-alive` must now be used **inside** of `RouterView` via the `v-slot` API:
+
   ```vue
   <router-view v-slot="{ Component }">
     <transition>
@@ -69,11 +78,15 @@
     </transition>
   </router-view>
   ```
+
   See more on the [KeepAlive](https://github.com/vuejs/vue-router-next/blob/master/e2e/keep-alive/index.ts) and the [Transition](https://github.com/vuejs/vue-router-next/blob/master/e2e/transitions/index.ts) examples. See [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0034-router-view-keep-alive-transitions.md).
+
 - `parent` is removed from Route locations (`this.$route` and object returned by `router.resolve`). You can still access it via the `matched` array:
+
   ```js
   const parent = this.$route.matched[this.$route.matched.length - 2]
   ```
+
 - `pathToRegexpOptions` and `caseSensitive` have been replaced with `sensitive` and `strict` options. They can also be directly passed when creating the router with `createRouter()`. Any other option has been removed as `path-to-regexp` is no longer used to parse paths.
 
 ### Typings
@@ -93,9 +106,11 @@ These are technically breaking changes but they fix an inconsistent behavior.
 - Pushing or resolving a non existent named route throws an error instead of navigating to `/` and displaying nothing.
 - _resolving_(`router.resolve`) or _pushing_ (`router.push`) a location with missing params no longer warns and produces an invalid URL (`/`), but explicitly throws an Error instead.
 - Empty children `path` does not append a trailing slash (`/`) anymore to make it consistent across all routes:
+
   - By default no route has a trailing slash but also works with a trailing slash
   - Adding `strict: true` to a route record or to the router options (alongside `routes`) will disallow an optional trailing slash
   - Combining `strict: true` with a trailing slash in your routes allows you to enforce a trailing slash in your routes. In the case of nested routes, make sure to add the trailing slash to the parent **and not the empty child**:
+
     ```js
     let routes = [
       {
@@ -104,14 +119,18 @@ These are technically breaking changes but they fix an inconsistent behavior.
       },
     ]
     ```
+
   - To redirect the user to trailing slash routes (or the opposite), you can setup a `beforeEach` navigation guard that ensures the presence of a trailing slash:
+
     ```js
     router.beforeEach((to, from, next) => {
       if (to.path.endsWith('/')) next()
       else next({ path: to.path + '/', query: to.query, hash: to.hash })
     })
     ```
+
 - Because of the change above, relative children path `redirect` on an empty path are not supported anymore. Use named routes instead:
+
   ```js
   // replace
   let routes = [
@@ -135,7 +154,9 @@ These are technically breaking changes but they fix an inconsistent behavior.
     },
   ]
   ```
+
   Note this will work if `path` was `/parent/` as the relative location `home` to `/parent/` is indeed `/parent/home` but the relative location of `home` to `/parent` is `/home`
+
 - Encoding is now more consistent. The initial navigation should yield the same results are in-app navigations.
   - Values in `path`, `fullPath` are not decoded anymore. They will appear as provided by the browser (most browsers provide them encoded).
   - `params`, `query` and `hash` are now all decoded
