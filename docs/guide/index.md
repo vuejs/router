@@ -63,9 +63,9 @@ const router = VueRouter.createRouter({
 })
 
 // 4. Create and mount the root instance.
+const app = Vue.createApp({})
 // Make sure to _use_ the router instance to make the
 // whole app router-aware.
-const app = Vue.createApp({})
 app.use(router)
 
 app.mount('#app')
@@ -73,7 +73,7 @@ app.mount('#app')
 // Now the app has started!
 ```
 
-By injecting the router, we get access to it as `this.$router` as well as the current route as `this.$route` inside of any component:
+By calling `app.use(router)`, we get access to it as `this.$router` as well as the current route as `this.$route` inside of any component:
 
 ```js
 // Home.vue
@@ -96,32 +96,6 @@ export default {
 }
 ```
 
-To access the router or the route inside the `setup` function, call the `useRouter` or `useRoute` functions:
-
-```js
-// Home.vue
-const { computed } = Vue
-const { useRouter, useRoute } = VueRouter
-
-export default {
-  setup() {
-    const router = useRouter()
-    const route = useRoute()
-
-    const username = computed(() => route.params.username)
-    function goToDashboard() {
-      if (isAuthenticated) {
-        router.push('/dashboard')
-      } else {
-        router.push('/login')
-      }
-    }
-
-    return { username, goToDashboard }
-  },
-}
-```
-
-We will learn more about this in [the Composition API](/guide/advanced/composition-api.md)
+To access the router or the route inside the `setup` function, call the `useRouter` or `useRoute` functions. We will learn more about this in [the Composition API](/guide/advanced/composition-api.md#accessing-the-router-and-current-route-inside-setup)
 
 Throughout the docs, we will often use the `router` instance. Keep in mind that `this.$router` is exactly the same as directly using the `router` instance created through `createRouter`. The reason we use `this.$router` is because we don't want to import the router in every single component that needs to manipulate routing.

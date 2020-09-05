@@ -86,7 +86,7 @@ router.beforeResolve(async to => {
 })
 ```
 
-`router.beforeResolve` is the ideal spot to fetch data or do any other operation that you want to avoid doing if the user cannot enter a page. It's also very easy to combine with [`meta` fields](./meta.md) to create a [generic fetching mechanism](../../cookbook/generic-data-fetching.md)
+`router.beforeResolve` is the ideal spot to fetch data or do any other operation that you want to avoid doing if the user cannot enter a page. It's also very easy to combine with [`meta` fields](./meta.md) to create a [generic fetching mechanism](/cookbook/generic-data-fetching.md)
 
 ## Global After Hooks
 
@@ -98,7 +98,7 @@ router.afterEach((to, from) => {
 })
 ```
 
-They are useful for analytics, [changing the title of the page](../../cookbook/page-title.md), [accessibility](../../cookbook/announcing-navigation.md) and many other things.
+They are useful for analytics, [changing the title of the page](/cookbook/page-title.md), [accessibility](/cookbook/announcing-navigation.md) and many other things.
 
 They also reflect [navigation failures](./navigation-failures.md) as the third argument:
 
