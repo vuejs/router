@@ -93,7 +93,7 @@
     "jest": "^26.4.2",
     "jest-mock-warn": "^1.1.0",
     "lint-staged": "^10.2.11",
-    "nightwatch": "^1.3.7",
+    "nightwatch": "^1.4.1",
     "nightwatch-helpers": "^1.2.0",
     "patch-package": "^6.2.2",
     "prettier": "^2.0.5",
