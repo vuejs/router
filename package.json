@@ -98,7 +98,7 @@
     "patch-package": "^6.2.2",
     "prettier": "^2.0.5",
     "rollup": "^2.26.9",
-    "rollup-plugin-terser": "^7.0.1",
+    "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.27.2",
     "selenium-server": "^3.141.59",
     "serve-handler": "^6.1.3",
