@@ -499,14 +499,14 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@microsoft/api-documenter@^7.8.36":
-  version "7.8.36"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-documenter/-/api-documenter-7.8.36.tgz#531997cc61860800eb7c540bd312e1d789874b9d"
-  integrity sha512-je2ZuJvaN9DHUju0CdABPzA3r13mUv59pC24kYg4Mj6CSclKYpTarCpiJzFeoYV6e2MBXkzYYMuUwSvyqWTljg==
+"@microsoft/api-documenter@^7.8.42":
+  version "7.8.42"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-documenter/-/api-documenter-7.8.42.tgz#c8c27febeae448a2d87a739a3c7aead381009816"
+  integrity sha512-k7GRf4KRlY0+9usDcw99NqeGldRH0fD6MCIUTyYwZiR0fXeGF1Q7+f0Dj67TKMEXN1nHlMthtrKo4FP6XLmaBg==
   dependencies:
-    "@microsoft/api-extractor-model" "7.8.19"
+    "@microsoft/api-extractor-model" "7.8.21"
     "@microsoft/tsdoc" "0.12.19"
-    "@rushstack/node-core-library" "3.30.0"
+    "@rushstack/node-core-library" "3.31.0"
     "@rushstack/ts-command-line" "4.6.4"
     colors "~1.2.1"
     js-yaml "~3.13.1"
@@ -520,13 +520,13 @@
     "@microsoft/tsdoc" "0.12.19"
     "@rushstack/node-core-library" "3.19.7"
 
-"@microsoft/api-extractor-model@7.8.19":
-  version "7.8.19"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.8.19.tgz#a49fb1b3f454966c4f60e8d63ffae2599eeaace3"
-  integrity sha512-tEEPuww0Gbyw9LuTcJ7nDCTjb+aLSAox8Xl9/iSxNTv5yHJN1QX3cqajlC3ibDHlRz7oMpQfHZX7YpAygbgIvg==
+"@microsoft/api-extractor-model@7.8.21":
+  version "7.8.21"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor-model/-/api-extractor-model-7.8.21.tgz#0d394a3414ff7222fc51ed7e00f9b732bd6a1fd2"
+  integrity sha512-gpg92BaN1mlxvSvyFMTPkcIZOqC9Q5pX/cKqkF+rtH0RXVQXL7ck9LWyM6gSrd/ricz/ARlsyTlLPNq2vJZg7A==
   dependencies:
     "@microsoft/tsdoc" "0.12.19"
-    "@rushstack/node-core-library" "3.30.0"
+    "@rushstack/node-core-library" "3.31.0"
 
 "@microsoft/api-extractor@^7.8.1":
   version "7.8.1"
@@ -664,10 +664,10 @@
     timsort "~0.3.0"
     z-schema "~3.18.3"
 
-"@rushstack/node-core-library@3.30.0":
-  version "3.30.0"
-  resolved "https://registry.yarnpkg.com/@rushstack/node-core-library/-/node-core-library-3.30.0.tgz#a2b814a611a040ac69d6c31ffc92bf9155c983fb"
-  integrity sha512-vZo1fi/ObL3CmRXlQUX/E1xL9KL9arBfCJ7pYf3O/vFrD8ffSfpQ6+6lhgAsKrCIM5Epddsgeb2REPxMwYZX1g==
+"@rushstack/node-core-library@3.31.0":
+  version "3.31.0"
+  resolved "https://registry.yarnpkg.com/@rushstack/node-core-library/-/node-core-library-3.31.0.tgz#80e8f50e5b438e68627a928ab8f45661860dc04f"
+  integrity sha512-GN/nKEszlKvW4Efhmicbk/s+mY6cshXexINl+W1OBtq2AaTae1QI0XjGjCp6cCygW7PltilJ5EOKGEtTQg2mew==
   dependencies:
     "@types/node" "10.17.13"
     colors "~1.2.1"
@@ -6367,7 +6367,7 @@ js-tokens@^4.0.0:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
-js-yaml@3.13.1, js-yaml@^3.13.1, js-yaml@~3.13.1:
+js-yaml@3.13.1, js-yaml@~3.13.1:
   version "3.13.1"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.13.1.tgz#aff151b30bfdfa8e49e05da22e7415e9dfa37847"
   integrity sha512-YfbcO7jXDdyj0DGxYVSlSeQNHbD7XPWvrVWeVUujrQEoZzWJIRrCPoyk6kL6IAjAG2IolMK4T0hNUe0HOUs5Jw==
@@ -6375,7 +6375,7 @@ js-yaml@3.13.1, js-yaml@^3.13.1, js-yaml@~3.13.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
-js-yaml@^3.11.0:
+js-yaml@^3.11.0, js-yaml@^3.13.1:
   version "3.14.0"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.14.0.tgz#a7a34170f26a21bb162424d8adacb4113a69e482"
   integrity sha512-/4IbIeHcD9VMHFqDR/gQ7EdZdLimOvW2DdcxFjdyyZ9NsbS+ccrXqVWDtab/lRl5AlUqmpBx8EhPaWR+OtY17A==
