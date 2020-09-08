@@ -1,5 +1,13 @@
-import { createRouter, createWebHistory, expectType } from './index'
-import { NavigationFailure } from 'dist/vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  expectType,
+  isNavigationFailure,
+  NavigationFailure,
+  NavigationFailureType,
+  RouteLocationNormalized,
+  RouteLocationRaw,
+} from './index'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -34,4 +42,12 @@ router.beforeEach((to, from, next) => {
 
 router.afterEach((to, from, failure) => {
   expectType<NavigationFailure | undefined | void>(failure)
+  if (isNavigationFailure(failure)) {
+    expectType<RouteLocationNormalized>(failure.from)
+    expectType<RouteLocationRaw>(failure.to)
+  }
+  if (isNavigationFailure(failure, NavigationFailureType.cancelled)) {
+    expectType<RouteLocationNormalized>(failure.from)
+    expectType<RouteLocationRaw>(failure.to)
+  }
 })

@@ -57,8 +57,10 @@ export default {
   },
 
   setup(props) {
-    const useLink
-    const isExternalLink = computed(() => typeof props.to === 'string' && props.to.startsWith('http'))
+    const { navigate, href route, isActive, isExactActive } = useLink(toRef(props, 'to'))
+
+
+    // profit!
 
     return { isExternalLink }
   }
