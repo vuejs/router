@@ -10,7 +10,7 @@ sidebar: auto
 - [Interfaces](./vue-router-interface.md)
 - [Types](./vue-router-typealias.md)
 
-## `<router-link>` props
+## `<router-link>` Props
 
 ### to
 
@@ -54,14 +54,14 @@ Setting `replace` prop will call `router.replace()` instead of `router.push()` w
 ### active-class
 
 - type: `string`
-- default: `'router-link-active'` (or global [`routerLinkActiveClass`](#TODO))
+- default: `"router-link-active"` (or global [`routerLinkActiveClass`](#TODO))
 
 Class to apply on the rendered `a` when the link is active.
 
 ### aria-current-value
 
 - type: `'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false'` (`string`)
-- default: `'page'`
+- default: `"page"`
 
 Value passed to the attribute `aria-current` when the link is exactly active.
 
@@ -81,7 +81,7 @@ Whether `<router-link>` should not wrap its content in an `<a>` element. Useful 
 ### exact-active-class
 
 - type: `string`
-- default: `'router-link-exact-active'` (or global [`routerLinkExactActiveClass`](#TODO))
+- default: `"router-link-exact-active"` (or global [`routerLinkExactActiveClass`](#TODO))
 
 Class to apply when the link is exact active.
 
@@ -129,3 +129,16 @@ Sometimes we may want the active class to be applied to an outer element rather 
 :::tip
 If you add a `target="_blank"` to your `a` element, you must omit the `@click="navigate"` handler.
 :::
+
+## `<router-view>` Props
+
+### name
+
+- type: `string`
+- default: `"default"`
+
+When a `<router-view>` has a `name`, it will render the component with the corresponding name in the matched route record's `components` option. See [Named Views](/guide/essentials/named-views.md) for an example.
+
+### route
+
+- type: `RouteLocationNormalizedLoaded`. A route location that has all of its component resolved (if any was lazy loaded) so it can be displayed.

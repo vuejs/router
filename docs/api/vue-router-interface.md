@@ -711,8 +711,6 @@ Custom implementation to stringify a query object. Should not prepend a leading 
 stringifyQuery?: typeof originalStringifyQuery;
 ```
 
-## RouterViewProps
-
 ### Methods
 
 ### Properties
