@@ -168,6 +168,26 @@ router.resolve({
 
 **Reason**: Vue Router doesn't use `path-to-regexp` anymore, instead it implements its own parsing system that allows route ranking and enables dynamic routing. Since we usually add one single catch-all route per project, there is no big benefit in supporting a special syntax for `*`.
 
+### Replaced `onReady` with `isReady`
+
+The existing `router.onReady()` function has been replaced with `router.isReady()` which doesn't take any argument and returns a Promise:
+
+```js
+// replace
+router.onReady(onSuccess, onError)
+// with
+router.isReady().then(onSuccess).catch(onError)
+// or use await:
+try {
+  await router.isReady()
+  // onSuccess
+} catch (err) {
+  // onError
+}
+```
+
+**Reason**: As Promises become available in all major browsers, we try to natively integrate them in Vue Router's API.
+
 ### Removal of `router.match` and changes to `router.resolve`
 
 Both `router.match`, and `router.resolve` have been merged together into `router.resolve` with a slightly different signature. [Refer to the API](#TODO) for more details.
