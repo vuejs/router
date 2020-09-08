@@ -34,7 +34,7 @@ export {
   RouteRecordRaw,
   NavigationGuard,
   NavigationGuardNext,
-  PostNavigationGuard,
+  NavigationHookAfter,
 } from './types'
 export {
   createRouter,

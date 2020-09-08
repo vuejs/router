@@ -44,6 +44,9 @@ export interface PathParser {
   stringify(params: PathParams): string
 }
 
+/**
+ * @internal
+ */
 export interface _PathParserOptions {
   /**
    * Makes the RegExp case sensitive. Defaults to false
@@ -54,11 +57,12 @@ export interface _PathParserOptions {
    */
   strict?: boolean
   /**
-   * Should the RegExp match from the beginning by prepending a ^. Defaults to true
+   * Should the RegExp match from the beginning by prepending a `^` to it. Defaults to true
+   * @internal
    */
   start?: boolean
   /**
-   * Should the RegExp match until the end by appending a $. Defaults to true
+   * Should the RegExp match until the end by appending a `$` to it. Defaults to true
    */
   end?: boolean
 }

@@ -2,7 +2,7 @@ import {
   RouteLocationNormalized,
   RouteRecordRaw,
   RouteLocationRaw,
-  PostNavigationGuard,
+  NavigationHookAfter,
   START_LOCATION_NORMALIZED,
   Lazy,
   RouteLocationNormalizedLoaded,
@@ -69,6 +69,11 @@ type OnReadyCallback = [() => void, (reason?: any) => void]
 type Awaitable<T> = T | Promise<T>
 
 export interface ScrollBehavior {
+  /**
+   * @param to - Route location where we are navigating to
+   * @param from - Route location where we are navigating from
+   * @param savedPosition - saved position if it exists, `null` otherwise
+   */
   (
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
@@ -98,16 +103,25 @@ export interface RouterOptions extends PathParserOptions {
    */
   routes: RouteRecordRaw[]
   /**
-   * Function to control scrolling when navigating between pages.
+   * Function to control scrolling when navigating between pages. Can return a
+   * Promise to delay scrolling. Check {@link ScrollBehavior}.
+   *
+   * @example
+   * ```js
+   * function scrollBehavior(to, from, savedPosition) {
+   *   // `to` and `from` are both route locations
+   *   // `savedPosition` can be null if there isn't one
+   * }
+   * ```
    */
   scrollBehavior?: ScrollBehavior
   /**
-   * Custom implementation to parse a query.
+   * Custom implementation to parse a query. See its counterpart,
+   * {@link RouterOptions.stringifyQuery}.
    *
    * @example
-   * Let's say you want to use the package {@link https://github.com/ljharb/qs | `qs`}
-   * to parse queries, you would need to provide both `parseQuery` and
-   * {@link RouterOptions.stringifyQuery | `stringifyQuery`}:
+   * Let's say you want to use the package {@link https://github.com/ljharb/qs | qs}
+   * to parse queries, you can provide both `parseQuery` and `stringifyQuery`:
    * ```js
    * import qs from 'qs'
    *
@@ -120,7 +134,8 @@ export interface RouterOptions extends PathParserOptions {
    */
   parseQuery?: typeof originalParseQuery
   /**
-   * {@link RouterOptions.parseQuery | `parseQuery`} counterpart to handle query parsing.
+   * Custom implementation to stringify a query object. Should not prepend a leading `?`.
+   * {@link RouterOptions.parseQuery | parseQuery} counterpart to handle query parsing.
    */
   stringifyQuery?: typeof originalStringifyQuery
   /**
@@ -145,30 +160,160 @@ export interface Router {
    * @internal
    */
   // readonly history: RouterHistory
+  /**
+   * Current {@link RouteLocationNormalized}
+   */
   readonly currentRoute: Ref<RouteLocationNormalizedLoaded>
+  /**
+   * Original options object passed to create the Router
+   */
   readonly options: RouterOptions
 
+  /**
+   * Add a new {@link RouteRecordRaw | Route Record} as the child of an existing route.
+   *
+   * @param parentName - Parent Route Record where `route` should be appended at
+   * @param route - Route Record to add
+   */
   addRoute(parentName: RouteRecordName, route: RouteRecordRaw): () => void
+  /**
+   * Add a new {@link RouteRecordRaw | route record} to the router.
+   *
+   * @param route - Route Record to add
+   */
   addRoute(route: RouteRecordRaw): () => void
+  /**
+   * Remove an existing route by its name.
+   *
+   * @param name - Name of the route to remove
+   */
   removeRoute(name: RouteRecordName): void
+  /**
+   * Checks if a route with a given name exists
+   *
+   * @param name - Name of the route to check
+   */
   hasRoute(name: RouteRecordName): boolean
+  /**
+   * Get a full list of all the {@link RouteRecord | route records}.
+   */
   getRoutes(): RouteRecord[]
 
+  /**
+   * Returns the {@link RouteLocation | normalized version} of a
+   * {@link RouteLocationRaw | route location}. Also includes an `href` property
+   * that includes any existing `base`.
+   *
+   * @param to - Raw route location to resolve
+   */
   resolve(to: RouteLocationRaw): RouteLocation & { href: string }
 
+  /**
+   * Programmatically navigate to a new URL by pushing an entry in the history
+   * stack.
+   *
+   * @param to - Route location to navigate to
+   */
   push(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+  /**
+   * Programmatically navigate to a new URL by replacing the current entry in
+   * the history stack.
+   *
+   * @param to - Route location to navigate to
+   */
   replace(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+  /**
+   * Go back in history if possible by calling `history.back()`. Equivalent to
+   * `router.go(-1)`.  Returns a Promise. See the limitations at
+   * {@link Router.go}.
+   */
   back(): Promise<NavigationFailure | void | undefined>
+  /**
+   * Go forward in history if possible by calling `history.forward()`.
+   * Equivalent to `router.go(1)`. Returns a Promise. See the limitations at
+   * {@link Router.go}.
+   */
   forward(): Promise<NavigationFailure | void | undefined>
+  /**
+   * Allows you to move forward or backward through the history. Returns a
+   * Promise that resolves when the navigation finishes. If it wasn't possible
+   * to go back, the promise never resolves or rejects
+   *
+   * @param delta - The position in the history to which you want to move,
+   * relative to the current page
+   */
   go(delta: number): Promise<NavigationFailure | void | undefined>
 
+  /**
+   * Add a navigation guard that executes before any navigation. Returns a
+   * function that removes the registered guard.
+   *
+   * @param guard - navigation guard to add
+   */
   beforeEach(guard: NavigationGuardWithThis<undefined>): () => void
+  /**
+   * Add a navigation guard that executes before navigation is about to be
+   * resolved. At this state all component have been fetched and other
+   * navigation guards have been successful. Returns a function that removes the
+   * registered guard.
+   *
+   * @example
+   * ```js
+   * router.beforeEach(to => {
+   *   if (to.meta.requiresAuth && !isAuthenticated) return false
+   * })
+   * ```
+   *
+   * @param guard - navigation guard to add
+   */
   beforeResolve(guard: NavigationGuardWithThis<undefined>): () => void
-  afterEach(guard: PostNavigationGuard): () => void
+  /**
+   * Add a navigation hook that is executed after every navigation. Returns a
+   * function that removes the registered hook.
+   *
+   * @example
+   * ```js
+   * router.afterEach((to, from, failure) => {
+   *   if (isNavigationFailure(failure)) {
+   *     console.log('failed navigation', failure)
+   *   }
+   * })
+   * ```
+   *
+   * @param guard - navigation hook to add
+   */
+  afterEach(guard: NavigationHookAfter): () => void
 
+  /**
+   * Adds an error handler that is called every time a non caught error happens
+   * during navigation. This includes errors thrown synchronously and
+   * asynchronously, errors returned or passed to `next` in any navigation
+   * guard, and errors occurred when trying to resolve an async component that
+   * is required to render a route.
+   *
+   * @param handler - error handler to register
+   */
   onError(handler: ErrorHandler): () => void
+  /**
+   * Returns a Promise that resolves when the router has completed the initial
+   * navigation, which means it has resolved all async enter hooks and async
+   * components that are associated with the initial route. If the initial
+   * navigation already happened, the promise resolves immediately.
+   *
+   * This is useful in server-side rendering to ensure consistent output on both
+   * the server and the client. Note that on server side, you need to manually
+   * push the initial location while on client side, the router automatically
+   * picks it up from the URL.
+   */
   isReady(): Promise<void>
 
+  /**
+   * Called automatically by `app.use(router)`. Should not be called manually by
+   * the user.
+   *
+   * @internal
+   * @param app - Application that uses the router
+   */
   install(app: App): void
 }
 
@@ -186,7 +331,7 @@ export function createRouter(options: RouterOptions): Router {
 
   const beforeGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
   const beforeResolveGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
-  const afterGuards = useCallbacks<PostNavigationGuard>()
+  const afterGuards = useCallbacks<NavigationHookAfter>()
   const currentRoute = shallowRef<RouteLocationNormalizedLoaded>(
     START_LOCATION_NORMALIZED
   )
@@ -826,14 +971,6 @@ export function createRouter(options: RouterOptions): Router {
     return Promise.reject(error)
   }
 
-  /**
-   * Returns a Promise that resolves or reject when the router has finished its
-   * initial navigation. This will be automatic on client but requires an
-   * explicit `router.push` call on the server. This behavior can change
-   * depending on the history implementation used e.g. the defaults history
-   * implementation (client only) triggers this automatically but the memory one
-   * (should be used on server) doesn't
-   */
   function isReady(): Promise<void> {
     if (ready && currentRoute.value !== START_LOCATION_NORMALIZED)
       return Promise.resolve()

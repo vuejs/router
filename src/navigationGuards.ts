@@ -41,9 +41,9 @@ function registerGuard(list: NavigationGuard[], guard: NavigationGuard) {
 }
 
 /**
- * Add a navigation guard that triggers whenever the current location is
- * left. Similarly to {@link beforeRouteLeave}, it has access to the
- * component instance as `this`.
+ * Add a navigation guard that triggers whenever the component for the current
+ * location is about to be left. Similar to {@link beforeRouteLeave} but can be
+ * used in any component. The guard is removed when the component is unmounted.
  *
  * @param leaveGuard - {@link NavigationGuard}
  */
@@ -68,9 +68,9 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
 }
 
 /**
- * Add a navigation guard that triggers whenever the current location is
- * updated. Similarly to {@link beforeRouteUpdate}, it has access to the
- * component instance as `this`.
+ * Add a navigation guard that triggers whenever the current location is about
+ * to be updated. Similar to {@link beforeRouteUpdate} but can be used in any
+ * component. The guard is removed when the component is unmounted.
  *
  * @param updateGuard - {@link NavigationGuard}
  */

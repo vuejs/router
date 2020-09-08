@@ -379,7 +379,7 @@ function isAliasRecord(record: RouteRecordMatcher | undefined): boolean {
 /**
  * Merge meta fields of an array of records
  *
- * @param matched array of matched records
+ * @param matched - array of matched records
  */
 function mergeMetaFields(matched: MatcherLocation['matched']) {
   return matched.reduce(

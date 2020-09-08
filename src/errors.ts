@@ -34,17 +34,46 @@ export interface MatcherError extends RouterErrorBase {
   currentLocation?: MatcherLocation
 }
 
+/**
+ * Enumeration with all possible types for navigation failures. Can be passed to
+ * {@link isNavigationFailure} to check for specific failures.
+ */
 export enum NavigationFailureType {
+  /**
+   * An aborted navigation is a navigation that failed because a navigation
+   * guard returned `false` or called `next(false)`
+   */
   aborted = ErrorTypes.NAVIGATION_ABORTED,
+  /**
+   * A cancelled navigation is a navigation that failed because a more recent
+   * navigation finished started (not necessarily finished).
+   */
   cancelled = ErrorTypes.NAVIGATION_CANCELLED,
+  /**
+   * A duplicated navigation is a navigation that failed because it was
+   * initiated while already being at the exact same location.
+   */
   duplicated = ErrorTypes.NAVIGATION_DUPLICATED,
 }
+
+/**
+ * Extended Error that contains extra information regarding a failed navigation.
+ */
 export interface NavigationFailure extends RouterErrorBase {
+  /**
+   * Type of the navigation. One of {@link NavigationFailureType}
+   */
   type:
     | ErrorTypes.NAVIGATION_CANCELLED
     | ErrorTypes.NAVIGATION_ABORTED
     | ErrorTypes.NAVIGATION_DUPLICATED
+  /**
+   * Route location we were navigating from
+   */
   from: RouteLocationNormalized
+  /**
+   * Route location we were navigating to
+   */
   to: RouteLocationNormalized
 }
 

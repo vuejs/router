@@ -116,8 +116,8 @@ export function stripBase(pathname: string, base: string): string {
  * pointing towards the same {@link RouteRecord} and that all `params`, `query`
  * parameters and `hash` are the same
  *
- * @param a first {@link RouteLocation}
- * @param b second {@link RouteLocation}
+ * @param a - first {@link RouteLocation}
+ * @param b - second {@link RouteLocation}
  */
 export function isSameRouteLocation(
   stringifyQuery: (query: LocationQueryRaw) => string,
@@ -141,8 +141,8 @@ export function isSameRouteLocation(
  * Check if two `RouteRecords` are equal. Takes into account aliases: they are
  * considered equal to the `RouteRecord` they are aliasing.
  *
- * @param a first {@link RouteRecord}
- * @param b second {@link RouteRecord}
+ * @param a - first {@link RouteRecord}
+ * @param b - second {@link RouteRecord}
  */
 export function isSameRouteRecord(a: RouteRecord, b: RouteRecord): boolean {
   // since the original record has an undefined value for aliasOf
