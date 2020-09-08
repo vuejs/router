@@ -142,3 +142,94 @@ When a `<router-view>` has a `name`, it will render the component with the corre
 ### route
 
 - type: `RouteLocationNormalizedLoaded`. A route location that has all of its component resolved (if any was lazy loaded) so it can be displayed.
+
+## createRouter
+
+Creates a Router instance that can be used by a Vue app.
+
+**Signature:**
+
+```typescript
+export declare function createRouter(options: RouterOptions): Router
+```
+
+### Parameters
+
+| Parameter | Type                                                    | Description                      |
+| --------- | ------------------------------------------------------- | -------------------------------- |
+| options   | [`RouterOptions`](./vue-router-interface#routeroptions) | Options to initialize the router |
+
+## createWebHistory
+
+Creates an HTML5 history. Most common history for single page applications. The application must be served through the http protocol.
+
+**Signature:**
+
+```typescript
+export declare function createWebHistory(base?: string): RouterHistory
+```
+
+### Parameters
+
+| Parameter | Type     | Description                                                                                                           |
+| --------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
+| base      | `string` | optional base to provide. Useful when the application is hosted inside of a folder like `https://example.com/folder/` |
+
+### Examples
+
+```js
+createWebHistory() // No base, the app is hosted at the root of the domain
+createWebHistory('/folder/') // gives a url of `https://example.com/folder/`
+```
+
+## createWebHashHistory
+
+Creates a hash history. Useful for web applications with no host (e.g. `file://`) or when configuring a server to handle any URL.
+
+**Signature:**
+
+```typescript
+export declare function createWebHashHistory(base?: string): RouterHistory
+```
+
+### Parameters
+
+| Parameter | Type     | Description                                                                                                                                         |
+| --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| base      | `string` | optional base to provide. Defaults to `location.pathname` or `/` if at root. If there is a `base` tag in the `head`, its value will be **ignored**. |
+
+### Examples
+
+```js
+// at https://example.com/folder
+createWebHashHistory() // gives a url of `https://example.com/folder#`
+createWebHashHistory('/folder/') // gives a url of `https://example.com/folder/#`
+// if the `#` is provided in the base, it won't be added by `createWebHashHistory`
+createWebHashHistory('/folder/#/app/') // gives a url of `https://example.com/folder/#/app/`
+// you should avoid doing this because it changes the original url and breaks copying urls
+createWebHashHistory('/other-folder/') // gives a url of `https://example.com/other-folder/#`
+
+// at file:///usr/etc/folder/index.html
+// for locations with no `host`, the base is ignored
+createWebHashHistory('/iAmIgnored') // gives a url of `file:///usr/etc/folder/index.html#`
+```
+
+## createMemoryHistory
+
+Creates a in-memory based history. The main purpose of this history is to handle SSR. It starts in a special location that is nowhere. It's up to the user to replace that location with the starter location.
+
+**Signature:**
+
+```typescript
+export declare function createMemoryHistory(base?: string): RouterHistory
+```
+
+### Parameters
+
+| Parameter | Type   | Description                               |
+| --------- | ------ | ----------------------------------------- |
+| base      | string | Base applied to all urls, defaults to '/' |
+
+### Returns
+
+a history object that can be passed to the router constructor

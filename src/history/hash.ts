@@ -3,7 +3,8 @@ import { createWebHistory } from './html5'
 import { warn } from '../warning'
 
 /**
- * Creates a hash history.
+ * Creates a hash history. Useful for web applications with no host (e.g.
+ * `file://`) or when configuring a server to handle any URL.
  *
  * @param base - optional base to provide. Defaults to `location.pathname` or
  * `/` if at root. If there is a `base` tag in the `head`, its value will be

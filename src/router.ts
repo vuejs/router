@@ -318,7 +318,7 @@ export interface Router {
 }
 
 /**
- * Create a Router instance that can be used on a Vue app.
+ * Creates a Router instance that can be used by a Vue app.
  *
  * @param options - {@link RouterOptions}
  */
