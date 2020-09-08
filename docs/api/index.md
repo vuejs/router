@@ -359,6 +359,28 @@ export declare enum NavigationFailureType
 | cancelled  | 8     | A cancelled navigation is a navigation that failed because a more recent navigation finished started (not necessarily finished). |
 | duplicated | 16    | A duplicated navigation is a navigation that failed because it was initiated while already being at the exact same location.     |
 
+## START_LOCATION
+
+Initial route location where the router is. Can be used in navigation guards to differentiate the initial navigation.
+
+**Signature:**
+
+```typescript
+START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded
+```
+
+### Examples
+
+```js
+import { START_LOCATION } from 'vue-router'
+
+router.beforeEach((to, from) => {
+  if (from === START_LOCATION) {
+    // initial navigation
+  }
+})
+```
+
 ## Composition API
 
 ### onBeforeRouteLeave
@@ -408,3 +430,35 @@ TODO:
 ## TypeScript
 
 Here are some of the interfaces and types used by Vue Router. The documentation references them to give you an idea of the existing properties in objects.
+
+## NavigationGuard
+
+Navigation guard. See [Navigation Guards](/guide/advanced/navigation-guards.md).
+
+**Signature:**
+
+```typescript
+export interface NavigationGuard {
+  (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    next: NavigationGuardNext
+  ): NavigationGuardReturn | Promise<NavigationGuardReturn>
+}
+```
+
+### Parameters
+
+| Parameter | Type                                                  | Description                                                                                                                                         |
+| --------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| to        | [`RouteLocationNormalized`](#routelocationnormalized) | Route location we are navigating to                                                                                                                 |
+| from      | [`RouteLocationNormalized`](#routelocationnormalized) | Route location we are navigating from                                                                                                               |
+| next      | [`NavigationGuardNext`](#navigationguardnext)         | Callback to call to accept or reject the navigation. Can also be omitted as long as the navigation guard returns a value instead of calling `next`. |
+
+### Can return
+
+It can return any value that can be passed to `next` as long as it is omitted from the list of arguments.
+
+- `boolean`: Return `true` to accept the navigation or `false` to reject it.
+- a [route location](#routelocation) to redirect somewhere else.
+- `undefined` (or no `return`). Same as returning `true`
