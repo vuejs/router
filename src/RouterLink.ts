@@ -107,7 +107,7 @@ export function useLink(props: UseLinkOptions) {
       isSameRouteLocationParams(currentRoute.params, route.value.params)
   )
 
-  function navigate(e: MouseEvent = {} as MouseEvent): Promise<any> {
+  function navigate(e: MouseEvent = {} as MouseEvent) {
     if (guardEvent(e))
       return router[unref(props.replace) ? 'replace' : 'push'](unref(props.to))
     return Promise.resolve()
