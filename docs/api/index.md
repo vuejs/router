@@ -417,15 +417,45 @@ export declare function onBeforeRouteUpdate(updateGuard: NavigationGuard): void
 
 ### useLink
 
-TODO:
+Returns everything exposed by the [`v-slot` API](#router-link-s-v-slot).
+
+**Signature:**
+
+```typescript
+export declare function useLink(props: RouterLinkOptions): {
+  route: ComputedRef<RouteLocationNormalized & { href: string }>,
+  href: ComputedRef<string>,
+  isActive: ComputedRef<boolean>,
+  isExactActive: ComputedRef<boolean>,
+  navigate: (event?: MouseEvent) => Promise(NavigationFailure | void),
+}
+```
+
+#### Parameters
+
+| Parameter | Type              | Description                                                                           |
+| --------- | ----------------- | ------------------------------------------------------------------------------------- |
+| props     | RouterLinkOptions | props object that can be passed to `<router-link>`. Accepts `Ref`s and `ComputedRef`s |
 
 ### useRoute
 
-TODO:
+Returns the current route location. Equivalent to using `$route` inside templates.
+
+**Signature:**
+
+```typescript
+export declare function userRoute(): RouteLocationNormalized
+```
 
 ### useRouter
 
-TODO:
+Returns the [router](#Router) instance. Equivalent to using `$router` inside templates.
+
+**Signature:**
+
+```typescript
+export declare function userRouter(): Router
+```
 
 ## TypeScript
 

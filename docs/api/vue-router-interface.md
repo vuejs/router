@@ -180,7 +180,7 @@ replace?: boolean;
 
 #### state
 
-State to save using the History API. This cannot contain any reactive values and some primitives like Symbols are forbidden. More info at TODO: link mdn
+State to save using the History API. This cannot contain any reactive values and some primitives like Symbols are forbidden. More info [on MDN](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState#Parameters).
 
 **Signature:**
 

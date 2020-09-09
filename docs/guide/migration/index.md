@@ -6,11 +6,9 @@ Most of Vue Router API has remained unchanged during its rewrite from v3 (for Vu
 
 Some of new features to keep an eye on in Vue Router 4 include:
 
-<!-- TODO: links -->
-
-- Dynamic Routing
+- [Dynamic Routing](#TODO)
 - [Composition API](/guide/advanced/composition-api.md)
-- Custom History implementation
+<!-- - Custom History implementation -->
 
 ## Breaking Changes: Improvements
 
@@ -89,13 +87,13 @@ Note this will work if `path` was `/parent/` as the relative location `home` to 
 
 Decoded values are now consistent no matter where the navigation is initiated (older browsers will still produce unencoded `path` and `fullPath`). The initial navigation should yield the same results as in-app navigations.
 
-Given any [normalized route location](#TODO):
+Given any [normalized route location](/api/#routelocationnormalized):
 
 - Values in `path`, `fullPath` are not decoded anymore. They will appear as provided by the browser (modern browsers provide them encoded). e.g. directly writing on the address bar `https://example.com/hello world` will yield the encoded version: `https://example.com/hello%20world` and both `path` and `fullPath` will be `/hello%20world`.
 - `hash` is now decoded, that way it can be copied over: `router.push({ hash: $route.hash })`.
 - When using `push`, `resolve` and `replace` and providing a `string` location or a `path` property in an object, **it must be encoded**. On the other hand, `params`, `query` and `hash` must be provided in its unencoded version.
 
-**Reason**: This allows to easily copy existing properties of a location when calling `router.push()` and `router.resolve()`. Learn more about encoding [in the cookbook](/cookbook/encoding.md).
+**Reason**: This allows to easily copy existing properties of a location when calling `router.push()` and `router.resolve()`. Learn more about encoding [in the cookbook](#TODO).
 
 ## Breaking Changes: API Changes
 
@@ -230,7 +228,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 ### Removal of `event` and `tag` props in `<router-link>`
 
-Both `event`, and `tag` props have been removed from `<router-link>`. You can use the [`v-slot` API](#TODO) to fully customize `<router-link>`:
+Both `event`, and `tag` props have been removed from `<router-link>`. You can use the [`v-slot` API](/api/#router-link-s-v-slot) to fully customize `<router-link>`:
 
 ```html
 replace

@@ -2,10 +2,6 @@
 
 When building apps with a bundler, the JavaScript bundle can become quite large, and thus affect the page load time. It would be more efficient if we can split each route's components into a separate chunks, and only load them when the route is visited.
 
-<!-- TODO: fix links -->
-
-<!-- TODO: make it clear that this also works with other bundlers, not only with webpack -->
-
 Vue Router supports [dynamic imports](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#Dynamic_Imports) out of the box, meaning you can replace static imports with dynamic ones:
 
 ```js
@@ -41,7 +37,7 @@ When using Babel, you will need to add the [syntax-dynamic-import](https://babel
 
 ## Grouping Components in the Same Chunk
 
-Sometimes we may want to group all the components nested under the same route into the same async chunk. To achieve that we need to use [named chunks](https://webpack.js.org/guides/code-splitting-async/#chunk-names) by providing a chunk name using a special comment syntax (requires webpack > 2.4):
+Sometimes we may want to group all the components nested under the same route into the same async chunk. To achieve that we need to use [named chunks](https://webpack.js.org/guides/code-splitting/#dynamic-imports) by providing a chunk name using a special comment syntax (requires webpack > 2.4):
 
 ```js
 const UserDetails = () =>

@@ -66,7 +66,7 @@ router.beforeEach((to, from, next) => {
 
 ## Global Resolve Guards
 
-You can register a global guard with `router.beforeResolve`. This is similar to `router.beforeEach` because it triggers on **every navigation**, but resolve guards are called right before the navigation is confirmed, **after all in-component guards and async route components are resolved**. Here is an example that ensures the user has given access to the Camera for routes that [have defined a custom meta](#TODO) property `requiresCamera`:
+You can register a global guard with `router.beforeResolve`. This is similar to `router.beforeEach` because it triggers on **every navigation**, but resolve guards are called right before the navigation is confirmed, **after all in-component guards and async route components are resolved**. Here is an example that ensures the user has given access to the Camera for routes that [have defined a custom meta](./meta.md) property `requiresCamera`:
 
 ```js
 router.beforeResolve(async to => {
@@ -86,7 +86,7 @@ router.beforeResolve(async to => {
 })
 ```
 
-`router.beforeResolve` is the ideal spot to fetch data or do any other operation that you want to avoid doing if the user cannot enter a page. It's also very easy to combine with [`meta` fields](./meta.md) to create a [generic fetching mechanism](/cookbook/generic-data-fetching.md)
+`router.beforeResolve` is the ideal spot to fetch data or do any other operation that you want to avoid doing if the user cannot enter a page. It's also very easy to combine with [`meta` fields](./meta.md) to create a [generic fetching mechanism](#TODO)
 
 ## Global After Hooks
 
