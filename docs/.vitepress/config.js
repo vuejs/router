@@ -97,6 +97,10 @@ const config = {
                 link: '/guide/advanced/navigation-guards',
                 text: 'Navigation guards',
               },
+              {
+                link: '/guide/advanced/route-matching-syntax',
+                text: 'Route Matching Syntax',
+              },
               { link: '/guide/advanced/meta', text: 'Route Meta Fields' },
               {
                 link: '/guide/advanced/data-fetching',

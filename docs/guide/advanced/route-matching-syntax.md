@@ -1,0 +1,85 @@
+# Route Matching Syntax
+
+Most applications will use static routes like `/about` and dynamic routes like `/users/:userId`, but Vue Router has much more to offer!
+
+## Custom Regexp in params
+
+When defining a param like `:userId`, we internally use the following regexp `([^/]+)` (at least one character that isn't a slash `/`) to extract params from URLs. This works well unless you need to differentiate two routes based on the param content. Imagine two routes `/:orderId` and `/:productName`, both would match the exact same URLs, so we need a way to differentiate them. The easiest way would be to add a static section to the path that differentiates them:
+
+```js
+const routes = [
+  // matches /o/3549
+  { path: '/o/:orderId' },
+  // matches /p/books
+  { path: '/p/:productName' },
+]
+```
+
+But in some scenarios we don't want to add that static section `/o`/`p`. However, `orderId` is always a number while `productName` can be anything, so we can specify a custom regexp for a param in parentheses:
+
+```js
+const routes = [
+  // /:orderId -> matches only numbers
+  { path: '/:orderId(\\d+)' },
+  // /:productName -> matches anything else
+  { path: '/:productName' },
+]
+```
+
+Make sure to **escape backslashes `\`** like we did with `\d` to actually pass the backslash character to a string in JavaScript.
+
+## Repeatable params
+
+If you need to match routes with multiple sections like `/first/second/third`, you can mark a param as repeatable with `*` (0 or more) and `+` (1 or more):
+
+```js
+const routes = [
+  // /:chapters -> matches /one, /one/two, /one/two/three, etc
+  { path: '/:chapters+' },
+  // /:chapters -> matches /, /one, /one/two, /one/two/three, etc
+  { path: '/:chapters*' },
+]
+```
+
+This will give you an array of params instead of a string and will also require you to pass an array when using named routes:
+
+```js
+// given { path: '/:chapters*', name: 'chapters' },
+router.resolve({ name: 'chapters', params: { chapters: [] } }).href
+// produces /
+router.resolve({ name: 'chapters', params: { chapters: ['a', 'b'] } }).href
+// produces /a/b
+
+// given { path: '/:chapters+', name: 'chapters' },
+router.resolve({ name: 'chapters', params: { chapters: [] } }).href
+// throws an Error because `chapters` is empty
+```
+
+These can also be combined with custom Regexp by adding them **after the closing parentheses**:
+
+```js
+const routes = [
+  // only match numbers
+  { path: '/:chapters(\\d+)+' },
+  { path: '/:chapters(\\d+)*' },
+]
+```
+
+## Optional parameters
+
+You can also mark a parameter as optional by using the `?` modifier:
+
+```js
+const routes = [
+  // will match /users and /users/posva
+  { path: '/users/:userId?' },
+  // will match /users and /users/42
+  { path: '/users/:userId(\\d+)?' },
+]
+```
+
+Note that `*` also marks the parameter as optional but cannot be repeated
+
+## Debugging
+
+If you need to dig how your routes are transformed into Regexp to understand why a route isn't being matched or, to report a bug, you can use the [path ranker tool](https://paths.esm.dev). It supports sharing your routes through the URL.
