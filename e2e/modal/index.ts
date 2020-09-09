@@ -141,6 +141,7 @@ router.beforeEach((to, from, next) => {
 const app = createApp({
   setup() {
     const route = useRoute()
+    const historyState = computed(() => route.fullPath && window.history.state)
     const routeWithModal = computed(() => {
       if (historyState.value.backgroundView) {
         return router.resolve(
@@ -150,7 +151,6 @@ const app = createApp({
         return route
       }
     })
-    const historyState = computed(() => route.fullPath && window.history.state)
 
     return { route, routeWithModal, historyState, ...toRefs(route) }
   },
