@@ -1105,7 +1105,7 @@ export function createRouter(options: RouterOptions): Router {
         unmountApp.call(this, arguments)
       }
 
-      if (__DEV__) {
+      if (__DEV__ && __BROWSER__) {
         addDevtools(app, router, matcher)
       }
     },

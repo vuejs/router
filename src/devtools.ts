@@ -100,7 +100,6 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         })
       })
 
-      console.log('adding devtools to timeline')
       router.beforeEach((to, from) => {
         const data: TimelineEvent<any, any>['data'] = {
           guard: formatDisplay('beforEach'),
@@ -111,7 +110,6 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
           to: formatRouteLocation(to, 'Target location'),
         }
 
-        console.log('adding to timeline')
         api.addTimelineEvent({
           layerId: navigationsLayerId,
           event: {
@@ -161,18 +159,30 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         })
       })
 
-      const routerInspectorId = 'hahaha router-inspector'
+      const routerInspectorId = 'router-inspector'
 
       api.addInspector({
         id: routerInspectorId,
         label: 'Routes',
         icon: 'book',
-        treeFilterPlaceholder: 'Filter routes',
+        treeFilterPlaceholder: 'Search routes',
       })
 
       api.on.getInspectorTree(payload => {
         if (payload.app === app && payload.inspectorId === routerInspectorId) {
-          const routes = matcher.getRoutes().filter(route => !route.parent)
+          const routes = matcher.getRoutes().filter(
+            route =>
+              !route.parent &&
+              (!payload.filter ||
+                // save isActive state
+                isRouteMatching(route, payload.filter))
+          )
+          // reset match state if no filter is provided
+          if (!payload.filter) {
+            routes.forEach(route => {
+              ;(route as any).__vd_match = false
+            })
+          }
           payload.rootNodes = routes.map(formatRouteRecordForInspector)
         }
       })
@@ -248,7 +258,7 @@ function formatRouteRecordMatcherForStateInspector(
     fields.push({
       editable: false,
       key: 'aliases',
-      value: route.alias,
+      value: route.alias.map(alias => alias.record.path),
     })
 
   fields.push({
@@ -291,6 +301,14 @@ function formatRouteRecordForInspector(
     })
   }
 
+  if ((route as any).__vd_match) {
+    tags.push({
+      label: 'matches',
+      textColor: 0,
+      backgroundColor: 0xf4f4f4,
+    })
+  }
+
   if (record.redirect) {
     tags.push({
       label:
@@ -308,4 +326,34 @@ function formatRouteRecordForInspector(
     // @ts-ignore
     children: route.children.map(formatRouteRecordForInspector),
   }
+}
+
+const EXTRACT_REGEXP_RE = /^\/(.*)\/([a-z]*)$/
+
+function isRouteMatching(route: RouteRecordMatcher, filter: string): boolean {
+  const found = String(route.re).match(EXTRACT_REGEXP_RE)
+  // reset the matching state
+  ;(route as any).__vd_match = false
+  if (!found || found.length < 3) return false
+
+  // use a regexp without $ at the end to match nested routes better
+  const nonEndingRE = new RegExp(found[1].replace(/\$$/, ''), found[2])
+  if (nonEndingRE.test(filter)) {
+    // mark children as matches
+    route.children.some(child => isRouteMatching(child, filter))
+    // exception case: `/`
+    if (route.record.path !== '/' || filter === '/') {
+      ;(route as any).__vd_match = route.re.test(filter)
+      return true
+    }
+    // hide the / route
+    return false
+  }
+
+  // also allow partial matching on the path
+  if (route.record.path.startsWith(filter)) return true
+  if (route.record.name && String(route.record.name).includes(filter))
+    return true
+
+  return route.children.some(child => isRouteMatching(child, filter))
 }
