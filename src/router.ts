@@ -84,6 +84,9 @@ export interface RouterScrollBehavior {
   ): Awaitable<ScrollPosition | false | void>
 }
 
+/**
+ * Options to initialize a {@link Router} instance.
+ */
 export interface RouterOptions extends PathParserOptions {
   /**
    * History implementation used by the router. Most web applications should use
@@ -158,6 +161,9 @@ export interface RouterOptions extends PathParserOptions {
   // linkInactiveClass?: string
 }
 
+/**
+ * Router instance
+ */
 export interface Router {
   /**
    * @internal

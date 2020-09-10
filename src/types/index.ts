@@ -220,6 +220,9 @@ export interface _RouteRecordBase extends PathParserOptions {
   meta?: RouteMeta
 }
 
+/**
+ * Interface to type `meta` fields in route records.
+ */
 export interface RouteMeta extends Record<string | number | symbol, any> {}
 
 export type RouteRecordRedirectOption =

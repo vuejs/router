@@ -32,7 +32,7 @@ interface StateEntry extends HistoryState {
 
 /**
  * Creates a normalized history location from a window.location object
- * @param location
+ * @param location -
  */
 function createCurrentLocation(
   base: string,
@@ -274,7 +274,7 @@ function useHistoryStateNavigation(base: string) {
 /**
  * Creates an HTML5 history. Most common history for single page applications.
  *
- * @param base
+ * @param base -
  */
 export function createWebHistory(base?: string): RouterHistory {
   base = normalizeBase(base)

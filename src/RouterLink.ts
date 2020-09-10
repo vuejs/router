@@ -188,6 +188,9 @@ export const RouterLinkImpl = defineComponent({
 
 // export the public type for h/tsx inference
 // also to avoid inline import() in generated d.ts files
+/**
+ * Component to render a link that triggers a navigation on click.
+ */
 export const RouterLink = (RouterLinkImpl as any) as {
   new (): {
     $props: AllowedComponentProps &

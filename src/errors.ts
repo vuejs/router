@@ -24,11 +24,7 @@ const NavigationFailureSymbol = PolySymbol(
   __DEV__ ? 'navigation failure' : 'nf'
 )
 
-interface RouterErrorBase extends Error {
-  type: ErrorTypes
-}
-
-export interface MatcherError extends RouterErrorBase {
+export interface MatcherError extends Error {
   type: ErrorTypes.MATCHER_NOT_FOUND
   location: MatcherLocationRaw
   currentLocation?: MatcherLocation
@@ -59,7 +55,7 @@ export enum NavigationFailureType {
 /**
  * Extended Error that contains extra information regarding a failed navigation.
  */
-export interface NavigationFailure extends RouterErrorBase {
+export interface NavigationFailure extends Error {
   /**
    * Type of the navigation. One of {@link NavigationFailureType}
    */

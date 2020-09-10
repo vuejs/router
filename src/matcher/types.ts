@@ -41,7 +41,7 @@ export interface RouteRecordNormalized {
    */
   props: Record<string, _RouteRecordProps>
   /**
-   * {@inheritDoc _RouteRecordBase.props}
+   * Registered beforeEnter guards
    */
   beforeEnter: RouteRecordMultipleViews['beforeEnter']
   /**

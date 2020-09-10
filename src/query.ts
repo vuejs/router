@@ -36,6 +36,8 @@ export type LocationQueryRaw = Record<
 /**
  * Transforms a queryString into a {@link LocationQuery} object. Accept both, a
  * version with the leading `?` and without Should work as URLSearchParams
+
+ * @internal
  *
  * @param search - search string to parse
  * @returns a query object
@@ -72,6 +74,8 @@ export function parseQuery(search: string): LocationQuery {
 /**
  * Stringifies a {@link LocationQueryRaw} object. Like `URLSearchParams`, it
  * doesn't prepend a `?`
+ *
+ * @internal
  *
  * @param query - query object to stringify
  * @returns string version of the query without the leading `?`

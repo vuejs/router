@@ -57,3 +57,9 @@ export { RouterView, RouterViewProps } from './RouterView'
 export * from './useApi'
 
 export * from './globalExtensions'
+
+/**
+ * The official Router for Vue 3.
+ *
+ * @packageDocumentation
+ */
