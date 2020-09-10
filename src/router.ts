@@ -68,7 +68,10 @@ type OnReadyCallback = [() => void, (reason?: any) => void]
 
 type Awaitable<T> = T | Promise<T>
 
-export interface ScrollBehavior {
+/**
+ * Type of the `scrollBehavior` option that can be passed to `createRouter`.
+ */
+export interface RouterScrollBehavior {
   /**
    * @param to - Route location where we are navigating to
    * @param from - Route location where we are navigating from
@@ -114,7 +117,7 @@ export interface RouterOptions extends PathParserOptions {
    * }
    * ```
    */
-  scrollBehavior?: ScrollBehavior
+  scrollBehavior?: RouterScrollBehavior
   /**
    * Custom implementation to parse a query. See its counterpart,
    * {@link RouterOptions.stringifyQuery}.

@@ -41,7 +41,7 @@ export {
   Router,
   RouterOptions,
   ErrorHandler,
-  ScrollBehavior,
+  RouterScrollBehavior,
 } from './router'
 
 export {
