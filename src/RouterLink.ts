@@ -15,6 +15,7 @@ import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { assign } from './utils'
+import { NavigationFailure } from './errors'
 
 export interface RouterLinkOptions {
   /**
@@ -107,7 +108,9 @@ export function useLink(props: UseLinkOptions) {
       isSameRouteLocationParams(currentRoute.params, route.value.params)
   )
 
-  function navigate(e: MouseEvent = {} as MouseEvent) {
+  function navigate(
+    e: MouseEvent = {} as MouseEvent
+  ): Promise<void | NavigationFailure> {
     if (guardEvent(e))
       return router[unref(props.replace) ? 'replace' : 'push'](unref(props.to))
     return Promise.resolve()
