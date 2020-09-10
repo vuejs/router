@@ -64,7 +64,7 @@ function createConfig(format, output, plugins = []) {
   output.sourcemap = !!process.env.SOURCE_MAP
   output.banner = banner
   output.externalLiveBindings = false
-  output.globals = { vue: 'Vue' }
+  output.globals = { vue: 'Vue', '@vue/devtools-api': 'VueDevtoolsApi' }
 
   const isProductionBuild = /\.prod\.js$/.test(output.file)
   const isGlobalBuild = format === 'global'
@@ -94,7 +94,7 @@ function createConfig(format, output, plugins = []) {
   // during a single build.
   hasTSChecked = true
 
-  const external = ['vue']
+  const external = ['vue', '@vue/devtools-api']
 
   const nodePlugins = [resolve(), commonjs()]
 
