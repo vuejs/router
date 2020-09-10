@@ -44,12 +44,17 @@ function formatDisplay(display: string) {
   }
 }
 
+// to support multiple router instances
+let routerId = 0
+
 export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
   // Take over router.beforeEach and afterEach
 
+  // increment to support multiple router instances
+  const id = routerId++
   setupDevtoolsPlugin(
     {
-      id: 'Router',
+      id: 'Router' + id ? ' ' + id : '',
       label: 'Router devtools',
       app,
     },
@@ -73,11 +78,11 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         api.notifyComponentUpdate()
       })
 
-      const navigationsLayerId = 'router:navigations'
+      const navigationsLayerId = 'router:navigations:' + id
 
       api.addTimelineLayer({
         id: navigationsLayerId,
-        label: 'Router Navigations',
+        label: `Router${id ? ' ' + id : ''} Navigations`,
         color: 0x40a8c4,
       })
 
@@ -159,11 +164,11 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         })
       })
 
-      const routerInspectorId = 'router-inspector'
+      const routerInspectorId = 'router-inspector:' + id
 
       api.addInspector({
         id: routerInspectorId,
-        label: 'Routes',
+        label: 'Routes' + id ? ' ' + id : '',
         icon: 'book',
         treeFilterPlaceholder: 'Search routes',
       })
