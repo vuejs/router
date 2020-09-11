@@ -389,7 +389,7 @@ describe('Router', () => {
 
   describe('navigation cancelled', () => {
     async function checkNavigationCancelledOnPush(
-      target?: RouteLocationRaw | false | ((vm: any) => any)
+      target?: RouteLocationRaw | false
     ) {
       const [p1, r1] = fakePromise()
       const history = createMemoryHistory()
@@ -436,7 +436,7 @@ describe('Router', () => {
     })
 
     async function checkNavigationCancelledOnPopstate(
-      target?: RouteLocationRaw | false | ((vm: any) => void)
+      target?: RouteLocationRaw | false
     ) {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
