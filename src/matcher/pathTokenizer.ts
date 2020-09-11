@@ -47,7 +47,8 @@ export function tokenizePath(path: string): Array<Token[]> {
   if (!path) return [[]]
   if (path === '/') return [[ROOT_TOKEN]]
   // remove the leading slash
-  if (path[0] !== '/') throw new Error('A non-empty path must start with "/"')
+  if (!path.startsWith('/'))
+    throw new Error(`Route "${path}" should be "/${path}".`)
 
   // if (tokenCache.has(path)) return tokenCache.get(path)!
 
