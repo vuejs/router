@@ -131,7 +131,10 @@ export function scrollToPosition(position: ScrollPosition): void {
         : positionEl
 
     if (!el) {
-      __DEV__ && warn(`Couldn't find element using selector "${position.el}"`)
+      __DEV__ &&
+        warn(
+          `Couldn't find element using selector "${position.el}" returned by scrollBehavior.`
+        )
       return
     }
     scrollToOptions = getElementPosition(el, position)
