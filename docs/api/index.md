@@ -880,66 +880,44 @@ Array of [normalized route records](#routerecord).
 
 ## NavigationFailure
 
-Extended Error that contains extra information regarding a failed navigation.
-
-**Signature:**
-
-```typescript
-export interface NavigationFailure extends RouterErrorBase
-```
-
 ### from
 
-Route location we were navigating from
+- **Type**: [`RouteLocationNormalized`](#routelocationnormalized)
+- **Details**:
 
-**Signature:**
-
-```typescript
-from: RouteLocationNormalized
-```
+  Route location we were navigating from
 
 ### to
 
-Route location we were navigating to
+- **Type**: [`RouteLocationNormalized`](#routelocationnormalized)
+- **Details**:
 
-**Signature:**
-
-```typescript
-to: RouteLocationNormalized
-```
+  Route location we were navigating to
 
 ### type
 
-Type of the navigation. One of [NavigationFailureType](#navigationfailuretype)
+- **Type**: [`NavigationFailureType`](#navigationfailuretype)
+- **Details**:
+
+  Type of the navigation failure.
+
+- **See Also**: [Navigation Failures](/guide/advanced/navigation-failures.md)
 
 ## NavigationGuard
 
-Navigation guard. See [Navigation Guards](/guide/advanced/navigation-guards.md).
+- **Arguments**:
 
-**Signature:**
+  - [`RouteLocationNormalized`](#routelocationnormalized) to - Route location we are navigating to
+  - [`RouteLocationNormalized`](#routelocationnormalized) from - Route location we are navigating from
+  - `Function` next (Optional) - Callback to validate the navigation
 
-```typescript
-export interface NavigationGuard {
-  (
-    to: RouteLocationNormalized,
-    from: RouteLocationNormalized,
-    next: NavigationGuardNext
-  ): NavigationGuardReturn | Promise<NavigationGuardReturn>
-}
-```
+- **Details**:
 
-### Parameters
+  Function that can be passed to control a router navigation. The `next` callback can be omitted if you return a value (or a Promise) instead, which is encouraged. Possible return values (and parameters for `next`) are:
 
-| Parameter | Type                                                  | Description                                                                                                                                         |
-| --------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| to        | [`RouteLocationNormalized`](#routelocationnormalized) | Route location we are navigating to                                                                                                                 |
-| from      | [`RouteLocationNormalized`](#routelocationnormalized) | Route location we are navigating from                                                                                                               |
-| next      | [`NavigationGuardNext`](#navigationguardnext)         | Callback to call to accept or reject the navigation. Can also be omitted as long as the navigation guard returns a value instead of calling `next`. |
+  - `undefined | void | true`: validates the navigation
+  - `false`: cancels the navigation
+  - [`RouteLocationRaw`](#routelocationraw): redirects to a different location
+  - `(vm: ComponentPublicInstance) => any` **only for `beforeRouteEnter`**: A callback to be executed once the navigation completes. Receives the route component instance as the parameter.
 
-### Can return
-
-It can return any value that can be passed to `next` as long as it is omitted from the list of arguments.
-
-- `boolean`: Return `true` to accept the navigation or `false` to reject it.
-- a [route location](#routelocationraw) to redirect somewhere else.
-- `undefined` (or no `return`). Same as returning `true`
+- **See Also**: [Navigation Guards](/guide/advanced/navigation-guards.md)
