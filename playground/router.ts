@@ -207,6 +207,44 @@ router.afterEach((to, from) => {
   // )
 })
 
+export function go(delta: number) {
+  return new Promise((resolve, reject) => {
+    function popStateListener() {
+      clearTimeout(timeout)
+    }
+    window.addEventListener('popstate', popStateListener)
+
+    function clearHooks() {
+      removeAfterEach()
+      removeOnError()
+      window.removeEventListener('popstate', popStateListener)
+    }
+
+    // if the popstate event is not called, consider this a failure
+    const timeout = setTimeout(() => {
+      clearHooks()
+      reject(new Error('Failed to use router.go()'))
+      // using 0 leads to false positives
+    }, 1)
+
+    setImmediate
+
+    const removeAfterEach = router.afterEach((_to, _from, failure) => {
+      clearHooks()
+      resolve(failure)
+    })
+    const removeOnError = router.onError(err => {
+      clearHooks()
+      reject(err)
+    })
+
+    router.go(delta)
+  })
+}
+
+// @ts-ignore
+window._go = go
+
 router.beforeEach((to, from, next) => {
   // console.log('second guard')
   if (to.query.to) next(to.query.to as string)
