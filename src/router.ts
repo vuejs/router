@@ -233,25 +233,22 @@ export interface Router {
   replace(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
   /**
    * Go back in history if possible by calling `history.back()`. Equivalent to
-   * `router.go(-1)`.  Returns a Promise. See the limitations at
-   * {@link Router.go}.
+   * `router.go(-1)`.
    */
-  back(): Promise<NavigationFailure | void | undefined>
+  back(): ReturnType<Router['go']>
   /**
    * Go forward in history if possible by calling `history.forward()`.
-   * Equivalent to `router.go(1)`. Returns a Promise. See the limitations at
-   * {@link Router.go}.
+   * Equivalent to `router.go(1)`.
    */
-  forward(): Promise<NavigationFailure | void | undefined>
+  forward(): ReturnType<Router['go']>
   /**
-   * Allows you to move forward or backward through the history. Returns a
-   * Promise that resolves when the navigation finishes. If it wasn't possible
-   * to go back, the promise never resolves or rejects
+   * Allows you to move forward or backward through the history. Calls
+   * `history.go()`.
    *
    * @param delta - The position in the history to which you want to move,
    * relative to the current page
    */
-  go(delta: number): Promise<NavigationFailure | void | undefined>
+  go(delta: number): void
 
   /**
    * Add a navigation guard that executes before any navigation. Returns a
@@ -1025,24 +1022,7 @@ export function createRouter(options: RouterOptions): Router {
       .catch(triggerError)
   }
 
-  function go(delta: number) {
-    return new Promise<NavigationFailure | void | undefined>(
-      (resolve, reject) => {
-        let removeError = errorHandlers.add(err => {
-          removeError()
-          removeAfterEach()
-          reject(err)
-        })
-        let removeAfterEach = afterGuards.add((_to, _from, failure) => {
-          removeError()
-          removeAfterEach()
-          resolve(failure)
-        })
-
-        routerHistory.go(delta)
-      }
-    )
-  }
+  const go = (delta: number) => routerHistory.go(delta)
 
   let started: boolean | undefined
   const installedApps = new Set<App>()
