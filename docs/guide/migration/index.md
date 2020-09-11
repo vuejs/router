@@ -257,7 +257,7 @@ router.isReady().then(() => app.mount('#app'))
 
 Otherwise there will be an initial transition as if you provided the `appear` prop to `transition` because the router displays its initial location (nothing) and then displays the first location.
 
-Note that **if you have navigation guards upon the initial navigation**, you might not want to block the app render until they are resolved unless you are doing Server Side Rendering.
+Note that **if you have navigation guards upon the initial navigation**, you might not want to block the app render until they are resolved unless you are doing Server Side Rendering. In this scenario, not waiting the router to be ready to mount the app would yield the same result as in Vue 2.
 
 ### `scrollBehavior` changes
 
@@ -294,6 +294,29 @@ const parent = this.$route.matched[this.$route.matched.length - 2]
 ### Removal of `pathToRegexpOptions`
 
 The `pathToRegexpOptions` and `caseSensitive` properties of route records have been replaced with `sensitive` and `strict` options for `createRouter()`. They can now also be directly passed when creating the router with `createRouter()`. Any other option specific to `path-to-regexp` has been removed as `path-to-regexp` is no longer used to parse paths.
+
+### Usage of `history.state`
+
+Vue Router saves information on the `history.state`. If you have any code manually calling `history.pushState()`, you should likely avoid it or refactor it with a regular `router.push()` and a `history.replaceState()`:
+
+```js
+// replace
+history.pushState(myState, '', url)
+// with
+await router.push(url)
+history.replaceState({ ...history.state, ...myState }, '')
+```
+
+Similarly, if you were calling `history.replaceState()` without preserving the current state, you will need to pass the current `history.state`:
+
+```js
+// replace
+history.replaceState({}, '', url)
+// with
+history.replaceState(history.state, '', url)
+```
+
+**Reason**: We use the history state to save information about the navigation like the scroll position, previous location, etc.
 
 ### TypeScript
 
