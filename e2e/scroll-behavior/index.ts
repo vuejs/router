@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, ScrollBehavior } from '../../src'
+import { createRouter, createWebHistory, RouterScrollBehavior } from '../../src'
 import { RouteComponent } from '../../src/types'
 import { createApp, ref } from 'vue'
 import { scrollWaiter } from './scrollWaiter'
@@ -21,7 +21,7 @@ const Bar: RouteComponent = {
 // - only available in html5 history mode
 // - defaults to no scroll behavior
 // - return false to prevent scroll
-const scrollBehavior: ScrollBehavior = async function (
+const scrollBehavior: RouterScrollBehavior = async function (
   to,
   from,
   savedPosition
@@ -36,7 +36,7 @@ const scrollBehavior: ScrollBehavior = async function (
     // savedPosition is only available for popstate navigations.
     return { ...savedPosition, behavior }
   } else {
-    let position: ReturnType<ScrollBehavior>
+    let position: ReturnType<RouterScrollBehavior>
 
     // scroll to anchor by returning the selector
     if (to.hash) {
