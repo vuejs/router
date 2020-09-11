@@ -155,6 +155,11 @@ export function tokenizePath(path: string): Array<Token[]> {
         break
 
       case TokenizerState.ParamRegExp:
+        // TODO: is it worth handling nested regexp? like :p(?:prefix_([^/]+)_suffix)
+        // it already works by escaping the closing )
+        // https://paths.esm.dev/?p=AAMeJbiAwQEcDKbAoAAkP60PG2R6QAvgNaA6AFACM2ABuQBB#
+        // is this really something people need since you can also write
+        // /prefix_:p()_suffix
         if (char === ')') {
           // handle the escaped )
           if (customRe[customRe.length - 1] == '\\')

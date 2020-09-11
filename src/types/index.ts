@@ -35,17 +35,13 @@ export interface LocationAsPath {
   path: string
 }
 
-export interface LocationAsNameRaw {
-  name: RouteRecordName
-  params?: RouteParamsRaw
-}
-
 export interface LocationAsName {
   name: RouteRecordName
   params?: RouteParams
 }
 
 export interface LocationAsRelativeRaw {
+  name?: RouteRecordName
   params?: RouteParamsRaw
 }
 
@@ -74,7 +70,6 @@ export interface RouteLocationOptions {
 export type RouteLocationRaw =
   | string
   | (RouteQueryAndHash & LocationAsPath & RouteLocationOptions)
-  | (RouteQueryAndHash & LocationAsNameRaw & RouteLocationOptions)
   | (RouteQueryAndHash & LocationAsRelativeRaw & RouteLocationOptions)
 
 export interface RouteLocationMatched extends RouteRecordNormalized {
