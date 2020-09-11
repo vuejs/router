@@ -818,6 +818,16 @@ Route record that can be provided by the user when adding routes via the [`route
 
   Before enter guard specific to this record. Note `beforeEnter` has no effect if the record has a `redirect` property.
 
+### props
+
+- **Type**: `boolean | Record<string, any> | (to: RouteLocationNormalized) => Record<string, any>` (Optional)
+- **Details**:
+
+  Allows passing down params as props to the component rendered by `router-view`. When passed to a _multiple views record_, it should be an object with the same keys as `components` or a `boolean` to be applied to each component.
+  target location.
+
+- **See Also**: [Passing props to Route Components](/guide/essentials/passing-props.md)
+
 ### meta
 
 - **Type**: [`RouteMeta`](#routemeta) (Optional)
