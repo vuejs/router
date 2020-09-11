@@ -358,7 +358,7 @@ Here are some of the interfaces and types used by Vue Router. The documentation 
 
 ### currentRoute
 
-Current [RouteLocationNormalized](./vue-router-interface#routelocationnormalized)
+Current [RouteLocationNormalized](#routelocationnormalized)
 
 **Signature:**
 
@@ -380,7 +380,7 @@ readonly options: RouterOptions;
 
 ### addRoute
 
-Add a new [Route Record](./vue-router-typealias#routerecordraw) as the child of an existing route.
+Add a new [Route Record](.#routerecordraw) as the child of an existing route.
 
 **Signature:**
 
@@ -397,7 +397,7 @@ _Parameters_
 
 ### addRoute
 
-Add a new [route record](./vue-router-typealias#routerecordraw) to the router.
+Add a new [route record](#routerecordraw) to the router.
 
 **Signature:**
 
@@ -439,7 +439,7 @@ router.afterEach((to, from, failure) => {
 
 ### back
 
-Go back in history if possible by calling `history.back()`. Equivalent to `router.go(-1)`. Returns a Promise. See the limitations at [go](./vue-router-interface#router.go).
+Go back in history if possible by calling `history.back()`. Equivalent to `router.go(-1)`. Returns a Promise. See the limitations at [`router.go()`](#go).
 
 **Signature:**
 
@@ -511,7 +511,7 @@ _Parameters_
 
 ### getRoutes
 
-Get a full list of all the [route records](./vue-router-typealias#routerecord).
+Get a full list of all the [route records](#routerecord).
 
 **Signature:**
 
@@ -759,6 +759,115 @@ Custom implementation to stringify a query object. Should not prepend a leading 
 stringifyQuery?: typeof originalStringifyQuery;
 ```
 
+## RouteRecordRaw
+
+Route record that can be provided by the user when adding routes via the [`routes` option](#routeroptions) or via [`router.addRoutes()`](#addroutes). There are three different kind of route records:
+
+- Single views records: have a `component` option
+- Multiple views records ([named views](/guide/essentials/named-views.md)): have a `components` option
+- Redirect records: cannot have `component` or `components` option because a redirect record is never reached.
+
+### path
+
+- **Type**: `string`
+- **Details**:
+
+  Path of the record. Should start with `/` unless the record is the child of another record.
+  Can define parameters: `/users/:id` matches `/users/1` as well as `/users/posva`.
+
+- **See Also**: [Dynamic Route Matching](/guide/essentials/dynamic-matching.md)
+
+### redirect
+
+- **Type**: [`RouteLocationRaw`](#routelocationraw) (Optional)
+- **Details**:
+
+  Where to redirect if the route is directly matched. The redirection happens
+  before any navigation guard and triggers a new navigation with the new
+  target location.
+
+### children
+
+- **Type**: Array of [`RouteRecordRaw`](#routerecordraw) (Optional)
+- **Details**:
+
+  Nested routes of the current record.
+
+- **See Also**: [Nested Routes](/guide/advanced/nested-routes.md)
+
+### alias
+
+- **Type**: `string | string[]` (Optional)
+- **Details**:
+
+  Aliases for the route. Allows defining extra paths that will behave like a
+  copy of the record. This enables paths shorthands like `/users/:id` and
+  `/u/:id`. **All `alias` and `path` values must share the same params**.
+
+### name
+
+- **Type**: `string | symbol` (Optional)
+- **Details**:
+
+  Unique name for the route record.
+
+### beforeEnter
+
+- **Type**: [`NavigationGuard | NavigationGuard[]`](#navigationguard) (Optional)
+- **Details**:
+
+  Before enter guard specific to this record. Note `beforeEnter` has no effect if the record has a `redirect` property.
+
+### meta
+
+- **Type**: [`RouteMeta`](#routemeta) (Optional)
+- **Details**:
+
+  Custom data attached to the record.
+
+- **See Also**: [Meta fields](/guide/advanced/meta.md)
+
+## RouteLocationRaw
+
+User-level route location that can be passed to `router.push()`, `redirect`, and returned in [Navigation Guards](/guide/advanced/navigation-guards.md).
+
+A raw location can either be a `string` like `/users/posva#bio` or an object:
+
+```js
+// these three forms are equivalent
+router.push('/users/posva#bio)
+router.push({ path: '/users/posva', hash: '#bio' })
+router.push({ name: 'users', params: { username: 'posva' }, hash: '#bio' })
+// only change the hash
+router.push({ hash: '#bio' })
+// only change query
+router.push({ query: { page: '2' } })
+// change one param
+router.push({ params: { username: 'jolyne' } })
+```
+
+Note `path` must be provided encoded (e.g. `phantom blood` becomes `phantom%20blood`) while `params`, `query` and `hash` must not, they are encoded by the router.
+
+Raw route locations also support an extra option `replace` to call `router.replace()` instead of `router.push()` in navigation guards. Note this also internally calls `router.replace()` even when calling `router.push()`:
+
+```js
+router.push({ hash: '#bio', replace: true })
+// equivalent to
+router.replace({ hash: '#bio' })
+```
+
+## RouteLocation
+
+Resolved [RouteLocationRaw](#routelocationraw) that can contain [redirect records](#routerecordraw). Apart from that it has the same properties as [RouteLocationNormalized](#routelocationnormalized).
+
+## RouteLocationNormalized
+
+Normalized route location. Does not have any [redirect records](#routerecordraw). In navigation guards, `to` and `from` are always of this type.
+
+### matched
+
+Array of [normalized route records](#routerecord).
+
 ## NavigationFailure
 
 Extended Error that contains extra information regarding a failed navigation.
@@ -769,9 +878,7 @@ Extended Error that contains extra information regarding a failed navigation.
 export interface NavigationFailure extends RouterErrorBase
 ```
 
-### Properties
-
-#### from
+### from
 
 Route location we were navigating from
 
@@ -781,7 +888,7 @@ Route location we were navigating from
 from: RouteLocationNormalized
 ```
 
-#### to
+### to
 
 Route location we were navigating to
 
@@ -791,37 +898,9 @@ Route location we were navigating to
 to: RouteLocationNormalized
 ```
 
-#### type
+### type
 
-Type of the navigation. One of [NavigationFailureType](./vue-router-enum#navigationfailuretype)
-
-**Signature:**
-
-```typescript
-type: ErrorTypes.NAVIGATION_CANCELLED |
-  ErrorTypes.NAVIGATION_ABORTED |
-  ErrorTypes.NAVIGATION_DUPLICATED
-```
-
-## RouteLocation
-
-[RouteLocationRaw](./vue-router-typealias#routelocationraw) resolved using the matcher
-
-**Signature:**
-
-```typescript
-export interface RouteLocation extends _RouteLocationBase
-```
-
-### matched
-
-Array of [RouteRecord](./vue-router-typealias#routerecord) containing components as they were passed when adding records. It can also contain redirect records. This can't be used directly
-
-**Signature:**
-
-```typescript
-matched: RouteRecord[];
-```
+Type of the navigation. One of [NavigationFailureType](#navigationfailuretype)
 
 ## NavigationGuard
 
@@ -852,5 +931,5 @@ export interface NavigationGuard {
 It can return any value that can be passed to `next` as long as it is omitted from the list of arguments.
 
 - `boolean`: Return `true` to accept the navigation or `false` to reject it.
-- a [route location](#routelocation) to redirect somewhere else.
+- a [route location](#routelocationraw) to redirect somewhere else.
 - `undefined` (or no `return`). Same as returning `true`
