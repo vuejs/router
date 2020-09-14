@@ -28,9 +28,7 @@ const router = createRouter({
 })
 ```
 
-<!-- TODO: use inline example -->
-
-A working demo of this example can be found [here](https://jsfiddle.net/posva/6du90epg/).
+A working demo of this example can be found [here](https://codesandbox.io/embed/named-views-s49go).
 
 ## Nested Named Views
 
@@ -86,4 +84,4 @@ Then you can achieve the layout above with this route configuration:
 }
 ```
 
-A working demo of this example can be found [here](https://jsfiddle.net/posva/22wgksa3/).
+A working demo of this example can be found [here](https://codesandbox.io/s/nested-named-views-c371h?&initialpath=%2Fsettings%2Femails).

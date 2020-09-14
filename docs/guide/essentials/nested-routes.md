@@ -92,6 +92,4 @@ const routes = [
 ]
 ```
 
-<!-- TODO: codesandbox -->
-
-A working demo of this example can be found [here](https://jsfiddle.net/yyx990803/L7hscd8h/).
+A working demo of this example can be found [here](https://codesandbox.io/embed/nested-views-cmn6l?initialpath=%2Fusers%2Feduardo).
