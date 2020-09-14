@@ -86,7 +86,9 @@ router.beforeResolve(async to => {
 })
 ```
 
-`router.beforeResolve` is the ideal spot to fetch data or do any other operation that you want to avoid doing if the user cannot enter a page. It's also very easy to combine with [`meta` fields](./meta.md) to create a [generic fetching mechanism](#TODO).
+`router.beforeResolve` is the ideal spot to fetch data or do any other operation that you want to avoid doing if the user cannot enter a page.
+
+<!-- TODO: how to combine with [`meta` fields](./meta.md) to create a [generic fetching mechanism](#TODO). -->
 
 ## Global After Hooks
 

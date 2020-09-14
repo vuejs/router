@@ -188,7 +188,7 @@ try {
 
 ### Removal of `router.match` and changes to `router.resolve`
 
-Both `router.match`, and `router.resolve` have been merged together into `router.resolve` with a slightly different signature. [Refer to the API](#TODO) for more details.
+Both `router.match`, and `router.resolve` have been merged together into `router.resolve` with a slightly different signature. [Refer to the API](/api/#resolve) for more details.
 
 **Reason**: Uniting multiple methods that were use for the same purpose.
 

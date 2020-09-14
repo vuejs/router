@@ -752,12 +752,13 @@ Route record that can be provided by the user when adding routes via the [`route
 
 ### redirect
 
-- **Type**: [`RouteLocationRaw`](#routelocationraw) (Optional)
+- **Type**: `RouteLocationRaw | (to: RouteLocationNormalized) => RouteLocationRaw` (Optional)
 - **Details**:
 
   Where to redirect if the route is directly matched. The redirection happens
-  before any navigation guard and triggers a new navigation with the new
-  target location.
+  before any navigation guard and triggers a new navigation with the new target
+  location. Can also be a function that receives the target route location and
+  returns the location we should redirect to.
 
 ### children
 
@@ -849,7 +850,7 @@ Normalized version of a [Route Record](#routerecordraw)
 - **Type**: `RouteMeta`
 - **Details**:
 
-  Arbitrary data attached to all matched records merged (non recursively) from parent to child.
+  Arbitrary data attached to the record.
 
 - **See also**: [Meta fields](/guide/advanced/meta.md)
 
@@ -918,12 +919,70 @@ Resolved [RouteLocationRaw](#routelocationraw) that can contain [redirect record
 
 Normalized route location. Does not have any [redirect records](#routerecordraw). In navigation guards, `to` and `from` are always of this type.
 
+### fullPath
+
+- **Type**: `string`
+- **Details**:
+
+  Encoded URL associated to the route location. Contains `path`, `query` and `hash`.
+
+### hash
+
+- **Type**: `string`
+- **Details**:
+
+  Decoded `hash` section of the URL. Always starts with a `#`. Empty string if there is no `hash` in the URL.
+
+### query
+
+- **Type**: `Record<string, string | string[]>`
+- **Details**:
+
+  Dictionary of decoded query params extracted from the `search` section of the URL.
+
 ### matched
 
 - **Type**: [`RouteRecordNormalized[]`](#routerecordnormalized)
 - **Details**:
 
   Array of [normalized route records](#routerecord) that were matched with the given route location.
+
+### meta
+
+- **Type**: `RouteMeta`
+- **Details**:
+
+  Arbitrary data attached to all matched records merged (non recursively) from parent to child.
+
+- **See also**: [Meta fields](/guide/advanced/meta.md)
+
+### name
+
+- **Type**: `string | symbol | undefined | null`
+- **Details**:
+
+  Name for the route record. `undefined` if none was provided.
+
+### params
+
+- **Type**: `Record<string, string | string[]>`
+- **Details**:
+
+  Dictionary of decoded params extracted from `path`.
+
+### path
+
+- **Type**: `string`
+- **Details**:
+
+  Encoded `pathname` section of the URL associated to the route location.
+
+### redirectedFrom
+
+- **Type**: [`RouteLocation`](#routelocation)
+- **Details**:
+
+  Route location we were initially trying to access before ending up on the current location when a `redirect` option was found or a navigation guard called `next()` with a route location. `undefined` if there was no redirection.
 
 ## NavigationFailure
 

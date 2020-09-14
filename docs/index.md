@@ -13,6 +13,4 @@ Vue Router is the official router for [Vue.js](http://vuejs.org). It deeply inte
 - Customizable Scroll Behavior
 - Proper encoding for URLs
 
-<!-- TODO: provide examples or remove this -->
-
 [Get started](./guide/) or play with the [playground](https://github.com/vuejs/vue-router-next/tree/master/playground) (see [`README.md`](https://github.com/vuejs/vue-router-next) to run them).
