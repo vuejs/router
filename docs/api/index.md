@@ -11,10 +11,10 @@ sidebar: auto
 
 ### to
 
-- type: [`RouteLocationRaw`](#routelocationraw)
-- required
+- **Type**: [`RouteLocationRaw`](#routelocationraw)
+- **Details**:
 
-Denotes the target route of the link. When clicked, the value of the `to` prop will be passed to `router.push()` internally, so the value can be either a string or a [route location object](#routelocationraw).
+  Denotes the target route of the link. When clicked, the value of the `to` prop will be passed to `router.push()` internally, so it can either be a `string` or a [route location object](#routelocationraw).
 
 ```html
 <!-- literal string -->
@@ -39,10 +39,11 @@ Denotes the target route of the link. When clicked, the value of the `to` prop w
 
 ### replace
 
-- type: `boolean`
-- default: `false`
+- **Type**: `boolean`
+- **Default**: `false`
+- **Details**:
 
-Setting `replace` prop will call `router.replace()` instead of `router.push()` when clicked, so the navigation will not leave a history record.
+  Setting `replace` prop will call `router.replace()` instead of `router.push()` when clicked, so the navigation will not leave a history record.
 
 ```html
 <router-link to="/abc" replace></router-link>
@@ -50,24 +51,27 @@ Setting `replace` prop will call `router.replace()` instead of `router.push()` w
 
 ### active-class
 
-- type: `string`
-- default: `"router-link-active"` (or global [`linkActiveClass`](#linkactiveclass))
+- **Type**: `string`
+- **Default**: `"router-link-active"` (or global [`linkActiveClass`](#linkactiveclass))
+- **Details**:
 
-Class to apply on the rendered `a` when the link is active.
+  Class to apply on the rendered `<a>` when the link is active.
 
 ### aria-current-value
 
-- type: `'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false'` (`string`)
-- default: `"page"`
+- **Type**: `'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false'` (`string`)
+- **Default**: `"page"`
+- **Details**:
 
-Value passed to the attribute `aria-current` when the link is exactly active.
+  Value passed to the attribute `aria-current` when the link is exactly active.
 
 ### custom
 
-- type: `boolean`
-- default: `false`
+- **Type**: `boolean`
+- **Default**: `false`
+- **Details**:
 
-Whether `<router-link>` should not wrap its content in an `<a>` element. Useful when using `v-slot` to create a custom RouterLink.
+  Whether `<router-link>` should not wrap its content in an `<a>` element. Useful when using [`v-slot`](#router-link-s-v-slot) to create a custom RouterLink.
 
 ```html
 <router-link to="/home" custom v-slot="{ navigate, href, route }">
@@ -77,10 +81,11 @@ Whether `<router-link>` should not wrap its content in an `<a>` element. Useful 
 
 ### exact-active-class
 
-- type: `string`
-- default: `"router-link-exact-active"` (or global [`linkExactActiveClass`](#linkexactactiveclass))
+- **Type**: `string`
+- **Default**: `"router-link-exact-active"` (or global [`linkExactActiveClass`](#linkexactactiveclass))
+- **Details**:
 
-Class to apply when the link is exact active.
+  Class to apply on the rendered `<a>` when the link is exact active.
 
 ## `<router-link>`'s `v-slot`
 
@@ -134,18 +139,24 @@ If you add a `target="_blank"` to your `a` element, you must omit the `@click="n
 
 ### name
 
-- type: `string`
-- default: `"default"`
+- **Type**: `string`
+- **Default**: `"default"`
+- **Details**:
 
-When a `<router-view>` has a `name`, it will render the component with the corresponding name in the matched route record's `components` option. See [Named Views](/guide/essentials/named-views.md) for an example.
+  When a `<router-view>` has a `name`, it will render the component with the corresponding name in the matched route record's `components` option.
+
+- **See Also**: [Named Views](/guide/essentials/named-views.md)
 
 ### route
 
-- type: `RouteLocationNormalizedLoaded`. A route location that has all of its component resolved (if any was lazy loaded) so it can be displayed.
+- **Type**: [`RouteLocationNormalized`](#routelocationnormalized)
+- **Details**:
+
+  A route location that has all of its component resolved (if any was lazy loaded) so it can be displayed.
 
 ## createRouter
 
-Creates a Router instance that can be used by a Vue app. Check the [RouterOptions](#routeroptions) for a list of all the properties that can be passed.
+Creates a Router instance that can be used by a Vue app. Check the [`RouterOptions`](#routeroptions) for a list of all the properties that can be passed.
 
 **Signature:**
 
@@ -178,13 +189,13 @@ export declare function createWebHistory(base?: string): RouterHistory
 ### Examples
 
 ```js
-createWebHistory() // No base, the app is hosted at the root of the domain
+createWebHistory() // No base, the app is hosted at the root of the domain `https://example.com`
 createWebHistory('/folder/') // gives a url of `https://example.com/folder/`
 ```
 
 ## createWebHashHistory
 
-Creates a hash history. Useful for web applications with no host (e.g. `file://`) or when configuring a server to handle any URL.
+Creates a hash history. Useful for web applications with no host (e.g. `file://`) or when configuring a server to handle any URL isn't an option. **Note you should use [`createWebHistory`](#createwebhistory) if SEO matters to you**.
 
 **Signature:**
 
@@ -216,7 +227,7 @@ createWebHashHistory('/iAmIgnored') // gives a url of `file:///usr/etc/folder/in
 
 ## createMemoryHistory
 
-Creates a in-memory based history. The main purpose of this history is to handle SSR. It starts in a special location that is nowhere. It's up to the user to replace that location with the starter location by either calling `router.push` or `router.replace`.
+Creates a in-memory based history. The main purpose of this history is to handle SSR. It starts in a special location that is nowhere. If the user is not on a browser context, it's up to them to replace that location with the starter location by either calling `router.push()` or `router.replace()`.
 
 **Signature:**
 
@@ -232,7 +243,7 @@ export declare function createMemoryHistory(base?: string): RouterHistory
 
 ### Returns
 
-a history object that can be passed to the router constructor
+A history object that can be passed to the router constructor
 
 ## NavigationFailureType
 
@@ -254,31 +265,26 @@ export declare enum NavigationFailureType
 
 ## START_LOCATION
 
-Initial route location where the router is. Can be used in navigation guards to differentiate the initial navigation.
+- **Type**: [`RouteLocationNormalized`](#routelocationnormalized)
+- **Details**:
 
-**Signature:**
+  Initial route location where the router is. Can be used in navigation guards to differentiate the initial navigation.
 
-```typescript
-START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded
-```
+  ```js
+  import { START_LOCATION } from 'vue-router'
 
-### Examples
-
-```js
-import { START_LOCATION } from 'vue-router'
-
-router.beforeEach((to, from) => {
-  if (from === START_LOCATION) {
-    // initial navigation
-  }
-})
-```
+  router.beforeEach((to, from) => {
+    if (from === START_LOCATION) {
+      // initial navigation
+    }
+  })
+  ```
 
 ## Composition API
 
 ### onBeforeRouteLeave
 
-Add a navigation guard that triggers whenever the component for the current location is about to be left. Similar to but can be used in any component. The guard is removed when the component is unmounted.
+Add a navigation guard that triggers whenever the component for the current location is about to be left. Similar to `beforeRouteLeave` but can be used in any component. The guard is removed when the component is unmounted.
 
 **Signature:**
 
@@ -288,13 +294,13 @@ export declare function onBeforeRouteLeave(leaveGuard: NavigationGuard): void
 
 #### Parameters
 
-| Parameter  | Type            | Description                         |
-| ---------- | --------------- | ----------------------------------- |
-| leaveGuard | NavigationGuard | [NavigationGuard](#navigationguard) |
+| Parameter  | Type                                  | Description             |
+| ---------- | ------------------------------------- | ----------------------- |
+| leaveGuard | [`NavigationGuard`](#navigationguard) | Navigation guard to add |
 
 ### onBeforeRouteUpdate
 
-Add a navigation guard that triggers whenever the current location is about to be updated. Similar to but can be used in any component. The guard is removed when the component is unmounted.
+Add a navigation guard that triggers whenever the current location is about to be updated. Similar to `beforeRouteUpdate` but can be used in any component. The guard is removed when the component is unmounted.
 
 **Signature:**
 
@@ -304,9 +310,9 @@ export declare function onBeforeRouteUpdate(updateGuard: NavigationGuard): void
 
 #### Parameters
 
-| Parameter   | Type            | Description                         |
-| ----------- | --------------- | ----------------------------------- |
-| updateGuard | NavigationGuard | [NavigationGuard](#navigationguard) |
+| Parameter   | Type                                  | Description             |
+| ----------- | ------------------------------------- | ----------------------- |
+| updateGuard | [`NavigationGuard`](#navigationguard) | Navigation guard to add |
 
 ### useLink
 
@@ -332,7 +338,7 @@ export declare function useLink(props: RouterLinkOptions): {
 
 ### useRoute
 
-Returns the current route location. Equivalent to using `$route` inside templates.
+Returns the current route location. Equivalent to using `$route` inside templates. Must be called inside of `setup()`.
 
 **Signature:**
 
@@ -342,7 +348,7 @@ export declare function userRoute(): RouteLocationNormalized
 
 ### useRouter
 
-Returns the [router](#Router) instance. Equivalent to using `$router` inside templates.
+Returns the [router](#Router) instance. Equivalent to using `$router` inside templates. Must be called inside of `setup()`.
 
 **Signature:**
 
@@ -358,58 +364,52 @@ Here are some of the interfaces and types used by Vue Router. The documentation 
 
 ### currentRoute
 
-Current [RouteLocationNormalized](#routelocationnormalized)
+- **Type**: [`Ref<RouteLocationNormalized>`](#routelocationnormalized)
+- **Details**:
 
-**Signature:**
-
-```typescript
-readonly currentRoute: Ref<RouteLocationNormalizedLoaded>;
-```
+  Current route location. Readonly.
 
 ### options
 
-Original options object passed to create the Router
+- **Type**: [`RouterOptions`](#routeroptions)
+- **Details**:
 
-**Signature:**
-
-```typescript
-readonly options: RouterOptions;
-```
+  Original options object passed to create the Router. Readonly.
 
 ## Router Methods
 
 ### addRoute
 
-Add a new [Route Record](.#routerecordraw) as the child of an existing route.
+Add a new [Route Record](.#routerecordraw) as the child of an existing route. If the route has a `name` and there is already an existing one with the same one, it removes it first.
 
 **Signature:**
 
 ```typescript
-addRoute(parentName: RouteRecordName, route: RouteRecordRaw): () => void;
+addRoute(parentName: string | symbol, route: RouteRecordRaw): () => void
 ```
 
 _Parameters_
 
-| Parameter  | Type            | Description                                             |
-| ---------- | --------------- | ------------------------------------------------------- |
-| parentName | RouteRecordName | Parent Route Record where `route` should be appended at |
-| route      | RouteRecordRaw  | Route Record to add                                     |
+| Parameter  | Type                                | Description         |
+| ---------- | ----------------------------------- | ------------------- |
+| parentName | `string                             | symbol`             | Parent Route Record where `route` should be appended at |
+| route      | [`RouteRecordRaw`](#routerecordraw) | Route Record to add |
 
 ### addRoute
 
-Add a new [route record](#routerecordraw) to the router.
+Add a new [route record](#routerecordraw) to the router. If the route has a `name` and there is already an existing one with the same one, it removes it first.
 
 **Signature:**
 
 ```typescript
-addRoute(route: RouteRecordRaw): () => void;
+addRoute(route: RouteRecordRaw): () => void
 ```
 
 _Parameters_
 
-| Parameter | Type           | Description         |
-| --------- | -------------- | ------------------- |
-| route     | RouteRecordRaw | Route Record to add |
+| Parameter | Type                                | Description         |
+| --------- | ----------------------------------- | ------------------- |
+| route     | [`RouteRecordRaw`](#routerecordraw) | Route Record to add |
 
 ### afterEach
 
@@ -418,7 +418,7 @@ Add a navigation hook that is executed after every navigation. Returns a functio
 **Signature:**
 
 ```typescript
-afterEach(guard: NavigationHookAfter): () => void;
+afterEach(guard: NavigationHookAfter): () => void
 ```
 
 _Parameters_
@@ -439,19 +439,13 @@ router.afterEach((to, from, failure) => {
 
 ### back
 
-Go back in history if possible by calling `history.back()`. Equivalent to `router.go(-1)`. Returns a Promise. See the limitations at [`router.go()`](#go).
+Go back in history if possible by calling `history.back()`. Equivalent to `router.go(-1)`.
 
 **Signature:**
 
 ```typescript
-back(): Promise<NavigationFailure | void | undefined>;
+back(): void
 ```
-
-_Parameters_
-
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-
 
 ### beforeEach
 
@@ -460,14 +454,14 @@ Add a navigation guard that executes before any navigation. Returns a function t
 **Signature:**
 
 ```typescript
-beforeEach(guard: NavigationGuardWithThis<undefined>): () => void;
+beforeEach(guard: NavigationGuard): () => void
 ```
 
 _Parameters_
 
-| Parameter | Type                                     | Description             |
-| --------- | ---------------------------------------- | ----------------------- |
-| guard     | NavigationGuardWithThis&lt;undefined&gt; | navigation guard to add |
+| Parameter | Type                                  | Description             |
+| --------- | ------------------------------------- | ----------------------- |
+| guard     | [`NavigationGuard`](#navigationguard) | navigation guard to add |
 
 ### beforeResolve
 
@@ -476,14 +470,14 @@ Add a navigation guard that executes before navigation is about to be resolved. 
 **Signature:**
 
 ```typescript
-beforeResolve(guard: NavigationGuardWithThis<undefined>): () => void;
+beforeResolve(guard: NavigationGuard): () => void
 ```
 
 _Parameters_
 
-| Parameter | Type                                     | Description             |
-| --------- | ---------------------------------------- | ----------------------- |
-| guard     | NavigationGuardWithThis&lt;undefined&gt; | navigation guard to add |
+| Parameter | Type                                  | Description             |
+| --------- | ------------------------------------- | ----------------------- |
+| guard     | [`NavigationGuard`](#navigationguard) | navigation guard to add |
 
 #### Examples
 
@@ -495,19 +489,13 @@ router.beforeEach(to => {
 
 ### forward
 
-Go forward in history if possible by calling `history.forward()`. Equivalent to `router.go(1)`. Returns a Promise. See the limitations at [go](./vue-router-interface#router.go).
+Go forward in history if possible by calling `history.forward()`. Equivalent to `router.go(1)`.
 
 **Signature:**
 
 ```typescript
-forward(): Promise<NavigationFailure | void | undefined>;
+forward(): void
 ```
-
-_Parameters_
-
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-
 
 ### getRoutes
 
@@ -516,30 +504,24 @@ Get a full list of all the [route records](#routerecord).
 **Signature:**
 
 ```typescript
-getRoutes(): RouteRecord[];
+getRoutes(): RouteRecord[]
 ```
-
-_Parameters_
-
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-
 
 ### go
 
-Allows you to move forward or backward through the history. Returns a Promise that resolves when the navigation finishes. If it wasn't possible to go back, the promise never resolves or rejects
+Allows you to move forward or backward through the history.
 
 **Signature:**
 
 ```typescript
-go(delta: number): Promise<NavigationFailure | void | undefined>;
+go(delta: number): void
 ```
 
 _Parameters_
 
-| Parameter | Type   | Description                                                                         |
-| --------- | ------ | ----------------------------------------------------------------------------------- |
-| delta     | number | The position in the history to which you want to move, relative to the current page |
+| Parameter | Type     | Description                                                                         |
+| --------- | -------- | ----------------------------------------------------------------------------------- |
+| delta     | `number` | The position in the history to which you want to move, relative to the current page |
 
 ### hasRoute
 
@@ -548,14 +530,14 @@ Checks if a route with a given name exists
 **Signature:**
 
 ```typescript
-hasRoute(name: RouteRecordName): boolean;
+hasRoute(name: string | symbol): boolean
 ```
 
 _Parameters_
 
-| Parameter | Type            | Description                |
-| --------- | --------------- | -------------------------- |
-| name      | RouteRecordName | Name of the route to check |
+| Parameter | Type    | Description |
+| --------- | ------- | ----------- |
+| name      | `string | symbol`     | Name of the route to check |
 
 ### isReady
 
@@ -564,14 +546,8 @@ Returns a Promise that resolves when the router has completed the initial naviga
 **Signature:**
 
 ```typescript
-isReady(): Promise<void>;
+isReady(): Promise<void>
 ```
-
-_Parameters_
-
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-
 
 ### onError
 
@@ -580,14 +556,14 @@ Adds an error handler that is called every time a non caught error happens durin
 **Signature:**
 
 ```typescript
-onError(handler: ErrorHandler): () => void;
+onError(handler: (error: any) => any): () => void
 ```
 
 _Parameters_
 
-| Parameter | Type         | Description               |
-| --------- | ------------ | ------------------------- |
-| handler   | ErrorHandler | error handler to register |
+| Parameter | Type                  | Description               |
+| --------- | --------------------- | ------------------------- |
+| handler   | `(error: any) => any` | error handler to register |
 
 ### push
 
@@ -596,14 +572,14 @@ Programmatically navigate to a new URL by pushing an entry in the history stack.
 **Signature:**
 
 ```typescript
-push(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>;
+push(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
 ```
 
 _Parameters_
 
-| Parameter | Type             | Description                   |
-| --------- | ---------------- | ----------------------------- |
-| to        | RouteLocationRaw | Route location to navigate to |
+| Parameter | Type                                    | Description                   |
+| --------- | --------------------------------------- | ----------------------------- |
+| to        | [`RouteLocationRaw`](#routelocationraw) | Route location to navigate to |
 
 ### removeRoute
 
@@ -612,14 +588,14 @@ Remove an existing route by its name.
 **Signature:**
 
 ```typescript
-removeRoute(name: RouteRecordName): void;
+removeRoute(name: string | symbol): void
 ```
 
 _Parameters_
 
-| Parameter | Type            | Description                 |
-| --------- | --------------- | --------------------------- |
-| name      | RouteRecordName | Name of the route to remove |
+| Parameter | Type    | Description |
+| --------- | ------- | ----------- |
+| name      | `string | symbol`     | Name of the route to remove |
 
 ### replace
 
@@ -628,14 +604,14 @@ Programmatically navigate to a new URL by replacing the current entry in the his
 **Signature:**
 
 ```typescript
-replace(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>;
+replace(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
 ```
 
 _Parameters_
 
-| Parameter | Type             | Description                   |
-| --------- | ---------------- | ----------------------------- |
-| to        | RouteLocationRaw | Route location to navigate to |
+| Parameter | Type                                    | Description                   |
+| --------- | --------------------------------------- | ----------------------------- |
+| to        | [`RouteLocationRaw`](#routelocationraw) | Route location to navigate to |
 
 ### resolve
 
@@ -645,15 +621,15 @@ Returns the [normalized version](./vue-router-interface#routelocation) of a [rou
 
 ```typescript
 resolve(to: RouteLocationRaw): RouteLocation & {
-        href: string;
-    };
+        href: string
+    }
 ```
 
 _Parameters_
 
-| Parameter | Type             | Description                   |
-| --------- | ---------------- | ----------------------------- |
-| to        | RouteLocationRaw | Raw route location to resolve |
+| Parameter | Type                                    | Description                   |
+| --------- | --------------------------------------- | ----------------------------- |
+| to        | [`RouteLocationRaw`](#routelocationraw) | Raw route location to resolve |
 
 ## RouterOptions
 
@@ -683,7 +659,7 @@ Default class applied to active [RouterLink](#router-link-props). If none is pro
 **Signature:**
 
 ```typescript
-linkActiveClass?: string;
+linkActiveClass?: string
 ```
 
 ### linkExactActiveClass
@@ -693,7 +669,7 @@ Default class applied to exact active [RouterLink](#router-link-props). If none 
 **Signature:**
 
 ```typescript
-linkExactActiveClass?: string;
+linkExactActiveClass?: string
 ```
 
 ### parseQuery
@@ -703,7 +679,7 @@ Custom implementation to parse a query. See its counterpart, [stringifyQuery](#s
 **Signature:**
 
 ```typescript
-parseQuery?: typeof originalParseQuery;
+parseQuery?: typeof originalParseQuery
 ```
 
 #### Examples
@@ -727,7 +703,7 @@ Initial list of routes that should be added to the router.
 **Signature:**
 
 ```typescript
-routes: RouteRecordRaw[];
+routes: RouteRecordRaw[]
 ```
 
 ### scrollBehavior
@@ -737,7 +713,7 @@ Function to control scrolling when navigating between pages. Can return a Promis
 **Signature:**
 
 ```typescript
-scrollBehavior?: ScrollBehavior;
+scrollBehavior?: ScrollBehavior
 ```
 
 #### Examples
@@ -756,7 +732,7 @@ Custom implementation to stringify a query object. Should not prepend a leading 
 **Signature:**
 
 ```typescript
-stringifyQuery?: typeof originalStringifyQuery;
+stringifyQuery?: typeof originalStringifyQuery
 ```
 
 ## RouteRecordRaw
@@ -921,3 +897,25 @@ Array of [normalized route records](#routerecord).
   - `(vm: ComponentPublicInstance) => any` **only for `beforeRouteEnter`**: A callback to be executed once the navigation completes. Receives the route component instance as the parameter.
 
 - **See Also**: [Navigation Guards](/guide/advanced/navigation-guards.md)
+
+## Component Injections
+
+### Component Injected Properties
+
+These properties are injected into every child component by calling `app.use(router)`.
+
+- **this.\$router**
+
+  The router instance.
+
+- **this.\$route**
+
+  The current active [route location](#routelocationnormalized). This property is read-only and its properties are immutable, but it can be watched.
+
+### Component Enabled Options
+
+- **beforeRouteEnter**
+- **beforeRouteUpdate**
+- **beforeRouteLeave**
+
+See [In Component Guards](/guide/advanced/navigation-guards.md).
