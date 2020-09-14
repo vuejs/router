@@ -7532,10 +7532,10 @@ nightwatch-helpers@^1.2.0:
   resolved "https://registry.yarnpkg.com/nightwatch-helpers/-/nightwatch-helpers-1.2.0.tgz#cdefeb7635074a141825a7b6d1b955b6d7810a0f"
   integrity sha1-ze/rdjUHShQYJae20blVtteBCg8=
 
-nightwatch@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/nightwatch/-/nightwatch-1.4.1.tgz#970690c1fd6dc36c1b9065408e3bf96bbb68e92d"
-  integrity sha512-2iMDQHx22ECzJGFoZc8hFCdojDzG5fuJz2bO3XWeFMAn/KtNB6sON1NTPV8uVf34OBzcFzTreLAKGijCuVtwxA==
+nightwatch@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/nightwatch/-/nightwatch-1.4.2.tgz#9bdbab8a9994ce0d20c6509a7b6591d1c9f02d9b"
+  integrity sha512-qbd8rCFrUjzLPvxZKHB3qRfwn7TbG8LABIJNf2GGNzfUetG83vY83iPWyWnOoZwOLfRAbJ9WWCssvH6nAl2oMw==
   dependencies:
     assertion-error "^1.1.0"
     chai-nightwatch "^0.4.0"
