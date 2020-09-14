@@ -98,4 +98,4 @@ You may have noticed that `router.push`, `router.replace` and `router.go` are co
 
 Therefore, if you are already familiar with [Browser History APIs](https://developer.mozilla.org/en-US/docs/Web/API/History_API), manipulating history will feel familiar when using Vue Router.
 
-It is worth mentioning that Vue Router navigation methods (`push`, `replace`, `go`) work consistently no matter the kind of [`history` option](#TODO_api_or_custom_history) is passed when creating the router instance.
+It is worth mentioning that Vue Router navigation methods (`push`, `replace`, `go`) work consistently no matter the kind of [`history` option](/api/#history) is passed when creating the router instance.

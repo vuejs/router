@@ -4,9 +4,6 @@ sidebar: auto
 
 # API Reference
 
-- [Interfaces](./vue-router-interface.md)
-- [Types](./vue-router-typealias.md)
-
 ## `<router-link>` Props
 
 ### to
@@ -813,6 +810,77 @@ Route record that can be provided by the user when adding routes via the [`route
 
 - **See Also**: [Meta fields](/guide/advanced/meta.md)
 
+## RouteRecordNormalized
+
+Normalized version of a [Route Record](#routerecordraw)
+
+### aliasOf
+
+- **Type**: `RouteRecordNormalized | undefined`
+- **Details**:
+
+  Defines if this record is the alias of another one. This property is `undefined` if the record is the original one.
+
+### beforeEnter
+
+- **Type**: [`NavigationGuard`](#navigationguard)
+- **Details**:
+
+  Navigation guard applied when entering this record from somewhere else.
+
+- **See Also**: [Navigation guards](/guide/advanced/navigation-guards.md)
+
+### children
+
+- **Type**: Array of normalized [route records](#routerecordnormalized)
+- **Details**:
+
+  Children route records of the current route. Empty array if none.
+
+### components
+
+- **Type**: `Record<string, Component>`
+- **Details**:
+
+  Dictionary of named views, if none, contains an object with the key `default`.
+
+### meta
+
+- **Type**: `RouteMeta`
+- **Details**:
+
+  Arbitrary data attached to all matched records merged (non recursively) from parent to child.
+
+- **See also**: [Meta fields](/guide/advanced/meta.md)
+
+### name
+
+- **Type**: `string | symbol | undefined`
+- **Details**:
+
+  Name for the route record. `undefined` if none was provided.
+
+### path
+
+- **Type**: `string`
+- **Details**:
+
+  Normalized path of the record. Includes any parent's `path`.
+
+### props
+
+- **Type**: `Record<string, boolean | Function | Record<string, any>>`
+- **Details**:
+
+  Dictionary of the [`props` option](#props) for each named view. If none, it will contain only one property named `default`.
+
+### redirect
+
+- **Type**: [`RouteLocationRaw`](#routelocationraw)
+- **Details**:
+
+  Where to redirect if the route is directly matched. The redirection happens before any navigation guard and triggers a new navigation with the new target location.
+
 ## RouteLocationRaw
 
 User-level route location that can be passed to `router.push()`, `redirect`, and returned in [Navigation Guards](/guide/advanced/navigation-guards.md).
@@ -852,7 +920,10 @@ Normalized route location. Does not have any [redirect records](#routerecordraw)
 
 ### matched
 
-Array of [normalized route records](#routerecord).
+- **Type**: [`RouteRecordNormalized[]`](#routerecordnormalized)
+- **Details**:
+
+  Array of [normalized route records](#routerecord) that were matched with the given route location.
 
 ## NavigationFailure
 

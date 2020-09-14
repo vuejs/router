@@ -74,15 +74,24 @@ const User = {
 Regular params will only match characters in between url fragments, separated by `/`. If we want to match **anything**, we can use a custom _param_ regexp by adding the regexp inside parentheses right after the _param_:
 
 ```js
-{
+const routes = [
   // will match everything and put it under `$route.params.pathMatch`
-  path: '/:pathMatch(.*)'
-}
-{
+  { path: '/:pathMatch(.*)*', name: 'NotFound' },
   // will match anything starting with `/user-` and put it under `$route.params.afterUser`
-  path: '/user-:afterUser(.*)'
-}
+  { path: '/user-:afterUser(.*)' },
+]
 ```
+
+In this specific scenario we are using a [custom regexp](/guide/advanced/path-matching.md#custom-regexp) between parentheses and marking the `pathMatch` param as [optionally repeatable](/guide/advanced/path-matching.md#zero-or-more). This is to allows us to directly navigate to the route if we need to by splitting the `path` into an array:
+
+```js
+this.$router.push({
+  name: 'NotFound',
+  params: { pathMatch: this.$route.path.split('/') },
+})
+```
+
+See more in the [repeated params](/guide/advanced/path-matching.md#zero-or-more) section.
 
 If you are using [History mode](./history-mode.md), make sure to follow the instructions to correctly configure your server as well.
 

@@ -318,6 +318,10 @@ history.replaceState(history.state, '', url)
 
 **Reason**: We use the history state to save information about the navigation like the scroll position, previous location, etc.
 
+### Navigation guards in mixins are ignored
+
+At the moment navigation guards in mixins are not supported. You can track its support at [vue-router#454](https://github.com/vuejs/vue-router-next/issues/454).
+
 ### TypeScript
 
 To make typings more consistent and expressive, some types have been renamed:

@@ -25,12 +25,12 @@ const routes = [
       // the function receives the target route as the argument
       // we return a redirect path/location here.
       return { path: '/search', query: { q: to.params.searchText } }
-    }
+    },
   },
   {
-    path: '/search'
+    path: '/search',
     // ...
-  }
+  },
 ]
 ```
 
@@ -47,8 +47,8 @@ const routes = [
     redirect: to => {
       // the function receives the target route as the argument
       // return redirect path/location here.
-    }
-  }
+    },
+  },
 ]
 ```
 
@@ -75,9 +75,9 @@ const routes = [
       // - /users
       // - /users/list
       // - /people
-      { path: '', component: UserList, alias: ['/people', 'list'] }
-    ]
-  }
+      { path: '', component: UserList, alias: ['/people', 'list'] },
+    ],
+  },
 ]
 ```
 
@@ -92,14 +92,10 @@ const routes = [
       // - /users/24
       // - /users/24/profile
       // - /24
-      { path: 'profile', component: UserDetails, alias: ['/:id', ''] }
-    ]
-  }
+      { path: 'profile', component: UserDetails, alias: ['/:id', ''] },
+    ],
+  },
 ]
 ```
 
 TODO: canonical links in cookbook https://support.google.com/webmasters/answer/139066?hl=en
-
-<!-- TODO: add the advanced usage here as well -->
-
-For advanced usage, check out the [example](https://github.com/vuejs/vue-router/blob/dev/examples/route-alias/app.js).
