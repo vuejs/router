@@ -60,6 +60,10 @@ const config = {
                 text: 'Dynamic Route Matching',
               },
               {
+                link: '/guide/essentials/route-matching-syntax',
+                text: "Routes' Matching Syntax",
+              },
+              {
                 link: '/guide/essentials/nested-routes',
                 text: 'Nested Routes',
               },

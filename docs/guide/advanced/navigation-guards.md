@@ -20,15 +20,15 @@ Global before guards are called in creation order, whenever a navigation is trig
 
 Every guard function receives two arguments:
 
-- **`to`**: the target route location [in a normalized format](../../api/#the-route-object) being navigated to.
-- **`from`**: the current route location [in a normalized format](../../api/#the-route-object) being navigated away from.
+- **`to`**: the target route location [in a normalized format](/api/#routelocationnormalized) being navigated to.
+- **`from`**: the current route location [in a normalized format](/api/#routelocationnormalized) being navigated away from.
 
 And can optionally return any of the following values:
 
 - `false`: cancel the current navigation. If the browser URL was changed (either manually by the user or via back button), it will be reset to that of the `from` route.
-- A [Route Location](../api#route-location): Redirect to a different location by passing a route location as if you were calling [`router.push()`](../api#router-push), which allows you to pass options like `replace: true` or `name: 'home'`. The current navigation is dropped and a new one is created with the same `from`.
+- A [Route Location](/api/#routelocationraw): Redirect to a different location by passing a route location as if you were calling [`router.push()`](/api/#push), which allows you to pass options like `replace: true` or `name: 'home'`. The current navigation is dropped and a new one is created with the same `from`.
 
-It's also possible to throw an `Error` if an unexpected situation was met. This will also cancel the navigation and call any callback registered via [`router.onError()`](../api#router-onerror).
+It's also possible to throw an `Error` if an unexpected situation was met. This will also cancel the navigation and call any callback registered via [`router.onError()`](/api/#onerror).
 
 If nothing, `undefined` or `true` is returned, **the navigation is validated**, and the next navigation guard is called.
 

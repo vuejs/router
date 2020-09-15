@@ -151,6 +151,19 @@ If you add a `target="_blank"` to your `a` element, you must omit the `@click="n
 
   A route location that has all of its component resolved (if any was lazy loaded) so it can be displayed.
 
+## `<router-view>`'s `v-slot`
+
+`<router-view>` exposes a `v-slot` API mainly to wrap your route components with `<transition>` and `<keep-alive>` components.
+
+```html
+<router-view v-slot="{ Component, route }">
+  <component :is="Component" />
+</router-view>
+```
+
+- `Component`: VNodes to be passed to a `<component>`'s `is` prop.
+- `route`: resolved normalized [route location](#routelocationnormalized).
+
 ## createRouter
 
 Creates a Router instance that can be used by a Vue app. Check the [`RouterOptions`](#routeroptions) for a list of all the properties that can be passed.

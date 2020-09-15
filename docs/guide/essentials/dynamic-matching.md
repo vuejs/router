@@ -31,7 +31,7 @@ You can have multiple _params_ in the same route, and they will map to correspon
 | /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`                |
 | /users/:username/posts/:postId | /users/eduardo/posts/123 | `{ username: 'eduardo', postId: '123' }` |
 
-In addition to `$route.params`, the `$route` object also exposes other useful information such as `$route.query` (if there is a query in the URL), `$route.hash`, etc. You can check out the full details in the [API Reference](../../api/#the-route-object).
+In addition to `$route.params`, the `$route` object also exposes other useful information such as `$route.query` (if there is a query in the URL), `$route.hash`, etc. You can check out the full details in the [API Reference](/api/#routelocationnormalized).
 
 A working demo of this example can be found [here](https://codesandbox.io/embed/objective-dew-ogjbp?initialpath=%2Fusers%2Feduardo%2Fposts%2F1).
 
@@ -103,4 +103,4 @@ If you are using [History mode](./history-mode.md), make sure to follow the inst
 
 ## Advanced Matching Patterns
 
-Vue Router uses its own path matching, inspired to the one used by `express`, so it supports many advanced matching patterns such as optional params, zero or more / one or more requirements, and even custom regex patterns. Please check the [Advanced Matching](../advanced/advanced-matching.md) documentation to explore them.
+Vue Router uses its own path matching, inspired to the one used by `express`, so it supports many advanced matching patterns such as optional params, zero or more / one or more requirements, and even custom regex patterns. Please check the [Advanced Matching](./route-matching-syntax.md) documentation to explore them.

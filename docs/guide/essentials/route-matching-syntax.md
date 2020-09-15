@@ -1,6 +1,6 @@
 # Route Matching Syntax
 
-Most applications will use static routes like `/about` and dynamic routes like `/users/:userId`, but Vue Router has much more to offer!
+Most applications will use static routes like `/about` and dynamic routes like `/users/:userId` like we just saw in [Dynamic Route Matching](./dynamic-matching.md), but Vue Router has much more to offer!
 
 ## Custom Regexp in params
 
@@ -82,4 +82,4 @@ Note that `*` also marks the parameter as optional but cannot be repeated
 
 ## Debugging
 
-If you need to dig how your routes are transformed into Regexp to understand why a route isn't being matched or, to report a bug, you can use the [path ranker tool](https://paths.esm.dev). It supports sharing your routes through the URL.
+If you need to dig how your routes are transformed into Regexp to understand why a route isn't being matched or, to report a bug, you can use the [path ranker tool](https://paths.esm.dev/?p=AAMeJSyAwR4UbFDAFxAcAGAIJXMAAA..#). It supports sharing your routes through the URL.

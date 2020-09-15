@@ -1,6 +1,6 @@
 # Transitions
 
-In order to use transitions on your route components and animate navigations, you need to use the [v-slot API](../../api#v-slot):
+In order to use transitions on your route components and animate navigations, you need to use the [v-slot API](/api/#router-view-s-v-slot):
 
 ```html
 <router-view v-slot="{ Component }">
@@ -10,7 +10,7 @@ In order to use transitions on your route components and animate navigations, yo
 </router-view>
 ```
 
-[All transition APIs](https://vuejs.org/guide/transitions.html) work the same here.
+[All transition APIs](https://v3.vuejs.org/guide/transitions-enterleave.html) work the same here.
 
 ## Per-Route Transition
 
