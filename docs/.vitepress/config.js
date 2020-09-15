@@ -28,6 +28,11 @@ const config = {
     docsBranch: 'master',
     editLinks: true,
 
+    carbonAds: {
+      serve: 'CEBICK3I',
+      placement: 'routervuejsorg',
+    },
+
     locales: {
       // English
       '/': {
