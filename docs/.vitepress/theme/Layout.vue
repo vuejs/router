@@ -3,7 +3,7 @@
     <template #sidebar-top>
       <CarbonAds
         v-if="$site.themeConfig.carbonAds"
-        :key="$page.path"
+        :key="'carbon' + $page.path"
         :code="$site.themeConfig.carbonAds.carbon"
         :placement="$site.themeConfig.carbonAds.placement"
       />
@@ -11,7 +11,7 @@
     <template #page-bottom>
       <BuySellAds
         v-if="$site.themeConfig.carbonAds"
-        :key="$page.path"
+        :key="'custom' + $page.path"
         :code="$site.themeConfig.carbonAds.custom"
         :placement="$site.themeConfig.carbonAds.placement"
       />

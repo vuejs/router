@@ -1,3 +1,9 @@
+<template>
+  <div class="bsa-cpc-wrapper">
+    <div class="bsa-cpc"></div>
+  </div>
+</template>
+
 <script>
 import { h, onMounted } from 'vue'
 
@@ -41,9 +47,6 @@ export default {
         load()
       }
     })
-
-    return () =>
-      h('div', { class: 'bsa-cpc-wrapper' }, [h('div', { class: 'bsa-cpc' })])
   },
 }
 </script>

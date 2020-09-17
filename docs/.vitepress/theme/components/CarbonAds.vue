@@ -1,3 +1,7 @@
+<template>
+  <div class="carbon-ads" ref="el"></div>
+</template>
+
 <script>
 import { h, onMounted, ref } from 'vue'
 
@@ -24,7 +28,7 @@ export default {
       el.value.appendChild(s)
     })
 
-    return () => h('div', { class: 'carbon-ads', ref: el })
+    return { el }
   },
 }
 </script>
