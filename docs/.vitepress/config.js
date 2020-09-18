@@ -1,4 +1,19 @@
-/** @type {import('vitepress').UserConfig} */
+/** @typedef {import('vitepress').UserConfig} UserConfig */
+
+/** @type {UserConfig['head']} */
+const head = []
+
+if (process.env.NODE_ENV === 'production') {
+  head.push([
+    'script',
+    {
+      src: 'https://unpkg.com/thesemetrics@latest',
+      async: '',
+    },
+  ])
+}
+
+/** @type {UserConfig} */
 const config = {
   lang: 'en-US',
   title: 'Vue Router',
@@ -15,6 +30,7 @@ const config = {
       description: 'El router oficial par Vue.js',
     },
   },
+  head,
   // serviceWorker: true,
   themeConfig: {
     // algolia: {
