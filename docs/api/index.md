@@ -68,13 +68,25 @@ sidebar: auto
 - **Default**: `false`
 - **Details**:
 
-  Whether `<router-link>` should not wrap its content in an `<a>` element. Useful when using [`v-slot`](#router-link-s-v-slot) to create a custom RouterLink.
+  Whether `<router-link>` should not wrap its content in an `<a>` element. Useful when using [`v-slot`](#router-link-s-v-slot) to create a custom RouterLink. By default, `<router-link>` will render its content wrapped in an `<a>` element, even when using `v-slot`. Passing the `custom` prop, removes that behavior.
 
-```html
-<router-link to="/home" custom v-slot="{ navigate, href, route }">
-  <a :href="href" @click="navigate">{{ route.fullPath }}</a>
-</router-link>
-```
+- **Examples**:
+
+  ```html
+  <router-link to="/home" custom v-slot="{ navigate, href, route }">
+    <a :href="href" @click="navigate">{{ route.fullPath }}</a>
+  </router-link>
+  ```
+
+  Renders `<a href="/home">/home</a>`.
+
+  ```html
+  <router-link to="/home" v-slot="{ route }">
+    <span>{{ route.fullPath }}</span>
+  </router-link>
+  ```
+
+  Renders `<a href="/home"><span>/home</span></a>`.
 
 ### exact-active-class
 
