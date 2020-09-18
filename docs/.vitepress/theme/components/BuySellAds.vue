@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { h, onMounted } from 'vue'
+import { onMounted } from 'vue'
 
 /* global _bsa */
 const ID = 'bsa-cpc-script'
