@@ -100,7 +100,9 @@ router.afterEach((to, from) => {
 })
 ```
 
-They are useful for analytics, [changing the title of the page](/cookbook/page-title.md), [accessibility](/cookbook/announcing-navigation.md) and many other things.
+<!-- TODO: maybe add links to examples -->
+
+They are useful for analytics, changing the title of the page, accessibility features like announcing the page and many other things.
 
 They also reflect [navigation failures](./navigation-failures.md) as the third argument:
 

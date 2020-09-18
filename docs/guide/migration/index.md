@@ -79,9 +79,13 @@ const routes = [
 ]
 ```
 
-Note this will work if `path` was `/parent/` as the relative location `home` to `/parent/` is indeed `/parent/home` but the relative location of `home` to `/parent` is `/home`. Learn more about relative links [in the cookbook](/cookbook/relative-links.md).
+Note this will work if `path` was `/parent/` as the relative location `home` to `/parent/` is indeed `/parent/home` but the relative location of `home` to `/parent` is `/home`.
 
-**Reason**: This is to make trailing slash behavior consistent: by default all routes allow a trailing slash. [It can be disabled](/cookbook/trailing-slashes.md).
+<!-- Learn more about relative links [in the cookbook](/cookbook/relative-links.md). -->
+
+**Reason**: This is to make trailing slash behavior consistent: by default all routes allow a trailing slash. It can be disabled by using the `strict` option and manually appending (or not) a slash to the routes.
+
+<!-- TODO: maybe a cookbook entry -->
 
 ### `$route` properties Encoding
 
@@ -93,7 +97,7 @@ Given any [normalized route location](/api/#routelocationnormalized):
 - `hash` is now decoded, that way it can be copied over: `router.push({ hash: $route.hash })` and be used directly in [scrollBehavior](/api/#scrollbehavior)'s `el` option.
 - When using `push`, `resolve` and `replace` and providing a `string` location or a `path` property in an object, **it must be encoded**. On the other hand, `params`, `query` and `hash` must be provided in its unencoded version.
 
-**Reason**: This allows to easily copy existing properties of a location when calling `router.push()` and `router.resolve()`, make it consistent across browsers. Learn more about encoding [in the cookbook](#TODO).
+**Reason**: This allows to easily copy existing properties of a location when calling `router.push()` and `router.resolve()`, make it consistent across browsers.
 
 ## Breaking Changes: API Changes
 
