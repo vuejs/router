@@ -1,3 +1,78 @@
+# [4.0.0-beta.10](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.9...v4.0.0-beta.10) (2020-09-18)
+
+### Bug Fixes
+
+- **history:** gracefully handle empty state ([cbcf2a9](https://github.com/vuejs/vue-router-next/commit/cbcf2a95a2af001c8aea96f3c76c4c4ef139219f)), closes [#366](https://github.com/vuejs/vue-router-next/issues/366)
+- **types:** better type for navigate ([0384cb0](https://github.com/vuejs/vue-router-next/commit/0384cb062d50f6be37512410b4c2d170896dc9cb))
+- **types:** explicit types on navigate ([36d218c](https://github.com/vuejs/vue-router-next/commit/36d218c15268d0d3d15d4ed3adc75c8cb09ed68b))
+- **types:** fix types for redirect records ([a77f148](https://github.com/vuejs/vue-router-next/commit/a77f1485323ef3b654077ecb227fd5a0373d3a2f))
+- **warn:** correctly warn against unused next ([47cd7b9](https://github.com/vuejs/vue-router-next/commit/47cd7b97bb7a3999178a26a4ca1af955178ea5d6))
+
+### Code Refactoring
+
+- **types:** Rename ScrollBehavior to RouterScrollBehavior ([9fc0996](https://github.com/vuejs/vue-router-next/commit/9fc09969db854bc0201454fbecd546637b76213a))
+
+### Features
+
+- **router:** remove partial Promise from router.go ([6ed6eee](https://github.com/vuejs/vue-router-next/commit/6ed6eee38b59eb0b6dec0bcb7d73e24203e20ba4))
+- **types:** allow extending meta fields ([#407](https://github.com/vuejs/vue-router-next/issues/407)) ([706e84f](https://github.com/vuejs/vue-router-next/commit/706e84f0099a2a04485dfa98449fdc875442bb49))
+- **warn:** point to scrollBehavior in message ([70ce7fe](https://github.com/vuejs/vue-router-next/commit/70ce7feefac3fddd2a9641fcc2ccc66b4b108775))
+
+### BREAKING CHANGES
+
+- **router:** The `router.go()` methods doesn't return anything
+  (like in Vue Router 3) anymore. The existing implementation was wrong as it
+  would resolve the promise for the following navigation if `router.go()`
+  was called with something that wasn't possible e.g. `router.go(-20)`
+  right after entering the application would not do anything. Even worse,
+  the promise returned by that call would resolve **after the next
+  navigation**. There is no proper native API to implement this
+  promise-based api properly, but one can write a version that should work
+  in most scenarios by setting up multiple hooks right before calling
+  `router.go()`:
+
+```js
+export function go(delta) {
+  return new Promise((resolve, reject) => {
+    function popStateListener() {
+      clearTimeout(timeout)
+    }
+    window.addEventListener('popstate', popStateListener)
+
+    function clearHooks() {
+      removeAfterEach()
+      removeOnError()
+      window.removeEventListener('popstate', popStateListener)
+    }
+
+    // if the popstate event is not called, consider this a failure
+    const timeout = setTimeout(() => {
+      clearHooks()
+      reject(new Error('Failed to use router.go()'))
+      // It's unclear of what value would always work here
+    }, 10)
+
+    setImmediate
+
+    const removeAfterEach = router.afterEach((_to, _from, failure) => {
+      clearHooks()
+      resolve(failure)
+    })
+    const removeOnError = router.onError(err => {
+      clearHooks()
+      reject(err)
+    })
+
+    router.go(delta)
+  })
+}
+```
+
+- **types:** there is already an existing type named `ScrollBehavior`,
+  so we are renaming our type to avoid any confusions and allow the user
+  to use both types at the same type (which given what the existing
+  `ScrollBehavior` type is designed for, will likely happen).
+
 # [4.0.0-beta.9](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.8...v4.0.0-beta.9) (2020-09-01)
 
 Build related fixes
