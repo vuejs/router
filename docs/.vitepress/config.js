@@ -133,10 +133,6 @@ const config = {
                 link: '/guide/advanced/navigation-guards',
               },
               {
-                text: 'Route Matching Syntax',
-                link: '/guide/advanced/route-matching-syntax',
-              },
-              {
                 text: 'Route Meta Fields',
                 link: '/guide/advanced/meta',
               },
