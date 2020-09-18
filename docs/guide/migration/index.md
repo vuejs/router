@@ -6,7 +6,7 @@ Most of Vue Router API has remained unchanged during its rewrite from v3 (for Vu
 
 Some of new features to keep an eye on in Vue Router 4 include:
 
-- [Dynamic Routing](#TODO)
+- [Dynamic Routing](/api/#addroute-2)
 - [Composition API](/guide/advanced/composition-api.md)
 <!-- - Custom History implementation -->
 
