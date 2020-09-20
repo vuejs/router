@@ -1,3 +1,10 @@
+# [4.0.0-beta.11](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.10...v4.0.0-beta.11) (2020-09-20)
+
+### Bug Fixes
+
+- use post flush in modal example ([2024281](https://github.com/vuejs/vue-router-next/commit/2024281902d62454d9159c87d4288d691cd0bce8))
+- **guards:** use post watcher for instances ([3234c59](https://github.com/vuejs/vue-router-next/commit/3234c5924f39fd9497866bfd160407256dc91bfe))
+
 # [4.0.0-beta.10](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.9...v4.0.0-beta.10) (2020-09-18)
 
 ### Bug Fixes
