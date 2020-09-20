@@ -87,7 +87,8 @@ export const RouterViewImpl = defineComponent({
             callback(instance)
           )
         }
-      }
+      },
+      { flush: 'post' }
     )
 
     return () => {
