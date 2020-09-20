@@ -25,6 +25,11 @@ async function showUserModal(id: number) {
     params: { id: '' + id },
     state: { backgroundView },
   })
+  const newState = {
+    ...window.history.state,
+    backgroundView,
+  }
+  window.history.replaceState(newState, '')
 }
 
 function closeUserModal() {
@@ -64,20 +69,23 @@ const Home = defineComponent({
 
     const userId = computed(() => route.params.id)
 
-    watchEffect(() => {
-      const el = modal.value
-      if (!el) return
+    watchEffect(
+      () => {
+        const el = modal.value
+        if (!el) return
 
-      const show = historyState.value.backgroundView
-      console.log('show modal?', show)
-      if (show) {
-        if ('show' in el) el.show()
-        else el.setAttribute('open', '')
-      } else {
-        if ('close' in el) el.close()
-        else el.removeAttribute('open')
-      }
-    })
+        const show = historyState.value.backgroundView
+        console.log('show modal?', show)
+        if (show) {
+          if ('show' in el) el.show()
+          else el.setAttribute('open', '')
+        } else {
+          if ('close' in el) el.close()
+          else el.removeAttribute('open')
+        }
+      },
+      { flush: 'post' }
+    )
 
     return {
       modal,
