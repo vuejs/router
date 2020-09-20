@@ -433,6 +433,10 @@ _Parameters_
 | --------- | ----------------------------------- | ------------------- |
 | route     | [`RouteRecordRaw`](#routerecordraw) | Route Record to add |
 
+:::tip
+Note adding routes does not trigger a new navigation, meaning that the added route will not be displayed unless a new navigation is triggered.
+:::
+
 ### afterEach
 
 Add a navigation hook that is executed after every navigation. Returns a function that removes the registered hook.

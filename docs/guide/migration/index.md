@@ -285,6 +285,26 @@ The object returned in `scrollBehavior` is now similar to [`ScrollToOptions`](ht
 
 **Reason**: This is was a necessary change. See the [related RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0034-router-view-keep-alive-transitions.md).
 
+### Passing content to route components' `<slot>`
+
+Before you could directly pass a template to be rendered by a route components' `<slot>` by nesting it under a `<router-view>` component:
+
+```html
+<router-view>
+  <p>In Vue Router 3, I render inside the route component</p>
+</router-view>
+```
+
+Because of the introduction of the `v-slot` api for `<router-view>`, you must pass it to the `<component>` using the `v-slot` API:
+
+```html
+<router-view v-slot="{ Component }">
+  <component :is="Component">
+    <p>In Vue Router 3, I render inside the route component</p>
+  </component>
+</router-view>
+```
+
 ### Removal of `parent` from route locations
 
 The `parent` property has been removed from normalized route locations (`this.$route` and object returned by `router.resolve`). You can still access it via the `matched` array:
