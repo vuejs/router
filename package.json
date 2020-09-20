@@ -60,7 +60,7 @@
     }
   ],
   "peerDependencies": {
-    "vue": "^3.0.0-rc.9"
+    "vue": "^3.0.0"
   },
   "vetur": {
     "tags": "vetur/tags.json",
