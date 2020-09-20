@@ -5,7 +5,7 @@ import {
 } from './types'
 import { Router } from './router'
 
-declare module 'vue' {
+declare module '@vue/runtime-core' {
   export interface ComponentCustomOptions {
     /**
      * Guard called when the router is navigating to the route that is rendering
