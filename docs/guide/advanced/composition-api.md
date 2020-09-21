@@ -16,7 +16,7 @@ export default {
       router.push({
         name: 'search',
         query: {
-          ...this.route.query,
+          ...route.query,
         },
       })
     }
