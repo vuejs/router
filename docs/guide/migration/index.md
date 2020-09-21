@@ -342,6 +342,16 @@ history.replaceState(history.state, '', url)
 
 **Reason**: We use the history state to save information about the navigation like the scroll position, previous location, etc.
 
+### `routes` option is required in `options`
+
+The property `routes` is now required in `options`.
+
+```js
+createRouter({ routes: [] })
+```
+
+**Reason**: The router is designed to be created with routes even though you can add them later on. You need at least one route in most scenarios and this is written once per app in general.
+
 ### Navigation guards in mixins are ignored
 
 At the moment navigation guards in mixins are not supported. You can track its support at [vue-router#454](https://github.com/vuejs/vue-router-next/issues/454).
