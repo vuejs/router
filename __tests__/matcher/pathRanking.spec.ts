@@ -134,7 +134,16 @@ describe('Path ranking', () => {
     ])
   })
 
+  it('root after others', () => {
+    checkPathOrder(['/static', '/'])
+    checkPathOrder(['/:w', '/'])
+    // this isn't possible as long as /:w? > /:w+ because / > /:w?
+    // checkPathOrder(['/:w+', '/'])
+    checkPathOrder(['/', '/:w(.*)'])
+  })
+
   it('puts the slash before optional parameters', () => {
+    // checkPathOrder(['/', '/:a?'])
     possibleOptions.forEach(options => {
       checkPathOrder(['/', ['/:a?', options]])
       checkPathOrder(['/', ['/:a*', options]])
@@ -176,12 +185,6 @@ describe('Path ranking', () => {
     })
   })
 
-  it('empty path before slash', () => {
-    possibleOptions.forEach(options => {
-      checkPathOrder(['', ['/', options]])
-    })
-  })
-
   it('works with long paths', () => {
     checkPathOrder(['/a/b/c/d/e', '/:k/b/c/d/e', '/:k/b/c/d/:j'])
   })
@@ -209,7 +212,7 @@ describe('Path ranking', () => {
 
   it('puts the wildcard at the end', () => {
     possibleOptions.forEach(options => {
-      checkPathOrder([['', options], '/:rest(.*)'])
+      // checkPathOrder([['', options], '/:rest(.*)'])
       checkPathOrder([['/', options], '/:rest(.*)'])
       checkPathOrder([['/ab', options], '/:rest(.*)'])
       checkPathOrder([['/:a', options], '/:rest(.*)'])

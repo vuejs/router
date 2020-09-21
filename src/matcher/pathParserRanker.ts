@@ -85,13 +85,13 @@ const BASE_PATH_PARSER_OPTIONS: Required<_PathParserOptions> = {
 // Scoring values used in tokensToParser
 const enum PathScore {
   _multiplier = 10,
-  Root = 9 * _multiplier, // just /
+  Root = 5.5 * _multiplier, // just /
   Segment = 4 * _multiplier, // /a-segment
   SubSegment = 3 * _multiplier, // /multiple-:things-in-one-:segment
   Static = 4 * _multiplier, // /static
   Dynamic = 2 * _multiplier, // /:someId
   BonusCustomRegExp = 1 * _multiplier, // /:someId(\\d+)
-  BonusWildcard = -4 * _multiplier - BonusCustomRegExp, // /:namedWildcard(.*) we remove the bonus added by the custom regexp
+  BonusWildcard = -5 * _multiplier - BonusCustomRegExp, // /:namedWildcard(.*) we remove the bonus added by the custom regexp
   BonusRepeatable = -2 * _multiplier, // /:w+ or /:w*
   BonusOptional = -0.8 * _multiplier, // /:w? or /:w*
   // these two have to be under 0.1 so a strict /:page is still lower than /:a-:b
@@ -124,7 +124,11 @@ export function tokensToParser(
 
   for (const segment of segments) {
     // the root segment needs special treatment
-    const segmentScores: number[] = segment.length ? [] : [PathScore.Root]
+    const segmentScores: number[] =
+      // the root can also be a leading slash with a single token with value = ''
+      segment.length > 1 || (segment[0] && segment[0].value)
+        ? []
+        : [PathScore.Root]
 
     // allow trailing slash
     if (options.strict && !segment.length) pattern += '/'
