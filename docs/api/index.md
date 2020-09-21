@@ -647,8 +647,8 @@ Returns the [normalized version](./vue-router-interface#routelocation) of a [rou
 
 ```typescript
 resolve(to: RouteLocationRaw): RouteLocation & {
-        href: string
-    }
+  href: string
+}
 ```
 
 _Parameters_
