@@ -34,7 +34,7 @@ export interface MatcherError extends Error {
  * Enumeration with all possible types for navigation failures. Can be passed to
  * {@link isNavigationFailure} to check for specific failures.
  */
-export const enum NavigationFailureType {
+export enum NavigationFailureType {
   /**
    * An aborted navigation is a navigation that failed because a navigation
    * guard returned `false` or called `next(false)`
