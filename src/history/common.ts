@@ -19,12 +19,12 @@ export interface HistoryState {
 }
 interface HistoryStateArray extends Array<HistoryStateValue> {}
 
-export enum NavigationType {
+export const enum NavigationType {
   pop = 'pop',
   push = 'push',
 }
 
-export enum NavigationDirection {
+export const enum NavigationDirection {
   back = 'back',
   forward = 'forward',
   unknown = '',
