@@ -32,11 +32,11 @@ Pushing or resolving a named route without its required params will throw an err
 
 ```js
 // given the following route:
-const routes = [{ path: '/users/:id', name: 'users' }]
+const routes = [{ path: '/users/:id', name: 'user', component: UserDetails }]
 
 // Missing the `id` param will fail
-router.push({ name: 'users' })
-router.resolve({ name: 'users' })
+router.push({ name: 'user' })
+router.resolve({ name: 'user' })
 ```
 
 **Reason**: Same as above.
@@ -50,9 +50,10 @@ const routes = [
   {
     path: '/dashboard',
     name: 'dashboard-parent',
+    component: DashboardParent
     children: [
-      { path: '', name: 'dashboard' },
-      { path: 'settings', name: 'dashboard-settings' },
+      { path: '', name: 'dashboard', component: DashboardDefault },
+      { path: 'settings', name: 'dashboard-settings', component: DashboardSettings },
     ],
   },
 ]
@@ -70,10 +71,11 @@ This has an important side effect about children `redirect` records like these:
 const routes = [
   {
     path: '/parent',
+    component: Parent,
     children: [
       // this would now redirect to `/home` instead of `/parent/home`
       { path: '', redirect: 'home' },
-      { path: 'home' },
+      { path: 'home', component: Home },
     ],
   },
 ]
@@ -152,9 +154,9 @@ Catch all routes (`*`, `/*`) must now be defined using a parameter with a custom
 const routes = [
   // pathMatch is the name of the param, e.g., going to /not/found yields
   // { params: { pathMatch: ['not', 'found'] }}
-  { path: '/:pathMatch(.*)*', name: 'not-found' },
+  { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
   // if you omit the last `*`, the `/` character in params will be encoded when resolving or pushing
-  { path: '/:pathMatch(.*)', name: 'bad-not-found' },
+  { path: '/:pathMatch(.*)', name: 'bad-not-found', component: NotFound },
 ]
 // bad example:
 router.resolve({

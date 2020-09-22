@@ -2,6 +2,10 @@
 
 Most applications will use static routes like `/about` and dynamic routes like `/users/:userId` like we just saw in [Dynamic Route Matching](./dynamic-matching.md), but Vue Router has much more to offer!
 
+:::tip
+For the sake of simplicity, all, route records **are omitting the `component` property** to focus on the `path` value.
+:::
+
 ## Custom Regexp in params
 
 When defining a param like `:userId`, we internally use the following regexp `([^/]+)` (at least one character that isn't a slash `/`) to extract params from URLs. This works well unless you need to differentiate two routes based on the param content. Imagine two routes `/:orderId` and `/:productName`, both would match the exact same URLs, so we need a way to differentiate them. The easiest way would be to add a static section to the path that differentiates them:

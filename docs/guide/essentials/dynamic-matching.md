@@ -82,9 +82,9 @@ Regular params will only match characters in between url fragments, separated by
 ```js
 const routes = [
   // will match everything and put it under `$route.params.pathMatch`
-  { path: '/:pathMatch(.*)*', name: 'NotFound' },
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
   // will match anything starting with `/user-` and put it under `$route.params.afterUser`
-  { path: '/user-:afterUser(.*)' },
+  { path: '/user-:afterUser(.*)', component: UserGeneric },
 ]
 ```
 

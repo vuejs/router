@@ -18,8 +18,16 @@ The above usage will apply the same transition for all routes. If you want each 
 
 ```js
 const routes = [
-  { path: '/custom-transition', meta: { transition: 'slide-left' } },
-  { path: '/other-transition', meta: { transition: 'slide-right' } },
+  {
+    path: '/custom-transition',
+    component: PanelLeft,
+    meta: { transition: 'slide-left' },
+  },
+  {
+    path: '/other-transition',
+    component: PanelRight,
+    meta: { transition: 'slide-right' },
+  },
 ]
 ```
 
