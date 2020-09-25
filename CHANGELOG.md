@@ -1,3 +1,9 @@
+# [4.0.0-beta.12](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.11...v4.0.0-beta.12) (2020-09-25)
+
+### Bug Fixes
+
+- **types:** extend @vue/runtime-core module ([#473](https://github.com/vuejs/vue-router-next/issues/473)) ([556cd4b](https://github.com/vuejs/vue-router-next/commit/556cd4b4af3d7ac1aa1c66848f5ab1bc33d13153))
+
 # [4.0.0-beta.11](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.10...v4.0.0-beta.11) (2020-09-20)
 
 ### Bug Fixes
