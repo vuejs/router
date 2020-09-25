@@ -92,4 +92,4 @@ const routes = [
 ]
 ```
 
-A working demo of this example can be found [here](https://codesandbox.io/embed/nested-views-cmn6l?initialpath=%2Fusers%2Feduardo).
+A working demo of this example can be found [here](https://codesandbox.io/s/nested-views-vue-router-4-examples-hl326?initialpath=%2Fusers%2Feduardo).

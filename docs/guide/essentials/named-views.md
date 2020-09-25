@@ -30,7 +30,7 @@ const router = createRouter({
 })
 ```
 
-A working demo of this example can be found [here](https://codesandbox.io/embed/named-views-s49go).
+A working demo of this example can be found [here](https://codesandbox.io/s/named-views-vue-router-4-examples-rd20l).
 
 ## Nested Named Views
 
@@ -86,4 +86,4 @@ Then you can achieve the layout above with this route configuration:
 }
 ```
 
-A working demo of this example can be found [here](https://codesandbox.io/s/nested-named-views-c371h?&initialpath=%2Fsettings%2Femails).
+A working demo of this example can be found [here](https://codesandbox.io/s/nested-named-views-vue-router-4-examples-re9yl?&initialpath=%2Fsettings%2Femails).
