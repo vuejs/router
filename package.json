@@ -2,7 +2,6 @@
   "name": "vue-router",
   "version": "4.0.0-beta.11",
   "main": "dist/vue-router.cjs.js",
-  "browser": "dist/vue-router.esm-browser.js",
   "unpkg": "dist/vue-router.global.js",
   "jsdelivr": "dist/vue-router.global.js",
   "module": "dist/vue-router.esm-bundler.js",

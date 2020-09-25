@@ -32,7 +32,7 @@ const outputConfigs = {
     format: `iife`,
   },
   esm: {
-    file: pkg.browser,
+    file: pkg.browser || pkg.module.replace('bundler', 'browser'),
     format: `es`,
   },
 }
