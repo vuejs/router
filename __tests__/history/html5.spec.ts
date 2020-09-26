@@ -93,7 +93,7 @@ describe('History HTMl5', () => {
     spy.mockRestore()
   })
 
-  it('works with file:/// urls and a base', () => {
+  it('calls push with hash part of the url with a base', () => {
     dom.reconfigure({ url: 'file:///usr/etc/index.html' })
     let history = createWebHistory('/usr/etc/index.html#/')
     let spy = jest.spyOn(window.history, 'pushState')
@@ -101,7 +101,20 @@ describe('History HTMl5', () => {
     expect(spy).toHaveBeenCalledWith(
       expect.anything(),
       expect.any(String),
-      'file:///usr/etc/index.html#/foo'
+      '#/foo'
+    )
+    spy.mockRestore()
+  })
+
+  it('works with something after the hash in the base', () => {
+    dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+    let history = createWebHistory('#something')
+    let spy = jest.spyOn(window.history, 'pushState')
+    history.push('/foo')
+    expect(spy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      '#something/foo'
     )
     spy.mockRestore()
   })

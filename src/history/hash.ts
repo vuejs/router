@@ -29,7 +29,7 @@ export function createWebHashHistory(base?: string): RouterHistory {
   // Make sure this implementation is fine in terms of encoding, specially for IE11
   // for `file://`, directly use the pathname and ignore the base
   // location.pathname contains an initial `/` even at the root: `https://example.com`
-  base = location.host ? base || location.pathname : location.pathname
+  base = location.host ? base || location.pathname : ''
   // allow the user to provide a `#` in the middle: `/base/#/app`
   if (base.indexOf('#') < 0) base += '#'
 

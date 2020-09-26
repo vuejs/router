@@ -101,7 +101,7 @@ describe('History Hash', () => {
     it('should use a correct base', () => {
       createWebHashHistory()
       // both, a trailing / and none work
-      expect(createWebHistory).toHaveBeenCalledWith('/usr/some-file.html#')
+      expect(createWebHistory).toHaveBeenCalledWith('#')
     })
   })
 })

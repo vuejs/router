@@ -202,13 +202,12 @@ function useHistoryStateNavigation(base: string) {
     state: StateEntry,
     replace: boolean
   ): void {
+    // when the base has a `#`, only use that for the URL
+    const hashIndex = base.indexOf('#')
     const url =
-      createBaseLocation() +
-      // preserve any existing query when base has a hash
-      (base.indexOf('#') > -1 && location.search
-        ? location.pathname + location.search + '#'
-        : base) +
-      to
+      hashIndex > -1
+        ? base.slice(hashIndex) + to
+        : createBaseLocation() + base + to
     try {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds
