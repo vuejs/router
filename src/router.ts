@@ -477,11 +477,11 @@ export function createRouter(options: RouterOptions): Router {
 
     let href = routerHistory.createHref(fullPath)
     if (__DEV__) {
-      if (href.startsWith('//'))
+      if (href.startsWith('//')) {
         warn(
           `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
         )
-      else if (!matchedRoute.matched.length) {
+      } else if (!matchedRoute.matched.length) {
         warn(
           `No match found for location with path "${
             'path' in rawLocation ? rawLocation.path : rawLocation

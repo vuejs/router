@@ -214,7 +214,11 @@ function useHistoryStateNavigation(base: string) {
       history[replace ? 'replaceState' : 'pushState'](state, '', url)
       historyState.value = state
     } catch (err) {
-      warn('Error with push/replace State', err)
+      if (__DEV__) {
+        warn('Error with push/replace State', err)
+      } else {
+        console.error(err)
+      }
       // Force the navigation, this also resets the call count
       location[replace ? 'replace' : 'assign'](url)
     }
