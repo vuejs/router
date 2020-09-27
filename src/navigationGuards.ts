@@ -245,9 +245,9 @@ export function extractComponentsGuards(
         guard && guards.push(guardToPromiseFn(guard, to, from, record, name))
       } else {
         // start requesting the chunk already
-        let componentPromise: Promise<RouteComponent | null> = (rawComponent as Lazy<
-          RouteComponent
-        >)()
+        let componentPromise: Promise<
+          RouteComponent | null | undefined | void
+        > = (rawComponent as Lazy<RouteComponent>)()
 
         if (__DEV__ && !('catch' in componentPromise)) {
           warn(
@@ -255,7 +255,10 @@ export function extractComponentsGuards(
           )
           componentPromise = Promise.resolve(componentPromise as RouteComponent)
         } else {
-          componentPromise = componentPromise.catch(() => null)
+          // display the error if any
+          componentPromise = componentPromise.catch(
+            __DEV__ ? err => err && warn(err) : console.error
+          )
         }
 
         guards.push(() =>
@@ -263,7 +266,7 @@ export function extractComponentsGuards(
             if (!resolved)
               return Promise.reject(
                 new Error(
-                  `Couldn't resolve component "${name}" for the following record with path "${record.path}"`
+                  `Couldn't resolve component "${name}" at "${record.path}"`
                 )
               )
             const resolvedComponent = isESModule(resolved)

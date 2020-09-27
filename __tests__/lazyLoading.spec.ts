@@ -4,6 +4,7 @@ import { RouterOptions } from '../src/router'
 import { RouteComponent } from '../src/types'
 import { ticks } from './utils'
 import { FunctionalComponent, h } from 'vue'
+import { mockWarn } from 'jest-mock-warn'
 
 function newRouter(options: Partial<RouterOptions> = {}) {
   let history = createMemoryHistory()
@@ -24,6 +25,7 @@ function createLazyComponent() {
 }
 
 describe('Lazy Loading', () => {
+  mockWarn()
   it('works', async () => {
     const { component, resolve } = createLazyComponent()
     const { router } = newRouter({
@@ -238,6 +240,26 @@ describe('Lazy Loading', () => {
 
     await router.push('/bar')
     expect(spy).toHaveBeenCalledTimes(1)
+  })
+
+  it('prints the error when lazy load fails', async () => {
+    const { component, reject } = createLazyComponent()
+    const { router } = newRouter({
+      routes: [{ path: '/foo', component }],
+    })
+
+    const spy = jest.fn()
+
+    reject(new Error('fail'))
+    await router.push('/foo').catch(spy)
+
+    expect(spy).toHaveBeenCalled()
+    expect('fail').toHaveBeenWarned()
+
+    expect(router.currentRoute.value).toMatchObject({
+      path: '/',
+      matched: [],
+    })
   })
 
   it('aborts the navigation if async fails', async () => {
