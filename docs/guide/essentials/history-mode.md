@@ -21,7 +21,7 @@ It uses a hash character (`#`) before the actual URL that is internally passed. 
 
 ## HTML5 Mode
 
-The HTML5 mode is created with `cerateWebHistory()` and is the recommend mode:
+The HTML5 mode is created with `createWebHistory()` and is the recommend mode:
 
 ```js
 import { createRouter, createWebHistory } from 'vue-router'
