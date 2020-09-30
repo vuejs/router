@@ -9,7 +9,7 @@ Let's extend RouterLink to handle external links as well and adding a custom `in
   <a v-if="isExternalLink" v-bind="$attrs" :href="to" target="_blank">
     <slot />
   </a>
-  <router-link v-else v-bind="$props" v-slot="{ isActive, href, navigate }">
+  <router-link v-else v-bind="$props" custom v-slot="{ isActive, href, navigate }">
     <a
       v-bind="$attrs"
       :href="href"
