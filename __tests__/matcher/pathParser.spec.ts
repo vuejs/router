@@ -13,6 +13,16 @@ describe('Path parser', () => {
       expect(tokenizePath('')).toEqual([[]])
     })
 
+    it('v3 catchAll', () => {
+      expect(() => tokenizePath('*')).toThrowError(
+        `Catch all routes (/*) must now be defined using a parameter with a custom regex: /:catchAll(.*)`
+      )
+    })
+
+    it('not start with /', () => {
+      expect(() => tokenizePath('a')).toThrowError(`Route "a" should be "/a".`)
+    })
+
     it('escapes :', () => {
       expect(tokenizePath('/\\:')).toEqual([
         [{ type: TokenType.Static, value: ':' }],
