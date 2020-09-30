@@ -116,6 +116,13 @@ export function createRouterMatcher(
           parent.record.path + (path && connectingSlash + path)
       }
 
+      if (__DEV__ && normalizedRecord.path === '*') {
+        throw new Error(
+          'Catch all routes ("*") must now be defined using a param with a custom regexp.\n' +
+            'See more at https://next.router.vuejs.org/guide/migration/#removed-star-or-catch-all-routes.'
+        )
+      }
+
       // create the object before hand so it can be passed to children
       matcher = createRouteRecordMatcher(normalizedRecord, parent, options)
 

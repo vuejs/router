@@ -15,6 +15,24 @@ describe('Matcher: adding and removing records', () => {
     })
   })
 
+  it('throws when adding *', () => {
+    const matcher = createRouterMatcher([], {})
+    expect(() => {
+      matcher.addRoute({ path: '*', component })
+    }).toThrowError('Catch all')
+  })
+
+  it('does not throw when adding * in children', () => {
+    const matcher = createRouterMatcher([], {})
+    expect(() => {
+      matcher.addRoute({
+        path: '/something',
+        component,
+        children: [{ path: '*', component }],
+      })
+    }).not.toThrow()
+  })
+
   it('adds children', () => {
     const matcher = createRouterMatcher([], {})
     matcher.addRoute({ path: '/parent', component, name: 'home' })

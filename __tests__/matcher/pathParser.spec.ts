@@ -13,6 +13,10 @@ describe('Path parser', () => {
       expect(tokenizePath('')).toEqual([[]])
     })
 
+    it('not start with /', () => {
+      expect(() => tokenizePath('a')).toThrowError(`"a" should be "/a"`)
+    })
+
     it('escapes :', () => {
       expect(tokenizePath('/\\:')).toEqual([
         [{ type: TokenType.Static, value: ':' }],

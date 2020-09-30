@@ -46,9 +46,18 @@ const VALID_PARAM_RE = /[a-zA-Z0-9_]/
 export function tokenizePath(path: string): Array<Token[]> {
   if (!path) return [[]]
   if (path === '/') return [[ROOT_TOKEN]]
+  // // v3 catchAll must be renew
+  // if (/^\/?\*/.test(path))
+  //   throw new Error(
+  //     `Catch all routes (/*) must now be defined using a parameter with a custom regex: /:catchAll(.*)`
+  //   )
   // remove the leading slash
-  if (!path.startsWith('/'))
-    throw new Error(`Route "${path}" should be "/${path}".`)
+  if (__DEV__ && !path.startsWith('/')) {
+    throw new Error(
+      `Route path should start with a "/": "${path}" should be "/${path}". This will break in production.`
+    )
+    path = '/' + path
+  }
 
   // if (tokenCache.has(path)) return tokenCache.get(path)!
 
