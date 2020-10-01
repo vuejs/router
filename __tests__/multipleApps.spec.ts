@@ -3,8 +3,6 @@ import { h } from 'vue'
 import { createDom } from './utils'
 // import { mockWarn } from 'jest-mock-warn'
 
-declare var __DEV__: boolean
-
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
 function newRouter(options: Partial<Parameters<typeof createRouter>[0]> = {}) {
