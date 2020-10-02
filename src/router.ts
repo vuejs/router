@@ -455,7 +455,7 @@ export function createRouter(options: RouterOptions): Router {
     }
 
     let matchedRoute = matcher.resolve(matcherLocation, currentLocation)
-    const hash = encodeHash(rawLocation.hash || '')
+    const hash = rawLocation.hash || ''
 
     if (__DEV__ && hash && !hash.startsWith('#')) {
       warn(
@@ -470,7 +470,7 @@ export function createRouter(options: RouterOptions): Router {
     const fullPath = stringifyURL(
       stringifyQuery,
       assign({}, rawLocation, {
-        hash,
+        hash: encodeHash(hash),
         path: matchedRoute.path,
       })
     )

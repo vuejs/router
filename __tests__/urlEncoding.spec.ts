@@ -128,4 +128,17 @@ describe('URL Encoding', () => {
       query: { p: '%' },
     })
   })
+
+  it('keeps decoded values in hash', async () => {
+    // @ts-ignore: override to make the difference
+    encoding.decode = () => 'd'
+    // @ts-ignore
+    encoding.encodeHash = () => '#e'
+    const router = createRouter()
+    await router.push({ name: 'home', hash: '#%' })
+    expect(router.currentRoute.value).toMatchObject({
+      fullPath: '/#e',
+      hash: '#%',
+    })
+  })
 })
