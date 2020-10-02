@@ -36,7 +36,8 @@
     "test:e2e": "yarn run test:e2e:headless && yarn run test:e2e:native",
     "test:e2e:headless": "node e2e/runner.js -e chrome-headless --skiptags no-headless",
     "test:e2e:native": "node e2e/runner.js -e chrome --tag no-headless",
-    "test:e2e:ci": "node e2e/runner.js -e firefox --retries 2"
+    "test:e2e:ci": "node e2e/runner.js -e firefox --retries 2",
+    "test:e2e:bs": "node e2e/runner.js --local -e edge_pre_chrome,android44 -c e2e/nightwatch.browserstack.js --tag browserstack"
   },
   "gitHooks": {
     "pre-commit": "lint-staged",

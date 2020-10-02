@@ -49,6 +49,15 @@ jobs:
       - store_test_results:
           path: e2e/reports
 
+  test-e2e-bs:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run: yarn test:e2e:bs
+      - store_test_results:
+          path: e2e/reports
+
   test-unit:
     <<: *defaults
     steps:
