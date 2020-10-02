@@ -46,10 +46,11 @@ const VALID_PARAM_RE = /[a-zA-Z0-9_]/
 export function tokenizePath(path: string): Array<Token[]> {
   if (!path) return [[]]
   if (path === '/') return [[ROOT_TOKEN]]
-  // remove the leading slash
-  if (__DEV__ && !path.startsWith('/')) {
+  if (!path.startsWith('/')) {
     throw new Error(
-      `Route path should start with a "/": "${path}" should be "/${path}". This will break in production.`
+      __DEV__
+        ? `Route paths should start with a "/": "${path}" should be "/${path}".`
+        : `Invalid path "${path}"`
     )
   }
 
