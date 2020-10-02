@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory, useRoute } from '../../src'
+import { createRouter, createWebHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
-import { createApp } from 'vue'
+import { createApp, defineComponent } from 'vue'
 
 const component: RouteComponent = {
   template: `<div>A component</div>`,
@@ -10,58 +10,68 @@ const Home: RouteComponent = {
   template: `<div>Home</div>`,
 }
 
-const Document: RouteComponent = {
-  template: `<div>Document: {{ route.params.id }}</div>`,
-  setup() {
-    return { route: useRoute() }
-  },
-}
+const ParamId = defineComponent({
+  template: `<div>id: <span id="p-id">"{{ $route.params.id }}"</span></div>`,
+})
+
+// full URL / !"$&'()*+,:;<=>%3F@[]^`{|}?a= !"$&'()*+,/:;<=>?@[]^`{|}# !"#$&'()*+,:;<=>?@[]^`{|}
 
 const router = createRouter({
+  // TODO: allow hash based history
   history: createWebHistory('/' + __dirname),
   routes: [
     { path: '/', component: Home, name: 'home' },
-    { path: '/documents/:id', name: 'docs', component: Document },
+    { path: '/:id', component: ParamId, name: 'param' },
+    { path: '/documents/:id', name: 'docs', component: ParamId },
     { path: encodeURI('/n/€'), name: 'euro', component },
   ],
 })
 
 const app = createApp({
   setup() {
-    const route = useRoute()
-    return { route }
+    const url =
+      '/' +
+      __dirname +
+      '/ !"%23$&\'()*+,%2F:;<=>%3F@[]^`{|}?a= !"$%26\'()*+,/:;<=>?@[]^`{|}# !"#$&\'()*+,/:;<=>?@[]^`{|}'
+    const urlObject = {
+      name: 'param',
+      params: { id: ' !"#$&\'()*+,/:;<=>?@[]^`{|}' },
+      query: { 'a=': ' !"#$&\'()*+,/:;<=>?@[]^`{|}' },
+      hash: '# !"#$&\'()*+,/:;<=>?@[]^`{|}',
+    }
+    return { url, urlObject }
   },
 
   template: `
     <div id="app">
       <section class="info">
         Name:
-        <pre id="name">{{ route.name }}</pre>
+        <pre id="name">{{ $route.name }}</pre>
       </section>
 
       <section class="info">
         Params:
-        <pre id="params">{{ route.params }}</pre>
+        <pre id="params">{{ $route.params }}</pre>
       </section>
 
       <section class="info">
         Query:
-        <pre id="query">{{ route.query }}</pre>
+        <pre id="query">{{ $route.query }}</pre>
       </section>
 
       <section class="info">
         Hash:
-        <pre id="hash">{{ route.hash }}</pre>
+        <pre id="hash">{{ $route.hash }}</pre>
       </section>
 
       <section class="info">
         FullPath:
-        <pre id="fullPath">{{ route.fullPath }}</pre>
+        <pre id="fullPath">{{ $route.fullPath }}</pre>
       </section>
 
       <section class="info">
         path:
-        <pre id="path">{{ route.path }}</pre>
+        <pre id="path">{{ $route.path }}</pre>
       </section>
 
       <hr />
@@ -94,6 +104,15 @@ const app = createApp({
             >/documents/€ (force reload. not valid but should not crash the
             router)</a
           >
+        </li>
+        <li>
+          <a :href="url"
+            >Unencoded URL (force reload)</a
+          >
+        </li>
+        <li>
+          <router-link :to="urlObject"
+            >Encoded by router</router-link>
         </li>
       </ul>
 

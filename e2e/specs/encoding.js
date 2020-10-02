@@ -2,6 +2,8 @@ const bsStatus = require('../browserstack-send-status')
 
 const baseURL = 'http://localhost:8080/encoding'
 
+const rawText = ' !"#$&\'()*+,/:;<=>?@[]^`{|}'
+
 module.exports = {
   ...bsStatus(),
 
@@ -18,14 +20,23 @@ module.exports = {
       .assert.urlEquals(baseURL + '/documents/%E2%82%ACuro')
       .assert.containsText('#fullPath', '/documents/%E2%82%ACuro')
       .assert.containsText('#path', '/documents/%E2%82%ACuro')
-      .assert.containsText('#params', JSON.stringify({ id: '€uro' }, null, 2))
+      .assert.containsText('#p-id', '"€uro"')
 
-      // check initial visit
+      // full encoding test
+      .click('li:nth-child(8) a')
+    browser.expect.element('#p-id').text.equals(`"${rawText}"`)
+    browser.expect
+      .element('#query')
+      .text.equals(JSON.stringify({ 'a=': rawText }, null, 2))
+    browser.expect.element('#hash').text.equals('#' + rawText)
+
+    // check initial visit
+    browser
       .url(baseURL + '/documents/%E2%82%ACuro')
       .waitForElementPresent('#app > *', 1000)
       .assert.containsText('#fullPath', '/documents/%E2%82%ACuro')
       .assert.containsText('#path', '/documents/%E2%82%ACuro')
-      .assert.containsText('#params', JSON.stringify({ id: '€uro' }, null, 2))
+      .assert.containsText('#p-id', '"€uro"')
 
       // TODO: invalid in safari, tests on those where this is valid
       // .url(baseURL + '/unicode/€uro')
