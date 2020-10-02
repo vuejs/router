@@ -39,4 +39,12 @@ describe('stringifyQuery', () => {
   it('encodes values in arrays', () => {
     expect(stringifyQuery({ e: ['%', 'a'], b: 'c' })).toEqual('e=%25&e=a&b=c')
   })
+
+  it('encodes = in key', () => {
+    expect(stringifyQuery({ '=': 'a' })).toEqual('%3D=a')
+  })
+
+  it('keeps = in value', () => {
+    expect(stringifyQuery({ a: '=' })).toEqual('a==')
+  })
 })

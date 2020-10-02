@@ -96,9 +96,10 @@ describe('URL Encoding', () => {
   it('calls encodeQueryProperty with query', async () => {
     const router = createRouter()
     await router.push({ name: 'home', query: { p: 'foo' } })
-    expect(encoding.encodeQueryProperty).toHaveBeenCalledTimes(2)
-    expect(encoding.encodeQueryProperty).toHaveBeenNthCalledWith(1, 'p')
-    expect(encoding.encodeQueryProperty).toHaveBeenNthCalledWith(2, 'foo')
+    expect(encoding.encodeQueryValue).toHaveBeenCalledTimes(1)
+    expect(encoding.encodeQueryKey).toHaveBeenCalledTimes(1)
+    expect(encoding.encodeQueryKey).toHaveBeenNthCalledWith(1, 'p')
+    expect(encoding.encodeQueryValue).toHaveBeenNthCalledWith(1, 'foo')
   })
 
   it('calls decode with query', async () => {
@@ -113,21 +114,24 @@ describe('URL Encoding', () => {
   it('calls encodeQueryProperty with arrays in query', async () => {
     const router = createRouter()
     await router.push({ name: 'home', query: { p: ['foo', 'bar'] } })
-    expect(encoding.encodeQueryProperty).toHaveBeenCalledTimes(3)
-    expect(encoding.encodeQueryProperty).toHaveBeenNthCalledWith(1, 'p')
-    expect(encoding.encodeQueryProperty).toHaveBeenNthCalledWith(2, 'foo')
-    expect(encoding.encodeQueryProperty).toHaveBeenNthCalledWith(3, 'bar')
+    expect(encoding.encodeQueryValue).toHaveBeenCalledTimes(2)
+    expect(encoding.encodeQueryKey).toHaveBeenCalledTimes(1)
+    expect(encoding.encodeQueryKey).toHaveBeenNthCalledWith(1, 'p')
+    expect(encoding.encodeQueryValue).toHaveBeenNthCalledWith(1, 'foo')
+    expect(encoding.encodeQueryValue).toHaveBeenNthCalledWith(2, 'bar')
   })
 
   it('keeps decoded values in query', async () => {
     // @ts-ignore: override to make the difference
     encoding.decode = () => 'd'
     // @ts-ignore
-    encoding.encodeQueryProperty = () => 'e'
+    encoding.encodeQueryValue = () => 'ev'
+    // @ts-ignore
+    encoding.encodeQueryKey = () => 'ek'
     const router = createRouter()
     await router.push({ name: 'home', query: { p: '%' } })
     expect(router.currentRoute.value).toMatchObject({
-      fullPath: '/?e=e',
+      fullPath: '/?ek=ev',
       query: { p: '%' },
     })
   })

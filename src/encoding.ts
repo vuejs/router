@@ -61,21 +61,29 @@ export function encodeHash(text: string): string {
 }
 
 /**
- * Encode characters that need to be encoded query keys and values on the query
+ * Encode characters that need to be encoded query values on the query
  * section of the URL.
  *
  * @param text - string to encode
  * @returns encoded string
  */
-export function encodeQueryProperty(text: string | number): string {
+export function encodeQueryValue(text: string | number): string {
   return commonEncode(text)
     .replace(HASH_RE, '%23')
     .replace(AMPERSAND_RE, '%26')
-    .replace(EQUAL_RE, '%3D')
     .replace(ENC_BACKTICK_RE, '`')
     .replace(ENC_CURLY_OPEN_RE, '{')
     .replace(ENC_CURLY_CLOSE_RE, '}')
     .replace(ENC_CARET_RE, '^')
+}
+
+/**
+ * Like `encodeQueryValue` but also encodes the `=` character.
+ *
+ * @param text - string to encode
+ */
+export function encodeQueryKey(text: string | number): string {
+  return encodeQueryValue(text).replace(EQUAL_RE, '%3D')
 }
 
 /**

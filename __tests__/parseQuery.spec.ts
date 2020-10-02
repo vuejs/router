@@ -36,7 +36,13 @@ describe('parseQuery', () => {
     })
   })
 
-  it('decodes empty values as null', () => {
+  it('allows = inside values', () => {
+    expect(parseQuery('e=c=a')).toEqual({
+      e: 'c=a',
+    })
+  })
+
+  it('parses empty values as null', () => {
     expect(parseQuery('e&b&c=a')).toEqual({
       e: null,
       b: null,

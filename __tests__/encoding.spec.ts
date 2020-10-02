@@ -1,7 +1,8 @@
 import {
   encodeHash,
   encodeParam,
-  encodeQueryProperty,
+  encodeQueryKey,
+  encodeQueryValue,
   // decode,
 } from '../src/encoding'
 
@@ -58,8 +59,16 @@ describe('Encoding', () => {
 
   describe('query params', () => {
     const safePerSpec = "!$'*+,:;@[]_|?/{}^()`"
-    const toEncode = ' "<>#&='
-    const encodedToEncode = toEncode
+    const toEncodeForKey = ' "<>#&='
+    const toEncodeForValue = ' "<>#&'
+    const encodedToEncodeForKey = toEncodeForKey
+      .split('')
+      .map(c => {
+        const hex = c.charCodeAt(0).toString(16).toUpperCase()
+        return '%' + (hex.length > 1 ? hex : '0' + hex)
+      })
+      .join('')
+    const encodedToEncodeForValue = toEncodeForValue
       .split('')
       .map(c => {
         const hex = c.charCodeAt(0).toString(16).toUpperCase()
@@ -68,25 +77,28 @@ describe('Encoding', () => {
       .join('')
 
     it('does not encode safe chars', () => {
-      expect(encodeQueryProperty(unreservedSet)).toBe(unreservedSet)
+      expect(encodeQueryValue(unreservedSet)).toBe(unreservedSet)
+      expect(encodeQueryKey(unreservedSet)).toBe(unreservedSet)
     })
 
     it('encodes non-ascii', () => {
-      expect(encodeQueryProperty('é')).toBe('%C3%A9')
+      expect(encodeQueryValue('é')).toBe('%C3%A9')
+      expect(encodeQueryKey('é')).toBe('%C3%A9')
     })
 
     it('encodes non-printable ascii', () => {
-      expect(encodeQueryProperty(nonPrintableASCII)).toBe(
-        encodedNonPrintableASCII
-      )
+      expect(encodeQueryValue(nonPrintableASCII)).toBe(encodedNonPrintableASCII)
+      expect(encodeQueryKey(nonPrintableASCII)).toBe(encodedNonPrintableASCII)
     })
 
     it('does not encode a safe set', () => {
-      expect(encodeQueryProperty(safePerSpec)).toBe(safePerSpec)
+      expect(encodeQueryValue(safePerSpec)).toBe(safePerSpec)
+      expect(encodeQueryKey(safePerSpec)).toBe(safePerSpec)
     })
 
     it('encodes a specific charset', () => {
-      expect(encodeQueryProperty(toEncode)).toBe(encodedToEncode)
+      expect(encodeQueryKey(toEncodeForKey)).toBe(encodedToEncodeForKey)
+      expect(encodeQueryValue(toEncodeForValue)).toBe(encodedToEncodeForValue)
     })
   })
 

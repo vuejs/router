@@ -1,4 +1,4 @@
-import { decode, encodeQueryProperty } from './encoding'
+import { decode, encodeQueryKey, encodeQueryValue } from './encoding'
 
 /**
  * Possible values in normalized {@link LocationQuery}
@@ -50,13 +50,12 @@ export function parseQuery(search: string): LocationQuery {
   const hasLeadingIM = search[0] === '?'
   const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
   for (let i = 0; i < searchParams.length; ++i) {
-    let [key, rawValue] = searchParams[i].split('=') as [
-      string,
-      string | undefined
-    ]
-    key = decode(key)
-    // avoid decoding null
-    let value = rawValue == null ? null : decode(rawValue)
+    const searchParam = searchParams[i]
+    // allow the = character
+    let eqPos = searchParam.indexOf('=')
+    let key = decode(eqPos < 0 ? searchParam : searchParam.slice(0, eqPos))
+    let value = eqPos < 0 ? null : decode(searchParam.slice(eqPos + 1))
+
     if (key in query) {
       // an extra variable for ts types
       let currentValue = query[key]
@@ -85,7 +84,7 @@ export function stringifyQuery(query: LocationQueryRaw): string {
   for (let key in query) {
     if (search.length) search += '&'
     const value = query[key]
-    key = encodeQueryProperty(key)
+    key = encodeQueryKey(key)
     if (value == null) {
       // only null adds the value
       if (value !== undefined) search += key
@@ -93,8 +92,8 @@ export function stringifyQuery(query: LocationQueryRaw): string {
     }
     // keep null values
     let values: LocationQueryValueRaw[] = Array.isArray(value)
-      ? value.map(v => v && encodeQueryProperty(v))
-      : [value && encodeQueryProperty(value)]
+      ? value.map(v => v && encodeQueryValue(v))
+      : [value && encodeQueryValue(value)]
 
     for (let i = 0; i < values.length; i++) {
       // only append & with i > 0
