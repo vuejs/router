@@ -1,3 +1,17 @@
+# [4.0.0-beta.13](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.12...v4.0.0-beta.13) (2020-10-02)
+
+### Bug Fixes
+
+- **encoding:** decode hash in string location ([11acb3d](https://github.com/vuejs/vue-router-next/commit/11acb3dea072592f00a23b912d39c3fcf72dc6c3))
+- **encoding:** differentiate keys and values in query ([a967e42](https://github.com/vuejs/vue-router-next/commit/a967e427ab3bc5c1e6236b01f484a87b74a92be1))
+- **encoding:** keep decoded hash when resolving ([1a8ffc1](https://github.com/vuejs/vue-router-next/commit/1a8ffc19b0d2bfc17daec4cb04b96d174c73dd9d))
+- **hash:** only pushState the hash part ([2a14c19](https://github.com/vuejs/vue-router-next/commit/2a14c19e4f0313996fd075a6821f85d30c5cad66)), closes [#495](https://github.com/vuejs/vue-router-next/issues/495)
+
+### Features
+
+- **warn:** help migrating catch all routes ([14e1eb9](https://github.com/vuejs/vue-router-next/commit/14e1eb96485f74669f582a87f522d3b13b567c9c))
+- print errors from lazy loading ([f6db91a](https://github.com/vuejs/vue-router-next/commit/f6db91aaf496b85c80e74727575cc1c2b1d06282)), closes [#497](https://github.com/vuejs/vue-router-next/issues/497)
+
 # [4.0.0-beta.12](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.11...v4.0.0-beta.12) (2020-09-25)
 
 ### Bug Fixes
