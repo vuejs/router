@@ -26,6 +26,7 @@ const config = {
       // is targeting Node (SSR)?
       __NODE_JS__: false,
       __VUE_PROD_DEVTOOLS__: false,
+      'process.env.NODE_ENV': JSON.stringify('production'),
     }),
     ts({
       check: false,

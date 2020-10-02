@@ -22,3 +22,4 @@ function checkFileSize(filePath) {
 }
 
 checkFileSize(path.resolve(__dirname, '../size-checks/dist/webRouter.js'))
+checkFileSize(path.resolve(__dirname, '../dist/vue-router.global.prod.js'))
