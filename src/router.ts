@@ -420,6 +420,7 @@ export function createRouter(options: RouterOptions): Router {
       // locationNormalized is always a new object
       return assign(locationNormalized, matchedRoute, {
         params: decodeParams(matchedRoute.params),
+        hash: decode(locationNormalized.hash),
         redirectedFrom: undefined,
         href,
       })
