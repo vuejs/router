@@ -30,6 +30,16 @@ module.exports = {
       .text.equals(JSON.stringify({ 'a=': rawText }, null, 2))
     browser.expect.element('#hash').text.equals('#' + rawText)
 
+    // link by the browser with minimal encoding
+    // browsers will encode it differently but the resulted decoded values
+    // should be consistent across browsers
+    browser.click('li:nth-child(7) a').waitForElementPresent('#app > *', 1000)
+    browser.expect.element('#p-id').text.equals(`"${rawText}"`)
+    browser.expect
+      .element('#query')
+      .text.equals(JSON.stringify({ 'a=': rawText }, null, 2))
+    browser.expect.element('#hash').text.equals('#' + rawText)
+
     // check initial visit
     browser
       .url(baseURL + '/documents/%E2%82%ACuro')
