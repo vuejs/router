@@ -26,9 +26,10 @@ const nwConf = {
     'browserstack.key': BS_KEY,
     name: 'Bstack-[Nightwatch] Vue Router Parallel Test',
     'browserstack.local': true,
-    'browserstack.video': false,
     // useful to get visual logs
     // 'browserstack.debug': true,
+    // 'browserstack.console': 'verbose',
+    // 'browserstack.video': false,
     acceptSslCerts: true,
     resolution: '1024x768',
   },
