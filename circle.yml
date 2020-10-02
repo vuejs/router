@@ -100,6 +100,9 @@ workflows:
       - test-e2e:
           requires:
             - install
+      - test-e2e-bs:
+          requires:
+            - install
       - test-unit:
           requires:
             - install
