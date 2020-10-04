@@ -149,6 +149,17 @@ Add this to your `firebase.json`:
 }
 ```
 
+### Netlify
+
+Create a `netlify.toml` file with the following code:
+
+```toml
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
+
 ## Caveat
 
 There is a caveat to this: Your server will no longer report 404 errors as all not-found paths now serve up your `index.html` file. To get around the issue, you should implement a catch-all route within your Vue app to show a 404 page:
