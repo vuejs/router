@@ -35,7 +35,7 @@ export default {
     // fetch the user information when params change
     watch(
       () => route.params,
-      async params => {
+      async newParams => {
         userData.value = await fetchUser(newParams.id)
       }
     )
