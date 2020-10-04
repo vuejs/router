@@ -151,14 +151,13 @@ Add this to your `firebase.json`:
 
 ### Netlify
 
-Create a `netlify.toml` file with the following code:
+Create a `_redirects` file with the following code:
 
-```toml
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
 ```
+/*    /index.html   200
+```
+
+Read more about [Netlify redirecting options](https://docs.netlify.com/routing/redirects/rewrites-proxies/#history-pushstate-and-single-page-apps) for more info.
 
 ## Caveat
 
