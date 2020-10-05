@@ -84,7 +84,7 @@
     "browserstack-local": "^1.4.5",
     "chalk": "^4.1.0",
     "chromedriver": "^85.0.0",
-    "codecov": "^3.7.2",
+    "codecov": "^3.8.0",
     "conventional-changelog-cli": "^2.1.0",
     "css-loader": "^4.2.1",
     "dotenv": "^8.2.0",
