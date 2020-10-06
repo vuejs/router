@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
-import { createApp, defineComponent } from 'vue'
+import { createApp, defineComponent, FunctionalComponent, h } from 'vue'
 
 const component: RouteComponent = {
   template: `<div>A component</div>`,
@@ -14,6 +14,9 @@ const ParamId = defineComponent({
   template: `<div>id: <span id="p-id">"{{ $route.params.id }}"</span></div>`,
 })
 
+const FunctionalView: FunctionalComponent = () =>
+  h('div', 'functional component')
+
 // full URL / !"$&'()*+,:;<=>%3F@[]^`{|}?a= !"$&'()*+,/:;<=>?@[]^`{|}# !"#$&'()*+,:;<=>?@[]^`{|}
 
 const router = createRouter({
@@ -21,6 +24,7 @@ const router = createRouter({
   history: createWebHistory('/' + __dirname),
   routes: [
     { path: '/', component: Home, name: 'home' },
+    { path: '/functional', component: FunctionalView },
     { path: '/:id', component: ParamId, name: 'param' },
     { path: '/documents/:id', name: 'docs', component: ParamId },
     { path: encodeURI('/n/€'), name: 'euro', component },
