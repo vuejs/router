@@ -3,6 +3,7 @@ import { START_LOCATION_NORMALIZED, RouteRecordRaw } from '../../src/types'
 import { components } from '../utils'
 import { normalizeRouteRecord } from '../../src/matcher'
 import { RouteRecordNormalized } from 'src/matcher/types'
+import { mockWarn } from 'jest-mock-warn'
 
 const beforeRouteEnter = jest.fn()
 
@@ -11,6 +12,16 @@ const to = START_LOCATION_NORMALIZED
 const from = START_LOCATION_NORMALIZED
 
 const NoGuard: RouteRecordRaw = { path: '/', component: components.Home }
+const InvalidRoute: RouteRecordRaw = {
+  path: '/',
+  // @ts-ignore: intended error
+  component: null,
+}
+const WrongLazyRoute: RouteRecordRaw = {
+  path: '/',
+  // @ts-ignore: intended error
+  component: Promise.resolve(components.Home),
+}
 const SingleGuard: RouteRecordRaw = {
   path: '/',
   component: { ...components.Home, beforeRouteEnter },
@@ -52,6 +63,8 @@ async function checkGuards(
 }
 
 describe('extractComponentsGuards', () => {
+  mockWarn()
+
   it('extracts guards from one single component', async () => {
     await checkGuards([SingleGuard], 1)
   })
@@ -68,5 +81,19 @@ describe('extractComponentsGuards', () => {
     await checkGuards([SingleGuard, SingleGuardNamed], 3)
     await checkGuards([SingleGuard, SingleGuard], 2)
     await checkGuards([SingleGuardNamed, SingleGuardNamed], 4)
+  })
+
+  it('throws if component is null', async () => {
+    // @ts-ignore
+    await expect(checkGuards([InvalidRoute], 2)).rejects.toHaveProperty(
+      'message',
+      expect.stringMatching('Invalid route component')
+    )
+    expect('is not a valid component').toHaveBeenWarned()
+  })
+
+  it('warns wrong lazy component', async () => {
+    await checkGuards([WrongLazyRoute], 0, 1)
+    expect('Promise instead of a function').toHaveBeenWarned()
   })
 })

@@ -18,10 +18,11 @@ import {
   NavigationRedirectError,
 } from './errors'
 import { ComponentOptions, onUnmounted, onActivated, onDeactivated } from 'vue'
-import { inject, getCurrentInstance, warn } from 'vue'
+import { inject, getCurrentInstance } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
 import { isESModule } from './utils'
+import { warn } from './warning'
 
 function registerGuard(list: NavigationGuard[], guard: NavigationGuard) {
   const removeFromList = () => {
@@ -225,13 +226,32 @@ export function extractComponentsGuards(
   for (const record of matched) {
     for (const name in record.components) {
       let rawComponent = record.components[name]
-      // warn if user wrote import('/component.vue') instead of () => import('./component.vue')
-      if (__DEV__ && 'then' in rawComponent) {
-        warn(
-          `Component "${name}" in record with path "${record.path}" is a Promise instead of a function that returns a Promise. Did you write "import('./MyPage.vue')" instead of "() => import('./MyPage.vue')"? This will break in production if not fixed.`
-        )
-        let promise = rawComponent
-        rawComponent = () => promise
+      if (__DEV__) {
+        if (
+          !rawComponent ||
+          (typeof rawComponent !== 'object' &&
+            typeof rawComponent !== 'function')
+        ) {
+          warn(
+            `Component "${name}" in record with path "${record.path}" is not` +
+              ` a valid component. Received "${String(rawComponent)}".`
+          )
+          // throw to ensure we stop here but warn to ensure the message isn't
+          // missed by the user
+          throw new Error('Invalid route component')
+        } else if ('then' in rawComponent) {
+          // warn if user wrote import('/component.vue') instead of () =>
+          // import('./component.vue')
+          warn(
+            `Component "${name}" in record with path "${record.path}" is a ` +
+              `Promise instead of a function that returns a Promise. Did you ` +
+              `write "import('./MyPage.vue')" instead of ` +
+              `"() => import('./MyPage.vue')" ? This will break in ` +
+              `production if not fixed.`
+          )
+          let promise = rawComponent
+          rawComponent = () => promise
+        }
       }
 
       // skip update and leave guards if the route component is not mounted
