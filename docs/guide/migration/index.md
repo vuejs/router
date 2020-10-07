@@ -2,17 +2,288 @@
 
 Most of Vue Router API has remained unchanged during its rewrite from v3 (for Vue 2) to v4 (for Vue 3) but there are still a few breaking changes that you might encounter while migrating your application. This guide is here to help you understand why these changes happened and how to adapt your application to make it work with Vue Router 4.
 
-## New Features
+## Breaking Changes
 
-Some of new features to keep an eye on in Vue Router 4 include:
+Changes are ordered by their usage. It is therefore recommended to follow this list in order.
 
-- [Dynamic Routing](/api/#addroute-2)
-- [Composition API](/guide/advanced/composition-api.md)
-<!-- - Custom History implementation -->
+### new Router becomes createRouter
 
-## Breaking Changes: Improvements
+Vue Router is no longer a class but a set of functions. Instead of writing `new Router()`, you now have to call `createRouter`:
 
-The following changes should not be a problem for you but they are technically breaking changes that will show a different behavior and might break parts of your application.
+```js
+// previously was
+// import Router from 'vue-router'
+import { createRouter } from 'vue-router'
+
+const router = createRouter({
+  // ...
+})
+```
+
+### New `history` option to replace `mode`
+
+The `mode: 'history'` option has been replaced with a more flexible one named `history`. Depending on which mode you were using, you will have to replace it with the appropriate function:
+
+- `"history"`: `createWebHistory()`
+- `"hash"`: `createWebHashHistory()`
+- `"abstract"`: `createMemoryHistory()`
+
+Here is a full snippet:
+
+```js
+import { createRouter, createWebHistory } from 'vue-router'
+// there is also createWebHashHistory and createMemoryHistory
+
+createRouter({
+  history: createWebHistory(),
+  routes: [],
+})
+```
+
+On SSR, you need to manually pass the appropriate history:
+
+```js
+// router.js
+let history = isServer ? createMemoryHistory() : createWebHistory()
+let router = createRouter({ routes, history })
+// somewhere in your server-entry.js
+router.push(req.url) // request url
+router.isReady().then(() => {
+  // resolve the request
+})
+```
+
+**Reason**: enable tree shaking of non used histories as well as implementing custom histories for advanced use cases like native solutions.
+
+### Moved the `base` option
+
+The `base` option is now passed as the first argument to `createWebHistory` (and other histories):
+
+```js
+import { createRouter, createWebHistory } from 'vue-router'
+createRouter({
+  history: createWebHistory('/base-directory/'),
+  routes: [],
+})
+```
+
+### Removed `*` (star or catch all) routes
+
+Catch all routes (`*`, `/*`) must now be defined using a parameter with a custom regex:
+
+```js
+const routes = [
+  // pathMatch is the name of the param, e.g., going to /not/found yields
+  // { params: { pathMatch: ['not', 'found'] }}
+  // this is thanks to the last *, meaning repeated params and it is necessary if you
+  // plan on directly navigating to the not-found route using its name
+  { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
+  // if you omit the last `*`, the `/` character in params will be encoded when resolving or pushing
+  { path: '/:pathMatch(.*)', name: 'bad-not-found', component: NotFound },
+]
+// bad example if using named routes:
+router.resolve({
+  name: 'bad-not-found',
+  params: { pathMatch: 'not/found' },
+}).href // '/not%2Ffound'
+// good example:
+router.resolve({
+  name: 'not-found',
+  params: { pathMatch: ['not', 'found'] },
+}).href // '/not/found'
+```
+
+:::tip
+You don't need to add the `*` for repeated params if you don't plan to directly push to the not found route using its name. If you call `router.push('/not/found/url')`, it will provide the right `pathMatch` param.
+:::
+
+**Reason**: Vue Router doesn't use `path-to-regexp` anymore, instead it implements its own parsing system that allows route ranking and enables dynamic routing. Since we usually add one single catch-all route per project, there is no big benefit in supporting a special syntax for `*`. The encoding of params is encoding across routes, without exception to make things easier to predict.
+
+### Replaced `onReady` with `isReady`
+
+The existing `router.onReady()` function has been replaced with `router.isReady()` which doesn't take any argument and returns a Promise:
+
+```js
+// replace
+router.onReady(onSuccess, onError)
+// with
+router.isReady().then(onSuccess).catch(onError)
+// or use await:
+try {
+  await router.isReady()
+  // onSuccess
+} catch (err) {
+  // onError
+}
+```
+
+### `scrollBehavior` changes
+
+The object returned in `scrollBehavior` is now similar to [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions): `x` is renamed to `left` and `y` is renamed to `top`. See [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0035-router-scroll-position.md).
+
+**Reason**: making the object similar to `ScrollToOptions` to make it feel more familiar with native JS APIs and potentially enable future new options.
+
+### `<router-view>`, `<keep-alive>`, and `<transition>`
+
+`transition` and `keep-alive` must now be used **inside** of `RouterView` via the `v-slot` API:
+
+```vue
+<router-view v-slot="{ Component }">
+  <transition>
+    <keep-alive>
+      <component :is="Component" />
+    </keep-alive>
+  </transition>
+</router-view>
+```
+
+**Reason**: This is was a necessary change. See the [related RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0034-router-view-keep-alive-transitions.md).
+
+### Removal of `append` prop in `<router-link>`
+
+The `append` prop has been removed from `<router-link>`. You can manually concatenate the value to an existing `path` instead:
+
+```html
+replace
+<router-link to="child-route" append>to relative child</router-link>
+with
+<router-link :to="append($route.path, 'child-route')">
+  to relative child
+</router-link>
+```
+
+You must define a global `append` function on your _App_ instance:
+
+```js
+app.config.globalProperties.append = (path, pathToAppend) =>
+  path + (path.endsWith('/') ? '' : '/') + pathToAppend
+```
+
+**Reason**: `append` wasn't used very often, is easy to replicate in user land.
+
+### Removal of `event` and `tag` props in `<router-link>`
+
+Both `event`, and `tag` props have been removed from `<router-link>`. You can use the [`v-slot` API](/api/#router-link-s-v-slot) to fully customize `<router-link>`:
+
+```html
+replace
+<router-link to="/about" tag="span" event="dblclick">About Us</router-link>
+with
+<router-link to="/about" custom v-slot="{ navigate }">
+  <span @click="navigate" @keypress.enter="navigate" role="link">About Us</span>
+</router-link>
+```
+
+**Reason**: These props were often used together to use something different from an `<a>` tag but were introduced before the `v-slot` API and are not used enough to justify adding to the bundle size for everybody.
+
+### Removal of the `exact` prop in `<router-link>`
+
+The `exact` prop has been removed because the caveat it was fixing is no longer present. See the [RFC about active matching](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0028-router-active-link.md) changes for more details.
+
+**Reason**: As Promises become available in all major browsers, we try to natively integrate them in Vue Router's API.
+
+### Navigation guards in mixins are ignored
+
+At the moment navigation guards in mixins are not supported. You can track its support at [vue-router#454](https://github.com/vuejs/vue-router-next/issues/454).
+
+### Removal of `router.match` and changes to `router.resolve`
+
+Both `router.match`, and `router.resolve` have been merged together into `router.resolve` with a slightly different signature. [Refer to the API](/api/#resolve) for more details.
+
+**Reason**: Uniting multiple methods that were used for the same purpose.
+
+### Removal of `router.getMatchedComponents()`
+
+The method `router.getMatchedComponents` is now removed as matched components can be retrieved from `router.currentRoute.value.matched`:
+
+```js
+router.currentRoute.value.matched.flatMap(record =>
+  Object.values(record.components)
+)
+```
+
+**Reason**: This method was only used during SSR and is a one liner that can be done by the user.
+
+### **All** navigations are now always asynchronous
+
+All navigations, including the first one, are now asynchronous, meaning that, if you use a `transition`, you may need to wait for the router to be _ready_ before mounting the app:
+
+```js
+app.use(router)
+// Note: on Server Side, you need to manually push the initial location
+router.isReady().then(() => app.mount('#app'))
+```
+
+Otherwise there will be an initial transition as if you provided the `appear` prop to `transition` because the router displays its initial location (nothing) and then displays the first location.
+
+Note that **if you have navigation guards upon the initial navigation**, you might not want to block the app render until they are resolved unless you are doing Server Side Rendering. In this scenario, not waiting the router to be ready to mount the app would yield the same result as in Vue 2.
+
+### Passing content to route components' `<slot>`
+
+Before you could directly pass a template to be rendered by a route components' `<slot>` by nesting it under a `<router-view>` component:
+
+```html
+<router-view>
+  <p>In Vue Router 3, I render inside the route component</p>
+</router-view>
+```
+
+Because of the introduction of the `v-slot` api for `<router-view>`, you must pass it to the `<component>` using the `v-slot` API:
+
+```html
+<router-view v-slot="{ Component }">
+  <component :is="Component">
+    <p>In Vue Router 3, I render inside the route component</p>
+  </component>
+</router-view>
+```
+
+### Removal of `parent` from route locations
+
+The `parent` property has been removed from normalized route locations (`this.$route` and object returned by `router.resolve`). You can still access it via the `matched` array:
+
+```js
+const parent = this.$route.matched[this.$route.matched.length - 2]
+```
+
+**Reason**: Having `parent` and `children` creates unnecessary circular references while the properties could be retrieved already through `matched`.
+
+### Removal of `pathToRegexpOptions`
+
+The `pathToRegexpOptions` and `caseSensitive` properties of route records have been replaced with `sensitive` and `strict` options for `createRouter()`. They can now also be directly passed when creating the router with `createRouter()`. Any other option specific to `path-to-regexp` has been removed as `path-to-regexp` is no longer used to parse paths.
+
+### Usage of `history.state`
+
+Vue Router saves information on the `history.state`. If you have any code manually calling `history.pushState()`, you should likely avoid it or refactor it with a regular `router.push()` and a `history.replaceState()`:
+
+```js
+// replace
+history.pushState(myState, '', url)
+// with
+await router.push(url)
+history.replaceState({ ...history.state, ...myState }, '')
+```
+
+Similarly, if you were calling `history.replaceState()` without preserving the current state, you will need to pass the current `history.state`:
+
+```js
+// replace
+history.replaceState({}, '', url)
+// with
+history.replaceState(history.state, '', url)
+```
+
+**Reason**: We use the history state to save information about the navigation like the scroll position, previous location, etc.
+
+### `routes` option is required in `options`
+
+The property `routes` is now required in `options`.
+
+```js
+createRouter({ routes: [] })
+```
+
+**Reason**: The router is designed to be created with routes even though you can add them later on. You need at least one route in most scenarios and this is written once per app in general.
 
 ### Non existent named routes
 
@@ -103,270 +374,7 @@ Given any [normalized route location](/api/#routelocationnormalized):
 
 **Reason**: This allows to easily copy existing properties of a location when calling `router.push()` and `router.resolve()`, and make the resulting route location consistent across browsers. `router.push()` is now idempotent, meaning that calling `router.push(route.fullPath)`, `router.push({ hash: route.hash })`, `router.push({ query: route.query })`, and `router.push({ params: route.params })` will not create extra encoding.
 
-## Breaking Changes: API Changes
-
-The following changes will require you to adapt your code
-
-### New `history` option to replace `mode`
-
-The `mode: 'history'` option has been replaced with a more flexible one named `history`:
-
-```js
-import { createRouter, createWebHistory } from 'vue-router'
-// there is also createWebHashHistory and createMemoryHistory
-
-createRouter({
-  history: createWebHistory(),
-  routes: [],
-})
-```
-
-On SSR, you need to manually pass the appropriate history:
-
-```js
-// router.js
-let history = isServer ? createMemoryHistory() : createWebHistory()
-let router = createRouter({ routes, history })
-// somewhere in your server-entry.js
-router.push(req.url) // request url
-router.isReady().then(() => {
-  // resolve the request
-})
-```
-
-**Reason**: enable tree shaking of non used histories as well as implementing custom histories for advanced use cases like native solutions.
-
-### Moved the `base` option
-
-The `base` option is now passed as the first argument to `createWebHistory` (and other histories):
-
-```js
-import { createRouter, createWebHistory } from 'vue-router'
-createRouter({
-  history: createWebHistory('/base-directory/'),
-  routes: [],
-})
-```
-
-### Removed `*` (star or catch all) routes
-
-Catch all routes (`*`, `/*`) must now be defined using a parameter with a custom regex:
-
-```js
-const routes = [
-  // pathMatch is the name of the param, e.g., going to /not/found yields
-  // { params: { pathMatch: ['not', 'found'] }}
-  // this is thanks to the last *, meaning repeated params and it is necessary if you
-  // plan on directly navigating to the not-found route using its name
-  { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
-  // if you omit the last `*`, the `/` character in params will be encoded when resolving or pushing
-  { path: '/:pathMatch(.*)', name: 'bad-not-found', component: NotFound },
-]
-// bad example if using named routes:
-router.resolve({
-  name: 'bad-not-found',
-  params: { pathMatch: 'not/found' },
-}).href // '/not%2Ffound'
-// good example:
-router.resolve({
-  name: 'not-found',
-  params: { pathMatch: ['not', 'found'] },
-}).href // '/not/found'
-```
-
-:::tip
-You don't need to add the `*` for repeated params if you don't plan to directly push to the not found route using its name. If you call `router.push('/not/found/url')`, it will provide the right `pathMatch` param.
-:::
-
-**Reason**: Vue Router doesn't use `path-to-regexp` anymore, instead it implements its own parsing system that allows route ranking and enables dynamic routing. Since we usually add one single catch-all route per project, there is no big benefit in supporting a special syntax for `*`. The encoding of params is encoding across routes, without exception to make things easier to predict.
-
-### Replaced `onReady` with `isReady`
-
-The existing `router.onReady()` function has been replaced with `router.isReady()` which doesn't take any argument and returns a Promise:
-
-```js
-// replace
-router.onReady(onSuccess, onError)
-// with
-router.isReady().then(onSuccess).catch(onError)
-// or use await:
-try {
-  await router.isReady()
-  // onSuccess
-} catch (err) {
-  // onError
-}
-```
-
-**Reason**: As Promises become available in all major browsers, we try to natively integrate them in Vue Router's API.
-
-### Removal of `router.match` and changes to `router.resolve`
-
-Both `router.match`, and `router.resolve` have been merged together into `router.resolve` with a slightly different signature. [Refer to the API](/api/#resolve) for more details.
-
-**Reason**: Uniting multiple methods that were used for the same purpose.
-
-### Removal of `router.getMatchedComponents()`
-
-The method `router.getMatchedComponents` is now removed as matched components can be retrieved from `router.currentRoute.value.matched`:
-
-```js
-router.currentRoute.value.matched.flatMap(record =>
-  Object.values(record.components)
-)
-```
-
-**Reason**: This method was only used during SSR and is a one liner that can be done by the user.
-
-### Removal of `append` prop in `<router-link>`
-
-The `append` prop has been removed from `<router-link>`. You can manually concatenate the value to an existing `path` instead:
-
-```html
-replace
-<router-link to="child-route" append>to relative child</router-link>
-with
-<router-link :to="append($route.path, 'child-route')">
-  to relative child
-</router-link>
-```
-
-You must define a global `append` function on your _App_ instance:
-
-```js
-app.config.globalProperties.append = (path, pathToAppend) =>
-  path + (path.endsWith('/') ? '' : '/') + pathToAppend
-```
-
-**Reason**: `append` wasn't used very often, is easy to replicate in user land.
-
-### Removal of `event` and `tag` props in `<router-link>`
-
-Both `event`, and `tag` props have been removed from `<router-link>`. You can use the [`v-slot` API](/api/#router-link-s-v-slot) to fully customize `<router-link>`:
-
-```html
-replace
-<router-link to="/about" tag="span" event="dblclick">About Us</router-link>
-with
-<router-link to="/about" custom v-slot="{ navigate }">
-  <span @dblclick="navigate" role="link">About Us</span>
-</router-link>
-```
-
-**Reason**: These props were often used together to use something different from an `<a>` tag but were introduced before the `v-slot` API and are not used enough to justify adding to the bundle size for everybody.
-
-### Removal of the `exact` prop in `<router-link>`
-
-The `exact` prop has been removed because the caveat it was fixing is no longer present. See the [RFC about active matching](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0028-router-active-link.md) changes for more details.
-
-### **All** navigations are now always asynchronous
-
-All navigations, including the first one, are now asynchronous, meaning that, if you use a `transition`, you may need to wait for the router to be _ready_ before mounting the app:
-
-```js
-app.use(router)
-// Note: on Server Side, you need to manually push the initial location
-router.isReady().then(() => app.mount('#app'))
-```
-
-Otherwise there will be an initial transition as if you provided the `appear` prop to `transition` because the router displays its initial location (nothing) and then displays the first location.
-
-Note that **if you have navigation guards upon the initial navigation**, you might not want to block the app render until they are resolved unless you are doing Server Side Rendering. In this scenario, not waiting the router to be ready to mount the app would yield the same result as in Vue 2.
-
-### `scrollBehavior` changes
-
-The object returned in `scrollBehavior` is now similar to [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions): `x` is renamed to `left` and `y` is renamed to `top`. See [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0035-router-scroll-position.md).
-
-**Reason**: making the object similar to `ScrollToOptions` to make it feel more familiar with native JS APIs and potentially enable future new options.
-
-### `<router-view>`, `<keep-alive>`, and `<transition>`
-
-`transition` and `keep-alive` must now be used **inside** of `RouterView` via the `v-slot` API:
-
-```vue
-<router-view v-slot="{ Component }">
-  <transition>
-    <keep-alive>
-      <component :is="Component" />
-    </keep-alive>
-  </transition>
-</router-view>
-```
-
-**Reason**: This is was a necessary change. See the [related RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0034-router-view-keep-alive-transitions.md).
-
-### Passing content to route components' `<slot>`
-
-Before you could directly pass a template to be rendered by a route components' `<slot>` by nesting it under a `<router-view>` component:
-
-```html
-<router-view>
-  <p>In Vue Router 3, I render inside the route component</p>
-</router-view>
-```
-
-Because of the introduction of the `v-slot` api for `<router-view>`, you must pass it to the `<component>` using the `v-slot` API:
-
-```html
-<router-view v-slot="{ Component }">
-  <component :is="Component">
-    <p>In Vue Router 3, I render inside the route component</p>
-  </component>
-</router-view>
-```
-
-### Removal of `parent` from route locations
-
-The `parent` property has been removed from normalized route locations (`this.$route` and object returned by `router.resolve`). You can still access it via the `matched` array:
-
-```js
-const parent = this.$route.matched[this.$route.matched.length - 2]
-```
-
-**Reason**: Having `parent` and `children` creates unnecessary circular references while the properties could be retrieved already through `matched`.
-
-### Removal of `pathToRegexpOptions`
-
-The `pathToRegexpOptions` and `caseSensitive` properties of route records have been replaced with `sensitive` and `strict` options for `createRouter()`. They can now also be directly passed when creating the router with `createRouter()`. Any other option specific to `path-to-regexp` has been removed as `path-to-regexp` is no longer used to parse paths.
-
-### Usage of `history.state`
-
-Vue Router saves information on the `history.state`. If you have any code manually calling `history.pushState()`, you should likely avoid it or refactor it with a regular `router.push()` and a `history.replaceState()`:
-
-```js
-// replace
-history.pushState(myState, '', url)
-// with
-await router.push(url)
-history.replaceState({ ...history.state, ...myState }, '')
-```
-
-Similarly, if you were calling `history.replaceState()` without preserving the current state, you will need to pass the current `history.state`:
-
-```js
-// replace
-history.replaceState({}, '', url)
-// with
-history.replaceState(history.state, '', url)
-```
-
-**Reason**: We use the history state to save information about the navigation like the scroll position, previous location, etc.
-
-### `routes` option is required in `options`
-
-The property `routes` is now required in `options`.
-
-```js
-createRouter({ routes: [] })
-```
-
-**Reason**: The router is designed to be created with routes even though you can add them later on. You need at least one route in most scenarios and this is written once per app in general.
-
-### Navigation guards in mixins are ignored
-
-At the moment navigation guards in mixins are not supported. You can track its support at [vue-router#454](https://github.com/vuejs/vue-router-next/issues/454).
-
-### TypeScript
+### TypeScript changes
 
 To make typings more consistent and expressive, some types have been renamed:
 
@@ -375,3 +383,11 @@ To make typings more consistent and expressive, some types have been renamed:
 | RouteConfig    | RouteRecordRaw          |
 | Location       | RouteLocation           |
 | Route          | RouteLocationNormalized |
+
+## New Features
+
+Some of new features to keep an eye on in Vue Router 4 include:
+
+- [Dynamic Routing](/api/#addroute-2)
+- [Composition API](/guide/advanced/composition-api.md)
+<!-- - Custom History implementation -->
