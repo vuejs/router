@@ -700,12 +700,12 @@ linkExactActiveClass?: string
 
 ### parseQuery
 
-Custom implementation to parse a query. See its counterpart, [stringifyQuery](#stringifyquery).
+Custom implementation to parse a query. Must decode query keys and values. See its counterpart, [stringifyQuery](#stringifyquery).
 
 **Signature:**
 
 ```typescript
-parseQuery?: typeof originalParseQuery
+parseQuery?: (searchQuery: string) => Record<string, (string | null)[] | string | null>
 ```
 
 #### Examples
@@ -753,12 +753,17 @@ function scrollBehavior(to, from, savedPosition) {
 
 ### stringifyQuery
 
-Custom implementation to stringify a query object. Should not prepend a leading `?`. [parseQuery](#parsequery) counterpart to handle query parsing.
+Custom implementation to stringify a query object. Should not prepend a leading `?`. Should properly encode query keys and values. [parseQuery](#parsequery) counterpart to handle query parsing.
 
 **Signature:**
 
 ```typescript
-stringifyQuery?: typeof originalStringifyQuery
+stringifyQuery?: (
+  query: Record<
+    string | number,
+    string | number | null | undefined | (string | number | null | undefined)[]
+  >
+) => string
 ```
 
 ## RouteRecordRaw
