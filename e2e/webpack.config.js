@@ -16,6 +16,7 @@ fs.readdirSync(__dirname).forEach(dir => {
 
 const globalCss = resolve(__dirname, 'global.css')
 
+/** @type {import('webpack').ConfigurationFactory} */
 const config = (env = {}) => ({
   // Expose __dirname to allow automatically setting basename.
   context: __dirname,
@@ -74,7 +75,7 @@ const config = (env = {}) => ({
   },
   plugins: [
     new webpack.DefinePlugin({
-      __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
+      __DEV__: JSON.stringify(!env.prod),
       __CI__: JSON.stringify(process.env.CI || false),
       __BROWSER__: 'true',
       'process.env': {

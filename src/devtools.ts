@@ -7,6 +7,7 @@ import {
   TimelineEvent,
 } from '@vue/devtools-api'
 import { watch } from 'vue'
+import { decode } from './encoding'
 import { RouterMatcher } from './matcher'
 import { RouteRecordMatcher } from './matcher/pathMatcher'
 import { PathParser } from './matcher/pathParserRanker'
@@ -107,7 +108,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
 
       router.beforeEach((to, from) => {
         const data: TimelineEvent<any, any>['data'] = {
-          guard: formatDisplay('beforEach'),
+          guard: formatDisplay('beforeEach'),
           from: formatRouteLocation(
             from,
             'Current Location during this navigation'
@@ -175,13 +176,15 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
 
       api.on.getInspectorTree(payload => {
         if (payload.app === app && payload.inspectorId === routerInspectorId) {
-          const routes = matcher.getRoutes().filter(
-            route =>
-              !route.parent &&
-              (!payload.filter ||
+          let routes = matcher.getRoutes()
+          if (payload.filter) {
+            routes = routes.filter(
+              route =>
+                !route.parent &&
                 // save isActive state
-                isRouteMatching(route, payload.filter))
-          )
+                isRouteMatching(route, payload.filter.toLowerCase())
+            )
+          }
           // reset match state if no filter is provided
           if (!payload.filter) {
             routes.forEach(route => {
@@ -355,8 +358,16 @@ function isRouteMatching(route: RouteRecordMatcher, filter: string): boolean {
     return false
   }
 
+  const path = route.record.path.toLowerCase()
+  const decodedPath = decode(path)
+
   // also allow partial matching on the path
-  if (route.record.path.startsWith(filter)) return true
+  if (
+    !filter.startsWith('/') &&
+    (decodedPath.includes(filter) || path.includes(filter))
+  )
+    return true
+  if (decodedPath.startsWith(filter) || path.startsWith(filter)) return true
   if (route.record.name && String(route.record.name).includes(filter))
     return true
 
