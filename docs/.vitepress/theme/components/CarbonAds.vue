@@ -1,5 +1,5 @@
 <template>
-  <div class="carbon-ads" ref="el"></div>
+  <div class="carbon-ads" ref="el" />
 </template>
 
 <script>
