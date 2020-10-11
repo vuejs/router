@@ -25,7 +25,7 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     // always scroll to top
     return { top: 0 }
-  }
+  },
 })
 ```
 
@@ -33,13 +33,15 @@ You can also pass a CSS selector or a DOM element via `el`. In that scenario, `t
 
 ```js
 const router = createRouter({
-  scrollBehavior (to, from, savedPosition) {
+  scrollBehavior(to, from, savedPosition) {
     // always scroll 10px above the element #main
-    // el: '#main'
-    // could also be
-    // el: document.getElementById('main'),
-    return { el: '#main',  top: -10 }
-  }
+    return {
+      // could also be
+      // el: document.getElementById('main'),
+      el: '#main',
+      top: -10,
+    }
+  },
 })
 ```
 
@@ -55,7 +57,7 @@ const router = createRouter({
     } else {
       return { top: 0 }
     }
-  }
+  },
 })
 ```
 
@@ -66,10 +68,10 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
       return {
-        el: to.hash
+        el: to.hash,
       }
     }
-  }
+  },
 })
 ```
 
@@ -100,7 +102,7 @@ const router = createRouter({
         resolve({ left: 0, top: 0 })
       }, 500)
     })
-  }
+  },
 })
 ```
 
