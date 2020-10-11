@@ -35,10 +35,10 @@ You can also pass a CSS selector or a DOM element via `el`. In that scenario, `t
 const router = createRouter({
   scrollBehavior (to, from, savedPosition) {
     // always scroll 10px above the element #main
-    el: '#main',
+    // el: '#main'
     // could also be
     // el: document.getElementById('main'),
-    return { top: -10 }
+    return { el: '#main',  top: -10 }
   }
 })
 ```
