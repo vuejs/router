@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 export default {
   name: 'CarbonAds',
