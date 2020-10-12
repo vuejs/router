@@ -1,6 +1,6 @@
 <template>
   <div class="bsa-cpc-wrapper">
-    <div class="bsa-cpc" />
+    <div class="bsa-cpc"></div>
   </div>
 </template>
 
