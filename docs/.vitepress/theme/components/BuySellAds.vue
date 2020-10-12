@@ -60,16 +60,19 @@ export default {
   padding: 1rem 2rem 0;
   margin-bottom: -1rem;
 }
+
 @media (max-width: 419px) {
   .bsa-cpc-wrapper {
     padding: 0 1.5rem;
   }
 }
+
 .bsa-cpc {
   font-size: 0.9em;
   background-color: #f8f8f8;
   border-radius: 6px;
 }
+
 .bsa-cpc a._default_ {
   text-align: left;
   display: block;
@@ -80,6 +83,7 @@ export default {
   font-weight: 400;
   line-height: 18px;
 }
+
 .bsa-cpc a._default_ .default-image img {
   height: 20px;
   border-radius: 3px;
@@ -87,9 +91,11 @@ export default {
   position: relative;
   top: -1px;
 }
+
 .bsa-cpc a._default_ .default-title {
   font-weight: 600;
 }
+
 .bsa-cpc a._default_ .default-description:after {
   font-size: 0.85em;
   content: 'Sponsored';
@@ -99,9 +105,11 @@ export default {
   padding: 0 4px 1px;
   margin-left: 6px;
 }
+
 .bsa-cpc .default-ad {
   display: none;
 }
+
 .bsa-cpc a._default_ .default-image,
 .bsa-cpc a._default_ .default-title,
 .bsa-cpc a._default_ .default-description {
