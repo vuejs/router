@@ -365,7 +365,7 @@ Returns the current route location. Equivalent to using `$route` inside template
 **Signature:**
 
 ```typescript
-export declare function userRoute(): RouteLocationNormalized
+export declare function useRoute(): RouteLocationNormalized
 ```
 
 ### useRouter
@@ -375,7 +375,7 @@ Returns the [router](#Router) instance. Equivalent to using `$router` inside tem
 **Signature:**
 
 ```typescript
-export declare function userRouter(): Router
+export declare function useRouter(): Router
 ```
 
 ## TypeScript
