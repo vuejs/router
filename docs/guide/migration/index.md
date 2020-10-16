@@ -252,6 +252,18 @@ const parent = this.$route.matched[this.$route.matched.length - 2]
 
 The `pathToRegexpOptions` and `caseSensitive` properties of route records have been replaced with `sensitive` and `strict` options for `createRouter()`. They can now also be directly passed when creating the router with `createRouter()`. Any other option specific to `path-to-regexp` has been removed as `path-to-regexp` is no longer used to parse paths.
 
+### Removal of unnamed parameters
+
+Due to the removal of `path-to-regexp`, unnamed parameters are no longer supported:
+
+- `/foo(/foo)?/suffix` becomes `/foo/:_(foo)?/suffix`
+- `/foo(foo)?` becomes `/foo:_(foo)?`
+- `/foo/(.*)` becomes `/foo/:_(.*)`
+
+:::tip
+Note you can use any name instead of `_` for the param. The point is to provide one.
+:::
+
 ### Usage of `history.state`
 
 Vue Router saves information on the `history.state`. If you have any code manually calling `history.pushState()`, you should likely avoid it or refactor it with a regular `router.push()` and a `history.replaceState()`:
