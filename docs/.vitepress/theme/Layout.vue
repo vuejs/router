@@ -1,5 +1,8 @@
 <template>
   <ParentLayout>
+    <template #navbar-search>
+      <AlgoliaSearchBox :options="$site.themeConfig.algolia" />
+    </template>
     <template #sidebar-top>
       <CarbonAds
         v-if="$site.themeConfig.carbonAds"
@@ -23,6 +26,7 @@
 import DefaultTheme from 'vitepress/dist/client/theme-default'
 import CarbonAds from './components/CarbonAds.vue'
 import BuySellAds from './components/BuySellAds.vue'
+import AlgoliaSearchBox from './components/AlgoliaSearchBox.vue'
 
 export default {
   name: 'Layout',
@@ -31,6 +35,16 @@ export default {
     ParentLayout: DefaultTheme.Layout,
     CarbonAds,
     BuySellAds,
+    AlgoliaSearchBox,
   },
 }
 </script>
+
+<style>
+/** Seems to be a bug in docsearch: they add a position: fixed to the header in general */
+header.DocSearch-SearchBar {
+  position: initial;
+  background-color: initial;
+  height: auto;
+}
+</style>
