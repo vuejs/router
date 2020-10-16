@@ -20,7 +20,7 @@ export const enum ErrorTypes {
   NAVIGATION_DUPLICATED = 16,
 }
 
-const NavigationFailureSymbol = PolySymbol(
+const NavigationFailureSymbol = /*#__PURE__*/ PolySymbol(
   __DEV__ ? 'navigation failure' : 'nf'
 )
 

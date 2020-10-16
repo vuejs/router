@@ -125,7 +125,7 @@ export function useLink(props: UseLinkOptions) {
   }
 }
 
-export const RouterLinkImpl = defineComponent({
+export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
   name: 'RouterLink',
   props: {
     to: {
@@ -259,7 +259,7 @@ function getOriginalPath(record: RouteRecord | undefined): string {
  * @param globalClass
  * @param defaultClass
  */
-let getLinkClass = (
+const getLinkClass = (
   propClass: string | undefined,
   globalClass: string | undefined,
   defaultClass: string
