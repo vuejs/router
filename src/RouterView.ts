@@ -33,7 +33,7 @@ export interface RouterViewProps {
   route?: RouteLocationNormalized
 }
 
-export const RouterViewImpl = defineComponent({
+export const RouterViewImpl = /*#__PURE__*/ defineComponent({
   name: 'RouterView',
   props: {
     name: {
