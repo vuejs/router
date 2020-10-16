@@ -137,7 +137,7 @@ The object returned in `scrollBehavior` is now similar to [`ScrollToOptions`](ht
 </router-view>
 ```
 
-**Reason**: This is was a necessary change. See the [related RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0034-router-view-keep-alive-transitions.md).
+**Reason**: This was a necessary change. See the [related RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0034-router-view-keep-alive-transitions.md).
 
 ### Removal of `append` prop in `<router-link>`
 
