@@ -41,10 +41,7 @@ export default {
 </script>
 
 <style>
-/** Seems to be a bug in docsearch: they add a position: fixed to the header in general */
-header.DocSearch-SearchBar {
-  position: initial;
-  background-color: initial;
-  height: auto;
+form {
+  margin-block-end: 0;
 }
 </style>

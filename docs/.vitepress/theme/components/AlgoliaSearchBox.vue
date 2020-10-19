@@ -150,12 +150,6 @@ export default {
 </script>
 
 <style>
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
 .DocSearch {
   --docsearch-primary-color: #42b983;
   --docsearch-highlight-color: var(--docsearch-primary-color);
