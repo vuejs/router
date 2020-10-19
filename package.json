@@ -86,7 +86,7 @@
     "html-webpack-plugin": "^4.5.0",
     "jest": "^26.6.0",
     "jest-mock-warn": "^1.1.0",
-    "lint-staged": "^10.2.11",
+    "lint-staged": "^10.4.2",
     "nightwatch": "^1.4.2",
     "nightwatch-helpers": "^1.2.0",
     "patch-package": "^6.2.2",
