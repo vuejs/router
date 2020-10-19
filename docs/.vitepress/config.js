@@ -53,7 +53,7 @@ const config = {
     algolia: {
       apiKey: '07ed552fc16926cc57c9eb0862c1a7f9',
       indexName: 'next_router_vuejs',
-      algoliaOptions: { facetFilters: ['tags:$TAGS'] },
+      algoliaOptions: { facetFilters: ['tags:guide,api'] },
     },
 
     locales: {
