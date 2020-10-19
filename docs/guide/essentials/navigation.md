@@ -6,7 +6,7 @@ sidebarDepth: 0
 
 Aside from using `<router-link>` to create anchor tags for declarative navigation, we can do this programmatically using the router's instance methods.
 
-## `router.push(routeLocation) => Promise`
+## Navigate to a different location
 
 **Note: Inside of a Vue instance, you have access to the router instance as `$router`. You can therefore call `this.$router.push`.**
 
@@ -55,7 +55,7 @@ Since the prop `to` accepts the same kind of object as `router.push`, the exact 
 
 `router.push` and all the other navigation methods return a _Promise_ that allows us to wait til the navigation is finished and to know if it succeeded or failed. We will talk more about that in [Navigation Handling](../advanced/navigation-handling.md).
 
-## `router.replace(routeLocation)`
+## Replace current location
 
 It acts like `router.push`, the only difference is that it navigates without pushing a new history entry, as its name suggests - it replaces the current entry.
 
@@ -71,7 +71,7 @@ router.push({ path: '/home', replace: true })
 router.replace({ path: '/home' })
 ```
 
-## `router.go(n)`
+## Traverse history
 
 This method takes a single integer as parameter that indicates by how many steps to go forward or go backward in the history stack, similar to `window.history.go(n)`.
 
