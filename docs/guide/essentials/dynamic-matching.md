@@ -63,7 +63,7 @@ const User = {
 }
 ```
 
-Or, use the `beforeRouteUpdate` [navigation guard](../advanced/navigation-guards.html), which also allows to cancel the navigation:
+Or, use the `beforeRouteUpdate` [navigation guard](../advanced/navigation-guards.md), which also allows to cancel the navigation:
 
 ```js
 const User = {
