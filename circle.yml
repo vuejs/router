@@ -19,7 +19,7 @@ jobs:
             - v2-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
             - v2-dependencies-cache-{{ .Branch }}-
             - v2-dependencies-cache-
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
       - persist_to_workspace:
           root: ~/project
           paths:
