@@ -402,7 +402,7 @@ Here are some of the interfaces and types used by Vue Router. The documentation 
 
 ### addRoute
 
-Add a new [Route Record](.#routerecordraw) as the child of an existing route. If the route has a `name` and there is already an existing one with the same one, it removes it first.
+Add a new [Route Record](#routerecordraw) as the child of an existing route. If the route has a `name` and there is already an existing one with the same one, it removes it first.
 
 **Signature:**
 
@@ -641,7 +641,7 @@ _Parameters_
 
 ### resolve
 
-Returns the [normalized version](./vue-router-interface#routelocation) of a [route location](./vue-router-typealias#routelocationraw). Also includes an `href` property that includes any existing `base`.
+Returns the [normalized version](#routelocation) of a [route location](#routelocationraw). Also includes an `href` property that includes any existing `base`.
 
 **Signature:**
 
@@ -801,7 +801,7 @@ Route record that can be provided by the user when adding routes via the [`route
 
   Nested routes of the current record.
 
-- **See Also**: [Nested Routes](/guide/advanced/nested-routes.md)
+- **See Also**: [Nested Routes](/guide/essentials/nested-routes.md)
 
 ### alias
 
@@ -1082,4 +1082,4 @@ These properties are injected into every child component by calling `app.use(rou
 - **beforeRouteUpdate**
 - **beforeRouteLeave**
 
-See [In Component Guards](/guide/advanced/navigation-guards.md).
+See [In Component Guards](/guide/advanced/navigation-guards.md#in-component-guards).
