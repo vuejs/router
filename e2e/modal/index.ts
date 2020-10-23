@@ -16,7 +16,7 @@ const users = readonly([
   { name: 'James' },
 ])
 
-const historyState = ref(history.state)
+const historyState = ref(history.state || {})
 
 async function showUserModal(id: number) {
   // add backgroundView state to the location so we can render a different view from the one
