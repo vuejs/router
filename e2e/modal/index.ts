@@ -16,20 +16,20 @@ const users = readonly([
   { name: 'James' },
 ])
 
+const historyState = ref(history.state)
+
 async function showUserModal(id: number) {
   // add backgroundView state to the location so we can render a different view from the one
   const backgroundView = router.currentRoute.value.fullPath
 
   await router.push({
     name: 'user',
-    params: { id: '' + id },
-    state: { backgroundView },
+    params: { id },
+    // state: { backgroundView },
   })
-  const newState = {
-    ...window.history.state,
-    backgroundView,
-  }
-  window.history.replaceState(newState, '')
+
+  history.replaceState({ ...history.state, backgroundView }, '')
+  historyState.value = history.state
 }
 
 function closeUserModal() {
@@ -65,7 +65,7 @@ const Home = defineComponent({
   setup() {
     const modal = ref<HTMLDialogElement | HTMLElement>()
     const route = useRoute()
-    const historyState = computed(() => route.fullPath && window.history.state)
+    // const historyState = computed(() => route.fullPath && window.history.state)
 
     const userId = computed(() => route.params.id)
 
@@ -138,6 +138,10 @@ const router = createRouter({
   ],
 })
 
+router.afterEach(() => {
+  historyState.value = history.state
+})
+
 router.beforeEach((to, from, next) => {
   console.log('---')
   console.log('going from', from.fullPath, 'to', to.fullPath)
@@ -149,7 +153,7 @@ router.beforeEach((to, from, next) => {
 const app = createApp({
   setup() {
     const route = useRoute()
-    const historyState = computed(() => route.fullPath && window.history.state)
+    // const historyState = computed(() => route.fullPath && window.history.state)
     const routeWithModal = computed(() => {
       if (historyState.value.backgroundView) {
         return router.resolve(
