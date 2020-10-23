@@ -1,3 +1,9 @@
+# [4.0.0-rc.1](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.13...v4.0.0-rc.1) (2020-10-23)
+
+### Features
+
+- **warn:** improve warning for invalid components ([5985b65](https://github.com/vuejs/vue-router-next/commit/5985b6560d40412d67311df10343ee6a119a0535)), closes [#517](https://github.com/vuejs/vue-router-next/issues/517)
+
 # [4.0.0-beta.13](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.12...v4.0.0-beta.13) (2020-10-02)
 
 ### Bug Fixes
