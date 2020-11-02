@@ -20,6 +20,9 @@ sidebar: auto
 <a href="/home">Home</a>
 
 <!-- javascript expression using `v-bind` -->
+<router-link v-bind:to="'/home'">Home</router-link>
+
+<!-- Omitting `v-bind` is fine, just as binding any other prop -->
 <router-link :to="'/home'">Home</router-link>
 
 <!-- same as above -->
