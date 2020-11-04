@@ -16,9 +16,9 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v2-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - v2-dependencies-cache-{{ .Branch }}-
-            - v2-dependencies-cache-
+            - v3-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - v3-dependencies-cache-{{ .Branch }}-
+            - v3-dependencies-cache-
       - run: yarn install --frozen-lockfile
       - persist_to_workspace:
           root: ~/project
@@ -79,7 +79,7 @@ jobs:
       - run: yarn run test:dts
       # Save cache after this task. At this point e2e are still running
       - save_cache:
-          key: v2-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: v3-dependencies-cache-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
 
