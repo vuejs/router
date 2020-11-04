@@ -169,7 +169,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
 
       api.addInspector({
         id: routerInspectorId,
-        label: 'Routes' + id ? ' ' + id : '',
+        label: 'Routes' + (id ? ' ' + id : ''),
         icon: 'book',
         treeFilterPlaceholder: 'Search routes',
       })
