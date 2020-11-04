@@ -110,5 +110,8 @@
     "webpack-cli": "^4.1.0",
     "webpack-dev-server": "^3.11.0",
     "yorkie": "^2.0.0"
+  },
+  "resolutions": {
+    "**/jest-haste-map/fsevents": "2.1.3"
   }
 }
