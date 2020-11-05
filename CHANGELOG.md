@@ -1,3 +1,13 @@
+# [4.0.0-rc.2](https://github.com/vuejs/vue-router-next/compare/v4.0.0-rc.1...v4.0.0-rc.2) (2020-11-05)
+
+### Features
+
+- expose injection symbols as internals ([0056aca](https://github.com/vuejs/vue-router-next/commit/0056aca5b251df2a18bab79e18874a18e0204b4d))
+- **devtools:** add devtools plugin ([894d50d](https://github.com/vuejs/vue-router-next/commit/894d50d351a40df95a3227840f5485f7e8b90432))
+- **devtools:** add more ([ee07302](https://github.com/vuejs/vue-router-next/commit/ee0730254522d6162114968e4d62b93e8b6f7f93))
+- **devtools:** better search ([5d68a29](https://github.com/vuejs/vue-router-next/commit/5d68a29386f34363b38c4138fbeae01ec538285e))
+- **devtools:** support multiple router instances ([2e5d0d4](https://github.com/vuejs/vue-router-next/commit/2e5d0d4d726ee6329745f34ca463a74820c5aa29))
+
 # [4.0.0-rc.1](https://github.com/vuejs/vue-router-next/compare/v4.0.0-beta.13...v4.0.0-rc.1) (2020-10-23)
 
 ### Features
