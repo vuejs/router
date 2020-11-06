@@ -46,11 +46,11 @@ import { NavigationFailureType, isNavigationFailure } from 'vue-router'
 
 // trying to leave the editing page of an article without saving
 const failure = await router.push('/articles/2')
-  if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
-    // show a small notification to the user
-    showToast('You have unsaved changes, discard and leave anyway?')
-  }
-})
+
+if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
+  // show a small notification to the user
+  showToast('You have unsaved changes, discard and leave anyway?')
+}
 ```
 
 ::: tip
