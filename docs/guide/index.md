@@ -1,11 +1,5 @@
 # Getting Started
 
-::: tip Note
-We will be using [ES2015](https://github.com/lukehoban/es6features) in the code samples in the guide.
-
-Also, all examples will be using the full version of Vue to make on-the-fly template compilation possible. See more details [here](https://v3.vuejs.org/guide/installation.html#runtime-compiler-vs-runtime-only).
-:::
-
 Creating a Single-page Application with Vue + Vue Router is dead simple. With Vue.js, we are already composing our application with components. When adding Vue Router to the mix, all we need to do is map our components to the routes and let Vue Router know where to render them. Here's a basic example:
 
 ## HTML

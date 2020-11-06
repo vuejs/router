@@ -78,7 +78,7 @@ const config = {
         sidebar: [
           {
             text: 'Introduction',
-            link: '/',
+            link: '/introduction.html',
           },
           {
             text: 'Installation',

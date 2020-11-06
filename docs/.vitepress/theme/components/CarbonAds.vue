@@ -37,8 +37,25 @@ export default {
 .carbon-ads {
   min-height: 102px;
   padding: 1.5rem 1.5rem 0;
-  margin-bottom: 0.5rem;
   font-size: 0.75rem;
+
+  width: 125px;
+  position: fixed;
+  z-index: 19;
+  bottom: 0;
+  right: 22px;
+  padding: 10px;
+}
+
+@media screen and (max-width: 1300px) {
+  .carbon-ads {
+    z-index: 1;
+    position: relative;
+    top: 12px;
+    right: 20px;
+    float: right;
+    padding: 0 0 20px 30px;
+  }
 }
 
 .carbon-ads a {
