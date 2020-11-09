@@ -80,7 +80,7 @@
     "chalk": "^4.1.0",
     "chromedriver": "^86.0.0",
     "codecov": "^3.8.0",
-    "conventional-changelog-cli": "^2.1.0",
+    "conventional-changelog-cli": "^2.1.1",
     "css-loader": "^5.0.1",
     "dotenv": "^8.2.0",
     "faked-promise": "^2.2.2",
