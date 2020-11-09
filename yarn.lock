@@ -9515,10 +9515,10 @@ vite@^1.0.0-rc.9:
     vue "^3.0.2"
     ws "^7.3.1"
 
-vitepress@^0.7.0:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/vitepress/-/vitepress-0.7.2.tgz#561133b1ab7cb681946371ad3bbd02c6ca45ddbc"
-  integrity sha512-3esAeqeFpa6kqydooqbs3PU3yM15RGL63FisaS4mU+8SUKxYq4Hcmp+5guF/aqFTZF2tYIvP3gxOSzCCsZMd7w==
+vitepress@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/vitepress/-/vitepress-0.7.3.tgz#61e05b5973aff22db80671a5cdff27176bcb9fdd"
+  integrity sha512-sRIkh4Ug+37qqvoHM4ZgLys5JD93DST4pV987O+1i1OajLWQFckyeXXlVu2GXIfvpnqMYkWdUNPczqn7wbXUqA==
   dependencies:
     "@vue/compiler-sfc" "^3.0.2"
     "@vue/server-renderer" "^3.0.2"

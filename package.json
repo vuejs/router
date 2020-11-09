@@ -101,7 +101,7 @@
     "ts-loader": "^8.0.10",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.3",
-    "vitepress": "^0.7.0",
+    "vitepress": "^0.7.3",
     "vue": "^3.0.2",
     "vue-loader": "^16.0.0-rc.1",
     "webpack": "^5.3.2",
