@@ -47,6 +47,13 @@ export default {
   padding: 10px;
 }
 
+@media screen and (max-width: 425px) {
+  .carbon-ads {
+    width: auto;
+    right: 0;
+  }
+}
+
 @media screen and (max-width: 1300px) {
   .carbon-ads {
     z-index: 1;
