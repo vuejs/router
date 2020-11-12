@@ -73,6 +73,10 @@ export default {
   border-radius: 6px;
 }
 
+.bsa-cpc .default-text {
+  display: inline;
+}
+
 .bsa-cpc a._default_ {
   text-align: left;
   display: block;
