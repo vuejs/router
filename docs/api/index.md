@@ -717,7 +717,7 @@ import qs from 'qs'
 
 createRouter({
   // other options...
-  parse: qs.parse,
+  parseQuery: qs.parse,
   stringifyQuery: qs.stringify,
 })
 ```
