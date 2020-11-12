@@ -170,6 +170,10 @@ const config = {
                 text: 'Navigation Failures',
                 link: '/guide/advanced/navigation-failures.html',
               },
+              {
+                text: 'Dynamic Routing',
+                link: '/guide/advanced/dynamic-routing.html',
+              },
             ],
           },
           {
