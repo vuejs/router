@@ -87,5 +87,8 @@ When returning a new location inside of a Navigation Guard, we are triggering a 
 
 ```js
 await router.push('/my-profile')
-if (router)
+if (router.currentRoute.value.redirectedFrom) {
+  // redirectedFrom is resolved route location like to and from in navigation
+  // guards
+}
 ```
