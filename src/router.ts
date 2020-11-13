@@ -944,7 +944,7 @@ export function createRouter(options: RouterOptions): Router {
               // TODO: should we force replace: true
               (error as NavigationRedirectError).to,
               toLocation
-              // avoid an uncaught rejection
+              // avoid an uncaught rejection, let push call triggerError
             ).catch(noop)
             // avoid the then branch
             return Promise.reject()
