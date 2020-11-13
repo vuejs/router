@@ -92,4 +92,20 @@ module.exports = {
 
       .end()
   },
+
+  /** @type {import('nightwatch').NightwatchTest} */
+  'manual hash change to trigger redirect': function (browser) {
+    browser
+      .url(baseURL + '/')
+      .waitForElementPresent('#app > *', 1000)
+      .assert.containsText('.view', 'home')
+
+      .execute(function () {
+        window.location.hash = '#/redirect'
+      })
+      .assert.containsText('.view', 'Foo')
+      .assert.urlEquals(baseURL + '/foo')
+
+      .end()
+  },
 }

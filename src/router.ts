@@ -545,24 +545,13 @@ export function createRouter(options: RouterOptions): Router {
     return push(assign(locationAsObject(to), { replace: true }))
   }
 
-  function pushWithRedirect(
-    to: RouteLocationRaw | RouteLocation,
-    redirectedFrom?: RouteLocation
-  ): Promise<NavigationFailure | void | undefined> {
-    const targetLocation: RouteLocation = (pendingLocation = resolve(to))
-    const from = currentRoute.value
-    const data: HistoryState | undefined = (to as RouteLocationOptions).state
-    const force: boolean | undefined = (to as RouteLocationOptions).force
-    // to could be a string where `replace` is a function
-    const replace = (to as RouteLocationOptions).replace === true
-
-    const lastMatched =
-      targetLocation.matched[targetLocation.matched.length - 1]
+  function handleRedirectRecord(to: RouteLocation): RouteLocationRaw | void {
+    const lastMatched = to.matched[to.matched.length - 1]
     if (lastMatched && lastMatched.redirect) {
       const { redirect } = lastMatched
       // transform it into an object to pass the original RouteLocaleOptions
       let newTargetLocation = locationAsObject(
-        typeof redirect === 'function' ? redirect(targetLocation) : redirect
+        typeof redirect === 'function' ? redirect(to) : redirect
       )
 
       if (
@@ -576,29 +565,42 @@ export function createRouter(options: RouterOptions): Router {
             null,
             2
           )}\n when navigating to "${
-            targetLocation.fullPath
+            to.fullPath
           }". A redirect must contain a name or path. This will break in production.`
         )
-        return Promise.reject(new Error('Invalid redirect'))
+        throw new Error('Invalid redirect')
       }
+
+      return assign(
+        {
+          query: to.query,
+          hash: to.hash,
+          params: to.params,
+        },
+        newTargetLocation
+      )
+    }
+  }
+
+  function pushWithRedirect(
+    to: RouteLocationRaw | RouteLocation,
+    redirectedFrom?: RouteLocation
+  ): Promise<NavigationFailure | void | undefined> {
+    const targetLocation: RouteLocation = (pendingLocation = resolve(to))
+    const from = currentRoute.value
+    const data: HistoryState | undefined = (to as RouteLocationOptions).state
+    const force: boolean | undefined = (to as RouteLocationOptions).force
+    // to could be a string where `replace` is a function
+    const replace = (to as RouteLocationOptions).replace === true
+
+    const shouldRedirect = handleRedirectRecord(targetLocation)
+
+    if (shouldRedirect)
       return pushWithRedirect(
-        assign(
-          {
-            query: targetLocation.query,
-            hash: targetLocation.hash,
-            params: targetLocation.params,
-          },
-          newTargetLocation,
-          {
-            state: data,
-            force,
-            replace,
-          }
-        ),
+        assign(shouldRedirect, { state: data, force, replace }),
         // keep original redirectedFrom if it exists
         redirectedFrom || targetLocation
       )
-    }
 
     // if it was a redirect we already called `pushWithRedirect` above
     const toLocation = targetLocation as RouteLocationNormalized
@@ -616,7 +618,7 @@ export function createRouter(options: RouterOptions): Router {
         from,
         from,
         // this is a push, the only way for it to be triggered from a
-        // history.listen is with a redirect, which makes it become a pus
+        // history.listen is with a redirect, which makes it become a push
         true,
         // This cannot be the first navigation because the initial location
         // cannot be manually navigated to
@@ -625,20 +627,12 @@ export function createRouter(options: RouterOptions): Router {
     }
 
     return (failure ? Promise.resolve(failure) : navigate(toLocation, from))
-      .catch((error: NavigationFailure | NavigationRedirectError) => {
-        if (
-          isNavigationFailure(
-            error,
-            ErrorTypes.NAVIGATION_ABORTED |
-              ErrorTypes.NAVIGATION_CANCELLED |
-              ErrorTypes.NAVIGATION_GUARD_REDIRECT
-          )
-        ) {
-          return error
-        }
-        // unknown error, rejects
-        return triggerError(error)
-      })
+      .catch((error: NavigationFailure | NavigationRedirectError) =>
+        isNavigationFailure(error)
+          ? error
+          : // reject any unknown error
+            triggerError(error)
+      )
       .then((failure: NavigationFailure | NavigationRedirectError | void) => {
         if (failure) {
           if (
@@ -896,7 +890,19 @@ export function createRouter(options: RouterOptions): Router {
   function setupListeners() {
     removeHistoryListener = routerHistory.listen((to, _from, info) => {
       // cannot be a redirect route because it was in history
-      const toLocation = resolve(to) as RouteLocationNormalized
+      let toLocation = resolve(to) as RouteLocationNormalized
+
+      // due to dynamic routing, and to hash history with manual navigation
+      // (manually changing the url or calling history.hash = '#/somewhere'),
+      // there could be a redirect record in history
+      const shouldRedirect = handleRedirectRecord(toLocation)
+      if (shouldRedirect) {
+        pushWithRedirect(
+          assign(shouldRedirect, { replace: true }),
+          toLocation
+        ).catch(noop)
+        return
+      }
 
       pendingLocation = toLocation
       const from = currentRoute.value
@@ -927,9 +933,10 @@ export function createRouter(options: RouterOptions): Router {
             // the error is already handled by router.push we just want to avoid
             // logging the error
             pushWithRedirect(
+              // TODO: should we force replace: true
               (error as NavigationRedirectError).to,
               toLocation
-              // avoid an uncaught rejection
+              // avoid an uncaught rejection, let push call triggerError
             ).catch(noop)
             // avoid the then branch
             return Promise.reject()
