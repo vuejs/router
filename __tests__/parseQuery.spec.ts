@@ -65,6 +65,18 @@ describe('parseQuery', () => {
     })
   })
 
+  it('decodes the + as space', () => {
+    expect(parseQuery('a+b=c+d')).toEqual({
+      'a b': 'c d',
+    })
+  })
+
+  it('decodes the encoded + as +', () => {
+    expect(parseQuery('a%2Bb=c%2Bd')).toEqual({
+      'a+b': 'c+d',
+    })
+  })
+
   // this is for browsers like IE that allow invalid characters
   it('keep invalid values as is', () => {
     expect(parseQuery('e=%&e=%25')).toEqual({

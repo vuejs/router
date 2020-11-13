@@ -50,7 +50,9 @@ export function parseQuery(search: string): LocationQuery {
   const hasLeadingIM = search[0] === '?'
   const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
   for (let i = 0; i < searchParams.length; ++i) {
-    const searchParam = searchParams[i]
+    // pre decode the + into space
+    // FIXME: can't import PLUS_RE because it becomes a different regex ???
+    const searchParam = searchParams[i].replace(/\+/g, ' ')
     // allow the = character
     let eqPos = searchParam.indexOf('=')
     let key = decode(eqPos < 0 ? searchParam : searchParam.slice(0, eqPos))

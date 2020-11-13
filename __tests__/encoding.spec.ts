@@ -58,9 +58,9 @@ describe('Encoding', () => {
   })
 
   describe('query params', () => {
-    const safePerSpec = "!$'*+,:;@[]_|?/{}^()`"
-    const toEncodeForKey = ' "<>#&='
-    const toEncodeForValue = ' "<>#&'
+    const safePerSpec = "!$'*,:;@[]_|?/{}^()`"
+    const toEncodeForKey = '"<>#&='
+    const toEncodeForValue = '"<>#&'
     const encodedToEncodeForKey = toEncodeForKey
       .split('')
       .map(c => {
@@ -99,6 +99,16 @@ describe('Encoding', () => {
     it('encodes a specific charset', () => {
       expect(encodeQueryKey(toEncodeForKey)).toBe(encodedToEncodeForKey)
       expect(encodeQueryValue(toEncodeForValue)).toBe(encodedToEncodeForValue)
+    })
+
+    it('encodes space as +', () => {
+      expect(encodeQueryKey(' ')).toBe('+')
+      expect(encodeQueryValue(' ')).toBe('+')
+    })
+
+    it('encodes +', () => {
+      expect(encodeQueryKey('+')).toBe('%2B')
+      expect(encodeQueryValue('+')).toBe('%2B')
     })
   })
 
