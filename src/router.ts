@@ -627,20 +627,12 @@ export function createRouter(options: RouterOptions): Router {
     }
 
     return (failure ? Promise.resolve(failure) : navigate(toLocation, from))
-      .catch((error: NavigationFailure | NavigationRedirectError) => {
-        if (
-          isNavigationFailure(
-            error,
-            ErrorTypes.NAVIGATION_ABORTED |
-              ErrorTypes.NAVIGATION_CANCELLED |
-              ErrorTypes.NAVIGATION_GUARD_REDIRECT
-          )
-        ) {
-          return error
-        }
-        // unknown error, rejects
-        return triggerError(error)
-      })
+      .catch((error: NavigationFailure | NavigationRedirectError) =>
+        isNavigationFailure(error)
+          ? error
+          : // reject any unknown error
+            triggerError(error)
+      )
       .then((failure: NavigationFailure | NavigationRedirectError | void) => {
         if (failure) {
           if (
