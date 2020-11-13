@@ -23,7 +23,7 @@ const AMPERSAND_RE = /&/g // %26
 const SLASH_RE = /\//g // %2F
 const EQUAL_RE = /=/g // %3D
 const IM_RE = /\?/g // %3F
-const PLUS_RE = /\+/g // %2B
+export const PLUS_RE = /\+/g // %2B
 /**
  * NOTE: It's not clear to me if we should encode the + symbol in queries, it
  * seems to be less flexible than not doing so and I can't find out the legacy

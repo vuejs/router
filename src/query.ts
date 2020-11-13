@@ -1,4 +1,4 @@
-import { decode, encodeQueryKey, encodeQueryValue } from './encoding'
+import { decode, encodeQueryKey, encodeQueryValue, PLUS_RE } from './encoding'
 
 /**
  * Possible values in normalized {@link LocationQuery}
@@ -51,8 +51,7 @@ export function parseQuery(search: string): LocationQuery {
   const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
   for (let i = 0; i < searchParams.length; ++i) {
     // pre decode the + into space
-    // FIXME: can't import PLUS_RE because it becomes a different regex ???
-    const searchParam = searchParams[i].replace(/\+/g, ' ')
+    const searchParam = searchParams[i].replace(PLUS_RE, ' ')
     // allow the = character
     let eqPos = searchParam.indexOf('=')
     let key = decode(eqPos < 0 ? searchParam : searchParam.slice(0, eqPos))
