@@ -387,7 +387,6 @@ Given any [normalized route location](/api/#routelocationnormalized):
 - `hash` is now decoded, that way it can be copied over: `router.push({ hash: $route.hash })` and be used directly in [scrollBehavior](/api/#scrollbehavior)'s `el` option.
 - When using `push`, `resolve`, and `replace` and providing a `string` location or a `path` property in an object, **it must be encoded** (like in the previous version). On the other hand, `params`, `query` and `hash` must be provided in its unencoded version.
 - The slash character (`/`) is now properly decoded inside `params` while still producing an encoded version on the URL: `%2F`.
-- The `+` character (`%2B` in its encoded form) no longer receives special treatment when found on the query section of the URL. It used to be encoded to deal with [legacy systems using `application/x-www-form-urlencoded`](https://url.spec.whatwg.org/#urlencoded-parsing). This can still be customized when providing custom [parsing and stringifying for `query`](/api/#stringifyquery) because they are responsible of encoding and decoding query params.
 
 **Reason**: This allows to easily copy existing properties of a location when calling `router.push()` and `router.resolve()`, and make the resulting route location consistent across browsers. `router.push()` is now idempotent, meaning that calling `router.push(route.fullPath)`, `router.push({ hash: route.hash })`, `router.push({ query: route.query })`, and `router.push({ params: route.params })` will not create extra encoding.
 
