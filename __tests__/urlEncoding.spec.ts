@@ -29,6 +29,8 @@ describe('URL Encoding', () => {
       const value = encoding[key]
       // @ts-ignore
       if (typeof value === 'function') encoding[key] = jest.fn((v: string) => v)
+      // @ts-ignore
+      else if (key === 'PLUS_RE') encoding[key] = /\+/g
     }
   })
 
