@@ -15,7 +15,9 @@ describe('warnings', () => {
         { path: '/redirect', redirect: { params: { foo: 'f' } } },
       ],
     })
-    await router.push('/redirect').catch(() => {})
+    try {
+      await router.push('/redirect')
+    } catch (err) {}
     expect('Invalid redirect found').toHaveBeenWarned()
   })
 

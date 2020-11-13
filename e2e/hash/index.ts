@@ -23,6 +23,7 @@ const router = createRouter({
   history: createWebHashHistory('/' + __dirname + '/#/'),
   routes: [
     { path: '/', component: Home },
+    { path: '/redirect', name: 'redirect', redirect: '/foo' },
     { path: '/foo', component: Foo },
     { path: '/bar', component: Bar },
     { path: '/unicode/:id', name: 'unicode', component: Unicode },
