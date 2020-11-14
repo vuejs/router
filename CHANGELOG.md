@@ -1,3 +1,10 @@
+# [4.0.0-rc.3](https://github.com/vuejs/vue-router-next/compare/v4.0.0-rc.2...v4.0.0-rc.3) (2020-11-14)
+
+### Bug Fixes
+
+- trigger redirect on popstate ([#592](https://github.com/vuejs/vue-router-next/issues/592)) ([18dbdc2](https://github.com/vuejs/vue-router-next/commit/18dbdc2745cf7bd2516d4576a8d6a21de78516ec))
+- **query:** encode space as + ([4d3dd5f](https://github.com/vuejs/vue-router-next/commit/4d3dd5fd523cefc675aa7e61ed9b06b66e42b80c)), closes [#561](https://github.com/vuejs/vue-router-next/issues/561)
+
 # [4.0.0-rc.2](https://github.com/vuejs/vue-router-next/compare/v4.0.0-rc.1...v4.0.0-rc.2) (2020-11-05)
 
 ### Features
