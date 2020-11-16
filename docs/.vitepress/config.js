@@ -1,7 +1,7 @@
 /** @typedef {import('vitepress').UserConfig} UserConfig */
 
 /** @type {UserConfig['head']} */
-const head = []
+const head = [['link', { rel: 'icon', href: `/logo.png` }]]
 
 if (process.env.NODE_ENV === 'production') {
   head.push([
