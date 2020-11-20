@@ -13,10 +13,23 @@ export const PolySymbol = (name: string) =>
     : (__DEV__ ? '[vue-router]: ' : '_vr_') + name
 
 // rvlm = Router View Location Matched
+/**
+ * RouteRecord being rendered by the closest ancestor Router View. Used for
+ * `onBeforeRouteUpdate` and `onBeforeRouteLeave`. rvlm stands for Router View
+ * Location Matched
+ *
+ * @internal
+ */
 export const matchedRouteKey = /*#__PURE__*/ PolySymbol(
   __DEV__ ? 'router view location matched' : 'rvlm'
 ) as InjectionKey<ComputedRef<RouteRecordNormalized | undefined>>
-// rvd = Router View Depth
+
+/**
+ * Allows overriding the router view depth to control which component in
+ * `matched` is rendered. rvd stands for Router View Depth
+ *
+ * @internal
+ */
 export const viewDepthKey = /*#__PURE__*/ PolySymbol(
   __DEV__ ? 'router view depth' : 'rvd'
 ) as InjectionKey<number>

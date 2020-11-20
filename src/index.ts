@@ -20,7 +20,12 @@ export {
   _PathParserOptions,
 } from './matcher/pathParserRanker'
 
-export { routeLocationKey, routerKey } from './injectionSymbols'
+export {
+  routeLocationKey,
+  routerKey,
+  matchedRouteKey,
+  viewDepthKey,
+} from './injectionSymbols'
 
 export {
   RouteMeta,
