@@ -24,11 +24,11 @@ const config = {
       title: 'Vue Router',
       description: 'The official router for Vue.js.',
     },
-    '/es/': {
-      lang: 'es-ES',
-      title: 'Vue Router',
-      description: 'El router oficial par Vue.js',
-    },
+    // '/es/': {
+    //   lang: 'es-ES',
+    //   title: 'Vue Router',
+    //   description: 'El router oficial par Vue.js',
+    // },
   },
   head,
   // serviceWorker: true,
@@ -184,23 +184,23 @@ const config = {
       },
     },
 
-    '/es/': {
-      nav: [
-        {
-          text: 'Guía',
-          link: '/guide/',
-        },
-        {
-          text: 'API',
-          link: '/api/',
-        },
-        {
-          text: 'Cambios',
-          link:
-            'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
-        },
-      ],
-    },
+    // '/es/': {
+    //   nav: [
+    //     {
+    //       text: 'Guía',
+    //       link: '/guide/',
+    //     },
+    //     {
+    //       text: 'API',
+    //       link: '/api/',
+    //     },
+    //     {
+    //       text: 'Cambios',
+    //       link:
+    //         'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
+    //     },
+    //   ],
+    // },
   },
 }
 
