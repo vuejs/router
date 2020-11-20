@@ -1,3 +1,9 @@
+# [4.0.0-rc.4](https://github.com/vuejs/vue-router-next/compare/v4.0.0-rc.3...v4.0.0-rc.4) (2020-11-20)
+
+### Features
+
+- expose symbols as internals ([ef62d96](https://github.com/vuejs/vue-router-next/commit/ef62d9645c456f069699480ae3f2c3dd97b9d30d))
+
 # [4.0.0-rc.3](https://github.com/vuejs/vue-router-next/compare/v4.0.0-rc.2...v4.0.0-rc.3) (2020-11-14)
 
 ### Bug Fixes
