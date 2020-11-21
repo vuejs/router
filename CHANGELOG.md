@@ -1,3 +1,9 @@
+# [4.0.0-rc.5](https://github.com/vuejs/vue-router-next/compare/v4.0.0-rc.4...v4.0.0-rc.5) (2020-11-21)
+
+### Features
+
+- **scroll:** allow modifying scrollBehavior in options ([#602](https://github.com/vuejs/vue-router-next/issues/602)) ([d6651f5](https://github.com/vuejs/vue-router-next/commit/d6651f5f954c8ecaf1a77ec209d5aba06343e867))
+
 # [4.0.0-rc.4](https://github.com/vuejs/vue-router-next/compare/v4.0.0-rc.3...v4.0.0-rc.4) (2020-11-20)
 
 ### Features
