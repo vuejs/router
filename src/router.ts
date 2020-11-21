@@ -333,7 +333,6 @@ export function createRouter(options: RouterOptions): Router {
   const matcher = createRouterMatcher(options.routes, options)
   let parseQuery = options.parseQuery || originalParseQuery
   let stringifyQuery = options.stringifyQuery || originalStringifyQuery
-  let { scrollBehavior } = options
   let routerHistory = options.history
 
   const beforeGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
@@ -345,7 +344,7 @@ export function createRouter(options: RouterOptions): Router {
   let pendingLocation: RouteLocation = START_LOCATION_NORMALIZED
 
   // leave the scrollRestoration if no scrollBehavior is provided
-  if (isBrowser && scrollBehavior && 'scrollRestoration' in history) {
+  if (isBrowser && options.scrollBehavior && 'scrollRestoration' in history) {
     history.scrollRestoration = 'manual'
   }
 
@@ -1016,6 +1015,7 @@ export function createRouter(options: RouterOptions): Router {
     isPush: boolean,
     isFirstNavigation: boolean
   ): Promise<any> {
+    const { scrollBehavior } = options
     if (!isBrowser || !scrollBehavior) return Promise.resolve()
 
     let scrollPosition: _ScrollPositionNormalized | null =
