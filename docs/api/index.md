@@ -924,7 +924,7 @@ A raw location can either be a `string` like `/users/posva#bio` or an object:
 
 ```js
 // these three forms are equivalent
-router.push('/users/posva#bio)
+router.push('/users/posva#bio')
 router.push({ path: '/users/posva', hash: '#bio' })
 router.push({ name: 'users', params: { username: 'posva' }, hash: '#bio' })
 // only change the hash
