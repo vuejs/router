@@ -162,6 +162,11 @@ export function createRouterMatcher(
       // other alias (if any) need to reference this record when adding children
       originalRecord = originalRecord || matcher
 
+      if (parent && isAliasRecord(originalRecord)) {
+        // TODO: remove them too
+        parent.children.push(originalRecord)
+      }
+
       insertMatcher(matcher)
     }
 

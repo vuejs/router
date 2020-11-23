@@ -3,11 +3,13 @@ import {
   CustomInspectorNode,
   CustomInspectorNodeTag,
   CustomInspectorState,
+  HookPayloads,
   setupDevtoolsPlugin,
   TimelineEvent,
 } from '@vue/devtools-api'
 import { watch } from 'vue'
 import { decode } from './encoding'
+import { isSameRouteRecord } from './location'
 import { RouterMatcher } from './matcher'
 import { RouteRecordMatcher } from './matcher/pathMatcher'
 import { PathParser } from './matcher/pathParserRanker'
@@ -75,8 +77,11 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
       })
 
       watch(router.currentRoute, () => {
+        // refresh active state
+        refreshRoutesView()
         // @ts-ignore
         api.notifyComponentUpdate()
+        api.sendInspectorTree(routerInspectorId)
       })
 
       const navigationsLayerId = 'router:navigations:' + id
@@ -165,6 +170,10 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         })
       })
 
+      /**
+       * Inspector of Existing routes
+       */
+
       const routerInspectorId = 'router-inspector:' + id
 
       api.addInspector({
@@ -174,32 +183,48 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         treeFilterPlaceholder: 'Search routes',
       })
 
+      function refreshRoutesView() {
+        // the routes view isn't active
+        if (!activeRoutesPayload) return
+        const payload = activeRoutesPayload
+
+        // children routes will appear as nested
+        let routes = matcher.getRoutes().filter(route => !route.parent)
+
+        // reset match state to false
+        routes.forEach(resetMatchStateOnRouteRecord)
+
+        // apply a match state if there is a payload
+        if (payload.filter) {
+          routes = routes.filter(route =>
+            // save matches state based on the payload
+            isRouteMatching(route, payload.filter.toLowerCase())
+          )
+        }
+
+        // mark active routes
+        routes.forEach(route =>
+          markRouteRecordActive(route, router.currentRoute.value)
+        )
+        payload.rootNodes = routes.map(formatRouteRecordForInspector)
+      }
+
+      let activeRoutesPayload: HookPayloads['getInspectorTree'] | undefined
       api.on.getInspectorTree(payload => {
+        activeRoutesPayload = payload
         if (payload.app === app && payload.inspectorId === routerInspectorId) {
-          let routes = matcher.getRoutes()
-          if (payload.filter) {
-            routes = routes.filter(
-              route =>
-                !route.parent &&
-                // save isActive state
-                isRouteMatching(route, payload.filter.toLowerCase())
-            )
-          }
-          // reset match state if no filter is provided
-          if (!payload.filter) {
-            routes.forEach(route => {
-              ;(route as any).__vd_match = false
-            })
-          }
-          payload.rootNodes = routes.map(formatRouteRecordForInspector)
+          refreshRoutesView()
         }
       })
 
+      /**
+       * Display information about the currently selected route record
+       */
       api.on.getInspectorState(payload => {
         if (payload.app === app && payload.inspectorId === routerInspectorId) {
           const routes = matcher.getRoutes()
           const route = routes.find(
-            route => route.record.path === payload.nodeId
+            route => (route.record as any).__vd_id === payload.nodeId
           )
 
           if (route) {
@@ -209,6 +234,9 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
           }
         }
       })
+
+      api.sendInspectorTree(routerInspectorId)
+      api.sendInspectorState(routerInspectorId)
     }
   )
 }
@@ -229,16 +257,17 @@ function formatRouteRecordMatcherForStateInspector(
     { editable: false, key: 'path', value: record.path },
   ]
 
-  if (record.name != null)
+  if (record.name != null) {
     fields.push({
       editable: false,
       key: 'name',
       value: record.name,
     })
+  }
 
   fields.push({ editable: false, key: 'regexp', value: route.re })
 
-  if (route.keys.length)
+  if (route.keys.length) {
     fields.push({
       editable: false,
       key: 'keys',
@@ -254,20 +283,23 @@ function formatRouteRecordMatcherForStateInspector(
         },
       },
     })
+  }
 
-  if (record.redirect != null)
+  if (record.redirect != null) {
     fields.push({
       editable: false,
       key: 'redirect',
       value: record.redirect,
     })
+  }
 
-  if (route.alias.length)
+  if (route.alias.length) {
     fields.push({
       editable: false,
       key: 'aliases',
       value: route.alias.map(alias => alias.record.path),
     })
+  }
 
   fields.push({
     key: 'score',
@@ -286,6 +318,17 @@ function formatRouteRecordMatcherForStateInspector(
   return fields
 }
 
+/**
+ * Extracted from tailwind palette
+ */
+const PINK_500 = 0xec4899
+const BLUE_600 = 0x2563eb
+const LIME_500 = 0x84cc16
+const CYAN_400 = 0x22d3ee
+const ORANGE_400 = 0xfb923c
+// const GRAY_100 = 0xf4f4f5
+const DARK = 0x666666
+
 function formatRouteRecordForInspector(
   route: RouteRecordMatcher
 ): CustomInspectorNode {
@@ -297,7 +340,7 @@ function formatRouteRecordForInspector(
     tags.push({
       label: String(record.name),
       textColor: 0,
-      backgroundColor: 0x00bcd4,
+      backgroundColor: CYAN_400,
     })
   }
 
@@ -305,7 +348,7 @@ function formatRouteRecordForInspector(
     tags.push({
       label: 'alias',
       textColor: 0,
-      backgroundColor: 0xff984f,
+      backgroundColor: ORANGE_400,
     })
   }
 
@@ -313,7 +356,23 @@ function formatRouteRecordForInspector(
     tags.push({
       label: 'matches',
       textColor: 0,
-      backgroundColor: 0xf4f4f4,
+      backgroundColor: PINK_500,
+    })
+  }
+
+  if ((route as any).__vd_exactActive) {
+    tags.push({
+      label: 'exact',
+      textColor: 0,
+      backgroundColor: LIME_500,
+    })
+  }
+
+  if ((route as any).__vd_active) {
+    tags.push({
+      label: 'active',
+      textColor: 0,
+      backgroundColor: BLUE_600,
     })
   }
 
@@ -323,12 +382,17 @@ function formatRouteRecordForInspector(
         'redirect: ' +
         (typeof record.redirect === 'string' ? record.redirect : 'Object'),
       textColor: 0xffffff,
-      backgroundColor: 0x666666,
+      backgroundColor: DARK,
     })
   }
 
+  // add an id to be able to select it. Using the `path` is not possible because
+  // empty path children would collide with their parents
+  let id = String(routeRecordId++)
+  ;(record as any).__vd_id = id
+
   return {
-    id: record.path,
+    id,
     label: record.path,
     tags,
     // @ts-ignore
@@ -336,19 +400,54 @@ function formatRouteRecordForInspector(
   }
 }
 
+//  incremental id for route records and inspector state
+let routeRecordId = 0
+
 const EXTRACT_REGEXP_RE = /^\/(.*)\/([a-z]*)$/
+
+function markRouteRecordActive(
+  route: RouteRecordMatcher,
+  currentRoute: RouteLocationNormalized
+) {
+  // no route will be active if matched is empty
+  // reset the matching state
+  const isExactActive =
+    currentRoute.matched.length &&
+    isSameRouteRecord(
+      currentRoute.matched[currentRoute.matched.length - 1],
+      route.record
+    )
+  ;(route as any).__vd_exactActive = (route as any).__vd_active = isExactActive
+
+  if (!isExactActive) {
+    ;(route as any).__vd_active = currentRoute.matched.some(match =>
+      isSameRouteRecord(match, route.record)
+    )
+  }
+
+  route.children.forEach(childRoute =>
+    markRouteRecordActive(childRoute, currentRoute)
+  )
+}
+
+function resetMatchStateOnRouteRecord(route: RouteRecordMatcher) {
+  ;(route as any).__vd_match = false
+  route.children.forEach(resetMatchStateOnRouteRecord)
+}
 
 function isRouteMatching(route: RouteRecordMatcher, filter: string): boolean {
   const found = String(route.re).match(EXTRACT_REGEXP_RE)
   // reset the matching state
   ;(route as any).__vd_match = false
-  if (!found || found.length < 3) return false
+  if (!found || found.length < 3) {
+    return false
+  }
 
   // use a regexp without $ at the end to match nested routes better
   const nonEndingRE = new RegExp(found[1].replace(/\$$/, ''), found[2])
   if (nonEndingRE.test(filter)) {
     // mark children as matches
-    route.children.some(child => isRouteMatching(child, filter))
+    route.children.forEach(child => isRouteMatching(child, filter))
     // exception case: `/`
     if (route.record.path !== '/' || filter === '/') {
       ;(route as any).__vd_match = route.re.test(filter)
