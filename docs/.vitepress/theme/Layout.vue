@@ -44,4 +44,8 @@ export default {
 form {
   margin-block-end: 0;
 }
+
+.custom-blocks {
+  overflow-x: auto;
+}
 </style>
