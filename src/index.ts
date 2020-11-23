@@ -9,6 +9,7 @@ export {
   stringifyQuery,
   LocationQueryRaw,
   LocationQueryValue,
+  LocationQueryValueRaw,
 } from './query'
 
 export { RouterHistory } from './history/common'

@@ -11,7 +11,7 @@ export type LocationQueryValue = string | null
  *
  * @internal
  */
-type LocationQueryValueRaw = LocationQueryValue | number | undefined
+export type LocationQueryValueRaw = LocationQueryValue | number | undefined
 /**
  * Normalized query object that appears in {@link RouteLocationNormalized}
  *
