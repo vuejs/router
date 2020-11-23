@@ -90,7 +90,7 @@
     "lint-staged": "^10.5.1",
     "nightwatch": "^1.5.1",
     "nightwatch-helpers": "^1.2.0",
-    "prettier": "^2.0.5",
+    "prettier": "^2.2.0",
     "rollup": "^2.33.3",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.29.0",
