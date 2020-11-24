@@ -93,6 +93,8 @@ function createTestComponent(key: string) {
 }
 
 const Foo = createTestComponent('Foo')
+const One = createTestComponent('One')
+const Two = createTestComponent('Two')
 const Aux = createTestComponent('Aux')
 
 const webHistory = createWebHistory('/' + __dirname)
@@ -107,6 +109,20 @@ const router = createRouter({
     {
       path: '/f/:id',
       component: Foo,
+    },
+    {
+      path: '/named-one',
+      components: {
+        default: One,
+        aux: Aux,
+      },
+    },
+    {
+      path: '/named-two',
+      components: {
+        default: Two,
+        aux: Aux,
+      },
     },
   ],
 })
@@ -160,6 +176,9 @@ leaves: {{ state.leave }}
         <li><router-link to="/f/2?bar=foo">/f/2?bar=foo</router-link></li>
         <li><router-link to="/f/2?foo=key">/f/2?foo=key</router-link></li>
         <li><router-link to="/f/2?foo=key2">/f/2?foo=key2</router-link></li>
+        <li><router-link id="update-query" :to="{ query: { n: (Number($route.query.n) || 0) + 1 }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
+        <li><router-link to="/named-one">/named-one</router-link></li>
+        <li><router-link to="/named-two">/named-two</router-link></li>
       </ul>
 
       <template v-if="testCase === 'keepalive'">
@@ -188,6 +207,7 @@ leaves: {{ state.leave }}
       </template>
       <template v-else>
         <router-view class="view" />
+        <router-view class="aux-view" name="aux" />
       </template>
 
     </div>

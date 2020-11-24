@@ -247,8 +247,38 @@ module.exports = {
   /** @type {import('nightwatch').NightwatchTest} */
   'guards + instances + named views': function (browser) {
     browser
-      .url('http://localhost:8080/guards-instances/')
+      .url('http://localhost:8080/guards-instances/named-one')
       .waitForElementPresent('#app > *', 1000)
+
+    browser
+      .click('li:nth-child(1) a')
+      .expect.element('#logs')
+      .text.to.equal(
+        [
+          `One: enter / - /named-one`,
+          `Aux: enter / - /named-one`,
+          `One: leave /named-one - /`,
+          `Aux: leave /named-one - /`,
+          `One: setup:leave /named-one - /`,
+          `Aux: setup:leave /named-one - /`,
+        ].join('\n')
+      )
+
+    browser
+      .click('li:nth-child(9) a')
+      .click('#resetLogs')
+      .click('li:nth-child(10) a')
+      .expect.element('#logs')
+      .text.to.equal(
+        [
+          `One: leave /named-one - /named-two`,
+          `Aux: leave /named-one - /named-two`,
+          `One: setup:leave /named-one - /named-two`,
+          `Aux: setup:leave /named-one - /named-two`,
+          `Two: enter /named-one - /named-two`,
+          `Aux: enter /named-one - /named-two`,
+        ].join('\n')
+      )
 
     browser.end()
   },
