@@ -342,8 +342,8 @@ export function normalizeRouteRecord(
     props: normalizeRecordProps(record),
     children: record.children || [],
     instances: {},
-    leaveGuards: [],
-    updateGuards: [],
+    leaveGuards: new Set(),
+    updateGuards: new Set(),
     enterCallbacks: {},
     components:
       'components' in record

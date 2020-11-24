@@ -158,7 +158,7 @@ module.exports = {
       .expect.element('#logs')
       .text.to.equal(
         [
-          // lol
+          // to force new lines formatting
           `${name}: update /f/2 - /f/2`,
           `${name}: setup:update /f/2 - /f/2`,
         ].join('\n')

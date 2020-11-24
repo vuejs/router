@@ -24,21 +24,23 @@ import { RouteRecordNormalized } from './matcher/types'
 import { isESModule } from './utils'
 import { warn } from './warning'
 
-function registerGuard(list: NavigationGuard[], guard: NavigationGuard) {
+function registerGuard(
+  record: RouteRecordNormalized,
+  name: 'leaveGuards' | 'updateGuards',
+  guard: NavigationGuard
+) {
   const removeFromList = () => {
-    const index = list.indexOf(guard)
-    if (index > -1) list.splice(index, 1)
+    record[name].delete(guard)
   }
 
   onUnmounted(removeFromList)
   onDeactivated(removeFromList)
 
   onActivated(() => {
-    const index = list.indexOf(guard)
-    if (index < 0) list.push(guard)
+    record[name].add(guard)
   })
 
-  list.push(guard)
+  record[name].add(guard)
 }
 
 /**
@@ -65,7 +67,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
     return
   }
 
-  registerGuard(activeRecord.leaveGuards, leaveGuard)
+  registerGuard(activeRecord, 'leaveGuards', leaveGuard)
 }
 
 /**
@@ -92,7 +94,7 @@ export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
     return
   }
 
-  registerGuard(activeRecord.updateGuards, updateGuard)
+  registerGuard(activeRecord, 'updateGuards', updateGuard)
 }
 
 export function guardToPromiseFn(

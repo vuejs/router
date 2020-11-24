@@ -47,6 +47,7 @@ const state = reactive({
  */
 function createTestComponent(key: string) {
   return defineComponent({
+    name: key,
     template: `
     <div :id="key">
     {{ key }}
@@ -196,12 +197,12 @@ leaves: {{ state.leave }}
         </router-view>
       </template>
       <template v-else-if="testCase === 'keyed'">
-        <router-view :key="$route.query.foo" class="view" />
+        <router-view :key="$route.query.foo || undefined" class="view" />
       </template>
       <template v-else-if="testCase === 'keepalivekeyed'">
         <router-view v-slot="{ Component }" >
           <keep-alive>
-            <component :is="Component" :key="$route.query.foo" class="view" />
+            <component :is="Component" :key="$route.query.foo || undefined" class="view" />
           </keep-alive>
         </router-view>
       </template>
@@ -231,5 +232,8 @@ leaves: {{ state.leave }}
 })
 
 app.use(router)
+
+// @ts-ignore
+window.r = router
 
 app.mount('#app')
