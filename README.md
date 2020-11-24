@@ -26,7 +26,7 @@ See [Contributing Guide](https://github.com/vuejs/vue-router-next/blob/master/.g
 ## Special Thanks
 
 <a href="https://www.browserstack.com">
-  <img src="/assets/browserstack-logo-600x315.png" height="80" title="BrowserStack Logo" alt="BrowserStack Logo" />
+  <img src="https://github.com/vuejs/vue-router/raw/dev/assets/browserstack-logo-600x315.png" height="80" title="BrowserStack Logo" alt="BrowserStack Logo" />
 </a>
 
 Special thanks to [BrowserStack](https://www.browserstack.com) for letting the maintainers use their service to debug browser specific issues.
