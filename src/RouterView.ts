@@ -69,7 +69,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
           to.instances[name] = instance
           // the component instance is reused for a different route or name so
           // we copy any saved update or leave guards
-          if (from && instance === oldInstance) {
+          if (from && from !== to && instance && instance === oldInstance) {
             to.leaveGuards = from.leaveGuards
             to.updateGuards = from.updateGuards
           }

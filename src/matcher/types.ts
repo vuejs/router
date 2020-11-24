@@ -49,13 +49,13 @@ export interface RouteRecordNormalized {
    *
    * @internal
    */
-  leaveGuards: NavigationGuard[]
+  leaveGuards: Set<NavigationGuard>
   /**
    * Registered update guards
    *
    * @internal
    */
-  updateGuards: NavigationGuard[]
+  updateGuards: Set<NavigationGuard>
   /**
    * Registered beforeRouteEnter callbacks passed to `next` or returned in guards
    *

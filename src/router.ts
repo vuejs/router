@@ -728,9 +728,9 @@ export function createRouter(options: RouterOptions): Router {
 
     // leavingRecords is already reversed
     for (const record of leavingRecords) {
-      for (const guard of record.leaveGuards) {
+      record.leaveGuards.forEach(guard => {
         guards.push(guardToPromiseFn(guard, to, from))
-      }
+      })
     }
 
     const canceledNavigationCheck = checkCanceledNavigationAndReject.bind(
@@ -764,9 +764,9 @@ export function createRouter(options: RouterOptions): Router {
           )
 
           for (const record of updatingRecords) {
-            for (const guard of record.updateGuards) {
+            record.updateGuards.forEach(guard => {
               guards.push(guardToPromiseFn(guard, to, from))
-            }
+            })
           }
           guards.push(canceledNavigationCheck)
 
