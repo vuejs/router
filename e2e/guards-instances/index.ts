@@ -41,50 +41,59 @@ const state = reactive({
   leave: 0,
 })
 
-const Foo = defineComponent({
-  template: `
-    <div>
-    foo
-    <p id="enterCbs">{{ enterCallback }}</p>
-    <p id="update">{{ selfUpdates }}</p>
-    <p id="leave">{{ selfLeaves }}</p>
+/**
+ * creates a component that logs the guards
+ * @param name
+ */
+function createTestComponent(key: string) {
+  return defineComponent({
+    template: `
+    <div :id="key">
+    {{ key }}
+    <p class="enterCbs">{{ enterCallback }}</p>
+    <p class="update">{{ selfUpdates }}</p>
+    <p class="leave">{{ selfLeaves }}</p>
     </div>
   `,
-  data: () => ({ key: 'Foo', enterCallback: 0, selfUpdates: 0, selfLeaves: 0 }),
-  // mounted() {
-  //   console.log('mounted Foo')
-  // },
-  beforeRouteEnter(to, from, next) {
-    state.enter++
-    logs.value.push(`enter ${from.path} - ${to.path}`)
-    next(vm => {
-      // @ts-ignore
-      vm.enterCallback++
-    })
-  },
-  beforeRouteUpdate(to, from) {
-    if (!this || this.key !== 'Foo') throw new Error('no this')
-    state.update++
-    this.selfUpdates++
-    logs.value.push(`update ${from.path} - ${to.path}`)
-  },
-  beforeRouteLeave(to, from) {
-    if (!this || this.key !== 'Foo') throw new Error('no this')
-    state.leave++
-    this.selfLeaves++
-    logs.value.push(`leave ${from.path} - ${to.path}`)
-  },
+    data: () => ({ key, enterCallback: 0, selfUpdates: 0, selfLeaves: 0 }),
+    // mounted() {
+    //   console.log('mounted Foo')
+    // },
+    beforeRouteEnter(to, from, next) {
+      state.enter++
+      logs.value.push(`${key}: enter ${from.path} - ${to.path}`)
+      next(vm => {
+        // @ts-ignore
+        vm.enterCallback++
+      })
+    },
+    beforeRouteUpdate(to, from) {
+      if (!this || this.key !== key) throw new Error('no this')
+      state.update++
+      this.selfUpdates++
+      logs.value.push(`${key}: update ${from.path} - ${to.path}`)
+    },
+    beforeRouteLeave(to, from) {
+      if (!this || this.key !== key) throw new Error('no this')
+      state.leave++
+      this.selfLeaves++
+      logs.value.push(`${key}: leave ${from.path} - ${to.path}`)
+    },
 
-  setup() {
-    onBeforeRouteUpdate((to, from) => {
-      logs.value.push(`setup:update ${from.path} - ${to.path}`)
-    })
-    onBeforeRouteLeave((to, from) => {
-      logs.value.push(`setup:leave ${from.path} - ${to.path}`)
-    })
-    return {}
-  },
-})
+    setup() {
+      onBeforeRouteUpdate((to, from) => {
+        logs.value.push(`${key}: setup:update ${from.path} - ${to.path}`)
+      })
+      onBeforeRouteLeave((to, from) => {
+        logs.value.push(`${key}: setup:leave ${from.path} - ${to.path}`)
+      })
+      return {}
+    },
+  })
+}
+
+const Foo = createTestComponent('Foo')
+const Aux = createTestComponent('Aux')
 
 const webHistory = createWebHistory('/' + __dirname)
 const router = createRouter({
