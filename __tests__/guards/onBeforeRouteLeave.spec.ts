@@ -42,6 +42,7 @@ describe('onBeforeRouteLeave', () => {
     await router.isReady()
     await router.push('/leave')
     await router.push('/')
+    expect(spy).toHaveBeenCalledTimes(1)
     await router.push('/leave')
     await router.push('/')
     expect(spy).toHaveBeenCalledTimes(2)
