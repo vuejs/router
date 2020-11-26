@@ -40,7 +40,7 @@ const scrollBehavior: RouterScrollBehavior = async function (
 
     // scroll to anchor by returning the selector
     if (to.hash) {
-      position = { el: decodeURI(to.hash), behavior }
+      position = { el: to.hash, behavior }
 
       // specify offset of the element
       if (to.hash === '#anchor2') {
