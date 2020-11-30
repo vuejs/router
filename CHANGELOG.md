@@ -1,3 +1,14 @@
+# [4.0.0-rc.6](https://github.com/vuejs/vue-router-next/compare/v4.0.0-rc.5...v4.0.0-rc.6) (2020-11-30)
+
+### Bug Fixes
+
+- **guards:** correctly reuse guards ([#616](https://github.com/vuejs/vue-router-next/issues/616)) ([95d44c8](https://github.com/vuejs/vue-router-next/commit/95d44c8ff2a961e052fd67b2160b87fb32d0ffb4)), closes [#614](https://github.com/vuejs/vue-router-next/issues/614)
+
+### Features
+
+- **devtools:** improve active + match in routes inspector ([9f59489](https://github.com/vuejs/vue-router-next/commit/9f59489f04cedfca5ba55da019b2dc790e926fd7))
+- **types:** expose `LocationQueryValueRaw` as internal ([dc02850](https://github.com/vuejs/vue-router-next/commit/dc028500c3e931ed5fd6beedf58b5425f5115b52))
+
 # [4.0.0-rc.5](https://github.com/vuejs/vue-router-next/compare/v4.0.0-rc.4...v4.0.0-rc.5) (2020-11-21)
 
 ### Features
