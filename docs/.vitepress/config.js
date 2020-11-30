@@ -33,11 +33,6 @@ const config = {
   head,
   // serviceWorker: true,
   themeConfig: {
-    // algolia: {
-    //   apiKey: 'f854bb46d3de7eeb921a3b9173bd0d4c',
-    //   indexName: 'vue-router-next',
-    // },
-
     repo: 'vuejs/vue-router-next',
     docsRepo: 'vuejs/vue-router-next',
     docsDir: 'docs',
