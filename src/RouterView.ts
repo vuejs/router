@@ -12,6 +12,7 @@ import {
   AllowedComponentProps,
   ComponentCustomProps,
   watch,
+  Slot,
 } from 'vue'
 import {
   RouteLocationNormalized,
@@ -100,9 +101,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       const currentName = props.name
 
       if (!ViewComponent) {
-        return slots.default
-          ? slots.default({ Component: ViewComponent, route })
-          : null
+        return normalizeSlot(slots.default, { Component: ViewComponent, route })
       }
 
       // props from route configuration
@@ -133,13 +132,18 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       return (
         // pass the vnode to the slot as a prop.
         // h and <component :is="..."> both accept vnodes
-        slots.default
-          ? slots.default({ Component: component, route })
-          : component
+        normalizeSlot(slots.default, { Component: component, route }) ||
+        component
       )
     }
   },
 })
+
+function normalizeSlot(slot: Slot | undefined, data: any) {
+  if (!slot) return null
+  const slotContent = slot(data)
+  return slotContent.length === 1 ? slotContent[0] : slotContent
+}
 
 // export the public type for h/tsx inference
 // also to avoid inline import() in generated d.ts files
