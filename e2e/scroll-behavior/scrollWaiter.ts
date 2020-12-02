@@ -1,5 +1,5 @@
 function createScrollWaiter() {
-  let resolve: (() => void) | undefined
+  let resolve: ((value?: any) => void) | undefined
   let promise: Promise<any> | undefined
 
   function add() {

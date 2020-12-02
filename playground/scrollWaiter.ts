@@ -1,5 +1,5 @@
 class ScrollQueue {
-  private resolve: (() => void) | null = null
+  private resolve: ((value?: any) => void) | null = null
   private promise: Promise<any> | null = null
 
   add() {
