@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory, useRoute } from '../../src'
+import { createRouter, createWebHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
-import { createApp, nextTick } from 'vue'
+import { createApp, defineComponent, nextTick, ref } from 'vue'
 
 const Home: RouteComponent = {
   template: `
@@ -56,6 +56,16 @@ const Parent: RouteComponent = {
   `,
 }
 
+const NestedTransition = defineComponent({
+  template: `
+      <router-view class="nested-view" mode="out-in" v-slot="{ Component }">
+        <transition name="none">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+  `,
+})
+
 const Default: RouteComponent = {
   template: '<div class="default">default</div>',
 }
@@ -76,13 +86,28 @@ const router = createRouter({
         { path: 'bar', component: Bar },
       ],
     },
+
+    {
+      path: '/nested',
+      component: NestedTransition,
+      children: [
+        { path: '', component: Default },
+        { path: 'foo', component: Foo },
+        { path: 'bar', component: Bar },
+      ],
+    },
   ],
 })
 const app = createApp({
   setup() {
+    const transitionName = ref('fade')
+    function toggleTransition() {
+      transitionName.value = transitionName.value === 'fade' ? 'none' : 'fade'
+    }
+
     return {
-      show: true,
-      route: useRoute(),
+      transitionName,
+      toggleTransition,
     }
   },
 
@@ -90,15 +115,20 @@ const app = createApp({
     <div id="app">
       <h1>Transitions</h1>
       <pre>CI: ${__CI__}</pre>
+      <button id="toggle-transition" @click="toggleTransition">Toggle Transition</button>
       <ul>
         <li><router-link to="/">/</router-link></li>
         <li><router-link to="/parent">/parent</router-link></li>
         <li><router-link to="/parent/foo">/parent/foo</router-link></li>
         <li><router-link to="/parent/bar">/parent/bar</router-link></li>
         <li><router-link to="/not-found">Not existing</router-link></li>
+
+        <li><router-link to="/nested">/nested</router-link></li>
+        <li><router-link to="/nested/foo">/nested/foo</router-link></li>
+        <li><router-link to="/nested/bar">/nested/bar</router-link></li>
       </ul>
       <router-view class="view" v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
+        <transition :name="transitionName" mode="out-in">
           <component :is="Component" />
         </transition>
       </router-view>

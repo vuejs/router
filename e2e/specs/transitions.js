@@ -51,4 +51,20 @@ module.exports = {
 
       .end()
   },
+
+  'out in transitions': function (browser) {
+    browser
+      .url('http://localhost:8080/transitions/')
+      .waitForElementPresent('#app > *', 1000)
+      .click('#toggle-transition')
+
+      .click('li:nth-child(7) a')
+      .assert.containsText('.nested-view', 'foo')
+      .click('li:nth-child(1) a')
+      .waitForElementPresent('.view.home', 1000)
+      .click('li:nth-child(7) a')
+      .assert.containsText('.nested-view', 'foo')
+
+      .end()
+  },
 }
