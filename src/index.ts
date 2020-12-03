@@ -23,6 +23,7 @@ export {
 
 export {
   routeLocationKey,
+  routerViewLocationKey,
   routerKey,
   matchedRouteKey,
   viewDepthKey,
