@@ -1,9 +1,7 @@
 set -e
-echo "Current version:" $(grep version package.json | sed -E 's/^.*"(4[^"]+)".*$/\1/')
-echo "Enter rc version e.g., 2 will generate 4.0.0-rc.2: "
-read RC_VERSION
-
-VERSION="4.0.0-rc.$RC_VERSION"
+echo "Current version:" $(grep version package.json | sed -E 's/^.*"([0-9][^"]+)".*$/\1/')
+echo "Enter version e.g., 4.0.1: "
+read VERSION
 
 read -p "Releasing v$VERSION - are you sure? (y/n)" -n 1 -r
 echo    # (optional) move to a new line
