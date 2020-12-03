@@ -47,6 +47,8 @@ const Home = defineComponent({
     </li>
   </ul>
 
+  <router-view />
+
   <dialog ref="modal" id="dialog">
     <div>
       <div v-if="userId">
@@ -110,6 +112,10 @@ const About = defineComponent({
   },
 })
 
+const Child = defineComponent({
+  template: `<div class="child">child</div>`,
+})
+
 const UserDetails = defineComponent({
   template: `<div>
     <h1>User #{{ id }}</h1>
@@ -121,8 +127,7 @@ const UserDetails = defineComponent({
   props: {
     id: {
       type: String,
-      // FIXME: setting this to true fails with props: true, as if it didn't fit the definition of RouteComponent
-      required: false,
+      required: true,
     },
   },
   data: () => ({ users }),
@@ -132,7 +137,14 @@ const webHistory = createWebHistory('/' + __dirname)
 const router = createRouter({
   history: webHistory,
   routes: [
-    { path: '/', component: Home },
+    {
+      path: '/',
+      component: Home,
+      children: [
+        // to check that displaying the modal doesn't change this
+        { path: '', component: Child },
+      ],
+    },
     { path: '/about', component: About },
     { path: '/users/:id', props: true, name: 'user', component: UserDetails },
   ],

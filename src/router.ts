@@ -56,7 +56,11 @@ import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
 import { warn } from './warning'
 import { RouterLink } from './RouterLink'
 import { RouterView } from './RouterView'
-import { routerKey, routeLocationKey } from './injectionSymbols'
+import {
+  routeLocationKey,
+  routerKey,
+  routerViewLocationKey,
+} from './injectionSymbols'
 import { addDevtools } from './devtools'
 
 /**
@@ -1098,6 +1102,7 @@ export function createRouter(options: RouterOptions): Router {
 
       app.provide(routerKey, router)
       app.provide(routeLocationKey, reactive(reactiveRoute))
+      app.provide(routerViewLocationKey, currentRoute)
 
       let unmountApp = app.unmount
       installedApps.add(app)

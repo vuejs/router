@@ -16,7 +16,10 @@ import {
 import { compile } from '@vue/compiler-dom'
 import * as runtimeDom from '@vue/runtime-dom'
 import { RouteLocationNormalizedLoose } from './utils'
-import { routeLocationKey } from '../src/injectionSymbols'
+import {
+  routeLocationKey,
+  routerViewLocationKey,
+} from '../src/injectionSymbols'
 import { Router } from '../src'
 
 export interface MountOptions {
@@ -183,6 +186,7 @@ export function createMockedRoute(initialValue: RouteLocationNormalizedLoose) {
     set,
     provides: {
       [routeLocationKey as symbol]: value,
+      [routerViewLocationKey as symbol]: routeRef,
     },
   }
 }

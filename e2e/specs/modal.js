@@ -14,11 +14,13 @@ module.exports = {
       .waitForElementPresent('#app > *', 1000)
       .assert.containsText('h1', 'Home')
       .assert.not.visible('dialog')
+      .assert.containsText('.child', 'child')
 
       .click('li:nth-child(2) button')
       .assert.urlEquals(baseURL + '/users/1')
       .assert.visible('dialog')
       .assert.containsText('dialog', 'User #1')
+      .assert.containsText('.child', 'child')
 
       .end()
   },

@@ -1,4 +1,4 @@
-import { InjectionKey, ComputedRef } from 'vue'
+import { InjectionKey, ComputedRef, Ref } from 'vue'
 import { RouteLocationNormalizedLoaded } from './types'
 import { Router } from './router'
 import { RouteRecordNormalized } from './matcher/types'
@@ -35,7 +35,8 @@ export const viewDepthKey = /*#__PURE__*/ PolySymbol(
 ) as InjectionKey<number>
 
 /**
- * Allows overriding the router instance returned by `useRouter` in tests. r stands for router
+ * Allows overriding the router instance returned by `useRouter` in tests. r
+ * stands for router
  *
  * @internal
  */
@@ -44,10 +45,21 @@ export const routerKey = /*#__PURE__*/ PolySymbol(
 ) as InjectionKey<Router>
 
 /**
- * Allows overriding the current route returned by `useRoute` in tests. rl stands for route location
+ * Allows overriding the current route returned by `useRoute` in tests. rl
+ * stands for route location
  *
  * @internal
  */
 export const routeLocationKey = /*#__PURE__*/ PolySymbol(
   __DEV__ ? 'route location' : 'rl'
 ) as InjectionKey<RouteLocationNormalizedLoaded>
+
+/**
+ * Allows overriding the current route used by router-view. Internally this is
+ * used when the `route` prop is passed.
+ *
+ * @internal
+ */
+export const routerViewLocationKey = /*#__PURE__*/ PolySymbol(
+  __DEV__ ? 'router view location' : 'rvl'
+) as InjectionKey<Ref<RouteLocationNormalizedLoaded>>

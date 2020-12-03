@@ -22,7 +22,7 @@ import {
 import {
   matchedRouteKey,
   viewDepthKey,
-  routeLocationKey,
+  routerViewLocationKey,
 } from './injectionSymbols'
 import { assign } from './utils'
 import { warn } from './warning'
@@ -47,14 +47,16 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
   setup(props, { attrs, slots }) {
     __DEV__ && warnDeprecatedUsage()
 
-    const injectedRoute = inject(routeLocationKey)!
+    const injectedRoute = inject(routerViewLocationKey)!
+    const routeToDisplay = computed(() => props.route || injectedRoute.value)
     const depth = inject(viewDepthKey, 0)
     const matchedRouteRef = computed<RouteLocationMatched | undefined>(
-      () => (props.route || injectedRoute).matched[depth]
+      () => routeToDisplay.value.matched[depth]
     )
 
     provide(viewDepthKey, depth + 1)
     provide(matchedRouteKey, matchedRouteRef)
+    provide(routerViewLocationKey, routeToDisplay)
 
     const viewRef = ref<ComponentPublicInstance>()
 
@@ -93,7 +95,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     )
 
     return () => {
-      const route = props.route || injectedRoute
+      const route = routeToDisplay.value
       const matchedRoute = matchedRouteRef.value
       const ViewComponent = matchedRoute && matchedRoute.components[props.name]
       // we need the value at the time we render because when we unmount, we
