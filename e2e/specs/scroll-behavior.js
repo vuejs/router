@@ -62,11 +62,7 @@ module.exports = {
         null,
         'restore scroll position on back again'
       )
-
-      .execute(function () {
-        // for Safari...
-        document.querySelector('li:nth-child(3) a').click()
-      })
+      .click('li:nth-child(3) a')
       .waitForElementPresent('.view.bar', TIMEOUT)
       .assert.evaluate(
         function () {
