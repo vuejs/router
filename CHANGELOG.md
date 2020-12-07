@@ -1,3 +1,14 @@
+# [4.0.0](https://github.com/vuejs/vue-router-next/compare/v4.0.0-rc.6...v4.0.0) (2020-12-07)
+
+### Bug Fixes
+
+- **router-view:** properly use route prop when nested ([b74051a](https://github.com/vuejs/vue-router-next/commit/b74051a6bde7524d1a7cc6cc1daacb213987faa0))
+- **router-view:** return one node when possible ([d18e500](https://github.com/vuejs/vue-router-next/commit/d18e500da2ed017be30871628a5cc59324bec15c)), closes [#537](https://github.com/vuejs/vue-router-next/issues/537)
+
+### Features
+
+- expose routerViewLocationKey as internal ([f498646](https://github.com/vuejs/vue-router-next/commit/f498646c3bc2ad480be7a3d0f11aa11710729911))
+
 # [4.0.0-rc.6](https://github.com/vuejs/vue-router-next/compare/v4.0.0-rc.5...v4.0.0-rc.6) (2020-11-30)
 
 ### Bug Fixes
