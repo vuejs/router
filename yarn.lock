@@ -2281,10 +2281,10 @@ chrome-trace-event@^1.0.2:
   dependencies:
     tslib "^1.9.0"
 
-chromedriver@^87.0.0:
-  version "87.0.0"
-  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-87.0.0.tgz#e8390deed8ada791719a67ad6bf1116614f1ba2d"
-  integrity sha512-PY7FnHOQKfH0oPfSdhpLx5nEy5g4dGYySf2C/WZGkAaCaldYH8/3lPPucZ8MlOCi4bCSGoKoCUTeG6+wYWavvw==
+chromedriver@^87.0.2:
+  version "87.0.2"
+  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-87.0.2.tgz#df6040db07aad180707f2442211dbd2ad1575f36"
+  integrity sha512-76JYSx9jt7byVYE+zQf25ISU0Cvla6YY8/0yKR7QtwBqGUkIxyupDIA0juGWDaXu/zis7H7EqzEExQjTnAZ7fQ==
   dependencies:
     "@testim/chrome-version" "^1.0.7"
     axios "^0.19.2"
@@ -2292,6 +2292,7 @@ chromedriver@^87.0.0:
     extract-zip "^2.0.1"
     https-proxy-agent "^5.0.0"
     mkdirp "^1.0.4"
+    proxy-from-env "^1.1.0"
     tcp-port-used "^1.0.1"
 
 ci-info@^1.5.0:
@@ -7586,7 +7587,7 @@ proxy-agent@^3.1.1:
     proxy-from-env "^1.0.0"
     socks-proxy-agent "^4.0.1"
 
-proxy-from-env@^1.0.0:
+proxy-from-env@^1.0.0, proxy-from-env@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/proxy-from-env/-/proxy-from-env-1.1.0.tgz#e102f16ca355424865755d2c9e8ea4f24d58c3e2"
   integrity sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==
