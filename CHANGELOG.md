@@ -1,3 +1,9 @@
+## [4.0.1](https://github.com/vuejs/vue-router-next/compare/v4.0.0...v4.0.1) (2020-12-07)
+
+### Bug Fixes
+
+- **build:** rollback rollup plugin commonjs ([9486950](https://github.com/vuejs/vue-router-next/commit/9486950f3399bda34ab2840b83fd123ac5ce7ce9))
+
 # [4.0.0](https://github.com/vuejs/vue-router-next/compare/v4.0.0-rc.6...v4.0.0) (2020-12-07)
 
 ### Bug Fixes
