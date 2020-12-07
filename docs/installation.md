@@ -2,7 +2,7 @@
 
 ## Direct Download / CDN
 
-[https://unpkg.com/vue-router@next](https://unpkg.com/vue-router@next)
+[https://unpkg.com/vue-router@4](https://unpkg.com/vue-router@4)
 
 <!--email_off-->
 
@@ -13,7 +13,7 @@
 ## npm
 
 ```bash
-npm install vue-router@next
+npm install vue-router@4
 ```
 
 ## Dev Build

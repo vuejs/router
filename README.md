@@ -1,18 +1,14 @@
 # vue-router-next [![release candidate](https://img.shields.io/npm/v/vue-router/next.svg)](https://www.npmjs.com/package/vue-router/v/next) [![CircleCI](https://circleci.com/gh/vuejs/vue-router-next.svg?style=svg)](https://circleci.com/gh/vuejs/vue-router-next)
 
-## Status: Release Candidate
-
-- Most RFCs have been merged.
-- All [merged RFCs](https://github.com/vuejs/rfcs/pulls?q=is%3Apr+is%3Amerged+label%3A3.x+label%3Arouter) have been implemented.
-- [Documentation](https://next.router.vuejs.org).
+This is the repository for Vue Router 4 (for Vue 3)
 
 ## Quickstart
 
-- Via CDN: `<script src="https://unpkg.com/vue-router@next"></script>`
+- Via CDN: `<script src="https://unpkg.com/vue-router@4"></script>`
 - In-browser playground on [CodeSandbox](https://codesandbox.io/s/vue-router-4-reproduction-hb9lh)
 - Add it to an existing Vue Project:
   ```bash
-  npm install vue-router@next
+  npm install vue-router@4
   ```
 
 ## Changes from Vue Router 3
