@@ -1,4 +1,4 @@
-# Route Matching Syntax
+# Routes' Matching Syntax
 
 Most applications will use static routes like `/about` and dynamic routes like `/users/:userId` like we just saw in [Dynamic Route Matching](./dynamic-matching.md), but Vue Router has much more to offer!
 
@@ -30,11 +30,15 @@ const routes = [
 ]
 ```
 
-Make sure to **escape backslashes `\`** like we did with `\d` to actually pass the backslash character to a string in JavaScript.
+Now, going to `/25` will match `/:orderId` while going to anything else will match `/:productName`. The order of the `routes` array doesn't even matter!
+
+:::tip
+Make sure to **escape backslashes (`\`)** like we did with `\d` (becomes `\\d`) to actually pass the backslash character in a string in JavaScript.
+:::
 
 ## Repeatable params
 
-If you need to match routes with multiple sections like `/first/second/third`, you can mark a param as repeatable with `*` (0 or more) and `+` (1 or more):
+If you need to match routes with multiple sections like `/first/second/third`, you should mark a param as repeatable with `*` (0 or more) and `+` (1 or more):
 
 ```js
 const routes = [
@@ -64,14 +68,16 @@ These can also be combined with custom Regexp by adding them **after the closing
 ```js
 const routes = [
   // only match numbers
+  // matches /1, /1/2, etc
   { path: '/:chapters(\\d+)+' },
+  // matches /, /1, /1/2, etc
   { path: '/:chapters(\\d+)*' },
 ]
 ```
 
 ## Optional parameters
 
-You can also mark a parameter as optional by using the `?` modifier:
+You can also mark a parameter as optional by using the `?` modifier (0 or 1):
 
 ```js
 const routes = [
@@ -82,7 +88,7 @@ const routes = [
 ]
 ```
 
-Note that `*` also marks the parameter as optional but cannot be repeated
+Note that `*` technically also marks a parameter as optional but `?` parameters cannot be repeated.
 
 ## Debugging
 
