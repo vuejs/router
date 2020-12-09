@@ -417,22 +417,6 @@ _Parameters_
 | parentName | `string                             | symbol`             | Parent Route Record where `route` should be appended at |
 | route      | [`RouteRecordRaw`](#routerecordraw) | Route Record to add |
 
-### addRoute
-
-Add a new [route record](#routerecordraw) to the router. If the route has a `name` and there is already an existing one with the same one, it removes it first.
-
-**Signature:**
-
-```typescript
-addRoute(route: RouteRecordRaw): () => void
-```
-
-_Parameters_
-
-| Parameter | Type                                | Description         |
-| --------- | ----------------------------------- | ------------------- |
-| route     | [`RouteRecordRaw`](#routerecordraw) | Route Record to add |
-
 :::tip
 Note adding routes does not trigger a new navigation, meaning that the added route will not be displayed unless a new navigation is triggered.
 :::
