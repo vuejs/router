@@ -3,18 +3,18 @@
     <template #navbar-search>
       <AlgoliaSearchBox :options="$site.themeConfig.algolia" />
     </template>
-    <template #page-top-ads>
+    <template #page-top>
       <CarbonAds
         v-if="$site.themeConfig.carbonAds"
-        :key="'carbon' + $page.path"
+        :key="'carbon' + $page.relativePath"
         :code="$site.themeConfig.carbonAds.carbon"
         :placement="$site.themeConfig.carbonAds.placement"
       />
     </template>
-    <template #page-bottom-ads>
+    <template #page-bottom>
       <BuySellAds
         v-if="$site.themeConfig.carbonAds"
-        :key="'custom' + $page.path"
+        :key="'custom' + $page.relativePath"
         :code="$site.themeConfig.carbonAds.custom"
         :placement="$site.themeConfig.carbonAds.placement"
       />
