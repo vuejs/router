@@ -5,7 +5,7 @@ Creating a Single-page Application with Vue + Vue Router feels natural: with Vue
 ## HTML
 
 ```html
-<script src="https://unpkg.com/vue@4"></script>
+<script src="https://unpkg.com/vue@3"></script>
 <script src="https://unpkg.com/vue-router@4"></script>
 
 <div id="app">
