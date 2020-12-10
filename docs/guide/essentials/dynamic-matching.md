@@ -88,7 +88,7 @@ const routes = [
 ]
 ```
 
-In this specific scenario we are using a [custom regexp](/guide/advanced/path-matching.md#custom-regexp) between parentheses and marking the `pathMatch` param as [optionally repeatable](/guide/advanced/path-matching.md#zero-or-more). This is to allow us to directly navigate to the route if we need to by splitting the `path` into an array:
+In this specific scenario we are using a [custom regexp](/guide/essentials/route-matching-syntax.md#custom-regexp-in-params) between parentheses and marking the `pathMatch` param as [optionally repeatable](/guide/essentials/route-matching-syntax.md#optional-parameters). This is to allows us to directly navigate to the route if we need to by splitting the `path` into an array:
 
 ```js
 this.$router.push({
@@ -97,7 +97,7 @@ this.$router.push({
 })
 ```
 
-See more in the [repeated params](/guide/advanced/path-matching.md#zero-or-more) section.
+See more in the [repeated params](/guide/essentials/route-matching-syntax.md#repeatable-params) section.
 
 If you are using [History mode](./history-mode.md), make sure to follow the instructions to correctly configure your server as well.
 
