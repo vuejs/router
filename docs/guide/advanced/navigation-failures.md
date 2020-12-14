@@ -71,7 +71,7 @@ All navigation failures expose `to` and `from` properties to reflect the current
 
 ```js
 // trying to access the admin page
-router.push('/admin').catch(failure => {
+router.push('/admin').push(failure => {
   if (isNavigationFailure(failure, NavigationFailureType.redirected)) {
     failure.to.path // '/admin'
     failure.from.path // '/'
