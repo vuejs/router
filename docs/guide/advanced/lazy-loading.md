@@ -37,7 +37,7 @@ When using Babel, you will need to add the [syntax-dynamic-import](https://babel
 
 ## Grouping Components in the Same Chunk
 
-Sometimes we may want to group all the components nested under the same route into the same async chunk. To achieve that we need to use [named chunks](https://webpack.js.org/guides/code-splitting/#dynamic-imports) by providing a chunk name using a special comment syntax (requires webpack > 2.4):
+Sometimes we may want to group all the components nested under the same route into the same async chunk. To achieve that we need to use [named chunks](https://webpack.js.org/concepts/under-the-hood/#chunks) by providing a chunk name using a special comment syntax (requires webpack > 2.4):
 
 ```js
 const UserDetails = () =>
