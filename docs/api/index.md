@@ -370,7 +370,7 @@ export declare function useRoute(): RouteLocationNormalized
 
 ### useRouter
 
-Returns the [router](#Router) instance. Equivalent to using `$router` inside templates. Must be called inside of `setup()`.
+Returns the [router](#router-properties) instance. Equivalent to using `$router` inside templates. Must be called inside of `setup()`.
 
 **Signature:**
 
