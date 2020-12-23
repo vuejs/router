@@ -27,6 +27,7 @@ export type RouteParamsRaw = Record<
   RouteParamValueRaw | RouteParamValueRaw[]
 >
 
+// TODO: document, mark as internal and export intermediate types for RouteLocationRaw
 export interface RouteQueryAndHash {
   query?: LocationQueryRaw
   hash?: string

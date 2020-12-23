@@ -522,6 +522,7 @@ export function createRouter(options: RouterOptions): Router {
   function locationAsObject(
     to: RouteLocationRaw | RouteLocationNormalized
   ): Exclude<RouteLocationRaw, string> | RouteLocationNormalized {
+    // FIXME: does not take into account query params
     return typeof to === 'string' ? { path: to } : assign({}, to)
   }
 
@@ -586,7 +587,9 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   function pushWithRedirect(
+    // TODO: should only be RouteLocation?
     to: RouteLocationRaw | RouteLocation,
+    // TODO: add replace here
     redirectedFrom?: RouteLocation
   ): Promise<NavigationFailure | void | undefined> {
     const targetLocation: RouteLocation = (pendingLocation = resolve(to))
