@@ -13,13 +13,24 @@ export type Immutable<T> = {
   readonly [P in keyof T]: Immutable<T[P]>
 }
 
+/**
+ * Type to transform a static object into one that allows passing Refs as
+ * values.
+ * @internal
+ */
 export type VueUseOptions<T> = {
   [k in keyof T]: Ref<T[k]> | T[k] | ComputedRef<T[k]>
 }
 
 export type TODO = any
 
+/**
+ * @internal
+ */
 export type RouteParamValue = string
+/**
+ * @internal
+ */
 export type RouteParamValueRaw = RouteParamValue | number
 export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
 export type RouteParamsRaw = Record<
@@ -27,11 +38,17 @@ export type RouteParamsRaw = Record<
   RouteParamValueRaw | RouteParamValueRaw[]
 >
 
-// TODO: document, mark as internal and export intermediate types for RouteLocationRaw
+/**
+ * @internal
+ */
 export interface RouteQueryAndHash {
   query?: LocationQueryRaw
   hash?: string
 }
+
+/**
+ * @internal
+ */
 export interface LocationAsPath {
   path: string
 }
@@ -41,6 +58,9 @@ export interface LocationAsName {
   params?: RouteParams
 }
 
+/**
+ * @internal
+ */
 export interface LocationAsRelativeRaw {
   name?: RouteRecordName
   params?: RouteParamsRaw
@@ -157,9 +177,18 @@ export interface RouteLocationNormalized extends _RouteLocationBase {
   matched: RouteRecordNormalized[] // non-enumerable
 }
 
+/**
+ * Allowed Component in {@link RouteLocationMatched}
+ */
 export type RouteComponent = Component
+/**
+ * Allowed Component definitions in route records provided by the user
+ */
 export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
 
+/**
+ * Possible values for a user-defined route record's name
+ */
 export type RouteRecordName = string | symbol
 
 /**
@@ -221,6 +250,9 @@ export interface _RouteRecordBase extends PathParserOptions {
  */
 export interface RouteMeta extends Record<string | number | symbol, any> {}
 
+/**
+ * @internal
+ */
 export type RouteRecordRedirectOption =
   | RouteLocationRaw
   | ((to: RouteLocation) => RouteLocationRaw)

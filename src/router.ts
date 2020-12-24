@@ -67,7 +67,7 @@ import { addDevtools } from './devtools'
  * Internal type to define an ErrorHandler
  * @internal
  */
-export type ErrorHandler = (error: any) => any
+export type _ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor
 type OnReadyCallback = [() => void, (reason?: any) => void]
 
@@ -304,7 +304,7 @@ export interface Router {
    *
    * @param handler - error handler to register
    */
-  onError(handler: ErrorHandler): () => void
+  onError(handler: _ErrorHandler): () => void
   /**
    * Returns a Promise that resolves when the router has completed the initial
    * navigation, which means it has resolved all async enter hooks and async
@@ -978,7 +978,7 @@ export function createRouter(options: RouterOptions): Router {
   // Initialization and Errors
 
   let readyHandlers = useCallbacks<OnReadyCallback>()
-  let errorHandlers = useCallbacks<ErrorHandler>()
+  let errorHandlers = useCallbacks<_ErrorHandler>()
   let ready: boolean
 
   /**

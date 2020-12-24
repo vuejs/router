@@ -18,6 +18,11 @@ import {
 import { warn } from '../warning'
 import { assign, noop } from '../utils'
 
+/**
+ * Internal RouterMatcher
+ *
+ * @internal
+ */
 export interface RouterMatcher {
   addRoute: (record: RouteRecordRaw, parent?: RouteRecordMatcher) => () => void
   removeRoute: {

@@ -4,6 +4,9 @@ import { removeTrailingSlash } from '../location'
 export type HistoryLocation = string
 // pushState clones the state passed and do not accept everything
 // it doesn't accept symbols, nor functions as values. It also ignores Symbols as keys
+/**
+ * Allowed variables in HTML5 history state
+ */
 type HistoryStateValue =
   | string
   | number
@@ -13,6 +16,9 @@ type HistoryStateValue =
   | HistoryState
   | HistoryStateArray
 
+/**
+ * Allowed HTML history.state
+ */
 export interface HistoryState {
   [x: number]: HistoryStateValue
   [x: string]: HistoryStateValue

@@ -56,7 +56,7 @@ export interface RouterLinkProps extends RouterLinkOptions {
     | 'false'
 }
 
-type UseLinkOptions = VueUseOptions<RouterLinkOptions>
+export type UseLinkOptions = VueUseOptions<RouterLinkOptions>
 
 // TODO: we could allow currentRoute as a prop to expose `isActive` and
 // `isExactActive` behavior should go through an RFC
