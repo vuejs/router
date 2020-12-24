@@ -36,6 +36,8 @@ export interface RouterViewProps {
 
 export const RouterViewImpl = /*#__PURE__*/ defineComponent({
   name: 'RouterView',
+  // #674 we manually inherit them
+  inheritAttrs: false,
   props: {
     name: {
       type: String as PropType<string>,

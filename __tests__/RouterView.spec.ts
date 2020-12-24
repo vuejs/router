@@ -293,6 +293,15 @@ describe('RouterView', () => {
     expect(wrapper.html()).toBe(`<div>id:foo;other:fixed</div>`)
   })
 
+  it('inherit attributes', async () => {
+    const { wrapper } = await factory(routes.withIdAndOther, {
+      'data-test': 'true',
+    })
+    expect(wrapper.html()).toBe(
+      `<div data-test="true">id:foo;other:fixed</div>`
+    )
+  })
+
   it('can pass a function as props', async () => {
     const { wrapper } = await factory(routes.withFnProps)
     expect(wrapper.html()).toBe(`<div>id:2;other:page</div>`)
