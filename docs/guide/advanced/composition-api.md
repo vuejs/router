@@ -7,6 +7,8 @@ The introduction of `setup` and Vue's [Composition API](https://v3.vuejs.org/gui
 Because we don't have access to `this` inside of `setup`, we cannot directly access `this.$router` or `this.$route` anymore. Instead we use the `useRouter` function:
 
 ```js
+import { useRouter, useRoute } from 'vue-router'
+
 export default {
   setup() {
     const router = useRouter()
@@ -27,6 +29,8 @@ export default {
 The `route` object is a reactive object, so any of its properties can be watched and you should **avoid watching the whole `route`** object:
 
 ```js
+import { useRoute } from 'vue-router'
+
 export default {
   setup() {
     const route = useRoute()
