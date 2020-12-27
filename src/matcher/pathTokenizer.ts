@@ -147,7 +147,6 @@ export function tokenizePath(path: string): Array<Token[]> {
       case TokenizerState.Param:
         if (char === '(') {
           state = TokenizerState.ParamRegExp
-          customRe = ''
         } else if (VALID_PARAM_RE.test(char)) {
           addCharToBuffer()
         } else {
@@ -180,6 +179,7 @@ export function tokenizePath(path: string): Array<Token[]> {
         state = TokenizerState.Static
         // go back one character if we were not modifying
         if (char !== '*' && char !== '?' && char !== '+') i--
+        customRe = ''
         break
 
       default:
