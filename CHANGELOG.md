@@ -1,3 +1,14 @@
+## [4.0.2](https://github.com/vuejs/vue-router-next/compare/v4.0.1...v4.0.2) (2020-12-27)
+
+### Bug Fixes
+
+- **matcher:** clear customRe after consuming buffer ([#680](https://github.com/vuejs/vue-router-next/issues/680)) ([4c0b825](https://github.com/vuejs/vue-router-next/commit/4c0b82507e1f949d55daffd06756615cd704e090)), closes [#679](https://github.com/vuejs/vue-router-next/issues/679)
+- **router:** allow replace to have query and hash ([6a8ccb6](https://github.com/vuejs/vue-router-next/commit/6a8ccb6e3b80aef00dda7e73be2afb433d871a32)), closes [#668](https://github.com/vuejs/vue-router-next/issues/668)
+- **router:** do not restore history when ... ([db267be](https://github.com/vuejs/vue-router-next/commit/db267be72bace7c99a0c65669ab04ce770e1532c)), closes [#662](https://github.com/vuejs/vue-router-next/issues/662)
+- **router-view:** disable inheritAttrs ([1e58574](https://github.com/vuejs/vue-router-next/commit/1e58574e6175f591f7fb24bcfc6e11045e7b0148)), closes [#674](https://github.com/vuejs/vue-router-next/issues/674)
+- **types:** add missing exported types ([034c71c](https://github.com/vuejs/vue-router-next/commit/034c71c72ca46d242daf53ae54ab67e6f7800f91))
+- spread operator compatible ([a2f3e91](https://github.com/vuejs/vue-router-next/commit/a2f3e91cb3e3ae61118d803ce938d6f4eea76116))
+
 ## [4.0.1](https://github.com/vuejs/vue-router-next/compare/v4.0.0...v4.0.1) (2020-12-07)
 
 ### Bug Fixes
