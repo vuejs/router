@@ -24,20 +24,3 @@ export function applyToParams(
 }
 
 export let noop = () => {}
-
-export const omit = <T extends Record<string, any>>(
-  object: T,
-  paths: Array<keyof T>
-) => {
-  const result: Record<string, any> = {}
-  for (let key in object) {
-    if (
-      paths.indexOf(key) >= 0 ||
-      !Object.prototype.hasOwnProperty.call(object, key)
-    ) {
-      continue
-    }
-    result[key] = object[key]
-  }
-  return result
-}
