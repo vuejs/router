@@ -1,7 +1,7 @@
 import {
   App,
   CustomInspectorNode,
-  CustomInspectorNodeTag,
+  InspectorNodeTag,
   CustomInspectorState,
   HookPayloads,
   setupDevtoolsPlugin,
@@ -332,7 +332,7 @@ const DARK = 0x666666
 function formatRouteRecordForInspector(
   route: RouteRecordMatcher
 ): CustomInspectorNode {
-  const tags: CustomInspectorNodeTag[] = []
+  const tags: InspectorNodeTag[] = []
 
   const { record } = route
 

@@ -71,7 +71,7 @@
     "@types/webpack": "^4.41.25",
     "@types/webpack-env": "^1.16.0",
     "@vue/compiler-sfc": "^3.0.3",
-    "@vue/devtools-api": "^6.0.0-beta.2",
+    "@vue/devtools-api": "^6.0.0-beta.3",
     "@vue/server-renderer": "^3.0.3",
     "algoliasearch": "^4.8.3",
     "axios": "^0.21.0",
