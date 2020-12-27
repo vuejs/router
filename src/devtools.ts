@@ -15,18 +15,18 @@ import { RouteRecordMatcher } from './matcher/pathMatcher'
 import { PathParser } from './matcher/pathParserRanker'
 import { Router } from './router'
 import { RouteLocationNormalized } from './types'
+import { assign } from './utils'
 
 function formatRouteLocation(
   routeLocation: RouteLocationNormalized,
   tooltip?: string
 ) {
-  const copy = {
-    ...routeLocation,
+  const copy = assign({}, routeLocation, {
     // remove variables that can contain vue instances
-    matched: routeLocation.matched.map(
-      ({ instances, children, aliasOf, ...rest }) => rest
+    matched: routeLocation.matched.map(matched =>
+      omit(matched, ['instances', 'children', 'aliasOf'])
     ),
-  }
+  })
 
   return {
     _custom: {
@@ -471,4 +471,18 @@ function isRouteMatching(route: RouteRecordMatcher, filter: string): boolean {
     return true
 
   return route.children.some(child => isRouteMatching(child, filter))
+}
+
+function omit<T extends object, K extends [...(keyof T)[]]>(obj: T, keys: K) {
+  const ret = {} as {
+    [K2 in Exclude<keyof T, K[number]>]: T[K2]
+  }
+
+  for (let key in obj) {
+    if (!keys.includes(key as any)) {
+      // @ts-ignore
+      ret[key] = obj[key]
+    }
+  }
+  return ret
 }
