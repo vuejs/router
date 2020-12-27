@@ -934,8 +934,14 @@ export function createRouter(options: RouterOptions): Router {
           if (
             isNavigationFailure(error, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
           ) {
-            // do not restore history on unknown direction
-            if (info.delta) routerHistory.go(-info.delta, false)
+            // Here we could call if (info.delta) routerHistory.go(-info.delta,
+            // false) but this is bug prone as we have no way to wait the
+            // navigation to be finished before calling pushWithRedirect. Using
+            // a setTimeout of 16ms seems to work but there is not guarantee for
+            // it to work on every browser. So Instead we do not restore the
+            // history entry and trigger a new navigation as requested by the
+            // navigation guard.
+
             // the error is already handled by router.push we just want to avoid
             // logging the error
             pushWithRedirect(
