@@ -522,8 +522,9 @@ export function createRouter(options: RouterOptions): Router {
   function locationAsObject(
     to: RouteLocationRaw | RouteLocationNormalized
   ): Exclude<RouteLocationRaw, string> | RouteLocationNormalized {
-    // FIXME: does not take into account query params
-    return typeof to === 'string' ? { path: to } : assign({}, to)
+    return typeof to === 'string'
+      ? parseURL(parseQuery, to, currentRoute.value.path)
+      : assign({}, to)
   }
 
   function checkCanceledNavigation(
@@ -553,10 +554,16 @@ export function createRouter(options: RouterOptions): Router {
     const lastMatched = to.matched[to.matched.length - 1]
     if (lastMatched && lastMatched.redirect) {
       const { redirect } = lastMatched
-      // transform it into an object to pass the original RouteLocaleOptions
-      let newTargetLocation = locationAsObject(
+      let newTargetLocation =
         typeof redirect === 'function' ? redirect(to) : redirect
-      )
+
+      if (typeof newTargetLocation === 'string') {
+        newTargetLocation =
+          newTargetLocation.indexOf('?') > -1 ||
+          newTargetLocation.indexOf('#') > -1
+            ? (newTargetLocation = locationAsObject(newTargetLocation))
+            : { path: newTargetLocation }
+      }
 
       if (
         __DEV__ &&
@@ -587,9 +594,7 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   function pushWithRedirect(
-    // TODO: should only be RouteLocation?
     to: RouteLocationRaw | RouteLocation,
-    // TODO: add replace here
     redirectedFrom?: RouteLocation
   ): Promise<NavigationFailure | void | undefined> {
     const targetLocation: RouteLocation = (pendingLocation = resolve(to))
@@ -603,7 +608,11 @@ export function createRouter(options: RouterOptions): Router {
 
     if (shouldRedirect)
       return pushWithRedirect(
-        assign(shouldRedirect, { state: data, force, replace }),
+        assign(locationAsObject(shouldRedirect), {
+          state: data,
+          force,
+          replace,
+        }),
         // keep original redirectedFrom if it exists
         redirectedFrom || targetLocation
       )

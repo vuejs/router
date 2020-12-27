@@ -31,6 +31,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/to-foo', redirect: '/foo' },
   { path: '/to-foo-named', redirect: { name: 'Foo' } },
   { path: '/to-foo2', redirect: '/to-foo' },
+  { path: '/to-foo-query', redirect: '/foo?a=2#b' },
   { path: '/to-p/:p', redirect: { name: 'Param' } },
   { path: '/p/:p', name: 'Param', component: components.Bar },
   { path: '/repeat/:r+', name: 'repeat', component: components.Bar },
@@ -113,6 +114,18 @@ describe('Router', () => {
     await router.replace('/foo')
     expect(history.replace).toHaveBeenCalledTimes(1)
     expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
+  })
+
+  it('parses query and hash with router.replace', async () => {
+    const history = createMemoryHistory()
+    const { router } = await newRouter({ history })
+    jest.spyOn(history, 'replace')
+    await router.replace('/foo?q=2#a')
+    expect(history.replace).toHaveBeenCalledTimes(1)
+    expect(history.replace).toHaveBeenCalledWith(
+      '/foo?q=2#a',
+      expect.anything()
+    )
   })
 
   it('replaces if a guard redirects', async () => {
@@ -534,6 +547,22 @@ describe('Router', () => {
       expect(loc.name).toBe('Foo')
       expect(loc.redirectedFrom).toMatchObject({
         path: '/to-foo2',
+      })
+    })
+
+    it('handles query and hash passed in redirect string', async () => {
+      const history = createMemoryHistory()
+      const router = createRouter({ history, routes })
+      await expect(router.push('/to-foo-query')).resolves.toEqual(undefined)
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Foo',
+        path: '/foo',
+        params: {},
+        query: { a: '2' },
+        hash: '#b',
+        redirectedFrom: expect.objectContaining({
+          fullPath: '/to-foo-query',
+        }),
       })
     })
 
