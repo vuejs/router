@@ -147,6 +147,29 @@ describe('Path parser', () => {
       ])
     })
 
+    it('param custom re followed by param without regex', () => {
+      expect(tokenizePath('/:one(\\d+)/:two')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'one',
+            regexp: '\\d+',
+            repeatable: false,
+            optional: false,
+          },
+        ],
+        [
+          {
+            type: TokenType.Param,
+            value: 'two',
+            regexp: '',
+            repeatable: false,
+            optional: false,
+          },
+        ],
+      ])
+    })
+
     it('param custom re?', () => {
       expect(tokenizePath('/:id(\\d+)?')).toEqual([
         [
