@@ -52,7 +52,9 @@ function registerGuard(
  */
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
   if (__DEV__ && !getCurrentInstance()) {
-    warn('onBeforeRouteLeave must be called at the top of a setup function')
+    warn(
+      'getCurrentInstance() returned null. onBeforeRouteLeave() must be called at the top of a setup function'
+    )
     return
   }
 
@@ -63,7 +65,9 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
 
   if (!activeRecord) {
     __DEV__ &&
-      warn('onBeforeRouteLeave must be called at the top of a setup function')
+      warn(
+        'No active route record was found. Are you missing a <router-view> component?'
+      )
     return
   }
 
@@ -79,7 +83,9 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
  */
 export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
   if (__DEV__ && !getCurrentInstance()) {
-    warn('onBeforeRouteUpdate must be called at the top of a setup function')
+    warn(
+      'getCurrentInstance() returned null. onBeforeRouteUpdate() must be called at the top of a setup function'
+    )
     return
   }
 
@@ -90,7 +96,9 @@ export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
 
   if (!activeRecord) {
     __DEV__ &&
-      warn('onBeforeRouteUpdate must be called at the top of a setup function')
+      warn(
+        'No active route record was found. Are you missing a <router-view> component?'
+      )
     return
   }
 
