@@ -253,7 +253,7 @@ export function extractComponentsGuards(
           )
           let promise = rawComponent
           rawComponent = () => promise
-        } else if ((rawComponent as any)['__asyncLoader']) {
+        } else if ((rawComponent as any).__asyncLoader) {
           let asyncComponent = rawComponent
           rawComponent = () => Promise.resolve(asyncComponent)
           warn(
