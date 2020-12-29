@@ -954,7 +954,6 @@ export function createRouter(options: RouterOptions): Router {
             // the error is already handled by router.push we just want to avoid
             // logging the error
             pushWithRedirect(
-              // TODO: should we force replace: true
               (error as NavigationRedirectError).to,
               toLocation
               // avoid an uncaught rejection, let push call triggerError
