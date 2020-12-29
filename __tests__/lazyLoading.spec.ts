@@ -3,7 +3,7 @@ import { createRouter, createMemoryHistory } from '../src'
 import { RouterOptions } from '../src/router'
 import { RouteComponent } from '../src/types'
 import { ticks } from './utils'
-import { defineAsyncComponent, FunctionalComponent, h } from 'vue'
+import { FunctionalComponent, h } from 'vue'
 import { mockWarn } from 'jest-mock-warn'
 
 function newRouter(options: Partial<RouterOptions> = {}) {
@@ -18,19 +18,6 @@ function createLazyComponent() {
 
   return {
     component: jest.fn(() => promise.then(() => ({} as RouteComponent))),
-    promise,
-    resolve,
-    reject,
-  }
-}
-
-function createLazyAsyncComponent() {
-  const [promise, resolve, reject] = fakePromise()
-
-  return {
-    component: jest.fn(() =>
-      promise.then(() => defineAsyncComponent(() => Promise.resolve({})))
-    ),
     promise,
     resolve,
     reject,
@@ -52,19 +39,6 @@ describe('Lazy Loading', () => {
     resolve()
 
     await p
-    expect(router.currentRoute.value).toMatchObject({
-      path: '/foo',
-      matched: [{}],
-    })
-  })
-
-  it('works with async components', async () => {
-    const { component, resolve } = createLazyAsyncComponent()
-    const { router } = newRouter({
-      routes: [{ path: '/foo', component }],
-    })
-    resolve()
-    await router.push('/foo')
     expect(router.currentRoute.value).toMatchObject({
       path: '/foo',
       matched: [{}],
