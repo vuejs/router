@@ -257,8 +257,10 @@ export function extractComponentsGuards(
           let asyncComponent = rawComponent
           rawComponent = () => Promise.resolve(asyncComponent)
           warn(
-            `Async component in record with path "${record.path}" can not be used in routes. ` +
-              `It can still be used inside route components but route component themselves are just dynamic imports.`
+            `Component "${name}" in record with path "${record.path}" is defined ` +
+              `using "defineAsyncComponent()". ` +
+              `Write "() => import('./MyPage.vue')" instead of ` +
+              `"defineAsyncComponent(() => import('./MyPage.vue'))".`
           )
         }
       }
