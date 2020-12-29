@@ -15,7 +15,7 @@ const router = createRouter({
 })
 ```
 
-Going to any page, `/about`, `/store`, or `/3-tricks-to-improve-your-routing-code` ends up rendering the `Article` component. If we are on `/about` and we are a new route:
+Going to any page, `/about`, `/store`, or `/3-tricks-to-improve-your-routing-code` ends up rendering the `Article` component. If we are on `/about` and we add a new route:
 
 ```js
 router.addRoute({ path: '/about', component: About })
