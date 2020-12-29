@@ -253,6 +253,13 @@ export function extractComponentsGuards(
           )
           let promise = rawComponent
           rawComponent = () => promise
+        } else if ((rawComponent as any)['__asyncLoader']) {
+          let asyncComponent = rawComponent
+          rawComponent = () => Promise.resolve(asyncComponent)
+          warn(
+            `Async component in record with path "${record.path}" can not be used in routes. ` +
+              `It can still be used inside route components but route component themselves are just dynamic imports.`
+          )
         }
       }
 
@@ -294,6 +301,10 @@ export function extractComponentsGuards(
             const resolvedComponent = isESModule(resolved)
               ? resolved.default
               : resolved
+            // __asyncLoader is added by defineAsyncCompoent
+            if (__DEV__ && '__asyncLoader' in resolvedComponent) {
+              resolvedComponent.__asyncLoader = null
+            }
             // replace the function with the resolved component
             record.components[name] = resolvedComponent
             // @ts-ignore: the options types are not propagated to Component
