@@ -6,8 +6,8 @@ import { warn } from '../warning'
  * Creates a hash history. Useful for web applications with no host (e.g.
  * `file://`) or when configuring a server to handle any URL is not possible.
  *
- * @param base - optional base to provide. Defaults to `location.pathname` or
- * `/` if at root. If there is a `<base>` tag in the `head`, its value will be
+ * @param base - optional base to provide. Defaults to `location.pathname +
+ * location.search` If there is a `<base>` tag in the `head`, its value will be
  * ignored in favor of this parameter **but note it affects all the
  * history.pushState() calls**, meaning that if you use a `<base>` tag, it's
  * `href` value **has to match this parameter** (ignoring anything after the
@@ -32,7 +32,7 @@ export function createWebHashHistory(base?: string): RouterHistory {
   // Make sure this implementation is fine in terms of encoding, specially for IE11
   // for `file://`, directly use the pathname and ignore the base
   // location.pathname contains an initial `/` even at the root: `https://example.com`
-  base = location.host ? base || location.pathname : ''
+  base = location.host ? base || location.pathname + location.search : ''
   // allow the user to provide a `#` in the middle: `/base/#/app`
   if (base.indexOf('#') < 0) base += '#'
 

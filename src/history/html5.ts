@@ -202,11 +202,21 @@ function useHistoryStateNavigation(base: string) {
     state: StateEntry,
     replace: boolean
   ): void {
-    // when the base has a `#`, only use that for the URL
+    /**
+     * if a base tag is provided and we are on a normal domain, we have to
+     * respect the provided `base` attribute because pushState() will use it and
+     * potentially erase anything before the `#` like at
+     * https://github.com/vuejs/vue-router-next/issues/685 where a base of
+     * `/folder/#` but a base of `/` would erase the `/folder/` section. If
+     * there is no host, the `<base>` tag makes no sense and if there isn't a
+     * base tag we can just use everything after the `#`.
+     */
     const hashIndex = base.indexOf('#')
     const url =
       hashIndex > -1
-        ? base.slice(hashIndex) + to
+        ? (location.host && document.querySelector('base')
+            ? base
+            : base.slice(hashIndex)) + to
         : createBaseLocation() + base + to
     try {
       // BROWSER QUIRK

@@ -20,7 +20,7 @@ const Unicode: RouteComponent = {
 const router = createRouter({
   // keep a trailing slash in this specific case because we are using a hash
   // history
-  history: createWebHashHistory('/' + __dirname + '/#/'),
+  history: createWebHashHistory(),
   routes: [
     { path: '/', component: Home },
     { path: '/redirect', name: 'redirect', redirect: '/foo' },

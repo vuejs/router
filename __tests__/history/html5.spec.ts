@@ -95,7 +95,7 @@ describe('History HTMl5', () => {
 
   it('calls push with hash part of the url with a base', () => {
     dom.reconfigure({ url: 'file:///usr/etc/index.html' })
-    let history = createWebHistory('/usr/etc/index.html#/')
+    let history = createWebHistory('#')
     let spy = jest.spyOn(window.history, 'pushState')
     history.push('/foo')
     expect(spy).toHaveBeenCalledWith(

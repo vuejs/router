@@ -62,6 +62,7 @@ module.exports = {
       .execute(function () {
         window.history.replaceState(history.state, '', '/hash/#/foo')
       })
+      .assert.urlEquals(baseURL + '/foo')
       .click('li:nth-child(3) a')
       .assert.urlEquals(baseURL + '/bar')
       .back()
