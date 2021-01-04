@@ -43,7 +43,7 @@ export interface RouteRecordNormalized {
   /**
    * Registered beforeEnter guards
    */
-  beforeEnter: RouteRecordMultipleViews['beforeEnter']
+  beforeEnter: _RouteRecordBase['beforeEnter']
   /**
    * Registered leave guards
    *
