@@ -107,7 +107,7 @@
     "webpack": "^5.11.0",
     "webpack-bundle-analyzer": "^4.3.0",
     "webpack-cli": "^4.3.1",
-    "webpack-dev-server": "^3.11.0",
+    "webpack-dev-server": "^3.11.1",
     "yorkie": "^2.0.0"
   }
 }
