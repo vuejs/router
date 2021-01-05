@@ -848,7 +848,7 @@ describe('RouterLink', () => {
       )
 
       expect(wrapper.element.tagName).toBe('A')
-      expect(wrapper.element.children).toHaveLength(1)
+      expect(wrapper.element.childNodes).toHaveLength(1)
     })
 
     it('can customize the rendering and remove the wrapping `a`', async () => {
