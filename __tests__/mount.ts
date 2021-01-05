@@ -191,7 +191,7 @@ export function createMockedRoute(initialValue: RouteLocationNormalizedLoose) {
   }
 }
 
-function compileSlot(template: string) {
+export function compileSlot(template: string) {
   const codegen = compile(template, {
     mode: 'function',
     hoistStatic: true,
