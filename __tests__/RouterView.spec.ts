@@ -320,7 +320,7 @@ describe('RouterView', () => {
           <router-view/>
         </div>
         `,
-        } as any,
+        },
         {
           propsData: {},
           global: {
@@ -342,7 +342,7 @@ describe('RouterView', () => {
           <router-view/>
         </keep-alive>
         `,
-        } as any,
+        },
         {
           propsData: {},
           global: {
@@ -366,7 +366,7 @@ describe('RouterView', () => {
           </keep-alive>
         </transition>
         `,
-        } as any,
+        },
         {
           propsData: {},
           global: {
@@ -391,7 +391,7 @@ describe('RouterView', () => {
           <router-view/>
         </transition>
         `,
-        } as any,
+        },
         {
           propsData: {},
           global: {

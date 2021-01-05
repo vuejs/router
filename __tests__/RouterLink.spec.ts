@@ -10,7 +10,7 @@ import {
 } from '../src/types'
 import { createMemoryHistory, RouterOptions } from '../src'
 import { createMockedRoute, compileSlot } from './mount'
-import { defineComponent, nextTick, PropType } from 'vue'
+import { defineComponent, PropType } from 'vue'
 import { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/injectionSymbols'
 import { tick } from './utils'
@@ -796,7 +796,6 @@ describe('RouterLink', () => {
       locations.basic.normalized
     )
     wrapper.find('a')!.trigger('click')
-    await nextTick()
     expect(router.push).toHaveBeenCalledTimes(1)
   })
 
@@ -807,7 +806,6 @@ describe('RouterLink', () => {
       locations.alias.normalized
     )
     wrapper.find('a')!.trigger('click')
-    await nextTick()
     expect(router.push).toHaveBeenCalledTimes(1)
     expect(router.push).not.toHaveBeenCalledWith(
       expect.objectContaining({
