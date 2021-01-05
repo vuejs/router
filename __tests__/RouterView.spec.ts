@@ -11,7 +11,6 @@ import { markRaw } from 'vue'
 import { createMockedRoute, compileSlot } from './mount'
 import { mockWarn } from 'jest-mock-warn'
 import { mount } from '@vue/test-utils'
-import { tick } from './utils'
 
 // to have autocompletion
 function createRoutes<T extends Record<string, RouteLocationNormalizedLoose>>(
@@ -379,7 +378,6 @@ describe('RouterView', () => {
           },
         }
       )
-      await tick()
       expect(wrapper.html()).toBe(`<div>Home</div>`)
       expect('can no longer be used directly inside').toHaveBeenWarned()
     })
