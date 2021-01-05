@@ -1128,8 +1128,8 @@
 
 "@vue/test-utils@^2.0.0-beta.13":
   version "2.0.0-beta.13"
-  resolved "https://maven.carzone365.com/repository/npm-group/@vue/test-utils/-/test-utils-2.0.0-beta.13.tgz#482aa29f4e80a713e03e22b736d7465d56909e66"
-  integrity sha1-SCqin06ApxPgPiK3NtdGXVaQnmY=
+  resolved "https://registry.yarnpkg.com/@vue/test-utils/-/test-utils-2.0.0-beta.13.tgz#482aa29f4e80a713e03e22b736d7465d56909e66"
+  integrity sha512-Au+yGMBPvrtcmPP6W4ielTbNJd3equxVOq1iL0DvpAZJwkGOrdBfFTomMhANODiBVyIEE8HMxhr7YIwDHWO36w==
 
 "@webassemblyjs/ast@1.9.1":
   version "1.9.1"
