@@ -9,7 +9,7 @@ import {
   RouteLocationNormalized,
 } from '../src/types'
 import { createMemoryHistory, RouterOptions } from '../src'
-import { createMockedRoute, compileSlot } from './mount'
+import { createMockedRoute } from './mount'
 import { defineComponent, PropType } from 'vue'
 import { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/injectionSymbols'
@@ -380,7 +380,7 @@ async function factory(
         ...route.provides,
       },
     },
-    slots: { default: compileSlot(slotTemplate) },
+    slots: { default: slotTemplate },
   })
 
   return { router, wrapper, route }
@@ -818,13 +818,14 @@ describe('RouterLink', () => {
 
   describe('v-slot', () => {
     const slotTemplate = `
+      <template #default="{route,href,isActive,isExactActive}">
         <span>
           route: {{ JSON.stringify(route) }}
           href: "{{ href }}"
           isActive: "{{ isActive }}"
           isExactActive: "{{ isExactActive }}"
         </span>
-    `
+      </template>`
 
     it('provides information on v-slot', async () => {
       const { wrapper } = await factory(
@@ -846,7 +847,7 @@ describe('RouterLink', () => {
       )
 
       expect(wrapper.element.tagName).toBe('A')
-      expect(wrapper.element.childNodes).toHaveLength(1)
+      expect(wrapper.element.childElementCount).toBe(1)
     })
 
     it('can customize the rendering and remove the wrapping `a`', async () => {

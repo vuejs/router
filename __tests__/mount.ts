@@ -1,14 +1,4 @@
-import {
-  defineComponent,
-  h,
-  reactive,
-  nextTick,
-  ComputedRef,
-  computed,
-  shallowRef,
-} from 'vue'
-import { compile } from '@vue/compiler-dom'
-import * as runtimeDom from '@vue/runtime-dom'
+import { reactive, nextTick, ComputedRef, computed, shallowRef } from 'vue'
 import { RouteLocationNormalizedLoose } from './utils'
 import {
   routeLocationKey,
@@ -46,25 +36,4 @@ export function createMockedRoute(initialValue: RouteLocationNormalizedLoose) {
       [routerViewLocationKey as symbol]: routeRef,
     },
   }
-}
-
-export function compileSlot(template: string) {
-  const codegen = compile(template, {
-    mode: 'function',
-    hoistStatic: true,
-    prefixIdentifiers: true,
-  })
-
-  const render = new Function('Vue', codegen.code)(runtimeDom)
-
-  const ToRender = defineComponent({
-    render,
-    inheritAttrs: false,
-
-    setup(props, { attrs }) {
-      return { ...attrs }
-    },
-  })
-
-  return (propsData: any) => h(ToRender, { ...propsData })
 }

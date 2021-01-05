@@ -8,7 +8,7 @@ import {
   RouteLocationNormalized,
 } from '../src/types'
 import { markRaw } from 'vue'
-import { createMockedRoute, compileSlot } from './mount'
+import { createMockedRoute } from './mount'
 import { mockWarn } from 'jest-mock-warn'
 import { mount } from '@vue/test-utils'
 
@@ -421,10 +421,11 @@ describe('RouterView', () => {
           components: { RouterView },
         },
         slots: {
-          default: compileSlot(`
-          <span>{{ route.name }}</span>
-          <component :is="Component"/>
-        `),
+          default: `
+            <template #default="{route,Component}">
+              <span>{{ route.name }}</span>
+              <component :is="Component"/>
+            </template>`,
         },
       })
 
@@ -450,11 +451,12 @@ describe('RouterView', () => {
           components: { RouterView },
         },
         slots: {
-          default: compileSlot(`
-          <keep-alive>
-            <component :is="Component"/>
-          </keep-alive>
-        `),
+          default: `
+          <template #default="{Component}">
+            <keep-alive>
+              <component :is="Component"/>
+            </keep-alive>
+          </template>`,
         },
       })
 
