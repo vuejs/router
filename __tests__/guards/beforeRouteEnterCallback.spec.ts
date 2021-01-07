@@ -64,7 +64,7 @@ describe('beforeRouteEnter next callback', () => {
         <router-view name="other"/>
       </div>
       `,
-      } as any,
+      },
       {
         global: {
           plugins: [router],
