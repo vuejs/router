@@ -422,7 +422,7 @@ describe('RouterView', () => {
         },
         slots: {
           default: `
-            <template #default="{route,Component}">
+            <template #default="{ route, Component }">
               <span>{{ route.name }}</span>
               <component :is="Component"/>
             </template>`,
@@ -452,7 +452,7 @@ describe('RouterView', () => {
         },
         slots: {
           default: `
-          <template #default="{Component}">
+          <template #default="{ Component }">
             <keep-alive>
               <component :is="Component"/>
             </keep-alive>

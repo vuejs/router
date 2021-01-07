@@ -818,14 +818,15 @@ describe('RouterLink', () => {
 
   describe('v-slot', () => {
     const slotTemplate = `
-      <template #default="{route,href,isActive,isExactActive}">
+      <template #default="{ route, href, isActive, isExactActive }">
         <span>
           route: {{ JSON.stringify(route) }}
           href: "{{ href }}"
           isActive: "{{ isActive }}"
           isExactActive: "{{ isExactActive }}"
         </span>
-      </template>`
+      </template>
+    `
 
     it('provides information on v-slot', async () => {
       const { wrapper } = await factory(
