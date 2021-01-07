@@ -8,8 +8,9 @@ import {
   RouteLocationNormalized,
 } from '../src/types'
 import { markRaw } from 'vue'
-import { mount, createMockedRoute } from './mount'
+import { createMockedRoute } from './mount'
 import { mockWarn } from 'jest-mock-warn'
+import { mount } from '@vue/test-utils'
 
 // to have autocompletion
 function createRoutes<T extends Record<string, RouteLocationNormalizedLoose>>(
@@ -211,10 +212,12 @@ describe('RouterView', () => {
     propsData: any = {}
   ) {
     const route = createMockedRoute(initialRoute)
-    const wrapper = await mount(RouterView, {
+    const wrapper = mount(RouterView as any, {
       propsData,
-      provide: route.provides,
-      components: { RouterView },
+      global: {
+        provide: route.provides,
+        components: { RouterView },
+      },
     })
 
     return { route, wrapper }
@@ -234,7 +237,7 @@ describe('RouterView', () => {
     const { wrapper } = await factory(START_LOCATION_NORMALIZED as any)
     // NOTE: I wonder if this will stay stable in future releases
     expect('Router').not.toHaveBeenWarned()
-    expect(wrapper.rootEl.childElementCount).toBe(0)
+    expect(wrapper.element.childNodes).toHaveLength(0)
   })
 
   it('displays nested views', async () => {
@@ -308,9 +311,9 @@ describe('RouterView', () => {
   })
 
   describe('warnings', () => {
-    it('does not warn RouterView is wrapped', async () => {
+    it('does not warn RouterView is wrapped', () => {
       const route = createMockedRoute(routes.root)
-      const wrapper = await mount(
+      const wrapper = mount(
         {
           template: `
         <div>
@@ -320,17 +323,19 @@ describe('RouterView', () => {
         },
         {
           propsData: {},
-          provide: route.provides,
-          components: { RouterView },
+          global: {
+            provide: route.provides,
+            components: { RouterView },
+          },
         }
       )
       expect(wrapper.html()).toBe(`<div><div>Home</div></div>`)
       expect('can no longer be used directly inside').not.toHaveBeenWarned()
     })
 
-    it('warns if KeepAlive wraps a RouterView', async () => {
+    it('warns if KeepAlive wraps a RouterView', () => {
       const route = createMockedRoute(routes.root)
-      const wrapper = await mount(
+      const wrapper = mount(
         {
           template: `
         <keep-alive>
@@ -340,8 +345,10 @@ describe('RouterView', () => {
         },
         {
           propsData: {},
-          provide: route.provides,
-          components: { RouterView },
+          global: {
+            provide: route.provides,
+            components: { RouterView },
+          },
         }
       )
       expect(wrapper.html()).toBe(`<div>Home</div>`)
@@ -350,7 +357,7 @@ describe('RouterView', () => {
 
     it('warns if KeepAlive and Transition wrap a RouterView', async () => {
       const route = createMockedRoute(routes.root)
-      const wrapper = await mount(
+      const wrapper = mount(
         {
           template: `
         <transition>
@@ -362,17 +369,22 @@ describe('RouterView', () => {
         },
         {
           propsData: {},
-          provide: route.provides,
-          components: { RouterView },
+          global: {
+            stubs: {
+              transition: false,
+            },
+            provide: route.provides,
+            components: { RouterView },
+          },
         }
       )
       expect(wrapper.html()).toBe(`<div>Home</div>`)
       expect('can no longer be used directly inside').toHaveBeenWarned()
     })
 
-    it('warns if Transition wraps a RouterView', async () => {
+    it('warns if Transition wraps a RouterView', () => {
       const route = createMockedRoute(routes.root)
-      const wrapper = await mount(
+      const wrapper = mount(
         {
           template: `
         <transition>
@@ -382,8 +394,13 @@ describe('RouterView', () => {
         },
         {
           propsData: {},
-          provide: route.provides,
-          components: { RouterView },
+          global: {
+            stubs: {
+              transition: false,
+            },
+            provide: route.provides,
+            components: { RouterView },
+          },
         }
       )
       expect(wrapper.html()).toBe(`<div>Home</div>`)
@@ -397,15 +414,18 @@ describe('RouterView', () => {
       propsData: any = {}
     ) {
       const route = createMockedRoute(initialRoute)
-      const wrapper = await mount(RouterView, {
+      const wrapper = await mount(RouterView as any, {
         propsData,
-        provide: route.provides,
-        components: { RouterView },
+        global: {
+          provide: route.provides,
+          components: { RouterView },
+        },
         slots: {
           default: `
-          <span>{{ route.name }}</span>
-          <component :is="Component"/>
-        `,
+            <template #default="{ route, Component }">
+              <span>{{ route.name }}</span>
+              <component :is="Component"/>
+            </template>`,
         },
       })
 
@@ -424,16 +444,19 @@ describe('RouterView', () => {
       propsData: any = {}
     ) {
       const route = createMockedRoute(initialRoute)
-      const wrapper = await mount(RouterView, {
+      const wrapper = await mount(RouterView as any, {
         propsData,
-        provide: route.provides,
-        components: { RouterView },
+        global: {
+          provide: route.provides,
+          components: { RouterView },
+        },
         slots: {
           default: `
-          <keep-alive>
-            <component :is="Component"/>
-          </keep-alive>
-        `,
+          <template #default="{ Component }">
+            <keep-alive>
+              <component :is="Component"/>
+            </keep-alive>
+          </template>`,
         },
       })
 

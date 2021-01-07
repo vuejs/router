@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { defineComponent, h } from 'vue'
-import { mount } from '../mount'
+import { mount } from '@vue/test-utils'
 import {
   createRouter,
   RouterView,
@@ -56,7 +56,7 @@ describe('beforeRouteEnter next callback', () => {
       ...options,
     })
 
-    const wrapper = await mount(
+    const wrapper = mount(
       {
         template: `
       <div>
@@ -64,9 +64,13 @@ describe('beforeRouteEnter next callback', () => {
         <router-view name="other"/>
       </div>
       `,
-        components: { RouterView },
       },
-      { router }
+      {
+        global: {
+          plugins: [router],
+          components: { RouterView },
+        },
+      }
     )
 
     return { wrapper, router }
