@@ -255,10 +255,8 @@ export function extractComponentsGuards(
           rawComponent = () => promise
         } else if (
           (rawComponent as any).__asyncLoader &&
-          !(rawComponent as any).__resolvedAsyncComponent
+          guardType === 'beforeRouteEnter'
         ) {
-          let asyncComponent = rawComponent
-          rawComponent = () => Promise.resolve(asyncComponent)
           warn(
             `Component "${name}" in record with path "${record.path}" is defined ` +
               `using "defineAsyncComponent()". ` +
@@ -306,10 +304,6 @@ export function extractComponentsGuards(
             const resolvedComponent = isESModule(resolved)
               ? resolved.default
               : resolved
-            // __asyncLoader is added by defineAsyncCompoent
-            if (__DEV__ && '__asyncLoader' in resolvedComponent) {
-              resolvedComponent.__resolvedAsyncComponent = true
-            }
             // replace the function with the resolved component
             record.components[name] = resolvedComponent
             // @ts-ignore: the options types are not propagated to Component
