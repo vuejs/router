@@ -194,9 +194,31 @@ describe('warnings', () => {
       ],
     })
     await router.push('/foo')
-    expect(
-      `Component "default" in record with path "/foo" is defined using "defineAsyncComponent()". Write "() => import('./MyPage.vue')" instead of "defineAsyncComponent(() => import('./MyPage.vue'))"`
-    ).toHaveBeenWarned()
+    expect(`defined using "defineAsyncComponent()"`).toHaveBeenWarned()
+  })
+
+  it('warns if use defineAsyncComponent in routes only once per component', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      // simulates import('./component.vue')
+      routes: [
+        { path: '/', component },
+        {
+          path: '/foo',
+          component: defineAsyncComponent(() => Promise.resolve({})),
+        },
+        {
+          path: '/bar',
+          component: defineAsyncComponent(() => Promise.resolve({})),
+        },
+      ],
+    })
+    await router.push('/foo')
+    await router.push('/')
+    await router.push('/foo')
+    expect(`defined using "defineAsyncComponent()"`).toHaveBeenWarnedTimes(1)
+    await router.push('/bar')
+    expect(`defined using "defineAsyncComponent()"`).toHaveBeenWarnedTimes(2)
   })
 
   it('warns if no route matched', async () => {

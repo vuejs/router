@@ -263,8 +263,10 @@ export function extractComponentsGuards(
           rawComponent = () => promise
         } else if (
           (rawComponent as any).__asyncLoader &&
-          guardType === 'beforeRouteEnter'
+          // warn only once per component
+          !(rawComponent as any).__warnedDefineAsync
         ) {
+          ;(rawComponent as any).__warnedDefineAsync = true
           warn(
             `Component "${name}" in record with path "${record.path}" is defined ` +
               `using "defineAsyncComponent()". ` +
