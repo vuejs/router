@@ -369,6 +369,7 @@ async function factory(
     options: {} as Partial<RouterOptions>,
     resolve: jest.fn(),
     push: jest.fn().mockResolvedValue(resolvedLocation),
+    replace: jest.fn().mockResolvedValue(resolvedLocation),
   }
   router.resolve.mockReturnValueOnce(resolvedLocation)
 
@@ -797,6 +798,16 @@ describe('RouterLink', () => {
     )
     wrapper.find('a')!.trigger('click')
     expect(router.push).toHaveBeenCalledTimes(1)
+  })
+
+  it('calls router.replace when clicked with replace prop', async () => {
+    const { router, wrapper } = await factory(
+      START_LOCATION_NORMALIZED,
+      { to: locations.basic.string, replace: true },
+      locations.basic.normalized
+    )
+    wrapper.find('a')!.trigger('click')
+    expect(router.replace).toHaveBeenCalledTimes(1)
   })
 
   it('calls router.push with the correct location for aliases', async () => {

@@ -132,6 +132,7 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
       type: [String, Object] as PropType<RouteLocationRaw>,
       required: true,
     },
+    replace: Boolean,
     activeClass: String,
     // inactiveClass: String,
     exactActiveClass: String,
