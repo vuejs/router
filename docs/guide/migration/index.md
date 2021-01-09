@@ -223,6 +223,19 @@ Otherwise there will be an initial transition as if you provided the `appear` pr
 
 Note that **if you have navigation guards upon the initial navigation**, you might not want to block the app render until they are resolved unless you are doing Server Side Rendering. In this scenario, not waiting the router to be ready to mount the app would yield the same result as in Vue 2.
 
+### Removal of `router.app`
+
+`router.app` used to represent the last root component (Vue instance) that injected the router. Vue Router can now be safely used by multiple Vue applications at the same time. You can still add it when using the router:
+
+```js
+app.use(router)
+router.app = app
+```
+
+You can also extend the TypeScript definition of the `Router` interface to add the `app` property.
+
+**Reason**: Vue 3 applications do not exist in Vue 2 and now we property support multiple applications using the same Router instance, so having an `app` property would have been misleading because it would have been the application instead of the root instance.
+
 ### Passing content to route components' `<slot>`
 
 Before you could directly pass a template to be rendered by a route components' `<slot>` by nesting it under a `<router-view>` component:
