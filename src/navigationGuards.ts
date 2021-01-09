@@ -261,6 +261,16 @@ export function extractComponentsGuards(
           )
           let promise = rawComponent
           rawComponent = () => promise
+        } else if (
+          (rawComponent as any).__asyncLoader &&
+          guardType === 'beforeRouteEnter'
+        ) {
+          warn(
+            `Component "${name}" in record with path "${record.path}" is defined ` +
+              `using "defineAsyncComponent()". ` +
+              `Write "() => import('./MyPage.vue')" instead of ` +
+              `"defineAsyncComponent(() => import('./MyPage.vue'))".`
+          )
         }
       }
 
