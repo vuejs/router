@@ -1,3 +1,16 @@
+## [4.0.3](https://github.com/vuejs/vue-router-next/compare/v4.0.2...v4.0.3) (2021-01-11)
+
+### Bug Fixes
+
+- **hash:** allow base tag different from base parameter ([85b1bff](https://github.com/vuejs/vue-router-next/commit/85b1bff96fbb6e21cd556b688f6085b6fbfe993f)), closes [#685](https://github.com/vuejs/vue-router-next/issues/685)
+- **link:** use replace prop ([6edba5c](https://github.com/vuejs/vue-router-next/commit/6edba5cf676bde94e5ebdb370a4146dc8f6b058e)), closes [#702](https://github.com/vuejs/vue-router-next/issues/702)
+
+### Features
+
+- **types:** expose RouteParamsRaw ([09bbc89](https://github.com/vuejs/vue-router-next/commit/09bbc895cd422af8354664062b29131ae32472d7))
+- **warn:** more specific warnings ([2cd8d86](https://github.com/vuejs/vue-router-next/commit/2cd8d867beda6f7c54578d40934774547866e069))
+- **warn:** warn defineAsyncComponent usage in routes ([#682](https://github.com/vuejs/vue-router-next/issues/682)) ([9520d66](https://github.com/vuejs/vue-router-next/commit/9520d66112c0f2922f4284cda1e75b316ddf3488))
+
 ## [4.0.2](https://github.com/vuejs/vue-router-next/compare/v4.0.1...v4.0.2) (2020-12-27)
 
 ### Bug Fixes
