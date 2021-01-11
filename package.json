@@ -61,7 +61,7 @@
   "devDependencies": {
     "@docsearch/css": "^1.0.0-alpha.27",
     "@docsearch/js": "^1.0.0-alpha.27",
-    "@microsoft/api-extractor": "7.8.1",
+    "@microsoft/api-extractor": "7.12.1",
     "@rollup/plugin-alias": "^3.1.1",
     "@rollup/plugin-commonjs": "^16.0.0",
     "@rollup/plugin-node-resolve": "^11.0.1",
