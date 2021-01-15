@@ -391,10 +391,25 @@ describe('Matcher: adding and removing records', () => {
   describe('warnings', () => {
     mockWarn()
 
-    // TODO: add warnings for invalid records
-    it.skip('warns if alias is missing a required param', () => {
+    it('warns if alias is missing a required param', () => {
       createRouterMatcher([{ path: '/:id', alias: '/no-id', component }], {})
-      expect('TODO').toHaveBeenWarned()
+      expect('same param named "id"').toHaveBeenWarned()
+    })
+
+    it('does not warn for optional param on alias', () => {
+      createRouterMatcher(
+        [{ path: '/:id', alias: '/:id-:suffix?', component }],
+        {}
+      )
+      expect('same param named').not.toHaveBeenWarned()
+    })
+
+    it('does not warn for optional param on main record', () => {
+      createRouterMatcher(
+        [{ alias: '/:id', path: '/:id-:suffix?', component }],
+        {}
+      )
+      expect('same param named').not.toHaveBeenWarned()
     })
   })
 })

@@ -425,15 +425,21 @@ function isSameParam(a: ParamKey, b: ParamKey): boolean {
   )
 }
 
+/**
+ * Check if a path and its alias have the same required params
+ *
+ * @param a - original record
+ * @param b - alias record
+ */
 function checkSameParams(a: RouteRecordMatcher, b: RouteRecordMatcher) {
   for (let key of a.keys) {
-    if (!b.keys.find(isSameParam.bind(null, key)))
+    if (!key.optional && !b.keys.find(isSameParam.bind(null, key)))
       return warn(
         `Alias "${b.record.path}" and the original record: "${a.record.path}" should have the exact same param named "${key.name}"`
       )
   }
   for (let key of b.keys) {
-    if (!a.keys.find(isSameParam.bind(null, key)))
+    if (!key.optional && !a.keys.find(isSameParam.bind(null, key)))
       return warn(
         `Alias "${b.record.path}" and the original record: "${a.record.path}" should have the exact same param named "${key.name}"`
       )
