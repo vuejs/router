@@ -1,14 +1,14 @@
 {
   "silver": [
     {
-      "href": "https://www.vuemastery.com/",
       "alt": "VueMastery",
+      "href": "https://www.vuemastery.com/",
       "imgSrc": "https://www.vuemastery.com/images/vuemastery.svg"
     },
     {
-      "imgSrc": "https://cdn.vuetifyjs.com/docs/images/logos/vuetify-logo-light-text.svg",
+      "alt": "Vuetify",
       "href": "https://www.vuetifyjs.com/",
-      "alt": "Vuetify"
+      "imgSrc": "https://cdn.vuetifyjs.com/docs/images/logos/vuetify-logo-light-text.svg"
     }
   ]
 }
