@@ -664,9 +664,9 @@ describe('Path parser', () => {
     })
 
     it('catch all non-greedy', () => {
-      matchParams('/:rest(.*?)/b/:other(.*)', '/a/b/c', {
+      matchParams('/:rest(.*?)/b/:other(.*)', '/a/b/c/b/d', {
         rest: 'a',
-        other: 'c',
+        other: 'c/b/d',
       })
     })
 
