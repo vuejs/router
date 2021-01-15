@@ -623,6 +623,12 @@ describe('Path parser', () => {
       matchParams('/home', '/home/other', {}, { end: false })
     })
 
+    it('should not match optional params + static without leading slash', () => {
+      matchParams('/a/:p?-b', '/a-b', null)
+      matchParams('/a/:p?-b', '/a/-b', { p: '' })
+      matchParams('/a/:p?-b', '/a/e-b', { p: 'e' })
+    })
+
     it('returns an empty object with no keys', () => {
       matchParams('/home', '/home', {})
     })
@@ -797,6 +803,12 @@ describe('Path parser', () => {
     it('optional param? with static segment', () => {
       matchStringify('/b-:a?/other', { a: '' }, '/b-/other')
       matchStringify('/b-:a?/other', {}, '/b-/other')
+    })
+
+    it('starting optional param? with static segment should not drop the initial /', () => {
+      matchStringify('/a/:a?-other/other', { a: '' }, '/a/-other/other')
+      matchStringify('/a/:a?-other/other', {}, '/a/-other/other')
+      matchStringify('/a/:a?-other/other', { a: 'p' }, '/a/p-other/other')
     })
 
     it('optional param*', () => {

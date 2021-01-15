@@ -167,7 +167,12 @@ export function tokensToParser(
 
         // prepend the slash if we are starting a new segment
         if (!tokenIndex)
-          subPattern = optional ? `(?:/${subPattern})` : '/' + subPattern
+          subPattern =
+            // avoid an optional / if there are more segments e.g. /:p?-static
+            // or /:p?-:p2
+            optional && segment.length < 2
+              ? `(?:/${subPattern})`
+              : '/' + subPattern
         if (optional) subPattern += '?'
 
         pattern += subPattern
@@ -239,10 +244,14 @@ export function tokensToParser(
           const text: string = Array.isArray(param) ? param.join('/') : param
           if (!text) {
             if (optional) {
-              // remove the last slash as we could be at the end
-              if (path.endsWith('/')) path = path.slice(0, -1)
-              // do not append a slash on the next iteration
-              else avoidDuplicatedSlash = true
+              // if we have more than one optional param like /:a?-static we
+              // don't need to care about the optional param
+              if (segment.length < 2) {
+                // remove the last slash as we could be at the end
+                if (path.endsWith('/')) path = path.slice(0, -1)
+                // do not append a slash on the next iteration
+                else avoidDuplicatedSlash = true
+              }
             } else throw new Error(`Missing required param "${value}"`)
           }
           path += text
