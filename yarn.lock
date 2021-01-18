@@ -9026,10 +9026,10 @@ vite@^2.0.0-beta.21:
   optionalDependencies:
     fsevents "~2.1.2"
 
-vitepress@^0.11.2:
-  version "0.11.2"
-  resolved "https://registry.yarnpkg.com/vitepress/-/vitepress-0.11.2.tgz#cc8562a30002ad28cd9b5bb49c084bbe16e82490"
-  integrity sha512-YzbiCevZLJ6yWFibUAu3xDTCDFvoL7bTin+DU/m7lza9OeVf5jvpHQoUz8t2EaqaUEbfFuJ+lPgUuEBCuKaZzQ==
+vitepress@^0.11.3:
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/vitepress/-/vitepress-0.11.3.tgz#bcc1b06792a3786175f72a1735ea4dc724d14c85"
+  integrity sha512-9WaZzlJgmOYXlMoTGaROP1npCp1A6V6BYB2nbYucsID0aTrm79p18Tdg2OEjG8X3iAOgN2PX5c1IXmrUneycqA==
   dependencies:
     "@docsearch/css" "^1.0.0-alpha.28"
     "@docsearch/js" "^1.0.0-alpha.28"
