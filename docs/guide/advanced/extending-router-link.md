@@ -62,15 +62,13 @@ export default {
   },
 
   setup(props) {
-    // toRef allows us to extract one prop and keep it reactive
-    // https://v3.vuejs.org/api/refs-api.html#toref
-    const { navigate, href, route, isActive, isExactActive } = useLink(toRef(props, 'to'))
-
+    // `props` contains `to` and any other prop that can be passed to <router-link>
+    const { navigate, href, route, isActive, isExactActive } = useLink(props)
 
     // profit!
 
     return { isExternalLink }
-  }
+  },
 }
 ```
 
