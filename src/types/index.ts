@@ -249,8 +249,18 @@ export interface _RouteRecordBase extends PathParserOptions {
 
 /**
  * Interface to type `meta` fields in route records.
+ *
+ * @example
+ *
+ * ```ts
+ * declare module 'vue-router' {
+ *   interface RouteMeta {
+ *     requiresAuth?: boolean
+ *   }
+ *  }
+ * ```
  */
-export interface RouteMeta extends Record<string | number | symbol, any> {}
+export interface RouteMeta extends Record<string | number | symbol, unknown> {}
 
 /**
  * @internal
