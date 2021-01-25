@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from '../../src'
+import { createRouter, createWebHistory, RouterViewSuspended } from '../../src'
 import { createApp, defineComponent, onErrorCaptured } from 'vue'
 
 const delay = (t: number) => new Promise(r => setTimeout(r, t))
@@ -18,6 +18,7 @@ const ViewData = defineComponent({
   template: `
   <div>
     <h1>With Data</h1>
+    <p>{{ $route.path }}</p>
 
     <router-view/>
 
@@ -27,7 +28,7 @@ const ViewData = defineComponent({
   async setup() {
     await delay(300)
 
-    throw new Error('oops')
+    // throw new Error('oops')
 
     return {}
   },
@@ -85,12 +86,13 @@ const app = createApp({
         <li><router-link to="/data-2/data">Suspended nested (2)</router-link></li>
       </ul>
 
-      <router-view-suspended />
+      <router-view  />
 
     </div>
   `,
 })
 app.use(router)
+app.component('RouterView', RouterViewSuspended)
 
 window.vm = app.mount('#app')
 window.r = router

@@ -81,6 +81,10 @@ export {
   UseLinkOptions,
 } from './RouterLink'
 export { RouterView, RouterViewProps } from './RouterView'
+export {
+  RouterViewSuspended,
+  RouterViewSuspendedProps,
+} from './RouterViewSuspended'
 
 export * from './useApi'
 

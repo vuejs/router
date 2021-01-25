@@ -61,7 +61,6 @@ import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
 import { warn } from './warning'
 import { RouterLink } from './RouterLink'
 import { RouterView } from './RouterView'
-import { RouterViewSuspended } from './RouterViewSuspended'
 import {
   routeLocationKey,
   routerKey,
@@ -1156,7 +1155,6 @@ export function createRouter(options: RouterOptions): Router {
       const router = this
       app.component('RouterLink', RouterLink)
       app.component('RouterView', RouterView)
-      app.component('RouterViewSuspended', RouterViewSuspended)
 
       app.config.globalProperties.$router = router
       Object.defineProperty(app.config.globalProperties, '$route', {
