@@ -106,7 +106,7 @@
     "vue": "^3.0.5",
     "vue-loader": "^16.1.2",
     "webpack": "^5.16.0",
-    "webpack-bundle-analyzer": "^4.3.0",
+    "webpack-bundle-analyzer": "^4.4.0",
     "webpack-cli": "^4.4.0",
     "webpack-dev-server": "^3.11.2",
     "yorkie": "^2.0.0"
