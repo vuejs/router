@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
 import { createApp, defineComponent, nextTick, ref } from 'vue'
 
+const delay = (t: number) => new Promise(r => setTimeout(r, t))
+
 const Home: RouteComponent = {
   template: `
     <div class="home">
@@ -9,6 +11,9 @@ const Home: RouteComponent = {
       <p>hello</p>
     </div>
   `,
+  async setup() {
+    await delay(1000)
+  },
 }
 
 // override existing style on dev with shorter times
@@ -54,6 +59,9 @@ const Parent: RouteComponent = {
       </router-view>
     </div>
   `,
+  async setup() {
+    await delay(1000)
+  },
 }
 
 const NestedTransition = defineComponent({
@@ -127,9 +135,11 @@ const app = createApp({
         <li><router-link to="/nested/bar">/nested/bar</router-link></li>
       </ul>
       <router-view class="view" v-slot="{ Component }">
+      <suspense :timeout="0">
         <transition :name="transitionName" mode="out-in">
           <component :is="Component" />
         </transition>
+      </suspense>
       </router-view>
     </div>
   `,
