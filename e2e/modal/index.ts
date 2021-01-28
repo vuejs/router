@@ -64,6 +64,7 @@ const Home = defineComponent({
     </div>
   </dialog>
   </div>`,
+
   setup() {
     const modal = ref<HTMLDialogElement | HTMLElement>()
     const route = useRoute()
