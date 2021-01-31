@@ -57,8 +57,8 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
   const id = routerId++
   setupDevtoolsPlugin(
     {
-      id: 'Router' + id ? ' ' + id : '',
-      label: 'Router devtools',
+      id: 'Router' + (id ? ' ' + id : ''),
+      label: 'Vue Router',
       app,
     },
     api => {
