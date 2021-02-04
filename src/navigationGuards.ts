@@ -316,8 +316,10 @@ export function extractComponentsGuards(
               : resolved
             // replace the function with the resolved component
             record.components[name] = resolvedComponent
-            // @ts-ignore: the options types are not propagated to Component
-            const guard: NavigationGuard = resolvedComponent[guardType]
+            // __vccOpts is added by vue-class-component and contain the regular options
+            let options: ComponentOptions =
+              (resolvedComponent as any).__vccOpts || resolvedComponent
+            const guard = options[guardType]
             return guard && guardToPromiseFn(guard, to, from, record, name)()
           })
         )
