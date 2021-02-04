@@ -47,7 +47,7 @@ It is also possible to determine the transition to use dynamically based on the 
 ```html
 <!-- use a dynamic transition name -->
 <router-view v-slot="{ Component, route }">
-  <transition :name="route.meta.transition">
+  <transition :name="route.meta.transitionName">
     <component :is="Component" />
   </transition>
 </router-view>

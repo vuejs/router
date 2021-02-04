@@ -1,8 +1,5 @@
 <template>
   <ParentLayout>
-    <template #navbar-search>
-      <AlgoliaSearchBox :options="$site.themeConfig.algolia" />
-    </template>
     <template #page-top-ads><span /></template>
     <template #page-top>
       <CarbonAds
@@ -27,7 +24,6 @@
 import DefaultTheme from 'vitepress/dist/client/theme-default'
 import CarbonAds from './components/CarbonAds.vue'
 import BuySellAds from './components/BuySellAds.vue'
-import AlgoliaSearchBox from './components/AlgoliaSearchBox.vue'
 
 export default {
   name: 'Layout',
@@ -36,7 +32,6 @@ export default {
     ParentLayout: DefaultTheme.Layout,
     CarbonAds,
     BuySellAds,
-    AlgoliaSearchBox,
   },
 }
 </script>

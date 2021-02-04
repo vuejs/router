@@ -36,6 +36,7 @@ const router = createRouter({
 
 router.beforeEach(to => {
   expectType<{ requiresAuth?: Boolean; nested: { foo: string } }>(to.meta)
+  expectType<unknown>(to.meta.lol)
   if (to.meta.nested.foo == 'foo' || to.meta.lol) return false
 })
 

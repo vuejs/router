@@ -1,39 +1,11 @@
 <template>
   <div id="sponsors">
     <div class="inner">
-      <template v-if="sponsors.platinum">
-        <h3>Platinum Sponsors</h3>
+      <HomeSponsorsGroup v-if="sponsors.platinum" name="Platinum" size="160" />
 
-        <a
-          v-for="sponsor in sponsors.platinum"
-          :key="sponsor.href"
-          :href="sponsor.href"
-          target="_blank"
-          rel="sponsored noopener"
-          style="width: 160px"
-        >
-          <img :src="sponsor.imgSrc" style="width: 160px" :alt="sponsor.alt" />
-        </a>
-        <br />
-        <br />
-      </template>
+      <HomeSponsorsGroup v-if="sponsors.gold" name="Gold" size="140" />
 
-      <template v-if="sponsors.silver">
-        <h3>Silver Sponsors</h3>
-
-        <a
-          v-for="sponsor in sponsors.silver"
-          :href="sponsor.href"
-          target="_blank"
-          rel="sponsored noopener"
-          style="width: 120px"
-        >
-          <img :src="sponsor.imgSrc" style="width: 120px" :alt="sponsor.alt" />
-        </a>
-
-        <br />
-        <br />
-      </template>
+      <HomeSponsorsGroup v-if="sponsors.silver" name="Silver" size="120" />
 
       <a
         class="become-sponsor button white"
@@ -45,10 +17,12 @@
 </template>
 
 <script>
+import HomeSponsorsGroup from './HomeSponsorsGroup.vue'
 import sponsors from './sponsors.json'
 
 export default {
   name: 'HomeSponsors',
+  components: { HomeSponsorsGroup },
 
   created() {
     this.sponsors = sponsors

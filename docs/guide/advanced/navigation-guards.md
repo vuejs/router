@@ -37,7 +37,8 @@ All of the the things above **work the same way with `async` functions** and Pro
 ```js
 router.beforeEach(async (to, from) => {
   // canUserAccess() returns `true` or `false`
-  return await canUserAccess(to)
+  const canAccess = await canUserAccess(to)
+  if (!canAccess) return '/login'
 })
 ```
 
