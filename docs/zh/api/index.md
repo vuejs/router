@@ -8,10 +8,10 @@ sidebar: auto
 
 ### to
 
-- **类型**: [`RouteLocationRaw`](#routelocationraw)
-- **详细内容**:
+- **类型**：[`RouteLocationRaw`](#routelocationraw)
+- **详细内容**：
 
-  表示目标路由的链接。当被点击后，内部会立刻把 `to` 的值传到 `router.push()`，所以这个值可以是一个`字符串`或者是[描述目标位置的对象](#routelocationraw)。
+  表示目标路由的链接。当被点击后，内部会立刻把 `to` 的值传到 `router.push()`，所以这个值可以是一个 `string` 或者是[描述目标位置的对象](#routelocationraw)。
 
 ```html
 <!-- 字符串 -->
@@ -36,11 +36,11 @@ sidebar: auto
 
 ### replace
 
-- **类型**: `boolean`
-- **默认值**: `false`
-- **详细内容**:
+- **类型**：`boolean`
+- **默认值**：`false`
+- **详细内容**：
 
-  设置 `replace` 属性的话，当点击时，会调用 `router.replace()` ，而不是 `router.push()`，所以导航后不会留下历史记录。
+  设置 `replace` 属性的话，当点击时，会调用 `router.replace()`，而不是 `router.push()`，所以导航后不会留下历史记录。
 
 ```html
 <router-link to="/abc" replace></router-link>
@@ -48,29 +48,29 @@ sidebar: auto
 
 ### active-class
 
-- **类型**: `string`
-- **默认值**: `"router-link-active"` (或者全局 [`linkActiveClass`](#linkactiveclass))
-- **详细内容**:
+- **类型**：`string`
+- **默认值**：`"router-link-active"` (或者全局 [`linkActiveClass`](#linkactiveclass))
+- **详细内容**：
 
   链接激活时，应用于渲染的 `<a>` 的类。
 
 ### aria-current-value
 
-- **类型**: `'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false'` (`string`)
-- **默认值**: `"page"`
-- **详细内容**:
+- **类型**：`'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false'` (`string`)
+- **默认值**：`"page"`
+- **详细内容**：
 
   当链接激活时，传递给属性 `aria-current` 的值。
 
 ### custom
 
-- **类型**: `boolean`
-- **默认值**: `false`
-- **详细内容**:
+- **类型**：`boolean`
+- **默认值**：`false`
+- **详细内容**：
 
-  `<router-link>` 是否应该将其内容包裹在 `<a>` 元素中。在使用 [`v-slot`](#router-link-s-v-slot) 创建自定义 RouterLink 时很有用。默认情况下，`<router-link>` 会将其内容包裹在 `<a>` 元素中，即使使用 `v-slot` 也是如此。传递`自定义的` prop ，可以去除这种行为。
+  `<router-link>` 是否应该将其内容包裹在 `<a>` 元素中。在使用 [`v-slot`](#router-link-s-v-slot) 创建自定义 RouterLink 时很有用。默认情况下，`<router-link>` 会将其内容包裹在 `<a>` 元素中，即使使用 `v-slot` 也是如此。传递`自定义的` prop，可以去除这种行为。
 
-- **例如**:
+- **例如**：
 
   ```html
   <router-link to="/home" custom v-slot="{ navigate, href, route }">
@@ -90,18 +90,18 @@ sidebar: auto
 
 ### exact-active-class
 
-- **类型**: `string`
-- **默认值**: `"router-link-exact-active"` (或者全局 [`linkExactActiveClass`](#linkexactactiveclass))
-- **详细内容**:
+- **类型**：`string`
+- **默认值**：`"router-link-exact-active"` (或者全局 [`linkExactActiveClass`](#linkexactactiveclass))
+- **详细内容**：
 
   链接精准激活时，应用于渲染的 `<a>` 的类。
 
 ## `<router-link>` 的 `v-slot`
 
-`<router-link>` 通过一个 [作用域插槽](https://v3.vuejs.org/guide/component-slots.html#scoped-slots) 暴露底层的定制能力。这是一个更高阶的 API，主要面向库作者，但也可以为开发者提供便利，大多数情况下用在一个类似 _NavLink_ 这样的组件里。
+`<router-link>` 通过一个[作用域插槽](https://v3.vuejs.org/guide/component-slots.html#scoped-slots)暴露底层的定制能力。这是一个更高阶的 API，主要面向库作者，但也可以为开发者提供便利，大多数情况下用在一个类似 _NavLink_ 这样的组件里。
 
 :::tip 注意
-记得把`自定义`选项传递给 `<router-link>` ，以防止它将内容包裹在 `<a>` 元素内。
+记得把 `custom` 配置传递给 `<router-link>`，以防止它将内容包裹在 `<a>` 元素内。
 :::
 
 ```html
@@ -116,11 +116,11 @@ sidebar: auto
 </router-link>
 ```
 
-- `href`：解析后的 URL。将会作为一个 `<a>` 元素的 `href` 属性。如果什么都没提供，则它会包含 `base` 。
+- `href`：解析后的 URL。将会作为一个 `<a>` 元素的 `href` 属性。如果什么都没提供，则它会包含 `base`。
 - `route`：解析后的规范化的地址。
-- `navigate`：触发导航的函数。 **会在必要时自动阻止事件**，和 `router-link` 一样。例如， `ctrl` 或者 `cmd` + 点击仍然会被 `导航` 忽略。
-- `isActive`：如果需要应用[active class](#active-class)，则为 `true`。允许应用一个任意的 class。
-- `isExactActive`：如果需要应用 [exact active class](#exact-active-class) ，则为 `true`。允许应用一个任意的 class。
+- `navigate`：触发导航的函数。 **会在必要时自动阻止事件**，和 `router-link` 一样。例如：`ctrl` 或者 `cmd` + 点击仍然会被 `导航` 忽略。
+- `isActive`：如果需要应用 [active class](#active-class)，则为 `true`。允许应用一个任意的 class。
+- `isExactActive`：如果需要应用 [exact active class](#exact-active-class)，则为 `true`。允许应用一个任意的 class。
 
 ### 示例：将激活的 class 应用在外层元素
 
@@ -141,31 +141,31 @@ sidebar: auto
 ```
 
 :::tip 提示
-如果你在 `a` 元素上添加一个 `target="_blank"` ，则 `@click="navigate"` 处理器会被忽略。
+如果你在 `a` 元素上添加一个 `target="_blank"`，则 `@click="navigate"` 处理器会被忽略。
 :::
 
 ## `<router-view>` Props
 
 ### name
 
-- **类型**： `string`
-- **默认值**： `"default"`
+- **类型**：`string`
+- **默认值**：`"default"`
 - **详细内容**：
 
   如果 `<router-view>` 设置了`名称`，则会渲染对应的路由配置中 `components` 下的相应组件。
 
-- **更多的内容请看**: [命名视图](/guide/essentials/named-views.md)
+- **更多的内容请看**：[命名视图](/guide/essentials/named-views.md)
 
 ### route
 
-- **类型**： [`RouteLocationNormalized`](#routelocationnormalized)
+- **类型**：[`RouteLocationNormalized`](#routelocationnormalized)
 - **详细内容**：
 
-  一个路由位置的所有组件都已被解析（如果所有组件都被懒加载），因此可以显示。
+  一个路由地址的所有组件都已被解析（如果所有组件都被懒加载），因此可以显示。
 
 ## `<router-view>` 的 `v-slot`
 
-`<router-view>` 暴露了一个 `v-slot` API ，主要使用 `<transition>` 和 `<keep-alive>` 组件来包裹你的路由组件。
+`<router-view>` 暴露了一个 `v-slot` API，主要使用 `<transition>` 和 `<keep-alive>` 组件来包裹你的路由组件。
 
 ```html
 <router-view v-slot="{ Component, route }">
@@ -173,8 +173,8 @@ sidebar: auto
 </router-view>
 ```
 
-- `Component`: VNode 要传递给 `<component>` 的`是` prop。
-- `route`: 解析出的标准化 [路由位置](#routelocationnormalized)。
+- `Component`: 要传递给 `<component>` 的 VNodes `是` prop。
+- `route`: 解析出的标准化[路由地址](#routelocationnormalized)。
 
 ## createRouter
 
@@ -204,20 +204,20 @@ export declare function createWebHistory(base?: string): RouterHistory
 
 ### 参数
 
-| 参数 | 类型     | 描述                                                                                               |
+| 参数  | 类型     | 描述                                                                                               |
 | ---- | -------- | -------------------------------------------------------------------------------------------------- |
-| base | `string` | 提供的可选 base 。 当应用程序被托管在诸如 `https://example.com/folder/` 之类的文件夹中时非常有用。 |
+| base | `string` | 提供的可选 base。当应用程序被托管在诸如 `https://example.com/folder/` 之类的文件夹中时非常有用。 |
 
 ### 示例
 
 ```js
-createWebHistory() // 没有 base ，应用托管在域名 `https://example.com` 的根目录下。
+createWebHistory() // 没有 base，应用托管在域名 `https://example.com` 的根目录下。
 createWebHistory('/folder/') // 给出的网址为 `https://example.com/folder/`
 ```
 
 ## createWebHashHistory
 
-创建一个 hash 历史记录。对于没有主机的 web 应用程序 (例如 `file://`) ，或者当配置服务器来处理任何 URL 时，这是一个选项。 **注意：如果 SEO 对你很重要，你应该使用 [`createWebHistory`](#createwebhistory)**.
+创建一个 hash 历史记录。对于没有主机的 web 应用程序 (例如 `file://`)，或当配置服务器不能处理任意URL时这非常有用。**注意：如果 SEO 对你很重要，你应该使用 [`createWebHistory`](#createwebhistory)**。
 
 **函数签名：**
 
@@ -229,7 +229,7 @@ export declare function createWebHashHistory(base?: string): RouterHistory
 
 | 参数 | 类型     | 描述                                                                                                                                                                                                                                                                                    |
 | ---- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| base | `string` | 提供可选的 base 。默认是 `location.pathname + location.search`。如果`头部`有一个 `<base>`，它的值将被忽略，而采用这个参数。**但请注意它会影响所有的 history.pushState() 调用**，这意味着如果你使用一个 `<base>` 标签，它的 `href` 值**必须与这个参数相匹配** (请忽略 `#`后面的所有内容) |
+| base | `string` | 提供可选的 base。默认是 `location.pathname + location.search`。如果 `head` 中有一个 `<base>`，它的值将被忽略，而采用这个参数。**但请注意它会影响所有的 history.pushState() 调用**，这意味着如果你使用一个 `<base>` 标签，它的 `href` 值**必须与这个参数相匹配** (请忽略 `#` 后面的所有内容) |
 
 ### 示例
 
@@ -237,7 +237,7 @@ export declare function createWebHashHistory(base?: string): RouterHistory
 // at https://example.com/folder
 createWebHashHistory() // 给出的网址为 `https://example.com/folder#`
 createWebHashHistory('/folder/') // 给出的网址为 `https://example.com/folder/#`
-// 如果在 base 中提供了 `#` ，则它不会被 `createWebHashHistory` 添加
+// 如果在 base 中提供了 `#`，则它不会被 `createWebHashHistory` 添加
 createWebHashHistory('/folder/#/app/') // 给出的网址为 `https://example.com/folder/#/app/`
 // 你应该避免这样做，因为它会更改原始 url 并打断正在复制的 url
 createWebHashHistory('/other-folder/') // 给出的网址为 `https://example.com/other-folder/#`
@@ -287,10 +287,10 @@ export declare enum NavigationFailureType
 
 ## START_LOCATION
 
-- **类型**： [`RouteLocationNormalized`](#routelocationnormalized)
+- **类型**：[`RouteLocationNormalized`](#routelocationnormalized)
 - **详细内容**：
 
-  路由所在的初始路由位置。可用于导航守卫中，以区分初始导航。
+  路由所在的初始路由地址。可用于导航守卫中，以区分初始导航。
 
   ```js
   import { START_LOCATION } from 'vue-router'
@@ -306,7 +306,7 @@ export declare enum NavigationFailureType
 
 ### onBeforeRouteLeave
 
-添加一个导航守卫，在当前位置的组件将要离开时触发。类似于 `beforeRouteLeave` ，但它可以在任何组件中使用。当组件被卸载时，导航守卫将被移除。
+添加一个导航守卫，在当前位置的组件将要离开时触发。类似于 `beforeRouteLeave`，但它可以在任何组件中使用。当组件被卸载时，导航守卫将被移除。
 
 **函数签名：**
 
@@ -322,7 +322,7 @@ export declare function onBeforeRouteLeave(leaveGuard: NavigationGuard): void
 
 ### onBeforeRouteUpdate
 
-添加一个导航守卫，在当前位置即将更新时触发。类似于 `beforeRouteUpdate` ，但它可以在任何组件中使用。当组件被卸载时，导航守卫将被移除。
+添加一个导航守卫，在当前位置即将更新时触发。类似于 `beforeRouteUpdate`，但它可以在任何组件中使用。当组件被卸载时，导航守卫将被移除。
 
 **函数签名：**
 
@@ -360,7 +360,7 @@ export declare function useLink(props: RouterLinkOptions): {
 
 ### useRoute
 
-返回当前路由位置。相当于在模板中使用 `$route` 。必须在 `setup()` 中调用。
+返回当前路由地址。相当于在模板中使用 `$route`。必须在 `setup()` 中调用。
 
 **函数签名：**
 
@@ -370,7 +370,7 @@ export declare function useRoute(): RouteLocationNormalized
 
 ### useRouter
 
-返回 [router](#router-properties) 实例。相当于在模板中使用 `$router` 。必须在 `setup()` 中调用。
+返回 [router](#router-properties) 实例。相当于在模板中使用 `$router`。必须在 `setup()` 中调用。
 
 **函数签名：**
 
@@ -389,20 +389,20 @@ export declare function useRouter(): Router
 - **类型**：[`Ref<RouteLocationNormalized>`](#routelocationnormalized)
 - **详细内容**：
 
-  当前路由位置。只读。
+  当前路由地址。只读。
 
 ### options
 
 - **类型**：[`RouterOptions`](#routeroptions)
 - **详细内容**：
 
-  创建 Router 时传递的原始选项对象。只读。
+  创建 Router 时传递的原始选项对象。只读的。
 
 ## Router 方法
 
 ### addRoute
 
-添加一条新的 [路由记录](#routerecordraw) 作为现有路由的子路由。如果路由有一个`名字`，并且已经有一个与之名字相同的路由，它会先删除之前的路由。
+添加一条新的 [路由记录](#routerecordraw)作为现有路由的子路由。如果路由有一个 `name`，并且已经有一个与之名字相同的路由，它会先删除之前的路由。
 
 **函数签名：**
 
@@ -412,14 +412,14 @@ addRoute(parentName: string | symbol, route: RouteRecordRaw): () => void
 
 _参数_
 
-| 参数       | 类型                                | 描述             |
+| 参数       | 类型                                 | 描述             |
 | ---------- | ----------------------------------- | ---------------- | -------------------------------------- |
-| parentName | `string                             | symbol`          | 父路由记录，`route` 应该被添加到的位置 |
+| parentName | `string| symbol`                    | 父路由记录，`route` 应该被添加到的位置 |
 | route      | [`RouteRecordRaw`](#routerecordraw) | 要添加的路由记录 |
 
 ### addRoute
 
-添加一条新的 [路由记录](#routerecordraw) 到路由。如果路由有一个`名字`，并且已经有一个与之名字相同的路由，它会先删除之前的路由。
+添加一条新的 [路由记录](#routerecordraw)到路由。如果路由有一个 `name`，并且已经有一个与之名字相同的路由，它会先删除之前的路由。
 
 **函数签名：**
 
@@ -515,7 +515,7 @@ router.beforeEach(to => {
 
 ### forward
 
-如果可能的话，通过调用 `history.forward()` 在历史中前进。相当于 `router.go(1)` 。
+如果可能的话，通过调用 `history.forward()` 在历史中前进。相当于 `router.go(1)`。
 
 **函数签名：**
 
@@ -525,7 +525,7 @@ forward(): void
 
 ### getRoutes
 
-获取所有 [路由记录](#routerecord) 的完整列表。
+获取所有 [路由记录](#routerecord)的完整列表。
 
 **函数签名：**
 
@@ -567,7 +567,7 @@ _参数_
 
 ### isReady
 
-当路由器完成初始化导航时，返回一个 Promise ，这意味着它已经解析了所有与初始路由相关的异步输入钩子和异步组件。如果初始导航已经发生了，那么 promise 就会立即解析。这在服务器端渲染中很有用，可以确保服务器和客户端的输出一致。需要注意的是，在服务器端，你需要手动推送初始位置，而在客户端，路由器会自动从 URL 中获取初始位置。
+当路由器完成初始化导航时，返回一个 Promise，这意味着它已经解析了所有与初始路由相关的异步输入钩子和异步组件。如果初始导航已经发生了，那么 promise 就会立即解析。这在服务器端渲染中很有用，可以确保服务器和客户端的输出一致。需要注意的是，在服务器端，你需要手动推送初始位置，而在客户端，路由器会自动从 URL 中获取初始位置。
 
 **函数签名：**
 
@@ -593,7 +593,7 @@ _参数_
 
 ### push
 
-通过在历史堆栈中推送一个 entry ，以编程方式导航到一个新的 URL。
+通过在历史堆栈中推送一个 entry，以编程方式导航到一个新的 URL。
 
 **函数签名：**
 
@@ -605,7 +605,7 @@ _参数_
 
 | 参数 | 类型                                    | 描述               |
 | ---- | --------------------------------------- | ------------------ |
-| to   | [`RouteLocationRaw`](#routelocationraw) | 要导航到的路由位置 |
+| to   | [`RouteLocationRaw`](#routelocationraw) | 要导航到的路由地址 |
 
 ### removeRoute
 
@@ -625,7 +625,7 @@ _参数_
 
 ### replace
 
-通过替换历史堆栈中的当前 entry ，以编程方式导航到一个新的 URL。
+通过替换历史堆栈中的当前 entry，以编程方式导航到一个新的 URL。
 
 **函数签名：**
 
@@ -637,11 +637,11 @@ _参数_
 
 | 参数 | 类型                                    | 描述               |
 | ---- | --------------------------------------- | ------------------ |
-| to   | [`RouteLocationRaw`](#routelocationraw) | 要导航到的路由位置 |
+| to   | [`RouteLocationRaw`](#routelocationraw) | 要导航到的路由地址 |
 
 ### resolve
 
-返回 [路由位置](#routelocationraw) 的 [标准化版本](#routelocation) 。还包括一个包含任何现有 `base` 的 `href` 属性。
+返回[路由地址](#routelocationraw) 的[标准化版本](#routelocation)。还包括一个包含任何现有 `base` 的 `href` 属性。
 
 **函数签名：**
 
@@ -655,13 +655,13 @@ _参数_
 
 | 参数 | 类型                                    | 描述                 |
 | ---- | --------------------------------------- | -------------------- |
-| to   | [`RouteLocationRaw`](#routelocationraw) | 要解析的原始路由位置 |
+| to   | [`RouteLocationRaw`](#routelocationraw) | 要解析的原始路由地址 |
 
 ## RouterOptions
 
 ### history
 
-用于路由实现历史记录。大多数 web 应用程序都应该使用 `createWebHistory` ，但它要求正确配置服务器。你还可以使用 `createWebHashHistory` 的基于 _hash_ 的历史记录，它不需要在服务器上进行任何配置，但是搜索引擎根本不会处理它，在 SEO 上表现很差。
+用于路由实现历史记录。大多数 web 应用程序都应该使用 `createWebHistory`，但它要求正确配置服务器。你还可以使用 `createWebHashHistory` 的基于 _hash_ 的历史记录，它不需要在服务器上进行任何配置，但是搜索引擎根本不会处理它，在 SEO 上表现很差。
 
 **函数签名：**
 
@@ -680,7 +680,7 @@ createRouter({
 
 ### linkActiveClass
 
-用于激活的 [RouterLink](#router-link-props) 的默认类。如果什么都没提供，则会使用 `router-link-active` 。
+用于激活的 [RouterLink](#router-link-props) 的默认类。如果什么都没提供，则会使用 `router-link-active`。
 
 **函数签名：**
 
@@ -690,7 +690,7 @@ linkActiveClass?: string
 
 ### linkExactActiveClass
 
-用于精准激活的 [RouterLink](#router-link-props) 的默认类。如果什么都没提供，则会使用 `router-link-exact-active` 。
+用于精准激活的 [RouterLink](#router-link-props) 的默认类。如果什么都没提供，则会使用 `router-link-exact-active`。
 
 **函数签名：**
 
@@ -700,7 +700,7 @@ linkExactActiveClass?: string
 
 ### parseQuery
 
-用于解析查询的自定义实现。必须解码查询键和值。参见对应的 [stringifyQuery](#stringifyquery) 。
+用于解析查询的自定义实现。必须解码查询键和值。参见对应的 [stringifyQuery](#stringifyquery)。
 
 **函数签名：**
 
@@ -734,7 +734,7 @@ routes: RouteRecordRaw[]
 
 ### scrollBehavior
 
-在页面之间导航时控制滚动的函数。可以返回一个 Promise 来延迟滚动。勾选 。
+在页面之间导航时控制滚动的函数。可以返回一个 Promise 来延迟滚动。
 
 **函数签名：**
 
@@ -746,7 +746,7 @@ scrollBehavior?: ScrollBehavior
 
 ```js
 function scrollBehavior(to, from, savedPosition) {
-  // `to` 和 `from` 都是路由位置
+  // `to` 和 `from` 都是路由地址
   // `savedPosition` 可以为空，如果没有的话。
 }
 ```
@@ -770,9 +770,9 @@ stringifyQuery?: (
 
 当用户通过 [`routes` option](#routeroptions) 或者 [`router.addRoutes()`](#addroutes) 来添加路由时，可以得到路由记录。 有三种不同的路由记录:
 
-- 单一视图记录：有一个 `component` 选项
-- 多视图记录 ([命名视图](/guide/essentials/named-views.md)) ：有一个 `components` 选项
-- 重定向记录：没有 `component` 或 `components` 选项，因为重定向记录永远不会到达。
+- 单一视图记录：有一个 `component` 配置
+- 多视图记录 ([命名视图](/guide/essentials/named-views.md)) ：有一个 `components` 配置
+- 重定向记录：没有 `component` 或 `components` 配置，因为重定向记录永远不会到达。
 
 ### path
 
@@ -781,14 +781,14 @@ stringifyQuery?: (
 
   记录的路径。应该以 `/` 开头，除非该记录是另一条记录的子记录。可以定义参数：`/users/:id` 匹配 `/users/1` 以及 `/users/posva`。
 
-- **更多的内容请看**: [动态路由匹配](/guide/essentials/dynamic-matching.md)
+- **更多的内容请看**：[动态路由匹配](/guide/essentials/dynamic-matching.md)
 
 ### redirect
 
 - **类型**：`RouteLocationRaw | (to: RouteLocationNormalized) => RouteLocationRaw` (可选择)
 - **详细内容**：
 
-  如果路由是直接匹配的，那么重定向到哪里呢。重定向发生在所有导航守卫之前，并以新的目标位置触发一个新的导航。也可以是一个接收目标路由位置并返回我们应该重定向到的位置的函数。
+  如果路由是直接匹配的，那么重定向到哪里呢。重定向发生在所有导航守卫之前，并以新的目标位置触发一个新的导航。也可以是一个接收目标路由地址并返回我们应该重定向到的位置的函数。
 
 ### children
 
@@ -805,7 +805,7 @@ stringifyQuery?: (
 - **详细内容**：
 
   路由的别名。允许定义类似记录副本的额外路由。这使得路由可以简写为像这种 `/users/:id` 和
-  `/u/:id` 。 **所有的 `alias` 和 `path` 值必须共享相同的参数**。
+  `/u/:id`。 **所有的 `alias` 和 `path` 值必须共享相同的参数**。
 
 ### name
 
@@ -848,7 +848,7 @@ stringifyQuery?: (
 - **类型**：`RouteRecordNormalized | undefined`
 - **详细内容**：
 
-  定义此记录是否是另一个记录的别名。如果该记录是原始记录，则此属性为 `undefined` 。
+  定义此记录是否是另一个记录的别名。如果该记录是原始记录，则此属性为 `undefined`。
 
 ### beforeEnter
 
@@ -861,7 +861,7 @@ stringifyQuery?: (
 
 ### children
 
-- **类型**：标准化 [路由记录](#routerecordnormalized) 数组
+- **类型**：标准化[路由记录](#routerecordnormalized)数组
 - **详细内容**：
 
   当前路由的子路由记录。如果没有则为空数组。
@@ -887,7 +887,7 @@ stringifyQuery?: (
 - **类型**：`string | symbol | undefined`
 - **详细内容**：
 
-  路由记录的名称。如果什么都没提供，则为 `undefined` 。
+  路由记录的名称。如果什么都没提供，则为 `undefined`。
 
 ### path
 
@@ -901,7 +901,7 @@ stringifyQuery?: (
 - **类型**：`Record<string, boolean | Function | Record<string, any>>`
 - **详细内容**：
 
-  每个命名视图的 [`props` 选项](#props) 字典。如果没有，它将只包含一个名为 `default` 的属性。
+  每个命名视图的 [`props` 配置](#props) 字典。如果没有，它将只包含一个名为 `default` 的属性。
 
 ### redirect
 
@@ -912,9 +912,9 @@ stringifyQuery?: (
 
 ## RouteLocationRaw
 
-用户级的路由位置，可以传递给 `router.push()`，`redirect`，并在[导航守卫](/guide/advanced/navigation-guards.md)中返回。
+用户级的路由地址，可以传递给 `router.push()`，`redirect`，并在[导航守卫](/guide/advanced/navigation-guards.md)中返回。
 
-原始位置可以是一个 `字符串` ，比如 `/users/posva#bio` ，也可以是一个对象：
+原始位置可以是一个 `字符串`，比如 `/users/posva#bio`，也可以是一个对象：
 
 ```js
 // 这三种形式是等价的
@@ -931,7 +931,7 @@ router.push({ params: { username: 'jolyne' } })
 
 注意 `path` 必须以编码方式提供(例如，`phantom blood` 变为 `phantom%20blood`)。而 `params`、`query` 和 `hash` 一定不要这样，因为它们会被路由编码。
 
-原始路由位置还支持一个额外的选项 `replace` 来调用导航守卫中的 `router.replace()` ，而不是 `router.push()` 。请注意，即使在调用 `router.push()`时，它也会在内部调用 `router.replace()` ：
+原始路由地址还支持一个额外的配置 `replace` 来调用导航守卫中的 `router.replace()`，而不是 `router.push()`。请注意，即使在调用 `router.push()`时，它也会在内部调用 `router.replace()` ：
 
 ```js
 router.push({ hash: '#bio', replace: true })
@@ -941,25 +941,25 @@ router.replace({ hash: '#bio' })
 
 ## RouteLocation
 
-可以包含 [重定向记录](#routerecordraw) 的解析的 [RouteLocationRaw](#routelocationraw) 。除此之外，它还具有与 [RouteLocationNormalized](#routelocationnormalized) 相同的属性。
+可以包含[重定向记录](#routerecordraw)的解析的 [RouteLocationRaw](#routelocationraw)。除此之外，它还具有与 [RouteLocationNormalized](#routelocationnormalized) 相同的属性。
 
 ## RouteLocationNormalized
 
-标准化的路由位置。没有任何 [重定向记录](#routerecordraw) 。在导航守卫中，`to` 和 `from` 总是属于这种类型。
+标准化的路由地址。没有任何[重定向记录](#routerecordraw)。在导航守卫中，`to` 和 `from` 总是属于这种类型。
 
 ### fullPath
 
 - **类型**：`string`
 - **详细内容**：
 
-  URL 编码与路由位置有关。包括 `path`、 `query` 和 `hash`。
+  URL 编码与路由地址有关。包括 `path`、 `query` 和 `hash`。
 
 ### hash
 
 - **类型**：`string`
 - **详细内容**：
 
-  已解码 URL 的 `hash` 部分。总是以 `#`开头。如果 URL 中没有 `hash` ，则为空字符串。
+  已解码 URL 的 `hash` 部分。总是以 `#`开头。如果 URL 中没有 `hash`，则为空字符串。
 
 ### query
 
@@ -973,7 +973,7 @@ router.replace({ hash: '#bio' })
 - **类型**：[`RouteRecordNormalized[]`](#routerecordnormalized)
 - **详细内容**：
 
-  与给定路由位置匹配的 [标准化的路由记录](#routerecord) 数组。
+  与给定路由地址匹配的[标准化的路由记录](#routerecord)数组。
 
 ### meta
 
@@ -989,7 +989,7 @@ router.replace({ hash: '#bio' })
 - **类型**：`string | symbol | undefined | null`
 - **详细内容**：
 
-  路由记录的名称。如果什么都没提供，则为 `undefined` 。
+  路由记录的名称。如果什么都没提供，则为 `undefined`。
 
 ### params
 
@@ -1003,14 +1003,14 @@ router.replace({ hash: '#bio' })
 - **类型**：`string`
 - **详细内容**：
 
-  编码 URL 的 `pathname` 部分，与路由位置有关。
+  编码 URL 的 `pathname` 部分，与路由地址有关。
 
 ### redirectedFrom
 
 - **类型**：[`RouteLocation`](#routelocation)
 - **详细内容**：
 
-  在找到 `redirect` 选项或带有路由位置的名为 `next()` 的导航守卫时，我们最初尝试访问的路由位置，最后到达当前位置。如果没有重定向，则为 `undefined` 。
+  在找到 `redirect` 配置或带有路由地址的名为 `next()` 的导航守卫时，我们最初尝试访问的路由地址，最后到达当前位置。如果没有重定向，则为 `undefined`。
 
 ## NavigationFailure
 
@@ -1019,14 +1019,14 @@ router.replace({ hash: '#bio' })
 - **类型**：[`RouteLocationNormalized`](#routelocationnormalized)
 - **详细内容**：
 
-  导航来的路由位置
+  导航来的路由地址
 
 ### to
 
 - **类型**：[`RouteLocationNormalized`](#routelocationnormalized)
 - **详细内容**：
 
-  导航去的路由位置
+  导航去的路由地址
 
 ### type
 
@@ -1041,8 +1041,8 @@ router.replace({ hash: '#bio' })
 
 - **Arguments**：
 
-  - [`RouteLocationNormalized`](#routelocationnormalized) to - 我们要导航到的路由位置
-  - [`RouteLocationNormalized`](#routelocationnormalized) from - 我们从哪里来的路由位置
+  - [`RouteLocationNormalized`](#routelocationnormalized) to - 我们要导航到的路由地址
+  - [`RouteLocationNormalized`](#routelocationnormalized) from - 我们从哪里来的路由地址
   - `Function` next (可选) - 回调以验证导航
 
 - **详细内容**：
@@ -1052,7 +1052,7 @@ router.replace({ hash: '#bio' })
   - `undefined | void | true`: 验证导航
   - `false`: 取消导航
   - [`RouteLocationRaw`](#routelocationraw): 重定向到一个不同的位置
-  - `(vm: ComponentPublicInstance) => any` **only for `beforeRouteEnter`**: 导航完成后执行的回调。接收路由组件实例作为参数。
+  - `(vm: ComponentPublicInstance) => any` **only for `beforeRouteEnter`**：导航完成后执行的回调。接收路由组件实例作为参数。
 
 - **更多的内容请看**：[导航守卫](/guide/advanced/navigation-guards.md)
 
@@ -1068,7 +1068,7 @@ router.replace({ hash: '#bio' })
 
 - **this.\$route**
 
-  当前激活的 [路由位置](#routelocationnormalized)。这个属性是只读的，并且它的属性是不可改变的，但是它可以被观察。
+  当前激活的 [路由地址](#routelocationnormalized)。这个属性是只读的，并且它的属性是不可改变的，但是它可以被观察。
 
 ### Component Enabled Options
 

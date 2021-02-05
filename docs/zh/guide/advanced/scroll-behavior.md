@@ -16,7 +16,7 @@ const router = createRouter({
 })
 ```
 
-`scrollBehavior` 函数接收 `to`和` from` 路由对象，如 [Navigation Guards](./navigation-guards.md)。第三个参数 `savedPosition` ，只有当这是一个 `popstate` 导航时才可用（由浏览器的后退/前进按钮触发）。
+`scrollBehavior` 函数接收 `to`和` from` 路由对象，如 [Navigation Guards](./navigation-guards.md)。第三个参数 `savedPosition`，只有当这是一个 `popstate` 导航时才可用（由浏览器的后退/前进按钮触发）。
 
 该函数可以返回一个 [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions) 位置对象:
 
@@ -47,7 +47,7 @@ const router = createRouter({
 
 如果返回一个 falsy 的值，或者是一个空对象，那么不会发生滚动。
 
-返回 `savedPosition` ，在按下 后退/前进 按钮时，就会像浏览器的原生表现那样：
+返回 `savedPosition`，在按下 后退/前进 按钮时，就会像浏览器的原生表现那样：
 
 ```js
 const router = createRouter({
@@ -106,5 +106,4 @@ const router = createRouter({
 })
 ```
 
-It's possible to hook this up with events from a page-level transition component to make the scroll behavior play nicely with your page transitions, but due to the possible variance and complexity in use cases, we simply provide this primitive to enable specific userland implementations.
 我们可以将其与页面级过渡组件的事件挂钩，以使滚动行为与你的页面过渡很好地结合起来，但由于使用场景可能存在的差异和复杂性，我们只是提供了这个基础来实现特定的用户场景。

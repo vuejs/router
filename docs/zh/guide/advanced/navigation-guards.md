@@ -1,6 +1,6 @@
 # 导航守卫
 
-正如其名， vue-router 提供的导航守卫主要用来通过跳转或取消的方式守卫导航。这里有很多方式植入路由导航中：全局的，单个路由独享的， 或者组件级的。
+正如其名，vue-router 提供的导航守卫主要用来通过跳转或取消的方式守卫导航。这里有很多方式植入路由导航中：全局的，单个路由独享的，或者组件级的。
 
 ## 全局前置守卫
 
@@ -26,11 +26,11 @@ router.beforeEach((to, from) => {
 可以返回的值如下:
 
 - `false`: 取消当前的导航。如果浏览器的 URL 改变了(可能是用户手动或者浏览器后退按钮)，那么 URL 地址会重置到 `from` 路由对应的地址。
-- 一个[路由地址](/api/#routelocationraw): 通过一个路由地址跳转到一个不同的地址，就像你调用 [`router.push()`](/api/#push) 一样， 你可以设置诸如 `replace: true` 或 `name: 'home'` 之类的选项。当前的导航被中断，然后进行一个新的导航，就和 `from` 一样。
+- 一个[路由地址](/api/#routelocationraw): 通过一个路由地址跳转到一个不同的地址，就像你调用 [`router.push()`](/api/#push) 一样，你可以设置诸如 `replace: true` 或 `name: 'home'` 之类的选项。当前的导航被中断，然后进行一个新的导航，就和 `from` 一样。
 
-如果遇到了意料之外的情况，可能会抛出一个 `Error` 。这会取消导航并且调用 [`router.onError()`](/api/#onerror) 注册过的回调。
+如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](/api/#onerror) 注册过的回调。
 
-如果什么都没有，`undefined` 或返回 `true` ，**则导航是有效的**，并调用下一个导航卫士
+如果什么都没有，`undefined` 或返回 `true`，**则导航是有效的**，并调用下一个导航卫士
 
 以上所有都同 **`async` 函数** 和 Promise 工作方式一样：
 
@@ -49,7 +49,7 @@ router.beforeEach(async (to, from) => {
 // BAD
 router.beforeEach((to, from, next) => {
   if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
-  // 如果用户未能验证身份， 则 `next` 会被调用两次
+  // 如果用户未能验证身份，则 `next` 会被调用两次
   next()
 })
 ```
@@ -226,7 +226,7 @@ beforeRouteLeave (to, from) {
 
 ### 使用组合 API
 
-如果你正在使用[组合 API 和 `setup` 函数](https://v3.vuejs.org/guide/composition-api-setup.html#setup)来编写组件， 你可以通过 `onBeforeRouteUpdate` 和 `onBeforeRouteLeave` 分别添加 update 和 leave 守卫。 请参考[组合 API 部分](./composition-api.md#navigation-guards)以获得更多细节。
+如果你正在使用[组合 API 和 `setup` 函数](https://v3.vuejs.org/guide/composition-api-setup.html#setup)来编写组件，你可以通过 `onBeforeRouteUpdate` 和 `onBeforeRouteLeave` 分别添加 update 和 leave 守卫。 请参考[组合 API 部分](./composition-api.md#navigation-guards)以获得更多细节。
 
 ## 完整的导航解析流程
 
@@ -234,7 +234,7 @@ beforeRouteLeave (to, from) {
 2. 在失活的组件里调用 `beforeRouteLeave` 守卫。
 3. 调用全局的 `beforeEach` 守卫。
 4. 在重用的组件里调用 `beforeRouteUpdate` 守卫(2.2+)。
-5. 在路由配置里调用 `beforeEnter` 。
+5. 在路由配置里调用 `beforeEnter`。
 6. 解析异步路由组件。
 7. 在被激活的组件里调用 `beforeRouteEnter`。
 8. 调用全局的 `beforeResolve` 守卫(2.5+)。

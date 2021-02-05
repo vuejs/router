@@ -37,7 +37,7 @@ router.push({ path: '/register', query: { plan: 'private' } })
 router.push({ path: '/about', hash: '#team' })
 ```
 
-**注意**：如果提供了 `path` ，`params` 会被忽略，上述例子中的 `query` 并不属于这种情况。取而代之的是下面例子的做法，你需要提供路由的 `name` 或手写完整的带有参数的 `path` ：
+**注意**：如果提供了 `path`，`params` 会被忽略，上述例子中的 `query` 并不属于这种情况。取而代之的是下面例子的做法，你需要提供路由的 `name` 或手写完整的带有参数的 `path` ：
 
 ```js
 const username = 'eduardo'
@@ -53,11 +53,11 @@ router.push({ path: '/user', params: { username } }) // -> /user
 
 由于属性 `to` 与 `router.push` 接受的对象种类相同，所以两者的规则完全相同。
 
-`router.push` 和所有其他导航方法都会返回一个 _Promise_ ，让我们可以等到导航完成后才知道是成功还是失败。我们将在 [Navigation Handling](.../zh/advanced/navigation-handling.md) 中详细介绍。
+`router.push` 和所有其他导航方法都会返回一个 _Promise_，让我们可以等到导航完成后才知道是成功还是失败。我们将在 [Navigation Handling](.../zh/advanced/navigation-handling.md) 中详细介绍。
 
 ## 替换当前位置
 
-它的作用类似于 `router.push` ，唯一不同的是，它在导航时不会向 history 添加新记录，正如它的名字所暗示的那样--它取代了当前的条目。
+它的作用类似于 `router.push`，唯一不同的是，它在导航时不会向 history 添加新记录，正如它的名字所暗示的那样--它取代了当前的条目。
 
 | 声明式                             | 编程式                 |
 | --------------------------------- | --------------------- |
@@ -96,6 +96,6 @@ router.go(100)
 
 你可能已经注意到，`router.push`、`router.replace` 和 `router.go` 是 [`window.history.pushState`、`window.history.replaceState` 和 `window.history.go`](https://developer.mozilla.org/en-US/docs/Web/API/History) 的翻版，它们确实模仿了 `window.history` 的 API。
 
-因此，如果你已经熟悉 [Browser History APIs](https://developer.mozilla.org/en-US/docs/Web/API/History_API) ，在使用 Vue Router 时，操作历史记录就会觉得很熟悉。
+因此，如果你已经熟悉 [Browser History APIs](https://developer.mozilla.org/en-US/docs/Web/API/History_API)，在使用 Vue Router 时，操作历史记录就会觉得很熟悉。
 
 值得一提的是，无论在创建路由器实例时传递什么样的[`history` 配置](/zh/api/#history)，Vue Router 的导航方法(`push`、`replace`、`go`)都能始终如一地工作。

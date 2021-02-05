@@ -164,7 +164,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 ### 删除 `<router-link>` 中的 `event` 和 `tag` 属性
 
-`<router-link>` 中的 `event` 和 `tag` 属性都已被删除。你可以使用 [`v-slot`API](/zh/api/#router-link-s-v-slot) 来完全定制 `<router-link>`：
+`<router-link>` 中的 `event` 和 `tag` 属性都已被删除。你可以使用 [`v-slot` API](/zh/api/#router-link-s-v-slot) 来完全定制 `<router-link>`：
 
 ```html
 将
@@ -395,7 +395,7 @@ const routes = [
 
 无论在哪里启动导航，`params`、`query`和 `hash` 中的解码值现在都是一致的（旧的浏览器仍然会产生未编码的 `path` 和 `fullPath`）。初始导航应产生与应用内部导航相同的结果。
 
-给定任何 [规范化的路由地址](/zh/api/#routelocationnormalized):
+给定任何[规范化的路由地址](/zh/api/#routelocationnormalized):
 
 - `hash` 现在被解码了，这样就可以复制过来。`router.push({ hash: $route.hash })` 可以直接用于 [scrollBehavior](/zh/api/#scrollbehavior) 的 `el` 选项中。
 - 当使用 `push`、`resolve` 和 `replace` 并在对象中提供 `string` 地址或 `path` 属性时，**必须进行编码**(像以前的版本一样)。另一方面，`params`、`query` 和 `hash` 必须以未编码的版本提供。

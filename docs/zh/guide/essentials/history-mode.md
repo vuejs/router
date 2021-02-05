@@ -34,7 +34,7 @@ const router = createRouter({
 })
 ```
 
-当使用这种历史模式时，URL 会看起来很 "正常"，例如 `https://example.com/user/id` 。漂亮!
+当使用这种历史模式时，URL 会看起来很 "正常"，例如 `https://example.com/user/id`。漂亮!
 
 不过，问题来了。由于我们的应用是一个单页的客户端应用，如果没有适当的服务器配置，用户在浏览器中直接访问 `https://example.com/user/id`，就会得到一个 404 错误。这就丑了。
 
