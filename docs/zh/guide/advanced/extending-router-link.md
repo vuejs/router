@@ -1,8 +1,8 @@
 # 扩展 RouterLink
 
-RouterLink 组件提供了足够的 `props` 来满足大多数基本应用程序的需求，但它并没有试图覆盖所有可能的用例。你可能会发现自己在某些高级用例中使用`v-slot`，而在大多数中大型应用中，创建一个甚至多个自定义的 RouterLink 组件是非常值得的，因为可以在你的应用中重复使用它们。例如导航菜单中的链接、处理外部链接、添加`非活动类`等。
+RouterLink 组件提供了足够的 `props` 来满足大多数基本应用程序的需求，但它并未尝试涵盖所有可能的用例，在某些高级情况下，你可能会发现自己使用了 `v-slot`。在大多数中型到大型应用程序中，值得创建一个（如果不是多个）自定义 RouterLink 组件，以在整个应用程序中重用它们。例如导航菜单中的链接，处理外部链接，添加 `inactive-class` 等。
 
-让我们扩展 RouterLink 来处理外部链接，并在 `AppLink.vue` 文件中添加一个自定义的`非活动类`：
+让我们扩展 RouterLink 来处理外部链接，并在 `AppLink.vue` 文件中添加一个自定义的 `inactive-class`：
 
 ```vue
 <template>
@@ -47,7 +47,7 @@ export default {
 </script>
 ```
 
-如果你喜欢使用渲染函数或创建 `computed` 属性，你可以使用 [Composition API](./composition-api.md)中的 `useLink` ：
+如果你喜欢使用渲染函数或创建 `computed` 属性，你可以使用 [Composition API](./composition-api.md) 中的 `useLink` ：
 
 ```js
 import { RouterLink, useLink } from 'vue-router'

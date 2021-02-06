@@ -285,7 +285,7 @@ const config = {
                 link: '/zh/guide/advanced/extending-router-link.html',
               },
               {
-                text: '导航失灵',
+                text: '导航故障',
                 link: '/zh/guide/advanced/navigation-failures.html',
               },
               {

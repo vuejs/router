@@ -1,6 +1,6 @@
 # 不同的历史模式
 
-在创建路由器实例时，`history` 选项允许我们在不同的历史模式中进行选择。
+在创建路由器实例时，`history` 配置允许我们在不同的历史模式中进行选择。
 
 ## Hash 模式
 
@@ -43,7 +43,7 @@ Not to worry: To fix the issue, all you need to do is add a simple catch-all fal
 
 ## 服务器配置示例
 
-**注意**：以下示例假定你正在从根目录提供服务。如果你部署到子目录，你应该使用[Vue CLI的 `publicPath` 选项](https://cli.vuejs.org/config/#publicpath)和相关的[路由器的 `base` 属性](/zh/api/#createwebhistory)。你还需要调整下面的例子，以使用子目录而不是根目录（例如，将`RewriteBase/` 替换为 `RewriteBase/name-of-your-subfolder/`）。
+**注意**：以下示例假定你正在从根目录提供服务。如果你部署到子目录，你应该使用[Vue CLI的 `publicPath` 配置](https://cli.vuejs.org/config/#publicpath)和相关的[路由器的 `base` 属性](/zh/api/#createwebhistory)。你还需要调整下面的例子，以使用子目录而不是根目录（例如，将`RewriteBase/` 替换为 `RewriteBase/name-of-your-subfolder/`）。
 
 ### Apache
 

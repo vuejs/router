@@ -397,7 +397,7 @@ const routes = [
 
 给定任何[规范化的路由地址](/zh/api/#routelocationnormalized):
 
-- `hash` 现在被解码了，这样就可以复制过来。`router.push({ hash: $route.hash })` 可以直接用于 [scrollBehavior](/zh/api/#scrollbehavior) 的 `el` 选项中。
+- `hash` 现在被解码了，这样就可以复制过来。`router.push({ hash: $route.hash })` 可以直接用于 [scrollBehavior](/zh/api/#scrollbehavior) 的 `el` 配置中。
 - 当使用 `push`、`resolve` 和 `replace` 并在对象中提供 `string` 地址或 `path` 属性时，**必须进行编码**(像以前的版本一样)。另一方面，`params`、`query` 和 `hash` 必须以未编码的版本提供。
 - 斜线字符(`/`)现在已在 `params` 内正确解码，同时仍在 URL 上产生一个编码版本：`%2F`。
 

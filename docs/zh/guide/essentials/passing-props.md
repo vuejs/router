@@ -29,7 +29,7 @@ const routes = [{ path: '/user/:id', component: User, props: true }]
 
 ## 命名视图
 
-对于有命名视图的路由，你必须为每个命名视图定义 `props` 选项：
+对于有命名视图的路由，你必须为每个命名视图定义 `props` 配置：
 
 ```js
 const routes = [

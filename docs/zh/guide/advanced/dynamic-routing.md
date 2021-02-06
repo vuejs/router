@@ -1,6 +1,6 @@
 # 动态路由
 
-添加路由到你的路由上通常是通过 [`routes` 配置](/api/#routes)来完成的，但是在某些情况下，你可能想在应用程序已经运行的时候添加或删除路由。具有可扩展接口(如 [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html) )这样的应用程序可以使用它来扩展应用程序。
+添加路由到你的路由上通常是通过 [`routes` 配置](/zh/api/#routes)来完成的，但是在某些情况下，你可能想在应用程序已经运行的时候添加或删除路由。具有可扩展接口(如 [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html) )这样的应用程序可以使用它来扩展应用程序。
 
 ## 添加路由
 
@@ -100,5 +100,5 @@ router.addRoute({
 
 Vue Router提供了两个功能来查看现有的路由：
 
-- [`router.hasRoute()`](/api/#hasroute)：检查路由是否存在。
-- [`router.getRoutes()`](/api/#getroutes)：获取一个包含所有路由记录的数组。
+- [`router.hasRoute()`](/zh/api/#hasroute)：检查路由是否存在。
+- [`router.getRoutes()`](/zh/api/#getroutes)：获取一个包含所有路由记录的数组。

@@ -31,7 +31,7 @@ const User = {
 | /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`                |
 | /users/:username/posts/:postId | /users/eduardo/posts/123 | `{ username: 'eduardo', postId: '123' }` |
 
-除了 `$route.params` 之外，`$route` 对象还公开了其他有用的信息，如 `$route.query`（如果 URL 中存在参数）、`$route.hash` 等。你可以在 [API 参考](/zh/api/#routelocationnormalized) 中查看完整的细节。
+除了 `$route.params` 之外，`$route` 对象还公开了其他有用的信息，如 `$route.query`（如果 URL 中存在参数）、`$route.hash` 等。你可以在 [API 参考](/zh/api/#routelocationnormalized)中查看完整的细节。
 
 这个例子的 demo 可以在[这里](https://codesandbox.io/s/route-params-vue-router-examples-mlb14?from-embed&initialpath=%2Fusers%2Feduardo%2Fposts%2F1)找到。
 

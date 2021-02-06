@@ -1,6 +1,6 @@
 # 路由的匹配语法
 
-大多数应用都会使用 `/about` 这样的静态路由和 `/users/:userId` 这样的动态路由，就像我们刚才在[动态路由匹配](./zh/dynamic-matching.md)中看到的那样，但是 Vue Router 可以提供更多的方式!
+大多数应用都会使用 `/about` 这样的静态路由和 `/users/:userId` 这样的动态路由，就像我们刚才在[动态路由匹配](./zh/dynamic-matching.md)中看到的那样，但是 Vue Router 可以提供更多的方式！
 
 :::tip
 为了简单起见，所有的路由**都省略了 `component` 属性**，只关注 `path` 值。
@@ -38,7 +38,7 @@ const routes = [
 
 ## 可重复的参数
 
-如果你需要匹配具有多个部分的路由，如 `/first/second/third`，你应该用 `*`（0 或更多）和 `+`（1 或更多）将参数标记为可重复：
+如果你需要匹配具有多个部分的路由，如 `/first/second/third`，你应该用 `*`（0 个或多个）和 `+`（1 个或多个）将参数标记为可重复：
 
 ```js
 const routes = [
@@ -63,7 +63,7 @@ router.resolve({ name: 'chapters', params: { chapters: [] } }).href
 // 抛出错误，因为 `chapters` 为空 
 ```
 
-这些也可以通过在**右括号后**后添加它们与自定义正则结合使用：
+这些也可以通过在**右括号后**添加它们与自定义正则结合使用：
 
 ```js
 const routes = [
@@ -77,7 +77,7 @@ const routes = [
 
 ## 可选参数
 
-你也可以通过使用 `?` 修饰符(0 或 1)将一个参数标记为可选：
+你也可以通过使用 `?` 修饰符(0 个或 1 个)将一个参数标记为可选：
 
 ```js
 const routes = [

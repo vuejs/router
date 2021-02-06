@@ -52,7 +52,7 @@ sidebar: auto
 - **默认值**：`"router-link-active"` (或者全局 [`linkActiveClass`](#linkactiveclass))
 - **详细内容**：
 
-  链接激活时，应用于渲染的 `<a>` 的类。
+  链接激活时，应用于渲染的 `<a>` 的 class。
 
 ### aria-current-value
 
@@ -78,7 +78,7 @@ sidebar: auto
   </router-link>
   ```
 
-  渲染 `<a href="/home">/home</a>`.
+  渲染成 `<a href="/home">/home</a>`。
 
   ```html
   <router-link to="/home" v-slot="{ route }">
@@ -86,7 +86,7 @@ sidebar: auto
   </router-link>
   ```
 
-  渲染 `<a href="/home"><span>/home</span></a>`.
+  渲染成 `<a href="/home"><span>/home</span></a>`。
 
 ### exact-active-class
 
@@ -94,7 +94,7 @@ sidebar: auto
 - **默认值**：`"router-link-exact-active"` (或者全局 [`linkExactActiveClass`](#linkexactactiveclass))
 - **详细内容**：
 
-  链接精准激活时，应用于渲染的 `<a>` 的类。
+  链接精准激活时，应用于渲染的 `<a>` 的 class。
 
 ## `<router-link>` 的 `v-slot`
 
@@ -118,7 +118,7 @@ sidebar: auto
 
 - `href`：解析后的 URL。将会作为一个 `<a>` 元素的 `href` 属性。如果什么都没提供，则它会包含 `base`。
 - `route`：解析后的规范化的地址。
-- `navigate`：触发导航的函数。 **会在必要时自动阻止事件**，和 `router-link` 一样。例如：`ctrl` 或者 `cmd` + 点击仍然会被 `导航` 忽略。
+- `navigate`：触发导航的函数。 **会在必要时自动阻止事件**，和 `router-link` 一样。例如：`ctrl` 或者 `cmd` + 点击仍然会被 `navigate` 忽略。
 - `isActive`：如果需要应用 [active class](#active-class)，则为 `true`。允许应用一个任意的 class。
 - `isExactActive`：如果需要应用 [exact active class](#exact-active-class)，则为 `true`。允许应用一个任意的 class。
 
@@ -141,7 +141,7 @@ sidebar: auto
 ```
 
 :::tip 提示
-如果你在 `a` 元素上添加一个 `target="_blank"`，则 `@click="navigate"` 处理器会被忽略。
+如果你在 `a` 元素上添加一个 `target="_blank"`，你必须省略 `@click="navigate"` 的处理。
 :::
 
 ## `<router-view>` Props
@@ -152,9 +152,9 @@ sidebar: auto
 - **默认值**：`"default"`
 - **详细内容**：
 
-  如果 `<router-view>` 设置了`名称`，则会渲染对应的路由配置中 `components` 下的相应组件。
+  如果 `<router-view>` 设置了 `name`，则会渲染对应的路由配置中 `components` 下的相应组件。
 
-- **更多的内容请看**：[命名视图](/guide/essentials/named-views.md)
+- **更多的内容请看**：[命名视图](/zh/guide/essentials/named-views.md)
 
 ### route
 
@@ -281,9 +281,9 @@ export declare enum NavigationFailureType
 
 | 成员       | 值  | 描述                                                                     |
 | ---------- | --- | ------------------------------------------------------------------------ |
-| aborted    | 4   | 终止导航是指由于导航卫士返回 `false` 或调用 `next(false)` 而失败的导航。 |
+| aborted    | 4   | 终止导航是指由于导航守卫返回 `false` 或调用 `next(false)` 而失败的导航。 |
 | cancelled  | 8   | 取消导航是指由于最近的导航完成启动（不一定是完成）而失败的导航。         |
-| duplicated | 16  | 重复导航是指在启动时已经在同一地点失败的导航。                           |
+| duplicated | 16  | 重复导航是指在启动时已经在同一位置失败的导航。                           |
 
 ## START_LOCATION
 
@@ -389,20 +389,20 @@ export declare function useRouter(): Router
 - **类型**：[`Ref<RouteLocationNormalized>`](#routelocationnormalized)
 - **详细内容**：
 
-  当前路由地址。只读。
+  当前路由地址。只读的。
 
 ### options
 
 - **类型**：[`RouterOptions`](#routeroptions)
 - **详细内容**：
 
-  创建 Router 时传递的原始选项对象。只读的。
+  创建 Router 时传递的原始配置对象。只读的。
 
 ## Router 方法
 
 ### addRoute
 
-添加一条新的 [路由记录](#routerecordraw)作为现有路由的子路由。如果路由有一个 `name`，并且已经有一个与之名字相同的路由，它会先删除之前的路由。
+添加一条新的[路由记录](#routerecordraw)作为现有路由的子路由。如果路由有一个 `name`，并且已经有一个与之名字相同的路由，它会先删除之前的路由。
 
 **函数签名：**
 
@@ -419,7 +419,7 @@ _参数_
 
 ### addRoute
 
-添加一条新的 [路由记录](#routerecordraw)到路由。如果路由有一个 `name`，并且已经有一个与之名字相同的路由，它会先删除之前的路由。
+添加一条新的[路由记录](#routerecordraw)到路由。如果路由有一个 `name`，并且已经有一个与之名字相同的路由，它会先删除之前的路由。
 
 **函数签名：**
 
@@ -641,7 +641,7 @@ _参数_
 
 ### resolve
 
-返回[路由地址](#routelocationraw) 的[标准化版本](#routelocation)。还包括一个包含任何现有 `base` 的 `href` 属性。
+返回[路由地址](#routelocationraw)的[标准化版本](#routelocation)。还包括一个包含任何现有 `base` 的 `href` 属性。
 
 **函数签名：**
 
@@ -674,7 +674,7 @@ history: RouterHistory
 ```js
 createRouter({
   history: createWebHistory(),
-  // 其他选项...
+  // 其他配置...
 })
 ```
 
@@ -716,7 +716,7 @@ parseQuery?: (searchQuery: string) => Record<string, (string | null)[] | string 
 import qs from 'qs'
 
 createRouter({
-  // 其他选项...
+  // 其他配置...
   parseQuery: qs.parse,
   stringifyQuery: qs.stringify,
 })
@@ -771,7 +771,7 @@ stringifyQuery?: (
 当用户通过 [`routes` option](#routeroptions) 或者 [`router.addRoutes()`](#addroutes) 来添加路由时，可以得到路由记录。 有三种不同的路由记录:
 
 - 单一视图记录：有一个 `component` 配置
-- 多视图记录 ([命名视图](/guide/essentials/named-views.md)) ：有一个 `components` 配置
+- 多视图记录 ([命名视图](/zh/guide/essentials/named-views.md)) ：有一个 `components` 配置
 - 重定向记录：没有 `component` 或 `components` 配置，因为重定向记录永远不会到达。
 
 ### path
@@ -781,27 +781,27 @@ stringifyQuery?: (
 
   记录的路径。应该以 `/` 开头，除非该记录是另一条记录的子记录。可以定义参数：`/users/:id` 匹配 `/users/1` 以及 `/users/posva`。
 
-- **更多的内容请看**：[动态路由匹配](/guide/essentials/dynamic-matching.md)
+- **更多的内容请看**：[动态路由匹配](/zh/guide/essentials/dynamic-matching.md)
 
 ### redirect
 
-- **类型**：`RouteLocationRaw | (to: RouteLocationNormalized) => RouteLocationRaw` (可选择)
+- **类型**：`RouteLocationRaw | (to: RouteLocationNormalized) => RouteLocationRaw` (可选)
 - **详细内容**：
 
   如果路由是直接匹配的，那么重定向到哪里呢。重定向发生在所有导航守卫之前，并以新的目标位置触发一个新的导航。也可以是一个接收目标路由地址并返回我们应该重定向到的位置的函数。
 
 ### children
 
-- **类型**：[`RouteRecordRaw`](#routerecordraw) 数组 (可选择)
+- **类型**：[`RouteRecordRaw`](#routerecordraw) 数组 (可选)
 - **详细内容**：
 
   当前记录的嵌套路由。
 
-- **更多的内容请看**：[Nested Routes](/guide/essentials/nested-routes.md)
+- **更多的内容请看**：[Nested Routes](/zh/guide/essentials/nested-routes.md)
 
 ### alias
 
-- **类型**：`string | string[]` (可选择)
+- **类型**：`string | string[]` (可选)
 - **详细内容**：
 
   路由的别名。允许定义类似记录副本的额外路由。这使得路由可以简写为像这种 `/users/:id` 和
@@ -809,39 +809,39 @@ stringifyQuery?: (
 
 ### name
 
-- **类型**：`string | symbol` (可选择)
+- **类型**：`string | symbol` (可选)
 - **详细内容**：
 
   路由记录独一无二的名称。
 
 ### beforeEnter
 
-- **类型**：[`NavigationGuard | NavigationGuard[]`](#navigationguard) (可选择)
+- **类型**：[`NavigationGuard | NavigationGuard[]`](#navigationguard) (可选)
 - **详细内容**：
 
   在进入特定于此记录的守卫之前。注意如果记录有`重定向`属性，则 `beforeEnter` 无效。
 
 ### props
 
-- **类型**：`boolean | Record<string, any> | (to: RouteLocationNormalized) => Record<string, any>` (可选择)
+- **类型**：`boolean | Record<string, any> | (to: RouteLocationNormalized) => Record<string, any>` (可选)
 - **详细内容**：
 
   允许将参数作为 props 传递给由 `router-view` 渲染的组件。当传递给一个*多视图记录*时，它应该是一个与`组件`具有相同键的对象，或者是一个应用于每个组件的`布尔值`。
 
-- **更多的内容请看**：[给路由组件传 props](/guide/essentials/passing-props.md)
+- **更多的内容请看**：[给路由组件传 props](/zh/guide/essentials/passing-props.md)
 
 ### meta
 
-- **类型**：[`RouteMeta`](#routemeta) (可选择)
+- **类型**：[`RouteMeta`](#routemeta) (可选)
 - **详细内容**：
 
   在记录上附加自定义数据。
 
-- **更多的内容请看**：[Meta 字段](/guide/advanced/meta.md)
+- **更多的内容请看**：[Meta 字段](/zh/guide/advanced/meta.md)
 
 ## RouteRecordNormalized
 
-[路由记录](#routerecordraw) 的标准化版本
+[路由记录](#routerecordraw)的标准化版本
 
 ### aliasOf
 
@@ -857,7 +857,7 @@ stringifyQuery?: (
 
   当从其他地方进入此记录时，导航守卫会被应用。
 
-- **更多的内容请看**：[导航守卫](/guide/advanced/navigation-guards.md)
+- **更多的内容请看**：[导航守卫](/zh/guide/advanced/navigation-guards.md)
 
 ### children
 
@@ -880,7 +880,7 @@ stringifyQuery?: (
 
   附在记录上的任意数据。
 
-- **更多的内容请看**：[Meta 字段](/guide/advanced/meta.md)
+- **更多的内容请看**：[Meta 字段](/zh/guide/advanced/meta.md)
 
 ### name
 
@@ -901,7 +901,7 @@ stringifyQuery?: (
 - **类型**：`Record<string, boolean | Function | Record<string, any>>`
 - **详细内容**：
 
-  每个命名视图的 [`props` 配置](#props) 字典。如果没有，它将只包含一个名为 `default` 的属性。
+  每个命名视图的 [`props` 配置](#props)字典。如果没有，它将只包含一个名为 `default` 的属性。
 
 ### redirect
 
@@ -912,7 +912,7 @@ stringifyQuery?: (
 
 ## RouteLocationRaw
 
-用户级的路由地址，可以传递给 `router.push()`，`redirect`，并在[导航守卫](/guide/advanced/navigation-guards.md)中返回。
+用户级的路由地址，可以传递给 `router.push()`，`redirect`，并在[导航守卫](/zh/guide/advanced/navigation-guards.md)中返回。
 
 原始位置可以是一个 `字符串`，比如 `/users/posva#bio`，也可以是一个对象：
 
@@ -982,7 +982,7 @@ router.replace({ hash: '#bio' })
 
   附加到从父级到子级合并（非递归）的所有匹配记录的任意数据。
 
-- **更多的内容请看**：[Meta 字段](/guide/advanced/meta.md)
+- **更多的内容请看**：[Meta 字段](/zh/guide/advanced/meta.md)
 
 ### name
 
@@ -1035,7 +1035,7 @@ router.replace({ hash: '#bio' })
 
   导航失败的类型
 
-- **更多的内容请看**：[Navigation Failures](/guide/advanced/navigation-failures.md)
+- **更多的内容请看**：[Navigation Failures](/zh/guide/advanced/navigation-failures.md)
 
 ## NavigationGuard
 
@@ -1052,9 +1052,9 @@ router.replace({ hash: '#bio' })
   - `undefined | void | true`: 验证导航
   - `false`: 取消导航
   - [`RouteLocationRaw`](#routelocationraw): 重定向到一个不同的位置
-  - `(vm: ComponentPublicInstance) => any` **only for `beforeRouteEnter`**：导航完成后执行的回调。接收路由组件实例作为参数。
+  - `(vm: ComponentPublicInstance) => any` **仅适用于 `beforeRouteEnter`**：导航完成后执行的回调。接收路由组件实例作为参数。
 
-- **更多的内容请看**：[导航守卫](/guide/advanced/navigation-guards.md)
+- **更多的内容请看**：[导航守卫](/zh/guide/advanced/navigation-guards.md)
 
 ## Component Injections
 
@@ -1068,7 +1068,7 @@ router.replace({ hash: '#bio' })
 
 - **this.\$route**
 
-  当前激活的 [路由地址](#routelocationnormalized)。这个属性是只读的，并且它的属性是不可改变的，但是它可以被观察。
+  当前激活的[路由地址](#routelocationnormalized)。这个属性是只读的，并且它的属性是不可改变的，但是它可以被观察。
 
 ### Component Enabled Options
 
@@ -1076,4 +1076,4 @@ router.replace({ hash: '#bio' })
 - **beforeRouteUpdate**
 - **beforeRouteLeave**
 
-请看 [In Component Guards](/guide/advanced/navigation-guards.md#in-component-guards).
+请看[组件内的守卫](/zh/guide/advanced/navigation-guards.md#in-component-guards)。
