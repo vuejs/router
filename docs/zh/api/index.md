@@ -1076,4 +1076,4 @@ router.replace({ hash: '#bio' })
 - **beforeRouteUpdate**
 - **beforeRouteLeave**
 
-请看[组件内的守卫](/zh/guide/advanced/navigation-guards.md#in-component-guards)。
+请看[组件内的守卫](/zh/guide/advanced/navigation-guards.md#组件内的守卫)。

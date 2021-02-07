@@ -53,7 +53,7 @@ const routes = [
 </router-view>
 ```
 
-我们可以添加一个 [after navigation hook](./navigation-guards.md#global-after-hooks)，根据路径的深度动态添加信息到 `meta` 字段。
+我们可以添加一个 [after navigation hook](./navigation-guards.md#全局后置钩子)，根据路径的深度动态添加信息到 `meta` 字段。
 
 ```js
 router.afterEach((to, from) => {

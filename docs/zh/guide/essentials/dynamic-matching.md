@@ -88,7 +88,7 @@ const routes = [
 ]
 ```
 
-在这个特定的场景中，我们在括号之间使用了[自定义正则表达式](/zh/guide/essentials/route-matching-syntax.md#custom-regexp-in-params)，并将`pathMatch` 参数标记为[可选可重复](/zh/guide/essentials/route-matching-syntax.md#optional-parameters)。这样做是为了让我们在需要的时候，可以通过将 `path` 拆分成一个数组，直接导航到路由：
+在这个特定的场景中，我们在括号之间使用了[自定义正则表达式](/zh/guide/essentials/route-matching-syntax.md#在参数中自定义正则)，并将`pathMatch` 参数标记为[可选可重复](/zh/guide/essentials/route-matching-syntax.md#可选参数)。这样做是为了让我们在需要的时候，可以通过将 `path` 拆分成一个数组，直接导航到路由：
 
 ```js
 this.$router.push({
@@ -97,7 +97,7 @@ this.$router.push({
 })
 ```
 
-更多内容请参见[重复参数](/zh/guide/essentials/route-matching-syntax.md#repeatable-params)部分。
+更多内容请参见[重复参数](/zh/guide/essentials/route-matching-syntax.md#可重复的参数)部分。
 
 如果你正在使用[历史模式](./zh/history-mode.md)，请务必按照说明正确配置你的服务器。
 
