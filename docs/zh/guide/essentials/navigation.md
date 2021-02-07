@@ -53,7 +53,7 @@ router.push({ path: '/user', params: { username } }) // -> /user
 
 由于属性 `to` 与 `router.push` 接受的对象种类相同，所以两者的规则完全相同。
 
-`router.push` 和所有其他导航方法都会返回一个 _Promise_，让我们可以等到导航完成后才知道是成功还是失败。我们将在 [Navigation Handling](.../zh/advanced/navigation-handling.md) 中详细介绍。
+`router.push` 和所有其他导航方法都会返回一个 _Promise_，让我们可以等到导航完成后才知道是成功还是失败。我们将在 [Navigation Handling](../advanced/navigation-handling.md) 中详细介绍。
 
 ## 替换当前位置
 

@@ -63,7 +63,7 @@ const User = {
 }
 ```
 
-或者，使用 `beforeRouteUpdate` [导航守卫](.../zh/advanced/navigation-guards.md)，它也可以取消导航：
+或者，使用 `beforeRouteUpdate` [导航守卫](../advanced/navigation-guards.md)，它也可以取消导航：
 
 ```js
 const User = {
@@ -99,8 +99,8 @@ this.$router.push({
 
 更多内容请参见[重复参数](/zh/guide/essentials/route-matching-syntax.md#可重复的参数)部分。
 
-如果你正在使用[历史模式](./zh/history-mode.md)，请务必按照说明正确配置你的服务器。
+如果你正在使用[历史模式](./history-mode.md)，请务必按照说明正确配置你的服务器。
 
 ## 高级匹配模式
 
-Vue Router 使用自己的路径匹配语法，其灵感来自于 `express`，因此它支持许多高级匹配模式，如可选的参数，零或多个 / 一个或多个，甚至自定义的正则匹配规则。请查看[高级匹配](./zh/route-matching-syntax.md)文档来探索它们。
+Vue Router 使用自己的路径匹配语法，其灵感来自于 `express`，因此它支持许多高级匹配模式，如可选的参数，零或多个 / 一个或多个，甚至自定义的正则匹配规则。请查看[高级匹配](./route-matching-syntax.md)文档来探索它们。

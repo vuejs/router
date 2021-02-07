@@ -1,6 +1,6 @@
 # 路由的匹配语法
 
-大多数应用都会使用 `/about` 这样的静态路由和 `/users/:userId` 这样的动态路由，就像我们刚才在[动态路由匹配](./zh/dynamic-matching.md)中看到的那样，但是 Vue Router 可以提供更多的方式！
+大多数应用都会使用 `/about` 这样的静态路由和 `/users/:userId` 这样的动态路由，就像我们刚才在[动态路由匹配](./dynamic-matching.md)中看到的那样，但是 Vue Router 可以提供更多的方式！
 
 :::tip
 为了简单起见，所有的路由**都省略了 `component` 属性**，只关注 `path` 值。
