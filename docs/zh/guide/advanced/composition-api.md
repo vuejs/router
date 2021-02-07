@@ -26,7 +26,7 @@ export default {
 }
 ```
 
-`route` 对象是一个响应式对象，所以它的任何属性都可以被监视，但你应该**避免监听整个 `route`** 对象：
+`route` 对象是一个响应式对象，所以它的任何属性都可以被监听，但你应该**避免监听整个 `route`** 对象：
 
 ```js
 import { useRoute } from 'vue-router'
