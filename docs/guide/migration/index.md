@@ -351,7 +351,7 @@ const routes = [
   {
     path: '/dashboard',
     name: 'dashboard-parent',
-    component: DashboardParent
+    component: DashboardParent,
     children: [
       { path: '', name: 'dashboard', component: DashboardDefault },
       { path: 'settings', name: 'dashboard-settings', component: DashboardSettings },
