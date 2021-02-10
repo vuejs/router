@@ -59,7 +59,7 @@ If you omit the second parameter: `isNavigationFailure(failure)`, it will only c
 
 ## Differentiating Navigation Failures
 
-As we said at the beginning, there are different situations aborting a navigation, all of them resulting in different _Navigation Failures_. They can be differentiated using the `isNavigationFailure` and `NavigationFailureType`. There are four different types:
+As we said at the beginning, there are different situations aborting a navigation, all of them resulting in different _Navigation Failures_. They can be differentiated using the `isNavigationFailure` and `NavigationFailureType`. There are three different types:
 
 - `aborted`: `false` was returned inside of a navigation guard to the navigation.
 - `cancelled`: A new navigation took place before the current navigation could finish. e.g. `router.push` was called while waiting inside of a navigation guard.
