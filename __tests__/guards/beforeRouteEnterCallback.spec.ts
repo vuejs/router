@@ -3,12 +3,7 @@
  */
 import { defineComponent, h } from 'vue'
 import { mount } from '@vue/test-utils'
-import {
-  createRouter,
-  RouterView,
-  createMemoryHistory,
-  RouterOptions,
-} from '../../src'
+import { createRouter, createMemoryHistory, RouterOptions } from '../../src'
 
 const nextCallbacks = {
   Default: jest.fn(),
@@ -68,7 +63,6 @@ describe('beforeRouteEnter next callback', () => {
       {
         global: {
           plugins: [router],
-          components: { RouterView },
         },
       }
     )
