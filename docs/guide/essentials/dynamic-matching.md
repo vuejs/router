@@ -93,9 +93,10 @@ In this specific scenario we are using a [custom regexp](/guide/essentials/route
 ```js
 this.$router.push({
   name: 'NotFound',
-  params: { pathMatch: this.$route.path.split('/') },
+  params: { pathMatch: this.$route.path.substring(1).split('/') },
 })
 ```
+Notice that we should remove the first slash (`/`) from the path to avoid the target URL starting with with 2 slashes.
 
 See more in the [repeated params](/guide/essentials/route-matching-syntax.md#repeatable-params) section.
 
