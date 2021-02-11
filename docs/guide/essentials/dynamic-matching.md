@@ -94,6 +94,9 @@ In this specific scenario we are using a [custom regexp](/guide/essentials/route
 this.$router.push({
   name: 'NotFound',
   params: { pathMatch: this.$route.path.substring(1).split('/') },
+  // preserve existing query and hash if any
+  query: this.$route.query,
+  hash: this.$route.hash,
 })
 ```
 Notice that we should remove the first slash (`/`) from the path to avoid the target URL starting with 2 slashes.
