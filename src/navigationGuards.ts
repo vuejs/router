@@ -298,9 +298,7 @@ export function extractComponentsGuards(
           componentPromise = Promise.resolve(componentPromise as RouteComponent)
         } else {
           // display the error if any
-          componentPromise = componentPromise.catch(
-            __DEV__ ? err => err && warn(err) : console.error
-          )
+          componentPromise = componentPromise.catch(console.error)
         }
 
         guards.push(() =>
