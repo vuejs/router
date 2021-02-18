@@ -26,6 +26,15 @@ function createLazyComponent() {
 
 describe('Lazy Loading', () => {
   mockWarn()
+  let consoleErrorSpy: jest.SpyInstance
+  beforeEach(() => {
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore()
+  })
+
   it('works', async () => {
     const { component, resolve } = createLazyComponent()
     const { router } = newRouter({
@@ -250,11 +259,12 @@ describe('Lazy Loading', () => {
 
     const spy = jest.fn()
 
-    reject(new Error('fail'))
+    const error = new Error('fail')
+    reject(error)
     await router.push('/foo').catch(spy)
 
     expect(spy).toHaveBeenCalled()
-    expect('fail').toHaveBeenWarned()
+    expect(console.error).toHaveBeenCalledWith(error)
 
     expect(router.currentRoute.value).toMatchObject({
       path: '/',
