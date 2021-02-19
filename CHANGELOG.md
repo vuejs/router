@@ -1,3 +1,16 @@
+## [4.0.4](https://github.com/vuejs/vue-router-next/compare/v4.0.3...v4.0.4) (2021-02-19)
+
+### Bug Fixes
+
+- **devtools:** id and label ([#742](https://github.com/vuejs/vue-router-next/issues/742)) ([d034307](https://github.com/vuejs/vue-router-next/commit/d034307444860fb834b0f5b5a1ddd0cce9d6d842))
+- **guards:** vue-class-component call guards on first... ([#755](https://github.com/vuejs/vue-router-next/issues/755)) ([06f942d](https://github.com/vuejs/vue-router-next/commit/06f942d0fbe1c5c86dc7e17d38c00d595854bd4f))
+- **matcher:** force leading slash with optional param in multi segments ([11c882f](https://github.com/vuejs/vue-router-next/commit/11c882f8f3b56d2c87fc095c46eb8050fbbf61df))
+- **warn:** should not warn missing optional params in aliases ([92f8901](https://github.com/vuejs/vue-router-next/commit/92f8901f54775cb4b3d1f2415b6a2b3ff77eb440))
+
+### Features
+
+- **types:** make meta type safe with unknown ([eef0472](https://github.com/vuejs/vue-router-next/commit/eef0472e3589ed0a6df0528a7b96f1d7bf316843))
+
 ## [4.0.3](https://github.com/vuejs/vue-router-next/compare/v4.0.2...v4.0.3) (2021-01-11)
 
 ### Bug Fixes
