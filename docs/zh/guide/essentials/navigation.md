@@ -71,7 +71,7 @@ router.push({ path: '/home', replace: true })
 router.replace({ path: '/home' })
 ```
 
-## 横夸历史
+## 横跨历史
 
 该方法采用一个整数作为参数，表示在历史堆栈中前进或后退多少步，类似于 `window.history.go(n)`。
 
