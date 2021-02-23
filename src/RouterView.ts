@@ -76,6 +76,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
           // we copy any saved update or leave guards
           if (from && from !== to && instance && instance === oldInstance) {
             to.leaveGuards = from.leaveGuards
+            to.updateGuards.forEach(guard => from.updateGuards.add(guard))
             to.updateGuards = from.updateGuards
           }
         }
