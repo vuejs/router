@@ -24,11 +24,15 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
 
 <p align="center">
   <a href="https://www.vuemastery.com" target="_blank" rel="noopener noreferrer">
-    <img src="https://www.vuemastery.com/images/vuemastery.svg" height="40px" alt="Vue Mastery">
+    <img src="https://www.vuemastery.com/images/vuemastery.svg" height="42px" alt="Vue Mastery">
   </a>
 
   <a href="https://vuetifyjs.com" target="_blank" rel="noopener noreferrer">
     <img src="https://cdn.vuetifyjs.com/docs/images/logos/vuetify-logo-light-text.svg" alt="Vuetify" height="42px">
+  </a>
+
+  <a href="https://www.codestream.com/?utm_source=github&utm_campaign=vuerouter&utm_medium=banner" target="_blank" rel="noopener noreferrer">
+    <img src="https://alt-images.codestream.com/codestream_logo_vuerouter.png" alt="CodeStream" height="42px">
   </a>
 </p>
 
