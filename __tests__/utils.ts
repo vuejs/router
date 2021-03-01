@@ -31,6 +31,8 @@ export async function ticks(n: number) {
   }
 }
 
+export const delay = (t: number) => new Promise(r => setTimeout(r, t))
+
 export function nextNavigation(router: Router) {
   return new Promise((resolve, reject) => {
     let removeAfter = router.afterEach((_to, _from, failure) => {
