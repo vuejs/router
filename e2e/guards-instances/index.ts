@@ -94,6 +94,7 @@ function createTestComponent(key: string) {
 }
 
 const Foo = createTestComponent('Foo')
+const Bar = createTestComponent('Bar')
 const One = createTestComponent('One')
 const Two = createTestComponent('Two')
 const Aux = createTestComponent('Aux')
@@ -110,6 +111,11 @@ const router = createRouter({
     {
       path: '/f/:id',
       component: Foo,
+    },
+    // TODO: test that the onBeforeRouteUpdate isn't kept
+    {
+      path: '/b/:id',
+      component: Bar,
     },
     {
       path: '/named-one',
