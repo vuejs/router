@@ -146,7 +146,12 @@ const router = createRouter({
       ],
     },
     { path: '/about', component: About },
-    { path: '/users/:id', props: true, name: 'user', component: UserDetails },
+    {
+      path: '/users/:id',
+      props: true,
+      name: 'user',
+      component: UserDetails,
+    },
   ],
 })
 
@@ -160,6 +165,16 @@ router.beforeEach((to, from, next) => {
   console.log('state:', window.history.state)
   console.log('---')
   next()
+})
+
+// avoid navigating to non existent users
+router.beforeEach(to => {
+  if (to.name !== 'user') return
+
+  const { id } = to.params
+  return (
+    typeof id === 'string' && !Number.isNaN(Number(id)) && !!users[Number(id)]
+  )
 })
 
 const app = createApp({
@@ -188,3 +203,5 @@ const app = createApp({
 app.use(router)
 
 window.vm = app.mount('#app')
+// @ts-ignore
+window.router = router
