@@ -4,6 +4,8 @@ const baseURL = 'http://localhost:8080/encoding'
 
 const rawText = ' !"#$&\'()*+,/:;<=>?@[]^`{|}'
 
+const TIMEOUT = 2000
+
 module.exports = {
   ...bsStatus(),
 
@@ -14,7 +16,7 @@ module.exports = {
     browser
       .url(baseURL)
       .assert.urlEquals(baseURL + '/')
-      .waitForElementPresent('#app > *', 1000)
+      .waitForElementPresent('#app > *', TIMEOUT)
 
       .click('li:nth-child(3) a')
       .assert.urlEquals(baseURL + '/documents/%E2%82%ACuro')
@@ -33,7 +35,9 @@ module.exports = {
     // link by the browser with minimal encoding
     // browsers will encode it differently but the resulted decoded values
     // should be consistent across browsers
-    browser.click('li:nth-child(7) a').waitForElementPresent('#app > *', 1000)
+    browser
+      .click('li:nth-child(7) a')
+      .waitForElementPresent('#app > *', TIMEOUT)
     browser.expect.element('#p-id').text.equals(`"${rawText}"`)
     browser.expect
       .element('#query')
@@ -43,14 +47,14 @@ module.exports = {
     // check initial visit
     browser
       .url(baseURL + '/documents/%E2%82%ACuro')
-      .waitForElementPresent('#app > *', 1000)
+      .waitForElementPresent('#app > *', TIMEOUT)
       // .assert.containsText('#fullPath', '/documents/%E2%82%ACuro')
       // .assert.containsText('#path', '/documents/%E2%82%ACuro')
       .assert.containsText('#p-id', '"€uro"')
 
       // TODO: invalid in safari, tests on those where this is valid
       // .url(baseURL + '/unicode/€uro')
-      // .waitForElementPresent('#app > *', 1000)
+      // .waitForElementPresent('#app > *', TIMEOUT)
       // navigation to unencoded value
       // depending on the browser the value will be encoded or not
       // .assert.containsText('#params', JSON.stringify({ id: '€uro' }, null, 2))
