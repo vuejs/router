@@ -127,6 +127,6 @@ looper.forEach((n, i) => {
 
   unmountBtn.addEventListener('click', () => {
     let app = apps[i]
-    app && app.unmount('#app-' + n)
+    app && app.unmount()
   })
 })
