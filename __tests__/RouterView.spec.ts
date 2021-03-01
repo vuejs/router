@@ -463,8 +463,40 @@ describe('RouterView', () => {
       return { route, wrapper }
     }
 
-    // TODO: maybe migrating to VTU 2 to handle this properly
-    it.skip('works', async () => {
+    it('works', async () => {
+      const { route, wrapper } = await factory(routes.root)
+      expect(wrapper.html()).toMatchInlineSnapshot(`"<div>Home</div>"`)
+      await route.set(routes.foo)
+      expect(wrapper.html()).toMatchInlineSnapshot(`"<div>Foo</div>"`)
+    })
+  })
+
+  describe('Suspense', () => {
+    async function factory(
+      initialRoute: RouteLocationNormalizedLoose,
+      propsData: any = {}
+    ) {
+      const route = createMockedRoute(initialRoute)
+      const wrapper = await mount(RouterView as any, {
+        propsData,
+        global: {
+          provide: route.provides,
+          components: { RouterView },
+        },
+        slots: {
+          default: `
+          <template #default="{ Component }">
+            <Suspense>
+              <component :is="Component"/>
+            </Suspense>
+          </template>`,
+        },
+      })
+
+      return { route, wrapper }
+    }
+
+    it('works', async () => {
       const { route, wrapper } = await factory(routes.root)
       expect(wrapper.html()).toMatchInlineSnapshot(`"<div>Home</div>"`)
       await route.set(routes.foo)
