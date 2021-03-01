@@ -145,19 +145,19 @@ function createReplacePlugin(
       ? // preserve to be handled by bundlers
         `(process.env.NODE_ENV !== 'production')`
       : // hard coded dev/prod builds
-        !isProduction,
+        JSON.stringify(!isProduction),
     // this is only used during tests
-    __TEST__: isBundlerESMBuild ? `(process.env.NODE_ENV === 'test')` : false,
+    __TEST__: isBundlerESMBuild ? `(process.env.NODE_ENV === 'test')` : 'false',
     // If the build is expected to run directly in the browser (global / esm builds)
     __BROWSER__: isBrowserBuild,
     __FEATURE_PROD_DEVTOOLS__: isBundlerESMBuild
       ? `__VUE_PROD_DEVTOOLS__`
-      : false,
+      : 'false',
     // is targeting bundlers?
-    __BUNDLER__: isBundlerESMBuild,
-    __GLOBAL__: isGlobalBuild,
+    __BUNDLER__: JSON.stringify(isBundlerESMBuild),
+    __GLOBAL__: JSON.stringify(isGlobalBuild),
     // is targeting Node (SSR)?
-    __NODE_JS__: isNodeBuild,
+    __NODE_JS__: JSON.stringify(isNodeBuild),
   }
   // allow inline overrides like
   //__RUNTIME_COMPILE__=true yarn build
@@ -166,7 +166,11 @@ function createReplacePlugin(
       replacements[key] = process.env[key]
     }
   })
-  return replace(replacements)
+  // TODO: fix replacement thing
+  return replace({
+    preventAssignment: true,
+    values: replacements,
+  })
 }
 
 function createProductionConfig(format) {
