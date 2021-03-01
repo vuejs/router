@@ -1131,7 +1131,7 @@ export function createRouter(options: RouterOptions): Router {
           started = false
           ready = false
         }
-        unmountApp.call(this, arguments)
+        unmountApp()
       }
 
       if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && __BROWSER__) {
