@@ -1,5 +1,16 @@
-import { createRouter, createWebHistory, useRoute } from '../../src'
-import { computed, createApp, defineComponent, onErrorCaptured } from 'vue'
+import {
+  createRouter,
+  createWebHistory,
+  useRoute,
+  viewDepthKey,
+} from '../../src'
+import {
+  computed,
+  createApp,
+  defineComponent,
+  onErrorCaptured,
+  inject,
+} from 'vue'
 
 // override existing style on dev with shorter times
 if (!__CI__) {
@@ -38,9 +49,12 @@ const ViewData = defineComponent({
     <p>{{ $route.path }}</p>
 
     <router-view v-slot="{ Component }">
-      <transition name="fade" mode="out-in">
-        <suspense :timeout="0">
+      <transition v-if="Component" name="fade" mode="out-in">
+        <suspense :timeout="0" v-bind="suspenseProps">
           <component :is="Component" />
+            <template #fallback>
+              <p>Loading ViewData...</p>
+            </template>
         </suspense>
       </transition>
     </router-view>
@@ -50,11 +64,25 @@ const ViewData = defineComponent({
   `,
 
   async setup() {
-    await delay(300)
+    const depth = inject(viewDepthKey, 0)
 
-    // throw new Error('oops')
+    const suspenseProps = createSuspenseProps(`ViewData(${depth})`)
 
-    return {}
+    onErrorCaptured((err, target, info) => {
+      console.log(`caught at ViewData(${depth})`, err, target, info)
+      // stop propagation
+      // return false
+    })
+
+    console.log(`wating at ${depth}...`)
+    await delay(1000)
+    console.log(`done at ${depth}!`)
+
+    if (depth > 1) {
+      throw new Error('oops')
+    }
+
+    return { suspenseProps }
   },
 })
 
@@ -83,26 +111,37 @@ const router = createRouter({
   ],
 })
 
+function createSuspenseProps(name: string) {
+  function onPending() {
+    console.log('onPending:' + name)
+  }
+  function onResolve() {
+    console.log('onResolve:' + name)
+  }
+  function onFallback() {
+    console.log('onFallback:' + name)
+  }
+
+  return { onPending, onResolve, onFallback }
+}
+
 const app = createApp({
   setup() {
     const route = useRoute()
-    function onPending() {
-      console.log('onPending')
-    }
-    function onResolve() {
-      console.log('onResolve')
-    }
-    function onFallback() {
-      console.log('onFallback')
-    }
 
     onErrorCaptured((err, target, info) => {
-      console.log('caught', err, target, info)
+      console.log('caught at Root', err, target, info)
+      // stop propagation
+      return false
     })
 
     const nextId = computed(() => (Number(route.params.id) || 0) + 1)
+    const suspenseProps = createSuspenseProps('Root')
 
-    return { onPending, onResolve, onFallback, nextId }
+    return {
+      nextId,
+      suspenseProps,
+    }
   },
 
   template: `
@@ -111,17 +150,20 @@ const app = createApp({
         <li><router-link to="/">Home</router-link></li>
         <li><router-link to="/data">Suspended</router-link></li>
         <li><router-link to="/data/data">Suspended nested</router-link></li>
-        <li><router-link :to="{ name: 'id1', params: { id: nextId }}">/data/{{ nextId }}</router-link></li>
+        <li><router-link :to="{ name: 'id1', params: { id: nextId }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
 
         <li><router-link to="/data-2">Suspended (2)</router-link></li>
         <li><router-link to="/data-2/data">Suspended nested (2)</router-link></li>
-        <li><router-link :to="{ name: 'id2', params: { id: nextId }}">/data/{{ nextId }}</router-link></li>
+        <li><router-link :to="{ name: 'id2', params: { id: nextId }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
       </ul>
 
       <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <suspense :timeout="0">
+        <transition name="fade" mode="out-in" v-if="Component">
+          <suspense :timeout="0" v-bind="suspenseProps">
             <component :is="Component" />
+            <template #fallback>
+              <p>Loading App...</p>
+            </template>
           </suspense>
         </transition>
       </router-view>
