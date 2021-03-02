@@ -10,7 +10,12 @@ import {
   defineComponent,
   onErrorCaptured,
   inject,
+  shallowRef,
 } from 'vue'
+import {
+  NavigationGuardReturn,
+  RouteLocationNormalizedLoaded,
+} from '../../src/types'
 
 // override existing style on dev with shorter times
 if (!__CI__) {
@@ -59,7 +64,6 @@ const ViewData = defineComponent({
       </transition>
     </router-view>
 
-
   </div>
   `,
 
@@ -79,7 +83,7 @@ const ViewData = defineComponent({
     console.log(`done at ${depth}!`)
 
     if (depth > 1) {
-      throw new Error('oops')
+      // throw new Error('oops')
     }
 
     return { suspenseProps }
@@ -114,9 +118,13 @@ const router = createRouter({
 function createSuspenseProps(name: string) {
   function onPending() {
     console.log('onPending:' + name)
+    console.log('Now remaining', ++remainingValidations)
   }
   function onResolve() {
     console.log('onResolve:' + name)
+    if (resolveSuspense) {
+      resolveSuspense()
+    }
   }
   function onFallback() {
     console.log('onFallback:' + name)
@@ -125,12 +133,52 @@ function createSuspenseProps(name: string) {
   return { onPending, onResolve, onFallback }
 }
 
+let resolveSuspense:
+  | ((value?: NavigationGuardReturn) => void)
+  | undefined
+  | null
+let rejectSuspense: ((reason: any) => void) | undefined | null
+let pendingRoute = shallowRef<
+  RouteLocationNormalizedLoaded | undefined | null
+>()
+let remainingValidations = 0
+
+router.beforeResolve((to, from) => {
+  return new Promise((resolve, reject) => {
+    // we need at least one, we increment the rest with onPending
+    // should probably be provided and then injected in each routerview to increment the counter
+    // then the resolve could decrement and check if it's under 0
+    remainingValidations = 1
+    if (resolveSuspense) {
+      resolveSuspense(false)
+    }
+    pendingRoute.value = to
+    resolveSuspense = () => {
+      if (--remainingValidations < 1) {
+        pendingRoute.value = null
+        resolveSuspense = null
+        resolve()
+      }
+    }
+    rejectSuspense = reason => {
+      pendingRoute.value = null
+      rejectSuspense = null
+      reject(reason)
+    }
+
+    console.log('pendingRoute set')
+  })
+})
+
 const app = createApp({
   setup() {
     const route = useRoute()
 
     onErrorCaptured((err, target, info) => {
       console.log('caught at Root', err, target, info)
+      if (rejectSuspense) {
+        rejectSuspense(err)
+      }
       // stop propagation
       return false
     })
@@ -141,6 +189,7 @@ const app = createApp({
     return {
       nextId,
       suspenseProps,
+      pendingRoute,
     }
   },
 
@@ -157,7 +206,9 @@ const app = createApp({
         <li><router-link :to="{ name: 'id2', params: { id: nextId }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
       </ul>
 
-      <router-view v-slot="{ Component }">
+      <pre v-if="pendingRoute">Loading {{ pendingRoute.fullPath }} from {{ $route.fullPath }}</pre>
+
+      <router-view v-slot="{ Component }" :route="pendingRoute">
         <transition name="fade" mode="out-in" v-if="Component">
           <suspense :timeout="0" v-bind="suspenseProps">
             <component :is="Component" />
@@ -167,6 +218,7 @@ const app = createApp({
           </suspense>
         </transition>
       </router-view>
+
 
     </div>
   `,
