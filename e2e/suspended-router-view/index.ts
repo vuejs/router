@@ -78,12 +78,14 @@ const ViewData = defineComponent({
       // return false
     })
 
-    console.log(`wating at ${depth}...`)
+    console.log(`waiting at ${depth}...`)
     await delay(1000)
     console.log(`done at ${depth}!`)
 
-    if (depth > 1) {
-      // throw new Error('oops')
+    if (depth > 0) {
+      // NOTE: artificial increment because suspense is not emitting
+      suspenseProps.onPending()
+      throw new Error('oops')
     }
 
     return { suspenseProps }
@@ -148,25 +150,30 @@ router.beforeResolve((to, from) => {
     // we need at least one, we increment the rest with onPending
     // should probably be provided and then injected in each routerview to increment the counter
     // then the resolve could decrement and check if it's under 0
-    remainingValidations = 1
+    remainingValidations = 0
     if (resolveSuspense) {
       resolveSuspense(false)
     }
     pendingRoute.value = to
     resolveSuspense = () => {
+      console.log('resolving suspense', remainingValidations - 1)
       if (--remainingValidations < 1) {
-        pendingRoute.value = null
         resolveSuspense = null
+        rejectSuspense = null
         resolve()
+        // pendingRoute.value = null
+        console.log('✅ Resolved')
       }
     }
     rejectSuspense = reason => {
-      pendingRoute.value = null
+      console.log('rejecting suspense')
       rejectSuspense = null
+      resolveSuspense = null
       reject(reason)
+      // pendingRoute.value = null
     }
 
-    console.log('pendingRoute set')
+    console.log('pendingRoute set', remainingValidations)
   })
 })
 
