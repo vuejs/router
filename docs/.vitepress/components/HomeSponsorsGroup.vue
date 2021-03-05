@@ -5,11 +5,16 @@
     v-for="sponsor in list"
     :key="sponsor.href"
     :href="sponsor.href"
+    :title="sponsor.alt"
     target="_blank"
     rel="sponsored noopener"
     :style="{ width: size + 'px' }"
   >
-    <img :src="sponsor.imgSrcLight" :style="{ width: size + 'px' }" />
+    <img
+      :src="sponsor.imgSrcLight"
+      :alt="sponsor.alt"
+      :style="{ width: size + 'px' }"
+    />
   </a>
   <br />
   <br />
