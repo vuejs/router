@@ -16,18 +16,9 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import HomeSponsorsGroup from './HomeSponsorsGroup.vue'
 import sponsors from './sponsors.json'
-
-export default {
-  name: 'HomeSponsors',
-  components: { HomeSponsorsGroup },
-
-  created() {
-    this.sponsors = sponsors
-  },
-}
 </script>
 
 <style>
@@ -39,7 +30,6 @@ export default {
 }
 
 #sponsors h3 {
-  color: #999;
   margin: 0 0 10px;
 }
 
@@ -72,11 +62,12 @@ export default {
   border-radius: 2em;
   transition: all 0.15s ease;
   box-sizing: border-box;
-  border: 1px solid #4fc08d;
+  border: 2px solid var(--c-text);
+  color: var(--c-text);
 }
 
 #sponsors .become-sponsor:hover {
-  background-color: #4fc08d;
-  color: white;
+  background-color: var(--c-brand);
+  border-color: var(--c-brand);
 }
 </style>
