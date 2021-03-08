@@ -6,10 +6,10 @@ actionText: Get Started →
 actionLink: /introduction.html
 
 features:
-  - title: 💡 Intuitive
-    details: Stores are as familiar as components. API designed to let you write well organized stores.
-  - title: 🔑 Type Safe
-    details: Types are inferred, which means stores provide you with autocompletion even in JavaScript!
+  - title: 🛣 Expressive route syntax
+    details: Define static and dynamic routes with an intuitive syntax.
+  - title: 🛑 Fine-grained Navigation control
+    details: Intercept any navigation and precisely control its outcome.
   - title: ⚙️ Devtools support
     details: Pinia hooks into Vue devtools to give you a enhanced development experience in both Vue 2 and Vue 3.
   - title: 🔌 Extensible

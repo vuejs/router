@@ -1,6 +1,6 @@
 <template>
-  <div id="sponsors">
-    <div class="inner">
+  <div class="sponsors_outer">
+    <div>
       <HomeSponsorsGroup v-if="sponsors.platinum" name="Platinum" size="160" />
 
       <HomeSponsorsGroup v-if="sponsors.gold" name="Gold" size="140" />
@@ -21,38 +21,17 @@ import HomeSponsorsGroup from './HomeSponsorsGroup.vue'
 import sponsors from './sponsors.json'
 </script>
 
-<style>
-#sponsors {
+<style scoped>
+.sponsors_outer {
   text-align: center;
   padding: 35px 40px 45px;
   margin: 0 -2.5rem;
-  background-color: #f6f6f6;
+  background-color: var(--c-bg-accent);
+  /* transition when toggling dark mode */
+  transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
 }
 
-#sponsors h3 {
-  margin: 0 0 10px;
-}
-
-#sponsors a,
-#sponsors img {
-  width: 100px;
-  text-decoration: none;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-#sponsors img {
-  transition: all 0.3s ease;
-  filter: grayscale(100%);
-  opacity: 0.66;
-}
-
-#sponsors img:hover {
-  filter: none;
-  opacity: 1;
-}
-
-#sponsors .become-sponsor {
+.become-sponsor {
   margin-top: 40px;
   font-size: 0.9em;
   font-weight: 700;
@@ -66,8 +45,10 @@ import sponsors from './sponsors.json'
   color: var(--c-text);
 }
 
-#sponsors .become-sponsor:hover {
+.become-sponsor:hover {
   background-color: var(--c-brand);
+  text-decoration: none;
   border-color: var(--c-brand);
+  color: var(--c-brand-text);
 }
 </style>
