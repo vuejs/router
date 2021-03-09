@@ -1,4 +1,4 @@
-# vue-router-next [![release candidate](https://img.shields.io/npm/v/vue-router/next.svg)](https://www.npmjs.com/package/vue-router/v/next) [![CircleCI](https://circleci.com/gh/vuejs/vue-router-next.svg?style=svg)](https://circleci.com/gh/vuejs/vue-router-next)
+# vue-router-next [![release candidate](https://img.shields.io/npm/v/vue-router/next.svg)](https://www.npmjs.com/package/vue-router/v/next) [![CircleCI](https://badgen.net/circleci/github/vuejs/vue-router-next/master)](https://circleci.com/gh/vuejs/vue-router-next)
 
 > This is the repository for Vue Router 4 (for Vue 3)
 
