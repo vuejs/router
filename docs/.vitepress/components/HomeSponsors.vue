@@ -10,7 +10,7 @@
       <a
         class="become-sponsor button white"
         href="https://github.com/sponsors/posva"
-        >Become a Sponsor!</a
+        >{{ translations[$siteByRoute.themeConfig.lang] || translations.en }}</a
       >
     </div>
   </div>
@@ -19,13 +19,17 @@
 <script setup>
 import HomeSponsorsGroup from './HomeSponsorsGroup.vue'
 import sponsors from './sponsors.json'
+
+const translations = {
+  'en-US': 'Become a Sponsor!',
+  'zh-CN': '成为赞助者！',
+}
 </script>
 
 <style scoped>
 .sponsors_outer {
   text-align: center;
-  padding: 35px 40px 45px;
-  margin: 0 -2.5rem;
+  padding: 35px 20px 45px;
   background-color: var(--c-bg-accent);
   /* transition when toggling dark mode */
   transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
