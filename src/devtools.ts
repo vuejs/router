@@ -14,7 +14,7 @@ import { RouterMatcher } from './matcher'
 import { RouteRecordMatcher } from './matcher/pathMatcher'
 import { PathParser } from './matcher/pathParserRanker'
 import { Router } from './router'
-import { RouteLocationNormalized } from './types'
+import { RouteLocation, RouteLocationNormalized } from './types'
 import { assign } from './utils'
 
 function formatRouteLocation(
@@ -53,15 +53,24 @@ let routerId = 0
 export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
   // Take over router.beforeEach and afterEach
 
+  // make sure we are not registering the devtool twice
+  if ((router as any).__hasDevtools) return
+  ;(router as any).__hasDevtools = true
+
   // increment to support multiple router instances
   const id = routerId++
   setupDevtoolsPlugin(
     {
-      id: 'Router' + (id ? ' ' + id : ''),
+      id: 'org.vuejs.router' + (id ? '.' + id : ''),
       label: 'Vue Router',
+      packageName: 'vue-router',
+      homepage: 'https://next.router.vuejs.org/',
+      logo: 'https://vuejs.org/images/icons/favicon-96x96.png',
+      componentStateTypes: ['Routing'],
       app,
     },
     api => {
+      // display state added by the router
       api.on.inspectComponent((payload, ctx) => {
         if (payload.instanceData) {
           payload.instanceData.state.push({
@@ -76,10 +85,38 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         }
       })
 
+      // mark router-link as active
+      api.on.visitComponentTree(({ treeNode: node, componentInstance }) => {
+        if (node.name === 'RouterLink') {
+          if (componentInstance.__vrl_route) {
+            node.tags.push({
+              label: (componentInstance.__vrl_route as RouteLocation).path,
+              textColor: 0,
+              backgroundColor: ORANGE_400,
+            })
+          }
+
+          if (componentInstance.__vrl_exactActive) {
+            node.tags.push({
+              label: 'exact',
+              textColor: 0,
+              backgroundColor: LIME_500,
+            })
+          }
+
+          if (componentInstance.__vrl_active) {
+            node.tags.push({
+              label: 'active',
+              textColor: 0,
+              backgroundColor: BLUE_600,
+            })
+          }
+        }
+      })
+
       watch(router.currentRoute, () => {
         // refresh active state
         refreshRoutesView()
-        // @ts-ignore
         api.notifyComponentUpdate()
         api.sendInspectorTree(routerInspectorId)
       })
@@ -103,13 +140,17 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         api.addTimelineEvent({
           layerId: navigationsLayerId,
           event: {
-            // @ts-ignore
+            title: 'Error',
+            subtitle: 'An uncaught error happened during navigation',
             logType: 'error',
             time: Date.now(),
             data: { error },
           },
         })
       })
+
+      // attached to `meta` and used to group events
+      let navigationId = 0
 
       router.beforeEach((to, from) => {
         const data: TimelineEvent<any, any>['data'] = {
@@ -121,12 +162,18 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
           to: formatRouteLocation(to, 'Target location'),
         }
 
+        // Used to group navigations together, hide from devtools
+        Object.defineProperty(to.meta, '__navigationId', {
+          value: navigationId++,
+        })
+
         api.addTimelineEvent({
           layerId: navigationsLayerId,
           event: {
             time: Date.now(),
-            meta: {},
+            title: 'Start of navigation',
             data,
+            groupId: (to.meta as any).__navigationId,
           },
         })
       })
@@ -161,11 +208,11 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         api.addTimelineEvent({
           layerId: navigationsLayerId,
           event: {
+            title: 'End of navigation',
             time: Date.now(),
             data,
-            // @ts-ignore
             logType: failure ? 'warning' : 'default',
-            meta: {},
+            groupId: (to.meta as any).__navigationId,
           },
         })
       })
@@ -395,7 +442,6 @@ function formatRouteRecordForInspector(
     id,
     label: record.path,
     tags,
-    // @ts-ignore
     children: route.children.map(formatRouteRecordForInspector),
   }
 }

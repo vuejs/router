@@ -9,6 +9,8 @@ import {
   VNodeProps,
   AllowedComponentProps,
   ComponentCustomProps,
+  getCurrentInstance,
+  watchEffect,
 } from 'vue'
 import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
@@ -164,6 +166,19 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
         'router-link-exact-active'
       )]: link.isExactActive,
     }))
+
+    if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && __BROWSER__) {
+      const instance = getCurrentInstance()
+      watchEffect(() => {
+        if (!instance) return
+        ;(instance as any).__vrl_route = link.route
+      })
+      watchEffect(() => {
+        if (!instance) return
+        ;(instance as any).__vrl_active = link.isActive
+        ;(instance as any).__vrl_exactActive = link.isExactActive
+      })
+    }
 
     return () => {
       const children = slots.default && slots.default(link)
