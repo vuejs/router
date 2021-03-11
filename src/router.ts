@@ -1174,8 +1174,9 @@ function extractChangingRecords(
     const recordTo = to.matched[i]
     if (recordTo) {
       // the type doesn't matter because we are comparing per reference
-      if (from.matched.indexOf(recordTo as any) < 0)
+      if (!from.matched.find(isSameRouteRecord.bind(null, recordTo))) {
         enteringRecords.push(recordTo)
+      }
     }
   }
 

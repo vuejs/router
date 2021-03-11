@@ -29,6 +29,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/foo', component: Foo },
   {
     path: '/guard/:n',
+    alias: '/guard-alias/:n',
     component: {
       ...Foo,
       beforeRouteEnter,
@@ -117,6 +118,20 @@ describe('beforeRouteEnter', () => {
       next()
     })
     await router.push('/guard/valid')
+    expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not call beforeRouteEnter guards on navigation between aliases', async () => {
+    const router = createRouter({ routes })
+    const spy = jest.fn()
+    beforeRouteEnter.mockImplementation(spy)
+    await router.push('/guard/valid')
+    expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
+    await router.push('/guard-alias/valid')
+    expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
+    await router.push('/guard-alias/other')
+    expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
+    await router.push('/guard/other')
     expect(beforeRouteEnter).toHaveBeenCalledTimes(1)
   })
 
