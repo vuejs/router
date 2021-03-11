@@ -1,3 +1,15 @@
+## [4.0.5](https://github.com/vuejs/vue-router-next/compare/v4.0.4...v4.0.5) (2021-03-11)
+
+### Bug Fixes
+
+- **guards:** avoid enter guards between aliases ([0048b9b](https://github.com/vuejs/vue-router-next/commit/0048b9b1b0fd0a0652fdabb683309fc5c0d5dbe4))
+- **guards:** ensure beforeRouteUpdate works with aliases ([#819](https://github.com/vuejs/vue-router-next/issues/819)) ([45ecb20](https://github.com/vuejs/vue-router-next/commit/45ecb205920be60c9b454dbb55cf4fe213bbc697)), closes [#805](https://github.com/vuejs/vue-router-next/issues/805)
+- **view:** correctly reuse instance guards ([#795](https://github.com/vuejs/vue-router-next/issues/795)) ([d4fde59](https://github.com/vuejs/vue-router-next/commit/d4fde599803a1be9d4823de0e406c9ce66143e2c))
+
+### Features
+
+- **devtools:** group navigations ([d3b5dfb](https://github.com/vuejs/vue-router-next/commit/d3b5dfb6d8a3da96ee93426dc4b5429581e8a739))
+
 ## [4.0.4](https://github.com/vuejs/vue-router-next/compare/v4.0.3...v4.0.4) (2021-02-19)
 
 ### Bug Fixes
