@@ -51,7 +51,12 @@ import {
   computed,
 } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
-import { parseURL, stringifyURL, isSameRouteLocation } from './location'
+import {
+  parseURL,
+  stringifyURL,
+  isSameRouteLocation,
+  isSameRouteRecord,
+} from './location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
 import { warn } from './warning'
 import { RouterLink } from './RouterLink'
@@ -1162,8 +1167,9 @@ function extractChangingRecords(
   for (let i = 0; i < len; i++) {
     const recordFrom = from.matched[i]
     if (recordFrom) {
-      if (to.matched.indexOf(recordFrom) < 0) leavingRecords.push(recordFrom)
-      else updatingRecords.push(recordFrom)
+      if (to.matched.find(isSameRouteRecord.bind(null, recordFrom)))
+        updatingRecords.push(recordFrom)
+      else leavingRecords.push(recordFrom)
     }
     const recordTo = to.matched[i]
     if (recordTo) {

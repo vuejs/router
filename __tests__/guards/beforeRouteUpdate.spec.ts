@@ -11,6 +11,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/foo', component: Foo },
   {
     path: '/guard/:go',
+    alias: '/guard-alias/:go',
     component: {
       ...Foo,
       beforeRouteUpdate,
@@ -36,6 +37,18 @@ describe('beforeRouteUpdate', () => {
     // simulate a mounted route component
     router.currentRoute.value.matched[0].instances.default = {} as any
     await router.push('/guard/other')
+    expect(beforeRouteUpdate).toHaveBeenCalledTimes(1)
+  })
+
+  it('calls beforeRouteUpdate guards when changing params with alias', async () => {
+    const router = createRouter({ routes })
+    beforeRouteUpdate.mockImplementationOnce(noGuard)
+    await router.push('/guard/valid')
+    // not called on initial navigation
+    expect(beforeRouteUpdate).not.toHaveBeenCalled()
+    // simulate a mounted route component
+    router.currentRoute.value.matched[0].instances.default = {} as any
+    await router.push('/guard-alias/other')
     expect(beforeRouteUpdate).toHaveBeenCalledTimes(1)
   })
 
