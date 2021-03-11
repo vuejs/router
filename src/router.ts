@@ -1167,14 +1167,14 @@ function extractChangingRecords(
   for (let i = 0; i < len; i++) {
     const recordFrom = from.matched[i]
     if (recordFrom) {
-      if (to.matched.find(isSameRouteRecord.bind(null, recordFrom)))
+      if (to.matched.find(record => isSameRouteRecord(record, recordFrom)))
         updatingRecords.push(recordFrom)
       else leavingRecords.push(recordFrom)
     }
     const recordTo = to.matched[i]
     if (recordTo) {
       // the type doesn't matter because we are comparing per reference
-      if (!from.matched.find(isSameRouteRecord.bind(null, recordTo))) {
+      if (!from.matched.find(record => isSameRouteRecord(record, recordTo))) {
         enteringRecords.push(recordTo)
       }
     }
