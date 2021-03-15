@@ -195,6 +195,9 @@ function createMinifiedConfig(format) {
           ecma: 2015,
           pure_getters: true,
         },
+        mangle: {
+          safari10: true,
+        },
       }),
     ]
   )
