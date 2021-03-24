@@ -343,6 +343,11 @@ export function createRouter(options: RouterOptions): Router {
   let parseQuery = options.parseQuery || originalParseQuery
   let stringifyQuery = options.stringifyQuery || originalStringifyQuery
   let routerHistory = options.history
+  if (__DEV__ && !routerHistory)
+    throw new Error(
+      'Missing required history option of RouterOptions.\n' +
+        'See more at https://next.router.vuejs.org/api/#createrouter'
+    )
 
   const beforeGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
   const beforeResolveGuards = useCallbacks<NavigationGuardWithThis<undefined>>()

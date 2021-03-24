@@ -93,6 +93,11 @@ describe('Router', () => {
     createDom()
   })
 
+  it('fails if history option is missing', () => {
+    // @ts-ignore
+    expect(() => createRouter({ routes })).toThrow()
+  })
+
   it('starts at START_LOCATION', () => {
     const history = createMemoryHistory()
     const router = createRouter({ history, routes })
