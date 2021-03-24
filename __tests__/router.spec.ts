@@ -95,7 +95,9 @@ describe('Router', () => {
 
   it('fails if history option is missing', () => {
     // @ts-ignore
-    expect(() => createRouter({ routes })).toThrowError('Provide the "history" option')
+    expect(() => createRouter({ routes })).toThrowError(
+      'Provide the "history" option'
+    )
   })
 
   it('starts at START_LOCATION', () => {
