@@ -169,15 +169,21 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
 
     if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && __BROWSER__) {
       const instance = getCurrentInstance()
-      watchEffect(() => {
-        if (!instance) return
-        ;(instance as any).__vrl_route = link.route
-      })
-      watchEffect(() => {
-        if (!instance) return
-        ;(instance as any).__vrl_active = link.isActive
-        ;(instance as any).__vrl_exactActive = link.isExactActive
-      })
+      watchEffect(
+        () => {
+          if (!instance) return
+          ;(instance as any).__vrl_route = link.route
+        },
+        { flush: 'post' }
+      )
+      watchEffect(
+        () => {
+          if (!instance) return
+          ;(instance as any).__vrl_active = link.isActive
+          ;(instance as any).__vrl_exactActive = link.isExactActive
+        },
+        { flush: 'post' }
+      )
     }
 
     return () => {
