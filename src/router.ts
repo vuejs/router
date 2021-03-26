@@ -1057,7 +1057,7 @@ export function createRouter(options: RouterOptions): Router {
       null
 
     return nextTick()
-      .then(() => scrollBehavior!(to, from, scrollPosition))
+      .then(() => scrollBehavior(to, from, scrollPosition))
       .then(position => position && scrollToPosition(position))
       .catch(triggerError)
   }
