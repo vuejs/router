@@ -335,6 +335,22 @@ describe('Router', () => {
     })
   })
 
+  it('can pass a currentLocation to resolve', async () => {
+    const { router } = await newRouter()
+    expect(router.resolve({ params: { p: 1 } })).toMatchObject({
+      path: '/',
+    })
+    expect(
+      router.resolve(
+        { params: { p: 1 } },
+        router.resolve({ name: 'Param', params: { p: 2 } })
+      )
+    ).toMatchObject({
+      name: 'Param',
+      params: { p: '1' },
+    })
+  })
+
   it('resolves relative locations', async () => {
     const { router } = await newRouter()
     await router.push('/users/posva')

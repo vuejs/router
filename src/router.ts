@@ -221,11 +221,16 @@ export interface Router {
   /**
    * Returns the {@link RouteLocation | normalized version} of a
    * {@link RouteLocationRaw | route location}. Also includes an `href` property
-   * that includes any existing `base`.
+   * that includes any existing `base`. By default the `currentLocation` used is
+   * `route.currentRoute` and should only be overriden in advanced use cases.
    *
    * @param to - Raw route location to resolve
+   * @param currentLocation - Optional current location to resolve against
    */
-  resolve(to: RouteLocationRaw): RouteLocation & { href: string }
+  resolve(
+    to: RouteLocationRaw,
+    currentLocation?: RouteLocationNormalizedLoaded
+  ): RouteLocation & { href: string }
 
   /**
    * Programmatically navigate to a new URL by pushing an entry in the history
