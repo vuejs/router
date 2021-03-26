@@ -800,6 +800,32 @@ describe('RouterLink', () => {
     expect(router.push).toHaveBeenCalledTimes(1)
   })
 
+  it('allows adding more click listeners', async () => {
+    const onClick = jest.fn()
+    const { router, wrapper } = await factory(
+      START_LOCATION_NORMALIZED,
+      { to: locations.basic.string, onClick },
+      locations.basic.normalized
+    )
+    wrapper.find('a')!.trigger('click')
+    expect(router.push).toHaveBeenCalledTimes(1)
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  it('allows adding custom classes', async () => {
+    const { wrapper } = await factory(
+      locations.basic.normalized,
+      { to: locations.basic.string, class: 'custom class' },
+      locations.basic.normalized
+    )
+    expect(wrapper.find('a')!.classes()).toEqual([
+      'router-link-active',
+      'router-link-exact-active',
+      'custom',
+      'class',
+    ])
+  })
+
   it('calls router.replace when clicked with replace prop', async () => {
     const { router, wrapper } = await factory(
       START_LOCATION_NORMALIZED,

@@ -16,7 +16,6 @@ import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
-import { assign } from './utils'
 import { NavigationFailure } from './errors'
 
 export interface RouterLinkOptions {
@@ -145,7 +144,7 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
     },
   },
 
-  setup(props, { slots, attrs }) {
+  setup(props, { slots }) {
     const link = reactive(useLink(props))
     const { options } = inject(routerKey)!
 
@@ -192,19 +191,16 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
         ? children
         : h(
             'a',
-            assign(
-              {
-                'aria-current': link.isExactActive
-                  ? props.ariaCurrentValue
-                  : null,
-                onClick: link.navigate,
-                href: link.href,
-              },
-              attrs,
-              {
-                class: elClass.value,
-              }
-            ),
+            {
+              'aria-current': link.isExactActive
+                ? props.ariaCurrentValue
+                : null,
+              href: link.href,
+              // this would override user added attrs but Vue will still add
+              // the listener so we end up triggering both
+              onClick: link.navigate,
+              class: elClass.value,
+            },
             children
           )
     }
