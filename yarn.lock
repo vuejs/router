@@ -911,10 +911,10 @@
     jest-diff "^26.0.0"
     pretty-format "^26.0.0"
 
-"@types/jsdom@^16.2.7":
-  version "16.2.7"
-  resolved "https://registry.yarnpkg.com/@types/jsdom/-/jsdom-16.2.7.tgz#27d2f77d655a3db15f7c3f104f1a6d15e3112938"
-  integrity sha512-jJ0QDvwZxAO+SninBaQdW6najEs1dCZ1uMsXFBTitwfAtz+0wfDZWd3GFEqkL4flD3IefB+VGBcrN9HbRdAdog==
+"@types/jsdom@^16.2.9":
+  version "16.2.9"
+  resolved "https://registry.yarnpkg.com/@types/jsdom/-/jsdom-16.2.9.tgz#9c219e5c387f045aae8b80ae4d4cf61d098c15eb"
+  integrity sha512-7+HFvB7RIrU4KGazrn0/K81yjdg1hpwshM+nbt7CNlbwN1TUq5sBFMCfVglBYYv29l6ZTmXXFEB2FnxLv5gDcg==
   dependencies:
     "@types/node" "*"
     "@types/parse5" "*"
