@@ -1,24 +1,20 @@
 <template>
-  <a id="vs" href="https://vueschool.io/the-vuejs-master-class/?friend=vuerouter#plans" target="_blank" rel="noreferrer">
+  <a id="vs" href="https://vueschool.io/sales/flashsale21/?friend=vuerouter" target="_blank" rel="noreferrer">
     <div class="vs-iso">
-      <img src="/images/vueschool/vs-iso.svg" alt="Vue School Logo">
+      <img src="/images/vueschool/vs-iso.svg" alt="Vue School logo">
     </div>
     <div class="vs-logo">
-      <img src="/images/vueschool/vs-logo.svg" alt="Vue School Logo">
+      <img src="/images/vueschool/vs-logo.svg" alt="Vue School logo">
     </div>
     <div class="vs-core">
+      <div class="vs-illustration">
+        <img src="/images/vueschool/vs-backpack.svg" alt="backpack illustration">
+      </div>
       <div class="vs-slogan">
-        <div class="vs-slogan-up">
-           LEARN VUE AT VUE SCHOOL
-        </div>
-        <div class="vs-slogan-down">
-          Register today and get <strong>20% OFF</strong>
-        </div>
+        <span class="vs-slogan-main">Flash Sale -</span> Less than <span style="color: #1fdb69">48hrs left</span> to get 20% OFF!
       </div>
       <div class="vs-button">
-        <div class="vs-button-inside">
-          <img src="/images/vueschool/learn-more.svg" alt="Learn More">
-        </div>
+        GET OFFER
       </div>
     </div>
     <div
@@ -31,14 +27,17 @@
 </template>
 
 <style>
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,500");
 #vs {
+  text-decoration: none;
   align-items: center;
-  background-color: #1e204d;
+  background-color: #202a5a;
   background-position: top right;
   background-repeat: no-repeat;
   background-size: cover;
   box-sizing: border-box;
   color: #fff;
+  display: none;
   font-family: 'Roboto', Oxygen, Fira Sans, Helvetica Neue, sans-serif;
   justify-content: center;
   position: fixed;
@@ -47,158 +46,115 @@
   right: 0;
   top: 0;
   z-index: 100;
-  background-image: url("/images/vueschool/vs-banner-bg-mobile-2.svg");
   height: 3.125rem;
-  display: flex;
 }
-
-#vs:hover {
-  text-decoration: none;
-}
-
 @media (min-width: 680px) {
   #vs {
     height: 5rem;
-    background-image: url("/images/vueschool/vs-banner-bg-tablet-2.svg");
   }
 }
-
-@media (min-width: 900px) {
-  #vs {
-    background-image: url("/images/vueschool/vs-banner-bg-desktop-2.svg");
-  }
+#vs:hover .vs-core .vs-button {
+  background-color: #364fde;
 }
-
-#vs:hover .vs-core .vs-button .vs-button-inside {
-  background: linear-gradient(#ed81eb, #d457d0);
-}
-
 #vs .vs-iso {
   position: absolute;
   left: 20px;
   height: 26px;
 }
-
 #vs .vs-iso img {
   height: 26px;
 }
-
 @media (min-width: 680px) {
-  #vs .vs-iso {
-    left: 40px;
-    height: 40px;
-  }
-
-  #vs .vs-iso img {
-    height: 40px;
-  }
-}
-
-@media (min-width: 900px) {
   #vs .vs-iso {
     display: none;
   }
 }
-
 #vs .vs-logo {
   position: absolute;
   display: none;
   left: 40px;
 }
-
 @media (min-width: 900px) {
   #vs .vs-logo {
     display: block;
   }
 }
-
 #vs .vs-core {
   display: flex;
   align-items: center;
 }
-
+#vs .vs-core .vs-illustration {
+  display: none;
+}
+@media (min-width: 680px) {
+  #vs .vs-core .vs-illustration {
+    display: inline-block;
+    margin-right: 8px;
+  }
+}
+@media (min-width: 900px) {
+  #vs .vs-core .vs-illustration {
+    margin-right: 20px;
+  }
+}
 #vs .vs-core .vs-slogan {
   text-align: center;
-}
-
-#vs .vs-core .vs-slogan .vs-slogan-up {
-  color: #47b785;
   font-size: 14px;
-  font-weight: bold;
 }
-
 @media (min-width: 680px) {
-  #vs .vs-core .vs-slogan .vs-slogan-up {
-    font-size: 18px;
+  #vs .vs-core .vs-slogan {
+    font-size: 20px;
   }
 }
-
-#vs .vs-core .vs-slogan .vs-slogan-down {
-  color: #fff;
-  font-size: 12px;
-  padding-top: 2px;
-}
-
-@media (min-width: 680px) {
-  #vs .vs-core .vs-slogan .vs-slogan-down {
-    font-size: 16px;
+@media (min-width: 900px) {
+  #vs .vs-core .vs-slogan {
+    font-size: 22px;
   }
 }
-
-#vs .vs-core .vs-slogan .vs-slogan-down strong {
-  color: #fff;
-  font-weight: bold;
+#vs .vs-core .vs-slogan .vs-slogan-main {
+  font-weight: 500;
+  display: none;
 }
-
+@media (min-width: 680px) {
+  #vs .vs-core .vs-slogan .vs-slogan-main {
+    display: inline;
+  }
+}
 #vs .vs-core .vs-button {
-  margin-left: 43px;
+  margin-left: 8px;
   color: #fff;
-  background: linear-gradient(to bottom, #b349b0, #dc61da);
+  background: #667dff;
   padding: 2px;
   border-radius: 40px;
   display: none;
+  padding: 17px 24px;
+  font-weight: 500;
 }
-
 @media (min-width: 680px) {
   #vs .vs-core .vs-button {
     display: inline-block;
   }
 }
-
-#vs .vs-core .vs-button .vs-button-inside {
-  border-radius: 40px;
-  background: linear-gradient(#dc61da, #b349b0);
-  transition: all 0.25s ease-in;
-  padding: 12px 24px 8px;
-  line-height: 0;
-}
-
-@media (min-width: 680px) {
-  #vs .vs-core .vs-button .vs-button-inside {
-    padding: 12px 24px 8px;
+@media (min-width: 900px) {
+  #vs .vs-core .vs-button {
+    margin-left: 20px;
   }
 }
-
-#vs .vs-core .vs-button.vs-button-alt {
-  background: linear-gradient(to bottom, #ffcc38, #ffd13d);
-}
-
-#vs .vs-core .vs-button.vs-button-alt .vs-button-inside {
-  background: linear-gradient(to bottom, #ffe24f, #ffa40e);
-}
-
 #vs .vs-close {
   right: 10px;
   position: absolute;
   padding: 10px;
 }
-
 @media (min-width: 680px) {
+  #vs .vs-close {
+    right: 0px;
+  }
+}
+@media (min-width: 900px) {
   #vs .vs-close {
     right: 20px;
   }
 }
-
 #vs .vs-close:hover {
   color: #56d8ff;
 }
