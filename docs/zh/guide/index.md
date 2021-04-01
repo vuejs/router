@@ -90,6 +90,6 @@ export default {
 }
 ```
 
-要在 `setup` 函数中访问路由，请调用 `useRouter` 或 `useRoute` 函数。我们将在 [Composition API](/zh/guide/advanced/composition-api.md#在-setup-中访问路由和当前路由) 中了解更多信息。
+要在 `setup` 函数中访问路由，请调用 `useRouter` 或 `useRoute` 函数。我们将在 [Composition API](./advanced/composition-api.md#在-setup-中访问路由和当前路由) 中了解更多信息。
 
 在整个文档中，我们会经常使用 `router` 实例，请记住，`this.$router` 与直接使用通过 `createRouter` 创建的 `router` 实例完全相同。我们使用 `this.$router` 的原因是，我们不想在每个需要操作路由的组件中都导入路由。

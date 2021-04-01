@@ -26,12 +26,12 @@ const User = {
 
 你可以在同一个路由中设置有多个 _路径参数_，它们会映射到 `$route.params` 上的相应字段。例如：
 
-| 匹配模式                        | 匹配路径                  | \$route.params                           |
+| 匹配模式                       | 匹配路径                 | \$route.params                           |
 | ------------------------------ | ------------------------ | ---------------------------------------- |
 | /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`                |
 | /users/:username/posts/:postId | /users/eduardo/posts/123 | `{ username: 'eduardo', postId: '123' }` |
 
-除了 `$route.params` 之外，`$route` 对象还公开了其他有用的信息，如 `$route.query`（如果 URL 中存在参数）、`$route.hash` 等。你可以在 [API 参考](/zh/api/#routelocationnormalized)中查看完整的细节。
+除了 `$route.params` 之外，`$route` 对象还公开了其他有用的信息，如 `$route.query`（如果 URL 中存在参数）、`$route.hash` 等。你可以在 [API 参考](../../api/#routelocationnormalized)中查看完整的细节。
 
 这个例子的 demo 可以在[这里](https://codesandbox.io/s/route-params-vue-router-examples-mlb14?from-embed&initialpath=%2Fusers%2Feduardo%2Fposts%2F1)找到。
 
@@ -88,7 +88,7 @@ const routes = [
 ]
 ```
 
-在这个特定的场景中，我们在括号之间使用了[自定义正则表达式](/zh/guide/essentials/route-matching-syntax.md#在参数中自定义正则)，并将`pathMatch` 参数标记为[可选可重复](/zh/guide/essentials/route-matching-syntax.md#可选参数)。这样做是为了让我们在需要的时候，可以通过将 `path` 拆分成一个数组，直接导航到路由：
+在这个特定的场景中，我们在括号之间使用了[自定义正则表达式](./route-matching-syntax.md#在参数中自定义正则)，并将`pathMatch` 参数标记为[可选可重复](./route-matching-syntax.md#可选参数)。这样做是为了让我们在需要的时候，可以通过将 `path` 拆分成一个数组，直接导航到路由：
 
 ```js
 this.$router.push({
@@ -97,7 +97,7 @@ this.$router.push({
 })
 ```
 
-更多内容请参见[重复参数](/zh/guide/essentials/route-matching-syntax.md#可重复的参数)部分。
+更多内容请参见[重复参数](./route-matching-syntax.md#可重复的参数)部分。
 
 如果你正在使用[历史模式](./history-mode.md)，请务必按照说明正确配置你的服务器。
 

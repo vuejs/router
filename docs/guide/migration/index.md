@@ -163,7 +163,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 ### Removal of `event` and `tag` props in `<router-link>`
 
-Both `event`, and `tag` props have been removed from `<router-link>`. You can use the [`v-slot` API](/api/#router-link-s-v-slot) to fully customize `<router-link>`:
+Both `event`, and `tag` props have been removed from `<router-link>`. You can use the [`v-slot` API](../../api/#router-link-s-v-slot) to fully customize `<router-link>`:
 
 ```html
 replace
@@ -193,7 +193,7 @@ At the moment navigation guards in mixins are not supported. You can track its s
 
 ### Removal of `router.match` and changes to `router.resolve`
 
-Both `router.match`, and `router.resolve` have been merged together into `router.resolve` with a slightly different signature. [Refer to the API](/api/#resolve) for more details.
+Both `router.match`, and `router.resolve` have been merged together into `router.resolve` with a slightly different signature. [Refer to the API](../../api/#resolve) for more details.
 
 **Reason**: Uniting multiple methods that were used for the same purpose.
 
@@ -354,7 +354,11 @@ const routes = [
     component: DashboardParent,
     children: [
       { path: '', name: 'dashboard', component: DashboardDefault },
-      { path: 'settings', name: 'dashboard-settings', component: DashboardSettings },
+      {
+        path: 'settings',
+        name: 'dashboard-settings',
+        component: DashboardSettings,
+      },
     ],
   },
 ]
@@ -384,7 +388,7 @@ const routes = [
 
 Note this will work if `path` was `/parent/` as the relative location `home` to `/parent/` is indeed `/parent/home` but the relative location of `home` to `/parent` is `/home`.
 
-<!-- Learn more about relative links [in the cookbook](/cookbook/relative-links.md). -->
+<!-- Learn more about relative links [in the cookbook](../../cookbook/relative-links.md). -->
 
 **Reason**: This is to make trailing slash behavior consistent: by default all routes allow a trailing slash. It can be disabled by using the `strict` option and manually appending (or not) a slash to the routes.
 
@@ -394,10 +398,10 @@ Note this will work if `path` was `/parent/` as the relative location `home` to 
 
 Decoded values in `params`, `query`, and `hash` are now consistent no matter where the navigation is initiated (older browsers will still produce unencoded `path` and `fullPath`). The initial navigation should yield the same results as in-app navigations.
 
-Given any [normalized route location](/api/#routelocationnormalized):
+Given any [normalized route location](../../api/#routelocationnormalized):
 
 - Values in `path`, `fullPath` are not decoded anymore. They will appear as provided by the browser (most browsers provide them encoded). e.g. directly writing on the address bar `https://example.com/hello world` will yield the encoded version: `https://example.com/hello%20world` and both `path` and `fullPath` will be `/hello%20world`.
-- `hash` is now decoded, that way it can be copied over: `router.push({ hash: $route.hash })` and be used directly in [scrollBehavior](/api/#scrollbehavior)'s `el` option.
+- `hash` is now decoded, that way it can be copied over: `router.push({ hash: $route.hash })` and be used directly in [scrollBehavior](../../api/#scrollbehavior)'s `el` option.
 - When using `push`, `resolve`, and `replace` and providing a `string` location or a `path` property in an object, **it must be encoded** (like in the previous version). On the other hand, `params`, `query` and `hash` must be provided in its unencoded version.
 - The slash character (`/`) is now properly decoded inside `params` while still producing an encoded version on the URL: `%2F`.
 
@@ -417,6 +421,6 @@ To make typings more consistent and expressive, some types have been renamed:
 
 Some of new features to keep an eye on in Vue Router 4 include:
 
-- [Dynamic Routing](/api/#addroute-2)
-- [Composition API](/guide/advanced/composition-api.md)
+- [Dynamic Routing](../../api/#addroute-2)
+- [Composition API](../advanced/composition-api.md)
 <!-- - Custom History implementation -->

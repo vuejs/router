@@ -154,7 +154,7 @@ If you add a `target="_blank"` to your `a` element, you must omit the `@click="n
 
   When a `<router-view>` has a `name`, it will render the component with the corresponding name in the matched route record's `components` option.
 
-- **See Also**: [Named Views](/guide/essentials/named-views.md)
+- **See Also**: [Named Views](../guide/essentials/named-views.md)
 
 ### route
 
@@ -771,7 +771,7 @@ stringifyQuery?: (
 Route record that can be provided by the user when adding routes via the [`routes` option](#routeroptions) or via [`router.addRoutes()`](#addroutes). There are three different kind of route records:
 
 - Single views records: have a `component` option
-- Multiple views records ([named views](/guide/essentials/named-views.md)): have a `components` option
+- Multiple views records ([named views](../guide/essentials/named-views.md)): have a `components` option
 - Redirect records: cannot have `component` or `components` option because a redirect record is never reached.
 
 ### path
@@ -782,7 +782,7 @@ Route record that can be provided by the user when adding routes via the [`route
   Path of the record. Should start with `/` unless the record is the child of another record.
   Can define parameters: `/users/:id` matches `/users/1` as well as `/users/posva`.
 
-- **See Also**: [Dynamic Route Matching](/guide/essentials/dynamic-matching.md)
+- **See Also**: [Dynamic Route Matching](../guide/essentials/dynamic-matching.md)
 
 ### redirect
 
@@ -801,7 +801,7 @@ Route record that can be provided by the user when adding routes via the [`route
 
   Nested routes of the current record.
 
-- **See Also**: [Nested Routes](/guide/essentials/nested-routes.md)
+- **See Also**: [Nested Routes](../guide/essentials/nested-routes.md)
 
 ### alias
 
@@ -834,7 +834,7 @@ Route record that can be provided by the user when adding routes via the [`route
   Allows passing down params as props to the component rendered by `router-view`. When passed to a _multiple views record_, it should be an object with the same keys as `components` or a `boolean` to be applied to each component.
   target location.
 
-- **See Also**: [Passing props to Route Components](/guide/essentials/passing-props.md)
+- **See Also**: [Passing props to Route Components](../guide/essentials/passing-props.md)
 
 ### meta
 
@@ -843,7 +843,7 @@ Route record that can be provided by the user when adding routes via the [`route
 
   Custom data attached to the record.
 
-- **See Also**: [Meta fields](/guide/advanced/meta.md)
+- **See Also**: [Meta fields](../guide/advanced/meta.md)
 
 ## RouteRecordNormalized
 
@@ -863,7 +863,7 @@ Normalized version of a [Route Record](#routerecordraw)
 
   Navigation guard applied when entering this record from somewhere else.
 
-- **See Also**: [Navigation guards](/guide/advanced/navigation-guards.md)
+- **See Also**: [Navigation guards](../guide/advanced/navigation-guards.md)
 
 ### children
 
@@ -886,7 +886,7 @@ Normalized version of a [Route Record](#routerecordraw)
 
   Arbitrary data attached to the record.
 
-- **See also**: [Meta fields](/guide/advanced/meta.md)
+- **See also**: [Meta fields](../guide/advanced/meta.md)
 
 ### name
 
@@ -918,7 +918,7 @@ Normalized version of a [Route Record](#routerecordraw)
 
 ## RouteLocationRaw
 
-User-level route location that can be passed to `router.push()`, `redirect`, and returned in [Navigation Guards](/guide/advanced/navigation-guards.md).
+User-level route location that can be passed to `router.push()`, `redirect`, and returned in [Navigation Guards](../guide/advanced/navigation-guards.md).
 
 A raw location can either be a `string` like `/users/posva#bio` or an object:
 
@@ -988,7 +988,7 @@ Normalized route location. Does not have any [redirect records](#routerecordraw)
 
   Arbitrary data attached to all matched records merged (non recursively) from parent to child.
 
-- **See also**: [Meta fields](/guide/advanced/meta.md)
+- **See also**: [Meta fields](../guide/advanced/meta.md)
 
 ### name
 
@@ -1041,7 +1041,7 @@ Normalized route location. Does not have any [redirect records](#routerecordraw)
 
   Type of the navigation failure.
 
-- **See Also**: [Navigation Failures](/guide/advanced/navigation-failures.md)
+- **See Also**: [Navigation Failures](../guide/advanced/navigation-failures.md)
 
 ## NavigationGuard
 
@@ -1060,7 +1060,7 @@ Normalized route location. Does not have any [redirect records](#routerecordraw)
   - [`RouteLocationRaw`](#routelocationraw): redirects to a different location
   - `(vm: ComponentPublicInstance) => any` **only for `beforeRouteEnter`**: A callback to be executed once the navigation completes. Receives the route component instance as the parameter.
 
-- **See Also**: [Navigation Guards](/guide/advanced/navigation-guards.md)
+- **See Also**: [Navigation Guards](../guide/advanced/navigation-guards.md)
 
 ## Component Injections
 
@@ -1082,4 +1082,4 @@ These properties are injected into every child component by calling `app.use(rou
 - **beforeRouteUpdate**
 - **beforeRouteLeave**
 
-See [In Component Guards](/guide/advanced/navigation-guards.md#in-component-guards).
+See [In Component Guards](../guide/advanced/navigation-guards.md#in-component-guards).

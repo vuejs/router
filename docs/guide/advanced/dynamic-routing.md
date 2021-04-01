@@ -1,6 +1,6 @@
 # Dynamic Routing
 
-Adding routes to your router is usually done via the [`routes` option](/api/#routes) but in some situations, you might want to add or remove routes while the application is already running. Application with extensible interfaces like [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html) can use this to make the application grow.
+Adding routes to your router is usually done via the [`routes` option](../../api/#routes) but in some situations, you might want to add or remove routes while the application is already running. Application with extensible interfaces like [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html) can use this to make the application grow.
 
 ## Adding Routes
 
@@ -99,5 +99,5 @@ router.addRoute({
 
 Vue Router gives you two functions to look at existing routes:
 
-- [`router.hasRoute()`](/api/#hasroute): check if a route exists
-- [`router.getRoutes()`](/api/#getroutes): get an array with all the route records.
+- [`router.hasRoute()`](../../api/#hasroute): check if a route exists
+- [`router.getRoutes()`](../../api/#getroutes): get an array with all the route records.

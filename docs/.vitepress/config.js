@@ -301,24 +301,6 @@ const config = {
         ],
       },
     },
-
-    // '/es/': {
-    //   nav: [
-    //     {
-    //       text: 'Guía',
-    //       link: '/guide/',
-    //     },
-    //     {
-    //       text: 'API',
-    //       link: '/api/',
-    //     },
-    //     {
-    //       text: 'Cambios',
-    //       link:
-    //         'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
-    //     },
-    //   ],
-    // },
   },
 }
 

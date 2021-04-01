@@ -13,7 +13,7 @@ Vue Router 是 [Vue.js](http://v3.vuejs.org) 的官方路由。它与 Vue.js 核
 - 可定制的滚动行为
 - URL 的正确编码
 
-[入门](/zh/guide/)或使用 [playground](https://github.com/vuejs/vue-router-next/tree/master/playground) (详见[`README.md`](https://github.com/vuejs/vue-router-next)来运行它们)。
+[入门](./guide/)或使用 [playground](https://github.com/vuejs/vue-router-next/tree/master/playground) (详见[`README.md`](https://github.com/vuejs/vue-router-next)来运行它们)。
 
 <HomeSponsors />
 

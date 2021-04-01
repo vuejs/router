@@ -53,7 +53,7 @@ router.push({ path: '/user', params: { username } }) // -> /user
 
 Since the prop `to` accepts the same kind of object as `router.push`, the exact same rules apply to both of them.
 
-`router.push` and all the other navigation methods return a _Promise_ that allows us to wait til the navigation is finished and to know if it succeeded or failed. We will talk more about that in [Navigation Handling](../advanced/navigation-handling.md).
+`router.push` and all the other navigation methods return a _Promise_ that allows us to wait til the navigation is finished and to know if it succeeded or failed. We will talk more about that in [Navigation Handling](../advanced/navigation-failures.md).
 
 ## Replace current location
 
@@ -98,4 +98,4 @@ You may have noticed that `router.push`, `router.replace` and `router.go` are co
 
 Therefore, if you are already familiar with [Browser History APIs](https://developer.mozilla.org/en-US/docs/Web/API/History_API), manipulating history will feel familiar when using Vue Router.
 
-It is worth mentioning that Vue Router navigation methods (`push`, `replace`, `go`) work consistently no matter the kind of [`history` option](/api/#history) is passed when creating the router instance.
+It is worth mentioning that Vue Router navigation methods (`push`, `replace`, `go`) work consistently no matter the kind of [`history` option](../../api/#history) is passed when creating the router instance.

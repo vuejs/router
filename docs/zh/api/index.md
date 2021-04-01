@@ -154,7 +154,7 @@ sidebar: auto
 
   如果 `<router-view>` 设置了 `name`，则会渲染对应的路由配置中 `components` 下的相应组件。
 
-- **更多的内容请看**：[命名视图](/zh/guide/essentials/named-views.md)
+- **更多的内容请看**：[命名视图](../guide/essentials/named-views.md)
 
 ### route
 
@@ -217,7 +217,7 @@ createWebHistory('/folder/') // 给出的网址为 `https://example.com/folder/`
 
 ## createWebHashHistory
 
-创建一个 hash 历史记录。对于没有主机的 web 应用程序 (例如 `file://`)，或当配置服务器不能处理任意URL时这非常有用。**注意：如果 SEO 对你很重要，你应该使用 [`createWebHistory`](#createwebhistory)**。
+创建一个 hash 历史记录。对于没有主机的 web 应用程序 (例如 `file://`)，或当配置服务器不能处理任意 URL 时这非常有用。**注意：如果 SEO 对你很重要，你应该使用 [`createWebHistory`](#createwebhistory)**。
 
 **函数签名：**
 
@@ -771,7 +771,7 @@ stringifyQuery?: (
 当用户通过 [`routes` option](#routeroptions) 或者 [`router.addRoutes()`](#addroutes) 来添加路由时，可以得到路由记录。 有三种不同的路由记录:
 
 - 单一视图记录：有一个 `component` 配置
-- 多视图记录 ([命名视图](/zh/guide/essentials/named-views.md)) ：有一个 `components` 配置
+- 多视图记录 ([命名视图](../guide/essentials/named-views.md)) ：有一个 `components` 配置
 - 重定向记录：没有 `component` 或 `components` 配置，因为重定向记录永远不会到达。
 
 ### path
@@ -781,7 +781,7 @@ stringifyQuery?: (
 
   记录的路径。应该以 `/` 开头，除非该记录是另一条记录的子记录。可以定义参数：`/users/:id` 匹配 `/users/1` 以及 `/users/posva`。
 
-- **更多的内容请看**：[动态路由匹配](/zh/guide/essentials/dynamic-matching.md)
+- **更多的内容请看**：[动态路由匹配](../guide/essentials/dynamic-matching.md)
 
 ### redirect
 
@@ -797,7 +797,7 @@ stringifyQuery?: (
 
   当前记录的嵌套路由。
 
-- **更多的内容请看**：[Nested Routes](/zh/guide/essentials/nested-routes.md)
+- **更多的内容请看**：[Nested Routes](../guide/essentials/nested-routes.md)
 
 ### alias
 
@@ -828,7 +828,7 @@ stringifyQuery?: (
 
   允许将参数作为 props 传递给由 `router-view` 渲染的组件。当传递给一个*多视图记录*时，它应该是一个与`组件`具有相同键的对象，或者是一个应用于每个组件的`布尔值`。
 
-- **更多的内容请看**：[给路由组件传 props](/zh/guide/essentials/passing-props.md)
+- **更多的内容请看**：[给路由组件传 props](../guide/essentials/passing-props.md)
 
 ### meta
 
@@ -837,7 +837,7 @@ stringifyQuery?: (
 
   在记录上附加自定义数据。
 
-- **更多的内容请看**：[Meta 字段](/zh/guide/advanced/meta.md)
+- **更多的内容请看**：[Meta 字段](../guide/advanced/meta.md)
 
 ## RouteRecordNormalized
 
@@ -857,7 +857,7 @@ stringifyQuery?: (
 
   当从其他地方进入此记录时，导航守卫会被应用。
 
-- **更多的内容请看**：[导航守卫](/zh/guide/advanced/navigation-guards.md)
+- **更多的内容请看**：[导航守卫](../guide/advanced/navigation-guards.md)
 
 ### children
 
@@ -880,7 +880,7 @@ stringifyQuery?: (
 
   附在记录上的任意数据。
 
-- **更多的内容请看**：[Meta 字段](/zh/guide/advanced/meta.md)
+- **更多的内容请看**：[Meta 字段](../guide/advanced/meta.md)
 
 ### name
 
@@ -912,7 +912,7 @@ stringifyQuery?: (
 
 ## RouteLocationRaw
 
-用户级的路由地址，可以传递给 `router.push()`，`redirect`，并在[导航守卫](/zh/guide/advanced/navigation-guards.md)中返回。
+用户级的路由地址，可以传递给 `router.push()`，`redirect`，并在[导航守卫](../guide/advanced/navigation-guards.md)中返回。
 
 原始位置可以是一个 `字符串`，比如 `/users/posva#bio`，也可以是一个对象：
 
@@ -982,7 +982,7 @@ router.replace({ hash: '#bio' })
 
   附加到从父级到子级合并（非递归）的所有匹配记录的任意数据。
 
-- **更多的内容请看**：[Meta 字段](/zh/guide/advanced/meta.md)
+- **更多的内容请看**：[Meta 字段](../guide/advanced/meta.md)
 
 ### name
 
@@ -1035,7 +1035,7 @@ router.replace({ hash: '#bio' })
 
   导航失败的类型
 
-- **更多的内容请看**：[Navigation Failures](/zh/guide/advanced/navigation-failures.md)
+- **更多的内容请看**：[Navigation Failures](../guide/advanced/navigation-failures.md)
 
 ## NavigationGuard
 
@@ -1054,7 +1054,7 @@ router.replace({ hash: '#bio' })
   - [`RouteLocationRaw`](#routelocationraw): 重定向到一个不同的位置
   - `(vm: ComponentPublicInstance) => any` **仅适用于 `beforeRouteEnter`**：导航完成后执行的回调。接收路由组件实例作为参数。
 
-- **更多的内容请看**：[导航守卫](/zh/guide/advanced/navigation-guards.md)
+- **更多的内容请看**：[导航守卫](../guide/advanced/navigation-guards.md)
 
 ## Component Injections
 
@@ -1076,4 +1076,4 @@ router.replace({ hash: '#bio' })
 - **beforeRouteUpdate**
 - **beforeRouteLeave**
 
-请看[组件内的守卫](/zh/guide/advanced/navigation-guards.md#组件内的守卫)。
+请看[组件内的守卫](../guide/advanced/navigation-guards.md#组件内的守卫)。

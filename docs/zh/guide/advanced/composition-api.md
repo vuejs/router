@@ -84,7 +84,7 @@ export default {
 
 ## `useLink`
 
-Vue Router 将 RouterLink 的内部行为作为一个组合式 API 函数公开。它提供了与 [`v-slot` API](/zh/api/#router-link-s-v-slot) 相同的访问属性：
+Vue Router 将 RouterLink 的内部行为作为一个组合式 API 函数公开。它提供了与 [`v-slot` API](../../api/#router-link-s-v-slot) 相同的访问属性：
 
 ```js
 import { RouterLink, useLink } from 'vue-router'

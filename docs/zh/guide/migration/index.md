@@ -97,7 +97,6 @@ router.resolve({
 如果你不打算使用其名称直接跳转到未找到的路由，则无需为重复的参数添加 `*`。如果你调用 `router.push('/not/found/url')`，它将提供正确的 `pathMatch` 参数。
 :::
 
-
 **原因**：Vue Router 不再使用 `path-to-regexp`，而是实现了自己的解析系统，允许路由排序并实现动态路由。由于我们通常在每个项目中只添加一个通配符路由，所以支持 `*` 的特殊语法并没有太大的好处。参数的编码是跨路由的，无一例外，让事情更容易预测。
 
 ### 将 `onReady` 改为 `isReady`
@@ -164,7 +163,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 ### 删除 `<router-link>` 中的 `event` 和 `tag` 属性
 
-`<router-link>` 中的 `event` 和 `tag` 属性都已被删除。你可以使用 [`v-slot` API](/zh/api/#router-link-s-v-slot) 来完全定制 `<router-link>`：
+`<router-link>` 中的 `event` 和 `tag` 属性都已被删除。你可以使用 [`v-slot` API](../../api/#router-link-s-v-slot) 来完全定制 `<router-link>`：
 
 ```html
 将
@@ -194,14 +193,14 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 ### 删除 `router.match` 改为 `router.resolve`
 
-`router.match` 和 `router.resolve` 已合并到 `router.resolve` 中，签名略有不同。[详见 API](/zh/api/#resolve)。
+`router.match` 和 `router.resolve` 已合并到 `router.resolve` 中，签名略有不同。[详见 API](../../api/#resolve)。
 
 **原因**：将用于同一目的的多种方法统一起来。
-
 
 ### 删除 `router.getMatchedComponents()`
 
 `router.getMatchedComponents` 方法现在被删除，因为匹配的组件可以从 `router.currentRoute.value.mixed` 中获取：
+
 ```js
 router.currentRoute.value.matched.flatMap(record =>
   Object.values(record.components)
@@ -222,7 +221,7 @@ router.isReady().then(() => app.mount('#app'))
 
 否则会有一个初始过渡，就像你提供了 `appear` 属性到 `transition` 一样，因为路由会显示它的初始地址（什么都没有），然后显示第一个地址。
 
-请注意，**如果在初始导航时有导航守卫**，你可能不想阻止程序渲染，直到它们被解析，除非你正在进行服务器端渲染。否则，在这种情况下，不等待路由准备好挂载应用会产生与Vue2 中相同的结果。
+请注意，**如果在初始导航时有导航守卫**，你可能不想阻止程序渲染，直到它们被解析，除非你正在进行服务器端渲染。否则，在这种情况下，不等待路由准备好挂载应用会产生与 Vue2 中相同的结果。
 
 ### 删除 `router.app`
 
@@ -235,7 +234,7 @@ router.app = app
 
 你也可以扩展 `Router` 接口的 TypeScript 定义来添加 `app` 属性。
 
-**原因**：Vue3 写的程序不能在 Vue2 中使用，现在我们使用同一个 Router 实例来支持多个程序，因此拥有 `app` 属性可能会产生误导，因为它是程序而不是根实例。 
+**原因**：Vue3 写的程序不能在 Vue2 中使用，现在我们使用同一个 Router 实例来支持多个程序，因此拥有 `app` 属性可能会产生误导，因为它是程序而不是根实例。
 
 ### 将内容传递给路由组件的 `<slot>`
 
@@ -306,7 +305,7 @@ history.replaceState(history.state, '', url)
 
 **原因**：我们使用历史状态来保存导航信息，如滚动位置，以前的地址等。
 
-### `options` 中需要配置 `routes` 
+### `options` 中需要配置 `routes`
 
 `options` 中的 `routes` 属性现在是必需的。
 
@@ -395,9 +394,9 @@ const routes = [
 
 无论在哪里启动导航，`params`、`query`和 `hash` 中的解码值现在都是一致的（旧的浏览器仍然会产生未编码的 `path` 和 `fullPath`）。初始导航应产生与应用内部导航相同的结果。
 
-给定任何[规范化的路由地址](/zh/api/#routelocationnormalized):
+给定任何[规范化的路由地址](../../api/#routelocationnormalized):
 
-- `hash` 现在被解码了，这样就可以复制过来。`router.push({ hash: $route.hash })` 可以直接用于 [scrollBehavior](/zh/api/#scrollbehavior) 的 `el` 配置中。
+- `hash` 现在被解码了，这样就可以复制过来。`router.push({ hash: $route.hash })` 可以直接用于 [scrollBehavior](../../api/#scrollbehavior) 的 `el` 配置中。
 - 当使用 `push`、`resolve` 和 `replace` 并在对象中提供 `string` 地址或 `path` 属性时，**必须进行编码**(像以前的版本一样)。另一方面，`params`、`query` 和 `hash` 必须以未编码的版本提供。
 - 斜线字符(`/`)现在已在 `params` 内正确解码，同时仍在 URL 上产生一个编码版本：`%2F`。
 
@@ -417,6 +416,6 @@ const routes = [
 
 Vue Router4 中需要关注的一些新功能包括：
 
-- [动态路由](/zh/api/#addroute-2)
-- [组合式 API](/zh/guide/advanced/composition-api.md)
+- [动态路由](../../api/#addroute-2)
+- [组合式 API](../advanced/composition-api.md)
 <!-- - Custom History implementation -->
