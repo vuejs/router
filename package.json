@@ -65,7 +65,7 @@
     "@rollup/plugin-node-resolve": "^11.2.0",
     "@rollup/plugin-replace": "^2.4.0",
     "@types/jest": "^26.0.21",
-    "@types/jsdom": "^16.2.7",
+    "@types/jsdom": "^16.2.10",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.16.0",
     "@vue/compiler-sfc": "^3.0.7",
