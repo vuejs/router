@@ -1,3 +1,15 @@
+## [4.0.6](https://github.com/vuejs/vue-router-next/compare/v4.0.5...v4.0.6) (2021-04-06)
+
+### Bug Fixes
+
+- **link:** let vue merge attrs ([4142871](https://github.com/vuejs/vue-router-next/commit/4142871189dbb13e1ce2d6be8d82bd5aa27526a3)), closes [#846](https://github.com/vuejs/vue-router-next/issues/846)
+- **link:** use flush post in devtools watcher ([4108814](https://github.com/vuejs/vue-router-next/commit/41088143c62244fe7b198e0907f4f6f98852df62)), closes [#845](https://github.com/vuejs/vue-router-next/issues/845)
+
+### Features
+
+- **types:** allow currentLocation param in resolve ([add6ce9](https://github.com/vuejs/vue-router-next/commit/add6ce9677ffd2c636e215ffab5ddbdef22b0158))
+- **warn:** throws if history is missing ([#844](https://github.com/vuejs/vue-router-next/issues/844)) ([dd8bf6c](https://github.com/vuejs/vue-router-next/commit/dd8bf6cf48db352cef72f419a14d1540818eb6ff))
+
 ## [4.0.5](https://github.com/vuejs/vue-router-next/compare/v4.0.4...v4.0.5) (2021-03-11)
 
 ### Bug Fixes
