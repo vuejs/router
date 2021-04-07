@@ -63,5 +63,19 @@ router.afterEach((to, from) => {
 })
 ```
 
+## Reuse-Component Transition
+
+If there are multiple routing addresses using the same component,
+and we hope that these routing will also have a transition effect when switching,
+We can do this by adding the `key` attribute to the `component` tag.
+
+```html
+<router-view v-slot="{ Component }">
+  <transition name="fade">
+    <component :is="Component" :key="$route.path"/>
+  </transition>
+</router-view>
+```
+
 <!-- TODO: interactive example -->
 <!-- See full example [here](https://github.com/vuejs/vue-router/blob/dev/examples/transitions/app.js). -->

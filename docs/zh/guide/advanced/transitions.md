@@ -63,5 +63,18 @@ router.afterEach((to, from) => {
 })
 ```
 
+## 复用组件的过渡
+
+如果有多个路由地址使用同一个组件，且我们希望这些路由在切换时也有过渡效果，
+我们可以通过在`component`标签中加入`key`属性来实现.
+
+```html
+<router-view v-slot="{ Component }">
+  <transition name="fade">
+    <component :is="Component" :key="$route.path"/>
+  </transition>
+</router-view>
+```
+
 <!-- TODO: interactive example -->
 <!-- See full example [here](https://github.com/vuejs/vue-router/blob/dev/examples/transitions/app.js). -->
