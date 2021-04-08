@@ -254,15 +254,15 @@ export interface Router {
    *
    * @param to - Route location to navigate to
    */
-  push(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+  // push(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
   /**
    * Programmatically navigate to a new URL by pushing an entry in the history
    * stack.
    *
    * @param to - typed route location
    */
-  push<T extends keyof NamedLocationMap>(
-    to: RouteNamedLocation<T>
+  push(
+    to: RouteNamedLocation
   ): Promise<NavigationFailure | void | undefined>
 
   /**

@@ -33,10 +33,11 @@ export function defineRoutes<
 }
 export interface NamedLocationMap {}
 
-export interface RouteNamedLocation<T extends keyof NamedLocationMap>
-  extends RouteLocationOptions {
+export interface RouteNamedLocation<
+  T extends keyof NamedLocationMap = keyof NamedLocationMap
+> extends RouteLocationOptions {
   name: T
-  params: NamedLocationMap[T]
+  // params: NamedLocationMap[T]
 }
 
 declare const r: [
