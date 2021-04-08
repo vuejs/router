@@ -4,6 +4,7 @@ import { Ref, ComponentPublicInstance, Component, DefineComponent } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
+import { NamedLocationMap } from './named'
 
 export {
   RouteNamedLocation,
@@ -72,7 +73,7 @@ export interface LocationAsName {
  * @internal
  */
 export interface LocationAsRelativeRaw {
-  name?: RouteRecordName
+  name?: {} extends NamedLocationMap ? RouteRecordName : keyof NamedLocationMap
   params?: RouteParamsRaw
 }
 

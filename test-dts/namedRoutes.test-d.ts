@@ -1,5 +1,3 @@
-// NOTE `ExtractNamedRoutes` is not exposed on build, you might need to add export to the type manually
-
 import { ExtractNamedRoutes, Router } from './index'
 import { DefineComponent } from 'vue'
 
@@ -10,18 +8,24 @@ const routes = [
     path: 'my-path',
     name: 'test',
     component: Comp,
-  } as const,
+  },
   {
     path: 'my-path',
     name: 'my-other-path',
     component: Comp,
-  } as const,
-
-  // {
-  //   path: 'my-path',
-  //   component: Comp,
-  // } as const,
-]
+  },
+  {
+    path: 'random',
+    name: 'tt',
+    children: [
+      {
+        path: 'random-child',
+        name: 'random-child',
+        component: Comp,
+      },
+    ],
+  },
+] as const
 
 type TypedRoutes = ExtractNamedRoutes<typeof routes>
 
@@ -32,5 +36,10 @@ declare module './index' {
 declare const router: Router
 
 router.push({
-  name: '',
+  name: 'my-other-path',
+})
+
+router.push({
+  // @ts-expect-error location name does not exist
+  name: 'random-location',
 })
