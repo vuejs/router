@@ -1,9 +1,11 @@
-import { defineRoutes } from './index'
+// NOTE `ExtractNamedRoutes` is not exposed on build, you might need to add export to the type manually
+
+import { ExtractNamedRoutes, Router } from './index'
 import { DefineComponent } from 'vue'
 
 declare const Comp: DefineComponent
 
-const routes = defineRoutes([
+const routes = [
   {
     path: 'my-path',
     name: 'test',
@@ -19,11 +21,16 @@ const routes = defineRoutes([
   //   path: 'my-path',
   //   component: Comp,
   // } as const,
-])
+]
+
+type TypedRoutes = ExtractNamedRoutes<typeof routes>
 
 declare module './index' {
-  interface RouteMeta {
-    requiresAuth?: boolean
-    nested: { foo: string }
-  }
+  interface NamedLocationMap extends TypedRoutes {}
 }
+
+declare const router: Router
+
+router.push({
+  name: '',
+})
