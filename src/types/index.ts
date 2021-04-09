@@ -6,12 +6,7 @@ import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
 import { NamedLocationMap } from './named'
 
-export {
-  RouteNamedLocation,
-  NamedLocationMap,
-  defineRoutes,
-  ExtractNamedRoutes,
-} from './named'
+export { NamedLocationMap, defineRoutes, ExtractNamedRoutes } from './named'
 
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
