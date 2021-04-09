@@ -8,11 +8,15 @@ const routes = [
     path: 'my-path',
     name: 'test',
     component: Comp,
+    // children must be declared :(
+    children: [],
   },
   {
     path: 'my-path',
     name: 'my-other-path',
     component: Comp,
+    // children must be declared :(
+    children: [],
   },
   {
     path: 'random',
@@ -22,39 +26,35 @@ const routes = [
         path: 'random-child',
         name: 'random-child',
         component: Comp,
+        children: [],
       },
     ],
   },
-]
-
-type TypedRoutes = ExtractNamedRoutes< [
   {
-    path: 'my-path',
-    name: 'test',
-    // component: ,
-  },
-  {
-    path: 'my-path',
-    name: 'my-other-path',
-    // component: Comp,
-  },
-  {
-    path: 'random',
-    name: 'tt',
+    name: '1',
     children: [
       {
-        path: 'random-child',
-        name: 'random-child',
-        component: {},
+        name: '2',
+        children: [{ name: '3' }],
       },
     ],
   },
-]>
+] as const
+
+declare const typed: ExtractNamedRoutes<typeof routes>
+
+typed['my-other-path']
+typed['random-child']
+typed.test
+typed.tt
+typed[1]
+typed[2]
+typed[3]
 
 declare module './index' {
-  interface NamedLocationMap  {
+  interface NamedLocationMap {
     'my-other-path': {
-      sss:  number
+      sss: number
     }
   }
 }
@@ -66,8 +66,8 @@ router.push({
   params: {
     sss: 1,
     // @ts-expect-error does not exist
-    xxxx: '22'
-  }
+    xxxx: '22',
+  },
 })
 
 router.push({
