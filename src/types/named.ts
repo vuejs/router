@@ -7,35 +7,6 @@ export type ExtractNamedRoutes<T> = [T] extends [ReadonlyArray<infer U>]
         ? ExtractNamedRoutes<T['children']>
         : {})
 
-// declare const test: ExtractNamedRoutes<
-//   [
-//     {
-//       path: 'my-path'
-//       name: 'test'
-//       children: []
-//     },
-//     {
-//       path: 'my-path'
-//       name: 'my-other-path'
-//       // children: []
-//     },
-//     {
-//       path: 'random'
-//       name: 'tt'
-//       children: [
-//         {
-//           path: 'random-child'
-//           name: 'random-child'
-//         }
-//       ]
-//     }
-//   ]
-// >
-// test
-// test['my-other-path']
-// test.test, test.tt
-// test['random-child']
-
 export function defineRoutes<
   T extends Array<RouteRecordRaw | Readonly<RouteRecordRaw>>
 >(routes: T): ExtractNamedRoutes<T> {
