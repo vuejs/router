@@ -30,13 +30,22 @@ const routes = [
 type TypedRoutes = ExtractNamedRoutes<typeof routes>
 
 declare module './index' {
-  interface NamedLocationMap extends TypedRoutes {}
+  interface NamedLocationMap {
+    'my-other-path': {
+      sss: number
+    }
+  }
 }
 
 declare const router: Router
 
 router.push({
   name: 'my-other-path',
+  params: {
+    sss: 1,
+    // @ts-expect-error
+    xxxx: '22',
+  },
 })
 
 router.push({
