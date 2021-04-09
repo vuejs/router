@@ -218,7 +218,7 @@ export interface _RouteRecordBase extends PathParserOptions {
   /**
    * Array of nested routes.
    */
-  children?: RouteRecordRaw[] | Readonly<RouteRecordRaw[]>
+  children?: RouteRecordRaw[]
   /**
    * Aliases for the record. Allows defining extra paths that will behave like a
    * copy of the record. Allows having paths shorthands like `/users/:id` and
