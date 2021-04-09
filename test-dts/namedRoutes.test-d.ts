@@ -30,7 +30,12 @@ const routes = [
     children: [
       {
         name: '2',
-        children: [{ name: '3', children: [{ name: '4' }] }],
+        children: [
+          {
+            name: '3',
+            children: [{ name: '4' }, { path: '', children: [{ name: '5' }] }],
+          },
+        ],
       },
     ],
   },
@@ -46,6 +51,7 @@ typed[1]
 typed[2]
 typed[3]
 typed[4]
+typed[5]
 //@ts-expect-error
 typed['non-existing']
 

@@ -1,5 +1,7 @@
-import { RouteRecordRaw, _RouteRecordBase } from '.'
-
+/**
+ * This will flat the routes into an object with `key` === `router.name`
+ * and the value will be `unknown` since we don't have way to describe params types
+ */
 export type ExtractNamedRoutes<T> = [T] extends [ReadonlyArray<infer U>]
   ? ExtractNamedRoutes<RouteFix<U>>
   : ([T] extends [{ name: string }] ? { [K in T['name']]: unknown } : {}) &
@@ -13,70 +15,25 @@ export type ExtractNamedRoutes<T> = [T] extends [ReadonlyArray<infer U>]
 type RouteFix<T> = T extends { name: string; children: any }
   ? T
   : T extends { name: string }
-  ? T & { children: never[] }
+  ? T & { children: never }
   : T extends { children: any }
-  ? T & { name: '' }
-  : { name: ''; children: never }
+  ? T & { name: never }
+  : { name: never; children: never }
 
-// // declare const xxx: NamedRoutes<
-// //   | {
-// //       name: 'LOL'
-// //     }
-// //   | { name: 'xxx' }
-// //   | { children: {} }
-// // >
-// // xxx.name
-
-// declare const typed: ExtractNamedRoutes<
-//   [
-//     {
-//       path: 'my-path'
-//       name: 'test'
-//       // children must be declared :(
-//       // children: []
-//     },
-//     {
-//       path: 'my-path'
-//       name: 'my-other-path'
-//       // children must be declared :(
-//       // children: []
-//     },
-//     {
-//       path: 'random'
-//       name: 'tt'
-//       children: [
-//         {
-//           path: 'random-child'
-//           name: 'random-child'
-//           // children: []
-//         }
-//       ]
-//     },
-//     {
-//       name: '1'
-//       children: [
-//         {
-//           name: '2'
-//           children: [{ name: '3'; children: [{ name: '4' }] }]
-//         }
-//       ]
-//     }
-//   ]
-// >
-
-// typed['my-other-path']
-// typed['random-child']
-// typed.test
-// typed.tt
-// typed[1]
-// typed[2]
-// typed[3]
-// typed[4]
-
-export function defineRoutes<
-  T extends Array<RouteRecordRaw | Readonly<RouteRecordRaw>>
->(routes: T): ExtractNamedRoutes<T> {
-  return routes as any
-}
-
+/**
+ * Used to define typed named locations
+ * @example
+ * ```ts
+ * declare module 'vue-router' {
+ *   interface NamedLocationMap {
+ *    // 'home' no params
+ *    home: {}
+ *    // 'product' `{id: string}` required parameter
+ *    product: {
+ *      id: string
+ *    }
+ *   }
+ * }
+ * ```
+ */
 export interface NamedLocationMap {}
