@@ -8,15 +8,11 @@ const routes = [
     path: 'my-path',
     name: 'test',
     component: Comp,
-    // children must be declared :(
-    children: [],
   },
   {
     path: 'my-path',
     name: 'my-other-path',
     component: Comp,
-    // children must be declared :(
-    children: [],
   },
   {
     path: 'random',
@@ -26,7 +22,6 @@ const routes = [
         path: 'random-child',
         name: 'random-child',
         component: Comp,
-        children: [],
       },
     ],
   },
