@@ -35,7 +35,7 @@ const routes = [
     children: [
       {
         name: '2',
-        children: [{ name: '3' }],
+        children: [{ name: '3', children: [{ name: '4' }] }],
       },
     ],
   },
@@ -50,6 +50,9 @@ typed.tt
 typed[1]
 typed[2]
 typed[3]
+typed[4]
+//@ts-expect-error
+typed['non-existing']
 
 declare module './index' {
   interface NamedLocationMap {
