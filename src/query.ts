@@ -57,7 +57,6 @@ export function parseQuery(search: string): LocationQuery {
   if (search === '' || search === '?') return query
   const hasLeadingIM = search[0] === '?'
   const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
-
   for (let i = 0; i < searchParams.length; ++i) {
     // pre decode the + into space
     const searchParam = searchParams[i].replace(PLUS_RE, ' ')
