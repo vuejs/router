@@ -181,7 +181,11 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 `exact` 属性已被删除，因为不再存在要修复的警告，所以你应该能够安全地删除它。但，有两件事你应该注意：
 
 - 路由现在是基于它们所代表的路由记录来激活的，而不是路由地址对象及其 `path`、`query` 和 `hash` 属性来激活的
-- 只匹配 `path` 部分，`query` 和 `hash` 不再考虑
+- 只匹配 `path` 部分，`query` 和 `hash` 不再考虑, 但是需要注意，`query`和`hash`如果一起使用, `hash`必须出现再query后面, 否则忽略。例如：
+
+```html
+<router-link to="/user?id=1#hash">user?id=1#hash</router-link>
+```
 
 如果你想自定义这种行为，例如考虑到 `hash` 部分，你应该使用 [`v-slot` API](https://next.router.vuejs.org/api/#router-link-s-v-slot) 来扩展`<router-link>`。
 
