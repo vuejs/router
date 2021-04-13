@@ -37,8 +37,7 @@ export type LocationQueryRaw = Record<
  * Do not allow invalid hazardous query keys
  */
 function isAllowedQueryKey(key: string): boolean {
-  const keysBlockList = ['__proto__', 'constructor', 'prototype']
-  return !keysBlockList.includes(key) && !Object.prototype.hasOwnProperty(key)
+  return !Object.prototype.hasOwnProperty(key)
 }
 
 /**
