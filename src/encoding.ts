@@ -123,9 +123,13 @@ export function encodePath(text: string | number): string {
  * slash (`/`) character.
  *
  * @param text - string to encode
- * @returns encoded string
+ * @returns encoded string or a empty sting if text is not a sting or a number
  */
 export function encodeParam(text: string | number): string {
+  const type = typeof text
+  if (type !== 'string' && type !== 'number') {
+    return ''
+  }
   return encodePath(text).replace(SLASH_RE, '%2F')
 }
 

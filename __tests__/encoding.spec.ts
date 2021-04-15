@@ -55,6 +55,21 @@ describe('Encoding', () => {
     it('encodes a specific charset', () => {
       expect(encodeParam(toEncode)).toBe(encodedToEncode)
     })
+
+    it('encodes undefined', () => {
+      // @ts-ignore
+      expect(encodeParam(undefined)).toBe('')
+    })
+
+    it('encodes false', () => {
+      // @ts-ignore
+      expect(encodeParam(false)).toBe('')
+    })
+
+    it('encodes true', () => {
+      // @ts-ignore
+      expect(encodeParam(true)).toBe('')
+    })
   })
 
   describe('query params', () => {
