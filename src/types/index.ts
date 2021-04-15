@@ -253,6 +253,9 @@ export interface _RouteRecordBase extends PathParserOptions {
  * @example
  *
  * ```ts
+ * // typings.d.ts or router.ts
+ * import 'vue-router';
+ *
  * declare module 'vue-router' {
  *   interface RouteMeta {
  *     requiresAuth?: boolean

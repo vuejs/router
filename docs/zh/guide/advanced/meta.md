@@ -56,6 +56,9 @@ router.beforeEach((to, from) => {
 可以通过扩展 `RouteMeta` 接口来输入 meta 字段：
 
 ```ts
+// typings.d.ts or router.ts
+import 'vue-router'
+
 declare module 'vue-router' {
   interface RouteMeta {
     // 是可选的
