@@ -59,6 +59,10 @@ const config = {
             link: '/api/',
           },
           {
+            text: 'v4.x',
+            items: [{ text: 'v3.x', link: 'https://router.vuejs.org' }],
+          },
+          {
             text: 'Changelog',
             link:
               'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
@@ -187,6 +191,10 @@ const config = {
           {
             text: 'API 参考',
             link: '/zh/api/',
+          },
+          {
+            text: 'v4.x',
+            items: [{ text: 'v3.x', link: 'https://router.vuejs.org/zh' }],
           },
           {
             text: '更新日志',
