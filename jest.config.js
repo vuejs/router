@@ -1,5 +1,5 @@
 module.exports = {
-  preset: 'ts-jest',
+  testEnvironment: 'node',
   globals: {
     __DEV__: true,
     __BROWSER__: true,
@@ -13,7 +13,9 @@ module.exports = {
     'src/entries',
     'src/devtools.ts',
   ],
+  transform: {
+    '^.+\\.tsx?$': '@sucrase/jest-plugin',
+  },
   testMatch: ['<rootDir>/__tests__/**/*.spec.ts?(x)'],
   watchPathIgnorePatterns: ['<rootDir>/node_modules'],
-  testEnvironment: 'node',
 }
