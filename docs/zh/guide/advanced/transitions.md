@@ -63,5 +63,17 @@ router.afterEach((to, from) => {
 })
 ```
 
+## 在路由复用的组件中触发过渡动效
+
+为了确保过渡动效能在路由复用的组件（多个路由复用了同一个组件）中正确触发，我们需要在组件中添加`key`属性。
+
+```js
+<router-view v-slot="{ Component }">
+  <transition name="fade">
+    <component :is="Component" :key="$route.path"/>
+  </transition>
+</router-view>
+```
+
 <!-- TODO: interactive example -->
 <!-- See full example [here](https://github.com/vuejs/vue-router/blob/dev/examples/transitions/app.js). -->

@@ -63,5 +63,17 @@ router.afterEach((to, from) => {
 })
 ```
 
+## Trigger Transition In Reused Component
+
+We need add `key` as a property of component to trigger `transition` correctly in reused component (multiple route path using the same component).
+
+```js
+<router-view v-slot="{ Component }">
+  <transition name="fade">
+    <component :is="Component" :key="$route.path"/>
+  </transition>
+</router-view>
+```
+
 <!-- TODO: interactive example -->
 <!-- See full example [here](https://github.com/vuejs/vue-router/blob/dev/examples/transitions/app.js). -->
