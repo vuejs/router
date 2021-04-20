@@ -435,8 +435,11 @@ function formatRouteRecordForInspector(
 
   // add an id to be able to select it. Using the `path` is not possible because
   // empty path children would collide with their parents
-  let id = String(routeRecordId++)
-  ;(record as any).__vd_id = id
+  let id = (record as any).__vd_id
+  if (id == null) {
+    id = String(routeRecordId++)
+    ;(record as any).__vd_id = id
+  }
 
   return {
     id,
