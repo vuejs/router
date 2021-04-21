@@ -128,7 +128,7 @@ export interface RouterOptions extends PathParserOptions {
   /**
    * Initial list of routes that should be added to the router.
    */
-  routes: RouteRecordRaw[]
+  routes: Readonly<RouteRecordRaw[]>
   /**
    * Function to control scrolling when navigating between pages. Can return a
    * Promise to delay scrolling. Check {@link ScrollBehavior}.
