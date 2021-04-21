@@ -185,7 +185,7 @@ export interface RouterOptions extends PathParserOptions {
 /**
  * Router instance
  */
-export interface Router {
+export interface Router<Options extends RouterOptions = RouterOptions> {
   /**
    * @internal
    */
@@ -197,7 +197,7 @@ export interface Router {
   /**
    * Original options object passed to create the Router
    */
-  readonly options: RouterOptions
+  readonly options: Options
 
   /**
    * Allows turning off the listening of history events. This is a low level api for micro-frontends.
@@ -360,7 +360,9 @@ export interface Router {
  *
  * @param options - {@link RouterOptions}
  */
-export function createRouter(options: RouterOptions): Router {
+export function createRouter<Options extends RouterOptions>(
+  options: Options
+): Router<Options> {
   const matcher = createRouterMatcher(options.routes, options)
   const parseQuery = options.parseQuery || originalParseQuery
   const stringifyQuery = options.stringifyQuery || originalStringifyQuery
@@ -1157,7 +1159,7 @@ export function createRouter(options: RouterOptions): Router {
   let started: boolean | undefined
   const installedApps = new Set<App>()
 
-  const router: Router = {
+  const router: Router<Options> = {
     currentRoute,
     listening: true,
 
