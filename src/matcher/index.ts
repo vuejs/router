@@ -56,7 +56,7 @@ export interface RouterMatcher {
  * @param globalOptions - global route options
  */
 export function createRouterMatcher(
-  routes: RouteRecordRaw[],
+  routes: Readonly<RouteRecordRaw[]>,
   globalOptions: PathParserOptions
 ): RouterMatcher {
   // normalized ordered array of matchers
