@@ -1,4 +1,9 @@
-import { ExtractNamedRoutes, Router } from './index'
+import {
+  ExtractNamedRoutes,
+  Router,
+  ExtractRoutes,
+  createRouter,
+} from './index'
 import { DefineComponent } from 'vue'
 
 declare const Comp: DefineComponent
@@ -58,7 +63,7 @@ typed['non-existing']
 declare module './index' {
   interface NamedLocationMap {
     'my-other-path': {
-      sss: number
+      id: string
     }
   }
 }
@@ -68,9 +73,9 @@ declare const router: Router
 router.push({
   name: 'my-other-path',
   params: {
-    sss: 1,
+    id: '222',
     // @ts-expect-error does not exist
-    xxxx: '22',
+    nonExistent: '22',
   },
 })
 
@@ -78,3 +83,14 @@ router.push({
   // @ts-expect-error location name does not exist
   name: 'random-location',
 })
+
+const otherRouter = createRouter({
+  history: {} as any,
+  routes: [{ path: 'e', name: 'test', component: Comp }] as const,
+})
+
+declare const otherRoutes: ExtractRoutes<typeof otherRouter>
+
+otherRoutes.test
+// @ts-expect-error
+otherRoutes.test2

@@ -1,3 +1,5 @@
+import { Router } from '../router'
+
 /**
  * This will flat the routes into an object with `key` === `router.name`
  * and the value will be `unknown` since we don't have way to describe params types
@@ -19,6 +21,10 @@ type RouteFix<T> = T extends { name: string; children: any }
   : T extends { children: any }
   ? T & { name: never }
   : { name: never; children: never }
+
+export type ExtractRoutes<T extends Router> = ExtractNamedRoutes<
+  T['options']['routes']
+>
 
 /**
  * Used to define typed named locations

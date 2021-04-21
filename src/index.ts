@@ -49,6 +49,7 @@ export type {
   RouteRecordRedirectOption,
   NamedLocationMap,
   ExtractNamedRoutes,
+  ExtractRoutes,
   // route records
   _RouteRecordBase,
   RouteMeta,
