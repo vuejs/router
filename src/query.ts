@@ -34,13 +34,6 @@ export type LocationQueryRaw = Record<
 >
 
 /**
- * Do not allow invalid hazardous query keys
- */
-function isAllowedQueryKey(key: string): boolean {
-  return !Object.prototype.hasOwnProperty(key)
-}
-
-/**
  * Transforms a queryString into a {@link LocationQuery} object. Accept both, a
  * version with the leading `?` and without Should work as URLSearchParams
 
@@ -62,9 +55,12 @@ export function parseQuery(search: string): LocationQuery {
     // allow the = character
     let eqPos = searchParam.indexOf('=')
     let key = decode(eqPos < 0 ? searchParam : searchParam.slice(0, eqPos))
-    if (!isAllowedQueryKey(key)) {
+
+    // this ignores ?__proto__&toString
+    if (Object.prototype.hasOwnProperty(key)) {
       continue
     }
+
     let value = eqPos < 0 ? null : decode(searchParam.slice(eqPos + 1))
 
     if (key in query) {
