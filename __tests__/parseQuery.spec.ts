@@ -92,7 +92,7 @@ describe('parseQuery', () => {
     expect(query.constructor).toEqual(Object)
   })
 
-  it('keep build-in methods', () => {
+  it('ignores build-in methods', () => {
     const query = parseQuery('toString=1')
     expect(query.toString).toEqual(Object.prototype.toString)
   })
