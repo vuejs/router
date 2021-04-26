@@ -86,7 +86,7 @@ describe('parseQuery', () => {
     expect('decoding "%"').toHaveBeenWarnedTimes(1)
   })
 
-  it('keep prototype', () => {
+  it('ignores __proto__', () => {
     const query = parseQuery('__proto__=1')
     expect(query.__proto__).toEqual(Object.prototype)
     expect(query.constructor).toEqual(Object)
