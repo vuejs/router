@@ -1136,10 +1136,10 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.0.11.tgz#20d22dd0da7d358bb21c17f9bde8628152642c77"
   integrity sha512-b+zB8A2so8eCE0JsxjL24J7vdGl8rzPQ09hZNhystm+KqSbKcAej1A+Hbva1rCMmTTqA+hFnUSDc5kouEo0JzA==
 
-"@vue/test-utils@^2.0.0-rc.3":
-  version "2.0.0-rc.4"
-  resolved "https://registry.yarnpkg.com/@vue/test-utils/-/test-utils-2.0.0-rc.4.tgz#536175be968e7c5741e9c95f117024d5053ea54c"
-  integrity sha512-DocrrFP28M7NO7y7iGiX9sf9n1AKEqkxXO5wedtp5FkHiAkc0xfmD4lvxgi4re5+xw7Zzb9U/vrhXKQZ0I4Q9g==
+"@vue/test-utils@^2.0.0-rc.6":
+  version "2.0.0-rc.6"
+  resolved "https://registry.yarnpkg.com/@vue/test-utils/-/test-utils-2.0.0-rc.6.tgz#d0aac24d20450d379e183f70542c0822670b8783"
+  integrity sha512-0cnQBVH589PwgqWpyv1fgCAz+9Ram/MsvN3ZEAEVXi1aPuhUa22EudGc0WezQ9PKwR+L40NrBmt3JBXE2tSRRQ==
 
 "@webassemblyjs/ast@1.11.0":
   version "1.11.0"
