@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RouterView displays deeply nested views 1`] = `
+"<div>
+  <h2>Nested</h2>
+  <div>
+    <h2>Nested</h2>
+    <div>Foo</div>
+  </div>
+</div>"
+`;
+
+exports[`RouterView displays nested views 1`] = `
+"<div>
+  <h2>Nested</h2>
+  <div>Foo</div>
+</div>"
+`;
+
+exports[`RouterView v-slot passes a Component and route 1`] = `
+"<span>home</span>
+<div>Home</div>"
+`;
+
+exports[`RouterView warnings does not warn RouterView is wrapped 1`] = `
+"<div>
+  <div>Home</div>
+</div>"
+`;

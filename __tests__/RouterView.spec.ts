@@ -209,11 +209,11 @@ describe('RouterView', () => {
 
   async function factory(
     initialRoute: RouteLocationNormalizedLoose,
-    propsData: any = {}
+    props: any = {}
   ) {
     const route = createMockedRoute(initialRoute)
     const wrapper = mount(RouterView as any, {
-      propsData,
+      props,
       global: {
         provide: route.provides,
         components: { RouterView },
@@ -242,14 +242,12 @@ describe('RouterView', () => {
 
   it('displays nested views', async () => {
     const { wrapper } = await factory(routes.nested)
-    expect(wrapper.html()).toBe(`<div><h2>Nested</h2><div>Foo</div></div>`)
+    expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('displays deeply nested views', async () => {
     const { wrapper } = await factory(routes.nestedNested)
-    expect(wrapper.html()).toBe(
-      `<div><h2>Nested</h2><div><h2>Nested</h2><div>Foo</div></div></div>`
-    )
+    expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('renders when the location changes', async () => {
@@ -315,21 +313,17 @@ describe('RouterView', () => {
       const route = createMockedRoute(routes.root)
       const wrapper = mount(
         {
-          template: `
-        <div>
-          <router-view/>
-        </div>
-        `,
+          template: `<div><router-view/></div>`,
         },
         {
-          propsData: {},
+          props: {},
           global: {
             provide: route.provides,
             components: { RouterView },
           },
         }
       )
-      expect(wrapper.html()).toBe(`<div><div>Home</div></div>`)
+      expect(wrapper.html()).toMatchSnapshot()
       expect('can no longer be used directly inside').not.toHaveBeenWarned()
     })
 
@@ -344,7 +338,7 @@ describe('RouterView', () => {
         `,
         },
         {
-          propsData: {},
+          props: {},
           global: {
             provide: route.provides,
             components: { RouterView },
@@ -368,7 +362,7 @@ describe('RouterView', () => {
         `,
         },
         {
-          propsData: {},
+          props: {},
           global: {
             stubs: {
               transition: false,
@@ -393,7 +387,7 @@ describe('RouterView', () => {
         `,
         },
         {
-          propsData: {},
+          props: {},
           global: {
             stubs: {
               transition: false,
@@ -411,11 +405,11 @@ describe('RouterView', () => {
   describe('v-slot', () => {
     async function factory(
       initialRoute: RouteLocationNormalizedLoose,
-      propsData: any = {}
+      props: any = {}
     ) {
       const route = createMockedRoute(initialRoute)
       const wrapper = await mount(RouterView as any, {
-        propsData,
+        props,
         global: {
           provide: route.provides,
           components: { RouterView },
@@ -425,27 +419,32 @@ describe('RouterView', () => {
             <template #default="{ route, Component }">
               <span>{{ route.name }}</span>
               <component :is="Component"/>
-            </template>`,
+            </template>
+            `,
         },
       })
+
+      // FIXME: the slot default is causing a warning with VTU
+      // https://github.com/vuejs/vue-test-utils-next/issues/549
+      expect('').toHaveBeenWarned()
 
       return { route, wrapper }
     }
 
     it('passes a Component and route', async () => {
       const { wrapper } = await factory(routes.root)
-      expect(wrapper.html()).toBe(`<span>home</span><div>Home</div>`)
+      expect(wrapper.html()).toMatchSnapshot()
     })
   })
 
   describe('KeepAlive', () => {
     async function factory(
       initialRoute: RouteLocationNormalizedLoose,
-      propsData: any = {}
+      props: any = {}
     ) {
       const route = createMockedRoute(initialRoute)
       const wrapper = await mount(RouterView as any, {
-        propsData,
+        props,
         global: {
           provide: route.provides,
           components: { RouterView },
@@ -459,6 +458,9 @@ describe('RouterView', () => {
           </template>`,
         },
       })
+
+      // FIXME: check comment above
+      expect('').toHaveBeenWarned()
 
       return { route, wrapper }
     }
@@ -474,11 +476,11 @@ describe('RouterView', () => {
   describe('Suspense', () => {
     async function factory(
       initialRoute: RouteLocationNormalizedLoose,
-      propsData: any = {}
+      props: any = {}
     ) {
       const route = createMockedRoute(initialRoute)
       const wrapper = await mount(RouterView as any, {
-        propsData,
+        props,
         global: {
           provide: route.provides,
           components: { RouterView },
@@ -492,6 +494,9 @@ describe('RouterView', () => {
           </template>`,
         },
       })
+
+      // FIXME: check comment above
+      expect('').toHaveBeenWarned()
 
       return { route, wrapper }
     }
