@@ -85,4 +85,15 @@ describe('parseQuery', () => {
 
     expect('decoding "%"').toHaveBeenWarnedTimes(1)
   })
+
+  it('ignores __proto__', () => {
+    const query = parseQuery('__proto__=1')
+    expect(query.__proto__).toEqual(Object.prototype)
+    expect(query.constructor).toEqual(Object)
+  })
+
+  it('ignores build-in methods', () => {
+    const query = parseQuery('toString=1')
+    expect(query.toString).toEqual(Object.prototype.toString)
+  })
 })

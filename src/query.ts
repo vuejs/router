@@ -55,6 +55,12 @@ export function parseQuery(search: string): LocationQuery {
     // allow the = character
     let eqPos = searchParam.indexOf('=')
     let key = decode(eqPos < 0 ? searchParam : searchParam.slice(0, eqPos))
+
+    // this ignores ?__proto__&toString
+    if (Object.prototype.hasOwnProperty(key)) {
+      continue
+    }
+
     let value = eqPos < 0 ? null : decode(searchParam.slice(eqPos + 1))
 
     if (key in query) {
