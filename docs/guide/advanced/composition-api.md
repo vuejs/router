@@ -26,7 +26,7 @@ export default {
 }
 ```
 
-The `route` object is a reactive object, so any of its properties can be watched and you should **avoid watching the whole `route`** object:
+The `route` object is a reactive object, so any of its properties can be watched and you should **avoid watching the whole `route`** object. In most scenarios, you should directly watch the param you are expecting to change
 
 ```js
 import { useRoute } from 'vue-router'
@@ -38,9 +38,9 @@ export default {
 
     // fetch the user information when params change
     watch(
-      () => route.params,
-      async newParams => {
-        userData.value = await fetchUser(newParams.id)
+      () => route.params.id,
+      async newId => {
+        userData.value = await fetchUser(newId)
       }
     )
   },
