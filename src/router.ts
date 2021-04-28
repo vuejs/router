@@ -1102,6 +1102,7 @@ export function createRouter(options: RouterOptions): Router {
 
       app.config.globalProperties.$router = router
       Object.defineProperty(app.config.globalProperties, '$route', {
+        enumerable: true,
         get: () => unref(currentRoute),
       })
 
