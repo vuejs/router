@@ -168,9 +168,21 @@ sidebar: auto
 `<router-view>` 暴露了一个 `v-slot` API，主要使用 `<transition>` 和 `<keep-alive>` 组件来包裹你的路由组件。
 
 ```html
-<router-view v-slot="{ Component, route }">
-  <component :is="Component" />
-</router-view>
+<Suspense>
+  <template #default>
+    <router-view v-slot="{ Component, route }">
+      <transition :name="route.meta.transition || 'fade'" mode="out-in">
+        <keep-alive>
+          <component
+            :is="Component"
+            :key="route.meta.usePathKey ? route.path : undefined"
+          />
+        </keep-alive>
+      </transition>
+    </router-view>
+  </template>
+  <template #fallback> Loading... </template>
+</Suspense>
 ```
 
 - `Component`: 要传递给 `<component>` 的 VNodes `是` prop。

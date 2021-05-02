@@ -168,9 +168,21 @@ If you add a `target="_blank"` to your `a` element, you must omit the `@click="n
 `<router-view>` exposes a `v-slot` API mainly to wrap your route components with `<transition>` and `<keep-alive>` components.
 
 ```html
-<router-view v-slot="{ Component, route }">
-  <component :is="Component" />
-</router-view>
+<Suspense>
+  <template #default>
+    <router-view v-slot="{ Component, route }">
+      <transition :name="route.meta.transition || 'fade'" mode="out-in">
+        <keep-alive>
+          <component
+            :is="Component"
+            :key="route.meta.usePathKey ? route.path : undefined"
+          />
+        </keep-alive>
+      </transition>
+    </router-view>
+  </template>
+  <template #fallback> Loading... </template>
+</Suspense>
 ```
 
 - `Component`: VNodes to be passed to a `<component>`'s `is` prop.
