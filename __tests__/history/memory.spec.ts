@@ -152,8 +152,27 @@ describe('Memory history', () => {
     const spy = jest.fn()
     history.listen(spy)
     history.destroy()
+    history.push('/2')
     history.go(-1)
     expect(spy).not.toHaveBeenCalled()
+  })
+
+  it('can be reused after destroy', () => {
+    const history = createMemoryHistory()
+    history.push('/1')
+    history.push('/2')
+    history.push('/3')
+    history.go(-1)
+
+    expect(history.location).toBe('/2')
+    history.destroy()
+    history.go(-1)
+    expect(history.location).toBe(START)
+    history.push('/4')
+    history.push('/5')
+    expect(history.location).toBe('/5')
+    history.go(-1)
+    expect(history.location).toBe('/4')
   })
 
   it('can avoid listeners with back and forward', () => {
