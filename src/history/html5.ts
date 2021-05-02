@@ -333,10 +333,12 @@ export function createWebHistory(base?: string): RouterHistory {
   )
 
   Object.defineProperty(routerHistory, 'location', {
+    enumerable: true,
     get: () => historyNavigation.location.value,
   })
 
   Object.defineProperty(routerHistory, 'state', {
+    enumerable: true,
     get: () => historyNavigation.state.value,
   })
 

@@ -95,6 +95,7 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
   }
 
   Object.defineProperty(routerHistory, 'location', {
+    enumerable: true,
     get: () => queue[position],
   })
 
