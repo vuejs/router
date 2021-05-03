@@ -102,5 +102,17 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
     get: () => queue[position],
   })
 
+  if (__TEST__) {
+    // @ts-ignore: only for tests
+    routerHistory.changeURL = function (url: string) {
+      const from = this.location
+      queue.splice(position++ + 1, queue.length, url)
+      triggerListeners(this.location, from, {
+        direction: NavigationDirection.unknown,
+        delta: 0,
+      })
+    }
+  }
+
   return routerHistory
 }

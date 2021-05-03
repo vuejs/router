@@ -2,6 +2,7 @@ module.exports = {
   testEnvironment: 'node',
   globals: {
     __DEV__: true,
+    __TEST__: true,
     __BROWSER__: true,
   },
   coverageDirectory: 'coverage',
