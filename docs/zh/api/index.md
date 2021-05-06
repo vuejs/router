@@ -851,6 +851,18 @@ stringifyQuery?: (
 
 - **更多的内容请看**：[Meta 字段](../guide/advanced/meta.md)
 
+:::tip 注意
+如果你想使用函数式组件, 请确保在组件上添加一个 `displayName`。
+
+例如:
+```js
+const HomeView = () => h('div', 'HomePage')
+// 使用TypeScript时, 组件需要为 FunctionalComponent 类型
+HomeView.displayName = 'HomeView'
+const routes = [{ path: '/', component: HomeView }]
+```
+:::
+
 ## RouteRecordNormalized
 
 [路由记录](#routerecordraw)的标准化版本
