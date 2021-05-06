@@ -39,11 +39,11 @@ function createCurrentLocation(
   location: Location
 ): HistoryLocation {
   const { pathname, search, hash } = location
-  // allows hash based url
-  const hashPos = base.indexOf('#')
-  if (hashPos > -1) {
-    // prepend the starting slash to hash so the url starts with /#
-    let pathFromHash = hash.slice(1)
+  // allows hash based or hashbang based url
+  const slicePos = base.indexOf('#!') > -1 ? 2 : base.indexOf('#') > -1 ? 1 : 0
+  if (slicePos) {
+    // prepend the starting slash to hash so the url starts with /# or /#!
+    let pathFromHash = hash.slice(slicePos)
     if (pathFromHash[0] !== '/') pathFromHash = '/' + pathFromHash
     return stripBase(pathFromHash, '')
   }
