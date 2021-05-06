@@ -30,6 +30,9 @@ describe('History HTMl5', () => {
   it('handles a basic base', () => {
     expect(createWebHistory().base).toBe('')
     expect(createWebHistory('/').base).toBe('')
+    expect(createWebHistory('/#').base).toBe('/#')
+    expect(createWebHistory('#!').base).toBe('#!')
+    expect(createWebHistory('#a').base).toBe('#a')
   })
 
   it('handles a base tag', () => {
@@ -68,11 +71,15 @@ describe('History HTMl5', () => {
   it('handles a single hash base', () => {
     expect(createWebHistory('#').base).toBe('#')
     expect(createWebHistory('#/').base).toBe('#')
+    expect(createWebHistory('#!/').base).toBe('#!')
+    expect(createWebHistory('#a/').base).toBe('#a')
   })
 
   it('handles a non-empty hash base', () => {
     expect(createWebHistory('#/bar').base).toBe('#/bar')
     expect(createWebHistory('#/bar/').base).toBe('#/bar')
+    expect(createWebHistory('#!/bar/').base).toBe('#!/bar')
+    expect(createWebHistory('#a/bar/').base).toBe('#a/bar')
   })
 
   it('prepends the host to support // urls', () => {
@@ -115,6 +122,32 @@ describe('History HTMl5', () => {
       expect.anything(),
       expect.any(String),
       '#something/foo'
+    )
+    spy.mockRestore()
+  })
+
+  it('works with ! or others after the hash in the base', () => {
+    dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+    let history = createWebHistory('#!')
+    let spy = jest.spyOn(window.history, 'pushState')
+    history.push('/foo')
+    expect(spy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      '#!/foo'
+    )
+    spy.mockRestore()
+  })
+
+  it('works with  others excepting ! after the hash in the base', () => {
+    dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+    let history = createWebHistory('#a')
+    let spy = jest.spyOn(window.history, 'pushState')
+    history.push('/foo')
+    expect(spy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      '#a/foo'
     )
     spy.mockRestore()
   })
