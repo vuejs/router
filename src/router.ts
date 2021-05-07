@@ -638,22 +638,29 @@ export function createRouter(options: RouterOptions): Router {
     toLocation.redirectedFrom = redirectedFrom
     let failure: NavigationFailure | void | undefined
 
-    if (!force && isSameRouteLocation(stringifyQuery, from, targetLocation)) {
-      failure = createRouterError<NavigationFailure>(
-        ErrorTypes.NAVIGATION_DUPLICATED,
-        { to: toLocation, from }
-      )
-      // trigger scroll to allow scrolling to the same anchor
-      handleScroll(
-        from,
-        from,
-        // this is a push, the only way for it to be triggered from a
-        // history.listen is with a redirect, which makes it become a push
-        true,
-        // This cannot be the first navigation because the initial location
-        // cannot be manually navigated to
-        false
-      )
+    if (!force) {
+      let isSame = isSameRouteLocation(stringifyQuery, from, targetLocation)
+      if (redirectedFrom) {
+        isSame =
+          isSame && isSameRouteLocation(stringifyQuery, from, redirectedFrom)
+      }
+      if (isSame) {
+        failure = createRouterError<NavigationFailure>(
+          ErrorTypes.NAVIGATION_DUPLICATED,
+          { to: toLocation, from }
+        )
+        // trigger scroll to allow scrolling to the same anchor
+        handleScroll(
+          from,
+          from,
+          // this is a push, the only way for it to be triggered from a
+          // history.listen is with a redirect, which makes it become a push
+          true,
+          // This cannot be the first navigation because the initial location
+          // cannot be manually navigated to
+          false
+        )
+      }
     }
 
     return (failure ? Promise.resolve(failure) : navigate(toLocation, from))
