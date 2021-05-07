@@ -857,6 +857,18 @@ Route record that can be provided by the user when adding routes via the [`route
 
 - **See Also**: [Meta fields](../guide/advanced/meta.md)
 
+:::tip
+If you want to use a functional component, make sure to add a `displayName` to it.
+
+For example:
+```js
+const HomeView = () => h('div', 'HomePage')
+// in TypeScript, you will need to use the FunctionalComponent type
+HomeView.displayName = 'HomeView'
+const routes = [{ path: '/', component: HomeView }]
+```
+:::
+
 ## RouteRecordNormalized
 
 Normalized version of a [Route Record](#routerecordraw)
