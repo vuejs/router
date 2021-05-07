@@ -62,7 +62,7 @@
     "@microsoft/api-extractor": "7.8.1",
     "@rollup/plugin-alias": "^3.1.2",
     "@rollup/plugin-commonjs": "^18.1.0",
-    "@rollup/plugin-node-resolve": "^11.2.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-replace": "^2.4.0",
     "@sucrase/jest-plugin": "^2.1.0",
     "@types/jest": "^26.0.21",
@@ -102,9 +102,9 @@
     "vitepress": "^0.13.0",
     "vue": "^3.0.7",
     "vue-loader": "^16.1.2",
-    "webpack": "^5.27.1",
+    "webpack": "^5.36.2",
     "webpack-bundle-analyzer": "^4.4.0",
-    "webpack-cli": "^4.5.0",
+    "webpack-cli": "^4.7.0",
     "webpack-dev-server": "^3.11.2",
     "yorkie": "^2.0.0"
   }
