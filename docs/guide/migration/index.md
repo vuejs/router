@@ -421,6 +421,6 @@ To make typings more consistent and expressive, some types have been renamed:
 
 Some of new features to keep an eye on in Vue Router 4 include:
 
-- [Dynamic Routing](../../api/#addroute-2)
+- [Dynamic Routing](../advanced/dynamic-routing.md)
 - [Composition API](../advanced/composition-api.md)
 <!-- - Custom History implementation -->
