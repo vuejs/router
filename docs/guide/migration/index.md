@@ -234,7 +234,7 @@ router.app = app
 
 You can also extend the TypeScript definition of the `Router` interface to add the `app` property.
 
-**Reason**: Vue 3 applications do not exist in Vue 2 and now we property support multiple applications using the same Router instance, so having an `app` property would have been misleading because it would have been the application instead of the root instance.
+**Reason**: Vue 3 applications do not exist in Vue 2 and now we properly support multiple applications using the same Router instance, so having an `app` property would have been misleading because it would have been the application instead of the root instance.
 
 ### Passing content to route components' `<slot>`
 
