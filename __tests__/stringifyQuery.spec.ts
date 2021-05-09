@@ -47,4 +47,11 @@ describe('stringifyQuery', () => {
   it('keeps = in value', () => {
     expect(stringifyQuery({ a: '=' })).toEqual('a==')
   })
+
+  it('removes values properly', () => {
+    expect(stringifyQuery({ a: 'a', b: 'b', c: 'c' })).toEqual('a=a&b=b&c=c')
+    expect(
+      stringifyQuery({ a: [undefined, 'b'], b: undefined, c: [] })
+    ).toEqual('a=b')
+  })
 })
