@@ -16,6 +16,11 @@ describe('History HTMl5', () => {
     dom = createDom()
   })
 
+  beforeEach(() => {
+    // empty the state to simulate an initial navigation by default
+    window.history.replaceState(null, '', '')
+  })
+
   afterAll(() => {
     dom.window.close()
   })
@@ -103,7 +108,14 @@ describe('History HTMl5', () => {
   describe('specific to base containing a hash', () => {
     it('calls push with hash part of the url with a base', () => {
       dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+      let initialSpy = jest.spyOn(window.history, 'replaceState')
       let history = createWebHistory('#')
+      // initial navigation
+      expect(initialSpy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        '#/'
+      )
       let spy = jest.spyOn(window.history, 'pushState')
       history.push('/foo')
       expect(spy).toHaveBeenCalledWith(
@@ -112,11 +124,19 @@ describe('History HTMl5', () => {
         '#/foo'
       )
       spy.mockRestore()
+      initialSpy.mockRestore()
     })
 
     it('works with something after the hash in the base', () => {
       dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+      let initialSpy = jest.spyOn(window.history, 'replaceState')
       let history = createWebHistory('#something')
+      // initial navigation
+      expect(initialSpy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        '#something/'
+      )
       let spy = jest.spyOn(window.history, 'pushState')
       history.push('/foo')
       expect(spy).toHaveBeenCalledWith(
@@ -125,6 +145,7 @@ describe('History HTMl5', () => {
         '#something/foo'
       )
       spy.mockRestore()
+      initialSpy.mockRestore()
     })
 
     it('works with #! and on a file with initial location', () => {
@@ -146,7 +167,7 @@ describe('History HTMl5', () => {
       expect(spy).toHaveBeenCalledWith(
         expect.anything(),
         expect.any(String),
-        '#other/foo'
+        '#other/'
       )
       spy.mockRestore()
     })
@@ -158,7 +179,7 @@ describe('History HTMl5', () => {
       expect(spy).toHaveBeenCalledWith(
         expect.anything(),
         expect.any(String),
-        '#other/foo'
+        '#other/'
       )
       spy.mockRestore()
     })
