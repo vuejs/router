@@ -162,7 +162,7 @@ function normalizeSlot(slot: Slot | undefined, data: any) {
 /**
  * Component to display the current route the user is at.
  */
-export const RouterView = (RouterViewImpl as any) as {
+export const RouterView = RouterViewImpl as {
   new (): {
     $props: AllowedComponentProps &
       ComponentCustomProps &

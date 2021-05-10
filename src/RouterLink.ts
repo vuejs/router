@@ -212,7 +212,7 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
 /**
  * Component to render a link that triggers a navigation on click.
  */
-export const RouterLink = (RouterLinkImpl as any) as {
+export const RouterLink = RouterLinkImpl as {
   new (): {
     $props: AllowedComponentProps &
       ComponentCustomProps &

@@ -743,11 +743,8 @@ export function createRouter(options: RouterOptions): Router {
   ): Promise<any> {
     let guards: Lazy<any>[]
 
-    const [
-      leavingRecords,
-      updatingRecords,
-      enteringRecords,
-    ] = extractChangingRecords(to, from)
+    const [leavingRecords, updatingRecords, enteringRecords] =
+      extractChangingRecords(to, from)
 
     // all components here have been resolved once because we are leaving
     guards = extractComponentsGuards(
