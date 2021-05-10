@@ -42,12 +42,11 @@ function createCurrentLocation(
   // allows hash bases like #, /#, #/, #!, #!/, /#!/, or even /folder#end
   const hashPos = base.indexOf('#')
   if (hashPos > -1) {
-    let slicePos =
-      hash.includes(base.slice(hashPos))
-        ? base.slice(hashPos).length
-        : 1
+    let slicePos = hash.includes(base.slice(hashPos))
+      ? base.slice(hashPos).length
+      : 1
     let pathFromHash = hash.slice(slicePos)
-// prepend the starting slash to hash so the url starts with /#
+    // prepend the starting slash to hash so the url starts with /#
     if (pathFromHash[0] !== '/') pathFromHash = '/' + pathFromHash
     return stripBase(pathFromHash, '')
   }
