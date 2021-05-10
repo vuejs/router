@@ -100,55 +100,79 @@ describe('History HTMl5', () => {
     spy.mockRestore()
   })
 
-  it('calls push with hash part of the url with a base', () => {
-    dom.reconfigure({ url: 'file:///usr/etc/index.html' })
-    let history = createWebHistory('#')
-    let spy = jest.spyOn(window.history, 'pushState')
-    history.push('/foo')
-    expect(spy).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.any(String),
-      '#/foo'
-    )
-    spy.mockRestore()
-  })
+  describe('specific to base containing a hash', () => {
+    it('calls push with hash part of the url with a base', () => {
+      dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+      let history = createWebHistory('#')
+      let spy = jest.spyOn(window.history, 'pushState')
+      history.push('/foo')
+      expect(spy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        '#/foo'
+      )
+      spy.mockRestore()
+    })
 
-  it('works with something after the hash in the base', () => {
-    dom.reconfigure({ url: 'file:///usr/etc/index.html' })
-    let history = createWebHistory('#something')
-    let spy = jest.spyOn(window.history, 'pushState')
-    history.push('/foo')
-    expect(spy).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.any(String),
-      '#something/foo'
-    )
-    spy.mockRestore()
-  })
+    it('works with something after the hash in the base', () => {
+      dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+      let history = createWebHistory('#something')
+      let spy = jest.spyOn(window.history, 'pushState')
+      history.push('/foo')
+      expect(spy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        '#something/foo'
+      )
+      spy.mockRestore()
+    })
 
-  it('works with ! or others after the hash in the base', () => {
-    dom.reconfigure({ url: 'file:///usr/etc/index.html' })
-    let history = createWebHistory('#!')
-    let spy = jest.spyOn(window.history, 'pushState')
-    history.push('/foo')
-    expect(spy).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.any(String),
-      '#!/foo'
-    )
-    spy.mockRestore()
-  })
+    it('works with #! and on a file with initial location', () => {
+      dom.reconfigure({ url: 'file:///usr/etc/index.html#!/foo' })
+      let spy = jest.spyOn(window.history, 'replaceState')
+      createWebHistory('#!')
+      expect(spy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        '#!/foo'
+      )
+      spy.mockRestore()
+    })
 
-  it('works with  other excepting ! after the hash in the base', () => {
-    dom.reconfigure({ url: 'file:///usr/etc/index.html' })
-    let history = createWebHistory('#other')
-    let spy = jest.spyOn(window.history, 'pushState')
-    history.push('/foo')
-    expect(spy).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.any(String),
-      '#other/foo'
-    )
-    spy.mockRestore()
+    it('works with #other', () => {
+      dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+      let spy = jest.spyOn(window.history, 'replaceState')
+      createWebHistory('#other')
+      expect(spy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        '#other/foo'
+      )
+      spy.mockRestore()
+    })
+
+    it('works with custom#other in domain', () => {
+      dom.reconfigure({ url: 'https://esm.dev/custom' })
+      let spy = jest.spyOn(window.history, 'replaceState')
+      createWebHistory('custom#other')
+      expect(spy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        '#other/foo'
+      )
+      spy.mockRestore()
+    })
+
+    it('works with #! and a host with initial location', () => {
+      dom.reconfigure({ url: 'https://esm.dev/#!/foo' })
+      let spy = jest.spyOn(window.history, 'replaceState')
+      createWebHistory('/#!')
+      expect(spy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        '#!/foo'
+      )
+      spy.mockRestore()
+    })
   })
 })

@@ -39,7 +39,7 @@ function createCurrentLocation(
   location: Location
 ): HistoryLocation {
   const { pathname, search, hash } = location
-  // allows hash based or hashbang based url or others
+  // allows hash bases like #, /#, #/, #!, #!/, /#!/, or even /folder#end
   const hashPos = base.indexOf('#')
   if (hashPos > -1) {
     let slicePos =
