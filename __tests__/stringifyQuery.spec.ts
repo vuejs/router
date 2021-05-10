@@ -28,10 +28,17 @@ describe('stringifyQuery', () => {
     expect(stringifyQuery({ e: undefined, b: 'a' })).toEqual('b=a')
   })
 
-  it('ignores undefined and empty arrays', () => {
-    expect(
-      stringifyQuery({ a: [undefined, 'b'], b: undefined, c: [] })
-    ).toEqual('a=b')
+  it('avoids trailing &', () => {
+    expect(stringifyQuery({ a: 'a', b: undefined })).toEqual('a=a')
+    expect(stringifyQuery({ a: 'a', c: [] })).toEqual('a=a')
+  })
+
+  it('skips undefined in arrays', () => {
+    expect(stringifyQuery({ a: [undefined, '3'] })).toEqual('a=3')
+    expect(stringifyQuery({ a: [1, undefined, '3'] })).toEqual('a=1&a=3')
+    expect(stringifyQuery({ a: [1, undefined, '3', undefined] })).toEqual(
+      'a=1&a=3'
+    )
   })
 
   it('stringifies arrays', () => {

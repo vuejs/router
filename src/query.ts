@@ -1,13 +1,15 @@
 import { decode, encodeQueryKey, encodeQueryValue, PLUS_RE } from './encoding'
 
 /**
- * Possible values in normalized {@link LocationQuery}
+ * Possible values in normalized {@link LocationQuery}. `null` renders the query
+ * param but without an `=`: `?isNull&isEmpty=&other=other` -> `{ isNull: null,
+ * isEmpty: '', other: 'other' }`.
  *
  * @internal
  */
 export type LocationQueryValue = string | null
 /**
- * Possible values when defining a query
+ * Possible values when defining a query.
  *
  * @internal
  */
@@ -93,7 +95,9 @@ export function stringifyQuery(query: LocationQueryRaw): string {
     key = encodeQueryKey(key)
     if (value == null) {
       // only null adds the value
-      if (value !== undefined) search += (search.length ? '&' : '') + key
+      if (value !== undefined) {
+        search += (search.length ? '&' : '') + key
+      }
       continue
     }
     // keep null values
@@ -101,12 +105,15 @@ export function stringifyQuery(query: LocationQueryRaw): string {
       ? value.map(v => v && encodeQueryValue(v))
       : [value && encodeQueryValue(value)]
 
-    for (let i = 0; i < values.length; i++) {
-      if (values[i] === undefined) continue
-      // only append & with non-empty search
-      search += (search.length ? '&' : '') + key
-      if (values[i] !== null) search += ('=' + values[i]) as string
-    }
+    values.forEach(value => {
+      // skip undefined values in arrays as if they were not present
+      // smaller code than using filter
+      if (value !== undefined) {
+        // only append & with non-empty search
+        search += (search.length ? '&' : '') + key
+        if (value != null) search += '=' + value
+      }
+    })
   }
 
   return search
