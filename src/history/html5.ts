@@ -43,11 +43,11 @@ function createCurrentLocation(
   const hashPos = base.indexOf('#')
   if (hashPos > -1) {
     let slicePos =
-      hash.indexOf(base.slice(hashPos).toLowerCase()) > -1
+      hash.includes(base.slice(hashPos))
         ? base.slice(hashPos).length
         : 1
     let pathFromHash = hash.slice(slicePos)
-
+// prepend the starting slash to hash so the url starts with /#
     if (pathFromHash[0] !== '/') pathFromHash = '/' + pathFromHash
     return stripBase(pathFromHash, '')
   }
