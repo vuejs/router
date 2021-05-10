@@ -89,12 +89,11 @@ export function parseQuery(search: string): LocationQuery {
 export function stringifyQuery(query: LocationQueryRaw): string {
   let search = ''
   for (let key in query) {
-    if (search.length) search += '&'
     const value = query[key]
     key = encodeQueryKey(key)
     if (value == null) {
       // only null adds the value
-      if (value !== undefined) search += key
+      if (value !== undefined) search += (search.length ? '&' : '') + key
       continue
     }
     // keep null values
@@ -103,9 +102,10 @@ export function stringifyQuery(query: LocationQueryRaw): string {
       : [value && encodeQueryValue(value)]
 
     for (let i = 0; i < values.length; i++) {
-      // only append & with i > 0
-      search += (i ? '&' : '') + key
-      if (values[i] != null) search += ('=' + values[i]) as string
+      if (values[i] === undefined) continue
+      // only append & with non-empty search
+      search += (search.length ? '&' : '') + key
+      if (values[i] !== null) search += ('=' + values[i]) as string
     }
   }
 

@@ -28,6 +28,12 @@ describe('stringifyQuery', () => {
     expect(stringifyQuery({ e: undefined, b: 'a' })).toEqual('b=a')
   })
 
+  it('ignores undefined and empty arrays', () => {
+    expect(
+      stringifyQuery({ a: [undefined, 'b'], b: undefined, c: [] })
+    ).toEqual('a=b')
+  })
+
   it('stringifies arrays', () => {
     expect(stringifyQuery({ e: ['b', 'a'] })).toEqual('e=b&e=a')
   })
