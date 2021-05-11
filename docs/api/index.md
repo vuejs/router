@@ -501,6 +501,14 @@ _Parameters_
 | --------- | ------------------------------------- | ----------------------- |
 | guard     | [`NavigationGuard`](#navigationguard) | navigation guard to add |
 
+#### Examples
+
+```js
+router.beforeEach(to => {
+  if (to.meta.requiresAuth && !isAuthenticated) return false
+})
+```
+
 ### beforeResolve
 
 Add a navigation guard that executes before navigation is about to be resolved. At this state all component have been fetched and other navigation guards have been successful. Returns a function that removes the registered guard.
@@ -516,14 +524,6 @@ _Parameters_
 | Parameter | Type                                  | Description             |
 | --------- | ------------------------------------- | ----------------------- |
 | guard     | [`NavigationGuard`](#navigationguard) | navigation guard to add |
-
-#### Examples
-
-```js
-router.beforeEach(to => {
-  if (to.meta.requiresAuth && !isAuthenticated) return false
-})
-```
 
 ### forward
 
