@@ -62,7 +62,7 @@ const scrollBehavior: RouterScrollBehavior = async function (
   }
 }
 
-const webHistory = createWebHistory('/' + __dirname)
+const webHistory = createWebHistory('/scroll-behavior')
 const router = createRouter({
   history: webHistory,
   scrollBehavior,

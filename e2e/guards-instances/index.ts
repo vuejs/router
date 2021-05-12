@@ -9,7 +9,7 @@ import {
 import { createApp, ref, reactive, defineComponent, computed } from 'vue'
 
 // override existing style on dev with shorter times
-if (!__CI__) {
+if (!window.__CI__) {
   const transitionDuration = '0.5s'
   const styleEl = document.createElement('style')
   styleEl.innerHTML = `
@@ -99,7 +99,7 @@ const One = createTestComponent('One')
 const Two = createTestComponent('Two')
 const Aux = createTestComponent('Aux')
 
-const webHistory = createWebHistory('/' + __dirname)
+const webHistory = createWebHistory('/guards-instances')
 const router = createRouter({
   history: webHistory,
   routes: [

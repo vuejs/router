@@ -133,7 +133,7 @@ const UserDetails = defineComponent({
   data: () => ({ users }),
 })
 
-const webHistory = createWebHistory('/' + __dirname)
+const webHistory = createWebHistory('/modal')
 const router = createRouter({
   history: webHistory,
   routes: [

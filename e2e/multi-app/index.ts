@@ -77,7 +77,7 @@ window.removeEventListener = function (name: string, handler: any) {
 }
 
 const router = createRouter({
-  history: createWebHistory('/' + __dirname),
+  history: createWebHistory('/multi-app'),
   routes: [
     { path: '/', component: Home },
     {

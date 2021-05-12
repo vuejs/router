@@ -18,7 +18,6 @@
     "noImplicitThis": true,
     "noImplicitReturns": true,
     "strict": true,
-    "isolatedModules": false,
 
     "experimentalDecorators": true,
     "resolveJsonModule": true,
@@ -26,6 +25,6 @@
     "removeComments": false,
     "jsx": "preserve",
     "lib": ["esnext", "dom"],
-    "types": ["jest", "node"]
+    "types": ["jest", "node", "vite/client"]
   }
 }

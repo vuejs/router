@@ -21,7 +21,7 @@ const FunctionalView: FunctionalComponent = () =>
 
 const router = createRouter({
   // TODO: allow hash based history
-  history: createWebHistory('/' + __dirname),
+  history: createWebHistory('/encoding'),
   routes: [
     { path: '/', component: Home, name: 'home' },
     { path: '/functional', component: FunctionalView },
@@ -34,9 +34,7 @@ const router = createRouter({
 const app = createApp({
   setup() {
     const url =
-      '/' +
-      __dirname +
-      '/ !"%23$&\'()*+,%2F:;<=>%3F@[]^`{|}?a%3D=+!"%23$%26\'()*%2B,/:;<=>?@[]^`{|}# !"#$&\'()*+,/:;<=>?@[]^`{|}'
+      '/encoding/ !"%23$&\'()*+,%2F:;<=>%3F@[]^`{|}?a%3D=+!"%23$%26\'()*%2B,/:;<=>?@[]^`{|}# !"#$&\'()*+,/:;<=>?@[]^`{|}'
     const urlObject = {
       name: 'param',
       params: { id: ' !"#$&\'()*+,/:;<=>?@[]^`{|}' },

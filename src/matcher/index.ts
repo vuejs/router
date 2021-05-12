@@ -9,12 +9,15 @@ import {
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
 import { RouteRecordNormalized } from './types'
-import {
+
+import type {
   PathParams,
-  comparePathParserScore,
   PathParserOptions,
   _PathParserOptions,
 } from './pathParserRanker'
+
+import { comparePathParserScore } from './pathParserRanker'
+
 import { warn } from '../warning'
 import { assign, noop } from '../utils'
 
@@ -458,4 +461,4 @@ function checkMissingParamsInAbsolutePath(
   }
 }
 
-export { PathParserOptions, _PathParserOptions }
+export type { PathParserOptions, _PathParserOptions }

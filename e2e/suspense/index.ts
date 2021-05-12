@@ -51,7 +51,7 @@ function createTestComponent(key: string, isAsync = false) {
 const Foo = createTestComponent('Foo')
 const FooAsync = createTestComponent('FooAsync', true)
 
-const webHistory = createWebHistory('/' + __dirname)
+const webHistory = createWebHistory('/suspense')
 const router = createRouter({
   history: webHistory,
   routes: [

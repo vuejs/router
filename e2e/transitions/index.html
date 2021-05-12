@@ -1,44 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Vue Router e2e tests - Transitions</title>
-    <!-- TODO: replace with local imports for promises and anything else needed -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2Ces2015"></script>
 
-    <style>
-      .fade-enter-active,
-      .fade-leave-active {
-        transition: opacity 2s ease;
-      }
-      .fade-enter-from,
-      .fade-leave-active {
-        opacity: 0;
-      }
-      .child-view {
-        position: absolute;
-        transition: all 2s cubic-bezier(0.55, 0, 0.1, 1);
-      }
-      .slide-left-enter-from,
-      .slide-right-leave-active {
-        opacity: 0;
-        -webkit-transform: translate(30px, 0);
-        transform: translate(30px, 0);
-      }
-      .slide-left-leave-active,
-      .slide-right-enter-from {
-        opacity: 0;
-        -webkit-transform: translate(-30px, 0);
-        transform: translate(-30px, 0);
-      }
-    </style>
-  </head>
-  <body>
-    <a href="/">&lt;&lt; Back to Homepage</a>
-    <hr />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Vue Router e2e tests - Transitions</title>
+  <!-- TODO: replace with local imports for promises and anything else needed -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2Ces2015"></script>
 
-    <main id="app"></main>
-  </body>
+  <style>
+    .fade-enter-active,
+    .fade-leave-active {
+      transition: opacity 2s ease;
+    }
+
+    .fade-enter-from,
+    .fade-leave-active {
+      opacity: 0;
+    }
+
+    .child-view {
+      position: absolute;
+      transition: all 2s cubic-bezier(0.55, 0, 0.1, 1);
+    }
+
+    .slide-left-enter-from,
+    .slide-right-leave-active {
+      opacity: 0;
+      -webkit-transform: translate(30px, 0);
+      transform: translate(30px, 0);
+    }
+
+    .slide-left-leave-active,
+    .slide-right-enter-from {
+      opacity: 0;
+      -webkit-transform: translate(-30px, 0);
+      transform: translate(-30px, 0);
+    }
+  </style>
+</head>
+
+<body>
+  <a href="/">&lt;&lt; Back to Homepage</a>
+  <hr />
+
+  <main id="app"></main>
+  <script type="module" src="./index.ts"></script>
+
+</body>
+
 </html>
