@@ -1,3 +1,7 @@
+## [4.0.8](https://github.com/vuejs/vue-router-next/compare/v4.0.6...v4.0.8) (2021-05-13)
+
+This release is a correct tag and doesn't contain any extra changes.
+
 ## [4.0.7](https://github.com/vuejs/vue-router-next/compare/v4.0.6...v4.0.7) (2021-05-13)
 
 ### Bug Fixes
