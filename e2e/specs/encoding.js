@@ -1,6 +1,6 @@
 const bsStatus = require('../browserstack-send-status')
 
-const baseURL = 'http://localhost:8080/encoding'
+const baseURL = 'http://localhost:8080/encoding/'
 
 const rawText = ' !"#$&\'()*+,/:;<=>?@[]^`{|}'
 

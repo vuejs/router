@@ -44,13 +44,12 @@ const config = (env = {}) => {
     },
     plugins: [vue()],
     define: {
-      __DEV__: JSON.stringify(9999),
+      __DEV__: JSON.stringify(!env.prod),
       __CI__: JSON.stringify(process.env.CI || false),
       __BROWSER__: 'true',
       'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        NODE_ENV: JSON.stringify(env.prod ? 'production' : 'development'),
       },
-      __dirname: JSON.stringify(__dirname),
     },
   })
 }

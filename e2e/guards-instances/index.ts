@@ -9,7 +9,7 @@ import {
 import { createApp, ref, reactive, defineComponent, computed } from 'vue'
 
 // override existing style on dev with shorter times
-if (!window.__CI__) {
+if (!__CI__) {
   const transitionDuration = '0.5s'
   const styleEl = document.createElement('style')
   styleEl.innerHTML = `
