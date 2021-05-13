@@ -1,3 +1,15 @@
+## [4.0.7](https://github.com/vuejs/vue-router-next/compare/v4.0.6...v4.0.7) (2021-05-13)
+
+### Bug Fixes
+
+- **$route:** Make $route have an enumerable type ([#912](https://github.com/vuejs/vue-router-next/issues/912)) ([d90520e](https://github.com/vuejs/vue-router-next/commit/d90520eb36ca310f52b22caeb88fd8cb06dca04a))
+- **devtools:** stabilize record id ([#897](https://github.com/vuejs/vue-router-next/issues/897)) ([c6460f0](https://github.com/vuejs/vue-router-next/commit/c6460f09aab3a834121dc58fc5880c81a65147ef))
+- **history:** make properties enumerable ([8e6ebdf](https://github.com/vuejs/vue-router-next/commit/8e6ebdf75adc1ab662e46835c5b7f078bc68a93b))
+- **history:** proper destroy in memory history ([9d188aa](https://github.com/vuejs/vue-router-next/commit/9d188aa165aeb12aa3771aaa56a269f5dad3ccf6))
+- **query:** filter undefined values in arrays ([df25fb5](https://github.com/vuejs/vue-router-next/commit/df25fb5c34ae4a1540d375ad078705719b56332b))
+- **query:** prevent trailing & in query ([#935](https://github.com/vuejs/vue-router-next/issues/935)) ([885bb06](https://github.com/vuejs/vue-router-next/commit/885bb06bb590944f2e58176151f7b7a6acbc1b4e))
+- do not allow invalid hazardous keys in query ([#880](https://github.com/vuejs/vue-router-next/issues/880)) ([ecd52e0](https://github.com/vuejs/vue-router-next/commit/ecd52e017ac30fa996d4796974371374f65640d1))
+
 ## [4.0.6](https://github.com/vuejs/vue-router-next/compare/v4.0.5...v4.0.6) (2021-04-06)
 
 ### Bug Fixes
