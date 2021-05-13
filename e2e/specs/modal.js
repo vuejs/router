@@ -1,6 +1,6 @@
 const bsStatus = require('../browserstack-send-status')
 
-const baseURL = 'http://localhost:8080/modal'
+const baseURL = 'http://localhost:8080/modal/'
 
 module.exports = {
   ...bsStatus(),
