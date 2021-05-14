@@ -231,9 +231,9 @@ function guardEvent(e: MouseEvent) {
   // don't redirect on right click
   if (e.button !== undefined && e.button !== 0) return
   // don't redirect if `target="_blank"`
-  // @ts-ignore getAttribute does exist
+  // @ts-expect-error getAttribute does exist
   if (e.currentTarget && e.currentTarget.getAttribute) {
-    // @ts-ignore getAttribute exists
+    // @ts-expect-error getAttribute exists
     const target = e.currentTarget.getAttribute('target')
     if (/\b_blank\b/i.test(target)) return
   }

@@ -1,17 +1,15 @@
-import { createMemoryHistory, createRouter } from '../src'
+import { createMemoryHistory, createRouter, RouterHistory } from '../src'
 import { tick } from './utils'
 
 const component = {}
 
-declare module '../src' {
-  export interface RouterHistory {
-    changeURL(url: string): void
-  }
+interface RouterHistory_Test extends RouterHistory {
+  changeURL(url: string): void
 }
 
 describe('hash history edge cases', () => {
   it('correctly sets the url when it is manually changed but aborted with a redirect in guard', async () => {
-    const history = createMemoryHistory()
+    const history = createMemoryHistory() as RouterHistory_Test
     const router = createRouter({
       history,
       routes: [
@@ -30,8 +28,10 @@ describe('hash history edge cases', () => {
     // force a redirect next time
     const removeListener = router.beforeEach(to => {
       if (to.path === '/') {
+        removeListener()
         return '/foo?step=2'
       }
+      return
     })
 
     // const spy = jest.spyOn(history, 'go')

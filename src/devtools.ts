@@ -529,7 +529,7 @@ function omit<T extends object, K extends [...(keyof T)[]]>(obj: T, keys: K) {
 
   for (let key in obj) {
     if (!keys.includes(key as any)) {
-      // @ts-ignore
+      // @ts-expect-error
       ret[key] = obj[key]
     }
   }
