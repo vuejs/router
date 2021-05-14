@@ -17,6 +17,7 @@ import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { NavigationFailure } from './errors'
+import { isBrowser } from './utils'
 
 export interface RouterLinkOptions {
   /**
@@ -166,7 +167,8 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
       )]: link.isExactActive,
     }))
 
-    if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && __BROWSER__) {
+    // devtools only
+    if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
       const instance = getCurrentInstance()
       watchEffect(
         () => {

@@ -66,7 +66,8 @@ function createConfig(format, output, plugins = []) {
   output.externalLiveBindings = false
   output.globals = {
     vue: 'Vue',
-    '@vue/devtools-api': 'VueDevtoolsApi',
+    // devtools are not global in iife
+    // '@vue/devtools-api': 'VueDevtoolsApi',
   }
 
   const isProductionBuild = /\.prod\.js$/.test(output.file)
@@ -97,10 +98,10 @@ function createConfig(format, output, plugins = []) {
   // during a single build.
   hasTSChecked = true
 
-  const external = [
-    'vue',
-    // '@vue/devtools-api',
-  ]
+  const external = ['vue']
+  if (!isGlobalBuild) {
+    external.push('@vue/devtools-api')
+  }
 
   const nodePlugins = [resolve(), commonjs()]
 

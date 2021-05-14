@@ -1147,7 +1147,7 @@ export function createRouter(options: RouterOptions): Router {
         unmountApp()
       }
 
-      if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && __BROWSER__) {
+      if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
         addDevtools(app, router, matcher)
       }
     },
