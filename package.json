@@ -30,7 +30,7 @@
     "lint": "yarn run lint:script && yarn run lint:html",
     "lint:script": "prettier -c --parser typescript \"{src,__tests__,e2e,playground}/**/*.[jt]s?(x)\"",
     "lint:html": "prettier -c --parser html \"{playground,e2e}/**/*.html\"",
-    "lint:fix": "yarn run lint:html --write && yarn run lint:html --write",
+    "lint:fix": "yarn run lint:script --write && yarn run lint:html --write",
     "test:types": "tsc --build tsconfig.json",
     "test:dts": "tsc -p ./test-dts/tsconfig.json",
     "test:unit": "jest --coverage",
