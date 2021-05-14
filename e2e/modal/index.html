@@ -1,52 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Vue Router e2e tests - Modal</title>
+    <!-- TODO: replace with local imports for promises and anything else needed -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2Ces2015"></script>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>Vue Router e2e tests - Modal</title>
-  <!-- TODO: replace with local imports for promises and anything else needed -->
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2Ces2015"></script>
+    <style>
+      #dialog {
+        top: 0;
+        left: 0;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        border: none;
+        margin: 0;
+        padding: 0;
+        background-color: rgb(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-top: 2%;
+      }
 
-  <style>
-    #dialog {
-      top: 0;
-      left: 0;
-      position: fixed;
-      width: 100vw;
-      height: 100vh;
-      border: none;
-      margin: 0;
-      padding: 0;
-      background-color: rgb(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding-top: 2%;
-    }
+      #dialog:not([open]) {
+        display: none;
+      }
 
-    #dialog:not([open]) {
-      display: none;
-    }
+      /* container */
+      #dialog > * {
+        background-color: white;
+        max-width: 500px;
+        max-height: 300px;
+        padding: 1rem;
+      }
+    </style>
+  </head>
 
-    /* container */
-    #dialog>* {
-      background-color: white;
-      max-width: 500px;
-      max-height: 300px;
-      padding: 1rem;
-    }
-  </style>
-</head>
+  <body>
+    <a href="/">&lt;&lt; Back to Homepage</a>
+    <hr />
 
-<body>
-  <a href="/">&lt;&lt; Back to Homepage</a>
-  <hr />
-
-  <main id="app"></main>
-  <script type="module" src="./index.ts"></script>
-
-</body>
-
+    <main id="app"></main>
+    <script type="module" src="./index.ts"></script>
+  </body>
 </html>
