@@ -45,7 +45,7 @@ describe('hash history edge cases', () => {
   })
 
   it('correctly sets the url when it is manually changed but aborted with guard', async () => {
-    const history = createMemoryHistory()
+    const history = createMemoryHistory() as RouterHistory_Test
     const router = createRouter({
       history,
       routes: [
@@ -64,8 +64,11 @@ describe('hash history edge cases', () => {
     // force a redirect next time
     const removeListener = router.beforeEach(to => {
       if (to.path === '/') {
+        removeListener()
         return false
       }
+
+      return
     })
 
     // const spy = jest.spyOn(history, 'go')
