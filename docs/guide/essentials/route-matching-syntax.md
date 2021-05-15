@@ -3,7 +3,7 @@
 Most applications will use static routes like `/about` and dynamic routes like `/users/:userId` like we just saw in [Dynamic Route Matching](./dynamic-matching.md), but Vue Router has much more to offer!
 
 :::tip
-For the sake of simplicity, all, route records **are omitting the `component` property** to focus on the `path` value.
+For the sake of simplicity, all route records **are omitting the `component` property** to focus on the `path` value.
 :::
 
 ## Custom Regexp in params
