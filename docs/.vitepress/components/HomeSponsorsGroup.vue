@@ -1,49 +1,50 @@
 <template>
   <h3>{{ name }} Sponsors</h3>
 
-  <a
-    v-for="sponsor in list"
-    :key="sponsor.href"
-    :href="sponsor.href"
-    :title="sponsor.alt"
-    target="_blank"
-    rel="sponsored noopener"
-    :style="{ width: size + 'px' }"
-    class="sponsor_wrapper"
-  >
-    <img
-      :src="sponsor.imgSrcLight"
-      :alt="sponsor.alt"
+  <p>
+    <a
+      v-for="sponsor in list"
+      :key="sponsor.href"
+      :href="sponsor.href"
+      :title="sponsor.alt"
+      target="_blank"
+      rel="sponsored noopener"
       :style="{ width: size + 'px' }"
-    />
-  </a>
-  <br />
-  <br />
+      class="sponsor_wrapper"
+    >
+      <img
+        :src="sponsor.imgSrc"
+        :class="sponsor.imgSrcLight === imgSrcDark && 'invert-colors'"
+        :alt="sponsor.alt"
+        :style="{ width: size + 'px' }"
+      />
+    </a>
+  </p>
 </template>
 
-<script>
+<script setup lang="ts">
 import sponsors from './sponsors.json'
+import { isDark } from '../theme/dark-theme'
+import { computed, defineProps } from 'vue'
+import type { PropType } from 'vue'
 
-export default {
-  name: 'HomeSponsorsGroup',
-
-  props: {
-    name: {
-      type: String,
-      required: true,
-    },
-    size: {
-      type: [Number, String],
-      default: 140,
-    },
+const props = defineProps({
+  name: {
+    type: String as PropType<'gold' | 'platinum' | 'silver' | 'bronze'>,
+    required: true,
   },
-
-  computed: {
-    list() {
-      return sponsors[this.name.toLowerCase()]
-    },
+  size: {
+    type: [Number, String],
+    default: 140,
   },
-}
+})
+
+const list = computed(() =>
+  sponsors[props.name.toLowerCase()].map(sponsor => ({
+    ...sponsor,
+    imgSrc: isDark.value ? sponsor.imgSrcDark : sponsor.imgSrcLight,
+  }))
+)
 </script>
 
 <style scoped>
@@ -59,6 +60,10 @@ export default {
   transition: background-color 300ms ease-in-out;
 }
 
+p {
+  margin: 0;
+}
+
 h3 {
   margin: 0 0 10px;
 }
@@ -69,7 +74,7 @@ img {
   opacity: 0.66;
 }
 
-html.dark img {
+html:not(.light) img.invert-colors {
   filter: invert(1) grayscale(100%);
 }
 
@@ -77,8 +82,4 @@ img:hover {
   filter: none !important;
   opacity: 1;
 }
-
-/* html.dark .sponsor_wrapper:hover {
-  background-color: var(--c-text-light);
-}*/
 </style>
