@@ -26,7 +26,7 @@ const config = {
     docsDir: 'docs',
     docsBranch: 'master',
     editLinks: true,
-    editLinkText: 'Edit this page on GitHub',
+    editLinkText: 'Suggest changes to this page',
     lastUpdated: 'Last Updated',
 
     carbonAds: {
