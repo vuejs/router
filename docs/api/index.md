@@ -746,9 +746,7 @@ routes: RouteRecordRaw[]
 
 ### scrollBehavior
 
-Function to control scrolling when navigating between pages. Can return a ScrollPosition object or a Promise to delay scrolling.
-  
-See [Scroll Behaviour](../guide/advanced/scroll-behavior.md) for more details.
+Function to control scrolling when navigating between pages. Can return a Promise to delay when the scrolling happens. See [Scroll Behaviour](../guide/advanced/scroll-behavior.md) for more details.
 
 **Signature:**
 
