@@ -26,6 +26,7 @@ const config = {
     docsDir: 'docs',
     docsBranch: 'master',
     editLinks: true,
+    editLinkText: 'Suggest changes to this page',
 
     carbonAds: {
       carbon: 'CEBICK3I',

@@ -18,6 +18,10 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
   <a href="https://passionatepeople.io" target="_blank" rel="noopener noreferrer">
     <img src="https://img2.storyblok.com/672x0/filters::format(webp)/f/86387/x/21aa32ed18/logo-normal.svg" height=72px" alt="Passionate People">
   </a>
+
+  <a href="https://vuejobs.com/?utm_source=vuerouter&utm_campaign=sponsor" target="_blank" rel="noopener noreferrer">
+    <img src="docs/public/sponsors/vuejobs.png" height="72px" alt="VueJobs">
+  </a>
 </p>
 
 <h4 align="center">Silver Sponsors</h4>

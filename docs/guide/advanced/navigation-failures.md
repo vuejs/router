@@ -22,7 +22,7 @@ await router.push('/my-profile')
 this.isMenuOpen = false
 ```
 
-Now the menu will close once the navigation is finished but it will also close if the navigation was prevented. We need a way to detect if we actually changed the page we are one or not.
+Now the menu will close once the navigation is finished but it will also close if the navigation was prevented. We need a way to detect if we actually changed the page we are on or not.
 
 ## Detecting Navigation Failures
 

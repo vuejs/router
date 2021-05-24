@@ -520,7 +520,7 @@ _Parameters_
 #### Examples
 
 ```js
-router.beforeEach(to => {
+router.beforeResolve(to => {
   if (to.meta.requiresAuth && !isAuthenticated) return false
 })
 ```
@@ -746,12 +746,12 @@ routes: RouteRecordRaw[]
 
 ### scrollBehavior
 
-Function to control scrolling when navigating between pages. Can return a Promise to delay scrolling. Check .
+Function to control scrolling when navigating between pages. Can return a Promise to delay when the scrolling happens. See [Scroll Behaviour](../guide/advanced/scroll-behavior.md) for more details.
 
 **Signature:**
 
 ```typescript
-scrollBehavior?: ScrollBehavior
+scrollBehavior?: RouterScrollBehavior
 ```
 
 #### Examples
