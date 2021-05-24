@@ -746,7 +746,7 @@ routes: RouteRecordRaw[]
 
 ### scrollBehavior
 
-在页面之间导航时控制滚动的函数。可以返回一个 Promise 来延迟滚动，有关更多详细信息，请参见[滚动行为](../guide/advanced/scroll-behavior.md)。
+在页面之间导航时控制滚动的函数。可以返回一个 Promise 来延迟滚动。有关更多详细信息，请参见[滚动行为](../guide/advanced/scroll-behavior.md)。
 
 **函数签名：**
 
