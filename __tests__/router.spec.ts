@@ -36,6 +36,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/p/:p', name: 'Param', component: components.Bar },
   { path: '/repeat/:r+', name: 'repeat', component: components.Bar },
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
+  { path: '/redirect-with-param/:p', redirect: () => `/` },
   { path: '/before-leave', component: components.BeforeLeave },
   {
     path: '/parent',
@@ -620,6 +621,23 @@ describe('Router', () => {
         hash: '#fa',
         redirectedFrom: expect.objectContaining({
           fullPath: '/to-p/1?hey=foo#fa',
+        }),
+      })
+    })
+
+    it('discard params on string redirect', async () => {
+      const history = createMemoryHistory()
+      const router = createRouter({ history, routes })
+      await expect(router.push('/redirect-with-param/test')).resolves.toEqual(
+        undefined
+      )
+      expect(router.currentRoute.value).toMatchObject({
+        params: {},
+        query: {},
+        hash: '',
+        redirectedFrom: expect.objectContaining({
+          fullPath: '/redirect-with-param/test',
+          params: { p: 'test' },
         }),
       })
     })

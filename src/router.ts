@@ -577,7 +577,11 @@ export function createRouter(options: RouterOptions): Router {
           newTargetLocation.indexOf('?') > -1 ||
           newTargetLocation.indexOf('#') > -1
             ? (newTargetLocation = locationAsObject(newTargetLocation))
-            : { path: newTargetLocation }
+            : // force empty params
+              { path: newTargetLocation }
+        // @ts-expect-error: force empty params when a string is passed to let
+        // the router parse them again
+        newTargetLocation.params = {}
       }
 
       if (
