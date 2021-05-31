@@ -366,9 +366,9 @@ export declare function useLink(props: RouterLinkOptions): {
 
 #### Parameters
 
-| Parameter | Type              | Description                                                                           |
-| --------- | ----------------- | ------------------------------------------------------------------------------------- |
-| props     | RouterLinkOptions | props object that can be passed to `<router-link>`. Accepts `Ref`s and `ComputedRef`s |
+| Parameter | Type                | Description                                                                           |
+| --------- | ------------------- | ------------------------------------------------------------------------------------- |
+| props     | `RouterLinkOptions` | props object that can be passed to `<router-link>`. Accepts `Ref`s and `ComputedRef`s |
 
 ### useRoute
 
@@ -461,9 +461,9 @@ afterEach(guard: NavigationHookAfter): () => void
 
 _Parameters_
 
-| Parameter | Type                | Description            |
-| --------- | ------------------- | ---------------------- |
-| guard     | NavigationHookAfter | navigation hook to add |
+| Parameter | Type                  | Description            |
+| --------- | --------------------- | ---------------------- |
+| guard     | `NavigationHookAfter` | navigation hook to add |
 
 #### Examples
 
@@ -573,9 +573,9 @@ hasRoute(name: string | symbol): boolean
 
 _Parameters_
 
-| Parameter | Type    | Description |
-| --------- | ------- | ----------- |
-| name      | `string | symbol`     | Name of the route to check |
+| Parameter | Type                                              | Description                |
+| --------- | ------------------------------------------------- | -------------------------- |
+| name      | `string \| symbol`                                | Name of the route to check |
 
 ### isReady
 
@@ -631,9 +631,9 @@ removeRoute(name: string | symbol): void
 
 _Parameters_
 
-| Parameter | Type    | Description |
-| --------- | ------- | ----------- |
-| name      | `string | symbol`     | Name of the route to remove |
+| Parameter | Type                                          | Description                 |
+| --------- | --------------------------------------------- | --------------------------- |
+| name      | `string \| symbol`                            | Name of the route to remove |
 
 ### replace
 
