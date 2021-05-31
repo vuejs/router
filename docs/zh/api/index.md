@@ -368,7 +368,7 @@ export declare function useLink(props: RouterLinkOptions): {
 
 | 参数  | 类型              | 描述                                                             |
 | ----- | ----------------- | ---------------------------------------------------------------- |
-| props | RouterLinkOptions | props 对象可以传递给`<router-link>`。接收 `Ref` 和 `ComputedRef` |
+| props | `RouterLinkOptions` | props 对象可以传递给`<router-link>`。接收 `Ref` 和 `ComputedRef` |
 
 ### useRoute
 
@@ -425,8 +425,8 @@ addRoute(parentName: string | symbol, route: RouteRecordRaw): () => void
 _参数_
 
 | 参数       | 类型                                 | 描述             |
-| ---------- | ----------------------------------- | ---------------- | -------------------------------------- |
-| parentName | `string| symbol`                    | 父路由记录，`route` 应该被添加到的位置 |
+| ---------- | ----------------------------------- | ---------------- |
+| parentName | `string \| symbol`                  | 父路由记录，`route` 应该被添加到的位置 |
 | route      | [`RouteRecordRaw`](#routerecordraw) | 要添加的路由记录 |
 
 ### addRoute
@@ -463,7 +463,7 @@ _参数_
 
 | 参数  | 类型                | 描述             |
 | ----- | ------------------- | ---------------- |
-| guard | NavigationHookAfter | 要添加的导航钩子 |
+| guard | `NavigationHookAfter` | 要添加的导航钩子 |
 
 #### 示例
 
@@ -574,8 +574,8 @@ hasRoute(name: string | symbol): boolean
 _参数_
 
 | 参数 | 类型    | 描述    |
-| ---- | ------- | ------- | ---------------- |
-| name | `string | symbol` | 要确认的路由名称 |
+| ---- | ------- | ------- | 
+| name | `string \| symbol` | 要确认的路由名称 |
 
 ### isReady
 
@@ -632,8 +632,8 @@ removeRoute(name: string | symbol): void
 _参数_
 
 | 参数 | 类型    | 描述    |
-| ---- | ------- | ------- | ---------------- |
-| name | `string | symbol` | 要删除的路由名称 |
+| ---- | ------- | ------- |
+| name | `string \| symbol` | 要删除的路由名称 |
 
 ### replace
 

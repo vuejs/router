@@ -366,9 +366,9 @@ export declare function useLink(props: RouterLinkOptions): {
 
 #### Parameters
 
-| Parameter | Type              | Description                                                                           |
-| --------- | ----------------- | ------------------------------------------------------------------------------------- |
-| props     | RouterLinkOptions | props object that can be passed to `<router-link>`. Accepts `Ref`s and `ComputedRef`s |
+| Parameter | Type                | Description                                                                           |
+| --------- | ------------------- | ------------------------------------------------------------------------------------- |
+| props     | `RouterLinkOptions` | props object that can be passed to `<router-link>`. Accepts `Ref`s and `ComputedRef`s |
 
 ### useRoute
 
@@ -424,10 +424,10 @@ addRoute(parentName: string | symbol, route: RouteRecordRaw): () => void
 
 _Parameters_
 
-| Parameter  | Type                                | Description         |
-| ---------- | ----------------------------------- | ------------------- |
-| parentName | `string                             | symbol`             | Parent Route Record where `route` should be appended at |
-| route      | [`RouteRecordRaw`](#routerecordraw) | Route Record to add |
+| Parameter  | Type                                          | Description                                             |
+| ---------- | --------------------------------------------- | ------------------------------------------------------- |
+| parentName | <div class='no-wrap'>`string \| symbol`</div> | Parent Route Record where `route` should be appended at |
+| route      | [`RouteRecordRaw`](#routerecordraw)           | Route Record to add                                     |
 
 ### addRoute
 
@@ -461,9 +461,9 @@ afterEach(guard: NavigationHookAfter): () => void
 
 _Parameters_
 
-| Parameter | Type                | Description            |
-| --------- | ------------------- | ---------------------- |
-| guard     | NavigationHookAfter | navigation hook to add |
+| Parameter | Type                  | Description            |
+| --------- | --------------------- | ---------------------- |
+| guard     | `NavigationHookAfter` | navigation hook to add |
 
 #### Examples
 
@@ -573,9 +573,9 @@ hasRoute(name: string | symbol): boolean
 
 _Parameters_
 
-| Parameter | Type    | Description |
-| --------- | ------- | ----------- |
-| name      | `string | symbol`     | Name of the route to check |
+| Parameter | Type                                              | Description                |
+| --------- | ------------------------------------------------- | -------------------------- |
+| name      | <div class='no-wrap'>`string \| symbol`</div>     | Name of the route to check |
 
 ### isReady
 
@@ -631,9 +631,9 @@ removeRoute(name: string | symbol): void
 
 _Parameters_
 
-| Parameter | Type    | Description |
-| --------- | ------- | ----------- |
-| name      | `string | symbol`     | Name of the route to remove |
+| Parameter | Type                                          | Description                 |
+| --------- | --------------------------------------------- | --------------------------- |
+| name      | <div class='no-wrap'>`string \| symbol`</div> | Name of the route to remove |
 
 ### replace
 

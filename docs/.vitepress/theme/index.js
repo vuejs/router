@@ -1,5 +1,6 @@
 import DefaultTheme from 'vitepress/dist/client/theme-default'
 import Layout from './Layout.vue'
+import './styles/index.css'
 
 export default {
   ...DefaultTheme,
