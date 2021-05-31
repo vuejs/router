@@ -574,8 +574,7 @@ export function createRouter(options: RouterOptions): Router {
 
       if (typeof newTargetLocation === 'string') {
         newTargetLocation =
-          newTargetLocation.indexOf('?') > -1 ||
-          newTargetLocation.indexOf('#') > -1
+          newTargetLocation.includes('?') || newTargetLocation.includes('#')
             ? (newTargetLocation = locationAsObject(newTargetLocation))
             : // force empty params
               { path: newTargetLocation }
@@ -810,7 +809,7 @@ export function createRouter(options: RouterOptions): Router {
           guards = []
           for (const record of to.matched) {
             // do not trigger beforeEnter on reused views
-            if (record.beforeEnter && from.matched.indexOf(record as any) < 0) {
+            if (record.beforeEnter && !from.matched.includes(record as any)) {
               if (Array.isArray(record.beforeEnter)) {
                 for (const beforeEnter of record.beforeEnter)
                   guards.push(guardToPromiseFn(beforeEnter, to, from))
