@@ -1,22 +1,5 @@
 <template>
   <ParentLayout>
-    <template #page-top-ads><span /></template>
-    <template #page-top>
-      <CarbonAds
-        v-if="$site.themeConfig.carbonAds"
-        :key="'carbon' + $page.relativePath"
-        :code="$site.themeConfig.carbonAds.carbon"
-        :placement="$site.themeConfig.carbonAds.placement"
-      />
-    </template>
-    <template #page-bottom>
-      <BuySellAds
-        v-if="$site.themeConfig.carbonAds"
-        :key="'custom' + $page.relativePath"
-        :code="$site.themeConfig.carbonAds.custom"
-        :placement="$site.themeConfig.carbonAds.placement"
-      />
-    </template>
     <template #sidebar-bottom>
       <div class="sponsors">
         <a
@@ -42,8 +25,6 @@
 
 <script>
 import DefaultTheme from 'vitepress/dist/client/theme-default'
-import CarbonAds from './components/CarbonAds.vue'
-import BuySellAds from './components/BuySellAds.vue'
 import sponsors from '../components/sponsors.json'
 
 export default {
@@ -51,8 +32,6 @@ export default {
 
   components: {
     ParentLayout: DefaultTheme.Layout,
-    CarbonAds,
-    BuySellAds,
   },
 
   setup() {
@@ -62,6 +41,10 @@ export default {
 </script>
 
 <style>
+td code {
+  white-space: nowrap;
+}
+
 form {
   margin-block-end: 0;
 }
