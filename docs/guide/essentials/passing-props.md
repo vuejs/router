@@ -15,7 +15,7 @@ with
 
 ```js
 const User = {
-  // prop names must match route params for values to be passed
+  // make sure to add a prop named exactly like the route param
   props: ['id'],
   template: '<div>User {{ id }}</div>'
 }
