@@ -424,10 +424,10 @@ addRoute(parentName: string | symbol, route: RouteRecordRaw): () => void
 
 _Parameters_
 
-| Parameter  | Type                                | Description         |
-| ---------- | ----------------------------------- | ------------------- |
-| parentName | `string                             | symbol`             | Parent Route Record where `route` should be appended at |
-| route      | [`RouteRecordRaw`](#routerecordraw) | Route Record to add |
+| Parameter  | Type                                | Description                                             |
+| ---------- | ----------------------------------- | ------------------------------------------------------- |
+| parentName | `string \| symbol`                  | Parent Route Record where `route` should be appended at |
+| route      | [`RouteRecordRaw`](#routerecordraw) | Route Record to add                                     |
 
 ### addRoute
 
@@ -861,12 +861,14 @@ Route record that can be provided by the user when adding routes via the [`route
 If you want to use a functional component, make sure to add a `displayName` to it.
 
 For example:
+
 ```js
 const HomeView = () => h('div', 'HomePage')
 // in TypeScript, you will need to use the FunctionalComponent type
 HomeView.displayName = 'HomeView'
 const routes = [{ path: '/', component: HomeView }]
 ```
+
 :::
 
 ## RouteRecordNormalized
