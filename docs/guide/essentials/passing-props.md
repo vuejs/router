@@ -23,6 +23,8 @@ const routes = [{ path: '/user/:id', component: User, props: true }]
 
 This allows you to use the component anywhere, which makes the component easier to reuse and test.
 
+Note that you must name your props to match their respective route params (without the `:` prefix) in order for the values to be passed.
+
 ## Boolean mode
 
 When `props` is set to `true`, the `route.params` will be set as the component props.
