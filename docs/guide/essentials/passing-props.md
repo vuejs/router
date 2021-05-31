@@ -15,6 +15,7 @@ with
 
 ```js
 const User = {
+  // prop names must match route params for values to be passed
   props: ['id'],
   template: '<div>User {{ id }}</div>'
 }
@@ -22,8 +23,6 @@ const routes = [{ path: '/user/:id', component: User, props: true }]
 ```
 
 This allows you to use the component anywhere, which makes the component easier to reuse and test.
-
-Note that you must name your props to match their respective route params (without the `:` prefix) in order for the values to be passed.
 
 ## Boolean mode
 
