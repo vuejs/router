@@ -575,7 +575,7 @@ _Parameters_
 
 | Parameter | Type                                              | Description                |
 | --------- | ------------------------------------------------- | -------------------------- |
-| name      | <div class='no-wrap'>`string \| symbol`</div>     | Name of the route to check |
+| name      | `string \| symbol`                                | Name of the route to check |
 
 ### isReady
 
@@ -633,7 +633,7 @@ _Parameters_
 
 | Parameter | Type                                          | Description                 |
 | --------- | --------------------------------------------- | --------------------------- |
-| name      | <div class='no-wrap'>`string \| symbol`</div> | Name of the route to remove |
+| name      | `string \| symbol`                            | Name of the route to remove |
 
 ### replace
 
