@@ -17,7 +17,7 @@ import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { NavigationFailure } from './errors'
-import { isBrowser } from './utils'
+import { isBrowser, noop } from './utils'
 
 export interface RouterLinkOptions {
   /**
@@ -113,8 +113,12 @@ export function useLink(props: UseLinkOptions) {
   function navigate(
     e: MouseEvent = {} as MouseEvent
   ): Promise<void | NavigationFailure> {
-    if (guardEvent(e))
-      return router[unref(props.replace) ? 'replace' : 'push'](unref(props.to))
+    if (guardEvent(e)) {
+      return router[unref(props.replace) ? 'replace' : 'push'](
+        unref(props.to)
+        // avoid uncaught errors are they are logged anyway
+      ).catch(noop)
+    }
     return Promise.resolve()
   }
 
