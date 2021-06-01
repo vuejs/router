@@ -25,11 +25,11 @@ describe('URL Encoding', () => {
   beforeEach(() => {
     // mock all encoding functions
     for (const key in encoding) {
-      // @ts-ignore
+      // @ts-expect-error
       const value = encoding[key]
-      // @ts-ignore
+      // @ts-expect-error
       if (typeof value === 'function') encoding[key] = jest.fn((v: string) => v)
-      // @ts-ignore
+      // @ts-expect-error
       else if (key === 'PLUS_RE') encoding[key] = /\+/g
     }
   })
@@ -82,9 +82,9 @@ describe('URL Encoding', () => {
   })
 
   it('decodes values in params', async () => {
-    // @ts-ignore: override to make the difference
+    // @ts-expect-error: override to make the difference
     encoding.decode = () => 'd'
-    // @ts-ignore
+    // @ts-expect-error
     encoding.encodeParam = () => 'e'
     const router = createRouter()
     await router.push({ name: 'optional', params: { a: 'a%' } })
@@ -124,11 +124,11 @@ describe('URL Encoding', () => {
   })
 
   it('keeps decoded values in query', async () => {
-    // @ts-ignore: override to make the difference
+    // @ts-expect-error: override to make the difference
     encoding.decode = () => 'd'
-    // @ts-ignore
+    // @ts-expect-error
     encoding.encodeQueryValue = () => 'ev'
-    // @ts-ignore
+    // @ts-expect-error
     encoding.encodeQueryKey = () => 'ek'
     const router = createRouter()
     await router.push({ name: 'home', query: { p: '%' } })
@@ -139,9 +139,9 @@ describe('URL Encoding', () => {
   })
 
   it('keeps decoded values in hash', async () => {
-    // @ts-ignore: override to make the difference
+    // @ts-expect-error: override to make the difference
     encoding.decode = () => 'd'
-    // @ts-ignore
+    // @ts-expect-error
     encoding.encodeHash = () => '#e'
     const router = createRouter()
     await router.push({ name: 'home', hash: '#%' })
@@ -151,9 +151,9 @@ describe('URL Encoding', () => {
     })
   })
   it('decodes hash', async () => {
-    // @ts-ignore: override to make the difference
+    // @ts-expect-error: override to make the difference
     encoding.decode = () => '#d'
-    // @ts-ignore
+    // @ts-expect-error
     encoding.encodeHash = () => '#e'
     const router = createRouter()
     await router.push('#%20')

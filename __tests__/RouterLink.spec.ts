@@ -919,7 +919,7 @@ describe('RouterLink', () => {
         components: { RouterLink },
         name: 'AppLink',
 
-        // @ts-ignore
+        // @ts-expect-error
         props: {
           ...((RouterLink as any).props as RouterLinkProps),
           inactiveClass: String as PropType<string>,
@@ -927,7 +927,7 @@ describe('RouterLink', () => {
 
         computed: {
           isExternalLink(): boolean {
-            // @ts-ignore
+            // @ts-expect-error
             return typeof this.to === 'string' && this.to.startsWith('http')
           },
         },

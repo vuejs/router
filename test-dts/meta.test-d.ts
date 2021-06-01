@@ -26,7 +26,7 @@ const router = createRouter({
     },
     {
       path: '/foo',
-      // @ts-ignore
+      // @ts-expect-error
       component,
       // @ts-expect-error
       meta: {},

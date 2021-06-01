@@ -257,7 +257,7 @@ export function go(delta: number) {
   })
 }
 
-// @ts-ignore
+// @ts-expect-error
 window._go = go
 
 router.beforeEach((to, from, next) => {

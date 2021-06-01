@@ -681,9 +681,9 @@ export function createRouter(options: RouterOptions): Router {
               ) &&
               // and we have done it a couple of times
               redirectedFrom &&
-              // @ts-ignore
+              // @ts-expect-error
               (redirectedFrom._count = redirectedFrom._count
-                ? // @ts-ignore
+                ? // @ts-expect-error
                   redirectedFrom._count + 1
                 : 1) > 10
             ) {
@@ -1129,7 +1129,7 @@ export function createRouter(options: RouterOptions): Router {
         >
       }
       for (let key in START_LOCATION_NORMALIZED) {
-        // @ts-ignore: the key matches
+        // @ts-expect-error: the key matches
         reactiveRoute[key] = computed(() => currentRoute.value[key])
       }
 

@@ -203,5 +203,5 @@ const app = createApp({
 app.use(router)
 
 window.vm = app.mount('#app')
-// @ts-ignore
+// @ts-expect-error
 window.router = router
