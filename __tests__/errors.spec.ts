@@ -21,6 +21,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/foo', component: components.Foo, name: 'Foo' },
   // prevent the log of no match warnings
   { path: '/:pathMatch(.*)', component: components.Home },
+  { path: '/async', component: () => Promise.reject('failed') },
 ]
 
 const onError = jest.fn()
@@ -50,6 +51,10 @@ describe('Errors & Navigation failures', () => {
         type: NavigationFailureType.aborted,
       })
     )
+  })
+
+  it('lazy loading reject', async () => {
+    await testError(true, 'failed', '/async')
   })
 
   it('Duplicated navigation triggers afterEach', async () => {
@@ -315,7 +320,7 @@ describe('isNavigationFailure', () => {
 
 async function testError(
   nextArgument: any | NavigationGuard,
-  expectedError: Error | void = undefined,
+  expectedError: any = undefined,
   to: RouteLocationRaw = '/foo'
 ) {
   const { router } = createRouter()
