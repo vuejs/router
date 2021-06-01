@@ -33,6 +33,10 @@ const SingleGuardNamed: RouteRecordRaw = {
     other: { ...components.Foo, beforeRouteEnter },
   },
 }
+const ErrorLazyLoad: RouteRecordRaw = {
+  path: '/',
+  component: () => Promise.reject(new Error('custom')),
+}
 
 beforeEach(() => {
   beforeRouteEnter.mockReset()
@@ -95,5 +99,12 @@ describe('extractComponentsGuards', () => {
   it('warns wrong lazy component', async () => {
     await checkGuards([WrongLazyRoute], 0, 1)
     expect('Promise instead of a function').toHaveBeenWarned()
+  })
+
+  it('rejects if lazy load fails', async () => {
+    await expect(checkGuards([ErrorLazyLoad], 0, 1)).rejects.toHaveProperty(
+      'message',
+      'custom'
+    )
   })
 })

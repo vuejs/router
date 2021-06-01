@@ -264,7 +264,7 @@ describe('Lazy Loading', () => {
     await router.push('/foo').catch(spy)
 
     expect(spy).toHaveBeenCalled()
-    expect(console.error).toHaveBeenCalledWith(error)
+    expect(spy).toHaveBeenLastCalledWith(error)
 
     expect(router.currentRoute.value).toMatchObject({
       path: '/',
@@ -307,10 +307,11 @@ describe('Lazy Loading', () => {
     const spy = jest.fn()
 
     parent.resolve()
-    child.reject()
+    const error = new Error()
+    child.reject(error)
     await router.push('/foo').catch(spy)
 
-    expect(spy).toHaveBeenCalledWith(expect.any(Error))
+    expect(spy).toHaveBeenCalledWith(error)
 
     expect(router.currentRoute.value).toMatchObject({
       path: '/',
