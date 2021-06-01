@@ -1015,9 +1015,17 @@ export function createRouter(options: RouterOptions): Router {
    * @param error - error to throw
    * @returns the error as a rejected promise
    */
-  function triggerError(error: any) {
+  function triggerError(error: any): Promise<unknown> {
     markAsReady(error)
-    errorHandlers.list().forEach(handler => handler(error))
+    const list = errorHandlers.list()
+    if (list.length) {
+      list.forEach(handler => handler(error))
+    } else {
+      if (__DEV__) {
+        warn('uncaught error during route navigation:')
+      }
+      console.error(error)
+    }
     return Promise.reject(error)
   }
 

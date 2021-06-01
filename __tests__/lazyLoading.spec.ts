@@ -265,6 +265,7 @@ describe('Lazy Loading', () => {
 
     expect(spy).toHaveBeenCalled()
     expect(spy).toHaveBeenLastCalledWith(error)
+    expect('uncaught error').toHaveBeenWarned()
 
     expect(router.currentRoute.value).toMatchObject({
       path: '/',
@@ -284,6 +285,7 @@ describe('Lazy Loading', () => {
     await router.push('/foo').catch(spy)
 
     expect(spy).toHaveBeenCalled()
+    expect('uncaught error').toHaveBeenWarned()
 
     expect(router.currentRoute.value).toMatchObject({
       path: '/',
@@ -312,6 +314,7 @@ describe('Lazy Loading', () => {
     await router.push('/foo').catch(spy)
 
     expect(spy).toHaveBeenCalledWith(error)
+    expect('uncaught error').toHaveBeenWarned()
 
     expect(router.currentRoute.value).toMatchObject({
       path: '/',
