@@ -88,6 +88,7 @@ Vue Router exposes the internal behavior of RouterLink as a Composition API func
 
 ```js
 import { RouterLink, useLink } from 'vue-router'
+import { computed } from 'vue'
 
 export default {
   name: 'AppLink',
