@@ -1,5 +1,7 @@
 # Named Routes
 
+<div class="vueschool"><a href="https://vueschool.io/lessons/named-routes?friend=vuerouter" target="_blank" rel="sponsored noopener" title="Learn about the named routes">Watch a free video lesson on Vue School</a></div>
+
 Alongside the `path`, you can provide a `name` to any route. This has the following advantages:
 
 - No hardcoded URLs
