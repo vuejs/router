@@ -30,6 +30,7 @@ The `route` object is a reactive object, so any of its properties can be watched
 
 ```js
 import { useRoute } from 'vue-router'
+import { ref } from 'vue'
 
 export default {
   setup() {
@@ -55,6 +56,7 @@ While you can still use in-component navigation guards with a `setup` function, 
 
 ```js
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
+import { ref } from 'vue'
 
 export default {
   setup() {
@@ -88,6 +90,7 @@ Vue Router exposes the internal behavior of RouterLink as a Composition API func
 
 ```js
 import { RouterLink, useLink } from 'vue-router'
+import { computed } from 'vue'
 
 export default {
   name: 'AppLink',
