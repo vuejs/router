@@ -1,6 +1,9 @@
 # Dynamic Route Matching with Params
 
-<div class="vueschool"><a href="https://vueschool.io/lessons/dynamic-routes?friend=vuerouter" target="_blank" rel="sponsored noopener" title="Learn about dynamic route matching with params">Watch a free video lesson on Vue School</a></div>
+<VueSchoolLink 
+  href="https://vueschool.io/lessons/dynamic-routes"
+  title="Learn about dynamic route matching with params"
+/>
 
 Very often we will need to map routes with the given pattern to the same component. For example we may have a `User` component which should be rendered for all users but with different user IDs. In Vue Router we can use a dynamic segment in the path to achieve that, we call that a _param_:
 
@@ -47,7 +50,10 @@ A working demo of this example can be found [here](https://codesandbox.io/s/rout
 
 ## Reacting to Params Changes
 
-<div class="vueschool"><a href="https://vueschool.io/lessons/reacting-to-param-changes?friend=vuerouter" target="_blank" rel="sponsored noopener" title="Learn how to react to param changes">Watch a free video lesson on Vue School</a></div>
+<VueSchoolLink 
+  href="https://vueschool.io/lessons/reacting-to-param-changes"
+  title="Learn how to react to param changes"
+/>
 
 One thing to note when using routes with params is that when the user navigates from `/users/johnny` to `/users/jolyne`, **the same component instance will be reused**. Since both routes render the same component, this is more efficient than destroying the old instance and then creating a new one. **However, this also means that the lifecycle hooks of the component will not be called**.
 
@@ -81,7 +87,10 @@ const User = {
 
 ## Catch all / 404 Not found Route
 
-<div class="vueschool"><a href="https://vueschool.io/lessons/404-not-found-page?friend=vuerouter" target="_blank" rel="sponsored noopener" title="Learn how to make a catch all/404 not found route">Watch a free video lesson on Vue School</a></div>
+<VueSchoolLink 
+  href="https://vueschool.io/lessons/404-not-found-page"
+  title="Learn how to make a catch all/404 not found route"
+/>
 
 Regular params will only match characters in between url fragments, separated by `/`. If we want to match **anything**, we can use a custom _param_ regexp by adding the regexp inside parentheses right after the _param_:
 
