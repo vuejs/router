@@ -1,5 +1,10 @@
 # Passing Props to Route Components
 
+<VueSchoolLink 
+  href="https://vueschool.io/lessons/route-props"
+  title="Learn how to pass props to route components"
+/>
+
 Using `$route` in your component creates a tight coupling with the route which limits the flexibility of the component as it can only be used on certain URLs. While this is not necessarily a bad thing, we can decouple this behavior with a `props` option:
 
 We can replace

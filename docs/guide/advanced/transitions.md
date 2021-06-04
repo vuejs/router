@@ -1,5 +1,10 @@
 # Transitions
 
+<VueSchoolLink 
+  href="https://vueschool.io/lessons/route-transitions"
+  title="Learn about route transitions"
+/>
+
 In order to use transitions on your route components and animate navigations, you need to use the [v-slot API](../../api/#router-view-s-v-slot):
 
 ```html
