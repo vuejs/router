@@ -1,5 +1,5 @@
 <template>
-  <a id="vs" href="https://vueschool.io/sales/summer-vue/?friend=vuerouter#plans" target="_blank" rel="noreferrer">
+  <a id="vs" href="https://vueschool.io/sales/summer-vue/?friend=vuerouter" target="_blank" rel="noreferrer">
     <div class="vs-iso">
       <img src="/images/vueschool/vs-iso.svg" alt="Vue School Logo">
     </div>
@@ -32,10 +32,7 @@
 <style>
 #vs {
   align-items: center;
-  background-color: #1e204d;
-  background-position: top right;
-  background-repeat: no-repeat;
-  background-size: cover;
+  background-color: #202A5A;
   box-sizing: border-box;
   color: #fff;
   font-family: 'Roboto', Oxygen, Fira Sans, Helvetica Neue, sans-serif;
@@ -46,7 +43,6 @@
   right: 0;
   top: 0;
   z-index: 100;
-  background-image: linear-gradient(90deg, #D2ECFF 0%, #4A96E1 100%);
   height: 3.125rem;
   display: flex;
 }
@@ -126,7 +122,7 @@
 }
 
 #vs .vs-core .vs-slogan {
-  color: #000;
+  color: #FFF;
   font-weight: bold;
   font-size: 14px;
   margin-right: 26px;
