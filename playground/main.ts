@@ -10,7 +10,6 @@ declare global {
     // h: HTML5History
     h: typeof routerHistory
     r: typeof router
-    // @ts-expect-error
     vm: ComponentPublicInstance
   }
 }
