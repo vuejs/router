@@ -33,9 +33,11 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue'
 import DefaultTheme from 'vitepress/dist/client/theme-default'
-import BannerTop from '../components/BannerTop.vue'
 import sponsors from '../components/sponsors.json'
+
+const BannerTop = defineAsyncComponent(() => import('../components/BannerTop.vue'))
 
 export default {
   name: 'Layout',
