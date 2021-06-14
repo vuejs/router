@@ -136,15 +136,16 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
       //   color: 0xea5455,
       // })
 
-      router.onError(error => {
+      router.onError((error, to) => {
         api.addTimelineEvent({
           layerId: navigationsLayerId,
           event: {
-            title: 'Error',
-            subtitle: 'An uncaught error happened during navigation',
+            title: 'Error during Navigation',
+            subtitle: to.fullPath,
             logType: 'error',
             time: Date.now(),
             data: { error },
+            groupId: (to.meta as any).__navigationId,
           },
         })
       })
@@ -172,6 +173,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
           event: {
             time: Date.now(),
             title: 'Start of navigation',
+            subtitle: to.fullPath,
             data,
             groupId: (to.meta as any).__navigationId,
           },
@@ -209,6 +211,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
           layerId: navigationsLayerId,
           event: {
             title: 'End of navigation',
+            subtitle: to.fullPath,
             time: Date.now(),
             data,
             logType: failure ? 'warning' : 'default',
