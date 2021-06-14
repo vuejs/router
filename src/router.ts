@@ -13,7 +13,7 @@ import {
   RouteLocationOptions,
   MatcherLocationRaw,
 } from './types'
-import { RouterHistory, HistoryState } from './history/common'
+import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
   ScrollPosition,
   getSavedScrollPosition,
@@ -689,7 +689,7 @@ export function createRouter(options: RouterOptions): Router {
               ) &&
               // and we have done it a couple of times
               redirectedFrom &&
-              // @ts-expect-error
+              // @ts-expect-error: added only in dev
               (redirectedFrom._count = redirectedFrom._count
                 ? // @ts-expect-error
                   redirectedFrom._count + 1
@@ -980,7 +980,24 @@ export function createRouter(options: RouterOptions): Router {
               (error as NavigationRedirectError).to,
               toLocation
               // avoid an uncaught rejection, let push call triggerError
-            ).catch(noop)
+            )
+              .then(failure => {
+                // manual change in hash history #916 ending up in the URL not
+                // changing but it was changed by the manual url change, so we
+                // need to manually change it ourselves
+                if (
+                  isNavigationFailure(
+                    failure,
+                    ErrorTypes.NAVIGATION_ABORTED |
+                      ErrorTypes.NAVIGATION_DUPLICATED
+                  ) &&
+                  !info.delta &&
+                  info.type === NavigationType.pop
+                ) {
+                  routerHistory.go(-1, false)
+                }
+              })
+              .catch(noop)
             // avoid the then branch
             return Promise.reject()
           }
@@ -1000,7 +1017,21 @@ export function createRouter(options: RouterOptions): Router {
             )
 
           // revert the navigation
-          if (failure && info.delta) routerHistory.go(-info.delta, false)
+          if (failure) {
+            if (info.delta) {
+              routerHistory.go(-info.delta, false)
+            } else if (
+              info.type === NavigationType.pop &&
+              isNavigationFailure(
+                failure,
+                ErrorTypes.NAVIGATION_ABORTED | ErrorTypes.NAVIGATION_DUPLICATED
+              )
+            ) {
+              // manual change in hash history #916
+              // it's like a push but lacks the information of the direction
+              routerHistory.go(-1, false)
+            }
+          }
 
           triggerAfterEach(
             toLocation as RouteLocationNormalizedLoaded,
