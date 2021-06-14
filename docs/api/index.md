@@ -573,9 +573,9 @@ hasRoute(name: string | symbol): boolean
 
 _Parameters_
 
-| Parameter | Type                                              | Description                |
-| --------- | ------------------------------------------------- | -------------------------- |
-| name      | `string \| symbol`                                | Name of the route to check |
+| Parameter | Type               | Description                |
+| --------- | ------------------ | -------------------------- |
+| name      | `string \| symbol` | Name of the route to check |
 
 ### isReady
 
@@ -594,14 +594,14 @@ Adds an error handler that is called every time a non caught error happens durin
 **Signature:**
 
 ```typescript
-onError(handler: (error: any) => any): () => void
+onError(handler: (error: any, to: RouteLocationNormalized, from: RouteLocationNormalized) => any): () => void
 ```
 
 _Parameters_
 
-| Parameter | Type                  | Description               |
-| --------- | --------------------- | ------------------------- |
-| handler   | `(error: any) => any` | error handler to register |
+| Parameter | Type                                                                              | Description               |
+| --------- | --------------------------------------------------------------------------------- | ------------------------- |
+| handler   | `(error: any, to: RouteLocationNormalized, from: RouteLocationNormalized) => any` | error handler to register |
 
 ### push
 
@@ -631,9 +631,9 @@ removeRoute(name: string | symbol): void
 
 _Parameters_
 
-| Parameter | Type                                          | Description                 |
-| --------- | --------------------------------------------- | --------------------------- |
-| name      | `string \| symbol`                            | Name of the route to remove |
+| Parameter | Type               | Description                 |
+| --------- | ------------------ | --------------------------- |
+| name      | `string \| symbol` | Name of the route to remove |
 
 ### replace
 

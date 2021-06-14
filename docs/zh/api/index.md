@@ -216,8 +216,8 @@ export declare function createWebHistory(base?: string): RouterHistory
 
 ### 参数
 
-| 参数  | 类型     | 描述                                                                                               |
-| ---- | -------- | -------------------------------------------------------------------------------------------------- |
+| 参数 | 类型     | 描述                                                                                             |
+| ---- | -------- | ------------------------------------------------------------------------------------------------ |
 | base | `string` | 提供的可选 base。当应用程序被托管在诸如 `https://example.com/folder/` 之类的文件夹中时非常有用。 |
 
 ### 示例
@@ -239,8 +239,8 @@ export declare function createWebHashHistory(base?: string): RouterHistory
 
 ### 参数
 
-| 参数 | 类型     | 描述                                                                                                                                                                                                                                                                                    |
-| ---- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 参数 | 类型     | 描述                                                                                                                                                                                                                                                                                        |
+| ---- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | base | `string` | 提供可选的 base。默认是 `location.pathname + location.search`。如果 `head` 中有一个 `<base>`，它的值将被忽略，而采用这个参数。**但请注意它会影响所有的 history.pushState() 调用**，这意味着如果你使用一个 `<base>` 标签，它的 `href` 值**必须与这个参数相匹配** (请忽略 `#` 后面的所有内容) |
 
 ### 示例
@@ -366,8 +366,8 @@ export declare function useLink(props: RouterLinkOptions): {
 
 #### 参数
 
-| 参数  | 类型              | 描述                                                             |
-| ----- | ----------------- | ---------------------------------------------------------------- |
+| 参数  | 类型                | 描述                                                             |
+| ----- | ------------------- | ---------------------------------------------------------------- |
 | props | `RouterLinkOptions` | props 对象可以传递给`<router-link>`。接收 `Ref` 和 `ComputedRef` |
 
 ### useRoute
@@ -424,10 +424,10 @@ addRoute(parentName: string | symbol, route: RouteRecordRaw): () => void
 
 _参数_
 
-| 参数       | 类型                                 | 描述             |
-| ---------- | ----------------------------------- | ---------------- |
+| 参数       | 类型                                | 描述                                   |
+| ---------- | ----------------------------------- | -------------------------------------- |
 | parentName | `string \| symbol`                  | 父路由记录，`route` 应该被添加到的位置 |
-| route      | [`RouteRecordRaw`](#routerecordraw) | 要添加的路由记录 |
+| route      | [`RouteRecordRaw`](#routerecordraw) | 要添加的路由记录                       |
 
 ### addRoute
 
@@ -461,8 +461,8 @@ afterEach(guard: NavigationHookAfter): () => void
 
 _参数_
 
-| 参数  | 类型                | 描述             |
-| ----- | ------------------- | ---------------- |
+| 参数  | 类型                  | 描述             |
+| ----- | --------------------- | ---------------- |
 | guard | `NavigationHookAfter` | 要添加的导航钩子 |
 
 #### 示例
@@ -573,8 +573,8 @@ hasRoute(name: string | symbol): boolean
 
 _参数_
 
-| 参数 | 类型    | 描述    |
-| ---- | ------- | ------- | 
+| 参数 | 类型               | 描述             |
+| ---- | ------------------ | ---------------- |
 | name | `string \| symbol` | 要确认的路由名称 |
 
 ### isReady
@@ -594,14 +594,14 @@ isReady(): Promise<void>
 **函数签名：**
 
 ```typescript
-onError(handler: (error: any) => any): () => void
+onError(handler: (error: any, to: RouteLocationNormalized, from: RouteLocationNormalized) => any): () => void
 ```
 
 _参数_
 
-| 参数    | 类型                  | 描述               |
-| ------- | --------------------- | ------------------ |
-| handler | `(error: any) => any` | 要注册的错误处理器 |
+| 参数    | 类型                                                                              | 描述                      |
+| ------- | --------------------------------------------------------------------------------- | ------------------------- |
+| handler | `(error: any, to: RouteLocationNormalized, from: RouteLocationNormalized) => any` | error handler to register |
 
 ### push
 
@@ -631,8 +631,8 @@ removeRoute(name: string | symbol): void
 
 _参数_
 
-| 参数 | 类型    | 描述    |
-| ---- | ------- | ------- |
+| 参数 | 类型               | 描述             |
+| ---- | ------------------ | ---------------- |
 | name | `string \| symbol` | 要删除的路由名称 |
 
 ### replace
@@ -855,12 +855,14 @@ stringifyQuery?: (
 如果你想使用函数式组件, 请确保在组件上添加一个 `displayName`。
 
 例如:
+
 ```js
 const HomeView = () => h('div', 'HomePage')
 // 使用TypeScript时, 组件需要为 FunctionalComponent 类型
 HomeView.displayName = 'HomeView'
 const routes = [{ path: '/', component: HomeView }]
 ```
+
 :::
 
 ## RouteRecordNormalized
