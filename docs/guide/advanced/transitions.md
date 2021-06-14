@@ -68,5 +68,17 @@ router.afterEach((to, from) => {
 })
 ```
 
+## Forcing a transition between reused views
+
+Vue might automatically reuse components that look alike, avoiding any transition. Fortunately, it is possible [to add a `key` attribute](https://v3.vuejs.org/api/special-attributes.html#key) to force transitions. This also allows you to trigger transitions while staying on the same route with different params:
+
+```vue
+<router-view v-slot="{ Component, route }">
+  <transition name="fade">
+    <component :is="Component" :key="route.path" />
+  </transition>
+</router-view>
+```
+
 <!-- TODO: interactive example -->
 <!-- See full example [here](https://github.com/vuejs/vue-router/blob/dev/examples/transitions/app.js). -->
