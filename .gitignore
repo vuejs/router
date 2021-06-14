@@ -17,3 +17,5 @@ markdown
 explorations
 selenium-server.log
 browserstack.err
+.idea
+debug.log

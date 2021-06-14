@@ -36,7 +36,8 @@ const translations = {
 }
 
 .become-sponsor {
-  margin-top: 40px;
+  margin-top: 1.5rem;
+  display: inline-block;
   font-size: 0.9em;
   font-weight: 700;
   width: auto;

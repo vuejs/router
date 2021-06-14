@@ -13,18 +13,16 @@ describe('Path ranking', () => {
         {
           score: a,
           re: /a/,
-          // @ts-ignore
+          // @ts-expect-error
           stringify: v => v,
-          // @ts-ignore
+          // @ts-expect-error
           parse: v => v,
           keys: [],
         },
         {
           score: b,
           re: /a/,
-          // @ts-ignore
           stringify: v => v,
-          // @ts-ignore
           parse: v => v,
           keys: [],
         }

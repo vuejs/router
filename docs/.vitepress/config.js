@@ -26,6 +26,7 @@ const config = {
     docsDir: 'docs',
     docsBranch: 'master',
     editLinks: true,
+    editLinkText: 'Suggest changes to this page',
 
     carbonAds: {
       carbon: 'CEBICK3I',
@@ -64,8 +65,7 @@ const config = {
           },
           {
             text: 'Changelog',
-            link:
-              'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
+            link: 'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
           },
         ],
 
@@ -198,8 +198,7 @@ const config = {
           },
           {
             text: '更新日志',
-            link:
-              'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
+            link: 'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
           },
         ],
 

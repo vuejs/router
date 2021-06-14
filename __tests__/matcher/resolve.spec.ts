@@ -9,7 +9,7 @@ import {
 import { MatcherLocationNormalizedLoose } from '../utils'
 import { mockWarn } from 'jest-mock-warn'
 
-// @ts-ignore
+// @ts-expect-error
 const component: RouteComponent = null
 
 // for normalized records
@@ -42,9 +42,7 @@ describe('RouterMatcher.resolve', () => {
       throw new Error('not handled')
     } else {
       // use one single record
-      if (!resolved.matched)
-        // @ts-ignore
-        resolved.matched = record.map(normalizeRouteRecord)
+      if (!resolved.matched) resolved.matched = record.map(normalizeRouteRecord)
       // allow passing an expect.any(Array)
       else if (Array.isArray(resolved.matched))
         resolved.matched = resolved.matched.map(m => ({

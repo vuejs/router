@@ -366,9 +366,9 @@ export declare function useLink(props: RouterLinkOptions): {
 
 #### Parameters
 
-| Parameter | Type              | Description                                                                           |
-| --------- | ----------------- | ------------------------------------------------------------------------------------- |
-| props     | RouterLinkOptions | props object that can be passed to `<router-link>`. Accepts `Ref`s and `ComputedRef`s |
+| Parameter | Type                | Description                                                                           |
+| --------- | ------------------- | ------------------------------------------------------------------------------------- |
+| props     | `RouterLinkOptions` | props object that can be passed to `<router-link>`. Accepts `Ref`s and `ComputedRef`s |
 
 ### useRoute
 
@@ -424,10 +424,10 @@ addRoute(parentName: string | symbol, route: RouteRecordRaw): () => void
 
 _Parameters_
 
-| Parameter  | Type                                | Description         |
-| ---------- | ----------------------------------- | ------------------- |
-| parentName | `string                             | symbol`             | Parent Route Record where `route` should be appended at |
-| route      | [`RouteRecordRaw`](#routerecordraw) | Route Record to add |
+| Parameter  | Type                                | Description                                             |
+| ---------- | ----------------------------------- | ------------------------------------------------------- |
+| parentName | `string \| symbol`                  | Parent Route Record where `route` should be appended at |
+| route      | [`RouteRecordRaw`](#routerecordraw) | Route Record to add                                     |
 
 ### addRoute
 
@@ -461,9 +461,9 @@ afterEach(guard: NavigationHookAfter): () => void
 
 _Parameters_
 
-| Parameter | Type                | Description            |
-| --------- | ------------------- | ---------------------- |
-| guard     | NavigationHookAfter | navigation hook to add |
+| Parameter | Type                  | Description            |
+| --------- | --------------------- | ---------------------- |
+| guard     | `NavigationHookAfter` | navigation hook to add |
 
 #### Examples
 
@@ -520,7 +520,7 @@ _Parameters_
 #### Examples
 
 ```js
-router.beforeEach(to => {
+router.beforeResolve(to => {
   if (to.meta.requiresAuth && !isAuthenticated) return false
 })
 ```
@@ -573,9 +573,9 @@ hasRoute(name: string | symbol): boolean
 
 _Parameters_
 
-| Parameter | Type    | Description |
-| --------- | ------- | ----------- |
-| name      | `string | symbol`     | Name of the route to check |
+| Parameter | Type               | Description                |
+| --------- | ------------------ | -------------------------- |
+| name      | `string \| symbol` | Name of the route to check |
 
 ### isReady
 
@@ -594,14 +594,14 @@ Adds an error handler that is called every time a non caught error happens durin
 **Signature:**
 
 ```typescript
-onError(handler: (error: any) => any): () => void
+onError(handler: (error: any, to: RouteLocationNormalized, from: RouteLocationNormalized) => any): () => void
 ```
 
 _Parameters_
 
-| Parameter | Type                  | Description               |
-| --------- | --------------------- | ------------------------- |
-| handler   | `(error: any) => any` | error handler to register |
+| Parameter | Type                                                                              | Description               |
+| --------- | --------------------------------------------------------------------------------- | ------------------------- |
+| handler   | `(error: any, to: RouteLocationNormalized, from: RouteLocationNormalized) => any` | error handler to register |
 
 ### push
 
@@ -631,9 +631,9 @@ removeRoute(name: string | symbol): void
 
 _Parameters_
 
-| Parameter | Type    | Description |
-| --------- | ------- | ----------- |
-| name      | `string | symbol`     | Name of the route to remove |
+| Parameter | Type               | Description                 |
+| --------- | ------------------ | --------------------------- |
+| name      | `string \| symbol` | Name of the route to remove |
 
 ### replace
 
@@ -746,12 +746,12 @@ routes: RouteRecordRaw[]
 
 ### scrollBehavior
 
-Function to control scrolling when navigating between pages. Can return a Promise to delay scrolling. Check .
+Function to control scrolling when navigating between pages. Can return a Promise to delay when the scrolling happens. See [Scroll Behaviour](../guide/advanced/scroll-behavior.md) for more details.
 
 **Signature:**
 
 ```typescript
-scrollBehavior?: ScrollBehavior
+scrollBehavior?: RouterScrollBehavior
 ```
 
 #### Examples
@@ -861,12 +861,14 @@ Route record that can be provided by the user when adding routes via the [`route
 If you want to use a functional component, make sure to add a `displayName` to it.
 
 For example:
+
 ```js
 const HomeView = () => h('div', 'HomePage')
 // in TypeScript, you will need to use the FunctionalComponent type
 HomeView.displayName = 'HomeView'
 const routes = [{ path: '/', component: HomeView }]
 ```
+
 :::
 
 ## RouteRecordNormalized

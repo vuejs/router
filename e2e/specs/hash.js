@@ -7,20 +7,15 @@ module.exports = {
 
   '@tags': ['hash', 'encoding'],
 
-  /** @type {import('nightwatch').NightwatchTest} */
   'navigating to links': function (browser) {
     browser
       .url(baseURL)
       .waitForElementPresent('#app > *', 1000)
-      .assert.attributeContains('li:nth-child(1) a', 'href', '/hash/#/')
-      .assert.attributeContains('li:nth-child(2) a', 'href', '/hash/#/foo')
-      .assert.attributeContains('li:nth-child(3) a', 'href', '/hash/#/bar')
-      .assert.attributeContains('li:nth-child(4) a', 'href', '/hash/#/n/%C3%A9')
-      .assert.attributeContains(
-        'li:nth-child(6) a',
-        'href',
-        '/hash/#/unicode/%C3%A9'
-      )
+      .assert.attributeContains('li:nth-child(1) a', 'href', '#/')
+      .assert.attributeContains('li:nth-child(2) a', 'href', '#/foo')
+      .assert.attributeContains('li:nth-child(3) a', 'href', '#/bar')
+      .assert.attributeContains('li:nth-child(4) a', 'href', '#/n/%C3%A9')
+      .assert.attributeContains('li:nth-child(6) a', 'href', '#/unicode/%C3%A9')
       .click('li:nth-child(3) a')
       .assert.urlEquals(baseURL + '/bar')
       .assert.containsText('.view', 'Bar')

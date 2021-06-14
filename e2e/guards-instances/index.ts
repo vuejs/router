@@ -64,7 +64,7 @@ function createTestComponent(key: string) {
       state.enter++
       logs.value.push(`${key}: enter ${from.path} - ${to.path}`)
       next(vm => {
-        // @ts-ignore
+        // @ts-expect-error
         vm.enterCallback++
       })
     },
@@ -239,7 +239,6 @@ leaves: {{ state.leave }}
 
 app.use(router)
 
-// @ts-ignore
 window.r = router
 
 app.mount('#app')

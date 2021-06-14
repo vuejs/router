@@ -14,12 +14,11 @@ const from = START_LOCATION_NORMALIZED
 const NoGuard: RouteRecordRaw = { path: '/', component: components.Home }
 const InvalidRoute: RouteRecordRaw = {
   path: '/',
-  // @ts-ignore: intended error
+  // @ts-expect-error
   component: null,
 }
 const WrongLazyRoute: RouteRecordRaw = {
   path: '/',
-  // @ts-ignore: intended error
   component: Promise.resolve(components.Home),
 }
 const SingleGuard: RouteRecordRaw = {
@@ -32,6 +31,10 @@ const SingleGuardNamed: RouteRecordRaw = {
     default: { ...components.Home, beforeRouteEnter },
     other: { ...components.Foo, beforeRouteEnter },
   },
+}
+const ErrorLazyLoad: RouteRecordRaw = {
+  path: '/',
+  component: () => Promise.reject(new Error('custom')),
 }
 
 beforeEach(() => {
@@ -84,7 +87,7 @@ describe('extractComponentsGuards', () => {
   })
 
   it('throws if component is null', async () => {
-    // @ts-ignore
+    // @ts-expect-error
     await expect(checkGuards([InvalidRoute], 2)).rejects.toHaveProperty(
       'message',
       expect.stringMatching('Invalid route component')
@@ -95,5 +98,12 @@ describe('extractComponentsGuards', () => {
   it('warns wrong lazy component', async () => {
     await checkGuards([WrongLazyRoute], 0, 1)
     expect('Promise instead of a function').toHaveBeenWarned()
+  })
+
+  it('rejects if lazy load fails', async () => {
+    await expect(checkGuards([ErrorLazyLoad], 0, 1)).rejects.toHaveProperty(
+      'message',
+      'custom'
+    )
   })
 })

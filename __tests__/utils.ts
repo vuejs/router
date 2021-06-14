@@ -60,7 +60,7 @@ export interface RouteRecordViewLoose
   aliasOf: RouteRecordViewLoose | undefined
 }
 
-// @ts-ignore we are intentionally overriding the type
+// @ts-expect-error we are intentionally overriding the type
 export interface RouteLocationNormalizedLoose extends RouteLocationNormalized {
   name: RouteRecordName | null | undefined
   path: string
@@ -105,7 +105,7 @@ export function createDom(options?: ConstructorOptions) {
     }
   )
 
-  // @ts-ignore: needed for jsdom
+  // @ts-expect-error: needed for jsdom
   global.window = dom.window
   global.location = dom.window.location
   global.history = dom.window.history

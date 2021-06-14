@@ -104,7 +104,6 @@ leaves: {{ state.leave }}
 
 app.use(router)
 
-// @ts-ignore
 window.r = router
 
 app.mount('#app')

@@ -51,6 +51,8 @@ router.push({ name: 'user', params: { username } }) // -> /user/eduardo
 router.push({ path: '/user', params: { username } }) // -> /user
 ```
 
+When specifying `params`, make sure to either provide a `string` or `number` (or an array of these for [repeatable params](./oute-matching-syntax.md#repeatable-params)). **Any other type (like `undefined`, `false`, etc) will be automatically stringified**. For [optional params](./route-matching-syntax.md#repeatable-params), you can provide an empty string (`""`) as the value to skip it.
+
 Since the prop `to` accepts the same kind of object as `router.push`, the exact same rules apply to both of them.
 
 `router.push` and all the other navigation methods return a _Promise_ that allows us to wait til the navigation is finished and to know if it succeeded or failed. We will talk more about that in [Navigation Handling](../advanced/navigation-failures.md).

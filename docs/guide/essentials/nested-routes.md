@@ -1,5 +1,10 @@
 # Nested Routes
 
+<VueSchoolLink 
+  href="https://vueschool.io/lessons/nested-routes"
+  title="Learn about nested routes"
+/>
+
 Some application's UIs are composed of components that are nested multiple levels deep. In this case, it is very common that the segments of a URL corresponds to a certain structure of nested components, for example:
 
 ```

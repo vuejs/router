@@ -296,9 +296,6 @@ export function extractComponentsGuards(
             `Component "${name}" in record with path "${record.path}" is a function that does not return a Promise. If you were passing a functional component, make sure to add a "displayName" to the component. This will break in production if not fixed.`
           )
           componentPromise = Promise.resolve(componentPromise as RouteComponent)
-        } else {
-          // display the error if any
-          componentPromise = componentPromise.catch(console.error)
         }
 
         guards.push(() =>
