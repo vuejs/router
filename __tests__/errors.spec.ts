@@ -13,6 +13,7 @@ import {
   NavigationGuard,
   RouteLocationRaw,
   START_LOCATION_NORMALIZED,
+  RouteLocationNormalized,
 } from '../src/types'
 
 const routes: RouteRecordRaw[] = [
@@ -144,6 +145,25 @@ describe('Errors & Navigation failures', () => {
     await testError(() => {
       throw error
     }, error)
+  })
+
+  it('triggers onError with to and from', async () => {
+    const { router } = createRouter()
+    let expectedTo: RouteLocationNormalized | undefined
+    let expectedFrom: RouteLocationNormalized | undefined
+    const error = new Error()
+    router.beforeEach((to, from) => {
+      expectedTo = to
+      expectedFrom = from
+      throw error
+    })
+
+    await expect(router.push('/foo')).rejects.toEqual(error)
+
+    expect(afterEach).toHaveBeenCalledTimes(0)
+    expect(onError).toHaveBeenCalledTimes(1)
+
+    expect(onError).toHaveBeenCalledWith(error, expectedTo, expectedFrom)
   })
 
   it('triggers onError with rejected promises', async () => {
@@ -337,7 +357,11 @@ async function testError(
   expect(afterEach).toHaveBeenCalledTimes(0)
   expect(onError).toHaveBeenCalledTimes(1)
 
-  expect(onError).toHaveBeenCalledWith(expectedError)
+  expect(onError).toHaveBeenCalledWith(
+    expectedError,
+    expect.any(Object),
+    expect.any(Object)
+  )
 }
 
 async function testNavigation(
@@ -425,5 +449,9 @@ async function testHistoryError(
   expect(afterEach).toHaveBeenCalledTimes(0)
   expect(onError).toHaveBeenCalledTimes(1)
 
-  expect(onError).toHaveBeenCalledWith(expectedError)
+  expect(onError).toHaveBeenCalledWith(
+    expectedError,
+    expect.any(Object),
+    expect.any(Object)
+  )
 }

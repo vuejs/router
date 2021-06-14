@@ -70,9 +70,17 @@ import { addDevtools } from './devtools'
 
 /**
  * Internal type to define an ErrorHandler
+ *
+ * @param error - error thrown
+ * @param to - location we were navigating to when the error happened
+ * @param from - location we were navigating from when the error happened
  * @internal
  */
-export type _ErrorHandler = (error: any) => any
+export type _ErrorHandler = (
+  error: any,
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalizedLoaded
+) => any
 // resolve, reject arguments of Promise constructor
 type OnReadyCallback = [() => void, (reason?: any) => void]
 
@@ -664,7 +672,7 @@ export function createRouter(options: RouterOptions): Router {
         isNavigationFailure(error)
           ? error
           : // reject any unknown error
-            triggerError(error)
+            triggerError(error, toLocation, from)
       )
       .then((failure: NavigationFailure | NavigationRedirectError | void) => {
         if (failure) {
@@ -979,7 +987,7 @@ export function createRouter(options: RouterOptions): Router {
           // do not restore history on unknown direction
           if (info.delta) routerHistory.go(-info.delta, false)
           // unrecognized error, transfer to the global handler
-          return triggerError(error)
+          return triggerError(error, toLocation, from)
         })
         .then((failure: NavigationFailure | void) => {
           failure =
@@ -1012,14 +1020,21 @@ export function createRouter(options: RouterOptions): Router {
 
   /**
    * Trigger errorHandlers added via onError and throws the error as well
+   *
    * @param error - error to throw
+   * @param to - location we were navigating to when the error happened
+   * @param from - location we were navigating from when the error happened
    * @returns the error as a rejected promise
    */
-  function triggerError(error: any): Promise<unknown> {
+  function triggerError(
+    error: any,
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalizedLoaded
+  ): Promise<unknown> {
     markAsReady(error)
     const list = errorHandlers.list()
     if (list.length) {
-      list.forEach(handler => handler(error))
+      list.forEach(handler => handler(error, to, from))
     } else {
       if (__DEV__) {
         warn('uncaught error during route navigation:')
@@ -1072,7 +1087,7 @@ export function createRouter(options: RouterOptions): Router {
     return nextTick()
       .then(() => scrollBehavior(to, from, scrollPosition))
       .then(position => position && scrollToPosition(position))
-      .catch(triggerError)
+      .catch(err => triggerError(err, to, from))
   }
 
   const go = (delta: number) => routerHistory.go(delta)
