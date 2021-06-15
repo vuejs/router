@@ -1,5 +1,10 @@
 # Scroll Behavior
 
+<VueSchoolLink 
+  href="https://vueschool.io/lessons/scroll-behavior"
+  title="Learn how to customize scroll behavior"
+/>
+
 When using client-side routing, we may want to scroll to top when navigating to a new route, or preserve the scrolling position of history entries just like real page reload does. Vue Router allows you to achieve these and even better, allows you to completely customize the scroll behavior on route navigation.
 
 **Note: this feature only works if the browser supports `history.pushState`.**

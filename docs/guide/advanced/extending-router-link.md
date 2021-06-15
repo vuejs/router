@@ -1,5 +1,10 @@
 # Extending RouterLink
 
+<VueSchoolLink 
+  href="https://vueschool.io/lessons/extending-router-link-for-external-urls"
+  title="Learn how to extend router-link"
+/>
+
 The RouterLink component exposes enough `props` to suffice most basic applications but it doesn't try to cover every possible use case and you will likely find yourself using `v-slot` for some advanced cases. In most medium to large sized applications, it's worth creating one if not multiple custom RouterLink components to reuse them across your application. Some examples are Links in a Navigation Menu, handling external links, adding an `inactive-class`, etc.
 
 Let's extend RouterLink to handle external links as well and adding a custom `inactive-class` in an `AppLink.vue` file:
