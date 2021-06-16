@@ -1,3 +1,19 @@
+## [4.0.9](https://github.com/vuejs/vue-router-next/compare/v4.0.8...v4.0.9) (2021-06-16)
+
+### Bug Fixes
+
+- **guards:** propagate lazy loading rejections ([3d465cc](https://github.com/vuejs/vue-router-next/commit/3d465cc128b2f5c109e71386760c7b99e3d71bce))
+- **hash:** force navigation restore on manual navigation ([#921](https://github.com/vuejs/vue-router-next/issues/921)) ([e08a0d0](https://github.com/vuejs/vue-router-next/commit/e08a0d0b64d2798164895da430de7edbb66d7ead)), closes [#916](https://github.com/vuejs/vue-router-next/issues/916)
+- **link:** catch errors ([e7b2156](https://github.com/vuejs/vue-router-next/commit/e7b2156c7436f18d1a08694f502eb00b10029f1c))
+- **query:** allow arbitrary keys in queries ([a57b5f1](https://github.com/vuejs/vue-router-next/commit/a57b5f179b8859776550f3b754f972fad8955566)), closes [#880](https://github.com/vuejs/vue-router-next/issues/880)
+- **warn:** drop unused params on string redirect ([bed24df](https://github.com/vuejs/vue-router-next/commit/bed24dff90c19a0ee3e335dbe43ed9ddbfc74542)), closes [#951](https://github.com/vuejs/vue-router-next/issues/951)
+
+### Features
+
+- **devtools:** group navigation errors ([a776a84](https://github.com/vuejs/vue-router-next/commit/a776a8402b7ae5bdc017409f26d4574bcee4858b))
+- **errors:** add to and from to router.onError()` ([c76feab](https://github.com/vuejs/vue-router-next/commit/c76feabf3703f06bff400d7aa84edede48329b82))
+- **errors:** log errors when no error handlers ([46a354e](https://github.com/vuejs/vue-router-next/commit/46a354ec5b9359bb1dcd3ac82716e898b3843ae4))
+
 ## [4.0.8](https://github.com/vuejs/vue-router-next/compare/v4.0.6...v4.0.8) (2021-05-13)
 
 This release is a correct tag and doesn't contain any extra changes.
