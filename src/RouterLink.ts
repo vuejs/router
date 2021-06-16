@@ -213,18 +213,21 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
   },
 })
 
+RouterLinkImpl.useLink = useLink
+
 // export the public type for h/tsx inference
 // also to avoid inline import() in generated d.ts files
 /**
  * Component to render a link that triggers a navigation on click.
  */
-export const RouterLink = RouterLinkImpl as {
+export const RouterLink = RouterLinkImpl as unknown as {
   new (): {
     $props: AllowedComponentProps &
       ComponentCustomProps &
       VNodeProps &
       RouterLinkProps
   }
+  useLink: typeof useLink
 }
 
 function guardEvent(e: MouseEvent) {
