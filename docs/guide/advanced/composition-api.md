@@ -66,22 +66,23 @@ import { ref } from 'vue'
 export default {
   setup() {
     // same as beforeRouteLeave option with no access to `this`
-    onBeforeRouteLeave((to, from) => {
+    onBeforeRouteLeave((to, from, next) => {
       const answer = window.confirm(
         'Do you really want to leave? you have unsaved changes!'
       )
       // cancel the navigation and stay on the same page
       if (!answer) return false
+      else next()
     })
 
     const userData = ref()
 
     // same as beforeRouteUpdate option with no access to `this`
-    onBeforeRouteUpdate(async (to, from) => {
+    onBeforeRouteUpdate(async (to, from, next) => {
       // only fetch the user if the id changed as maybe only the query or the hash changed
       if (to.params.id !== from.params.id) {
         userData.value = await fetchUser(to.params.id)
-      }
+      } else next()
     })
   },
 }
