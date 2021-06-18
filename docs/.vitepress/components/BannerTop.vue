@@ -11,10 +11,7 @@
         <img src="/images/vueschool/vs-backpack.png" alt="Backpack">
       </div>
       <div class="vs-slogan">
-        3-months Vue School for only $49 <span style="text-decoration: line-through">$75</span>!
-        <span class="vs-slogan-light">
-          Limited Time Offer
-        </span>
+        Less than <span class="vs-slogan-light">48 hours</span> left for the Vue School offer
       </div>
       <div class="vs-button">
         GET ACCESS
@@ -74,7 +71,6 @@
 
 @media (min-width: 680px) {
   #vs .vs-iso {
-    left: 40px;
     height: 40px;
     display: inline-block;
   }
@@ -109,6 +105,7 @@
 
 #vs .vs-core .vs-backpack {
   margin-right: 14px;
+  position: absolute;
 }
 
 #vs .vs-core .vs-backpack img {
@@ -116,6 +113,10 @@
 }
 
 @media (min-width: 680px) {
+  #vs .vs-core .vs-backpack {
+    position: static;
+  }
+
   #vs .vs-core .vs-backpack img {
     height: 74px;
   }
@@ -125,11 +126,15 @@
   color: #FFF;
   font-weight: bold;
   font-size: 14px;
-  margin-right: 26px;
+  text-align: center;
+  padding:  0 90px;
 }
 
 @media (min-width: 680px) {
   #vs .vs-core .vs-slogan {
+    padding: 0;
+    text-align: left;
+    margin-right: 26px;
     margin-right: 0;
     font-size: 18px;
   }
@@ -137,7 +142,6 @@
 
 #vs .vs-core .vs-slogan > .vs-slogan-light {
   color: #ff5338;
-  display: block;
   text-align: left;
 }
 
@@ -149,7 +153,7 @@
 }
 
 #vs .vs-core .vs-button {
-  margin-left: 43px;
+  margin-left: 13px;
   color: #fff;
   padding: 13px 24px;
   border-radius: 40px;
