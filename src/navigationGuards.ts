@@ -60,6 +60,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
 
   const activeRecord: RouteRecordNormalized | undefined = inject(
     matchedRouteKey,
+    // to avoid warning
     {} as any
   ).value
 
@@ -91,6 +92,7 @@ export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
 
   const activeRecord: RouteRecordNormalized | undefined = inject(
     matchedRouteKey,
+    // to avoid warning
     {} as any
   ).value
 
@@ -327,6 +329,7 @@ export function extractComponentsGuards(
 
 /**
  * Allows differentiating lazy components from functional components and vue-class-component
+ *
  * @param component
  */
 function isRouteComponent(
