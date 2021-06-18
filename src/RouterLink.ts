@@ -149,6 +149,8 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
     },
   },
 
+  useLink,
+
   setup(props, { slots }) {
     const link = reactive(useLink(props))
     const { options } = inject(routerKey)!
@@ -218,13 +220,20 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
 /**
  * Component to render a link that triggers a navigation on click.
  */
-export const RouterLink = RouterLinkImpl as {
+export const RouterLink = RouterLinkImpl as unknown as {
   new (): {
     $props: AllowedComponentProps &
       ComponentCustomProps &
       VNodeProps &
       RouterLinkProps
   }
+
+  /**
+   * Access to `useLink()` without depending on using vue-router
+   *
+   * @internal
+   */
+  useLink: typeof useLink
 }
 
 function guardEvent(e: MouseEvent) {
