@@ -67,6 +67,9 @@
         <router-link to="/">Home</router-link>
       </li>
       <li>
+        <AppLink to="/">AppLink Home</AppLink>
+      </li>
+      <li>
         <router-link to="/always-redirect">/always-redirect</router-link>
       </li>
       <li>
@@ -183,14 +186,20 @@
 <script>
 import { defineComponent, inject, computed, ref } from 'vue'
 import { scrollWaiter } from './scrollWaiter'
-import { useRoute } from '../src'
+import { useLink, useRoute } from '../src'
+import AppLink from './AppLink.vue'
 
 export default defineComponent({
   name: 'App',
+  components: { AppLink },
   setup() {
     const route = useRoute()
     const state = inject('state')
     const viewName = ref('default')
+
+    useLink({ to: '/' })
+    useLink({ to: '/documents/hello' })
+    useLink({ to: '/children' })
 
     const currentLocation = computed(() => {
       const { matched, ...rest } = route

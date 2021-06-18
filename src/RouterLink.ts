@@ -12,7 +12,12 @@ import {
   getCurrentInstance,
   watchEffect,
 } from 'vue'
-import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types'
+import {
+  RouteLocationRaw,
+  VueUseOptions,
+  RouteLocation,
+  RouteLocationNormalized,
+} from './types'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
@@ -56,6 +61,12 @@ export interface RouterLinkProps extends RouterLinkOptions {
     | 'time'
     | 'true'
     | 'false'
+}
+
+export interface UseLinkDevtoolsContext {
+  route: RouteLocationNormalized & { href: string }
+  isActive: boolean
+  isExactActive: boolean
 }
 
 export type UseLinkOptions = VueUseOptions<RouterLinkOptions>
@@ -122,6 +133,30 @@ export function useLink(props: UseLinkOptions) {
     return Promise.resolve()
   }
 
+  // devtools only
+  if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
+    const instance = getCurrentInstance()
+    if (!instance) return
+    const linkContextDevtools: UseLinkDevtoolsContext = {
+      route: route.value,
+      isActive: isActive.value,
+      isExactActive: isExactActive.value,
+    }
+
+    // @ts-expect-error: this is internal
+    instance.__vrl_devtools = instance.__vrl_devtools || []
+    // @ts-expect-error: this is internal
+    instance.__vrl_devtools.push(linkContextDevtools)
+    watchEffect(
+      () => {
+        linkContextDevtools.route = route.value
+        linkContextDevtools.isActive = isActive.value
+        linkContextDevtools.isExactActive = isExactActive.value
+      },
+      { flush: 'post' }
+    )
+  }
+
   return {
     route,
     href: computed(() => route.value.href),
@@ -172,26 +207,6 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
         'router-link-exact-active'
       )]: link.isExactActive,
     }))
-
-    // devtools only
-    if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
-      const instance = getCurrentInstance()
-      watchEffect(
-        () => {
-          if (!instance) return
-          ;(instance as any).__vrl_route = link.route
-        },
-        { flush: 'post' }
-      )
-      watchEffect(
-        () => {
-          if (!instance) return
-          ;(instance as any).__vrl_active = link.isActive
-          ;(instance as any).__vrl_exactActive = link.isExactActive
-        },
-        { flush: 'post' }
-      )
-    }
 
     return () => {
       const children = slots.default && slots.default(link)
