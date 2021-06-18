@@ -149,6 +149,8 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
     },
   },
 
+  useLink,
+
   setup(props, { slots }) {
     const link = reactive(useLink(props))
     const { options } = inject(routerKey)!
@@ -213,8 +215,6 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
   },
 })
 
-RouterLinkImpl.useLink = useLink
-
 // export the public type for h/tsx inference
 // also to avoid inline import() in generated d.ts files
 /**
@@ -227,6 +227,12 @@ export const RouterLink = RouterLinkImpl as unknown as {
       VNodeProps &
       RouterLinkProps
   }
+
+  /**
+   * Access to `useLink()` without depending on using vue-router
+   *
+   * @internal
+   */
   useLink: typeof useLink
 }
 
