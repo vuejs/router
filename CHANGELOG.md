@@ -1,3 +1,10 @@
+## [4.0.10](https://github.com/vuejs/vue-router-next/compare/v4.0.9...v4.0.10) (2021-06-21)
+
+### Features
+
+- **devtools:** display components using `useLink()` ([aab8c04](https://github.com/vuejs/vue-router-next/commit/aab8c0414af6784fc0250fb4b81be4186ff4cfec)), closes [#1003](https://github.com/vuejs/vue-router-next/issues/1003)
+- **link:** expose useLink on RouterLink as internal ([#1002](https://github.com/vuejs/vue-router-next/issues/1002)) ([57b1468](https://github.com/vuejs/vue-router-next/commit/57b1468645248068c76b809efd10f3f42762d52b))
+
 ## [4.0.9](https://github.com/vuejs/vue-router-next/compare/v4.0.8...v4.0.9) (2021-06-16)
 
 ### Bug Fixes
