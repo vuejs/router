@@ -69,7 +69,7 @@ createRouter({
 
 ### 删除了 `RouterOptions` 中的 `fallback` 属性
 
-创建路由器时不再支持 `fallback` 选项：
+创建路由时不再支持 `fallback` 属性：
 
 ```diff
 -new VueRouter({
