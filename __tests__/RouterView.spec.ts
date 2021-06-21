@@ -424,10 +424,6 @@ describe('RouterView', () => {
         },
       })
 
-      // FIXME: the slot default is causing a warning with VTU
-      // https://github.com/vuejs/vue-test-utils-next/issues/549
-      expect('').toHaveBeenWarned()
-
       return { route, wrapper }
     }
 
@@ -458,9 +454,6 @@ describe('RouterView', () => {
           </template>`,
         },
       })
-
-      // FIXME: check comment above
-      expect('').toHaveBeenWarned()
 
       return { route, wrapper }
     }
@@ -494,9 +487,6 @@ describe('RouterView', () => {
           </template>`,
         },
       })
-
-      // FIXME: check comment above
-      expect('').toHaveBeenWarned()
 
       return { route, wrapper }
     }
