@@ -71,11 +71,11 @@ export interface UseLinkDevtoolsContext {
 }
 
 interface useLinkPropsOptions {
-  route: ComputedRef<RouteLocationNormalized & { href: string }>,
-  href: ComputedRef<string>,
-  isActive: ComputedRef<boolean>,
-  isExactActive: ComputedRef<boolean>,
-  navigate: (event?: MouseEvent) => Promise<NavigationFailure | void>,
+  route: ComputedRef<RouteLocationNormalized & { href: string }>
+  href: ComputedRef<string>
+  isActive: ComputedRef<boolean>
+  isExactActive: ComputedRef<boolean>
+  navigate: (event?: MouseEvent) => Promise<NavigationFailure | void>
 }
 
 export type UseLinkOptions = VueUseOptions<RouterLinkOptions>
