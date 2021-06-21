@@ -910,6 +910,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/highlight.js@^9.7.0":
+  version "9.12.4"
+  resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.12.4.tgz#8c3496bd1b50cc04aeefd691140aa571d4dbfa34"
+  integrity sha512-t2szdkwmg2JJyuCM20e8kR2X59WCE5Zkl4bzm1u1Oukjm79zpbiAv+QjnwLnuuV0WHEcX2NgUItu0pAMKuOPww==
+
 "@types/html-minifier-terser@^5.0.0":
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/@types/html-minifier-terser/-/html-minifier-terser-5.1.1.tgz#3c9ee980f1a10d6021ae6632ca3e79ca2ec4fb50"
@@ -955,6 +960,25 @@
   version "7.0.7"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.7.tgz#98a993516c859eb0d5c4c8f098317a9ea68db9ad"
   integrity sha512-cxWFQVseBm6O9Gbw1IWb8r6OS4OhSt3hPZLkFApLjM8TEXROBuQGLAH2i2gZpcXdLBIrpXuTDhH7Vbm1iXmNGA==
+
+"@types/linkify-it@*":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/linkify-it/-/linkify-it-3.0.1.tgz#4d26a9efe3aa2caf829234ec5a39580fc88b6001"
+  integrity sha512-pQv3Sygwxxh6jYQzXaiyWDAHevJqWtqDUv6t11Sa9CPGiXny66II7Pl6PR8QO5OVysD6HYOkHMeBgIjLnk9SkQ==
+
+"@types/markdown-it@^12.0.1":
+  version "12.0.2"
+  resolved "https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-12.0.2.tgz#153e5477970ed2a47b2f619ed4ab66f870de8a04"
+  integrity sha512-p4DIfLMmGN0iLSbMxknDXeSm8W2ZRqQeN/1EAwVxVqJietzgp3WeP1UQjCKWDXWBcEbUa1ECx8YAfdpQdDQmZQ==
+  dependencies:
+    "@types/highlight.js" "^9.7.0"
+    "@types/linkify-it" "*"
+    "@types/mdurl" "*"
+
+"@types/mdurl@*":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/mdurl/-/mdurl-1.0.2.tgz#e2ce9d83a613bacf284c7be7d491945e39e1f8e9"
+  integrity sha512-eC4U9MlIcu2q0KQmXszyn5Akca/0jrQmwDRgpAMJai7qBWq4amIQhZyNau4VYGtCeALvW1/NtjzJJ567aZxfKA==
 
 "@types/minimatch@*":
   version "3.0.4"
@@ -2698,7 +2722,14 @@ debug@3.2.6:
   dependencies:
     ms "^2.1.1"
 
-debug@4, debug@4.3.1, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1:
+debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.2.tgz#f0a49c18ac8779e31d4a0c6029dfb76873c7428b"
+  integrity sha512-mOp8wKcvj7XxC78zLgw/ZA+6TSgkoE2C/ienthhRD298T7UNwAg9diBpLRxC0mOezLl4B0xV7M0cCO6P/O0Xhw==
+  dependencies:
+    ms "2.1.2"
+
+debug@4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.1.tgz#f0d229c505e0c6d8c49ac553d1b13dc183f6b2ee"
   integrity sha512-doEwdvm4PCeK4K3RQN2ZC2BYUBaxwLARCqZmMjtF8a51J2Rb0xpVloFRnCODwqjpwnAoao4pelN8l3RJdv3gRQ==
@@ -2711,13 +2742,6 @@ debug@^3.1.1, debug@^3.2.6:
   integrity sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==
   dependencies:
     ms "^2.1.1"
-
-debug@^4.3.2:
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.2.tgz#f0a49c18ac8779e31d4a0c6029dfb76873c7428b"
-  integrity sha512-mOp8wKcvj7XxC78zLgw/ZA+6TSgkoE2C/ienthhRD298T7UNwAg9diBpLRxC0mOezLl4B0xV7M0cCO6P/O0Xhw==
-  dependencies:
-    ms "2.1.2"
 
 decamelize-keys@^1.1.0:
   version "1.1.0"
@@ -8834,13 +8858,14 @@ vite@^2.3.7:
   optionalDependencies:
     fsevents "~2.3.1"
 
-vitepress@^0.14.1:
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/vitepress/-/vitepress-0.14.1.tgz#0f431d3070b9a18938985be8078f27faf90ed5c6"
-  integrity sha512-cGsDULwKvKljtDNm4uy8zDYoM3gBRxr75R8+buzeyWnpXEqIwWICl0P2AHwLm2Dbs7cVy8lAREOrcUsShDzPuA==
+vitepress@^0.15.4:
+  version "0.15.4"
+  resolved "https://registry.yarnpkg.com/vitepress/-/vitepress-0.15.4.tgz#170ee7e30b33beb1b2ba1d6c6ec55b1e074ac750"
+  integrity sha512-Z8227gCpVv+OTUsM0F4MhLkpf3nerIHGA59HXlvNNV50KT9MG86OaVhJlQOl2+mUNY9D7kx3VHp0gvWk8ySGwQ==
   dependencies:
     "@docsearch/css" "^1.0.0-alpha.28"
     "@docsearch/js" "^1.0.0-alpha.28"
+    "@types/markdown-it" "^12.0.1"
     "@vitejs/plugin-vue" "^1.2.3"
     "@vue/compiler-sfc" "^3.1.1"
     "@vue/server-renderer" "^3.1.1"
