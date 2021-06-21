@@ -15,7 +15,7 @@ import { RouteRecordMatcher } from './matcher/pathMatcher'
 import { PathParser } from './matcher/pathParserRanker'
 import { Router } from './router'
 import { UseLinkDevtoolsContext } from './RouterLink'
-import { RouteLocation, RouteLocationNormalized } from './types'
+import { RouteLocationNormalized } from './types'
 import { assign } from './utils'
 
 function formatRouteLocation(
