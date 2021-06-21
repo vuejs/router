@@ -135,11 +135,9 @@ const app = createApp({
         <li><router-link to="/nested/bar">/nested/bar</router-link></li>
       </ul>
       <router-view class="view" v-slot="{ Component }">
-      <suspense :timeout="0">
         <transition :name="transitionName" mode="out-in">
           <component :is="Component" />
         </transition>
-      </suspense>
       </router-view>
     </div>
   `,

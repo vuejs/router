@@ -201,33 +201,29 @@ const app = createApp({
   },
 
   template: `
-    <div id="app">
-      <ul>
-        <li><router-link to="/">Home</router-link></li>
-        <li><router-link to="/data">Suspended</router-link></li>
-        <li><router-link to="/data/data">Suspended nested</router-link></li>
-        <li><router-link :to="{ name: 'id1', params: { id: nextId }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
+    <ul>
+      <li><router-link to="/">Home</router-link></li>
+      <li><router-link to="/data">Suspended</router-link></li>
+      <li><router-link to="/data/data">Suspended nested</router-link></li>
+      <li><router-link :to="{ name: 'id1', params: { id: nextId }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
 
-        <li><router-link to="/data-2">Suspended (2)</router-link></li>
-        <li><router-link to="/data-2/data">Suspended nested (2)</router-link></li>
-        <li><router-link :to="{ name: 'id2', params: { id: nextId }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
-      </ul>
+      <li><router-link to="/data-2">Suspended (2)</router-link></li>
+      <li><router-link to="/data-2/data">Suspended nested (2)</router-link></li>
+      <li><router-link :to="{ name: 'id2', params: { id: nextId }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
+    </ul>
 
-      <pre v-if="pendingRoute">Loading {{ pendingRoute.fullPath }} from {{ $route.fullPath }}</pre>
+    <pre v-if="pendingRoute">Loading {{ pendingRoute.fullPath }} from {{ $route.fullPath }}</pre>
 
-      <router-view v-slot="{ Component }" :route="pendingRoute">
-        <transition name="fade" mode="out-in" v-if="Component">
-          <suspense :timeout="0" v-bind="suspenseProps">
-            <component :is="Component" />
-            <template #fallback>
-              <p>Loading App...</p>
-            </template>
-          </suspense>
-        </transition>
-      </router-view>
-
-
-    </div>
+    <router-view v-slot="{ Component }" :route="pendingRoute">
+      <transition name="fade" mode="out-in" v-if="Component">
+        <suspense :timeout="0" v-bind="suspenseProps">
+          <component :is="Component" />
+          <template #fallback>
+            <p>Loading App...</p>
+          </template>
+        </suspense>
+      </transition>
+    </router-view>
   `,
 })
 app.use(router)

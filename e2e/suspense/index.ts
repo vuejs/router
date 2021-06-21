@@ -69,33 +69,31 @@ const router = createRouter({
 
 const app = createApp({
   template: `
-    <div id="app">
-      <h1>Suspense</h1>
+    <h1>Suspense</h1>
 
-      <pre>
+    <pre>
 route: {{ $route.fullPath }}
 enters: {{ state.enter }}
 updates: {{ state.update }}
 leaves: {{ state.leave }}
-      </pre>
+    </pre>
 
-      <pre id="logs">{{ logs.join('\\n') }}</pre>
+    <pre id="logs">{{ logs.join('\\n') }}</pre>
 
-      <button id="resetLogs" @click="logs = []">Reset Logs</button>
+    <button id="resetLogs" @click="logs = []">Reset Logs</button>
 
-      <ul>
-        <li><router-link to="/">/</router-link></li>
-        <li><router-link to="/foo">/foo</router-link></li>
-        <li><router-link to="/foo-async">/foo-async</router-link></li>
-        <li><router-link id="update-query" :to="{ query: { n: (Number($route.query.n) || 0) + 1 }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
-      </ul>
+    <ul>
+      <li><router-link to="/">/</router-link></li>
+      <li><router-link to="/foo">/foo</router-link></li>
+      <li><router-link to="/foo-async">/foo-async</router-link></li>
+      <li><router-link id="update-query" :to="{ query: { n: (Number($route.query.n) || 0) + 1 }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
+    </ul>
 
-      <router-view v-slot="{ Component }" >
-        <Suspense>
-          <component :is="Component" class="view" />
-        </Suspense>
-      </router-view>
-    </div>
+    <router-view v-slot="{ Component }" >
+      <Suspense>
+        <component :is="Component" class="view" />
+      </Suspense>
+    </router-view>
   `,
   setup() {
     return { state, logs }
