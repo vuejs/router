@@ -159,65 +159,62 @@ router.push = to => {
 
 const app = createApp({
   template: `
-    <div id="app">
-      <h1>Instances</h1>
-      <p>Using {{ testCase || 'default' }}</p>
-      <button id="test-normal" @click="testCase = ''">Use Normal</button>
-      <button id="test-keepalive" @click="testCase = 'keepalive'">Use Keep Alive</button>
-      <button id="test-transition" @click="testCase = 'transition'">Use Transition</button>
-      <button id="test-keyed" @click="testCase = 'keyed'">Use keyed</button>
-      <button id="test-keepalivekeyed" @click="testCase = 'keepalivekeyed'">Use Keep Alive Keyed</button>
-      <pre>
+    <h1>Instances</h1>
+    <p>Using {{ testCase || 'default' }}</p>
+    <button id="test-normal" @click="testCase = ''">Use Normal</button>
+    <button id="test-keepalive" @click="testCase = 'keepalive'">Use Keep Alive</button>
+    <button id="test-transition" @click="testCase = 'transition'">Use Transition</button>
+    <button id="test-keyed" @click="testCase = 'keyed'">Use keyed</button>
+    <button id="test-keepalivekeyed" @click="testCase = 'keepalivekeyed'">Use Keep Alive Keyed</button>
+    <pre>
 route: {{ $route.fullPath }}
 enters: {{ state.enter }}
 updates: {{ state.update }}
 leaves: {{ state.leave }}
-      </pre>
-      <pre id="logs">{{ logs.join('\\n') }}</pre>
-      <button id="resetLogs" @click="logs = []">Reset Logs</button>
-      <ul>
-        <li><router-link to="/">/</router-link></li>
-        <li><router-link to="/foo">/foo</router-link></li>
-        <li><router-link to="/f/1">/f/1</router-link></li>
-        <li><router-link to="/f/2">/f/2</router-link></li>
-        <li><router-link to="/f/2?bar=foo">/f/2?bar=foo</router-link></li>
-        <li><router-link to="/f/2?foo=key">/f/2?foo=key</router-link></li>
-        <li><router-link to="/f/2?foo=key2">/f/2?foo=key2</router-link></li>
-        <li><router-link id="update-query" :to="{ query: { n: (Number($route.query.n) || 0) + 1 }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
-        <li><router-link to="/named-one">/named-one</router-link></li>
-        <li><router-link to="/named-two">/named-two</router-link></li>
-      </ul>
+    </pre>
+    <pre id="logs">{{ logs.join('\\n') }}</pre>
+    <button id="resetLogs" @click="logs = []">Reset Logs</button>
+    <ul>
+      <li><router-link to="/">/</router-link></li>
+      <li><router-link to="/foo">/foo</router-link></li>
+      <li><router-link to="/f/1">/f/1</router-link></li>
+      <li><router-link to="/f/2">/f/2</router-link></li>
+      <li><router-link to="/f/2?bar=foo">/f/2?bar=foo</router-link></li>
+      <li><router-link to="/f/2?foo=key">/f/2?foo=key</router-link></li>
+      <li><router-link to="/f/2?foo=key2">/f/2?foo=key2</router-link></li>
+      <li><router-link id="update-query" :to="{ query: { n: (Number($route.query.n) || 0) + 1 }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
+      <li><router-link to="/named-one">/named-one</router-link></li>
+      <li><router-link to="/named-two">/named-two</router-link></li>
+    </ul>
 
-      <template v-if="testCase === 'keepalive'">
-        <router-view v-slot="{ Component }" >
-          <keep-alive>
-            <component :is="Component" class="view" />
-          </keep-alive>
-        </router-view>
-      </template>
-      <template v-else-if="testCase === 'transition'">
-        <router-view v-slot="{ Component }" >
-          <transition name="fade" mode="">
-            <component :is="Component" class="view" />
-          </transition>
-        </router-view>
-      </template>
-      <template v-else-if="testCase === 'keyed'">
-        <router-view :key="$route.query.foo || undefined" class="view" />
-      </template>
-      <template v-else-if="testCase === 'keepalivekeyed'">
-        <router-view v-slot="{ Component }" >
-          <keep-alive>
-            <component :is="Component" :key="$route.query.foo || undefined" class="view" />
-          </keep-alive>
-        </router-view>
-      </template>
-      <template v-else>
-        <router-view class="view" />
-        <router-view class="aux-view" name="aux" />
-      </template>
-
-    </div>
+    <template v-if="testCase === 'keepalive'">
+      <router-view v-slot="{ Component }" >
+        <keep-alive>
+          <component :is="Component" class="view" />
+        </keep-alive>
+      </router-view>
+    </template>
+    <template v-else-if="testCase === 'transition'">
+      <router-view v-slot="{ Component }" >
+        <transition name="fade" mode="">
+          <component :is="Component" class="view" />
+        </transition>
+      </router-view>
+    </template>
+    <template v-else-if="testCase === 'keyed'">
+      <router-view :key="$route.query.foo || undefined" class="view" />
+    </template>
+    <template v-else-if="testCase === 'keepalivekeyed'">
+      <router-view v-slot="{ Component }" >
+        <keep-alive>
+          <component :is="Component" :key="$route.query.foo || undefined" class="view" />
+        </keep-alive>
+      </router-view>
+    </template>
+    <template v-else>
+      <router-view class="view" />
+      <router-view class="aux-view" name="aux" />
+    </template>
   `,
   setup() {
     const router = useRouter()

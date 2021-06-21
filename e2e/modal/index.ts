@@ -195,9 +195,7 @@ const app = createApp({
   },
 
   template: `
-    <div id="app">
-      <router-view :route="routeWithModal"></router-view>
-    </div>
+    <router-view :route="routeWithModal"></router-view>
   `,
 })
 app.use(router)

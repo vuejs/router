@@ -112,16 +112,15 @@ const app = createApp({
   },
 
   template: `
-    <div id="app">
-      <h1>Transitions</h1>
-      <pre>CI: ${__CI__}</pre>
-      <button id="toggle-transition" @click="toggleTransition">Toggle Transition</button>
-      <ul>
-        <li><router-link to="/">/</router-link></li>
-        <li><router-link to="/parent">/parent</router-link></li>
-        <li><router-link to="/parent/foo">/parent/foo</router-link></li>
-        <li><router-link to="/parent/bar">/parent/bar</router-link></li>
-        <li><router-link to="/not-found">Not existing</router-link></li>
+    <h1>Transitions</h1>
+    <pre>CI: ${__CI__}</pre>
+    <button id="toggle-transition" @click="toggleTransition">Toggle Transition</button>
+    <ul>
+      <li><router-link to="/">/</router-link></li>
+      <li><router-link to="/parent">/parent</router-link></li>
+      <li><router-link to="/parent/foo">/parent/foo</router-link></li>
+      <li><router-link to="/parent/bar">/parent/bar</router-link></li>
+      <li><router-link to="/not-found">Not existing</router-link></li>
 
         <li><router-link to="/nested">/nested</router-link></li>
         <li><router-link to="/nested/foo">/nested/foo</router-link></li>
