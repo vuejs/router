@@ -67,6 +67,20 @@ createRouter({
 })
 ```
 
+### 删除了 `RouterOptions` 中的 `fallback` 属性
+
+创建路由时不再支持 `fallback` 属性：
+
+```diff
+-new VueRouter({
++createRouter({
+-  fallback: false,
+// other options...
+})
+```
+
+**原因**: Vue支持的所有浏览器都支持 [HTML5 History API](https://developer.mozilla.org/zh-CN/docs/Web/API/History_API)，因此我们不再需要使用 `location.hash`，而可以直接使用 `history.pushState()`。
+
 ### 删除了 `*`（星标或通配符）路由
 
 现在必须使用自定义的 regex 参数来定义所有路由(`*`、`/*`)：
