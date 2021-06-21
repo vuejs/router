@@ -36,6 +36,7 @@ import { RouterLink } from 'vue-router'
 
 export default {
   name: 'AppLink',
+  inheritAttrs: false,
 
   props: {
     // add @ts-ignore if using TypeScript
