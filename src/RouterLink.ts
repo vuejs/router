@@ -136,25 +136,26 @@ export function useLink(props: UseLinkOptions) {
   // devtools only
   if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
     const instance = getCurrentInstance()
-    if (!instance) return
-    const linkContextDevtools: UseLinkDevtoolsContext = {
-      route: route.value,
-      isActive: isActive.value,
-      isExactActive: isExactActive.value,
-    }
+    if (instance) {
+      const linkContextDevtools: UseLinkDevtoolsContext = {
+        route: route.value,
+        isActive: isActive.value,
+        isExactActive: isExactActive.value,
+      }
 
-    // @ts-expect-error: this is internal
-    instance.__vrl_devtools = instance.__vrl_devtools || []
-    // @ts-expect-error: this is internal
-    instance.__vrl_devtools.push(linkContextDevtools)
-    watchEffect(
-      () => {
-        linkContextDevtools.route = route.value
-        linkContextDevtools.isActive = isActive.value
-        linkContextDevtools.isExactActive = isExactActive.value
-      },
-      { flush: 'post' }
-    )
+      // @ts-expect-error: this is internal
+      instance.__vrl_devtools = instance.__vrl_devtools || []
+      // @ts-expect-error: this is internal
+      instance.__vrl_devtools.push(linkContextDevtools)
+      watchEffect(
+        () => {
+          linkContextDevtools.route = route.value
+          linkContextDevtools.isActive = isActive.value
+          linkContextDevtools.isExactActive = isExactActive.value
+        },
+        { flush: 'post' }
+      )
+    }
   }
 
   return {
