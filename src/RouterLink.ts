@@ -4,6 +4,7 @@ import {
   PropType,
   inject,
   computed,
+  ComputedRef,
   reactive,
   unref,
   VNodeProps,
@@ -67,6 +68,14 @@ export interface UseLinkDevtoolsContext {
   route: RouteLocationNormalized & { href: string }
   isActive: boolean
   isExactActive: boolean
+}
+
+interface useLinkPropsOptions {
+  route: ComputedRef<RouteLocationNormalized & { href: string }>,
+  href: ComputedRef<string>,
+  isActive: ComputedRef<boolean>,
+  isExactActive: ComputedRef<boolean>,
+  navigate: (event?: MouseEvent) => Promise<NavigationFailure | void>,
 }
 
 export type UseLinkOptions = VueUseOptions<RouterLinkOptions>
@@ -187,7 +196,7 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
   useLink,
 
   setup(props, { slots }) {
-    const link = reactive(useLink(props))
+    const link = reactive(useLink(props) as useLinkPropsOptions)
     const { options } = inject(routerKey)!
 
     const elClass = computed(() => ({
