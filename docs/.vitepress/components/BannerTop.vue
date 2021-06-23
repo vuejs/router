@@ -11,7 +11,7 @@
         <img src="/images/vueschool/vs-backpack.png" alt="Backpack">
       </div>
       <div class="vs-slogan">
-        Less than <span class="vs-slogan-light">48 hours</span> left for the Vue School offer
+        Extended! <span class="vs-slogan-light">Last few hours</span> for the Vue School offer
       </div>
       <div class="vs-button">
         GET ACCESS
@@ -115,10 +115,17 @@
 @media (min-width: 680px) {
   #vs .vs-core .vs-backpack {
     position: static;
+    margin-right: 0;
   }
 
   #vs .vs-core .vs-backpack img {
     height: 74px;
+  }
+}
+
+@media (min-width: 900px) {
+  #vs .vs-core .vs-backpack {
+    margin-right: 14px;
   }
 }
 
