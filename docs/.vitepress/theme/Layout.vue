@@ -1,65 +1,42 @@
 <template>
-  <div
-    class="main-container"
-    :class="{ 'has-top-banner': showTopBanner }"
-  >
-    <BannerTop
-      v-if="showTopBanner"
-      @close="closeBannerTop"
-    />
-    <ParentLayout>
-      <template #sidebar-bottom>
-        <div class="sponsors">
-          <a
-            href="https://github.com/sponsors/posva"
-            target="_blank"
-            rel="noopener"
-            >Sponsors</a
-          >
+  <ParentLayout>
+    <template #sidebar-bottom>
+      <div class="sponsors">
+        <a
+          href="https://github.com/sponsors/posva"
+          target="_blank"
+          rel="noopener"
+          >Sponsors</a
+        >
 
-          <a
-            v-for="sponsor in sponsors.gold"
-            :href="sponsor.href"
-            :key="sponsor.href"
-            target="_blank"
-            rel="noopener"
-          >
-            <img :src="sponsor.imgSrcLight" :alt="sponsor.alt" />
-          </a>
-        </div>
-      </template>
-    </ParentLayout>
-  </div>
+        <a
+          v-for="sponsor in sponsors.gold"
+          :href="sponsor.href"
+          :key="sponsor.href"
+          target="_blank"
+          rel="noopener"
+        >
+          <img :src="sponsor.imgSrcLight" :alt="sponsor.alt" />
+        </a>
+      </div>
+    </template>
+  </ParentLayout>
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue'
 import DefaultTheme from 'vitepress/dist/client/theme-default'
 import sponsors from '../components/sponsors.json'
 
-const BannerTop = defineAsyncComponent(() => import('../components/BannerTop.vue'))
-
 export default {
   name: 'Layout',
+
   components: {
     ParentLayout: DefaultTheme.Layout,
-    BannerTop
   },
-  data () {
-    return {
-      sponsors,
-      showTopBanner: false
-    }
+
+  setup() {
+    return { sponsors }
   },
-  mounted () {
-    this.showTopBanner = !localStorage.getItem('VS_SUMMER_BANNER_CLOSED')
-  },
-  methods: {
-    closeBannerTop () {
-      this.showTopBanner = false
-      localStorage.setItem('VS_SUMMER_BANNER_CLOSED', 1)
-    }
-  }
 }
 </script>
 
