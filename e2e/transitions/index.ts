@@ -139,7 +139,6 @@ const app = createApp({
           <component :is="Component" />
         </transition>
       </router-view>
-    </div>
   `,
 })
 app.use(router)

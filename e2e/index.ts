@@ -14,7 +14,7 @@ examples.sort()
 declare global {
   interface Window {
     app: App<Element>
-    // @ts-expect-error: wat?
+    // @ts-ignore: wat???
     vm: ComponentPublicInstance
     r: Router
   }
