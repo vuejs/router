@@ -54,10 +54,6 @@ export const routeLocationKey = /*#__PURE__*/ PolySymbol(
   __DEV__ ? 'route location' : 'rl'
 ) as InjectionKey<RouteLocationNormalizedLoaded>
 
-export const suspendedRouteKey = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'suspended route location' : 'srl'
-) as InjectionKey<Ref<RouteLocationNormalizedLoaded | null>>
-
 /**
  * Allows overriding the current route used by router-view. Internally this is
  * used when the `route` prop is passed.

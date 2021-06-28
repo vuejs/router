@@ -65,7 +65,6 @@ import {
   routeLocationKey,
   routerKey,
   routerViewLocationKey,
-  suspendedRouteKey,
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
 
@@ -370,7 +369,6 @@ export function createRouter(options: RouterOptions): Router {
     START_LOCATION_NORMALIZED
   )
   let pendingLocation: RouteLocation = START_LOCATION_NORMALIZED
-  const suspendedRoute = shallowRef<RouteLocationNormalizedLoaded | null>()
 
   // leave the scrollRestoration if no scrollBehavior is provided
   if (isBrowser && options.scrollBehavior && 'scrollRestoration' in history) {
@@ -1191,7 +1189,6 @@ export function createRouter(options: RouterOptions): Router {
 
       app.provide(routerKey, router)
       app.provide(routeLocationKey, reactive(reactiveRoute))
-      app.provide(suspendedRouteKey, suspendedRoute)
       app.provide(routerViewLocationKey, currentRoute)
 
       let unmountApp = app.unmount
