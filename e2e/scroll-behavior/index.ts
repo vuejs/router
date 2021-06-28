@@ -52,7 +52,7 @@ const scrollBehavior: RouterScrollBehavior = async function (
     }
 
     // check if any matched route config has meta that requires scrolling to top
-    if (to.matched.some(m => m.meta.scrollToTop)) {
+    if (to.meta.scrollToTop) {
       // coords will be used if no selector is provided,
       // or if the selector didn't match any element.
       return { left: 0, top: 0, behavior }
@@ -72,6 +72,12 @@ const router = createRouter({
     { path: '/bar', component: Bar, meta: { scrollToTop: true } },
   ],
 })
+
+declare module '../../src' {
+  export interface RouteMeta {
+    scrollToTop?: boolean
+  }
+}
 
 scrollWaiter.add()
 
