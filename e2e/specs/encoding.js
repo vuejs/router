@@ -14,7 +14,7 @@ module.exports = {
   /** @type {import('nightwatch').NightwatchTest} */
   'encodes values': function (browser) {
     browser
-      .url(baseURL)
+      .url(baseURL + '/')
       .assert.urlEquals(baseURL + '/')
       .waitForElementPresent('#app > *', TIMEOUT)
 
