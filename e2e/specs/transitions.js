@@ -9,7 +9,7 @@ module.exports = {
     const TIMEOUT = 3000
 
     browser
-      .url('http://localhost:8080/transitions/')
+      .url('http://localhost:3000/transitions/')
       .waitForElementPresent('#app > *', 1000)
 
       .click('li:nth-child(2) a')
@@ -54,7 +54,7 @@ module.exports = {
 
   'out in transitions': function (browser) {
     browser
-      .url('http://localhost:8080/transitions/')
+      .url('http://localhost:3000/transitions/')
       .waitForElementPresent('#app > *', 1000)
       .click('#toggle-transition')
 

@@ -8,7 +8,7 @@ module.exports = {
   /** @type {import('nightwatch').NightwatchTest} */
   KeepAlive: function (browser) {
     browser
-      .url('http://localhost:8080/keep-alive/')
+      .url('http://localhost:3000/keep-alive/')
       .waitForElementPresent('#app > *', 1000)
 
       .assert.containsText('#counter', '0')

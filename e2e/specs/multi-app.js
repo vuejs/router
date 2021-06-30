@@ -1,6 +1,6 @@
 const bsStatus = require('../browserstack-send-status')
 
-const baseURL = 'http://localhost:8080/multi-app/'
+const baseURL = 'http://localhost:3000/multi-app'
 
 module.exports = {
   ...bsStatus(),

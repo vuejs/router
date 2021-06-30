@@ -8,7 +8,7 @@ module.exports = {
   /** @type {import('nightwatch').NightwatchTest} */
   'suspense with guards': function (browser) {
     browser
-      .url('http://localhost:8080/suspense/foo')
+      .url('http://localhost:3000/suspense/foo')
       .waitForElementPresent('#app > *', 1000)
 
     browser
