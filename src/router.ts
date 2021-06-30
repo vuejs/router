@@ -1214,10 +1214,10 @@ export function createRouter(options: RouterOptions): Router {
 }
 
 function runGuardQueue(guards: Lazy<any>[]): Promise<void> {
-  return guards.reduce(
-    (promise, guard) => promise.then(() => guard()),
-    Promise.resolve()
-  )
+  return guards.reduce((promise, guard) => {
+    const promises = Array.isArray(promise) ? promise : [promise]
+    return Promise.all(promises).then(() => guard())
+  }, Promise.resolve())
 }
 
 function extractChangingRecords(

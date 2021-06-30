@@ -233,7 +233,7 @@ export function extractComponentsGuards(
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded
 ) {
-  const guards: Array<() => Promise<void>> = []
+  const guards: Array<() => Promise<void> | Promise<Array<Promise<void>>>> = []
 
   for (const record of matched) {
     for (const name in record.components) {
@@ -285,6 +285,14 @@ export function extractComponentsGuards(
         // __vccOpts is added by vue-class-component and contain the regular options
         let options: ComponentOptions =
           (rawComponent as any).__vccOpts || rawComponent
+        // guards in mixins
+        if (options.mixins && options.mixins.length) {
+          for (const mixin of options.mixins) {
+            const guard = mixin[guardType]
+            guard &&
+              guards.push(guardToPromiseFn(guard, to, from, record, name))
+          }
+        }
         const guard = options[guardType]
         guard && guards.push(guardToPromiseFn(guard, to, from, record, name))
       } else {
@@ -300,7 +308,7 @@ export function extractComponentsGuards(
           componentPromise = Promise.resolve(componentPromise as RouteComponent)
         }
 
-        guards.push(() =>
+        const gu = () =>
           componentPromise.then(resolved => {
             if (!resolved)
               return Promise.reject(
@@ -316,10 +324,21 @@ export function extractComponentsGuards(
             // __vccOpts is added by vue-class-component and contain the regular options
             let options: ComponentOptions =
               (resolvedComponent as any).__vccOpts || resolvedComponent
+            const guards = []
+            // guards in mixins
+            if (options.mixins && options.mixins.length) {
+              for (const mixin of options.mixins) {
+                const guard = mixin[guardType]
+                guard &&
+                  guards.push(guardToPromiseFn(guard, to, from, record, name)())
+              }
+            }
             const guard = options[guardType]
-            return guard && guardToPromiseFn(guard, to, from, record, name)()
+            guard &&
+              guards.push(guardToPromiseFn(guard, to, from, record, name)())
+            return guards
           })
-        )
+        guards.push(gu)
       }
     }
   }

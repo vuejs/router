@@ -5,7 +5,7 @@ import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
 
-export type Lazy<T> = () => Promise<T>
+export type Lazy<T> = () => Promise<T> | Promise<Array<Promise<T>>>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
 
 // TODO: find a better way to type readonly types. Readonly<T> is non recursive, maybe we should use it at multiple places. It would also allow preventing the problem Immutable create.
