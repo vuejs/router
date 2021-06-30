@@ -1,5 +1,10 @@
 # Named Routes
 
+<VueSchoolLink 
+  href="https://vueschool.io/lessons/named-routes"
+  title="Learn about the named routes"
+/>
+
 Alongside the `path`, you can provide a `name` to any route. This has the following advantages:
 
 - No hardcoded URLs

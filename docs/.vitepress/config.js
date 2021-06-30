@@ -65,8 +65,7 @@ const config = {
           },
           {
             text: 'Changelog',
-            link:
-              'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
+            link: 'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
           },
         ],
 
@@ -199,8 +198,7 @@ const config = {
           },
           {
             text: '更新日志',
-            link:
-              'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
+            link: 'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
           },
         ],
 

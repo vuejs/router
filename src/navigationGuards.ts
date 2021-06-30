@@ -60,6 +60,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
 
   const activeRecord: RouteRecordNormalized | undefined = inject(
     matchedRouteKey,
+    // to avoid warning
     {} as any
   ).value
 
@@ -91,6 +92,7 @@ export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
 
   const activeRecord: RouteRecordNormalized | undefined = inject(
     matchedRouteKey,
+    // to avoid warning
     {} as any
   ).value
 
@@ -185,7 +187,7 @@ export function guardToPromiseFn(
         }:\n${guard.toString()}\n. If you are returning a value instead of calling "next", make sure to remove the "next" parameter from your function.`
         if (typeof guardReturn === 'object' && 'then' in guardReturn) {
           guardCall = guardCall.then(resolvedValue => {
-            // @ts-ignore: _called is added at canOnlyBeCalledOnce
+            // @ts-expect-error: _called is added at canOnlyBeCalledOnce
             if (!next._called) {
               warn(message)
               return Promise.reject(new Error('Invalid navigation guard'))
@@ -194,7 +196,7 @@ export function guardToPromiseFn(
           })
           // TODO: test me!
         } else if (guardReturn !== undefined) {
-          // @ts-ignore: _called is added at canOnlyBeCalledOnce
+          // @ts-expect-error: _called is added at canOnlyBeCalledOnce
           if (!next._called) {
             warn(message)
             reject(new Error('Invalid navigation guard'))
@@ -217,7 +219,7 @@ function canOnlyBeCalledOnce(
       warn(
         `The "next" callback was called more than once in one navigation guard when going from "${from.fullPath}" to "${to.fullPath}". It should be called exactly one time in each navigation guard. This will fail in production.`
       )
-    // @ts-ignore: we put it in the original one because it's easier to check
+    // @ts-expect-error: we put it in the original one because it's easier to check
     next._called = true
     if (called === 1) next.apply(null, arguments as any)
   }
@@ -296,9 +298,6 @@ export function extractComponentsGuards(
             `Component "${name}" in record with path "${record.path}" is a function that does not return a Promise. If you were passing a functional component, make sure to add a "displayName" to the component. This will break in production if not fixed.`
           )
           componentPromise = Promise.resolve(componentPromise as RouteComponent)
-        } else {
-          // display the error if any
-          componentPromise = componentPromise.catch(console.error)
         }
 
         guards.push(() =>
@@ -330,6 +329,7 @@ export function extractComponentsGuards(
 
 /**
  * Allows differentiating lazy components from functional components and vue-class-component
+ *
  * @param component
  */
 function isRouteComponent(

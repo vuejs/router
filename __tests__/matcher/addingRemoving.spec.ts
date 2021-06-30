@@ -3,7 +3,7 @@ import { MatcherLocation } from '../../src/types'
 import { mockWarn } from 'jest-mock-warn'
 
 const currentLocation = { path: '/' } as MatcherLocation
-// @ts-ignore
+// @ts-expect-error
 const component: RouteComponent = null
 
 describe('Matcher: adding and removing records', () => {

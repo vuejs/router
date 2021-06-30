@@ -1,5 +1,10 @@
 # Route Meta Fields
 
+<VueSchoolLink 
+  href="https://vueschool.io/lessons/route-meta-fields"
+  title="Learn how to use route meta fields"
+/>
+
 Sometimes, you might want to attach arbitrary information to routes like transition names, who can access the route, etc. This can be achieved through the `meta` property which accepts an object of properties and can be accessed on the route location and navigation guards. You can define `meta` properties like this:
 
 ```js

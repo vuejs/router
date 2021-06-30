@@ -52,7 +52,7 @@ const scrollBehavior: RouterScrollBehavior = async function (
     }
 
     // check if any matched route config has meta that requires scrolling to top
-    if (to.matched.some(m => m.meta.scrollToTop)) {
+    if (to.meta.scrollToTop) {
       // coords will be used if no selector is provided,
       // or if the selector didn't match any element.
       return { left: 0, top: 0, behavior }
@@ -72,6 +72,12 @@ const router = createRouter({
     { path: '/bar', component: Bar, meta: { scrollToTop: true } },
   ],
 })
+
+declare module '../../src' {
+  export interface RouteMeta {
+    scrollToTop?: boolean
+  }
+}
 
 scrollWaiter.add()
 
@@ -93,30 +99,28 @@ const app = createApp({
   },
 
   template: `
-    <div id="app">
-      <h1>Scroll Behavior</h1>
-      <ul>
-        <li><router-link to="/">/</router-link></li>
-        <li><router-link to="/foo">/foo</router-link></li>
-        <li><router-link to="/bar">/bar</router-link></li>
-        <li><router-link to="/bar#anchor">/bar#anchor</router-link></li>
-        <li><router-link to="/bar#anchor2">/bar#anchor2</router-link></li>
-        <li><router-link :to="hashWithNumber">/bar#1number</router-link></li>
-      </ul>
-      <label>
-      <input type="checkbox" v-model="smoothScroll"> Use smooth scroll
-      </label>
-      <router-view class="view" v-slot="{ Component }">
-        <transition
-          name="fade"
-          mode="out-in"
-          @before-enter="flushWaiter"
-          @before-leave="setupWaiter"
-        >
-          <component :is="Component" />
-        </transition>
-      </router-view>
-    </div>
+    <h1>Scroll Behavior</h1>
+    <ul>
+      <li><router-link to="/">/</router-link></li>
+      <li><router-link to="/foo">/foo</router-link></li>
+      <li><router-link to="/bar">/bar</router-link></li>
+      <li><router-link to="/bar#anchor">/bar#anchor</router-link></li>
+      <li><router-link to="/bar#anchor2">/bar#anchor2</router-link></li>
+      <li><router-link :to="hashWithNumber">/bar#1number</router-link></li>
+    </ul>
+    <label>
+    <input type="checkbox" v-model="smoothScroll"> Use smooth scroll
+    </label>
+    <router-view class="view" v-slot="{ Component }">
+      <transition
+        name="fade"
+        mode="out-in"
+        @before-enter="flushWaiter"
+        @before-leave="setupWaiter"
+      >
+        <component :is="Component" />
+      </transition>
+    </router-view>
   `,
 })
 app.use(router)

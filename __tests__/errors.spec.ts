@@ -13,6 +13,7 @@ import {
   NavigationGuard,
   RouteLocationRaw,
   START_LOCATION_NORMALIZED,
+  RouteLocationNormalized,
 } from '../src/types'
 
 const routes: RouteRecordRaw[] = [
@@ -21,6 +22,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/foo', component: components.Foo, name: 'Foo' },
   // prevent the log of no match warnings
   { path: '/:pathMatch(.*)', component: components.Home },
+  { path: '/async', component: () => Promise.reject('failed') },
 ]
 
 const onError = jest.fn()
@@ -50,6 +52,10 @@ describe('Errors & Navigation failures', () => {
         type: NavigationFailureType.aborted,
       })
     )
+  })
+
+  it('lazy loading reject', async () => {
+    await testError(true, 'failed', '/async')
   })
 
   it('Duplicated navigation triggers afterEach', async () => {
@@ -139,6 +145,25 @@ describe('Errors & Navigation failures', () => {
     await testError(() => {
       throw error
     }, error)
+  })
+
+  it('triggers onError with to and from', async () => {
+    const { router } = createRouter()
+    let expectedTo: RouteLocationNormalized | undefined
+    let expectedFrom: RouteLocationNormalized | undefined
+    const error = new Error()
+    router.beforeEach((to, from) => {
+      expectedTo = to
+      expectedFrom = from
+      throw error
+    })
+
+    await expect(router.push('/foo')).rejects.toEqual(error)
+
+    expect(afterEach).toHaveBeenCalledTimes(0)
+    expect(onError).toHaveBeenCalledTimes(1)
+
+    expect(onError).toHaveBeenCalledWith(error, expectedTo, expectedFrom)
   })
 
   it('triggers onError with rejected promises', async () => {
@@ -315,7 +340,7 @@ describe('isNavigationFailure', () => {
 
 async function testError(
   nextArgument: any | NavigationGuard,
-  expectedError: Error | void = undefined,
+  expectedError: any = undefined,
   to: RouteLocationRaw = '/foo'
 ) {
   const { router } = createRouter()
@@ -332,7 +357,11 @@ async function testError(
   expect(afterEach).toHaveBeenCalledTimes(0)
   expect(onError).toHaveBeenCalledTimes(1)
 
-  expect(onError).toHaveBeenCalledWith(expectedError)
+  expect(onError).toHaveBeenCalledWith(
+    expectedError,
+    expect.any(Object),
+    expect.any(Object)
+  )
 }
 
 async function testNavigation(
@@ -420,5 +449,9 @@ async function testHistoryError(
   expect(afterEach).toHaveBeenCalledTimes(0)
   expect(onError).toHaveBeenCalledTimes(1)
 
-  expect(onError).toHaveBeenCalledWith(expectedError)
+  expect(onError).toHaveBeenCalledWith(
+    expectedError,
+    expect.any(Object),
+    expect.any(Object)
+  )
 }

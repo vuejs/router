@@ -14,7 +14,8 @@ import { RouterMatcher } from './matcher'
 import { RouteRecordMatcher } from './matcher/pathMatcher'
 import { PathParser } from './matcher/pathParserRanker'
 import { Router } from './router'
-import { RouteLocation, RouteLocationNormalized } from './types'
+import { UseLinkDevtoolsContext } from './RouterLink'
+import { RouteLocationNormalized } from './types'
 import { assign } from './utils'
 
 function formatRouteLocation(
@@ -87,30 +88,30 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
 
       // mark router-link as active
       api.on.visitComponentTree(({ treeNode: node, componentInstance }) => {
-        if (node.name === 'RouterLink') {
-          if (componentInstance.__vrl_route) {
-            node.tags.push({
-              label: (componentInstance.__vrl_route as RouteLocation).path,
-              textColor: 0,
-              backgroundColor: ORANGE_400,
-            })
-          }
+        // if multiple useLink are used
+        if (Array.isArray(componentInstance.__vrl_devtools)) {
+          componentInstance.__devtoolsApi = api
+          ;(
+            componentInstance.__vrl_devtools as UseLinkDevtoolsContext[]
+          ).forEach(devtoolsData => {
+            let backgroundColor = ORANGE_400
+            let tooltip: string = ''
 
-          if (componentInstance.__vrl_exactActive) {
-            node.tags.push({
-              label: 'exact',
-              textColor: 0,
-              backgroundColor: LIME_500,
-            })
-          }
+            if (devtoolsData.isExactActive) {
+              backgroundColor = LIME_500
+              tooltip = 'This is exactly active'
+            } else if (devtoolsData.isActive) {
+              backgroundColor = BLUE_600
+              tooltip = 'This link is active'
+            }
 
-          if (componentInstance.__vrl_active) {
             node.tags.push({
-              label: 'active',
+              label: devtoolsData.route.path,
               textColor: 0,
-              backgroundColor: BLUE_600,
+              tooltip,
+              backgroundColor,
             })
-          }
+          })
         }
       })
 
@@ -119,6 +120,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         refreshRoutesView()
         api.notifyComponentUpdate()
         api.sendInspectorTree(routerInspectorId)
+        api.sendInspectorState(routerInspectorId)
       })
 
       const navigationsLayerId = 'router:navigations:' + id
@@ -136,15 +138,16 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
       //   color: 0xea5455,
       // })
 
-      router.onError(error => {
+      router.onError((error, to) => {
         api.addTimelineEvent({
           layerId: navigationsLayerId,
           event: {
-            title: 'Error',
-            subtitle: 'An uncaught error happened during navigation',
+            title: 'Error during Navigation',
+            subtitle: to.fullPath,
             logType: 'error',
             time: Date.now(),
             data: { error },
+            groupId: (to.meta as any).__navigationId,
           },
         })
       })
@@ -172,6 +175,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
           event: {
             time: Date.now(),
             title: 'Start of navigation',
+            subtitle: to.fullPath,
             data,
             groupId: (to.meta as any).__navigationId,
           },
@@ -209,6 +213,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
           layerId: navigationsLayerId,
           event: {
             title: 'End of navigation',
+            subtitle: to.fullPath,
             time: Date.now(),
             data,
             logType: failure ? 'warning' : 'default',
@@ -529,7 +534,7 @@ function omit<T extends object, K extends [...(keyof T)[]]>(obj: T, keys: K) {
 
   for (let key in obj) {
     if (!keys.includes(key as any)) {
-      // @ts-ignore
+      // @ts-expect-error
       ret[key] = obj[key]
     }
   }

@@ -13,7 +13,7 @@ import {
   RouteLocationOptions,
   MatcherLocationRaw,
 } from './types'
-import { RouterHistory, HistoryState } from './history/common'
+import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
   ScrollPosition,
   getSavedScrollPosition,
@@ -70,9 +70,17 @@ import { addDevtools } from './devtools'
 
 /**
  * Internal type to define an ErrorHandler
+ *
+ * @param error - error thrown
+ * @param to - location we were navigating to when the error happened
+ * @param from - location we were navigating from when the error happened
  * @internal
  */
-export type _ErrorHandler = (error: any) => any
+export type _ErrorHandler = (
+  error: any,
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalizedLoaded
+) => any
 // resolve, reject arguments of Promise constructor
 type OnReadyCallback = [() => void, (reason?: any) => void]
 
@@ -574,10 +582,13 @@ export function createRouter(options: RouterOptions): Router {
 
       if (typeof newTargetLocation === 'string') {
         newTargetLocation =
-          newTargetLocation.indexOf('?') > -1 ||
-          newTargetLocation.indexOf('#') > -1
+          newTargetLocation.includes('?') || newTargetLocation.includes('#')
             ? (newTargetLocation = locationAsObject(newTargetLocation))
-            : { path: newTargetLocation }
+            : // force empty params
+              { path: newTargetLocation }
+        // @ts-expect-error: force empty params when a string is passed to let
+        // the router parse them again
+        newTargetLocation.params = {}
       }
 
       if (
@@ -661,7 +672,7 @@ export function createRouter(options: RouterOptions): Router {
         isNavigationFailure(error)
           ? error
           : // reject any unknown error
-            triggerError(error)
+            triggerError(error, toLocation, from)
       )
       .then((failure: NavigationFailure | NavigationRedirectError | void) => {
         if (failure) {
@@ -678,9 +689,9 @@ export function createRouter(options: RouterOptions): Router {
               ) &&
               // and we have done it a couple of times
               redirectedFrom &&
-              // @ts-ignore
+              // @ts-expect-error: added only in dev
               (redirectedFrom._count = redirectedFrom._count
-                ? // @ts-ignore
+                ? // @ts-expect-error
                   redirectedFrom._count + 1
                 : 1) > 10
             ) {
@@ -806,7 +817,7 @@ export function createRouter(options: RouterOptions): Router {
           guards = []
           for (const record of to.matched) {
             // do not trigger beforeEnter on reused views
-            if (record.beforeEnter && from.matched.indexOf(record as any) < 0) {
+            if (record.beforeEnter && !from.matched.includes(record as any)) {
               if (Array.isArray(record.beforeEnter)) {
                 for (const beforeEnter of record.beforeEnter)
                   guards.push(guardToPromiseFn(beforeEnter, to, from))
@@ -969,14 +980,31 @@ export function createRouter(options: RouterOptions): Router {
               (error as NavigationRedirectError).to,
               toLocation
               // avoid an uncaught rejection, let push call triggerError
-            ).catch(noop)
+            )
+              .then(failure => {
+                // manual change in hash history #916 ending up in the URL not
+                // changing but it was changed by the manual url change, so we
+                // need to manually change it ourselves
+                if (
+                  isNavigationFailure(
+                    failure,
+                    ErrorTypes.NAVIGATION_ABORTED |
+                      ErrorTypes.NAVIGATION_DUPLICATED
+                  ) &&
+                  !info.delta &&
+                  info.type === NavigationType.pop
+                ) {
+                  routerHistory.go(-1, false)
+                }
+              })
+              .catch(noop)
             // avoid the then branch
             return Promise.reject()
           }
           // do not restore history on unknown direction
           if (info.delta) routerHistory.go(-info.delta, false)
           // unrecognized error, transfer to the global handler
-          return triggerError(error)
+          return triggerError(error, toLocation, from)
         })
         .then((failure: NavigationFailure | void) => {
           failure =
@@ -989,7 +1017,21 @@ export function createRouter(options: RouterOptions): Router {
             )
 
           // revert the navigation
-          if (failure && info.delta) routerHistory.go(-info.delta, false)
+          if (failure) {
+            if (info.delta) {
+              routerHistory.go(-info.delta, false)
+            } else if (
+              info.type === NavigationType.pop &&
+              isNavigationFailure(
+                failure,
+                ErrorTypes.NAVIGATION_ABORTED | ErrorTypes.NAVIGATION_DUPLICATED
+              )
+            ) {
+              // manual change in hash history #916
+              // it's like a push but lacks the information of the direction
+              routerHistory.go(-1, false)
+            }
+          }
 
           triggerAfterEach(
             toLocation as RouteLocationNormalizedLoaded,
@@ -1009,12 +1051,27 @@ export function createRouter(options: RouterOptions): Router {
 
   /**
    * Trigger errorHandlers added via onError and throws the error as well
+   *
    * @param error - error to throw
+   * @param to - location we were navigating to when the error happened
+   * @param from - location we were navigating from when the error happened
    * @returns the error as a rejected promise
    */
-  function triggerError(error: any) {
+  function triggerError(
+    error: any,
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalizedLoaded
+  ): Promise<unknown> {
     markAsReady(error)
-    errorHandlers.list().forEach(handler => handler(error))
+    const list = errorHandlers.list()
+    if (list.length) {
+      list.forEach(handler => handler(error, to, from))
+    } else {
+      if (__DEV__) {
+        warn('uncaught error during route navigation:')
+      }
+      console.error(error)
+    }
     return Promise.reject(error)
   }
 
@@ -1061,7 +1118,7 @@ export function createRouter(options: RouterOptions): Router {
     return nextTick()
       .then(() => scrollBehavior(to, from, scrollPosition))
       .then(position => position && scrollToPosition(position))
-      .catch(triggerError)
+      .catch(err => triggerError(err, to, from))
   }
 
   const go = (delta: number) => routerHistory.go(delta)
@@ -1126,7 +1183,7 @@ export function createRouter(options: RouterOptions): Router {
         >
       }
       for (let key in START_LOCATION_NORMALIZED) {
-        // @ts-ignore: the key matches
+        // @ts-expect-error: the key matches
         reactiveRoute[key] = computed(() => currentRoute.value[key])
       }
 

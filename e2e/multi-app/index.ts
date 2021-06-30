@@ -12,9 +12,8 @@ const User: RouteComponent = {
 
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      // @ts-ignore
+      // @ts-expect-error
       console.log('enter from ', vm.id)
-      // @ts-ignore
     })
   },
 
@@ -41,7 +40,7 @@ const NamedViews: RouteComponent[] = looper.map(i => ({
 
   beforeRouteUpdate(to, from, next) {
     console.log('update of', i)
-    // @ts-ignore
+    // @ts-expect-error
     this.count++
     next()
   },

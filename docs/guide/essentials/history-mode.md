@@ -1,5 +1,10 @@
 # Different History modes
 
+<VueSchoolLink 
+  href="https://vueschool.io/lessons/history-mode"
+  title="Learn about the differences between Hash Mode and HTML5 Mode"
+/>
+
 The `history` option when creating the router instance allows us to choose among different history modes.
 
 ## Hash Mode
@@ -178,4 +183,4 @@ const router = createRouter({
 })
 ```
 
-Alternatively, if you are using a Node.js server, you can implement the fallback by using the router on the server side to match the incoming URL and respond with 404 if no route is matched. Check out the [Vue server side rendering documentation](https://ssr.vuejs.org/en/) for more information.
+Alternatively, if you are using a Node.js server, you can implement the fallback by using the router on the server side to match the incoming URL and respond with 404 if no route is matched. Check out the [Vue server side rendering documentation](https://v3.vuejs.org/guide/ssr/introduction.html#what-is-server-side-rendering-ssr) for more information.

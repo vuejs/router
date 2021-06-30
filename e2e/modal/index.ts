@@ -64,6 +64,7 @@ const Home = defineComponent({
     </div>
   </dialog>
   </div>`,
+
   setup() {
     const modal = ref<HTMLDialogElement | HTMLElement>()
     const route = useRoute()
@@ -195,13 +196,11 @@ const app = createApp({
   },
 
   template: `
-    <div id="app">
-      <router-view :route="routeWithModal"></router-view>
-    </div>
+    <router-view :route="routeWithModal"></router-view>
   `,
 })
 app.use(router)
 
 window.vm = app.mount('#app')
-// @ts-ignore
+// @ts-expect-error
 window.router = router

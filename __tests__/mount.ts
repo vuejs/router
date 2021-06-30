@@ -20,7 +20,7 @@ export function createMockedRoute(initialValue: RouteLocationNormalizedLoose) {
   }
 
   for (let key in initialValue) {
-    // @ts-ignore
+    // @ts-expect-error
     route[key] =
       // new line to still get errors here
       computed(() => routeRef.value[key as keyof RouteLocationNormalizedLoose])

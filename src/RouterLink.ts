@@ -12,12 +12,17 @@ import {
   getCurrentInstance,
   watchEffect,
 } from 'vue'
-import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types'
+import {
+  RouteLocationRaw,
+  VueUseOptions,
+  RouteLocation,
+  RouteLocationNormalized,
+} from './types'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { NavigationFailure } from './errors'
-import { isBrowser } from './utils'
+import { isBrowser, noop } from './utils'
 
 export interface RouterLinkOptions {
   /**
@@ -56,6 +61,12 @@ export interface RouterLinkProps extends RouterLinkOptions {
     | 'time'
     | 'true'
     | 'false'
+}
+
+export interface UseLinkDevtoolsContext {
+  route: RouteLocationNormalized & { href: string }
+  isActive: boolean
+  isExactActive: boolean
 }
 
 export type UseLinkOptions = VueUseOptions<RouterLinkOptions>
@@ -113,9 +124,38 @@ export function useLink(props: UseLinkOptions) {
   function navigate(
     e: MouseEvent = {} as MouseEvent
   ): Promise<void | NavigationFailure> {
-    if (guardEvent(e))
-      return router[unref(props.replace) ? 'replace' : 'push'](unref(props.to))
+    if (guardEvent(e)) {
+      return router[unref(props.replace) ? 'replace' : 'push'](
+        unref(props.to)
+        // avoid uncaught errors are they are logged anyway
+      ).catch(noop)
+    }
     return Promise.resolve()
+  }
+
+  // devtools only
+  if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
+    const instance = getCurrentInstance()
+    if (instance) {
+      const linkContextDevtools: UseLinkDevtoolsContext = {
+        route: route.value,
+        isActive: isActive.value,
+        isExactActive: isExactActive.value,
+      }
+
+      // @ts-expect-error: this is internal
+      instance.__vrl_devtools = instance.__vrl_devtools || []
+      // @ts-expect-error: this is internal
+      instance.__vrl_devtools.push(linkContextDevtools)
+      watchEffect(
+        () => {
+          linkContextDevtools.route = route.value
+          linkContextDevtools.isActive = isActive.value
+          linkContextDevtools.isExactActive = isExactActive.value
+        },
+        { flush: 'post' }
+      )
+    }
   }
 
   return {
@@ -145,6 +185,8 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
     },
   },
 
+  useLink,
+
   setup(props, { slots }) {
     const link = reactive(useLink(props))
     const { options } = inject(routerKey)!
@@ -166,26 +208,6 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
         'router-link-exact-active'
       )]: link.isExactActive,
     }))
-
-    // devtools only
-    if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
-      const instance = getCurrentInstance()
-      watchEffect(
-        () => {
-          if (!instance) return
-          ;(instance as any).__vrl_route = link.route
-        },
-        { flush: 'post' }
-      )
-      watchEffect(
-        () => {
-          if (!instance) return
-          ;(instance as any).__vrl_active = link.isActive
-          ;(instance as any).__vrl_exactActive = link.isExactActive
-        },
-        { flush: 'post' }
-      )
-    }
 
     return () => {
       const children = slots.default && slots.default(link)
@@ -214,13 +236,20 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
 /**
  * Component to render a link that triggers a navigation on click.
  */
-export const RouterLink = RouterLinkImpl as {
+export const RouterLink = RouterLinkImpl as unknown as {
   new (): {
     $props: AllowedComponentProps &
       ComponentCustomProps &
       VNodeProps &
       RouterLinkProps
   }
+
+  /**
+   * Access to `useLink()` without depending on using vue-router
+   *
+   * @internal
+   */
+  useLink: typeof useLink
 }
 
 function guardEvent(e: MouseEvent) {
@@ -231,9 +260,9 @@ function guardEvent(e: MouseEvent) {
   // don't redirect on right click
   if (e.button !== undefined && e.button !== 0) return
   // don't redirect if `target="_blank"`
-  // @ts-ignore getAttribute does exist
+  // @ts-expect-error getAttribute does exist
   if (e.currentTarget && e.currentTarget.getAttribute) {
-    // @ts-ignore getAttribute exists
+    // @ts-expect-error getAttribute exists
     const target = e.currentTarget.getAttribute('target')
     if (/\b_blank\b/i.test(target)) return
   }

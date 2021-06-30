@@ -5,8 +5,10 @@ import { RouteRecordRaw, NavigationGuard } from '../../src/types'
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
-const beforeRouteEnter =
-  jest.fn<ReturnType<NavigationGuard>, Parameters<NavigationGuard>>()
+const beforeRouteEnter = jest.fn<
+  ReturnType<NavigationGuard>,
+  Parameters<NavigationGuard>
+>()
 const named = {
   default: jest.fn(),
   other: jest.fn(),

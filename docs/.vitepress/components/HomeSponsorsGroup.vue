@@ -14,7 +14,11 @@
     >
       <img
         :src="sponsor.imgSrc"
-        :class="sponsor.imgSrcLight === imgSrcDark && 'invert-colors'"
+        :class="
+          isDark &&
+          sponsor.imgSrcLight === sponsor.imgSrcDark &&
+          'invert-colors'
+        "
         :alt="sponsor.alt"
         :style="{ width: size + 'px' }"
       />

@@ -1,4 +1,4 @@
-import { createApp, ComponentPublicInstance } from 'vue'
+import { createApp, ComponentPublicInstance, App } from 'vue'
 import { Router } from '../src'
 
 const tsmap = import.meta.glob('./**/index.ts')
@@ -25,7 +25,8 @@ examples.sort()
 
 declare global {
   interface Window {
-    app: typeof app
+    app: App<Element>
+    // @ts-ignore: wat???
     vm: ComponentPublicInstance
     r: Router
   }

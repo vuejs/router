@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from '../src'
+import { createRouter, createWebHistory, RouterView } from '../src'
 import Home from './views/Home.vue'
 import Nested from './views/Nested.vue'
 import NestedWithId from './views/NestedWithId.vue'
@@ -15,7 +15,11 @@ import ComponentWithData from './views/ComponentWithData.vue'
 import { globalState } from './store'
 import { scrollWaiter } from './scrollWaiter'
 import RepeatedParams from './views/RepeatedParams.vue'
+import { FunctionalComponent, h } from 'vue'
 let removeRoute: (() => void) | undefined
+
+const TransparentWrapper: FunctionalComponent = () => h(RouterView)
+TransparentWrapper.displayName = 'NestedView'
 
 export const routerHistory = createWebHistory()
 export const router = createRouter({
@@ -147,6 +151,16 @@ export const router = createRouter({
         } else next()
       },
     },
+
+    {
+      path: '/admin',
+      component: TransparentWrapper,
+      children: [
+        { path: '', component },
+        { path: 'dashboard', component },
+        { path: 'settings', component },
+      ],
+    },
   ],
   async scrollBehavior(to, from, savedPosition) {
     await scrollWaiter.wait()
@@ -243,7 +257,7 @@ export function go(delta: number) {
   })
 }
 
-// @ts-ignore
+// @ts-expect-error
 window._go = go
 
 router.beforeEach((to, from, next) => {

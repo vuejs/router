@@ -38,47 +38,45 @@ const app = createApp({
   },
 
   template: `
-    <div id="app">
-      <ul>
-        <li><router-link to="/">/</router-link></li>
-        <li><router-link to="/foo">/foo</router-link></li>
-        <li><router-link to="/bar">/bar</router-link></li>
-        <li><router-link :to="{ name: 'encoded' }">/n/é</router-link></li>
-        <li><router-link to="/unicode/é">/unicode/é (not properly encoded, fails on some browsers)</router-link></li>
-        <li>
-          <router-link :to="{ name: 'unicode', params: { id: 'é' }}"
-            >/unicode/é (correctly encoded)</router-link
-          >
-        </li>
-        <li>
-          <router-link :to="{ path: '/', query: { t: 'é', 'é': 'e' }}"
-            >/?currency=€uro&é=e (object)</router-link
-          >
-        </li>
-        <li>
-          <a href="/hash/#/unicode/%E2%82%AC"
-            >/unicode/%E2%82%AC (force reload)</a
-          >
-        </li>
-        <li>
-          <a href="/hash/#/unicode/€"
-            >/unicode/€ (force reload. not valid but should not crash the
-            router)</a
-          >
-        </li>
-        <li><a href="#/foo">/foo (regular hash)</a></li>
-      </ul>
+    <ul>
+      <li><router-link to="/">/</router-link></li>
+      <li><router-link to="/foo">/foo</router-link></li>
+      <li><router-link to="/bar">/bar</router-link></li>
+      <li><router-link :to="{ name: 'encoded' }">/n/é</router-link></li>
+      <li><router-link to="/unicode/é">/unicode/é (not properly encoded, fails on some browsers)</router-link></li>
+      <li>
+        <router-link :to="{ name: 'unicode', params: { id: 'é' }}"
+          >/unicode/é (correctly encoded)</router-link
+        >
+      </li>
+      <li>
+        <router-link :to="{ path: '/', query: { t: 'é', 'é': 'e' }}"
+          >/?currency=€uro&é=e (object)</router-link
+        >
+      </li>
+      <li>
+        <a href="/hash/#/unicode/%E2%82%AC"
+          >/unicode/%E2%82%AC (force reload)</a
+        >
+      </li>
+      <li>
+        <a href="/hash/#/unicode/€"
+          >/unicode/€ (force reload. not valid but should not crash the
+          router)</a
+        >
+      </li>
+      <li><a href="#/foo">/foo (regular hash)</a></li>
+    </ul>
 
-      <p>
-        path: <code id="path">{{ route.path }}</code>
-        <br />
-        query.t: <code id="query-t">{{ route.query.t }}</code>
-        <br />
-        hash: <code id="hash">{{ route.hash }}</code>
-      </p>
+    <p>
+      path: <code id="path">{{ route.path }}</code>
+      <br />
+      query.t: <code id="query-t">{{ route.query.t }}</code>
+      <br />
+      hash: <code id="hash">{{ route.hash }}</code>
+    </p>
 
-      <router-view class="view"></router-view>
-    </div>
+    <router-view class="view"></router-view>
   `,
 })
 app.use(router)
