@@ -2,12 +2,13 @@ const fs = require('fs')
 const { resolve, join } = require('path')
 const { defineConfig } = require('vite')
 const vue = require('@vitejs/plugin-vue')
+const history = require('connect-history-api-fallback')
 
 /** @type {string[]} */
 let examples = []
 fs.readdirSync(__dirname).forEach(dir => {
   const fullDir = join(__dirname, dir)
-  const entry = join(fullDir, dir + '.ts')
+  const entry = join(fullDir, 'index.ts')
   if (fs.statSync(fullDir).isDirectory() && fs.existsSync(entry)) {
     examples.push(dir)
   }
@@ -41,7 +42,38 @@ const config = (env = {}) => {
         ),
       },
     },
-    plugins: [vue()],
+    plugins: [
+      vue(),
+      {
+        configureServer({ middlewares }) {
+          middlewares.use(
+            history({
+              // verbose: true,
+              rewrites: [
+                ...examples.map(name => ({
+                  from: new RegExp(`^/${name}/.*$`),
+                  to({ parsedUrl }) {
+                    // console.log('checking for', parsedUrl.pathname)
+                    if (fs.existsSync(join(__dirname, parsedUrl.pathname))) {
+                      return parsedUrl.pathname
+                    } else {
+                      return `/${name}/index.html`
+                    }
+                  },
+                  // to: `/${name}/index.html`,
+                })),
+                {
+                  from: /^\/@.*$/,
+                  to({ parsedUrl }) {
+                    return parsedUrl.href
+                  },
+                },
+              ],
+            })
+          )
+        },
+      },
+    ],
     define: {
       __DEV__: JSON.stringify(!env.prod),
       __CI__: JSON.stringify(process.env.CI || false),
