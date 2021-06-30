@@ -1,3 +1,4 @@
+import '../global.css'
 import {
   createRouter,
   createWebHistory,

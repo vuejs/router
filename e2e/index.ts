@@ -1,3 +1,4 @@
+import './global.css'
 import { createApp, ComponentPublicInstance, App } from 'vue'
 import { Router } from '../src'
 

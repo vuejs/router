@@ -1,3 +1,4 @@
+import '../global.css'
 import { createRouter, createWebHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
 import { createApp, defineComponent, FunctionalComponent, h } from 'vue'

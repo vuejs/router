@@ -2,7 +2,6 @@ const fs = require('fs')
 const { resolve, join } = require('path')
 const { defineConfig } = require('vite')
 const vue = require('@vitejs/plugin-vue')
-const analyze = require('rollup-plugin-analyzer')
 
 /** @type {string[]} */
 let examples = []
@@ -32,7 +31,7 @@ const config = (env = {}) => {
       chunkFilename: '[id].chunk.js',
       publicPath: '/',
       rollupOptions: {
-        plugins: [analyze()],
+        plugins: [],
         input: examples.reduce(
           (entries, name) => {
             entries[name] = resolve(__dirname, name, 'index.html')

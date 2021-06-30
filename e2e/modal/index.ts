@@ -1,3 +1,4 @@
+import '../global.css'
 import { createRouter, createWebHistory, useRoute } from '../../src'
 import { RouteLocationNormalizedLoaded } from '../../src/types'
 import {
