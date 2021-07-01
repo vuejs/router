@@ -54,6 +54,7 @@ async function checkGuards(
     // type is fine as we excluded RouteRecordRedirect in components argument
     components.map(normalizeRouteRecord) as RouteRecordNormalized[],
     'beforeRouteEnter',
+    new Set(),
     to,
     from
   )
