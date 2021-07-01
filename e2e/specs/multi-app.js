@@ -1,6 +1,6 @@
 const bsStatus = require('../browserstack-send-status')
 
-const baseURL = 'http://localhost:8080/multi-app'
+const baseURL = 'http://localhost:3000/multi-app'
 
 module.exports = {
   ...bsStatus(),
@@ -10,7 +10,7 @@ module.exports = {
   /** @type {import('nightwatch').NightwatchTest} */
   'supports multiple apps mounted at the same time': function (browser) {
     browser
-      .url(baseURL)
+      .url(baseURL + '/')
       .assert.urlEquals(baseURL + '/')
 
       // mount multiple apps and expect to have one listener only
@@ -101,7 +101,7 @@ module.exports = {
   /** @type {import('nightwatch').NightwatchTest} */
   'supports navigation guards context with multiple apps': function (browser) {
     browser
-      .url(baseURL)
+      .url(baseURL + '/')
       .assert.urlEquals(baseURL + '/')
 
       // mount multiple apps and expect to have one listener only

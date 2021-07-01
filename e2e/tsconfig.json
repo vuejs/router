@@ -18,6 +18,7 @@
     "noImplicitReturns": true,
 
     "moduleResolution": "node",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["vite/client"]
   }
 }

@@ -1,6 +1,6 @@
 const bsStatus = require('../browserstack-send-status')
 
-const baseURL = 'http://localhost:8080/hash/#'
+const baseURL = 'http://localhost:3000/hash/#'
 
 module.exports = {
   ...bsStatus(),
@@ -46,12 +46,12 @@ module.exports = {
   /** @type {import('nightwatch').NightwatchTest} */
   'initial navigation with search': function (browser) {
     browser
-      .url('http://localhost:8080/hash/?code=auth#')
+      .url('http://localhost:3000/hash/?code=auth#')
       .waitForElementPresent('#app > *', 1000)
-      .assert.urlEquals('http://localhost:8080/hash/?code=auth#/')
+      .assert.urlEquals('http://localhost:3000/hash/?code=auth#/')
 
-      .url('http://localhost:8080/hash/?code=auth#/foo')
-      .assert.urlEquals('http://localhost:8080/hash/?code=auth#/foo')
+      .url('http://localhost:3000/hash/?code=auth#/foo')
+      .assert.urlEquals('http://localhost:3000/hash/?code=auth#/foo')
       // manually remove the search from the URL
       .waitForElementPresent('#app > *', 1000)
       .execute(function () {
@@ -64,9 +64,9 @@ module.exports = {
       .assert.urlEquals(baseURL + '/foo')
 
       // with slash between the pathname and search
-      .url('http://localhost:8080/hash/?code=auth#')
+      .url('http://localhost:3000/hash/?code=auth#')
       .waitForElementPresent('#app > *', 1000)
-      .assert.urlEquals('http://localhost:8080/hash/?code=auth#/')
+      .assert.urlEquals('http://localhost:3000/hash/?code=auth#/')
 
       .end()
   },

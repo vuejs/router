@@ -1,6 +1,6 @@
 const bsStatus = require('../browserstack-send-status')
 
-const baseURL = 'http://localhost:8080/modal'
+const baseURL = 'http://localhost:3000/modal'
 
 module.exports = {
   ...bsStatus(),
@@ -10,7 +10,7 @@ module.exports = {
   /** @type {import('nightwatch').NightwatchTest} */
   'changes the url': function (browser) {
     browser
-      .url(baseURL)
+      .url(baseURL + '/')
       .waitForElementPresent('#app > *', 1000)
       .assert.containsText('h1', 'Home')
       .assert.not.visible('dialog')
@@ -28,7 +28,7 @@ module.exports = {
   /** @type {import('nightwatch').NightwatchTest} */
   'can close and reopen the modal through history'(browser) {
     browser
-      .url(baseURL)
+      .url(baseURL + '/')
       .waitForElementPresent('#app > *', 1000)
       .assert.containsText('h1', 'Home')
 
@@ -53,7 +53,7 @@ module.exports = {
   /** @type {import('nightwatch').NightwatchTest} */
   'can keep the modal when reloading'(browser) {
     browser
-      .url(baseURL)
+      .url(baseURL + '/')
       .waitForElementPresent('#app > *', 1000)
       .assert.containsText('h1', 'Home')
 
@@ -74,7 +74,7 @@ module.exports = {
   /** @type {import('nightwatch').NightwatchTest} */
   'can pass through the modal and then back'(browser) {
     browser
-      .url(baseURL)
+      .url(baseURL + '/')
       .waitForElementPresent('#app > *', 1000)
       .assert.containsText('h1', 'Home')
       .assert.not.visible('dialog')
@@ -133,7 +133,7 @@ module.exports = {
   /** @type {import('nightwatch').NightwatchTest} */
   'can navigate away from the modal then come back'(browser) {
     browser
-      .url(baseURL)
+      .url(baseURL + '/')
       .waitForElementPresent('#app > *', 1000)
       .assert.containsText('h1', 'Home')
 

@@ -11,6 +11,18 @@ import {
   ComponentCustomProps,
   getCurrentInstance,
   watchEffect,
+  // this is a workaround for https://github.com/microsoft/rushstack/issues/1050
+  // this file is meant to be prepended to the generated dist/src/RouterLink.d.ts
+  // @ts-ignore
+  ComputedRef,
+  // @ts-ignore
+  DefineComponent,
+  // @ts-ignore
+  RendererElement,
+  // @ts-ignore
+  RendererNode,
+  // @ts-ignore
+  ComponentOptionsMixin,
 } from 'vue'
 import {
   RouteLocationRaw,

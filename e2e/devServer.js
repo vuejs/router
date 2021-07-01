@@ -1,12 +1,16 @@
-const webpack = require('webpack')
-const WebpackDevServer = require('webpack-dev-server')
-const webpackConfig = require('./webpack.config')
+const { createServer } = require('vite')
+const viteConfig = require('./vite.config')
+const config = viteConfig({ prod: false })
 
-const config = webpackConfig({ prod: false })
+let server = null
 
-const compiler = webpack(config)
+;(async () => {
+  const app = await createServer({
+    configFile: false,
+    ...config,
+  })
+  const port = process.env.PORT || 3000
+  server = await app.listen(port)
+})()
 
-const app = new WebpackDevServer(compiler, config.devServer)
-
-const port = process.env.PORT || 8080
-module.exports = app.listen(port)
+module.exports = server

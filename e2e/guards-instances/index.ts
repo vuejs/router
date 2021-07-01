@@ -1,3 +1,4 @@
+import '../global.css'
 import {
   createRouter,
   createWebHistory,
@@ -99,7 +100,7 @@ const One = createTestComponent('One')
 const Two = createTestComponent('Two')
 const Aux = createTestComponent('Aux')
 
-const webHistory = createWebHistory('/' + __dirname)
+const webHistory = createWebHistory('/guards-instances')
 const router = createRouter({
   history: webHistory,
   routes: [

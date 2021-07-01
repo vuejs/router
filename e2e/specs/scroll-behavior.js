@@ -10,7 +10,7 @@ module.exports = {
     const TIMEOUT = 3000
 
     browser
-      .url('http://localhost:8080/scroll-behavior/')
+      .url('http://localhost:3000/scroll-behavior/')
       .waitForElementPresent('#app > *', 1000)
       .assert.count('li a', 6)
       .assert.containsText('.view', 'home')
@@ -200,7 +200,7 @@ module.exports = {
         'scroll to anchor'
       )
 
-      .url('http://localhost:8080/scroll-behavior/bar#anchor')
+      .url('http://localhost:3000/scroll-behavior/bar#anchor')
       .waitForElementPresent('.view.bar', TIMEOUT)
       .assert.evaluate(
         function () {

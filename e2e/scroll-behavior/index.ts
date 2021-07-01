@@ -1,3 +1,4 @@
+import '../global.css'
 import { createRouter, createWebHistory, RouterScrollBehavior } from '../../src'
 import { RouteComponent } from '../../src/types'
 import { createApp, ref } from 'vue'
@@ -62,7 +63,7 @@ const scrollBehavior: RouterScrollBehavior = async function (
   }
 }
 
-const webHistory = createWebHistory('/' + __dirname)
+const webHistory = createWebHistory('/scroll-behavior')
 const router = createRouter({
   history: webHistory,
   scrollBehavior,

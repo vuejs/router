@@ -1,3 +1,4 @@
+import '../global.css'
 import {
   createRouter,
   createWebHistory,
@@ -69,7 +70,7 @@ const FooAsync = createTestComponent('FooAsync', true)
 const PassThroughView: FunctionalComponent = () => h(RouterView)
 PassThroughView.displayName = 'RouterView'
 
-const webHistory = createWebHistory('/' + __dirname)
+const webHistory = createWebHistory('/suspense')
 const router = createRouter({
   history: webHistory,
   routes: [

@@ -1,3 +1,4 @@
+import '../global.css'
 import { createRouter, createWebHistory, useRoute } from '../../src'
 import { RouteLocationNormalizedLoaded } from '../../src/types'
 import {
@@ -134,7 +135,7 @@ const UserDetails = defineComponent({
   data: () => ({ users }),
 })
 
-const webHistory = createWebHistory('/' + __dirname)
+const webHistory = createWebHistory('/modal')
 const router = createRouter({
   history: webHistory,
   routes: [

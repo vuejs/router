@@ -1,3 +1,4 @@
+import '../global.css'
 import { createRouter, createWebHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
 import { createApp, defineComponent, nextTick, ref } from 'vue'
@@ -74,7 +75,7 @@ const Default: RouteComponent = {
 const Foo: RouteComponent = { template: '<div class="foo">foo</div>' }
 const Bar: RouteComponent = { template: '<div class="bar">bar</div>' }
 
-const webHistory = createWebHistory('/' + __dirname)
+const webHistory = createWebHistory('/transitions')
 const router = createRouter({
   history: webHistory,
   routes: [

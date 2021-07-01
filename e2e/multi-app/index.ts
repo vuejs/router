@@ -1,3 +1,4 @@
+import '../global.css'
 import { createRouter, createWebHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
 import { createApp, ref, watchEffect, App, inject } from 'vue'
@@ -76,7 +77,7 @@ window.removeEventListener = function (name: string, handler: any) {
 }
 
 const router = createRouter({
-  history: createWebHistory('/' + __dirname),
+  history: createWebHistory('/multi-app'),
   routes: [
     { path: '/', component: Home },
     {

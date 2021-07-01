@@ -1,22 +1,22 @@
 export { createWebHistory } from './history/html5'
 export { createMemoryHistory } from './history/memory'
 export { createWebHashHistory } from './history/hash'
-export { createRouterMatcher, RouterMatcher } from './matcher'
+export { createRouterMatcher } from './matcher'
+export type { RouterMatcher } from './matcher'
 
-export {
+export { parseQuery, stringifyQuery } from './query'
+export type {
   LocationQuery,
-  parseQuery,
-  stringifyQuery,
   LocationQueryRaw,
   LocationQueryValue,
   LocationQueryValueRaw,
 } from './query'
 
-export { RouterHistory, HistoryState } from './history/common'
+export type { RouterHistory, HistoryState } from './history/common'
 
-export { RouteRecord, RouteRecordNormalized } from './matcher/types'
+export type { RouteRecord, RouteRecordNormalized } from './matcher/types'
 
-export {
+export type {
   PathParserOptions,
   _PathParserOptions,
 } from './matcher/pathParserRanker'
@@ -29,7 +29,8 @@ export {
   viewDepthKey,
 } from './injectionSymbols'
 
-export {
+export { START_LOCATION_NORMALIZED as START_LOCATION } from './types'
+export type {
   // route location
   _RouteLocationBase,
   LocationAsPath,
@@ -49,7 +50,6 @@ export {
   // route records
   _RouteRecordBase,
   RouteMeta,
-  START_LOCATION_NORMALIZED as START_LOCATION,
   RouteComponent,
   // RawRouteComponent,
   RouteRecordName,
@@ -60,27 +60,17 @@ export {
   NavigationHookAfter,
 } from './types'
 
-export {
-  createRouter,
-  Router,
-  RouterOptions,
-  RouterScrollBehavior,
-} from './router'
+export { createRouter } from './router'
+export type { Router, RouterOptions, RouterScrollBehavior } from './router'
 
-export {
-  NavigationFailureType,
-  NavigationFailure,
-  isNavigationFailure,
-} from './errors'
+export { NavigationFailureType, isNavigationFailure } from './errors'
+export type { NavigationFailure } from './errors'
 
 export { onBeforeRouteLeave, onBeforeRouteUpdate } from './navigationGuards'
-export {
-  RouterLink,
-  useLink,
-  RouterLinkProps,
-  UseLinkOptions,
-} from './RouterLink'
-export { RouterView, RouterViewProps } from './RouterView'
+export { RouterLink, useLink } from './RouterLink'
+export type { RouterLinkProps, UseLinkOptions } from './RouterLink'
+export { RouterView } from './RouterView'
+export type { RouterViewProps } from './RouterView'
 
 export * from './useApi'
 

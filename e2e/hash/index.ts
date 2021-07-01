@@ -1,3 +1,4 @@
+import '../global.css'
 import { createRouter, useRoute, createWebHashHistory } from '../../src'
 import { RouteComponent } from '../../src/types'
 import { createApp } from 'vue'

@@ -1,3 +1,4 @@
+import '../global.css'
 import { createRouter, createWebHistory, useRouter } from '../../src'
 import { RouteComponent } from '../../src/types'
 import { createApp, ref } from 'vue'
@@ -68,7 +69,7 @@ const WithGuards: RouteComponent = {
   },
 }
 
-const webHistory = createWebHistory('/' + __dirname)
+const webHistory = createWebHistory('/keep-alive')
 const router = createRouter({
   history: webHistory,
   routes: [
