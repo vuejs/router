@@ -352,6 +352,7 @@ export interface Router {
  * @param options - {@link RouterOptions}
  */
 export function createRouter(options: RouterOptions): Router {
+  const installedApps = new Set<App>()
   const matcher = createRouterMatcher(options.routes, options)
   let parseQuery = options.parseQuery || originalParseQuery
   let stringifyQuery = options.stringifyQuery || originalStringifyQuery
@@ -761,6 +762,7 @@ export function createRouter(options: RouterOptions): Router {
     guards = extractComponentsGuards(
       leavingRecords.reverse(),
       'beforeRouteLeave',
+      installedApps,
       to,
       from
     )
@@ -798,6 +800,7 @@ export function createRouter(options: RouterOptions): Router {
           guards = extractComponentsGuards(
             updatingRecords,
             'beforeRouteUpdate',
+            installedApps,
             to,
             from
           )
@@ -841,6 +844,7 @@ export function createRouter(options: RouterOptions): Router {
           guards = extractComponentsGuards(
             enteringRecords,
             'beforeRouteEnter',
+            installedApps,
             to,
             from
           )
@@ -1124,7 +1128,6 @@ export function createRouter(options: RouterOptions): Router {
   const go = (delta: number) => routerHistory.go(delta)
 
   let started: boolean | undefined
-  const installedApps = new Set<App>()
 
   const router: Router = {
     currentRoute,

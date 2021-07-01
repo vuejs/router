@@ -10,7 +10,7 @@ import {
   RouteComponent,
   RawRouteComponent,
 } from './types'
-
+import type { App } from 'vue'
 import {
   createRouterError,
   ErrorTypes,
@@ -230,14 +230,23 @@ type GuardType = 'beforeRouteEnter' | 'beforeRouteUpdate' | 'beforeRouteLeave'
 export function extractComponentsGuards(
   matched: RouteRecordNormalized[],
   guardType: GuardType,
+  apps: Set<App>,
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded
 ) {
   const guards: Array<() => Promise<void> | Promise<Array<Promise<void>>>> = []
+  const globalMixins = [...apps].reduce(
+    (ac: Array<RawRouteComponent>, app) => (
+      ac.push(...app._context.mixins), ac
+    ),
+    []
+  )
 
   for (const record of matched) {
     for (const name in record.components) {
-      let rawComponent = record.components[name]
+      let rawComponent = record.components[name] as RawRouteComponent & {
+        _context?: any
+      }
       if (__DEV__) {
         if (
           !rawComponent ||
@@ -281,20 +290,45 @@ export function extractComponentsGuards(
       // skip update and leave guards if the route component is not mounted
       if (guardType !== 'beforeRouteEnter' && !record.instances[name]) continue
 
-      if (isRouteComponent(rawComponent)) {
-        // __vccOpts is added by vue-class-component and contain the regular options
+      function resolveGuards(
+        rawComponent: RawRouteComponent & { _context?: any },
+        isChunk = false,
+        guards: any = []
+      ) {
         let options: ComponentOptions =
           (rawComponent as any).__vccOpts || rawComponent
         // guards in mixins
         if (options.mixins && options.mixins.length) {
           for (const mixin of options.mixins) {
-            const guard = mixin[guardType]
-            guard &&
-              guards.push(guardToPromiseFn(guard, to, from, record, name))
+            resolveGuards(mixin, isChunk, guards)
           }
         }
+        // guards in extends component
+        if (options.extends) {
+          resolveGuards(options.extends, isChunk, guards)
+        }
         const guard = options[guardType]
-        guard && guards.push(guardToPromiseFn(guard, to, from, record, name))
+        guard &&
+          guards.push(
+            isChunk
+              ? guardToPromiseFn(guard, to, from, record, name)()
+              : guardToPromiseFn(guard, to, from, record, name)
+          )
+        if (
+          rawComponent._context &&
+          rawComponent._context.mixins &&
+          rawComponent._context.mixins.length
+        ) {
+          for (const mixin of rawComponent._context.mixins) {
+            resolveGuards(mixin, isChunk, guards)
+          }
+        }
+        return guards
+      }
+
+      if (isRouteComponent(rawComponent)) {
+        rawComponent._context = { mixins: globalMixins }
+        guards.push(...resolveGuards(rawComponent))
       } else {
         // start requesting the chunk already
         let componentPromise: Promise<
@@ -307,8 +341,7 @@ export function extractComponentsGuards(
           )
           componentPromise = Promise.resolve(componentPromise as RouteComponent)
         }
-
-        const gu = () =>
+        guards.push(() =>
           componentPromise.then(resolved => {
             if (!resolved)
               return Promise.reject(
@@ -316,29 +349,15 @@ export function extractComponentsGuards(
                   `Couldn't resolve component "${name}" at "${record.path}"`
                 )
               )
-            const resolvedComponent = isESModule(resolved)
-              ? resolved.default
-              : resolved
+            const resolvedComponent = (
+              isESModule(resolved) ? resolved.default : resolved
+            ) as RawRouteComponent & { _context?: any }
             // replace the function with the resolved component
             record.components[name] = resolvedComponent
-            // __vccOpts is added by vue-class-component and contain the regular options
-            let options: ComponentOptions =
-              (resolvedComponent as any).__vccOpts || resolvedComponent
-            const guards = []
-            // guards in mixins
-            if (options.mixins && options.mixins.length) {
-              for (const mixin of options.mixins) {
-                const guard = mixin[guardType]
-                guard &&
-                  guards.push(guardToPromiseFn(guard, to, from, record, name)())
-              }
-            }
-            const guard = options[guardType]
-            guard &&
-              guards.push(guardToPromiseFn(guard, to, from, record, name)())
-            return guards
+            resolvedComponent._context = { mixins: globalMixins }
+            return resolveGuards(resolvedComponent, true)
           })
-        guards.push(gu)
+        )
       }
     }
   }
