@@ -119,7 +119,7 @@ export const router = createRouter({
         },
       ],
     },
-
+    { path: '/anchor', component },
     {
       path: '/parent/:id',
       name: 'parent',
@@ -151,7 +151,6 @@ export const router = createRouter({
         } else next()
       },
     },
-
     {
       path: '/admin',
       component: TransparentWrapper,
@@ -167,6 +166,8 @@ export const router = createRouter({
     if (savedPosition) {
       return savedPosition
     } else {
+      if (to.hash) return { el: to.hash }
+
       // TODO: check if parent in common that works with alias
       if (to.matched.every((record, i) => from.matched[i] !== record))
         return { left: 0, top: 0 }

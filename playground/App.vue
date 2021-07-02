@@ -73,6 +73,9 @@
         <router-link to="/always-redirect">/always-redirect</router-link>
       </li>
       <li>
+        <router-link to="/anchor#btn">/anchor-point</router-link>
+      </li>
+      <li>
         <router-link to="/children">/children</router-link>
       </li>
       <li>
@@ -159,7 +162,7 @@
         <router-link to="/p_1/absolute-a">/p_1/absolute-a</router-link>
       </li>
     </ul>
-    <button @click="toggleViewName">Toggle view</button>
+    <button id="btn" @click="toggleViewName">Toggle view</button>
     <Suspense>
       <template #default>
         <router-view :name="viewName" v-slot="{ Component, route }">
