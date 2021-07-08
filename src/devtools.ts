@@ -353,6 +353,67 @@ function formatRouteRecordMatcherForStateInspector(
     })
   }
 
+  if ((route as any).__vd_match) {
+    fields.push({
+      editable: false,
+      key: 'match',
+      value: (route as any).__vd_match,
+    })
+  }
+
+  if ((route as any).__vd_exactActive) {
+    fields.push({
+      editable: false,
+      key: 'exactActive',
+      value: (route as any).__vd_exactActive,
+    })
+  }
+
+  if ((route as any).__vd_active) {
+    fields.push({
+      editable: false,
+      key: 'active',
+      value: (route as any).__vd_active,
+    })
+  }
+
+  if (route.record.meta) {
+    fields.push({
+      editable: false,
+      key: 'meta',
+      value: route.record.meta,
+    })
+  }
+
+  if (route.record.props) {
+    fields.push({
+      editable: false,
+      key: 'props',
+      value: route.record.props,
+    })
+  }
+
+  if (route.record.components.default) {
+    fields.push({
+      editable: false,
+      key: 'components',
+      value: {
+        _custom: {
+          type: 'component',
+          readOnly: true,
+          display: route.record.components.default?.name,
+          tooltip: 'Router component',
+          value: {
+            default:
+              typeof route.record.components.default === 'function'
+                ? route.record.components.default
+                : (route.record.components.default as any)?.__file,
+          },
+        },
+      },
+    })
+  }
+
   fields.push({
     key: 'score',
     editable: false,
