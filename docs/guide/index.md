@@ -36,6 +36,7 @@ Note how instead of using regular `a` tags, we use a custom component `router-li
 ```js
 // 1. Import router
 import { createRouter, createWebHashHistory } from 'vue-router'
+import {createApp} from 'vue'
 
 // 2. Define route components.
 // These can be imported from other files
@@ -53,14 +54,14 @@ const routes = [
 // 4. Create the router instance and pass the `routes` option
 // You can pass in additional options here, but let's
 // keep it simple for now.
-const router = VueRouter.createRouter({
+const router = createRouter({
   // 5. Provide the history implementation to use. We are using the hash history for simplicity here.
-  history: VueRouter.createWebHashHistory(),
+  history: createWebHashHistory(),
   routes, // short for `routes: routes`
 })
 
 // 6. Create and mount the root instance.
-const app = Vue.createApp({})
+const app = createApp({})
 // Make sure to _use_ the router instance to make the
 // whole app router-aware.
 app.use(router)
