@@ -1,6 +1,6 @@
 import { LocationQuery, LocationQueryRaw } from '../query'
 import { PathParserOptions } from '../matcher'
-import { Ref, ComputedRef, ComponentPublicInstance, Component } from 'vue'
+import { Ref, ComponentPublicInstance, Component } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
@@ -19,7 +19,7 @@ export type Immutable<T> = {
  * @internal
  */
 export type VueUseOptions<T> = {
-  [k in keyof T]: Ref<T[k]> | T[k] | ComputedRef<T[k]>
+  [k in keyof T]: Ref<T[k]> | T[k]
 }
 
 export type TODO = any
