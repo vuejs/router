@@ -167,7 +167,6 @@ function createReplacePlugin(
       replacements[key] = process.env[key]
     }
   })
-  // TODO: fix replacement thing
   return replace({
     preventAssignment: true,
     values: replacements,
