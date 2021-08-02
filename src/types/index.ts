@@ -369,7 +369,7 @@ export interface MatcherLocation
 export interface NavigationGuardNext {
   (): void
   (error: Error): void
-  (location: RouteLocationRaw): void
+  (location?: RouteLocationRaw): void
   (valid: boolean): void
   (cb: NavigationGuardNextCallback): void
   /**
