@@ -923,7 +923,7 @@ export function createRouter(options: RouterOptions): Router {
     markAsReady()
   }
 
-  let removeHistoryListener: () => void
+  let removeHistoryListener: () => void | undefined
   // attach listener to history to trigger navigations
   function setupListeners() {
     removeHistoryListener = routerHistory.listen((to, _from, info) => {
@@ -1195,8 +1195,11 @@ export function createRouter(options: RouterOptions): Router {
       installedApps.add(app)
       app.unmount = function () {
         installedApps.delete(app)
+        // the router is not attached to an app anymore
         if (installedApps.size < 1) {
-          removeHistoryListener()
+          // invalidate the current navigation
+          pendingLocation = START_LOCATION_NORMALIZED
+          removeHistoryListener && removeHistoryListener()
           currentRoute.value = START_LOCATION_NORMALIZED
           started = false
           ready = false
