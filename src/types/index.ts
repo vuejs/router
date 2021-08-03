@@ -370,7 +370,7 @@ export interface NavigationGuardNext {
   (): void
   (error: Error): void
   (location: RouteLocationRaw): void
-  (valid: boolean): void
+  (valid: boolean | undefined): void
   (cb: NavigationGuardNextCallback): void
   /**
    * Allows to detect if `next` isn't called in a resolved guard. Used
