@@ -353,9 +353,9 @@ export interface Router {
  */
 export function createRouter(options: RouterOptions): Router {
   const matcher = createRouterMatcher(options.routes, options)
-  let parseQuery = options.parseQuery || originalParseQuery
-  let stringifyQuery = options.stringifyQuery || originalStringifyQuery
-  let routerHistory = options.history
+  const parseQuery = options.parseQuery || originalParseQuery
+  const stringifyQuery = options.stringifyQuery || originalStringifyQuery
+  const routerHistory = options.history
   if (__DEV__ && !routerHistory)
     throw new Error(
       'Provide the "history" option when calling "createRouter()":' +
@@ -399,7 +399,7 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   function removeRoute(name: RouteRecordName) {
-    let recordMatcher = matcher.getRecordMatcher(name)
+    const recordMatcher = matcher.getRecordMatcher(name)
     if (recordMatcher) {
       matcher.removeRoute(recordMatcher)
     } else if (__DEV__) {
@@ -423,17 +423,17 @@ export function createRouter(options: RouterOptions): Router {
     // we create a copy to modify it later
     currentLocation = assign({}, currentLocation || currentRoute.value)
     if (typeof rawLocation === 'string') {
-      let locationNormalized = parseURL(
+      const locationNormalized = parseURL(
         parseQuery,
         rawLocation,
         currentLocation.path
       )
-      let matchedRoute = matcher.resolve(
+      const matchedRoute = matcher.resolve(
         { path: locationNormalized.path },
         currentLocation
       )
 
-      let href = routerHistory.createHref(locationNormalized.fullPath)
+      const href = routerHistory.createHref(locationNormalized.fullPath)
       if (__DEV__) {
         if (href.startsWith('//'))
           warn(
@@ -482,7 +482,7 @@ export function createRouter(options: RouterOptions): Router {
       currentLocation.params = encodeParams(currentLocation.params)
     }
 
-    let matchedRoute = matcher.resolve(matcherLocation, currentLocation)
+    const matchedRoute = matcher.resolve(matcherLocation, currentLocation)
     const hash = rawLocation.hash || ''
 
     if (__DEV__ && hash && !hash.startsWith('#')) {
@@ -503,7 +503,7 @@ export function createRouter(options: RouterOptions): Router {
       })
     )
 
-    let href = routerHistory.createHref(fullPath)
+    const href = routerHistory.createHref(fullPath)
     if (__DEV__) {
       if (href.startsWith('//')) {
         warn(
@@ -928,7 +928,7 @@ export function createRouter(options: RouterOptions): Router {
   function setupListeners() {
     removeHistoryListener = routerHistory.listen((to, _from, info) => {
       // cannot be a redirect route because it was in history
-      let toLocation = resolve(to) as RouteLocationNormalized
+      const toLocation = resolve(to) as RouteLocationNormalized
 
       // due to dynamic routing, and to hash history with manual navigation
       // (manually changing the url or calling history.hash = '#/somewhere'),
@@ -1108,7 +1108,7 @@ export function createRouter(options: RouterOptions): Router {
     const { scrollBehavior } = options
     if (!isBrowser || !scrollBehavior) return Promise.resolve()
 
-    let scrollPosition: _ScrollPositionNormalized | null =
+    const scrollPosition: _ScrollPositionNormalized | null =
       (!isPush && getSavedScrollPosition(getScrollKey(to.fullPath, 0))) ||
       ((isFirstNavigation || !isPush) &&
         (history.state as HistoryState) &&
@@ -1182,7 +1182,7 @@ export function createRouter(options: RouterOptions): Router {
           RouteLocationNormalizedLoaded[k]
         >
       }
-      for (let key in START_LOCATION_NORMALIZED) {
+      for (const key in START_LOCATION_NORMALIZED) {
         // @ts-expect-error: the key matches
         reactiveRoute[key] = computed(() => currentRoute.value[key])
       }
@@ -1191,7 +1191,7 @@ export function createRouter(options: RouterOptions): Router {
       app.provide(routeLocationKey, reactive(reactiveRoute))
       app.provide(routerViewLocationKey, currentRoute)
 
-      let unmountApp = app.unmount
+      const unmountApp = app.unmount
       installedApps.add(app)
       app.unmount = function () {
         installedApps.delete(app)
