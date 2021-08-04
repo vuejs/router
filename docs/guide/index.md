@@ -3,7 +3,7 @@
 <VueMasteryVideo
   title="Get Started with Vue Router"
   url="https://player.vimeo.com/video/548250062"
-  img="https://i.vimeocdn.com/video/1201118933_640"
+  img="/Vue_Router_-_Getting_Started.jpeg"
 />
 
 <script setup>
