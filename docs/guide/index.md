@@ -1,5 +1,15 @@
 # Getting Started
 
+<VueMasteryVideo
+  title="Get Started with Vue Router"
+  url="https://player.vimeo.com/video/548250062"
+  img="https://i.vimeocdn.com/video/1201118933_640"
+/>
+
+<script setup>
+  import VueMasteryVideo from '../.vitepress/components/VueMasteryVideo.vue'
+  </script>
+
 Creating a Single-page Application with Vue + Vue Router feels natural: with Vue.js, we are already composing our application with components. When adding Vue Router to the mix, all we need to do is map our components to the routes and let Vue Router know where to render them. Here's a basic example:
 
 ## HTML
