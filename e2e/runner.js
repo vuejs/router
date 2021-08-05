@@ -26,6 +26,20 @@ const { resolve } = require('path')
 const Nightwatch = require('nightwatch')
 const args = process.argv.slice(2)
 
+// allow running browserstack local
+const isLocal = args.indexOf('--local') > -1
+
+if (isLocal && (!process.env.BS_USER || !process.env.BS_KEY)) {
+  console.log(
+    'Hey!\n',
+    'You are missing credentials for Browserstack.\n',
+    'If you are a contributor, this is normal, credentials are private. These tests must be run by a maintainer of vue-router',
+    'If you are a maintainer, make sure to create your `.env` file with both `BS_USER` and `BS_KEY` variables!'
+  )
+  // fail if testing locally
+  process.exit(process.env.CI ? 0 : 1)
+}
+
 // if we are running yarn dev locally, we can pass --dev to avoid launching another server instance
 const server =
   args.indexOf('--dev') > -1
@@ -33,9 +47,6 @@ const server =
     : // : process.env.CI || args.indexOf('--ci') > -1
       // ? require('./staticServer')
       require('./devServer')
-
-// allow running browserstack local
-const isLocal = args.indexOf('--local') > -1
 
 const DEFAULT_CONFIG = './nightwatch.json'
 const NW_CONFIG = isLocal
@@ -86,17 +97,6 @@ process.mainModule.filename = resolve(
 )
 
 if (isLocal) {
-  if (isLocal && (!process.env.BS_USER || !process.env.BS_KEY)) {
-    console.log(
-      'Hey!\n',
-      'You are missing credentials for Browserstack.\n',
-      'If you are a contributor, this is normal, credentials are private. These tests must be run by a maintainer of vue-router',
-      'If you are a maintainer, make sure to create your `.env` file with both `BS_USER` and `BS_KEY` variables!'
-    )
-    // fail if testing locally
-    process.exit(process.env.CI ? 0 : 1)
-  }
-
   let bsLocal
   const browserstack = require('browserstack-local')
   Nightwatch.bs_local = bsLocal = new browserstack.Local()

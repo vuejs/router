@@ -55,6 +55,8 @@ jobs:
       - attach_workspace:
           at: ~/project
       - run: yarn test:e2e:bs
+      - store_artifacts:
+          path: e2e/screenshots
       - store_test_results:
           path: e2e/reports
 
@@ -100,13 +102,16 @@ workflows:
       - test-e2e:
           requires:
             - install
-      - test-e2e-bs:
-          requires:
-            - install
-      - test-unit:
-          requires:
-            - install
       - build-lint:
+          requires:
+            - install
+      # - build-e2e:
+      #     requires:
+      #       - install
+      # - test-e2e-bs:
+      #     requires:
+      #       - build-e2e
+      - test-unit:
           requires:
             - install
       - coverage:

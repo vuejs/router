@@ -1,8 +1,8 @@
-import fs from 'fs'
-import { resolve, join } from 'path'
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import history from 'connect-history-api-fallback'
+const fs = require('fs')
+const { resolve, join } = require('path')
+const { defineConfig } = require('vite')
+const vue = require('@vitejs/plugin-vue')
+const history = require('connect-history-api-fallback')
 
 /** @type {string[]} */
 let examples = []
