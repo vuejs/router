@@ -31,11 +31,11 @@ export type RouteParamValue = string
 /**
  * @internal
  */
-export type RouteParamValueRaw = RouteParamValue | number
+export type RouteParamValueRaw = RouteParamValue | number | null | undefined
 export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
 export type RouteParamsRaw = Record<
   string,
-  RouteParamValueRaw | RouteParamValueRaw[]
+  RouteParamValueRaw | Exclude<RouteParamValueRaw, null | undefined>[]
 >
 
 /**

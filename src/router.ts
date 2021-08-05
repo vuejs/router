@@ -12,6 +12,7 @@ import {
   NavigationGuardWithThis,
   RouteLocationOptions,
   MatcherLocationRaw,
+  RouteParams,
 } from './types'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
@@ -380,7 +381,9 @@ export function createRouter(options: RouterOptions): Router {
     paramValue => '' + paramValue
   )
   const encodeParams = applyToParams.bind(null, encodeParam)
-  const decodeParams = applyToParams.bind(null, decode)
+  const decodeParams: (params: RouteParams | undefined) => RouteParams =
+    // @ts-expect-error: intentionally avoid the type check
+    applyToParams.bind(null, decode)
 
   function addRoute(
     parentOrRoute: RouteRecordName | RouteRecordRaw,
@@ -473,6 +476,13 @@ export function createRouter(options: RouterOptions): Router {
         path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path,
       })
     } else {
+      // remove any nullish param
+      const targetParams = assign({}, rawLocation.params)
+      for (const key in targetParams) {
+        if (targetParams[key] == null) {
+          delete targetParams[key]
+        }
+      }
       // pass encoded values to the matcher so it can produce encoded path and fullPath
       matcherLocation = assign({}, rawLocation, {
         params: encodeParams(rawLocation.params),

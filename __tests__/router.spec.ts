@@ -34,6 +34,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/to-foo-query', redirect: '/foo?a=2#b' },
   { path: '/to-p/:p', redirect: { name: 'Param' } },
   { path: '/p/:p', name: 'Param', component: components.Bar },
+  { path: '/optional/:p?', name: 'optional', component: components.Bar },
   { path: '/repeat/:r+', name: 'repeat', component: components.Bar },
   { path: '/to-p/:p', redirect: to => `/p/${to.params.p}` },
   { path: '/redirect-with-param/:p', redirect: () => `/` },
@@ -238,6 +239,23 @@ describe('Router', () => {
     const { router } = await newRouter()
     await router.push({ name: 'Param', params: { p: 0 } })
     expect(router.currentRoute.value).toMatchObject({ params: { p: '0' } })
+  })
+
+  it('casts null/undefined params to empty strings', async () => {
+    const { router } = await newRouter()
+    expect(
+      router.resolve({ name: 'optional', params: { p: undefined } })
+    ).toMatchObject({
+      params: {},
+    })
+    expect(
+      router.resolve({ name: 'optional', params: { p: null } })
+    ).toMatchObject({
+      params: {},
+    })
+    await router.push({ name: 'optional', params: { p: null } })
+    expect(router.currentRoute.value).toMatchObject({ params: {} })
+    await router.push({ name: 'optional', params: {} })
   })
 
   it('navigates to same route record but different query', async () => {
