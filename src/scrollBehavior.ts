@@ -78,7 +78,7 @@ export function scrollToPosition(position: ScrollPosition): void {
   let scrollToOptions: ScrollPositionCoordinates
 
   if ('el' in position) {
-    let positionEl = position.el
+    const positionEl = position.el
     const isIdSelector =
       typeof positionEl === 'string' && positionEl.startsWith('#')
     /**
@@ -105,7 +105,7 @@ export function scrollToPosition(position: ScrollPosition): void {
     if (__DEV__ && typeof position.el === 'string') {
       if (!isIdSelector || !document.getElementById(position.el.slice(1))) {
         try {
-          let foundEl = document.querySelector(position.el)
+          const foundEl = document.querySelector(position.el)
           if (isIdSelector && foundEl) {
             warn(
               `The selector "${position.el}" should be passed as "el: document.querySelector('${position.el}')" because it starts with "#".`

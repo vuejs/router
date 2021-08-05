@@ -261,7 +261,7 @@ export function extractComponentsGuards(
               `"() => import('./MyPage.vue')" ? This will break in ` +
               `production if not fixed.`
           )
-          let promise = rawComponent
+          const promise = rawComponent
           rawComponent = () => promise
         } else if (
           (rawComponent as any).__asyncLoader &&
@@ -283,7 +283,7 @@ export function extractComponentsGuards(
 
       if (isRouteComponent(rawComponent)) {
         // __vccOpts is added by vue-class-component and contain the regular options
-        let options: ComponentOptions =
+        const options: ComponentOptions =
           (rawComponent as any).__vccOpts || rawComponent
         const guard = options[guardType]
         guard && guards.push(guardToPromiseFn(guard, to, from, record, name))
@@ -314,7 +314,7 @@ export function extractComponentsGuards(
             // replace the function with the resolved component
             record.components[name] = resolvedComponent
             // __vccOpts is added by vue-class-component and contain the regular options
-            let options: ComponentOptions =
+            const options: ComponentOptions =
               (resolvedComponent as any).__vccOpts || resolvedComponent
             const guard = options[guardType]
             return guard && guardToPromiseFn(guard, to, from, record, name)()

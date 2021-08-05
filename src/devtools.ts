@@ -532,7 +532,7 @@ function omit<T extends object, K extends [...(keyof T)[]]>(obj: T, keys: K) {
     [K2 in Exclude<keyof T, K[number]>]: T[K2]
   }
 
-  for (let key in obj) {
+  for (const key in obj) {
     if (!keys.includes(key as any)) {
       // @ts-expect-error
       ret[key] = obj[key]
