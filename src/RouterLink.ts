@@ -92,17 +92,17 @@ export function useLink(props: UseLinkOptions) {
   const route = computed(() => router.resolve(unref(props.to)))
 
   const activeRecordIndex = computed<number>(() => {
-    let { matched } = route.value
-    let { length } = matched
+    const { matched } = route.value
+    const { length } = matched
     const routeMatched: RouteRecord | undefined = matched[length - 1]
-    let currentMatched = currentRoute.matched
+    const currentMatched = currentRoute.matched
     if (!routeMatched || !currentMatched.length) return -1
-    let index = currentMatched.findIndex(
+    const index = currentMatched.findIndex(
       isSameRouteRecord.bind(null, routeMatched)
     )
     if (index > -1) return index
     // possible parent record
-    let parentRecordPath = getOriginalPath(
+    const parentRecordPath = getOriginalPath(
       matched[length - 2] as RouteRecord | undefined
     )
     return (
@@ -288,9 +288,9 @@ function includesParams(
   outer: RouteLocation['params'],
   inner: RouteLocation['params']
 ): boolean {
-  for (let key in inner) {
-    let innerValue = inner[key]
-    let outerValue = outer[key]
+  for (const key in inner) {
+    const innerValue = inner[key]
+    const outerValue = outer[key]
     if (typeof innerValue === 'string') {
       if (innerValue !== outerValue) return false
     } else {

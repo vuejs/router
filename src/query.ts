@@ -55,9 +55,9 @@ export function parseQuery(search: string): LocationQuery {
     // pre decode the + into space
     const searchParam = searchParams[i].replace(PLUS_RE, ' ')
     // allow the = character
-    let eqPos = searchParam.indexOf('=')
-    let key = decode(eqPos < 0 ? searchParam : searchParam.slice(0, eqPos))
-    let value = eqPos < 0 ? null : decode(searchParam.slice(eqPos + 1))
+    const eqPos = searchParam.indexOf('=')
+    const key = decode(eqPos < 0 ? searchParam : searchParam.slice(0, eqPos))
+    const value = eqPos < 0 ? null : decode(searchParam.slice(eqPos + 1))
 
     if (key in query) {
       // an extra variable for ts types
@@ -95,7 +95,7 @@ export function stringifyQuery(query: LocationQueryRaw): string {
       continue
     }
     // keep null values
-    let values: LocationQueryValueRaw[] = Array.isArray(value)
+    const values: LocationQueryValueRaw[] = Array.isArray(value)
       ? value.map(v => v && encodeQueryValue(v))
       : [value && encodeQueryValue(value)]
 
@@ -126,8 +126,8 @@ export function normalizeQuery(
 ): LocationQuery {
   const normalizedQuery: LocationQuery = {}
 
-  for (let key in query) {
-    let value = query[key]
+  for (const key in query) {
+    const value = query[key]
     if (value !== undefined) {
       normalizedQuery[key] = Array.isArray(value)
         ? value.map(v => (v == null ? null : '' + v))
