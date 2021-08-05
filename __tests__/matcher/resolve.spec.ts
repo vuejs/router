@@ -691,8 +691,7 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
-    // FIXME:
-    it.skip('keeps required trailing slash (strict: true)', () => {
+    it('keeps required trailing slash (strict: true)', () => {
       const record = {
         path: '/home/',
         name: 'Home',
