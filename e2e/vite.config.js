@@ -1,8 +1,8 @@
-const fs = require('fs')
-const { resolve, join } = require('path')
-const { defineConfig } = require('vite')
-const vue = require('@vitejs/plugin-vue')
-const history = require('connect-history-api-fallback')
+import fs from 'fs'
+import { resolve, join } from 'path'
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import history from 'connect-history-api-fallback'
 
 /** @type {string[]} */
 let examples = []
@@ -54,9 +54,15 @@ const config = (env = {}) => {
                   from: new RegExp(`^/${name}/.*$`),
                   to({ parsedUrl }) {
                     // console.log('checking for', parsedUrl.pathname)
-                    if (fs.existsSync(join(__dirname, parsedUrl.pathname))) {
+                    const filePath = join(__dirname, parsedUrl.pathname)
+                    if (
+                      fs.existsSync(filePath) &&
+                      !fs.statSync(filePath).isDirectory()
+                    ) {
+                      // console.log('\t', parsedUrl.pathname)
                       return parsedUrl.pathname
                     } else {
+                      // console.log('\t', `/${name}/index.html`)
                       return `/${name}/index.html`
                     }
                   },
@@ -65,6 +71,7 @@ const config = (env = {}) => {
                 {
                   from: /^\/@.*$/,
                   to({ parsedUrl }) {
+                    // console.log('bypassing', parsedUrl.pathname, parsedUrl.href)
                     return parsedUrl.href
                   },
                 },
