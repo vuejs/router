@@ -93,7 +93,7 @@ export function stringifyURL(
   stringifyQuery: (query: LocationQueryRaw) => string,
   location: LocationPartial
 ): string {
-  let query: string = location.query ? stringifyQuery(location.query) : ''
+  const query: string = location.query ? stringifyQuery(location.query) : ''
   return location.path + (query && '?') + query + (location.hash || '')
 }
 
@@ -124,8 +124,8 @@ export function isSameRouteLocation(
   a: RouteLocation,
   b: RouteLocation
 ): boolean {
-  let aLastIndex = a.matched.length - 1
-  let bLastIndex = b.matched.length - 1
+  const aLastIndex = a.matched.length - 1
+  const bLastIndex = b.matched.length - 1
 
   return (
     aLastIndex > -1 &&
@@ -157,7 +157,7 @@ export function isSameRouteLocationParams(
 ): boolean {
   if (Object.keys(a).length !== Object.keys(b).length) return false
 
-  for (let key in a) {
+  for (const key in a) {
     if (!isSameRouteLocationParamsValue(a[key], b[key])) return false
   }
 

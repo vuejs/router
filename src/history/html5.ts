@@ -177,10 +177,10 @@ function useHistoryStateNavigation(base: string) {
   const { history, location } = window
 
   // private variables
-  let currentLocation: ValueContainer<HistoryLocation> = {
+  const currentLocation: ValueContainer<HistoryLocation> = {
     value: createCurrentLocation(base, location),
   }
-  let historyState: ValueContainer<StateEntry> = { value: history.state }
+  const historyState: ValueContainer<StateEntry> = { value: history.state }
   // build current history entry as this is a fresh navigation
   if (!historyState.value) {
     changeLocation(

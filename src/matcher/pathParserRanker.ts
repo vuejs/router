@@ -122,7 +122,7 @@ export function tokensToParser(
   const options = assign({}, BASE_PATH_PARSER_OPTIONS, extraOptions)
 
   // the amount of scores is the same as the length of segments except for the root segment "/"
-  let score: Array<number[]> = []
+  const score: Array<number[]> = []
   // the regexp as a string
   let pattern = options.start ? '^' : ''
   // extracted keys

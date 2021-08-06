@@ -23,4 +23,4 @@ export function applyToParams(
   return newParams
 }
 
-export let noop = () => {}
+export const noop = () => {}

@@ -827,7 +827,7 @@ export function createRouter(options: RouterOptions): Router {
           guards = []
           for (const record of to.matched) {
             // do not trigger beforeEnter on reused views
-            if (record.beforeEnter && !from.matched.includes(record as any)) {
+            if (record.beforeEnter && !from.matched.includes(record)) {
               if (Array.isArray(record.beforeEnter)) {
                 for (const beforeEnter of record.beforeEnter)
                   guards.push(guardToPromiseFn(beforeEnter, to, from))

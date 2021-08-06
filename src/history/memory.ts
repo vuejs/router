@@ -44,7 +44,7 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
       delta,
       type: NavigationType.pop,
     }
-    for (let callback of listeners) {
+    for (const callback of listeners) {
       callback(to, from, info)
     }
   }
