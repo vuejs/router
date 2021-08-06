@@ -157,7 +157,7 @@ export function isSameRouteLocationParams(
 ): boolean {
   if (Object.keys(a).length !== Object.keys(b).length) return false
 
-  for (let key in a) {
+  for (const key in a) {
     if (!isSameRouteLocationParamsValue(a[key], b[key])) return false
   }
 
