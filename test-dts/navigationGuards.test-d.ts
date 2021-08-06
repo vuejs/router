@@ -26,6 +26,10 @@ router.beforeEach((to, from) => {
   return false
 })
 
+router.beforeEach((to, from, next) => {
+  next(undefined)
+})
+
 // @ts-expect-error
 router.beforeEach((to, from, next) => {
   return Symbol('not supported')

@@ -17,10 +17,12 @@ export interface PathParser {
    * The regexp used to match a url
    */
   re: RegExp
+
   /**
    * The score of the parser
    */
   score: Array<number[]>
+
   /**
    * Keys that appeared in the path
    */
@@ -35,6 +37,7 @@ export interface PathParser {
    * no match
    */
   parse(path: string): PathParams | null
+
   /**
    * Creates a string version of the url
    *
@@ -52,15 +55,18 @@ export interface _PathParserOptions {
    * Makes the RegExp case sensitive. Defaults to false
    */
   sensitive?: boolean
+
   /**
    * Should we disallow a trailing slash. Defaults to false
    */
   strict?: boolean
+
   /**
    * Should the RegExp match from the beginning by prepending a `^` to it. Defaults to true
    * @internal
    */
   start?: boolean
+
   /**
    * Should the RegExp match until the end by appending a `$` to it. Defaults to true
    */
@@ -274,6 +280,7 @@ export function tokensToParser(
 /**
  * Compares an array of numbers as used in PathParser.score and returns a
  * number. This function can be used to `sort` an array
+ *
  * @param a - first array of numbers
  * @param b - second array of numbers
  * @returns 0 if both are equal, < 0 if a should be sorted first, > 0 if b
@@ -306,6 +313,7 @@ function compareScoreArray(a: number[], b: number[]): number {
 
 /**
  * Compare function that can be used with `sort` to sort an array of PathParser
+ *
  * @param a - first PathParser
  * @param b - second PathParser
  * @returns 0 if both are equal, < 0 if a should be sorted first, > 0 if b

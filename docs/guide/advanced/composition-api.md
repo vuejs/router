@@ -35,7 +35,7 @@ The `route` object is a reactive object, so any of its properties can be watched
 
 ```js
 import { useRoute } from 'vue-router'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 export default {
   setup() {

@@ -1,6 +1,6 @@
 import { LocationQuery, LocationQueryRaw } from '../query'
 import { PathParserOptions } from '../matcher'
-import { Ref, ComputedRef, ComponentPublicInstance, Component } from 'vue'
+import { Ref, ComponentPublicInstance, Component } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
@@ -19,7 +19,7 @@ export type Immutable<T> = {
  * @internal
  */
 export type VueUseOptions<T> = {
-  [k in keyof T]: Ref<T[k]> | T[k] | ComputedRef<T[k]>
+  [k in keyof T]: Ref<T[k]> | T[k]
 }
 
 export type TODO = any
@@ -31,11 +31,11 @@ export type RouteParamValue = string
 /**
  * @internal
  */
-export type RouteParamValueRaw = RouteParamValue | number
+export type RouteParamValueRaw = RouteParamValue | number | null | undefined
 export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
 export type RouteParamsRaw = Record<
   string,
-  RouteParamValueRaw | RouteParamValueRaw[]
+  RouteParamValueRaw | Exclude<RouteParamValueRaw, null | undefined>[]
 >
 
 /**
@@ -370,7 +370,7 @@ export interface NavigationGuardNext {
   (): void
   (error: Error): void
   (location: RouteLocationRaw): void
-  (valid: boolean): void
+  (valid: boolean | undefined): void
   (cb: NavigationGuardNextCallback): void
   /**
    * Allows to detect if `next` isn't called in a resolved guard. Used
