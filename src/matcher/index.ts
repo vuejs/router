@@ -5,7 +5,7 @@ import {
   isRouteName,
   RouteRecordName,
   _RouteRecordProps,
-  RouteRecordSingleView,
+  RouteRecordRedirect,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
@@ -371,7 +371,8 @@ function normalizeRecordProps(
 ): Record<string, _RouteRecordProps> {
   const propsObject = {} as Record<string, _RouteRecordProps>
   // props does not exist on redirect records but we can set false directly
-  const props = (record as RouteRecordSingleView).props || false
+  const props =
+    (record as Exclude<RouteRecordRaw, RouteRecordRedirect>).props || false
   if ('component' in record) {
     propsObject.default = props
   } else {

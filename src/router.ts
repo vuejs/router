@@ -468,7 +468,7 @@ export function createRouter(options: RouterOptions): Router {
       ) {
         warn(
           `Path "${
-            (rawLocation as RouteLocation).path
+            (rawLocation as any).path
           }" was passed with params but they will be ignored. Use a named route alongside params instead.`
         )
       }
