@@ -461,11 +461,11 @@ export function createRouter(options: RouterOptions): Router {
         __DEV__ &&
         'params' in rawLocation &&
         !('name' in rawLocation) &&
-        Object.keys((rawLocation as any).params).length
+        Object.keys((rawLocation as RouteLocation).params).length
       ) {
         warn(
           `Path "${
-            (rawLocation as any).path
+            (rawLocation as RouteLocation).path
           }" was passed with params but they will be ignored. Use a named route alongside params instead.`
         )
       }
@@ -817,7 +817,7 @@ export function createRouter(options: RouterOptions): Router {
           guards = []
           for (const record of to.matched) {
             // do not trigger beforeEnter on reused views
-            if (record.beforeEnter && !from.matched.includes(record as any)) {
+            if (record.beforeEnter && !from.matched.includes(record)) {
               if (Array.isArray(record.beforeEnter)) {
                 for (const beforeEnter of record.beforeEnter)
                   guards.push(guardToPromiseFn(beforeEnter, to, from))

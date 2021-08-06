@@ -5,6 +5,7 @@ import {
   isRouteName,
   RouteRecordName,
   _RouteRecordProps,
+  RouteRecordSingleView,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
@@ -370,13 +371,13 @@ function normalizeRecordProps(
 ): Record<string, _RouteRecordProps> {
   const propsObject = {} as Record<string, _RouteRecordProps>
   // props does not exist on redirect records but we can set false directly
-  const props = (record as any).props || false
+  const props = (record as RouteRecordSingleView).props || false
   if ('component' in record) {
     propsObject.default = props
   } else {
     // NOTE: we could also allow a function to be applied to every component.
     // Would need user feedback for use cases
-    for (let name in record.components)
+    for (const name in record.components)
       propsObject[name] = typeof props === 'boolean' ? props : props[name]
   }
 
@@ -409,10 +410,9 @@ function mergeMetaFields(matched: MatcherLocation['matched']) {
 }
 
 function mergeOptions<T>(defaults: T, partialOptions: Partial<T>): T {
-  let options = {} as T
-  for (let key in defaults) {
-    options[key] =
-      key in partialOptions ? partialOptions[key] : (defaults[key] as any)
+  const options = {} as T
+  for (const key in defaults) {
+    options[key] = key in partialOptions ? partialOptions[key]! : defaults[key]
   }
 
   return options
