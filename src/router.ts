@@ -464,7 +464,7 @@ export function createRouter(options: RouterOptions): Router {
         __DEV__ &&
         'params' in rawLocation &&
         !('name' in rawLocation) &&
-        Object.keys((rawLocation as RouteLocation).params).length
+        Object.keys((rawLocation as any).params).length
       ) {
         warn(
           `Path "${
