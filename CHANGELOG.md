@@ -1,3 +1,12 @@
+## [4.0.11](https://github.com/vuejs/vue-router-next/compare/v4.0.10...v4.0.11) (2021-08-09)
+
+### Bug Fixes
+
+- **query:** empty object with custom stringify ([4dd2fbf](https://github.com/vuejs/vue-router-next/commit/4dd2fbfeb486800a7d5fbc384eb567c3c6532f41))
+- **router:** allow null | undefined for params ([ebca15a](https://github.com/vuejs/vue-router-next/commit/ebca15a0140453c6671fdae7a9864badc650531e))
+- **router:** invalidate ongoing navigation when unmounting ([d8fb7d0](https://github.com/vuejs/vue-router-next/commit/d8fb7d0ab1694fe86edbd52668f84fb9bb9f4dcf))
+- **types:** Support `undefined` in NavigationGuardNext ([#1059](https://github.com/vuejs/vue-router-next/issues/1059)) ([6cce232](https://github.com/vuejs/vue-router-next/commit/6cce232ba0dc5d89f6a53c1af674a8e0c6eb8790))
+
 ## [4.0.10](https://github.com/vuejs/vue-router-next/compare/v4.0.9...v4.0.10) (2021-06-21)
 
 ### Features
