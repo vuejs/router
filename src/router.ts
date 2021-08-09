@@ -542,7 +542,7 @@ export function createRouter(options: RouterOptions): Router {
           // https://github.com/vuejs/vue-router-next/issues/328#issuecomment-649481567
           stringifyQuery === originalStringifyQuery
             ? normalizeQuery(rawLocation.query)
-            : (rawLocation.query as LocationQuery),
+            : ((rawLocation.query || {}) as LocationQuery),
       },
       matchedRoute,
       {

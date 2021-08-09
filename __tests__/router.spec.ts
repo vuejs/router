@@ -149,17 +149,28 @@ describe('Router', () => {
   })
 
   it('allows to customize parseQuery', async () => {
-    const parseQuery = jest.fn()
+    const parseQuery = jest.fn(_ => ({}))
     const { router } = await newRouter({ parseQuery })
-    router.resolve('/foo?bar=baz')
+    const to = router.resolve('/foo?bar=baz')
     expect(parseQuery).toHaveBeenCalledWith('bar=baz')
+    expect(to.query).toEqual({})
   })
 
   it('allows to customize stringifyQuery', async () => {
-    const stringifyQuery = jest.fn()
+    const stringifyQuery = jest.fn(_ => '')
     const { router } = await newRouter({ stringifyQuery })
-    router.resolve({ query: { foo: 'bar' } })
+    const to = router.resolve({ query: { foo: 'bar' } })
     expect(stringifyQuery).toHaveBeenCalledWith({ foo: 'bar' })
+    expect(to.query).toEqual({ foo: 'bar' })
+    expect(to.fullPath).toBe('/')
+  })
+
+  it('creates an empty query with no query', async () => {
+    const stringifyQuery = jest.fn(_ => '')
+    const { router } = await newRouter({ stringifyQuery })
+    const to = router.resolve({ hash: '#a' })
+    expect(stringifyQuery).not.toHaveBeenCalled()
+    expect(to.query).toEqual({})
   })
 
   it('merges meta properties from parent to child', async () => {
