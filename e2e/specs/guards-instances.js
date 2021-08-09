@@ -259,8 +259,8 @@ module.exports = {
           `Aux: enter / - /named-one`,
           `One: leave /named-one - /`,
           `Aux: leave /named-one - /`,
-          `Aux: setup:leave /named-one - /`,
           `One: setup:leave /named-one - /`,
+          `Aux: setup:leave /named-one - /`,
         ].join('\n')
       )
 
@@ -273,8 +273,8 @@ module.exports = {
         [
           `One: leave /named-one - /named-two`,
           `Aux: leave /named-one - /named-two`,
-          `Aux: setup:leave /named-one - /named-two`,
           `One: setup:leave /named-one - /named-two`,
+          `Aux: setup:leave /named-one - /named-two`,
           `Two: enter /named-one - /named-two`,
           `Aux: enter /named-one - /named-two`,
         ].join('\n')
