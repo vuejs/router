@@ -86,7 +86,7 @@ router.beforeResolve(async to => {
 })
 ```
 
-`router.beforeResolve` 是一个理想的位置，可以在用户无法进入页面的情况下，获取数据或进行任何其他你想避免的操作。
+`router.beforeResolve` 是一个理想的位置，在这个钩子里，你可以获取数据或执行其他在用户不能进入页面的情况下尽量要避免的操作。
 
 <!-- TODO: how to combine with [`meta` fields](./meta.md) to create a [generic fetching mechanism](#TODO). -->
 
