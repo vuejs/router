@@ -1201,20 +1201,22 @@ export function createRouter(options: RouterOptions): Router {
       app.provide(routeLocationKey, reactive(reactiveRoute))
       app.provide(routerViewLocationKey, currentRoute)
 
-      const unmountApp = app.unmount
-      installedApps.add(app)
-      app.unmount = function () {
-        installedApps.delete(app)
-        // the router is not attached to an app anymore
-        if (installedApps.size < 1) {
-          // invalidate the current navigation
-          pendingLocation = START_LOCATION_NORMALIZED
-          removeHistoryListener && removeHistoryListener()
-          currentRoute.value = START_LOCATION_NORMALIZED
-          started = false
-          ready = false
+      if (isBrowser) {
+        const unmountApp = app.unmount
+        installedApps.add(app)
+        app.unmount = function () {
+          installedApps.delete(app)
+          // the router is not attached to an app anymore
+          if (installedApps.size < 1) {
+            // invalidate the current navigation
+            pendingLocation = START_LOCATION_NORMALIZED
+            removeHistoryListener && removeHistoryListener()
+            currentRoute.value = START_LOCATION_NORMALIZED
+            started = false
+            ready = false
+          }
+          unmountApp()
         }
-        unmountApp()
       }
 
       if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
