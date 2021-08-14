@@ -28,6 +28,7 @@ interface StateEntry extends HistoryState {
   position: number
   replaced: boolean
   scroll: _ScrollPositionNormalized | null | false
+  token: number
 }
 
 /**
@@ -58,7 +59,8 @@ function useHistoryListeners(
   base: string,
   historyState: ValueContainer<StateEntry>,
   currentLocation: ValueContainer<HistoryLocation>,
-  replace: RouterHistory['replace']
+  replace: RouterHistory['replace'],
+  token: number
 ) {
   let listeners: NavigationCallback[] = []
   let teardowns: Array<() => void> = []
@@ -76,7 +78,7 @@ function useHistoryListeners(
     const fromState: StateEntry = historyState.value
     let delta = 0
 
-    if (state) {
+    if (state?.token === token) {
       currentLocation.value = to
       historyState.value = state
 
@@ -157,6 +159,7 @@ function useHistoryListeners(
  * Creates a state object
  */
 function buildState(
+  token: number,
   back: HistoryLocation | null,
   current: HistoryLocation,
   forward: HistoryLocation | null,
@@ -170,17 +173,26 @@ function buildState(
     replaced,
     position: window.history.length,
     scroll: computeScroll ? computeScrollPosition() : null,
+    token,
   }
 }
 
-function useHistoryStateNavigation(base: string) {
+function getHistoryState(token: number) {
+  return window.history.state?.token === token
+    ? window.history.state
+    : undefined
+}
+
+function useHistoryStateNavigation(base: string, token: number) {
   const { history, location } = window
 
   // private variables
   const currentLocation: ValueContainer<HistoryLocation> = {
     value: createCurrentLocation(base, location),
   }
-  const historyState: ValueContainer<StateEntry> = { value: history.state }
+  const historyState: ValueContainer<StateEntry> = {
+    value: getHistoryState(token),
+  }
   // build current history entry as this is a fresh navigation
   if (!historyState.value) {
     changeLocation(
@@ -195,6 +207,7 @@ function useHistoryStateNavigation(base: string) {
         // don't add a scroll as the user may have an anchor and we want
         // scrollBehavior to be triggered without a saved position
         scroll: null,
+        token,
       },
       true
     )
@@ -239,9 +252,10 @@ function useHistoryStateNavigation(base: string) {
 
   function replace(to: HistoryLocation, data?: HistoryState) {
     const state: StateEntry = assign(
-      {},
-      history.state,
+      { token },
+      getHistoryState(token),
       buildState(
+        token,
         historyState.value.back,
         // keep back and forward entries but override current position
         to,
@@ -260,12 +274,12 @@ function useHistoryStateNavigation(base: string) {
     // Add to current entry the information of where we are going
     // as well as saving the current position
     const currentState = assign(
-      {},
+      { token },
       // use current history state to gracefully handle a wrong call to
       // history.replaceState
       // https://github.com/vuejs/vue-router-next/issues/366
       historyState.value,
-      history.state as Partial<StateEntry> | null,
+      getHistoryState(token) as Partial<StateEntry> | null,
       {
         forward: to,
         scroll: computeScrollPosition(),
@@ -280,11 +294,13 @@ function useHistoryStateNavigation(base: string) {
       )
     }
 
-    changeLocation(currentState.current, currentState, true)
+    if (!history.state || history.state.token === token) {
+      changeLocation(currentState.current, currentState, true)
+    }
 
     const state: StateEntry = assign(
-      {},
-      buildState(currentLocation.value, to, null),
+      { token },
+      buildState(token, currentLocation.value, to, null),
       { position: currentState.position + 1 },
       data
     )
@@ -309,13 +325,16 @@ function useHistoryStateNavigation(base: string) {
  */
 export function createWebHistory(base?: string): RouterHistory {
   base = normalizeBase(base)
+  // identity whose history state
+  const stateToken = Math.random()
 
-  const historyNavigation = useHistoryStateNavigation(base)
+  const historyNavigation = useHistoryStateNavigation(base, stateToken)
   const historyListeners = useHistoryListeners(
     base,
     historyNavigation.state,
     historyNavigation.location,
-    historyNavigation.replace
+    historyNavigation.replace,
+    stateToken
   )
   function go(delta: number, triggerListeners = true) {
     if (!triggerListeners) historyListeners.pauseListeners()
