@@ -21,7 +21,7 @@ const routes = [
       },
       {
         path: ':id',
-        component: PostsDetail
+        component: PostsDetail,
         // anybody can read a post
         meta: { requiresAuth: false }
       }
