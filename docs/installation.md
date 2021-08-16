@@ -21,3 +21,8 @@ npm install vue-router@4
 ```bash
 yarn add vue-router@4
 ```
+
+### use 
+```js
+import * as VueRouter from 'vue-router'
+```
