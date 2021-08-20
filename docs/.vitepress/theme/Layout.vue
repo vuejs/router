@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import DefaultTheme from 'vitepress/dist/client/theme-default'
+import DefaultTheme from 'vitepress/theme'
 import sponsors from '../components/sponsors.json'
 
 export default {
