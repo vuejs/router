@@ -2,8 +2,14 @@ import { decode, encodeQueryKey, encodeQueryValue, PLUS_RE } from './encoding'
 
 /**
  * Possible values in normalized {@link LocationQuery}. `null` renders the query
- * param but without an `=`: `?isNull&isEmpty=&other=other` -> `{ isNull: null,
- * isEmpty: '', other: 'other' }`.
+ * param but without an `=`.
+ *
+ * @example
+ * ```
+ * ?isNull&isEmpty=&other=other
+ * gives
+ * `{ isNull: null, isEmpty: '', other: 'other' }`.
+ * ```
  *
  * @internal
  */
