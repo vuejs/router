@@ -20,6 +20,20 @@ const config = {
   description: 'The official router for Vue.js.',
   head,
   // serviceWorker: true,
+
+  locales: {
+    '/': {
+      lang: 'en-US',
+      title: 'Vue Router',
+      description: 'The official router for Vue.js.',
+    },
+    '/zh/': {
+      lang: 'zh-CN',
+      title: 'Vue Router',
+      description: 'Vue.js 的官方路由',
+    },
+  },
+
   themeConfig: {
     repo: 'vuejs/vue-router-next',
     docsRepo: 'vuejs/vue-router-next',

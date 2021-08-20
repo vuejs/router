@@ -29,19 +29,15 @@
 <script setup lang="ts">
 import sponsors from './sponsors.json'
 import { isDark } from '../theme/dark-theme'
-import { computed, defineProps } from 'vue'
-import type { PropType } from 'vue'
+import { computed } from 'vue'
 
-const props = defineProps({
-  name: {
-    type: String as PropType<'gold' | 'platinum' | 'silver' | 'bronze'>,
-    required: true,
-  },
-  size: {
-    type: [Number, String],
-    default: 140,
-  },
-})
+const props = withDefaults(
+  defineProps<{
+    name: 'gold' | 'platinum' | 'silver' | 'bronze'
+    size: number | string
+  }>(),
+  { size: 140 }
+)
 
 const list = computed(() =>
   sponsors[props.name.toLowerCase()].map(sponsor => ({
