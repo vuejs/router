@@ -31,7 +31,7 @@ if (!__CI__) {
   document.head.append(styleEl)
 }
 
-const Parent: RouteComponent = {
+const Parent = defineComponent({
   data() {
     return {
       transitionName: 'slide-right',
@@ -41,7 +41,6 @@ const Parent: RouteComponent = {
     const toDepth = to.path.split('/').length
     const fromDepth = from.path.split('/').length
 
-    // @ts-ignore: move to composition api, cannot type `this` yet
     this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
     await nextTick()
     next()
@@ -57,7 +56,7 @@ const Parent: RouteComponent = {
       </router-view>
     </div>
   `,
-}
+})
 
 const NestedTransition = defineComponent({
   template: `

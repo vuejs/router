@@ -464,11 +464,13 @@ export function createRouter(options: RouterOptions): Router {
         __DEV__ &&
         'params' in rawLocation &&
         !('name' in rawLocation) &&
-        Object.keys((rawLocation as any).params).length
+        // @ts-expect-error: the type is never
+        Object.keys(rawLocation.params).length
       ) {
         warn(
           `Path "${
-            (rawLocation as any).path
+            // @ts-expect-error: the type is never
+            rawLocation.path
           }" was passed with params but they will be ignored. Use a named route alongside params instead.`
         )
       }

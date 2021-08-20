@@ -27,7 +27,6 @@ examples.sort()
 declare global {
   interface Window {
     app: App<Element>
-    // @ts-ignore: wat???
     vm: ComponentPublicInstance
     r: Router
   }
