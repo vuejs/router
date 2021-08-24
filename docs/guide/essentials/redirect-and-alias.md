@@ -45,12 +45,13 @@ It's also possible to redirect to a relative location:
 ```js
 const routes = [
   {
-    // /users/123/posts -> /users/123/profile
+    // will always redirect /users/123/posts to /users/123/profile
     path: '/users/:id/posts',
     redirect: to => {
       // the function receives the target route as the argument
-      // return redirect path/location here.
-      return { path: 'profile'}
+      // a relative location doesn't start with `/`
+      // or { path: 'profile'}
+      return 'profile'
     },
   },
 ]
