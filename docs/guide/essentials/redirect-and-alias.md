@@ -34,7 +34,7 @@ const routes = [
 ]
 ```
 
-Note that **[Navigation Guards](../advanced/navigation-guards.md) are not applied on the route that redirects, only on its target**. e.g. In the example below, adding a `beforeEnter` guard to the `/home` route would not have any effect.
+Note that **[Navigation Guards](../advanced/navigation-guards.md) are not applied on the route that redirects, only on its target**. e.g. In the above example, adding a `beforeEnter` guard to the `/home` route would not have any effect.
 
 When writing a `redirect`, you can omit the `component` option because it is never directly reached so there is no component to render. The only exception are [nested routes](./nested-routes.md): if a route record has `children` and a `redirect` property, it should also have a `component` property.
 
@@ -45,10 +45,12 @@ It's also possible to redirect to a relative location:
 ```js
 const routes = [
   {
+    // /users/123/posts -> /users/123/profile
     path: '/users/:id/posts',
     redirect: to => {
       // the function receives the target route as the argument
       // return redirect path/location here.
+      return { path: 'profile'}
     },
   },
 ]
