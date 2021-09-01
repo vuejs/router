@@ -10,7 +10,7 @@
       <a
         class="become-sponsor button white"
         href="https://github.com/sponsors/posva"
-        >{{ translations[$siteByRoute.themeConfig.lang] || translations.en }}</a
+        >{{ translations[site.lang] || translations.en }}</a
       >
     </div>
   </div>
@@ -19,6 +19,9 @@
 <script setup>
 import HomeSponsorsGroup from './HomeSponsorsGroup.vue'
 import sponsors from './sponsors.json'
+import { useData } from 'vitepress'
+
+const { site } = useData()
 
 const translations = {
   'en-US': 'Become a Sponsor!',

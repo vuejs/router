@@ -20,6 +20,20 @@ const config = {
   description: 'The official router for Vue.js.',
   head,
   // serviceWorker: true,
+
+  locales: {
+    '/': {
+      lang: 'en-US',
+      title: 'Vue Router',
+      description: 'The official router for Vue.js.',
+    },
+    '/zh/': {
+      lang: 'zh-CN',
+      title: 'Vue Router',
+      description: 'Vue.js 的官方路由',
+    },
+  },
+
   themeConfig: {
     repo: 'vuejs/vue-router-next',
     docsRepo: 'vuejs/vue-router-next',
@@ -45,11 +59,8 @@ const config = {
     locales: {
       // English
       '/': {
-        lang: 'en-US',
         label: 'English',
         selectText: 'Languages',
-        title: 'Vue Router',
-        description: 'The official router for Vue.js.',
         nav: [
           {
             text: 'Guide',
@@ -178,11 +189,8 @@ const config = {
       },
       // 简体中文
       '/zh/': {
-        lang: 'zh-CN',
         label: '中文',
         selectText: '选择语言',
-        title: 'Vue Router',
-        description: 'Vue.js 的官方路由',
         nav: [
           {
             text: '教程',
