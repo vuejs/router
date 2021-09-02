@@ -6,11 +6,25 @@ import { RouteRecordNormalized } from './matcher/types'
 export const hasSymbol =
   typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol'
 
+// Reserve 'vue-router:' provide prefix for this project.
 export const PolySymbol = (name: string) =>
-  // vr = vue router
-  hasSymbol
-    ? Symbol(__DEV__ ? '[vue-router]: ' + name : name)
-    : (__DEV__ ? '[vue-router]: ' : '_vr_') + name
+  hasSymbol ? Symbol.for('vue-router:' + name) : 'vue-router:' + name
+
+/**
+ * Unique identifier for router
+ *
+ * @internal
+ */
+export const idValue: string = Date.now() + '' + Math.random()
+
+/**
+ * Unique identifier for router to detect double router instances.
+ *
+ * @internal
+ */
+export const idKey = /*#__PURE__*/ PolySymbol('id') as InjectionKey<
+  typeof idValue
+>
 
 // rvlm = Router View Location Matched
 /**

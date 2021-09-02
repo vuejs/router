@@ -63,6 +63,8 @@ import { warn } from './warning'
 import { RouterLink } from './RouterLink'
 import { RouterView } from './RouterView'
 import {
+  idKey,
+  idValue,
   routeLocationKey,
   routerKey,
   routerViewLocationKey,
@@ -1199,6 +1201,7 @@ export function createRouter(options: RouterOptions): Router {
         reactiveRoute[key] = computed(() => currentRoute.value[key])
       }
 
+      __DEV__ && app.provide(idKey, idValue)
       app.provide(routerKey, router)
       app.provide(routeLocationKey, reactive(reactiveRoute))
       app.provide(routerViewLocationKey, currentRoute)

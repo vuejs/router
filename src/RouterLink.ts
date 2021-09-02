@@ -35,6 +35,7 @@ import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { NavigationFailure } from './errors'
 import { isBrowser, noop } from './utils'
+import { warnDuplicatePackage } from './warnDuplicatePackage'
 
 export interface RouterLinkOptions {
   /**
@@ -86,6 +87,7 @@ export type UseLinkOptions = VueUseOptions<RouterLinkOptions>
 // TODO: we could allow currentRoute as a prop to expose `isActive` and
 // `isExactActive` behavior should go through an RFC
 export function useLink(props: UseLinkOptions) {
+  __DEV__ && warnDuplicatePackage()
   const router = inject(routerKey)!
   const currentRoute = inject(routeLocationKey)!
 
@@ -200,6 +202,7 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
   useLink,
 
   setup(props, { slots }) {
+    __DEV__ && warnDuplicatePackage()
     const link = reactive(useLink(props))
     const { options } = inject(routerKey)!
 

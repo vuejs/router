@@ -27,6 +27,7 @@ import {
 import { assign } from './utils'
 import { warn } from './warning'
 import { isSameRouteRecord } from './location'
+import { warnDuplicatePackage } from './warnDuplicatePackage'
 
 export interface RouterViewProps {
   name?: string
@@ -48,6 +49,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
 
   setup(props, { attrs, slots }) {
     __DEV__ && warnDeprecatedUsage()
+    __DEV__ && warnDuplicatePackage()
 
     const injectedRoute = inject(routerViewLocationKey)!
     const routeToDisplay = computed(() => props.route || injectedRoute.value)

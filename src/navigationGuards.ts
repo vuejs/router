@@ -23,6 +23,7 @@ import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
 import { isESModule } from './utils'
 import { warn } from './warning'
+import { warnDuplicatePackage } from './warnDuplicatePackage'
 
 function registerGuard(
   record: RouteRecordNormalized,
@@ -58,6 +59,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
     return
   }
 
+  __DEV__ && warnDuplicatePackage()
   const activeRecord: RouteRecordNormalized | undefined = inject(
     matchedRouteKey,
     // to avoid warning
@@ -90,6 +92,7 @@ export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
     return
   }
 
+  __DEV__ && warnDuplicatePackage()
   const activeRecord: RouteRecordNormalized | undefined = inject(
     matchedRouteKey,
     // to avoid warning

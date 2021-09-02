@@ -1,4 +1,5 @@
 import { inject } from 'vue'
+import { warnDuplicatePackage } from './warnDuplicatePackage'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { Router } from './router'
 import { RouteLocationNormalizedLoaded } from './types'
@@ -8,6 +9,8 @@ import { RouteLocationNormalizedLoaded } from './types'
  * templates.
  */
 export function useRouter(): Router {
+  __DEV__ && warnDuplicatePackage()
+
   return inject(routerKey)!
 }
 
@@ -16,5 +19,7 @@ export function useRouter(): Router {
  * templates.
  */
 export function useRoute(): RouteLocationNormalizedLoaded {
+  __DEV__ && warnDuplicatePackage()
+
   return inject(routeLocationKey)!
 }
