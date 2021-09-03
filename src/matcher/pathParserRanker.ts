@@ -163,7 +163,7 @@ export function tokensToParser(
           } catch (err) {
             throw new Error(
               `Invalid custom RegExp for param "${value}" (${re}): ` +
-                err.message
+                (err as Error).message
             )
           }
         }
