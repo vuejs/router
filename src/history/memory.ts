@@ -6,6 +6,7 @@ import {
   NavigationType,
   NavigationDirection,
   NavigationInformation,
+  normalizeBase,
   createHref,
   HistoryLocation,
 } from './common'
@@ -21,6 +22,7 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
   let listeners: NavigationCallback[] = []
   let queue: HistoryLocation[] = [START]
   let position: number = 0
+  base = normalizeBase(base)
 
   function setLocation(location: HistoryLocation) {
     position++
