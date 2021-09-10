@@ -185,4 +185,9 @@ describe('Memory history', () => {
     history.go(1, false)
     expect(spy).not.toHaveBeenCalled()
   })
+
+  it('handles a non-empty base', () => {
+    expect(createMemoryHistory('/foo/').base).toBe('/foo')
+    expect(createMemoryHistory('/foo').base).toBe('/foo')
+  })
 })
