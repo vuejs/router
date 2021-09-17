@@ -44,6 +44,9 @@ Note how instead of using regular `a` tags, we use a custom component `router-li
 ## JavaScript
 
 ```js
+import VueRouter from "vue-router"
+// In vue3, you may need 
+// import {createRouter,createWebHashHistory} from "vue-router"
 // 1. Define route components.
 // These can be imported from other files
 const Home = { template: '<div>Home</div>' }
@@ -65,6 +68,17 @@ const router = VueRouter.createRouter({
   history: VueRouter.createWebHashHistory(),
   routes, // short for `routes: routes`
 })
+
+//The requested module '/node_modules/.vite/vue-router.js?v=289caafc'does not provide an export named' default 'error. You cannot use import vuerouter from "Vue router" at this time
+//The correct approach is
+/*
+import {createRouter,createWebHashHistory} from "vue-router"
+const router = createRouter({
+  //  // 4. Provide the history implementation to use. We are using the hash history for simplicity here.
+   history: createWebHashHistory(),
+   routes, // short for `routes: routes`
+ })
+*/
 
 // 5. Create and mount the root instance.
 const app = Vue.createApp({})
