@@ -34,6 +34,9 @@
 ## JavaScript
 
 ```js
+import VueRouter from "vue-router"
+// 在vue3中你或许需要 import {createRouter,createWebHashHistory} from "vue-router"
+
 // 1. 定义路由组件.
 // 也可以从其他文件导入
 const Home = { template: '<div>Home</div>' }
@@ -55,6 +58,18 @@ const router = VueRouter.createRouter({
   history: VueRouter.createWebHashHistory(),
   routes, // `routes: routes` 的缩写
 })
+
+// 在vue3中使用时候会出现 The requested module '/node_modules/.vite/vue-router.js?v=289caafc' does not provide an export named 'default' 的错误，这是你不可以使用
+// import VueRouter from "vue-router"
+// 正确的做法为
+/*
+import {createRouter,createWebHashHistory} from "vue-router"
+const router = createRouter({
+  // 4. 内部提供了 history 模式的实现。为了简单起见，我们在这里使用 hash 模式。
+   history: createWebHashHistory(),
+   routes, // `routes: routes` 的缩写
+ })
+*/
 
 // 5. 创建并挂载根实例
 const app = Vue.createApp({})
