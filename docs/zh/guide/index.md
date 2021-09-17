@@ -58,9 +58,8 @@ const router = VueRouter.createRouter({
   history: VueRouter.createWebHashHistory(),
   routes, // `routes: routes` 的缩写
 })
-
-// 在vue3中使用时候会出现 The requested module '/node_modules/.vite/vue-router.js?v=289caafc' does not provide an export named 'default' 的错误，这是你不可以使用
-// import VueRouter from "vue-router"
+ 
+// 在vue3中使用时候会出现 The requested module '/node_modules/.vite/vue-router.js?v=289caafc' does not provide an export named 'default' 的错误，这时你不可以使用 import VueRouter from "vue-router"
 // 正确的做法为
 /*
 import {createRouter,createWebHashHistory} from "vue-router"
