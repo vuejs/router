@@ -88,7 +88,7 @@ createRouter({
 ```js
 const routes = [
   // pathMatch 是参数的名称，例如，跳转到 /not/found 会得到
-  // { params: { params: { pathMatch: ['not', 'found'] }}
+  // { params: { pathMatch: ['not', 'found'] } }
   // 这要归功于最后一个 *，意思是重复的参数，如果你
   // 打算直接使用未匹配的路径名称导航到该路径，这是必要的
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
