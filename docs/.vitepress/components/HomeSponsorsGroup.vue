@@ -9,7 +9,6 @@
       :title="sponsor.alt"
       target="_blank"
       rel="sponsored noopener"
-      :style="{ width: size + 'px' }"
       class="sponsor_wrapper"
     >
       <img
@@ -20,7 +19,7 @@
           'invert-colors'
         "
         :alt="sponsor.alt"
-        :style="{ width: size + 'px' }"
+        :style="{ height: size + 'px' }"
       />
     </a>
   </p>
@@ -52,7 +51,6 @@ const list = computed(() =>
   padding: 5px;
   margin: 0 3px;
 
-  width: 100px;
   display: inline-block;
   text-decoration: none;
   vertical-align: middle;
