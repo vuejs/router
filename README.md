@@ -12,11 +12,28 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
 <!-- <h3 align="center">Special Sponsors</h3> -->
 <!--special start-->
 
+<h3 align="center">Platinum Sponsors</h3>
+
+<p align="center">
+
+  <a href="https://www.finclip.com/#/home?from=vue" target="_blank" rel="noopener noreferrer">
+    <picture>
+      <source srcset="docs/public/sponsors/fincliplogo_white.svg" media="(prefers-color-scheme: dark)" height="96px" alt="Finogeeks" />
+      <img src="docs/public/sponsors/fincliplogo_black_svg.svg" height="96px" alt="Finogeeks" />
+    </picture>
+  </a>
+
+</p>
+
 <h4 align="center">Gold Sponsors</h4>
 
 <p align="center">
+
   <a href="https://passionatepeople.io" target="_blank" rel="noopener noreferrer">
-    <img src="https://img2.storyblok.com/672x0/filters::format(webp)/f/86387/x/21aa32ed18/logo-normal.svg" height=72px" alt="Passionate People">
+    <picture>
+      <source srcset="docs/public/sponsors/passionate-people-dark.png" media="(prefers-color-scheme: dark)" height="72px" alt="Passionate People" />
+      <img src="docs/public/sponsors/passionate-people-light.png" height="72px" alt="Passionate People" />
+    </picture>
   </a>
 
   <a href="https://vuetifyjs.com" target="_blank" rel="noopener noreferrer">
@@ -48,7 +65,7 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
   </a>
 
   <a href="https://nuxtjs.org" target="_blank" rel="noopener noreferrer">
-    <img src="https://nuxtjs.org/logos/nuxtjs-typo-white.svg" alt="NuxtJS" height="26px">
+    <img src="https://nuxtjs.org/design-kit/colored-white-text.svg" alt="NuxtJS" height="26px">
   </a>
 </p>
 
