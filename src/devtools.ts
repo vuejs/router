@@ -15,6 +15,7 @@ import { RouteRecordMatcher } from './matcher/pathMatcher'
 import { PathParser } from './matcher/pathParserRanker'
 import { Router } from './router'
 import { UseLinkDevtoolsContext } from './RouterLink'
+import { RouterViewDevtoolsContext } from './RouterView'
 import { RouteLocationNormalized } from './types'
 import { assign } from './utils'
 
@@ -86,8 +87,19 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         }
       })
 
-      // mark router-link as active
+      // mark router-link as active and display tags on router views
       api.on.visitComponentTree(({ treeNode: node, componentInstance }) => {
+        if (componentInstance.__vrv_devtools) {
+          const info =
+            componentInstance.__vrv_devtools as RouterViewDevtoolsContext
+
+          node.tags.push({
+            label: (info.name ? `${info.name.toString()}: ` : '') + info.path,
+            textColor: 0,
+            tooltip: 'This component is rendered by &lt;router-view&gt;',
+            backgroundColor: PINK_500,
+          })
+        }
         // if multiple useLink are used
         if (Array.isArray(componentInstance.__vrl_devtools)) {
           componentInstance.__devtoolsApi = api
