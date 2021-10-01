@@ -67,7 +67,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
   if (!activeRecord) {
     __DEV__ &&
       warn(
-        'No active route record was found. Are you missing a <router-view> component?'
+        'No active route record was found when calling `onBeforeRouteLeave()`. Make sure you call this function inside of a component child of <router-view>. Maybe you called it inside of App.vue?'
       )
     return
   }
@@ -99,7 +99,7 @@ export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
   if (!activeRecord) {
     __DEV__ &&
       warn(
-        'No active route record was found. Are you missing a <router-view> component?'
+        'No active route record was found when calling `onBeforeRouteUpdate()`. Make sure you call this function inside of a component child of <router-view>. Maybe you called it inside of App.vue?'
       )
     return
   }
