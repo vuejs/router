@@ -1,6 +1,5 @@
 <template>
-  <div class="main-container" :class="{ 'has-top-banner': showTopBanner }">
-    <BannerTop v-if="showTopBanner" @close="closeBannerTop" />
+  <div class="main-container">
     <ParentLayout>
       <template #sidebar-top>
         <div class="sponsors sponsors-top">
@@ -42,31 +41,16 @@ import { defineAsyncComponent } from 'vue'
 import DefaultTheme from 'vitepress/dist/client/theme-default'
 import sponsors from '../components/sponsors.json'
 
-const BannerTop = defineAsyncComponent(() =>
-  import('../components/BannerTop.vue')
-)
-
 export default {
   name: 'Layout',
   components: {
-    ParentLayout: DefaultTheme.Layout,
-    BannerTop,
+    ParentLayout: DefaultTheme.Layout
   },
   data() {
     return {
-      sponsors,
-      showTopBanner: false,
+      sponsors
     }
-  },
-  mounted() {
-    this.showTopBanner = !localStorage.getItem('VS_BTS_BANNER_CLOSED')
-  },
-  methods: {
-    closeBannerTop() {
-      this.showTopBanner = false
-      localStorage.setItem('VS_BTS_BANNER_CLOSED', 1)
-    },
-  },
+  }
 }
 </script>
 
