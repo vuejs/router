@@ -13,6 +13,7 @@ import {
   ComponentCustomProps,
   watch,
   Slot,
+  VNode,
 } from 'vue'
 import {
   RouteLocationNormalized,
@@ -190,12 +191,19 @@ function normalizeSlot(slot: Slot | undefined, data: any) {
 /**
  * Component to display the current route the user is at.
  */
-export const RouterView = RouterViewImpl as {
+export const RouterView = RouterViewImpl as unknown as {
   new (): {
     $props: AllowedComponentProps &
       ComponentCustomProps &
       VNodeProps &
       RouterViewProps
+
+    $slots: {
+      default: (arg: {
+        Component: VNode
+        route: RouteLocationNormalizedLoaded
+      }) => VNode[]
+    }
   }
 }
 

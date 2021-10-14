@@ -6,6 +6,8 @@ import {
   computed,
   reactive,
   unref,
+  VNode,
+  UnwrapRef,
   VNodeProps,
   AllowedComponentProps,
   ComponentCustomProps,
@@ -254,6 +256,10 @@ export const RouterLink = RouterLinkImpl as unknown as {
       ComponentCustomProps &
       VNodeProps &
       RouterLinkProps
+
+    $slots: {
+      default: (arg: UnwrapRef<ReturnType<typeof useLink>>) => VNode[]
+    }
   }
 
   /**
