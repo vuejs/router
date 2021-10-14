@@ -1,3 +1,14 @@
+## [4.0.12](https://github.com/vuejs/vue-router-next/compare/v4.0.11...v4.0.12) (2021-10-14)
+
+### Bug Fixes
+
+- **history:** ensure base is normalized in memory history ([#1112](https://github.com/vuejs/vue-router-next/issues/1112)) ([198a5bd](https://github.com/vuejs/vue-router-next/commit/198a5bda8354ea6c3121f5fbf92ed93390e70cfb))
+
+### Features
+
+- **devtools:** display router view path ([3ce3834](https://github.com/vuejs/vue-router-next/commit/3ce383402fbaa1539cdfe32cbdd48dfda5fbfa7b)), closes [#1119](https://github.com/vuejs/vue-router-next/issues/1119)
+- **warn:** improve message for onBeforeRoute\*() ([7d5230e](https://github.com/vuejs/vue-router-next/commit/7d5230e556002b6ddd17c857ad43608590e9a7bd))
+
 ## [4.0.11](https://github.com/vuejs/vue-router-next/compare/v4.0.10...v4.0.11) (2021-08-09)
 
 ### Bug Fixes
