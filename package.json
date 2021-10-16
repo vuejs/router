@@ -1,10 +1,10 @@
 {
   "name": "vue-router",
   "version": "4.0.15",
-  "main": "dist/vue-router.cjs.js",
+  "main": "dist/vue-router.cjs",
   "unpkg": "dist/vue-router.global.js",
   "jsdelivr": "dist/vue-router.global.js",
-  "module": "dist/vue-router.esm-bundler.js",
+  "module": "dist/vue-router.esm-bundler.mjs",
   "types": "dist/vue-router.d.ts",
   "sideEffects": false,
   "funding": "https://github.com/sponsors/posva",

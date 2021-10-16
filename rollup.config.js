@@ -1,4 +1,5 @@
 import path from 'path'
+import { promises as fsp } from 'fs'
 import ts from 'rollup-plugin-typescript2'
 import replace from '@rollup/plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
@@ -17,7 +18,7 @@ const banner = `/*!
 let hasTSChecked = false
 
 const outputConfigs = {
-  // each file name has the format: `dist/${name}.${format}.js`
+  // each file name has the format: `dist/${name}.${format}.${ext}`
   // format being a key of this object
   'esm-bundler': {
     file: pkg.module,
@@ -35,6 +36,13 @@ const outputConfigs = {
     file: pkg.browser || pkg.module.replace('bundler', 'browser'),
     format: `es`,
   },
+}
+
+const stubs = {
+  'dist/vue-router.cjs': 'vue-router.cjs.js',
+  'dist/vue-router.prod.cjs': 'vue-router.cjs.prod.js',
+  'dist/vue-router.esm-browser.mjs': 'vue-router.esm-browser.js',
+  'dist/vue-router.esm-bundler.mjs': 'vue-router.esm-bundler.js',
 }
 
 const allFormats = Object.keys(outputConfigs)
@@ -70,7 +78,7 @@ function createConfig(format, output, plugins = []) {
     // '@vue/devtools-api': 'VueDevtoolsApi',
   }
 
-  const isProductionBuild = /\.prod\.js$/.test(output.file)
+  const isProductionBuild = /\.prod\.[cm]?js$/.test(output.file)
   const isGlobalBuild = format === 'global'
   const isRawESMBuild = format === 'esm'
   const isNodeBuild = format === 'cjs'
@@ -122,6 +130,20 @@ function createConfig(format, output, plugins = []) {
       ),
       ...nodePlugins,
       ...plugins,
+      {
+        async writeBundle() {
+          const stub = stubs[output.file]
+          if (!stub) return
+
+          const contents =
+            format === 'cjs'
+              ? `module.exports = require('../${output.file}')`
+              : `export * from '../${output.file}'`
+
+          await fsp.writeFile(path.resolve(__dirname, `dist/${stub}`), contents)
+          console.log(`created stub ${require('chalk').bold(`dist/${stub}`)}`)
+        },
+      },
     ],
     output,
     // onwarn: (msg, warn) => {
@@ -174,8 +196,10 @@ function createReplacePlugin(
 }
 
 function createProductionConfig(format) {
+  const extension = format === 'cjs' ? 'cjs' : 'js'
+  const descriptor = format === 'cjs' ? '' : `.${format}`
   return createConfig(format, {
-    file: `dist/${name}.${format}.prod.js`,
+    file: `dist/${name}${descriptor}.prod.${extension}`,
     format: outputConfigs[format].format,
   })
 }
