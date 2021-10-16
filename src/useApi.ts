@@ -1,7 +1,7 @@
 import { inject } from 'vue'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { Router } from './router'
-import { RouteLocationNormalizedLoaded } from './types'
+import { RouteLocationNormalizedLoaded, RouteParams } from './types'
 
 /**
  * Returns the router instance. Equivalent to using `$router` inside
@@ -15,6 +15,8 @@ export function useRouter(): Router {
  * Returns the current route location. Equivalent to using `$route` inside
  * templates.
  */
-export function useRoute(): RouteLocationNormalizedLoaded {
-  return inject(routeLocationKey)!
+export function useRoute<
+  Params extends RouteParams = RouteParams
+>(): RouteLocationNormalizedLoaded<Params> {
+  return inject<RouteLocationNormalizedLoaded<Params>>(routeLocationKey)!
 }

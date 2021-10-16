@@ -105,7 +105,7 @@ export interface RouteLocationMatched extends RouteRecordNormalized {
  *
  * @internal
  */
-export interface _RouteLocationBase {
+export interface _RouteLocationBase<Params extends RouteParams = RouteParams> {
   /**
    * Percentage encoded pathname section of the URL.
    */
@@ -130,7 +130,7 @@ export interface _RouteLocationBase {
   /**
    * Object of decoded params extracted from the `path`.
    */
-  params: RouteParams
+  params: Params
   /**
    * Contains the location we were initially trying to access before ending up
    * on the current location.
@@ -146,7 +146,9 @@ export interface _RouteLocationBase {
 /**
  * {@link RouteLocationRaw} with
  */
-export interface RouteLocationNormalizedLoaded extends _RouteLocationBase {
+export interface RouteLocationNormalizedLoaded<
+  Params extends RouteParams = RouteParams
+> extends _RouteLocationBase<Params> {
   /**
    * Array of {@link RouteLocationMatched} containing only plain components (any
    * lazy-loaded components have been loaded and were replaced inside of the
