@@ -73,7 +73,7 @@ sidebar: auto
 - **Examples**:
 
   ```html
-  <router-link to="/home" custom v-slot="{ navigate, href, route }">
+  <router-link to="/home" v-slot="{ navigate, href, route }">
     <a :href="href" @click="navigate">{{ route.fullPath }}</a>
   </router-link>
   ```
@@ -81,7 +81,7 @@ sidebar: auto
   Renders `<a href="/home">/home</a>`.
 
   ```html
-  <router-link to="/home" v-slot="{ route }">
+  <router-link to="/home" custom v-slot="{ route }">
     <span>{{ route.fullPath }}</span>
   </router-link>
   ```
