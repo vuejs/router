@@ -20,52 +20,50 @@ let hasTSChecked = false
 const outputConfigs = {
   // each file name has the format: `dist/${name}.${format}.${ext}`
   // format being a key of this object
-  'esm-bundler': {
+  mjs: {
     file: pkg.module,
     format: `es`,
   },
   cjs: {
-    file: pkg.main,
+    file: 'dist/vue-router.cjs',
     format: `cjs`,
   },
   global: {
     file: pkg.unpkg,
     format: `iife`,
   },
-  esm: {
-    file: pkg.browser || pkg.module.replace('bundler', 'browser'),
+  browser: {
+    file: 'dist/vue-router.esm-browser.js',
     format: `es`,
   },
 }
 
 const stubs = {
   'dist/vue-router.cjs': 'vue-router.cjs.js',
+  'dist/vue-router.mjs': 'vue-router.esm-bundler.js',
   'dist/vue-router.prod.cjs': 'vue-router.cjs.prod.js',
-  'dist/vue-router.esm-browser.mjs': 'vue-router.esm-browser.js',
-  'dist/vue-router.esm-bundler.mjs': 'vue-router.esm-bundler.js',
 }
 
-const allFormats = Object.keys(outputConfigs)
+const packageBuilds = Object.keys(outputConfigs)
 // in vue-router there are not that many
-const packageFormats = allFormats
-const packageConfigs = packageFormats.map(format =>
-  createConfig(format, outputConfigs[format])
+const packageConfigs = packageBuilds.map(buildName =>
+  createConfig(buildName, outputConfigs[buildName])
 )
 
 // only add the production ready if we are bundling the options
-packageFormats.forEach(format => {
-  if (format === 'cjs') {
-    packageConfigs.push(createProductionConfig(format))
-  } else if (format === 'global') {
-    packageConfigs.push(createMinifiedConfig(format))
+packageBuilds.forEach(buildName => {
+  if (buildName === 'cjs') {
+    packageConfigs.push(createProductionConfig(buildName))
+  } else if (buildName === 'global') {
+    packageConfigs.push(createMinifiedConfig(buildName))
   }
 })
 
 export default packageConfigs
 
-function createConfig(format, output, plugins = []) {
+function createConfig(buildName, output, plugins = []) {
   if (!output) {
-    console.log(require('chalk').yellow(`invalid format: "${format}"`))
+    console.log(require('chalk').yellow(`invalid format: "${buildName}"`))
     process.exit(1)
   }
 
@@ -79,10 +77,10 @@ function createConfig(format, output, plugins = []) {
   }
 
   const isProductionBuild = /\.prod\.[cm]?js$/.test(output.file)
-  const isGlobalBuild = format === 'global'
-  const isRawESMBuild = format === 'esm'
-  const isNodeBuild = format === 'cjs'
-  const isBundlerESMBuild = /esm-bundler/.test(format)
+  const isGlobalBuild = buildName === 'global'
+  const isRawESMBuild = buildName === 'browser'
+  const isNodeBuild = buildName === 'cjs'
+  const isBundlerESMBuild = buildName === 'mjs'
 
   if (isGlobalBuild) output.name = 'VueRouter'
 
@@ -136,7 +134,7 @@ function createConfig(format, output, plugins = []) {
           if (!stub) return
 
           const contents =
-            format === 'cjs'
+            buildName === 'cjs'
               ? `module.exports = require('../${output.file}')`
               : `export * from '../${output.file}'`
 
