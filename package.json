@@ -6,6 +6,20 @@
   "jsdelivr": "dist/vue-router.global.js",
   "module": "dist/vue-router.esm-bundler.mjs",
   "types": "dist/vue-router.d.ts",
+  "exports": {
+    ".": {
+      "browser": "./dist/vue-router.esm-browser.mjs",
+      "node": {
+        "production": "./dist/vue-router.prod.cjs",
+        "development": "./dist/vue-router.cjs",
+        "default": "./dist/vue-router.cjs"
+      },
+      "import": "./dist/vue-router.esm-bundler.mjs",
+      "require": "./dist/vue-router.cjs"
+    },
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
   "sideEffects": false,
   "funding": "https://github.com/sponsors/posva",
   "license": "MIT",
