@@ -289,7 +289,7 @@ export interface Router {
    *
    * @example
    * ```js
-   * router.beforeEach(to => {
+   * router.beforeResolve(to => {
    *   if (to.meta.requiresAuth && !isAuthenticated) return false
    * })
    * ```
