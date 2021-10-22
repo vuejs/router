@@ -780,7 +780,7 @@ stringifyQuery?: (
 
 ## RouteRecordRaw
 
-当用户通过 [`routes` option](#routeroptions) 或者 [`router.addRoutes()`](#addroutes) 来添加路由时，可以得到路由记录。 有三种不同的路由记录:
+当用户通过 [`routes` option](#routeroptions) 或者 [`router.addRoute()`](#addroute) 来添加路由时，可以得到路由记录。 有三种不同的路由记录:
 
 - 单一视图记录：有一个 `component` 配置
 - 多视图记录 ([命名视图](../guide/essentials/named-views.md)) ：有一个 `components` 配置
