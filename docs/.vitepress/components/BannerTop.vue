@@ -1,27 +1,28 @@
 <template>
-  <a id="vs" href="https://vueschool.io/sales/back-to-school?friend=vuerouter" target="_blank" rel="noreferrer">
+  <a
+    id="vs"
+    href="https://vueschool.io/sales/back-to-school?friend=vuerouter"
+    target="_blank"
+    rel="noreferrer"
+  >
     <div class="vs-iso">
-      <img src="/images/vueschool/vs-iso.svg" alt="Vue School Logo">
+      <img src="/images/vueschool/vs-iso.svg" alt="Vue School Logo" />
     </div>
     <div class="vs-logo">
-      <img src="/images/vueschool/vs-logo.svg" alt="Vue School Logo">
+      <img src="/images/vueschool/vs-logo.svg" alt="Vue School Logo" />
     </div>
     <div class="vs-core">
       <div class="vs-backpack">
-        <img src="/images/vueschool/vs-backpack.png" alt="Backpack">
+        <img src="/images/vueschool/vs-backpack.png" alt="Backpack" />
       </div>
       <div class="vs-slogan">
-        Less than <span class="vs-slogan-light">48 hours</span> left for the Vue School offer
+        Less than <span class="vs-slogan-light">48 hours</span> left for the Vue
+        School offer
       </div>
-      <div class="vs-button">
-        GET ACCESS
-      </div>
+      <div class="vs-button">GET ACCESS</div>
     </div>
-    <div
-      id="vs-close"
-      class="vs-close"
-      @click.stop.prevent="$emit('close')">
-      <img src="/images/vueschool/close.svg" alt="Close">
+    <div id="vs-close" class="vs-close" @click.stop.prevent="$emit('close')">
+      <img src="/images/vueschool/close.svg" alt="Close" />
     </div>
   </a>
 </template>
@@ -29,7 +30,7 @@
 <style>
 #vs {
   align-items: center;
-  background-color: #202A5A;
+  background-color: #202a5a;
   box-sizing: border-box;
   color: #fff;
   font-family: 'Roboto', Oxygen, Fira Sans, Helvetica Neue, sans-serif;
@@ -119,7 +120,7 @@
 }
 
 #vs .vs-core .vs-slogan {
-  color: #FFF;
+  color: #fff;
   font-weight: bold;
   font-size: 14px;
   margin-right: 26px;
