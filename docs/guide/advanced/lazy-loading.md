@@ -42,6 +42,8 @@ When using Babel, you will need to add the [syntax-dynamic-import](https://babel
 
 ## Grouping Components in the Same Chunk
 
+### With webpack
+
 Sometimes we may want to group all the components nested under the same route into the same async chunk. To achieve that we need to use [named chunks](https://webpack.js.org/guides/code-splitting/#dynamic-imports) by providing a chunk name using a special comment syntax (requires webpack > 2.4):
 
 ```js
@@ -54,3 +56,26 @@ const UserProfileEdit = () =>
 ```
 
 webpack will group any async module with the same chunk name into the same async chunk.
+
+### With Vite
+
+In Vite you can define the chunks under the [`rollupOptions`](https://vitejs.dev/config/#build-rollupoptions):
+
+```js
+// vite.config.js
+export default defineConfig({
+  build: {
+    rollupOptions: {
+      // https://rollupjs.org/guide/en/#outputmanualchunks
+      output: {
+        manualChunks: {
+          'group-user': [
+            './src/UserDetails',
+            './src/UserDashboard',
+            './src/UserProfileEdit',
+          ],
+        },
+    },
+  },
+})
+```
