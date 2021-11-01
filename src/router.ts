@@ -152,7 +152,7 @@ export interface RouterOptions extends PathParserOptions {
    *
    * createRouter({
    *   // other options...
-   *   parse: qs.parse,
+   *   parseQuery: qs.parse,
    *   stringifyQuery: qs.stringify,
    * })
    * ```
