@@ -198,14 +198,14 @@ export interface Router {
   readonly options: RouterOptions
 
   /**
-   * Add a new {@link RouteRecordRaw | Route Record} as the child of an existing route.
+   * Add a new {@link RouteRecordRaw route record} as the child of an existing route.
    *
    * @param parentName - Parent Route Record where `route` should be appended at
    * @param route - Route Record to add
    */
   addRoute(parentName: RouteRecordName, route: RouteRecordRaw): () => void
   /**
-   * Add a new {@link RouteRecordRaw | route record} to the router.
+   * Add a new {@link RouteRecordRaw route record} to the router.
    *
    * @param route - Route Record to add
    */
@@ -223,13 +223,13 @@ export interface Router {
    */
   hasRoute(name: RouteRecordName): boolean
   /**
-   * Get a full list of all the {@link RouteRecord | route records}.
+   * Get a full list of all the {@link RouteRecord route records}.
    */
   getRoutes(): RouteRecord[]
 
   /**
-   * Returns the {@link RouteLocation | normalized version} of a
-   * {@link RouteLocationRaw | route location}. Also includes an `href` property
+   * Returns the {@link RouteLocation normalized version} of a
+   * {@link RouteLocationRaw route location}. Also includes an `href` property
    * that includes any existing `base`. By default the `currentLocation` used is
    * `route.currentRoute` and should only be overriden in advanced use cases.
    *

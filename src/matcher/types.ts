@@ -9,7 +9,7 @@ import { ComponentPublicInstance } from 'vue'
 
 // normalize component/components into components and make every property always present
 /**
- * Normalized version of a {@link RouteRecord | Route Record}
+ * Normalized version of a {@link RouteRecord route record}
  */
 export interface RouteRecordNormalized {
   /**
