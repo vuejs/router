@@ -158,7 +158,14 @@ export function isSameRouteLocationParams(
   if (Object.keys(a).length !== Object.keys(b).length) return false
 
   for (const key in a) {
-    if (!isSameRouteLocationParamsValue(a[key], b[key])) return false
+    const aValue = a[key],
+      bValue = b[key]
+    if (
+      aValue === undefined ||
+      bValue === undefined ||
+      !isSameRouteLocationParamsValue(aValue, bValue)
+    )
+      return false
   }
 
   return true

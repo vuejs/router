@@ -302,8 +302,8 @@ function includesParams(
     } else {
       if (
         !Array.isArray(outerValue) ||
-        outerValue.length !== innerValue.length ||
-        innerValue.some((value, i) => value !== outerValue[i])
+        outerValue.length !== innerValue?.length ||
+        innerValue?.some((value, i) => value !== outerValue[i])
       )
         return false
     }

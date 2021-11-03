@@ -6,6 +6,7 @@ import {
   RouteRecordName,
   _RouteRecordProps,
   RouteRecordRedirect,
+  RouteParams,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
@@ -231,6 +232,19 @@ export function createRouterMatcher(
     location: Readonly<MatcherLocationRaw>,
     currentLocation: Readonly<MatcherLocation>
   ): MatcherLocation {
+    // cannot use Required<RouteParams>
+    type RouteParamsRequired = {
+      [P in keyof RouteParams]: NonNullable<RouteParams[string]>
+    }
+    const removeUndefinedFromRouteParams = (
+      obj: RouteParams
+    ): RouteParamsRequired => {
+      for (const key in obj) {
+        if (obj[key] === undefined) delete obj[key]
+      }
+      return obj as RouteParamsRequired
+    }
+
     let matcher: RouteRecordMatcher | undefined
     let params: PathParams = {}
     let path: MatcherLocation['path']
@@ -245,15 +259,17 @@ export function createRouterMatcher(
         })
 
       name = matcher.record.name
-      params = assign(
-        // paramsFromLocation is a new object
-        paramsFromLocation(
-          currentLocation.params,
-          // only keep params that exist in the resolved location
-          // TODO: only keep optional params coming from a parent record
-          matcher.keys.filter(k => !k.optional).map(k => k.name)
-        ),
-        location.params
+      params = removeUndefinedFromRouteParams(
+        assign(
+          // paramsFromLocation is a new object
+          paramsFromLocation(
+            currentLocation.params,
+            // only keep params that exist in the resolved location
+            // TODO: only keep optional params coming from a parent record
+            matcher.keys.filter(k => !k.optional).map(k => k.name)
+          ),
+          location.params
+        )
       )
       // throws if cannot be stringified
       path = matcher.stringify(params)
@@ -291,7 +307,11 @@ export function createRouterMatcher(
       name = matcher.record.name
       // since we are navigating to the same location, we don't need to pick the
       // params like when `name` is provided
-      params = assign({}, currentLocation.params, location.params)
+      params = assign(
+        {},
+        removeUndefinedFromRouteParams(currentLocation.params),
+        removeUndefinedFromRouteParams(location.params ?? {})
+      )
       path = matcher.stringify(params)
     }
 
