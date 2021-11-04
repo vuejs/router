@@ -16,11 +16,11 @@
     "README.md"
   ],
   "scripts": {
-    "build": "rollup -c rollup.config.js",
-    "build:dts": "api-extractor run --local --verbose && tail -n +7 src/globalExtensions.ts >> dist/vue-router.d.ts",
     "dev": "vite --config playground/vite.config.js",
     "release": "bash scripts/release.sh",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 1",
+    "build": "rollup -c rollup.config.js",
+    "build:dts": "api-extractor run --local --verbose && tail -n +7 src/globalExtensions.ts >> dist/vue-router.d.ts",
     "build:playground": "vue-tsc --noEmit && vite build --config playground/vite.config.js",
     "build:e2e": "vue-tsc --noEmit && vite build --config e2e/vite.config.js",
     "build:size": "yarn run build && rollup -c size-checks/rollup.config.js",

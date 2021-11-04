@@ -1220,6 +1220,7 @@ export function createRouter(options: RouterOptions): Router {
       }
 
       if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
+        // @ts-expect-error: until it gets fixed in devtools
         addDevtools(app, router, matcher)
       }
     },
