@@ -5,6 +5,7 @@ import {
   defineComponent,
   PropType,
   ref,
+  unref,
   ComponentPublicInstance,
   VNodeProps,
   getCurrentInstance,
@@ -61,12 +62,29 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
 
     const injectedRoute = inject(routerViewLocationKey)!
     const routeToDisplay = computed(() => props.route || injectedRoute.value)
-    const depth = inject(viewDepthKey, 0)
+    const injectedDepth = inject(viewDepthKey, 0)
+    // The depth changes based on empty components option, which allows passthrough routes e.g. routes with children
+    // that are used to reuse the `path` property
+    const depth = computed<number>(() => {
+      let initialDepth = unref(injectedDepth)
+      const { matched } = routeToDisplay.value
+      let matchedRoute: RouteLocationMatched | undefined
+      while (
+        (matchedRoute = matched[initialDepth]) &&
+        !matchedRoute.components
+      ) {
+        initialDepth++
+      }
+      return initialDepth
+    })
     const matchedRouteRef = computed<RouteLocationMatched | undefined>(
-      () => routeToDisplay.value.matched[depth]
+      () => routeToDisplay.value.matched[depth.value]
     )
 
-    provide(viewDepthKey, depth + 1)
+    provide(
+      viewDepthKey,
+      computed(() => depth.value + 1)
+    )
     provide(matchedRouteKey, matchedRouteRef)
     provide(routerViewLocationKey, routeToDisplay)
 
@@ -117,7 +135,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     return () => {
       const route = routeToDisplay.value
       const matchedRoute = matchedRouteRef.value
-      const ViewComponent = matchedRoute && matchedRoute.components[props.name]
+      const ViewComponent = matchedRoute && matchedRoute.components![props.name]
       // we need the value at the time we render because when we unmount, we
       // navigated to a different location so the value is different
       const currentName = props.name
@@ -158,7 +176,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       ) {
         // TODO: can display if it's an alias, its props
         const info: RouterViewDevtoolsContext = {
-          depth,
+          depth: depth.value,
           name: matchedRoute.name,
           path: matchedRoute.path,
           meta: matchedRoute.meta,
