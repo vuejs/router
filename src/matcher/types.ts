@@ -27,7 +27,7 @@ export interface RouteRecordNormalized {
   /**
    * {@inheritDoc RouteRecordMultipleViews.components}
    */
-  components: RouteRecordMultipleViews['components']
+  components: RouteRecordMultipleViews['components'] | null | undefined
   /**
    * {@inheritDoc _RouteRecordBase.components}
    */

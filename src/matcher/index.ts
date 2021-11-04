@@ -350,6 +350,7 @@ export function normalizeRouteRecord(
     aliasOf: undefined,
     beforeEnter: record.beforeEnter,
     props: normalizeRecordProps(record),
+    // @ts-expect-error: record.children only exists in some cases
     children: record.children || [],
     instances: {},
     leaveGuards: new Set(),
@@ -357,8 +358,8 @@ export function normalizeRouteRecord(
     enterCallbacks: {},
     components:
       'components' in record
-        ? record.components || {}
-        : { default: record.component! },
+        ? record.components || null
+        : record.component && { default: record.component },
   }
 }
 

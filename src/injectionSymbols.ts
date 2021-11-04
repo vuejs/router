@@ -32,7 +32,7 @@ export const matchedRouteKey = /*#__PURE__*/ PolySymbol(
  */
 export const viewDepthKey = /*#__PURE__*/ PolySymbol(
   __DEV__ ? 'router view depth' : 'rvd'
-) as InjectionKey<number>
+) as InjectionKey<Ref<number> | number>
 
 /**
  * Allows overriding the router instance returned by `useRouter` in tests. r
