@@ -213,7 +213,6 @@ const routes = createRoutes({
     meta: {},
     matched: [
       {
-        // @ts-ignore: FIXME:
         components: null,
         instances: {},
         enterCallbacks: {},
