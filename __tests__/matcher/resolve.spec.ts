@@ -6,11 +6,20 @@ import {
   MatcherLocationRaw,
   MatcherLocation,
 } from '../../src/types'
-import { MatcherLocationNormalizedLoose } from '../utils'
+import { MatcherLocationNormalizedLoose, RouteRecordViewLoose } from '../utils'
 import { mockWarn } from 'jest-mock-warn'
+import { defineComponent } from '@vue/runtime-core'
 
-// @ts-expect-error
-const component: RouteComponent = null
+const component: RouteComponent = defineComponent({})
+
+const baseRouteRecordNormalized: RouteRecordViewLoose = {
+  instances: {},
+  enterCallbacks: {},
+  aliasOf: undefined,
+  components: null,
+  path: '',
+  props: {},
+}
 
 // for normalized records
 const components = { default: component }
@@ -232,6 +241,7 @@ describe('RouterMatcher.resolve', () => {
           matched: [
             {
               path: '/p',
+              // @ts-expect-error: doesn't matter
               children,
               components,
               aliasOf: expect.objectContaining({ path: '/parent' }),
@@ -573,6 +583,7 @@ describe('RouterMatcher.resolve', () => {
           matched: [
             {
               path: '/parent',
+              // @ts-expect-error
               children,
               components,
               aliasOf: undefined,
@@ -1017,7 +1028,10 @@ describe('RouterMatcher.resolve', () => {
           name: 'child-b',
           path: '/foo/b',
           params: {},
-          matched: [Foo, { ...ChildB, path: `${Foo.path}/${ChildB.path}` }],
+          matched: [
+            Foo as any,
+            { ...ChildB, path: `${Foo.path}/${ChildB.path}` },
+          ],
         }
       )
     })
@@ -1037,7 +1051,7 @@ describe('RouterMatcher.resolve', () => {
           name: 'nested',
           path: '/foo',
           params: {},
-          matched: [Foo, { ...Nested, path: `${Foo.path}` }],
+          matched: [Foo as any, { ...Nested, path: `${Foo.path}` }],
         }
       )
     })
@@ -1064,7 +1078,7 @@ describe('RouterMatcher.resolve', () => {
           path: '/foo',
           params: {},
           matched: [
-            Foo,
+            Foo as any,
             { ...Nested, path: `${Foo.path}` },
             { ...NestedNested, path: `${Foo.path}` },
           ],
@@ -1087,7 +1101,7 @@ describe('RouterMatcher.resolve', () => {
           path: '/foo/nested/a',
           params: {},
           matched: [
-            Foo,
+            Foo as any,
             { ...Nested, path: `${Foo.path}/${Nested.path}` },
             {
               ...NestedChildA,
@@ -1113,7 +1127,7 @@ describe('RouterMatcher.resolve', () => {
           path: '/foo/nested/a',
           params: {},
           matched: [
-            Foo,
+            Foo as any,
             { ...Nested, path: `${Foo.path}/${Nested.path}` },
             {
               ...NestedChildA,
@@ -1139,7 +1153,7 @@ describe('RouterMatcher.resolve', () => {
           path: '/foo/nested/a',
           params: {},
           matched: [
-            Foo,
+            Foo as any,
             { ...Nested, path: `${Foo.path}/${Nested.path}` },
             {
               ...NestedChildA,
@@ -1172,7 +1186,7 @@ describe('RouterMatcher.resolve', () => {
           path: '/foo/nested/a/b',
           params: { p: 'b', n: 'a' },
           matched: [
-            Foo,
+            Foo as any,
             {
               ...NestedWithParam,
               path: `${Foo.path}/${NestedWithParam.path}`,
@@ -1201,7 +1215,7 @@ describe('RouterMatcher.resolve', () => {
           path: '/foo/nested/b/a',
           params: { p: 'a', n: 'b' },
           matched: [
-            Foo,
+            Foo as any,
             {
               ...NestedWithParam,
               path: `${Foo.path}/${NestedWithParam.path}`,
@@ -1249,7 +1263,7 @@ describe('RouterMatcher.resolve', () => {
           name: 'nested',
           path: '/nested',
           params: {},
-          matched: [Parent, { ...Nested, path: `/nested` }],
+          matched: [Parent as any, { ...Nested, path: `/nested` }],
         }
       )
     })
@@ -1269,7 +1283,7 @@ describe('RouterMatcher.resolve', () => {
           name: 'nested',
           path: '/parent/nested',
           params: {},
-          matched: [Parent, { ...Nested, path: `/parent/nested` }],
+          matched: [Parent as any, { ...Nested, path: `/parent/nested` }],
         }
       )
     })

@@ -236,6 +236,12 @@ export function extractComponentsGuards(
   const guards: Array<() => Promise<void>> = []
 
   for (const record of matched) {
+    if (__DEV__ && !record.components && !record.children.length) {
+      warn(
+        `Record with path "${record.path}" is either missing a "component(s)"` +
+          ` or "children" property.`
+      )
+    }
     for (const name in record.components) {
       let rawComponent = record.components[name]
       if (__DEV__) {
@@ -312,7 +318,8 @@ export function extractComponentsGuards(
               ? resolved.default
               : resolved
             // replace the function with the resolved component
-            record.components[name] = resolvedComponent
+            // cannot be null or undefined because we went into the for loop
+            record.components![name] = resolvedComponent
             // __vccOpts is added by vue-class-component and contain the regular options
             const options: ComponentOptions =
               (resolvedComponent as any).__vccOpts || resolvedComponent
