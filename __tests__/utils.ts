@@ -58,7 +58,7 @@ export interface RouteRecordViewLoose
   enterCallbacks: Record<string, Function[]>
   props: Record<string, _RouteRecordProps>
   aliasOf: RouteRecordViewLoose | undefined
-  children?: RouteRecordViewLoose[]
+  children?: RouteRecordRaw[]
   components: Record<string, RouteComponent> | null | undefined
 }
 
