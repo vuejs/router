@@ -29,7 +29,7 @@ module.exports = {
     port: 4444,
     server_path: require('selenium-server').path,
     cli_args: {
-      'webdriver.chrome.driver': require('chromedriver').path,
+      // 'webdriver.chrome.driver': require('chromedriver').path,
       // 'webdriver.gecko.driver': require('geckodriver').path,
     },
   },
