@@ -12,9 +12,9 @@ const to = START_LOCATION_NORMALIZED
 const from = START_LOCATION_NORMALIZED
 
 const NoGuard: RouteRecordRaw = { path: '/', component: components.Home }
+// @ts-expect-error
 const InvalidRoute: RouteRecordRaw = {
   path: '/',
-  // @ts-expect-error
   component: null,
 }
 const WrongLazyRoute: RouteRecordRaw = {
@@ -88,11 +88,8 @@ describe('extractComponentsGuards', () => {
 
   it('throws if component is null', async () => {
     // @ts-expect-error
-    await expect(checkGuards([InvalidRoute], 2)).rejects.toHaveProperty(
-      'message',
-      expect.stringMatching('Invalid route component')
-    )
-    expect('is not a valid component').toHaveBeenWarned()
+    await expect(checkGuards([InvalidRoute], 0))
+    expect('either missing a "component(s)" or "children"').toHaveBeenWarned()
   })
 
   it('warns wrong lazy component', async () => {
