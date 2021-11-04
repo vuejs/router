@@ -1,6 +1,6 @@
 import { LocationQuery, LocationQueryRaw } from '../query'
 import { PathParserOptions } from '../matcher'
-import { Ref, ComponentPublicInstance, Component } from 'vue'
+import { Ref, ComponentPublicInstance, Component, DefineComponent } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
@@ -97,7 +97,7 @@ export type RouteLocationRaw =
 
 export interface RouteLocationMatched extends RouteRecordNormalized {
   // components cannot be Lazy<RouteComponent>
-  components: Record<string, RouteComponent>
+  components: Record<string, RouteComponent> | null | undefined
 }
 
 /**
@@ -182,7 +182,7 @@ export interface RouteLocationNormalized extends _RouteLocationBase {
 /**
  * Allowed Component in {@link RouteLocationMatched}
  */
-export type RouteComponent = Component
+export type RouteComponent = Component | DefineComponent
 /**
  * Allowed Component definitions in route records provided by the user
  */
@@ -214,26 +214,26 @@ export interface _RouteRecordBase extends PathParserOptions {
    * @example `/users/:id` matches `/users/1` as well as `/users/posva`.
    */
   path: string
+
   /**
    * Where to redirect if the route is directly matched. The redirection happens
    * before any navigation guard and triggers a new navigation with the new
    * target location.
    */
   redirect?: RouteRecordRedirectOption
-  /**
-   * Array of nested routes.
-   */
-  children?: RouteRecordRaw[]
+
   /**
    * Aliases for the record. Allows defining extra paths that will behave like a
    * copy of the record. Allows having paths shorthands like `/users/:id` and
    * `/u/:id`. All `alias` and `path` values must share the same params.
    */
   alias?: string | string[]
+
   /**
    * Name for the route record.
    */
   name?: RouteRecordName
+
   /**
    * Before Enter guard specific to this record. Note `beforeEnter` has no
    * effect if the record has a `redirect` property.
@@ -241,6 +241,7 @@ export interface _RouteRecordBase extends PathParserOptions {
   beforeEnter?:
     | NavigationGuardWithThis<undefined>
     | NavigationGuardWithThis<undefined>[]
+
   /**
    * Arbitrary data attached to the record.
    */
@@ -288,6 +289,27 @@ export interface RouteRecordSingleView extends _RouteRecordBase {
 }
 
 /**
+ * Route Record defining one single component with a nested view.
+ */
+export interface RouteRecordSingleViewWithChildren extends _RouteRecordBase {
+  /**
+   * Component to display when the URL matches this route.
+   */
+  component?: RawRouteComponent | null | undefined
+  components?: never
+
+  /**
+   * Array of nested routes.
+   */
+  children: RouteRecordRaw[]
+
+  /**
+   * Allow passing down params as props to the component rendered by `router-view`.
+   */
+  props?: _RouteRecordProps
+}
+
+/**
  * Route Record defining multiple named components with the `components` option.
  */
 export interface RouteRecordMultipleViews extends _RouteRecordBase {
@@ -296,6 +318,27 @@ export interface RouteRecordMultipleViews extends _RouteRecordBase {
    */
   components: Record<string, RawRouteComponent>
   component?: never
+
+  /**
+   * Allow passing down params as props to the component rendered by
+   * `router-view`. Should be an object with the same keys as `components` or a
+   * boolean to be applied to every component.
+   */
+  props?: Record<string, _RouteRecordProps> | boolean
+}
+
+/**
+ * Route Record defining multiple named components with the `components` option and children.
+ */
+export interface RouteRecordMultipleViewsWithChildren extends _RouteRecordBase {
+  /**
+   * Components to display when the URL matches this route. Allow using named views.
+   */
+  components?: Record<string, RawRouteComponent> | null | undefined
+  component?: never
+
+  children: RouteRecordRaw[]
+
   /**
    * Allow passing down params as props to the component rendered by
    * `router-view`. Should be an object with the same keys as `components` or a
@@ -316,7 +359,9 @@ export interface RouteRecordRedirect extends _RouteRecordBase {
 
 export type RouteRecordRaw =
   | RouteRecordSingleView
+  | RouteRecordSingleViewWithChildren
   | RouteRecordMultipleViews
+  | RouteRecordMultipleViewsWithChildren
   | RouteRecordRedirect
 
 /**

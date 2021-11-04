@@ -202,6 +202,33 @@ const routes = createRoutes({
       },
     ],
   },
+
+  passthrough: {
+    fullPath: '/foo',
+    name: undefined,
+    path: '/foo',
+    query: {},
+    params: {},
+    hash: '',
+    meta: {},
+    matched: [
+      {
+        // @ts-ignore: FIXME:
+        components: null,
+        instances: {},
+        enterCallbacks: {},
+        path: '/',
+        props,
+      },
+      {
+        components: { default: components.Foo },
+        instances: {},
+        enterCallbacks: {},
+        path: 'foo',
+        props,
+      },
+    ],
+  },
 })
 
 describe('RouterView', () => {
@@ -306,6 +333,11 @@ describe('RouterView', () => {
   it('can pass a function as props', async () => {
     const { wrapper } = await factory(routes.withFnProps)
     expect(wrapper.html()).toBe(`<div>id:2;other:page</div>`)
+  })
+
+  it('pass through with empty children', async () => {
+    const { wrapper } = await factory(routes.passthrough)
+    expect(wrapper.html()).toBe(`<div>Foo</div>`)
   })
 
   describe('warnings', () => {
