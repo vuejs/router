@@ -51,13 +51,15 @@ export function nextNavigation(router: Router) {
 export interface RouteRecordViewLoose
   extends Pick<
     RouteRecordMultipleViews,
-    'path' | 'name' | 'components' | 'children' | 'meta' | 'beforeEnter'
+    'path' | 'name' | 'meta' | 'beforeEnter'
   > {
   leaveGuards?: any
   instances: Record<string, any>
   enterCallbacks: Record<string, Function[]>
   props: Record<string, _RouteRecordProps>
   aliasOf: RouteRecordViewLoose | undefined
+  children?: RouteRecordViewLoose[]
+  components: Record<string, RouteComponent> | null | undefined
 }
 
 // @ts-expect-error we are intentionally overriding the type
