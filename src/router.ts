@@ -50,7 +50,6 @@ import {
   reactive,
   unref,
   computed,
-  ref,
 } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import {
