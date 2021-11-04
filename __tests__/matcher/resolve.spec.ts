@@ -6,20 +6,11 @@ import {
   MatcherLocationRaw,
   MatcherLocation,
 } from '../../src/types'
-import { MatcherLocationNormalizedLoose, RouteRecordViewLoose } from '../utils'
+import { MatcherLocationNormalizedLoose } from '../utils'
 import { mockWarn } from 'jest-mock-warn'
 import { defineComponent } from '@vue/runtime-core'
 
 const component: RouteComponent = defineComponent({})
-
-const baseRouteRecordNormalized: RouteRecordViewLoose = {
-  instances: {},
-  enterCallbacks: {},
-  aliasOf: undefined,
-  components: null,
-  path: '',
-  props: {},
-}
 
 // for normalized records
 const components = { default: component }
@@ -241,7 +232,6 @@ describe('RouterMatcher.resolve', () => {
           matched: [
             {
               path: '/p',
-              // @ts-expect-error: doesn't matter
               children,
               components,
               aliasOf: expect.objectContaining({ path: '/parent' }),
@@ -583,7 +573,6 @@ describe('RouterMatcher.resolve', () => {
           matched: [
             {
               path: '/parent',
-              // @ts-expect-error
               children,
               components,
               aliasOf: undefined,
@@ -1036,10 +1025,7 @@ describe('RouterMatcher.resolve', () => {
           name: 'child-b',
           path: '/foo/b',
           params: {},
-          matched: [
-            Foo as any,
-            { ...ChildB, path: `${Foo.path}/${ChildB.path}` },
-          ],
+          matched: [Foo, { ...ChildB, path: `${Foo.path}/${ChildB.path}` }],
         }
       )
     })
