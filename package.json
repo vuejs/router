@@ -8,6 +8,14 @@
   "types": "dist/vue-router.d.ts",
   "sideEffects": false,
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vuejs/vue-router-next.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vuejs/vue-router-next/issues"
+  },
+  "homepage": "https://github.com/vuejs/vue-router-next#readme",
   "files": [
     "dist/*.js",
     "dist/vue-router.d.ts",
