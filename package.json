@@ -7,6 +7,7 @@
   "module": "dist/vue-router.esm-bundler.js",
   "types": "dist/vue-router.d.ts",
   "sideEffects": false,
+  "funding": "https://github.com/sponsors/posva",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -62,7 +63,7 @@
     ]
   },
   "peerDependencies": {
-    "vue": "^3.0.0"
+    "vue": "^3.2.0"
   },
   "vetur": {
     "tags": "vetur/tags.json",
