@@ -1065,12 +1065,7 @@
   dependencies:
     "@types/node" "*"
 
-"@vitejs/plugin-vue@^1.9.0":
-  version "1.9.2"
-  resolved "https://registry.yarnpkg.com/@vitejs/plugin-vue/-/plugin-vue-1.9.2.tgz#7234efb8c3c3d60c7eac350a935074ab1820ae0e"
-  integrity sha512-QnUQJvGmY+YT9xTidLcjr6NAjKWNdSuul1M+BZ6uwTQaO5vpAY9USBncXESATk742dYMZGJenegJgeJhG/HMNQ==
-
-"@vitejs/plugin-vue@^1.9.2":
+"@vitejs/plugin-vue@^1.9.0", "@vitejs/plugin-vue@^1.9.2":
   version "1.9.4"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-vue/-/plugin-vue-1.9.4.tgz#4f48485432cbb986a9fb9d254dc33ce30ddccbfa"
   integrity sha512-0CZqaCoChriPTTtGkERy1LGPcYjGFpi2uYRhBPIkqJqUGV5JnJFhQAgh6oH9j5XZHfrRaisX8W0xSpO4T7S78A==
@@ -7096,10 +7091,10 @@ vite@^2.6.5, vite@~2.6.13:
   optionalDependencies:
     fsevents "~2.3.2"
 
-vitepress@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/vitepress/-/vitepress-0.20.0.tgz#eb4f86abb7a90e9dc52c595fb5cc63ca2b717c60"
-  integrity sha512-+PZy1BAWha46hcaWqhB1Vet+2dwhebTnk900ZzrAgLiw4Dx0dQpnMRnDlrp5HR8fgmLNB1Ij9PJO4gh4tvb6gQ==
+vitepress@^0.20.1:
+  version "0.20.1"
+  resolved "https://registry.yarnpkg.com/vitepress/-/vitepress-0.20.1.tgz#34d39950a5062a4efa5621be3a78c005f656faee"
+  integrity sha512-2SOlvRv0bvPrQ3RPtp7Fh/G1MKidrsgAgYz18OvV+nIJb9iiYo0GUVHKN3OYswMh+vH78NyTeA1Q5v4YJ/H9LQ==
   dependencies:
     "@docsearch/css" "^1.0.0-alpha.28"
     "@docsearch/js" "^1.0.0-alpha.28"
