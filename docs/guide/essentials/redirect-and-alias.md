@@ -2,7 +2,7 @@
 
 ## Redirect
 
-Redirecting is also done in the `routes` configuration. To redirect from `/a` to `/b`:
+Redirecting is also done in the `routes` configuration. To redirect from `/home` to `/`:
 
 ```js
 const routes = [{ path: '/home', redirect: '/' }]
