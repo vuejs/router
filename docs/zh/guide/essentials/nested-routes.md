@@ -54,7 +54,7 @@ const routes = [
     component: User,
     children: [
       {
-        // 当 /user/:id/profile 匹配成功 
+        // 当 /user/:id/profile 匹配成功
         // UserProfile 将被渲染到 User 的 <router-view> 内部
         path: 'profile',
         component: UserProfile,
@@ -82,8 +82,6 @@ const routes = [
     path: '/user/:id',
     component: User,
     children: [
-      // UserHome will be rendered inside User's <router-view>
-      // when /user/:id is matched
       // 当 /user/:id 匹配成功
       // UserHome 将被渲染到 User 的 <router-view> 内部
       { path: '', component: UserHome },
