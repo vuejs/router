@@ -1,39 +1,42 @@
 <template>
   <a
     id="vs"
-    href="https://vueschool.io/sales/back-to-school?friend=vuerouter"
+    href="https://vueschool.io/sales/blackfriday?friend=vuerouter"
     target="_blank"
     rel="noreferrer"
   >
-    <div class="vs-iso">
-      <img src="/images/vueschool/vs-iso.svg" alt="Vue School Logo" />
-    </div>
-    <div class="vs-logo">
-      <img src="/images/vueschool/vs-logo.svg" alt="Vue School Logo" />
-    </div>
     <div class="vs-core">
-      <div class="vs-backpack">
-        <img src="/images/vueschool/vs-backpack.png" alt="Backpack" />
+      <div class="vs-logo">
+        <img src="/images/vueschool/vueschool_blackfriday_logo.svg">
       </div>
       <div class="vs-slogan">
-        Less than <span class="vs-slogan-light">48 hours</span> left for the Vue
-        School offer
+        <div class="vs-slogan-subtitle">
+          Access to all Vue Courses at Vue School
+        </div>
+        <div class="vs-slogan-title">
+          Black Friday <strong>40% OFF</strong>
+        </div>
       </div>
-      <div class="vs-button">GET ACCESS</div>
+      <div class="vs-button">
+        Get Discount
+      </div>
     </div>
     <div id="vs-close" class="vs-close" @click.stop.prevent="$emit('close')">
-      <img src="/images/vueschool/close.svg" alt="Close" />
+      <img src="/images/vueschool/vueschool_close.svg" alt="Close">
     </div>
   </a>
 </template>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600&display=swap');
+
 #vs {
   align-items: center;
-  background-color: #202a5a;
+  background-color: #000c19;
   box-sizing: border-box;
   color: #fff;
-  font-family: 'Roboto', Oxygen, Fira Sans, Helvetica Neue, sans-serif;
+  display: none;
+  font-family: 'Inter', Roboto, Oxygen, Fira Sans, Helvetica Neue, sans-serif;
   justify-content: center;
   position: fixed;
   padding: 0 10px;
@@ -41,139 +44,96 @@
   right: 0;
   top: 0;
   z-index: 100;
-  height: 3.125rem;
-  display: flex;
+  height: 5rem;
+  line-height: 1;
 }
-
 #vs:hover {
   text-decoration: none;
 }
-
 @media (min-width: 680px) {
   #vs {
     height: 5rem;
+    justify-content: center;
+    background-image: url("/images/vueschool/vueschool_blackfriday_background_tablet.svg");
   }
 }
-
+@media (min-width: 900px) {
+  #vs {
+    background-image: url("/images/vueschool/vueschool_blackfriday_background_desktop.svg");
+  }
+}
 #vs:hover .vs-core .vs-button {
-  background: #f22606;
+  background: linear-gradient(261deg, #e61463 100%, #db5248 3%);
 }
-
-#vs .vs-iso {
-  position: absolute;
-  left: 20px;
-  height: 26px;
-  display: none;
-}
-
-#vs .vs-iso img {
-  height: 26px;
-}
-
-@media (min-width: 680px) {
-  #vs .vs-iso {
-    left: 40px;
-    height: 40px;
-    display: inline-block;
-  }
-
-  #vs .vs-iso img {
-    height: 40px;
-  }
-}
-
-@media (min-width: 900px) {
-  #vs .vs-iso {
-    display: none;
-  }
-}
-
-#vs .vs-logo {
-  position: absolute;
-  display: none;
-  left: 40px;
-}
-
-@media (min-width: 900px) {
-  #vs .vs-logo {
-    display: block;
-  }
-}
-
 #vs .vs-core {
   display: flex;
   align-items: center;
 }
-
-#vs .vs-core .vs-backpack {
-  margin-right: 14px;
-}
-
-#vs .vs-core .vs-backpack img {
-  height: 50px;
-}
-
-@media (min-width: 680px) {
-  #vs .vs-core .vs-backpack img {
-    height: 74px;
-  }
-}
-
 #vs .vs-core .vs-slogan {
+  font-family: Archivo;
   color: #fff;
-  font-weight: bold;
-  font-size: 14px;
-  margin-right: 26px;
+  margin-left: 8px;
 }
-
 @media (min-width: 680px) {
   #vs .vs-core .vs-slogan {
-    margin-right: 0;
+    margin-left: 24px;
+  }
+}
+#vs .vs-core .vs-slogan .vs-slogan-subtitle {
+  font-size: 12px;
+}
+@media (min-width: 680px) {
+  #vs .vs-core .vs-slogan .vs-slogan-subtitle {
+    font-size: 14px;
+  }
+}
+#vs .vs-core .vs-slogan .vs-slogan-title {
+  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+@media (min-width: 680px) {
+  #vs .vs-core .vs-slogan .vs-slogan-title {
     font-size: 18px;
   }
 }
-
-#vs .vs-core .vs-slogan > .vs-slogan-light {
-  color: #ff5338;
-  display: block;
-  text-align: left;
+#vs .vs-core .vs-slogan .vs-slogan-title strong {
+  color: #ffae29;
+  font-weight: 600;
 }
-
-@media (min-width: 900px) {
-  #vs .vs-core .vs-slogan > .vs-slogan-light {
-    text-align: center;
-    display: inline;
-  }
-}
-
 #vs .vs-core .vs-button {
-  margin-left: 43px;
   color: #fff;
-  padding: 13px 24px;
-  border-radius: 40px;
-  display: none;
-  background: #ff5338;
-  font-weight: bold;
+  padding: 7px 10px;
+  border-radius: 4px;
+  background: linear-gradient(to left, #e61b60, #dd4a4c);
+  font-weight: 600;
+  white-space: nowrap;
+  margin-right: 18px;
+  margin-left: 16px;
+  font-family: 'Archivo', sans-serif;
 }
-
 @media (min-width: 680px) {
   #vs .vs-core .vs-button {
-    display: inline-block;
+    margin-right: 0;
+    padding: 8px 24px;
+    margin-left: 32px;
   }
 }
-
-#vs .vs-close {
-  right: 10px;
-  position: absolute;
-  padding: 10px;
+@media (min-width: 680px) {
+  #vs .vs-core .vs-button {
+    margin-left: 69px;
+  }
 }
-
+#vs .vs-close {
+  right: 6px;
+  position: absolute;
+}
 @media (min-width: 680px) {
   #vs .vs-close {
+    padding: 10px;
     right: 20px;
   }
 }
-
 #vs .vs-close:hover {
   color: #56d8ff;
 }
@@ -185,19 +145,19 @@
 }
 
 .main-container.has-top-banner {
-  margin-top: 3.125rem;
+  margin-top: 5rem;
 }
 
 .main-container.has-top-banner .nav-bar {
-  margin-top: 3.125rem;
+  margin-top: 5rem;
 }
 
 .main-container.has-top-banner .sidebar {
-  margin-top: 3.125rem;
+  margin-top: 5rem;
 }
 
 .main-container.has-top-banner .page {
-  margin-top: 3.125rem;
+  margin-top: 5rem;
 }
 
 @media (min-width: 680px) {
