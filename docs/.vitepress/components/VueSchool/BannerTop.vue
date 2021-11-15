@@ -5,6 +5,7 @@
     target="_blank"
     rel="noreferrer"
   >
+    <BannerCoins />
     <div class="vs-core">
       <div class="vs-logo">
         <img src="/images/vueschool/vueschool_blackfriday_logo.svg">
@@ -26,6 +27,16 @@
     </div>
   </a>
 </template>
+
+<script>
+import BannerCoins from './BannerCoins.vue'
+
+export default {
+  components: {
+    BannerCoins
+  }
+}
+</script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600&display=swap');
@@ -54,12 +65,6 @@
   #vs {
     height: 5rem;
     justify-content: center;
-    background-image: url("/images/vueschool/vueschool_blackfriday_background_tablet.svg");
-  }
-}
-@media (min-width: 900px) {
-  #vs {
-    background-image: url("/images/vueschool/vueschool_blackfriday_background_desktop.svg");
   }
 }
 #vs:hover .vs-core .vs-button {
