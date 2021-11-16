@@ -68,7 +68,7 @@ import {
   routerViewLocationKey,
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
-import { createWebHistory } from './html5'
+import { createWebHistory } from './history/html5'
 
 /**
  * Internal type to define an ErrorHandler
