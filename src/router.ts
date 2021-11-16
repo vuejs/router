@@ -68,6 +68,7 @@ import {
   routerViewLocationKey,
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
+import { createWebHistory } from './html5'
 
 /**
  * Internal type to define an ErrorHandler
@@ -356,13 +357,11 @@ export function createRouter(options: RouterOptions): Router {
   const matcher = createRouterMatcher(options.routes, options)
   const parseQuery = options.parseQuery || originalParseQuery
   const stringifyQuery = options.stringifyQuery || originalStringifyQuery
-  const routerHistory = options.history
-  if (__DEV__ && !routerHistory)
-    throw new Error(
-      'Provide the "history" option when calling "createRouter()":' +
-        ' https://next.router.vuejs.org/api/#history.'
-    )
-
+  let routerHistory = options.history
+  if (!routerHistory){
+    routerHistory = options.history = createWebHistory()
+  }
+  
   const beforeGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
   const beforeResolveGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
   const afterGuards = useCallbacks<NavigationHookAfter>()
