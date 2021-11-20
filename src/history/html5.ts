@@ -280,8 +280,6 @@ function useHistoryStateNavigation(base: string) {
       )
     }
 
-    changeLocation(currentState.current, currentState, true)
-
     const state: StateEntry = assign(
       {},
       buildState(currentLocation.value, to, null),
