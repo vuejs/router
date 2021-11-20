@@ -44,6 +44,8 @@ Note how instead of using regular `a` tags, we use a custom component `router-li
 ## JavaScript
 
 ```js
+import * as VueRouter from 'vue-router'
+
 // 1. Define route components.
 // These can be imported from other files
 const Home = { template: '<div>Home</div>' }
