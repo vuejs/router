@@ -77,6 +77,15 @@ function useHistoryListeners(
     let delta = 0
 
     if (state) {
+      // handle scenarios where the state value is illegal, such as micro front-end scenarios that coexist with React
+      if (!state.current) {
+        state = assign({}, historyState.value, {
+          back: historyState.value.current,
+          current: to,
+          position: historyState.value.position + 1,
+        })
+      }
+
       currentLocation.value = to
       historyState.value = state
 
