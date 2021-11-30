@@ -15,12 +15,13 @@
           Access to all Vue Courses at Vue School
         </div>
         <div class="vs-slogan-title">
-          Black Friday <strong>40% OFF</strong>
+          Cyber Monday <strong>35% OFF</strong> - Closes Soon
         </div>
       </div>
       <div class="vs-button">
         Get Discount
       </div>
+      <img class="vs-tag" src="/images/vueschool/extended.svg" alt="Extended">
     </div>
     <div id="vs-close" class="vs-close" @click.stop.prevent="$emit('close')">
       <img src="/images/vueschool/vueschool_close.svg" alt="Close">
@@ -57,6 +58,9 @@ export default {
   z-index: 100;
   height: 5rem;
   line-height: 1;
+  background-image: url(/images/vueschool/vueschool_banner_mobile.png);
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 #vs:hover {
   text-decoration: none;
@@ -65,14 +69,20 @@ export default {
   #vs {
     height: 5rem;
     justify-content: center;
+    background-image: none;
   }
 }
 #vs:hover .vs-core .vs-button {
   background: linear-gradient(261deg, #e61463 100%, #db5248 3%);
 }
 #vs .vs-core {
-  display: flex;
-  align-items: center;
+  display: none;
+}
+@media (min-width: 680px) {
+  #vs .vs-core {
+    display: flex;
+    align-items: center;
+  }
 }
 #vs .vs-core .vs-slogan {
   font-family: Archivo;
@@ -121,12 +131,20 @@ export default {
   #vs .vs-core .vs-button {
     margin-right: 0;
     padding: 8px 24px;
-    margin-left: 32px;
+    margin-left: 22px;
   }
 }
-@media (min-width: 680px) {
+@media (min-width: 1024px) {
   #vs .vs-core .vs-button {
     margin-left: 69px;
+  }
+}
+.vs-tag {
+  margin-left: 10px
+}
+@media (min-width: 1024px) {
+  .vs-tag {
+    margin-left: 30px
   }
 }
 #vs .vs-close {
