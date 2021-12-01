@@ -19,3 +19,5 @@ selenium-server.log
 browserstack.err
 .idea
 debug.log
+yalc.lock
+.yalc
