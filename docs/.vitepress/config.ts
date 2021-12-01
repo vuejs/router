@@ -1,7 +1,6 @@
-/** @typedef {import('vitepress').UserConfig} UserConfig */
+import { defineConfig, UserConfig } from 'vitepress'
 
-/** @type {UserConfig['head']} */
-const head = [['link', { rel: 'icon', href: `/logo.png` }]]
+const head: UserConfig['head'] = [['link', { rel: 'icon', href: `/logo.png` }]]
 
 if (process.env.NODE_ENV === 'production') {
   head.push([
@@ -13,8 +12,7 @@ if (process.env.NODE_ENV === 'production') {
   ])
 }
 
-/** @type {UserConfig} */
-const config = {
+const config = defineConfig({
   lang: 'en-US',
   title: 'Vue Router',
   description: 'The official router for Vue.js.',
@@ -50,10 +48,13 @@ const config = {
 
     algolia: {
       apiKey: '07ed552fc16926cc57c9eb0862c1a7f9',
+      // TODO: upgrade this once it works
+      // appId: 'BTNTW3I1XP',
+      // apiKey: '771d10c8c5cc48f7922f15048b4d931c',
       indexName: 'next_router_vuejs',
-      searchParams: {
-        facetFilters: ['tags:guide,api,migration'],
-      },
+      // searchParameters: {
+      //   facetFilters: ['tags:guide,api,migration'],
+      // },
     },
 
     locales: {
@@ -319,6 +320,6 @@ const config = {
       },
     },
   },
-}
+})
 
-module.exports = config
+export default config
