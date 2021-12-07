@@ -35,7 +35,7 @@ const routes = [
 ]
 ```
 
-请注意，**[导航守卫](../advanced/navigation-guards.md)并没有应用在跳转路由上，而仅仅应用在其目标上**。在下面的例子中，在 `/home` 路由中添加 `beforeEnter` 守卫不会有任何效果。
+请注意，**[导航守卫](../advanced/navigation-guards.md)并没有应用在跳转路由上，而仅仅应用在其目标上**。在上面的例子中，在 `/home` 路由中添加 `beforeEnter` 守卫不会有任何效果。
 
 在写 `redirect` 的时候，可以省略 `component` 配置，因为它从来没有被直接访问过，所以没有组件要渲染。唯一的例外是[嵌套路由](./nested-routes.md)：如果一个路由记录有 `children` 和 `redirect` 属性，它也应该有 `component` 属性。
 
@@ -59,7 +59,7 @@ const routes = [
 
 重定向是指当用户访问 `/home` 时，URL 会被 `/` 替换，然后匹配成 `/`。那么什么是别名呢？
 
-**将 `/` 别名为 `/home`，意味着当用户访问 `/home` 时，URL 仍然是 `/home`，但会被匹配为用户正在访问 `/`。
+**将 `/` 别名为 `/home`，意味着当用户访问 `/home` 时，URL 仍然是 `/home`，但会被匹配为用户正在访问 `/`。**
 
 上面对应的路由配置为：
 
