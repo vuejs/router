@@ -99,7 +99,7 @@
     "dotenv": "^10.0.0",
     "faked-promise": "^2.2.2",
     "html-webpack-plugin": "^5.3.2",
-    "jest": "^27.2.3",
+    "jest": "^27.4.4",
     "jest-mock-warn": "^1.1.0",
     "lint-staged": "^12.1.2",
     "nightwatch": "^1.7.11",
