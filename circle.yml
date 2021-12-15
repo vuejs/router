@@ -90,9 +90,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/project
-      - run:
-          name: Send code coverage
-          command: yarn run codecov
+
+      - uses: codecov/codecov-action@v2
 
 workflows:
   version: 2

@@ -92,7 +92,6 @@
     "browserstack-local": "^1.4.5",
     "chalk": "^4.1.0",
     "chromedriver": "^96.0.0",
-    "codecov": "^3.8.2",
     "connect-history-api-fallback": "^1.6.0",
     "conventional-changelog-cli": "^2.1.1",
     "css-loader": "^6.3.0",
