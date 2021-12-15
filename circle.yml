@@ -3,6 +3,8 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2.1
+orbs:
+  codecov: codecov/codecov@3.2.2
 
 defaults: &defaults
   working_directory: ~/project/vue-router
@@ -85,14 +87,6 @@ jobs:
           paths:
             - node_modules
 
-  coverage:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/project
-
-      - uses: codecov/codecov-action@v2
-
 workflows:
   version: 2
   install-and-parallel-test:
@@ -113,6 +107,3 @@ workflows:
       - test-unit:
           requires:
             - install
-      - coverage:
-          requires:
-            - test-unit
