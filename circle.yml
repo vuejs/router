@@ -3,8 +3,6 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2.1
-orbs:
-  codecov: codecov/codecov@3.2.2
 
 defaults: &defaults
   working_directory: ~/project/vue-router
