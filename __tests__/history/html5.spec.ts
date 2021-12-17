@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
 import { createWebHistory } from '../../src/history/html5'
-import { createDom } from '../utils'
+import { createDom, tick } from '../utils'
 
 // override the value of isBrowser because the variable is created before JSDOM
 // is created
@@ -38,6 +38,26 @@ describe('History HTMl5', () => {
     expect(createWebHistory('/#').base).toBe('/#')
     expect(createWebHistory('#!').base).toBe('#!')
     expect(createWebHistory('#other').base).toBe('#other')
+  })
+
+  it('grecefully handles an invalid state', async () => {
+    const history = createWebHistory()
+    const spy = jest.fn()
+    history.listen(spy)
+
+    // null state
+    window.history.pushState(null, '')
+    window.history.back()
+    await tick(2)
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledWith('', '', 'https://example.com/foo')
+
+    // invalid state but not empty
+    window.history.pushState({}, '')
+    window.history.back()
+    await tick()
+    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledWith('', '', 'https://example.com/foo')
   })
 
   it('handles a base tag', () => {

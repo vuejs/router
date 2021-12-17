@@ -69,7 +69,9 @@ function useHistoryListeners(
   const popStateHandler: PopStateListener = ({
     state,
   }: {
-    state: StateEntry | null
+    // use an empty object to accomodate for other kind of invalid states
+    // https://github.com/vuejs/vue-router-next/pull/1219
+    state: StateEntry | null | { current: never }
   }) => {
     const to = createCurrentLocation(base, location)
     const from: HistoryLocation = currentLocation.value
@@ -77,6 +79,14 @@ function useHistoryListeners(
     let delta = 0
 
     if (state) {
+      if (!state.current) {
+        state = assign({}, historyState.value, {
+          back: historyState.value.current,
+          current: to,
+          position: historyState.value.position + 1,
+        })
+      }
+
       currentLocation.value = to
       historyState.value = state
 
