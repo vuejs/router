@@ -1,5 +1,6 @@
 import DefaultTheme from 'vitepress/dist/client/theme-default'
 import Layout from './Layout.vue'
+import './sponsors.css'
 import VueSchoolLink from '../components/VueSchoolLink.vue'
 
 export default {

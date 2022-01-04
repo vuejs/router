@@ -1,23 +1,30 @@
 <template>
   <div class="main-container">
-    <BannerTop
-      v-if="showTopBanner"
-      @close="closeBannerTop"
-    />
+    <BannerTop v-if="showTopBanner" @close="closeBannerTop" />
     <ParentLayout>
       <template #sidebar-top>
         <div class="sponsors sponsors-top">
           <span>Platinum Sponsors</span>
 
+          <template v-if="sponsors.platinum.length">
+            <a
+              v-for="sponsor in sponsors.platinum"
+              :href="sponsor.href"
+              :key="sponsor.href"
+              target="_blank"
+              rel="noopener"
+            >
+              <img :src="sponsor.imgSrcLight" :alt="sponsor.alt" />
+            </a>
+          </template>
           <a
-            v-for="sponsor in sponsors.platinum"
-            :href="sponsor.href"
-            :key="sponsor.href"
+            v-else
+            class="become-sponsor"
+            href="https://github.com/sponsors/posva"
             target="_blank"
             rel="noopener"
-          >
-            <img :src="sponsor.imgSrcLight" :alt="sponsor.alt" />
-          </a>
+            alt="Your logo here"
+          >Become a Sponsor!</a>
         </div>
       </template>
 
