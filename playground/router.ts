@@ -32,6 +32,24 @@ export const router = createRouter({
       components: { default: Home, other: component },
       props: { default: to => ({ waited: to.meta.waitedFor }) },
     },
+    // TODO: EDDIE: Need to check children case too.
+    // {
+    //   path: '/error-test-components1',
+    //   // @ts-expect-error
+    //   components: Home,
+    //   name: 'error-test-components1',
+    // },
+    {
+      path: '/error-test-components2',
+      components: { default: import('./views/Generic.vue') },
+      name: 'error-test-components2',
+    },
+    // {
+    //   path: '/error-test-components3',
+    //   // @ts-expect-error
+    //   components: TransparentWrapper,
+    //   name: 'error-test-components3',
+    // },
     {
       path: '/always-redirect',
       redirect: () => ({

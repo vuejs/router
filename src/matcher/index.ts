@@ -71,11 +71,52 @@ export function createRouterMatcher(
     return matcherMap.get(name)
   }
 
+  function routeComponentsOptionGuard(record: RouteRecordRaw): never | void {
+    // TODO: EDDIE
+    // Guard for record.components
+    // ex> components: Home -> should be like components: { default: Home, others }
+    if (__DEV__) {
+      if (record.components) {
+        for (const name in record.components) {
+          const rawComponent = record.components[name]
+          console.log('HELLO RAW', rawComponent)
+          const { path } = record
+          // property components should be object
+          if (
+            !rawComponent ||
+            (typeof rawComponent !== 'object' &&
+              typeof rawComponent !== 'function')
+          ) {
+            warn(
+              `Route record property "components" with path "${path}" is not valid. ` +
+                `Property "components" should be object. ` +
+                `ex> { components: { default: Home } }`
+            )
+            throw new Error(
+              `Invalid route record: components property should be object`
+            )
+          } else if ('then' in rawComponent) {
+            warn(
+              `Route record property "components" with path "${path}" is a ` +
+                `Promise instead of a function that returns a Promise. ` +
+                `Did you write "import(./MyPage.vue) instead of "` +
+                `"() => import(./MyPage.vue) ? "` +
+                `This will break in production if not fixed.`
+            )
+            record.components[name] = () => rawComponent
+          }
+        }
+      }
+    }
+  }
+
   function addRoute(
     record: RouteRecordRaw,
     parent?: RouteRecordMatcher,
     originalRecord?: RouteRecordMatcher
   ) {
+    // for route records.components guard
+    routeComponentsOptionGuard(record)
     // used later on to remove by name
     const isRootAdd = !originalRecord
     const mainNormalizedRecord = normalizeRouteRecord(record)

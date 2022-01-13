@@ -38,6 +38,9 @@
       Navigation
     </label>
     <ul>
+      <li><router-link to="error-test-components1">error-test-components1</router-link></li>
+      <li><router-link to="error-test-components2">error-test-components2</router-link></li>
+      <li><router-link to="error-test-components3">error-test-components3</router-link></li>
       <li>
         <router-link to="/n/%E2%82%AC">/n/%E2%82%AC</router-link>
       </li>
