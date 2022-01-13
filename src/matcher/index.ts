@@ -80,6 +80,7 @@ export function createRouterMatcher(
         for (const name in record.components) {
           const rawComponent = record.components[name]
           console.log('HELLO RAW', rawComponent)
+          console.log('Hello NAME', name)
           const { path } = record
           // property components should be object
           if (
@@ -88,7 +89,7 @@ export function createRouterMatcher(
               typeof rawComponent !== 'function')
           ) {
             warn(
-              `Route record property "components" with path "${path}" is not valid. ` +
+              `Route record "${name}" property "components" with path "${path}" is not valid. ` +
                 `Property "components" should be object. ` +
                 `ex> { components: { default: Home } }`
             )
@@ -97,13 +98,25 @@ export function createRouterMatcher(
             )
           } else if ('then' in rawComponent) {
             warn(
-              `Route record property "components" with path "${path}" is a ` +
+              `Route record "${name}" property "components" with path "${path}" is a ` +
                 `Promise instead of a function that returns a Promise. ` +
                 `Did you write "import(./MyPage.vue) instead of "` +
                 `"() => import(./MyPage.vue) ? "` +
                 `This will break in production if not fixed.`
             )
             record.components[name] = () => rawComponent
+          } else if (
+            (rawComponent as any).__asyncLoader &&
+            // warn only once per component
+            !(rawComponent as any).__warnedDefineAsync
+          ) {
+            ;(rawComponent as any).__warnedDefineAsync = true
+            warn(
+              `Route record "${name}" property with path "${record.path}" is defined ` +
+                `using "defineAsyncComponent()". ` +
+                `Write "() => import('./MyPage.vue')" instead of ` +
+                `"defineAsyncComponent(() => import('./MyPage.vue'))".`
+            )
           }
         }
       }
