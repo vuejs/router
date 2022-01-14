@@ -6,13 +6,11 @@ import {
   RouteRecordName,
   _RouteRecordProps,
   RouteRecordRedirect,
-  RouteComponent,
-  Lazy,
+  RawRouteComponent,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
 import { RouteRecordNormalized } from './types'
-import { isRouteComponent } from '../navigationGuards'
 
 import type {
   PathParams,
@@ -74,54 +72,26 @@ export function createRouterMatcher(
     return matcherMap.get(name)
   }
 
-  function routeComponentsOptionGuard(record: RouteRecordRaw): never | void {
-    // Guard for record.components
-    // ex> components: Home -> should be like components: { default: Home, others }
-    if ('components' in record) {
-      for (const name in record.components) {
-        const rawComponent = record.components[name]
-        const { path } = record
-        // property components should be object
-        if (
-          !rawComponent ||
-          (typeof rawComponent !== 'object' &&
-            typeof rawComponent !== 'function')
-        ) {
-          warn(
-            `Components property in record  with path "${path}" is not valid. ` +
-              `Property "components" should be object. ` +
-              `ex> { components: { default: Home } }`
-          )
-          // same with navigation guards
-          throw new Error(`Invalid route record "components" property.`)
-        } else if ('then' in rawComponent) {
-          // warn if user wrote import('/component.vue') instead of () =>
-          // import('./component.vue')
-          warn(
-            `Route record "${name}" property "components" with path "${path}" is a ` +
-              `Promise instead of a function that returns a Promise. ` +
-              `Did you write "import(./MyPage.vue) instead of "` +
-              `"() => import(./MyPage.vue) ? "` +
-              `This will break in production if not fixed.`
-          )
-          // convert () => import(./Mypage.vue) to avoid
-          // warned by navigationGuards
-          record.components[name] = () => rawComponent
-        }
-        // Guard for functional components
-        if (isRouteComponent(rawComponent)) return
-        let componentPromise: Promise<
-          RouteComponent | null | undefined | void
-        > = (rawComponent as Lazy<RouteComponent>)()
-        if (!('catch' in componentPromise)) {
-          warn(
-            `Components property in record  with path "${path}" is not valid. ` +
-              `Property "components" should be object. ` +
-              `ex> { components: { default: Home } }`
-          )
-          // should throw error becuase components are not object
-          throw new Error(`Invalid route record "components" property.`)
-        }
+  function routeComponentsOptionGuard(
+    recordComponents?: Record<string, RawRouteComponent>
+  ): never | void {
+    // Guard for record.components. See Issue #1260
+    // Recieved components: Home
+    // This should be components: { default: Home, others } or component: Home
+    for (const name in recordComponents) {
+      const rawComponent = recordComponents[name]
+      // property components should be object
+      if (
+        !rawComponent ||
+        (typeof rawComponent !== 'object' && typeof rawComponent !== 'function')
+      ) {
+        warn(
+          `Components property in record is not valid. ` +
+            `Property "components" should be component: MyView or ` +
+            `components: { default: MyView }`
+        )
+        // same with navigation guards
+        throw new Error(`Invalid route record "components" property.`)
       }
     }
   }
@@ -132,7 +102,7 @@ export function createRouterMatcher(
     originalRecord?: RouteRecordMatcher
   ) {
     // for route records.components guard
-    if (__DEV__) routeComponentsOptionGuard(record)
+    if (__DEV__) routeComponentsOptionGuard(record.components)
     // used later on to remove by name
     const isRootAdd = !originalRecord
     const mainNormalizedRecord = normalizeRouteRecord(record)
