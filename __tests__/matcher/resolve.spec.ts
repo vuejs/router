@@ -8,11 +8,11 @@ import {
 } from '../../src/types'
 import {
   MatcherLocationNormalizedLoose,
-  components as mockComponents,
+  components as componentsStub,
 } from '../utils'
 import { mockWarn } from 'jest-mock-warn'
 
-const component: RouteComponent = mockComponents.Home
+const component: RouteComponent = componentsStub.Home
 
 // for normalized records
 const components = { default: component }
