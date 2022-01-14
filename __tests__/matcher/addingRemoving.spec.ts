@@ -1,4 +1,4 @@
-import { createRouterMatcher, RouterMatcher } from '../../src/matcher'
+import { createRouterMatcher } from '../../src/matcher'
 import { MatcherLocation } from '../../src/types'
 import { mockWarn } from 'jest-mock-warn'
 
@@ -7,13 +7,8 @@ const currentLocation = { path: '/' } as MatcherLocation
 const component: RouteComponent = null
 
 describe('Matcher: adding and removing records', () => {
-  let matcher: RouterMatcher
-
-  beforeEach(() => {
-    matcher = createRouterMatcher([], {})
-  })
-
   it('can add records', () => {
+    const matcher = createRouterMatcher([], {})
     matcher.addRoute({ path: '/', component, name: 'home' })
     expect(matcher.resolve({ path: '/' }, currentLocation)).toMatchObject({
       name: 'home',
@@ -21,12 +16,14 @@ describe('Matcher: adding and removing records', () => {
   })
 
   it('throws when adding *', () => {
+    const matcher = createRouterMatcher([], {})
     expect(() => {
       matcher.addRoute({ path: '*', component })
     }).toThrowError('Catch all')
   })
 
   it('does not throw when adding * in children', () => {
+    const matcher = createRouterMatcher([], {})
     expect(() => {
       matcher.addRoute({
         path: '/something',
@@ -37,6 +34,7 @@ describe('Matcher: adding and removing records', () => {
   })
 
   it('adds children', () => {
+    const matcher = createRouterMatcher([], {})
     matcher.addRoute({ path: '/parent', component, name: 'home' })
     const parent = matcher.getRecordMatcher('home')
     matcher.addRoute({ path: 'foo', component, name: 'foo' }, parent)
@@ -53,6 +51,7 @@ describe('Matcher: adding and removing records', () => {
 
   describe('addRoute returned function', () => {
     it('remove records', () => {
+      const matcher = createRouterMatcher([], {})
       const remove = matcher.addRoute({ path: '/', component, name: 'home' })
       remove()
       expect(matcher.resolve({ path: '/' }, currentLocation)).toMatchObject({
@@ -81,6 +80,7 @@ describe('Matcher: adding and removing records', () => {
     })
 
     it('remove aliases', () => {
+      const matcher = createRouterMatcher([], {})
       const remove = matcher.addRoute({
         path: '/',
         component,
@@ -110,6 +110,7 @@ describe('Matcher: adding and removing records', () => {
     })
 
     it('remove aliases children', () => {
+      const matcher = createRouterMatcher([], {})
       const remove = matcher.addRoute({
         path: '/',
         component,
@@ -144,6 +145,7 @@ describe('Matcher: adding and removing records', () => {
     })
 
     it('remove children when removing the parent', () => {
+      const matcher = createRouterMatcher([], {})
       const remove = matcher.addRoute({
         path: '/',
         component,
@@ -171,6 +173,7 @@ describe('Matcher: adding and removing records', () => {
   })
 
   it('can remove records by name', () => {
+    const matcher = createRouterMatcher([], {})
     matcher.addRoute({ path: '/', component, name: 'home' })
     matcher.removeRoute('home')
     expect(matcher.getRoutes()).toHaveLength(0)
@@ -181,6 +184,7 @@ describe('Matcher: adding and removing records', () => {
   })
 
   it('removes children when removing the parent', () => {
+    const matcher = createRouterMatcher([], {})
     matcher.addRoute({
       path: '/',
       component,
@@ -204,6 +208,7 @@ describe('Matcher: adding and removing records', () => {
   })
 
   it('removes children by name', () => {
+    const matcher = createRouterMatcher([], {})
     matcher.addRoute({
       path: '/',
       component,
@@ -234,6 +239,7 @@ describe('Matcher: adding and removing records', () => {
   })
 
   it('removes children by name from parent', () => {
+    const matcher = createRouterMatcher([], {})
     matcher.addRoute({
       path: '/',
       component,
@@ -256,6 +262,7 @@ describe('Matcher: adding and removing records', () => {
   })
 
   it('removes alias (and original) by name', () => {
+    const matcher = createRouterMatcher([], {})
     matcher.addRoute({
       path: '/',
       alias: '/start',
@@ -273,6 +280,7 @@ describe('Matcher: adding and removing records', () => {
   })
 
   it('removes all children alias when removing parent by name', () => {
+    const matcher = createRouterMatcher([], {})
     matcher.addRoute({
       path: '/',
       alias: ['/start', '/home'],
@@ -330,6 +338,7 @@ describe('Matcher: adding and removing records', () => {
   })
 
   it('removes children alias (and original) by name', () => {
+    const matcher = createRouterMatcher([], {})
     matcher.addRoute({
       path: '/',
       alias: '/start',
@@ -370,6 +379,7 @@ describe('Matcher: adding and removing records', () => {
   })
 
   it('removes existing record when adding with the same name', () => {
+    const matcher = createRouterMatcher([], {})
     matcher.addRoute({ path: '/', component, name: 'home' })
     matcher.addRoute({ path: '/home', component, name: 'home' })
     expect(matcher.getRoutes()).toHaveLength(1)
