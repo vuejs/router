@@ -6,11 +6,13 @@ import {
   MatcherLocationRaw,
   MatcherLocation,
 } from '../../src/types'
-import { MatcherLocationNormalizedLoose } from '../utils'
+import {
+  MatcherLocationNormalizedLoose,
+  components as mockComponents,
+} from '../utils'
 import { mockWarn } from 'jest-mock-warn'
 
-// @ts-expect-error
-const component: RouteComponent = null
+const component: RouteComponent = mockComponents.Home
 
 // for normalized records
 const components = { default: component }
