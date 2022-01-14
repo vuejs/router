@@ -332,7 +332,7 @@ export function extractComponentsGuards(
  *
  * @param component
  */
-function isRouteComponent(
+export function isRouteComponent(
   component: RawRouteComponent
 ): component is RouteComponent {
   return (
