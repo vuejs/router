@@ -77,7 +77,6 @@ export function createRouterMatcher(
   function routeComponentsOptionGuard(record: RouteRecordRaw): never | void {
     // Guard for record.components
     // ex> components: Home -> should be like components: { default: Home, others }
-    if (!__DEV__) return // guard for development mode
     if ('components' in record) {
       for (const name in record.components) {
         const rawComponent = record.components[name]
@@ -133,7 +132,7 @@ export function createRouterMatcher(
     originalRecord?: RouteRecordMatcher
   ) {
     // for route records.components guard
-    routeComponentsOptionGuard(record)
+    if (__DEV__) routeComponentsOptionGuard(record)
     // used later on to remove by name
     const isRootAdd = !originalRecord
     const mainNormalizedRecord = normalizeRouteRecord(record)
