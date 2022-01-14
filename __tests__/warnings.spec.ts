@@ -281,18 +281,10 @@ describe('warnings', () => {
         })
       } catch ({ message }) {
         expect(message).toBe('Invalid route record "components" property.')
-        expect('should be object.').toHaveBeenWarned()
+        expect(
+          'should be component: MyView or components: { default: MyView }'
+        ).toHaveBeenWarned()
       }
-    })
-
-    it('not appropriate lazyload in components property -> warn', () => {
-      createRouter({
-        history: createMemoryHistory(),
-        routes: [{ path: '/', components: { default: import('./utils') } }],
-      })
-      expect(
-        'Promise instead of a function that returns a Promise.'
-      ).toHaveBeenWarned()
     })
   })
 })
