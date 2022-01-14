@@ -271,4 +271,28 @@ describe('warnings', () => {
       'It should be called exactly one time in each navigation guard'
     ).toHaveBeenWarned()
   })
+
+  describe(`not appropriate values placed in components property"`, () => {
+    it('not appropriate object placed in components propery -> warn + error', () => {
+      try {
+        createRouter({
+          history: createMemoryHistory(),
+          routes: [{ path: '/', components: component, name: 'home' }],
+        })
+      } catch ({ message }) {
+        expect(message).toBe('Invalid route record "components" property.')
+        expect('should be object.').toHaveBeenWarned()
+      }
+    })
+
+    it('not appropriate lazyload in components property -> warn', () => {
+      createRouter({
+        history: createMemoryHistory(),
+        routes: [{ path: '/', components: { default: import('./utils') } }],
+      })
+      expect(
+        'Promise instead of a function that returns a Promise.'
+      ).toHaveBeenWarned()
+    })
+  })
 })

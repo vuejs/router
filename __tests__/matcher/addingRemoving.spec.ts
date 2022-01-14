@@ -402,31 +402,5 @@ describe('Matcher: adding and removing records', () => {
       )
       expect('same param named').not.toHaveBeenWarned()
     })
-
-    describe(`not appropriate values placed in components property"`, () => {
-      it('not appropriate object placed in components propery -> warn + error', () => {
-        try {
-          matcher.addRoute({
-            path: '/',
-            components: components.Home,
-            name: 'home',
-          })
-        } catch ({ message }) {
-          expect(message).toBe('Invalid route record "components" property.')
-          expect('should be object.').toHaveBeenWarned()
-        }
-      })
-
-      it('not appropriate lazyload in components property -> warn', () => {
-        matcher.addRoute({
-          path: '/',
-          components: { default: import('../utils') },
-          name: 'home',
-        })
-        expect(
-          'Promise instead of a function that returns a Promise.'
-        ).toHaveBeenWarned()
-      })
-    })
   })
 })
