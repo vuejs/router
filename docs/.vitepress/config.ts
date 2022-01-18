@@ -33,8 +33,8 @@ const config = defineConfig({
   },
 
   themeConfig: {
-    repo: 'vuejs/vue-router-next',
-    docsRepo: 'vuejs/vue-router-next',
+    repo: 'vuejs/router',
+    docsRepo: 'vuejs/router',
     docsDir: 'docs',
     docsBranch: 'master',
     editLinks: true,
@@ -77,7 +77,7 @@ const config = defineConfig({
           },
           {
             text: 'Changelog',
-            link: 'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
+            link: 'https://github.com/vuejs/router/blob/master/CHANGELOG.md',
           },
         ],
 
@@ -207,7 +207,7 @@ const config = defineConfig({
           },
           {
             text: '更新日志',
-            link: 'https://github.com/vuejs/vue-router-next/blob/master/CHANGELOG.md',
+            link: 'https://github.com/vuejs/router/blob/master/CHANGELOG.md',
           },
         ],
 

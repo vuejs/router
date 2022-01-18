@@ -203,7 +203,7 @@ If you wish to customize this behavior, e.g. take into account the `hash` sectio
 
 ### Navigation guards in mixins are ignored
 
-At the moment navigation guards in mixins are not supported. You can track its support at [vue-router#454](https://github.com/vuejs/vue-router-next/issues/454).
+At the moment navigation guards in mixins are not supported. You can track its support at [vue-router#454](https://github.com/vuejs/router/issues/454).
 
 ### Removal of `router.match` and changes to `router.resolve`
 

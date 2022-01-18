@@ -11,12 +11,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vuejs/vue-router-next.git"
+    "url": "git+https://github.com/vuejs/router.git"
   },
   "bugs": {
-    "url": "https://github.com/vuejs/vue-router-next/issues"
+    "url": "https://github.com/vuejs/router/issues"
   },
-  "homepage": "https://github.com/vuejs/vue-router-next#readme",
+  "homepage": "https://github.com/vuejs/router#readme",
   "files": [
     "dist/*.js",
     "dist/vue-router.d.ts",

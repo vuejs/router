@@ -744,7 +744,7 @@ describe('Router', () => {
       })
     })
 
-    // https://github.com/vuejs/vue-router-next/issues/404
+    // https://github.com/vuejs/router/issues/404
     it('works with named routes', async () => {
       const history = createMemoryHistory()
       const router = createRouter({

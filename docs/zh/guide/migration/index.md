@@ -203,7 +203,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 ### 忽略 mixins 中的导航守卫
 
-目前不支持 mixins 中的导航守卫，你可以在 [vue-router#454](https://github.com/vuejs/vue-router-next/issues/454) 追踪它的支持情况。
+目前不支持 mixins 中的导航守卫，你可以在 [vue-router#454](https://github.com/vuejs/router/issues/454) 追踪它的支持情况。
 
 ### 删除 `router.match` 改为 `router.resolve`
 

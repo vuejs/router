@@ -209,7 +209,7 @@ function useHistoryStateNavigation(base: string) {
      * if a base tag is provided and we are on a normal domain, we have to
      * respect the provided `base` attribute because pushState() will use it and
      * potentially erase anything before the `#` like at
-     * https://github.com/vuejs/vue-router-next/issues/685 where a base of
+     * https://github.com/vuejs/router/issues/685 where a base of
      * `/folder/#` but a base of `/` would erase the `/folder/` section. If
      * there is no host, the `<base>` tag makes no sense and if there isn't a
      * base tag we can just use everything after the `#`.
@@ -263,7 +263,7 @@ function useHistoryStateNavigation(base: string) {
       {},
       // use current history state to gracefully handle a wrong call to
       // history.replaceState
-      // https://github.com/vuejs/vue-router-next/issues/366
+      // https://github.com/vuejs/router/issues/366
       historyState.value,
       history.state as Partial<StateEntry> | null,
       {

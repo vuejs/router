@@ -541,7 +541,7 @@ export function createRouter(options: RouterOptions): Router {
           // nested objects, so we keep the query as is, meaning it can contain
           // numbers at `$route.query`, but at the point, the user will have to
           // use their own type anyway.
-          // https://github.com/vuejs/vue-router-next/issues/328#issuecomment-649481567
+          // https://github.com/vuejs/router/issues/328#issuecomment-649481567
           stringifyQuery === originalStringifyQuery
             ? normalizeQuery(rawLocation.query)
             : ((rawLocation.query || {}) as LocationQuery),
