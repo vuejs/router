@@ -36,7 +36,7 @@ const config = defineConfig({
     repo: 'vuejs/router',
     docsRepo: 'vuejs/router',
     docsDir: 'docs',
-    docsBranch: 'master',
+    docsBranch: 'main',
     editLinks: true,
     editLinkText: 'Suggest changes to this page',
 
@@ -77,7 +77,7 @@ const config = defineConfig({
           },
           {
             text: 'Changelog',
-            link: 'https://github.com/vuejs/router/blob/master/CHANGELOG.md',
+            link: 'https://github.com/vuejs/router/blob/main/CHANGELOG.md',
           },
         ],
 
@@ -207,7 +207,7 @@ const config = defineConfig({
           },
           {
             text: '更新日志',
-            link: 'https://github.com/vuejs/router/blob/master/CHANGELOG.md',
+            link: 'https://github.com/vuejs/router/blob/main/CHANGELOG.md',
           },
         ],
 
