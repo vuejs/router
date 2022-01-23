@@ -59,14 +59,13 @@ webpack will group any async module with the same chunk name into the same async
 
 ### With Vite
 
-In Vite you can define the chunks under the [`rollupOptions`](https://vitejs.dev/config/#build-rollupoptions):
+In Vite you can define the chunks under the [`rollupOptions`](https://vitejs.dev/config/#build-rollupoptions) using [`output.manualChunks`](https://rollupjs.org/guide/en/#outputmanualchunks):
 
 ```js
 // vite.config.js
 export default defineConfig({
   build: {
     rollupOptions: {
-      // https://rollupjs.org/guide/en/#outputmanualchunks
       output: {
         manualChunks: {
           'group-user': [
