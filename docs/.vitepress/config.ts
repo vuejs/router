@@ -179,7 +179,7 @@ const config = defineConfig({
                 link: '/guide/advanced/extending-router-link.html',
               },
               {
-                text: 'Navigation Failures',
+                text: 'Navigation Results',
                 link: '/guide/advanced/navigation-failures.html',
               },
               {
