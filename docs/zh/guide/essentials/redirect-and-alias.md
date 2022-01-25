@@ -46,10 +46,13 @@ const routes = [
 ```js
 const routes = [
   {
+    // will always redirect /users/123/posts to /users/123/profile
     path: '/users/:id/posts',
     redirect: to => {
-      // 方法接收目标路由作为参数
-      // return 重定向的字符串路径/路径对象
+      // the function receives the target route as the argument
+      // a relative location doesn't start with `/`
+      // or { path: 'profile'}
+      return 'profile'
     },
   },
 ]
