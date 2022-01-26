@@ -273,7 +273,7 @@ describe('warnings', () => {
   })
 
   describe(`not appropriate values placed in components property"`, () => {
-    it('not appropriate object placed in components propery -> warn + error', () => {
+    it('warns if components option is a single component', () => {
       try {
         createRouter({
           history: createMemoryHistory(),
