@@ -273,16 +273,12 @@ describe('warnings', () => {
   })
 
   it('warns if components option is a single component', () => {
-    try {
-      createRouter({
-        history: createMemoryHistory(),
-        routes: [{ path: '/', components: component, name: 'home' }],
-      })
-    } catch ({ message }) {
-      expect(message).toBe('Invalid route record "components" property.')
-      expect(
-        'should be component: MyView or components: { default: MyView }'
-      ).toHaveBeenWarned()
-    }
+    createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/', components: component, name: 'home' }],
+    })
+    expect(
+      'should be component: MyView or components: { default: MyView }'
+    ).toHaveBeenWarned()
   })
 })

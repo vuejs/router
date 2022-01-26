@@ -73,8 +73,8 @@ export function createRouterMatcher(
   }
 
   function routeComponentsOptionGuard(
-    recordComponents?: Record<string, RawRouteComponent>
-  ): never | void {
+    recordComponents: Record<string, RawRouteComponent>
+  ): Record<string, RawRouteComponent> {
     // Guard for record.components. See Issue #1260
     // Recieved components: Home
     // This should be components: { default: Home, others } or component: Home
@@ -90,10 +90,10 @@ export function createRouterMatcher(
             `Property "components" should be component: MyView or ` +
             `components: { default: MyView }`
         )
-        // same with navigation guards
-        throw new Error(`Invalid route record "components" property.`)
+        return { default: recordComponents }
       }
     }
+    return recordComponents
   }
 
   function addRoute(
@@ -102,7 +102,7 @@ export function createRouterMatcher(
     originalRecord?: RouteRecordMatcher
   ) {
     // for route records.components guard
-    if (__DEV__) {
+    if (__DEV__ && record.components) {
       record.components = routeComponentsOptionGuard(record.components)
     }
     // used later on to remove by name
