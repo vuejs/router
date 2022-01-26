@@ -272,19 +272,17 @@ describe('warnings', () => {
     ).toHaveBeenWarned()
   })
 
-  describe(`not appropriate values placed in components property"`, () => {
-    it('not appropriate object placed in components propery -> warn + error', () => {
-      try {
-        createRouter({
-          history: createMemoryHistory(),
-          routes: [{ path: '/', components: component, name: 'home' }],
-        })
-      } catch ({ message }) {
-        expect(message).toBe('Invalid route record "components" property.')
-        expect(
-          'should be component: MyView or components: { default: MyView }'
-        ).toHaveBeenWarned()
-      }
-    })
+  it('not appropriate object placed in components propery -> warn + error', () => {
+    try {
+      createRouter({
+        history: createMemoryHistory(),
+        routes: [{ path: '/', components: component, name: 'home' }],
+      })
+    } catch ({ message }) {
+      expect(message).toBe('Invalid route record "components" property.')
+      expect(
+        'should be component: MyView or components: { default: MyView }'
+      ).toHaveBeenWarned()
+    }
   })
 })
