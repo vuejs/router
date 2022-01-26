@@ -102,7 +102,9 @@ export function createRouterMatcher(
     originalRecord?: RouteRecordMatcher
   ) {
     // for route records.components guard
-    if (__DEV__) routeComponentsOptionGuard(record.components)
+    if (__DEV__) {
+      record.components = routeComponentsOptionGuard(record.components)
+    }
     // used later on to remove by name
     const isRootAdd = !originalRecord
     const mainNormalizedRecord = normalizeRouteRecord(record)
