@@ -7,6 +7,7 @@ import {
   _RouteRecordProps,
   RouteRecordRedirect,
   RawRouteComponent,
+  RouteComponent,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
@@ -78,20 +79,13 @@ export function createRouterMatcher(
     // Guard for record.components. See Issue #1260
     // Recieved components: Home
     // This should be components: { default: Home, others } or component: Home
-    for (const name in recordComponents) {
-      const rawComponent = recordComponents[name]
-      // property components should be object
-      if (
-        !rawComponent ||
-        (typeof rawComponent !== 'object' && typeof rawComponent !== 'function')
-      ) {
-        warn(
-          `Components property in record is not valid. ` +
-            `Property "components" should be component: MyView or ` +
-            `components: { default: MyView }`
-        )
-        return { default: recordComponents }
-      }
+    if (isRouteComponent(recordComponents)) {
+      warn(
+        `Components property in record is not valid. ` +
+          `Property "components" should be component: MyView or ` +
+          `components: { default: MyView }`
+      )
+      return { default: recordComponents }
     }
     return recordComponents
   }
@@ -489,6 +483,22 @@ function checkMissingParamsInAbsolutePath(
         `Absolute path "${record.record.path}" should have the exact same param named "${key.name}" as its parent "${parent.record.path}".`
       )
   }
+}
+
+/**
+ * Allows differentiating lazy components from functional components and vue-class-component
+ *
+ * @param component
+ */
+function isRouteComponent(
+  component: RawRouteComponent
+): component is RouteComponent {
+  return (
+    Object.keys(component).length === 0 ||
+    'displayName' in component ||
+    'props' in component ||
+    '__vccOpts' in component
+  )
 }
 
 export type { PathParserOptions, _PathParserOptions }
