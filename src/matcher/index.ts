@@ -76,16 +76,28 @@ export function createRouterMatcher(
   function routeComponentsOptionGuard(
     recordComponents: Record<string, RawRouteComponent>
   ): Record<string, RawRouteComponent> {
-    // Guard for record.components. See Issue #1260
-    // Recieved components: Home
-    // This should be components: { default: Home, others } or component: Home
-    if (isRouteComponent(recordComponents)) {
+    const fixMissMatchedComponentsOption = () => {
+      console.log(recordComponents)
       warn(
         `Components property in record is not valid. ` +
           `Property "components" should be component: MyView or ` +
           `components: { default: MyView }`
       )
       return { default: recordComponents }
+    }
+    // Recieved components: defineComponent({})
+    // This should be components: { default: {} } or component: Home
+    if (Object.keys(recordComponents).length === 0) {
+      return fixMissMatchedComponentsOption()
+    }
+    for (const name in recordComponents) {
+      const rawComponent = recordComponents[name]
+      if (!isRawRouteComponent(rawComponent)) {
+        console.log('HELLO', rawComponent)
+        // Recieved components: Home
+        // This should be components: { default: Home, others } or component: Home
+        return fixMissMatchedComponentsOption()
+      }
     }
     return recordComponents
   }
@@ -486,15 +498,13 @@ function checkMissingParamsInAbsolutePath(
 }
 
 /**
- * Allows differentiating lazy components from functional components and vue-class-component
  *
  * @param component
  */
-function isRouteComponent(
-  component: RawRouteComponent
-): component is RouteComponent {
+function isRawRouteComponent(component: any): component is RouteComponent {
   return (
-    Object.keys(component).length === 0 ||
+    typeof component === 'object' ||
+    typeof component === 'function' ||
     'displayName' in component ||
     'props' in component ||
     '__vccOpts' in component
