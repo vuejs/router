@@ -499,7 +499,9 @@ function checkMissingParamsInAbsolutePath(
  *
  * @param component
  */
-function isRawRouteComponent(component: any): component is RouteComponent {
+function isRawRouteComponent(
+  component: RawRouteComponent
+): component is RouteComponent {
   return (
     typeof component === 'object' ||
     typeof component === 'function' ||
