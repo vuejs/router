@@ -77,7 +77,6 @@ export function createRouterMatcher(
     recordComponents: Record<string, RawRouteComponent>
   ): Record<string, RawRouteComponent> {
     const fixMissMatchedComponentsOption = () => {
-      console.log(recordComponents)
       warn(
         `Components property in record is not valid. ` +
           `Property "components" should be component: MyView or ` +
@@ -92,10 +91,9 @@ export function createRouterMatcher(
     }
     for (const name in recordComponents) {
       const rawComponent = recordComponents[name]
+      // Recieved components: Home
+      // This should be components: { default: Home, others } or component: Home
       if (!isRawRouteComponent(rawComponent)) {
-        console.log('HELLO', rawComponent)
-        // Recieved components: Home
-        // This should be components: { default: Home, others } or component: Home
         return fixMissMatchedComponentsOption()
       }
     }
