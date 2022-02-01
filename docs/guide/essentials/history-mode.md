@@ -39,7 +39,7 @@ const router = createRouter({
 })
 ```
 
-When using history mode, the URL will look "normal," e.g. `https://example.com/user/id`. Beautiful!
+When using `createWebHistory()`, the URL will look "normal," e.g. `https://example.com/user/id`. Beautiful!
 
 Here comes a problem, though: Since our app is a single page client side app, without a proper server configuration, the users will get a 404 error if they access `https://example.com/user/id` directly in their browser. Now that's ugly.
 
