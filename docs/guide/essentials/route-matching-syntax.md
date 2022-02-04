@@ -76,6 +76,7 @@ const routes = [
 ```
 
 ## Sensitive and strict route options 
+
 As mentioned in this section [Removal of PathToRegexOptions](../migration/index#removal-of-pathtoregexpoptions). `pathToRegexpOptions` and `caseSensitive` have been replaced with `sensitive` and `strict` options. Beside passing them per route, they can now also be directly passed when creating the router with `createRouter()` like this. 
 ```js
 const router = createRouter({
