@@ -91,7 +91,6 @@ const router = createRouter({
 });
 ```
 
-
 ## Optional parameters
 
 You can also mark a parameter as optional by using the `?` modifier (0 or 1):
