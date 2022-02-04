@@ -80,15 +80,17 @@ const routes = [
 As mentioned in [the migration guide](../migration/index#removal-of-pathtoregexpoptions). `pathToRegexpOptions` and `caseSensitive` have been replaced with `sensitive` and `strict` options. Beside passing them per route, they can now also be directly passed when creating the router with `createRouter()`:
 ```js
 const router = createRouter({
-  history: createWebHistory("/"),
-  [
-    // will match /users and /users/posva
-    { path: '/users/:userId', sensitive: true },
-    // will match /users and /users/42
-    { path: '/users/:userId(\\d+)?' },
+  history: createWebHistory(),
+  routes: [
+    // will match /users/posva but not:
+    // - /users/posva/ because of strict: true
+    // - /Users/posva because of sensitive: true
+    { path: '/users/:id', sensitive: true },
+    // will match /users, /Users, and /users/42 but not /users/ or /users/42/
+    { path: '/users/:id?' },
   ]
   strict: true,
-});
+})
 ```
 
 ## Optional parameters
