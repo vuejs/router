@@ -79,7 +79,7 @@ const config = defineConfig({
           },
           {
             text: 'v4.x',
-            items: [{ text: 'v3.x', link: 'https://router.vuejs.org' }],
+            items: [{ text: 'v3.x', link: 'https://v3.router.vuejs.org' }],
           },
           {
             text: 'Changelog',
@@ -209,7 +209,7 @@ const config = defineConfig({
           },
           {
             text: 'v4.x',
-            items: [{ text: 'v3.x', link: 'https://router.vuejs.org/zh' }],
+            items: [{ text: 'v3.x', link: 'https://v3.router.vuejs.org/zh' }],
           },
           {
             text: '更新日志',
