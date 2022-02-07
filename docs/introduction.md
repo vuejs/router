@@ -1,6 +1,6 @@
 # Introduction
 
-Vue Router is the official router for [Vue.js](http://v3.vuejs.org). It deeply integrates with Vue.js core to make building Single Page Applications with Vue.js a breeze. Features include:
+Vue Router is the official router for [Vue.js](https://vuejs.org). It deeply integrates with Vue.js core to make building Single Page Applications with Vue.js a breeze. Features include:
 
 - Nested routes mapping
 - Dynamic Routing
