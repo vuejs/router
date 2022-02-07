@@ -66,7 +66,7 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
 
 ---
 
-Get started with the [documentation](https://next.router.vuejs.org).
+Get started with the [documentation](https://router.vuejs.org).
 
 ## Quickstart
 
@@ -79,7 +79,7 @@ Get started with the [documentation](https://next.router.vuejs.org).
 
 ## Changes from Vue Router 3
 
-Please consult the [Migration Guide](https://next.router.vuejs.org/guide/migration/).
+Please consult the [Migration Guide](https://router.vuejs.org/guide/migration/).
 
 ## Contributing
 
