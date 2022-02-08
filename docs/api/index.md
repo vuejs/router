@@ -848,6 +848,19 @@ Route record that can be provided by the user when adding routes via the [`route
 
 - **See Also**: [Passing props to Route Components](../guide/essentials/passing-props.md)
 
+### sensitive
+- **Type**: `PathParserOptions` (Optional) 
+- **Details**: 
+
+  Enables a more restrictive route matching. Makes the route case sensitive. `sensitive` can be passed on route level and now also when creating the router with `createRouter()` on the top level.
+
+### strict
+- **Type**: `PathParserOptions` (Optional) 
+- **Details**: 
+
+  Enables a more restrictive route matching. Disallows the check of an optional `/` at the end of the path. `strict` can be passed on route level and now also when creating the router with `createRouter()` on the top level.
+
+
 ### meta
 
 - **Type**: [`RouteMeta`](#routemeta) (Optional)
