@@ -50,6 +50,7 @@ import {
   reactive,
   unref,
   computed,
+  ShallowRef,
 } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import {
@@ -63,6 +64,7 @@ import { warn } from './warning'
 import { RouterLink } from './RouterLink'
 import { RouterView } from './RouterView'
 import {
+  pendingViewKey,
   routeLocationKey,
   routerKey,
   routerViewLocationKey,
@@ -191,7 +193,12 @@ export interface Router {
   /**
    * Current {@link RouteLocationNormalized}
    */
-  readonly currentRoute: Ref<RouteLocationNormalizedLoaded>
+  readonly currentRoute: ShallowRef<RouteLocationNormalizedLoaded>
+
+  readonly pendingNavigation: ShallowRef<
+    null | undefined | Promise<NavigationFailure | void | undefined>
+  >
+
   /**
    * Original options object passed to create the Router
    */
@@ -370,6 +377,24 @@ export function createRouter(options: RouterOptions): Router {
     START_LOCATION_NORMALIZED
   )
   let pendingLocation: RouteLocation = START_LOCATION_NORMALIZED
+  const pendingViews = new Set<any>()
+  const pendingNavigation = shallowRef<
+    undefined | null | ReturnType<Router['push']>
+  >()
+  let valueToResolveOrError: any
+  let resolvePendingNavigation: (resolvedValue: any) => void = noop
+  let rejectPendingNavigation: (error: any) => void = noop
+
+  function addPendingView(view: any) {
+    pendingViews.add(view)
+
+    return () => {
+      pendingViews.delete(view)
+      if (!pendingViews.size) {
+        resolvePendingNavigation(valueToResolveOrError)
+      }
+    }
+  }
 
   // leave the scrollRestoration if no scrollBehavior is provided
   if (isBrowser && options.scrollBehavior && 'scrollRestoration' in history) {
@@ -679,70 +704,90 @@ export function createRouter(options: RouterOptions): Router {
       )
     }
 
-    return (failure ? Promise.resolve(failure) : navigate(toLocation, from))
-      .catch((error: NavigationFailure | NavigationRedirectError) =>
-        isNavigationFailure(error)
-          ? error
-          : // reject any unknown error
-            triggerError(error, toLocation, from)
-      )
-      .then((failure: NavigationFailure | NavigationRedirectError | void) => {
-        if (failure) {
-          if (
-            isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
-          ) {
-            if (
-              __DEV__ &&
-              // we are redirecting to the same location we were already at
-              isSameRouteLocation(
-                stringifyQuery,
-                resolve(failure.to),
-                toLocation
-              ) &&
-              // and we have done it a couple of times
-              redirectedFrom &&
-              // @ts-expect-error: added only in dev
-              (redirectedFrom._count = redirectedFrom._count
-                ? // @ts-expect-error
-                  redirectedFrom._count + 1
-                : 1) > 10
-            ) {
-              warn(
-                `Detected an infinite redirection in a navigation guard when going from "${from.fullPath}" to "${toLocation.fullPath}". Aborting to avoid a Stack Overflow. This will break in production if not fixed.`
-              )
-              return Promise.reject(
-                new Error('Infinite redirect in navigation guard')
-              )
-            }
+    pendingViews.clear()
 
-            return pushWithRedirect(
-              // keep options
-              assign(locationAsObject(failure.to), {
-                state: data,
-                force,
-                replace,
-              }),
-              // preserve the original redirectedFrom if any
-              redirectedFrom || toLocation
-            )
-          }
-        } else {
-          // if we fail we don't finalize the navigation
-          failure = finalizeNavigation(
-            toLocation as RouteLocationNormalizedLoaded,
-            from,
-            true,
-            replace,
-            data
+    return (pendingNavigation.value = new Promise(
+      (promiseResolve, promiseReject) => {
+        rejectPendingNavigation = promiseReject
+
+        return (failure ? Promise.resolve(failure) : navigate(toLocation, from))
+          .catch((error: NavigationFailure | NavigationRedirectError) =>
+            isNavigationFailure(error)
+              ? error
+              : // reject any unknown error
+                triggerError(error, toLocation, from)
           )
-        }
-        triggerAfterEach(
-          toLocation as RouteLocationNormalizedLoaded,
-          from,
-          failure
-        )
-        return failure
-      })
+          .then(
+            (failure: NavigationFailure | NavigationRedirectError | void) => {
+              if (failure) {
+                if (
+                  isNavigationFailure(
+                    failure,
+                    ErrorTypes.NAVIGATION_GUARD_REDIRECT
+                  )
+                ) {
+                  if (
+                    __DEV__ &&
+                    // we are redirecting to the same location we were already at
+                    isSameRouteLocation(
+                      stringifyQuery,
+                      resolve(failure.to),
+                      toLocation
+                    ) &&
+                    // and we have done it a couple of times
+                    redirectedFrom &&
+                    // @ts-expect-error: added only in dev
+                    (redirectedFrom._count = redirectedFrom._count
+                      ? // @ts-expect-error
+                        redirectedFrom._count + 1
+                      : 1) > 10
+                  ) {
+                    warn(
+                      `Detected an infinite redirection in a navigation guard when going from "${from.fullPath}" to "${toLocation.fullPath}". Aborting to avoid a Stack Overflow. This will break in production if not fixed.`
+                    )
+                    return Promise.reject(
+                      new Error('Infinite redirect in navigation guard')
+                    )
+                  }
+
+                  // FIXME: find a way to keep the return pattern of promises to handle reusing the promise maybe by
+                  // passing the resolve, reject as parameters to pushWithRedirect
+
+                  return pushWithRedirect(
+                    // keep options
+                    assign(locationAsObject(failure.to), {
+                      state: data,
+                      force,
+                      replace,
+                    }),
+                    // preserve the original redirectedFrom if any
+                    redirectedFrom || toLocation
+                  )
+                }
+              } else {
+                // if we fail we don't finalize the navigation
+                pendingNavigation.value = null
+                failure = finalizeNavigation(
+                  toLocation as RouteLocationNormalizedLoaded,
+                  from,
+                  true,
+                  replace,
+                  data
+                )
+              }
+              resolvePendingNavigation = () => {
+                triggerAfterEach(
+                  toLocation as RouteLocationNormalizedLoaded,
+                  from,
+                  failure as any
+                )
+                promiseResolve(failure as any)
+              }
+              return failure
+            }
+          )
+      }
+    ))
   }
 
   /**
@@ -888,6 +933,11 @@ export function createRouter(options: RouterOptions): Router {
     // navigation is confirmed, call afterGuards
     // TODO: wrap with error handlers
     for (const guard of afterGuards.list()) guard(to, from, failure)
+
+    // TODO: moving this here is technically a breaking change maybe as it would mean the afterEach trigger before any
+    // afterEach but I think it's rather a fix.
+    // FIXME: this breaks a lot of tests
+    markAsReady()
   }
 
   /**
@@ -931,8 +981,6 @@ export function createRouter(options: RouterOptions): Router {
     // accept current navigation
     currentRoute.value = toLocation
     handleScroll(toLocation, from, isPush, isFirstNavigation)
-
-    markAsReady()
   }
 
   let removeHistoryListener: () => void | undefined
@@ -1140,6 +1188,7 @@ export function createRouter(options: RouterOptions): Router {
 
   const router: Router = {
     currentRoute,
+    pendingNavigation,
 
     addRoute,
     removeRoute,
@@ -1202,6 +1251,7 @@ export function createRouter(options: RouterOptions): Router {
       app.provide(routerKey, router)
       app.provide(routeLocationKey, reactive(reactiveRoute))
       app.provide(routerViewLocationKey, currentRoute)
+      app.provide(pendingViewKey, addPendingView)
 
       const unmountApp = app.unmount
       installedApps.add(app)

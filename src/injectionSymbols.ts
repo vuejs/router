@@ -63,3 +63,7 @@ export const routeLocationKey = /*#__PURE__*/ PolySymbol(
 export const routerViewLocationKey = /*#__PURE__*/ PolySymbol(
   __DEV__ ? 'router view location' : 'rvl'
 ) as InjectionKey<Ref<RouteLocationNormalizedLoaded>>
+
+export const pendingViewKey = /*#__PURE__*/ PolySymbol(
+  __DEV__ ? 'pending view' : 'pv'
+) as InjectionKey<(view: any) => () => void>

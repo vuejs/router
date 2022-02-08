@@ -97,7 +97,7 @@ const PassThroughViewSuspense: FunctionalComponent = (_, { emit }) =>
 PassThroughViewSuspense.displayName = 'PTVS'
 PassThroughViewSuspense.emits = ['pending', 'resolve']
 
-const webHistory = createWebHistory('/' + __dirname)
+const webHistory = createWebHistory('/suspense')
 const router = createRouter({
   history: webHistory,
   routes: [

@@ -71,6 +71,8 @@ export { RouterLink, useLink } from './RouterLink'
 export type { RouterLinkProps, UseLinkOptions } from './RouterLink'
 export { RouterView } from './RouterView'
 export type { RouterViewProps } from './RouterView'
+export { SusRouterView } from './SusRouterView'
+export type { SusRouterViewProps } from './SusRouterView'
 
 export * from './useApi'
 

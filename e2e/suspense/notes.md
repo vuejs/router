@@ -122,27 +122,26 @@ This is an idea of integrating better with Suspense and having one single naviga
 - Become part of navigation: the URL should not change until all `<Suspense>` resolve
 - Allows the user to display a `fallback` slot and use the `timeout` prop to control when it appears. Note there could be a new RouterView Component that accept those slots and forward them to `Suspense`.
 - Abort the navigation when async setup errors and trigger `router.onError()` but still display the current route
+- It shouldn't change the existing behavior when unused
+
+- **Should it also trigger when leaving?** I think it makes more sense for it to trigger only on entering or updating (cf the example below)
 
 ### API usage
 
-```js
+```vue
+<script setup>
 import { onBeforeNavigation } from 'vue-router'
 import { getUser } from './api'
 
 /**
  * This is the component for /users/:id, it fetches the user information and display it.
  */
-export default {
-  async setup() {
-    const user = ref()
+const user = ref()
 
-    await onBeforeNavigation(async (to, from) => {
-      user.value = await getUser(to.params.id)
-    })
-
-    return { user }
-  },
-}
+await onBeforeNavigation(async (to, from) => {
+  user.value = await getUser(to.params.id)
+})
+</script>
 ```
 
 Let's consider these routes:
@@ -153,14 +152,14 @@ Let's consider these routes:
 This would be the expected behavior:
 
 - Going from `/` to `/users/1` (Entering):
-  - Calls `getUser(1)`
-  - Keeps Home (`/`) visible until resolves or fails
-  - resolves: switch to `/users/1` and display the view with the content ready
+  - Calls `getUser(1)` thanks to `onBeforeNavigation()`
+  - Keeps Home (`/`) visible until it resolves or fails
+  - resolves: finish navigation (triggers `afterEach()`), switch to `/users/1`, and display the view with the content ready
   - fails: triggers `router.onError()`, stays at Home
 - Going from `/users/1` to `/users/2` (Updating):
-  - Calls `getUser(2)`
+  - Also calls `getUser(2)` thanks to `onBeforeNavigation()`
   - Keeps User 1 (`/users/1`) visible until resolves or fails
-  - resolves: switch to `/users/2` and display the view with the content ready
+  - resolves: (same as above) switch to `/users/2` and display the view with the content ready
   - fails: triggers `router.onError()`, stays at User 1
 - Going from `/users/2` to `/` (Leaving):
   - Directly goes to Home without calling `getUser()`
@@ -178,6 +177,12 @@ This would be the expected behavior:
 ## Implementation
 
 The implementation for this hook requires displaying multiple router views at the same time: the pending view we are navigating to and the current
+
+- To avoid
+- We need to wrap every component with Suspense (even nested ones)
+- Multiple Suspenses can resolve but we need to wait for all of them to resolve
+  - `onBeforeNavigation()` could increment a counter
+  - Without it we can only support it in view components: we count `to.matched.length`
 
 ## Other notes
 
