@@ -92,6 +92,18 @@ const router = createRouter({
   strict: true,
 })
 ```
+And if they are applied directly on a specific route:
+```js
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    // will match /users/posva/ but not /Users/posva
+    { path: '/users/:id', sensitive: true },
+    // will match /users, /Users, and /users/42 but not /users/42/
+    { path: '/users/:id?', strict: true },
+  ]
+})
+```
 
 ## Optional parameters
 
