@@ -848,6 +848,18 @@ Route record that can be provided by the user when adding routes via the [`route
 
 - **See Also**: [Passing props to Route Components](../guide/essentials/passing-props.md)
 
+### sensitive
+- **Type**: `boolean` (Optional) 
+- **Details**: 
+
+  Makes the route matching case sensitive, defaults to `false`. Note this can also be set at a route level.
+
+### strict
+- **Type**: `boolean` (Optional) 
+- **Details**: 
+
+  Strictly checks the presence or absence of a trailing slash (`/`) at the end of the path. Defaults to `false` meaning that by default a route `/users` matches both `/users` and `/users/`. Note this can also be set at a route level.
+
 ### meta
 
 - **Type**: [`RouteMeta`](#routemeta) (Optional)
