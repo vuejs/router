@@ -213,7 +213,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 ### 删除 `router.getMatchedComponents()`
 
-`router.getMatchedComponents` 方法现在被删除，因为匹配的组件可以从 `router.currentRoute.value.mixed` 中获取：
+`router.getMatchedComponents` 方法现在被删除，因为匹配的组件可以从 `router.currentRoute.value.matched` 中获取：
 
 ```js
 router.currentRoute.value.matched.flatMap(record =>
