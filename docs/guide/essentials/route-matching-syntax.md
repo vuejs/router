@@ -77,7 +77,8 @@ const routes = [
 
 ## Sensitive and strict route options 
 
-As mentioned in [the migration guide](../migration/index#removal-of-pathtoregexpoptions). `pathToRegexpOptions` and `caseSensitive` have been replaced with `sensitive` and `strict` options. Beside passing them per route, they can now also be directly passed when creating the router with `createRouter()`:
+By default, all routes are case-insensitive and match routes with or without a trailing slash. e.g. a route `/users` matches `/users`, `/users/`, and even `/Users/`. This behavior can be configured with the `strict` and `sensitive` options, they can be set both at a router and route level:
+
 ```js
 const router = createRouter({
   history: createWebHistory(),
@@ -89,19 +90,7 @@ const router = createRouter({
     // will match /users, /Users, and /users/42 but not /users/ or /users/42/
     { path: '/users/:id?' },
   ]
-  strict: true,
-})
-```
-And if they are applied directly on a specific route:
-```js
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [
-    // will match /users/posva/ but not /Users/posva
-    { path: '/users/:id', sensitive: true },
-    // will match /users, /Users, and /users/42 but not /users/42/
-    { path: '/users/:id?', strict: true },
-  ]
+  strict: true, // applies to all routes
 })
 ```
 
