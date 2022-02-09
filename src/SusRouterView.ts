@@ -51,9 +51,10 @@ export const SusRouterViewImpl = /*#__PURE__*/ defineComponent({
       type: String as PropType<string>,
       default: 'default',
     },
+    timeout: Number,
     route: Object as PropType<RouteLocationNormalizedLoaded>,
   },
-  emits: ['resolve', 'pending'],
+  emits: ['resolve', 'pending', 'fallback'],
 
   setup(props, { attrs, slots, emit }) {
     __DEV__ && warnDeprecatedUsage()
@@ -152,6 +153,7 @@ export const SusRouterViewImpl = /*#__PURE__*/ defineComponent({
       const component = h(
         Suspense,
         {
+          timeout: props.timeout,
           onPending: () => {
             unregisterPendingView = addPendingView(Symbol())
             emit('pending', String(ViewComponent.name || 'unnamed'))
@@ -160,7 +162,9 @@ export const SusRouterViewImpl = /*#__PURE__*/ defineComponent({
             unregisterPendingView && unregisterPendingView()
             emit('resolve', String(ViewComponent.name || 'unnamed'))
           },
-          // onResolve,
+          onFallback: () => {
+            emit('fallback', String(ViewComponent.name || 'unnamed'))
+          },
         },
         {
           fallback: slots.fallback,

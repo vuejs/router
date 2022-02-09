@@ -704,90 +704,93 @@ export function createRouter(options: RouterOptions): Router {
       )
     }
 
+    // reset any pending views
     pendingViews.clear()
 
-    return (pendingNavigation.value = new Promise(
-      (promiseResolve, promiseReject) => {
-        rejectPendingNavigation = promiseReject
-
-        return (failure ? Promise.resolve(failure) : navigate(toLocation, from))
-          .catch((error: NavigationFailure | NavigationRedirectError) =>
-            isNavigationFailure(error)
-              ? error
-              : // reject any unknown error
-                triggerError(error, toLocation, from)
-          )
-          .then(
-            (failure: NavigationFailure | NavigationRedirectError | void) => {
-              if (failure) {
-                if (
-                  isNavigationFailure(
-                    failure,
-                    ErrorTypes.NAVIGATION_GUARD_REDIRECT
-                  )
-                ) {
-                  if (
-                    __DEV__ &&
-                    // we are redirecting to the same location we were already at
-                    isSameRouteLocation(
-                      stringifyQuery,
-                      resolve(failure.to),
-                      toLocation
-                    ) &&
-                    // and we have done it a couple of times
-                    redirectedFrom &&
-                    // @ts-expect-error: added only in dev
-                    (redirectedFrom._count = redirectedFrom._count
-                      ? // @ts-expect-error
-                        redirectedFrom._count + 1
-                      : 1) > 10
-                  ) {
-                    warn(
-                      `Detected an infinite redirection in a navigation guard when going from "${from.fullPath}" to "${toLocation.fullPath}". Aborting to avoid a Stack Overflow. This will break in production if not fixed.`
-                    )
-                    return Promise.reject(
-                      new Error('Infinite redirect in navigation guard')
-                    )
-                  }
-
-                  // FIXME: find a way to keep the return pattern of promises to handle reusing the promise maybe by
-                  // passing the resolve, reject as parameters to pushWithRedirect
-
-                  return pushWithRedirect(
-                    // keep options
-                    assign(locationAsObject(failure.to), {
-                      state: data,
-                      force,
-                      replace,
-                    }),
-                    // preserve the original redirectedFrom if any
-                    redirectedFrom || toLocation
-                  )
-                }
-              } else {
-                // if we fail we don't finalize the navigation
-                pendingNavigation.value = null
-                failure = finalizeNavigation(
-                  toLocation as RouteLocationNormalizedLoaded,
-                  from,
-                  true,
-                  replace,
-                  data
-                )
-              }
-              resolvePendingNavigation = () => {
-                triggerAfterEach(
-                  toLocation as RouteLocationNormalizedLoaded,
-                  from,
-                  failure as any
-                )
-                promiseResolve(failure as any)
-              }
-              return failure
+    return (pendingNavigation.value = (
+      failure ? Promise.resolve(failure) : navigate(toLocation, from)
+    )
+      .catch(
+        (
+          errorOrNavigationFailure: NavigationFailure | NavigationRedirectError
+        ) =>
+          isNavigationFailure(errorOrNavigationFailure)
+            ? errorOrNavigationFailure
+            : // triggerError returns a rejected promise to avoid the next then()
+              triggerError(errorOrNavigationFailure, toLocation, from)
+      )
+      .then((failure: NavigationFailure | NavigationRedirectError | void) => {
+        if (failure) {
+          if (
+            isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
+          ) {
+            if (
+              __DEV__ &&
+              // we are redirecting to the same location we were already at
+              isSameRouteLocation(
+                stringifyQuery,
+                resolve(failure.to),
+                toLocation
+              ) &&
+              // and we have done it a couple of times
+              redirectedFrom &&
+              // @ts-expect-error: added only in dev
+              (redirectedFrom._count = redirectedFrom._count
+                ? // @ts-expect-error
+                  redirectedFrom._count + 1
+                : 1) > 10
+            ) {
+              warn(
+                `Detected an infinite redirection in a navigation guard when going from "${from.fullPath}" to "${toLocation.fullPath}". Aborting to avoid a Stack Overflow. This will break in production if not fixed.`
+              )
+              return Promise.reject(
+                new Error('Infinite redirect in navigation guard')
+              )
             }
+
+            // FIXME: find a way to keep the return pattern of promises to handle reusing the promise maybe by
+            // passing the resolve, reject as parameters to pushWithRedirect
+
+            return pushWithRedirect(
+              // keep options
+              assign(locationAsObject(failure.to), {
+                state: data,
+                force,
+                replace,
+              }),
+              // preserve the original redirectedFrom if any
+              redirectedFrom || toLocation
+            )
+          }
+          // we had a failure so we cannot change the URL
+        } else {
+          // Nothing prevented the navigation to happen, we can update the URL
+          pendingNavigation.value = null
+          failure = finalizeNavigation(
+            toLocation as RouteLocationNormalizedLoaded,
+            from,
+            true,
+            replace,
+            data
           )
-      }
-    ))
+        }
+        // we updated the URL and currentRoute, this will update the rendered router view
+        // we move into the second phase of a navigation: awaiting suspended routes
+        return new Promise((promiseResolve, promiseReject) => {
+          // FIXME: if we reject here we need to restore the navigation like we do in the setupListeners
+          // this would be so much easier with the App History API
+          rejectPendingNavigation = promiseReject
+          resolvePendingNavigation = () => {
+            triggerAfterEach(
+              toLocation as RouteLocationNormalizedLoaded,
+              from,
+              failure as any
+            )
+            promiseResolve(failure as any)
+          }
+          valueToResolveOrError = failure
+        })
+      }))
   }
 
   /**

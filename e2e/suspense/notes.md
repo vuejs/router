@@ -138,7 +138,11 @@ import { getUser } from './api'
  */
 const user = ref()
 
+// +--- Allows blocking the initial navigation
+// |
+// v
 await onBeforeNavigation(async (to, from) => {
+  // this will be executed on any navigation except when leaving (we can have a different hook like `onBeforeEach()`)
   user.value = await getUser(to.params.id)
 })
 </script>
