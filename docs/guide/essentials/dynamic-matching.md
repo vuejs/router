@@ -1,6 +1,6 @@
 # Dynamic Route Matching with Params
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/dynamic-routes"
   title="Learn about dynamic route matching with params"
 />
@@ -50,7 +50,7 @@ A working demo of this example can be found [here](https://codesandbox.io/s/rout
 
 ## Reacting to Params Changes
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/reacting-to-param-changes"
   title="Learn how to react to param changes"
 />
@@ -87,7 +87,7 @@ const User = {
 
 ## Catch all / 404 Not found Route
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/404-not-found-page"
   title="Learn how to make a catch all/404 not found route"
 />

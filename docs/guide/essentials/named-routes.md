@@ -1,6 +1,6 @@
 # Named Routes
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/named-routes"
   title="Learn about the named routes"
 />

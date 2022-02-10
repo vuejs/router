@@ -1,6 +1,6 @@
 # Lazy Loading Routes
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/lazy-loading-routes-vue-cli-only"
   title="Learn about lazy loading routes"
 />

@@ -1,6 +1,6 @@
 # Passing Props to Route Components
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/route-props"
   title="Learn how to pass props to route components"
 />

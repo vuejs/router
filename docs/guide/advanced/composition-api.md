@@ -1,6 +1,6 @@
 # Vue Router and the Composition API
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/router-and-the-composition-api"
   title="Learn how to use Vue Router with the composition API"
 />

@@ -1,6 +1,6 @@
 # Transitions
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/route-transitions"
   title="Learn about route transitions"
 />

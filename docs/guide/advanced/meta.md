@@ -1,6 +1,6 @@
 # Route Meta Fields
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/route-meta-fields"
   title="Learn how to use route meta fields"
 />

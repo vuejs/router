@@ -1,6 +1,6 @@
 # Different History modes
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/history-mode"
   title="Learn about the differences between Hash Mode and HTML5 Mode"
 />

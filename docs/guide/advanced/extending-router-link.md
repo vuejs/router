@@ -1,6 +1,6 @@
 # Extending RouterLink
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/extending-router-link-for-external-urls"
   title="Learn how to extend router-link"
 />

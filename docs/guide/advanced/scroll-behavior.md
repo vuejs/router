@@ -1,6 +1,6 @@
 # Scroll Behavior
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/scroll-behavior"
   title="Learn how to customize scroll behavior"
 />

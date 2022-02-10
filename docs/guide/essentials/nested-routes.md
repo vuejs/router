@@ -1,6 +1,6 @@
 # Nested Routes
 
-<VueSchoolLink 
+<VueSchoolLink
   href="https://vueschool.io/lessons/nested-routes"
   title="Learn about nested routes"
 />
