@@ -67,7 +67,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
       label: 'Vue Router',
       packageName: 'vue-router',
       homepage: 'https://next.router.vuejs.org/',
-      logo: 'https://vuejs.org/images/icons/favicon-96x96.png',
+      logo: 'https://router.vuejs.org/logo.png',
       componentStateTypes: ['Routing'],
       app,
     },
