@@ -16,6 +16,7 @@ import {
   h,
   onErrorCaptured,
   defineAsyncComponent,
+  onServerPrefetch,
 } from 'vue'
 
 const Home = defineComponent({

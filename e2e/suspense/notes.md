@@ -136,17 +136,20 @@ import { getUser } from './api'
 /**
  * This is the component for /users/:id, it fetches the user information and display it.
  */
-const user = ref()
+const user = useDataFetching()
 
-// +--- Allows blocking the initial navigation
+// +--- Allows blocking the entering navigation
 // |
 // v
-await onBeforeNavigation(async (to, from) => {
+onBeforeNavigation(async (to, from) => {
   // this will be executed on any navigation except when leaving (we can have a different hook like `onBeforeEach()`)
-  user.value = await getUser(to.params.id)
+  await user.fetch(to.params.id)
+  // user.value = await getUser(to.params.id)
 })
 </script>
 ```
+
+
 
 Let's consider these routes:
 
