@@ -4,6 +4,8 @@ home: true
 heroImage: /logo.png
 actionText: Get Started →
 actionLink: /installation.html
+altActionLink: https://vueschool.io/courses/vue-router-4-for-everyone
+altActionText: Free Video Course
 
 features:
   - title: 🛣 Expressive route syntax
