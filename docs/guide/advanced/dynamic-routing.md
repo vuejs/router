@@ -1,5 +1,10 @@
 # Dynamic Routing
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/vue-router-4-dynamic-routing"
+  title="Learn how to add routes at runtime"
+/>
+
 Adding routes to your router is usually done via the [`routes` option](../../api/#routes) but in some situations, you might want to add or remove routes while the application is already running. Application with extensible interfaces like [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html) can use this to make the application grow.
 
 ## Adding Routes

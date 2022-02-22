@@ -4,6 +4,11 @@ sidebarDepth: 0
 
 # Programmatic Navigation
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/vue-router-4-programmatic-navigation"
+  title="Learn how to navigate programmatically"
+/>
+
 Aside from using `<router-link>` to create anchor tags for declarative navigation, we can do this programmatically using the router's instance methods.
 
 ## Navigate to a different location
@@ -74,6 +79,11 @@ router.replace({ path: '/home' })
 ```
 
 ## Traverse history
+
+<VueSchoolLink
+  href="https://vueschool.io/lessons/go-back"
+  title="Learn how to use Vue Router to go back"
+/>
 
 This method takes a single integer as parameter that indicates by how many steps to go forward or go backward in the history stack, similar to `window.history.go(n)`.
 
