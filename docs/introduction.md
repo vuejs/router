@@ -1,8 +1,8 @@
 # Introduction
 
 <VueSchoolLink
-  href="https://vueschool.io/lessons/router-and-the-composition-api"
-  title="Learn how to use Vue Router with the composition API"
+  href="https://vueschool.io/courses/vue-router-4-for-everyone"
+  title="Learn how to build powerful Single Page Applications with the Vue Router on Vue School"
 >Watch a Free Vue Router Video Course</VueSchoolLink>
 
 Vue Router is the official router for [Vue.js](https://vuejs.org). It deeply integrates with Vue.js core to make building Single Page Applications with Vue.js a breeze. Features include:
