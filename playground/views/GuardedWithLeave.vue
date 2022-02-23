@@ -7,24 +7,25 @@
 
 <script>
 // @ts-check
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { onBeforeRouteLeave } from '../../src'
 
 export default defineComponent({
   name: 'GuardedWithLeave',
-  data: () => ({ tries: 0 }),
+  data: () => ({}),
 
   setup() {
     console.log('setup in cant leave')
+    const tries = ref(0)
     onBeforeRouteLeave(function (to, from, next) {
       if (window.confirm('Do you really want to leave?')) next()
       else {
         // @ts-ignore
-        this.tries++
+        tries.value++
         next(false)
       }
     })
-    return {}
+    return { tries }
   },
 })
 </script>
