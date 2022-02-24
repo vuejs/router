@@ -4,7 +4,7 @@ home: true
 heroImage: /logo.png
 actionText: Get Started →
 actionLink: /installation.html
-altActionLink: https://vueschool.io/courses/vue-router-4-for-everyone?friend=vuerouter
+altActionLink: https://vueschool.io/courses/vue-router-4-for-everyone?friend=vuerouter&utm_source=vuerouter&utm_medium=link&utm_campaign=homepage
 altActionText: Free Video Course
 
 features:
