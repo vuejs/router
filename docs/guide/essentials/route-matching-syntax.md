@@ -6,9 +6,9 @@ Most applications will use static routes like `/about` and dynamic routes like `
 For the sake of simplicity, all route records **are omitting the `component` property** to focus on the `path` value.
 :::
 
-## Custom Regexp in params
+## Custom regex in params
 
-When defining a param like `:userId`, we internally use the following regexp `([^/]+)` (at least one character that isn't a slash `/`) to extract params from URLs. This works well unless you need to differentiate two routes based on the param content. Imagine two routes `/:orderId` and `/:productName`, both would match the exact same URLs, so we need a way to differentiate them. The easiest way would be to add a static section to the path that differentiates them:
+When defining a param like `:userId`, we internally use the following regex `([^/]+)` (at least one character that isn't a slash `/`) to extract params from URLs. This works well unless you need to differentiate two routes based on the param content. Imagine two routes `/:orderId` and `/:productName`, both would match the exact same URLs, so we need a way to differentiate them. The easiest way would be to add a static section to the path that differentiates them:
 
 ```js
 const routes = [
@@ -19,7 +19,7 @@ const routes = [
 ]
 ```
 
-But in some scenarios we don't want to add that static section `/o`/`p`. However, `orderId` is always a number while `productName` can be anything, so we can specify a custom regexp for a param in parentheses:
+But in some scenarios we don't want to add that static section `/o`/`p`. However, `orderId` is always a number while `productName` can be anything, so we can specify a custom regex for a param in parentheses:
 
 ```js
 const routes = [
@@ -63,7 +63,7 @@ router.resolve({ name: 'chapters', params: { chapters: [] } }).href
 // throws an Error because `chapters` is empty
 ```
 
-These can also be combined with custom Regexp by adding them **after the closing parentheses**:
+These can also be combined with a custom regex by adding them **after the closing parentheses**:
 
 ```js
 const routes = [
@@ -111,4 +111,4 @@ Note that `*` technically also marks a parameter as optional but `?` parameters 
 
 ## Debugging
 
-If you need to dig how your routes are transformed into Regexp to understand why a route isn't being matched or, to report a bug, you can use the [path ranker tool](https://paths.esm.dev/?p=AAMeJSyAwR4UbFDAFxAcAGAIJXMAAA..#). It supports sharing your routes through the URL.
+If you need to dig how your routes are transformed into a regex to understand why a route isn't being matched or, to report a bug, you can use the [path ranker tool](https://paths.esm.dev/?p=AAMeJSyAwR4UbFDAFxAcAGAIJXMAAA..#). It supports sharing your routes through the URL.
