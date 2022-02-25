@@ -211,12 +211,24 @@ export function createRouterMatcher(
     return matchers
   }
 
+  function isChildOf(
+    child: RouteRecordMatcher,
+    parent: RouteRecordMatcher
+  ): Boolean {
+    return parent.children.some(currChild => {
+      if (currChild === child) return true
+
+      return isChildOf(child, currChild)
+    })
+  }
+
   function insertMatcher(matcher: RouteRecordMatcher) {
     let i = 0
     // console.log('i is', { i })
     while (
       i < matchers.length &&
-      comparePathParserScore(matcher, matchers[i]) >= 0
+      comparePathParserScore(matcher, matchers[i]) >= 0 &&
+      !isChildOf(matcher, matchers[i])
     )
       i++
     // console.log('END i is', { i })
