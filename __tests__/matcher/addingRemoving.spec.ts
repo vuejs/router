@@ -388,6 +388,36 @@ describe('Matcher: adding and removing records', () => {
     })
   })
 
+  it('adds empty paths as children', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({ path: '/', component, name: 'parent' })
+    const parent = matcher.getRecordMatcher('parent')
+    expect(matcher.resolve({ path: '/' }, currentLocation)).toMatchObject({
+      name: 'parent',
+    })
+    matcher.addRoute({ path: '', component, name: 'child' }, parent)
+    expect(matcher.resolve({ path: '/' }, currentLocation)).toMatchObject({
+      name: 'child',
+    })
+  })
+
+  it('adding dynamic child with root path', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({ path: '/parent', component, name: 'parent' })
+    const parent = matcher.getRecordMatcher('parent')
+    expect(matcher.resolve({ path: '/parent' }, currentLocation)).toMatchObject(
+      {
+        name: 'parent',
+      }
+    )
+    matcher.addRoute({ path: '/:id', component, name: 'child' }, parent)
+    expect(matcher.resolve({ path: '/parent' }, currentLocation)).toMatchObject(
+      {
+        name: 'parent',
+      }
+    )
+  })
+
   describe('warnings', () => {
     mockWarn()
 
