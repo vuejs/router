@@ -72,11 +72,19 @@ function createTestComponent(
   })
 }
 
-function createPassThroughWithSuspense(key: string) {
+function createPassThroughWithSuspense(key: string, isAsync = false) {
   return defineComponent({
     name: `PassThroughViewWithSuspense:${key}`,
     setup() {
       logs.value.push(`PassThrough:${key} setup`)
+      const route = useRoute()
+      const shouldFail = !!route.query.fail
+
+      return isAsync
+        ? delay(100).then(() =>
+            shouldFail ? Promise.reject(new Error('failed')) : {}
+          )
+        : {}
     },
 
     template: `
@@ -117,7 +125,7 @@ const router = createRouter({
     },
     {
       path: '/n/sus/one',
-      component: createPassThroughWithSuspense('sus-one'),
+      component: createPassThroughWithSuspense('sus-one', false),
       children: [
         {
           path: 'child',
@@ -127,7 +135,7 @@ const router = createRouter({
     },
     {
       path: '/n/sus/two',
-      component: createPassThroughWithSuspense('sus-two'),
+      component: createPassThroughWithSuspense('sus-two', true),
       children: [
         {
           path: 'child',
