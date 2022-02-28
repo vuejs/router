@@ -1103,14 +1103,19 @@ export function createRouter(options: RouterOptions): Router {
    * only be called once, otherwise does nothing.
    * @param err - optional error
    */
-  function markAsReady(err?: any): void {
-    if (ready) return
-    ready = true
-    setupListeners()
-    readyHandlers
-      .list()
-      .forEach(([resolve, reject]) => (err ? reject(err) : resolve()))
-    readyHandlers.reset()
+  function markAsReady<E = any>(err: E): E
+  function markAsReady<E = any>(): void
+  function markAsReady<E = any>(err?: E): E | void {
+    if (!ready) {
+      // still not ready if an error happened
+      ready = !err
+      setupListeners()
+      readyHandlers
+        .list()
+        .forEach(([resolve, reject]) => (err ? reject(err) : resolve()))
+      readyHandlers.reset()
+    }
+    return err
   }
 
   // Scroll behavior
