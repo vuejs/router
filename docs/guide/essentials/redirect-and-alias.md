@@ -1,5 +1,10 @@
 # Redirect and Alias
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/vue-router-4-redirect-and-alias"
+  title="Learn how to use redirect and alias"
+/>
+
 ## Redirect
 
 Redirecting is also done in the `routes` configuration. To redirect from `/home` to `/`:

@@ -3,7 +3,7 @@
 <VueSchoolLink
   href="https://vueschool.io/courses/vue-router-4-for-everyone"
   title="Learn how to build powerful Single Page Applications with the Vue Router on Vue School"
-/>
+>Watch a Free Vue Router Video Course</VueSchoolLink>
 
 Creating a Single-page Application with Vue + Vue Router feels natural: with Vue.js, we are already composing our application with components. When adding Vue Router to the mix, all we need to do is map our components to the routes and let Vue Router know where to render them. Here's a basic example:
 
