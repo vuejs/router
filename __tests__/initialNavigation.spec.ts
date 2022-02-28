@@ -61,7 +61,7 @@ describe('Initial Navigation', () => {
     expect(router.currentRoute.value).toMatchObject({ path: '/' })
   })
 
-  it('handles initial navigation with beforEnter', async () => {
+  it('handles initial navigation with beforeEnter', async () => {
     const { history, router } = newRouter('/home-before')
     expect(history.location).toBe('/home-before')
     // this is done automatically on mount but there is no mount here
