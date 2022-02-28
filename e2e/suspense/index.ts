@@ -38,12 +38,19 @@ const delay = (t: number) => new Promise(r => setTimeout(r, t))
  * creates a component that logs the guards
  * @param name
  */
-function createTestComponent(key: string, isAsync = false) {
+function createTestComponent(
+  key: string,
+  isAsync = false,
+  logCreation = false
+) {
   return defineComponent({
     name: key,
     template: `<div id="${key}">${key}</div>`,
 
     setup() {
+      if (logCreation) {
+        logs.value.push(`${key} setup`)
+      }
       onBeforeRouteUpdate((to, from) => {
         logs.value.push(
           `${key}: setup:update ${from.fullPath} - ${to.fullPath}`
@@ -62,6 +69,23 @@ function createTestComponent(key: string, isAsync = false) {
           )
         : {}
     },
+  })
+}
+
+function createPassThroughWithSuspense(key: string) {
+  return defineComponent({
+    name: `PassThroughViewWithSuspense:${key}`,
+    setup() {
+      logs.value.push(`PassThrough:${key} setup`)
+    },
+
+    template: `
+<router-view v-slot="{ Component }">
+  <Suspense>
+    <component :is="Component" />
+  </Suspense>
+</router-view>
+  `,
   })
 }
 
@@ -91,6 +115,26 @@ const router = createRouter({
         { path: 'two', component: createTestComponent('two', true) },
       ],
     },
+    {
+      path: '/n/sus/one',
+      component: createPassThroughWithSuspense('sus-one'),
+      children: [
+        {
+          path: 'child',
+          component: createTestComponent('one:child', true, true),
+        },
+      ],
+    },
+    {
+      path: '/n/sus/two',
+      component: createPassThroughWithSuspense('sus-two'),
+      children: [
+        {
+          path: 'child',
+          component: createTestComponent('two:child', true, true),
+        },
+      ],
+    },
   ],
 })
 const shouldFail = ref(false)
@@ -118,6 +162,8 @@ leaves: {{ state.leave }}
       <li><router-link id="update-query" :to="{ query: { n: (Number($route.query.n) || 0) + 1 }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
       <li><router-link to="/nested/one">/nested/one</router-link></li>
       <li><router-link to="/nested/two">/nested/two</router-link></li>
+      <li><router-link to="/n/sus/one/child">Nested Suspense one</router-link></li>
+      <li><router-link to="/n/sus/two/child">Nested Suspense two</router-link></li>
     </ul>
 
     <router-view v-slot="{ Component }" >
