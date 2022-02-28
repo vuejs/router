@@ -211,28 +211,17 @@ export function createRouterMatcher(
     return matchers
   }
 
-  function isChildOf(
-    child: RouteRecordMatcher,
-    parent: RouteRecordMatcher
-  ): Boolean {
-    return parent.children.some(currChild => {
-      if (currChild === child) return true
-
-      return isChildOf(child, currChild)
-    })
-  }
-
   function insertMatcher(matcher: RouteRecordMatcher) {
     let i = 0
-    // console.log('i is', { i })
     while (
       i < matchers.length &&
       comparePathParserScore(matcher, matchers[i]) >= 0 &&
-      !isChildOf(matcher, matchers[i])
+      // Adding children with empty path should still appear before the parent
+      // https://github.com/vuejs/router/issues/1124
+      (matcher.record.path !== matchers[i].record.path ||
+        !isRecordChildOf(matcher, matchers[i]))
     )
       i++
-    // console.log('END i is', { i })
-    // while (i < matchers.length && matcher.score <= matchers[i].score) i++
     matchers.splice(i, 0, matcher)
     // only add the original record to the name map
     if (matcher.record.name && !isAliasRecord(matcher))
@@ -472,6 +461,15 @@ function checkMissingParamsInAbsolutePath(
         `Absolute path "${record.record.path}" should have the exact same param named "${key.name}" as its parent "${parent.record.path}".`
       )
   }
+}
+
+function isRecordChildOf(
+  record: RouteRecordMatcher,
+  parent: RouteRecordMatcher
+): boolean {
+  return parent.children.some(
+    child => child === record || isRecordChildOf(record, child)
+  )
 }
 
 export type { PathParserOptions, _PathParserOptions }
