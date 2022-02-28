@@ -1,3 +1,10 @@
+## [4.0.13](https://github.com/vuejs/router/compare/v4.0.12...v4.0.13) (2022-02-28)
+
+### Bug Fixes
+
+- **matcher:** add child before parent when using `addRoute` ([8744bba](https://github.com/vuejs/router/commit/8744bbae7789e236e5308f939fb4b2d946a8ca6d))
+- **ssr:** reject unfinished initial navigation ([509fc0d](https://github.com/vuejs/router/commit/509fc0d5c78b32cbd5ce0c86f716774ad6163cad)), closes [#1305](https://github.com/vuejs/router/issues/1305)
+
 ## [4.0.12](https://github.com/vuejs/router/compare/v4.0.11...v4.0.12) (2021-10-14)
 
 ### Bug Fixes
