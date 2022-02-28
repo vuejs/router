@@ -682,7 +682,10 @@ export function createRouter(options: RouterOptions): Router {
     return (failure ? Promise.resolve(failure) : navigate(toLocation, from))
       .catch((error: NavigationFailure | NavigationRedirectError) =>
         isNavigationFailure(error)
-          ? error
+          ? // navigation redirects still mark the router as ready
+            isNavigationFailure(error, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
+            ? error
+            : markAsReady(error) // also returns the error
           : // reject any unknown error
             triggerError(error, toLocation, from)
       )
