@@ -1,3 +1,9 @@
+## [4.0.14](https://github.com/vuejs/router/compare/v4.0.13...v4.0.14) (2022-03-10)
+
+### Features
+
+- **devtools:** use api.now() ([06ac7bb](https://github.com/vuejs/router/commit/06ac7bbc4caaacaf8f054aa2ee164517b99b18ba))
+
 ## [4.0.13](https://github.com/vuejs/router/compare/v4.0.12...v4.0.13) (2022-02-28)
 
 ### Bug Fixes
