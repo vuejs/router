@@ -157,7 +157,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
             title: 'Error during Navigation',
             subtitle: to.fullPath,
             logType: 'error',
-            time: Date.now(),
+            time: api.now(),
             data: { error },
             groupId: (to.meta as any).__navigationId,
           },
@@ -185,7 +185,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         api.addTimelineEvent({
           layerId: navigationsLayerId,
           event: {
-            time: Date.now(),
+            time: api.now(),
             title: 'Start of navigation',
             subtitle: to.fullPath,
             data,
@@ -226,7 +226,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
           event: {
             title: 'End of navigation',
             subtitle: to.fullPath,
-            time: Date.now(),
+            time: api.now(),
             data,
             logType: failure ? 'warning' : 'default',
             groupId: (to.meta as any).__navigationId,
