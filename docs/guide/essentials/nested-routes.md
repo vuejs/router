@@ -97,4 +97,19 @@ const routes = [
 ]
 ```
 
+Note that in empty nested route, if you want to access `/user/eduardo` via a named route or `router-link`, you need to put the name on the child:
+
+```js
+const routes = [
+  {
+    path: '/user/:id',
+    component: User,
+    children: [
+      // Add the named on the child
+      { name: 'UserRoute', path: '', component: UserHome },
+    ],
+  },
+]
+```
+
 A working demo of this example can be found [here](https://codesandbox.io/s/nested-views-vue-router-4-examples-hl326?initialpath=%2Fusers%2Feduardo).
