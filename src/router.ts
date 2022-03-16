@@ -938,9 +938,11 @@ export function createRouter(options: RouterOptions): Router {
     markAsReady()
   }
 
-  let removeHistoryListener: () => void | undefined
+  let removeHistoryListener: undefined | null | (() => void)
   // attach listener to history to trigger navigations
   function setupListeners() {
+    // avoid setting up listeners twice due to an invalid first navigation
+    if (removeHistoryListener) return
     removeHistoryListener = routerHistory.listen((to, _from, info) => {
       // cannot be a redirect route because it was in history
       const toLocation = resolve(to) as RouteLocationNormalized
@@ -1220,6 +1222,7 @@ export function createRouter(options: RouterOptions): Router {
           // invalidate the current navigation
           pendingLocation = START_LOCATION_NORMALIZED
           removeHistoryListener && removeHistoryListener()
+          removeHistoryListener = null
           currentRoute.value = START_LOCATION_NORMALIZED
           started = false
           ready = false
