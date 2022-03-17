@@ -537,12 +537,12 @@ forward(): void
 
 ### getRoutes
 
-Get a full list of all the [route records](#routerecord).
+Get a full list of all the [route records](#routerecordnormalized).
 
 **Signature:**
 
 ```typescript
-getRoutes(): RouteRecord[]
+getRoutes(): RouteRecordNormalized[]
 ```
 
 ### go
@@ -1017,7 +1017,7 @@ Normalized route location. Does not have any [redirect records](#routerecordraw)
 - **Type**: [`RouteRecordNormalized[]`](#routerecordnormalized)
 - **Details**:
 
-  Array of [normalized route records](#routerecord) that were matched with the given route location.
+  Array of [normalized route records](#routerecordnormalized) that were matched with the given route location.
 
 ### meta
 
