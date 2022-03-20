@@ -16,13 +16,8 @@
 npm install vue-router@4
 ```
 
-## 开发版本构建
-
-如果你想使用最新的开发版本，你需要直接从 GitHub 上克隆并自己构建 `vue-router`。
+## yarn
 
 ```bash
-git clone https://github.com/vuejs/vue-router.git node_modules/vue-router
-cd node_modules/vue-router
-npm install
-npm run build
+yarn add vue-router@4
 ```

@@ -1,5 +1,10 @@
 # 路由的匹配语法
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/vue-router-4-advanced-routes-matching-syntax"
+  title="Learn how to use advanced route routes' matching syntax"
+>观看免费的 Vue Router 视频教程</VueSchoolLink>
+
 大多数应用都会使用 `/about` 这样的静态路由和 `/users/:userId` 这样的动态路由，就像我们刚才在[动态路由匹配](./dynamic-matching.md)中看到的那样，但是 Vue Router 可以提供更多的方式！
 
 :::tip
@@ -73,6 +78,25 @@ const routes = [
   // 匹配 /, /1, /1/2, 等
   { path: '/:chapters(\\d+)*' },
 ]
+```
+
+## Sensitive 与 strict 路由配置
+
+默认情况下，所有路由是不区分大小写的，并且匹配带有或不带有尾部斜线的路由。例如，路由`/users`匹配`/users`、`/users/`，甚至`/Users/`。这种行为可以通过`strict`和`sensitive`选项来配置，它们可以在路由器和路由级别上设置：
+
+```js
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    // 将匹配 /users/posva 而非：
+    // - /users/posva/ 当 strict: true
+    // - /Users/posva 当 sensitive: true
+    { path: '/users/:id', sensitive: true },
+    // 将匹配 /users, /Users, 以及 /users/42 而非 /users/ 或 /users/42/
+    { path: '/users/:id?' },
+  ]
+  strict: true, // applies to all routes
+})
 ```
 
 ## 可选参数

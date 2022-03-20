@@ -55,7 +55,6 @@ export default {
       this.error = this.post = null
       this.loading = true
       // replace `getPost` with your data fetching util / API wrapper
-      // 用你的数据获取 util 或 API 替换 `getPost`
       getPost(this.$route.params.id, (err, post) => {
         this.loading = false
         if (err) {

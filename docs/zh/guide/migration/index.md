@@ -67,7 +67,7 @@ createRouter({
 })
 ```
 
-### 删除了 `RouterOptions` 中的 `fallback` 属性
+### 删除了 `fallback` 属性
 
 创建路由时不再支持 `fallback` 属性：
 
@@ -365,16 +365,20 @@ const routes = [
   {
     path: '/dashboard',
     name: 'dashboard-parent',
-    component: DashboardParent
+    component: DashboardParent,
     children: [
       { path: '', name: 'dashboard', component: DashboardDefault },
-      { path: 'settings', name: 'dashboard-settings', component: DashboardSettings },
+      {
+        path: 'settings',
+        name: 'dashboard-settings',
+        component: DashboardSettings,
+      },
     ],
   },
 ]
 ```
 
-现在，导航或解析到命名的路由 `dashboard` 时，会产生一个**不带斜线的 URL**：
+现在，导航或解析到命名的路由 `dashboard` 时，会产生一个**不带斜线的** URL：
 
 ```js
 router.resolve({ name: 'dashboard' }).href // '/dashboard'
@@ -410,6 +414,7 @@ const routes = [
 
 给定任何[规范化的路由地址](../../api/#routelocationnormalized):
 
+- `path`, `fullPath`中的值不再被解码了。例如，直接在地址栏上写 "https://example.com/hello world"，将得到编码后的版本："https://example.com/hello%20world"，而 "path "和 "fullPath "都是"/hello%20world"。
 - `hash` 现在被解码了，这样就可以复制过来。`router.push({ hash: $route.hash })` 可以直接用于 [scrollBehavior](../../api/#scrollbehavior) 的 `el` 配置中。
 - 当使用 `push`、`resolve` 和 `replace` 并在对象中提供 `string` 地址或 `path` 属性时，**必须进行编码**(像以前的版本一样)。另一方面，`params`、`query` 和 `hash` 必须以未编码的版本提供。
 - 斜线字符(`/`)现在已在 `params` 内正确解码，同时仍在 URL 上产生一个编码版本：`%2F`。
