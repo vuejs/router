@@ -19,7 +19,7 @@ features:
   - title: 🎚 支持滚动控制
     details: 可精确控制每个页面的滚动位置。
   - title: 🌐 支持自动编码
-    details: 可直接在代码中使用unicode字符（你好）。
+    details: 可直接在代码中使用 unicode 字符（你好）。
 
 footer: MIT Licensed | Copyright © 2014-present Evan You, Eduardo San Martin Morote
 ---
