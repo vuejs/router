@@ -789,6 +789,14 @@ describe('RouterMatcher.resolve', () => {
         }
       )
     })
+
+    it('resolves root path with optional params', () => {
+      assertRecordMatch(
+        { path: '/:tab?', name: 'h', components },
+        { name: 'h' },
+        { name: 'h', path: '/', params: {} }
+      )
+    })
   })
 
   describe('LocationAsRelative', () => {
