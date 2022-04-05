@@ -537,7 +537,7 @@ forward(): void
 
 ### getRoutes
 
-获取所有 [路由记录](#routerecord)的完整列表。
+获取所有 [路由记录](#routerecordnormalized)的完整列表。
 
 **函数签名：**
 
