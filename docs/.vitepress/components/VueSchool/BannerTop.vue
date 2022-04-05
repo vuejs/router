@@ -15,7 +15,7 @@
           VUE 3 MASTERCLASS - FREE WEEKEND
         </div>
         <div class="vs-slogan-title">
-          April 23-24th at <strong>vueschool.io/free-weekend</strong>
+          Register at <strong>vueschool.io/free-weekend</strong>
         </div>
       </div>
       <div class="vs-button">
