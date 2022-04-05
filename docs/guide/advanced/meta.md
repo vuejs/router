@@ -58,10 +58,12 @@ router.beforeEach((to, from) => {
 
 ## TypeScript
 
-It is possible to type the meta field by extending the `RouteMeta` interface:
+It is possible to type the meta field by extending the `RouteMeta` interface from `vue-router`:
 
 ```ts
-// typings.d.ts or router.ts
+// Ensure this file is parsed as a module regardless of dependencies.
+export {}
+
 import 'vue-router'
 
 declare module 'vue-router' {
