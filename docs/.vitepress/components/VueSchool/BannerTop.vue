@@ -19,7 +19,7 @@
         </div>
       </div>
       <div class="vs-button">
-        Register Free
+        Free Access
       </div>
     </div>
     <div id="vs-close" class="vs-close" @click.stop.prevent="$emit('close')">
