@@ -70,7 +70,7 @@ router.afterEach((to, from) => {
 
 ## 强制在复用的视图之间进行过渡
 
-Vue可能会自动复用看起来相似的组件，从而忽略了任何过渡。幸运的是，可以[添加一个 `key` 属性](https://v3.vuejs.org/api/special-attributes.html#key)来强制过渡。这也允许你在相同路由上用不同的参数触发过渡：
+Vue 可能会自动复用看起来相似的组件，从而忽略了任何过渡。幸运的是，可以[添加一个 `key` 属性](https://v3.vuejs.org/api/special-attributes.html#key)来强制过渡。这也允许你在相同路由上使用不同的参数触发过渡：
 
 ```vue
 <router-view v-slot="{ Component, route }">

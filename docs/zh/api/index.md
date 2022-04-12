@@ -853,7 +853,7 @@ stringifyQuery?: (
 - **类型**: `boolean` (可选) 
 - **详细内容**: 
 
-  严格检查路径末尾是否有尾部斜线（`/`）。默认为`false`，意味着默认情况下，路由`/users`同时匹配`/users`和`/users/`。注意这也可以在路由级别上设置。
+  严格检查路径末尾是否有尾部斜线（`/`）。默认为 `false`，意味着默认情况下，路由 `/users` 同时匹配 `/users` 和 `/users/`。注意这也可以在路由级别上设置。
 
 ### meta
 
@@ -903,7 +903,7 @@ const routes = [{ path: '/', component: HomeView }]
 - **类型**：标准化[路由记录](#routerecordnormalized)数组
 - **详细内容**：
 
-  路由被添加时的子路由记录。如果没有则为空数组。注意这个数组在`addRoute()`和`removeRoute()`被调用时不会更新。
+  路由被添加时的子路由记录。如果没有则为空数组。注意这个数组在 `addRoute()` 和 `removeRoute()` 被调用时不会更新。
 
 ### components
 

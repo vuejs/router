@@ -108,7 +108,7 @@ const routes = [
 ```js
 this.$router.push({
   name: 'NotFound',
-  // 保留当前路径并删除第一个字符，以避免目标URL以`//`开头。
+  // 保留当前路径并删除第一个字符，以避免目标 URL 以 `//` 开头。
   params: { pathMatch: this.$route.path.substring(1).split('/') },
   // 保留现有的查询和 hash 值，如果有的话
   query: this.$route.query,
