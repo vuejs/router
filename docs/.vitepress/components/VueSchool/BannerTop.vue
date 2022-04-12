@@ -60,14 +60,17 @@
   top: 20px;
 }
 #vs .vs-logo .logo-small {
-  display: none;
+  width: 30px;
+  margin-left: -5px;
+  margin-top: 5px;
 }
 #vs .vs-logo .logo-big {
   display: none;
 }
 @media (min-width: 768px) {
   #vs .vs-logo .logo-small {
-    display: inline-block;
+    width: auto;
+    margin: 0;
   }
 }
 @media (min-width: 1024px) {
