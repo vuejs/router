@@ -36,7 +36,7 @@ router.beforeEach((to, from) => {
  ```js
   router.beforeEach(async (to, from) => {
     if (
-      // 确保用户未认证
+      // 检查用户是否已登录
       !isAuthenticated &&
       // ❗️ 避免无限重定向
       to.name !== 'Login'

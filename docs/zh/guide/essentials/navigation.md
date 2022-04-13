@@ -56,7 +56,7 @@ router.push({ name: 'user', params: { username } }) // -> /user/eduardo
 router.push({ path: '/user', params: { username } }) // -> /user
 ```
 
-当指定 `params `时，确保提供 `string `或 `number`（或者对于[可重复的参数](./route-matching-syntax.md#repeatable-params)数组）。**任何其他类型（如 `undefined`、`false`等）将被自动字符串化**。对于[可选参数](./route-matching-syntax.md#repeatable-params)，你可以提供一个空字符串（`""`）作为值来跳过它。
+当指定 `params `时，可提供 `string `或 `number` 参数（或者对于[可重复的参数](./route-matching-syntax.md#repeatable-params)提供一个数组）。**任何其他类型（如 `undefined`、`false`等）都将被自动字符串化**。对于[可选参数](./route-matching-syntax.md#repeatable-params)，你可以提供一个空字符串（`""`）来跳过它。
 
 由于属性 `to` 与 `router.push` 接受的对象种类相同，所以两者的规则完全相同。
 
