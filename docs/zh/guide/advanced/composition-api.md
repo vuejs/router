@@ -3,7 +3,7 @@
 <VueSchoolLink
   href="https://vueschool.io/lessons/router-and-the-composition-api"
   title="Learn how to use Vue Router with the composition API"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 引入 `setup` 和 Vue 的[组合式 API](https://v3.vuejs.org/guide/composition-api-introduction.html)，开辟了新的可能性，但要想充分发挥 Vue Router 的潜力，我们需要使用一些新的函数来代替访问 `this` 和组件内导航守卫。
 

@@ -3,7 +3,7 @@
 <VueSchoolLink
   href="https://vueschool.io/courses/vue-router-4-for-everyone"
   title="Learn how to build powerful Single Page Applications with the Vue Router on Vue School"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 用 Vue + Vue Router 创建单页应用非常简单：通过 Vue.js，我们已经用组件组成了我们的应用。当加入 Vue Router 时，我们需要做的就是将我们的组件映射到路由上，让 Vue Router 知道在哪里渲染它们。下面是一个基本的例子：
 

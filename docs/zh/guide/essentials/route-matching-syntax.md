@@ -3,7 +3,7 @@
 <VueSchoolLink
   href="https://vueschool.io/lessons/vue-router-4-advanced-routes-matching-syntax"
   title="Learn how to use advanced route routes' matching syntax"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 大多数应用都会使用 `/about` 这样的静态路由和 `/users/:userId` 这样的动态路由，就像我们刚才在[动态路由匹配](./dynamic-matching.md)中看到的那样，但是 Vue Router 可以提供更多的方式！
 

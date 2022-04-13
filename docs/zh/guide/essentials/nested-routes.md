@@ -3,7 +3,7 @@
 <VueSchoolLink
   href="https://vueschool.io/lessons/nested-routes"
   title="Learn about nested routes"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 一些应用程序的 UI 由多层嵌套的组件组成。在这种情况下，URL 的片段通常对应于特定的嵌套组件结构，例如：
 

@@ -3,7 +3,7 @@
 <VueSchoolLink
   href="https://vueschool.io/lessons/extending-router-link-for-external-urls"
   title="Learn how to extend router-link"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 RouterLink 组件提供了足够的 `props` 来满足大多数基本应用程序的需求，但它并未尝试涵盖所有可能的用例，在某些高级情况下，你可能会发现自己使用了 `v-slot`。在大多数中型到大型应用程序中，值得创建一个（如果不是多个）自定义 RouterLink 组件，以在整个应用程序中重用它们。例如导航菜单中的链接，处理外部链接，添加 `inactive-class` 等。
 

@@ -3,7 +3,7 @@
 <VueSchoolLink
   href="https://vueschool.io/lessons/vue-router-4-redirect-and-alias"
   title="Learn how to use redirect and alias"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 ## 重定向
 

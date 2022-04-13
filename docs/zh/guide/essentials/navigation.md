@@ -7,7 +7,7 @@ sidebarDepth: 0
 <VueSchoolLink
   href="https://vueschool.io/lessons/vue-router-4-programmatic-navigation"
   title="Learn how to navigate programmatically"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 除了使用 `<router-link>` 创建 a 标签来定义导航链接，我们还可以借助 router 的实例方法，通过编写代码来实现。
 
@@ -83,7 +83,7 @@ router.replace({ path: '/home' })
 <VueSchoolLink
   href="https://vueschool.io/lessons/go-back"
   title="Learn how to use Vue Router to go back"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 该方法采用一个整数作为参数，表示在历史堆栈中前进或后退多少步，类似于 `window.history.go(n)`。
 

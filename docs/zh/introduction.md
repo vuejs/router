@@ -3,7 +3,7 @@
 <VueSchoolLink
   href="https://vueschool.io/courses/vue-router-4-for-everyone"
   title="Learn how to build powerful Single Page Applications with the Vue Router on Vue School"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 Vue Router 是 [Vue.js](http://v3.vuejs.org) 的官方路由。它与 Vue.js 核心深度集成，让用 Vue.js 构建单页应用变得轻而易举。功能包括：
 

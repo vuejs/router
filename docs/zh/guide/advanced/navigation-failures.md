@@ -3,7 +3,7 @@
 <VueSchoolLink
   href="https://vueschool.io/lessons/vue-router-4-detecting-navigation-failures"
   title="Learn how to detect navigation failures"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 当使用 `router-link` 组件时，Vue Router 会自动调用 `router.push` 来触发一次导航。虽然大多数链接的预期行为是将用户导航到一个新页面，但也有少数情况下用户将留在同一页面上：
 

@@ -3,7 +3,7 @@
 <VueSchoolLink
   href="https://vueschool.io/lessons/route-transitions"
   title="Learn about route transitions"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 想要在你的路径组件上使用转场，并对导航进行动画处理，你需要使用 [v-slot API](../../api/#router-view-s-v-slot)：
 

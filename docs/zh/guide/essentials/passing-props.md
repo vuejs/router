@@ -3,7 +3,7 @@
 <VueSchoolLink
   href="https://vueschool.io/lessons/route-props"
   title="Learn how to pass props to route components"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 在你的组件中使用 `$route` 会与路由紧密耦合，这限制了组件的灵活性，因为它只能用于特定的 URL。虽然这不一定是件坏事，但我们可以通过 `props` 配置来解除这种行为：
 

@@ -3,7 +3,7 @@
 <VueSchoolLink
   href="https://vueschool.io/lessons/dynamic-routes"
   title="Learn about dynamic route matching with params"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 很多时候，我们需要将给定匹配模式的路由映射到同一个组件。例如，我们可能有一个 `User` 组件，它应该对所有用户进行渲染，但用户 ID 不同。在 Vue Router 中，我们可以在路径中使用一个动态字段来实现，我们称之为 _路径参数_ ：
 
@@ -53,7 +53,7 @@ const User = {
 <VueSchoolLink
   href="https://vueschool.io/lessons/reacting-to-param-changes"
   title="Learn how to react to param changes"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 使用带有参数的路由时需要注意的是，当用户从 `/users/johnny` 导航到 `/users/jolyne` 时，**相同的组件实例将被重复使用**。因为两个路由都渲染同个组件，比起销毁再创建，复用则显得更加高效。**不过，这也意味着组件的生命周期钩子不会被调用**。
 
@@ -90,7 +90,7 @@ const User = {
 <VueSchoolLink
   href="https://vueschool.io/lessons/404-not-found-page"
   title="Learn how to make a catch all/404 not found route"
->观看免费的 Vue Router 视频教程</VueSchoolLink>
+/>
 
 常规参数只匹配 url 片段之间的字符，用 `/` 分隔。如果我们想匹配**任意路径**，我们可以使用自定义的 _路径参数_ 正则表达式，在 _路径参数_ 后面的括号中加入 正则表达式 :
 
