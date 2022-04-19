@@ -188,6 +188,17 @@ If you add a `target="_blank"` to your `a` element, you must omit the `@click="n
 - `Component`: VNodes to be passed to a `<component>`'s `is` prop.
 - `route`: resolved normalized [route location](#routelocationnormalized).
 
+### Example: Passing custom props to `<router-view>` component
+
+```html
+<router-view v-slot="{ Component }">
+  <component
+    :is="Component"
+    your-prop="your-value"
+   />
+</router-view>
+```
+
 ## createRouter
 
 Creates a Router instance that can be used by a Vue app. Check the [`RouterOptions`](#routeroptions) for a list of all the properties that can be passed.
