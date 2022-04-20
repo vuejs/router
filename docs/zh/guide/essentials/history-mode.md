@@ -167,6 +167,16 @@ rewrite {
 
 你可以在 [Netlify 文档](https://docs.netlify.com/routing/redirects/rewrites-proxies/#history-pushstate-and-single-page-apps)中找到更多关于语法的信息。你也可以[创建一个 `netlify.toml`](https://docs.netlify.com/configure-builds/file-based-configuration/) 来结合其他 Netlify 功能的重定向。
 
+### Vercel
+
+在项目根目录创建一个`vercel.json`文件，内容如下：
+
+```json
+{
+  "rewrites": [{ "source": "/:path*", "destination": "/index.html" }]
+}
+```
+
 ## Caveat
 
 这有一个注意事项。你的服务器将不再报告 404 错误，因为现在所有未找到的路径都会显示你的 `index.html` 文件。为了解决这个问题，你应该在你的 Vue 应用程序中实现一个万能的路由来显示 404 页面。

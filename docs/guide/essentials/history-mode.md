@@ -172,6 +172,16 @@ In vue-cli, nuxt, and vite projects, this file usually goes under a folder named
 
 You can more about the syntax on [Netlify documentation](https://docs.netlify.com/routing/redirects/rewrites-proxies/#history-pushstate-and-single-page-apps). You can also [create a `netlify.toml`](https://docs.netlify.com/configure-builds/file-based-configuration/) to combine _redirections_ with other Netlify features.
 
+### Vercel
+
+Create a `vercel.json` file under the root directory of your project with the following:
+
+```json
+{
+  "rewrites": [{ "source": "/:path*", "destination": "/index.html" }]
+}
+```
+
 ## Caveat
 
 There is a caveat to this: Your server will no longer report 404 errors as all not-found paths now serve up your `index.html` file. To get around the issue, you should implement a catch-all route within your Vue app to show a 404 page:
