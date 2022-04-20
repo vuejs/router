@@ -52,6 +52,10 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     route: Object as PropType<RouteLocationNormalizedLoaded>,
   },
 
+  // Better compat for @vue/compat users
+  // https://github.com/vuejs/router/issues/1315
+  compatConfig: { MODE: 3 },
+
   setup(props, { attrs, slots }) {
     __DEV__ && warnDeprecatedUsage()
 
