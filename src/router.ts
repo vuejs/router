@@ -198,6 +198,11 @@ export interface Router {
   readonly options: RouterOptions
 
   /**
+   * Allows turning off the listening of history events. This is a low level api for micro-frontends.
+   */
+  listening: boolean
+
+  /**
    * Add a new {@link RouteRecordRaw route record} as the child of an existing route.
    *
    * @param parentName - Parent Route Record where `route` should be appended at
@@ -944,6 +949,7 @@ export function createRouter(options: RouterOptions): Router {
     // avoid setting up listeners twice due to an invalid first navigation
     if (removeHistoryListener) return
     removeHistoryListener = routerHistory.listen((to, _from, info) => {
+      if (!router.listening) return
       // cannot be a redirect route because it was in history
       const toLocation = resolve(to) as RouteLocationNormalized
 
@@ -1150,6 +1156,7 @@ export function createRouter(options: RouterOptions): Router {
 
   const router: Router = {
     currentRoute,
+    listening: true,
 
     addRoute,
     removeRoute,
