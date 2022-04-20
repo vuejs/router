@@ -365,6 +365,14 @@ function formatRouteRecordMatcherForStateInspector(
     })
   }
 
+  if (Object.keys(route.record.meta).length) {
+    fields.push({
+      editable: false,
+      key: 'meta',
+      value: route.record.meta,
+    })
+  }
+
   fields.push({
     key: 'score',
     editable: false,
@@ -443,8 +451,9 @@ function formatRouteRecordForInspector(
   if (record.redirect) {
     tags.push({
       label:
-        'redirect: ' +
-        (typeof record.redirect === 'string' ? record.redirect : 'Object'),
+        typeof record.redirect === 'string'
+          ? `redirect: ${record.redirect}`
+          : 'redirects',
       textColor: 0xffffff,
       backgroundColor: DARK,
     })
