@@ -3,16 +3,6 @@ import { RouteLocationNormalizedLoaded } from './types'
 import { Router } from './router'
 import { RouteRecordNormalized } from './matcher/types'
 
-export const hasSymbol =
-  typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol'
-
-export const PolySymbol = (name: string) =>
-  // vr = vue router
-  hasSymbol
-    ? Symbol(__DEV__ ? '[vue-router]: ' + name : name)
-    : (__DEV__ ? '[vue-router]: ' : '_vr_') + name
-
-// rvlm = Router View Location Matched
 /**
  * RouteRecord being rendered by the closest ancestor Router View. Used for
  * `onBeforeRouteUpdate` and `onBeforeRouteLeave`. rvlm stands for Router View
@@ -20,8 +10,8 @@ export const PolySymbol = (name: string) =>
  *
  * @internal
  */
-export const matchedRouteKey = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'router view location matched' : 'rvlm'
+export const matchedRouteKey = Symbol(
+  __DEV__ ? 'router view location matched' : ''
 ) as InjectionKey<ComputedRef<RouteRecordNormalized | undefined>>
 
 /**
@@ -30,8 +20,8 @@ export const matchedRouteKey = /*#__PURE__*/ PolySymbol(
  *
  * @internal
  */
-export const viewDepthKey = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'router view depth' : 'rvd'
+export const viewDepthKey = Symbol(
+  __DEV__ ? 'router view depth' : ''
 ) as InjectionKey<Ref<number> | number>
 
 /**
@@ -40,9 +30,7 @@ export const viewDepthKey = /*#__PURE__*/ PolySymbol(
  *
  * @internal
  */
-export const routerKey = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'router' : 'r'
-) as InjectionKey<Router>
+export const routerKey = Symbol(__DEV__ ? 'router' : '') as InjectionKey<Router>
 
 /**
  * Allows overriding the current route returned by `useRoute` in tests. rl
@@ -50,8 +38,8 @@ export const routerKey = /*#__PURE__*/ PolySymbol(
  *
  * @internal
  */
-export const routeLocationKey = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'route location' : 'rl'
+export const routeLocationKey = Symbol(
+  __DEV__ ? 'route location' : ''
 ) as InjectionKey<RouteLocationNormalizedLoaded>
 
 /**
@@ -60,6 +48,6 @@ export const routeLocationKey = /*#__PURE__*/ PolySymbol(
  *
  * @internal
  */
-export const routerViewLocationKey = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'router view location' : 'rvl'
+export const routerViewLocationKey = Symbol(
+  __DEV__ ? 'router view location' : ''
 ) as InjectionKey<Ref<RouteLocationNormalizedLoaded>>
