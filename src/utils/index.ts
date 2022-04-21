@@ -1,10 +1,9 @@
 import { RouteParams, RouteComponent, RouteParamsRaw } from '../types'
-import { hasSymbol } from '../injectionSymbols'
 
 export * from './env'
 
 export function isESModule(obj: any): obj is { default: RouteComponent } {
-  return obj.__esModule || (hasSymbol && obj[Symbol.toStringTag] === 'Module')
+  return obj.__esModule || obj[Symbol.toStringTag] === 'Module'
 }
 
 export const assign = Object.assign

@@ -5,7 +5,6 @@ import {
   RouteLocationNormalized,
 } from './types'
 import { assign } from './utils'
-import { PolySymbol } from './injectionSymbols'
 
 /**
  * Flags so we can combine them when checking for multiple errors
@@ -20,9 +19,7 @@ export const enum ErrorTypes {
   NAVIGATION_DUPLICATED = 16,
 }
 
-const NavigationFailureSymbol = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'navigation failure' : 'nf'
-)
+const NavigationFailureSymbol = Symbol(__DEV__ ? 'navigation failure' : '')
 
 export interface MatcherError extends Error {
   type: ErrorTypes.MATCHER_NOT_FOUND
