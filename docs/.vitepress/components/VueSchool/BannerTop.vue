@@ -129,16 +129,6 @@
   color: #56d8ff;
 }
 
-.has-top-banner {
-  --vt-banner-height: 104px;
-}
-
-.has-top-banner .banner {
-  height: 24px;
-  line-height: 24px;
-  top: 80px;
-}
-
 @media (min-width: 680px) {
   #vs {
     background-image: url(/images/vueschool/vs-fw-bg.svg);
