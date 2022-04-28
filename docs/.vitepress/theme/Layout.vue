@@ -73,7 +73,9 @@ export default {
     }
   },
   mounted () {
-    this.showTopBanner = !localStorage.getItem('VS_FW_22')
+    const now = new Date()
+    const end = new Date('2022-05-04T00:00:00+02:00')
+    this.showTopBanner = !localStorage.getItem('VS_FW_22') && (now < end)
   },
   methods: {
     closeBannerTop () {
