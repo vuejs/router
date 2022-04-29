@@ -441,5 +441,79 @@ describe('Matcher: adding and removing records', () => {
       )
       expect('same param named').not.toHaveBeenWarned()
     })
+
+    it('warn if child route missing a required name', () => {
+      createRouterMatcher(
+        [
+          {
+            name: 'UserRoute',
+            path: '/user/:id',
+            component: component,
+            children: [{ path: '', component: component }],
+          },
+        ],
+        {}
+      )
+      expect('route needs a name').toHaveBeenWarned()
+    })
+
+    it('does not warn warn if child route has a required name', () => {
+      createRouterMatcher(
+        [
+          {
+            name: 'UserRoute',
+            path: '/user/:id',
+            component: component,
+            children: [{ path: '', name: 'UserHome', component: component }],
+          },
+        ],
+        {}
+      )
+      expect('route needs a name').not.toHaveBeenWarned()
+    })
+
+    it('warn if child route missing a required name', () => {
+      createRouterMatcher(
+        [
+          {
+            name: 'AAAA',
+            path: '/aaaa',
+            component: component,
+            children: [
+              {
+                path: 'bbbb',
+                name: 'BBBB',
+                component: component,
+                children: [{ path: '', component: component }],
+              },
+            ],
+          },
+        ],
+        {}
+      )
+      expect('route needs a name').toHaveBeenWarned()
+    })
+
+    it('does not warn warn if child route has a required name', () => {
+      createRouterMatcher(
+        [
+          {
+            name: 'AAAA',
+            path: '/aaaa',
+            component: component,
+            children: [
+              {
+                path: 'bbbb',
+                name: 'BBBB',
+                component: component,
+                children: [{ path: '', name: 'CCCC', component: component }],
+              },
+            ],
+          },
+        ],
+        {}
+      )
+      expect('route needs a name').not.toHaveBeenWarned()
+    })
   })
 })

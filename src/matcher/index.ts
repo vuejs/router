@@ -79,6 +79,9 @@ export function createRouterMatcher(
     // used later on to remove by name
     const isRootAdd = !originalRecord
     const mainNormalizedRecord = normalizeRouteRecord(record)
+    if (__DEV__) {
+      checkChildMissingNameWithEmptyPath(mainNormalizedRecord, parent)
+    }
     // we might be the child of an alias
     mainNormalizedRecord.aliasOf = originalRecord && originalRecord.record
     const options: PathParserOptions = mergeOptions(globalOptions, record)
@@ -448,6 +451,28 @@ function checkSameParams(a: RouteRecordMatcher, b: RouteRecordMatcher) {
       return warn(
         `Alias "${b.record.path}" and the original record: "${a.record.path}" should have the exact same param named "${key.name}"`
       )
+  }
+}
+
+/**
+ * A route with a name and a child with an empty path without a name should warn when adding the route
+ *
+ * @param mainNormalizedRecord - RouteRecordNormalized
+ * @param parent - RouteRecordMatcher
+ */
+function checkChildMissingNameWithEmptyPath(
+  mainNormalizedRecord: RouteRecordNormalized,
+  parent?: RouteRecordMatcher
+) {
+  if (
+    parent &&
+    parent.record.name &&
+    !mainNormalizedRecord.name &&
+    !mainNormalizedRecord.path
+  ) {
+    warn(
+      `A child route with an empth path that has a named parent route needs a name`
+    )
   }
 }
 
