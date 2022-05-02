@@ -385,6 +385,7 @@ export function loadRouteLocation(
                       // replace the function with the resolved component
                       // cannot be null or undefined because we went into the for loop
                       record.components![name] = resolvedComponent
+                      return
                     })
                   )
                 }
