@@ -59,6 +59,12 @@ export type {
   NavigationGuardWithThis,
   NavigationHookAfter,
 } from './types'
+export type {
+  ParamsFromPath,
+  _ExtractFirstParamName,
+  _RemoveRegexpFromParam,
+  _RemoveUntilClosingPar,
+} from './types/paths'
 
 export { createRouter } from './router'
 export type { Router, RouterOptions, RouterScrollBehavior } from './router'
