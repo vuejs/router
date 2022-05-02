@@ -66,7 +66,11 @@ export type { Router, RouterOptions, RouterScrollBehavior } from './router'
 export { NavigationFailureType, isNavigationFailure } from './errors'
 export type { NavigationFailure } from './errors'
 
-export { onBeforeRouteLeave, onBeforeRouteUpdate } from './navigationGuards'
+export {
+  onBeforeRouteLeave,
+  onBeforeRouteUpdate,
+  loadRouteLocation,
+} from './navigationGuards'
 export { RouterLink, useLink } from './RouterLink'
 export type { RouterLinkProps, UseLinkOptions } from './RouterLink'
 export { RouterView } from './RouterView'
