@@ -53,6 +53,9 @@ export interface LocationAsPath {
   path: string
 }
 
+/**
+ * @internal
+ */
 export interface LocationAsName {
   name: RouteRecordName
   params?: RouteParams
@@ -105,11 +108,8 @@ export interface RouteLocationMatched extends RouteRecordNormalized {
  *
  * @internal
  */
-export interface _RouteLocationBase {
-  /**
-   * Percentage encoded pathname section of the URL.
-   */
-  path: string
+export interface _RouteLocationBase
+  extends Pick<MatcherLocation, 'name' | 'path' | 'params' | 'meta'> {
   /**
    * The whole location including the `search` and `hash`. This string is
    * percentage encoded.
@@ -124,22 +124,10 @@ export interface _RouteLocationBase {
    */
   hash: string
   /**
-   * Name of the matched record
-   */
-  name: RouteRecordName | null | undefined
-  /**
-   * Object of decoded params extracted from the `path`.
-   */
-  params: RouteParams
-  /**
    * Contains the location we were initially trying to access before ending up
    * on the current location.
    */
   redirectedFrom: RouteLocation | undefined
-  /**
-   * Merged `meta` properties from all of the matched route records.
-   */
-  meta: RouteMeta
 }
 
 // matched contains resolved components
@@ -404,12 +392,34 @@ export type MatcherLocationRaw =
   | LocationAsName
   | LocationAsRelative
 
-// TODO: should probably be the other way around: RouteLocationNormalized extending from MatcherLocation
-export interface MatcherLocation
-  extends Pick<
-    RouteLocation,
-    'name' | 'path' | 'params' | 'matched' | 'meta'
-  > {}
+export interface MatcherLocation {
+  /**
+   * Name of the matched record
+   */
+  name: RouteRecordName | null | undefined
+
+  /**
+   * Percentage encoded pathname section of the URL.
+   */
+  path: string
+
+  /**
+   * Object of decoded params extracted from the `path`.
+   */
+  params: RouteParams
+
+  /**
+   * Merged `meta` properties from all of the matched route records.
+   */
+  meta: RouteMeta
+
+  /**
+   * Array of {@link RouteRecord} containing components as they were
+   * passed when adding records. It can also contain redirect records. This
+   * can't be used directly
+   */
+  matched: RouteRecord[] // non-enumerable
+}
 
 export interface NavigationGuardNext {
   (): void
