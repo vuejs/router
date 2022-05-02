@@ -464,7 +464,6 @@ export interface NavigationHookAfter {
   (
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
-    // TODO: move these types to a different file
     failure?: NavigationFailure | void
   ): any
 }
