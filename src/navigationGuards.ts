@@ -194,7 +194,6 @@ export function guardToPromiseFn(
             }
             return resolvedValue
           })
-          // TODO: test me!
         } else if (guardReturn !== undefined) {
           // @ts-expect-error: _called is added at canOnlyBeCalledOnce
           if (!next._called) {
