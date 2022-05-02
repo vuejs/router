@@ -335,10 +335,11 @@ export function extractComponentsGuards(
 
 /**
  * Allows differentiating lazy components from functional components and vue-class-component
+ * @internal
  *
  * @param component
  */
-function isRouteComponent(
+export function isRouteComponent(
   component: RawRouteComponent
 ): component is RouteComponent {
   return (
@@ -347,4 +348,49 @@ function isRouteComponent(
     'props' in component ||
     '__vccOpts' in component
   )
+}
+
+/**
+ * Ensures a route is loaded so it can be passed as o prop to `<RouterView>`.
+ *
+ * @param route - resolved route to load
+ */
+export function loadRouteLocation(
+  route: RouteLocationNormalized
+): Promise<RouteLocationNormalizedLoaded> {
+  return route.matched.every(record => record.redirect)
+    ? Promise.reject(new Error('Cannot load a route that redirects.'))
+    : Promise.all(
+        route.matched.map(
+          record =>
+            record.components &&
+            Promise.all(
+              Object.keys(record.components).reduce((promises, name) => {
+                const rawComponent = record.components![name]
+                if (
+                  typeof rawComponent === 'function' &&
+                  !('displayName' in rawComponent)
+                ) {
+                  promises.push(
+                    (rawComponent as Lazy<RouteComponent>)().then(resolved => {
+                      if (!resolved)
+                        return Promise.reject(
+                          new Error(
+                            `Couldn't resolve component "${name}" at "${record.path}". Ensure you passed a function that returns a promise.`
+                          )
+                        )
+                      const resolvedComponent = isESModule(resolved)
+                        ? resolved.default
+                        : resolved
+                      // replace the function with the resolved component
+                      // cannot be null or undefined because we went into the for loop
+                      record.components![name] = resolvedComponent
+                    })
+                  )
+                }
+                return promises
+              }, [] as Array<Promise<RouteComponent | null | undefined>>)
+            )
+        )
+      ).then(() => route as RouteLocationNormalizedLoaded)
 }
