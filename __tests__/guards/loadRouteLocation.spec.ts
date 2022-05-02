@@ -1,12 +1,6 @@
 import { isRouteComponent, loadRouteLocation } from '../../src/navigationGuards'
-import {
-  START_LOCATION_NORMALIZED,
-  RouteRecordRaw,
-  RouteLocationRaw,
-} from '../../src/types'
+import { RouteRecordRaw, RouteLocationRaw } from '../../src/types'
 import { components } from '../utils'
-import { normalizeRouteRecord } from '../../src/matcher'
-import { RouteRecordNormalized } from '../../src/matcher/types'
 import { createMemoryHistory, createRouter } from '../../src'
 import { FunctionalComponent } from 'vue'
 
