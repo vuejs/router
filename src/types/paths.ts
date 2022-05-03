@@ -1,4 +1,16 @@
 /**
+ * Extract an object of params given a path like `/users/:id`.
+ *
+ * @example
+ * ```ts
+ * type P = ParamsFromPath<'/:id/b/:c*'> // { id: string; c?: string[] }
+ * ```
+ */
+export type ParamsFromPath<P extends string = string> = string extends P
+  ? PathParams // Generic version
+  : _ExtractParamsPath<_RemoveRegexpFromParam<P>>
+
+/**
  * Generic possible params from a path (after parsing).
  */
 export type PathParams = Record<
@@ -55,13 +67,6 @@ export type _ExtractParamsPath<P extends string> =
         : _ParamToObject<PP, ''>) &
         _ExtractParamsPath<Rest>
     : {}
-
-/**
- * Extract an object of params given a path like `/users/:id`.
- */
-export type ParamsFromPath<P extends string = string> = string extends P
-  ? PathParams // Generic version
-  : _ExtractParamsPath<_RemoveRegexpFromParam<P>>
 
 /**
  * Gets the possible type of a param based on its modifier M.
@@ -275,3 +280,12 @@ export type _ExtractPathParamKeys<P extends string> =
 export type ParamKeysFromPath<P extends string = string> = string extends P
   ? readonly PathParserParamKey[] // Generic version
   : _ExtractPathParamKeys<_RemoveRegexpFromParam<P>>
+
+export type JoinPath<
+  Prefix extends string,
+  Path extends string
+> = Path extends `/${string}`
+  ? Path
+  : '' extends Prefix
+  ? never
+  : `${Prefix}${Prefix extends `${string}/` ? '' : '/'}${Path}`
