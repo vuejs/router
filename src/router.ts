@@ -13,8 +13,6 @@ import {
   RouteLocationOptions,
   MatcherLocationRaw,
   RouteParams,
-  RouteNamedLocation,
-  NamedLocationMap,
 } from './types'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
