@@ -94,7 +94,7 @@ const router = createRouter({
     { path: '/users/:id', sensitive: true },
     // will match /users, /Users, and /users/42 but not /users/ or /users/42/
     { path: '/users/:id?' },
-  ]
+  ],
   strict: true, // applies to all routes
 })
 ```
