@@ -68,6 +68,7 @@ export type {
   _RemoveRegexpFromParam,
   _RemoveUntilClosingPar,
 } from './types/paths'
+export type { RouteNamedMap } from './types/named'
 
 export { createRouter } from './router'
 export type { Router, RouterOptions, RouterScrollBehavior } from './router'

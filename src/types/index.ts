@@ -216,10 +216,6 @@ export interface _RouteRecordBase extends PathParserOptions {
   redirect?: RouteRecordRedirectOption
 
   /**
-   * Array of nested routes.
-   */
-  children?: RouteRecordRaw[]
-  /**
    * Aliases for the record. Allows defining extra paths that will behave like a
    * copy of the record. Allows having paths shorthands like `/users/:id` and
    * `/u/:id`. All `alias` and `path` values must share the same params.
@@ -298,7 +294,7 @@ export interface RouteRecordSingleViewWithChildren extends _RouteRecordBase {
   /**
    * Array of nested routes.
    */
-  children: RouteRecordRaw[]
+  children: Readonly<RouteRecordRaw[]>
 
   /**
    * Allow passing down params as props to the component rendered by `router-view`.
