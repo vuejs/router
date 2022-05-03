@@ -199,14 +199,15 @@ export type _RouteRecordProps =
  * Common properties among all kind of {@link RouteRecordRaw}
  * @internal
  */
-export interface _RouteRecordBase extends PathParserOptions {
+export interface _RouteRecordBase<Path extends string = string>
+  extends PathParserOptions {
   /**
    * Path of the record. Should start with `/` unless the record is the child of
    * another record.
    *
    * @example `/users/:id` matches `/users/1` as well as `/users/posva`.
    */
-  path: string
+  path: Path
 
   /**
    * Where to redirect if the route is directly matched. The redirection happens
@@ -269,7 +270,8 @@ export type RouteRecordRedirectOption =
 /**
  * Route Record defining one single component with the `component` option.
  */
-export interface RouteRecordSingleView extends _RouteRecordBase {
+export interface RouteRecordSingleView<Path extends string = string>
+  extends _RouteRecordBase<Path> {
   /**
    * Component to display when the URL matches this route.
    */
@@ -284,7 +286,8 @@ export interface RouteRecordSingleView extends _RouteRecordBase {
 /**
  * Route Record defining one single component with a nested view.
  */
-export interface RouteRecordSingleViewWithChildren extends _RouteRecordBase {
+export interface RouteRecordSingleViewWithChildren<Path extends string = string>
+  extends _RouteRecordBase<Path> {
   /**
    * Component to display when the URL matches this route.
    */
@@ -305,7 +308,8 @@ export interface RouteRecordSingleViewWithChildren extends _RouteRecordBase {
 /**
  * Route Record defining multiple named components with the `components` option.
  */
-export interface RouteRecordMultipleViews extends _RouteRecordBase {
+export interface RouteRecordMultipleViews<Path extends string = string>
+  extends _RouteRecordBase<Path> {
   /**
    * Components to display when the URL matches this route. Allow using named views.
    */
@@ -323,7 +327,9 @@ export interface RouteRecordMultipleViews extends _RouteRecordBase {
 /**
  * Route Record defining multiple named components with the `components` option and children.
  */
-export interface RouteRecordMultipleViewsWithChildren extends _RouteRecordBase {
+export interface RouteRecordMultipleViewsWithChildren<
+  Path extends string = string
+> extends _RouteRecordBase<Path> {
   /**
    * Components to display when the URL matches this route. Allow using named views.
    */
@@ -344,18 +350,19 @@ export interface RouteRecordMultipleViewsWithChildren extends _RouteRecordBase {
  * Route Record that defines a redirect. Cannot have `component` or `components`
  * as it is never rendered.
  */
-export interface RouteRecordRedirect extends _RouteRecordBase {
+export interface RouteRecordRedirect<Path extends string = string>
+  extends _RouteRecordBase<Path> {
   redirect: RouteRecordRedirectOption
   component?: never
   components?: never
 }
 
-export type RouteRecordRaw =
-  | RouteRecordSingleView
-  | RouteRecordSingleViewWithChildren
-  | RouteRecordMultipleViews
-  | RouteRecordMultipleViewsWithChildren
-  | RouteRecordRedirect
+export type RouteRecordRaw<Path extends string = string> =
+  | RouteRecordSingleView<Path>
+  | RouteRecordSingleViewWithChildren<Path>
+  | RouteRecordMultipleViews<Path>
+  | RouteRecordMultipleViewsWithChildren<Path>
+  | RouteRecordRedirect<Path>
 
 /**
  * Initial route location where the router is. Can be used in navigation guards
