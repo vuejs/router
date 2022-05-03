@@ -60,7 +60,7 @@ When specifying `params`, make sure to either provide a `string` or `number` (or
 
 Since the prop `to` accepts the same kind of object as `router.push`, the exact same rules apply to both of them.
 
-`router.push` and all the other navigation methods return a _Promise_ that allows us to wait til the navigation is finished and to know if it succeeded or failed. We will talk more about that in [Navigation Handling](../advanced/navigation-failures.md).
+`router.push` and all the other navigation methods return a _Promise_ that allows us to wait till the navigation is finished and to know if it succeeded or failed. We will talk more about that in [Navigation Handling](../advanced/navigation-failures.md).
 
 ## Replace current location
 
