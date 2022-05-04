@@ -1,6 +1,6 @@
-import type { RouteRecordRaw } from '.'
+import type { RouteParams, RouteParamsRaw, RouteRecordRaw } from '.'
 import type { Router } from '../router'
-import { JoinPath, ParamsFromPath } from './paths'
+import type { JoinPath, ParamsFromPath, ParamsRawFromPath } from './paths'
 
 /**
  * This will flat the routes into an object with `key` === `router.name`
@@ -57,13 +57,20 @@ export type RouteNamedMap<
         children?: infer Children
       }
         ? Path extends string
-          ? (Name extends string
+          ? (Name extends string | symbol
               ? {
-                  [N in Name]: ParamsFromPath<JoinPath<Prefix, Path>>
+                  [N in Name]: {
+                    // name: N
+                    params: ParamsFromPath<JoinPath<Prefix, Path>>
+                    // TODO: ParamsRawFromPath
+                    paramsRaw: ParamsRawFromPath<JoinPath<Prefix, Path>>
+                    path: JoinPath<Prefix, Path>
+                  }
                 }
               : {
                   // NO_NAME: 1
                 }) &
+              // Recurse children
               (Children extends Readonly<RouteRecordRaw[]>
                 ? RouteNamedMap<Children, JoinPath<Prefix, Path>>
                 : {
@@ -73,8 +80,18 @@ export type RouteNamedMap<
         : {
             // EMPTY: 1
           }) &
-        RouteNamedMap<Rest>
+        RouteNamedMap<Rest, Prefix>
     : never // R must be a valid route record
   : {
       // END: 1
     }
+
+export type RouteNamedMapGeneric = Record<
+  string | symbol | number,
+  // TODO: use RouteParams, RouteParamRaw
+  {
+    params: RouteParams
+    paramsRaw: RouteParamsRaw
+    path: string
+  }
+>

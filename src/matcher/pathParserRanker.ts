@@ -1,7 +1,7 @@
 import { Token, TokenType } from './pathTokenizer'
 import { assign } from '../utils'
 
-export type PathParams = Record<string, string | string[]>
+export type PathParams = Record<string, string | readonly string[]>
 
 /**
  * A param in a url like `/users/:id`
@@ -241,13 +241,16 @@ export function tokensToParser(
           path += token.value
         } else if (token.type === TokenType.Param) {
           const { value, repeatable, optional } = token
-          const param: string | string[] = value in params ? params[value] : ''
+          const param: string | readonly string[] =
+            value in params ? params[value] : ''
 
           if (Array.isArray(param) && !repeatable)
             throw new Error(
               `Provided param "${value}" is an array but it is not repeatable (* or + modifiers)`
             )
-          const text: string = Array.isArray(param) ? param.join('/') : param
+          const text: string = Array.isArray(param)
+            ? (param as string[]).join('/')
+            : (param as string)
           if (!text) {
             if (optional) {
               // if we have more than one optional param like /:a?-static and there are more segments, we don't need to

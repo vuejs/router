@@ -13,6 +13,7 @@ import {
   RouteLocationOptions,
   MatcherLocationRaw,
   RouteParams,
+  RouteLocationNamedRaw,
 } from './types'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
@@ -68,6 +69,7 @@ import {
   routerViewLocationKey,
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
+import { RouteNamedMap, RouteNamedMapGeneric } from './types/named'
 
 /**
  * Internal type to define an ErrorHandler
@@ -236,7 +238,7 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
    * Returns the {@link RouteLocation normalized version} of a
    * {@link RouteLocationRaw route location}. Also includes an `href` property
    * that includes any existing `base`. By default the `currentLocation` used is
-   * `route.currentRoute` and should only be overriden in advanced use cases.
+   * `route.currentRoute` and should only be overridden in advanced use cases.
    *
    * @param to - Raw route location to resolve
    * @param currentLocation - Optional current location to resolve against
@@ -252,7 +254,14 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
    *
    * @param to - Route location to navigate to
    */
-  push(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+  push<
+    RouteMap extends RouteNamedMapGeneric = RouteNamedMap<Options['routes']>,
+    Name extends keyof RouteMap = keyof RouteNamedMap<Options['routes']>
+  >(
+    to: RouteNamedMapGeneric extends RouteMap
+      ? RouteLocationRaw
+      : RouteLocationNamedRaw<RouteMap, Name>
+  ): Promise<NavigationFailure | void | undefined>
 
   /**
    * Programmatically navigate to a new URL by replacing the current entry in
@@ -260,7 +269,15 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
    *
    * @param to - Route location to navigate to
    */
-  replace(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+  replace<
+    RouteMap extends RouteNamedMapGeneric = RouteNamedMap<Options['routes']>,
+    Name extends keyof RouteMap = keyof RouteNamedMap<Options['routes']>
+  >(
+    to: RouteNamedMapGeneric extends RouteMap
+      ? RouteLocationRaw
+      : RouteLocationNamedRaw<RouteMap, Name>
+  ): Promise<NavigationFailure | void | undefined>
+
   /**
    * Go back in history if possible by calling `history.back()`. Equivalent to
    * `router.go(-1)`.
@@ -585,11 +602,11 @@ export function createRouter<Options extends RouterOptions>(
     }
   }
 
-  function push(to: RouteLocationRaw | RouteLocation) {
+  function push(to: RouteLocationRaw) {
     return pushWithRedirect(to)
   }
 
-  function replace(to: RouteLocationRaw | RouteLocationNormalized) {
+  function replace(to: RouteLocationRaw) {
     return push(assign(locationAsObject(to), { replace: true }))
   }
 
@@ -1168,7 +1185,9 @@ export function createRouter<Options extends RouterOptions>(
     resolve,
     options,
 
+    // @ts-expect-error: FIXME: can't type this one correctly without too much hussle
     push,
+    // @ts-expect-error: same
     replace,
     go,
     back: () => go(-1),

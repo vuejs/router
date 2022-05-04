@@ -42,9 +42,11 @@ describe('RouterMatcher.resolve', () => {
       throw new Error('not handled')
     } else {
       // use one single record
+      // @ts-expect-error: One way or the other it failse
       if (!resolved.matched) resolved.matched = record.map(normalizeRouteRecord)
       // allow passing an expect.any(Array)
       else if (Array.isArray(resolved.matched))
+        // @ts-expect-error: same as above
         resolved.matched = resolved.matched.map(m => ({
           ...normalizeRouteRecord(m as any),
           aliasOf: m.aliasOf,
@@ -58,6 +60,7 @@ describe('RouterMatcher.resolve', () => {
     const startCopy: MatcherLocation = {
       ...start,
       matched: start.matched.map(m => ({
+        // @ts-expect-error: okay...
         ...normalizeRouteRecord(m),
         aliasOf: m.aliasOf,
       })) as MatcherLocation['matched'],
