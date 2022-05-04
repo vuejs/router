@@ -165,8 +165,8 @@ export function isSameRouteLocationParams(
 }
 
 function isSameRouteLocationParamsValue(
-  a: RouteParamValue | RouteParamValue[],
-  b: RouteParamValue | RouteParamValue[]
+  a: RouteParamValue | readonly RouteParamValue[],
+  b: RouteParamValue | readonly RouteParamValue[]
 ): boolean {
   return Array.isArray(a)
     ? isEquivalentArray(a, b)

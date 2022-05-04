@@ -17,6 +17,7 @@ import {
   createRouter,
   Router,
   RouterView,
+  RouteRecordNormalized,
 } from '../src'
 
 export const tick = (time?: number) =>
@@ -57,7 +58,7 @@ export interface RouteRecordViewLoose
   instances: Record<string, any>
   enterCallbacks: Record<string, Function[]>
   props: Record<string, _RouteRecordProps>
-  aliasOf: RouteRecordViewLoose | undefined
+  aliasOf: RouteRecordNormalized | RouteRecordViewLoose | undefined
   children?: RouteRecordRaw[]
   components: Record<string, RouteComponent> | null | undefined
 }
