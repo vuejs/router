@@ -4,7 +4,7 @@ import { Ref, ComponentPublicInstance, Component, DefineComponent } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
-import { NamedLocationMap } from './named'
+import { RouteNamedMapGeneric } from './named'
 
 export { NamedLocationMap, ExtractNamedRoutes, ExtractRoutes } from './named'
 
@@ -35,10 +35,13 @@ export type RouteParamValue = string
  * @internal
  */
 export type RouteParamValueRaw = RouteParamValue | number | null | undefined
-export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
+export type RouteParams = Record<
+  string,
+  RouteParamValue | readonly RouteParamValue[]
+>
 export type RouteParamsRaw = Record<
   string,
-  RouteParamValueRaw | Exclude<RouteParamValueRaw, null | undefined>[]
+  RouteParamValueRaw | readonly Exclude<RouteParamValueRaw, null | undefined>[]
 >
 
 /**
@@ -68,14 +71,22 @@ export interface LocationAsName {
  * @internal
  */
 export interface LocationAsRelativeRaw<
-  T extends keyof NamedLocationMap = keyof NamedLocationMap
+  RouteMap extends RouteNamedMapGeneric = RouteNamedMapGeneric,
+  Name extends keyof RouteMap = keyof RouteMap
 > {
-  name?: {} extends NamedLocationMap ? RouteRecordName : T
-  params?: {} extends NamedLocationMap ? RouteParamsRaw : NamedLocationMap[T]
+  name?: RouteNamedMapGeneric extends RouteMap ? RouteRecordName : Name
+  params?: RouteNamedMapGeneric extends RouteMap
+    ? RouteParamsRaw
+    : RouteMap[Name]['paramsRaw']
 }
 
-export interface LocationAsRelative {
-  params?: RouteParams
+export interface LocationAsRelative<
+  RouteMap extends RouteNamedMapGeneric = RouteNamedMapGeneric,
+  Name extends keyof RouteMap = keyof RouteMap
+> {
+  params?: RouteNamedMapGeneric extends RouteMap
+    ? RouteParams
+    : RouteMap[Name]['params']
 }
 
 export interface RouteLocationOptions {
@@ -100,8 +111,18 @@ export interface RouteLocationOptions {
  */
 export type RouteLocationRaw =
   | string
-  | (RouteQueryAndHash & LocationAsPath & RouteLocationOptions)
-  | (RouteQueryAndHash & LocationAsRelativeRaw & RouteLocationOptions)
+  | RouteLocationPathRaw
+  | RouteLocationNamedRaw
+
+export type RouteLocationNamedRaw<
+  RouteMap extends RouteNamedMapGeneric = RouteNamedMapGeneric,
+  Name extends keyof RouteMap = keyof RouteMap
+> = RouteQueryAndHash &
+  LocationAsRelativeRaw<RouteMap, Name> &
+  RouteLocationOptions
+
+export type RouteLocationPathRaw =
+  | RouteQueryAndHash & LocationAsPath & RouteLocationOptions
 
 export interface RouteLocationMatched extends RouteRecordNormalized {
   // components cannot be Lazy<RouteComponent>
@@ -199,15 +220,14 @@ export type _RouteRecordProps =
  * Common properties among all kind of {@link RouteRecordRaw}
  * @internal
  */
-export interface _RouteRecordBase<Path extends string = string>
-  extends PathParserOptions {
+export interface _RouteRecordBase extends PathParserOptions {
   /**
    * Path of the record. Should start with `/` unless the record is the child of
    * another record.
    *
    * @example `/users/:id` matches `/users/1` as well as `/users/posva`.
    */
-  path: Path
+  path: string
 
   /**
    * Where to redirect if the route is directly matched. The redirection happens
@@ -270,8 +290,7 @@ export type RouteRecordRedirectOption =
 /**
  * Route Record defining one single component with the `component` option.
  */
-export interface RouteRecordSingleView<Path extends string = string>
-  extends _RouteRecordBase<Path> {
+export interface RouteRecordSingleView extends _RouteRecordBase {
   /**
    * Component to display when the URL matches this route.
    */
@@ -286,8 +305,7 @@ export interface RouteRecordSingleView<Path extends string = string>
 /**
  * Route Record defining one single component with a nested view.
  */
-export interface RouteRecordSingleViewWithChildren<Path extends string = string>
-  extends _RouteRecordBase<Path> {
+export interface RouteRecordSingleViewWithChildren extends _RouteRecordBase {
   /**
    * Component to display when the URL matches this route.
    */
@@ -308,8 +326,7 @@ export interface RouteRecordSingleViewWithChildren<Path extends string = string>
 /**
  * Route Record defining multiple named components with the `components` option.
  */
-export interface RouteRecordMultipleViews<Path extends string = string>
-  extends _RouteRecordBase<Path> {
+export interface RouteRecordMultipleViews extends _RouteRecordBase {
   /**
    * Components to display when the URL matches this route. Allow using named views.
    */
@@ -327,16 +344,14 @@ export interface RouteRecordMultipleViews<Path extends string = string>
 /**
  * Route Record defining multiple named components with the `components` option and children.
  */
-export interface RouteRecordMultipleViewsWithChildren<
-  Path extends string = string
-> extends _RouteRecordBase<Path> {
+export interface RouteRecordMultipleViewsWithChildren extends _RouteRecordBase {
   /**
    * Components to display when the URL matches this route. Allow using named views.
    */
   components?: Record<string, RawRouteComponent> | null | undefined
   component?: never
 
-  children: RouteRecordRaw[]
+  children: Readonly<RouteRecordRaw>[]
 
   /**
    * Allow passing down params as props to the component rendered by
@@ -350,19 +365,18 @@ export interface RouteRecordMultipleViewsWithChildren<
  * Route Record that defines a redirect. Cannot have `component` or `components`
  * as it is never rendered.
  */
-export interface RouteRecordRedirect<Path extends string = string>
-  extends _RouteRecordBase<Path> {
+export interface RouteRecordRedirect extends _RouteRecordBase {
   redirect: RouteRecordRedirectOption
   component?: never
   components?: never
 }
 
-export type RouteRecordRaw<Path extends string = string> =
-  | RouteRecordSingleView<Path>
-  | RouteRecordSingleViewWithChildren<Path>
-  | RouteRecordMultipleViews<Path>
-  | RouteRecordMultipleViewsWithChildren<Path>
-  | RouteRecordRedirect<Path>
+export type RouteRecordRaw =
+  | RouteRecordSingleView
+  | RouteRecordSingleViewWithChildren
+  | RouteRecordMultipleViews
+  | RouteRecordMultipleViewsWithChildren
+  | RouteRecordRedirect
 
 /**
  * Initial route location where the router is. Can be used in navigation guards

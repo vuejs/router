@@ -1,3 +1,5 @@
+import { RouteParams, RouteParamsRaw, RouteParamValueRaw } from '.'
+
 /**
  * Extract an object of params given a path like `/users/:id`.
  *
@@ -7,16 +9,12 @@
  * ```
  */
 export type ParamsFromPath<P extends string = string> = string extends P
-  ? PathParams // Generic version
-  : _ExtractParamsPath<_RemoveRegexpFromParam<P>>
+  ? RouteParams // Generic version
+  : _ExtractParamsPath<_RemoveRegexpFromParam<P>, false>
 
-/**
- * Generic possible params from a path (after parsing).
- */
-export type PathParams = Record<
-  string,
-  string | readonly string[] | undefined | null
->
+export type ParamsRawFromPath<P extends string = string> = string extends P
+  ? RouteParamsRaw // Generic version
+  : _ExtractParamsPath<_RemoveRegexpFromParam<P>, true>
 
 /**
  * Possible param modifiers.
@@ -56,17 +54,19 @@ type _ParamDelimiter =
  *
  * @internal
  */
-export type _ExtractParamsPath<P extends string> =
-  P extends `${string}{${infer PP}}${infer Rest}`
-    ? (PP extends `${infer N}${_ParamModifier}`
-        ? PP extends `${N}${infer M}`
-          ? M extends _ParamModifier
-            ? _ParamToObject<N, M>
-            : never
+export type _ExtractParamsPath<
+  P extends string,
+  isRaw extends boolean
+> = P extends `${string}{${infer PP}}${infer Rest}`
+  ? (PP extends `${infer N}${_ParamModifier}`
+      ? PP extends `${N}${infer M}`
+        ? M extends _ParamModifier
+          ? _ParamToObject<N, M, isRaw>
           : never
-        : _ParamToObject<PP, ''>) &
-        _ExtractParamsPath<Rest>
-    : {}
+        : never
+      : _ParamToObject<PP, '', isRaw>) &
+      _ExtractParamsPath<Rest, isRaw>
+  : {}
 
 /**
  * Gets the possible type of a param based on its modifier M.
@@ -74,16 +74,33 @@ export type _ExtractParamsPath<P extends string> =
  * @internal
  */
 export type _ModifierParamValue<
-  M extends _ParamModifier | '' = _ParamModifier | ''
+  M extends _ParamModifier | '' = _ParamModifier | '',
+  isRaw extends boolean = false
 > = '' extends M
-  ? string
+  ? _ParamValue<isRaw>
   : '+' extends M
-  ? readonly [string, ...string[]]
+  ? _ParamValueOneOrMore<isRaw>
   : '*' extends M
-  ? readonly string[] | undefined | null
+  ? _ParamValueZeroOrMore<isRaw>
   : '?' extends M
-  ? string | undefined | null
+  ? _ParamValueZeroOrOne<isRaw>
   : never
+
+export type _ParamValueOneOrMore<isRaw extends boolean> = true extends isRaw
+  ? readonly [string | number, ...(string | number)[]]
+  : readonly [string, ...string[]]
+
+export type _ParamValueZeroOrMore<isRaw extends boolean> = true extends isRaw
+  ? readonly (string | number)[] | undefined | null
+  : readonly string[] | undefined | null
+
+export type _ParamValueZeroOrOne<isRaw extends boolean> = true extends isRaw
+  ? RouteParamValueRaw
+  : string
+
+export type _ParamValue<isRaw extends boolean> = true extends isRaw
+  ? string | number
+  : string
 
 /**
  * Given a param name N and its modifier M, creates a param object for the pair.
@@ -92,13 +109,14 @@ export type _ModifierParamValue<
  */
 export type _ParamToObject<
   N extends string,
-  M extends _ParamModifier | ''
+  M extends _ParamModifier | '',
+  isRaw extends boolean
 > = M extends '?' | '*'
   ? {
-      [K in N]?: _ModifierParamValue<M>
+      [K in N]?: _ModifierParamValue<M, isRaw>
     }
   : {
-      [K in N]: _ModifierParamValue<M>
+      [K in N]: _ModifierParamValue<M, isRaw>
     }
 
 /**

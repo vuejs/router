@@ -1,4 +1,9 @@
-import { RouteParams, RouteComponent, RouteParamsRaw } from '../types'
+import {
+  RouteParams,
+  RouteComponent,
+  RouteParamsRaw,
+  RouteParamValueRaw,
+} from '../types'
 
 export * from './env'
 
@@ -16,7 +21,9 @@ export function applyToParams(
 
   for (const key in params) {
     const value = params[key]
-    newParams[key] = Array.isArray(value) ? value.map(fn) : fn(value)
+    newParams[key] = Array.isArray(value)
+      ? value.map(fn)
+      : fn(value as Exclude<RouteParamValueRaw, any[]>)
   }
 
   return newParams

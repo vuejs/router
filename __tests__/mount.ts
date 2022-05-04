@@ -4,17 +4,24 @@ import {
   routeLocationKey,
   routerViewLocationKey,
 } from '../src/injectionSymbols'
+import { RouteLocationNormalized } from 'src'
 
-export function createMockedRoute(initialValue: RouteLocationNormalizedLoose) {
+export function createMockedRoute(
+  initialValue: RouteLocationNormalizedLoose | RouteLocationNormalized
+) {
   const route = {} as {
     [k in keyof RouteLocationNormalizedLoose]: ComputedRef<
       RouteLocationNormalizedLoose[k]
     >
   }
 
-  const routeRef = shallowRef(initialValue)
+  const routeRef = shallowRef<
+    RouteLocationNormalized | RouteLocationNormalizedLoose
+  >(initialValue)
 
-  function set(newRoute: RouteLocationNormalizedLoose) {
+  function set(
+    newRoute: RouteLocationNormalizedLoose | RouteLocationNormalized
+  ) {
     routeRef.value = newRoute
     return nextTick()
   }
