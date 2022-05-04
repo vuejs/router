@@ -16,7 +16,7 @@ import {
   RouteLocationNormalized,
 } from '../src/types'
 
-const routes: RouteRecordRaw[] = [
+const routes: Readonly<RouteRecordRaw>[] = [
   { path: '/', component: components.Home },
   { path: '/redirect', redirect: '/' },
   { path: '/foo', component: components.Foo, name: 'Foo' },
