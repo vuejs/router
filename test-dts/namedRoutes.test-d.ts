@@ -1,70 +1,26 @@
 import {
-  ExtractNamedRoutes,
-  Router,
-  ExtractRoutes,
   createRouter,
   createWebHistory,
   RouteRecordRaw,
   expectType,
   RouteNamedMap,
+  RouterTyped,
+  Router,
+  RouteLocationRaw,
 } from './index'
 import { DefineComponent } from 'vue'
 import { JoinPath } from 'src/types/paths'
 
-declare const Comp: DefineComponent
 declare const component: DefineComponent
 declare const components: { default: DefineComponent }
 
-const routes = [
-  {
-    path: 'my-path',
-    name: 'test',
-    component: Comp,
-  },
-  {
-    path: 'my-path',
-    name: 'my-other-path',
-    component: Comp,
-  },
-  {
-    path: 'random',
-    name: 'tt',
-    children: [
-      {
-        path: 'random-child',
-        name: 'random-child',
-        component: Comp,
-      },
-    ],
-  },
-  {
-    name: '1',
-    children: [
-      {
-        name: '2',
-        children: [
-          {
-            name: '3',
-            children: [{ name: '4' }, { path: '', children: [{ name: '5' }] }],
-          },
-        ],
-      },
-    ],
-  },
-] as const
-
-export function defineRoutes<
-  Path extends string,
-  Routes extends Readonly<RouteRecordRaw<Path>[]>
->(routes: Routes): Routes {
-  return routes
-}
+const routeName = Symbol()
 
 const r2 = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/users/:id', name: 'UserDetails', component },
-    { path: '/no-name', /* no name */ component },
+    { path: '/no-name', /* no name */ components },
     {
       path: '/nested',
       name: 'nested',
@@ -79,10 +35,58 @@ const r2 = createRouter({
             },
           ],
         },
+        { path: ':opt?', name: 'optional', component },
+        // still skipped
+        { path: 'other', name: routeName, component },
       ],
     },
   ] as const,
 })
+
+const methods = ['push', 'replace'] as const
+for (const method of methods) {
+  r2.push({ name: 'UserDetails' })
+  r2.replace({ name: 'UserDetails' })
+
+  // accepts missing params because of relative locations is valid
+  r2[method]({ name: 'UserDetails' })
+  // @ts-expect-error: but expects a correct id
+  r2[method]({ name: 'UserDetails', params: {} })
+  // @ts-expect-error: no invalid params
+  r2[method]({ name: 'UserDetails', params: { id: '2', nope: 'oops' } })
+  // other options are valid
+  r2[method]({ name: 'UserDetails', query: { valid: 'true' }, replace: true })
+  r2[method]({ name: 'UserDetails', params: { id: '2' } })
+  // accepts numbers
+  r2[method]({ name: 'UserDetails', params: { id: 2 } })
+  // @ts-expect-error: fails an null
+  r2[method]({ name: 'UserDetails', params: { id: null } })
+  // @ts-expect-error: and undefined
+  r2[method]({ name: 'UserDetails', params: { id: undefined } })
+  // nested params work too
+  r2[method]({ name: 'nested-c', params: { a: '2', c: '3' } })
+  r2[method]({ name: 'optional' })
+  // optional params are more flexible
+  r2[method]({ name: 'optional', params: {} })
+  r2[method]({ name: 'optional', params: { opt: 'hey' } })
+  r2[method]({ name: 'optional', params: { opt: null } })
+  r2[method]({ name: 'optional', params: { opt: undefined } })
+  // works with symbols too
+  r2[method]({ name: routeName })
+  // @ts-expect-error: but not other symbols
+  r2[method]({ name: Symbol() })
+  // any path is still valid
+  r2[method]('/path')
+  // relative push can have any of the params
+  r2[method]({ params: { a: 2 } })
+  r2[method]({ params: {} })
+  r2[method]({ params: { opt: 'hey' } })
+}
+
+r2.push({} as unknown as RouteLocationRaw)
+r2.replace({} as unknown as RouteLocationRaw)
+
+// createMap(r2.options.routes, true).
 
 function joinPath<A extends string, B extends string>(
   prefix: A,
@@ -102,70 +106,48 @@ expectType<'/nested/:a'>(joinPath('/nested/', ':a'))
 expectType<'/:a'>(joinPath('/nested', '/:a'))
 
 expectType<{
-  UserDetails: { id: string }
-  nested: {}
-  'nested-a': { a: string }
-  'nested-c': { a: string; c: string }
+  UserDetails: { params: { id: string }; path: '/users/:id' }
+  nested: { params: {}; path: '/nested' }
+  'nested-a': { params: { a: string }; path: '/nested/:a' }
+  'nested-c': { params: { a: string; c: string }; path: '/nested/:a/b/:c' }
 }>(createMap(r2.options.routes))
 
 expectType<{
-  UserDetails: { nope: string }
+  UserDetails: { params: { nope: string } }
   // @ts-expect-error
 }>(createMap(r2.options.routes))
 expectType<{
-  'nested-c': { a: string; d: string }
+  UserDetails: { path: '/users' }
   // @ts-expect-error
 }>(createMap(r2.options.routes))
 expectType<{
-  nope: {}
+  'nested-c': { path: '/' }
+  // @ts-expect-error
+}>(createMap(r2.options.routes))
+expectType<{
+  'nested-c': { params: { a: string; d: string } }
+  // @ts-expect-error
+}>(createMap(r2.options.routes))
+expectType<{
+  nope: { params: {} }
   // @ts-expect-error
 }>(createMap(r2.options.routes))
 
-declare const typed: ExtractNamedRoutes<typeof routes>
-
-typed['my-other-path']
-typed['random-child']
-typed.test
-typed.tt
-typed[1]
-typed[2]
-typed[3]
-typed[4]
-typed[5]
-//@ts-expect-error
-typed['non-existing']
-
-declare module './index' {
-  interface NamedLocationMap {
-    'my-other-path': {
-      id: string
-    }
+declare module '../src' {
+  // declare module '../dist/vue-router' {
+  export interface Config {
+    Router: typeof r2
   }
 }
 
-declare const router: Router
+function getTypedRouter(): RouterTyped {
+  return {} as any
+}
 
-router.push({
-  name: 'my-other-path',
-  params: {
-    id: '222',
-    // @ts-expect-error does not exist
-    nonExistent: '22',
-  },
-})
-
-router.push({
-  // @ts-expect-error location name does not exist
-  name: 'random-location',
-})
-
-const otherRouter = createRouter({
-  history: {} as any,
-  routes: [{ path: 'e', name: 'test', component: Comp }] as const,
-})
-
-declare const otherRoutes: ExtractRoutes<typeof otherRouter>
-
-otherRoutes.test
+const typedRouter = getTypedRouter()
+// this one is true if we comment out the line with Router: typeof r2
+// expectType<Router>(typedRouter)
+expectType<typeof r2>(typedRouter)
+typedRouter.push({ name: 'UserDetails' })
 // @ts-expect-error
-otherRoutes.test2
+typedRouter.push({ name: 'nope' })
