@@ -1,5 +1,5 @@
-// export * from '../dist/vue-router'
-export * from '../src'
+export * from '../dist/vue-router'
+// export * from '../src'
 
 export function describe(_name: string, _fn: () => void): void
 export function expectType<T>(value: T): void

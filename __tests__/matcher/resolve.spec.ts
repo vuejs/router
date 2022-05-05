@@ -42,7 +42,7 @@ describe('RouterMatcher.resolve', () => {
       throw new Error('not handled')
     } else {
       // use one single record
-      // @ts-expect-error: One way or the other it failse
+      // @ts-expect-error: One way or the other it false
       if (!resolved.matched) resolved.matched = record.map(normalizeRouteRecord)
       // allow passing an expect.any(Array)
       else if (Array.isArray(resolved.matched))

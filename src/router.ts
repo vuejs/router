@@ -14,6 +14,7 @@ import {
   MatcherLocationRaw,
   RouteParams,
   RouteLocationNamedRaw,
+  RouteLocationPathRaw,
 } from './types'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
@@ -260,7 +261,7 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
   >(
     to: RouteNamedMapGeneric extends RouteMap
       ? RouteLocationRaw
-      : RouteLocationNamedRaw<RouteMap, Name>
+      : RouteLocationNamedRaw<RouteMap, Name> | RouteLocationPathRaw | string
   ): Promise<NavigationFailure | void | undefined>
 
   /**
@@ -275,7 +276,7 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
   >(
     to: RouteNamedMapGeneric extends RouteMap
       ? RouteLocationRaw
-      : RouteLocationNamedRaw<RouteMap, Name>
+      : RouteLocationNamedRaw<RouteMap, Name> | RouteLocationPathRaw | string
   ): Promise<NavigationFailure | void | undefined>
 
   /**
@@ -1185,9 +1186,7 @@ export function createRouter<Options extends RouterOptions>(
     resolve,
     options,
 
-    // @ts-expect-error: FIXME: can't type this one correctly without too much hussle
     push,
-    // @ts-expect-error: same
     replace,
     go,
     back: () => go(-1),
