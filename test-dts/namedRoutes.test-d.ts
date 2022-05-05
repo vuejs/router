@@ -5,11 +5,10 @@ import {
   expectType,
   RouteNamedMap,
   RouterTyped,
-  Router,
   RouteLocationRaw,
+  JoinPath,
 } from './index'
 import { DefineComponent } from 'vue'
-import { JoinPath } from 'src/types/paths'
 
 declare const component: DefineComponent
 declare const components: { default: DefineComponent }
@@ -59,7 +58,7 @@ for (const method of methods) {
   r2[method]({ name: 'UserDetails', params: { id: '2' } })
   // accepts numbers
   r2[method]({ name: 'UserDetails', params: { id: 2 } })
-  // @ts-expect-error: fails an null
+  // @ts-expect-error: fails on null
   r2[method]({ name: 'UserDetails', params: { id: null } })
   // @ts-expect-error: and undefined
   r2[method]({ name: 'UserDetails', params: { id: undefined } })
@@ -77,10 +76,15 @@ for (const method of methods) {
   r2[method]({ name: Symbol() })
   // any path is still valid
   r2[method]('/path')
+  r2.push('/path')
+  r2.replace('/path')
   // relative push can have any of the params
   r2[method]({ params: { a: 2 } })
   r2[method]({ params: {} })
   r2[method]({ params: { opt: 'hey' } })
+  // FIXME: is it possible to support this version
+  // // @ts-expect-error: does not accept any params
+  // r2[method]({ name: 'nested', params: { eo: 'true' } })
 }
 
 r2.push({} as unknown as RouteLocationRaw)
@@ -133,8 +137,8 @@ expectType<{
   // @ts-expect-error
 }>(createMap(r2.options.routes))
 
-declare module '../src' {
-  // declare module '../dist/vue-router' {
+// declare module '../src' {
+declare module '../dist/vue-router' {
   export interface Config {
     Router: typeof r2
   }
