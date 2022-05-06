@@ -86,18 +86,38 @@ export type _ModifierParamValue<
   ? _ParamValueZeroOrOne<isRaw>
   : never
 
+/**
+ * Utility type for raw and non raw params like :id+
+ *
+ * @internal
+ */
 export type _ParamValueOneOrMore<isRaw extends boolean> = true extends isRaw
   ? readonly [string | number, ...(string | number)[]]
   : readonly [string, ...string[]]
 
+/**
+ * Utility type for raw and non raw params like :id*
+ *
+ * @internal
+ */
 export type _ParamValueZeroOrMore<isRaw extends boolean> = true extends isRaw
   ? readonly (string | number)[] | undefined | null
   : readonly string[] | undefined | null
 
+/**
+ * Utility type for raw and non raw params like :id?
+ *
+ * @internal
+ */
 export type _ParamValueZeroOrOne<isRaw extends boolean> = true extends isRaw
   ? RouteParamValueRaw
   : string
 
+/**
+ * Utility type for raw and non raw params like :id
+ *
+ * @internal
+ */
 export type _ParamValue<isRaw extends boolean> = true extends isRaw
   ? string | number
   : string
@@ -188,7 +208,7 @@ export type _ExtractFirstParamName<S extends string> =
     : S
 
 /**
- * Join an array of param values
+ * Join an array of param values for repeated params
  *
  * @internal
  */
@@ -215,7 +235,7 @@ export type _ParamToString<V> = V extends null | undefined | readonly string[]
   ? ''
   : V extends string
   ? V
-  : `oops`
+  : never
 
 /**
  * Possible values for a Modifier.
@@ -299,7 +319,12 @@ export type ParamKeysFromPath<P extends string = string> = string extends P
   ? readonly PathParserParamKey[] // Generic version
   : _ExtractPathParamKeys<_RemoveRegexpFromParam<P>>
 
-export type JoinPath<
+/**
+ * Joins a prefix and a path putting a `/` between them when necessary
+ *
+ * @internal
+ */
+export type _JoinPath<
   Prefix extends string,
   Path extends string
 > = Path extends `/${string}`
