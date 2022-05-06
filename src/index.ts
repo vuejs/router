@@ -64,7 +64,7 @@ export type {
   _ExtractFirstParamName,
   _RemoveRegexpFromParam,
   _RemoveUntilClosingPar,
-  JoinPath,
+  _JoinPath as JoinPath,
 } from './types/paths'
 export type { RouteNamedMap } from './types/named'
 export type { Config, RouterTyped } from './typedRouter'
