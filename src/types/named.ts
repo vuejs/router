@@ -1,5 +1,5 @@
 import type { RouteParams, RouteParamsRaw, RouteRecordRaw } from '.'
-import type { JoinPath, ParamsFromPath, ParamsRawFromPath } from './paths'
+import type { _JoinPath, ParamsFromPath, ParamsRawFromPath } from './paths'
 
 export type RouteNamedMap<
   Routes extends Readonly<RouteRecordRaw[]>,
@@ -16,10 +16,10 @@ export type RouteNamedMap<
               ? {
                   [N in Name]: {
                     // name: N
-                    params: ParamsFromPath<JoinPath<Prefix, Path>>
+                    params: ParamsFromPath<_JoinPath<Prefix, Path>>
                     // TODO: ParamsRawFromPath
-                    paramsRaw: ParamsRawFromPath<JoinPath<Prefix, Path>>
-                    path: JoinPath<Prefix, Path>
+                    paramsRaw: ParamsRawFromPath<_JoinPath<Prefix, Path>>
+                    path: _JoinPath<Prefix, Path>
                   }
                 }
               : {
@@ -27,7 +27,7 @@ export type RouteNamedMap<
                 }) &
               // Recurse children
               (Children extends Readonly<RouteRecordRaw[]>
-                ? RouteNamedMap<Children, JoinPath<Prefix, Path>>
+                ? RouteNamedMap<Children, _JoinPath<Prefix, Path>>
                 : {
                     // NO_CHILDREN: 1
                   })
@@ -43,7 +43,6 @@ export type RouteNamedMap<
 
 export type RouteNamedMapGeneric = Record<
   string | symbol | number,
-  // TODO: use RouteParams, RouteParamRaw
   {
     params: RouteParams
     paramsRaw: RouteParamsRaw
