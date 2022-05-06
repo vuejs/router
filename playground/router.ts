@@ -161,7 +161,7 @@ export const router = createRouter({
         { path: 'settings', component },
       ],
     },
-  ],
+  ] as const,
   async scrollBehavior(to, from, savedPosition) {
     await scrollWaiter.wait()
     if (savedPosition) {
@@ -175,6 +175,12 @@ export const router = createRouter({
     return false
   },
 })
+
+declare module '../src' {
+  export interface Config {
+    Router: typeof router
+  }
+}
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
