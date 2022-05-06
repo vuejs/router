@@ -7,6 +7,7 @@ import {
   RouterTyped,
   RouteLocationRaw,
   JoinPath,
+  useRouter,
 } from './index'
 import { DefineComponent } from 'vue'
 
@@ -82,11 +83,16 @@ for (const method of methods) {
   r2[method]({ params: { a: 2 } })
   r2[method]({ params: {} })
   r2[method]({ params: { opt: 'hey' } })
+
+  // routes with no params
+  r2[method]({ name: 'nested' })
+  r2[method]({ name: 'nested', params: {} })
   // FIXME: is it possible to support this version
   // // @ts-expect-error: does not accept any params
   // r2[method]({ name: 'nested', params: { eo: 'true' } })
 }
 
+// still allow generics to be passed for convenience
 r2.push({} as unknown as RouteLocationRaw)
 r2.replace({} as unknown as RouteLocationRaw)
 
@@ -144,11 +150,7 @@ declare module '../dist/vue-router' {
   }
 }
 
-function getTypedRouter(): RouterTyped {
-  return {} as any
-}
-
-const typedRouter = getTypedRouter()
+const typedRouter = useRouter()
 // this one is true if we comment out the line with Router: typeof r2
 // expectType<Router>(typedRouter)
 expectType<typeof r2>(typedRouter)

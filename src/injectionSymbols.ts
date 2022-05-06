@@ -1,7 +1,7 @@
 import { InjectionKey, ComputedRef, Ref } from 'vue'
 import { RouteLocationNormalizedLoaded } from './types'
-import { Router } from './router'
 import { RouteRecordNormalized } from './matcher/types'
+import { RouterTyped } from './typedRouter'
 
 /**
  * RouteRecord being rendered by the closest ancestor Router View. Used for
@@ -30,7 +30,9 @@ export const viewDepthKey = Symbol(
  *
  * @internal
  */
-export const routerKey = Symbol(__DEV__ ? 'router' : '') as InjectionKey<Router>
+export const routerKey = Symbol(
+  __DEV__ ? 'router' : ''
+) as InjectionKey<RouterTyped>
 
 /**
  * Allows overriding the current route returned by `useRoute` in tests. rl

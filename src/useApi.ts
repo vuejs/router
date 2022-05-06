@@ -1,13 +1,13 @@
 import { inject } from 'vue'
 import { routerKey, routeLocationKey } from './injectionSymbols'
-import { Router } from './router'
+import { RouterTyped } from './typedRouter'
 import { RouteLocationNormalizedLoaded } from './types'
 
 /**
  * Returns the router instance. Equivalent to using `$router` inside
  * templates.
  */
-export function useRouter(): Router {
+export function useRouter(): RouterTyped {
   return inject(routerKey)!
 }
 
