@@ -79,7 +79,7 @@ export interface LocationAsRelativeRaw<
 }
 
 // this one didn't work 🤔
-// export type _LocationAsRelativeRaw<
+// export type LocationAsRelativeRaw<
 //   RouteMap extends RouteNamedMapGeneric = RouteNamedMapGeneric
 // > = {
 //   [N in keyof RouteMap]: {
