@@ -78,6 +78,16 @@ export interface LocationAsRelativeRaw<
     : RouteMap[Name]['paramsRaw']
 }
 
+// this one didn't work 🤔
+// export type _LocationAsRelativeRaw<
+//   RouteMap extends RouteNamedMapGeneric = RouteNamedMapGeneric
+// > = {
+//   [N in keyof RouteMap]: {
+//     name?: N
+//     params?: RouteMap[N]['paramsRaw']
+//   }
+// }[keyof RouteMap]
+
 export interface LocationAsRelative<
   RouteMap extends RouteNamedMapGeneric = RouteNamedMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap
