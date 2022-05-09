@@ -122,6 +122,11 @@ export type RouteLocationRaw =
   | RouteLocationPathRaw
   | RouteLocationNamedRaw
 
+/**
+ * Route Location that can infer the necessary params based on the name
+ *
+ * @internal
+ */
 export type RouteLocationNamedRaw<
   RouteMap extends RouteNamedMapGeneric = RouteNamedMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap
