@@ -45,6 +45,22 @@ Here comes a problem, though: Since our app is a single page client side app, wi
 
 Not to worry: To fix the issue, all you need to do is add a simple catch-all fallback route to your server. If the URL doesn't match any static assets, it should serve the same `index.html` page that your app lives in. Beautiful, again!
 
+## Abstract mode
+
+The abstract history mode is created with `createMemoryHistory()`:
+
+```js
+import { createRouter, createMemoryHistory } from 'vue-router'
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [
+    //...
+  ],
+})
+```
+
+When using `createMemoryHistory()` the URL will not change when navigating between routes and no entries will be created in the browser history. The history is kept "hidden" within the javascript. The history will not persist when leaving or reloading the app, you get a fresh start every time your app is reloaded. Vue Router will always try to resolve the root `'/'` path when the app is loaded.
+
 ## Example Server Configurations
 
 **Note**: The following examples assume you are serving your app from the root folder. If you deploy to a subfolder, you should use [the `publicPath` option of Vue CLI](https://cli.vuejs.org/config/#publicpath) and the related [`base` property of the router](../../api/#createwebhistory). You also need to adjust the examples below to use the subfolder instead of the root folder (e.g. replacing `RewriteBase /` with `RewriteBase /name-of-your-subfolder/`).
