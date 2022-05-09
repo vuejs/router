@@ -4,7 +4,6 @@ import {
   RouteRecordRaw,
   expectType,
   RouteNamedMap,
-  RouterTyped,
   RouteLocationRaw,
   JoinPath,
   useRouter,
