@@ -176,6 +176,8 @@ export const router = createRouter({
   },
 })
 
+// TODO: move to pnpm, workspaces, and use an alias 'vue-router' to be closer to a real project
+
 declare module '../src' {
   export interface Config {
     Router: typeof router
