@@ -45,12 +45,13 @@ Here comes a problem, though: Since our app is a single page client side app, wi
 
 Not to worry: To fix the issue, all you need to do is add a simple catch-all fallback route to your server. If the URL doesn't match any static assets, it should serve the same `index.html` page that your app lives in. Beautiful, again!
 
-## Abstract mode
+## Memory mode
 
-The abstract history mode is created with `createMemoryHistory()`:
+The memory history mode doesn't assume a browser environment and therefore doesn't interact with the URL **nor automatically triggers the initial navigation**. This makes it perfect for Node environment and SSR. It is created with `createMemoryHistory()` and **requires you to push the initial navigation** after calling `app.use(router)`.
 
 ```js
 import { createRouter, createMemoryHistory } from 'vue-router'
+
 const router = createRouter({
   history: createMemoryHistory(),
   routes: [
@@ -59,7 +60,7 @@ const router = createRouter({
 })
 ```
 
-When using `createMemoryHistory()` the URL will not change when navigating between routes and no entries will be created in the browser history. The history is kept "hidden" within the javascript. The history will not persist when leaving or reloading the app, you get a fresh start every time your app is reloaded. Vue Router will always try to resolve the root `'/'` path when the app is loaded.
+While it's not recommended, you can use this mode inside Browser applications but note **there will be no history**, meaning you won't be able to go _back_ or _forward_.
 
 ## Example Server Configurations
 
