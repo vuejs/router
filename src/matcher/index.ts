@@ -415,7 +415,10 @@ function mergeMetaFields(matched: MatcherLocation['matched']) {
   )
 }
 
-function mergeOptions<T>(defaults: T, partialOptions: Partial<T>): T {
+function mergeOptions<T extends object>(
+  defaults: T,
+  partialOptions: Partial<T>
+): T {
   const options = {} as T
   for (const key in defaults) {
     options[key] = key in partialOptions ? partialOptions[key]! : defaults[key]
