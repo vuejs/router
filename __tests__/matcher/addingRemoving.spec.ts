@@ -442,14 +442,14 @@ describe('Matcher: adding and removing records', () => {
       expect('same param named').not.toHaveBeenWarned()
     })
 
-    it('warn if child route missing a required name', () => {
+    it('warns if a named route has an empty non-named child route', () => {
       createRouterMatcher(
         [
           {
             name: 'UserRoute',
             path: '/user/:id',
-            component: component,
-            children: [{ path: '', component: component }],
+            component,
+            children: [{ path: '', component }],
           },
         ],
         {}
@@ -457,14 +457,19 @@ describe('Matcher: adding and removing records', () => {
       expect('has a child without a name').toHaveBeenWarned()
     })
 
-    it('does not warn warn if child route has a required name', () => {
+    it('no warn if both or just the child are named', () => {
       createRouterMatcher(
         [
           {
             name: 'UserRoute',
             path: '/user/:id',
-            component: component,
-            children: [{ path: '', name: 'UserHome', component: component }],
+            component,
+            children: [{ path: '', name: 'UserHome', component }],
+          },
+          {
+            path: '/',
+            component,
+            children: [{ path: '', name: 'child', component }],
           },
         ],
         {}
@@ -472,19 +477,19 @@ describe('Matcher: adding and removing records', () => {
       expect('has a child without a name').not.toHaveBeenWarned()
     })
 
-    it('warn if child route missing a required name', () => {
+    it('warns if nested child is missing a name', () => {
       createRouterMatcher(
         [
           {
-            name: 'AAAA',
-            path: '/aaaa',
-            component: component,
+            name: 'parent',
+            path: '/a',
+            component,
             children: [
               {
-                path: 'bbbb',
-                name: 'BBBB',
-                component: component,
-                children: [{ path: '', component: component }],
+                path: 'b',
+                name: 'b',
+                component,
+                children: [{ path: '', component }],
               },
             ],
           },
@@ -494,19 +499,40 @@ describe('Matcher: adding and removing records', () => {
       expect('has a child without a name').toHaveBeenWarned()
     })
 
-    it('does not warn warn if child route has a required name', () => {
+    it('warns if middle nested child is missing a name', () => {
       createRouterMatcher(
         [
           {
-            name: 'AAAA',
-            path: '/aaaa',
-            component: component,
+            path: '/a',
+            component,
             children: [
               {
-                path: 'bbbb',
-                name: 'BBBB',
-                component: component,
-                children: [{ path: '', name: 'CCCC', component: component }],
+                path: '',
+                name: 'parent',
+                component,
+                children: [{ path: '', component }],
+              },
+            ],
+          },
+        ],
+        {}
+      )
+      expect('has a child without a name').toHaveBeenWarned()
+    })
+
+    it('no warn if nested child is named', () => {
+      createRouterMatcher(
+        [
+          {
+            name: 'parent',
+            path: '/a',
+            component,
+            children: [
+              {
+                path: 'b',
+                name: 'b',
+                component,
+                children: [{ path: '', name: 'child', component }],
               },
             ],
           },
