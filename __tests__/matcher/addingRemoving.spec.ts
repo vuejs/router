@@ -441,5 +441,105 @@ describe('Matcher: adding and removing records', () => {
       )
       expect('same param named').not.toHaveBeenWarned()
     })
+
+    it('warns if a named route has an empty non-named child route', () => {
+      createRouterMatcher(
+        [
+          {
+            name: 'UserRoute',
+            path: '/user/:id',
+            component,
+            children: [{ path: '', component }],
+          },
+        ],
+        {}
+      )
+      expect('has a child without a name').toHaveBeenWarned()
+    })
+
+    it('no warn if both or just the child are named', () => {
+      createRouterMatcher(
+        [
+          {
+            name: 'UserRoute',
+            path: '/user/:id',
+            component,
+            children: [{ path: '', name: 'UserHome', component }],
+          },
+          {
+            path: '/',
+            component,
+            children: [{ path: '', name: 'child', component }],
+          },
+        ],
+        {}
+      )
+      expect('has a child without a name').not.toHaveBeenWarned()
+    })
+
+    it('warns if nested child is missing a name', () => {
+      createRouterMatcher(
+        [
+          {
+            name: 'parent',
+            path: '/a',
+            component,
+            children: [
+              {
+                path: 'b',
+                name: 'b',
+                component,
+                children: [{ path: '', component }],
+              },
+            ],
+          },
+        ],
+        {}
+      )
+      expect('has a child without a name').toHaveBeenWarned()
+    })
+
+    it('warns if middle nested child is missing a name', () => {
+      createRouterMatcher(
+        [
+          {
+            path: '/a',
+            component,
+            children: [
+              {
+                path: '',
+                name: 'parent',
+                component,
+                children: [{ path: '', component }],
+              },
+            ],
+          },
+        ],
+        {}
+      )
+      expect('has a child without a name').toHaveBeenWarned()
+    })
+
+    it('no warn if nested child is named', () => {
+      createRouterMatcher(
+        [
+          {
+            name: 'parent',
+            path: '/a',
+            component,
+            children: [
+              {
+                path: 'b',
+                name: 'b',
+                component,
+                children: [{ path: '', name: 'child', component }],
+              },
+            ],
+          },
+        ],
+        {}
+      )
+      expect('has a child without a name').not.toHaveBeenWarned()
+    })
   })
 })
