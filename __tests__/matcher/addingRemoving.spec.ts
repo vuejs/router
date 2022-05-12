@@ -454,7 +454,7 @@ describe('Matcher: adding and removing records', () => {
         ],
         {}
       )
-      expect('route needs a name').toHaveBeenWarned()
+      expect('has a child without a name').toHaveBeenWarned()
     })
 
     it('does not warn warn if child route has a required name', () => {
@@ -469,7 +469,7 @@ describe('Matcher: adding and removing records', () => {
         ],
         {}
       )
-      expect('route needs a name').not.toHaveBeenWarned()
+      expect('has a child without a name').not.toHaveBeenWarned()
     })
 
     it('warn if child route missing a required name', () => {
@@ -491,7 +491,7 @@ describe('Matcher: adding and removing records', () => {
         ],
         {}
       )
-      expect('route needs a name').toHaveBeenWarned()
+      expect('has a child without a name').toHaveBeenWarned()
     })
 
     it('does not warn warn if child route has a required name', () => {
@@ -513,7 +513,7 @@ describe('Matcher: adding and removing records', () => {
         ],
         {}
       )
-      expect('route needs a name').not.toHaveBeenWarned()
+      expect('has a child without a name').not.toHaveBeenWarned()
     })
   })
 })
