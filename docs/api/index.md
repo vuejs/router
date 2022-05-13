@@ -1010,7 +1010,7 @@ Normalized route location. Does not have any [redirect records](#routerecordraw)
 
 ### query
 
-- **Type**: `Record<string, string | string[]>`
+- **Type**: `Record<string, LocationQueryValue | LocationQueryValue[]>`
 - **Details**:
 
   Dictionary of decoded query params extracted from the `search` section of the URL.
