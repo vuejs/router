@@ -40,7 +40,6 @@
   "homepage": "https://github.com/vuejs/router#readme",
   "files": [
     "index.js",
-    "index.cjs",
     "dist/*.{js,cjs,mjs}",
     "dist/vue-router.d.ts",
     "vetur/tags.json",
