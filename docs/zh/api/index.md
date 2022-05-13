@@ -124,7 +124,7 @@ sidebar: auto
 
 ### 示例：将激活的 class 应用在外层元素
 
-有的时候我们可能想把激活的 class 应用到一个外部元素而不是 `<a>` 标签本身，这时你可以在一个 `router-link` 中包裹该元素并使用 `v-slot` 属性来创建链接：
+有时我们可能想把激活的 class 应用到一个外部元素而不是 `<a>` 标签本身，这时你可以在一个 `router-link` 中包裹该元素并使用 `v-slot` 属性来创建链接：
 
 ```html
 <router-link
@@ -168,21 +168,21 @@ sidebar: auto
 `<router-view>` 暴露了一个 `v-slot` API，主要使用 `<transition>` 和 `<keep-alive>` 组件来包裹你的路由组件。
 
 ```html
-<Suspense>
-  <template #default>
-    <router-view v-slot="{ Component, route }">
-      <transition :name="route.meta.transition || 'fade'" mode="out-in">
-        <keep-alive>
+<router-view v-slot="{ Component, route }">
+  <transition :name="route.meta.transition || 'fade'" mode="out-in">
+    <keep-alive>
+      <suspense>
+        <template #default>
           <component
             :is="Component"
             :key="route.meta.usePathKey ? route.path : undefined"
           />
-        </keep-alive>
-      </transition>
-    </router-view>
-  </template>
-  <template #fallback> Loading... </template>
-</Suspense>
+        </template>
+        <template #fallback> Loading... </template>
+      </suspense>
+    </keep-alive>
+  </transition>
+</router-view>
 ```
 
 - `Component`: 要传递给 `<component>` 的 VNodes `是` prop。
@@ -601,7 +601,7 @@ _参数_
 
 | 参数    | 类型                                                                              | 描述                      |
 | ------- | --------------------------------------------------------------------------------- | ------------------------- |
-| handler | `(error: any, to: RouteLocationNormalized, from: RouteLocationNormalized) => any` | error handler to register |
+| handler | `(error: any, to: RouteLocationNormalized, from: RouteLocationNormalized) => any` | 注册的错误处理程序 |
 
 ### push
 
@@ -816,8 +816,7 @@ stringifyQuery?: (
 - **类型**：`string | string[]` (可选)
 - **详细内容**：
 
-  路由的别名。允许定义类似记录副本的额外路由。这使得路由可以简写为像这种 `/users/:id` 和
-  `/u/:id`。 **所有的 `alias` 和 `path` 值必须共享相同的参数**。
+  路由的别名。允许定义类似记录副本的额外路由。这使得路由可以简写为像这种 `/users/:id` 和 `/u/:id`。 **所有的 `alias` 和 `path` 值必须共享相同的参数**。
 
 ### name
 
@@ -838,9 +837,23 @@ stringifyQuery?: (
 - **类型**：`boolean | Record<string, any> | (to: RouteLocationNormalized) => Record<string, any>` (可选)
 - **详细内容**：
 
-  允许将参数作为 props 传递给由 `router-view` 渲染的组件。当传递给一个*多视图记录*时，它应该是一个与`组件`具有相同键的对象，或者是一个应用于每个组件的`布尔值`。
+  允许将参数作为 props 传递给由 `router-view` 渲染的组件。当传递给一个**多视图记录**时，它应该是一个与`组件`具有相同键的对象，或者是一个应用于每个组件的`布尔值`。
 
 - **更多的内容请看**：[给路由组件传 props](../guide/essentials/passing-props.md)
+
+### sensitive
+
+- **类型**: `boolean` (可选) 
+- **详细内容**: 
+
+  使路由匹配区分大小写，默认为`false`。注意这也可以在路由级别上设置。
+
+### strict
+
+- **类型**: `boolean` (可选) 
+- **详细内容**: 
+
+  严格检查路径末尾是否有尾部斜线（`/`）。默认为 `false`，意味着默认情况下，路由 `/users` 同时匹配 `/users` 和 `/users/`。注意这也可以在路由级别上设置。
 
 ### meta
 
@@ -890,7 +903,7 @@ const routes = [{ path: '/', component: HomeView }]
 - **类型**：标准化[路由记录](#routerecordnormalized)数组
 - **详细内容**：
 
-  当前路由的子路由记录。如果没有则为空数组。
+  路由被添加时的子路由记录。如果没有则为空数组。注意这个数组在 `addRoute()` 和 `removeRoute()` 被调用时不会更新。
 
 ### components
 

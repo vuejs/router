@@ -1,5 +1,10 @@
 # 路由懒加载
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/lazy-loading-routes-vue-cli-only"
+  title="Learn about lazy loading routes"
+/>
+
 当打包构建应用时，JavaScript 包会变得非常大，影响页面加载。如果我们能把不同路由对应的组件分割成不同的代码块，然后当路由被访问的时候才加载对应组件，这样就会更加高效。
 
 Vue Router 支持开箱即用的[动态导入](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#Dynamic_Imports)，这意味着你可以用动态导入代替静态导入：
@@ -37,6 +42,8 @@ const UserDetails = () =>
 
 ## 把组件按组分块
 
+### 使用 webpack
+
 有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用[命名 chunk](https://webpack.js.org/guides/code-splitting/#dynamic-imports)，一个特殊的注释语法来提供 chunk name (需要 Webpack > 2.4)：
 
 ```js
@@ -49,3 +56,26 @@ const UserProfileEdit = () =>
 ```
 
 webpack 会将任何一个异步模块与相同的块名称组合到相同的异步块中。
+
+### 使用 Vite
+
+在Vite中，你可以在[`rollupOptions`](https://vitejs.dev/config/#build-rollupoptions)下定义分块：
+
+```js
+// vite.config.js
+export default defineConfig({
+  build: {
+    rollupOptions: {
+      // https://rollupjs.org/guide/en/#outputmanualchunks
+      output: {
+        manualChunks: {
+          'group-user': [
+            './src/UserDetails',
+            './src/UserDashboard',
+            './src/UserProfileEdit',
+          ],
+        },
+    },
+  },
+})
+```

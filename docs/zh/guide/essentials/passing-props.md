@@ -1,5 +1,10 @@
 # 将 props 传递给路由组件
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/route-props"
+  title="Learn how to pass props to route components"
+/>
+
 在你的组件中使用 `$route` 会与路由紧密耦合，这限制了组件的灵活性，因为它只能用于特定的 URL。虽然这不一定是件坏事，但我们可以通过 `props` 配置来解除这种行为：
 
 我们可以将下面的代码
@@ -15,6 +20,7 @@ const routes = [{ path: '/user/:id', component: User }]
 
 ```js
 const User = {
+  // 请确保添加一个与路由参数完全相同的 prop 名
   props: ['id'],
   template: '<div>User {{ id }}</div>'
 }
@@ -72,5 +78,3 @@ const routes = [
 URL `/search?q=vue` 将传递 `{query: 'vue'}` 作为 props 传给 `SearchUser` 组件。
 
 请尽可能保持 `props` 函数为无状态的，因为它只会在路由发生变化时起作用。如果你需要状态来定义 props，请使用包装组件，这样 vue 才可以对状态变化做出反应。
-
-高级使用方法，请查看[示例](https://github.com/vuejs/vue-router/blob/dev/examples/route-props/app.js).

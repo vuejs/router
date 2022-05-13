@@ -1,5 +1,10 @@
 # 过渡动效
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/route-transitions"
+  title="Learn about route transitions"
+/>
+
 想要在你的路径组件上使用转场，并对导航进行动画处理，你需要使用 [v-slot API](../../api/#router-view-s-v-slot)：
 
 ```html
@@ -10,7 +15,7 @@
 </router-view>
 ```
 
-[Transition 的所有功能](https://v3.vuejs.org/guide/transitions-enterleave.html) 在这里同样适用。
+[Transition 的 API](https://v3.vuejs.org/guide/transitions-enterleave.html) 在这里同样适用。
 
 ## 单个路由的过渡
 
@@ -61,6 +66,18 @@ router.afterEach((to, from) => {
   const fromDepth = from.path.split('/').length
   to.meta.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
 })
+```
+
+## 强制在复用的视图之间进行过渡
+
+Vue 可能会自动复用看起来相似的组件，从而忽略了任何过渡。幸运的是，可以[添加一个 `key` 属性](https://v3.vuejs.org/api/special-attributes.html#key)来强制过渡。这也允许你在相同路由上使用不同的参数触发过渡：
+
+```vue
+<router-view v-slot="{ Component, route }">
+  <transition name="fade">
+    <component :is="Component" :key="route.path" />
+  </transition>
+</router-view>
 ```
 
 <!-- TODO: interactive example -->

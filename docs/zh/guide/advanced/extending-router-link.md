@@ -1,5 +1,10 @@
 # 扩展 RouterLink
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/extending-router-link-for-external-urls"
+  title="Learn how to extend router-link"
+/>
+
 RouterLink 组件提供了足够的 `props` 来满足大多数基本应用程序的需求，但它并未尝试涵盖所有可能的用例，在某些高级情况下，你可能会发现自己使用了 `v-slot`。在大多数中型到大型应用程序中，值得创建一个（如果不是多个）自定义 RouterLink 组件，以在整个应用程序中重用它们。例如导航菜单中的链接，处理外部链接，添加 `inactive-class` 等。
 
 让我们扩展 RouterLink 来处理外部链接，并在 `AppLink.vue` 文件中添加一个自定义的 `inactive-class`：
@@ -31,6 +36,7 @@ import { RouterLink } from 'vue-router'
 
 export default {
   name: 'AppLink',
+  inheritAttrs: false,
 
   props: {
     // 如果使用 TypeScript，请添加 @ts-ignore
@@ -62,11 +68,8 @@ export default {
   },
 
   setup(props) {
-    // toRef 允许我们提取一个 prop 并保持它的响应
-    // https://v3.vuejs.org/api/refs-api.html#toref
-    const { navigate, href, route, isActive, isExactActive } = useLink(
-      toRef(props, 'to')
-    )
+    // `props` 包含 `to` 和任何其他可以传递给 <router-link> 的 prop
+    const { navigate, href, route, isActive, isExactActive } = useLink(props)
 
     // profit!
 
@@ -89,4 +92,3 @@ export default {
   </AppLink>
 </template>
 ```
-

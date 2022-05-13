@@ -1,5 +1,10 @@
 # 路由元信息
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/route-meta-fields"
+  title="Learn how to use route meta fields"
+/>
+
 有时，你可能希望将任意信息附加到路由上，如过渡名称、谁可以访问路由等。这些事情可以通过接收属性对象的`meta`属性来实现，并且它可以在路由地址和导航守卫上都被访问到。定义路由的时候你可以这样配置 `meta` 字段：
 
 ```js

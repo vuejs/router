@@ -1,9 +1,13 @@
 # 重定向和别名
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/vue-router-4-redirect-and-alias"
+  title="Learn how to use redirect and alias"
+/>
+
 ## 重定向
 
 重定向也是通过 `routes` 配置来完成，下面例子是从 `/home` 重定向到 `/`：
-
 
 ```js
 const routes = [{ path: '/home', redirect: '/' }]
@@ -46,10 +50,13 @@ const routes = [
 ```js
 const routes = [
   {
+    // 将总是把/users/123/posts重定向到/users/123/profile。
     path: '/users/:id/posts',
     redirect: to => {
-      // 方法接收目标路由作为参数
-      // return 重定向的字符串路径/路径对象
+      // 该函数接收目标路由作为参数
+      // 相对位置不以`/`开头
+      // 或 { path: 'profile'}
+      return 'profile'
     },
   },
 ]

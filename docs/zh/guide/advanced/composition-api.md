@@ -1,5 +1,10 @@
 # Vue Router 和 组合式 API
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/router-and-the-composition-api"
+  title="Learn how to use Vue Router with the composition API"
+/>
+
 引入 `setup` 和 Vue 的[组合式 API](https://v3.vuejs.org/guide/composition-api-introduction.html)，开辟了新的可能性，但要想充分发挥 Vue Router 的潜力，我们需要使用一些新的函数来代替访问 `this` 和组件内导航守卫。
 
 ## 在 `setup` 中访问路由和当前路由
@@ -26,10 +31,11 @@ export default {
 }
 ```
 
-`route` 对象是一个响应式对象，所以它的任何属性都可以被监听，但你应该**避免监听整个 `route`** 对象：
+`route` 对象是一个响应式对象，所以它的任何属性都可以被监听，但你应该**避免监听整个 `route`** 对象。在大多数情况下，你应该直接监听你期望改变的参数。
 
 ```js
 import { useRoute } from 'vue-router'
+import { ref, watch } from 'vue'
 
 export default {
   setup() {
@@ -38,9 +44,9 @@ export default {
 
     // 当参数更改时获取用户信息
     watch(
-      () => route.params,
-      async newParams => {
-        userData.value = await fetchUser(newParams.id)
+      () => route.params.id,
+      async newId => {
+        userData.value = await fetchUser(newId)
       }
     )
   },
@@ -55,6 +61,7 @@ export default {
 
 ```js
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
+import { ref } from 'vue'
 
 export default {
   setup() {
@@ -88,6 +95,7 @@ Vue Router 将 RouterLink 的内部行为作为一个组合式 API 函数公开�
 
 ```js
 import { RouterLink, useLink } from 'vue-router'
+import { computed } from 'vue'
 
 export default {
   name: 'AppLink',

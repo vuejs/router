@@ -1,4 +1,8 @@
 # 滚动行为
+<VueSchoolLink
+  href="https://vueschool.io/lessons/scroll-behavior"
+  title="Learn how to customize scroll behavior"
+/>
 
 使用前端路由，当切换到新路由时，想要页面滚到顶部，或者是保持原先的滚动位置，就像重新加载页面那样。 vue-router 能做到，而且更好，它让你可以自定义路由切换时页面如何滚动。
 

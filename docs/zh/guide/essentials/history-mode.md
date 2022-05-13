@@ -1,5 +1,10 @@
 # 不同的历史模式
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/history-mode"
+  title="Learn about the differences between Hash Mode and HTML5 Mode"
+/>
+
 在创建路由器实例时，`history` 配置允许我们在不同的历史模式中进行选择。
 
 ## Hash 模式

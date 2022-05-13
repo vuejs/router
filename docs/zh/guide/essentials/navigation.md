@@ -4,6 +4,11 @@ sidebarDepth: 0
 
 # 编程式导航
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/vue-router-4-programmatic-navigation"
+  title="Learn how to navigate programmatically"
+/>
+
 除了使用 `<router-link>` 创建 a 标签来定义导航链接，我们还可以借助 router 的实例方法，通过编写代码来实现。
 
 ## 导航到不同的位置
@@ -51,6 +56,8 @@ router.push({ name: 'user', params: { username } }) // -> /user/eduardo
 router.push({ path: '/user', params: { username } }) // -> /user
 ```
 
+当指定 `params` 时，可提供 `string` 或 `number` 参数（或者对于[可重复的参数](./route-matching-syntax.md#repeatable-params)可提供一个数组）。**任何其他类型（如 `undefined`、`false` 等）都将被自动字符串化**。对于[可选参数](./route-matching-syntax.md#repeatable-params)，你可以提供一个空字符串（`""`）来跳过它。
+
 由于属性 `to` 与 `router.push` 接受的对象种类相同，所以两者的规则完全相同。
 
 `router.push` 和所有其他导航方法都会返回一个 _Promise_，让我们可以等到导航完成后才知道是成功还是失败。我们将在 [Navigation Handling](../advanced/navigation-failures.md) 中详细介绍。
@@ -73,6 +80,11 @@ router.replace({ path: '/home' })
 
 ## 横跨历史
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/go-back"
+  title="Learn how to use Vue Router to go back"
+/>
+
 该方法采用一个整数作为参数，表示在历史堆栈中前进或后退多少步，类似于 `window.history.go(n)`。
 
 例子
@@ -81,7 +93,7 @@ router.replace({ path: '/home' })
 // 向前移动一条记录，与 router.forward() 相同
 router.go(1)
 
-// 返回一条记录，与router.back() 相同
+// 返回一条记录，与 router.back() 相同
 router.go(-1)
 
 // 前进 3 条记录
@@ -98,4 +110,4 @@ router.go(100)
 
 因此，如果你已经熟悉 [Browser History APIs](https://developer.mozilla.org/en-US/docs/Web/API/History_API)，在使用 Vue Router 时，操作历史记录就会觉得很熟悉。
 
-值得一提的是，无论在创建路由器实例时传递什么样的[`history` 配置](../../api/#history)，Vue Router 的导航方法(`push`、`replace`、`go`)都能始终如一地工作。
+值得一提的是，无论在创建路由器实例时传递什么样的 [`history` 配置](../../api/#history)，Vue Router 的导航方法( `push`、`replace`、`go` )都能始终正常工作。

@@ -1,5 +1,10 @@
 # 命名路由
 
+<VueSchoolLink
+  href="https://vueschool.io/lessons/named-routes"
+  title="Learn about the named routes"
+/>
+
 除了 `path` 之外，你还可以为任何路由提供 `name`。这有以下优点：
 
 - 没有硬编码的 URL
