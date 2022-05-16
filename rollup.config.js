@@ -4,6 +4,7 @@ import ts from 'rollup-plugin-typescript2'
 import replace from '@rollup/plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
+import chalk from 'chalk'
 
 const pkg = require('./package.json')
 const name = pkg.name
@@ -63,7 +64,7 @@ export default packageConfigs
 
 function createConfig(buildName, output, plugins = []) {
   if (!output) {
-    console.log(require('chalk').yellow(`invalid format: "${buildName}"`))
+    console.log(chalk.yellow(`invalid format: "${buildName}"`))
     process.exit(1)
   }
 
@@ -139,7 +140,16 @@ function createConfig(buildName, output, plugins = []) {
               : `export * from '../${output.file}'`
 
           await fsp.writeFile(path.resolve(__dirname, `dist/${stub}`), contents)
-          console.log(`created stub ${require('chalk').bold(`dist/${stub}`)}`)
+          console.log(`created stub ${chalk.bold(`dist/${stub}`)}`)
+          // add the node specific version
+          if (buildName === 'mjs') {
+            const outfile = `dist/${stub}`.replace('esm-bundler.js', 'node.mjs')
+            await fsp.writeFile(
+              path.resolve(__dirname, outfile),
+              `global.__VUE_PROD_DEVTOOLS__ = false;\n` + contents
+            )
+            console.log(`created stub ${chalk.bold(outfile)}`)
+          }
         },
       },
     ],
