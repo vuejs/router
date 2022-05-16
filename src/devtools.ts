@@ -17,7 +17,7 @@ import { Router } from './router'
 import { UseLinkDevtoolsContext } from './RouterLink'
 import { RouterViewDevtoolsContext } from './RouterView'
 import { RouteLocationNormalized } from './types'
-import { assign } from './utils'
+import { assign, isArray } from './utils'
 
 function formatRouteLocation(
   routeLocation: RouteLocationNormalized,
@@ -101,7 +101,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
           })
         }
         // if multiple useLink are used
-        if (Array.isArray(componentInstance.__vrl_devtools)) {
+        if (isArray(componentInstance.__vrl_devtools)) {
           componentInstance.__devtoolsApi = api
           ;(
             componentInstance.__vrl_devtools as UseLinkDevtoolsContext[]

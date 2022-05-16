@@ -36,7 +36,7 @@ import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { NavigationFailure } from './errors'
-import { isBrowser, noop } from './utils'
+import { isArray, isBrowser, noop } from './utils'
 import { RouterTyped } from './typedRouter'
 
 export interface RouterLinkOptions {
@@ -303,7 +303,7 @@ function includesParams(
       if (innerValue !== outerValue) return false
     } else {
       if (
-        !Array.isArray(outerValue) ||
+        !isArray(outerValue) ||
         outerValue.length !== innerValue.length ||
         innerValue.some((value, i) => value !== outerValue[i])
       )

@@ -6,6 +6,7 @@ import {
 } from './types'
 import { RouteRecord } from './matcher/types'
 import { warn } from './warning'
+import { isArray } from './utils'
 
 /**
  * Location object returned by {@link `parseURL`}.
@@ -168,9 +169,9 @@ function isSameRouteLocationParamsValue(
   a: RouteParamValue | readonly RouteParamValue[],
   b: RouteParamValue | readonly RouteParamValue[]
 ): boolean {
-  return Array.isArray(a)
+  return isArray(a)
     ? isEquivalentArray(a, b)
-    : Array.isArray(b)
+    : isArray(b)
     ? isEquivalentArray(b, a)
     : a === b
 }
@@ -182,8 +183,8 @@ function isSameRouteLocationParamsValue(
  * @param a - array of values
  * @param b - array of values or a single value
  */
-function isEquivalentArray<T>(a: T[], b: T[] | T): boolean {
-  return Array.isArray(b)
+function isEquivalentArray<T>(a: readonly T[], b: readonly T[] | T): boolean {
+  return isArray(b)
     ? a.length === b.length && a.every((value, i) => value === b[i])
     : a.length === 1 && a[0] === b
 }
