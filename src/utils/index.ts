@@ -21,7 +21,7 @@ export function applyToParams(
 
   for (const key in params) {
     const value = params[key]
-    newParams[key] = Array.isArray(value)
+    newParams[key] = isArray(value)
       ? value.map(fn)
       : fn(value as Exclude<RouteParamValueRaw, any[]>)
   }
@@ -30,3 +30,10 @@ export function applyToParams(
 }
 
 export const noop = () => {}
+
+/**
+ * Typesafe alternative to Array.isArray
+ * https://github.com/microsoft/TypeScript/pull/48228
+ */
+export const isArray: (arg: ArrayLike<any> | any) => arg is ReadonlyArray<any> =
+  Array.isArray
