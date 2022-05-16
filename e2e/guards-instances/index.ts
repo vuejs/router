@@ -8,6 +8,7 @@ import {
   useRouter,
 } from '../../src'
 import { createApp, ref, reactive, defineComponent, computed } from 'vue'
+import { isArray } from '../../src/utils'
 
 // override existing style on dev with shorter times
 if (!__CI__) {
@@ -148,7 +149,9 @@ router.push = to => {
       },
     })
   } else {
+    // @ts-expect-error: because of the generics
     return originalPush({
+      // @ts-expect-error: because of the generics
       ...to,
       query: {
         testCase: router.currentRoute.value.query.testCase,
@@ -224,7 +227,7 @@ leaves: {{ state.leave }}
     const testCase = computed<string>({
       get: () => {
         let { testCase } = route.query
-        return !testCase || Array.isArray(testCase) ? '' : testCase
+        return !testCase || isArray(testCase) ? '' : testCase
       },
       set(testCase) {
         router.push({ query: { ...route.query, testCase } })
