@@ -203,6 +203,19 @@ Create a `vercel.json` file under the root directory of your project with the fo
 }
 ```
 
+### Azure Static Web Apps
+
+Create a `staticwebapp.config.json` file in the public folder with the following configuration. If the requested route does not exist, Azure will rewrite all requests to `index.html` except for assets and favicons.
+
+```json [staticwebapp.config.json ~vscode-icons:file-type-light-azure~]
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/favicons/*"]
+  }
+}
+```
+
 <RuleKitLink />
 
 ## Caveat
