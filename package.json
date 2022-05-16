@@ -12,8 +12,8 @@
       "node": {
         "import": {
           "production": "./dist/vue-router.prod.cjs",
-          "development": "./dist/vue-router.mjs",
-          "default": "./dist/vue-router.mjs"
+          "development": "./dist/vue-router.node.mjs",
+          "default": "./dist/vue-router.node.mjs"
         },
         "require": {
           "production": "./dist/vue-router.prod.cjs",
