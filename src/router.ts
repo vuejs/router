@@ -650,7 +650,8 @@ export function createRouter<Options extends RouterOptions>(
         {
           query: to.query,
           hash: to.hash,
-          params: to.params,
+          // avoid transferring params if the redirect has a path
+          params: 'path' in newTargetLocation ? {} : to.params,
         },
         newTargetLocation
       )

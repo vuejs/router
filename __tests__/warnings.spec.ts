@@ -32,7 +32,7 @@ describe('warnings', () => {
       history,
       routes: [{ path: '/:p', name: 'p', component }],
     })
-    router.resolve({ path: '/p', params: { p: 'p' } })
+    router.push({ path: '/p', params: { p: 'p' } })
     expect('Path "/p" was passed with params').toHaveBeenWarned()
   })
 
@@ -42,8 +42,24 @@ describe('warnings', () => {
       history,
       routes: [{ path: '/:p', name: 'p', component }],
     })
-    router.resolve({ path: '/p', name: 'p', params: { p: 'p' } })
+    router.push({ path: '/p', name: 'p', params: { p: 'p' } })
     expect('Path "/" was passed with params').not.toHaveBeenWarned()
+  })
+
+  it('does not warn when redirecting from params', async () => {
+    const history = createMemoryHistory()
+    const router = createRouter({
+      history,
+      routes: [
+        {
+          path: '/p/:p',
+          redirect: to => ({ path: '/s', query: { p: to.params.p } }),
+        },
+        { path: '/s', component },
+      ],
+    })
+    router.push({ path: '/p/abc' })
+    expect('was passed with params').not.toHaveBeenWarned()
   })
 
   it('warns if an alias is missing params', async () => {
