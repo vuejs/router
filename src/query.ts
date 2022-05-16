@@ -1,4 +1,5 @@
 import { decode, encodeQueryKey, encodeQueryValue, PLUS_RE } from './encoding'
+import { isArray } from './utils'
 
 /**
  * Possible values in normalized {@link LocationQuery}. `null` renders the query
@@ -27,7 +28,7 @@ export type LocationQueryValueRaw = LocationQueryValue | number | undefined
  */
 export type LocationQuery = Record<
   string,
-  LocationQueryValue | LocationQueryValue[]
+  LocationQueryValue | readonly LocationQueryValue[]
 >
 /**
  * Loose {@link LocationQuery} object that can be passed to functions like
@@ -38,7 +39,7 @@ export type LocationQuery = Record<
  */
 export type LocationQueryRaw = Record<
   string | number,
-  LocationQueryValueRaw | LocationQueryValueRaw[]
+  LocationQueryValueRaw | readonly LocationQueryValueRaw[]
 >
 
 /**
@@ -68,10 +69,11 @@ export function parseQuery(search: string): LocationQuery {
     if (key in query) {
       // an extra variable for ts types
       let currentValue = query[key]
-      if (!Array.isArray(currentValue)) {
+      if (!isArray(currentValue)) {
         currentValue = query[key] = [currentValue]
       }
-      currentValue.push(value)
+      // we force the modification
+      ;(currentValue as LocationQueryValue[]).push(value)
     } else {
       query[key] = value
     }
@@ -101,7 +103,7 @@ export function stringifyQuery(query: LocationQueryRaw): string {
       continue
     }
     // keep null values
-    const values: LocationQueryValueRaw[] = Array.isArray(value)
+    const values: LocationQueryValueRaw[] = isArray(value)
       ? value.map(v => v && encodeQueryValue(v))
       : [value && encodeQueryValue(value)]
 
@@ -135,7 +137,7 @@ export function normalizeQuery(
   for (const key in query) {
     const value = query[key]
     if (value !== undefined) {
-      normalizedQuery[key] = Array.isArray(value)
+      normalizedQuery[key] = isArray(value)
         ? value.map(v => (v == null ? null : '' + v))
         : value == null
         ? value

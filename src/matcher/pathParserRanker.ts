@@ -1,5 +1,5 @@
 import { Token, TokenType } from './pathTokenizer'
-import { assign } from '../utils'
+import { assign, isArray } from '../utils'
 
 export type PathParams = Record<string, string | readonly string[]>
 
@@ -244,11 +244,13 @@ export function tokensToParser(
           const param: string | readonly string[] =
             value in params ? params[value] : ''
 
-          if (Array.isArray(param) && !repeatable)
+          if (isArray(param) && !repeatable) {
             throw new Error(
               `Provided param "${value}" is an array but it is not repeatable (* or + modifiers)`
             )
-          const text: string = Array.isArray(param)
+          }
+
+          const text: string = isArray(param)
             ? (param as string[]).join('/')
             : (param as string)
           if (!text) {

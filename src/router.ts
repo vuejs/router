@@ -34,7 +34,7 @@ import {
   NavigationRedirectError,
   isNavigationFailure,
 } from './errors'
-import { applyToParams, isBrowser, assign, noop } from './utils'
+import { applyToParams, isBrowser, assign, noop, isArray } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
 import {
@@ -859,7 +859,7 @@ export function createRouter<Options extends RouterOptions>(
           for (const record of to.matched) {
             // do not trigger beforeEnter on reused views
             if (record.beforeEnter && !from.matched.includes(record)) {
-              if (Array.isArray(record.beforeEnter)) {
+              if (isArray(record.beforeEnter)) {
                 for (const beforeEnter of record.beforeEnter)
                   guards.push(guardToPromiseFn(beforeEnter, to, from))
               } else {

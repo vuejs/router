@@ -26,7 +26,7 @@ import {
   viewDepthKey,
   routerViewLocationKey,
 } from './injectionSymbols'
-import { assign, isBrowser } from './utils'
+import { assign, isArray, isBrowser } from './utils'
 import { warn } from './warning'
 import { isSameRouteRecord } from './location'
 
@@ -182,7 +182,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
           meta: matchedRoute.meta,
         }
 
-        const internalInstances = Array.isArray(component.ref)
+        const internalInstances = isArray(component.ref)
           ? component.ref.map(r => r.i)
           : [component.ref.i]
 
