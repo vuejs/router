@@ -329,6 +329,9 @@ describe('resolveRelativePath', () => {
     expect(resolveRelativePath('./../add', '/')).toBe('/add')
     expect(resolveRelativePath('../../add', '/')).toBe('/add')
     expect(resolveRelativePath('../../../add', '/')).toBe('/add')
+    expect(resolveRelativePath('a/add', '/')).toBe('/a/add')
+    expect(resolveRelativePath('./a/add', '/')).toBe('/a/add')
+    expect(resolveRelativePath('../a/add', '/')).toBe('/a/add')
   })
 
   it('ignores it location is absolute', () => {
