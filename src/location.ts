@@ -215,10 +215,16 @@ export function resolveRelativePath(to: string, from: string): string {
 
   for (toPosition = 0; toPosition < toSegments.length; toPosition++) {
     segment = toSegments[toPosition]
-    // can't go below zero
-    if (position === 1 || segment === '.') continue
-    if (segment === '..') position--
-    // found something that is not relative path
+
+    // we stay on the same position
+    if (segment === '.') continue
+    // go up in the from array
+    if (segment === '..') {
+      // we can't go below zero but we still need to increment toPosition
+      if (position > 1) position--
+      // continue
+    }
+    // we reached a non relative path, we stop here
     else break
   }
 
@@ -226,6 +232,7 @@ export function resolveRelativePath(to: string, from: string): string {
     fromSegments.slice(0, position).join('/') +
     '/' +
     toSegments
+      // ensure we use at least the last element in the toSegments
       .slice(toPosition - (toPosition === toSegments.length ? 1 : 0))
       .join('/')
   )
