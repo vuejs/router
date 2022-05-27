@@ -45,6 +45,7 @@ router.beforeEach((to, from) => {
       return { name: 'Login' }
     }
   })
+```
 
 如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](../../api/#onerror) 注册过的回调。
 
