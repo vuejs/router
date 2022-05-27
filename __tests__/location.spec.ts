@@ -134,6 +134,12 @@ describe('parseURL', () => {
   })
 
   it('parses ? after the hash', () => {
+    expect(parseURL('/foo#?a=one')).toEqual({
+      fullPath: '/foo#?a=one',
+      path: '/foo',
+      hash: '#?a=one',
+      query: {},
+    })
     expect(parseURL('/foo/#?a=one')).toEqual({
       fullPath: '/foo/#?a=one',
       path: '/foo/',
