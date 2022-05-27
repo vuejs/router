@@ -53,8 +53,13 @@ export function parseURL(
     hash = ''
 
   // Could use URL and URLSearchParams but IE 11 doesn't support it
-  const searchPos = location.indexOf('?')
-  const hashPos = location.indexOf('#', searchPos > -1 ? searchPos : 0)
+  // TODO: move to new URL()
+  const hashPos = location.indexOf('#')
+  let searchPos = location.indexOf('?')
+  // the hash appears before the search, so it's not part of the search string
+  if (hashPos < searchPos && hashPos >= 0) {
+    searchPos = -1
+  }
 
   if (searchPos > -1) {
     path = location.slice(0, searchPos)
