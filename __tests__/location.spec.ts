@@ -133,6 +133,15 @@ describe('parseURL', () => {
     })
   })
 
+  it('parses ? after the hash', () => {
+    expect(parseURL('/foo/#?a=one')).toEqual({
+      fullPath: '/foo/#?a=one',
+      path: '/foo/',
+      hash: '#?a=one',
+      query: {},
+    })
+  })
+
   it('calls parseQuery', () => {
     const parseQuery = jest.fn()
     originalParseURL(parseQuery, '/?é=é&é=a')
