@@ -183,6 +183,7 @@ export function useLink(props: UseLinkOptions) {
 
 export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
   name: 'RouterLink',
+  compatConfig: { MODE: 3 },
   props: {
     to: {
       type: [String, Object] as PropType<RouteLocationRaw>,
