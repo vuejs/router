@@ -4,7 +4,7 @@ import { Ref, ComponentPublicInstance, Component, DefineComponent } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
-import { RouteNamedMapGeneric } from './named'
+import { RouteNamedInfo, RouteNamedMapGeneric } from './named'
 
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
@@ -69,32 +69,24 @@ export interface LocationAsName {
  * @internal
  */
 export interface LocationAsRelativeRaw<
-  RouteMap extends RouteNamedMapGeneric = RouteNamedMapGeneric,
-  Name extends keyof RouteMap = keyof RouteMap
+  Name extends RouteRecordName = RouteRecordName,
+  Info extends RouteNamedInfo = RouteNamedInfo
 > {
-  name?: RouteNamedMapGeneric extends RouteMap ? RouteRecordName : Name
-  params?: RouteNamedMapGeneric extends RouteMap
-    ? RouteParamsRaw
-    : RouteMap[Name]['paramsRaw']
+  name?: Name
+  params?: Info extends RouteNamedInfo<any, any, infer ParamsRaw>
+    ? ParamsRaw
+    : RouteParamsRaw
 }
 
-// this one didn't work 🤔
-// export type LocationAsRelativeRaw<
-//   RouteMap extends RouteNamedMapGeneric = RouteNamedMapGeneric
-// > = {
-//   [N in keyof RouteMap]: {
-//     name?: N
-//     params?: RouteMap[N]['paramsRaw']
-//   }
-// }[keyof RouteMap]
-
+/**
+ * @internal
+ */
 export interface LocationAsRelative<
-  RouteMap extends RouteNamedMapGeneric = RouteNamedMapGeneric,
-  Name extends keyof RouteMap = keyof RouteMap
+  Info extends RouteNamedInfo = RouteNamedInfo
 > {
-  params?: RouteNamedMapGeneric extends RouteMap
-    ? RouteParams
-    : RouteMap[Name]['params']
+  params?: Info extends RouteNamedInfo<any, infer Params, any>
+    ? Params
+    : RouteParams
 }
 
 export interface RouteLocationOptions {
@@ -128,11 +120,15 @@ export type RouteLocationRaw =
  * @internal
  */
 export type RouteLocationNamedRaw<
-  RouteMap extends RouteNamedMapGeneric = RouteNamedMapGeneric,
-  Name extends keyof RouteMap = keyof RouteMap
-> = RouteQueryAndHash &
-  LocationAsRelativeRaw<RouteMap, Name> &
-  RouteLocationOptions
+  RouteMap extends RouteNamedMapGeneric = RouteNamedMapGeneric
+> = RouteNamedMapGeneric extends RouteMap
+  ? // allows assigning a RouteLocationRaw to RouteLocationNamedRaw
+    RouteQueryAndHash & LocationAsRelativeRaw & RouteLocationOptions
+  : {
+      [K in Extract<keyof RouteMap, RouteRecordName>]: RouteQueryAndHash &
+        LocationAsRelativeRaw<K, RouteMap[K]> &
+        RouteLocationOptions
+    }[Extract<keyof RouteMap, RouteRecordName>]
 
 export type RouteLocationPathRaw =
   | RouteQueryAndHash & LocationAsPath & RouteLocationOptions

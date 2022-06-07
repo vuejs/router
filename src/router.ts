@@ -70,7 +70,7 @@ import {
   routerViewLocationKey,
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
-import { RouteNamedMap, RouteNamedMapGeneric } from './types/named'
+import { RouteNamedMap } from './types/named'
 
 /**
  * Internal type to define an ErrorHandler
@@ -255,13 +255,11 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
    *
    * @param to - Route location to navigate to
    */
-  push<
-    RouteMap extends RouteNamedMapGeneric = RouteNamedMap<Options['routes']>,
-    Name extends keyof RouteMap = keyof RouteNamedMap<Options['routes']>
-  >(
-    to: RouteNamedMapGeneric extends RouteMap
-      ? RouteLocationRaw
-      : RouteLocationNamedRaw<RouteMap, Name> | RouteLocationPathRaw | string
+  push(
+    to:
+      | RouteLocationNamedRaw<RouteNamedMap<Options['routes']>>
+      | string
+      | RouteLocationPathRaw
   ): Promise<NavigationFailure | void | undefined>
 
   /**
@@ -270,13 +268,11 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
    *
    * @param to - Route location to navigate to
    */
-  replace<
-    RouteMap extends RouteNamedMapGeneric = RouteNamedMap<Options['routes']>,
-    Name extends keyof RouteMap = keyof RouteNamedMap<Options['routes']>
-  >(
-    to: RouteNamedMapGeneric extends RouteMap
-      ? RouteLocationRaw
-      : RouteLocationNamedRaw<RouteMap, Name> | RouteLocationPathRaw | string
+  replace(
+    to:
+      | RouteLocationNamedRaw<RouteNamedMap<Options['routes']>>
+      | string
+      | RouteLocationPathRaw
   ): Promise<NavigationFailure | void | undefined>
 
   /**
