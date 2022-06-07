@@ -7,7 +7,7 @@ version: 2.1
 defaults: &defaults
   working_directory: ~/project/vue-router
   docker:
-    - image: circleci/node:lts-browsers
+    - image: cimg/node:lts-browsers
 
 jobs:
   install:
