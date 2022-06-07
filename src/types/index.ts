@@ -89,13 +89,18 @@ export interface LocationAsRelative<
     : RouteParams
 }
 
+/**
+ * Common options for all navigation methods.
+ */
 export interface RouteLocationOptions {
   /**
    * Replace the entry in the history instead of pushing a new entry
    */
   replace?: boolean
   /**
-   * Triggers the navigation even if the location is the same as the current one
+   * Triggers the navigation even if the location is the same as the current one.
+   * Note this will also add a new entry to the history unless `replace: true`
+   * is passed.
    */
   force?: boolean
   /**
