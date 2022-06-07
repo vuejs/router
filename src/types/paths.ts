@@ -10,10 +10,20 @@ import { RouteParams, RouteParamsRaw, RouteParamValueRaw } from '.'
  */
 export type ParamsFromPath<P extends string = string> = string extends P
   ? RouteParams // Generic version
+  : _ExtractParamsPath<_RemoveRegexpFromParam<P>, false> extends Record<
+      any,
+      never
+    >
+  ? Record<any, never>
   : _ExtractParamsPath<_RemoveRegexpFromParam<P>, false>
 
 export type ParamsRawFromPath<P extends string = string> = string extends P
   ? RouteParamsRaw // Generic version
+  : _ExtractParamsPath<_RemoveRegexpFromParam<P>, true> extends Record<
+      any,
+      never
+    >
+  ? Record<any, never>
   : _ExtractParamsPath<_RemoveRegexpFromParam<P>, true>
 
 /**

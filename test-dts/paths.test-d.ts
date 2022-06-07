@@ -19,6 +19,10 @@ expectType<{ id: readonly [string, ...string[]] }>(params('/users/:id+'))
 expectType<{ id?: string | null | undefined }>(params('/users/:id?'))
 expectType<{ id?: readonly string[] | null | undefined }>(params('/users/:id*'))
 
+expectType<Record<any, never>>(params('/hello/other/thing'))
+// @ts-expect-error
+expectType<{ thing: 'e' }>(params('/hello/other/thing'))
+
 // @ts-expect-error
 expectType<{ other: string }>(params('/users/:id'))
 // @ts-expect-error

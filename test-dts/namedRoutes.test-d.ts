@@ -82,17 +82,21 @@ for (const method of methods) {
   r2[method]({ params: { a: 2 } })
   r2[method]({ params: {} })
   r2[method]({ params: { opt: 'hey' } })
+  // @ts-expect-error: but not non existent
+  r2[method]({ params: { fake_param: 'hey' } })
 
   // routes with no params
   r2[method]({ name: 'nested' })
   r2[method]({ name: 'nested', params: {} })
   // FIXME: is it possible to support this version
-  // // @ts-expect-error: does not accept any params
-  // r2[method]({ name: 'nested', params: { eo: 'true' } })
+  // @ts-expect-error: does not accept any params
+  r2[method]({ name: 'nested', params: { id: 2 } })
 }
 
-// still allow generics to be passed for convenience
+// NOTE: not possible if we use the named routes as the point is to provide valid routes only
+// @ts-expect-error
 r2.push({} as unknown as RouteLocationRaw)
+// @ts-expect-error
 r2.replace({} as unknown as RouteLocationRaw)
 
 // createMap(r2.options.routes, true).
