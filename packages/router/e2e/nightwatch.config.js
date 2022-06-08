@@ -13,6 +13,9 @@ const browserDefaults = {
   },
 }
 
+const geckodriverPath = require('geckodriver').path
+const chromedriverPath = require('chromedriver').path
+
 /** @type {import('nightwatch').NightwatchOptions} */
 module.exports = {
   src_folders: ['e2e/specs'],
@@ -29,8 +32,8 @@ module.exports = {
     port: 4444,
     server_path: require('selenium-server').path,
     cli_args: {
-      'webdriver.chrome.driver': require('chromedriver').path,
-      'webdriver.gecko.driver': require('geckodriver').path,
+      'webdriver.chrome.driver': chromedriverPath,
+      'webdriver.gecko.driver': geckodriverPath,
     },
   },
 
@@ -83,7 +86,7 @@ module.exports = {
         browserName: 'firefox',
         acceptSslCerts: true,
         'moz:firefoxOptions': {
-          binary: require('geckodriver').path,
+          binary: geckodriverPath,
           args: [],
         },
       },
