@@ -31,6 +31,7 @@ jobs:
       - run: pnpm run -r build
       - run: pnpm run -r build:dts
       - run: pnpm run -r test:dts
-      - run: pnpm run -r test:e2e:ci
+      # TODO: add when doable
+      # - run: pnpm run -r test:e2e:ci
 
       - uses: codecov/codecov-action@v2

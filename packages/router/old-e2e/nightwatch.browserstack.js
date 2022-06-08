@@ -108,7 +108,7 @@ const nwConf = {
   },
 }
 
-// Code to copy seleniumhost/port into test settings
+// Code to copy selenium host/port into test settings
 for (const setting in nwConf.test_settings) {
   const config = nwConf.test_settings[setting]
   config['selenium_host'] = nwConf.selenium.host
