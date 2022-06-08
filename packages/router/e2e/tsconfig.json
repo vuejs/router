@@ -2,7 +2,7 @@
   "include": ["index.ts", "*/*.ts", "../src/global.d.ts"],
   "compilerOptions": {
     "target": "es6",
-    "module": "commonjs",
+    "module": "ESNext",
     // "lib": ["es2017.object"] /* Specify library files to be included in the compilation. */,
     "declaration": true,
     // "declarationMap": true,
@@ -19,6 +19,9 @@
 
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "paths": {
+      "vue-router": ["../src"]
+    }
   }
 }
