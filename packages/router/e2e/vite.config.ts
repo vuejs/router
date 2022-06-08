@@ -1,11 +1,10 @@
-const fs = require('fs')
-const { resolve, join } = require('path')
-const { defineConfig } = require('vite')
-const vue = require('@vitejs/plugin-vue')
-const history = require('connect-history-api-fallback')
+import fs from 'fs'
+import { resolve, join } from 'path'
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import history from 'connect-history-api-fallback'
 
-/** @type {string[]} */
-let examples = []
+const examples: string[] = []
 fs.readdirSync(__dirname).forEach(dir => {
   const fullDir = join(__dirname, dir)
   const entry = join(fullDir, 'index.ts')
@@ -15,7 +14,7 @@ fs.readdirSync(__dirname).forEach(dir => {
 })
 
 // https://vitejs.dev/config/
-const config = (env = {}) => {
+const config = (env: Record<string, string> = {}) => {
   return defineConfig({
     root: resolve(__dirname),
     resolve: {
@@ -28,23 +27,26 @@ const config = (env = {}) => {
     },
     build: {
       outDir: join(__dirname, '__build__'),
-      filename: '[name].js',
-      chunkFilename: '[id].chunk.js',
-      publicPath: '/',
+      // publicPath: '/',
       rollupOptions: {
+        output: {
+          file: '[name].js',
+          chunkFileNames: '[id].chunk.js',
+        },
         plugins: [],
         input: examples.reduce(
           (entries, name) => {
             entries[name] = resolve(__dirname, name, 'index.html')
             return entries
           },
-          { index: resolve(__dirname, 'index.html') }
+          { index: resolve(__dirname, 'index.html') } as Record<string, string>
         ),
       },
     },
     plugins: [
       vue(),
       {
+        name: 'custom history',
         configureServer({ middlewares }) {
           middlewares.use(
             history({
