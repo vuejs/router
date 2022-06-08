@@ -12,21 +12,9 @@ const examples: string[] = Object.keys(tsmap)
   .map(match => match![1] + '/')
   .sort()
 
-// const context = require.context('.', true, /^.{2,}\/index\.ts$/)
-// const DIR_RE = /^\.\/([^/]+)\//
-
-// const examples: string[] = []
-// context.keys().forEach(path => {
-//   const match = DIR_RE.exec(path)
-//   if (match) examples.push(match[1])
-//   return name
-// })
-
-examples.sort()
-
 declare global {
   interface Window {
-    app: App<Element>
+    app: App
     vm: ComponentPublicInstance
     r: Router
   }

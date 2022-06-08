@@ -1,4 +1,4 @@
-const bsStatus = require('../browserstack-send-status')
+// const bsStatus = require('../browserstack-send-status')
 
 const baseURL = 'http://localhost:3000/encoding'
 
@@ -7,12 +7,12 @@ const rawText = ' !"#$&\'()*+,/:;<=>?@[]^`{|}'
 const TIMEOUT = 2000
 
 module.exports = {
-  ...bsStatus(),
+  // ...bsStatus(),
 
   '@tags': ['history', 'encoding', 'browserstack'],
 
   /** @type {import('nightwatch').NightwatchTest} */
-  'encodes values': function (browser) {
+  'encodes values'(browser) {
     browser
       .url(baseURL + '/')
       .assert.urlEquals(baseURL + '/')

@@ -21,6 +21,7 @@ importers:
       '@sucrase/jest-plugin': ^2.1.1
       '@types/jest': ^27.4.1
       '@types/jsdom': ^16.2.13
+      '@types/nightwatch': ^2.0.8
       '@vitejs/plugin-vue': ^2.2.2
       '@vue/compiler-sfc': ^3.2.31
       '@vue/devtools-api': ^6.1.4
@@ -65,6 +66,7 @@ importers:
       '@sucrase/jest-plugin': 2.2.1
       '@types/jest': 27.5.2
       '@types/jsdom': 16.2.14
+      '@types/nightwatch': 2.0.8
       '@vitejs/plugin-vue': 2.3.3_vite@2.9.10+vue@3.2.37
       '@vue/compiler-sfc': 3.2.37
       '@vue/server-renderer': 3.2.37_vue@3.2.37
@@ -1128,6 +1130,12 @@ packages:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
     dev: true
 
+  /@types/nightwatch/2.0.8:
+    resolution: {integrity: sha512-QxWcHZjdkNRU+524zOkwt5N809pcBklymGVfCGIzWPdf0s2Y573pXNkIomQ4ZFjxyvPevg8izZflQ7DMyeE8HA==}
+    dependencies:
+      '@types/selenium-webdriver': 4.1.1
+    dev: true
+
   /@types/node/12.20.24:
     resolution: {integrity: sha512-yxDeaQIAJlMav7fH5AQqPH1u8YIuhYJXYBzxaQ4PifsU0GDO38MSdmEDeRlIxrKbC6NbEaaEHDanWb+y30U8SQ==}
     dev: true
@@ -1160,12 +1168,24 @@ packages:
       '@types/node': 17.0.41
     dev: true
 
+  /@types/selenium-webdriver/4.1.1:
+    resolution: {integrity: sha512-NxxZZek50ylIACiXebKQYHD3D4One3WXOasEXWazL6aTfYbZob7ClNKxUpg8I4/oWArX87oPWvj1cHKqfel3Hg==}
+    dependencies:
+      '@types/ws': 8.5.3
+    dev: true
+
   /@types/stack-utils/2.0.1:
     resolution: {integrity: sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==}
     dev: true
 
   /@types/tough-cookie/4.0.2:
     resolution: {integrity: sha512-Q5vtl1W5ue16D+nIaW8JWebSSraJVlK+EthKn7e7UcD4KWsaSJ8BqGPXNaPghgtcn/fhvrN17Tv8ksUsQpiplw==}
+    dev: true
+
+  /@types/ws/8.5.3:
+    resolution: {integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==}
+    dependencies:
+      '@types/node': 17.0.41
     dev: true
 
   /@types/yargs-parser/21.0.0:
