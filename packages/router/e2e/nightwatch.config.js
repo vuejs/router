@@ -83,6 +83,7 @@ module.exports = {
         browserName: 'firefox',
         acceptSslCerts: true,
         'moz:firefoxOptions': {
+          binary: require('geckodriver').path,
           args: [],
         },
       },
