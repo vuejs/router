@@ -1,0 +1,36 @@
+name: test
+
+on:
+  push:
+    paths-ignore:
+      - 'packages/docs/**'
+      - 'packages/playground/**'
+  pull_request:
+    paths-ignore:
+      - 'packages/docs/**'
+      - 'packages/playground/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2.2.1
+        with:
+          version: 7.1.7
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'pnpm'
+
+      - run: pnpm install
+      - run: pnpm run lint
+      - run: pnpm run -r test:types
+      - run: pnpm run -r test:unit
+      - run: pnpm run -r build
+      - run: pnpm run -r build:dts
+      - run: pnpm run -r test:dts
+      - run: pnpm run -r test:e2e:ci
+
+      - uses: codecov/codecov-action@v2
