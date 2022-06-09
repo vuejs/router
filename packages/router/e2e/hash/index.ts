@@ -1,6 +1,10 @@
 import '../global.css'
-import { createRouter, useRoute, createWebHashHistory } from '../../src'
-import { RouteComponent } from '../../src/types'
+import {
+  createRouter,
+  useRoute,
+  createWebHashHistory,
+  RouteComponent,
+} from 'vue-router'
 import { createApp } from 'vue'
 
 const Home: RouteComponent = {
