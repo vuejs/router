@@ -3,6 +3,8 @@ const Nightwatch = require('nightwatch')
 const browserstack = require('browserstack-local')
 const path = require('path')
 
+console.log('Test', process.env.API_SECRET)
+
 const { BROWSERSTACK_ACCESS_KEY } = process.env
 if (!BROWSERSTACK_ACCESS_KEY) {
   throw new Error(
