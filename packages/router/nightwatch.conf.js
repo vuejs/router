@@ -12,6 +12,7 @@
 //            |___/
 //
 
+/** @type {import('nightwatch').NightwatchOptions} */
 module.exports = {
   // An array of folders (excluding subfolders) where your tests are located;
   // if this is not specified, the test source must be passed as the second argument to the test runner.
@@ -149,34 +150,6 @@ module.exports = {
     },
 
     //////////////////////////////////////////////////////////////////////////////////
-    // Configuration for when using cucumber-js (https://cucumber.io)                |
-    //                                                                               |
-    // It uses the bundled examples inside the nightwatch examples folder; feel free |
-    // to adapt this to your own project needs                                       |
-    //////////////////////////////////////////////////////////////////////////////////
-    'cucumber-js': {
-      src_folders: ['examples/cucumber-js/features/step_definitions'],
-
-      test_runner: {
-        // set cucumber as the runner
-        type: 'cucumber',
-
-        // define cucumber specific options
-        options: {
-          //set the feature path
-          feature_path:
-            'node_modules/nightwatch/examples/cucumber-js/*/*.feature',
-
-          // start the webdriver session automatically (enabled by default)
-          // auto_start_session: true
-
-          // use parallel execution in Cucumber
-          // parallel: 2 // set number of workers to use (can also be defined in the cli as --parallel 2
-        },
-      },
-    },
-
-    //////////////////////////////////////////////////////////////////////////////////
     // Configuration for when using the browserstack.com cloud service               |
     //                                                                               |
     // Please set the username and access key by setting the environment variables:  |
@@ -261,60 +234,7 @@ module.exports = {
         browserName: 'firefox',
       },
     },
-    //////////////////////////////////////////////////////////////////////////////////
-    // Configuration for when using the SauceLabs cloud service                      |
-    //                                                                               |
-    // Please set the username and access key by setting the environment variables:  |
-    // - SAUCE_USERNAME                                                              |
-    // - SAUCE_ACCESS_KEY                                                            |
-    //////////////////////////////////////////////////////////////////////////////////
-    saucelabs: {
-      selenium: {
-        host: 'ondemand.saucelabs.com',
-        port: 443,
-      },
-      // More info on configuring capabilities can be found on:
-      // https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options
-      desiredCapabilities: {
-        'sauce:options': {
-          username: '${SAUCE_USERNAME}',
-          accessKey: '${SAUCE_ACCESS_KEY}',
-          screenResolution: '1280x1024',
-          // https://docs.saucelabs.com/dev/cli/sauce-connect-proxy/#--region
-          // region: 'us-west-1'
-          // https://docs.saucelabs.com/dev/test-configuration-options/#tunnelidentifier
-          // parentTunnel: '',
-          // tunnelIdentifier: '',
-        },
-      },
-      disable_error_log: false,
-      webdriver: {
-        start_process: false,
-      },
-    },
-    'saucelabs.chrome': {
-      extends: 'saucelabs',
-      desiredCapabilities: {
-        browserName: 'chrome',
-        browserVersion: 'latest',
-        javascriptEnabled: true,
-        acceptSslCerts: true,
-        timeZone: 'London',
-        chromeOptions: {
-          w3c: true,
-        },
-      },
-    },
-    'saucelabs.firefox': {
-      extends: 'saucelabs',
-      desiredCapabilities: {
-        browserName: 'firefox',
-        browserVersion: 'latest',
-        javascriptEnabled: true,
-        acceptSslCerts: true,
-        timeZone: 'London',
-      },
-    },
+
     //////////////////////////////////////////////////////////////////////////////////
     // Configuration for when using the Selenium service, either locally or remote,  |
     //  like Selenium Grid                                                           |
