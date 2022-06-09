@@ -21,34 +21,16 @@ module.exports = {
 
       // they should all be displaying the home page
       .assert.textContains('#app-1 .home', 'Home')
-      .assert.cssClassPresent(
-        '#app-1 li:nth-child(1) a',
-        'router-link-exact-active'
-      )
-      .assert.not.cssClassPresent(
-        '#app-1 li:nth-child(2) a',
-        'router-link-active'
-      )
+      .assert.hasClass('#app-1 li:nth-child(1) a', 'router-link-exact-active')
+      .assert.not.hasClass('#app-1 li:nth-child(2) a', 'router-link-active')
 
       .assert.textContains('#app-2 .home', 'Home')
-      .assert.cssClassPresent(
-        '#app-2 li:nth-child(1) a',
-        'router-link-exact-active'
-      )
-      .assert.not.cssClassPresent(
-        '#app-2 li:nth-child(2) a',
-        'router-link-active'
-      )
+      .assert.hasClass('#app-2 li:nth-child(1) a', 'router-link-exact-active')
+      .assert.not.hasClass('#app-2 li:nth-child(2) a', 'router-link-active')
 
       .assert.textContains('#app-3 .home', 'Home')
-      .assert.cssClassPresent(
-        '#app-3 li:nth-child(1) a',
-        'router-link-exact-active'
-      )
-      .assert.not.cssClassPresent(
-        '#app-3 li:nth-child(2) a',
-        'router-link-active'
-      )
+      .assert.hasClass('#app-3 li:nth-child(1) a', 'router-link-exact-active')
+      .assert.not.hasClass('#app-3 li:nth-child(2) a', 'router-link-active')
 
       // navigation on app 1
       .click('#app-1 li:nth-child(2) a')
