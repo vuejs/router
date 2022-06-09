@@ -1,27 +1,25 @@
-const bsStatus = require('../browserstack-send-status')
-
 function testCase(browser, name) {
   return browser
     .click('li:nth-child(2) a')
-    .assert.containsText(`#${name} .enterCbs`, '1')
-    .assert.containsText(`#${name} .update`, '0')
-    .assert.containsText(`#${name} .leave`, '0')
+    .assert.textContains(`#${name} .enterCbs`, '1')
+    .assert.textContains(`#${name} .update`, '0')
+    .assert.textContains(`#${name} .leave`, '0')
     .click('li:nth-child(3) a')
-    .assert.containsText(`#${name} .enterCbs`, '2')
-    .assert.containsText(`#${name} .update`, '0')
-    .assert.containsText(`#${name} .leave`, '1')
+    .assert.textContains(`#${name} .enterCbs`, '2')
+    .assert.textContains(`#${name} .update`, '0')
+    .assert.textContains(`#${name} .leave`, '1')
     .click('li:nth-child(4) a')
-    .assert.containsText(`#${name} .enterCbs`, '2')
-    .assert.containsText(`#${name} .update`, '1')
-    .assert.containsText(`#${name} .leave`, '1')
+    .assert.textContains(`#${name} .enterCbs`, '2')
+    .assert.textContains(`#${name} .update`, '1')
+    .assert.textContains(`#${name} .leave`, '1')
     .click('li:nth-child(5) a')
-    .assert.containsText(`#${name} .enterCbs`, '2')
-    .assert.containsText(`#${name} .update`, '2')
-    .assert.containsText(`#${name} .leave`, '1')
+    .assert.textContains(`#${name} .enterCbs`, '2')
+    .assert.textContains(`#${name} .update`, '2')
+    .assert.textContains(`#${name} .leave`, '1')
     .click('li:nth-child(2) a')
-    .assert.containsText(`#${name} .enterCbs`, '3')
-    .assert.containsText(`#${name} .update`, '2')
-    .assert.containsText(`#${name} .leave`, '2')
+    .assert.textContains(`#${name} .enterCbs`, '3')
+    .assert.textContains(`#${name} .update`, '2')
+    .assert.textContains(`#${name} .leave`, '2')
     .expect.element('#logs')
     .text.to.equal(
       [
@@ -41,8 +39,6 @@ function testCase(browser, name) {
 }
 
 module.exports = {
-  ...bsStatus(),
-
   '@tags': [],
 
   /** @type {import('nightwatch').NightwatchTest} */
@@ -60,7 +56,7 @@ module.exports = {
       .click('li:nth-child(1) a')
       // the enters are reset when leaving a reused component
       .click('li:nth-child(2) a')
-      .assert.containsText(`#${name} .enterCbs`, '1')
+      .assert.textContains(`#${name} .enterCbs`, '1')
 
     browser.end()
   },
@@ -98,9 +94,9 @@ module.exports = {
     browser
       .click('li:nth-child(1) a')
       .click('li:nth-child(2) a')
-      .assert.containsText(`#${name} .enterCbs`, '5')
+      .assert.textContains(`#${name} .enterCbs`, '5')
       .click('li:nth-child(3) a')
-      .assert.containsText(`#${name} .enterCbs`, '6')
+      .assert.textContains(`#${name} .enterCbs`, '6')
       // leave the update view and enter it again
       .click('li:nth-child(1) a')
       .click('li:nth-child(3) a')
@@ -135,26 +131,26 @@ module.exports = {
       .click('li:nth-child(5) a')
       // the query is used as a key resetting the enter count
       .click('li:nth-child(6) a')
-      .assert.containsText(`#${name} .enterCbs`, '0')
+      .assert.textContains(`#${name} .enterCbs`, '0')
       // changing both the route and mounting the component
       .click('li:nth-child(2) a')
-      .assert.containsText(`#${name} .enterCbs`, '1')
+      .assert.textContains(`#${name} .enterCbs`, '1')
       .click('li:nth-child(6) a')
-      .assert.containsText(`#${name} .enterCbs`, '1')
-      .assert.containsText(`#${name} .update`, '0')
-      .assert.containsText(`#${name} .leave`, '0')
+      .assert.textContains(`#${name} .enterCbs`, '1')
+      .assert.textContains(`#${name} .update`, '0')
+      .assert.textContains(`#${name} .leave`, '0')
       .click('li:nth-child(2) a')
-      .assert.containsText(`#${name} .enterCbs`, '1')
-      .assert.containsText(`#${name} .update`, '0')
-      .assert.containsText(`#${name} .leave`, '0')
+      .assert.textContains(`#${name} .enterCbs`, '1')
+      .assert.textContains(`#${name} .update`, '0')
+      .assert.textContains(`#${name} .leave`, '0')
       .click('li:nth-child(6) a')
-      .assert.containsText(`#${name} .update`, '0')
-      .assert.containsText(`#${name} .leave`, '0')
+      .assert.textContains(`#${name} .update`, '0')
+      .assert.textContains(`#${name} .leave`, '0')
       .click('#resetLogs')
       .click('li:nth-child(7) a')
-      .assert.containsText(`#${name} .enterCbs`, '0')
-      .assert.containsText(`#${name} .update`, '0')
-      .assert.containsText(`#${name} .leave`, '0')
+      .assert.textContains(`#${name} .enterCbs`, '0')
+      .assert.textContains(`#${name} .update`, '0')
+      .assert.textContains(`#${name} .leave`, '0')
       .expect.element('#logs')
       .text.to.equal(
         [
@@ -165,7 +161,7 @@ module.exports = {
       )
     browser
       .click('li:nth-child(6) a')
-      .assert.containsText(`#${name} .enterCbs`, '0')
+      .assert.textContains(`#${name} .enterCbs`, '0')
 
     browser.end()
   },
@@ -185,38 +181,38 @@ module.exports = {
       .click('li:nth-child(1) a')
       // keep alive keeps the correct instance
       .click('li:nth-child(2) a')
-      .assert.containsText(`#${name} .enterCbs`, '4')
+      .assert.textContains(`#${name} .enterCbs`, '4')
       .click('li:nth-child(1) a')
       .click('li:nth-child(2) a')
-      .assert.containsText(`#${name} .enterCbs`, '5')
+      .assert.textContains(`#${name} .enterCbs`, '5')
       .click('li:nth-child(3) a')
-      .assert.containsText(`#${name} .enterCbs`, '6')
+      .assert.textContains(`#${name} .enterCbs`, '6')
 
       .click('li:nth-child(5) a')
       // the query is used as a key resetting the enter count
       .click('li:nth-child(6) a')
-      .assert.containsText(`#${name} .enterCbs`, '0')
-      .assert.containsText(`#${name} .update`, '0')
-      .assert.containsText(`#${name} .leave`, '0')
+      .assert.textContains(`#${name} .enterCbs`, '0')
+      .assert.textContains(`#${name} .update`, '0')
+      .assert.textContains(`#${name} .leave`, '0')
       .click('li:nth-child(1) a')
       .click('li:nth-child(6) a')
-      .assert.containsText(`#${name} .enterCbs`, '1')
-      .assert.containsText(`#${name} .update`, '0')
-      .assert.containsText(`#${name} .leave`, '1')
+      .assert.textContains(`#${name} .enterCbs`, '1')
+      .assert.textContains(`#${name} .update`, '0')
+      .assert.textContains(`#${name} .leave`, '1')
       .click('li:nth-child(5) a')
-      .assert.containsText(`#${name} .enterCbs`, '6')
+      .assert.textContains(`#${name} .enterCbs`, '6')
       // on reused instance
       .click('li:nth-child(2) a')
       .click('li:nth-child(6) a')
-      .assert.containsText(`#${name} .enterCbs`, '2')
-      .assert.containsText(`#${name} .update`, '1')
-      .assert.containsText(`#${name} .leave`, '1')
+      .assert.textContains(`#${name} .enterCbs`, '2')
+      .assert.textContains(`#${name} .update`, '1')
+      .assert.textContains(`#${name} .leave`, '1')
       .click('#resetLogs')
       .click('li:nth-child(7) a')
-      .assert.containsText(`#${name} .enterCbs`, '0')
+      .assert.textContains(`#${name} .enterCbs`, '0')
       // the previous instance was updated but not this one
-      .assert.containsText(`#${name} .update`, '0')
-      .assert.containsText(`#${name} .leave`, '0')
+      .assert.textContains(`#${name} .update`, '0')
+      .assert.textContains(`#${name} .leave`, '0')
       .expect.element('#logs')
       // should only trigger active guards
       .text.to.equal(
@@ -228,9 +224,9 @@ module.exports = {
       )
     browser
       .click('li:nth-child(6) a')
-      .assert.containsText(`#${name} .enterCbs`, '2')
-      .assert.containsText(`#${name} .update`, '2')
-      .assert.containsText(`#${name} .leave`, '1')
+      .assert.textContains(`#${name} .enterCbs`, '2')
+      .assert.textContains(`#${name} .update`, '2')
+      .assert.textContains(`#${name} .leave`, '1')
       .expect.element('#logs')
       .text.to.equal(
         [
