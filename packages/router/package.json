@@ -55,7 +55,7 @@
     "build:playground": "vue-tsc --noEmit && vite build --config playground/vite.config.js",
     "build:e2e": "vue-tsc --noEmit && vite build --config e2e/vite.config.js",
     "build:size": "pnpm run build && rollup -c size-checks/rollup.config.js",
-    "dev:e2e": "vite --config e2e/vite.config.ts",
+    "dev:e2e": "vite --config e2e/vite.config.js",
     "docs": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "lint": "pnpm run lint:script && pnpm run lint:html",
