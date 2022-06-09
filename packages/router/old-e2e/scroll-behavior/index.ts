@@ -1,6 +1,10 @@
 import '../global.css'
-import { createRouter, createWebHistory, RouterScrollBehavior } from '../../src'
-import { RouteComponent } from '../../src/types'
+import {
+  RouteComponent,
+  createRouter,
+  createWebHistory,
+  RouterScrollBehavior,
+} from 'vue-router'
 import { createApp, ref } from 'vue'
 import { scrollWaiter } from './scrollWaiter'
 

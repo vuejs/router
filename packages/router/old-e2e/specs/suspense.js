@@ -1,8 +1,4 @@
-const bsStatus = require('../browserstack-send-status')
-
 module.exports = {
-  ...bsStatus(),
-
   '@tags': [],
 
   /** @type {import('nightwatch').NightwatchTest} */
