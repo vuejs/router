@@ -329,6 +329,10 @@ export function comparePathParserScore(a: PathParser, b: PathParser): number {
 
     i++
   }
+  if (Math.abs(bScore.length - aScore.length) === 1) {
+    if (isLastScoreNegative(aScore)) return 1
+    if (isLastScoreNegative(bScore)) return -1
+  }
 
   // if a and b share the same score entries but b has more, sort b first
   return bScore.length - aScore.length
@@ -338,4 +342,15 @@ export function comparePathParserScore(a: PathParser, b: PathParser): number {
   //   : aScore.length > bScore.length
   //   ? -1
   //   : 0
+}
+
+/**
+ * This allows detecting splats at the end of a path: /home/:id(.*)*
+ *
+ * @param score - score to check
+ * @returns true if the last entry is negative
+ */
+function isLastScoreNegative(score: PathParser['score']): boolean {
+  const last = score[score.length - 1]
+  return score.length > 0 && last[last.length - 1] < 0
 }
