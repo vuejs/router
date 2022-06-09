@@ -1,6 +1,10 @@
 import '../global.css'
-import { createRouter, createWebHistory, useRoute } from '../../src'
-import { RouteLocationNormalizedLoaded } from '../../src/types'
+import {
+  RouteLocationNormalizedLoaded,
+  createRouter,
+  createWebHistory,
+  useRoute,
+} from 'vue-router'
 import {
   createApp,
   readonly,

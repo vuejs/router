@@ -1,8 +1,4 @@
-const bsStatus = require('../browserstack-send-status')
-
 module.exports = {
-  ...bsStatus(),
-
   '@tags': ['history'],
 
   /** @type {import('nightwatch').NightwatchTest} */
@@ -13,20 +9,20 @@ module.exports = {
       .url('http://localhost:3000/scroll-behavior/')
       .waitForElementPresent('#app > *', 1000)
       .assert.count('li a', 6)
-      .assert.containsText('.view', 'home')
+      .assert.textContains('.view', 'home')
 
       .execute(function () {
         window.scrollTo(0, 100)
       })
       .click('li:nth-child(2) a')
       .waitForElementPresent('.view.foo', TIMEOUT)
-      .assert.containsText('.view', 'foo')
+      .assert.textContains('.view', 'foo')
       .execute(function () {
         window.scrollTo(0, 200)
         window.history.back()
       })
       .waitForElementPresent('.view.home', TIMEOUT)
-      .assert.containsText('.view', 'home')
+      .assert.textContains('.view', 'home')
       .assert.evaluate(
         function () {
           return window.pageYOffset === 100
@@ -41,7 +37,7 @@ module.exports = {
         window.history.forward()
       })
       .waitForElementPresent('.view.foo', TIMEOUT)
-      .assert.containsText('.view', 'foo')
+      .assert.textContains('.view', 'foo')
       .assert.evaluate(
         function () {
           return window.pageYOffset === 200
@@ -54,7 +50,7 @@ module.exports = {
         window.history.back()
       })
       .waitForElementPresent('.view.home', TIMEOUT)
-      .assert.containsText('.view', 'home')
+      .assert.textContains('.view', 'home')
       .assert.evaluate(
         function () {
           return window.pageYOffset === 50
