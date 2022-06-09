@@ -48,7 +48,6 @@ importers:
       rollup-plugin-analyzer: ^4.0.0
       rollup-plugin-terser: ^7.0.2
       rollup-plugin-typescript2: ^0.32.1
-      selenium-server: ^3.141.59
       serve-handler: ^6.1.3
       typescript: ~4.7.3
       vite: ~2.9.10
@@ -92,7 +91,6 @@ importers:
       rollup-plugin-analyzer: 4.0.0
       rollup-plugin-terser: 7.0.2_rollup@2.75.6
       rollup-plugin-typescript2: 0.32.1_fgms252lqu3rk7srzpqqayl4ya
-      selenium-server: 3.141.59
       serve-handler: 6.1.3
       typescript: 4.7.3
       vite: 2.9.10
@@ -2026,7 +2024,7 @@ packages:
     dev: true
 
   /content-disposition/0.5.2:
-    resolution: {integrity: sha1-DPaLud318r55YcOoUXjLhdunjLQ=}
+    resolution: {integrity: sha512-kRGRZw3bLlFISDBgwTSA1TMBFN6J6GWDeubmDE3AF+3+yXL8hTWv8r5rkLbqYXY4RjPk/EzHnClI3zQf1cFmHA==}
     engines: {node: '>= 0.6'}
     dev: true
 
@@ -5367,11 +5365,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       xmlchars: 2.2.0
-    dev: true
-
-  /selenium-server/3.141.59:
-    resolution: {integrity: sha512-pL7T1YtAqOEXiBbTx0KdZMkE2U7PYucemd7i0nDLcxcR1APXYZlJfNr5hrvL3mZgwXb7AJEZPINzC6mDU3eP5g==}
-    hasBin: true
     dev: true
 
   /selenium-webdriver/4.1.1:
