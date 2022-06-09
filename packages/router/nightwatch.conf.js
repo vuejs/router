@@ -37,7 +37,7 @@ module.exports = {
   test_settings: {
     default: {
       disable_error_log: false,
-      launch_url: 'https://nightwatchjs.org',
+      // launch_url: 'https://nightwatchjs.org',
 
       screenshots: {
         enabled: false,
@@ -46,12 +46,19 @@ module.exports = {
       },
 
       desiredCapabilities: {
-        browserName: 'firefox',
+        browserName: 'chrome',
+        'goog:chromeOptions': {
+          w3c: true,
+          args: ['--headless'],
+        },
       },
 
       webdriver: {
         start_process: true,
         server_path: '',
+        cli_args: [
+          // --verbose
+        ],
       },
     },
 
@@ -111,10 +118,11 @@ module.exports = {
       webdriver: {
         start_process: true,
         server_path: '',
-        cli_args: [
-          // --verbose
-        ],
       },
+    },
+
+    'chrome-headless': {
+      extends: 'default',
     },
 
     edge: {
