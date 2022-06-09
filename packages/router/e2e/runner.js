@@ -12,11 +12,7 @@ const args = process.argv.slice(2)
 const isLocal = args.indexOf('--local') > -1
 
 const getServer =
-  args.indexOf('--dev') > -1
-    ? null
-    : // : process.env.CI || args.indexOf('--ci') > -1
-      // ? require('./staticServer')
-      require('./devServer')
+  args.indexOf('--dev') > -1 ? () => null : require('./devServer')
 
 ;(async () => {
   const server = await getServer()
@@ -52,19 +48,19 @@ BROWSERSTACK_ACCESS_KEY is not set. Did you create the .env file?
           await runNighwatchCli().finally(() => {
             // Code to stop browserstack local after end of single test
             bs_local.stop(() => {
-              server.close()
+              server?.close()
             })
           })
         }
       )
     } else {
       await runNighwatchCli()
-      server.close()
+      server?.close()
     }
   } catch (ex) {
     console.log('There was an error while starting the test runner:\n\n')
     process.stderr.write(ex.stack + '\n')
-    server.close()
+    server?.close()
     process.exit(2)
   }
 })()
