@@ -24,14 +24,6 @@ const getServer =
   const server = await getServer()
 
   try {
-    if (!BROWSERSTACK_ACCESS_KEY) {
-      throw new Error(
-        `
-(ONLY FOR MAINTAINERS)
-BROWSERSTACK_ACCESS_KEY is not set. Did you create the .env file?
-`
-      )
-    }
     require.main.filename = path.resolve(
       __dirname,
       '../../../node_modules/.bin/nightwatch'
@@ -40,6 +32,14 @@ BROWSERSTACK_ACCESS_KEY is not set. Did you create the .env file?
     /** @type {import('browserstack-local').Local} */
     let bs_local
     if (isLocal) {
+      if (!BROWSERSTACK_ACCESS_KEY) {
+        throw new Error(
+          `
+(ONLY FOR MAINTAINERS)
+BROWSERSTACK_ACCESS_KEY is not set. Did you create the .env file?
+`
+        )
+      }
       // Code to start browserstack local before start of test
       console.log('Connecting local')
       bs_local = new browserstack.Local()
