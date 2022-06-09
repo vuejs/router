@@ -106,6 +106,7 @@ module.exports = {
           args: [
             // needed for ci
             '--no-sandbox',
+            `--disable-setuid-sandbox`,
             //'--ignore-certificate-errors',
             '--allow-insecure-localhost',
             //'--headless'
