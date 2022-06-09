@@ -215,7 +215,7 @@ export const RouterView = RouterViewImpl as unknown as {
 // due to functional component being no longer eager in Vue 3
 function warnDeprecatedUsage() {
   const instance = getCurrentInstance()!
-  const parentName = instance.parent && instance.parent.type.name
+  const parentName = instance && instance.parent && instance.parent.type.name
   if (
     parentName &&
     (parentName === 'KeepAlive' || parentName.includes('Transition'))
