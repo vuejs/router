@@ -6,7 +6,7 @@ import {
   onBeforeRouteLeave,
   RouterView,
   useRoute,
-} from '../../src'
+} from 'vue-router'
 import {
   createApp,
   ref,

@@ -1,8 +1,4 @@
-const bsStatus = require('../browserstack-send-status')
-
 module.exports = {
-  ...bsStatus(),
-
   '@tags': ['no-headless'],
 
   transitions: function (browser) {
@@ -59,11 +55,11 @@ module.exports = {
       .click('#toggle-transition')
 
       .click('li:nth-child(7) a')
-      .assert.containsText('.nested-view', 'foo')
+      .assert.textContains('.nested-view', 'foo')
       .click('li:nth-child(1) a')
       .waitForElementPresent('.view.home', 1000)
       .click('li:nth-child(7) a')
-      .assert.containsText('.nested-view', 'foo')
+      .assert.textContains('.nested-view', 'foo')
 
       .end()
   },
