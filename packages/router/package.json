@@ -67,10 +67,10 @@
     "test:unit": "jest --coverage",
     "test": "pnpm run test:types && pnpm run test:unit && pnpm run build && pnpm run build:dts && pnpm run test:e2e",
     "test:e2e": "pnpm run test:e2e:headless && pnpm run test:e2e:native",
-    "test:e2e:headless": "node e2e/runner.js -e chrome-headless --skiptags no-headless",
-    "test:e2e:native": "node e2e/runner.js -e chrome --tag no-headless",
-    "test:e2e:ci": "node e2e/runner.js -e firefox --retries 2",
-    "test:e2e:bs": "node e2e/local.runner.js -e edge_pre_chrome,android44 --tag browserstack"
+    "test:e2e:headless": "nightwatch --skiptags no-headless",
+    "test:e2e:native": "nightwatch --env chrome",
+    "test:e2e:ci": "nightwatch --env chrome --retries 2",
+    "test:e2e:bs": "node e2e/runner.js -e edge_pre_chrome,android44 --tag browserstack"
   },
   "gitHooks": {
     "pre-commit": "lint-staged",
