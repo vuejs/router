@@ -39,6 +39,10 @@ jobs:
 
       # E2E testing
 
+      - run: pnpm run -r test:e2e:ci
+
+      # - uses: codecov/codecov-action@v2
+
       - name: 'Start BrowserStackLocal Tunnel'
         uses: 'browserstack/github-actions/setup-local@master'
         with:
@@ -52,7 +56,3 @@ jobs:
         uses: 'browserstack/github-actions/setup-local@master'
         with:
           local-testing: 'stop'
-
-      - run: pnpm run -r test:e2e:ci
-
-      # - uses: codecov/codecov-action@v2
