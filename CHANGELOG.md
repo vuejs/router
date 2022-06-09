@@ -1,3 +1,10 @@
+## [4.0.16](https://github.com/vuejs/router/compare/v4.0.15...v4.0.16) (2022-06-09)
+
+### Bug Fixes
+
+- **compat:** force router-link mode to Vue 3 ([#1426](https://github.com/vuejs/router/issues/1426)) ([0478512](https://github.com/vuejs/router/commit/047851299c4c438cc977f6d5d7da455eb69195db))
+- **matcher:** leave catchall routes at the end ([77f0998](https://github.com/vuejs/router/commit/77f099835a237e5b996ff4af19d1488b49990c38)), closes [#1435](https://github.com/vuejs/router/issues/1435)
+
 ## [4.0.15](https://github.com/vuejs/router/compare/v4.0.14...v4.0.15) (2022-05-04)
 
 ### Bug Fixes
