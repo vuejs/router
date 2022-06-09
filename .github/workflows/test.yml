@@ -43,16 +43,16 @@ jobs:
 
       # - uses: codecov/codecov-action@v2
 
-      - name: 'Start BrowserStackLocal Tunnel'
-        uses: 'browserstack/github-actions/setup-local@master'
-        with:
-          local-testing: 'start'
-          local-logging-level: 'all-logs'
-          local-identifier: 'random'
+      # - name: 'Start BrowserStackLocal Tunnel'
+      #   uses: 'browserstack/github-actions/setup-local@master'
+      #   with:
+      #     local-testing: 'start'
+      #     local-logging-level: 'all-logs'
+      #     local-identifier: 'random'
 
-      - run: pnpm run -r test:e2e:bs-test
+      # - run: pnpm run -r test:e2e:bs-test
 
-      - name: 'Stop BrowserStackLocal'
-        uses: 'browserstack/github-actions/setup-local@master'
-        with:
-          local-testing: 'stop'
+      # - name: 'Stop BrowserStackLocal'
+      #   uses: 'browserstack/github-actions/setup-local@master'
+      #   with:
+      #     local-testing: 'stop'
