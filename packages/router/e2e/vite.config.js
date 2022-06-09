@@ -1,10 +1,11 @@
-import fs from 'fs'
-import { resolve, join } from 'path'
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import history from 'connect-history-api-fallback'
+const fs = require('fs')
+const { resolve, join } = require('path')
+const { defineConfig } = require('vite')
+const vue = require('@vitejs/plugin-vue')
+const history = require('connect-history-api-fallback')
 
-const examples: string[] = []
+/** @type {string[]} */
+const examples = []
 fs.readdirSync(__dirname).forEach(dir => {
   const fullDir = join(__dirname, dir)
   const entry = join(fullDir, 'index.ts')
@@ -14,7 +15,12 @@ fs.readdirSync(__dirname).forEach(dir => {
 })
 
 // https://vitejs.dev/config/
-const config = (env: Record<string, string> = {}) => {
+/**
+ *
+ * @param {Record<string, string>} env
+ * @returns
+ */
+const config = env => {
   return defineConfig({
     root: resolve(__dirname),
     resolve: {
@@ -39,7 +45,8 @@ const config = (env: Record<string, string> = {}) => {
             entries[name] = resolve(__dirname, name, 'index.html')
             return entries
           },
-          { index: resolve(__dirname, 'index.html') } as Record<string, string>
+          /** @type {Record<string, string>} */
+          { index: resolve(__dirname, 'index.html') }
         ),
       },
     },

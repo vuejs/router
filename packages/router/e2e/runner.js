@@ -19,41 +19,55 @@ const args = process.argv.slice(2)
 // note this works because nighwatch doesn't use this option
 const isLocal = args.indexOf('--local') > -1
 
-try {
-  require.main.filename = path.resolve(
-    __dirname,
-    '../../../node_modules/.bin/nightwatch'
-  )
+const getServer =
+  args.indexOf('--dev') > -1
+    ? null
+    : // : process.env.CI || args.indexOf('--ci') > -1
+      // ? require('./staticServer')
+      require('./devServer')
 
-  // Code to start browserstack local before start of test
-  console.log('Connecting local')
+;(async () => {
+  const server = await getServer()
 
-  /** @type {import('browserstack-local').Local} */
-  let bs_local
-  if (isLocal) {
-    bs_local = new browserstack.Local()
-    Nightwatch.bs_local = bs_local
-
-    bs_local.start(
-      { key: process.env.BROWSERSTACK_ACCESS_KEY },
-      async error => {
-        if (error) throw error
-
-        console.log('Connected. Now testing...')
-        await runNighwatchCli().finally(() => {
-          // Code to stop browserstack local after end of single test
-          bs_local.stop(() => {})
-        })
-      }
+  try {
+    require.main.filename = path.resolve(
+      __dirname,
+      '../../../node_modules/.bin/nightwatch'
     )
-  } else {
-    runNighwatchCli()
+
+    /** @type {import('browserstack-local').Local} */
+    let bs_local
+    if (isLocal) {
+      // Code to start browserstack local before start of test
+      console.log('Connecting local')
+      bs_local = new browserstack.Local()
+      Nightwatch.bs_local = bs_local
+
+      bs_local.start(
+        { key: process.env.BROWSERSTACK_ACCESS_KEY },
+        async error => {
+          if (error) throw error
+
+          console.log('Connected. Now testing...')
+          await runNighwatchCli().finally(() => {
+            // Code to stop browserstack local after end of single test
+            bs_local.stop(() => {
+              server.close()
+            })
+          })
+        }
+      )
+    } else {
+      await runNighwatchCli()
+      server.close()
+    }
+  } catch (ex) {
+    console.log('There was an error while starting the test runner:\n\n')
+    process.stderr.write(ex.stack + '\n')
+    server.close()
+    process.exit(2)
   }
-} catch (ex) {
-  console.log('There was an error while starting the test runner:\n\n')
-  process.stderr.write(ex.stack + '\n')
-  process.exit(2)
-}
+})()
 
 function runNighwatchCli() {
   return new Promise((resolve, reject) => {
