@@ -16,7 +16,7 @@
 module.exports = {
   // An array of folders (excluding subfolders) where your tests are located;
   // if this is not specified, the test source must be passed as the second argument to the test runner.
-  src_folders: [],
+  src_folders: ['e2e/specs'],
 
   // See https://nightwatchjs.org/guide/working-with-page-objects/using-page-objects.html
   page_objects_path: ['node_modules/nightwatch/examples/pages/'],
@@ -50,7 +50,7 @@ module.exports = {
         browserName: 'chrome',
         'goog:chromeOptions': {
           w3c: true,
-          args: ['--headless'],
+          args: ['window-size=1280,800', 'headless'],
         },
       },
 
@@ -206,14 +206,6 @@ module.exports = {
       },
     },
 
-    'browserstack.ie': {
-      extends: 'browserstack',
-      desiredCapabilities: {
-        browserName: 'internet explorer',
-        browserVersion: '11.0',
-      },
-    },
-
     'browserstack.safari': {
       extends: 'browserstack',
       desiredCapabilities: {
@@ -232,6 +224,35 @@ module.exports = {
       extends: 'browserstack.local',
       desiredCapabilities: {
         browserName: 'firefox',
+        browserVersion: '58.0',
+      },
+    },
+
+    // Use https://www.browserstack.com/automate/capabilities?tag=selenium-4 to generate configs
+
+    edge_pre_chrome: {
+      extends: 'browserstack.local',
+      desiredCapabilities: {
+        browserName: 'Edge',
+        browserVersion: '18.0',
+      },
+    },
+
+    android5: {
+      extends: 'browserstack.local',
+      desiredCapabilities: {
+        deviceName: 'Samsung Galaxy S6',
+        realMobile: 'true',
+        osVersion: '5.0',
+      },
+    },
+
+    ios10: {
+      extends: 'browserstack.local',
+      desiredCapabilities: {
+        deviceName: 'iPhone 7',
+        realMobile: 'true',
+        osVersion: '10',
       },
     },
 
