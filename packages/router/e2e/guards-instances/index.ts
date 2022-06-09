@@ -6,7 +6,7 @@ import {
   onBeforeRouteLeave,
   useRoute,
   useRouter,
-} from '../../src'
+} from 'vue-router'
 import { createApp, ref, reactive, defineComponent, computed } from 'vue'
 import { isArray } from '../../src/utils'
 
@@ -149,9 +149,7 @@ router.push = to => {
       },
     })
   } else {
-    // @ts-expect-error: because of the generics
     return originalPush({
-      // @ts-expect-error: because of the generics
       ...to,
       query: {
         testCase: router.currentRoute.value.query.testCase,
