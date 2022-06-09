@@ -1,12 +1,9 @@
-const bsStatus = require('../browserstack-send-status')
-
 const baseURL = 'http://localhost:3000/hash/#'
 
 module.exports = {
-  ...bsStatus(),
-
   '@tags': ['hash', 'encoding'],
 
+  /** @type {import('nightwatch').NightwatchTest} */
   'navigating to links': function (browser) {
     browser
       .url(baseURL)
@@ -18,27 +15,27 @@ module.exports = {
       .assert.attributeContains('li:nth-child(6) a', 'href', '#/unicode/%C3%A9')
       .click('li:nth-child(3) a')
       .assert.urlEquals(baseURL + '/bar')
-      .assert.containsText('.view', 'Bar')
+      .assert.textContains('.view', 'Bar')
       .click('li:nth-child(2) a')
       .assert.urlEquals(baseURL + '/foo')
       .click('li:nth-child(4) a')
       .assert.urlEquals(baseURL + '/n/%C3%A9')
-      .assert.containsText('#path', '/n/%C3%A9')
+      .assert.textContains('#path', '/n/%C3%A9')
 
       // the correctly encoded version
       .click('li:nth-child(6) a')
       .assert.urlEquals(baseURL + '/unicode/%C3%A9')
-      .assert.containsText('#path', '/unicode/%C3%A9')
-      .assert.containsText('#param', 'é')
+      .assert.textContains('#path', '/unicode/%C3%A9')
+      .assert.textContains('#param', 'é')
       // the unencoded version, no check for the url because changes based on browser
       .click('li:nth-child(5) a')
-      .assert.containsText('#param', 'é')
+      .assert.textContains('#param', 'é')
 
       // regular links should not break navigation
       .click('li:nth-child(10) a')
       .assert.urlEquals(baseURL + '/foo')
-      .assert.containsText('#path', '/foo')
-      .assert.containsText('.view', 'Foo')
+      .assert.textContains('#path', '/foo')
+      .assert.textContains('.view', 'Foo')
 
       .end()
   },
@@ -77,14 +74,14 @@ module.exports = {
       .url(baseURL + '/unicode/%C3%A9')
       // navigation to unencoded value
       .assert.urlEquals(baseURL + '/unicode/%C3%A9')
-      .assert.containsText('#path', '/unicode/%C3%A9')
-      .assert.containsText('#param', 'é')
+      .assert.textContains('#path', '/unicode/%C3%A9')
+      .assert.textContains('#param', 'é')
 
       // TODO: invalid in safari, tests on those where this is valid
       // .url(baseURL + '/unicode/é')
       // navigation to unencoded value
       // depending on the browser the value will be encoded or not
-      // .assert.containsText('#param', 'é')
+      // .assert.textContains('#param', 'é')
 
       .end()
   },
@@ -94,12 +91,12 @@ module.exports = {
     browser
       .url(baseURL + '/')
       .waitForElementPresent('#app > *', 1000)
-      .assert.containsText('.view', 'home')
+      .assert.textContains('.view', 'home')
 
       .execute(function () {
         window.location.hash = '#/redirect'
       })
-      .assert.containsText('.view', 'Foo')
+      .assert.textContains('.view', 'Foo')
       .assert.urlEquals(baseURL + '/foo')
 
       .end()
