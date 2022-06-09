@@ -50,16 +50,12 @@ module.exports = {
         browserName: 'chrome',
         'goog:chromeOptions': {
           w3c: true,
-          args: ['window-size=1280,800', 'headless'],
         },
       },
 
       webdriver: {
         start_process: true,
         server_path: '',
-        cli_args: [
-          // --verbose
-        ],
       },
     },
 
@@ -124,6 +120,13 @@ module.exports = {
 
     'chrome-headless': {
       extends: 'default',
+      desiredCapabilities: {
+        browserName: 'chrome',
+        'goog:chromeOptions': {
+          w3c: true,
+          args: ['window-size=1280,800', 'headless'],
+        },
+      },
     },
 
     edge: {
@@ -186,30 +189,6 @@ module.exports = {
       extends: 'browserstack',
       desiredCapabilities: {
         'browserstack.local': true,
-      },
-    },
-
-    'browserstack.chrome': {
-      extends: 'browserstack',
-      desiredCapabilities: {
-        browserName: 'chrome',
-        chromeOptions: {
-          w3c: true,
-        },
-      },
-    },
-
-    'browserstack.firefox': {
-      extends: 'browserstack',
-      desiredCapabilities: {
-        browserName: 'firefox',
-      },
-    },
-
-    'browserstack.safari': {
-      extends: 'browserstack',
-      desiredCapabilities: {
-        browserName: 'safari',
       },
     },
 
