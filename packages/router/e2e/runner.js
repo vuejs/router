@@ -6,14 +6,6 @@ const path = require('path')
 console.log('Test', process.env.API_SECRET)
 
 const { BROWSERSTACK_ACCESS_KEY } = process.env
-if (!BROWSERSTACK_ACCESS_KEY) {
-  throw new Error(
-    `
-(ONLY FOR MAINTAINERS)
-BROWSERSTACK_ACCESS_KEY is not set. Did you create the .env file?
-`
-  )
-}
 
 const args = process.argv.slice(2)
 
@@ -32,6 +24,14 @@ const getServer =
   const server = await getServer()
 
   try {
+    if (!BROWSERSTACK_ACCESS_KEY) {
+      throw new Error(
+        `
+(ONLY FOR MAINTAINERS)
+BROWSERSTACK_ACCESS_KEY is not set. Did you create the .env file?
+`
+      )
+    }
     require.main.filename = path.resolve(
       __dirname,
       '../../../node_modules/.bin/nightwatch'
