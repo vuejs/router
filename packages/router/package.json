@@ -69,8 +69,9 @@
     "test:e2e": "pnpm run test:e2e:headless && pnpm run test:e2e:native",
     "test:e2e:headless": "node e2e/runner.js --skiptags no-headless",
     "test:e2e:native": "node e2e/runner.js --env chrome",
-    "test:e2e:ci": "node e2e/runner.js --env chrome --retries 2",
-    "test:e2e:bs": "node e2e/runner.js -e edge_pre_chrome,android44 --tag browserstack"
+    "test:e2e:ci": "node e2e/runner.js --env chrome-headless --retries 2",
+    "test:e2e:bs": "node e2e/runner.js -e edge_pre_chrome,android44 --tag browserstack",
+    "test:e2e:bs-test": "node e2e/runner.js --env chrome"
   },
   "gitHooks": {
     "pre-commit": "lint-staged",

@@ -36,6 +36,23 @@ jobs:
       # - run: pnpm run -r build
       # - run: pnpm run -r build:dts
       # - run: pnpm run -r test:dts
+
+      # E2E testing
+
+      - name: 'Start BrowserStackLocal Tunnel'
+        uses: 'browserstack/github-actions/setup-local@master'
+        with:
+          local-testing: 'start'
+          local-logging-level: 'all-logs'
+          local-identifier: 'random'
+
+      - run: pnpm run -r test:e2e:bs
+
+      - name: 'Stop BrowserStackLocal'
+        uses: 'browserstack/github-actions/setup-local@master'
+        with:
+          local-testing: 'stop'
+
       - run: pnpm run -r test:e2e:ci
 
       # - uses: codecov/codecov-action@v2
