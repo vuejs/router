@@ -149,7 +149,7 @@ export interface RouterOptions extends PathParserOptions {
    * {@link RouterOptions.stringifyQuery}.
    *
    * @example
-   * Let's say you want to use the package {@link https://github.com/ljharb/qs | qs}
+   * Let's say you want to use the [qs package](https://github.com/ljharb/qs)
    * to parse queries, you can provide both `parseQuery` and `stringifyQuery`:
    * ```js
    * import qs from 'qs'
@@ -207,14 +207,14 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
   listening: boolean
 
   /**
-   * Add a new {@link RouteRecordRaw route record} as the child of an existing route.
+   * Add a new {@link RouteRecordRaw | route record} as the child of an existing route.
    *
    * @param parentName - Parent Route Record where `route` should be appended at
    * @param route - Route Record to add
    */
   addRoute(parentName: RouteRecordName, route: RouteRecordRaw): () => void
   /**
-   * Add a new {@link RouteRecordRaw route record} to the router.
+   * Add a new {@link RouteRecordRaw | route record} to the router.
    *
    * @param route - Route Record to add
    */
@@ -232,13 +232,13 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
    */
   hasRoute(name: RouteRecordName): boolean
   /**
-   * Get a full list of all the {@link RouteRecord route records}.
+   * Get a full list of all the {@link RouteRecord | route records}.
    */
   getRoutes(): RouteRecord[]
 
   /**
-   * Returns the {@link RouteLocation normalized version} of a
-   * {@link RouteLocationRaw route location}. Also includes an `href` property
+   * Returns the {@link RouteLocation | normalized version} of a
+   * {@link RouteLocationRaw | route location}. Also includes an `href` property
    * that includes any existing `base`. By default the `currentLocation` used is
    * `route.currentRoute` and should only be overridden in advanced use cases.
    *

@@ -41,7 +41,7 @@ export type _ParamModifier = '+' | '?' | '*'
  *
  * @internal
  */
-type _ParamDelimiter =
+export type _ParamDelimiter =
   | '-'
   | '/'
   | '%'
@@ -153,7 +153,7 @@ export type _ParamToObject<
  * Takes the custom regex (and everything after) of a param and strips it off.
  *
  * @example
- * - `\\d+(?:inner-group\\)-end)/:rest-of-url` -> `/:rest-of-url`
+ * - `\\d+(?:inner-group\\)-end)/:rest-of-url` becomes `/:rest-of-url`
  *
  * @internal
  */
@@ -260,7 +260,7 @@ type _PossibleModifierValue =
   | readonly never[]
 
 /**
- * Recursively builds a path from a {param} based path
+ * Recursively builds a path from a param based path with curly braces (e.g. `\{id\}`).
  *
  * @internal
  */
