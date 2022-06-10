@@ -13,7 +13,7 @@ export default defineConfig({
     coverage: {
       reportsDirectory: 'coverage',
       reporter: ['text', 'lcov', 'html'],
-      src: ['__tests__/**/*.spec.ts?(x)'],
+      include: ['src/**/*.ts'],
       exclude: [
         '/node_modules/',
         'src/index.ts',
