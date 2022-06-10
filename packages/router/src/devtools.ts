@@ -72,6 +72,12 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
       app,
     },
     api => {
+      if (typeof api.now !== 'function') {
+        console.warn(
+          '[Vue Router]: You seem to be using an outdated version of Vue Devtools. Are you still using the Beta release instead of the stable one? You can find the links at https://devtools.vuejs.org/guide/installation.html.'
+        )
+      }
+
       // display state added by the router
       api.on.inspectComponent((payload, ctx) => {
         if (payload.instanceData) {
