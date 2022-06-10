@@ -27,7 +27,7 @@ describe('router.beforeEach', () => {
   })
 
   it('calls beforeEach guards on navigation', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes })
     router.beforeEach(spy)
     spy.mockImplementationOnce(noGuard)
@@ -36,7 +36,7 @@ describe('router.beforeEach', () => {
   })
 
   it('can be removed', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes })
     const remove = router.beforeEach(spy)
     remove()
@@ -46,7 +46,7 @@ describe('router.beforeEach', () => {
   })
 
   it('does not call beforeEach guard if we were already on the page', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes })
     await router.push('/foo')
     router.beforeEach(spy)
@@ -56,7 +56,7 @@ describe('router.beforeEach', () => {
   })
 
   it('calls beforeEach guards on navigation between children routes', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes })
     await router.push('/nested')
     router.beforeEach(spy)
@@ -78,7 +78,7 @@ describe('router.beforeEach', () => {
   })
 
   it('can redirect to a different location', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes })
     await router.push('/foo')
     spy.mockImplementation((to, from, next) => {
@@ -107,7 +107,7 @@ describe('router.beforeEach', () => {
   })
 
   async function assertRedirect(redirectFn: (i: string) => RouteLocationRaw) {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes })
     await router.push('/')
     spy.mockImplementation((to, from, next) => {
@@ -136,7 +136,7 @@ describe('router.beforeEach', () => {
   })
 
   it('is called when changing params', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes: [...routes] })
     await router.push('/n/2')
     spy.mockImplementation(noGuard)
@@ -147,7 +147,7 @@ describe('router.beforeEach', () => {
   })
 
   it('is not called with same params', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes: [...routes] })
     await router.push('/n/2')
     spy.mockImplementation(noGuard)
@@ -175,7 +175,7 @@ describe('router.beforeEach', () => {
     const [p1, r1] = fakePromise()
     const [p2, r2] = fakePromise()
     const router = createRouter({ routes })
-    const guard1 = jest.fn()
+    const guard1 = vitest.fn()
     let order = 0
     guard1.mockImplementationOnce(async (to, from, next) => {
       expect(order++).toBe(0)
@@ -183,7 +183,7 @@ describe('router.beforeEach', () => {
       next()
     })
     router.beforeEach(guard1)
-    const guard2 = jest.fn()
+    const guard2 = vitest.fn()
     guard2.mockImplementationOnce(async (to, from, next) => {
       expect(order++).toBe(1)
       await p2
@@ -207,7 +207,7 @@ describe('router.beforeEach', () => {
   })
 
   it('adds meta information', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes })
     router.beforeEach(spy)
     spy.mockImplementationOnce(noGuard)

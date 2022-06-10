@@ -2,12 +2,12 @@ import { JSDOM } from 'jsdom'
 import { createWebHashHistory } from '../../src/history/hash'
 import { createWebHistory } from '../../src/history/html5'
 import { createDom } from '../utils'
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from '../mock-warn'
 
-jest.mock('../../src/history/html5')
+vitest.mock('../../src/history/html5')
 // override the value of isBrowser because the variable is created before JSDOM
 // is created
-jest.mock('../../src/utils/env', () => ({
+vitest.mock('../../src/utils/env', () => ({
   isBrowser: true,
 }))
 
@@ -19,7 +19,7 @@ describe('History Hash', () => {
   mockWarn()
 
   beforeEach(() => {
-    ;(createWebHistory as jest.Mock).mockClear()
+    ;(createWebHistory as any).mockClear()
   })
 
   afterAll(() => {

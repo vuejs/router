@@ -5,7 +5,7 @@ import { RouteRecordRaw } from '../src/types'
 
 // override the value of isBrowser because the variable is created before JSDOM
 // is created
-jest.mock('../src/utils/env', () => ({
+vitest.mock('../src/utils/env', () => ({
   isBrowser: true,
 }))
 

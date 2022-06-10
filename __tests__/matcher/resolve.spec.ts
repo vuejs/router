@@ -7,7 +7,7 @@ import {
   MatcherLocation,
 } from '../../src/types'
 import { MatcherLocationNormalizedLoose } from '../utils'
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from '../mock-warn'
 
 // @ts-expect-error
 const component: RouteComponent = null

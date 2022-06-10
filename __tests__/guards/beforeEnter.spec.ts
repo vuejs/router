@@ -5,16 +5,16 @@ import { RouteRecordRaw } from '../../src/types'
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
-const beforeEnter = jest.fn()
-const beforeEnters = [jest.fn(), jest.fn()]
+const beforeEnter = vitest.fn()
+const beforeEnters = [vitest.fn(), vitest.fn()]
 const nested = {
-  parent: jest.fn(),
-  nestedEmpty: jest.fn(),
-  nestedA: jest.fn(),
-  nestedAbs: jest.fn(),
-  nestedNested: jest.fn(),
-  nestedNestedFoo: jest.fn(),
-  nestedNestedParam: jest.fn(),
+  parent: vitest.fn(),
+  nestedEmpty: vitest.fn(),
+  nestedA: vitest.fn(),
+  nestedAbs: vitest.fn(),
+  nestedNested: vitest.fn(),
+  nestedNestedFoo: vitest.fn(),
+  nestedNestedParam: vitest.fn(),
 }
 
 const routes: RouteRecordRaw[] = [

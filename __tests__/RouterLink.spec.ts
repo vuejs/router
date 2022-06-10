@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 import { RouterLink, RouterLinkProps } from '../src/RouterLink'
 import {
@@ -367,9 +367,9 @@ async function factory(
       return this.history.base + to.fullPath
     },
     options: {} as Partial<RouterOptions>,
-    resolve: jest.fn(),
-    push: jest.fn().mockResolvedValue(resolvedLocation),
-    replace: jest.fn().mockResolvedValue(resolvedLocation),
+    resolve: vitest.fn(),
+    push: vitest.fn().mockResolvedValue(resolvedLocation),
+    replace: vitest.fn().mockResolvedValue(resolvedLocation),
   }
   router.resolve.mockReturnValueOnce(resolvedLocation)
 
@@ -801,7 +801,7 @@ describe('RouterLink', () => {
   })
 
   it('allows adding more click listeners', async () => {
-    const onClick = jest.fn()
+    const onClick = vitest.fn()
     const { router, wrapper } = await factory(
       START_LOCATION_NORMALIZED,
       { to: locations.basic.string, onClick },
@@ -946,8 +946,8 @@ describe('RouterLink', () => {
             return this.history.base + to.fullPath
           },
           options: {} as Partial<RouterOptions>,
-          resolve: jest.fn(),
-          push: jest.fn().mockResolvedValue(resolvedLocation),
+          resolve: vitest.fn(),
+          push: vitest.fn().mockResolvedValue(resolvedLocation),
         }
         router.resolve.mockReturnValueOnce(resolvedLocation)
 

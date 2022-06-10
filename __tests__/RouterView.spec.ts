@@ -9,7 +9,7 @@ import {
 } from '../src/types'
 import { markRaw } from 'vue'
 import { createMockedRoute } from './mount'
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from './mock-warn'
 import { mount } from '@vue/test-utils'
 
 // to have autocompletion

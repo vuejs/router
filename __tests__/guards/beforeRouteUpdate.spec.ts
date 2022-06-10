@@ -5,7 +5,7 @@ import { RouteRecordRaw } from '../../src/types'
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
-const beforeRouteUpdate = jest.fn()
+const beforeRouteUpdate = vitest.fn()
 const routes: RouteRecordRaw[] = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },

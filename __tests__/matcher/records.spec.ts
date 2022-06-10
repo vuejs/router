@@ -22,7 +22,7 @@ describe('normalizeRouteRecord', () => {
   })
 
   it('keeps original values in single view', () => {
-    const beforeEnter = jest.fn()
+    const beforeEnter = vitest.fn()
     const record = normalizeRouteRecord({
       path: '/home',
       beforeEnter,
@@ -64,7 +64,7 @@ describe('normalizeRouteRecord', () => {
   })
 
   it('keeps original values in multiple views', () => {
-    const beforeEnter = jest.fn()
+    const beforeEnter = vitest.fn()
     const record = normalizeRouteRecord({
       path: '/home',
       beforeEnter,

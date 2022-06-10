@@ -1,13 +1,13 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 import { defineComponent, h } from 'vue'
 import { mount } from '@vue/test-utils'
 import { createRouter, createMemoryHistory, RouterOptions } from '../../src'
 
 const nextCallbacks = {
-  Default: jest.fn(),
-  Other: jest.fn(),
+  Default: vitest.fn(),
+  Other: vitest.fn(),
 }
 const Default = defineComponent({
   beforeRouteEnter(to, from, next) {

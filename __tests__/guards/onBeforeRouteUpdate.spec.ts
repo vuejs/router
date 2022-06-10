@@ -17,7 +17,7 @@ const component = {
 }
 
 function withSpy(name?: string, isAsync = false) {
-  const spy = jest.fn()
+  const spy = vitest.fn()
   const Component = defineComponent({
     name,
     template: `<p>${name || 'No Name'}</p>`,

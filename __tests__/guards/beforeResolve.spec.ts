@@ -15,7 +15,7 @@ describe('router.beforeEach', () => {
   })
 
   it('calls beforeEach guards on navigation', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes })
     router.beforeResolve(spy)
     spy.mockImplementationOnce(noGuard)

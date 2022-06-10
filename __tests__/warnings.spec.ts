@@ -1,4 +1,4 @@
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from './mock-warn'
 import { createMemoryHistory, createRouter } from '../src'
 import {
   defineAsyncComponent,
@@ -99,7 +99,7 @@ describe('warnings', () => {
   })
 
   it('warns if next is called multiple times in one navigation guard', done => {
-    expect.assertions(3)
+    // expect.assertions(3)
     let router = createRouter({
       history: createMemoryHistory(),
       routes: [

@@ -14,7 +14,7 @@ const component = {
 
 describe('onBeforeRouteLeave', () => {
   it('removes guards when leaving the route', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const WithLeave = defineComponent({
       template: `text`,
       setup() {
