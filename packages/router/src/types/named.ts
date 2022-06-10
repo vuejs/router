@@ -148,6 +148,7 @@ export type RouteStaticPathMapGeneric = Record<
 
 /**
  * Relevant information about a named route record to deduce its params.
+ *
  * @internal
  */
 export interface RouteNamedInfo<

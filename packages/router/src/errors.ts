@@ -7,7 +7,10 @@ import {
 import { assign } from './utils'
 
 /**
- * Flags so we can combine them when checking for multiple errors
+ * Flags so we can combine them when checking for multiple errors. This is the internal version of
+ * {@link NavigationFailureType}.
+ *
+ * @internal
  */
 export const enum ErrorTypes {
   // they must be literals to be used as values so we can't write
@@ -70,6 +73,11 @@ export interface NavigationFailure extends Error {
   to: RouteLocationNormalized
 }
 
+/**
+ * Internal error used to detect a redirection.
+ *
+ * @internal
+ */
 export interface NavigationRedirectError
   extends Omit<NavigationFailure, 'to' | 'type'> {
   type: ErrorTypes.NAVIGATION_GUARD_REDIRECT

@@ -2,12 +2,14 @@ import { isBrowser } from '../utils'
 import { removeTrailingSlash } from '../location'
 
 export type HistoryLocation = string
-// pushState clones the state passed and do not accept everything
-// it doesn't accept symbols, nor functions as values. It also ignores Symbols as keys
 /**
- * Allowed variables in HTML5 history state
+ * Allowed variables in HTML5 history state. Note that pushState clones the state
+ * passed and does not accept everything: e.g it doesn't accept symbols, nor
+ * functions as values. It also ignores Symbols as keys.
+ *
+ * @internal
  */
-type HistoryStateValue =
+export type HistoryStateValue =
   | string
   | number
   | boolean
@@ -23,7 +25,13 @@ export interface HistoryState {
   [x: number]: HistoryStateValue
   [x: string]: HistoryStateValue
 }
-interface HistoryStateArray extends Array<HistoryStateValue> {}
+
+/**
+ * Allowed arrays for history.state.
+ *
+ * @internal
+ */
+export interface HistoryStateArray extends Array<HistoryStateValue> {}
 
 export enum NavigationType {
   pop = 'pop',
