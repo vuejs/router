@@ -15,3 +15,4 @@ yalc.lock
 .yalc
 local.log
 _selenium-server.log
+packages/*/LICENSE

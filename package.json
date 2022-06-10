@@ -20,8 +20,14 @@
     "test": "pnpm run -r test"
   },
   "devDependencies": {
-    "chalk": "^4.1.0",
+    "chalk": "^4.1.2",
+    "enquirer": "^2.3.6",
+    "execa": "^6.1.0",
+    "globby": "^13.1.1",
     "lint-staged": "^13.0.0",
+    "minimist": "^1.2.6",
+    "p-series": "^3.0.0",
+    "semver": "^7.3.7",
     "yorkie": "^2.0.0"
   },
   "gitHooks": {
