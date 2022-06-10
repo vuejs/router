@@ -11,7 +11,7 @@
 
 <script>
 import { defineComponent, computed } from 'vue'
-import { useRoute } from '../../src'
+import { useRoute } from 'vue-router'
 
 export default defineComponent({
   name: 'RepeatedParams',

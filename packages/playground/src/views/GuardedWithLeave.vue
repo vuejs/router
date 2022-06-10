@@ -8,7 +8,7 @@
 <script>
 // @ts-check
 import { defineComponent } from 'vue'
-import { onBeforeRouteLeave } from '../../src'
+import { onBeforeRouteLeave } from 'vue-router'
 
 export default defineComponent({
   name: 'GuardedWithLeave',

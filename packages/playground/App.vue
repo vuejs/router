@@ -186,7 +186,7 @@
 <script>
 import { defineComponent, inject, computed, ref } from 'vue'
 import { scrollWaiter } from './scrollWaiter'
-import { useLink, useRoute } from '../src'
+import { useLink, useRoute } from 'vue-router'
 import AppLink from './AppLink.vue'
 
 export default defineComponent({
