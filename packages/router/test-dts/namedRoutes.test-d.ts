@@ -18,6 +18,8 @@ const routeName = Symbol()
 const r2 = createRouter({
   history: createWebHistory(),
   routes: [
+    { path: '/', component },
+    { path: '/foo', component },
     { path: '/users/:id', name: 'UserDetails', component },
     { path: '/no-name', /* no name */ components },
     {
@@ -74,10 +76,6 @@ for (const method of methods) {
   r2[method]({ name: routeName })
   // @ts-expect-error: but not other symbols
   r2[method]({ name: Symbol() })
-  // any path is still valid
-  r2[method]('/path')
-  r2.push('/path')
-  r2.replace('/path')
   // relative push can have any of the params
   r2[method]({ params: { a: 2 } })
   r2[method]({ params: {} })
@@ -91,6 +89,27 @@ for (const method of methods) {
   // FIXME: is it possible to support this version
   // @ts-expect-error: does not accept any params
   r2[method]({ name: 'nested', params: { id: 2 } })
+
+  // paths
+  r2[method]({ path: '/nested' })
+  r2[method]({ path: '/nested/a/b' })
+  // @ts-expect-error
+  r2[method]({ path: '' })
+  // @ts-expect-error
+  r2[method]({ path: '/nope' })
+  // @ts-expect-error
+  r2[method]({ path: '/no-name?query' })
+  // @ts-expect-error
+  r2[method]({ path: '/no-name#hash' })
+
+  r2[method]('/nested')
+  r2[method]('/nested/a/b')
+  // @ts-expect-error
+  r2[method]('')
+  // @ts-expect-error
+  r2[method]('/nope')
+  r2[method]('/no-name?query')
+  r2[method]('/no-name#hash')
 }
 
 // NOTE: not possible if we use the named routes as the point is to provide valid routes only

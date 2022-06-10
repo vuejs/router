@@ -288,7 +288,7 @@ export type _BuildPath<
  */
 export type PathFromParams<
   P extends string,
-  PO extends ParamsFromPath<P>
+  PO extends ParamsFromPath<P> = ParamsFromPath<P>
 > = string extends P ? string : _BuildPath<_RemoveRegexpFromParam<P>, PO>
 
 /**
