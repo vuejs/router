@@ -4,7 +4,11 @@ import { Ref, ComponentPublicInstance, Component, DefineComponent } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
-import { RouteNamedInfo, RouteNamedMapGeneric } from './named'
+import {
+  RouteNamedInfo,
+  RouteNamedMapGeneric,
+  RouteStaticPathMapGeneric,
+} from './named'
 
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
@@ -53,8 +57,8 @@ export interface RouteQueryAndHash {
 /**
  * @internal
  */
-export interface LocationAsPath {
-  path: string
+export interface LocationAsPath<P extends string = string> {
+  path: P
 }
 
 /**
@@ -120,7 +124,20 @@ export type RouteLocationRaw =
   | RouteLocationNamedRaw
 
 /**
- * Route Location that can infer the necessary params based on the name
+ * Route location that can infer full path locations
+ *
+ * @internal
+ */
+export type RouteLocationString<
+  RouteMap extends RouteStaticPathMapGeneric = RouteStaticPathMapGeneric
+> = RouteStaticPathMapGeneric extends RouteMap
+  ? string
+  : {
+      [K in keyof RouteMap]: RouteMap[K]['fullPath']
+    }[keyof RouteMap]
+
+/**
+ * Route Location that can infer the necessary params based on the name.
  *
  * @internal
  */
@@ -135,8 +152,21 @@ export type RouteLocationNamedRaw<
         RouteLocationOptions
     }[Extract<keyof RouteMap, RouteRecordName>]
 
-export type RouteLocationPathRaw =
-  | RouteQueryAndHash & LocationAsPath & RouteLocationOptions
+/**
+ * Route Location that can infer the possible paths.
+ *
+ * @internal
+ */
+export type RouteLocationPathRaw<
+  RouteMap extends RouteStaticPathMapGeneric = RouteStaticPathMapGeneric
+> = RouteStaticPathMapGeneric extends RouteMap
+  ? // allows assigning a RouteLocationRaw to RouteLocationPat
+    RouteQueryAndHash & LocationAsPath & RouteLocationOptions
+  : {
+      [K in Extract<keyof RouteMap, string>]: RouteQueryAndHash &
+        LocationAsPath<RouteMap[K]['path']> &
+        RouteLocationOptions
+    }[Extract<keyof RouteMap, string>]
 
 export interface RouteLocationMatched extends RouteRecordNormalized {
   // components cannot be Lazy<RouteComponent>

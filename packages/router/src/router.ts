@@ -15,6 +15,7 @@ import {
   RouteParams,
   RouteLocationNamedRaw,
   RouteLocationPathRaw,
+  RouteLocationString,
 } from './types'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
@@ -70,7 +71,7 @@ import {
   routerViewLocationKey,
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
-import { RouteNamedMap } from './types/named'
+import { RouteNamedMap, RouteStaticPathMap } from './types/named'
 
 /**
  * Internal type to define an ErrorHandler
@@ -258,8 +259,8 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
   push(
     to:
       | RouteLocationNamedRaw<RouteNamedMap<Options['routes']>>
-      | string
-      | RouteLocationPathRaw
+      | RouteLocationString<RouteStaticPathMap<Options['routes']>>
+      | RouteLocationPathRaw<RouteStaticPathMap<Options['routes']>>
   ): Promise<NavigationFailure | void | undefined>
 
   /**
@@ -271,8 +272,8 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
   replace(
     to:
       | RouteLocationNamedRaw<RouteNamedMap<Options['routes']>>
-      | string
-      | RouteLocationPathRaw
+      | RouteLocationString<RouteStaticPathMap<Options['routes']>>
+      | RouteLocationPathRaw<RouteStaticPathMap<Options['routes']>>
   ): Promise<NavigationFailure | void | undefined>
 
   /**
