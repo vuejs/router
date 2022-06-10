@@ -19,6 +19,13 @@ import { RouterViewDevtoolsContext } from './RouterView'
 import { RouteLocationNormalized } from './types'
 import { assign, isArray } from './utils'
 
+/**
+ * Copies a route location and removes any problematic properties that cannot be shown in devtools (e.g. Vue instances).
+ *
+ * @param routeLocation - routeLocation to format
+ * @param tooltip - optional tooltip
+ * @returns a copy of the routeLocation
+ */
 function formatRouteLocation(
   routeLocation: RouteLocationNormalized,
   tooltip?: string
