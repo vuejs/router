@@ -8,7 +8,7 @@
 <script>
 import { defineComponent, toRefs, reactive } from 'vue'
 import { getData, delay } from '../api'
-import { onBeforeRouteUpdate } from '../../src'
+import { onBeforeRouteUpdate } from 'vue-router'
 
 export default defineComponent({
   name: 'ComponentWithData',

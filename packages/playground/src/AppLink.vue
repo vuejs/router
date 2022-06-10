@@ -27,13 +27,12 @@
 </template>
 
 <script>
-import { RouterLinkImpl } from '../src/RouterLink'
+import { RouterLink, START_LOCATION, useLink, useRoute } from 'vue-router'
 import { computed, defineComponent, toRefs } from 'vue'
-import { START_LOCATION, useLink, useRoute } from '../src'
 
 export default defineComponent({
   props: {
-    ...RouterLinkImpl.props,
+    ...RouterLink.props,
     disabled: Boolean,
   },
 

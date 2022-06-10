@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouterView } from '../src'
+import { createRouter, createWebHistory, RouterView } from 'vue-router'
 import Home from './views/Home.vue'
 import Nested from './views/Nested.vue'
 import NestedWithId from './views/NestedWithId.vue'
@@ -15,12 +15,10 @@ import ComponentWithData from './views/ComponentWithData.vue'
 import { globalState } from './store'
 import { scrollWaiter } from './scrollWaiter'
 import RepeatedParams from './views/RepeatedParams.vue'
-import { FunctionalComponent, h } from 'vue'
-let removeRoute: (() => void) | undefined
-
-const TransparentWrapper: FunctionalComponent = () => h(RouterView)
+import { h } from 'vue'
+let removeRoute
+const TransparentWrapper = () => h(RouterView)
 TransparentWrapper.displayName = 'NestedView'
-
 export const routerHistory = createWebHistory()
 export const router = createRouter({
   history: routerHistory,
@@ -119,7 +117,6 @@ export const router = createRouter({
         },
       ],
     },
-
     {
       path: '/parent/:id',
       name: 'parent',
@@ -151,7 +148,6 @@ export const router = createRouter({
         } else next()
       },
     },
-
     {
       path: '/admin',
       component: TransparentWrapper,
@@ -161,7 +157,7 @@ export const router = createRouter({
         { path: 'settings', component },
       ],
     },
-  ] as const,
+  ],
   async scrollBehavior(to, from, savedPosition) {
     await scrollWaiter.wait()
     if (savedPosition) {
@@ -175,44 +171,178 @@ export const router = createRouter({
     return false
   },
 })
-
-// TODO: move to pnpm, workspaces, and use an alias 'vue-router' to be closer to a real project
-
-declare module '../src' {
-  export interface Config {
-    Router: typeof router
-  }
-}
-
-const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
-
+const myRouter = createRouter({
+  history: routerHistory,
+  strict: true,
+  routes: [
+    { path: '/home', redirect: '/' },
+    {
+      path: '/',
+      components: { default: Home, other: component },
+      props: { default: to => ({ waited: to.meta.waitedFor }) },
+    },
+    {
+      path: '/always-redirect',
+      redirect: () => ({
+        name: 'user',
+        params: { id: String(Math.round(Math.random() * 100)) },
+      }),
+    },
+    { path: '/users/:id', name: 'user', component: User, props: true },
+    { path: '/documents/:id', name: 'docs', component: User, props: true },
+    { path: '/optional/:id?', name: 'optional', component: User, props: true },
+    { path: encodeURI('/n/€'), name: 'euro', component },
+    { path: '/n/:n', name: 'increment', component },
+    { path: '/multiple/:a/:b', name: 'multiple', component },
+    { path: '/long-:n', name: 'long', component: LongView },
+    {
+      path: '/lazy',
+      meta: { transition: 'slide-left' },
+      component: async () => {
+        await delay(500)
+        return component()
+      },
+    },
+    {
+      path: '/with-guard/:n',
+      name: 'guarded',
+      component,
+      beforeEnter(to, from, next) {
+        if (to.params.n !== 'valid') next(false)
+        next()
+      },
+    },
+    { path: '/cant-leave', component: GuardedWithLeave },
+    {
+      path: '/children',
+      name: 'WithChildren',
+      component: Nested,
+      children: [
+        { path: '', alias: 'alias', name: 'default-child', component: Nested },
+        { path: 'a', name: 'a-child', component: Nested },
+        {
+          path: 'b',
+          name: 'b-child',
+          component: Nested,
+          children: [
+            { path: '', component: Nested },
+            { path: 'a2', component: Nested },
+            { path: 'b2', component: Nested },
+          ],
+        },
+      ],
+    },
+    { path: '/with-data', component: ComponentWithData, name: 'WithData' },
+    { path: '/rep/:a*', component: RepeatedParams, name: 'repeat' },
+    // { path: '/:data(.*)', component: NotFound, name: 'NotFound' },
+    {
+      path: '/nested',
+      alias: '/anidado',
+      component: Nested,
+      name: 'Nested',
+      children: [
+        {
+          path: 'nested',
+          alias: 'a',
+          name: 'NestedNested',
+          component: Nested,
+          children: [
+            {
+              name: 'NestedNestedNested',
+              path: 'nested',
+              component: Nested,
+            },
+          ],
+        },
+        {
+          path: 'other',
+          alias: 'otherAlias',
+          component: Nested,
+          name: 'NestedOther',
+        },
+        {
+          path: 'also-as-absolute',
+          alias: '/absolute',
+          name: 'absolute-child',
+          component: Nested,
+        },
+      ],
+    },
+    {
+      path: '/parent/:id',
+      name: 'parent',
+      component: NestedWithId,
+      props: true,
+      alias: '/p/:id',
+      children: [
+        // empty child
+        { path: '', component },
+        // child with absolute path. we need to add an `id` because the parent needs it
+        { path: '/p_:id/absolute-a', alias: 'as-absolute-a', component },
+        // same as above but the alias is absolute
+        { path: 'as-absolute-b', alias: '/p_:id/absolute-b', component },
+      ],
+    },
+    {
+      path: '/dynamic',
+      name: 'dynamic',
+      component: Nested,
+      end: false,
+      strict: true,
+      beforeEnter(to, from, next) {
+        if (!removeRoute) {
+          removeRoute = router.addRoute('dynamic', {
+            path: 'child',
+            component: Dynamic,
+          })
+          next(to.fullPath)
+        } else next()
+      },
+    },
+    {
+      path: '/admin',
+      component: TransparentWrapper,
+      children: [
+        { path: '', component },
+        { path: 'dashboard', component },
+        { path: 'settings', component },
+      ],
+    },
+  ],
+  async scrollBehavior(to, from, savedPosition) {
+    await scrollWaiter.wait()
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      if (to.matched.every((record, i) => from.matched[i] !== record))
+        return { left: 0, top: 0 }
+    }
+    // leave scroll as it is by not returning anything
+    // https://github.com/Microsoft/TypeScript/issues/18319
+    return false
+  },
+})
+const delay = t => new Promise(resolve => setTimeout(resolve, t))
 // remove trailing slashes
-router.beforeEach((to, from, next) => {
+router.beforeEach(to => {
   if (/.\/$/.test(to.path)) {
     to.meta.redirectCode = 301
-    next(to.path.replace(/\/$/, ''))
-  } else next()
-  // next()
+    return to.path.replace(/\/$/, '')
+  }
 })
-
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async to => {
   // console.log(`Guard from ${from.fullPath} to ${to.fullPath}`)
-  if (to.params.id === 'no-name') return next(false)
-
+  if (to.params.id === 'no-name') return false
   const time = Number(to.query.delay)
   if (time > 0) {
     console.log('⏳ waiting ' + time + 'ms')
     to.meta.waitedFor = time
     await delay(time)
   }
-  next()
 })
-
-router.beforeEach((to, from, next) => {
-  if (globalState.cancelNextNavigation) return next(false)
-  next()
+router.beforeEach(() => {
+  if (globalState.cancelNextNavigation) return false
 })
-
 router.afterEach((to, from) => {
   if (to.name === from.name && to.name === 'repeat') {
     const toDepth = to.path.split('/').length
@@ -220,7 +350,6 @@ router.afterEach((to, from) => {
     to.meta.transition = toDepth < fromDepth ? 'slide-right' : 'slide-left'
   }
 })
-
 router.afterEach((to, from) => {
   // console.log(
   //   `After guard: from ${from.fullPath} to ${
@@ -228,29 +357,23 @@ router.afterEach((to, from) => {
   //   } | location = ${location.href.replace(location.origin, '')}`
   // )
 })
-
-export function go(delta: number) {
+export function go(delta) {
   return new Promise((resolve, reject) => {
     function popStateListener() {
       clearTimeout(timeout)
     }
     window.addEventListener('popstate', popStateListener)
-
     function clearHooks() {
       removeAfterEach()
       removeOnError()
       window.removeEventListener('popstate', popStateListener)
     }
-
     // if the popstate event is not called, consider this a failure
     const timeout = setTimeout(() => {
       clearHooks()
       reject(new Error('Failed to use router.go()'))
       // using 0 leads to false positives
     }, 1)
-
-    setImmediate
-
     const removeAfterEach = router.afterEach((_to, _from, failure) => {
       clearHooks()
       resolve(failure)
@@ -259,20 +382,15 @@ export function go(delta: number) {
       clearHooks()
       reject(err)
     })
-
     router.go(delta)
   })
 }
-
 // @ts-expect-error
 window._go = go
-
-router.beforeEach((to, from, next) => {
+router.beforeEach(to => {
   // console.log('second guard')
-  if (to.query.to) next(to.query.to as string)
-  else next()
+  if (typeof to.query.to === 'string' && to.query.to) return to.query.to
 })
-
 const dirLog = {
   '': '？',
   back: '⏪',

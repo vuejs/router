@@ -37,13 +37,12 @@ import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { NavigationFailure } from './errors'
 import { isArray, isBrowser, noop } from './utils'
-import { RouterTyped } from './typedRouter'
 
 export interface RouterLinkOptions {
   /**
    * Route Location the link should navigate to when clicked on.
    */
-  to: Parameters<RouterTyped['push']>[0]
+  to: RouteLocationRaw
   /**
    * Calls `router.replace` instead of `router.push`.
    */
