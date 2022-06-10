@@ -44,6 +44,9 @@ export type {
   RouteParamsRaw,
   RouteParamValue,
   RouteParamValueRaw,
+  RouteLocationNamedRaw,
+  RouteLocationPathRaw,
+  RouteLocationString,
   RouteLocationMatched,
   RouteLocationOptions,
   RouteRecordRedirectOption,
@@ -65,15 +68,26 @@ export type {
   _RemoveRegexpFromParam,
   _RemoveUntilClosingPar,
   _JoinPath as JoinPath,
+  _ParamDelimiter,
+  _ParamModifier,
 } from './types/paths'
-export type { RouteNamedMap } from './types/named'
+export type {
+  RouteNamedMap,
+  RouteStaticPathMap,
+  RouteNamedInfo,
+  _RouteRecordNamedBaseInfo,
+} from './types/named'
 export type { Config, RouterTyped } from './typedRouter'
 
 export { createRouter } from './router'
 export type { Router, RouterOptions, RouterScrollBehavior } from './router'
 
 export { NavigationFailureType, isNavigationFailure } from './errors'
-export type { NavigationFailure } from './errors'
+export type {
+  NavigationFailure,
+  ErrorTypes,
+  NavigationRedirectError,
+} from './errors'
 
 export {
   onBeforeRouteLeave,
