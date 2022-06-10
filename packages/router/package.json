@@ -48,7 +48,6 @@
   ],
   "scripts": {
     "dev": "vite --config playground/vite.config.js",
-    "release": "bash scripts/release.sh",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 1",
     "build": "rimraf dist && rollup -c rollup.config.js",
     "build:dts": "api-extractor run --local --verbose && tail -n +9 src/globalExtensions.ts >> dist/vue-router.d.ts",
