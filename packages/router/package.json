@@ -73,18 +73,6 @@
     "test:e2e:bs": "node e2e/runner.js --local -e android5 --tag browserstack",
     "test:e2e:bs-test": "node e2e/runner.js --local --env browserstack.local_chrome --tag browserstack"
   },
-  "gitHooks": {
-    "pre-commit": "lint-staged",
-    "commit-msg": "node scripts/verifyCommit.js"
-  },
-  "lint-staged": {
-    "*.js": [
-      "prettier --write"
-    ],
-    "*.ts?(x)": [
-      "prettier --parser=typescript --write"
-    ]
-  },
   "peerDependencies": {
     "vue": "^3.2.0"
   },
@@ -112,7 +100,6 @@
     "axios": "^0.27.2",
     "brotli": "^1.3.2",
     "browserstack-local": "^1.4.5",
-    "chalk": "^4.1.0",
     "chromedriver": "^102.0.0",
     "connect-history-api-fallback": "^1.6.0",
     "conventional-changelog-cli": "^2.1.1",
@@ -121,7 +108,6 @@
     "geckodriver": "^3.0.1",
     "jest": "^27.5.1",
     "jest-mock-warn": "^1.1.0",
-    "lint-staged": "^13.0.0",
     "nightwatch": "^2.0.0",
     "nightwatch-helpers": "^1.2.0",
     "prettier": "^2.4.1",
@@ -130,11 +116,9 @@
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.32.1",
-    "serve-handler": "^6.1.3",
     "typescript": "~4.7.3",
     "vite": "~2.9.10",
     "vue": "^3.2.31",
-    "vue-tsc": "^0.37.2",
-    "yorkie": "^2.0.0"
+    "vue-tsc": "^0.37.2"
   }
 }
