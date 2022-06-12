@@ -5,23 +5,23 @@ import { RouteRecordRaw, NavigationGuard } from '../../src/types'
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
-const beforeRouteEnter = jest.fn<
+const beforeRouteEnter = vitest.fn<
   ReturnType<NavigationGuard>,
   Parameters<NavigationGuard>
 >()
 const named = {
-  default: jest.fn(),
-  other: jest.fn(),
+  default: vitest.fn(),
+  other: vitest.fn(),
 }
 
 const nested = {
-  parent: jest.fn(),
-  nestedEmpty: jest.fn(),
-  nestedA: jest.fn(),
-  nestedAbs: jest.fn(),
-  nestedNested: jest.fn(),
-  nestedNestedFoo: jest.fn(),
-  nestedNestedParam: jest.fn(),
+  parent: vitest.fn(),
+  nestedEmpty: vitest.fn(),
+  nestedA: vitest.fn(),
+  nestedAbs: vitest.fn(),
+  nestedNested: vitest.fn(),
+  nestedNestedFoo: vitest.fn(),
+  nestedNestedParam: vitest.fn(),
 }
 
 const routes: RouteRecordRaw[] = [
@@ -123,7 +123,7 @@ describe('beforeRouteEnter', () => {
 
   it('does not call beforeRouteEnter guards on navigation between aliases', async () => {
     const router = createRouter({ routes })
-    const spy = jest.fn()
+    const spy = vitest.fn()
     beforeRouteEnter.mockImplementation(spy)
     await router.push('/guard/valid')
     expect(beforeRouteEnter).toHaveBeenCalledTimes(1)

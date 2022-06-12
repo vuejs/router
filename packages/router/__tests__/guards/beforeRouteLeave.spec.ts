@@ -5,16 +5,16 @@ const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
 const nested = {
-  parent: jest.fn(),
-  nestedEmpty: jest.fn(),
-  nestedA: jest.fn(),
-  nestedB: jest.fn(),
-  nestedAbs: jest.fn(),
-  nestedNested: jest.fn(),
-  nestedNestedFoo: jest.fn(),
-  nestedNestedParam: jest.fn(),
+  parent: vitest.fn(),
+  nestedEmpty: vitest.fn(),
+  nestedA: vitest.fn(),
+  nestedB: vitest.fn(),
+  nestedAbs: vitest.fn(),
+  nestedNested: vitest.fn(),
+  nestedNestedFoo: vitest.fn(),
+  nestedNestedParam: vitest.fn(),
 }
-const beforeRouteLeave = jest.fn()
+const beforeRouteLeave = vitest.fn()
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: Home },

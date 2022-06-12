@@ -1,5 +1,5 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 import { createRouter, createMemoryHistory } from '../src'
 import { createSSRApp, resolveComponent, Component } from 'vue'

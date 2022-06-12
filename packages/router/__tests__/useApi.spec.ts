@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 import { mount } from '@vue/test-utils'
 import { computed } from 'vue'

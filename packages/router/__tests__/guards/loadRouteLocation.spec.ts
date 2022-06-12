@@ -93,7 +93,7 @@ describe('loadRouteLocation', () => {
 
   it('works with nested routes with redirect', async () => {
     expect.assertions(2)
-    testLoadRoute(
+    await testLoadRoute(
       [
         {
           path: '/',
@@ -105,7 +105,7 @@ describe('loadRouteLocation', () => {
       ],
       '/foo'
     )
-    testLoadRoute(
+    await testLoadRoute(
       [
         {
           path: '/',

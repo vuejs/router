@@ -1,7 +1,7 @@
 import { createRouter, createMemoryHistory } from '../src'
 import { h } from 'vue'
 import { createDom } from './utils'
-// import { mockWarn } from 'jest-mock-warn'
+// import { mockWarn } from './mock-warn'
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
@@ -34,7 +34,7 @@ describe('Multiple apps', () => {
   it('does not listen to url changes before being ready', async () => {
     const { router, history } = newRouter()
 
-    const spy = jest.fn((to, from, next) => {
+    const spy = vitest.fn((to, from, next) => {
       next()
     })
     router.beforeEach(spy)

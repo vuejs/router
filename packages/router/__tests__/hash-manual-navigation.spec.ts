@@ -34,7 +34,7 @@ describe('hash history edge cases', () => {
       return
     })
 
-    // const spy = jest.spyOn(history, 'go')
+    // const spy = vitest.spyOn(history, 'go')
 
     history.changeURL('/')
     await tick()
@@ -71,7 +71,7 @@ describe('hash history edge cases', () => {
       return
     })
 
-    // const spy = jest.spyOn(history, 'go')
+    // const spy = vitest.spyOn(history, 'go')
 
     history.changeURL('/')
     await tick()

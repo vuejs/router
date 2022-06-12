@@ -24,7 +24,7 @@ describe('router.afterEach', () => {
   })
 
   it('calls afterEach guards on push', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes })
     router.afterEach(spy)
     await router.push('/foo')
@@ -37,7 +37,7 @@ describe('router.afterEach', () => {
   })
 
   it('can be removed', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes })
     const remove = router.afterEach(spy)
     remove()
@@ -46,7 +46,7 @@ describe('router.afterEach', () => {
   })
 
   it('calls afterEach guards on multiple push', async () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
     const router = createRouter({ routes })
     await router.push('/nested')
     router.afterEach(spy)

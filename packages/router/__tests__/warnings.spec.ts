@@ -1,4 +1,4 @@
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from './mock-warn'
 import { createMemoryHistory, createRouter } from '../src'
 import {
   defineAsyncComponent,
@@ -114,7 +114,7 @@ describe('warnings', () => {
     ).toHaveBeenWarned()
   })
 
-  it('warns if next is called multiple times in one navigation guard', done => {
+  it('warns if next is called multiple times in one navigation guard', async () => {
     expect.assertions(3)
     let router = createRouter({
       history: createMemoryHistory(),
@@ -124,17 +124,18 @@ describe('warnings', () => {
       ],
     })
 
-    router.beforeEach((to, from, next) => {
-      next()
-      expect('').not.toHaveBeenWarned()
-      next()
-      expect('called more than once').toHaveBeenWarnedTimes(1)
-      next()
-      expect('called more than once').toHaveBeenWarnedTimes(1)
-      done()
+    await new Promise(resolve => {
+      router.beforeEach((to, from, next) => {
+        next()
+        expect('').not.toHaveBeenWarned()
+        next()
+        expect('called more than once').toHaveBeenWarnedTimes(1)
+        next()
+        expect('called more than once').toHaveBeenWarnedTimes(1)
+        resolve('')
+      })
+      router.push('/b')
     })
-
-    router.push('/b')
   })
 
   it('warns if a non valid function is passed as a component', async () => {

@@ -25,8 +25,8 @@ const routes: Readonly<RouteRecordRaw>[] = [
   { path: '/async', component: () => Promise.reject('failed') },
 ]
 
-const onError = jest.fn()
-const afterEach = jest.fn()
+const onError = vitest.fn()
+const afterEach = vitest.fn()
 function createRouter() {
   const history = createMemoryHistory()
   const router = newRouter({

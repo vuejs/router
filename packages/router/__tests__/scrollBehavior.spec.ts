@@ -1,20 +1,21 @@
 import { JSDOM } from 'jsdom'
 import { scrollToPosition } from '../src/scrollBehavior'
 import { createDom } from './utils'
-import { mockWarn } from 'jest-mock-warn'
+import { SpyInstance } from 'vitest'
+import { mockWarn } from './mock-warn'
 
 describe('scrollBehavior', () => {
   mockWarn()
   let dom: JSDOM
-  let scrollTo: jest.SpyInstance
-  let getElementById: jest.SpyInstance
-  let querySelector: jest.SpyInstance
+  let scrollTo: SpyInstance
+  let getElementById: SpyInstance
+  let querySelector: SpyInstance
 
   beforeAll(() => {
     dom = createDom()
-    scrollTo = jest.spyOn(window, 'scrollTo').mockImplementation(() => {})
-    getElementById = jest.spyOn(document, 'getElementById')
-    querySelector = jest.spyOn(document, 'querySelector')
+    scrollTo = vitest.spyOn(window, 'scrollTo').mockImplementation(() => {})
+    getElementById = vitest.spyOn(document, 'getElementById')
+    querySelector = vitest.spyOn(document, 'querySelector')
 
     // #text
     let el = document.createElement('div')
