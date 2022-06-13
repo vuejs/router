@@ -16,3 +16,4 @@ yalc.lock
 local.log
 _selenium-server.log
 packages/*/LICENSE
+tracing_output
