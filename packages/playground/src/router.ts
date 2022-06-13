@@ -146,14 +146,14 @@ export const router = createRouter({
       component: Nested,
       end: false,
       strict: true,
-      beforeEnter(to, from, next) {
+      beforeEnter(to) {
         if (!removeRoute) {
           removeRoute = router.addRoute('dynamic', {
             path: 'child',
             component: Dynamic,
           })
-          next(to.fullPath)
-        } else next()
+          return to.fullPath
+        }
       },
     },
 

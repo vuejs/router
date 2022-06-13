@@ -9,6 +9,7 @@ import {
   RouteNamedMapGeneric,
   RouteStaticPathMapGeneric,
 } from './named'
+import { LiteralUnion } from './utils'
 
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
@@ -132,9 +133,12 @@ export type RouteLocationString<
   RouteMap extends RouteStaticPathMapGeneric = RouteStaticPathMapGeneric
 > = RouteStaticPathMapGeneric extends RouteMap
   ? string
-  : {
-      [K in keyof RouteMap]: RouteMap[K]['fullPath']
-    }[keyof RouteMap]
+  : LiteralUnion<
+      {
+        [K in keyof RouteMap]: RouteMap[K]
+      }[keyof RouteMap],
+      string
+    >
 
 /**
  * Route Location that can infer the necessary params based on the name.
@@ -162,11 +166,14 @@ export type RouteLocationPathRaw<
 > = RouteStaticPathMapGeneric extends RouteMap
   ? // allows assigning a RouteLocationRaw to RouteLocationPat
     RouteQueryAndHash & LocationAsPath & RouteLocationOptions
-  : {
-      [K in Extract<keyof RouteMap, string>]: RouteQueryAndHash &
-        LocationAsPath<RouteMap[K]['path']> &
-        RouteLocationOptions
-    }[Extract<keyof RouteMap, string>]
+  : RouteQueryAndHash &
+      RouteLocationOptions &
+      LocationAsPath<
+        LiteralUnion<
+          { [K in keyof RouteMap]: RouteMap[K] }[keyof RouteMap],
+          string
+        >
+      >
 
 export interface RouteLocationMatched extends RouteRecordNormalized {
   // components cannot be Lazy<RouteComponent>
