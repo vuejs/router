@@ -64,7 +64,7 @@ expectType<{ date: string }>(params('/users/:date(\\d{4}-\\d{2}-\\d{2})'))
 expectType<{ a: string }>(params('/:a(pre-(?:\\d{0,5}\\)-end)'))
 
 // special characters
-expectType<{ id$thing: string }>(params('/:id$thing'))
+expectType<{ id: string }>(params('/:id$thing'))
 expectType<{ id: string }>(params('/:id&thing'))
 expectType<{ id: string }>(params('/:id!thing'))
 expectType<{ id: string }>(params('/:id\\*thing'))
