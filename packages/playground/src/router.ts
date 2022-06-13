@@ -74,10 +74,14 @@ export const router = createRouter({
         { path: 'a', name: 'a-child', component: Nested },
         {
           path: 'b',
-          name: 'b-child',
+          name: 'WithChildrenB',
           component: Nested,
           children: [
-            { path: '', component: Nested },
+            {
+              path: '',
+              name: 'b-child',
+              component: Nested,
+            },
             { path: 'a2', component: Nested },
             { path: 'b2', component: Nested },
           ],
@@ -129,7 +133,7 @@ export const router = createRouter({
       alias: '/p/:id',
       children: [
         // empty child
-        { path: '', component },
+        { path: '', name: 'child-id', component },
         // child with absolute path. we need to add an `id` because the parent needs it
         { path: '/p_:id/absolute-a', alias: 'as-absolute-a', component },
         // same as above but the alias is absolute
