@@ -92,21 +92,20 @@ for (const method of methods) {
 
   // paths
   r2[method]({ path: '/nested' })
+  r2[method]({ path: '/nested/:a/b' })
+  // with an actual param
   r2[method]({ path: '/nested/a/b' })
-  // @ts-expect-error
+  // NOTE: we actually accept any string because of perf bottlenecks due to tuples
   r2[method]({ path: '' })
-  // @ts-expect-error
   r2[method]({ path: '/nope' })
-  // @ts-expect-error
   r2[method]({ path: '/no-name?query' })
-  // @ts-expect-error
   r2[method]({ path: '/no-name#hash' })
 
   r2[method]('/nested')
   r2[method]('/nested/a/b')
-  // @ts-expect-error
+
+  // NOTE: same as above
   r2[method]('')
-  // @ts-expect-error
   r2[method]('/nope')
   r2[method]('/no-name?query')
   r2[method]('/no-name#hash')
