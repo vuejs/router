@@ -151,10 +151,13 @@ export type RouteLocationNamedRaw<
   ? // allows assigning a RouteLocationRaw to RouteLocationNamedRaw
     RouteQueryAndHash & LocationAsRelativeRaw & RouteLocationOptions
   : {
-      [K in Extract<keyof RouteMap, RouteRecordName>]: RouteQueryAndHash &
-        LocationAsRelativeRaw<K, RouteMap[K]> &
-        RouteLocationOptions
-    }[Extract<keyof RouteMap, RouteRecordName>]
+      [K in Extract<keyof RouteMap, RouteRecordName>]: LocationAsRelativeRaw<
+        K,
+        RouteMap[K]
+      >
+    }[Extract<keyof RouteMap, RouteRecordName>] &
+      RouteQueryAndHash &
+      RouteLocationOptions
 
 /**
  * Route Location that can infer the possible paths.

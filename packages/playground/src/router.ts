@@ -52,7 +52,7 @@ export const router = createRouter({
       meta: { transition: 'slide-left' },
       component: async () => {
         await delay(500)
-        return component()
+        return component
       },
     },
     {
