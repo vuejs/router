@@ -64,9 +64,13 @@ export type {
 } from './types'
 export type {
   ParamsFromPath,
-  _ExtractFirstParamName,
-  _RemoveRegexpFromParam,
+  ParamsRawFromPath,
+  _StripRegex,
   _RemoveUntilClosingPar,
+  _ExtractParamsOfPath,
+  _ParamExtractResult,
+  _ExtractModifier,
+  _ModifierExtracTResult,
   _JoinPath,
   _ParamDelimiter,
   _ParamModifier,

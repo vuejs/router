@@ -1,8 +1,10 @@
 import type {
   ParamsFromPath,
-  _ExtractFirstParamName,
-  _RemoveRegexpFromParam,
+  _StripRegex,
+  _ExtractParamsOfPath,
   _RemoveUntilClosingPar,
+  _ExtractModifier,
+  _ModifierExtracTResult,
 } from './'
 import { expectType } from './'
 
@@ -11,7 +13,7 @@ function params<T extends string>(_path: T): ParamsFromPath<T> {
 }
 
 // simple
-expectType<{}>(params('/static'))
+expectType<Record<any, never>>(params('/static'))
 expectType<{ id: string }>(params('/users/:id'))
 // simulate a part of the string unknown at compilation time
 expectType<{ id: string }>(params(`/${encodeURI('')}/:id`))
@@ -63,6 +65,13 @@ expectType<{ id: readonly string[] }>(params('/users/:id(one)+'))
 expectType<{ date: string }>(params('/users/:date(\\d{4}-\\d{2}-\\d{2})'))
 expectType<{ a: string }>(params('/:a(pre-(?:\\d{0,5}\\)-end)'))
 
+expectType<{
+  id: readonly [string, ...string[]]
+  b: string
+  c: string
+  d: string
+}>(params('/:id(.*)+/other/:b/:c/:d'))
+
 // special characters
 expectType<{ id: string }>(params('/:id$thing'))
 expectType<{ id: string }>(params('/:id&thing'))
@@ -83,54 +92,52 @@ function removeUntilClosingPar<S extends string>(
   return '' as any
 }
 
-expectType<'}'>(removeUntilClosingPar(')'))
-expectType<'+}'>(removeUntilClosingPar(')+'))
-expectType<'}more'>(removeUntilClosingPar(')more'))
-expectType<'}'>(removeUntilClosingPar('\\w+)'))
-expectType<'}/more-url'>(removeUntilClosingPar('\\w+)/more-url'))
-expectType<'}/:p'>(removeUntilClosingPar('\\w+)/:p'))
-expectType<'+}'>(removeUntilClosingPar('oe)+'))
-expectType<'}/:p(o)'>(removeUntilClosingPar('\\w+)/:p(o)'))
-expectType<'}/:p(o)'>(removeUntilClosingPar('(?:no\\)?-end)/:p(o)'))
-expectType<'}/:p(o(?:no\\)?-end)'>(
+expectType<''>(removeUntilClosingPar(')'))
+expectType<'+'>(removeUntilClosingPar(')+'))
+expectType<'more'>(removeUntilClosingPar(')more'))
+expectType<''>(removeUntilClosingPar('\\w+)'))
+expectType<'/more-url'>(removeUntilClosingPar('\\w+)/more-url'))
+expectType<'/:p'>(removeUntilClosingPar('\\w+)/:p'))
+expectType<'+'>(removeUntilClosingPar('oe)+'))
+expectType<'/:p(o)'>(removeUntilClosingPar('\\w+)/:p(o)'))
+expectType<'/:p(o)'>(removeUntilClosingPar('(?:no\\)?-end)/:p(o)'))
+expectType<'/:p(o(?:no\\)?-end)'>(
   removeUntilClosingPar('-end)/:p(o(?:no\\)?-end)')
 )
-expectType<'}:new(eg)other'>(removeUntilClosingPar('customr):new(eg)other'))
-expectType<'}:new(eg)+other'>(removeUntilClosingPar('customr):new(eg)+other'))
-expectType<'}/:new(eg)+other'>(removeUntilClosingPar('customr)/:new(eg)+other'))
-expectType<'?}/:new(eg)+other'>(
+expectType<':new(eg)other'>(removeUntilClosingPar('customr):new(eg)other'))
+expectType<':new(eg)+other'>(removeUntilClosingPar('customr):new(eg)+other'))
+expectType<'/:new(eg)+other'>(removeUntilClosingPar('customr)/:new(eg)+other'))
+expectType<'?/:new(eg)+other'>(
   removeUntilClosingPar('customr)?/:new(eg)+other')
 )
-function removeRegexp<S extends string>(_s: S): _RemoveRegexpFromParam<S> {
+
+function stripRegex<S extends string>(_s: S): _StripRegex<S> {
   return '' as any
 }
 
-expectType<'/{id?}/{b}'>(removeRegexp('/:id(aue(ee{2,3}\\))?/:b(hey)'))
-expectType<'/{id+}/b'>(removeRegexp('/:id+/b'))
-expectType<'/{id}'>(removeRegexp('/:id'))
-expectType<'/{id+}'>(removeRegexp('/:id+'))
-expectType<'+}'>(removeRegexp('+}'))
-expectType<'/{id+}'>(removeRegexp('/:id(e)+'))
-expectType<'/{id}/b'>(removeRegexp('/:id/b'))
-expectType<'/{id}/{b}'>(removeRegexp('/:id/:b'))
-expectType<'/users/{id}/{b}'>(removeRegexp('/users/:id/:b'))
-expectType<'/{id?}/{b+}'>(removeRegexp('/:id?/:b+'))
-expectType<'/{id?}/{b+}'>(removeRegexp('/:id(aue(ee{2,3}\\))?/:b+'))
+const a = '/:id(\\d+)+/edit/:more(.*)' as '/:id+/edit/:more'
 
-function extractParamName<S extends string>(_s: S): _ExtractFirstParamName<S> {
-  return '' as any
+expectType<'+/edit/'>(stripRegex('(\\d+)+/edit/'))
+expectType<'*'>(stripRegex('(.*)*'))
+expectType<'?/rest'>(stripRegex('?/rest'))
+expectType<'*'>(stripRegex('*'))
+expectType<'-other-stuff'>(stripRegex('-other-stuff'))
+expectType<'/edit'>(stripRegex('/edit'))
+expectType<'?/rest/:other(.*)*'>(stripRegex('?/rest/:other(.*)*'))
+expectType<'+/edit/:other(.*)*'>(stripRegex('(\\d+)+/edit/:other(.*)*'))
+expectType<'?/rest/:other(.*)/more/:b(.*)'>(
+  stripRegex('?/rest/:other(.*)/more/:b(.*)')
+)
+
+function extractModifier<S extends string>(_s: S): _ExtractModifier<S> {
+  return {} as any
 }
 
-expectType<'id'>(extractParamName('id(aue(ee{2,3}\\))?/:b(hey)'))
-expectType<'id'>(extractParamName('id(e)+:d(c)'))
-expectType<'id'>(extractParamName('id(e)/:d(c)'))
-expectType<'id'>(extractParamName('id:d'))
-expectType<'id'>(extractParamName('id/:d'))
-expectType<'id'>(extractParamName('id?/other/:d'))
-expectType<'id'>(extractParamName('id/b'))
-expectType<'id'>(extractParamName('id+'))
-expectType<'id'>(extractParamName('id'))
-expectType<'id'>(extractParamName('id-u'))
-expectType<'id'>(extractParamName('id:u'))
-expectType<'id'>(extractParamName('id(o(\\)e)o'))
-expectType<'id'>(extractParamName('id(o(\\)e)?o'))
+expectType<_ModifierExtracTResult<'', ''>>(extractModifier(''))
+expectType<_ModifierExtracTResult<'', '-rest'>>(extractModifier('-rest'))
+expectType<_ModifierExtracTResult<'', 'edit'>>(extractModifier('edit'))
+expectType<_ModifierExtracTResult<'+', ''>>(extractModifier('+'))
+expectType<_ModifierExtracTResult<'+', '/edit'>>(extractModifier('+/edit'))
+expectType<_ModifierExtracTResult<'+', '/edit/:a?'>>(
+  extractModifier('+/edit/:a?')
+)
