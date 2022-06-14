@@ -115,8 +115,6 @@ function stripRegex<S extends string>(_s: S): _StripRegex<S> {
   return '' as any
 }
 
-const a = '/:id(\\d+)+/edit/:more(.*)' as '/:id+/edit/:more'
-
 expectType<'+/edit/'>(stripRegex('(\\d+)+/edit/'))
 expectType<'*'>(stripRegex('(.*)*'))
 expectType<'?/rest'>(stripRegex('?/rest'))
