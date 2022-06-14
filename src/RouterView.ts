@@ -138,7 +138,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
 
       const onVnodeUnmounted: VNodeProps['onVnodeUnmounted'] = vnode => {
         // remove the instance reference to prevent leak
-        if (vnode.component!.isUnmounted) {
+        if (vnode?.component?.isUnmounted) {
           matchedRoute!.instances[currentName] = null
         }
       }
