@@ -58,14 +58,14 @@ export interface RouteQueryAndHash {
 /**
  * @internal
  */
-export interface LocationAsPath<P extends string = string> {
+export interface MatcherLocationAsPath<P extends string = string> {
   path: P
 }
 
 /**
  * @internal
  */
-export interface LocationAsName {
+export interface MatcherLocationAsName {
   name: RouteRecordName
   params?: RouteParams
 }
@@ -86,7 +86,7 @@ export interface LocationAsRelativeRaw<
 /**
  * @internal
  */
-export interface LocationAsRelative<
+export interface MatcherLocationAsRelative<
   Info extends RouteNamedInfo = RouteNamedInfo
 > {
   params?: Info extends RouteNamedInfo<any, infer Params, any>
@@ -167,11 +167,11 @@ export type RouteLocationNamedRaw<
 export type RouteLocationPathRaw<
   RouteMap extends RouteStaticPathMapGeneric = RouteStaticPathMapGeneric
 > = RouteStaticPathMapGeneric extends RouteMap
-  ? // allows assigning a RouteLocationRaw to RouteLocationPat
-    RouteQueryAndHash & LocationAsPath & RouteLocationOptions
+  ? // allows assigning a RouteLocationRaw to RouteLocationPath
+    RouteQueryAndHash & MatcherLocationAsPath & RouteLocationOptions
   : RouteQueryAndHash &
       RouteLocationOptions &
-      LocationAsPath<
+      MatcherLocationAsPath<
         LiteralUnion<
           { [K in keyof RouteMap]: RouteMap[K] }[keyof RouteMap],
           string
@@ -467,11 +467,17 @@ export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = {
 
 // Matcher types
 // the matcher doesn't care about query and hash
+/**
+ * Route location that can be passed to the matcher.
+ */
 export type MatcherLocationRaw =
-  | LocationAsPath
-  | LocationAsName
-  | LocationAsRelative
+  | MatcherLocationAsPath
+  | MatcherLocationAsName
+  | MatcherLocationAsRelative
 
+/**
+ * Normalized/resolved Route location that returned by the matcher.
+ */
 export interface MatcherLocation {
   /**
    * Name of the matched record

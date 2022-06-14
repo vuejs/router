@@ -33,7 +33,7 @@ export { START_LOCATION_NORMALIZED as START_LOCATION } from './types'
 export type {
   // route location
   _RouteLocationBase,
-  LocationAsPath,
+  MatcherLocationAsPath,
   LocationAsRelativeRaw,
   RouteQueryAndHash,
   RouteLocationRaw,
