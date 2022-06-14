@@ -108,7 +108,7 @@ type _ExtractParamName<
     ? // Keep extracting other alphanumeric chars
       _ExtractParamName<Rest, `${Head}${C}`>
     : never // ERR
-  : // add the rest to the end after a % which is invalid in a path so it can be used as a delimiter
+  : // end the recursion
     _ParamExtractResult<Head, Tail>
 
 /**
