@@ -67,7 +67,7 @@ export type {
   _ExtractFirstParamName,
   _RemoveRegexpFromParam,
   _RemoveUntilClosingPar,
-  _JoinPath as JoinPath,
+  _JoinPath,
   _ParamDelimiter,
   _ParamModifier,
 } from './types/paths'
