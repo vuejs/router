@@ -1,4 +1,4 @@
-import { RouteParams, RouteParamsRaw, RouteParamValueRaw } from '.'
+import { RouteParamValueRaw } from '.'
 
 /**
  * Extract an object of params given a path like `/users/:id`.
@@ -71,20 +71,16 @@ export type _ExtractParamsPath<
       _ExtractParamsPath<Rest, isRaw>
   : {}
 
-type _PathParam<P extends string, Rest extends string = ''> =
-  | `${string}:${P}`
-  | `${string}:${P}${_ParamModifier}${Rest}`
-
-type b = '/' extends _PathParam<infer P> ? P : never
-type c = '/home' extends _PathParam<infer P> ? P : never
-type d = '/user/:id' extends _PathParam<infer P, infer Rest> ? [P, Rest] : never
-type e = '/user/:id+' extends _PathParam<infer P> ? P : never
-
+/**
+ * Given a path, extracts the possible params or {} when there are no params.
+ *
+ * @internal
+ */
 export type _ExtractParamsOfPath<
   P extends string,
   isRaw extends boolean
 > = P extends `${string}:${infer HasParam}`
-  ? _ParamName<HasParam> extends _ParamExtractResult<
+  ? _ExtractParamName<HasParam> extends _ParamExtractResult<
       infer ParamName,
       infer Rest
     >
@@ -123,53 +119,64 @@ type test1 =
     ? [P, Rest]
     : never
 
-type _ParamName_OLD<P extends string> =
-  P extends `${_AlphaNumeric}${infer Rest}`
-    ? P extends `${infer C}${Rest}`
-      ? // Keep extracting other alphanumeric chars
-        `${C}${_ParamName_OLD<Rest>}`
-      : never // ERR
-    : // add the rest to the end after a % which is invalid in a path so it can be used as a delimiter
-      ` % ${P}`
-
+/**
+ * Helper type to infer a param name extraction result
+ * @internal
+ */
 interface _ParamExtractResult<P extends string, Rest extends string> {
   param: P
   rest: Rest
 }
 
-type _ParamName<
+/**
+ * Extracts the param name from a path. Requires to strip off the starting `:`
+ *
+ * @example
+ * ```ts
+ * _ExtractParamName<'id/:b'> // 'id'
+ * ```
+ *
+ * @internal
+ */
+type _ExtractParamName<
   Tail extends string,
   Head extends string = ''
 > = Tail extends `${_AlphaNumeric}${infer Rest}`
   ? Tail extends `${infer C}${Rest}`
     ? // Keep extracting other alphanumeric chars
-      _ParamName<Rest, `${Head}${C}`>
+      _ExtractParamName<Rest, `${Head}${C}`>
     : never // ERR
   : // add the rest to the end after a % which is invalid in a path so it can be used as a delimiter
     _ParamExtractResult<Head, Tail>
 
-type p1 = _ParamName<'id'>
-type p2 = _ParamName<'abc+/dos'>
-type p3 = _ParamName<'abc/:dos)'>
+type p1 = _ExtractParamName<'id'>
+type p2 = _ExtractParamName<'abc+/dos'>
+type p3 = _ExtractParamName<'abc/:dos)'>
 
 /**
  * We consider a what comes after a param, e.g. For `/:id(\\d+)+/edit`, it would be `(\\d+)+/edit`. This should output
- * everything after the regex while handling escaped `)`: `+/edit`.
+ * everything after the regex while handling escaped `)`: `+/edit`. Note this type should be used with a string that
+ * starts with `(` as it will remove everything until the closing parenthesis `)`.
+ *
+ * @internal
  */
 export type _StripRegex<S extends string> =
   // do we have an escaped closing parenthesis?
-  S extends `${infer A}\\)${infer Rest}`
+  S extends `(${infer A}\\)${infer Rest}`
     ? // the actual regexp finished before, A has no escaped )
       A extends `${string})${infer Rest2}`
-      ? // get the modifier if there is one
+      ? // Rebuild the rest
         `${Rest2}\\)${Rest}` // job done
-      : _RemoveUntilClosingPar<Rest> // we keep removing
+      : // NOTE: expensive type when there are multiple custom regex. It's a good idea to avoid multiple custom regexs in paths. Only use custom regexs when necessary or cast the string type: `path: /:id(...)/rest` as '/:id/rest'
+        _RemoveUntilClosingPar<Rest> // we keep removing
     : // simple case with no escaping
-    S extends `${string})${infer Rest}`
+    S extends `(${string})${infer Rest}`
     ? // extract the modifier if there is one
       Rest
     : // nothing to remove
       S
+
+const a = '/:id(\\d+)+/edit/:more(.*)' as '/:id+/edit/:more'
 
 type r1 = _StripRegex<'(\\d+)+/edit/:other(.*)*'>
 type r3 = _StripRegex<'(.*)*'>
@@ -177,7 +184,14 @@ type r4 = _StripRegex<'?/rest'>
 type r5 = _StripRegex<'*'>
 type r6 = _StripRegex<'-other-stuff'>
 type r7 = _StripRegex<'/edit'>
+type r8 = _StripRegex<'?/rest/:other(.*)'>
+type r9 = _StripRegex<'?/rest/:other(.*)/more/:b(.*)'>
 
+/**
+ * Helper type to infer a modifier extraction result.
+ *
+ * @internal
+ */
 export interface _ModifierExtracTResult<
   M extends _ParamModifier | '',
   Rest extends string
@@ -186,6 +200,12 @@ export interface _ModifierExtracTResult<
   rest: Rest
 }
 
+/**
+ * Extracts the modifier and the rest of the path. This is meant to be used with everything after the param name, e.g.,
+ * given a path of `/:paths(.+)+/end`, it should be given `+/end` and will split the path into `+` and `/end`.
+ *
+ * @internal
+ */
 export type _ExtractModifier<P extends string> =
   P extends `${_ParamModifier}${infer Rest}`
     ? P extends `${infer M}${Rest}`
@@ -203,31 +223,6 @@ type m2 = _ExtractModifier<'-rest'>
 type m3 = _ExtractModifier<'edit'>
 type m4 = _ExtractModifier<'+'>
 type m5 = _ExtractModifier<'+/edit'>
-
-export type _StripModifierAndRegex_OLD<S extends string> =
-  // do we have an escaped closing parenthesis?
-  S extends `${infer A}\\)${infer Rest}`
-    ? // the actual regexp finished before, A has no escaped )
-      A extends `${string})${infer Rest2}`
-      ? // get the modifier if there is one
-        Rest2 extends `${_ParamModifier}${infer Rest3}`
-        ? Rest2 extends `${infer M}${Rest3}`
-          ? { mod: M; rest: `${Rest3}\\)${Rest}` }
-          : never
-        : // No modifier
-          { mod: ''; rest: `${Rest2}\\)${Rest}` } // job done
-      : _RemoveUntilClosingPar<Rest> // we keep removing
-    : // simple case with no escaping
-    S extends `${string})${infer Rest}`
-    ? // extract the modifier if there is one
-      Rest extends `${_ParamModifier}${infer Rest2}`
-      ? Rest extends `${infer M}${Rest2}`
-        ? { mod: M; rest: Rest2 }
-        : never
-      : // no modifier
-        { mod: ''; rest: Rest }
-    : // nothing to remove
-      { mod: ''; rest: S }
 
 /**
  * Gets the possible type of a param based on its modifier M.
@@ -372,119 +367,6 @@ export type _ExtractFirstParamName<S extends string> =
     : S extends `${string}${_ParamDelimiter}${string}`
     ? never
     : S
-
-/**
- * Join an array of param values for repeated params
- *
- * @internal
- */
-type _JoinParams<V extends null | undefined | readonly any[]> = V extends
-  | null
-  | undefined
-  ? ''
-  : V extends readonly [infer A, ...infer Rest]
-  ? A extends string
-    ? `${A}${Rest extends readonly [any, ...any[]]
-        ? `/${_JoinParams<Rest>}`
-        : ''}`
-    : never
-  : ''
-
-/**
- * Transform a param value to a string.
- *
- * @internal
- */
-export type _ParamToString<V> = V extends null | undefined | readonly string[]
-  ? _JoinParams<V>
-  : V extends null | undefined | readonly never[] | readonly []
-  ? ''
-  : V extends string
-  ? V
-  : never
-
-/**
- * Possible values for a Modifier.
- *
- * @internal
- */
-type _PossibleModifierValue =
-  | string
-  | readonly string[]
-  | null
-  | undefined
-  | readonly never[]
-
-/**
- * Recursively builds a path from a param based path with curly braces (e.g. `\{id\}`).
- *
- * @internal
- */
-export type _BuildPath<
-  P extends string,
-  PO extends ParamsFromPath
-> = P extends `${infer A}{${infer PP}}${infer Rest}`
-  ? PP extends `${infer N}${_ParamModifier}`
-    ? PO extends Record<N, _PossibleModifierValue>
-      ? PO[N] extends readonly [] | readonly never[] | null | undefined
-        ? `${A}${Rest extends `/${infer Rest2}` ? _BuildPath<Rest2, PO> : ''}`
-        : `${A}${_ParamToString<PO[N]>}${_BuildPath<Rest, PO>}`
-      : `${A}${Rest extends `/${infer Rest2}` ? _BuildPath<Rest2, PO> : ''}`
-    : `${A}${PO extends Record<PP, _PossibleModifierValue>
-        ? _ParamToString<PO[PP]>
-        : ''}${_BuildPath<Rest, PO>}`
-  : P
-
-/**
- * Builds a path string type from a path definition and an object of params.
- *
- * @example
- * ```ts
- * type url = PathFromParams<'/users/:id', { id: 'posva' }> -> '/users/posva'
- * ```
- */
-export type PathFromParams<
-  P extends string,
-  PO extends ParamsFromPath<P> = ParamsFromPath<P>
-> = string extends P ? string : _BuildPath<_RemoveRegexpFromParam<P>, PO>
-
-/**
- * A param in a url like `/users/:id`.
- */
-export interface PathParserParamKey<
-  N extends string = string,
-  M extends _ParamModifier | '' = _ParamModifier | ''
-> {
-  name: N
-  repeatable: M extends '+' | '*' ? true : false
-  optional: M extends '?' | '*' ? true : false
-}
-
-/**
- * Extracts the params of a path.
- *
- * @internal
- */
-export type _ExtractPathParamKeys<P extends string> =
-  P extends `${string}{${infer PP}}${infer Rest}`
-    ? [
-        PP extends `${infer N}${_ParamModifier}`
-          ? PP extends `${N}${infer M}`
-            ? M extends _ParamModifier
-              ? PathParserParamKey<N, M>
-              : never
-            : never
-          : PathParserParamKey<PP, ''>,
-        ..._ExtractPathParamKeys<Rest>
-      ]
-    : []
-
-/**
- * Extract the param keys (name and modifiers) tuple of a path.
- */
-export type ParamKeysFromPath<P extends string = string> = string extends P
-  ? readonly PathParserParamKey[] // Generic version
-  : _ExtractPathParamKeys<_RemoveRegexpFromParam<P>>
 
 /**
  * Joins a prefix and a path putting a `/` between them when necessary
