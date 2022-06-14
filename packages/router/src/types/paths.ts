@@ -54,26 +54,7 @@ export type _ParamDelimiter =
   | _ParamModifier
 
 /**
- * Given a simple path, creates an object of the possible param values.
- *
- * @internal
- */
-export type _ExtractParamsPath<
-  P extends string,
-  isRaw extends boolean
-> = P extends `${string}{${infer PP}}${infer Rest}`
-  ? (PP extends `${infer N}${_ParamModifier}`
-      ? PP extends `${N}${infer M}`
-        ? M extends _ParamModifier
-          ? _ParamToObject<N, M, isRaw>
-          : never
-        : never
-      : _ParamToObject<PP, '', isRaw>) &
-      _ExtractParamsPath<Rest, isRaw>
-  : {}
-
-/**
- * Given a path, extracts the possible params or {} when there are no params.
+ * Given a path, extracts the possible params or \{\} when there are no params.
  *
  * @internal
  */
@@ -93,34 +74,18 @@ export type _ExtractParamsOfPath<
       >
       ? _ParamToObject<ParamName, Modifier, isRaw> &
           _ExtractParamsOfPath<Rest2, isRaw>
-      : {
-          NO: 1 // this should never happen as the modifier can be empty
-        }
+      : never // this should never happen as the modifier can be empty
     : // Nothing after the param: /:id, we are done
       _ParamToObject<HasParam, '', isRaw>
   : {
       // EMPTY: 1
     }
 
-type a1 = _ExtractParamsOfPath<'/', false>
-type a2 = _ExtractParamsOfPath<'/:id', false>
-type a3 = _ExtractParamsOfPath<'/:id/:b', false>
-type a4 = _ExtractParamsOfPath<'/:id(.*)', false>
-type a5 = _ExtractParamsOfPath<'/:id(.*)/other', false>
-type a6 = _ExtractParamsOfPath<'/:id(.*)+', false>
-type a7 = _ExtractParamsOfPath<'/:id(.*)+/other', false>
-type a8 = _ExtractParamsOfPath<'/:id(.*)+/other/:b/:c/:d', false>
-
-type test1 =
-  '/:id/:b' extends `${string}:${infer P}${_ParamDelimiter}${infer Rest}`
-    ? [P, Rest]
-    : never
-
 /**
  * Helper type to infer a param name extraction result
  * @internal
  */
-interface _ParamExtractResult<P extends string, Rest extends string> {
+export interface _ParamExtractResult<P extends string, Rest extends string> {
   param: P
   rest: Rest
 }
@@ -146,10 +111,6 @@ type _ExtractParamName<
   : // add the rest to the end after a % which is invalid in a path so it can be used as a delimiter
     _ParamExtractResult<Head, Tail>
 
-type p1 = _ExtractParamName<'id'>
-type p2 = _ExtractParamName<'abc+/dos'>
-type p3 = _ExtractParamName<'abc/:dos)'>
-
 /**
  * We consider a what comes after a param, e.g. For `/:id(\\d+)+/edit`, it would be `(\\d+)+/edit`. This should output
  * everything after the regex while handling escaped `)`: `+/edit`. Note this type should be used with a string that
@@ -172,19 +133,6 @@ export type _StripRegex<S extends string> =
       Rest
     : // nothing to remove
       S
-
-const a = '/:id(\\d+)+/edit/:more(.*)' as '/:id+/edit/:more'
-
-type r1 = _StripRegex<'(\\d+)+/edit/'>
-type r3 = _StripRegex<'(.*)*'>
-type r4 = _StripRegex<'?/rest'>
-type r5 = _StripRegex<'*'>
-type r6 = _StripRegex<'-other-stuff'>
-type r7 = _StripRegex<'/edit'>
-
-// type r8 = _StripRegex<'?/rest/:other(.*)'>
-// type r9 = _StripRegex<'(\\d+)+/edit/:other(.*)*'>
-// type r10 = _StripRegex<'?/rest/:other(.*)/more/:b(.*)'>
 
 /**
  * Helper type to infer a modifier extraction result.
@@ -216,12 +164,6 @@ export type _ExtractModifier<P extends string> =
         never
     : // No modifier present
       _ModifierExtracTResult<'', P>
-
-type m1 = _ExtractModifier<''>
-type m2 = _ExtractModifier<'-rest'>
-type m3 = _ExtractModifier<'edit'>
-type m4 = _ExtractModifier<'+'>
-type m5 = _ExtractModifier<'+/edit'>
 
 /**
  * Gets the possible type of a param based on its modifier M.
@@ -308,65 +250,11 @@ export type _RemoveUntilClosingPar<S extends string> =
   S extends `${infer A}\\)${infer Rest}`
     ? // the actual regexp finished before, A has no escaped )
       A extends `${string})${infer Rest2}`
-      ? Rest2 extends `${_ParamModifier}${infer Rest3}`
-        ? Rest2 extends `${infer M}${Rest3}`
-          ? `${M}}${Rest3}\\)${Rest}`
-          : never
-        : `}${Rest2}\\)${Rest}` // job done
+      ? `${Rest2}\\)${Rest}` // job done
       : _RemoveUntilClosingPar<Rest> // we keep removing
     : S extends `${string})${infer Rest}`
-    ? Rest extends `${_ParamModifier}${infer Rest2}`
-      ? Rest extends `${infer M}${Rest2}`
-        ? `${M}}${Rest2}`
-        : never
-      : `}${Rest}`
+    ? Rest
     : never // nothing to remove, should not have been called, easier to spot bugs
-
-type r = _RemoveUntilClosingPar<`aouest)/end`>
-type r2 = _RemoveUntilClosingPar<`aouest`>
-
-/**
- * Reformats a path string `/:id(custom-regex)/:other+` by wrapping params with
- * `{}` and removing custom regexps to make them easier to parse.
- *
- * @internal
- */
-export type _RemoveRegexpFromParam<S extends string> =
-  S extends `${infer A}:${infer P}${_ParamDelimiter}${infer Rest}`
-    ? P extends _ExtractFirstParamName<P>
-      ? S extends `${A}:${P}${infer D}${Rest}`
-        ? D extends _ParamModifier | ''
-          ? `${A}{${P}${D}}${S extends `${A}:${P}${D}${infer Rest2}` // we need to infer again...
-              ? _RemoveRegexpFromParam<Rest2>
-              : never}`
-          : D extends _ParamDelimiter
-          ? '(' extends D
-            ? `${A}{${P}${S extends `${A}:${P}(${infer Rest2}` // we need to infer again to include D
-                ? _RemoveRegexpFromParam<_RemoveUntilClosingPar<Rest2>>
-                : '}'}`
-            : `${A}{${P}}${S extends `${A}:${P}${infer Rest2}` // we need to infer again to include D
-                ? _RemoveRegexpFromParam<Rest2>
-                : never}`
-          : never
-        : never
-      : never
-    : S extends `${infer A}:${infer P}`
-    ? P extends _ExtractFirstParamName<P>
-      ? `${A}{${P}}`
-      : never
-    : S
-
-/**
- * Extract the first param name (after a `:`) and ignores the rest.
- *
- * @internal
- */
-export type _ExtractFirstParamName<S extends string> =
-  S extends `${infer P}${_ParamDelimiter}${string}`
-    ? _ExtractFirstParamName<P>
-    : S extends `${string}${_ParamDelimiter}${string}`
-    ? never
-    : S
 
 /**
  * Joins a prefix and a path putting a `/` between them when necessary

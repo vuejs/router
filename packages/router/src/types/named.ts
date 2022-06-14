@@ -4,13 +4,7 @@ import type {
   RouteRecordRaw,
   RouteRecordName,
 } from '.'
-import type {
-  _JoinPath,
-  ParamsFromPath,
-  ParamsRawFromPath,
-  PathFromParams,
-} from './paths'
-import { LiteralUnion } from './utils'
+import type { _JoinPath, ParamsFromPath, ParamsRawFromPath } from './paths'
 
 /**
  * Creates a map with each named route as a properties. Each property contains the type of the params in raw and
