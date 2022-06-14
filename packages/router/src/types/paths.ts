@@ -1,4 +1,5 @@
 import { RouteParamValueRaw } from '.'
+import { Simplify, _AlphaNumeric } from './utils'
 
 /**
  * Extract an object of params given a path like `/users/:id`.
@@ -110,10 +111,6 @@ type a6 = _ExtractParamsOfPath<'/:id(.*)+', false>
 type a7 = _ExtractParamsOfPath<'/:id(.*)+/other', false>
 type a8 = _ExtractParamsOfPath<'/:id(.*)+/other/:b/:c/:d', false>
 
-// TODO: perf test this to see if worth because it's way more readable
-// also move to utils
-export type Simplify<T> = { [K in keyof T]: T[K] }
-
 type test1 =
   '/:id/:b' extends `${string}:${infer P}${_ParamDelimiter}${infer Rest}`
     ? [P, Rest]
@@ -178,14 +175,16 @@ export type _StripRegex<S extends string> =
 
 const a = '/:id(\\d+)+/edit/:more(.*)' as '/:id+/edit/:more'
 
-type r1 = _StripRegex<'(\\d+)+/edit/:other(.*)*'>
+type r1 = _StripRegex<'(\\d+)+/edit/'>
 type r3 = _StripRegex<'(.*)*'>
 type r4 = _StripRegex<'?/rest'>
 type r5 = _StripRegex<'*'>
 type r6 = _StripRegex<'-other-stuff'>
 type r7 = _StripRegex<'/edit'>
-type r8 = _StripRegex<'?/rest/:other(.*)'>
-type r9 = _StripRegex<'?/rest/:other(.*)/more/:b(.*)'>
+
+// type r8 = _StripRegex<'?/rest/:other(.*)'>
+// type r9 = _StripRegex<'(\\d+)+/edit/:other(.*)*'>
+// type r10 = _StripRegex<'?/rest/:other(.*)/more/:b(.*)'>
 
 /**
  * Helper type to infer a modifier extraction result.
@@ -296,7 +295,8 @@ export type _ParamToObject<
     }
 
 /**
- * Takes the custom regex (and everything after) of a param and strips it off.
+ * Takes the custom regex (and everything after) of a param and strips it off. Must be called with a string that starts
+ * with a `(` **after the parenthesis**.
  *
  * @example
  * - `\\d+(?:inner-group\\)-end)/:rest-of-url` becomes `/:rest-of-url`
@@ -381,69 +381,3 @@ export type _JoinPath<
   : '' extends Prefix
   ? never
   : `${Prefix}${Prefix extends `${string}/` ? '' : '/'}${Path}`
-
-/**
- * @internal
- */
-type _AlphaNumeric =
-  | 'a'
-  | 'A'
-  | 'b'
-  | 'B'
-  | 'c'
-  | 'C'
-  | 'd'
-  | 'D'
-  | 'e'
-  | 'E'
-  | 'f'
-  | 'F'
-  | 'g'
-  | 'G'
-  | 'h'
-  | 'H'
-  | 'i'
-  | 'I'
-  | 'j'
-  | 'J'
-  | 'k'
-  | 'K'
-  | 'l'
-  | 'L'
-  | 'm'
-  | 'M'
-  | 'n'
-  | 'N'
-  | 'o'
-  | 'O'
-  | 'p'
-  | 'P'
-  | 'q'
-  | 'Q'
-  | 'r'
-  | 'R'
-  | 's'
-  | 'S'
-  | 't'
-  | 'T'
-  | 'u'
-  | 'U'
-  | 'v'
-  | 'V'
-  | 'w'
-  | 'W'
-  | 'x'
-  | 'X'
-  | 'y'
-  | 'Y'
-  | '0'
-  | '1'
-  | '2'
-  | '3'
-  | '4'
-  | '5'
-  | '6'
-  | '7'
-  | '8'
-  | '9'
-  | '_'
