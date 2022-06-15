@@ -5,7 +5,7 @@ import {
   expectType,
   RouteNamedMap,
   RouteLocationRaw,
-  JoinPath,
+  _JoinPath,
   useRouter,
 } from './index'
 import { DefineComponent } from 'vue'
@@ -122,7 +122,7 @@ r2.replace({} as unknown as RouteLocationRaw)
 function joinPath<A extends string, B extends string>(
   prefix: A,
   path: B
-): JoinPath<A, B> {
+): _JoinPath<A, B> {
   return '' as any
 }
 
