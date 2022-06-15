@@ -99,7 +99,11 @@ export {
   loadRouteLocation,
 } from './navigationGuards'
 export { RouterLink, useLink } from './RouterLink'
-export type { RouterLinkProps, UseLinkOptions } from './RouterLink'
+export type {
+  RouterLinkProps,
+  UseLinkOptions,
+  RouterLinkTyped,
+} from './RouterLink'
 export { RouterView } from './RouterView'
 export type { RouterViewProps } from './RouterView'
 

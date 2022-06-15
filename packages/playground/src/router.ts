@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouterView } from 'vue-router'
+import type { RouterLinkTyped } from 'vue-router'
 import Home from './views/Home.vue'
 import Nested from './views/Nested.vue'
 import NestedWithId from './views/NestedWithId.vue'
@@ -186,6 +187,12 @@ export const router = createRouter({
 declare module 'vue-router' {
   export interface Config {
     Router: typeof router
+  }
+}
+
+declare module 'vue' {
+  interface GlobalComponents {
+    RouterLink: RouterLinkTyped<typeof router>
   }
 }
 
