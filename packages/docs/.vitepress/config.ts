@@ -175,6 +175,10 @@ const config = defineConfig({
                 link: '/guide/advanced/lazy-loading.html',
               },
               {
+                text: 'Typed Routes',
+                link: '/guide/advanced/typed-routes.html',
+              },
+              {
                 text: 'Extending RouterLink',
                 link: '/guide/advanced/extending-router-link.html',
               },
