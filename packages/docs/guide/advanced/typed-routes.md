@@ -1,6 +1,10 @@
-# Typed routes (v4.1.0+)
+# Typed Routes (v4.1.0+)
 
-> ⚠️ This feature is still experimental and will evolve in the future
+::: danger
+
+ ⚠️ This feature is still experimental and will evolve in the future, make sure to follow along in release notes and check the [Troubleshooting](#troubleshooting) section if you have issues.
+
+:::
 
 With typed routes you get type validation when calling `router.push()` as well as autocompletion for the route path. It gives you:
 
@@ -41,23 +45,7 @@ declare module 'vue-router' {
 
 ### Typed `<RouterLink>`
 
-It's also possible to type the `to` prop of `<RouterLink>` by overriding the global type used by Vue. You can add this in the `router.ts` file, right after the previous snippet of code:
-
-```ts{1,9-13}
-import type { RouterLinkTyped } from 'vue-router'
-
-export const router = createRouter({
-  // ...options
-})
-
-// other code
-
-declare module 'vue' {
-  interface GlobalComponents {
-    RouterLink: RouterLinkTyped<typeof router>
-  }
-}
-```
+Providing the router instance to the `Config` interface above, will also provide typings to the `<RouterLink>` component's `to` prop.
 
 ## Caveats
 
@@ -67,4 +55,4 @@ If you have [dynamic routes](../advanced/dynamic-routing.md), these cannot be ty
 
 ## Troubleshooting
 
-If you ever find something blocking you or making your types too slow, you can just remove the `as const` part to rollback to the previous version of the types. If something not mentioned here isn't working and you think it sohuld be working, please open an issue on [GitHub](https://github.com/vuejs/router/issues).
+If you ever find something blocking you or making your types too slow, you can just remove the `as const` part to rollback to the previous version of the types. If something not mentioned here isn't working and you think it should be working, please open an issue on [GitHub](https://github.com/vuejs/router/issues).
