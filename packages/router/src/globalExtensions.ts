@@ -1,11 +1,11 @@
-import {
+import type {
   NavigationGuardWithThis,
   NavigationGuard,
   RouteLocationNormalizedLoaded,
 } from './types'
 import { RouterView } from './RouterView'
-import { RouterLink } from './RouterLink'
-import { RouterTyped } from './typedRouter'
+import type { RouterLinkTyped } from './RouterLink'
+import type { RouterTyped } from './typedRouter'
 
 declare module '@vue/runtime-core' {
   export interface ComponentCustomOptions {
@@ -60,6 +60,6 @@ declare module '@vue/runtime-core' {
 
   export interface GlobalComponents {
     RouterView: typeof RouterView
-    RouterLink: typeof RouterLink
+    RouterLink: RouterLinkTyped<RouterTyped>
   }
 }
