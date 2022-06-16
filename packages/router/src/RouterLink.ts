@@ -261,7 +261,7 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
 /**
  * Component to render a link that triggers a navigation on click.
  */
-export const RouterLink = RouterLinkImpl as unknown as RouterLinkTyped
+export const RouterLink: RouterLinkTyped = RouterLinkImpl as any
 
 /**
  * Typed version of the `RouterLink` component. Its generic defaults to the typed router so it can be inferred
