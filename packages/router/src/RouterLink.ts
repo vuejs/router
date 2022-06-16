@@ -41,7 +41,8 @@ import { RouteRecord } from './matcher/types'
 import { NavigationFailure } from './errors'
 import { isArray, isBrowser, noop } from './utils'
 import type { Router } from './router'
-import { RouteNamedMap, RouteStaticPathMap } from './types/named'
+import type { RouteNamedMap, RouteStaticPathMap } from './types/named'
+import type { RouterTyped } from './typedRouter'
 
 export interface RouterLinkOptions<
   Routes extends RouteLocationRaw = RouteLocationRaw
@@ -262,7 +263,11 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
  */
 export const RouterLink = RouterLinkImpl as unknown as RouterLinkTyped
 
-export interface RouterLinkTyped<R extends Router = Router> {
+/**
+ * Typed version of the `RouterLink` component. Its generic defaults to the typed router so it can be inferred
+ * automatically for JSX.
+ */
+export interface RouterLinkTyped<R extends Router = RouterTyped> {
   new (): {
     $props: AllowedComponentProps &
       ComponentCustomProps &
