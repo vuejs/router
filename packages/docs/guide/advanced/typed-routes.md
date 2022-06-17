@@ -1,8 +1,8 @@
 # Typed Routes (v4.1.0+)
 
-::: danger
+::: danger ‼️ Experimental feature
 
- ⚠️ This feature is still experimental and will evolve in the future, make sure to follow along in release notes and check the [Troubleshooting](#troubleshooting) section if you have issues.
+ This feature is still experimental and will evolve in the future, make sure to follow along in release notes and check the [Troubleshooting](#troubleshooting) section if you have issues. This feature is very likely to be replaced by a much more efficient build-based implementation. It not recommended for projects with a lot of routes (+50) but the setup takes about a minute and can be reverted in a few seconds at any time.
 
 :::
 
@@ -52,6 +52,8 @@ Providing the router instance to the `Config` interface above, will also provide
 Currently, typed routes are inferred at runtime with complex, costly types that become slow if you have a lot of routes. If you have more than 50 routes, you will should give this a try first to see how much it impacts the compilation time of your project.
 
 If you have [dynamic routes](../advanced/dynamic-routing.md), these cannot be typed and if you use [named routes](../essentials/named-routes.md), you won't be able to push to them so it's better not to use both at the same time.
+
+Some APIs like `useRoute()` and `router.resolve()` are still not typed while this feature is being tested.
 
 ## Troubleshooting
 
