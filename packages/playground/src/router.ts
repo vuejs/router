@@ -60,9 +60,8 @@ export const router = createRouter({
       path: '/with-guard/:n',
       name: 'guarded',
       component,
-      beforeEnter(to, from, next) {
-        if (to.params.n !== 'valid') next(false)
-        next()
+      beforeEnter(to) {
+        if (to.params.n !== 'valid') return false
       },
     },
     { path: '/cant-leave', component: GuardedWithLeave },
@@ -182,19 +181,13 @@ export const router = createRouter({
   },
 })
 
-// router.push('/admin/dashboard')
-
 declare module 'vue-router' {
   export interface Config {
     Router: typeof router
   }
 }
 
-declare module 'vue' {
-  interface GlobalComponents {
-    RouterLink: RouterLinkTyped<typeof router>
-  }
-}
+// router.push({ name: 'user', params: {} })
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
