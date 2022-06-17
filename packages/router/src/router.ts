@@ -185,7 +185,7 @@ export interface RouterOptions extends PathParserOptions {
 }
 
 /**
- * Router instance
+ * Router instance. **The `Options` generic is internal**.
  */
 export interface Router<Options extends RouterOptions = RouterOptions> {
   /**
@@ -360,7 +360,7 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
 
   /**
    * Called automatically by `app.use(router)`. Should not be called manually by
-   * the user.
+   * the user. This will trigger the initial navigation when on client side.
    *
    * @internal
    * @param app - Application that uses the router

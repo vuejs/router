@@ -4,6 +4,7 @@ import {
   createRouter,
   createWebHistory,
   useRoute,
+  loadRouteLocation,
 } from 'vue-router'
 import {
   createApp,
@@ -30,11 +31,8 @@ async function showUserModal(id: number) {
   await router.push({
     name: 'user',
     params: { id },
-    // state: { backgroundView },
+    state: { backgroundView },
   })
-
-  history.replaceState({ ...history.state, backgroundView }, '')
-  historyState.value = history.state
 }
 
 function closeUserModal() {
@@ -73,7 +71,6 @@ const Home = defineComponent({
   setup() {
     const modal = ref<HTMLDialogElement | HTMLElement>()
     const route = useRoute()
-    // const historyState = computed(() => route.fullPath && window.history.state)
 
     const userId = computed(() => route.params.id)
 
@@ -165,12 +162,17 @@ router.afterEach(() => {
   historyState.value = history.state
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   console.log('---')
   console.log('going from', from.fullPath, 'to', to.fullPath)
   console.log('state:', window.history.state)
   console.log('---')
-  next()
+})
+
+router.beforeResolve(async to => {
+  if (historyState.value && historyState.value.backgroundView) {
+    await loadRouteLocation(router.resolve(historyState.value.backgroundView))
+  }
 })
 
 // avoid navigating to non existent users
@@ -186,7 +188,7 @@ router.beforeEach(to => {
 const app = createApp({
   setup() {
     const route = useRoute()
-    // const historyState = computed(() => route.fullPath && window.history.state)
+
     const routeWithModal = computed(() => {
       if (historyState.value.backgroundView) {
         return router.resolve(
@@ -197,7 +199,7 @@ const app = createApp({
       }
     })
 
-    return { route, routeWithModal, historyState, ...toRefs(route) }
+    return { routeWithModal }
   },
 
   template: `
