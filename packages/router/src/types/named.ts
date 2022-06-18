@@ -4,13 +4,7 @@ import type {
   RouteRecordRaw,
   RouteRecordName,
 } from '.'
-import type {
-  _JoinPath,
-  ParamsFromPath,
-  ParamsRawFromPath,
-  PathFromParams,
-} from './paths'
-import { LiteralUnion } from './utils'
+import type { _JoinPath, ParamsFromPath, ParamsRawFromPath } from './paths'
 
 /**
  * Creates a map with each named route as a properties. Each property contains the type of the params in raw and
@@ -32,7 +26,6 @@ export type RouteNamedMap<
                 [N in Name]: {
                   // name: N
                   params: ParamsFromPath<_JoinPath<Prefix, Path>>
-                  // TODO: ParamsRawFromPath
                   paramsRaw: ParamsRawFromPath<_JoinPath<Prefix, Path>>
                   path: _JoinPath<Prefix, Path>
                 }
@@ -56,31 +49,6 @@ export type RouteNamedMap<
     }
 
 /**
- * Type that adds valid semi literal paths to still enable autocomplete while allowing proper paths
- */
-type _PathForAutocomplete<P extends string> = P extends `${string}:${string}`
-  ? LiteralUnion<P, PathFromParams<P>>
-  : P
-
-/**
- * @internal
- */
-export type _PathWithHash<P extends string> = `${P}#${string}`
-
-/**
- * @internal
- */
-export type _PathWithQuery<P extends string> = `${P}?${string}`
-
-/**
- * @internal
- */
-export type _FullPath<P extends string> = LiteralUnion<
-  P,
-  _PathWithHash<P> | _PathWithQuery<P>
->
-
-/**
  * @internal
  */
 export type RouteStaticPathMap<
@@ -94,12 +62,7 @@ export type RouteStaticPathMap<
         infer Children
       >
         ? {
-            // TODO: add | ${string} for params
-            // TODO: add extra type to append  ? and # variants
-            [P in Path as _JoinPath<Prefix, Path>]: {
-              path: _PathForAutocomplete<_JoinPath<Prefix, Path>>
-              fullPath: _FullPath<_PathForAutocomplete<_JoinPath<Prefix, Path>>>
-            }
+            [P in Path as _JoinPath<Prefix, Path>]: _JoinPath<Prefix, Path>
           } & (Children extends Readonly<RouteRecordRaw[]> // Recurse children
             ? RouteStaticPathMap<Children, _JoinPath<Prefix, Path>>
             : {
@@ -141,10 +104,7 @@ export type RouteNamedMapGeneric = Record<RouteRecordName, RouteNamedInfo>
  *
  * @internal
  */
-export type RouteStaticPathMapGeneric = Record<
-  string,
-  { path: string; fullPath: string }
->
+export type RouteStaticPathMapGeneric = Record<string, string>
 
 /**
  * Relevant information about a named route record to deduce its params.

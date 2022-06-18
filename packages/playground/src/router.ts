@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouterView } from 'vue-router'
+import type { RouterLinkTyped } from 'vue-router'
 import Home from './views/Home.vue'
 import Nested from './views/Nested.vue'
 import NestedWithId from './views/NestedWithId.vue'
@@ -52,16 +53,15 @@ export const router = createRouter({
       meta: { transition: 'slide-left' },
       component: async () => {
         await delay(500)
-        return component()
+        return component
       },
     },
     {
       path: '/with-guard/:n',
       name: 'guarded',
       component,
-      beforeEnter(to, from, next) {
-        if (to.params.n !== 'valid') next(false)
-        next()
+      beforeEnter(to) {
+        if (to.params.n !== 'valid') return false
       },
     },
     { path: '/cant-leave', component: GuardedWithLeave },
@@ -74,10 +74,14 @@ export const router = createRouter({
         { path: 'a', name: 'a-child', component: Nested },
         {
           path: 'b',
-          name: 'b-child',
+          name: 'WithChildrenB',
           component: Nested,
           children: [
-            { path: '', component: Nested },
+            {
+              path: '',
+              name: 'b-child',
+              component: Nested,
+            },
             { path: 'a2', component: Nested },
             { path: 'b2', component: Nested },
           ],
@@ -129,7 +133,7 @@ export const router = createRouter({
       alias: '/p/:id',
       children: [
         // empty child
-        { path: '', component },
+        { path: '', name: 'child-id', component },
         // child with absolute path. we need to add an `id` because the parent needs it
         { path: '/p_:id/absolute-a', alias: 'as-absolute-a', component },
         // same as above but the alias is absolute
@@ -142,14 +146,14 @@ export const router = createRouter({
       component: Nested,
       end: false,
       strict: true,
-      beforeEnter(to, from, next) {
+      beforeEnter(to) {
         if (!removeRoute) {
           removeRoute = router.addRoute('dynamic', {
             path: 'child',
             component: Dynamic,
           })
-          next(to.fullPath)
-        } else next()
+          return to.fullPath
+        }
       },
     },
 
@@ -177,13 +181,13 @@ export const router = createRouter({
   },
 })
 
-// router.push('/admin/dashboard')
-
 declare module 'vue-router' {
   export interface Config {
     Router: typeof router
   }
 }
+
+// router.push({ name: 'user', params: {} })
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 

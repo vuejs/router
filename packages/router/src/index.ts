@@ -33,7 +33,7 @@ export { START_LOCATION_NORMALIZED as START_LOCATION } from './types'
 export type {
   // route location
   _RouteLocationBase,
-  LocationAsPath,
+  MatcherLocationAsPath,
   LocationAsRelativeRaw,
   RouteQueryAndHash,
   RouteLocationRaw,
@@ -64,10 +64,14 @@ export type {
 } from './types'
 export type {
   ParamsFromPath,
-  _ExtractFirstParamName,
-  _RemoveRegexpFromParam,
+  ParamsRawFromPath,
+  _StripRegex,
   _RemoveUntilClosingPar,
-  _JoinPath as JoinPath,
+  _ExtractParamsOfPath,
+  _ParamExtractResult,
+  _ExtractModifier,
+  _ModifierExtracTResult,
+  _JoinPath,
   _ParamDelimiter,
   _ParamModifier,
 } from './types/paths'
@@ -95,7 +99,11 @@ export {
   loadRouteLocation,
 } from './navigationGuards'
 export { RouterLink, useLink } from './RouterLink'
-export type { RouterLinkProps, UseLinkOptions } from './RouterLink'
+export type {
+  RouterLinkProps,
+  UseLinkOptions,
+  RouterLinkTyped,
+} from './RouterLink'
 export { RouterView } from './RouterView'
 export type { RouterViewProps } from './RouterView'
 

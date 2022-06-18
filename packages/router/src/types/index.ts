@@ -9,6 +9,7 @@ import {
   RouteNamedMapGeneric,
   RouteStaticPathMapGeneric,
 } from './named'
+import { LiteralUnion } from './utils'
 
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
@@ -57,14 +58,14 @@ export interface RouteQueryAndHash {
 /**
  * @internal
  */
-export interface LocationAsPath<P extends string = string> {
+export interface MatcherLocationAsPath<P extends string = string> {
   path: P
 }
 
 /**
  * @internal
  */
-export interface LocationAsName {
+export interface MatcherLocationAsName {
   name: RouteRecordName
   params?: RouteParams
 }
@@ -85,7 +86,7 @@ export interface LocationAsRelativeRaw<
 /**
  * @internal
  */
-export interface LocationAsRelative<
+export interface MatcherLocationAsRelative<
   Info extends RouteNamedInfo = RouteNamedInfo
 > {
   params?: Info extends RouteNamedInfo<any, infer Params, any>
@@ -132,9 +133,12 @@ export type RouteLocationString<
   RouteMap extends RouteStaticPathMapGeneric = RouteStaticPathMapGeneric
 > = RouteStaticPathMapGeneric extends RouteMap
   ? string
-  : {
-      [K in keyof RouteMap]: RouteMap[K]['fullPath']
-    }[keyof RouteMap]
+  : LiteralUnion<
+      {
+        [K in keyof RouteMap]: RouteMap[K]
+      }[keyof RouteMap],
+      string
+    >
 
 /**
  * Route Location that can infer the necessary params based on the name.
@@ -147,10 +151,13 @@ export type RouteLocationNamedRaw<
   ? // allows assigning a RouteLocationRaw to RouteLocationNamedRaw
     RouteQueryAndHash & LocationAsRelativeRaw & RouteLocationOptions
   : {
-      [K in Extract<keyof RouteMap, RouteRecordName>]: RouteQueryAndHash &
-        LocationAsRelativeRaw<K, RouteMap[K]> &
-        RouteLocationOptions
-    }[Extract<keyof RouteMap, RouteRecordName>]
+      [K in Extract<keyof RouteMap, RouteRecordName>]: LocationAsRelativeRaw<
+        K,
+        RouteMap[K]
+      >
+    }[Extract<keyof RouteMap, RouteRecordName>] &
+      RouteQueryAndHash &
+      RouteLocationOptions
 
 /**
  * Route Location that can infer the possible paths.
@@ -160,13 +167,16 @@ export type RouteLocationNamedRaw<
 export type RouteLocationPathRaw<
   RouteMap extends RouteStaticPathMapGeneric = RouteStaticPathMapGeneric
 > = RouteStaticPathMapGeneric extends RouteMap
-  ? // allows assigning a RouteLocationRaw to RouteLocationPat
-    RouteQueryAndHash & LocationAsPath & RouteLocationOptions
-  : {
-      [K in Extract<keyof RouteMap, string>]: RouteQueryAndHash &
-        LocationAsPath<RouteMap[K]['path']> &
-        RouteLocationOptions
-    }[Extract<keyof RouteMap, string>]
+  ? // allows assigning a RouteLocationRaw to RouteLocationPath
+    RouteQueryAndHash & MatcherLocationAsPath & RouteLocationOptions
+  : RouteQueryAndHash &
+      RouteLocationOptions &
+      MatcherLocationAsPath<
+        LiteralUnion<
+          { [K in keyof RouteMap]: RouteMap[K] }[keyof RouteMap],
+          string
+        >
+      >
 
 export interface RouteLocationMatched extends RouteRecordNormalized {
   // components cannot be Lazy<RouteComponent>
@@ -457,11 +467,17 @@ export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = {
 
 // Matcher types
 // the matcher doesn't care about query and hash
+/**
+ * Route location that can be passed to the matcher.
+ */
 export type MatcherLocationRaw =
-  | LocationAsPath
-  | LocationAsName
-  | LocationAsRelative
+  | MatcherLocationAsPath
+  | MatcherLocationAsName
+  | MatcherLocationAsRelative
 
+/**
+ * Normalized/resolved Route location that returned by the matcher.
+ */
 export interface MatcherLocation {
   /**
    * Name of the matched record

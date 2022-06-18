@@ -84,6 +84,10 @@
     "@rollup/plugin-replace": "^4.0.0",
     "@types/jsdom": "^16.2.13",
     "@types/nightwatch": "^2.0.8",
+    "@vitejs/plugin-vue": "^2.3.3",
+    "@vue/compiler-sfc": "^3.2.31",
+    "@vue/server-renderer": "^3.2.37",
+    "@vue/test-utils": "^2.0.0",
     "browserstack-local": "^1.4.5",
     "c8": "^7.11.3",
     "chromedriver": "^102.0.0",
@@ -101,6 +105,8 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.32.1",
     "typescript": "~4.7.2",
-    "vitest": "^0.14.2"
+    "vitest": "^0.14.2",
+    "vite": "^2.9.9",
+    "vue": "^3.2.37"
   }
 }

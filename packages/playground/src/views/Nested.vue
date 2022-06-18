@@ -3,7 +3,7 @@
     <p>Nested level {{ level }}</p>
     <ul v-if="level === 1 && $route.name === 'Nested'">
       <li>
-        <router-link to="/nested/nested">/nested/nested</router-link>
+        <RouterLink to="/nested/nested">/nested/nested</RouterLink>
       </li>
       <li>
         <router-link to="/anidado/nested">/anidado/nested</router-link>
