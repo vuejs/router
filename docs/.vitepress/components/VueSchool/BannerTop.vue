@@ -11,7 +11,7 @@
         <img src="/images/vueschool/vs-backpack.png" alt="Backpack">
       </div>
       <div class="vs-slogan">
-        <span class="vs-slogan-light">Summer Sale:</span> Get the 3 month plan for only <span style="text-decoration: line-through">$75</span> $50
+        <span class="vs-slogan-light">Summer Sale:</span> Get the 3 months plan for only <span style="text-decoration: line-through">$75</span> $50
       </div>
       <div class="vs-button">
         Get 33% OFF
@@ -118,6 +118,11 @@
   #vs .vs-core .vs-slogan {
     margin-right: 0;
     font-size: 16px;
+  }
+}
+@media (min-width: 900px) {
+  #vs .vs-core .vs-slogan {
+    font-size: 20px;
   }
 }
 #vs .vs-core .vs-slogan > .vs-slogan-light {
