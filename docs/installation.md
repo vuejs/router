@@ -13,11 +13,11 @@
 ## npm
 
 ```bash
-npm install vue-router@4
+npm install vue-router
 ```
 
 ## yarn
 
 ```bash
-yarn add vue-router@4
+yarn add vue-router
 ```
