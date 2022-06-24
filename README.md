@@ -77,7 +77,7 @@ Get started with the [documentation](https://router.vuejs.org).
 - In-browser playground on [CodeSandbox](https://codesandbox.io/s/vue-router-4-reproduction-hb9lh)
 - Add it to an existing Vue Project:
   ```bash
-  npm install vue-router@4
+  npm install vue-router
   ```
 
 ## Changes from Vue Router 3
