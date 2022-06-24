@@ -74,13 +74,13 @@ export default {
   },
   mounted () {
     const now = new Date()
-    const end = new Date('2022-05-04T00:00:00+02:00')
-    this.showTopBanner = !localStorage.getItem('VS_FW_22') && (now < end)
+    const end = new Date('2022-07-23T00:00:00+02:00')
+    this.showTopBanner = !localStorage.getItem('VS_SUMMER_22') && (now < end)
   },
   methods: {
     closeBannerTop () {
       this.showTopBanner = false
-      localStorage.setItem('VS_FW_22', 1)
+      localStorage.setItem('VS_SUMMER_22', 1)
     }
   }
 }
