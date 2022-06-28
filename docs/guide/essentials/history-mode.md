@@ -203,6 +203,20 @@ Create a `vercel.json` file under the root directory of your project with the fo
 }
 ```
 
+### Azure Static Web App
+Create a staticwebapp.config.json file in the public folder with the following configuration. If the route does not exist, Azure will redirects all requests to index.html except for assets and favicons.
+```
+{
+    "navigationFallback": {
+        "rewrite": "/index.html",
+        "exclude": [
+            "/assets/*",
+            "/favicons/*"
+       ]
+    }
+}
+```
+
 ## Caveat
 
 There is a caveat to this: Your server will no longer report 404 errors as all not-found paths now serve up your `index.html` file. To get around the issue, you should implement a catch-all route within your Vue app to show a 404 page:
