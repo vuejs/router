@@ -24,8 +24,6 @@ expectType<JSX.Element>(<RouterLink to="/foo" />)
 expectType<JSX.Element>(<RouterLink class="link" to="/foo" />)
 expectType<JSX.Element>(<RouterLink to={{ path: '/foo' }} />)
 expectType<JSX.Element>(<RouterLink to={{ path: '/foo' }} custom />)
-// @ts-expect-error: non existing name
-expectError(<RouterLink to={{ name: '' }} />)
 
 // RouterView
 expectType<JSX.Element>(<RouterView class="view" />)

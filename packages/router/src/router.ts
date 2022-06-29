@@ -13,9 +13,6 @@ import {
   RouteLocationOptions,
   MatcherLocationRaw,
   RouteParams,
-  RouteLocationNamedRaw,
-  RouteLocationPathRaw,
-  RouteLocationString,
 } from './types'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
@@ -71,7 +68,6 @@ import {
   routerViewLocationKey,
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
-import { RouteNamedMap, RouteStaticPathMap } from './types/named'
 
 /**
  * Internal type to define an ErrorHandler
@@ -185,9 +181,9 @@ export interface RouterOptions extends PathParserOptions {
 }
 
 /**
- * Router instance. **The `Options` generic is internal**.
+ * Router instance.
  */
-export interface Router<Options extends RouterOptions = RouterOptions> {
+export interface Router {
   /**
    * @internal
    */
@@ -199,7 +195,7 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
   /**
    * Original options object passed to create the Router
    */
-  readonly options: Options
+  readonly options: RouterOptions
 
   /**
    * Allows turning off the listening of history events. This is a low level api for micro-frontends.
@@ -256,12 +252,7 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
    *
    * @param to - Route location to navigate to
    */
-  push(
-    to:
-      | RouteLocationNamedRaw<RouteNamedMap<Options['routes']>>
-      | RouteLocationString<RouteStaticPathMap<Options['routes']>>
-      | RouteLocationPathRaw<RouteStaticPathMap<Options['routes']>>
-  ): Promise<NavigationFailure | void | undefined>
+  push(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
 
   /**
    * Programmatically navigate to a new URL by replacing the current entry in
@@ -269,12 +260,7 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
    *
    * @param to - Route location to navigate to
    */
-  replace(
-    to:
-      | RouteLocationNamedRaw<RouteNamedMap<Options['routes']>>
-      | RouteLocationString<RouteStaticPathMap<Options['routes']>>
-      | RouteLocationPathRaw<RouteStaticPathMap<Options['routes']>>
-  ): Promise<NavigationFailure | void | undefined>
+  replace(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
 
   /**
    * Go back in history if possible by calling `history.back()`. Equivalent to
@@ -373,9 +359,7 @@ export interface Router<Options extends RouterOptions = RouterOptions> {
  *
  * @param options - {@link RouterOptions}
  */
-export function createRouter<Options extends RouterOptions>(
-  options: Options
-): Router<Options> {
+export function createRouter(options: RouterOptions): Router {
   const matcher = createRouterMatcher(options.routes, options)
   const parseQuery = options.parseQuery || originalParseQuery
   const stringifyQuery = options.stringifyQuery || originalStringifyQuery
@@ -1173,7 +1157,7 @@ export function createRouter<Options extends RouterOptions>(
   let started: boolean | undefined
   const installedApps = new Set<App>()
 
-  const router: Router<Options> = {
+  const router: Router = {
     currentRoute,
     listening: true,
 

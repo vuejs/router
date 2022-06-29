@@ -46,7 +46,6 @@ export type {
   RouteParamValueRaw,
   RouteLocationNamedRaw,
   RouteLocationPathRaw,
-  RouteLocationString,
   RouteLocationMatched,
   RouteLocationOptions,
   RouteRecordRedirectOption,
@@ -62,26 +61,6 @@ export type {
   NavigationGuardWithThis,
   NavigationHookAfter,
 } from './types'
-export type {
-  ParamsFromPath,
-  ParamsRawFromPath,
-  _StripRegex,
-  _RemoveUntilClosingPar,
-  _ExtractParamsOfPath,
-  _ParamExtractResult,
-  _ExtractModifier,
-  _ModifierExtracTResult,
-  _JoinPath,
-  _ParamDelimiter,
-  _ParamModifier,
-} from './types/paths'
-export type {
-  RouteNamedMap,
-  RouteStaticPathMap,
-  RouteNamedInfo,
-  _RouteRecordNamedBaseInfo,
-} from './types/named'
-export type { Config, RouterTyped } from './typedRouter'
 
 export { createRouter } from './router'
 export type { Router, RouterOptions, RouterScrollBehavior } from './router'
@@ -100,9 +79,9 @@ export {
 } from './navigationGuards'
 export { RouterLink, useLink } from './RouterLink'
 export type {
+  _RouterLinkI,
   RouterLinkProps,
   UseLinkOptions,
-  RouterLinkTyped,
 } from './RouterLink'
 export { RouterView } from './RouterView'
 export type { RouterViewProps } from './RouterView'
