@@ -6,6 +6,7 @@ import type {
 import { RouterView } from './RouterView'
 import { RouterLink } from './RouterLink'
 import type { Router } from './router'
+import type { TypesConfig } from './config'
 
 declare module '@vue/runtime-core' {
   export interface ComponentCustomOptions {
@@ -21,7 +22,9 @@ declare module '@vue/runtime-core' {
      * @param next - function to validate, cancel or modify (by redirecting) the
      * navigation
      */
-    beforeRouteEnter?: NavigationGuardWithThis<undefined>
+    beforeRouteEnter?: TypesConfig extends Record<'beforeRouteEnter', infer T>
+      ? T
+      : NavigationGuardWithThis<undefined>
 
     /**
      * Guard called whenever the route that renders this component has changed but
@@ -33,7 +36,9 @@ declare module '@vue/runtime-core' {
      * @param next - function to validate, cancel or modify (by redirecting) the
      * navigation
      */
-    beforeRouteUpdate?: NavigationGuard
+    beforeRouteUpdate?: TypesConfig extends Record<'beforeRouteUpdate', infer T>
+      ? T
+      : NavigationGuard
 
     /**
      * Guard called when the router is navigating away from the current route that
@@ -44,22 +49,30 @@ declare module '@vue/runtime-core' {
      * @param next - function to validate, cancel or modify (by redirecting) the
      * navigation
      */
-    beforeRouteLeave?: NavigationGuard
+    beforeRouteLeave?: TypesConfig extends Record<'beforeRouteLeave', infer T>
+      ? T
+      : NavigationGuard
   }
 
   export interface ComponentCustomProperties {
     /**
      * Normalized current location. See {@link RouteLocationNormalizedLoaded}.
      */
-    $route: RouteLocationNormalizedLoaded
+    $route: TypesConfig extends Record<'$route', infer T>
+      ? T
+      : RouteLocationNormalizedLoaded
     /**
      * {@link Router} instance used by the application.
      */
-    $router: Router
+    $router: TypesConfig extends Record<'$router', infer T> ? T : Router
   }
 
   export interface GlobalComponents {
-    RouterView: typeof RouterView
-    RouterLink: typeof RouterLink
+    RouterView: TypesConfig extends Record<'RouterView', infer T>
+      ? T
+      : typeof RouterView
+    RouterLink: TypesConfig extends Record<'RouterLink', infer T>
+      ? T
+      : typeof RouterLink
   }
 }
