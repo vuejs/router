@@ -4,8 +4,8 @@ import type {
   RouteLocationNormalizedLoaded,
 } from './types'
 import { RouterView } from './RouterView'
-import type { RouterLinkTyped } from './RouterLink'
-import type { RouterTyped } from './typedRouter'
+import { RouterLink } from './RouterLink'
+import type { Router } from './router'
 
 declare module '@vue/runtime-core' {
   export interface ComponentCustomOptions {
@@ -55,11 +55,11 @@ declare module '@vue/runtime-core' {
     /**
      * {@link Router} instance used by the application.
      */
-    $router: RouterTyped
+    $router: Router
   }
 
   export interface GlobalComponents {
     RouterView: typeof RouterView
-    RouterLink: RouterLinkTyped<RouterTyped>
+    RouterLink: typeof RouterLink
   }
 }

@@ -31,26 +31,18 @@ import {
   VueUseOptions,
   RouteLocation,
   RouteLocationNormalized,
-  RouteLocationPathRaw,
-  RouteLocationString,
-  RouteLocationNamedRaw,
 } from './types'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { NavigationFailure } from './errors'
 import { isArray, isBrowser, noop } from './utils'
-import type { Router } from './router'
-import type { RouteNamedMap, RouteStaticPathMap } from './types/named'
-import type { RouterTyped } from './typedRouter'
 
-export interface RouterLinkOptions<
-  Routes extends RouteLocationRaw = RouteLocationRaw
-> {
+export interface RouterLinkOptions {
   /**
    * Route Location the link should navigate to when clicked on.
    */
-  to: Routes
+  to: RouteLocationRaw
   /**
    * Calls `router.replace` instead of `router.push`.
    */
@@ -58,9 +50,7 @@ export interface RouterLinkOptions<
   // TODO: refactor using extra options allowed in router.push. Needs RFC
 }
 
-export interface RouterLinkProps<
-  Routes extends RouteLocationRaw = RouteLocationRaw
-> extends RouterLinkOptions<Routes> {
+export interface RouterLinkProps extends RouterLinkOptions {
   /**
    * Whether RouterLink should not wrap its content in an `a` tag. Useful when
    * using `v-slot` to create a custom RouterLink
@@ -261,22 +251,20 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
 /**
  * Component to render a link that triggers a navigation on click.
  */
-export const RouterLink: RouterLinkTyped = RouterLinkImpl as any
+export const RouterLink: _RouterLinkI = RouterLinkImpl as any
 
 /**
  * Typed version of the `RouterLink` component. Its generic defaults to the typed router so it can be inferred
  * automatically for JSX.
+ *
+ * @internal
  */
-export interface RouterLinkTyped<R extends Router = RouterTyped> {
+export interface _RouterLinkI {
   new (): {
     $props: AllowedComponentProps &
       ComponentCustomProps &
       VNodeProps &
-      RouterLinkProps<
-        | RouteLocationNamedRaw<RouteNamedMap<R['options']['routes']>>
-        | RouteLocationString<RouteStaticPathMap<R['options']['routes']>>
-        | RouteLocationPathRaw<RouteStaticPathMap<R['options']['routes']>>
-      >
+      RouterLinkProps
 
     $slots: {
       default: (arg: UnwrapRef<ReturnType<typeof useLink>>) => VNode[]
