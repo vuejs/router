@@ -1,4 +1,5 @@
 [build.environment]
+CHROMEDRIVER_SKIP_DOWNLOAD = "true"
 NPM_FLAGS = "--version"
 
 [build]
