@@ -1,3 +1,22 @@
+# [4.1.0](https://github.com/vuejs/router/compare/v4.0.16...v4.1.0) (2022-07-04)
+
+### Bug Fixes
+
+- correctly resolve hash including a search ([136bf21](https://github.com/vuejs/router/commit/136bf2146071d017702c3989f08d26dc5cbe5292)), closes [#1422](https://github.com/vuejs/router/issues/1422)
+- discard params in path redirect ([8d12db4](https://github.com/vuejs/router/commit/8d12db4ffd2406dcc45777a68c6e601546dfce36)), closes [#1401](https://github.com/vuejs/router/issues/1401)
+- resolve relative paths to / ([23e25e5](https://github.com/vuejs/router/commit/23e25e5b55592790805b98e21836bd4e57eb037c)), closes [#1410](https://github.com/vuejs/router/issues/1410)
+
+### Features
+
+- **devtools:** add more options in devtools routes ([606f852](https://github.com/vuejs/router/commit/606f852dc9cca1b78e2161a14aa037817936d011)), closes [#1033](https://github.com/vuejs/router/issues/1033)
+- **devtools:** warn against old devtools version ([8462551](https://github.com/vuejs/router/commit/8462551c6b9354772689e56d3718375f3211b0eb)), closes [#1338](https://github.com/vuejs/router/issues/1338)
+- expose RouterView and RouterLink as GlobalComponents ([#1372](https://github.com/vuejs/router/issues/1372)) ([3b3e123](https://github.com/vuejs/router/commit/3b3e123f51d71bfae5d9cb99891e6d2f38f5ed26))
+- loadRouteLocation() ([d352ee4](https://github.com/vuejs/router/commit/d352ee4d76f5e7d60aba03d275df9a35459bd300)), closes [#1048](https://github.com/vuejs/router/issues/1048)
+- **router:** allow pausing listeners ([58460bc](https://github.com/vuejs/router/commit/58460bca1fca9f4c48f101b6c295ad9f42ca397a)), closes [#1270](https://github.com/vuejs/router/issues/1270)
+- **types:** allow extending global types ([31aaf3b](https://github.com/vuejs/router/commit/31aaf3b82aae5c553a0bacd52d0be1c602e0ab30))
+- **view:** handle empty components as pass through ([e07c469](https://github.com/vuejs/router/commit/e07c46938d0cc2ca2bc2b1d07fd543465121b60a))
+- warn against named parent routes ([#1396](https://github.com/vuejs/router/issues/1396)) ([4dab4d0](https://github.com/vuejs/router/commit/4dab4d0e46315d2a5a2763ec2559dfafd843063f))
+
 ## [4.0.16](https://github.com/vuejs/router/compare/v4.0.15...v4.0.16) (2022-06-09)
 
 ### Bug Fixes
