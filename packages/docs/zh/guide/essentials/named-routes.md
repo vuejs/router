@@ -17,8 +17,8 @@ const routes = [
   {
     path: '/user/:username',
     name: 'user',
-    component: User
-  }
+    component: User,
+  },
 ]
 ```
 
@@ -38,4 +38,4 @@ router.push({ name: 'user', params: { username: 'erina' } })
 
 在这两种情况下，路由将导航到路径 `/user/erina`。
 
-完整的例子[这里](https://github.com/vuejs/vue-router/blob/dev/examples/named-routes/app.js).
+完整的例子在[这里](https://github.com/vuejs/vue-router/blob/dev/examples/named-routes/app.js).
