@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "play": "vite",
     "build": "vite build",
     "types": "vue-tsc --noEmit",
     "preview": "vite preview --port 4173"
