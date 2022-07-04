@@ -302,6 +302,7 @@ async function publishPackage(pkg) {
         'public',
         '--publish-branch',
         EXPECTED_BRANCH,
+        ...(skipCleanGitCheck ? ['--no-git-checks'] : []),
       ],
       {
         cwd: pkg.path,
