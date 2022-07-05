@@ -28,7 +28,7 @@ export type LocationQueryValueRaw = LocationQueryValue | number | undefined
  */
 export type LocationQuery = Record<
   string,
-  LocationQueryValue | readonly LocationQueryValue[]
+  LocationQueryValue | LocationQueryValue[]
 >
 /**
  * Loose {@link LocationQuery} object that can be passed to functions like
@@ -39,7 +39,7 @@ export type LocationQuery = Record<
  */
 export type LocationQueryRaw = Record<
   string | number,
-  LocationQueryValueRaw | readonly LocationQueryValueRaw[]
+  LocationQueryValueRaw | LocationQueryValueRaw[]
 >
 
 /**

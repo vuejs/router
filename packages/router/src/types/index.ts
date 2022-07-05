@@ -32,13 +32,10 @@ export type RouteParamValue = string
  * @internal
  */
 export type RouteParamValueRaw = RouteParamValue | number | null | undefined
-export type RouteParams = Record<
-  string,
-  RouteParamValue | readonly RouteParamValue[]
->
+export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
 export type RouteParamsRaw = Record<
   string,
-  RouteParamValueRaw | readonly Exclude<RouteParamValueRaw, null | undefined>[]
+  RouteParamValueRaw | Exclude<RouteParamValueRaw, null | undefined>[]
 >
 
 /**
@@ -320,7 +317,7 @@ export interface RouteRecordSingleViewWithChildren extends _RouteRecordBase {
   /**
    * Array of nested routes.
    */
-  children: Readonly<RouteRecordRaw[]>
+  children: RouteRecordRaw[]
 
   /**
    * Allow passing down params as props to the component rendered by `router-view`.
@@ -356,7 +353,7 @@ export interface RouteRecordMultipleViewsWithChildren extends _RouteRecordBase {
   components?: Record<string, RawRouteComponent> | null | undefined
   component?: never
 
-  children: Readonly<RouteRecordRaw>[]
+  children: RouteRecordRaw[]
 
   /**
    * Allow passing down params as props to the component rendered by
