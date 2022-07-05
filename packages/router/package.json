@@ -8,7 +8,6 @@
   "types": "dist/vue-router.d.ts",
   "exports": {
     ".": {
-      "browser": "./dist/vue-router.esm-browser.js",
       "node": {
         "import": {
           "production": "./dist/vue-router.prod.cjs",
