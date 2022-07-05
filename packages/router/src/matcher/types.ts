@@ -4,7 +4,7 @@ import {
   _RouteRecordBase,
   _RouteRecordProps,
   NavigationGuardNextCallback,
-  RouteRecordSingleViewWithChildren,
+  RouteRecordRaw,
 } from '../types'
 import { ComponentPublicInstance } from 'vue'
 
@@ -32,7 +32,7 @@ export interface RouteRecordNormalized {
   /**
    * Nested route records.
    */
-  children: RouteRecordSingleViewWithChildren['children']
+  children: RouteRecordRaw[]
   /**
    * {@inheritDoc _RouteRecordBase.meta}
    */

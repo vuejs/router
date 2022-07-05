@@ -262,6 +262,11 @@ export interface _RouteRecordBase extends PathParserOptions {
    * Arbitrary data attached to the record.
    */
   meta?: RouteMeta
+
+  /**
+   * Array of nested routes.
+   */
+  children?: RouteRecordRaw[]
 }
 
 /**
@@ -298,6 +303,9 @@ export interface RouteRecordSingleView extends _RouteRecordBase {
    */
   component: RawRouteComponent
   components?: never
+  children?: never
+  redirect?: never
+
   /**
    * Allow passing down params as props to the component rendered by `router-view`.
    */
@@ -314,9 +322,6 @@ export interface RouteRecordSingleViewWithChildren extends _RouteRecordBase {
   component?: RawRouteComponent | null | undefined
   components?: never
 
-  /**
-   * Array of nested routes.
-   */
   children: RouteRecordRaw[]
 
   /**
@@ -334,6 +339,8 @@ export interface RouteRecordMultipleViews extends _RouteRecordBase {
    */
   components: Record<string, RawRouteComponent>
   component?: never
+  children?: never
+  redirect?: never
 
   /**
    * Allow passing down params as props to the component rendered by
@@ -352,6 +359,7 @@ export interface RouteRecordMultipleViewsWithChildren extends _RouteRecordBase {
    */
   components?: Record<string, RawRouteComponent> | null | undefined
   component?: never
+  redirect?: never
 
   children: RouteRecordRaw[]
 
