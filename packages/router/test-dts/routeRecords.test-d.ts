@@ -11,10 +11,29 @@ routes.push({ path: '/', redirect: '/foo' })
 // @ts-expect-error cannot have components and component at the same time
 routes.push({ path: '/', components, component })
 
+// a redirect record with children to point to a child
 routes.push({
   path: '/',
   redirect: '/foo',
-  children: [],
+  children: [
+    {
+      path: 'foo',
+      component,
+    },
+  ],
+})
+
+// same but with a nested route
+routes.push({
+  path: '/',
+  component,
+  redirect: '/foo',
+  children: [
+    {
+      path: 'foo',
+      component,
+    },
+  ],
 })
 
 routes.push({ path: '/', component, props: true })
@@ -29,3 +48,14 @@ routes.push({ path: '/', components, props: true })
 //   component,
 //   components,
 // }
+
+export function filterNestedChildren(children: RouteRecordRaw[]) {
+  return children.filter(r => {
+    if (r.redirect) {
+      r.children?.map(() => {})
+    }
+    if (r.children) {
+      r.children = filterNestedChildren(r.children)
+    }
+  })
+}

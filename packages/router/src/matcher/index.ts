@@ -159,7 +159,7 @@ export function createRouterMatcher(
           removeRoute(record.name)
       }
 
-      if ('children' in mainNormalizedRecord) {
+      if (mainNormalizedRecord.children) {
         const children = mainNormalizedRecord.children
         for (let i = 0; i < children.length; i++) {
           addRoute(
@@ -353,7 +353,6 @@ export function normalizeRouteRecord(
     aliasOf: undefined,
     beforeEnter: record.beforeEnter,
     props: normalizeRecordProps(record),
-    // @ts-expect-error: record.children only exists in some cases
     children: record.children || [],
     instances: {},
     leaveGuards: new Set(),
