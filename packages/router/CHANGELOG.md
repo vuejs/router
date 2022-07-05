@@ -1,3 +1,11 @@
+## [4.1.1](https://github.com/vuejs/router/compare/v4.1.0...v4.1.1) (2022-07-05)
+
+### Bug Fixes
+
+- remove browser export ([64b1ccf](https://github.com/vuejs/router/commit/64b1ccf25166882af4dffc194bc5b796c472096a))
+- **types:** allow simpler type check of route records ([#1453](https://github.com/vuejs/router/issues/1453)) ([e3078a4](https://github.com/vuejs/router/commit/e3078a4190c799ec4f01fa5c46d64c54c0e95034)), closes [#1452](https://github.com/vuejs/router/issues/1452)
+- **types:** remove unnecessary readonly ([4bb989d](https://github.com/vuejs/router/commit/4bb989d36798243df1eb186c4ec01d9fd97d1f26))
+
 # [4.1.0](https://github.com/vuejs/router/compare/v4.0.16...v4.1.0) (2022-07-04)
 
 ### Bug Fixes
