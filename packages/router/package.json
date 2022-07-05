@@ -8,6 +8,7 @@
   "types": "dist/vue-router.d.ts",
   "exports": {
     ".": {
+      "types": "dist/vue-router.d.ts",
       "node": {
         "import": {
           "production": "./dist/vue-router.prod.cjs",
