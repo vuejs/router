@@ -53,10 +53,8 @@ const config = defineConfig({
     },
 
     algolia: {
-      apiKey: '07ed552fc16926cc57c9eb0862c1a7f9',
-      // TODO: upgrade this once it works
-      // appId: 'BTNTW3I1XP',
-      // apiKey: '771d10c8c5cc48f7922f15048b4d931c',
+      appId: 'BTNTW3I1XP',
+      apiKey: '771d10c8c5cc48f7922f15048b4d931c',
       indexName: 'next_router_vuejs',
       // searchParameters: {
       //   facetFilters: ['tags:guide,api,migration'],
