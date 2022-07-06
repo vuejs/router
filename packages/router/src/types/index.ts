@@ -267,6 +267,11 @@ export interface _RouteRecordBase extends PathParserOptions {
    * Array of nested routes.
    */
   children?: RouteRecordRaw[]
+
+  /**
+   * Allow passing down params as props to the component rendered by `router-view`.
+   */
+  props?: _RouteRecordProps | Record<string, _RouteRecordProps>
 }
 
 /**
@@ -379,6 +384,7 @@ export interface RouteRecordRedirect extends _RouteRecordBase {
   redirect: RouteRecordRedirectOption
   component?: never
   components?: never
+  props?: never
 }
 
 export type RouteRecordRaw =
