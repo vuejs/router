@@ -1,5 +1,10 @@
-import { createRouter, createWebHistory, RouterView } from 'vue-router'
-import type { RouterLinkTyped } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  RouterView,
+  type RouteLocationNormalized,
+  type RouteRecordRaw,
+} from 'vue-router'
 import Home from './views/Home.vue'
 import Nested from './views/Nested.vue'
 import NestedWithId from './views/NestedWithId.vue'
@@ -23,150 +28,186 @@ let removeRoute: (() => void) | undefined
 const TransparentWrapper: FunctionalComponent = () => h(RouterView)
 TransparentWrapper.displayName = 'NestedView'
 
+const routes: RouteRecordRaw[] = [
+  { path: '/home', redirect: '/' },
+  {
+    path: '/',
+    components: { default: Home, other: component },
+    props: { default: to => ({ waited: to.meta.waitedFor }) },
+  },
+  {
+    path: '/always-redirect',
+    redirect: () => ({
+      name: 'user',
+      params: { id: String(Math.round(Math.random() * 100)) },
+    }),
+  },
+  { path: '/users/:id', name: 'user', component: User, props: true },
+  { path: '/documents/:id', name: 'docs', component: User, props: true },
+  { path: '/optional/:id?', name: 'optional', component: User, props: true },
+  { path: encodeURI('/n/€'), name: 'euro', component },
+  { path: '/n/:n', name: 'increment', component },
+  { path: '/multiple/:a/:b', name: 'multiple', component },
+  { path: '/long-:n', name: 'long', component: LongView },
+  {
+    path: '/lazy',
+    meta: { transition: 'slide-left' },
+    component: async () => {
+      await delay(500)
+      return component
+    },
+  },
+  {
+    path: '/with-guard/:n',
+    name: 'guarded',
+    component,
+    beforeEnter(to) {
+      if (to.params.n !== 'valid') return false
+    },
+  },
+  { path: '/cant-leave', component: GuardedWithLeave },
+  {
+    path: '/children',
+    name: 'WithChildren',
+    component: Nested,
+    children: [
+      { path: '', alias: 'alias', name: 'default-child', component: Nested },
+      { path: 'a', name: 'a-child', component: Nested },
+      {
+        path: 'b',
+        name: 'WithChildrenB',
+        component: Nested,
+        children: [
+          {
+            path: '',
+            name: 'b-child',
+            component: Nested,
+          },
+          { path: 'a2', component: Nested },
+          { path: 'b2', component: Nested },
+        ],
+      },
+    ],
+  },
+  { path: '/with-data', component: ComponentWithData, name: 'WithData' },
+  { path: '/rep/:a*', component: RepeatedParams, name: 'repeat' },
+  { path: '/:data(.*)', component: NotFound, name: 'NotFound' },
+  {
+    path: '/nested',
+    alias: '/anidado',
+    component: Nested,
+    name: 'Nested',
+    children: [
+      {
+        path: 'nested',
+        alias: 'a',
+        name: 'NestedNested',
+        component: Nested,
+        children: [
+          {
+            name: 'NestedNestedNested',
+            path: 'nested',
+            component: Nested,
+          },
+        ],
+      },
+      {
+        path: 'other',
+        alias: 'otherAlias',
+        component: Nested,
+        name: 'NestedOther',
+      },
+      {
+        path: 'also-as-absolute',
+        alias: '/absolute',
+        name: 'absolute-child',
+        component: Nested,
+      },
+    ],
+  },
+
+  {
+    path: '/parent/:id',
+    name: 'parent',
+    component: NestedWithId,
+    props: true,
+    alias: '/p/:id',
+    children: [
+      // empty child
+      { path: '', name: 'child-id', component },
+      // child with absolute path. we need to add an `id` because the parent needs it
+      { path: '/p_:id/absolute-a', alias: 'as-absolute-a', component },
+      // same as above but the alias is absolute
+      { path: 'as-absolute-b', alias: '/p_:id/absolute-b', component },
+    ],
+  },
+  {
+    path: '/dynamic',
+    name: 'dynamic',
+    component: Nested,
+    end: false,
+    strict: true,
+    beforeEnter(to) {
+      if (!removeRoute) {
+        removeRoute = router.addRoute('dynamic', {
+          path: 'child',
+          component: Dynamic,
+        })
+        return to.fullPath
+      }
+    },
+  },
+
+  {
+    path: '/admin',
+    component: TransparentWrapper,
+    children: [
+      { path: '', component },
+      { path: 'dashboard', component },
+      { path: 'settings', component },
+    ],
+  },
+]
+
+function mergeRouteProps(
+  record: Exclude<RouteRecordRaw, { redirect: any }>,
+  to: RouteLocationNormalized
+) {
+  const originalProps = record.props
+  // TODO: named views can have an object
+  const originalPropsResult =
+    typeof originalProps === 'function'
+      ? originalProps(to)
+      : typeof originalProps === 'boolean'
+      ? {}
+      : originalProps
+  return { ...originalPropsResult, ...to.meta.data }
+}
+
+function setPropsToData(record: RouteRecordRaw) {
+  if (!('redirect' in record)) {
+    const originalProps = record.props
+    record.props = mergeRouteProps.bind(null, record)
+  }
+  if (record.children) {
+    record.children.forEach(setPropsToData)
+  }
+}
+routes.forEach(setPropsToData)
+
+declare module 'vue-router' {
+  export interface RouteMeta {
+    pendingRoute?: RouteLocationNormalizedLoaded
+    load?: () => Promise<Record<any, unknown>> | Record<any, unknown>
+    data?: Record<any, unknown>
+  }
+}
+
 export const routerHistory = createWebHistory()
 export const router = createRouter({
   history: routerHistory,
   strict: true,
-  routes: [
-    { path: '/home', redirect: '/' },
-    {
-      path: '/',
-      components: { default: Home, other: component },
-      props: { default: to => ({ waited: to.meta.waitedFor }) },
-    },
-    {
-      path: '/always-redirect',
-      redirect: () => ({
-        name: 'user',
-        params: { id: String(Math.round(Math.random() * 100)) },
-      }),
-    },
-    { path: '/users/:id', name: 'user', component: User, props: true },
-    { path: '/documents/:id', name: 'docs', component: User, props: true },
-    { path: '/optional/:id?', name: 'optional', component: User, props: true },
-    { path: encodeURI('/n/€'), name: 'euro', component },
-    { path: '/n/:n', name: 'increment', component },
-    { path: '/multiple/:a/:b', name: 'multiple', component },
-    { path: '/long-:n', name: 'long', component: LongView },
-    {
-      path: '/lazy',
-      meta: { transition: 'slide-left' },
-      component: async () => {
-        await delay(500)
-        return component
-      },
-    },
-    {
-      path: '/with-guard/:n',
-      name: 'guarded',
-      component,
-      beforeEnter(to) {
-        if (to.params.n !== 'valid') return false
-      },
-    },
-    { path: '/cant-leave', component: GuardedWithLeave },
-    {
-      path: '/children',
-      name: 'WithChildren',
-      component: Nested,
-      children: [
-        { path: '', alias: 'alias', name: 'default-child', component: Nested },
-        { path: 'a', name: 'a-child', component: Nested },
-        {
-          path: 'b',
-          name: 'WithChildrenB',
-          component: Nested,
-          children: [
-            {
-              path: '',
-              name: 'b-child',
-              component: Nested,
-            },
-            { path: 'a2', component: Nested },
-            { path: 'b2', component: Nested },
-          ],
-        },
-      ],
-    },
-    { path: '/with-data', component: ComponentWithData, name: 'WithData' },
-    { path: '/rep/:a*', component: RepeatedParams, name: 'repeat' },
-    { path: '/:data(.*)', component: NotFound, name: 'NotFound' },
-    {
-      path: '/nested',
-      alias: '/anidado',
-      component: Nested,
-      name: 'Nested',
-      children: [
-        {
-          path: 'nested',
-          alias: 'a',
-          name: 'NestedNested',
-          component: Nested,
-          children: [
-            {
-              name: 'NestedNestedNested',
-              path: 'nested',
-              component: Nested,
-            },
-          ],
-        },
-        {
-          path: 'other',
-          alias: 'otherAlias',
-          component: Nested,
-          name: 'NestedOther',
-        },
-        {
-          path: 'also-as-absolute',
-          alias: '/absolute',
-          name: 'absolute-child',
-          component: Nested,
-        },
-      ],
-    },
-
-    {
-      path: '/parent/:id',
-      name: 'parent',
-      component: NestedWithId,
-      props: true,
-      alias: '/p/:id',
-      children: [
-        // empty child
-        { path: '', name: 'child-id', component },
-        // child with absolute path. we need to add an `id` because the parent needs it
-        { path: '/p_:id/absolute-a', alias: 'as-absolute-a', component },
-        // same as above but the alias is absolute
-        { path: 'as-absolute-b', alias: '/p_:id/absolute-b', component },
-      ],
-    },
-    {
-      path: '/dynamic',
-      name: 'dynamic',
-      component: Nested,
-      end: false,
-      strict: true,
-      beforeEnter(to) {
-        if (!removeRoute) {
-          removeRoute = router.addRoute('dynamic', {
-            path: 'child',
-            component: Dynamic,
-          })
-          return to.fullPath
-        }
-      },
-    },
-
-    {
-      path: '/admin',
-      component: TransparentWrapper,
-      children: [
-        { path: '', component },
-        { path: 'dashboard', component },
-        { path: 'settings', component },
-      ],
-    },
-  ] as const,
+  routes,
   async scrollBehavior(to, from, savedPosition) {
     await scrollWaiter.wait()
     if (savedPosition) {
@@ -181,13 +222,28 @@ export const router = createRouter({
   },
 })
 
-declare module 'vue-router' {
-  export interface Config {
-    Router: typeof router
+router.beforeEach((to, from) => {
+  delete from.meta.pendingRoute
+})
+router.beforeResolve(async (to, from) => {
+  if (to.meta.load) {
+    from.meta.pendingRoute = to
+    to.meta.data = await to.meta.load()
+  } else {
   }
-}
 
-// router.push({ name: 'user', params: {} })
+  from.meta.pendingRoute = to
+  const loaders = to.matched
+    .map(record =>
+      // TODO: avoid refetching if the route is already loaded
+      // Find a strategy to do it
+      record.meta.load?.()
+    )
+    .filter(Boolean)
+
+  const loadedData = await Promise.all(loaders)
+  loadedData.forEach((data, i) => {})
+})
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 

@@ -9,3 +9,11 @@ export async function getData() {
     time: Date.now(),
   }
 }
+
+export async function getUserById(id: string) {
+  await delay(200)
+  return {
+    id: 1,
+    name: 'Eduardo',
+  }
+}
