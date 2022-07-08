@@ -25,6 +25,8 @@ jobs:
           cache: 'pnpm'
       - name: 'BrowserStack Env Setup'
         uses: 'browserstack/github-actions/setup-env@master'
+        # forks do not have access to secrets so just skip this
+        if: ${{ !github.event.pull_request.head.repo.fork }}
         with:
           username: ${{ secrets.BROWSERSTACK_USERNAME }}
           access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
@@ -37,8 +39,7 @@ jobs:
       - run: pnpm run -r build:dts
       - run: pnpm run -r test:dts
 
-      # E2E testing
-
+      # e2e tests that that run locally
       - run: pnpm run -r test:e2e:ci
 
       - uses: codecov/codecov-action@v2
