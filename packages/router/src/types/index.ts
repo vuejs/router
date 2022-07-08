@@ -65,7 +65,7 @@ export interface MatcherLocationAsName {
  * @internal
  */
 export interface LocationAsRelativeRaw {
-  name?: string
+  name?: RouteRecordName
   params?: RouteParamsRaw
 }
 
