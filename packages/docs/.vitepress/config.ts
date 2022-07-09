@@ -215,7 +215,7 @@ const config = defineConfig({
           },
           {
             text: '更新日志',
-            link: 'https://github.com/vuejs/router/blob/main/CHANGELOG.md',
+            link: 'https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md',
           },
         ],
 
