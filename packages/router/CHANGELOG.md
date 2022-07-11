@@ -1,3 +1,16 @@
+## [4.1.2](https://github.com/vuejs/router/compare/v4.1.1...v4.1.2) (2022-07-11)
+
+### Bug Fixes
+
+- allow requiring in cjs context ([#1465](https://github.com/vuejs/router/issues/1465)) ([5f3febe](https://github.com/vuejs/router/commit/5f3febe86bf2ee656e64c430f102c19ec081abc7))
+- force relative link in types exports ([8082035](https://github.com/vuejs/router/commit/8082035b097bcb1e50c659a802b127d26c56afa5))
+- **types:** adds ESM export of types ([#1457](https://github.com/vuejs/router/issues/1457)) ([e82a89c](https://github.com/vuejs/router/commit/e82a89c19a367fd91348c0e0f2bbbdacb646d2aa))
+- **types:** allow `symbol` type ([#1460](https://github.com/vuejs/router/issues/1460)) ([0f053db](https://github.com/vuejs/router/commit/0f053db4cbafdac8d5174e9ae841969274f916f1))
+
+### Features
+
+- **types:** simplify props types ([2df87ef](https://github.com/vuejs/router/commit/2df87efda150027b5e455958f284db8f755caa1a))
+
 ## [4.1.1](https://github.com/vuejs/router/compare/v4.1.0...v4.1.1) (2022-07-05)
 
 ### Bug Fixes
