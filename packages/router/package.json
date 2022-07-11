@@ -21,7 +21,8 @@
           "default": "./index.js"
         }
       },
-      "import": "./dist/vue-router.mjs"
+      "import": "./dist/vue-router.mjs",
+      "require": "./index.js"
     },
     "./dist/*": "./dist/*",
     "./vetur/*": "./vetur/*",
