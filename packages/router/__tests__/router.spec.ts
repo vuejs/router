@@ -143,9 +143,29 @@ describe('Router', () => {
     // move somewhere else
     await router.push('/search')
     jest.spyOn(history, 'replace')
+    jest.spyOn(history, 'push')
     await router.replace('/home-before')
+    expect(history.push).toHaveBeenCalledTimes(0)
     expect(history.replace).toHaveBeenCalledTimes(1)
     expect(history.replace).toHaveBeenCalledWith('/', expect.anything())
+  })
+
+  it('replaces if a guard redirect replaces', async () => {
+    const history = createMemoryHistory()
+    const { router } = await newRouter({ history })
+    // move somewhere else
+    router.beforeEach(to => {
+      if (to.name !== 'Foo') {
+        return { name: 'Foo', replace: true }
+      }
+    })
+    jest.spyOn(history, 'replace')
+    jest.spyOn(history, 'push')
+    await router.push('/search')
+    expect(history.location).toBe('/foo')
+    expect(history.push).toHaveBeenCalledTimes(0)
+    expect(history.replace).toHaveBeenCalledTimes(1)
+    expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
   })
 
   it('allows to customize parseQuery', async () => {

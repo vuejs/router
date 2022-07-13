@@ -728,11 +728,17 @@ export function createRouter(options: RouterOptions): Router {
 
             return pushWithRedirect(
               // keep options
-              assign(locationAsObject(failure.to), {
-                state: data,
-                force,
-                replace,
-              }),
+              assign(
+                {
+                  // preserve an existing replace but allow the redirect to override it
+                  replace,
+                },
+                locationAsObject(failure.to),
+                {
+                  state: data,
+                  force,
+                }
+              ),
               // preserve the original redirectedFrom if any
               redirectedFrom || toLocation
             )
