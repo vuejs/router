@@ -56,7 +56,7 @@ router.push({ name: 'user', params: { username } }) // -> /user/eduardo
 router.push({ path: '/user', params: { username } }) // -> /user
 ```
 
-When specifying `params`, make sure to either provide a `string` or `number` (or an array of these for [repeatable params](./route-matching-syntax.md#repeatable-params)). **Any other type (like `undefined`, `false`, etc) will be automatically stringified**. For [optional params](./route-matching-syntax.md#repeatable-params), you can provide an empty string (`""`) as the value to skip it.
+When specifying `params`, make sure to either provide a `string` or `number` (or an array of these for [repeatable params](./route-matching-syntax.md#repeatable-params)). **Any other type (like `undefined`, `false`, etc) will be automatically stringified**. For [optional params](./route-matching-syntax.md#optional-parameters), you can provide an empty string (`""`) as the value to skip it.
 
 Since the prop `to` accepts the same kind of object as `router.push`, the exact same rules apply to both of them.
 
