@@ -76,6 +76,7 @@ Get started with the [documentation](https://router.vuejs.org).
 - Via CDN: `<script src="https://unpkg.com/vue-router@4"></script>`
 - In-browser playground on [CodeSandbox](https://codesandbox.io/s/vue-router-4-reproduction-hb9lh)
 - Add it to an existing Vue Project:
+
   ```bash
   npm install vue-router@4
   ```
