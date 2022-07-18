@@ -158,6 +158,7 @@ describe('Router', () => {
       if (to.name !== 'Foo') {
         return { name: 'Foo', replace: true }
       }
+      return // no warn
     })
     jest.spyOn(history, 'replace')
     jest.spyOn(history, 'push')
