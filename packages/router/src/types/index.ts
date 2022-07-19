@@ -364,7 +364,6 @@ export interface RouteRecordMultipleViewsWithChildren extends _RouteRecordBase {
    */
   components?: Record<string, RawRouteComponent> | null | undefined
   component?: never
-  redirect?: never
 
   children: RouteRecordRaw[]
 

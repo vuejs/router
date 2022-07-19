@@ -58,7 +58,6 @@ describe('RouterMatcher.resolve', () => {
     const startCopy: MatcherLocation = {
       ...start,
       matched: start.matched.map(m => ({
-        // @ts-expect-error: okay...
         ...normalizeRouteRecord(m),
         aliasOf: m.aliasOf,
       })) as MatcherLocation['matched'],
