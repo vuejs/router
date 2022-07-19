@@ -242,7 +242,7 @@ describe('RouterView', () => {
     props: any = {}
   ) {
     const route = createMockedRoute(initialRoute)
-    const wrapper = mount(RouterView, {
+    const wrapper = mount(RouterView as any, {
       props,
       global: {
         provide: route.provides,
@@ -443,7 +443,7 @@ describe('RouterView', () => {
       props: any = {}
     ) {
       const route = createMockedRoute(initialRoute)
-      const wrapper = await mount(RouterView, {
+      const wrapper = await mount(RouterView as any, {
         props,
         global: {
           provide: route.provides,
@@ -474,7 +474,7 @@ describe('RouterView', () => {
       props: any = {}
     ) {
       const route = createMockedRoute(initialRoute)
-      const wrapper = await mount(RouterView, {
+      const wrapper = await mount(RouterView as any, {
         props,
         global: {
           provide: route.provides,
@@ -507,7 +507,7 @@ describe('RouterView', () => {
       props: any = {}
     ) {
       const route = createMockedRoute(initialRoute)
-      const wrapper = await mount(RouterView, {
+      const wrapper = await mount(RouterView as any, {
         props,
         global: {
           provide: route.provides,
