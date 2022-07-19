@@ -61,7 +61,9 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     __DEV__ && warnDeprecatedUsage()
 
     const injectedRoute = inject(routerViewLocationKey)!
-    const routeToDisplay = computed(() => props.route || injectedRoute.value)
+    const routeToDisplay = computed<RouteLocationNormalizedLoaded>(
+      () => props.route || injectedRoute.value
+    )
     const injectedDepth = inject(viewDepthKey, 0)
     // The depth changes based on empty components option, which allows passthrough routes e.g. routes with children
     // that are used to reuse the `path` property
@@ -134,18 +136,19 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
 
     return () => {
       const route = routeToDisplay.value
-      const matchedRoute = matchedRouteRef.value
-      const ViewComponent = matchedRoute && matchedRoute.components![props.name]
       // we need the value at the time we render because when we unmount, we
       // navigated to a different location so the value is different
       const currentName = props.name
+      const matchedRoute = matchedRouteRef.value
+      const ViewComponent =
+        matchedRoute && matchedRoute.components![currentName]
 
       if (!ViewComponent) {
         return normalizeSlot(slots.default, { Component: ViewComponent, route })
       }
 
       // props from route configuration
-      const routePropsOption = matchedRoute!.props[props.name]
+      const routePropsOption = matchedRoute.props[currentName]
       const routeProps = routePropsOption
         ? routePropsOption === true
           ? route.params
@@ -157,7 +160,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       const onVnodeUnmounted: VNodeProps['onVnodeUnmounted'] = vnode => {
         // remove the instance reference to prevent leak
         if (vnode.component!.isUnmounted) {
-          matchedRoute!.instances[currentName] = null
+          matchedRoute.instances[currentName] = null
         }
       }
 

@@ -160,30 +160,30 @@
       </li>
     </ul>
     <button @click="toggleViewName">Toggle view</button>
-    <Suspense>
-      <template #default>
-        <router-view :name="viewName" v-slot="{ Component, route }">
-          <transition
-            :name="route.meta.transition || 'fade'"
-            mode="out-in"
-            @before-enter="flushWaiter"
-            @before-leave="setupWaiter"
-          >
-            <keep-alive>
-              <component
-                :is="Component"
-                :key="route.name === 'repeat' ? route.path : undefined"
-              />
-            </keep-alive>
-          </transition>
-        </router-view>
-      </template>
-      <template #fallback> Loading... </template>
-    </Suspense>
+    <RouterView :name="viewName" v-slot="{ Component, route }">
+      <Transition
+        :name="route.meta.transition || 'fade'"
+        mode="out-in"
+        @before-enter="flushWaiter"
+        @before-leave="setupWaiter"
+      >
+        <!-- <KeepAlive> -->
+        <Suspense>
+          <template #default>
+            <component
+              :is="Component"
+              :key="route.name === 'repeat' ? route.path : route.meta.key"
+            />
+          </template>
+          <template #fallback> Loading... </template>
+        </Suspense>
+        <!-- </KeepAlive> -->
+      </Transition>
+    </RouterView>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, inject, computed, ref } from 'vue'
 import { scrollWaiter } from './scrollWaiter'
 import { useLink, useRoute } from 'vue-router'
@@ -214,7 +214,7 @@ export default defineComponent({
     }
 
     const nextUserLink = computed(
-      () => '/users/' + String((Number(route.value.params.id) || 0) + 1)
+      () => '/users/' + String((Number(route.params.id) || 0) + 1)
     )
 
     return {
