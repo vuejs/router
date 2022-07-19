@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, RouterView } from 'vue-router'
-import type { RouterLinkTyped } from 'vue-router'
 import Home from './views/Home.vue'
 import Nested from './views/Nested.vue'
 import NestedWithId from './views/NestedWithId.vue'
@@ -16,12 +15,7 @@ import ComponentWithData from './views/ComponentWithData.vue'
 import { globalState } from './store'
 import { scrollWaiter } from './scrollWaiter'
 import RepeatedParams from './views/RepeatedParams.vue'
-import { h } from 'vue'
-import type { FunctionalComponent } from 'vue'
 let removeRoute: (() => void) | undefined
-
-const TransparentWrapper: FunctionalComponent = () => h(RouterView)
-TransparentWrapper.displayName = 'NestedView'
 
 export const routerHistory = createWebHistory()
 export const router = createRouter({
@@ -159,7 +153,6 @@ export const router = createRouter({
 
     {
       path: '/admin',
-      component: TransparentWrapper,
       children: [
         { path: '', component },
         { path: 'dashboard', component },
@@ -180,12 +173,6 @@ export const router = createRouter({
     return false
   },
 })
-
-declare module 'vue-router' {
-  export interface Config {
-    Router: typeof router
-  }
-}
 
 // router.push({ name: 'user', params: {} })
 

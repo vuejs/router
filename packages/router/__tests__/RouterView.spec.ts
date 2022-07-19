@@ -20,6 +20,10 @@ function createRoutes<T extends Record<string, RouteLocationNormalizedLoose>>(
 
   for (let key in routes) {
     nonReactiveRoutes[key] = markRaw(routes[key])
+    nonReactiveRoutes[key].matched.forEach(record => {
+      record.leaveGuards ??= new Set()
+      record.updateGuards ??= new Set()
+    })
   }
 
   return nonReactiveRoutes
@@ -238,7 +242,7 @@ describe('RouterView', () => {
     props: any = {}
   ) {
     const route = createMockedRoute(initialRoute)
-    const wrapper = mount(RouterView as any, {
+    const wrapper = mount(RouterView, {
       props,
       global: {
         provide: route.provides,
@@ -439,7 +443,7 @@ describe('RouterView', () => {
       props: any = {}
     ) {
       const route = createMockedRoute(initialRoute)
-      const wrapper = await mount(RouterView as any, {
+      const wrapper = await mount(RouterView, {
         props,
         global: {
           provide: route.provides,
@@ -470,7 +474,7 @@ describe('RouterView', () => {
       props: any = {}
     ) {
       const route = createMockedRoute(initialRoute)
-      const wrapper = await mount(RouterView as any, {
+      const wrapper = await mount(RouterView, {
         props,
         global: {
           provide: route.provides,
@@ -503,7 +507,7 @@ describe('RouterView', () => {
       props: any = {}
     ) {
       const route = createMockedRoute(initialRoute)
-      const wrapper = await mount(RouterView as any, {
+      const wrapper = await mount(RouterView, {
         props,
         global: {
           provide: route.provides,

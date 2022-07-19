@@ -55,6 +55,7 @@ export interface RouteRecordViewLoose
     'path' | 'name' | 'meta' | 'beforeEnter'
   > {
   leaveGuards?: any
+  updateGuards?: any
   instances: Record<string, any>
   enterCallbacks: Record<string, Function[]>
   props: Record<string, _RouteRecordProps>
