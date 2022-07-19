@@ -797,6 +797,11 @@ describe('RouterMatcher.resolve', () => {
         { name: 'h' },
         { name: 'h', path: '/', params: {} }
       )
+      assertRecordMatch(
+        { path: '/:tab?/:other?', name: 'h', components },
+        { name: 'h' },
+        { name: 'h', path: '/', params: {} }
+      )
     })
   })
 

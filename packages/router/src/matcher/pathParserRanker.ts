@@ -255,9 +255,8 @@ export function tokensToParser(
             : (param as string)
           if (!text) {
             if (optional) {
-              // if we have more than one optional param like /:a?-static and there are more segments, we don't need to
-              // care about the optional param
-              if (segment.length < 2 && segments.length > 1) {
+              // if we have more than one optional param like /:a?-static we don't need to care about the optional param
+              if (segment.length < 2) {
                 // remove the last slash as we could be at the end
                 if (path.endsWith('/')) path = path.slice(0, -1)
                 // do not append a slash on the next iteration
@@ -270,7 +269,8 @@ export function tokensToParser(
       }
     }
 
-    return path
+    // avoid empty path when we have multiple optional params
+    return path || '/'
   }
 
   return {
