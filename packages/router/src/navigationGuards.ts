@@ -137,7 +137,7 @@ export function guardToPromiseFn(
       const next: NavigationGuardNext = (
         valid?: boolean | RouteLocationRaw | NavigationGuardNextCallback | Error
       ) => {
-        if (valid === false)
+        if (valid === false) {
           reject(
             createRouterError<NavigationFailure>(
               ErrorTypes.NAVIGATION_ABORTED,
@@ -147,7 +147,7 @@ export function guardToPromiseFn(
               }
             )
           )
-        else if (valid instanceof Error) {
+        } else if (valid instanceof Error) {
           reject(valid)
         } else if (isRouteLocation(valid)) {
           reject(
@@ -165,8 +165,9 @@ export function guardToPromiseFn(
             // since enterCallbackArray is truthy, both record and name also are
             record!.enterCallbacks[name!] === enterCallbackArray &&
             typeof valid === 'function'
-          )
+          ) {
             enterCallbackArray.push(valid)
+          }
           resolve()
         }
       }
