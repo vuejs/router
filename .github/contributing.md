@@ -28,7 +28,7 @@ Hi! I'm really excited that you are interested in contributing to Vue Router. Be
 
   - If you are resolving a special issue, add `(fix #xxxx[,#xxxx])` (#xxxx is the issue id) in your PR title for a better release log, e.g. `update entities encoding/decoding (fix #3899)`.
   - Provide a detailed description of the bug in the PR. Live demo preferred.
-  - Add appropriate test coverage if applicable. You can check the coverage of your code addition by running `yarn test --coverage`.
+  - Add appropriate test coverage if applicable. You can check the coverage of your code addition by running `pnpm test --coverage`.
 
 - It's OK to have multiple small commits as you work on the PR - GitHub can automatically squash them before merging.
 
@@ -40,12 +40,12 @@ Hi! I'm really excited that you are interested in contributing to Vue Router. Be
 
 ## Development Setup
 
-You will need [Node.js](http://nodejs.org) **version 10+**, and [Yarn](https://classic.yarnpkg.com/en/docs/install).
+You will need [Node.js](http://nodejs.org) **version 10+**, and [Pnpm](https://pnpm.io/installation).
 
 After cloning the repo, run:
 
 ```bash
-$ yarn # install the dependencies of the project
+$ pnpm install # install the dependencies of the project
 ```
 
 A high level overview of tools used:
@@ -57,21 +57,21 @@ A high level overview of tools used:
 
 ## Scripts
 
-### `yarn build`
+### `pnpm build`
 
 The `build` script builds vue-router
 
-### `yarn dev`
+### `pnpm play`
 
-The `dev` scripts starts a playground project located at `playground/` that allows you to test things on a browser.
+The `play` scripts starts a playground project located at `playground/` that allows you to test things on a browser.
 
 ```bash
-$ yarn dev
+$ pnpm play
 ```
 
-### `yarn test`
+### `pnpm test`
 
-The `yarn test` script runs all checks:
+The `pnpm test` script runs all checks:
 
 - _Typings_: `test:types`
 - _Linting_: `test:lint`
@@ -80,10 +80,10 @@ The `yarn test` script runs all checks:
 
 ```bash
 # run all tests
-$ yarn test
+$ pnpm test
 
 # run unit tests in watch mode
-$ yarn jest --watch
+$ pnpm jest --watch
 ```
 
 ## Project Structure
