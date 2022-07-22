@@ -788,7 +788,7 @@ stringifyQuery?: (
 
 ## RouteRecordRaw
 
-Route record that can be provided by the user when adding routes via the [`routes` option](#routeroptions) or via [`router.addRoute()`](#addroute-2). There are three different kind of route records:
+Route record that can be provided by the user when adding routes via the [`routes` option](#routeroptions) or via [`router.addRoute()`](#addroute). There are three different kind of route records:
 
 - Single views records: have a `component` option
 - Multiple views records ([named views](../guide/essentials/named-views.md)): have a `components` option
