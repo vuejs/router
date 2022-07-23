@@ -41,7 +41,7 @@ const config = defineConfig({
   themeConfig: {
     repo: 'vuejs/router',
     docsRepo: 'vuejs/router',
-    docsDir: 'docs',
+    docsDir: 'packages/docs',
     docsBranch: 'main',
     editLinks: true,
     editLinkText: 'Suggest changes to this page',
