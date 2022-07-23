@@ -41,12 +41,10 @@ const config = defineConfig({
   themeConfig: {
     repo: 'vuejs/router',
     docsRepo: 'vuejs/router',
-    docsDir: 'docs',
+    docsDir: 'packages/docs',
     docsBranch: 'main',
-    editLink: {
-      pattern: 'https://github.com/vuejs/router/edit/main/packages/docs/:path',
-      text: 'Suggest changes to this page'
-    },
+    editLinks: true,
+    editLinkText: 'Suggest changes to this page',
 
     carbonAds: {
       carbon: 'CEBICK3I',
