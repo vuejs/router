@@ -1,4 +1,4 @@
-lockfileVersion: 5.4
+lockfileVersion: 5.3
 
 importers:
 
@@ -32,8 +32,10 @@ importers:
 
   packages/docs:
     specifiers:
+      '@chenfengyuan/vue-countdown': '2'
       vitepress: ^0.20.0
     dependencies:
+      '@chenfengyuan/vue-countdown': 2.0.0
       vitepress: 0.20.10
 
   packages/playground:
@@ -551,6 +553,12 @@ packages:
   /@bcoe/v8-coverage/0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
+
+  /@chenfengyuan/vue-countdown/2.0.0:
+    resolution: {integrity: sha512-uZQBuajO9Jp5y5Hh5/C61qZw5oQXv3Cgd0FWO4j22SmwY7pzEHC7A/liobHjHeLiQH9WKVEhyOzmIZ2a4WSXhQ==}
+    peerDependencies:
+      vue: ^3.0.0
+    dev: false
 
   /@docsearch/css/3.1.0:
     resolution: {integrity: sha512-bh5IskwkkodbvC0FzSg1AxMykfDl95hebEKwxNoq4e5QaGzOXSBgW8+jnMFZ7JU4sTBiB04vZWoUSzNrPboLZA==}

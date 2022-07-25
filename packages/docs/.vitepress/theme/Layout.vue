@@ -1,12 +1,6 @@
 <template>
-  <div
-    class="main-container"
-    :class="{ 'has-top-banner': showTopBanner }"
-  >
-    <BannerTop
-      v-if="showTopBanner"
-      @close="closeBannerTop"
-    />
+  <div class="main-container">
+    <BannerTop />
     <ParentLayout>
       <template #sidebar-top>
         <div class="sponsors sponsors-top">
@@ -68,19 +62,7 @@ export default {
   },
   data() {
     return {
-      sponsors,
-      showTopBanner: false
-    }
-  },
-  mounted () {
-    const now = new Date()
-    const end = new Date('2022-07-23T00:00:00+02:00')
-    this.showTopBanner = !localStorage.getItem('VS_SUMMER_22') && (now < end)
-  },
-  methods: {
-    closeBannerTop () {
-      this.showTopBanner = false
-      localStorage.setItem('VS_SUMMER_22', 1)
+      sponsors
     }
   }
 }
