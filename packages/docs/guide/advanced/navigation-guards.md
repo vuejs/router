@@ -253,3 +253,5 @@ If you are writing your component using the [composition API and a `setup` funct
 ![Vue router flow](./images/vue-router-flow.png)
 
 <!-- https://www.figma.com/file/nxHzZVExlwnOiWhfeDU0nB/Vue-Router-Flow -->
+
+See also: [Example](https://codesandbox.io/s/router-flow-umcmb8)
