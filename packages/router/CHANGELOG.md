@@ -1,3 +1,12 @@
+## [4.1.3](https://github.com/vuejs/router/compare/v4.1.2...v4.1.3) (2022-07-27)
+
+### Bug Fixes
+
+- allow overriding replace in guards ([f0f448a](https://github.com/vuejs/router/commit/f0f448abe0d9c64e35aec8c1906ef4bf7059577f)), closes [#1471](https://github.com/vuejs/router/issues/1471)
+- avoid restore on cancelled pop navigations ([66491c1](https://github.com/vuejs/router/commit/66491c1fb56de924337ac35a0d235e662d138480))
+- **matcher:** correctly resolve empty paths with optional params ([4d5182a](https://github.com/vuejs/router/commit/4d5182a3e8e74e1bb66b641c39391349be6d963b)), closes [#1475](https://github.com/vuejs/router/issues/1475)
+- **types:** allow redirect with children ([9f0d999](https://github.com/vuejs/router/commit/9f0d9997b681b33b5ad2180399612fba14898372)), closes [#1476](https://github.com/vuejs/router/issues/1476)
+
 ## [4.1.2](https://github.com/vuejs/router/compare/v4.1.1...v4.1.2) (2022-07-11)
 
 ### Bug Fixes
