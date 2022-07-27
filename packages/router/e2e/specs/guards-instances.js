@@ -38,6 +38,8 @@ function testCase(browser, name) {
     )
 }
 
+const baseURL = 'http://localhost:3000/guards-instances'
+
 module.exports = {
   '@tags': [],
 
@@ -59,6 +61,24 @@ module.exports = {
       .assert.textContains(`#${name} .enterCbs`, '1')
 
     browser.end()
+  },
+
+  /** @type {import('nightwatch').NightwatchTest} */
+  'cancel pending pop navigations': function (browser) {
+    browser
+      .url(baseURL + '/')
+      .waitForElementPresent('#app > *', 1000)
+
+      .click('#test-normal')
+      .click('li:nth-child(11) a')
+      .click('li:nth-child(12) a')
+      .click('li:nth-child(13) a')
+      .back()
+      .back()
+      .waitForElementPresent('#app > #with-id-1', 1000)
+      .assert.urlEquals(baseURL + '/b/1?testCase=')
+
+      .end()
   },
 
   /** @type {import('nightwatch').NightwatchTest} */

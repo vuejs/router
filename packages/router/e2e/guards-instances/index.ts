@@ -96,10 +96,13 @@ function createTestComponent(key: string) {
 }
 
 const Foo = createTestComponent('Foo')
-const Bar = createTestComponent('Bar')
 const One = createTestComponent('One')
 const Two = createTestComponent('Two')
 const Aux = createTestComponent('Aux')
+
+const WithId = defineComponent({
+  template: `<p :id="'with-id-' + $route.params.id">id: {{ $route.params.id }}</p>`,
+})
 
 const webHistory = createWebHistory('/guards-instances')
 const router = createRouter({
@@ -117,7 +120,8 @@ const router = createRouter({
     // TODO: test that the onBeforeRouteUpdate isn't kept
     {
       path: '/b/:id',
-      component: Bar,
+      name: 'id',
+      component: WithId,
     },
     {
       path: '/named-one',
@@ -134,6 +138,17 @@ const router = createRouter({
       },
     },
   ],
+})
+
+router.beforeEach(async (to, from) => {
+  if (to.name === 'id') {
+    const toId = Number(to.params.id)
+    const fromId = Number(from.params.id)
+    // only do it when we are going backwards
+    if (!Number.isNaN(toId) && !Number.isNaN(fromId) && toId < fromId) {
+      await new Promise(r => setTimeout(r, 250))
+    }
+  }
 })
 
 // preserve existing query
@@ -187,6 +202,9 @@ leaves: {{ state.leave }}
       <li><router-link id="update-query" :to="{ query: { n: (Number($route.query.n) || 0) + 1 }}" v-slot="{ route }">{{ route.fullPath }}</router-link></li>
       <li><router-link to="/named-one">/named-one</router-link></li>
       <li><router-link to="/named-two">/named-two</router-link></li>
+      <li><router-link to="/b/1">/b/1</router-link></li>
+      <li><router-link to="/b/2">/b/2</router-link></li>
+      <li><router-link to="/b/3">/b/3</router-link></li>
     </ul>
 
     <template v-if="testCase === 'keepalive'">

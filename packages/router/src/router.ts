@@ -1034,7 +1034,9 @@ export function createRouter(options: RouterOptions): Router {
             return Promise.reject()
           }
           // do not restore history on unknown direction
-          if (info.delta) routerHistory.go(-info.delta, false)
+          if (info.delta) {
+            routerHistory.go(-info.delta, false)
+          }
           // unrecognized error, transfer to the global handler
           return triggerError(error, toLocation, from)
         })
@@ -1050,7 +1052,12 @@ export function createRouter(options: RouterOptions): Router {
 
           // revert the navigation
           if (failure) {
-            if (info.delta) {
+            if (
+              info.delta &&
+              // a new navigation has been triggered, so we do not want to revert, that will change the current history
+              // entry while a different route is displayed
+              !isNavigationFailure(failure, ErrorTypes.NAVIGATION_CANCELLED)
+            ) {
               routerHistory.go(-info.delta, false)
             } else if (
               info.type === NavigationType.pop &&
