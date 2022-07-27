@@ -1002,7 +1002,7 @@ export function createRouter(options: RouterOptions): Router {
             // false) but this is bug prone as we have no way to wait the
             // navigation to be finished before calling pushWithRedirect. Using
             // a setTimeout of 16ms seems to work but there is not guarantee for
-            // it to work on every browser. So Instead we do not restore the
+            // it to work on every browser. So instead we do not restore the
             // history entry and trigger a new navigation as requested by the
             // navigation guard.
 
