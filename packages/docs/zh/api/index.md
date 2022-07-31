@@ -185,7 +185,7 @@ sidebar: auto
 </router-view>
 ```
 
-- `Component`: 要传递给 `<component>` 的 VNodes `是` prop。
+- `Component`: VNodes, 传递给 `<component>`的`is` prop。
 - `route`: 解析出的标准化[路由地址](#routelocationnormalized)。
 
 ## createRouter
