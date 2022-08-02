@@ -205,9 +205,22 @@ export type RouteComponent = Component | DefineComponent
 export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
 
 /**
+ * Interface to add available RouteRecordName values
+ *
+ * @example
+ *    declare module 'vue-router' {
+ *        export interface RouteRecords {
+ *           [key: 'app' | 'contact-us' | 'services' | 'index']: never;
+ *        }
+ *    }
+ */
+export interface RouteRecords {
+}
+
+/**
  * Possible values for a user-defined route record's name
  */
-export type RouteRecordName = string | symbol
+export type RouteRecordName = keyof RouteRecords | string | symbol
 
 /**
  * @internal
