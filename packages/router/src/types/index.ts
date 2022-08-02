@@ -214,8 +214,7 @@ export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
  *        }
  *    }
  */
-export interface RouteRecords {
-}
+export interface RouteRecords {}
 
 /**
  * Possible values for a user-defined route record's name
