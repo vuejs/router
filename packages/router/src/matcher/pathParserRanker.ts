@@ -28,7 +28,7 @@ export interface PathParser {
    */
   keys: PathParserParamKey[]
   /**
-   * Parses a url and returns the matched params or nul if it doesn't match. An
+   * Parses a url and returns the matched params or null if it doesn't match. An
    * optional param that isn't preset will be an empty string. A repeatable
    * param will be an array if there is at least one value.
    *
