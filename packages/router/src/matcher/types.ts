@@ -73,7 +73,7 @@ export interface RouteRecordNormalized {
    * views.
    */
   instances: Record<string, ComponentPublicInstance | undefined | null>
-  // can only be of of the same type as this record
+  // can only be of the same type as this record
   /**
    * Defines if this record is the alias of another one. This property is
    * `undefined` if the record is the original one.

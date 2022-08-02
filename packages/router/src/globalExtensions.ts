@@ -27,7 +27,7 @@ declare module '@vue/runtime-core' {
       : NavigationGuardWithThis<undefined>
 
     /**
-     * Guard called whenever the route that renders this component has changed but
+     * Guard called whenever the route that renders this component has changed, but
      * it is reused for the new route. This allows you to guard for changes in
      * params, the query or the hash.
      *

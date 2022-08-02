@@ -13,7 +13,7 @@ import { assign } from './utils'
  * @internal
  */
 export const enum ErrorTypes {
-  // they must be literals to be used as values so we can't write
+  // they must be literals to be used as values, so we can't write
   // 1 << 2
   MATCHER_NOT_FOUND = 1,
   NAVIGATION_GUARD_REDIRECT = 2,

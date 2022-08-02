@@ -7,7 +7,7 @@ import { warn } from './warning'
  * On top of that, the RFC3986 (https://tools.ietf.org/html/rfc3986#section-2.2)
  * defines some extra characters to be encoded. Most browsers do not encode them
  * in encodeURI https://github.com/whatwg/url/issues/369, so it may be safer to
- * also encode `!'()*`. Leaving unencoded only ASCII alphanumeric(`a-zA-Z0-9`)
+ * also encode `!'()*`. Leaving un-encoded only ASCII alphanumeric(`a-zA-Z0-9`)
  * plus `-._~`. This extra safety should be applied to query by patching the
  * string returned by encodeURIComponent encodeURI also encodes `[\]^`. `\`
  * should be encoded to avoid ambiguity. Browsers (IE, FF, C) transform a `\`
@@ -32,7 +32,7 @@ export const PLUS_RE = /\+/g // %2B
  * application/x-www-form-urlencoded
  * (https://url.spec.whatwg.org/#urlencoded-parsing) and most browsers seems lo
  * leave the plus character as is in queries. To be more flexible, we allow the
- * plus character on the query but it can also be manually encoded by the user.
+ * plus character on the query, but it can also be manually encoded by the user.
  *
  * Resources:
  * - https://url.spec.whatwg.org/#urlencoded-parsing

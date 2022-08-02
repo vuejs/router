@@ -114,7 +114,7 @@ function useHistoryListeners(
   }
 
   function listen(callback: NavigationCallback) {
-    // setup the listener and prepare teardown callbacks
+    // set up the listener and prepare teardown callbacks
     listeners.push(callback)
 
     const teardown = () => {
@@ -142,7 +142,7 @@ function useHistoryListeners(
     window.removeEventListener('beforeunload', beforeUnloadListener)
   }
 
-  // setup the listeners and prepare teardown callbacks
+  // set up the listeners and prepare teardown callbacks
   window.addEventListener('popstate', popStateHandler)
   window.addEventListener('beforeunload', beforeUnloadListener)
 
@@ -192,7 +192,7 @@ function useHistoryStateNavigation(base: string) {
         // the length is off by one, we need to decrease it
         position: history.length - 1,
         replaced: true,
-        // don't add a scroll as the user may have an anchor and we want
+        // don't add a scroll as the user may have an anchor, and we want
         // scrollBehavior to be triggered without a saved position
         scroll: null,
       },
@@ -206,7 +206,7 @@ function useHistoryStateNavigation(base: string) {
     replace: boolean
   ): void {
     /**
-     * if a base tag is provided and we are on a normal domain, we have to
+     * if a base tag is provided, and we are on a normal domain, we have to
      * respect the provided `base` attribute because pushState() will use it and
      * potentially erase anything before the `#` like at
      * https://github.com/vuejs/router/issues/685 where a base of

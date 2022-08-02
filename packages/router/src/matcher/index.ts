@@ -134,13 +134,13 @@ export function createRouterMatcher(
         )
       }
 
-      // create the object before hand so it can be passed to children
+      // create the object beforehand, so it can be passed to children
       matcher = createRouteRecordMatcher(normalizedRecord, parent, options)
 
       if (__DEV__ && parent && path[0] === '/')
         checkMissingParamsInAbsolutePath(matcher, parent)
 
-      // if we are an alias we must tell the original record that we exist
+      // if we are an alias we must tell the original record that we exist,
       // so we can be removed
       if (originalRecord) {
         originalRecord.alias.push(matcher)
@@ -170,7 +170,7 @@ export function createRouterMatcher(
       }
 
       // if there was no original record, then the first one was not an alias and all
-      // other alias (if any) need to reference this record when adding children
+      // other aliases (if any) need to reference this record when adding children
       originalRecord = originalRecord || matcher
 
       // TODO: add normalized records for more flexibility
@@ -373,7 +373,7 @@ function normalizeRecordProps(
   record: RouteRecordRaw
 ): Record<string, _RouteRecordProps> {
   const propsObject = {} as Record<string, _RouteRecordProps>
-  // props does not exist on redirect records but we can set false directly
+  // props does not exist on redirect records, but we can set false directly
   const props = record.props || false
   if ('component' in record) {
     propsObject.default = props

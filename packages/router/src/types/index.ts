@@ -165,7 +165,7 @@ export interface _RouteLocationBase
 export interface RouteLocationNormalizedLoaded extends _RouteLocationBase {
   /**
    * Array of {@link RouteLocationMatched} containing only plain components (any
-   * lazy-loaded components have been loaded and were replaced inside of the
+   * lazy-loaded components have been loaded and were replaced inside the
    * `components` object) so it can be directly used to display routes. It
    * cannot contain redirect records either
    */
@@ -420,7 +420,7 @@ export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = {
   redirectedFrom: undefined,
 }
 
-// make matched non enumerable for easy printing
+// make matched non-enumerable for easy printing
 // NOTE: commented for tests at RouterView.spec
 // Object.defineProperty(START_LOCATION_NORMALIZED, 'matched', {
 //   enumerable: false,
@@ -456,7 +456,7 @@ export interface MatcherLocation {
   params: RouteParams
 
   /**
-   * Merged `meta` properties from all of the matched route records.
+   * Merged `meta` properties from all the matched route records.
    */
   meta: RouteMeta
 

@@ -6,7 +6,7 @@ import { warn } from '../warning'
  * Creates a hash history. Useful for web applications with no host (e.g. `file://`) or when configuring a server to
  * handle any URL is not possible.
  *
- * @param base - optional base to provide. Defaults to `location.pathname + location.search` If there is a `<base>` tag
+ * @param {string} [base] - optional base to provide. Defaults to `location.pathname + location.search` If there is a `<base>` tag
  * in the `head`, its value will be ignored in favor of this parameter **but note it affects all the history.pushState()
  * calls**, meaning that if you use a `<base>` tag, it's `href` value **has to match this parameter** (ignoring anything
  * after the `#`).
