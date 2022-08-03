@@ -96,6 +96,36 @@ const routes = [
   },
 ]
 ```
-**Note that if you use named routes you have to use the name of the child with the empty path to get the same effect**
 
 A working demo of this example can be found [here](https://codesandbox.io/s/nested-views-vue-router-4-examples-hl326?initialpath=%2Fusers%2Feduardo).
+
+
+## Nested Named Routes
+There are some differences if you use [Named Routes](./named-routes.md#named-routes).
+
+If you route to `user` it will show the `User` component.
+
+You have to route to a child like `user-home` if you want to render something in the  `User`'s `router-view` because the empty path property will be ignored here.
+
+```js
+const routes = [
+  {
+    path: '/user/:id',
+    name: 'user'
+    component: User,
+    children: [
+      // UserHome will be rendered inside User's <router-view>
+      // when "user-home" is matched
+      { path: '', name:"user-home", component: UserHome },
+
+      {
+        // UserPosts will be rendered inside User's <router-view>
+        // when "user-posts" is matched
+        path: 'posts',
+        name: 'user-posts',
+        component: UserPosts,
+      }
+    ],
+  },
+]
+```
