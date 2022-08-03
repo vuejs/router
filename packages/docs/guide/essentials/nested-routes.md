@@ -96,5 +96,6 @@ const routes = [
   },
 ]
 ```
+**Note that if you use named routes you have to use the name of the child with the empty path to get the same effect**
 
 A working demo of this example can be found [here](https://codesandbox.io/s/nested-views-vue-router-4-examples-hl326?initialpath=%2Fusers%2Feduardo).
