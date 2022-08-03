@@ -19,6 +19,6 @@
     "typescript": "~4.7.4",
     "vite": "^2.9.9",
     "vue-router": "workspace:*",
-    "vue-tsc": "^0.38.8"
+    "vue-tsc": "^0.39.4"
   }
 }
