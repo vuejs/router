@@ -7,7 +7,7 @@
 
 When building apps with a bundler, the JavaScript bundle can become quite large, and thus affect the page load time. It would be more efficient if we can split each route's components into separate chunks, and only load them when the route is visited.
 
-Vue Router supports [dynamic imports](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#Dynamic_Imports) out of the box, meaning you can replace static imports with dynamic ones:
+Vue Router supports [dynamic imports](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import) out of the box, meaning you can replace static imports with dynamic ones:
 
 ```js
 // replace
