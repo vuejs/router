@@ -4,7 +4,7 @@ import { removeTrailingSlash } from '../location'
 export type HistoryLocation = string
 /**
  * Allowed variables in HTML5 history state. Note that pushState clones the state
- * passed and does not accept everything: e.g it doesn't accept symbols, nor
+ * passed and does not accept everything: e.g.: it doesn't accept symbols, nor
  * functions as values. It also ignores Symbols as keys.
  *
  * @internal
@@ -74,8 +74,8 @@ export type ValueContainer<T> = { value: T }
 export interface RouterHistory {
   /**
    * Base path that is prepended to every url. This allows hosting an SPA at a
-   * subfolder of a domain like `example.com/subfolder` by having a `base` of
-   * `/subfolder`
+   * sub-folder of a domain like `example.com/sub-folder` by having a `base` of
+   * `/sub-folder`
    */
   readonly base: string
   /**

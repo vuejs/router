@@ -102,7 +102,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
           // this will update the instance for new instances as well as reused
           // instances when navigating to a new route
           to.instances[name] = instance
-          // the component instance is reused for a different route or name so
+          // the component instance is reused for a different route or name, so
           // we copy any saved update or leave guards. With async setup, the
           // mounting component will mount before the matchedRoute changes,
           // making instance === oldInstance, so we check if guards have been

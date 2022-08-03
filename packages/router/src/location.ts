@@ -34,7 +34,7 @@ export const removeTrailingSlash = (path: string) =>
   path.replace(TRAILING_SLASH_RE, '')
 
 /**
- * Transforms an URI into a normalized history location
+ * Transforms a URI into a normalized history location
  *
  * @param parseQuery
  * @param location - URI to normalize
@@ -104,8 +104,7 @@ export function stringifyURL(
 }
 
 /**
- * Strips off the base from the beginning of a location.pathname in a non
- * case-sensitive way.
+ * Strips off the base from the beginning of a location.pathname in a non-case-sensitive way.
  *
  * @param pathname - location.pathname
  * @param base - base to strip off
@@ -225,11 +224,11 @@ export function resolveRelativePath(to: string, from: string): string {
     if (segment === '.') continue
     // go up in the from array
     if (segment === '..') {
-      // we can't go below zero but we still need to increment toPosition
+      // we can't go below zero, but we still need to increment toPosition
       if (position > 1) position--
       // continue
     }
-    // we reached a non relative path, we stop here
+    // we reached a non-relative path, we stop here
     else break
   }
 

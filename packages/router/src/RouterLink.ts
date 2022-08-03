@@ -65,7 +65,9 @@ export interface RouterLinkProps extends RouterLinkOptions {
    */
   exactActiveClass?: string
   /**
-   * Value passed to the attribute `aria-current` when the link is exact active. Defaults to "page"
+   * Value passed to the attribute `aria-current` when the link is exact active.
+   *
+   * @defaultValue 'page'
    */
   ariaCurrentValue?:
     | 'page'
@@ -236,7 +238,7 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
                 : null,
               href: link.href,
               // this would override user added attrs but Vue will still add
-              // the listener so we end up triggering both
+              // the listener, so we end up triggering both
               onClick: link.navigate,
               class: elClass.value,
             },
@@ -254,7 +256,7 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
 export const RouterLink: _RouterLinkI = RouterLinkImpl as any
 
 /**
- * Typed version of the `RouterLink` component. Its generic defaults to the typed router so it can be inferred
+ * Typed version of the `RouterLink` component. Its generic defaults to the typed router, so it can be inferred
  * automatically for JSX.
  *
  * @internal

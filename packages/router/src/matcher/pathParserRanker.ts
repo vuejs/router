@@ -52,23 +52,31 @@ export interface PathParser {
  */
 export interface _PathParserOptions {
   /**
-   * Makes the RegExp case sensitive. Defaults to false
+   * Makes the RegExp case-sensitive.
+   *
+   * @defaultValue false
    */
   sensitive?: boolean
 
   /**
-   * Should we disallow a trailing slash. Defaults to false
+   * Whether to disallow a trailing slash or not.
+   *
+   * @defaultValue false
    */
   strict?: boolean
 
   /**
-   * Should the RegExp match from the beginning by prepending a `^` to it. Defaults to true
+   * Should the RegExp match from the beginning by prepending a `^` to it.
    * @internal
+   *
+   * @defaultValue true
    */
   start?: boolean
 
   /**
-   * Should the RegExp match until the end by appending a `$` to it. Defaults to true
+   * Should the RegExp match until the end by appending a `$` to it.
+   *
+   * @defaultValue true
    */
   end?: boolean
 }
@@ -78,7 +86,7 @@ export type PathParserOptions = Pick<
   'end' | 'sensitive' | 'strict'
 >
 
-// default pattern for a param: non greedy everything but /
+// default pattern for a param: non-greedy everything but /
 const BASE_PARAM_PATTERN = '[^/]+?'
 
 const BASE_PATH_PARSER_OPTIONS: Required<_PathParserOptions> = {
@@ -136,7 +144,7 @@ export function tokensToParser(
     if (options.strict && !segment.length) pattern += '/'
     for (let tokenIndex = 0; tokenIndex < segment.length; tokenIndex++) {
       const token = segment[tokenIndex]
-      // resets the score if we are inside a sub segment /:a-other-:b
+      // resets the score if we are inside a sub-segment /:a-other-:b
       let subSegmentScore: number =
         PathScore.Segment +
         (options.sensitive ? PathScore.BonusCaseSensitive : 0)

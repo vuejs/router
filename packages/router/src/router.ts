@@ -174,7 +174,7 @@ export interface RouterOptions extends PathParserOptions {
    */
   linkExactActiveClass?: string
   /**
-   * Default class applied to non active {@link RouterLink}. If none is provided,
+   * Default class applied to non-active {@link RouterLink}. If none is provided,
    * `router-link-inactive` will be applied.
    */
   // linkInactiveClass?: string
@@ -235,7 +235,7 @@ export interface Router {
   /**
    * Returns the {@link RouteLocation | normalized version} of a
    * {@link RouteLocationRaw | route location}. Also includes an `href` property
-   * that includes any existing `base`. By default the `currentLocation` used is
+   * that includes any existing `base`. By default, the `currentLocation` used is
    * `route.currentRoute` and should only be overridden in advanced use cases.
    *
    * @param to - Raw route location to resolve
@@ -492,7 +492,7 @@ export function createRouter(options: RouterOptions): Router {
           delete targetParams[key]
         }
       }
-      // pass encoded values to the matcher so it can produce encoded path and fullPath
+      // pass encoded values to the matcher, so it can produce encoded path and fullPath
       matcherLocation = assign({}, rawLocation, {
         params: encodeParams(rawLocation.params),
       })
@@ -510,7 +510,7 @@ export function createRouter(options: RouterOptions): Router {
       )
     }
 
-    // decoding them) the matcher might have merged current location params so
+    // the matcher might have merged current location params, so
     // we need to run the decoding again
     matchedRoute.params = normalizeParams(decodeParams(matchedRoute.params))
 
@@ -730,7 +730,7 @@ export function createRouter(options: RouterOptions): Router {
               // keep options
               assign(
                 {
-                  // preserve an existing replace but allow the redirect to override it
+                  // preserve an existing replacement but allow the redirect to override it
                   replace,
                 },
                 locationAsObject(failure.to),
@@ -1001,7 +1001,7 @@ export function createRouter(options: RouterOptions): Router {
             // Here we could call if (info.delta) routerHistory.go(-info.delta,
             // false) but this is bug prone as we have no way to wait the
             // navigation to be finished before calling pushWithRedirect. Using
-            // a setTimeout of 16ms seems to work but there is not guarantee for
+            // a setTimeout of 16ms seems to work but there is no guarantee for
             // it to work on every browser. So instead we do not restore the
             // history entry and trigger a new navigation as requested by the
             // navigation guard.
@@ -1015,7 +1015,7 @@ export function createRouter(options: RouterOptions): Router {
             )
               .then(failure => {
                 // manual change in hash history #916 ending up in the URL not
-                // changing but it was changed by the manual url change, so we
+                // changing, but it was changed by the manual url change, so we
                 // need to manually change it ourselves
                 if (
                   isNavigationFailure(
