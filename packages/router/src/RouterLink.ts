@@ -67,7 +67,7 @@ export interface RouterLinkProps extends RouterLinkOptions {
   /**
    * Value passed to the attribute `aria-current` when the link is exact active.
    *
-   * @defaultValue 'page'
+   * @defaultValue `'page'`
    */
   ariaCurrentValue?:
     | 'page'

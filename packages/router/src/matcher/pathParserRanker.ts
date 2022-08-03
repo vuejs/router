@@ -54,14 +54,14 @@ export interface _PathParserOptions {
   /**
    * Makes the RegExp case-sensitive.
    *
-   * @defaultValue false
+   * @defaultValue `false`
    */
   sensitive?: boolean
 
   /**
    * Whether to disallow a trailing slash or not.
    *
-   * @defaultValue false
+   * @defaultValue `false`
    */
   strict?: boolean
 
@@ -69,14 +69,14 @@ export interface _PathParserOptions {
    * Should the RegExp match from the beginning by prepending a `^` to it.
    * @internal
    *
-   * @defaultValue true
+   * @defaultValue `true`
    */
   start?: boolean
 
   /**
    * Should the RegExp match until the end by appending a `$` to it.
    *
-   * @defaultValue true
+   * @defaultValue `true`
    */
   end?: boolean
 }
