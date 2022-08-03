@@ -74,8 +74,8 @@ export type ValueContainer<T> = { value: T }
 export interface RouterHistory {
   /**
    * Base path that is prepended to every url. This allows hosting an SPA at a
-   * sub folder of a domain like `example.com/sub folder` by having a `base` of
-   * `/sub folder`
+   * sub-folder of a domain like `example.com/sub-folder` by having a `base` of
+   * `/sub-folder`
    */
   readonly base: string
   /**
