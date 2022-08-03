@@ -98,3 +98,33 @@ const routes = [
 ```
 
 A working demo of this example can be found [here](https://codesandbox.io/s/nested-views-vue-router-4-examples-hl326?initialpath=%2Fusers%2Feduardo).
+
+## Nested Named Routes
+
+When dealing with [Named Routes](./named-routes.md), you usually **name the children routes**:
+
+```js
+const routes = [
+  {
+    path: '/user/:id',
+    component: User,
+    // notice how only the child route has a name
+    children: [{ path: '', name: 'user', component: UserHome }],
+  },
+]
+```
+
+This will ensure navigating to `/user/:id` will always display the nested route.
+
+In some scenarios, you may want to navigate to a named route without navigating to the nested route. For example, if you want to navigate to `/user/:id` without displaying the nested route. In that case, you can **also** name the parent route but note **that reloading the page will always display the nested child** as it's considered a navigation to the path `/users/:id` instead of the named route:
+
+```js
+const routes = [
+  {
+    path: '/user/:id',
+    name: 'user-parent'
+    component: User,
+    children: [{ path: '', name: 'user', component: UserHome }],
+  },
+]
+```
