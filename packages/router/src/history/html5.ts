@@ -215,12 +215,19 @@ function useHistoryStateNavigation(base: string) {
      * base tag we can just use everything after the `#`.
      */
     const hashIndex = base.indexOf('#')
-    const url =
-      hashIndex > -1
-        ? (location.host && document.querySelector('base')
-            ? base
-            : base.slice(hashIndex)) + to
-        : createBaseLocation() + base + to
+
+    let url = ''
+
+    if (hashIndex > -1) {
+      if (location.host && document.querySelector('base')) {
+        url = base
+      } else {
+        url = base.slice(hashIndex) + (to ?? '')
+      }
+    } else {
+      url = createBaseLocation() + base + (to ?? '')
+    }
+
     try {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds
