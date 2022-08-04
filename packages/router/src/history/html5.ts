@@ -222,10 +222,10 @@ function useHistoryStateNavigation(base: string) {
       if (location.host && document.querySelector('base')) {
         url = base
       } else {
-        url = base.slice(hashIndex) + (to ?? '')
+        url = base.slice(hashIndex) + (to !== undefined ? to : '')
       }
     } else {
-      url = createBaseLocation() + base + (to ?? '')
+      url = createBaseLocation() + base + (to !== undefined ? to : '')
     }
 
     try {
