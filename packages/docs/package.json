@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "docs": "vitepress dev .",
-    "docs:api": "node run-typedoc.js",
+    "docs:api": "node scripts/run-typedoc.js",
     "docs:build": "vitepress build ."
   },
   "dependencies": {
@@ -12,6 +12,8 @@
     "vitepress": "^0.20.0"
   },
   "devDependencies": {
-    "@algolia/client-search": "^4.14.2"
+    "@algolia/client-search": "^4.14.2",
+    "typedoc": "^0.23.10",
+    "typedoc-plugin-markdown": "^3.13.4"
   }
 }
