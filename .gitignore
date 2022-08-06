@@ -16,4 +16,5 @@ yalc.lock
 local.log
 _selenium-server.log
 packages/*/LICENSE
+abcd
 tracing_output
