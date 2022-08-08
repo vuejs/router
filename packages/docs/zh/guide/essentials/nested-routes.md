@@ -98,3 +98,33 @@ const routes = [
 ```
 
 这个例子的 demo 可以在[这里](https://codesandbox.io/s/nested-views-vue-router-4-examples-hl326?initialpath=%2Fusers%2Feduardo)找到。
+
+## 嵌套的命名路由
+
+在处理[命名路由](./named-routes.md)时，**你通常会给子路由命名**：
+
+```js
+const routes = [
+  {
+    path: '/user/:id',
+    component: User,
+    // 请注意，只有子路由具有名称
+    children: [{ path: '', name: 'user', component: UserHome }],
+  },
+]
+```
+
+这将确保导航到 `/user/:id` 时始终显示嵌套路由。
+
+在一些场景中，你可能希望导航到命名路由而不导航到嵌套路由。例如，你想导航 `/user/:id` 而不显示嵌套路由。那样的话，你还可以**命名父路由**，但请注意**重新加载页面将始终显示嵌套的子路由**，因为它被视为指向路径`/users/:id` 的导航，而不是命名路由：
+
+```js
+const routes = [
+  {
+    path: '/user/:id',
+    name: 'user-parent'
+    component: User,
+    children: [{ path: '', name: 'user', component: UserHome }],
+  },
+]
+```
