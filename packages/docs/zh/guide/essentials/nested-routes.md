@@ -99,7 +99,7 @@ const routes = [
 
 这个例子的 demo 可以在[这里](https://codesandbox.io/s/nested-views-vue-router-4-examples-hl326?initialpath=%2Fusers%2Feduardo)找到。
 
-## 嵌套命名路由
+## 嵌套的命名路由
 
 在处理[命名路由](./named-routes.md)时，**通常将子路由命名为**：
 
