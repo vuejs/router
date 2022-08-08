@@ -101,7 +101,7 @@ const routes = [
 
 ## 嵌套的命名路由
 
-在处理[命名路由](./named-routes.md)时，**通常将子路由命名为**：
+在处理[命名路由](./named-routes.md)时，**你通常会给子路由命名**：
 
 ```js
 const routes = [
