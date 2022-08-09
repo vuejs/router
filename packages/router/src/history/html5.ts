@@ -287,7 +287,8 @@ function useHistoryStateNavigation(base: string) {
       )
     }
 
-    changeLocation(currentState.current, currentState, true)
+    if (currentState.current)
+      changeLocation(currentState.current, currentState, true)
 
     const state: StateEntry = assign(
       {},
