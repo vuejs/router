@@ -266,7 +266,7 @@ export interface _RouteRecordBase extends PathParserOptions {
   /**
    * Array of nested routes.
    */
-  children?: RouteRecordRaw[]
+  children?: ReadOnly<RouteRecordRaw[]>
 
   /**
    * Allow passing down params as props to the component rendered by `router-view`.
@@ -365,7 +365,7 @@ export interface RouteRecordMultipleViewsWithChildren extends _RouteRecordBase {
   components?: Record<string, RawRouteComponent> | null | undefined
   component?: never
 
-  children: RouteRecordRaw[]
+  children: ReadOnly<RouteRecordRaw[]>
 
   /**
    * Allow passing down params as props to the component rendered by
