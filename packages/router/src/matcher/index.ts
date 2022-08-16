@@ -256,7 +256,13 @@ export function createRouterMatcher(
           // TODO: only keep optional params coming from a parent record
           matcher.keys.filter(k => !k.optional).map(k => k.name)
         ),
-        location.params
+        // discard any existing params in the current location that do not exist here
+        // #1497 this ensures better active/exact matching
+        location.params &&
+          paramsFromLocation(
+            location.params,
+            matcher.keys.map(k => k.name)
+          )
       )
       // throws if cannot be stringified
       path = matcher.stringify(params)
@@ -275,7 +281,6 @@ export function createRouterMatcher(
       // matcher should have a value after the loop
 
       if (matcher) {
-        // TODO: dev warning of unused params if provided
         // we know the matcher works because we tested the regexp
         params = matcher.parse(path)!
         name = matcher.record.name

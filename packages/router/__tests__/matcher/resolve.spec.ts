@@ -775,6 +775,19 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
+    it('drops non existent params', () => {
+      assertRecordMatch(
+        { path: '/', name: 'home', components },
+        { name: 'home', params: { a: 'b' } },
+        { name: 'home', path: '/', params: {} }
+      )
+      assertRecordMatch(
+        { path: '/:b', name: 'a', components },
+        { name: 'a', params: { a: 'a', b: 'b' } },
+        { name: 'a', path: '/b', params: { b: 'b' } }
+      )
+    })
+
     it('drops optional params', () => {
       assertRecordMatch(
         { path: '/:a/:b?', name: 'p', components },
