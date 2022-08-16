@@ -655,7 +655,10 @@ export function createRouter(options: RouterOptions): Router {
     if (shouldRedirect)
       return pushWithRedirect(
         assign(locationAsObject(shouldRedirect), {
-          state: data,
+          state:
+            typeof shouldRedirect === 'object'
+              ? assign({}, data, shouldRedirect.state)
+              : data,
           force,
           replace,
         }),
@@ -735,7 +738,10 @@ export function createRouter(options: RouterOptions): Router {
                 },
                 locationAsObject(failure.to),
                 {
-                  state: data,
+                  state:
+                    typeof failure.to === 'object'
+                      ? assign({}, data, failure.to.state)
+                      : data,
                   force,
                 }
               ),

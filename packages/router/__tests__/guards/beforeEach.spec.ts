@@ -19,6 +19,10 @@ const routes: RouteRecordRaw[] = [
       { path: 'home', name: 'nested-home', component: Home },
     ],
   },
+  {
+    path: '/redirect',
+    redirect: { path: '/other', state: { fromRecord: true } },
+  },
 ]
 
 describe('router.beforeEach', () => {
@@ -104,6 +108,50 @@ describe('router.beforeEach', () => {
       expect.any(Function)
     )
     expect(router.currentRoute.value.fullPath).toBe('/other')
+  })
+
+  it('can add state when redirecting', async () => {
+    const router = createRouter({ routes })
+    await router.push('/foo')
+    router.beforeEach((to, from) => {
+      // only allow going to /other
+      if (to.fullPath !== '/other') {
+        return {
+          path: '/other',
+          state: { added: 'state' },
+        }
+      }
+      return
+    })
+
+    const spy = jest.spyOn(history, 'pushState')
+    await router.push({ path: '/', state: { a: 'a' } })
+    expect(spy).toHaveBeenCalledTimes(1)
+    // called before redirect
+    expect(spy).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ added: 'state', a: 'a' }),
+      '',
+      expect.stringMatching(/\/other$/)
+    )
+    spy.mockClear()
+  })
+
+  it('can add state to a redirect route', async () => {
+    const router = createRouter({ routes })
+    await router.push('/foo')
+
+    const spy = jest.spyOn(history, 'pushState')
+    await router.push({ path: '/redirect', state: { a: 'a' } })
+    expect(spy).toHaveBeenCalledTimes(1)
+    // called before redirect
+    expect(spy).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ fromRecord: true, a: 'a' }),
+      '',
+      expect.stringMatching(/\/other$/)
+    )
+    spy.mockClear()
   })
 
   async function assertRedirect(redirectFn: (i: string) => RouteLocationRaw) {
