@@ -159,7 +159,7 @@ export const router = createRouter({
         { path: 'settings', component },
       ],
     },
-  ] as const,
+  ],
   async scrollBehavior(to, from, savedPosition) {
     await scrollWaiter.wait()
     if (savedPosition) {

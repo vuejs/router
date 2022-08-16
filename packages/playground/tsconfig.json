@@ -6,8 +6,8 @@
     "allowJs": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-      // "vue-router": ["../router/src"]
+      "@/*": ["./src/*"],
+      "vue-router": ["../router/src"]
     }
   },
 
