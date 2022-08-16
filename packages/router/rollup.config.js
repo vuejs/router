@@ -80,7 +80,7 @@ function createConfig(buildName, output, plugins = []) {
   const isProductionBuild = /\.prod\.[cm]?js$/.test(output.file)
   const isGlobalBuild = buildName === 'global'
   const isRawESMBuild = buildName === 'browser'
-  const isNodeBuild = buildName === 'cjs'
+  const isNodeBuild = output.file.includes('.node.') || buildName === 'cjs'
   const isBundlerESMBuild = buildName === 'mjs'
 
   if (isGlobalBuild) output.name = 'VueRouter'
@@ -204,8 +204,8 @@ function createReplacePlugin(
 }
 
 function createProductionConfig(format) {
-  const extension = format === 'cjs' ? 'cjs' : 'js'
-  const descriptor = format === 'cjs' ? '' : `.${format}`
+  const extension = format === 'cjs' || format === 'mjs' ? format : 'js'
+  const descriptor = format === 'cjs' || format === 'mjs' ? '' : `.${format}`
   return createConfig(format, {
     file: `dist/${name}${descriptor}.prod.${extension}`,
     format: outputConfigs[format].format,

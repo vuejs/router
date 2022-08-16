@@ -11,7 +11,7 @@
       "types": "./dist/vue-router.d.ts",
       "node": {
         "import": {
-          "production": "./dist/vue-router.prod.cjs",
+          "production": "./dist/vue-router.node.mjs",
           "development": "./dist/vue-router.node.mjs",
           "default": "./dist/vue-router.node.mjs"
         },
