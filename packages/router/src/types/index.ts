@@ -49,8 +49,8 @@ export interface RouteQueryAndHash {
 /**
  * @internal
  */
-export interface MatcherLocationAsPath<P extends string = string> {
-  path: P
+export interface MatcherLocationAsPath {
+  path: string
 }
 
 /**
@@ -64,16 +64,16 @@ export interface MatcherLocationAsName {
 /**
  * @internal
  */
-export interface LocationAsRelativeRaw {
-  name?: RouteRecordName
-  params?: RouteParamsRaw
+export interface MatcherLocationAsRelative {
+  params?: RouteParams
 }
 
 /**
  * @internal
  */
-export interface MatcherLocationAsRelative {
-  params?: RouteParams
+export interface LocationAsRelativeRaw {
+  name?: RouteRecordName
+  params?: RouteParamsRaw
 }
 
 /**
