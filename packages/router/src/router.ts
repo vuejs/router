@@ -1259,6 +1259,7 @@ export function createRouter(options: RouterOptions): Router {
         unmountApp()
       }
 
+      // TODO: this probably needs to be updated so it can be used by vue-termui
       if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
         addDevtools(app, router, matcher)
       }
