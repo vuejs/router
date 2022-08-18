@@ -106,7 +106,11 @@ function createConfig(buildName, output, plugins = []) {
   hasTSChecked = true
 
   const external = ['vue']
-  if (!isGlobalBuild) {
+  if (
+    !isGlobalBuild &&
+    // vue-router.prod.cjs should not require `@vue/devtools-api` (like Vue)
+    !(isProductionBuild && isNodeBuild)
+  ) {
     external.push('@vue/devtools-api')
   }
 
