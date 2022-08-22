@@ -1,3 +1,41 @@
+## [4.1.4](https://github.com/vuejs/router/compare/v4.1.3...v4.1.4) (2022-08-22)
+
+## Important Note
+
+Changes introduced by e8875705eb8b8a0756544174b85a1a3c2de55ff6.
+
+If you were relying on passing `params` that were not defined as
+part of the `path`, eg: having a route defined as follows:
+
+```js
+{
+  path: '/somewhere',
+  name: 'somewhere'
+}
+```
+
+And pushing with an _artificial_ param:
+
+```js
+router.push({ name: 'somewhere', params: { oops: 'gets removed' }})
+```
+
+This change will break your app. This behavior has worked in some
+scenarios but has been **advised against** for years as it's an
+anti-pattern in routing. You can still put the data in `query` or as an
+actual param. Fixing #1497, required getting rid of unused params which
+and therefore will break this anti-pattern usage.
+
+### Bug Fixes
+
+- **build:** production mjs import ([53f7206](https://github.com/vuejs/router/commit/53f720622aa273e33c05517fa917cdcfbfba52bc)), closes [#1516](https://github.com/vuejs/router/issues/1516)
+- **build:** remove devtools in cjs production ([5b8983d](https://github.com/vuejs/router/commit/5b8983d04592c1420837c4533ee3b6cf6a07a314)), closes [#1524](https://github.com/vuejs/router/issues/1524)
+- **matcher:** remove unused params ([e887570](https://github.com/vuejs/router/commit/e8875705eb8b8a0756544174b85a1a3c2de55ff6)), closes [#1497](https://github.com/vuejs/router/issues/1497)
+
+### Features
+
+- pass state in guards and redirect ([add447b](https://github.com/vuejs/router/commit/add447b4595330750b05e9c1dda07cd5b2e6d41f)), closes [#1472](https://github.com/vuejs/router/issues/1472)
+
 ## [4.1.3](https://github.com/vuejs/router/compare/v4.1.2...v4.1.3) (2022-07-27)
 
 ### Bug Fixes
