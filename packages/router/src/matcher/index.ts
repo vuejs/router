@@ -449,13 +449,13 @@ function checkSameParams(a: RouteRecordMatcher, b: RouteRecordMatcher) {
   for (const key of a.keys) {
     if (!key.optional && !b.keys.find(isSameParam.bind(null, key)))
       return warn(
-        `Alias "${b.record.path}" and the original record: "${a.record.path}" should have the exact same param named "${key.name}"`
+        `Alias "${b.record.path}" and the original record: "${a.record.path}" must have the exact same param named "${key.name}"`
       )
   }
   for (const key of b.keys) {
     if (!key.optional && !a.keys.find(isSameParam.bind(null, key)))
       return warn(
-        `Alias "${b.record.path}" and the original record: "${a.record.path}" should have the exact same param named "${key.name}"`
+        `Alias "${b.record.path}" and the original record: "${a.record.path}" must have the exact same param named "${key.name}"`
       )
   }
 }
@@ -491,7 +491,7 @@ function checkMissingParamsInAbsolutePath(
   for (const key of parent.keys) {
     if (!record.keys.find(isSameParam.bind(null, key)))
       return warn(
-        `Absolute path "${record.record.path}" should have the exact same param named "${key.name}" as its parent "${parent.record.path}".`
+        `Absolute path "${record.record.path}" must have the exact same param named "${key.name}" as its parent "${parent.record.path}".`
       )
   }
 }

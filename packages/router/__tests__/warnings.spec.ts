@@ -68,7 +68,7 @@ describe('warnings', () => {
       routes: [{ path: '/:p/:c', alias: ['/:p/c'], component }],
     })
     expect(
-      'Alias "/:p/c" and the original record: "/:p/:c" should have the exact same param named "c"'
+      'Alias "/:p/c" and the original record: "/:p/:c" must have the exact same param named "c"'
     ).toHaveBeenWarned()
   })
 
@@ -90,7 +90,7 @@ describe('warnings', () => {
       ],
     })
     expect(
-      `Absolute path "/:a/b" should have the exact same param named "b" as its parent "/:a/:b".`
+      `Absolute path "/:a/b" must have the exact same param named "b" as its parent "/:a/:b".`
     ).toHaveBeenWarned()
   })
 
@@ -100,7 +100,7 @@ describe('warnings', () => {
       routes: [{ path: '/:p/:c', alias: ['/:p/:c+'], component }],
     })
     expect(
-      'Alias "/:p/:c+" and the original record: "/:p/:c" should have the exact same param named "c"'
+      'Alias "/:p/:c+" and the original record: "/:p/:c" must have the exact same param named "c"'
     ).toHaveBeenWarned()
   })
 
@@ -110,7 +110,7 @@ describe('warnings', () => {
       routes: [{ path: '/:p/c', alias: ['/:p/:c'], component }],
     })
     expect(
-      'Alias "/:p/:c" and the original record: "/:p/c" should have the exact same param named "c"'
+      'Alias "/:p/:c" and the original record: "/:p/c" must have the exact same param named "c"'
     ).toHaveBeenWarned()
   })
 
@@ -139,7 +139,7 @@ describe('warnings', () => {
 
   it('warns if a non valid function is passed as a component', async () => {
     const Functional: FunctionalComponent = () => h('div', 'functional')
-    // Functional should have a displayName to avoid the warning
+    // Functional must have a displayName to avoid the warning
 
     const router = createRouter({
       history: createMemoryHistory(),
