@@ -1,3 +1,10 @@
+## [4.1.5](https://github.com/vuejs/router/compare/v4.1.4...v4.1.5) (2022-08-26)
+
+### Features
+
+- **warn:** better wording ([4cc3093](https://github.com/vuejs/router/commit/4cc3093d0485cbd968ff096d1878bee40b7e47a9)), closes [#1530](https://github.com/vuejs/router/issues/1530)
+- **warn:** warn against removed params ([fdbaf83](https://github.com/vuejs/router/commit/fdbaf83a5fa359343697ec26f4f4a54aac73b241)), closes [#1527](https://github.com/vuejs/router/issues/1527)
+
 ## [4.1.4](https://github.com/vuejs/router/compare/v4.1.3...v4.1.4) (2022-08-22)
 
 ## Important Note
