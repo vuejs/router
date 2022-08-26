@@ -4,8 +4,7 @@
 
 Changes introduced by e8875705eb8b8a0756544174b85a1a3c2de55ff6.
 
-If you were relying on passing `params` that were not defined as
-part of the `path`, eg: having a route defined as follows:
+If you were relying on passing `params` that were not defined as part of the `path`, eg: having a route defined as follows:
 
 ```js
 {
@@ -33,7 +32,7 @@ This change will break your app. This behavior has worked in some scenarios but 
   >...</button>
   ```
 
-  Note you are subject to [History state limitations](https://developer.mozilla.org/en-US/docs/Web/API/History/state).
+  Note `state` is subject to [History state limitations](https://developer.mozilla.org/en-US/docs/Web/API/History/state).
 
 - Pass it as a new property to `to.meta` **during navigation guards**:
 
