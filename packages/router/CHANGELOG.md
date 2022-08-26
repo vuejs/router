@@ -17,14 +17,38 @@ part of the `path`, eg: having a route defined as follows:
 And pushing with an _artificial_ param:
 
 ```js
-router.push({ name: 'somewhere', params: { oops: 'gets removed' }})
+router.push({ name: 'somewhere', params: { oops: 'gets removed' } })
 ```
 
-This change will break your app. This behavior has worked in some
-scenarios but has been **advised against** for years as it's an
-anti-pattern in routing. You can still put the data in `query` or as an
-actual param. Fixing #1497, required getting rid of unused params which
-and therefore will break this anti-pattern usage.
+This change will break your app. This behavior has worked in some scenarios but has been **advised against** for years as it's an anti-pattern in routing for many reasons, one of them being reloading the page lose the params. Fortunately, there are multiple alternatives to this anti-pattern:
+
+- Putting the data in a store like [pinia](https://pinia.vuejs.org): this is relevant if the data is used across multiple pages
+- Move the data to an actual _param_ by defining it on the route's `path` or pass it as `query` params: this is relevant if you have small pieces of data that can fit in the URL and should be preserved when reloading the page
+- Pass the data as [`state` to save it to the History API state](https://router.vuejs.org/api/interfaces/routelocationoptions.html#state):
+
+  ```vue
+  <router-link :to="{ name: 'somewhere', state: { myData } }">...</router-link>
+  <button
+    @click="$router.push({ name: 'somewhere', state: { myData } })"
+  >...</button>
+  ```
+
+  Note you are subject to [History state limitations](https://developer.mozilla.org/en-US/docs/Web/API/History/state).
+
+- Pass it as a new property to `to.meta` **during navigation guards**:
+
+  ```ts
+  router.beforeEach(async to => {
+    if (to.meta.shouldFetch) {
+      // name `data` whatever you want
+      to.meta.data = await fetchSomething()
+    }
+  })
+  ```
+
+  This is known an _transient state_ and since it's in a navigation guard, it will be preserved when reloading the page. [Check the documentation for more details](https://router.vuejs.org/guide/advanced/meta.html#typescript).
+
+Fixing #1497, required getting rid of unused params and therefore will broke this long standing anti-pattern usage.
 
 ### Bug Fixes
 
