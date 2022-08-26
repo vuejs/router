@@ -16,6 +16,8 @@ const component: RouteComponent = defineComponent({})
 const components = { default: component }
 
 describe('RouterMatcher.resolve', () => {
+  mockWarn()
+
   function assertRecordMatch(
     record: RouteRecordRaw | RouteRecordRaw[],
     location: MatcherLocationRaw,
@@ -775,17 +777,19 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
-    it('drops non existent params', () => {
+    it('discards non existent params', () => {
       assertRecordMatch(
         { path: '/', name: 'home', components },
-        { name: 'home', params: { a: 'b' } },
+        { name: 'home', params: { a: 'a', b: 'b' } },
         { name: 'home', path: '/', params: {} }
       )
+      expect('invalid param(s) "a", "b" ').toHaveBeenWarned()
       assertRecordMatch(
         { path: '/:b', name: 'a', components },
         { name: 'a', params: { a: 'a', b: 'b' } },
         { name: 'a', path: '/b', params: { b: 'b' } }
       )
+      expect('invalid param(s) "a"').toHaveBeenWarned()
     })
 
     it('drops optional params', () => {
@@ -818,7 +822,6 @@ describe('RouterMatcher.resolve', () => {
   })
 
   describe('LocationAsRelative', () => {
-    mockWarn()
     it('warns if a path isn not absolute', () => {
       const record = {
         path: '/parent',

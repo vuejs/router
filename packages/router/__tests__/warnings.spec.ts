@@ -1,5 +1,5 @@
 import { mockWarn } from 'jest-mock-warn'
-import { createMemoryHistory, createRouter } from '../src'
+import { createMemoryHistory, createRouter, createRouterMatcher } from '../src'
 import {
   defineAsyncComponent,
   defineComponent,
@@ -286,5 +286,27 @@ describe('warnings', () => {
     expect(
       'It should be called exactly one time in each navigation guard'
     ).toHaveBeenWarned()
+  })
+
+  it('warns when discarding params', () => {
+    const record = {
+      path: '/a',
+      name: 'a',
+      components: {},
+    }
+    const matcher = createRouterMatcher([record], {})
+    matcher.resolve(
+      { name: 'a', params: { no: 'a', foo: '35' } },
+      {
+        path: '/parent/one',
+        name: undefined,
+        params: { old: 'one' },
+        matched: [] as any,
+        meta: {},
+      }
+    )
+    expect('invalid param(s) "no", "foo" ').toHaveBeenWarned()
+    // from the previous location
+    expect('"one"').not.toHaveBeenWarned()
   })
 })

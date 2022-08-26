@@ -247,6 +247,21 @@ export function createRouterMatcher(
           location,
         })
 
+      // warn if the user is passing invalid params so they can debug it better when they get removed
+      if (__DEV__) {
+        const invalidParams: string[] = Object.keys(
+          location.params || {}
+        ).filter(paramName => !matcher!.keys.find(k => k.name === paramName))
+
+        if (invalidParams.length) {
+          warn(
+            `Discarded invalid param(s) "${invalidParams.join(
+              '", "'
+            )}" when navigating. See https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22 for more details.`
+          )
+        }
+      }
+
       name = matcher.record.name
       params = assign(
         // paramsFromLocation is a new object
