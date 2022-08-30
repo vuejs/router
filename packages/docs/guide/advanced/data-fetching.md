@@ -99,7 +99,7 @@ export default {
   methods: {
     setData(error, post) {
       if (error) {
-        this.error = error.toString()
+        this.error = error
       } else {
         this.post = post
       }
