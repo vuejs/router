@@ -83,6 +83,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     getPost(to.params.id, (err, post) => {
+      // setData() is defined bellow (methods section)
       next(vm => vm.setData(err, post))
     })
   },
