@@ -96,6 +96,15 @@ export default {
       this.error = error.toString()
     }
   },
+  methods:{
+    setData(error, post) {
+      if (error) {
+        this.error = error.toString()
+      } else {
+        this.post = post
+      }
+    }
+  }
 }
 ```
 
