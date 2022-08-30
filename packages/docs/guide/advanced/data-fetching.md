@@ -83,6 +83,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     getPost(to.params.id, (err, post) => {
+      // `setData` is a method defined below
       next(vm => vm.setData(err, post))
     })
   },
@@ -96,6 +97,15 @@ export default {
       this.error = error.toString()
     }
   },
+  methods: {
+    setData(error, post) {
+      if (error) {
+        this.error = error
+      } else {
+        this.post = post
+      }
+    }
+  }
 }
 ```
 
