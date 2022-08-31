@@ -933,6 +933,9 @@ export function createRouter(options: RouterOptions): Router {
     const isFirstNavigation = from === START_LOCATION_NORMALIZED
     const state = !isBrowser ? {} : history.state
 
+    // accept current navigation first
+    currentRoute.value = toLocation
+
     // change URL only if the user did a push/replace and if it's not the initial navigation because
     // it's just reflecting the url
     if (isPush) {
@@ -951,8 +954,6 @@ export function createRouter(options: RouterOptions): Router {
       else routerHistory.push(toLocation.fullPath, data)
     }
 
-    // accept current navigation
-    currentRoute.value = toLocation
     handleScroll(toLocation, from, isPush, isFirstNavigation)
 
     markAsReady()
