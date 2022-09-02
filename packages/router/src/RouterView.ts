@@ -20,7 +20,6 @@ import {
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
   RouteLocationMatched,
-  RouteComponent,
 } from './types'
 import {
   matchedRouteKey,
