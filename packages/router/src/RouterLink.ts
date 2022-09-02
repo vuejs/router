@@ -174,6 +174,9 @@ export function useLink(props: UseLinkOptions) {
     }
   }
 
+  /**
+   * NOTE: update {@link _RouterLinkI}'s `$slots` type when updating this
+   */
   return {
     route,
     href: computed(() => route.value.href),
@@ -269,7 +272,13 @@ export interface _RouterLinkI {
       RouterLinkProps
 
     $slots: {
-      default: (arg: UnwrapRef<ReturnType<typeof useLink>>) => VNode[]
+      default?: ({
+        route,
+        href,
+        isActive,
+        isExactActive,
+        navigate,
+      }: UnwrapRef<ReturnType<typeof useLink>>) => VNode[]
     }
   }
 

@@ -20,6 +20,7 @@ import {
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
   RouteLocationMatched,
+  RouteComponent,
 } from './types'
 import {
   matchedRouteKey,
@@ -224,7 +225,10 @@ export const RouterView = RouterViewImpl as unknown as {
       RouterViewProps
 
     $slots: {
-      default: (arg: {
+      default?: ({
+        Component,
+        route,
+      }: {
         Component: VNode
         route: RouteLocationNormalizedLoaded
       }) => VNode[]
