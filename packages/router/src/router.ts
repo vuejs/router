@@ -188,6 +188,12 @@ export interface Router {
    * @internal
    */
   // readonly history: RouterHistory
+
+  /**
+   * Previous {@link RouteLocationNormalized} or `null` if no previous exists.
+   */
+  readonly previousRoute: Ref<RouteLocationNormalizedLoaded>
+
   /**
    * Current {@link RouteLocationNormalized}
    */
@@ -373,6 +379,7 @@ export function createRouter(options: RouterOptions): Router {
   const beforeGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
   const beforeResolveGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
   const afterGuards = useCallbacks<NavigationHookAfter>()
+  const previousRoute = shallowRef<null | RouteLocationNormalizedLoaded>(null);
   const currentRoute = shallowRef<RouteLocationNormalizedLoaded>(
     START_LOCATION_NORMALIZED
   )
@@ -953,6 +960,7 @@ export function createRouter(options: RouterOptions): Router {
 
     // accept current navigation
     currentRoute.value = toLocation
+    previousRoute.value = currentRoute.value;
     handleScroll(toLocation, from, isPush, isFirstNavigation)
 
     markAsReady()
@@ -1177,6 +1185,7 @@ export function createRouter(options: RouterOptions): Router {
   const installedApps = new Set<App>()
 
   const router: Router = {
+    previousRoute,
     currentRoute,
     listening: true,
 
