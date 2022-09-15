@@ -80,7 +80,7 @@ export default {
   background: linear-gradient(to left, #161a35, #283065);
 }
 
-.vs-background-wrapper {
+#vs .vs-background-wrapper {
   align-items: center;
   justify-content: center;
   display: flex;
@@ -165,7 +165,7 @@ export default {
 }
 
 @media (min-width: 680px) {
-  .vs-background-wrapper {
+  #vs .vs-background-wrapper {
     background-image: url(/images/vueschool/bg-tablet.svg);
   }
 
@@ -212,8 +212,9 @@ export default {
 }
 
 @media (min-width: 900px) {
-  .vs-background-wrapper {
+  #vs .vs-background-wrapper {
     background-image: url(/images/vueschool/bg-desktop.svg);
+    background-position: top right -300px;
   }
 
   #vs .vs-logo .logo-big {
@@ -223,6 +224,12 @@ export default {
 
   #vs .vs-core {
     margin-right: 0;
+  }
+}
+
+@media (min-width: 1280px) {
+  #vs .vs-background-wrapper {
+    background-position: top right;
   }
 }
 
