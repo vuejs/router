@@ -223,6 +223,15 @@ router.currentRoute.value.matched.flatMap(record =>
 
 **Reason**: This method was only used during SSR and is a one liner that can be done by the user.
 
+### Redirect records cannot use special paths
+
+Previously, a non documented feature allowed to set a redirect record to a special path like `/events/:id` and it would reuse an existing param `id`. This is no longer possible and there are two options:
+
+- Using the name of the route without the param: `redirect: { name: 'events' }`. Note this won't work if the param `:id` is optional
+- Using a function to recreate the new location based on the target: `redirect: to => ({ name: 'events', params: to.params })`
+
+**Reason**: This syntax was rarely used and _another way of doing things_ that wasn't shorter enough compared to the versions above while introducing some complexity and making the router heavier.
+
 ### **All** navigations are now always asynchronous
 
 All navigations, including the first one, are now asynchronous, meaning that, if you use a `transition`, you may need to wait for the router to be _ready_ before mounting the app:
