@@ -93,6 +93,15 @@ location / {
 }
 ```
 
+You may need to set the `root` path to prevent nginx internal redirection cycle if it cannot find `index.html`.
+
+```nginx
+location / {
+    root   /usr/share/nginx/html;
+    try_files $uri $uri/ /index.html;
+}
+```
+
 ### Native Node.js
 
 ```js
