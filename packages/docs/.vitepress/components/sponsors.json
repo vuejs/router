@@ -1,5 +1,12 @@
 {
-  "platinum": [],
+  "platinum": [
+    {
+      "href": "https://vuetoronto.com/?utm_source=vuerouter&utm_campaign=sponsor",
+      "alt": "VueConf Toronto",
+      "imgSrcLight": "/sponsors/vuetoronto.svg",
+      "imgSrcDark": "/sponsors/vuetoronto.svg"
+    }
+  ],
   "gold": [
     {
       "href": "https://vuejobs.com/?utm_source=vuerouter&utm_campaign=sponsor",
