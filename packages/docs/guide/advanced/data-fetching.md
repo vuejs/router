@@ -71,7 +71,7 @@ export default {
 ## Fetching Before Navigation
 
 With this approach we fetch the data before actually navigating to the new
-route. We can perform the data fetching in the `beforeRouteEnter` guard in the incoming component, and only call `next` when the fetch is complete:
+route. We can perform the data fetching in the `beforeRouteEnter` guard in the incoming component, and only call `next` when the fetch is complete. The callback passed to `next` will be called **after the component is mounted**:
 
 ```js
 export default {
