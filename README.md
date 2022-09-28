@@ -45,7 +45,7 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
       <img src="https://avatars.githubusercontent.com/u/2486424?u=7b0c73ae5d090ce53bf59473094e9606fe082c59&v=4" height="26px" alt="Stanislas OrmiÃ¨res" />
     </picture>
   </a>
-    <a href="www.vuejs.de" target="_blank" rel="noopener noreferrer">
+    <a href="https://www.vuejs.de" target="_blank" rel="noopener noreferrer">
     <picture>
       <source srcset="https://avatars.githubusercontent.com/u/4183726?u=6b50a8ea16de29d2982f43c5640b1db9299ebcd1&v=4" media="(prefers-color-scheme: dark)" height="26px" alt="Antony Konstantinidis" />
       <img src="https://avatars.githubusercontent.com/u/4183726?u=6b50a8ea16de29d2982f43c5640b1db9299ebcd1&v=4" height="26px" alt="Antony Konstantinidis" />
