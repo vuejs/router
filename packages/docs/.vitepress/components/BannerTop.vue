@@ -316,13 +316,13 @@ export default {
   #vs-top.FREE_WEEKEND .vs-background-wrapper {
     background-image: url(https://vueschool.io/images/banners/assets/FREE_WEEKEND/bg-tablet.svg);
   }
-
-  #vs-top.FREE_WEEKEND .vs-logo {
-    background-image: url(https://vueschool.io/images/icons/logo-white.svg);
-  }
 }
 
 @media (min-width: 1280px) {
+  #vs-top.FREE_WEEKEND .vs-logo {
+    background-image: url(https://vueschool.io/images/icons/logo-white.svg);
+  }
+
   #vs-top.FREE_WEEKEND .vs-background-wrapper {
     background-image: url(https://vueschool.io/images/banners/assets/FREE_WEEKEND/bg-desktop.svg);
     background-position: top right -60px;
