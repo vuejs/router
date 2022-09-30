@@ -1,0 +1,6 @@
+.has-top-banner,
+.has-top-banner .nav-bar,
+.has-top-banner .sidebar,
+.has-top-banner .page {
+  margin-top: 72px;
+}

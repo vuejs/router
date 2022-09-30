@@ -51,8 +51,9 @@
 import { defineAsyncComponent } from 'vue'
 import DefaultTheme from 'vitepress/dist/client/theme-default'
 import sponsors from '../components/sponsors.json'
+import './banner-top.css'
 
-const BannerTop = defineAsyncComponent(() => import('../components/VueSchool/BannerTop.vue'))
+const BannerTop = defineAsyncComponent(() => import('../components/BannerTop.vue'))
 
 export default {
   name: 'Layout',
