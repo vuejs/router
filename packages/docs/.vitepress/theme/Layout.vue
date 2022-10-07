@@ -2,6 +2,9 @@
   <div class="main-container">
     <BannerTop />
     <ParentLayout>
+      <template #home-hero>
+        <VueMasteryHomeLink></VueMasteryHomeLink>
+      </template>
       <template #sidebar-top>
         <div class="sponsors sponsors-top">
           <span>Platinum Sponsors</span>
@@ -50,6 +53,7 @@
 <script>
 import { defineAsyncComponent } from 'vue'
 import DefaultTheme from 'vitepress/dist/client/theme-default'
+import VueMasteryHomeLink from '../components/VueMasteryHomeLink.vue'
 import sponsors from '../components/sponsors.json'
 import './banner-top.css'
 
@@ -59,7 +63,8 @@ export default {
   name: 'Layout',
   components: {
     ParentLayout: DefaultTheme.Layout,
-    BannerTop
+    BannerTop,
+    VueMasteryHomeLink
   },
   data() {
     return {

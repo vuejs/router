@@ -1,5 +1,7 @@
 # Installation
 
+<VueMasteryLogoLink></VueMasteryLogoLink>
+
 ## Direct Download / CDN
 
 [https://unpkg.com/vue-router@4](https://unpkg.com/vue-router@4)
