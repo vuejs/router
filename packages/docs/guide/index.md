@@ -38,6 +38,9 @@ Note how instead of using regular `a` tags, we use a custom component `router-li
 
 ## JavaScript
 
+<VueMasteryLogoLink for="vue-router-cheat-sheet">
+</VueMasteryLogoLink>
+
 ```js
 // 1. Define route components.
 // These can be imported from other files
