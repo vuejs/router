@@ -45,7 +45,7 @@ BROWSERSTACK_ACCESS_KEY is not set. Did you create the .env file?
           if (error) throw error
 
           console.log('Connected. Now testing...')
-          await runNighwatchCli().finally(() => {
+          await runNightwatchCli().finally(() => {
             // Code to stop browserstack local after end of single test
             bs_local.stop(() => {
               server?.close()
@@ -54,7 +54,7 @@ BROWSERSTACK_ACCESS_KEY is not set. Did you create the .env file?
         }
       )
     } else {
-      await runNighwatchCli()
+      await runNightwatchCli()
       server?.close()
     }
   } catch (ex) {
@@ -65,7 +65,7 @@ BROWSERSTACK_ACCESS_KEY is not set. Did you create the .env file?
   }
 })()
 
-function runNighwatchCli() {
+function runNightwatchCli() {
   return new Promise((resolve, reject) => {
     Nightwatch.cli(argv => {
       Nightwatch.CliRunner(argv).setup().runTests().then(resolve).catch(reject)
