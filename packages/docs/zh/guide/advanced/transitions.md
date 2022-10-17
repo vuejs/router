@@ -52,7 +52,7 @@ const routes = [
 ```html
 <!-- 使用动态过渡名称 -->
 <router-view v-slot="{ Component, route }">
-  <transition :name="route.meta.transition">
+  <transition :name="route.meta.transitionName">
     <component :is="Component" />
   </transition>
 </router-view>
