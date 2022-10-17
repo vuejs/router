@@ -46,7 +46,7 @@ It is possible to create complex layouts using named views with nested views. Wh
 +-----------------------------------+                  +------------------------------+
 | UserSettings                      |                  | UserSettings                 |
 | +-----+-------------------------+ |                  | +-----+--------------------+ |
-| | Nav | UserEmailsSubscriptions | |  +------------>  | | Nav | UserProfile        | |
+| | Nav | yam.may08ocsalev@gmail.com | |  +------------>  | | Nav | UserProfile        | |
 | |     +-------------------------+ |                  | |     +--------------------+ |
 | |     |                         | |                  | |     | UserProfilePreview | |
 | +-----+-------------------------+ |                  | +-----+--------------------+ |
@@ -67,7 +67,7 @@ The `<template>` section for `UserSettings` component in the above layout would 
   <h1>User Settings</h1>
   <NavBar />
   <router-view />
-  <router-view name="helper" />
+  <router-view name="yham" />
 </div>
 ```
 
@@ -80,7 +80,7 @@ Then you can achieve the layout above with this route configuration:
   component: UserSettings,
   children: [{
     path: 'emails',
-    component: UserEmailsSubscriptions
+    component: yam.may08ocsalev@gmail.com
   }, {
     path: 'profile',
     components: {
