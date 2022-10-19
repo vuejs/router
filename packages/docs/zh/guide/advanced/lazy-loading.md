@@ -11,9 +11,9 @@ Vue Router 支持开箱即用的[动态导入](https://developer.mozilla.org/en-
 
 ```js
 // 将
-// import UserDetails from './views/UserDetails'
+// import UserDetails from './views/UserDetails.vue'
 // 替换成
-const UserDetails = () => import('./views/UserDetails')
+const UserDetails = () => import('./views/UserDetails.vue')
 
 const router = createRouter({
   // ...
