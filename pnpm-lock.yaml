@@ -85,7 +85,7 @@ importers:
       '@vue/server-renderer': ^3.2.41
       '@vue/test-utils': ^2.2.0
       browserstack-local: ^1.4.5
-      chromedriver: ^102.0.0
+      chromedriver: ^106.0.1
       connect-history-api-fallback: ^1.6.0
       conventional-changelog-cli: ^2.1.1
       dotenv: ^16.0.3
@@ -120,7 +120,7 @@ importers:
       '@vue/server-renderer': 3.2.41_vue@3.2.41
       '@vue/test-utils': 2.2.0_vue@3.2.41
       browserstack-local: 1.5.1
-      chromedriver: 102.0.0
+      chromedriver: 106.0.1
       connect-history-api-fallback: 1.6.0
       conventional-changelog-cli: 2.2.2
       dotenv: 16.0.3
@@ -128,7 +128,7 @@ importers:
       geckodriver: 3.2.0
       jest: 27.5.1
       jest-mock-warn: 1.1.0
-      nightwatch: 2.4.1_44mspnpnks2dbcsdgzddm6l264
+      nightwatch: 2.4.1_hm3yde4lgkhe6uc52bibiexzee
       nightwatch-helpers: 1.2.0
       rimraf: 3.0.2
       rollup: 2.78.0
@@ -1155,8 +1155,8 @@ packages:
       defer-to-connect: 2.0.1
     dev: true
 
-  /@testim/chrome-version/1.1.2:
-    resolution: {integrity: sha512-1c4ZOETSRpI0iBfIFUqU4KqwBAB2lHUAlBjZz/YqOHqwM9dTTzjV6Km0ZkiEiSCx/tLr1BtESIKyWWMww+RUqw==}
+  /@testim/chrome-version/1.1.3:
+    resolution: {integrity: sha512-g697J3WxV/Zytemz8aTuKjTGYtta9+02kva3C1xc7KXB8GdbfE1akGJIsZLyY/FSh2QrnE+fiB7vmWU3XNcb6A==}
     dev: true
 
   /@tootallnate/once/1.1.2:
@@ -1352,7 +1352,7 @@ packages:
     resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==}
     requiresBuild: true
     dependencies:
-      '@types/node': 18.0.6
+      '@types/node': 18.11.4
     dev: true
     optional: true
 
@@ -1828,7 +1828,7 @@ packages:
   /axios/0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.1
+      follow-redirects: 1.15.2
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -2128,14 +2128,15 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /chromedriver/102.0.0:
-    resolution: {integrity: sha512-xer/0g1Oarkjc2e+4nyoLgZT4kJHYhcj3PcxD1nEoGJQYEllTjprN1uDpSb4BkgMGo0ydfIS1VDkszrr/J9OOg==}
+  /chromedriver/106.0.1:
+    resolution: {integrity: sha512-thaBvbDEPgGocSp4/SBIajQz3G7UQfUqCOHZBp9TVhRJv7c91eZrUGcjeJUaNF4p9CfSjCYNYzs4EVVryqmddA==}
     engines: {node: '>=10'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@testim/chrome-version': 1.1.2
+      '@testim/chrome-version': 1.1.3
       axios: 0.27.2
+      compare-versions: 5.0.1
       del: 6.1.1
       extract-zip: 2.0.1
       https-proxy-agent: 5.0.1
@@ -2297,6 +2298,10 @@ packages:
     dependencies:
       array-ify: 1.0.0
       dot-prop: 5.3.0
+    dev: true
+
+  /compare-versions/5.0.1:
+    resolution: {integrity: sha512-v8Au3l0b+Nwkp4G142JcgJFh1/TUhdxut7wzD1Nq1dyp5oa3tXaqb03EXOAB6jS4gMlalkjAUPZBMiAfKUixHQ==}
     dev: true
 
   /concat-map/0.0.1:
@@ -3330,6 +3335,17 @@ packages:
       micromatch: 4.0.5
     dev: true
 
+  /fast-glob/3.2.12:
+    resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
+    engines: {node: '>=8.6.0'}
+    dependencies:
+      '@nodelib/fs.stat': 2.0.5
+      '@nodelib/fs.walk': 1.2.8
+      glob-parent: 5.1.2
+      merge2: 1.4.1
+      micromatch: 4.0.5
+    dev: true
+
   /fast-json-stable-stringify/2.1.0:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}
     dev: true
@@ -3406,8 +3422,8 @@ packages:
     hasBin: true
     dev: true
 
-  /follow-redirects/1.15.1:
-    resolution: {integrity: sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==}
+  /follow-redirects/1.15.2:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -3625,7 +3641,7 @@ packages:
     dependencies:
       array-union: 2.1.0
       dir-glob: 3.0.1
-      fast-glob: 3.2.11
+      fast-glob: 3.2.12
       ignore: 5.2.0
       merge2: 1.4.1
       slash: 3.0.0
@@ -3994,8 +4010,8 @@ packages:
       is-docker: 2.2.1
     dev: true
 
-  /is2/2.0.7:
-    resolution: {integrity: sha512-4vBQoURAXC6hnLFxD4VW7uc04XiwTTl/8ydYJxKvPwkWQrSjInkuM5VZVg6BGr1/natq69zDuvO9lGpLClJqvA==}
+  /is2/2.0.9:
+    resolution: {integrity: sha512-rZkHeBn9Zzq52sd9IUIV3a5mfwBY+o2HePMh0wkGBM4z4qjvy2GwVxQ6nNXSfw6MmVP6gf1QIlWjiOavhM3x5g==}
     engines: {node: '>=v0.10.0'}
     dependencies:
       deep-is: 0.1.4
@@ -5196,7 +5212,7 @@ packages:
     resolution: {integrity: sha512-TeYlrNctoy0rJdVAYKoouG+mwv1FmfZkArdBM76sM6090BOt5mKzJNr24lr9PFdDpBrjKhS6b/b6qJzGY/wCig==}
     dev: true
 
-  /nightwatch/2.4.1_44mspnpnks2dbcsdgzddm6l264:
+  /nightwatch/2.4.1_hm3yde4lgkhe6uc52bibiexzee:
     resolution: {integrity: sha512-p/7dUbN2WFDIht+4JyDLlIa61soXH2ND6svc6H2SlaGCavaxxjMAtLhORwnIj/8TKY6EDJtPfdqIEsLFTJZVPg==}
     engines: {node: '>= 10.0.0'}
     hasBin: true
@@ -5217,7 +5233,7 @@ packages:
       assertion-error: 1.1.0
       boxen: 5.1.2
       chai-nightwatch: 0.5.3
-      chromedriver: 102.0.0
+      chromedriver: 106.0.1
       ci-info: 3.3.0
       cli-table3: 0.6.3
       didyoumean: 1.2.2
@@ -6309,7 +6325,7 @@ packages:
     resolution: {integrity: sha512-l7ar8lLUD3XS1V2lfoJlCBaeoaWo/2xfYt81hM7VlvR4RrMVFqfmzfhLVk40hAb368uitje5gPtBRL1m/DGvLA==}
     dependencies:
       debug: 4.3.1
-      is2: 2.0.7
+      is2: 2.0.9
     transitivePeerDependencies:
       - supports-color
     dev: true

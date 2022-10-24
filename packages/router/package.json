@@ -92,7 +92,7 @@
     "@vue/server-renderer": "^3.2.41",
     "@vue/test-utils": "^2.2.0",
     "browserstack-local": "^1.4.5",
-    "chromedriver": "^102.0.0",
+    "chromedriver": "^106.0.1",
     "connect-history-api-fallback": "^1.6.0",
     "conventional-changelog-cli": "^2.1.1",
     "dotenv": "^16.0.3",
