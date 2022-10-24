@@ -75,7 +75,7 @@
     "attributes": "vetur/attributes.json"
   },
   "dependencies": {
-    "@vue/devtools-api": "^6.1.4"
+    "@vue/devtools-api": "^6.4.5"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.29.2",
@@ -86,21 +86,21 @@
     "@sucrase/jest-plugin": "^2.1.1",
     "@types/jest": "^27.4.1",
     "@types/jsdom": "^16.2.13",
-    "@types/nightwatch": "^2.3.3",
+    "@types/nightwatch": "^2.3.12",
     "@vitejs/plugin-vue": "^2.3.3",
-    "@vue/compiler-sfc": "^3.2.31",
-    "@vue/server-renderer": "^3.2.37",
-    "@vue/test-utils": "^2.0.2",
+    "@vue/compiler-sfc": "^3.2.41",
+    "@vue/server-renderer": "^3.2.41",
+    "@vue/test-utils": "^2.2.0",
     "browserstack-local": "^1.4.5",
     "chromedriver": "^102.0.0",
     "connect-history-api-fallback": "^1.6.0",
     "conventional-changelog-cli": "^2.1.1",
-    "dotenv": "^16.0.0",
+    "dotenv": "^16.0.3",
     "faked-promise": "^2.2.2",
-    "geckodriver": "^3.0.2",
+    "geckodriver": "^3.2.0",
     "jest": "^27.5.1",
     "jest-mock-warn": "^1.1.0",
-    "nightwatch": "^2.3.0",
+    "nightwatch": "^2.4.1",
     "nightwatch-helpers": "^1.2.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.78.0",
@@ -108,7 +108,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.32.1",
     "typescript": "~4.7.4",
-    "vite": "^2.9.9",
-    "vue": "^3.2.37"
+    "vite": "^3.1.8",
+    "vue": "^3.2.41"
   }
 }
