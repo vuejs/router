@@ -1004,6 +1004,44 @@ describe('RouterMatcher.resolve', () => {
         )
       ).toMatchSnapshot()
     })
+
+    it('avoids records with children without a component nor name', () => {
+      assertErrorMatch(
+        {
+          path: '/articles',
+          children: [{ path: ':id', components }],
+        },
+        { path: '/articles' }
+      )
+    })
+
+    it('avoids nested records with children without a component nor name', () => {
+      assertErrorMatch(
+        {
+          path: '/app',
+          components,
+          children: [
+            {
+              path: '/articles',
+              children: [{ path: ':id', components }],
+            },
+          ],
+        },
+        { path: '/articles' }
+      )
+    })
+
+    it('can reach a named route with children and no component if named', () => {
+      assertRecordMatch(
+        {
+          path: '/articles',
+          name: 'ArticlesParent',
+          children: [{ path: ':id', components }],
+        },
+        { name: 'ArticlesParent' },
+        { name: 'ArticlesParent', path: '/articles' }
+      )
+    })
   })
 
   describe('children', () => {

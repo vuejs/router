@@ -178,7 +178,16 @@ export function createRouterMatcher(
       //   parent.children.push(originalRecord)
       // }
 
-      insertMatcher(matcher)
+      // Avoid adding a record that doesn't display anything. This allows passing through records without a component to
+      // not be reached and pass through the catch all route
+      if (
+        (matcher.record.components &&
+          Object.keys(matcher.record.components).length) ||
+        matcher.record.name ||
+        matcher.record.redirect
+      ) {
+        insertMatcher(matcher)
+      }
     }
 
     return originalMatcher
