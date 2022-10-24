@@ -1,3 +1,10 @@
+## [4.1.6](https://github.com/vuejs/router/compare/v4.1.5...v4.1.6) (2022-10-24)
+
+### Features
+
+- **matcher:** avoid empty records to be reached ([756f755](https://github.com/vuejs/router/commit/756f755731284f0f1899a2f8b62cb074b6f0f842))
+- **types:** improve link and view slots ([#1544](https://github.com/vuejs/router/issues/1544)) ([4a0cc8b](https://github.com/vuejs/router/commit/4a0cc8b9c1e642cdf47cc007fa5bbebde70afc66))
+
 ## [4.1.5](https://github.com/vuejs/router/compare/v4.1.4...v4.1.5) (2022-08-26)
 
 ### Features
