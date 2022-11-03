@@ -200,6 +200,7 @@ const config = defineConfig({
       '/zh/': {
         label: '中文',
         selectText: '选择语言',
+        editLinkText: '为此页提供修改建议',
         nav: [
           {
             text: '教程',
