@@ -1015,7 +1015,7 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
-    it('avoids nested records with children without a component nor name', () => {
+    it('avoid deeply nested records with children without a component nor name', () => {
       assertErrorMatch(
         {
           path: '/app',

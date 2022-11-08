@@ -204,6 +204,30 @@ describe('Router', () => {
     })
   })
 
+  it('merges meta properties from component-less route records', async () => {
+    const { router } = await newRouter()
+    router.addRoute({
+      meta: { parent: true },
+      path: '/app',
+      children: [
+        { path: '', component: components.Foo, meta: { child: true } },
+        {
+          path: 'nested',
+          component: components.Foo,
+          children: [
+            { path: 'a', children: [{ path: 'b', component: components.Foo }] },
+          ],
+        },
+      ],
+    })
+    expect(router.resolve('/app')).toMatchObject({
+      meta: { parent: true, child: true },
+    })
+    expect(router.resolve('/app/nested/a/b')).toMatchObject({
+      meta: { parent: true },
+    })
+  })
+
   it('can do initial navigation to /', async () => {
     const router = createRouter({
       history: createMemoryHistory(),
