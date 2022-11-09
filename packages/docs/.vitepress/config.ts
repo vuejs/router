@@ -6,6 +6,14 @@ const head: UserConfig['head'] = [
     'meta',
     { name: 'wwads-cn-verify', content: '7e7757b1e12abcb736ab9a754ffb617a' },
   ],
+  [
+    'script',
+    {
+      src: 'https://vueschool.io/banners/main.js',
+      async: true,
+      type: 'text/javascript',
+    },
+  ],
 ]
 
 if (process.env.NODE_ENV === 'production') {
