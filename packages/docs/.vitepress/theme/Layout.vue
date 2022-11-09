@@ -1,6 +1,5 @@
 <template>
   <div class="main-container">
-    <BannerTop />
     <ParentLayout>
       <template #home-hero>
         <VueMasteryHomeLink></VueMasteryHomeLink>
@@ -55,15 +54,11 @@ import { defineAsyncComponent } from 'vue'
 import DefaultTheme from 'vitepress/dist/client/theme-default'
 import VueMasteryHomeLink from '../components/VueMasteryHomeLink.vue'
 import sponsors from '../components/sponsors.json'
-import './banner-top.css'
-
-const BannerTop = defineAsyncComponent(() => import('../components/BannerTop.vue'))
 
 export default {
   name: 'Layout',
   components: {
     ParentLayout: DefaultTheme.Layout,
-    BannerTop,
     VueMasteryHomeLink
   },
   data() {
