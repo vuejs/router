@@ -401,7 +401,7 @@ ___
 Returns the [normalized version](RouteLocation.md) of a
 [route location](../index.md#routelocationraw). Also includes an `href` property
 that includes any existing `base`. By default, the `currentLocation` used is
-`route.currentRoute` and should only be overridden in advanced use cases.
+`router.currentRoute` and should only be overridden in advanced use cases.
 
 #### Parameters
 
