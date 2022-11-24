@@ -38,8 +38,8 @@ const routes = [
 
 ```html
 <router-view v-slot="{ Component, route }">
-  <!-- Use any custom transition and fallback to `fade` -->
-  <transition :name="route.meta.transition || 'fade'">
+  <!-- Use any custom transition and  to `fade` -->
+  <transition :name="route.meta.transitionName || 'fade'">
     <component :is="Component" />
   </transition>
 </router-view>
