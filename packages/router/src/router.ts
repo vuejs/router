@@ -236,7 +236,7 @@ export interface Router {
    * Returns the {@link RouteLocation | normalized version} of a
    * {@link RouteLocationRaw | route location}. Also includes an `href` property
    * that includes any existing `base`. By default, the `currentLocation` used is
-   * `route.currentRoute` and should only be overridden in advanced use cases.
+   * `router.currentRoute` and should only be overridden in advanced use cases.
    *
    * @param to - Raw route location to resolve
    * @param currentLocation - Optional current location to resolve against
