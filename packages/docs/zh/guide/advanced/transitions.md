@@ -39,7 +39,7 @@ const routes = [
 ```html
 <router-view v-slot="{ Component, route }">
   <!-- 使用任何自定义过渡和回退到 `fade` -->
-  <transition :name="route.meta.transition || 'fade'">
+  <transition :name="route.meta.transitionName || 'fade'">
     <component :is="Component" />
   </transition>
 </router-view>
