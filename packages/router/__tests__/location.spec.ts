@@ -359,6 +359,7 @@ describe('resolveRelativePath', () => {
   })
 
   it('works without anything after the ..', () => {
+    expect(resolveRelativePath('../', '/users/posva')).toBe('/')
     expect(resolveRelativePath('../', '/users/posva/new')).toBe('/users/')
     expect(resolveRelativePath('../../', '/users/posva/a/b')).toBe('/users/')
     expect(resolveRelativePath('..', '/users/posva/new')).toBe('/users/')

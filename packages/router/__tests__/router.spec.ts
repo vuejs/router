@@ -444,6 +444,9 @@ describe('Router', () => {
     await router.push('/users/posva')
     await router.push('../../../add')
     expect(router.currentRoute.value.path).toBe('/add')
+    await router.push('/users/posva')
+    await router.push('../')
+    expect(router.currentRoute.value.path).toBe('/')
   })
 
   describe('alias', () => {
