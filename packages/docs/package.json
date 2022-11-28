@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@algolia/client-search": "^4.14.2",
-    "typedoc": "^0.23.10",
-    "typedoc-plugin-markdown": "^3.13.4"
+    "typedoc": "^0.23.21",
+    "typedoc-plugin-markdown": "^3.13.6"
   }
 }

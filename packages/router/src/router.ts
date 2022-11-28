@@ -475,10 +475,7 @@ export function createRouter(options: RouterOptions): Router {
         Object.keys(rawLocation.params).length
       ) {
         warn(
-          `Path "${
-            // @ts-expect-error: the type is never
-            rawLocation.path
-          }" was passed with params but they will be ignored. Use a named route alongside params instead.`
+          `Path "${rawLocation.path}" was passed with params but they will be ignored. Use a named route alongside params instead.`
         )
       }
       matcherLocation = assign({}, rawLocation, {

@@ -181,7 +181,7 @@ export function isNavigationFailure(
   return (
     error instanceof Error &&
     NavigationFailureSymbol in error &&
-    (type == null || !!((error as NavigationFailure).type & type))
+    (type == null || !!((error as unknown as NavigationFailure).type & type))
   )
 }
 
