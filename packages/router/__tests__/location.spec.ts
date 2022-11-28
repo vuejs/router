@@ -353,6 +353,18 @@ describe('resolveRelativePath', () => {
     expect(resolveRelativePath('/add', '/users/posva')).toBe('/add')
   })
 
+  it('works without anything after the .', () => {
+    expect(resolveRelativePath('./', '/users/posva')).toBe('/users/')
+    expect(resolveRelativePath('.', '/users/posva')).toBe('/users/')
+  })
+
+  it('works without anything after the ..', () => {
+    expect(resolveRelativePath('../', '/users/posva/new')).toBe('/users/')
+    expect(resolveRelativePath('../../', '/users/posva/a/b')).toBe('/users/')
+    expect(resolveRelativePath('..', '/users/posva/new')).toBe('/users/')
+    expect(resolveRelativePath('../..', '/users/posva/a/b')).toBe('/users/')
+  })
+
   it('resolves empty path', () => {
     expect(resolveRelativePath('', '/users/posva')).toBe('/users/posva')
     expect(resolveRelativePath('', '/users')).toBe('/users')

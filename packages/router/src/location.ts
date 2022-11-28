@@ -212,6 +212,13 @@ export function resolveRelativePath(to: string, from: string): string {
 
   const fromSegments = from.split('/')
   const toSegments = to.split('/')
+  const lastToSegment = toSegments[toSegments.length - 1]
+
+  // make . and ./ the same (../ === .., ../../ === ../..)
+  // this is the same behavior as new URL()
+  if (lastToSegment === '..' || lastToSegment === '.') {
+    toSegments.push('')
+  }
 
   let position = fromSegments.length - 1
   let toPosition: number
