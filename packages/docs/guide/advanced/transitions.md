@@ -5,7 +5,7 @@
   title="Learn about route transitions"
 />
 
-In order to use transitions on your route components and animate navigations, you need to use the [v-slot API](../../api/#v-slot-api-3-1-0):
+In order to use transitions on your route components and animate navigations, you need to use the v-slot API:
 
 ```html
 <router-view v-slot="{ Component }">
