@@ -51,7 +51,7 @@ It's also possible to throw an `Error` if an unexpected situation was met. This 
 
 If nothing, `undefined` or `true` is returned, **the navigation is validated**, and the next navigation guard is called.
 
-All of the the things above **work the same way with `async` functions** and Promises:
+All of the things above **work the same way with `async` functions** and Promises:
 
 ```js
 router.beforeEach(async (to, from) => {
