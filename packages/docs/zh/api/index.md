@@ -68,7 +68,7 @@ sidebar: auto
 - **默认值**：`false`
 - **详细内容**：
 
-  `<router-link>` 是否应该将其内容包裹在 `<a>` 元素中。在使用 [`v-slot`](#router-link-s-v-slot) 创建自定义 RouterLink 时很有用。默认情况下，`<router-link>` 会将其内容包裹在 `<a>` 元素中，即使使用 `v-slot` 也是如此。传递`自定义的` prop，可以去除这种行为。
+  `<router-link>` 是否应该将其内容包裹在 `<a>` 元素中。在使用 [`v-slot`](#router-link-s-v-slot) 创建自定义 RouterLink 时很有用。默认情况下，`<router-link>` 会将其内容包裹在 `<a>` 元素中，即使使用 `v-slot` 也是如此。传递 `custom` prop，可以去除这种行为。
 
 - **例如**：
 
