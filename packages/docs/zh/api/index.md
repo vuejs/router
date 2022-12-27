@@ -429,22 +429,6 @@ _参数_
 | parentName | `string \| symbol`                  | 父路由记录，`route` 应该被添加到的位置 |
 | route      | [`RouteRecordRaw`](#routerecordraw) | 要添加的路由记录                       |
 
-### addRoute
-
-添加一条新的[路由记录](#routerecordraw)到路由。如果路由有一个 `name`，并且已经有一个与之名字相同的路由，它会先删除之前的路由。
-
-**函数签名：**
-
-```typescript
-addRoute(route: RouteRecordRaw): () => void
-```
-
-_参数_
-
-| 参数  | 类型                                | 描述             |
-| ----- | ----------------------------------- | ---------------- |
-| route | [`RouteRecordRaw`](#routerecordraw) | 要添加的路由记录 |
-
 :::tip 提示
 请注意，添加路由并不会触发新的导航。也就是说，除非触发新的导航，否则不会显示所添加的路由。
 :::
