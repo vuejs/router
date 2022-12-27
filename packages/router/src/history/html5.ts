@@ -144,7 +144,11 @@ function useHistoryListeners(
 
   // set up the listeners and prepare teardown callbacks
   window.addEventListener('popstate', popStateHandler)
-  window.addEventListener('beforeunload', beforeUnloadListener)
+  // TODO: could we use 'pagehide' or 'visibilitychange' instead?
+  // https://developer.chrome.com/blog/page-lifecycle-api/
+  window.addEventListener('beforeunload', beforeUnloadListener, {
+    passive: true,
+  })
 
   return {
     pauseListeners,
