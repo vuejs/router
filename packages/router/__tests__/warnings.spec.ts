@@ -266,7 +266,7 @@ describe('warnings', () => {
 
     await router.push('/b').catch(() => {})
     expect(
-      'Detected an infinite redirection in a navigation guard when going from "/" to "/b"'
+      'Detected a possibly infinite redirection in a navigation guard when going from "/" to "/b"'
     ).toHaveBeenWarned()
   })
 
