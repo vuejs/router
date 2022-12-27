@@ -716,10 +716,10 @@ export function createRouter(options: RouterOptions): Router {
               (redirectedFrom._count = redirectedFrom._count
                 ? // @ts-expect-error
                   redirectedFrom._count + 1
-                : 1) > 10
+                : 1) > 30
             ) {
               warn(
-                `Detected an infinite redirection in a navigation guard when going from "${from.fullPath}" to "${toLocation.fullPath}". Aborting to avoid a Stack Overflow. This will break in production if not fixed.`
+                `Detected a possibly infinite redirection in a navigation guard when going from "${from.fullPath}" to "${toLocation.fullPath}". Aborting to avoid a Stack Overflow. This might break in production if not fixed.`
               )
               return Promise.reject(
                 new Error('Infinite redirect in navigation guard')
