@@ -39,7 +39,7 @@ const routes = [
 ```html
 <router-view v-slot="{ Component, route }">
   <!-- 使用任何自定义过渡和回退到 `fade` -->
-  <transition :name="route.meta.transitionName || 'fade'">
+  <transition :name="route.meta.transition || 'fade'">
     <component :is="Component" />
   </transition>
 </router-view>
@@ -52,7 +52,7 @@ const routes = [
 ```html
 <!-- 使用动态过渡名称 -->
 <router-view v-slot="{ Component, route }">
-  <transition :name="route.meta.transitionName">
+  <transition :name="route.meta.transition">
     <component :is="Component" />
   </transition>
 </router-view>
@@ -64,7 +64,7 @@ const routes = [
 router.afterEach((to, from) => {
   const toDepth = to.path.split('/').length
   const fromDepth = from.path.split('/').length
-  to.meta.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
+  to.meta.transition = toDepth < fromDepth ? 'slide-right' : 'slide-left'
 })
 ```
 

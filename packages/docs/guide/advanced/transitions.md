@@ -39,7 +39,7 @@ const routes = [
 ```html
 <router-view v-slot="{ Component, route }">
   <!-- Use any custom transition and  to `fade` -->
-  <transition :name="route.meta.transitionName || 'fade'">
+  <transition :name="route.meta.transition || 'fade'">
     <component :is="Component" />
   </transition>
 </router-view>
@@ -52,7 +52,7 @@ It is also possible to determine the transition to use dynamically based on the 
 ```html
 <!-- use a dynamic transition name -->
 <router-view v-slot="{ Component, route }">
-  <transition :name="route.meta.transitionName">
+  <transition :name="route.meta.transition">
     <component :is="Component" />
   </transition>
 </router-view>
@@ -64,7 +64,7 @@ We can add an [after navigation hook](./navigation-guards.md#global-after-hooks)
 router.afterEach((to, from) => {
   const toDepth = to.path.split('/').length
   const fromDepth = from.path.split('/').length
-  to.meta.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
+  to.meta.transition = toDepth < fromDepth ? 'slide-right' : 'slide-left'
 })
 ```
 
