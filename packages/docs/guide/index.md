@@ -74,7 +74,7 @@ app.mount('#app')
 // Now the app has started!
 ```
 
-By calling `app.use(router)`, we get access to it as `this.$router` as well as the current route as `this.$route` inside of any component:
+By calling `app.use(router)`, we are triggering the initial navigation and giving access to `this.$router` as well as the current route as `this.$route` inside of any component:
 
 ```js
 // Home.vue
