@@ -23,3 +23,8 @@ npm install vue-router@4
 ```bash
 yarn add vue-router@4
 ```
+## pnpm
+
+```bash
+pnpm install vue-router@4
+```
