@@ -1,7 +1,7 @@
 {
   "name": "@vue/router-root",
   "private": true,
-  "packageManager": "pnpm@7.1.7",
+  "packageManager": "pnpm@7.26.0",
   "engines": {
     "node": ">=16.5.0"
   },
