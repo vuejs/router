@@ -1,21 +1,19 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / RouterViewProps
 
 # Interface: RouterViewProps
 
-## Properties
+## Properties %{#Properties}%
 
-### name
+### name %{#Properties-name}%
 
 • `Optional` **name**: `string`
 
 ___
 
-### route
+### route %{#Properties-route}%
 
 • `Optional` **route**: [`RouteLocationNormalized`](RouteLocationNormalized.md)

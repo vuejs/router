@@ -1,7 +1,5 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / HistoryState
@@ -10,6 +8,6 @@ sidebarDepth: 3
 
 Allowed HTML history.state
 
-## Indexable
+## Indexable %{#Indexable}%
 
 ▪ [x: `number`]: `HistoryStateValue`

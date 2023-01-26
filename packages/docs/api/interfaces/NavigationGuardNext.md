@@ -1,75 +1,73 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / NavigationGuardNext
 
 # Interface: NavigationGuardNext
 
-## Callable
+## Callable %{#Callable}%
 
-### NavigationGuardNext
+### NavigationGuardNext %{#Callable-NavigationGuardNext}%
 
 ▸ **NavigationGuardNext**(): `void`
 
-#### Returns
+#### Returns %{#Callable-NavigationGuardNext-Returns}%
 
 `void`
 
-### NavigationGuardNext
+### NavigationGuardNext %{#Callable-NavigationGuardNext_1}%
 
 ▸ **NavigationGuardNext**(`error`): `void`
 
-#### Parameters
+#### Parameters %{#Callable-NavigationGuardNext-Parameters}%
 
 | Name | Type |
 | :------ | :------ |
 | `error` | `Error` |
 
-#### Returns
+#### Returns %{#Callable-NavigationGuardNext-Returns_1}%
 
 `void`
 
-### NavigationGuardNext
+### NavigationGuardNext %{#Callable-NavigationGuardNext_2}%
 
 ▸ **NavigationGuardNext**(`location`): `void`
 
-#### Parameters
+#### Parameters %{#Callable-NavigationGuardNext-Parameters_1}%
 
 | Name | Type |
 | :------ | :------ |
 | `location` | [`RouteLocationRaw`](../index.md#routelocationraw) |
 
-#### Returns
+#### Returns %{#Callable-NavigationGuardNext-Returns_2}%
 
 `void`
 
-### NavigationGuardNext
+### NavigationGuardNext %{#Callable-NavigationGuardNext_3}%
 
 ▸ **NavigationGuardNext**(`valid`): `void`
 
-#### Parameters
+#### Parameters %{#Callable-NavigationGuardNext-Parameters_2}%
 
 | Name | Type |
 | :------ | :------ |
 | `valid` | `undefined` \| `boolean` |
 
-#### Returns
+#### Returns %{#Callable-NavigationGuardNext-Returns_3}%
 
 `void`
 
-### NavigationGuardNext
+### NavigationGuardNext %{#Callable-NavigationGuardNext_4}%
 
 ▸ **NavigationGuardNext**(`cb`): `void`
 
-#### Parameters
+#### Parameters %{#Callable-NavigationGuardNext-Parameters_3}%
 
 | Name | Type |
 | :------ | :------ |
 | `cb` | `NavigationGuardNextCallback` |
 
-#### Returns
+#### Returns %{#Callable-NavigationGuardNext-Returns_4}%
 
 `void`
