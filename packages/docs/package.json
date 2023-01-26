@@ -12,7 +12,7 @@
     "vitepress": "^0.20.0"
   },
   "devDependencies": {
-    "@algolia/client-search": "^4.14.2",
+    "@algolia/client-search": "^4.14.3",
     "typedoc": "^0.23.21",
     "typedoc-plugin-markdown": "^3.13.6"
   }

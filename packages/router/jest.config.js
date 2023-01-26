@@ -1,10 +1,14 @@
 module.exports = {
   testEnvironment: 'node',
+  testEnvironmentOptions: {
+    customExportConditions: ['node', 'node-addons'],
+  },
   globals: {
     __DEV__: true,
     __TEST__: true,
     __BROWSER__: true,
   },
+  setupFilesAfterEnv: ['<rootDir>/__tests__/setup.ts'],
   coverageDirectory: 'coverage',
   coverageReporters: ['html', 'lcov', 'text'],
   collectCoverageFrom: ['src/**/*.ts'],
