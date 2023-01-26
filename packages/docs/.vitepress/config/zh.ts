@@ -1,10 +1,8 @@
 import type { DefaultTheme, LocaleSpecificConfig } from 'vitepress'
 
-export const META_URL = 'https://pinia.vuejs.org'
-export const META_TITLE = 'Pinia 🍍'
-export const META_DESCRIPTION = '值得你喜欢的 Vue Store'
-// TODO: translation of this
-// 'Intuitive, type safe, light and flexible Store for Vue'
+export const META_URL = 'https://router.vuejs.org'
+export const META_TITLE = 'Vue Router'
+export const META_DESCRIPTION = 'Vue.js 的官方路由'
 
 export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
   description: META_DESCRIPTION,
@@ -18,127 +16,160 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
 
   themeConfig: {
     editLink: {
-      pattern: 'https://github.com/vuejs/pinia/edit/v2/packages/docs/:path',
+      pattern: 'https://github.com/vuejs/router/edit/v2/packages/docs/:path',
       text: '对本页提出修改建议',
     },
 
     outlineTitle: '本页内容',
 
     nav: [
-      // { text: 'Config', link: '/config/' },
-      // { text: 'Plugins', link: '/plugins/' },
       {
-        text: '指南',
-        link: '/zh/core-concepts/',
-        activeMatch: '^/zh/core-concepts/',
+        text: '教程',
+        link: '/zh/guide/',
+        activeMatch: '^/zh/guide/',
       },
-      { text: 'API', link: '/zh/api/', activeMatch: '^/zh/api/' },
-      { text: '手册', link: '/zh/cookbook/', activeMatch: '^/zh/cookbook/' },
+      {
+        text: 'API 参考',
+        link: '/zh/api/',
+        activeMatch: '^/zh/api/',
+      },
+      {
+        text: 'v4.x',
+        items: [{ text: 'v3.x', link: 'https://v3.router.vuejs.org/zh' }],
+      },
       {
         text: '相关链接',
         items: [
           {
-            text: '论坛',
-            link: 'https://github.com/vuejs/pinia/discussions',
+            text: 'Discussions',
+            link: 'https://github.com/vuejs/router/discussions',
           },
           {
             text: '更新日志',
-            link: 'https://github.com/vuejs/pinia/blob/v2/packages/pinia/CHANGELOG.md',
+            link: 'https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md',
           },
         ],
       },
     ],
+
     sidebar: {
       '/zh/api/': [
         {
           text: 'packages',
-          items: [
-            { text: 'pinia', link: '/zh/api/modules/pinia.html' },
-            { text: '@pinia/nuxt', link: '/zh/api/modules/pinia_nuxt.html' },
-            {
-              text: '@pinia/testing',
-              link: '/zh/api/modules/pinia_testing.html',
-            },
-          ],
+          items: [{ text: 'vue-router', link: '/api/' }],
         },
       ],
+
       '/zh/': [
         {
-          text: '介绍',
           items: [
             {
-              text: 'Pinia 是什么？',
+              text: '介绍',
               link: '/zh/introduction.html',
             },
             {
-              text: '开始',
-              link: '/zh/getting-started.html',
+              text: '安装',
+              link: '/zh/installation.html',
             },
           ],
         },
         {
-          text: '核心概念',
+          text: '基础',
+          collapsible: false,
           items: [
-            { text: '定义 Store', link: '/zh/core-concepts/' },
-            { text: 'State', link: '/zh/core-concepts/state.html' },
-            { text: 'Getter', link: '/zh/core-concepts/getters.html' },
-            { text: 'Action', link: '/zh/core-concepts/actions.html' },
-            { text: '插件', link: '/zh/core-concepts/plugins.html' },
             {
-              text: '组件外的 Store',
-              link: '/zh/core-concepts/outside-component-usage.html',
+              text: '入门',
+              link: '/zh/guide/',
+            },
+            {
+              text: '动态路由匹配',
+              link: '/zh/guide/essentials/dynamic-matching.html',
+            },
+            {
+              text: '路由的匹配语法',
+              link: '/zh/guide/essentials/route-matching-syntax.html',
+            },
+            {
+              text: '嵌套路由',
+              link: '/zh/guide/essentials/nested-routes.html',
+            },
+            {
+              text: '编程式导航',
+              link: '/zh/guide/essentials/navigation.html',
+            },
+            {
+              text: '命名路由',
+              link: '/zh/guide/essentials/named-routes.html',
+            },
+            {
+              text: '命名视图',
+              link: '/zh/guide/essentials/named-views.html',
+            },
+            {
+              text: '重定向和别名',
+              link: '/zh/guide/essentials/redirect-and-alias.html',
+            },
+            {
+              text: '路由组件传参',
+              link: '/zh/guide/essentials/passing-props.html',
+            },
+            {
+              text: '不同的历史记录模式',
+              link: '/zh/guide/essentials/history-mode.html',
             },
           ],
         },
         {
-          text: '服务端渲染 (SSR)',
+          text: '进阶',
+          collapsible: false,
           items: [
             {
-              text: 'Vue 与 Vite',
-              link: '/zh/ssr/',
+              text: '导航守卫',
+              link: '/zh/guide/advanced/navigation-guards.html',
             },
             {
-              text: 'Nuxt.js',
-              link: '/zh/ssr/nuxt.html',
+              text: '路由元信息',
+              link: '/zh/guide/advanced/meta.html',
+            },
+            {
+              text: '数据获取',
+              link: '/zh/guide/advanced/data-fetching.html',
+            },
+            {
+              text: '组合式 API',
+              link: '/zh/guide/advanced/composition-api.html',
+            },
+            {
+              text: '过渡动效',
+              link: '/zh/guide/advanced/transitions.html',
+            },
+            {
+              text: '滚动行为',
+              link: '/zh/guide/advanced/scroll-behavior.html',
+            },
+            {
+              text: '路由懒加载',
+              link: '/zh/guide/advanced/lazy-loading.html',
+            },
+            {
+              text: '扩展 RouterLink',
+              link: '/zh/guide/advanced/extending-router-link.html',
+            },
+            {
+              text: '导航故障',
+              link: '/zh/guide/advanced/navigation-failures.html',
+            },
+            {
+              text: '动态路由',
+              link: '/zh/guide/advanced/dynamic-routing.html',
             },
           ],
         },
         {
-          text: '手册',
-          collapsible: true,
-          collapsed: false,
           items: [
             {
-              text: '目录',
-              link: '/zh/cookbook/',
-            },
-            {
-              text: '从 Vuex ≤4 迁移',
-              link: '/zh/cookbook/migration-vuex.html',
-            },
-            {
-              text: '热更新',
-              link: '/zh/cookbook/hot-module-replacement.html',
-            },
-            {
-              text: '测试',
-              link: '/zh/cookbook/testing.html',
-            },
-            {
-              text: '不使用 setup() 的用法',
-              link: '/zh/cookbook/options-api.html',
-            },
-            {
-              text: '组合式 Stores',
-              link: '/zh/cookbook/composing-stores.html',
-            },
-            {
-              text: '从 v0/v1 迁移至 v2',
-              link: '/zh/cookbook/migration-v1-v2.html',
-            },
-            {
-              text: '处理组合式函数',
-              link: '/zh/cookbook/composables.html',
+              text: '从 Vue2 迁移',
+              link: '/zh/guide/migration/index.html',
             },
           ],
         },

@@ -1,9 +1,8 @@
 import type { DefaultTheme, LocaleSpecificConfig } from 'vitepress'
 
-export const META_URL = 'https://pinia.vuejs.org'
-export const META_TITLE = 'Pinia 🍍'
-export const META_DESCRIPTION =
-  'Intuitive, type safe, light and flexible Store for Vue'
+export const META_URL = 'https://router.vuejs.org'
+export const META_TITLE = 'Vue Router'
+export const META_DESCRIPTION = 'The official Router for Vue.js'
 
 export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
   description: META_DESCRIPTION,
@@ -17,7 +16,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
 
   themeConfig: {
     editLink: {
-      pattern: 'https://github.com/vuejs/pinia/edit/v2/packages/docs/:path',
+      pattern: 'https://github.com/vuejs/router/edit/v2/packages/docs/:path',
       text: 'Suggest changes to this page',
     },
 
@@ -171,19 +170,12 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         },
       ],
 
-      // '/api/': [
-      //   {
-      //     text: 'packages',
-      //     items: [
-      //       { text: 'pinia', link: '/api/modules/pinia.html' },
-      //       { text: '@pinia/nuxt', link: '/api/modules/pinia_nuxt.html' },
-      //       {
-      //         text: '@pinia/testing',
-      //         link: '/api/modules/pinia_testing.html',
-      //       },
-      //     ],
-      //   },
-      // ],
+      '/api/': [
+        {
+          text: 'packages',
+          items: [{ text: 'vue-router', link: '/api/' }],
+        },
+      ],
     },
   },
 }
