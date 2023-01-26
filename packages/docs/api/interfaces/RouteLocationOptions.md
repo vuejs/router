@@ -1,7 +1,5 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / RouteLocationOptions
@@ -10,9 +8,9 @@ sidebarDepth: 3
 
 Common options for all navigation methods.
 
-## Properties
+## Properties %{#Properties}%
 
-### force
+### force %{#Properties-force}%
 
 • `Optional` **force**: `boolean`
 
@@ -22,7 +20,7 @@ is passed.
 
 ___
 
-### replace
+### replace %{#Properties-replace}%
 
 • `Optional` **replace**: `boolean`
 
@@ -30,7 +28,7 @@ Replace the entry in the history instead of pushing a new entry
 
 ___
 
-### state
+### state %{#Properties-state}%
 
 • `Optional` **state**: [`HistoryState`](HistoryState.md)
 

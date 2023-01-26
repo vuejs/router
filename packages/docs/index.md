@@ -1,11 +1,26 @@
 ---
-home: true
+layout: home
 
-heroImage: /logo.png
-actionText: Get Started →
-actionLink: /installation.html
-altActionLink: https://vueschool.io/courses/vue-router-4-for-everyone?friend=vuerouter&utm_source=vuerouter&utm_medium=link&utm_campaign=homepage
-altActionText: Free Video Course
+title: Vue Router
+titleTemplate: The official Router for Vue.js
+
+hero: 
+  name: Vue Router
+  text: The official Router for Vue.js
+  tagline: Expressive, configurable and convenient routing for Vue.js
+  image:
+    src: /logo.png
+    alt: Vue Router
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /installation
+    - theme: cta vueschool
+      text: Free Video Course
+      link: https://vueschool.io/courses/vue-router-4-for-everyone?friend=vuerouter&utm_source=vuerouter&utm_medium=link&utm_campaign=homepage
+    - theme: cta vue-mastery
+      text: Get the Vue Router Cheat Sheet
+      link: https://www.vuemastery.com/vue-router?coupon=ROUTER-DOCS&via=eduardo
 
 features:
   - title: 🛣 Expressive route syntax
@@ -20,12 +35,11 @@ features:
     details: Precisely control the scroll position in every page.
   - title: 🌐 Automatic Encoding
     details: Directly use unicode characters (你好) in your code.
-
-footer: MIT Licensed | Copyright © 2014-present Evan You, Eduardo San Martin Morote
 ---
 
-<HomeSponsors />
-
 <script setup>
-import HomeSponsors from './.vitepress/components/HomeSponsors.vue'
+import HomeSponsors from './.vitepress/theme/components/HomeSponsors.vue'
+import './.vitepress/theme/styles/home-links.css'
 </script>
+
+<HomeSponsors />

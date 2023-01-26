@@ -1,20 +1,18 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / NavigationHookAfter
 
 # Interface: NavigationHookAfter
 
-## Callable
+## Callable %{#Callable}%
 
-### NavigationHookAfter
+### NavigationHookAfter %{#Callable-NavigationHookAfter}%
 
 ▸ **NavigationHookAfter**(`to`, `from`, `failure?`): `any`
 
-#### Parameters
+#### Parameters %{#Callable-NavigationHookAfter-Parameters}%
 
 | Name | Type |
 | :------ | :------ |
@@ -22,6 +20,6 @@ sidebarDepth: 3
 | `from` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
 | `failure?` | `void` \| [`NavigationFailure`](NavigationFailure.md) |
 
-#### Returns
+#### Returns %{#Callable-NavigationHookAfter-Returns}%
 
 `any`

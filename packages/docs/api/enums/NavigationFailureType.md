@@ -1,7 +1,5 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / NavigationFailureType
@@ -11,9 +9,9 @@ sidebarDepth: 3
 Enumeration with all possible types for navigation failures. Can be passed to
 [isNavigationFailure](../index.md#isnavigationfailure) to check for specific failures.
 
-## Enumeration Members
+## Enumeration Members %{#Enumeration-Members}%
 
-### aborted
+### aborted %{#Enumeration-Members-aborted}%
 
 • **aborted** = ``4``
 
@@ -22,7 +20,7 @@ guard returned `false` or called `next(false)`
 
 ___
 
-### cancelled
+### cancelled %{#Enumeration-Members-cancelled}%
 
 • **cancelled** = ``8``
 
@@ -31,7 +29,7 @@ navigation finished started (not necessarily finished).
 
 ___
 
-### duplicated
+### duplicated %{#Enumeration-Members-duplicated}%
 
 • **duplicated** = ``16``
 

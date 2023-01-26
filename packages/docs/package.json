@@ -4,16 +4,11 @@
   "private": true,
   "scripts": {
     "docs": "vitepress dev .",
-    "docs:api": "node scripts/run-typedoc.js",
+    "docs:api": "node run-typedoc.js",
     "docs:build": "vitepress build ."
   },
   "dependencies": {
-    "@chenfengyuan/vue-countdown": "2",
-    "vitepress": "^0.20.0"
-  },
-  "devDependencies": {
-    "@algolia/client-search": "^4.14.3",
-    "typedoc": "^0.23.21",
-    "typedoc-plugin-markdown": "^3.13.6"
+    "vitepress": "^1.0.0-alpha.40",
+    "vue-router": "workspace:*"
   }
 }

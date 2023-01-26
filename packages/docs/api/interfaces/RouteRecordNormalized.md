@@ -1,7 +1,5 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / RouteRecordNormalized
@@ -10,15 +8,15 @@ sidebarDepth: 3
 
 Normalized version of a [route record](../index.md#routerecord).
 
-## Hierarchy
+## Hierarchy %{#Hierarchy}%
 
 - **`RouteRecordNormalized`**
 
   ↳ [`RouteLocationMatched`](RouteLocationMatched.md)
 
-## Properties
+## Properties %{#Properties}%
 
-### aliasOf
+### aliasOf %{#Properties-aliasOf}%
 
 • **aliasOf**: `undefined` \| [`RouteRecordNormalized`](RouteRecordNormalized.md)
 
@@ -27,7 +25,7 @@ Defines if this record is the alias of another one. This property is
 
 ___
 
-### beforeEnter
+### beforeEnter %{#Properties-beforeEnter}%
 
 • **beforeEnter**: `undefined` \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\>[]
 
@@ -35,7 +33,7 @@ Registered beforeEnter guards
 
 ___
 
-### children
+### children %{#Properties-children}%
 
 • **children**: [`RouteRecordRaw`](../index.md#routerecordraw)[]
 
@@ -43,7 +41,7 @@ Nested route records.
 
 ___
 
-### components
+### components %{#Properties-components}%
 
 • **components**: `undefined` \| ``null`` \| `Record`<`string`, `RawRouteComponent`\>
 
@@ -51,7 +49,7 @@ ___
 
 ___
 
-### instances
+### instances %{#Properties-instances}%
 
 • **instances**: `Record`<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`<{}, {}, {}, {}, {}, {}, {}, {}, ``false``, `ComponentOptionsBase`<`any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, {}, {}, `string`\>, {}\>\>
 
@@ -65,7 +63,7 @@ views.
 
 ___
 
-### meta
+### meta %{#Properties-meta}%
 
 • **meta**: [`RouteMeta`](RouteMeta.md)
 
@@ -73,7 +71,7 @@ ___
 
 ___
 
-### name
+### name %{#Properties-name}%
 
 • **name**: `undefined` \| [`RouteRecordName`](../index.md#routerecordname)
 
@@ -81,7 +79,7 @@ ___
 
 ___
 
-### path
+### path %{#Properties-path}%
 
 • **path**: `string`
 
@@ -89,7 +87,7 @@ ___
 
 ___
 
-### props
+### props %{#Properties-props}%
 
 • **props**: `Record`<`string`, `_RouteRecordProps`\>
 
@@ -97,7 +95,7 @@ ___
 
 ___
 
-### redirect
+### redirect %{#Properties-redirect}%
 
 • **redirect**: `undefined` \| `RouteRecordRedirectOption`
 
