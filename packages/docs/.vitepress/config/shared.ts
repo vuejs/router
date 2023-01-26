@@ -1,6 +1,8 @@
 import { defineConfig, HeadConfig } from 'vitepress'
 
-export const META_IMAGE = 'https://pinia.vuejs.org/social.png'
+// TODO:
+// export const META_IMAGE = 'https://router.vuejs.org/social.png'
+export const META_IMAGE = null
 export const isProduction =
   process.env.NETLIFY && process.env.CONTEXT === 'production'
 
@@ -59,13 +61,13 @@ export const sharedConfig = defineConfig({
         content: 'summary_large_image',
       },
     ],
-    [
-      'meta',
-      {
-        property: 'twitter:image',
-        content: META_IMAGE,
-      },
-    ],
+    // [
+    //   'meta',
+    //   {
+    //     property: 'twitter:image',
+    //     content: META_IMAGE,
+    //   },
+    // ],
 
     [
       'script',
