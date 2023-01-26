@@ -396,7 +396,7 @@ export function createRouter(options: RouterOptions): Router {
     parentOrRoute: RouteRecordName | RouteRecordRaw,
     route?: RouteRecordRaw
   ) {
-    let parent: Parameters<typeof matcher['addRoute']>[1] | undefined
+    let parent: Parameters<(typeof matcher)['addRoute']>[1] | undefined
     let record: RouteRecordRaw
     if (isRouteName(parentOrRoute)) {
       parent = matcher.getRecordMatcher(parentOrRoute)

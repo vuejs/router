@@ -85,7 +85,7 @@ export function createRouterMatcher(
     mainNormalizedRecord.aliasOf = originalRecord && originalRecord.record
     const options: PathParserOptions = mergeOptions(globalOptions, record)
     // generate an array of records to correctly handle aliases
-    const normalizedRecords: typeof mainNormalizedRecord[] = [
+    const normalizedRecords: (typeof mainNormalizedRecord)[] = [
       mainNormalizedRecord,
     ]
     if ('alias' in record) {
