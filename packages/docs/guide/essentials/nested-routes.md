@@ -5,7 +5,7 @@
   title="Learn about nested routes"
 />
 
-Some application's UIs are composed of components that are nested multiple levels deep. In this case, it is very common that the segments of a URL corresponds to a certain structure of nested components, for example:
+Some applications' UIs are composed of components that are nested multiple levels deep. In this case, it is very common that the segments of a URL correspond to a certain structure of nested components, for example:
 
 ```
 /user/johnny/profile                     /user/johnny/posts
@@ -75,9 +75,9 @@ const routes = [
 ]
 ```
 
-**Note that nested paths that start with `/` will be treated as a root path. This allows you to leverage the component nesting without having to use a nested URL.**
+**Note that nested paths that start with `/` will be treated as root paths. This allows you to leverage the component nesting without having to use a nested URL.**
 
-As you can see the `children` option is just another Array of routes like `routes` itself. Therefore, you can keep nesting views as much as you need.
+As you can see, the `children` option is just another Array of routes like `routes` itself. Therefore, you can keep nesting views as much as you need.
 
 At this point, with the above configuration, when you visit `/user/eduardo`, nothing will be rendered inside `User`'s `router-view`, because no nested route is matched. Maybe you do want to render something there. In such case you can provide an empty nested path:
 
