@@ -9,7 +9,7 @@ The introduction of `setup` and Vue's [Composition API](https://v3.vuejs.org/gui
 
 ## Accessing the Router and current Route inside `setup`
 
-Because we don't have access to `this` inside of `setup`, we cannot directly access `this.$router` or `this.$route` anymore. Instead we use the `useRouter` function:
+Because we don't have access to `this` inside of `setup`, we cannot directly access `this.$router` or `this.$route` anymore. Instead we use the `useRouter` and `useRoute` functions:
 
 ```js
 import { useRouter, useRoute } from 'vue-router'
