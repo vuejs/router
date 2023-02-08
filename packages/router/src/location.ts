@@ -243,8 +243,7 @@ export function resolveRelativePath(to: string, from: string): string {
     fromSegments.slice(0, position).join('/') +
     '/' +
     toSegments
-      // ensure we use at least the last element in the toSegments
-      .slice(toPosition - (toPosition === toSegments.length ? 1 : 0))
+      .slice(toPosition)
       .join('/')
   )
 }
