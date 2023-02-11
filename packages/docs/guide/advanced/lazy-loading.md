@@ -75,6 +75,7 @@ export default defineConfig({
             './src/UserProfileEdit',
           ],
         },
+      },
     },
   },
 })
