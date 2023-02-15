@@ -9,7 +9,7 @@ hero:
   text: The official Router for Vue.js
   tagline: Expressive, configurable and convenient routing for Vue.js
   image:
-    src: /logo.png
+    src: /logo.svg
     alt: Vue Router
   actions:
     - theme: brand
