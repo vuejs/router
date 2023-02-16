@@ -7,7 +7,7 @@ titleTemplate: Vue.js 的官方路由
 hero: 
   name: Vue Router
   text: Vue.js 的官方路由
-  tagline: 表达能力强，可配置且方便的 Vue.js 路由
+  tagline: 为 Vue.js 提供富有表现力、可配置的、方便的路由
   image:
     src: /logo.png
     alt: Vue Router
