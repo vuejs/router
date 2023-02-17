@@ -16,7 +16,7 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
 
   themeConfig: {
     editLink: {
-      pattern: 'https://github.com/vuejs/router/edit/v2/packages/docs/:path',
+      pattern: 'https://github.com/vuejs/router/edit/main/packages/docs/:path',
       text: '对本页提出修改建议',
     },
 
