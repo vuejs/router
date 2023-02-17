@@ -70,7 +70,7 @@ describe('scrollBehavior', () => {
     it('scrolls to a position', () => {
       scrollToPosition({ left: 10, top: 100 })
       expect(getElementById).not.toHaveBeenCalled()
-      expect(getElementById).not.toHaveBeenCalled()
+      expect(querySelector).not.toHaveBeenCalled()
       expect(scrollTo).toHaveBeenCalledWith({
         left: 10,
         top: 100,
@@ -81,7 +81,7 @@ describe('scrollBehavior', () => {
     it('scrolls to a partial position top', () => {
       scrollToPosition({ top: 10 })
       expect(getElementById).not.toHaveBeenCalled()
-      expect(getElementById).not.toHaveBeenCalled()
+      expect(querySelector).not.toHaveBeenCalled()
       expect(scrollTo).toHaveBeenCalledWith({
         top: 10,
         behavior: undefined,
@@ -91,7 +91,7 @@ describe('scrollBehavior', () => {
     it('scrolls to a partial position left', () => {
       scrollToPosition({ left: 10 })
       expect(getElementById).not.toHaveBeenCalled()
-      expect(getElementById).not.toHaveBeenCalled()
+      expect(querySelector).not.toHaveBeenCalled()
       expect(scrollTo).toHaveBeenCalledWith({
         left: 10,
         behavior: undefined,
