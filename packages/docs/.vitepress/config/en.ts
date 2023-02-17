@@ -16,7 +16,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
 
   themeConfig: {
     editLink: {
-      pattern: 'https://github.com/vuejs/router/edit/v2/packages/docs/:path',
+      pattern: 'https://github.com/vuejs/router/edit/main/packages/docs/:path',
       text: 'Suggest changes to this page',
     },
 
