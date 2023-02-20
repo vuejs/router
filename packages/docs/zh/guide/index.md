@@ -72,7 +72,7 @@ app.mount('#app')
 // 现在，应用已经启动了！
 ```
 
-通过调用 `app.use(router)`，我们可以在任意组件中以 `this.$router` 的形式访问它，并且以 `this.$route` 的形式访问当前路由：
+通过调用 `app.use(router)`，我们会触发第一次导航且可以在任意组件中以 `this.$router` 的形式访问它，并且以 `this.$route` 的形式访问当前路由：
 
 ```js
 // Home.vue
