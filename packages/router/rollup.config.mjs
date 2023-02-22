@@ -1,13 +1,17 @@
-import path from 'path'
-import { promises as fsp } from 'fs'
+import path from 'node:path'
+import { promises as fsp } from 'node:fs'
+import {dirname} from 'node:path'
 import ts from 'rollup-plugin-typescript2'
 import replace from '@rollup/plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import chalk from 'chalk'
+import pkg from './package.json' assert { type: 'json' }
+import {terser} from 'rollup-plugin-terser'
 
-const pkg = require('./package.json')
 const name = pkg.name
+
+const __dirname = dirname(new URL(import.meta.url).pathname)
 
 const banner = `/*!
   * ${pkg.name} v${pkg.version}
@@ -217,7 +221,6 @@ function createProductionConfig(format) {
 }
 
 function createMinifiedConfig(format) {
-  const { terser } = require('rollup-plugin-terser')
   return createConfig(
     format,
     {

@@ -1,12 +1,14 @@
-import path from 'path'
+import path from 'node:path'
 import ts from 'rollup-plugin-typescript2'
 import replace from '@rollup/plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import { terser } from 'rollup-plugin-terser'
+import { defineConfig } from 'rollup'
 
-/** @type {import('rollup').RollupOptions} */
-const config = {
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
+const config = defineConfig({
   external: ['vue'],
   output: {
     file: path.resolve(__dirname, './dist/webRouter.js'),
@@ -57,6 +59,6 @@ const config = {
       },
     }),
   ],
-}
+})
 
 export default config

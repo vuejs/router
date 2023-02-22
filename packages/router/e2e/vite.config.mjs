@@ -1,8 +1,14 @@
-const fs = require('fs')
-const { resolve, join } = require('path')
-const { defineConfig } = require('vite')
-const vue = require('@vitejs/plugin-vue')
-const history = require('connect-history-api-fallback')
+// these are require syntax
+import fs from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { resolve, join, dirname } from 'node:path'
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import history from 'connect-history-api-fallback'
+// and these are the same with import
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 /** @type {string[]} */
 const examples = []
@@ -101,4 +107,4 @@ const config = env => {
   })
 }
 
-module.exports = config
+export default config

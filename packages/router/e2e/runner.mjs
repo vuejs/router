@@ -1,7 +1,8 @@
-require('dotenv').config()
-const Nightwatch = require('nightwatch')
-const browserstack = require('browserstack-local')
-const path = require('path')
+import { config } from 'dotenv'
+import Nightwatch from 'nightwatch'
+import browserstack from 'browserstack-local'
+
+config()
 
 const { BROWSERSTACK_ACCESS_KEY } = process.env
 
@@ -11,18 +12,16 @@ const args = process.argv.slice(2)
 // note this works because nighwatch doesn't use this option
 const isLocal = args.indexOf('--local') > -1
 
-const getServer =
-  args.indexOf('--dev') > -1 ? () => null : require('./devServer')
+function getServer() {
+  return args.indexOf('--dev') > -1
+    ? null
+    : import('./devServer.mjs').then(({ getServer }) => getServer())
+}
 
 ;(async () => {
   const server = await getServer()
 
   try {
-    require.main.filename = path.resolve(
-      __dirname,
-      '../../../node_modules/.bin/nightwatch'
-    )
-
     /** @type {import('browserstack-local').Local} */
     let bs_local
     if (isLocal) {

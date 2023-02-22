@@ -1,5 +1,5 @@
-const { createServer, resolveConfig } = require('vite')
-const viteConfig = require('./vite.config')
+import { createServer } from 'vite'
+import viteConfig from './vite.config.mjs'
 const config = viteConfig({ prod: false })
 
 /** @type {import('vite').ViteDevServer} */
@@ -16,7 +16,7 @@ let server = null
 
 let internalResolve = () => {}
 
-module.exports = function getServer() {
+export function getServer() {
   return new Promise((resolve, reject) => {
     if (server) {
       resolve(server)
