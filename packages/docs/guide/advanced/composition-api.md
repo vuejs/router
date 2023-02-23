@@ -92,7 +92,7 @@ Composition API guards can also be used in any component rendered by `<router-vi
 
 ## `useLink`
 
-Vue Router exposes the internal behavior of RouterLink as a Composition API function. It gives access to the same properties as the [`v-slot` API](../../api/#router-link-s-v-slot):
+Vue Router exposes the internal behavior of RouterLink as a composable. It accepts a reactive object like the props of `RouterLink` and exposes low-level properties to build your own `RouterLink` component or generate custom links:
 
 ```js
 import { RouterLink, useLink } from 'vue-router'
@@ -108,7 +108,18 @@ export default {
   },
 
   setup(props) {
-    const { route, href, isActive, isExactActive, navigate } = useLink(props)
+    const {
+      // the resolved route object
+      route,
+      // the href to use in a link
+      href,
+      // boolean ref  indicating if the link is active
+      isActive,
+      // boolean ref  indicating if the link is exactly active
+      isExactActive,
+      // function to navigate to the link
+      navigate
+      } = useLink(props)
 
     const isExternalLink = computed(
       () => typeof props.to === 'string' && props.to.startsWith('http')
@@ -118,3 +129,5 @@ export default {
   },
 }
 ```
+
+Note that the RouterLink's `v-slot` gives access to the same properties as the `useLink` composable.

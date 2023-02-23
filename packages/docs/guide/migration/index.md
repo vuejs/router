@@ -177,7 +177,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 ### Removal of `event` and `tag` props in `<router-link>`
 
-Both `event`, and `tag` props have been removed from `<router-link>`. You can use the [`v-slot` API](../../api/#router-link-s-v-slot) to fully customize `<router-link>`:
+Both `event`, and `tag` props have been removed from `<router-link>`. You can use the [`v-slot` API](/guide/advanced/composition-api#uselink) to fully customize `<router-link>`:
 
 ```html
 replace
@@ -197,7 +197,7 @@ The `exact` prop has been removed because the caveat it was fixing is no longer 
 - Routes are now active based on the route records they represent instead of the generated route location objects and their `path`, `query`, and `hash` properties
 - Only the `path` section is matched, `query`, and `hash` aren't taken into account anymore
 
-If you wish to customize this behavior, e.g. take into account the `hash` section, you should use the [`v-slot` API](https://next.router.vuejs.org/api/#router-link-s-v-slot) to extend `<router-link>`.
+If you wish to customize this behavior, e.g. take into account the `hash` section, you should use the [`v-slot` API](/guide/advanced/composition-api#uselink) to extend `<router-link>`.
 
 **Reason**: See the [RFC about active matching](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0028-router-active-link.md#summary) changes for more details.
 
@@ -207,7 +207,7 @@ At the moment navigation guards in mixins are not supported. You can track its s
 
 ### Removal of `router.match` and changes to `router.resolve`
 
-Both `router.match`, and `router.resolve` have been merged together into `router.resolve` with a slightly different signature. [Refer to the API](../../api/#resolve) for more details.
+Both `router.match`, and `router.resolve` have been merged together into `router.resolve` with a slightly different signature. [Refer to the API](api/interfaces/router#Methods-resolve) for more details.
 
 **Reason**: Uniting multiple methods that were used for the same purpose.
 

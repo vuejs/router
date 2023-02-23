@@ -177,7 +177,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 ### 删除 `<router-link>` 中的 `event` 和 `tag` 属性
 
-`<router-link>` 中的 `event` 和 `tag` 属性都已被删除。你可以使用 [`v-slot` API](../../api/#router-link-s-v-slot) 来完全定制 `<router-link>`：
+`<router-link>` 中的 `event` 和 `tag` 属性都已被删除。你可以使用 [`v-slot` API](/zh/guide/advanced/composition-api#uselink) 来完全定制 `<router-link>`：
 
 ```html
 将
@@ -197,7 +197,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 - 路由现在是基于它们所代表的路由记录来激活的，而不是路由地址对象及其 `path`、`query` 和 `hash` 属性来激活的
 - 只匹配 `path` 部分，`query` 和 `hash` 不再考虑
 
-如果你想自定义这种行为，例如考虑到 `hash` 部分，你应该使用 [`v-slot` API](https://next.router.vuejs.org/api/#router-link-s-v-slot) 来扩展`<router-link>`。
+如果你想自定义这种行为，例如考虑到 `hash` 部分，你应该使用 [`v-slot` API](/zh/guide/advanced/composition-api#uselink) 来扩展`<router-link>`。
 
 **原因**: 详见 [RFC about active matching](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0028-router-active-link.md#summary)。
 
@@ -207,7 +207,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 ### 删除 `router.match` 改为 `router.resolve`
 
-`router.match` 和 `router.resolve` 已合并到 `router.resolve` 中，签名略有不同。[详见 API](../../api/#resolve)。
+`router.match` 和 `router.resolve` 已合并到 `router.resolve` 中，签名略有不同。[详见 API](../../api/interfaces/router#Methods-resolve)。
 
 **原因**：将用于同一目的的多种方法统一起来。
 
