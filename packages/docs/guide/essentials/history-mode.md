@@ -68,7 +68,7 @@ While it's not recommended, you can use this mode inside Browser applications bu
 
 ### Apache
 
-```apacheconf
+```
 <IfModule mod_negotiation.c>
   Options -MultiViews
 </IfModule>

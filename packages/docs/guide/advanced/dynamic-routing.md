@@ -59,23 +59,29 @@ Because we are redirecting, we are replacing the ongoing navigation, effectively
 There are few different ways to remove existing routes:
 
 - By adding a route with a conflicting name. If you add a route that has the same name as an existing route, it will remove the route first and then add the route:
+
   ```js
   router.addRoute({ path: '/about', name: 'about', component: About })
   // this will remove the previously added route because they have the same name and names are unique
   router.addRoute({ path: '/other', name: 'about', component: Other })
   ```
+
 - By calling the callback returned by `router.addRoute()`:
+
   ```js
   const removeRoute = router.addRoute(routeRecord)
   removeRoute() // removes the route if it exists
   ```
+
   This is useful when the routes do not have a name
 - By using `router.removeRoute()` to remove a route by its name:
+
   ```js
   router.addRoute({ path: '/about', name: 'about', component: About })
   // remove the route
   router.removeRoute('about')
   ```
+
   Note you can use `Symbol`s for names in routes if you wish to use this function but want to avoid conflicts in names.
 
 Whenever a route is removed, **all of its aliases and children** are removed with it.
@@ -104,5 +110,5 @@ router.addRoute({
 
 Vue Router gives you two functions to look at existing routes:
 
-- [`router.hasRoute()`](../../api/interfaces/router.html#Methods-hasRoute): check if a route exists
-- [`router.getRoutes()`](../../api/interfaces/Router.html#Methods-getRoutes): get an array with all the route records.
+- [`router.hasRoute()`](/api/interfaces/Router.md#Methods-hasRoute): check if a route exists
+- [`router.getRoutes()`](/api/interfaces/Router.md#Methods-getRoutes): get an array with all the route records.
