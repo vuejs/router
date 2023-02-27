@@ -122,7 +122,7 @@ const routes = [
 const routes = [
   {
     path: '/user/:id',
-    name: 'user-parent'
+    name: 'user-parent',
     component: User,
     children: [{ path: '', name: 'user', component: UserHome }],
   },
