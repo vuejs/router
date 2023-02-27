@@ -9,5 +9,6 @@ export default defineConfig({
   locales: {
     root: { label: 'English', lang: 'en-US', link: '/', ...enConfig },
     zh: { label: '简体中文', lang: 'zh-CN', link: '/zh/', ...zhConfig },
+    ko: { label: '한국어', lang: 'ko-KR', link: 'https://router.vuejs.kr/' },
   },
 })
