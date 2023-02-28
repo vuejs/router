@@ -266,7 +266,7 @@ export function createRouterMatcher(
           warn(
             `Discarded invalid param(s) "${invalidParams.join(
               '", "'
-            )}" when navigating. See https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22 for more details.`
+            )}" when navigating. You can hide this warning message by passing an empty object of Params alongside the name of the route. See https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22 for more details.`
           )
         }
       }
