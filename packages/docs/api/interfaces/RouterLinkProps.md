@@ -71,4 +71,4 @@ Route Location the link should navigate to when clicked on.
 
 #### Inherited from %{#Properties-to-Inherited-from}%
 
-RouterLinkOptions.to
+<span>RouterLinkOptions.to</span>
