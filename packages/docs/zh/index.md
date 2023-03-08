@@ -9,7 +9,7 @@ hero:
   text: Vue.js 的官方路由
   tagline: 为 Vue.js 提供富有表现力、可配置的、方便的路由
   image:
-    src: /logo.png
+    src: /logo.svg
     alt: Vue Router
   actions:
     - theme: brand
