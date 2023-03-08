@@ -1,17 +1,17 @@
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { promises as fsp } from 'node:fs'
-import {dirname} from 'node:path'
 import ts from 'rollup-plugin-typescript2'
 import replace from '@rollup/plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import chalk from 'chalk'
 import pkg from './package.json' assert { type: 'json' }
-import {terser} from 'rollup-plugin-terser'
+import { terser } from 'rollup-plugin-terser'
 
 const name = pkg.name
 
-const __dirname = dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const banner = `/*!
   * ${pkg.name} v${pkg.version}
