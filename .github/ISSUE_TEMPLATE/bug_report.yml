@@ -9,7 +9,7 @@ body:
     id: reproduction
     attributes:
       label: Reproduction
-            description: "If possible, provide a boiled down editable reproduction using a service like [JSFiddle](https://jsfiddle.net/posva/3yq6ojLv), Codepen, [CodeSandbox](https://codesandbox.io/s/vue-router-4-reproduction-s1sqc), or a GitHub repository. A failing unit test is even better! Otherwise provide as much information as possible to reproduce the problem. If we can't reproduce the problem, we won't be able to give it a look **and the issue will be converted into a question and moved to discussions**."
+      description: "If possible, provide a boiled down editable reproduction using a service like [JSFiddle](https://jsfiddle.net/posva/3yq6ojLv), Codepen, [CodeSandbox](https://codesandbox.io/s/vue-router-4-reproduction-s1sqc), or a GitHub repository. A failing unit test is even better! Otherwise provide as much information as possible to reproduce the problem. If we can't reproduce the problem, we won't be able to give it a look **and the issue will be converted into a question and moved to discussions**."
       placeholder: Reproduction
     validations:
       required: true
