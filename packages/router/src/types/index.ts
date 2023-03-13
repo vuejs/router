@@ -513,7 +513,7 @@ export interface NavigationGuardWithThis<T> {
     this: T,
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
-    next: NavigationGuardNext
+    next?: NavigationGuardNext
   ): NavigationGuardReturn | Promise<NavigationGuardReturn>
 }
 
