@@ -197,24 +197,24 @@ ___
 **`Example`**
 
 ```js
-// at https://example.com/folder
-createWebHashHistory() // gives a url of `https://example.com/folder#`
-createWebHashHistory('/folder/') // gives a url of `https://example.com/folder/#`
-// if the `#` is provided in the base, it won't be added by `createWebHashHistory`
-createWebHashHistory('/folder/#/app/') // gives a url of `https://example.com/folder/#/app/`
-// you should avoid doing this because it changes the original url and breaks copying urls
-createWebHashHistory('/other-folder/') // gives a url of `https://example.com/other-folder/#`
+// 基于 https://example.com/folder
+createWebHashHistory() // 给出一个 `https://example.com/folder#` 的 URL
+createWebHashHistory('/folder/') // 给出一个 `https://example.com/folder/#` 的 URL
+// 如果其基础位置提供了 `#`，则不会被 `createWebHashHistory` 添加
+createWebHashHistory('/folder/#/app/') // 给出一个 `https://example.com/folder/#/app/` 的 URL
+// 你应该避免这样做，因为它改变了原始的 URL 且破坏了复制 URL 的工作
+createWebHashHistory('/other-folder/') // 给出一个 `https://example.com/other-folder/#` 的 URL
 
-// at file:///usr/etc/folder/index.html
-// for locations with no `host`, the base is ignored
-createWebHashHistory('/iAmIgnored') // gives a url of `file:///usr/etc/folder/index.html#`
+// 基于 file:///usr/etc/folder/index.html
+// 对于没有 `host` 的位置，该 base 会被忽略
+createWebHashHistory('/iAmIgnored') // 给出一个 `file:///usr/etc/folder/index.html#` 的 URL
 ```
 
 #### Parameters %{#Functions-createWebHashHistory-Parameters}%
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `base?` | `string` | optional base to provide. Defaults to `location.pathname + location.search` If there is a `<base>` tag in the `head`, its value will be ignored in favor of this parameter **but note it affects all the history.pushState() calls**, meaning that if you use a `<base>` tag, it's `href` value **has to match this parameter** (ignoring anything after the `#`). |
+| `base?` | `string` | 可选提供的基础位置。默认为 `location.pathname + location.search`。如果在 `head` 中有一个 `<base>` 标签，它的值会因此被忽略，**但注意它会影响所有 history.pushState() 的调用**，这意味着如果你使用一个 `<base>` 标签，它的 `href` 值**必须与这个参数匹配** (忽略 `#` 后的任何东西)。 |
 
 #### Returns %{#Functions-createWebHashHistory-Returns}%
 
@@ -226,7 +226,7 @@ ___
 
 ▸ **createWebHistory**(`base?`): [`RouterHistory`](interfaces/RouterHistory.md)
 
-Creates an HTML5 history. Most common history for single page applications.
+创建一个 HTML5 历史。对于单页应用来说这是最常见的历史。
 
 #### Parameters %{#Functions-createWebHistory-Parameters}%
 
@@ -244,7 +244,7 @@ ___
 
 ▸ **isNavigationFailure**(`error`, `type?`): error is NavigationRedirectError
 
-Check if an object is a [NavigationFailure](interfaces/NavigationFailure.md).
+检查一个对象是否是 [NavigationFailure](interfaces/NavigationFailure.md)。
 
 **`Example`**
 
@@ -252,15 +252,15 @@ Check if an object is a [NavigationFailure](interfaces/NavigationFailure.md).
 import { isNavigationFailure, NavigationFailureType } from 'vue-router'
 
 router.afterEach((to, from, failure) => {
-  // Any kind of navigation failure
+  // 任何类型的导航失败
   if (isNavigationFailure(failure)) {
     // ...
   }
-  // Only duplicated navigations
+  // 重复的导航
   if (isNavigationFailure(failure, NavigationFailureType.duplicated)) {
     // ...
   }
-  // Aborted or canceled navigations
+  // 中止或取消的导航
   if (isNavigationFailure(failure, NavigationFailureType.aborted | NavigationFailureType.canceled)) {
     // ...
   }
@@ -271,8 +271,8 @@ router.afterEach((to, from, failure) => {
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `error` | `any` | possible [NavigationFailure](interfaces/NavigationFailure.md) |
-| `type?` | `NAVIGATION_GUARD_REDIRECT` | optional types to check for |
+| `error` | `any` | 可能的 [NavigationFailure](interfaces/NavigationFailure.md) |
+| `type?` | `NAVIGATION_GUARD_REDIRECT` | 可选的待检查类型 |
 
 #### Returns %{#Functions-isNavigationFailure-Returns}%
 
@@ -297,13 +297,13 @@ ___
 
 ▸ **loadRouteLocation**(`route`): `Promise`<[`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)\>
 
-Ensures a route is loaded, so it can be passed as o prop to `<RouterView>`.
+确保路由被加载，所以它可以作为一个 prop 传递给 `<RouterView>`。
 
 #### Parameters %{#Functions-loadRouteLocation-Parameters}%
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `route` | [`RouteLocationNormalized`](interfaces/RouteLocationNormalized.md) | resolved route to load |
+| `route` | [`RouteLocationNormalized`](interfaces/RouteLocationNormalized.md) | 解析要加载的路由 |
 
 #### Returns %{#Functions-loadRouteLocation-Returns}%
 
@@ -315,9 +315,7 @@ ___
 
 ▸ **onBeforeRouteLeave**(`leaveGuard`): `void`
 
-Add a navigation guard that triggers whenever the component for the current
-location is about to be left. Similar to beforeRouteLeave but can be
-used in any component. The guard is removed when the component is unmounted.
+添加一个导航守卫，不论当前位置的组件何时离开都会触发。类似于 beforeRouteLeave，但可以在任意组件中使用。当组件被卸载时，该守卫会被移除。
 
 #### Parameters %{#Functions-onBeforeRouteLeave-Parameters}%
 
@@ -335,9 +333,7 @@ ___
 
 ▸ **onBeforeRouteUpdate**(`updateGuard`): `void`
 
-Add a navigation guard that triggers whenever the current location is about
-to be updated. Similar to beforeRouteUpdate but can be used in any
-component. The guard is removed when the component is unmounted.
+添加一个导航守卫，不论当前位置何时被更新都会触发。类似于 beforeRouteUpdate，但可以在任何组件中使用。当组件被卸载时，该守卫会被移除。
 
 #### Parameters %{#Functions-onBeforeRouteUpdate-Parameters}%
 
@@ -379,8 +375,7 @@ ___
 
 ▸ **useRoute**(): [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)
 
-Returns the current route location. Equivalent to using `$route` inside
-templates.
+返回当前的路由地址。相当于在模板中使用 `$router`。
 
 #### Returns %{#Functions-useRoute-Returns}%
 
@@ -392,8 +387,7 @@ ___
 
 ▸ **useRouter**(): [`Router`](interfaces/Router.md)
 
-Returns the router instance. Equivalent to using `$router` inside
-templates.
+返回路由器实例。相当于在模板中使用 `$router`。
 
 #### Returns %{#Functions-useRouter-Returns}%
 
