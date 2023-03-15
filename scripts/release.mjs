@@ -344,7 +344,8 @@ async function getChangedPackages() {
     )
     lastTag = stdout
   }
-  const folders = await globby(join(__dirname, '../packages/*'), {
+  // globby expects `/` even on windows
+  const folders = await globby((join(__dirname, '../packages/*').replace(/\\/g,'/')), {
     onlyFiles: false,
   })
 
