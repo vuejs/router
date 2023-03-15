@@ -344,7 +344,7 @@ async function getChangedPackages() {
     )
     lastTag = stdout
   }
-  const folders = await globby(join(__dirname, '../packages/*'), {
+  const folders = await globby((join(__dirname, '../packages/*').replace(/\\/g,'/')), {
     onlyFiles: false,
   })
 
