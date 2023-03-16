@@ -130,13 +130,13 @@ ___
 
 ___
 
-### START\_LOCATION %{#Variables-START\_LOCATION}%
+### START\_LOCATION %{#Variables-START_LOCATION}%
 
 • `Const` **START\_LOCATION**: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)
 
 路由器的初始路由位置。可以在导航守卫中使用来区分初始导航。
 
-**`Example`**
+**示例**
 
 ```js
 import { START_LOCATION } from 'vue-router'
@@ -156,13 +156,13 @@ router.beforeEach((to, from) => {
 
 创建一个基于内存的历史。该历史的主要目的是为了处理服务端渲染。它从一个不存在的特殊位置开始。用户可以通过调用 `router.push` 或 `router.replace` 将该位置替换成起始位置。
 
-#### Parameters %{#Functions-createMemoryHistory-Parameters}%
+#### 参数 %{#Functions-createMemoryHistory-Parameters}%
 
-| Name | Type | Default value | Description |
+| 名称 | 类型 | 默认值 | 描述 |
 | :------ | :------ | :------ | :------ |
 | `base` | `string` | `''` | 所有 URL 的基础位置，默认为 '/' |
 
-#### Returns %{#Functions-createMemoryHistory-Returns}%
+#### 返回值 %{#Functions-createMemoryHistory-Returns}%
 
 [`RouterHistory`](interfaces/RouterHistory.md)
 
@@ -176,13 +176,13 @@ ___
 
 创建一个可以被 Vue 应用使用的 Router 实例。
 
-#### Parameters %{#Functions-createRouter-Parameters}%
+#### 参数 %{#Functions-createRouter-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `options` | [`RouterOptions`](interfaces/RouterOptions.md) | [RouterOptions](interfaces/RouterOptions.md) |
 
-#### Returns %{#Functions-createRouter-Returns}%
+#### 返回值 %{#Functions-createRouter-Returns}%
 
 [`Router`](interfaces/Router.md)
 
@@ -194,7 +194,7 @@ ___
 
 创建一个 hash 模式的历史。在没有主机的 web 应用 (如 `file://`) 或无法通过配置服务器来处理任意 URL 的时候非常有用。
 
-**`Example`**
+**示例**
 
 ```js
 // 基于 https://example.com/folder
@@ -210,13 +210,13 @@ createWebHashHistory('/other-folder/') // 给出一个 `https://example.com/othe
 createWebHashHistory('/iAmIgnored') // 给出一个 `file:///usr/etc/folder/index.html#` 的 URL
 ```
 
-#### Parameters %{#Functions-createWebHashHistory-Parameters}%
+#### 参数 %{#Functions-createWebHashHistory-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `base?` | `string` | 可选提供的基础位置。默认为 `location.pathname + location.search`。如果在 `head` 中有一个 `<base>` 标签，它的值会因此被忽略，**但注意它会影响所有 history.pushState() 的调用**，这意味着如果你使用一个 `<base>` 标签，它的 `href` 值**必须与这个参数匹配** (忽略 `#` 后的任何东西)。 |
 
-#### Returns %{#Functions-createWebHashHistory-Returns}%
+#### 返回值 %{#Functions-createWebHashHistory-Returns}%
 
 [`RouterHistory`](interfaces/RouterHistory.md)
 
@@ -228,13 +228,13 @@ ___
 
 创建一个 HTML5 历史。对于单页应用来说这是最常见的历史。
 
-#### Parameters %{#Functions-createWebHistory-Parameters}%
+#### 参数 %{#Functions-createWebHistory-Parameters}%
 
-| Name | Type |
+| 名称 | 类型 |
 | :------ | :------ |
 | `base?` | `string` |
 
-#### Returns %{#Functions-createWebHistory-Returns}%
+#### 返回值 %{#Functions-createWebHistory-Returns}%
 
 [`RouterHistory`](interfaces/RouterHistory.md)
 
@@ -246,7 +246,7 @@ ___
 
 检查一个对象是否是 [NavigationFailure](interfaces/NavigationFailure.md)。
 
-**`Example`**
+**示例**
 
 ```js
 import { isNavigationFailure, NavigationFailureType } from 'vue-router'
@@ -267,27 +267,27 @@ router.afterEach((to, from, failure) => {
 })
 ```
 
-#### Parameters %{#Functions-isNavigationFailure-Parameters}%
+#### 参数 %{#Functions-isNavigationFailure-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型| 名称 | 类型 | |
 | :------ | :------ | :------ |
 | `error` | `any` | 可能的 [NavigationFailure](interfaces/NavigationFailure.md) |
 | `type?` | `NAVIGATION_GUARD_REDIRECT` | 可选的待检查类型 |
 
-#### Returns %{#Functions-isNavigationFailure-Returns}%
+#### 返回值 %{#Functions-isNavigationFailure-Returns}%
 
 error is NavigationRedirectError
 
 ▸ **isNavigationFailure**(`error`, `type?`): error is NavigationFailure
 
-#### Parameters %{#Functions-isNavigationFailure-Parameters_1}%
+#### 参数 %{#Functions-isNavigationFailure-Parameters_1}%
 
-| Name | Type |
+| 名称 | 类型 |
 | :------ | :------ |
 | `error` | `any` |
 | `type?` | `ErrorTypes` \| [`NavigationFailureType`](enums/NavigationFailureType.md) |
 
-#### Returns %{#Functions-isNavigationFailure-Returns_1}%
+#### 返回值 %{#Functions-isNavigationFailure-Returns_1}%
 
 error is NavigationFailure
 
@@ -299,13 +299,13 @@ ___
 
 确保路由被加载，所以它可以作为一个 prop 传递给 `<RouterView>`。
 
-#### Parameters %{#Functions-loadRouteLocation-Parameters}%
+#### 参数 %{#Functions-loadRouteLocation-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型| 名称 | 类型 | |
 | :------ | :------ | :------ |
 | `route` | [`RouteLocationNormalized`](interfaces/RouteLocationNormalized.md) | 解析要加载的路由 |
 
-#### Returns %{#Functions-loadRouteLocation-Returns}%
+#### 返回值 %{#Functions-loadRouteLocation-Returns}%
 
 `Promise`<[`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)\>
 
@@ -317,13 +317,13 @@ ___
 
 添加一个导航守卫，不论当前位置的组件何时离开都会触发。类似于 beforeRouteLeave，但可以在任意组件中使用。当组件被卸载时，该守卫会被移除。
 
-#### Parameters %{#Functions-onBeforeRouteLeave-Parameters}%
+#### 参数 %{#Functions-onBeforeRouteLeave-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型| 名称 | 类型 | |
 | :------ | :------ | :------ |
 | `leaveGuard` | [`NavigationGuard`](interfaces/NavigationGuard.md) | [NavigationGuard](interfaces/NavigationGuard.md) |
 
-#### Returns %{#Functions-onBeforeRouteLeave-Returns}%
+#### 返回值 %{#Functions-onBeforeRouteLeave-Returns}%
 
 `void`
 
@@ -335,13 +335,13 @@ ___
 
 添加一个导航守卫，不论当前位置何时被更新都会触发。类似于 beforeRouteUpdate，但可以在任何组件中使用。当组件被卸载时，该守卫会被移除。
 
-#### Parameters %{#Functions-onBeforeRouteUpdate-Parameters}%
+#### 参数 %{#Functions-onBeforeRouteUpdate-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型| 名称 | 类型 | |
 | :------ | :------ | :------ |
 | `updateGuard` | [`NavigationGuard`](interfaces/NavigationGuard.md) | [NavigationGuard](interfaces/NavigationGuard.md) |
 
-#### Returns %{#Functions-onBeforeRouteUpdate-Returns}%
+#### 返回值 %{#Functions-onBeforeRouteUpdate-Returns}%
 
 `void`
 
@@ -351,19 +351,19 @@ ___
 
 ▸ **useLink**(`props`): `Object`
 
-#### Parameters %{#Functions-useLink-Parameters}%
+#### 参数 %{#Functions-useLink-Parameters}%
 
-| Name | Type |
+| 名称 | 类型 |
 | :------ | :------ |
 | `props` | `VueUseOptions`<`RouterLinkOptions`\> |
 
-#### Returns %{#Functions-useLink-Returns}%
+#### 返回值 %{#Functions-useLink-Returns}%
 
 `Object`
 
-| Name | Type |
+| 名称 | 类型 |
 | :------ | :------ |
-| `href` | `ComputedRef`<`string`\> |
+| `href` | `ComputedRef<string\>` |
 | `isActive` | `ComputedRef`<`boolean`\> |
 | `isExactActive` | `ComputedRef`<`boolean`\> |
 | `navigate` | (`e`: `MouseEvent`) => `Promise`<`void` \| [`NavigationFailure`](interfaces/NavigationFailure.md)\> |
@@ -377,7 +377,7 @@ ___
 
 返回当前的路由地址。相当于在模板中使用 `$router`。
 
-#### Returns %{#Functions-useRoute-Returns}%
+#### 返回值 %{#Functions-useRoute-Returns}%
 
 [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)
 
@@ -389,6 +389,6 @@ ___
 
 返回路由器实例。相当于在模板中使用 `$router`。
 
-#### Returns %{#Functions-useRouter-Returns}%
+#### 返回值 %{#Functions-useRouter-Returns}%
 
 [`Router`](interfaces/Router.md)
