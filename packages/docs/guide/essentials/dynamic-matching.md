@@ -25,7 +25,7 @@ A _param_ is denoted by a colon `:`. When a route is matched, the value of its _
 
 ```js
 const User = {
-  template: '<div>User {{ $route.params.id }}</div>', // "this." can be omitted in template syntax
+  template: '<div>User {{ $route.params.id }}</div>', // `this.` can be omitted in template syntax
 }
 ```
 
