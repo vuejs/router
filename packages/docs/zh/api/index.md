@@ -269,7 +269,7 @@ router.afterEach((to, from, failure) => {
 
 #### 参数 %{#Functions-isNavigationFailure-Parameters}%
 
-| 名称 | 类型| 名称 | 类型 | |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `error` | `any` | 可能的 [NavigationFailure](interfaces/NavigationFailure.md) |
 | `type?` | `NAVIGATION_GUARD_REDIRECT` | 可选的待检查类型 |
@@ -301,7 +301,7 @@ ___
 
 #### 参数 %{#Functions-loadRouteLocation-Parameters}%
 
-| 名称 | 类型| 名称 | 类型 | |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `route` | [`RouteLocationNormalized`](interfaces/RouteLocationNormalized.md) | 解析要加载的路由 |
 
@@ -319,7 +319,7 @@ ___
 
 #### 参数 %{#Functions-onBeforeRouteLeave-Parameters}%
 
-| 名称 | 类型| 名称 | 类型 | |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `leaveGuard` | [`NavigationGuard`](interfaces/NavigationGuard.md) | [NavigationGuard](interfaces/NavigationGuard.md) |
 
@@ -337,7 +337,7 @@ ___
 
 #### 参数 %{#Functions-onBeforeRouteUpdate-Parameters}%
 
-| 名称 | 类型| 名称 | 类型 | |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `updateGuard` | [`NavigationGuard`](interfaces/NavigationGuard.md) | [NavigationGuard](interfaces/NavigationGuard.md) |
 
