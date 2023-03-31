@@ -94,7 +94,7 @@ const router = createRouter({
     { path: '/users/:id', sensitive: true },
     // 将匹配 /users, /Users, 以及 /users/42 而非 /users/ 或 /users/42/
     { path: '/users/:id?' },
-  ]
+  ],
   strict: true, // applies to all routes
 })
 ```
