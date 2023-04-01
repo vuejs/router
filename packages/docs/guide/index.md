@@ -78,6 +78,10 @@ app.mount('#app')
 // Now the app has started!
 ```
 
+:::tip
+if you are use the router with Vite add your App vue when calling `createApp(App)` and remember to use `<router-view></router-view>` so the routing rendering can be done and displayed.
+:::
+
 By calling `app.use(router)`, we are triggering the initial navigation and giving access to `this.$router` as well as the current route as `this.$route` inside of any component:
 
 ```js
