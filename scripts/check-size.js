@@ -1,18 +1,23 @@
-const fs = require('fs')
+const fs = require('fs').promises
 const path = require('path')
 const chalk = require('chalk')
 const { gzipSync } = require('zlib')
 const { compress } = require('brotli')
 
-function checkFileSize(filePath) {
-  if (!fs.existsSync(filePath)) {
+async function checkFileSize(filePath) {
+  const stat = await fs.stat(filePath).catch(() => null)
+  if (!stat?.isFile()) {
+    console.error(chalk.red(`File ${chalk.bold(filePath)} not found`))
     return
   }
-  const file = fs.readFileSync(filePath)
+  const file = await fs.readFile(filePath)
   const minSize = (file.length / 1024).toFixed(2) + 'kb'
-  const gzipped = gzipSync(file)
+  const [gzipped, compressed] = await Promise.all([
+    gzipSync(file),
+    //
+    compress(file),
+  ])
   const gzippedSize = (gzipped.length / 1024).toFixed(2) + 'kb'
-  const compressed = compress(file)
   const compressedSize = (compressed.length / 1024).toFixed(2) + 'kb'
   console.log(
     `${chalk.gray(
@@ -21,9 +26,15 @@ function checkFileSize(filePath) {
   )
 }
 
-checkFileSize(
-  path.resolve(__dirname, '../packages/router/size-checks/dist/webRouter.js')
-)
-checkFileSize(
-  path.resolve(__dirname, '../packages/router/dist/vue-router.global.prod.js')
-)
+;(async () => {
+  const files = [
+    path.resolve(__dirname, '../packages/router/size-checks/dist/webRouter.js'),
+    path.resolve(
+      __dirname,
+      '../packages/router/dist/vue-router.global.prod.js'
+    ),
+  ]
+  for (const file of files) {
+    await checkFileSize(file)
+  }
+})()
