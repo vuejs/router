@@ -5,6 +5,10 @@ const { gzip } = require('zlib')
 const { compress } = require('brotli')
 
 async function checkFileSize(filePath) {
+  const stat = await fs.stat(filePath).catch(() => null)
+  if (!stat || !stat.isFile()) {
+    return
+  }
   const file = await fs.readFile(filePath)
   const minSize = (file.length / 1024).toFixed(2) + 'kb'
   const [gzipped, compressed] = await Promise.all([gzip(file), compress(file)])
