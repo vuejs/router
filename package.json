@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "release": "node scripts/release.mjs",
-    "size": "pnpm run -r size",
+    "size": "node scripts/check-size.mjs",
     "build": "pnpm run -r build",
     "build:dts": "pnpm run -r build:dts",
     "docs:api": "pnpm run --filter ./packages/docs -r docs:api",

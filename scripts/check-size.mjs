@@ -1,8 +1,10 @@
-const fs = require('fs').promises
-const path = require('path')
-const chalk = require('chalk')
-const { gzipSync } = require('zlib')
-const { compress } = require('brotli')
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import chalk from 'chalk'
+import { gzipSync } from 'zlib'
+import { compress } from 'brotli'
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 async function checkFileSize(filePath) {
   const stat = await fs.stat(filePath).catch(() => null)
@@ -27,14 +29,16 @@ async function checkFileSize(filePath) {
 }
 
 ;(async () => {
-  const files = [
-    path.resolve(__dirname, '../packages/router/size-checks/dist/webRouter.js'),
-    path.resolve(
-      __dirname,
-      '../packages/router/dist/vue-router.global.prod.js'
-    ),
-  ]
-  for (const file of files) {
-    await checkFileSize(file)
-  }
+  await Promise.all(
+    [
+      path.resolve(
+        __dirname,
+        '../packages/router/size-checks/dist/webRouter.js'
+      ),
+      path.resolve(
+        __dirname,
+        '../packages/router/dist/vue-router.global.prod.js'
+      ),
+    ].map(checkFileSize)
+  )
 })()
