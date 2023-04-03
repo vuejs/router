@@ -7,24 +7,24 @@ import { compress } from 'brotli'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 async function checkFileSize(filePath) {
-  const stat = await fs.stat(filePath).catch(() => null)
-  if (!stat?.isFile()) {
+  const { isFile = false } = await fs.stat(filePath).catch(() => ({}))
+  if (!isFile) {
     console.error(chalk.red(`File ${chalk.bold(filePath)} not found`))
     return
   }
+
   const file = await fs.readFile(filePath)
-  const minSize = (file.length / 1024).toFixed(2) + 'kb'
   const [gzipped, compressed] = await Promise.all([
     gzipSync(file),
-    //
     compress(file),
   ])
-  const gzippedSize = (gzipped.length / 1024).toFixed(2) + 'kb'
-  const compressedSize = (compressed.length / 1024).toFixed(2) + 'kb'
+
   console.log(
-    `${chalk.gray(
-      chalk.bold(path.basename(filePath))
-    )} min:${minSize} / gzip:${gzippedSize} / brotli:${compressedSize}`
+    `${chalk.gray(chalk.bold(path.basename(filePath)))} min:${(
+      file.length / 1024
+    ).toFixed(2)}kb / gzip:${(gzipped.length / 1024).toFixed(2)}kb / brotli:${(
+      compressed.length / 1024
+    ).toFixed(2)}kb`
   )
 }
 
