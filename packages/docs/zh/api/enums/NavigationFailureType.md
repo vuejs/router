@@ -4,19 +4,17 @@ editLink: false
 
 [API Documentation](../index.md) / NavigationFailureType
 
-# Enumeration: NavigationFailureType
+# 枚举：NavigationFailureType %{#enumeration-navigationfailuretype}%
 
-Enumeration with all possible types for navigation failures. Can be passed to
-[isNavigationFailure](../index.md#isnavigationfailure) to check for specific failures.
+为导航失败枚举所有可能的类型。可以传入 [isNavigationFailure](../index.md#isnavigationfailure) 以检查特定的失败情况。
 
-## Enumeration Members %{#Enumeration-Members}%
+## 枚举成员 %{#Enumeration-Members}%
 
 ### aborted %{#Enumeration-Members-aborted}%
 
 • **aborted** = ``4``
 
-An aborted navigation is a navigation that failed because a navigation
-guard returned `false` or called `next(false)`
+中断的导航是因为导航守卫返回 `false` 会调用了 `next(false)` 而导致失败的导航。
 
 ___
 
@@ -24,8 +22,7 @@ ___
 
 • **cancelled** = ``8``
 
-A cancelled navigation is a navigation that failed because a more recent
-navigation finished started (not necessarily finished).
+取消的导航是因为另一个更近的导航已经开始 (不需要完成) 而导致失败的导航。
 
 ___
 
@@ -33,5 +30,4 @@ ___
 
 • **duplicated** = ``16``
 
-A duplicated navigation is a navigation that failed because it was
-initiated while already being at the exact same location.
+重复的导航是因为其开始的时候已经处在相同的路径而导致失败的导航。
