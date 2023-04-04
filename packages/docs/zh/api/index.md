@@ -375,7 +375,7 @@ ___
 
 ▸ **useRoute**(): [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)
 
-返回当前的路由地址。相当于在模板中使用 `$router`。
+返回当前的路由地址。相当于在模板中使用 `$route`。
 
 #### 返回值 %{#Functions-useRoute-Returns}%
 
