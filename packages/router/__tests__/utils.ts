@@ -4,7 +4,6 @@ import {
   RouteRecordMultipleViews,
   MatcherLocation,
   RouteLocationNormalized,
-  _RouteRecordBase,
   RouteComponent,
   RouteRecordRaw,
   RouteRecordName,

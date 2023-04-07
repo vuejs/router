@@ -32,7 +32,8 @@ interface StateEntry extends HistoryState {
 
 /**
  * Creates a normalized history location from a window.location object
- * @param location -
+ * @param base - The base path
+ * @param location - The window.location object
  */
 function createCurrentLocation(
   base: string,
