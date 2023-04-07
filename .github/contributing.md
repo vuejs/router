@@ -111,7 +111,7 @@ Unit tests are located inside `__tests__`. Consult the [Jest docs](https://jestj
 
 ## Contributing Docs
 
-Currently, all the docs can be found in `packages/docs`. It has a English version by default, and translation(s) in corresponding `<lang>` sub-folder(s):
+Currently, all the docs can be found in `packages/docs`. It contains the English markdown files while translation(s) are stored in their corresponding `<lang>` sub-folder(s):
 
 - `zh`: Chinese translation.
 
