@@ -121,6 +121,7 @@ export function stripBase(pathname: string, base: string): string {
  * pointing towards the same {@link RouteRecord} and that all `params`, `query`
  * parameters and `hash` are the same
  *
+ * @param stringifyQuery - A function that takes a query object of type LocationQueryRaw and returns a string representation of it.
  * @param a - first {@link RouteLocation}
  * @param b - second {@link RouteLocation}
  */

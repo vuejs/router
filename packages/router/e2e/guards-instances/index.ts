@@ -45,7 +45,8 @@ const state = reactive({
 
 /**
  * creates a component that logs the guards
- * @param name
+ * @param key {string} - a unique identifier for the component
+ * @returns {object} - a Vue component object with beforeRouteEnter, beforeRouteUpdate, and beforeRouteLeave navigation guards implemented
  */
 function createTestComponent(key: string) {
   return defineComponent({
