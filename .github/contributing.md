@@ -117,7 +117,7 @@ Currently, all the docs can be found in `packages/docs`. It has a English versio
 
 Besides that, the `.vitepress` sub-folder is used to put the config and theme, including the i18n information.
 
-If you want to start to translate the docs in a new language:
+If you want to start translating the docs in a new language:
 
 1. Create the corresponding `<lang>` sub-folder for your translation.
 2. Modify the i18n config in `.vitepress` sub-folder.
