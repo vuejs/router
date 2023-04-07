@@ -45,7 +45,7 @@ You will need [Node.js](http://nodejs.org) **version 10+**, and [Pnpm](https://p
 After cloning the repo, run:
 
 ```bash
-$ pnpm install # install the dependencies of the project
+pnpm install # install the dependencies of the project
 ```
 
 A high level overview of tools used:
@@ -66,7 +66,7 @@ The `build` script builds vue-router
 The `play` scripts starts a playground project located at `playground/` that allows you to test things on a browser.
 
 ```bash
-$ pnpm play
+pnpm play
 ```
 
 ### `pnpm test`
@@ -113,4 +113,4 @@ Unit tests are located inside `__tests__`. Consult the [Jest docs](https://jestj
 
 Thank you to all the people who have already contributed to Vue Router!
 
-<a href="https://github.com/vuejs/vue/graphs/contributors"><img src="https://opencollective.com/vuejs/contributors.svg?width=890" /></a>
+<a href="https://github.com/vuejs/router/graphs/contributors"><img src="https://opencollective.com/vuejs/contributors.svg?width=890" /></a>
