@@ -113,7 +113,7 @@ Unit tests are located inside `__tests__`. Consult the [Jest docs](https://jestj
 
 Currently, all the docs can be found in `packages/docs`. It contains the English markdown files while translation(s) are stored in their corresponding `<lang>` sub-folder(s):
 
-- `zh`: Chinese translation.
+- [`zh`](https://github.com/vuejs/router/tree/main/packages/docs/zh): Chinese translation.
 
 Besides that, the `.vitepress` sub-folder is used to put the config and theme, including the i18n information.
 
