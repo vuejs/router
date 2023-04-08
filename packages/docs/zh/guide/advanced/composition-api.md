@@ -91,7 +91,7 @@ export default {
 
 ## `useLink`
 
-Vue Router 将 RouterLink 的内部行为作为一个组合 (composable) 公开。它接收一个类似 `RouterLink` 所有 prop 的响应式对象，并暴露底层属性来构建你自己的 `RouterLink` 组件或生成自定义链接：
+Vue Router 将 RouterLink 的内部行为作为一个组合式函数 (composable) 公开。它接收一个类似 `RouterLink` 所有 prop 的响应式对象，并暴露底层属性来构建你自己的 `RouterLink` 组件或生成自定义链接：
 
 ```js
 import { RouterLink, useLink } from 'vue-router'
@@ -112,7 +112,7 @@ export default {
       route,
       // 用在链接里的 href
       href,
-      // 布尔类型的 ref  标识链接是否为活跃的
+      // 布尔类型的 ref 标识链接是否为激活的
       isActive,
       // 布尔类型的 ref  标识链接是否为严格活跃的
       isExactActive,
@@ -129,4 +129,4 @@ export default {
 }
 ```
 
-注意 RouterLink 的 `v-slot` 提供了与 `useLink` 组合相同的访问属性。
+注意在 RouterLink 的 `v-slot` 中可以访问与 `useLink` 组合式函数相同的属性。
