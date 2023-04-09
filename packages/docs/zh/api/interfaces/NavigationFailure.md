@@ -4,23 +4,23 @@ editLink: false
 
 [API Documentation](../index.md) / NavigationFailure
 
-# Interface: NavigationFailure
+# 接口：NavigationFailure %{#interface-navigationfailure}%
 
-Extended Error that contains extra information regarding a failed navigation.
+Error 类型的扩展，包含导航失败的额外信息。
 
-## Hierarchy %{#Hierarchy}%
+## 继承关系 %{#Hierarchy}%
 
 - `Error`
 
   ↳ **`NavigationFailure`**
 
-## Properties %{#Properties}%
+## 属性 %{#Properties}%
 
 ### cause %{#Properties-cause}%
 
-• `Optional` **cause**: `unknown`
+• `可选` **cause**: `unknown`
 
-#### Inherited from %{#Properties-cause-Inherited-from}%
+#### 继承自 %{#Properties-cause-Inherited-from}%
 
 Error.cause
 
@@ -30,7 +30,7 @@ ___
 
 • **from**: [`RouteLocationNormalized`](RouteLocationNormalized.md)
 
-Route location we were navigating from
+上一个路由位置
 
 ___
 
@@ -38,7 +38,7 @@ ___
 
 • **message**: `string`
 
-#### Inherited from %{#Properties-message-Inherited-from}%
+#### 继承自 %{#Properties-message-Inherited-from}%
 
 Error.message
 
@@ -48,7 +48,7 @@ ___
 
 • **name**: `string`
 
-#### Inherited from %{#Properties-name-Inherited-from}%
+#### 继承自 %{#Properties-name-Inherited-from}%
 
 Error.name
 
@@ -56,9 +56,9 @@ ___
 
 ### stack %{#Properties-stack}%
 
-• `Optional` **stack**: `string`
+• `可选` **stack**: `string`
 
-#### Inherited from %{#Properties-stack-Inherited-from}%
+#### 继承自 %{#Properties-stack-Inherited-from}%
 
 Error.stack
 

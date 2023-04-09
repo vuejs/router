@@ -4,29 +4,29 @@ editLink: false
 
 [API Documentation](../index.md) / RouterOptions
 
-# Interface: RouterOptions
+# 接口：RouterOptions %{#interface-routeroptions}%
 
-Options to initialize a [Router](Router.md) instance.
+用来初始化一个 [Router](Router.md) 实例的选项。
 
-## Hierarchy %{#Hierarchy}%
+## 继承关系 %{#Hierarchy}%
 
 - [`PathParserOptions`](../index.md#pathparseroptions)
 
   ↳ **`RouterOptions`**
 
-## Properties %{#Properties}%
+## 属性 %{#Properties}%
 
 ### end %{#Properties-end}%
 
-• `Optional` **end**: `boolean`
+• `可选` **end**: `boolean`
 
-Should the RegExp match until the end by appending a `$` to it.
+其 RegExp 是否应该在末尾加一个 `$` 以匹配到末尾。
 
-**`Default Value`**
+**`默认值`**
 
 `true`
 
-#### Inherited from %{#Properties-end-Inherited-from}%
+#### 继承自 %{#Properties-end-Inherited-from}%
 
 PathParserOptions.end
 
@@ -36,18 +36,14 @@ ___
 
 • **history**: [`RouterHistory`](RouterHistory.md)
 
-History implementation used by the router. Most web applications should use
-`createWebHistory` but it requires the server to be properly configured.
-You can also use a _hash_ based history with `createWebHashHistory` that
-does not require any configuration on the server but isn't handled at all
-by search engines and does poorly on SEO.
+路由器使用的历史记录模式。大多数应用应该使用 `createWebHistory`，但这需要正确配置服务器。你也可以使用 `createWebHashHistory` 来实现基于 *hash* 的历史记录，无需配置服务器。但这种方式不会被搜索引擎处理，SEO 的效果较差。
 
-**`Example`**
+**`示例`**
 
 ```js
 createRouter({
   history: createWebHistory(),
-  // other options...
+  // 其它选项...
 })
 ```
 
@@ -55,54 +51,51 @@ ___
 
 ### linkActiveClass %{#Properties-linkActiveClass}%
 
-• `Optional` **linkActiveClass**: `string`
+• `可选` **linkActiveClass**: `string`
 
-Default class applied to active [RouterLink](../index.md#routerlink). If none is provided,
-`router-link-active` will be applied.
+匹配当前路由的 [RouterLink](../index.md#routerlink) 默认的 CSS class。如果没有提供，则会使用 `router-link-active`。
 
 ___
 
 ### linkExactActiveClass %{#Properties-linkExactActiveClass}%
 
-• `Optional` **linkExactActiveClass**: `string`
+• `可选` **linkExactActiveClass**: `string`
 
-Default class applied to exact active [RouterLink](../index.md#routerlink). If none is provided,
-`router-link-exact-active` will be applied.
+严格匹配当前路由的 [RouterLink](../index.md#routerlink) 默认的 CSS class。如果没有提供，则会使用 `router-link-exact-active`。
 
 ___
 
 ### parseQuery %{#Properties-parseQuery}%
 
-• `Optional` **parseQuery**: (`search`: `string`) => [`LocationQuery`](../index.md#locationquery)
+• `可选` **parseQuery**: (`search`: `string`) => [`LocationQuery`](../index.md#locationquery)
 
-#### Type declaration %{#Properties-parseQuery-Type-declaration}%
+#### 类型声明 %{#Properties-parseQuery-Type-declaration}%
 
 ▸ (`search`): [`LocationQuery`](../index.md#locationquery)
 
-Custom implementation to parse a query. See its counterpart,
-[stringifyQuery](RouterOptions.md#stringifyquery).
+解析查询的自定义实现。请查阅其相关内容 [stringifyQuery](RouterOptions.md#stringifyquery)。
 
-**`Example`**
+**`示例`**
 
-Let's say you want to use the [qs package](https://github.com/ljharb/qs)
-to parse queries, you can provide both `parseQuery` and `stringifyQuery`:
+假设你想使用 [qs 包](https://github.com/ljharb/qs) 来解析查询，那么你可以同时提供 `parseQuery` 和 `stringifyQuery`：
+
 ```js
 import qs from 'qs'
 
 createRouter({
-  // other options...
+  // 其它选项...
   parseQuery: qs.parse,
   stringifyQuery: qs.stringify,
 })
 ```
 
-##### Parameters %{#Properties-parseQuery-Type-declaration-Parameters}%
+##### 参数 %{#Properties-parseQuery-Type-declaration-Parameters}%
 
-| Name | Type |
+| 名称 | 类型 |
 | :------ | :------ |
 | `search` | `string` |
 
-##### Returns %{#Properties-parseQuery-Type-declaration-Returns}%
+##### 返回值 %{#Properties-parseQuery-Type-declaration-Returns}%
 
 [`LocationQuery`](../index.md#locationquery)
 
@@ -110,25 +103,24 @@ ___
 
 ### routes %{#Properties-routes}%
 
-• **routes**: readonly [`RouteRecordRaw`](../index.md#routerecordraw)[]
+• **routes**: 只读 [`RouteRecordRaw`](../index.md#routerecordraw)[]
 
-Initial list of routes that should be added to the router.
+应该添加到路由器的初始路由列表。
 
 ___
 
 ### scrollBehavior %{#Properties-scrollBehavior}%
 
-• `Optional` **scrollBehavior**: [`RouterScrollBehavior`](RouterScrollBehavior.md)
+• `可选` **scrollBehavior**: [`RouterScrollBehavior`](RouterScrollBehavior.md)
 
-Function to control scrolling when navigating between pages. Can return a
-Promise to delay scrolling. Check ScrollBehavior.
+当在页面之间导航时控制滚动的功能。可以返回一个 Promise 来延迟滚动。相关内容请查阅 ScrollBehavior。
 
-**`Example`**
+**`示例`**
 
 ```js
 function scrollBehavior(to, from, savedPosition) {
-  // `to` and `from` are both route locations
-  // `savedPosition` can be null if there isn't one
+  // `to` 和 `from` 都是路由路径
+  // `savedPosition` 如果不存在可以为 null
 }
 ```
 
@@ -136,15 +128,15 @@ ___
 
 ### sensitive %{#Properties-sensitive}%
 
-• `Optional` **sensitive**: `boolean`
+• `可选` **sensitive**: `boolean`
 
-Makes the RegExp case-sensitive.
+使该 RegExp 区分大小写。
 
-**`Default Value`**
+**`默认值`**
 
 `false`
 
-#### Inherited from %{#Properties-sensitive-Inherited-from}%
+#### 继承自 %{#Properties-sensitive-Inherited-from}%
 
 PathParserOptions.sensitive
 
@@ -152,15 +144,15 @@ ___
 
 ### strict %{#Properties-strict}%
 
-• `Optional` **strict**: `boolean`
+• `可选` **strict**: `boolean`
 
-Whether to disallow a trailing slash or not.
+是否禁止尾部斜线。
 
-**`Default Value`**
+**`默认值`**
 
 `false`
 
-#### Inherited from %{#Properties-strict-Inherited-from}%
+#### 继承自 %{#Properties-strict-Inherited-from}%
 
 PathParserOptions.strict
 
@@ -168,21 +160,20 @@ ___
 
 ### stringifyQuery %{#Properties-stringifyQuery}%
 
-• `Optional` **stringifyQuery**: (`query`: [`LocationQueryRaw`](../index.md#locationqueryraw)) => `string`
+• `可选` **stringifyQuery**: (`query`: [`LocationQueryRaw`](../index.md#locationqueryraw)) => `string`
 
-#### Type declaration %{#Properties-stringifyQuery-Type-declaration}%
+#### 类型声明 %{#Properties-stringifyQuery-Type-declaration}%
 
 ▸ (`query`): `string`
 
-Custom implementation to stringify a query object. Should not prepend a leading `?`.
-[parseQuery](RouterOptions.md#parsequery) counterpart to handle query parsing.
+对查询对象进行字符串化的自定义实现。该实现不应该前置 `?`。[parseQuery](RouterOptions.md#parsequery) 对应处理查询解析。
 
 ##### Parameters %{#Properties-stringifyQuery-Type-declaration-Parameters}%
 
-| Name | Type |
+| 名称 | 类型 |
 | :------ | :------ |
 | `query` | [`LocationQueryRaw`](../index.md#locationqueryraw) |
 
-##### Returns %{#Properties-stringifyQuery-Type-declaration-Returns}%
+##### 返回值 %{#Properties-stringifyQuery-Type-declaration-Returns}%
 
 `string`
