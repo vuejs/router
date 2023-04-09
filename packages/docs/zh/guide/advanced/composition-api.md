@@ -113,9 +113,9 @@ export default {
       route,
       // 用在链接里的 href
       href,
-      // 布尔类型的 ref 标识链接是否为激活的
+      // 布尔类型的 ref 标识链接是否匹配当前路由
       isActive,
-      // 布尔类型的 ref  标识链接是否为严格活跃的
+      // 布尔类型的 ref 标识链接是否严格匹配当前路由
       isExactActive,
       // 导航至该链接的函数
       navigate
