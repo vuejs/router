@@ -20,7 +20,7 @@ editLink: false
 
 • `可选` **end**: `boolean`
 
-其 RegExp 是否应该在末尾加一个 `$` 以匹配到结束。
+其 RegExp 是否应该在末尾加一个 `$` 以匹配到末尾。
 
 **`默认值`**
 
@@ -36,7 +36,7 @@ ___
 
 • **history**: [`RouterHistory`](RouterHistory.md)
 
-路由器使用的历史记录模式。大多数应用应该使用 `createWebHistory`，但这需要正确配置服务器。你也可以使用 `createWebHashHistory` 来实现基于*哈希*的历史记录，无需配置服务器，但这种方式不会被搜索引擎处理，SEO 的效果较差。
+路由器使用的历史记录模式。大多数应用应该使用 `createWebHistory`，但这需要正确配置服务器。你也可以使用 `createWebHashHistory` 来实现基于 *hash* 的历史记录，无需配置服务器。但这种方式不会被搜索引擎处理，SEO 的效果较差。
 
 **`示例`**
 
@@ -53,7 +53,7 @@ ___
 
 • `可选` **linkActiveClass**: `string`
 
-活跃的 [RouterLink](../index.md#routerlink) 的默认 CSS class。如果没有提供，则会使用 `router-link-active`。
+匹配当前路由的 [RouterLink](../index.md#routerlink) 默认的 CSS class。如果没有提供，则会使用 `router-link-active`。
 
 ___
 
@@ -61,7 +61,7 @@ ___
 
 • `可选` **linkExactActiveClass**: `string`
 
-精确活跃的 [RouterLink](../index.md#routerlink) 的默认 CSS class。如果没有提供，则会使用 `router-link-exact-active`。
+严格匹配当前路由的 [RouterLink](../index.md#routerlink) 默认的 CSS class。如果没有提供，则会使用 `router-link-exact-active`。
 
 ___
 
@@ -77,7 +77,7 @@ ___
 
 **`示例`**
 
-假设你想使用这个 [qs 包](https://github.com/ljharb/qs) 来解析查询，那么你可以同时提供 `parseQuery` 和 `stringifyQuery`：
+假设你想使用 [qs 包](https://github.com/ljharb/qs) 来解析查询，那么你可以同时提供 `parseQuery` 和 `stringifyQuery`：
 
 ```js
 import qs from 'qs'
@@ -146,7 +146,7 @@ ___
 
 • `可选` **strict**: `boolean`
 
-是否不允许有尾部斜线。
+是否禁止尾部斜线。
 
 **`默认值`**
 

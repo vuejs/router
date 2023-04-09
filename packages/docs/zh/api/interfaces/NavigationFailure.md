@@ -30,7 +30,7 @@ ___
 
 • **from**: [`RouteLocationNormalized`](RouteLocationNormalized.md)
 
-该导航由来的路由路径
+上一个路由位置
 
 ___
 
