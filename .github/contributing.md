@@ -117,7 +117,7 @@ Currently, all the docs can be found in `packages/docs`. It contains the English
 
 Besides that, the `.vitepress` sub-folder is used to put the config and theme, including the i18n information.
 
-For contributing to the translations, you have 2 ways to go:
+Consider the following two options in order to contribute to the translations:
 
 ### Translate in a `<lang>` sub-folder and host it on our official repo
 
@@ -147,10 +147,10 @@ For more real examples, please check out [all the PRs with title "docs(zh): sync
 
 You can also host the translation on your own. To create one, just simply fork our GitHub repo and change the content and site config in `packages/docs`. To long-term maintain it, we _highly recommend_ a similar way that we do above for our officially hosted translations:
 
-1. Make sure to have a _checkpoint_ branch (named like `sync`), which is always to the commit of the original docs that your latest translation is corresponding to.
-2. Translate by the diff result between the latest official repo and yours via git diff command or GitHub Compare page.
-3. Finish the translation.
-4. Update the checkpoint branch.
+1. Ensure you create a _checkpoint branch_ (for example, a branch named sync). This branch should always align with the commit of the original documentation that corresponds to your most recent translation.
+2. Utilize the diff result between the latest official repository and your own by using the git diff command or the GitHub Compare page to guide your translation.
+3. Complete the translation process.
+4. Update the _checkpoint branch_ accordingly.
 
 <!-- TODO: add an example once we have got one -->
 
