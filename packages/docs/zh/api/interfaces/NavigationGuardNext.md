@@ -2,17 +2,17 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / NavigationGuardNext
+[API 参考](../index.md) / NavigationGuardNext
 
-# Interface: NavigationGuardNext
+# 接口：NavigationGuardNext %{#interface-navigationguardnext}%
 
-## Callable %{#Callable}%
+## 可调用函数 %{#Callable}%
 
 ### NavigationGuardNext %{#Callable-NavigationGuardNext}%
 
 ▸ **NavigationGuardNext**(): `void`
 
-#### Returns %{#Callable-NavigationGuardNext-Returns}%
+#### 返回值 %{#Callable-NavigationGuardNext-Returns}%
 
 `void`
 
@@ -20,13 +20,13 @@ editLink: false
 
 ▸ **NavigationGuardNext**(`error`): `void`
 
-#### Parameters %{#Callable-NavigationGuardNext-Parameters}%
+#### 参数 %{#Callable-NavigationGuardNext-Parameters}%
 
-| Name | Type |
+| 名称 | 类型 |
 | :------ | :------ |
 | `error` | `Error` |
 
-#### Returns %{#Callable-NavigationGuardNext-Returns_1}%
+#### 返回值 %{#Callable-NavigationGuardNext-Returns_1}%
 
 `void`
 
@@ -34,13 +34,13 @@ editLink: false
 
 ▸ **NavigationGuardNext**(`location`): `void`
 
-#### Parameters %{#Callable-NavigationGuardNext-Parameters_1}%
+#### 参数 %{#Callable-NavigationGuardNext-Parameters_1}%
 
-| Name | Type |
+| 名称 | 类型 |
 | :------ | :------ |
 | `location` | [`RouteLocationRaw`](../index.md#routelocationraw) |
 
-#### Returns %{#Callable-NavigationGuardNext-Returns_2}%
+#### 返回值 %{#Callable-NavigationGuardNext-Returns_2}%
 
 `void`
 
@@ -48,13 +48,13 @@ editLink: false
 
 ▸ **NavigationGuardNext**(`valid`): `void`
 
-#### Parameters %{#Callable-NavigationGuardNext-Parameters_2}%
+#### 参数 %{#Callable-NavigationGuardNext-Parameters_2}%
 
-| Name | Type |
+| 名称 | 类型 |
 | :------ | :------ |
 | `valid` | `undefined` \| `boolean` |
 
-#### Returns %{#Callable-NavigationGuardNext-Returns_3}%
+#### 返回值 %{#Callable-NavigationGuardNext-Returns_3}%
 
 `void`
 
@@ -62,12 +62,12 @@ editLink: false
 
 ▸ **NavigationGuardNext**(`cb`): `void`
 
-#### Parameters %{#Callable-NavigationGuardNext-Parameters_3}%
+#### 参数 %{#Callable-NavigationGuardNext-Parameters_3}%
 
-| Name | Type |
+| 名称 | 类型 |
 | :------ | :------ |
 | `cb` | `NavigationGuardNextCallback` |
 
-#### Returns %{#Callable-NavigationGuardNext-Returns_4}%
+#### 返回值 %{#Callable-NavigationGuardNext-Returns_4}%
 
 `void`

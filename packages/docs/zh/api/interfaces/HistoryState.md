@@ -2,7 +2,7 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / HistoryState
+[API 参考](../index.md) / HistoryState
 
 # 接口：HistoryState %{#interface-historystate}%
 

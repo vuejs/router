@@ -2,17 +2,17 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / Router
+[API 参考](../index.md) / Router
 
-# Interface: Router
+# 接口：Router
 
 Router instance.
 
-## Properties %{#Properties}%
+## 属性 %{#Properties}%
 
 ### currentRoute %{#Properties-currentRoute}%
 
-• `Readonly` **currentRoute**: `Ref`<[`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md)\>
+• `只读` **currentRoute**: `Ref`<[`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md)\>
 
 Current [RouteLocationNormalized](RouteLocationNormalized.md)
 
@@ -28,7 +28,7 @@ ___
 
 ### options %{#Properties-options}%
 
-• `Readonly` **options**: [`RouterOptions`](RouterOptions.md)
+• `只读` **options**: [`RouterOptions`](RouterOptions.md)
 
 Original options object passed to create the Router
 
@@ -40,14 +40,14 @@ Original options object passed to create the Router
 
 Add a new [route record](../index.md#routerecordraw) as the child of an existing route.
 
-#### Parameters %{#Methods-addRoute-Parameters}%
+#### 参数 %{#Methods-addRoute-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `parentName` | [`RouteRecordName`](../index.md#routerecordname) | Parent Route Record where `route` should be appended at |
 | `route` | [`RouteRecordRaw`](../index.md#routerecordraw) | Route Record to add |
 
-#### Returns %{#Methods-addRoute-Returns}%
+#### 返回值 %{#Methods-addRoute-Returns}%
 
 `fn`
 
@@ -55,7 +55,7 @@ Add a new [route record](../index.md#routerecordraw) as the child of an existing
 
 Add a new [route record](../index.md#routerecordraw) as the child of an existing route.
 
-##### Returns %{#Methods-addRoute-Returns-Returns}%
+##### 返回值 %{#Methods-addRoute-Returns-Returns}%
 
 `void`
 
@@ -63,13 +63,13 @@ Add a new [route record](../index.md#routerecordraw) as the child of an existing
 
 Add a new [route record](../index.md#routerecordraw) to the router.
 
-#### Parameters %{#Methods-addRoute-Parameters_1}%
+#### 参数 %{#Methods-addRoute-Parameters_1}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `route` | [`RouteRecordRaw`](../index.md#routerecordraw) | Route Record to add |
 
-#### Returns %{#Methods-addRoute-Returns_1}%
+#### 返回值 %{#Methods-addRoute-Returns_1}%
 
 `fn`
 
@@ -77,7 +77,7 @@ Add a new [route record](../index.md#routerecordraw) to the router.
 
 Add a new [route record](../index.md#routerecordraw) to the router.
 
-##### Returns %{#Methods-addRoute-Returns-Returns_1}%
+##### 返回值 %{#Methods-addRoute-Returns-Returns_1}%
 
 `void`
 
@@ -100,13 +100,13 @@ router.afterEach((to, from, failure) => {
 })
 ```
 
-#### Parameters %{#Methods-afterEach-Parameters}%
+#### 参数 %{#Methods-afterEach-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `guard` | [`NavigationHookAfter`](NavigationHookAfter.md) | navigation hook to add |
 
-#### Returns %{#Methods-afterEach-Returns}%
+#### 返回值 %{#Methods-afterEach-Returns}%
 
 `fn`
 
@@ -125,7 +125,7 @@ router.afterEach((to, from, failure) => {
 })
 ```
 
-##### Returns %{#Methods-afterEach-Returns-Returns}%
+##### 返回值 %{#Methods-afterEach-Returns-Returns}%
 
 `void`
 
@@ -138,7 +138,7 @@ ___
 Go back in history if possible by calling `history.back()`. Equivalent to
 `router.go(-1)`.
 
-#### Returns %{#Methods-back-Returns}%
+#### 返回值 %{#Methods-back-Returns}%
 
 `void`
 
@@ -151,13 +151,13 @@ ___
 Add a navigation guard that executes before any navigation. Returns a
 function that removes the registered guard.
 
-#### Parameters %{#Methods-beforeEach-Parameters}%
+#### 参数 %{#Methods-beforeEach-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> | navigation guard to add |
 
-#### Returns %{#Methods-beforeEach-Returns}%
+#### 返回值 %{#Methods-beforeEach-Returns}%
 
 `fn`
 
@@ -166,7 +166,7 @@ function that removes the registered guard.
 Add a navigation guard that executes before any navigation. Returns a
 function that removes the registered guard.
 
-##### Returns %{#Methods-beforeEach-Returns-Returns}%
+##### 返回值 %{#Methods-beforeEach-Returns-Returns}%
 
 `void`
 
@@ -189,13 +189,13 @@ router.beforeResolve(to => {
 })
 ```
 
-#### Parameters %{#Methods-beforeResolve-Parameters}%
+#### 参数 %{#Methods-beforeResolve-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> | navigation guard to add |
 
-#### Returns %{#Methods-beforeResolve-Returns}%
+#### 返回值 %{#Methods-beforeResolve-Returns}%
 
 `fn`
 
@@ -214,7 +214,7 @@ router.beforeResolve(to => {
 })
 ```
 
-##### Returns %{#Methods-beforeResolve-Returns-Returns}%
+##### 返回值 %{#Methods-beforeResolve-Returns-Returns}%
 
 `void`
 
@@ -227,7 +227,7 @@ ___
 Go forward in history if possible by calling `history.forward()`.
 Equivalent to `router.go(1)`.
 
-#### Returns %{#Methods-forward-Returns}%
+#### 返回值 %{#Methods-forward-Returns}%
 
 `void`
 
@@ -239,7 +239,7 @@ ___
 
 Get a full list of all the [route records](../index.md#routerecord).
 
-#### Returns %{#Methods-getRoutes-Returns}%
+#### 返回值 %{#Methods-getRoutes-Returns}%
 
 [`RouteRecordNormalized`](RouteRecordNormalized.md)[]
 
@@ -252,13 +252,13 @@ ___
 Allows you to move forward or backward through the history. Calls
 `history.go()`.
 
-#### Parameters %{#Methods-go-Parameters}%
+#### 参数 %{#Methods-go-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `delta` | `number` | The position in the history to which you want to move, relative to the current page |
 
-#### Returns %{#Methods-go-Returns}%
+#### 返回值 %{#Methods-go-Returns}%
 
 `void`
 
@@ -270,13 +270,13 @@ ___
 
 Checks if a route with a given name exists
 
-#### Parameters %{#Methods-hasRoute-Parameters}%
+#### 参数 %{#Methods-hasRoute-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `name` | [`RouteRecordName`](../index.md#routerecordname) | Name of the route to check |
 
-#### Returns %{#Methods-hasRoute-Returns}%
+#### 返回值 %{#Methods-hasRoute-Returns}%
 
 `boolean`
 
@@ -296,7 +296,7 @@ the server and the client. Note that on server side, you need to manually
 push the initial location while on client side, the router automatically
 picks it up from the URL.
 
-#### Returns %{#Methods-isReady-Returns}%
+#### 返回值 %{#Methods-isReady-Returns}%
 
 `Promise`<`void`\>
 
@@ -312,13 +312,13 @@ asynchronously, errors returned or passed to `next` in any navigation
 guard, and errors occurred when trying to resolve an async component that
 is required to render a route.
 
-#### Parameters %{#Methods-onError-Parameters}%
+#### 参数 %{#Methods-onError-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `handler` | `_ErrorHandler` | error handler to register |
 
-#### Returns %{#Methods-onError-Returns}%
+#### 返回值 %{#Methods-onError-Returns}%
 
 `fn`
 
@@ -330,7 +330,7 @@ asynchronously, errors returned or passed to `next` in any navigation
 guard, and errors occurred when trying to resolve an async component that
 is required to render a route.
 
-##### Returns %{#Methods-onError-Returns-Returns}%
+##### 返回值 %{#Methods-onError-Returns-Returns}%
 
 `void`
 
@@ -343,13 +343,13 @@ ___
 Programmatically navigate to a new URL by pushing an entry in the history
 stack.
 
-#### Parameters %{#Methods-push-Parameters}%
+#### 参数 %{#Methods-push-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | Route location to navigate to |
 
-#### Returns %{#Methods-push-Returns}%
+#### 返回值 %{#Methods-push-Returns}%
 
 `Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
@@ -361,13 +361,13 @@ ___
 
 Remove an existing route by its name.
 
-#### Parameters %{#Methods-removeRoute-Parameters}%
+#### 参数 %{#Methods-removeRoute-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `name` | [`RouteRecordName`](../index.md#routerecordname) | Name of the route to remove |
 
-#### Returns %{#Methods-removeRoute-Returns}%
+#### 返回值 %{#Methods-removeRoute-Returns}%
 
 `void`
 
@@ -380,13 +380,13 @@ ___
 Programmatically navigate to a new URL by replacing the current entry in
 the history stack.
 
-#### Parameters %{#Methods-replace-Parameters}%
+#### 参数 %{#Methods-replace-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | Route location to navigate to |
 
-#### Returns %{#Methods-replace-Returns}%
+#### 返回值 %{#Methods-replace-Returns}%
 
 `Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
@@ -401,13 +401,13 @@ Returns the [normalized version](RouteLocation.md) of a
 that includes any existing `base`. By default, the `currentLocation` used is
 `router.currentRoute` and should only be overridden in advanced use cases.
 
-#### Parameters %{#Methods-resolve-Parameters}%
+#### 参数 %{#Methods-resolve-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | Raw route location to resolve |
 | `currentLocation?` | [`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md) | Optional current location to resolve against |
 
-#### Returns %{#Methods-resolve-Returns}%
+#### 返回值 %{#Methods-resolve-Returns}%
 
 [`RouteLocation`](RouteLocation.md) & { `href`: `string`  }

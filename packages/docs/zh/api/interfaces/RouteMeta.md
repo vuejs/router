@@ -2,16 +2,16 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / RouteMeta
+[API 参考](../index.md) / RouteMeta
 
-# Interface: RouteMeta
+# 接口：RouteMeta
 
-Interface to type `meta` fields in route records.
+路由记录中的 `meta` 字段的类型接口。
 
 **`Example`**
 
 ```ts
-// typings.d.ts or router.ts
+// typings.d.ts 或 router.ts
 import 'vue-router';
 
 declare module 'vue-router' {
@@ -21,7 +21,7 @@ declare module 'vue-router' {
  }
 ```
 
-## Hierarchy %{#Hierarchy}%
+## 继承关系 %{#Hierarchy}%
 
 - `Record`<`string` \| `number` \| `symbol`, `unknown`\>
 

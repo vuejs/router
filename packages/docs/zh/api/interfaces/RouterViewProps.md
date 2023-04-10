@@ -2,18 +2,18 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / RouterViewProps
+[API 参考](../index.md) / RouterViewProps
 
-# Interface: RouterViewProps
+# 接口：RouterViewProps
 
-## Properties %{#Properties}%
+## 属性 %{#Properties}%
 
 ### name %{#Properties-name}%
 
-• `Optional` **name**: `string`
+• `可选` **name**: `string`
 
 ___
 
 ### route %{#Properties-route}%
 
-• `Optional` **route**: [`RouteLocationNormalized`](RouteLocationNormalized.md)
+• `可选` **route**: [`RouteLocationNormalized`](RouteLocationNormalized.md)

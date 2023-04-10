@@ -2,28 +2,29 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / RouteLocationNormalizedLoaded
+[API 参考](../index.md) / RouteLocationNormalizedLoaded
 
-# Interface: RouteLocationNormalizedLoaded
+# 接口：RouteLocationNormalizedLoaded
+
+<!-- TODO: translation -->
 
 [RouteLocationRaw](../index.md#routelocationraw) with
 
-## Hierarchy %{#Hierarchy}%
+## 继承关系 %{#Hierarchy}%
 
 - `_RouteLocationBase`
 
   ↳ **`RouteLocationNormalizedLoaded`**
 
-## Properties %{#Properties}%
+## 属性 %{#Properties}%
 
 ### fullPath %{#Properties-fullPath}%
 
 • **fullPath**: `string`
 
-The whole location including the `search` and `hash`. This string is
-percentage encoded.
+包括 `search` 和 `hash` 在内的完整地址。该字符串是经过百分号编码的。
 
-#### Inherited from %{#Properties-fullPath-Inherited-from}%
+#### 继承自 %{#Properties-fullPath-Inherited-from}%
 
 \_RouteLocationBase.fullPath
 
@@ -33,9 +34,9 @@ ___
 
 • **hash**: `string`
 
-Hash of the current location. If present, starts with a `#`.
+当前地址的 hash。如果存在则以 `#` 开头。
 
-#### Inherited from %{#Properties-hash-Inherited-from}%
+#### 继承自 %{#Properties-hash-Inherited-from}%
 
 \_RouteLocationBase.hash
 
@@ -45,10 +46,7 @@ ___
 
 • **matched**: [`RouteLocationMatched`](RouteLocationMatched.md)[]
 
-Array of [RouteLocationMatched](RouteLocationMatched.md) containing only plain components (any
-lazy-loaded components have been loaded and were replaced inside the
-`components` object) so it can be directly used to display routes. It
-cannot contain redirect records either
+[RouteLocationMatched](RouteLocationMatched.md) 数组，只包含直接的组件 (任何已被加载并在 `components` 对象内被替换掉的懒加载组件)。所以它可以被直接用于展示路由。同样它不包含重定向的记录。
 
 ___
 
@@ -56,9 +54,9 @@ ___
 
 • **meta**: [`RouteMeta`](RouteMeta.md)
 
-Merged `meta` properties from all the matched route records.
+从所有匹配的路由记录中合并的 `meta` 属性。
 
-#### Inherited from %{#Properties-meta-Inherited-from}%
+#### 继承自 %{#Properties-meta-Inherited-from}%
 
 \_RouteLocationBase.meta
 
@@ -68,9 +66,9 @@ ___
 
 • **name**: `undefined` \| ``null`` \| [`RouteRecordName`](../index.md#routerecordname)
 
-Name of the matched record
+匹配的路由名称。
 
-#### Inherited from %{#Properties-name-Inherited-from}%
+#### 继承自 %{#Properties-name-Inherited-from}%
 
 \_RouteLocationBase.name
 
@@ -80,9 +78,9 @@ ___
 
 • **params**: [`RouteParams`](../index.md#routeparams)
 
-Object of decoded params extracted from the `path`.
+从 `path` 中提取出来并解码后的参数对象。
 
-#### Inherited from %{#Properties-params-Inherited-from}%
+#### 继承自 %{#Properties-params-Inherited-from}%
 
 \_RouteLocationBase.params
 
@@ -92,9 +90,9 @@ ___
 
 • **path**: `string`
 
-Percentage encoded pathname section of the URL.
+经过百分号编码的 URL 中的 pathname 段。
 
-#### Inherited from %{#Properties-path-Inherited-from}%
+#### 继承自 %{#Properties-path-Inherited-from}%
 
 \_RouteLocationBase.path
 
@@ -104,9 +102,9 @@ ___
 
 • **query**: [`LocationQuery`](../index.md#locationquery)
 
-Object representation of the `search` property of the current location.
+代表当前地址的 `search` 属性的对象
 
-#### Inherited from %{#Properties-query-Inherited-from}%
+#### 继承自 %{#Properties-query-Inherited-from}%
 
 \_RouteLocationBase.query
 
@@ -116,9 +114,8 @@ ___
 
 • **redirectedFrom**: `undefined` \| [`RouteLocation`](RouteLocation.md)
 
-Contains the location we were initially trying to access before ending up
-on the current location.
+包含在重定向到当前地址之前，我们最初想访问的地址。
 
-#### Inherited from %{#Properties-redirectedFrom-Inherited-from}%
+#### 继承自 %{#Properties-redirectedFrom-Inherited-from}%
 
 \_RouteLocationBase.redirectedFrom

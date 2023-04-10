@@ -2,36 +2,32 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / RouteLocationOptions
+[API 参考](../index.md) / RouteLocationOptions
 
-# Interface: RouteLocationOptions
+# 接口：RouteLocationOptions
 
-Common options for all navigation methods.
+对所有导航方法通用的选项。
 
-## Properties %{#Properties}%
+## 属性 %{#Properties}%
 
 ### force %{#Properties-force}%
 
-• `Optional` **force**: `boolean`
+• `可选` **force**: `boolean`
 
-Triggers the navigation even if the location is the same as the current one.
-Note this will also add a new entry to the history unless `replace: true`
-is passed.
+触发导航，即使该地址与当前地址相同。请注意，这也会新添加一条历史记录，除非传入 `replace: true`。
 
 ___
 
 ### replace %{#Properties-replace}%
 
-• `Optional` **replace**: `boolean`
+• `可选` **replace**: `boolean`
 
-Replace the entry in the history instead of pushing a new entry
+替换而不是加入一个新的历史记录。
 
 ___
 
 ### state %{#Properties-state}%
 
-• `Optional` **state**: [`HistoryState`](HistoryState.md)
+• `可选` **state**: [`HistoryState`](HistoryState.md)
 
-State to save using the History API. This cannot contain any reactive
-values and some primitives like Symbols are forbidden. More info at
-https://developer.mozilla.org/en-US/docs/Web/API/History/state
+使用 History API 保存的状态。它不能包含任何响应性的值，同时一些诸如 Symbol 的基础类型是被禁用的。更多信息见 https://developer.mozilla.org/en-US/docs/Web/API/History/state
