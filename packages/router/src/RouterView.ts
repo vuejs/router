@@ -241,7 +241,7 @@ export const RouterView = RouterViewImpl as unknown as {
 function warnDeprecatedUsage() {
   const instance = getCurrentInstance()!
   const parentName = instance.parent && instance.parent.type.name
-  const parentSubTreeType = instance.parent?.subTree?.type
+  const parentSubTreeType = instance.parent && instance.parent.subTree && instance.parent.subTree.type
   if (
     parentName &&
     (parentName === 'KeepAlive' || parentName.includes('Transition')) &&

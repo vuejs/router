@@ -411,7 +411,7 @@ describe('RouterView', () => {
       expect('can no longer be used directly inside').toHaveBeenWarned()
     })
 
-    it('does not warn if router-view is not used directly inside transition', async () => {
+    it('does not warn if RouterView is not a direct-child of transition', async () => {
       const route = createMockedRoute(routes.root)
       const wrapper = mount(
         {
