@@ -411,6 +411,35 @@ describe('RouterView', () => {
       expect('can no longer be used directly inside').toHaveBeenWarned()
     })
 
+    it('does not warn if router-view is not used directly inside transition', async () => {
+      const route = createMockedRoute(routes.root)
+      const wrapper = mount(
+        {
+          template: `
+        <transition>
+          <div>
+            <router-view/>
+          </div>
+        </transition>
+        `,
+        },
+        {
+          props: {},
+          global: {
+            stubs: {
+              transition: false,
+            },
+            provide: route.provides,
+            components: { RouterView },
+          },
+        }
+      )
+      expect(wrapper.html()).toBe(`<div>
+  <div>Home</div>
+</div>`)
+      expect('can no longer be used directly inside').not.toHaveBeenWarned()
+    })
+
     it('warns if Transition wraps a RouterView', () => {
       const route = createMockedRoute(routes.root)
       const wrapper = mount(
