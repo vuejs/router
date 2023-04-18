@@ -152,6 +152,10 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/zh/guide/advanced/lazy-loading.html',
             },
             {
+              text: '类型化路由',
+              link: '/zh/guide/advanced/typed-routes.html'
+            },
+            {
               text: '扩展 RouterLink',
               link: '/zh/guide/advanced/extending-router-link.html',
             },
