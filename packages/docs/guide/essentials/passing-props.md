@@ -77,4 +77,4 @@ const routes = [
 
 The URL `/search?q=vue` would pass `{query: 'vue'}` as props to the `SearchUser` component.
 
-Try to keep the `props` function stateless, as it's only evaluated on route changes. Use a wrapper component if you need state to define the props, that way vue can react to state changes.
+Try to keep the `props` function stateless, as it's only evaluated on route changes. Use a wrapper component if you need state to define the props, that way Vue can react to state changes.
