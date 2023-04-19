@@ -77,7 +77,7 @@ if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
 ```js
 // 正在尝试访问 admin 页面
 router.push('/admin').then(failure => {
-  if (isNavigationFailure(failure, NavigationFailureType.redirected)) {
+  if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
     failure.to.path // '/admin'
     failure.from.path // '/'
   }
