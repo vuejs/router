@@ -117,6 +117,10 @@ Currently, all the docs can be found in `packages/docs`. It contains the English
 
 Besides that, the `.vitepress` sub-folder is used to put the config and theme, including the i18n information.
 
+Consider the following two options in order to contribute to the translations:
+
+### Translate in a `<lang>` sub-folder and host it on our official repo
+
 If you want to start translating the docs in a new language:
 
 1. Create the corresponding `<lang>` sub-folder for your translation.
@@ -138,6 +142,17 @@ If you want to maintain a existing translation:
 5. (Repo permission required) **VERY IMPORTANT**: after the pull request is merged, for the future batch of sync-up, do another merge from the latest commit at that moment to the checkpoint branch. e.g. merge commit `e008551` to branch `docs-sync-zh`.
 
 For more real examples, please check out [all the PRs with title "docs(zh): sync" after 2023-01-01](https://github.com/vuejs/router/pulls?q=is%3Apr+created%3A%3E2023-01-01+docs%28zh%29+sync).
+
+### Self-host the translation
+
+You can also host the translation on your own. To create one, just simply fork our GitHub repo and change the content and site config in `packages/docs`. To long-term maintain it, we _highly recommend_ a similar way that we do above for our officially hosted translations:
+
+1. Ensure you create a _checkpoint branch_ (for example, a branch named sync). This branch should always align with the commit of the original documentation that corresponds to your most recent translation.
+2. Utilize the diff result between the latest official repository and your own by using the git diff command or the GitHub Compare page to guide your translation.
+3. Complete the translation process.
+4. Update the _checkpoint branch_ accordingly.
+
+<!-- TODO: add an example once we have got one -->
 
 ## Credits
 
