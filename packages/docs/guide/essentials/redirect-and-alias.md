@@ -43,6 +43,10 @@ Note that **[Navigation Guards](../advanced/navigation-guards.md) are not applie
 
 When writing a `redirect`, you can omit the `component` option because it is never directly reached so there is no component to render. The only exception are [nested routes](./nested-routes.md): if a route record has `children` and a `redirect` property, it should also have a `component` property.
 
+::: tip Tip
+Since release of [4.1.0](https://github.com/vuejs/router/releases/tag/v4.1.0)，it's possible to completely omit the component option when defining routes with children.
+:::
+
 ### Relative redirecting
 
 It's also possible to redirect to a relative location:

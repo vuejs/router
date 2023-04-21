@@ -43,6 +43,10 @@ const routes = [
 
 在写 `redirect` 的时候，可以省略 `component` 配置，因为它从来没有被直接访问过，所以没有组件要渲染。唯一的例外是[嵌套路由](./nested-routes.md)：如果一个路由记录有 `children` 和 `redirect` 属性，它也应该有 `component` 属性。
 
+::: tip 更新
+在 [4.1.0](https://github.com/vuejs/router/releases/tag/v4.1.0) 的版本更新之后，即使一个路由记录有 `children` ，你也完全可以忽略它的 `component` 属性。
+:::
+
 ### 相对重定向
 
 也可以重定向到相对位置：
