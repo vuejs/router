@@ -265,7 +265,7 @@ function useHistoryStateNavigation(base: string) {
     // Add to current entry the information of where we are going
     // as well as saving the current position
     const currentState = assign(
-      {},
+      {current: location.pathname},
       // use current history state to gracefully handle a wrong call to
       // history.replaceState
       // https://github.com/vuejs/router/issues/366
