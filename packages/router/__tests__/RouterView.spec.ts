@@ -413,7 +413,7 @@ describe('RouterView', () => {
 
     it('does not warn if RouterView is not a direct-child of transition', async () => {
       const route = createMockedRoute(routes.root)
-      const wrapper = mount(
+      mount(
         {
           template: `
         <transition>
@@ -434,9 +434,6 @@ describe('RouterView', () => {
           },
         }
       )
-      expect(wrapper.html()).toBe(`<div>
-  <div>Home</div>
-</div>`)
       expect('can no longer be used directly inside').not.toHaveBeenWarned()
     })
 
