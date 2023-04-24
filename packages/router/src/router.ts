@@ -491,7 +491,7 @@ export function createRouter(options: RouterOptions): Router {
       }
       // pass encoded values to the matcher, so it can produce encoded path and fullPath
       matcherLocation = assign({}, rawLocation, {
-        params: encodeParams(rawLocation.params),
+        params: encodeParams(targetParams),
       })
       // current location params are decoded, we need to encode them in case the
       // matcher merges the params
