@@ -807,6 +807,21 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
+    it('keeps optional params passed as empty strings', () => {
+      assertRecordMatch(
+        { path: '/:a/:b?', name: 'p', components },
+        { name: 'p', params: { a: 'b', b: '' } },
+        { name: 'p', path: '/b', params: { a: 'b', b: '' } },
+        {
+          params: { a: 'a', b: '' },
+          path: '/a',
+          matched: [],
+          meta: {},
+          name: undefined,
+        }
+      )
+    })
+
     it('resolves root path with optional params', () => {
       assertRecordMatch(
         { path: '/:tab?', name: 'h', components },
