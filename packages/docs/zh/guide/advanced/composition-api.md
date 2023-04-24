@@ -24,6 +24,7 @@ export default {
         name: 'search',
         query: {
           ...route.query,
+          ...query,
         },
       })
     }
