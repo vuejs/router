@@ -719,7 +719,7 @@ export function createRouter(options: RouterOptions): Router {
                 : 1) > 30
             ) {
               warn(
-                `Detected a possibly infinite redirection in a navigation guard when going from "${from.fullPath}" to "${toLocation.fullPath}". Aborting to avoid a Stack Overflow. This might break in production if not fixed.`
+                `Detected a possibly infinite redirection in a navigation guard when going from "${from.fullPath}" to "${toLocation.fullPath}". Aborting to avoid a Stack Overflow.\n Are you always returning a new location within a navigation guard? That would lead to this error. Only return when redirecting or aborting, that should fix this. This might break in production if not fixed.`
               )
               return Promise.reject(
                 new Error('Infinite redirect in navigation guard')
