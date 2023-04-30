@@ -171,10 +171,7 @@ ___
 
 ▸ **beforeResolve**(`guard`): () => `void`
 
-Add a navigation guard that executes before navigation is about to be
-resolved. At this state all component have been fetched and other
-navigation guards have been successful. Returns a function that removes the
-registered guard.
+添加一个导航守卫，它会在每次导航被解析之前被执行。此时所有组件已经被获取，且其它导航守卫也都已经就绪。返回值是一个用来移除被注册的守卫的函数。
 
 **`Example`**
 
@@ -196,10 +193,7 @@ router.beforeResolve(to => {
 
 ▸ (): `void`
 
-Add a navigation guard that executes before navigation is about to be
-resolved. At this state all component have been fetched and other
-navigation guards have been successful. Returns a function that removes the
-registered guard.
+添加一个导航守卫，它会在每次导航被解析之前被执行。此时所有组件已经被获取，且其它导航守卫也都已经就绪。返回值是一个用来移除被注册的守卫的函数。
 
 **`Example`**
 
@@ -219,8 +213,7 @@ ___
 
 ▸ **forward**(): `void`
 
-Go forward in history if possible by calling `history.forward()`.
-Equivalent to `router.go(1)`.
+通过调用 `history.forward()` 在可能的情况下在历史中前进。相当于 `router.go(1)`。
 
 #### Returns %{#Methods-forward-Returns}%
 
@@ -232,7 +225,7 @@ ___
 
 ▸ **getRoutes**(): [`RouteRecordNormalized`](RouteRecordNormalized.md)[]
 
-Get a full list of all the [route records](../index.md#routerecord).
+获得所有[路由记录](../index.md#routerecord)的完整列表。
 
 #### Returns %{#Methods-getRoutes-Returns}%
 
@@ -244,14 +237,13 @@ ___
 
 ▸ **go**(`delta`): `void`
 
-Allows you to move forward or backward through the history. Calls
-`history.go()`.
+允许你在历史中前进或后退。相当于 `router.go()`。
 
 #### Parameters %{#Methods-go-Parameters}%
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `delta` | `number` | The position in the history to which you want to move, relative to the current page |
+| `delta` | `number` | 相对于当前页面你想要移动到的历史中的位置 |
 
 #### Returns %{#Methods-go-Returns}%
 
@@ -263,13 +255,13 @@ ___
 
 ▸ **hasRoute**(`name`): `boolean`
 
-Checks if a route with a given name exists
+检查一个给定名称的路由是否存在。
 
 #### Parameters %{#Methods-hasRoute-Parameters}%
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `name` | [`RouteRecordName`](../index.md#routerecordname) | Name of the route to check |
+| `name` | [`RouteRecordName`](../index.md#routerecordname) | 要检查的路由名称 |
 
 #### Returns %{#Methods-hasRoute-Returns}%
 
@@ -281,15 +273,9 @@ ___
 
 ▸ **isReady**(): `Promise`<`void`\>
 
-Returns a Promise that resolves when the router has completed the initial
-navigation, which means it has resolved all async enter hooks and async
-components that are associated with the initial route. If the initial
-navigation already happened, the promise resolves immediately.
+返回一个 Promise，它会在路由器完成初始导航之后被解析，也就是说这时所有和初始路由有关联的异步入口钩子和异步组件都已经被解析。如果初始导航已经发生，则该 Promise 会被立刻解析。
 
-This is useful in server-side rendering to ensure consistent output on both
-the server and the client. Note that on server side, you need to manually
-push the initial location while on client side, the router automatically
-picks it up from the URL.
+这在服务端渲染中确认服务端和客户端输出一致的时候非常有用。注意在服务端你需要手动加入初始地址，而在客户端，路由器会从 URL 进行自动选择。
 
 #### Returns %{#Methods-isReady-Returns}%
 
@@ -301,17 +287,13 @@ ___
 
 ▸ **onError**(`handler`): () => `void`
 
-Adds an error handler that is called every time a non caught error happens
-during navigation. This includes errors thrown synchronously and
-asynchronously, errors returned or passed to `next` in any navigation
-guard, and errors occurred when trying to resolve an async component that
-is required to render a route.
+添加一个错误处理器，它会在每次导航遇到未被捕获的错误出现时被调用。其中包括同步和异步被抛出的错误、在任何导航守卫中返回或传入 `next` 的错误、尝试解析一个需要渲染路由的异步组件时发生的错误。
 
 #### Parameters %{#Methods-onError-Parameters}%
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `handler` | `_ErrorHandler` | error handler to register |
+| `handler` | `_ErrorHandler` | 要注册的错误处理器 |
 
 #### Returns %{#Methods-onError-Returns}%
 
@@ -319,11 +301,7 @@ is required to render a route.
 
 ▸ (): `void`
 
-Adds an error handler that is called every time a non caught error happens
-during navigation. This includes errors thrown synchronously and
-asynchronously, errors returned or passed to `next` in any navigation
-guard, and errors occurred when trying to resolve an async component that
-is required to render a route.
+添加一个错误处理器，它会在每次导航遇到未被捕获的错误出现时被调用。其中包括同步和异步被抛出的错误、在任何导航守卫中返回或传入 `next` 的错误、尝试解析一个需要渲染路由的异步组件时发生的错误。
 
 ##### Returns %{#Methods-onError-Returns-Returns}%
 
@@ -335,14 +313,13 @@ ___
 
 ▸ **push**(`to`): `Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
-Programmatically navigate to a new URL by pushing an entry in the history
-stack.
+程序式地通过将一条记录加入到历史栈中来导航到一个新的 URL。
 
 #### Parameters %{#Methods-push-Parameters}%
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | Route location to navigate to |
+| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | 要导航到的路由 |
 
 #### Returns %{#Methods-push-Returns}%
 
@@ -354,13 +331,13 @@ ___
 
 ▸ **removeRoute**(`name`): `void`
 
-Remove an existing route by its name.
+根据其名称移除一个现有的路由。
 
 #### Parameters %{#Methods-removeRoute-Parameters}%
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `name` | [`RouteRecordName`](../index.md#routerecordname) | Name of the route to remove |
+| `name` | [`RouteRecordName`](../index.md#routerecordname) | 要移除的路由名称 |
 
 #### Returns %{#Methods-removeRoute-Returns}%
 
@@ -372,14 +349,13 @@ ___
 
 ▸ **replace**(`to`): `Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
-Programmatically navigate to a new URL by replacing the current entry in
-the history stack.
+程序式地通过替换历史栈中的当前记录来导航到一个新的 URL。
 
 #### Parameters %{#Methods-replace-Parameters}%
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | Route location to navigate to |
+| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | 要导航到的路由 |
 
 #### Returns %{#Methods-replace-Returns}%
 
@@ -391,17 +367,14 @@ ___
 
 ▸ **resolve**(`to`, `currentLocation?`): [`RouteLocation`](RouteLocation.md) & { `href`: `string`  }
 
-Returns the [normalized version](RouteLocation.md) of a
-[route location](../index.md#routelocationraw). Also includes an `href` property
-that includes any existing `base`. By default, the `currentLocation` used is
-`router.currentRoute` and should only be overridden in advanced use cases.
+返回一个[路由地址](../index.md#routelocationraw)的[规范化版本](RouteLocation.md)。同时包含一个包含任何现有 `base` 的 `href` 属性。默认情况下，用于 `router.currentRoute` 的 `currentLocation` 应该在特别高阶的用例下才会被覆写。
 
 #### Parameters %{#Methods-resolve-Parameters}%
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | Raw route location to resolve |
-| `currentLocation?` | [`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md) | Optional current location to resolve against |
+| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | 要解析的原始路由地址 |
+| `currentLocation?` | [`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md) | 可选的被解析的当前地址 |
 
 #### Returns %{#Methods-resolve-Returns}%
 
