@@ -6,7 +6,7 @@ editLink: false
 
 # Interface: Router
 
-Router instance.
+路由器实例。
 
 ## Properties %{#Properties}%
 
@@ -14,7 +14,7 @@ Router instance.
 
 • `Readonly` **currentRoute**: `Ref`<[`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md)\>
 
-Current [RouteLocationNormalized](RouteLocationNormalized.md)
+当前的 [RouteLocationNormalized](RouteLocationNormalized.md)。
 
 ___
 
@@ -22,7 +22,7 @@ ___
 
 • **listening**: `boolean`
 
-Allows turning off the listening of history events. This is a low level api for micro-frontends.
+允许关闭历史事件的监听器。这是一个为微前端提供的底层 API。
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 • `Readonly` **options**: [`RouterOptions`](RouterOptions.md)
 
-Original options object passed to create the Router
+创建路由器时的原始选项对象。
 
 ## Methods %{#Methods}%
 
@@ -38,14 +38,14 @@ Original options object passed to create the Router
 
 ▸ **addRoute**(`parentName`, `route`): () => `void`
 
-Add a new [route record](../index.md#routerecordraw) as the child of an existing route.
+添加一个新的[路由记录](../index.md#routerecordraw)，将其作为一个已有路由的子路由。
 
 #### Parameters %{#Methods-addRoute-Parameters}%
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `parentName` | [`RouteRecordName`](../index.md#routerecordname) | Parent Route Record where `route` should be appended at |
-| `route` | [`RouteRecordRaw`](../index.md#routerecordraw) | Route Record to add |
+| `parentName` | [`RouteRecordName`](../index.md#routerecordname) | `route` 应该被加入到的父级路由记录 |
+| `route` | [`RouteRecordRaw`](../index.md#routerecordraw) | 要加入的路由记录 |
 
 #### Returns %{#Methods-addRoute-Returns}%
 
@@ -53,7 +53,7 @@ Add a new [route record](../index.md#routerecordraw) as the child of an existing
 
 ▸ (): `void`
 
-Add a new [route record](../index.md#routerecordraw) as the child of an existing route.
+添加一个新的[路由记录](../index.md#routerecordraw)，将其作为一个已有路由的子路由。
 
 ##### Returns %{#Methods-addRoute-Returns-Returns}%
 
@@ -61,13 +61,13 @@ Add a new [route record](../index.md#routerecordraw) as the child of an existing
 
 ▸ **addRoute**(`route`): () => `void`
 
-Add a new [route record](../index.md#routerecordraw) to the router.
+添加一个新的[路由记录](../index.md#routerecordraw)到该路由器中。
 
 #### Parameters %{#Methods-addRoute-Parameters_1}%
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `route` | [`RouteRecordRaw`](../index.md#routerecordraw) | Route Record to add |
+| `route` | [`RouteRecordRaw`](../index.md#routerecordraw) | 要加入的路由记录 |
 
 #### Returns %{#Methods-addRoute-Returns_1}%
 
@@ -75,7 +75,7 @@ Add a new [route record](../index.md#routerecordraw) to the router.
 
 ▸ (): `void`
 
-Add a new [route record](../index.md#routerecordraw) to the router.
+添加一个新的[路由记录](../index.md#routerecordraw)到该路由器中。
 
 ##### Returns %{#Methods-addRoute-Returns-Returns_1}%
 
@@ -87,8 +87,7 @@ ___
 
 ▸ **afterEach**(`guard`): () => `void`
 
-Add a navigation hook that is executed after every navigation. Returns a
-function that removes the registered hook.
+添加一个导航钩子，它会在每次导航之后被执行。返回值是一个用来移除这个被注册的钩子的函数。
 
 **`Example`**
 
@@ -104,7 +103,7 @@ router.afterEach((to, from, failure) => {
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `guard` | [`NavigationHookAfter`](NavigationHookAfter.md) | navigation hook to add |
+| `guard` | [`NavigationHookAfter`](NavigationHookAfter.md) | 要加入的导航钩子 |
 
 #### Returns %{#Methods-afterEach-Returns}%
 
@@ -112,8 +111,7 @@ router.afterEach((to, from, failure) => {
 
 ▸ (): `void`
 
-Add a navigation hook that is executed after every navigation. Returns a
-function that removes the registered hook.
+添加一个导航钩子，它会在每次导航之后被执行。返回值是一个用来移除这个被注册的钩子的函数。
 
 **`Example`**
 
@@ -135,8 +133,7 @@ ___
 
 ▸ **back**(): `void`
 
-Go back in history if possible by calling `history.back()`. Equivalent to
-`router.go(-1)`.
+通过调用 `history.back()` 在可能的情况下在历史中后退。相当于 `router.go(-1)`。
 
 #### Returns %{#Methods-back-Returns}%
 
@@ -148,14 +145,13 @@ ___
 
 ▸ **beforeEach**(`guard`): () => `void`
 
-Add a navigation guard that executes before any navigation. Returns a
-function that removes the registered guard.
+添加一个导航钩子，它会在每次导航之前被执行。返回值是一个用来移除这个被注册的钩子的函数。
 
 #### Parameters %{#Methods-beforeEach-Parameters}%
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> | navigation guard to add |
+| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> | 要加入的导航钩子 |
 
 #### Returns %{#Methods-beforeEach-Returns}%
 
@@ -163,8 +159,7 @@ function that removes the registered guard.
 
 ▸ (): `void`
 
-Add a navigation guard that executes before any navigation. Returns a
-function that removes the registered guard.
+添加一个导航钩子，它会在每次导航之前被执行。返回值是一个用来移除这个被注册的钩子的函数。
 
 ##### Returns %{#Methods-beforeEach-Returns-Returns}%
 
