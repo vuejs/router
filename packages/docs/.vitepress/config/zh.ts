@@ -175,6 +175,10 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               text: '从 Vue2 迁移',
               link: '/zh/guide/migration/index.html',
             },
+            {
+              text: '关于中文翻译',
+              link: '/zh/about-translation.html',
+            },
           ],
         },
       ],
