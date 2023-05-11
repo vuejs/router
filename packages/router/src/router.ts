@@ -13,6 +13,7 @@ import {
   RouteLocationOptions,
   MatcherLocationRaw,
   RouteParams,
+  NavigationGuardReturn,
 } from './types'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
@@ -778,6 +779,14 @@ export function createRouter(options: RouterOptions): Router {
     return error ? Promise.reject(error) : Promise.resolve()
   }
 
+  function runWithContext<T>(fn: () => T): T {
+    const app: App | undefined = installedApps.values().next().value
+    // support Vue < 3.3
+    return app && typeof app.runWithContext === 'function'
+      ? app.runWithContext(fn)
+      : fn()
+  }
+
   // TODO: refactor the whole before guards by internally using router.beforeEach
 
   function navigate(
@@ -907,7 +916,9 @@ export function createRouter(options: RouterOptions): Router {
   ): void {
     // navigation is confirmed, call afterGuards
     // TODO: wrap with error handlers
-    for (const guard of afterGuards.list()) guard(to, from, failure)
+    for (const guard of afterGuards.list()) {
+      runWithContext(() => guard(to, from, failure))
+    }
   }
 
   /**
@@ -1263,14 +1274,15 @@ export function createRouter(options: RouterOptions): Router {
     },
   }
 
-  return router
-}
+  // TODO: type this as NavigationGuardReturn or similar instead of any
+  function runGuardQueue(guards: Lazy<any>[]): Promise<any> {
+    return guards.reduce(
+      (promise, guard) => promise.then(() => runWithContext(guard)),
+      Promise.resolve()
+    )
+  }
 
-function runGuardQueue(guards: Lazy<any>[]): Promise<void> {
-  return guards.reduce(
-    (promise, guard) => promise.then(() => guard()),
-    Promise.resolve()
-  )
+  return router
 }
 
 function extractChangingRecords(
