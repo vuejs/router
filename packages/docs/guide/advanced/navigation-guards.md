@@ -145,7 +145,10 @@ app.provide('global', 'hello injections')
 
 // router.ts or main.ts
 router.beforeEach((to, from) => {
-  console.log(inject('global')) // -> 'hello injections'
+  const global = inject('global') // 'hello injections'
+  // a pinia store
+  const userStore = useAuthStore()
+  // ...
 })
 ```
 
