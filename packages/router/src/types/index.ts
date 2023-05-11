@@ -490,6 +490,7 @@ export type NavigationGuardReturn =
   | Error
   | RouteLocationRaw
   | boolean
+  // FIXME: this one is only allowed in options api
   | NavigationGuardNextCallback
 
 /**
@@ -502,6 +503,7 @@ export interface NavigationGuard {
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
     next: NavigationGuardNext
+    // FIXME: this one shouldn't allow returning () => ...
   ): NavigationGuardReturn | Promise<NavigationGuardReturn>
 }
 
