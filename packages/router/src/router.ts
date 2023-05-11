@@ -13,7 +13,6 @@ import {
   RouteLocationOptions,
   MatcherLocationRaw,
   RouteParams,
-  NavigationGuardReturn,
 } from './types'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
