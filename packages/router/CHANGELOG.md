@@ -1,3 +1,17 @@
+# [4.2.0](https://github.com/vuejs/router/compare/v4.1.6...v4.2.0) (2023-05-11)
+
+### Bug Fixes
+
+- **location:** correctly parse url ending with . ([cc6e255](https://github.com/vuejs/router/commit/cc6e255b9c579ad975fbc9bd309e7b2f1f80bf82)), closes [#1620](https://github.com/vuejs/router/issues/1620)
+- remove nullish params when resolving ([#1814](https://github.com/vuejs/router/issues/1814)) ([15e20cb](https://github.com/vuejs/router/commit/15e20cbb7baedb42e44e10d5d69ffb2a3124360f))
+- **warn:** avoid redundant usage warn ([#1797](https://github.com/vuejs/router/issues/1797)) ([bbd80ad](https://github.com/vuejs/router/commit/bbd80adb627d4ee3f3e0ef7f7a1f99a2c5e0edf6))
+
+### Features
+
+- allow inject within global navigation guards ([909c45b](https://github.com/vuejs/router/commit/909c45be199fbf48e55f3f7e681e93c259e82a14))
+- **warn:** improve infinite redirect warning message ([2abecb7](https://github.com/vuejs/router/commit/2abecb71500e08f11e1686a57110afb71f625433))
+- **warn:** infinite redirection up to 30 ([376edd3](https://github.com/vuejs/router/commit/376edd32c39af004ee3689f569f0da65418c9577)), closes [#1643](https://github.com/vuejs/router/issues/1643)
+
 ## [4.1.6](https://github.com/vuejs/router/compare/v4.1.5...v4.1.6) (2022-10-24)
 
 ### Features
