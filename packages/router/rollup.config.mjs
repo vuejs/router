@@ -59,7 +59,10 @@ const packageConfigs = packageBuilds.map(buildName =>
 packageBuilds.forEach(buildName => {
   if (buildName === 'cjs') {
     packageConfigs.push(createProductionConfig(buildName))
-  } else if (buildName === 'global') {
+    return;
+  }
+
+  if (['global', 'browser'].includes(buildName)) {
     packageConfigs.push(createMinifiedConfig(buildName))
   }
 })
@@ -221,10 +224,12 @@ function createProductionConfig(format) {
 }
 
 function createMinifiedConfig(format) {
+  const item = path.parse(outputConfigs[format].file);
+
   return createConfig(
     format,
     {
-      file: `dist/${name}.${format}.prod.js`,
+      file: `${item.dir}/${item.name}.prod${item.ext}`,
       format: outputConfigs[format].format,
     },
     [
