@@ -5,7 +5,7 @@
   "scripts": {
     "docs": "vitepress dev .",
     "docs:api": "node run-typedoc.js",
-    "docs:translation-status": "node generate-translation-status.js",
+    "docs:translation-status": "node generate-translation-status.mjs",
     "docs:build": "vitepress build .",
     "docs:preview": "vitepress preview ."
   },
