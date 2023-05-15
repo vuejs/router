@@ -131,14 +131,14 @@ If you want to start translating the docs in a new language:
 If you want to maintain a existing translation:
 
 1. (Repo permission required) First of all, make sure there is a _checkpoint_ branch for the language. Usually it's named as `docs-sync-<lang>`. Notice that:
-    - This branch is always synced to the commit of the original docs that the latest translation of your language is corresponding to. Like `docs-sync-zh` is always to the commit of the original docs that the latest Chinese translation is corresponding to.
-    - Technically, this checkpoint branch should be only updated if the translation is synced to a nearer commit of the original docs. Usually the commit is the HEAD of the `main` branch at that moment.
+   - This branch is always synced to the commit of the original docs that the latest translation of your language is corresponding to. Like `docs-sync-zh` is always to the commit of the original docs that the latest Chinese translation is corresponding to.
+   - Technically, this checkpoint branch should be only updated if the translation is synced to a nearer commit of the original docs. Usually the commit is the HEAD of the `main` branch at that moment.
 2. See what translation you need to do to sync up with the original docs. There are 2 popular ways:
-	  - Git diff command: e.g. `git diff docs-sync-zh..main packages/docs # > debug.log`, or
-	  - GitHub Compare page: e.g. https://github.com/vuejs/router/compare/docs-sync-zh...main (only see the changes in `packages/docs/*`)
+   - Git diff command: e.g. `git diff docs-sync-zh..main packages/docs # > debug.log`, or
+   - GitHub Compare page: e.g. https://github.com/vuejs/router/compare/docs-sync-zh...main (only see the changes in `packages/docs/*`)
 3. Create your own branch and start the translation update, following the diff or compare.
 4. Once you have done all above, create a pull request to our GitHub repo.
-    - It's highly recommended to commit with message like `docs(<lang>): sync update to <the-latest-commit>`. e.g. `docs(zh): sync update to e008551`.
+   - It's highly recommended to commit with message like `docs(<lang>): sync update to <the-latest-commit>`. e.g. `docs(zh): sync update to e008551`.
 5. (Repo permission required) **VERY IMPORTANT**: after the pull request is merged, for the future batch of sync-up, do another merge from the latest commit at that moment to the checkpoint branch. e.g. merge commit `e008551` to branch `docs-sync-zh`.
 
 For more real examples, please check out [all the PRs with title "docs(zh): sync" after 2023-01-01](https://github.com/vuejs/router/pulls?q=is%3Apr+created%3A%3E2023-01-01+docs%28zh%29+sync).
