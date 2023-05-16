@@ -2,28 +2,27 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / RouteLocationMatched
+[API 参考](../index.md) / RouteLocationMatched
 
-# Interface: RouteLocationMatched
+# 接口：RouteLocationMatched
 
-Normalized version of a [route record](../index.md#routerecord).
+一条[路由记录](../index.md#routerecord)的规范化版本。
 
-## Hierarchy %{#Hierarchy}%
+## 继承关系 %{#Hierarchy}%
 
 - [`RouteRecordNormalized`](RouteRecordNormalized.md)
 
   ↳ **`RouteLocationMatched`**
 
-## Properties %{#Properties}%
+## 属性 %{#Properties}%
 
 ### aliasOf %{#Properties-aliasOf}%
 
 • **aliasOf**: `undefined` \| [`RouteRecordNormalized`](RouteRecordNormalized.md)
 
-Defines if this record is the alias of another one. This property is
-`undefined` if the record is the original one.
+定义了是否这条记录是另一条的别名。如果记录是原始记录，则该属性为 `undefined`。
 
-#### Inherited from %{#Properties-aliasOf-Inherited-from}%
+#### 继承自 %{#Properties-aliasOf-Inherited-from}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[aliasOf](RouteRecordNormalized.md#aliasof)
 
@@ -33,9 +32,9 @@ ___
 
 • **beforeEnter**: `undefined` \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\>[]
 
-Registered beforeEnter guards
+被注册的 beforeEnter 守卫
 
-#### Inherited from %{#Properties-beforeEnter-Inherited-from}%
+#### 继承自 %{#Properties-beforeEnter-Inherited-from}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[beforeEnter](RouteRecordNormalized.md#beforeenter)
 
@@ -45,9 +44,9 @@ ___
 
 • **children**: [`RouteRecordRaw`](../index.md#routerecordraw)[]
 
-Nested route records.
+嵌套的路由记录。
 
-#### Inherited from %{#Properties-children-Inherited-from}%
+#### 继承自 %{#Properties-children-Inherited-from}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[children](RouteRecordNormalized.md#children)
 
@@ -59,7 +58,7 @@ ___
 
 {@inheritDoc RouteRecordMultipleViews.components}
 
-#### Overrides %{#Properties-components-Overrides}%
+#### Override %{#Properties-components-Overrides}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[components](RouteRecordNormalized.md#components)
 
@@ -69,15 +68,11 @@ ___
 
 • **instances**: `Record`<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`<{}, {}, {}, {}, {}, {}, {}, {}, ``false``, `ComponentOptionsBase`<`any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, {}, {}, `string`\>, {}\>\>
 
-Mounted route component instances
-Having the instances on the record mean beforeRouteUpdate and
-beforeRouteLeave guards can only be invoked with the latest mounted app
-instance if there are multiple application instances rendering the same
-view, basically duplicating the content on the page, which shouldn't happen
-in practice. It will work if multiple apps are rendering different named
-views.
+<!-- TODO: translation -->
 
-#### Inherited from %{#Properties-instances-Inherited-from}%
+Mounted route component instance。 Having the instances on the record mean beforeRouteUpdate and beforeRouteLeave guards can only be invoked with the latest mounted app instance if there are multiple application instances rendering the same view, basically duplicating the content on the page, which shouldn't happen in practice. It will work if multiple apps are rendering different named views.
+
+#### 继承自 %{#Properties-instances-Inherited-from}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[instances](RouteRecordNormalized.md#instances)
 
@@ -89,7 +84,7 @@ ___
 
 {@inheritDoc _RouteRecordBase.meta}
 
-#### Inherited from %{#Properties-meta-Inherited-from}%
+#### 继承自 %{#Properties-meta-Inherited-from}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[meta](RouteRecordNormalized.md#meta)
 
@@ -101,7 +96,7 @@ ___
 
 {@inheritDoc _RouteRecordBase.name}
 
-#### Inherited from %{#Properties-name-Inherited-from}%
+#### 继承自 %{#Properties-name-Inherited-from}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[name](RouteRecordNormalized.md#name)
 
@@ -113,7 +108,7 @@ ___
 
 {@inheritDoc _RouteRecordBase.path}
 
-#### Inherited from %{#Properties-path-Inherited-from}%
+#### 继承自 %{#Properties-path-Inherited-from}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[path](RouteRecordNormalized.md#path)
 
@@ -125,7 +120,7 @@ ___
 
 {@inheritDoc RouteRecordMultipleViews.props}
 
-#### Inherited from %{#Properties-props-Inherited-from}%
+#### 继承自 %{#Properties-props-Inherited-from}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[props](RouteRecordNormalized.md#props)
 
@@ -137,6 +132,6 @@ ___
 
 {@inheritDoc _RouteRecordBase.redirect}
 
-#### Inherited from %{#Properties-redirect-Inherited-from}%
+#### 继承自 %{#Properties-redirect-Inherited-from}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[redirect](RouteRecordNormalized.md#redirect)

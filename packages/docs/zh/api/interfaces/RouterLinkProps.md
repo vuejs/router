@@ -2,31 +2,31 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / RouterLinkProps
+[API 参考](../index.md) / RouterLinkProps
 
-# Interface: RouterLinkProps
+# 接口：RouterLinkProps
 
-## Hierarchy %{#Hierarchy}%
+## 继承关系 %{#Hierarchy}%
 
 - `RouterLinkOptions`
 
   ↳ **`RouterLinkProps`**
 
-## Properties %{#Properties}%
+## 属性 %{#Properties}%
 
 ### activeClass %{#Properties-activeClass}%
 
-• `Optional` **activeClass**: `string`
+• `可选` **activeClass**: `string`
 
-Class to apply when the link is active
+链接在匹配当前路由时被应用到 class。
 
 ___
 
 ### ariaCurrentValue %{#Properties-ariaCurrentValue}%
 
-• `Optional` **ariaCurrentValue**: ``"location"`` \| ``"time"`` \| ``"page"`` \| ``"step"`` \| ``"date"`` \| ``"true"`` \| ``"false"``
+• `可选` **ariaCurrentValue**: ``"location"`` \| ``"time"`` \| ``"page"`` \| ``"step"`` \| ``"date"`` \| ``"true"`` \| ``"false"``
 
-Value passed to the attribute `aria-current` when the link is exact active.
+链接在匹配当前路由时传入 `aria-current` attribute 的值。
 
 **`Default Value`**
 
@@ -36,28 +36,27 @@ ___
 
 ### custom %{#Properties-custom}%
 
-• `Optional` **custom**: `boolean`
+• `可选` **custom**: `boolean`
 
-Whether RouterLink should not wrap its content in an `a` tag. Useful when
-using `v-slot` to create a custom RouterLink
+RouterLink 是否应该将其内容包裹在一个 `a` 标签里。用于通过 `v-slot` 创建自定义 RouterLink。
 
 ___
 
 ### exactActiveClass %{#Properties-exactActiveClass}%
 
-• `Optional` **exactActiveClass**: `string`
+• `可选` **exactActiveClass**: `string`
 
-Class to apply when the link is exact active
+链接在严格匹配当前路由时被应用到 class。
 
 ___
 
 ### replace %{#Properties-replace}%
 
-• `Optional` **replace**: `boolean`
+• `可选` **replace**: `boolean`
 
-Calls `router.replace` instead of `router.push`.
+调用 `router.replace` 以替换 `router.push`。
 
-#### Inherited from %{#Properties-replace-Inherited-from}%
+#### 继承自 %{#Properties-replace-Inherited-from}%
 
 RouterLinkOptions.replace
 
@@ -67,8 +66,8 @@ ___
 
 • **to**: [`RouteLocationRaw`](../index.md#routelocationraw)
 
-Route Location the link should navigate to when clicked on.
+当点击该链接时应该进入的路由地址。
 
-#### Inherited from %{#Properties-to-Inherited-from}%
+#### 继承自 %{#Properties-to-Inherited-from}%
 
 RouterLinkOptions.to
