@@ -2,38 +2,35 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / RouterHistory
+[API 参考](../index.md) / RouterHistory
 
-# Interface: RouterHistory
+# 接口：RouterHistory
 
-Interface implemented by History implementations that can be passed to the
-router as Router.history
+由 History 实现的接口，可以作为 Router.history 传递给路由器。
 
-## Properties %{#Properties}%
+## 属性 %{#Properties}%
 
 ### base %{#Properties-base}%
 
-• `Readonly` **base**: `string`
+• `只读` **base**: `string`
 
-Base path that is prepended to every url. This allows hosting an SPA at a
-sub-folder of a domain like `example.com/sub-folder` by having a `base` of
-`/sub-folder`
+基准路径，它被预置到每个 URL 上。这允许在一个域名子文件夹中托管 SPA，例如将 `base` 设置为 `/sub-folder` 使得其托管在 `example.com/sub-folder`。
 
 ___
 
 ### location %{#Properties-location}%
 
-• `Readonly` **location**: `string`
+• `只读` **location**: `string`
 
-Current History location
+当前历史的地址
 
 ___
 
 ### state %{#Properties-state}%
 
-• `Readonly` **state**: [`HistoryState`](HistoryState.md)
+• `只读` **state**: [`HistoryState`](HistoryState.md)
 
-Current History state
+当前历史的状态
 
 ## Methods %{#Methods}%
 
@@ -41,15 +38,15 @@ Current History state
 
 ▸ **createHref**(`location`): `string`
 
-Generates the corresponding href to be used in an anchor tag.
+生成用于链接标签的相应的 href。
 
-#### Parameters %{#Methods-createHref-Parameters}%
+#### 参数 %{#Methods-createHref-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `location` | `string` | history location that should create an href |
+| `location` | `string` | 应该创建一个 href 的历史的地址 |
 
-#### Returns %{#Methods-createHref-Returns}%
+#### 返回值 %{#Methods-createHref-Returns}%
 
 `string`
 
@@ -59,9 +56,9 @@ ___
 
 ▸ **destroy**(): `void`
 
-Clears any event listener attached by the history implementation.
+清除任何通过该历史实现附加的事件监听器。
 
-#### Returns %{#Methods-destroy-Returns}%
+#### 返回值 %{#Methods-destroy-Returns}%
 
 `void`
 
@@ -71,7 +68,7 @@ ___
 
 ▸ **go**(`delta`, `triggerListeners?`): `void`
 
-Traverses history in a given direction.
+按指定方向访问历史。
 
 **`Example`**
 
@@ -80,14 +77,14 @@ myHistory.go(-1) // equivalent to window.history.back()
 myHistory.go(1) // equivalent to window.history.forward()
 ```
 
-#### Parameters %{#Methods-go-Parameters}%
+#### 参数 %{#Methods-go-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `delta` | `number` | distance to travel. If delta is \< 0, it will go back, if it's \> 0, it will go forward by that amount of entries. |
-| `triggerListeners?` | `boolean` | whether this should trigger listeners attached to the history |
+| `delta` | `number` | 访问的距离。如果 delta \< 0 则后退相应数量的记录，如果 \> 0 则前进。 |
+| `triggerListeners?` | `boolean` | 是否应该触发连接到该历史的监听器 |
 
-#### Returns %{#Methods-go-Returns}%
+#### 返回值 %{#Methods-go-Returns}%
 
 `void`
 
@@ -97,35 +94,29 @@ ___
 
 ▸ **listen**(`callback`): () => `void`
 
-Attach a listener to the History implementation that is triggered when the
-navigation is triggered from outside (like the Browser back and forward
-buttons) or when passing `true` to RouterHistory.back and
-RouterHistory.forward
+给历史实现附加一个监听器，当导航从外部被触发时 (像浏览器的前进后退按钮) 或者向 RouterHistory.back 和 RouterHistory.forward 传递 `true` 时，监听器就会被触发。
 
-#### Parameters %{#Methods-listen-Parameters}%
+#### 参数 %{#Methods-listen-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `callback` | `NavigationCallback` | listener to attach |
+| `callback` | `NavigationCallback` | 附加的监听器 |
 
-#### Returns %{#Methods-listen-Returns}%
+#### 返回值 %{#Methods-listen-Returns}%
 
 `fn`
 
-a callback to remove the listener
+用来移除该监听器的回调函数。
 
 ▸ (): `void`
 
-Attach a listener to the History implementation that is triggered when the
-navigation is triggered from outside (like the Browser back and forward
-buttons) or when passing `true` to RouterHistory.back and
-RouterHistory.forward
+给历史实现附加一个监听器，当导航从外部被触发时 (像浏览器的前进后退按钮) 或者向 RouterHistory.back 和 RouterHistory.forward 传递 `true` 时，监听器就会被触发。
 
-##### Returns %{#Methods-listen-Returns-Returns}%
+##### 返回值 %{#Methods-listen-Returns-Returns}%
 
 `void`
 
-a callback to remove the listener
+用来移除该监听器的回调函数。
 
 ___
 
@@ -133,17 +124,16 @@ ___
 
 ▸ **push**(`to`, `data?`): `void`
 
-Navigates to a location. In the case of an HTML5 History implementation,
-this will call `history.pushState` to effectively change the URL.
+导航到一个地址。在 HTML5 历史实现下，这将调用 `history.pushState` 来有效改变 URL。
 
-#### Parameters %{#Methods-push-Parameters}%
+#### 参数 %{#Methods-push-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
 | `to` | `string` | location to push |
-| `data?` | [`HistoryState`](HistoryState.md) | optional [HistoryState](HistoryState.md) to be associated with the navigation entry |
+| `data?` | [`HistoryState`](HistoryState.md) | 可选的 [HistoryState](HistoryState.md) 以关联该导航记录 |
 
-#### Returns %{#Methods-push-Returns}%
+#### 返回值 %{#Methods-push-Returns}%
 
 `void`
 
@@ -153,16 +143,16 @@ ___
 
 ▸ **replace**(`to`, `data?`): `void`
 
-Same as [push](RouterHistory.md#push) but performs a `history.replaceState`
-instead of `history.pushState`
+和 [push](RouterHistory.md#push) 相同，只是执行了 `history.replaceState`
+以换掉 `history.pushState`。
 
-#### Parameters %{#Methods-replace-Parameters}%
+#### 参数 %{#Methods-replace-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `to` | `string` | location to set |
-| `data?` | [`HistoryState`](HistoryState.md) | optional [HistoryState](HistoryState.md) to be associated with the navigation entry |
+| `to` | `string` | 要设置的地址 |
+| `data?` | [`HistoryState`](HistoryState.md) | 可选的 [HistoryState](HistoryState.md) 以关联该导航记录 |
 
-#### Returns %{#Methods-replace-Returns}%
+#### 返回值 %{#Methods-replace-Returns}%
 
 `void`

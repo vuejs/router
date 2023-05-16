@@ -2,24 +2,24 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / RouterScrollBehavior
+[API 参考](../index.md) / RouterScrollBehavior
 
-# Interface: RouterScrollBehavior
+# 接口：RouterScrollBehavior
 
-## Callable %{#Callable}%
+## 可调用函数 %{#Callable}%
 
 ### RouterScrollBehavior %{#Callable-RouterScrollBehavior}%
 
 ▸ **RouterScrollBehavior**(`to`, `from`, `savedPosition`): `Awaitable`<``false`` \| `void` \| `ScrollPosition`\>
 
-#### Parameters %{#Callable-RouterScrollBehavior-Parameters}%
+#### 参数 %{#Callable-RouterScrollBehavior-Parameters}%
 
-| Name | Type | Description |
+| 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `to` | [`RouteLocationNormalized`](RouteLocationNormalized.md) | Route location where we are navigating to |
-| `from` | [`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md) | Route location where we are navigating from |
-| `savedPosition` | ``null`` \| `_ScrollPositionNormalized` | saved position if it exists, `null` otherwise |
+| `to` | [`RouteLocationNormalized`](RouteLocationNormalized.md) | 我们要导航到的路由地址 |
+| `from` | [`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md) | 我们要离开的路由地址 |
+| `savedPosition` | ``null`` \| `_ScrollPositionNormalized` | 要保存的页面位置，如果不存在则是 `null` |
 
-#### Returns %{#Callable-RouterScrollBehavior-Returns}%
+#### 返回值 %{#Callable-RouterScrollBehavior-Returns}%
 
 `Awaitable`<``false`` \| `void` \| `ScrollPosition`\>

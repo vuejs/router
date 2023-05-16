@@ -2,7 +2,7 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / NavigationFailure
+[API 参考](../index.md) / NavigationFailure
 
 # 接口：NavigationFailure %{#interface-navigationfailure}%
 
@@ -68,7 +68,7 @@ ___
 
 • **to**: [`RouteLocationNormalized`](RouteLocationNormalized.md)
 
-Route location we were navigating to
+要导航至的下一个路由位置
 
 ___
 
@@ -76,4 +76,4 @@ ___
 
 • **type**: `NAVIGATION_ABORTED` \| `NAVIGATION_CANCELLED` \| `NAVIGATION_DUPLICATED`
 
-Type of the navigation. One of [NavigationFailureType](../enums/NavigationFailureType.md)
+导航类型。属于 [NavigationFailureType](../enums/NavigationFailureType.md) 的一种。

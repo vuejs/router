@@ -2,7 +2,7 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / RouterOptions
+[API 参考](../index.md) / RouterOptions
 
 # 接口：RouterOptions %{#interface-routeroptions}%
 
