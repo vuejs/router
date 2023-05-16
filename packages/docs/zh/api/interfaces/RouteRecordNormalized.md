@@ -36,7 +36,7 @@ ___
 
 • **children**: [`RouteRecordRaw`](../index.md#routerecordraw)[]
 
-层叠的路由记录。
+嵌套的路由记录。
 
 ___
 

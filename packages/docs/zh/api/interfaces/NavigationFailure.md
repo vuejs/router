@@ -76,4 +76,4 @@ ___
 
 • **type**: `NAVIGATION_ABORTED` \| `NAVIGATION_CANCELLED` \| `NAVIGATION_DUPLICATED`
 
-导航类型。属于 [NavigationFailureType](../enums/NavigationFailureType.md)。
+导航类型。属于 [NavigationFailureType](../enums/NavigationFailureType.md) 的一种。
