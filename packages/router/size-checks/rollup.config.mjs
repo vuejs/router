@@ -3,7 +3,7 @@ import ts from 'rollup-plugin-typescript2'
 import replace from '@rollup/plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
-import { terser } from 'rollup-plugin-terser'
+import terser from '@rollup/plugin-terser'
 import { defineConfig } from 'rollup'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
