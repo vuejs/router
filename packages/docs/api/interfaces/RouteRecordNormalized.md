@@ -6,7 +6,7 @@ editLink: false
 
 # Interface: RouteRecordNormalized
 
-Normalized version of a [route record](../index.md#routerecord).
+Normalized version of a [route record](../index.md#Type-Aliases-RouteRecord).
 
 ## Hierarchy %{#Hierarchy}%
 
@@ -23,7 +23,7 @@ Normalized version of a [route record](../index.md#routerecord).
 Defines if this record is the alias of another one. This property is
 `undefined` if the record is the original one.
 
-___
+---
 
 ### beforeEnter %{#Properties-beforeEnter}%
 
@@ -31,27 +31,27 @@ ___
 
 Registered beforeEnter guards
 
-___
+---
 
 ### children %{#Properties-children}%
 
-• **children**: [`RouteRecordRaw`](../index.md#routerecordraw)[]
+• **children**: [`RouteRecordRaw`](../index.md#Type-Aliases-RouteRecordRaw)[]
 
 Nested route records.
 
-___
+---
 
 ### components %{#Properties-components}%
 
-• **components**: `undefined` \| ``null`` \| `Record`<`string`, `RawRouteComponent`\>
+• **components**: `undefined` \| `null` \| `Record`<`string`, `RawRouteComponent`\>
 
 {@inheritDoc RouteRecordMultipleViews.components}
 
-___
+---
 
 ### instances %{#Properties-instances}%
 
-• **instances**: `Record`<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`<{}, {}, {}, {}, {}, {}, {}, {}, ``false``, `ComponentOptionsBase`<`any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, {}, {}, `string`, {}\>, {}, {}\>\>
+• **instances**: `Record`<`string`, `undefined` \| `null` \| `ComponentPublicInstance`<{}, {}, {}, {}, {}, {}, {}, {}, `false`, `ComponentOptionsBase`<`any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, {}, {}, `string`, {}\>, {}, {}\>\>
 
 Mounted route component instances
 Having the instances on the record mean beforeRouteUpdate and
@@ -61,31 +61,31 @@ view, basically duplicating the content on the page, which shouldn't happen
 in practice. It will work if multiple apps are rendering different named
 views.
 
-___
+---
 
 ### meta %{#Properties-meta}%
 
 • **meta**: [`RouteMeta`](RouteMeta.md)
 
-{@inheritDoc _RouteRecordBase.meta}
+{@inheritDoc \_RouteRecordBase.meta}
 
-___
+---
 
 ### name %{#Properties-name}%
 
-• **name**: `undefined` \| [`RouteRecordName`](../index.md#routerecordname)
+• **name**: `undefined` \| [`RouteRecordName`](../index.md#Type-Aliases-RouteRecordName)
 
-{@inheritDoc _RouteRecordBase.name}
+{@inheritDoc \_RouteRecordBase.name}
 
-___
+---
 
 ### path %{#Properties-path}%
 
 • **path**: `string`
 
-{@inheritDoc _RouteRecordBase.path}
+{@inheritDoc \_RouteRecordBase.path}
 
-___
+---
 
 ### props %{#Properties-props}%
 
@@ -93,10 +93,10 @@ ___
 
 {@inheritDoc RouteRecordMultipleViews.props}
 
-___
+---
 
 ### redirect %{#Properties-redirect}%
 
 • **redirect**: `undefined` \| `RouteRecordRedirectOption`
 
-{@inheritDoc _RouteRecordBase.redirect}
+{@inheritDoc \_RouteRecordBase.redirect}

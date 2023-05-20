@@ -22,7 +22,7 @@ editLink: false
 
 #### Parameters %{#Callable-NavigationGuardNext-Parameters}%
 
-| Name | Type |
+| Name    | Type    |
 | :------ | :------ |
 | `error` | `Error` |
 
@@ -36,9 +36,9 @@ editLink: false
 
 #### Parameters %{#Callable-NavigationGuardNext-Parameters_1}%
 
-| Name | Type |
-| :------ | :------ |
-| `location` | [`RouteLocationRaw`](../index.md#routelocationraw) |
+| Name       | Type                                                            |
+| :--------- | :-------------------------------------------------------------- |
+| `location` | [`RouteLocationRaw`](../index.md#Type-Aliases-RouteLocationRaw) |
 
 #### Returns %{#Callable-NavigationGuardNext-Returns_2}%
 
@@ -50,8 +50,8 @@ editLink: false
 
 #### Parameters %{#Callable-NavigationGuardNext-Parameters_2}%
 
-| Name | Type |
-| :------ | :------ |
+| Name    | Type                     |
+| :------ | :----------------------- |
 | `valid` | `undefined` \| `boolean` |
 
 #### Returns %{#Callable-NavigationGuardNext-Returns_3}%
@@ -64,8 +64,8 @@ editLink: false
 
 #### Parameters %{#Callable-NavigationGuardNext-Parameters_3}%
 
-| Name | Type |
-| :------ | :------ |
+| Name | Type                          |
+| :--- | :---------------------------- |
 | `cb` | `NavigationGuardNextCallback` |
 
 #### Returns %{#Callable-NavigationGuardNext-Returns_4}%

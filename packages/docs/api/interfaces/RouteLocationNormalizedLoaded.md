@@ -6,7 +6,7 @@ editLink: false
 
 # Interface: RouteLocationNormalizedLoaded
 
-[RouteLocationRaw](../index.md#routelocationraw) with
+[RouteLocationRaw](../index.md#Type-Aliases-RouteLocationRaw) with
 
 ## Hierarchy %{#Hierarchy}%
 
@@ -27,7 +27,7 @@ percentage encoded.
 
 \_RouteLocationBase.fullPath
 
-___
+---
 
 ### hash %{#Properties-hash}%
 
@@ -39,7 +39,7 @@ Hash of the current location. If present, starts with a `#`.
 
 \_RouteLocationBase.hash
 
-___
+---
 
 ### matched %{#Properties-matched}%
 
@@ -50,7 +50,7 @@ lazy-loaded components have been loaded and were replaced inside the
 `components` object) so it can be directly used to display routes. It
 cannot contain redirect records either
 
-___
+---
 
 ### meta %{#Properties-meta}%
 
@@ -62,11 +62,11 @@ Merged `meta` properties from all the matched route records.
 
 \_RouteLocationBase.meta
 
-___
+---
 
 ### name %{#Properties-name}%
 
-• **name**: `undefined` \| ``null`` \| [`RouteRecordName`](../index.md#routerecordname)
+• **name**: `undefined` \| `null` \| [`RouteRecordName`](../index.md#Type-Aliases-RouteRecordName)
 
 Name of the matched record
 
@@ -74,11 +74,11 @@ Name of the matched record
 
 \_RouteLocationBase.name
 
-___
+---
 
 ### params %{#Properties-params}%
 
-• **params**: [`RouteParams`](../index.md#routeparams)
+• **params**: [`RouteParams`](../index.md#Type-Aliases-RouteParams)
 
 Object of decoded params extracted from the `path`.
 
@@ -86,7 +86,7 @@ Object of decoded params extracted from the `path`.
 
 \_RouteLocationBase.params
 
-___
+---
 
 ### path %{#Properties-path}%
 
@@ -98,11 +98,11 @@ Percentage encoded pathname section of the URL.
 
 \_RouteLocationBase.path
 
-___
+---
 
 ### query %{#Properties-query}%
 
-• **query**: [`LocationQuery`](../index.md#locationquery)
+• **query**: [`LocationQuery`](../index.md#Type-Aliases-LocationQuery)
 
 Object representation of the `search` property of the current location.
 
@@ -110,7 +110,7 @@ Object representation of the `search` property of the current location.
 
 \_RouteLocationBase.query
 
-___
+---
 
 ### redirectedFrom %{#Properties-redirectedFrom}%
 

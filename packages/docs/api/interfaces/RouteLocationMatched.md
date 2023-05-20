@@ -6,7 +6,7 @@ editLink: false
 
 # Interface: RouteLocationMatched
 
-Normalized version of a [route record](../index.md#routerecord).
+Normalized version of a [route record](../index.md#Type-Aliases-RouteRecord).
 
 ## Hierarchy %{#Hierarchy}%
 
@@ -27,7 +27,7 @@ Defines if this record is the alias of another one. This property is
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[aliasOf](RouteRecordNormalized.md#aliasof)
 
-___
+---
 
 ### beforeEnter %{#Properties-beforeEnter}%
 
@@ -39,11 +39,11 @@ Registered beforeEnter guards
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[beforeEnter](RouteRecordNormalized.md#beforeenter)
 
-___
+---
 
 ### children %{#Properties-children}%
 
-• **children**: [`RouteRecordRaw`](../index.md#routerecordraw)[]
+• **children**: [`RouteRecordRaw`](../index.md#Type-Aliases-RouteRecordRaw)[]
 
 Nested route records.
 
@@ -51,11 +51,11 @@ Nested route records.
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[children](RouteRecordNormalized.md#children)
 
-___
+---
 
 ### components %{#Properties-components}%
 
-• **components**: `undefined` \| ``null`` \| `Record`<`string`, [`RouteComponent`](../index.md#routecomponent)\>
+• **components**: `undefined` \| `null` \| `Record`<`string`, [`RouteComponent`](../index.md#Type-Aliases-RouteComponent)\>
 
 {@inheritDoc RouteRecordMultipleViews.components}
 
@@ -63,11 +63,11 @@ ___
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[components](RouteRecordNormalized.md#components)
 
-___
+---
 
 ### instances %{#Properties-instances}%
 
-• **instances**: `Record`<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`<{}, {}, {}, {}, {}, {}, {}, {}, ``false``, `ComponentOptionsBase`<`any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, {}, {}, `string`, {}\>, {}, {}\>\>
+• **instances**: `Record`<`string`, `undefined` \| `null` \| `ComponentPublicInstance`<{}, {}, {}, {}, {}, {}, {}, {}, `false`, `ComponentOptionsBase`<`any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, {}, {}, `string`, {}\>, {}, {}\>\>
 
 Mounted route component instances
 Having the instances on the record mean beforeRouteUpdate and
@@ -81,43 +81,43 @@ views.
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[instances](RouteRecordNormalized.md#instances)
 
-___
+---
 
 ### meta %{#Properties-meta}%
 
 • **meta**: [`RouteMeta`](RouteMeta.md)
 
-{@inheritDoc _RouteRecordBase.meta}
+{@inheritDoc \_RouteRecordBase.meta}
 
 #### Inherited from %{#Properties-meta-Inherited-from}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[meta](RouteRecordNormalized.md#meta)
 
-___
+---
 
 ### name %{#Properties-name}%
 
-• **name**: `undefined` \| [`RouteRecordName`](../index.md#routerecordname)
+• **name**: `undefined` \| [`RouteRecordName`](../index.md#Type-Aliases-RouteRecordName)
 
-{@inheritDoc _RouteRecordBase.name}
+{@inheritDoc \_RouteRecordBase.name}
 
 #### Inherited from %{#Properties-name-Inherited-from}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[name](RouteRecordNormalized.md#name)
 
-___
+---
 
 ### path %{#Properties-path}%
 
 • **path**: `string`
 
-{@inheritDoc _RouteRecordBase.path}
+{@inheritDoc \_RouteRecordBase.path}
 
 #### Inherited from %{#Properties-path-Inherited-from}%
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[path](RouteRecordNormalized.md#path)
 
-___
+---
 
 ### props %{#Properties-props}%
 
@@ -129,13 +129,13 @@ ___
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[props](RouteRecordNormalized.md#props)
 
-___
+---
 
 ### redirect %{#Properties-redirect}%
 
 • **redirect**: `undefined` \| `RouteRecordRedirectOption`
 
-{@inheritDoc _RouteRecordBase.redirect}
+{@inheritDoc \_RouteRecordBase.redirect}
 
 #### Inherited from %{#Properties-redirect-Inherited-from}%
 

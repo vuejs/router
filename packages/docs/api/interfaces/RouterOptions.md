@@ -10,7 +10,7 @@ Options to initialize a [Router](Router.md) instance.
 
 ## Hierarchy %{#Hierarchy}%
 
-- [`PathParserOptions`](../index.md#pathparseroptions)
+- [`PathParserOptions`](../index.md#Type-Aliases-PathParserOptions)
 
   ↳ **`RouterOptions`**
 
@@ -30,7 +30,7 @@ Should the RegExp match until the end by appending a `$` to it.
 
 PathParserOptions.end
 
-___
+---
 
 ### history %{#Properties-history}%
 
@@ -51,33 +51,33 @@ createRouter({
 })
 ```
 
-___
+---
 
 ### linkActiveClass %{#Properties-linkActiveClass}%
 
 • `Optional` **linkActiveClass**: `string`
 
-Default class applied to active [RouterLink](../index.md#routerlink). If none is provided,
+Default class applied to active [RouterLink](../index.md#Type-Aliases-RouterLink). If none is provided,
 `router-link-active` will be applied.
 
-___
+---
 
 ### linkExactActiveClass %{#Properties-linkExactActiveClass}%
 
 • `Optional` **linkExactActiveClass**: `string`
 
-Default class applied to exact active [RouterLink](../index.md#routerlink). If none is provided,
+Default class applied to exact active [RouterLink](../index.md#Type-Aliases-RouterLink). If none is provided,
 `router-link-exact-active` will be applied.
 
-___
+---
 
 ### parseQuery %{#Properties-parseQuery}%
 
-• `Optional` **parseQuery**: (`search`: `string`) => [`LocationQuery`](../index.md#locationquery)
+• `Optional` **parseQuery**: (`search`: `string`) => [`LocationQuery`](../index.md#Type-Aliases-LocationQuery)
 
 #### Type declaration %{#Properties-parseQuery-Type-declaration}%
 
-▸ (`search`): [`LocationQuery`](../index.md#locationquery)
+▸ (`search`): [`LocationQuery`](../index.md#Type-Aliases-LocationQuery)
 
 Custom implementation to parse a query. See its counterpart,
 [stringifyQuery](RouterOptions.md#stringifyquery).
@@ -86,6 +86,7 @@ Custom implementation to parse a query. See its counterpart,
 
 Let's say you want to use the [qs package](https://github.com/ljharb/qs)
 to parse queries, you can provide both `parseQuery` and `stringifyQuery`:
+
 ```js
 import qs from 'qs'
 
@@ -98,23 +99,23 @@ createRouter({
 
 ##### Parameters %{#Properties-parseQuery-Type-declaration-Parameters}%
 
-| Name | Type |
-| :------ | :------ |
+| Name     | Type     |
+| :------- | :------- |
 | `search` | `string` |
 
 ##### Returns %{#Properties-parseQuery-Type-declaration-Returns}%
 
-[`LocationQuery`](../index.md#locationquery)
+[`LocationQuery`](../index.md#Type-Aliases-LocationQuery)
 
-___
+---
 
 ### routes %{#Properties-routes}%
 
-• **routes**: readonly [`RouteRecordRaw`](../index.md#routerecordraw)[]
+• **routes**: readonly [`RouteRecordRaw`](../index.md#Type-Aliases-RouteRecordRaw)[]
 
 Initial list of routes that should be added to the router.
 
-___
+---
 
 ### scrollBehavior %{#Properties-scrollBehavior}%
 
@@ -132,7 +133,7 @@ function scrollBehavior(to, from, savedPosition) {
 }
 ```
 
-___
+---
 
 ### sensitive %{#Properties-sensitive}%
 
@@ -148,7 +149,7 @@ Makes the RegExp case-sensitive.
 
 PathParserOptions.sensitive
 
-___
+---
 
 ### strict %{#Properties-strict}%
 
@@ -164,11 +165,11 @@ Whether to disallow a trailing slash or not.
 
 PathParserOptions.strict
 
-___
+---
 
 ### stringifyQuery %{#Properties-stringifyQuery}%
 
-• `Optional` **stringifyQuery**: (`query`: [`LocationQueryRaw`](../index.md#locationqueryraw)) => `string`
+• `Optional` **stringifyQuery**: (`query`: [`LocationQueryRaw`](../index.md#Type-Aliases-LocationQueryRaw)) => `string`
 
 #### Type declaration %{#Properties-stringifyQuery-Type-declaration}%
 
@@ -179,9 +180,9 @@ Custom implementation to stringify a query object. Should not prepend a leading 
 
 ##### Parameters %{#Properties-stringifyQuery-Type-declaration-Parameters}%
 
-| Name | Type |
-| :------ | :------ |
-| `query` | [`LocationQueryRaw`](../index.md#locationqueryraw) |
+| Name    | Type                                                            |
+| :------ | :-------------------------------------------------------------- |
+| `query` | [`LocationQueryRaw`](../index.md#Type-Aliases-LocationQueryRaw) |
 
 ##### Returns %{#Properties-stringifyQuery-Type-declaration-Returns}%
 

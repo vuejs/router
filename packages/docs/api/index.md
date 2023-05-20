@@ -36,23 +36,23 @@ API Documentation
 
 Normalized query object that appears in [RouteLocationNormalized](interfaces/RouteLocationNormalized.md)
 
-___
+---
 
 ### LocationQueryRaw %{#Type-Aliases-LocationQueryRaw}%
 
 Ƭ **LocationQueryRaw**: `Record`<`string` \| `number`, `LocationQueryValueRaw` \| `LocationQueryValueRaw`[]\>
 
-Loose [LocationQuery](index.md#locationquery) object that can be passed to functions like
+Loose [LocationQuery](index.md#Type-Aliases-LocationQuery) object that can be passed to functions like
 [push](interfaces/Router.md#push) and [replace](interfaces/Router.md#replace) or anywhere when creating a
-[RouteLocationRaw](index.md#routelocationraw)
+[RouteLocationRaw](index.md#Type-Aliases-RouteLocationRaw)
 
-___
+---
 
 ### PathParserOptions %{#Type-Aliases-PathParserOptions}%
 
-Ƭ **PathParserOptions**: `Pick`<`_PathParserOptions`, ``"end"`` \| ``"sensitive"`` \| ``"strict"``\>
+Ƭ **PathParserOptions**: `Pick`<`_PathParserOptions`, `"end"` \| `"sensitive"` \| `"strict"`\>
 
-___
+---
 
 ### RouteComponent %{#Type-Aliases-RouteComponent}%
 
@@ -60,7 +60,7 @@ ___
 
 Allowed Component in [RouteLocationMatched](interfaces/RouteLocationMatched.md)
 
-___
+---
 
 ### RouteLocationRaw %{#Type-Aliases-RouteLocationRaw}%
 
@@ -68,27 +68,27 @@ ___
 
 User-level route location
 
-___
+---
 
 ### RouteParams %{#Type-Aliases-RouteParams}%
 
 Ƭ **RouteParams**: `Record`<`string`, `RouteParamValue` \| `RouteParamValue`[]\>
 
-___
+---
 
 ### RouteParamsRaw %{#Type-Aliases-RouteParamsRaw}%
 
-Ƭ **RouteParamsRaw**: `Record`<`string`, `RouteParamValueRaw` \| `Exclude`<`RouteParamValueRaw`, ``null`` \| `undefined`\>[]\>
+Ƭ **RouteParamsRaw**: `Record`<`string`, `RouteParamValueRaw` \| `Exclude`<`RouteParamValueRaw`, `null` \| `undefined`\>[]\>
 
-___
+---
 
 ### RouteRecord %{#Type-Aliases-RouteRecord}%
 
 Ƭ **RouteRecord**: [`RouteRecordNormalized`](interfaces/RouteRecordNormalized.md)
 
-Normalized version of a [route record](index.md#routerecord).
+Normalized version of a [route record](index.md#Type-Aliases-RouteRecord).
 
-___
+---
 
 ### RouteRecordName %{#Type-Aliases-RouteRecordName}%
 
@@ -96,13 +96,13 @@ ___
 
 Possible values for a user-defined route record's name
 
-___
+---
 
 ### RouteRecordRaw %{#Type-Aliases-RouteRecordRaw}%
 
 Ƭ **RouteRecordRaw**: `RouteRecordSingleView` \| `RouteRecordSingleViewWithChildren` \| `RouteRecordMultipleViews` \| `RouteRecordMultipleViewsWithChildren` \| `RouteRecordRedirect`
 
-___
+---
 
 ### UseLinkOptions %{#Type-Aliases-UseLinkOptions}%
 
@@ -116,11 +116,11 @@ ___
 
 Component to render a link that triggers a navigation on click.
 
-___
+---
 
 ### RouterView %{#Variables-RouterView}%
 
-• `Const` **RouterView**: () => { `$props`: `AllowedComponentProps` & `ComponentCustomProps` & `VNodeProps` & [`RouterViewProps`](interfaces/RouterViewProps.md) ; `$slots`: { `default?`: (`__namedParameters`: { `Component`: `VNode`<`RendererNode`, `RendererElement`, { `[key: string]`: `any`;  }\> ; `route`: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)  }) => `VNode`<`RendererNode`, `RendererElement`, { `[key: string]`: `any`;  }\>[]  }  }
+• `Const` **RouterView**: () => { `$props`: `AllowedComponentProps` & `ComponentCustomProps` & `VNodeProps` & [`RouterViewProps`](interfaces/RouterViewProps.md) ; `$slots`: { `default?`: (`__namedParameters`: { `Component`: `VNode`<`RendererNode`, `RendererElement`, { `[key: string]`: `any`; }\> ; `route`: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md) }) => `VNode`<`RendererNode`, `RendererElement`, { `[key: string]`: `any`; }\>[] } }
 
 #### Type declaration %{#Variables-RouterView-Type-declaration}%
 
@@ -128,11 +128,11 @@ ___
 
 Component to display the current route the user is at.
 
-___
+---
 
-### START\_LOCATION %{#Variables-START_LOCATION}%
+### START_LOCATION %{#Variables-START_LOCATION}%
 
-• `Const` **START\_LOCATION**: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)
+• `Const` **START_LOCATION**: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)
 
 Initial route location where the router is. Can be used in navigation guards
 to differentiate the initial navigation.
@@ -160,9 +160,9 @@ It's up to the user to replace that location with the starter location by either
 
 #### Parameters %{#Functions-createMemoryHistory-Parameters}%
 
-| Name | Type | Default value | Description |
-| :------ | :------ | :------ | :------ |
-| `base` | `string` | `''` | Base applied to all urls, defaults to '/' |
+| Name   | Type     | Default value | Description                               |
+| :----- | :------- | :------------ | :---------------------------------------- |
+| `base` | `string` | `''`          | Base applied to all urls, defaults to '/' |
 
 #### Returns %{#Functions-createMemoryHistory-Returns}%
 
@@ -170,7 +170,7 @@ It's up to the user to replace that location with the starter location by either
 
 a history object that can be passed to the router constructor
 
-___
+---
 
 ### createRouter %{#Functions-createRouter}%
 
@@ -180,15 +180,15 @@ Creates a Router instance that can be used by a Vue app.
 
 #### Parameters %{#Functions-createRouter-Parameters}%
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
+| Name      | Type                                           | Description                                  |
+| :-------- | :--------------------------------------------- | :------------------------------------------- |
 | `options` | [`RouterOptions`](interfaces/RouterOptions.md) | [RouterOptions](interfaces/RouterOptions.md) |
 
 #### Returns %{#Functions-createRouter-Returns}%
 
 [`Router`](interfaces/Router.md)
 
-___
+---
 
 ### createWebHashHistory %{#Functions-createWebHashHistory}%
 
@@ -215,15 +215,15 @@ createWebHashHistory('/iAmIgnored') // gives a url of `file:///usr/etc/folder/in
 
 #### Parameters %{#Functions-createWebHashHistory-Parameters}%
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
+| Name    | Type     | Description                                                                                                                                                                                                                                                                                                                                                        |
+| :------ | :------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `base?` | `string` | optional base to provide. Defaults to `location.pathname + location.search` If there is a `<base>` tag in the `head`, its value will be ignored in favor of this parameter **but note it affects all the history.pushState() calls**, meaning that if you use a `<base>` tag, it's `href` value **has to match this parameter** (ignoring anything after the `#`). |
 
 #### Returns %{#Functions-createWebHashHistory-Returns}%
 
 [`RouterHistory`](interfaces/RouterHistory.md)
 
-___
+---
 
 ### createWebHistory %{#Functions-createWebHistory}%
 
@@ -233,15 +233,15 @@ Creates an HTML5 history. Most common history for single page applications.
 
 #### Parameters %{#Functions-createWebHistory-Parameters}%
 
-| Name | Type |
-| :------ | :------ |
+| Name    | Type     |
+| :------ | :------- |
 | `base?` | `string` |
 
 #### Returns %{#Functions-createWebHistory-Returns}%
 
 [`RouterHistory`](interfaces/RouterHistory.md)
 
-___
+---
 
 ### isNavigationFailure %{#Functions-isNavigationFailure}%
 
@@ -264,7 +264,12 @@ router.afterEach((to, from, failure) => {
     // ...
   }
   // Aborted or canceled navigations
-  if (isNavigationFailure(failure, NavigationFailureType.aborted | NavigationFailureType.canceled)) {
+  if (
+    isNavigationFailure(
+      failure,
+      NavigationFailureType.aborted | NavigationFailureType.canceled
+    )
+  ) {
     // ...
   }
 })
@@ -272,10 +277,10 @@ router.afterEach((to, from, failure) => {
 
 #### Parameters %{#Functions-isNavigationFailure-Parameters}%
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `error` | `any` | possible [NavigationFailure](interfaces/NavigationFailure.md) |
-| `type?` | `NAVIGATION_GUARD_REDIRECT` | optional types to check for |
+| Name    | Type                        | Description                                                   |
+| :------ | :-------------------------- | :------------------------------------------------------------ |
+| `error` | `any`                       | possible [NavigationFailure](interfaces/NavigationFailure.md) |
+| `type?` | `NAVIGATION_GUARD_REDIRECT` | optional types to check for                                   |
 
 #### Returns %{#Functions-isNavigationFailure-Returns}%
 
@@ -285,16 +290,16 @@ error is NavigationRedirectError
 
 #### Parameters %{#Functions-isNavigationFailure-Parameters_1}%
 
-| Name | Type |
-| :------ | :------ |
-| `error` | `any` |
+| Name    | Type                                                                      |
+| :------ | :------------------------------------------------------------------------ |
+| `error` | `any`                                                                     |
 | `type?` | `ErrorTypes` \| [`NavigationFailureType`](enums/NavigationFailureType.md) |
 
 #### Returns %{#Functions-isNavigationFailure-Returns_1}%
 
 error is NavigationFailure
 
-___
+---
 
 ### loadRouteLocation %{#Functions-loadRouteLocation}%
 
@@ -304,15 +309,15 @@ Ensures a route is loaded, so it can be passed as o prop to `<RouterView>`.
 
 #### Parameters %{#Functions-loadRouteLocation-Parameters}%
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
+| Name    | Type                                                               | Description            |
+| :------ | :----------------------------------------------------------------- | :--------------------- |
 | `route` | [`RouteLocationNormalized`](interfaces/RouteLocationNormalized.md) | resolved route to load |
 
 #### Returns %{#Functions-loadRouteLocation-Returns}%
 
 `Promise`<[`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)\>
 
-___
+---
 
 ### onBeforeRouteLeave %{#Functions-onBeforeRouteLeave}%
 
@@ -324,15 +329,15 @@ used in any component. The guard is removed when the component is unmounted.
 
 #### Parameters %{#Functions-onBeforeRouteLeave-Parameters}%
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
+| Name         | Type                                               | Description                                      |
+| :----------- | :------------------------------------------------- | :----------------------------------------------- |
 | `leaveGuard` | [`NavigationGuard`](interfaces/NavigationGuard.md) | [NavigationGuard](interfaces/NavigationGuard.md) |
 
 #### Returns %{#Functions-onBeforeRouteLeave-Returns}%
 
 `void`
 
-___
+---
 
 ### onBeforeRouteUpdate %{#Functions-onBeforeRouteUpdate}%
 
@@ -344,15 +349,15 @@ component. The guard is removed when the component is unmounted.
 
 #### Parameters %{#Functions-onBeforeRouteUpdate-Parameters}%
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
+| Name          | Type                                               | Description                                      |
+| :------------ | :------------------------------------------------- | :----------------------------------------------- |
 | `updateGuard` | [`NavigationGuard`](interfaces/NavigationGuard.md) | [NavigationGuard](interfaces/NavigationGuard.md) |
 
 #### Returns %{#Functions-onBeforeRouteUpdate-Returns}%
 
 `void`
 
-___
+---
 
 ### useLink %{#Functions-useLink}%
 
@@ -360,23 +365,23 @@ ___
 
 #### Parameters %{#Functions-useLink-Parameters}%
 
-| Name | Type |
-| :------ | :------ |
+| Name    | Type                                  |
+| :------ | :------------------------------------ |
 | `props` | `VueUseOptions`<`RouterLinkOptions`\> |
 
 #### Returns %{#Functions-useLink-Returns}%
 
 `Object`
 
-| Name | Type |
-| :------ | :------ |
-| `href` | `ComputedRef`<`string`\> |
-| `isActive` | `ComputedRef`<`boolean`\> |
-| `isExactActive` | `ComputedRef`<`boolean`\> |
-| `navigate` | (`e`: `MouseEvent`) => `Promise`<`void` \| [`NavigationFailure`](interfaces/NavigationFailure.md)\> |
-| `route` | `ComputedRef`<[`RouteLocation`](interfaces/RouteLocation.md) & { `href`: `string`  }\> |
+| Name            | Type                                                                                                |
+| :-------------- | :-------------------------------------------------------------------------------------------------- |
+| `href`          | `ComputedRef`<`string`\>                                                                            |
+| `isActive`      | `ComputedRef`<`boolean`\>                                                                           |
+| `isExactActive` | `ComputedRef`<`boolean`\>                                                                           |
+| `navigate`      | (`e`: `MouseEvent`) => `Promise`<`void` \| [`NavigationFailure`](interfaces/NavigationFailure.md)\> |
+| `route`         | `ComputedRef`<[`RouteLocation`](interfaces/RouteLocation.md) & { `href`: `string` }\>               |
 
-___
+---
 
 ### useRoute %{#Functions-useRoute}%
 
@@ -389,7 +394,7 @@ templates.
 
 [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)
 
-___
+---
 
 ### useRouter %{#Functions-useRouter}%
 
