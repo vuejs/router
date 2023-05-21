@@ -38,7 +38,7 @@ editLink: false
 
 | Name | Type |
 | :------ | :------ |
-| `location` | [`RouteLocationRaw`](../index.md#routelocationraw) |
+| `location` | [`RouteLocationRaw`](../index.md#Type-Aliases-RouteLocationRaw) |
 
 #### Returns %{#Callable-NavigationGuardNext-Returns_2}%
 

@@ -43,7 +43,7 @@ ___
 
 ### children %{#Properties-children}%
 
-• **children**: [`RouteRecordRaw`](../index.md#routerecordraw)[]
+• **children**: [`RouteRecordRaw`](../index.md#Type-Aliases-RouteRecordRaw)[]
 
 Nested route records.
 

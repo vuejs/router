@@ -65,7 +65,7 @@ ___
 
 ### name %{#Properties-name}%
 
-• **name**: `undefined` \| ``null`` \| [`RouteRecordName`](../index.md#routerecordname)
+• **name**: `undefined` \| ``null`` \| [`RouteRecordName`](../index.md#Type-Aliases-RouteRecordName)
 
 Name of the matched record
 

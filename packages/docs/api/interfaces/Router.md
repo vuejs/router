@@ -45,7 +45,7 @@ Add a new [route record](../index.md#routerecordraw) as the child of an existing
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `parentName` | [`RouteRecordName`](../index.md#routerecordname) | Parent Route Record where `route` should be appended at |
-| `route` | [`RouteRecordRaw`](../index.md#routerecordraw) | Route Record to add |
+| `route` | [`RouteRecordRaw`](../index.md#Type-Aliases-RouteRecordRaw) | Route Record to add |
 
 #### Returns %{#Methods-addRoute-Returns}%
 
@@ -53,7 +53,7 @@ Add a new [route record](../index.md#routerecordraw) as the child of an existing
 
 ▸ (): `void`
 
-Add a new [route record](../index.md#routerecordraw) as the child of an existing route.
+Add a new [route record](../index.md#Type-Aliases-RouteRecordRaw) as the child of an existing route.
 
 ##### Returns %{#Methods-addRoute-Returns-Returns}%
 
@@ -347,7 +347,7 @@ stack.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | Route location to navigate to |
+| `to` | [`RouteLocationRaw`](../index.md#Type-Aliases-RouteLocationRaw) | Route location to navigate to |
 
 #### Returns %{#Methods-push-Returns}%
 
