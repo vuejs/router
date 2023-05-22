@@ -15,7 +15,7 @@ async function main() {
     if (targetHash) {
       console.log(`The last checkpoint of docs(${targetLocale}) is ${targetHash}.\n`)
       const git = simpleGit()
-      const result = await git.diff([`${targetHash}..main`, 'README.md'])
+      const result = await git.diff([`${targetHash}..main`, '.'])
       console.log(result)
     } else {
       console.log(`No docs(${targetLocale}) checkpoint found.\n`)
