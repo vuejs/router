@@ -20,7 +20,8 @@ async function getCheckpointMap() {
   if (log && log.all) {
     let localesLeft = locales.length
     log.all.some(({ date, message }) => {
-      const matched = message.match(/^docs\((.+)\)\: sync to (\w+)/)
+      // be compatible with `docs(<locale>): sync update to #<hash>`
+      const matched = message.match(/^docs\((.+)\)\: sync (?:update )?to (\w+)/)
       if (matched) {
         const locale = matched[1]
         const hash = matched[2]
