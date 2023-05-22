@@ -18,6 +18,7 @@
     "docs:compare-to-translate": "pnpm run --filter ./packages/docs -r docs:compare-to-translate",
     "docs:translation-status": "pnpm run --filter ./packages/docs -r docs:translation-status",
     "docs:build": "pnpm run docs:api && pnpm run --filter ./packages/docs -r docs:build",
+    "docs:preview": "pnpm run --filter ./packages/docs -r docs:preview",
     "play": "pnpm run -r play",
     "build:size": "pnpm run -r build:size",
     "lint": "pnpm run lint:script && pnpm run lint:html",
