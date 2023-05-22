@@ -2,24 +2,24 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / NavigationHookAfter
+[API 参考](../index.md) / NavigationHookAfter
 
-# Interface: NavigationHookAfter
+# 接口：NavigationHookAfter %{#interface-navigationhookafter}%
 
-## Callable %{#Callable}%
+## 可调用函数 %{#Callable}%
 
 ### NavigationHookAfter %{#Callable-NavigationHookAfter}%
 
 ▸ **NavigationHookAfter**(`to`, `from`, `failure?`): `any`
 
-#### Parameters %{#Callable-NavigationHookAfter-Parameters}%
+#### 参数 %{#Callable-NavigationHookAfter-Parameters}%
 
-| Name | Type |
+| 名称 | 类型 |
 | :------ | :------ |
 | `to` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
 | `from` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
 | `failure?` | `void` \| [`NavigationFailure`](NavigationFailure.md) |
 
-#### Returns %{#Callable-NavigationHookAfter-Returns}%
+#### 返回值 %{#Callable-NavigationHookAfter-Returns}%
 
 `any`

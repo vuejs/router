@@ -2,26 +2,25 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / RouteRecordNormalized
+[API 参考](../index.md) / RouteRecordNormalized
 
-# Interface: RouteRecordNormalized
+# 接口：RouteRecordNormalized
 
-Normalized version of a [route record](../index.md#routerecord).
+一条[路由记录](../index.md#routerecord)的规范化版本。
 
-## Hierarchy %{#Hierarchy}%
+## 继承关系 %{#Hierarchy}%
 
 - **`RouteRecordNormalized`**
 
   ↳ [`RouteLocationMatched`](RouteLocationMatched.md)
 
-## Properties %{#Properties}%
+## 属性 %{#Properties}%
 
 ### aliasOf %{#Properties-aliasOf}%
 
 • **aliasOf**: `undefined` \| [`RouteRecordNormalized`](RouteRecordNormalized.md)
 
-Defines if this record is the alias of another one. This property is
-`undefined` if the record is the original one.
+定义了是否这条记录是另一条的别名。如果记录是原始记录，则该属性为 `undefined`。
 
 ___
 
@@ -29,7 +28,7 @@ ___
 
 • **beforeEnter**: `undefined` \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\>[]
 
-Registered beforeEnter guards
+被注册的 beforeEnter 守卫
 
 ___
 
@@ -37,7 +36,7 @@ ___
 
 • **children**: [`RouteRecordRaw`](../index.md#routerecordraw)[]
 
-Nested route records.
+嵌套的路由记录。
 
 ___
 
@@ -52,6 +51,8 @@ ___
 ### instances %{#Properties-instances}%
 
 • **instances**: `Record`<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`<{}, {}, {}, {}, {}, {}, {}, {}, ``false``, `ComponentOptionsBase`<`any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, {}, {}, `string`\>, {}\>\>
+
+<!-- TODO: translation -->
 
 Mounted route component instances
 Having the instances on the record mean beforeRouteUpdate and

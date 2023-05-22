@@ -2,34 +2,33 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / NavigationGuardWithThis
+[API 参考](../index.md) / NavigationGuardWithThis
 
-# Interface: NavigationGuardWithThis<T\>
+# 接口：NavigationGuardWithThis<T\> %{#interface-navigationguardwiththis-t}%
 
-## Type parameters %{#Type-parameters}%
+## 类型参数 %{#Type-parameters}%
 
 | Name |
 | :------ |
 | `T` |
 
-## Callable %{#Callable}%
+## 可调用函数 %{#Callable}%
 
 ### NavigationGuardWithThis %{#Callable-NavigationGuardWithThis}%
 
 ▸ **NavigationGuardWithThis**(`this`, `to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
 
-Navigation guard. See [Navigation
-Guards](/guide/advanced/navigation-guards.md).
+导航守卫。详情可查阅[导航守卫](/zh/guide/advanced/navigation-guards.md).
 
-#### Parameters %{#Callable-NavigationGuardWithThis-Parameters}%
+#### 参数 %{#Callable-NavigationGuardWithThis-Parameters}%
 
-| Name | Type |
+| 名称 | 类型 |
 | :------ | :------ |
 | `this` | `T` |
 | `to` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
 | `from` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
 | `next` | [`NavigationGuardNext`](NavigationGuardNext.md) |
 
-#### Returns %{#Callable-NavigationGuardWithThis-Returns}%
+#### 返回值 %{#Callable-NavigationGuardWithThis-Returns}%
 
 `NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>

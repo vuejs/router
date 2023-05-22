@@ -2,7 +2,7 @@
 editLink: false
 ---
 
-[API Documentation](../index.md) / NavigationFailureType
+[API 参考](../index.md) / NavigationFailureType
 
 # 枚举：NavigationFailureType %{#enumeration-navigationfailuretype}%
 

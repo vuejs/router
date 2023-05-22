@@ -7,7 +7,7 @@ import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import chalk from 'chalk'
 import pkg from './package.json' assert { type: 'json' }
-import { terser } from 'rollup-plugin-terser'
+import terser from '@rollup/plugin-terser'
 
 const name = pkg.name
 
