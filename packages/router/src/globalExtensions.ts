@@ -8,7 +8,8 @@ import { RouterLink } from './RouterLink'
 import type { Router } from './router'
 import type { TypesConfig } from './config'
 
-declare module 'vue' {
+// TODO: figure out why it cannot be 'vue' like said in docs
+declare module '@vue/runtime-core' {
   export interface ComponentCustomOptions {
     /**
      * Guard called when the router is navigating to the route that is rendering

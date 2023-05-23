@@ -8,7 +8,7 @@
     "docs:build": "vitepress build ."
   },
   "dependencies": {
-    "vitepress": "1.0.0-alpha.75",
+    "vitepress": "1.0.0-alpha.76",
     "vue-router": "workspace:*"
   }
 }

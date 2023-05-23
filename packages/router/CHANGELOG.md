@@ -1,3 +1,9 @@
+## [4.2.1](https://github.com/vuejs/router/compare/v4.2.0...v4.2.1) (2023-05-18)
+
+### Bug Fixes
+
+- **types:** revert declare module vue ([b8d417a](https://github.com/vuejs/router/commit/b8d417a5b81c94aa5eb252782b07cb2b471d3a4e))
+
 # [4.2.0](https://github.com/vuejs/router/compare/v4.1.6...v4.2.0) (2023-05-11)
 
 ### Bug Fixes
