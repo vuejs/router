@@ -178,6 +178,16 @@ async function main() {
   step('\nUpdating versions in package.json files...')
   await updateVersions(pkgWithVersions)
 
+  step('\nCopying README for router package...')
+  if (!isDryRun) {
+    await fs.copyFile(
+      resolve(__dirname, '../README.md'),
+      resolve(__dirname, '../packages/router/README.md')
+    )
+  } else {
+    console.log(`(skipped)`)
+  }
+
   step('\nGenerating changelogs...')
   for (const pkg of pkgWithVersions) {
     step(` -> ${pkg.name} (${pkg.path})`)
@@ -209,23 +219,11 @@ async function main() {
     console.log(`(skipped)`)
   }
 
-  step('\nCopying README...')
-  if (!isDryRun) {
-    await fs.copyFile(
-      resolve(__dirname, '../README.md'),
-      resolve(__dirname, 'README.md')
-    )
-  } else {
-    console.log(`(skipped)`)
-  }
-
   const { stdout } = await run('git', ['diff'], { stdio: 'pipe' })
   if (stdout) {
     step('\nCommitting changes...')
     await runIfNotDry('git', [
       'add',
-      'packages/*/README.md',
-      'packages/*/LICENSE',
       'packages/*/CHANGELOG.md',
       'packages/*/package.json',
     ])
