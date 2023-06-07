@@ -6,6 +6,9 @@ editLink: false
 
 # Interface: NavigationGuardWithThis<T\>
 
+Navigation guard. See [Navigation
+Guards](/guide/advanced/navigation-guards.md).
+
 ## Type parameters %{#Type-parameters}%
 
 | Name |
@@ -17,9 +20,6 @@ editLink: false
 ### NavigationGuardWithThis %{#Callable-NavigationGuardWithThis}%
 
 ▸ **NavigationGuardWithThis**(`this`, `to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
-
-Navigation guard. See [Navigation
-Guards](/guide/advanced/navigation-guards.md).
 
 #### Parameters %{#Callable-NavigationGuardWithThis-Parameters}%
 

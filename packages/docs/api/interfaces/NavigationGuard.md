@@ -6,14 +6,14 @@ editLink: false
 
 # Interface: NavigationGuard
 
+Navigation guard. See [Navigation
+Guards](/guide/advanced/navigation-guards.md).
+
 ## Callable %{#Callable}%
 
 ### NavigationGuard %{#Callable-NavigationGuard}%
 
 ▸ **NavigationGuard**(`to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
-
-Navigation guard. See [Navigation
-Guards](/guide/advanced/navigation-guards.md).
 
 #### Parameters %{#Callable-NavigationGuard-Parameters}%
 

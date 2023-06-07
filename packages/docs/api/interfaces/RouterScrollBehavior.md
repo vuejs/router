@@ -6,6 +6,8 @@ editLink: false
 
 # Interface: RouterScrollBehavior
 
+Type of the `scrollBehavior` option that can be passed to `createRouter`.
+
 ## Callable %{#Callable}%
 
 ### RouterScrollBehavior %{#Callable-RouterScrollBehavior}%
