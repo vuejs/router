@@ -938,7 +938,7 @@ export function createRouter(options: RouterOptions): Router {
 
     // only consider as push if it's not the first navigation
     const isFirstNavigation = from === START_LOCATION_NORMALIZED
-    const state = !isBrowser ? {} : history.state
+    const state: Partial<HistoryState> | null = !isBrowser ? {} : history.state
 
     // change URL only if the user did a push/replace and if it's not the initial navigation because
     // it's just reflecting the url
