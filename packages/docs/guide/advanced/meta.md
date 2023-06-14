@@ -17,16 +17,16 @@ const routes = [
         path: 'new',
         component: PostsNew,
         // only authenticated users can create posts
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
       },
       {
         path: ':id',
         component: PostsDetail,
         // anybody can read a post
-        meta: { requiresAuth: false }
-      }
-    ]
-  }
+        meta: { requiresAuth: false },
+      },
+    ],
+  },
 ]
 ```
 
@@ -62,11 +62,12 @@ It is possible to type the meta field by extending the `RouteMeta` interface fro
 
 ```ts
 // This can be directly added to any of your `.ts` files like `router.ts`
-// It can also be added to a `.d.ts` file, in which case you will need to add an export
-// to ensure it is treated as a module
-export {}
-
+// It can also be added to a `.d.ts` file. Make sure it's included in
+// project's tsconfig.json "files"
 import 'vue-router'
+
+// To ensure it is treated as a module, add at least one `export` statement
+export {}
 
 declare module 'vue-router' {
   interface RouteMeta {
