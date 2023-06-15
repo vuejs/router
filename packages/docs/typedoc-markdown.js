@@ -42,6 +42,7 @@ exports.createTypeDocApp = function createTypeDocApp(config = {}) {
   // encodeURIComponent(String(s).trim().toLowerCase().replace(/\s+/g, '-'))
 
   const idHashNames = []
+  const lineWithHashNames = []
 
   app.renderer.on(
     PageEvent.END,
@@ -67,7 +68,12 @@ exports.createTypeDocApp = function createTypeDocApp(config = {}) {
         const existingIds = new Map()
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i]
-          if (!line.startsWith('#')) continue
+          if (!line.startsWith('#')) {
+            if (LINK_REG.test(line)) {
+              lineWithHashNames.push({ line, index: i })
+            }
+            continue
+          }
           const level = line.match(TITLE_LEVEL)[0].length
 
           // remove extra levels
@@ -103,17 +109,13 @@ exports.createTypeDocApp = function createTypeDocApp(config = {}) {
           lines.splice(i, 1, newLine)
         }
 
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i]
-          if (LINK_REG.test(line)) {
-            const newLine = line.replace(LINK_REG, (match, p1, p2) => {
-              const hashName = idHashNames.find(item => item.indexOf(p1) > -1)
-              return `[\`${p1}\`](${p2}${hashName})`
-            })
-            lines.splice(i, 1, newLine)
-            continue
-          }
-        }
+        lineWithHashNames.forEach(({ line, index }) => {
+          const newLine = line.replace(LINK_REG, (_, p1, p2) => {
+            const hashName = idHashNames.find(item => item.indexOf(p1) > -1)
+            return `[\`${p1}\`](${p2}${hashName})`
+          })
+          lines.splice(index, 1, newLine)
+        })
 
         page.contents = lines.join('\n')
       }
