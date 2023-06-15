@@ -41,6 +41,8 @@ exports.createTypeDocApp = function createTypeDocApp(config = {}) {
   const slugify = s => s.replaceAll(' ', '-')
   // encodeURIComponent(String(s).trim().toLowerCase().replace(/\s+/g, '-'))
 
+  const idHashNames = []
+
   app.renderer.on(
     PageEvent.END,
     /**
@@ -61,6 +63,7 @@ exports.createTypeDocApp = function createTypeDocApp(config = {}) {
         const titleStack = []
         let currentLevel = 0
         const TITLE_LEVEL = /^#+/
+        const LINK_REG = /\[`([^`]+)`]\(([^#]+#)[^)]+\)/
         const existingIds = new Map()
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i]
@@ -83,16 +86,33 @@ exports.createTypeDocApp = function createTypeDocApp(config = {}) {
             // ensure the link is valid #1743
             .replaceAll('\\', '')
           let id
+          let hashName
           if (existingIds.has(slugifiedTitle)) {
             const current = existingIds.get(slugifiedTitle)
             existingIds.set(slugifiedTitle, current + 1)
-            id = ` %{#${slugifiedTitle}_${current + 1}}%`
+            hashName = `${slugifiedTitle}_${current + 1}`
+            id = ` %{#${hashName}}%`
           } else {
             existingIds.set(slugifiedTitle, 0)
-            id = ` %{#${slugifiedTitle}}%`
+            hashName = slugifiedTitle
+            id = ` %{#${hashName}}%`
           }
+          idHashNames.push(hashName)
+
           const newLine = line + id
           lines.splice(i, 1, newLine)
+        }
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i]
+          if (LINK_REG.test(line)) {
+            const newLine = line.replace(LINK_REG, (match, p1, p2) => {
+              const hashName = idHashNames.find(item => item.indexOf(p1) > -1)
+              return `[\`${p1}\`](${p2}${hashName})`
+            })
+            lines.splice(i, 1, newLine)
+            continue
+          }
         }
 
         page.contents = lines.join('\n')
