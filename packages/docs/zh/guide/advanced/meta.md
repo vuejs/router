@@ -44,6 +44,7 @@ const routes = [
 router.beforeEach((to, from) => {
   // 而不是去检查每条路由记录
   // to.matched.some(record => record.meta.requiresAuth)
+  // 当然 to.matched.some(record => record.meta.requiresAuth) 和 to.meta.requiresAuth 并不是一种等效的写法
   if (to.meta.requiresAuth && !auth.isLoggedIn()) {
     // 此路由需要授权，请检查是否已登录
     // 如果没有，则重定向到登录页面
