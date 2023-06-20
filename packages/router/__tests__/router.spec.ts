@@ -319,7 +319,7 @@ describe('Router', () => {
     await router.push({ name: 'optional', params: {} })
   })
 
-  it('removes null/undefined params when current location has it', async () => {
+  it('removes null/undefined optional params when current location has it', async () => {
     const { router } = await newRouter()
 
     await router.push({ name: 'optional', params: { p: 'a' } })
@@ -331,7 +331,7 @@ describe('Router', () => {
     expect(router.currentRoute.value.params).toEqual({})
   })
 
-  it('keeps empty strings', async () => {
+  it('keeps empty strings in optional params', async () => {
     const { router } = await newRouter()
     const route1 = router.resolve({ name: 'optional', params: { p: '' } })
     expect(route1.params).toEqual({ p: '' })
