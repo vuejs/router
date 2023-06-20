@@ -1,3 +1,4 @@
+import { assign } from './utils'
 import { warn } from './warning'
 
 /**
@@ -120,14 +121,34 @@ export function encodePath(text: string | number): string {
 /**
  * Encode characters that need to be encoded on the path section of the URL as a
  * param. This function encodes everything {@link encodePath} does plus the
- * slash (`/`) character. If `text` is `null` or `undefined`, returns an empty
- * string instead.
+ * slash (`/`) character. If `text` is `null` or `undefined`, it keeps the value as is.
  *
  * @param text - string to encode
  * @returns encoded string
  */
-export function encodeParam(text: string | number | null | undefined): string {
-  return text == null ? '' : encodePath(text).replace(SLASH_RE, '%2F')
+export function encodeParam(
+  text: string | number | null | undefined
+): string | null | undefined {
+  return text == null ? text : encodePath(text).replace(SLASH_RE, '%2F')
+}
+
+/**
+ * Remove nullish values from an object. This function creates a copy of the object. Used for params and query.
+ *
+ * @param obj - plain object to remove nullish values from
+ * @returns a new object with only defined values
+ */
+export function withoutNullishValues(
+  obj: Record<string, unknown>
+): Record<string, unknown> {
+  const targetParams = assign({}, obj)
+  for (const key in targetParams) {
+    if (targetParams[key] == null) {
+      delete targetParams[key]
+    }
+  }
+
+  return targetParams
 }
 
 /**

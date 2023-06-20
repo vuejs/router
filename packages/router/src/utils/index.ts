@@ -14,9 +14,17 @@ export function isESModule(obj: any): obj is { default: RouteComponent } {
 export const assign = Object.assign
 
 export function applyToParams(
+  fn: (v: string | number | null | undefined) => string | null | undefined,
+  params: RouteParamsRaw | undefined
+): RouteParamsRaw
+export function applyToParams(
   fn: (v: string | number | null | undefined) => string,
   params: RouteParamsRaw | undefined
-): RouteParams {
+): RouteParams
+export function applyToParams(
+  fn: (v: string | number | null | undefined) => string | null | undefined,
+  params: RouteParamsRaw | undefined
+): RouteParams | RouteParamsRaw {
   const newParams: RouteParams = {}
 
   for (const key in params) {

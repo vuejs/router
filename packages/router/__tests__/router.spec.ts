@@ -331,6 +331,19 @@ describe('Router', () => {
     expect(router.currentRoute.value.params).toEqual({})
   })
 
+  it('removes null/undefined optional params when current location has it on relative navigations', async () => {
+    const { router } = await newRouter()
+    const withParam = router.resolve({ name: 'optional', params: { p: 'a' } })
+    const implicitNull = router.resolve({ params: { p: null } }, withParam)
+    const implicitUndefined = router.resolve(
+      { params: { p: undefined } },
+      withParam
+    )
+
+    expect(implicitNull.params).toEqual({})
+    expect(implicitUndefined.params).toEqual({})
+  })
+
   it('keeps empty strings in optional params', async () => {
     const { router } = await newRouter()
     const route1 = router.resolve({ name: 'optional', params: { p: '' } })
