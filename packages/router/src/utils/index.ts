@@ -46,14 +46,24 @@ export function isESModule(obj: any): obj is { default: RouteComponent } {
 export const assign = Object.assign
 
 export function applyToParams(
+  fn: (v: string | number | null | undefined) => string | null | undefined,
+  params: RouteParamsRawGeneric | undefined
+): RouteParamsRawGeneric
+export function applyToParams(
   fn: (v: string | number | null | undefined) => string,
   params: RouteParamsRawGeneric | undefined
-): RouteParamsGeneric {
-  const newParams: RouteParamsGeneric = {}
+): RouteParamsGeneric
+export function applyToParams(
+  fn: (v: string | number | null | undefined) => string | null | undefined,
+  params: RouteParamsRawGeneric | undefined
+): RouteParamsGeneric | RouteParamsRawGeneric {
+  const newParams: RouteParamsRawGeneric = {}
 
   for (const key in params) {
     const value = params[key]
-    newParams[key] = isArray(value) ? value.map(fn) : fn(value)
+    newParams[key] = isArray(value)
+      ? (value.map(fn) as string[])
+      : (fn(value) as string)
   }
 
   return newParams

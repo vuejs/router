@@ -3,6 +3,8 @@ import type {
   Lazy,
   RouteLocationOptions,
   MatcherLocationRaw,
+  RouteParamsGeneric,
+  RouteParamsRawGeneric,
 } from './types'
 import { isRouteLocation, isRouteName } from './types'
 import type {
@@ -155,7 +157,10 @@ export function createRouter(options: RouterOptions): Router {
     null,
     paramValue => '' + paramValue
   )
-  const encodeParams = applyToParams.bind(null, encodeParam)
+  const encodeParams = (
+    params: RouteParamsRawGeneric | undefined
+  ): RouteParamsGeneric =>
+    applyToParams(encodeParam, params) as RouteParamsGeneric
   const decodeParams: (params: RouteParams | undefined) => RouteParams =
     // @ts-expect-error: intentionally avoid the type check
     applyToParams.bind(null, decode)
