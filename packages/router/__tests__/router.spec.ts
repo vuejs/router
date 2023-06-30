@@ -319,6 +319,17 @@ describe('Router', () => {
     await router.push({ name: 'optional', params: {} })
   })
 
+  it('handles undefined path', async () => {
+    const { router } = await newRouter()
+
+    const route1 = router.resolve({
+      path: undefined,
+      params: { p: 'a' },
+    })
+    expect(route1.path).toBe('/')
+    expect(route1.params).toEqual({ p: 'a' })
+  })
+
   it('removes null/undefined optional params when current location has it', async () => {
     const { router } = await newRouter()
 

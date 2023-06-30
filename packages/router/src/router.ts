@@ -463,7 +463,7 @@ export function createRouter(options: RouterOptions): Router {
     let matcherLocation: MatcherLocationRaw
 
     // path could be relative in object as well
-    if ('path' in rawLocation) {
+    if ('path' in rawLocation && rawLocation.path != null) {
       if (
         __DEV__ &&
         'params' in rawLocation &&
