@@ -62,6 +62,18 @@ if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
 If you omit the second parameter: `isNavigationFailure(failure)`, it will only check if `failure` is a _Navigation Failure_.
 :::
 
+## Global navigation failures
+
+You can detect global navigation failures globally by using the [`router.afterEach()` navigation guard](./navigation-guards.md#global-after-hooks):
+
+```ts
+router.afterEach((to, from, failure) => {
+  if (failure) {
+    sendToAnalytics(to, from failure)
+  }
+})
+```
+
 ## Differentiating Navigation Failures
 
 As we said at the beginning, there are different situations aborting a navigation, all of them resulting in different _Navigation Failures_. They can be differentiated using the `isNavigationFailure` and `NavigationFailureType`. There are three different types:
