@@ -240,14 +240,14 @@ async function main() {
 
   step('\nCreating tags...')
   let versionsToPush = []
-  for (const pkg of pkgWithVersions) {
+  await Promise.all(pkgWithVersions.map((pkg) => {
     const tagName =
       pkg.name === 'vue-router'
         ? `v${pkg.version}`
         : `${pkg.name}@${pkg.version}`
     versionsToPush.push(`refs/tags/${tagName}`)
-    await runIfNotDry('git', ['tag', `${tagName}`])
-  }
+    return runIfNotDry('git', ['tag', `${tagName}`])
+  }))
 
   step('\nPublishing packages...')
   await Promise.all(
