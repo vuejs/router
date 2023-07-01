@@ -250,9 +250,9 @@ async function main() {
   }
 
   step('\nPublishing packages...')
-  for (const pkg of pkgWithVersions) {
-    await publishPackage(pkg)
-  }
+  await Promise.all(
+    pkgWithVersions.map((pkg) => publishPackage(pkg))
+  )
 
   step('\nPushing to Github...')
   await runIfNotDry('git', ['push', 'origin', ...versionsToPush])
