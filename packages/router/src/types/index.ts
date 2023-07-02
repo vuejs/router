@@ -58,6 +58,8 @@ export interface MatcherLocationAsPath {
  */
 export interface MatcherLocationAsName {
   name: RouteRecordName
+  // to allow checking location.path == null
+  path?: undefined
   params?: RouteParams
 }
 
@@ -65,6 +67,8 @@ export interface MatcherLocationAsName {
  * @internal
  */
 export interface MatcherLocationAsRelative {
+  // to allow checking location.path == null
+  path?: undefined
   params?: RouteParams
 }
 
@@ -73,6 +77,8 @@ export interface MatcherLocationAsRelative {
  */
 export interface LocationAsRelativeRaw {
   name?: RouteRecordName
+  // to allow checking location.path == null
+  path?: undefined
   params?: RouteParamsRaw
 }
 

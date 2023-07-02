@@ -290,7 +290,7 @@ export function createRouterMatcher(
       )
       // throws if cannot be stringified
       path = matcher.stringify(params)
-    } else if ('path' in location && location.path != null) {
+    } else if (location.path != null) {
       // no need to resolve the path with the matcher as it was provided
       // this also allows the user to control the encoding
       path = location.path
