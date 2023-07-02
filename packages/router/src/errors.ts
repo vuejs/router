@@ -190,7 +190,7 @@ const propertiesToLog = ['params', 'query', 'hash'] as const
 
 function stringifyRoute(to: RouteLocationRaw): string {
   if (typeof to === 'string') return to
-  if ('path' in to) return to.path
+  if (to.path != null) return to.path
   const location = {} as Record<string, unknown>
   for (const key of propertiesToLog) {
     if (key in to) location[key] = to[key]
