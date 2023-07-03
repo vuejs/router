@@ -855,9 +855,9 @@ export function createRouter(options: RouterOptions): Router {
         .then(() => {
           // check the route beforeEnter
           guards = []
-          for (const record of to.matched) {
+          for (const record of enteringRecords) {
             // do not trigger beforeEnter on reused views
-            if (record.beforeEnter && !from.matched.includes(record)) {
+            if (record.beforeEnter) {
               if (isArray(record.beforeEnter)) {
                 for (const beforeEnter of record.beforeEnter)
                   guards.push(guardToPromiseFn(beforeEnter, to, from))
