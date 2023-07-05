@@ -1,3 +1,9 @@
+## [4.2.3](https://github.com/vuejs/router/compare/v4.2.2...v4.2.3) (2023-07-05)
+
+### Performance Improvements
+
+- use getter instead of `computed` for route location ([#1916](https://github.com/vuejs/router/issues/1916)) ([f1b839e](https://github.com/vuejs/router/commit/f1b839e7fc46d5b24dadb64cdc8e3cc95010ccfa))
+
 ## [4.2.2](https://github.com/vuejs/router/compare/v4.2.1...v4.2.2) (2023-05-29)
 
 This version contains no code changes.
