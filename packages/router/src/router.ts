@@ -41,14 +41,7 @@ import {
   stringifyQuery as originalStringifyQuery,
   LocationQuery,
 } from './query'
-import {
-  shallowRef,
-  Ref,
-  nextTick,
-  App,
-  unref,
-  shallowReactive,
-} from 'vue'
+import { shallowRef, Ref, nextTick, App, unref, shallowReactive } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import {
   parseURL,

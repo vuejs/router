@@ -9,8 +9,6 @@ import { RouteLocationNormalized } from '../src'
 export function createMockedRoute(
   initialValue: RouteLocationNormalizedLoose | RouteLocationNormalized
 ) {
- 
-
   const routeRef = shallowRef<
     RouteLocationNormalized | RouteLocationNormalizedLoose
   >(initialValue)
@@ -21,7 +19,6 @@ export function createMockedRoute(
     routeRef.value = newRoute
     return nextTick()
   }
-
 
   const route = {} as RouteLocationNormalizedLoose
 
