@@ -410,7 +410,7 @@ function normalizeRecordProps(
     // NOTE: we could also allow a function to be applied to every component.
     // Would need user feedback for use cases
     for (const name in record.components)
-      propsObject[name] = typeof props === 'boolean' ? props : props[name]
+      propsObject[name] = typeof props === 'object' ? props[name] : props
   }
 
   return propsObject
