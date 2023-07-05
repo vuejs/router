@@ -46,10 +46,8 @@ import {
   Ref,
   nextTick,
   App,
-  ComputedRef,
-  reactive,
   unref,
-  computed,
+  shallowReactive,
 } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import {
@@ -1235,18 +1233,16 @@ export function createRouter(options: RouterOptions): Router {
         })
       }
 
-      const reactiveRoute = {} as {
-        [k in keyof RouteLocationNormalizedLoaded]: ComputedRef<
-          RouteLocationNormalizedLoaded[k]
-        >
-      }
+      const reactiveRoute = {} as RouteLocationNormalizedLoaded
       for (const key in START_LOCATION_NORMALIZED) {
-        // @ts-expect-error: the key matches
-        reactiveRoute[key] = computed(() => currentRoute.value[key])
+        Object.defineProperty(reactiveRoute, key, {
+          get: () => currentRoute.value[key as keyof RouteLocationNormalized],
+          enumerable: true,
+        })
       }
 
       app.provide(routerKey, router)
-      app.provide(routeLocationKey, reactive(reactiveRoute))
+      app.provide(routeLocationKey, shallowReactive(reactiveRoute))
       app.provide(routerViewLocationKey, currentRoute)
 
       const unmountApp = app.unmount
