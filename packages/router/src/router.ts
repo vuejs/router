@@ -906,9 +906,9 @@ export function createRouter(options: RouterOptions): Router {
   ): void {
     // navigation is confirmed, call afterGuards
     // TODO: wrap with error handlers
-    for (const guard of afterGuards.list()) {
-      runWithContext(() => guard(to, from, failure))
-    }
+    afterGuards
+      .list()
+      .forEach(guard => runWithContext(() => guard(to, from, failure)))
   }
 
   /**

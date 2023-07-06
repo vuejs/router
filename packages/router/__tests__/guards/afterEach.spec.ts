@@ -65,4 +65,16 @@ describe('router.afterEach', () => {
     )
     expect(spy).toHaveBeenCalledTimes(2)
   })
+
+  it('removing an afterEach guard within one does not affect others', async () => {
+    const spy1 = jest.fn()
+    const spy2 = jest.fn()
+    const router = createRouter({ routes })
+    router.afterEach(spy1)
+    const remove = router.afterEach(spy2)
+    spy1.mockImplementationOnce(remove)
+    await router.push('/foo')
+    expect(spy1).toHaveBeenCalledTimes(1)
+    expect(spy2).toHaveBeenCalledTimes(1)
+  })
 })
