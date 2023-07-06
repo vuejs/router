@@ -1,3 +1,9 @@
+## [4.2.4](https://github.com/vuejs/router/compare/v4.2.3...v4.2.4) (2023-07-06)
+
+### Bug Fixes
+
+- allow removing guards within the guard ([d60d36c](https://github.com/vuejs/router/commit/d60d36c49bbbd308618926ff0131890bfed2cdff))
+
 ## [4.2.3](https://github.com/vuejs/router/compare/v4.2.2...v4.2.3) (2023-07-05)
 
 ### Performance Improvements
