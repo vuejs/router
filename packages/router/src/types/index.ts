@@ -246,7 +246,7 @@ export interface _RouteRecordBase extends PathParserOptions {
   alias?: string | string[]
 
   /**
-   * Name for the route record.
+   * Name for the route record. Must be unique.
    */
   name?: RouteRecordName
 

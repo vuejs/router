@@ -62,7 +62,8 @@ There are few different ways to remove existing routes:
 
   ```js
   router.addRoute({ path: '/about', name: 'about', component: About })
-  // this will remove the previously added route because they have the same name and names are unique
+  // this will remove the previously added route because they have
+  // the same name and names are unique across all routes
   router.addRoute({ path: '/other', name: 'about', component: Other })
   ```
 

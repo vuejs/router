@@ -39,3 +39,5 @@ router.push({ name: 'user', params: { username: 'erina' } })
 In both cases, the router will navigate to the path `/user/erina`.
 
 Full example [here](https://github.com/vuejs/vue-router/blob/dev/examples/named-routes/app.js).
+
+Each name **must be unique** across all routes. If you add the same name to multiple routes, the router will only keep the last one. You can read more about this [in the Dynamic Routing](../advanced/dynamic-routing.md#removing-routes) section.
