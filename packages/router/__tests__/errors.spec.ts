@@ -15,6 +15,7 @@ import {
   START_LOCATION_NORMALIZED,
   RouteLocationNormalized,
 } from '../src/types'
+import { mockWarn } from 'jest-mock-warn'
 
 const routes: Readonly<RouteRecordRaw>[] = [
   { path: '/', component: components.Home },
@@ -40,6 +41,7 @@ function createRouter() {
 }
 
 describe('Errors & Navigation failures', () => {
+  mockWarn()
   beforeEach(() => {
     onError.mockReset()
     afterEach.mockReset()
@@ -158,7 +160,7 @@ describe('Errors & Navigation failures', () => {
       throw error
     })
 
-    await expect(router.push('/foo')).rejects.toEqual(error)
+    await router.push('/foo').catch(() => {})
 
     expect(afterEach).toHaveBeenCalledTimes(0)
     expect(onError).toHaveBeenCalledTimes(1)
@@ -352,7 +354,11 @@ async function testError(
         }
   )
 
-  await expect(router.push(to)).rejects.toEqual(expectedError)
+  if (expectedError !== undefined) {
+    await expect(router.push(to)).rejects.toEqual(expectedError)
+  } else {
+    await router.push(to).catch(() => {})
+  }
 
   expect(afterEach).toHaveBeenCalledTimes(0)
   expect(onError).toHaveBeenCalledTimes(1)

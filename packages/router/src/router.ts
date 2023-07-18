@@ -68,11 +68,13 @@ import { addDevtools } from './devtools'
  * @param from - location we were navigating from when the error happened
  * @internal
  */
-export type _ErrorHandler = (
-  error: any,
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalizedLoaded
-) => any
+export interface _ErrorListener {
+  (
+    error: any,
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalizedLoaded
+  ): any
+}
 // resolve, reject arguments of Promise constructor
 type OnReadyCallback = [() => void, (reason?: any) => void]
 
@@ -321,7 +323,7 @@ export interface Router {
    *
    * @param handler - error handler to register
    */
-  onError(handler: _ErrorHandler): () => void
+  onError(handler: _ErrorListener): () => void
   /**
    * Returns a Promise that resolves when the router has completed the initial
    * navigation, which means it has resolved all async enter hooks and async
@@ -1082,6 +1084,7 @@ export function createRouter(options: RouterOptions): Router {
             failure
           )
         })
+        // avoid warnings in the console about uncaught rejections, they are logged by triggerErrors
         .catch(noop)
     })
   }
@@ -1089,11 +1092,11 @@ export function createRouter(options: RouterOptions): Router {
   // Initialization and Errors
 
   let readyHandlers = useCallbacks<OnReadyCallback>()
-  let errorHandlers = useCallbacks<_ErrorHandler>()
+  let errorListeners = useCallbacks<_ErrorListener>()
   let ready: boolean
 
   /**
-   * Trigger errorHandlers added via onError and throws the error as well
+   * Trigger errorListeners added via onError and throws the error as well
    *
    * @param error - error to throw
    * @param to - location we were navigating to when the error happened
@@ -1106,7 +1109,7 @@ export function createRouter(options: RouterOptions): Router {
     from: RouteLocationNormalizedLoaded
   ): Promise<unknown> {
     markAsReady(error)
-    const list = errorHandlers.list()
+    const list = errorListeners.list()
     if (list.length) {
       list.forEach(handler => handler(error, to, from))
     } else {
@@ -1115,6 +1118,7 @@ export function createRouter(options: RouterOptions): Router {
       }
       console.error(error)
     }
+    // reject the error no matter there were error listeners or not
     return Promise.reject(error)
   }
 
@@ -1152,7 +1156,8 @@ export function createRouter(options: RouterOptions): Router {
     from: RouteLocationNormalizedLoaded,
     isPush: boolean,
     isFirstNavigation: boolean
-  ): Promise<any> {
+  ): // the return is not meant to be used
+  Promise<unknown> {
     const { scrollBehavior } = options
     if (!isBrowser || !scrollBehavior) return Promise.resolve()
 
@@ -1195,7 +1200,7 @@ export function createRouter(options: RouterOptions): Router {
     beforeResolve: beforeResolveGuards.add,
     afterEach: afterGuards.add,
 
-    onError: errorHandlers.add,
+    onError: errorListeners.add,
     isReady,
 
     install(app: App) {
