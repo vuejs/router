@@ -483,7 +483,9 @@ export interface NavigationGuardNext {
   // _called: boolean
 }
 
-export type NavigationGuardNextCallback = (vm: ComponentPublicInstance) => any
+export type NavigationGuardNextCallback = (
+  vm: ComponentPublicInstance
+) => unknown
 
 export type NavigationGuardReturn =
   | void
