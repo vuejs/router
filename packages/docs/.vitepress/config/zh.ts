@@ -56,7 +56,7 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
       '/zh/api/': [
         {
           text: 'packages',
-          items: [{ text: 'vue-router', link: '/api/' }],
+          items: [{ text: 'vue-router', link: '/zh/api/' }],
         },
       ],
 
@@ -153,7 +153,7 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             },
             {
               text: '类型化路由',
-              link: '/zh/guide/advanced/typed-routes.html'
+              link: '/zh/guide/advanced/typed-routes.html',
             },
             {
               text: '扩展 RouterLink',
