@@ -35,6 +35,10 @@ export const sharedConfig = defineConfig({
       leftDelimiter: '%{',
       rightDelimiter: '}%',
     },
+
+    anchor: {
+      slugify: s => s.replace(/\s/g, '-'),
+    },
   },
 
   head: [
