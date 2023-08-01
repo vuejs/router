@@ -9,13 +9,13 @@ editLink: false
 Navigation guard. See [Navigation
 Guards](/guide/advanced/navigation-guards.md).
 
-## Callable %{#Callable}%
+## Callable
 
-### NavigationGuard %{#Callable-NavigationGuard}%
+### NavigationGuard
 
 ▸ **NavigationGuard**(`to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
 
-#### Parameters %{#Callable-NavigationGuard-Parameters}%
+#### Parameters
 
 | Name | Type |
 | :------ | :------ |
@@ -23,6 +23,6 @@ Guards](/guide/advanced/navigation-guards.md).
 | `from` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
 | `next` | [`NavigationGuardNext`](NavigationGuardNext.md) |
 
-#### Returns %{#Callable-NavigationGuard-Returns}%
+#### Returns
 
 `NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>

@@ -6,68 +6,68 @@ editLink: false
 
 # Interface: RouteLocationMatched
 
-Normalized version of a [route record](../index.md#routerecord).
+Normalized version of a [route record](../index.md#RouteRecord).
 
-## Hierarchy %{#Hierarchy}%
+## Hierarchy
 
 - [`RouteRecordNormalized`](RouteRecordNormalized.md)
 
   ↳ **`RouteLocationMatched`**
 
-## Properties %{#Properties}%
+## Properties
 
-### aliasOf %{#Properties-aliasOf}%
+### aliasOf
 
 • **aliasOf**: `undefined` \| [`RouteRecordNormalized`](RouteRecordNormalized.md)
 
 Defines if this record is the alias of another one. This property is
 `undefined` if the record is the original one.
 
-#### Inherited from %{#Properties-aliasOf-Inherited-from}%
+#### Inherited from
 
-[RouteRecordNormalized](RouteRecordNormalized.md).[aliasOf](RouteRecordNormalized.md#aliasof)
+[RouteRecordNormalized](RouteRecordNormalized.md).[aliasOf](RouteRecordNormalized.md#aliasOf)
 
 ___
 
-### beforeEnter %{#Properties-beforeEnter}%
+### beforeEnter
 
 • **beforeEnter**: `undefined` \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\>[]
 
 Registered beforeEnter guards
 
-#### Inherited from %{#Properties-beforeEnter-Inherited-from}%
+#### Inherited from
 
-[RouteRecordNormalized](RouteRecordNormalized.md).[beforeEnter](RouteRecordNormalized.md#beforeenter)
+[RouteRecordNormalized](RouteRecordNormalized.md).[beforeEnter](RouteRecordNormalized.md#beforeEnter)
 
 ___
 
-### children %{#Properties-children}%
+### children
 
-• **children**: [`RouteRecordRaw`](../index.md#routerecordraw)[]
+• **children**: [`RouteRecordRaw`](../index.md#RouteRecordRaw)[]
 
 Nested route records.
 
-#### Inherited from %{#Properties-children-Inherited-from}%
+#### Inherited from
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[children](RouteRecordNormalized.md#children)
 
 ___
 
-### components %{#Properties-components}%
+### components
 
-• **components**: `undefined` \| ``null`` \| `Record`<`string`, [`RouteComponent`](../index.md#routecomponent)\>
+• **components**: `undefined` \| ``null`` \| `Record`<`string`, [`RouteComponent`](../index.md#RouteComponent)\>
 
-{@inheritDoc RouteRecordMultipleViews.components}
+Components to display when the URL matches this route. Allow using named views.
 
-#### Overrides %{#Properties-components-Overrides}%
+#### Overrides
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[components](RouteRecordNormalized.md#components)
 
 ___
 
-### instances %{#Properties-instances}%
+### instances
 
-• **instances**: `Record`<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`<{}, {}, {}, {}, {}, {}, {}, {}, ``false``, `ComponentOptionsBase`<`any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, {}, {}, `string`, {}\>, {}, {}\>\>
+• **instances**: `Record`<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`\>
 
 Mounted route component instances
 Having the instances on the record mean beforeRouteUpdate and
@@ -77,66 +77,71 @@ view, basically duplicating the content on the page, which shouldn't happen
 in practice. It will work if multiple apps are rendering different named
 views.
 
-#### Inherited from %{#Properties-instances-Inherited-from}%
+#### Inherited from
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[instances](RouteRecordNormalized.md#instances)
 
 ___
 
-### meta %{#Properties-meta}%
+### meta
 
 • **meta**: [`RouteMeta`](RouteMeta.md)
 
-{@inheritDoc _RouteRecordBase.meta}
+Arbitrary data attached to the record.
 
-#### Inherited from %{#Properties-meta-Inherited-from}%
+#### Inherited from
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[meta](RouteRecordNormalized.md#meta)
 
 ___
 
-### name %{#Properties-name}%
+### name
 
-• **name**: `undefined` \| [`RouteRecordName`](../index.md#routerecordname)
+• **name**: `undefined` \| [`RouteRecordName`](../index.md#RouteRecordName)
 
-{@inheritDoc _RouteRecordBase.name}
+Name for the route record. Must be unique.
 
-#### Inherited from %{#Properties-name-Inherited-from}%
+#### Inherited from
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[name](RouteRecordNormalized.md#name)
 
 ___
 
-### path %{#Properties-path}%
+### path
 
 • **path**: `string`
 
-{@inheritDoc _RouteRecordBase.path}
+Path of the record. Should start with `/` unless the record is the child of
+another record.
 
-#### Inherited from %{#Properties-path-Inherited-from}%
+#### Inherited from
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[path](RouteRecordNormalized.md#path)
 
 ___
 
-### props %{#Properties-props}%
+### props
 
 • **props**: `Record`<`string`, `_RouteRecordProps`\>
 
-{@inheritDoc RouteRecordMultipleViews.props}
+Allow passing down params as props to the component rendered by
+`router-view`. Should be an object with the same keys as `components` or a
+boolean to be applied to every component.
 
-#### Inherited from %{#Properties-props-Inherited-from}%
+#### Inherited from
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[props](RouteRecordNormalized.md#props)
 
 ___
 
-### redirect %{#Properties-redirect}%
+### redirect
 
 • **redirect**: `undefined` \| `RouteRecordRedirectOption`
 
-{@inheritDoc _RouteRecordBase.redirect}
+Where to redirect if the route is directly matched. The redirection happens
+before any navigation guard and triggers a new navigation with the new
+target location.
 
-#### Inherited from %{#Properties-redirect-Inherited-from}%
+#### Inherited from
 
 [RouteRecordNormalized](RouteRecordNormalized.md).[redirect](RouteRecordNormalized.md#redirect)

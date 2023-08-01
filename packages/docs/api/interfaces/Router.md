@@ -8,9 +8,9 @@ editLink: false
 
 Router instance.
 
-## Properties %{#Properties}%
+## Properties
 
-### currentRoute %{#Properties-currentRoute}%
+### currentRoute
 
 • `Readonly` **currentRoute**: `Ref`<[`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md)\>
 
@@ -18,7 +18,7 @@ Current [RouteLocationNormalized](RouteLocationNormalized.md)
 
 ___
 
-### listening %{#Properties-listening}%
+### listening
 
 • **listening**: `boolean`
 
@@ -26,87 +26,77 @@ Allows turning off the listening of history events. This is a low level api for 
 
 ___
 
-### options %{#Properties-options}%
+### options
 
 • `Readonly` **options**: [`RouterOptions`](RouterOptions.md)
 
 Original options object passed to create the Router
 
-## Methods %{#Methods}%
+## Methods
 
-### addRoute %{#Methods-addRoute}%
+### addRoute
 
 ▸ **addRoute**(`parentName`, `route`): () => `void`
 
-Add a new [route record](../index.md#routerecordraw) as the child of an existing route.
+Add a new [route record](../index.md#RouteRecordRaw) as the child of an existing route.
 
-#### Parameters %{#Methods-addRoute-Parameters}%
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `parentName` | [`RouteRecordName`](../index.md#routerecordname) | Parent Route Record where `route` should be appended at |
-| `route` | [`RouteRecordRaw`](../index.md#routerecordraw) | Route Record to add |
+| `parentName` | [`RouteRecordName`](../index.md#RouteRecordName) | Parent Route Record where `route` should be appended at |
+| `route` | [`RouteRecordRaw`](../index.md#RouteRecordRaw) | Route Record to add |
 
-#### Returns %{#Methods-addRoute-Returns}%
+#### Returns
 
 `fn`
 
 ▸ (): `void`
 
-Add a new [route record](../index.md#routerecordraw) as the child of an existing route.
+Add a new [route record](../index.md#RouteRecordRaw) as the child of an existing route.
 
-##### Returns %{#Methods-addRoute-Returns-Returns}%
+##### Returns
 
 `void`
 
 ▸ **addRoute**(`route`): () => `void`
 
-Add a new [route record](../index.md#routerecordraw) to the router.
+Add a new [route record](../index.md#RouteRecordRaw) to the router.
 
-#### Parameters %{#Methods-addRoute-Parameters_1}%
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `route` | [`RouteRecordRaw`](../index.md#routerecordraw) | Route Record to add |
+| `route` | [`RouteRecordRaw`](../index.md#RouteRecordRaw) | Route Record to add |
 
-#### Returns %{#Methods-addRoute-Returns_1}%
+#### Returns
 
 `fn`
 
 ▸ (): `void`
 
-Add a new [route record](../index.md#routerecordraw) to the router.
+Add a new [route record](../index.md#RouteRecordRaw) to the router.
 
-##### Returns %{#Methods-addRoute-Returns-Returns_1}%
+##### Returns
 
 `void`
 
 ___
 
-### afterEach %{#Methods-afterEach}%
+### afterEach
 
 ▸ **afterEach**(`guard`): () => `void`
 
 Add a navigation hook that is executed after every navigation. Returns a
 function that removes the registered hook.
 
-**`Example`**
-
-```js
-router.afterEach((to, from, failure) => {
-  if (isNavigationFailure(failure)) {
-    console.log('failed navigation', failure)
-  }
-})
-```
-
-#### Parameters %{#Methods-afterEach-Parameters}%
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `guard` | [`NavigationHookAfter`](NavigationHookAfter.md) | navigation hook to add |
 
-#### Returns %{#Methods-afterEach-Returns}%
+#### Returns
 
 `fn`
 
@@ -115,6 +105,10 @@ router.afterEach((to, from, failure) => {
 Add a navigation hook that is executed after every navigation. Returns a
 function that removes the registered hook.
 
+##### Returns
+
+`void`
+
 **`Example`**
 
 ```js
@@ -125,39 +119,45 @@ router.afterEach((to, from, failure) => {
 })
 ```
 
-##### Returns %{#Methods-afterEach-Returns-Returns}%
+**`Example`**
 
-`void`
+```js
+router.afterEach((to, from, failure) => {
+  if (isNavigationFailure(failure)) {
+    console.log('failed navigation', failure)
+  }
+})
+```
 
 ___
 
-### back %{#Methods-back}%
+### back
 
 ▸ **back**(): `void`
 
 Go back in history if possible by calling `history.back()`. Equivalent to
 `router.go(-1)`.
 
-#### Returns %{#Methods-back-Returns}%
+#### Returns
 
 `void`
 
 ___
 
-### beforeEach %{#Methods-beforeEach}%
+### beforeEach
 
 ▸ **beforeEach**(`guard`): () => `void`
 
 Add a navigation guard that executes before any navigation. Returns a
 function that removes the registered guard.
 
-#### Parameters %{#Methods-beforeEach-Parameters}%
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> | navigation guard to add |
 
-#### Returns %{#Methods-beforeEach-Returns}%
+#### Returns
 
 `fn`
 
@@ -166,13 +166,13 @@ function that removes the registered guard.
 Add a navigation guard that executes before any navigation. Returns a
 function that removes the registered guard.
 
-##### Returns %{#Methods-beforeEach-Returns-Returns}%
+##### Returns
 
 `void`
 
 ___
 
-### beforeResolve %{#Methods-beforeResolve}%
+### beforeResolve
 
 ▸ **beforeResolve**(`guard`): () => `void`
 
@@ -181,21 +181,13 @@ resolved. At this state all component have been fetched and other
 navigation guards have been successful. Returns a function that removes the
 registered guard.
 
-**`Example`**
-
-```js
-router.beforeResolve(to => {
-  if (to.meta.requiresAuth && !isAuthenticated) return false
-})
-```
-
-#### Parameters %{#Methods-beforeResolve-Parameters}%
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> | navigation guard to add |
 
-#### Returns %{#Methods-beforeResolve-Returns}%
+#### Returns
 
 `fn`
 
@@ -206,6 +198,10 @@ resolved. At this state all component have been fetched and other
 navigation guards have been successful. Returns a function that removes the
 registered guard.
 
+##### Returns
+
+`void`
+
 **`Example`**
 
 ```js
@@ -214,75 +210,79 @@ router.beforeResolve(to => {
 })
 ```
 
-##### Returns %{#Methods-beforeResolve-Returns-Returns}%
+**`Example`**
 
-`void`
+```js
+router.beforeResolve(to => {
+  if (to.meta.requiresAuth && !isAuthenticated) return false
+})
+```
 
 ___
 
-### forward %{#Methods-forward}%
+### forward
 
 ▸ **forward**(): `void`
 
 Go forward in history if possible by calling `history.forward()`.
 Equivalent to `router.go(1)`.
 
-#### Returns %{#Methods-forward-Returns}%
+#### Returns
 
 `void`
 
 ___
 
-### getRoutes %{#Methods-getRoutes}%
+### getRoutes
 
 ▸ **getRoutes**(): [`RouteRecordNormalized`](RouteRecordNormalized.md)[]
 
-Get a full list of all the [route records](../index.md#routerecord).
+Get a full list of all the [route records](../index.md#RouteRecord).
 
-#### Returns %{#Methods-getRoutes-Returns}%
+#### Returns
 
 [`RouteRecordNormalized`](RouteRecordNormalized.md)[]
 
 ___
 
-### go %{#Methods-go}%
+### go
 
 ▸ **go**(`delta`): `void`
 
 Allows you to move forward or backward through the history. Calls
 `history.go()`.
 
-#### Parameters %{#Methods-go-Parameters}%
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `delta` | `number` | The position in the history to which you want to move, relative to the current page |
 
-#### Returns %{#Methods-go-Returns}%
+#### Returns
 
 `void`
 
 ___
 
-### hasRoute %{#Methods-hasRoute}%
+### hasRoute
 
 ▸ **hasRoute**(`name`): `boolean`
 
 Checks if a route with a given name exists
 
-#### Parameters %{#Methods-hasRoute-Parameters}%
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `name` | [`RouteRecordName`](../index.md#routerecordname) | Name of the route to check |
+| `name` | [`RouteRecordName`](../index.md#RouteRecordName) | Name of the route to check |
 
-#### Returns %{#Methods-hasRoute-Returns}%
+#### Returns
 
 `boolean`
 
 ___
 
-### isReady %{#Methods-isReady}%
+### isReady
 
 ▸ **isReady**(): `Promise`<`void`\>
 
@@ -296,13 +296,13 @@ the server and the client. Note that on server side, you need to manually
 push the initial location while on client side, the router automatically
 picks it up from the URL.
 
-#### Returns %{#Methods-isReady-Returns}%
+#### Returns
 
 `Promise`<`void`\>
 
 ___
 
-### onError %{#Methods-onError}%
+### onError
 
 ▸ **onError**(`handler`): () => `void`
 
@@ -312,13 +312,13 @@ asynchronously, errors returned or passed to `next` in any navigation
 guard, and errors occurred when trying to resolve an async component that
 is required to render a route.
 
-#### Parameters %{#Methods-onError-Parameters}%
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `handler` | `_ErrorHandler` | error handler to register |
+| `handler` | `_ErrorListener` | error handler to register |
 
-#### Returns %{#Methods-onError-Returns}%
+#### Returns
 
 `fn`
 
@@ -330,84 +330,84 @@ asynchronously, errors returned or passed to `next` in any navigation
 guard, and errors occurred when trying to resolve an async component that
 is required to render a route.
 
-##### Returns %{#Methods-onError-Returns-Returns}%
+##### Returns
 
 `void`
 
 ___
 
-### push %{#Methods-push}%
+### push
 
 ▸ **push**(`to`): `Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
 Programmatically navigate to a new URL by pushing an entry in the history
 stack.
 
-#### Parameters %{#Methods-push-Parameters}%
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | Route location to navigate to |
+| `to` | [`RouteLocationRaw`](../index.md#RouteLocationRaw) | Route location to navigate to |
 
-#### Returns %{#Methods-push-Returns}%
+#### Returns
 
 `Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
 ___
 
-### removeRoute %{#Methods-removeRoute}%
+### removeRoute
 
 ▸ **removeRoute**(`name`): `void`
 
 Remove an existing route by its name.
 
-#### Parameters %{#Methods-removeRoute-Parameters}%
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `name` | [`RouteRecordName`](../index.md#routerecordname) | Name of the route to remove |
+| `name` | [`RouteRecordName`](../index.md#RouteRecordName) | Name of the route to remove |
 
-#### Returns %{#Methods-removeRoute-Returns}%
+#### Returns
 
 `void`
 
 ___
 
-### replace %{#Methods-replace}%
+### replace
 
 ▸ **replace**(`to`): `Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
 Programmatically navigate to a new URL by replacing the current entry in
 the history stack.
 
-#### Parameters %{#Methods-replace-Parameters}%
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | Route location to navigate to |
+| `to` | [`RouteLocationRaw`](../index.md#RouteLocationRaw) | Route location to navigate to |
 
-#### Returns %{#Methods-replace-Returns}%
+#### Returns
 
 `Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
 ___
 
-### resolve %{#Methods-resolve}%
+### resolve
 
 ▸ **resolve**(`to`, `currentLocation?`): [`RouteLocation`](RouteLocation.md) & { `href`: `string`  }
 
 Returns the [normalized version](RouteLocation.md) of a
-[route location](../index.md#routelocationraw). Also includes an `href` property
+[route location](../index.md#RouteLocationRaw). Also includes an `href` property
 that includes any existing `base`. By default, the `currentLocation` used is
 `router.currentRoute` and should only be overridden in advanced use cases.
 
-#### Parameters %{#Methods-resolve-Parameters}%
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | Raw route location to resolve |
+| `to` | [`RouteLocationRaw`](../index.md#RouteLocationRaw) | Raw route location to resolve |
 | `currentLocation?` | [`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md) | Optional current location to resolve against |
 
-#### Returns %{#Methods-resolve-Returns}%
+#### Returns
 
 [`RouteLocation`](RouteLocation.md) & { `href`: `string`  }

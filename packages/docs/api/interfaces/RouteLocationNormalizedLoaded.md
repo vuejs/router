@@ -6,42 +6,42 @@ editLink: false
 
 # Interface: RouteLocationNormalizedLoaded
 
-[RouteLocationRaw](../index.md#routelocationraw) with
+[RouteLocationRaw](../index.md#RouteLocationRaw) with
 
-## Hierarchy %{#Hierarchy}%
+## Hierarchy
 
 - `_RouteLocationBase`
 
   ↳ **`RouteLocationNormalizedLoaded`**
 
-## Properties %{#Properties}%
+## Properties
 
-### fullPath %{#Properties-fullPath}%
+### fullPath
 
 • **fullPath**: `string`
 
 The whole location including the `search` and `hash`. This string is
 percentage encoded.
 
-#### Inherited from %{#Properties-fullPath-Inherited-from}%
+#### Inherited from
 
 \_RouteLocationBase.fullPath
 
 ___
 
-### hash %{#Properties-hash}%
+### hash
 
 • **hash**: `string`
 
 Hash of the current location. If present, starts with a `#`.
 
-#### Inherited from %{#Properties-hash-Inherited-from}%
+#### Inherited from
 
 \_RouteLocationBase.hash
 
 ___
 
-### matched %{#Properties-matched}%
+### matched
 
 • **matched**: [`RouteLocationMatched`](RouteLocationMatched.md)[]
 
@@ -52,73 +52,73 @@ cannot contain redirect records either
 
 ___
 
-### meta %{#Properties-meta}%
+### meta
 
 • **meta**: [`RouteMeta`](RouteMeta.md)
 
 Merged `meta` properties from all the matched route records.
 
-#### Inherited from %{#Properties-meta-Inherited-from}%
+#### Inherited from
 
 \_RouteLocationBase.meta
 
 ___
 
-### name %{#Properties-name}%
+### name
 
-• **name**: `undefined` \| ``null`` \| [`RouteRecordName`](../index.md#routerecordname)
+• **name**: `undefined` \| ``null`` \| [`RouteRecordName`](../index.md#RouteRecordName)
 
 Name of the matched record
 
-#### Inherited from %{#Properties-name-Inherited-from}%
+#### Inherited from
 
 \_RouteLocationBase.name
 
 ___
 
-### params %{#Properties-params}%
+### params
 
-• **params**: [`RouteParams`](../index.md#routeparams)
+• **params**: [`RouteParams`](../index.md#RouteParams)
 
 Object of decoded params extracted from the `path`.
 
-#### Inherited from %{#Properties-params-Inherited-from}%
+#### Inherited from
 
 \_RouteLocationBase.params
 
 ___
 
-### path %{#Properties-path}%
+### path
 
 • **path**: `string`
 
 Percentage encoded pathname section of the URL.
 
-#### Inherited from %{#Properties-path-Inherited-from}%
+#### Inherited from
 
 \_RouteLocationBase.path
 
 ___
 
-### query %{#Properties-query}%
+### query
 
-• **query**: [`LocationQuery`](../index.md#locationquery)
+• **query**: [`LocationQuery`](../index.md#LocationQuery)
 
 Object representation of the `search` property of the current location.
 
-#### Inherited from %{#Properties-query-Inherited-from}%
+#### Inherited from
 
 \_RouteLocationBase.query
 
 ___
 
-### redirectedFrom %{#Properties-redirectedFrom}%
+### redirectedFrom
 
 • **redirectedFrom**: `undefined` \| [`RouteLocation`](RouteLocation.md)
 
 Contains the location we were initially trying to access before ending up
 on the current location.
 
-#### Inherited from %{#Properties-redirectedFrom-Inherited-from}%
+#### Inherited from
 
 \_RouteLocationBase.redirectedFrom

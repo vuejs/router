@@ -7,11 +7,11 @@ editLink: false
 # Enumeration: NavigationFailureType
 
 Enumeration with all possible types for navigation failures. Can be passed to
-[isNavigationFailure](../index.md#isnavigationfailure) to check for specific failures.
+[isNavigationFailure](../index.md#isNavigationFailure) to check for specific failures.
 
-## Enumeration Members %{#Enumeration-Members}%
+## Enumeration Members
 
-### aborted %{#Enumeration-Members-aborted}%
+### aborted
 
 • **aborted** = ``4``
 
@@ -20,7 +20,7 @@ guard returned `false` or called `next(false)`
 
 ___
 
-### cancelled %{#Enumeration-Members-cancelled}%
+### cancelled
 
 • **cancelled** = ``8``
 
@@ -29,7 +29,7 @@ navigation finished started (not necessarily finished).
 
 ___
 
-### duplicated %{#Enumeration-Members-duplicated}%
+### duplicated
 
 • **duplicated** = ``16``
 
