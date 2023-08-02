@@ -100,6 +100,8 @@ function that removes the registered hook.
 
 `fn`
 
+a function that removes the registered hook
+
 ▸ (): `void`
 
 Add a navigation hook that is executed after every navigation. Returns a
@@ -108,6 +110,8 @@ function that removes the registered hook.
 ##### Returns
 
 `void`
+
+a function that removes the registered hook
 
 **`Example`**
 
@@ -191,6 +195,8 @@ registered guard.
 
 `fn`
 
+a function that removes the registered guard
+
 ▸ (): `void`
 
 Add a navigation guard that executes before navigation is about to be
@@ -201,6 +207,8 @@ registered guard.
 ##### Returns
 
 `void`
+
+a function that removes the registered guard
 
 **`Example`**
 

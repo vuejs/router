@@ -287,6 +287,9 @@ export interface Router {
    * navigation guards have been successful. Returns a function that removes the
    * registered guard.
    *
+   * @param guard - navigation guard to add
+   * @returns a function that removes the registered guard
+   *
    * @example
    * ```js
    * router.beforeResolve(to => {
@@ -294,12 +297,15 @@ export interface Router {
    * })
    * ```
    *
-   * @param guard - navigation guard to add
    */
   beforeResolve(guard: NavigationGuardWithThis<undefined>): () => void
+
   /**
    * Add a navigation hook that is executed after every navigation. Returns a
    * function that removes the registered hook.
+   *
+   * @param guard - navigation hook to add
+   * @returns a function that removes the registered hook
    *
    * @example
    * ```js
@@ -309,8 +315,6 @@ export interface Router {
    *   }
    * })
    * ```
-   *
-   * @param guard - navigation hook to add
    */
   afterEach(guard: NavigationHookAfter): () => void
 

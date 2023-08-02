@@ -144,6 +144,9 @@ export function createRouterError<E extends RouterError>(
 /**
  * Check if an object is a {@link NavigationFailure}.
  *
+ * @param error - possible {@link NavigationFailure}
+ * @param type - optional types to check for
+ *
  * @example
  * ```js
  * import { isNavigationFailure, NavigationFailureType } from 'vue-router'
@@ -163,8 +166,6 @@ export function createRouterError<E extends RouterError>(
  *   }
  * })
  * ```
- * @param error - possible {@link NavigationFailure}
- * @param type - optional types to check for
  */
 export function isNavigationFailure(
   error: any,
