@@ -26,7 +26,7 @@
   "devDependencies": {
     "brotli": "^1.3.3",
     "chalk": "^4.1.2",
-    "enquirer": "^2.3.6",
+    "enquirer": "^2.4.1",
     "execa": "^6.1.0",
     "globby": "^13.2.2",
     "lint-staged": "^13.2.3",
