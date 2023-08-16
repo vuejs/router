@@ -29,6 +29,10 @@
     "./package.json": "./package.json"
   },
   "sideEffects": false,
+  "author": {
+    "name": "Eduardo San Martin Morote",
+    "email": "posva13@gmail.com"
+  },
   "funding": "https://github.com/sponsors/posva",
   "license": "MIT",
   "repository": {
