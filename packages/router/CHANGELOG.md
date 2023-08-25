@@ -97,7 +97,7 @@ This change will break your app. This behavior has worked in some scenarios but 
 
   This is known an _transient state_ and since it's in a navigation guard, it will be preserved when reloading the page. [Check the documentation for more details](https://router.vuejs.org/guide/advanced/meta.html#typescript).
 
-Fixing #1497, required getting rid of unused params and therefore will broke this long standing anti-pattern usage.
+Fixing #1497, required getting rid of unused params and therefore will break this long standing anti-pattern usage.
 
 ### Bug Fixes
 
