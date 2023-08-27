@@ -117,19 +117,19 @@ Currently, all the docs can be found in `packages/docs`. It contains the English
 
 Besides that, the `.vitepress` sub-folder is used to put the config and theme, including the i18n information.
 
-Consider the following two options in order to contribute to the translations:
+Contributing to the English docs is the same as contributing to the source code. You can simply create a pull request to our GitHub repo. However, if you would like to contribute to the translations, there are 2 options and some some extra steps to follow:
 
 ### Translate in a `<lang>` sub-folder and host it on our official repo
 
-If you want to start translating the docs in a new language:
+If you want to start translating the docs in a _new_ language:
 
 1. Note down the **latest git commit hash** you are translating on as a _checkpoint_. **The checkpoint is important for the long-term maintenance since all the further translation sync-ups of each language would be based on their previous checkpoint.**
 2. Create the corresponding `<lang>` sub-folder for your translation.
 3. Modify the i18n config in `.vitepress` sub-folder.
-4. Add your language code into `locales` in `packages/docs/generate-translation-status.mjs`.
-5. Translate the docs and run the doc site to self-test locally.
-6. Once you have done all above, create a pull request to our GitHub repo. It's highly recommended to set the pull request title as **`docs(<lang>): sync update to <checkpoint-hash>`** e.g. `docs(zh): sync update to e008551`, which is easier for the maintainers to proceed.
-7. (Repo permission required) the maintainers will review and merge the pull request once it's approved. The merge should be ensured with a commit log as `docs(<lang>): sync update to <checkpoint-hash> (#<pr-id>)`, which is also the reason we recommend the pull request title format in step 6. After the merge request
+4. Translate the docs and run the doc site to self-test locally.
+5. Once you have done all above, run `pnpm run docs:translation-status <lang> <commit>` to update the translation status.
+6. Create a pull request to our GitHub repo.
+7. (Repo permission required) the maintainers will review and merge the pull request once it's approved.
 
 If you want to maintain an existing translation:
 
