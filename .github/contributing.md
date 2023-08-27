@@ -117,36 +117,50 @@ Currently, all the docs can be found in `packages/docs`. It contains the English
 
 Besides that, the `.vitepress` sub-folder is used to put the config and theme, including the i18n information.
 
-Contributing to the English docs is the same as contributing to the source code. You can simply create a pull request to our GitHub repo. However, if you would like to contribute to the translations, there are 2 options and some some extra steps to follow:
+Contributing to the English docs is the same as contributing to the source code. You can simply create a pull request to our GitHub repo. However, if you would like to contribute to the translations, there are 2 options and some extra steps to follow:
 
 ### Translate in a `<lang>` sub-folder and host it on our official repo
 
 If you want to start translating the docs in a _new_ language:
 
-1. Note down the **latest git commit hash** you are translating on as a _checkpoint_. **The checkpoint is important for the long-term maintenance since all the further translation sync-ups of each language would be based on their previous checkpoint.**
-2. Create the corresponding `<lang>` sub-folder for your translation.
-3. Modify the i18n config in `.vitepress` sub-folder.
-4. Translate the docs and run the doc site to self-test locally.
-5. Once you have done all above, run `pnpm run docs:translation-status <lang> <commit>` to update the translation status.
-6. Create a pull request to our GitHub repo.
-7. (Repo permission required) the maintainers will review and merge the pull request once it's approved.
+1. Create the corresponding `<lang>` sub-folder for your translation.
+2. Modify the i18n config in `.vitepress` sub-folder.
+3. Translate the docs and run the doc site to self-test locally.
+4. Create a checkpoint for your language by running `pnpm run docs:translation-status <lang> [<commit>]`. A checkpoint is the hash and date of the latest commit when you do the translation. The checkpoint information would be stored in the status file `packages/docs/.vitepress/translation-status.json`. _It's important for the long-term maintenance since all the further translation sync-ups would be based on their previous checkpoints._ Usually you can skip the commit argument because the default value is `main`.
+5. Commit all the changes and create a pull request to our GitHub repo. Then after the approval and merge by the maintainers. The translation would be affected.
+
+To be noticed, on the top of each translation page, there would be a paragraph to indicate their translation status. So the users can know whether the translation is up-to-date or not.
 
 If you want to maintain an existing translation:
 
 1. See what translation you need to do to sync up with the original docs. There are 2 popular ways:
-    1. Via the GitHub Compare page: https://github.com/vuejs/router/compare/ (only see the changes in `packages/docs/*`) from the checkpoint hash to `main` branch. You can find the checkpoint hash from the latest pull request.
-   2. Via a local command: `pnpm run docs:compare-to-translate <lang>`.
-2. Create your own branch and start the translation update, following the previous result.
-3. Same to step 6 and step 7 in starting a new language, once you have done all above, create a pull request with the same title format as **`docs(<lang>): sync update to <checkpoint-hash>`** and wait for the approval and merge by the maintainers.
+    1. Via the GitHub Compare page: https://github.com/vuejs/router/compare/ (only see the changes in `packages/docs/*`) from the checkpoint hash to `main` branch. You can find the checkpoint hash for your language via the translation status file `packages/docs/.vitepress/translation-status.json`.
+   2. Via a local command: `pnpm run docs:compare-to-translate <lang> [<commit>]`.
+2. Create your own branch and start the translation update, following the previous comparison.
+3. Same to step 4 and step 5 in the “starting a new language” workflow. Once you have done all above, create a pull request and then wait for the maintainers to approve and merge it.
 
-For more real examples, please check out [all the PRs with title "docs(zh): sync" after 2023-01-01](https://github.com/vuejs/router/pulls?q=is%3Apr+created%3A%3E2023-01-01+docs%28zh%29+sync).
+<!-- TODO: add an example once we have got one -->
 
 ### Self-host the translation
 
 You can also host the translation on your own. To create one, just simply fork our GitHub repo and change the content and site config in `packages/docs`. To long-term maintain it, we _highly recommend_ a similar way that we do above for our officially hosted translations:
 
-- Ensure you maintain the _checkpoint_ properly.
+- Ensure you maintain the _checkpoint_ properly. And also ensure the _translation status_ is well-displayed on the top of each translation page.
 - Utilize the diff result between the latest official repository and your own checkpoint to guide your translation.
+
+Tips: you can add the official repo as a remote to your forked repo, and then still able to run `pnpm run docs:translation-status <lang> [<commit>]` and `npm run docs:compare-to-translate <lang> [<commit>]` to get the checkpoint and diff result:
+
+```bash
+# prepare the upstream remote
+git remote add upstream git@github.com:vuejs/router.git
+git fetch upstream main
+
+# set the checkpoint
+pnpm run docs:translation-status <lang> upstream/main
+
+# get the diff result
+pnpm run docs:compare-to-translate <lang> upstream/main
+```
 
 <!-- TODO: add an example once we have got one -->
 
