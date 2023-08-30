@@ -113,18 +113,17 @@ You don't need to add the `*` for repeated params if you don't plan to directly 
 
 **Reason**: Vue Router doesn't use `path-to-regexp` anymore, instead it implements its own parsing system that allows route ranking and enables dynamic routing. Since we usually add one single catch-all route per project, there is no big benefit in supporting a special syntax for `*`. The encoding of params is encoding across routes, without exception to make things easier to predict.
 
-### The `currentRoute` property is now a ref() (ie. reactive) property
+### The `currentRoute` property is now a `ref()`
 
 Previously the properties of the [`currentRoute`](https://v3.router.vuejs.org/api/#router-currentroute) object on a router instance could be accessed directly. 
 
 With the introduction of vue-router v4, the underlying type of the `currentRoute` object on the router instance has changed to `Ref<RouteLocationNormalizedLoaded>`, which comes from the newer [reactivity fundamentals](https://vuejs.org/guide/essentials/reactivity-fundamentals.html) introduced in Vue 3.
 
-While this doesn't change anything if you're using these objects from the Vue templates, if you're accessing them from outside the Vue templates you'll need to tweak your `currentRoute` usage to use the [`.value`](https://vuejs.org/guide/essentials/reactivity-fundamentals.html#why-refs) property, in order to drill down to the underlying properties like `query`, `params` or `fullPath` etc.
+While this doesn't change anything if you're reading the route with `useRoute()` or `this.$route`, if you're accessing it directly on the router instance, you will need to access the actual route object via `currentRoute.value`:
 
-```diff
--const myQueryProperty = router.currentRoute.query.customProperty;
-+const myQueryProperty = router.currentRoute.value.query.customProperty
-```
+```ts
+const { page } = router.currentRoute.query  // [!code  --]
+const { page } = router.currentRoute.value.query  // [!code  ++]
 
 ### Replaced `onReady` with `isReady`
 
