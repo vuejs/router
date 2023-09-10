@@ -93,6 +93,16 @@ export const sharedConfig = defineConfig({
     //   },
     // ],
 
+    [
+      'script',
+      {
+        src: 'https://cdn.usefathom.com/script.js',
+        'data-site': 'RENJQDQI',
+        'data-spa': 'auto',
+        defer: '',
+      },
+    ],
+
     // Vue School Top banner
     [
       'script',
