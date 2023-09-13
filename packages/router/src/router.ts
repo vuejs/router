@@ -1230,7 +1230,7 @@ export function createRouter(options: RouterOptions): Router {
       ) {
         // see above
         started = true
-        push(routerHistory.location).catch(err => {
+        push(decodeURI(routerHistory.location)).catch(err => {
           if (__DEV__) warn('Unexpected error when starting the router:', err)
         })
       }
