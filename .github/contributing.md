@@ -131,13 +131,14 @@ If you want to start translating the docs in a _new_ language:
 
 We will have a paragraph right at the top of each translation page that shows the status of the translation. That way, users can easily figure out if the translation is up-to-date or lags behind the English version.
 
-If you want to maintain an existing translation:
+Speaking of the up-to-date translation, we also need good long-term maintenance for every language. If you want to _update_ an existing translation:
 
-1. See what translation you need to do to sync up with the original docs. There are 2 popular ways:
-    1. Via the GitHub Compare page: https://github.com/vuejs/router/compare/ (only see the changes in `packages/docs/*`) from the checkpoint hash to `main` branch. You can find the checkpoint hash for your language via the translation status file `packages/docs/.vitepress/translation-status.json`.
-   2. Via a local command: `pnpm run docs:compare-to-translate <lang> [<commit>]`.
+1. See what translation you need to sync up with the original docs. There are 2 popular ways:
+    1. Via the [GitHub Compare](https://github.com/vuejs/router/compare/) page: only see the changes in `packages/docs/*` from the checkpoint hash to `main` branch. You can find the checkpoint hash for your language via the translation status file `packages/docs/.vitepress/translation-status.json`. And the compare page can be directly opened with the hash as part of the URL e.g. https://github.com/vuejs/router/compare/e008551...main
+    2. Via a local command: `pnpm run docs:compare-to-translate <lang> [<commit>]`.
 2. Create your own branch and start the translation update, following the previous comparison.
-3. Same to step 4 and step 5 in the “starting a new language” workflow. Once you have done all above, create a pull request and then wait for the maintainers to approve and merge it.
+3. Create a checkpoint for your language by running `pnpm run docs:translation-status <lang> [<commit>]`.
+4. Commit all the changes and create a pull request to our GitHub repo.
 
 <!-- TODO: add an example once we have got one -->
 
