@@ -10,7 +10,7 @@ Usage: pnpm run docs:translation-status <locale> [<commit>]
   locale: The target locale to update.
   commit: The target commit to update. It could be a branch, a tag, or a hash. Default to 'main'.`
 
-const getCommitInfo = async (commit) => {
+async function getCommitInfo (commit) {
   try {
     const git = simpleGit()
     const log = await git.log([commit, '-n', '1'])
@@ -21,7 +21,7 @@ const getCommitInfo = async (commit) => {
   }
 }
 
-const writeLangMap = async (lang, hash, date) => {
+async function writeLangMap (lang, hash, date) {
   const data = {}
   try {
     const previousContent = await readFile(STATUS_FILE_PATH, 'utf8')
@@ -39,11 +39,7 @@ const writeLangMap = async (lang, hash, date) => {
 }
 
 async function main() {
-  if (
-    process.argv.length < 3 ||
-    process.argv[2] === '--help' ||
-    process.argv[2] === '-h'
-  ) {
+  if (process.argv.find(arg => arg === '--help' || arg === '-h')) {
     console.log(usage)
     return
   }
@@ -53,11 +49,11 @@ async function main() {
 
   const { hash, date } = await getCommitInfo(commit)
   if (!hash) {
-    console.log(`❌ No commit found for ${commit}.`)
+    console.log(`❌ No commit found for "${commit}".`)
     return
   } else {
     await writeLangMap(locale, hash, date)
-    console.log(`✅ Updated ${locale} to ${hash} (${date})`)
+    console.log(`✅ Updated ${locale} to "${hash}" (${date})`)
   }
 }
 

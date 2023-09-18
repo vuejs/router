@@ -127,9 +127,9 @@ If you want to start translating the docs in a _new_ language:
 2. Modify the i18n config in `.vitepress` sub-folder.
 3. Translate the docs and run the doc site to self-test locally.
 4. Create a checkpoint for your language by running `pnpm run docs:translation-status <lang> [<commit>]`. A checkpoint is the hash and date of the latest commit when you do the translation. The checkpoint information would be stored in the status file `packages/docs/.vitepress/translation-status.json`. _It's important for the long-term maintenance since all the further translation sync-ups would be based on their previous checkpoints._ Usually you can skip the commit argument because the default value is `main`.
-5. Commit all the changes and create a pull request to our GitHub repo. Then after the approval and merge by the maintainers. The translation would be affected.
+5. Commit all the changes and create a pull request to our GitHub repo.
 
-To be noticed, on the top of each translation page, there would be a paragraph to indicate their translation status. So the users can know whether the translation is up-to-date or not.
+We will have a paragraph right at the top of each translation page that shows the status of the translation. That way, users can easily figure out if the translation is up-to-date or lags behind the English version.
 
 If you want to maintain an existing translation:
 
@@ -148,7 +148,7 @@ You can also host the translation on your own. To create one, just simply fork o
 - Ensure you maintain the _checkpoint_ properly. And also ensure the _translation status_ is well-displayed on the top of each translation page.
 - Utilize the diff result between the latest official repository and your own checkpoint to guide your translation.
 
-Tips: you can add the official repo as a remote to your forked repo, and then still able to run `pnpm run docs:translation-status <lang> [<commit>]` and `npm run docs:compare-to-translate <lang> [<commit>]` to get the checkpoint and diff result:
+Tip: you can add the official repo as a remote to your forked repo, this way you can still run `pnpm run docs:translation-status <lang> [<commit>]` and `npm run docs:compare-to-translate <lang> [<commit>]` to get the checkpoint and diff result:
 
 ```bash
 # prepare the upstream remote

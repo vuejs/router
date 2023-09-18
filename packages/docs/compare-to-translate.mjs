@@ -10,7 +10,7 @@ Usage: pnpm run docs:compare-to-translate <locale> [<commit>]
   locale: The target locale to compare.
   commit: The target commit to compare. It could be a branch, a tag, or a hash. Default to 'main'.`
 
-const getLocaleHash = async (lang) => {
+async function getLocaleHash (lang) {
   try {
     const content = await readFile(STATUS_FILE_PATH, 'utf8')
     const data = JSON.parse(content)
@@ -21,7 +21,7 @@ const getLocaleHash = async (lang) => {
 }
 
 async function main() {
-  if (!process.argv[2] || process.argv[2] === '--help' || process.argv[2] === '-h') {
+  if (process.argv.find(arg => arg === '--help' || arg === '-h')) {
     console.log(usage)
     return
   }
@@ -31,11 +31,11 @@ async function main() {
 
   const hash = await getLocaleHash(locale)
   if (hash) {
-    console.log(`The last checkpoint of docs(${locale}) is ${hash}.\n`)
+    console.log(`The last checkpoint of docs(${locale}) is "${hash}".\n`)
     const git = simpleGit()
     const result = await git.diff([`${hash}..${commit}`, '.'])
     console.log(result)
-    console.log(`\nAfter finishing the translation, you can run "pnpm run docs:translation-status ${locale} ${hash}" or "pnpm run docs:translation-status ${locale}${commit !== 'main' ? ' ' + commit : ''}" to update the translation status file.`)
+    console.log(`\nAfter finishing the translation, you can run\n"pnpm run docs:translation-status ${locale} ${hash}"\nor\n"pnpm run docs:translation-status ${locale}${commit !== 'main' ? ' ' + commit : ''}"\nto update the translation status file.`)
   } else {
     console.log(`No docs(${locale}) checkpoint found.\n`)
     console.log(usage)
