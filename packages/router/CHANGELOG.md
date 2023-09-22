@@ -1,3 +1,9 @@
+## [4.2.5](https://github.com/vuejs/router/compare/v4.2.4...v4.2.5) (2023-09-22)
+
+### Bug Fixes
+
+- **devtools:** display children with empty parent ([d7af338](https://github.com/vuejs/router/commit/d7af338d9e27e77ac109bf7495e057a2df9a8752)), closes [posva/unplugin-vue-router#235](https://github.com/posva/unplugin-vue-router/issues/235)
+
 ## [4.2.4](https://github.com/vuejs/router/compare/v4.2.3...v4.2.4) (2023-07-06)
 
 ### Bug Fixes
