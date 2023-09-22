@@ -266,7 +266,13 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         const payload = activeRoutesPayload
 
         // children routes will appear as nested
-        let routes = matcher.getRoutes().filter(route => !route.parent)
+        let routes = matcher.getRoutes().filter(
+          route =>
+            !route.parent ||
+            // these routes have a parent with no component which will not appear in the view
+            // therefore we still need to include them
+            !route.parent.record.components
+        )
 
         // reset match state to false
         routes.forEach(resetMatchStateOnRouteRecord)
