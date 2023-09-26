@@ -64,6 +64,8 @@ export type _AlphaNumeric =
   | 'X'
   | 'y'
   | 'Y'
+  | 'z'
+  | 'Z'
   | '0'
   | '1'
   | '2'
