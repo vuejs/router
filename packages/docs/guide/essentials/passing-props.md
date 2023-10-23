@@ -78,3 +78,20 @@ const routes = [
 The URL `/search?q=vue` would pass `{query: 'vue'}` as props to the `SearchUser` component.
 
 Try to keep the `props` function stateless, as it's only evaluated on route changes. Use a wrapper component if you need state to define the props, that way Vue can react to state changes.
+
+## Via RouterView
+
+You can also pass any props directly via `<RouterView>`:
+
+```vue-html
+<RouterView v-slot="{ Component }">
+  <component
+    :is="Component"
+    view-prop="value"
+   />
+</RouterView
+```
+
+::: warning
+In this case, **all view components** will receive `view-prop`. This is usually not a good idea as  it means that all of the view components have declared a `view-prop` prop, which is not necessarily true. If possible, use any of the options above.
+:::
