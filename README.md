@@ -42,16 +42,10 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
       <img src="https://avatars.githubusercontent.com/u/4183726?u=6b50a8ea16de29d2982f43c5640b1db9299ebcd1&v=4" height="26px" alt="Antony Konstantinidis" />
     </picture>
   </a>
-    <a href="https://storyblok.com" target="_blank" rel="noopener noreferrer">
+    <a href="https://nuxtlabs.com" target="_blank" rel="noopener noreferrer">
     <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/storyblok.png" media="(prefers-color-scheme: dark)" height="26px" alt="Storyblok" />
-      <img src="https://posva-sponsors.pages.dev/logos/storyblok.png" height="26px" alt="Storyblok" />
-    </picture>
-  </a>
-    <a href="https://nuxtjs.org" target="_blank" rel="noopener noreferrer">
-    <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/nuxt-dark.svg" media="(prefers-color-scheme: dark)" height="26px" alt="Nuxt Labs" />
-      <img src="https://posva-sponsors.pages.dev/logos/nuxt-light.svg" height="26px" alt="Nuxt Labs" />
+      <source srcset="https://posva-sponsors.pages.dev/logos/nuxt-dark.svg" media="(prefers-color-scheme: dark)" height="26px" alt="NuxtLabs" />
+      <img src="https://posva-sponsors.pages.dev/logos/nuxt-light.svg" height="26px" alt="NuxtLabs" />
     </picture>
   </a>
 </p>
