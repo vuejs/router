@@ -1,8 +1,4 @@
-lockfileVersion: '6.1'
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
+lockfileVersion: '6.0'
 
 importers:
 
@@ -1879,7 +1875,6 @@ packages:
 
   /@types/node@18.16.19:
     resolution: {integrity: sha512-IXl7o+R9iti9eBW4Wg2hx1xQDig183jj7YLn8F7udNceyfkbn1ZxmzZXuak20gR40D7pIkIY1kYGx5VIGbaHKA==}
-    dev: true
 
   /@types/node@20.4.2:
     resolution: {integrity: sha512-Dd0BYtWgnWJKwO1jkmTrzofjK2QXXcai0dmtzvIBhcA+RsG5h8R3xlyta0kGOZRNfL9GuRtb1knmPEhQrePCEw==}
@@ -1956,7 +1951,7 @@ packages:
       vite: ^4.0.0
       vue: ^3.2.25
     dependencies:
-      vite: 4.4.8
+      vite: 4.4.8(@types/node@18.16.19)
       vue: 3.3.4
     dev: false
 
@@ -7228,7 +7223,7 @@ packages:
     engines: {node: '>= 0.10'}
     dev: true
 
-  /vite@4.4.8:
+  /vite@4.4.8(@types/node@18.16.19):
     resolution: {integrity: sha512-LONawOUUjxQridNWGQlNizfKH89qPigK36XhMI7COMGztz8KNY0JHim7/xDd71CZwGT4HtSRgI7Hy+RlhG0Gvg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -7256,6 +7251,7 @@ packages:
       terser:
         optional: true
     dependencies:
+      '@types/node': 18.16.19
       esbuild: 0.18.17
       postcss: 8.4.27
       rollup: 3.27.0
@@ -7314,7 +7310,7 @@ packages:
       mark.js: 8.11.1
       minisearch: 6.1.0
       shiki: 0.14.3
-      vite: 4.4.8
+      vite: 4.4.8(@types/node@18.16.19)
       vue: 3.3.4
     transitivePeerDependencies:
       - '@algolia/client-search'
