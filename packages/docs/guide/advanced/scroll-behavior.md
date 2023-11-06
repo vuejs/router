@@ -44,7 +44,8 @@ const router = createRouter({
       // could also be
       // el: document.getElementById('main'),
       el: '#main',
-      top: -10,
+      // 10px above the element
+      top: 10,
     }
   },
 })
