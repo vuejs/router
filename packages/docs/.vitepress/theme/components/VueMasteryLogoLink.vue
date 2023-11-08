@@ -26,6 +26,7 @@ a {
   align-items: center;
   margin-top: 10px;
   margin-bottom: 10px;
+  text-decoration: none !important;
 }
 
 .description {
@@ -36,10 +37,6 @@ a {
   color: var(--vp-c-text-1);
   margin: 0 0 0 16px;
   transition: color 0.5s;
-}
-
-a:hover {
-  text-decoration: none !important;
 }
 
 .description span {
