@@ -34,8 +34,8 @@
     "p-series": "^3.0.0",
     "prettier": "^2.8.8",
     "semver": "^7.5.4",
-    "typedoc": "^0.24.8",
-    "typedoc-plugin-markdown": "^3.15.4",
+    "typedoc": "^0.25.3",
+    "typedoc-plugin-markdown": "^3.17.1",
     "typescript": "~5.1.6",
     "yorkie": "^2.0.0"
   },
