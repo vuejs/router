@@ -38,7 +38,7 @@ ___
 
 ### beforeEnter
 
-• `Optional` **beforeEnter**: [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\>[]
+• `Optional` **beforeEnter**: [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\>[]
 
 Before Enter guard specific to this record. Note `beforeEnter` has no
 effect if the record has a `redirect` property.
@@ -102,7 +102,7 @@ ___
 
 ### props
 
-• `Optional` **props**: `_RouteRecordProps` \| `Record`<`string`, `_RouteRecordProps`\>
+• `Optional` **props**: `_RouteRecordProps` \| `Record`\<`string`, `_RouteRecordProps`\>
 
 Allow passing down params as props to the component rendered by `router-view`.
 

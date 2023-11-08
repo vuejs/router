@@ -5,9 +5,9 @@
   title="Learn how to add routes at runtime"
 />
 
-Adding routes to your router is usually done via the [`routes` option](../../api/#routes) but in some situations, you might want to add or remove routes while the application is already running. Application with extensible interfaces like [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html) can use this to make the application grow.
+Adding routes to your router is usually done via the `routes` option but in some situations, you might want to add or remove routes while the application is already running. Application with extensible interfaces like [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html) can use this to make the application grow.
 
-## Adding Routes
+## Adding routes
 
 Dynamic routing is achieved mainly via two functions: `router.addRoute()` and `router.removeRoute()`. They **only** register a new route, meaning that if the newly added route matches the current location, it would require you to **manually navigate** with `router.push()` or `router.replace()` to display that new route. Let's take a look at an example:
 
@@ -36,7 +36,7 @@ router.replace(router.currentRoute.value.fullPath)
 
 Remember you can `await router.replace()` if you need to wait for the new route to be displayed.
 
-## Adding Routes inside navigation guards
+## Adding routes inside navigation guards
 
 If you decide to add or remove routes inside of a navigation guard, you should not call `router.replace()` but trigger a redirection by returning the new location:
 
@@ -111,5 +111,5 @@ router.addRoute({
 
 Vue Router gives you two functions to look at existing routes:
 
-- [`router.hasRoute()`](/api/interfaces/Router.md#Methods-hasRoute): check if a route exists
-- [`router.getRoutes()`](/api/interfaces/Router.md#Methods-getRoutes): get an array with all the route records.
+- [`router.hasRoute()`](/api/interfaces/Router.md#hasRoute): check if a route exists
+- [`router.getRoutes()`](/api/interfaces/Router.md#getRoutes): get an array with all the route records.

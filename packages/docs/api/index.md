@@ -42,7 +42,7 @@ API Documentation
 
 ### LocationQuery
 
-Ƭ **LocationQuery**: `Record`<`string`, `LocationQueryValue` \| `LocationQueryValue`[]\>
+Ƭ **LocationQuery**: `Record`\<`string`, `LocationQueryValue` \| `LocationQueryValue`[]\>
 
 Normalized query object that appears in [RouteLocationNormalized](interfaces/RouteLocationNormalized.md)
 
@@ -50,17 +50,17 @@ ___
 
 ### LocationQueryRaw
 
-Ƭ **LocationQueryRaw**: `Record`<`string` \| `number`, `LocationQueryValueRaw` \| `LocationQueryValueRaw`[]\>
+Ƭ **LocationQueryRaw**: `Record`\<`string` \| `number`, `LocationQueryValueRaw` \| `LocationQueryValueRaw`[]\>
 
 Loose [LocationQuery](index.md#LocationQuery) object that can be passed to functions like
-[push](interfaces/Router.md#push) and [replace](interfaces/Router.md#replace) or anywhere when creating a
+[Router.push](interfaces/Router.md#push) and [Router.replace](interfaces/Router.md#replace) or anywhere when creating a
 [RouteLocationRaw](index.md#RouteLocationRaw)
 
 ___
 
 ### PathParserOptions
 
-Ƭ **PathParserOptions**: `Pick`<`_PathParserOptions`, ``"end"`` \| ``"sensitive"`` \| ``"strict"``\>
+Ƭ **PathParserOptions**: `Pick`\<`_PathParserOptions`, ``"end"`` \| ``"sensitive"`` \| ``"strict"``\>
 
 ___
 
@@ -82,13 +82,13 @@ ___
 
 ### RouteParams
 
-Ƭ **RouteParams**: `Record`<`string`, `RouteParamValue` \| `RouteParamValue`[]\>
+Ƭ **RouteParams**: `Record`\<`string`, `RouteParamValue` \| `RouteParamValue`[]\>
 
 ___
 
 ### RouteParamsRaw
 
-Ƭ **RouteParamsRaw**: `Record`<`string`, `RouteParamValueRaw` \| `Exclude`<`RouteParamValueRaw`, ``null`` \| `undefined`\>[]\>
+Ƭ **RouteParamsRaw**: `Record`\<`string`, `RouteParamValueRaw` \| `Exclude`\<`RouteParamValueRaw`, ``null`` \| `undefined`\>[]\>
 
 ___
 
@@ -116,7 +116,7 @@ ___
 
 ### UseLinkOptions
 
-Ƭ **UseLinkOptions**: `VueUseOptions`<`RouterLinkOptions`\>
+Ƭ **UseLinkOptions**: `VueUseOptions`\<`RouterLinkOptions`\>
 
 ## Variables
 
@@ -130,13 +130,23 @@ ___
 
 ### RouterView
 
-• `Const` **RouterView**: () => { `$props`: `AllowedComponentProps` & `ComponentCustomProps` & `VNodeProps` & [`RouterViewProps`](interfaces/RouterViewProps.md) ; `$slots`: { `default?`: (`__namedParameters`: { `Component`: `VNode`<`RendererNode`, `RendererElement`, { `[key: string]`: `any`;  }\> ; `route`: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)  }) => `VNode`<`RendererNode`, `RendererElement`, { `[key: string]`: `any`;  }\>[]  }  }
+• `Const` **RouterView**: () => \{ `$props`: `AllowedComponentProps` & `ComponentCustomProps` & `VNodeProps` & [`RouterViewProps`](interfaces/RouterViewProps.md) ; `$slots`: \{ `default?`: (`__namedParameters`: \{ `Component`: `VNode`\<`RendererNode`, `RendererElement`, \{ `[key: string]`: `any`;  }\> ; `route`: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)  }) => `VNode`\<`RendererNode`, `RendererElement`, \{ `[key: string]`: `any`;  }\>[]  }  }
 
 #### Type declaration
 
-• **new RouterView**()
+• **new RouterView**(): `Object`
 
 Component to display the current route the user is at.
+
+##### Returns
+
+`Object`
+
+| Name | Type |
+| :------ | :------ |
+| `$props` | `AllowedComponentProps` & `ComponentCustomProps` & `VNodeProps` & [`RouterViewProps`](interfaces/RouterViewProps.md) |
+| `$slots` | \{ `default?`: (`__namedParameters`: \{ `Component`: `VNode`\<`RendererNode`, `RendererElement`, \{ `[key: string]`: `any`;  }\> ; `route`: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)  }) => `VNode`\<`RendererNode`, `RendererElement`, \{ `[key: string]`: `any`;  }\>[]  } |
+| `$slots.default?` | (`__namedParameters`: \{ `Component`: `VNode`\<`RendererNode`, `RendererElement`, \{ `[key: string]`: `any`;  }\> ; `route`: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)  }) => `VNode`\<`RendererNode`, `RendererElement`, \{ `[key: string]`: `any`;  }\>[] |
 
 ___
 
@@ -308,7 +318,7 @@ ___
 
 ### loadRouteLocation
 
-▸ **loadRouteLocation**(`route`): `Promise`<[`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)\>
+▸ **loadRouteLocation**(`route`): `Promise`\<[`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)\>
 
 Ensures a route is loaded, so it can be passed as o prop to `<RouterView>`.
 
@@ -320,7 +330,7 @@ Ensures a route is loaded, so it can be passed as o prop to `<RouterView>`.
 
 #### Returns
 
-`Promise`<[`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)\>
+`Promise`\<[`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)\>
 
 ___
 
@@ -372,7 +382,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `props` | `VueUseOptions`<`RouterLinkOptions`\> |
+| `props` | `VueUseOptions`\<`RouterLinkOptions`\> |
 
 #### Returns
 
@@ -380,11 +390,11 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `href` | `ComputedRef`<`string`\> |
-| `isActive` | `ComputedRef`<`boolean`\> |
-| `isExactActive` | `ComputedRef`<`boolean`\> |
-| `navigate` | (`e`: `MouseEvent`) => `Promise`<`void` \| [`NavigationFailure`](interfaces/NavigationFailure.md)\> |
-| `route` | `ComputedRef`<[`RouteLocation`](interfaces/RouteLocation.md) & { `href`: `string`  }\> |
+| `href` | `ComputedRef`\<`string`\> |
+| `isActive` | `ComputedRef`\<`boolean`\> |
+| `isExactActive` | `ComputedRef`\<`boolean`\> |
+| `navigate` | (`e`: `MouseEvent`) => `Promise`\<`void` \| [`NavigationFailure`](interfaces/NavigationFailure.md)\> |
+| `route` | `ComputedRef`\<[`RouteLocation`](interfaces/RouteLocation.md) & \{ `href`: `string`  }\> |
 
 ___
 

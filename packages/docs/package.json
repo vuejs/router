@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "docs": "vitepress dev .",
-    "docs:api": "node run-typedoc.js",
+    "docs:api": "node run-typedoc.mjs",
     "docs:build": "vitepress build ."
   },
   "dependencies": {

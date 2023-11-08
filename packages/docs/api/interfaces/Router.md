@@ -12,7 +12,7 @@ Router instance.
 
 ### currentRoute
 
-• `Readonly` **currentRoute**: `Ref`<[`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md)\>
+• `Readonly` **currentRoute**: `Ref`\<[`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md)\>
 
 Current [RouteLocationNormalized](RouteLocationNormalized.md)
 
@@ -159,7 +159,7 @@ function that removes the registered guard.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> | navigation guard to add |
+| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> | navigation guard to add |
 
 #### Returns
 
@@ -189,7 +189,7 @@ registered guard.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> | navigation guard to add |
+| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> | navigation guard to add |
 
 #### Returns
 
@@ -292,7 +292,7 @@ ___
 
 ### isReady
 
-▸ **isReady**(): `Promise`<`void`\>
+▸ **isReady**(): `Promise`\<`void`\>
 
 Returns a Promise that resolves when the router has completed the initial
 navigation, which means it has resolved all async enter hooks and async
@@ -306,7 +306,7 @@ picks it up from the URL.
 
 #### Returns
 
-`Promise`<`void`\>
+`Promise`\<`void`\>
 
 ___
 
@@ -346,7 +346,7 @@ ___
 
 ### push
 
-▸ **push**(`to`): `Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
+▸ **push**(`to`): `Promise`\<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
 Programmatically navigate to a new URL by pushing an entry in the history
 stack.
@@ -359,7 +359,7 @@ stack.
 
 #### Returns
 
-`Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
+`Promise`\<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
 ___
 
@@ -383,7 +383,7 @@ ___
 
 ### replace
 
-▸ **replace**(`to`): `Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
+▸ **replace**(`to`): `Promise`\<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
 Programmatically navigate to a new URL by replacing the current entry in
 the history stack.
@@ -396,13 +396,13 @@ the history stack.
 
 #### Returns
 
-`Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
+`Promise`\<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
 ___
 
 ### resolve
 
-▸ **resolve**(`to`, `currentLocation?`): [`RouteLocation`](RouteLocation.md) & { `href`: `string`  }
+▸ **resolve**(`to`, `currentLocation?`): [`RouteLocation`](RouteLocation.md) & \{ `href`: `string`  }
 
 Returns the [normalized version](RouteLocation.md) of a
 [route location](../index.md#RouteLocationRaw). Also includes an `href` property
@@ -418,4 +418,4 @@ that includes any existing `base`. By default, the `currentLocation` used is
 
 #### Returns
 
-[`RouteLocation`](RouteLocation.md) & { `href`: `string`  }
+[`RouteLocation`](RouteLocation.md) & \{ `href`: `string`  }

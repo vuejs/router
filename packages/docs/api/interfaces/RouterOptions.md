@@ -80,7 +80,7 @@ ___
 ▸ (`search`): [`LocationQuery`](../index.md#LocationQuery)
 
 Custom implementation to parse a query. See its counterpart,
-[stringifyQuery](RouterOptions.md#stringifyQuery).
+[RouterOptions.stringifyQuery](RouterOptions.md#stringifyQuery).
 
 ##### Parameters
 

@@ -1,9 +1,8 @@
 # Getting Started
 
 <VueSchoolLink
-  href="https://vueschool.io/courses/vue-router-4-for-everyone"
-  title="Learn how to build powerful Single Page Applications with the Vue Router on Vue School"
->Watch a Free Vue Router Video Course</VueSchoolLink>
+href="https://vueschool.io/courses/vue-router-4-for-everyone"
+title="Learn how to build powerful Single Page Applications with the Vue Router on Vue School">Watch a Free Vue Router Video Course</VueSchoolLink>
 
 Creating a Single-page Application with Vue + Vue Router feels natural: with Vue.js, we are already composing our application with components. When adding Vue Router to the mix, all we need to do is map our components to the routes and let Vue Router know where to render them. Here's a basic example:
 
@@ -97,6 +96,6 @@ export default {
 }
 ```
 
-To access the router or the route inside the `setup` function, call the `useRouter` or `useRoute` functions. We will learn more about this in [the Composition API](./advanced/composition-api.md#accessing-the-router-and-current-route-inside-setup)
+To access the router or the route inside the `setup` function, call the `useRouter` or `useRoute` functions. We will learn more about this in [the Composition API](./advanced/composition-api.md#Accessing-the-Router-and-current-Route-inside-setup)
 
 Throughout the docs, we will often use the `router` instance. Keep in mind that `this.$router` is exactly the same as directly using the `router` instance created through `createRouter`. The reason we use `this.$router` is because we don't want to import the router in every single component that needs to manipulate routing.

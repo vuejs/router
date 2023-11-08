@@ -25,13 +25,13 @@ Global before guards are called in creation order, whenever a navigation is trig
 
 Every guard function receives two arguments:
 
-- **`to`**: the target route location [in a normalized format](../../api/#routelocationnormalized) being navigated to.
-- **`from`**: the current route location [in a normalized format](../../api/#routelocationnormalized) being navigated away from.
+- **`to`**: the target route location [in a normalized format](../../api/interfaces/RouteLocationNormalized.md) being navigated to.
+- **`from`**: the current route location [in a normalized format](../../api/interfaces/RouteLocationNormalized.md) being navigated away from.
 
 And can optionally return any of the following values:
 
 - `false`: cancel the current navigation. If the browser URL was changed (either manually by the user or via back button), it will be reset to that of the `from` route.
-- A [Route Location](../../api/#routelocationraw): Redirect to a different location by passing a route location as if you were calling [`router.push()`](../../api/#push), which allows you to pass options like `replace: true` or `name: 'home'`. The current navigation is dropped and a new one is created with the same `from`.
+- A [Route Location](../../api/#RouteLocationRaw): Redirect to a different location by passing a route location as if you were calling `router.push()`, which allows you to pass options like `replace: true` or `name: 'home'`. The current navigation is dropped and a new one is created with the same `from`.
 
   ```js
   router.beforeEach(async (to, from) => {
@@ -47,7 +47,7 @@ And can optionally return any of the following values:
   })
   ```
 
-It's also possible to throw an `Error` if an unexpected situation was met. This will also cancel the navigation and call any callback registered via [`router.onError()`](../../api/#onerror).
+It's also possible to throw an `Error` if an unexpected situation was met. This will also cancel the navigation and call any callback registered via [`router.onError()`](../../api/interfaces/Router.md#onError).
 
 If nothing, `undefined` or `true` is returned, **the navigation is validated**, and the next navigation guard is called.
 
@@ -197,7 +197,7 @@ const routes = [
 ]
 ```
 
-Note it is possible to achieve a similar behavior by using [route meta fields](./meta.md) and [global navigation guards](#global-before-guards).
+Note it is possible to achieve a similar behavior by using [route meta fields](./meta.md) and global navigation guards.
 
 ## In-Component Guards
 

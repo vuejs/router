@@ -153,7 +153,7 @@ ___
 
 ▸ **replace**(`to`, `data?`): `void`
 
-Same as [push](RouterHistory.md#push) but performs a `history.replaceState`
+Same as [RouterHistory.push](RouterHistory.md#push) but performs a `history.replaceState`
 instead of `history.pushState`
 
 #### Parameters

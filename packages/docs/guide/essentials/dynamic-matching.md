@@ -36,7 +36,7 @@ You can have multiple _params_ in the same route, and they will map to correspon
 | /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`                |
 | /users/:username/posts/:postId | /users/eduardo/posts/123 | `{ username: 'eduardo', postId: '123' }` |
 
-In addition to `$route.params`, the `$route` object also exposes other useful information such as `$route.query` (if there is a query in the URL), `$route.hash`, etc. You can check out the full details in the [API Reference](../../api/#routelocationnormalized).
+In addition to `$route.params`, the `$route` object also exposes other useful information such as `$route.query` (if there is a query in the URL), `$route.hash`, etc. You can check out the full details in the [API Reference](../../api/interfaces/RouteLocationNormalized.md).
 
 A working demo of this example can be found [here](https://codesandbox.io/s/route-params-vue-router-examples-mlb14?from-embed&initialpath=%2Fusers%2Feduardo%2Fposts%2F1).
 
@@ -116,7 +116,7 @@ this.$router.push({
 })
 ```
 
-See more in the [repeated params](./route-matching-syntax.md#repeatable-params) section.
+See more in the [repeated params](./route-matching-syntax.md#Repeatable-params) section.
 
 If you are using [History mode](./history-mode.md), make sure to follow the instructions to correctly configure your server as well.
 

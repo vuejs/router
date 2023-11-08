@@ -32,7 +32,7 @@ ___
 
 ### beforeEnter
 
-• `Optional` **beforeEnter**: [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\>[]
+• `Optional` **beforeEnter**: [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\>[]
 
 Before Enter guard specific to this record. Note `beforeEnter` has no
 effect if the record has a `redirect` property.
@@ -63,7 +63,7 @@ ___
 
 ### components
 
-• `Optional` **components**: ``null`` \| `Record`<`string`, `RawRouteComponent`\>
+• `Optional` **components**: ``null`` \| `Record`\<`string`, `RawRouteComponent`\>
 
 Components to display when the URL matches this route. Allow using named views.
 
@@ -130,7 +130,7 @@ ___
 
 ### props
 
-• `Optional` **props**: `boolean` \| `Record`<`string`, `_RouteRecordProps`\>
+• `Optional` **props**: `boolean` \| `Record`\<`string`, `_RouteRecordProps`\>
 
 Allow passing down params as props to the component rendered by
 `router-view`. Should be an object with the same keys as `components` or a

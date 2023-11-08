@@ -12,7 +12,7 @@ Type of the `scrollBehavior` option that can be passed to `createRouter`.
 
 ### RouterScrollBehavior
 
-▸ **RouterScrollBehavior**(`to`, `from`, `savedPosition`): `Awaitable`<``false`` \| `void` \| `ScrollPosition`\>
+▸ **RouterScrollBehavior**(`to`, `from`, `savedPosition`): `Awaitable`\<``false`` \| `void` \| `ScrollPosition`\>
 
 #### Parameters
 
@@ -24,4 +24,4 @@ Type of the `scrollBehavior` option that can be passed to `createRouter`.
 
 #### Returns
 
-`Awaitable`<``false`` \| `void` \| `ScrollPosition`\>
+`Awaitable`\<``false`` \| `void` \| `ScrollPosition`\>

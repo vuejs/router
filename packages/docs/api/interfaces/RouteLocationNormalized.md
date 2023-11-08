@@ -7,7 +7,7 @@ editLink: false
 # Interface: RouteLocationNormalized
 
 Similar to [RouteLocation](RouteLocation.md) but its
-[matched](RouteLocationNormalized.md#matched) cannot contain redirect records
+[RouteLocationNormalized.matched](RouteLocationNormalized.md#matched) cannot contain redirect records
 
 ## Hierarchy
 

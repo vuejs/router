@@ -58,7 +58,7 @@ It is also possible to determine the transition to use dynamically based on the 
 </router-view>
 ```
 
-We can add an [after navigation hook](./navigation-guards.md#global-after-hooks) to dynamically add information to the `meta` field based on the depth of the route
+We can add an [after navigation hook](./navigation-guards.md#Global-After-Hooks) to dynamically add information to the `meta` field based on the depth of the route
 
 ```js
 router.afterEach((to, from) => {

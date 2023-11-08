@@ -13,7 +13,7 @@ Guards](/guide/advanced/navigation-guards.md).
 
 ### NavigationGuard
 
-▸ **NavigationGuard**(`to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
+▸ **NavigationGuard**(`to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>
 
 #### Parameters
 
@@ -25,4 +25,4 @@ Guards](/guide/advanced/navigation-guards.md).
 
 #### Returns
 
-`NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
+`NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>

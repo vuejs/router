@@ -4,7 +4,7 @@ editLink: false
 
 [API Documentation](../index.md) / NavigationGuardWithThis
 
-# Interface: NavigationGuardWithThis<T\>
+# Interface: NavigationGuardWithThis\<T\>
 
 Navigation guard. See [Navigation
 Guards](/guide/advanced/navigation-guards.md).
@@ -19,7 +19,7 @@ Guards](/guide/advanced/navigation-guards.md).
 
 ### NavigationGuardWithThis
 
-▸ **NavigationGuardWithThis**(`this`, `to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
+▸ **NavigationGuardWithThis**(`this`, `to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>
 
 #### Parameters
 
@@ -32,4 +32,4 @@ Guards](/guide/advanced/navigation-guards.md).
 
 #### Returns
 
-`NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
+`NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>

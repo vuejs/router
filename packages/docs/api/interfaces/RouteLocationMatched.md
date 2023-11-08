@@ -31,7 +31,7 @@ ___
 
 ### beforeEnter
 
-• **beforeEnter**: `undefined` \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\>[]
+• **beforeEnter**: `undefined` \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\>[]
 
 Registered beforeEnter guards
 
@@ -55,7 +55,7 @@ ___
 
 ### components
 
-• **components**: `undefined` \| ``null`` \| `Record`<`string`, [`RouteComponent`](../index.md#RouteComponent)\>
+• **components**: `undefined` \| ``null`` \| `Record`\<`string`, [`RouteComponent`](../index.md#RouteComponent)\>
 
 Components to display when the URL matches this route. Allow using named views.
 
@@ -67,7 +67,7 @@ ___
 
 ### instances
 
-• **instances**: `Record`<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`\>
+• **instances**: `Record`\<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`\>
 
 Mounted route component instances
 Having the instances on the record mean beforeRouteUpdate and
@@ -122,7 +122,7 @@ ___
 
 ### props
 
-• **props**: `Record`<`string`, `_RouteRecordProps`\>
+• **props**: `Record`\<`string`, `_RouteRecordProps`\>
 
 Allow passing down params as props to the component rendered by
 `router-view`. Should be an object with the same keys as `components` or a
