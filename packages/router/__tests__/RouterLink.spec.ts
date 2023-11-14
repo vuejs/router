@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { RouterLink, RouterLinkProps } from '../src/RouterLink'
+import { RouterLink } from '../src/RouterLink'
 import {
   START_LOCATION_NORMALIZED,
   RouteQueryAndHash,
@@ -15,7 +15,6 @@ import { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/injectionSymbols'
 import { tick } from './utils'
 import { mount } from '@vue/test-utils'
-import { ExtractComponentOptions } from 'vue'
 
 const records = {
   home: {} as RouteRecordNormalized,
