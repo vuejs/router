@@ -15,6 +15,7 @@ import { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/injectionSymbols'
 import { tick } from './utils'
 import { mount } from '@vue/test-utils'
+import { ExtractComponentOptions } from 'vue'
 
 const records = {
   home: {} as RouteRecordNormalized,
@@ -919,15 +920,13 @@ describe('RouterLink', () => {
         components: { RouterLink },
         name: 'AppLink',
 
-        // @ts-expect-error
         props: {
-          ...((RouterLink as any).props as RouterLinkProps),
+          ...RouterLink.props,
           inactiveClass: String as PropType<string>,
         },
 
         computed: {
           isExternalLink(): boolean {
-            // @ts-expect-error
             return typeof this.to === 'string' && this.to.startsWith('http')
           },
         },
@@ -951,7 +950,7 @@ describe('RouterLink', () => {
         }
         router.resolve.mockReturnValueOnce(resolvedLocation)
 
-        const wrapper = await mount(AppLink as any, {
+        const wrapper = await mount(AppLink, {
           propsData,
           global: {
             provide: {

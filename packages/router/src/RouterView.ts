@@ -10,12 +10,11 @@ import {
   VNodeProps,
   getCurrentInstance,
   computed,
-  AllowedComponentProps,
-  ComponentCustomProps,
   watch,
   Slot,
   VNode,
   Component,
+  SlotsType,
 } from 'vue'
 import {
   RouteLocationNormalized,
@@ -53,6 +52,16 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     },
     route: Object as PropType<RouteLocationNormalizedLoaded>,
   },
+
+  slots: {} as SlotsType<{
+    default?: ({
+      Component,
+      route,
+    }: {
+      Component: VNode
+      route: RouteLocationNormalizedLoaded
+    }) => any
+  }>,
 
   // Better compat for @vue/compat users
   // https://github.com/vuejs/router/issues/1315
@@ -217,24 +226,7 @@ function normalizeSlot(slot: Slot | undefined, data: any) {
 /**
  * Component to display the current route the user is at.
  */
-export const RouterView = RouterViewImpl as unknown as {
-  new (): {
-    $props: AllowedComponentProps &
-      ComponentCustomProps &
-      VNodeProps &
-      RouterViewProps
-
-    $slots: {
-      default?: ({
-        Component,
-        route,
-      }: {
-        Component: VNode
-        route: RouteLocationNormalizedLoaded
-      }) => VNode[]
-    }
-  }
-}
+export const RouterView = RouterViewImpl
 
 // warn against deprecated usage with <transition> & <keep-alive>
 // due to functional component being no longer eager in Vue 3
