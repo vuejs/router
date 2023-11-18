@@ -89,7 +89,7 @@ You can also pass any props directly via `<RouterView>`:
     :is="Component"
     view-prop="value"
    />
-</RouterView
+</RouterView>
 ```
 
 ::: warning
