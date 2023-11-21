@@ -69,7 +69,7 @@ You can detect global navigation failures globally by using the [`router.afterEa
 ```ts
 router.afterEach((to, from, failure) => {
   if (failure) {
-    sendToAnalytics(to, from failure)
+    sendToAnalytics(to, from, failure)
   }
 })
 ```
