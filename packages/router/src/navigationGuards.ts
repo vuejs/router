@@ -231,7 +231,8 @@ export function extractComponentsGuards(
   matched: RouteRecordNormalized[],
   guardType: GuardType,
   to: RouteLocationNormalized,
-  from: RouteLocationNormalizedLoaded
+  from: RouteLocationNormalizedLoaded,
+  runWithContext: <T>(fn: () => T) => T = fn => fn()
 ) {
   const guards: Array<() => Promise<void>> = []
 
@@ -292,7 +293,12 @@ export function extractComponentsGuards(
         const options: ComponentOptions =
           (rawComponent as any).__vccOpts || rawComponent
         const guard = options[guardType]
-        guard && guards.push(guardToPromiseFn(guard, to, from, record, name))
+        guard &&
+          guards.push(
+            runWithContext(() =>
+              guardToPromiseFn(guard, to, from, record, name)
+            )
+          )
       } else {
         // start requesting the chunk already
         let componentPromise: Promise<
