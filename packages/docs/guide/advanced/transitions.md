@@ -5,7 +5,7 @@
   title="Learn about route transitions"
 />
 
-In order to use transitions on your route components and animate navigations, you need to use the [`<RouterView>` slot](/guide/advanced/router-view-slot):
+In order to use transitions on your route components and animate navigations, you need to use the [`<RouterView>` slot](./router-view-slot):
 
 ```html
 <router-view v-slot="{ Component }">
