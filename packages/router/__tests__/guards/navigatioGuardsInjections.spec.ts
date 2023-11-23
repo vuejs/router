@@ -5,7 +5,7 @@ import { createDom, newRouter as createRouter } from '../utils'
 import { mount } from '@vue/test-utils'
 import { inject } from 'vue'
 import { mockWarn } from 'jest-mock-warn'
-import type { Router } from '../../src'
+import { type Router } from '../../src'
 
 describe('inject() within navigation guards', () => {
   mockWarn()
