@@ -246,7 +246,7 @@ beforeRouteLeave (to, from) {
 
 ### 使用组合 API
 
-如果你正在使用[组合 API 和 `setup` 函数](https://v3.vuejs.org/guide/composition-api-setup.html#setup)来编写组件，你可以通过 `onBeforeRouteUpdate` 和 `onBeforeRouteLeave` 分别添加 update 和 leave 守卫。 请参考[组合 API 部分](./composition-api.md#导航守卫)以获得更多细节。
+如果你正在使用[组合 API 和 `setup` 函数](https://cn.vuejs.org/api/composition-api-setup.html)来编写组件，你可以通过 `onBeforeRouteUpdate` 和 `onBeforeRouteLeave` 分别添加 update 和 leave 守卫。 请参考[组合 API 部分](./composition-api.md#导航守卫)以获得更多细节。
 
 ## 完整的导航解析流程
 

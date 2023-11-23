@@ -5,7 +5,7 @@
   title="Learn how to build powerful Single Page Applications with the Vue Router on Vue School"
 />
 
-Vue Router 是 [Vue.js](https://vuejs.org) 的官方路由。它与 Vue.js 核心深度集成，让用 Vue.js 构建单页应用变得轻而易举。功能包括：
+Vue Router 是 [Vue.js](https://cn.vuejs.org/) 的官方路由。它与 Vue.js 核心深度集成，让用 Vue.js 构建单页应用变得轻而易举。功能包括：
 
 - 嵌套路由映射
 - 动态路由选择

@@ -33,7 +33,7 @@ const UserDetails = () =>
 一般来说，对所有的路由**都使用动态导入**是个好主意。
 
 ::: tip 注意
-**不要**在路由中使用[异步组件](https://v3.vuejs.org/guide/component-dynamic-async.html#async-components)。异步组件仍然可以在路由组件中使用，但路由组件本身就是动态导入的。
+**不要**在路由中使用[异步组件](https://cn.vuejs.org/guide/components/async.html)。异步组件仍然可以在路由组件中使用，但路由组件本身就是动态导入的。
 :::
 
 如果你使用的是 webpack 之类的打包器，它将自动从[代码分割](https://webpack.js.org/guides/code-splitting/)中受益。

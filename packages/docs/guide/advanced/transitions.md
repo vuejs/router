@@ -15,7 +15,7 @@ In order to use transitions on your route components and animate navigations, yo
 </router-view>
 ```
 
-[All transition APIs](https://v3.vuejs.org/guide/transitions-enterleave.html) work the same here.
+[All transition APIs](https://vuejs.org/guide/built-ins/transition.html) work the same here.
 
 ## Per-Route Transition
 
@@ -70,7 +70,7 @@ router.afterEach((to, from) => {
 
 ## Forcing a transition between reused views
 
-Vue might automatically reuse components that look alike, avoiding any transition. Fortunately, it is possible [to add a `key` attribute](https://v3.vuejs.org/api/special-attributes.html#key) to force transitions. This also allows you to trigger transitions while staying on the same route with different params:
+Vue might automatically reuse components that look alike, avoiding any transition. Fortunately, it is possible [to add a `key` attribute](https://vuejs.org/api/built-in-special-attributes.html#key) to force transitions. This also allows you to trigger transitions while staying on the same route with different params:
 
 ```vue
 <router-view v-slot="{ Component, route }">

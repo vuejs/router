@@ -264,7 +264,7 @@ beforeRouteLeave (to, from) {
 
 ### Using the composition API
 
-If you are writing your component using the [composition API and a `setup` function](https://v3.vuejs.org/guide/composition-api-setup.html#setup), you can add update and leave guards through `onBeforeRouteUpdate` and `onBeforeRouteLeave` respectively. Please refer to the [Composition API section](./composition-api.md#navigation-guards) for more details.
+If you are writing your component using the [composition API and a `setup` function](https://vuejs.org/api/composition-api-setup.html), you can add update and leave guards through `onBeforeRouteUpdate` and `onBeforeRouteLeave` respectively. Please refer to the [Composition API section](./composition-api.md#navigation-guards) for more details.
 
 ## The Full Navigation Resolution Flow
 
