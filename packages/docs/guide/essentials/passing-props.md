@@ -81,7 +81,7 @@ Try to keep the `props` function stateless, as it's only evaluated on route chan
 
 ## Via RouterView
 
-You can also pass any props directly via `<RouterView>`:
+You can also pass any props via the [`<RouterView>` slot](../advanced/router-view-slot):
 
 ```vue-html
 <RouterView v-slot="{ Component }">

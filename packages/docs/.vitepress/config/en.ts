@@ -135,6 +135,10 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/guide/advanced/composition-api.html',
             },
             {
+              text: 'RouterView slot',
+              link: '/guide/advanced/router-view-slot.html',
+            },
+            {
               text: 'Transitions',
               link: '/guide/advanced/transitions.html',
             },
