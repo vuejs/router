@@ -7,7 +7,7 @@
 
 In order to use transitions on your route components and animate navigations, you need to use the [`<RouterView>` slot](./router-view-slot):
 
-```html
+```vue-html
 <router-view v-slot="{ Component }">
   <transition name="fade">
     <component :is="Component" />
@@ -36,7 +36,7 @@ const routes = [
 ]
 ```
 
-```html
+```vue-html
 <router-view v-slot="{ Component, route }">
   <!-- Use any custom transition and  to `fade` -->
   <transition :name="route.meta.transition || 'fade'">
@@ -49,7 +49,7 @@ const routes = [
 
 It is also possible to determine the transition to use dynamically based on the relationship between the target route and current route. Using a very similar snippet to the one just before:
 
-```html
+```vue-html
 <!-- use a dynamic transition name -->
 <router-view v-slot="{ Component, route }">
   <transition :name="route.meta.transition">
@@ -72,7 +72,7 @@ router.afterEach((to, from) => {
 
 Vue might automatically reuse components that look alike, avoiding any transition. Fortunately, it is possible [to add a `key` attribute](https://vuejs.org/api/built-in-special-attributes.html#key) to force transitions. This also allows you to trigger transitions while staying on the same route with different params:
 
-```vue
+```vue-html
 <router-view v-slot="{ Component, route }">
   <transition name="fade">
     <component :is="Component" :key="route.path" />

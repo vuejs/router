@@ -24,7 +24,7 @@ const routes = [
 
 To link to a named route, you can pass an object to the `router-link` component's `to` prop:
 
-```html
+```vue-html
 <router-link :to="{ name: 'user', params: { username: 'erina' }}">
   User
 </router-link>
