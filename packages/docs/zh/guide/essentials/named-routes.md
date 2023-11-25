@@ -24,7 +24,7 @@ const routes = [
 
 要链接到一个命名的路由，可以向 `router-link` 组件的 `to` 属性传递一个对象：
 
-```html
+```vue-html
 <router-link :to="{ name: 'user', params: { username: 'erina' }}">
   User
 </router-link>

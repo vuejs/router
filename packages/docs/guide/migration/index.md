@@ -154,7 +154,7 @@ The object returned in `scrollBehavior` is now similar to [`ScrollToOptions`](ht
 
 `transition` and `keep-alive` must now be used **inside** of `RouterView` via the `v-slot` API:
 
-```vue
+```vue-html
 <router-view v-slot="{ Component }">
   <transition>
     <keep-alive>
@@ -170,7 +170,7 @@ The object returned in `scrollBehavior` is now similar to [`ScrollToOptions`](ht
 
 The `append` prop has been removed from `<router-link>`. You can manually concatenate the value to an existing `path` instead:
 
-```html
+```vue-html
 replace
 <router-link to="child-route" append>to relative child</router-link>
 with
@@ -192,7 +192,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 Both `event`, and `tag` props have been removed from `<router-link>`. You can use the [`v-slot` API](/guide/advanced/composition-api#uselink) to fully customize `<router-link>`:
 
-```html
+```vue-html
 replace
 <router-link to="/about" tag="span" event="dblclick">About Us</router-link>
 with
@@ -276,7 +276,7 @@ You can also extend the TypeScript definition of the `Router` interface to add t
 
 Before you could directly pass a template to be rendered by a route components' `<slot>` by nesting it under a `<router-view>` component:
 
-```html
+```vue-html
 <router-view>
   <p>In Vue Router 3, I render inside the route component</p>
 </router-view>
@@ -284,7 +284,7 @@ Before you could directly pass a template to be rendered by a route components' 
 
 Because of the introduction of the `v-slot` api for `<router-view>`, you must pass it to the `<component>` using the `v-slot` API:
 
-```html
+```vue-html
 <router-view v-slot="{ Component }">
   <component :is="Component">
     <p>In Vue Router 3, I render inside the route component</p>

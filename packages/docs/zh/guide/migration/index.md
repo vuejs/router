@@ -141,7 +141,7 @@ try {
 
 `transition` 和 `keep-alive` 现在必须通过 `v-slot` API 在 `RouterView` **内部**使用：
 
-```vue
+```vue-html
 <router-view v-slot="{ Component }">
   <transition>
     <keep-alive>
@@ -157,7 +157,7 @@ try {
 
 `<router-link>` 中的 `append` 属性已被删除。你可以手动将值设置到现有的 `path` 中：
 
-```html
+```vue-html
 将
 <router-link to="child-route" append>to relative child</router-link>
 替换成
@@ -179,7 +179,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 `<router-link>` 中的 `event` 和 `tag` 属性都已被删除。你可以使用 [`v-slot` API](/zh/guide/advanced/composition-api#uselink) 来完全定制 `<router-link>`：
 
-```html
+```vue-html
 将
 <router-link to="/about" tag="span" event="dblclick">About Us</router-link>
 替换成
@@ -254,7 +254,7 @@ router.app = app
 
 之前你可以直接传递一个模板，通过嵌套在 `<router-view>` 组件下，由路由组件的 `<slot>` 来渲染：
 
-```html
+```vue-html
 <router-view>
   <p>In Vue Router 3, I render inside the route component</p>
 </router-view>
@@ -262,7 +262,7 @@ router.app = app
 
 由于 `<router-view>` 引入了 `v-slot` API，你必须使用 `v-slot` API 将其传递给 `<component>`：
 
-```html
+```vue-html
 <router-view v-slot="{ Component }">
   <component :is="Component">
     <p>In Vue Router 3, I render inside the route component</p>
