@@ -32,8 +32,8 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
 <p align="center">
     <a href="https://stormier.ninja" target="_blank" rel="noopener noreferrer">
     <picture>
-      <source srcset="https://avatars.githubusercontent.com/u/2486424?u=7b0c73ae5d090ce53bf59473094e9606fe082c59&v=4" media="(prefers-color-scheme: dark)" height="26px" alt="Stanislas OrmiÃ¨res" />
-      <img src="https://avatars.githubusercontent.com/u/2486424?u=7b0c73ae5d090ce53bf59473094e9606fe082c59&v=4" height="26px" alt="Stanislas OrmiÃ¨res" />
+      <source srcset="https://avatars.githubusercontent.com/u/2486424?u=7b0c73ae5d090ce53bf59473094e9606fe082c59&v=4" media="(prefers-color-scheme: dark)" height="26px" alt="Stanislas Ormières" />
+      <img src="https://avatars.githubusercontent.com/u/2486424?u=7b0c73ae5d090ce53bf59473094e9606fe082c59&v=4" height="26px" alt="Stanislas Ormières" />
     </picture>
   </a>
     <a href="https://www.vuejs.de" target="_blank" rel="noopener noreferrer">
@@ -42,10 +42,16 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
       <img src="https://avatars.githubusercontent.com/u/4183726?u=6b50a8ea16de29d2982f43c5640b1db9299ebcd1&v=4" height="26px" alt="Antony Konstantinidis" />
     </picture>
   </a>
-    <a href="https://nuxtlabs.com" target="_blank" rel="noopener noreferrer">
+    <a href="https://storyblok.com" target="_blank" rel="noopener noreferrer">
     <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/nuxt-dark.svg" media="(prefers-color-scheme: dark)" height="26px" alt="NuxtLabs" />
-      <img src="https://posva-sponsors.pages.dev/logos/nuxt-light.svg" height="26px" alt="NuxtLabs" />
+      <source srcset="https://posva-sponsors.pages.dev/logos/storyblok.png" media="(prefers-color-scheme: dark)" height="26px" alt="Storyblok" />
+      <img src="https://posva-sponsors.pages.dev/logos/storyblok.png" height="26px" alt="Storyblok" />
+    </picture>
+  </a>
+    <a href="https://ui.nuxt.com/pro" target="_blank" rel="noopener noreferrer">
+    <picture>
+      <source srcset="https://avatars.githubusercontent.com/u/81570812?v=4" media="(prefers-color-scheme: dark)" height="26px" alt="Nuxt UI Pro Templates" />
+      <img src="https://avatars.githubusercontent.com/u/81570812?v=4" height="26px" alt="Nuxt UI Pro Templates" />
     </picture>
   </a>
 </p>
