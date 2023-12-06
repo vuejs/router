@@ -13,7 +13,7 @@ Aside from using `<router-link>` to create anchor tags for declarative navigatio
 
 ## Navigate to a different location
 
-**Note: Inside of a Vue instance, you have access to the router instance as `$router`. You can therefore call `this.$router.push`.**
+**Note: The examples below refer to the router instance as `router`. Inside a component, you can access the router using the `$router` property, e.g. `this.$router.push(...)`. If you're using the Composition API, the router is accessible by calling [`useRouter()`](../advanced/composition-api).**
 
 To navigate to a different URL, use `router.push`. This method pushes a new entry into the history stack, so when the user clicks the browser back button they will be taken to the previous URL.
 
