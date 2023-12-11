@@ -29,7 +29,7 @@
     "enquirer": "^2.4.1",
     "execa": "^8.0.1",
     "globby": "^14.0.0",
-    "lint-staged": "^15.1.0",
+    "lint-staged": "^15.2.0",
     "minimist": "^1.2.8",
     "p-series": "^3.0.0",
     "prettier": "^2.8.8",
