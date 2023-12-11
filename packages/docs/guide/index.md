@@ -80,7 +80,7 @@ By calling `app.use(router)`, we are triggering the initial navigation and givin
 export default {
   computed: {
     username() {
-      // We will see what `params` is shortly
+      // We will see what `params` in shortly
       return this.$route.params.username
     },
   },
