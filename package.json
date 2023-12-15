@@ -13,6 +13,7 @@
     "size": "node scripts/check-size.mjs",
     "build": "pnpm run -r build",
     "build:dts": "pnpm run -r build:dts",
+    "docs": "pnpm run --filter ./packages/docs -r docs",
     "docs:api": "pnpm run --filter ./packages/docs -r docs:api",
     "docs:compare-to-translate": "pnpm run --filter ./packages/docs -r docs:compare-to-translate",
     "docs:translation-status": "pnpm run --filter ./packages/docs -r docs:translation-status",

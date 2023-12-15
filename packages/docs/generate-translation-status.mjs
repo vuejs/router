@@ -1,10 +1,10 @@
 // @ts-check
-import { writeFile, readFile } from 'fs/promises'
+import { writeFile } from 'fs/promises'
 import simpleGit from 'simple-git'
 
 // Add any translation here. For each there must be at least one commit log
-// like `docs(<locale>): sync to #<hash>`.
-// e.g. `docs(zh): sync to #1a3a28f`
+// like `docs(<locale>): sync update to <hash>`.
+// e.g. `docs(zh): sync update to 1a3a28f`
 const locales = ['zh']
 
 // The number of commits to look back for locale checkpoints.
@@ -13,6 +13,12 @@ const MAX_LOG_COUNT = 100
 // The path to the translation status file.
 const STATUS_FILE_PATH = './.vitepress/translation-status.json'
 
+const usage = `
+Usage: pnpm run docs:translation-status [target-locale] [target-hash]
+  target-locale: The target locale to update.
+  target-hash: The target hash to update.
+If neither target-locale nor target-hash are not provided, all locales will be updated.`
+
 async function getCheckpointMap() {
   const checkpointMap = new Map()
   const git = simpleGit()
@@ -20,8 +26,7 @@ async function getCheckpointMap() {
   if (log && log.all) {
     let localesLeft = locales.length
     log.all.some(({ date, message }) => {
-      // be compatible with `docs(<locale>): sync update to #<hash>`
-      const matched = message.match(/^docs\((.+)\)\: sync (?:update )?to (\w+)/)
+      const matched = message.match(/^docs\((.+)\)\: sync update to (\w+)/)
       if (matched) {
         const locale = matched[1]
         const hash = matched[2]
@@ -43,14 +48,21 @@ async function getCheckpointMap() {
   return checkpointMap
 }
 
+async function getCommitDate(hash) {
+  const git = simpleGit()
+  const log = await git.log(['-n', '1', '--date=short', hash])
+  if (log && log.all && log.all.length) {
+    return new Date(log.all[0].date).toISOString().slice(0, 10)
+  }
+  return ''
+}
+
 async function updateStatusFile(checkpointMap) {
   if (!checkpointMap.size) {
     console.log('❌ No checkpoint found.')
     return
   }
-  const currentStatus = JSON.parse(
-    await readFile(STATUS_FILE_PATH, 'utf-8')
-  )
+  const currentStatus = {}
   checkpointMap.forEach((value, key) => {
     console.log(`✅ Updated ${key} to ${value.hash}`)
     currentStatus[key] = value
@@ -62,7 +74,29 @@ async function updateStatusFile(checkpointMap) {
 }
 
 async function main() {
-  const checkpointMap = await getCheckpointMap()
+  if (process.argv[2] === '--help' || process.argv[2] === '-h') {
+    console.log(usage)
+    return
+  }
+
+  const targetLocale = process.argv[2]
+  const targetHash = process.argv[3]
+  let checkpointMap
+
+  if (targetLocale && targetHash) {
+    const targetDate = await getCommitDate(targetHash)
+    if (targetDate === '') {
+      console.log(`❌ No commit found for ${targetHash}.`)
+      return
+    }
+    checkpointMap = new Map()
+    checkpointMap.set(targetLocale, {
+      hash: targetHash,
+      date: targetDate,
+    })
+  } else {
+    checkpointMap = await getCheckpointMap()
+  }
   await updateStatusFile(checkpointMap)
 }
 

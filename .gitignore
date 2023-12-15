@@ -17,3 +17,4 @@ local.log
 _selenium-server.log
 packages/*/LICENSE
 tracing_output
+packages/docs/.vitepress/translation-status.json

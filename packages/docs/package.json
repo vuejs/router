@@ -4,11 +4,11 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "docs": "vitepress dev .",
+    "docs": "pnpm run docs:translation-status && vitepress dev .",
     "docs:api": "node run-typedoc.mjs",
     "docs:compare-to-translate": "node compare-to-translate.mjs",
     "docs:translation-status": "node generate-translation-status.mjs",
-    "docs:build": "pnpm run translation-status && vitepress build .",
+    "docs:build": "pnpm run docs:translation-status && vitepress build .",
     "docs:preview": "vitepress preview ."
   },
   "dependencies": {

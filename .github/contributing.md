@@ -123,23 +123,21 @@ Consider the following two options in order to contribute to the translations:
 
 If you want to start translating the docs in a new language:
 
-1. Create the corresponding `<lang>` sub-folder for your translation.
-2. Modify the i18n config in `.vitepress` sub-folder.
-3. Translate the docs and run the doc site to self-test locally.
-4. Once you have done all above, create a pull request to our GitHub repo.
+1. Note down the **latest git commit hash** you are translating on as a _checkpoint_. **The checkpoint is important for the long-term maintenance since all the further translation sync-ups of each language would be based on their previous checkpoint.**
+2. Create the corresponding `<lang>` sub-folder for your translation.
+3. Modify the i18n config in `.vitepress` sub-folder.
+4. Add your language code into `locales` in `packages/docs/generate-translation-status.mjs`.
+5. Translate the docs and run the doc site to self-test locally.
+6. Once you have done all above, create a pull request to our GitHub repo. It's highly recommended to set the pull request title as **`docs(<lang>): sync update to <checkpoint-hash>`** e.g. `docs(zh): sync update to e008551`, which is easier for the maintainers to proceed.
+7. (Repo permission required) the maintainers will review and merge the pull request once it's approved. The merge should be ensured with a commit log as `docs(<lang>): sync update to <checkpoint-hash> (#<pr-id>)`, which is also the reason we recommend the pull request title format in step 6. After the merge request
 
-If you want to maintain a existing translation:
+If you want to maintain an existing translation:
 
-1. (Repo permission required) First of all, make sure there is a _checkpoint_ branch for the language. Usually it's named as `docs-sync-<lang>`. Notice that:
-   - This branch is always synced to the commit of the original docs that the latest translation of your language is corresponding to. Like `docs-sync-zh` is always to the commit of the original docs that the latest Chinese translation is corresponding to.
-   - Technically, this checkpoint branch should be only updated if the translation is synced to a nearer commit of the original docs. Usually the commit is the HEAD of the `main` branch at that moment.
-2. See what translation you need to do to sync up with the original docs. There are 2 popular ways:
-   - Git diff command: e.g. `git diff docs-sync-zh..main packages/docs # > debug.log`, or
-   - GitHub Compare page: e.g. https://github.com/vuejs/router/compare/docs-sync-zh...main (only see the changes in `packages/docs/*`)
-3. Create your own branch and start the translation update, following the diff or compare.
-4. Once you have done all above, create a pull request to our GitHub repo.
-   - It's highly recommended to commit with message like `docs(<lang>): sync update to <the-latest-commit>`. e.g. `docs(zh): sync update to e008551`.
-5. (Repo permission required) **VERY IMPORTANT**: after the pull request is merged, for the future batch of sync-up, do another merge from the latest commit at that moment to the checkpoint branch. e.g. merge commit `e008551` to branch `docs-sync-zh`.
+1. See what translation you need to do to sync up with the original docs. There are 2 popular ways:
+    1. Via the GitHub Compare page: https://github.com/vuejs/router/compare/ (only see the changes in `packages/docs/*`) from the checkpoint hash to `main` branch. You can find the checkpoint hash from the latest pull request.
+   2. Via a local command: `pnpm run docs:compare-to-translate <lang>`.
+2. Create your own branch and start the translation update, following the previous result.
+3. Same to step 6 and step 7 in starting a new language, once you have done all above, create a pull request with the same title format as **`docs(<lang>): sync update to <checkpoint-hash>`** and wait for the approval and merge by the maintainers.
 
 For more real examples, please check out [all the PRs with title "docs(zh): sync" after 2023-01-01](https://github.com/vuejs/router/pulls?q=is%3Apr+created%3A%3E2023-01-01+docs%28zh%29+sync).
 
@@ -147,10 +145,8 @@ For more real examples, please check out [all the PRs with title "docs(zh): sync
 
 You can also host the translation on your own. To create one, just simply fork our GitHub repo and change the content and site config in `packages/docs`. To long-term maintain it, we _highly recommend_ a similar way that we do above for our officially hosted translations:
 
-1. Ensure you create a _checkpoint branch_ (for example, a branch named sync). This branch should always align with the commit of the original documentation that corresponds to your most recent translation.
-2. Utilize the diff result between the latest official repository and your own by using the git diff command or the GitHub Compare page to guide your translation.
-3. Complete the translation process.
-4. Update the _checkpoint branch_ accordingly.
+- Ensure you maintain the _checkpoint_ properly.
+- Utilize the diff result between the latest official repository and your own checkpoint to guide your translation.
 
 <!-- TODO: add an example once we have got one -->
 
