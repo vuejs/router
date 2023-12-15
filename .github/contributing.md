@@ -117,40 +117,51 @@ Currently, all the docs can be found in `packages/docs`. It contains the English
 
 Besides that, the `.vitepress` sub-folder is used to put the config and theme, including the i18n information.
 
-Consider the following two options in order to contribute to the translations:
+Contributing to the English docs is the same as contributing to the source code. You can simply create a pull request to our GitHub repo. However, if you would like to contribute to the translations, there are 2 options and some extra steps to follow:
 
 ### Translate in a `<lang>` sub-folder and host it on our official repo
 
-If you want to start translating the docs in a new language:
+If you want to start translating the docs in a _new_ language:
 
 1. Create the corresponding `<lang>` sub-folder for your translation.
 2. Modify the i18n config in `.vitepress` sub-folder.
 3. Translate the docs and run the doc site to self-test locally.
-4. Once you have done all above, create a pull request to our GitHub repo.
+4. Create a checkpoint for your language by running `pnpm run docs:translation-status <lang> [<commit>]`. A checkpoint is the hash and date of the latest commit when you do the translation. The checkpoint information would be stored in the status file `packages/docs/.vitepress/translation-status.json`. _It's important for the long-term maintenance since all the further translation sync-ups would be based on their previous checkpoints._ Usually you can skip the commit argument because the default value is `main`.
+5. Commit all the changes and create a pull request to our GitHub repo.
 
-If you want to maintain a existing translation:
+We will have a paragraph right at the top of each translation page that shows the status of the translation. That way, users can easily figure out if the translation is up-to-date or lags behind the English version.
 
-1. (Repo permission required) First of all, make sure there is a _checkpoint_ branch for the language. Usually it's named as `docs-sync-<lang>`. Notice that:
-    - This branch is always synced to the commit of the original docs that the latest translation of your language is corresponding to. Like `docs-sync-zh` is always to the commit of the original docs that the latest Chinese translation is corresponding to.
-    - Technically, this checkpoint branch should be only updated if the translation is synced to a nearer commit of the original docs. Usually the commit is the HEAD of the `main` branch at that moment.
-2. See what translation you need to do to sync up with the original docs. There are 2 popular ways:
-	  - Git diff command: e.g. `git diff docs-sync-zh..main packages/docs # > debug.log`, or
-	  - GitHub Compare page: e.g. https://github.com/vuejs/router/compare/docs-sync-zh...main (only see the changes in `packages/docs/*`)
-3. Create your own branch and start the translation update, following the diff or compare.
-4. Once you have done all above, create a pull request to our GitHub repo.
-    - It's highly recommended to commit with message like `docs(<lang>): sync update to <the-latest-commit>`. e.g. `docs(zh): sync update to e008551`.
-5. (Repo permission required) **VERY IMPORTANT**: after the pull request is merged, for the future batch of sync-up, do another merge from the latest commit at that moment to the checkpoint branch. e.g. merge commit `e008551` to branch `docs-sync-zh`.
+Speaking of the up-to-date translation, we also need good long-term maintenance for every language. If you want to _update_ an existing translation:
 
-For more real examples, please check out [all the PRs with title "docs(zh): sync" after 2023-01-01](https://github.com/vuejs/router/pulls?q=is%3Apr+created%3A%3E2023-01-01+docs%28zh%29+sync).
+1. See what translation you need to sync up with the original docs. There are 2 popular ways:
+    1. Via the [GitHub Compare](https://github.com/vuejs/router/compare/) page: only see the changes in `packages/docs/*` from the checkpoint hash to `main` branch. You can find the checkpoint hash for your language via the translation status file `packages/docs/.vitepress/translation-status.json`. And the compare page can be directly opened with the hash as part of the URL e.g. https://github.com/vuejs/router/compare/e008551...main
+    2. Via a local command: `pnpm run docs:compare-to-translate <lang> [<commit>]`.
+2. Create your own branch and start the translation update, following the previous comparison.
+3. Create a checkpoint for your language by running `pnpm run docs:translation-status <lang> [<commit>]`.
+4. Commit all the changes and create a pull request to our GitHub repo.
+
+<!-- TODO: add an example once we have got one -->
 
 ### Self-host the translation
 
 You can also host the translation on your own. To create one, just simply fork our GitHub repo and change the content and site config in `packages/docs`. To long-term maintain it, we _highly recommend_ a similar way that we do above for our officially hosted translations:
 
-1. Ensure you create a _checkpoint branch_ (for example, a branch named sync). This branch should always align with the commit of the original documentation that corresponds to your most recent translation.
-2. Utilize the diff result between the latest official repository and your own by using the git diff command or the GitHub Compare page to guide your translation.
-3. Complete the translation process.
-4. Update the _checkpoint branch_ accordingly.
+- Ensure you maintain the _checkpoint_ properly. And also ensure the _translation status_ is well-displayed on the top of each translation page.
+- Utilize the diff result between the latest official repository and your own checkpoint to guide your translation.
+
+Tip: you can add the official repo as a remote to your forked repo, this way you can still run `pnpm run docs:translation-status <lang> [<commit>]` and `npm run docs:compare-to-translate <lang> [<commit>]` to get the checkpoint and diff result:
+
+```bash
+# prepare the upstream remote
+git remote add upstream git@github.com:vuejs/router.git
+git fetch upstream main
+
+# set the checkpoint
+pnpm run docs:translation-status <lang> upstream/main
+
+# get the diff result
+pnpm run docs:compare-to-translate <lang> upstream/main
+```
 
 <!-- TODO: add an example once we have got one -->
 
