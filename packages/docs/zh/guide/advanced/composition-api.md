@@ -77,7 +77,7 @@ export default {
 
     const userData = ref()
 
-    // 与 beforeRouteUpdate 相同，无法访问 `this`  在beforeRouteUpdate守卫中可以访问组件实例this，组件已经挂载好
+    // 与 beforeRouteUpdate 相同，无法访问 `this` 在 beforeRouteUpdate 守卫中可以访问组件实例this，组件已经挂载好
     onBeforeRouteUpdate(async (to, from) => {
       //仅当 id 更改时才获取用户，例如仅 query 或 hash 值已更改
       if (to.params.id !== from.params.id) {
