@@ -1,3 +1,28 @@
+<script lang="ts" setup>
+import { inject, computed, ref } from 'vue'
+import { useLink, useRoute } from 'vue-router'
+import AppLink from './AppLink.vue'
+import SimpleView from './SimpleView.vue'
+
+const route = useRoute()
+const state = inject('state')
+
+useLink({ to: '/' })
+useLink({ to: '/documents/hello' })
+useLink({ to: '/children' })
+
+const currentLocation = computed(() => {
+  const { matched, ...rest } = route
+  return rest
+})
+
+const nextUserLink = computed(
+  () => '/users/' + String((Number(route.params.id) || 0) + 1)
+)
+
+const simple = ref(false)
+</script>
+
 <template>
   <div>
     <pre>{{ currentLocation }}</pre>
@@ -37,6 +62,11 @@
       <input type="checkbox" v-model="state.cancelNextNavigation" /> Cancel Next
       Navigation
     </label>
+
+    <label>
+      <input type="checkbox" v-model="simple" /> Use Simple RouterView
+    </label>
+
     <ul>
       <li>
         <router-link to="/n/%E2%82%AC">/n/%E2%82%AC</router-link>
@@ -158,76 +188,18 @@
       <li>
         <router-link to="/p_1/absolute-a">/p_1/absolute-a</router-link>
       </li>
+      <li>
+        <RouterLink to="/rerender" v-slot="{ href }">{{ href }}</RouterLink>
+      </li>
+      <li>
+        <RouterLink to="/rerender/a" v-slot="{ href }">{{ href }}</RouterLink>
+      </li>
+      <li>
+        <RouterLink to="/rerender/b" v-slot="{ href }">{{ href }}</RouterLink>
+      </li>
     </ul>
     <button @click="toggleViewName">Toggle view</button>
-    <RouterView :name="viewName" v-slot="{ Component, route }">
-      <Transition
-        :name="route.meta.transition || 'fade'"
-        mode="out-in"
-        @before-enter="flushWaiter"
-        @before-leave="setupWaiter"
-      >
-        <!-- <KeepAlive> -->
-        <Suspense>
-          <template #default>
-            <component
-              :is="Component"
-              :key="route.name === 'repeat' ? route.path : route.meta.key"
-            />
-          </template>
-          <template #fallback> Loading... </template>
-        </Suspense>
-        <!-- </KeepAlive> -->
-      </Transition>
-    </RouterView>
+
+    <SimpleView :simple="simple"></SimpleView>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, inject, computed, ref } from 'vue'
-import { scrollWaiter } from './scrollWaiter'
-import { useLink, useRoute } from 'vue-router'
-import AppLink from './AppLink.vue'
-
-export default defineComponent({
-  name: 'App',
-  components: { AppLink },
-  setup() {
-    const route = useRoute()
-    const state = inject('state')
-    const viewName = ref('default')
-
-    useLink({ to: '/' })
-    useLink({ to: '/documents/hello' })
-    useLink({ to: '/children' })
-
-    const currentLocation = computed(() => {
-      const { matched, ...rest } = route
-      return rest
-    })
-
-    function flushWaiter() {
-      scrollWaiter.flush()
-    }
-    function setupWaiter() {
-      scrollWaiter.add()
-    }
-
-    const nextUserLink = computed(
-      () => '/users/' + String((Number(route.params.id) || 0) + 1)
-    )
-
-    return {
-      currentLocation,
-      nextUserLink,
-      state,
-      flushWaiter,
-      setupWaiter,
-      viewName,
-      toggleViewName() {
-        viewName.value = viewName.value === 'default' ? 'other' : 'default'
-      },
-    }
-  },
-})
-</script>
