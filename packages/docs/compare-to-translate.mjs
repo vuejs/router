@@ -1,33 +1,23 @@
 // @ts-check
+import { readFile } from 'fs/promises'
 import simpleGit from 'simple-git'
 
-// The number of commits to look back for locale checkpoints.
-const MAX_LOG_COUNT = 100
+// The path to the translation status file.
+const STATUS_FILE_PATH = './.vitepress/translation-status.json'
 
 const usage = `
-Usage: pnpm run docs:compare-to-translate <locale> [target-branch]
-  locale: The locale to compare.
-  target-branch: The target branch to compare. Default to 'main'.`
+Usage: pnpm run docs:compare-to-translate <locale> [<commit>]
+  locale: The target locale to compare.
+  commit: The target commit to compare. It could be a branch, a tag, or a hash. Default to 'main'.`
 
-async function getTargetHashByGit(targetLocale) {
-  const git = simpleGit()
-  const log = await git.log(['-n', MAX_LOG_COUNT.toString()])
-  let targetHash = ''
-  if (log && log.all) {
-    log.all.some(({ message }) => {
-      const matched = message.match(/^docs\((.+)\)\: sync update to (\w+)/)
-      if (matched) {
-        const locale = matched[1]
-        const hash = matched[2]
-        if (locale === targetLocale) {
-          targetHash = hash
-          return true
-        }
-      }
-      return false
-    })
+const getLocaleHash = async (lang) => {
+  try {
+    const content = await readFile(STATUS_FILE_PATH, 'utf8')
+    const data = JSON.parse(content)
+    return data[lang]?.hash
+  } catch (err) {
+    console.log('No previous status file. Will create a new one.')
   }
-  return targetHash
 }
 
 async function main() {
@@ -36,17 +26,19 @@ async function main() {
     return
   }
 
-  const targetLocale = process.argv[2]
-  const targetBranch = process.argv[3] || 'main'
+  const locale = process.argv[2]
+  const commit = process.argv[3] || 'main'
 
-  const targetHash = await getTargetHashByGit(targetLocale)
-  if (targetHash) {
-    console.log(`The last checkpoint of docs(${targetLocale}) is ${targetHash}.\n`)
+  const hash = await getLocaleHash(locale)
+  if (hash) {
+    console.log(`The last checkpoint of docs(${locale}) is ${hash}.\n`)
     const git = simpleGit()
-    const result = await git.diff([`${targetHash}..${targetBranch}`, '.'])
+    const result = await git.diff([`${hash}..${commit}`, '.'])
     console.log(result)
+    console.log(`\nAfter finishing the translation, you can run "pnpm run docs:translation-status ${locale} ${hash}" or "pnpm run docs:translation-status ${locale}${commit !== 'main' ? ' ' + commit : ''}" to update the translation status file.`)
   } else {
-    console.log(`No docs(${targetLocale}) checkpoint found.\n`)
+    console.log(`No docs(${locale}) checkpoint found.\n`)
+    console.log(usage)
   }
 }
 

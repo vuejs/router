@@ -1,103 +1,64 @@
 // @ts-check
-import { writeFile } from 'fs/promises'
+import { writeFile, readFile } from 'fs/promises'
 import simpleGit from 'simple-git'
-
-// Add any translation here. For each there must be at least one commit log
-// like `docs(<locale>): sync update to <hash>`.
-// e.g. `docs(zh): sync update to 1a3a28f`
-const locales = ['zh']
-
-// The number of commits to look back for locale checkpoints.
-const MAX_LOG_COUNT = 100
 
 // The path to the translation status file.
 const STATUS_FILE_PATH = './.vitepress/translation-status.json'
 
 const usage = `
-Usage: pnpm run docs:translation-status [target-locale] [target-hash]
-  target-locale: The target locale to update.
-  target-hash: The target hash to update.
-If neither target-locale nor target-hash are not provided, all locales will be updated.`
+Usage: pnpm run docs:translation-status <locale> [<commit>]
+  locale: The target locale to update.
+  commit: The target commit to update. It could be a branch, a tag, or a hash. Default to 'main'.`
 
-async function getCheckpointMap() {
-  const checkpointMap = new Map()
-  const git = simpleGit()
-  const log = await git.log(['-n', MAX_LOG_COUNT.toString(), '--date=short'])
-  if (log && log.all) {
-    let localesLeft = locales.length
-    log.all.some(({ date, message }) => {
-      const matched = message.match(/^docs\((.+)\)\: sync update to (\w+)/)
-      if (matched) {
-        const locale = matched[1]
-        const hash = matched[2]
-        if (!checkpointMap.has(locale)) {
-          checkpointMap.set(locale, {
-            hash,
-            // format: 'YYYY-MM-DD'
-            date: new Date(date).toISOString().slice(0, 10),
-          })
-          localesLeft--
-          if (localesLeft === 0) {
-            return true
-          }
-        }
-      }
-      return false
-    })
+const getCommitInfo = async (commit) => {
+  try {
+    const git = simpleGit()
+    const log = await git.log([commit, '-n', '1'])
+    const { hash, date } = log.latest
+    return { hash, date: new Date(date).toISOString().substring(0, 10) }
+  } catch (err) {
+    return { hash: '', date: '' }
   }
-  return checkpointMap
 }
 
-async function getCommitDate(hash) {
-  const git = simpleGit()
-  const log = await git.log(['-n', '1', '--date=short', hash])
-  if (log && log.all && log.all.length) {
-    return new Date(log.all[0].date).toISOString().slice(0, 10)
+const writeLangMap = async (lang, hash, date) => {
+  const data = {}
+  try {
+    const previousContent = await readFile(STATUS_FILE_PATH, 'utf8')
+    const previousJson = JSON.parse(previousContent)
+    Object.assign(data, previousJson)
   }
-  return ''
-}
-
-async function updateStatusFile(checkpointMap) {
-  if (!checkpointMap.size) {
-    console.log('❌ No checkpoint found.')
-    return
+  catch (err) {
+    console.log('No previous status file. Will create a new one.')
   }
-  const currentStatus = {}
-  checkpointMap.forEach((value, key) => {
-    console.log(`✅ Updated ${key} to ${value.hash}`)
-    currentStatus[key] = value
-  })
-  await writeFile(
-    STATUS_FILE_PATH,
-    JSON.stringify(currentStatus, null, 2) + '\n'
-  )
+  data[lang] = {
+    hash,
+    date,
+  }
+  await writeFile(STATUS_FILE_PATH, JSON.stringify(data, null, 2))
 }
 
 async function main() {
-  if (process.argv[2] === '--help' || process.argv[2] === '-h') {
+  if (
+    process.argv.length < 3 ||
+    process.argv[2] === '--help' ||
+    process.argv[2] === '-h'
+  ) {
     console.log(usage)
     return
   }
 
-  const targetLocale = process.argv[2]
-  const targetHash = process.argv[3]
-  let checkpointMap
+  const locale = process.argv[2]
+  const commit = process.argv[3] || 'main'
 
-  if (targetLocale && targetHash) {
-    const targetDate = await getCommitDate(targetHash)
-    if (targetDate === '') {
-      console.log(`❌ No commit found for ${targetHash}.`)
-      return
-    }
-    checkpointMap = new Map()
-    checkpointMap.set(targetLocale, {
-      hash: targetHash,
-      date: targetDate,
-    })
+  const { hash, date } = await getCommitInfo(commit)
+  if (!hash) {
+    console.log(`❌ No commit found for ${commit}.`)
+    return
   } else {
-    checkpointMap = await getCheckpointMap()
+    await writeLangMap(locale, hash, date)
+    console.log(`✅ Updated ${locale} to ${hash} (${date})`)
   }
-  await updateStatusFile(checkpointMap)
 }
 
 main()

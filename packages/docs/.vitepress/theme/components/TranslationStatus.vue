@@ -1,10 +1,10 @@
 <script lang="ts">
+const originalLang = 'root'
 const i18nLabels: {
   [lang: string]: string
 } = {
-  // An example of the English label:
-  // 'root': 'The translation is synced to the docs on ${date} of which the commit hash is ${hash}.',
-  zh: '该翻译已同步到了 ${date} 的版本，其对应的 commit hash 是 ${hash}。',
+  en: 'The translation is synced to the docs on ${date} of which the commit hash is <code>${hash}</code>.',
+  zh: '该翻译已同步到了 ${date} 的版本，其对应的 commit hash 是 <code>${hash}</code>。',
 }
 </script>
 
@@ -16,13 +16,13 @@ import status from '../../translation-status.json'
 const { site } = useData()
 const label = computed<string>(() => {
   const localeIndex = site.value.localeIndex
-  if (!localeIndex || !status[localeIndex] || !i18nLabels[localeIndex]) {
+  if (!localeIndex || localeIndex === originalLang || !status[localeIndex]) {
     return ''
   }
   const { date, hash } = status[localeIndex]
-  return i18nLabels[localeIndex]
+  return (i18nLabels[localeIndex] || i18nLabels.en)
     .replace('${date}', `<time>${date}</time>`)
-    .replace('${hash}', `<code>${hash}</code>`)
+    .replace('${hash}', `<code>${hash.substring(0, 7)}</code>`)
 })
 </script>
 
