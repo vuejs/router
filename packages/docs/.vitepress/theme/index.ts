@@ -3,6 +3,7 @@ import { Theme, useData } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import AsideSponsors from './components/AsideSponsors.vue'
 // import HomeSponsors from './components/HomeSponsors.vue'
+import TranslationStatus from './components/TranslationStatus.vue'
 import './styles/vars.css'
 import './styles/sponsors.css'
 import VueSchoolLink from './components/VueSchoolLink.vue'
@@ -14,6 +15,7 @@ const theme: Theme = {
     return h(DefaultTheme.Layout, null, {
       // 'home-features-after': () => h(HomeSponsors),
       'aside-ads-before': () => h(AsideSponsors),
+      'doc-before': () => h(TranslationStatus),
     })
   },
 

@@ -6,9 +6,12 @@
   "scripts": {
     "docs": "vitepress dev .",
     "docs:api": "node run-typedoc.mjs",
-    "docs:build": "vitepress build ."
+    "docs:translation-status": "node generate-translation-status.js",
+    "docs:build": "vitepress build .",
+    "docs:preview": "vitepress preview ."
   },
   "dependencies": {
+    "simple-git": "^3.18.0",
     "vitepress": "1.0.0-rc.31",
     "vue-router": "workspace:*"
   }
