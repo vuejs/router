@@ -6,8 +6,9 @@
   "scripts": {
     "docs": "vitepress dev .",
     "docs:api": "node run-typedoc.mjs",
+    "docs:compare-to-translate": "node compare-to-translate.mjs",
     "docs:translation-status": "node generate-translation-status.mjs",
-    "docs:build": "vitepress build .",
+    "docs:build": "pnpm run translation-status && vitepress build .",
     "docs:preview": "vitepress preview ."
   },
   "dependencies": {

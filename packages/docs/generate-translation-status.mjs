@@ -2,62 +2,67 @@
 import { writeFile, readFile } from 'fs/promises'
 import simpleGit from 'simple-git'
 
-// Add any translation here. For each there must be a corresponding
-// branch in the docs repo named `docs-sync-<lang>`.
+// Add any translation here. For each there must be at least one commit log
+// like `docs(<locale>): sync to #<hash>`.
+// e.g. `docs(zh): sync to #1a3a28f`
 const locales = ['zh']
 
-/**
- *
- * @param {string} docsSyncBranch
- */
-function getInfo(docsSyncBranch) {
-  const git = simpleGit()
-  return git
-    .log([
-      '-n',
-      '1',
-      '--pretty=format:"%H %cd"',
-      '--date=short',
-      'origin/' + docsSyncBranch || 'main',
-    ])
-    .then(log => {
-      if (!log.latest) return null
+// The number of commits to look back for locale checkpoints.
+const MAX_LOG_COUNT = 100
 
-      const [hash, date] = log.latest.hash.replace(/"/g, '').split(' ')
-      return {
-        hash: hash.slice(0, 7),
-        date,
+// The path to the translation status file.
+const STATUS_FILE_PATH = './.vitepress/translation-status.json'
+
+async function getCheckpointMap() {
+  const checkpointMap = new Map()
+  const git = simpleGit()
+  const log = await git.log(['-n', MAX_LOG_COUNT.toString(), '--date=short'])
+  if (log && log.all) {
+    let localesLeft = locales.length
+    log.all.some(({ date, message }) => {
+      const matched = message.match(/^docs\((.+)\)\: sync to (\w+)/)
+      if (matched) {
+        const locale = matched[1]
+        const hash = matched[2]
+        if (!checkpointMap.has(locale)) {
+          checkpointMap.set(locale, {
+            hash,
+            // format: 'YYYY-MM-DD'
+            date: new Date(date).toISOString().slice(0, 10),
+          })
+          localesLeft--
+          if (localesLeft === 0) {
+            return true
+          }
+        }
       }
+      return false
     })
+  }
+  return checkpointMap
+}
+
+async function updateStatusFile(checkpointMap) {
+  if (!checkpointMap.size) {
+    console.log('❌ No checkpoint found.')
+    return
+  }
+  const currentStatus = JSON.parse(
+    await readFile(STATUS_FILE_PATH, 'utf-8')
+  )
+  checkpointMap.forEach((value, key) => {
+    console.log(`✅ Updated ${key} to ${value.hash}`)
+    currentStatus[key] = value
+  })
+  await writeFile(
+    STATUS_FILE_PATH,
+    JSON.stringify(currentStatus, null, 2) + '\n'
+  )
 }
 
 async function main() {
-  const result = JSON.parse(
-    await readFile('./.vitepress/translation-status.json', 'utf-8')
-  )
-  await Promise.all(
-    locales.map(lang =>
-      getInfo(`docs-sync-${lang}`)
-        .then(data => {
-          if (data) {
-            result[lang] = data
-            console.log(`✅ Updated ${lang} to ${data.hash}`)
-          } else {
-            console.log(`❌ Failed to update ${lang}`)
-          }
-        })
-        .catch(err => {
-          console.log(`❌ Unexpected Error for ${lang}`)
-          console.error(err)
-          return Promise.reject(err)
-        })
-    )
-  )
-
-  await writeFile(
-    './.vitepress/translation-status.json',
-    JSON.stringify(result, null, 2) + '\n'
-  )
+  const checkpointMap = await getCheckpointMap()
+  await updateStatusFile(checkpointMap)
 }
 
 main()

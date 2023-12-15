@@ -14,6 +14,7 @@
     "build": "pnpm run -r build",
     "build:dts": "pnpm run -r build:dts",
     "docs:api": "pnpm run --filter ./packages/docs -r docs:api",
+    "docs:compare-to-translate": "pnpm run --filter ./packages/docs -r docs:compare-to-translate",
     "docs:translation-status": "pnpm run --filter ./packages/docs -r docs:translation-status",
     "docs:build": "pnpm run docs:api && pnpm run --filter ./packages/docs -r docs:build",
     "play": "pnpm run -r play",
