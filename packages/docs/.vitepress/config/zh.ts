@@ -48,6 +48,10 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             text: '更新日志',
             link: 'https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md',
           },
+          {
+            text: 'Vue.js 认证',
+            link: 'https://certification.vuejs.org/?friend=VUEROUTER',
+          },
         ],
       },
     ],
@@ -138,6 +142,10 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             {
               text: '组合式 API',
               link: '/zh/guide/advanced/composition-api.html',
+            },
+            {
+              text: 'RouterView 插槽',
+              link: '/guide/advanced/router-view-slot.html',
             },
             {
               text: '过渡动效',

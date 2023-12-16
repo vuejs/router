@@ -62,6 +62,20 @@ if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
 如果你忽略第二个参数： `isNavigationFailure(failure)`，那么就只会检查这个 `failure` 是不是一个 _Navigation Failure_。
 :::
 
+<!-- TODO: translation -->
+
+## Global navigation failures
+
+You can detect global navigation failures globally by using the [`router.afterEach()` navigation guard](./navigation-guards.md#Global-After-Hooks):
+
+```ts
+router.afterEach((to, from, failure) => {
+  if (failure) {
+    sendToAnalytics(to, from, failure)
+  }
+})
+```
+
 ## 鉴别导航故障
 
 正如我们在一开始所说的，有不同的情况会导致导航的中止，所有这些情况都会导致不同的 _Navigation Failure_。它们可以用 `isNavigationFailure` 和 `NavigationFailureType` 来区分。总共有三种不同的类型：

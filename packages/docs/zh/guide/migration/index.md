@@ -113,6 +113,21 @@ router.resolve({
 
 **原因**：Vue Router 不再使用 `path-to-regexp`，而是实现了自己的解析系统，允许路由排序并实现动态路由。由于我们通常在每个项目中只添加一个通配符路由，所以支持 `*` 的特殊语法并没有太大的好处。参数的编码是跨路由的，无一例外，让事情更容易预测。
 
+<!-- TODO: translation -->
+
+### The `currentRoute` property is now a `ref()`
+
+Previously the properties of the [`currentRoute`](https://v3.router.vuejs.org/api/#router-currentroute) object on a router instance could be accessed directly.
+
+With the introduction of vue-router v4, the underlying type of the `currentRoute` object on the router instance has changed to `Ref<RouteLocationNormalizedLoaded>`, which comes from the newer [reactivity fundamentals](https://vuejs.org/guide/essentials/reactivity-fundamentals.html) introduced in Vue 3.
+
+While this doesn't change anything if you're reading the route with `useRoute()` or `this.$route`, if you're accessing it directly on the router instance, you will need to access the actual route object via `currentRoute.value`:
+
+```ts
+const { page } = router.currentRoute.query // [!code --]
+const { page } = router.currentRoute.value.query // [!code ++]
+```
+
 ### 将 `onReady` 改为 `isReady`
 
 现有的 `router.onReady()` 函数已被 `router.isReady()` 取代，该函数不接受任何参数并返回一个 Promise：

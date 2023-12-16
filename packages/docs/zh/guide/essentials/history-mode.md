@@ -24,6 +24,24 @@ const router = createRouter({
 
 它在内部传递的实际 URL 之前使用了一个哈希字符（`#`）。由于这部分 URL 从未被发送到服务器，所以它不需要在服务器层面上进行任何特殊处理。不过，**它在 SEO 中确实有不好的影响**。如果你担心这个问题，可以使用 HTML5 模式。
 
+<!-- TODO: translation -->
+
+## Memory mode
+
+The memory history mode doesn't assume a browser environment and therefore doesn't interact with the URL **nor automatically triggers the initial navigation**. This makes it perfect for Node environment and SSR. It is created with `createMemoryHistory()` and **requires you to push the initial navigation** after calling `app.use(router)`.
+
+```js
+import { createRouter, createMemoryHistory } from 'vue-router'
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [
+    //...
+  ],
+})
+```
+
+While it's not recommended, you can use this mode inside Browser applications but note **there will be no history**, meaning you won't be able to go _back_ or _forward_.
+
 ## HTML5 模式
 
 用 `createWebHistory()` 创建 HTML5 模式，推荐使用这个模式：
@@ -66,7 +84,7 @@ const router = createRouter({
 </IfModule>
 ```
 
-也可以使用 [`FallbackResource`](https://httpd.apache.org/docs/2.2/mod/mod_dir.html#fallbackresource) 代替 `mod_rewrite`。
+也可以使用 [`FallbackResource`](https://httpd.apache.org/docs/2.4/mod/mod_dir.html#fallbackresource) 代替 `mod_rewrite`。
 
 ### nginx
 

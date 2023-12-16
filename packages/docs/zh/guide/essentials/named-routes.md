@@ -24,7 +24,7 @@ const routes = [
 
 要链接到一个命名的路由，可以向 `router-link` 组件的 `to` 属性传递一个对象：
 
-```vue-html
+```html
 <router-link :to="{ name: 'user', params: { username: 'erina' }}">
   User
 </router-link>
@@ -39,3 +39,7 @@ router.push({ name: 'user', params: { username: 'erina' } })
 在这两种情况下，路由将导航到路径 `/user/erina`。
 
 完整的例子在[这里](https://github.com/vuejs/vue-router/blob/dev/examples/named-routes/app.js).
+
+<!-- TODO: translation -->
+
+Each name **must be unique** across all routes. If you add the same name to multiple routes, the router will only keep the last one. You can read more about this [in the Dynamic Routing](../advanced/dynamic-routing.md#Removing-routes) section.

@@ -17,13 +17,13 @@ const routes = [
         path: 'new',
         component: PostsNew,
         // 只有经过身份验证的用户才能创建帖子
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
       },
       {
         path: ':id',
         component: PostsDetail
         // 任何人都可以阅读文章
-        meta: { requiresAuth: false }
+        meta: { requiresAuth: false },
       }
     ]
   }
@@ -58,11 +58,18 @@ router.beforeEach((to, from) => {
 
 ## TypeScript
 
-可以通过扩展 `RouteMeta` 接口来输入 meta 字段：
+<!-- TODO: translation -->
+
+It is possible to type the meta field by extending the `RouteMeta` interface from `vue-router`:
 
 ```ts
-// typings.d.ts or router.ts
+// This can be directly added to any of your `.ts` files like `router.ts`
+// It can also be added to a `.d.ts` file. Make sure it's included in
+// project's tsconfig.json "files"
 import 'vue-router'
+
+// To ensure it is treated as a module, add at least one `export` statement
+export {}
 
 declare module 'vue-router' {
   interface RouteMeta {

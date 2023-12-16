@@ -78,3 +78,22 @@ const routes = [
 URL `/search?q=vue` 将传递 `{query: 'vue'}` 作为 props 传给 `SearchUser` 组件。
 
 请尽可能保持 `props` 函数为无状态的，因为它只会在路由发生变化时起作用。如果你需要状态来定义 props，请使用包装组件，这样 vue 才可以对状态变化做出反应。
+
+<!-- TODO: translation -->
+
+## Via RouterView
+
+You can also pass any props via the [`<RouterView>` slot](../advanced/router-view-slot):
+
+```vue-html
+<RouterView v-slot="{ Component }">
+  <component
+    :is="Component"
+    view-prop="value"
+   />
+</RouterView>
+```
+
+::: warning
+In this case, **all view components** will receive `view-prop`. This is usually not a good idea as  it means that all of the view components have declared a `view-prop` prop, which is not necessarily true. If possible, use any of the options above.
+:::
