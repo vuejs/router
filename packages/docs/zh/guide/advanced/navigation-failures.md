@@ -67,7 +67,7 @@ if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
 正如我们在一开始所说的，有不同的情况会导致导航的中止，所有这些情况都会导致不同的 _Navigation Failure_。它们可以用 `isNavigationFailure` 和 `NavigationFailureType` 来区分。总共有三种不同的类型：
 
 - `aborted`：在导航守卫中返回 `false` 中断了本次导航。
-- `cancelled`： 在当前导航还没有完成之前又有了一个新的导航。比如，在等待导航守卫的过程中又调用了 `router.push`。
+- `cancelled`： 在当前导航完成之前又有了一个新的导航。比如，在等待导航守卫的过程中又调用了 `router.push`。
 - `duplicated`：导航被阻止，因为我们已经在目标位置了。
 
 ## *导航故障*的属性
