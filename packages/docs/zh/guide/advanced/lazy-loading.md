@@ -17,7 +17,11 @@ const UserDetails = () => import('./views/UserDetails.vue')
 
 const router = createRouter({
   // ...
-  routes: [{ path: '/users/:id', component: UserDetails }],
+  routes: [
+    { path: '/users/:id', component: UserDetails }
+    // 或在路由定义里直接使用它
+    { path: '/users/:id', component: () => import('./views/UserDetails.vue') },
+  ],
 })
 ```
 

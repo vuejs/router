@@ -34,7 +34,7 @@
 
 ### `router-view`
 
-`router-view` 将显示与 url 对应的组件。你可以把它放在任何地方，以适应你的布局。
+`router-view` 将显示与 URL 对应的组件。你可以把它放在任何地方，以适应你的布局。
 
 ## JavaScript
 

@@ -30,7 +30,7 @@ ___
 
 ### beforeEnter %{#Properties-beforeEnter}%
 
-• **beforeEnter**: `undefined` \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\>[]
+• **beforeEnter**: `undefined` \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\>[]
 
 被注册的 beforeEnter 守卫
 
@@ -54,7 +54,7 @@ ___
 
 ### components %{#Properties-components}%
 
-• **components**: `undefined` \| ``null`` \| `Record`<`string`, [`RouteComponent`](../index.md#routecomponent)\>
+• **components**: `undefined` \| ``null`` \| `Record`\<`string`, [`RouteComponent`](../index.md#routecomponent)\>
 
 {@inheritDoc RouteRecordMultipleViews.components}
 
@@ -66,7 +66,7 @@ ___
 
 ### instances %{#Properties-instances}%
 
-• **instances**: `Record`<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`<{}, {}, {}, {}, {}, {}, {}, {}, ``false``, `ComponentOptionsBase`<`any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, {}, {}, `string`\>, {}\>\>
+• **instances**: `Record`\<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`\>
 
 <!-- TODO: translation -->
 
@@ -82,7 +82,9 @@ ___
 
 • **meta**: [`RouteMeta`](RouteMeta.md)
 
-{@inheritDoc _RouteRecordBase.meta}
+<!-- TODO: translation -->
+
+Arbitrary data attached to the record.
 
 #### 继承自 %{#Properties-meta-Inherited-from}%
 
@@ -94,7 +96,9 @@ ___
 
 • **name**: `undefined` \| [`RouteRecordName`](../index.md#routerecordname)
 
-{@inheritDoc _RouteRecordBase.name}
+<!-- TODO: translation -->
+
+Name for the route record. Must be unique.
 
 #### 继承自 %{#Properties-name-Inherited-from}%
 
@@ -106,7 +110,9 @@ ___
 
 • **path**: `string`
 
-{@inheritDoc _RouteRecordBase.path}
+<!-- TODO: translation -->
+
+Path of the record. Should start with `/` unless the record is the child of another record.
 
 #### 继承自 %{#Properties-path-Inherited-from}%
 
@@ -116,9 +122,11 @@ ___
 
 ### props %{#Properties-props}%
 
-• **props**: `Record`<`string`, `_RouteRecordProps`\>
+• **props**: `Record`\<`string`, `_RouteRecordProps`\>
 
-{@inheritDoc RouteRecordMultipleViews.props}
+<!-- TODO: translation -->
+
+Allow passing down params as props to the component rendered by `router-view`. Should be an object with the same keys as `components` or a boolean to be applied to every component.
 
 #### 继承自 %{#Properties-props-Inherited-from}%
 
@@ -130,7 +138,9 @@ ___
 
 • **redirect**: `undefined` \| `RouteRecordRedirectOption`
 
-{@inheritDoc _RouteRecordBase.redirect}
+<!-- TODO: translation -->
+
+Where to redirect if the route is directly matched. The redirection happens before any navigation guard and triggers a new navigation with the new target location.
 
 #### 继承自 %{#Properties-redirect-Inherited-from}%
 

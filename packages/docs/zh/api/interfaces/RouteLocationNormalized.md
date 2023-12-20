@@ -6,7 +6,7 @@ editLink: false
 
 # 接口：RouteLocationNormalized
 
-和 [RouteLocation](RouteLocation.md) 类似但是其 [matched](RouteLocationNormalized.md#matched) 无法包含重定向的记录
+和 [RouteLocation](RouteLocation.md) 类似但是其 [RouteLocationNormalized.matched](RouteLocationNormalized.md#matched) 无法包含重定向的记录
 
 ## 继承关系 %{#Hierarchy}%
 

@@ -70,13 +70,6 @@ ___
 
 按指定方向访问历史。
 
-**`Example`**
-
-```js
-myHistory.go(-1) // equivalent to window.history.back()
-myHistory.go(1) // equivalent to window.history.forward()
-```
-
 #### 参数 %{#Methods-go-Parameters}%
 
 | 名称 | 类型 | 描述 |
@@ -87,6 +80,13 @@ myHistory.go(1) // equivalent to window.history.forward()
 #### 返回值 %{#Methods-go-Returns}%
 
 `void`
+
+**`Example`**
+
+```js
+myHistory.go(-1) // equivalent to window.history.back()
+myHistory.go(1) // equivalent to window.history.forward()
+```
 
 ___
 
@@ -143,7 +143,7 @@ ___
 
 ▸ **replace**(`to`, `data?`): `void`
 
-和 [push](RouterHistory.md#push) 相同，只是执行了 `history.replaceState`
+和 [RouterHistory.push](RouterHistory.md#push) 相同，只是执行了 `history.replaceState`
 以换掉 `history.pushState`。
 
 #### 参数 %{#Methods-replace-Parameters}%

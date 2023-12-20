@@ -31,7 +31,7 @@ router.beforeEach((to, from) => {
 可以返回的值如下:
 
 - `false`: 取消当前的导航。如果浏览器的 URL 改变了(可能是用户手动或者浏览器后退按钮)，那么 URL 地址会重置到 `from` 路由对应的地址。
-- 一个[路由地址](../../api/#routelocationraw): 通过一个路由地址重定向到一个不同的地址，如同调用 [`router.push()`](../../api/#push)，且可以传入诸如 `replace: true` 或 `name: 'home'` 之类的选项。它会中断当前的导航，同时用相同的 `from` 创建一个新导航。
+- 一个[路由地址](../../api/#routelocationraw): 通过一个路由地址重定向到一个不同的地址，如同调用 `router.push()`，且可以传入诸如 `replace: true` 或 `name: 'home'` 之类的选项。它会中断当前的导航，同时用相同的 `from` 创建一个新导航。
 
  ```js
   router.beforeEach(async (to, from) => {
@@ -47,7 +47,7 @@ router.beforeEach((to, from) => {
   })
 ```
 
-如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](../../api/#onerror) 注册过的回调。
+如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](../../api/interfaces/Router.md#onError) 注册过的回调。
 
 如果什么都没有，`undefined` 或返回 `true`，**则导航是有效的**，并调用下一个导航守卫
 
@@ -134,6 +134,26 @@ router.afterEach((to, from, failure) => {
 
 了解更多关于 navigation failures 的信息在[它的指南](./navigation-failures.md)中。
 
+<!-- TODO: translation -->
+
+## Global injections within guards
+
+Since Vue 3.3, it is possible to use `inject()` within navigation guards. This is useful for injecting global properties like the [pinia stores](https://pinia.vuejs.org). Anything that is provided with `app.provide()` is also accessible within `router.beforeEach()`, `router.beforeResolve()`, `router.afterEach()`:
+
+```ts
+// main.ts
+const app = createApp(App)
+app.provide('global', 'hello injections')
+
+// router.ts or main.ts
+router.beforeEach((to, from) => {
+  const global = inject('global') // 'hello injections'
+  // a pinia store
+  const userStore = useAuthStore()
+  // ...
+})
+```
+
 ## 路由独享的守卫
 
 你可以直接在路由配置上定义 `beforeEnter` 守卫：
@@ -179,7 +199,7 @@ const routes = [
 ]
 ```
 
-请注意，你也可以通过使用[路径 meta 字段](./meta.md)和[全局导航守卫](#global-before-guards)来实现类似的行为。
+请注意，你也可以通过使用[路径 meta 字段](./meta.md)和全局导航守卫来实现类似的行为。
 
 ## 组件内的守卫
 

@@ -20,19 +20,25 @@ API 文档
 - [RouteLocationNormalizedLoaded](interfaces/RouteLocationNormalizedLoaded.md)
 - [RouteLocationOptions](interfaces/RouteLocationOptions.md)
 - [RouteMeta](interfaces/RouteMeta.md)
+- [RouteRecordMultipleViews](interfaces/RouteRecordMultipleViews.md)
+- [RouteRecordMultipleViewsWithChildren](interfaces/RouteRecordMultipleViewsWithChildren.md)
 - [RouteRecordNormalized](interfaces/RouteRecordNormalized.md)
+- [RouteRecordRedirect](interfaces/RouteRecordRedirect.md)
+- [RouteRecordSingleView](interfaces/RouteRecordSingleView.md)
+- [RouteRecordSingleViewWithChildren](interfaces/RouteRecordSingleViewWithChildren.md)
 - [Router](interfaces/Router.md)
 - [RouterHistory](interfaces/RouterHistory.md)
 - [RouterLinkProps](interfaces/RouterLinkProps.md)
 - [RouterOptions](interfaces/RouterOptions.md)
 - [RouterScrollBehavior](interfaces/RouterScrollBehavior.md)
 - [RouterViewProps](interfaces/RouterViewProps.md)
+- [\_RouteRecordBase](interfaces/RouteRecordBase.md)
 
 ## TS 类型别名 %{#Type-Aliases}%
 
 ### LocationQuery %{#Type-Aliases-LocationQuery}%
 
-Ƭ **LocationQuery**: `Record`<`string`, `LocationQueryValue` \| `LocationQueryValue`[]\>
+Ƭ **LocationQuery**: `Record`\<`string`, `LocationQueryValue` \| `LocationQueryValue`[]\>
 
 出现在 [RouteLocationNormalized](interfaces/RouteLocationNormalized.md) 中的规范化查询对象。
 
@@ -40,17 +46,17 @@ ___
 
 ### LocationQueryRaw %{#Type-Aliases-LocationQueryRaw}%
 
-Ƭ **LocationQueryRaw**: `Record`<`string` \| `number`, `LocationQueryValueRaw` \| `LocationQueryValueRaw`[]\>
+Ƭ **LocationQueryRaw**: `Record`\<`string` \| `number`, `LocationQueryValueRaw` \| `LocationQueryValueRaw`[]\>
 
 松散的 [LocationQuery](index.md#locationquery) 对象，可以被传递给诸如
-[push](interfaces/Router.md#push)、[replace](interfaces/Router.md#replace) 或任何创建
+[Router.push](interfaces/Router.md#push)、[Router.replace](interfaces/Router.md#replace) 或任何创建
 [RouteLocationRaw](index.md#routelocationraw) 的函数。
 
 ___
 
 ### PathParserOptions %{#Type-Aliases-PathParserOptions}%
 
-Ƭ **PathParserOptions**: `Pick`<`_PathParserOptions`, ``"end"`` \| ``"sensitive"`` \| ``"strict"``\>
+Ƭ **PathParserOptions**: `Pick`\<`_PathParserOptions`, ``"end"`` \| ``"sensitive"`` \| ``"strict"``\>
 
 ___
 
@@ -72,13 +78,13 @@ ___
 
 ### RouteParams %{#Type-Aliases-RouteParams}%
 
-Ƭ **RouteParams**: `Record`<`string`, `RouteParamValue` \| `RouteParamValue`[]\>
+Ƭ **RouteParams**: `Record`\<`string`, `RouteParamValue` \| `RouteParamValue`[]\>
 
 ___
 
 ### RouteParamsRaw %{#Type-Aliases-RouteParamsRaw}%
 
-Ƭ **RouteParamsRaw**: `Record`<`string`, `RouteParamValueRaw` \| `Exclude`<`RouteParamValueRaw`, ``null`` \| `undefined`\>[]\>
+Ƭ **RouteParamsRaw**: `Record`\<`string`, `RouteParamValueRaw` \| `Exclude`\<`RouteParamValueRaw`, ``null`` \| `undefined`\>[]\>
 
 ___
 
@@ -100,13 +106,13 @@ ___
 
 ### RouteRecordRaw %{#Type-Aliases-RouteRecordRaw}%
 
-Ƭ **RouteRecordRaw**: `RouteRecordSingleView` \| `RouteRecordSingleViewWithChildren` \| `RouteRecordMultipleViews` \| `RouteRecordMultipleViewsWithChildren` \| `RouteRecordRedirect`
+Ƭ **RouteRecordRaw**: [`RouteRecordSingleView`](interfaces/RouteRecordSingleView.md) \| [`RouteRecordSingleViewWithChildren`](interfaces/RouteRecordSingleViewWithChildren.md) \| [`RouteRecordMultipleViews`](interfaces/RouteRecordMultipleViews.md) \| [`RouteRecordMultipleViewsWithChildren`](interfaces/RouteRecordMultipleViewsWithChildren.md) \| [`RouteRecordRedirect`](interfaces/RouteRecordRedirect.md)
 
 ___
 
 ### UseLinkOptions %{#Type-Aliases-UseLinkOptions}%
 
-Ƭ **UseLinkOptions**: `VueUseOptions`<`RouterLinkOptions`\>
+Ƭ **UseLinkOptions**: `VueUseOptions`\<`RouterLinkOptions`\>
 
 ## 变量 %{#Variables}%
 
@@ -120,13 +126,23 @@ ___
 
 ### RouterView %{#Variables-RouterView}%
 
-• `Const` **RouterView**: () => { `$props`: `AllowedComponentProps` & `ComponentCustomProps` & `VNodeProps` & [`RouterViewProps`](interfaces/RouterViewProps.md) ; `$slots`: { `default?`: (`__namedParameters`: { `Component`: `VNode`<`RendererNode`, `RendererElement`, { `[key: string]`: `any`;  }\> ; `route`: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)  }) => `VNode`<`RendererNode`, `RendererElement`, { `[key: string]`: `any`;  }\>[]  }  }
+• `Const` **RouterView**: () => \{ `$props`: `AllowedComponentProps` & `ComponentCustomProps` & `VNodeProps` & [`RouterViewProps`](interfaces/RouterViewProps.md) ; `$slots`: \{ `default?`: (`__namedParameters`: \{ `Component`: `VNode`\<`RendererNode`, `RendererElement`, \{ `[key: string]`: `any`;  }\> ; `route`: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)  }) => `VNode`\<`RendererNode`, `RendererElement`, \{ `[key: string]`: `any`;  }\>[]  }  }
 
 #### 类型声明 %{#Variables-RouterView-Type-declaration}%
 
-• **new RouterView**()
+• **new RouterView**(): `Object`
 
 用于显示用户当前所处路由的组件。
+
+##### 返回值 %{#Variables-RouterView-Returns}%
+
+`Object`
+
+| 名称 | 类型 |
+| :------ | :------ |
+| `$props` | `AllowedComponentProps` & `ComponentCustomProps` & `VNodeProps` & [`RouterViewProps`](interfaces/RouterViewProps.md) |
+| `$slots` | \{ `default?`: (`__namedParameters`: \{ `Component`: `VNode`\<`RendererNode`, `RendererElement`, \{ `[key: string]`: `any`;  }\> ; `route`: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)  }) => `VNode`\<`RendererNode`, `RendererElement`, \{ `[key: string]`: `any`;  }\>[]  } |
+| `$slots.default?` | (`__namedParameters`: \{ `Component`: `VNode`\<`RendererNode`, `RendererElement`, \{ `[key: string]`: `any`;  }\> ; `route`: [`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)  }) => `VNode`\<`RendererNode`, `RendererElement`, \{ `[key: string]`: `any`;  }\>[] |
 
 ___
 
@@ -194,6 +210,16 @@ ___
 
 创建一个 hash 模式的历史。在没有主机的 web 应用 (如 `file://`) 或无法通过配置服务器来处理任意 URL 的时候非常有用。
 
+#### 参数 %{#Functions-createWebHashHistory-Parameters}%
+
+| 名称 | 类型 | 描述 |
+| :------ | :------ | :------ |
+| `base?` | `string` | 可选提供的基础位置。默认为 `location.pathname + location.search`。如果在 `head` 中有一个 `<base>` 标签，它的值会因此被忽略，**但注意它会影响所有 history.pushState() 的调用**，这意味着如果你使用一个 `<base>` 标签，它的 `href` 值**必须与这个参数匹配** (忽略 `#` 后的任何东西)。 |
+
+#### 返回值 %{#Functions-createWebHashHistory-Returns}%
+
+[`RouterHistory`](interfaces/RouterHistory.md)
+
 **示例**
 
 ```js
@@ -209,16 +235,6 @@ createWebHashHistory('/other-folder/') // 给出一个 `https://example.com/othe
 // 对于没有 `host` 的位置，该 base 会被忽略
 createWebHashHistory('/iAmIgnored') // 给出一个 `file:///usr/etc/folder/index.html#` 的 URL
 ```
-
-#### 参数 %{#Functions-createWebHashHistory-Parameters}%
-
-| 名称 | 类型 | 描述 |
-| :------ | :------ | :------ |
-| `base?` | `string` | 可选提供的基础位置。默认为 `location.pathname + location.search`。如果在 `head` 中有一个 `<base>` 标签，它的值会因此被忽略，**但注意它会影响所有 history.pushState() 的调用**，这意味着如果你使用一个 `<base>` 标签，它的 `href` 值**必须与这个参数匹配** (忽略 `#` 后的任何东西)。 |
-
-#### 返回值 %{#Functions-createWebHashHistory-Returns}%
-
-[`RouterHistory`](interfaces/RouterHistory.md)
 
 ___
 
@@ -246,6 +262,17 @@ ___
 
 检查一个对象是否是 [NavigationFailure](interfaces/NavigationFailure.md)。
 
+#### 参数 %{#Functions-isNavigationFailure-Parameters}%
+
+| 名称 | 类型 | 描述 |
+| :------ | :------ | :------ |
+| `error` | `any` | 可能的 [NavigationFailure](interfaces/NavigationFailure.md) |
+| `type?` | `NAVIGATION_GUARD_REDIRECT` | 可选的待检查类型 |
+
+#### 返回值 %{#Functions-isNavigationFailure-Returns}%
+
+error is NavigationRedirectError
+
 **示例**
 
 ```js
@@ -267,17 +294,6 @@ router.afterEach((to, from, failure) => {
 })
 ```
 
-#### 参数 %{#Functions-isNavigationFailure-Parameters}%
-
-| 名称 | 类型 | 描述 |
-| :------ | :------ | :------ |
-| `error` | `any` | 可能的 [NavigationFailure](interfaces/NavigationFailure.md) |
-| `type?` | `NAVIGATION_GUARD_REDIRECT` | 可选的待检查类型 |
-
-#### 返回值 %{#Functions-isNavigationFailure-Returns}%
-
-error is NavigationRedirectError
-
 ▸ **isNavigationFailure**(`error`, `type?`): error is NavigationFailure
 
 #### 参数 %{#Functions-isNavigationFailure-Parameters_1}%
@@ -295,7 +311,7 @@ ___
 
 ### loadRouteLocation %{#Functions-loadRouteLocation}%
 
-▸ **loadRouteLocation**(`route`): `Promise`<[`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)\>
+▸ **loadRouteLocation**(`route`): `Promise`\<[`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)\>
 
 确保路由被加载，所以它可以作为一个 prop 传递给 `<RouterView>`。
 
@@ -307,7 +323,7 @@ ___
 
 #### 返回值 %{#Functions-loadRouteLocation-Returns}%
 
-`Promise`<[`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)\>
+`Promise`\<[`RouteLocationNormalizedLoaded`](interfaces/RouteLocationNormalizedLoaded.md)\>
 
 ___
 
@@ -355,7 +371,7 @@ ___
 
 | 名称 | 类型 |
 | :------ | :------ |
-| `props` | `VueUseOptions`<`RouterLinkOptions`\> |
+| `props` | `VueUseOptions`\<`RouterLinkOptions`\> |
 
 #### 返回值 %{#Functions-useLink-Returns}%
 
@@ -364,10 +380,10 @@ ___
 | 名称 | 类型 |
 | :------ | :------ |
 | `href` | `ComputedRef<string\>` |
-| `isActive` | `ComputedRef`<`boolean`\> |
-| `isExactActive` | `ComputedRef`<`boolean`\> |
-| `navigate` | (`e`: `MouseEvent`) => `Promise`<`void` \| [`NavigationFailure`](interfaces/NavigationFailure.md)\> |
-| `route` | `ComputedRef`<[`RouteLocation`](interfaces/RouteLocation.md) & { `href`: `string`  }\> |
+| `isActive` | `ComputedRef`\<`boolean`\> |
+| `isExactActive` | `ComputedRef`\<`boolean`\> |
+| `navigate` | (`e`: `MouseEvent`) => `Promise`\<`void` \| [`NavigationFailure`](interfaces/NavigationFailure.md)\> |
+| `route` | `ComputedRef`\<[`RouteLocation`](interfaces/RouteLocation.md) & { `href`: `string`  }\> |
 
 ___
 
