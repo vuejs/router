@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress'
 import { enConfig } from './en'
 import { sharedConfig } from './shared'
 import { zhConfig } from './zh'
+import { faConfig } from './fa'
 
 export default defineConfig({
   ...sharedConfig,
@@ -12,5 +13,6 @@ export default defineConfig({
     ko: { label: '한국어', lang: 'ko-KR', link: 'https://router.vuejs.kr/' },
     pt: { label: 'Português', lang: 'pt-PT', link: 'https://vue-router-docs-pt.netlify.app/' },
     ru: { label: 'Русский', lang: 'ru-RU', link: 'https://vue-router-ru.netlify.app' },
+    fa: { label: 'فارسی', lang: 'fa-IR', link: '/fa/', ...faConfig },
   },
 })
