@@ -8,6 +8,7 @@ import './styles/vars.css'
 import './styles/sponsors.css'
 import VueSchoolLink from './components/VueSchoolLink.vue'
 import VueMasteryLogoLink from './components/VueMasteryLogoLink.vue'
+import VueMasteryBanner from './components/VueMasteryBanner.vue'
 
 const theme: Theme = {
   ...DefaultTheme,
@@ -16,6 +17,7 @@ const theme: Theme = {
       // 'home-features-after': () => h(HomeSponsors),
       'aside-ads-before': () => h(AsideSponsors),
       'doc-before': () => h(TranslationStatus),
+      'layout-top': () => h(VueMasteryBanner),
     })
   },
 
