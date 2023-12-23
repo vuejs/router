@@ -32,6 +32,10 @@ yarn add vue-router@4
 pnpm add vue-router@4
 ```
 
+```bash [bun]
+bun install vue-router@4
+```
+
 :::
 
 If you're starting a new project, you might find it easier to use the [create-vue](https://github.com/vuejs/create-vue) scaffolding tool, which creates a Vite-based project with the option to include Vue Router:
@@ -48,6 +52,10 @@ yarn create vue
 
 ```bash [pnpm]
 pnpm create vue
+```
+
+```bash [bun]
+bun create vue
 ```
 
 :::
