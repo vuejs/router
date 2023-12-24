@@ -58,17 +58,15 @@ router.beforeEach((to, from) => {
 
 ## TypeScript
 
-<!-- TODO: translation -->
-
-It is possible to type the meta field by extending the `RouteMeta` interface from `vue-router`:
+也可以继承来自 `vue-router` 中的 `RouteMeta` 来为 meta 字段添加类型：
 
 ```ts
-// This can be directly added to any of your `.ts` files like `router.ts`
-// It can also be added to a `.d.ts` file. Make sure it's included in
-// project's tsconfig.json "files"
+// 这段可以直接添加到你的任何 `.ts` 文件中，例如 `router.ts`
+// 也可以添加到一个 `.d.ts` 文件中。确保这个文件包含在
+// 项目的 `tsconfig.json` 中的 "file" 字段内。
 import 'vue-router'
 
-// To ensure it is treated as a module, add at least one `export` statement
+// 为了确保这个文件被当作一个模块，添加至少一个 `export` 声明
 export {}
 
 declare module 'vue-router' {
