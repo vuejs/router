@@ -136,9 +136,9 @@ router.afterEach((to, from, failure) => {
 
 <!-- TODO: translation -->
 
-## Global injections within guards
+## 在守卫内的全局注入
 
-Since Vue 3.3, it is possible to use `inject()` within navigation guards. This is useful for injecting global properties like the [pinia stores](https://pinia.vuejs.org). Anything that is provided with `app.provide()` is also accessible within `router.beforeEach()`, `router.beforeResolve()`, `router.afterEach()`:
+从 Vue 3.3开始，可以在导航守卫内使用 `inject()` 方法。这在用于注入像 [pinia stores](https://pinia.vuejs.org) 这样的全局属性时很有用。在 `app.provide()` 中提供的所有内容都可以在 `router.beforeEach()`，`router.beforeResolve()`，`router.afterEach()` 内获取到：
 
 ```ts
 // main.ts
