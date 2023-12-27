@@ -24,11 +24,9 @@ const router = createRouter({
 
 它在内部传递的实际 URL 之前使用了一个哈希字符（`#`）。由于这部分 URL 从未被发送到服务器，所以它不需要在服务器层面上进行任何特殊处理。不过，**它在 SEO 中确实有不好的影响**。如果你担心这个问题，可以使用 HTML5 模式。
 
-<!-- TODO: translation -->
+## Memory 模式
 
-## Memory mode
-
-The memory history mode doesn't assume a browser environment and therefore doesn't interact with the URL **nor automatically triggers the initial navigation**. This makes it perfect for Node environment and SSR. It is created with `createMemoryHistory()` and **requires you to push the initial navigation** after calling `app.use(router)`.
+Memory 模式不会假定自己处于浏览器环境，因此不会与 URL 交互**也不会自动触发初始导航**。这使得它非常适合 Node 环境和 SSR。它是用 `createMemoryHistory()` 创建的，并且**需要你在调用 `app.use(router)` 之后手动 push 到初始导航**。
 
 ```js
 import { createRouter, createMemoryHistory } from 'vue-router'
@@ -40,7 +38,7 @@ const router = createRouter({
 })
 ```
 
-While it's not recommended, you can use this mode inside Browser applications but note **there will be no history**, meaning you won't be able to go _back_ or _forward_.
+虽然不推荐，你仍可以在浏览器应用程序中使用此模式，但请注意**它不会有历史记录**，这意味着你无法*后退*或*前进*。
 
 ## HTML5 模式
 
