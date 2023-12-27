@@ -137,7 +137,7 @@ router.afterEach((to, from, failure) => {
 
 ## 在守卫内的全局注入
 
-从 Vue 3.3 开始，可以在导航守卫内使用 `inject()` 方法。这在用于注入像 [pinia stores](https://pinia.vuejs.org) 这样的全局属性时很有用。在 `app.provide()` 中提供的所有内容都可以在 `router.beforeEach()`，`router.beforeResolve()`，`router.afterEach()` 内获取到：
+从 Vue 3.3 开始，你可以在导航守卫内使用 `inject()` 方法。这在注入像 [pinia stores](https://pinia.vuejs.org) 这样的全局属性时很有用。在 `app.provide()` 中提供的所有内容都可以在 `router.beforeEach()`、`router.beforeResolve()`、`router.afterEach()` 内获取到：
 
 ```ts
 // main.ts
