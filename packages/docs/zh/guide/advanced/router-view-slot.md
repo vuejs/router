@@ -48,7 +48,7 @@ RotuerView 组件暴露了一个插槽，可以用来渲染路由组件：
 
 ## 传递 props 和插槽
 
-我们可以用插槽来传递 props 或 slots 给路由组件：
+我们可以利用其插槽给路由组件传递 props 或插槽：
 
 ```vue-html
 <router-view v-slot="{ Component }">
