@@ -134,7 +134,6 @@ router.afterEach((to, from, failure) => {
 
 了解更多关于 navigation failures 的信息在[它的指南](./navigation-failures.md)中。
 
-<!-- TODO: translation -->
 
 ## 在守卫内的全局注入
 
