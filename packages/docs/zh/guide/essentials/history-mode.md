@@ -26,7 +26,7 @@ const router = createRouter({
 
 ## Memory 模式
 
-Memory 模式不会假设是否处于浏览器环境，因此不会与 URL 交互**也不会自动触发初始导航**。这使得它非常适合 Node 环境和 SSR。它是用 `createMemoryHistory()` 创建的，并且**需要你在调用 `app.use(router)` 之后手动 push 到初始导航**。
+Memory 模式不会假定自己处于浏览器环境，因此不会与 URL 交互**也不会自动触发初始导航**。这使得它非常适合 Node 环境和 SSR。它是用 `createMemoryHistory()` 创建的，并且**需要你在调用 `app.use(router)` 之后手动 push 到初始导航**。
 
 ```js
 import { createRouter, createMemoryHistory } from 'vue-router'
@@ -38,7 +38,7 @@ const router = createRouter({
 })
 ```
 
-虽然不推荐，您仍可以在浏览器应用程序中使用此模式，但请注意**不会有历史记录**，这意味着无法使用 _后退_ 或 _前进_ 功能。
+虽然不推荐，你仍可以在浏览器应用程序中使用此模式，但请注意**它不会有历史记录**，这意味着你无法_后退_或_前进_。
 
 ## HTML5 模式
 
