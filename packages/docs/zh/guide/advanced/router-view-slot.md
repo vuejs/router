@@ -62,7 +62,7 @@ RotuerView 组件暴露了一个插槽，可以用来渲染路由组件：
 
 ## 模板引用
 
-使用插槽可以让我们直接将 [模板引用](https://vuejs.org/guide/essentials/template-refs.html) 放置在路由组件上：
+使用插槽可以让我们直接将[模板引用](https://vuejs.org/guide/essentials/template-refs.html)放置在路由组件上：
 
 ```vue-html
 <router-view v-slot="{ Component }">
