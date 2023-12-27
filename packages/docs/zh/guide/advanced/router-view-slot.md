@@ -58,7 +58,7 @@ RotuerView 组件暴露了一个插槽，可以用来渲染路由组件：
 </router-view>
 ```
 
-实践中通常不会这么做，因为这样会导致所有路由组件 **都使用相同的 props 和 slots**。请查阅 [传递 props 给路由组件](../essentials/passing-props) 获取其他传递 props 的方式。
+实践中通常不会这么做，因为这样会导致所有路由组件**都使用相同的 props 和插槽**。请查阅[传递 props 给路由组件](../essentials/passing-props)获取其他传递 props 的方式。
 
 ## 模板引用
 
