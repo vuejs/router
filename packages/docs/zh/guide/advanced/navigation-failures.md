@@ -64,9 +64,9 @@ if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
 
 <!-- TODO: translation -->
 
-## Global navigation failures
+## 全局导航故障
 
-You can detect global navigation failures globally by using the [`router.afterEach()` navigation guard](./navigation-guards.md#Global-After-Hooks):
+你可以用 [`router.afterEach()` 导航守卫](./navigation-guards.md#Global-After-Hooks)检测全局导航故障：
 
 ```ts
 router.afterEach((to, from, failure) => {
