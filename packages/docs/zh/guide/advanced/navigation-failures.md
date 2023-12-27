@@ -66,7 +66,7 @@ if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
 
 ## 全局导航故障
 
-你可以用 [`router.afterEach()` 导航指南](./navigation-guards.md#Global-After-Hooks) 检测全局导航故障：
+你可以用 [`router.afterEach()` 导航守卫](./navigation-guards.md#Global-After-Hooks)检测全局导航故障：
 
 ```ts
 router.afterEach((to, from, failure) => {
