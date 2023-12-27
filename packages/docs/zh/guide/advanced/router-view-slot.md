@@ -1,8 +1,6 @@
-<!-- TODO: translation -->
+# RouterView 插槽
 
-# RouterView slot
-
-The RouterView component exposes a slot that can be used to render the route component:
+RotuerView 组件暴露了一个插槽，可以用来渲染路由组件：
 
 ```vue-html
 <router-view v-slot="{ Component }">
@@ -10,11 +8,11 @@ The RouterView component exposes a slot that can be used to render the route com
 </router-view>
 ```
 
-The code above is equivalent to using `<router-view />` without the slot, but the slot provides extra flexibility when we want to work with other features.
+上面的代码等价于不带插槽的 `<router-view />`，但是当我们想要获得其他功能时，插槽提供了额外的扩展性。
 
 ## KeepAlive & Transition
 
-When working with the [KeepAlive](https://vuejs.org/guide/built-ins/keep-alive.html) component, we would usually want it to keep the route components alive, not the RouterView itself. We can achieve that by putting the KeepAlive inside the slot:
+当在处理 [KeepAlive](https://vuejs.org/guide/built-ins/keep-alive.html) 组件时，我们通常想要保持路由组件活跃，而不是 RouterView 本身。为了实现这个目的，我们可以将 KeepAlive 组件放置在插槽内：
 
 ```vue-html
 <router-view v-slot="{ Component }">
@@ -24,7 +22,7 @@ When working with the [KeepAlive](https://vuejs.org/guide/built-ins/keep-alive.h
 </router-view>
 ```
 
-Similarly, the slot allows us to use a [Transition](https://vuejs.org/guide/built-ins/transition.html) component to transition between route components:
+类似地，插槽允许我们使用一个 [Transition](https://vuejs.org/guide/built-ins/transition.html) 组件来实现在路由组件之间切换时实现过渡效果：
 
 ```vue-html
 <router-view v-slot="{ Component }">
@@ -34,7 +32,7 @@ Similarly, the slot allows us to use a [Transition](https://vuejs.org/guide/buil
 </router-view>
 ```
 
-We can also use KeepAlive inside a Transition:
+我们也可以在 Transaction 组件内使用 KeepAlive 组件：
 
 ```vue-html
 <router-view v-slot="{ Component }">
@@ -46,11 +44,11 @@ We can also use KeepAlive inside a Transition:
 </router-view>
 ```
 
-For more information about using RouterView with the Transition component, see the [Transitions](./transitions) guide.
+关于更多 RouterView 组件和 Transition 组件之间的互动，请参考 [Transitions](./transitions) 指南。
 
-## Passing props and slots
+## 传递 props 和插槽
 
-We can use the slot to pass props or slots to the route component:
+我们可以利用其插槽给路由组件传递 props 或插槽：
 
 ```vue-html
 <router-view v-slot="{ Component }">
@@ -60,11 +58,11 @@ We can use the slot to pass props or slots to the route component:
 </router-view>
 ```
 
-In practice, this usually isn't something you would want to do, as the route components would **all need to use the same props and slots**. See [Passing Props to Route Components](../essentials/passing-props) for other ways to pass props.
+实践中通常不会这么做，因为这样会导致所有路由组件**都使用相同的 props 和插槽**。请查阅[传递 props 给路由组件](../essentials/passing-props)获取其他传递 props 的方式。
 
-## Template refs
+## 模板引用
 
-Using the slot allows us to put a [template ref](https://vuejs.org/guide/essentials/template-refs.html) directly on the route component:
+使用插槽可以让我们直接将[模板引用](https://vuejs.org/guide/essentials/template-refs.html)放置在路由组件上：
 
 ```vue-html
 <router-view v-slot="{ Component }">
@@ -72,4 +70,4 @@ Using the slot allows us to put a [template ref](https://vuejs.org/guide/essenti
 </router-view>
 ```
 
-If we put the ref on the `<router-view>` instead then the ref would be populated with the RouterView instance, rather than the route component.
+而如果我们将引用放在 `<router-view>` 上，那引用将会被 RouterView 的实例填充，而不是路由组件本身。
