@@ -46,7 +46,7 @@ RotuerView 组件暴露了一个插槽，可以用来渲染路由组件：
 
 关于更多 RouterView 组件和 Transition 组件之间的互动，请参考 [Transitions](./transitions) 指南。
 
-## 传递 props 和 slots
+## 传递 props 和插槽
 
 我们可以用插槽来传递 props 或 slots 给路由组件：
 
