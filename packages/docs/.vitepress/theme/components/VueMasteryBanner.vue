@@ -272,7 +272,8 @@ html.vuemastery-menu-fixed {
   --vt-banner-height: 70px;
 }
 html.vuemastery-menu-fixed .VPNav,
-html.vuemastery-menu-fixed .VPSidebar {
+html.vuemastery-menu-fixed .VPSidebar,
+html.vuemastery-menu-fixed .aside-container {
   top: 70px;
 }
 html.vuemastery-menu-fixed {
