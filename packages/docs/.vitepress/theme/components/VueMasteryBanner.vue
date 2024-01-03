@@ -269,7 +269,6 @@ onMounted(() => {
 
 <style>
 html.vuemastery-menu-fixed {
-  --vt-banner-height: 70px;
   --vp-layout-top-height: 70px;
 }
 html.vuemastery-menu-fixed .VPNav,
