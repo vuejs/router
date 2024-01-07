@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "simple-git": "^3.18.0",
-    "vitepress": "1.0.0-rc.31",
+    "vitepress": "1.0.0-rc.35",
     "vue-router": "workspace:*"
   }
 }
