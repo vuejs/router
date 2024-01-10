@@ -145,7 +145,7 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             },
             {
               text: 'RouterView 插槽',
-              link: '/guide/advanced/router-view-slot.html',
+              link: '/zh/guide/advanced/router-view-slot.html',
             },
             {
               text: '过渡动效',
