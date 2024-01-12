@@ -3,7 +3,6 @@ import { Theme, useData } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import AsideSponsors from './components/AsideSponsors.vue'
 // import HomeSponsors from './components/HomeSponsors.vue'
-// TODO: props
 import TranslationStatus from 'vitepress-translation-helper/ui/TranslationStatus.vue'
 import './styles/vars.css'
 import './styles/sponsors.css'
