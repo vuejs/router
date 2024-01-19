@@ -32,7 +32,7 @@ RotuerView 组件暴露了一个插槽，可以用来渲染路由组件：
 </router-view>
 ```
 
-我们也可以在 Transaction 组件内使用 KeepAlive 组件：
+我们也可以在 Transition 组件内使用 KeepAlive 组件：
 
 ```vue-html
 <router-view v-slot="{ Component }">
