@@ -1,5 +1,5 @@
 import { h } from 'vue'
-import { Theme, useData } from 'vitepress'
+import { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import AsideSponsors from './components/AsideSponsors.vue'
 // import HomeSponsors from './components/HomeSponsors.vue'
@@ -22,7 +22,6 @@ const theme: Theme = {
       // 'home-features-after': () => h(HomeSponsors),
       'aside-ads-before': () => h(AsideSponsors),
       'doc-before': () => h(TranslationStatus, { status, i18nLabels }),
-      'layout-top': () => h(VueMasteryBanner),
     })
   },
 
