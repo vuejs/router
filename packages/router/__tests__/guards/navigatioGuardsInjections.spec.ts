@@ -48,4 +48,92 @@ describe('inject() within navigation guards', () => {
       await router.isReady()
     })
   }
+
+  describe('in-component guards', () => {
+    it('beforeRouteEnter', async () => {
+      expect.assertions(1)
+      const router = createRouter({
+        routes: [
+          {
+            path: '/',
+            component: {
+              template: `<div>Page</div>`,
+              beforeRouteEnter() {
+                expect(inject('test')).toBe('hello')
+              },
+            },
+          },
+        ],
+      })
+      factory(router)
+      await router.isReady()
+      await router.push('/')
+    })
+
+    it('beforeRouteEnter + lazy load', async () => {
+      expect.assertions(1)
+      const router = createRouter({
+        routes: [
+          {
+            path: '/',
+            component: () =>
+              new Promise(r =>
+                r({
+                  template: `<div>Page</div>`,
+                  beforeRouteEnter() {
+                    expect(inject('test')).toBe('hello')
+                  },
+                })
+              ),
+          },
+        ],
+      })
+      factory(router)
+      await router.isReady()
+      await router.push('/')
+    })
+
+    it('beforeRouteUpdate', async () => {
+      expect.assertions(1)
+      const router = createRouter({
+        routes: [
+          {
+            path: '/',
+            component: {
+              template: `<div>Page</div>`,
+              beforeRouteUpdate() {
+                expect(inject('test')).toBe('hello')
+              },
+            },
+          },
+        ],
+      })
+      factory(router)
+      await router.isReady()
+      await router.push('/')
+      await router.push('/#other')
+    })
+
+    it('beforeRouteLeave', async () => {
+      expect.assertions(1)
+      const router = createRouter({
+        routes: [
+          { path: '/', component: PageComponent },
+          {
+            path: '/foo',
+            component: {
+              template: `<div>Page</div>`,
+              beforeRouteLeave() {
+                expect(inject('test')).toBe('hello')
+              },
+            },
+          },
+        ],
+      })
+      factory(router)
+      await router.isReady()
+      await router.push('/foo')
+      await router.push('/')
+    })
+  })
 })
