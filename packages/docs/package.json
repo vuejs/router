@@ -6,14 +6,16 @@
   "scripts": {
     "docs": "vitepress dev .",
     "docs:api": "node run-typedoc.mjs",
-    "docs:compare-to-translate": "node compare-to-translate.mjs",
-    "docs:translation-status": "node generate-translation-status.mjs",
+    "docs:translation:compare": "v-translation compare",
+    "docs:translation:update": "v-translation update",
+    "docs:translation:status": "v-translation status",
     "docs:build": "vitepress build .",
     "docs:preview": "vitepress preview ."
   },
   "dependencies": {
     "simple-git": "^3.18.0",
     "vitepress": "1.0.0-rc.35",
+    "vitepress-translation-helper": "^0.1.3",
     "vue-router": "workspace:*"
   }
 }
