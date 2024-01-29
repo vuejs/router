@@ -879,7 +879,8 @@ export function createRouter(options: RouterOptions): Router {
             enteringRecords,
             'beforeRouteEnter',
             to,
-            from
+            from,
+            runWithContext
           )
           guards.push(canceledNavigationCheck)
 
