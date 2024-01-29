@@ -14,7 +14,7 @@
 
 ## 包管理器
 
-如果你有一个使用 JavaScript 包管理器的现有项目，你可以从 npm registry 中安装 Vue Router：
+对于一个现有的使用 JavaScript 包管理器的项目，你可以从 npm registry 中安装 Vue Router：
 
 ::: code-group
 
@@ -32,7 +32,7 @@ pnpm add vue-router@4
 
 :::
 
-如果你正在启动一个新项目，你可能会发现使用 [create-vue](https://github.com/vuejs/create-vue) 这个脚手架工具更容易，它能创建一个基于 Vite 的项目，并可选择在项目中包含 Vue Router：
+如果你打算启动一个新项目，你可能会发现使用 [create-vue](https://github.com/vuejs/create-vue) 这个脚手架工具更容易，它能创建一个基于 Vite 的项目，并包含加入 Vue Router 的选项：
 
 ::: code-group
 
