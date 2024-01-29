@@ -8,7 +8,6 @@ import './styles/vars.css'
 import './styles/sponsors.css'
 import VueSchoolLink from './components/VueSchoolLink.vue'
 import VueMasteryLogoLink from './components/VueMasteryLogoLink.vue'
-import VueMasteryBanner from './components/VueMasteryBanner.vue'
 
 const theme: Theme = {
   ...DefaultTheme,
