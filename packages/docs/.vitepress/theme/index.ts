@@ -15,7 +15,7 @@ const i18nLabels = {
 }
 
 const theme: Theme = {
-  ...DefaultTheme,
+  extends: DefaultTheme,
   Layout() {
     return h(DefaultTheme.Layout, null, {
       // 'home-features-after': () => h(HomeSponsors),
