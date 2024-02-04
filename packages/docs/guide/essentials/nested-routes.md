@@ -148,4 +148,4 @@ const routes = [
 ]
 ```
 
-As the parent doesn't specify a route component, the top-level `router-view` will skip over the parent and just use the component from the relevant child instead.
+As the parent doesn't specify a route component, the top-level `<router-view>` will skip over the parent and just use the component from the relevant child instead.
