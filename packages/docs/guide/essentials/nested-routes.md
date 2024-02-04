@@ -128,3 +128,24 @@ const routes = [
   },
 ]
 ```
+
+## Omitting parent components <Badge text="4.1+" />
+
+We can also take advantage of the parent-child relationship between routes without needing to nest route components. This can be useful for grouping together routes with a common path prefix, or when working with [route meta fields](../advanced/meta).
+
+To achieve this, we omit the `component` and `components` options from the parent route:
+
+```js
+const routes = [
+  {
+    path: '/admin',
+    children: [
+      { path: '', component: AdminOverview },
+      { path: 'users', component: AdminUserList },
+      { path: 'users/:id', component: AdminUserDetails },
+    ], 
+  },
+]
+```
+
+As the parent doesn't specify a route component, the top-level `<router-view>` will skip over the parent and just use the component from the relevant child instead.
