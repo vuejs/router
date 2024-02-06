@@ -90,6 +90,21 @@ export default {
 
 Composition API guards can also be used in any component rendered by `<router-view>`, they don't have to be used directly on the route component like in-component guards.
 
+There isn't an equivalent Composition API function for `beforeRouteEnter`. The `beforeRouteEnter` guard needs to run before `setup`, so calling a function inside `setup` would be too late. If you're using `<script setup>`, you can specify the `beforeRouteEnter` option using the [`defineOptions`](https://vuejs.org/api/sfc-script-setup.html#defineoptions) macro:
+
+```vue
+<script setup>
+// Using defineOptions requires Vue 3.3+
+defineOptions({
+  beforeRouteEnter() {
+    // ...
+  }
+})
+</script>
+```
+
+For versions of Vue prior to 3.3, a [separate `<script>` tag](https://vuejs.org/api/sfc-script-setup.html#usage-alongside-normal-script) can be used instead of `defineOptions`.
+
 ## `useLink`
 
 Vue Router exposes the internal behavior of RouterLink as a composable. It accepts a reactive object like the props of `RouterLink` and exposes low-level properties to build your own `RouterLink` component or generate custom links:
