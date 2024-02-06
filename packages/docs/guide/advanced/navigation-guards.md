@@ -197,7 +197,28 @@ const routes = [
 ]
 ```
 
-Note it is possible to achieve a similar behavior by using [route meta fields](./meta.md) and global navigation guards.
+When working with [nested routes](../essentials/nested-routes), both parent and child routes can use `beforeEnter`. When placed on a parent route, it won't be triggered when moving between children with that same parent. For example:
+
+```js
+const routes = [
+  {
+    path: '/user',
+    beforeEnter() {
+      // ...
+    },
+    children: [
+      { path: 'list', component: UserList },
+      { path: 'details', component: UserDetails },
+    ],
+  },
+]
+```
+
+The `beforeEnter` in the example above won't be called when moving between `/user/list` and `/user/details`, as they share the same parent. If we put the `beforeEnter` guard directly on the `details` route instead, that would be called when moving between those two routes.
+
+::: tip
+It is possible to achieve similar behavior to per-route guards by using [route meta fields](./meta) and global navigation guards.
+:::
 
 ## In-Component Guards
 
