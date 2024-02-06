@@ -131,7 +131,7 @@ const routes = [
 
 ## Omitting parent components <Badge text="4.1+" />
 
-We can also take advantage of the parent-child relationship between routes without needing to nest route components. This can be useful for grouping together routes with a common path prefix, or when working with [route meta fields](../advanced/meta).
+We can also take advantage of the parent-child relationship between routes without needing to nest route components. This can be useful for grouping together routes with a common path prefix, or when working with more advanced features, such as [per-route navigation guards](../advanced/navigation-guards#Per-Route-Guard) or [route meta fields](../advanced/meta).
 
 To achieve this, we omit the `component` and `components` options from the parent route:
 
