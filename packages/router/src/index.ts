@@ -1,7 +1,7 @@
 export { createWebHistory } from './history/html5'
 export { createMemoryHistory } from './history/memory'
 export { createWebHashHistory } from './history/hash'
-export { createRouterMatcher } from './matcher'
+export { createRouterMatcher, createSortCache } from './matcher'
 export type { RouterMatcher } from './matcher'
 
 export { parseQuery, stringifyQuery } from './query'

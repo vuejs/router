@@ -79,17 +79,28 @@ export interface _PathParserOptions {
    * @defaultValue `true`
    */
   end?: boolean
+
+  /**
+   * A precomputed object that maps matchers to its sorted index
+   *
+   * @internal
+   * @defaultValue `undefined`
+   */
+  sortCache?: Record<string, number>
 }
 
 export type PathParserOptions = Pick<
   _PathParserOptions,
-  'end' | 'sensitive' | 'strict'
+  'end' | 'sensitive' | 'strict' | 'sortCache'
 >
 
 // default pattern for a param: non-greedy everything but /
 const BASE_PARAM_PATTERN = '[^/]+?'
 
-const BASE_PATH_PARSER_OPTIONS: Required<_PathParserOptions> = {
+const BASE_PATH_PARSER_OPTIONS: Omit<
+  Required<_PathParserOptions>,
+  'sortCache'
+> = {
   sensitive: false,
   strict: false,
   start: true,
