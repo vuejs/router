@@ -366,17 +366,15 @@ export function createRouterMatcher(
   // restore matcher order from cache
   if (globalOptions.sortCache != null) {
     try {
-      const sorted = matchers.sort(
+      matchers.sort(
         (a, b) =>
           globalOptions!.sortCache![a.cacheKey!] -
           globalOptions!.sortCache![b.cacheKey!]
       )
 
-      for (const entry of sorted) {
+      for (const entry of matchers) {
         delete entry.cacheKey
       }
-
-      matchers.splice(0, matchers.length, ...sorted)
     } catch {
       console.log('Restore failure.')
     }
