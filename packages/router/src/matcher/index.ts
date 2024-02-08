@@ -384,13 +384,7 @@ export function createRouterMatcher(
 
   restoreSort = false
 
-  return {
-    addRoute,
-    resolve,
-    removeRoute,
-    getRoutes,
-    getRecordMatcher,
-  }
+  return { addRoute, resolve, removeRoute, getRoutes, getRecordMatcher }
 }
 
 /**
