@@ -394,11 +394,11 @@ export function createRouterMatcher(
 }
 
 /**
- * Creates matcher sort cache
+ * Creates a router matcher sort cache
  *
  * @internal
  */
-export function createSortCache(
+export function createRouterMatcherSortCache(
   records: RouteRecord[]
 ): Record<string, number> {
   const sortCache: Record<string, number> = {}
