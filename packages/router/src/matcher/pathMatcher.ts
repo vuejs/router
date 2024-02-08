@@ -18,6 +18,10 @@ export interface RouteRecordMatcher extends PathParser {
   cacheKey?: string
 }
 
+export function createRouteRecordCacheKey(record: Readonly<RouteRecord>) {
+  return String(record?.name) + '___' + record.path
+}
+
 export function createRouteRecordMatcher(
   record: Readonly<RouteRecord>,
   parent: RouteRecordMatcher | undefined,
@@ -46,7 +50,7 @@ export function createRouteRecordMatcher(
   })
 
   if (options?.sortCache) {
-    matcher.cacheKey = String(record?.name) + '___' + record.path
+    matcher.cacheKey = createRouteRecordCacheKey(record)
   }
 
   if (parent) {

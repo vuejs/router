@@ -7,7 +7,11 @@ import {
   _RouteRecordProps,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
-import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
+import {
+  createRouteRecordCacheKey,
+  createRouteRecordMatcher,
+  RouteRecordMatcher,
+} from './pathMatcher'
 import { RouteRecord, RouteRecordNormalized } from './types'
 
 import type {
@@ -394,11 +398,16 @@ export function createRouterMatcher(
  *
  * @internal
  */
-export function createSortCache(records: RouteRecord[]) {
-  return records.reduce((acc, cur, index) => {
-    acc[String(cur?.name) + '___' + cur.path] = index
-    return acc
-  }, {} as Record<string, number>)
+export function createSortCache(
+  records: RouteRecord[]
+): Record<string, number> {
+  const sortCache: Record<string, number> = {}
+
+  for (let i = 0; i < records.length; i++) {
+    sortCache[createRouteRecordCacheKey(records[i])] = i
+  }
+
+  return sortCache
 }
 
 function paramsFromLocation(
