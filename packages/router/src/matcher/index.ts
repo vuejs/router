@@ -223,17 +223,8 @@ export function createRouterMatcher(
   }
 
   function insertMatcher(matcher: RouteRecordMatcher) {
-    let i = 0
-    while (
-      i < matchers.length &&
-      comparePathParserScore(matcher, matchers[i]) >= 0 &&
-      // Adding children with empty path should still appear before the parent
-      // https://github.com/vuejs/router/issues/1124
-      (matcher.record.path !== matchers[i].record.path ||
-        !isRecordChildOf(matcher, matchers[i]))
-    )
-      i++
-    matchers.splice(i, 0, matcher)
+    const index = findInsertionIndex(matcher, matchers)
+    matchers.splice(index, 0, matcher)
     // only add the original record to the name map
     if (matcher.record.name && !isAliasRecord(matcher))
       matcherMap.set(matcher.record.name, matcher)
@@ -520,13 +511,51 @@ function checkMissingParamsInAbsolutePath(
   }
 }
 
-function isRecordChildOf(
-  record: RouteRecordMatcher,
-  parent: RouteRecordMatcher
-): boolean {
-  return parent.children.some(
-    child => child === record || isRecordChildOf(record, child)
-  )
+/**
+ * Performs a binary search to find the correct insertion index for a new matcher.
+ *
+ * Matchers are primarily sorted by their score. If scores are tied then the matcher's depth is used instead.
+ * The depth check ensures that a child with an empty path comes before its parent.
+ *
+ * @param matcher - new matcher to be inserted
+ * @param matchers - existing matchers
+ */
+function findInsertionIndex(
+  matcher: RouteRecordMatcher,
+  matchers: RouteRecordMatcher[]
+) {
+  const depth = getDepth(matcher)
+
+  let lower = 0
+  let upper = matchers.length
+
+  while (lower !== upper) {
+    const mid = (lower + upper) >> 1
+    const sortOrder =
+      comparePathParserScore(matcher, matchers[mid]) ||
+      getDepth(matchers[mid]) - depth
+
+    if (sortOrder === 0) {
+      return mid
+    } else if (sortOrder < 0) {
+      upper = mid
+    } else {
+      lower = mid + 1
+    }
+  }
+
+  return upper
+}
+
+function getDepth(record: RouteRecordMatcher) {
+  let depth = 0
+
+  while (record.parent) {
+    ++depth
+    record = record.parent
+  }
+
+  return depth
 }
 
 export type { PathParserOptions, _PathParserOptions }
