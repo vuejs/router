@@ -418,6 +418,64 @@ describe('Matcher: adding and removing records', () => {
     )
   })
 
+  it('should give priority to earlier routes', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({ path: '/:id(123\\d*)', component, name: 'first' })
+    matcher.addRoute({ path: '/:id(12\\d*)', component, name: 'second' })
+    matcher.addRoute({ path: '/:id(1\\d*)', component, name: 'third' })
+    matcher.addRoute({ path: '/:id(\\d+)', component, name: 'fourth' })
+    expect(matcher.resolve({ path: '/1239' }, currentLocation)).toMatchObject({
+      name: 'first',
+    })
+    expect(matcher.resolve({ path: '/1299' }, currentLocation)).toMatchObject({
+      name: 'second',
+    })
+    expect(matcher.resolve({ path: '/1999' }, currentLocation)).toMatchObject({
+      name: 'third',
+    })
+    expect(matcher.resolve({ path: '/9999' }, currentLocation)).toMatchObject({
+      name: 'fourth',
+    })
+  })
+
+  it('should give priority to earlier child routes', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({
+      path: '/user',
+      name: 'parent',
+      children: [
+        { path: '', component, name: 'root' },
+        { path: ':id(123\\d*)', component, name: 'first' },
+        { path: ':id(12\\d*)', component, name: 'second' },
+        { path: ':id(1\\d*)', component, name: 'third' },
+        { path: ':id(\\d+)', component, name: 'fourth' },
+      ],
+    })
+    expect(matcher.resolve({ path: '/user/' }, currentLocation)).toMatchObject({
+      name: 'root',
+    })
+    expect(
+      matcher.resolve({ path: '/user/1239' }, currentLocation)
+    ).toMatchObject({
+      name: 'first',
+    })
+    expect(
+      matcher.resolve({ path: '/user/1299' }, currentLocation)
+    ).toMatchObject({
+      name: 'second',
+    })
+    expect(
+      matcher.resolve({ path: '/user/1999' }, currentLocation)
+    ).toMatchObject({
+      name: 'third',
+    })
+    expect(
+      matcher.resolve({ path: '/user/9999' }, currentLocation)
+    ).toMatchObject({
+      name: 'fourth',
+    })
+  })
+
   describe('warnings', () => {
     mockWarn()
 
