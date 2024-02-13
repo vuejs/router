@@ -17,7 +17,8 @@ Creating a Single-page Application with Vue + Vue Router feels natural: with Vue
   <p>
     <!-- use the router-link component for navigation. -->
     <!-- specify the link by passing the `to` prop. -->
-    <!-- `<router-link>` will render an `<a>` tag with the correct `href` attribute -->
+    <!-- `<router-link>` will render an `<a>` tag with -->
+    <!-- the correct `href` attribute -->
     <router-link to="/">Go to Home</router-link>
     <router-link to="/about">Go to About</router-link>
   </p>
@@ -57,7 +58,8 @@ const routes = [
 // You can pass in additional options here, but let's
 // keep it simple for now.
 const router = VueRouter.createRouter({
-  // 4. Provide the history implementation to use. We are using the hash history for simplicity here.
+  // 4. Provide the history implementation to use. We
+  // are using the hash history for simplicity here.
   history: VueRouter.createWebHashHistory(),
   routes, // short for `routes: routes`
 })
