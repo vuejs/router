@@ -1,12 +1,46 @@
 {
   "name": "vue-router",
-  "version": "4.2.5",
+  "version": "4.3.0-alpha.1",
   "main": "index.js",
   "unpkg": "dist/vue-router.global.js",
   "jsdelivr": "dist/vue-router.global.js",
   "module": "dist/vue-router.mjs",
   "types": "dist/vue-router.d.ts",
   "exports": {
+    "./auto-routes": {
+      "types": "./vue-router-auto-routes.d.ts",
+      "node": {
+        "import": {
+          "production": "./dist/vue-router.node.mjs",
+          "development": "./dist/vue-router.node.mjs",
+          "default": "./dist/vue-router.node.mjs"
+        },
+        "require": {
+          "production": "./dist/vue-router.prod.cjs",
+          "development": "./dist/vue-router.cjs",
+          "default": "./index.js"
+        }
+      },
+      "import": "./dist/vue-router.mjs",
+      "require": "./index.js"
+    },
+    "./auto": {
+      "types": "./vue-router-auto.d.ts",
+      "node": {
+        "import": {
+          "production": "./dist/vue-router.node.mjs",
+          "development": "./dist/vue-router.node.mjs",
+          "default": "./dist/vue-router.node.mjs"
+        },
+        "require": {
+          "production": "./dist/vue-router.prod.cjs",
+          "development": "./dist/vue-router.cjs",
+          "default": "./index.js"
+        }
+      },
+      "import": "./dist/vue-router.mjs",
+      "require": "./index.js"
+    },
     ".": {
       "types": "./dist/vue-router.d.ts",
       "node": {
@@ -47,6 +81,8 @@
     "index.js",
     "dist/*.{js,cjs,mjs}",
     "dist/vue-router.d.ts",
+    "vue-router-auto.d.ts",
+    "vue-router-auto-routes.d.ts",
     "vetur/tags.json",
     "vetur/attributes.json",
     "README.md"
