@@ -40,4 +40,4 @@ router.push({ name: 'user', params: { username: 'erina' } })
 
 完整的例子在[这里](https://github.com/vuejs/vue-router/blob/dev/examples/named-routes/app.js).
 
-任何`name`在所有路由中都**必须是唯一**的。如果为多条路由添加相同的`name`，路由器将只保留最后一条。您可以在[动态路由](../advanced/dynamic-routing.md#Removing-routes)部分阅读更多相关内容。
+所有路由的命名**都必须是唯一的**。如果为多条路由添加相同的命名，路由器只会保留最后那一条。你可以在[动态路由](../advanced/dynamic-routing.md#Removing-routes)章节了解更多。
