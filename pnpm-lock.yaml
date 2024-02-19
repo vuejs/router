@@ -149,8 +149,8 @@ importers:
         specifier: ^1.5.5
         version: 1.5.5
       chromedriver:
-        specifier: ^119.0.1
-        version: 119.0.1
+        specifier: ^121.0.2
+        version: 121.0.2
       connect-history-api-fallback:
         specifier: ^1.6.0
         version: 1.6.0
@@ -177,7 +177,7 @@ importers:
         version: 1.1.0
       nightwatch:
         specifier: ^2.6.22
-        version: 2.6.24(chromedriver@119.0.1)(geckodriver@3.2.0)
+        version: 2.6.24(chromedriver@121.0.2)(geckodriver@3.2.0)
       nightwatch-helpers:
         specifier: ^1.2.0
         version: 1.2.0
@@ -2398,10 +2398,10 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /axios@1.6.2:
-    resolution: {integrity: sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==}
+  /axios@1.6.7:
+    resolution: {integrity: sha512-/hDJGff6/c7u0hDkvkGxR/oy6CbCs8ziCsC7SqmhjfozqiJGc8Z11wrv9z9lYfY4K8l+H9TpjcMDX0xOZmx+RA==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.5
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -2706,14 +2706,14 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /chromedriver@119.0.1:
-    resolution: {integrity: sha512-lpCFFLaXPpvElTaUOWKdP74pFb/sJhWtWqMjn7Ju1YriWn8dT5JBk84BGXMPvZQs70WfCYWecxdMmwfIu1Mupg==}
+  /chromedriver@121.0.2:
+    resolution: {integrity: sha512-58MUSCEE3oB3G3Y/Jo3URJ2Oa1VLHcVBufyYt7vNfGrABSJm7ienQLF9IQ8LPDlPVgLUXt2OBfggK3p2/SlEBg==}
     engines: {node: '>=18'}
     hasBin: true
     requiresBuild: true
     dependencies:
       '@testim/chrome-version': 1.1.4
-      axios: 1.6.2
+      axios: 1.6.7
       compare-versions: 6.1.0
       extract-zip: 2.0.1
       https-proxy-agent: 5.0.1
@@ -3685,8 +3685,8 @@ packages:
       tabbable: 6.2.0
     dev: false
 
-  /follow-redirects@1.15.2:
-    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+  /follow-redirects@1.15.5:
+    resolution: {integrity: sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -5621,7 +5621,7 @@ packages:
     resolution: {integrity: sha512-TeYlrNctoy0rJdVAYKoouG+mwv1FmfZkArdBM76sM6090BOt5mKzJNr24lr9PFdDpBrjKhS6b/b6qJzGY/wCig==}
     dev: true
 
-  /nightwatch@2.6.24(chromedriver@119.0.1)(geckodriver@3.2.0):
+  /nightwatch@2.6.24(chromedriver@121.0.2)(geckodriver@3.2.0):
     resolution: {integrity: sha512-XRLlmZLWv/a35ZZ0Ev1FVizqx+d5K4aDv/vV1++I1JJzyBu/vftx4ALKCrR0nmNqqQfBBO+p/h10r+ayyU9TRw==}
     engines: {node: '>= 12.0.0'}
     hasBin: true
@@ -5643,7 +5643,7 @@ packages:
       assertion-error: 1.1.0
       boxen: 5.1.2
       chai-nightwatch: 0.5.3
-      chromedriver: 119.0.1
+      chromedriver: 121.0.2
       ci-info: 3.3.0
       cli-table3: 0.6.3
       didyoumean: 1.2.2
