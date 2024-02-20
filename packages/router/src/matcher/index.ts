@@ -7,6 +7,7 @@ import {
   _RouteRecordProps,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
+import { createMatcherTree } from './matcherTree'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
 import { RouteRecordNormalized } from './types'
 
@@ -15,8 +16,6 @@ import type {
   PathParserOptions,
   _PathParserOptions,
 } from './pathParserRanker'
-
-import { comparePathParserScore } from './pathParserRanker'
 
 import { warn } from '../warning'
 import { assign, noop } from '../utils'
@@ -58,8 +57,8 @@ export function createRouterMatcher(
   routes: Readonly<RouteRecordRaw[]>,
   globalOptions: PathParserOptions
 ): RouterMatcher {
-  // normalized ordered array of matchers
-  const matchers: RouteRecordMatcher[] = []
+  // normalized ordered tree of matchers
+  const matcherTree = createMatcherTree()
   const matcherMap = new Map<RouteRecordName, RouteRecordMatcher>()
   globalOptions = mergeOptions(
     { strict: false, end: true, sensitive: false } as PathParserOptions,
@@ -203,37 +202,24 @@ export function createRouterMatcher(
       const matcher = matcherMap.get(matcherRef)
       if (matcher) {
         matcherMap.delete(matcherRef)
-        matchers.splice(matchers.indexOf(matcher), 1)
+        matcherTree.remove(matcher)
         matcher.children.forEach(removeRoute)
         matcher.alias.forEach(removeRoute)
       }
     } else {
-      const index = matchers.indexOf(matcherRef)
-      if (index > -1) {
-        matchers.splice(index, 1)
-        if (matcherRef.record.name) matcherMap.delete(matcherRef.record.name)
-        matcherRef.children.forEach(removeRoute)
-        matcherRef.alias.forEach(removeRoute)
-      }
+      matcherTree.remove(matcherRef)
+      if (matcherRef.record.name) matcherMap.delete(matcherRef.record.name)
+      matcherRef.children.forEach(removeRoute)
+      matcherRef.alias.forEach(removeRoute)
     }
   }
 
   function getRoutes() {
-    return matchers
+    return matcherTree.toArray()
   }
 
   function insertMatcher(matcher: RouteRecordMatcher) {
-    let i = 0
-    while (
-      i < matchers.length &&
-      comparePathParserScore(matcher, matchers[i]) >= 0 &&
-      // Adding children with empty path should still appear before the parent
-      // https://github.com/vuejs/router/issues/1124
-      (matcher.record.path !== matchers[i].record.path ||
-        !isRecordChildOf(matcher, matchers[i]))
-    )
-      i++
-    matchers.splice(i, 0, matcher)
+    matcherTree.add(matcher)
     // only add the original record to the name map
     if (matcher.record.name && !isAliasRecord(matcher))
       matcherMap.set(matcher.record.name, matcher)
@@ -306,7 +292,7 @@ export function createRouterMatcher(
         )
       }
 
-      matcher = matchers.find(m => m.re.test(path))
+      matcher = matcherTree.find(path)
       // matcher should have a value after the loop
 
       if (matcher) {
@@ -319,7 +305,7 @@ export function createRouterMatcher(
       // match by name or path of current route
       matcher = currentLocation.name
         ? matcherMap.get(currentLocation.name)
-        : matchers.find(m => m.re.test(currentLocation.path))
+        : matcherTree.find(currentLocation.path)
       if (!matcher)
         throw createRouterError<MatcherError>(ErrorTypes.MATCHER_NOT_FOUND, {
           location,
@@ -523,15 +509,6 @@ function checkMissingParamsInAbsolutePath(
         `Absolute path "${record.record.path}" must have the exact same param named "${key.name}" as its parent "${parent.record.path}".`
       )
   }
-}
-
-function isRecordChildOf(
-  record: RouteRecordMatcher,
-  parent: RouteRecordMatcher
-): boolean {
-  return parent.children.some(
-    child => child === record || isRecordChildOf(record, child)
-  )
 }
 
 export type { PathParserOptions, _PathParserOptions }
