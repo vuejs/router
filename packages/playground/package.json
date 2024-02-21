@@ -12,7 +12,7 @@
     "vue": "^3.4.19"
   },
   "devDependencies": {
-    "@types/node": "^20.10.4",
+    "@types/node": "^20.11.17",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/compiler-sfc": "^3.4.19",
     "@vue/tsconfig": "^0.5.1",

@@ -53,8 +53,6 @@ Add a new [route record](../index.md#RouteRecordRaw) as the child of an existing
 
 ▸ (): `void`
 
-Add a new [route record](../index.md#RouteRecordRaw) as the child of an existing route.
-
 ##### Returns
 
 `void`
@@ -74,8 +72,6 @@ Add a new [route record](../index.md#RouteRecordRaw) to the router.
 `fn`
 
 ▸ (): `void`
-
-Add a new [route record](../index.md#RouteRecordRaw) to the router.
 
 ##### Returns
 
@@ -104,24 +100,9 @@ a function that removes the registered hook
 
 ▸ (): `void`
 
-Add a navigation hook that is executed after every navigation. Returns a
-function that removes the registered hook.
-
 ##### Returns
 
 `void`
-
-a function that removes the registered hook
-
-**`Example`**
-
-```js
-router.afterEach((to, from, failure) => {
-  if (isNavigationFailure(failure)) {
-    console.log('failed navigation', failure)
-  }
-})
-```
 
 **`Example`**
 
@@ -167,9 +148,6 @@ function that removes the registered guard.
 
 ▸ (): `void`
 
-Add a navigation guard that executes before any navigation. Returns a
-function that removes the registered guard.
-
 ##### Returns
 
 `void`
@@ -199,24 +177,9 @@ a function that removes the registered guard
 
 ▸ (): `void`
 
-Add a navigation guard that executes before navigation is about to be
-resolved. At this state all component have been fetched and other
-navigation guards have been successful. Returns a function that removes the
-registered guard.
-
 ##### Returns
 
 `void`
-
-a function that removes the registered guard
-
-**`Example`**
-
-```js
-router.beforeResolve(to => {
-  if (to.meta.requiresAuth && !isAuthenticated) return false
-})
-```
 
 **`Example`**
 
@@ -331,12 +294,6 @@ is required to render a route.
 `fn`
 
 ▸ (): `void`
-
-Adds an error handler that is called every time a non caught error happens
-during navigation. This includes errors thrown synchronously and
-asynchronously, errors returned or passed to `next` in any navigation
-guard, and errors occurred when trying to resolve an async component that
-is required to render a route.
 
 ##### Returns
 
