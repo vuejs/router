@@ -1,9 +1,9 @@
 {
   "name": "@vue/router-root",
   "private": true,
-  "packageManager": "pnpm@8.10.2",
+  "packageManager": "pnpm@8.15.3",
   "engines": {
-    "node": ">=18.14.0"
+    "node": ">=20.9.0"
   },
   "workspaces": [
     "packages/*"
@@ -66,6 +66,6 @@
     }
   },
   "volta": {
-    "node": "18.16.0"
+    "node": "20.11.1"
   }
 }
