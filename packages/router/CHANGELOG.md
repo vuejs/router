@@ -1,3 +1,17 @@
+# [4.3.0](https://github.com/vuejs/router/compare/v4.2.5...v4.3.0) (2024-02-21)
+
+### Bug Fixes
+
+- check document for browser instead of window ([#2042](https://github.com/vuejs/router/issues/2042)) ([5631732](https://github.com/vuejs/router/commit/5631732cbafd0c780db449fd820607a75b9b82aa))
+- decode hash when parsing urls ([#2061](https://github.com/vuejs/router/issues/2061)) ([6f160b9](https://github.com/vuejs/router/commit/6f160b931e8647e15217a3ecf9efcc2152366fc6)), closes [#2060](https://github.com/vuejs/router/issues/2060)
+- **guards:** run beforeRouteEnter with app context ([#2117](https://github.com/vuejs/router/issues/2117)) ([6a69696](https://github.com/vuejs/router/commit/6a696961a42d1d39640d36a1e65e5097b50030b8)), closes [vuejs/router#2051](https://github.com/vuejs/router/issues/2051)
+- handle undefined path in router resolve ([0ec4862](https://github.com/vuejs/router/commit/0ec4862ff54207c1c207027ed240e24efcfeb6cf))
+- keep optional params coming from a parent record ([#2031](https://github.com/vuejs/router/issues/2031)) ([04b50e5](https://github.com/vuejs/router/commit/04b50e5a2cf82f896f5200497386d8a2acdae738))
+
+### Features
+
+- (internal) add types for unplugin-vue-router ([2d1dd2a](https://github.com/vuejs/router/commit/2d1dd2ad721d7e62d801d6788ba056444aa09bad)).
+
 ## [4.2.5](https://github.com/vuejs/router/compare/v4.2.4...v4.2.5) (2023-09-22)
 
 ### Bug Fixes
