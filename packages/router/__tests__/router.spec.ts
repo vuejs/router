@@ -1076,5 +1076,22 @@ describe('Router', () => {
         name: 'Param',
       })
     })
+
+    it('warns when the parent route is missing', async () => {
+      const { router } = await newRouter()
+      router.addRoute('parent-route', {
+        path: '/p',
+        component: components.Foo,
+      })
+      expect(
+        'Parent route "parent-route" not found when adding child route'
+      ).toHaveBeenWarned()
+    })
+
+    it('warns when removing a missing route', async () => {
+      const { router } = await newRouter()
+      router.removeRoute('route-name')
+      expect('Cannot remove non-existent route "route-name"').toHaveBeenWarned()
+    })
   })
 })
