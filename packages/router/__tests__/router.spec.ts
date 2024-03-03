@@ -330,7 +330,7 @@ describe('Router', () => {
     expect(route1.params).toEqual({ p: 'a' })
   })
 
-  it('handles an undefined location', async () => {
+  it('warns on undefined location during dev', async () => {
     const { router } = await newRouter()
 
     const route1 = router.resolve(undefined as any)
@@ -338,7 +338,7 @@ describe('Router', () => {
     expect(route1.path).toBe('/')
   })
 
-  it('handles a null location', async () => {
+  it('warns on null location during dev', async () => {
     const { router } = await newRouter()
 
     const route1 = router.resolve(null as any)
