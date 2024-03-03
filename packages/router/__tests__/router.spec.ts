@@ -330,6 +330,22 @@ describe('Router', () => {
     expect(route1.params).toEqual({ p: 'a' })
   })
 
+  it('handles an undefined location', async () => {
+    const { router } = await newRouter()
+
+    const route1 = router.resolve(undefined as any)
+    expect('router.resolve() was passed an invalid location').toHaveBeenWarned()
+    expect(route1.path).toBe('/')
+  })
+
+  it('handles a null location', async () => {
+    const { router } = await newRouter()
+
+    const route1 = router.resolve(null as any)
+    expect('router.resolve() was passed an invalid location').toHaveBeenWarned()
+    expect(route1.path).toBe('/')
+  })
+
   it('removes null/undefined optional params when current location has it', async () => {
     const { router } = await newRouter()
 

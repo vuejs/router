@@ -32,7 +32,14 @@ import {
   NavigationRedirectError,
   isNavigationFailure,
 } from './errors'
-import { applyToParams, isBrowser, assign, noop, isArray } from './utils'
+import {
+  applyToParams,
+  isBrowser,
+  assign,
+  noop,
+  isArray,
+  isObject,
+} from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
 import {
@@ -458,6 +465,14 @@ export function createRouter(options: RouterOptions): Router {
         redirectedFrom: undefined,
         href,
       })
+    }
+
+    if (__DEV__ && !isObject(rawLocation)) {
+      warn(
+        `router.resolve() was passed an invalid location. This will fail in production.\n- Location:`,
+        rawLocation
+      )
+      rawLocation = {}
     }
 
     let matcherLocation: MatcherLocationRaw
