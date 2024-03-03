@@ -7,9 +7,7 @@ import { mockWarn } from 'jest-mock-warn'
 import {
   createMemoryHistory,
   createRouter,
-  routeLocationKey,
   RouteLocationRaw,
-  routerKey,
   useLink,
   UseLinkOptions,
 } from '../src'
@@ -50,10 +48,7 @@ async function callUseLink(args: UseLinkOptions) {
     },
     {
       global: {
-        provide: {
-          [routerKey as any]: router,
-          [routeLocationKey as any]: router.currentRoute.value,
-        },
+        plugins: [router],
       },
     }
   )
