@@ -397,6 +397,14 @@ export function createRouter(options: RouterOptions): Router {
     let record: RouteRecordRaw
     if (isRouteName(parentOrRoute)) {
       parent = matcher.getRecordMatcher(parentOrRoute)
+      if (__DEV__ && !parent) {
+        warn(
+          `Parent route "${String(
+            parentOrRoute
+          )}" not found when adding child route`,
+          route
+        )
+      }
       record = route!
     } else {
       record = parentOrRoute
