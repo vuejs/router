@@ -84,7 +84,7 @@ export interface UseLinkDevtoolsContext {
   route: RouteLocationNormalized & { href: string }
   isActive: boolean
   isExactActive: boolean
-  error: string
+  error: string | null
 }
 
 export type UseLinkOptions = VueUseOptions<RouterLinkOptions>
@@ -192,7 +192,7 @@ export function useLink(props: UseLinkOptions) {
         route: route.value,
         isActive: isActive.value,
         isExactActive: isExactActive.value,
-        error: '',
+        error: null,
       }
 
       // @ts-expect-error: this is internal
@@ -205,7 +205,7 @@ export function useLink(props: UseLinkOptions) {
           linkContextDevtools.isActive = isActive.value
           linkContextDevtools.isExactActive = isExactActive.value
           linkContextDevtools.error = isValidTo(unref(props.to))
-            ? ''
+            ? null
             : 'Invalid "to" value'
         },
         { flush: 'post' }
