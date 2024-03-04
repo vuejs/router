@@ -20,6 +20,22 @@ function normalizePath(path: string) {
   return path
 }
 
+function chooseBestMatcher(
+  firstMatcher: RouteRecordMatcher | undefined,
+  secondMatcher: RouteRecordMatcher | undefined
+) {
+  if (secondMatcher) {
+    if (
+      !firstMatcher ||
+      comparePathParserScore(firstMatcher, secondMatcher) > 0
+    ) {
+      firstMatcher = secondMatcher
+    }
+  }
+
+  return firstMatcher
+}
+
 export function createMatcherTree(): MatcherTree {
   const root = createMatcherNode()
   const exactMatchers: Record<string, RouteRecordMatcher[]> =
@@ -53,15 +69,10 @@ export function createMatcherTree(): MatcherTree {
     find(path) {
       const matchers = exactMatchers[normalizePath(path)]
 
-      if (matchers) {
-        for (const matcher of matchers) {
-          if (matcher.re.test(path)) {
-            return matcher
-          }
-        }
-      }
-
-      return root.find(path)
+      return chooseBestMatcher(
+        matchers && matchers.find(matcher => matcher.re.test(path)),
+        root.find(path)
+      )
     },
 
     toArray() {
@@ -127,24 +138,24 @@ function createMatcherNode(depth = 1): MatcherTree {
     find(path) {
       const tokens = path.split('/')
       const myToken = tokens[depth]
+      let matcher: RouteRecordMatcher | undefined
 
       if (segments && myToken != null) {
         const segmentMatcher = segments[myToken.toUpperCase()]
 
         if (segmentMatcher) {
-          const match = segmentMatcher.find(path)
-
-          if (match) {
-            return match
-          }
+          matcher = segmentMatcher.find(path)
         }
       }
 
       if (wildcards) {
-        return wildcards.find(matcher => matcher.re.test(path))
+        matcher = chooseBestMatcher(
+          matcher,
+          wildcards.find(matcher => matcher.re.test(path))
+        )
       }
 
-      return
+      return matcher
     },
 
     toArray() {
