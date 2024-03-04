@@ -44,6 +44,10 @@ export function createRouteRecordMatcher(
     }
   }
 
+  if (options?.end === false && !options?.strict) {
+    staticTokens.pop()
+  }
+
   const parser = staticPath
     ? staticPathToParser(record.path, tokens, options)
     : tokensToParser(tokens, options)
