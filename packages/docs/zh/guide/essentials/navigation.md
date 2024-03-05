@@ -13,7 +13,7 @@ sidebarDepth: 0
 
 ## 导航到不同的位置
 
-**注意: 在下面的示例中也会使用路由来指代路由器实例。在组件内部，你可以使用 `$router` 属性访问路由，例如 `this.$router.push(...)`。如果你正在使用组合式 API，可以通过调用 [`useRouter()`](../advanced/composition-api) 来访问路由。**
+**注意: 下面的示例中的 `router` 指代路由器实例。在组件内部，你可以使用 `$router` 属性访问路由，例如 `this.$router.push(...)`。如果使用组合式 API，你可以通过调用 [`useRouter()`](../advanced/composition-api) 来访问路由器。**
 
 想要导航到不同的 URL，可以使用 `router.push` 方法。这个方法会向 history 栈添加一个新的记录，所以，当用户点击浏览器后退按钮时，会回到之前的 URL。
 
