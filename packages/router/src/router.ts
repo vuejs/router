@@ -8,6 +8,7 @@ import {
   RouteLocationNormalizedLoaded,
   RouteLocation,
   RouteRecordName,
+  isRouteLocation,
   isRouteName,
   NavigationGuardWithThis,
   RouteLocationOptions,
@@ -32,14 +33,7 @@ import {
   NavigationRedirectError,
   isNavigationFailure,
 } from './errors'
-import {
-  applyToParams,
-  isBrowser,
-  assign,
-  noop,
-  isArray,
-  isObject,
-} from './utils'
+import { applyToParams, isBrowser, assign, noop, isArray } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
 import {
@@ -467,7 +461,7 @@ export function createRouter(options: RouterOptions): Router {
       })
     }
 
-    if (__DEV__ && !isObject(rawLocation)) {
+    if (__DEV__ && !isRouteLocation(rawLocation)) {
       warn(
         `router.resolve() was passed an invalid location. This will fail in production.\n- Location:`,
         rawLocation

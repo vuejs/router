@@ -27,6 +27,7 @@ import {
   ComponentOptionsMixin,
 } from 'vue'
 import {
+  isRouteLocation,
   RouteLocationRaw,
   VueUseOptions,
   RouteLocation,
@@ -36,7 +37,7 @@ import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { NavigationFailure } from './errors'
-import { isArray, isBrowser, isObject, noop } from './utils'
+import { isArray, isBrowser, noop } from './utils'
 import { warn } from './warning'
 
 export interface RouterLinkOptions {
@@ -95,7 +96,6 @@ export function useLink(props: UseLinkOptions) {
   const router = inject(routerKey)!
   const currentRoute = inject(routeLocationKey)!
 
-  const isValidTo = (to: unknown) => typeof to === 'string' || isObject(to)
   let hasPrevious = false
   let previousTo: unknown = null
 
@@ -103,7 +103,7 @@ export function useLink(props: UseLinkOptions) {
     const to = unref(props.to)
 
     if (__DEV__ && (!hasPrevious || to !== previousTo)) {
-      if (!isValidTo(to)) {
+      if (!isRouteLocation(to)) {
         if (hasPrevious) {
           warn(
             `Invalid value for prop "to" in useLink()\n- to:`,
@@ -204,7 +204,7 @@ export function useLink(props: UseLinkOptions) {
           linkContextDevtools.route = route.value
           linkContextDevtools.isActive = isActive.value
           linkContextDevtools.isExactActive = isExactActive.value
-          linkContextDevtools.error = isValidTo(unref(props.to))
+          linkContextDevtools.error = isRouteLocation(unref(props.to))
             ? null
             : 'Invalid "to" value'
         },
