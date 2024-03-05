@@ -81,9 +81,9 @@ URL `/search?q=vue` 将传递 `{query: 'vue'}` 作为 props 传给 `SearchUser` 
 
 <!-- TODO: translation -->
 
-## Via RouterView
+## 通过 RouterView
 
-You can also pass any props via the [`<RouterView>` slot](../advanced/router-view-slot):
+你还可以通过 [`<RouterView>` 插槽](../advanced/router-view-slot) 传递任何参数：
 
 ```vue-html
 <RouterView v-slot="{ Component }">
@@ -94,6 +94,6 @@ You can also pass any props via the [`<RouterView>` slot](../advanced/router-vie
 </RouterView>
 ```
 
-::: warning
-In this case, **all view components** will receive `view-prop`. This is usually not a good idea as  it means that all of the view components have declared a `view-prop` prop, which is not necessarily true. If possible, use any of the options above.
+::: 警告
+在这种情况下，**所有视图组件**都会接收到 `view-prop`。通常这并不是一个好的做法，因为这意味着所有的视图组件都声明了一个不一定正确的 `view-prop` 属性。请尽可能使用上述的其他选项。
 :::
