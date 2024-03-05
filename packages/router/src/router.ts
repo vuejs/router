@@ -8,6 +8,7 @@ import {
   RouteLocationNormalizedLoaded,
   RouteLocation,
   RouteRecordName,
+  isRouteLocation,
   isRouteName,
   NavigationGuardWithThis,
   RouteLocationOptions,
@@ -466,6 +467,14 @@ export function createRouter(options: RouterOptions): Router {
         redirectedFrom: undefined,
         href,
       })
+    }
+
+    if (__DEV__ && !isRouteLocation(rawLocation)) {
+      warn(
+        `router.resolve() was passed an invalid location. This will fail in production.\n- Location:`,
+        rawLocation
+      )
+      rawLocation = {}
     }
 
     let matcherLocation: MatcherLocationRaw

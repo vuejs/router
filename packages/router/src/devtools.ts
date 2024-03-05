@@ -119,10 +119,16 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
           ;(
             componentInstance.__vrl_devtools as UseLinkDevtoolsContext[]
           ).forEach(devtoolsData => {
+            let label = devtoolsData.route.path
             let backgroundColor = ORANGE_400
             let tooltip: string = ''
+            let textColor = 0
 
-            if (devtoolsData.isExactActive) {
+            if (devtoolsData.error) {
+              label = devtoolsData.error
+              backgroundColor = RED_100
+              textColor = RED_700
+            } else if (devtoolsData.isExactActive) {
               backgroundColor = LIME_500
               tooltip = 'This is exactly active'
             } else if (devtoolsData.isActive) {
@@ -131,8 +137,8 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
             }
 
             node.tags.push({
-              label: devtoolsData.route.path,
-              textColor: 0,
+              label,
+              textColor,
               tooltip,
               backgroundColor,
             })
@@ -419,6 +425,8 @@ const CYAN_400 = 0x22d3ee
 const ORANGE_400 = 0xfb923c
 // const GRAY_100 = 0xf4f4f5
 const DARK = 0x666666
+const RED_100 = 0xfee2e2
+const RED_700 = 0xb91c1c
 
 function formatRouteRecordForInspector(
   route: RouteRecordMatcher
