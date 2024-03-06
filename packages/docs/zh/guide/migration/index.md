@@ -113,11 +113,11 @@ router.resolve({
 
 **原因**：Vue Router 不再使用 `path-to-regexp`，而是实现了自己的解析系统，允许路由排序并实现动态路由。由于我们通常在每个项目中只添加一个通配符路由，所以支持 `*` 的特殊语法并没有太大的好处。参数的编码是跨路由的，无一例外，让事情更容易预测。
 
-### `currentRoute` 属性现已使用 `ref()` 声明其响应式状态
+### 现在 `currentRoute` 属性是一个 `ref()`
 
 路由器实例上的 [`currentRoute`](https://v3.router.vuejs.org/zh/api/#router-currentroute) 对象的属性在以前可以被直接访问。
 
-随着 vue-router v4 的引入，路由器实例上的 `currentRoute` 对象的底层类型已被改为 `Ref<RouteLocationNormalizedLoaded>`，其源自 Vue 3 中新引入的[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)。
+从 vue-router v4 开始，路由器实例上的 `currentRoute` 对象的底层类型已被改为 `Ref<RouteLocationNormalizedLoaded>`，其源自 Vue 3 中新引入的[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)。
 
 当你使用 `useRoute()` 或 `this.$route` 获取路由信息时这并不会带来任何变化，如果想要直接在路由器实例上访问它，你需要通过 `currentRoute.value` 来访问实际的路由对象：
 
