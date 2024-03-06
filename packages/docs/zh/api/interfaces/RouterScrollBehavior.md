@@ -6,9 +6,7 @@ editLink: false
 
 # 接口：RouterScrollBehavior
 
-<!-- TODO: translation -->
-
-Type of the `scrollBehavior` option that can be passed to `createRouter`.
+可以被传递给 `createRouter` 的 `scrollBehavior` 选项的类型。
 
 ## 可调用函数 %{#Callable}%
 
