@@ -618,6 +618,23 @@ describe('Path parser', () => {
       matchParams('/home', '/other/home', {}, { start: false })
     })
 
+    it('defaults to matching the end', () => {
+      // The default should behave like `end: true`
+      const optionSets = [{}, { end: true }]
+
+      for (const options of optionSets) {
+        matchParams('/home', '/home', {}, options)
+        matchParams('/home', '/home/', {}, options)
+        matchParams('/home', '/home/other', null, options)
+        matchParams('/home', '/homepage', null, options)
+
+        matchParams('/home/', '/home', {}, options)
+        matchParams('/home/', '/home/', {}, options)
+        matchParams('/home/', '/home/other', null, options)
+        matchParams('/home/', '/homepage', null, options)
+      }
+    })
+
     it('can not match the end', () => {
       const options = { end: false }
 
