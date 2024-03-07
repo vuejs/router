@@ -22,12 +22,12 @@ import { warn } from '../warning'
 import { assign, noop } from '../utils'
 
 /**
- * Internal RouterMatcher
+ * Internal GenericRouterMatcher
  *
  * @internal
  */
-export interface RouterMatcher {
-  addRoute: (record: RouteRecordRaw, parent?: RouteRecordMatcher) => () => void
+export interface GenericRouterMatcher<RC> {
+  addRoute: (record: RC, parent?: RouteRecordMatcher) => () => void
   removeRoute: {
     (matcher: RouteRecordMatcher): void
     (name: RouteRecordName): void
@@ -48,6 +48,18 @@ export interface RouterMatcher {
 }
 
 /**
+ * Internal RouterMatcher
+ *
+ * @internal
+ */
+export interface RouterMatcher extends GenericRouterMatcher<RouteRecordRaw> {}
+
+// TODO: Should this be considered internal?
+export interface CloneableRouterMatcher extends RouterMatcher {
+  clone: () => CloneableRouterMatcher
+}
+
+/**
  * Creates a Router Matcher.
  *
  * @internal
@@ -57,14 +69,36 @@ export interface RouterMatcher {
 export function createRouterMatcher(
   routes: Readonly<RouteRecordRaw[]>,
   globalOptions: PathParserOptions
-): RouterMatcher {
-  // normalized ordered array of matchers
-  const matchers: RouteRecordMatcher[] = []
-  const matcherMap = new Map<RouteRecordName, RouteRecordMatcher>()
+): CloneableRouterMatcher {
   globalOptions = mergeOptions(
     { strict: false, end: true, sensitive: false } as PathParserOptions,
     globalOptions
   )
+
+  const matcher = createRouterMatcherInternal(
+    globalOptions,
+    [],
+    new Map<RouteRecordName, RouteRecordMatcher>()
+  )
+
+  // add initial routes
+  routes.forEach(route => matcher.addRoute(route))
+
+  return matcher
+}
+
+function createRouterMatcherInternal(
+  globalOptions: PathParserOptions,
+  matchers: RouteRecordMatcher[],
+  matcherMap: Map<RouteRecordName, RouteRecordMatcher>
+): CloneableRouterMatcher {
+  function clone() {
+    return createRouterMatcherInternal(
+      globalOptions,
+      [...matchers],
+      new Map(matcherMap)
+    )
+  }
 
   function getRecordMatcher(name: RouteRecordName) {
     return matcherMap.get(name)
@@ -350,10 +384,7 @@ export function createRouterMatcher(
     }
   }
 
-  // add initial routes
-  routes.forEach(route => addRoute(route))
-
-  return { addRoute, resolve, removeRoute, getRoutes, getRecordMatcher }
+  return { addRoute, resolve, removeRoute, getRoutes, getRecordMatcher, clone }
 }
 
 function paramsFromLocation(

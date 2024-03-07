@@ -10,10 +10,10 @@ import {
 import { watch } from 'vue'
 import { decode } from './encoding'
 import { isSameRouteRecord } from './location'
-import { RouterMatcher } from './matcher'
+import { GenericRouterMatcher } from './matcher'
 import { RouteRecordMatcher } from './matcher/pathMatcher'
 import { PathParser } from './matcher/pathParserRanker'
-import { Router } from './router'
+import { GenericRouter } from './router'
 import { UseLinkDevtoolsContext } from './RouterLink'
 import { RouterViewDevtoolsContext } from './RouterView'
 import { RouteLocationNormalized } from './types'
@@ -59,7 +59,11 @@ function formatDisplay(display: string) {
 // to support multiple router instances
 let routerId = 0
 
-export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
+export function addDevtools<RC>(
+  app: App,
+  router: GenericRouter<RC>,
+  matcher: GenericRouterMatcher<RC>
+) {
   // Take over router.beforeEach and afterEach
 
   // make sure we are not registering the devtool twice
