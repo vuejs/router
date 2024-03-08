@@ -54,7 +54,7 @@ ___
 
 <!-- TODO: translation -->
 
-Mounted route component instances
+Mounted route component instances.
 Having the instances on the record mean beforeRouteUpdate and
 beforeRouteLeave guards can only be invoked with the latest mounted app
 instance if there are multiple application instances rendering the same
