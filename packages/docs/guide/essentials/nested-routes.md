@@ -22,16 +22,24 @@ With Vue Router, you can express this relationship using nested route configurat
 
 Given the app we created in the last chapter:
 
-```html
-<div id="app">
-  <router-view></router-view>
-</div>
+```vue
+<!-- App.vue -->
+<template>
+  <router-view />
+</template>
+```
+
+```vue
+<!-- User.vue -->
+<template>
+  <div>
+    User {{ $route.params.id }}
+  </div>
+</template>
 ```
 
 ```js
-const User = {
-  template: '<div>User {{ $route.params.id }}</div>',
-}
+import User from './User.vue'
 
 // these are passed to `createRouter`
 const routes = [{ path: '/user/:id', component: User }]
@@ -39,15 +47,14 @@ const routes = [{ path: '/user/:id', component: User }]
 
 The `<router-view>` here is a top-level `router-view`. It renders the component matched by a top level route. Similarly, a rendered component can also contain its own, nested `<router-view>`. For example, if we add one inside the `User` component's template:
 
-```js
-const User = {
-  template: `
-    <div class="user">
-      <h2>User {{ $route.params.id }}</h2>
-      <router-view></router-view>
-    </div>
-  `,
-}
+```vue
+<!-- User.vue -->
+<template>
+  <div class="user">
+    <h2>User {{ $route.params.id }}</h2>
+    <router-view />
+  </div>
+</template>
 ```
 
 To render components into this nested `router-view`, we need to use the `children` option in any of the routes:
