@@ -69,7 +69,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-watch(() => route.params, (newParams, previousParams) => {
+watch(() => route.params.id, (newId, oldId) => {
   // react to route changes...
 })
 </script>
@@ -80,8 +80,8 @@ watch(() => route.params, (newParams, previousParams) => {
 export default {
   created() {
     this.$watch(
-      () => this.$route.params,
-      (toParams, previousParams) => {
+      () => this.$route.params.id,
+      (newId, oldId) => {
         // react to route changes...
       }
     )

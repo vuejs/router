@@ -9,7 +9,7 @@ The introduction of Vue's [Composition API](https://vuejs.org/guide/extras/compo
 
 ## Accessing the Router and current Route inside `setup`
 
-Because we don't have access to `this` inside of `setup`, we cannot directly access `this.$router` or `this.$route`. Instead, we use the `useRouter` and `useRoute` functions:
+Because we don't have access to `this` inside of `setup`, we cannot directly access `this.$router` or `this.$route`. Instead, we use the `useRouter` and `useRoute` composables:
 
 ```vue
 <script setup>

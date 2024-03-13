@@ -44,13 +44,13 @@ const error = ref(null)
 // watch the params of the route to fetch the data again
 watch(() => route.params.id, fetchData, { immediate: true })
 
-async function fetchData() {
+async function fetchData(id) {
   error.value = post.value = null
   loading.value = true
   
   try {
     // replace `getPost` with your data fetching util / API wrapper
-    post.value = await getPost(route.params.id)  
+    post.value = await getPost(id)  
   } catch (err) {
     error.value = err.toString()
   } finally {
@@ -89,22 +89,20 @@ export default {
     // watch the params of the route to fetch the data again
     this.$watch(
       () => this.$route.params.id,
-      () => {
-        this.fetchData()
-      },
+      this.fetchData,
       // fetch the data when the view is created and the data is
       // already being observed
       { immediate: true }
     )
   },
   methods: {
-    async fetchData() {
+    async fetchData(id) {
       this.error = this.post = null
       this.loading = true
 
       try {
         // replace `getPost` with your data fetching util / API wrapper
-        this.post = await getPost(this.$route.params.id)
+        this.post = await getPost(id)
       } catch (err) {
         this.error = err.toString()
       } finally {
