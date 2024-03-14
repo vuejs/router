@@ -38,7 +38,7 @@ First, each route object in the `routes` configuration is called a **route recor
 
 For example, with the above route config, the URL `/posts/new` will match both the parent route record (`path: '/posts'`) and the child route record (`path: 'new'`).
 
-All route records matched by a route are exposed on the `$route` object (and also route objects in navigation guards) as the `$route.matched` Array. We could loop through that array to check all `meta` fields, but Vue Router also provides you a `$route.meta` that is a non-recursive merge of **all `meta`** fields from parent to child. Meaning you can simply write
+All route records matched by a route are exposed on the `route` object (and also route objects in navigation guards) as the `route.matched` Array. We could loop through that array to check all `meta` fields, but Vue Router also provides you a `route.meta` that is a non-recursive merge of **all `meta`** fields from parent to child. Meaning you can simply write:
 
 ```js
 router.beforeEach((to, from) => {

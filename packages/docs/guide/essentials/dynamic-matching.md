@@ -8,9 +8,7 @@
 Very often we will need to map routes with the given pattern to the same component. For example, we may have a `User` component which should be rendered for all users but with different user IDs. In Vue Router we can use a dynamic segment in the path to achieve that, we call that a _param_:
 
 ```js
-const User = {
-  template: '<div>User</div>',
-}
+import User from './User.vue'
 
 // these are passed to `createRouter`
 const routes = [
@@ -21,22 +19,25 @@ const routes = [
 
 Now URLs like `/users/johnny` and `/users/jolyne` will both map to the same route.
 
-A _param_ is denoted by a colon `:`. When a route is matched, the value of its _params_ will be exposed as `this.$route.params` in every component. Therefore, we can render the current user ID by updating `User`'s template to this:
+A _param_ is denoted by a colon `:`. When a route is matched, the value of its _params_ will be exposed as `route.params` in every component. Therefore, we can render the current user ID by updating `User`'s template to this:
 
-```js
-const User = {
-  template: '<div>User {{ $route.params.id }}</div>',
-}
+```vue
+<template>
+  <div>
+    <!-- The current route is accessible as $route in the template -->
+    User {{ $route.params.id }}
+  </div>
+</template>
 ```
 
-You can have multiple _params_ in the same route, and they will map to corresponding fields on `$route.params`. Examples:
+You can have multiple _params_ in the same route, and they will map to corresponding fields on `route.params`. Examples:
 
-| pattern                        | matched path             | \$route.params                           |
-| ------------------------------ | ------------------------ | ---------------------------------------- |
-| /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`                |
+| pattern                        | matched path             | route.params                           |
+| ------------------------------ | ------------------------ | -------------------------------------- |
+| /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`              |
 | /users/:username/posts/:postId | /users/eduardo/posts/123 | `{ username: 'eduardo', postId: '123' }` |
 
-In addition to `$route.params`, the `$route` object also exposes other useful information such as `$route.query` (if there is a query in the URL), `$route.hash`, etc. You can check out the full details in the [API Reference](../../api/interfaces/RouteLocationNormalized.md).
+In addition to `route.params`, the `route` object also exposes other useful information such as `route.query` (if there is a query in the URL), `route.hash`, etc. You can check out the full details in the [API Reference](../../api/interfaces/RouteLocationNormalized.md).
 
 A working demo of this example can be found [here](https://codesandbox.io/s/route-params-vue-router-examples-mlb14?from-embed&initialpath=%2Fusers%2Feduardo%2Fposts%2F1).
 
@@ -57,33 +58,69 @@ A working demo of this example can be found [here](https://codesandbox.io/s/rout
 
 One thing to note when using routes with params is that when the user navigates from `/users/johnny` to `/users/jolyne`, **the same component instance will be reused**. Since both routes render the same component, this is more efficient than destroying the old instance and then creating a new one. **However, this also means that the lifecycle hooks of the component will not be called**.
 
-To react to params changes in the same component, you can simply watch anything on the `$route` object, in this scenario, the `$route.params`:
+To react to params changes in the same component, you can simply watch anything on the `route` object, in this scenario, the `route.params`:
 
-```js
-const User = {
-  template: '...',
+::: code-group
+
+```vue [Composition API]
+<script setup>
+import { watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+watch(() => route.params.id, (newId, oldId) => {
+  // react to route changes...
+})
+</script>
+```
+
+```vue [Options API]
+<script>
+export default {
   created() {
     this.$watch(
-      () => this.$route.params,
-      (toParams, previousParams) => {
+      () => this.$route.params.id,
+      (newId, oldId) => {
         // react to route changes...
       }
     )
   },
 }
+</script>
 ```
+
+:::
 
 Or, use the `beforeRouteUpdate` [navigation guard](../advanced/navigation-guards.md), which also allows to cancel the navigation:
 
-```js
-const User = {
-  template: '...',
+::: code-group
+
+```vue [Composition API]
+<script setup>
+import { onBeforeRouteUpdate } from 'vue-router'
+// ...
+
+onBeforeRouteUpdate(async (to, from) => {
+  // react to route changes...
+  userData.value = await fetchUser(to.params.id)
+})
+</script>
+```
+
+```vue [Options API]
+<script>
+export default {
   async beforeRouteUpdate(to, from) {
     // react to route changes...
     this.userData = await fetchUser(to.params.id)
   },
+  // ...
 }
+</script>
 ```
+
+:::
 
 ## Catch all / 404 Not found Route
 
@@ -96,9 +133,9 @@ Regular params will only match characters in between url fragments, separated by
 
 ```js
 const routes = [
-  // will match everything and put it under `$route.params.pathMatch`
+  // will match everything and put it under `route.params.pathMatch`
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
-  // will match anything starting with `/user-` and put it under `$route.params.afterUser`
+  // will match anything starting with `/user-` and put it under `route.params.afterUser`
   { path: '/user-:afterUser(.*)', component: UserGeneric },
 ]
 ```
@@ -106,13 +143,13 @@ const routes = [
 In this specific scenario, we are using a [custom regexp](./route-matching-syntax.md#custom-regexp-in-params) between parentheses and marking the `pathMatch` param as [optionally repeatable](./route-matching-syntax.md#optional-parameters). This allows us to directly navigate to the route if we need to by splitting the `path` into an array:
 
 ```js
-this.$router.push({
+router.push({
   name: 'NotFound',
   // preserve current path and remove the first char to avoid the target URL starting with `//`
-  params: { pathMatch: this.$route.path.substring(1).split('/') },
+  params: { pathMatch: route.path.substring(1).split('/') },
   // preserve existing query and hash if any
-  query: this.$route.query,
-  hash: this.$route.hash,
+  query: route.query,
+  hash: route.hash,
 })
 ```
 

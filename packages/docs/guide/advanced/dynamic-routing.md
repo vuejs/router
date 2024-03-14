@@ -30,7 +30,7 @@ The page will still show the `Article` component, we need to manually call `rout
 
 ```js
 router.addRoute({ path: '/about', component: About })
-// we could also use this.$route or route = useRoute() (inside a setup)
+// we could also use this.$route or useRoute()
 router.replace(router.currentRoute.value.fullPath)
 ```
 
