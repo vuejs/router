@@ -33,7 +33,7 @@ Using a `name` has various advantages:
 
 - No hardcoded URLs.
 - Automatic encoding of `params`.
-- Prevents you from having a typo in the url.
+- Avoids URL typos.
 - Bypassing path ranking, e.g. to display a lower-ranked route that matches the same path.
 
 Each name **must be unique** across all routes. If you add the same name to multiple routes, the router will only keep the last one. You can read more about this [in the Dynamic Routing](../advanced/dynamic-routing#Removing-routes) section.
