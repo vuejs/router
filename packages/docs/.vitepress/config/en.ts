@@ -85,16 +85,16 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/guide/essentials/route-matching-syntax.html',
             },
             {
+              text: 'Named Routes',
+              link: '/guide/essentials/named-routes.html',
+            },
+            {
               text: 'Nested Routes',
               link: '/guide/essentials/nested-routes.html',
             },
             {
               text: 'Programmatic Navigation',
               link: '/guide/essentials/navigation.html',
-            },
-            {
-              text: 'Named Routes',
-              link: '/guide/essentials/named-routes.html',
             },
             {
               text: 'Named Views',
