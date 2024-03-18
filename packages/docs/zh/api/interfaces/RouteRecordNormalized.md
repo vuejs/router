@@ -53,7 +53,7 @@ ___
 • **instances**: `Record`\<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`\>
 
 挂载的路由组件实例。
-在记录上存在实例意味着当有多个应用实例渲染相同的视图时，beforeRouteUpdate 和 beforeRouteLeave 守卫只能被最后挂载的应用实例调用，基本上只会对页面内容进行复制，这在实践中不应该发生。它会在多个应用渲染不同的命名视图时生效。
+在记录上存在实例意味着，当有多个应用实例渲染相同的视图时，beforeRouteUpdate 和 beforeRouteLeave 守卫只能被最后挂载的应用实例调用。这样的渲染基本上只会对页面内容进行复制，在实际情况下并不应该发生。它可以在多个应用渲染不同的命名视图时工作。
 
 ___
 
