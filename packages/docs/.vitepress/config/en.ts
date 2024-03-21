@@ -109,6 +109,10 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/guide/essentials/passing-props.html',
             },
             {
+              text: 'RouterLink classes',
+              link: '/guide/essentials/router-link-classes.html',
+            },
+            {
               text: 'Different History modes',
               link: '/guide/essentials/history-mode.html',
             },
