@@ -1,10 +1,10 @@
-# RouterLink classes
+# Active links
 
 It's common for applications to have a navigation component that renders a list of RouterLink components. Within that list, we might want to style links to the currently active route differently from the others.
 
 The RouterLink component adds two CSS classes to active links, `router-link-active` and `router-link-exact-active`. To understand the difference between them, we first need to consider how Vue Router decides that a link is _active_.
 
-## Active links
+## When are links active?
 
 A RouterLink is considered to be ***active*** if:
 
