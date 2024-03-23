@@ -109,6 +109,10 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/guide/essentials/passing-props.html',
             },
             {
+              text: 'Active links',
+              link: '/guide/essentials/active-links.html',
+            },
+            {
               text: 'Different History modes',
               link: '/guide/essentials/history-mode.html',
             },
