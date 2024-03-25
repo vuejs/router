@@ -2,7 +2,7 @@ export { createWebHistory } from './history/html5'
 export { createMemoryHistory } from './history/memory'
 export { createWebHashHistory } from './history/hash'
 export { createRouterMatcher } from './matcher'
-export type { RouterMatcher } from './matcher'
+export type { GenericRouterMatcher, RouterMatcher } from './matcher'
 
 export { parseQuery, stringifyQuery } from './query'
 export type {
@@ -67,8 +67,18 @@ export type {
   NavigationHookAfter,
 } from './types'
 
-export { createRouter } from './router'
-export type { Router, RouterOptions, RouterScrollBehavior } from './router'
+export {
+  createRouter,
+  createRouterWithMatcher,
+  createDefaultMatcher,
+} from './router'
+export type {
+  Router,
+  RouterWithMatcher,
+  RouterOptions,
+  RouterWithMatcherOptions,
+  RouterScrollBehavior,
+} from './router'
 
 export { NavigationFailureType, isNavigationFailure } from './errors'
 export type {

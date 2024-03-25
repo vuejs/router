@@ -25,7 +25,12 @@ import {
   scrollToPosition,
   _ScrollPositionNormalized,
 } from './scrollBehavior'
-import { createRouterMatcher, PathParserOptions } from './matcher'
+import {
+  CloneableRouterMatcher,
+  createRouterMatcher,
+  GenericRouterMatcher,
+  PathParserOptions,
+} from './matcher'
 import {
   createRouterError,
   ErrorTypes,
@@ -97,10 +102,11 @@ export interface RouterScrollBehavior {
   ): Awaitable<ScrollPosition | false | void>
 }
 
-/**
- * Options to initialize a {@link Router} instance.
- */
-export interface RouterOptions extends PathParserOptions {
+export interface DefaultMatcherOptions extends PathParserOptions {
+  routes: Readonly<RouteRecordRaw[]>
+}
+
+export interface SharedOptions {
   /**
    * History implementation used by the router. Most web applications should use
    * `createWebHistory` but it requires the server to be properly configured.
@@ -117,10 +123,6 @@ export interface RouterOptions extends PathParserOptions {
    * ```
    */
   history: RouterHistory
-  /**
-   * Initial list of routes that should be added to the router.
-   */
-  routes: Readonly<RouteRecordRaw[]>
   /**
    * Function to control scrolling when navigating between pages. Can return a
    * Promise to delay scrolling. Check {@link ScrollBehavior}.
@@ -175,9 +177,23 @@ export interface RouterOptions extends PathParserOptions {
 }
 
 /**
+ * Options to initialize a {@link Router} instance.
+ */
+export interface RouterOptions extends SharedOptions, PathParserOptions {
+  /**
+   * Initial list of routes that should be added to the router.
+   */
+  routes: Readonly<RouteRecordRaw[]>
+}
+
+export interface RouterWithMatcherOptions<RC> extends SharedOptions {
+  matcher: GenericRouterMatcher<RC>
+}
+
+/**
  * Router instance.
  */
-export interface Router {
+export interface GenericRouter<RC> {
   /**
    * @internal
    */
@@ -189,7 +205,7 @@ export interface Router {
   /**
    * Original options object passed to create the Router
    */
-  readonly options: RouterOptions
+  readonly options: SharedOptions
 
   /**
    * Allows turning off the listening of history events. This is a low level api for micro-frontends.
@@ -202,13 +218,13 @@ export interface Router {
    * @param parentName - Parent Route Record where `route` should be appended at
    * @param route - Route Record to add
    */
-  addRoute(parentName: RouteRecordName, route: RouteRecordRaw): () => void
+  addRoute(parentName: RouteRecordName, route: RC): () => void
   /**
    * Add a new {@link RouteRecordRaw | route record} to the router.
    *
    * @param route - Route Record to add
    */
-  addRoute(route: RouteRecordRaw): () => void
+  addRoute(route: RC): () => void
   /**
    * Remove an existing route by its name.
    *
@@ -260,12 +276,12 @@ export interface Router {
    * Go back in history if possible by calling `history.back()`. Equivalent to
    * `router.go(-1)`.
    */
-  back(): ReturnType<Router['go']>
+  back(): ReturnType<GenericRouter<RC>['go']>
   /**
    * Go forward in history if possible by calling `history.forward()`.
    * Equivalent to `router.go(1)`.
    */
-  forward(): ReturnType<Router['go']>
+  forward(): ReturnType<GenericRouter<RC>['go']>
   /**
    * Allows you to move forward or backward through the history. Calls
    * `history.go()`.
@@ -352,13 +368,44 @@ export interface Router {
   install(app: App): void
 }
 
+export interface Router extends GenericRouter<RouteRecordRaw> {
+  readonly options: RouterOptions
+}
+
+export interface RouterWithMatcher<RC> extends GenericRouter<RC> {
+  readonly options: RouterWithMatcherOptions<RC>
+}
+
+export function createDefaultMatcher(
+  options: DefaultMatcherOptions
+): CloneableRouterMatcher {
+  return createRouterMatcher(options.routes, options)
+}
+
 /**
  * Creates a Router instance that can be used by a Vue app.
  *
  * @param options - {@link RouterOptions}
  */
 export function createRouter(options: RouterOptions): Router {
-  const matcher = createRouterMatcher(options.routes, options)
+  const matcher = createDefaultMatcher(options)
+
+  const router = createRouterWithMatcher({
+    ...options,
+    matcher,
+  })
+
+  // Set the original options
+  ;(router as any).options = options
+
+  // Casting needed due to the 'options' property
+  return router as GenericRouter<RouteRecordRaw> as Router
+}
+
+export function createRouterWithMatcher<RC>(
+  options: RouterWithMatcherOptions<RC>
+): RouterWithMatcher<RC> {
+  const matcher = options.matcher
   const parseQuery = options.parseQuery || originalParseQuery
   const stringifyQuery = options.stringifyQuery || originalStringifyQuery
   const routerHistory = options.history
@@ -390,12 +437,9 @@ export function createRouter(options: RouterOptions): Router {
     // @ts-expect-error: intentionally avoid the type check
     applyToParams.bind(null, decode)
 
-  function addRoute(
-    parentOrRoute: RouteRecordName | RouteRecordRaw,
-    route?: RouteRecordRaw
-  ) {
+  function addRoute(parentOrRoute: RouteRecordName | RC, route?: RC) {
     let parent: Parameters<(typeof matcher)['addRoute']>[1] | undefined
-    let record: RouteRecordRaw
+    let record: RC
     if (isRouteName(parentOrRoute)) {
       parent = matcher.getRecordMatcher(parentOrRoute)
       if (__DEV__ && !parent) {
@@ -1201,7 +1245,7 @@ export function createRouter(options: RouterOptions): Router {
   let started: boolean | undefined
   const installedApps = new Set<App>()
 
-  const router: Router = {
+  const router: RouterWithMatcher<RC> = {
     currentRoute,
     listening: true,
 
@@ -1230,7 +1274,7 @@ export function createRouter(options: RouterOptions): Router {
       app.component('RouterLink', RouterLink)
       app.component('RouterView', RouterView)
 
-      app.config.globalProperties.$router = router
+      app.config.globalProperties.$router = router as any
       Object.defineProperty(app.config.globalProperties, '$route', {
         enumerable: true,
         get: () => unref(currentRoute),
@@ -1261,7 +1305,7 @@ export function createRouter(options: RouterOptions): Router {
         })
       }
 
-      app.provide(routerKey, router)
+      app.provide(routerKey, router as any)
       app.provide(routeLocationKey, shallowReactive(reactiveRoute))
       app.provide(routerViewLocationKey, currentRoute)
 
