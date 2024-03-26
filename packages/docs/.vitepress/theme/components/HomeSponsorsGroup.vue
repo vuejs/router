@@ -24,7 +24,7 @@ const list = computed(() =>
 </script>
 
 <template>
-  <h3>{{ name }} Sponsors</h3>
+  <h3>{{ name }} اسپانسرهای</h3>
 
   <p>
     <a
