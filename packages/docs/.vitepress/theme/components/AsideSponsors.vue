@@ -14,7 +14,7 @@
 
   <a
     class="banner"
-    href="https://certificates.dev/vuejs/?friend=VUEROUTER&utm_source=affiliate&utm_medium=vuerouter&utm_campaign=VueRouter_CERT&utm_content=sidebar"
+    href="https://certificates.dev/vuejs/?friend=VUEROUTER&utm_source=router_vuejs&utm_medium=link&utm_campaign=router_vuejs_links&utm_content=sidebar"
     target="_blank"
   >
     <img src="/banners/vuejs-certification.svg" alt="Vue.js Certification" />

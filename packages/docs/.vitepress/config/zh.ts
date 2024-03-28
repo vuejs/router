@@ -50,7 +50,7 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
           },
           {
             text: 'Vue.js 认证',
-            link: 'https://certification.vuejs.org/?friend=VUEROUTER',
+            link: 'https://certificates.dev/vuejs/?friend=VUEROUTER&utm_source=router_vuejs&utm_medium=link&utm_campaign=router_vuejs_links&utm_content=navbar',
           },
         ],
       },
@@ -79,7 +79,6 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         },
         {
           text: '基础',
-          collapsible: false,
           items: [
             {
               text: '入门',
@@ -125,7 +124,6 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         },
         {
           text: '进阶',
-          collapsible: false,
           items: [
             {
               text: '导航守卫',

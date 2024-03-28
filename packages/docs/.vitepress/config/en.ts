@@ -46,7 +46,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
           },
           {
             text: 'Vue.js Certification',
-            link: 'https://certification.vuejs.org/?friend=VUEROUTER',
+            link: 'https://certificates.dev/vuejs/?friend=VUEROUTER&utm_source=router_vuejs&utm_medium=link&utm_campaign=router_vuejs_links&utm_content=navbar',
           },
         ],
       },
@@ -70,7 +70,6 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         },
         {
           text: 'Essentials',
-          collapsible: false,
           items: [
             {
               text: 'Getting Started',
@@ -120,7 +119,6 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         },
         {
           text: 'Advanced',
-          collapsible: false,
           items: [
             {
               text: 'Navigation guards',
