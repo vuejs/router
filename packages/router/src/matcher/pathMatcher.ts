@@ -14,6 +14,12 @@ export interface RouteRecordMatcher extends PathParser {
   children: RouteRecordMatcher[]
   // aliases that must be removed when removing this record
   alias: RouteRecordMatcher[]
+  // defined when sort cache is present
+  cacheKey?: string
+}
+
+export function createRouteRecordCacheKey(record: Readonly<RouteRecord>) {
+  return String(record?.name) + '___' + record.path
 }
 
 export function createRouteRecordMatcher(
@@ -42,6 +48,10 @@ export function createRouteRecordMatcher(
     children: [],
     alias: [],
   })
+
+  if (options?.sortCache) {
+    matcher.cacheKey = createRouteRecordCacheKey(record)
+  }
 
   if (parent) {
     // both are aliases or both are not aliases

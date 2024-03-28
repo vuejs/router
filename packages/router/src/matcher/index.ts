@@ -7,8 +7,12 @@ import {
   _RouteRecordProps,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
-import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
-import { RouteRecordNormalized } from './types'
+import {
+  createRouteRecordCacheKey,
+  createRouteRecordMatcher,
+  RouteRecordMatcher,
+} from './pathMatcher'
+import { RouteRecord, RouteRecordNormalized } from './types'
 
 import type {
   PathParams,
@@ -61,8 +65,15 @@ export function createRouterMatcher(
   // normalized ordered array of matchers
   const matchers: RouteRecordMatcher[] = []
   const matcherMap = new Map<RouteRecordName, RouteRecordMatcher>()
+  let restoreSort = globalOptions.sortCache != null
+
   globalOptions = mergeOptions(
-    { strict: false, end: true, sensitive: false } as PathParserOptions,
+    {
+      strict: false,
+      end: true,
+      sensitive: false,
+      sortCache: undefined,
+    } as PathParserOptions,
     globalOptions
   )
 
@@ -223,17 +234,21 @@ export function createRouterMatcher(
   }
 
   function insertMatcher(matcher: RouteRecordMatcher) {
-    let i = 0
-    while (
-      i < matchers.length &&
-      comparePathParserScore(matcher, matchers[i]) >= 0 &&
-      // Adding children with empty path should still appear before the parent
-      // https://github.com/vuejs/router/issues/1124
-      (matcher.record.path !== matchers[i].record.path ||
-        !isRecordChildOf(matcher, matchers[i]))
-    )
-      i++
-    matchers.splice(i, 0, matcher)
+    if (restoreSort) {
+      matchers.push(matcher)
+    } else {
+      let i = 0
+      while (
+        i < matchers.length &&
+        comparePathParserScore(matcher, matchers[i]) >= 0 &&
+        // Adding children with empty path should still appear before the parent
+        // https://github.com/vuejs/router/issues/1124
+        (matcher.record.path !== matchers[i].record.path ||
+          !isRecordChildOf(matcher, matchers[i]))
+      )
+        i++
+      matchers.splice(i, 0, matcher)
+    }
     // only add the original record to the name map
     if (matcher.record.name && !isAliasRecord(matcher))
       matcherMap.set(matcher.record.name, matcher)
@@ -353,7 +368,43 @@ export function createRouterMatcher(
   // add initial routes
   routes.forEach(route => addRoute(route))
 
+  // restore matcher order from cache
+  if (globalOptions.sortCache != null) {
+    try {
+      matchers.sort(
+        (a, b) =>
+          globalOptions!.sortCache![a.cacheKey!] -
+          globalOptions!.sortCache![b.cacheKey!]
+      )
+
+      for (const entry of matchers) {
+        delete entry.cacheKey
+      }
+    } catch {
+      console.log('Restore failure.')
+    }
+  }
+
+  restoreSort = false
+
   return { addRoute, resolve, removeRoute, getRoutes, getRecordMatcher }
+}
+
+/**
+ * Creates a router matcher sort cache
+ *
+ * @internal
+ */
+export function createRouterMatcherSortCache(
+  records: RouteRecord[]
+): Record<string, number> {
+  const sortCache: Record<string, number> = {}
+
+  for (let i = 0; i < records.length; i++) {
+    sortCache[createRouteRecordCacheKey(records[i])] = i
+  }
+
+  return sortCache
 }
 
 function paramsFromLocation(
