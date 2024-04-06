@@ -92,7 +92,7 @@ export default {
 
 :::
 
-Or, use the `beforeRouteUpdate` [navigation guard](../advanced/navigation-guards.md), which also allows to cancel the navigation:
+Or, use the `beforeRouteUpdate` [navigation guard](../advanced/navigation-guards.md), which also allows you to cancel the navigation:
 
 ::: code-group
 
