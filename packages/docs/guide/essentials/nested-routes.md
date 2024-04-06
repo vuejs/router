@@ -8,14 +8,14 @@
 Some applications' UIs are composed of components that are nested multiple levels deep. In this case, it is very common that the segments of a URL correspond to a certain structure of nested components, for example:
 
 ```
-/user/johnny/profile                     /user/johnny/posts
-+------------------+                  +-----------------+
-| User             |                  | User            |
-| +--------------+ |                  | +-------------+ |
-| | Profile      | |  +------------>  | | Posts       | |
-| |              | |                  | |             | |
-| +--------------+ |                  | +-------------+ |
-+------------------+                  +-----------------+
+/user/johnny/profile                   /user/johnny/posts 
+┌──────────────────┐                  ┌──────────────────┐
+│ User             │                  │ User             │
+│ ┌──────────────┐ │                  │ ┌──────────────┐ │
+│ │ Profile      │ │  ●────────────▶  │ │ Posts        │ │
+│ │              │ │                  │ │              │ │
+│ └──────────────┘ │                  │ └──────────────┘ │
+└──────────────────┘                  └──────────────────┘
 ```
 
 With Vue Router, you can express this relationship using nested route configurations.
