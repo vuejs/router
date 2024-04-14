@@ -76,3 +76,13 @@ const router = createRouter({
 ```
 
 See [Extending RouterLink](../advanced/extending-router-link) for more advanced customization techniques.
+
+## Slot Properties
+
+The RouterLink component in Vue 3 offers two [`slot properties`](https://vuejs.org/guide/components/slots.html#scoped-slots), which indicate whether the RouterLink component is `active` or in an `exact active` state. These slot properties can be utilized to pass information down to any child component.
+
+```vue-html
+<RouterLink to="/user/dashboard" v-slot={ isActive }>
+  <ChildComponent :active="isActive" />   
+</RouterLink>
+```
