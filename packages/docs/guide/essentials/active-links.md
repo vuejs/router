@@ -75,4 +75,4 @@ const router = createRouter({
 })
 ```
 
-See [Extending RouterLink](../advanced/extending-router-link) for more advanced customization techniques.
+See [Extending RouterLink](../advanced/extending-router-link) for more advanced customization techniques using the `v-slot` API.
