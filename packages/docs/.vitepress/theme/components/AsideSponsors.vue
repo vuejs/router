@@ -1,7 +1,7 @@
 <template>
   <a
     class="banner mp"
-    href="https://masteringpinia.com?utm=pinia-sidebar"
+    href="https://masteringpinia.com/?utm_source=affiliate&utm_medium=vuerouter&utm_campaign=VueRouter_MP&utm_content=sidebar"
     target="_blank"
   >
     <img width="22" height="22" src="/mp-pinia-logo.svg" />
@@ -14,7 +14,7 @@
 
   <a
     class="banner cert"
-    href="https://certificates.dev/vuejs/?friend=VUEROUTER&utm_source=pinia_vuejs&utm_medium=link&utm_campaign=pinia_vuejs_links&utm_content=sidebar"
+    href="https://certificates.dev/vuejs/?friend=VUEROUTER&utm_source=router_vuejs&utm_medium=link&utm_campaign=router_vuejs_links&utm_content=sidebar"
     target="_blank"
   >
     <img width="22" height="22" src="/vue-cert-logo.svg" />
