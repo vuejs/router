@@ -1,3 +1,14 @@
+## [4.3.1](https://github.com/vuejs/router/compare/v4.3.0...v4.3.1) (2024-04-17)
+
+### Bug Fixes
+
+- avoid normalizing the fullPath ([#2189](https://github.com/vuejs/router/issues/2189)) ([c54fc84](https://github.com/vuejs/router/commit/c54fc8407bd1944a3b724fbcc7f6fbac5ff45f0f)), closes [vuejs/router#2187](https://github.com/vuejs/router/issues/2187)
+
+### Features
+
+- **dx:** warn when `addRoute` cannot find the parent ([#2157](https://github.com/vuejs/router/issues/2157)) ([6377083](https://github.com/vuejs/router/commit/63770832d01a86a7464fde744e94058aae07de2e))
+- **dx:** warn when passing undefined/null locations ([#2158](https://github.com/vuejs/router/issues/2158)) ([089378b](https://github.com/vuejs/router/commit/089378bb973a6d91ddfe8eea76a670cd805fb5cf))
+
 # [4.3.0](https://github.com/vuejs/router/compare/v4.2.5...v4.3.0) (2024-02-21)
 
 ### Bug Fixes
