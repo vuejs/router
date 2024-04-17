@@ -534,6 +534,18 @@ describe('Router', () => {
     })
   })
 
+  // https://github.com/vuejs/router/issues/2187
+  it('keeps a consistent value on fullPath when resolving', async () => {
+    const { router } = await newRouter()
+    const targetLoc = '/search#/?redirect=%2F%3Fid%3D1%23%2Fabc'
+    expect(router.resolve(targetLoc).fullPath).toBe(targetLoc)
+    await router.push(targetLoc)
+    expect(router.currentRoute.value.fullPath).toBe(targetLoc)
+    await router.push('/')
+    await router.replace(targetLoc)
+    expect(router.currentRoute.value.fullPath).toBe(targetLoc)
+  })
+
   describe('navigation cancelled', () => {
     async function checkNavigationCancelledOnPush(
       target?: RouteLocationRaw | false
