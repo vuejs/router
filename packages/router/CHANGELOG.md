@@ -1,3 +1,9 @@
+## [4.3.2](https://github.com/vuejs/router/compare/v4.3.1...v4.3.2) (2024-04-18)
+
+### Bug Fixes
+
+- Revert "fix: avoid normalizing the fullPath ([#2189](https://github.com/vuejs/router/issues/2189))" ([b78aa98](https://github.com/vuejs/router/commit/b78aa98792e86e08b76eb879e496fe1c300c1e18)), closes [vuejs/router#2216](https://github.com/vuejs/router/issues/2216). This was creating other bugs when reusing a normalized location (common pattern). The original issue wasn't a problem in practice as the consistent values are the query, params, and hash.
+
 ## [4.3.1](https://github.com/vuejs/router/compare/v4.3.0...v4.3.1) (2024-04-17)
 
 ### Bug Fixes
