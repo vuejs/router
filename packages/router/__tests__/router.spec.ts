@@ -534,16 +534,22 @@ describe('Router', () => {
     })
   })
 
-  // https://github.com/vuejs/router/issues/2187
-  it('keeps a consistent value on fullPath when resolving', async () => {
+  it('should be able to resolve a partially updated location', async () => {
     const { router } = await newRouter()
-    const targetLoc = '/search#/?redirect=%2F%3Fid%3D1%23%2Fabc'
-    expect(router.resolve(targetLoc).fullPath).toBe(targetLoc)
-    await router.push(targetLoc)
-    expect(router.currentRoute.value.fullPath).toBe(targetLoc)
-    await router.push('/')
-    await router.replace(targetLoc)
-    expect(router.currentRoute.value.fullPath).toBe(targetLoc)
+    expect(
+      router.resolve({
+        // spread the current location
+        ...router.currentRoute.value,
+        // then update some stuff, creating inconsistencies,
+        query: { a: '1' },
+        hash: '#a',
+      })
+    ).toMatchObject({
+      query: { a: '1' },
+      path: '/',
+      fullPath: '/?a=1#a',
+      hash: '#a',
+    })
   })
 
   describe('navigation cancelled', () => {

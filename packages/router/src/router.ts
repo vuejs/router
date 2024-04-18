@@ -525,19 +525,13 @@ export function createRouter(options: RouterOptions): Router {
     // we need to run the decoding again
     matchedRoute.params = normalizeParams(decodeParams(matchedRoute.params))
 
-    const fullPath =
-      // @ts-expect-error: the rawLocation doesn't normally have a fullPath
-      // but sometimes it gets noramlized before being passed to resolve and we can
-      // resue it to avoid encoding an unencoded path from the user in order to be closer
-      // to the URL constructor behavior. vuejs/router#2187
-      rawLocation.fullPath ||
-      stringifyURL(
-        stringifyQuery,
-        assign({}, rawLocation, {
-          hash: encodeHash(hash),
-          path: matchedRoute.path,
-        })
-      )
+    const fullPath = stringifyURL(
+      stringifyQuery,
+      assign({}, rawLocation, {
+        hash: encodeHash(hash),
+        path: matchedRoute.path,
+      })
+    )
 
     const href = routerHistory.createHref(fullPath)
     if (__DEV__) {
