@@ -46,7 +46,7 @@ Vue Router 基于 Vue 的组件系统构建，你可以通过配置一组 **路�
 
 `RouterView` 组件可以使 Vue Router 知道你想要在哪里渲染当前 URL 路径对应的 **路由组件** （route component）。它不一定要在 `App.vue` 中，你可以把它放在任何地方，但它需要在某处被导入，否则 Vue Router 就不会渲染任何东西。
 
-在这个例子中，我们使用了 `{{ $route.fullPath }}` 。你可以在组件模板中使用 `$route` 来访问当前的路由对象。
+在这个例子中，我们使用了 <code v-pre>{{ $route.fullPath }}</code> 。你可以在组件模板中使用 `$route` 来访问当前的路由对象。
 
 <VueMasteryLogoLink></VueMasteryLogoLink>
 
