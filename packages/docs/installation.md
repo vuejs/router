@@ -35,15 +35,15 @@ npm create vue@latest
 ```
 
 ```bash [yarn]
-yarn create vue
+yarn create vue@latest
 ```
 
 ```bash [pnpm]
-pnpm create vue
+pnpm create vue@latest
 ```
 
 ```bash [bun]
-bun create vue
+bun create vue@latest
 ```
 
 :::
