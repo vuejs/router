@@ -534,6 +534,24 @@ describe('Router', () => {
     })
   })
 
+  it('should be able to resolve a partially updated location', async () => {
+    const { router } = await newRouter()
+    expect(
+      router.resolve({
+        // spread the current location
+        ...router.currentRoute.value,
+        // then update some stuff, creating inconsistencies,
+        query: { a: '1' },
+        hash: '#a',
+      })
+    ).toMatchObject({
+      query: { a: '1' },
+      path: '/',
+      fullPath: '/?a=1#a',
+      hash: '#a',
+    })
+  })
+
   describe('navigation cancelled', () => {
     async function checkNavigationCancelledOnPush(
       target?: RouteLocationRaw | false

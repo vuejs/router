@@ -1,6 +1,6 @@
 {
   "name": "vue-router",
-  "version": "4.3.0",
+  "version": "4.3.2",
   "main": "index.js",
   "unpkg": "dist/vue-router.global.js",
   "jsdelivr": "dist/vue-router.global.js",
@@ -129,8 +129,8 @@
     "@types/jsdom": "^21.1.6",
     "@types/nightwatch": "^2.3.30",
     "@vitejs/plugin-vue": "^5.0.4",
-    "@vue/compiler-sfc": "^3.4.19",
-    "@vue/server-renderer": "^3.4.19",
+    "@vue/compiler-sfc": "^3.4.23",
+    "@vue/server-renderer": "^3.4.23",
     "@vue/test-utils": "^2.4.4",
     "browserstack-local": "^1.5.5",
     "chromedriver": "^121.0.2",
@@ -150,7 +150,7 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "sucrase": "^3.34.0",
     "typescript": "~5.3.3",
-    "vite": "^5.1.1",
-    "vue": "^3.4.19"
+    "vite": "^5.2.9",
+    "vue": "^3.4.23"
   }
 }
