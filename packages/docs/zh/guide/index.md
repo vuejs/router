@@ -99,7 +99,7 @@ app.mount('#app')
 
 如果你好奇这个插件做了什么，它的职责包括：
 
-1. [全局注册](https://vuejs.org/guide/components/registration.html#global-registration) `RouterView` 和 `RouterLink` 组件。
+1. [全局注册](https://cn.vuejs.org/guide/components/registration.html#global-registration) `RouterView` 和 `RouterLink` 组件。
 2. 添加全局 `$router` 和 `$route` 属性。
 3. 启用 `useRouter()` 和 `useRoute()` 组合式函数。
 4. 触发路由器解析初始路由。
