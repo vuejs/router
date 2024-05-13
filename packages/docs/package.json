@@ -13,9 +13,9 @@
     "docs:preview": "vitepress preview ."
   },
   "dependencies": {
-    "simple-git": "^3.22.0",
-    "vitepress": "1.0.0-rc.44",
-    "vitepress-translation-helper": "^0.1.3",
+    "simple-git": "^3.24.0",
+    "vitepress": "1.1.0",
+    "vitepress-translation-helper": "^0.2.1",
     "vue-router": "workspace:*"
   }
 }
