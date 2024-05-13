@@ -203,4 +203,4 @@ Vue Router 可以使用 Composition API 或 Options API 。在相关部分中，
 
 在模板中，组件的名字可以是 PascalCase 风格或 kebab-case 风格的。Vue 的模板编译器支持两种格式，因此 `<RouterView>` 和 `<router-view>` 通常是等效的。此时应该遵循你自己项目中使用的约定。
 
-如果你使用 in-DOM 模板，那么需要 [注意](https://vuejs.org/guide/essentials/component-basics.html#in-dom-template-parsing-caveats) ：组件名字必须使用 kebab-case 风格且不支持自闭合标签。因此，如果你不能写 `<RouterView />`，而需要使用 `<router-view></router-view>`
+如果你使用 in-DOM 模板，那么需要 [注意](https://vuejs.org/guide/essentials/component-basics.html#in-dom-template-parsing-caveats) ：组件名字必须使用 kebab-case 风格且不支持自闭合标签。因此你不能直接写 `<RouterView />`，而需要使用 `<router-view></router-view>`
