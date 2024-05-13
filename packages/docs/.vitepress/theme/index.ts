@@ -22,7 +22,7 @@ const theme: Theme = {
       // 'home-features-after': () => h(HomeSponsors),
       'aside-ads-before': () => h(AsideSponsors),
       'doc-before': () => h(TranslationStatus, { status, i18nLabels }),
-      'layout-top': () => h(VuejsdeConfBanner)
+      // 'layout-top': () => h(VuejsdeConfBanner)
     })
   },
 
