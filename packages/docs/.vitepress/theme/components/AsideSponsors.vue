@@ -1,4 +1,48 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { VPDocAsideSponsors } from 'vitepress/theme'
+import sponsors from './sponsors.json'
+
+// to avoid the never[] type in json
+interface Sponsor {
+  alt: string
+  href: string
+  imgSrcDark: string
+  imgSrcLight: string
+}
+
+const asideSponsors = computed(() => {
+  return [
+    {
+      size: 'mini',
+      items: sponsors.platinum.length ? sponsors.platinum.map((sponsor: Sponsor) => ({
+        name: sponsor.alt,
+        url: sponsor.href,
+        img: sponsor.imgSrcLight,
+      })) : [
+        {
+          name: 'Become a sponsor',
+          url: 'https://github.com/sponsors/posva',
+          img: '/your-logo-here.svg'
+        }
+      ],
+    },
+    {
+      size: 'xmini',
+      // TODO: use gold instead once I have some
+      items: sponsors.silver.map((sponsor: Sponsor) => ({
+        name: sponsor.alt,
+        url: sponsor.href,
+        img: sponsor.imgSrcLight,
+      })),
+    },
+  ]
+})
+</script>
+
 <template>
+  <VPDocAsideSponsors :data="asideSponsors" />
+
   <a
     class="banner mp"
     href="https://masteringpinia.com/?utm_source=affiliate&utm_medium=vuerouter&utm_campaign=VueRouter_MP&utm_content=sidebar"
@@ -27,6 +71,19 @@
 </template>
 
 <style scoped>
+.VPDocAsideSponsors {
+  margin-top: 8px !important;
+}
+
+:deep(.vp-sponsor-grid.mini .vp-sponsor-grid-image) {
+  max-width: 158px;
+  max-height: 48px;
+}
+:deep(.vp-sponsor-grid.xmini .vp-sponsor-grid-image) {
+  max-width: 80px;
+  max-height: 32px;
+}
+
 .banner {
   margin: 0.25rem 0;
   padding: 0.4rem 0;
