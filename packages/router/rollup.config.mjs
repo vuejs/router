@@ -59,10 +59,7 @@ const packageConfigs = packageBuilds.map(buildName =>
 packageBuilds.forEach(buildName => {
   if (buildName === 'cjs') {
     packageConfigs.push(createProductionConfig(buildName))
-    return;
-  }
-
-  if (['global', 'browser'].includes(buildName)) {
+  } else if (buildName === 'global' || buildName === 'browser') {
     packageConfigs.push(createMinifiedConfig(buildName))
   }
 })
@@ -128,6 +125,10 @@ function createConfig(buildName, output, plugins = []) {
     // Global and Browser ESM builds inlines everything so that they can be
     // used alone.
     external,
+    treeshake: {
+      // Ensure @vue/devtools-api can be treeshaken in production builds
+      moduleSideEffects: false,
+    },
     plugins: [
       tsPlugin,
       createReplacePlugin(
@@ -224,12 +225,10 @@ function createProductionConfig(format) {
 }
 
 function createMinifiedConfig(format) {
-  const item = path.parse(outputConfigs[format].file);
-
   return createConfig(
     format,
     {
-      file: `${item.dir}/${item.name}.prod${item.ext}`,
+      file: outputConfigs[format].file.replace(/.js$/, '.prod.js'),
       format: outputConfigs[format].format,
     },
     [
