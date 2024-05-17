@@ -1,5 +1,6 @@
 [build.environment]
 CHROMEDRIVER_SKIP_DOWNLOAD = "true"
+NODE_VERSION = "18"
 
 [build]
 command = "pnpm run docs:build"

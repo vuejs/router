@@ -7,6 +7,7 @@ import {
 import { RouteRecord } from './matcher/types'
 import { warn } from './warning'
 import { isArray } from './utils'
+import { decode } from './encoding'
 
 /**
  * Location object returned by {@link `parseURL`}.
@@ -85,7 +86,7 @@ export function parseURL(
     fullPath: path + (searchString && '?') + searchString + hash,
     path,
     query,
-    hash,
+    hash: decode(hash),
   }
 }
 
@@ -243,9 +244,6 @@ export function resolveRelativePath(to: string, from: string): string {
   return (
     fromSegments.slice(0, position).join('/') +
     '/' +
-    toSegments
-      // ensure we use at least the last element in the toSegments
-      .slice(toPosition - (toPosition === toSegments.length ? 1 : 0))
-      .join('/')
+    toSegments.slice(toPosition).join('/')
   )
 }

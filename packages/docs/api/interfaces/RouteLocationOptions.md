@@ -8,9 +8,9 @@ editLink: false
 
 Common options for all navigation methods.
 
-## Properties %{#Properties}%
+## Properties
 
-### force %{#Properties-force}%
+### force
 
 • `Optional` **force**: `boolean`
 
@@ -20,7 +20,7 @@ is passed.
 
 ___
 
-### replace %{#Properties-replace}%
+### replace
 
 • `Optional` **replace**: `boolean`
 
@@ -28,7 +28,7 @@ Replace the entry in the history instead of pushing a new entry
 
 ___
 
-### state %{#Properties-state}%
+### state
 
 • `Optional` **state**: [`HistoryState`](HistoryState.md)
 

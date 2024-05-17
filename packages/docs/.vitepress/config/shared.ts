@@ -1,4 +1,5 @@
 import { defineConfig, HeadConfig } from 'vitepress'
+import { zhSearch } from './zh'
 
 // TODO:
 // export const META_IMAGE = 'https://router.vuejs.org/social.png'
@@ -10,15 +11,35 @@ if (process.env.NETLIFY) {
   console.log('Netlify build', process.env.CONTEXT)
 }
 
+const rControl = /[\u0000-\u001f]/g
+const rSpecial = /[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/g
+const rCombining = /[\u0300-\u036F]/g
+
+/**
+ * Default slugification function
+ */
+export const slugify = (str: string): string =>
+  str
+    .normalize('NFKD')
+    // Remove accents
+    .replace(rCombining, '')
+    // Remove control characters
+    .replace(rControl, '')
+    // Replace special characters
+    .replace(rSpecial, '-')
+    // ensure it doesn't start with a number
+    .replace(/^(\d)/, '_$1')
+
 const productionHead: HeadConfig[] = [
-  [
-    'script',
-    {
-      src: 'https://unpkg.com/thesemetrics@latest',
-      async: '',
-      type: 'text/javascript',
-    },
-  ],
+  // NOTE: removed because there is a bug that makes it load forever
+  // [
+  //   'script',
+  //   {
+  //     src: 'https://unpkg.com/thesemetrics@latest',
+  //     async: '',
+  //     type: 'text/javascript',
+  //   },
+  // ],
 ]
 
 export const sharedConfig = defineConfig({
@@ -34,6 +55,10 @@ export const sharedConfig = defineConfig({
     attrs: {
       leftDelimiter: '%{',
       rightDelimiter: '}%',
+    },
+
+    anchor: {
+      slugify,
     },
   },
 
@@ -69,6 +94,16 @@ export const sharedConfig = defineConfig({
     //   },
     // ],
 
+    [
+      'script',
+      {
+        src: 'https://cdn.usefathom.com/script.js',
+        'data-site': 'RENJQDQI',
+        'data-spa': 'auto',
+        defer: '',
+      },
+    ],
+
     // Vue School Top banner
     [
       'script',
@@ -88,7 +123,7 @@ export const sharedConfig = defineConfig({
     outline: [2, 3],
 
     socialLinks: [
-      { icon: 'twitter', link: 'https://twitter.com/posva' },
+      { icon: 'x', link: 'https://twitter.com/posva' },
       {
         icon: 'github',
         link: 'https://github.com/vuejs/router',
@@ -109,10 +144,14 @@ export const sharedConfig = defineConfig({
       text: 'Suggest changes',
     },
 
-    algolia: {
-      appId: 'BTNTW3I1XP',
-      apiKey: '771d10c8c5cc48f7922f15048b4d931c',
-      indexName: 'next_router_vuejs',
+    search: {
+      provider: 'algolia',
+      options: {
+        appId: 'BTNTW3I1XP',
+        apiKey: '771d10c8c5cc48f7922f15048b4d931c',
+        indexName: 'next_router_vuejs',
+        locales: { ...zhSearch },
+      },
     },
 
     carbonAds: {

@@ -8,6 +8,6 @@ editLink: false
 
 Allowed HTML history.state
 
-## Indexable %{#Indexable}%
+## Indexable
 
 ▪ [x: `number`]: `HistoryStateValue`

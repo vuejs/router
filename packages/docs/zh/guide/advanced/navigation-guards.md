@@ -31,7 +31,7 @@ router.beforeEach((to, from) => {
 可以返回的值如下:
 
 - `false`: 取消当前的导航。如果浏览器的 URL 改变了(可能是用户手动或者浏览器后退按钮)，那么 URL 地址会重置到 `from` 路由对应的地址。
-- 一个[路由地址](../../api/#routelocationraw): 通过一个路由地址跳转到一个不同的地址，就像你调用 [`router.push()`](../../api/#push) 一样，你可以设置诸如 `replace: true` 或 `name: 'home'` 之类的配置。当前的导航被中断，然后进行一个新的导航，就和 `from` 一样。
+- 一个[路由地址](../../api/#routelocationraw): 通过一个路由地址重定向到一个不同的地址，如同调用 `router.push()`，且可以传入诸如 `replace: true` 或 `name: 'home'` 之类的选项。它会中断当前的导航，同时用相同的 `from` 创建一个新导航。
 
  ```js
   router.beforeEach(async (to, from) => {
@@ -47,7 +47,7 @@ router.beforeEach((to, from) => {
   })
 ```
 
-如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](../../api/#onerror) 注册过的回调。
+如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](../../api/interfaces/Router.md#onError) 注册过的回调。
 
 如果什么都没有，`undefined` 或返回 `true`，**则导航是有效的**，并调用下一个导航守卫
 
@@ -63,7 +63,7 @@ router.beforeEach(async (to, from) => {
 
 ### 可选的第三个参数 `next`
 
-在之前的 Vue Router 版本中，也是可以使用 _第三个参数_ `next` 的。这是一个常见的错误来源，可以通过 [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0037-router-return-guards.md#motivation) 来消除错误。然而，它仍然是被支持的，这意味着你可以向任何导航守卫传递第三个参数。在这种情况下，**确保 `next`** 在任何给定的导航守卫中都被**严格调用一次**。它可以出现多于一次，但是只能在所有的逻辑路径都不重叠的情况下，否则钩子永远都不会被解析或报错。这里有一个在用户未能验证身份时重定向到`/login`的**错误用例**：
+在之前的 Vue Router 版本中，还可以使用 _第三个参数_ `next` 。这是一个常见的错误来源，我们经过 [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0037-router-return-guards.md#motivation) 讨论将其移除。然而，它仍然是被支持的，这意味着你可以向任何导航守卫传递第三个参数。在这种情况下，**确保 `next`** 在任何给定的导航守卫中都被**严格调用一次**。它可以出现多于一次，但是只能在所有的逻辑路径都不重叠的情况下，否则钩子永远都不会被解析或报错。这里有一个在用户未能验证身份时重定向到`/login`的**错误用例**：
 
 ```js
 // BAD
@@ -134,6 +134,25 @@ router.afterEach((to, from, failure) => {
 
 了解更多关于 navigation failures 的信息在[它的指南](./navigation-failures.md)中。
 
+
+## 在守卫内的全局注入
+
+从 Vue 3.3 开始，你可以在导航守卫内使用 `inject()` 方法。这在注入像 [pinia stores](https://pinia.vuejs.org) 这样的全局属性时很有用。在 `app.provide()` 中提供的所有内容都可以在 `router.beforeEach()`、`router.beforeResolve()`、`router.afterEach()` 内获取到：
+
+```ts
+// main.ts
+const app = createApp(App)
+app.provide('global', 'hello injections')
+
+// router.ts or main.ts
+router.beforeEach((to, from) => {
+  const global = inject('global') // 'hello injections'
+  // a pinia store
+  const userStore = useAuthStore()
+  // ...
+})
+```
+
 ## 路由独享的守卫
 
 你可以直接在路由配置上定义 `beforeEnter` 守卫：
@@ -179,7 +198,7 @@ const routes = [
 ]
 ```
 
-请注意，你也可以通过使用[路径 meta 字段](./meta.md)和[全局导航守卫](#global-before-guards)来实现类似的行为。
+请注意，你也可以通过使用[路径 meta 字段](./meta.md)和全局导航守卫来实现类似的行为。
 
 ## 组件内的守卫
 
@@ -246,7 +265,7 @@ beforeRouteLeave (to, from) {
 
 ### 使用组合 API
 
-如果你正在使用[组合 API 和 `setup` 函数](https://v3.vuejs.org/guide/composition-api-setup.html#setup)来编写组件，你可以通过 `onBeforeRouteUpdate` 和 `onBeforeRouteLeave` 分别添加 update 和 leave 守卫。 请参考[组合 API 部分](./composition-api.md#导航守卫)以获得更多细节。
+如果你正在使用[组合 API 和 `setup` 函数](https://cn.vuejs.org/api/composition-api-setup.html)来编写组件，你可以通过 `onBeforeRouteUpdate` 和 `onBeforeRouteLeave` 分别添加 update 和 leave 守卫。 请参考[组合 API 部分](./composition-api.md#导航守卫)以获得更多细节。
 
 ## 完整的导航解析流程
 

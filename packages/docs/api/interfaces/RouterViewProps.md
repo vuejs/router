@@ -6,14 +6,14 @@ editLink: false
 
 # Interface: RouterViewProps
 
-## Properties %{#Properties}%
+## Properties
 
-### name %{#Properties-name}%
+### name
 
 • `Optional` **name**: `string`
 
 ___
 
-### route %{#Properties-route}%
+### route
 
 • `Optional` **route**: [`RouteLocationNormalized`](RouteLocationNormalized.md)

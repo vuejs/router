@@ -14,7 +14,7 @@ editLink: false
 
 ### currentRoute %{#Properties-currentRoute}%
 
-• `只读` **currentRoute**: `Ref`<[`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md)\>
+• `只读` **currentRoute**: `Ref`\<[`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md)\>
 
 当前的 [RouteLocationNormalized](RouteLocationNormalized.md)。
 
@@ -91,16 +91,6 @@ ___
 
 添加一个导航钩子，它会在每次导航之后被执行。返回一个用来移除该钩子的函数。
 
-**`Example`**
-
-```js
-router.afterEach((to, from, failure) => {
-  if (isNavigationFailure(failure)) {
-    console.log('failed navigation', failure)
-  }
-})
-```
-
 #### 参数 %{#Methods-afterEach-Parameters}%
 
 | 名称 | 类型 | 描述 |
@@ -110,6 +100,8 @@ router.afterEach((to, from, failure) => {
 #### 返回值 %{#Methods-afterEach-Returns}%
 
 `fn`
+
+a function that removes the registered hook
 
 ▸ (): `void`
 
@@ -153,7 +145,7 @@ ___
 
 | 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> | 要加入的导航钩子 |
+| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> | 要加入的导航钩子 |
 
 #### 返回值 %{#Methods-beforeEach-Returns}%
 
@@ -175,19 +167,11 @@ ___
 
 添加一个导航守卫，它会在导航将要被解析之前被执行。此时所有组件都已经获取完毕，且其它导航守卫也都已经完成调用。返回一个用来移除该守卫的函数。
 
-**`Example`**
-
-```js
-router.beforeResolve(to => {
-  if (to.meta.requiresAuth && !isAuthenticated) return false
-})
-```
-
 #### 参数 %{#Methods-beforeResolve-Parameters}%
 
 | 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> | navigation guard to add |
+| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> | navigation guard to add |
 
 #### 返回值 %{#Methods-beforeResolve-Returns}%
 
@@ -273,7 +257,7 @@ ___
 
 ### isReady %{#Methods-isReady}%
 
-▸ **isReady**(): `Promise`<`void`\>
+▸ **isReady**(): `Promise`\<`void`\>
 
 返回一个 Promise，它会在路由器完成初始导航之后被解析，也就是说这时所有和初始路由有关联的异步入口钩子和异步组件都已经被解析。如果初始导航已经发生，则该 Promise 会被立刻解析。
 
@@ -281,7 +265,7 @@ ___
 
 #### 返回值 %{#Methods-isReady-Returns}%
 
-`Promise`<`void`\>
+`Promise`\<`void`\>
 
 ___
 
@@ -295,7 +279,7 @@ ___
 
 | 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `handler` | `_ErrorHandler` | 要注册的错误处理器 |
+| `handler` | `_ErrorListener` | 要注册的错误处理器 |
 
 #### 返回值 %{#Methods-onError-Returns}%
 
@@ -313,7 +297,7 @@ ___
 
 ### push %{#Methods-push}%
 
-▸ **push**(`to`): `Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
+▸ **push**(`to`): `Promise`\<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
 程序式地通过将一条记录加入到历史栈中来导航到一个新的 URL。
 
@@ -325,7 +309,7 @@ ___
 
 #### 返回值 %{#Methods-push-Returns}%
 
-`Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
+`Promise`\<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
 ___
 
@@ -349,7 +333,7 @@ ___
 
 ### replace %{#Methods-replace}%
 
-▸ **replace**(`to`): `Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
+▸ **replace**(`to`): `Promise`\<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
 程序式地通过替换历史栈中的当前记录来导航到一个新的 URL。
 
@@ -361,7 +345,7 @@ ___
 
 #### 返回值 %{#Methods-replace-Returns}%
 
-`Promise`<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
+`Promise`\<`undefined` \| `void` \| [`NavigationFailure`](NavigationFailure.md)\>
 
 ___
 

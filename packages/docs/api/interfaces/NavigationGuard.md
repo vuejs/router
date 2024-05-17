@@ -6,16 +6,16 @@ editLink: false
 
 # Interface: NavigationGuard
 
-## Callable %{#Callable}%
-
-### NavigationGuard %{#Callable-NavigationGuard}%
-
-▸ **NavigationGuard**(`to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
-
 Navigation guard. See [Navigation
 Guards](/guide/advanced/navigation-guards.md).
 
-#### Parameters %{#Callable-NavigationGuard-Parameters}%
+## Callable
+
+### NavigationGuard
+
+▸ **NavigationGuard**(`to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>
+
+#### Parameters
 
 | Name | Type |
 | :------ | :------ |
@@ -23,6 +23,6 @@ Guards](/guide/advanced/navigation-guards.md).
 | `from` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
 | `next` | [`NavigationGuardNext`](NavigationGuardNext.md) |
 
-#### Returns %{#Callable-NavigationGuard-Returns}%
+#### Returns
 
-`NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
+`NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>

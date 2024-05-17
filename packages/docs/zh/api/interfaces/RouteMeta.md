@@ -23,6 +23,6 @@ declare module 'vue-router' {
 
 ## 继承关系 %{#Hierarchy}%
 
-- `Record`<`string` \| `number` \| `symbol`, `unknown`\>
+- `Record`\<`string` \| `number` \| `symbol`, `unknown`\>
 
   ↳ **`RouteMeta`**

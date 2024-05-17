@@ -6,13 +6,13 @@ editLink: false
 
 # Interface: NavigationHookAfter
 
-## Callable %{#Callable}%
+## Callable
 
-### NavigationHookAfter %{#Callable-NavigationHookAfter}%
+### NavigationHookAfter
 
 ▸ **NavigationHookAfter**(`to`, `from`, `failure?`): `any`
 
-#### Parameters %{#Callable-NavigationHookAfter-Parameters}%
+#### Parameters
 
 | Name | Type |
 | :------ | :------ |
@@ -20,6 +20,6 @@ editLink: false
 | `from` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
 | `failure?` | `void` \| [`NavigationFailure`](NavigationFailure.md) |
 
-#### Returns %{#Callable-NavigationHookAfter-Returns}%
+#### Returns
 
 `any`

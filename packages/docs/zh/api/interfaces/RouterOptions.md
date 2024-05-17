@@ -73,7 +73,17 @@ ___
 
 ▸ (`search`): [`LocationQuery`](../index.md#locationquery)
 
-解析查询的自定义实现。请查阅其相关内容 [stringifyQuery](RouterOptions.md#stringifyquery)。
+解析查询的自定义实现。请查阅其相关内容 [RouterOptions.stringifyQuery](RouterOptions.md#stringifyquery)。
+
+##### 参数 %{#Properties-parseQuery-Type-declaration-Parameters}%
+
+| 名称 | 类型 |
+| :------ | :------ |
+| `search` | `string` |
+
+##### 返回值 %{#Properties-parseQuery-Type-declaration-Returns}%
+
+[`LocationQuery`](../index.md#locationquery)
 
 **`示例`**
 
@@ -88,16 +98,6 @@ createRouter({
   stringifyQuery: qs.stringify,
 })
 ```
-
-##### 参数 %{#Properties-parseQuery-Type-declaration-Parameters}%
-
-| 名称 | 类型 |
-| :------ | :------ |
-| `search` | `string` |
-
-##### 返回值 %{#Properties-parseQuery-Type-declaration-Returns}%
-
-[`LocationQuery`](../index.md#locationquery)
 
 ___
 

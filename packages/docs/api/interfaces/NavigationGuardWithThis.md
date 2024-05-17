@@ -4,24 +4,24 @@ editLink: false
 
 [API Documentation](../index.md) / NavigationGuardWithThis
 
-# Interface: NavigationGuardWithThis<T\>
+# Interface: NavigationGuardWithThis\<T\>
 
-## Type parameters %{#Type-parameters}%
+Navigation guard. See [Navigation
+Guards](/guide/advanced/navigation-guards.md).
+
+## Type parameters
 
 | Name |
 | :------ |
 | `T` |
 
-## Callable %{#Callable}%
+## Callable
 
-### NavigationGuardWithThis %{#Callable-NavigationGuardWithThis}%
+### NavigationGuardWithThis
 
-▸ **NavigationGuardWithThis**(`this`, `to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
+▸ **NavigationGuardWithThis**(`this`, `to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>
 
-Navigation guard. See [Navigation
-Guards](/guide/advanced/navigation-guards.md).
-
-#### Parameters %{#Callable-NavigationGuardWithThis-Parameters}%
+#### Parameters
 
 | Name | Type |
 | :------ | :------ |
@@ -30,6 +30,6 @@ Guards](/guide/advanced/navigation-guards.md).
 | `from` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
 | `next` | [`NavigationGuardNext`](NavigationGuardNext.md) |
 
-#### Returns %{#Callable-NavigationGuardWithThis-Returns}%
+#### Returns
 
-`NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
+`NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>

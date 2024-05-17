@@ -17,7 +17,7 @@ Hi! I'm really excited that you are interested in contributing to Vue Router. Be
 
 ## Pull Request Guidelines
 
-- Checkout a topic branch from a base branch, e.g. `main`, and merge back against that branch.
+- Check out a topic branch from a base branch, e.g. `main`, and merge back against that branch.
 
 - If adding a new feature:
 
@@ -26,7 +26,7 @@ Hi! I'm really excited that you are interested in contributing to Vue Router. Be
 
 - If fixing bug:
 
-  - If you are resolving a special issue, add `(fix #xxxx[,#xxxx])` (#xxxx is the issue id) in your PR title for a better release log, e.g. `update entities encoding/decoding (fix #3899)`.
+  - If you are resolving a particular issue, add `(fix #xxxx[,#xxxx])` (#xxxx is the issue id) in your PR title for a better release log, e.g. `update entities encoding/decoding (fix #3899)`.
   - Provide a detailed description of the bug in the PR. Live demo preferred.
   - Add appropriate test coverage if applicable. You can check the coverage of your code addition by running `pnpm test --coverage`.
 
@@ -48,7 +48,7 @@ After cloning the repo, run:
 pnpm install # install the dependencies of the project
 ```
 
-A high level overview of tools used:
+A high-level overview of tools used:
 
 - [TypeScript](https://www.typescriptlang.org/) as the development language
 - [Rollup](https://rollupjs.org) for bundling
@@ -63,7 +63,7 @@ The `build` script builds vue-router
 
 ### `pnpm play`
 
-The `play` scripts starts a playground project located at `playground/` that allows you to test things on a browser.
+The `play` script starts a playground project located at `playground/`, allowing you to test things on a browser.
 
 ```bash
 pnpm play
@@ -91,66 +91,77 @@ $ pnpm jest --watch
 Vue Router source code can be found in the `src` directory:
 
 - `src/history`: history implementations that are instantiable with `create*History()`. This folder contains code related to using the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
-- `src/matcher`: RouteMatcher implementation. Contains the code that transforms paths like `/users/:id` into regexps and handle the transformation of locations like `{ name: 'UserDetail', params: { id: '2' } }` to strings. It contains path ranking logic and the part of dynamic routing that concerns matching urls in the right order.
-- `src/utils`: contains small utility functions that are used across other sections of the router but are not contained by them.
-- `src/router`: contains the router creation, navigation execution, using the matcher, the history implementation. It runs navigation guards.
-- `src/location`: helpers related to route location and urls
-- `src/encoding`: helpers related to url encoding
+- `src/matcher`: RouteMatcher implementation. Contains the code that transforms paths like `/users/:id` into regexps and handles the transformation of locations like `{ name: 'UserDetail', params: { id: '2' } }` to strings. It contains path ranking logic and the part of dynamic routing that concerns matching URLs in the correct order.
+- `src/utils`: contains small utility functions used across other router
+- `src/router`: contains the router creation, navigation execution, matcher use, and history implementation. It runs navigation guards.
+- `src/location`: helpers related to route location and URLs
+- `src/encoding`: helpers related to URL encoding
 - `src/errors`: different internal and external errors with their messages
-- `src/index`: contains all public API as exports.
-- `src/types`: contains global types that are used across multiple sections of the router.
+- `src/index` contains all public APIs as exports.
+- `src/types`: contains global types used across multiple router sections.
 
 ## Contributing Tests
 
 Unit tests are located inside `__tests__`. Consult the [Jest docs](https://jestjs.io/docs/en/using-matchers) and existing test cases for how to write new test specs. Here are some additional guidelines:
 
 - Use the minimal API needed for a test case. For example, if a test can be written without involving the reactivity system or a component, it should be written so. This limits the test's exposure to changes in unrelated parts and makes it more stable.
-- Use the minimal API needed for a test case. For example, if a test concerns the `router-link` component, don't create a router instance, mock the needed properties instead.
+- Use the minimal API needed for a test case. For example, if a test concerns the `router-link` component, don't create a router instance, mock the required properties instead.
 - Write a unit test whenever possible
-- If a test is specific to a browser, create an e2e (end to end) test and make sure to indicate it on the test
+- If a test is specific to a browser, create an e2e (end-to-end) test and make sure to indicate it on the test
 
 ## Contributing Docs
 
-Currently, all the docs can be found in `packages/docs`. It contains the English markdown files while translation(s) are stored in their corresponding `<lang>` sub-folder(s):
+All the documentation files can be found in `packages/docs`. It contains the English markdown files while translation(s) are stored in their corresponding `<lang>` sub-folder(s):
 
 - [`zh`](https://github.com/vuejs/router/tree/main/packages/docs/zh): Chinese translation.
 
-Besides that, the `.vitepress` sub-folder is used to put the config and theme, including the i18n information.
+Besides that, the `.vitepress` sub-folder contains the config and theme, including the i18n information.
 
-Consider the following two options in order to contribute to the translations:
+Contributing to the English docs is the same as contributing to the source code. You can create a pull request to our GitHub repo. However, if you would like to contribute to the translations, there are two options and some extra steps to follow:
 
 ### Translate in a `<lang>` sub-folder and host it on our official repo
 
-If you want to start translating the docs in a new language:
+If you want to start translating the docs in a _new_ language:
 
 1. Create the corresponding `<lang>` sub-folder for your translation.
-2. Modify the i18n config in `.vitepress` sub-folder.
+2. Modify the i18n configuration in the `.vitepress` sub-folder.
 3. Translate the docs and run the doc site to self-test locally.
-4. Once you have done all above, create a pull request to our GitHub repo.
+4. Create a checkpoint for your language by running `pnpm run docs:translation:update <lang> [<commit>]`. A checkpoint is the hash and date of the latest commit when you do the translation. The checkpoint information is stored in the status file `packages/docs/.vitepress/translation-status.json`. _It's crucial for long-term maintenance since all the further translation sync-ups are based on their previous checkpoints._ Usually, you can skip the commit argument because the default value is `main`.
+5. Commit all the changes and create a pull request to our GitHub repo.
 
-If you want to maintain a existing translation:
+We will have a paragraph at the top of each translation page that shows the translation status. That way, users can quickly determine if the translation is up-to-date or lags behind the English version.
 
-1. (Repo permission required) First of all, make sure there is a _checkpoint_ branch for the language. Usually it's named as `docs-sync-<lang>`. Notice that:
-    - This branch is always synced to the commit of the original docs that the latest translation of your language is corresponding to. Like `docs-sync-zh` is always to the commit of the original docs that the latest Chinese translation is corresponding to.
-    - Technically, this checkpoint branch should be only updated if the translation is synced to a nearer commit of the original docs. Usually the commit is the HEAD of the `main` branch at that moment.
-2. See what translation you need to do to sync up with the original docs. There are 2 popular ways:
-	  - Git diff command: e.g. `git diff docs-sync-zh..main packages/docs # > debug.log`, or
-	  - GitHub Compare page: e.g. https://github.com/vuejs/router/compare/docs-sync-zh...main (only see the changes in `packages/docs/*`)
-3. Create your own branch and start the translation update, following the diff or compare.
-4. Once you have done all above, create a pull request to our GitHub repo.
-    - It's highly recommended to commit with message like `docs(<lang>): sync update to <the-latest-commit>`. e.g. `docs(zh): sync update to e008551`.
-5. (Repo permission required) **VERY IMPORTANT**: after the pull request is merged, for the future batch of sync-up, do another merge from the latest commit at that moment to the checkpoint branch. e.g. merge commit `e008551` to branch `docs-sync-zh`.
+Speaking of the up-to-date translation, we also need good long-term maintenance for every language. If you want to _update_ an existing translation:
 
-For more real examples, please check out [all the PRs with title "docs(zh): sync" after 2023-01-01](https://github.com/vuejs/router/pulls?q=is%3Apr+created%3A%3E2023-01-01+docs%28zh%29+sync).
+1. See what translation you need to sync up with the original docs. There are two popular ways:
+   1. Via the [GitHub Compare](https://github.com/vuejs/router/compare/) page, only see the changes in `packages/docs/*` from the checkpoint hash to `main` branch. You can find the checkpoint hash for your language via the translation status file `packages/docs/.vitepress/translation-status.json`. The compare page can be directly opened with the hash as part of the URL, e.g. https://github.com/vuejs/router/compare/e008551...main
+   2. Via a local command: `pnpm run docs:translation:compare <lang> [<commit>]`.
+2. Create your own branch and start the translation update, following the previous comparison.
+3. Create a checkpoint for your language by running `pnpm run docs:translation:update <lang> [<commit>]`.
+4. Commit all the changes and create a pull request to our GitHub repo.
+
+<!-- TODO: add an example once we have got one -->
 
 ### Self-host the translation
 
-You can also host the translation on your own. To create one, just simply fork our GitHub repo and change the content and site config in `packages/docs`. To long-term maintain it, we _highly recommend_ a similar way that we do above for our officially hosted translations:
+You can also host the translation on your own. To create one, fork our GitHub repo and change the content and site config in `packages/docs`. To long-term maintain it, we _highly recommend_ a similar way that we do above for our officially hosted translations:
 
-1. Ensure you create a _checkpoint branch_ (for example, a branch named sync). This branch should always align with the commit of the original documentation that corresponds to your most recent translation.
-2. Utilize the diff result between the latest official repository and your own by using the git diff command or the GitHub Compare page to guide your translation.
-3. Complete the translation process.
-4. Update the _checkpoint branch_ accordingly.
+- Ensure you maintain the _checkpoint_ properly. Also, ensure the _translation status_ is well-displayed on the top of each translation page.
+- Utilize the diff result between the latest official repository and your own checkpoint to guide your translation.
+
+Tip: you can add the official repo as a remote to your forked repo. This way, you can still run `pnpm run docs:translation:update <lang> [<commit>]` and `npm run docs:translation:compare <lang> [<commit>]` to get the checkpoint and diff result:
+
+```bash
+# prepare the upstream remote
+git remote add upstream git@github.com:vuejs/router.git
+git fetch upstream main
+
+# set the checkpoint
+pnpm run docs:translation:update <lang> upstream/main
+
+# get the diff result
+pnpm run docs:translation:compare <lang> upstream/main
+```
 
 <!-- TODO: add an example once we have got one -->
 

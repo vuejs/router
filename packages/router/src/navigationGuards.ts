@@ -117,14 +117,16 @@ export function guardToPromiseFn(
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded,
   record: RouteRecordNormalized,
-  name: string
+  name: string,
+  runWithContext: <T>(fn: () => T) => T
 ): () => Promise<void>
 export function guardToPromiseFn(
   guard: NavigationGuard,
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded,
   record?: RouteRecordNormalized,
-  name?: string
+  name?: string,
+  runWithContext: <T>(fn: () => T) => T = fn => fn()
 ): () => Promise<void> {
   // keep a reference to the enterCallbackArray to prevent pushing callbacks if a new navigation took place
   const enterCallbackArray =
@@ -173,11 +175,13 @@ export function guardToPromiseFn(
       }
 
       // wrapping with Promise.resolve allows it to work with both async and sync guards
-      const guardReturn = guard.call(
-        record && record.instances[name!],
-        to,
-        from,
-        __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
+      const guardReturn = runWithContext(() =>
+        guard.call(
+          record && record.instances[name!],
+          to,
+          from,
+          __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
+        )
       )
       let guardCall = Promise.resolve(guardReturn)
 
@@ -231,7 +235,8 @@ export function extractComponentsGuards(
   matched: RouteRecordNormalized[],
   guardType: GuardType,
   to: RouteLocationNormalized,
-  from: RouteLocationNormalizedLoaded
+  from: RouteLocationNormalizedLoaded,
+  runWithContext: <T>(fn: () => T) => T = fn => fn()
 ) {
   const guards: Array<() => Promise<void>> = []
 
@@ -292,7 +297,10 @@ export function extractComponentsGuards(
         const options: ComponentOptions =
           (rawComponent as any).__vccOpts || rawComponent
         const guard = options[guardType]
-        guard && guards.push(guardToPromiseFn(guard, to, from, record, name))
+        guard &&
+          guards.push(
+            guardToPromiseFn(guard, to, from, record, name, runWithContext)
+          )
       } else {
         // start requesting the chunk already
         let componentPromise: Promise<
@@ -324,7 +332,10 @@ export function extractComponentsGuards(
             const options: ComponentOptions =
               (resolvedComponent as any).__vccOpts || resolvedComponent
             const guard = options[guardType]
-            return guard && guardToPromiseFn(guard, to, from, record, name)()
+            return (
+              guard &&
+              guardToPromiseFn(guard, to, from, record, name, runWithContext)()
+            )
           })
         )
       }

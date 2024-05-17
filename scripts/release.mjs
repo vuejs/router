@@ -1,7 +1,7 @@
+import fs from 'node:fs/promises'
+import { join, resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import minimist from 'minimist'
-import _fs from 'fs'
-import { join, resolve, dirname } from 'path'
-import { fileURLToPath } from 'url'
 import chalk from 'chalk'
 import semver from 'semver'
 import enquirer from 'enquirer'
@@ -10,7 +10,6 @@ import pSeries from 'p-series'
 import { globby } from 'globby'
 
 const { prompt } = enquirer
-const fs = _fs.promises
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -179,6 +178,16 @@ async function main() {
   step('\nUpdating versions in package.json files...')
   await updateVersions(pkgWithVersions)
 
+  step('\nCopying README for router package...')
+  if (!isDryRun) {
+    await fs.copyFile(
+      resolve(__dirname, '../README.md'),
+      resolve(__dirname, '../packages/router/README.md')
+    )
+  } else {
+    console.log(`(skipped)`)
+  }
+
   step('\nGenerating changelogs...')
   for (const pkg of pkgWithVersions) {
     step(` -> ${pkg.name} (${pkg.path})`)
@@ -345,9 +354,12 @@ async function getChangedPackages() {
     lastTag = stdout
   }
   // globby expects `/` even on windows
-  const folders = await globby((join(__dirname, '../packages/*').replace(/\\/g,'/')), {
-    onlyFiles: false,
-  })
+  const folders = await globby(
+    join(__dirname, '../packages/*').replace(/\\/g, '/'),
+    {
+      onlyFiles: false,
+    }
+  )
 
   const pkgs = await Promise.all(
     folders.map(async folder => {

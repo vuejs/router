@@ -6,11 +6,13 @@ editLink: false
 
 # 接口：RouterScrollBehavior
 
+可以被传递给 `createRouter` 的 `scrollBehavior` 选项的类型。
+
 ## 可调用函数 %{#Callable}%
 
 ### RouterScrollBehavior %{#Callable-RouterScrollBehavior}%
 
-▸ **RouterScrollBehavior**(`to`, `from`, `savedPosition`): `Awaitable`<``false`` \| `void` \| `ScrollPosition`\>
+▸ **RouterScrollBehavior**(`to`, `from`, `savedPosition`): `Awaitable`\<``false`` \| `void` \| `ScrollPosition`\>
 
 #### 参数 %{#Callable-RouterScrollBehavior-Parameters}%
 
@@ -22,4 +24,4 @@ editLink: false
 
 #### 返回值 %{#Callable-RouterScrollBehavior-Returns}%
 
-`Awaitable`<``false`` \| `void` \| `ScrollPosition`\>
+`Awaitable`\<``false`` \| `void` \| `ScrollPosition`\>

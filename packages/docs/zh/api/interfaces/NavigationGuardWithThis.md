@@ -4,7 +4,9 @@ editLink: false
 
 [API 参考](../index.md) / NavigationGuardWithThis
 
-# 接口：NavigationGuardWithThis<T\> %{#interface-navigationguardwiththis-t}%
+# 接口：NavigationGuardWithThis\<T\> %{#interface-navigationguardwiththis-t}%
+
+导航守卫。详情可查阅[导航守卫](/zh/guide/advanced/navigation-guards.md)。
 
 ## 类型参数 %{#Type-parameters}%
 
@@ -16,9 +18,7 @@ editLink: false
 
 ### NavigationGuardWithThis %{#Callable-NavigationGuardWithThis}%
 
-▸ **NavigationGuardWithThis**(`this`, `to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
-
-导航守卫。详情可查阅[导航守卫](/zh/guide/advanced/navigation-guards.md).
+▸ **NavigationGuardWithThis**(`this`, `to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>
 
 #### 参数 %{#Callable-NavigationGuardWithThis-Parameters}%
 
@@ -31,4 +31,4 @@ editLink: false
 
 #### 返回值 %{#Callable-NavigationGuardWithThis-Returns}%
 
-`NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
+`NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>

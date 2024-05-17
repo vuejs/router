@@ -17,7 +17,11 @@ const UserDetails = () => import('./views/UserDetails.vue')
 
 const router = createRouter({
   // ...
-  routes: [{ path: '/users/:id', component: UserDetails }],
+  routes: [
+    { path: '/users/:id', component: UserDetails }
+    // or use it directly in the route definition
+    { path: '/users/:id', component: () => import('./views/UserDetails.vue') },
+  ],
 })
 ```
 
@@ -33,7 +37,7 @@ const UserDetails = () =>
 In general, it's a good idea **to always use dynamic imports** for all your routes.
 
 ::: tip Note
-Do **not** use [Async components](https://v3.vuejs.org/guide/component-dynamic-async.html#async-components) for routes. Async components can still be used inside route components but route component themselves are just dynamic imports.
+Do **not** use [Async components](https://vuejs.org/guide/components/async.html) for routes. Async components can still be used inside route components but route component themselves are just dynamic imports.
 :::
 
 When using a bundler like webpack, this will automatically benefit from [code splitting](https://webpack.js.org/guides/code-splitting/)

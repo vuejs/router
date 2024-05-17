@@ -6,15 +6,15 @@ editLink: false
 
 # Interface: RouterLinkProps
 
-## Hierarchy %{#Hierarchy}%
+## Hierarchy
 
 - `RouterLinkOptions`
 
   ↳ **`RouterLinkProps`**
 
-## Properties %{#Properties}%
+## Properties
 
-### activeClass %{#Properties-activeClass}%
+### activeClass
 
 • `Optional` **activeClass**: `string`
 
@@ -22,7 +22,7 @@ Class to apply when the link is active
 
 ___
 
-### ariaCurrentValue %{#Properties-ariaCurrentValue}%
+### ariaCurrentValue
 
 • `Optional` **ariaCurrentValue**: ``"location"`` \| ``"time"`` \| ``"page"`` \| ``"step"`` \| ``"date"`` \| ``"true"`` \| ``"false"``
 
@@ -34,7 +34,7 @@ Value passed to the attribute `aria-current` when the link is exact active.
 
 ___
 
-### custom %{#Properties-custom}%
+### custom
 
 • `Optional` **custom**: `boolean`
 
@@ -43,7 +43,7 @@ using `v-slot` to create a custom RouterLink
 
 ___
 
-### exactActiveClass %{#Properties-exactActiveClass}%
+### exactActiveClass
 
 • `Optional` **exactActiveClass**: `string`
 
@@ -51,24 +51,24 @@ Class to apply when the link is exact active
 
 ___
 
-### replace %{#Properties-replace}%
+### replace
 
 • `Optional` **replace**: `boolean`
 
 Calls `router.replace` instead of `router.push`.
 
-#### Inherited from %{#Properties-replace-Inherited-from}%
+#### Inherited from
 
 RouterLinkOptions.replace
 
 ___
 
-### to %{#Properties-to}%
+### to
 
-• **to**: [`RouteLocationRaw`](../index.md#routelocationraw)
+• **to**: [`RouteLocationRaw`](../index.md#RouteLocationRaw)
 
 Route Location the link should navigate to when clicked on.
 
-#### Inherited from %{#Properties-to-Inherited-from}%
+#### Inherited from
 
 RouterLinkOptions.to

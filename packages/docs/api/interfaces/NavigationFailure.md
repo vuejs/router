@@ -8,25 +8,25 @@ editLink: false
 
 Extended Error that contains extra information regarding a failed navigation.
 
-## Hierarchy %{#Hierarchy}%
+## Hierarchy
 
 - `Error`
 
   ↳ **`NavigationFailure`**
 
-## Properties %{#Properties}%
+## Properties
 
-### cause %{#Properties-cause}%
+### cause
 
 • `Optional` **cause**: `unknown`
 
-#### Inherited from %{#Properties-cause-Inherited-from}%
+#### Inherited from
 
 Error.cause
 
 ___
 
-### from %{#Properties-from}%
+### from
 
 • **from**: [`RouteLocationNormalized`](RouteLocationNormalized.md)
 
@@ -34,37 +34,37 @@ Route location we were navigating from
 
 ___
 
-### message %{#Properties-message}%
+### message
 
 • **message**: `string`
 
-#### Inherited from %{#Properties-message-Inherited-from}%
+#### Inherited from
 
 Error.message
 
 ___
 
-### name %{#Properties-name}%
+### name
 
 • **name**: `string`
 
-#### Inherited from %{#Properties-name-Inherited-from}%
+#### Inherited from
 
 Error.name
 
 ___
 
-### stack %{#Properties-stack}%
+### stack
 
 • `Optional` **stack**: `string`
 
-#### Inherited from %{#Properties-stack-Inherited-from}%
+#### Inherited from
 
 Error.stack
 
 ___
 
-### to %{#Properties-to}%
+### to
 
 • **to**: [`RouteLocationNormalized`](RouteLocationNormalized.md)
 
@@ -72,7 +72,7 @@ Route location we were navigating to
 
 ___
 
-### type %{#Properties-type}%
+### type
 
 • **type**: `NAVIGATION_ABORTED` \| `NAVIGATION_CANCELLED` \| `NAVIGATION_DUPLICATED`
 

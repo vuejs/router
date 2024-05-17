@@ -82,6 +82,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     getPost(to.params.id, (err, post) => {
+      // `setData` 方法定义在下面的代码中
       next(vm => vm.setData(err, post))
     })
   },
@@ -95,6 +96,15 @@ export default {
       this.error = error.toString()
     }
   },
+  methods: {
+    setData(error, post) {
+      if (error) {
+        this.error = error
+      } else {
+        this.post = post
+      }
+    }
+  }
 }
 ```
 

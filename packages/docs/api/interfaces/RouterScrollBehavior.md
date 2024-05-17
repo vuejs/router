@@ -6,13 +6,15 @@ editLink: false
 
 # Interface: RouterScrollBehavior
 
-## Callable %{#Callable}%
+Type of the `scrollBehavior` option that can be passed to `createRouter`.
 
-### RouterScrollBehavior %{#Callable-RouterScrollBehavior}%
+## Callable
 
-▸ **RouterScrollBehavior**(`to`, `from`, `savedPosition`): `Awaitable`<``false`` \| `void` \| `ScrollPosition`\>
+### RouterScrollBehavior
 
-#### Parameters %{#Callable-RouterScrollBehavior-Parameters}%
+▸ **RouterScrollBehavior**(`to`, `from`, `savedPosition`): `Awaitable`\<``false`` \| `void` \| `ScrollPosition`\>
+
+#### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
@@ -20,6 +22,6 @@ editLink: false
 | `from` | [`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md) | Route location where we are navigating from |
 | `savedPosition` | ``null`` \| `_ScrollPositionNormalized` | saved position if it exists, `null` otherwise |
 
-#### Returns %{#Callable-RouterScrollBehavior-Returns}%
+#### Returns
 
-`Awaitable`<``false`` \| `void` \| `ScrollPosition`\>
+`Awaitable`\<``false`` \| `void` \| `ScrollPosition`\>

@@ -6,68 +6,68 @@ editLink: false
 
 # Interface: NavigationGuardNext
 
-## Callable %{#Callable}%
+## Callable
 
-### NavigationGuardNext %{#Callable-NavigationGuardNext}%
+### NavigationGuardNext
 
 ▸ **NavigationGuardNext**(): `void`
 
-#### Returns %{#Callable-NavigationGuardNext-Returns}%
+#### Returns
 
 `void`
 
-### NavigationGuardNext %{#Callable-NavigationGuardNext_1}%
+### NavigationGuardNext
 
 ▸ **NavigationGuardNext**(`error`): `void`
 
-#### Parameters %{#Callable-NavigationGuardNext-Parameters}%
+#### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `error` | `Error` |
 
-#### Returns %{#Callable-NavigationGuardNext-Returns_1}%
+#### Returns
 
 `void`
 
-### NavigationGuardNext %{#Callable-NavigationGuardNext_2}%
+### NavigationGuardNext
 
 ▸ **NavigationGuardNext**(`location`): `void`
 
-#### Parameters %{#Callable-NavigationGuardNext-Parameters_1}%
+#### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `location` | [`RouteLocationRaw`](../index.md#routelocationraw) |
+| `location` | [`RouteLocationRaw`](../index.md#RouteLocationRaw) |
 
-#### Returns %{#Callable-NavigationGuardNext-Returns_2}%
+#### Returns
 
 `void`
 
-### NavigationGuardNext %{#Callable-NavigationGuardNext_3}%
+### NavigationGuardNext
 
 ▸ **NavigationGuardNext**(`valid`): `void`
 
-#### Parameters %{#Callable-NavigationGuardNext-Parameters_2}%
+#### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `valid` | `undefined` \| `boolean` |
 
-#### Returns %{#Callable-NavigationGuardNext-Returns_3}%
+#### Returns
 
 `void`
 
-### NavigationGuardNext %{#Callable-NavigationGuardNext_4}%
+### NavigationGuardNext
 
 ▸ **NavigationGuardNext**(`cb`): `void`
 
-#### Parameters %{#Callable-NavigationGuardNext-Parameters_3}%
+#### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `cb` | `NavigationGuardNextCallback` |
 
-#### Returns %{#Callable-NavigationGuardNext-Returns_4}%
+#### Returns
 
 `void`

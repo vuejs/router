@@ -284,7 +284,7 @@ describe('Lazy Loading', () => {
     reject()
     await router.push('/foo').catch(spy)
 
-    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalledTimes(1)
     expect('uncaught error').toHaveBeenWarned()
 
     expect(router.currentRoute.value).toMatchObject({

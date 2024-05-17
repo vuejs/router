@@ -64,7 +64,7 @@ While it's not recommended, you can use this mode inside Browser applications bu
 
 ## Example Server Configurations
 
-**Note**: The following examples assume you are serving your app from the root folder. If you deploy to a subfolder, you should use [the `publicPath` option of Vue CLI](https://cli.vuejs.org/config/#publicpath) and the related [`base` property of the router](../../api/#Functions-createWebHistory). You also need to adjust the examples below to use the subfolder instead of the root folder (e.g. replacing `RewriteBase /` with `RewriteBase /name-of-your-subfolder/`).
+**Note**: The following examples assume you are serving your app from the root folder. If you deploy to a subfolder, you should use [the `publicPath` option of Vue CLI](https://cli.vuejs.org/config/#publicpath) and the related [`base` property of the router](../../api/interfaces/Router.md#createWebHistory). You also need to adjust the examples below to use the subfolder instead of the root folder (e.g. replacing `RewriteBase /` with `RewriteBase /name-of-your-subfolder/`).
 
 ### Apache
 
@@ -83,7 +83,7 @@ While it's not recommended, you can use this mode inside Browser applications bu
 </IfModule>
 ```
 
-Instead of `mod_rewrite`, you could also use [`FallbackResource`](https://httpd.apache.org/docs/2.2/mod/mod_dir.html#fallbackresource).
+Instead of `mod_rewrite`, you could also use [`FallbackResource`](https://httpd.apache.org/docs/2.4/mod/mod_dir.html#fallbackresource).
 
 ### nginx
 
@@ -214,4 +214,4 @@ const router = createRouter({
 })
 ```
 
-Alternatively, if you are using a Node.js server, you can implement the fallback by using the router on the server side to match the incoming URL and respond with 404 if no route is matched. Check out the [Vue server side rendering documentation](https://v3.vuejs.org/guide/ssr/introduction.html#what-is-server-side-rendering-ssr) for more information.
+Alternatively, if you are using a Node.js server, you can implement the fallback by using the router on the server side to match the incoming URL and respond with 404 if no route is matched. Check out the [Vue server side rendering documentation](https://vuejs.org/guide/scaling-up/ssr.html) for more information.

@@ -44,6 +44,10 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             text: 'Changelog',
             link: 'https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md',
           },
+          {
+            text: 'Vue.js Certification',
+            link: 'https://certificates.dev/vuejs/?friend=VUEROUTER&utm_source=router_vuejs&utm_medium=link&utm_campaign=router_vuejs_links&utm_content=navbar',
+          },
         ],
       },
     ],
@@ -66,7 +70,6 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         },
         {
           text: 'Essentials',
-          collapsible: false,
           items: [
             {
               text: 'Getting Started',
@@ -81,16 +84,16 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/guide/essentials/route-matching-syntax.html',
             },
             {
+              text: 'Named Routes',
+              link: '/guide/essentials/named-routes.html',
+            },
+            {
               text: 'Nested Routes',
               link: '/guide/essentials/nested-routes.html',
             },
             {
               text: 'Programmatic Navigation',
               link: '/guide/essentials/navigation.html',
-            },
-            {
-              text: 'Named Routes',
-              link: '/guide/essentials/named-routes.html',
             },
             {
               text: 'Named Views',
@@ -105,6 +108,10 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/guide/essentials/passing-props.html',
             },
             {
+              text: 'Active links',
+              link: '/guide/essentials/active-links.html',
+            },
+            {
               text: 'Different History modes',
               link: '/guide/essentials/history-mode.html',
             },
@@ -112,7 +119,6 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         },
         {
           text: 'Advanced',
-          collapsible: false,
           items: [
             {
               text: 'Navigation guards',
@@ -129,6 +135,10 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             {
               text: 'Composition API',
               link: '/guide/advanced/composition-api.html',
+            },
+            {
+              text: 'RouterView slot',
+              link: '/guide/advanced/router-view-slot.html',
             },
             {
               text: 'Transitions',

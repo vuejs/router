@@ -91,7 +91,6 @@ function useHistoryListeners(
       replace(to)
     }
 
-    // console.log({ deltaFromCurrent })
     // Here we could also revert the navigation by calling history.go(-delta)
     // this listener will have to be adapted to not trigger again and to wait for the url
     // to be updated before triggering the listeners. Some kind of validation function would also

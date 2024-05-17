@@ -8,15 +8,15 @@ editLink: false
 
 Options to initialize a [Router](Router.md) instance.
 
-## Hierarchy %{#Hierarchy}%
+## Hierarchy
 
-- [`PathParserOptions`](../index.md#pathparseroptions)
+- [`PathParserOptions`](../index.md#PathParserOptions)
 
   ↳ **`RouterOptions`**
 
-## Properties %{#Properties}%
+## Properties
 
-### end %{#Properties-end}%
+### end
 
 • `Optional` **end**: `boolean`
 
@@ -26,13 +26,13 @@ Should the RegExp match until the end by appending a `$` to it.
 
 `true`
 
-#### Inherited from %{#Properties-end-Inherited-from}%
+#### Inherited from
 
 PathParserOptions.end
 
 ___
 
-### history %{#Properties-history}%
+### history
 
 • **history**: [`RouterHistory`](RouterHistory.md)
 
@@ -53,34 +53,30 @@ createRouter({
 
 ___
 
-### linkActiveClass %{#Properties-linkActiveClass}%
+### linkActiveClass
 
 • `Optional` **linkActiveClass**: `string`
 
-Default class applied to active [RouterLink](../index.md#routerlink). If none is provided,
+Default class applied to active [RouterLink](../index.md#RouterLink). If none is provided,
 `router-link-active` will be applied.
 
 ___
 
-### linkExactActiveClass %{#Properties-linkExactActiveClass}%
+### linkExactActiveClass
 
 • `Optional` **linkExactActiveClass**: `string`
 
-Default class applied to exact active [RouterLink](../index.md#routerlink). If none is provided,
+Default class applied to exact active [RouterLink](../index.md#RouterLink). If none is provided,
 `router-link-exact-active` will be applied.
 
 ___
 
-### parseQuery %{#Properties-parseQuery}%
+### parseQuery
 
-• `Optional` **parseQuery**: (`search`: `string`) => [`LocationQuery`](../index.md#locationquery)
-
-#### Type declaration %{#Properties-parseQuery-Type-declaration}%
-
-▸ (`search`): [`LocationQuery`](../index.md#locationquery)
+• `Optional` **parseQuery**: (`search`: `string`) => [`LocationQuery`](../index.md#LocationQuery)
 
 Custom implementation to parse a query. See its counterpart,
-[stringifyQuery](RouterOptions.md#stringifyquery).
+[RouterOptions.stringifyQuery](RouterOptions.md#stringifyQuery).
 
 **`Example`**
 
@@ -96,27 +92,48 @@ createRouter({
 })
 ```
 
-##### Parameters %{#Properties-parseQuery-Type-declaration-Parameters}%
+#### Type declaration
+
+▸ (`search`): [`LocationQuery`](../index.md#LocationQuery)
+
+Custom implementation to parse a query. See its counterpart,
+[RouterOptions.stringifyQuery](RouterOptions.md#stringifyQuery).
+
+##### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `search` | `string` |
 
-##### Returns %{#Properties-parseQuery-Type-declaration-Returns}%
+##### Returns
 
-[`LocationQuery`](../index.md#locationquery)
+[`LocationQuery`](../index.md#LocationQuery)
+
+**`Example`**
+
+Let's say you want to use the [qs package](https://github.com/ljharb/qs)
+to parse queries, you can provide both `parseQuery` and `stringifyQuery`:
+```js
+import qs from 'qs'
+
+createRouter({
+  // other options...
+  parseQuery: qs.parse,
+  stringifyQuery: qs.stringify,
+})
+```
 
 ___
 
-### routes %{#Properties-routes}%
+### routes
 
-• **routes**: readonly [`RouteRecordRaw`](../index.md#routerecordraw)[]
+• **routes**: readonly [`RouteRecordRaw`](../index.md#RouteRecordRaw)[]
 
 Initial list of routes that should be added to the router.
 
 ___
 
-### scrollBehavior %{#Properties-scrollBehavior}%
+### scrollBehavior
 
 • `Optional` **scrollBehavior**: [`RouterScrollBehavior`](RouterScrollBehavior.md)
 
@@ -134,7 +151,7 @@ function scrollBehavior(to, from, savedPosition) {
 
 ___
 
-### sensitive %{#Properties-sensitive}%
+### sensitive
 
 • `Optional` **sensitive**: `boolean`
 
@@ -144,13 +161,13 @@ Makes the RegExp case-sensitive.
 
 `false`
 
-#### Inherited from %{#Properties-sensitive-Inherited-from}%
+#### Inherited from
 
 PathParserOptions.sensitive
 
 ___
 
-### strict %{#Properties-strict}%
+### strict
 
 • `Optional` **strict**: `boolean`
 
@@ -160,29 +177,32 @@ Whether to disallow a trailing slash or not.
 
 `false`
 
-#### Inherited from %{#Properties-strict-Inherited-from}%
+#### Inherited from
 
 PathParserOptions.strict
 
 ___
 
-### stringifyQuery %{#Properties-stringifyQuery}%
+### stringifyQuery
 
-• `Optional` **stringifyQuery**: (`query`: [`LocationQueryRaw`](../index.md#locationqueryraw)) => `string`
+• `Optional` **stringifyQuery**: (`query`: [`LocationQueryRaw`](../index.md#LocationQueryRaw)) => `string`
 
-#### Type declaration %{#Properties-stringifyQuery-Type-declaration}%
+Custom implementation to stringify a query object. Should not prepend a leading `?`.
+[parseQuery](RouterOptions.md#parseQuery) counterpart to handle query parsing.
+
+#### Type declaration
 
 ▸ (`query`): `string`
 
 Custom implementation to stringify a query object. Should not prepend a leading `?`.
-[parseQuery](RouterOptions.md#parsequery) counterpart to handle query parsing.
+[parseQuery](RouterOptions.md#parseQuery) counterpart to handle query parsing.
 
-##### Parameters %{#Properties-stringifyQuery-Type-declaration-Parameters}%
+##### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `query` | [`LocationQueryRaw`](../index.md#locationqueryraw) |
+| `query` | [`LocationQueryRaw`](../index.md#LocationQueryRaw) |
 
-##### Returns %{#Properties-stringifyQuery-Type-declaration-Returns}%
+##### Returns
 
 `string`

@@ -5,9 +5,9 @@
   title="Learn about route transitions"
 />
 
-In order to use transitions on your route components and animate navigations, you need to use the v-slot API:
+In order to use transitions on your route components and animate navigations, you need to use the [`<RouterView>` slot](./router-view-slot):
 
-```html
+```vue-html
 <router-view v-slot="{ Component }">
   <transition name="fade">
     <component :is="Component" />
@@ -15,7 +15,7 @@ In order to use transitions on your route components and animate navigations, yo
 </router-view>
 ```
 
-[All transition APIs](https://v3.vuejs.org/guide/transitions-enterleave.html) work the same here.
+[All transition APIs](https://vuejs.org/guide/built-ins/transition.html) work the same here.
 
 ## Per-Route Transition
 
@@ -36,9 +36,9 @@ const routes = [
 ]
 ```
 
-```html
+```vue-html
 <router-view v-slot="{ Component, route }">
-  <!-- Use any custom transition and  to `fade` -->
+  <!-- Use a custom transition or fallback to `fade` -->
   <transition :name="route.meta.transition || 'fade'">
     <component :is="Component" />
   </transition>
@@ -49,7 +49,7 @@ const routes = [
 
 It is also possible to determine the transition to use dynamically based on the relationship between the target route and current route. Using a very similar snippet to the one just before:
 
-```html
+```vue-html
 <!-- use a dynamic transition name -->
 <router-view v-slot="{ Component, route }">
   <transition :name="route.meta.transition">
@@ -58,7 +58,7 @@ It is also possible to determine the transition to use dynamically based on the 
 </router-view>
 ```
 
-We can add an [after navigation hook](./navigation-guards.md#global-after-hooks) to dynamically add information to the `meta` field based on the depth of the route
+We can add an [after navigation hook](./navigation-guards.md#Global-After-Hooks) to dynamically add information to the `meta` field based on the depth of the route
 
 ```js
 router.afterEach((to, from) => {
@@ -70,9 +70,9 @@ router.afterEach((to, from) => {
 
 ## Forcing a transition between reused views
 
-Vue might automatically reuse components that look alike, avoiding any transition. Fortunately, it is possible [to add a `key` attribute](https://v3.vuejs.org/api/special-attributes.html#key) to force transitions. This also allows you to trigger transitions while staying on the same route with different params:
+Vue might automatically reuse components that look alike, avoiding any transition. Fortunately, it is possible [to add a `key` attribute](https://vuejs.org/api/built-in-special-attributes.html#key) to force transitions. This also allows you to trigger transitions while staying on the same route with different params:
 
-```vue
+```vue-html
 <router-view v-slot="{ Component, route }">
   <transition name="fade">
     <component :is="Component" :key="route.path" />

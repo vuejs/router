@@ -32,6 +32,7 @@ describe('warnings', () => {
       history,
       routes: [{ path: '/:p', name: 'p', component }],
     })
+    // @ts-expect-error: cannot pass params with a path
     router.push({ path: '/p', params: { p: 'p' } })
     expect('Path "/p" was passed with params').toHaveBeenWarned()
   })
@@ -42,6 +43,8 @@ describe('warnings', () => {
       history,
       routes: [{ path: '/:p', name: 'p', component }],
     })
+    // @ts-expect-error: it would be better if this didn't error but it still an
+    // invalid location
     router.push({ path: '/p', name: 'p', params: { p: 'p' } })
     expect('Path "/" was passed with params').not.toHaveBeenWarned()
   })
