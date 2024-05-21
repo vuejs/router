@@ -198,7 +198,29 @@ const routes = [
 ]
 ```
 
-请注意，你也可以通过使用[路径 meta 字段](./meta.md)和全局导航守卫来实现类似的行为。
+<!-- TODO: translation -->
+When working with [nested routes](../essentials/nested-routes), both parent and child routes can use `beforeEnter`. When placed on a parent route, it won't be triggered when moving between children with that same parent. For example:
+
+```js
+const routes = [
+  {
+    path: '/user',
+    beforeEnter() {
+      // ...
+    },
+    children: [
+      { path: 'list', component: UserList },
+      { path: 'details', component: UserDetails },
+    ],
+  },
+]
+```
+
+The `beforeEnter` in the example above won't be called when moving between `/user/list` and `/user/details`, as they share the same parent. If we put the `beforeEnter` guard directly on the `details` route instead, that would be called when moving between those two routes.
+
+::: tip
+你也可以通过使用[路径 meta 字段](./meta.md)和全局导航守卫来实现类似的行为。
+:::
 
 ## 组件内的守卫
 
@@ -212,9 +234,9 @@ const routes = [
 - `beforeRouteUpdate`
 - `beforeRouteLeave`
 
-```js
-const UserDetails = {
-  template: `...`,
+```vue
+<script>
+export default {
   beforeRouteEnter(to, from) {
     // 在渲染该组件的对应路由被验证前调用
     // 不能获取组件实例 `this` ！
@@ -231,6 +253,7 @@ const UserDetails = {
     // 与 `beforeRouteUpdate` 一样，它可以访问组件实例 `this`
   },
 }
+</script>
 ```
 
 `beforeRouteEnter` 守卫 **不能** 访问 `this`，因为守卫在导航确认前被调用，因此即将登场的新组件还没被创建。
@@ -265,7 +288,7 @@ beforeRouteLeave (to, from) {
 
 ### 使用组合 API
 
-如果你正在使用[组合 API 和 `setup` 函数](https://cn.vuejs.org/api/composition-api-setup.html)来编写组件，你可以通过 `onBeforeRouteUpdate` 和 `onBeforeRouteLeave` 分别添加 update 和 leave 守卫。 请参考[组合 API 部分](./composition-api.md#导航守卫)以获得更多细节。
+如果你正在使用组合式 API 编写组件，你可以通过 `onBeforeRouteUpdate` 和 `onBeforeRouteLeave` 分别添加 update 和 leave 守卫。 请参考[组合式 API 部分](./composition-api.md#导航守卫)以获得更多细节。
 
 ## 完整的导航解析流程
 
