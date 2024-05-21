@@ -198,8 +198,7 @@ const routes = [
 ]
 ```
 
-<!-- TODO: translation -->
-When working with [nested routes](../essentials/nested-routes), both parent and child routes can use `beforeEnter`. When placed on a parent route, it won't be triggered when moving between children with that same parent. For example:
+当配合[嵌套路由](../essentials/nested-routes)使用时，父路由和子路由都可以使用 `beforeEnter`。如果放在父级路由上，路径在具有相同父级的子路由之间移动时不会被触发。例如：
 
 ```js
 const routes = [
@@ -216,7 +215,7 @@ const routes = [
 ]
 ```
 
-The `beforeEnter` in the example above won't be called when moving between `/user/list` and `/user/details`, as they share the same parent. If we put the `beforeEnter` guard directly on the `details` route instead, that would be called when moving between those two routes.
+示例中的 `beforeEnter` 在 `/user/list` 和 `/user/details` 之间移动时不会被调用，因为它们共享相同的父级路由。如果我们直接将 `beforeEnter` 守卫放在 `details` 路由上，那么在这两个路由之间移动时就会被调用。
 
 ::: tip
 你也可以通过使用[路径 meta 字段](./meta.md)和全局导航守卫来实现类似的行为。

@@ -92,8 +92,7 @@ export default {
 
 :::
 
-<!-- TODO: translation -->
-Or, use the `beforeRouteUpdate` [navigation guard](../advanced/navigation-guards.md), which also allows you to cancel the navigation:
+或者，使用 `beforeRouteUpdate` [导航守卫](../advanced/navigation-guards.md)，它还允许你取消导航：
 
 ::: code-group
 
