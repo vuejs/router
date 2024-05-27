@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { RouterLink, RouterLinkProps } from '../src/RouterLink'
+import { RouterLink } from '../src/RouterLink'
 import {
   START_LOCATION_NORMALIZED,
   RouteQueryAndHash,
@@ -919,15 +919,13 @@ describe('RouterLink', () => {
         components: { RouterLink },
         name: 'AppLink',
 
-        // @ts-expect-error
         props: {
-          ...((RouterLink as any).props as RouterLinkProps),
+          ...RouterLink.props,
           inactiveClass: String as PropType<string>,
         },
 
         computed: {
           isExternalLink(): boolean {
-            // @ts-expect-error
             return typeof this.to === 'string' && this.to.startsWith('http')
           },
         },
@@ -951,7 +949,7 @@ describe('RouterLink', () => {
         }
         router.resolve.mockReturnValueOnce(resolvedLocation)
 
-        const wrapper = await mount(AppLink as any, {
+        const wrapper = await mount(AppLink, {
           propsData,
           global: {
             provide: {

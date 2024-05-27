@@ -6,11 +6,6 @@ import {
   computed,
   reactive,
   unref,
-  VNode,
-  UnwrapRef,
-  VNodeProps,
-  AllowedComponentProps,
-  ComponentCustomProps,
   getCurrentInstance,
   watchEffect,
   // this is a workaround for https://github.com/microsoft/rushstack/issues/1050
@@ -25,6 +20,8 @@ import {
   RendererNode,
   // @ts-ignore
   ComponentOptionsMixin,
+  SlotsType,
+  UnwrapRef,
 } from 'vue'
 import {
   isRouteLocation,
@@ -213,9 +210,6 @@ export function useLink(props: UseLinkOptions) {
     }
   }
 
-  /**
-   * NOTE: update {@link _RouterLinkI}'s `$slots` type when updating this
-   */
   return {
     route,
     href: computed(() => route.value.href),
@@ -246,6 +240,10 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
 
   useLink,
 
+  slots: {} as SlotsType<{
+    default?: (arg: UnwrapRef<ReturnType<typeof useLink>>) => any
+  }>,
+
   setup(props, { slots }) {
     const link = reactive(useLink(props))
     const { options } = inject(routerKey)!
@@ -256,11 +254,6 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
         options.linkActiveClass,
         'router-link-active'
       )]: link.isActive,
-      // [getLinkClass(
-      //   props.inactiveClass,
-      //   options.linkInactiveClass,
-      //   'router-link-inactive'
-      // )]: !link.isExactActive,
       [getLinkClass(
         props.exactActiveClass,
         options.linkExactActiveClass,
@@ -295,39 +288,7 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
 /**
  * Component to render a link that triggers a navigation on click.
  */
-export const RouterLink: _RouterLinkI = RouterLinkImpl as any
-
-/**
- * Typed version of the `RouterLink` component. Its generic defaults to the typed router, so it can be inferred
- * automatically for JSX.
- *
- * @internal
- */
-export interface _RouterLinkI {
-  new (): {
-    $props: AllowedComponentProps &
-      ComponentCustomProps &
-      VNodeProps &
-      RouterLinkProps
-
-    $slots: {
-      default?: ({
-        route,
-        href,
-        isActive,
-        isExactActive,
-        navigate,
-      }: UnwrapRef<ReturnType<typeof useLink>>) => VNode[]
-    }
-  }
-
-  /**
-   * Access to `useLink()` without depending on using vue-router
-   *
-   * @internal
-   */
-  useLink: typeof useLink
-}
+export const RouterLink = RouterLinkImpl
 
 function guardEvent(e: MouseEvent) {
   // don't redirect with control keys
