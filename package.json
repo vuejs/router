@@ -1,9 +1,9 @@
 {
   "name": "@vue/router-root",
   "private": true,
-  "packageManager": "pnpm@8.10.2",
+  "packageManager": "pnpm@8.15.3",
   "engines": {
-    "node": ">=18.14.0"
+    "node": ">=20.9.0"
   },
   "workspaces": [
     "packages/*"
@@ -33,13 +33,13 @@
     "chalk": "^5.3.0",
     "enquirer": "^2.4.1",
     "execa": "^8.0.1",
-    "globby": "^14.0.0",
-    "lint-staged": "^15.2.0",
+    "globby": "^14.0.1",
+    "lint-staged": "^15.2.2",
     "minimist": "^1.2.8",
     "p-series": "^3.0.0",
     "prettier": "^2.8.8",
-    "semver": "^7.5.4",
-    "typedoc": "^0.25.3",
+    "semver": "^7.6.0",
+    "typedoc": "^0.25.8",
     "typedoc-plugin-markdown": "^3.17.1",
     "typescript": "~5.3.3",
     "yorkie": "^2.0.0"
@@ -66,6 +66,6 @@
     }
   },
   "volta": {
-    "node": "18.16.0"
+    "node": "20.11.1"
   }
 }

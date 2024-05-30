@@ -224,7 +224,7 @@ It is possible to achieve similar behavior to per-route guards by using [route m
 
 Finally, you can directly define route navigation guards inside route components (the ones passed to the router configuration)
 
-### Using the options API
+### Using the Options API
 
 You can add the following options to route components:
 
@@ -232,9 +232,9 @@ You can add the following options to route components:
 - `beforeRouteUpdate`
 - `beforeRouteLeave`
 
-```js
-const UserDetails = {
-  template: `...`,
+```vue
+<script>
+export default {
   beforeRouteEnter(to, from) {
     // called before the route that renders this component is confirmed.
     // does NOT have access to `this` component instance,
@@ -251,6 +251,7 @@ const UserDetails = {
     // As with `beforeRouteUpdate`, it has access to `this` component instance.
   },
 }
+</script>
 ```
 
 The `beforeRouteEnter` guard does **NOT** have access to `this`, because the guard is called before the navigation is confirmed, thus the new entering component has not even been created yet.
@@ -283,9 +284,9 @@ beforeRouteLeave (to, from) {
 }
 ```
 
-### Using the composition API
+### Using the Composition API
 
-If you are writing your component using the [composition API and a `setup` function](https://vuejs.org/api/composition-api-setup.html), you can add update and leave guards through `onBeforeRouteUpdate` and `onBeforeRouteLeave` respectively. Please refer to the [Composition API section](./composition-api.md#navigation-guards) for more details.
+If you are writing your component using the Composition API, you can add update and leave guards through `onBeforeRouteUpdate` and `onBeforeRouteLeave` respectively. Please refer to the [Composition API section](./composition-api.md#navigation-guards) for more details.
 
 ## The Full Navigation Resolution Flow
 

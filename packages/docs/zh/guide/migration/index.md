@@ -113,15 +113,13 @@ router.resolve({
 
 **原因**：Vue Router 不再使用 `path-to-regexp`，而是实现了自己的解析系统，允许路由排序并实现动态路由。由于我们通常在每个项目中只添加一个通配符路由，所以支持 `*` 的特殊语法并没有太大的好处。参数的编码是跨路由的，无一例外，让事情更容易预测。
 
-<!-- TODO: translation -->
+### 现在 `currentRoute` 属性是一个 `ref()`
 
-### The `currentRoute` property is now a `ref()`
+路由器实例上的 [`currentRoute`](https://v3.router.vuejs.org/zh/api/#router-currentroute) 对象的属性在以前可以被直接访问。
 
-Previously the properties of the [`currentRoute`](https://v3.router.vuejs.org/api/#router-currentroute) object on a router instance could be accessed directly.
+从 vue-router v4 开始，路由器实例上的 `currentRoute` 对象的底层类型已被改为 `Ref<RouteLocationNormalizedLoaded>`，其源自 Vue 3 中新引入的[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)。
 
-With the introduction of vue-router v4, the underlying type of the `currentRoute` object on the router instance has changed to `Ref<RouteLocationNormalizedLoaded>`, which comes from the newer [reactivity fundamentals](https://vuejs.org/guide/essentials/reactivity-fundamentals.html) introduced in Vue 3.
-
-While this doesn't change anything if you're reading the route with `useRoute()` or `this.$route`, if you're accessing it directly on the router instance, you will need to access the actual route object via `currentRoute.value`:
+当你使用 `useRoute()` 或 `this.$route` 获取路由信息时这并不会带来任何变化，如果想要直接在路由器实例上访问它，你需要通过 `currentRoute.value` 来访问实际的路由对象：
 
 ```ts
 const { page } = router.currentRoute.query // [!code --]
@@ -237,6 +235,15 @@ router.currentRoute.value.matched.flatMap(record =>
 ```
 
 **原因**：这个方法只在 SSR 中使用，并且是用户一行就能完成的操作。
+
+### 重定向记录不能使用特殊路径
+
+以前，有一个未被记录的特性允许将重定向记录设置为形如 `/events/:id` 的特殊路径，并且它会复用现有的参数 `id`。现在它已不再支持，有两个替代选项:
+
+- 使用不包含参数的路由名称：`redirect: { name: 'events' }`。注意，当参数 `:id` 为可选项时它不会生效
+- 使用一个函数重建基于目标的新位置：`redirect: to => ({ name: 'events', params: to.params })`
+
+**原因**：这种语法很少使用，是上述版本的*等效做法*，但是相比之下还不够简短，同时会引入一些复杂性，使路由器变得更重。
 
 ### **所有**的导航现在都是异步的
 

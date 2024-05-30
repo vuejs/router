@@ -777,6 +777,40 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
+    it('keep optional params from parent record', () => {
+      const Child_A = { path: 'a', name: 'child_a', components }
+      const Child_B = { path: 'b', name: 'child_b', components }
+      const Parent = {
+        path: '/:optional?/parent',
+        name: 'parent',
+        components,
+        children: [Child_A, Child_B],
+      }
+      assertRecordMatch(
+        Parent,
+        { name: 'child_b' },
+        {
+          name: 'child_b',
+          path: '/foo/parent/b',
+          params: { optional: 'foo' },
+          matched: [
+            Parent as any,
+            {
+              ...Child_B,
+              path: `${Parent.path}/${Child_B.path}`,
+            },
+          ],
+        },
+        {
+          params: { optional: 'foo' },
+          path: '/foo/parent/a',
+          matched: [],
+          meta: {},
+          name: undefined,
+        }
+      )
+    })
+
     it('discards non existent params', () => {
       assertRecordMatch(
         { path: '/', name: 'home', components },

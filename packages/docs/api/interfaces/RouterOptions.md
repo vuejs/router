@@ -75,6 +75,23 @@ ___
 
 • `Optional` **parseQuery**: (`search`: `string`) => [`LocationQuery`](../index.md#LocationQuery)
 
+Custom implementation to parse a query. See its counterpart,
+[RouterOptions.stringifyQuery](RouterOptions.md#stringifyQuery).
+
+**`Example`**
+
+Let's say you want to use the [qs package](https://github.com/ljharb/qs)
+to parse queries, you can provide both `parseQuery` and `stringifyQuery`:
+```js
+import qs from 'qs'
+
+createRouter({
+  // other options...
+  parseQuery: qs.parse,
+  stringifyQuery: qs.stringify,
+})
+```
+
 #### Type declaration
 
 ▸ (`search`): [`LocationQuery`](../index.md#LocationQuery)
@@ -169,6 +186,9 @@ ___
 ### stringifyQuery
 
 • `Optional` **stringifyQuery**: (`query`: [`LocationQueryRaw`](../index.md#LocationQueryRaw)) => `string`
+
+Custom implementation to stringify a query object. Should not prepend a leading `?`.
+[parseQuery](RouterOptions.md#parseQuery) counterpart to handle query parsing.
 
 #### Type declaration
 

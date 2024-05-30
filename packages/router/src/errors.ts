@@ -115,6 +115,12 @@ const ErrorTypeMessages = {
 // Possible internal errors
 type RouterError = NavigationFailure | NavigationRedirectError | MatcherError
 
+/**
+ * Creates a typed NavigationFailure object.
+ * @internal
+ * @param type - NavigationFailureType
+ * @param params - { from, to }
+ */
 export function createRouterError<E extends RouterError>(
   type: E['type'],
   params: Omit<E, 'type' | keyof Error>

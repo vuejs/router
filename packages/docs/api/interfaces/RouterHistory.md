@@ -116,16 +116,9 @@ a callback to remove the listener
 
 ▸ (): `void`
 
-Attach a listener to the History implementation that is triggered when the
-navigation is triggered from outside (like the Browser back and forward
-buttons) or when passing `true` to RouterHistory.back and
-RouterHistory.forward
-
 ##### Returns
 
 `void`
-
-a callback to remove the listener
 
 ___
 
