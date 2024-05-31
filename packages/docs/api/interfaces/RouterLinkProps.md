@@ -1,7 +1,5 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / RouterLinkProps
@@ -67,7 +65,7 @@ ___
 
 ### to
 
-• **to**: [`RouteLocationRaw`](../index.md#routelocationraw)
+• **to**: [`RouteLocationRaw`](../index.md#RouteLocationRaw)
 
 Route Location the link should navigate to when clicked on.
 

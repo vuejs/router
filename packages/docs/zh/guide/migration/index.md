@@ -113,6 +113,19 @@ router.resolve({
 
 **原因**：Vue Router 不再使用 `path-to-regexp`，而是实现了自己的解析系统，允许路由排序并实现动态路由。由于我们通常在每个项目中只添加一个通配符路由，所以支持 `*` 的特殊语法并没有太大的好处。参数的编码是跨路由的，无一例外，让事情更容易预测。
 
+### 现在 `currentRoute` 属性是一个 `ref()`
+
+路由器实例上的 [`currentRoute`](https://v3.router.vuejs.org/zh/api/#router-currentroute) 对象的属性在以前可以被直接访问。
+
+从 vue-router v4 开始，路由器实例上的 `currentRoute` 对象的底层类型已被改为 `Ref<RouteLocationNormalizedLoaded>`，其源自 Vue 3 中新引入的[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)。
+
+当你使用 `useRoute()` 或 `this.$route` 获取路由信息时这并不会带来任何变化，如果想要直接在路由器实例上访问它，你需要通过 `currentRoute.value` 来访问实际的路由对象：
+
+```ts
+const { page } = router.currentRoute.query // [!code --]
+const { page } = router.currentRoute.value.query // [!code ++]
+```
+
 ### 将 `onReady` 改为 `isReady`
 
 现有的 `router.onReady()` 函数已被 `router.isReady()` 取代，该函数不接受任何参数并返回一个 Promise：
@@ -141,7 +154,7 @@ try {
 
 `transition` 和 `keep-alive` 现在必须通过 `v-slot` API 在 `RouterView` **内部**使用：
 
-```vue
+```vue-html
 <router-view v-slot="{ Component }">
   <transition>
     <keep-alive>
@@ -157,7 +170,7 @@ try {
 
 `<router-link>` 中的 `append` 属性已被删除。你可以手动将值设置到现有的 `path` 中：
 
-```html
+```vue-html
 将
 <router-link to="child-route" append>to relative child</router-link>
 替换成
@@ -177,9 +190,9 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 ### 删除 `<router-link>` 中的 `event` 和 `tag` 属性
 
-`<router-link>` 中的 `event` 和 `tag` 属性都已被删除。你可以使用 [`v-slot` API](../../api/#router-link-s-v-slot) 来完全定制 `<router-link>`：
+`<router-link>` 中的 `event` 和 `tag` 属性都已被删除。你可以使用 [`v-slot` API](/zh/guide/advanced/composition-api#uselink) 来完全定制 `<router-link>`：
 
-```html
+```vue-html
 将
 <router-link to="/about" tag="span" event="dblclick">About Us</router-link>
 替换成
@@ -197,7 +210,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 - 路由现在是基于它们所代表的路由记录来激活的，而不是路由地址对象及其 `path`、`query` 和 `hash` 属性来激活的
 - 只匹配 `path` 部分，`query` 和 `hash` 不再考虑
 
-如果你想自定义这种行为，例如考虑到 `hash` 部分，你应该使用 [`v-slot` API](https://next.router.vuejs.org/api/#router-link-s-v-slot) 来扩展`<router-link>`。
+如果你想自定义这种行为，例如考虑到 `hash` 部分，你应该使用 [`v-slot` API](/zh/guide/advanced/composition-api#uselink) 来扩展`<router-link>`。
 
 **原因**: 详见 [RFC about active matching](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0028-router-active-link.md#summary)。
 
@@ -207,7 +220,7 @@ app.config.globalProperties.append = (path, pathToAppend) =>
 
 ### 删除 `router.match` 改为 `router.resolve`
 
-`router.match` 和 `router.resolve` 已合并到 `router.resolve` 中，签名略有不同。[详见 API](../../api/#resolve)。
+`router.match` 和 `router.resolve` 已合并到 `router.resolve` 中，签名略有不同。[详见 API](/zh/api/interfaces/Router#Methods-resolve)。
 
 **原因**：将用于同一目的的多种方法统一起来。
 
@@ -222,6 +235,15 @@ router.currentRoute.value.matched.flatMap(record =>
 ```
 
 **原因**：这个方法只在 SSR 中使用，并且是用户一行就能完成的操作。
+
+### 重定向记录不能使用特殊路径
+
+以前，有一个未被记录的特性允许将重定向记录设置为形如 `/events/:id` 的特殊路径，并且它会复用现有的参数 `id`。现在它已不再支持，有两个替代选项:
+
+- 使用不包含参数的路由名称：`redirect: { name: 'events' }`。注意，当参数 `:id` 为可选项时它不会生效
+- 使用一个函数重建基于目标的新位置：`redirect: to => ({ name: 'events', params: to.params })`
+
+**原因**：这种语法很少使用，是上述版本的*等效做法*，但是相比之下还不够简短，同时会引入一些复杂性，使路由器变得更重。
 
 ### **所有**的导航现在都是异步的
 
@@ -254,7 +276,7 @@ router.app = app
 
 之前你可以直接传递一个模板，通过嵌套在 `<router-view>` 组件下，由路由组件的 `<slot>` 来渲染：
 
-```html
+```vue-html
 <router-view>
   <p>In Vue Router 3, I render inside the route component</p>
 </router-view>
@@ -262,7 +284,7 @@ router.app = app
 
 由于 `<router-view>` 引入了 `v-slot` API，你必须使用 `v-slot` API 将其传递给 `<component>`：
 
-```html
+```vue-html
 <router-view v-slot="{ Component }">
   <component :is="Component">
     <p>In Vue Router 3, I render inside the route component</p>
@@ -412,10 +434,12 @@ const routes = [
 
 无论在哪里启动导航，`params`、`query`和 `hash` 中的解码值现在都是一致的（旧的浏览器仍然会产生未编码的 `path` 和 `fullPath`）。初始导航应产生与应用内部导航相同的结果。
 
-给定任何[规范化的路由地址](../../api/#routelocationnormalized):
+<!-- TODO: translate chinese API entries -->
 
-- `path`, `fullPath`中的值不再被解码了。例如，直接在地址栏上写 "https://example.com/hello world"，将得到编码后的版本："https://example.com/hello%20world"，而 "path "和 "fullPath "都是"/hello%20world"。
-- `hash` 现在被解码了，这样就可以复制过来。`router.push({ hash: $route.hash })` 可以直接用于 [scrollBehavior](../../api/#scrollbehavior) 的 `el` 配置中。
+给定任何[规范化的路由地址](/zh/api/interfaces/RouteLocationNormalized.md):
+
+- `path`, `fullPath`中的值不再被解码了。例如，直接在地址栏上写 "<https://example.com/hello> world"，将得到编码后的版本："https://example.com/hello%20world"，而 "path "和 "fullPath "都是"/hello%20world"。
+- `hash` 现在被解码了，这样就可以复制过来。`router.push({ hash: $route.hash })` 可以直接用于 [scrollBehavior](/zh/api/interfaces/RouterOptions.md#Properties-scrollBehavior) 的 `el` 配置中。
 - 当使用 `push`、`resolve` 和 `replace` 并在对象中提供 `string` 地址或 `path` 属性时，**必须进行编码**(像以前的版本一样)。另一方面，`params`、`query` 和 `hash` 必须以未编码的版本提供。
 - 斜线字符(`/`)现在已在 `params` 内正确解码，同时仍在 URL 上产生一个编码版本：`%2F`。
 

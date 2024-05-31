@@ -23,5 +23,5 @@ Vue Router is the official router for [Vue.js](https://vuejs.org). It deeply int
 <HomeSponsors />
 
 <script setup>
-import HomeSponsors from './.vitepress/components/HomeSponsors.vue'
+import HomeSponsors from './.vitepress/theme/components/HomeSponsors.vue'
 </script>

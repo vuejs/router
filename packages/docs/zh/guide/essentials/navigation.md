@@ -13,7 +13,7 @@ sidebarDepth: 0
 
 ## 导航到不同的位置
 
-**注意：在 Vue 实例中，你可以通过 `$router` 访问路由实例。因此你可以调用 `this.$router.push`。**
+**注意: 下面的示例中的 `router` 指代路由器实例。在组件内部，你可以使用 `$router` 属性访问路由，例如 `this.$router.push(...)`。如果使用组合式 API，你可以通过调用 [`useRouter()`](../advanced/composition-api) 来访问路由器。**
 
 想要导航到不同的 URL，可以使用 `router.push` 方法。这个方法会向 history 栈添加一个新的记录，所以，当用户点击浏览器后退按钮时，会回到之前的 URL。
 
@@ -56,7 +56,7 @@ router.push({ name: 'user', params: { username } }) // -> /user/eduardo
 router.push({ path: '/user', params: { username } }) // -> /user
 ```
 
-当指定 `params` 时，可提供 `string` 或 `number` 参数（或者对于[可重复的参数](./route-matching-syntax.md#repeatable-params)可提供一个数组）。**任何其他类型（如 `undefined`、`false` 等）都将被自动字符串化**。对于[可选参数](./route-matching-syntax.md#repeatable-params)，你可以提供一个空字符串（`""`）来跳过它。
+当指定 `params` 时，可提供 `string` 或 `number` 参数（或者对于[可重复的参数](./route-matching-syntax.md#repeatable-params)可提供一个数组）。**任何其他类型（如对象、布尔等）都将被自动字符串化**。对于[可选参数](./route-matching-syntax.md#repeatable-params)，你可以提供一个空字符串（`""`）或 `null` 来移除它。
 
 由于属性 `to` 与 `router.push` 接受的对象种类相同，所以两者的规则完全相同。
 
@@ -70,7 +70,7 @@ router.push({ path: '/user', params: { username } }) // -> /user
 | --------------------------------- | --------------------- |
 | `<router-link :to="..." replace>` | `router.replace(...)` |
 
-也可以直接在传递给 `router.push` 的 `routeLocation` 中增加一个属性 `replace: true` ：
+也可以直接在传递给 `router.push` 的 `to` 参数中增加一个属性 `replace: true` ：
 
 ```js
 router.push({ path: '/home', replace: true })
@@ -110,4 +110,4 @@ router.go(100)
 
 因此，如果你已经熟悉 [Browser History APIs](https://developer.mozilla.org/en-US/docs/Web/API/History_API)，在使用 Vue Router 时，操作历史记录就会觉得很熟悉。
 
-值得一提的是，无论在创建路由器实例时传递什么样的 [`history` 配置](../../api/#history)，Vue Router 的导航方法( `push`、`replace`、`go` )都能始终正常工作。
+值得一提的是，无论在创建路由器实例时传递什么 `history` 配置，Vue Router 的导航方法 (`push`、`replace`、`go`) 都能始终正常工作。

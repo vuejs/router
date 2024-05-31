@@ -26,14 +26,11 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
 
   function setLocation(location: HistoryLocation) {
     position++
-    if (position === queue.length) {
-      // we are at the end, we can simply append a new entry
-      queue.push(location)
-    } else {
+    if (position !== queue.length) {
       // we are in the middle, we remove everything from here in the queue
       queue.splice(position)
-      queue.push(location)
     }
+    queue.push(location)
   }
 
   function triggerListeners(

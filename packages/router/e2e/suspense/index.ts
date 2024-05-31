@@ -35,8 +35,13 @@ const state = reactive({
 const delay = (t: number) => new Promise(r => setTimeout(r, t))
 
 /**
- * creates a component that logs the guards
- * @param name
+ * Creates a test component with the given key, optionally specifying whether it should be async and whether creation should be logged.
+ *
+ * @param {string} key - The key of the component.
+ * @param {boolean} [isAsync=false] - Whether the component should be async.
+ * @param {boolean} [logCreation=false] - Whether creation should be logged.
+ * @returns {object} The component object.
+ *
  */
 function createTestComponent(
   key: string,

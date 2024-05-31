@@ -1,14 +1,12 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / RouteLocation
 
 # Interface: RouteLocation
 
-[RouteLocationRaw](../index.md#routelocationraw) resolved using the matcher
+[RouteLocationRaw](../index.md#RouteLocationRaw) resolved using the matcher
 
 ## Hierarchy
 
@@ -47,7 +45,7 @@ ___
 
 • **matched**: [`RouteRecordNormalized`](RouteRecordNormalized.md)[]
 
-Array of [RouteRecord](../index.md#routerecord) containing components as they were
+Array of [RouteRecord](../index.md#RouteRecord) containing components as they were
 passed when adding records. It can also contain redirect records. This
 can't be used directly
 
@@ -67,7 +65,7 @@ ___
 
 ### name
 
-• **name**: `undefined` \| ``null`` \| [`RouteRecordName`](../index.md#routerecordname)
+• **name**: `undefined` \| ``null`` \| [`RouteRecordName`](../index.md#RouteRecordName)
 
 Name of the matched record
 
@@ -79,7 +77,7 @@ ___
 
 ### params
 
-• **params**: [`RouteParams`](../index.md#routeparams)
+• **params**: [`RouteParams`](../index.md#RouteParams)
 
 Object of decoded params extracted from the `path`.
 
@@ -103,7 +101,7 @@ ___
 
 ### query
 
-• **query**: [`LocationQuery`](../index.md#locationquery)
+• **query**: [`LocationQuery`](../index.md#LocationQuery)
 
 Object representation of the `search` property of the current location.
 

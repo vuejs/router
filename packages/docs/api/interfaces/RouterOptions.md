@@ -1,7 +1,5 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / RouterOptions
@@ -12,7 +10,7 @@ Options to initialize a [Router](Router.md) instance.
 
 ## Hierarchy
 
-- [`PathParserOptions`](../index.md#pathparseroptions)
+- [`PathParserOptions`](../index.md#PathParserOptions)
 
   ↳ **`RouterOptions`**
 
@@ -59,7 +57,7 @@ ___
 
 • `Optional` **linkActiveClass**: `string`
 
-Default class applied to active [RouterLink](../index.md#routerlink). If none is provided,
+Default class applied to active [RouterLink](../index.md#RouterLink). If none is provided,
 `router-link-active` will be applied.
 
 ___
@@ -68,17 +66,48 @@ ___
 
 • `Optional` **linkExactActiveClass**: `string`
 
-Default class applied to exact active [RouterLink](../index.md#routerlink). If none is provided,
+Default class applied to exact active [RouterLink](../index.md#RouterLink). If none is provided,
 `router-link-exact-active` will be applied.
 
 ___
 
 ### parseQuery
 
-• `Optional` **parseQuery**: 
+• `Optional` **parseQuery**: (`search`: `string`) => [`LocationQuery`](../index.md#LocationQuery)
 
 Custom implementation to parse a query. See its counterpart,
-[stringifyQuery](RouterOptions.md#stringifyquery).
+[RouterOptions.stringifyQuery](RouterOptions.md#stringifyQuery).
+
+**`Example`**
+
+Let's say you want to use the [qs package](https://github.com/ljharb/qs)
+to parse queries, you can provide both `parseQuery` and `stringifyQuery`:
+```js
+import qs from 'qs'
+
+createRouter({
+  // other options...
+  parseQuery: qs.parse,
+  stringifyQuery: qs.stringify,
+})
+```
+
+#### Type declaration
+
+▸ (`search`): [`LocationQuery`](../index.md#LocationQuery)
+
+Custom implementation to parse a query. See its counterpart,
+[RouterOptions.stringifyQuery](RouterOptions.md#stringifyQuery).
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `search` | `string` |
+
+##### Returns
+
+[`LocationQuery`](../index.md#LocationQuery)
 
 **`Example`**
 
@@ -98,7 +127,7 @@ ___
 
 ### routes
 
-• **routes**: readonly [`RouteRecordRaw`](../index.md#routerecordraw)[]
+• **routes**: readonly [`RouteRecordRaw`](../index.md#RouteRecordRaw)[]
 
 Initial list of routes that should be added to the router.
 
@@ -156,7 +185,24 @@ ___
 
 ### stringifyQuery
 
-• `Optional` **stringifyQuery**: 
+• `Optional` **stringifyQuery**: (`query`: [`LocationQueryRaw`](../index.md#LocationQueryRaw)) => `string`
 
 Custom implementation to stringify a query object. Should not prepend a leading `?`.
-[parseQuery](RouterOptions.md#parsequery) counterpart to handle query parsing.
+[parseQuery](RouterOptions.md#parseQuery) counterpart to handle query parsing.
+
+#### Type declaration
+
+▸ (`query`): `string`
+
+Custom implementation to stringify a query object. Should not prepend a leading `?`.
+[parseQuery](RouterOptions.md#parseQuery) counterpart to handle query parsing.
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `query` | [`LocationQueryRaw`](../index.md#LocationQueryRaw) |
+
+##### Returns
+
+`string`

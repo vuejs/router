@@ -50,7 +50,7 @@ async function checkGuards(
   guardsLength: number = n
 ) {
   beforeRouteEnter.mockClear()
-  const guards = await extractComponentsGuards(
+  const guards = extractComponentsGuards(
     // type is fine as we excluded RouteRecordRedirect in components argument
     components.map(normalizeRouteRecord) as RouteRecordNormalized[],
     'beforeRouteEnter',

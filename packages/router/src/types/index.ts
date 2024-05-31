@@ -58,6 +58,11 @@ export interface MatcherLocationAsPath {
  */
 export interface MatcherLocationAsName {
   name: RouteRecordName
+  // to allow checking location.path == null
+  /**
+   * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
+   */
+  path?: undefined
   params?: RouteParams
 }
 
@@ -65,6 +70,11 @@ export interface MatcherLocationAsName {
  * @internal
  */
 export interface MatcherLocationAsRelative {
+  // to allow checking location.path == null
+  /**
+   * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
+   */
+  path?: undefined
   params?: RouteParams
 }
 
@@ -73,6 +83,11 @@ export interface MatcherLocationAsRelative {
  */
 export interface LocationAsRelativeRaw {
   name?: RouteRecordName
+  // to allow checking location.path == null
+  /**
+   * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
+   */
+  path?: undefined
   params?: RouteParamsRaw
 }
 
@@ -219,8 +234,7 @@ export type _RouteRecordProps =
 
 // TODO: could this be moved to matcher?
 /**
- * Common properties among all kind of {@link RouteRecordRaw}
- * @internal
+ * Internal type for common properties among all kind of {@link RouteRecordRaw}.
  */
 export interface _RouteRecordBase extends PathParserOptions {
   /**
@@ -246,7 +260,7 @@ export interface _RouteRecordBase extends PathParserOptions {
   alias?: string | string[]
 
   /**
-   * Name for the route record.
+   * Name for the route record. Must be unique.
    */
   name?: RouteRecordName
 
@@ -483,13 +497,16 @@ export interface NavigationGuardNext {
   // _called: boolean
 }
 
-export type NavigationGuardNextCallback = (vm: ComponentPublicInstance) => any
+export type NavigationGuardNextCallback = (
+  vm: ComponentPublicInstance
+) => unknown
 
 export type NavigationGuardReturn =
   | void
   | Error
   | RouteLocationRaw
   | boolean
+  // FIXME: this one is only allowed in options api
   | NavigationGuardNextCallback
 
 /**
@@ -502,6 +519,7 @@ export interface NavigationGuard {
     to: RouteLocationNormalized,
     from: RouteLocationNormalized,
     next: NavigationGuardNext
+    // FIXME: this one shouldn't allow returning () => ...
   ): NavigationGuardReturn | Promise<NavigationGuardReturn>
 }
 

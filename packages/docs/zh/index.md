@@ -1,11 +1,26 @@
 ---
-home: true
+layout: home
 
-heroImage: /logo.png
-actionText: 入门 →
-actionLink: /zh/introduction.html
-altActionLink: https://vueschool.io/courses/vue-router-4-for-everyone?friend=vuerouter&utm_source=vuerouter&utm_medium=link&utm_campaign=homepage
-altActionText: 免费视频课程
+title: Vue Router
+titleTemplate: Vue.js 的官方路由
+
+hero: 
+  name: Vue Router
+  text: Vue.js 的官方路由
+  tagline: 为 Vue.js 提供富有表现力、可配置的、方便的路由
+  image:
+    src: /logo.svg
+    alt: Vue Router
+  actions:
+    - theme: brand
+      text: 入门 →
+      link: /zh/introduction
+    - theme: cta vueschool
+      text: 免费视频课程
+      link: https://vueschool.io/courses/vue-router-4-for-everyone?friend=vuerouter&utm_source=vuerouter&utm_medium=link&utm_campaign=homepage
+    - theme: cta vue-mastery
+      text: Get the Vue Router Cheat Sheet
+      link: https://www.vuemastery.com/vue-router?coupon=ROUTER-DOCS&via=eduardo
 
 features:
   - title: 🛣 富有表现力的路由语法
@@ -20,12 +35,11 @@ features:
     details: 可精确控制每个页面的滚动位置。
   - title: 🌐 支持自动编码
     details: 可直接在代码中使用 unicode 字符（你好）。
-
-footer: MIT Licensed | Copyright © 2014-present Evan You, Eduardo San Martin Morote
 ---
 
-<HomeSponsors />
-
 <script setup>
-import HomeSponsors from '../.vitepress/components/HomeSponsors.vue'
+import HomeSponsors from '../.vitepress/theme/components/HomeSponsors.vue'
+import '../.vitepress/theme/styles/home-links.css'
 </script>
+
+<HomeSponsors />

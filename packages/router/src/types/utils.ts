@@ -1,8 +1,14 @@
-export type LiteralUnion<LiteralType, BaseType extends string = string> =
+/**
+ * @internal
+ */
+export type _LiteralUnion<LiteralType, BaseType extends string = string> =
   | LiteralType
   | (BaseType & Record<never, never>)
 
-export type Simplify<T> = { [K in keyof T]: T[K] }
+/**
+ * @internal
+ */
+export type _Simplify<T> = { [K in keyof T]: T[K] }
 
 /**
  * @internal
@@ -58,6 +64,8 @@ export type _AlphaNumeric =
   | 'X'
   | 'y'
   | 'Y'
+  | 'z'
+  | 'Z'
   | '0'
   | '1'
   | '2'

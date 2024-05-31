@@ -1,21 +1,19 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / NavigationGuard
 
 # Interface: NavigationGuard
 
+Navigation guard. See [Navigation
+Guards](/guide/advanced/navigation-guards.md).
+
 ## Callable
 
 ### NavigationGuard
 
-▸ **NavigationGuard**(`to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
-
-Navigation guard. See [Navigation
-Guards](/guide/advanced/navigation-guards.md).
+▸ **NavigationGuard**(`to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>
 
 #### Parameters
 
@@ -27,4 +25,4 @@ Guards](/guide/advanced/navigation-guards.md).
 
 #### Returns
 
-`NavigationGuardReturn` \| `Promise`<`NavigationGuardReturn`\>
+`NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>

@@ -8,6 +8,7 @@ import { RouterLink } from './RouterLink'
 import type { Router } from './router'
 import type { TypesConfig } from './config'
 
+// TODO: figure out why it cannot be 'vue' like said in docs
 declare module '@vue/runtime-core' {
   export interface ComponentCustomOptions {
     /**

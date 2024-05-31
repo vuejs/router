@@ -1,7 +1,5 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / NavigationFailureType
@@ -9,7 +7,7 @@ sidebarDepth: 3
 # Enumeration: NavigationFailureType
 
 Enumeration with all possible types for navigation failures. Can be passed to
-[isNavigationFailure](../index.md#isnavigationfailure) to check for specific failures.
+[isNavigationFailure](../index.md#isNavigationFailure) to check for specific failures.
 
 ## Enumeration Members
 

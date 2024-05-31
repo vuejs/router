@@ -16,7 +16,7 @@ export type ScrollPositionCoordinates = {
 
 /**
  * Internal normalized version of {@link ScrollPositionCoordinates} that always
- * has `left` and `top` coordinates.
+ * has `left` and `top` coordinates. Must be a type to be assignable to HistoryStateValue.
  *
  * @internal
  */
@@ -68,11 +68,10 @@ function getElementPosition(
   }
 }
 
-export const computeScrollPosition = () =>
-  ({
-    left: window.pageXOffset,
-    top: window.pageYOffset,
-  } as _ScrollPositionNormalized)
+export const computeScrollPosition = (): _ScrollPositionNormalized => ({
+  left: window.scrollX,
+  top: window.scrollY,
+})
 
 export function scrollToPosition(position: ScrollPosition): void {
   let scrollToOptions: ScrollPositionCoordinates
@@ -146,8 +145,8 @@ export function scrollToPosition(position: ScrollPosition): void {
     window.scrollTo(scrollToOptions)
   else {
     window.scrollTo(
-      scrollToOptions.left != null ? scrollToOptions.left : window.pageXOffset,
-      scrollToOptions.top != null ? scrollToOptions.top : window.pageYOffset
+      scrollToOptions.left != null ? scrollToOptions.left : window.scrollX,
+      scrollToOptions.top != null ? scrollToOptions.top : window.scrollY
     )
   }
 }

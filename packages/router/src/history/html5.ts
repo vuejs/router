@@ -32,7 +32,8 @@ interface StateEntry extends HistoryState {
 
 /**
  * Creates a normalized history location from a window.location object
- * @param location -
+ * @param base - The base path
+ * @param location - The window.location object
  */
 function createCurrentLocation(
   base: string,
@@ -90,7 +91,6 @@ function useHistoryListeners(
       replace(to)
     }
 
-    // console.log({ deltaFromCurrent })
     // Here we could also revert the navigation by calling history.go(-delta)
     // this listener will have to be adapted to not trigger again and to wait for the url
     // to be updated before triggering the listeners. Some kind of validation function would also
@@ -144,7 +144,11 @@ function useHistoryListeners(
 
   // set up the listeners and prepare teardown callbacks
   window.addEventListener('popstate', popStateHandler)
-  window.addEventListener('beforeunload', beforeUnloadListener)
+  // TODO: could we use 'pagehide' or 'visibilitychange' instead?
+  // https://developer.chrome.com/blog/page-lifecycle-api/
+  window.addEventListener('beforeunload', beforeUnloadListener, {
+    passive: true,
+  })
 
   return {
     pauseListeners,

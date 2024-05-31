@@ -1,19 +1,21 @@
 {
   "name": "@vue/router-docs",
   "version": "0.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "docs": "vitepress dev .",
-    "docs:api": "node scripts/run-typedoc.js",
-    "docs:build": "vitepress build ."
+    "docs:api": "node run-typedoc.mjs",
+    "docs:translation:compare": "v-translation compare",
+    "docs:translation:update": "v-translation update",
+    "docs:translation:status": "v-translation status",
+    "docs:build": "vitepress build .",
+    "docs:preview": "vitepress preview ."
   },
   "dependencies": {
-    "@chenfengyuan/vue-countdown": "2",
-    "vitepress": "^0.20.0"
-  },
-  "devDependencies": {
-    "@algolia/client-search": "^4.14.2",
-    "typedoc": "^0.23.10",
-    "typedoc-plugin-markdown": "^3.13.4"
+    "simple-git": "^3.24.0",
+    "vitepress": "1.1.0",
+    "vitepress-translation-helper": "^0.2.1",
+    "vue-router": "workspace:*"
   }
 }

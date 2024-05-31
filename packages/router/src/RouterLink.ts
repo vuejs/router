@@ -27,6 +27,7 @@ import {
   ComponentOptionsMixin,
 } from 'vue'
 import {
+  isRouteLocation,
   RouteLocationRaw,
   VueUseOptions,
   RouteLocation,
@@ -37,6 +38,7 @@ import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { NavigationFailure } from './errors'
 import { isArray, isBrowser, noop } from './utils'
+import { warn } from './warning'
 
 export interface RouterLinkOptions {
   /**
@@ -83,6 +85,7 @@ export interface UseLinkDevtoolsContext {
   route: RouteLocationNormalized & { href: string }
   isActive: boolean
   isExactActive: boolean
+  error: string | null
 }
 
 export type UseLinkOptions = VueUseOptions<RouterLinkOptions>
@@ -93,7 +96,39 @@ export function useLink(props: UseLinkOptions) {
   const router = inject(routerKey)!
   const currentRoute = inject(routeLocationKey)!
 
-  const route = computed(() => router.resolve(unref(props.to)))
+  let hasPrevious = false
+  let previousTo: unknown = null
+
+  const route = computed(() => {
+    const to = unref(props.to)
+
+    if (__DEV__ && (!hasPrevious || to !== previousTo)) {
+      if (!isRouteLocation(to)) {
+        if (hasPrevious) {
+          warn(
+            `Invalid value for prop "to" in useLink()\n- to:`,
+            to,
+            `\n- previous to:`,
+            previousTo,
+            `\n- props:`,
+            props
+          )
+        } else {
+          warn(
+            `Invalid value for prop "to" in useLink()\n- to:`,
+            to,
+            `\n- props:`,
+            props
+          )
+        }
+      }
+
+      previousTo = to
+      hasPrevious = true
+    }
+
+    return router.resolve(to)
+  })
 
   const activeRecordIndex = computed<number>(() => {
     const { matched } = route.value
@@ -157,6 +192,7 @@ export function useLink(props: UseLinkOptions) {
         route: route.value,
         isActive: isActive.value,
         isExactActive: isExactActive.value,
+        error: null,
       }
 
       // @ts-expect-error: this is internal
@@ -168,6 +204,9 @@ export function useLink(props: UseLinkOptions) {
           linkContextDevtools.route = route.value
           linkContextDevtools.isActive = isActive.value
           linkContextDevtools.isExactActive = isExactActive.value
+          linkContextDevtools.error = isRouteLocation(unref(props.to))
+            ? null
+            : 'Invalid "to" value'
         },
         { flush: 'post' }
       )

@@ -7,6 +7,7 @@ import {
 import { RouteRecord } from './matcher/types'
 import { warn } from './warning'
 import { isArray } from './utils'
+import { decode } from './encoding'
 
 /**
  * Location object returned by {@link `parseURL`}.
@@ -85,7 +86,7 @@ export function parseURL(
     fullPath: path + (searchString && '?') + searchString + hash,
     path,
     query,
-    hash,
+    hash: decode(hash),
   }
 }
 
@@ -121,6 +122,7 @@ export function stripBase(pathname: string, base: string): string {
  * pointing towards the same {@link RouteRecord} and that all `params`, `query`
  * parameters and `hash` are the same
  *
+ * @param stringifyQuery - A function that takes a query object of type LocationQueryRaw and returns a string representation of it.
  * @param a - first {@link RouteLocation}
  * @param b - second {@link RouteLocation}
  */
@@ -212,6 +214,13 @@ export function resolveRelativePath(to: string, from: string): string {
 
   const fromSegments = from.split('/')
   const toSegments = to.split('/')
+  const lastToSegment = toSegments[toSegments.length - 1]
+
+  // make . and ./ the same (../ === .., ../../ === ../..)
+  // this is the same behavior as new URL()
+  if (lastToSegment === '..' || lastToSegment === '.') {
+    toSegments.push('')
+  }
 
   let position = fromSegments.length - 1
   let toPosition: number
@@ -235,9 +244,6 @@ export function resolveRelativePath(to: string, from: string): string {
   return (
     fromSegments.slice(0, position).join('/') +
     '/' +
-    toSegments
-      // ensure we use at least the last element in the toSegments
-      .slice(toPosition - (toPosition === toSegments.length ? 1 : 0))
-      .join('/')
+    toSegments.slice(toPosition).join('/')
   )
 }

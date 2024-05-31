@@ -1,4 +1,4 @@
-import { reactive, nextTick, ComputedRef, computed, shallowRef } from 'vue'
+import { nextTick, shallowRef, shallowReactive } from 'vue'
 import { RouteLocationNormalizedLoose } from './utils'
 import {
   routeLocationKey,
@@ -9,12 +9,6 @@ import { RouteLocationNormalized } from '../src'
 export function createMockedRoute(
   initialValue: RouteLocationNormalizedLoose | RouteLocationNormalized
 ) {
-  const route = {} as {
-    [k in keyof RouteLocationNormalizedLoose]: ComputedRef<
-      RouteLocationNormalizedLoose[k]
-    >
-  }
-
   const routeRef = shallowRef<
     RouteLocationNormalized | RouteLocationNormalizedLoose
   >(initialValue)
@@ -26,14 +20,16 @@ export function createMockedRoute(
     return nextTick()
   }
 
+  const route = {} as RouteLocationNormalizedLoose
+
   for (let key in initialValue) {
-    // @ts-expect-error
-    route[key] =
-      // new line to still get errors here
-      computed(() => routeRef.value[key as keyof RouteLocationNormalizedLoose])
+    Object.defineProperty(route, key, {
+      enumerable: true,
+      get: () => routeRef.value[key as keyof RouteLocationNormalizedLoose],
+    })
   }
 
-  const value = reactive(route)
+  const value = shallowReactive(route)
 
   return {
     value,

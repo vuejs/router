@@ -1,7 +1,5 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / RouteLocationNormalized
@@ -9,7 +7,7 @@ sidebarDepth: 3
 # Interface: RouteLocationNormalized
 
 Similar to [RouteLocation](RouteLocation.md) but its
-[matched](RouteLocationNormalized.md#matched) cannot contain redirect records
+[RouteLocationNormalized.matched](RouteLocationNormalized.md#matched) cannot contain redirect records
 
 ## Hierarchy
 
@@ -66,7 +64,7 @@ ___
 
 ### name
 
-• **name**: `undefined` \| ``null`` \| [`RouteRecordName`](../index.md#routerecordname)
+• **name**: `undefined` \| ``null`` \| [`RouteRecordName`](../index.md#RouteRecordName)
 
 Name of the matched record
 
@@ -78,7 +76,7 @@ ___
 
 ### params
 
-• **params**: [`RouteParams`](../index.md#routeparams)
+• **params**: [`RouteParams`](../index.md#RouteParams)
 
 Object of decoded params extracted from the `path`.
 
@@ -102,7 +100,7 @@ ___
 
 ### query
 
-• **query**: [`LocationQuery`](../index.md#locationquery)
+• **query**: [`LocationQuery`](../index.md#LocationQuery)
 
 Object representation of the `search` property of the current location.
 

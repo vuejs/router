@@ -18,7 +18,7 @@ export function useCallbacks<T>() {
 
   return {
     add,
-    list: () => handlers,
+    list: () => handlers.slice(),
     reset,
   }
 }

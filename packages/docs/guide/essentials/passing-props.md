@@ -5,26 +5,74 @@
   title="Learn how to pass props to route components"
 />
 
-Using `$route` in your component creates a tight coupling with the route which limits the flexibility of the component as it can only be used on certain URLs. While this is not necessarily a bad thing, we can decouple this behavior with a `props` option:
+Using `$route` or `useRoute()` in your component creates a tight coupling with the route which limits the flexibility of the component as it can only be used on certain URLs. While this is not necessarily a bad thing, we can decouple this behavior with a `props` option.
 
-We can replace
+Let's return to our earlier example:
 
-```js
-const User = {
-  template: '<div>User {{ $route.params.id }}</div>'
-}
-const routes = [{ path: '/user/:id', component: User }]
+```vue
+<!-- User.vue -->
+<template>
+  <div>
+    User {{ $route.params.id }}
+  </div>
+</template>
 ```
 
-with
+with:
 
 ```js
-const User = {
-  // make sure to add a prop named exactly like the route param
-  props: ['id'],
-  template: '<div>User {{ id }}</div>'
+import User from './User.vue'
+
+// these are passed to `createRouter`
+const routes = [
+  { path: '/users/:id', component: User },
+]
+```
+
+We can remove the direct dependency on `$route` in `User.vue` by declaring a prop instead:
+
+::: code-group
+
+```vue [Composition API]
+<!-- User.vue -->
+<script setup>
+defineProps({
+  id: String
+})
+</script>
+
+<template>
+  <div>
+    User {{ id }}
+  </div>
+</template>
+```
+
+```vue [Options API]
+<!-- User.vue -->
+<script>
+export default {
+  props: {
+    id: String
+  }
 }
-const routes = [{ path: '/user/:id', component: User, props: true }]
+</script>
+
+<template>
+  <div>
+    User {{ id }}
+  </div>
+</template>
+```
+
+:::
+
+We can then configure the route to pass the `id` param as a prop by setting `props: true`:
+
+```js
+const routes = [
+  { path: '/user/:id', component: User, props: true }
+]
 ```
 
 This allows you to use the component anywhere, which makes the component easier to reuse and test.
@@ -77,4 +125,21 @@ const routes = [
 
 The URL `/search?q=vue` would pass `{query: 'vue'}` as props to the `SearchUser` component.
 
-Try to keep the `props` function stateless, as it's only evaluated on route changes. Use a wrapper component if you need state to define the props, that way vue can react to state changes.
+Try to keep the `props` function stateless, as it's only evaluated on route changes. Use a wrapper component if you need state to define the props, that way Vue can react to state changes.
+
+## Via RouterView
+
+You can also pass any props via the [`<RouterView>` slot](../advanced/router-view-slot):
+
+```vue-html
+<RouterView v-slot="{ Component }">
+  <component
+    :is="Component"
+    view-prop="value"
+   />
+</RouterView>
+```
+
+::: warning
+In this case, **all view components** will receive `view-prop`. This is usually not a good idea as  it means that all of the view components have declared a `view-prop` prop, which is not necessarily true. If possible, use any of the options above.
+:::

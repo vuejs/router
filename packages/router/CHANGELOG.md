@@ -1,3 +1,83 @@
+## [4.3.2](https://github.com/vuejs/router/compare/v4.3.1...v4.3.2) (2024-04-18)
+
+### Bug Fixes
+
+- Revert "fix: avoid normalizing the fullPath ([#2189](https://github.com/vuejs/router/issues/2189))" ([b78aa98](https://github.com/vuejs/router/commit/b78aa98792e86e08b76eb879e496fe1c300c1e18)), closes [vuejs/router#2216](https://github.com/vuejs/router/issues/2216). This was creating other bugs when reusing a normalized location (common pattern). The original issue wasn't a problem in practice as the consistent values are the query, params, and hash.
+
+## [4.3.1](https://github.com/vuejs/router/compare/v4.3.0...v4.3.1) (2024-04-17)
+
+### Bug Fixes
+
+- avoid normalizing the fullPath ([#2189](https://github.com/vuejs/router/issues/2189)) ([c54fc84](https://github.com/vuejs/router/commit/c54fc8407bd1944a3b724fbcc7f6fbac5ff45f0f)), closes [vuejs/router#2187](https://github.com/vuejs/router/issues/2187)
+
+### Features
+
+- **dx:** warn when `addRoute` cannot find the parent ([#2157](https://github.com/vuejs/router/issues/2157)) ([6377083](https://github.com/vuejs/router/commit/63770832d01a86a7464fde744e94058aae07de2e))
+- **dx:** warn when passing undefined/null locations ([#2158](https://github.com/vuejs/router/issues/2158)) ([089378b](https://github.com/vuejs/router/commit/089378bb973a6d91ddfe8eea76a670cd805fb5cf))
+
+# [4.3.0](https://github.com/vuejs/router/compare/v4.2.5...v4.3.0) (2024-02-21)
+
+### Bug Fixes
+
+- check document for browser instead of window ([#2042](https://github.com/vuejs/router/issues/2042)) ([5631732](https://github.com/vuejs/router/commit/5631732cbafd0c780db449fd820607a75b9b82aa))
+- decode hash when parsing urls ([#2061](https://github.com/vuejs/router/issues/2061)) ([6f160b9](https://github.com/vuejs/router/commit/6f160b931e8647e15217a3ecf9efcc2152366fc6)), closes [#2060](https://github.com/vuejs/router/issues/2060)
+- **guards:** run beforeRouteEnter with app context ([#2117](https://github.com/vuejs/router/issues/2117)) ([6a69696](https://github.com/vuejs/router/commit/6a696961a42d1d39640d36a1e65e5097b50030b8)), closes [vuejs/router#2051](https://github.com/vuejs/router/issues/2051)
+- handle undefined path in router resolve ([0ec4862](https://github.com/vuejs/router/commit/0ec4862ff54207c1c207027ed240e24efcfeb6cf))
+- keep optional params coming from a parent record ([#2031](https://github.com/vuejs/router/issues/2031)) ([04b50e5](https://github.com/vuejs/router/commit/04b50e5a2cf82f896f5200497386d8a2acdae738))
+
+### Features
+
+- (internal) add types for unplugin-vue-router ([2d1dd2a](https://github.com/vuejs/router/commit/2d1dd2ad721d7e62d801d6788ba056444aa09bad)).
+
+## [4.2.5](https://github.com/vuejs/router/compare/v4.2.4...v4.2.5) (2023-09-22)
+
+### Bug Fixes
+
+- **devtools:** display children with empty parent ([d7af338](https://github.com/vuejs/router/commit/d7af338d9e27e77ac109bf7495e057a2df9a8752)), closes [posva/unplugin-vue-router#235](https://github.com/posva/unplugin-vue-router/issues/235)
+
+## [4.2.4](https://github.com/vuejs/router/compare/v4.2.3...v4.2.4) (2023-07-06)
+
+### Bug Fixes
+
+- allow removing guards within the guard ([d60d36c](https://github.com/vuejs/router/commit/d60d36c49bbbd308618926ff0131890bfed2cdff))
+
+## [4.2.3](https://github.com/vuejs/router/compare/v4.2.2...v4.2.3) (2023-07-05)
+
+### Performance Improvements
+
+- use getter instead of `computed` for route location ([#1916](https://github.com/vuejs/router/issues/1916)) ([f1b839e](https://github.com/vuejs/router/commit/f1b839e7fc46d5b24dadb64cdc8e3cc95010ccfa))
+
+## [4.2.2](https://github.com/vuejs/router/compare/v4.2.1...v4.2.2) (2023-05-29)
+
+This version contains no code changes.
+
+## [4.2.1](https://github.com/vuejs/router/compare/v4.2.0...v4.2.1) (2023-05-18)
+
+### Bug Fixes
+
+- **types:** revert declare module vue ([b8d417a](https://github.com/vuejs/router/commit/b8d417a5b81c94aa5eb252782b07cb2b471d3a4e))
+
+# [4.2.0](https://github.com/vuejs/router/compare/v4.1.6...v4.2.0) (2023-05-11)
+
+### Bug Fixes
+
+- **location:** correctly parse url ending with . ([cc6e255](https://github.com/vuejs/router/commit/cc6e255b9c579ad975fbc9bd309e7b2f1f80bf82)), closes [#1620](https://github.com/vuejs/router/issues/1620)
+- remove nullish params when resolving ([#1814](https://github.com/vuejs/router/issues/1814)) ([15e20cb](https://github.com/vuejs/router/commit/15e20cbb7baedb42e44e10d5d69ffb2a3124360f))
+- **warn:** avoid redundant usage warn ([#1797](https://github.com/vuejs/router/issues/1797)) ([bbd80ad](https://github.com/vuejs/router/commit/bbd80adb627d4ee3f3e0ef7f7a1f99a2c5e0edf6))
+
+### Features
+
+- allow inject within global navigation guards ([909c45b](https://github.com/vuejs/router/commit/909c45be199fbf48e55f3f7e681e93c259e82a14))
+- **warn:** improve infinite redirect warning message ([2abecb7](https://github.com/vuejs/router/commit/2abecb71500e08f11e1686a57110afb71f625433))
+- **warn:** infinite redirection up to 30 ([376edd3](https://github.com/vuejs/router/commit/376edd32c39af004ee3689f569f0da65418c9577)), closes [#1643](https://github.com/vuejs/router/issues/1643)
+
+## [4.1.6](https://github.com/vuejs/router/compare/v4.1.5...v4.1.6) (2022-10-24)
+
+### Features
+
+- **matcher:** avoid empty records to be reached ([756f755](https://github.com/vuejs/router/commit/756f755731284f0f1899a2f8b62cb074b6f0f842))
+- **types:** improve link and view slots ([#1544](https://github.com/vuejs/router/issues/1544)) ([4a0cc8b](https://github.com/vuejs/router/commit/4a0cc8b9c1e642cdf47cc007fa5bbebde70afc66))
+
 ## [4.1.5](https://github.com/vuejs/router/compare/v4.1.4...v4.1.5) (2022-08-26)
 
 ### Features
@@ -54,7 +134,7 @@ This change will break your app. This behavior has worked in some scenarios but 
 
   This is known an _transient state_ and since it's in a navigation guard, it will be preserved when reloading the page. [Check the documentation for more details](https://router.vuejs.org/guide/advanced/meta.html#typescript).
 
-Fixing #1497, required getting rid of unused params and therefore will broke this long standing anti-pattern usage.
+Fixing #1497, required getting rid of unused params and therefore will break this long standing anti-pattern usage.
 
 ### Bug Fixes
 

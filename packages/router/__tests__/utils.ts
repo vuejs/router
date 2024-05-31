@@ -4,7 +4,6 @@ import {
   RouteRecordMultipleViews,
   MatcherLocation,
   RouteLocationNormalized,
-  _RouteRecordBase,
   RouteComponent,
   RouteRecordRaw,
   RouteRecordName,
@@ -109,11 +108,15 @@ export function createDom(options?: ConstructorOptions) {
     }
   )
 
-  // @ts-expect-error: needed for jsdom
-  global.window = dom.window
-  global.location = dom.window.location
-  global.history = dom.window.history
-  global.document = dom.window.document
+  try {
+    // @ts-expect-error: not the same window
+    global.window = dom.window
+    global.location = dom.window.location
+    global.history = dom.window.history
+    global.document = dom.window.document
+  } catch (erro) {
+    // it's okay, some are readonly
+  }
 
   return dom
 }

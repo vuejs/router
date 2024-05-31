@@ -1,16 +1,26 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["env.d.ts", "src/**/*.ts", "src/**/*.vue"],
-  "exclude": ["**/node_modules", "**/.*/"],
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": [
+    "env.d.ts",
+    "src/**/*.ts",
+    "src/**/*.vue"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/.*/"
+  ],
   "compilerOptions": {
     "allowJs": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "vue-router": ["../router/src"]
+      "@/*": [
+        "./src/*"
+      ],
+      "vue-router": [
+        "../router/src"
+      ]
     }
   },
-
   "references": [
     {
       "path": "./tsconfig.config.json"

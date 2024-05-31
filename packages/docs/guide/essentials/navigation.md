@@ -13,7 +13,7 @@ Aside from using `<router-link>` to create anchor tags for declarative navigatio
 
 ## Navigate to a different location
 
-**Note: Inside of a Vue instance, you have access to the router instance as `$router`. You can therefore call `this.$router.push`.**
+**Note: The examples below refer to the router instance as `router`. Inside a component, you can access the router using the `$router` property, e.g. `this.$router.push(...)`. If you're using the Composition API, the router is accessible by calling [`useRouter()`](../advanced/composition-api).**
 
 To navigate to a different URL, use `router.push`. This method pushes a new entry into the history stack, so when the user clicks the browser back button they will be taken to the previous URL.
 
@@ -56,7 +56,7 @@ router.push({ name: 'user', params: { username } }) // -> /user/eduardo
 router.push({ path: '/user', params: { username } }) // -> /user
 ```
 
-When specifying `params`, make sure to either provide a `string` or `number` (or an array of these for [repeatable params](./route-matching-syntax.md#repeatable-params)). **Any other type (like `undefined`, `false`, etc) will be automatically stringified**. For [optional params](./route-matching-syntax.md#optional-parameters), you can provide an empty string (`""`) as the value to skip it.
+When specifying `params`, make sure to either provide a `string` or `number` (or an array of these for [repeatable params](./route-matching-syntax.md#Repeatable-params)). **Any other type (like objects, booleans, etc) will be automatically stringified**. For [optional params](./route-matching-syntax.md#Optional-parameters), you can provide an empty string (`""`) or `null` as the value to remove it.
 
 Since the prop `to` accepts the same kind of object as `router.push`, the exact same rules apply to both of them.
 
@@ -70,7 +70,7 @@ It acts like `router.push`, the only difference is that it navigates without pus
 | --------------------------------- | --------------------- |
 | `<router-link :to="..." replace>` | `router.replace(...)` |
 
-It's also possible to directly add a property `replace: true` to the `routeLocation` that is passed to `router.push`:
+It's also possible to directly add a property `replace: true` to the `to` argument that is passed to `router.push`:
 
 ```js
 router.push({ path: '/home', replace: true })
@@ -110,4 +110,4 @@ You may have noticed that `router.push`, `router.replace` and `router.go` are co
 
 Therefore, if you are already familiar with [Browser History APIs](https://developer.mozilla.org/en-US/docs/Web/API/History_API), manipulating history will feel familiar when using Vue Router.
 
-It is worth mentioning that Vue Router navigation methods (`push`, `replace`, `go`) work consistently no matter the kind of [`history` option](../../api/#history) is passed when creating the router instance.
+It is worth mentioning that Vue Router navigation methods (`push`, `replace`, `go`) work consistently no matter the `history` option passed when creating the router instance.

@@ -1,18 +1,18 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / RouterScrollBehavior
 
 # Interface: RouterScrollBehavior
 
+Type of the `scrollBehavior` option that can be passed to `createRouter`.
+
 ## Callable
 
 ### RouterScrollBehavior
 
-▸ **RouterScrollBehavior**(`to`, `from`, `savedPosition`): `Awaitable`<``false`` \| `void` \| `ScrollPosition`\>
+▸ **RouterScrollBehavior**(`to`, `from`, `savedPosition`): `Awaitable`\<``false`` \| `void` \| `ScrollPosition`\>
 
 #### Parameters
 
@@ -24,4 +24,4 @@ sidebarDepth: 3
 
 #### Returns
 
-`Awaitable`<``false`` \| `void` \| `ScrollPosition`\>
+`Awaitable`\<``false`` \| `void` \| `ScrollPosition`\>

@@ -85,7 +85,7 @@ export function createRouterMatcher(
     mainNormalizedRecord.aliasOf = originalRecord && originalRecord.record
     const options: PathParserOptions = mergeOptions(globalOptions, record)
     // generate an array of records to correctly handle aliases
-    const normalizedRecords: typeof mainNormalizedRecord[] = [
+    const normalizedRecords: (typeof mainNormalizedRecord)[] = [
       mainNormalizedRecord,
     ]
     if ('alias' in record) {
@@ -178,7 +178,16 @@ export function createRouterMatcher(
       //   parent.children.push(originalRecord)
       // }
 
-      insertMatcher(matcher)
+      // Avoid adding a record that doesn't display anything. This allows passing through records without a component to
+      // not be reached and pass through the catch all route
+      if (
+        (matcher.record.components &&
+          Object.keys(matcher.record.components).length) ||
+        matcher.record.name ||
+        matcher.record.redirect
+      ) {
+        insertMatcher(matcher)
+      }
     }
 
     return originalMatcher
@@ -268,8 +277,13 @@ export function createRouterMatcher(
         paramsFromLocation(
           currentLocation.params,
           // only keep params that exist in the resolved location
-          // TODO: only keep optional params coming from a parent record
-          matcher.keys.filter(k => !k.optional).map(k => k.name)
+          // only keep optional params coming from a parent record
+          matcher.keys
+            .filter(k => !k.optional)
+            .concat(
+              matcher.parent ? matcher.parent.keys.filter(k => k.optional) : []
+            )
+            .map(k => k.name)
         ),
         // discard any existing params in the current location that do not exist here
         // #1497 this ensures better active/exact matching
@@ -281,14 +295,14 @@ export function createRouterMatcher(
       )
       // throws if cannot be stringified
       path = matcher.stringify(params)
-    } else if ('path' in location) {
+    } else if (location.path != null) {
       // no need to resolve the path with the matcher as it was provided
       // this also allows the user to control the encoding
       path = location.path
 
       if (__DEV__ && !path.startsWith('/')) {
         warn(
-          `The Matcher cannot resolve relative paths but received "${path}". Unless you directly called \`matcher.resolve("${path}")\`, this is probably a bug in vue-router. Please open an issue at https://new-issue.vuejs.org/?repo=vuejs/router.`
+          `The Matcher cannot resolve relative paths but received "${path}". Unless you directly called \`matcher.resolve("${path}")\`, this is probably a bug in vue-router. Please open an issue at https://github.com/vuejs/router/issues/new/choose.`
         )
       }
 
@@ -401,7 +415,7 @@ function normalizeRecordProps(
     // NOTE: we could also allow a function to be applied to every component.
     // Would need user feedback for use cases
     for (const name in record.components)
-      propsObject[name] = typeof props === 'boolean' ? props : props[name]
+      propsObject[name] = typeof props === 'object' ? props[name] : props
   }
 
   return propsObject

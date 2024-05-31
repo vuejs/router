@@ -1,14 +1,12 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / RouteRecordNormalized
 
 # Interface: RouteRecordNormalized
 
-Normalized version of a [route record](../index.md#routerecord).
+Normalized version of a [route record](../index.md#RouteRecord).
 
 ## Hierarchy
 
@@ -29,7 +27,7 @@ ___
 
 ### beforeEnter
 
-• **beforeEnter**: `undefined` \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)<`undefined`\>[]
+• **beforeEnter**: `undefined` \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> \| [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\>[]
 
 Registered beforeEnter guards
 
@@ -37,7 +35,7 @@ ___
 
 ### children
 
-• **children**: [`RouteRecordRaw`](../index.md#routerecordraw)[]
+• **children**: [`RouteRecordRaw`](../index.md#RouteRecordRaw)[]
 
 Nested route records.
 
@@ -45,15 +43,15 @@ ___
 
 ### components
 
-• **components**: `undefined` \| ``null`` \| `Record`<`string`, `RawRouteComponent`\>
+• **components**: `undefined` \| ``null`` \| `Record`\<`string`, `RawRouteComponent`\>
 
-{@inheritDoc RouteRecordMultipleViews.components}
+Components to display when the URL matches this route. Allow using named views.
 
 ___
 
 ### instances
 
-• **instances**: `Record`<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`<{}, {}, {}, {}, {}, {}, {}, {}, ``false``, `ComponentOptionsBase`<`any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, `any`, {}\>\>\>
+• **instances**: `Record`\<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`\>
 
 Mounted route component instances
 Having the instances on the record mean beforeRouteUpdate and
@@ -69,15 +67,15 @@ ___
 
 • **meta**: [`RouteMeta`](RouteMeta.md)
 
-{@inheritDoc _RouteRecordBase.meta}
+Arbitrary data attached to the record.
 
 ___
 
 ### name
 
-• **name**: `undefined` \| [`RouteRecordName`](../index.md#routerecordname)
+• **name**: `undefined` \| [`RouteRecordName`](../index.md#RouteRecordName)
 
-{@inheritDoc _RouteRecordBase.name}
+Name for the route record. Must be unique.
 
 ___
 
@@ -85,15 +83,18 @@ ___
 
 • **path**: `string`
 
-{@inheritDoc _RouteRecordBase.path}
+Path of the record. Should start with `/` unless the record is the child of
+another record.
 
 ___
 
 ### props
 
-• **props**: `Record`<`string`, `_RouteRecordProps`\>
+• **props**: `Record`\<`string`, `_RouteRecordProps`\>
 
-{@inheritDoc RouteRecordMultipleViews.props}
+Allow passing down params as props to the component rendered by
+`router-view`. Should be an object with the same keys as `components` or a
+boolean to be applied to every component.
 
 ___
 
@@ -101,4 +102,6 @@ ___
 
 • **redirect**: `undefined` \| `RouteRecordRedirectOption`
 
-{@inheritDoc _RouteRecordBase.redirect}
+Where to redirect if the route is directly matched. The redirection happens
+before any navigation guard and triggers a new navigation with the new
+target location.

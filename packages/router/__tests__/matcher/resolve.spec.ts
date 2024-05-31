@@ -777,6 +777,40 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
+    it('keep optional params from parent record', () => {
+      const Child_A = { path: 'a', name: 'child_a', components }
+      const Child_B = { path: 'b', name: 'child_b', components }
+      const Parent = {
+        path: '/:optional?/parent',
+        name: 'parent',
+        components,
+        children: [Child_A, Child_B],
+      }
+      assertRecordMatch(
+        Parent,
+        { name: 'child_b' },
+        {
+          name: 'child_b',
+          path: '/foo/parent/b',
+          params: { optional: 'foo' },
+          matched: [
+            Parent as any,
+            {
+              ...Child_B,
+              path: `${Parent.path}/${Child_B.path}`,
+            },
+          ],
+        },
+        {
+          params: { optional: 'foo' },
+          path: '/foo/parent/a',
+          matched: [],
+          meta: {},
+          name: undefined,
+        }
+      )
+    })
+
     it('discards non existent params', () => {
       assertRecordMatch(
         { path: '/', name: 'home', components },
@@ -799,6 +833,21 @@ describe('RouterMatcher.resolve', () => {
         { name: 'p', path: '/b', params: { a: 'b' } },
         {
           params: { a: 'a', b: 'b' },
+          path: '/a',
+          matched: [],
+          meta: {},
+          name: undefined,
+        }
+      )
+    })
+
+    it('keeps optional params passed as empty strings', () => {
+      assertRecordMatch(
+        { path: '/:a/:b?', name: 'p', components },
+        { name: 'p', params: { a: 'b', b: '' } },
+        { name: 'p', path: '/b', params: { a: 'b', b: '' } },
+        {
+          params: { a: 'a', b: '' },
           path: '/a',
           matched: [],
           meta: {},
@@ -1003,6 +1052,44 @@ describe('RouterMatcher.resolve', () => {
           }
         )
       ).toMatchSnapshot()
+    })
+
+    it('avoids records with children without a component nor name', () => {
+      assertErrorMatch(
+        {
+          path: '/articles',
+          children: [{ path: ':id', components }],
+        },
+        { path: '/articles' }
+      )
+    })
+
+    it('avoid deeply nested records with children without a component nor name', () => {
+      assertErrorMatch(
+        {
+          path: '/app',
+          components,
+          children: [
+            {
+              path: '/articles',
+              children: [{ path: ':id', components }],
+            },
+          ],
+        },
+        { path: '/articles' }
+      )
+    })
+
+    it('can reach a named route with children and no component if named', () => {
+      assertRecordMatch(
+        {
+          path: '/articles',
+          name: 'ArticlesParent',
+          children: [{ path: ':id', components }],
+        },
+        { name: 'ArticlesParent' },
+        { name: 'ArticlesParent', path: '/articles' }
+      )
     })
   })
 

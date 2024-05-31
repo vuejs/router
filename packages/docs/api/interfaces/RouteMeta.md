@@ -1,7 +1,5 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / RouteMeta
@@ -25,6 +23,6 @@ declare module 'vue-router' {
 
 ## Hierarchy
 
-- `Record`<`string` \| `number` \| `symbol`, `unknown`\>
+- `Record`\<`string` \| `number` \| `symbol`, `unknown`\>
 
   ↳ **`RouteMeta`**

@@ -1,7 +1,5 @@
 ---
-sidebar: "auto"
-editLinks: false
-sidebarDepth: 3
+editLink: false
 ---
 
 [API Documentation](../index.md) / NavigationGuardNext
@@ -40,7 +38,7 @@ sidebarDepth: 3
 
 | Name | Type |
 | :------ | :------ |
-| `location` | [`RouteLocationRaw`](../index.md#routelocationraw) |
+| `location` | [`RouteLocationRaw`](../index.md#RouteLocationRaw) |
 
 #### Returns
 
