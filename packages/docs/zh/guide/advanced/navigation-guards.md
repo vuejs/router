@@ -86,7 +86,7 @@ router.beforeEach((to, from, next) => {
 
 ## 全局解析守卫
 
-你可以用 `router.beforeResolve` 注册一个全局守卫。这和 `router.beforeEach` 类似，因为它在**每次导航**时都会触发，不同的是，解析守卫刚好会在导航被确认之前、**所有组件内守卫和异步路由组件被解析之后**调用。这里有一个例子，确保用户可以访问[自定义 meta](./meta.md) 属性 `requiresCamera` 的路由：
+你可以用 `router.beforeResolve` 注册一个全局守卫。这和 `router.beforeEach` 类似，因为它在**每次导航**时都会触发，不同的是，解析守卫刚好会在导航被确认之前、**所有组件内守卫和异步路由组件被解析之后**调用。这里有一个例子，根据路由在[元信息](./meta.md)中的 `requiresCamera` 属性确保用户访问摄像头的权限：
 
 ```js
 router.beforeResolve(async to => {
@@ -218,7 +218,7 @@ const routes = [
 示例中的 `beforeEnter` 在 `/user/list` 和 `/user/details` 之间移动时不会被调用，因为它们共享相同的父级路由。如果我们直接将 `beforeEnter` 守卫放在 `details` 路由上，那么在这两个路由之间移动时就会被调用。
 
 ::: tip
-你也可以通过使用[路径 meta 字段](./meta.md)和全局导航守卫来实现类似的行为。
+你也可以通过使用[路由元信息字段](./meta.md)和全局导航守卫来实现类似的行为。
 :::
 
 ## 组件内的守卫
