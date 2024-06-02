@@ -198,7 +198,7 @@ const routes = [
 ]
 ```
 
-当配合[嵌套路由](../essentials/nested-routes)使用时，父路由和子路由都可以使用 `beforeEnter`。如果放在父级路由上，路径在具有相同父级的子路由之间移动时不会被触发。例如：
+当配合[嵌套路由](../essentials/nested-routes)使用时，父路由和子路由都可以使用 `beforeEnter`。如果放在父级路由上，路由在具有相同父级的子路由之间移动时，它不会被触发。例如：
 
 ```js
 const routes = [
