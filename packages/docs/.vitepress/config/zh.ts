@@ -111,7 +111,7 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/zh/guide/essentials/passing-props.html',
             },
             {
-              text: '活跃的链接',
+              text: '匹配当前路由的链接',
               link: '/zh/guide/essentials/active-links.html',
             },
             {
