@@ -41,7 +41,7 @@ const loading = ref(false)
 const post = ref(null)
 const error = ref(null)
 
-// watch 路由的参数，以便再次获取数据
+// 侦听路由的参数，以便再次获取数据
 watch(() => route.params.id, fetchData, { immediate: true })
 
 async function fetchData(id) {
@@ -86,7 +86,7 @@ export default {
     }
   },
   created() {
-    // 监听路由的参数，以便再次获取数据
+    // 侦听路由的参数，以便再次获取数据
     this.$watch(
       () => this.$route.params.id,
       this.fetchData,
