@@ -1,15 +1,17 @@
 import {
   NavigationGuard,
-  RouteLocationNormalized,
   NavigationGuardNext,
-  RouteLocationRaw,
-  RouteLocationNormalizedLoaded,
   NavigationGuardNextCallback,
   isRouteLocation,
   Lazy,
   RouteComponent,
   RawRouteComponent,
 } from './types'
+import type {
+  RouteLocationRaw,
+  RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+} from './typed-routes'
 
 import {
   createRouterError,

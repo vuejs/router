@@ -8,6 +8,7 @@ import { RouteRecord } from './matcher/types'
 import { warn } from './warning'
 import { isArray } from './utils'
 import { decode } from './encoding'
+import { RouteLocationNormalizedLoaded } from './typed-routes'
 
 /**
  * Location object returned by {@link `parseURL`}.
@@ -246,4 +247,33 @@ export function resolveRelativePath(to: string, from: string): string {
     '/' +
     toSegments.slice(toPosition).join('/')
   )
+}
+
+/**
+ * Initial route location where the router is. Can be used in navigation guards
+ * to differentiate the initial navigation.
+ *
+ * @example
+ * ```js
+ * import { START_LOCATION } from 'vue-router'
+ *
+ * router.beforeEach((to, from) => {
+ *   if (from === START_LOCATION) {
+ *     // initial navigation
+ *   }
+ * })
+ * ```
+ */
+export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = {
+  path: '/',
+  // @ts-expect-error: internal name for compatibility
+  name: undefined,
+  // TODO: could we use a symbol in the future?
+  params: {},
+  query: {},
+  hash: '',
+  fullPath: '/',
+  matched: [],
+  meta: {},
+  redirectedFrom: undefined,
 }

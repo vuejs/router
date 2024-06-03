@@ -4,6 +4,7 @@ import type { ComponentPublicInstance } from 'vue'
 import { router, routerHistory } from './router'
 import { globalState } from './store'
 import App from './App.vue'
+import { useRoute, type ParamValue, type RouteRecordInfo } from 'vue-router'
 
 declare global {
   interface Window {
@@ -29,3 +30,34 @@ app.provide('state', globalState)
 app.use(router)
 
 window.vm = app.mount('#app')
+
+export interface RouteNamedMap {
+  home: RouteRecordInfo<'home', '/', Record<never, never>, Record<never, never>>
+  '/[name]': RouteRecordInfo<
+    '/[name]',
+    '/:name',
+    { name: ParamValue<true> },
+    { name: ParamValue<false> }
+  >
+  '/[...path]': RouteRecordInfo<
+    '/[...path]',
+    '/:path(.*)',
+    { path: ParamValue<true> },
+    { path: ParamValue<false> }
+  >
+}
+
+declare module 'vue-router' {
+  interface TypesConfig {
+    RouteNamedMap: RouteNamedMap
+  }
+}
+
+const r = useRoute()
+
+if (r.name === '/[name]') {
+  r.params.name.toUpperCase()
+  // @ts-expect-error: Not existing route
+} else if (r.name === 'nope') {
+  console.log('nope')
+}

@@ -3,11 +3,11 @@
  */
 import { RouterLink } from '../src/RouterLink'
 import {
-  START_LOCATION_NORMALIZED,
   RouteQueryAndHash,
   MatcherLocationRaw,
   RouteLocationNormalized,
 } from '../src/types'
+import { START_LOCATION_NORMALIZED } from '../src/location'
 import { createMemoryHistory, RouterOptions } from '../src'
 import { createMockedRoute } from './mount'
 import { defineComponent, PropType } from 'vue'

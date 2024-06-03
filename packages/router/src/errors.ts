@@ -1,9 +1,5 @@
-import {
-  MatcherLocationRaw,
-  MatcherLocation,
-  RouteLocationRaw,
-  RouteLocationNormalized,
-} from './types'
+import type { MatcherLocationRaw, MatcherLocation } from './types'
+import type { RouteLocationRaw, RouteLocationNormalized } from './typed-routes'
 import { assign } from './utils'
 
 /**

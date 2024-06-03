@@ -3,8 +3,8 @@ import {
   MatcherLocationRaw,
   MatcherLocation,
   isRouteName,
-  RouteRecordName,
   _RouteRecordProps,
+  RouteRecordName,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
@@ -28,10 +28,10 @@ import { assign, noop } from '../utils'
  */
 export interface RouterMatcher {
   addRoute: (record: RouteRecordRaw, parent?: RouteRecordMatcher) => () => void
-  removeRoute: {
-    (matcher: RouteRecordMatcher): void
-    (name: RouteRecordName): void
-  }
+
+  removeRoute(matcher: RouteRecordMatcher): void
+  removeRoute(name: RouteRecordName): void
+
   getRoutes: () => RouteRecordMatcher[]
   getRecordMatcher: (name: RouteRecordName) => RouteRecordMatcher | undefined
 

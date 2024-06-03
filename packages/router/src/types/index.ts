@@ -4,6 +4,7 @@ import { Ref, ComponentPublicInstance, Component, DefineComponent } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
+import { RouteRecordRedirectOption } from '../typed-routes'
 
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
@@ -307,13 +308,6 @@ export interface _RouteRecordBase extends PathParserOptions {
 export interface RouteMeta extends Record<string | number | symbol, unknown> {}
 
 /**
- * @internal
- */
-export type RouteRecordRedirectOption =
-  | RouteLocationRaw
-  | ((to: RouteLocation) => RouteLocationRaw)
-
-/**
  * Route Record defining one single component with the `component` option.
  */
 export interface RouteRecordSingleView extends _RouteRecordBase {
@@ -406,33 +400,6 @@ export type RouteRecordRaw =
   | RouteRecordMultipleViews
   | RouteRecordMultipleViewsWithChildren
   | RouteRecordRedirect
-
-/**
- * Initial route location where the router is. Can be used in navigation guards
- * to differentiate the initial navigation.
- *
- * @example
- * ```js
- * import { START_LOCATION } from 'vue-router'
- *
- * router.beforeEach((to, from) => {
- *   if (from === START_LOCATION) {
- *     // initial navigation
- *   }
- * })
- * ```
- */
-export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = {
-  path: '/',
-  name: undefined,
-  params: {},
-  query: {},
-  hash: '',
-  fullPath: '/',
-  matched: [],
-  meta: {},
-  redirectedFrom: undefined,
-}
 
 // make matched non-enumerable for easy printing
 // NOTE: commented for tests at RouterView.spec

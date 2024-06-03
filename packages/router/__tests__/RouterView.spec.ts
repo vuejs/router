@@ -3,10 +3,8 @@
  */
 import { RouterView } from '../src/RouterView'
 import { components, RouteLocationNormalizedLoose } from './utils'
-import {
-  START_LOCATION_NORMALIZED,
-  RouteLocationNormalized,
-} from '../src/types'
+import { RouteLocationNormalized } from '../src/types'
+import { START_LOCATION_NORMALIZED } from '../src/location'
 import { markRaw } from 'vue'
 import { createMockedRoute } from './mount'
 import { mockWarn } from 'jest-mock-warn'

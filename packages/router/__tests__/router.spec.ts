@@ -7,12 +7,9 @@ import {
 } from '../src'
 import { NavigationFailureType } from '../src/errors'
 import { createDom, components, tick, nextNavigation } from './utils'
-import {
-  RouteRecordRaw,
-  RouteLocationRaw,
-  START_LOCATION_NORMALIZED,
-} from '../src/types'
+import { RouteRecordRaw, RouteLocationRaw } from '../src/types'
 import { mockWarn } from 'jest-mock-warn'
+import { START_LOCATION_NORMALIZED } from '../src/location'
 
 declare var __DEV__: boolean
 

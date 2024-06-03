@@ -1,20 +1,21 @@
 import {
-  RouteLocationNormalized,
   RouteRecordRaw,
-  RouteLocationRaw,
   NavigationHookAfter,
-  START_LOCATION_NORMALIZED,
   Lazy,
-  RouteLocationNormalizedLoaded,
-  RouteLocation,
-  RouteRecordName,
   isRouteLocation,
   isRouteName,
   NavigationGuardWithThis,
   RouteLocationOptions,
   MatcherLocationRaw,
-  RouteParams,
 } from './types'
+import type {
+  RouteLocation,
+  RouteLocationRaw,
+  RouteRecordName,
+  RouteParams,
+  RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+} from './typed-routes'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
   ScrollPosition,
@@ -49,6 +50,7 @@ import {
   stringifyURL,
   isSameRouteLocation,
   isSameRouteRecord,
+  START_LOCATION_NORMALIZED,
 } from './location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
 import { warn } from './warning'
@@ -60,6 +62,7 @@ import {
   routerViewLocationKey,
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
+import { _LiteralUnion } from './types/utils'
 
 /**
  * Internal type to define an ErrorHandler
@@ -432,7 +435,7 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   function resolve(
-    rawLocation: Readonly<RouteLocationRaw>,
+    rawLocation: RouteLocationRaw,
     currentLocation?: RouteLocationNormalizedLoaded
   ): RouteLocation & { href: string } {
     // const objectLocation = routerLocationAsObject(rawLocation)
@@ -466,7 +469,7 @@ export function createRouter(options: RouterOptions): Router {
         hash: decode(locationNormalized.hash),
         redirectedFrom: undefined,
         href,
-      })
+      }) as any // FIXME:
     }
 
     if (__DEV__ && !isRouteLocation(rawLocation)) {
@@ -474,7 +477,7 @@ export function createRouter(options: RouterOptions): Router {
         `router.resolve() was passed an invalid location. This will fail in production.\n- Location:`,
         rawLocation
       )
-      rawLocation = {}
+      return resolve({})
     }
 
     let matcherLocation: MatcherLocationRaw
@@ -564,7 +567,8 @@ export function createRouter(options: RouterOptions): Router {
             ? normalizeQuery(rawLocation.query)
             : ((rawLocation.query || {}) as LocationQuery),
       },
-      matchedRoute,
+      // make it typed
+      matchedRoute as RouteLocation,
       {
         redirectedFrom: undefined,
         href,
@@ -623,7 +627,7 @@ export function createRouter(options: RouterOptions): Router {
 
       if (
         __DEV__ &&
-        newTargetLocation.path == null &&
+        (!('path' in newTargetLocation) || newTargetLocation.path == null) &&
         !('name' in newTargetLocation)
       ) {
         warn(

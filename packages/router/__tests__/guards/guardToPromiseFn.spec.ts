@@ -1,5 +1,5 @@
 import { guardToPromiseFn } from '../../src/navigationGuards'
-import { START_LOCATION_NORMALIZED } from '../../src/types'
+import { START_LOCATION_NORMALIZED } from '../../src/location'
 import { ErrorTypes } from '../../src/errors'
 import { mockWarn } from 'jest-mock-warn'
 

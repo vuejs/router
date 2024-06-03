@@ -8,14 +8,13 @@ import {
   ErrorTypes,
 } from '../src/errors'
 import { components, tick } from './utils'
-import {
-  RouteRecordRaw,
-  NavigationGuard,
+import { RouteRecordRaw, NavigationGuard } from '../src/types'
+import type {
   RouteLocationRaw,
-  START_LOCATION_NORMALIZED,
   RouteLocationNormalized,
-} from '../src/types'
+} from '../src/typed-routes'
 import { mockWarn } from 'jest-mock-warn'
+import { START_LOCATION_NORMALIZED } from '../src/location'
 
 const routes: Readonly<RouteRecordRaw>[] = [
   { path: '/', component: components.Home },

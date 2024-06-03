@@ -4,6 +4,8 @@ export { createWebHashHistory } from './history/hash'
 export { createRouterMatcher } from './matcher'
 export type { RouterMatcher } from './matcher'
 
+export type * from './typed-routes'
+
 export { parseQuery, stringifyQuery } from './query'
 export type {
   LocationQuery,
@@ -29,7 +31,7 @@ export {
   viewDepthKey,
 } from './injectionSymbols'
 
-export { START_LOCATION_NORMALIZED as START_LOCATION } from './types'
+export { START_LOCATION_NORMALIZED as START_LOCATION } from './location'
 export type {
   // route location
   _RouteLocationBase,
@@ -52,7 +54,6 @@ export type {
   _RouteRecordBase,
   RouteRecordName,
   RouteRecordRaw,
-  RouteRecordRedirectOption,
   RouteRecordSingleView,
   RouteRecordSingleViewWithChildren,
   RouteRecordMultipleViews,

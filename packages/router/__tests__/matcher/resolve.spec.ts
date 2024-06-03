@@ -1,6 +1,5 @@
 import { createRouterMatcher, normalizeRouteRecord } from '../../src/matcher'
 import {
-  START_LOCATION_NORMALIZED,
   RouteComponent,
   RouteRecordRaw,
   MatcherLocationRaw,
@@ -9,6 +8,7 @@ import {
 import { MatcherLocationNormalizedLoose } from '../utils'
 import { mockWarn } from 'jest-mock-warn'
 import { defineComponent } from '@vue/runtime-core'
+import { START_LOCATION_NORMALIZED } from '../../src/location'
 
 const component: RouteComponent = defineComponent({})
 
@@ -75,7 +75,7 @@ describe('RouterMatcher.resolve', () => {
   /**
    *
    * @param record - Record or records we are testing the matcher against
-   * @param location - location we want to reolve against
+   * @param location - location we want to resolve against
    * @param [start] Optional currentLocation used when resolving
    * @returns error
    */
