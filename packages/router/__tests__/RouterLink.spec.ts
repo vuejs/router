@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { RouterLink, RouterLinkProps } from '../src/RouterLink'
+import { RouterLink } from '../src/RouterLink'
 import {
   START_LOCATION_NORMALIZED,
   RouteQueryAndHash,
@@ -919,9 +919,8 @@ describe('RouterLink', () => {
         components: { RouterLink },
         name: 'AppLink',
 
-        // @ts-expect-error
         props: {
-          ...((RouterLink as any).props as RouterLinkProps),
+          ...(RouterLink as any).props,
           inactiveClass: String as PropType<string>,
         },
 
