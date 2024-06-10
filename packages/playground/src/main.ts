@@ -53,11 +53,22 @@ declare module 'vue-router' {
   }
 }
 
-const r = useRoute()
+function _ok() {
+  const r = useRoute()
 
-if (r.name === '/[name]') {
-  r.params.name.toUpperCase()
-  // @ts-expect-error: Not existing route
-} else if (r.name === 'nope') {
-  console.log('nope')
+  if (r.name === '/[name]') {
+    r.params.name.toUpperCase()
+    // @ts-expect-error: Not existing route
+  } else if (r.name === 'nope') {
+    console.log('nope')
+  }
+
+  router.push({
+    name: '/[name]',
+    params: { name: 'hey' },
+  })
+
+  router
+    .resolve({ name: '/[name]', params: { name: 2 } })
+    .params.name.toUpperCase()
 }
