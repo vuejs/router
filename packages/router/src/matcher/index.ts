@@ -545,10 +545,10 @@ function findInsertionIndex(
   if (insertionAncestor) {
     upper = matchers.lastIndexOf(insertionAncestor, upper - 1)
 
-    if (__DEV__ && upper === -1) {
+    if (__DEV__ && upper < 0) {
       // This should never happen
       warn(
-        `Finding ancestor route ${insertionAncestor.record.path} failed for ${matcher.record.path}`
+        `Finding ancestor route "${insertionAncestor.record.path}" failed for "${matcher.record.path}"`
       )
     }
   }
@@ -571,6 +571,13 @@ function getInsertionAncestor(matcher: RouteRecordMatcher) {
   return
 }
 
+/**
+ * Checks if a matcher can be reachable. This means if it's possible to reach it as a route. For example, routes without
+ * a component, or name, or redirect, are just used to group other routes.
+ * @param matcher
+ * @param matcher.record record of the matcher
+ * @returns
+ */
 function isMatchable({ record }: RouteRecordMatcher): boolean {
   return !!(
     record.name ||
