@@ -4,9 +4,10 @@ import { Ref, ComponentPublicInstance, Component, DefineComponent } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
-import {
+import type {
   NavigationGuardWithThis,
   RouteLocation,
+  RouteRecordName,
   RouteRecordRedirectOption,
 } from '../typed-routes'
 import { _Awaitable } from './utils'
@@ -213,11 +214,6 @@ export type RouteComponent = Component | DefineComponent
  * Allowed Component definitions in route records provided by the user
  */
 export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
-
-/**
- * Possible values for a user-defined route record's name
- */
-export type RouteRecordName = string | symbol
 
 /**
  * @internal

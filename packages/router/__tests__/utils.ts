@@ -4,7 +4,6 @@ import {
   MatcherLocation,
   RouteComponent,
   RouteRecordRaw,
-  RouteRecordName,
   _RouteRecordProps,
 } from '../src/types'
 import { h, ComponentOptions } from 'vue'
@@ -65,7 +64,7 @@ export interface RouteRecordViewLoose
 
 // @ts-expect-error we are intentionally overriding the type
 export interface RouteLocationNormalizedLoose extends RouteLocationNormalized {
-  name: RouteRecordName | null | undefined
+  name: string | symbol | null | undefined
   path: string
   // record?
   params: any

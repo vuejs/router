@@ -4,7 +4,6 @@ import {
   MatcherLocation,
   isRouteName,
   _RouteRecordProps,
-  RouteRecordName,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
@@ -20,6 +19,7 @@ import { comparePathParserScore } from './pathParserRanker'
 
 import { warn } from '../warning'
 import { assign, noop } from '../utils'
+import type { RouteRecordName } from '../typed-routes'
 
 /**
  * Internal RouterMatcher

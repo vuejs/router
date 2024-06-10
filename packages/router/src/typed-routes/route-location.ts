@@ -3,7 +3,6 @@ import type {
   RouteLocationNormalizedLoaded,
   RouteLocationOptions,
   RouteQueryAndHash,
-  RouteRecordName,
   RouteLocationRaw,
   _RouteLocationBase,
 } from '../types'
@@ -14,9 +13,9 @@ import type { Router } from '../router'
 import type { RouteRecord } from '../matcher/types'
 
 /**
- * Type safe version if it exists of the routes' names.
+ * Possible values for a user-defined route record's name
  */
-export type _RouteRecordName = keyof RouteMap
+export type RouteRecordName = keyof RouteMap
 
 /**
  * Type safe version of the {@link RouteLocation} type.
@@ -26,7 +25,7 @@ export interface RouteLocationTyped<
   RouteMap extends _RouteMapGeneric,
   Name extends keyof RouteMap
 > extends _RouteLocationBase {
-  name: Extract<Name, RouteRecordName>
+  name: Extract<Name, string | symbol>
   params: RouteMap[Name]['params']
 
   /**
@@ -53,7 +52,7 @@ export interface RouteLocationNormalizedTyped<
   RouteMap extends _RouteMapGeneric = _RouteMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap
 > extends RouteLocationNormalized {
-  name: Extract<Name, RouteRecordName>
+  name: Extract<Name, string | symbol>
   // we don't override path because it could contain params and in practice it's just not useful
   params: RouteMap[Name]['params']
 }
@@ -74,7 +73,7 @@ export interface RouteLocationNormalizedLoadedTyped<
   RouteMap extends _RouteMapGeneric = _RouteMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap
 > extends RouteLocationNormalizedLoaded {
-  name: Extract<Name, RouteRecordName>
+  name: Extract<Name, string | symbol>
   // we don't override path because it could contain params and in practice it's just not useful
   params: RouteMap[Name]['params']
 }
@@ -172,7 +171,7 @@ export type RouteLocationResolvedTypedList<
  * @see {@link RouteLocationNormalized}
  */
 export type _RouteLocationNormalized<
-  Name extends _RouteRecordName = _RouteRecordName
+  Name extends RouteRecordName = RouteRecordName
 > = RouteLocationNormalizedTypedList<RouteMap>[Name]
 
 /**
@@ -180,7 +179,7 @@ export type _RouteLocationNormalized<
  * @see {@link RouteLocationNormalizedLoaded}
  */
 export type _RouteLocationNormalizedLoaded<
-  Name extends _RouteRecordName = _RouteRecordName
+  Name extends RouteRecordName = RouteRecordName
 > = RouteLocationNormalizedLoadedTypedList<RouteMap>[Name]
 
 /**
@@ -188,7 +187,7 @@ export type _RouteLocationNormalizedLoaded<
  * @see {@link RouteLocationAsRelative}
  */
 export type _RouteLocationAsRelativePath<
-  Name extends _RouteRecordName = _RouteRecordName
+  Name extends RouteRecordName = RouteRecordName
 > = RouteLocationAsRelativeTypedList<RouteMap>[Name]
 
 /**
