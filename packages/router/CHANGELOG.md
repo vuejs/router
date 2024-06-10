@@ -1,3 +1,9 @@
+## [4.3.3](https://github.com/vuejs/router/compare/v4.3.2...v4.3.3) (2024-06-10)
+
+### Performance Improvements
+
+- use a binary search for insertMatcher ([#2137](https://github.com/vuejs/router/issues/2137)) ([e9f6ae3](https://github.com/vuejs/router/commit/e9f6ae3d61b91892f88fa26a6c224e0166b874ff)) This partially addresses #2132
+
 ## [4.3.2](https://github.com/vuejs/router/compare/v4.3.1...v4.3.2) (2024-04-18)
 
 ### Bug Fixes
