@@ -10,7 +10,7 @@ export type { RouteRecordInfo } from './route-map'
 export type {
   _RouteRecordName as RouteRecordName,
   _RouteLocationRaw as RouteLocationRaw,
-  _RouteLocation as RouteLocation,
+  RouteLocation,
   _RouteLocationNormalized as RouteLocationNormalized,
   _RouteLocationNormalizedLoaded as RouteLocationNormalizedLoaded,
   _RouteLocationResolved as RouteLocationResolved,

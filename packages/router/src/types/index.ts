@@ -6,6 +6,7 @@ import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
 import {
   NavigationGuardWithThis,
+  RouteLocation,
   RouteRecordRedirectOption,
 } from '../typed-routes'
 import { _Awaitable } from './utils'
@@ -191,18 +192,6 @@ export interface RouteLocationNormalizedLoaded extends _RouteLocationBase {
    * cannot contain redirect records either
    */
   matched: RouteLocationMatched[] // non-enumerable
-}
-
-/**
- * {@link RouteLocationRaw} resolved using the matcher
- */
-export interface RouteLocation extends _RouteLocationBase {
-  /**
-   * Array of {@link RouteRecord} containing components as they were
-   * passed when adding records. It can also contain redirect records. This
-   * can't be used directly
-   */
-  matched: RouteRecord[] // non-enumerable
 }
 
 /**

@@ -1,16 +1,17 @@
 import type {
-  RouteLocation,
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
   RouteLocationOptions,
   RouteQueryAndHash,
   RouteRecordName,
   RouteLocationRaw,
+  _RouteLocationBase,
 } from '../types'
 import type { _LiteralUnion } from '../types/utils'
 // inlining the type as it avoids code splitting issues
 import type { RouteMap, _RouteMapGeneric } from './route-map'
 import type { Router } from '../router'
+import type { RouteRecord } from '../matcher/types'
 
 /**
  * Type safe version if it exists of the routes' names.
@@ -24,9 +25,16 @@ export type _RouteRecordName = keyof RouteMap
 export interface RouteLocationTyped<
   RouteMap extends _RouteMapGeneric,
   Name extends keyof RouteMap
-> extends RouteLocation {
+> extends _RouteLocationBase {
   name: Extract<Name, RouteRecordName>
   params: RouteMap[Name]['params']
+
+  /**
+   * Array of {@link RouteRecord} containing components as they were
+   * passed when adding records. It can also contain redirect records. This
+   * can't be used directly
+   */
+  matched: RouteRecord[] // non-enumerable
 }
 
 /**
@@ -193,10 +201,10 @@ export type _RouteLocationResolved<
 > = RouteLocationResolvedTypedList<RouteMap>[Name]
 
 /**
- * Type safe version of `RouteLocation` . Allows passing the name of the route to be passed as a generic.
+ * {@link RouteLocationRaw} resolved using the matcher
  * @see {@link RouteLocation}
  */
-export type _RouteLocation<Name extends keyof RouteMap = keyof RouteMap> =
+export type RouteLocation<Name extends keyof RouteMap = keyof RouteMap> =
   RouteLocationTypedList<RouteMap>[Name]
 
 /**
