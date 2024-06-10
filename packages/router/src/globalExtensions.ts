@@ -2,9 +2,9 @@ import type {
   NavigationGuardWithThis,
   NavigationGuard,
   RouteLocationNormalizedLoaded,
-} from './types'
-import { RouterView } from './RouterView'
-import { RouterLink } from './RouterLink'
+} from './typed-routes'
+import type { RouterView } from './RouterView'
+import type { RouterLink } from './RouterLink'
 import type { Router } from './router'
 import type { TypesConfig } from './config'
 

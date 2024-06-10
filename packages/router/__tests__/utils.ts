@@ -1,9 +1,7 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
 import {
-  NavigationGuard,
   RouteRecordMultipleViews,
   MatcherLocation,
-  RouteLocationNormalized,
   RouteComponent,
   RouteRecordRaw,
   RouteRecordName,
@@ -17,6 +15,8 @@ import {
   Router,
   RouterView,
   RouteRecordNormalized,
+  NavigationGuard,
+  RouteLocationNormalized,
 } from '../src'
 
 export const tick = (time?: number) =>

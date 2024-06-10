@@ -1,9 +1,8 @@
 import { extractComponentsGuards } from '../../src/navigationGuards'
-import { RouteRecordRaw } from '../../src/types'
+import type { RouteRecordRaw, RouteRecordNormalized } from '../../src'
 import { START_LOCATION_NORMALIZED } from '../../src/location'
 import { components } from '../utils'
 import { normalizeRouteRecord } from '../../src/matcher'
-import { RouteRecordNormalized } from 'src/matcher/types'
 import { mockWarn } from 'jest-mock-warn'
 
 const beforeRouteEnter = jest.fn()

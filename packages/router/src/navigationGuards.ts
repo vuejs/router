@@ -1,16 +1,19 @@
 import {
-  NavigationGuard,
   NavigationGuardNext,
   NavigationGuardNextCallback,
   isRouteLocation,
   Lazy,
   RouteComponent,
   RawRouteComponent,
+
+  // NOTE: Still need to use some old types while migrating
+  RouteLocationRaw as RouteLocationRaw_OLD,
 } from './types'
+
 import type {
-  RouteLocationRaw,
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
+  NavigationGuard,
 } from './typed-routes'
 
 import {
@@ -139,7 +142,12 @@ export function guardToPromiseFn(
   return () =>
     new Promise((resolve, reject) => {
       const next: NavigationGuardNext = (
-        valid?: boolean | RouteLocationRaw | NavigationGuardNextCallback | Error
+        valid?:
+          | boolean
+          // TODO: remove
+          | RouteLocationRaw_OLD
+          | NavigationGuardNextCallback
+          | Error
       ) => {
         if (valid === false) {
           reject(

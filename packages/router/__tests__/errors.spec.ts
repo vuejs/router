@@ -8,7 +8,7 @@ import {
   ErrorTypes,
 } from '../src/errors'
 import { components, tick } from './utils'
-import { RouteRecordRaw, NavigationGuard } from '../src/types'
+import type { RouteRecordRaw, NavigationGuard } from '../src'
 import type {
   RouteLocationRaw,
   RouteLocationNormalized,

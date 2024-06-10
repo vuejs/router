@@ -4,7 +4,11 @@ import { Ref, ComponentPublicInstance, Component, DefineComponent } from 'vue'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
-import { RouteRecordRedirectOption } from '../typed-routes'
+import {
+  NavigationGuardWithThis,
+  RouteRecordRedirectOption,
+} from '../typed-routes'
+import { _Awaitable } from './utils'
 
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
@@ -142,6 +146,7 @@ export interface RouteLocationPathRaw
     MatcherLocationAsPath,
     RouteLocationOptions {}
 
+// TODO: rename in next major
 export interface RouteLocationMatched extends RouteRecordNormalized {
   // components cannot be Lazy<RouteComponent>
   components: Record<string, RouteComponent> | null | undefined
@@ -484,22 +489,10 @@ export interface NavigationGuard {
   (
     // TODO: we could maybe add extra information like replace: true/false
     to: RouteLocationNormalized,
-    from: RouteLocationNormalized,
+    from: RouteLocationNormalizedLoaded,
     next: NavigationGuardNext
     // FIXME: this one shouldn't allow returning () => ...
-  ): NavigationGuardReturn | Promise<NavigationGuardReturn>
-}
-
-/**
- * {@inheritDoc NavigationGuard}
- */
-export interface NavigationGuardWithThis<T> {
-  (
-    this: T,
-    to: RouteLocationNormalized,
-    from: RouteLocationNormalized,
-    next: NavigationGuardNext
-  ): NavigationGuardReturn | Promise<NavigationGuardReturn>
+  ): _Awaitable<NavigationGuardReturn>
 }
 
 export interface NavigationHookAfter {

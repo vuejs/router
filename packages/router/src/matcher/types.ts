@@ -1,6 +1,6 @@
+import type { NavigationGuard } from '../typed-routes'
 import {
   RouteRecordMultipleViews,
-  NavigationGuard,
   _RouteRecordBase,
   _RouteRecordProps,
   NavigationGuardNextCallback,

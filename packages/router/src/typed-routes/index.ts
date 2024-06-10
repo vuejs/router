@@ -20,3 +20,10 @@ export type {
 } from './route-location'
 
 export type { RouteRecordRedirectOption } from './route-records'
+
+export type {
+  NavigationGuard,
+  NavigationGuardReturn,
+  NavigationHookAfter,
+  NavigationGuardWithThis,
+} from './navigation-guards'

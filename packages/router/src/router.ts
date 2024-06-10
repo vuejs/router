@@ -1,10 +1,8 @@
 import {
   RouteRecordRaw,
-  NavigationHookAfter,
   Lazy,
   isRouteLocation,
   isRouteName,
-  NavigationGuardWithThis,
   RouteLocationOptions,
   MatcherLocationRaw,
 } from './types'
@@ -15,6 +13,9 @@ import type {
   RouteParams,
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
+  NavigationGuardWithThis,
+  NavigationHookAfter,
+  RouteLocationResolved,
 } from './typed-routes'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
@@ -63,6 +64,12 @@ import {
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
 import { _LiteralUnion } from './types/utils'
+import {
+  RouteLocationAsPathTyped,
+  RouteLocationAsRelativeTyped,
+  RouteLocationAsString,
+} from './typed-routes/route-location'
+import { RouteMap } from './typed-routes/route-map'
 
 /**
  * Internal type to define an ErrorHandler
@@ -195,7 +202,7 @@ export interface Router {
   readonly options: RouterOptions
 
   /**
-   * Allows turning off the listening of history events. This is a low level api for micro-frontends.
+   * Allows turning off the listening of history events. This is a low level api for micro-frontend.
    */
   listening: boolean
 
@@ -238,10 +245,13 @@ export interface Router {
    * @param to - Raw route location to resolve
    * @param currentLocation - Optional current location to resolve against
    */
-  resolve(
-    to: RouteLocationRaw,
+  resolve<Name extends keyof RouteMap = keyof RouteMap>(
+    to:
+      | RouteLocationAsString<RouteMap>
+      | RouteLocationAsRelativeTyped<RouteMap, Name>
+      | RouteLocationAsPathTyped<RouteMap, Name>,
     currentLocation?: RouteLocationNormalizedLoaded
-  ): RouteLocation & { href: string }
+  ): RouteLocationResolved<Name>
 
   /**
    * Programmatically navigate to a new URL by pushing an entry in the history
@@ -435,9 +445,11 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   function resolve(
+    // NOTE: it's easier to by pass the type generics which are just for type inference in the resolved route
     rawLocation: RouteLocationRaw,
     currentLocation?: RouteLocationNormalizedLoaded
-  ): RouteLocation & { href: string } {
+  ): RouteLocationResolved {
+    // const resolve: Router['resolve'] = (rawLocation: RouteLocationRaw, currentLocation) => {
     // const objectLocation = routerLocationAsObject(rawLocation)
     // we create a copy to modify it later
     currentLocation = assign({}, currentLocation || currentRoute.value)
@@ -655,7 +667,7 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   function pushWithRedirect(
-    to: RouteLocationRaw | RouteLocation,
+    to: RouteLocationRaw,
     redirectedFrom?: RouteLocation
   ): Promise<NavigationFailure | void | undefined> {
     const targetLocation: RouteLocation = (pendingLocation = resolve(to))
@@ -1213,6 +1225,7 @@ export function createRouter(options: RouterOptions): Router {
     removeRoute,
     hasRoute,
     getRoutes,
+    // @ts-expect-error: FIXME: types do not match
     resolve,
     options,
 

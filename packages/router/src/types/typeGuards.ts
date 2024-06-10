@@ -1,4 +1,4 @@
-import { RouteLocationRaw, RouteRecordName } from '../typed-routes'
+import type { RouteLocationRaw } from '../typed-routes'
 
 export function isRouteLocation(route: any): route is RouteLocationRaw {
   return typeof route === 'string' || (route && typeof route === 'object')

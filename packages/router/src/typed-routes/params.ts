@@ -1,5 +1,3 @@
-// TODO: refactor to ParamValueRaw and ParamValue ?
-
 /**
  * Utility type for raw and non raw params like :id+
  *
@@ -32,3 +30,8 @@ export type ParamValueZeroOrOne<isRaw extends boolean> = true extends isRaw
 export type ParamValue<isRaw extends boolean> = true extends isRaw
   ? string | number
   : string
+
+// TODO: finish this refactor
+// export type ParamValueOneOrMoreRaw = [ParamValueRaw, ...ParamValueRaw[]]
+// export type ParamValue =  string
+// export type ParamValueRaw = string | number

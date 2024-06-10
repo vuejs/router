@@ -4,8 +4,6 @@ export { createWebHashHistory } from './history/hash'
 export { createRouterMatcher } from './matcher'
 export type { RouterMatcher } from './matcher'
 
-export type * from './typed-routes'
-
 export { parseQuery, stringifyQuery } from './query'
 export type {
   LocationQuery,
@@ -38,21 +36,22 @@ export type {
   MatcherLocationAsPath,
   LocationAsRelativeRaw,
   RouteQueryAndHash,
-  RouteLocationRaw,
-  RouteLocation,
-  RouteLocationNormalized,
-  RouteLocationNormalizedLoaded,
-  RouteParams,
-  RouteParamsRaw,
+
+  // route params
   RouteParamValue,
   RouteParamValueRaw,
+
+  // Partial route location
   RouteLocationNamedRaw,
+  // exported for backwards compat for old RouteLocationRaw
   RouteLocationPathRaw,
   RouteLocationMatched,
+
+  // extra options when navigating
   RouteLocationOptions,
+
   // route records
   _RouteRecordBase,
-  RouteRecordName,
   RouteRecordRaw,
   RouteRecordSingleView,
   RouteRecordSingleViewWithChildren,
@@ -62,11 +61,38 @@ export type {
   RouteMeta,
   RouteComponent,
   // RawRouteComponent,
-  NavigationGuard,
   NavigationGuardNext,
+} from './types'
+
+// Experimental Type Safe API
+export type {
+  // route location
+  RouteLocationRaw,
+  RouteLocation,
+  RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+  RouteLocationResolved,
+  RouteLocationAsRelativePath,
+
+  // route records
+  RouteRecordInfo,
+  RouteRecordName,
+  RouteRecordRedirectOption,
+
+  // params
+  RouteParams,
+  RouteParamsRaw,
+  ParamValue,
+  ParamValueOneOrMore,
+  ParamValueZeroOrMore,
+  ParamValueZeroOrOne,
+
+  // navigation guards
+  NavigationGuard,
   NavigationGuardWithThis,
   NavigationHookAfter,
-} from './types'
+  NavigationGuardReturn,
+} from './typed-routes'
 
 export { createRouter } from './router'
 export type { Router, RouterOptions, RouterScrollBehavior } from './router'
