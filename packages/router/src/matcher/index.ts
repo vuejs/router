@@ -158,6 +158,12 @@ export function createRouterMatcher(
           removeRoute(record.name)
       }
 
+      // Avoid adding a record that doesn't display anything. This allows passing through records without a component to
+      // not be reached and pass through the catch all route
+      if (isMatchable(matcher)) {
+        insertMatcher(matcher)
+      }
+
       if (mainNormalizedRecord.children) {
         const children = mainNormalizedRecord.children
         for (let i = 0; i < children.length; i++) {
@@ -177,17 +183,6 @@ export function createRouterMatcher(
       // if (parent && isAliasRecord(originalRecord)) {
       //   parent.children.push(originalRecord)
       // }
-
-      // Avoid adding a record that doesn't display anything. This allows passing through records without a component to
-      // not be reached and pass through the catch all route
-      if (
-        (matcher.record.components &&
-          Object.keys(matcher.record.components).length) ||
-        matcher.record.name ||
-        matcher.record.redirect
-      ) {
-        insertMatcher(matcher)
-      }
     }
 
     return originalMatcher
@@ -223,17 +218,8 @@ export function createRouterMatcher(
   }
 
   function insertMatcher(matcher: RouteRecordMatcher) {
-    let i = 0
-    while (
-      i < matchers.length &&
-      comparePathParserScore(matcher, matchers[i]) >= 0 &&
-      // Adding children with empty path should still appear before the parent
-      // https://github.com/vuejs/router/issues/1124
-      (matcher.record.path !== matchers[i].record.path ||
-        !isRecordChildOf(matcher, matchers[i]))
-    )
-      i++
-    matchers.splice(i, 0, matcher)
+    const index = findInsertionIndex(matcher, matchers)
+    matchers.splice(index, 0, matcher)
     // only add the original record to the name map
     if (matcher.record.name && !isAliasRecord(matcher))
       matcherMap.set(matcher.record.name, matcher)
@@ -525,12 +511,78 @@ function checkMissingParamsInAbsolutePath(
   }
 }
 
-function isRecordChildOf(
-  record: RouteRecordMatcher,
-  parent: RouteRecordMatcher
-): boolean {
-  return parent.children.some(
-    child => child === record || isRecordChildOf(record, child)
+/**
+ * Performs a binary search to find the correct insertion index for a new matcher.
+ *
+ * Matchers are primarily sorted by their score. If scores are tied then we also consider parent/child relationships,
+ * with descendants coming before ancestors. If there's still a tie, new routes are inserted after existing routes.
+ *
+ * @param matcher - new matcher to be inserted
+ * @param matchers - existing matchers
+ */
+function findInsertionIndex(
+  matcher: RouteRecordMatcher,
+  matchers: RouteRecordMatcher[]
+) {
+  // First phase: binary search based on score
+  let lower = 0
+  let upper = matchers.length
+
+  while (lower !== upper) {
+    const mid = (lower + upper) >> 1
+    const sortOrder = comparePathParserScore(matcher, matchers[mid])
+
+    if (sortOrder < 0) {
+      upper = mid
+    } else {
+      lower = mid + 1
+    }
+  }
+
+  // Second phase: check for an ancestor with the same score
+  const insertionAncestor = getInsertionAncestor(matcher)
+
+  if (insertionAncestor) {
+    upper = matchers.lastIndexOf(insertionAncestor, upper - 1)
+
+    if (__DEV__ && upper < 0) {
+      // This should never happen
+      warn(
+        `Finding ancestor route "${insertionAncestor.record.path}" failed for "${matcher.record.path}"`
+      )
+    }
+  }
+
+  return upper
+}
+
+function getInsertionAncestor(matcher: RouteRecordMatcher) {
+  let ancestor: RouteRecordMatcher | undefined = matcher
+
+  while ((ancestor = ancestor.parent)) {
+    if (
+      isMatchable(ancestor) &&
+      comparePathParserScore(matcher, ancestor) === 0
+    ) {
+      return ancestor
+    }
+  }
+
+  return
+}
+
+/**
+ * Checks if a matcher can be reachable. This means if it's possible to reach it as a route. For example, routes without
+ * a component, or name, or redirect, are just used to group other routes.
+ * @param matcher
+ * @param matcher.record record of the matcher
+ * @returns
+ */
+function isMatchable({ record }: RouteRecordMatcher): boolean {
+  return !!(
+    record.name ||
+    (record.components && Object.keys(record.components).length) ||
+    record.redirect
   )
 }
 
