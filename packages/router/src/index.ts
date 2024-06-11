@@ -61,21 +61,59 @@ export type {
   RouteMeta,
   RouteComponent,
   // RawRouteComponent,
+  RouteParamsGeneric,
+  RouteParamsRawGeneric,
+  MatcherLocation,
 } from './types'
+export type { _Awaitable } from './types/utils'
 
 // Experimental Type Safe API
 export type {
+  RouteMap,
+  RouteMapGeneric,
+
   // route location
   RouteLocationRaw,
   RouteLocation,
+  RouteLocationTyped,
+  RouteLocationTypedList,
+  RouteLocationGeneric,
+
+  // RouteLocationNormalized
+  RouteLocationNormalizedGeneric,
   RouteLocationNormalized,
+  RouteLocationNormalizedTyped,
+  RouteLocationNormalizedTypedList,
+
+  // RouteLocationNormalizedLoaded
+  RouteLocationNormalizedLoadedGeneric,
   RouteLocationNormalizedLoaded,
+  RouteLocationNormalizedLoadedTyped,
+  RouteLocationNormalizedLoadedTypedList,
+
+  // RouteLocationResolved
   RouteLocationResolved,
+  RouteLocationResolvedGeneric,
+  RouteLocationResolvedTyped,
+  RouteLocationResolvedTypedList,
+
+  // relative
   RouteLocationAsRelative,
+  RouteLocationAsRelativeGeneric,
+  RouteLocationAsRelativeTyped,
+  RouteLocationAsRelativeTypedList,
+  // string
+  RouteLocationAsString,
+  // as path
+  RouteLocationAsPathGeneric,
+  RouteLocationAsPathTyped,
+  RouteLocationAsPathTypedList,
 
   // route records
   RouteRecordInfo,
   RouteRecordName,
+  RouteRecordNameGeneric,
+  _RouteRecordProps,
   RouteRecordRedirectOption,
 
   // params
@@ -92,6 +130,7 @@ export type {
   NavigationHookAfter,
   NavigationGuardReturn,
   NavigationGuardNext,
+  NavigationGuardNextCallback,
 } from './typed-routes'
 
 export { createRouter } from './router'

@@ -6,14 +6,14 @@ The RouterLink component adds two CSS classes to active links, `router-link-acti
 
 ## When are links active?
 
-A RouterLink is considered to be ***active*** if:
+A RouterLink is considered to be **_active_** if:
 
 1. It matches the same route record (i.e. configured route) as the current location.
 2. It has the same values for the `params` as the current location.
 
 If you're using [nested routes](./nested-routes), any links to ancestor routes will also be considered active if the relevant `params` match.
 
-Other route properties, such as the [`query`](../../api/interfaces/RouteLocationNormalized#query), are not taken into account.
+Other route properties, such as the [`query`](../../api/interfaces/RouteLocationBase.html#query), are not taken into account.
 
 The path doesn't necessarily need to be a perfect match. For example, using an [`alias`](./redirect-and-alias#Alias) would still be considered a match, so long as it resolves to the same route record and `params`.
 
@@ -21,7 +21,7 @@ If a route has a [`redirect`](./redirect-and-alias#Redirect), it won't be follow
 
 ## Exact active links
 
-An ***exact*** match does not include ancestor routes.
+An **_exact_** match does not include ancestor routes.
 
 Let's imagine we have the following routes:
 
@@ -34,9 +34,9 @@ const routes = [
       {
         path: 'role/:roleId',
         component: Role,
-      }
-    ]
-  }
+      },
+    ],
+  },
 ]
 ```
 
@@ -51,7 +51,7 @@ Then consider these two links:
 </RouterLink>
 ```
 
-If the current location path is `/user/erina/role/admin` then these would both be considered _active_, so the class `router-link-active` would be applied to both links. But only the second link would be considered _exact_, so only that second link would have the class `router-link-exact-active`. 
+If the current location path is `/user/erina/role/admin` then these would both be considered _active_, so the class `router-link-active` would be applied to both links. But only the second link would be considered _exact_, so only that second link would have the class `router-link-exact-active`.
 
 ## Configuring the classes
 

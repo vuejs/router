@@ -434,7 +434,7 @@ Note this will work if `path` was `/parent/` as the relative location `home` to 
 
 Decoded values in `params`, `query`, and `hash` are now consistent no matter where the navigation is initiated (older browsers will still produce unencoded `path` and `fullPath`). The initial navigation should yield the same results as in-app navigations.
 
-Given any [normalized route location](/api/interfaces/RouteLocationNormalized.md):
+Given any [normalized route location](/api/#RouteLocationNormalized):
 
 - Values in `path`, `fullPath` are not decoded anymore. They will appear as provided by the browser (most browsers provide them encoded). e.g. directly writing on the address bar `https://example.com/hello world` will yield the encoded version: `https://example.com/hello%20world` and both `path` and `fullPath` will be `/hello%20world`.
 - `hash` is now decoded, that way it can be copied over: `router.push({ hash: $route.hash })` and be used directly in [scrollBehavior](/api/interfaces/RouterOptions.md#scrollBehavior)'s `el` option.

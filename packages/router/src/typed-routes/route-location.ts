@@ -240,7 +240,7 @@ export type RouteLocation<Name extends keyof RouteMap = keyof RouteMap> =
 
 /**
  * Similar to {@link RouteLocation} but its
- * {@link RouteLocationNormalizedTyped.matched `matched` property} cannot contain redirect records
+ * {@link RouteLocationNormalizedTyped.matched | `matched` property} cannot contain redirect records
  */
 export type RouteLocationNormalized<
   Name extends keyof RouteMap = keyof RouteMap
@@ -251,7 +251,6 @@ export type RouteLocationNormalized<
 /**
  * Similar to {@link RouteLocationNormalized} but its `components` do not contain any function to lazy load components.
  * In other words, it's ready to be rendered by `<RouterView>`.
- * @see {@link RouteLocationNormalized}
  */
 export type RouteLocationNormalizedLoaded<
   Name extends keyof RouteMap = keyof RouteMap
@@ -270,8 +269,7 @@ export type RouteLocationAsRelative<
   : RouteLocationAsRelativeTypedList<RouteMap>[Name]
 
 /**
- * Route location resolved with `router.resolve()`.
- * @see {@link Router['resolve'] | `router.resolve()`}
+ * Route location resolved with {@link Router | `router.resolve()`}.
  */
 export type RouteLocationResolved<
   Name extends keyof RouteMap = keyof RouteMap
