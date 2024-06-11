@@ -1,3 +1,9 @@
+# [4.4.0-alpha.0](https://github.com/vuejs/router/compare/v4.3.3...v4.4.0-alpha.0) (2024-06-11)
+
+### Features
+
+- typed routes ([f92282b](https://github.com/vuejs/router/commit/f92282b896ccf92360d781832435e1ae86314e0e))
+
 ## [4.3.3](https://github.com/vuejs/router/compare/v4.3.2...v4.3.3) (2024-06-10)
 
 ### Performance Improvements
