@@ -57,15 +57,9 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
     ],
 
     sidebar: {
-      '/zh/api/': [
-        {
-          text: 'packages',
-          items: [{ text: 'vue-router', link: '/zh/api/' }],
-        },
-      ],
-
       '/zh/': [
         {
+          text: '设置',
           items: [
             {
               text: '介绍',
@@ -97,12 +91,12 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/zh/guide/essentials/nested-routes.html',
             },
             {
-              text: '编程式导航',
-              link: '/zh/guide/essentials/navigation.html',
-            },
-            {
               text: '命名路由',
               link: '/zh/guide/essentials/named-routes.html',
+            },
+            {
+              text: '编程式导航',
+              link: '/zh/guide/essentials/navigation.html',
             },
             {
               text: '命名视图',
@@ -115,6 +109,10 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             {
               text: '路由组件传参',
               link: '/zh/guide/essentials/passing-props.html',
+            },
+            {
+              text: '匹配当前路由的链接',
+              link: '/zh/guide/essentials/active-links.html',
             },
             {
               text: '不同的历史记录模式',
@@ -186,6 +184,13 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/zh/about-translation.html',
             },
           ],
+        },
+      ],
+
+      '/zh/api/': [
+        {
+          text: 'packages',
+          items: [{ text: 'vue-router', link: '/zh/api/' }],
         },
       ],
     },

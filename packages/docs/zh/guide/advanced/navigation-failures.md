@@ -62,8 +62,6 @@ if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
 如果你忽略第二个参数： `isNavigationFailure(failure)`，那么就只会检查这个 `failure` 是不是一个 _Navigation Failure_。
 :::
 
-<!-- TODO: translation -->
-
 ## 全局导航故障
 
 你可以用 [`router.afterEach()` 导航守卫](./navigation-guards.md#Global-After-Hooks)检测全局导航故障：
