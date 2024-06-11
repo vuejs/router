@@ -212,6 +212,9 @@ export interface RouteLocationResolvedTyped<
   RouteMap extends RouteMapGeneric,
   Name extends keyof RouteMap
 > extends RouteLocationTyped<RouteMap, Name> {
+  /**
+   * Resolved `href` for the route location that will be set on the `<a href="...">`.
+   */
   href: string
 }
 
