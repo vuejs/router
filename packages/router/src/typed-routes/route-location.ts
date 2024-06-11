@@ -1,124 +1,185 @@
 import type {
-  RouteLocationNormalized,
-  RouteLocationNormalizedLoaded,
   RouteLocationOptions,
   RouteQueryAndHash,
-  RouteLocationRaw,
   _RouteLocationBase,
+  RouteParamsGeneric,
+  RouteLocationMatched,
+  RouteParamsRawGeneric,
 } from '../types'
 import type { _LiteralUnion } from '../types/utils'
 // inlining the type as it avoids code splitting issues
-import type { RouteMap, _RouteMapGeneric } from './route-map'
+import type { RouteMap, RouteMapGeneric } from './route-map'
 import type { Router } from '../router'
-import type { RouteRecord } from '../matcher/types'
+import type { RouteRecord, RouteRecordNormalized } from '../matcher/types'
+import { RouteRecordNameGeneric } from './route-records'
 
 /**
- * Possible values for a user-defined route record's name
+ * Possible values for a user-defined route record's name.
  */
-export type RouteRecordName = keyof RouteMap
+export type RouteRecordName = RouteMapGeneric extends RouteMap
+  ? RouteRecordNameGeneric
+  : keyof RouteMap
 
 /**
- * Type safe version of the {@link RouteLocation} type.
- * @internal
+ * Generic version of {@link RouteLocation}. It is used when no {@link RouteMap} is provided.
  */
-export interface RouteLocationTyped<
-  RouteMap extends _RouteMapGeneric,
-  Name extends keyof RouteMap
-> extends _RouteLocationBase {
-  name: Extract<Name, string | symbol>
-  params: RouteMap[Name]['params']
-
+export interface RouteLocationGeneric extends _RouteLocationBase {
   /**
    * Array of {@link RouteRecord} containing components as they were
    * passed when adding records. It can also contain redirect records. This
-   * can't be used directly
+   * can't be used directly. **This property is non-enumerable**.
    */
-  matched: RouteRecord[] // non-enumerable
+  matched: RouteRecord[]
 }
 
 /**
- * Type safe version of the {@link RouteLocation} type as a Record with all the routes.
+ * Helper to generate a type safe version of the {@link RouteLocation} type.
+ * @internal
+ */
+export interface RouteLocationTyped<
+  RouteMap extends RouteMapGeneric,
+  Name extends keyof RouteMap
+> extends RouteLocationGeneric {
+  // Extract is needed because keyof can produce numbers
+  name: Extract<Name, string | symbol>
+  params: RouteMap[Name]['params']
+}
+
+/**
+ * List of all possible {@link RouteLocation} indexed by the route name.
  * @internal
  */
 export type RouteLocationTypedList<
-  RouteMap extends _RouteMapGeneric = _RouteMapGeneric
+  RouteMap extends RouteMapGeneric = RouteMapGeneric
 > = { [N in keyof RouteMap]: RouteLocationTyped<RouteMap, N> }
 
 /**
- * Helper to generate a type safe version of the `RouteLocationNormalized` type.
+ * Generic version of {@link RouteLocationNormalized} that is used when no {@link RouteMap} is provided.
+ */
+export interface RouteLocationNormalizedGeneric extends _RouteLocationBase {
+  name: RouteRecordNameGeneric
+  params: RouteParamsGeneric
+  /**
+   * Array of {@link RouteRecordNormalized}
+   */
+  matched: RouteRecordNormalized[]
+}
+
+/**
+ * Helper to generate a type safe version of the {@link RouteLocationNormalized} type.
  * @internal
  */
 export interface RouteLocationNormalizedTyped<
-  RouteMap extends _RouteMapGeneric = _RouteMapGeneric,
+  RouteMap extends RouteMapGeneric = RouteMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap
-> extends RouteLocationNormalized {
+> extends RouteLocationNormalizedGeneric {
   name: Extract<Name, string | symbol>
   // we don't override path because it could contain params and in practice it's just not useful
   params: RouteMap[Name]['params']
+
+  /**
+   * Array of {@link RouteRecordNormalized}
+   */
+  matched: RouteRecordNormalized[] // non-enumerable
 }
 
 /**
- * Helper to generate a type safe version of the `RouteLocationNormalizedLoaded` type.
+ * List of all possible {@link RouteLocationNormalized} indexed by the route name.
  * @internal
  */
 export type RouteLocationNormalizedTypedList<
-  RouteMap extends _RouteMapGeneric = _RouteMapGeneric
+  RouteMap extends RouteMapGeneric = RouteMapGeneric
 > = { [N in keyof RouteMap]: RouteLocationNormalizedTyped<RouteMap, N> }
 
 /**
- * Helper to generate a type safe version of the `RouteLocationNormalizedLoaded` type.
+ * Generic version of {@link RouteLocationNormalizedLoaded} that is used when no {@link RouteMap} is provided.
+ */
+export interface RouteLocationNormalizedLoadedGeneric
+  extends RouteLocationNormalizedGeneric {
+  /**
+   * Array of {@link RouteLocationMatched} containing only plain components (any
+   * lazy-loaded components have been loaded and were replaced inside the
+   * `components` object) so it can be directly used to display routes. It
+   * cannot contain redirect records either. **This property is non-enumerable**.
+   */
+  matched: RouteLocationMatched[]
+}
+
+/**
+ * Helper to generate a type safe version of the {@link RouteLocationNormalizedLoaded} type.
  * @internal
  */
 export interface RouteLocationNormalizedLoadedTyped<
-  RouteMap extends _RouteMapGeneric = _RouteMapGeneric,
+  RouteMap extends RouteMapGeneric = RouteMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap
-> extends RouteLocationNormalizedLoaded {
+> extends RouteLocationNormalizedLoadedGeneric {
   name: Extract<Name, string | symbol>
   // we don't override path because it could contain params and in practice it's just not useful
   params: RouteMap[Name]['params']
 }
 
 /**
- * Helper to generate a type safe version of the {@link RouteLocationNormalizedLoaded } type.
+ * List of all possible {@link RouteLocationNormalizedLoaded} indexed by the route name.
  * @internal
  */
 export type RouteLocationNormalizedLoadedTypedList<
-  RouteMap extends _RouteMapGeneric = _RouteMapGeneric
+  RouteMap extends RouteMapGeneric = RouteMapGeneric
 > = { [N in keyof RouteMap]: RouteLocationNormalizedLoadedTyped<RouteMap, N> }
 
 /**
- * Type safe adaptation of {@link LocationAsRelativeRaw}. Used to generate the union of all possible location.
- * @internal
+ * Generic version of {@link RouteLocationAsRelative}. It is used when no {@link RouteMap} is provided.
  */
-export interface RouteLocationAsRelativeTyped<
-  RouteMap extends _RouteMapGeneric = _RouteMapGeneric,
-  Name extends keyof RouteMap = keyof RouteMap
-> extends RouteQueryAndHash,
+export interface RouteLocationAsRelativeGeneric
+  extends RouteQueryAndHash,
     RouteLocationOptions {
-  name?: Name
-  params?: RouteMap[Name]['paramsRaw']
-
-  // A relative path shouldn't have a path. This is easier to check with TS
+  name?: RouteRecordName
+  params?: RouteParamsRawGeneric
+  /**
+   * A relative path to the current location. This property should be removed
+   */
   path?: undefined
 }
 
 /**
- * Type safe adaptation of {@link LocationAsRelativeRaw}. Used to generate the union of all possible location.
+ * Helper to generate a type safe version of the {@link RouteLocationAsRelative} type.
+ * @internal
+ */
+export interface RouteLocationAsRelativeTyped<
+  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  Name extends keyof RouteMap = keyof RouteMap
+> extends RouteLocationAsRelativeGeneric {
+  name?: Extract<Name, string | symbol>
+  params?: RouteMap[Name]['paramsRaw']
+}
+
+/**
+ * List of all possible {@link RouteLocationAsRelative} indexed by the route name.
  * @internal
  */
 export type RouteLocationAsRelativeTypedList<
-  RouteMap extends _RouteMapGeneric = _RouteMapGeneric
+  RouteMap extends RouteMapGeneric = RouteMapGeneric
 > = { [N in keyof RouteMap]: RouteLocationAsRelativeTyped<RouteMap, N> }
 
 /**
- * Type safe version to auto complete the path of a route.
+ * Generic version of {@link RouteLocationAsPath}. It is used when no {@link RouteMap} is provided.
+ */
+export interface RouteLocationAsPathGeneric
+  extends RouteQueryAndHash,
+    RouteLocationOptions {
+  /**
+   * Percentage encoded pathname section of the URL.
+   */
+  path: string
+}
+
+/**
+ * Helper to generate a type safe version of the {@link RouteLocationAsPath} type.
  * @internal
  */
 export interface RouteLocationAsPathTyped<
-  RouteMap extends _RouteMapGeneric = _RouteMapGeneric,
+  RouteMap extends RouteMapGeneric = RouteMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap
-> extends RouteQueryAndHash,
-    RouteLocationOptions {
+> extends RouteLocationAsPathGeneric {
   path: _LiteralUnion<RouteMap[Name]['path']>
 
   // // allows to check for .path and other properties that exist in different route location types
@@ -130,101 +191,111 @@ export interface RouteLocationAsPathTyped<
  * @internal
  */
 export type RouteLocationAsPathTypedList<
-  RouteMap extends _RouteMapGeneric = _RouteMapGeneric
+  RouteMap extends RouteMapGeneric = RouteMapGeneric
 > = { [N in keyof RouteMap]: RouteLocationAsPathTyped<RouteMap, N> }
 
 /**
- * Same as {@link RouteLocationAsPathTyped} but as a string literal.
- * @internal
+ * Generic version of {@link RouteLocationResolved}. It is used when no {@link RouteMap} is provided.
  */
-export type RouteLocationAsString<
-  RouteMap extends _RouteMapGeneric = _RouteMapGeneric
-> = _LiteralUnion<RouteMap[keyof RouteMap]['path'], string>
+export interface RouteLocationResolvedGeneric extends RouteLocationGeneric {
+  /**
+   * Resolved `href` for the route location that will be set on the `<a href="...">`.
+   */
+  href: string
+}
 
 /**
- * Type safe version of a resolved route location returned by `router.resolve()`.
- * @see {@link RouteLocationTyped}
+ * Helper to generate a type safe version of the {@link RouteLocationResolved} type.
  * @internal
  */
 export interface RouteLocationResolvedTyped<
-  RouteMap extends _RouteMapGeneric,
+  RouteMap extends RouteMapGeneric,
   Name extends keyof RouteMap
 > extends RouteLocationTyped<RouteMap, Name> {
   href: string
 }
 
 /**
- * Record of all the resolved routes.
- * @see {@link RouteLocationResolvedTyped}
+ * List of all possible {@link RouteLocationResolved} indexed by the route name.
  * @internal
  */
 export type RouteLocationResolvedTypedList<
-  RouteMap extends _RouteMapGeneric = _RouteMapGeneric
+  RouteMap extends RouteMapGeneric = RouteMapGeneric
 > = { [N in keyof RouteMap]: RouteLocationResolvedTyped<RouteMap, N> }
 
 /**
- * Type safe versions of types that are exposed by vue-router
+ * Type safe versions of types that are exposed by vue-router. We have to use a generic check to allow for names to be `undefined` when no `RouteMap` is provided.
  */
-
-/**
- * Type safe version of `RouteLocationNormalized`. Accepts the name of the route as a type parameter.
- * @see {@link RouteLocationNormalized}
- */
-export type _RouteLocationNormalized<
-  Name extends RouteRecordName = RouteRecordName
-> = RouteLocationNormalizedTypedList<RouteMap>[Name]
-
-/**
- * Type safe version of `RouteLocationNormalizedLoaded`. Accepts the name of the route as a type parameter.
- * @see {@link RouteLocationNormalizedLoaded}
- */
-export type _RouteLocationNormalizedLoaded<
-  Name extends RouteRecordName = RouteRecordName
-> = RouteLocationNormalizedLoadedTypedList<RouteMap>[Name]
-
-/**
- * Type safe version of `RouteLocationAsRelative`. Accepts the name of the route as a type parameter.
- * @see {@link RouteLocationAsRelative}
- */
-export type _RouteLocationAsRelativePath<
-  Name extends RouteRecordName = RouteRecordName
-> = RouteLocationAsRelativeTypedList<RouteMap>[Name]
-
-/**
- * Type safe version of `RouteLocationResolved` (the returned route of `router.resolve()`).
- * Allows passing the name of the route to be passed as a generic.
- * @see {@link Router['resolve']}
- */
-export type _RouteLocationResolved<
-  Name extends keyof RouteMap = keyof RouteMap
-> = RouteLocationResolvedTypedList<RouteMap>[Name]
 
 /**
  * {@link RouteLocationRaw} resolved using the matcher
- * @see {@link RouteLocation}
  */
 export type RouteLocation<Name extends keyof RouteMap = keyof RouteMap> =
-  RouteLocationTypedList<RouteMap>[Name]
+  RouteMapGeneric extends RouteMap
+    ? RouteLocationGeneric
+    : RouteLocationTypedList<RouteMap>[Name]
 
 /**
- * Type safe version of {@link `RouteLocationRaw`} . Allows passing the name of the route to be passed as a generic.
- * @see {@link RouteLocationRaw}
+ * Similar to {@link RouteLocation} but its
+ * {@link RouteLocationNormalizedTyped.matched `matched` property} cannot contain redirect records
  */
-export type _RouteLocationRaw<Name extends keyof RouteMap = keyof RouteMap> =
-  | RouteLocationAsString<RouteMap>
-  | RouteLocationAsRelativeTypedList<RouteMap>[Name]
-  | RouteLocationAsPathTypedList<RouteMap>[Name]
+export type RouteLocationNormalized<
+  Name extends keyof RouteMap = keyof RouteMap
+> = RouteMapGeneric extends RouteMap
+  ? RouteLocationNormalizedGeneric
+  : RouteLocationNormalizedTypedList<RouteMap>[Name]
 
 /**
- * Generate a type safe params for a route location. Requires the name of the route to be passed as a generic.
- * @see {@link RouteParams}
+ * Similar to {@link RouteLocationNormalized} but its `components` do not contain any function to lazy load components.
+ * In other words, it's ready to be rendered by `<RouterView>`.
+ * @see {@link RouteLocationNormalized}
  */
-export type _RouteParams<Name extends keyof RouteMap = keyof RouteMap> =
-  RouteMap[Name]['params']
+export type RouteLocationNormalizedLoaded<
+  Name extends keyof RouteMap = keyof RouteMap
+> = RouteMapGeneric extends RouteMap
+  ? RouteLocationNormalizedLoadedGeneric
+  : RouteLocationNormalizedLoadedTypedList<RouteMap>[Name]
 
 /**
- * Generate a type safe raw params for a route location. Requires the name of the route to be passed as a generic.
- * @see {@link RouteParamsRaw}
+ * Route location relative to the current location. It accepts other properties than `path` like `params`, `query` and
+ * `hash` to conveniently change them.
  */
-export type _RouteParamsRaw<Name extends keyof RouteMap = keyof RouteMap> =
-  RouteMap[Name]['paramsRaw']
+export type RouteLocationAsRelative<
+  Name extends keyof RouteMap = keyof RouteMap
+> = RouteMapGeneric extends RouteMap
+  ? RouteLocationAsRelativeGeneric
+  : RouteLocationAsRelativeTypedList<RouteMap>[Name]
+
+/**
+ * Route location resolved with `router.resolve()`.
+ * @see {@link Router['resolve'] | `router.resolve()`}
+ */
+export type RouteLocationResolved<
+  Name extends keyof RouteMap = keyof RouteMap
+> = RouteMapGeneric extends RouteMap
+  ? RouteLocationResolvedGeneric
+  : RouteLocationResolvedTypedList<RouteMap>[Name]
+
+/**
+ * Same as {@link RouteLocationAsPathTyped} but as a string literal.
+ * @internal
+ */
+export type RouteLocationAsString<
+  RouteMap extends RouteMapGeneric = RouteMapGeneric
+> = RouteMapGeneric extends RouteMap
+  ? string
+  : _LiteralUnion<RouteMap[keyof RouteMap]['path'], string>
+
+/**
+ * Route location that can be passed to `router.push()` and other user-facing APIs.
+ */
+export type RouteLocationRaw<Name extends keyof RouteMap = keyof RouteMap> =
+  RouteMapGeneric extends RouteMap
+    ?
+        | RouteLocationAsString
+        | RouteLocationAsRelativeGeneric
+        | RouteLocationAsPathGeneric
+    :
+        | RouteLocationAsString<RouteMap>
+        | RouteLocationAsRelativeTypedList<RouteMap>[Name]
+        | RouteLocationAsPathTypedList<RouteMap>[Name]

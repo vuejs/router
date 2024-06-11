@@ -61,7 +61,6 @@ export type {
   RouteMeta,
   RouteComponent,
   // RawRouteComponent,
-  NavigationGuardNext,
 } from './types'
 
 // Experimental Type Safe API
@@ -72,7 +71,7 @@ export type {
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
   RouteLocationResolved,
-  RouteLocationAsRelativePath,
+  RouteLocationAsRelative,
 
   // route records
   RouteRecordInfo,
@@ -92,6 +91,7 @@ export type {
   NavigationGuardWithThis,
   NavigationHookAfter,
   NavigationGuardReturn,
+  NavigationGuardNext,
 } from './typed-routes'
 
 export { createRouter } from './router'

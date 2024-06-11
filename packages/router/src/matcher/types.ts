@@ -1,9 +1,11 @@
-import type { NavigationGuard } from '../typed-routes'
+import type {
+  NavigationGuard,
+  NavigationGuardNextCallback,
+  _RouteRecordProps,
+} from '../typed-routes'
 import {
   RouteRecordMultipleViews,
   _RouteRecordBase,
-  _RouteRecordProps,
-  NavigationGuardNextCallback,
   RouteRecordRaw,
 } from '../types'
 import { ComponentPublicInstance } from 'vue'

@@ -212,7 +212,10 @@ export interface Router {
    * @param parentName - Parent Route Record where `route` should be appended at
    * @param route - Route Record to add
    */
-  addRoute(parentName: RouteRecordName, route: RouteRecordRaw): () => void
+  addRoute(
+    parentName: NonNullable<RouteRecordName>,
+    route: RouteRecordRaw
+  ): () => void
   /**
    * Add a new {@link RouteRecordRaw | route record} to the router.
    *
@@ -230,7 +233,7 @@ export interface Router {
    *
    * @param name - Name of the route to check
    */
-  hasRoute(name: RouteRecordName): boolean
+  hasRoute(name: NonNullable<RouteRecordName>): boolean
   /**
    * Get a full list of all the {@link RouteRecord | route records}.
    */
@@ -404,7 +407,7 @@ export function createRouter(options: RouterOptions): Router {
     applyToParams.bind(null, decode)
 
   function addRoute(
-    parentOrRoute: RouteRecordName | RouteRecordRaw,
+    parentOrRoute: NonNullable<RouteRecordName> | RouteRecordRaw,
     route?: RouteRecordRaw
   ) {
     let parent: Parameters<(typeof matcher)['addRoute']>[1] | undefined
@@ -427,7 +430,7 @@ export function createRouter(options: RouterOptions): Router {
     return matcher.addRoute(record, parent)
   }
 
-  function removeRoute(name: RouteRecordName) {
+  function removeRoute(name: NonNullable<RouteRecordName>) {
     const recordMatcher = matcher.getRecordMatcher(name)
     if (recordMatcher) {
       matcher.removeRoute(recordMatcher)
@@ -440,7 +443,7 @@ export function createRouter(options: RouterOptions): Router {
     return matcher.getRoutes().map(routeMatcher => routeMatcher.record)
   }
 
-  function hasRoute(name: RouteRecordName): boolean {
+  function hasRoute(name: NonNullable<RouteRecordName>): boolean {
     return !!matcher.getRecordMatcher(name)
   }
 
@@ -1225,7 +1228,6 @@ export function createRouter(options: RouterOptions): Router {
     removeRoute,
     hasRoute,
     getRoutes,
-    // @ts-expect-error: FIXME: types do not match
     resolve,
     options,
 

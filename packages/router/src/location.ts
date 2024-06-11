@@ -1,5 +1,5 @@
 import { LocationQuery, LocationQueryRaw } from './query'
-import { RouteLocationNormalized, RouteParamValue } from './types'
+import { RouteParamValue, RouteParamsGeneric } from './types'
 import { RouteRecord } from './matcher/types'
 import { warn } from './warning'
 import { isArray } from './utils'
@@ -156,8 +156,8 @@ export function isSameRouteRecord(a: RouteRecord, b: RouteRecord): boolean {
 }
 
 export function isSameRouteLocationParams(
-  a: RouteLocationNormalized['params'],
-  b: RouteLocationNormalized['params']
+  a: RouteParamsGeneric,
+  b: RouteParamsGeneric
 ): boolean {
   if (Object.keys(a).length !== Object.keys(b).length) return false
 
@@ -262,7 +262,6 @@ export function resolveRelativePath(to: string, from: string): string {
  */
 export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = {
   path: '/',
-  // @ts-expect-error: internal name for compatibility
   name: undefined,
   // TODO: could we use a symbol in the future?
   params: {},

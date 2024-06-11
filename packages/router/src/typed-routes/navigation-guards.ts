@@ -1,59 +1,33 @@
 import type { _Awaitable } from '../types/utils'
-import type { NavigationGuardNext } from '../types'
 import type {
-  _RouteLocationNormalizedLoaded,
-  RouteLocationNormalizedTypedList,
-  RouteLocationNormalizedLoadedTypedList,
-  RouteLocationAsString,
-  RouteLocationAsRelativeTypedList,
-  RouteLocationAsPathTypedList,
-  _RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+  RouteLocationNormalized,
+  RouteLocationRaw,
 } from './route-location'
-import type { _RouteMapGeneric, RouteMap } from './route-map'
+import type { TypesConfig } from '../config'
 import type { NavigationFailure } from '../errors'
-
-/**
- * Return types for a Navigation Guard. Accepts a type param for the RouteMap.
- */
-type NavigationGuardReturnTyped<RouteMap extends _RouteMapGeneric> =
-  | void
-  | Error
-  | boolean
-  | RouteLocationAsString<RouteMap>
-  | RouteLocationAsRelativeTypedList<RouteMap>[keyof RouteMap]
-  | RouteLocationAsPathTypedList<RouteMap>[keyof RouteMap]
+import { ComponentPublicInstance } from 'vue'
 
 /**
  * Return types for a Navigation Guard. Based on `TypesConfig`
  *
  * @see {@link TypesConfig}
- * @see {@link NavigationGuardReturnTyped}
  */
-export type NavigationGuardReturn = NavigationGuardReturnTyped<RouteMap>
+export type NavigationGuardReturn = void | Error | boolean | RouteLocationRaw
 
 /**
- * Typed Navigation Guard with a type parameter for `this` and another for the route map.
+ * Navigation Guard with a type parameter for `this`.
+ * @see {@link TypesConfig}
  */
-export interface NavigationGuardWithThisTyped<
-  T,
-  RouteMap extends _RouteMapGeneric
-> {
+export interface NavigationGuardWithThis<T> {
   (
     this: T,
-    to: RouteLocationNormalizedTypedList<RouteMap>[keyof RouteMap],
-    from: RouteLocationNormalizedLoadedTypedList<RouteMap>[keyof RouteMap],
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalizedLoaded,
     // intentionally not typed to make people use the return
     next: NavigationGuardNext
-  ): _Awaitable<NavigationGuardReturnTyped<RouteMap>>
+  ): _Awaitable<NavigationGuardReturn>
 }
-
-/**
- * Typed Navigation Guard with a type parameter for `this`. Based on `TypesConfig`
- * @see {@link TypesConfig}
- * @see {@link NavigationGuardWithThisTyped}
- */
-export interface NavigationGuardWithThis<T>
-  extends NavigationGuardWithThisTyped<T, RouteMap> {}
 
 /**
  * In `router.beforeResolve((to) => {})`, the `to` is typed as `RouteLocationNormalizedLoaded`, not
@@ -64,47 +38,57 @@ export interface NavigationGuardWithThis<T>
 export interface _NavigationGuardResolved {
   (
     this: undefined,
-    to: _RouteLocationNormalizedLoaded,
-    from: _RouteLocationNormalizedLoaded,
+    to: RouteLocationNormalizedLoaded,
+    from: RouteLocationNormalizedLoaded,
     // intentionally not typed to make people use the return
     next: NavigationGuardNext
   ): _Awaitable<NavigationGuardReturn>
 }
 
 /**
- * Typed Navigation Guard. Accepts a type param for the RouteMap.
+ * Navigation Guard.
  */
-export interface NavigationGuardTyped<RouteMap extends _RouteMapGeneric> {
+export interface NavigationGuard {
   (
-    to: _RouteLocationNormalized,
-    from: _RouteLocationNormalizedLoaded,
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalizedLoaded,
     // intentionally not typed to make people use the return
     next: NavigationGuardNext
-  ): _Awaitable<NavigationGuardReturnTyped<RouteMap>>
+  ): _Awaitable<NavigationGuardReturn>
 }
 
 /**
- * Typed Navigation Guard. Based on `TypesConfig`.
- * @see {@link TypesConfig}
- * @see {@link NavigationGuardWithThisTyped}
+ * Navigation hook triggered after a navigation is settled.
  */
-export type NavigationGuard = NavigationGuardTyped<RouteMap>
-
-/**
- * Typed Navigation Hook After. Accepts a type param for the RouteMap.
- */
-export interface NavigationHookAfterTyped<RouteMap extends _RouteMapGeneric> {
+export interface NavigationHookAfter {
   (
-    to: RouteLocationNormalizedTypedList<RouteMap>[keyof RouteMap],
-    from: RouteLocationNormalizedLoadedTypedList<RouteMap>[keyof RouteMap],
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalizedLoaded,
     failure?: NavigationFailure | void
   ): unknown
 }
 
 /**
- * Typed Navigation Hook After. Based on `TypesConfig`.
- * @see {@link TypesConfig}
- * @see {@link NavigationHookAfterTyped}
+ * `next()` callback passed to navigation guards.
  */
-export interface NavigationHookAfter
-  extends NavigationHookAfterTyped<RouteMap> {}
+export interface NavigationGuardNext {
+  (): void
+  (error: Error): void
+  (location: RouteLocationRaw): void
+  (valid: boolean | undefined): void
+  (cb: NavigationGuardNextCallback): void
+  /**
+   * Allows to detect if `next` isn't called in a resolved guard. Used
+   * internally in DEV mode to emit a warning. Commented out to simplify
+   * typings.
+   * @internal
+   */
+  // _called: boolean
+}
+
+/**
+ * Callback that can be passed to `next()` in `beforeRouteEnter()` guards.
+ */
+export type NavigationGuardNextCallback = (
+  vm: ComponentPublicInstance
+) => unknown

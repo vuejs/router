@@ -1,6 +1,7 @@
 import fakePromise from 'faked-promise'
 import { createDom, tick, noGuard, newRouter as createRouter } from '../utils'
-import { RouteRecordRaw, RouteLocationRaw } from '../../src/types'
+import { RouteRecordRaw } from '../../src/types'
+import { RouteLocationRaw } from '../../src'
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }

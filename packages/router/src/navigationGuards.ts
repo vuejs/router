@@ -1,19 +1,18 @@
 import {
-  NavigationGuardNext,
-  NavigationGuardNextCallback,
   isRouteLocation,
   Lazy,
   RouteComponent,
   RawRouteComponent,
-
-  // NOTE: Still need to use some old types while migrating
-  RouteLocationRaw as RouteLocationRaw_OLD,
 } from './types'
 
 import type {
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
   NavigationGuard,
+  RouteLocation,
+  RouteLocationRaw,
+  NavigationGuardNext,
+  NavigationGuardNextCallback,
 } from './typed-routes'
 
 import {
@@ -142,12 +141,7 @@ export function guardToPromiseFn(
   return () =>
     new Promise((resolve, reject) => {
       const next: NavigationGuardNext = (
-        valid?:
-          | boolean
-          // TODO: remove
-          | RouteLocationRaw_OLD
-          | NavigationGuardNextCallback
-          | Error
+        valid?: boolean | RouteLocationRaw | NavigationGuardNextCallback | Error
       ) => {
         if (valid === false) {
           reject(
@@ -378,7 +372,7 @@ export function isRouteComponent(
  * @param route - resolved route to load
  */
 export function loadRouteLocation(
-  route: RouteLocationNormalized
+  route: RouteLocation | RouteLocationNormalized
 ): Promise<RouteLocationNormalizedLoaded> {
   return route.matched.every(record => record.redirect)
     ? Promise.reject(new Error('Cannot load a route that redirects.'))

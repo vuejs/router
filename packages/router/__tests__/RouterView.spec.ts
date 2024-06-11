@@ -3,12 +3,12 @@
  */
 import { RouterView } from '../src/RouterView'
 import { components, RouteLocationNormalizedLoose } from './utils'
-import { RouteLocationNormalized } from '../src/types'
 import { START_LOCATION_NORMALIZED } from '../src/location'
 import { markRaw } from 'vue'
 import { createMockedRoute } from './mount'
 import { mockWarn } from 'jest-mock-warn'
 import { mount } from '@vue/test-utils'
+import { RouteLocationNormalized } from '../src'
 
 // to have autocompletion
 function createRoutes<T extends Record<string, RouteLocationNormalizedLoose>>(

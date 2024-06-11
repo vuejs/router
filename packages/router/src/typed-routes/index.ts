@@ -3,27 +3,34 @@ export type {
   ParamValueOneOrMore,
   ParamValueZeroOrMore,
   ParamValueZeroOrOne,
+  RouteParams,
+  RouteParamsRaw,
 } from './params'
 
 export type { RouteRecordInfo } from './route-map'
 
 export type {
-  RouteRecordName as RouteRecordName,
-  _RouteLocationRaw as RouteLocationRaw,
+  RouteRecordName,
+  RouteLocationRaw,
   RouteLocation,
-  _RouteLocationNormalized as RouteLocationNormalized,
-  _RouteLocationNormalizedLoaded as RouteLocationNormalizedLoaded,
-  _RouteLocationResolved as RouteLocationResolved,
-  _RouteLocationAsRelativePath as RouteLocationAsRelativePath,
-  _RouteParams as RouteParams,
-  _RouteParamsRaw as RouteParamsRaw,
+  RouteLocationNormalized,
+  RouteLocationNormalizedGeneric,
+  RouteLocationNormalizedLoaded,
+  RouteLocationResolved,
+  RouteLocationAsRelative,
 } from './route-location'
 
-export type { RouteRecordRedirectOption } from './route-records'
+export type {
+  RouteRecordRedirectOption,
+  RouteRecordNameGeneric,
+  _RouteRecordProps,
+} from './route-records'
 
 export type {
   NavigationGuard,
   NavigationGuardReturn,
   NavigationHookAfter,
   NavigationGuardWithThis,
+  NavigationGuardNext,
+  NavigationGuardNextCallback,
 } from './navigation-guards'

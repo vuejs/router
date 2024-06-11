@@ -1,7 +1,7 @@
 import { isRouteComponent, loadRouteLocation } from '../../src/navigationGuards'
-import { RouteRecordRaw, RouteLocationRaw } from '../../src/types'
+import { RouteRecordRaw } from '../../src/types'
 import { components } from '../utils'
-import { createMemoryHistory, createRouter } from '../../src'
+import { RouteLocationRaw, createMemoryHistory, createRouter } from '../../src'
 import { FunctionalComponent } from 'vue'
 
 const FunctionalHome: FunctionalComponent = () => null

@@ -19,6 +19,5 @@ export function useRouter(): Router {
 export function useRoute<Name extends keyof RouteMap = keyof RouteMap>(
   _name?: Name
 ): RouteLocationNormalizedLoaded<Name> {
-  // @ts-expect-error: FIXME: name mismatch issue
   return inject(routeLocationKey)!
 }

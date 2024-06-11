@@ -4,10 +4,12 @@ import {
   createMemoryHistory,
   createWebHistory,
   createWebHashHistory,
+  loadRouteLocation,
+  RouteLocationRaw,
 } from '../src'
 import { NavigationFailureType } from '../src/errors'
 import { createDom, components, tick, nextNavigation } from './utils'
-import { RouteRecordRaw, RouteLocationRaw } from '../src/types'
+import { RouteRecordRaw } from '../src/types'
 import { mockWarn } from 'jest-mock-warn'
 import { START_LOCATION_NORMALIZED } from '../src/location'
 
@@ -465,7 +467,9 @@ describe('Router', () => {
     expect(
       router.resolve(
         { params: { p: 1 } },
-        router.resolve({ name: 'Param', params: { p: 2 } })
+        await loadRouteLocation(
+          router.resolve({ name: 'Param', params: { p: 2 } })
+        )
       )
     ).toMatchObject({
       name: 'Param',

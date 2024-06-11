@@ -1,16 +1,17 @@
-import { LocationQuery, LocationQueryRaw } from '../query'
-import { PathParserOptions } from '../matcher'
-import { Ref, ComponentPublicInstance, Component, DefineComponent } from 'vue'
-import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
-import { HistoryState } from '../history/common'
-import { NavigationFailure } from '../errors'
+import type { LocationQuery, LocationQueryRaw } from '../query'
+import type { PathParserOptions } from '../matcher'
+import type { Ref, Component, DefineComponent } from 'vue'
+import type { RouteRecord, RouteRecordNormalized } from '../matcher/types'
+import type { HistoryState } from '../history/common'
 import type {
   NavigationGuardWithThis,
   RouteLocation,
   RouteRecordName,
   RouteRecordRedirectOption,
+  _RouteRecordProps,
+  RouteRecordNameGeneric,
 } from '../typed-routes'
-import { _Awaitable } from './utils'
+import type { _Awaitable } from './utils'
 
 export type Lazy<T> = () => Promise<T>
 export type Override<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U
@@ -39,8 +40,11 @@ export type RouteParamValue = string
  * @internal
  */
 export type RouteParamValueRaw = RouteParamValue | number | null | undefined
-export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
-export type RouteParamsRaw = Record<
+export type RouteParamsGeneric = Record<
+  string,
+  RouteParamValue | RouteParamValue[]
+>
+export type RouteParamsRawGeneric = Record<
   string,
   RouteParamValueRaw | Exclude<RouteParamValueRaw, null | undefined>[]
 >
@@ -70,7 +74,7 @@ export interface MatcherLocationAsName {
    * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
    */
   path?: undefined
-  params?: RouteParams
+  params?: RouteParamsGeneric
 }
 
 /**
@@ -82,20 +86,20 @@ export interface MatcherLocationAsRelative {
    * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
    */
   path?: undefined
-  params?: RouteParams
+  params?: RouteParamsGeneric
 }
 
 /**
  * @internal
  */
 export interface LocationAsRelativeRaw {
-  name?: RouteRecordName
+  name?: RouteRecordNameGeneric
   // to allow checking location.path == null
   /**
    * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
    */
   path?: undefined
-  params?: RouteParamsRaw
+  params?: RouteParamsRawGeneric
 }
 
 /**
@@ -121,14 +125,6 @@ export interface RouteLocationOptions {
 }
 
 /**
- * User-level route location
- */
-export type RouteLocationRaw =
-  | string
-  | RouteLocationPathRaw
-  | RouteLocationNamedRaw
-
-/**
  * Route Location that can infer the necessary params based on the name.
  *
  * @internal
@@ -148,7 +144,7 @@ export interface RouteLocationPathRaw
     MatcherLocationAsPath,
     RouteLocationOptions {}
 
-// TODO: rename in next major
+// TODO: rename in next major to RouteRecordMatched?
 export interface RouteLocationMatched extends RouteRecordNormalized {
   // components cannot be Lazy<RouteComponent>
   components: Record<string, RouteComponent> | null | undefined
@@ -181,31 +177,6 @@ export interface _RouteLocationBase
   redirectedFrom: RouteLocation | undefined
 }
 
-// matched contains resolved components
-/**
- * {@link RouteLocationRaw} with
- */
-export interface RouteLocationNormalizedLoaded extends _RouteLocationBase {
-  /**
-   * Array of {@link RouteLocationMatched} containing only plain components (any
-   * lazy-loaded components have been loaded and were replaced inside the
-   * `components` object) so it can be directly used to display routes. It
-   * cannot contain redirect records either
-   */
-  matched: RouteLocationMatched[] // non-enumerable
-}
-
-/**
- * Similar to {@link RouteLocation} but its
- * {@link RouteLocationNormalized.matched} cannot contain redirect records
- */
-export interface RouteLocationNormalized extends _RouteLocationBase {
-  /**
-   * Array of {@link RouteRecordNormalized}
-   */
-  matched: RouteRecordNormalized[] // non-enumerable
-}
-
 /**
  * Allowed Component in {@link RouteLocationMatched}
  */
@@ -214,14 +185,6 @@ export type RouteComponent = Component | DefineComponent
  * Allowed Component definitions in route records provided by the user
  */
 export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
-
-/**
- * @internal
- */
-export type _RouteRecordProps =
-  | boolean
-  | Record<string, any>
-  | ((to: RouteLocationNormalized) => Record<string, any>)
 
 // TODO: could this be moved to matcher?
 /**
@@ -424,7 +387,7 @@ export interface MatcherLocation {
   /**
    * Object of decoded params extracted from the `path`.
    */
-  params: RouteParams
+  params: RouteParamsGeneric
 
   /**
    * Merged `meta` properties from all the matched route records.
@@ -437,55 +400,6 @@ export interface MatcherLocation {
    * can't be used directly
    */
   matched: RouteRecord[] // non-enumerable
-}
-
-export interface NavigationGuardNext {
-  (): void
-  (error: Error): void
-  (location: RouteLocationRaw): void
-  (valid: boolean | undefined): void
-  (cb: NavigationGuardNextCallback): void
-  /**
-   * Allows to detect if `next` isn't called in a resolved guard. Used
-   * internally in DEV mode to emit a warning. Commented out to simplify
-   * typings.
-   * @internal
-   */
-  // _called: boolean
-}
-
-export type NavigationGuardNextCallback = (
-  vm: ComponentPublicInstance
-) => unknown
-
-export type NavigationGuardReturn =
-  | void
-  | Error
-  | RouteLocationRaw
-  | boolean
-  // FIXME: this one is only allowed in options api
-  | NavigationGuardNextCallback
-
-/**
- * Navigation guard. See [Navigation
- * Guards](/guide/advanced/navigation-guards.md).
- */
-export interface NavigationGuard {
-  (
-    // TODO: we could maybe add extra information like replace: true/false
-    to: RouteLocationNormalized,
-    from: RouteLocationNormalizedLoaded,
-    next: NavigationGuardNext
-    // FIXME: this one shouldn't allow returning () => ...
-  ): _Awaitable<NavigationGuardReturn>
-}
-
-export interface NavigationHookAfter {
-  (
-    to: RouteLocationNormalized,
-    from: RouteLocationNormalized,
-    failure?: NavigationFailure | void
-  ): any
 }
 
 export * from './typeGuards'

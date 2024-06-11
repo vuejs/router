@@ -26,17 +26,17 @@ import {
   // @ts-ignore
   ComponentOptionsMixin,
 } from 'vue'
-import { isRouteLocation, type VueUseOptions } from './types'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { NavigationFailure } from './errors'
 import { isArray, isBrowser, noop } from './utils'
 import { warn } from './warning'
+import { isRouteLocation, type VueUseOptions } from './types'
 import {
   RouteLocation,
-  RouteLocationNormalized,
   RouteLocationRaw,
+  RouteLocationResolved,
 } from './typed-routes'
 
 export interface RouterLinkOptions {
@@ -81,8 +81,7 @@ export interface RouterLinkProps extends RouterLinkOptions {
 }
 
 export interface UseLinkDevtoolsContext {
-  // TODO: loaded type ?
-  route: RouteLocationNormalized & { href: string }
+  route: RouteLocationResolved
   isActive: boolean
   isExactActive: boolean
   error: string | null
@@ -127,10 +126,7 @@ export function useLink(props: UseLinkOptions) {
       hasPrevious = true
     }
 
-    return router.resolve(
-      // @ts-expect-error: FIXME: errors on the name because of typed routes
-      to
-    )
+    return router.resolve(to)
   })
 
   const activeRecordIndex = computed<number>(() => {

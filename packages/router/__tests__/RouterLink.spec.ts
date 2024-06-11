@@ -2,13 +2,14 @@
  * @jest-environment jsdom
  */
 import { RouterLink } from '../src/RouterLink'
-import {
-  RouteQueryAndHash,
-  MatcherLocationRaw,
-  RouteLocationNormalized,
-} from '../src/types'
+import { RouteQueryAndHash, MatcherLocationRaw } from '../src/types'
 import { START_LOCATION_NORMALIZED } from '../src/location'
-import { createMemoryHistory, RouterOptions } from '../src'
+import {
+  createMemoryHistory,
+  RouterOptions,
+  RouteLocationNormalized,
+  RouteLocationResolved,
+} from '../src'
 import { createMockedRoute } from './mount'
 import { defineComponent, PropType } from 'vue'
 import { RouteRecordNormalized } from '../src/matcher/types'
@@ -36,8 +37,6 @@ records.parentAlias = {
 } as RouteRecordNormalized
 records.childAlias = { aliasOf: records.child } as RouteRecordNormalized
 records.childEmptyAlias.aliasOf = records.childEmpty
-
-type RouteLocationResolved = RouteLocationNormalized & { href: string }
 
 function createLocations<
   T extends Record<

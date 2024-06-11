@@ -4,7 +4,6 @@ import {
   MatcherLocation,
   RouteComponent,
   RouteRecordRaw,
-  _RouteRecordProps,
 } from '../src/types'
 import { h, ComponentOptions } from 'vue'
 import {
@@ -17,6 +16,7 @@ import {
   NavigationGuard,
   RouteLocationNormalized,
 } from '../src'
+import { _RouteRecordProps } from '../src/typed-routes'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
