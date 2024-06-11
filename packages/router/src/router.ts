@@ -448,7 +448,6 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   function resolve(
-    // NOTE: it's easier to by pass the type generics which are just for type inference in the resolved route
     rawLocation: RouteLocationRaw,
     currentLocation?: RouteLocationNormalizedLoaded
   ): RouteLocationResolved {
@@ -484,7 +483,7 @@ export function createRouter(options: RouterOptions): Router {
         hash: decode(locationNormalized.hash),
         redirectedFrom: undefined,
         href,
-      }) as any // FIXME:
+      })
     }
 
     if (__DEV__ && !isRouteLocation(rawLocation)) {
@@ -582,8 +581,7 @@ export function createRouter(options: RouterOptions): Router {
             ? normalizeQuery(rawLocation.query)
             : ((rawLocation.query || {}) as LocationQuery),
       },
-      // make it typed
-      matchedRoute as RouteLocation,
+      matchedRoute,
       {
         redirectedFrom: undefined,
         href,
@@ -642,7 +640,7 @@ export function createRouter(options: RouterOptions): Router {
 
       if (
         __DEV__ &&
-        (!('path' in newTargetLocation) || newTargetLocation.path == null) &&
+        newTargetLocation.path == null &&
         !('name' in newTargetLocation)
       ) {
         warn(
@@ -670,7 +668,7 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   function pushWithRedirect(
-    to: RouteLocationRaw,
+    to: RouteLocationRaw | RouteLocation,
     redirectedFrom?: RouteLocation
   ): Promise<NavigationFailure | void | undefined> {
     const targetLocation: RouteLocation = (pendingLocation = resolve(to))

@@ -262,8 +262,8 @@ export function resolveRelativePath(to: string, from: string): string {
  */
 export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = {
   path: '/',
-  name: undefined,
   // TODO: could we use a symbol in the future?
+  name: undefined,
   params: {},
   query: {},
   hash: '',
