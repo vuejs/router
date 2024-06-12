@@ -156,6 +156,7 @@ export type {
   _RouterLinkI,
   RouterLinkProps,
   UseLinkOptions,
+  UseLinkReturn,
 } from './RouterLink'
 export { RouterView } from './RouterView'
 export type { RouterViewProps } from './RouterView'
