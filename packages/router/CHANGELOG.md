@@ -1,3 +1,9 @@
+# [4.4.0-alpha.1](https://github.com/vuejs/router/compare/v4.4.0-alpha.0...v4.4.0-alpha.1) (2024-06-12)
+
+### Features
+
+- type useLink ([6a90774](https://github.com/vuejs/router/commit/6a907746db930161902d80e0d254c56e6a273482))
+
 # [4.4.0-alpha.0](https://github.com/vuejs/router/compare/v4.3.3...v4.4.0-alpha.0) (2024-06-11)
 
 ### Features
