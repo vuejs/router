@@ -1,3 +1,9 @@
+# [4.4.0-alpha.2](https://github.com/vuejs/router/compare/v4.4.0-alpha.1...v4.4.0-alpha.2) (2024-06-12)
+
+### Bug Fixes
+
+- allow arbitrary strings in RouteLocationRaw ([a7a8452](https://github.com/vuejs/router/commit/a7a8452d137024d607d803a4009a5d55419259f2))
+
 # [4.4.0-alpha.1](https://github.com/vuejs/router/compare/v4.4.0-alpha.0...v4.4.0-alpha.1) (2024-06-12)
 
 ### Features
