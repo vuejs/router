@@ -1,6 +1,8 @@
 # Typed Routes <Badge type="tip" text="v4.4.0+" />
 
-::: danger ‼️ Experimental feature
+::: danger
+‼️ Experimental feature
+:::
 
 ![RouterLink to autocomplete](https://user-images.githubusercontent.com/664177/176442066-c4e7fa31-4f06-4690-a49f-ed0fd880dfca.png)
 
