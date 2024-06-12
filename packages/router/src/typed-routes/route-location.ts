@@ -310,10 +310,10 @@ export type RouteLocationAsPath<Name extends keyof RouteMap = keyof RouteMap> =
 export type RouteLocationRaw<Name extends keyof RouteMap = keyof RouteMap> =
   RouteMapGeneric extends RouteMap
     ?
-        | RouteLocationAsStringTyped
+        | RouteLocationAsString
         | RouteLocationAsRelativeGeneric
         | RouteLocationAsPathGeneric
     :
-        | RouteLocationAsStringTyped<RouteMap>
+        | _LiteralUnion<RouteLocationAsStringTypedList<RouteMap>[Name], string>
         | RouteLocationAsRelativeTypedList<RouteMap>[Name]
         | RouteLocationAsPathTypedList<RouteMap>[Name]
