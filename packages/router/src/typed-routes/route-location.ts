@@ -34,7 +34,6 @@ export interface RouteLocationGeneric extends _RouteLocationBase {
 
 /**
  * Helper to generate a type safe version of the {@link RouteLocation} type.
- * @internal
  */
 export interface RouteLocationTyped<
   RouteMap extends RouteMapGeneric,
@@ -67,7 +66,6 @@ export interface RouteLocationNormalizedGeneric extends _RouteLocationBase {
 
 /**
  * Helper to generate a type safe version of the {@link RouteLocationNormalized} type.
- * @internal
  */
 export interface RouteLocationNormalizedTyped<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
@@ -107,7 +105,6 @@ export interface RouteLocationNormalizedLoadedGeneric
 
 /**
  * Helper to generate a type safe version of the {@link RouteLocationNormalizedLoaded} type.
- * @internal
  */
 export interface RouteLocationNormalizedLoadedTyped<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
@@ -142,7 +139,6 @@ export interface RouteLocationAsRelativeGeneric
 
 /**
  * Helper to generate a type safe version of the {@link RouteLocationAsRelative} type.
- * @internal
  */
 export interface RouteLocationAsRelativeTyped<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
@@ -174,7 +170,6 @@ export interface RouteLocationAsPathGeneric
 
 /**
  * Helper to generate a type safe version of the {@link RouteLocationAsPath} type.
- * @internal
  */
 export interface RouteLocationAsPathTyped<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
@@ -187,12 +182,28 @@ export interface RouteLocationAsPathTyped<
 }
 
 /**
- * Type safe version to auto complete the path of a route.
+ * List of all possible {@link RouteLocationAsPath} indexed by the route name.
  * @internal
  */
 export type RouteLocationAsPathTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric
 > = { [N in keyof RouteMap]: RouteLocationAsPathTyped<RouteMap, N> }
+
+/**
+ * Helper to generate a type safe version of the {@link RouteLocationAsString} type.
+ */
+export type RouteLocationAsStringTyped<
+  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  Name extends keyof RouteMap = keyof RouteMap
+> = RouteMap[Name]['path']
+
+/**
+ * List of all possible {@link RouteLocationAsString} indexed by the route name.
+ * @internal
+ */
+export type RouteLocationAsStringTypedList<
+  RouteMap extends RouteMapGeneric = RouteMapGeneric
+> = { [N in keyof RouteMap]: RouteLocationAsStringTyped<RouteMap, N> }
 
 /**
  * Generic version of {@link RouteLocationResolved}. It is used when no {@link RouteMap} is provided.
@@ -206,7 +217,6 @@ export interface RouteLocationResolvedGeneric extends RouteLocationGeneric {
 
 /**
  * Helper to generate a type safe version of the {@link RouteLocationResolved} type.
- * @internal
  */
 export interface RouteLocationResolvedTyped<
   RouteMap extends RouteMapGeneric,
@@ -278,14 +288,21 @@ export type RouteLocationResolved<
   : RouteLocationResolvedTypedList<RouteMap>[Name]
 
 /**
- * Same as {@link RouteLocationAsPathTyped} but as a string literal.
- * @internal
+ * Same as {@link RouteLocationAsPath} but as a string literal.
  */
 export type RouteLocationAsString<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric
+  Name extends keyof RouteMap = keyof RouteMap
 > = RouteMapGeneric extends RouteMap
   ? string
-  : _LiteralUnion<RouteMap[keyof RouteMap]['path'], string>
+  : _LiteralUnion<RouteLocationAsStringTypedList<RouteMap>[Name], string>
+
+/**
+ * Route location as an object with a `path` property.
+ */
+export type RouteLocationAsPath<Name extends keyof RouteMap = keyof RouteMap> =
+  RouteMapGeneric extends RouteMap
+    ? RouteLocationAsPathGeneric
+    : RouteLocationAsPathTypedList<RouteMap>[Name]
 
 /**
  * Route location that can be passed to `router.push()` and other user-facing APIs.
@@ -293,10 +310,10 @@ export type RouteLocationAsString<
 export type RouteLocationRaw<Name extends keyof RouteMap = keyof RouteMap> =
   RouteMapGeneric extends RouteMap
     ?
-        | RouteLocationAsString
+        | RouteLocationAsStringTyped
         | RouteLocationAsRelativeGeneric
         | RouteLocationAsPathGeneric
     :
-        | RouteLocationAsString<RouteMap>
+        | RouteLocationAsStringTyped<RouteMap>
         | RouteLocationAsRelativeTypedList<RouteMap>[Name]
         | RouteLocationAsPathTypedList<RouteMap>[Name]

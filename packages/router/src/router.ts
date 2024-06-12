@@ -16,6 +16,9 @@ import type {
   NavigationGuardWithThis,
   NavigationHookAfter,
   RouteLocationResolved,
+  RouteLocationAsRelative,
+  RouteLocationAsPath,
+  RouteLocationAsString,
 } from './typed-routes'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
@@ -64,11 +67,7 @@ import {
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
 import { _LiteralUnion } from './types/utils'
-import {
-  RouteLocationAsPathTyped,
-  RouteLocationAsRelativeTyped,
-  RouteLocationAsString,
-} from './typed-routes/route-location'
+import { RouteLocationAsRelativeTyped } from './typed-routes/route-location'
 import { RouteMap } from './typed-routes/route-map'
 
 /**
@@ -249,12 +248,16 @@ export interface Router {
    * @param currentLocation - Optional current location to resolve against
    */
   resolve<Name extends keyof RouteMap = keyof RouteMap>(
-    to:
-      | RouteLocationAsString<RouteMap>
-      | RouteLocationAsRelativeTyped<RouteMap, Name>
-      | RouteLocationAsPathTyped<RouteMap, Name>,
+    to: RouteLocationAsRelativeTyped<RouteMap, Name>,
+    // NOTE: This version doesn't work probably because it infers the type too early
+    // | RouteLocationAsRelative<Name>
     currentLocation?: RouteLocationNormalizedLoaded
   ): RouteLocationResolved<Name>
+  resolve(
+    // not having the overload produces errors in RouterLink calls to router.resolve()
+    to: RouteLocationAsString | RouteLocationAsRelative | RouteLocationAsPath,
+    currentLocation?: RouteLocationNormalizedLoaded
+  ): RouteLocationResolved
 
   /**
    * Programmatically navigate to a new URL by pushing an entry in the history

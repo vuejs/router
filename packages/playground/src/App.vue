@@ -184,7 +184,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, inject, computed, ref } from 'vue'
+import { inject, computed, ref } from 'vue'
 import { scrollWaiter } from './scrollWaiter'
 import { useLink, useRoute, RouterLink } from 'vue-router'
 import AppLink from './AppLink.vue'
@@ -213,13 +213,7 @@ const nextUserLink = computed(
   () => '/users/' + String((Number(route.params.id) || 0) + 1)
 )
 
-currentLocation,
-  nextUserLink,
-  state,
-  flushWaiter,
-  setupWaiter,
-  viewName,
-  function toggleViewName() {
-    viewName.value = viewName.value === 'default' ? 'other' : 'default'
-  }
+function toggleViewName() {
+  viewName.value = viewName.value === 'default' ? 'other' : 'default'
+}
 </script>

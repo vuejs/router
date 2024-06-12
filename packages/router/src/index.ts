@@ -75,9 +75,9 @@ export type {
   // route location
   RouteLocationRaw,
   RouteLocation,
+  RouteLocationGeneric,
   RouteLocationTyped,
   RouteLocationTypedList,
-  RouteLocationGeneric,
 
   // RouteLocationNormalized
   RouteLocationNormalizedGeneric,
@@ -92,20 +92,23 @@ export type {
   RouteLocationNormalizedLoadedTypedList,
 
   // RouteLocationResolved
-  RouteLocationResolved,
   RouteLocationResolvedGeneric,
+  RouteLocationResolved,
   RouteLocationResolvedTyped,
   RouteLocationResolvedTypedList,
 
   // relative
-  RouteLocationAsRelative,
   RouteLocationAsRelativeGeneric,
+  RouteLocationAsRelative,
   RouteLocationAsRelativeTyped,
   RouteLocationAsRelativeTypedList,
   // string
+  RouteLocationAsStringTyped,
   RouteLocationAsString,
+  RouteLocationAsStringTypedList,
   // as path
   RouteLocationAsPathGeneric,
+  RouteLocationAsPath,
   RouteLocationAsPathTyped,
   RouteLocationAsPathTypedList,
 
