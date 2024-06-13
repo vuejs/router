@@ -9,7 +9,6 @@ import {
 import type {
   RouteLocation,
   RouteLocationRaw,
-  RouteRecordName,
   RouteParams,
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
@@ -19,6 +18,7 @@ import type {
   RouteLocationAsRelative,
   RouteLocationAsPath,
   RouteLocationAsString,
+  RouteRecordName,
 } from './typed-routes'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
@@ -212,6 +212,7 @@ export interface Router {
    * @param route - Route Record to add
    */
   addRoute(
+    // NOTE: RouteRecordName could be `keyof RouteMap` but the point of dynamic routes is not knowing the routes at build
     parentName: NonNullable<RouteRecordName>,
     route: RouteRecordRaw
   ): () => void
@@ -226,7 +227,7 @@ export interface Router {
    *
    * @param name - Name of the route to remove
    */
-  removeRoute(name: RouteRecordName): void
+  removeRoute(name: NonNullable<RouteRecordName>): void
   /**
    * Checks if a route with a given name exists
    *

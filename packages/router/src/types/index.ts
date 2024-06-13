@@ -6,10 +6,9 @@ import type { HistoryState } from '../history/common'
 import type {
   NavigationGuardWithThis,
   RouteLocation,
-  RouteRecordName,
   RouteRecordRedirectOption,
   _RouteRecordProps,
-  RouteRecordNameGeneric,
+  RouteRecordName,
 } from '../typed-routes'
 import type { _Awaitable } from './utils'
 
@@ -93,7 +92,7 @@ export interface MatcherLocationAsRelative {
  * @internal
  */
 export interface LocationAsRelativeRaw {
-  name?: RouteRecordNameGeneric
+  name?: RouteRecordName
   // to allow checking location.path == null
   /**
    * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
