@@ -135,12 +135,30 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       { flush: 'post' }
     )
 
+    let matchedRoute: RouteLocationMatched | undefined
+    let currentName: string
+    // Since in Vue the entering view mounts first and then the leaving unmounts,
+    // we need to keep track of the last route in order to use it in the unmounted
+    // event
+    let lastMatchedRoute: RouteLocationMatched | undefined
+    let lastCurrentName: string
+
+    const onVnodeUnmounted: VNodeProps['onVnodeUnmounted'] = vnode => {
+      // remove the instance reference to prevent leak
+      if (lastMatchedRoute && vnode.component!.isUnmounted) {
+        lastMatchedRoute.instances[lastCurrentName] = null
+      }
+    }
+
     return () => {
       const route = routeToDisplay.value
+      lastMatchedRoute = matchedRoute
+      lastCurrentName = currentName
       // we need the value at the time we render because when we unmount, we
       // navigated to a different location so the value is different
-      const currentName = props.name
-      const matchedRoute = matchedRouteRef.value
+      currentName = props.name
+      matchedRoute = matchedRouteRef.value
+
       const ViewComponent =
         matchedRoute && matchedRoute.components![currentName]
 
@@ -149,7 +167,8 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       }
 
       // props from route configuration
-      const routePropsOption = matchedRoute.props[currentName]
+      // matchedRoute exists since we check with if (ViewComponent)
+      const routePropsOption = matchedRoute!.props[currentName]
       const routeProps = routePropsOption
         ? routePropsOption === true
           ? route.params
@@ -157,13 +176,6 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
           ? routePropsOption(route)
           : routePropsOption
         : null
-
-      const onVnodeUnmounted: VNodeProps['onVnodeUnmounted'] = vnode => {
-        // remove the instance reference to prevent leak
-        if (vnode.component!.isUnmounted) {
-          matchedRoute.instances[currentName] = null
-        }
-      }
 
       const component = h(
         ViewComponent,
@@ -181,9 +193,10 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
         // TODO: can display if it's an alias, its props
         const info: RouterViewDevtoolsContext = {
           depth: depth.value,
-          name: matchedRoute.name,
-          path: matchedRoute.path,
-          meta: matchedRoute.meta,
+          // same as above: ensured with if (ViewComponent) above
+          name: matchedRoute!.name,
+          path: matchedRoute!.path,
+          meta: matchedRoute!.meta,
         }
 
         const internalInstances = isArray(component.ref)
