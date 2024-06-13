@@ -8,7 +8,7 @@ import type {
   RouteLocation,
   RouteRecordRedirectOption,
   _RouteRecordProps,
-  RouteRecordName,
+  RouteRecordNameGeneric,
 } from '../typed-routes'
 import type { _Awaitable } from './utils'
 
@@ -67,7 +67,7 @@ export interface MatcherLocationAsPath {
  * @internal
  */
 export interface MatcherLocationAsName {
-  name: RouteRecordName
+  name: RouteRecordNameGeneric
   // to allow checking location.path == null
   /**
    * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
@@ -92,7 +92,7 @@ export interface MatcherLocationAsRelative {
  * @internal
  */
 export interface LocationAsRelativeRaw {
-  name?: RouteRecordName
+  name?: RouteRecordNameGeneric
   // to allow checking location.path == null
   /**
    * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
@@ -215,7 +215,7 @@ export interface _RouteRecordBase extends PathParserOptions {
   /**
    * Name for the route record. Must be unique.
    */
-  name?: RouteRecordName
+  name?: RouteRecordNameGeneric
 
   /**
    * Before Enter guard specific to this record. Note `beforeEnter` has no
@@ -376,7 +376,7 @@ export interface MatcherLocation {
   /**
    * Name of the matched record
    */
-  name: RouteRecordName | null | undefined
+  name: RouteRecordNameGeneric | null | undefined
 
   /**
    * Percentage encoded pathname section of the URL.

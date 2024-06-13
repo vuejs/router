@@ -114,6 +114,7 @@ export type {
 
   // route records
   RouteRecordInfo,
+  RouteRecordNameGeneric,
   RouteRecordName,
   _RouteRecordProps,
   RouteRecordRedirectOption,

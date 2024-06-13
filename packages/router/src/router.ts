@@ -18,7 +18,7 @@ import type {
   RouteLocationAsRelative,
   RouteLocationAsPath,
   RouteLocationAsString,
-  RouteRecordName,
+  RouteRecordNameGeneric,
 } from './typed-routes'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
@@ -212,8 +212,8 @@ export interface Router {
    * @param route - Route Record to add
    */
   addRoute(
-    // NOTE: RouteRecordName could be `keyof RouteMap` but the point of dynamic routes is not knowing the routes at build
-    parentName: NonNullable<RouteRecordName>,
+    // NOTE: it could be `keyof RouteMap` but the point of dynamic routes is not knowing the routes at build
+    parentName: NonNullable<RouteRecordNameGeneric>,
     route: RouteRecordRaw
   ): () => void
   /**
@@ -227,13 +227,13 @@ export interface Router {
    *
    * @param name - Name of the route to remove
    */
-  removeRoute(name: NonNullable<RouteRecordName>): void
+  removeRoute(name: NonNullable<RouteRecordNameGeneric>): void
   /**
    * Checks if a route with a given name exists
    *
    * @param name - Name of the route to check
    */
-  hasRoute(name: NonNullable<RouteRecordName>): boolean
+  hasRoute(name: NonNullable<RouteRecordNameGeneric>): boolean
   /**
    * Get a full list of all the {@link RouteRecord | route records}.
    */
@@ -411,7 +411,7 @@ export function createRouter(options: RouterOptions): Router {
     applyToParams.bind(null, decode)
 
   function addRoute(
-    parentOrRoute: NonNullable<RouteRecordName> | RouteRecordRaw,
+    parentOrRoute: NonNullable<RouteRecordNameGeneric> | RouteRecordRaw,
     route?: RouteRecordRaw
   ) {
     let parent: Parameters<(typeof matcher)['addRoute']>[1] | undefined
@@ -434,7 +434,7 @@ export function createRouter(options: RouterOptions): Router {
     return matcher.addRoute(record, parent)
   }
 
-  function removeRoute(name: NonNullable<RouteRecordName>) {
+  function removeRoute(name: NonNullable<RouteRecordNameGeneric>) {
     const recordMatcher = matcher.getRecordMatcher(name)
     if (recordMatcher) {
       matcher.removeRoute(recordMatcher)
@@ -447,7 +447,7 @@ export function createRouter(options: RouterOptions): Router {
     return matcher.getRoutes().map(routeMatcher => routeMatcher.record)
   }
 
-  function hasRoute(name: NonNullable<RouteRecordName>): boolean {
+  function hasRoute(name: NonNullable<RouteRecordNameGeneric>): boolean {
     return !!matcher.getRecordMatcher(name)
   }
 

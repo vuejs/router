@@ -11,7 +11,7 @@ import type { _LiteralUnion } from '../types/utils'
 import type { RouteMap, RouteMapGeneric } from './route-map'
 import type { Router } from '../router'
 import type { RouteRecord, RouteRecordNormalized } from '../matcher/types'
-import type { RouteRecordName } from './route-records'
+import type { RouteRecordNameGeneric } from './route-records'
 
 /**
  * Generic version of {@link RouteLocation}. It is used when no {@link RouteMap} is provided.
@@ -49,7 +49,7 @@ export type RouteLocationTypedList<
  * Generic version of {@link RouteLocationNormalized} that is used when no {@link RouteMap} is provided.
  */
 export interface RouteLocationNormalizedGeneric extends _RouteLocationBase {
-  name: RouteRecordName
+  name: RouteRecordNameGeneric
   params: RouteParamsGeneric
   /**
    * Array of {@link RouteRecordNormalized}
@@ -122,7 +122,7 @@ export type RouteLocationNormalizedLoadedTypedList<
 export interface RouteLocationAsRelativeGeneric
   extends RouteQueryAndHash,
     RouteLocationOptions {
-  name?: RouteRecordName
+  name?: RouteRecordNameGeneric
   params?: RouteParamsRawGeneric
   /**
    * A relative path to the current location. This property should be removed

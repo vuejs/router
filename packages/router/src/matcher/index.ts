@@ -18,7 +18,7 @@ import { comparePathParserScore } from './pathParserRanker'
 
 import { warn } from '../warning'
 import { assign, noop } from '../utils'
-import type { RouteRecordName, _RouteRecordProps } from '../typed-routes'
+import type { RouteRecordNameGeneric, _RouteRecordProps } from '../typed-routes'
 
 /**
  * Internal RouterMatcher
@@ -29,11 +29,11 @@ export interface RouterMatcher {
   addRoute: (record: RouteRecordRaw, parent?: RouteRecordMatcher) => () => void
 
   removeRoute(matcher: RouteRecordMatcher): void
-  removeRoute(name: NonNullable<RouteRecordName>): void
+  removeRoute(name: NonNullable<RouteRecordNameGeneric>): void
 
   getRoutes: () => RouteRecordMatcher[]
   getRecordMatcher: (
-    name: NonNullable<RouteRecordName>
+    name: NonNullable<RouteRecordNameGeneric>
   ) => RouteRecordMatcher | undefined
 
   /**
@@ -61,13 +61,16 @@ export function createRouterMatcher(
 ): RouterMatcher {
   // normalized ordered array of matchers
   const matchers: RouteRecordMatcher[] = []
-  const matcherMap = new Map<RouteRecordName, RouteRecordMatcher>()
+  const matcherMap = new Map<
+    NonNullable<RouteRecordNameGeneric>,
+    RouteRecordMatcher
+  >()
   globalOptions = mergeOptions(
     { strict: false, end: true, sensitive: false } as PathParserOptions,
     globalOptions
   )
 
-  function getRecordMatcher(name: RouteRecordName) {
+  function getRecordMatcher(name: NonNullable<RouteRecordNameGeneric>) {
     return matcherMap.get(name)
   }
 
@@ -195,7 +198,7 @@ export function createRouterMatcher(
   }
 
   function removeRoute(
-    matcherRef: NonNullable<RouteRecordName> | RouteRecordMatcher
+    matcherRef: NonNullable<RouteRecordNameGeneric> | RouteRecordMatcher
   ) {
     if (isRouteName(matcherRef)) {
       const matcher = matcherMap.get(matcherRef)
