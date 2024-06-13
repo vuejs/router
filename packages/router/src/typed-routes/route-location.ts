@@ -11,14 +11,7 @@ import type { _LiteralUnion } from '../types/utils'
 import type { RouteMap, RouteMapGeneric } from './route-map'
 import type { Router } from '../router'
 import type { RouteRecord, RouteRecordNormalized } from '../matcher/types'
-import { RouteRecordNameGeneric } from './route-records'
-
-/**
- * Possible values for a user-defined route record's name.
- */
-export type RouteRecordName = RouteMapGeneric extends RouteMap
-  ? RouteRecordNameGeneric
-  : keyof RouteMap
+import type { RouteRecordName, RouteRecordNameGeneric } from './route-records'
 
 /**
  * Generic version of {@link RouteLocation}. It is used when no {@link RouteMap} is provided.

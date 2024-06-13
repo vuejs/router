@@ -1,9 +1,9 @@
-import {
+import type {
   RouteLocation,
   RouteLocationNormalized,
   RouteLocationRaw,
 } from './route-location'
-import { RouteMap } from './route-map'
+import type { RouteMap, RouteMapGeneric } from './route-map'
 
 /**
  * @internal
@@ -16,6 +16,15 @@ export type RouteRecordRedirectOption =
  * Possible values for a route record **after normalization**
  */
 export type RouteRecordNameGeneric = string | symbol | undefined
+
+/**
+ * Possible values for a user-defined route record's name.
+ *
+ * NOTE: since `RouteRecordName` is a type, it evaluates too early and it's always be {@link RouteRecordNameGeneric}. If you need a typed version use {@link RouteMap | `keyof RouteMap`}
+ */
+export type RouteRecordName = RouteMapGeneric extends RouteMap
+  ? RouteRecordNameGeneric
+  : keyof RouteMap
 
 /**
  * @internal
