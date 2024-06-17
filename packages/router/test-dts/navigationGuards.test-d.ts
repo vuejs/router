@@ -1,7 +1,7 @@
+import { expectTypeOf } from 'vitest'
 import {
   createRouter,
   createWebHistory,
-  expectType,
   isNavigationFailure,
   NavigationFailure,
   NavigationFailureType,
@@ -45,13 +45,13 @@ router.beforeEach((to, from, next) => {
 })
 
 router.afterEach((to, from, failure) => {
-  expectType<NavigationFailure | undefined | void>(failure)
+  expectTypeOf<NavigationFailure | undefined | void>(failure)
   if (isNavigationFailure(failure)) {
-    expectType<RouteLocationNormalized>(failure.from)
-    expectType<RouteLocationRaw>(failure.to)
+    expectTypeOf<RouteLocationNormalized>(failure.from)
+    expectTypeOf<RouteLocationRaw>(failure.to)
   }
   if (isNavigationFailure(failure, NavigationFailureType.cancelled)) {
-    expectType<RouteLocationNormalized>(failure.from)
-    expectType<RouteLocationRaw>(failure.to)
+    expectTypeOf<RouteLocationNormalized>(failure.from)
+    expectTypeOf<RouteLocationRaw>(failure.to)
   }
 })

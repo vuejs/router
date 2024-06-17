@@ -1,11 +1,12 @@
-import { Router, RouteLocationNormalizedLoaded, expectType } from './index'
+import { expectTypeOf } from 'vitest'
+import { Router, RouteLocationNormalizedLoaded } from './index'
 import { defineComponent } from 'vue'
 
 defineComponent({
   methods: {
     doStuff() {
-      expectType<Router>(this.$router)
-      expectType<RouteLocationNormalizedLoaded>(this.$route)
+      expectTypeOf<Router>(this.$router)
+      expectTypeOf<RouteLocationNormalizedLoaded>(this.$route)
     },
   },
 })
