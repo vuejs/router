@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 import { RouterLink } from '../src/RouterLink'
 import { RouteQueryAndHash, MatcherLocationRaw } from '../src/types'
@@ -16,6 +16,7 @@ import { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/injectionSymbols'
 import { tick } from './utils'
 import { mount } from '@vue/test-utils'
+import { vi, describe, expect, it } from 'vitest'
 
 const records = {
   home: {} as RouteRecordNormalized,
@@ -366,9 +367,9 @@ async function factory(
       return this.history.base + to.fullPath
     },
     options: {} as Partial<RouterOptions>,
-    resolve: jest.fn(),
-    push: jest.fn().mockResolvedValue(resolvedLocation),
-    replace: jest.fn().mockResolvedValue(resolvedLocation),
+    resolve: vi.fn(),
+    push: vi.fn().mockResolvedValue(resolvedLocation),
+    replace: vi.fn().mockResolvedValue(resolvedLocation),
   }
   router.resolve.mockReturnValueOnce(resolvedLocation)
 
@@ -800,7 +801,7 @@ describe('RouterLink', () => {
   })
 
   it('allows adding more click listeners', async () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     const { router, wrapper } = await factory(
       START_LOCATION_NORMALIZED,
       { to: locations.basic.string, onClick },
@@ -944,8 +945,8 @@ describe('RouterLink', () => {
             return this.history.base + to.fullPath
           },
           options: {} as Partial<RouterOptions>,
-          resolve: jest.fn(),
-          push: jest.fn().mockResolvedValue(resolvedLocation),
+          resolve: vi.fn(),
+          push: vi.fn().mockResolvedValue(resolvedLocation),
         }
         router.resolve.mockReturnValueOnce(resolvedLocation)
 

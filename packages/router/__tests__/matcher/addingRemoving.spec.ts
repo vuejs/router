@@ -1,6 +1,7 @@
 import { createRouterMatcher } from '../../src/matcher'
 import { MatcherLocation } from '../../src/types'
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from '../vitest-mock-warn'
+import { describe, expect, it } from 'vitest'
 
 const currentLocation = { path: '/' } as MatcherLocation
 // @ts-expect-error

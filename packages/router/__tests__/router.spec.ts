@@ -10,8 +10,9 @@ import {
 import { NavigationFailureType } from '../src/errors'
 import { createDom, components, tick, nextNavigation } from './utils'
 import { RouteRecordRaw } from '../src/types'
-import { mockWarn } from 'jest-mock-warn'
 import { START_LOCATION_NORMALIZED } from '../src/location'
+import { vi, describe, expect, it, beforeAll } from 'vitest'
+import { mockWarn } from './vitest-mock-warn'
 
 declare var __DEV__: boolean
 
@@ -109,7 +110,7 @@ describe('Router', () => {
 
   it('calls history.push with router.push', async () => {
     const { router, history } = await newRouter()
-    jest.spyOn(history, 'push')
+    vi.spyOn(history, 'push')
     await router.push('/foo')
     expect(history.push).toHaveBeenCalledTimes(1)
     expect(history.push).toHaveBeenCalledWith('/foo', undefined)
@@ -118,7 +119,7 @@ describe('Router', () => {
   it('calls history.replace with router.replace', async () => {
     const history = createMemoryHistory()
     const { router } = await newRouter({ history })
-    jest.spyOn(history, 'replace')
+    vi.spyOn(history, 'replace')
     await router.replace('/foo')
     expect(history.replace).toHaveBeenCalledTimes(1)
     expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
@@ -127,7 +128,7 @@ describe('Router', () => {
   it('parses query and hash with router.replace', async () => {
     const history = createMemoryHistory()
     const { router } = await newRouter({ history })
-    jest.spyOn(history, 'replace')
+    vi.spyOn(history, 'replace')
     await router.replace('/foo?q=2#a')
     expect(history.replace).toHaveBeenCalledTimes(1)
     expect(history.replace).toHaveBeenCalledWith(
@@ -141,8 +142,8 @@ describe('Router', () => {
     const { router } = await newRouter({ history })
     // move somewhere else
     await router.push('/search')
-    jest.spyOn(history, 'replace')
-    jest.spyOn(history, 'push')
+    vi.spyOn(history, 'replace')
+    vi.spyOn(history, 'push')
     await router.replace('/home-before')
     expect(history.push).toHaveBeenCalledTimes(0)
     expect(history.replace).toHaveBeenCalledTimes(1)
@@ -159,8 +160,8 @@ describe('Router', () => {
       }
       return // no warn
     })
-    jest.spyOn(history, 'replace')
-    jest.spyOn(history, 'push')
+    vi.spyOn(history, 'replace')
+    vi.spyOn(history, 'push')
     await router.push('/search')
     expect(history.location).toBe('/foo')
     expect(history.push).toHaveBeenCalledTimes(0)
@@ -169,7 +170,7 @@ describe('Router', () => {
   })
 
   it('allows to customize parseQuery', async () => {
-    const parseQuery = jest.fn(_ => ({}))
+    const parseQuery = vi.fn(_ => ({}))
     const { router } = await newRouter({ parseQuery })
     const to = router.resolve('/foo?bar=baz')
     expect(parseQuery).toHaveBeenCalledWith('bar=baz')
@@ -177,7 +178,7 @@ describe('Router', () => {
   })
 
   it('allows to customize stringifyQuery', async () => {
-    const stringifyQuery = jest.fn(_ => '')
+    const stringifyQuery = vi.fn(_ => '')
     const { router } = await newRouter({ stringifyQuery })
     const to = router.resolve({ query: { foo: 'bar' } })
     expect(stringifyQuery).toHaveBeenCalledWith({ foo: 'bar' })
@@ -186,7 +187,7 @@ describe('Router', () => {
   })
 
   it('creates an empty query with no query', async () => {
-    const stringifyQuery = jest.fn(_ => '')
+    const stringifyQuery = vi.fn(_ => '')
     const { router } = await newRouter({ stringifyQuery })
     const to = router.resolve({ hash: '#a' })
     expect(stringifyQuery).not.toHaveBeenCalled()
@@ -254,7 +255,7 @@ describe('Router', () => {
 
   it('can pass replace option to push', async () => {
     const { router, history } = await newRouter()
-    jest.spyOn(history, 'replace')
+    vi.spyOn(history, 'replace')
     await router.push({ path: '/foo', replace: true })
     expect(history.replace).toHaveBeenCalledTimes(1)
     expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
@@ -262,7 +263,7 @@ describe('Router', () => {
 
   it('can replaces current location with a string location', async () => {
     const { router, history } = await newRouter()
-    jest.spyOn(history, 'replace')
+    vi.spyOn(history, 'replace')
     await router.replace('/foo')
     expect(history.replace).toHaveBeenCalledTimes(1)
     expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
@@ -270,7 +271,7 @@ describe('Router', () => {
 
   it('can replaces current location with an object location', async () => {
     const { router, history } = await newRouter()
-    jest.spyOn(history, 'replace')
+    vi.spyOn(history, 'replace')
     await router.replace({ path: '/foo' })
     expect(history.replace).toHaveBeenCalledTimes(1)
     expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
@@ -278,7 +279,7 @@ describe('Router', () => {
 
   it('navigates if the location does not exist', async () => {
     const { router } = await newRouter({ routes: [routes[0]] })
-    const spy = jest.fn((to, from, next) => next())
+    const spy = vi.fn((to, from, next) => next())
     router.beforeEach(spy)
     await router.push('/idontexist')
     expect(spy).toHaveBeenCalledTimes(1)
@@ -503,7 +504,7 @@ describe('Router', () => {
   describe('alias', () => {
     it('does not navigate to alias if already on original record', async () => {
       const { router } = await newRouter()
-      const spy = jest.fn((to, from, next) => next())
+      const spy = vi.fn((to, from, next) => next())
       await router.push('/basic')
       router.beforeEach(spy)
       await router.push('/basic-alias')
@@ -512,7 +513,7 @@ describe('Router', () => {
 
     it('does not navigate to alias with children if already on original record', async () => {
       const { router } = await newRouter()
-      const spy = jest.fn((to, from, next) => next())
+      const spy = vi.fn((to, from, next) => next())
       await router.push('/aliases')
       router.beforeEach(spy)
       await router.push('/aliases1')
@@ -523,7 +524,7 @@ describe('Router', () => {
 
     it('does not navigate to child alias if already on original record', async () => {
       const { router } = await newRouter()
-      const spy = jest.fn((to, from, next) => next())
+      const spy = vi.fn((to, from, next) => next())
       await router.push('/aliases/one')
       router.beforeEach(spy)
       await router.push('/aliases1/one')
@@ -698,7 +699,7 @@ describe('Router', () => {
     it('only triggers guards once with a redirect option', async () => {
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
-      const spy = jest.fn((to, from, next) => next())
+      const spy = vi.fn((to, from, next) => next())
       router.beforeEach(spy)
       await router.push('/to-foo')
       expect(spy).toHaveBeenCalledTimes(1)

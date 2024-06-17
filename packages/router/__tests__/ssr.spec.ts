@@ -1,5 +1,5 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 import { createRouter, createMemoryHistory } from '../src'
 import { createSSRApp, resolveComponent, Component } from 'vue'
@@ -8,6 +8,7 @@ import {
   ssrInterpolate,
   ssrRenderComponent,
 } from '@vue/server-renderer'
+import { describe, expect, it } from 'vitest'
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 

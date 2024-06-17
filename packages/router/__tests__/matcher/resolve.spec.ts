@@ -6,9 +6,10 @@ import {
   MatcherLocation,
 } from '../../src/types'
 import { MatcherLocationNormalizedLoose } from '../utils'
-import { mockWarn } from 'jest-mock-warn'
-import { defineComponent } from '@vue/runtime-core'
+import { defineComponent } from 'vue'
 import { START_LOCATION_NORMALIZED } from '../../src/location'
+import { mockWarn } from '../vitest-mock-warn'
+import { describe, expect, it } from 'vitest'
 
 const component: RouteComponent = defineComponent({})
 

@@ -13,8 +13,9 @@ import type {
   RouteLocationRaw,
   RouteLocationNormalized,
 } from '../src/typed-routes'
-import { mockWarn } from 'jest-mock-warn'
 import { START_LOCATION_NORMALIZED } from '../src/location'
+import { vi, describe, expect, it, beforeEach } from 'vitest'
+import { mockWarn } from './vitest-mock-warn'
 
 const routes: Readonly<RouteRecordRaw>[] = [
   { path: '/', component: components.Home },
@@ -25,8 +26,8 @@ const routes: Readonly<RouteRecordRaw>[] = [
   { path: '/async', component: () => Promise.reject('failed') },
 ]
 
-const onError = jest.fn()
-const afterEach = jest.fn()
+const onError = vi.fn()
+const afterEach = vi.fn()
 function createRouter() {
   const history = createMemoryHistory()
   const router = newRouter({

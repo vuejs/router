@@ -4,7 +4,16 @@ import { RouterOptions } from '../src/router'
 import { RouteComponent } from '../src/types'
 import { ticks } from './utils'
 import { FunctionalComponent, h } from 'vue'
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from './vitest-mock-warn'
+import {
+  vi,
+  describe,
+  expect,
+  it,
+  beforeEach,
+  MockInstance,
+  afterEach,
+} from 'vitest'
 
 function newRouter(options: Partial<RouterOptions> = {}) {
   let history = createMemoryHistory()
@@ -17,7 +26,7 @@ function createLazyComponent() {
   const [promise, resolve, reject] = fakePromise()
 
   return {
-    component: jest.fn(() => promise.then(() => ({} as RouteComponent))),
+    component: vi.fn(() => promise.then(() => ({} as RouteComponent))),
     promise,
     resolve,
     reject,
@@ -26,9 +35,9 @@ function createLazyComponent() {
 
 describe('Lazy Loading', () => {
   mockWarn()
-  let consoleErrorSpy: jest.SpyInstance
+  let consoleErrorSpy: MockInstance
   beforeEach(() => {
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
   })
 
   afterEach(() => {
@@ -150,7 +159,7 @@ describe('Lazy Loading', () => {
 
   it('avoid fetching async component if navigation is cancelled through beforeEnter', async () => {
     const { component, resolve } = createLazyComponent()
-    const spy = jest.fn((to, from, next) => next(false))
+    const spy = vi.fn((to, from, next) => next(false))
     const { router } = newRouter({
       routes: [
         {
@@ -178,7 +187,7 @@ describe('Lazy Loading', () => {
       ],
     })
 
-    const spy = jest.fn((to, from, next) => next(false))
+    const spy = vi.fn((to, from, next) => next(false))
 
     router.beforeEach(spy)
 
@@ -190,8 +199,8 @@ describe('Lazy Loading', () => {
 
   it('invokes beforeRouteEnter after lazy loading the component', async () => {
     const { promise, resolve } = createLazyComponent()
-    const spy = jest.fn((to, from, next) => next())
-    const component = jest.fn(() =>
+    const spy = vi.fn((to, from, next) => next())
+    const component = vi.fn(() =>
       promise.then(() => ({ beforeRouteEnter: spy }))
     )
     const { router } = newRouter({
@@ -206,8 +215,8 @@ describe('Lazy Loading', () => {
 
   it('beforeRouteLeave works on a lazy loaded component', async () => {
     const { promise, resolve } = createLazyComponent()
-    const spy = jest.fn((to, from, next) => next())
-    const component = jest.fn(() =>
+    const spy = vi.fn((to, from, next) => next())
+    const component = vi.fn(() =>
       promise.then(() => ({ beforeRouteLeave: spy }))
     )
     const { router } = newRouter({
@@ -231,8 +240,8 @@ describe('Lazy Loading', () => {
 
   it('beforeRouteUpdate works on a lazy loaded component', async () => {
     const { promise, resolve } = createLazyComponent()
-    const spy = jest.fn((to, from, next) => next())
-    const component = jest.fn(() =>
+    const spy = vi.fn((to, from, next) => next())
+    const component = vi.fn(() =>
       promise.then(() => ({ beforeRouteUpdate: spy }))
     )
     const { router } = newRouter({
@@ -257,7 +266,7 @@ describe('Lazy Loading', () => {
       routes: [{ path: '/foo', component }],
     })
 
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     const error = new Error('fail')
     reject(error)
@@ -279,7 +288,7 @@ describe('Lazy Loading', () => {
       routes: [{ path: '/foo', component }],
     })
 
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     reject()
     await router.push('/foo').catch(spy)
@@ -306,7 +315,7 @@ describe('Lazy Loading', () => {
       ],
     })
 
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     parent.resolve()
     const error = new Error()

@@ -32,7 +32,6 @@
       "dom"
     ],
     "types": [
-      "jest",
       "node",
       "vite/client"
     ]

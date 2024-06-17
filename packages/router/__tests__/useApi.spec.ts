@@ -1,9 +1,10 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 import { mount } from '@vue/test-utils'
 import { computed } from 'vue'
 import { useRoute, createRouter, createMemoryHistory } from '../src'
+import { describe, expect, it } from 'vitest'
 
 describe('use apis', () => {
   it('unwraps useRoute()', async () => {

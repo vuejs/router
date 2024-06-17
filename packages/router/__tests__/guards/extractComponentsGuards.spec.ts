@@ -3,9 +3,10 @@ import type { RouteRecordRaw, RouteRecordNormalized } from '../../src'
 import { START_LOCATION_NORMALIZED } from '../../src/location'
 import { components } from '../utils'
 import { normalizeRouteRecord } from '../../src/matcher'
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from '../vitest-mock-warn'
+import { vi, describe, expect, it, beforeEach } from 'vitest'
 
-const beforeRouteEnter = jest.fn()
+const beforeRouteEnter = vi.fn()
 
 // stub those two
 const to = START_LOCATION_NORMALIZED
