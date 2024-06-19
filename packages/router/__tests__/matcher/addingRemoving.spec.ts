@@ -16,6 +16,21 @@ describe('Matcher: adding and removing records', () => {
     })
   })
 
+  it('can remove all records', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({ path: '/', component })
+    matcher.addRoute({ path: '/about', component, name: 'about' })
+    matcher.addRoute({
+      path: '/with-children',
+      component,
+      children: [{ path: 'child', component }],
+    })
+    expect(matcher.getRoutes()).not.toHaveLength(0)
+    matcher.clearRoutes()
+    expect(matcher.getRoutes()).toHaveLength(0)
+    expect(matcher.getRecordMatcher('about')).toBeFalsy()
+  })
+
   it('throws when adding *', () => {
     const matcher = createRouterMatcher([], {})
     expect(() => {

@@ -27,10 +27,9 @@ import type { RouteRecordNameGeneric, _RouteRecordProps } from '../typed-routes'
  */
 export interface RouterMatcher {
   addRoute: (record: RouteRecordRaw, parent?: RouteRecordMatcher) => () => void
-
   removeRoute(matcher: RouteRecordMatcher): void
   removeRoute(name: NonNullable<RouteRecordNameGeneric>): void
-
+  clearRoutes: () => void
   getRoutes: () => RouteRecordMatcher[]
   getRecordMatcher: (
     name: NonNullable<RouteRecordNameGeneric>
@@ -345,7 +344,19 @@ export function createRouterMatcher(
   // add initial routes
   routes.forEach(route => addRoute(route))
 
-  return { addRoute, resolve, removeRoute, getRoutes, getRecordMatcher }
+  function clearRoutes() {
+    matchers.length = 0
+    matcherMap.clear()
+  }
+
+  return {
+    addRoute,
+    resolve,
+    removeRoute,
+    clearRoutes,
+    getRoutes,
+    getRecordMatcher,
+  }
 }
 
 function paramsFromLocation(

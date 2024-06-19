@@ -240,6 +240,11 @@ export interface Router {
   getRoutes(): RouteRecord[]
 
   /**
+   * Delete all routes from the router matcher.
+   */
+  clearRoutes(): void
+
+  /**
    * Returns the {@link RouteLocation | normalized version} of a
    * {@link RouteLocationRaw | route location}. Also includes an `href` property
    * that includes any existing `base`. By default, the `currentLocation` used is
@@ -1228,6 +1233,7 @@ export function createRouter(options: RouterOptions): Router {
 
     addRoute,
     removeRoute,
+    clearRoutes: matcher.clearRoutes,
     hasRoute,
     getRoutes,
     resolve,
