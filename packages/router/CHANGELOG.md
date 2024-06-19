@@ -1,3 +1,9 @@
+# [4.4.0-alpha.3](https://github.com/vuejs/router/compare/v4.4.0-alpha.2...v4.4.0-alpha.3) (2024-06-19)
+
+### Features
+
+- add a clearRoutes method ([abe223d](https://github.com/vuejs/router/commit/abe223dab44a092682eed5f77b0e231ff2392076))
+
 # [4.4.0-alpha.2](https://github.com/vuejs/router/compare/v4.4.0-alpha.1...v4.4.0-alpha.2) (2024-06-12)
 
 ### Bug Fixes
