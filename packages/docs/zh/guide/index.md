@@ -148,7 +148,7 @@ const search = computed({
 </script>
 ```
 
-你现在不一定要完全理解这段代码，关键是要知道可以通过 `useRoute()` 和 `useRouter()` 来访问路由器实例和当前路由。
+你现在不一定要完全理解这段代码，关键是要知道可以通过 `useRouter()` 和 `useRoute()` 来访问路由器实例和当前路由。
 
 ### 下一步
 
