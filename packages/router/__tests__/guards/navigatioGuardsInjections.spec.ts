@@ -1,11 +1,12 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 import { createDom, newRouter as createRouter } from '../utils'
 import { mount } from '@vue/test-utils'
 import { inject } from 'vue'
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from '../vitest-mock-warn'
 import type { Router } from '../../src'
+import { describe, expect, it, beforeAll } from 'vitest'
 
 describe('inject() within navigation guards', () => {
   mockWarn()

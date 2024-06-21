@@ -2,10 +2,11 @@ import { JSDOM } from 'jsdom'
 import { createRouter, createWebHistory } from '../src'
 import { createDom, components, nextNavigation } from './utils'
 import { RouteRecordRaw } from '../src/types'
+import { describe, expect, it, beforeAll, vi, afterAll } from 'vitest'
 
 // override the value of isBrowser because the variable is created before JSDOM
 // is created
-jest.mock('../src/utils/env', () => ({
+vi.mock('../src/utils/env', () => ({
   isBrowser: true,
 }))
 

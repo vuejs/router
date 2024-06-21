@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`RouterView displays deeply nested views 1`] = `
+exports[`RouterView > displays deeply nested views 1`] = `
 "<div>
   <h2>Nested</h2>
   <div>
@@ -10,19 +10,19 @@ exports[`RouterView displays deeply nested views 1`] = `
 </div>"
 `;
 
-exports[`RouterView displays nested views 1`] = `
+exports[`RouterView > displays nested views 1`] = `
 "<div>
   <h2>Nested</h2>
   <div>Foo</div>
 </div>"
 `;
 
-exports[`RouterView v-slot passes a Component and route 1`] = `
+exports[`RouterView > v-slot > passes a Component and route 1`] = `
 "<span>home</span>
 <div>Home</div>"
 `;
 
-exports[`RouterView warnings does not warn RouterView is wrapped 1`] = `
+exports[`RouterView > warnings > does not warn RouterView is wrapped 1`] = `
 "<div>
   <div>Home</div>
 </div>"

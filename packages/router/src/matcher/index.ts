@@ -3,8 +3,6 @@ import {
   MatcherLocationRaw,
   MatcherLocation,
   isRouteName,
-  RouteRecordName,
-  _RouteRecordProps,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
@@ -20,6 +18,7 @@ import { comparePathParserScore } from './pathParserRanker'
 
 import { warn } from '../warning'
 import { assign, noop } from '../utils'
+import type { RouteRecordNameGeneric, _RouteRecordProps } from '../typed-routes'
 
 /**
  * Internal RouterMatcher
@@ -28,12 +27,13 @@ import { assign, noop } from '../utils'
  */
 export interface RouterMatcher {
   addRoute: (record: RouteRecordRaw, parent?: RouteRecordMatcher) => () => void
-  removeRoute: {
-    (matcher: RouteRecordMatcher): void
-    (name: RouteRecordName): void
-  }
+  removeRoute(matcher: RouteRecordMatcher): void
+  removeRoute(name: NonNullable<RouteRecordNameGeneric>): void
+  clearRoutes: () => void
   getRoutes: () => RouteRecordMatcher[]
-  getRecordMatcher: (name: RouteRecordName) => RouteRecordMatcher | undefined
+  getRecordMatcher: (
+    name: NonNullable<RouteRecordNameGeneric>
+  ) => RouteRecordMatcher | undefined
 
   /**
    * Resolves a location. Gives access to the route record that corresponds to the actual path as well as filling the corresponding params objects
@@ -60,13 +60,16 @@ export function createRouterMatcher(
 ): RouterMatcher {
   // normalized ordered array of matchers
   const matchers: RouteRecordMatcher[] = []
-  const matcherMap = new Map<RouteRecordName, RouteRecordMatcher>()
+  const matcherMap = new Map<
+    NonNullable<RouteRecordNameGeneric>,
+    RouteRecordMatcher
+  >()
   globalOptions = mergeOptions(
     { strict: false, end: true, sensitive: false } as PathParserOptions,
     globalOptions
   )
 
-  function getRecordMatcher(name: RouteRecordName) {
+  function getRecordMatcher(name: NonNullable<RouteRecordNameGeneric>) {
     return matcherMap.get(name)
   }
 
@@ -193,7 +196,9 @@ export function createRouterMatcher(
       : noop
   }
 
-  function removeRoute(matcherRef: RouteRecordName | RouteRecordMatcher) {
+  function removeRoute(
+    matcherRef: NonNullable<RouteRecordNameGeneric> | RouteRecordMatcher
+  ) {
     if (isRouteName(matcherRef)) {
       const matcher = matcherMap.get(matcherRef)
       if (matcher) {
@@ -339,7 +344,19 @@ export function createRouterMatcher(
   // add initial routes
   routes.forEach(route => addRoute(route))
 
-  return { addRoute, resolve, removeRoute, getRoutes, getRecordMatcher }
+  function clearRoutes() {
+    matchers.length = 0
+    matcherMap.clear()
+  }
+
+  return {
+    addRoute,
+    resolve,
+    removeRoute,
+    clearRoutes,
+    getRoutes,
+    getRecordMatcher,
+  }
 }
 
 function paramsFromLocation(

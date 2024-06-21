@@ -1,13 +1,9 @@
 import { JSDOM, ConstructorOptions } from 'jsdom'
 import {
-  NavigationGuard,
   RouteRecordMultipleViews,
   MatcherLocation,
-  RouteLocationNormalized,
   RouteComponent,
   RouteRecordRaw,
-  RouteRecordName,
-  _RouteRecordProps,
 } from '../src/types'
 import { h, ComponentOptions } from 'vue'
 import {
@@ -17,7 +13,10 @@ import {
   Router,
   RouterView,
   RouteRecordNormalized,
+  NavigationGuard,
+  RouteLocationNormalized,
 } from '../src'
+import { _RouteRecordProps } from '../src/typed-routes'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
@@ -65,7 +64,7 @@ export interface RouteRecordViewLoose
 
 // @ts-expect-error we are intentionally overriding the type
 export interface RouteLocationNormalizedLoose extends RouteLocationNormalized {
-  name: RouteRecordName | null | undefined
+  name: string | symbol | null | undefined
   path: string
   // record?
   params: any

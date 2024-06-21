@@ -1,6 +1,7 @@
 import { createRouterMatcher } from '../../src/matcher'
 import { MatcherLocation } from '../../src/types'
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from '../vitest-mock-warn'
+import { describe, expect, it } from 'vitest'
 
 const currentLocation = { path: '/' } as MatcherLocation
 // @ts-expect-error
@@ -13,6 +14,21 @@ describe('Matcher: adding and removing records', () => {
     expect(matcher.resolve({ path: '/' }, currentLocation)).toMatchObject({
       name: 'home',
     })
+  })
+
+  it('can remove all records', () => {
+    const matcher = createRouterMatcher([], {})
+    matcher.addRoute({ path: '/', component })
+    matcher.addRoute({ path: '/about', component, name: 'about' })
+    matcher.addRoute({
+      path: '/with-children',
+      component,
+      children: [{ path: 'child', component }],
+    })
+    expect(matcher.getRoutes()).not.toHaveLength(0)
+    matcher.clearRoutes()
+    expect(matcher.getRoutes()).toHaveLength(0)
+    expect(matcher.getRecordMatcher('about')).toBeFalsy()
   })
 
   it('throws when adding *', () => {

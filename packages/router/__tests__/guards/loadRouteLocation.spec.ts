@@ -1,8 +1,9 @@
 import { isRouteComponent, loadRouteLocation } from '../../src/navigationGuards'
-import { RouteRecordRaw, RouteLocationRaw } from '../../src/types'
+import { RouteRecordRaw } from '../../src/types'
 import { components } from '../utils'
-import { createMemoryHistory, createRouter } from '../../src'
+import { RouteLocationRaw, createMemoryHistory, createRouter } from '../../src'
 import { FunctionalComponent } from 'vue'
+import { describe, expect, it } from 'vitest'
 
 const FunctionalHome: FunctionalComponent = () => null
 FunctionalHome.displayName = 'Home'
@@ -93,7 +94,7 @@ describe('loadRouteLocation', () => {
 
   it('works with nested routes with redirect', async () => {
     expect.assertions(2)
-    testLoadRoute(
+    await testLoadRoute(
       [
         {
           path: '/',
@@ -105,7 +106,7 @@ describe('loadRouteLocation', () => {
       ],
       '/foo'
     )
-    testLoadRoute(
+    await testLoadRoute(
       [
         {
           path: '/',
