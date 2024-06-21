@@ -28,7 +28,7 @@ ___
 
 ### from
 
-• **from**: [`RouteLocationNormalized`](RouteLocationNormalized.md)
+• **from**: [`RouteLocationNormalizedGeneric`](RouteLocationNormalizedGeneric.md)
 
 Route location we were navigating from
 
@@ -66,7 +66,7 @@ ___
 
 ### to
 
-• **to**: [`RouteLocationNormalized`](RouteLocationNormalized.md)
+• **to**: [`RouteLocationNormalizedGeneric`](RouteLocationNormalizedGeneric.md)
 
 Route location we were navigating to
 
@@ -74,6 +74,6 @@ ___
 
 ### type
 
-• **type**: `NAVIGATION_ABORTED` \| `NAVIGATION_CANCELLED` \| `NAVIGATION_DUPLICATED`
+• **type**: [`NAVIGATION_ABORTED`](../enums/ErrorTypes.md#NAVIGATION_ABORTED) \| [`NAVIGATION_CANCELLED`](../enums/ErrorTypes.md#NAVIGATION_CANCELLED) \| [`NAVIGATION_DUPLICATED`](../enums/ErrorTypes.md#NAVIGATION_DUPLICATED)
 
 Type of the navigation. One of [NavigationFailureType](../enums/NavigationFailureType.md)

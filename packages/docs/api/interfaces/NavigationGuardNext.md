@@ -6,6 +6,8 @@ editLink: false
 
 # Interface: NavigationGuardNext
 
+`next()` callback passed to navigation guards.
+
 ## Callable
 
 ### NavigationGuardNext
@@ -38,7 +40,7 @@ editLink: false
 
 | Name | Type |
 | :------ | :------ |
-| `location` | [`RouteLocationRaw`](../index.md#RouteLocationRaw) |
+| `location` | `string` \| [`RouteLocationAsRelativeGeneric`](RouteLocationAsRelativeGeneric.md) \| [`RouteLocationAsPathGeneric`](RouteLocationAsPathGeneric.md) |
 
 #### Returns
 
@@ -66,7 +68,7 @@ editLink: false
 
 | Name | Type |
 | :------ | :------ |
-| `cb` | `NavigationGuardNextCallback` |
+| `cb` | [`NavigationGuardNextCallback`](../index.md#NavigationGuardNextCallback) |
 
 #### Returns
 

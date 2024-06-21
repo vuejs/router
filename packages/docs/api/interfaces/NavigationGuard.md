@@ -6,23 +6,22 @@ editLink: false
 
 # Interface: NavigationGuard
 
-Navigation guard. See [Navigation
-Guards](/guide/advanced/navigation-guards.md).
+Navigation Guard.
 
 ## Callable
 
 ### NavigationGuard
 
-▸ **NavigationGuard**(`to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>
+▸ **NavigationGuard**(`to`, `from`, `next`): [`_Awaitable`](../index.md#_Awaitable)\<[`NavigationGuardReturn`](../index.md#NavigationGuardReturn)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `to` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
-| `from` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
+| `to` | [`RouteLocationNormalizedGeneric`](RouteLocationNormalizedGeneric.md) |
+| `from` | [`RouteLocationNormalizedLoadedGeneric`](RouteLocationNormalizedLoadedGeneric.md) |
 | `next` | [`NavigationGuardNext`](NavigationGuardNext.md) |
 
 #### Returns
 
-`NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>
+[`_Awaitable`](../index.md#_Awaitable)\<[`NavigationGuardReturn`](../index.md#NavigationGuardReturn)\>

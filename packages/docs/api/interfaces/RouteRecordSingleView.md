@@ -99,7 +99,7 @@ ___
 
 ### name
 
-• `Optional` **name**: [`RouteRecordName`](../index.md#RouteRecordName)
+• `Optional` **name**: [`RouteRecordNameGeneric`](../index.md#RouteRecordNameGeneric)
 
 Name for the route record. Must be unique.
 
@@ -130,7 +130,7 @@ ___
 
 ### props
 
-• `Optional` **props**: `_RouteRecordProps`
+• `Optional` **props**: [`_RouteRecordProps`](../index.md#_RouteRecordProps)
 
 Allow passing down params as props to the component rendered by `router-view`.
 

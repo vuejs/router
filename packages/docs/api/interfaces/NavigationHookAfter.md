@@ -6,20 +6,22 @@ editLink: false
 
 # Interface: NavigationHookAfter
 
+Navigation hook triggered after a navigation is settled.
+
 ## Callable
 
 ### NavigationHookAfter
 
-▸ **NavigationHookAfter**(`to`, `from`, `failure?`): `any`
+▸ **NavigationHookAfter**(`to`, `from`, `failure?`): `unknown`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `to` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
-| `from` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
+| `to` | [`RouteLocationNormalizedGeneric`](RouteLocationNormalizedGeneric.md) |
+| `from` | [`RouteLocationNormalizedLoadedGeneric`](RouteLocationNormalizedLoadedGeneric.md) |
 | `failure?` | `void` \| [`NavigationFailure`](NavigationFailure.md) |
 
 #### Returns
 
-`any`
+`unknown`
