@@ -133,7 +133,7 @@ export function createRouterMatcher(
       if (__DEV__ && normalizedRecord.path === '*') {
         throw new Error(
           'Catch all routes ("*") must now be defined using a param with a custom regexp.\n' +
-            'See more at https://next.router.vuejs.org/guide/migration/#removed-star-or-catch-all-routes.'
+            'See more at https://router.vuejs.org/guide/migration/#Removed-star-or-catch-all-routes.'
         )
       }
 

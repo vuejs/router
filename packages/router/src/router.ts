@@ -390,7 +390,7 @@ export function createRouter(options: RouterOptions): Router {
   if (__DEV__ && !routerHistory)
     throw new Error(
       'Provide the "history" option when calling "createRouter()":' +
-        ' https://next.router.vuejs.org/api/#history.'
+        ' https://router.vuejs.org/api/interfaces/RouterOptions.html#history'
     )
 
   const beforeGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
