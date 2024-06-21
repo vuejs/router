@@ -1,18 +1,15 @@
 /**
- * @vitest-environment jsdom
+ * @vitest-environment happy-dom
  */
-import { createDom, newRouter as createRouter } from '../utils'
+import { newRouter as createRouter } from '../utils'
 import { mount } from '@vue/test-utils'
 import { inject } from 'vue'
 import { mockWarn } from '../vitest-mock-warn'
-import type { Router } from '../../src'
-import { describe, expect, it, beforeAll } from 'vitest'
+import { createMemoryHistory, type Router } from '../../src'
+import { describe, expect, it } from 'vitest'
 
 describe('inject() within navigation guards', () => {
   mockWarn()
-  beforeAll(() => {
-    createDom()
-  })
 
   const PageComponent = {
     template: `<div>Page</div>`,
@@ -97,6 +94,7 @@ describe('inject() within navigation guards', () => {
     it('beforeRouteUpdate', async () => {
       expect.assertions(1)
       const router = createRouter({
+        history: createMemoryHistory(),
         routes: [
           {
             path: '/',
@@ -118,6 +116,7 @@ describe('inject() within navigation guards', () => {
     it('beforeRouteLeave', async () => {
       expect.assertions(1)
       const router = createRouter({
+        history: createMemoryHistory(),
         routes: [
           { path: '/', component: PageComponent },
           {
