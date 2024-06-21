@@ -1,26 +1,15 @@
-# [4.4.0-alpha.3](https://github.com/vuejs/router/compare/v4.4.0-alpha.2...v4.4.0-alpha.3) (2024-06-19)
+# [4.4.0](https://github.com/vuejs/router/compare/v4.4.0-alpha.3...v4.4.0) (2024-06-21)
+
+This version introduces native support for [typed routes via the `RouteNamedMap`](https://router.vuejs.org/guide/advanced/typed-routes.html). It is now possible to define a map without [unplugin-vue-router](https://uvr.esm.is) and have the types inferred automatically. It is still recommended to use [unplugin-vue-router](https://uvr.esm.is) to automatically generate these types.
 
 ### Features
 
 - add a clearRoutes method ([abe223d](https://github.com/vuejs/router/commit/abe223dab44a092682eed5f77b0e231ff2392076))
-
-# [4.4.0-alpha.2](https://github.com/vuejs/router/compare/v4.4.0-alpha.1...v4.4.0-alpha.2) (2024-06-12)
+- typed routes ([f92282b](https://github.com/vuejs/router/commit/f92282b896ccf92360d781832435e1ae86314e0e))
 
 ### Bug Fixes
 
 - allow arbitrary strings in RouteLocationRaw ([a7a8452](https://github.com/vuejs/router/commit/a7a8452d137024d607d803a4009a5d55419259f2))
-
-# [4.4.0-alpha.1](https://github.com/vuejs/router/compare/v4.4.0-alpha.0...v4.4.0-alpha.1) (2024-06-12)
-
-### Features
-
-- type useLink ([6a90774](https://github.com/vuejs/router/commit/6a907746db930161902d80e0d254c56e6a273482))
-
-# [4.4.0-alpha.0](https://github.com/vuejs/router/compare/v4.3.3...v4.4.0-alpha.0) (2024-06-11)
-
-### Features
-
-- typed routes ([f92282b](https://github.com/vuejs/router/commit/f92282b896ccf92360d781832435e1ae86314e0e))
 
 ## [4.3.3](https://github.com/vuejs/router/compare/v4.3.2...v4.3.3) (2024-06-10)
 
