@@ -43,17 +43,17 @@ describe('Matcher', () => {
         })
       )
 
-      expect(matcher.resolve('/foo/1')).toMatchObject({
+      expect(matcher.resolve('/foo/1?a=a&b=b#h')).toMatchObject({
         path: '/foo/1',
         params: { id: 1 },
-        query: {},
-        hash: '',
+        query: { a: 'a', b: 'b' },
+        hash: '#h',
       })
-      expect(matcher.resolve('/foo/54')).toMatchObject({
+      expect(matcher.resolve('/foo/54?a=a&b=b#h')).toMatchObject({
         path: '/foo/54',
         params: { id: 54 },
-        query: {},
-        hash: '',
+        query: { a: 'a', b: 'b' },
+        hash: '#h',
       })
     })
 
@@ -68,15 +68,14 @@ describe('Matcher', () => {
         })
       )
 
-      expect(matcher.resolve('/foo?id=100')).toMatchObject({
-        hash: '',
-        params: {
-          id: 100,
-        },
+      expect(matcher.resolve('/foo?id=100&b=b#h')).toMatchObject({
+        params: { id: 100 },
         path: '/foo',
         query: {
           id: '100',
+          b: 'b',
         },
+        hash: '#h',
       })
     })
 
@@ -94,11 +93,11 @@ describe('Matcher', () => {
         )
       )
 
-      expect(matcher.resolve('/foo#bar')).toMatchObject({
+      expect(matcher.resolve('/foo?a=a&b=b#bar')).toMatchObject({
         hash: '#bar',
         params: { a: 'bar' },
         path: '/foo',
-        query: {},
+        query: { a: 'a', b: 'b' },
       })
     })
   })
