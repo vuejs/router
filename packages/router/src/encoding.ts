@@ -22,7 +22,7 @@ import { warn } from './warning'
 
 const HASH_RE = /#/g // %23
 const AMPERSAND_RE = /&/g // %26
-const SLASH_RE = /\//g // %2F
+export const SLASH_RE = /\//g // %2F
 const EQUAL_RE = /=/g // %3D
 const IM_RE = /\?/g // %3F
 export const PLUS_RE = /\+/g // %2B
@@ -58,7 +58,7 @@ const ENC_SPACE_RE = /%20/g // }
  * @param text - string to encode
  * @returns encoded string
  */
-function commonEncode(text: string | number): string {
+export function commonEncode(text: string | number): string {
   return encodeURI('' + text)
     .replace(ENC_PIPE_RE, '|')
     .replace(ENC_BRACKET_OPEN_RE, '[')
