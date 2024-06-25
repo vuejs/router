@@ -187,6 +187,12 @@ function transformObject<T>(
   return encoded
 }
 
+export const NO_MATCH_LOCATION = {
+  name: Symbol('no-match'),
+  params: {},
+  matched: [],
+} satisfies Omit<NEW_MatcherLocationResolved, 'path' | 'hash' | 'query'>
+
 export function createCompiledMatcher(): NEW_Matcher_Resolve {
   const matchers = new Map<MatcherName, MatcherPattern>()
 
@@ -220,13 +226,21 @@ export function createCompiledMatcher(): NEW_Matcher_Resolve {
           if (parsedParams) break
         }
       }
+
+      // No match location
       if (!parsedParams || !matcher) {
-        throw new Error(`No matcher found for location "${location}"`)
+        return {
+          ...url,
+          ...NO_MATCH_LOCATION,
+          query: transformObject(decode, decode, url.query),
+          hash: decode(url.hash),
+        }
       }
+
       // TODO: build fullPath
       return {
+        ...url,
         name: matcher.name,
-        path: url.path,
         params: parsedParams,
         query: transformObject(decode, decode, url.query),
         hash: decode(url.hash),
@@ -243,11 +257,6 @@ export function createCompiledMatcher(): NEW_Matcher_Resolve {
       // unencoded params in a formatted form that the user came up with
       const params = location.params ?? currentLocation!.params
       const mixedUnencodedParams = matcher.unformatParams(params)
-
-      // TODO: they could just throw?
-      if (!mixedUnencodedParams) {
-        throw new Error(`Missing params for matcher "${String(name)}"`)
-      }
 
       const path = matcher.buildPath(
         // encode the values before building the path

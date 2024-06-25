@@ -13,12 +13,12 @@ export interface MatcherPattern {
   name: MatcherName
 
   /**
-   * Extracts from a formatted, unencoded params object the ones belonging to the path, query, and hash. If any of them is missing, returns `null`. TODO: throw instead?
+   * Extracts from a formatted, unencoded params object the ones belonging to the path, query, and hash.
    * @param params - Params to extract from.
    */
   unformatParams(
     params: MatcherParamsFormatted
-  ): [path: MatcherPathParams, query: MatcherQueryParams, hash: string | null]
+  ): [path: MatcherPathParams, query: MatcherQueryParams, hash: string]
 
   /**
    * Extracts the defined params from an encoded path, query, and hash parsed from a URL. Does not apply formatting or
@@ -44,7 +44,7 @@ export interface MatcherPattern {
     path: string
     query: MatcherQueryParams
     hash: string
-  }): [path: MatcherPathParams, query: MatcherQueryParams, hash: string | null]
+  }): [path: MatcherPathParams, query: MatcherQueryParams, hash: string]
 
   /**
    * Takes encoded params object to form the `path`,
@@ -59,7 +59,7 @@ export interface MatcherPattern {
   formatParams(
     path: MatcherPathParams,
     query: MatcherQueryParams,
-    hash: string | null
+    hash: string
   ): MatcherParamsFormatted
 }
 
@@ -82,13 +82,16 @@ export interface PatternHashParamOptions
   extends PatternParamOptions_Base<string> {}
 
 export interface MatcherPatternPath {
+  build(path: MatcherPathParams): string
   match(path: string): MatcherPathParams
   format(params: MatcherPathParams): MatcherParamsFormatted
+  unformat(params: MatcherParamsFormatted): MatcherPathParams
 }
 
 export interface MatcherPatternQuery {
   match(query: MatcherQueryParams): MatcherQueryParams
   format(params: MatcherQueryParams): MatcherParamsFormatted
+  unformat(params: MatcherParamsFormatted): MatcherQueryParams
 }
 
 export interface MatcherPatternHash {
@@ -98,6 +101,7 @@ export interface MatcherPatternHash {
    */
   match(hash: string): string
   format(hash: string): MatcherParamsFormatted
+  unformat(params: MatcherParamsFormatted): string
 }
 
 export class MatcherPatternImpl implements MatcherPattern {
@@ -133,12 +137,16 @@ export class MatcherPatternImpl implements MatcherPattern {
   }
 
   buildPath(path: MatcherPathParams): string {
-    return ''
+    return this.path.build(path)
   }
 
   unformatParams(
     params: MatcherParamsFormatted
-  ): [path: MatcherPathParams, query: MatcherQueryParams, hash: string | null] {
-    throw new Error('Method not implemented.')
+  ): [path: MatcherPathParams, query: MatcherQueryParams, hash: string] {
+    return [
+      this.path.unformat(params),
+      this.query?.unformat(params) ?? {},
+      this.hash?.unformat(params) ?? '',
+    ]
   }
 }
