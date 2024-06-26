@@ -14,8 +14,6 @@ import { START_LOCATION_NORMALIZED } from '../src/location'
 import { vi, describe, expect, it, beforeAll } from 'vitest'
 import { mockWarn } from './vitest-mock-warn'
 
-declare var __DEV__: boolean
-
 const routes: RouteRecordRaw[] = [
   { path: '/', component: components.Home, name: 'home' },
   { path: '/home', redirect: '/' },
@@ -173,7 +171,7 @@ describe('Router', () => {
     const parseQuery = vi.fn(_ => ({}))
     const { router } = await newRouter({ parseQuery })
     const to = router.resolve('/foo?bar=baz')
-    expect(parseQuery).toHaveBeenCalledWith('bar=baz')
+    expect(parseQuery).toHaveBeenCalledWith('?bar=baz')
     expect(to.query).toEqual({})
   })
 

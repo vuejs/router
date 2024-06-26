@@ -56,8 +56,7 @@ export function parseQuery(search: string): LocationQuery {
   // avoid creating an object with an empty key and empty value
   // because of split('&')
   if (search === '' || search === '?') return query
-  const hasLeadingIM = search[0] === '?'
-  const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
+  const searchParams = (search[0] === '?' ? search.slice(1) : search).split('&')
   for (let i = 0; i < searchParams.length; ++i) {
     // pre decode the + into space
     const searchParam = searchParams[i].replace(PLUS_RE, ' ')

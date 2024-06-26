@@ -134,7 +134,7 @@ describe('parseURL', () => {
     })
   })
 
-  it('parses ? after the hash', () => {
+  it('avoids ? after the hash', () => {
     expect(parseURL('/foo#?a=one')).toEqual({
       fullPath: '/foo#?a=one',
       path: '/foo',
@@ -149,11 +149,75 @@ describe('parseURL', () => {
     })
   })
 
+  it('works with empty query', () => {
+    expect(parseURL('/foo?#hash')).toEqual({
+      fullPath: '/foo?#hash',
+      path: '/foo',
+      hash: '#hash',
+      query: {},
+    })
+    expect(parseURL('/foo?')).toEqual({
+      fullPath: '/foo?',
+      path: '/foo',
+      hash: '',
+      query: {},
+    })
+  })
+
+  it('works with empty hash', () => {
+    expect(parseURL('/foo#')).toEqual({
+      fullPath: '/foo#',
+      path: '/foo',
+      hash: '#',
+      query: {},
+    })
+    expect(parseURL('/foo?#')).toEqual({
+      fullPath: '/foo?#',
+      path: '/foo',
+      hash: '#',
+      query: {},
+    })
+  })
+
+  it('works with a relative paths', () => {
+    expect(parseURL('foo', '/parent/bar')).toEqual({
+      fullPath: '/parent/foo',
+      path: '/parent/foo',
+      hash: '',
+      query: {},
+    })
+    expect(parseURL('./foo', '/parent/bar')).toEqual({
+      fullPath: '/parent/foo',
+      path: '/parent/foo',
+      hash: '',
+      query: {},
+    })
+    expect(parseURL('../foo', '/parent/bar')).toEqual({
+      fullPath: '/foo',
+      path: '/foo',
+      hash: '',
+      query: {},
+    })
+
+    expect(parseURL('#foo', '/parent/bar')).toEqual({
+      fullPath: '/parent/bar#foo',
+      path: '/parent/bar',
+      hash: '#foo',
+      query: {},
+    })
+    expect(parseURL('?o=o', '/parent/bar')).toEqual({
+      fullPath: '/parent/bar?o=o',
+      path: '/parent/bar',
+      hash: '',
+      query: { o: 'o' },
+    })
+  })
+
   it('calls parseQuery', () => {
     const parseQuery = vi.fn()
     originalParseURL(parseQuery, '/?é=é&é=a')
     expect(parseQuery).toHaveBeenCalledTimes(1)
-    expect(parseQuery).toHaveBeenCalledWith('é=é&é=a')
+    expect(parseQuery).toHaveBeenCalledWith('?é=é&é=a')
   })
 })
 

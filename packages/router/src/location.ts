@@ -50,37 +50,43 @@ export function parseURL(
     searchString = '',
     hash = ''
 
-  // Could use URL and URLSearchParams but IE 11 doesn't support it
-  // TODO: move to new URL()
+  // NOTE: we could use URL and URLSearchParams but they are 2 to 5 times slower than this method
   const hashPos = location.indexOf('#')
-  let searchPos = location.indexOf('?')
-  // the hash appears before the search, so it's not part of the search string
-  if (hashPos < searchPos && hashPos >= 0) {
-    searchPos = -1
-  }
+  // let searchPos = location.indexOf('?')
+  let searchPos =
+    hashPos >= 0
+      ? // find the query string before the hash to avoid including a ? in the hash
+        // e.g. /foo#hash?query -> has no query
+        location.lastIndexOf('?', hashPos)
+      : location.indexOf('?')
 
-  if (searchPos > -1) {
+  if (searchPos >= 0) {
     path = location.slice(0, searchPos)
-    searchString = location.slice(
-      searchPos + 1,
-      hashPos > -1 ? hashPos : location.length
-    )
+    searchString =
+      '?' +
+      location.slice(searchPos + 1, hashPos > 0 ? hashPos : location.length)
 
     query = parseQuery(searchString)
   }
 
-  if (hashPos > -1) {
+  if (hashPos >= 0) {
+    // TODO(major): path ||=
     path = path || location.slice(0, hashPos)
     // keep the # character
     hash = location.slice(hashPos, location.length)
   }
 
-  // no search and no query
-  path = resolveRelativePath(path != null ? path : location, currentLocation)
-  // empty path means a relative query or hash `?foo=f`, `#thing`
+  // TODO(major): path ?? location
+  path = resolveRelativePath(
+    path != null
+      ? path
+      : // empty path means a relative query or hash `?foo=f`, `#thing`
+        location,
+    currentLocation
+  )
 
   return {
-    fullPath: path + (searchString && '?') + searchString + hash,
+    fullPath: path + searchString + hash,
     path,
     query,
     hash: decode(hash),
@@ -207,11 +213,12 @@ export function resolveRelativePath(to: string, from: string): string {
     return to
   }
 
+  // resolve '' with '/anything' -> '/anything'
   if (!to) return from
 
   const fromSegments = from.split('/')
   const toSegments = to.split('/')
-  const lastToSegment = toSegments[toSegments.length - 1]
+  const lastToSegment: string | undefined = toSegments[toSegments.length - 1]
 
   // make . and ./ the same (../ === .., ../../ === ../..)
   // this is the same behavior as new URL()
