@@ -220,8 +220,9 @@ export function createCompiledMatcher(): NEW_Matcher_Resolve {
         if (params) {
           parsedParams = matcher.formatParams(
             transformObject(String, decode, params[0]),
-            transformObject(decode, decode, params[1]),
-            decode(params[2])
+            // already decoded
+            params[1],
+            params[2]
           )
           if (parsedParams) break
         }
@@ -232,8 +233,9 @@ export function createCompiledMatcher(): NEW_Matcher_Resolve {
         return {
           ...url,
           ...NO_MATCH_LOCATION,
-          query: transformObject(decode, decode, url.query),
-          hash: decode(url.hash),
+          // already decoded
+          query: url.query,
+          hash: url.hash,
         }
       }
 
@@ -242,8 +244,9 @@ export function createCompiledMatcher(): NEW_Matcher_Resolve {
         ...url,
         name: matcher.name,
         params: parsedParams,
-        query: transformObject(decode, decode, url.query),
-        hash: decode(url.hash),
+        // already decoded
+        query: url.query,
+        hash: url.hash,
         matched: [],
       }
     } else {

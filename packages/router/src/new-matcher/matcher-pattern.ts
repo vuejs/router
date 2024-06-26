@@ -44,7 +44,7 @@ export interface MatcherPattern {
     path: string
     query: MatcherQueryParams
     hash: string
-  }): [path: MatcherPathParams, query: MatcherQueryParams, hash: string]
+  }): [path: MatcherPathParams, query: MatcherQueryParams, hash: string] | null
 
   /**
    * Takes encoded params object to form the `path`,
