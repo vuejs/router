@@ -9,7 +9,8 @@ import type { MatcherParamsFormatted } from './matcher-location'
 /**
  * Allows to match, extract, parse and build a path. Tailored to iterate through route records and check if a location
  * matches. When it cannot match, it returns `null` instead of throwing to not force a try/catch block around each
- * iteration in for loops.
+ * iteration in for loops. Not meant to handle encoding/decoding. It expects different parts of the URL to be either
+ * encoded or decoded depending on the method.
  */
 export interface MatcherPattern {
   /**
@@ -36,8 +37,8 @@ export interface MatcherPattern {
     | null
 
   /**
-   * Extracts the defined params from an encoded path, query, and hash parsed from a URL. Does not apply formatting or
-   * decoding. If the URL does not match the pattern, returns `null`.
+   * Extracts the defined params from an encoded path, decoded query, and decoded hash parsed from a URL. Does not apply
+   * formatting or decoding. If the URL does not match the pattern, returns `null`.
    *
    * @example
    * ```ts
@@ -54,6 +55,11 @@ export interface MatcherPattern {
    * pattern.parseLocation({ path: '/foo', query: {}, hash: '#hello' })
    * // null // the query param is missing
    * ```
+   *
+   * @param location - URL parts to extract from
+   * @param location.path - encoded path
+   * @param location.query - decoded query
+   * @param location.hash - decoded hash
    */
   matchLocation(location: {
     path: string
