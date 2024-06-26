@@ -1,4 +1,9 @@
-import { type LocationQuery, parseQuery, normalizeQuery } from '../query'
+import {
+  type LocationQuery,
+  parseQuery,
+  normalizeQuery,
+  stringifyQuery,
+} from '../query'
 import type { MatcherPattern } from './matcher-pattern'
 import { warn } from '../warning'
 import {
@@ -6,7 +11,7 @@ import {
   encodePath,
   encodeQueryValue as _encodeQueryValue,
 } from '../encoding'
-import { parseURL } from '../location'
+import { parseURL, stringifyURL } from '../location'
 import type {
   MatcherLocationAsName,
   MatcherLocationAsRelative,
@@ -84,6 +89,7 @@ type TODO = any
 
 export interface NEW_MatcherLocationResolved {
   name: MatcherName
+  fullPath: string
   path: string
   // TODO: generics?
   params: MatcherParamsFormatted
@@ -137,6 +143,7 @@ export function decode(
   }
   return '' + text
 }
+// TODO: just add the null check to the original function in encoding.ts
 
 interface FnStableNull {
   (value: null | undefined): null
@@ -191,7 +198,10 @@ export const NO_MATCH_LOCATION = {
   name: Symbol('no-match'),
   params: {},
   matched: [],
-} satisfies Omit<NEW_MatcherLocationResolved, 'path' | 'hash' | 'query'>
+} satisfies Omit<
+  NEW_MatcherLocationResolved,
+  'path' | 'hash' | 'query' | 'fullPath'
+>
 
 export function createCompiledMatcher(): NEW_Matcher_Resolve {
   const matchers = new Map<MatcherName, MatcherPattern>()
@@ -239,7 +249,6 @@ export function createCompiledMatcher(): NEW_Matcher_Resolve {
         }
       }
 
-      // TODO: build fullPath
       return {
         ...url,
         name: matcher.name,
@@ -266,16 +275,20 @@ export function createCompiledMatcher(): NEW_Matcher_Resolve {
         transformObject(String, encodeParam, mixedUnencodedParams[0])
       )
 
+      // TODO: should pick query from the params but also from the location and merge them
+      const query = {
+        ...normalizeQuery(location.query),
+        // ...matcher.extractQuery(mixedUnencodedParams[1])
+      }
+      const hash = mixedUnencodedParams[2] ?? location.hash ?? ''
+
       return {
         name,
+        fullPath: stringifyURL(stringifyQuery, { path, query: {}, hash }),
         path,
         params,
-        hash: mixedUnencodedParams[2] ?? location.hash ?? '',
-        // TODO: should pick query from the params but also from the location and merge them
-        query: {
-          ...normalizeQuery(location.query),
-          // ...matcher.extractQuery(mixedUnencodedParams[1])
-        },
+        hash,
+        query,
         matched: [],
       }
     }
