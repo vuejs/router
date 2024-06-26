@@ -153,7 +153,7 @@ export class MatcherPatternImpl implements MatcherPattern {
     query: MatcherQueryParams
     hash: string
   }) {
-    // TODO: is this performant? Compare to a check with `null
+    // TODO: is this performant? bench compare to a check with `null
     try {
       return [
         this.path.match(location.path),
