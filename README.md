@@ -1,4 +1,4 @@
-# vue-router [![release candidate](https://img.shields.io/npm/v/vue-router.svg)](https://www.npmjs.com/package/vue-router) [![test](https://github.com/vuejs/router/actions/workflows/test.yml/badge.svg)](https://github.com/vuejs/router/actions/workflows/test.yml)
+# vue-router [![release candidate](https://img.shields.io/npm/v/vue-router.svg)](https://www.npmjs.com/package/vue-router) [![test](https://github.com/vuejs/router/actions/workflows/test.yml/badge.svg)](https://github.com/vuejs/router/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/vuejs/router/graph/badge.svg?token=azNM3FI0d1)](https://codecov.io/gh/vuejs/router)
 
 > - This is the repository for Vue Router 4 (for Vue 3)
 > - For Vue Router 3 (for Vue 2) see [vuejs/vue-router](https://github.com/vuejs/vue-router).
