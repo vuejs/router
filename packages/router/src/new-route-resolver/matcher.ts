@@ -21,13 +21,13 @@ import type {
 export type MatcherName = string | symbol
 
 /**
- * Matcher capable of resolving route locations.
+ * Manage and resolve routes. Also handles the encoding, decoding, parsing and serialization of params, query, and hash.
  */
-export interface NEW_Matcher_Resolve {
+export interface RouteResolver {
   /**
    * Resolves an absolute location (like `/path/to/somewhere`).
    */
-  resolve(absoluteLocation: `/${string}`): NEW_MatcherLocationResolved
+  resolve(absoluteLocation: `/${string}`): NEW_LocationResolved
 
   /**
    * Resolves a string location relative to another location. A relative location can be `./same-folder`,
@@ -35,13 +35,13 @@ export interface NEW_Matcher_Resolve {
    */
   resolve(
     relativeLocation: string,
-    currentLocation: NEW_MatcherLocationResolved
-  ): NEW_MatcherLocationResolved
+    currentLocation: NEW_LocationResolved
+  ): NEW_LocationResolved
 
   /**
    * Resolves a location by its name. Any required params or query must be passed in the `options` argument.
    */
-  resolve(location: MatcherLocationAsName): NEW_MatcherLocationResolved
+  resolve(location: MatcherLocationAsName): NEW_LocationResolved
 
   /**
    * Resolves a location by its path. Any required query must be passed.
@@ -56,8 +56,8 @@ export interface NEW_Matcher_Resolve {
    */
   resolve(
     relativeLocation: MatcherLocationAsRelative,
-    currentLocation: NEW_MatcherLocationResolved
-  ): NEW_MatcherLocationResolved
+    currentLocation: NEW_LocationResolved
+  ): NEW_LocationResolved
 
   addRoute(matcher: MatcherPattern, parent?: MatcherPattern): void
   removeRoute(matcher: MatcherPattern): void
@@ -66,11 +66,11 @@ export interface NEW_Matcher_Resolve {
 
 type MatcherResolveArgs =
   | [absoluteLocation: `/${string}`]
-  | [relativeLocation: string, currentLocation: NEW_MatcherLocationResolved]
+  | [relativeLocation: string, currentLocation: NEW_LocationResolved]
   | [location: MatcherLocationAsName]
   | [
       relativeLocation: MatcherLocationAsRelative,
-      currentLocation: NEW_MatcherLocationResolved
+      currentLocation: NEW_LocationResolved
     ]
 
 /**
@@ -87,7 +87,7 @@ export interface NEW_Matcher_Dynamic {
 
 type TODO = any
 
-export interface NEW_MatcherLocationResolved {
+export interface NEW_LocationResolved {
   name: MatcherName
   fullPath: string
   path: string
@@ -198,12 +198,9 @@ export const NO_MATCH_LOCATION = {
   name: Symbol('no-match'),
   params: {},
   matched: [],
-} satisfies Omit<
-  NEW_MatcherLocationResolved,
-  'path' | 'hash' | 'query' | 'fullPath'
->
+} satisfies Omit<NEW_LocationResolved, 'path' | 'hash' | 'query' | 'fullPath'>
 
-export function createCompiledMatcher(): NEW_Matcher_Resolve {
+export function createCompiledMatcher(): RouteResolver {
   const matchers = new Map<MatcherName, MatcherPattern>()
 
   // TODO: allow custom encode/decode functions
@@ -216,7 +213,7 @@ export function createCompiledMatcher(): NEW_Matcher_Resolve {
   // )
   // const decodeQuery = transformObject.bind(null, decode, decode)
 
-  function resolve(...args: MatcherResolveArgs): NEW_MatcherLocationResolved {
+  function resolve(...args: MatcherResolveArgs): NEW_LocationResolved {
     const [location, currentLocation] = args
     if (typeof location === 'string') {
       // string location, e.g. '/foo', '../bar', 'baz'
@@ -228,7 +225,7 @@ export function createCompiledMatcher(): NEW_Matcher_Resolve {
       for (matcher of matchers.values()) {
         const params = matcher.matchLocation(url)
         if (params) {
-          parsedParams = matcher.formatParams(
+          parsedParams = matcher.parseParams(
             transformObject(String, decode, params[0]),
             // already decoded
             params[1],
@@ -268,7 +265,17 @@ export function createCompiledMatcher(): NEW_Matcher_Resolve {
 
       // unencoded params in a formatted form that the user came up with
       const params = location.params ?? currentLocation!.params
-      const mixedUnencodedParams = matcher.unformatParams(params)
+      const mixedUnencodedParams = matcher.matchParams(params)
+
+      if (!mixedUnencodedParams) {
+        throw new Error(
+          `Invalid params for matcher "${String(name)}":\n${JSON.stringify(
+            params,
+            null,
+            2
+          )}`
+        )
+      }
 
       const path = matcher.buildPath(
         // encode the values before building the path

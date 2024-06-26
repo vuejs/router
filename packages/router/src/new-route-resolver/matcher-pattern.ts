@@ -6,19 +6,34 @@ import type {
 } from './matcher'
 import type { MatcherParamsFormatted } from './matcher-location'
 
+/**
+ * Allows to match, extract, parse and build a path. Tailored to iterate through route records and check if a location
+ * matches. When it cannot match, it returns `null` instead of throwing to not force a try/catch block around each
+ * iteration in for loops.
+ */
 export interface MatcherPattern {
   /**
    * Name of the matcher. Unique across all matchers.
    */
   name: MatcherName
 
+  // TODO: add route record to be able to build the matched
+
   /**
-   * Extracts from a formatted, unencoded params object the ones belonging to the path, query, and hash.
-   * @param params - Params to extract from.
+   * Extracts from an unencoded, parsed params object the ones belonging to the path, query, and hash in their
+   * serialized format but still unencoded. e.g. `{ id: 2 }` -> `{ id: '2' }`. If any params are missing, return `null`.
+   *
+   * @param params - Params to extract from. If any params are missing, throws
    */
-  unformatParams(
+  matchParams(
     params: MatcherParamsFormatted
-  ): [path: MatcherPathParams, query: MatcherQueryParams, hash: string]
+  ):
+    | readonly [
+        pathParams: MatcherPathParams,
+        queryParams: MatcherQueryParams,
+        hashParam: string
+      ]
+    | null
 
   /**
    * Extracts the defined params from an encoded path, query, and hash parsed from a URL. Does not apply formatting or
@@ -44,23 +59,34 @@ export interface MatcherPattern {
     path: string
     query: MatcherQueryParams
     hash: string
-  }): [path: MatcherPathParams, query: MatcherQueryParams, hash: string] | null
+  }):
+    | readonly [
+        pathParams: MatcherPathParams,
+        queryParams: MatcherQueryParams,
+        hashParam: string
+      ]
+    | null
 
   /**
    * Takes encoded params object to form the `path`,
-   * @param path - encoded path params
+   *
+   * @param pathParams - encoded path params
    */
-  buildPath(path: MatcherPathParams): string
+  buildPath(pathParams: MatcherPathParams): string
 
   /**
-   * Runs the decoded params through the formatting functions if any.
-   * @param params - Params to format.
+   * Runs the decoded params through the parsing functions if any, allowing them to be in be of a type other than a
+   * string.
+   *
+   * @param pathParams - decoded path params
+   * @param queryParams - decoded query params
+   * @param hashParam - decoded hash param
    */
-  formatParams(
-    path: MatcherPathParams,
-    query: MatcherQueryParams,
-    hash: string
-  ): MatcherParamsFormatted
+  parseParams(
+    pathParams: MatcherPathParams,
+    queryParams: MatcherQueryParams,
+    hashParam: string
+  ): MatcherParamsFormatted | null
 }
 
 interface PatternParamOptions_Base<T = unknown> {
@@ -69,7 +95,11 @@ interface PatternParamOptions_Base<T = unknown> {
   default?: T | (() => T)
 }
 
-export interface PatternParamOptions extends PatternParamOptions_Base {}
+export interface PatternPathParamOptions<T = unknown>
+  extends PatternParamOptions_Base<T> {
+  re: RegExp
+  keys: string[]
+}
 
 export interface PatternQueryParamOptions<T = unknown>
   extends PatternParamOptions_Base<T> {
@@ -82,16 +112,16 @@ export interface PatternHashParamOptions
   extends PatternParamOptions_Base<string> {}
 
 export interface MatcherPatternPath {
-  build(path: MatcherPathParams): string
+  buildPath(path: MatcherPathParams): string
   match(path: string): MatcherPathParams
-  format(params: MatcherPathParams): MatcherParamsFormatted
-  unformat(params: MatcherParamsFormatted): MatcherPathParams
+  parse?(params: MatcherPathParams): MatcherParamsFormatted
+  serialize?(params: MatcherParamsFormatted): MatcherPathParams
 }
 
 export interface MatcherPatternQuery {
   match(query: MatcherQueryParams): MatcherQueryParams
-  format(params: MatcherQueryParams): MatcherParamsFormatted
-  unformat(params: MatcherParamsFormatted): MatcherQueryParams
+  parse(params: MatcherQueryParams): MatcherParamsFormatted
+  serialize(params: MatcherParamsFormatted): MatcherQueryParams
 }
 
 export interface MatcherPatternHash {
@@ -100,8 +130,8 @@ export interface MatcherPatternHash {
    * @param hash - encoded hash
    */
   match(hash: string): string
-  format(hash: string): MatcherParamsFormatted
-  unformat(params: MatcherParamsFormatted): string
+  parse(hash: string): MatcherParamsFormatted
+  serialize(params: MatcherParamsFormatted): string
 }
 
 export class MatcherPatternImpl implements MatcherPattern {
@@ -116,37 +146,42 @@ export class MatcherPatternImpl implements MatcherPattern {
     path: string
     query: MatcherQueryParams
     hash: string
-  }): [path: MatcherPathParams, query: MatcherQueryParams, hash: string] {
-    return [
-      this.path.match(location.path),
-      this.query?.match(location.query) ?? {},
-      this.hash?.match(location.hash) ?? '',
-    ]
+  }) {
+    // TODO: is this performant? Compare to a check with `null
+    try {
+      return [
+        this.path.match(location.path),
+        this.query?.match(location.query) ?? {},
+        this.hash?.match(location.hash) ?? '',
+      ] as const
+    } catch {
+      return null
+    }
   }
 
-  formatParams(
+  parseParams(
     path: MatcherPathParams,
     query: MatcherQueryParams,
     hash: string
   ): MatcherParamsFormatted {
     return {
-      ...this.path.format(path),
-      ...this.query?.format(query),
-      ...this.hash?.format(hash),
+      ...this.path.parse?.(path),
+      ...this.query?.parse(query),
+      ...this.hash?.parse(hash),
     }
   }
 
   buildPath(path: MatcherPathParams): string {
-    return this.path.build(path)
+    return this.path.buildPath(path)
   }
 
-  unformatParams(
+  matchParams(
     params: MatcherParamsFormatted
   ): [path: MatcherPathParams, query: MatcherQueryParams, hash: string] {
     return [
-      this.path.unformat(params),
-      this.query?.unformat(params) ?? {},
-      this.hash?.unformat(params) ?? '',
+      this.path.serialize?.(params) ?? {},
+      this.query?.serialize(params) ?? {},
+      this.hash?.serialize(params) ?? '',
     ]
   }
 }

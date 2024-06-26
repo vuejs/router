@@ -10,9 +10,9 @@ function createMatcherPattern(
 
 const EMPTY_PATH_PATTERN_MATCHER = {
   match: (path: string) => ({}),
-  format: (params: {}) => ({}),
-  unformat: (params: {}) => ({}),
-  build: () => '/',
+  parse: (params: {}) => ({}),
+  serialize: (params: {}) => ({}),
+  buildPath: () => '/',
 } satisfies MatcherPatternPath
 
 describe('Matcher', () => {
@@ -42,9 +42,9 @@ describe('Matcher', () => {
               if (!match) throw new Error('no match')
               return { id: match[1] }
             },
-            format: (params: { id: string }) => ({ id: Number(params.id) }),
-            unformat: (params: { id: number }) => ({ id: String(params.id) }),
-            build: params => `/foo/${params.id}`,
+            parse: (params: { id: string }) => ({ id: Number(params.id) }),
+            serialize: (params: { id: number }) => ({ id: String(params.id) }),
+            buildPath: params => `/foo/${params.id}`,
           })
         )
 
@@ -69,8 +69,8 @@ describe('Matcher', () => {
             match: query => ({
               id: Array.isArray(query.id) ? query.id[0] : query.id,
             }),
-            format: (params: { id: string }) => ({ id: Number(params.id) }),
-            unformat: (params: { id: number }) => ({ id: String(params.id) }),
+            parse: (params: { id: string }) => ({ id: Number(params.id) }),
+            serialize: (params: { id: number }) => ({ id: String(params.id) }),
           })
         )
 
@@ -94,8 +94,8 @@ describe('Matcher', () => {
             undefined,
             {
               match: hash => hash,
-              format: hash => ({ a: hash.slice(1) }),
-              unformat: ({ a }) => '#a',
+              parse: hash => ({ a: hash.slice(1) }),
+              serialize: ({ a }) => '#a',
             }
           )
         )
@@ -138,26 +138,26 @@ describe('Matcher', () => {
           createMatcherPattern(
             Symbol('foo'),
             {
-              build: params => `/foo/${params.id}`,
+              buildPath: params => `/foo/${params.id}`,
               match: path => {
                 const match = path.match(/^\/foo\/([^/]+?)$/)
                 if (!match) throw new Error('no match')
                 return { id: match[1] }
               },
-              format: params => ({ id: Number(params.id) }),
-              unformat: params => ({ id: String(params.id) }),
+              parse: params => ({ id: Number(params.id) }),
+              serialize: params => ({ id: String(params.id) }),
             },
             {
               match: query => ({
                 id: Array.isArray(query.id) ? query.id[0] : query.id,
               }),
-              format: params => ({ q: Number(params.id) }),
-              unformat: params => ({ id: String(params.q) }),
+              parse: params => ({ q: Number(params.id) }),
+              serialize: params => ({ id: String(params.q) }),
             },
             {
               match: hash => hash,
-              format: hash => ({ a: hash.slice(1) }),
-              unformat: ({ a }) => '#a',
+              parse: hash => ({ a: hash.slice(1) }),
+              serialize: ({ a }) => '#a',
             }
           )
         )
