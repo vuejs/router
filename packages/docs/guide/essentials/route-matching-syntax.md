@@ -114,6 +114,15 @@ const routes = [
 
 Note that `*` technically also marks a parameter as optional but `?` parameters cannot be repeated.
 
+When using multiple optional parameters in succession, the behavior is slightly different because the parser expects at least one of them to match.
+
+```js
+const routes = [
+  // This will match /users/42posva, /users/42, /users/posva but not /users,  
+  { path: '/users/:userId(\\d+)?:name(\\w+)?' },
+]
+```
+
 ## Debugging
 
 If you need to dig how your routes are transformed into a regex to understand why a route isn't being matched or, to report a bug, you can use the [path ranker tool](https://paths.esm.dev/?p=AAMeJSyAwR4UbFDAFxAcAGAIJXMAAA..#). It supports sharing your routes through the URL.
