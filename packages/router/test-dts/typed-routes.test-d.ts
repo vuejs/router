@@ -10,7 +10,7 @@ import {
 
 // type is needed instead of an interface
 // https://github.com/microsoft/TypeScript/issues/15300
-type RouteMap = {
+export type RouteMap = {
   '/[...path]': RouteRecordInfo<
     '/[...path]',
     '/:path(.*)',

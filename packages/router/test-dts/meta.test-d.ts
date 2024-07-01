@@ -4,10 +4,11 @@ import { describe, it, expectTypeOf } from 'vitest'
 
 const component = defineComponent({})
 
-declare module './index' {
+declare module '.' {
   interface RouteMeta {
     requiresAuth?: boolean
-    nested: { foo: string }
+    // TODO: it would be nice to be able to test required meta without polluting all tests
+    nested?: { foo: string }
   }
 }
 
@@ -27,13 +28,17 @@ describe('RouteMeta', () => {
             },
           },
         },
-        {
-          path: '/foo',
-          component,
-          // @ts-expect-error
-          meta: {},
-        },
       ],
+    })
+
+    router.addRoute({
+      path: '/foo',
+      component,
+      meta: {
+        nested: {
+          foo: 'foo',
+        },
+      },
     })
   })
 
@@ -43,9 +48,12 @@ describe('RouteMeta', () => {
       routes: [],
     })
     router.beforeEach(to => {
-      expectTypeOf<{ requiresAuth?: Boolean; nested: { foo: string } }>(to.meta)
+      expectTypeOf<{ requiresAuth?: Boolean; nested?: { foo: string } }>(
+        to.meta
+      )
       expectTypeOf<unknown>(to.meta.lol)
-      if (to.meta.nested.foo == 'foo' || to.meta.lol) return false
+      if (to.meta.nested?.foo == 'foo' || to.meta.lol) return false
+      return
     })
   })
 })

@@ -32,7 +32,7 @@ export default defineConfig({
       checker: 'vue-tsc',
       // only: true,
       // by default it includes all specs too
-      include: ['**/*.test-d.ts'],
+      // include: ['**/*.test-d.ts'],
 
       // tsconfig: './tsconfig.typecheck.json',
     },
