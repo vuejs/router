@@ -98,7 +98,7 @@
     "dev:e2e": "vite --config e2e/vite.config.mjs",
     "test:types": "tsc --build tsconfig.json",
     "test:unit": "vitest --coverage run",
-    "test": "pnpm run test:types && pnpm run build && pnpm run build:dts && pnpm run test:unit && pnpm run test:e2e",
+    "test": "pnpm run build && pnpm run build:dts && pnpm run test:types && pnpm run test:unit && pnpm run test:e2e",
     "test:e2e": "pnpm run test:e2e:headless",
     "test:e2e:headless": "node e2e/runner.mjs --env chrome-headless",
     "test:e2e:native": "node e2e/runner.mjs --env chrome",
