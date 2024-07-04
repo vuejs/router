@@ -10,6 +10,7 @@ interface PathParserParamKey {
   name: string
   repeatable: boolean
   optional: boolean
+  keepSlash: boolean
 }
 
 export interface PathParser {
@@ -156,11 +157,6 @@ export function tokensToParser(
         subSegmentScore += PathScore.Static
       } else if (token.type === TokenType.Param) {
         const { value, repeatable, optional, regexp } = token
-        keys.push({
-          name: value,
-          repeatable,
-          optional,
-        })
         const re = regexp ? regexp : BASE_PARAM_PATTERN
         // the user provided a custom regexp /:id(\\d+)
         if (re !== BASE_PARAM_PATTERN) {
@@ -175,6 +171,19 @@ export function tokensToParser(
             )
           }
         }
+
+        // Keep slash if it matches regex
+        // Or if a slash is litterally contained outside of lookaheads, lookbehinds and negative ranges
+        let keepSlash =
+          new RegExp(`(${re})`).test('/') ||
+          /\//.test(re.replace(/\(\?<?[=!].*\)|\[\^.*\]/, ''))
+
+        keys.push({
+          name: value,
+          repeatable,
+          optional,
+          keepSlash,
+        })
 
         // when we repeat we must take care of the repeating leading slash
         let subPattern = repeatable ? `((?:${re})(?:/(?:${re}))*)` : `(${re})`

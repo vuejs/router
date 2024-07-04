@@ -3,6 +3,7 @@ import {
   MatcherLocationRaw,
   MatcherLocation,
   isRouteName,
+  RouteParamsGeneric,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
@@ -17,8 +18,9 @@ import type {
 import { comparePathParserScore } from './pathParserRanker'
 
 import { warn } from '../warning'
-import { assign, noop } from '../utils'
+import { applyToParam, assign, noop } from '../utils'
 import type { RouteRecordNameGeneric, _RouteRecordProps } from '../typed-routes'
+import { encodeParam, encodePathParam } from '../encoding'
 
 /**
  * Internal RouterMatcher
@@ -40,10 +42,12 @@ export interface RouterMatcher {
    *
    * @param location - MatcherLocationRaw to resolve to a url
    * @param currentLocation - MatcherLocation of the current location
+   * @param encodeParams - Whether to encode parameters or not. Defaults to `false`
    */
   resolve: (
     location: MatcherLocationRaw,
-    currentLocation: MatcherLocation
+    currentLocation: MatcherLocation,
+    encodeParams?: boolean
   ) => MatcherLocation
 }
 
@@ -230,14 +234,47 @@ export function createRouterMatcher(
       matcherMap.set(matcher.record.name, matcher)
   }
 
+  function encodeParams(
+    matcher: RouteRecordMatcher,
+    params: RouteParamsGeneric | undefined
+  ): MatcherLocation['params'] {
+    const newParams = {} as MatcherLocation['params']
+    if (params) {
+      for (let paramKey of Object.keys(params)) {
+        let matcherKey = matcher.keys.find(k => k.name == paramKey)
+
+        let keepSlash = matcherKey?.keepSlash ?? false
+        newParams[paramKey] = keepSlash
+          ? applyToParam(encodePathParam, params[paramKey])
+          : applyToParam(encodeParam, params[paramKey])
+      }
+    }
+    return newParams
+  }
+
   function resolve(
     location: Readonly<MatcherLocationRaw>,
-    currentLocation: Readonly<MatcherLocation>
+    currentLocation: Readonly<MatcherLocation>,
+    doEncodeParams: boolean = false
   ): MatcherLocation {
     let matcher: RouteRecordMatcher | undefined
     let params: PathParams = {}
     let path: MatcherLocation['path']
     let name: MatcherLocation['name']
+
+    // Encode params
+    let encodeLocationsParams = (matcher: RouteRecordMatcher) => {
+      if (doEncodeParams) {
+        if ('params' in location) {
+          location = assign(location, {
+            params: encodeParams(matcher, location.params),
+          })
+        }
+        currentLocation = assign(currentLocation, {
+          params: encodeParams(matcher, currentLocation.params),
+        })
+      }
+    }
 
     if ('name' in location && location.name) {
       matcher = matcherMap.get(location.name)
@@ -246,6 +283,8 @@ export function createRouterMatcher(
         throw createRouterError<MatcherError>(ErrorTypes.MATCHER_NOT_FOUND, {
           location,
         })
+
+      encodeLocationsParams(matcher)
 
       // warn if the user is passing invalid params so they can debug it better when they get removed
       if (__DEV__) {
@@ -301,6 +340,7 @@ export function createRouterMatcher(
       // matcher should have a value after the loop
 
       if (matcher) {
+        encodeLocationsParams(matcher)
         // we know the matcher works because we tested the regexp
         params = matcher.parse(path)!
         name = matcher.record.name
@@ -316,6 +356,7 @@ export function createRouterMatcher(
           location,
           currentLocation,
         })
+      encodeLocationsParams(matcher)
       name = matcher.record.name
       // since we are navigating to the same location, we don't need to pick the
       // params like when `name` is provided
