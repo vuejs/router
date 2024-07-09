@@ -114,6 +114,13 @@ const routes = [
 
 Note that `*` technically also marks a parameter as optional but `?` parameters cannot be repeated.
 
+If the route segment contains more than **just an optional parameter**, it won't match a path **without the trailing slash**. For example:
+
+- `/users/:uid?-:name?` won't match `/users`, only `/users/-` or even `/users/-/`
+- `/users/:uid(\\d+)?:name? won't match `/users`, only `/users/`, `/users/2`, `/users/2/`, etc
+
+You can play around with the matching syntax [in the playground](https://paths.esm.dev/?p=AAMsIPQg4AoKzidgQFoEXAmw-IEBBRYYOE0SkABTASiz1qgBpgQA1QTsFjAb3h2onsmlAmGIFsCXjXh4AIA.&t=/users/2/#)
+
 ## Debugging
 
 If you need to dig how your routes are transformed into a regex to understand why a route isn't being matched or, to report a bug, you can use the [path ranker tool](https://paths.esm.dev/?p=AAMeJSyAwR4UbFDAFxAcAGAIJXMAAA..#). It supports sharing your routes through the URL.
