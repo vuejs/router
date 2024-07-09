@@ -24,7 +24,7 @@ const routes = [
 ]
 ```
 
-But in some scenarios we don't want to add that static section `/o``/p`. However, `orderId` is always a number while `productName` can be anything, so we can specify a custom regex for a param in parentheses:
+But in some scenarios, we don't want to add that static section `/o` or `/p`. However, `orderId` is always a number while `productName` can be anything so we can specify a custom regex for a param in parentheses:
 
 ```js
 const routes = [
