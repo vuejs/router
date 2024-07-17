@@ -36,14 +36,14 @@ We can remove the direct dependency on `$route` in `User.vue` by declaring a pro
 ```vue [Composition API]
 <!-- User.vue -->
 <script setup>
-defineProps({
+const props = defineProps({
   id: String
 })
 </script>
 
 <template>
   <div>
-    User {{ id }}
+    User {{ props.id }}
   </div>
 </template>
 ```
@@ -60,7 +60,7 @@ export default {
 
 <template>
   <div>
-    User {{ id }}
+    User {{ props.id }}
   </div>
 </template>
 ```
