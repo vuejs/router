@@ -8,6 +8,10 @@ import type { RouterLink } from './RouterLink'
 import type { Router } from './router'
 import type { TypesConfig } from './config'
 
+/**
+ * NOTE: this used to be `@vue/runtime-core` but it should have been `vue` for a long time. Using both declaration at
+ * the same time breaks so using only one everywhere is the preferred way.
+ */
 declare module 'vue' {
   export interface ComponentCustomOptions {
     /**
