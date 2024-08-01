@@ -1,3 +1,9 @@
+## [4.4.2](https://github.com/vuejs/router/compare/v4.4.1...v4.4.2) (2024-08-01)
+
+### Bug Fixes
+
+- **types:** revert stricter meta ([d4d0087](https://github.com/vuejs/router/commit/d4d0087eae5721f73bde445be33407875a92a1ca)), closes [#2319](https://github.com/vuejs/router/issues/2319)
+
 ## [4.4.1](https://github.com/vuejs/router/compare/v4.4.0...v4.4.1) (2024-07-31)
 
 ### Bug Fixes
