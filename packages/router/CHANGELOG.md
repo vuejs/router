@@ -8,6 +8,9 @@
 
 ### Bug Fixes
 
+> [!IMPORTANT]
+> This release replaces `declare module '@vue/runtime-core'` with `declare module 'vue'` [like it's supposed to be](https://vuejs.org/guide/typescript/options-api.html#augmenting-global-properties). If you are also augmenting `@vue/runtime-core`, you will likely have to change it to `vue`. It is also recommended to use an up-to-date TypeScript version (>=5.4) and `"moduleResolution": "Bundler"` in your `tsconfig.json`.
+
 - router typescript definitions related to vue package ([#2295](https://github.com/vuejs/router/issues/2295)) ([a495ce0](https://github.com/vuejs/router/commit/a495ce0e1d545d521673d21af43e63a761b53e27))
 - **types:** stricter meta with required fields ([423d9f7](https://github.com/vuejs/router/commit/423d9f763ed033dd6687ce7687c859c92554a60d))
 
