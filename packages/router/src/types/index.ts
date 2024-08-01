@@ -189,9 +189,7 @@ export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
 /**
  * Internal type for common properties among all kind of {@link RouteRecordRaw}.
  */
-export interface _RouteRecordBase
-  extends PathParserOptions,
-    _RouteRecordBaseMeta {
+export interface _RouteRecordBase extends PathParserOptions {
   /**
    * Path of the record. Should start with `/` unless the record is the child of
    * another record.
@@ -230,7 +228,7 @@ export interface _RouteRecordBase
   /**
    * Arbitrary data attached to the record.
    */
-  // meta?: RouteMeta
+  meta?: RouteMeta
 
   /**
    * Array of nested routes.
@@ -242,12 +240,6 @@ export interface _RouteRecordBase
    */
   props?: _RouteRecordProps | Record<string, _RouteRecordProps>
 }
-
-/**
- * Default type for RouteMeta when not augmented.
- * @internal
- */
-export type _RouteMetaBase = Record<string | number | symbol, unknown>
 
 /**
  * Interface to type `meta` fields in route records.
@@ -265,33 +257,7 @@ export type _RouteMetaBase = Record<string | number | symbol, unknown>
  *  }
  * ```
  */
-export interface RouteMeta extends _RouteMetaBase {}
-
-/**
- * Returns `true` if the passed `RouteMeta` type hasn't been augmented. Return `false` otherwise.
- * @internal
- */
-export type IsRouteMetaBase<RM> = _RouteMetaBase extends RM ? true : false
-/**
- * Returns `true` if the passed `RouteMeta` type has been augmented with required fields. Return `false` otherwise.
- * @internal
- */
-export type IsRouteMetaRequired<RM> = Partial<RM> extends RM ? false : true
-
-export type _RouteRecordBaseMeta = IsRouteMetaRequired<RouteMeta> extends true
-  ? {
-      /**
-       * Arbitrary data attached to the record. Required because the `RouteMeta` type has been augmented with required
-       * fields.
-       */
-      meta: RouteMeta
-    }
-  : {
-      /**
-       * Arbitrary data attached to the record.
-       */
-      meta?: RouteMeta
-    }
+export interface RouteMeta extends Record<string | number | symbol, unknown> {}
 
 /**
  * Route Record defining one single component with the `component` option.
