@@ -443,6 +443,16 @@ Given any [normalized route location](/api/#RouteLocationNormalized):
 
 **Reason**: This allows to easily copy existing properties of a location when calling `router.push()` and `router.resolve()`, and make the resulting route location consistent across browsers. `router.push()` is now idempotent, meaning that calling `router.push(route.fullPath)`, `router.push({ hash: route.hash })`, `router.push({ query: route.query })`, and `router.push({ params: route.params })` will not create extra encoding.
 
+### `$router.push` and `$router.replace` - `onDemand` and `onAbort` callbacks
+
+Previously, `$router.push` and `$router.replace` accepted two callbacks as second and third argument, `onComplete` and `onAbort` functions, which would be called after a successful navigation and after a failed navigation respectively. These arguments have been deprecated, please use the thenable Promise that `$router.push` and `$router.replace` return from now on.
+
+```js
+router.replace({ path: '/home' })
+  .then(onDemand)
+  .catch(onAbort);
+```
+
 ### TypeScript changes
 
 To make typings more consistent and expressive, some types have been renamed:
