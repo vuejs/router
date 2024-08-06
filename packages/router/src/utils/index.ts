@@ -13,6 +13,15 @@ export function isESModule(obj: any): obj is { default: RouteComponent } {
 
 export const assign = Object.assign
 
+export function applyToParam(
+  fn: (v: string | number | null | undefined) => string,
+  param: RouteParamValueRaw | Exclude<RouteParamValueRaw, null | undefined>[]
+): string | string[] {
+  return isArray(param)
+    ? param.map(fn)
+    : fn(param as Exclude<RouteParamValueRaw, any[]>)
+}
+
 export function applyToParams(
   fn: (v: string | number | null | undefined) => string,
   params: RouteParamsRawGeneric | undefined
@@ -21,9 +30,7 @@ export function applyToParams(
 
   for (const key in params) {
     const value = params[key]
-    newParams[key] = isArray(value)
-      ? value.map(fn)
-      : fn(value as Exclude<RouteParamValueRaw, any[]>)
+    newParams[key] = applyToParam(fn, value)
   }
 
   return newParams
