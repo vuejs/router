@@ -8,11 +8,10 @@ import type { RouterLink } from './RouterLink'
 import type { Router } from './router'
 import type { TypesConfig } from './config'
 
-/**
- * NOTE: this used to be `@vue/runtime-core` but it should have been `vue` for a long time. Using both declaration at
- * the same time breaks so using only one everywhere is the preferred way.
- */
-declare module 'vue' {
+declare module '@vue/runtime-core' {
+  // 2024-Aug-06: Declaring this interface within 'vue' module as specified in Vue's API did not end up appending types for exposure to SFC <script/>
+  // https://vuejs.org/guide/typescript/options-api.html#augmenting-global-properties
+  // TODO: figure out why the types aren't properly exposed and nest interface within 'vue' module
   export interface ComponentCustomOptions {
     /**
      * Guard called when the router is navigating to the route that is rendering
@@ -58,6 +57,9 @@ declare module 'vue' {
       : NavigationGuard
   }
 
+  // 2024-Aug-06: Declaring this interface within 'vue' module as specified in Vue's API did not end up appending types for exposure to SFC <template/>
+  // https://vuejs.org/guide/typescript/options-api.html#augmenting-global-properties
+  // TODO: figure out why the types aren't properly exposed and nest interface within 'vue' module
   export interface ComponentCustomProperties {
     /**
      * Normalized current location. See {@link RouteLocationNormalizedLoaded}.
@@ -70,7 +72,12 @@ declare module 'vue' {
      */
     $router: TypesConfig extends Record<'$router', infer T> ? T : Router
   }
+}
 
+declare module 'vue' {
+  // 2024-Jul-31: this had been nested within '@vue/runtime-core' module, but was moved to the 'vue' module to adhere to Vue's API
+  // https://vuejs.org/guide/typescript/options-api.html#augmenting-global-properties
+  // Declaring this interface twice (once in each module) created issues
   export interface GlobalComponents {
     RouterView: TypesConfig extends Record<'RouterView', infer T>
       ? T
