@@ -443,15 +443,10 @@ Given any [normalized route location](/api/#RouteLocationNormalized):
 
 **Reason**: This allows to easily copy existing properties of a location when calling `router.push()` and `router.resolve()`, and make the resulting route location consistent across browsers. `router.push()` is now idempotent, meaning that calling `router.push(route.fullPath)`, `router.push({ hash: route.hash })`, `router.push({ query: route.query })`, and `router.push({ params: route.params })` will not create extra encoding.
 
-### `$router.push` and `$router.replace` - `onDemand` and `onAbort` callbacks
+### `$router.push()` and `$router.replace()` - `onComplete` and `onAbort` callbacks
 
-Previously, `$router.push` and `$router.replace` accepted two callbacks as second and third argument, `onComplete` and `onAbort` functions, which would be called after a successful navigation and after a failed navigation respectively. These arguments have been deprecated, please use the thenable Promise that `$router.push` and `$router.replace` return from now on.
-
-```js
-router.replace({ path: '/home' })
-  .then(onDemand)
-  .catch(onAbort);
-```
+Previously, `$router.push()` and `$router.replace()` accepted two callbacks, `onComplete` and `onAbort`, as second and third arguments. They were called after a navigation based on the result. With the introduction of a Promise based API, these callbacks are redundant and have been removed. See [Navigation Failures](/guide/advanced/navigation-failures.md) for more information on how to detect successful and failed navigations.
+**Reason**: Reduce library size by adapting to established JS standards (Promises).
 
 ### TypeScript changes
 
