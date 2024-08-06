@@ -1,3 +1,9 @@
+## [4.4.3](https://github.com/vuejs/router/compare/v4.4.2...v4.4.3) (2024-08-06)
+
+### Bug Fixes
+
+- reorder exports in `package.json` ([#2323](https://github.com/vuejs/router/issues/2323)) ([7422b15](https://github.com/vuejs/router/commit/7422b15e6fcf57819f82a1384c9a2a73e32e186f))
+
 ## [4.4.2](https://github.com/vuejs/router/compare/v4.4.1...v4.4.2) (2024-08-01)
 
 ### Bug Fixes
