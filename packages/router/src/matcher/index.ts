@@ -5,7 +5,7 @@ import {
   isRouteName,
 } from '../types'
 import { createRouterError, ErrorTypes, MatcherError } from '../errors'
-import { createMatcherTree } from './matcherTree'
+import { createMatcherTree, isMatchable } from './matcherTree'
 import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
 import { RouteRecordNormalized } from './types'
 
@@ -340,7 +340,7 @@ export function createRouterMatcher(
   routes.forEach(route => addRoute(route))
 
   function clearRoutes() {
-    matchers.length = 0
+    matcherTree.clear()
     matcherMap.clear()
   }
 
@@ -521,81 +521,6 @@ function checkMissingParamsInAbsolutePath(
         `Absolute path "${record.record.path}" must have the exact same param named "${key.name}" as its parent "${parent.record.path}".`
       )
   }
-}
-
-/**
- * Performs a binary search to find the correct insertion index for a new matcher.
- *
- * Matchers are primarily sorted by their score. If scores are tied then we also consider parent/child relationships,
- * with descendants coming before ancestors. If there's still a tie, new routes are inserted after existing routes.
- *
- * @param matcher - new matcher to be inserted
- * @param matchers - existing matchers
- */
-function findInsertionIndex(
-  matcher: RouteRecordMatcher,
-  matchers: RouteRecordMatcher[]
-) {
-  // First phase: binary search based on score
-  let lower = 0
-  let upper = matchers.length
-
-  while (lower !== upper) {
-    const mid = (lower + upper) >> 1
-    const sortOrder = comparePathParserScore(matcher, matchers[mid])
-
-    if (sortOrder < 0) {
-      upper = mid
-    } else {
-      lower = mid + 1
-    }
-  }
-
-  // Second phase: check for an ancestor with the same score
-  const insertionAncestor = getInsertionAncestor(matcher)
-
-  if (insertionAncestor) {
-    upper = matchers.lastIndexOf(insertionAncestor, upper - 1)
-
-    if (__DEV__ && upper < 0) {
-      // This should never happen
-      warn(
-        `Finding ancestor route "${insertionAncestor.record.path}" failed for "${matcher.record.path}"`
-      )
-    }
-  }
-
-  return upper
-}
-
-function getInsertionAncestor(matcher: RouteRecordMatcher) {
-  let ancestor: RouteRecordMatcher | undefined = matcher
-
-  while ((ancestor = ancestor.parent)) {
-    if (
-      isMatchable(ancestor) &&
-      comparePathParserScore(matcher, ancestor) === 0
-    ) {
-      return ancestor
-    }
-  }
-
-  return
-}
-
-/**
- * Checks if a matcher can be reachable. This means if it's possible to reach it as a route. For example, routes without
- * a component, or name, or redirect, are just used to group other routes.
- * @param matcher
- * @param matcher.record record of the matcher
- * @returns
- */
-function isMatchable({ record }: RouteRecordMatcher): boolean {
-  return !!(
-    record.name ||
-    (record.components && Object.keys(record.components).length) ||
-    record.redirect
-  )
 }
 
 export type { PathParserOptions, _PathParserOptions }
