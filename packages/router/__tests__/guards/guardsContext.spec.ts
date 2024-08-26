@@ -1,8 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 import { createRouter, createMemoryHistory } from '../../src'
 import { createApp, defineComponent } from 'vue'
+import { vi, describe, expect, it } from 'vitest'
 
 const component = {
   template: '<div>Generic</div>',
@@ -11,7 +12,7 @@ const component = {
 describe('beforeRouteLeave', () => {
   it('invokes with the component context', async () => {
     expect.assertions(2)
-    const spy = jest
+    const spy = vi
       .fn()
       .mockImplementationOnce(function (this: any, to, from, next) {
         expect(typeof this.counter).toBe('number')
@@ -53,7 +54,7 @@ describe('beforeRouteLeave', () => {
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: jest
+      beforeRouteLeave: vi
         .fn()
         .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
@@ -64,7 +65,7 @@ describe('beforeRouteLeave', () => {
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: jest
+      beforeRouteLeave: vi
         .fn()
         .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
@@ -107,7 +108,7 @@ describe('beforeRouteLeave', () => {
       template: `<router-view/>`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: jest
+      beforeRouteLeave: vi
         .fn()
         .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
@@ -118,7 +119,7 @@ describe('beforeRouteLeave', () => {
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: jest
+      beforeRouteLeave: vi
         .fn()
         .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
@@ -166,7 +167,7 @@ describe('beforeRouteLeave', () => {
       `,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: jest
+      beforeRouteLeave: vi
         .fn()
         .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
@@ -177,7 +178,7 @@ describe('beforeRouteLeave', () => {
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: jest
+      beforeRouteLeave: vi
         .fn()
         .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
@@ -188,7 +189,7 @@ describe('beforeRouteLeave', () => {
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: jest
+      beforeRouteLeave: vi
         .fn()
         .mockImplementationOnce(function (this: any, to, from, next) {
           expect(typeof this.counter).toBe('number')
@@ -234,7 +235,7 @@ describe('beforeRouteLeave', () => {
 describe('beforeRouteUpdate', () => {
   it('invokes with the component context', async () => {
     expect.assertions(2)
-    const spy = jest
+    const spy = vi
       .fn()
       .mockImplementationOnce(function (this: any, to, from, next) {
         expect(typeof this.counter).toBe('number')

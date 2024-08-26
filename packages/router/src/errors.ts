@@ -1,9 +1,5 @@
-import {
-  MatcherLocationRaw,
-  MatcherLocation,
-  RouteLocationRaw,
-  RouteLocationNormalized,
-} from './types'
+import type { MatcherLocationRaw, MatcherLocation } from './types'
+import type { RouteLocationRaw, RouteLocationNormalized } from './typed-routes'
 import { assign } from './utils'
 
 /**
@@ -115,6 +111,12 @@ const ErrorTypeMessages = {
 // Possible internal errors
 type RouterError = NavigationFailure | NavigationRedirectError | MatcherError
 
+/**
+ * Creates a typed NavigationFailure object.
+ * @internal
+ * @param type - NavigationFailureType
+ * @param params - { from, to }
+ */
 export function createRouterError<E extends RouterError>(
   type: E['type'],
   params: Omit<E, 'type' | keyof Error>

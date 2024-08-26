@@ -8,9 +8,9 @@
 Sometimes you need to display multiple views at the same time instead of nesting them, e.g. creating a layout with a `sidebar` view and a `main` view. This is where named views come in handy. Instead of having one single outlet in your view, you can have multiple and give each of them a name. A `router-view` without a name will be given `default` as its name.
 
 ```vue-html
-<router-view class="view left-sidebar" name="LeftSidebar"></router-view>
-<router-view class="view main-content"></router-view>
-<router-view class="view right-sidebar" name="RightSidebar"></router-view>
+<router-view class="view left-sidebar" name="LeftSidebar" />
+<router-view class="view main-content" />
+<router-view class="view right-sidebar" name="RightSidebar" />
 ```
 
 A view is rendered by using a component, therefore multiple views require

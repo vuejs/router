@@ -2,10 +2,14 @@ name: test
 
 on:
   push:
+    branches:
+      - main
     paths-ignore:
       - 'packages/docs/**'
       - 'packages/playground/**'
   pull_request:
+    branches:
+      - main
     paths-ignore:
       - 'packages/docs/**'
       - 'packages/playground/**'
@@ -15,14 +19,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
-          version: 8.5.0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'pnpm'
+          node-version: 'lts/*'
+          cache: pnpm
       - name: 'BrowserStack Env Setup'
         uses: 'browserstack/github-actions/setup-env@master'
         # forks do not have access to secrets so just skip this
@@ -33,16 +35,17 @@ jobs:
 
       - run: pnpm install
       - run: pnpm run lint
-      - run: pnpm run -r test:types
-      - run: pnpm run -r test:unit
       - run: pnpm run -r build
       - run: pnpm run -r build:dts
-      - run: pnpm run -r test:dts
+      - run: pnpm run -r test:types
+      - run: pnpm run -r test:unit
 
       # e2e tests that that run locally
       - run: pnpm run -r test:e2e:ci
 
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       # - name: 'Start BrowserStackLocal Tunnel'
       #   uses: 'browserstack/github-actions/setup-local@master'

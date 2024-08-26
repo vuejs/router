@@ -2,7 +2,8 @@
   "include": [
     "src/global.d.ts",
     "src/**/*.ts",
-    "__tests__/**/*.ts"
+    "__tests__/**/*.ts",
+    "test-dts/**/*.ts"
   ],
   "compilerOptions": {
     "baseUrl": ".",
@@ -12,7 +13,7 @@
     "noEmit": true,
     "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "allowJs": false,
     "noUnusedLocals": true,
     "strictNullChecks": true,
@@ -32,7 +33,6 @@
       "dom"
     ],
     "types": [
-      "jest",
       "node",
       "vite/client"
     ]

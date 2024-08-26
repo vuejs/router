@@ -16,4 +16,4 @@ ___
 
 ### route
 
-• `Optional` **route**: [`RouteLocationNormalized`](RouteLocationNormalized.md)
+• `Optional` **route**: [`RouteLocationNormalizedGeneric`](RouteLocationNormalizedGeneric.md)

@@ -183,51 +183,37 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, inject, computed, ref } from 'vue'
+<script lang="ts" setup>
+import { inject, computed, ref } from 'vue'
 import { scrollWaiter } from './scrollWaiter'
-import { useLink, useRoute } from 'vue-router'
+import { useLink, useRoute, RouterLink } from 'vue-router'
 import AppLink from './AppLink.vue'
 
-export default defineComponent({
-  name: 'App',
-  components: { AppLink },
-  setup() {
-    const route = useRoute()
-    const state = inject('state')
-    const viewName = ref('default')
+const route = useRoute()
+const state = inject('state')
+const viewName = ref('default')
 
-    useLink({ to: '/' })
-    useLink({ to: '/documents/hello' })
-    useLink({ to: '/children' })
+useLink({ to: '/' })
+useLink({ to: '/documents/hello' })
+useLink({ to: '/children' })
 
-    const currentLocation = computed(() => {
-      const { matched, ...rest } = route
-      return rest
-    })
-
-    function flushWaiter() {
-      scrollWaiter.flush()
-    }
-    function setupWaiter() {
-      scrollWaiter.add()
-    }
-
-    const nextUserLink = computed(
-      () => '/users/' + String((Number(route.params.id) || 0) + 1)
-    )
-
-    return {
-      currentLocation,
-      nextUserLink,
-      state,
-      flushWaiter,
-      setupWaiter,
-      viewName,
-      toggleViewName() {
-        viewName.value = viewName.value === 'default' ? 'other' : 'default'
-      },
-    }
-  },
+const currentLocation = computed(() => {
+  const { matched, ...rest } = route
+  return rest
 })
+
+function flushWaiter() {
+  scrollWaiter.flush()
+}
+function setupWaiter() {
+  scrollWaiter.add()
+}
+
+const nextUserLink = computed(
+  () => '/users/' + String((Number(route.params.id) || 0) + 1)
+)
+
+function toggleViewName() {
+  viewName.value = viewName.value === 'default' ? 'other' : 'default'
+}
 </script>

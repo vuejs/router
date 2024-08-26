@@ -8,7 +8,8 @@ import {
   resolveRelativePath,
 } from '../src/location'
 import { RouteLocationNormalizedLoaded } from 'src'
-import { mockWarn } from 'jest-mock-warn'
+import { vi, describe, expect, it } from 'vitest'
+import { mockWarn } from './vitest-mock-warn'
 
 describe('parseURL', () => {
   let parseURL = originalParseURL.bind(null, parseQuery)
@@ -149,7 +150,7 @@ describe('parseURL', () => {
   })
 
   it('calls parseQuery', () => {
-    const parseQuery = jest.fn()
+    const parseQuery = vi.fn()
     originalParseURL(parseQuery, '/?é=é&é=a')
     expect(parseQuery).toHaveBeenCalledTimes(1)
     expect(parseQuery).toHaveBeenCalledWith('é=é&é=a')
@@ -214,7 +215,7 @@ describe('stringifyURL', () => {
   })
 
   it('calls stringifyQuery', () => {
-    const stringifyQuery = jest.fn()
+    const stringifyQuery = vi.fn()
     originalStringifyURL(stringifyQuery, {
       path: '/',
       query: { é: 'é', b: 'a' },

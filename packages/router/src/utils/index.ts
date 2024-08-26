@@ -1,7 +1,7 @@
 import {
-  RouteParams,
+  RouteParamsGeneric,
   RouteComponent,
-  RouteParamsRaw,
+  RouteParamsRawGeneric,
   RouteParamValueRaw,
 } from '../types'
 
@@ -15,9 +15,9 @@ export const assign = Object.assign
 
 export function applyToParams(
   fn: (v: string | number | null | undefined) => string,
-  params: RouteParamsRaw | undefined
-): RouteParams {
-  const newParams: RouteParams = {}
+  params: RouteParamsRawGeneric | undefined
+): RouteParamsGeneric {
+  const newParams: RouteParamsGeneric = {}
 
   for (const key in params) {
     const value = params[key]

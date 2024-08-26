@@ -24,7 +24,7 @@ const routes = [
 ]
 ```
 
-But in some scenarios we don't want to add that static section `/o`/`p`. However, `orderId` is always a number while `productName` can be anything, so we can specify a custom regex for a param in parentheses:
+But in some scenarios, we don't want to add that static section `/o` or `/p`. However, `orderId` is always a number while `productName` can be anything so we can specify a custom regex for a param in parentheses:
 
 ```js
 const routes = [
@@ -80,7 +80,7 @@ const routes = [
 ]
 ```
 
-## Sensitive and strict route options 
+## Sensitive and strict route options
 
 By default, all routes are case-insensitive and match routes with or without a trailing slash. e.g. a route `/users` matches `/users`, `/users/`, and even `/Users/`. This behavior can be configured with the `strict` and `sensitive` options, they can be set both at a router and route level:
 
@@ -113,6 +113,13 @@ const routes = [
 ```
 
 Note that `*` technically also marks a parameter as optional but `?` parameters cannot be repeated.
+
+If the route segment contains more than **just an optional parameter**, it won't match a path **without the trailing slash**. For example:
+
+- `/users/:uid?-:name?` won't match `/users`, only `/users/-` or even `/users/-/`
+- `/users/:uid(\\d+)?:name?` won't match `/users`, only `/users/`, `/users/2`, `/users/2/`, etc
+
+You can play around with the matching syntax [in the playground](https://paths.esm.dev/?p=AAMsIPQg4AoKzidgQFoEXAmw-IEBBRYYOE0SkABTASiz1qgBpgQA1QTsFjAb3h2onsmlAmGIFsCXjXh4AIA.&t=/users/2/#)
 
 ## Debugging
 

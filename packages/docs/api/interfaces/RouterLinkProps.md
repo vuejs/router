@@ -24,7 +24,7 @@ ___
 
 ### ariaCurrentValue
 
-• `Optional` **ariaCurrentValue**: ``"location"`` \| ``"time"`` \| ``"page"`` \| ``"step"`` \| ``"date"`` \| ``"true"`` \| ``"false"``
+• `Optional` **ariaCurrentValue**: ``"time"`` \| ``"location"`` \| ``"page"`` \| ``"step"`` \| ``"date"`` \| ``"true"`` \| ``"false"``
 
 Value passed to the attribute `aria-current` when the link is exact active.
 
@@ -65,7 +65,7 @@ ___
 
 ### to
 
-• **to**: [`RouteLocationRaw`](../index.md#RouteLocationRaw)
+• **to**: `string` \| [`RouteLocationAsRelativeGeneric`](RouteLocationAsRelativeGeneric.md) \| [`RouteLocationAsPathGeneric`](RouteLocationAsPathGeneric.md)
 
 Route Location the link should navigate to when clicked on.
 

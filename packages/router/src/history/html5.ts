@@ -280,7 +280,7 @@ function useHistoryStateNavigation(base: string) {
       warn(
         `history.state seems to have been manually replaced without preserving the necessary values. Make sure to preserve existing history state if you are manually calling history.replaceState:\n\n` +
           `history.replaceState(history.state, '', url)\n\n` +
-          `You can find more information at https://next.router.vuejs.org/guide/migration/#usage-of-history-state.`
+          `You can find more information at https://router.vuejs.org/guide/migration/#Usage-of-history-state`
       )
     }
 

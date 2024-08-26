@@ -8,6 +8,18 @@ editLink: false
 
 Common options for all navigation methods.
 
+## Hierarchy
+
+- **`RouteLocationOptions`**
+
+  ↳ [`RouteLocationNamedRaw`](RouteLocationNamedRaw.md)
+
+  ↳ [`RouteLocationPathRaw`](RouteLocationPathRaw.md)
+
+  ↳ [`RouteLocationAsRelativeGeneric`](RouteLocationAsRelativeGeneric.md)
+
+  ↳ [`RouteLocationAsPathGeneric`](RouteLocationAsPathGeneric.md)
+
 ## Properties
 
 ### force

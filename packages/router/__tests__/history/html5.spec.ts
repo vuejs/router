@@ -1,10 +1,20 @@
 import { JSDOM } from 'jsdom'
 import { createWebHistory } from '../../src/history/html5'
 import { createDom } from '../utils'
+import {
+  vi,
+  describe,
+  expect,
+  it,
+  beforeAll,
+  beforeEach,
+  afterAll,
+  afterEach,
+} from 'vitest'
 
 // override the value of isBrowser because the variable is created before JSDOM
 // is created
-jest.mock('../../src/utils/env', () => ({
+vi.mock('../../src/utils/env', () => ({
   isBrowser: true,
 }))
 
@@ -89,7 +99,7 @@ describe('History HTMl5', () => {
 
   it('prepends the host to support // urls', () => {
     let history = createWebHistory()
-    let spy = jest.spyOn(window.history, 'pushState')
+    let spy = vi.spyOn(window.history, 'pushState')
     history.push('/foo')
     expect(spy).toHaveBeenCalledWith(
       expect.anything(),
@@ -108,7 +118,7 @@ describe('History HTMl5', () => {
   describe('specific to base containing a hash', () => {
     it('calls push with hash part of the url with a base', () => {
       dom.reconfigure({ url: 'file:///usr/etc/index.html' })
-      let initialSpy = jest.spyOn(window.history, 'replaceState')
+      let initialSpy = vi.spyOn(window.history, 'replaceState')
       let history = createWebHistory('#')
       // initial navigation
       expect(initialSpy).toHaveBeenCalledWith(
@@ -116,7 +126,7 @@ describe('History HTMl5', () => {
         expect.any(String),
         '#/'
       )
-      let spy = jest.spyOn(window.history, 'pushState')
+      let spy = vi.spyOn(window.history, 'pushState')
       history.push('/foo')
       expect(spy).toHaveBeenCalledWith(
         expect.anything(),
@@ -129,7 +139,7 @@ describe('History HTMl5', () => {
 
     it('works with something after the hash in the base', () => {
       dom.reconfigure({ url: 'file:///usr/etc/index.html' })
-      let initialSpy = jest.spyOn(window.history, 'replaceState')
+      let initialSpy = vi.spyOn(window.history, 'replaceState')
       let history = createWebHistory('#something')
       // initial navigation
       expect(initialSpy).toHaveBeenCalledWith(
@@ -137,7 +147,7 @@ describe('History HTMl5', () => {
         expect.any(String),
         '#something/'
       )
-      let spy = jest.spyOn(window.history, 'pushState')
+      let spy = vi.spyOn(window.history, 'pushState')
       history.push('/foo')
       expect(spy).toHaveBeenCalledWith(
         expect.anything(),
@@ -150,7 +160,7 @@ describe('History HTMl5', () => {
 
     it('works with #! and on a file with initial location', () => {
       dom.reconfigure({ url: 'file:///usr/etc/index.html#!/foo' })
-      let spy = jest.spyOn(window.history, 'replaceState')
+      let spy = vi.spyOn(window.history, 'replaceState')
       createWebHistory('#!')
       expect(spy).toHaveBeenCalledWith(
         expect.anything(),
@@ -162,7 +172,7 @@ describe('History HTMl5', () => {
 
     it('works with #other', () => {
       dom.reconfigure({ url: 'file:///usr/etc/index.html' })
-      let spy = jest.spyOn(window.history, 'replaceState')
+      let spy = vi.spyOn(window.history, 'replaceState')
       createWebHistory('#other')
       expect(spy).toHaveBeenCalledWith(
         expect.anything(),
@@ -174,7 +184,7 @@ describe('History HTMl5', () => {
 
     it('works with custom#other in domain', () => {
       dom.reconfigure({ url: 'https://esm.dev/custom' })
-      let spy = jest.spyOn(window.history, 'replaceState')
+      let spy = vi.spyOn(window.history, 'replaceState')
       createWebHistory('custom#other')
       expect(spy).toHaveBeenCalledWith(
         expect.anything(),
@@ -186,7 +196,7 @@ describe('History HTMl5', () => {
 
     it('works with #! and a host with initial location', () => {
       dom.reconfigure({ url: 'https://esm.dev/#!/foo' })
-      let spy = jest.spyOn(window.history, 'replaceState')
+      let spy = vi.spyOn(window.history, 'replaceState')
       createWebHistory('/#!')
       expect(spy).toHaveBeenCalledWith(
         expect.anything(),

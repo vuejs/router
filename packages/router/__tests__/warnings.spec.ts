@@ -1,4 +1,3 @@
-import { mockWarn } from 'jest-mock-warn'
 import { createMemoryHistory, createRouter, createRouterMatcher } from '../src'
 import {
   defineAsyncComponent,
@@ -6,6 +5,8 @@ import {
   FunctionalComponent,
   h,
 } from 'vue'
+import { describe, expect, it } from 'vitest'
+import { mockWarn } from './vitest-mock-warn'
 
 let component = defineComponent({})
 
@@ -117,7 +118,7 @@ describe('warnings', () => {
     ).toHaveBeenWarned()
   })
 
-  it('warns if next is called multiple times in one navigation guard', done => {
+  it('warns if next is called multiple times in one navigation guard', async () => {
     expect.assertions(3)
     let router = createRouter({
       history: createMemoryHistory(),
@@ -134,10 +135,9 @@ describe('warnings', () => {
       expect('called more than once').toHaveBeenWarnedTimes(1)
       next()
       expect('called more than once').toHaveBeenWarnedTimes(1)
-      done()
     })
 
-    router.push('/b')
+    await router.push('/b')
   })
 
   it('warns if a non valid function is passed as a component', async () => {

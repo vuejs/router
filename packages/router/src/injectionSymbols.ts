@@ -1,5 +1,5 @@
 import type { InjectionKey, ComputedRef, Ref } from 'vue'
-import { RouteLocationNormalizedLoaded } from './types'
+import type { RouteLocationNormalizedLoaded } from './typed-routes'
 import { RouteRecordNormalized } from './matcher/types'
 import type { Router } from './router'
 

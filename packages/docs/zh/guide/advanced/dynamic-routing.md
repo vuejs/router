@@ -30,7 +30,7 @@ router.addRoute({ path: '/about', component: About })
 
 ```js
 router.addRoute({ path: '/about', component: About })
-// 我们也可以使用 this.$route 或 route = useRoute() （在 setup 中）
+// 我们也可以使用 this.$route 或 useRoute()
 router.replace(router.currentRoute.value.fullPath)
 ```
 

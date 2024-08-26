@@ -8,6 +8,7 @@ import './styles/vars.css'
 import './styles/sponsors.css'
 import VueSchoolLink from './components/VueSchoolLink.vue'
 import VueMasteryLogoLink from './components/VueMasteryLogoLink.vue'
+// import VuejsdeConfBanner from './components/VuejsdeConfBanner.vue'
 import status from '../translation-status.json'
 
 const i18nLabels = {
@@ -21,6 +22,7 @@ const theme: Theme = {
       // 'home-features-after': () => h(HomeSponsors),
       'aside-ads-before': () => h(AsideSponsors),
       'doc-before': () => h(TranslationStatus, { status, i18nLabels }),
+      // 'layout-top': () => h(VuejsdeConfBanner),
     })
   },
 
