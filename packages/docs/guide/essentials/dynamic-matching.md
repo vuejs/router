@@ -32,12 +32,12 @@ A _param_ is denoted by a colon `:`. When a route is matched, the value of its _
 
 You can have multiple _params_ in the same route, and they will map to corresponding fields on `route.params`. Examples:
 
-| pattern                        | matched path             | route.params                           |
-| ------------------------------ | ------------------------ | -------------------------------------- |
-| /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`              |
+| pattern                        | matched path             | route.params                             |
+| ------------------------------ | ------------------------ | ---------------------------------------- |
+| /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`                |
 | /users/:username/posts/:postId | /users/eduardo/posts/123 | `{ username: 'eduardo', postId: '123' }` |
 
-In addition to `route.params`, the `route` object also exposes other useful information such as `route.query` (if there is a query in the URL), `route.hash`, etc. You can check out the full details in the [API Reference](../../api/interfaces/RouteLocationNormalized.md).
+In addition to `route.params`, the `route` object also exposes other useful information such as `route.query` (if there is a query in the URL), `route.hash`, etc. You can check out the full details in the [API Reference](../../api/#RouteLocationNormalized).
 
 A working demo of this example can be found [here](https://codesandbox.io/s/route-params-vue-router-examples-mlb14?from-embed&initialpath=%2Fusers%2Feduardo%2Fposts%2F1).
 
@@ -69,9 +69,12 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-watch(() => route.params.id, (newId, oldId) => {
-  // react to route changes...
-})
+watch(
+  () => route.params.id,
+  (newId, oldId) => {
+    // react to route changes...
+  }
+)
 </script>
 ```
 

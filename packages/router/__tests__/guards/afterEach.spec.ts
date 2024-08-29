@@ -1,5 +1,6 @@
 import { createDom, newRouter as createRouter } from '../utils'
-import { RouteRecordRaw } from 'src/types'
+import { RouteRecordRaw } from '../../src/types'
+import { vi, describe, expect, it, beforeAll } from 'vitest'
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
@@ -24,7 +25,7 @@ describe('router.afterEach', () => {
   })
 
   it('calls afterEach guards on push', async () => {
-    const spy = jest.fn()
+    const spy = vi.fn()
     const router = createRouter({ routes })
     router.afterEach(spy)
     await router.push('/foo')
@@ -37,7 +38,7 @@ describe('router.afterEach', () => {
   })
 
   it('can be removed', async () => {
-    const spy = jest.fn()
+    const spy = vi.fn()
     const router = createRouter({ routes })
     const remove = router.afterEach(spy)
     remove()
@@ -46,7 +47,7 @@ describe('router.afterEach', () => {
   })
 
   it('calls afterEach guards on multiple push', async () => {
-    const spy = jest.fn()
+    const spy = vi.fn()
     const router = createRouter({ routes })
     await router.push('/nested')
     router.afterEach(spy)
@@ -67,8 +68,8 @@ describe('router.afterEach', () => {
   })
 
   it('removing an afterEach guard within one does not affect others', async () => {
-    const spy1 = jest.fn()
-    const spy2 = jest.fn()
+    const spy1 = vi.fn()
+    const spy2 = vi.fn()
     const router = createRouter({ routes })
     router.afterEach(spy1)
     const remove = router.afterEach(spy2)

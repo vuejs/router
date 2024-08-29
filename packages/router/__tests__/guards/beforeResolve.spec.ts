@@ -1,5 +1,6 @@
 import { createDom, noGuard, newRouter as createRouter } from '../utils'
 import { RouteRecordRaw } from '../../src/types'
+import { vi, describe, expect, it, beforeAll } from 'vitest'
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
@@ -15,7 +16,7 @@ describe('router.beforeEach', () => {
   })
 
   it('calls beforeEach guards on navigation', async () => {
-    const spy = jest.fn()
+    const spy = vi.fn()
     const router = createRouter({ routes })
     router.beforeResolve(spy)
     spy.mockImplementationOnce(noGuard)

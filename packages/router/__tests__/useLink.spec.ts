@@ -1,9 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from './vitest-mock-warn'
 import {
   createMemoryHistory,
   createRouter,
@@ -11,6 +11,7 @@ import {
   useLink,
   UseLinkOptions,
 } from '../src'
+import { describe, expect, it } from 'vitest'
 
 async function callUseLink(args: UseLinkOptions) {
   const router = createRouter({

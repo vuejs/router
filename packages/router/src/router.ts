@@ -1,20 +1,25 @@
 import {
-  RouteLocationNormalized,
   RouteRecordRaw,
-  RouteLocationRaw,
-  NavigationHookAfter,
-  START_LOCATION_NORMALIZED,
   Lazy,
-  RouteLocationNormalizedLoaded,
-  RouteLocation,
-  RouteRecordName,
   isRouteLocation,
   isRouteName,
-  NavigationGuardWithThis,
   RouteLocationOptions,
   MatcherLocationRaw,
-  RouteParams,
 } from './types'
+import type {
+  RouteLocation,
+  RouteLocationRaw,
+  RouteParams,
+  RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+  NavigationGuardWithThis,
+  NavigationHookAfter,
+  RouteLocationResolved,
+  RouteLocationAsRelative,
+  RouteLocationAsPath,
+  RouteLocationAsString,
+  RouteRecordNameGeneric,
+} from './typed-routes'
 import { RouterHistory, HistoryState, NavigationType } from './history/common'
 import {
   ScrollPosition,
@@ -49,6 +54,7 @@ import {
   stringifyURL,
   isSameRouteLocation,
   isSameRouteRecord,
+  START_LOCATION_NORMALIZED,
 } from './location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
 import { warn } from './warning'
@@ -60,6 +66,9 @@ import {
   routerViewLocationKey,
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
+import { _LiteralUnion } from './types/utils'
+import { RouteLocationAsRelativeTyped } from './typed-routes/route-location'
+import { RouteMap } from './typed-routes/route-map'
 
 /**
  * Internal type to define an ErrorHandler
@@ -192,7 +201,7 @@ export interface Router {
   readonly options: RouterOptions
 
   /**
-   * Allows turning off the listening of history events. This is a low level api for micro-frontends.
+   * Allows turning off the listening of history events. This is a low level api for micro-frontend.
    */
   listening: boolean
 
@@ -202,7 +211,11 @@ export interface Router {
    * @param parentName - Parent Route Record where `route` should be appended at
    * @param route - Route Record to add
    */
-  addRoute(parentName: RouteRecordName, route: RouteRecordRaw): () => void
+  addRoute(
+    // NOTE: it could be `keyof RouteMap` but the point of dynamic routes is not knowing the routes at build
+    parentName: NonNullable<RouteRecordNameGeneric>,
+    route: RouteRecordRaw
+  ): () => void
   /**
    * Add a new {@link RouteRecordRaw | route record} to the router.
    *
@@ -214,17 +227,22 @@ export interface Router {
    *
    * @param name - Name of the route to remove
    */
-  removeRoute(name: RouteRecordName): void
+  removeRoute(name: NonNullable<RouteRecordNameGeneric>): void
   /**
    * Checks if a route with a given name exists
    *
    * @param name - Name of the route to check
    */
-  hasRoute(name: RouteRecordName): boolean
+  hasRoute(name: NonNullable<RouteRecordNameGeneric>): boolean
   /**
    * Get a full list of all the {@link RouteRecord | route records}.
    */
   getRoutes(): RouteRecord[]
+
+  /**
+   * Delete all routes from the router matcher.
+   */
+  clearRoutes(): void
 
   /**
    * Returns the {@link RouteLocation | normalized version} of a
@@ -235,10 +253,17 @@ export interface Router {
    * @param to - Raw route location to resolve
    * @param currentLocation - Optional current location to resolve against
    */
-  resolve(
-    to: RouteLocationRaw,
+  resolve<Name extends keyof RouteMap = keyof RouteMap>(
+    to: RouteLocationAsRelativeTyped<RouteMap, Name>,
+    // NOTE: This version doesn't work probably because it infers the type too early
+    // | RouteLocationAsRelative<Name>
     currentLocation?: RouteLocationNormalizedLoaded
-  ): RouteLocation & { href: string }
+  ): RouteLocationResolved<Name>
+  resolve(
+    // not having the overload produces errors in RouterLink calls to router.resolve()
+    to: RouteLocationAsString | RouteLocationAsRelative | RouteLocationAsPath,
+    currentLocation?: RouteLocationNormalizedLoaded
+  ): RouteLocationResolved
 
   /**
    * Programmatically navigate to a new URL by pushing an entry in the history
@@ -365,7 +390,7 @@ export function createRouter(options: RouterOptions): Router {
   if (__DEV__ && !routerHistory)
     throw new Error(
       'Provide the "history" option when calling "createRouter()":' +
-        ' https://next.router.vuejs.org/api/#history.'
+        ' https://router.vuejs.org/api/interfaces/RouterOptions.html#history'
     )
 
   const beforeGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
@@ -391,7 +416,7 @@ export function createRouter(options: RouterOptions): Router {
     applyToParams.bind(null, decode)
 
   function addRoute(
-    parentOrRoute: RouteRecordName | RouteRecordRaw,
+    parentOrRoute: NonNullable<RouteRecordNameGeneric> | RouteRecordRaw,
     route?: RouteRecordRaw
   ) {
     let parent: Parameters<(typeof matcher)['addRoute']>[1] | undefined
@@ -414,7 +439,7 @@ export function createRouter(options: RouterOptions): Router {
     return matcher.addRoute(record, parent)
   }
 
-  function removeRoute(name: RouteRecordName) {
+  function removeRoute(name: NonNullable<RouteRecordNameGeneric>) {
     const recordMatcher = matcher.getRecordMatcher(name)
     if (recordMatcher) {
       matcher.removeRoute(recordMatcher)
@@ -427,14 +452,15 @@ export function createRouter(options: RouterOptions): Router {
     return matcher.getRoutes().map(routeMatcher => routeMatcher.record)
   }
 
-  function hasRoute(name: RouteRecordName): boolean {
+  function hasRoute(name: NonNullable<RouteRecordNameGeneric>): boolean {
     return !!matcher.getRecordMatcher(name)
   }
 
   function resolve(
-    rawLocation: Readonly<RouteLocationRaw>,
+    rawLocation: RouteLocationRaw,
     currentLocation?: RouteLocationNormalizedLoaded
-  ): RouteLocation & { href: string } {
+  ): RouteLocationResolved {
+    // const resolve: Router['resolve'] = (rawLocation: RouteLocationRaw, currentLocation) => {
     // const objectLocation = routerLocationAsObject(rawLocation)
     // we create a copy to modify it later
     currentLocation = assign({}, currentLocation || currentRoute.value)
@@ -474,7 +500,7 @@ export function createRouter(options: RouterOptions): Router {
         `router.resolve() was passed an invalid location. This will fail in production.\n- Location:`,
         rawLocation
       )
-      rawLocation = {}
+      return resolve({})
     }
 
     let matcherLocation: MatcherLocationRaw
@@ -1207,6 +1233,7 @@ export function createRouter(options: RouterOptions): Router {
 
     addRoute,
     removeRoute,
+    clearRoutes: matcher.clearRoutes,
     hasRoute,
     getRoutes,
     resolve,

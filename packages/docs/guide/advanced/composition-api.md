@@ -50,7 +50,7 @@ watch(
 </script>
 ```
 
-Note we still have access to `$router` and `$route` in templates, so there's no need to use `useRouter` or `useRoute` if we only need those object in the template.
+Note we still have access to `$router` and `$route` in templates, so there's no need to use `useRouter` or `useRoute` if we only need those objects in the template.
 
 ## Navigation Guards
 

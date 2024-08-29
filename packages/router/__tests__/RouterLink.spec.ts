@@ -1,20 +1,22 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
-import { RouterLink, RouterLinkProps } from '../src/RouterLink'
+import { RouterLink } from '../src/RouterLink'
+import { RouteQueryAndHash, MatcherLocationRaw } from '../src/types'
+import { START_LOCATION_NORMALIZED } from '../src/location'
 import {
-  START_LOCATION_NORMALIZED,
-  RouteQueryAndHash,
-  MatcherLocationRaw,
+  createMemoryHistory,
+  RouterOptions,
   RouteLocationNormalized,
-} from '../src/types'
-import { createMemoryHistory, RouterOptions } from '../src'
+  RouteLocationResolved,
+} from '../src'
 import { createMockedRoute } from './mount'
 import { defineComponent, PropType } from 'vue'
 import { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/injectionSymbols'
 import { tick } from './utils'
 import { mount } from '@vue/test-utils'
+import { vi, describe, expect, it } from 'vitest'
 
 const records = {
   home: {} as RouteRecordNormalized,
@@ -36,8 +38,6 @@ records.parentAlias = {
 } as RouteRecordNormalized
 records.childAlias = { aliasOf: records.child } as RouteRecordNormalized
 records.childEmptyAlias.aliasOf = records.childEmpty
-
-type RouteLocationResolved = RouteLocationNormalized & { href: string }
 
 function createLocations<
   T extends Record<
@@ -367,9 +367,9 @@ async function factory(
       return this.history.base + to.fullPath
     },
     options: {} as Partial<RouterOptions>,
-    resolve: jest.fn(),
-    push: jest.fn().mockResolvedValue(resolvedLocation),
-    replace: jest.fn().mockResolvedValue(resolvedLocation),
+    resolve: vi.fn(),
+    push: vi.fn().mockResolvedValue(resolvedLocation),
+    replace: vi.fn().mockResolvedValue(resolvedLocation),
   }
   router.resolve.mockReturnValueOnce(resolvedLocation)
 
@@ -801,7 +801,7 @@ describe('RouterLink', () => {
   })
 
   it('allows adding more click listeners', async () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     const { router, wrapper } = await factory(
       START_LOCATION_NORMALIZED,
       { to: locations.basic.string, onClick },
@@ -919,9 +919,8 @@ describe('RouterLink', () => {
         components: { RouterLink },
         name: 'AppLink',
 
-        // @ts-expect-error
         props: {
-          ...((RouterLink as any).props as RouterLinkProps),
+          ...(RouterLink as any).props,
           inactiveClass: String as PropType<string>,
         },
 
@@ -946,8 +945,8 @@ describe('RouterLink', () => {
             return this.history.base + to.fullPath
           },
           options: {} as Partial<RouterOptions>,
-          resolve: jest.fn(),
-          push: jest.fn().mockResolvedValue(resolvedLocation),
+          resolve: vi.fn(),
+          push: vi.fn().mockResolvedValue(resolvedLocation),
         }
         router.resolve.mockReturnValueOnce(resolvedLocation)
 

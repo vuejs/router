@@ -1,16 +1,15 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 import { RouterView } from '../src/RouterView'
 import { components, RouteLocationNormalizedLoose } from './utils'
-import {
-  START_LOCATION_NORMALIZED,
-  RouteLocationNormalized,
-} from '../src/types'
+import { START_LOCATION_NORMALIZED } from '../src/location'
 import { markRaw } from 'vue'
 import { createMockedRoute } from './mount'
-import { mockWarn } from 'jest-mock-warn'
 import { mount } from '@vue/test-utils'
+import { RouteLocationNormalized } from '../src'
+import { describe, expect, it } from 'vitest'
+import { mockWarn } from './vitest-mock-warn'
 
 // to have autocompletion
 function createRoutes<T extends Record<string, RouteLocationNormalizedLoose>>(

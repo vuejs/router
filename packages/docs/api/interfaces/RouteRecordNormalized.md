@@ -49,6 +49,14 @@ Components to display when the URL matches this route. Allow using named views.
 
 ___
 
+### enterCallbacks
+
+• **enterCallbacks**: `Record`\<`string`, [`NavigationGuardNextCallback`](../index.md#NavigationGuardNextCallback)[]\>
+
+Registered beforeRouteEnter callbacks passed to `next` or returned in guards
+
+___
+
 ### instances
 
 • **instances**: `Record`\<`string`, `undefined` \| ``null`` \| `ComponentPublicInstance`\>
@@ -63,6 +71,14 @@ views.
 
 ___
 
+### leaveGuards
+
+• **leaveGuards**: `Set`\<[`NavigationGuard`](NavigationGuard.md)\>
+
+Registered leave guards
+
+___
+
 ### meta
 
 • **meta**: [`RouteMeta`](RouteMeta.md)
@@ -73,7 +89,7 @@ ___
 
 ### name
 
-• **name**: `undefined` \| [`RouteRecordName`](../index.md#RouteRecordName)
+• **name**: [`RouteRecordNameGeneric`](../index.md#RouteRecordNameGeneric)
 
 Name for the route record. Must be unique.
 
@@ -90,7 +106,7 @@ ___
 
 ### props
 
-• **props**: `Record`\<`string`, `_RouteRecordProps`\>
+• **props**: `Record`\<`string`, [`_RouteRecordProps`](../index.md#_RouteRecordProps)\>
 
 Allow passing down params as props to the component rendered by
 `router-view`. Should be an object with the same keys as `components` or a
@@ -100,8 +116,16 @@ ___
 
 ### redirect
 
-• **redirect**: `undefined` \| `RouteRecordRedirectOption`
+• **redirect**: `undefined` \| [`RouteRecordRedirectOption`](../index.md#RouteRecordRedirectOption)
 
 Where to redirect if the route is directly matched. The redirection happens
 before any navigation guard and triggers a new navigation with the new
 target location.
+
+___
+
+### updateGuards
+
+• **updateGuards**: `Set`\<[`NavigationGuard`](NavigationGuard.md)\>
+
+Registered update guards

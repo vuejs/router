@@ -17,11 +17,11 @@ import {
   VNode,
   Component,
 } from 'vue'
-import {
+import type {
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
-  RouteLocationMatched,
-} from './types'
+} from './typed-routes'
+import type { RouteLocationMatched } from './types'
 import {
   matchedRouteKey,
   viewDepthKey,

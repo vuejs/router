@@ -25,8 +25,8 @@ Global before guards are called in creation order, whenever a navigation is trig
 
 Every guard function receives two arguments:
 
-- **`to`**: the target route location [in a normalized format](../../api/interfaces/RouteLocationNormalized.md) being navigated to.
-- **`from`**: the current route location [in a normalized format](../../api/interfaces/RouteLocationNormalized.md) being navigated away from.
+- **`to`**: the target route location [in a normalized format](../../api/#RouteLocationNormalized) being navigated to.
+- **`from`**: the current route location [in a normalized format](../../api/#RouteLocationNormalized) being navigated away from.
 
 And can optionally return any of the following values:
 

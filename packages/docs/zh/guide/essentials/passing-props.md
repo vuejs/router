@@ -5,26 +5,74 @@
   title="Learn how to pass props to route components"
 />
 
-在你的组件中使用 `$route` 会与路由紧密耦合，这限制了组件的灵活性，因为它只能用于特定的 URL。虽然这不一定是件坏事，但我们可以通过 `props` 配置来解除这种行为：
+在你的组件中使用 `$route` 或 `useRoute()` 会与路由紧密耦合，这限制了组件的灵活性，因为它只能用于特定的 URL。虽然这不一定是件坏事，但我们可以通过 `props` 配置来解除这种行为：
 
-我们可以将下面的代码
+回到我们之前的示例：
 
-```js
-const User = {
-  template: '<div>User {{ $route.params.id }}</div>'
-}
-const routes = [{ path: '/user/:id', component: User }]
+```vue
+<!-- User.vue -->
+<template>
+  <div>
+    User {{ $route.params.id }}
+  </div>
+</template>
 ```
 
-替换成
+和：
 
 ```js
-const User = {
-  // 请确保添加一个与路由参数完全相同的 prop 名
-  props: ['id'],
-  template: '<div>User {{ id }}</div>'
+import User from './User.vue'
+
+// 传入 `createRouter`
+const routes = [
+  { path: '/users/:id', component: User },
+]
+```
+
+我们可以通过声明 prop 来在 `User.vue` 中删除对 `$route` 的直接依赖：
+
+::: code-group
+
+```vue [Composition API]
+<!-- User.vue -->
+<script setup>
+defineProps({
+  id: String
+})
+</script>
+
+<template>
+  <div>
+    User {{ id }}
+  </div>
+</template>
+```
+
+```vue [Options API]
+<!-- User.vue -->
+<script>
+export default {
+  props: {
+    id: String
+  }
 }
-const routes = [{ path: '/user/:id', component: User, props: true }]
+</script>
+
+<template>
+  <div>
+    User {{ id }}
+  </div>
+</template>
+```
+
+:::
+
+然后我们可以通过设置 `props: true` 来配置路由将 `id` 参数作为 prop 传递给组件：
+
+```js
+const routes = [
+  { path: '/user/:id', component: User, props: true }
+]
 ```
 
 这允许你在任何地方使用该组件，使得该组件更容易重用和测试。

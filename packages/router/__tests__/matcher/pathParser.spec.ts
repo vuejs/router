@@ -1,5 +1,6 @@
 import { tokenizePath, TokenType } from '../../src/matcher/pathTokenizer'
 import { tokensToParser } from '../../src/matcher/pathParserRanker'
+import { describe, expect, it } from 'vitest'
 
 describe('Path parser', () => {
   describe('tokenizer', () => {

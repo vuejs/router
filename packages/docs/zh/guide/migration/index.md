@@ -79,7 +79,7 @@ createRouter({
 })
 ```
 
-**原因**: Vue支持的所有浏览器都支持 [HTML5 History API](https://developer.mozilla.org/zh-CN/docs/Web/API/History_API)，因此我们不再需要使用 `location.hash`，而可以直接使用 `history.pushState()`。
+**原因**: Vue 支持的所有浏览器都支持 [HTML5 History API](https://developer.mozilla.org/zh-CN/docs/Web/API/History_API)，因此我们不再需要使用 `location.hash`，而可以直接使用 `history.pushState()`。
 
 ### 删除了 `*`（星标或通配符）路由
 
@@ -436,7 +436,7 @@ const routes = [
 
 <!-- TODO: translate chinese API entries -->
 
-给定任何[规范化的路由地址](/zh/api/interfaces/RouteLocationNormalized.md):
+给定任何[规范化的路由地址](/zh/api/#RouteLocationNormalized):
 
 - `path`, `fullPath`中的值不再被解码了。例如，直接在地址栏上写 "<https://example.com/hello> world"，将得到编码后的版本："https://example.com/hello%20world"，而 "path "和 "fullPath "都是"/hello%20world"。
 - `hash` 现在被解码了，这样就可以复制过来。`router.push({ hash: $route.hash })` 可以直接用于 [scrollBehavior](/zh/api/interfaces/RouterOptions.md#Properties-scrollBehavior) 的 `el` 配置中。

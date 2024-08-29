@@ -1,4 +1,4 @@
-import { h, createApp } from '@vue/runtime-dom'
+import { h, createApp } from 'vue'
 import { createRouter, createWebHistory } from '../dist/vue-router.esm-bundler'
 
 createRouter({

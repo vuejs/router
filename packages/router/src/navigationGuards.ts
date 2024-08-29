@@ -1,15 +1,19 @@
 import {
-  NavigationGuard,
-  RouteLocationNormalized,
-  NavigationGuardNext,
-  RouteLocationRaw,
-  RouteLocationNormalizedLoaded,
-  NavigationGuardNextCallback,
   isRouteLocation,
   Lazy,
   RouteComponent,
   RawRouteComponent,
 } from './types'
+
+import type {
+  RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+  NavigationGuard,
+  RouteLocation,
+  RouteLocationRaw,
+  NavigationGuardNext,
+  NavigationGuardNextCallback,
+} from './typed-routes'
 
 import {
   createRouterError,
@@ -368,7 +372,7 @@ export function isRouteComponent(
  * @param route - resolved route to load
  */
 export function loadRouteLocation(
-  route: RouteLocationNormalized
+  route: RouteLocation | RouteLocationNormalized
 ): Promise<RouteLocationNormalizedLoaded> {
   return route.matched.every(record => record.redirect)
     ? Promise.reject(new Error('Cannot load a route that redirects.'))

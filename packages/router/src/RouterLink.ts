@@ -25,20 +25,24 @@ import {
   RendererNode,
   // @ts-ignore
   ComponentOptionsMixin,
+  MaybeRef,
 } from 'vue'
-import {
-  isRouteLocation,
-  RouteLocationRaw,
-  VueUseOptions,
-  RouteLocation,
-  RouteLocationNormalized,
-} from './types'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { NavigationFailure } from './errors'
 import { isArray, isBrowser, noop } from './utils'
 import { warn } from './warning'
+import { isRouteLocation } from './types'
+import {
+  RouteLocation,
+  RouteLocationAsPath,
+  RouteLocationAsRelativeTyped,
+  RouteLocationAsString,
+  RouteLocationRaw,
+  RouteLocationResolved,
+  RouteMap,
+} from './typed-routes'
 
 export interface RouterLinkOptions {
   /**
@@ -81,18 +85,52 @@ export interface RouterLinkProps extends RouterLinkOptions {
     | 'false'
 }
 
+/**
+ * Context passed from router-link components to devtools.
+ * @internal
+ */
 export interface UseLinkDevtoolsContext {
-  route: RouteLocationNormalized & { href: string }
+  route: RouteLocationResolved
   isActive: boolean
   isExactActive: boolean
   error: string | null
 }
 
-export type UseLinkOptions = VueUseOptions<RouterLinkOptions>
+/**
+ * Options passed to {@link useLink}.
+ */
+export interface UseLinkOptions<Name extends keyof RouteMap = keyof RouteMap> {
+  to: MaybeRef<
+    | RouteLocationAsString
+    | RouteLocationAsRelativeTyped<RouteMap, Name>
+    | RouteLocationAsPath
+    | RouteLocationRaw
+  >
+  replace?: MaybeRef<boolean | undefined>
+}
+
+/**
+ * Return type of {@link useLink}.
+ * @internal
+ */
+export interface UseLinkReturn<Name extends keyof RouteMap = keyof RouteMap> {
+  route: ComputedRef<RouteLocationResolved<Name>>
+  href: ComputedRef<string>
+  isActive: ComputedRef<boolean>
+  isExactActive: ComputedRef<boolean>
+  navigate(e?: MouseEvent): Promise<void | NavigationFailure>
+}
 
 // TODO: we could allow currentRoute as a prop to expose `isActive` and
 // `isExactActive` behavior should go through an RFC
-export function useLink(props: UseLinkOptions) {
+/**
+ * Returns the internal behavior of a {@link RouterLink} without the rendering part.
+ *
+ * @param props - a `to` location and an optional `replace` flag
+ */
+export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
+  props: UseLinkOptions<Name>
+): UseLinkReturn<Name> {
   const router = inject(routerKey)!
   const currentRoute = inject(routeLocationKey)!
 
@@ -317,7 +355,8 @@ export interface _RouterLinkI {
         isActive,
         isExactActive,
         navigate,
-      }: UnwrapRef<ReturnType<typeof useLink>>) => VNode[]
+      }: // TODO: How do we add the name generic
+      UnwrapRef<UseLinkReturn>) => VNode[]
     }
   }
 

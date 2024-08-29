@@ -15,7 +15,7 @@
   background-color: var(--vp-c-brand);
   text-decoration: none;
   border-color: var(--vp-c-brand);
-  color: var(--vp-button-brand-text);
+  color: var(--vp-button-brand-text) !important;
 }
 
 .sponsors-top .become-sponsor {

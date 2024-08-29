@@ -1,5 +1,6 @@
 import { stringifyQuery } from '../src/query'
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from './vitest-mock-warn'
+import { describe, expect, it } from 'vitest'
 
 describe('stringifyQuery', () => {
   mockWarn()

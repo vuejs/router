@@ -9,16 +9,16 @@
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
-    "vue": "^3.4.23"
+    "vue": "^3.4.29"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
-    "@vitejs/plugin-vue": "^5.0.4",
-    "@vue/compiler-sfc": "^3.4.23",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "@vue/compiler-sfc": "^3.4.29",
     "@vue/tsconfig": "^0.5.1",
     "typescript": "~5.3.3",
-    "vite": "^5.2.9",
+    "vite": "^5.3.1",
     "vue-router": "workspace:*",
-    "vue-tsc": "^1.8.27"
+    "vue-tsc": "^2.0.21"
   }
 }

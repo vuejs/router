@@ -1,5 +1,6 @@
 import { createMemoryHistory } from '../../src/history/memory'
 import { START, HistoryLocation } from '../../src/history/common'
+import { vi, describe, expect, it } from 'vitest'
 
 const loc: HistoryLocation = '/foo'
 
@@ -26,7 +27,7 @@ describe('Memory history', () => {
 
   it('does not trigger listeners with push', () => {
     const history = createMemoryHistory()
-    const spy = jest.fn()
+    const spy = vi.fn()
     history.listen(spy)
     history.push(loc)
     expect(spy).not.toHaveBeenCalled()
@@ -34,7 +35,7 @@ describe('Memory history', () => {
 
   it('does not trigger listeners with replace', () => {
     const history = createMemoryHistory()
-    const spy = jest.fn()
+    const spy = vi.fn()
     history.listen(spy)
     history.replace(loc)
     expect(spy).not.toHaveBeenCalled()
@@ -91,7 +92,7 @@ describe('Memory history', () => {
 
   it('can listen to navigations', () => {
     const history = createMemoryHistory()
-    const spy = jest.fn()
+    const spy = vi.fn()
     history.listen(spy)
     history.push(loc)
     history.go(-1)
@@ -112,8 +113,8 @@ describe('Memory history', () => {
 
   it('can stop listening to navigation', () => {
     const history = createMemoryHistory()
-    const spy = jest.fn()
-    const spy2 = jest.fn()
+    const spy = vi.fn()
+    const spy2 = vi.fn()
     // remove right away
     history.listen(spy)()
     const remove = history.listen(spy2)
@@ -129,8 +130,8 @@ describe('Memory history', () => {
 
   it('removing the same listener is a noop', () => {
     const history = createMemoryHistory()
-    const spy = jest.fn()
-    const spy2 = jest.fn()
+    const spy = vi.fn()
+    const spy2 = vi.fn()
     const rem = history.listen(spy)
     const rem2 = history.listen(spy2)
     rem()
@@ -149,7 +150,7 @@ describe('Memory history', () => {
   it('removes all listeners with destroy', () => {
     const history = createMemoryHistory()
     history.push('/other')
-    const spy = jest.fn()
+    const spy = vi.fn()
     history.listen(spy)
     history.destroy()
     history.push('/2')
@@ -177,7 +178,7 @@ describe('Memory history', () => {
 
   it('can avoid listeners with back and forward', () => {
     const history = createMemoryHistory()
-    const spy = jest.fn()
+    const spy = vi.fn()
     history.listen(spy)
     history.push(loc)
     history.go(-1, false)
