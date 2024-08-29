@@ -254,7 +254,7 @@ export interface _RouteRecordBase extends PathParserOptions {
  *   interface RouteMeta {
  *     requiresAuth?: boolean
  *   }
- *  }
+ * }
  * ```
  */
 export interface RouteMeta extends Record<string | number | symbol, unknown> {}
