@@ -60,7 +60,7 @@ html:not(.banner-dismissed) {
   text-align: center;
   font-size: 12px;
   font-weight: 600;
-  color: #fff;
+  color: #000;
 }
 
 .banner-dismissed .banner {
@@ -69,6 +69,10 @@ html:not(.banner-dismissed) {
 
 a {
   text-decoration: underline;
+}
+
+.close {
+  font-size: 24px;
 }
 
 .banner-vuejsconf {
