@@ -1,4 +1,13 @@
 import type {
+  ComponentInjectOptions,
+  ComponentOptionsMixin,
+  ComputedOptions,
+  EmitsOptions,
+  MethodOptions,
+  SlotsType,
+} from 'vue';
+
+import type {
   NavigationGuardWithThis,
   NavigationGuard,
   RouteLocationNormalizedLoaded,
@@ -57,6 +66,22 @@ declare module 'vue' {
       ? T
       : NavigationGuard
   }
+
+  export interface ComponentOptionsBase<
+    Props,
+    RawBindings,
+    D,
+    C extends ComputedOptions,
+    M extends MethodOptions,
+    Mixin extends ComponentOptionsMixin,
+    Extends extends ComponentOptionsMixin,
+    E extends EmitsOptions,
+    EE extends string = string,
+    Defaults = {},
+    I extends ComponentInjectOptions = {},
+    II extends string = string,
+    S extends SlotsType = {},
+  > extends ComponentCustomOptions {}
 
   export interface ComponentCustomProperties {
     /**
