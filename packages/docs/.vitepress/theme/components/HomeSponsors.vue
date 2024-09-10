@@ -1,3 +1,16 @@
+<script setup lang="ts">
+import HomeSponsorsGroup from './HomeSponsorsGroup.vue'
+import sponsors from './sponsors.json'
+import { useData } from 'vitepress'
+
+const { site } = useData()
+const translations = {
+  en: 'Become a sponsor',
+  'en-US': 'Become a Sponsor!',
+  'zh-CN': '成为赞助者！',
+}
+</script>
+
 <template>
   <div class="sponsors_outer">
     <div>
@@ -24,20 +37,35 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import HomeSponsorsGroup from './HomeSponsorsGroup.vue'
-import sponsors from './sponsors.json'
-import { useData } from 'vitepress'
-
-const { site } = useData()
-const translations = {
-  en: 'Become a sponsor',
-  'en-US': 'Become a Sponsor!',
-  'zh-CN': '成为赞助者！',
-}
-</script>
 
 <style scoped>
+.become-sponsor {
+  font-size: 0.9em;
+  font-weight: 700;
+  width: auto;
+  text-align: center;
+  background-color: transparent;
+  padding: 0.75em 2em;
+  border-radius: 2em;
+  transition: all 0.30s ease;
+  box-sizing: border-box;
+  border: 2px solid var(--vp-c-brand-1);
+  text-decoration: none;
+}
+
+.become-sponsor:hover {
+  background-color: var(--vp-c-brand);
+  border-color: var(--vp-c-brand);
+  color: var(--vp-button-brand-text) !important;
+}
+
+.sponsors-top .become-sponsor {
+  font-size: 0.75em;
+  padding: 0.2em;
+  width: auto;
+  max-width: 150px;
+}
+
 .sponsors_outer {
   text-align: center;
   padding: 35px 40px 45px;
