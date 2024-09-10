@@ -49,13 +49,12 @@ const translations = {
   border-radius: 2em;
   transition: all 0.30s ease;
   box-sizing: border-box;
-  border: 2px solid var(--vp-c-brand-1);
+  border: 2px solid var(--vp-button-brand-hover-bg);
   text-decoration: none;
 }
 
 .become-sponsor:hover {
-  background-color: var(--vp-c-brand);
-  border-color: var(--vp-c-brand);
+  background-color: var(--vp-button-brand-hover-bg);
   color: var(--vp-button-brand-text) !important;
 }
 
@@ -69,7 +68,6 @@ const translations = {
 .sponsors_outer {
   text-align: center;
   padding: 35px 40px 45px;
-  background-color: var(--vp-c-bg-accent);
   /* transition when toggling dark mode */
   transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
 }
