@@ -13,7 +13,7 @@
     "docs:preview": "vitepress preview ."
   },
   "dependencies": {
-    "simple-git": "^3.25.0",
+    "simple-git": "^3.26.0",
     "vitepress": "1.2.3",
     "vitepress-translation-helper": "^0.2.1",
     "vue-router": "workspace:*"
