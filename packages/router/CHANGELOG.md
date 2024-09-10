@@ -1,3 +1,13 @@
+## [4.4.4](https://github.com/vuejs/router/compare/v4.4.3...v4.4.4) (2024-09-10)
+
+### Bug Fixes
+
+- **ssr:** handle symboless Modules in dynamic imports ([#2355](https://github.com/vuejs/router/issues/2355)) ([4861467](https://github.com/vuejs/router/commit/4861467e60a9e20d00cb46e4b9bbce1a2e129e0e))
+
+### Features
+
+- **loaders:** internal mods in route records ([5ff2cd0](https://github.com/vuejs/router/commit/5ff2cd09d656a6f5ff38517c87d48b89f41ff49b))
+
 ## [4.4.3](https://github.com/vuejs/router/compare/v4.4.2...v4.4.3) (2024-08-06)
 
 ### Bug Fixes
