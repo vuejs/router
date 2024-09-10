@@ -9,12 +9,12 @@
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
-    "vue": "^3.5.3"
+    "vue": "~3.4.3"
   },
   "devDependencies": {
     "@types/node": "^20.16.5",
     "@vitejs/plugin-vue": "^5.1.3",
-    "@vue/compiler-sfc": "^3.5.3",
+    "@vue/compiler-sfc": "~3.4.3",
     "@vue/tsconfig": "^0.5.1",
     "typescript": "~5.3.3",
     "vite": "^5.4.3",

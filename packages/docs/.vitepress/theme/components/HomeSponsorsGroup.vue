@@ -3,20 +3,15 @@ import sponsors from './sponsors.json'
 import { computed } from 'vue'
 import { useData } from 'vitepress'
 
-const props = withDefaults(
-  defineProps<{
+const { name, size = 140 } = defineProps<{
     name: 'Gold' | 'Platinum' | 'Silver' | 'Bronze'
     size?: number | string
-  }>(),
-  {
-    size: 140,
-  }
-)
+  }>()
 
 const { isDark } = useData()
 
 const list = computed(() =>
-  sponsors[props.name.toLowerCase()].map(sponsor => ({
+  sponsors[name.toLowerCase()].map(sponsor => ({
     ...sponsor,
     imgSrc: isDark.value ? sponsor.imgSrcDark : sponsor.imgSrcLight,
   }))
