@@ -86,6 +86,61 @@ describe('loadRouteLocation', () => {
     ])
   })
 
+  describe('mods', () => {
+    const mod = {
+      default: components.Home,
+      __esModule: true,
+      custom: true,
+    }
+    const mod2 = {
+      default: FunctionalHome,
+      __esModule: true,
+      custom: true,
+    }
+
+    it('preserves resolved modules', async () => {
+      const router = createRouter({
+        history: createMemoryHistory(),
+        routes: [
+          {
+            path: '/',
+            component: async () => mod,
+          },
+        ],
+      })
+
+      const loaded = await loadRouteLocation(router.resolve('/'))
+      // mods follow the same structure as components
+      expect(loaded.matched[0]?.mods).toEqual({
+        default: expect.anything(),
+      })
+      expect(loaded.matched[0]?.mods?.default).toBe(mod)
+    })
+
+    it('preserves resolved modules for named components', async () => {
+      const router = createRouter({
+        history: createMemoryHistory(),
+        routes: [
+          {
+            path: '/',
+            components: {
+              default: async () => mod2,
+              name: async () => mod,
+            },
+          },
+        ],
+      })
+
+      const loaded = await loadRouteLocation(router.resolve('/'))
+      expect(loaded.matched[0]?.mods).toEqual({
+        default: expect.anything(),
+        name: expect.anything(),
+      })
+      expect(loaded.matched[0]?.mods?.name).toBe(mod)
+      expect(loaded.matched[0]?.mods?.default).toBe(mod2)
+    })
+  })
+
   it('throws with non loadable routes', async () => {
     expect.assertions(1)
     await expect(

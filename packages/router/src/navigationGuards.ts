@@ -316,14 +316,14 @@ export function extractComponentsGuards(
         guards.push(() =>
           componentPromise.then(resolved => {
             if (!resolved)
-              return Promise.reject(
-                new Error(
-                  `Couldn't resolve component "${name}" at "${record.path}"`
-                )
+              throw new Error(
+                `Couldn't resolve component "${name}" at "${record.path}"`
               )
             const resolvedComponent = isESModule(resolved)
               ? resolved.default
               : resolved
+            // keep the resolved module for plugins like data loaders
+            record.mods[name] = resolved
             // replace the function with the resolved component
             // cannot be null or undefined because we went into the for loop
             record.components![name] = resolvedComponent
@@ -331,6 +331,7 @@ export function extractComponentsGuards(
             const options: ComponentOptions =
               (resolvedComponent as any).__vccOpts || resolvedComponent
             const guard = options[guardType]
+
             return (
               guard &&
               guardToPromiseFn(guard, to, from, record, name, runWithContext)()
@@ -373,9 +374,12 @@ export function loadRouteLocation(
                             `Couldn't resolve component "${name}" at "${record.path}". Ensure you passed a function that returns a promise.`
                           )
                         )
+
                       const resolvedComponent = isESModule(resolved)
                         ? resolved.default
                         : resolved
+                      // keep the resolved module for plugins like data loaders
+                      record.mods[name] = resolved
                       // replace the function with the resolved component
                       // cannot be null or undefined because we went into the for loop
                       record.components![name] = resolvedComponent
