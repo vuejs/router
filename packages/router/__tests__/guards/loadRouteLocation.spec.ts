@@ -1,9 +1,10 @@
-import { isRouteComponent, loadRouteLocation } from '../../src/navigationGuards'
+import { loadRouteLocation } from '../../src/navigationGuards'
 import { RouteRecordRaw } from '../../src/types'
 import { components } from '../utils'
 import { RouteLocationRaw, createMemoryHistory, createRouter } from '../../src'
 import { FunctionalComponent } from 'vue'
 import { describe, expect, it } from 'vitest'
+import { isRouteComponent } from '../../src/utils'
 
 const FunctionalHome: FunctionalComponent = () => null
 FunctionalHome.displayName = 'Home'
