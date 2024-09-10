@@ -1,9 +1,4 @@
-import {
-  isRouteLocation,
-  Lazy,
-  RouteComponent,
-  RawRouteComponent,
-} from './types'
+import { isRouteLocation, Lazy, RouteComponent } from './types'
 
 import type {
   RouteLocationNormalized,
@@ -25,7 +20,7 @@ import { ComponentOptions, onUnmounted, onActivated, onDeactivated } from 'vue'
 import { inject, getCurrentInstance } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
-import { isESModule } from './utils'
+import { isESModule, isRouteComponent } from './utils'
 import { warn } from './warning'
 
 function registerGuard(
@@ -347,23 +342,6 @@ export function extractComponentsGuards(
   }
 
   return guards
-}
-
-/**
- * Allows differentiating lazy components from functional components and vue-class-component
- * @internal
- *
- * @param component
- */
-export function isRouteComponent(
-  component: RawRouteComponent
-): component is RouteComponent {
-  return (
-    typeof component === 'object' ||
-    'displayName' in component ||
-    'props' in component ||
-    '__vccOpts' in component
-  )
 }
 
 /**
