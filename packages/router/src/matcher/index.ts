@@ -381,7 +381,7 @@ function paramsFromLocation(
 export function normalizeRouteRecord(
   record: RouteRecordRaw
 ): RouteRecordNormalized {
-  return {
+  const normalized: RouteRecordNormalized = {
     path: record.path,
     redirect: record.redirect,
     name: record.name,
@@ -400,6 +400,15 @@ export function normalizeRouteRecord(
         ? record.components || null
         : record.component && { default: record.component },
   }
+
+  // mods contain modules and shouldn't be copied,
+  // logged or anything. It's just used for internal
+  // advanced use cases like data loaders
+  Object.defineProperty(normalized, 'mods', {
+    value: {},
+  })
+
+  return normalized
 }
 
 /**
