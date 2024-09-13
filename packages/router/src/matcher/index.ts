@@ -88,28 +88,30 @@ export function createRouterMatcher(
     mainNormalizedRecord.aliasOf = originalRecord && originalRecord.record
     const options: PathParserOptions = mergeOptions(globalOptions, record)
     // generate an array of records to correctly handle aliases
-    const normalizedRecords: (typeof mainNormalizedRecord)[] = [
-      mainNormalizedRecord,
-    ]
+    const normalizedRecords: RouteRecordNormalized[] = [mainNormalizedRecord]
     if ('alias' in record) {
       const aliases =
         typeof record.alias === 'string' ? [record.alias] : record.alias!
       for (const alias of aliases) {
         normalizedRecords.push(
-          assign({}, mainNormalizedRecord, {
-            // this allows us to hold a copy of the `components` option
-            // so that async components cache is hold on the original record
-            components: originalRecord
-              ? originalRecord.record.components
-              : mainNormalizedRecord.components,
-            path: alias,
-            // we might be the child of an alias
-            aliasOf: originalRecord
-              ? originalRecord.record
-              : mainNormalizedRecord,
-            // the aliases are always of the same kind as the original since they
-            // are defined on the same record
-          }) as typeof mainNormalizedRecord
+          // we need to normalize again to ensure the `mods` property
+          // being non enumerable
+          normalizeRouteRecord(
+            assign({}, mainNormalizedRecord, {
+              // this allows us to hold a copy of the `components` option
+              // so that async components cache is hold on the original record
+              components: originalRecord
+                ? originalRecord.record.components
+                : mainNormalizedRecord.components,
+              path: alias,
+              // we might be the child of an alias
+              aliasOf: originalRecord
+                ? originalRecord.record
+                : mainNormalizedRecord,
+              // the aliases are always of the same kind as the original since they
+              // are defined on the same record
+            })
+          )
         )
       }
     }
@@ -379,14 +381,14 @@ function paramsFromLocation(
  * @returns the normalized version
  */
 export function normalizeRouteRecord(
-  record: RouteRecordRaw
+  record: RouteRecordRaw & { aliasOf?: RouteRecordNormalized }
 ): RouteRecordNormalized {
   const normalized: Omit<RouteRecordNormalized, 'mods'> = {
     path: record.path,
     redirect: record.redirect,
     name: record.name,
     meta: record.meta || {},
-    aliasOf: undefined,
+    aliasOf: record.aliasOf,
     beforeEnter: record.beforeEnter,
     props: normalizeRecordProps(record),
     children: record.children || [],
