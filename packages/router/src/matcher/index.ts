@@ -381,7 +381,7 @@ function paramsFromLocation(
 export function normalizeRouteRecord(
   record: RouteRecordRaw
 ): RouteRecordNormalized {
-  const normalized: RouteRecordNormalized = {
+  const normalized: Omit<RouteRecordNormalized, 'mods'> = {
     path: record.path,
     redirect: record.redirect,
     name: record.name,
@@ -394,7 +394,8 @@ export function normalizeRouteRecord(
     leaveGuards: new Set(),
     updateGuards: new Set(),
     enterCallbacks: {},
-    mods: {},
+    // must be declared afterwards
+    // mods: {},
     components:
       'components' in record
         ? record.components || null
@@ -408,7 +409,7 @@ export function normalizeRouteRecord(
     value: {},
   })
 
-  return normalized
+  return normalized as RouteRecordNormalized
 }
 
 /**
