@@ -1,3 +1,9 @@
+## [4.4.5](https://github.com/vuejs/router/compare/v4.4.4...v4.4.5) (2024-09-13)
+
+### Bug Fixes
+
+- make internal property non enumerable to avoid errors with `{{route}}` ([a8df616](https://github.com/vuejs/router/commit/a8df616bfda2feb7aa6b738054a02e241d4f276b))
+
 ## [4.4.4](https://github.com/vuejs/router/compare/v4.4.3...v4.4.4) (2024-09-10)
 
 ### Bug Fixes
