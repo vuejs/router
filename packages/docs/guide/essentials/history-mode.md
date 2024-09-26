@@ -203,6 +203,20 @@ Create a `vercel.json` file under the root directory of your project with the fo
 }
 ```
 
+### Azure Static Web Apps
+
+Create a `staticwebapp.config.json` file at the root of your deployed project folder with the following:
+
+```json
+{
+    "navigationFallback": {
+        "rewrite": "/index.html"
+    }
+}
+```
+
+In vue-cli, nuxt, and vite projects, this file usually goes under a folder named `static` or `public`.
+
 ## Caveat
 
 There is a caveat to this: Your server will no longer report 404 errors as all not-found paths now serve up your `index.html` file. To get around the issue, you should implement a catch-all route within your Vue app to show a 404 page:
