@@ -263,6 +263,10 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
   }
 }
 
+function preferSingleVNode<T>(vnodes: T | T[]) {
+  return isArray(vnodes) && vnodes.length === 1 ? vnodes[0] : vnodes
+}
+
 export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
   name: 'RouterLink',
   compatConfig: { MODE: 3 },
@@ -307,7 +311,7 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
     }))
 
     return () => {
-      const children = slots.default && slots.default(link)
+      const children = preferSingleVNode(slots.default && slots.default(link))
       return props.custom
         ? children
         : h(
