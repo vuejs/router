@@ -28,7 +28,7 @@ export type LocationQueryValueRaw = LocationQueryValue | number | undefined
  */
 export type LocationQuery = Record<
   string,
-  LocationQueryValue | LocationQueryValue[]
+  LocationQueryValue | LocationQueryValue[] | undefined
 >
 /**
  * Loose {@link LocationQuery} object that can be passed to functions like
