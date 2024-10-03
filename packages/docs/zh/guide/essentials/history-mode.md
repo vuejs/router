@@ -202,6 +202,20 @@ rewrite {
 }
 ```
 
+### Azure Static Web Apps
+
+创建一个`staticwebapp.config.json`文件，包含在部署目录中，内容如下：
+
+```json
+{
+    "navigationFallback": {
+        "rewrite": "/index.html"
+    }
+}
+```
+
+在 vue-cli、nuxt 和 vite 项目中，这个文件通常放在名为 `static` 或 `public` 的目录下。
+
 ## 附加说明
 
 这有一个注意事项。你的服务器将不再报告 404 错误，因为现在所有未找到的路径都会显示你的 `index.html` 文件。为了解决这个问题，你应该在你的 Vue 应用程序中实现一个万能的路由来显示 404 页面。
