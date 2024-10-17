@@ -911,7 +911,7 @@ describe('RouterLink', () => {
         `,
         components: { RouterLink },
         directives: { Directive },
-        name: 'AppLink'
+        name: 'AppLink',
       })
 
       const { wrapper } = await factory(
