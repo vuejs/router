@@ -569,6 +569,9 @@ function findInsertionIndex(
     }
   }
 
+  // Copy the upper and return its original position when it is -1
+  const upperBackup = upper
+
   // Second phase: check for an ancestor with the same score
   const insertionAncestor = getInsertionAncestor(matcher)
 
@@ -580,6 +583,7 @@ function findInsertionIndex(
       warn(
         `Finding ancestor route "${insertionAncestor.record.path}" failed for "${matcher.record.path}"`
       )
+      return upperBackup
     }
   }
 
