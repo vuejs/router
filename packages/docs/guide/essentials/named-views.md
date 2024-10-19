@@ -78,16 +78,19 @@ Then you can achieve the layout above with this route configuration:
   path: '/settings',
   // You could also have named views at the top
   component: UserSettings,
-  children: [{
-    path: 'emails',
-    component: UserEmailsSubscriptions
-  }, {
-    path: 'profile',
-    components: {
-      default: UserProfile,
-      helper: UserProfilePreview
+  children: [
+    {
+      path: 'emails',
+      component: UserEmailsSubscriptions
+    },
+    {
+      path: 'profile',
+      components: {
+        default: UserProfile,
+        helper: UserProfilePreview
+      }
     }
-  }]
+  ]
 }
 ```
 
