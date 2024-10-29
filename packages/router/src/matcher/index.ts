@@ -512,7 +512,7 @@ function checkSameNameAsAncestor(
       throw new Error(
         `A route named "${String(record.name)}" has been added as a ${
           parent === ancestor ? 'child' : 'descendant'
-        } of a route with the same name. This is not allowed, a nested route must not use the same name as an ancestor.`
+        } of a route with the same name. Route names must be unique and a nested route cannot use the same name as an ancestor.`
       )
     }
   }
