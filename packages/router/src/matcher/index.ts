@@ -159,8 +159,12 @@ export function createRouterMatcher(
 
         // remove the route if named and only for the top record (avoid in nested calls)
         // this works because the original record is the first one
-        if (isRootAdd && record.name && !isAliasRecord(matcher))
+        if (isRootAdd && record.name && !isAliasRecord(matcher)) {
+          if (__DEV__) {
+            checkSameNameAsAncestor(record, parent)
+          }
           removeRoute(record.name)
+        }
       }
 
       // Avoid adding a record that doesn't display anything. This allows passing through records without a component to
@@ -526,6 +530,21 @@ function checkChildMissingNameWithEmptyPath(
         parent.record.name
       )}" has a child without a name and an empty path. Using that name won't render the empty path child so you probably want to move the name to the child instead. If this is intentional, add a name to the child route to remove the warning.`
     )
+  }
+}
+
+function checkSameNameAsAncestor(
+  record: RouteRecordRaw,
+  parent?: RouteRecordMatcher
+) {
+  for (let ancestor = parent; ancestor; ancestor = ancestor.parent) {
+    if (ancestor.record.name === record.name) {
+      throw new Error(
+        `A route named "${String(record.name)}" has been added as a ${
+          parent === ancestor ? 'child' : 'descendant'
+        } of a route with the same name. Route names must be unique and a nested route cannot use the same name as an ancestor.`
+      )
+    }
   }
 }
 
