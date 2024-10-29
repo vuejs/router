@@ -1,5 +1,6 @@
 import { createMemoryHistory, createRouter, RouterHistory } from '../src'
 import { tick } from './utils'
+import { describe, expect, it } from 'vitest'
 
 const component = {}
 
@@ -34,7 +35,7 @@ describe('hash history edge cases', () => {
       return
     })
 
-    // const spy = jest.spyOn(history, 'go')
+    // const spy = vi.spyOn(history, 'go')
 
     history.changeURL('/')
     await tick()
@@ -71,7 +72,7 @@ describe('hash history edge cases', () => {
       return
     })
 
-    // const spy = jest.spyOn(history, 'go')
+    // const spy = vi.spyOn(history, 'go')
 
     history.changeURL('/')
     await tick()

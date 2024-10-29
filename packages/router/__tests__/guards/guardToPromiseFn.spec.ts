@@ -1,7 +1,8 @@
 import { guardToPromiseFn } from '../../src/navigationGuards'
-import { START_LOCATION_NORMALIZED } from '../../src/types'
+import { START_LOCATION_NORMALIZED } from '../../src/location'
 import { ErrorTypes } from '../../src/errors'
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from '../vitest-mock-warn'
+import { vi, describe, expect, it } from 'vitest'
 
 // stub those two
 const to = START_LOCATION_NORMALIZED
@@ -15,7 +16,7 @@ describe('guardToPromiseFn', () => {
   mockWarn()
   it('calls the guard with to, from and, next', async () => {
     expect.assertions(2)
-    const spy = jest.fn((to, from, next) => next())
+    const spy = vi.fn((to, from, next) => next())
     await expect(guardToPromiseFn(spy, to, from)()).resolves.toEqual(undefined)
     expect(spy).toHaveBeenCalledWith(to, from, expect.any(Function))
   })

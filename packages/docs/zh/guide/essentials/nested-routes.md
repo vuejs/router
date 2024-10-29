@@ -8,30 +8,38 @@
 一些应用程序的 UI 由多层嵌套的组件组成。在这种情况下，URL 的片段通常对应于特定的嵌套组件结构，例如：
 
 ```
-/user/johnny/profile                     /user/johnny/posts
-+------------------+                  +-----------------+
-| User             |                  | User            |
-| +--------------+ |                  | +-------------+ |
-| | Profile      | |  +------------>  | | Posts       | |
-| |              | |                  | |             | |
-| +--------------+ |                  | +-------------+ |
-+------------------+                  +-----------------+
+/user/johnny/profile                   /user/johnny/posts 
+┌──────────────────┐                  ┌──────────────────┐
+│ User             │                  │ User             │
+│ ┌──────────────┐ │                  │ ┌──────────────┐ │
+│ │ Profile      │ │  ●────────────▶  │ │ Posts        │ │
+│ │              │ │                  │ │              │ │
+│ └──────────────┘ │                  │ └──────────────┘ │
+└──────────────────┘                  └──────────────────┘
 ```
 
 通过 Vue Router，你可以使用嵌套路由配置来表达这种关系。
 
 接着上节创建的 app ：
 
-```html
-<div id="app">
-  <router-view></router-view>
-</div>
+```vue
+<!-- App.vue -->
+<template>
+  <router-view />
+</template>
+```
+
+```vue
+<!-- User.vue -->
+<template>
+  <div>
+    User {{ $route.params.id }}
+  </div>
+</template>
 ```
 
 ```js
-const User = {
-  template: '<div>User {{ $route.params.id }}</div>',
-}
+import User from './User.vue'
 
 // 这些都会传递给 `createRouter`
 const routes = [{ path: '/user/:id', component: User }]
@@ -39,15 +47,14 @@ const routes = [{ path: '/user/:id', component: User }]
 
 这里的 `<router-view>` 是一个顶层的 `router-view`。它渲染顶层路由匹配的组件。同样地，一个被渲染的组件也可以包含自己嵌套的 `<router-view>`。例如，如果我们在 `User` 组件的模板内添加一个 `<router-view>`：
 
-```js
-const User = {
-  template: `
-    <div class="user">
-      <h2>User {{ $route.params.id }}</h2>
-      <router-view></router-view>
-    </div>
-  `,
-}
+```vue
+<!-- User.vue -->
+<template>
+  <div class="user">
+    <h2>User {{ $route.params.id }}</h2>
+    <router-view />
+  </div>
+</template>
 ```
 
 要将组件渲染到这个嵌套的 `router-view` 中，我们需要在路由中配置 `children`：
@@ -128,3 +135,25 @@ const routes = [
   },
 ]
 ```
+
+<!-- TODO: translation -->
+## Omitting parent components <Badge text="4.1+" />
+
+We can also take advantage of the parent-child relationship between routes without needing to nest route components. This can be useful for grouping together routes with a common path prefix, or when working with more advanced features, such as [per-route navigation guards](../advanced/navigation-guards#Per-Route-Guard) or [route meta fields](../advanced/meta).
+
+To achieve this, we omit the `component` and `components` options from the parent route:
+
+```js
+const routes = [
+  {
+    path: '/admin',
+    children: [
+      { path: '', component: AdminOverview },
+      { path: 'users', component: AdminUserList },
+      { path: 'users/:id', component: AdminUserDetails },
+    ], 
+  },
+]
+```
+
+As the parent doesn't specify a route component, the top-level `<router-view>` will skip over the parent and just use the component from the relevant child instead.

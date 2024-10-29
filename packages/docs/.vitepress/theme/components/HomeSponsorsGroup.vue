@@ -1,3 +1,23 @@
+<script setup lang="ts">
+import sponsors from './sponsors.json'
+import { computed } from 'vue'
+import { useData } from 'vitepress'
+
+const { name, size = 140 } = defineProps<{
+    name: 'Gold' | 'Platinum' | 'Silver' | 'Bronze'
+    size?: number | string
+  }>()
+
+const { isDark } = useData()
+
+const list = computed(() =>
+  sponsors[name.toLowerCase()].map(sponsor => ({
+    ...sponsor,
+    imgSrc: isDark.value ? sponsor.imgSrcDark : sponsor.imgSrcLight,
+  }))
+)
+</script>
+
 <template>
   <h3>{{ name }} Sponsors</h3>
 
@@ -27,33 +47,6 @@
     </a>
   </p>
 </template>
-
-<script setup lang="ts">
-import sponsors from './sponsors.json'
-import { computed } from 'vue'
-import type { PropType } from 'vue'
-import { useData } from 'vitepress'
-
-const { isDark } = useData()
-
-const props = defineProps({
-  name: {
-    type: String as PropType<'Gold' | 'Platinum' | 'Silver' | 'Bronze'>,
-    required: true,
-  },
-  size: {
-    type: [Number, String],
-    default: 140,
-  },
-})
-
-const list = computed(() =>
-  sponsors[props.name.toLowerCase()].map((sponsor) => ({
-    ...sponsor,
-    imgSrc: isDark.value ? sponsor.imgSrcDark : sponsor.imgSrcLight,
-  }))
-)
-</script>
 
 <style scoped>
 .sponsor_wrapper {

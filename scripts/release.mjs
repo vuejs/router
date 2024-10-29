@@ -1,7 +1,7 @@
+import minimist from 'minimist'
 import fs from 'node:fs/promises'
 import { join, resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import minimist from 'minimist'
 import chalk from 'chalk'
 import semver from 'semver'
 import enquirer from 'enquirer'
@@ -20,15 +20,33 @@ let {
   tag: optionTag,
   dry: isDryRun,
   skipCleanCheck: skipCleanGitCheck,
+  noDepsUpdate,
+  noPublish,
 } = args
+
+if (args.h || args.help) {
+  console.log(
+    `
+Usage: node release.mjs [flags]
+       node release.mjs [ -h | --help ]
+
+Flags:
+  --skipBuild         Skip building packages
+  --tag               Publish under a given npm dist tag
+  --dry               Dry run
+  --skipCleanCheck    Skip checking if the git repo is clean
+  --noDepsUpdate      Skip updating dependencies in package.json files
+  --noPublish         Skip publishing packages
+`.trim()
+  )
+  process.exit(0)
+}
 
 // const preId =
 //   args.preid ||
 //   (semver.prerelease(currentVersion) && semver.prerelease(currentVersion)[0])
 const EXPECTED_BRANCH = 'main'
 
-const incrementVersion = increment =>
-  semver.inc(currentVersion, increment, preId)
 const bin = name => resolve(__dirname, '../node_modules/.bin/' + name)
 /**
  * @param bin {string}
@@ -136,6 +154,17 @@ async function main() {
         message: `Select release type for ${chalk.bold.white(name)}`,
         choices: versionIncrements
           .map(i => `${i}: ${name} (${semver.inc(version, i, preId)})`)
+          .concat(
+            optionTag === 'edge'
+              ? [
+                  `edge: ${name} (${semver.inc(
+                    version,
+                    'prerelease',
+                    'alpha'
+                  )})`,
+                ]
+              : []
+          )
           .concat(['custom']),
       })
 
@@ -178,15 +207,8 @@ async function main() {
   step('\nUpdating versions in package.json files...')
   await updateVersions(pkgWithVersions)
 
-  step('\nCopying README for router package...')
-  if (!isDryRun) {
-    await fs.copyFile(
-      resolve(__dirname, '../README.md'),
-      resolve(__dirname, '../packages/router/README.md')
-    )
-  } else {
-    console.log(`(skipped)`)
-  }
+  step('\nUpdating lock...')
+  await runIfNotDry(`pnpm`, ['install'])
 
   step('\nGenerating changelogs...')
   for (const pkg of pkgWithVersions) {
@@ -226,6 +248,7 @@ async function main() {
       'add',
       'packages/*/CHANGELOG.md',
       'packages/*/package.json',
+      'pnpm-lock.yaml',
     ])
     await runIfNotDry('git', [
       'commit',
@@ -249,14 +272,18 @@ async function main() {
     await runIfNotDry('git', ['tag', `${tagName}`])
   }
 
-  step('\nPublishing packages...')
-  for (const pkg of pkgWithVersions) {
-    await publishPackage(pkg)
-  }
+  if (!noPublish) {
+    step('\nPublishing packages...')
+    for (const pkg of pkgWithVersions) {
+      await publishPackage(pkg)
+    }
 
-  step('\nPushing to Github...')
-  await runIfNotDry('git', ['push', 'origin', ...versionsToPush])
-  await runIfNotDry('git', ['push'])
+    step('\nPushing to Github...')
+    await runIfNotDry('git', ['push', 'origin', ...versionsToPush])
+    await runIfNotDry('git', ['push'])
+  } else {
+    console.log(chalk.bold.white(`Skipping publishing...`))
+  }
 }
 
 /**
@@ -267,11 +294,14 @@ async function updateVersions(packageList) {
   return Promise.all(
     packageList.map(({ pkg, version, path, name }) => {
       pkg.version = version
-      updateDeps(pkg, 'dependencies', packageList)
-      updateDeps(pkg, 'peerDependencies', packageList)
+      if (!noDepsUpdate) {
+        updateDeps(pkg, 'dependencies', packageList)
+        updateDeps(pkg, 'peerDependencies', packageList)
+      }
       const content = JSON.stringify(pkg, null, 2) + '\n'
       return isDryRun
         ? dryRun('write', [name], {
+            version: pkg.version,
             dependencies: pkg.dependencies,
             peerDependencies: pkg.peerDependencies,
           })
@@ -307,11 +337,11 @@ async function publishPackage(pkg) {
       [
         'publish',
         ...(optionTag ? ['--tag', optionTag] : []),
+        ...(skipCleanGitCheck ? ['--no-git-checks'] : []),
         '--access',
         'public',
         '--publish-branch',
         EXPECTED_BRANCH,
-        ...(skipCleanGitCheck ? ['--no-git-checks'] : []),
       ],
       {
         cwd: pkg.path,

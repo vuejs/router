@@ -1,6 +1,7 @@
 import { createMemoryHistory, createRouter } from '../src'
 import { components } from './utils'
 import { RouteRecordRaw } from '../src/types'
+import { vi, describe, expect, it } from 'vitest'
 
 // generic component because we are not displaying anything so it doesn't matter
 const component = components.Home
@@ -49,7 +50,7 @@ describe('isReady', () => {
 
   it('rejects when an error is thrown in a navigation guard', async () => {
     const router = newRouter()
-    const errorSpy = jest.fn()
+    const errorSpy = vi.fn()
     const error = new Error('failed')
     router.onError(errorSpy)
     const remove = router.beforeEach(async () => {
@@ -75,7 +76,7 @@ describe('isReady', () => {
 
   it('rejects a cancelled navigation', async () => {
     const router = newRouter()
-    const errorSpy = jest.fn()
+    const errorSpy = vi.fn()
     router.onError(errorSpy)
     const remove = router.beforeEach(() => false)
     router.push('/foo').catch(() => {})
@@ -102,7 +103,7 @@ describe('isReady', () => {
 
   it('rejects failed lazy loading', async () => {
     const router = newRouter()
-    const errorSpy = jest.fn()
+    const errorSpy = vi.fn()
     router.onError(errorSpy)
     router.push('/fail-lazy').catch(() => {})
     await expect(router.isReady()).rejects.toEqual(expect.any(Error))

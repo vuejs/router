@@ -1,11 +1,12 @@
 import { extractComponentsGuards } from '../../src/navigationGuards'
-import { START_LOCATION_NORMALIZED, RouteRecordRaw } from '../../src/types'
+import type { RouteRecordRaw, RouteRecordNormalized } from '../../src'
+import { START_LOCATION_NORMALIZED } from '../../src/location'
 import { components } from '../utils'
 import { normalizeRouteRecord } from '../../src/matcher'
-import { RouteRecordNormalized } from 'src/matcher/types'
-import { mockWarn } from 'jest-mock-warn'
+import { mockWarn } from '../vitest-mock-warn'
+import { vi, describe, expect, it, beforeEach } from 'vitest'
 
-const beforeRouteEnter = jest.fn()
+const beforeRouteEnter = vi.fn()
 
 // stub those two
 const to = START_LOCATION_NORMALIZED
@@ -102,5 +103,31 @@ describe('extractComponentsGuards', () => {
       'message',
       'custom'
     )
+  })
+
+  it('preserves resolved modules in mods', async () => {
+    const mod = {
+      default: components.Home,
+      __esModule: true,
+      custom: true,
+    }
+    const mod2 = {
+      default: components.Bar,
+      __esModule: true,
+      custom: true,
+    }
+    const record = normalizeRouteRecord({
+      path: '/',
+      components: { default: async () => mod, other: async () => mod2 },
+    })
+    expect(record.mods).toEqual({})
+    const guards = extractComponentsGuards(
+      [record],
+      'beforeRouteEnter',
+      to,
+      from
+    )
+    await Promise.all(guards.map(guard => guard()))
+    expect(record.mods).toEqual({ default: mod, other: mod2 })
   })
 })

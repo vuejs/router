@@ -24,6 +24,22 @@ const router = createRouter({
 
 它在内部传递的实际 URL 之前使用了一个哈希字符（`#`）。由于这部分 URL 从未被发送到服务器，所以它不需要在服务器层面上进行任何特殊处理。不过，**它在 SEO 中确实有不好的影响**。如果你担心这个问题，可以使用 HTML5 模式。
 
+## Memory 模式
+
+Memory 模式不会假定自己处于浏览器环境，因此不会与 URL 交互**也不会自动触发初始导航**。这使得它非常适合 Node 环境和 SSR。它是用 `createMemoryHistory()` 创建的，并且**需要你在调用 `app.use(router)` 之后手动 push 到初始导航**。
+
+```js
+import { createRouter, createMemoryHistory } from 'vue-router'
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [
+    //...
+  ],
+})
+```
+
+虽然不推荐，你仍可以在浏览器应用程序中使用此模式，但请注意**它不会有历史记录**，这意味着你无法*后退*或*前进*。
+
 ## HTML5 模式
 
 用 `createWebHistory()` 创建 HTML5 模式，推荐使用这个模式：
@@ -66,7 +82,7 @@ const router = createRouter({
 </IfModule>
 ```
 
-也可以使用 [`FallbackResource`](https://httpd.apache.org/docs/2.2/mod/mod_dir.html#fallbackresource) 代替 `mod_rewrite`。
+也可以使用 [`FallbackResource`](https://httpd.apache.org/docs/2.4/mod/mod_dir.html#fallbackresource) 代替 `mod_rewrite`。
 
 ### nginx
 
@@ -186,7 +202,7 @@ rewrite {
 }
 ```
 
-## Caveat
+## 附加说明
 
 这有一个注意事项。你的服务器将不再报告 404 错误，因为现在所有未找到的路径都会显示你的 `index.html` 文件。为了解决这个问题，你应该在你的 Vue 应用程序中实现一个万能的路由来显示 404 页面。
 

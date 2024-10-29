@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 import {
   createRouter,
@@ -11,13 +11,14 @@ import {
 import { defineComponent, h, ComponentOptions, FunctionalComponent } from 'vue'
 import { mount } from '@vue/test-utils'
 import { delay } from '../utils'
+import { vi, describe, expect, it } from 'vitest'
 
 const component = {
   template: '<div>Generic</div>',
 }
 
 function withSpy(name?: string, isAsync = false) {
-  const spy = jest.fn()
+  const spy = vi.fn()
   const Component = defineComponent({
     name,
     template: `<p>${name || 'No Name'}</p>`,

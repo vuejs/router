@@ -8,7 +8,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 const DEFAULT_OPTIONS = {
   // disableOutputCheck: true,
   cleanOutputDir: true,
-  excludeInternal: true,
+  excludeInternal: false,
   readme: 'none',
   out: path.resolve(__dirname, './api'),
   entryDocument: 'index.md',

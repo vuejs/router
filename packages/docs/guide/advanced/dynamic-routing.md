@@ -5,7 +5,7 @@
   title="Learn how to add routes at runtime"
 />
 
-Adding routes to your router is usually done via the `routes` option but in some situations, you might want to add or remove routes while the application is already running. Application with extensible interfaces like [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html) can use this to make the application grow.
+Adding routes to your router is usually done via the `routes` option but in some situations, you might want to add or remove routes while the application is already running. Applications with extensible interfaces like [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html) can use this to make the application grow.
 
 ## Adding routes
 
@@ -20,17 +20,17 @@ const router = createRouter({
 })
 ```
 
-Going to any page, `/about`, `/store`, or `/3-tricks-to-improve-your-routing-code` ends up rendering the `Article` component. If we are on `/about` and we add a new route:
+Going to any page like `/about`, `/store`, or `/3-tricks-to-improve-your-routing-code` ends up rendering the `Article` component. If we are on `/about` and we add a new route:
 
 ```js
 router.addRoute({ path: '/about', component: About })
 ```
 
-The page will still show the `Article` component, we need to manually call `router.replace()` to change the current location and overwrite where we were (instead of pushing a new entry, ending up in the same location twice in our history):
+The page will still show the `Article` component. We need to manually call `router.replace()` to change the current location and overwrite where we were (instead of pushing a new entry, ending up in the same location twice in our history):
 
 ```js
 router.addRoute({ path: '/about', component: About })
-// we could also use this.$route or route = useRoute() (inside a setup)
+// we could also use this.$route or useRoute()
 router.replace(router.currentRoute.value.fullPath)
 ```
 
@@ -89,7 +89,7 @@ Whenever a route is removed, **all of its aliases and children** are removed wit
 
 ## Adding nested routes
 
-To add nested routes to an existing route, you can pass the _name_ of the route as its first parameter to `router.addRoute()`, this will effectively add the route as if it was added through `children`:
+To add nested routes to an existing route, you can pass the _name_ of the route as its first parameter to `router.addRoute()`. This will effectively add the route as if it was added through `children`:
 
 ```js
 router.addRoute({ name: 'admin', path: '/admin', component: Admin })
@@ -111,5 +111,5 @@ router.addRoute({
 
 Vue Router gives you two functions to look at existing routes:
 
-- [`router.hasRoute()`](/api/interfaces/Router.md#hasRoute): check if a route exists
+- [`router.hasRoute()`](/api/interfaces/Router.md#hasRoute): check if a route exists.
 - [`router.getRoutes()`](/api/interfaces/Router.md#getRoutes): get an array with all the route records.

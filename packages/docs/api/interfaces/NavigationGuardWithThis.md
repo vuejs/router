@@ -6,8 +6,11 @@ editLink: false
 
 # Interface: NavigationGuardWithThis\<T\>
 
-Navigation guard. See [Navigation
-Guards](/guide/advanced/navigation-guards.md).
+Navigation Guard with a type parameter for `this`.
+
+**`See`**
+
+[TypesConfig](TypesConfig.md)
 
 ## Type parameters
 
@@ -19,17 +22,17 @@ Guards](/guide/advanced/navigation-guards.md).
 
 ### NavigationGuardWithThis
 
-▸ **NavigationGuardWithThis**(`this`, `to`, `from`, `next`): `NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>
+▸ **NavigationGuardWithThis**(`this`, `to`, `from`, `next`): [`_Awaitable`](../index.md#_Awaitable)\<[`NavigationGuardReturn`](../index.md#NavigationGuardReturn)\>
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `this` | `T` |
-| `to` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
-| `from` | [`RouteLocationNormalized`](RouteLocationNormalized.md) |
+| `to` | [`RouteLocationNormalizedGeneric`](RouteLocationNormalizedGeneric.md) |
+| `from` | [`RouteLocationNormalizedLoadedGeneric`](RouteLocationNormalizedLoadedGeneric.md) |
 | `next` | [`NavigationGuardNext`](NavigationGuardNext.md) |
 
 #### Returns
 
-`NavigationGuardReturn` \| `Promise`\<`NavigationGuardReturn`\>
+[`_Awaitable`](../index.md#_Awaitable)\<[`NavigationGuardReturn`](../index.md#NavigationGuardReturn)\>

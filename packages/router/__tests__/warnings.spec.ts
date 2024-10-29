@@ -1,4 +1,3 @@
-import { mockWarn } from 'jest-mock-warn'
 import { createMemoryHistory, createRouter, createRouterMatcher } from '../src'
 import {
   defineAsyncComponent,
@@ -6,6 +5,8 @@ import {
   FunctionalComponent,
   h,
 } from 'vue'
+import { describe, expect, it } from 'vitest'
+import { mockWarn } from './vitest-mock-warn'
 
 let component = defineComponent({})
 
@@ -32,6 +33,7 @@ describe('warnings', () => {
       history,
       routes: [{ path: '/:p', name: 'p', component }],
     })
+    // @ts-expect-error: cannot pass params with a path
     router.push({ path: '/p', params: { p: 'p' } })
     expect('Path "/p" was passed with params').toHaveBeenWarned()
   })
@@ -42,6 +44,8 @@ describe('warnings', () => {
       history,
       routes: [{ path: '/:p', name: 'p', component }],
     })
+    // @ts-expect-error: it would be better if this didn't error but it still an
+    // invalid location
     router.push({ path: '/p', name: 'p', params: { p: 'p' } })
     expect('Path "/" was passed with params').not.toHaveBeenWarned()
   })
@@ -114,7 +118,7 @@ describe('warnings', () => {
     ).toHaveBeenWarned()
   })
 
-  it('warns if next is called multiple times in one navigation guard', done => {
+  it('warns if next is called multiple times in one navigation guard', async () => {
     expect.assertions(3)
     let router = createRouter({
       history: createMemoryHistory(),
@@ -131,10 +135,9 @@ describe('warnings', () => {
       expect('called more than once').toHaveBeenWarnedTimes(1)
       next()
       expect('called more than once').toHaveBeenWarnedTimes(1)
-      done()
     })
 
-    router.push('/b')
+    await router.push('/b')
   })
 
   it('warns if a non valid function is passed as a component', async () => {

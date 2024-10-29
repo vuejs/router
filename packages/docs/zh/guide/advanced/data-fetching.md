@@ -10,11 +10,13 @@
 
 ## 导航完成后获取数据
 
-当你使用这种方式时，我们会马上导航和渲染组件，然后在组件的 created 钩子中获取数据。这让我们有机会在数据获取期间展示一个 loading 状态，还可以在不同视图间展示不同的 loading 状态。
+当你使用这种方式时，我们会马上导航和渲染组件，然后在组件中获取数据。这让我们有机会在数据获取期间展示一个 loading 状态，还可以在不同视图间展示不同的 loading 状态。
 
-假设我们有一个 `Post` 组件，需要基于 `$route.params.id` 获取文章数据：
+假设我们有一个 `Post` 组件，需要基于 `route.params.id` 获取文章数据：
 
-```html
+::: code-group
+
+```vue [Composition API]
 <template>
   <div class="post">
     <div v-if="loading" class="loading">Loading...</div>
@@ -27,9 +29,54 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { getPost } from './api.js'
+
+const route = useRoute()
+
+const loading = ref(false)
+const post = ref(null)
+const error = ref(null)
+
+// 侦听路由的参数，以便再次获取数据
+watch(() => route.params.id, fetchData, { immediate: true })
+
+async function fetchData(id) {
+  error.value = post.value = null
+  loading.value = true
+  
+  try {
+    // 用获取数据的工具函数 / API 包裹器替换 `getPost`
+    post.value = await getPost(id)  
+  } catch (err) {
+    error.value = err.toString()
+  } finally {
+    loading.value = false
+  }
+}
+</script>
 ```
 
-```js
+```vue [Options API]
+<template>
+  <div class="post">
+    <div v-if="loading" class="loading">Loading...</div>
+
+    <div v-if="error" class="error">{{ error }}</div>
+
+    <div v-if="post" class="content">
+      <h2>{{ post.title }}</h2>
+      <p>{{ post.body }}</p>
+    </div>
+  </div>
+</template>
+
+<script>
+import { getPost } from './api.js'
+
 export default {
   data() {
     return {
@@ -39,34 +86,35 @@ export default {
     }
   },
   created() {
-    // watch 路由的参数，以便再次获取数据
+    // 侦听路由的参数，以便再次获取数据
     this.$watch(
-      () => this.$route.params,
-      () => {
-        this.fetchData()
-      },
+      () => this.$route.params.id,
+      this.fetchData,
       // 组件创建完后获取数据，
-      // 此时 data 已经被 observed 了
+      // 此时 data 已经被监听了
       { immediate: true }
     )
   },
   methods: {
-    fetchData() {
+    async fetchData(id) {
       this.error = this.post = null
       this.loading = true
-      // replace `getPost` with your data fetching util / API wrapper
-      getPost(this.$route.params.id, (err, post) => {
+
+      try {
+        // 用获取数据的工具函数 / API 包裹器替换 `getPost`
+        this.post = await getPost(id)
+      } catch (err) {
+        this.error = err.toString()
+      } finally {
         this.loading = false
-        if (err) {
-          this.error = err.toString()
-        } else {
-          this.post = post
-        }
-      })
+      }
     },
   },
 }
+</script>
 ```
+
+:::
 
 ## 在导航完成前获取数据
 
@@ -81,20 +129,29 @@ export default {
     }
   },
   beforeRouteEnter(to, from, next) {
-    getPost(to.params.id, (err, post) => {
-      next(vm => vm.setData(err, post))
-    })
+    try {
+      const post = await getPost(to.params.id)
+      // `setPost` 方法定义在下面的代码中
+      next(vm => vm.setPost(post))
+    } catch (err) {
+      // `setError` 方法定义在下面的代码中
+      next(vm => vm.setError(err))
+    }
   },
   // 路由改变前，组件就已经渲染完了
   // 逻辑稍稍不同
   async beforeRouteUpdate(to, from) {
     this.post = null
-    try {
-      this.post = await getPost(to.params.id)
-    } catch (error) {
-      this.error = error.toString()
-    }
+    getPost(to.params.id).then(this.setPost).catch(this.setError)
   },
+  methods: {
+    setPost(post) {
+      this.post = post
+    },
+    setError(err) {
+      this.error = err.toString()
+    }
+  }
 }
 ```
 

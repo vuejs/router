@@ -3,8 +3,9 @@ import { components } from './utils'
 import { RouteRecordRaw } from '../src/types'
 import { createMemoryHistory } from '../src'
 import * as encoding from '../src/encoding'
+import { vi, describe, expect, it, beforeEach } from 'vitest'
 
-jest.mock('../src/encoding')
+vi.mock('../src/encoding')
 
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: components.Home },
@@ -28,7 +29,7 @@ describe('URL Encoding', () => {
       // @ts-expect-error
       const value = encoding[key]
       // @ts-expect-error
-      if (typeof value === 'function') encoding[key] = jest.fn((v: string) => v)
+      if (typeof value === 'function') encoding[key] = vi.fn((v: string) => v)
       // @ts-expect-error
       else if (key === 'PLUS_RE') encoding[key] = /\+/g
     }

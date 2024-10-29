@@ -98,7 +98,7 @@ ___
 
 ### name
 
-• `Optional` **name**: [`RouteRecordName`](../index.md#RouteRecordName)
+• `Optional` **name**: [`RouteRecordNameGeneric`](../index.md#RouteRecordNameGeneric)
 
 Name for the route record. Must be unique.
 
@@ -141,7 +141,7 @@ ___
 
 ### redirect
 
-• **redirect**: `RouteRecordRedirectOption`
+• **redirect**: [`RouteRecordRedirectOption`](../index.md#RouteRecordRedirectOption)
 
 Where to redirect if the route is directly matched. The redirection happens
 before any navigation guard and triggers a new navigation with the new

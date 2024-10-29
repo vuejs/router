@@ -1,0 +1,44 @@
+name: Publish Any Commit
+
+on:
+  pull_request:
+    branches: main
+    paths-ignore:
+    - 'packages/docs/**'
+    - 'packages/playground/**'
+
+  push:
+    branches:
+    - '**'
+    tags:
+    - '!**'
+    paths-ignore:
+    - 'packages/docs/**'
+    - 'packages/playground/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: pnpm/action-setup@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+        cache: pnpm
+
+    - name: Install
+      run: pnpm install --frozen-lockfile
+
+    - name: Build
+      run: pnpm -C packages/router build
+
+    - name: Build DTS
+      run: pnpm -C packages/router build:dts
+
+    - name: Release
+      run: pnpm dlx pkg-pr-new publish --compact --pnpm './packages/*'

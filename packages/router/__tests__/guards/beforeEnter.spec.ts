@@ -1,20 +1,21 @@
 import fakePromise from 'faked-promise'
 import { createDom, noGuard, tick, newRouter as createRouter } from '../utils'
 import { RouteRecordRaw } from '../../src/types'
+import { vi, describe, expect, it, beforeAll, beforeEach } from 'vitest'
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
-const beforeEnter = jest.fn()
-const beforeEnters = [jest.fn(), jest.fn()]
+const beforeEnter = vi.fn()
+const beforeEnters = [vi.fn(), vi.fn()]
 const nested = {
-  parent: jest.fn(),
-  nestedEmpty: jest.fn(),
-  nestedA: jest.fn(),
-  nestedAbs: jest.fn(),
-  nestedNested: jest.fn(),
-  nestedNestedFoo: jest.fn(),
-  nestedNestedParam: jest.fn(),
+  parent: vi.fn(),
+  nestedEmpty: vi.fn(),
+  nestedA: vi.fn(),
+  nestedAbs: vi.fn(),
+  nestedNested: vi.fn(),
+  nestedNestedFoo: vi.fn(),
+  nestedNestedParam: vi.fn(),
 }
 
 const routes: RouteRecordRaw[] = [

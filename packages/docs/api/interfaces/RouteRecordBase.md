@@ -79,7 +79,7 @@ ___
 
 ### name
 
-• `Optional` **name**: [`RouteRecordName`](../index.md#RouteRecordName)
+• `Optional` **name**: [`RouteRecordNameGeneric`](../index.md#RouteRecordNameGeneric)
 
 Name for the route record. Must be unique.
 
@@ -102,7 +102,7 @@ ___
 
 ### props
 
-• `Optional` **props**: `_RouteRecordProps` \| `Record`\<`string`, `_RouteRecordProps`\>
+• `Optional` **props**: [`_RouteRecordProps`](../index.md#_RouteRecordProps) \| `Record`\<`string`, [`_RouteRecordProps`](../index.md#_RouteRecordProps)\>
 
 Allow passing down params as props to the component rendered by `router-view`.
 
@@ -110,7 +110,7 @@ ___
 
 ### redirect
 
-• `Optional` **redirect**: `RouteRecordRedirectOption`
+• `Optional` **redirect**: [`RouteRecordRedirectOption`](../index.md#RouteRecordRedirectOption)
 
 Where to redirect if the route is directly matched. The redirection happens
 before any navigation guard and triggers a new navigation with the new

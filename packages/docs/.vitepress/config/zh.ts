@@ -48,20 +48,18 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             text: '更新日志',
             link: 'https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md',
           },
+          {
+            text: 'Vue.js 认证',
+            link: 'https://certificates.dev/vuejs/?friend=VUEROUTER&utm_source=router_vuejs&utm_medium=link&utm_campaign=router_vuejs_links&utm_content=navbar',
+          },
         ],
       },
     ],
 
     sidebar: {
-      '/zh/api/': [
-        {
-          text: 'packages',
-          items: [{ text: 'vue-router', link: '/zh/api/' }],
-        },
-      ],
-
       '/zh/': [
         {
+          text: '设置',
           items: [
             {
               text: '介绍',
@@ -75,7 +73,6 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         },
         {
           text: '基础',
-          collapsible: false,
           items: [
             {
               text: '入门',
@@ -94,12 +91,12 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/zh/guide/essentials/nested-routes.html',
             },
             {
-              text: '编程式导航',
-              link: '/zh/guide/essentials/navigation.html',
-            },
-            {
               text: '命名路由',
               link: '/zh/guide/essentials/named-routes.html',
+            },
+            {
+              text: '编程式导航',
+              link: '/zh/guide/essentials/navigation.html',
             },
             {
               text: '命名视图',
@@ -114,6 +111,10 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/zh/guide/essentials/passing-props.html',
             },
             {
+              text: '匹配当前路由的链接',
+              link: '/zh/guide/essentials/active-links.html',
+            },
+            {
               text: '不同的历史记录模式',
               link: '/zh/guide/essentials/history-mode.html',
             },
@@ -121,7 +122,6 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         },
         {
           text: '进阶',
-          collapsible: false,
           items: [
             {
               text: '导航守卫',
@@ -138,6 +138,10 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             {
               text: '组合式 API',
               link: '/zh/guide/advanced/composition-api.html',
+            },
+            {
+              text: 'RouterView 插槽',
+              link: '/zh/guide/advanced/router-view-slot.html',
             },
             {
               text: '过渡动效',
@@ -182,6 +186,57 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
           ],
         },
       ],
+
+      '/zh/api/': [
+        {
+          text: 'packages',
+          items: [{ text: 'vue-router', link: '/zh/api/' }],
+        },
+      ],
+    },
+  },
+}
+
+export const zhSearch: DefaultTheme.AlgoliaSearchOptions['locales'] = {
+  zh: {
+    placeholder: '搜索文档',
+    translations: {
+      button: {
+        buttonText: '搜索文档',
+        buttonAriaLabel: '搜索文档',
+      },
+      modal: {
+        searchBox: {
+          resetButtonTitle: '清除查询条件',
+          resetButtonAriaLabel: '清除查询条件',
+          cancelButtonText: '取消',
+          cancelButtonAriaLabel: '取消',
+        },
+        startScreen: {
+          recentSearchesTitle: '搜索历史',
+          noRecentSearchesText: '没有搜索历史',
+          saveRecentSearchButtonTitle: '保存至搜索历史',
+          removeRecentSearchButtonTitle: '从搜索历史中移除',
+          favoriteSearchesTitle: '收藏',
+          removeFavoriteSearchButtonTitle: '从收藏中移除',
+        },
+        errorScreen: {
+          titleText: '无法获取结果',
+          helpText: '你可能需要检查你的网络连接',
+        },
+        footer: {
+          selectText: '选择',
+          navigateText: '切换',
+          closeText: '关闭',
+          searchByText: '搜索供应商',
+        },
+        noResultsScreen: {
+          noResultsText: '无法找到相关结果',
+          suggestedQueryText: '你可以尝试查询',
+          reportMissingResultsText: '你认为该查询应该有结果？',
+          reportMissingResultsLinkText: '点击反馈',
+        },
+      },
     },
   },
 }

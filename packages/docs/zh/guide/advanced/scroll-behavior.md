@@ -43,7 +43,8 @@ const router = createRouter({
       // 也可以这么写
       // el: document.getElementById('main'),
       el: '#main',
-      top: -10,
+      // 在元素上 10 像素
+      top: 10,
     }
   },
 })

@@ -5,9 +5,9 @@
   title="Learn about route transitions"
 />
 
-想要在你的路径组件上使用转场，并对导航进行动画处理，你需要使用 [v-slot API](/guide/advanced/composition-api#uselink)：
+想要在你的路径组件上使用转场，并对导航进行动画处理，你需要使用 [`<RouterView>` 插槽](./router-view-slot)：
 
-```vue-html
+```html
 <router-view v-slot="{ Component }">
   <transition name="fade">
     <component :is="Component" />
@@ -36,7 +36,7 @@ const routes = [
 ]
 ```
 
-```vue-html
+```html
 <router-view v-slot="{ Component, route }">
   <!-- 使用任何自定义过渡和回退到 `fade` -->
   <transition :name="route.meta.transition || 'fade'">
@@ -49,7 +49,7 @@ const routes = [
 
 也可以根据目标路由和当前路由之间的关系，动态地确定使用的过渡。使用和刚才非常相似的片段：
 
-```vue-html
+```html
 <!-- 使用动态过渡名称 -->
 <router-view v-slot="{ Component, route }">
   <transition :name="route.meta.transition">

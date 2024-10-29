@@ -8,9 +8,7 @@
 很多时候，我们需要将给定匹配模式的路由映射到同一个组件。例如，我们可能有一个 `User` 组件，它应该对所有用户进行渲染，但用户 ID 不同。在 Vue Router 中，我们可以在路径中使用一个动态字段来实现，我们称之为 _路径参数_ ：
 
 ```js
-const User = {
-  template: '<div>User</div>',
-}
+import User from './User.vue'
 
 // 这些都会传递给 `createRouter`
 const routes = [
@@ -21,22 +19,25 @@ const routes = [
 
 现在像 `/users/johnny` 和 `/users/jolyne` 这样的 URL 都会映射到同一个路由。
 
-_路径参数_ 用冒号 `:` 表示。当一个路由被匹配时，它的 _params_ 的值将在每个组件中以 `this.$route.params` 的形式暴露出来。因此，我们可以通过更新 `User` 的模板来呈现当前的用户 ID：
+_路径参数_ 用冒号 `:` 表示。当一个路由被匹配时，它的 _params_ 的值将在每个组件中以 `route.params` 的形式暴露出来。因此，我们可以通过更新 `User` 的模板来呈现当前的用户 ID：
 
-```js
-const User = {
-  template: '<div>User {{ $route.params.id }}</div>',
-}
+```vue
+<template>
+  <div>
+    <!-- 当前路由可以通过 $route 在模板中访问 -->
+    User {{ $route.params.id }}
+  </div>
+</template>
 ```
 
 你可以在同一个路由中设置有多个 _路径参数_，它们会映射到 `$route.params` 上的相应字段。例如：
 
-| 匹配模式                       | 匹配路径                 | \$route.params                           |
+| 匹配模式                       | 匹配路径                 | route.params                           |
 | ------------------------------ | ------------------------ | ---------------------------------------- |
 | /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`                |
 | /users/:username/posts/:postId | /users/eduardo/posts/123 | `{ username: 'eduardo', postId: '123' }` |
 
-除了 `$route.params` 之外，`$route` 对象还公开了其他有用的信息，如 `$route.query`（如果 URL 中存在参数）、`$route.hash` 等。你可以在 [API 参考](../../api/#routelocationnormalized)中查看完整的细节。
+除了 `route.params` 之外，`route` 对象还公开了其他有用的信息，如 `route.query`（如果 URL 中存在参数）、`route.hash` 等。你可以在 [API 参考](../../api/#routelocationnormalized)中查看完整的细节。
 
 这个例子的 demo 可以在[这里](https://codesandbox.io/s/route-params-vue-router-examples-mlb14?from-embed&initialpath=%2Fusers%2Feduardo%2Fposts%2F1)找到。
 
@@ -59,31 +60,67 @@ const User = {
 
 要对同一个组件中参数的变化做出响应的话，你可以简单地 watch `$route` 对象上的任意属性，在这个场景中，就是 `$route.params` ：
 
-```js
-const User = {
-  template: '...',
+::: code-group
+
+```vue [Composition API]
+<script setup>
+import { watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+watch(() => route.params.id, (newId, oldId) => {
+  // 对路由变化做出响应...
+})
+</script>
+```
+
+```vue [Options API]
+<script>
+export default {
   created() {
     this.$watch(
-      () => this.$route.params,
-      (toParams, previousParams) => {
+      () => this.$route.params.id,
+      (newId, oldId) => {
         // 对路由变化做出响应...
       }
     )
   },
 }
+</script>
 ```
 
-或者，使用 `beforeRouteUpdate` [导航守卫](../advanced/navigation-guards.md)，它也可以取消导航：
+:::
 
-```js
-const User = {
-  template: '...',
+或者，使用 `beforeRouteUpdate` [导航守卫](../advanced/navigation-guards.md)，它还允许你取消导航：
+
+::: code-group
+
+```vue [Composition API]
+<script setup>
+import { onBeforeRouteUpdate } from 'vue-router'
+// ...
+
+onBeforeRouteUpdate(async (to, from) => {
+  // 对路由变化做出响应...
+  userData.value = await fetchUser(to.params.id)
+})
+</script>
+```
+
+```vue [Options API]
+<script>
+export default {
   async beforeRouteUpdate(to, from) {
     // 对路由变化做出响应...
     this.userData = await fetchUser(to.params.id)
   },
+  // ...
 }
+</script>
 ```
+
+:::
 
 ## 捕获所有路由或 404 Not found 路由
 
@@ -96,9 +133,9 @@ const User = {
 
 ```js
 const routes = [
-  // 将匹配所有内容并将其放在 `$route.params.pathMatch` 下
+  // 将匹配所有内容并将其放在 `route.params.pathMatch` 下
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
-  // 将匹配以 `/user-` 开头的所有内容，并将其放在 `$route.params.afterUser` 下
+  // 将匹配以 `/user-` 开头的所有内容，并将其放在 `route.params.afterUser` 下
   { path: '/user-:afterUser(.*)', component: UserGeneric },
 ]
 ```
@@ -106,13 +143,13 @@ const routes = [
 在这个特定的场景中，我们在括号之间使用了[自定义正则表达式](./route-matching-syntax.md#在参数中自定义正则)，并将`pathMatch` 参数标记为[可选可重复](./route-matching-syntax.md#可选参数)。这样做是为了让我们在需要的时候，可以通过将 `path` 拆分成一个数组，直接导航到路由：
 
 ```js
-this.$router.push({
+router.push({
   name: 'NotFound',
   // 保留当前路径并删除第一个字符，以避免目标 URL 以 `//` 开头。
   params: { pathMatch: this.$route.path.substring(1).split('/') },
   // 保留现有的查询和 hash 值，如果有的话
-  query: this.$route.query,
-  hash: this.$route.hash,
+  query: route.query,
+  hash: route.hash,
 })
 ```
 

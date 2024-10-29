@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 import {
   createRouter,
@@ -7,6 +7,7 @@ import {
   onBeforeRouteLeave,
 } from '../../src'
 import { createApp, defineComponent } from 'vue'
+import { vi, describe, expect, it } from 'vitest'
 
 const component = {
   template: '<div>Generic</div>',
@@ -14,7 +15,7 @@ const component = {
 
 describe('onBeforeRouteLeave', () => {
   it('removes guards when leaving the route', async () => {
-    const spy = jest.fn()
+    const spy = vi.fn()
     const WithLeave = defineComponent({
       template: `text`,
       setup() {

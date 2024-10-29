@@ -1,15 +1,14 @@
-import {
-  NavigationGuard,
+import { isRouteLocation, Lazy, RouteComponent } from './types'
+
+import type {
   RouteLocationNormalized,
-  NavigationGuardNext,
-  RouteLocationRaw,
   RouteLocationNormalizedLoaded,
+  NavigationGuard,
+  RouteLocation,
+  RouteLocationRaw,
+  NavigationGuardNext,
   NavigationGuardNextCallback,
-  isRouteLocation,
-  Lazy,
-  RouteComponent,
-  RawRouteComponent,
-} from './types'
+} from './typed-routes'
 
 import {
   createRouterError,
@@ -21,7 +20,7 @@ import { ComponentOptions, onUnmounted, onActivated, onDeactivated } from 'vue'
 import { inject, getCurrentInstance } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
-import { isESModule } from './utils'
+import { isESModule, isRouteComponent } from './utils'
 import { warn } from './warning'
 
 function registerGuard(
@@ -117,14 +116,16 @@ export function guardToPromiseFn(
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded,
   record: RouteRecordNormalized,
-  name: string
+  name: string,
+  runWithContext: <T>(fn: () => T) => T
 ): () => Promise<void>
 export function guardToPromiseFn(
   guard: NavigationGuard,
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded,
   record?: RouteRecordNormalized,
-  name?: string
+  name?: string,
+  runWithContext: <T>(fn: () => T) => T = fn => fn()
 ): () => Promise<void> {
   // keep a reference to the enterCallbackArray to prevent pushing callbacks if a new navigation took place
   const enterCallbackArray =
@@ -173,11 +174,13 @@ export function guardToPromiseFn(
       }
 
       // wrapping with Promise.resolve allows it to work with both async and sync guards
-      const guardReturn = guard.call(
-        record && record.instances[name!],
-        to,
-        from,
-        __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
+      const guardReturn = runWithContext(() =>
+        guard.call(
+          record && record.instances[name!],
+          to,
+          from,
+          __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
+        )
       )
       let guardCall = Promise.resolve(guardReturn)
 
@@ -231,7 +234,8 @@ export function extractComponentsGuards(
   matched: RouteRecordNormalized[],
   guardType: GuardType,
   to: RouteLocationNormalized,
-  from: RouteLocationNormalizedLoaded
+  from: RouteLocationNormalizedLoaded,
+  runWithContext: <T>(fn: () => T) => T = fn => fn()
 ) {
   const guards: Array<() => Promise<void>> = []
 
@@ -292,7 +296,10 @@ export function extractComponentsGuards(
         const options: ComponentOptions =
           (rawComponent as any).__vccOpts || rawComponent
         const guard = options[guardType]
-        guard && guards.push(guardToPromiseFn(guard, to, from, record, name))
+        guard &&
+          guards.push(
+            guardToPromiseFn(guard, to, from, record, name, runWithContext)
+          )
       } else {
         // start requesting the chunk already
         let componentPromise: Promise<
@@ -309,14 +316,14 @@ export function extractComponentsGuards(
         guards.push(() =>
           componentPromise.then(resolved => {
             if (!resolved)
-              return Promise.reject(
-                new Error(
-                  `Couldn't resolve component "${name}" at "${record.path}"`
-                )
+              throw new Error(
+                `Couldn't resolve component "${name}" at "${record.path}"`
               )
             const resolvedComponent = isESModule(resolved)
               ? resolved.default
               : resolved
+            // keep the resolved module for plugins like data loaders
+            record.mods[name] = resolved
             // replace the function with the resolved component
             // cannot be null or undefined because we went into the for loop
             record.components![name] = resolvedComponent
@@ -324,7 +331,11 @@ export function extractComponentsGuards(
             const options: ComponentOptions =
               (resolvedComponent as any).__vccOpts || resolvedComponent
             const guard = options[guardType]
-            return guard && guardToPromiseFn(guard, to, from, record, name)()
+
+            return (
+              guard &&
+              guardToPromiseFn(guard, to, from, record, name, runWithContext)()
+            )
           })
         )
       }
@@ -335,29 +346,12 @@ export function extractComponentsGuards(
 }
 
 /**
- * Allows differentiating lazy components from functional components and vue-class-component
- * @internal
- *
- * @param component
- */
-export function isRouteComponent(
-  component: RawRouteComponent
-): component is RouteComponent {
-  return (
-    typeof component === 'object' ||
-    'displayName' in component ||
-    'props' in component ||
-    '__vccOpts' in component
-  )
-}
-
-/**
  * Ensures a route is loaded, so it can be passed as o prop to `<RouterView>`.
  *
  * @param route - resolved route to load
  */
 export function loadRouteLocation(
-  route: RouteLocationNormalized
+  route: RouteLocation | RouteLocationNormalized
 ): Promise<RouteLocationNormalizedLoaded> {
   return route.matched.every(record => record.redirect)
     ? Promise.reject(new Error('Cannot load a route that redirects.'))
@@ -380,9 +374,12 @@ export function loadRouteLocation(
                             `Couldn't resolve component "${name}" at "${record.path}". Ensure you passed a function that returns a promise.`
                           )
                         )
+
                       const resolvedComponent = isESModule(resolved)
                         ? resolved.default
                         : resolved
+                      // keep the resolved module for plugins like data loaders
+                      record.mods[name] = resolved
                       // replace the function with the resolved component
                       // cannot be null or undefined because we went into the for loop
                       record.components![name] = resolvedComponent

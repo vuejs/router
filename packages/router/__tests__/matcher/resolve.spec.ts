@@ -1,14 +1,15 @@
 import { createRouterMatcher, normalizeRouteRecord } from '../../src/matcher'
 import {
-  START_LOCATION_NORMALIZED,
   RouteComponent,
   RouteRecordRaw,
   MatcherLocationRaw,
   MatcherLocation,
 } from '../../src/types'
 import { MatcherLocationNormalizedLoose } from '../utils'
-import { mockWarn } from 'jest-mock-warn'
-import { defineComponent } from '@vue/runtime-core'
+import { defineComponent } from 'vue'
+import { START_LOCATION_NORMALIZED } from '../../src/location'
+import { mockWarn } from '../vitest-mock-warn'
+import { describe, expect, it } from 'vitest'
 
 const component: RouteComponent = defineComponent({})
 
@@ -75,7 +76,7 @@ describe('RouterMatcher.resolve', () => {
   /**
    *
    * @param record - Record or records we are testing the matcher against
-   * @param location - location we want to reolve against
+   * @param location - location we want to resolve against
    * @param [start] Optional currentLocation used when resolving
    * @returns error
    */
@@ -770,6 +771,40 @@ describe('RouterMatcher.resolve', () => {
         {
           params: { a: 'a', c: 'c' },
           path: '/a',
+          matched: [],
+          meta: {},
+          name: undefined,
+        }
+      )
+    })
+
+    it('keep optional params from parent record', () => {
+      const Child_A = { path: 'a', name: 'child_a', components }
+      const Child_B = { path: 'b', name: 'child_b', components }
+      const Parent = {
+        path: '/:optional?/parent',
+        name: 'parent',
+        components,
+        children: [Child_A, Child_B],
+      }
+      assertRecordMatch(
+        Parent,
+        { name: 'child_b' },
+        {
+          name: 'child_b',
+          path: '/foo/parent/b',
+          params: { optional: 'foo' },
+          matched: [
+            Parent as any,
+            {
+              ...Child_B,
+              path: `${Parent.path}/${Child_B.path}`,
+            },
+          ],
+        },
+        {
+          params: { optional: 'foo' },
+          path: '/foo/parent/a',
           matched: [],
           meta: {},
           name: undefined,

@@ -1,27 +1,28 @@
 import fakePromise from 'faked-promise'
 import { createDom, noGuard, newRouter as createRouter } from '../utils'
-import { RouteRecordRaw, NavigationGuard } from '../../src/types'
+import type { RouteRecordRaw, NavigationGuard } from '../../src'
+import { vi, describe, expect, it, beforeAll, beforeEach } from 'vitest'
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
-const beforeRouteEnter = jest.fn<
-  ReturnType<NavigationGuard>,
-  Parameters<NavigationGuard>
+const beforeRouteEnter = vi.fn<
+  Parameters<NavigationGuard>,
+  ReturnType<NavigationGuard>
 >()
 const named = {
-  default: jest.fn(),
-  other: jest.fn(),
+  default: vi.fn(),
+  other: vi.fn(),
 }
 
 const nested = {
-  parent: jest.fn(),
-  nestedEmpty: jest.fn(),
-  nestedA: jest.fn(),
-  nestedAbs: jest.fn(),
-  nestedNested: jest.fn(),
-  nestedNestedFoo: jest.fn(),
-  nestedNestedParam: jest.fn(),
+  parent: vi.fn(),
+  nestedEmpty: vi.fn(),
+  nestedA: vi.fn(),
+  nestedAbs: vi.fn(),
+  nestedNested: vi.fn(),
+  nestedNestedFoo: vi.fn(),
+  nestedNestedParam: vi.fn(),
 }
 
 const routes: RouteRecordRaw[] = [
@@ -123,7 +124,7 @@ describe('beforeRouteEnter', () => {
 
   it('does not call beforeRouteEnter guards on navigation between aliases', async () => {
     const router = createRouter({ routes })
-    const spy = jest.fn()
+    const spy = vi.fn()
     beforeRouteEnter.mockImplementation(spy)
     await router.push('/guard/valid')
     expect(beforeRouteEnter).toHaveBeenCalledTimes(1)

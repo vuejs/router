@@ -3,6 +3,7 @@ import {
   tokensToParser,
   comparePathParserScore,
 } from '../../src/matcher/pathParserRanker'
+import { describe, expect, it } from 'vitest'
 
 type PathParserOptions = Parameters<typeof tokensToParser>[1]
 

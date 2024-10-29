@@ -79,7 +79,7 @@ createRouter({
 })
 ```
 
-**原因**: Vue支持的所有浏览器都支持 [HTML5 History API](https://developer.mozilla.org/zh-CN/docs/Web/API/History_API)，因此我们不再需要使用 `location.hash`，而可以直接使用 `history.pushState()`。
+**原因**: Vue 支持的所有浏览器都支持 [HTML5 History API](https://developer.mozilla.org/zh-CN/docs/Web/API/History_API)，因此我们不再需要使用 `location.hash`，而可以直接使用 `history.pushState()`。
 
 ### 删除了 `*`（星标或通配符）路由
 
@@ -112,6 +112,19 @@ router.resolve({
 :::
 
 **原因**：Vue Router 不再使用 `path-to-regexp`，而是实现了自己的解析系统，允许路由排序并实现动态路由。由于我们通常在每个项目中只添加一个通配符路由，所以支持 `*` 的特殊语法并没有太大的好处。参数的编码是跨路由的，无一例外，让事情更容易预测。
+
+### 现在 `currentRoute` 属性是一个 `ref()`
+
+路由器实例上的 [`currentRoute`](https://v3.router.vuejs.org/zh/api/#router-currentroute) 对象的属性在以前可以被直接访问。
+
+从 vue-router v4 开始，路由器实例上的 `currentRoute` 对象的底层类型已被改为 `Ref<RouteLocationNormalizedLoaded>`，其源自 Vue 3 中新引入的[响应式基础](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html)。
+
+当你使用 `useRoute()` 或 `this.$route` 获取路由信息时这并不会带来任何变化，如果想要直接在路由器实例上访问它，你需要通过 `currentRoute.value` 来访问实际的路由对象：
+
+```ts
+const { page } = router.currentRoute.query // [!code --]
+const { page } = router.currentRoute.value.query // [!code ++]
+```
 
 ### 将 `onReady` 改为 `isReady`
 
@@ -222,6 +235,15 @@ router.currentRoute.value.matched.flatMap(record =>
 ```
 
 **原因**：这个方法只在 SSR 中使用，并且是用户一行就能完成的操作。
+
+### 重定向记录不能使用特殊路径
+
+以前，有一个未被记录的特性允许将重定向记录设置为形如 `/events/:id` 的特殊路径，并且它会复用现有的参数 `id`。现在它已不再支持，有两个替代选项:
+
+- 使用不包含参数的路由名称：`redirect: { name: 'events' }`。注意，当参数 `:id` 为可选项时它不会生效
+- 使用一个函数重建基于目标的新位置：`redirect: to => ({ name: 'events', params: to.params })`
+
+**原因**：这种语法很少使用，是上述版本的*等效做法*，但是相比之下还不够简短，同时会引入一些复杂性，使路由器变得更重。
 
 ### **所有**的导航现在都是异步的
 
@@ -414,7 +436,7 @@ const routes = [
 
 <!-- TODO: translate chinese API entries -->
 
-给定任何[规范化的路由地址](/zh/api/interfaces/RouteLocationNormalized.md):
+给定任何[规范化的路由地址](/zh/api/#RouteLocationNormalized):
 
 - `path`, `fullPath`中的值不再被解码了。例如，直接在地址栏上写 "<https://example.com/hello> world"，将得到编码后的版本："https://example.com/hello%20world"，而 "path "和 "fullPath "都是"/hello%20world"。
 - `hash` 现在被解码了，这样就可以复制过来。`router.push({ hash: $route.hash })` 可以直接用于 [scrollBehavior](/zh/api/interfaces/RouterOptions.md#Properties-scrollBehavior) 的 `el` 配置中。

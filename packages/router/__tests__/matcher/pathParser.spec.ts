@@ -1,5 +1,6 @@
 import { tokenizePath, TokenType } from '../../src/matcher/pathTokenizer'
 import { tokensToParser } from '../../src/matcher/pathParserRanker'
+import { describe, expect, it } from 'vitest'
 
 describe('Path parser', () => {
   describe('tokenizer', () => {
@@ -618,9 +619,77 @@ describe('Path parser', () => {
       matchParams('/home', '/other/home', {}, { start: false })
     })
 
+    it('defaults to matching the end', () => {
+      // The default should behave like `end: true`
+      const optionSets = [{}, { end: true }]
+
+      for (const options of optionSets) {
+        matchParams('/home', '/home', {}, options)
+        matchParams('/home', '/home/', {}, options)
+        matchParams('/home', '/home/other', null, options)
+        matchParams('/home', '/homepage', null, options)
+
+        matchParams('/home/', '/home', {}, options)
+        matchParams('/home/', '/home/', {}, options)
+        matchParams('/home/', '/home/other', null, options)
+        matchParams('/home/', '/homepage', null, options)
+      }
+    })
+
     it('can not match the end', () => {
-      matchParams('/home', '/home/other', null, { end: true })
-      matchParams('/home', '/home/other', {}, { end: false })
+      const options = { end: false }
+
+      matchParams('/home', '/home', {}, options)
+      matchParams('/home', '/home/', {}, options)
+      matchParams('/home', '/home/other', {}, options)
+      matchParams('/home', '/homepage', {}, options)
+
+      matchParams('/home/:p', '/home', null, options)
+      matchParams('/home/:p', '/home/', null, options)
+      matchParams('/home/:p', '/home/a', { p: 'a' }, options)
+      matchParams('/home/:p', '/home/a/', { p: 'a' }, options)
+      matchParams('/home/:p', '/home/a/b', { p: 'a' }, options)
+      matchParams('/home/:p', '/homepage', null, options)
+
+      matchParams('/home/', '/home', {}, options)
+      matchParams('/home/', '/home/', {}, options)
+      matchParams('/home/', '/home/other', {}, options)
+      matchParams('/home/', '/homepage', {}, options)
+
+      matchParams('/home/:p/', '/home', null, options)
+      matchParams('/home/:p/', '/home/', null, options)
+      matchParams('/home/:p/', '/home/a', { p: 'a' }, options)
+      matchParams('/home/:p/', '/home/a/', { p: 'a' }, options)
+      matchParams('/home/:p/', '/home/a/b', { p: 'a' }, options)
+      matchParams('/home/:p/', '/homepage', null, options)
+    })
+
+    it('can not match the end when strict', () => {
+      const options = { end: false, strict: true }
+
+      matchParams('/home', '/home', {}, options)
+      matchParams('/home', '/home/', {}, options)
+      matchParams('/home', '/home/other', {}, options)
+      matchParams('/home', '/homepage', null, options)
+
+      matchParams('/home/:p', '/home', null, options)
+      matchParams('/home/:p', '/home/', null, options)
+      matchParams('/home/:p', '/home/a', { p: 'a' }, options)
+      matchParams('/home/:p', '/home/a/', { p: 'a' }, options)
+      matchParams('/home/:p', '/home/a/b', { p: 'a' }, options)
+      matchParams('/home/:p', '/homepage', null, options)
+
+      matchParams('/home/', '/home', null, options)
+      matchParams('/home/', '/home/', {}, options)
+      matchParams('/home/', '/home/other', {}, options)
+      matchParams('/home/', '/homepage', null, options)
+
+      matchParams('/home/:p/', '/home', null, options)
+      matchParams('/home/:p/', '/home/', null, options)
+      matchParams('/home/:p/', '/home/a', null, options)
+      matchParams('/home/:p/', '/home/a/', { p: 'a' }, options)
+      matchParams('/home/:p/', '/home/a/b', { p: 'a' }, options)
+      matchParams('/home/:p/', '/homepage', null, options)
     })
 
     it('should not match optional params + static without leading slash', () => {

@@ -1,9 +1,11 @@
+import type {
+  NavigationGuard,
+  NavigationGuardNextCallback,
+  _RouteRecordProps,
+} from '../typed-routes'
 import {
   RouteRecordMultipleViews,
-  NavigationGuard,
   _RouteRecordBase,
-  _RouteRecordProps,
-  NavigationGuardNextCallback,
   RouteRecordRaw,
 } from '../types'
 import { ComponentPublicInstance } from 'vue'
@@ -29,6 +31,13 @@ export interface RouteRecordNormalized {
    * {@inheritDoc RouteRecordMultipleViews.components}
    */
   components: RouteRecordMultipleViews['components'] | null | undefined
+
+  /**
+   * Contains the original modules for lazy loaded components.
+   * @internal
+   */
+  mods: Record<string, unknown>
+
   /**
    * Nested route records.
    */

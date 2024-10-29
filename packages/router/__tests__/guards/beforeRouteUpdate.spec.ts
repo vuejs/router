@@ -1,11 +1,12 @@
 import fakePromise from 'faked-promise'
 import { createDom, noGuard, newRouter as createRouter } from '../utils'
 import { RouteRecordRaw } from '../../src/types'
+import { vi, describe, expect, it, beforeAll, beforeEach } from 'vitest'
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
-const beforeRouteUpdate = jest.fn()
+const beforeRouteUpdate = vi.fn()
 const routes: RouteRecordRaw[] = [
   { path: '/', component: Home },
   { path: '/foo', component: Foo },

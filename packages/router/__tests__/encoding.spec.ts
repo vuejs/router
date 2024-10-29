@@ -5,6 +5,7 @@ import {
   encodeQueryValue,
   // decode,
 } from '../src/encoding'
+import { describe, expect, it } from 'vitest'
 
 describe('Encoding', () => {
   // all ascii chars with a non ascii char at the beginning

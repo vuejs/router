@@ -1,4 +1,5 @@
 import { normalizeRouteRecord } from '../../src/matcher'
+import { vi, describe, expect, it } from 'vitest'
 
 describe('normalizeRouteRecord', () => {
   it('transforms a single view into multiple views', () => {
@@ -22,7 +23,7 @@ describe('normalizeRouteRecord', () => {
   })
 
   it('keeps original values in single view', () => {
-    const beforeEnter = jest.fn()
+    const beforeEnter = vi.fn()
     const record = normalizeRouteRecord({
       path: '/home',
       beforeEnter,
@@ -64,7 +65,7 @@ describe('normalizeRouteRecord', () => {
   })
 
   it('keeps original values in multiple views', () => {
-    const beforeEnter = jest.fn()
+    const beforeEnter = vi.fn()
     const record = normalizeRouteRecord({
       path: '/home',
       beforeEnter,

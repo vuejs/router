@@ -1,20 +1,22 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
-import { RouterLink, RouterLinkProps } from '../src/RouterLink'
+import { RouterLink } from '../src/RouterLink'
+import { RouteQueryAndHash, MatcherLocationRaw } from '../src/types'
+import { START_LOCATION_NORMALIZED } from '../src/location'
 import {
-  START_LOCATION_NORMALIZED,
-  RouteQueryAndHash,
-  MatcherLocationRaw,
+  createMemoryHistory,
+  RouterOptions,
   RouteLocationNormalized,
-} from '../src/types'
-import { createMemoryHistory, RouterOptions } from '../src'
+  RouteLocationResolved,
+} from '../src'
 import { createMockedRoute } from './mount'
 import { defineComponent, PropType } from 'vue'
 import { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/injectionSymbols'
 import { tick } from './utils'
 import { mount } from '@vue/test-utils'
+import { vi, describe, expect, it } from 'vitest'
 
 const records = {
   home: {} as RouteRecordNormalized,
@@ -36,8 +38,6 @@ records.parentAlias = {
 } as RouteRecordNormalized
 records.childAlias = { aliasOf: records.child } as RouteRecordNormalized
 records.childEmptyAlias.aliasOf = records.childEmpty
-
-type RouteLocationResolved = RouteLocationNormalized & { href: string }
 
 function createLocations<
   T extends Record<
@@ -358,7 +358,8 @@ async function factory(
   currentLocation: RouteLocationNormalized,
   propsData: any,
   resolvedLocation: RouteLocationResolved,
-  slotTemplate: string = ''
+  slotTemplate: string = '',
+  component: any = RouterLink
 ) {
   const route = createMockedRoute(currentLocation)
   const router = {
@@ -367,13 +368,13 @@ async function factory(
       return this.history.base + to.fullPath
     },
     options: {} as Partial<RouterOptions>,
-    resolve: jest.fn(),
-    push: jest.fn().mockResolvedValue(resolvedLocation),
-    replace: jest.fn().mockResolvedValue(resolvedLocation),
+    resolve: vi.fn(),
+    push: vi.fn().mockResolvedValue(resolvedLocation),
+    replace: vi.fn().mockResolvedValue(resolvedLocation),
   }
   router.resolve.mockReturnValueOnce(resolvedLocation)
 
-  const wrapper = mount(RouterLink as any, {
+  const wrapper = mount(component, {
     propsData,
     global: {
       provide: {
@@ -801,7 +802,7 @@ describe('RouterLink', () => {
   })
 
   it('allows adding more click listeners', async () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     const { router, wrapper } = await factory(
       START_LOCATION_NORMALIZED,
       { to: locations.basic.string, onClick },
@@ -899,6 +900,32 @@ describe('RouterLink', () => {
       expect(wrapper.html()).not.toContain('</a>')
     })
 
+    // #2375
+    it('works with custom directive when custom=true', async () => {
+      const Directive = (el: HTMLElement) => el.setAttribute('data-test', 'x')
+      const AppLink = defineComponent({
+        template: `
+<router-link custom v-directive>
+  <a></a>
+</router-link>
+        `,
+        components: { RouterLink },
+        directives: { Directive },
+        name: 'AppLink',
+      })
+
+      const { wrapper } = await factory(
+        locations.basic.normalized,
+        { to: locations.basic.string },
+        locations.basic.normalized,
+        undefined,
+        AppLink
+      )
+
+      expect(wrapper.element.tagName).toBe('A')
+      expect(wrapper.attributes('data-test')).toBe('x')
+    })
+
     describe('Extending RouterLink', () => {
       const AppLink = defineComponent({
         template: `
@@ -919,9 +946,8 @@ describe('RouterLink', () => {
         components: { RouterLink },
         name: 'AppLink',
 
-        // @ts-expect-error
         props: {
-          ...((RouterLink as any).props as RouterLinkProps),
+          ...(RouterLink as any).props,
           inactiveClass: String as PropType<string>,
         },
 
@@ -933,59 +959,31 @@ describe('RouterLink', () => {
         },
       })
 
-      async function factoryCustom(
-        currentLocation: RouteLocationNormalized,
-        propsData: any,
-        resolvedLocation: RouteLocationResolved,
-        slotTemplate: string = ''
-      ) {
-        const route = createMockedRoute(currentLocation)
-        const router = {
-          history: createMemoryHistory(),
-          createHref(to: RouteLocationNormalized): string {
-            return this.history.base + to.fullPath
-          },
-          options: {} as Partial<RouterOptions>,
-          resolve: jest.fn(),
-          push: jest.fn().mockResolvedValue(resolvedLocation),
-        }
-        router.resolve.mockReturnValueOnce(resolvedLocation)
-
-        const wrapper = await mount(AppLink as any, {
-          propsData,
-          global: {
-            provide: {
-              [routerKey as any]: router,
-              ...route.provides,
-            },
-          },
-          slots: { default: slotTemplate },
-        })
-
-        return { router, wrapper, route }
-      }
-
       it('can extend RouterLink with inactive class', async () => {
-        const { wrapper } = await factoryCustom(
+        const { wrapper } = await factory(
           locations.basic.normalized,
           {
             to: locations.basic.string,
             inactiveClass: 'inactive',
             activeClass: 'active',
           },
-          locations.foo.normalized
+          locations.foo.normalized,
+          undefined,
+          AppLink
         )
 
         expect(wrapper.find('a')!.classes()).toEqual(['inactive'])
       })
 
       it('can extend RouterLink with external link', async () => {
-        const { wrapper } = await factoryCustom(
+        const { wrapper } = await factory(
           locations.basic.normalized,
           {
             to: 'https://esm.dev',
           },
-          locations.foo.normalized
+          locations.foo.normalized,
+          undefined,
+          AppLink
         )
 
         expect(wrapper.find('a')!.classes()).toHaveLength(0)

@@ -17,13 +17,13 @@ const routes = [
         path: 'new',
         component: PostsNew,
         // 只有经过身份验证的用户才能创建帖子
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true },
       },
       {
         path: ':id',
         component: PostsDetail
         // 任何人都可以阅读文章
-        meta: { requiresAuth: false }
+        meta: { requiresAuth: false },
       }
     ]
   }
@@ -38,7 +38,7 @@ const routes = [
 
 例如，根据上面的路由配置，`/posts/new` 这个 URL 将会匹配父路由记录 (`path: '/posts'`) 以及子路由记录 (`path: 'new'`)。
 
-一个路由匹配到的所有路由记录会暴露为 `$route` 对象(还有在导航守卫中的路由对象)的`$route.matched` 数组。我们需要遍历这个数组来检查路由记录中的 `meta` 字段，但是 Vue Router 还为你提供了一个 `$route.meta` 方法，它是一个非递归合并**所有 `meta`** 字段的（从父字段到子字段）的方法。这意味着你可以简单地写
+一个路由匹配到的所有路由记录会暴露为 `route` 对象(还有在导航守卫中的路由对象)的`route.matched` 数组。我们需要遍历这个数组来检查路由记录中的 `meta` 字段，但是 Vue Router 还为你提供了一个 `route.meta` 方法，它是一个非递归合并**所有 `meta`** 字段（从父字段到子字段）的方法。这意味着你可以简单地写
 
 ```js
 router.beforeEach((to, from) => {
@@ -58,11 +58,16 @@ router.beforeEach((to, from) => {
 
 ## TypeScript
 
-可以通过扩展 `RouteMeta` 接口来输入 meta 字段：
+也可以继承来自 `vue-router` 中的 `RouteMeta` 来为 meta 字段添加类型：
 
 ```ts
-// typings.d.ts or router.ts
+// 这段可以直接添加到你的任何 `.ts` 文件中，例如 `router.ts`
+// 也可以添加到一个 `.d.ts` 文件中。确保这个文件包含在
+// 项目的 `tsconfig.json` 中的 "file" 字段内。
 import 'vue-router'
+
+// 为了确保这个文件被当作一个模块，添加至少一个 `export` 声明
+export {}
 
 declare module 'vue-router' {
   interface RouteMeta {

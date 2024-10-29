@@ -25,8 +25,8 @@ Global before guards are called in creation order, whenever a navigation is trig
 
 Every guard function receives two arguments:
 
-- **`to`**: the target route location [in a normalized format](../../api/interfaces/RouteLocationNormalized.md) being navigated to.
-- **`from`**: the current route location [in a normalized format](../../api/interfaces/RouteLocationNormalized.md) being navigated away from.
+- **`to`**: the target route location [in a normalized format](../../api/#RouteLocationNormalized) being navigated to.
+- **`from`**: the current route location [in a normalized format](../../api/#RouteLocationNormalized) being navigated away from.
 
 And can optionally return any of the following values:
 
@@ -197,13 +197,34 @@ const routes = [
 ]
 ```
 
-Note it is possible to achieve a similar behavior by using [route meta fields](./meta.md) and global navigation guards.
+When working with [nested routes](../essentials/nested-routes), both parent and child routes can use `beforeEnter`. When placed on a parent route, it won't be triggered when moving between children with that same parent. For example:
+
+```js
+const routes = [
+  {
+    path: '/user',
+    beforeEnter() {
+      // ...
+    },
+    children: [
+      { path: 'list', component: UserList },
+      { path: 'details', component: UserDetails },
+    ],
+  },
+]
+```
+
+The `beforeEnter` in the example above won't be called when moving between `/user/list` and `/user/details`, as they share the same parent. If we put the `beforeEnter` guard directly on the `details` route instead, that would be called when moving between those two routes.
+
+::: tip
+It is possible to achieve similar behavior to per-route guards by using [route meta fields](./meta) and global navigation guards.
+:::
 
 ## In-Component Guards
 
 Finally, you can directly define route navigation guards inside route components (the ones passed to the router configuration)
 
-### Using the options API
+### Using the Options API
 
 You can add the following options to route components:
 
@@ -211,9 +232,9 @@ You can add the following options to route components:
 - `beforeRouteUpdate`
 - `beforeRouteLeave`
 
-```js
-const UserDetails = {
-  template: `...`,
+```vue
+<script>
+export default {
   beforeRouteEnter(to, from) {
     // called before the route that renders this component is confirmed.
     // does NOT have access to `this` component instance,
@@ -230,6 +251,7 @@ const UserDetails = {
     // As with `beforeRouteUpdate`, it has access to `this` component instance.
   },
 }
+</script>
 ```
 
 The `beforeRouteEnter` guard does **NOT** have access to `this`, because the guard is called before the navigation is confirmed, thus the new entering component has not even been created yet.
@@ -262,9 +284,9 @@ beforeRouteLeave (to, from) {
 }
 ```
 
-### Using the composition API
+### Using the Composition API
 
-If you are writing your component using the [composition API and a `setup` function](https://vuejs.org/api/composition-api-setup.html), you can add update and leave guards through `onBeforeRouteUpdate` and `onBeforeRouteLeave` respectively. Please refer to the [Composition API section](./composition-api.md#navigation-guards) for more details.
+If you are writing your component using the Composition API, you can add update and leave guards through `onBeforeRouteUpdate` and `onBeforeRouteLeave` respectively. Please refer to the [Composition API section](./composition-api.md#navigation-guards) for more details.
 
 ## The Full Navigation Resolution Flow
 

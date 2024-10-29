@@ -9,7 +9,28 @@ The RouterLink component exposes enough `props` to suffice most basic applicatio
 
 Let's extend RouterLink to handle external links as well and adding a custom `inactive-class` in an `AppLink.vue` file:
 
-```vue
+::: code-group
+
+```vue [Composition API]
+<script setup>
+import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
+
+defineOptions({
+  inheritAttrs: false,
+})
+
+const props = defineProps({
+  // add @ts-ignore if using TypeScript
+  ...RouterLink.props,
+  inactiveClass: String,
+})
+
+const isExternalLink = computed(() => {
+  return typeof props.to === 'string' && props.to.startsWith('http')
+})
+</script>
+
 <template>
   <a v-if="isExternalLink" v-bind="$attrs" :href="to" target="_blank">
     <slot />
@@ -30,7 +51,9 @@ Let's extend RouterLink to handle external links as well and adding a custom `in
     </a>
   </router-link>
 </template>
+```
 
+```vue [Options API]
 <script>
 import { RouterLink } from 'vue-router'
 
@@ -51,7 +74,30 @@ export default {
   },
 }
 </script>
+
+<template>
+  <a v-if="isExternalLink" v-bind="$attrs" :href="to" target="_blank">
+    <slot />
+  </a>
+  <router-link
+    v-else
+    v-bind="$props"
+    custom
+    v-slot="{ isActive, href, navigate }"
+  >
+    <a
+      v-bind="$attrs"
+      :href="href"
+      @click="navigate"
+      :class="isActive ? activeClass : inactiveClass"
+    >
+      <slot />
+    </a>
+  </router-link>
+</template>
 ```
+
+:::
 
 If you prefer using a render function or create `computed` properties, you can use the `useLink` from the [Composition API](./composition-api.md):
 
