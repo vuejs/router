@@ -138,9 +138,9 @@ const routes = [
 
 ## 忽略父组件 <Badge text="4.1+" />
 
-我们还可以利用路由之间的父子关系，而不需要嵌套路由组件。这对于将具有公共路径前缀的路由分组在一起或使用更高级的功能时很有用，例如： [路由独享的守卫](../advanced/navigation-guards#Per-Route-Guard) 或 [路由元信息](../advanced/meta)。
+我们还可以仅利用路由的父子关系，但不嵌套路由组件。这对于将具有公共路径前缀的路由分组在一起或使用更高级的功能时很有用，例如：[路由独享的守卫](../advanced/navigation-guards#Per-Route-Guard)或[路由元信息](../advanced/meta)。
 
-为了实现这一点, 我们可以在父路由中省略了 `component` 和 `components`的选项
+为了实现这一点, 我们在父路由中省略了 `component` 和 `components` 选项
 
 ```js
 const routes = [
@@ -155,4 +155,4 @@ const routes = [
 ]
 ```
 
-由于父级没有指定路由组件，顶级  `<router-view>` 将跳过父级并仅使用子级的路由组件。
+由于父级没有指定路由组件，顶级 `<router-view>` 将跳过父级并仅使用子路由组件。
