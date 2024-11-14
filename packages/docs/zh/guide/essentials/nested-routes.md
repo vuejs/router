@@ -136,12 +136,11 @@ const routes = [
 ]
 ```
 
-<!-- TODO: translation -->
-## Omitting parent components <Badge text="4.1+" />
+## 忽略父组件 <Badge text="4.1+" />
 
-We can also take advantage of the parent-child relationship between routes without needing to nest route components. This can be useful for grouping together routes with a common path prefix, or when working with more advanced features, such as [per-route navigation guards](../advanced/navigation-guards#Per-Route-Guard) or [route meta fields](../advanced/meta).
+我们还可以仅利用路由的父子关系，但不嵌套路由组件。这对于将具有公共路径前缀的路由分组在一起或使用更高级的功能时很有用，例如：[路由独享的守卫](../advanced/navigation-guards#Per-Route-Guard)或[路由元信息](../advanced/meta)。
 
-To achieve this, we omit the `component` and `components` options from the parent route:
+为了实现这一点, 我们在父路由中省略了 `component` 和 `components` 选项
 
 ```js
 const routes = [
@@ -156,4 +155,4 @@ const routes = [
 ]
 ```
 
-As the parent doesn't specify a route component, the top-level `<router-view>` will skip over the parent and just use the component from the relevant child instead.
+由于父级没有指定路由组件，顶级 `<router-view>` 将跳过父级并仅使用子路由组件。
