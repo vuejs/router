@@ -234,7 +234,7 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
         typeof document !== 'undefined' &&
         'startViewTransition' in document
       ) {
-        // @ts-expect-error: not added to types yet
+        // @ts-ignore: this fails with Vitest, FIXME: remove it
         document.startViewTransition(() => p)
       }
       return p

@@ -6,10 +6,7 @@ import { vi, describe, expect, it, beforeAll, beforeEach } from 'vitest'
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
 
-const beforeRouteEnter = vi.fn<
-  Parameters<NavigationGuard>,
-  ReturnType<NavigationGuard>
->()
+const beforeRouteEnter = vi.fn<NavigationGuard>()
 const named = {
   default: vi.fn(),
   other: vi.fn(),
