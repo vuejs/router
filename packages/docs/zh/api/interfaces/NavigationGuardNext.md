@@ -38,7 +38,7 @@ editLink: false
 
 | 名称 | 类型 |
 | :------ | :------ |
-| `location` | [`RouteLocationRaw`](../index.md#routelocationraw) |
+| `location` | [`RouteLocationRaw`](../index.md#Type-Aliases-RouteLocationRaw) |
 
 #### 返回值 %{#Callable-NavigationGuardNext-Returns_2}%
 

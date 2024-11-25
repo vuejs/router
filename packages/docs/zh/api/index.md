@@ -50,7 +50,7 @@ ___
 
 松散的 [LocationQuery](index.md#locationquery) 对象，可以被传递给诸如
 [Router.push](interfaces/Router.md#push)、[Router.replace](interfaces/Router.md#replace) 或任何创建
-[RouteLocationRaw](index.md#routelocationraw) 的函数。
+[RouteLocationRaw](index.md#Type-Aliases-RouteLocationRaw) 的函数。
 
 ___
 

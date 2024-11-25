@@ -6,7 +6,7 @@ editLink: false
 
 # 接口：RouteLocation %{#interface-routelocation}%
 
-通过匹配解析出来的 [RouteLocationRaw](../index.md#routelocationraw)
+通过匹配解析出来的 [RouteLocationRaw](../index.md#Type-Aliases-RouteLocationRaw)
 
 ## 继承关系 %{#Hierarchy}%
 

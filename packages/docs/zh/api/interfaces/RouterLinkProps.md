@@ -64,7 +64,7 @@ ___
 
 ### to %{#Properties-to}%
 
-• **to**: [`RouteLocationRaw`](../index.md#routelocationraw)
+• **to**: [`RouteLocationRaw`](../index.md#Type-Aliases-RouteLocationRaw)
 
 当点击该链接时应该进入的路由地址。
 
