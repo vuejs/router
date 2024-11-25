@@ -126,8 +126,8 @@
     "@types/jsdom": "^21.1.7",
     "@types/nightwatch": "^2.3.32",
     "@vitejs/plugin-vue": "^5.2.0",
-    "@vue/compiler-sfc": "~3.4.38",
-    "@vue/server-renderer": "~3.4.38",
+    "@vue/compiler-sfc": "~3.5.13",
+    "@vue/server-renderer": "~3.5.13",
     "@vue/test-utils": "^2.4.6",
     "browserstack-local": "^1.5.5",
     "chromedriver": "^131.0.1",
@@ -143,8 +143,7 @@
     "rollup": "^3.29.5",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-typescript2": "^0.36.0",
-    "typescript": "~5.6.3",
     "vite": "^5.4.11",
-    "vue": "~3.4.38"
+    "vue": "~3.5.13"
   }
 }

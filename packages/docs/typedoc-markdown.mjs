@@ -1,7 +1,7 @@
 // @ts-check
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { Application, TSConfigReader, PageEvent } from 'typedoc'
+import { Application, PageEvent, TSConfigReader } from 'typedoc'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
@@ -11,9 +11,8 @@ const DEFAULT_OPTIONS = {
   excludeInternal: false,
   readme: 'none',
   out: path.resolve(__dirname, './api'),
-  entryDocument: 'index.md',
+  entryFileName: 'index.md',
   hideBreadcrumbs: false,
-  hideInPageTOC: true,
   preserveAnchorCasing: true,
 }
 
@@ -108,7 +107,7 @@ async function exists(path) {
  */
 function prependYAML(contents, vars) {
   return contents
-    .replace(/^/, toYAML(vars) + '\n\n')
+    .replace(/^/, `${toYAML(vars)}\n\n`)
     .replace(/[\r\n]{3,}/g, '\n\n')
 }
 
