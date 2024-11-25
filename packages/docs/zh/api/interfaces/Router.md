@@ -305,7 +305,7 @@ ___
 
 | 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | 要导航到的路由 |
+| `to` | [`RouteLocationRaw`](../index.md#Type-Aliases-RouteLocationRaw) | 要导航到的路由 |
 
 #### 返回值 %{#Methods-push-Returns}%
 
@@ -341,7 +341,7 @@ ___
 
 | 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | 要导航到的路由 |
+| `to` | [`RouteLocationRaw`](../index.md#Type-Aliases-RouteLocationRaw) | 要导航到的路由 |
 
 #### 返回值 %{#Methods-replace-Returns}%
 
@@ -353,13 +353,13 @@ ___
 
 ▸ **resolve**(`to`, `currentLocation?`): [`RouteLocation`](RouteLocation.md) & { `href`: `string`  }
 
-返回一个[路由地址](../index.md#routelocationraw)的[规范化版本](RouteLocation.md)。同时包含一个包含任何现有 `base` 的 `href` 属性。默认情况下，用于 `router.currentRoute` 的 `currentLocation` 应该在特别高阶的用例下才会被覆写。
+返回一个[路由地址](../index.md#Type-Aliases-RouteLocationRaw)的[规范化版本](RouteLocation.md)。同时包含一个包含任何现有 `base` 的 `href` 属性。默认情况下，用于 `router.currentRoute` 的 `currentLocation` 应该在特别高阶的用例下才会被覆写。
 
 #### 参数 %{#Methods-resolve-Parameters}%
 
 | 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `to` | [`RouteLocationRaw`](../index.md#routelocationraw) | 要解析的原始路由地址 |
+| `to` | [`RouteLocationRaw`](../index.md#Type-Aliases-RouteLocationRaw) | 要解析的原始路由地址 |
 | `currentLocation?` | [`RouteLocationNormalizedLoaded`](RouteLocationNormalizedLoaded.md) | 可选的被解析的当前地址 |
 
 #### 返回值 %{#Methods-resolve-Returns}%

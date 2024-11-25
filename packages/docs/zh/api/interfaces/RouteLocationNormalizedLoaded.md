@@ -8,7 +8,7 @@ editLink: false
 
 <!-- TODO: translation -->
 
-[RouteLocationRaw](../index.md#routelocationraw) with
+[RouteLocationRaw](../index.md#Type-Aliases-RouteLocationRaw) with
 
 ## 继承关系 %{#Hierarchy}%
 
