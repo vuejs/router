@@ -1,3 +1,16 @@
+# [4.5.0](https://github.com/vuejs/router/compare/v4.4.5...v4.5.0) (2024-11-25)
+
+### Bug Fixes
+
+- combining 'end' and 'strict' ([#2154](https://github.com/vuejs/router/issues/2154)) ([ab62098](https://github.com/vuejs/router/commit/ab62098b4f47b910ad89b8f08b882bf0d38c973f))
+- custom directive doesn't work when custom=true ([#2377](https://github.com/vuejs/router/issues/2377)) ([0d8d997](https://github.com/vuejs/router/commit/0d8d9978cbf1cae77ee4d9ac6cec69cc341a8243))
+- **router:** allow duplicated navigation on back + redirect ([#2133](https://github.com/vuejs/router/issues/2133)) ([d992bb2](https://github.com/vuejs/router/commit/d992bb2085cadf01b270e4f04b3d91c4fd5a70e3))
+
+### Features
+
+- **link:** add view-transition prop ([#2356](https://github.com/vuejs/router/issues/2356)) ([e978eb8](https://github.com/vuejs/router/commit/e978eb8efeef193dfaf5f358a56109633d17fc56))
+- throw if parent and child routes have the same name ([#2267](https://github.com/vuejs/router/issues/2267)) ([8c73877](https://github.com/vuejs/router/commit/8c73877dc159fb7d736f9d0a71ba22e8130012a3))
+
 ## [4.4.5](https://github.com/vuejs/router/compare/v4.4.4...v4.4.5) (2024-09-13)
 
 ### Bug Fixes
