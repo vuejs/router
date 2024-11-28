@@ -59,7 +59,6 @@ export type {
   RouteRecordMultipleViewsWithChildren,
   RouteRecordRedirect,
   RouteMeta,
-  _RouteMetaBase,
   RouteComponent,
   // RawRouteComponent,
   RouteParamsGeneric,

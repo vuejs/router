@@ -7,8 +7,7 @@ const component = defineComponent({})
 declare module '.' {
   interface RouteMeta {
     requiresAuth?: boolean
-    // TODO: it would be nice to be able to test required meta without polluting all tests
-    nested?: { foo: string }
+    nested: { foo: string }
   }
 }
 
@@ -27,6 +26,12 @@ describe('RouteMeta', () => {
               foo: 'bar',
             },
           },
+        },
+        {
+          path: '/hey',
+          component,
+          // @ts-expect-error: meta is missing `nested`
+          meta: {},
         },
       ],
     })

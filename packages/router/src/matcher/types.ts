@@ -31,6 +31,13 @@ export interface RouteRecordNormalized {
    * {@inheritDoc RouteRecordMultipleViews.components}
    */
   components: RouteRecordMultipleViews['components'] | null | undefined
+
+  /**
+   * Contains the original modules for lazy loaded components.
+   * @internal
+   */
+  mods: Record<string, unknown>
+
   /**
    * Nested route records.
    */

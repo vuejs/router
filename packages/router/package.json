@@ -1,12 +1,32 @@
 {
   "name": "vue-router",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "main": "index.js",
   "unpkg": "dist/vue-router.global.js",
   "jsdelivr": "dist/vue-router.global.js",
   "module": "dist/vue-router.mjs",
   "types": "dist/vue-router.d.ts",
   "exports": {
+    ".": {
+      "types": "./dist/vue-router.d.ts",
+      "node": {
+        "import": {
+          "production": "./dist/vue-router.node.mjs",
+          "development": "./dist/vue-router.node.mjs",
+          "default": "./dist/vue-router.node.mjs"
+        },
+        "require": {
+          "production": "./dist/vue-router.prod.cjs",
+          "development": "./dist/vue-router.cjs",
+          "default": "./index.js"
+        }
+      },
+      "import": "./dist/vue-router.mjs",
+      "require": "./index.js"
+    },
+    "./dist/*": "./dist/*",
+    "./vetur/*": "./vetur/*",
+    "./package.json": "./package.json",
     "./auto-routes": {
       "types": "./vue-router-auto-routes.d.ts",
       "node": {
@@ -40,27 +60,7 @@
       },
       "import": "./dist/vue-router.mjs",
       "require": "./index.js"
-    },
-    ".": {
-      "types": "./dist/vue-router.d.ts",
-      "node": {
-        "import": {
-          "production": "./dist/vue-router.node.mjs",
-          "development": "./dist/vue-router.node.mjs",
-          "default": "./dist/vue-router.node.mjs"
-        },
-        "require": {
-          "production": "./dist/vue-router.prod.cjs",
-          "development": "./dist/vue-router.cjs",
-          "default": "./index.js"
-        }
-      },
-      "import": "./dist/vue-router.mjs",
-      "require": "./index.js"
-    },
-    "./dist/*": "./dist/*",
-    "./vetur/*": "./vetur/*",
-    "./package.json": "./package.json"
+    }
   },
   "sideEffects": false,
   "author": {
@@ -114,40 +114,36 @@
     "attributes": "vetur/attributes.json"
   },
   "dependencies": {
-    "@vue/devtools-api": "^6.6.3"
+    "@vue/devtools-api": "^6.6.4"
   },
   "devDependencies": {
-    "@microsoft/api-extractor": "^7.40.1",
-    "@rollup/plugin-alias": "^5.1.0",
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-replace": "^5.0.5",
+    "@microsoft/api-extractor": "^7.48.0",
+    "@rollup/plugin-alias": "^5.1.1",
+    "@rollup/plugin-commonjs": "^25.0.8",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-terser": "^0.4.4",
     "@types/jsdom": "^21.1.7",
-    "@types/nightwatch": "^2.3.31",
-    "@vitejs/plugin-vue": "^5.0.5",
-    "@vitest/coverage-v8": "^1.6.0",
-    "@vitest/ui": "^1.6.0",
-    "@vue/compiler-sfc": "^3.4.29",
-    "@vue/server-renderer": "^3.4.29",
+    "@types/nightwatch": "^2.3.32",
+    "@vitejs/plugin-vue": "^5.2.0",
+    "@vue/compiler-sfc": "~3.5.13",
+    "@vue/server-renderer": "~3.5.13",
     "@vue/test-utils": "^2.4.6",
     "browserstack-local": "^1.5.5",
-    "chromedriver": "^121.0.2",
+    "chromedriver": "^131.0.1",
     "connect-history-api-fallback": "^1.6.0",
-    "conventional-changelog-cli": "^2.1.1",
+    "conventional-changelog-cli": "^2.2.2",
     "dotenv": "^16.4.5",
     "faked-promise": "^2.2.2",
-    "geckodriver": "^3.2.0",
-    "happy-dom": "^14.12.3",
-    "nightwatch": "^2.6.22",
+    "geckodriver": "^4.5.1",
+    "happy-dom": "^15.11.6",
+    "nightwatch": "^2.6.25",
     "nightwatch-helpers": "^1.2.0",
-    "rimraf": "^5.0.7",
-    "rollup": "^3.29.4",
+    "rimraf": "^6.0.1",
+    "rollup": "^3.29.5",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-typescript2": "^0.36.0",
-    "typescript": "~5.3.3",
-    "vite": "^5.3.1",
-    "vitest": "^1.6.0",
-    "vue": "^3.4.29"
+    "vite": "^5.4.11",
+    "vue": "~3.5.13"
   }
 }

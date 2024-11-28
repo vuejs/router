@@ -358,7 +358,8 @@ async function factory(
   currentLocation: RouteLocationNormalized,
   propsData: any,
   resolvedLocation: RouteLocationResolved,
-  slotTemplate: string = ''
+  slotTemplate: string = '',
+  component: any = RouterLink
 ) {
   const route = createMockedRoute(currentLocation)
   const router = {
@@ -373,7 +374,7 @@ async function factory(
   }
   router.resolve.mockReturnValueOnce(resolvedLocation)
 
-  const wrapper = mount(RouterLink as any, {
+  const wrapper = mount(component, {
     propsData,
     global: {
       provide: {
@@ -899,6 +900,32 @@ describe('RouterLink', () => {
       expect(wrapper.html()).not.toContain('</a>')
     })
 
+    // #2375
+    it('works with custom directive when custom=true', async () => {
+      const Directive = (el: HTMLElement) => el.setAttribute('data-test', 'x')
+      const AppLink = defineComponent({
+        template: `
+<router-link custom v-directive>
+  <a></a>
+</router-link>
+        `,
+        components: { RouterLink },
+        directives: { Directive },
+        name: 'AppLink',
+      })
+
+      const { wrapper } = await factory(
+        locations.basic.normalized,
+        { to: locations.basic.string },
+        locations.basic.normalized,
+        undefined,
+        AppLink
+      )
+
+      expect(wrapper.element.tagName).toBe('A')
+      expect(wrapper.attributes('data-test')).toBe('x')
+    })
+
     describe('Extending RouterLink', () => {
       const AppLink = defineComponent({
         template: `
@@ -932,59 +959,31 @@ describe('RouterLink', () => {
         },
       })
 
-      async function factoryCustom(
-        currentLocation: RouteLocationNormalized,
-        propsData: any,
-        resolvedLocation: RouteLocationResolved,
-        slotTemplate: string = ''
-      ) {
-        const route = createMockedRoute(currentLocation)
-        const router = {
-          history: createMemoryHistory(),
-          createHref(to: RouteLocationNormalized): string {
-            return this.history.base + to.fullPath
-          },
-          options: {} as Partial<RouterOptions>,
-          resolve: vi.fn(),
-          push: vi.fn().mockResolvedValue(resolvedLocation),
-        }
-        router.resolve.mockReturnValueOnce(resolvedLocation)
-
-        const wrapper = await mount(AppLink as any, {
-          propsData,
-          global: {
-            provide: {
-              [routerKey as any]: router,
-              ...route.provides,
-            },
-          },
-          slots: { default: slotTemplate },
-        })
-
-        return { router, wrapper, route }
-      }
-
       it('can extend RouterLink with inactive class', async () => {
-        const { wrapper } = await factoryCustom(
+        const { wrapper } = await factory(
           locations.basic.normalized,
           {
             to: locations.basic.string,
             inactiveClass: 'inactive',
             activeClass: 'active',
           },
-          locations.foo.normalized
+          locations.foo.normalized,
+          undefined,
+          AppLink
         )
 
         expect(wrapper.find('a')!.classes()).toEqual(['inactive'])
       })
 
       it('can extend RouterLink with external link', async () => {
-        const { wrapper } = await factoryCustom(
+        const { wrapper } = await factory(
           locations.basic.normalized,
           {
             to: 'https://esm.dev',
           },
-          locations.foo.normalized
+          locations.foo.normalized,
+          undefined,
+          AppLink
         )
 
         expect(wrapper.find('a')!.classes()).toHaveLength(0)

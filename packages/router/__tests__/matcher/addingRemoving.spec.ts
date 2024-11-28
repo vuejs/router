@@ -404,6 +404,52 @@ describe('Matcher: adding and removing records', () => {
     })
   })
 
+  it('throws if a parent and child have the same name', () => {
+    expect(() => {
+      createRouterMatcher(
+        [
+          {
+            path: '/',
+            component,
+            name: 'home',
+            children: [{ path: '/home', component, name: 'home' }],
+          },
+        ],
+        {}
+      )
+    }).toThrowError(
+      'A route named "home" has been added as a child of a route with the same name'
+    )
+  })
+
+  it('throws if an ancestor and descendant have the same name', () => {
+    const name = Symbol('home')
+    const matcher = createRouterMatcher(
+      [
+        {
+          path: '/',
+          name,
+          children: [
+            {
+              path: 'home',
+              name: 'other',
+              component,
+            },
+          ],
+        },
+      ],
+      {}
+    )
+
+    const parent = matcher.getRecordMatcher('other')
+
+    expect(() => {
+      matcher.addRoute({ path: '', component, name }, parent)
+    }).toThrowError(
+      'A route named "Symbol(home)" has been added as a descendant of a route with the same name'
+    )
+  })
+
   it('adds empty paths as children', () => {
     const matcher = createRouterMatcher([], {})
     matcher.addRoute({ path: '/', component, name: 'parent' })

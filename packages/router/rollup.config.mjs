@@ -6,7 +6,7 @@ import replace from '@rollup/plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import chalk from 'chalk'
-import pkg from './package.json' assert { type: 'json' }
+import pkg from './package.json' with { type: 'json' }
 import terser from '@rollup/plugin-terser'
 
 const name = pkg.name
@@ -59,7 +59,7 @@ const packageConfigs = packageBuilds.map(buildName =>
 packageBuilds.forEach(buildName => {
   if (buildName === 'cjs') {
     packageConfigs.push(createProductionConfig(buildName))
-  } else if (buildName === 'global') {
+  } else if (buildName === 'global' || buildName === 'browser') {
     packageConfigs.push(createMinifiedConfig(buildName))
   }
 })
@@ -125,6 +125,10 @@ function createConfig(buildName, output, plugins = []) {
     // Global and Browser ESM builds inlines everything so that they can be
     // used alone.
     external,
+    treeshake: {
+      // Ensure @vue/devtools-api can be treeshaken in production builds
+      moduleSideEffects: false,
+    },
     plugins: [
       tsPlugin,
       createReplacePlugin(
@@ -224,7 +228,7 @@ function createMinifiedConfig(format) {
   return createConfig(
     format,
     {
-      file: `dist/${name}.${format}.prod.js`,
+      file: outputConfigs[format].file.replace(/.js$/, '.prod.js'),
       format: outputConfigs[format].format,
     },
     [

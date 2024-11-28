@@ -83,6 +83,11 @@ export interface RouterLinkProps extends RouterLinkOptions {
     | 'time'
     | 'true'
     | 'false'
+
+  /**
+   * Pass the returned promise of `router.push()` to `document.startViewTransition()` if supported.
+   */
+  viewTransition?: boolean
 }
 
 /**
@@ -106,7 +111,13 @@ export interface UseLinkOptions<Name extends keyof RouteMap = keyof RouteMap> {
     | RouteLocationAsPath
     | RouteLocationRaw
   >
+
   replace?: MaybeRef<boolean | undefined>
+
+  /**
+   * Pass the returned promise of `router.push()` to `document.startViewTransition()` if supported.
+   */
+  viewTransition?: boolean
 }
 
 /**
@@ -214,10 +225,18 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
     e: MouseEvent = {} as MouseEvent
   ): Promise<void | NavigationFailure> {
     if (guardEvent(e)) {
-      return router[unref(props.replace) ? 'replace' : 'push'](
+      const p = router[unref(props.replace) ? 'replace' : 'push'](
         unref(props.to)
         // avoid uncaught errors are they are logged anyway
       ).catch(noop)
+      if (
+        props.viewTransition &&
+        typeof document !== 'undefined' &&
+        'startViewTransition' in document
+      ) {
+        document.startViewTransition(() => p)
+      }
+      return p
     }
     return Promise.resolve()
   }
@@ -261,6 +280,10 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
     isExactActive,
     navigate,
   }
+}
+
+function preferSingleVNode(vnodes: VNode[]) {
+  return vnodes.length === 1 ? vnodes[0] : vnodes
 }
 
 export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
@@ -307,7 +330,7 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
     }))
 
     return () => {
-      const children = slots.default && slots.default(link)
+      const children = slots.default && preferSingleVNode(slots.default(link))
       return props.custom
         ? children
         : h(

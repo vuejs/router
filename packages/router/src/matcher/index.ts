@@ -92,28 +92,30 @@ export function createRouterMatcher(
     mainNormalizedRecord.aliasOf = originalRecord && originalRecord.record
     const options: PathParserOptions = mergeOptions(globalOptions, record)
     // generate an array of records to correctly handle aliases
-    const normalizedRecords: (typeof mainNormalizedRecord)[] = [
-      mainNormalizedRecord,
-    ]
+    const normalizedRecords: RouteRecordNormalized[] = [mainNormalizedRecord]
     if ('alias' in record) {
       const aliases =
         typeof record.alias === 'string' ? [record.alias] : record.alias!
       for (const alias of aliases) {
         normalizedRecords.push(
-          assign({}, mainNormalizedRecord, {
-            // this allows us to hold a copy of the `components` option
-            // so that async components cache is hold on the original record
-            components: originalRecord
-              ? originalRecord.record.components
-              : mainNormalizedRecord.components,
-            path: alias,
-            // we might be the child of an alias
-            aliasOf: originalRecord
-              ? originalRecord.record
-              : mainNormalizedRecord,
-            // the aliases are always of the same kind as the original since they
-            // are defined on the same record
-          }) as typeof mainNormalizedRecord
+          // we need to normalize again to ensure the `mods` property
+          // being non enumerable
+          normalizeRouteRecord(
+            assign({}, mainNormalizedRecord, {
+              // this allows us to hold a copy of the `components` option
+              // so that async components cache is hold on the original record
+              components: originalRecord
+                ? originalRecord.record.components
+                : mainNormalizedRecord.components,
+              path: alias,
+              // we might be the child of an alias
+              aliasOf: originalRecord
+                ? originalRecord.record
+                : mainNormalizedRecord,
+              // the aliases are always of the same kind as the original since they
+              // are defined on the same record
+            })
+          )
         )
       }
     }
@@ -161,8 +163,12 @@ export function createRouterMatcher(
 
         // remove the route if named and only for the top record (avoid in nested calls)
         // this works because the original record is the first one
-        if (isRootAdd && record.name && !isAliasRecord(matcher))
+        if (isRootAdd && record.name && !isAliasRecord(matcher)) {
+          if (__DEV__) {
+            checkSameNameAsAncestor(record, parent)
+          }
           removeRoute(record.name)
+        }
       }
 
       // Avoid adding a record that doesn't display anything. This allows passing through records without a component to
@@ -420,14 +426,14 @@ function paramsFromLocation(
  * @returns the normalized version
  */
 export function normalizeRouteRecord(
-  record: RouteRecordRaw
+  record: RouteRecordRaw & { aliasOf?: RouteRecordNormalized }
 ): RouteRecordNormalized {
-  return {
+  const normalized: Omit<RouteRecordNormalized, 'mods'> = {
     path: record.path,
     redirect: record.redirect,
     name: record.name,
     meta: record.meta || {},
-    aliasOf: undefined,
+    aliasOf: record.aliasOf,
     beforeEnter: record.beforeEnter,
     props: normalizeRecordProps(record),
     children: record.children || [],
@@ -435,11 +441,22 @@ export function normalizeRouteRecord(
     leaveGuards: new Set(),
     updateGuards: new Set(),
     enterCallbacks: {},
+    // must be declared afterwards
+    // mods: {},
     components:
       'components' in record
         ? record.components || null
         : record.component && { default: record.component },
   }
+
+  // mods contain modules and shouldn't be copied,
+  // logged or anything. It's just used for internal
+  // advanced use cases like data loaders
+  Object.defineProperty(normalized, 'mods', {
+    value: {},
+  })
+
+  return normalized as RouteRecordNormalized
 }
 
 /**
@@ -554,6 +571,21 @@ function checkChildMissingNameWithEmptyPath(
         parent.record.name
       )}" has a child without a name and an empty path. Using that name won't render the empty path child so you probably want to move the name to the child instead. If this is intentional, add a name to the child route to remove the warning.`
     )
+  }
+}
+
+function checkSameNameAsAncestor(
+  record: RouteRecordRaw,
+  parent?: RouteRecordMatcher
+) {
+  for (let ancestor = parent; ancestor; ancestor = ancestor.parent) {
+    if (ancestor.record.name === record.name) {
+      throw new Error(
+        `A route named "${String(record.name)}" has been added as a ${
+          parent === ancestor ? 'child' : 'descendant'
+        } of a route with the same name. Route names must be unique and a nested route cannot use the same name as an ancestor.`
+      )
+    }
   }
 }
 

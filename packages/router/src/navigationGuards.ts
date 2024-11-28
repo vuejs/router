@@ -1,9 +1,4 @@
-import {
-  isRouteLocation,
-  Lazy,
-  RouteComponent,
-  RawRouteComponent,
-} from './types'
+import { isRouteLocation, Lazy, RouteComponent } from './types'
 
 import type {
   RouteLocationNormalized,
@@ -25,7 +20,7 @@ import { ComponentOptions, onUnmounted, onActivated, onDeactivated } from 'vue'
 import { inject, getCurrentInstance } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
-import { isESModule } from './utils'
+import { isESModule, isRouteComponent } from './utils'
 import { warn } from './warning'
 
 function registerGuard(
@@ -321,14 +316,14 @@ export function extractComponentsGuards(
         guards.push(() =>
           componentPromise.then(resolved => {
             if (!resolved)
-              return Promise.reject(
-                new Error(
-                  `Couldn't resolve component "${name}" at "${record.path}"`
-                )
+              throw new Error(
+                `Couldn't resolve component "${name}" at "${record.path}"`
               )
             const resolvedComponent = isESModule(resolved)
               ? resolved.default
               : resolved
+            // keep the resolved module for plugins like data loaders
+            record.mods[name] = resolved
             // replace the function with the resolved component
             // cannot be null or undefined because we went into the for loop
             record.components![name] = resolvedComponent
@@ -336,6 +331,7 @@ export function extractComponentsGuards(
             const options: ComponentOptions =
               (resolvedComponent as any).__vccOpts || resolvedComponent
             const guard = options[guardType]
+
             return (
               guard &&
               guardToPromiseFn(guard, to, from, record, name, runWithContext)()
@@ -347,23 +343,6 @@ export function extractComponentsGuards(
   }
 
   return guards
-}
-
-/**
- * Allows differentiating lazy components from functional components and vue-class-component
- * @internal
- *
- * @param component
- */
-export function isRouteComponent(
-  component: RawRouteComponent
-): component is RouteComponent {
-  return (
-    typeof component === 'object' ||
-    'displayName' in component ||
-    'props' in component ||
-    '__vccOpts' in component
-  )
 }
 
 /**
@@ -395,9 +374,12 @@ export function loadRouteLocation(
                             `Couldn't resolve component "${name}" at "${record.path}". Ensure you passed a function that returns a promise.`
                           )
                         )
+
                       const resolvedComponent = isESModule(resolved)
                         ? resolved.default
                         : resolved
+                      // keep the resolved module for plugins like data loaders
+                      record.mods[name] = resolved
                       // replace the function with the resolved component
                       // cannot be null or undefined because we went into the for loop
                       record.components![name] = resolvedComponent
