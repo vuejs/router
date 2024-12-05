@@ -134,18 +134,18 @@ describe('parseURL', () => {
     })
   })
 
-  it('avoids ? after the hash', () => {
+  it('correctly parses a ? after the hash', () => {
     expect(parseURL('/foo#?a=one')).toEqual({
       fullPath: '/foo#?a=one',
       path: '/foo',
       hash: '#?a=one',
       query: {},
     })
-    expect(parseURL('/foo/#?a=one')).toEqual({
-      fullPath: '/foo/#?a=one',
+    expect(parseURL('/foo/?a=two#?a=one')).toEqual({
+      fullPath: '/foo/?a=two#?a=one',
       path: '/foo/',
       hash: '#?a=one',
-      query: {},
+      query: { a: 'two' },
     })
   })
 
