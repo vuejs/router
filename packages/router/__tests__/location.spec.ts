@@ -156,8 +156,20 @@ describe('parseURL', () => {
       hash: '#hash',
       query: {},
     })
+    expect(parseURL('/foo#hash')).toEqual({
+      fullPath: '/foo#hash',
+      path: '/foo',
+      hash: '#hash',
+      query: {},
+    })
     expect(parseURL('/foo?')).toEqual({
       fullPath: '/foo?',
+      path: '/foo',
+      hash: '',
+      query: {},
+    })
+    expect(parseURL('/foo')).toEqual({
+      fullPath: '/foo',
       path: '/foo',
       hash: '',
       query: {},
@@ -175,6 +187,12 @@ describe('parseURL', () => {
       fullPath: '/foo?#',
       path: '/foo',
       hash: '#',
+      query: {},
+    })
+    expect(parseURL('/foo')).toEqual({
+      fullPath: '/foo',
+      path: '/foo',
+      hash: '',
       query: {},
     })
   })
@@ -198,7 +216,20 @@ describe('parseURL', () => {
       hash: '',
       query: {},
     })
+    // cannot go below root
+    expect(parseURL('../../foo', '/parent/bar')).toEqual({
+      fullPath: '/foo',
+      path: '/foo',
+      hash: '',
+      query: {},
+    })
 
+    expect(parseURL('', '/parent/bar')).toEqual({
+      fullPath: '/parent/bar',
+      path: '/parent/bar',
+      hash: '',
+      query: {},
+    })
     expect(parseURL('#foo', '/parent/bar')).toEqual({
       fullPath: '/parent/bar#foo',
       path: '/parent/bar',
