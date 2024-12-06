@@ -52,19 +52,19 @@ export function parseURL(
 
   // NOTE: we could use URL and URLSearchParams but they are 2 to 5 times slower than this method
   const hashPos = location.indexOf('#')
-  // let searchPos = location.indexOf('?')
-  let searchPos =
-    hashPos >= 0
-      ? // find the query string before the hash to avoid including a ? in the hash
-        // e.g. /foo#hash?query -> has no query
-        location.lastIndexOf('?', hashPos)
-      : location.indexOf('?')
+  let searchPos = location.indexOf('?')
+
+  // This ensures that the ? is not part of the hash
+  // e.g. /foo#hash?query -> has no query
+  searchPos = hashPos >= 0 && searchPos > hashPos ? -1 : searchPos
 
   if (searchPos >= 0) {
     path = location.slice(0, searchPos)
-    searchString =
-      '?' +
-      location.slice(searchPos + 1, hashPos > 0 ? hashPos : location.length)
+    // keep the ? char
+    searchString = location.slice(
+      searchPos,
+      hashPos > 0 ? hashPos : location.length
+    )
 
     query = parseQuery(searchString)
   }
@@ -213,7 +213,7 @@ export function resolveRelativePath(to: string, from: string): string {
     return to
   }
 
-  // resolve '' with '/anything' -> '/anything'
+  // resolve to: '' with from: '/anything' -> '/anything'
   if (!to) return from
 
   const fromSegments = from.split('/')
