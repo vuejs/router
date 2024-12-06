@@ -63,6 +63,7 @@ export function parseURL(
     // keep the ? char
     searchString = location.slice(
       searchPos,
+      // hashPos cannot be 0 because there is a search section in the location
       hashPos > 0 ? hashPos : location.length
     )
 
