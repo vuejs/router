@@ -6,7 +6,7 @@ import type { MatcherName } from './matcher'
  */
 export type MatcherParamsFormatted = Record<string, unknown>
 
-export interface MatcherLocationAsName {
+export interface MatcherLocationAsNamed {
   name: MatcherName
   params: MatcherParamsFormatted
   query?: LocationQueryRaw

@@ -47,11 +47,11 @@ export interface MatcherPattern {
    *   query: { used: String }, // we require a `used` query param
    * })
    * // /?used=2
-   * pattern.parseLocation({ path: '/', query: { used: '' }, hash: '' }) // null
+   * pattern.parseLocation({ path: '/', query: { used: '' }, hash: '' }) // null becauso no /foo
    * // /foo?used=2&notUsed&notUsed=2#hello
    * pattern.parseLocation({ path: '/foo', query: { used: '2', notUsed: [null, '2']}, hash: '#hello' })
-   * // { used: '2' } // we extract the required params
-   * // /foo?used=2#hello
+   * // [{}, { used: '2' }, {}]// we extract the required params
+   * // /foo?other=2#hello
    * pattern.parseLocation({ path: '/foo', query: {}, hash: '#hello' })
    * // null // the query param is missing
    * ```
@@ -109,6 +109,7 @@ export interface PatternPathParamOptions<T = unknown>
 
 export interface PatternQueryParamOptions<T = unknown>
   extends PatternParamOptions_Base<T> {
+  // FIXME: can be removed? seems to be the same as above
   get: (value: MatcherQueryParamsValue) => T
   set?: (value: T) => MatcherQueryParamsValue
 }
@@ -153,7 +154,7 @@ export class MatcherPatternImpl implements MatcherPattern {
     query: MatcherQueryParams
     hash: string
   }) {
-    // TODO: is this performant? bench compare to a check with `null
+    // TODO: is this performant? bench compare to a check with `null`
     try {
       return [
         this.path.match(location.path),

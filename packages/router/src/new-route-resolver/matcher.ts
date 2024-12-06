@@ -13,7 +13,7 @@ import {
 } from '../encoding'
 import { parseURL, stringifyURL } from '../location'
 import type {
-  MatcherLocationAsName,
+  MatcherLocationAsNamed,
   MatcherLocationAsRelative,
   MatcherParamsFormatted,
 } from './matcher-location'
@@ -31,7 +31,7 @@ export interface RouteResolver {
 
   /**
    * Resolves a string location relative to another location. A relative location can be `./same-folder`,
-   * `../parent-folder`, or even `same-folder`.
+   * `../parent-folder`, `same-folder`, or even `?page=2`.
    */
   resolve(
     relativeLocation: string,
@@ -41,7 +41,7 @@ export interface RouteResolver {
   /**
    * Resolves a location by its name. Any required params or query must be passed in the `options` argument.
    */
-  resolve(location: MatcherLocationAsName): NEW_LocationResolved
+  resolve(location: MatcherLocationAsNamed): NEW_LocationResolved
 
   /**
    * Resolves a location by its path. Any required query must be passed.
@@ -67,7 +67,7 @@ export interface RouteResolver {
 type MatcherResolveArgs =
   | [absoluteLocation: `/${string}`]
   | [relativeLocation: string, currentLocation: NEW_LocationResolved]
-  | [location: MatcherLocationAsName]
+  | [location: MatcherLocationAsNamed]
   | [
       relativeLocation: MatcherLocationAsRelative,
       currentLocation: NEW_LocationResolved
@@ -108,7 +108,11 @@ export type MatcherPathParams = Record<string, MatcherPathParamsValue>
 export type MatcherQueryParamsValue = string | null | Array<string | null>
 export type MatcherQueryParams = Record<string, MatcherQueryParamsValue>
 
-export function applyToParams<R>(
+/**
+ * Apply a function to all properties in an object. It's used to encode/decode params and queries.
+ * @internal
+ */
+export function applyFnToObject<R>(
   fn: (v: string | number | null | undefined) => R,
   params: MatcherPathParams | LocationQuery | undefined
 ): Record<string, R | R[]> {
@@ -195,7 +199,7 @@ function transformObject<T>(
 }
 
 export const NO_MATCH_LOCATION = {
-  name: Symbol('no-match'),
+  name: __DEV__ ? Symbol('no-match') : Symbol(),
   params: {},
   matched: [],
 } satisfies Omit<NEW_LocationResolved, 'path' | 'hash' | 'query' | 'fullPath'>
@@ -215,8 +219,9 @@ export function createCompiledMatcher(): RouteResolver {
 
   function resolve(...args: MatcherResolveArgs): NEW_LocationResolved {
     const [location, currentLocation] = args
+
+    // string location, e.g. '/foo', '../bar', 'baz', '?page=1'
     if (typeof location === 'string') {
-      // string location, e.g. '/foo', '../bar', 'baz'
       const url = parseURL(parseQuery, location, currentLocation?.path)
 
       let matcher: MatcherPattern | undefined
@@ -257,6 +262,21 @@ export function createCompiledMatcher(): RouteResolver {
       }
     } else {
       // relative location or by name
+      if (__DEV__ && location.name == null && currentLocation == null) {
+        console.warn(
+          `Cannot resolve an unnamed relative location without a current location. This will throw in production.`,
+          location
+        )
+        return {
+          ...NO_MATCH_LOCATION,
+          fullPath: '/',
+          path: '/',
+          query: {},
+          hash: '',
+        }
+      }
+
+      // either one of them must be defined and is catched by the dev only warn above
       const name = location.name ?? currentLocation!.name
       const matcher = matchers.get(name)
       if (!matcher) {
@@ -264,7 +284,8 @@ export function createCompiledMatcher(): RouteResolver {
       }
 
       // unencoded params in a formatted form that the user came up with
-      const params = location.params ?? currentLocation!.params
+      const params: MatcherParamsFormatted =
+        location.params ?? currentLocation!.params
       const mixedUnencodedParams = matcher.matchParams(params)
 
       if (!mixedUnencodedParams) {
