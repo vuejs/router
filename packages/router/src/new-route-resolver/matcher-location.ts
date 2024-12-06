@@ -1,7 +1,9 @@
 import type { LocationQueryRaw } from '../query'
 import type { MatcherName } from './matcher'
 
-// the matcher can serialize and deserialize params
+/**
+ * Generic object of params that can be passed to a matcher.
+ */
 export type MatcherParamsFormatted = Record<string, unknown>
 
 export interface MatcherLocationAsName {
@@ -10,6 +12,9 @@ export interface MatcherLocationAsName {
   query?: LocationQueryRaw
   hash?: string
 
+  /**
+   * A path is ignored if `name` is provided.
+   */
   path?: undefined
 }
 
