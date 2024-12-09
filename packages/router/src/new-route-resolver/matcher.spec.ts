@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { MatcherPatternImpl } from './matcher-pattern'
 import { createCompiledMatcher, NO_MATCH_LOCATION } from './matcher'
 import {
   MatcherPatternParams_Base,
@@ -9,12 +8,6 @@ import {
 } from './new-matcher-pattern'
 import { miss } from './matchers/errors'
 import { EmptyParams } from './matcher-location'
-
-function createMatcherPattern(
-  ...args: ConstructorParameters<typeof MatcherPatternImpl>
-) {
-  return new MatcherPatternImpl(...args)
-}
 
 const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{ pathMatch: string }> = {
   match(path) {

@@ -11,18 +11,13 @@ import type {
   MatcherPatternQuery,
 } from './new-matcher-pattern'
 import { warn } from '../warning'
-import {
-  SLASH_RE,
-  encodePath,
-  encodeQueryValue as _encodeQueryValue,
-} from '../encoding'
+import { encodeQueryValue as _encodeQueryValue } from '../encoding'
 import { parseURL, stringifyURL } from '../location'
 import type {
   MatcherLocationAsNamed,
   MatcherLocationAsRelative,
   MatcherParamsFormatted,
 } from './matcher-location'
-import { RouteRecordRaw } from 'test-dts'
 
 /**
  * Allowed types for a matcher name.
@@ -165,20 +160,20 @@ interface FnStableNull {
   (value: string | number | null | undefined): string | null
 }
 
-function encodeParam(text: null | undefined, encodeSlash?: boolean): null
-function encodeParam(text: string | number, encodeSlash?: boolean): string
-function encodeParam(
-  text: string | number | null | undefined,
-  encodeSlash?: boolean
-): string | null
-function encodeParam(
-  text: string | number | null | undefined,
-  encodeSlash = true
-): string | null {
-  if (text == null) return null
-  text = encodePath(text)
-  return encodeSlash ? text.replace(SLASH_RE, '%2F') : text
-}
+// function encodeParam(text: null | undefined, encodeSlash?: boolean): null
+// function encodeParam(text: string | number, encodeSlash?: boolean): string
+// function encodeParam(
+//   text: string | number | null | undefined,
+//   encodeSlash?: boolean
+// ): string | null
+// function encodeParam(
+//   text: string | number | null | undefined,
+//   encodeSlash = true
+// ): string | null {
+//   if (text == null) return null
+//   text = encodePath(text)
+//   return encodeSlash ? text.replace(SLASH_RE, '%2F') : text
+// }
 
 // @ts-expect-error: overload are not correctly identified
 const encodeQueryValue: FnStableNull =
@@ -189,23 +184,6 @@ const encodeQueryValue: FnStableNull =
 // const encodeQueryKey: FnStableNull =
 //   // for ts
 //   value => (value == null ? null : _encodeQueryKey(value))
-
-function transformObject<T>(
-  fnKey: (value: string | number) => string,
-  fnValue: FnStableNull,
-  query: T
-): T {
-  const encoded: any = {}
-
-  for (const key in query) {
-    const value = query[key]
-    encoded[fnKey(key)] = Array.isArray(value)
-      ? value.map(fnValue)
-      : fnValue(value as string | number | null | undefined)
-  }
-
-  return encoded
-}
 
 export const NO_MATCH_LOCATION = {
   name: __DEV__ ? Symbol('no-match') : Symbol(),
