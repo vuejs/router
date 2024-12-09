@@ -5,7 +5,7 @@ import {
   MatcherPattern,
   MatcherPatternPath,
   MatcherPatternQuery,
-} from './new-matcher-pattern'
+} from './matcher-pattern'
 import { miss } from './matchers/errors'
 import { EmptyParams } from './matcher-location'
 

@@ -9,7 +9,7 @@ import type {
   MatcherPatternHash,
   MatcherPatternPath,
   MatcherPatternQuery,
-} from './new-matcher-pattern'
+} from './matcher-pattern'
 import { warn } from '../warning'
 import { encodeQueryValue as _encodeQueryValue } from '../encoding'
 import { parseURL, stringifyURL } from '../location'
