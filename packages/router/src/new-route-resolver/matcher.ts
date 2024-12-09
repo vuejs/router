@@ -4,7 +4,12 @@ import {
   normalizeQuery,
   stringifyQuery,
 } from '../query'
-import type { MatcherPattern } from './matcher-pattern'
+import type {
+  MatcherPattern,
+  MatcherPatternHash,
+  MatcherPatternPath,
+  MatcherPatternQuery,
+} from './new-matcher-pattern'
 import { warn } from '../warning'
 import {
   SLASH_RE,
@@ -17,13 +22,17 @@ import type {
   MatcherLocationAsRelative,
   MatcherParamsFormatted,
 } from './matcher-location'
+import { RouteRecordRaw } from 'test-dts'
 
+/**
+ * Allowed types for a matcher name.
+ */
 export type MatcherName = string | symbol
 
 /**
  * Manage and resolve routes. Also handles the encoding, decoding, parsing and serialization of params, query, and hash.
  */
-export interface RouteResolver {
+export interface RouteResolver<Matcher, MatcherNormalized> {
   /**
    * Resolves an absolute location (like `/path/to/somewhere`).
    */
@@ -59,8 +68,8 @@ export interface RouteResolver {
     currentLocation: NEW_LocationResolved
   ): NEW_LocationResolved
 
-  addRoute(matcher: MatcherPattern, parent?: MatcherPattern): void
-  removeRoute(matcher: MatcherPattern): void
+  addRoute(matcher: Matcher, parent?: MatcherNormalized): MatcherNormalized
+  removeRoute(matcher: MatcherNormalized): void
   clearRoutes(): void
 }
 
@@ -204,7 +213,39 @@ export const NO_MATCH_LOCATION = {
   matched: [],
 } satisfies Omit<NEW_LocationResolved, 'path' | 'hash' | 'query' | 'fullPath'>
 
-export function createCompiledMatcher(): RouteResolver {
+// FIXME: later on, the MatcherRecord should be compatible with RouteRecordRaw (which can miss a path, have children, etc)
+
+export interface MatcherRecordRaw {
+  name?: MatcherName
+
+  path: MatcherPatternPath
+
+  query?: MatcherPatternQuery
+
+  hash?: MatcherPatternHash
+
+  children?: MatcherRecordRaw[]
+}
+
+// const a: RouteRecordRaw = {} as any
+
+/**
+ * Build the `matched` array of a record that includes all parent records from the root to the current one.
+ */
+function buildMatched(record: MatcherPattern): MatcherPattern[] {
+  const matched: MatcherPattern[] = []
+  let node: MatcherPattern | undefined = record
+  while (node) {
+    matched.unshift(node)
+    node = node.parent
+  }
+  return matched
+}
+
+export function createCompiledMatcher(): RouteResolver<
+  MatcherRecordRaw,
+  MatcherPattern
+> {
   const matchers = new Map<MatcherName, MatcherPattern>()
 
   // TODO: allow custom encode/decode functions
@@ -225,23 +266,39 @@ export function createCompiledMatcher(): RouteResolver {
       const url = parseURL(parseQuery, location, currentLocation?.path)
 
       let matcher: MatcherPattern | undefined
+      let matched: NEW_LocationResolved['matched'] | undefined
       let parsedParams: MatcherParamsFormatted | null | undefined
 
       for (matcher of matchers.values()) {
-        const params = matcher.matchLocation(url)
-        if (params) {
-          parsedParams = matcher.parseParams(
-            transformObject(String, decode, params[0]),
-            // already decoded
-            params[1],
-            params[2]
+        // match the path because the path matcher only needs to be matched here
+        // match the hash because only the deepest child matters
+        // End up by building up the matched array, (reversed so it goes from
+        // root to child) and then match and merge all queries
+        try {
+          const pathParams = matcher.path.match(url.path)
+          const hashParams = matcher.hash?.match(url.hash)
+          matched = buildMatched(matcher)
+          const queryParams: MatcherQueryParams = Object.assign(
+            {},
+            ...matched.map(matcher => matcher.query?.match(url.query))
           )
+          // TODO: test performance
+          // for (const matcher of matched) {
+          //   Object.assign(queryParams, matcher.query?.match(url.query))
+          // }
+
+          parsedParams = { ...pathParams, ...queryParams, ...hashParams }
+          // console.log('parsedParams', parsedParams)
+
           if (parsedParams) break
+        } catch (e) {
+          // for debugging tests
+          // console.log('❌ ERROR matching', e)
         }
       }
 
       // No match location
-      if (!parsedParams || !matcher) {
+      if (!parsedParams || !matched) {
         return {
           ...url,
           ...NO_MATCH_LOCATION,
@@ -253,12 +310,13 @@ export function createCompiledMatcher(): RouteResolver {
 
       return {
         ...url,
-        name: matcher.name,
+        // matcher exists if matched exists
+        name: matcher!.name,
         params: parsedParams,
         // already decoded
         query: url.query,
         hash: url.hash,
-        matched: [],
+        matched,
       }
     } else {
       // relative location or by name
@@ -284,46 +342,43 @@ export function createCompiledMatcher(): RouteResolver {
       }
 
       // unencoded params in a formatted form that the user came up with
-      const params: MatcherParamsFormatted =
-        location.params ?? currentLocation!.params
-      const mixedUnencodedParams = matcher.matchParams(params)
-
-      if (!mixedUnencodedParams) {
-        throw new Error(
-          `Invalid params for matcher "${String(name)}":\n${JSON.stringify(
-            params,
-            null,
-            2
-          )}`
-        )
+      const params: MatcherParamsFormatted = {
+        ...currentLocation?.params,
+        ...location.params,
       }
-
-      const path = matcher.buildPath(
-        // encode the values before building the path
-        transformObject(String, encodeParam, mixedUnencodedParams[0])
+      const path = matcher.path.build(params)
+      const hash = matcher.hash?.build(params) ?? ''
+      const matched = buildMatched(matcher)
+      const query = Object.assign(
+        {
+          ...currentLocation?.query,
+          ...normalizeQuery(location.query),
+        },
+        ...matched.map(matcher => matcher.query?.build(params))
       )
-
-      // TODO: should pick query from the params but also from the location and merge them
-      const query = {
-        ...normalizeQuery(location.query),
-        // ...matcher.extractQuery(mixedUnencodedParams[1])
-      }
-      const hash = mixedUnencodedParams[2] ?? location.hash ?? ''
 
       return {
         name,
-        fullPath: stringifyURL(stringifyQuery, { path, query: {}, hash }),
+        fullPath: stringifyURL(stringifyQuery, { path, query, hash }),
         path,
-        params,
-        hash,
         query,
-        matched: [],
+        hash,
+        params,
+        matched,
       }
     }
   }
 
-  function addRoute(matcher: MatcherPattern, parent?: MatcherPattern) {
-    matchers.set(matcher.name, matcher)
+  function addRoute(record: MatcherRecordRaw, parent?: MatcherPattern) {
+    const name = record.name ?? (__DEV__ ? Symbol('unnamed-route') : Symbol())
+    // FIXME: proper normalization of the record
+    const normalizedRecord: MatcherPattern = {
+      ...record,
+      name,
+      parent,
+    }
+    matchers.set(name, normalizedRecord)
+    return normalizedRecord
   }
 
   function removeRoute(matcher: MatcherPattern) {

@@ -6,8 +6,14 @@ import type { MatcherName } from './matcher'
  */
 export type MatcherParamsFormatted = Record<string, unknown>
 
+/**
+ * Empty object in TS.
+ */
+export type EmptyParams = Record<PropertyKey, never>
+
 export interface MatcherLocationAsNamed {
   name: MatcherName
+  // FIXME: should this be optional?
   params: MatcherParamsFormatted
   query?: LocationQueryRaw
   hash?: string

@@ -89,9 +89,10 @@ export function parseQuery(search: string): LocationQuery {
  * @param query - query object to stringify
  * @returns string version of the query without the leading `?`
  */
-export function stringifyQuery(query: LocationQueryRaw): string {
+export function stringifyQuery(query: LocationQueryRaw | undefined): string {
   let search = ''
   for (let key in query) {
+    // FIXME: we could do search ||= '?' so that the returned value already has the leading ?
     const value = query[key]
     key = encodeQueryKey(key)
     if (value == null) {

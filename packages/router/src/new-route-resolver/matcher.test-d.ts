@@ -1,8 +1,8 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import { NEW_LocationResolved, createCompiledMatcher } from './matcher'
+import { NEW_LocationResolved, RouteResolver } from './matcher'
 
 describe('Matcher', () => {
-  const matcher = createCompiledMatcher()
+  const matcher: RouteResolver<unknown, unknown> = {} as any
 
   describe('matcher.resolve()', () => {
     it('resolves absolute string locations', () => {
