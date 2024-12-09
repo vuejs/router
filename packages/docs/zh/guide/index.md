@@ -178,7 +178,7 @@ pnpm create vue
 
 Vue Router 经常在配合打包工具 (如 Vite) 和[单文件组件](https://cn.vuejs.org/guide/introduction.html#single-file-components) (即 `.vue` 文件) 的应用中使用。本教程大多数的示例都是如此，但是 Vue Router 本身并不要求你使用构建工具或单文件组件。
 
-例如，若你要使用 [Vue](https://cn.vuejs.org/guide/quick-start.html#using-vue-from-cdn) 和 [Vue Router](../installation#Direct-Download-CDN) 的使用全局构建版本，这些库将被暴露为全局对象，而不是导入：
+例如，若你要使用 [Vue](https://cn.vuejs.org/guide/quick-start.html#using-vue-from-cdn) 和 [Vue Router](../installation#Direct-Download-CDN) 的全局构建版本，这些库将被暴露为全局对象，而不是导入：
 
 ```js
 const { createApp } = Vue
