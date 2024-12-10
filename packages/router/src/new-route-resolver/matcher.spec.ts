@@ -209,6 +209,20 @@ describe('Matcher', () => {
       })
     })
 
+    describe('absolute locations as objects', () => {
+      it('resolves an object location', () => {
+        const matcher = createCompiledMatcher()
+        matcher.addRoute(EMPTY_PATH_ROUTE)
+        expect(matcher.resolve({ path: '/' })).toMatchObject({
+          fullPath: '/',
+          path: '/',
+          params: {},
+          query: {},
+          hash: '',
+        })
+      })
+    })
+
     describe('named locations', () => {
       it('resolves named locations with no params', () => {
         const matcher = createCompiledMatcher()

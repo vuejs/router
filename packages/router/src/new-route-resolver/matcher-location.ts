@@ -19,18 +19,28 @@ export interface MatcherLocationAsNamed {
   hash?: string
 
   /**
-   * A path is ignored if `name` is provided.
+   * @deprecated This is ignored when `name` is provided
    */
   path?: undefined
 }
 
-export interface MatcherLocationAsPath {
+export interface MatcherLocationAsPathRelative {
   path: string
   query?: LocationQueryRaw
   hash?: string
 
+  /**
+   * @deprecated This is ignored when `path` is provided
+   */
   name?: undefined
+  /**
+   * @deprecated This is ignored when `path` (instead of `name`) is provided
+   */
   params?: undefined
+}
+export interface MatcherLocationAsPathAbsolute
+  extends MatcherLocationAsPathRelative {
+  path: `/${string}`
 }
 
 export interface MatcherLocationAsRelative {
@@ -38,6 +48,12 @@ export interface MatcherLocationAsRelative {
   query?: LocationQueryRaw
   hash?: string
 
+  /**
+   * @deprecated This location is relative to the next parameter. This `name` will be ignored.
+   */
   name?: undefined
+  /**
+   * @deprecated This location is relative to the next parameter. This `path` will be ignored.
+   */
   path?: undefined
 }

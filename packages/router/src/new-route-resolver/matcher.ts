@@ -15,6 +15,8 @@ import { encodeQueryValue as _encodeQueryValue } from '../encoding'
 import { parseURL, stringifyURL } from '../location'
 import type {
   MatcherLocationAsNamed,
+  MatcherLocationAsPathAbsolute,
+  MatcherLocationAsPathRelative,
   MatcherLocationAsRelative,
   MatcherParamsFormatted,
 } from './matcher-location'
@@ -48,10 +50,16 @@ export interface RouteResolver<Matcher, MatcherNormalized> {
   resolve(location: MatcherLocationAsNamed): NEW_LocationResolved
 
   /**
-   * Resolves a location by its path. Any required query must be passed.
+   * Resolves a location by its absolute path (starts with `/`). Any required query must be passed.
    * @param location - The location to resolve.
    */
-  // resolve(location: MatcherLocationAsPath): NEW_MatcherLocationResolved
+  resolve(location: MatcherLocationAsPathAbsolute): NEW_LocationResolved
+
+  resolve(
+    location: MatcherLocationAsPathRelative,
+    currentLocation: NEW_LocationResolved
+  ): NEW_LocationResolved
+
   // NOTE: in practice, this overload can cause bugs. It's better to use named locations
 
   /**
@@ -66,11 +74,28 @@ export interface RouteResolver<Matcher, MatcherNormalized> {
   addRoute(matcher: Matcher, parent?: MatcherNormalized): MatcherNormalized
   removeRoute(matcher: MatcherNormalized): void
   clearRoutes(): void
+
+  /**
+   * Get a list of all matchers.
+   * Previously named `getRoutes()`
+   */
+  getMatchers(): MatcherNormalized[]
+
+  /**
+   * Get a matcher by its name.
+   * Previously named `getRecordMatcher()`
+   */
+  getMatcher(name: MatcherName): MatcherNormalized | undefined
 }
 
 type MatcherResolveArgs =
   | [absoluteLocation: `/${string}`]
   | [relativeLocation: string, currentLocation: NEW_LocationResolved]
+  | [absoluteLocation: MatcherLocationAsPathAbsolute]
+  | [
+      relativeLocation: MatcherLocationAsPathRelative,
+      currentLocation: NEW_LocationResolved
+    ]
   | [location: MatcherLocationAsNamed]
   | [
       relativeLocation: MatcherLocationAsRelative,
@@ -224,6 +249,7 @@ export function createCompiledMatcher(): RouteResolver<
   MatcherRecordRaw,
   MatcherPattern
 > {
+  // TODO: we also need an array that has the correct order
   const matchers = new Map<MatcherName, MatcherPattern>()
 
   // TODO: allow custom encode/decode functions
@@ -241,6 +267,7 @@ export function createCompiledMatcher(): RouteResolver<
 
     // string location, e.g. '/foo', '../bar', 'baz', '?page=1'
     if (typeof location === 'string') {
+      // parseURL handles relative paths
       const url = parseURL(parseQuery, location, currentLocation?.path)
 
       let matcher: MatcherPattern | undefined
@@ -266,7 +293,6 @@ export function createCompiledMatcher(): RouteResolver<
           // }
 
           parsedParams = { ...pathParams, ...queryParams, ...hashParams }
-          // console.log('parsedParams', parsedParams)
 
           if (parsedParams) break
         } catch (e) {
@@ -296,6 +322,7 @@ export function createCompiledMatcher(): RouteResolver<
         hash: url.hash,
         matched,
       }
+      // TODO: handle object location { path, query, hash }
     } else {
       // relative location or by name
       if (__DEV__ && location.name == null && currentLocation == null) {
@@ -368,11 +395,21 @@ export function createCompiledMatcher(): RouteResolver<
     matchers.clear()
   }
 
+  function getMatchers() {
+    return Array.from(matchers.values())
+  }
+
+  function getMatcher(name: MatcherName) {
+    return matchers.get(name)
+  }
+
   return {
     resolve,
 
     addRoute,
     removeRoute,
     clearRoutes,
+    getMatcher,
+    getMatchers,
   }
 }

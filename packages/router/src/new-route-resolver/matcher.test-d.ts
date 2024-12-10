@@ -39,4 +39,16 @@ describe('Matcher', () => {
       ).toEqualTypeOf<NEW_LocationResolved>()
     })
   })
+
+  it('does not allow a name + path', () => {
+    matcher.resolve({
+      // ...({} as NEW_LocationResolved),
+      name: 'foo',
+      params: {},
+      // @ts-expect-error: name + path
+      path: '/e',
+    })
+    // @ts-expect-error: name + currentLocation
+    matcher.resolve({ name: 'a', params: {} }, {} as NEW_LocationResolved)
+  })
 })
