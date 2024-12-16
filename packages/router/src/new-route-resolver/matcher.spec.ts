@@ -1,10 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import { createCompiledMatcher, NO_MATCH_LOCATION } from './matcher'
+import {
+  createCompiledMatcher,
+  NO_MATCH_LOCATION,
+  pathEncoded,
+} from './matcher'
 import {
   MatcherPatternParams_Base,
   MatcherPattern,
   MatcherPatternPath,
   MatcherPatternQuery,
+  MatcherPatternPathStatic,
+  MatcherPatternPathDynamic,
+  defineParamParser,
 } from './matcher-pattern'
 import { miss } from './matchers/errors'
 import { EmptyParams } from './matcher-location'
@@ -73,7 +80,52 @@ const USER_ID_ROUTE = {
   path: USER_ID_PATH_PATTERN_MATCHER,
 } satisfies MatcherPattern
 
-describe('Matcher', () => {
+describe('RouterMatcher', () => {
+  describe('new matchers', () => {
+    it('static path', () => {
+      const matcher = createCompiledMatcher([
+        { path: new MatcherPatternPathStatic('/') },
+        { path: new MatcherPatternPathStatic('/users') },
+      ])
+
+      expect(matcher.resolve('/')).toMatchObject({
+        fullPath: '/',
+        path: '/',
+        params: {},
+        query: {},
+        hash: '',
+      })
+
+      expect(matcher.resolve('/users')).toMatchObject({
+        fullPath: '/users',
+        path: '/users',
+        params: {},
+        query: {},
+        hash: '',
+      })
+    })
+
+    it('dynamic path', () => {
+      const matcher = createCompiledMatcher([
+        {
+          path: new MatcherPatternPathDynamic<{ id: string }>(
+            /^\/users\/([^\/]+)$/,
+            {
+              id: {},
+            },
+            ({ id }) => pathEncoded`/users/${id}`
+          ),
+        },
+      ])
+
+      expect(matcher.resolve('/users/1')).toMatchObject({
+        fullPath: '/users/1',
+        path: '/users/1',
+        params: { id: '1' },
+      })
+    })
+  })
+
   describe('adding and removing', () => {
     it('add static path', () => {
       const matcher = createCompiledMatcher()
@@ -87,10 +139,9 @@ describe('Matcher', () => {
   })
 
   describe('resolve()', () => {
-    describe('absolute locationss as strings', () => {
+    describe('absolute locations as strings', () => {
       it('resolves string locations with no params', () => {
-        const matcher = createCompiledMatcher()
-        matcher.addRoute(EMPTY_PATH_ROUTE)
+        const matcher = createCompiledMatcher([EMPTY_PATH_ROUTE])
 
         expect(matcher.resolve('/?a=a&b=b#h')).toMatchObject({
           path: '/',
@@ -113,8 +164,7 @@ describe('Matcher', () => {
       })
 
       it('resolves string locations with params', () => {
-        const matcher = createCompiledMatcher()
-        matcher.addRoute(USER_ID_ROUTE)
+        const matcher = createCompiledMatcher([USER_ID_ROUTE])
 
         expect(matcher.resolve('/users/1?a=a&b=b#h')).toMatchObject({
           path: '/users/1',
@@ -131,11 +181,12 @@ describe('Matcher', () => {
       })
 
       it('resolve string locations with query', () => {
-        const matcher = createCompiledMatcher()
-        matcher.addRoute({
-          path: ANY_PATH_PATTERN_MATCHER,
-          query: PAGE_QUERY_PATTERN_MATCHER,
-        })
+        const matcher = createCompiledMatcher([
+          {
+            path: ANY_PATH_PATTERN_MATCHER,
+            query: PAGE_QUERY_PATTERN_MATCHER,
+          },
+        ])
 
         expect(matcher.resolve('/foo?page=100&b=b#h')).toMatchObject({
           params: { page: 100 },
@@ -149,11 +200,12 @@ describe('Matcher', () => {
       })
 
       it('resolves string locations with hash', () => {
-        const matcher = createCompiledMatcher()
-        matcher.addRoute({
-          path: ANY_PATH_PATTERN_MATCHER,
-          hash: ANY_HASH_PATTERN_MATCHER,
-        })
+        const matcher = createCompiledMatcher([
+          {
+            path: ANY_PATH_PATTERN_MATCHER,
+            hash: ANY_HASH_PATTERN_MATCHER,
+          },
+        ])
 
         expect(matcher.resolve('/foo?a=a&b=b#bar')).toMatchObject({
           hash: '#bar',
@@ -164,12 +216,13 @@ describe('Matcher', () => {
       })
 
       it('combines path, query and hash params', () => {
-        const matcher = createCompiledMatcher()
-        matcher.addRoute({
-          path: USER_ID_PATH_PATTERN_MATCHER,
-          query: PAGE_QUERY_PATTERN_MATCHER,
-          hash: ANY_HASH_PATTERN_MATCHER,
-        })
+        const matcher = createCompiledMatcher([
+          {
+            path: USER_ID_PATH_PATTERN_MATCHER,
+            query: PAGE_QUERY_PATTERN_MATCHER,
+            hash: ANY_HASH_PATTERN_MATCHER,
+          },
+        ])
 
         expect(matcher.resolve('/users/24?page=100#bar')).toMatchObject({
           params: { id: 24, page: 100, hash: 'bar' },
@@ -179,8 +232,9 @@ describe('Matcher', () => {
 
     describe('relative locations as strings', () => {
       it('resolves a simple relative location', () => {
-        const matcher = createCompiledMatcher()
-        matcher.addRoute({ path: ANY_PATH_PATTERN_MATCHER })
+        const matcher = createCompiledMatcher([
+          { path: ANY_PATH_PATTERN_MATCHER },
+        ])
 
         expect(
           matcher.resolve('foo', matcher.resolve('/nested/'))
@@ -211,8 +265,7 @@ describe('Matcher', () => {
 
     describe('absolute locations as objects', () => {
       it('resolves an object location', () => {
-        const matcher = createCompiledMatcher()
-        matcher.addRoute(EMPTY_PATH_ROUTE)
+        const matcher = createCompiledMatcher([EMPTY_PATH_ROUTE])
         expect(matcher.resolve({ path: '/' })).toMatchObject({
           fullPath: '/',
           path: '/',
@@ -225,11 +278,12 @@ describe('Matcher', () => {
 
     describe('named locations', () => {
       it('resolves named locations with no params', () => {
-        const matcher = createCompiledMatcher()
-        matcher.addRoute({
-          name: 'home',
-          path: EMPTY_PATH_PATTERN_MATCHER,
-        })
+        const matcher = createCompiledMatcher([
+          {
+            name: 'home',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+          },
+        ])
 
         expect(matcher.resolve({ name: 'home', params: {} })).toMatchObject({
           name: 'home',

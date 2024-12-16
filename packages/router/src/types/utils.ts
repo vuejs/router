@@ -6,6 +6,16 @@ export type _LiteralUnion<LiteralType, BaseType extends string = string> =
   | LiteralType
   | (BaseType & Record<never, never>)
 
+export type IsNull<T> =
+  // avoid distributive conditional types
+  [T] extends [null] ? true : false
+
+export type IsUnknown<T> = unknown extends T // `T` can be `unknown` or `any`
+  ? IsNull<T> extends false // `any` can be `null`, but `unknown` can't be
+    ? true
+    : false
+  : false
+
 /**
  * Maybe a promise maybe not
  * @internal

@@ -11,7 +11,7 @@ import type {
   MatcherPatternQuery,
 } from './matcher-pattern'
 import { warn } from '../warning'
-import { encodeQueryValue as _encodeQueryValue } from '../encoding'
+import { encodeQueryValue as _encodeQueryValue, encodeParam } from '../encoding'
 import { parseURL, stringifyURL } from '../location'
 import type {
   MatcherLocationAsNamed,
@@ -101,6 +101,17 @@ type MatcherResolveArgs =
       relativeLocation: MatcherLocationAsRelative,
       currentLocation: NEW_LocationResolved
     ]
+
+/**
+ * Allowed location objects to be passed to {@link RouteResolver['resolve']}
+ */
+export type MatcherLocationRaw =
+  | `/${string}`
+  | string
+  | MatcherLocationAsNamed
+  | MatcherLocationAsPathAbsolute
+  | MatcherLocationAsPathRelative
+  | MatcherLocationAsRelative
 
 /**
  * Matcher capable of adding and removing routes at runtime.
@@ -230,6 +241,28 @@ export interface MatcherRecordRaw {
   children?: MatcherRecordRaw[]
 }
 
+/**
+ * Tagged template helper to encode params into a path. Doesn't work with null
+ */
+export function pathEncoded(
+  parts: TemplateStringsArray,
+  ...params: Array<string | number | (string | number)[]>
+): string {
+  return parts.reduce((result, part, i) => {
+    return (
+      result +
+      part +
+      (Array.isArray(params[i])
+        ? params[i].map(encodeParam).join('/')
+        : encodeParam(params[i]))
+    )
+  })
+}
+
+// pathEncoded`/users/${1}`
+// TODO:
+// pathEncoded`/users/${null}/end`
+
 // const a: RouteRecordRaw = {} as any
 
 /**
@@ -245,10 +278,9 @@ function buildMatched(record: MatcherPattern): MatcherPattern[] {
   return matched
 }
 
-export function createCompiledMatcher(): RouteResolver<
-  MatcherRecordRaw,
-  MatcherPattern
-> {
+export function createCompiledMatcher(
+  records: MatcherRecordRaw[] = []
+): RouteResolver<MatcherRecordRaw, MatcherPattern> {
   // TODO: we also need an array that has the correct order
   const matchers = new Map<MatcherName, MatcherPattern>()
 
@@ -384,6 +416,10 @@ export function createCompiledMatcher(): RouteResolver<
     }
     matchers.set(name, normalizedRecord)
     return normalizedRecord
+  }
+
+  for (const record of records) {
+    addRoute(record)
   }
 
   function removeRoute(matcher: MatcherPattern) {
