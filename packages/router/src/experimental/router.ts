@@ -1,109 +1,413 @@
 import {
-  RouteRecordRaw,
-  Lazy,
-  isRouteLocation,
-  isRouteName,
-  RouteLocationOptions,
-  MatcherLocationRaw,
-} from './types'
-import type {
-  RouteLocation,
-  RouteLocationRaw,
-  RouteParams,
-  RouteLocationNormalized,
-  RouteLocationNormalizedLoaded,
-  NavigationGuardWithThis,
-  NavigationHookAfter,
-  RouteLocationResolved,
-  RouteRecordNameGeneric,
-} from './typed-routes'
-import { HistoryState, NavigationType } from './history/common'
-import {
-  getSavedScrollPosition,
-  getScrollKey,
-  saveScrollPosition,
-  computeScrollPosition,
-  scrollToPosition,
-  _ScrollPositionNormalized,
-} from './scrollBehavior'
-import { createRouterMatcher } from './matcher'
-import {
   createRouterError,
   ErrorTypes,
-  NavigationFailure,
-  NavigationRedirectError,
   isNavigationFailure,
-  _ErrorListener,
-} from './errors'
-import { applyToParams, isBrowser, assign, noop, isArray } from './utils'
-import { useCallbacks } from './utils/callbacks'
-import { encodeParam, decode, encodeHash } from './encoding'
+  NavigationRedirectError,
+  type _ErrorListener,
+  type NavigationFailure,
+} from '../errors'
 import {
+  nextTick,
+  shallowReactive,
+  shallowRef,
+  unref,
+  warn,
+  type App,
+  type Ref,
+} from 'vue'
+import { RouterLink } from '../RouterLink'
+import { RouterView } from '../RouterView'
+import {
+  NavigationType,
+  type HistoryState,
+  type RouterHistory,
+} from '../history/common'
+import type { PathParserOptions } from '../matcher'
+import type { RouteResolver } from '../new-route-resolver/matcher'
+import {
+  LocationQuery,
   normalizeQuery,
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
-  LocationQuery,
-} from './query'
-import { shallowRef, nextTick, App, unref, shallowReactive } from 'vue'
-import { RouteRecordNormalized } from './matcher/types'
+} from '../query'
+import type { Router } from '../router'
 import {
-  parseURL,
-  stringifyURL,
+  _ScrollPositionNormalized,
+  computeScrollPosition,
+  getSavedScrollPosition,
+  getScrollKey,
+  saveScrollPosition,
+  scrollToPosition,
+  type RouterScrollBehavior,
+} from '../scrollBehavior'
+import type {
+  NavigationGuardWithThis,
+  NavigationHookAfter,
+  RouteLocation,
+  RouteLocationAsPath,
+  RouteLocationAsRelative,
+  RouteLocationAsRelativeTyped,
+  RouteLocationAsString,
+  RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+  RouteLocationRaw,
+  RouteLocationResolved,
+  RouteMap,
+  RouteParams,
+  RouteRecordNameGeneric,
+} from '../typed-routes'
+import {
+  isRouteLocation,
+  isRouteName,
+  Lazy,
+  MatcherLocationRaw,
+  RouteLocationOptions,
+  type RouteRecordRaw,
+} from '../types'
+import { useCallbacks } from '../utils/callbacks'
+import {
   isSameRouteLocation,
+  parseURL,
   START_LOCATION_NORMALIZED,
-} from './location'
+  stringifyURL,
+} from '../location'
+import { applyToParams, assign, isArray, isBrowser, noop } from '../utils'
+import { decode, encodeHash, encodeParam } from '../encoding'
 import {
   extractChangingRecords,
   extractComponentsGuards,
   guardToPromiseFn,
-} from './navigationGuards'
-import { warn } from './warning'
-import { RouterLink } from './RouterLink'
-import { RouterView } from './RouterView'
+} from '../navigationGuards'
+import { addDevtools } from '../devtools'
 import {
   routeLocationKey,
   routerKey,
   routerViewLocationKey,
-} from './injectionSymbols'
-import { addDevtools } from './devtools'
-import { _LiteralUnion } from './types/utils'
-import {
-  EXPERIMENTAL_RouterOptions_Base,
-  EXPERIMENTAL_Router_Base,
-  _OnReadyCallback,
-} from './experimental/router'
+} from '../injectionSymbols'
+
+/**
+ * resolve, reject arguments of Promise constructor
+ * @internal
+ */
+export type _OnReadyCallback = [() => void, (reason?: any) => void]
 
 /**
  * Options to initialize a {@link Router} instance.
  */
-export interface RouterOptions extends EXPERIMENTAL_RouterOptions_Base {
+export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
+  /**
+   * History implementation used by the router. Most web applications should use
+   * `createWebHistory` but it requires the server to be properly configured.
+   * You can also use a _hash_ based history with `createWebHashHistory` that
+   * does not require any configuration on the server but isn't handled at all
+   * by search engines and does poorly on SEO.
+   *
+   * @example
+   * ```js
+   * createRouter({
+   *   history: createWebHistory(),
+   *   // other options...
+   * })
+   * ```
+   */
+  history: RouterHistory
+
+  /**
+   * Function to control scrolling when navigating between pages. Can return a
+   * Promise to delay scrolling.
+   *
+   * @see {@link RouterScrollBehavior}.
+   *
+   * @example
+   * ```js
+   * function scrollBehavior(to, from, savedPosition) {
+   *   // `to` and `from` are both route locations
+   *   // `savedPosition` can be null if there isn't one
+   * }
+   * ```
+   */
+
+  scrollBehavior?: RouterScrollBehavior
+  /**
+   * Custom implementation to parse a query. See its counterpart,
+   * {@link EXPERIMENTAL_RouterOptions_Base.stringifyQuery}.
+   *
+   * @example
+   * Let's say you want to use the [qs package](https://github.com/ljharb/qs)
+   * to parse queries, you can provide both `parseQuery` and `stringifyQuery`:
+   * ```js
+   * import qs from 'qs'
+   *
+   * createRouter({
+   *   // other options...
+   *   parseQuery: qs.parse,
+   *   stringifyQuery: qs.stringify,
+   * })
+   * ```
+   */
+
+  parseQuery?: typeof originalParseQuery
+  /**
+   * Custom implementation to stringify a query object. Should not prepend a leading `?`.
+   * {@link EXPERIMENTAL_RouterOptions_Base.parseQuery | parseQuery} counterpart to handle query parsing.
+   */
+
+  stringifyQuery?: typeof originalStringifyQuery
+  /**
+   * Default class applied to active {@link RouterLink}. If none is provided,
+   * `router-link-active` will be applied.
+   */
+
+  linkActiveClass?: string
+  /**
+   * Default class applied to exact active {@link RouterLink}. If none is provided,
+   * `router-link-exact-active` will be applied.
+   */
+
+  linkExactActiveClass?: string
+  /**
+   * Default class applied to non-active {@link RouterLink}. If none is provided,
+   * `router-link-inactive` will be applied.
+   */
+  // linkInactiveClass?: string
+}
+
+/**
+ * Options to initialize an experimental {@link EXPERIMENTAL_Router} instance.
+ * @experimental
+ */
+export interface EXPERIMENTAL_RouterOptions<TRouteRecordRaw, TRouteRecord>
+  extends EXPERIMENTAL_RouterOptions_Base {
   /**
    * Initial list of routes that should be added to the router.
    */
-  routes: Readonly<RouteRecordRaw[]>
+  routes?: Readonly<RouteRecordRaw[]>
+
+  /**
+   * Matcher to use to resolve routes.
+   * @experimental
+   */
+  matcher: RouteResolver<TRouteRecordRaw, TRouteRecord>
 }
 
 /**
  * Router instance.
+ * @experimental This version is not stable, it's meant to replace {@link Router} in the future.
  */
-export interface Router
-  extends EXPERIMENTAL_Router_Base<RouteRecordRaw, RouteRecordNormalized> {
+export interface EXPERIMENTAL_Router_Base<TRouteRecordRaw, TRouteRecord> {
+  /**
+   * Current {@link RouteLocationNormalized}
+   */
+  readonly currentRoute: Ref<RouteLocationNormalizedLoaded>
+
+  /**
+   * Allows turning off the listening of history events. This is a low level api for micro-frontend.
+   */
+  listening: boolean
+
+  /**
+   * Add a new {@link RouteRecordRaw | route record} as the child of an existing route.
+   *
+   * @param parentName - Parent Route Record where `route` should be appended at
+   * @param route - Route Record to add
+   */
+  addRoute(
+    // NOTE: it could be `keyof RouteMap` but the point of dynamic routes is not knowing the routes at build
+    parentName: NonNullable<RouteRecordNameGeneric>,
+    route: RouteRecordRaw
+  ): () => void
+  /**
+   * Add a new {@link RouteRecordRaw | route record} to the router.
+   *
+   * @param route - Route Record to add
+   */
+  addRoute(route: TRouteRecordRaw): () => void
+
+  /**
+   * Remove an existing route by its name.
+   *
+   * @param name - Name of the route to remove
+   */
+  removeRoute(name: NonNullable<RouteRecordNameGeneric>): void
+
+  /**
+   * Checks if a route with a given name exists
+   *
+   * @param name - Name of the route to check
+   */
+  hasRoute(name: NonNullable<RouteRecordNameGeneric>): boolean
+
+  /**
+   * Get a full list of all the {@link RouteRecord | route records}.
+   */
+  getRoutes(): TRouteRecord[]
+
+  /**
+   * Delete all routes from the router matcher.
+   */
+  clearRoutes(): void
+
+  /**
+   * Returns the {@link RouteLocation | normalized version} of a
+   * {@link RouteLocationRaw | route location}. Also includes an `href` property
+   * that includes any existing `base`. By default, the `currentLocation` used is
+   * `router.currentRoute` and should only be overridden in advanced use cases.
+   *
+   * @param to - Raw route location to resolve
+   * @param currentLocation - Optional current location to resolve against
+   */
+  resolve<Name extends keyof RouteMap = keyof RouteMap>(
+    to: RouteLocationAsRelativeTyped<RouteMap, Name>,
+    // NOTE: This version doesn't work probably because it infers the type too early
+    // | RouteLocationAsRelative<Name>
+    currentLocation?: RouteLocationNormalizedLoaded
+  ): RouteLocationResolved<Name>
+  resolve(
+    // not having the overload produces errors in RouterLink calls to router.resolve()
+    to: RouteLocationAsString | RouteLocationAsRelative | RouteLocationAsPath,
+    currentLocation?: RouteLocationNormalizedLoaded
+  ): RouteLocationResolved
+
+  /**
+   * Programmatically navigate to a new URL by pushing an entry in the history
+   * stack.
+   *
+   * @param to - Route location to navigate to
+   */
+  push(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+
+  /**
+   * Programmatically navigate to a new URL by replacing the current entry in
+   * the history stack.
+   *
+   * @param to - Route location to navigate to
+   */
+  replace(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+
+  /**
+   * Go back in history if possible by calling `history.back()`. Equivalent to
+   * `router.go(-1)`.
+   */
+  back(): void
+
+  /**
+   * Go forward in history if possible by calling `history.forward()`.
+   * Equivalent to `router.go(1)`.
+   */
+  forward(): void
+
+  /**
+   * Allows you to move forward or backward through the history. Calls
+   * `history.go()`.
+   *
+   * @param delta - The position in the history to which you want to move,
+   * relative to the current page
+   */
+  go(delta: number): void
+
+  /**
+   * Add a navigation guard that executes before any navigation. Returns a
+   * function that removes the registered guard.
+   *
+   * @param guard - navigation guard to add
+   */
+  beforeEach(guard: NavigationGuardWithThis<undefined>): () => void
+
+  /**
+   * Add a navigation guard that executes before navigation is about to be
+   * resolved. At this state all component have been fetched and other
+   * navigation guards have been successful. Returns a function that removes the
+   * registered guard.
+   *
+   * @param guard - navigation guard to add
+   * @returns a function that removes the registered guard
+   *
+   * @example
+   * ```js
+   * router.beforeResolve(to => {
+   *   if (to.meta.requiresAuth && !isAuthenticated) return false
+   * })
+   * ```
+   *
+   */
+  beforeResolve(guard: NavigationGuardWithThis<undefined>): () => void
+
+  /**
+   * Add a navigation hook that is executed after every navigation. Returns a
+   * function that removes the registered hook.
+   *
+   * @param guard - navigation hook to add
+   * @returns a function that removes the registered hook
+   *
+   * @example
+   * ```js
+   * router.afterEach((to, from, failure) => {
+   *   if (isNavigationFailure(failure)) {
+   *     console.log('failed navigation', failure)
+   *   }
+   * })
+   * ```
+   */
+  afterEach(guard: NavigationHookAfter): () => void
+
+  /**
+   * Adds an error handler that is called every time a non caught error happens
+   * during navigation. This includes errors thrown synchronously and
+   * asynchronously, errors returned or passed to `next` in any navigation
+   * guard, and errors occurred when trying to resolve an async component that
+   * is required to render a route.
+   *
+   * @param handler - error handler to register
+   */
+  onError(handler: _ErrorListener): () => void
+
+  /**
+   * Returns a Promise that resolves when the router has completed the initial
+   * navigation, which means it has resolved all async enter hooks and async
+   * components that are associated with the initial route. If the initial
+   * navigation already happened, the promise resolves immediately.
+   *
+   * This is useful in server-side rendering to ensure consistent output on both
+   * the server and the client. Note that on server side, you need to manually
+   * push the initial location while on client side, the router automatically
+   * picks it up from the URL.
+   */
+  isReady(): Promise<void>
+
+  /**
+   * Called automatically by `app.use(router)`. Should not be called manually by
+   * the user. This will trigger the initial navigation when on client side.
+   *
+   * @internal
+   * @param app - Application that uses the router
+   */
+  install(app: App): void
+}
+
+export interface EXPERIMENTAL_Router<TRouteRecordRaw, TRouteRecord>
+  extends EXPERIMENTAL_Router_Base<TRouteRecordRaw, TRouteRecord> {
   /**
    * Original options object passed to create the Router
    */
-  readonly options: RouterOptions
+  readonly options: EXPERIMENTAL_RouterOptions<TRouteRecordRaw, TRouteRecord>
 }
 
-/**
- * Creates a Router instance that can be used by a Vue app.
- *
- * @param options - {@link RouterOptions}
- */
-export function createRouter(options: RouterOptions): Router {
-  const matcher = createRouterMatcher(options.routes, options)
-  const parseQuery = options.parseQuery || originalParseQuery
-  const stringifyQuery = options.stringifyQuery || originalStringifyQuery
-  const routerHistory = options.history
+interface EXPERIMENTAL_RouteRecordRaw {}
+interface EXPERIMENTAL_RouteRecord {}
+
+export function experimental_createRouter(
+  options: EXPERIMENTAL_RouterOptions<
+    EXPERIMENTAL_RouteRecordRaw,
+    EXPERIMENTAL_RouteRecord
+  >
+): EXPERIMENTAL_Router<EXPERIMENTAL_RouteRecordRaw, EXPERIMENTAL_RouteRecord> {
+  const {
+    matcher,
+    parseQuery = originalParseQuery,
+    stringifyQuery = originalStringifyQuery,
+    history: routerHistory,
+  } = options
+
   if (__DEV__ && !routerHistory)
     throw new Error(
       'Provide the "history" option when calling "createRouter()":' +
@@ -139,7 +443,7 @@ export function createRouter(options: RouterOptions): Router {
     let parent: Parameters<(typeof matcher)['addRoute']>[1] | undefined
     let record: RouteRecordRaw
     if (isRouteName(parentOrRoute)) {
-      parent = matcher.getRecordMatcher(parentOrRoute)
+      parent = matcher.getMatcher(parentOrRoute)
       if (__DEV__ && !parent) {
         warn(
           `Parent route "${String(
@@ -157,7 +461,7 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   function removeRoute(name: NonNullable<RouteRecordNameGeneric>) {
-    const recordMatcher = matcher.getRecordMatcher(name)
+    const recordMatcher = matcher.getMatcher(name)
     if (recordMatcher) {
       matcher.removeRoute(recordMatcher)
     } else if (__DEV__) {
@@ -166,11 +470,11 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   function getRoutes() {
-    return matcher.getRoutes().map(routeMatcher => routeMatcher.record)
+    return matcher.getMatchers().map(routeMatcher => routeMatcher.record)
   }
 
   function hasRoute(name: NonNullable<RouteRecordNameGeneric>): boolean {
-    return !!matcher.getRecordMatcher(name)
+    return !!matcher.getMatcher(name)
   }
 
   function resolve(

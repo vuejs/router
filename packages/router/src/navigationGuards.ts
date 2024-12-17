@@ -22,6 +22,7 @@ import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
 import { isESModule, isRouteComponent } from './utils'
 import { warn } from './warning'
+import { isSameRouteRecord } from './location'
 
 function registerGuard(
   record: RouteRecordNormalized,
@@ -392,4 +393,43 @@ export function loadRouteLocation(
             )
         )
       ).then(() => route as RouteLocationNormalizedLoaded)
+}
+
+/**
+ * Split the leaving, updating, and entering records.
+ * @internal
+ *
+ * @param  to - Location we are navigating to
+ * @param from - Location we are navigating from
+ */
+export function extractChangingRecords(
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalizedLoaded
+): [
+  leavingRecords: RouteRecordNormalized[],
+  updatingRecords: RouteRecordNormalized[],
+  enteringRecords: RouteRecordNormalized[]
+] {
+  const leavingRecords: RouteRecordNormalized[] = []
+  const updatingRecords: RouteRecordNormalized[] = []
+  const enteringRecords: RouteRecordNormalized[] = []
+
+  const len = Math.max(from.matched.length, to.matched.length)
+  for (let i = 0; i < len; i++) {
+    const recordFrom = from.matched[i]
+    if (recordFrom) {
+      if (to.matched.find(record => isSameRouteRecord(record, recordFrom)))
+        updatingRecords.push(recordFrom)
+      else leavingRecords.push(recordFrom)
+    }
+    const recordTo = to.matched[i]
+    if (recordTo) {
+      // the type doesn't matter because we are comparing per reference
+      if (!from.matched.find(record => isSameRouteRecord(record, recordTo))) {
+        enteringRecords.push(recordTo)
+      }
+    }
+  }
+
+  return [leavingRecords, updatingRecords, enteringRecords]
 }
