@@ -94,3 +94,5 @@ export type _AlphaNumeric =
   | '8'
   | '9'
   | '_'
+
+export type Awaitable<T> = T | Promise<T>

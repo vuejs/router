@@ -11,7 +11,6 @@ import {
   MatcherPatternQuery,
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,
-  defineParamParser,
 } from './matcher-pattern'
 import { miss } from './matchers/errors'
 import { EmptyParams } from './matcher-location'
