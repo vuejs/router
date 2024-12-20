@@ -51,7 +51,7 @@ const router = createRouter({
 })
 ```
 
-If a falsy value or an empty object is returned, no scrolling will happen.
+If a false value or an empty object is returned, no scrolling will happen.
 
 Returning the `savedPosition` will result in a native-like behavior when navigating with back/forward buttons:
 
