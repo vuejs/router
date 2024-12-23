@@ -1,14 +1,23 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import { NEW_LocationResolved, RouteResolver } from './matcher'
+import {
+  NEW_LocationResolved,
+  NEW_MatcherRecordRaw,
+  NEW_RouterMatcher,
+} from './matcher'
+import { EXPERIMENTAL_RouteRecordNormalized } from '../experimental/router'
 
 describe('Matcher', () => {
-  const matcher: RouteResolver<unknown, unknown> = {} as any
+  type TMatcherRecordRaw = NEW_MatcherRecordRaw
+  type TMatcherRecord = EXPERIMENTAL_RouteRecordNormalized
+
+  const matcher: NEW_RouterMatcher<TMatcherRecordRaw, TMatcherRecord> =
+    {} as any
 
   describe('matcher.resolve()', () => {
     it('resolves absolute string locations', () => {
-      expectTypeOf(
-        matcher.resolve('/foo')
-      ).toEqualTypeOf<NEW_LocationResolved>()
+      expectTypeOf(matcher.resolve('/foo')).toEqualTypeOf<
+        NEW_LocationResolved<TMatcherRecord>
+      >()
     })
 
     it('fails on non absolute location without a currentLocation', () => {
@@ -18,14 +27,14 @@ describe('Matcher', () => {
 
     it('resolves relative locations', () => {
       expectTypeOf(
-        matcher.resolve('foo', {} as NEW_LocationResolved)
-      ).toEqualTypeOf<NEW_LocationResolved>()
+        matcher.resolve('foo', {} as NEW_LocationResolved<TMatcherRecord>)
+      ).toEqualTypeOf<NEW_LocationResolved<TMatcherRecord>>()
     })
 
     it('resolved named locations', () => {
-      expectTypeOf(
-        matcher.resolve({ name: 'foo', params: {} })
-      ).toEqualTypeOf<NEW_LocationResolved>()
+      expectTypeOf(matcher.resolve({ name: 'foo', params: {} })).toEqualTypeOf<
+        NEW_LocationResolved<TMatcherRecord>
+      >()
     })
 
     it('fails on object relative location without a currentLocation', () => {
@@ -35,8 +44,11 @@ describe('Matcher', () => {
 
     it('resolves object relative locations with a currentLocation', () => {
       expectTypeOf(
-        matcher.resolve({ params: { id: 1 } }, {} as NEW_LocationResolved)
-      ).toEqualTypeOf<NEW_LocationResolved>()
+        matcher.resolve(
+          { params: { id: 1 } },
+          {} as NEW_LocationResolved<TMatcherRecord>
+        )
+      ).toEqualTypeOf<NEW_LocationResolved<TMatcherRecord>>()
     })
   })
 

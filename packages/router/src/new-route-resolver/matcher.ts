@@ -5,7 +5,6 @@ import {
   stringifyQuery,
 } from '../query'
 import type {
-  MatcherPattern,
   MatcherPatternHash,
   MatcherPatternPath,
   MatcherPatternQuery,
@@ -20,6 +19,7 @@ import type {
   MatcherLocationAsRelative,
   MatcherParamsFormatted,
 } from './matcher-location'
+import { _RouteRecordProps } from '../typed-routes'
 
 /**
  * Allowed types for a matcher name.
@@ -28,12 +28,17 @@ export type MatcherName = string | symbol
 
 /**
  * Manage and resolve routes. Also handles the encoding, decoding, parsing and serialization of params, query, and hash.
+ * `TMatcherRecordRaw` represents the raw record type passed to {@link addRoute}.
+ * `TMatcherRecord` represents the normalized record type.
  */
-export interface RouteResolver<Matcher, MatcherNormalized> {
+export interface NEW_RouterMatcher<TMatcherRecordRaw, TMatcherRecord> {
   /**
    * Resolves an absolute location (like `/path/to/somewhere`).
    */
-  resolve(absoluteLocation: `/${string}`): NEW_LocationResolved
+  resolve(
+    absoluteLocation: `/${string}`,
+    currentLocation?: undefined | NEW_LocationResolved<TMatcherRecord>
+  ): NEW_LocationResolved<TMatcherRecord>
 
   /**
    * Resolves a string location relative to another location. A relative location can be `./same-folder`,
@@ -41,24 +46,28 @@ export interface RouteResolver<Matcher, MatcherNormalized> {
    */
   resolve(
     relativeLocation: string,
-    currentLocation: NEW_LocationResolved
-  ): NEW_LocationResolved
+    currentLocation: NEW_LocationResolved<TMatcherRecord>
+  ): NEW_LocationResolved<TMatcherRecord>
 
   /**
    * Resolves a location by its name. Any required params or query must be passed in the `options` argument.
    */
-  resolve(location: MatcherLocationAsNamed): NEW_LocationResolved
+  resolve(
+    location: MatcherLocationAsNamed
+  ): NEW_LocationResolved<TMatcherRecord>
 
   /**
    * Resolves a location by its absolute path (starts with `/`). Any required query must be passed.
    * @param location - The location to resolve.
    */
-  resolve(location: MatcherLocationAsPathAbsolute): NEW_LocationResolved
+  resolve(
+    location: MatcherLocationAsPathAbsolute
+  ): NEW_LocationResolved<TMatcherRecord>
 
   resolve(
     location: MatcherLocationAsPathRelative,
-    currentLocation: NEW_LocationResolved
-  ): NEW_LocationResolved
+    currentLocation: NEW_LocationResolved<TMatcherRecord>
+  ): NEW_LocationResolved<TMatcherRecord>
 
   // NOTE: in practice, this overload can cause bugs. It's better to use named locations
 
@@ -68,42 +77,28 @@ export interface RouteResolver<Matcher, MatcherNormalized> {
    */
   resolve(
     relativeLocation: MatcherLocationAsRelative,
-    currentLocation: NEW_LocationResolved
-  ): NEW_LocationResolved
+    currentLocation: NEW_LocationResolved<TMatcherRecord>
+  ): NEW_LocationResolved<TMatcherRecord>
 
-  addRoute(matcher: Matcher, parent?: MatcherNormalized): MatcherNormalized
-  removeRoute(matcher: MatcherNormalized): void
+  addRoute(matcher: TMatcherRecordRaw, parent?: TMatcherRecord): TMatcherRecord
+  removeRoute(matcher: TMatcherRecord): void
   clearRoutes(): void
 
   /**
    * Get a list of all matchers.
    * Previously named `getRoutes()`
    */
-  getMatchers(): MatcherNormalized[]
+  getMatchers(): TMatcherRecord[]
 
   /**
    * Get a matcher by its name.
    * Previously named `getRecordMatcher()`
    */
-  getMatcher(name: MatcherName): MatcherNormalized | undefined
+  getMatcher(name: MatcherName): TMatcherRecord | undefined
 }
 
-type MatcherResolveArgs =
-  | [absoluteLocation: `/${string}`]
-  | [relativeLocation: string, currentLocation: NEW_LocationResolved]
-  | [absoluteLocation: MatcherLocationAsPathAbsolute]
-  | [
-      relativeLocation: MatcherLocationAsPathRelative,
-      currentLocation: NEW_LocationResolved
-    ]
-  | [location: MatcherLocationAsNamed]
-  | [
-      relativeLocation: MatcherLocationAsRelative,
-      currentLocation: NEW_LocationResolved
-    ]
-
 /**
- * Allowed location objects to be passed to {@link RouteResolver['resolve']}
+ * Allowed location objects to be passed to {@link NEW_RouterMatcher['resolve']}
  */
 export type MatcherLocationRaw =
   | `/${string}`
@@ -127,16 +122,18 @@ export interface NEW_Matcher_Dynamic {
 
 type TODO = any
 
-export interface NEW_LocationResolved {
-  name: MatcherName
-  fullPath: string
-  path: string
+export interface NEW_LocationResolved<TMatched> {
+  // FIXME: remove `undefined`
+  name: MatcherName | undefined
   // TODO: generics?
   params: MatcherParamsFormatted
+
+  fullPath: string
+  path: string
   query: LocationQuery
   hash: string
 
-  matched: TODO[]
+  matched: TMatched[]
 }
 
 export type MatcherPathParamsValue = string | null | string[]
@@ -221,24 +218,69 @@ const encodeQueryValue: FnStableNull =
 //   // for ts
 //   value => (value == null ? null : _encodeQueryKey(value))
 
+/**
+ * Common properties for a location that couldn't be matched. This ensures
+ * having the same name while having a `path`, `query` and `hash` that change.
+ */
 export const NO_MATCH_LOCATION = {
   name: __DEV__ ? Symbol('no-match') : Symbol(),
   params: {},
   matched: [],
-} satisfies Omit<NEW_LocationResolved, 'path' | 'hash' | 'query' | 'fullPath'>
+} satisfies Omit<
+  NEW_LocationResolved<unknown>,
+  'path' | 'hash' | 'query' | 'fullPath'
+>
 
 // FIXME: later on, the MatcherRecord should be compatible with RouteRecordRaw (which can miss a path, have children, etc)
 
-export interface MatcherRecordRaw {
-  name?: MatcherName
-
+/**
+ * Experiment new matcher record base type.
+ *
+ * @experimental
+ */
+export interface NEW_MatcherRecordRaw {
   path: MatcherPatternPath
-
   query?: MatcherPatternQuery
-
   hash?: MatcherPatternHash
 
-  children?: MatcherRecordRaw[]
+  // NOTE: matchers do not handle `redirect` the redirect option, the router
+  // does. They can still match the correct record but they will let the router
+  // retrigger a whole navigation to the new location.
+
+  // TODO: probably as `aliasOf`. Maybe a different format with the path, query and has matchers?
+  /**
+   * Aliases for the record. Allows defining extra paths that will behave like a
+   * copy of the record. Allows having paths shorthands like `/users/:id` and
+   * `/u/:id`. All `alias` and `path` values must share the same params.
+   */
+  // alias?: string | string[]
+
+  /**
+   * Name for the route record. Must be unique. Will be set to `Symbol()` if
+   * not set.
+   */
+  name?: MatcherName
+
+  /**
+   * Array of nested routes.
+   */
+  children?: NEW_MatcherRecordRaw[]
+}
+
+/**
+ * Normalized version of a {@link NEW_MatcherRecordRaw} record.
+ */
+export interface NEW_MatcherRecord {
+  /**
+   * Name of the matcher. Unique across all matchers.
+   */
+  name: MatcherName
+
+  path: MatcherPatternPath
+  query?: MatcherPatternQuery
+  hash?: MatcherPatternHash
+
+  parent?: NEW_MatcherRecord
 }
 
 /**
@@ -268,9 +310,9 @@ export function pathEncoded(
 /**
  * Build the `matched` array of a record that includes all parent records from the root to the current one.
  */
-function buildMatched(record: MatcherPattern): MatcherPattern[] {
-  const matched: MatcherPattern[] = []
-  let node: MatcherPattern | undefined = record
+function buildMatched(record: NEW_MatcherRecord): NEW_MatcherRecord[] {
+  const matched: NEW_MatcherRecord[] = []
+  let node: NEW_MatcherRecord | undefined = record
   while (node) {
     matched.unshift(node)
     node = node.parent
@@ -279,10 +321,10 @@ function buildMatched(record: MatcherPattern): MatcherPattern[] {
 }
 
 export function createCompiledMatcher(
-  records: MatcherRecordRaw[] = []
-): RouteResolver<MatcherRecordRaw, MatcherPattern> {
+  records: NEW_MatcherRecordRaw[] = []
+): NEW_RouterMatcher<NEW_MatcherRecordRaw, NEW_MatcherRecord> {
   // TODO: we also need an array that has the correct order
-  const matchers = new Map<MatcherName, MatcherPattern>()
+  const matchers = new Map<MatcherName, NEW_MatcherRecord>()
 
   // TODO: allow custom encode/decode functions
   // const encodeParams = applyToParams.bind(null, encodeParam)
@@ -294,7 +336,30 @@ export function createCompiledMatcher(
   // )
   // const decodeQuery = transformObject.bind(null, decode, decode)
 
-  function resolve(...args: MatcherResolveArgs): NEW_LocationResolved {
+  // NOTE: because of the overloads, we need to manually type the arguments
+  type MatcherResolveArgs =
+    | [
+        absoluteLocation: `/${string}`,
+        currentLocation?: undefined | NEW_LocationResolved<NEW_MatcherRecord>
+      ]
+    | [
+        relativeLocation: string,
+        currentLocation: NEW_LocationResolved<NEW_MatcherRecord>
+      ]
+    | [absoluteLocation: MatcherLocationAsPathAbsolute]
+    | [
+        relativeLocation: MatcherLocationAsPathRelative,
+        currentLocation: NEW_LocationResolved<NEW_MatcherRecord>
+      ]
+    | [location: MatcherLocationAsNamed]
+    | [
+        relativeLocation: MatcherLocationAsRelative,
+        currentLocation: NEW_LocationResolved<NEW_MatcherRecord>
+      ]
+
+  function resolve(
+    ...args: MatcherResolveArgs
+  ): NEW_LocationResolved<NEW_MatcherRecord> {
     const [location, currentLocation] = args
 
     // string location, e.g. '/foo', '../bar', 'baz', '?page=1'
@@ -302,8 +367,10 @@ export function createCompiledMatcher(
       // parseURL handles relative paths
       const url = parseURL(parseQuery, location, currentLocation?.path)
 
-      let matcher: MatcherPattern | undefined
-      let matched: NEW_LocationResolved['matched'] | undefined
+      let matcher: NEW_MatcherRecord | undefined
+      let matched:
+        | NEW_LocationResolved<NEW_MatcherRecord>['matched']
+        | undefined
       let parsedParams: MatcherParamsFormatted | null | undefined
 
       for (matcher of matchers.values()) {
@@ -360,18 +427,22 @@ export function createCompiledMatcher(
           `Cannot resolve an unnamed relative location without a current location. This will throw in production.`,
           location
         )
+        const query = normalizeQuery(location.query)
+        const hash = location.hash ?? ''
+        const path = location.path ?? '/'
         return {
           ...NO_MATCH_LOCATION,
-          fullPath: '/',
-          path: '/',
-          query: {},
-          hash: '',
+          fullPath: stringifyURL(stringifyQuery, { path, query, hash }),
+          path,
+          query,
+          hash,
         }
       }
 
       // either one of them must be defined and is catched by the dev only warn above
       const name = location.name ?? currentLocation!.name
-      const matcher = matchers.get(name)
+      // FIXME: remove once name cannot be null
+      const matcher = name != null && matchers.get(name)
       if (!matcher) {
         throw new Error(`Matcher "${String(location.name)}" not found`)
       }
@@ -404,10 +475,10 @@ export function createCompiledMatcher(
     }
   }
 
-  function addRoute(record: MatcherRecordRaw, parent?: MatcherPattern) {
+  function addRoute(record: NEW_MatcherRecordRaw, parent?: NEW_MatcherRecord) {
     const name = record.name ?? (__DEV__ ? Symbol('unnamed-route') : Symbol())
     // FIXME: proper normalization of the record
-    const normalizedRecord: MatcherPattern = {
+    const normalizedRecord: NEW_MatcherRecord = {
       ...record,
       name,
       parent,
@@ -420,7 +491,7 @@ export function createCompiledMatcher(
     addRoute(record)
   }
 
-  function removeRoute(matcher: MatcherPattern) {
+  function removeRoute(matcher: NEW_MatcherRecord) {
     matchers.delete(matcher.name)
     // TODO: delete children and aliases
   }

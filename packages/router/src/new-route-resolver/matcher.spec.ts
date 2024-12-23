@@ -6,12 +6,12 @@ import {
 } from './matcher'
 import {
   MatcherPatternParams_Base,
-  MatcherPattern,
   MatcherPatternPath,
   MatcherPatternQuery,
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,
 } from './matcher-pattern'
+import { NEW_MatcherRecord } from './matcher'
 import { miss } from './matchers/errors'
 import { EmptyParams } from './matcher-location'
 
@@ -72,12 +72,17 @@ const ANY_HASH_PATTERN_MATCHER: MatcherPatternParams_Base<
 const EMPTY_PATH_ROUTE = {
   name: 'no params',
   path: EMPTY_PATH_PATTERN_MATCHER,
-} satisfies MatcherPattern
+} satisfies NEW_MatcherRecord
+
+const ANY_PATH_ROUTE = {
+  name: 'any path',
+  path: ANY_PATH_PATTERN_MATCHER,
+} satisfies NEW_MatcherRecord
 
 const USER_ID_ROUTE = {
   name: 'user-id',
   path: USER_ID_PATH_PATTERN_MATCHER,
-} satisfies MatcherPattern
+} satisfies NEW_MatcherRecord
 
 describe('RouterMatcher', () => {
   describe('new matchers', () => {
@@ -134,6 +139,20 @@ describe('RouterMatcher', () => {
     it('adds dynamic path', () => {
       const matcher = createCompiledMatcher()
       matcher.addRoute(USER_ID_ROUTE)
+    })
+
+    it('removes static path', () => {
+      const matcher = createCompiledMatcher()
+      matcher.addRoute(EMPTY_PATH_ROUTE)
+      matcher.removeRoute(EMPTY_PATH_ROUTE)
+      // Add assertions to verify the route was removed
+    })
+
+    it('removes dynamic path', () => {
+      const matcher = createCompiledMatcher()
+      matcher.addRoute(USER_ID_ROUTE)
+      matcher.removeRoute(USER_ID_ROUTE)
+      // Add assertions to verify the route was removed
     })
   })
 
@@ -290,6 +309,38 @@ describe('RouterMatcher', () => {
           params: {},
           query: {},
           hash: '',
+        })
+      })
+    })
+
+    describe('encoding', () => {
+      it('handles encoded string path', () => {
+        const matcher = createCompiledMatcher([ANY_PATH_ROUTE])
+        console.log(matcher.resolve('/%23%2F%3F'))
+        expect(matcher.resolve('/%23%2F%3F')).toMatchObject({
+          fullPath: '/%23%2F%3F',
+          path: '/%23%2F%3F',
+          query: {},
+          params: {},
+          hash: '',
+        })
+      })
+
+      it('decodes query from a string', () => {
+        const matcher = createCompiledMatcher([ANY_PATH_ROUTE])
+        expect(matcher.resolve('/foo?foo=%23%2F%3F')).toMatchObject({
+          path: '/foo',
+          fullPath: '/foo?foo=%23%2F%3F',
+          query: { foo: '#/?' },
+        })
+      })
+
+      it('decodes hash from a string', () => {
+        const matcher = createCompiledMatcher([ANY_PATH_ROUTE])
+        expect(matcher.resolve('/foo#h-%23%2F%3F')).toMatchObject({
+          path: '/foo',
+          fullPath: '/foo#h-%23%2F%3F',
+          hash: '#h-#/?',
         })
       })
     })

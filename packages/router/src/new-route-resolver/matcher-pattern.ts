@@ -1,19 +1,6 @@
-import { decode, MatcherName, MatcherQueryParams } from './matcher'
+import { decode, MatcherQueryParams } from './matcher'
 import { EmptyParams, MatcherParamsFormatted } from './matcher-location'
 import { miss } from './matchers/errors'
-
-export interface MatcherPattern {
-  /**
-   * Name of the matcher. Unique across all matchers.
-   */
-  name: MatcherName
-
-  path: MatcherPatternPath
-  query?: MatcherPatternQuery
-  hash?: MatcherPatternHash
-
-  parent?: MatcherPattern
-}
 
 export interface MatcherPatternParams_Base<
   TIn = string,

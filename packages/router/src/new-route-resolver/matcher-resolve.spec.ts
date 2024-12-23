@@ -8,7 +8,7 @@ import { mockWarn } from '../../__tests__/vitest-mock-warn'
 import {
   createCompiledMatcher,
   MatcherLocationRaw,
-  MatcherRecordRaw,
+  NEW_MatcherRecordRaw,
   NEW_LocationResolved,
 } from './matcher'
 import { PathParams, tokensToParser } from '../matcher/pathParserRanker'
@@ -24,7 +24,7 @@ const components = { default: component }
 function compileRouteRecord(
   record: RouteRecordRaw,
   parentRecord?: RouteRecordRaw
-): MatcherRecordRaw {
+): NEW_MatcherRecordRaw {
   // we adapt the path to ensure they are absolute
   // TODO: aliases? they could be handled directly in the path matcher
   const path = record.path.startsWith('/')
@@ -100,7 +100,7 @@ describe('RouterMatcher.resolve', () => {
       | `/${string}` = START_LOCATION
   ) {
     const records = (Array.isArray(record) ? record : [record]).map(
-      (record): MatcherRecordRaw => compileRouteRecord(record)
+      (record): NEW_MatcherRecordRaw => compileRouteRecord(record)
     )
     const matcher = createCompiledMatcher()
     for (const record of records) {

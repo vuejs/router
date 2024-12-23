@@ -3,8 +3,8 @@ import {
   MatcherPatternPath,
   MatcherPatternQuery,
   MatcherPatternParams_Base,
-  MatcherPattern,
 } from '../matcher-pattern'
+import { NEW_MatcherRecord } from '../matcher'
 import { miss } from './errors'
 
 export const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{
@@ -68,9 +68,9 @@ export const ANY_HASH_PATTERN_MATCHER: MatcherPatternParams_Base<
 export const EMPTY_PATH_ROUTE = {
   name: 'no params',
   path: EMPTY_PATH_PATTERN_MATCHER,
-} satisfies MatcherPattern
+} satisfies NEW_MatcherRecord
 
 export const USER_ID_ROUTE = {
   name: 'user-id',
   path: USER_ID_PATH_PATTERN_MATCHER,
-} satisfies MatcherPattern
+} satisfies NEW_MatcherRecord
