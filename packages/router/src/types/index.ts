@@ -185,7 +185,7 @@ export type RouteComponent = Component | DefineComponent
  */
 export type RawRouteComponent = RouteComponent | Lazy<RouteComponent>
 
-// TODO: could this be moved to matcher?
+// TODO: could this be moved to matcher? YES, it's on the way
 /**
  * Internal type for common properties among all kind of {@link RouteRecordRaw}.
  */
@@ -278,7 +278,9 @@ export interface RouteRecordSingleView extends _RouteRecordBase {
 }
 
 /**
- * Route Record defining one single component with a nested view.
+ * Route Record defining one single component with a nested view. Differently
+ * from {@link RouteRecordSingleView}, this record has children and allows a
+ * `redirect` option.
  */
 export interface RouteRecordSingleViewWithChildren extends _RouteRecordBase {
   /**

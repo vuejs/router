@@ -126,8 +126,8 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
    * }
    * ```
    */
-
   scrollBehavior?: RouterScrollBehavior
+
   /**
    * Custom implementation to parse a query. See its counterpart,
    * {@link EXPERIMENTAL_RouterOptions_Base.stringifyQuery}.
@@ -145,26 +145,27 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
    * })
    * ```
    */
-
   parseQuery?: typeof originalParseQuery
+
   /**
    * Custom implementation to stringify a query object. Should not prepend a leading `?`.
-   * {@link EXPERIMENTAL_RouterOptions_Base.parseQuery | parseQuery} counterpart to handle query parsing.
+   * {@link parseQuery} counterpart to handle query parsing.
    */
 
   stringifyQuery?: typeof originalStringifyQuery
+
   /**
    * Default class applied to active {@link RouterLink}. If none is provided,
    * `router-link-active` will be applied.
    */
-
   linkActiveClass?: string
+
   /**
    * Default class applied to exact active {@link RouterLink}. If none is provided,
    * `router-link-exact-active` will be applied.
    */
-
   linkExactActiveClass?: string
+
   /**
    * Default class applied to non-active {@link RouterLink}. If none is provided,
    * `router-link-inactive` will be applied.
@@ -191,7 +192,7 @@ export interface EXPERIMENTAL_RouterOptions<TRouteRecordRaw, TRouteRecord>
 }
 
 /**
- * Router instance.
+ * Router base instance.
  * @experimental This version is not stable, it's meant to replace {@link Router} in the future.
  */
 export interface EXPERIMENTAL_Router_Base<TRouteRecordRaw, TRouteRecord> {
@@ -1161,7 +1162,6 @@ export function experimental_createRouter(
   }
 
   // Initialization and Errors
-
   let readyHandlers = useCallbacks<_OnReadyCallback>()
   let errorListeners = useCallbacks<_ErrorListener>()
   let ready: boolean
@@ -1206,9 +1206,9 @@ export function experimental_createRouter(
    * only be called once, otherwise does nothing.
    * @param err - optional error
    */
-  function markAsReady<E = any>(err: E): E
-  function markAsReady<E = any>(): void
-  function markAsReady<E = any>(err?: E): E | void {
+  function markAsReady<E = unknown>(err: E): E
+  function markAsReady(): void
+  function markAsReady<E = unknown>(err?: E): E | void {
     if (!ready) {
       // still not ready if an error happened
       ready = !err

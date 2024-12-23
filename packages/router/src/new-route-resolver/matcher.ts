@@ -325,8 +325,6 @@ export function createCompiledMatcher(
           // }
 
           parsedParams = { ...pathParams, ...queryParams, ...hashParams }
-
-          if (parsedParams) break
         } catch (e) {
           // for debugging tests
           // console.log('❌ ERROR matching', e)
