@@ -314,33 +314,50 @@ describe('RouterMatcher', () => {
     })
 
     describe('encoding', () => {
-      it('handles encoded string path', () => {
-        const matcher = createCompiledMatcher([ANY_PATH_ROUTE])
-        console.log(matcher.resolve('/%23%2F%3F'))
-        expect(matcher.resolve('/%23%2F%3F')).toMatchObject({
-          fullPath: '/%23%2F%3F',
-          path: '/%23%2F%3F',
-          query: {},
-          params: {},
-          hash: '',
+      const matcher = createCompiledMatcher([ANY_PATH_ROUTE])
+      describe('decodes', () => {
+        it('handles encoded string path', () => {
+          expect(matcher.resolve('/%23%2F%3F')).toMatchObject({
+            fullPath: '/%23%2F%3F',
+            path: '/%23%2F%3F',
+            query: {},
+            params: {},
+            hash: '',
+          })
+        })
+
+        it('decodes query from a string', () => {
+          expect(matcher.resolve('/foo?foo=%23%2F%3F')).toMatchObject({
+            path: '/foo',
+            fullPath: '/foo?foo=%23%2F%3F',
+            query: { foo: '#/?' },
+          })
+        })
+
+        it('decodes hash from a string', () => {
+          expect(matcher.resolve('/foo#%22')).toMatchObject({
+            path: '/foo',
+            fullPath: '/foo#%22',
+            hash: '#"',
+          })
         })
       })
 
-      it('decodes query from a string', () => {
-        const matcher = createCompiledMatcher([ANY_PATH_ROUTE])
-        expect(matcher.resolve('/foo?foo=%23%2F%3F')).toMatchObject({
-          path: '/foo',
-          fullPath: '/foo?foo=%23%2F%3F',
-          query: { foo: '#/?' },
+      describe('encodes', () => {
+        it('encodes the query', () => {
+          expect(
+            matcher.resolve({ path: '/foo', query: { foo: '"' } })
+          ).toMatchObject({
+            fullPath: '/foo?foo=%22',
+            query: { foo: '"' },
+          })
         })
-      })
 
-      it('decodes hash from a string', () => {
-        const matcher = createCompiledMatcher([ANY_PATH_ROUTE])
-        expect(matcher.resolve('/foo#h-%23%2F%3F')).toMatchObject({
-          path: '/foo',
-          fullPath: '/foo#h-%23%2F%3F',
-          hash: '#h-#/?',
+        it('encodes the hash', () => {
+          expect(matcher.resolve({ path: '/foo', hash: '#"' })).toMatchObject({
+            fullPath: '/foo#%22',
+            hash: '#"',
+          })
         })
       })
     })

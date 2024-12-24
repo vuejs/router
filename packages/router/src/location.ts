@@ -3,7 +3,7 @@ import { RouteParamValue, RouteParamsGeneric } from './types'
 import { RouteRecord } from './matcher/types'
 import { warn } from './warning'
 import { isArray } from './utils'
-import { decode } from './encoding'
+import { decode, encodeHash } from './encoding'
 import { RouteLocation, RouteLocationNormalizedLoaded } from './typed-routes'
 
 /**
@@ -92,6 +92,25 @@ export function parseURL(
     query,
     hash: decode(hash),
   }
+}
+
+/**
+ * Creates a `fullPath` property from the `path`, `query` and `hash` properties
+ *
+ * @param  stringifyQuery - custom function to stringify the query object. It should handle encoding values
+ * @param  path - An encdoded path
+ * @param  query - A decoded query object
+ * @param  hash - A decoded hash
+ * @returns a valid `fullPath`
+ */
+export function NEW_stringifyURL(
+  stringifyQuery: (query?: LocationQueryRaw) => string,
+  path: LocationPartial['path'],
+  query?: LocationPartial['query'],
+  hash: LocationPartial['hash'] = ''
+): string {
+  const searchText = stringifyQuery(query)
+  return path + (searchText && '?') + searchText + encodeHash(hash)
 }
 
 /**

@@ -11,7 +11,7 @@ import type {
 } from './matcher-pattern'
 import { warn } from '../warning'
 import { encodeQueryValue as _encodeQueryValue, encodeParam } from '../encoding'
-import { parseURL, stringifyURL } from '../location'
+import { parseURL, NEW_stringifyURL } from '../location'
 import type {
   MatcherLocationAsNamed,
   MatcherLocationAsPathAbsolute,
@@ -432,7 +432,7 @@ export function createCompiledMatcher(
         const path = location.path ?? '/'
         return {
           ...NO_MATCH_LOCATION,
-          fullPath: stringifyURL(stringifyQuery, { path, query, hash }),
+          fullPath: NEW_stringifyURL(stringifyQuery, path, query, hash),
           path,
           query,
           hash,
@@ -465,7 +465,7 @@ export function createCompiledMatcher(
 
       return {
         name,
-        fullPath: stringifyURL(stringifyQuery, { path, query, hash }),
+        fullPath: NEW_stringifyURL(stringifyQuery, path, query, hash),
         path,
         query,
         hash,
