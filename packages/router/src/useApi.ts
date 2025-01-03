@@ -16,8 +16,6 @@ export function useRouter(): Router {
  * Returns the current route location. Equivalent to using `$route` inside
  * templates.
  */
-export function useRoute<Name extends keyof RouteMap = keyof RouteMap>(
-  _name?: Name
-): RouteLocationNormalizedLoaded<Name> {
+export function useRoute<Name extends keyof RouteMap = keyof RouteMap>(): RouteLocationNormalizedLoaded<Name> {
   return inject(routeLocationKey)!
 }
