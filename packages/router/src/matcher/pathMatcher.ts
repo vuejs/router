@@ -4,11 +4,14 @@ import {
   PathParser,
   PathParserOptions,
 } from './pathParserRanker'
+import { staticPathToParser } from './staticPathParser'
 import { tokenizePath } from './pathTokenizer'
 import { warn } from '../warning'
 import { assign } from '../utils'
 
 export interface RouteRecordMatcher extends PathParser {
+  staticPath: boolean
+  staticTokens: string[]
   record: RouteRecord
   parent: RouteRecordMatcher | undefined
   children: RouteRecordMatcher[]
@@ -21,7 +24,33 @@ export function createRouteRecordMatcher(
   parent: RouteRecordMatcher | undefined,
   options?: PathParserOptions
 ): RouteRecordMatcher {
-  const parser = tokensToParser(tokenizePath(record.path), options)
+  const tokens = tokenizePath(record.path)
+
+  // TODO: Merge options properly
+  const staticPath =
+    options?.end !== false &&
+    tokens.every(
+      segment =>
+        segment.length === 0 || (segment.length === 1 && segment[0].type === 0)
+    )
+
+  const staticTokens: string[] = []
+
+  for (const token of tokens) {
+    if (token.length === 1 && token[0].type === 0) {
+      staticTokens.push(token[0].value)
+    } else {
+      break
+    }
+  }
+
+  if (options?.end === false && !options?.strict) {
+    staticTokens.pop()
+  }
+
+  const parser = staticPath
+    ? staticPathToParser(record.path, tokens, options)
+    : tokensToParser(tokens, options)
 
   // warn against params with the same name
   if (__DEV__) {
@@ -36,6 +65,8 @@ export function createRouteRecordMatcher(
   }
 
   const matcher: RouteRecordMatcher = assign(parser, {
+    staticPath,
+    staticTokens,
     record,
     parent,
     // these needs to be populated by the parent
