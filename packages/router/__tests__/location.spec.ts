@@ -134,18 +134,113 @@ describe('parseURL', () => {
     })
   })
 
-  it('parses ? after the hash', () => {
+  it('correctly parses a ? after the hash', () => {
     expect(parseURL('/foo#?a=one')).toEqual({
       fullPath: '/foo#?a=one',
       path: '/foo',
       hash: '#?a=one',
       query: {},
     })
-    expect(parseURL('/foo/#?a=one')).toEqual({
-      fullPath: '/foo/#?a=one',
+    expect(parseURL('/foo/?a=two#?a=one')).toEqual({
+      fullPath: '/foo/?a=two#?a=one',
       path: '/foo/',
       hash: '#?a=one',
+      query: { a: 'two' },
+    })
+  })
+
+  it('works with empty query', () => {
+    expect(parseURL('/foo?#hash')).toEqual({
+      fullPath: '/foo?#hash',
+      path: '/foo',
+      hash: '#hash',
       query: {},
+    })
+    expect(parseURL('/foo#hash')).toEqual({
+      fullPath: '/foo#hash',
+      path: '/foo',
+      hash: '#hash',
+      query: {},
+    })
+    expect(parseURL('/foo?')).toEqual({
+      fullPath: '/foo?',
+      path: '/foo',
+      hash: '',
+      query: {},
+    })
+    expect(parseURL('/foo')).toEqual({
+      fullPath: '/foo',
+      path: '/foo',
+      hash: '',
+      query: {},
+    })
+  })
+
+  it('works with empty hash', () => {
+    expect(parseURL('/foo#')).toEqual({
+      fullPath: '/foo#',
+      path: '/foo',
+      hash: '#',
+      query: {},
+    })
+    expect(parseURL('/foo?#')).toEqual({
+      fullPath: '/foo?#',
+      path: '/foo',
+      hash: '#',
+      query: {},
+    })
+    expect(parseURL('/foo')).toEqual({
+      fullPath: '/foo',
+      path: '/foo',
+      hash: '',
+      query: {},
+    })
+  })
+
+  it('works with a relative paths', () => {
+    expect(parseURL('foo', '/parent/bar')).toEqual({
+      fullPath: '/parent/foo',
+      path: '/parent/foo',
+      hash: '',
+      query: {},
+    })
+    expect(parseURL('./foo', '/parent/bar')).toEqual({
+      fullPath: '/parent/foo',
+      path: '/parent/foo',
+      hash: '',
+      query: {},
+    })
+    expect(parseURL('../foo', '/parent/bar')).toEqual({
+      fullPath: '/foo',
+      path: '/foo',
+      hash: '',
+      query: {},
+    })
+    // cannot go below root
+    expect(parseURL('../../foo', '/parent/bar')).toEqual({
+      fullPath: '/foo',
+      path: '/foo',
+      hash: '',
+      query: {},
+    })
+
+    expect(parseURL('', '/parent/bar')).toEqual({
+      fullPath: '/parent/bar',
+      path: '/parent/bar',
+      hash: '',
+      query: {},
+    })
+    expect(parseURL('#foo', '/parent/bar')).toEqual({
+      fullPath: '/parent/bar#foo',
+      path: '/parent/bar',
+      hash: '#foo',
+      query: {},
+    })
+    expect(parseURL('?o=o', '/parent/bar')).toEqual({
+      fullPath: '/parent/bar?o=o',
+      path: '/parent/bar',
+      hash: '',
+      query: { o: 'o' },
     })
   })
 
@@ -153,7 +248,7 @@ describe('parseURL', () => {
     const parseQuery = vi.fn()
     originalParseURL(parseQuery, '/?é=é&é=a')
     expect(parseQuery).toHaveBeenCalledTimes(1)
-    expect(parseQuery).toHaveBeenCalledWith('é=é&é=a')
+    expect(parseQuery).toHaveBeenCalledWith('?é=é&é=a')
   })
 })
 

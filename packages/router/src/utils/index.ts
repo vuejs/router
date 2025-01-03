@@ -2,7 +2,6 @@ import {
   RouteParamsGeneric,
   RouteComponent,
   RouteParamsRawGeneric,
-  RouteParamValueRaw,
   RawRouteComponent,
 } from '../types'
 
@@ -45,9 +44,7 @@ export function applyToParams(
 
   for (const key in params) {
     const value = params[key]
-    newParams[key] = isArray(value)
-      ? value.map(fn)
-      : fn(value as Exclude<RouteParamValueRaw, any[]>)
+    newParams[key] = isArray(value) ? value.map(fn) : fn(value)
   }
 
   return newParams
