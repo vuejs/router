@@ -1,6 +1,6 @@
 # RouterView 插槽
 
-RotuerView 组件暴露了一个插槽，可以用来渲染路由组件：
+RouterView 组件暴露了一个插槽，可以用来渲染路由组件：
 
 ```vue-html
 <router-view v-slot="{ Component }">
