@@ -1,9 +1,15 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Help and Question
+  - name: 👨‍💻 Support
+    url: https://cal.com/posva/consultancy
+    about: Get direct help from the author of Vue Router with your project
+  - name: ❓ Help & Questions
     url: https://github.com/vuejs/router/discussions/new?category=help-and-questions
     about: Ask a question or discuss about Vue Router
-  - name: GitHub Sponsors
+  - name: 💡 Ideas
+    url: https://github.com/vuejs/router/discussions/new?category=ideas
+    about: Start a discussion to improve Pinia
+  - name: 🌟 GitHub Sponsors
     url: https://github.com/sponsors/posva
     about: Like this project? Please consider supporting the author.
   - name: Open Collective
