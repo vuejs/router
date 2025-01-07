@@ -536,10 +536,10 @@ export function experimental_createRouter(
 
       if (
         typeof rawLocation === 'object' &&
-        rawLocation.hash?.startsWith('#')
+        !rawLocation.hash?.startsWith('#')
       ) {
         warn(
-          `A \`hash\` should always start with the character "#". Replace "${hash}" with "#${hash}".`
+          `A \`hash\` should always start with the character "#". Replace "${rawLocation.hash}" with "#${rawLocation.hash}".`
         )
       }
     }
