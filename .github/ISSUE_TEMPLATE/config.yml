@@ -8,7 +8,7 @@ contact_links:
     about: Ask a question or discuss about Vue Router
   - name: 💡 Ideas
     url: https://github.com/vuejs/router/discussions/new?category=ideas
-    about: Start a discussion to improve Pinia
+    about: Start a discussion to improve Vue Router
   - name: 🌟 GitHub Sponsors
     url: https://github.com/sponsors/posva
     about: Like this project? Please consider supporting the author.
