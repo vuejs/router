@@ -158,6 +158,15 @@
       <li>
         <router-link to="/p_1/absolute-a">/p_1/absolute-a</router-link>
       </li>
+      <li>
+        <router-link :to="{ name: 'features' }">Go to Features (name)</router-link>
+      </li>
+      <li>
+        <router-link to="/features">Go to Features (string)</router-link>
+      </li>
+      <li>
+        <router-link to="/features/one">Go to Feature one</router-link>
+      </li>
     </ul>
     <button @click="toggleViewName">Toggle view</button>
     <RouterView :name="viewName" v-slot="{ Component, route }">

@@ -159,6 +159,11 @@ export const router = createRouter({
         { path: 'settings', component },
       ],
     },
+    {
+      path: '/features/:pathMatch(.*)*',
+      name: 'features',
+      component: User,
+    },
   ],
   async scrollBehavior(to, from, savedPosition) {
     await scrollWaiter.wait()
