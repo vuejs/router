@@ -4,7 +4,7 @@ import {
   MatcherPatternQuery,
   MatcherPatternParams_Base,
 } from '../matcher-pattern'
-import { NEW_MatcherRecord } from '../matcher'
+import { NEW_MatcherRecord } from '../resolver'
 import { miss } from './errors'
 
 export const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{

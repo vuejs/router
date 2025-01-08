@@ -1,5 +1,5 @@
 import type { LocationQueryRaw } from '../query'
-import type { MatcherName } from './matcher'
+import type { MatcherName } from './resolver'
 
 /**
  * Generic object of params that can be passed to a matcher.

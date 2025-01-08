@@ -27,8 +27,8 @@ import type {
   NEW_LocationResolved,
   NEW_MatcherRecord,
   NEW_MatcherRecordRaw,
-  NEW_RouterMatcher,
-} from '../new-route-resolver/matcher'
+  NEW_RouterResolver,
+} from '../new-route-resolver/resolver'
 import {
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
@@ -51,7 +51,6 @@ import type {
   RouteLocationAsRelative,
   RouteLocationAsRelativeTyped,
   RouteLocationAsString,
-  RouteLocationGeneric,
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
   RouteLocationRaw,
@@ -191,7 +190,7 @@ export interface EXPERIMENTAL_RouterOptions<
    * Matcher to use to resolve routes.
    * @experimental
    */
-  matcher: NEW_RouterMatcher<NEW_MatcherRecordRaw, TMatcherRecord>
+  matcher: NEW_RouterResolver<NEW_MatcherRecordRaw, TMatcherRecord>
 }
 
 /**
@@ -407,6 +406,9 @@ export interface EXPERIMENTAL_RouteRecordRaw extends NEW_MatcherRecordRaw {
 
 // TODO: is it worth to have 2 types for the undefined values?
 export interface EXPERIMENTAL_RouteRecordNormalized extends NEW_MatcherRecord {
+  /**
+   * Arbitrary data attached to the record.
+   */
   meta: RouteMeta
 }
 
@@ -468,7 +470,7 @@ export function experimental_createRouter(
       | EXPERIMENTAL_RouteRecordRaw,
     route?: EXPERIMENTAL_RouteRecordRaw
   ) {
-    let parent: Parameters<(typeof matcher)['addRoute']>[1] | undefined
+    let parent: Parameters<(typeof matcher)['addMatcher']>[1] | undefined
     let rawRecord: EXPERIMENTAL_RouteRecordRaw
 
     if (isRouteName(parentOrRoute)) {
@@ -486,20 +488,20 @@ export function experimental_createRouter(
       rawRecord = parentOrRoute
     }
 
-    const addedRecord = matcher.addRoute(
+    const addedRecord = matcher.addMatcher(
       normalizeRouteRecord(rawRecord),
       parent
     )
 
     return () => {
-      matcher.removeRoute(addedRecord)
+      matcher.removeMatcher(addedRecord)
     }
   }
 
   function removeRoute(name: NonNullable<RouteRecordNameGeneric>) {
     const recordMatcher = matcher.getMatcher(name)
     if (recordMatcher) {
-      matcher.removeRoute(recordMatcher)
+      matcher.removeMatcher(recordMatcher)
     } else if (__DEV__) {
       warn(`Cannot remove non-existent route "${String(name)}"`)
     }
@@ -1219,7 +1221,7 @@ export function experimental_createRouter(
 
     addRoute,
     removeRoute,
-    clearRoutes: matcher.clearRoutes,
+    clearRoutes: matcher.clearMatchers,
     hasRoute,
     getRoutes,
     resolve,

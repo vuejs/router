@@ -1,1 +1,1 @@
-export { createCompiledMatcher } from './matcher'
+export { createCompiledMatcher } from './resolver'

@@ -1,6 +1,5 @@
 import { createRouterMatcher, normalizeRouteRecord } from '../matcher'
 import { RouteComponent, RouteRecordRaw, MatcherLocation } from '../types'
-import { MatcherLocationNormalizedLoose } from '../../__tests__/utils'
 import { defineComponent } from 'vue'
 import { START_LOCATION_NORMALIZED } from '../location'
 import { describe, expect, it } from 'vitest'
@@ -10,7 +9,8 @@ import {
   MatcherLocationRaw,
   NEW_MatcherRecordRaw,
   NEW_LocationResolved,
-} from './matcher'
+  NEW_MatcherRecord,
+} from './resolver'
 import { PathParams, tokensToParser } from '../matcher/pathParserRanker'
 import { tokenizePath } from '../matcher/pathTokenizer'
 import { miss } from './matchers/errors'
@@ -63,22 +63,23 @@ function compileRouteRecord(
 
 describe('RouterMatcher.resolve', () => {
   mockWarn()
-  type Matcher = ReturnType<typeof createRouterMatcher>
+  type Matcher = ReturnType<typeof createCompiledMatcher>
   type MatcherResolvedLocation = ReturnType<Matcher['resolve']>
 
-  const START_LOCATION: NEW_LocationResolved = {
+  const START_LOCATION: MatcherResolvedLocation = {
     name: Symbol('START'),
-    fullPath: '/',
-    path: '/',
     params: {},
+    path: '/',
+    fullPath: '/',
     query: {},
     hash: '',
     matched: [],
+    // meta: {},
   }
 
   function isMatcherLocationResolved(
     location: unknown
-  ): location is NEW_LocationResolved {
+  ): location is NEW_LocationResolved<NEW_MatcherRecord> {
     return !!(
       location &&
       typeof location === 'object' &&
@@ -95,16 +96,16 @@ describe('RouterMatcher.resolve', () => {
     toLocation: MatcherLocationRaw,
     expectedLocation: Partial<MatcherResolvedLocation>,
     fromLocation:
-      | NEW_LocationResolved
+      | NEW_LocationResolved<NEW_MatcherRecord>
       | Exclude<MatcherLocationRaw, string>
       | `/${string}` = START_LOCATION
   ) {
     const records = (Array.isArray(record) ? record : [record]).map(
       (record): NEW_MatcherRecordRaw => compileRouteRecord(record)
     )
-    const matcher = createCompiledMatcher()
+    const matcher = createCompiledMatcher<NEW_MatcherRecord>()
     for (const record of records) {
-      matcher.addRoute(record)
+      matcher.addMatcher(record)
     }
 
     const resolved: MatcherResolvedLocation = {
@@ -135,60 +136,6 @@ describe('RouterMatcher.resolve', () => {
       hash: '',
       ...resolved,
     })
-  }
-
-  function _assertRecordMatch(
-    record: RouteRecordRaw | RouteRecordRaw[],
-    location: MatcherLocationRaw,
-    resolved: Partial<MatcherLocationNormalizedLoose>,
-    start: MatcherLocation = START_LOCATION_NORMALIZED
-  ) {
-    record = Array.isArray(record) ? record : [record]
-    const matcher = createRouterMatcher(record, {})
-
-    if (!('meta' in resolved)) {
-      resolved.meta = record[0].meta || {}
-    }
-
-    if (!('name' in resolved)) {
-      resolved.name = undefined
-    }
-
-    // add location if provided as it should be the same value
-    if ('path' in location && !('path' in resolved)) {
-      resolved.path = location.path
-    }
-
-    if ('redirect' in record) {
-      throw new Error('not handled')
-    } else {
-      // use one single record
-      if (!resolved.matched) resolved.matched = record.map(normalizeRouteRecord)
-      // allow passing an expect.any(Array)
-      else if (Array.isArray(resolved.matched))
-        resolved.matched = resolved.matched.map(m => ({
-          ...normalizeRouteRecord(m as any),
-          aliasOf: m.aliasOf,
-        }))
-    }
-
-    // allows not passing params
-    resolved.params =
-      resolved.params || ('params' in location ? location.params : {})
-
-    const startCopy: MatcherLocation = {
-      ...start,
-      matched: start.matched.map(m => ({
-        ...normalizeRouteRecord(m),
-        aliasOf: m.aliasOf,
-      })) as MatcherLocation['matched'],
-    }
-
-    // make matched non enumerable
-    Object.defineProperty(startCopy, 'matched', { enumerable: false })
-
-    const result = matcher.resolve(location, startCopy)
-    expect(result).toEqual(resolved)
   }
 
   /**

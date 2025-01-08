@@ -58,3 +58,15 @@ export const noop = () => {}
  */
 export const isArray: (arg: ArrayLike<any> | any) => arg is ReadonlyArray<any> =
   Array.isArray
+
+export function mergeOptions<T extends object>(
+  defaults: T,
+  partialOptions: Partial<T>
+): T {
+  const options = {} as T
+  for (const key in defaults) {
+    options[key] = key in partialOptions ? partialOptions[key]! : defaults[key]
+  }
+
+  return options
+}

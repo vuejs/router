@@ -2,15 +2,15 @@ import { describe, expectTypeOf, it } from 'vitest'
 import {
   NEW_LocationResolved,
   NEW_MatcherRecordRaw,
-  NEW_RouterMatcher,
-} from './matcher'
+  NEW_RouterResolver,
+} from './resolver'
 import { EXPERIMENTAL_RouteRecordNormalized } from '../experimental/router'
 
 describe('Matcher', () => {
   type TMatcherRecordRaw = NEW_MatcherRecordRaw
   type TMatcherRecord = EXPERIMENTAL_RouteRecordNormalized
 
-  const matcher: NEW_RouterMatcher<TMatcherRecordRaw, TMatcherRecord> =
+  const matcher: NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord> =
     {} as any
 
   describe('matcher.resolve()', () => {

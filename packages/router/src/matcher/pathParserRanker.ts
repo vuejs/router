@@ -367,3 +367,8 @@ function isLastScoreNegative(score: PathParser['score']): boolean {
   const last = score[score.length - 1]
   return score.length > 0 && last[last.length - 1] < 0
 }
+export const PATH_PARSER_OPTIONS_DEFAULTS: PathParserOptions = {
+  strict: false,
+  end: true,
+  sensitive: false,
+}

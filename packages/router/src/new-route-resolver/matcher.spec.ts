@@ -3,7 +3,7 @@ import {
   createCompiledMatcher,
   NO_MATCH_LOCATION,
   pathEncoded,
-} from './matcher'
+} from './resolver'
 import {
   MatcherPatternParams_Base,
   MatcherPatternPath,
@@ -11,7 +11,7 @@ import {
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,
 } from './matcher-pattern'
-import { NEW_MatcherRecord } from './matcher'
+import { NEW_MatcherRecord } from './resolver'
 import { miss } from './matchers/errors'
 import { EmptyParams } from './matcher-location'
 
@@ -133,25 +133,25 @@ describe('RouterMatcher', () => {
   describe('adding and removing', () => {
     it('add static path', () => {
       const matcher = createCompiledMatcher()
-      matcher.addRoute(EMPTY_PATH_ROUTE)
+      matcher.addMatcher(EMPTY_PATH_ROUTE)
     })
 
     it('adds dynamic path', () => {
       const matcher = createCompiledMatcher()
-      matcher.addRoute(USER_ID_ROUTE)
+      matcher.addMatcher(USER_ID_ROUTE)
     })
 
     it('removes static path', () => {
       const matcher = createCompiledMatcher()
-      matcher.addRoute(EMPTY_PATH_ROUTE)
-      matcher.removeRoute(EMPTY_PATH_ROUTE)
+      matcher.addMatcher(EMPTY_PATH_ROUTE)
+      matcher.removeMatcher(EMPTY_PATH_ROUTE)
       // Add assertions to verify the route was removed
     })
 
     it('removes dynamic path', () => {
       const matcher = createCompiledMatcher()
-      matcher.addRoute(USER_ID_ROUTE)
-      matcher.removeRoute(USER_ID_ROUTE)
+      matcher.addMatcher(USER_ID_ROUTE)
+      matcher.removeMatcher(USER_ID_ROUTE)
       // Add assertions to verify the route was removed
     })
   })

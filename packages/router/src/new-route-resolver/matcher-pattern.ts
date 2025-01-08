@@ -1,4 +1,4 @@
-import { decode, MatcherQueryParams } from './matcher'
+import { decode, MatcherQueryParams } from './resolver'
 import { EmptyParams, MatcherParamsFormatted } from './matcher-location'
 import { miss } from './matchers/errors'
 
