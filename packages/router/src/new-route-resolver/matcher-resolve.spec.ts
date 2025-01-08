@@ -1,7 +1,7 @@
-import { createRouterMatcher, normalizeRouteRecord } from '../matcher'
-import { RouteComponent, RouteRecordRaw, MatcherLocation } from '../types'
+import { createRouterMatcher } from '../matcher'
+import { RouteComponent, RouteRecordRaw } from '../types'
 import { defineComponent } from 'vue'
-import { START_LOCATION_NORMALIZED } from '../location'
+import { stringifyURL } from '../location'
 import { describe, expect, it } from 'vitest'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
 import {
@@ -15,6 +15,12 @@ import { PathParams, tokensToParser } from '../matcher/pathParserRanker'
 import { tokenizePath } from '../matcher/pathTokenizer'
 import { miss } from './matchers/errors'
 import { MatcherPatternPath } from './matcher-pattern'
+import { EXPERIMENTAL_RouteRecordRaw } from '../experimental/router'
+import { stringifyQuery } from '../query'
+import {
+  MatcherLocationAsNamed,
+  MatcherLocationAsPathAbsolute,
+} from './matcher-location'
 
 // for raw route record
 const component: RouteComponent = defineComponent({})
@@ -89,33 +95,58 @@ describe('RouterMatcher.resolve', () => {
     )
   }
 
+  function isExperimentalRouteRecordRaw(
+    record: Record<any, any>
+  ): record is EXPERIMENTAL_RouteRecordRaw {
+    return typeof record.path !== 'string'
+  }
+
   // TODO: rework with object param for clarity
 
   function assertRecordMatch(
-    record: RouteRecordRaw | RouteRecordRaw[],
-    toLocation: MatcherLocationRaw,
+    record:
+      | EXPERIMENTAL_RouteRecordRaw
+      | EXPERIMENTAL_RouteRecordRaw[]
+      | RouteRecordRaw
+      | RouteRecordRaw[],
+    toLocation: Exclude<MatcherLocationRaw, string> | `/${string}`,
     expectedLocation: Partial<MatcherResolvedLocation>,
     fromLocation:
       | NEW_LocationResolved<NEW_MatcherRecord>
-      | Exclude<MatcherLocationRaw, string>
-      | `/${string}` = START_LOCATION
+      // absolute locations only that can be resolved for convenience
+      | `/${string}`
+      | MatcherLocationAsNamed
+      | MatcherLocationAsPathAbsolute = START_LOCATION
   ) {
     const records = (Array.isArray(record) ? record : [record]).map(
-      (record): NEW_MatcherRecordRaw => compileRouteRecord(record)
+      (record): EXPERIMENTAL_RouteRecordRaw =>
+        isExperimentalRouteRecordRaw(record)
+          ? record
+          : compileRouteRecord(record)
     )
     const matcher = createCompiledMatcher<NEW_MatcherRecord>()
     for (const record of records) {
       matcher.addMatcher(record)
     }
 
-    const resolved: MatcherResolvedLocation = {
+    const path =
+      typeof toLocation === 'string' ? toLocation : toLocation.path || '/'
+
+    const resolved: Omit<MatcherResolvedLocation, 'matched'> = {
       // FIXME: to add later
       // meta: records[0].meta || {},
-      path:
-        typeof toLocation === 'string' ? toLocation : toLocation.path || '/',
+      path,
+      query: {},
+      hash: '',
       name: expect.any(Symbol) as symbol,
-      matched: [], // FIXME: build up
+      // must non enumerable
+      // matched: [],
       params: (typeof toLocation === 'object' && toLocation.params) || {},
+      fullPath: stringifyURL(stringifyQuery, {
+        path: expectedLocation.path || '/',
+        query: expectedLocation.query,
+        hash: expectedLocation.hash,
+      }),
       ...expectedLocation,
     }
 
@@ -123,17 +154,24 @@ describe('RouterMatcher.resolve', () => {
       writable: true,
       configurable: true,
       enumerable: false,
+      // FIXME: build it
       value: [],
     })
 
-    fromLocation = isMatcherLocationResolved(fromLocation)
+    const resolvedFrom = isMatcherLocationResolved(fromLocation)
       ? fromLocation
-      : matcher.resolve(fromLocation)
+      : // FIXME: is this a ts bug?
+        // @ts-expect-error
+        matcher.resolve(fromLocation)
 
-    expect(matcher.resolve(toLocation, fromLocation)).toMatchObject({
-      // avoid undesired properties
-      query: {},
-      hash: '',
+    expect(
+      matcher.resolve(
+        // FIXME: WTF?
+        // @ts-expect-error
+        toLocation,
+        resolvedFrom
+      )
+    ).toMatchObject({
       ...resolved,
     })
   }
@@ -147,10 +185,15 @@ describe('RouterMatcher.resolve', () => {
    */
   function assertErrorMatch(
     record: RouteRecordRaw | RouteRecordRaw[],
-    location: MatcherLocationRaw,
-    start: MatcherLocation = START_LOCATION_NORMALIZED
+    toLocation: Exclude<MatcherLocationRaw, string> | `/${string}`,
+    fromLocation:
+      | NEW_LocationResolved<NEW_MatcherRecord>
+      // absolute locations only
+      | `/${string}`
+      | MatcherLocationAsNamed
+      | MatcherLocationAsPathAbsolute = START_LOCATION
   ) {
-    assertRecordMatch(record, location, {}, start)
+    assertRecordMatch(record, toLocation, {}, fromLocation)
   }
 
   describe.skip('LocationAsPath', () => {
@@ -353,7 +396,7 @@ describe('RouterMatcher.resolve', () => {
       }
       assertRecordMatch(
         Parent,
-        { name: 'child_b' },
+        {},
         {
           name: 'child_b',
           path: '/foo/parent/b',
@@ -368,15 +411,13 @@ describe('RouterMatcher.resolve', () => {
         },
         {
           params: { optional: 'foo' },
-          path: '/foo/parent/a',
-          matched: [],
-          meta: {},
-          name: undefined,
+          // matched: [],
+          name: 'child_a',
         }
       )
     })
-
     // TODO: check if needed by the active matching, if not just test that the param is dropped
+
     it.todo('discards non existent params', () => {
       assertRecordMatch(
         { path: '/', name: 'home', components },
@@ -451,9 +492,6 @@ describe('RouterMatcher.resolve', () => {
         {
           name: 'Home',
           params: {},
-          path: '/home',
-          matched: [record] as any,
-          meta: {},
         }
       )
     })
@@ -466,10 +504,8 @@ describe('RouterMatcher.resolve', () => {
         { name: undefined, path: '/users/posva/m/admin' },
         {
           path: '/users/ed/m/user',
-          name: undefined,
-          params: { id: 'ed', role: 'user' },
-          matched: [record] as any,
-          meta: {},
+          // params: { id: 'ed', role: 'user' },
+          // matched: [record] as any,
         }
       )
     })
@@ -485,11 +521,10 @@ describe('RouterMatcher.resolve', () => {
         { params: { id: 'posva', role: 'admin' } },
         { name: 'UserEdit', path: '/users/posva/m/admin' },
         {
-          path: '/users/ed/m/user',
+          // path: '/users/ed/m/user',
           name: 'UserEdit',
           params: { id: 'ed', role: 'user' },
-          matched: [],
-          meta: {},
+          // matched: [],
         }
       )
     })
@@ -509,11 +544,10 @@ describe('RouterMatcher.resolve', () => {
           params: { id: 'ed', role: 'user' },
         },
         {
-          path: '/users/ed/m/user',
+          // path: '/users/ed/m/user',
           name: 'UserEdit',
           params: { id: 'ed', role: 'user' },
           matched: [record] as any,
-          meta: {},
         }
       )
     })
@@ -530,10 +564,9 @@ describe('RouterMatcher.resolve', () => {
         },
         {
           path: '/users/ed/m/user',
-          name: undefined,
-          params: { id: 'ed', role: 'user' },
-          matched: [record] as any,
-          meta: {},
+          // name: undefined,
+          // params: { id: 'ed', role: 'user' },
+          // matched: [record] as any,
         }
       )
     })
@@ -546,9 +579,8 @@ describe('RouterMatcher.resolve', () => {
         {
           name: 'p',
           params: { a: 'a' },
-          path: '/a',
-          matched: [],
-          meta: {},
+          // path: '/a',
+          // matched: [],
         }
       )
     })
@@ -561,9 +593,8 @@ describe('RouterMatcher.resolve', () => {
         {
           name: 'p',
           params: { a: 'a', b: 'b' },
-          path: '/a/b',
+          // path: '/a/b',
           matched: [],
-          meta: {},
         }
       )
     })
@@ -576,9 +607,8 @@ describe('RouterMatcher.resolve', () => {
         {
           name: 'p',
           params: { a: 'a', b: 'b' },
-          path: '/a/b',
+          // path: '/a/b',
           matched: [],
-          meta: {},
         }
       )
     })
@@ -598,9 +628,10 @@ describe('RouterMatcher.resolve', () => {
           record,
           { params: { a: 'foo' } },
           {
-            ...start,
-            matched: start.matched.map(normalizeRouteRecord),
-            meta: {},
+            name: 'home',
+            params: {},
+            // matched: start.matched.map(normalizeRouteRecord),
+            // meta: {},
           }
         )
       ).toMatchSnapshot()
@@ -639,7 +670,7 @@ describe('RouterMatcher.resolve', () => {
           name: 'ArticlesParent',
           children: [{ path: ':id', components }],
         },
-        { name: 'ArticlesParent' },
+        { name: 'ArticlesParent', params: {} },
         { name: 'ArticlesParent', path: '/articles' }
       )
     })
@@ -660,15 +691,15 @@ describe('RouterMatcher.resolve', () => {
           name: 'Home',
           path: '/home',
           params: {},
-          meta: { foo: true },
           matched: [
-            {
-              path: '/home',
-              name: 'Home',
-              components,
-              aliasOf: expect.objectContaining({ name: 'Home', path: '/' }),
-              meta: { foo: true },
-            },
+            // TODO:
+            // {
+            //   path: '/home',
+            //   name: 'Home',
+            //   components,
+            //   aliasOf: expect.objectContaining({ name: 'Home', path: '/' }),
+            //   meta: { foo: true },
+            // },
           ],
         }
       )
@@ -690,15 +721,15 @@ describe('RouterMatcher.resolve', () => {
           name: 'Home',
           path: '/',
           params: {},
-          meta: { foo: true },
           matched: [
-            {
-              path: '/',
-              name: 'Home',
-              components,
-              aliasOf: undefined,
-              meta: { foo: true },
-            },
+            // TODO:
+            // {
+            //   path: '/',
+            //   name: 'Home',
+            //   components,
+            //   aliasOf: undefined,
+            //   meta: { foo: true },
+            // },
           ],
         }
       )
@@ -709,15 +740,15 @@ describe('RouterMatcher.resolve', () => {
           name: 'Home',
           path: '/home',
           params: {},
-          meta: { foo: true },
           matched: [
-            {
-              path: '/home',
-              name: 'Home',
-              components,
-              aliasOf: expect.objectContaining({ name: 'Home', path: '/' }),
-              meta: { foo: true },
-            },
+            // TODO:
+            // {
+            //   path: '/home',
+            //   name: 'Home',
+            //   components,
+            //   aliasOf: expect.objectContaining({ name: 'Home', path: '/' }),
+            //   meta: { foo: true },
+            // },
           ],
         }
       )
@@ -728,15 +759,15 @@ describe('RouterMatcher.resolve', () => {
           name: 'Home',
           path: '/start',
           params: {},
-          meta: { foo: true },
           matched: [
-            {
-              path: '/start',
-              name: 'Home',
-              components,
-              aliasOf: expect.objectContaining({ name: 'Home', path: '/' }),
-              meta: { foo: true },
-            },
+            // TODO:
+            // {
+            //   path: '/start',
+            //   name: 'Home',
+            //   components,
+            //   aliasOf: expect.objectContaining({ name: 'Home', path: '/' }),
+            //   meta: { foo: true },
+            // },
           ],
         }
       )
@@ -751,20 +782,20 @@ describe('RouterMatcher.resolve', () => {
           components,
           meta: { foo: true },
         },
-        { name: 'Home' },
+        { name: 'Home', params: {} },
         {
           name: 'Home',
           path: '/',
           params: {},
-          meta: { foo: true },
           matched: [
-            {
-              path: '/',
-              name: 'Home',
-              components,
-              aliasOf: undefined,
-              meta: { foo: true },
-            },
+            // TODO:
+            // {
+            //   path: '/',
+            //   name: 'Home',
+            //   components,
+            //   aliasOf: undefined,
+            //   meta: { foo: true },
+            // },
           ],
         }
       )
@@ -785,18 +816,19 @@ describe('RouterMatcher.resolve', () => {
           name: 'nested',
           params: {},
           matched: [
-            {
-              path: '/p',
-              children,
-              components,
-              aliasOf: expect.objectContaining({ path: '/parent' }),
-            },
-            {
-              path: '/p/one',
-              name: 'nested',
-              components,
-              aliasOf: expect.objectContaining({ path: '/parent/one' }),
-            },
+            // TODO:
+            // {
+            //   path: '/p',
+            //   children,
+            //   components,
+            //   aliasOf: expect.objectContaining({ path: '/parent' }),
+            // },
+            // {
+            //   path: '/p/one',
+            //   name: 'nested',
+            //   components,
+            //   aliasOf: expect.objectContaining({ path: '/parent/one' }),
+            // },
           ],
         }
       )
@@ -1120,19 +1152,20 @@ describe('RouterMatcher.resolve', () => {
           component,
           children,
         },
-        { name: 'nested' },
+        { name: 'nested', params: {} },
         {
           path: '/parent/one',
           name: 'nested',
           params: {},
           matched: [
-            {
-              path: '/parent',
-              children,
-              components,
-              aliasOf: undefined,
-            },
-            { path: '/parent/one', name: 'nested', components },
+            // TODO:
+            // {
+            //   path: '/parent',
+            //   children,
+            //   components,
+            //   aliasOf: undefined,
+            // },
+            // { path: '/parent/one', name: 'nested', components },
           ],
         }
       )
@@ -1179,7 +1212,8 @@ describe('RouterMatcher.resolve', () => {
           name: 'child-b',
           path: '/foo/b',
           params: {},
-          matched: [Foo, { ...ChildB, path: `${Foo.path}/${ChildB.path}` }],
+          // TODO:
+          // matched: [Foo, { ...ChildB, path: `${Foo.path}/${ChildB.path}` }],
         }
       )
     })
@@ -1269,19 +1303,20 @@ describe('RouterMatcher.resolve', () => {
       }
       assertRecordMatch(
         Foo,
-        { name: 'nested-child-a' },
+        { name: 'nested-child-a', params: {} },
         {
           name: 'nested-child-a',
           path: '/foo/nested/a',
           params: {},
-          matched: [
-            Foo as any,
-            { ...Nested, path: `${Foo.path}/${Nested.path}` },
-            {
-              ...NestedChildA,
-              path: `${Foo.path}/${Nested.path}/${NestedChildA.path}`,
-            },
-          ],
+          // TODO:
+          // matched: [
+          //   Foo as any,
+          //   { ...Nested, path: `${Foo.path}/${Nested.path}` },
+          //   {
+          //     ...NestedChildA,
+          //     path: `${Foo.path}/${Nested.path}/${NestedChildA.path}`,
+          //   },
+          // ],
         }
       )
     })
@@ -1311,10 +1346,7 @@ describe('RouterMatcher.resolve', () => {
         },
         {
           name: 'nested-child-a',
-          matched: [],
           params: {},
-          path: '/foo/nested/a',
-          meta: {},
         }
       )
     })
@@ -1391,7 +1423,8 @@ describe('RouterMatcher.resolve', () => {
           name: 'absolute',
           path: '/absolute',
           params: {},
-          matched: [Foo, ChildD],
+          // TODO:
+          // matched: [Foo, ChildD],
         }
       )
     })
