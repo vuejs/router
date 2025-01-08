@@ -56,7 +56,6 @@ import type {
   RouteLocationRaw,
   RouteLocationResolved,
   RouteMap,
-  RouteParams,
   RouteRecordNameGeneric,
 } from '../typed-routes'
 import {
@@ -72,8 +71,7 @@ import {
   parseURL,
   START_LOCATION_NORMALIZED,
 } from '../location'
-import { applyToParams, assign, isArray, isBrowser, noop } from '../utils'
-import { decode, encodeParam } from '../encoding'
+import { assign, isArray, isBrowser, noop } from '../utils'
 import {
   extractChangingRecords,
   extractComponentsGuards,
@@ -454,15 +452,6 @@ export function experimental_createRouter(
   if (isBrowser && options.scrollBehavior && 'scrollRestoration' in history) {
     history.scrollRestoration = 'manual'
   }
-
-  const normalizeParams = applyToParams.bind(
-    null,
-    paramValue => '' + paramValue
-  )
-  const encodeParams = applyToParams.bind(null, encodeParam)
-  const decodeParams: (params: RouteParams | undefined) => RouteParams =
-    // @ts-expect-error: intentionally avoid the type check
-    applyToParams.bind(null, decode)
 
   function addRoute(
     parentOrRoute:
