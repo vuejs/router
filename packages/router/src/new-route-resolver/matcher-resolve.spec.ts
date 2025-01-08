@@ -1,26 +1,27 @@
-import { createRouterMatcher } from '../matcher'
-import { RouteComponent, RouteRecordRaw } from '../types'
-import { defineComponent } from 'vue'
-import { stringifyURL } from '../location'
 import { describe, expect, it } from 'vitest'
+import { defineComponent } from 'vue'
+import { RouteComponent, RouteRecordRaw } from '../types'
+import { stringifyURL } from '../location'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
 import {
   createCompiledMatcher,
-  MatcherLocationRaw,
-  NEW_MatcherRecordRaw,
-  NEW_LocationResolved,
-  NEW_MatcherRecord,
+  type MatcherLocationRaw,
+  type NEW_MatcherRecordRaw,
+  type NEW_LocationResolved,
+  type NEW_MatcherRecord,
 } from './resolver'
-import { PathParams, tokensToParser } from '../matcher/pathParserRanker'
-import { tokenizePath } from '../matcher/pathTokenizer'
 import { miss } from './matchers/errors'
-import { MatcherPatternPath } from './matcher-pattern'
-import { EXPERIMENTAL_RouteRecordRaw } from '../experimental/router'
+import { MatcherPatternPath, MatcherPatternPathStatic } from './matcher-pattern'
+import { type EXPERIMENTAL_RouteRecordRaw } from '../experimental/router'
 import { stringifyQuery } from '../query'
-import {
+import type {
   MatcherLocationAsNamed,
   MatcherLocationAsPathAbsolute,
 } from './matcher-location'
+// TODO: should be moved to a different test file
+// used to check backward compatible paths
+import { PathParams, tokensToParser } from '../matcher/pathParserRanker'
+import { tokenizePath } from '../matcher/pathTokenizer'
 
 // for raw route record
 const component: RouteComponent = defineComponent({})
@@ -464,22 +465,12 @@ describe('RouterMatcher.resolve', () => {
   })
 
   describe.skip('LocationAsRelative', () => {
-    it('warns if a path isn not absolute', () => {
-      const record = {
-        path: '/parent',
-        components,
-      }
-      const matcher = createRouterMatcher([record], {})
-      matcher.resolve(
-        { path: 'two' },
-        {
-          path: '/parent/one',
-          name: undefined,
-          params: {},
-          matched: [] as any,
-          meta: {},
-        }
-      )
+    // TODO: not sure where this warning should appear now
+    it.todo('warns if a path isn not absolute', () => {
+      const matcher = createCompiledMatcher([
+        { path: new MatcherPatternPathStatic('/') },
+      ])
+      matcher.resolve('two', matcher.resolve('/'))
       expect('received "two"').toHaveBeenWarned()
     })
 
