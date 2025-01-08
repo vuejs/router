@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from 'vue'
 import { RouteComponent, RouteRecordRaw } from '../types'
-import { stringifyURL } from '../location'
+import { NEW_stringifyURL } from '../location'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
 import {
   createCompiledMatcher,
@@ -9,6 +9,7 @@ import {
   type NEW_MatcherRecordRaw,
   type NEW_LocationResolved,
   type NEW_MatcherRecord,
+  NO_MATCH_LOCATION,
 } from './resolver'
 import { miss } from './matchers/errors'
 import { MatcherPatternPath, MatcherPatternPathStatic } from './matcher-pattern'
@@ -20,13 +21,26 @@ import type {
 } from './matcher-location'
 // TODO: should be moved to a different test file
 // used to check backward compatible paths
-import { PathParams, tokensToParser } from '../matcher/pathParserRanker'
+import {
+  PATH_PARSER_OPTIONS_DEFAULTS,
+  PathParams,
+  tokensToParser,
+} from '../matcher/pathParserRanker'
 import { tokenizePath } from '../matcher/pathTokenizer'
+import { mergeOptions } from '../utils'
 
 // for raw route record
 const component: RouteComponent = defineComponent({})
 // for normalized route records
 const components = { default: component }
+
+function isMatchable(record: RouteRecordRaw): boolean {
+  return !!(
+    record.name ||
+    (record.components && Object.keys(record.components).length) ||
+    record.redirect
+  )
+}
 
 function compileRouteRecord(
   record: RouteRecordRaw,
@@ -38,14 +52,15 @@ function compileRouteRecord(
     ? record.path
     : (parentRecord?.path || '') + record.path
   record.path = path
-  const parser = tokensToParser(tokenizePath(record.path), {
-    // start: true,
-    end: record.end,
-    sensitive: record.sensitive,
-    strict: record.strict,
-  })
+  const parser = tokensToParser(
+    tokenizePath(record.path),
+    mergeOptions(PATH_PARSER_OPTIONS_DEFAULTS, record)
+  )
+
+  // console.log({ record, parser })
 
   return {
+    group: !isMatchable(record),
     name: record.name,
 
     path: {
@@ -122,7 +137,7 @@ describe('RouterMatcher.resolve', () => {
     const records = (Array.isArray(record) ? record : [record]).map(
       (record): EXPERIMENTAL_RouteRecordRaw =>
         isExperimentalRouteRecordRaw(record)
-          ? record
+          ? { components, ...record }
           : compileRouteRecord(record)
     )
     const matcher = createCompiledMatcher<NEW_MatcherRecord>()
@@ -139,15 +154,17 @@ describe('RouterMatcher.resolve', () => {
       path,
       query: {},
       hash: '',
+      // by default we have a symbol on every route
       name: expect.any(Symbol) as symbol,
       // must non enumerable
       // matched: [],
       params: (typeof toLocation === 'object' && toLocation.params) || {},
-      fullPath: stringifyURL(stringifyQuery, {
-        path: expectedLocation.path || '/',
-        query: expectedLocation.query,
-        hash: expectedLocation.hash,
-      }),
+      fullPath: NEW_stringifyURL(
+        stringifyQuery,
+        expectedLocation.path || path || '/',
+        expectedLocation.query,
+        expectedLocation.hash
+      ),
       ...expectedLocation,
     }
 
@@ -161,43 +178,29 @@ describe('RouterMatcher.resolve', () => {
 
     const resolvedFrom = isMatcherLocationResolved(fromLocation)
       ? fromLocation
-      : // FIXME: is this a ts bug?
-        // @ts-expect-error
-        matcher.resolve(fromLocation)
+      : matcher.resolve(
+          // FIXME: is this a ts bug?
+          // @ts-expect-error
+          typeof fromLocation === 'string'
+            ? { path: fromLocation }
+            : fromLocation
+        )
+
+    // console.log({ toLocation, resolved, expectedLocation, resolvedFrom })
 
     expect(
       matcher.resolve(
-        // FIXME: WTF?
+        // FIXME: should work now
         // @ts-expect-error
-        toLocation,
-        resolvedFrom
+        typeof toLocation === 'string' ? { path: toLocation } : toLocation,
+        resolvedFrom === START_LOCATION ? undefined : resolvedFrom
       )
     ).toMatchObject({
       ...resolved,
     })
   }
 
-  /**
-   *
-   * @param record - Record or records we are testing the matcher against
-   * @param location - location we want to resolve against
-   * @param [start] Optional currentLocation used when resolving
-   * @returns error
-   */
-  function assertErrorMatch(
-    record: RouteRecordRaw | RouteRecordRaw[],
-    toLocation: Exclude<MatcherLocationRaw, string> | `/${string}`,
-    fromLocation:
-      | NEW_LocationResolved<NEW_MatcherRecord>
-      // absolute locations only
-      | `/${string}`
-      | MatcherLocationAsNamed
-      | MatcherLocationAsPathAbsolute = START_LOCATION
-  ) {
-    assertRecordMatch(record, toLocation, {}, fromLocation)
-  }
-
-  describe.skip('LocationAsPath', () => {
+  describe('LocationAsPath', () => {
     it('resolves a normal path', () => {
       assertRecordMatch({ path: '/', name: 'Home', components }, '/', {
         name: 'Home',
@@ -207,10 +210,14 @@ describe('RouterMatcher.resolve', () => {
     })
 
     it('resolves a normal path without name', () => {
+      assertRecordMatch({ path: '/', components }, '/', {
+        path: '/',
+        params: {},
+      })
       assertRecordMatch(
         { path: '/', components },
         { path: '/' },
-        { name: undefined, path: '/', params: {} }
+        { path: '/', params: {} }
       )
     })
 
@@ -258,7 +265,7 @@ describe('RouterMatcher.resolve', () => {
       assertRecordMatch(
         { path: '/users/:id/:other', components },
         { path: '/users/posva/hey' },
-        { name: undefined, params: { id: 'posva', other: 'hey' } }
+        { name: expect.any(Symbol), params: { id: 'posva', other: 'hey' } }
       )
     })
 
@@ -266,7 +273,7 @@ describe('RouterMatcher.resolve', () => {
       assertRecordMatch(
         { path: '/', components },
         { path: '/foo' },
-        { name: undefined, params: {}, path: '/foo', matched: [] }
+        { params: {}, path: '/foo', matched: [] }
       )
     })
 
@@ -274,7 +281,7 @@ describe('RouterMatcher.resolve', () => {
       assertRecordMatch(
         { path: '/home/', name: 'Home', components },
         { path: '/home/' },
-        { name: 'Home', path: '/home/', matched: expect.any(Array) }
+        { name: 'Home', path: '/home/' }
       )
     })
 
@@ -309,13 +316,13 @@ describe('RouterMatcher.resolve', () => {
         path: '/home/',
         name: 'Home',
         components,
-        options: { strict: true },
+        strict: true,
       }
-      assertErrorMatch(record, { path: '/home' })
+      assertRecordMatch(record, { path: '/home' }, NO_MATCH_LOCATION)
       assertRecordMatch(
         record,
         { path: '/home/' },
-        { name: 'Home', path: '/home/', matched: expect.any(Array) }
+        { name: 'Home', path: '/home/' }
       )
     })
 
@@ -324,14 +331,14 @@ describe('RouterMatcher.resolve', () => {
         path: '/home',
         name: 'Home',
         components,
-        options: { strict: true },
+        strict: true,
       }
       assertRecordMatch(
         record,
         { path: '/home' },
-        { name: 'Home', path: '/home', matched: expect.any(Array) }
+        { name: 'Home', path: '/home' }
       )
-      assertErrorMatch(record, { path: '/home/' })
+      assertRecordMatch(record, { path: '/home/' }, NO_MATCH_LOCATION)
     })
   })
 
@@ -358,12 +365,10 @@ describe('RouterMatcher.resolve', () => {
     })
 
     it('throws if the named route does not exists', () => {
-      expect(() =>
-        assertErrorMatch(
-          { path: '/', components },
-          { name: 'Home', params: {} }
-        )
-      ).toThrowError('Matcher "Home" not found')
+      const matcher = createCompiledMatcher([])
+      expect(() => matcher.resolve({ name: 'Home', params: {} })).toThrowError(
+        'Matcher "Home" not found'
+      )
     })
 
     it('merges params', () => {
@@ -375,8 +380,9 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
-    // TODO: new matcher no longer allows implicit param merging
-    it.todo('only keep existing params', () => {
+    // TODO: this test doesn't seem useful, it's the same as the test above
+    // maybe remove it?
+    it('only keep existing params', () => {
       assertRecordMatch(
         { path: '/:a/:b', name: 'p', components },
         { name: 'p', params: { b: 'b' } },
@@ -464,13 +470,13 @@ describe('RouterMatcher.resolve', () => {
     })
   })
 
-  describe.skip('LocationAsRelative', () => {
+  describe('LocationAsRelative', () => {
     // TODO: not sure where this warning should appear now
     it.todo('warns if a path isn not absolute', () => {
       const matcher = createCompiledMatcher([
         { path: new MatcherPatternPathStatic('/') },
       ])
-      matcher.resolve('two', matcher.resolve('/'))
+      matcher.resolve({ path: 'two' }, matcher.resolve({ path: '/' }))
       expect('received "two"').toHaveBeenWarned()
     })
 
@@ -492,7 +498,7 @@ describe('RouterMatcher.resolve', () => {
       assertRecordMatch(
         record,
         { params: { id: 'posva', role: 'admin' } },
-        { name: undefined, path: '/users/posva/m/admin' },
+        { path: '/users/posva/m/admin' },
         {
           path: '/users/ed/m/user',
           // params: { id: 'ed', role: 'user' },
@@ -549,7 +555,6 @@ describe('RouterMatcher.resolve', () => {
         record,
         {},
         {
-          name: undefined,
           path: '/users/ed/m/user',
           params: { id: 'ed', role: 'user' },
         },
@@ -605,41 +610,36 @@ describe('RouterMatcher.resolve', () => {
     })
 
     it('throws if the current named route does not exists', () => {
-      const record = { path: '/', components }
-      const start = {
-        name: 'home',
-        params: {},
-        path: '/',
-        matched: [record],
-      }
-      // the property should be non enumerable
-      Object.defineProperty(start, 'matched', { enumerable: false })
-      expect(
-        assertErrorMatch(
-          record,
-          { params: { a: 'foo' } },
+      const matcher = createCompiledMatcher([])
+      expect(() =>
+        matcher.resolve(
+          {},
           {
-            name: 'home',
+            name: 'ko',
             params: {},
-            // matched: start.matched.map(normalizeRouteRecord),
-            // meta: {},
+            fullPath: '/',
+            hash: '',
+            matched: [],
+            path: '/',
+            query: {},
           }
         )
-      ).toMatchSnapshot()
+      ).toThrowError('Matcher "ko" not found')
     })
 
     it('avoids records with children without a component nor name', () => {
-      assertErrorMatch(
+      assertRecordMatch(
         {
           path: '/articles',
           children: [{ path: ':id', components }],
         },
-        { path: '/articles' }
+        { path: '/articles' },
+        NO_MATCH_LOCATION
       )
     })
 
-    it('avoid deeply nested records with children without a component nor name', () => {
-      assertErrorMatch(
+    it('avoids deeply nested records with children without a component nor name', () => {
+      assertRecordMatch(
         {
           path: '/app',
           components,
@@ -650,7 +650,8 @@ describe('RouterMatcher.resolve', () => {
             },
           ],
         },
-        { path: '/articles' }
+        { path: '/articles' },
+        NO_MATCH_LOCATION
       )
     })
 

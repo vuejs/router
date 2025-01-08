@@ -16,7 +16,7 @@ import { isArray } from './utils'
  */
 export type LocationQueryValue = string | null
 /**
- * Possible values when defining a query.
+ * Possible values when defining a query. `undefined` allows to remove a value.
  *
  * @internal
  */

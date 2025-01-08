@@ -15,7 +15,7 @@ describe('Matcher', () => {
 
   describe('matcher.resolve()', () => {
     it('resolves absolute string locations', () => {
-      expectTypeOf(matcher.resolve('/foo')).toEqualTypeOf<
+      expectTypeOf(matcher.resolve({ path: '/foo' })).toEqualTypeOf<
         NEW_LocationResolved<TMatcherRecord>
       >()
     })
@@ -27,7 +27,10 @@ describe('Matcher', () => {
 
     it('resolves relative locations', () => {
       expectTypeOf(
-        matcher.resolve('foo', {} as NEW_LocationResolved<TMatcherRecord>)
+        matcher.resolve(
+          { path: 'foo' },
+          {} as NEW_LocationResolved<TMatcherRecord>
+        )
       ).toEqualTypeOf<NEW_LocationResolved<TMatcherRecord>>()
     })
 

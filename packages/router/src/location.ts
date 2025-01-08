@@ -77,8 +77,8 @@ export function parseURL(
     hash = location.slice(hashPos, location.length)
   }
 
-  // TODO(major): path ?? location
   path = resolveRelativePath(
+    // TODO(major): path ?? location
     path != null
       ? path
       : // empty path means a relative query or hash `?foo=f`, `#thing`

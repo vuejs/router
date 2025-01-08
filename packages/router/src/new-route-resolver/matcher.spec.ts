@@ -92,7 +92,7 @@ describe('RouterMatcher', () => {
         { path: new MatcherPatternPathStatic('/users') },
       ])
 
-      expect(matcher.resolve('/')).toMatchObject({
+      expect(matcher.resolve({ path: '/' })).toMatchObject({
         fullPath: '/',
         path: '/',
         params: {},
@@ -100,7 +100,7 @@ describe('RouterMatcher', () => {
         hash: '',
       })
 
-      expect(matcher.resolve('/users')).toMatchObject({
+      expect(matcher.resolve({ path: '/users' })).toMatchObject({
         fullPath: '/users',
         path: '/users',
         params: {},
@@ -122,7 +122,7 @@ describe('RouterMatcher', () => {
         },
       ])
 
-      expect(matcher.resolve('/users/1')).toMatchObject({
+      expect(matcher.resolve({ path: '/users/1' })).toMatchObject({
         fullPath: '/users/1',
         path: '/users/1',
         params: { id: '1' },
@@ -157,11 +157,11 @@ describe('RouterMatcher', () => {
   })
 
   describe('resolve()', () => {
-    describe('absolute locations as strings', () => {
+    describe.todo('absolute locations as strings', () => {
       it('resolves string locations with no params', () => {
         const matcher = createCompiledMatcher([EMPTY_PATH_ROUTE])
 
-        expect(matcher.resolve('/?a=a&b=b#h')).toMatchObject({
+        expect(matcher.resolve({ path: '/?a=a&b=b#h' })).toMatchObject({
           path: '/',
           params: {},
           query: { a: 'a', b: 'b' },
@@ -171,7 +171,7 @@ describe('RouterMatcher', () => {
 
       it('resolves a not found string', () => {
         const matcher = createCompiledMatcher()
-        expect(matcher.resolve('/bar?q=1#hash')).toEqual({
+        expect(matcher.resolve({ path: '/bar?q=1#hash' })).toEqual({
           ...NO_MATCH_LOCATION,
           fullPath: '/bar?q=1#hash',
           path: '/bar',
@@ -184,13 +184,13 @@ describe('RouterMatcher', () => {
       it('resolves string locations with params', () => {
         const matcher = createCompiledMatcher([USER_ID_ROUTE])
 
-        expect(matcher.resolve('/users/1?a=a&b=b#h')).toMatchObject({
+        expect(matcher.resolve({ path: '/users/1?a=a&b=b#h' })).toMatchObject({
           path: '/users/1',
           params: { id: 1 },
           query: { a: 'a', b: 'b' },
           hash: '#h',
         })
-        expect(matcher.resolve('/users/54?a=a&b=b#h')).toMatchObject({
+        expect(matcher.resolve({ path: '/users/54?a=a&b=b#h' })).toMatchObject({
           path: '/users/54',
           params: { id: 54 },
           query: { a: 'a', b: 'b' },
@@ -206,7 +206,7 @@ describe('RouterMatcher', () => {
           },
         ])
 
-        expect(matcher.resolve('/foo?page=100&b=b#h')).toMatchObject({
+        expect(matcher.resolve({ path: '/foo?page=100&b=b#h' })).toMatchObject({
           params: { page: 100 },
           path: '/foo',
           query: {
@@ -225,7 +225,7 @@ describe('RouterMatcher', () => {
           },
         ])
 
-        expect(matcher.resolve('/foo?a=a&b=b#bar')).toMatchObject({
+        expect(matcher.resolve({ path: '/foo?a=a&b=b#bar' })).toMatchObject({
           hash: '#bar',
           params: { hash: 'bar' },
           path: '/foo',
@@ -242,7 +242,9 @@ describe('RouterMatcher', () => {
           },
         ])
 
-        expect(matcher.resolve('/users/24?page=100#bar')).toMatchObject({
+        expect(
+          matcher.resolve({ path: '/users/24?page=100#bar' })
+        ).toMatchObject({
           params: { id: 24, page: 100, hash: 'bar' },
         })
       })
@@ -255,7 +257,10 @@ describe('RouterMatcher', () => {
         ])
 
         expect(
-          matcher.resolve('foo', matcher.resolve('/nested/'))
+          matcher.resolve(
+            { path: 'foo' },
+            matcher.resolve({ path: '/nested/' })
+          )
         ).toMatchObject({
           params: {},
           path: '/nested/foo',
@@ -263,7 +268,10 @@ describe('RouterMatcher', () => {
           hash: '',
         })
         expect(
-          matcher.resolve('../foo', matcher.resolve('/nested/'))
+          matcher.resolve(
+            { path: '../foo' },
+            matcher.resolve({ path: '/nested/' })
+          )
         ).toMatchObject({
           params: {},
           path: '/foo',
@@ -271,7 +279,10 @@ describe('RouterMatcher', () => {
           hash: '',
         })
         expect(
-          matcher.resolve('./foo', matcher.resolve('/nested/'))
+          matcher.resolve(
+            { path: './foo' },
+            matcher.resolve({ path: '/nested/' })
+          )
         ).toMatchObject({
           params: {},
           path: '/nested/foo',
@@ -317,7 +328,7 @@ describe('RouterMatcher', () => {
       const matcher = createCompiledMatcher([ANY_PATH_ROUTE])
       describe('decodes', () => {
         it('handles encoded string path', () => {
-          expect(matcher.resolve('/%23%2F%3F')).toMatchObject({
+          expect(matcher.resolve({ path: '/%23%2F%3F' })).toMatchObject({
             fullPath: '/%23%2F%3F',
             path: '/%23%2F%3F',
             query: {},
@@ -326,7 +337,9 @@ describe('RouterMatcher', () => {
           })
         })
 
-        it('decodes query from a string', () => {
+        // TODO: move to the router as the matcher dosen't handle a plain string
+        it.todo('decodes query from a string', () => {
+          // @ts-expect-error: does not suppor fullPath
           expect(matcher.resolve('/foo?foo=%23%2F%3F')).toMatchObject({
             path: '/foo',
             fullPath: '/foo?foo=%23%2F%3F',
@@ -334,7 +347,8 @@ describe('RouterMatcher', () => {
           })
         })
 
-        it('decodes hash from a string', () => {
+        it.todo('decodes hash from a string', () => {
+          // @ts-expect-error: does not suppor fullPath
           expect(matcher.resolve('/foo#%22')).toMatchObject({
             path: '/foo',
             fullPath: '/foo#%22',

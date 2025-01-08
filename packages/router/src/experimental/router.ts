@@ -83,6 +83,7 @@ import {
   routerKey,
   routerViewLocationKey,
 } from '../injectionSymbols'
+import { MatcherLocationAsPathAbsolute } from '../new-route-resolver/matcher-location'
 
 /**
  * resolve, reject arguments of Promise constructor
@@ -406,6 +407,11 @@ export interface EXPERIMENTAL_RouteRecordRaw extends NEW_MatcherRecordRaw {
    * Arbitrary data attached to the record.
    */
   meta?: RouteMeta
+
+  components?: Record<string, unknown>
+  component?: unknown
+
+  redirect?: unknown
 }
 
 // TODO: is it worth to have 2 types for the undefined values?
@@ -510,6 +516,15 @@ export function experimental_createRouter(
     return !!matcher.getMatcher(name)
   }
 
+  function locationAsObject(
+    to: RouteLocationRaw | RouteLocationNormalized,
+    currentLocation: string = currentRoute.value.path
+  ): Exclude<RouteLocationRaw, string> | RouteLocationNormalized {
+    return typeof to === 'string'
+      ? parseURL(parseQuery, to, currentLocation)
+      : to
+  }
+
   function resolve(
     rawLocation: RouteLocationRaw,
     currentLocation?: RouteLocationNormalizedLoaded
@@ -522,6 +537,11 @@ export function experimental_createRouter(
       currentLocation && assign({}, currentLocation || currentRoute.value)
     // currentLocation = assign({}, currentLocation || currentRoute.value)
 
+    const locationObject = locationAsObject(
+      rawLocation,
+      currentRoute.value.path
+    )
+
     if (__DEV__) {
       if (!isRouteLocation(rawLocation)) {
         warn(
@@ -531,12 +551,9 @@ export function experimental_createRouter(
         return resolve({})
       }
 
-      if (
-        typeof rawLocation === 'object' &&
-        !rawLocation.hash?.startsWith('#')
-      ) {
+      if (!locationObject.hash?.startsWith('#')) {
         warn(
-          `A \`hash\` should always start with the character "#". Replace "${rawLocation.hash}" with "#${rawLocation.hash}".`
+          `A \`hash\` should always start with the character "#". Replace "${locationObject.hash}" with "#${locationObject.hash}".`
         )
       }
     }
@@ -555,16 +572,20 @@ export function experimental_createRouter(
 
     const matchedRoute = matcher.resolve(
       // FIXME: should be ok
-      // @ts-expect-error: too many overlads
-      rawLocation,
-      currentLocation
+      // locationObject as MatcherLocationAsPathRelative,
+      // locationObject as MatcherLocationAsRelative,
+      // locationObject as MatcherLocationAsName, // TODO: this one doesn't allow an undefined currentLocation, the other ones work
+      locationObject as MatcherLocationAsPathAbsolute,
+      currentLocation as unknown as NEW_LocationResolved<EXPERIMENTAL_RouteRecordNormalized>
     )
     const href = routerHistory.createHref(matchedRoute.fullPath)
 
     if (__DEV__) {
       if (href.startsWith('//')) {
         warn(
-          `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
+          `Location ${JSON.stringify(
+            rawLocation
+          )} resolved to "${href}". A resolved location cannot start with multiple slashes.`
         )
       }
       if (!matchedRoute.matched.length) {
@@ -579,14 +600,6 @@ export function experimental_createRouter(
       href,
       meta: mergeMetaFields(matchedRoute.matched),
     })
-  }
-
-  function locationAsObject(
-    to: RouteLocationRaw | RouteLocationNormalized
-  ): Exclude<RouteLocationRaw, string> | RouteLocationNormalized {
-    return typeof to === 'string'
-      ? parseURL(parseQuery, to, currentRoute.value.path)
-      : assign({}, to)
   }
 
   function checkCanceledNavigation(

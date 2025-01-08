@@ -38,6 +38,9 @@ export interface MatcherLocationAsPathRelative {
    */
   params?: undefined
 }
+
+// TODO: does it make sense to support absolute paths objects?
+
 export interface MatcherLocationAsPathAbsolute
   extends MatcherLocationAsPathRelative {
   path: `/${string}`
