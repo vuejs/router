@@ -90,6 +90,12 @@ import {
  */
 export type _OnReadyCallback = [() => void, (reason?: any) => void]
 
+// NOTE: we could override each type with the new matched array but this would
+// interface RouteLocationResolved<Name extends keyof RouteMap = keyof RouteMap>
+//   extends Omit<_RouteLocationResolved<Name>, 'matched'> {
+//   matched: EXPERIMENTAL_RouteRecordNormalized[]
+// }
+
 /**
  * Options to initialize a {@link Router} instance.
  */
@@ -548,8 +554,10 @@ export function experimental_createRouter(
     // }
 
     const matchedRoute = matcher.resolve(
+      // FIXME: should be ok
+      // @ts-expect-error: too many overlads
       rawLocation,
-      currentLocation satisfies NEW_LocationResolved<EXPERIMENTAL_RouteRecordNormalized>
+      currentLocation
     )
     const href = routerHistory.createHref(matchedRoute.fullPath)
 
@@ -564,8 +572,8 @@ export function experimental_createRouter(
       }
     }
 
-    // TODO: can this be refactored at the very end
     // matchedRoute is always a new object
+    // @ts-expect-error: the `matched` property is different
     return assign(matchedRoute, {
       redirectedFrom: undefined,
       href,
