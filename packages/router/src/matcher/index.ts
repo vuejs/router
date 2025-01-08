@@ -311,7 +311,7 @@ export function createRouterMatcher(
         params = matcher.parse(path)!
         name = matcher.record.name
 
-        matcher?.keys.forEach(key => {
+        matcher.keys.forEach(key => {
           if (key.optional && params[key.name] === '') {
             delete params[key.name]
           }
