@@ -188,16 +188,21 @@ describe('RouterMatcher.resolve', () => {
 
     // console.log({ toLocation, resolved, expectedLocation, resolvedFrom })
 
-    expect(
-      matcher.resolve(
-        // FIXME: should work now
-        // @ts-expect-error
-        typeof toLocation === 'string' ? { path: toLocation } : toLocation,
-        resolvedFrom === START_LOCATION ? undefined : resolvedFrom
-      )
-    ).toMatchObject({
-      ...resolved,
-    })
+    const result = matcher.resolve(
+      // FIXME: should work now
+      // @ts-expect-error
+      typeof toLocation === 'string' ? { path: toLocation } : toLocation,
+      resolvedFrom === START_LOCATION ? undefined : resolvedFrom
+    )
+
+    if (
+      expectedLocation.name === undefined ||
+      expectedLocation.name !== NO_MATCH_LOCATION.name
+    ) {
+      expect(result.name).not.toBe(NO_MATCH_LOCATION.name)
+    }
+
+    expect(result).toMatchObject(resolved)
   }
 
   describe('LocationAsPath', () => {
@@ -273,7 +278,7 @@ describe('RouterMatcher.resolve', () => {
       assertRecordMatch(
         { path: '/', components },
         { path: '/foo' },
-        { params: {}, path: '/foo', matched: [] }
+        NO_MATCH_LOCATION
       )
     })
 
