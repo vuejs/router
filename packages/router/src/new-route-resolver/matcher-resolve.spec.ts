@@ -42,15 +42,25 @@ function isMatchable(record: RouteRecordRaw): boolean {
   )
 }
 
+function joinPaths(a: string | undefined, b: string) {
+  if (a?.endsWith('/')) {
+    return a + b
+  }
+  return a + '/' + b
+}
+
 function compileRouteRecord(
   record: RouteRecordRaw,
   parentRecord?: RouteRecordRaw
 ): NEW_MatcherRecordRaw {
   // we adapt the path to ensure they are absolute
   // TODO: aliases? they could be handled directly in the path matcher
+  if (!parentRecord && !record.path.startsWith('/')) {
+    throw new Error(`Record without parent must have an absolute path`)
+  }
   const path = record.path.startsWith('/')
     ? record.path
-    : (parentRecord?.path || '') + record.path
+    : joinPaths(parentRecord?.path, record.path)
   record.path = path
   const parser = tokensToParser(
     tokenizePath(record.path),
@@ -62,10 +72,12 @@ function compileRouteRecord(
   return {
     group: !isMatchable(record),
     name: record.name,
+    score: parser.score,
 
     path: {
       match(value) {
         const params = parser.parse(value)
+        // console.log('🌟', parser.re, value, params)
         if (params) {
           return params
         }
@@ -181,19 +193,20 @@ describe('RouterMatcher.resolve', () => {
       : matcher.resolve(
           // FIXME: is this a ts bug?
           // @ts-expect-error
-          typeof fromLocation === 'string'
-            ? { path: fromLocation }
-            : fromLocation
+          fromLocation
         )
 
+    // console.log(matcher.getMatchers())
     // console.log({ toLocation, resolved, expectedLocation, resolvedFrom })
 
     const result = matcher.resolve(
       // FIXME: should work now
       // @ts-expect-error
-      typeof toLocation === 'string' ? { path: toLocation } : toLocation,
+      toLocation,
       resolvedFrom === START_LOCATION ? undefined : resolvedFrom
     )
+
+    // console.log(result)
 
     if (
       expectedLocation.name === undefined ||
@@ -479,7 +492,7 @@ describe('RouterMatcher.resolve', () => {
     // TODO: not sure where this warning should appear now
     it.todo('warns if a path isn not absolute', () => {
       const matcher = createCompiledMatcher([
-        { path: new MatcherPatternPathStatic('/') },
+        { path: new MatcherPatternPathStatic('/'), score: [[80]] },
       ])
       matcher.resolve({ path: 'two' }, matcher.resolve({ path: '/' }))
       expect('received "two"').toHaveBeenWarned()
@@ -1169,26 +1182,34 @@ describe('RouterMatcher.resolve', () => {
     })
   })
 
-  describe.skip('children', () => {
-    const ChildA = { path: 'a', name: 'child-a', components }
-    const ChildB = { path: 'b', name: 'child-b', components }
-    const ChildC = { path: 'c', name: 'child-c', components }
-    const ChildD = { path: '/absolute', name: 'absolute', components }
-    const ChildWithParam = { path: ':p', name: 'child-params', components }
-    const NestedChildWithParam = {
+  describe('children', () => {
+    const ChildA: RouteRecordRaw = { path: 'a', name: 'child-a', components }
+    const ChildB: RouteRecordRaw = { path: 'b', name: 'child-b', components }
+    const ChildC: RouteRecordRaw = { path: 'c', name: 'child-c', components }
+    const ChildD: RouteRecordRaw = {
+      path: '/absolute',
+      name: 'absolute',
+      components,
+    }
+    const ChildWithParam: RouteRecordRaw = {
+      path: ':p',
+      name: 'child-params',
+      components,
+    }
+    const NestedChildWithParam: RouteRecordRaw = {
       ...ChildWithParam,
       name: 'nested-child-params',
     }
-    const NestedChildA = { ...ChildA, name: 'nested-child-a' }
-    const NestedChildB = { ...ChildB, name: 'nested-child-b' }
-    const NestedChildC = { ...ChildC, name: 'nested-child-c' }
-    const Nested = {
+    const NestedChildA: RouteRecordRaw = { ...ChildA, name: 'nested-child-a' }
+    const NestedChildB: RouteRecordRaw = { ...ChildB, name: 'nested-child-b' }
+    const NestedChildC: RouteRecordRaw = { ...ChildC, name: 'nested-child-c' }
+    const Nested: RouteRecordRaw = {
       path: 'nested',
       name: 'nested',
       components,
       children: [NestedChildA, NestedChildB, NestedChildC],
     }
-    const NestedWithParam = {
+    const NestedWithParam: RouteRecordRaw = {
       path: 'nested/:n',
       name: 'nested',
       components,
@@ -1196,7 +1217,7 @@ describe('RouterMatcher.resolve', () => {
     }
 
     it('resolves children', () => {
-      const Foo = {
+      const Foo: RouteRecordRaw = {
         path: '/foo',
         name: 'Foo',
         components,
@@ -1216,8 +1237,8 @@ describe('RouterMatcher.resolve', () => {
     })
 
     it('resolves children with empty paths', () => {
-      const Nested = { path: '', name: 'nested', components }
-      const Foo = {
+      const Nested: RouteRecordRaw = { path: '', name: 'nested', components }
+      const Foo: RouteRecordRaw = {
         path: '/foo',
         name: 'Foo',
         components,

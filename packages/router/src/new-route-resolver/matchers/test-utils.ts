@@ -68,9 +68,23 @@ export const ANY_HASH_PATTERN_MATCHER: MatcherPatternParams_Base<
 export const EMPTY_PATH_ROUTE = {
   name: 'no params',
   path: EMPTY_PATH_PATTERN_MATCHER,
+  score: [[80]],
+  children: [],
+  parent: undefined,
+} satisfies NEW_MatcherRecord
+
+export const ANY_PATH_ROUTE = {
+  name: 'any path',
+  path: ANY_PATH_PATTERN_MATCHER,
+  score: [[-10]],
+  children: [],
+  parent: undefined,
 } satisfies NEW_MatcherRecord
 
 export const USER_ID_ROUTE = {
   name: 'user-id',
   path: USER_ID_PATH_PATTERN_MATCHER,
+  score: [[80], [70]],
+  children: [],
+  parent: undefined,
 } satisfies NEW_MatcherRecord

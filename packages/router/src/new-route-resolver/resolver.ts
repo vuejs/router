@@ -25,6 +25,7 @@ import type {
   MatcherParamsFormatted,
 } from './matcher-location'
 import { _RouteRecordProps } from '../typed-routes'
+import { comparePathParserScore } from '../matcher/pathParserRanker'
 
 /**
  * Allowed types for a matcher name.
@@ -286,6 +287,8 @@ export interface NEW_MatcherRecordRaw {
    * Is this a record that groups children. Cannot be matched
    */
   group?: boolean
+
+  score: Array<number[]>
 }
 
 export interface NEW_MatcherRecordBase<T> {
@@ -298,9 +301,12 @@ export interface NEW_MatcherRecordBase<T> {
   query?: MatcherPatternQuery
   hash?: MatcherPatternHash
 
-  group?: boolean
-
   parent?: T
+  children: T[]
+
+  group?: boolean
+  aliasOf?: NEW_MatcherRecord
+  score: Array<number[]>
 }
 
 /**
@@ -352,7 +358,8 @@ export function createCompiledMatcher<
   records: NEW_MatcherRecordRaw[] = []
 ): NEW_RouterResolver<NEW_MatcherRecordRaw, TMatcherRecord> {
   // TODO: we also need an array that has the correct order
-  const matchers = new Map<MatcherName, TMatcherRecord>()
+  const matcherMap = new Map<MatcherName, TMatcherRecord>()
+  const matchers: TMatcherRecord[] = []
 
   // TODO: allow custom encode/decode functions
   // const encodeParams = applyToParams.bind(null, encodeParam)
@@ -424,7 +431,7 @@ export function createCompiledMatcher<
       // either one of them must be defined and is catched by the dev only warn above
       const name = to.name ?? currentLocation?.name
       // FIXME: remove once name cannot be null
-      const matcher = name != null && matchers.get(name)
+      const matcher = name != null && matcherMap.get(name)
       if (!matcher) {
         throw new Error(`Matcher "${String(name)}" not found`)
       }
@@ -474,7 +481,7 @@ export function createCompiledMatcher<
       let matched: NEW_LocationResolved<TMatcherRecord>['matched'] | undefined
       let parsedParams: MatcherParamsFormatted | null | undefined
 
-      for (matcher of matchers.values()) {
+      for (matcher of matchers) {
         // match the path because the path matcher only needs to be matched here
         // match the hash because only the deepest child matters
         // End up by building up the matched array, (reversed so it goes from
@@ -493,6 +500,8 @@ export function createCompiledMatcher<
           // }
 
           parsedParams = { ...pathParams, ...queryParams, ...hashParams }
+          // we found our match!
+          break
         } catch (e) {
           // for debugging tests
           // console.log('❌ ERROR matching', e)
@@ -529,12 +538,23 @@ export function createCompiledMatcher<
       ...record,
       name,
       parent,
+      children: [],
     }
-    // TODO:
-    // record.children
+
+    // insert the matcher if it's matchable
     if (!normalizedRecord.group) {
-      matchers.set(name, normalizedRecord)
+      const index = findInsertionIndex(normalizedRecord, matchers)
+      matchers.splice(index, 0, normalizedRecord)
+      // only add the original record to the name map
+      if (normalizedRecord.name && !isAliasRecord(normalizedRecord))
+        matcherMap.set(normalizedRecord.name, normalizedRecord)
+      // matchers.set(name, normalizedRecord)
     }
+
+    record.children?.forEach(childRecord =>
+      normalizedRecord.children.push(addMatcher(childRecord, normalizedRecord))
+    )
+
     return normalizedRecord
   }
 
@@ -543,20 +563,25 @@ export function createCompiledMatcher<
   }
 
   function removeMatcher(matcher: TMatcherRecord) {
-    matchers.delete(matcher.name)
+    matcherMap.delete(matcher.name)
+    for (const child of matcher.children) {
+      removeMatcher(child)
+    }
+    // TODO: delete from matchers
     // TODO: delete children and aliases
   }
 
   function clearMatchers() {
-    matchers.clear()
+    matchers.splice(0, matchers.length)
+    matcherMap.clear()
   }
 
   function getMatchers() {
-    return Array.from(matchers.values())
+    return matchers
   }
 
   function getMatcher(name: MatcherName) {
-    return matchers.get(name)
+    return matcherMap.get(name)
   }
 
   return {
@@ -568,4 +593,77 @@ export function createCompiledMatcher<
     getMatcher,
     getMatchers,
   }
+}
+
+/**
+ * Performs a binary search to find the correct insertion index for a new matcher.
+ *
+ * Matchers are primarily sorted by their score. If scores are tied then we also consider parent/child relationships,
+ * with descendants coming before ancestors. If there's still a tie, new routes are inserted after existing routes.
+ *
+ * @param matcher - new matcher to be inserted
+ * @param matchers - existing matchers
+ */
+function findInsertionIndex<T extends NEW_MatcherRecordBase<T>>(
+  matcher: T,
+  matchers: T[]
+) {
+  // First phase: binary search based on score
+  let lower = 0
+  let upper = matchers.length
+
+  while (lower !== upper) {
+    const mid = (lower + upper) >> 1
+    const sortOrder = comparePathParserScore(matcher, matchers[mid])
+
+    if (sortOrder < 0) {
+      upper = mid
+    } else {
+      lower = mid + 1
+    }
+  }
+
+  // Second phase: check for an ancestor with the same score
+  const insertionAncestor = getInsertionAncestor(matcher)
+
+  if (insertionAncestor) {
+    upper = matchers.lastIndexOf(insertionAncestor, upper - 1)
+
+    if (__DEV__ && upper < 0) {
+      // This should never happen
+      warn(
+        // TODO: fix stringifying new matchers
+        `Finding ancestor route "${insertionAncestor.path}" failed for "${matcher.path}"`
+      )
+    }
+  }
+
+  return upper
+}
+
+function getInsertionAncestor<T extends NEW_MatcherRecordBase<T>>(matcher: T) {
+  let ancestor: T | undefined = matcher
+
+  while ((ancestor = ancestor.parent)) {
+    if (!ancestor.group && comparePathParserScore(matcher, ancestor) === 0) {
+      return ancestor
+    }
+  }
+
+  return
+}
+
+/**
+ * Checks if a record or any of its parent is an alias
+ * @param record
+ */
+function isAliasRecord<T extends NEW_MatcherRecordBase<T>>(
+  record: T | undefined
+): boolean {
+  while (record) {
+    if (record.aliasOf) return true
+    record = record.parent
+  }
+
+  return false
 }

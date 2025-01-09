@@ -11,9 +11,13 @@ import {
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,
 } from './matcher-pattern'
-import { NEW_MatcherRecord } from './resolver'
 import { miss } from './matchers/errors'
 import { EmptyParams } from './matcher-location'
+import {
+  EMPTY_PATH_ROUTE,
+  USER_ID_ROUTE,
+  ANY_PATH_ROUTE,
+} from './matchers/test-utils'
 
 const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{ pathMatch: string }> = {
   match(path) {
@@ -69,27 +73,12 @@ const ANY_HASH_PATTERN_MATCHER: MatcherPatternParams_Base<
   build: ({ hash }) => (hash ? `#${hash}` : ''),
 }
 
-const EMPTY_PATH_ROUTE = {
-  name: 'no params',
-  path: EMPTY_PATH_PATTERN_MATCHER,
-} satisfies NEW_MatcherRecord
-
-const ANY_PATH_ROUTE = {
-  name: 'any path',
-  path: ANY_PATH_PATTERN_MATCHER,
-} satisfies NEW_MatcherRecord
-
-const USER_ID_ROUTE = {
-  name: 'user-id',
-  path: USER_ID_PATH_PATTERN_MATCHER,
-} satisfies NEW_MatcherRecord
-
 describe('RouterMatcher', () => {
   describe('new matchers', () => {
     it('static path', () => {
       const matcher = createCompiledMatcher([
-        { path: new MatcherPatternPathStatic('/') },
-        { path: new MatcherPatternPathStatic('/users') },
+        { path: new MatcherPatternPathStatic('/'), score: [[80]] },
+        { path: new MatcherPatternPathStatic('/users'), score: [[80]] },
       ])
 
       expect(matcher.resolve({ path: '/' })).toMatchObject({
@@ -112,6 +101,7 @@ describe('RouterMatcher', () => {
     it('dynamic path', () => {
       const matcher = createCompiledMatcher([
         {
+          score: [[80], [70]],
           path: new MatcherPatternPathDynamic<{ id: string }>(
             /^\/users\/([^\/]+)$/,
             {
@@ -202,6 +192,7 @@ describe('RouterMatcher', () => {
         const matcher = createCompiledMatcher([
           {
             path: ANY_PATH_PATTERN_MATCHER,
+            score: [[100, -10]],
             query: PAGE_QUERY_PATTERN_MATCHER,
           },
         ])
@@ -220,6 +211,7 @@ describe('RouterMatcher', () => {
       it('resolves string locations with hash', () => {
         const matcher = createCompiledMatcher([
           {
+            score: [[100, -10]],
             path: ANY_PATH_PATTERN_MATCHER,
             hash: ANY_HASH_PATTERN_MATCHER,
           },
@@ -236,6 +228,7 @@ describe('RouterMatcher', () => {
       it('combines path, query and hash params', () => {
         const matcher = createCompiledMatcher([
           {
+            score: [[200, 80], [72]],
             path: USER_ID_PATH_PATTERN_MATCHER,
             query: PAGE_QUERY_PATTERN_MATCHER,
             hash: ANY_HASH_PATTERN_MATCHER,
@@ -253,7 +246,7 @@ describe('RouterMatcher', () => {
     describe('relative locations as strings', () => {
       it('resolves a simple relative location', () => {
         const matcher = createCompiledMatcher([
-          { path: ANY_PATH_PATTERN_MATCHER },
+          { path: ANY_PATH_PATTERN_MATCHER, score: [[-10]] },
         ])
 
         expect(
@@ -311,6 +304,7 @@ describe('RouterMatcher', () => {
           {
             name: 'home',
             path: EMPTY_PATH_PATTERN_MATCHER,
+            score: [[80]],
           },
         ])
 

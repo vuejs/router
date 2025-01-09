@@ -23,11 +23,12 @@ import {
   type RouterHistory,
 } from '../history/common'
 import type { PathParserOptions } from '../matcher'
-import type {
-  NEW_LocationResolved,
-  NEW_MatcherRecord,
-  NEW_MatcherRecordRaw,
-  NEW_RouterResolver,
+import {
+  type NEW_MatcherRecordBase,
+  type NEW_LocationResolved,
+  type NEW_MatcherRecord,
+  type NEW_MatcherRecordRaw,
+  type NEW_RouterResolver,
 } from '../new-route-resolver/resolver'
 import {
   parseQuery as originalParseQuery,
@@ -194,7 +195,7 @@ export interface EXPERIMENTAL_RouterOptions<
    * Matcher to use to resolve routes.
    * @experimental
    */
-  matcher: NEW_RouterResolver<NEW_MatcherRecordRaw, TMatcherRecord>
+  resolver: NEW_RouterResolver<NEW_MatcherRecordRaw, TMatcherRecord>
 }
 
 /**
@@ -411,14 +412,18 @@ export interface EXPERIMENTAL_RouteRecordRaw extends NEW_MatcherRecordRaw {
   component?: unknown
 
   redirect?: unknown
+  score: Array<number[]>
 }
 
 // TODO: is it worth to have 2 types for the undefined values?
-export interface EXPERIMENTAL_RouteRecordNormalized extends NEW_MatcherRecord {
+export interface EXPERIMENTAL_RouteRecordNormalized
+  extends NEW_MatcherRecordBase<EXPERIMENTAL_RouteRecordNormalized> {
   /**
    * Arbitrary data attached to the record.
    */
   meta: RouteMeta
+  group?: boolean
+  score: Array<number[]>
 }
 
 function normalizeRouteRecord(
@@ -429,6 +434,7 @@ function normalizeRouteRecord(
     name: __DEV__ ? Symbol('anonymous route record') : Symbol(),
     meta: {},
     ...record,
+    children: (record.children || []).map(normalizeRouteRecord),
   }
 }
 
@@ -439,7 +445,7 @@ export function experimental_createRouter(
   EXPERIMENTAL_RouteRecordNormalized
 > {
   const {
-    matcher,
+    resolver,
     parseQuery = originalParseQuery,
     stringifyQuery = originalStringifyQuery,
     history: routerHistory,
@@ -470,11 +476,11 @@ export function experimental_createRouter(
       | EXPERIMENTAL_RouteRecordRaw,
     route?: EXPERIMENTAL_RouteRecordRaw
   ) {
-    let parent: Parameters<(typeof matcher)['addMatcher']>[1] | undefined
+    let parent: Parameters<(typeof resolver)['addMatcher']>[1] | undefined
     let rawRecord: EXPERIMENTAL_RouteRecordRaw
 
     if (isRouteName(parentOrRoute)) {
-      parent = matcher.getMatcher(parentOrRoute)
+      parent = resolver.getMatcher(parentOrRoute)
       if (__DEV__ && !parent) {
         warn(
           `Parent route "${String(
@@ -488,31 +494,31 @@ export function experimental_createRouter(
       rawRecord = parentOrRoute
     }
 
-    const addedRecord = matcher.addMatcher(
+    const addedRecord = resolver.addMatcher(
       normalizeRouteRecord(rawRecord),
       parent
     )
 
     return () => {
-      matcher.removeMatcher(addedRecord)
+      resolver.removeMatcher(addedRecord)
     }
   }
 
   function removeRoute(name: NonNullable<RouteRecordNameGeneric>) {
-    const recordMatcher = matcher.getMatcher(name)
+    const recordMatcher = resolver.getMatcher(name)
     if (recordMatcher) {
-      matcher.removeMatcher(recordMatcher)
+      resolver.removeMatcher(recordMatcher)
     } else if (__DEV__) {
       warn(`Cannot remove non-existent route "${String(name)}"`)
     }
   }
 
   function getRoutes() {
-    return matcher.getMatchers()
+    return resolver.getMatchers()
   }
 
   function hasRoute(name: NonNullable<RouteRecordNameGeneric>): boolean {
-    return !!matcher.getMatcher(name)
+    return !!resolver.getMatcher(name)
   }
 
   function locationAsObject(
@@ -567,7 +573,7 @@ export function experimental_createRouter(
     //   rawLocation.params = targetParams
     // }
 
-    const matchedRoute = matcher.resolve(
+    const matchedRoute = resolver.resolve(
       // incompatible types
       rawLocation as any,
       // incompatible `matched` requires casting
@@ -1226,7 +1232,7 @@ export function experimental_createRouter(
 
     addRoute,
     removeRoute,
-    clearRoutes: matcher.clearMatchers,
+    clearRoutes: resolver.clearMatchers,
     hasRoute,
     getRoutes,
     resolve,
@@ -1307,7 +1313,7 @@ export function experimental_createRouter(
       // TODO: this probably needs to be updated so it can be used by vue-termui
       if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
         // @ts-expect-error: FIXME: refactor with new types once it's possible
-        addDevtools(app, router, matcher)
+        addDevtools(app, router, resolver)
       }
     },
   }

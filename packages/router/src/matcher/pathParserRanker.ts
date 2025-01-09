@@ -331,7 +331,10 @@ function compareScoreArray(a: number[], b: number[]): number {
  * @param b - second PathParser
  * @returns 0 if both are equal, < 0 if a should be sorted first, > 0 if b
  */
-export function comparePathParserScore(a: PathParser, b: PathParser): number {
+export function comparePathParserScore(
+  a: Pick<PathParser, 'score'>,
+  b: Pick<PathParser, 'score'>
+): number {
   let i = 0
   const aScore = a.score
   const bScore = b.score
