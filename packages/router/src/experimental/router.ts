@@ -83,7 +83,6 @@ import {
   routerKey,
   routerViewLocationKey,
 } from '../injectionSymbols'
-import { MatcherLocationAsPathAbsolute } from '../new-route-resolver/matcher-location'
 
 /**
  * resolve, reject arguments of Promise constructor
@@ -537,11 +536,6 @@ export function experimental_createRouter(
       currentLocation && assign({}, currentLocation || currentRoute.value)
     // currentLocation = assign({}, currentLocation || currentRoute.value)
 
-    const locationObject = locationAsObject(
-      rawLocation,
-      currentRoute.value.path
-    )
-
     if (__DEV__) {
       if (!isRouteLocation(rawLocation)) {
         warn(
@@ -551,9 +545,12 @@ export function experimental_createRouter(
         return resolve({})
       }
 
-      if (!locationObject.hash?.startsWith('#')) {
+      if (
+        typeof rawLocation === 'object' &&
+        rawLocation.hash?.startsWith('#')
+      ) {
         warn(
-          `A \`hash\` should always start with the character "#". Replace "${locationObject.hash}" with "#${locationObject.hash}".`
+          `A \`hash\` should always start with the character "#". Replace "${rawLocation.hash}" with "#${rawLocation.hash}".`
         )
       }
     }
@@ -571,12 +568,10 @@ export function experimental_createRouter(
     // }
 
     const matchedRoute = matcher.resolve(
-      // FIXME: should be ok
-      // locationObject as MatcherLocationAsPathRelative,
-      // locationObject as MatcherLocationAsRelative,
-      // locationObject as MatcherLocationAsName, // TODO: this one doesn't allow an undefined currentLocation, the other ones work
-      locationObject as MatcherLocationAsPathAbsolute,
-      currentLocation as unknown as NEW_LocationResolved<EXPERIMENTAL_RouteRecordNormalized>
+      // incompatible types
+      rawLocation as any,
+      // incompatible `matched` requires casting
+      currentLocation as any
     )
     const href = routerHistory.createHref(matchedRoute.fullPath)
 

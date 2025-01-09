@@ -337,9 +337,7 @@ describe('RouterMatcher', () => {
           })
         })
 
-        // TODO: move to the router as the matcher dosen't handle a plain string
-        it.todo('decodes query from a string', () => {
-          // @ts-expect-error: does not suppor fullPath
+        it('decodes query from a string', () => {
           expect(matcher.resolve('/foo?foo=%23%2F%3F')).toMatchObject({
             path: '/foo',
             fullPath: '/foo?foo=%23%2F%3F',
@@ -347,8 +345,7 @@ describe('RouterMatcher', () => {
           })
         })
 
-        it.todo('decodes hash from a string', () => {
-          // @ts-expect-error: does not suppor fullPath
+        it('decodes hash from a string', () => {
           expect(matcher.resolve('/foo#%22')).toMatchObject({
             path: '/foo',
             fullPath: '/foo#%22',

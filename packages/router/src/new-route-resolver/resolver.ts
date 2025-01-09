@@ -1,4 +1,9 @@
-import { type LocationQuery, normalizeQuery, stringifyQuery } from '../query'
+import {
+  type LocationQuery,
+  normalizeQuery,
+  parseQuery,
+  stringifyQuery,
+} from '../query'
 import type {
   MatcherPatternHash,
   MatcherPatternPath,
@@ -6,7 +11,12 @@ import type {
 } from './matcher-pattern'
 import { warn } from '../warning'
 import { encodeQueryValue as _encodeQueryValue, encodeParam } from '../encoding'
-import { NEW_stringifyURL, resolveRelativePath } from '../location'
+import {
+  LocationNormalized,
+  NEW_stringifyURL,
+  parseURL,
+  resolveRelativePath,
+} from '../location'
 import type {
   MatcherLocationAsNamed,
   MatcherLocationAsPathAbsolute,
@@ -32,19 +42,19 @@ export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord> {
   /**
    * Resolves an absolute location (like `/path/to/somewhere`).
    */
-  // resolve(
-  //   absoluteLocation: `/${string}`,
-  //   currentLocation?: undefined | NEW_LocationResolved<TMatcherRecord>
-  // ): NEW_LocationResolved<TMatcherRecord>
+  resolve(
+    absoluteLocation: `/${string}`,
+    currentLocation?: undefined
+  ): NEW_LocationResolved<TMatcherRecord>
 
   /**
    * Resolves a string location relative to another location. A relative location can be `./same-folder`,
    * `../parent-folder`, `same-folder`, or even `?page=2`.
    */
-  // resolve(
-  //   relativeLocation: string,
-  //   currentLocation: NEW_LocationResolved<TMatcherRecord>
-  // ): NEW_LocationResolved<TMatcherRecord>
+  resolve(
+    relativeLocation: string,
+    currentLocation: NEW_LocationResolved<TMatcherRecord>
+  ): NEW_LocationResolved<TMatcherRecord>
 
   /**
    * Resolves a location by its name. Any required params or query must be passed in the `options` argument.
@@ -53,6 +63,7 @@ export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord> {
     location: MatcherLocationAsNamed,
     // TODO: is this useful?
     currentLocation?: undefined
+    // currentLocation?: undefined | NEW_LocationResolved<TMatcherRecord>
   ): NEW_LocationResolved<TMatcherRecord>
 
   /**
@@ -63,7 +74,7 @@ export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord> {
     location: MatcherLocationAsPathAbsolute,
     // TODO: is this useful?
     currentLocation?: undefined
-    // currentLocation?: NEW_LocationResolved<TMatcherRecord>
+    // currentLocation?: NEW_LocationResolved<TMatcherRecord> | undefined
   ): NEW_LocationResolved<TMatcherRecord>
 
   resolve(
@@ -121,7 +132,7 @@ export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord> {
  */
 export type MatcherLocationRaw =
   // | `/${string}`
-  // | string
+  | string
   | MatcherLocationAsNamed
   | MatcherLocationAsPathAbsolute
   | MatcherLocationAsPathRelative
@@ -355,23 +366,27 @@ export function createCompiledMatcher<
 
   // NOTE: because of the overloads, we need to manually type the arguments
   type MatcherResolveArgs =
-    // | [
-    //     absoluteLocation: `/${string}`,
-    //     currentLocation?: undefined | NEW_LocationResolved<TMatcherRecord>
-    //   ]
-    // | [
-    //     relativeLocation: string,
-    //     currentLocation: NEW_LocationResolved<TMatcherRecord>
-    //   ]
+    | [absoluteLocation: `/${string}`, currentLocation?: undefined]
+    | [
+        relativeLocation: string,
+        currentLocation: NEW_LocationResolved<TMatcherRecord>
+      ]
     | [
         absoluteLocation: MatcherLocationAsPathAbsolute,
+        // Same as above
+        // currentLocation?: NEW_LocationResolved<TMatcherRecord> | undefined
         currentLocation?: undefined
       ]
     | [
         relativeLocation: MatcherLocationAsPathRelative,
         currentLocation: NEW_LocationResolved<TMatcherRecord>
       ]
-    | [location: MatcherLocationAsNamed, currentLocation?: undefined]
+    | [
+        location: MatcherLocationAsNamed,
+        // Same as above
+        // currentLocation?: NEW_LocationResolved<TMatcherRecord> | undefined
+        currentLocation?: undefined
+      ]
     | [
         relativeLocation: MatcherLocationAsRelative,
         currentLocation: NEW_LocationResolved<TMatcherRecord>
@@ -382,7 +397,7 @@ export function createCompiledMatcher<
   ): NEW_LocationResolved<TMatcherRecord> {
     const [to, currentLocation] = args
 
-    if (to.name || to.path == null) {
+    if (typeof to === 'object' && (to.name || to.path == null)) {
       // relative location or by name
       if (__DEV__ && to.name == null && currentLocation == null) {
         console.warn(
@@ -442,13 +457,17 @@ export function createCompiledMatcher<
       // string location, e.g. '/foo', '../bar', 'baz', '?page=1'
     } else {
       // parseURL handles relative paths
-      // parseURL(to.path, currentLocation?.path)
-      const query = normalizeQuery(to.query)
-      const url = {
-        fullPath: NEW_stringifyURL(stringifyQuery, to.path, query, to.hash),
-        path: resolveRelativePath(to.path, currentLocation?.path || '/'),
-        query,
-        hash: to.hash || '',
+      let url: LocationNormalized
+      if (typeof to === 'string') {
+        url = parseURL(parseQuery, to, currentLocation?.path)
+      } else {
+        const query = normalizeQuery(to.query)
+        url = {
+          fullPath: NEW_stringifyURL(stringifyQuery, to.path, query, to.hash),
+          path: resolveRelativePath(to.path, currentLocation?.path || '/'),
+          query,
+          hash: to.hash || '',
+        }
       }
 
       let matcher: TMatcherRecord | undefined

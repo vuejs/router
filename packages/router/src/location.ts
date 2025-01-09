@@ -10,7 +10,7 @@ import { RouteLocation, RouteLocationNormalizedLoaded } from './typed-routes'
  * Location object returned by {@link `parseURL`}.
  * @internal
  */
-interface LocationNormalized {
+export interface LocationNormalized {
   path: string
   fullPath: string
   hash: string
