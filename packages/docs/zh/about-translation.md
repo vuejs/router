@@ -29,8 +29,8 @@ https://github.com/vuejs-translations/docs-zh-cn/wiki/%E7%BF%BB%E8%AF%91%E9%A1%B
 | active (link) | 匹配当前路由 (的链接) |
 | exact active (link) | 严格匹配当前路由 (的链接) |
 | location | 地址 |
-| (nagivate) from | (导航) 离开 |
-| (nagivate) to | (导航) 进入 |
+| (navigate) from | (导航) 离开 |
+| (navigate) to | (导航) 进入 |
 | (navigation) guard | (导航) 守卫 |
 | path | 路径 |
 
