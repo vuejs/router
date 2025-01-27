@@ -1,4 +1,5 @@
 # 滚动行为
+
 <VueSchoolLink
   href="https://vueschool.io/lessons/scroll-behavior"
   title="Learn how to customize scroll behavior"
@@ -91,7 +92,7 @@ const router = createRouter({
         behavior: 'smooth',
       }
     }
-  }
+  },
 })
 ```
 
@@ -112,3 +113,33 @@ const router = createRouter({
 ```
 
 我们可以将其与页面级过渡组件的事件挂钩，以使滚动行为与你的页面过渡很好地结合起来，但由于使用场景可能存在的差异和复杂性，我们只是提供了这个基础来实现特定的用户场景。
+
+## 高级偏移量
+
+根据页面的布局，比如如果有一个固定定位的导航栏，可能需要一个偏移量，确保目标元素不会被其他内容遮挡。
+
+当一个静态的偏移值无法满足需求时，可能会尝试使用 CSS 来创建滚动到元素时的偏移量，但这往往不起作用。以下样式可能会导致这种边界情况：
+
+- `scroll-margin` 或 `scroll-padding` 值
+- `::before` 和 `::after` 伪元素
+
+在这些情况下，需要手动计算偏移量。一个简单的解决方案是利用 getComputedStyle() 来计算偏移量。这允许每个元素根据其自身的需求定义偏移值，并提供所需的灵活性。以下是一个示例：
+
+```js
+const router = createRouter({
+  scrollBehavior(to, from, savedPosition) {
+    const mainElement = document.querySelector('#main')
+    if (mainElement) {
+      const marginTop = parseFloat(
+        getComputedStyle(mainElement).scrollMarginTop
+      )
+      return {
+        el: mainElement,
+        top: marginTop,
+      }
+    } else {
+      return { top: 0 }
+    }
+  },
+})
+```
