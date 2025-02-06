@@ -80,5 +80,23 @@ Vue might automatically reuse components that look alike, avoiding any transitio
 </router-view>
 ```
 
+## Respecting `appear` transitions behaviour
+
+Usually, enter animations are ignored on the initial render unless you're using the `appear` prop. But you'll notice that route components don't respect this behaviour. This happens because the route component is not available in the initial render.
+
+You can fix this by making sure that the `<transition>` component isn't rendered until the first route component has been loaded:
+
+```vue-html
+<router-view v-slot="{ Component }">
+  <transition v-if="Component" name="fade">
+    <component :is="Component" />
+  </transition>
+</router-view>
+```
+
+Alternatively, you can also await on the router's [`isReady`](https://router.vuejs.org/api/interfaces/Router.html#isReady) method which returns a promise.
+
+Finally, you can support for more complex scenarios [combining the `<Suspense>` and `<KeepAlive>` components](https://vuejs.org/guide/built-ins/suspense.html#combining-with-other-components).
+
 <!-- TODO: interactive example -->
 <!-- See full example [here](https://github.com/vuejs/vue-router/blob/dev/examples/transitions/app.js). -->
