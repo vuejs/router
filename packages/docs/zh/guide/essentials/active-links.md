@@ -1,31 +1,29 @@
-<!-- TODO: translation -->
+# 活动链接
 
-# Active links
+在应用程序中，导航组件通常会渲染一组路由链接（RouterLink）。为了提升用户体验，开发者往往需要对当前活动路由对应的链接进行视觉区分。
 
-It's common for applications to have a navigation component that renders a list of RouterLink components. Within that list, we might want to style links to the currently active route differently from the others.
+RouterLink 组件会为活动链接添加两个 CSS 类，`router-link-active` 和 `router-link-exact-active`。要理解它们之间的区别，我们首先需要了解 Vue Router 如何判断一个链接是 _活动状态_。
 
-The RouterLink component adds two CSS classes to active links, `router-link-active` and `router-link-exact-active`. To understand the difference between them, we first need to consider how Vue Router decides that a link is _active_.
+## 活动状态标识
 
-## When are links active?
+当满足以下条件时，RouterLink 被认为是 _活动状态_：
 
-A RouterLink is considered to be ***active*** if:
+1. 它与当前路径匹配相同的路由记录（即配置的路由）。
+2. 它的 `params` 与当前路径的 `params` 相同。
 
-1. It matches the same route record (i.e. configured route) as the current location.
-2. It has the same values for the `params` as the current location.
+如果你使用了[嵌套路由](./nested-routes)，任何指向祖先路由的链接也会被认为是活动的，只要相关的 `params` 匹配。
 
-If you're using [nested routes](./nested-routes), any links to ancestor routes will also be considered active if the relevant `params` match.
+其他路由属性，例如 [`query`](../../api/interfaces/RouteLocationNormalized#query)，不会被考虑在内。
 
-Other route properties, such as the [`query`](../../api/interfaces/RouteLocationNormalized#query), are not taken into account.
+路径不一定需要完全匹配。例如，使用 [`alias`](./redirect-and-alias#Alias) 仍然会被认为是匹配的，只要它解析到相同的路由记录和 `params`。
 
-The path doesn't necessarily need to be a perfect match. For example, using an [`alias`](./redirect-and-alias#Alias) would still be considered a match, so long as it resolves to the same route record and `params`.
+如果一个路由有 [`redirect`](./redirect-and-alias#Redirect)，在检查链接是否活跃时不会跟随重定向。
 
-If a route has a [`redirect`](./redirect-and-alias#Redirect), it won't be followed when checking whether a link is active.
+## 精确活动链接
 
-## Exact active links
+_精确_ 匹配不包括祖先路由。
 
-An ***exact*** match does not include ancestor routes.
-
-Let's imagine we have the following routes:
+假设我们有以下路由：
 
 ```js
 const routes = [
@@ -42,7 +40,7 @@ const routes = [
 ]
 ```
 
-Then consider these two links:
+然后考虑这两个链接：
 
 ```vue-html
 <RouterLink to="/user/erina">
@@ -53,11 +51,11 @@ Then consider these two links:
 </RouterLink>
 ```
 
-If the current location path is `/user/erina/role/admin` then these would both be considered _active_, so the class `router-link-active` would be applied to both links. But only the second link would be considered _exact_, so only that second link would have the class `router-link-exact-active`. 
+如果当前路径是 `/user/erina/role/admin`，那么这两个链接都会被认为是 _活动状态_，因此 `router-link-active` 类会应用于这两个链接。但只有第二个链接会被认为是 _精确的_，因此只有第二个链接会有 `router-link-exact-active` 类。
 
-## Configuring the classes
+## 配置类名
 
-The RouterLink component has two props, `activeClass` and `exactActiveClass`, that can be used to change the names of the classes that are applied:
+RouterLink 组件有两个属性，`activeClass` 和 `exactActiveClass`，可以用来更改应用的类名：
 
 ```vue-html
 <RouterLink
@@ -67,7 +65,7 @@ The RouterLink component has two props, `activeClass` and `exactActiveClass`, th
 >
 ```
 
-The default class names can also be changed globally by passing the `linkActiveClass` and `linkExactActiveClass` options to `createRouter()`:
+默认的类名也可以通过传递 `linkActiveClass` 和 `linkExactActiveClass` 选项给 `createRouter()` 来全局更改：
 
 ```js
 const router = createRouter({
@@ -77,4 +75,4 @@ const router = createRouter({
 })
 ```
 
-See [Extending RouterLink](../advanced/extending-router-link) for more advanced customization techniques using the `v-slot` API.
+参见 [扩展 RouterLink](../advanced/extending-router-link) 以获取使用 `v-slot` API 进行更高级自定义的技术。
