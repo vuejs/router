@@ -52,7 +52,7 @@ A high-level overview of tools used:
 
 - [TypeScript](https://www.typescriptlang.org/) as the development language
 - [Rollup](https://rollupjs.org) for bundling
-- [Jest](https://jestjs.io/) for unit testing
+- [Vitest](https://vitest.dev/) for unit testing
 - [Prettier](https://prettier.io/) for code formatting
 
 ## Scripts
@@ -83,7 +83,7 @@ The `pnpm test` script runs all checks:
 $ pnpm test
 
 # run unit tests in watch mode
-$ pnpm jest --watch
+$ pnpm test:unit --watch
 ```
 
 ## Project Structure
@@ -102,7 +102,7 @@ Vue Router source code can be found in the `src` directory:
 
 ## Contributing Tests
 
-Unit tests are located inside `__tests__`. Consult the [Jest docs](https://jestjs.io/docs/en/using-matchers) and existing test cases for how to write new test specs. Here are some additional guidelines:
+Unit tests are located inside `__tests__`. Consult the [Vitest docs](https://vitest.dev/guide/) and existing test cases for how to write new test specs. Here are some additional guidelines:
 
 - Use the minimal API needed for a test case. For example, if a test can be written without involving the reactivity system or a component, it should be written so. This limits the test's exposure to changes in unrelated parts and makes it more stable.
 - Use the minimal API needed for a test case. For example, if a test concerns the `router-link` component, don't create a router instance, mock the required properties instead.
