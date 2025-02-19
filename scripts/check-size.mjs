@@ -5,8 +5,7 @@ import chalk from 'chalk'
 import { gzipSync } from 'zlib'
 import { compress } from 'brotli'
 
-const pathname = process.platform === 'win32' ? fileURLToPath(import.meta.url) : new URL(import.meta.url).pathname
-const __dirname = path.dirname(pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 async function checkFileSize(filePath) {
   const stat = await fs.stat(filePath).catch(() => null)

@@ -2,8 +2,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createTypeDocApp } from './typedoc-markdown.mjs'
 
-const pathname = process.platform === 'win32' ? fileURLToPath(import.meta.url) : new URL(import.meta.url).pathname
-const __dirname = path.dirname(pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 createTypeDocApp({
   name: 'API Documentation',

@@ -7,8 +7,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import terser from '@rollup/plugin-terser'
 import { defineConfig } from 'rollup'
 
-const pathname = process.platform === 'win32' ? fileURLToPath(import.meta.url) : new URL(import.meta.url).pathname
-const __dirname = path.dirname(pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const config = defineConfig({
   external: ['vue'],
