@@ -1,9 +1,11 @@
 // @ts-check
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import { Application, PageEvent, TSConfigReader } from 'typedoc'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const pathname = process.platform === 'win32' ? fileURLToPath(import.meta.url) : new URL(import.meta.url).pathname
+const __dirname = path.dirname(pathname)
 
 const DEFAULT_OPTIONS = {
   // disableOutputCheck: true,
