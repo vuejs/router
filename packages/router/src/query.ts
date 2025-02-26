@@ -140,8 +140,8 @@ export function normalizeQuery(
       normalizedQuery[key] = isArray(value)
         ? value.map(v => (v == null ? null : '' + v))
         : value == null
-        ? value
-        : '' + value
+          ? value
+          : '' + value
     }
   }
 

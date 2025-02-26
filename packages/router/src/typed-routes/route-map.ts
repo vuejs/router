@@ -17,7 +17,7 @@ export interface RouteRecordInfo<
   // TODO: could probably be inferred from the Params
   ParamsRaw extends RouteParamsRawGeneric = RouteParamsRawGeneric,
   Params extends RouteParamsGeneric = RouteParamsGeneric,
-  Meta extends RouteMeta = RouteMeta
+  Meta extends RouteMeta = RouteMeta,
 > {
   name: Name
   path: Path
@@ -30,12 +30,10 @@ export interface RouteRecordInfo<
 /**
  * Convenience type to get the typed RouteMap or a generic one if not provided. It is extracted from the {@link TypesConfig} if it exists, it becomes {@link RouteMapGeneric} otherwise.
  */
-export type RouteMap = TypesConfig extends Record<
-  'RouteNamedMap',
-  infer RouteNamedMap
->
-  ? RouteNamedMap
-  : RouteMapGeneric
+export type RouteMap =
+  TypesConfig extends Record<'RouteNamedMap', infer RouteNamedMap>
+    ? RouteNamedMap
+    : RouteMapGeneric
 
 /**
  * Generic version of the `RouteMap`.

@@ -154,8 +154,8 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
         ? routePropsOption === true
           ? route.params
           : typeof routePropsOption === 'function'
-          ? routePropsOption(route)
-          : routePropsOption
+            ? routePropsOption(route)
+            : routePropsOption
         : null
 
       const onVnodeUnmounted: VNodeProps['onVnodeUnmounted'] = vnode => {

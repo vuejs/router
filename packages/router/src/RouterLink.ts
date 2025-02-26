@@ -455,5 +455,5 @@ const getLinkClass = (
   propClass != null
     ? propClass
     : globalClass != null
-    ? globalClass
-    : defaultClass
+      ? globalClass
+      : defaultClass

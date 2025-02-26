@@ -47,7 +47,7 @@ function createLocations<
       normalized: RouteLocationResolved
       toResolve?: MatcherLocationRaw & Required<RouteQueryAndHash>
     }
-  >
+  >,
 >(locs: T) {
   return locs
 }

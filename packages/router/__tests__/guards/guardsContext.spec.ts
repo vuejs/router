@@ -12,12 +12,15 @@ const component = {
 describe('beforeRouteLeave', () => {
   it('invokes with the component context', async () => {
     expect.assertions(2)
-    const spy = vi
-      .fn()
-      .mockImplementationOnce(function (this: any, to, from, next) {
-        expect(typeof this.counter).toBe('number')
-        next()
-      })
+    const spy = vi.fn().mockImplementationOnce(function (
+      this: any,
+      to,
+      from,
+      next
+    ) {
+      expect(typeof this.counter).toBe('number')
+      next()
+    })
     const WithLeave = defineComponent({
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
@@ -54,23 +57,29 @@ describe('beforeRouteLeave', () => {
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: vi
-        .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
-          expect(typeof this.counter).toBe('number')
-          next()
-        }),
+      beforeRouteLeave: vi.fn().mockImplementationOnce(function (
+        this: any,
+        to,
+        from,
+        next
+      ) {
+        expect(typeof this.counter).toBe('number')
+        next()
+      }),
     })
     const WithLeaveTwo = defineComponent({
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: vi
-        .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
-          expect(typeof this.counter).toBe('number')
-          next()
-        }),
+      beforeRouteLeave: vi.fn().mockImplementationOnce(function (
+        this: any,
+        to,
+        from,
+        next
+      ) {
+        expect(typeof this.counter).toBe('number')
+        next()
+      }),
     })
 
     const router = createRouter({
@@ -108,23 +117,29 @@ describe('beforeRouteLeave', () => {
       template: `<router-view/>`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: vi
-        .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
-          expect(typeof this.counter).toBe('number')
-          next()
-        }),
+      beforeRouteLeave: vi.fn().mockImplementationOnce(function (
+        this: any,
+        to,
+        from,
+        next
+      ) {
+        expect(typeof this.counter).toBe('number')
+        next()
+      }),
     })
     const WithLeave = defineComponent({
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: vi
-        .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
-          expect(typeof this.counter).toBe('number')
-          next()
-        }),
+      beforeRouteLeave: vi.fn().mockImplementationOnce(function (
+        this: any,
+        to,
+        from,
+        next
+      ) {
+        expect(typeof this.counter).toBe('number')
+        next()
+      }),
     })
 
     const router = createRouter({
@@ -167,34 +182,43 @@ describe('beforeRouteLeave', () => {
       `,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: vi
-        .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
-          expect(typeof this.counter).toBe('number')
-          next()
-        }),
+      beforeRouteLeave: vi.fn().mockImplementationOnce(function (
+        this: any,
+        to,
+        from,
+        next
+      ) {
+        expect(typeof this.counter).toBe('number')
+        next()
+      }),
     })
     const WithLeaveOne = defineComponent({
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: vi
-        .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
-          expect(typeof this.counter).toBe('number')
-          next()
-        }),
+      beforeRouteLeave: vi.fn().mockImplementationOnce(function (
+        this: any,
+        to,
+        from,
+        next
+      ) {
+        expect(typeof this.counter).toBe('number')
+        next()
+      }),
     })
     const WithLeaveTwo = defineComponent({
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
       data: () => ({ counter: 0 }),
-      beforeRouteLeave: vi
-        .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
-          expect(typeof this.counter).toBe('number')
-          next()
-        }),
+      beforeRouteLeave: vi.fn().mockImplementationOnce(function (
+        this: any,
+        to,
+        from,
+        next
+      ) {
+        expect(typeof this.counter).toBe('number')
+        next()
+      }),
     })
 
     const router = createRouter({
@@ -235,12 +259,15 @@ describe('beforeRouteLeave', () => {
 describe('beforeRouteUpdate', () => {
   it('invokes with the component context', async () => {
     expect.assertions(2)
-    const spy = vi
-      .fn()
-      .mockImplementationOnce(function (this: any, to, from, next) {
-        expect(typeof this.counter).toBe('number')
-        next()
-      })
+    const spy = vi.fn().mockImplementationOnce(function (
+      this: any,
+      to,
+      from,
+      next
+    ) {
+      expect(typeof this.counter).toBe('number')
+      next()
+    })
     const WithParam = defineComponent({
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings

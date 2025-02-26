@@ -360,35 +360,40 @@ export function loadRouteLocation(
           record =>
             record.components &&
             Promise.all(
-              Object.keys(record.components).reduce((promises, name) => {
-                const rawComponent = record.components![name]
-                if (
-                  typeof rawComponent === 'function' &&
-                  !('displayName' in rawComponent)
-                ) {
-                  promises.push(
-                    (rawComponent as Lazy<RouteComponent>)().then(resolved => {
-                      if (!resolved)
-                        return Promise.reject(
-                          new Error(
-                            `Couldn't resolve component "${name}" at "${record.path}". Ensure you passed a function that returns a promise.`
-                          )
-                        )
+              Object.keys(record.components).reduce(
+                (promises, name) => {
+                  const rawComponent = record.components![name]
+                  if (
+                    typeof rawComponent === 'function' &&
+                    !('displayName' in rawComponent)
+                  ) {
+                    promises.push(
+                      (rawComponent as Lazy<RouteComponent>)().then(
+                        resolved => {
+                          if (!resolved)
+                            return Promise.reject(
+                              new Error(
+                                `Couldn't resolve component "${name}" at "${record.path}". Ensure you passed a function that returns a promise.`
+                              )
+                            )
 
-                      const resolvedComponent = isESModule(resolved)
-                        ? resolved.default
-                        : resolved
-                      // keep the resolved module for plugins like data loaders
-                      record.mods[name] = resolved
-                      // replace the function with the resolved component
-                      // cannot be null or undefined because we went into the for loop
-                      record.components![name] = resolvedComponent
-                      return
-                    })
-                  )
-                }
-                return promises
-              }, [] as Array<Promise<RouteComponent | null | undefined>>)
+                          const resolvedComponent = isESModule(resolved)
+                            ? resolved.default
+                            : resolved
+                          // keep the resolved module for plugins like data loaders
+                          record.mods[name] = resolved
+                          // replace the function with the resolved component
+                          // cannot be null or undefined because we went into the for loop
+                          record.components![name] = resolvedComponent
+                          return
+                        }
+                      )
+                    )
+                  }
+                  return promises
+                },
+                [] as Array<Promise<RouteComponent | null | undefined>>
+              )
             )
         )
       ).then(() => route as RouteLocationNormalizedLoaded)
