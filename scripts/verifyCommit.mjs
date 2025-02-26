@@ -1,8 +1,10 @@
-// Invoked on the commit-msg git hook by yorkie.
+// Invoked on the commit-msg git hook by simple-git-hooks.
 
 import chalk from 'chalk'
 import { readFileSync } from 'node:fs'
-const msgPath = process.env.GIT_PARAMS
+import path from 'node:path'
+
+const msgPath = path.resolve('.git/COMMIT_EDITMSG')
 const msg = readFileSync(msgPath, 'utf-8').trim()
 
 const commitRE =

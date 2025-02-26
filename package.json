@@ -27,7 +27,8 @@
     "lint:script": "prettier -c --parser typescript \"packages/*/{src,__tests__,e2e}/**/*.[jt]s?(x)\"",
     "lint:html": "prettier -c --parser html \"packages/**/*.html\"",
     "lint:fix": "pnpm run lint:script --write && pnpm run lint:html --write",
-    "test": "pnpm run -r test"
+    "test": "pnpm run -r test",
+    "postinstall": "simple-git-hooks"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^2.1.5",
@@ -42,14 +43,14 @@
     "p-series": "^3.0.0",
     "prettier": "^2.8.8",
     "semver": "^7.6.3",
+    "simple-git-hooks": "^2.11.1",
     "typedoc": "^0.26.11",
     "typedoc-plugin-markdown": "^4.2.10",
     "typescript": "~5.6.3",
-    "vitest": "^2.1.5",
-    "yorkie": "^2.0.0"
+    "vitest": "^2.1.5"
   },
-  "gitHooks": {
-    "pre-commit": "lint-staged",
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged",
     "commit-msg": "node scripts/verifyCommit.mjs"
   },
   "lint-staged": {
