@@ -6,7 +6,7 @@ import type { RouteMap } from './route-map'
  */
 export type ParamValueOneOrMore<isRaw extends boolean> = [
   ParamValue<isRaw>,
-  ...ParamValue<isRaw>[]
+  ...ParamValue<isRaw>[],
 ]
 
 /**

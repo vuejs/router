@@ -175,8 +175,8 @@ function isSameRouteLocationParamsValue(
   return isArray(a)
     ? isEquivalentArray(a, b)
     : isArray(b)
-    ? isEquivalentArray(b, a)
-    : a === b
+      ? isEquivalentArray(b, a)
+      : a === b
 }
 
 /**

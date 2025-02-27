@@ -41,7 +41,7 @@
     "lint-staged": "^15.2.10",
     "minimist": "^1.2.8",
     "p-series": "^3.0.0",
-    "prettier": "^2.8.8",
+    "prettier": "^3.5.2",
     "semver": "^7.6.3",
     "simple-git-hooks": "^2.11.1",
     "typedoc": "^0.26.11",

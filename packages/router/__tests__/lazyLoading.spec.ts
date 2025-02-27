@@ -26,7 +26,7 @@ function createLazyComponent() {
   const [promise, resolve, reject] = fakePromise()
 
   return {
-    component: vi.fn(() => promise.then(() => ({} as RouteComponent))),
+    component: vi.fn(() => promise.then(() => ({}) as RouteComponent)),
     promise,
     resolve,
     reject,
