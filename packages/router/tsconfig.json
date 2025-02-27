@@ -22,19 +22,14 @@
     "noImplicitReturns": true,
     "strict": true,
     "skipLibCheck": true,
+    "useDefineForClassFields": true,
     // "noUncheckedIndexedAccess": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "removeComments": false,
     "jsx": "preserve",
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "types": [
-      "node",
-      "vite/client"
-    ]
+    "lib": ["esnext", "dom"],
+    "types": ["node", "vite/client"]
   }
 }
