@@ -12,7 +12,7 @@ Some applications' UIs are composed of components that are nested multiple level
 ┌──────────────────┐                  ┌──────────────────┐
 │ User             │                  │ User             │
 │ ┌──────────────┐ │                  │ ┌──────────────┐ │
-│ │ Profile      │ │  ●────────────▶  │ │ Posts        │ │
+│ │ Profile      │ │  ────────────>   │ │ Posts        │ │
 │ │              │ │                  │ │              │ │
 │ └──────────────┘ │                  │ └──────────────┘ │
 └──────────────────┘                  └──────────────────┘
