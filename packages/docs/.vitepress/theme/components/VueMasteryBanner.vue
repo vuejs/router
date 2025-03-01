@@ -1,3 +1,29 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+
+const isVisible = ref(false)
+const showFlash = ref(false)
+const nameStorage = 'VUEMASTERY-BANNER-DECEMBER-2023'
+
+function closeBanner() {
+  // Hide the banner
+  isVisible.value = false
+  // Save action in the local storage
+  localStorage.setItem(nameStorage, String(true))
+  document.documentElement.classList.remove('vuemastery-menu-fixed')
+}
+
+onMounted(() => {
+  isVisible.value = !localStorage.getItem(nameStorage)
+  if (isVisible.value) {
+    document.documentElement.classList.add('vuemastery-menu-fixed')
+    setTimeout(() => {
+      showFlash.value = true
+    }, 2000)
+  }
+})
+</script>
+
 <template>
   <div class="vuemastery-banner-wrapper" role="banner" v-if="isVisible">
     <div
@@ -30,31 +56,6 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from 'vue'
-
-const isVisible = ref(false)
-const showFlash = ref(false)
-const nameStorage = 'VUEMASTERY-BANNER-DECEMBER-2023'
-
-const closeBanner = () => {
-  // Hide the banner
-  isVisible.value = false
-  // Save action in the local storage
-  localStorage.setItem(nameStorage, String(true))
-  document.documentElement.classList.remove('vuemastery-menu-fixed')
-}
-
-onMounted(() => {
-  isVisible.value = !localStorage.getItem(nameStorage)
-  if (isVisible.value) {
-    document.documentElement.classList.add('vuemastery-menu-fixed')
-    setTimeout(() => {
-      showFlash.value = true
-    }, 2000)
-  }
-})
-</script>
 <style scoped>
 .vuemastery-banner-wrapper {
   position: fixed;
