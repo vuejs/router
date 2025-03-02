@@ -2,3 +2,4 @@ __build__
 dist
 coverage
 tests_output
+packages/docs/.vitepress/cache

@@ -135,7 +135,8 @@ export const sharedConfig = defineConfig({
     ],
 
     footer: {
-      copyright: 'Copyright © 2014-present Evan You, Eduardo San Martin Morote',
+      copyright:
+        'Copyright © 2014-present Evan You, Eduardo San Martin Morote',
       message: 'Released under the MIT License.',
     },
 
