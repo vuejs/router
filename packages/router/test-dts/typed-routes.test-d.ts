@@ -4,8 +4,11 @@ import {
   type ParamValue,
   type ParamValueOneOrMore,
   type RouteLocationTyped,
+  type RouteMeta,
   createRouter,
   createWebHistory,
+  useRoute,
+  RouteLocationNormalizedLoadedTyped,
 } from './index'
 
 // type is needed instead of an interface
@@ -15,20 +18,49 @@ export type RouteMap = {
     '/[...path]',
     '/:path(.*)',
     { path: ParamValue<true> },
-    { path: ParamValue<false> }
+    { path: ParamValue<false> },
+    RouteMeta,
+    never
   >
   '/[a]': RouteRecordInfo<
     '/[a]',
     '/:a',
     { a: ParamValue<true> },
-    { a: ParamValue<false> }
+    { a: ParamValue<false> },
+    RouteMeta,
+    never
   >
-  '/a': RouteRecordInfo<'/a', '/a', Record<never, never>, Record<never, never>>
+  '/a': RouteRecordInfo<
+    '/a',
+    '/a',
+    Record<never, never>,
+    Record<never, never>,
+    RouteMeta,
+    '/a/b'
+  >
+  '/a/b': RouteRecordInfo<
+    '/a/b',
+    '/a/b',
+    Record<never, never>,
+    Record<never, never>,
+    RouteMeta,
+    '/a/b/c'
+  >
+  '/a/b/c': RouteRecordInfo<
+    '/a/b/c',
+    '/a/b/c',
+    Record<never, never>,
+    Record<never, never>,
+    RouteMeta,
+    never
+  >
   '/[id]+': RouteRecordInfo<
     '/[id]+',
     '/:id+',
     { id: ParamValueOneOrMore<true> },
-    { id: ParamValueOneOrMore<false> }
+    { id: ParamValueOneOrMore<false> },
+    RouteMeta,
+    never
   >
 }
 
@@ -135,5 +167,12 @@ describe('RouterTyped', () => {
       }
       return true
     })
+  })
+
+  it('useRoute', () => {
+    expectTypeOf(useRoute('/[a]')).toEqualTypeOf<RouteLocationNormalizedLoadedTyped<RouteMap, '/[a]'>>();
+    expectTypeOf(useRoute('/a')).toEqualTypeOf<RouteLocationNormalizedLoadedTyped<RouteMap, '/a'> | RouteLocationNormalizedLoadedTyped<RouteMap, '/a/b'> | RouteLocationNormalizedLoadedTyped<RouteMap, '/a/b/c'>>();
+    expectTypeOf(useRoute('/a/b')).toEqualTypeOf<RouteLocationNormalizedLoadedTyped<RouteMap, '/a/b'> | RouteLocationNormalizedLoadedTyped<RouteMap, '/a/b/c'>>();
+    expectTypeOf(useRoute('/a/b/c')).toEqualTypeOf<RouteLocationNormalizedLoadedTyped<RouteMap, '/a/b/c'>>();
   })
 })
