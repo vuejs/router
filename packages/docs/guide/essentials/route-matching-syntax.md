@@ -124,3 +124,25 @@ You can play around with the matching syntax [in the playground](https://paths.e
 ## Debugging
 
 If you need to dig how your routes are transformed into a regex to understand why a route isn't being matched or, to report a bug, you can use the [path ranker tool](https://paths.esm.dev/?p=AAMeJSyAwR4UbFDAFxAcAGAIJXMAAA..#). It supports sharing your routes through the URL.
+
+## Avoiding slow regex
+
+When using custom regex, make sure to avoid using slow regex patterns. For example, using `.*` will match any character and can lead to **serious performance issues** if it's combined with a repeatable modifier `*` or `+` and anything after it:
+
+```ts
+const routes = [
+  // This creates a very slow regex because of the greedy `.*` followed by `*` and a static string
+  { path: '/:pathMatch(.*)*/something-at-the-end' },
+]
+```
+
+In practice, use these _match everything_ params only **in the very end of the URL**. If you need them in the middle of the path, **do not make them repeatable**:
+
+```ts
+const routes = [
+  // This is fine because the `.*` is at the end
+  { path: '/:pathMatch(.*)/something-at-the-end' },
+]
+```
+
+This matches the same routes but without an array of params and it's much faster.
