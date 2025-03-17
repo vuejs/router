@@ -54,9 +54,7 @@ const routes = [
     path: '/users/:id/posts',
     redirect: to => {
       // 该函数接收目标路由作为参数
-      // 相对位置不以`/`开头
-      // 或 { path: 'profile'}
-      return 'profile'
+      return to.path.replace(/posts$/, 'profile')
     },
   },
 ]
