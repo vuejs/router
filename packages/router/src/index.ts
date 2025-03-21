@@ -137,7 +137,8 @@ export type {
 } from './typed-routes'
 
 export { createRouter } from './router'
-export type { Router, RouterOptions, RouterScrollBehavior } from './router'
+export type { Router, RouterOptions } from './router'
+export type { RouterScrollBehavior } from './scrollBehavior'
 
 export { NavigationFailureType, isNavigationFailure } from './errors'
 export type {
