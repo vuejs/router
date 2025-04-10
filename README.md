@@ -12,12 +12,22 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
 
 <!--sponsors start-->
 
+<h4 align="center">Gold Sponsors</h4>
+<p align="center">
+    <a href="https://www.coderabbit.ai/?utm_source=cr_org&utm_medium=github" target="_blank" rel="noopener noreferrer">
+    <picture>
+      <source srcset="https://posva-sponsors.pages.dev/logos/coderabbitai.svg" media="(prefers-color-scheme: dark)" height="72px" alt="CodeRabbit" />
+      <img src="https://posva-sponsors.pages.dev/logos/coderabbitai.svg" height="72px" alt="CodeRabbit" />
+    </picture>
+  </a>
+</p>
+
 <h4 align="center">Silver Sponsors</h4>
 <p align="center">
-    <a href="https://route4me.com" target="_blank" rel="noopener noreferrer">
+    <a href="https://www.vuemastery.com" target="_blank" rel="noopener noreferrer">
     <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/route4me.png" media="(prefers-color-scheme: dark)" height="42px" alt="Route Optimizer and Route Planner Software" />
-      <img src="https://posva-sponsors.pages.dev/logos/route4me.png" height="42px" alt="Route Optimizer and Route Planner Software" />
+      <source srcset="https://avatars.githubusercontent.com/u/22382188?v=4" media="(prefers-color-scheme: dark)" height="42px" alt="Vue Mastery" />
+      <img src="https://avatars.githubusercontent.com/u/22382188?v=4" height="42px" alt="Vue Mastery" />
     </picture>
   </a>
     <a href="https://www.prefect.io/" target="_blank" rel="noopener noreferrer">
@@ -26,10 +36,10 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
       <img src="https://posva-sponsors.pages.dev/logos/prefectlogo-light.svg" height="42px" alt="Prefect" />
     </picture>
   </a>
-    <a href="https://www.vuemastery.com/" target="_blank" rel="noopener noreferrer">
+    <a href="https://route4me.com" target="_blank" rel="noopener noreferrer">
     <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/vuemastery-dark.png" media="(prefers-color-scheme: dark)" height="42px" alt="VueMastery" />
-      <img src="https://posva-sponsors.pages.dev/logos/vuemastery-light.svg" height="42px" alt="VueMastery" />
+      <source srcset="https://posva-sponsors.pages.dev/logos/route4me.png" media="(prefers-color-scheme: dark)" height="42px" alt="Route Optimizer and Route Planner Software" />
+      <img src="https://posva-sponsors.pages.dev/logos/route4me.png" height="42px" alt="Route Optimizer and Route Planner Software" />
     </picture>
   </a>
 </p>
@@ -42,16 +52,10 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
       <img src="https://posva-sponsors.pages.dev/logos/storyblok.png" height="26px" alt="Storyblok" />
     </picture>
   </a>
-    <a href="https://ui.nuxt.com/pro" target="_blank" rel="noopener noreferrer">
+    <a href="https://nuxtlabs.com" target="_blank" rel="noopener noreferrer">
     <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/nuxt-dark.svg" media="(prefers-color-scheme: dark)" height="26px" alt="Nuxt UI Pro Templates" />
-      <img src="https://posva-sponsors.pages.dev/logos/nuxt-light.svg" height="26px" alt="Nuxt UI Pro Templates" />
-    </picture>
-  </a>
-    <a href="https://www.vuejs.de" target="_blank" rel="noopener noreferrer">
-    <picture>
-      <source srcset="https://avatars.githubusercontent.com/u/4183726?u=6b50a8ea16de29d2982f43c5640b1db9299ebcd1&v=4" media="(prefers-color-scheme: dark)" height="26px" alt="Antony Konstantinidis" />
-      <img src="https://avatars.githubusercontent.com/u/4183726?u=6b50a8ea16de29d2982f43c5640b1db9299ebcd1&v=4" height="26px" alt="Antony Konstantinidis" />
+      <source srcset="https://posva-sponsors.pages.dev/logos/nuxt-dark.svg" media="(prefers-color-scheme: dark)" height="26px" alt="NuxtLabs" />
+      <img src="https://posva-sponsors.pages.dev/logos/nuxt-light.svg" height="26px" alt="NuxtLabs" />
     </picture>
   </a>
     <a href="https://stormier.ninja" target="_blank" rel="noopener noreferrer">
