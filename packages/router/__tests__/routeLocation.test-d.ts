@@ -4,6 +4,7 @@ import type {
   ParamValue,
   ParamValueZeroOrMore,
   RouteRecordInfo,
+  RouteMeta,
   RouteLocationNormalizedTypedList,
 } from '../src'
 
@@ -15,25 +16,49 @@ type RouteNamedMap = {
     '/[other]',
     '/:other',
     { other: ParamValue<true> },
-    { other: ParamValue<false> }
+    { other: ParamValue<false> },
+    RouteMeta,
+    never
   >
-  '/[name]': RouteRecordInfo<
-    '/[name]',
-    '/:name',
-    { name: ParamValue<true> },
-    { name: ParamValue<false> }
+  '/groups/[gid]': RouteRecordInfo<
+    '/groups/[gid]',
+    '/:gid',
+    { gid: ParamValue<true> },
+    { gid: ParamValue<false> },
+    RouteMeta,
+    '/groups/[gid]/users'
+  >
+  '/groups/[gid]/users': RouteRecordInfo<
+    '/groups/[gid]/users',
+    '/:gid/users',
+    { gid: ParamValue<true> },
+    { gid: ParamValue<false> },
+    RouteMeta,
+    '/groups/[gid]/users/[uid]'
+  >
+  '/groups/[gid]/users/[uid]': RouteRecordInfo<
+    '/groups/[gid]/users/[uid]',
+    '/:gid/users/:uid',
+    { gid: ParamValue<true>; uid: ParamValue<true> },
+    { gid: ParamValue<false>; uid: ParamValue<false> },
+    RouteMeta,
+    never
   >
   '/[...path]': RouteRecordInfo<
     '/[...path]',
     '/:path(.*)',
     { path: ParamValue<true> },
-    { path: ParamValue<false> }
+    { path: ParamValue<false> },
+    RouteMeta,
+    never
   >
   '/deep/nesting/works/[[files]]+': RouteRecordInfo<
     '/deep/nesting/works/[[files]]+',
     '/deep/nesting/works/:files*',
     { files?: ParamValueZeroOrMore<true> },
-    { files?: ParamValueZeroOrMore<false> }
+    { files?: ParamValueZeroOrMore<false> },
+    RouteMeta,
+    never
   >
 }
 
@@ -50,17 +75,29 @@ describe('Route Location types', () => {
     ): void
     function withRoute<Name extends RouteRecordName>(...args: unknown[]) {}
 
-    withRoute('/[name]', to => {
-      expectTypeOf(to.params).toEqualTypeOf<{ name: string }>()
+    withRoute('/groups/[gid]', to => {
+      expectTypeOf(to.params).toEqualTypeOf<{ gid: string }>()
       expectTypeOf(to.params).not.toEqualTypeOf<{ notExisting: string }>()
       expectTypeOf(to.params).not.toEqualTypeOf<{ other: string }>()
     })
 
-    withRoute('/[name]' as keyof RouteNamedMap, to => {
+    withRoute('/groups/[gid]/users', to => {
+      expectTypeOf(to.params).toEqualTypeOf<{ gid: string }>()
+      expectTypeOf(to.params).not.toEqualTypeOf<{ gid: string; uid: string }>()
+      expectTypeOf(to.params).not.toEqualTypeOf<{ other: string }>()
+    })
+
+    withRoute('/groups/[gid]/users/[uid]', to => {
+      expectTypeOf(to.params).toEqualTypeOf<{ gid: string; uid: string }>()
+      expectTypeOf(to.params).not.toEqualTypeOf<{ notExisting: string }>()
+      expectTypeOf(to.params).not.toEqualTypeOf<{ other: string }>()
+    })
+
+    withRoute('/groups/[gid]' as keyof RouteNamedMap, to => {
       // @ts-expect-error: no all params have this
-      to.params.name
-      if (to.name === '/[name]') {
-        to.params.name
+      to.params.gid
+      if (to.name === '/groups/[gid]') {
+        to.params.gid
         // @ts-expect-error: no param other
         to.params.other
       }
@@ -68,12 +105,12 @@ describe('Route Location types', () => {
 
     withRoute(to => {
       // @ts-expect-error: not all params object have a name
-      to.params.name
+      to.params.gid
       // @ts-expect-error: no route named like that
       if (to.name === '') {
       }
-      if (to.name === '/[name]') {
-        expectTypeOf(to.params).toEqualTypeOf<{ name: string }>()
+      if (to.name === '/groups/[gid]') {
+        expectTypeOf(to.params).toEqualTypeOf<{ gid: string }>()
         // @ts-expect-error: no param other
         to.params.other
       }
