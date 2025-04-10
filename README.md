@@ -14,10 +14,10 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
 
 <h4 align="center">Gold Sponsors</h4>
 <p align="center">
-    <a href="https://www.coderabbit.ai/?utm_source=cr_org&utm_medium=github" target="_blank" rel="noopener noreferrer">
+    <a href="https://www.coderabbit.ai/?utm_source=vuerouter&utm_medium=sponsor" target="_blank" rel="noopener noreferrer">
     <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/coderabbitai.svg" media="(prefers-color-scheme: dark)" height="72px" alt="CodeRabbit" />
-      <img src="https://posva-sponsors.pages.dev/logos/coderabbitai.svg" height="72px" alt="CodeRabbit" />
+      <source srcset="https://posva-sponsors.pages.dev/logos/coderabbitai-dark.svg" media="(prefers-color-scheme: dark)" height="72px" alt="CodeRabbit" />
+      <img src="https://posva-sponsors.pages.dev/logos/coderabbitai-light.svg" height="72px" alt="CodeRabbit" />
     </picture>
   </a>
 </p>
