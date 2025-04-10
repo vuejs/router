@@ -24,10 +24,10 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
 
 <h4 align="center">Silver Sponsors</h4>
 <p align="center">
-    <a href="https://www.vuemastery.com" target="_blank" rel="noopener noreferrer">
+    <a href="https://www.vuemastery.com/" target="_blank" rel="noopener noreferrer">
     <picture>
-      <source srcset="https://avatars.githubusercontent.com/u/22382188?v=4" media="(prefers-color-scheme: dark)" height="42px" alt="Vue Mastery" />
-      <img src="https://avatars.githubusercontent.com/u/22382188?v=4" height="42px" alt="Vue Mastery" />
+      <source srcset="https://posva-sponsors.pages.dev/logos/vuemastery-dark.png" media="(prefers-color-scheme: dark)" height="42px" alt="VueMastery" />
+      <img src="https://posva-sponsors.pages.dev/logos/vuemastery-light.svg" height="42px" alt="VueMastery" />
     </picture>
   </a>
     <a href="https://www.prefect.io/" target="_blank" rel="noopener noreferrer">
