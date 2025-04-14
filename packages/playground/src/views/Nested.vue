@@ -60,18 +60,9 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, inject, provide } from 'vue'
+<script setup lang="ts">
+import { inject, provide } from 'vue'
 
-export default defineComponent({
-  name: 'Nested',
-  setup() {
-    const level = inject('level', 1)
-    provide('level', level + 1)
-
-    return {
-      level,
-    }
-  },
-})
+const level = inject('level', 1)
+provide('level', level + 1)
 </script>

@@ -13,15 +13,8 @@
   </section>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import { useRoute } from 'vue-router'
 
-export default defineComponent({
-  name: 'LongView',
-  setup() {
-    const route = useRoute()
-    return { route }
-  },
-})
+const route = useRoute<'long'>()
 </script>

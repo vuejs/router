@@ -9,31 +9,24 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
-export default defineComponent({
-  name: 'RepeatedParams',
+const route = useRoute<'repeat'>()
 
-  setup() {
-    const route = useRoute()
+const lessNesting = computed(() => {
+  const a = [...(route.params.a || [])]
+  a.pop()
 
-    const lessNesting = computed(() => {
-      const a = [...(route.params.a || [])]
-      a.pop()
-
-      return { params: { a } }
-    })
-
-    const moreNesting = computed(() => {
-      const a = [...(route.params.a || [])]
-      a.push('more')
-
-      return { params: { a } }
-    })
-
-    return { lessNesting, moreNesting }
-  },
+  return { params: { a } }
 })
+
+const moreNesting = computed(() => {
+  const a = [...(route.params.a || [])]
+  a.push('more')
+
+  return { params: { a } }
+})
+
 </script>
