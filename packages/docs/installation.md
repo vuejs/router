@@ -21,7 +21,7 @@ pnpm add vue-router@4
 ```
 
 ```bash [bun]
-bun install vue-router@4
+bun add vue-router@4
 ```
 
 :::
