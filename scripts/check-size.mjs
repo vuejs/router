@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import {fileURLToPath} from 'node:url'
+import { fileURLToPath } from 'node:url'
 import chalk from 'chalk'
 import { gzipSync } from 'zlib'
 import { compress } from 'brotli'
