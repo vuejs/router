@@ -4,7 +4,12 @@ import type { ComponentPublicInstance } from 'vue'
 import { router, routerHistory } from './router'
 import { globalState } from './store'
 import App from './App.vue'
-import { useRoute, type ParamValue, type RouteRecordInfo } from 'vue-router'
+import {
+  useRoute,
+  type ParamValue,
+  type RouteRecordInfo,
+  type RouteMeta,
+} from 'vue-router'
 
 declare global {
   interface Window {
@@ -32,18 +37,37 @@ app.use(router)
 window.vm = app.mount('#app')
 
 export interface RouteNamedMap {
-  home: RouteRecordInfo<'home', '/', Record<never, never>, Record<never, never>>
+  home: RouteRecordInfo<
+    'home',
+    '/',
+    Record<never, never>,
+    Record<never, never>,
+    RouteMeta,
+    never
+  >
   '/[name]': RouteRecordInfo<
     '/[name]',
     '/:name',
     { name: ParamValue<true> },
-    { name: ParamValue<false> }
+    { name: ParamValue<false> },
+    RouteMeta,
+    '/[name]/edit'
+  >
+  '/[name]/edit': RouteRecordInfo<
+    '/[name]/edit',
+    '/:name/edit',
+    { name: ParamValue<true> },
+    { name: ParamValue<false> },
+    RouteMeta,
+    never
   >
   '/[...path]': RouteRecordInfo<
     '/[...path]',
     '/:path(.*)',
     { path: ParamValue<true> },
-    { path: ParamValue<false> }
+    { path: ParamValue<false> },
+    RouteMeta,
+    never
   >
 }
 

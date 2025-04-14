@@ -9,8 +9,8 @@ It's possible to configure the router to have a _map_ of typed routes. While thi
 Here is an example of how to manually configure typed routes:
 
 ```ts
-// import the `RouteRecordInfo` type from vue-router to type your routes
-import type { RouteRecordInfo } from 'vue-router'
+// import the `RouteRecordInfo` and `RouteMeta` type from vue-router to type your routes
+import type { RouteRecordInfo, RouteMeta } from 'vue-router'
 
 // Define an interface of routes
 export interface RouteNamedMap {
@@ -23,7 +23,11 @@ export interface RouteNamedMap {
     // these are the raw params. In this case, there are no params allowed
     Record<never, never>,
     // these are the normalized params
-    Record<never, never>
+    Record<never, never>,
+    // these are the `meta` fields
+    RouteMeta,
+    // this is a union of all children route names
+    never
   >
   // repeat for each route..
   // Note you can name them whatever you want
@@ -31,19 +35,33 @@ export interface RouteNamedMap {
     'named-param',
     '/:name',
     { name: string | number }, // raw value
-    { name: string } // normalized value
+    { name: string }, // normalized value
+    RouteMeta,
+    'named-param-edit'
+  >
+  'named-param-edit': RouteRecordInfo<
+    'named-param-edit',
+    '/:name/edit',
+    { name: string | number }, // raw value
+    { name: string }, // normalized value
+    RouteMeta,
+    never
   >
   'article-details': RouteRecordInfo<
     'article-details',
     '/articles/:id+',
     { id: Array<number | string> },
-    { id: string[] }
+    { id: string[] },
+    RouteMeta,
+    never
   >
   'not-found': RouteRecordInfo<
     'not-found',
     '/:path(.*)',
     { path: string },
-    { path: string }
+    { path: string },
+    RouteMeta,
+    never
   >
 }
 
