@@ -63,7 +63,7 @@ webpack 会将任何一个异步模块与相同的块名称组合到相同的异
 
 ### 使用 Vite
 
-在Vite中，你可以在[`rollupOptions`](https://vitejs.dev/config/#build-rollupoptions)下定义分块：
+在Vite中，你可以在[`rollupOptions`](https://cn.vite.dev/config/build-options.html#build-rollupoptions)下定义分块：
 
 ```js
 // vite.config.js
