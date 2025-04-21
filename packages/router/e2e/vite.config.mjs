@@ -20,7 +20,7 @@ fs.readdirSync(__dirname).forEach(dir => {
   }
 })
 
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 /**
  *
  * @param {Record<string, string>} env
