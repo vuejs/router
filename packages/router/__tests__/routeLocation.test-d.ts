@@ -8,7 +8,7 @@ import type {
   RouteLocationNormalizedTypedList,
 } from '../src'
 
-// TODO: could we move this to an .d.ts file that is only loaded for tests?
+// NOTE: A type allows us to make it work only in this test file
 // https://github.com/microsoft/TypeScript/issues/15300
 type RouteNamedMap = {
   home: RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>
@@ -73,7 +73,13 @@ describe('Route Location types', () => {
       name: Name,
       fn: (to: RouteLocationNormalizedTypedList<RouteNamedMap>[Name]) => void
     ): void
-    function withRoute<Name extends RouteRecordName>(...args: unknown[]) {}
+    function withRoute<_Name extends RouteRecordName>(..._args: unknown[]) {}
+
+    withRoute('/[other]', to => {
+      expectTypeOf(to.params).toEqualTypeOf<{ other: string }>()
+      expectTypeOf(to.params).not.toEqualTypeOf<{ gid: string }>()
+      expectTypeOf(to.params).not.toEqualTypeOf<{ notExisting: string }>()
+    })
 
     withRoute('/groups/[gid]', to => {
       expectTypeOf(to.params).toEqualTypeOf<{ gid: string }>()
