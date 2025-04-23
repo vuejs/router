@@ -36,7 +36,7 @@ export type RouteMap = {
     Record<never, never>,
     Record<never, never>,
     RouteMeta,
-    '/a/b'
+    '/a/b' | '/a/b/c'
   >
   '/a/b': RouteRecordInfo<
     '/a/b',

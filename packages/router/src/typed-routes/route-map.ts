@@ -18,7 +18,7 @@ export interface RouteRecordInfo<
   ParamsRaw extends RouteParamsRawGeneric = RouteParamsRawGeneric,
   Params extends RouteParamsGeneric = RouteParamsGeneric,
   Meta extends RouteMeta = RouteMeta,
-  _ChildrenRouteNames extends string | symbol = never,
+  ChildrenNames extends string | symbol | never = never | string | symbol,
 > {
   name: Name
   path: Path
@@ -26,6 +26,7 @@ export interface RouteRecordInfo<
   params: Params
   // TODO: implement meta with a defineRoute macro
   meta: Meta
+  childrenNames: ChildrenNames
 }
 
 /**
@@ -40,28 +41,3 @@ export type RouteMap =
  * Generic version of the `RouteMap`.
  */
 export type RouteMapGeneric = Record<string | symbol, RouteRecordInfo>
-
-/**
- * Returns a union of route names from children of the route with given route name
- */
-export type GetDeepChildrenRouteNames<Name extends keyof RouteMap> =
-  RouteMap[Name] extends RouteRecordInfo<
-    any,
-    any,
-    any,
-    any,
-    any,
-    infer ChildrenNames
-  >
-    ? ChildrenNames extends any
-      ? ChildrenNames | GetDeepChildrenRouteNames<ChildrenNames>
-      : never
-    : never
-
-/**
- * Returns a union of given route name and the route names of children of that route
- */
-export type RouteNameWithChildren<Name extends keyof RouteMap> =
-  RouteMapGeneric extends RouteMap
-    ? Name
-    : Name | GetDeepChildrenRouteNames<Name>
