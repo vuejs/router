@@ -8,7 +8,7 @@ import {
   createRouter,
   createWebHistory,
   useRoute,
-  RouteLocationNormalizedLoadedTyped,
+  RouteLocationNormalizedLoadedTypedList,
 } from './index'
 
 // type is needed instead of an interface
@@ -63,6 +63,15 @@ export type RouteMap = {
     never
   >
 }
+
+// the type allows for type params to distribute types:
+// RouteLocationNormalizedLoadedLoaded<'/[a]' | '/'> will become RouteLocationNormalizedLoadedTyped<RouteMap>['/[a]'] | RouteLocationTypedList<RouteMap>['/']
+// it's closer to what the end users uses but with the RouteMap type fixed so it doesn't
+// pollute globals
+type RouteLocationNormalizedLoaded<
+  Name extends keyof RouteMap = keyof RouteMap,
+> = RouteLocationNormalizedLoadedTypedList<RouteMap>[Name]
+// type Test = RouteLocationNormalizedLoaded<'/a' | '/a/b' | '/a/b/c'>
 
 declare module './index' {
   interface TypesConfig {
@@ -170,9 +179,17 @@ describe('RouterTyped', () => {
   })
 
   it('useRoute', () => {
-    expectTypeOf(useRoute('/[a]')).toEqualTypeOf<RouteLocationNormalizedLoadedTyped<RouteMap, '/[a]'>>();
-    expectTypeOf(useRoute('/a')).toEqualTypeOf<RouteLocationNormalizedLoadedTyped<RouteMap, '/a'> | RouteLocationNormalizedLoadedTyped<RouteMap, '/a/b'> | RouteLocationNormalizedLoadedTyped<RouteMap, '/a/b/c'>>();
-    expectTypeOf(useRoute('/a/b')).toEqualTypeOf<RouteLocationNormalizedLoadedTyped<RouteMap, '/a/b'> | RouteLocationNormalizedLoadedTyped<RouteMap, '/a/b/c'>>();
-    expectTypeOf(useRoute('/a/b/c')).toEqualTypeOf<RouteLocationNormalizedLoadedTyped<RouteMap, '/a/b/c'>>();
+    expectTypeOf(useRoute('/[a]')).toEqualTypeOf<
+      RouteLocationNormalizedLoaded<'/[a]'>
+    >()
+    expectTypeOf(useRoute('/a')).toEqualTypeOf<
+      RouteLocationNormalizedLoaded<'/a' | '/a/b' | '/a/b/c'>
+    >()
+    expectTypeOf(useRoute('/a/b')).toEqualTypeOf<
+      RouteLocationNormalizedLoaded<'/a/b' | '/a/b/c'>
+    >()
+    expectTypeOf(useRoute('/a/b/c')).toEqualTypeOf<
+      RouteLocationNormalizedLoaded<'/a/b/c'>
+    >()
   })
 })

@@ -44,15 +44,24 @@ export type RouteMapGeneric = Record<string | symbol, RouteRecordInfo>
 /**
  * Returns a union of route names from children of the route with given route name
  */
-export type GetDeepChildrenRouteNames<T extends keyof RouteMap> =
-  RouteMap[T] extends RouteRecordInfo<any, any, any, any, any, infer N>
-    ? N extends any
-      ? N | GetDeepChildrenRouteNames<N>
+export type GetDeepChildrenRouteNames<Name extends keyof RouteMap> =
+  RouteMap[Name] extends RouteRecordInfo<
+    any,
+    any,
+    any,
+    any,
+    any,
+    infer ChildrenNames
+  >
+    ? ChildrenNames extends any
+      ? ChildrenNames | GetDeepChildrenRouteNames<ChildrenNames>
       : never
     : never
 
 /**
  * Returns a union of given route name and the route names of children of that route
  */
-export type RouteNameWithChildren<T extends keyof RouteMap> =
-  RouteMapGeneric extends RouteMap ? T : T | GetDeepChildrenRouteNames<T>
+export type RouteNameWithChildren<Name extends keyof RouteMap> =
+  RouteMapGeneric extends RouteMap
+    ? Name
+    : Name | GetDeepChildrenRouteNames<Name>
