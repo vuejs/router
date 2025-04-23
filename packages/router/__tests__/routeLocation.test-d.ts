@@ -26,7 +26,7 @@ type RouteNamedMap = {
     { gid: ParamValue<true> },
     { gid: ParamValue<false> },
     RouteMeta,
-    '/groups/[gid]/users'
+    '/groups/[gid]/users' | '/groups/[gid]/users/[uid]'
   >
   '/groups/[gid]/users': RouteRecordInfo<
     '/groups/[gid]/users',

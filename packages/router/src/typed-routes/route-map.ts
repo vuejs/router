@@ -18,7 +18,7 @@ export interface RouteRecordInfo<
   ParamsRaw extends RouteParamsRawGeneric = RouteParamsRawGeneric,
   Params extends RouteParamsGeneric = RouteParamsGeneric,
   Meta extends RouteMeta = RouteMeta,
-  ChildrenNames extends string | symbol | never = never | string | symbol,
+  ChildrenNames extends string | symbol = never,
 > {
   name: Name
   path: Path
@@ -28,6 +28,15 @@ export interface RouteRecordInfo<
   meta: Meta
   childrenNames: ChildrenNames
 }
+
+export type RouteRecordInfoGeneric = RouteRecordInfo<
+  string | symbol,
+  string,
+  RouteParamsRawGeneric,
+  RouteParamsGeneric,
+  RouteMeta,
+  string | symbol
+>
 
 /**
  * Convenience type to get the typed RouteMap or a generic one if not provided. It is extracted from the {@link TypesConfig} if it exists, it becomes {@link RouteMapGeneric} otherwise.
@@ -40,4 +49,4 @@ export type RouteMap =
 /**
  * Generic version of the `RouteMap`.
  */
-export type RouteMapGeneric = Record<string | symbol, RouteRecordInfo>
+export type RouteMapGeneric = Record<string | symbol, RouteRecordInfoGeneric>
