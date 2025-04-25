@@ -24,7 +24,7 @@
     "play": "pnpm run -r play",
     "build:size": "pnpm run -r build:size",
     "lint": "pnpm run lint:script && pnpm run lint:html",
-    "lint:script": "prettier -c --parser typescript \"packages/*/{src,__tests__,e2e}/**/*.[jt]s?(x)\"",
+    "lint:script": "prettier -c --parser typescript \"packages/**/*.?(m)[jt]s?(x)\" \"scripts/*.mjs\"",
     "lint:html": "prettier -c --parser html \"packages/**/*.html\"",
     "lint:fix": "pnpm run lint:script --write && pnpm run lint:html --write",
     "test": "pnpm run -r test",
@@ -54,11 +54,14 @@
     "commit-msg": "node scripts/verifyCommit.mjs"
   },
   "lint-staged": {
-    "*.js": [
+    "*.?(m)js": [
       "prettier --write"
     ],
-    "*.ts?(x)": [
+    "*.?(m)ts?(x)": [
       "prettier --parser=typescript --write"
+    ],
+    "*.html": [
+      "prettier --parser=html --write"
     ]
   },
   "pnpm": {
