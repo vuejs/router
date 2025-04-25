@@ -1,14 +1,10 @@
 import { createMemoryHistory } from '../../src/history/memory'
-import { START, HistoryLocation, HistoryState } from '../../src/history/common'
+import { START, HistoryLocation } from '../../src/history/common'
 import { vi, describe, expect, it } from 'vitest'
 
 const loc: HistoryLocation = '/foo'
 
 const loc2: HistoryLocation = '/bar'
-
-const state: HistoryState = { foo: 'bar' }
-
-const state2: HistoryState = { foo: 'baz' }
 
 describe('Memory history', () => {
   it('starts in nowhere', () => {
@@ -57,12 +53,12 @@ describe('Memory history', () => {
 
   it('stores a state', () => {
     const history = createMemoryHistory()
-    history.push(loc, state)
-    expect(history.state).toEqual(state)
-    history.push(loc, state2)
-    expect(history.state).toEqual(state2)
+    history.push(loc, { foo: 'bar' })
+    expect(history.state).toEqual({ foo: 'bar' })
+    history.push(loc, { foo: 'baz' })
+    expect(history.state).toEqual({ foo: 'baz' })
     history.go(-1)
-    expect(history.state).toEqual(state)
+    expect(history.state).toEqual({ foo: 'bar' })
   })
 
   it('does nothing with back if queue contains only one element', () => {
