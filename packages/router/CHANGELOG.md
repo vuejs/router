@@ -6,7 +6,6 @@
 
 ### Features
 
-- activate madvue banner ([#2480](https://github.com/vuejs/router/issues/2480)) ([8e38733](https://github.com/vuejs/router/commit/8e387338c40cd0d68fc02f8ee8fb83d6a3b834f0))
 - memory history stores state ([#2491](https://github.com/vuejs/router/issues/2491)) ([24ff936](https://github.com/vuejs/router/commit/24ff936bed41166a03f365ab1437960f6426bed1))
 - **types:** add support for children routes as union ([#2475](https://github.com/vuejs/router/issues/2475)) ([0ce408d](https://github.com/vuejs/router/commit/0ce408dadbb45a4790e2ccee311a032cc7c6d957))
 
