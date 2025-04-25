@@ -80,5 +80,17 @@ Vue might automatically reuse components that look alike, avoiding any transitio
 </router-view>
 ```
 
-<!-- TODO: interactive example -->
+## Initial navigation and transitions
+
+Usually, enter animations are ignored by Vue's `<Transition>` unless we add the `appear` prop. But you'll notice that, when using it alongside `<RouterView>`, transitions are **always** applied despite the `appear` prop not being set. This is because navigations are asynchronous in Vue Router, meaning that the Vue application renders once before the initial navigation is finished. There are different ways to adapt this. The easiest one is to await the initial navigation before mounting the app with [`isReady`](https://router.vuejs.org/api/interfaces/Router.html#isReady):
+
+```ts
+const app = createApp(App)
+app.use(router)
+
+// mount after the initial navigation is ready
+await router.isReady()
+app.mount('#app')
+```
+
 <!-- See full example [here](https://github.com/vuejs/vue-router/blob/dev/examples/transitions/app.js). -->
