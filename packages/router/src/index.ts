@@ -113,6 +113,7 @@ export type {
   RouteLocationAsPathTypedList,
 
   // route records
+  RouteRecordInfoGeneric,
   RouteRecordInfo,
   RouteRecordNameGeneric,
   RouteRecordName,
