@@ -1,4 +1,5 @@
 # 滚动行为
+
 <VueSchoolLink
   href="https://vueschool.io/lessons/scroll-behavior"
   title="Learn how to customize scroll behavior"
@@ -20,7 +21,7 @@ const router = createRouter({
 })
 ```
 
-`scrollBehavior` 函数接收 `to`和` from` 路由对象，如 [Navigation Guards](./navigation-guards.md)。第三个参数 `savedPosition`，只有当这是一个 `popstate` 导航时才可用（由浏览器的后退/前进按钮触发）。
+`scrollBehavior` 函数接收 `to`和`from` 路由对象，如 [Navigation Guards](./navigation-guards.md)。第三个参数 `savedPosition`，只有当这是一个 `popstate` 导航时才可用（由浏览器的后退/前进按钮触发）。
 
 该函数可以返回一个 [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions) 位置对象:
 
@@ -91,7 +92,7 @@ const router = createRouter({
         behavior: 'smooth',
       }
     }
-  }
+  },
 })
 ```
 
@@ -112,3 +113,29 @@ const router = createRouter({
 ```
 
 我们可以将其与页面级过渡组件的事件挂钩，以使滚动行为与你的页面过渡很好地结合起来，但由于使用场景可能存在的差异和复杂性，我们只是提供了这个基础来实现特定的用户场景。
+
+## 高级偏移量
+
+如果你的页面中有固定的导航栏或类似的元素，你可能需要设置偏移量，以确保目标元素不会被其他内容遮挡。
+使用静态偏移值并不总是有效。你可以尝试一些基于 CSS 的解决方案，比如使用 `scroll-margin` 或 `scroll-padding` 添加偏移，或者使用 `::before` 和 `::after` 伪元素。然而，这些方法有时会导致意想不到的行为。
+
+在这种情况下，更好的做法是手动计算偏移量。一种简单的方法是结合 CSS 和 JavaScript 的 `getComputedStyle()`。这样每个元素都可以动态定义自己的偏移量。以下是一个示例：
+
+```js
+const router = createRouter({
+  scrollBehavior(to, from, savedPosition) {
+    const mainElement = document.querySelector('#main')
+    if (mainElement) {
+      const marginTop = parseFloat(
+        getComputedStyle(mainElement).scrollMarginTop
+      )
+      return {
+        el: mainElement,
+        top: marginTop,
+      }
+    } else {
+      return { top: 0 }
+    }
+  },
+})
+```

@@ -92,7 +92,7 @@ const router = createRouter({
         behavior: 'smooth',
       }
     }
-  }
+  },
 })
 ```
 
@@ -113,3 +113,29 @@ const router = createRouter({
 ```
 
 It's possible to hook this up with events from a page-level transition component to make the scroll behavior play nicely with your page transitions, but due to the possible variance and complexity in use cases, we simply provide this primitive to enable specific userland implementations.
+
+## Advanced offsets
+
+If your page has a fixed navbar or similar elements, you might need an offset to ensure the target element isn't hidden behind other content.
+Using a static offset value may not always work. You might try CSS-based solutions, like adding offsets with `scroll-margin` or `scroll-padding`, or using `::before` and `::after` pseudo-elements. However, these approaches can lead to unexpected behavior.
+
+In such cases, it's better to calculate the offset manually. A simple way to do this is by combining CSS with JavaScript's `getComputedStyle()`. This lets each element define its own offset dynamically. Here's an example:
+
+```js
+const router = createRouter({
+  scrollBehavior(to, from, savedPosition) {
+    const mainElement = document.querySelector('#main')
+    if (mainElement) {
+      const marginTop = parseFloat(
+        getComputedStyle(mainElement).scrollMarginTop
+      )
+      return {
+        el: mainElement,
+        top: marginTop,
+      }
+    } else {
+      return { top: 0 }
+    }
+  },
+})
+```
