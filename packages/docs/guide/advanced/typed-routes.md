@@ -9,8 +9,8 @@ It's possible to configure the router to have a _map_ of typed routes. While thi
 Here is an example of how to manually configure typed routes:
 
 ```ts
-// import the `RouteRecordInfo` and `RouteMeta` type from vue-router to type your routes
-import type { RouteRecordInfo, RouteMeta } from 'vue-router'
+// import the `RouteRecordInfo` type from vue-router to type your routes
+import type { RouteRecordInfo } from 'vue-router'
 
 // Define an interface of routes
 export interface RouteNamedMap {
@@ -24,8 +24,6 @@ export interface RouteNamedMap {
     Record<never, never>,
     // these are the normalized params
     Record<never, never>,
-    // these are the `meta` fields
-    RouteMeta,
     // this is a union of all children route names
     never
   >
@@ -36,7 +34,6 @@ export interface RouteNamedMap {
     '/:name',
     { name: string | number }, // raw value
     { name: string }, // normalized value
-    RouteMeta,
     'named-param-edit'
   >
   'named-param-edit': RouteRecordInfo<
@@ -44,7 +41,6 @@ export interface RouteNamedMap {
     '/:name/edit',
     { name: string | number }, // raw value
     { name: string }, // normalized value
-    RouteMeta,
     never
   >
   'article-details': RouteRecordInfo<
@@ -52,7 +48,6 @@ export interface RouteNamedMap {
     '/articles/:id+',
     { id: Array<number | string> },
     { id: string[] },
-    RouteMeta,
     never
   >
   'not-found': RouteRecordInfo<
@@ -60,7 +55,6 @@ export interface RouteNamedMap {
     '/:path(.*)',
     { path: string },
     { path: string },
-    RouteMeta,
     never
   >
 }
