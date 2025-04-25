@@ -20,27 +20,28 @@ export interface RouteNamedMap {
     'home',
     // this is the path, it will appear in autocompletion
     '/',
-    // these are the raw params. In this case, there are no params allowed
+    // these are the raw params (what can be passed to router.push() and RouterLink's "to" prop)
+    // In this case, there are no params allowed
     Record<never, never>,
-    // these are the normalized params
+    // these are the normalized params (what you get from useRoute())
     Record<never, never>,
-    // this is a union of all children route names
+    // this is a union of all children route names, in this case, there are none
     never
   >
-  // repeat for each route..
+  // repeat for each route...
   // Note you can name them whatever you want
   'named-param': RouteRecordInfo<
     'named-param',
     '/:name',
-    { name: string | number }, // raw value
-    { name: string }, // normalized value
+    { name: string | number }, // Allows string or number
+    { name: string }, // but always returns a string from the URL
     'named-param-edit'
   >
   'named-param-edit': RouteRecordInfo<
     'named-param-edit',
     '/:name/edit',
-    { name: string | number }, // raw value
-    { name: string }, // normalized value
+    { name: string | number }, // we also include parent params
+    { name: string },
     never
   >
   'article-details': RouteRecordInfo<
