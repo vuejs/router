@@ -4,7 +4,6 @@ import type {
   ParamValue,
   ParamValueZeroOrMore,
   RouteRecordInfo,
-  RouteMeta,
   RouteLocationNormalizedTypedList,
 } from '../src'
 
@@ -17,7 +16,6 @@ type RouteNamedMap = {
     '/:other',
     { other: ParamValue<true> },
     { other: ParamValue<false> },
-    RouteMeta,
     never
   >
   '/groups/[gid]': RouteRecordInfo<
@@ -25,7 +23,6 @@ type RouteNamedMap = {
     '/:gid',
     { gid: ParamValue<true> },
     { gid: ParamValue<false> },
-    RouteMeta,
     '/groups/[gid]/users' | '/groups/[gid]/users/[uid]'
   >
   '/groups/[gid]/users': RouteRecordInfo<
@@ -33,7 +30,6 @@ type RouteNamedMap = {
     '/:gid/users',
     { gid: ParamValue<true> },
     { gid: ParamValue<false> },
-    RouteMeta,
     '/groups/[gid]/users/[uid]'
   >
   '/groups/[gid]/users/[uid]': RouteRecordInfo<
@@ -41,7 +37,6 @@ type RouteNamedMap = {
     '/:gid/users/:uid',
     { gid: ParamValue<true>; uid: ParamValue<true> },
     { gid: ParamValue<false>; uid: ParamValue<false> },
-    RouteMeta,
     never
   >
   '/[...path]': RouteRecordInfo<
@@ -49,7 +44,6 @@ type RouteNamedMap = {
     '/:path(.*)',
     { path: ParamValue<true> },
     { path: ParamValue<false> },
-    RouteMeta,
     never
   >
   '/deep/nesting/works/[[files]]+': RouteRecordInfo<
@@ -57,7 +51,6 @@ type RouteNamedMap = {
     '/deep/nesting/works/:files*',
     { files?: ParamValueZeroOrMore<true> },
     { files?: ParamValueZeroOrMore<false> },
-    RouteMeta,
     never
   >
 }

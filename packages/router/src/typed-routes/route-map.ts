@@ -1,9 +1,5 @@
 import type { TypesConfig } from '../config'
-import type {
-  RouteMeta,
-  RouteParamsGeneric,
-  RouteParamsRawGeneric,
-} from '../types'
+import type { RouteParamsGeneric, RouteParamsRawGeneric } from '../types'
 import type { RouteRecord } from '../matcher/types'
 
 /**
@@ -17,16 +13,20 @@ export interface RouteRecordInfo<
   // TODO: could probably be inferred from the Params
   ParamsRaw extends RouteParamsRawGeneric = RouteParamsRawGeneric,
   Params extends RouteParamsGeneric = RouteParamsGeneric,
-  Meta extends RouteMeta = RouteMeta,
+  // NOTE: this is the only type param that feels wrong because its default
+  // value is the default value to avoid breaking changes but it should be the
+  // generic version by default instead (string | symbol)
   ChildrenNames extends string | symbol = never,
+  // TODO: implement meta with a defineRoute macro
+  // Meta extends RouteMeta = RouteMeta,
 > {
   name: Name
   path: Path
   paramsRaw: ParamsRaw
   params: Params
-  // TODO: implement meta with a defineRoute macro
-  meta: Meta
   childrenNames: ChildrenNames
+  // TODO: implement meta with a defineRoute macro
+  // meta: Meta
 }
 
 export type RouteRecordInfoGeneric = RouteRecordInfo<
@@ -34,7 +34,6 @@ export type RouteRecordInfoGeneric = RouteRecordInfo<
   string,
   RouteParamsRawGeneric,
   RouteParamsGeneric,
-  RouteMeta,
   string | symbol
 >
 

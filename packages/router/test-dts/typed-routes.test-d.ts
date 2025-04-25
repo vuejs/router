@@ -4,7 +4,6 @@ import {
   type ParamValue,
   type ParamValueOneOrMore,
   type RouteLocationTyped,
-  type RouteMeta,
   createRouter,
   createWebHistory,
   useRoute,
@@ -19,7 +18,6 @@ export type RouteMap = {
     '/:path(.*)',
     { path: ParamValue<true> },
     { path: ParamValue<false> },
-    RouteMeta,
     never
   >
   '/[a]': RouteRecordInfo<
@@ -27,7 +25,6 @@ export type RouteMap = {
     '/:a',
     { a: ParamValue<true> },
     { a: ParamValue<false> },
-    RouteMeta,
     never
   >
   '/a': RouteRecordInfo<
@@ -35,7 +32,6 @@ export type RouteMap = {
     '/a',
     Record<never, never>,
     Record<never, never>,
-    RouteMeta,
     '/a/b' | '/a/b/c'
   >
   '/a/b': RouteRecordInfo<
@@ -43,7 +39,6 @@ export type RouteMap = {
     '/a/b',
     Record<never, never>,
     Record<never, never>,
-    RouteMeta,
     '/a/b/c'
   >
   '/a/b/c': RouteRecordInfo<
@@ -51,7 +46,6 @@ export type RouteMap = {
     '/a/b/c',
     Record<never, never>,
     Record<never, never>,
-    RouteMeta,
     never
   >
   '/[id]+': RouteRecordInfo<
@@ -59,7 +53,6 @@ export type RouteMap = {
     '/:id+',
     { id: ParamValueOneOrMore<true> },
     { id: ParamValueOneOrMore<false> },
-    RouteMeta,
     never
   >
 }
