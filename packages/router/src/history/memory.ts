@@ -20,17 +20,17 @@ import {
  */
 export function createMemoryHistory(base: string = ''): RouterHistory {
   let listeners: NavigationCallback[] = []
-  let queue: HistoryLocation[] = [START]
+  let queue: [url: HistoryLocation, state: HistoryState][] = [[START, {}]]
   let position: number = 0
   base = normalizeBase(base)
 
-  function setLocation(location: HistoryLocation) {
+  function setLocation(location: HistoryLocation, state: HistoryState = {}) {
     position++
     if (position !== queue.length) {
       // we are in the middle, we remove everything from here in the queue
       queue.splice(position)
     }
-    queue.push(location)
+    queue.push([location, state])
   }
 
   function triggerListeners(
@@ -51,19 +51,19 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
   const routerHistory: RouterHistory = {
     // rewritten by Object.defineProperty
     location: START,
-    // TODO: should be kept in queue
+    // rewritten by Object.defineProperty
     state: {},
     base,
     createHref: createHref.bind(null, base),
 
-    replace(to) {
+    replace(to, state?: HistoryState) {
       // remove current entry and decrement position
       queue.splice(position--, 1)
-      setLocation(to)
+      setLocation(to, state)
     },
 
-    push(to, data?: HistoryState) {
-      setLocation(to)
+    push(to, state?: HistoryState) {
+      setLocation(to, state)
     },
 
     listen(callback) {
@@ -75,7 +75,7 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
     },
     destroy() {
       listeners = []
-      queue = [START]
+      queue = [[START, {}]]
       position = 0
     },
 
@@ -98,14 +98,19 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
 
   Object.defineProperty(routerHistory, 'location', {
     enumerable: true,
-    get: () => queue[position],
+    get: () => queue[position][0],
+  })
+
+  Object.defineProperty(routerHistory, 'state', {
+    enumerable: true,
+    get: () => queue[position][1],
   })
 
   if (__TEST__) {
     // @ts-expect-error: only for tests
-    routerHistory.changeURL = function (url: string) {
+    routerHistory.changeURL = function (url: string, state: HistoryState = {}) {
       const from = this.location
-      queue.splice(position++ + 1, queue.length, url)
+      queue.splice(position++ + 1, queue.length, [url, state])
       triggerListeners(this.location, from, {
         direction: NavigationDirection.unknown,
         delta: 0,

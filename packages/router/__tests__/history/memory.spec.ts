@@ -51,6 +51,16 @@ describe('Memory history', () => {
     expect(history.location).toEqual(START)
   })
 
+  it('stores a state', () => {
+    const history = createMemoryHistory()
+    history.push(loc, { foo: 'bar' })
+    expect(history.state).toEqual({ foo: 'bar' })
+    history.push(loc, { foo: 'baz' })
+    expect(history.state).toEqual({ foo: 'baz' })
+    history.go(-1)
+    expect(history.state).toEqual({ foo: 'bar' })
+  })
+
   it('does nothing with back if queue contains only one element', () => {
     const history = createMemoryHistory()
     history.go(-1)
