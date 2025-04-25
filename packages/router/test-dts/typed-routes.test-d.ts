@@ -6,6 +6,8 @@ import {
   type RouteLocationTyped,
   createRouter,
   createWebHistory,
+  useRoute,
+  RouteLocationNormalizedLoadedTypedList,
 } from './index'
 
 // type is needed instead of an interface
@@ -15,22 +17,54 @@ export type RouteMap = {
     '/[...path]',
     '/:path(.*)',
     { path: ParamValue<true> },
-    { path: ParamValue<false> }
+    { path: ParamValue<false> },
+    never
   >
   '/[a]': RouteRecordInfo<
     '/[a]',
     '/:a',
     { a: ParamValue<true> },
-    { a: ParamValue<false> }
+    { a: ParamValue<false> },
+    never
   >
-  '/a': RouteRecordInfo<'/a', '/a', Record<never, never>, Record<never, never>>
+  '/a': RouteRecordInfo<
+    '/a',
+    '/a',
+    Record<never, never>,
+    Record<never, never>,
+    '/a/b' | '/a/b/c'
+  >
+  '/a/b': RouteRecordInfo<
+    '/a/b',
+    '/a/b',
+    Record<never, never>,
+    Record<never, never>,
+    '/a/b/c'
+  >
+  '/a/b/c': RouteRecordInfo<
+    '/a/b/c',
+    '/a/b/c',
+    Record<never, never>,
+    Record<never, never>,
+    never
+  >
   '/[id]+': RouteRecordInfo<
     '/[id]+',
     '/:id+',
     { id: ParamValueOneOrMore<true> },
-    { id: ParamValueOneOrMore<false> }
+    { id: ParamValueOneOrMore<false> },
+    never
   >
 }
+
+// the type allows for type params to distribute types:
+// RouteLocationNormalizedLoadedLoaded<'/[a]' | '/'> will become RouteLocationNormalizedLoadedTyped<RouteMap>['/[a]'] | RouteLocationTypedList<RouteMap>['/']
+// it's closer to what the end users uses but with the RouteMap type fixed so it doesn't
+// pollute globals
+type RouteLocationNormalizedLoaded<
+  Name extends keyof RouteMap = keyof RouteMap,
+> = RouteLocationNormalizedLoadedTypedList<RouteMap>[Name]
+// type Test = RouteLocationNormalizedLoaded<'/a' | '/a/b' | '/a/b/c'>
 
 declare module './index' {
   interface TypesConfig {
@@ -135,5 +169,20 @@ describe('RouterTyped', () => {
       }
       return true
     })
+  })
+
+  it('useRoute', () => {
+    expectTypeOf(useRoute('/[a]')).toEqualTypeOf<
+      RouteLocationNormalizedLoaded<'/[a]'>
+    >()
+    expectTypeOf(useRoute('/a')).toEqualTypeOf<
+      RouteLocationNormalizedLoaded<'/a' | '/a/b' | '/a/b/c'>
+    >()
+    expectTypeOf(useRoute('/a/b')).toEqualTypeOf<
+      RouteLocationNormalizedLoaded<'/a/b' | '/a/b/c'>
+    >()
+    expectTypeOf(useRoute('/a/b/c')).toEqualTypeOf<
+      RouteLocationNormalizedLoaded<'/a/b/c'>
+    >()
   })
 })

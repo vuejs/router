@@ -32,18 +32,33 @@ app.use(router)
 window.vm = app.mount('#app')
 
 export interface RouteNamedMap {
-  home: RouteRecordInfo<'home', '/', Record<never, never>, Record<never, never>>
+  home: RouteRecordInfo<
+    'home',
+    '/',
+    Record<never, never>,
+    Record<never, never>,
+    never
+  >
   '/[name]': RouteRecordInfo<
     '/[name]',
     '/:name',
     { name: ParamValue<true> },
-    { name: ParamValue<false> }
+    { name: ParamValue<false> },
+    '/[name]/edit'
+  >
+  '/[name]/edit': RouteRecordInfo<
+    '/[name]/edit',
+    '/:name/edit',
+    { name: ParamValue<true> },
+    { name: ParamValue<false> },
+    never
   >
   '/[...path]': RouteRecordInfo<
     '/[...path]',
     '/:path(.*)',
     { path: ParamValue<true> },
-    { path: ParamValue<false> }
+    { path: ParamValue<false> },
+    never
   >
 }
 

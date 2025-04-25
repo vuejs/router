@@ -257,7 +257,7 @@ export interface _RouteRecordBase extends PathParserOptions {
  * }
  * ```
  */
-export interface RouteMeta extends Record<string | number | symbol, unknown> {}
+export interface RouteMeta extends Record<PropertyKey, unknown> {}
 
 /**
  * Route Record defining one single component with the `component` option.

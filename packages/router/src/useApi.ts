@@ -18,6 +18,8 @@ export function useRouter(): Router {
  */
 export function useRoute<Name extends keyof RouteMap = keyof RouteMap>(
   _name?: Name
-): RouteLocationNormalizedLoaded<Name> {
-  return inject(routeLocationKey)!
+) {
+  return inject(routeLocationKey) as RouteLocationNormalizedLoaded<
+    Name | RouteMap[Name]['childrenNames']
+  >
 }
