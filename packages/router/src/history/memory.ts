@@ -56,14 +56,14 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
     base,
     createHref: createHref.bind(null, base),
 
-    replace(to, data?: HistoryState) {
+    replace(to, state?: HistoryState) {
       // remove current entry and decrement position
       queue.splice(position--, 1)
-      setLocation(to, data)
+      setLocation(to, state)
     },
 
-    push(to, data?: HistoryState) {
-      setLocation(to, data)
+    push(to, state?: HistoryState) {
+      setLocation(to, state)
     },
 
     listen(callback) {
@@ -100,6 +100,7 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
     enumerable: true,
     get: () => queue[position][0],
   })
+
   Object.defineProperty(routerHistory, 'state', {
     enumerable: true,
     get: () => queue[position][1],
@@ -107,9 +108,9 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
 
   if (__TEST__) {
     // @ts-expect-error: only for tests
-    routerHistory.changeURL = function (url: string) {
+    routerHistory.changeURL = function (url: string, state: HistoryState = {}) {
       const from = this.location
-      queue.splice(position++ + 1, queue.length, [url, {}])
+      queue.splice(position++ + 1, queue.length, [url, state])
       triggerListeners(this.location, from, {
         direction: NavigationDirection.unknown,
         delta: 0,
