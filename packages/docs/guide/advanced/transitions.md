@@ -80,23 +80,17 @@ Vue might automatically reuse components that look alike, avoiding any transitio
 </router-view>
 ```
 
-## Respecting `appear` transitions behaviour
+## Initial navigation and transitions
 
-Usually, enter animations are ignored on the initial render unless you're using the `appear` prop. But you'll notice that route components don't respect this behaviour. This happens because the route component is not available in the initial render.
+Usually, enter animations are ignored by Vue's `<Transition>` unless we add the `appear` prop. But you'll notice that, when using it alongside `<RouterView>`, transitions are **always** applied despite the `appear` prop not being set. This is because navigations are asynchronous in Vue Router, meaning that the Vue application renders once before the initial navigation is finished. There are different ways to adapt this. The easiest one is to await the initial navigation before mounting the app with [`isReady`](https://router.vuejs.org/api/interfaces/Router.html#isReady):
 
-You can fix this by making sure that the `<transition>` component isn't rendered until the first route component has been loaded:
+```ts
+const app = createApp(App)
+app.use(router)
 
-```vue-html
-<router-view v-slot="{ Component }">
-  <transition v-if="Component" name="fade">
-    <component :is="Component" />
-  </transition>
-</router-view>
+// mount after the initial navigation is ready
+await router.isReady()
+app.mount('#app')
 ```
 
-Alternatively, you can also await on the router's [`isReady`](https://router.vuejs.org/api/interfaces/Router.html#isReady) method which returns a promise.
-
-Finally, you can support for more complex scenarios [combining the `<Suspense>` and `<KeepAlive>` components](https://vuejs.org/guide/built-ins/suspense.html#combining-with-other-components).
-
-<!-- TODO: interactive example -->
 <!-- See full example [here](https://github.com/vuejs/vue-router/blob/dev/examples/transitions/app.js). -->
