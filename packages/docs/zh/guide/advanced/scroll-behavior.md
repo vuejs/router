@@ -21,7 +21,7 @@ const router = createRouter({
 })
 ```
 
-`scrollBehavior` 函数接收 `to`和` from` 路由对象，如 [Navigation Guards](./navigation-guards.md)。第三个参数 `savedPosition`，只有当这是一个 `popstate` 导航时才可用（由浏览器的后退/前进按钮触发）。
+`scrollBehavior` 函数接收 `to`和`from` 路由对象，如 [Navigation Guards](./navigation-guards.md)。第三个参数 `savedPosition`，只有当这是一个 `popstate` 导航时才可用（由浏览器的后退/前进按钮触发）。
 
 该函数可以返回一个 [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions) 位置对象:
 
@@ -116,14 +116,10 @@ const router = createRouter({
 
 ## 高级偏移量
 
-根据页面的布局，比如如果有一个固定定位的导航栏，可能需要一个偏移量，确保目标元素不会被其他内容遮挡。
+如果你的页面中有固定的导航栏或类似的元素，你可能需要设置偏移量，以确保目标元素不会被其他内容遮挡。
+使用静态偏移值并不总是有效。你可以尝试一些基于 CSS 的解决方案，比如使用 `scroll-margin` 或 `scroll-padding` 添加偏移，或者使用 `::before` 和 `::after` 伪元素。然而，这些方法有时会导致意想不到的行为。
 
-当一个静态的偏移值无法满足需求时，可能会尝试使用 CSS 来创建滚动到元素时的偏移量，但这往往不起作用。以下样式可能会导致这种边界情况：
-
-- `scroll-margin` 或 `scroll-padding` 值
-- `::before` 和 `::after` 伪元素
-
-在这些情况下，需要手动计算偏移量。一个简单的解决方案是利用 getComputedStyle() 来计算偏移量。这允许每个元素根据其自身的需求定义偏移值，并提供所需的灵活性。以下是一个示例：
+在这种情况下，更好的做法是手动计算偏移量。一种简单的方法是结合 CSS 和 JavaScript 的 `getComputedStyle()`。这样每个元素都可以动态定义自己的偏移量。以下是一个示例：
 
 ```js
 const router = createRouter({

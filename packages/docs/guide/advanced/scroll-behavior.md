@@ -116,14 +116,10 @@ It's possible to hook this up with events from a page-level transition component
 
 ## Advanced offsets
 
-Depending on the layout of the page, for example if there is a fixed-positioned navbar, an offset might be needed to make sure the target element is not obscured by other content.
+If your page has a fixed navbar or similar elements, you might need an offset to ensure the target element isn't hidden behind other content.
+Using a static offset value may not always work. You might try CSS-based solutions, like adding offsets with `scroll-margin` or `scroll-padding`, or using `::before` and `::after` pseudo-elements. However, these approaches can lead to unexpected behavior.
 
-When a static offset value doesn't quite do the trick, one might reach for CSS to create an offset when scrolling to an element, only to discover that this doesn't work. For reference, the following styles can result in such edge cases:
-
-- `scroll-margin` or `scroll-padding` values
-- `::before` and `::after` pseudo elements
-
-In these scenarios, the offset needs to be manually computed. One simple solution is to leverage CSS with `getComputedStyle()`. This allows each element to define its own offset value with all the desired flexibility. Here is an example:
+In such cases, it's better to calculate the offset manually. A simple way to do this is by combining CSS with JavaScript's `getComputedStyle()`. This lets each element define its own offset dynamically. Here's an example:
 
 ```js
 const router = createRouter({
