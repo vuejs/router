@@ -20,7 +20,7 @@ import {
  */
 export function createMemoryHistory(base: string = ''): RouterHistory {
   let listeners: NavigationCallback[] = []
-  let queue: [HistoryLocation, HistoryState][] = [[START, {}]]
+  let queue: [url: HistoryLocation, state: HistoryState][] = [[START, {}]]
   let position: number = 0
   base = normalizeBase(base)
 
