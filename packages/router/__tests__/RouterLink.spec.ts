@@ -991,4 +991,39 @@ describe('RouterLink', () => {
       })
     })
   })
+  describe('data attributes for active links', () => {
+    it('sets data-is-active and data-is-exact-active when the link is exactly active', async () => {
+      const { wrapper } = await factory(
+        locations.basic.normalized,
+        { to: locations.basic.string },
+        locations.basic.normalized
+      )
+      expect(wrapper.find('a')!.attributes('data-is-active')).toBe('true')
+      expect(wrapper.find('a')!.attributes('data-is-exact-active')).toBe('true')
+    })
+
+    it('does not include the data attributes when the link is not active', async () => {
+      const { wrapper } = await factory(
+        START_LOCATION_NORMALIZED,
+        { to: locations.foo.string },
+        locations.basic.normalized
+      )
+      expect(wrapper.find('a')!.attributes('data-is-active')).toBeUndefined()
+      expect(
+        wrapper.find('a')!.attributes('data-is-exact-active')
+      ).toBeUndefined()
+    })
+
+    it('sets only data-is-active for a parent link when a child is active', async () => {
+      const { wrapper } = await factory(
+        locations.child.normalized,
+        { to: locations.parent.string },
+        locations.parent.normalized
+      )
+      expect(wrapper.find('a')!.attributes('data-is-active')).toBe('true')
+      expect(
+        wrapper.find('a')!.attributes('data-is-exact-active')
+      ).toBeUndefined()
+    })
+  })
 })
