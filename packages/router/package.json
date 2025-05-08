@@ -76,7 +76,7 @@
   "bugs": {
     "url": "https://github.com/vuejs/router/issues"
   },
-  "homepage": "https://github.com/vuejs/router#readme",
+  "homepage": "https://router.vuejs.org",
   "files": [
     "index.js",
     "dist/*.{js,cjs,mjs}",
