@@ -6,7 +6,7 @@
     :class="classes"
     target="_blank"
     rel="noopener noreferrer"
-    :href="to"
+    :href="String(to)"
     :tabindex="disabled ? -1 : undefined"
     :aria-disabled="disabled"
   >
@@ -26,38 +26,30 @@
   </a>
 </template>
 
-<script>
-import { RouterLink, START_LOCATION, useLink, useRoute } from 'vue-router'
-import { computed, defineComponent, toRefs } from 'vue'
+<script setup lang="ts">
+import { START_LOCATION, useLink, useRoute } from 'vue-router'
+import { computed, useAttrs,  } from 'vue'
+import type { RouterLinkProps } from 'vue-router'
 
-export default defineComponent({
-  props: {
-    ...RouterLink.props,
-    disabled: Boolean,
-  },
+const { replace, to, disabled } = defineProps<RouterLinkProps & {disabled?: boolean}>()
+const attrs = useAttrs()
 
-  setup(props, { attrs }) {
-    const { replace, to, disabled } = toRefs(props)
-    const isExternalLink = computed(
-      () => typeof to.value === 'string' && to.value.startsWith('http')
-    )
+const isExternalLink = computed(
+  () => typeof to === 'string' && to.startsWith('http')
+)
 
-    const currentRoute = useRoute()
+const currentRoute = useRoute()
 
-    const { route, href, isActive, isExactActive, navigate } = useLink({
-      to: computed(() => (isExternalLink.value ? START_LOCATION : to.value)),
-      replace,
-    })
-
-    const classes = computed(() => ({
-      // allow link to be active for unrelated routes
-      'router-link-active':
-        isActive.value || currentRoute.path.startsWith(route.value.path),
-      'router-link-exact-active':
-        isExactActive.value || currentRoute.path === route.value.path,
-    }))
-
-    return { attrs, isExternalLink, href, navigate, classes, disabled }
-  },
+const { route, href, isActive, isExactActive, navigate } = useLink({
+  to: computed(() => (isExternalLink.value ? START_LOCATION : to)),
+  replace,
 })
+
+const classes = computed(() => ({
+  // allow link to be active for unrelated routes
+  'router-link-active':
+    isActive.value || currentRoute.path.startsWith(route.value.path),
+  'router-link-exact-active':
+    isExactActive.value || currentRoute.path === route.value.path,
+}))
 </script>

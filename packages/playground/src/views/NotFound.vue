@@ -2,15 +2,8 @@
   <div>Not Found: {{ route.fullPath }}</div>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import { useRoute } from 'vue-router'
 
-export default defineComponent({
-  name: 'NotFound',
-  setup() {
-    const route = useRoute()
-    return { route }
-  },
-})
+const route = useRoute()
 </script>
