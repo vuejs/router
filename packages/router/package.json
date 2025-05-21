@@ -104,7 +104,9 @@
     "test:e2e:native": "node e2e/runner.mjs --env chrome",
     "test:e2e:ci": "node e2e/runner.mjs --env chrome-headless --retries 2",
     "test:e2e:bs": "node e2e/runner.mjs --local -e android5 --tag browserstack",
-    "test:e2e:bs-test": "node e2e/runner.mjs --local --env browserstack.local_chrome --tag browserstack"
+    "test:e2e:bs-test": "node e2e/runner.mjs --local --env browserstack.local_chrome --tag browserstack",
+    "prepack": "cp ../../README.md ./README.md",
+    "postpack": "rm ./README.md"
   },
   "peerDependencies": {
     "vue": "^3.2.0"
