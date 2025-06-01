@@ -9,15 +9,13 @@
     "types": "vue-tsc --noEmit",
     "preview": "vite preview --port 4173"
   },
-  "dependencies": {
-    "vue": "3.6.0-beta.2"
-  },
   "devDependencies": {
     "@types/node": "^24.10.4",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vue/compiler-sfc": "~3.5.26",
     "@vue/tsconfig": "^0.8.1",
     "vite": "^7.3.0",
+    "vue": "^3.6.0-beta.5",
     "vue-router": "workspace:*",
     "vue-tsc": "^3.2.4"
   }
