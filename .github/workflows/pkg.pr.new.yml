@@ -18,6 +18,7 @@ on:
 
 jobs:
   build:
+    if: github.repository == 'vuejs/router'
     runs-on: ubuntu-latest
 
     steps:
