@@ -185,13 +185,13 @@
     "tsdown": "^0.20.1",
     "tsup": "^8.5.1",
     "vite": "^7.3.0",
-    "vue": "3.6.0-beta.2"
+    "vue": "^3.6.0-beta.5"
   },
   "peerDependencies": {
     "@pinia/colada": ">=0.21.2",
     "@vue/compiler-sfc": "^3.5.17",
     "pinia": "^3.0.4",
-    "vue": "^3.5.0"
+    "vue": "^3.5.0 || ^3.6.0-beta.5"
   },
   "peerDependenciesMeta": {
     "@vue/compiler-sfc": {
