@@ -143,6 +143,8 @@ export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
         : null
     })
 
+    const setRef = createTemplateRefSetter()
+
     return createDynamicComponent(() => {
       if (!ViewComponent.value) {
         return () =>
@@ -151,8 +153,6 @@ export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
             route: routeToDisplay.value,
           })
       }
-
-      const setRef = createTemplateRefSetter()
 
       return () => {
         const component = createComponent(
