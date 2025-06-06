@@ -207,6 +207,16 @@ async function main() {
   step('\nUpdating versions in package.json files...')
   await updateVersions(pkgWithVersions)
 
+  step('\nCopying README for router package...')
+  if (!isDryRun) {
+    await fs.copyFile(
+      resolve(__dirname, '../README.md'),
+      resolve(__dirname, '../packages/router/README.md')
+    )
+  } else {
+    console.log(`(skipped)`)
+  }
+
   step('\nUpdating lock...')
   await runIfNotDry(`pnpm`, ['install'])
 
