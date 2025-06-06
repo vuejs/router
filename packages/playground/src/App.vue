@@ -158,6 +158,9 @@
       <li>
         <router-link to="/p_1/absolute-a">/p_1/absolute-a</router-link>
       </li>
+      <li>
+        <router-link to="/func_comp">/func_comp</router-link>
+      </li>
     </ul>
     <button @click="toggleViewName">Toggle view</button>
     <RouterView :name="viewName" v-slot="{ Component, route }">

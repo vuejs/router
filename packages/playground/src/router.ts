@@ -12,6 +12,7 @@ const component = () => {
 import LongView from './views/LongView.vue'
 import GuardedWithLeave from './views/GuardedWithLeave.vue'
 import ComponentWithData from './views/ComponentWithData.vue'
+import FuncComp from './views/FuncComp'
 import { globalState } from './store'
 import { scrollWaiter } from './scrollWaiter'
 import RepeatedParams from './views/RepeatedParams.vue'
@@ -158,6 +159,10 @@ export const router = createRouter({
         { path: 'dashboard', component },
         { path: 'settings', component },
       ],
+    },
+    {
+      path: '/func_comp',
+      component: FuncComp,
     },
   ],
   async scrollBehavior(to, from, savedPosition) {
