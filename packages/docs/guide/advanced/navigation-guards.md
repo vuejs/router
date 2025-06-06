@@ -290,15 +290,8 @@ If you are writing your component using the Composition API, you can add update 
 
 ## The Full Navigation Resolution Flow
 
-1. Navigation triggered.
-2. Call `beforeRouteLeave` guards in deactivated components.
-3. Call global `beforeEach` guards.
-4. Call `beforeRouteUpdate` guards in reused components.
-5. Call `beforeEnter` in route configs.
-6. Resolve async route components.
-7. Call `beforeRouteEnter` in activated components.
-8. Call global `beforeResolve` guards.
-9. Navigation is confirmed.
-10. Call global `afterEach` hooks.
-11. DOM updates triggered.
-12. Call callbacks passed to `next` in `beforeRouteEnter` guards with instantiated instances.
+![Vue router flow](./images/vue-router-flow.png)
+
+<!-- https://www.figma.com/file/nxHzZVExlwnOiWhfeDU0nB/Vue-Router-Flow -->
+
+See also: [Example](https://codesandbox.io/s/router-flow-umcmb8)
