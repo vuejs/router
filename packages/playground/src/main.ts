@@ -60,6 +60,30 @@ export interface RouteNamedMap {
     { path: ParamValue<false> },
     never
   >
+  long: RouteRecordInfo<
+    'long',
+    '/long-:n(\\d+)',
+    { n: ParamValue<true> },
+    { n: ParamValue<false> }
+  >
+  Nested: RouteRecordInfo<
+    'Nested',
+    '/nested',
+    Record<never, never>,
+    Record<never, never>
+  >
+  'absolute-child': RouteRecordInfo<
+    'absolute-child',
+    '/nested/also-as-absolute',
+    Record<never, never>,
+    Record<never, never>
+  >
+  repeat: RouteRecordInfo<
+    'repeat',
+    '/rep/:a*',
+    { a: ParamValue<true> },
+    { a: ParamValue<false> }
+  >
 }
 
 declare module 'vue-router' {
