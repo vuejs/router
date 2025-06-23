@@ -1,4 +1,5 @@
 export { createWebHistory } from './history/html5'
+export { useHistoryState } from './history/state'
 export { createMemoryHistory } from './history/memory'
 export { createWebHashHistory } from './history/hash'
 export { createRouterMatcher } from './matcher'
