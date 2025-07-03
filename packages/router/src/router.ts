@@ -1259,11 +1259,13 @@ export function createRouter(options: RouterOptions): Router {
       app.component('RouterLink', RouterLink)
       app.component('RouterView', RouterView)
 
-      app.config.globalProperties.$router = router
-      Object.defineProperty(app.config.globalProperties, '$route', {
-        enumerable: true,
-        get: () => unref(currentRoute),
-      })
+      if (!app.vapor) {
+        app.config.globalProperties.$router = router
+        Object.defineProperty(app.config.globalProperties, '$route', {
+          enumerable: true,
+          get: () => unref(currentRoute),
+        })
+      }
 
       // this initial navigation is only necessary on client, on server it doesn't
       // make sense because it will create an extra unnecessary navigation and could
