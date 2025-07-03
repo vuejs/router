@@ -14,6 +14,8 @@ Vue Router 基于 Vue 的组件系统构建，你可以通过配置**路由**来
 这份指南假设你已经对 Vue 有了一定的了解。你不必是 Vue 的专家，但你也许偶尔需要查看 [Vue 的文档](https://cn.vuejs.org/)来了解某些特性。
 :::
 
+<RuleKitLink />
+
 ## 示例
 
 为了引入一些核心概念，我们将使用如下的示例：
@@ -27,9 +29,7 @@ Vue Router 基于 Vue 的组件系统构建，你可以通过配置**路由**来
 ```vue
 <template>
   <h1>Hello App!</h1>
-  <p>
-    <strong>Current route path:</strong> {{ $route.fullPath }}
-  </p>
+  <p><strong>Current route path:</strong> {{ $route.fullPath }}</p>
   <nav>
     <RouterLink to="/">Go to Home</RouterLink>
     <RouterLink to="/about">Go to About</RouterLink>
@@ -82,9 +82,7 @@ const router = createRouter({
 一旦创建了我们的路由器实例，我们就需要将其注册为插件，这一步骤可以通过调用 `use()` 来完成。
 
 ```js
-createApp(App)
-  .use(router)
-  .mount('#app')
+createApp(App).use(router).mount('#app')
 ```
 
 或等价地：
@@ -126,7 +124,6 @@ export default {
 
 这里调用了 `push()`，这是用于[编程式导航](./essentials/navigation)的方法。我们会在后面详细了解。
 
-
 对于组合式 API，我们不能通过 `this` 访问组件实例，所以 Vue Router 给我们提供了一些组合式函数。演练场示例中的 `AboutView.vue` 组件使用了这种方法：
 
 ```vue
@@ -143,7 +140,7 @@ const search = computed({
   },
   set(search) {
     router.replace({ query: { search } })
-  }
+  },
 })
 </script>
 ```
