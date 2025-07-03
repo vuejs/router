@@ -106,6 +106,8 @@ const routes = [
 
 这个例子的 demo 可以在[这里](https://codesandbox.io/s/nested-views-vue-router-4-examples-hl326?initialpath=%2Fusers%2Feduardo)找到。
 
+<RuleKitLink />
+
 ## 嵌套的命名路由
 
 在处理[命名路由](./named-routes.md)时，**你通常会给子路由命名**：

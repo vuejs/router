@@ -1,5 +1,7 @@
 # 关于中文翻译
 
+<RuleKitLink />
+
 这里是 Vue Router 文档的中文翻译，该翻译由 Vue 社区贡献完成，如对翻译有任何疑问，可在我们的 GitHub 仓库创建 issue 或 pull request。谢谢。
 
 ## 协作指南

@@ -36,6 +36,8 @@ router.replace(router.currentRoute.value.fullPath)
 
 记住，如果你需要等待新的路由显示，可以使用 `await router.replace()`。
 
+<RuleKitLink />
+
 ## 在导航守卫中添加路由
 
 如果你决定在导航守卫内部添加或删除路由，你不应该调用 `router.replace()`，而是通过返回新的位置来触发重定向：

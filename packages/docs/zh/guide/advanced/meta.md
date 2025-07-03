@@ -56,6 +56,8 @@ router.beforeEach((to, from) => {
 })
 ```
 
+<RuleKitLink />
+
 ## TypeScript
 
 也可以继承来自 `vue-router` 中的 `RouteMeta` 来为 meta 字段添加类型：

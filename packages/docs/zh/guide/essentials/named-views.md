@@ -90,3 +90,5 @@ const router = createRouter({
 ```
 
 以上案例相关的可运行代码请[移步这里](https://codesandbox.io/s/nested-named-views-vue-router-4-examples-re9yl?&initialpath=%2Fsettings%2Femails).
+
+<RuleKitLink />

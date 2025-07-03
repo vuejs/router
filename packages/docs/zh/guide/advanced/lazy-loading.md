@@ -27,6 +27,8 @@ const router = createRouter({
 
 `component` (和 `components`) 配置接收一个返回 Promise 组件的函数，Vue Router **只会在第一次进入页面时才会获取这个函数**，然后使用缓存数据。这意味着你也可以使用更复杂的函数，只要它们返回一个 Promise ：
 
+<RuleKitLink />
+
 ```js
 const UserDetails = () =>
   Promise.resolve({

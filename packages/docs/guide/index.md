@@ -10,9 +10,7 @@ Client-side routing is used by single-page applications (SPAs) to tie the browse
 
 Vue Router is built on Vue's component system. You configure **routes** to tell Vue Router which components to show for each URL path.
 
-::: tip Prerequisites
 This guide will assume that you are already familiar with Vue itself. You don't need to be a Vue expert, but you may occasionally need to refer back to [the core Vue documentation](https://vuejs.org/) for more information about certain features.
-:::
 
 <RuleKitLink />
 

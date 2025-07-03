@@ -56,6 +56,8 @@ router.beforeEach((to, from) => {
 })
 ```
 
+<RuleKitLink />
+
 ## TypeScript
 
 It is possible to type the meta field by extending the `RouteMeta` interface from `vue-router`:

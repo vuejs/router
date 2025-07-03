@@ -95,3 +95,5 @@ Then you can achieve the layout above with this route configuration:
 ```
 
 A working demo of this example can be found [here](https://codesandbox.io/s/nested-named-views-vue-router-4-examples-re9yl?&initialpath=%2Fsettings%2Femails).
+
+<RuleKitLink />

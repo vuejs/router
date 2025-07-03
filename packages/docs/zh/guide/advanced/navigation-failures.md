@@ -33,6 +33,8 @@ this.isMenuOpen = false
 
 如果导航被阻止，导致用户停留在同一个页面上，由 `router.push` 返回的 `Promise` 的解析值将是 _Navigation Failure_。否则，它将是一个 _falsy_ 值(通常是 `undefined`)。这样我们就可以区分我们导航是否离开了当前位置：
 
+<RuleKitLink />
+
 ```js
 const navigationResult = await router.push('/my-profile')
 

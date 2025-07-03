@@ -23,6 +23,8 @@ const router = createRouter({
 
 `scrollBehavior` 函数接收 `to`和`from` 路由对象，如 [Navigation Guards](./navigation-guards.md)。第三个参数 `savedPosition`，只有当这是一个 `popstate` 导航时才可用（由浏览器的后退/前进按钮触发）。
 
+<RuleKitLink />
+
 该函数可以返回一个 [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions) 位置对象:
 
 ```js

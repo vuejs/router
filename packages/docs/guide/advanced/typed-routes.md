@@ -1,5 +1,7 @@
 # Typed Routes <Badge type="tip" text="v4.4.0+" />
 
+<RuleKitLink />
+
 ![RouterLink to autocomplete](https://user-images.githubusercontent.com/664177/176442066-c4e7fa31-4f06-4690-a49f-ed0fd880dfca.png)
 
 It's possible to configure the router to have a _map_ of typed routes. While this can be done manually, it is recommended to use the [unplugin-vue-router](https://github.com/posva/unplugin-vue-router) plugin to generate the routes and the types automatically.

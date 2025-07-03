@@ -27,6 +27,8 @@ const router = createRouter({
 
 The `component` (and `components`) option accepts a function that returns a Promise of a component and Vue Router **will only fetch it when entering the page for the first time**, then use the cached version. Which means you can also have more complex functions as long as they return a Promise:
 
+<RuleKitLink />
+
 ```js
 const UserDetails = () =>
   Promise.resolve({

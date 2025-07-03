@@ -106,6 +106,8 @@ const routes = [
 
 A working demo of this example can be found [here](https://codesandbox.io/s/nested-views-vue-router-4-examples-hl326?initialpath=%2Fusers%2Feduardo).
 
+<RuleKitLink />
+
 ## Nested Named Routes
 
 When dealing with [Named Routes](./named-routes.md), you usually **name the children routes**:

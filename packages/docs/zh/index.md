@@ -15,6 +15,9 @@ hero:
     - theme: brand
       text: 入门 →
       link: /zh/introduction
+    - theme: cta rulekit
+      text: RuleKit
+      link: https://rulekit.dev?from=vuerouter
     - theme: cta vueschool
       text: 免费视频课程
       link: https://vueschool.io/courses/vue-router-4-for-everyone?friend=vuerouter&utm_source=vuerouter&utm_medium=link&utm_campaign=homepage

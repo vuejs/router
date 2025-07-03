@@ -45,6 +45,8 @@ const routes = [
 </router-view>
 ```
 
+<RuleKitLink />
+
 ## Route-Based Dynamic Transition
 
 It is also possible to determine the transition to use dynamically based on the relationship between the target route and current route. Using a very similar snippet to the one just before:

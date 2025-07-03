@@ -36,6 +36,8 @@ const routes = [
 - 防止你在 URL 中出现打字错误。
 - 绕过路径排序，例如展示一个匹配相同路径但排序较低的路由。
 
+<RuleKitLink />
+
 所有路由的命名**都必须是唯一的**。如果为多条路由添加相同的命名，路由器只会保留最后那一条。你可以在[动态路由](../advanced/dynamic-routing.md#Removing-routes)章节了解更多。
 
 Vue Router 有很多其他部分可以传入网址，例如 `router.push()` 和 `router.replace()` 方法。我们将在[编程式导航](./navigation.md)指南中详细介绍这些方法。就像 `to` 属性一样，这些方法也支持通过 `name` 传入网址：

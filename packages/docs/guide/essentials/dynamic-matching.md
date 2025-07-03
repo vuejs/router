@@ -160,6 +160,8 @@ See more in the [repeated params](./route-matching-syntax.md#Repeatable-params) 
 
 If you are using [History mode](./history-mode.md), make sure to follow the instructions to correctly configure your server as well.
 
+<RuleKitLink />
+
 ## Advanced Matching Patterns
 
 Vue Router uses its own path matching syntax, inspired by the one used by `express`, so it supports many advanced matching patterns such as optional params, zero or more / one or more requirements, and even custom regex patterns. Please check the [Advanced Matching](./route-matching-syntax.md) documentation to explore them.
