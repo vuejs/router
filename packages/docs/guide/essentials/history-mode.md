@@ -185,7 +185,7 @@ Add this to your `firebase.json`:
 
 Create a `_redirects` file that is included with your deployed files:
 
-```
+``` [_redirects ~vscode-icons:file-type-light-netlify~]
 /* /index.html 200
 ```
 
