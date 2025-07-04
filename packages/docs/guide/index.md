@@ -22,9 +22,7 @@ To introduce some of the main ideas, we're going to consider this example:
 
 Let's start by looking at the root component, `App.vue`.
 
-### App.vue
-
-```vue
+```vue [App.vue]
 <template>
   <h1>Hello App!</h1>
   <p><strong>Current route path:</strong> {{ $route.fullPath }}</p>

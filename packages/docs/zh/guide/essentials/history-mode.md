@@ -127,7 +127,7 @@ http
 1. 安装 [IIS UrlRewrite](https://www.iis.net/downloads/microsoft/url-rewrite)
 2. 在网站的根目录下创建一个 `web.config` 文件，内容如下：
 
-```xml
+```xml  [web.config ~vscode-icons:file-type-xml~]
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
   <system.webServer>
@@ -166,7 +166,7 @@ rewrite {
 
 将此添加到你的 `firebase.json` 中：
 
-```json
+```json [firebase.json ~vscode-icons:file-type-firebase~]
 {
   "hosting": {
     "public": "dist",
@@ -196,7 +196,7 @@ rewrite {
 
 在项目根目录创建一个`vercel.json`文件，内容如下：
 
-```json
+```json [vercel.json ~vscode-icons:file-type-json~]
 {
   "rewrites": [{ "source": "/:path*", "destination": "/index.html" }]
 }
