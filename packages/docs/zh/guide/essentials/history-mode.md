@@ -184,7 +184,7 @@ rewrite {
 
 创建一个 `_redirects` 文件，包含在你的部署文件中：
 
-```
+``` [_redirects ~vscode-icons:file-type-light-netlify~]
 /* /index.html 200
 ```
 
