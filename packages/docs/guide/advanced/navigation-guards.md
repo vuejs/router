@@ -140,8 +140,7 @@ Learn more about navigation failures on [its guide](./navigation-failures.md).
 
 Since Vue 3.3, it is possible to use `inject()` within navigation guards. This is useful for injecting global properties like the [pinia stores](https://pinia.vuejs.org). Anything that is provided with `app.provide()` is also accessible within `router.beforeEach()`, `router.beforeResolve()`, `router.afterEach()`:
 
-```ts
-// main.ts
+```ts [main.ts]
 const app = createApp(App)
 app.provide('global', 'hello injections')
 

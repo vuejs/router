@@ -17,6 +17,7 @@
     "typedoc-vitepress-theme": "^1.1.2",
     "vitepress": "1.6.4",
     "vitepress-translation-helper": "^0.2.2",
+    "vitepress-plugin-group-icons": "^1.6.1",
     "vue-router": "workspace:*"
   }
 }

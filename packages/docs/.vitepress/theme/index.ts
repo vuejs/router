@@ -9,6 +9,7 @@ import VueSchoolLink from './components/VueSchoolLink.vue'
 import VueMasteryLogoLink from './components/VueMasteryLogoLink.vue'
 import status from '../translation-status.json'
 import RuleKitLink from './components/RuleKitLink.vue'
+import 'virtual:group-icons.css'
 
 const i18nLabels = {
   zh: '该翻译已同步到了 ${date} 的版本，其对应的 commit hash 是 <code>${hash}</code>。',

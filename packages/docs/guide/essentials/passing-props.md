@@ -9,8 +9,7 @@ Using `$route` or `useRoute()` in your component creates a tight coupling with t
 
 Let's return to our earlier example:
 
-```vue
-<!-- User.vue -->
+```vue [User.vue]
 <template>
   <div>
     User {{ $route.params.id }}
