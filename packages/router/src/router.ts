@@ -1255,7 +1255,6 @@ export function createRouter(options: RouterOptions): Router {
     isReady,
 
     install(app: App) {
-      const router = this
       app.component('RouterLink', RouterLink)
       app.component('RouterView', RouterView)
 
