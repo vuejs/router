@@ -163,7 +163,7 @@ export function createRouterError<E extends RouterError>(
  *     // ...
  *   }
  *   // Aborted or canceled navigations
- *   if (isNavigationFailure(failure, NavigationFailureType.aborted | NavigationFailureType.canceled)) {
+ *   if (isNavigationFailure(failure, NavigationFailureType.aborted | NavigationFailureType.cancelled )) {
  *     // ...
  *   }
  * })
