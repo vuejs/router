@@ -22,15 +22,13 @@ With Vue Router, you can express this relationship using nested route configurat
 
 Given the app we created in the last chapter:
 
-```vue
-<!-- App.vue -->
+```vue [App.vue]
 <template>
   <router-view />
 </template>
 ```
 
-```vue
-<!-- User.vue -->
+```vue [User.vue]
 <template>
   <div>
     User {{ $route.params.id }}
@@ -47,8 +45,7 @@ const routes = [{ path: '/user/:id', component: User }]
 
 The `<router-view>` here is a top-level `router-view`. It renders the component matched by a top level route. Similarly, a rendered component can also contain its own, nested `<router-view>`. For example, if we add one inside the `User` component's template:
 
-```vue
-<!-- User.vue -->
+```vue [User.vue]
 <template>
   <div class="user">
     <h2>User {{ $route.params.id }}</h2>
