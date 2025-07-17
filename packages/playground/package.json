@@ -9,7 +9,7 @@
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
-    "vue": "~3.5.13"
+    "vue": "https://pkg.pr.new/vue@280bc48"
   },
   "devDependencies": {
     "@types/node": "^20.17.31",
