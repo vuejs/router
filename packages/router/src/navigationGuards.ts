@@ -413,7 +413,7 @@ export function extractChangingRecords(
 ): [
   leavingRecords: RouteRecordNormalized[],
   updatingRecords: RouteRecordNormalized[],
-  enteringRecords: RouteRecordNormalized[]
+  enteringRecords: RouteRecordNormalized[],
 ] {
   const leavingRecords: RouteRecordNormalized[] = []
   const updatingRecords: RouteRecordNormalized[] = []

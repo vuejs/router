@@ -5,55 +5,19 @@ import {
   pathEncoded,
 } from './resolver'
 import {
-  MatcherPatternParams_Base,
-  MatcherPatternPath,
   MatcherPatternQuery,
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,
 } from './matcher-pattern'
-import { miss } from './matchers/errors'
-import { EmptyParams } from './matcher-location'
 import {
   EMPTY_PATH_ROUTE,
   USER_ID_ROUTE,
   ANY_PATH_ROUTE,
+  ANY_PATH_PATTERN_MATCHER,
+  EMPTY_PATH_PATTERN_MATCHER,
+  USER_ID_PATH_PATTERN_MATCHER,
+  ANY_HASH_PATTERN_MATCHER,
 } from './matchers/test-utils'
-
-const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{ pathMatch: string }> = {
-  match(path) {
-    return { pathMatch: path }
-  },
-  build({ pathMatch }) {
-    return pathMatch
-  },
-}
-
-const EMPTY_PATH_PATTERN_MATCHER: MatcherPatternPath<EmptyParams> = {
-  match: path => {
-    if (path !== '/') {
-      throw miss()
-    }
-    return {}
-  },
-  build: () => '/',
-}
-
-const USER_ID_PATH_PATTERN_MATCHER: MatcherPatternPath<{ id: number }> = {
-  match(value) {
-    const match = value.match(/^\/users\/(\d+)$/)
-    if (!match?.[1]) {
-      throw miss()
-    }
-    const id = Number(match[1])
-    if (Number.isNaN(id)) {
-      throw miss()
-    }
-    return { id }
-  },
-  build({ id }) {
-    return `/users/${id}`
-  },
-}
 
 const PAGE_QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ page: number }> = {
   match: query => {
@@ -64,14 +28,6 @@ const PAGE_QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ page: number }> = {
   },
   build: params => ({ page: String(params.page) }),
 } satisfies MatcherPatternQuery<{ page: number }>
-
-const ANY_HASH_PATTERN_MATCHER: MatcherPatternParams_Base<
-  string,
-  { hash: string | null }
-> = {
-  match: hash => ({ hash: hash ? hash.slice(1) : null }),
-  build: ({ hash }) => (hash ? `#${hash}` : ''),
-}
 
 describe('RouterMatcher', () => {
   describe('new matchers', () => {

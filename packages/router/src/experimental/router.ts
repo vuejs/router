@@ -16,20 +16,13 @@ import {
   type App,
 } from 'vue'
 import { RouterLink } from '../RouterLink'
-import { RouterView } from '../RouterView'
 import {
   NavigationType,
   type HistoryState,
   type RouterHistory,
 } from '../history/common'
 import type { PathParserOptions } from '../matcher'
-import {
-  type NEW_MatcherRecordBase,
-  type NEW_LocationResolved,
-  type NEW_MatcherRecord,
-  type NEW_MatcherRecordRaw,
-  type NEW_RouterResolver,
-} from '../new-route-resolver/resolver'
+import { type NEW_LocationResolved } from '../new-route-resolver/resolver'
 import {
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
@@ -45,6 +38,7 @@ import {
   type RouterScrollBehavior,
 } from '../scrollBehavior'
 import type {
+  _RouteRecordProps,
   NavigationGuardWithThis,
   NavigationHookAfter,
   RouteLocation,
@@ -61,8 +55,8 @@ import type {
 } from '../typed-routes'
 import {
   isRouteLocation,
-  isRouteName,
   Lazy,
+  RawRouteComponent,
   RouteLocationOptions,
   RouteMeta,
 } from '../types'
@@ -84,6 +78,10 @@ import {
   routerKey,
   routerViewLocationKey,
 } from '../injectionSymbols'
+import {
+  EXPERIMENTAL_ResolverStatic,
+  EXPERIMENTAL_ResolverStaticRecord,
+} from '../new-route-resolver/resolver-static'
 
 /**
  * resolve, reject arguments of Promise constructor
@@ -179,30 +177,58 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
   // linkInactiveClass?: string
 }
 
+// TODO: is it worth to have 2 types for the undefined values?
+export interface EXPERIMENTAL_RouteRecordNormalized
+  extends EXPERIMENTAL_ResolverStaticRecord {
+  /**
+   * Arbitrary data attached to the record.
+   */
+  meta: RouteMeta
+
+  // TODO:
+  redirect?: unknown
+
+  /**
+   * Allow passing down params as props to the component rendered by `router-view`.
+   */
+  props: Record<string, _RouteRecordProps>
+
+  /**
+   * {@inheritDoc RouteRecordMultipleViews.components}
+   */
+  components: Record<string, RawRouteComponent>
+
+  /**
+   * Contains the original modules for lazy loaded components.
+   * @internal
+   */
+  mods: Record<string, unknown>
+}
+
 /**
  * Options to initialize an experimental {@link EXPERIMENTAL_Router} instance.
  * @experimental
  */
 export interface EXPERIMENTAL_RouterOptions<
-  TMatcherRecord extends NEW_MatcherRecord
-> extends EXPERIMENTAL_RouterOptions_Base {
-  /**
-   * Initial list of routes that should be added to the router.
-   */
-  routes?: Readonly<EXPERIMENTAL_RouteRecordRaw[]>
-
+  // TODO: probably need some generic types
+  // TResolver extends NEW_RouterResolver_Base,
+>extends EXPERIMENTAL_RouterOptions_Base {
   /**
    * Matcher to use to resolve routes.
+   *
    * @experimental
    */
-  resolver: NEW_RouterResolver<NEW_MatcherRecordRaw, TMatcherRecord>
+  resolver: EXPERIMENTAL_ResolverStatic<EXPERIMENTAL_RouteRecordNormalized>
 }
 
 /**
  * Router base instance.
+ *
  * @experimental This version is not stable, it's meant to replace {@link Router} in the future.
  */
-export interface EXPERIMENTAL_Router_Base<TRouteRecordRaw, TRouteRecord> {
+export interface EXPERIMENTAL_Router_Base<TRecord> {
+  // NOTE: for dynamic routing we need this
+  // <TRouteRecordRaw, TRouteRecord>
   /**
    * Current {@link RouteLocationNormalized}
    */
@@ -214,31 +240,6 @@ export interface EXPERIMENTAL_Router_Base<TRouteRecordRaw, TRouteRecord> {
   listening: boolean
 
   /**
-   * Add a new {@link EXPERIMENTAL_RouteRecordRaw | route record} as the child of an existing route.
-   *
-   * @param parentName - Parent Route Record where `route` should be appended at
-   * @param route - Route Record to add
-   */
-  addRoute(
-    // NOTE: it could be `keyof RouteMap` but the point of dynamic routes is not knowing the routes at build
-    parentName: NonNullable<RouteRecordNameGeneric>,
-    route: TRouteRecordRaw
-  ): () => void
-  /**
-   * Add a new {@link EXPERIMENTAL_RouteRecordRaw | route record} to the router.
-   *
-   * @param route - Route Record to add
-   */
-  addRoute(route: TRouteRecordRaw): () => void
-
-  /**
-   * Remove an existing route by its name.
-   *
-   * @param name - Name of the route to remove
-   */
-  removeRoute(name: NonNullable<RouteRecordNameGeneric>): void
-
-  /**
    * Checks if a route with a given name exists
    *
    * @param name - Name of the route to check
@@ -248,12 +249,7 @@ export interface EXPERIMENTAL_Router_Base<TRouteRecordRaw, TRouteRecord> {
   /**
    * Get a full list of all the {@link RouteRecord | route records}.
    */
-  getRoutes(): TRouteRecord[]
-
-  /**
-   * Delete all routes from the router matcher.
-   */
-  clearRoutes(): void
+  getRoutes(): TRecord[]
 
   /**
    * Returns the {@link RouteLocation | normalized version} of a
@@ -392,58 +388,49 @@ export interface EXPERIMENTAL_Router_Base<TRouteRecordRaw, TRouteRecord> {
   install(app: App): void
 }
 
-export interface EXPERIMENTAL_Router<
-  TRouteRecordRaw, // extends NEW_MatcherRecordRaw,
-  TRouteRecord extends NEW_MatcherRecord
-> extends EXPERIMENTAL_Router_Base<TRouteRecordRaw, TRouteRecord> {
+export interface EXPERIMENTAL_Router
+  // TODO: dynamic routing
+  //   <
+  //   TRouteRecordRaw, // extends NEW_MatcherRecordRaw,
+  //   TRouteRecord extends NEW_MatcherRecord,
+  // >
+  extends EXPERIMENTAL_Router_Base<EXPERIMENTAL_RouteRecordNormalized> {
   /**
    * Original options object passed to create the Router
    */
-  readonly options: EXPERIMENTAL_RouterOptions<TRouteRecord>
+  readonly options: EXPERIMENTAL_RouterOptions
 }
 
-export interface EXPERIMENTAL_RouteRecordRaw extends NEW_MatcherRecordRaw {
-  /**
-   * Arbitrary data attached to the record.
-   */
-  meta?: RouteMeta
-
-  components?: Record<string, unknown>
-  component?: unknown
-
-  redirect?: unknown
-  score: Array<number[]>
-}
-
-// TODO: is it worth to have 2 types for the undefined values?
-export interface EXPERIMENTAL_RouteRecordNormalized
-  extends NEW_MatcherRecordBase<EXPERIMENTAL_RouteRecordNormalized> {
-  /**
-   * Arbitrary data attached to the record.
-   */
-  meta: RouteMeta
-  group?: boolean
-  score: Array<number[]>
-}
-
-function normalizeRouteRecord(
-  record: EXPERIMENTAL_RouteRecordRaw
-): EXPERIMENTAL_RouteRecordNormalized {
-  // FIXME: implementation
-  return {
-    name: __DEV__ ? Symbol('anonymous route record') : Symbol(),
-    meta: {},
-    ...record,
-    children: (record.children || []).map(normalizeRouteRecord),
-  }
-}
+// export interface EXPERIMENTAL_RouteRecordRaw extends NEW_MatcherRecordRaw {
+//   /**
+//    * Arbitrary data attached to the record.
+//    */
+//   meta?: RouteMeta
+//
+//   components?: Record<string, unknown>
+//   component?: unknown
+//
+//   redirect?: unknown
+//   // TODO: Not needed
+//   score: Array<number[]>
+// }
+//
+//
+// function normalizeRouteRecord(
+//   record: EXPERIMENTAL_RouteRecordRaw
+// ): EXPERIMENTAL_RouteRecordNormalized {
+//   // FIXME: implementation
+//   return {
+//     name: __DEV__ ? Symbol('anonymous route record') : Symbol(),
+//     meta: {},
+//     ...record,
+//     children: (record.children || []).map(normalizeRouteRecord),
+//   }
+// }
 
 export function experimental_createRouter(
-  options: EXPERIMENTAL_RouterOptions<EXPERIMENTAL_RouteRecordNormalized>
-): EXPERIMENTAL_Router<
-  EXPERIMENTAL_RouteRecordRaw,
-  EXPERIMENTAL_RouteRecordNormalized
-> {
+  options: EXPERIMENTAL_RouterOptions
+): EXPERIMENTAL_Router {
   const {
     resolver,
     parseQuery = originalParseQuery,
@@ -451,6 +438,7 @@ export function experimental_createRouter(
     history: routerHistory,
   } = options
 
+  // FIXME: can be removed, it was for migration purposes
   if (__DEV__ && !routerHistory)
     throw new Error(
       'Provide the "history" option when calling "createRouter()":' +
@@ -466,59 +454,16 @@ export function experimental_createRouter(
   let pendingLocation: RouteLocation = START_LOCATION_NORMALIZED
 
   // leave the scrollRestoration if no scrollBehavior is provided
-  if (isBrowser && options.scrollBehavior && 'scrollRestoration' in history) {
+  if (isBrowser && options.scrollBehavior) {
     history.scrollRestoration = 'manual'
   }
 
-  function addRoute(
-    parentOrRoute:
-      | NonNullable<RouteRecordNameGeneric>
-      | EXPERIMENTAL_RouteRecordRaw,
-    route?: EXPERIMENTAL_RouteRecordRaw
-  ) {
-    let parent: Parameters<(typeof resolver)['addMatcher']>[1] | undefined
-    let rawRecord: EXPERIMENTAL_RouteRecordRaw
-
-    if (isRouteName(parentOrRoute)) {
-      parent = resolver.getMatcher(parentOrRoute)
-      if (__DEV__ && !parent) {
-        warn(
-          `Parent route "${String(
-            parentOrRoute
-          )}" not found when adding child route`,
-          route
-        )
-      }
-      rawRecord = route!
-    } else {
-      rawRecord = parentOrRoute
-    }
-
-    const addedRecord = resolver.addMatcher(
-      normalizeRouteRecord(rawRecord),
-      parent
-    )
-
-    return () => {
-      resolver.removeMatcher(addedRecord)
-    }
-  }
-
-  function removeRoute(name: NonNullable<RouteRecordNameGeneric>) {
-    const recordMatcher = resolver.getMatcher(name)
-    if (recordMatcher) {
-      resolver.removeMatcher(recordMatcher)
-    } else if (__DEV__) {
-      warn(`Cannot remove non-existent route "${String(name)}"`)
-    }
-  }
-
   function getRoutes() {
-    return resolver.getMatchers()
+    return resolver.getRecords()
   }
 
   function hasRoute(name: NonNullable<RouteRecordNameGeneric>): boolean {
-    return !!resolver.getMatcher(name)
+    return !!resolver.getRecord(name)
   }
 
   function locationAsObject(
@@ -812,9 +757,10 @@ export function experimental_createRouter(
 
   function runWithContext<T>(fn: () => T): T {
     const app: App | undefined = installedApps.values().next().value
+    // FIXME: remove safeguard and ensure
     // TODO: remove safeguard and bump required minimum version of Vue
     // support Vue < 3.3
-    return app && typeof app.runWithContext === 'function'
+    return typeof app?.runWithContext === 'function'
       ? app.runWithContext(fn)
       : fn()
   }
@@ -1223,16 +1169,10 @@ export function experimental_createRouter(
   let started: boolean | undefined
   const installedApps = new Set<App>()
 
-  const router: EXPERIMENTAL_Router<
-    EXPERIMENTAL_RouteRecordRaw,
-    EXPERIMENTAL_RouteRecordNormalized
-  > = {
+  const router: EXPERIMENTAL_Router = {
     currentRoute,
     listening: true,
 
-    addRoute,
-    removeRoute,
-    clearRoutes: resolver.clearMatchers,
     hasRoute,
     getRoutes,
     resolve,
@@ -1252,9 +1192,9 @@ export function experimental_createRouter(
     isReady,
 
     install(app: App) {
-      const router = this
-      app.component('RouterLink', RouterLink)
-      app.component('RouterView', RouterView)
+      // Must be done by user for vapor variants
+      // app.component('RouterLink', RouterLink)
+      // app.component('RouterView', RouterView)
 
       // @ts-expect-error: FIXME: refactor with new types once it's possible
       app.config.globalProperties.$router = router
@@ -1293,9 +1233,8 @@ export function experimental_createRouter(
       app.provide(routeLocationKey, shallowReactive(reactiveRoute))
       app.provide(routerViewLocationKey, currentRoute)
 
-      const unmountApp = app.unmount
       installedApps.add(app)
-      app.unmount = function () {
+      app.onUnmount(() => {
         installedApps.delete(app)
         // the router is not attached to an app anymore
         if (installedApps.size < 1) {
@@ -1307,8 +1246,7 @@ export function experimental_createRouter(
           started = false
           ready = false
         }
-        unmountApp()
-      }
+      })
 
       // TODO: this probably needs to be updated so it can be used by vue-termui
       if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {

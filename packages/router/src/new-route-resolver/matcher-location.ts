@@ -1,5 +1,7 @@
 import type { LocationQueryRaw } from '../query'
-import type { MatcherName } from './resolver'
+import type { RecordName } from './resolver'
+
+// FIXME: rename to ResolverLocation... instead of MatcherLocation... since they are returned by a resolver
 
 /**
  * Generic object of params that can be passed to a matcher.
@@ -12,7 +14,7 @@ export type MatcherParamsFormatted = Record<string, unknown>
 export type EmptyParams = Record<PropertyKey, never>
 
 export interface MatcherLocationAsNamed {
-  name: MatcherName
+  name: RecordName
   // FIXME: should this be optional?
   params: MatcherParamsFormatted
   query?: LocationQueryRaw

@@ -2,10 +2,10 @@ import { EmptyParams } from '../matcher-location'
 import {
   MatcherPatternPath,
   MatcherPatternQuery,
-  MatcherPatternParams_Base,
+  MatcherPatternHash,
 } from '../matcher-pattern'
 import { NEW_MatcherRecord } from '../resolver'
-import { miss } from './errors'
+import { invalid, miss } from './errors'
 
 export const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{
   pathMatch: string
@@ -37,7 +37,8 @@ export const USER_ID_PATH_PATTERN_MATCHER: MatcherPatternPath<{ id: number }> =
       }
       const id = Number(match[1])
       if (Number.isNaN(id)) {
-        throw miss()
+        throw invalid('id')
+        // throw miss()
       }
       return { id }
     },
@@ -55,12 +56,10 @@ export const PAGE_QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ page: number }> =
       }
     },
     build: params => ({ page: String(params.page) }),
-  } satisfies MatcherPatternQuery<{ page: number }>
+  }
 
-export const ANY_HASH_PATTERN_MATCHER: MatcherPatternParams_Base<
-  string,
-  { hash: string | null }
-> = {
+export const ANY_HASH_PATTERN_MATCHER: MatcherPatternHash<// hash could be named anything, in this case it creates a param named hash
+{ hash: string | null }> = {
   match: hash => ({ hash: hash ? hash.slice(1) : null }),
   build: ({ hash }) => (hash ? `#${hash}` : ''),
 }

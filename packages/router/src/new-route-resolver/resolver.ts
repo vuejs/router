@@ -5,6 +5,7 @@ import {
   stringifyQuery,
 } from '../query'
 import type {
+  MatcherPattern,
   MatcherPatternHash,
   MatcherPatternPath,
   MatcherPatternQuery,
@@ -30,23 +31,26 @@ import { comparePathParserScore } from '../matcher/pathParserRanker'
 /**
  * Allowed types for a matcher name.
  */
-export type MatcherName = string | symbol
+export type RecordName = string | symbol
 
 /**
  * Manage and resolve routes. Also handles the encoding, decoding, parsing and
  * serialization of params, query, and hash.
  *
  * - `TMatcherRecordRaw` represents the raw record type passed to {@link addMatcher}.
- * - `TMatcherRecord` represents the normalized record type returned by {@link getMatchers}.
+ * - `TMatcherRecord` represents the normalized record type returned by {@link getRecords}.
  */
-export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord> {
+export interface NEW_RouterResolver_Base<TRecord> {
   /**
    * Resolves an absolute location (like `/path/to/somewhere`).
+   *
+   * @param absoluteLocation - The absolute location to resolve.
+   * @param currentLocation - This value is ignored and should not be passed if the location is absolute.
    */
   resolve(
     absoluteLocation: `/${string}`,
     currentLocation?: undefined
-  ): NEW_LocationResolved<TMatcherRecord>
+  ): NEW_LocationResolved<TRecord>
 
   /**
    * Resolves a string location relative to another location. A relative location can be `./same-folder`,
@@ -54,8 +58,8 @@ export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord> {
    */
   resolve(
     relativeLocation: string,
-    currentLocation: NEW_LocationResolved<TMatcherRecord>
-  ): NEW_LocationResolved<TMatcherRecord>
+    currentLocation: NEW_LocationResolved<TRecord>
+  ): NEW_LocationResolved<TRecord>
 
   /**
    * Resolves a location by its name. Any required params or query must be passed in the `options` argument.
@@ -65,7 +69,7 @@ export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord> {
     // TODO: is this useful?
     currentLocation?: undefined
     // currentLocation?: undefined | NEW_LocationResolved<TMatcherRecord>
-  ): NEW_LocationResolved<TMatcherRecord>
+  ): NEW_LocationResolved<TRecord>
 
   /**
    * Resolves a location by its absolute path (starts with `/`). Any required query must be passed.
@@ -76,12 +80,12 @@ export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord> {
     // TODO: is this useful?
     currentLocation?: undefined
     // currentLocation?: NEW_LocationResolved<TMatcherRecord> | undefined
-  ): NEW_LocationResolved<TMatcherRecord>
+  ): NEW_LocationResolved<TRecord>
 
   resolve(
     location: MatcherLocationAsPathRelative,
-    currentLocation: NEW_LocationResolved<TMatcherRecord>
-  ): NEW_LocationResolved<TMatcherRecord>
+    currentLocation: NEW_LocationResolved<TRecord>
+  ): NEW_LocationResolved<TRecord>
 
   // NOTE: in practice, this overload can cause bugs. It's better to use named locations
 
@@ -91,9 +95,31 @@ export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord> {
    */
   resolve(
     relativeLocation: MatcherLocationAsRelative,
-    currentLocation: NEW_LocationResolved<TMatcherRecord>
-  ): NEW_LocationResolved<TMatcherRecord>
+    currentLocation: NEW_LocationResolved<TRecord>
+  ): NEW_LocationResolved<TRecord>
 
+  /**
+   * Get a list of all resolver records.
+   * Previously named `getRoutes()`
+   */
+  getRecords(): TRecord[]
+
+  /**
+   * Get a resolver record by its name.
+   * Previously named `getRecordMatcher()`
+   */
+  getRecord(name: RecordName): TRecord | undefined
+}
+
+/**
+ * Manage and resolve routes. Also handles the encoding, decoding, parsing and
+ * serialization of params, query, and hash.
+ *
+ * - `TMatcherRecordRaw` represents the raw record type passed to {@link addMatcher}.
+ * - `TMatcherRecord` represents the normalized record type returned by {@link getRecords}.
+ */
+export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord>
+  extends NEW_RouterResolver_Base<TMatcherRecord> {
   /**
    * Add a matcher record. Previously named `addRoute()`.
    * @param matcher - The matcher record to add.
@@ -114,18 +140,6 @@ export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord> {
    * Remove all matcher records. Prevoisly named `clearRoutes()`.
    */
   clearMatchers(): void
-
-  /**
-   * Get a list of all matchers.
-   * Previously named `getRoutes()`
-   */
-  getMatchers(): TMatcherRecord[]
-
-  /**
-   * Get a matcher by its name.
-   * Previously named `getRecordMatcher()`
-   */
-  getMatcher(name: MatcherName): TMatcherRecord | undefined
 }
 
 /**
@@ -139,10 +153,9 @@ export type MatcherLocationRaw =
   | MatcherLocationAsPathRelative
   | MatcherLocationAsRelative
 
+// TODO: ResolverLocationResolved
 export interface NEW_LocationResolved<TMatched> {
-  // FIXME: remove `undefined`
-  name: MatcherName | undefined
-  // TODO: generics?
+  name: RecordName
   params: MatcherParamsFormatted
 
   fullPath: string
@@ -159,6 +172,7 @@ export type MatcherPathParamsValue = string | null | string[]
  */
 export type MatcherPathParams = Record<string, MatcherPathParamsValue>
 
+// TODO: move to matcher-pattern
 export type MatcherQueryParamsValue = string | null | Array<string | null>
 export type MatcherQueryParams = Record<string, MatcherQueryParamsValue>
 
@@ -276,7 +290,7 @@ export interface NEW_MatcherRecordRaw {
    * Name for the route record. Must be unique. Will be set to `Symbol()` if
    * not set.
    */
-  name?: MatcherName
+  name?: RecordName
 
   /**
    * Array of nested routes.
@@ -291,29 +305,50 @@ export interface NEW_MatcherRecordRaw {
   score: Array<number[]>
 }
 
-export interface NEW_MatcherRecordBase<T> {
+export interface EXPERIMENTAL_ResolverRecord_Base {
   /**
    * Name of the matcher. Unique across all matchers.
    */
-  name: MatcherName
+  name: RecordName
 
+  /**
+   * {@link MatcherPattern} for the path section of the URI.
+   */
   path: MatcherPatternPath
+
+  /**
+   * {@link MatcherPattern} for the query section of the URI.
+   */
   query?: MatcherPatternQuery
+
+  /**
+   * {@link MatcherPattern} for the hash section of the URI.
+   */
   hash?: MatcherPatternHash
 
-  parent?: T
-  children: T[]
+  // TODO: here or in router
+  // redirect?: RouteRecordRedirectOption
 
+  parent?: this
+  children: this[]
+  aliasOf?: this
+
+  /**
+   * Is this a record that groups children. Cannot be matched
+   */
   group?: boolean
-  aliasOf?: NEW_MatcherRecord
+}
+
+export interface NEW_MatcherDynamicRecord
+  extends EXPERIMENTAL_ResolverRecord_Base {
+  // TODO: the score shouldn't be always needed, it's only needed with dynamic routing
   score: Array<number[]>
 }
 
 /**
  * Normalized version of a {@link NEW_MatcherRecordRaw} record.
  */
-export interface NEW_MatcherRecord
-  extends NEW_MatcherRecordBase<NEW_MatcherRecord> {}
+export interface NEW_MatcherRecord extends NEW_MatcherDynamicRecord {}
 
 /**
  * Tagged template helper to encode params into a path. Doesn't work with null
@@ -342,7 +377,9 @@ export function pathEncoded(
 /**
  * Build the `matched` array of a record that includes all parent records from the root to the current one.
  */
-function buildMatched<T extends NEW_MatcherRecordBase<T>>(record: T): T[] {
+export function buildMatched<T extends EXPERIMENTAL_ResolverRecord_Base>(
+  record: T
+): T[] {
   const matched: T[] = []
   let node: T | undefined = record
   while (node) {
@@ -353,12 +390,12 @@ function buildMatched<T extends NEW_MatcherRecordBase<T>>(record: T): T[] {
 }
 
 export function createCompiledMatcher<
-  TMatcherRecord extends NEW_MatcherRecordBase<TMatcherRecord>
+  TMatcherRecord extends NEW_MatcherDynamicRecord,
 >(
   records: NEW_MatcherRecordRaw[] = []
 ): NEW_RouterResolver<NEW_MatcherRecordRaw, TMatcherRecord> {
   // TODO: we also need an array that has the correct order
-  const matcherMap = new Map<MatcherName, TMatcherRecord>()
+  const matcherMap = new Map<RecordName, TMatcherRecord>()
   const matchers: TMatcherRecord[] = []
 
   // TODO: allow custom encode/decode functions
@@ -376,27 +413,27 @@ export function createCompiledMatcher<
     | [absoluteLocation: `/${string}`, currentLocation?: undefined]
     | [
         relativeLocation: string,
-        currentLocation: NEW_LocationResolved<TMatcherRecord>
+        currentLocation: NEW_LocationResolved<TMatcherRecord>,
       ]
     | [
         absoluteLocation: MatcherLocationAsPathAbsolute,
         // Same as above
         // currentLocation?: NEW_LocationResolved<TMatcherRecord> | undefined
-        currentLocation?: undefined
+        currentLocation?: undefined,
       ]
     | [
         relativeLocation: MatcherLocationAsPathRelative,
-        currentLocation: NEW_LocationResolved<TMatcherRecord>
+        currentLocation: NEW_LocationResolved<TMatcherRecord>,
       ]
     | [
         location: MatcherLocationAsNamed,
         // Same as above
         // currentLocation?: NEW_LocationResolved<TMatcherRecord> | undefined
-        currentLocation?: undefined
+        currentLocation?: undefined,
       ]
     | [
         relativeLocation: MatcherLocationAsRelative,
-        currentLocation: NEW_LocationResolved<TMatcherRecord>
+        currentLocation: NEW_LocationResolved<TMatcherRecord>,
       ]
 
   function resolve(
@@ -576,11 +613,11 @@ export function createCompiledMatcher<
     matcherMap.clear()
   }
 
-  function getMatchers() {
+  function getRecords() {
     return matchers
   }
 
-  function getMatcher(name: MatcherName) {
+  function getRecord(name: RecordName) {
     return matcherMap.get(name)
   }
 
@@ -590,8 +627,8 @@ export function createCompiledMatcher<
     addMatcher,
     removeMatcher,
     clearMatchers,
-    getMatcher,
-    getMatchers,
+    getRecord,
+    getRecords,
   }
 }
 
@@ -604,7 +641,7 @@ export function createCompiledMatcher<
  * @param matcher - new matcher to be inserted
  * @param matchers - existing matchers
  */
-function findInsertionIndex<T extends NEW_MatcherRecordBase<T>>(
+function findInsertionIndex<T extends NEW_MatcherDynamicRecord>(
   matcher: T,
   matchers: T[]
 ) {
@@ -641,7 +678,7 @@ function findInsertionIndex<T extends NEW_MatcherRecordBase<T>>(
   return upper
 }
 
-function getInsertionAncestor<T extends NEW_MatcherRecordBase<T>>(matcher: T) {
+function getInsertionAncestor<T extends NEW_MatcherDynamicRecord>(matcher: T) {
   let ancestor: T | undefined = matcher
 
   while ((ancestor = ancestor.parent)) {
@@ -657,7 +694,7 @@ function getInsertionAncestor<T extends NEW_MatcherRecordBase<T>>(matcher: T) {
  * Checks if a record or any of its parent is an alias
  * @param record
  */
-function isAliasRecord<T extends NEW_MatcherRecordBase<T>>(
+function isAliasRecord<T extends NEW_MatcherDynamicRecord>(
   record: T | undefined
 ): boolean {
   while (record) {

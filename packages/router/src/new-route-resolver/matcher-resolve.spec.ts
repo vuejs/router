@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from 'vue'
-import { RouteComponent, RouteRecordRaw } from '../types'
+import { RouteComponent, RouteMeta, RouteRecordRaw } from '../types'
 import { NEW_stringifyURL } from '../location'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
 import {
@@ -13,7 +13,7 @@ import {
 } from './resolver'
 import { miss } from './matchers/errors'
 import { MatcherPatternPath, MatcherPatternPathStatic } from './matcher-pattern'
-import { type EXPERIMENTAL_RouteRecordRaw } from '../experimental/router'
+import { EXPERIMENTAL_RouterOptions } from '../experimental/router'
 import { stringifyQuery } from '../query'
 import type {
   MatcherLocationAsNamed,
@@ -28,6 +28,21 @@ import {
 } from '../matcher/pathParserRanker'
 import { tokenizePath } from '../matcher/pathTokenizer'
 import { mergeOptions } from '../utils'
+
+// FIXME: this type was removed, it will be a new one once a dynamic resolver is implemented
+export interface EXPERIMENTAL_RouteRecordRaw extends NEW_MatcherRecordRaw {
+  /**
+   * Arbitrary data attached to the record.
+   */
+  meta?: RouteMeta
+
+  components?: Record<string, unknown>
+  component?: unknown
+
+  redirect?: unknown
+  score: Array<number[]>
+  readonly options: EXPERIMENTAL_RouterOptions
+}
 
 // for raw route record
 const component: RouteComponent = defineComponent({})
@@ -147,7 +162,7 @@ describe('RouterMatcher.resolve', () => {
       | MatcherLocationAsPathAbsolute = START_LOCATION
   ) {
     const records = (Array.isArray(record) ? record : [record]).map(
-      (record): EXPERIMENTAL_RouteRecordRaw =>
+      (record): NEW_MatcherRecordRaw =>
         isExperimentalRouteRecordRaw(record)
           ? { components, ...record }
           : compileRouteRecord(record)

@@ -2,16 +2,28 @@ import { decode, MatcherQueryParams } from './resolver'
 import { EmptyParams, MatcherParamsFormatted } from './matcher-location'
 import { miss } from './matchers/errors'
 
-export interface MatcherPatternParams_Base<
+/**
+ * Base interface for matcher patterns that extract params from a URL.
+ *
+ * @template TIn - type of the input value to match against the pattern
+ * @template TOut - type of the output value after matching
+ *
+ * In the case of the `path`, the `TIn` is a `string`, but in the case of the
+ * query, it's the object of query params.
+ *
+ * @internal this is the base interface for all matcher patterns, it shouldn't
+ * be used directly
+ */
+export interface MatcherPattern<
   TIn = string,
-  TOut extends MatcherParamsFormatted = MatcherParamsFormatted
+  TOut extends MatcherParamsFormatted = MatcherParamsFormatted,
 > {
   /**
    * Matches a serialized params value against the pattern.
    *
    * @param value - params value to parse
    * @throws {MatchMiss} if the value doesn't match
-   * @returns parsed params
+   * @returns parsed params object
    */
   match(value: TIn): TOut
 
@@ -21,14 +33,19 @@ export interface MatcherPatternParams_Base<
    * shouldn't).
    *
    * @param value - params value to parse
+   * @returns serialized params value
    */
   build(params: TOut): TIn
 }
 
+/**
+ * Handles the `path` part of a URL. It can transform a path string into an
+ * object of params and vice versa.
+ */
 export interface MatcherPatternPath<
   // TODO: should we allow to not return anything? It's valid to spread null and undefined
-  TParams extends MatcherParamsFormatted = MatcherParamsFormatted // | null // | undefined // | void // so it might be a bit more convenient
-> extends MatcherPatternParams_Base<string, TParams> {}
+  TParams extends MatcherParamsFormatted = MatcherParamsFormatted, // | null // | undefined // | void // so it might be a bit more convenient
+> extends MatcherPattern<string, TParams> {}
 
 export class MatcherPatternPathStatic
   implements MatcherPatternPath<EmptyParams>
@@ -48,10 +65,11 @@ export class MatcherPatternPathStatic
 }
 // example of a static matcher built at runtime
 // new MatcherPatternPathStatic('/')
+// new MatcherPatternPathStatic('/team')
 
 export interface Param_GetSet<
   TIn extends string | string[] = string | string[],
-  TOut = TIn
+  TOut = TIn,
 > {
   get?: (value: NoInfer<TIn>) => TOut
   set?: (value: NoInfer<TOut>) => TIn
@@ -115,10 +133,11 @@ export type ParamsFromParsers<P extends Record<string, ParamParser_Generic>> = {
 }
 
 export class MatcherPatternPathDynamic<
-  TParams extends MatcherParamsFormatted = MatcherParamsFormatted
+  TParams extends MatcherParamsFormatted = MatcherParamsFormatted,
 > implements MatcherPatternPath<TParams>
 {
   private params: Record<string, Required<ParamParser_Generic>> = {}
+
   constructor(
     private re: RegExp,
     params: Record<keyof TParams, ParamParser_Generic>,
@@ -186,10 +205,18 @@ export class MatcherPatternPathDynamic<
   // }
 }
 
+/**
+ * Handles the `query` part of a URL. It can transform a query object into an
+ * object of params and vice versa.
+ */
 export interface MatcherPatternQuery<
-  TParams extends MatcherParamsFormatted = MatcherParamsFormatted
-> extends MatcherPatternParams_Base<MatcherQueryParams, TParams> {}
+  TParams extends MatcherParamsFormatted = MatcherParamsFormatted,
+> extends MatcherPattern<MatcherQueryParams, TParams> {}
 
+/**
+ * Handles the `hash` part of a URL. It can transform a hash string into an
+ * object of params and vice versa.
+ */
 export interface MatcherPatternHash<
-  TParams extends MatcherParamsFormatted = MatcherParamsFormatted
-> extends MatcherPatternParams_Base<string, TParams> {}
+  TParams extends MatcherParamsFormatted = MatcherParamsFormatted,
+> extends MatcherPattern<string, TParams> {}

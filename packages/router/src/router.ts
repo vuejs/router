@@ -87,11 +87,41 @@ export interface RouterOptions extends EXPERIMENTAL_RouterOptions_Base {
  * Router instance.
  */
 export interface Router
-  extends EXPERIMENTAL_Router_Base<RouteRecordRaw, RouteRecordNormalized> {
+  extends EXPERIMENTAL_Router_Base<RouteRecordNormalized> {
   /**
    * Original options object passed to create the Router
    */
   readonly options: RouterOptions
+
+  /**
+   * Add a new {@link EXPERIMENTAL_RouteRecordRaw | route record} as the child of an existing route.
+   *
+   * @param parentName - Parent Route Record where `route` should be appended at
+   * @param route - Route Record to add
+   */
+  addRoute(
+    // NOTE: it could be `keyof RouteMap` but the point of dynamic routes is not knowing the routes at build
+    parentName: NonNullable<RouteRecordNameGeneric>,
+    route: RouteRecordRaw
+  ): () => void
+  /**
+   * Add a new {@link EXPERIMENTAL_RouteRecordRaw | route record} to the router.
+   *
+   * @param route - Route Record to add
+   */
+  addRoute(route: RouteRecordRaw): () => void
+
+  /**
+   * Remove an existing route by its name.
+   *
+   * @param name - Name of the route to remove
+   */
+  removeRoute(name: NonNullable<RouteRecordNameGeneric>): void
+
+  /**
+   * Delete all routes from the router.
+   */
+  clearRoutes(): void
 }
 
 /**
