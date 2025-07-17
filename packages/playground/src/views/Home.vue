@@ -8,7 +8,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, getCurrentInstance, ref } from 'vue'
 
 export default defineComponent({
@@ -22,7 +22,7 @@ export default defineComponent({
   setup() {
     const me = getCurrentInstance()
 
-    function log(value) {
+    function log(value: any) {
       console.log(value)
       return value
     }
