@@ -205,14 +205,14 @@ export interface EXPERIMENTAL_RouteRecordNormalized
   mods: Record<string, unknown>
 }
 
+// TODO: probably need some generic types
+// <TResolver extends NEW_RouterResolver_Base>,
 /**
  * Options to initialize an experimental {@link EXPERIMENTAL_Router} instance.
  * @experimental
  */
-export interface EXPERIMENTAL_RouterOptions<
-  // TODO: probably need some generic types
-  // TResolver extends NEW_RouterResolver_Base,
->extends EXPERIMENTAL_RouterOptions_Base {
+export interface EXPERIMENTAL_RouterOptions
+  extends EXPERIMENTAL_RouterOptions_Base {
   /**
    * Matcher to use to resolve routes.
    *
