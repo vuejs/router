@@ -65,12 +65,15 @@ importers:
       simple-git:
         specifier: ^3.28.0
         version: 3.28.0
+      typedoc-vitepress-theme:
+        specifier: ^1.1.2
+        version: 1.1.2(typedoc-plugin-markdown@4.7.0(typedoc@0.28.7(typescript@5.8.3)))
       vitepress:
         specifier: 1.6.3
         version: 1.6.3(@algolia/client-search@5.34.0)(@types/node@24.0.14)(axios@1.10.0)(postcss@8.5.6)(search-insights@2.17.3)(terser@5.43.1)(typescript@5.8.3)
       vitepress-translation-helper:
-        specifier: ^0.2.1
-        version: 0.2.1(vitepress@1.6.3(@algolia/client-search@5.34.0)(@types/node@24.0.14)(axios@1.10.0)(postcss@8.5.6)(search-insights@2.17.3)(terser@5.43.1)(typescript@5.8.3))(vue@3.5.17(typescript@5.8.3))
+        specifier: ^0.2.2
+        version: 0.2.2(vitepress@1.6.3(@algolia/client-search@5.34.0)(@types/node@24.0.14)(axios@1.10.0)(postcss@8.5.6)(search-insights@2.17.3)(terser@5.43.1)(typescript@5.8.3))(vue@3.5.17(typescript@5.8.3))
       vue-router:
         specifier: workspace:*
         version: link:../router
@@ -4211,6 +4214,11 @@ packages:
     peerDependencies:
       typedoc: 0.28.x
 
+  typedoc-vitepress-theme@1.1.2:
+    resolution: {integrity: sha512-hQvCZRr5uKDqY1bRuY1+eNTNn6d4TE4OP5pnw65Y7WGgajkJW9X1/lVJK2UJpcwCmwkdjw1QIO49H9JQlxWhhw==}
+    peerDependencies:
+      typedoc-plugin-markdown: '>=4.4.0'
+
   typedoc@0.28.7:
     resolution: {integrity: sha512-lpz0Oxl6aidFkmS90VQDQjk/Qf2iw0IUvFqirdONBdj7jPSN9mGXhy66BcGNDxx5ZMyKKiBVAREvPEzT6Uxipw==}
     engines: {node: '>= 18', pnpm: '>= 10'}
@@ -4342,8 +4350,8 @@ packages:
       terser:
         optional: true
 
-  vitepress-translation-helper@0.2.1:
-    resolution: {integrity: sha512-zYjakGIdVDonT1P85OkeQcdE6e8vdmKiVclHB7DGcTzFUwb2D0w+hcC31AGneB5wa5IiqEoipycSTYNKM0YKJg==}
+  vitepress-translation-helper@0.2.2:
+    resolution: {integrity: sha512-xqE4p1iUmsADKyA8W/02POtEwL0ZMcY2Ogj4Shuh70392UslB5JhrgCdF1j61NIQhgy/wgAGhn33QZdksN6IqQ==}
     hasBin: true
     peerDependencies:
       vitepress: ^1.0.0
@@ -8659,6 +8667,10 @@ snapshots:
     dependencies:
       typedoc: 0.28.7(typescript@5.8.3)
 
+  typedoc-vitepress-theme@1.1.2(typedoc-plugin-markdown@4.7.0(typedoc@0.28.7(typescript@5.8.3))):
+    dependencies:
+      typedoc-plugin-markdown: 4.7.0(typedoc@0.28.7(typescript@5.8.3))
+
   typedoc@0.28.7(typescript@5.8.3):
     dependencies:
       '@gerrit0/mini-shiki': 3.8.0
@@ -8790,7 +8802,7 @@ snapshots:
       fsevents: 2.3.3
       terser: 5.43.1
 
-  vitepress-translation-helper@0.2.1(vitepress@1.6.3(@algolia/client-search@5.34.0)(@types/node@24.0.14)(axios@1.10.0)(postcss@8.5.6)(search-insights@2.17.3)(terser@5.43.1)(typescript@5.8.3))(vue@3.5.17(typescript@5.8.3)):
+  vitepress-translation-helper@0.2.2(vitepress@1.6.3(@algolia/client-search@5.34.0)(@types/node@24.0.14)(axios@1.10.0)(postcss@8.5.6)(search-insights@2.17.3)(terser@5.43.1)(typescript@5.8.3))(vue@3.5.17(typescript@5.8.3)):
     dependencies:
       minimist: 1.2.8
       simple-git: 3.28.0

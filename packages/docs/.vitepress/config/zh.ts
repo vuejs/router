@@ -1,4 +1,6 @@
 import type { DefaultTheme, LocaleSpecificConfig } from 'vitepress'
+import typedocSidebar from '../../api/typedoc-sidebar.json'
+// TODO: rework the typedoc sidebar to include the /zh/ prefix
 
 export const META_URL = 'https://router.vuejs.org'
 export const META_TITLE = 'Vue Router'
@@ -57,6 +59,12 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
     ],
 
     sidebar: {
+      '/zh/api/': [
+        {
+          text: 'API',
+          items: typedocSidebar,
+        },
+      ],
       '/zh/': [
         {
           text: '设置',
@@ -184,13 +192,6 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/zh/about-translation.html',
             },
           ],
-        },
-      ],
-
-      '/zh/api/': [
-        {
-          text: 'packages',
-          items: [{ text: 'vue-router', link: '/zh/api/' }],
         },
       ],
     },
