@@ -1,0 +1,198 @@
+import { normalizeQuery, parseQuery, stringifyQuery } from '../query'
+import {
+  LocationNormalized,
+  NEW_stringifyURL,
+  parseURL,
+  resolveRelativePath,
+} from '../location'
+import {
+  MatcherLocationAsNamed,
+  MatcherLocationAsPathAbsolute,
+  MatcherLocationAsPathRelative,
+  MatcherLocationAsRelative,
+  MatcherParamsFormatted,
+} from './matcher-location'
+import {
+  buildMatched,
+  EXPERIMENTAL_ResolverRecord_Base,
+  RecordName,
+  MatcherQueryParams,
+  NEW_LocationResolved,
+  NEW_RouterResolver_Base,
+  NO_MATCH_LOCATION,
+} from './resolver'
+
+export interface EXPERIMENTAL_ResolverStaticRecord
+  extends EXPERIMENTAL_ResolverRecord_Base {}
+
+export interface EXPERIMENTAL_ResolverStatic<TRecord>
+  extends NEW_RouterResolver_Base<TRecord> {}
+
+export function createStaticResolver<
+  TRecord extends EXPERIMENTAL_ResolverStaticRecord,
+>(records: TRecord[]): EXPERIMENTAL_ResolverStatic<TRecord> {
+  // allows fast access to a matcher by name
+  const recordMap = new Map<RecordName, TRecord>()
+  for (const record of records) {
+    recordMap.set(record.name, record)
+  }
+
+  // NOTE: because of the overloads, we need to manually type the arguments
+  type _resolveArgs =
+    | [absoluteLocation: `/${string}`, currentLocation?: undefined]
+    | [relativeLocation: string, currentLocation: NEW_LocationResolved<TRecord>]
+    | [
+        absoluteLocation: MatcherLocationAsPathAbsolute,
+        // Same as above
+        // currentLocation?: NEW_LocationResolved<TRecord> | undefined
+        currentLocation?: undefined,
+      ]
+    | [
+        relativeLocation: MatcherLocationAsPathRelative,
+        currentLocation: NEW_LocationResolved<TRecord>,
+      ]
+    | [
+        location: MatcherLocationAsNamed,
+        // Same as above
+        // currentLocation?: NEW_LocationResolved<TRecord> | undefined
+        currentLocation?: undefined,
+      ]
+    | [
+        relativeLocation: MatcherLocationAsRelative,
+        currentLocation: NEW_LocationResolved<TRecord>,
+      ]
+
+  function resolve(
+    ...[to, currentLocation]: _resolveArgs
+  ): NEW_LocationResolved<TRecord> {
+    if (typeof to === 'object' && (to.name || to.path == null)) {
+      // relative location by path or by name
+      if (__DEV__ && to.name == null && currentLocation == null) {
+        console.warn(
+          `Cannot resolve relative location "${JSON.stringify(to)}"without a current location. This will throw in production.`,
+          to
+        )
+        // NOTE: normally there is no query, hash or path but this helps debug
+        // what kind of object location was passed
+        // @ts-expect-error: to is never
+        const query = normalizeQuery(to.query)
+        // @ts-expect-error: to is never
+        const hash = to.hash ?? ''
+        // @ts-expect-error: to is never
+        const path = to.path ?? '/'
+        return {
+          ...NO_MATCH_LOCATION,
+          fullPath: NEW_stringifyURL(stringifyQuery, path, query, hash),
+          path,
+          query,
+          hash,
+        }
+      }
+
+      // either one of them must be defined and is catched by the dev only warn above
+      const name = to.name ?? currentLocation!.name
+      const record = recordMap.get(name)!
+      if (__DEV__ && (!record || !name)) {
+        throw new Error(`Record "${String(name)}" not found`)
+      }
+
+      // unencoded params in a formatted form that the user came up with
+      const params: MatcherParamsFormatted = {
+        ...currentLocation?.params,
+        ...to.params,
+      }
+      const path = record.path.build(params)
+      const hash = record.hash?.build(params) ?? ''
+      const matched = buildMatched(record)
+      const query = Object.assign(
+        {
+          ...currentLocation?.query,
+          ...normalizeQuery(to.query),
+        },
+        ...matched.map(record => record.query?.build(params))
+      )
+
+      return {
+        name,
+        fullPath: NEW_stringifyURL(stringifyQuery, path, query, hash),
+        path,
+        query,
+        hash,
+        params,
+        matched,
+      }
+      // string location, e.g. '/foo', '../bar', 'baz', '?page=1'
+    } else {
+      // parseURL handles relative paths
+      let url: LocationNormalized
+      if (typeof to === 'string') {
+        url = parseURL(parseQuery, to, currentLocation?.path)
+      } else {
+        const query = normalizeQuery(to.query)
+        url = {
+          fullPath: NEW_stringifyURL(stringifyQuery, to.path, query, to.hash),
+          path: resolveRelativePath(to.path, currentLocation?.path || '/'),
+          query,
+          hash: to.hash || '',
+        }
+      }
+
+      let record: TRecord | undefined
+      let matched: NEW_LocationResolved<TRecord>['matched'] | undefined
+      let parsedParams: MatcherParamsFormatted | null | undefined
+
+      for (record of records) {
+        // match the path because the path matcher only needs to be matched here
+        // match the hash because only the deepest child matters
+        // End up by building up the matched array, (reversed so it goes from
+        // root to child) and then match and merge all queries
+        try {
+          const pathParams = record.path.match(url.path)
+          const hashParams = record.hash?.match(url.hash)
+          matched = buildMatched(record)
+          const queryParams: MatcherQueryParams = Object.assign(
+            {},
+            ...matched.map(record => record.query?.match(url.query))
+          )
+          // TODO: test performance
+          // for (const record of matched) {
+          //   Object.assign(queryParams, record.query?.match(url.query))
+          // }
+
+          parsedParams = { ...pathParams, ...queryParams, ...hashParams }
+          // we found our match!
+          break
+        } catch (e) {
+          // for debugging tests
+          // console.log('❌ ERROR matching', e)
+        }
+      }
+
+      // No match location
+      if (!parsedParams || !matched) {
+        return {
+          ...url,
+          ...NO_MATCH_LOCATION,
+          // already decoded
+          // query: url.query,
+          // hash: url.hash,
+        }
+      }
+
+      return {
+        ...url,
+        // record exists if matched exists
+        name: record!.name,
+        params: parsedParams,
+        matched,
+      }
+      // TODO: handle object location { path, query, hash }
+    }
+  }
+
+  return {
+    resolve,
+    getRecords: () => records,
+    getRecord: name => recordMap.get(name),
+  }
+}

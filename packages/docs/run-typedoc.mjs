@@ -1,15 +1,21 @@
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { createTypeDocApp } from './typedoc-markdown.mjs'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 createTypeDocApp({
-  name: 'API Documentation',
+  textContentMappings: {
+    'title.indexPage': 'API Reference',
+    'title.memberPage': '{name}',
+  },
   tsconfig: path.resolve(__dirname, './typedoc.tsconfig.json'),
+  // entryPointStrategy: 'packages',
   categorizeByGroup: true,
   githubPages: false,
-  disableSources: true, // some links are in node_modules and it's ugly
-  plugin: ['typedoc-plugin-markdown'],
+  readme: 'none',
+  indexFormat: 'table',
+  disableSources: true,
+  plugin: ['typedoc-plugin-markdown', 'typedoc-vitepress-theme'],
+  useCodeBlocks: true,
   entryPoints: [path.resolve(__dirname, '../router/src/index.ts')],
 }).then(app => app.build())

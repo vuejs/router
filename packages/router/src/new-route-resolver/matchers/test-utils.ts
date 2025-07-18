@@ -1,0 +1,89 @@
+import { EmptyParams } from '../matcher-location'
+import {
+  MatcherPatternPath,
+  MatcherPatternQuery,
+  MatcherPatternHash,
+} from '../matcher-pattern'
+import { NEW_MatcherRecord } from '../resolver'
+import { invalid, miss } from './errors'
+
+export const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{
+  pathMatch: string
+}> = {
+  match(path) {
+    return { pathMatch: path }
+  },
+  build({ pathMatch }) {
+    return pathMatch
+  },
+}
+
+export const EMPTY_PATH_PATTERN_MATCHER: MatcherPatternPath<EmptyParams> = {
+  match: path => {
+    if (path !== '/') {
+      throw miss()
+    }
+    return {}
+  },
+  build: () => '/',
+}
+
+export const USER_ID_PATH_PATTERN_MATCHER: MatcherPatternPath<{ id: number }> =
+  {
+    match(value) {
+      const match = value.match(/^\/users\/(\d+)$/)
+      if (!match?.[1]) {
+        throw miss()
+      }
+      const id = Number(match[1])
+      if (Number.isNaN(id)) {
+        throw invalid('id')
+        // throw miss()
+      }
+      return { id }
+    },
+    build({ id }) {
+      return `/users/${id}`
+    },
+  }
+
+export const PAGE_QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ page: number }> =
+  {
+    match: query => {
+      const page = Number(query.page)
+      return {
+        page: Number.isNaN(page) ? 1 : page,
+      }
+    },
+    build: params => ({ page: String(params.page) }),
+  }
+
+export const ANY_HASH_PATTERN_MATCHER: MatcherPatternHash<// hash could be named anything, in this case it creates a param named hash
+{ hash: string | null }> = {
+  match: hash => ({ hash: hash ? hash.slice(1) : null }),
+  build: ({ hash }) => (hash ? `#${hash}` : ''),
+}
+
+export const EMPTY_PATH_ROUTE = {
+  name: 'no params',
+  path: EMPTY_PATH_PATTERN_MATCHER,
+  score: [[80]],
+  children: [],
+  parent: undefined,
+} satisfies NEW_MatcherRecord
+
+export const ANY_PATH_ROUTE = {
+  name: 'any path',
+  path: ANY_PATH_PATTERN_MATCHER,
+  score: [[-10]],
+  children: [],
+  parent: undefined,
+} satisfies NEW_MatcherRecord
+
+export const USER_ID_ROUTE = {
+  name: 'user-id',
+  path: USER_ID_PATH_PATTERN_MATCHER,
+  score: [[80], [70]],
+  children: [],
+  parent: undefined,
+} satisfies NEW_MatcherRecord
