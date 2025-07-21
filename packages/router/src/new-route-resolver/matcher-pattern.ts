@@ -1,6 +1,7 @@
 import { decode, MatcherQueryParams } from './resolver'
 import { EmptyParams, MatcherParamsFormatted } from './matcher-location'
 import { miss } from './matchers/errors'
+import { joinPaths } from './matcher-resolve.spec'
 
 /**
  * Base interface for matcher patterns that extract params from a URL.
@@ -47,13 +48,27 @@ export interface MatcherPatternPath<
   TParams extends MatcherParamsFormatted = MatcherParamsFormatted, // | null // | undefined // | void // so it might be a bit more convenient
 > extends MatcherPattern<string, TParams> {}
 
+/**
+ * Allows matching a static path.
+ *
+ * @example
+ * ```ts
+ * const matcher = new MatcherPatternPathStatic('/team')
+ * matcher.match('/team') // {}
+ * matcher.match('/team/123') // throws MatchMiss
+ * matcher.build() // '/team'
+ * ```
+ */
 export class MatcherPatternPathStatic
   implements MatcherPatternPath<EmptyParams>
 {
-  constructor(private path: string) {}
+  private path: string
+  constructor(path: string) {
+    this.path = path.toLowerCase()
+  }
 
   match(path: string): EmptyParams {
-    if (path !== this.path) {
+    if (path.toLowerCase() !== this.path) {
       throw miss()
     }
     return {}
@@ -63,6 +78,43 @@ export class MatcherPatternPathStatic
     return this.path
   }
 }
+
+/**
+ * Allows matching a static path folllowed by anything.
+ *
+ * @example
+ *
+ * ```ts
+ * const matcher = new MatcherPatternPathStar('/team')
+ * matcher.match('/team/123') // { pathMatch: '/123' }
+ * matcher.match('/team-123') // { pathMatch: '-123' }
+ * matcher.match('/team') // { pathMatch: '' }
+ * matcher.build({ pathMatch: '/123' }) // '/team/123'
+ * ```
+ */
+export class MatcherPatternPathStar
+  implements MatcherPatternPath<{ pathMatch: string }>
+{
+  private path: string
+  constructor(path: string = '') {
+    this.path = path.toLowerCase()
+  }
+
+  match(path: string): { pathMatch: string } {
+    const pathMatchIndex = path.toLowerCase().indexOf(this.path)
+    if (pathMatchIndex < 0) {
+      throw miss()
+    }
+    return {
+      pathMatch: path.slice(pathMatchIndex + this.path.length),
+    }
+  }
+
+  build(params: { pathMatch: string }): string {
+    return this.path + params.pathMatch
+  }
+}
+
 // example of a static matcher built at runtime
 // new MatcherPatternPathStatic('/')
 // new MatcherPatternPathStatic('/team')
@@ -132,6 +184,10 @@ export type ParamsFromParsers<P extends Record<string, ParamParser_Generic>> = {
     : never
 }
 
+/**
+ * Matcher for dynamic paths, e.g. `/team/:id/:name`.
+ * Supports one, one or zero, one or more and zero or more params.
+ */
 export class MatcherPatternPathDynamic<
   TParams extends MatcherParamsFormatted = MatcherParamsFormatted,
 > implements MatcherPatternPath<TParams>
@@ -183,7 +239,7 @@ export class MatcherPatternPathDynamic<
 
     if (__DEV__ && i !== match.length) {
       console.warn(
-        `Regexp matched ${match.length} params, but ${i} params are defined`
+        `Regexp matched ${match.length} params, but ${i} params are defined. Found when matching "${path}" against ${String(this.re)}`
       )
     }
     return params

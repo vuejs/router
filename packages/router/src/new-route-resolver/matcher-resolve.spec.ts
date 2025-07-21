@@ -57,7 +57,7 @@ function isMatchable(record: RouteRecordRaw): boolean {
   )
 }
 
-function joinPaths(a: string | undefined, b: string) {
+export function joinPaths(a: string | undefined, b: string) {
   if (a?.endsWith('/')) {
     return a + b
   }

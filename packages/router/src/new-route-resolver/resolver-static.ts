@@ -13,23 +13,102 @@ import {
   MatcherParamsFormatted,
 } from './matcher-location'
 import {
-  buildMatched,
-  EXPERIMENTAL_ResolverRecord_Base,
   RecordName,
   MatcherQueryParams,
   NEW_LocationResolved,
   NEW_RouterResolver_Base,
   NO_MATCH_LOCATION,
 } from './resolver'
+import type {
+  MatcherPatternPath,
+  MatcherPatternQuery,
+  MatcherPatternHash,
+} from './matcher-pattern'
 
-export interface EXPERIMENTAL_ResolverStaticRecord
-  extends EXPERIMENTAL_ResolverRecord_Base {}
+// TODO: find a better name than static that doesn't conflict with static params
+// maybe fixed or simple
+
+export interface EXPERIMENTAL_ResolverRecord_Base {
+  /**
+   * Name of the matcher. Unique across all matchers. If missing, this record
+   * cannot be matched. This is useful for grouping records.
+   */
+  name?: RecordName
+
+  /**
+   * {@link MatcherPattern} for the path section of the URI.
+   */
+  path?: MatcherPatternPath
+
+  /**
+   * {@link MatcherPattern} for the query section of the URI.
+   */
+  query?: MatcherPatternQuery
+
+  /**
+   * {@link MatcherPattern} for the hash section of the URI.
+   */
+  hash?: MatcherPatternHash
+
+  // TODO: here or in router
+  // redirect?: RouteRecordRedirectOption
+
+  parent?: EXPERIMENTAL_ResolverRecord // the parent can be matchable or not
+  // TODO: implement aliases
+  // aliasOf?: this
+}
+
+/**
+ * A group can contain other useful properties like `meta` defined by the router.
+ */
+export interface EXPERIMENTAL_ResolverRecord_Group
+  extends EXPERIMENTAL_ResolverRecord_Base {
+  name?: undefined
+  path?: undefined
+  query?: undefined
+  hash?: undefined
+}
+
+export interface EXPERIMENTAL_ResolverRecord_Matchable
+  extends EXPERIMENTAL_ResolverRecord_Base {
+  name: RecordName
+  path: MatcherPatternPath
+}
+
+export type EXPERIMENTAL_ResolverRecord =
+  | EXPERIMENTAL_ResolverRecord_Matchable
+  | EXPERIMENTAL_ResolverRecord_Group
+
+export type EXPERIMENTAL_ResolverStaticRecord = EXPERIMENTAL_ResolverRecord
 
 export interface EXPERIMENTAL_ResolverStatic<TRecord>
   extends NEW_RouterResolver_Base<TRecord> {}
 
+/**
+ * Build the `matched` array of a record that includes all parent records from the root to the current one.
+ */
+export function buildMatched<T extends EXPERIMENTAL_ResolverRecord>(
+  record: T
+): T[] {
+  const matched: T[] = []
+  let node: T | undefined = record
+  while (node) {
+    matched.unshift(node)
+    node = node.parent as T
+  }
+  return matched
+}
+
+/**
+ * Creates a simple resolver that must have all records defined at creation
+ * time.
+ *
+ * @template TRecord - extended type of the records
+ * @param {TRecord[]} records - Ordered array of records that will be used to resolve routes
+ * @returns a resolver that can be passed to the router
+ */
 export function createStaticResolver<
-  TRecord extends EXPERIMENTAL_ResolverStaticRecord,
+  TRecord extends EXPERIMENTAL_ResolverRecord_Matchable,
 >(records: TRecord[]): EXPERIMENTAL_ResolverStatic<TRecord> {
   // allows fast access to a matcher by name
   const recordMap = new Map<RecordName, TRecord>()
@@ -37,7 +116,7 @@ export function createStaticResolver<
     recordMap.set(record.name, record)
   }
 
-  // NOTE: because of the overloads, we need to manually type the arguments
+  // NOTE: because of the overloads for `resolve`, we need to manually type the arguments
   type _resolveArgs =
     | [absoluteLocation: `/${string}`, currentLocation?: undefined]
     | [relativeLocation: string, currentLocation: NEW_LocationResolved<TRecord>]
