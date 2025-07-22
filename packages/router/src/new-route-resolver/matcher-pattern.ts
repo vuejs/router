@@ -1,7 +1,6 @@
 import { decode, MatcherQueryParams } from './resolver'
 import { EmptyParams, MatcherParamsFormatted } from './matcher-location'
 import { miss } from './matchers/errors'
-import { joinPaths } from './matcher-resolve.spec'
 
 /**
  * Base interface for matcher patterns that extract params from a URL.

@@ -178,32 +178,32 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
 }
 
 // TODO: is it worth to have 2 types for the undefined values?
-export interface EXPERIMENTAL_RouteRecordNormalized
-  extends EXPERIMENTAL_ResolverStaticRecord {
-  /**
-   * Arbitrary data attached to the record.
-   */
-  meta: RouteMeta
+export type EXPERIMENTAL_RouteRecordNormalized =
+  EXPERIMENTAL_ResolverStaticRecord<{
+    /**
+     * Arbitrary data attached to the record.
+     */
+    meta: RouteMeta
 
-  // TODO:
-  redirect?: unknown
+    // TODO:
+    redirect?: unknown
 
-  /**
-   * Allow passing down params as props to the component rendered by `router-view`.
-   */
-  props: Record<string, _RouteRecordProps>
+    /**
+     * Allow passing down params as props to the component rendered by `router-view`.
+     */
+    props: Record<string, _RouteRecordProps>
 
-  /**
-   * {@inheritDoc RouteRecordMultipleViews.components}
-   */
-  components: Record<string, RawRouteComponent>
+    /**
+     * {@inheritDoc RouteRecordMultipleViews.components}
+     */
+    components: Record<string, RawRouteComponent>
 
-  /**
-   * Contains the original modules for lazy loaded components.
-   * @internal
-   */
-  mods: Record<string, unknown>
-}
+    /**
+     * Contains the original modules for lazy loaded components.
+     * @internal
+     */
+    mods: Record<string, unknown>
+  }>
 
 // TODO: probably need some generic types
 // <TResolver extends NEW_RouterResolver_Base>,

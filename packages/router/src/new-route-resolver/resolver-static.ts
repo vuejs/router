@@ -75,11 +75,12 @@ export interface EXPERIMENTAL_ResolverRecord_Matchable
   path: MatcherPatternPath
 }
 
-export type EXPERIMENTAL_ResolverRecord =
-  | EXPERIMENTAL_ResolverRecord_Matchable
-  | EXPERIMENTAL_ResolverRecord_Group
+export type EXPERIMENTAL_ResolverRecord<T = {}> =
+  | (EXPERIMENTAL_ResolverRecord_Matchable & T)
+  | (EXPERIMENTAL_ResolverRecord_Group & T)
 
-export type EXPERIMENTAL_ResolverStaticRecord = EXPERIMENTAL_ResolverRecord
+export type EXPERIMENTAL_ResolverStaticRecord<T> =
+  EXPERIMENTAL_ResolverRecord<T>
 
 export interface EXPERIMENTAL_ResolverStatic<TRecord>
   extends NEW_RouterResolver_Base<TRecord> {}
