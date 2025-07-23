@@ -1,10 +1,10 @@
-import { normalizeQuery, parseQuery, stringifyQuery } from '../query'
+import { normalizeQuery, parseQuery, stringifyQuery } from '../../query'
 import {
   LocationNormalized,
   NEW_stringifyURL,
   parseURL,
   resolveRelativePath,
-} from '../location'
+} from '../../location'
 import {
   MatcherLocationAsNamed,
   MatcherLocationAsPathAbsolute,
@@ -53,7 +53,7 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
   // TODO: here or in router
   // redirect?: RouteRecordRedirectOption
 
-  parent?: EXPERIMENTAL_ResolverRecord // the parent can be matchable or not
+  parent?: EXPERIMENTAL_ResolverRecord | null // the parent can be matchable or not
   // TODO: implement aliases
   // aliasOf?: this
 }
@@ -79,7 +79,7 @@ export type EXPERIMENTAL_ResolverRecord<T = {}> =
   | (EXPERIMENTAL_ResolverRecord_Matchable & T)
   | (EXPERIMENTAL_ResolverRecord_Group & T)
 
-export type EXPERIMENTAL_ResolverStaticRecord<T> =
+export type EXPERIMENTAL_ResolverStaticRecord<T = {}> =
   EXPERIMENTAL_ResolverRecord<T>
 
 export interface EXPERIMENTAL_ResolverStatic<TRecord>

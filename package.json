@@ -74,6 +74,7 @@
     },
     "onlyBuiltDependencies": [
       "chromedriver",
+      "esbuild",
       "geckodriver"
     ]
   },

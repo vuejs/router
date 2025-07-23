@@ -27,6 +27,7 @@
     "./dist/*": "./dist/*",
     "./vetur/*": "./vetur/*",
     "./package.json": "./package.json",
+    "./experimental": "./dist/experimental/index.mjs",
     "./auto-routes": {
       "types": "./vue-router-auto-routes.d.ts",
       "node": {
@@ -79,8 +80,8 @@
   "homepage": "https://router.vuejs.org",
   "files": [
     "index.js",
-    "dist/*.{js,cjs,mjs}",
-    "dist/vue-router.d.{ts,mts}",
+    "dist/**/*.{js,cjs,mjs}",
+    "dist/**/*.d.{ts,mts}",
     "vue-router-auto.d.ts",
     "vue-router-auto-routes.d.ts",
     "vetur/tags.json",

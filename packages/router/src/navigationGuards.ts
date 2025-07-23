@@ -289,6 +289,7 @@ export function extractComponentsGuards(
         }
       }
 
+      // TODO: extract the logic relying on instances into an options-api plugin
       // skip update and leave guards if the route component is not mounted
       if (guardType !== 'beforeRouteEnter' && !record.instances[name]) continue
 

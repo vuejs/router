@@ -1,4 +1,4 @@
-import type { LocationQueryRaw } from '../query'
+import type { LocationQueryRaw } from '../../query'
 import type { RecordName } from './resolver'
 
 // FIXME: rename to ResolverLocation... instead of MatcherLocation... since they are returned by a resolver

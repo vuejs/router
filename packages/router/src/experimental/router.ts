@@ -22,7 +22,6 @@ import {
   type RouterHistory,
 } from '../history/common'
 import type { PathParserOptions } from '../matcher'
-import { type NEW_LocationResolved } from '../new-route-resolver/resolver'
 import {
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
@@ -39,6 +38,7 @@ import {
 } from '../scrollBehavior'
 import type {
   _RouteRecordProps,
+  NavigationGuard,
   NavigationGuardWithThis,
   NavigationHookAfter,
   RouteLocation,
@@ -79,9 +79,11 @@ import {
   routerViewLocationKey,
 } from '../injectionSymbols'
 import {
+  EXPERIMENTAL_ResolverRecord_Base,
+  EXPERIMENTAL_ResolverRecord_Group,
+  EXPERIMENTAL_ResolverRecord_Matchable,
   EXPERIMENTAL_ResolverStatic,
-  EXPERIMENTAL_ResolverStaticRecord,
-} from '../new-route-resolver/resolver-static'
+} from './route-resolver/resolver-static'
 
 /**
  * resolve, reject arguments of Promise constructor
@@ -177,33 +179,183 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
   // linkInactiveClass?: string
 }
 
+// TODO: non matchable and parent
+/**
+ * Internal type for common properties among all kind of {@link RouteRecordRaw}.
+ */
+export interface EXPERIMENTAL_RouteRecord_Base
+  extends EXPERIMENTAL_ResolverRecord_Base {
+  // TODO:
+  /**
+   * Where to redirect if the route is directly matched. The redirection happens
+   * before any navigation guard and triggers a new navigation with the new
+   * target location.
+   */
+  // redirect?: RouteRecordRedirectOption;
+
+  // TODO:
+  /**
+   * Aliases for the record. Allows defining extra paths that will behave like a
+   * copy of the record. Allows having paths shorthands like `/users/:id` and
+   * `/u/:id`. All `alias` and `path` values must share the same params.
+   */
+  // alias?: string | string[]
+
+  // TODO:
+  /**
+   * Before Enter guard specific to this record. Note `beforeEnter` has no
+   * effect if the record has a `redirect` property.
+   */
+  // beforeEnter?:
+  //   | NavigationGuardWithThis<undefined>
+  //   | NavigationGuardWithThis<undefined>[]
+
+  /**
+   * Arbitrary data attached to the record.
+   */
+  meta?: RouteMeta
+
+  // TODO:
+  /**
+   * Array of nested routes.
+   */
+  // children?: RouteRecordRaw[]
+
+  /**
+   * Components to display when the URL matches this route. Allow using named views.
+   */
+  components?: Record<string, RawRouteComponent>
+
+  /**
+   * Parent of this component if any
+   */
+  parent?: EXPERIMENTAL_RouteRecordRaw
+
+  // TODO:
+  /**
+   * Allow passing down params as props to the component rendered by `router-view`.
+   */
+  // props?: _RouteRecordProps | Record<string, _RouteRecordProps>
+}
+
+export interface EXPERIMENTAL_RouteRecord_Matchable
+  // preserve the values from the type EXPERIMENTAL_ResolverRecord_Matchable
+  extends Omit<EXPERIMENTAL_RouteRecord_Base, 'name' | 'path' | 'parent'>,
+    EXPERIMENTAL_ResolverRecord_Matchable {
+  components: Record<string, RawRouteComponent>
+
+  parent?: EXPERIMENTAL_RouteRecordNormalized | null
+
+  redirect?: never
+}
+
+export interface EXPERIMENTAL_RouteRecord_Group
+  extends Omit<
+      EXPERIMENTAL_RouteRecord_Base,
+      // preserve the values from the type EXPERIMENTAL_ResolverRecord_Group
+      'name' | 'path' | 'query' | 'hash' | 'parent'
+    >,
+    EXPERIMENTAL_ResolverRecord_Group {
+  components?: Record<string, RawRouteComponent>
+
+  parent?: EXPERIMENTAL_RouteRecordNormalized | null
+
+  // TODO:
+  // redirect?: something
+}
+
+export type EXPERIMENTAL_RouteRecordRaw =
+  | EXPERIMENTAL_RouteRecord_Matchable
+  | EXPERIMENTAL_RouteRecord_Group
+// | RouteRecordSingleViewWithChildren
+// | RouteRecordMultipleViews
+// | RouteRecordMultipleViewsWithChildren
+// | RouteRecordRedirect
+
+export interface EXPERIMENTAL_RouteRecordNoramlized_Base {
+  /**
+   * Contains the original modules for lazy loaded components.
+   *
+   * @internal
+   */
+  mods: Record<string, unknown>
+
+  props: Record<string, _RouteRecordProps>
+
+  /**
+   * Registered leave guards
+   *
+   * @internal
+   */
+  leaveGuards: Set<NavigationGuard>
+
+  /**
+   * Registered update guards
+   *
+   * @internal
+   */
+  updateGuards: Set<NavigationGuard>
+
+  // FIXME: remove the need for these
+  instances: Record<string, unknown>
+}
+
+export interface EXPERIMENTAL_RouteRecordNormalized_Group
+  extends EXPERIMENTAL_RouteRecordNoramlized_Base,
+    EXPERIMENTAL_RouteRecord_Group {
+  meta: RouteMeta
+  parent: EXPERIMENTAL_RouteRecordNormalized | null
+}
+
 // TODO: is it worth to have 2 types for the undefined values?
+export interface EXPERIMENTAL_RouteRecordNormalized_Matchable
+  extends EXPERIMENTAL_RouteRecordNoramlized_Base,
+    EXPERIMENTAL_RouteRecord_Matchable {
+  meta: RouteMeta
+
+  parent: EXPERIMENTAL_RouteRecordNormalized | null
+
+  // TODO:
+  // redirect?: unknown
+
+  // TODO:
+  // props: Record<string, _RouteRecordProps>
+
+  components: Record<string, RawRouteComponent>
+}
+
 export type EXPERIMENTAL_RouteRecordNormalized =
-  EXPERIMENTAL_ResolverStaticRecord<{
-    /**
-     * Arbitrary data attached to the record.
-     */
-    meta: RouteMeta
+  | EXPERIMENTAL_RouteRecordNormalized_Matchable
+  | EXPERIMENTAL_RouteRecordNormalized_Group
 
-    // TODO:
-    redirect?: unknown
+export function normalizeRouteRecord(
+  record: EXPERIMENTAL_RouteRecord_Matchable
+): EXPERIMENTAL_RouteRecordNormalized_Matchable {
+  // we can't define mods if we want to call defineProperty later
+  const normalizedRecord: Omit<
+    EXPERIMENTAL_RouteRecordNormalized_Matchable,
+    'mods'
+  > = {
+    meta: {},
+    // must be defined as non enumerable because it contains modules
+    // mods: {},
+    props: {},
+    parent: null,
+    ...record,
+    // FIXME: to be removed
+    instances: {},
+    leaveGuards: new Set(),
+    updateGuards: new Set(),
+  }
+  // mods contain modules and shouldn't be copied,
+  // logged or anything. It's just used for internal
+  // advanced use cases like data loaders
+  Object.defineProperty(normalizedRecord, 'mods', {
+    value: {},
+  })
 
-    /**
-     * Allow passing down params as props to the component rendered by `router-view`.
-     */
-    props: Record<string, _RouteRecordProps>
-
-    /**
-     * {@inheritDoc RouteRecordMultipleViews.components}
-     */
-    components: Record<string, RawRouteComponent>
-
-    /**
-     * Contains the original modules for lazy loaded components.
-     * @internal
-     */
-    mods: Record<string, unknown>
-  }>
+  return normalizedRecord as EXPERIMENTAL_RouteRecordNormalized_Matchable
+}
 
 // TODO: probably need some generic types
 // <TResolver extends NEW_RouterResolver_Base>,
@@ -218,7 +370,7 @@ export interface EXPERIMENTAL_RouterOptions
    *
    * @experimental
    */
-  resolver: EXPERIMENTAL_ResolverStatic<EXPERIMENTAL_RouteRecordNormalized>
+  resolver: EXPERIMENTAL_ResolverStatic<EXPERIMENTAL_RouteRecordNormalized_Matchable>
 }
 
 /**
@@ -394,7 +546,7 @@ export interface EXPERIMENTAL_Router
   //   TRouteRecordRaw, // extends NEW_MatcherRecordRaw,
   //   TRouteRecord extends NEW_MatcherRecord,
   // >
-  extends EXPERIMENTAL_Router_Base<EXPERIMENTAL_RouteRecordNormalized> {
+  extends EXPERIMENTAL_Router_Base<EXPERIMENTAL_RouteRecordNormalized_Matchable> {
   /**
    * Original options object passed to create the Router
    */
@@ -1273,7 +1425,7 @@ export function experimental_createRouter(
  * @param matched - array of matched records
  */
 function mergeMetaFields(
-  matched: NEW_LocationResolved<EXPERIMENTAL_RouteRecordNormalized>['matched']
+  matched: EXPERIMENTAL_RouteRecordNormalized[]
 ): RouteMeta {
   return assign({} as RouteMeta, ...matched.map(r => r.meta))
 }

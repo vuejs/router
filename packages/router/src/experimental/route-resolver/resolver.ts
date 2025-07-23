@@ -3,21 +3,24 @@ import {
   normalizeQuery,
   parseQuery,
   stringifyQuery,
-} from '../query'
+} from '../../query'
 import type {
   MatcherPattern,
   MatcherPatternHash,
   MatcherPatternPath,
   MatcherPatternQuery,
 } from './matcher-pattern'
-import { warn } from '../warning'
-import { encodeQueryValue as _encodeQueryValue, encodeParam } from '../encoding'
+import { warn } from '../../warning'
+import {
+  encodeQueryValue as _encodeQueryValue,
+  encodeParam,
+} from '../../encoding'
 import {
   LocationNormalized,
   NEW_stringifyURL,
   parseURL,
   resolveRelativePath,
-} from '../location'
+} from '../../location'
 import type {
   MatcherLocationAsNamed,
   MatcherLocationAsPathAbsolute,
@@ -25,8 +28,8 @@ import type {
   MatcherLocationAsRelative,
   MatcherParamsFormatted,
 } from './matcher-location'
-import { _RouteRecordProps } from '../typed-routes'
-import { comparePathParserScore } from '../matcher/pathParserRanker'
+import { _RouteRecordProps } from '../../typed-routes'
+import { comparePathParserScore } from '../../matcher/pathParserRanker'
 
 /**
  * Allowed types for a matcher name.
