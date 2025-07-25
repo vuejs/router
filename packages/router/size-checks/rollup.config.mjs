@@ -50,6 +50,8 @@ const config = defineConfig({
     resolve(),
     commonjs(),
     terser({
+      // uncomment to debug output size changes
+      // mangle: false,
       format: {
         comments: false,
       },

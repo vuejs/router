@@ -2,7 +2,6 @@ import type {
   RouteLocationOptions,
   RouteQueryAndHash,
   _RouteLocationBase,
-  RouteParamsGeneric,
   RouteLocationMatched,
   RouteParamsRawGeneric,
 } from '../types'
@@ -50,7 +49,6 @@ export type RouteLocationTypedList<
  */
 export interface RouteLocationNormalizedGeneric extends _RouteLocationBase {
   name: RouteRecordNameGeneric
-  params: RouteParamsGeneric
   /**
    * Array of {@link RouteRecordNormalized}
    */
