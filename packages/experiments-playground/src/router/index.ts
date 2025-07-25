@@ -12,8 +12,8 @@ import type {
 } from 'vue-router/experimental'
 import PageHome from '../pages/(home).vue'
 
-type ExtractMatcherQueryParams<T> =
-  T extends MatcherPatternQuery<infer P> ? P : never
+// type ExtractMatcherQueryParams<T> =
+//   T extends MatcherPatternQuery<infer P> ? P : never
 
 // type CombineMatcherParams<T extends readonly MatcherPatternQuery[]> =
 //   T extends readonly [infer First, ...infer Rest]
@@ -95,6 +95,7 @@ const ANY_HASH_PATTERN_MATCHER: MatcherPatternHash<// hash could be named anythi
 }
 
 const r_group = normalizeRouteRecord({
+  // cannot have a name because it's a group
   meta: {
     fromGroup: 'r_group',
   },
@@ -115,11 +116,21 @@ const r_about = normalizeRouteRecord({
   components: { default: () => import('../pages/about.vue') },
 })
 
-const r_profile_layout = normalizeRouteRecord({
-  components: {},
+const r_profiles_layout = normalizeRouteRecord({
+  // cannot have a name because it's a layout and can't be matched (no path, query, or hash)
+  // name: 'profile',
+  // path: new MatcherPatternPathStatic('/profile'),
+  components: { default: () => import('../pages/profiles/+layout.vue') },
   meta: {
     layout: 'profile',
   },
+})
+
+const r_profiles_list = normalizeRouteRecord({
+  name: 'profiles-list',
+  components: { default: () => import('../pages/profiles/(list).vue') },
+  path: new MatcherPatternPathStatic('/profiles'),
+  parent: r_profiles_layout,
 })
 
 const r_nested = normalizeRouteRecord({
@@ -142,5 +153,6 @@ export const router = experimental_createRouter({
     r_about,
     r_nested,
     r_nested_a,
+    r_profiles_list,
   ]),
 })
