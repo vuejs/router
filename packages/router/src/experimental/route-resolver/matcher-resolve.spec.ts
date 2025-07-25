@@ -1,33 +1,34 @@
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from 'vue'
-import { RouteComponent, RouteMeta, RouteRecordRaw } from '../types'
-import { NEW_stringifyURL } from '../location'
-import { mockWarn } from '../../__tests__/vitest-mock-warn'
+import { RouteComponent, RouteMeta, RouteRecordRaw } from '../../types'
+import { NEW_stringifyURL } from '../../location'
+import { mockWarn } from '../../../__tests__/vitest-mock-warn'
 import {
-  createCompiledMatcher,
   type MatcherLocationRaw,
-  type NEW_MatcherRecordRaw,
-  type NEW_LocationResolved,
+  type ResolverLocationResolved,
   type NEW_MatcherRecord,
   NO_MATCH_LOCATION,
-} from './resolver'
+} from './resolver-abstract'
+import { type NEW_MatcherRecordRaw } from './resolver-dynamic'
+import { createCompiledMatcher } from './resolver-dynamic'
 import { miss } from './matchers/errors'
-import { MatcherPatternPath, MatcherPatternPathStatic } from './matcher-pattern'
-import { EXPERIMENTAL_RouterOptions } from '../experimental/router'
-import { stringifyQuery } from '../query'
-import type {
-  MatcherLocationAsNamed,
-  MatcherLocationAsPathAbsolute,
-} from './matcher-location'
+import {
+  MatcherPatternPath,
+  MatcherPatternPathStatic,
+} from './matchers/matcher-pattern'
+import { EXPERIMENTAL_RouterOptions } from '../router'
+import { stringifyQuery } from '../../query'
+import type { ResolverLocationAsPathAbsolute } from './resolver-abstract'
+import type { ResolverLocationAsNamed } from './resolver-abstract'
 // TODO: should be moved to a different test file
 // used to check backward compatible paths
 import {
   PATH_PARSER_OPTIONS_DEFAULTS,
   PathParams,
   tokensToParser,
-} from '../matcher/pathParserRanker'
-import { tokenizePath } from '../matcher/pathTokenizer'
-import { mergeOptions } from '../utils'
+} from '../../matcher/pathParserRanker'
+import { tokenizePath } from '../../matcher/pathTokenizer'
+import { mergeOptions } from '../../utils'
 
 // FIXME: this type was removed, it will be a new one once a dynamic resolver is implemented
 export interface EXPERIMENTAL_RouteRecordRaw extends NEW_MatcherRecordRaw {
@@ -128,7 +129,7 @@ describe('RouterMatcher.resolve', () => {
 
   function isMatcherLocationResolved(
     location: unknown
-  ): location is NEW_LocationResolved<NEW_MatcherRecord> {
+  ): location is ResolverLocationResolved<NEW_MatcherRecord> {
     return !!(
       location &&
       typeof location === 'object' &&
@@ -155,11 +156,11 @@ describe('RouterMatcher.resolve', () => {
     toLocation: Exclude<MatcherLocationRaw, string> | `/${string}`,
     expectedLocation: Partial<MatcherResolvedLocation>,
     fromLocation:
-      | NEW_LocationResolved<NEW_MatcherRecord>
+      | ResolverLocationResolved<NEW_MatcherRecord>
       // absolute locations only that can be resolved for convenience
       | `/${string}`
-      | MatcherLocationAsNamed
-      | MatcherLocationAsPathAbsolute = START_LOCATION
+      | ResolverLocationAsNamed
+      | ResolverLocationAsPathAbsolute = START_LOCATION
   ) {
     const records = (Array.isArray(record) ? record : [record]).map(
       (record): NEW_MatcherRecordRaw =>

@@ -17,15 +17,15 @@ export { createStaticResolver } from './route-resolver/resolver-static'
 export type {
   MatcherQueryParams,
   MatcherQueryParamsValue,
-} from './route-resolver/resolver'
+} from './route-resolver/resolver-abstract'
 export {
   MatcherPatternPathDynamic,
   MatcherPatternPathStatic,
   MatcherPatternPathStar,
-} from './route-resolver/matcher-pattern'
+} from './route-resolver/matchers/matcher-pattern'
 export type {
   MatcherPattern,
   MatcherPatternHash,
   MatcherPatternPath,
   MatcherPatternQuery,
-} from './route-resolver/matcher-pattern'
+} from './route-resolver/matchers/matcher-pattern'

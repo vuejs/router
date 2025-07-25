@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { createStaticResolver } from './resolver-static'
-import { MatcherQueryParams, NO_MATCH_LOCATION } from './resolver'
+import { MatcherQueryParams, NO_MATCH_LOCATION } from './resolver-abstract'
 import {
   MatcherPatternQuery,
   MatcherPatternPathStatic,
-} from './matcher-pattern'
+} from './matchers/matcher-pattern'
 import {
   EMPTY_PATH_PATTERN_MATCHER,
   USER_ID_PATH_PATTERN_MATCHER,

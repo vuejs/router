@@ -1,14 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import {
-  createCompiledMatcher,
-  NO_MATCH_LOCATION,
-  pathEncoded,
-} from './resolver'
+import { NO_MATCH_LOCATION, pathEncoded } from './resolver-abstract'
+import { createCompiledMatcher } from './resolver-dynamic'
 import {
   MatcherPatternQuery,
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,
-} from './matcher-pattern'
+} from './matchers/matcher-pattern'
 import {
   EMPTY_PATH_ROUTE,
   USER_ID_ROUTE,

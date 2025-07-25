@@ -1,10 +1,8 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import {
-  NEW_LocationResolved,
-  NEW_MatcherRecordRaw,
-  NEW_RouterResolver,
-} from './resolver'
-import { EXPERIMENTAL_RouteRecordNormalized } from '../experimental/router'
+import { ResolverLocationResolved } from './resolver-abstract'
+import { NEW_MatcherRecordRaw } from './resolver-dynamic'
+import { NEW_RouterResolver } from './resolver-dynamic'
+import { EXPERIMENTAL_RouteRecordNormalized } from '../router'
 
 describe('Matcher', () => {
   type TMatcherRecordRaw = NEW_MatcherRecordRaw
@@ -16,10 +14,10 @@ describe('Matcher', () => {
   describe('matcher.resolve()', () => {
     it('resolves absolute string locations', () => {
       expectTypeOf(matcher.resolve({ path: '/foo' })).toEqualTypeOf<
-        NEW_LocationResolved<TMatcherRecord>
+        ResolverLocationResolved<TMatcherRecord>
       >()
       expectTypeOf(matcher.resolve('/foo')).toEqualTypeOf<
-        NEW_LocationResolved<TMatcherRecord>
+        ResolverLocationResolved<TMatcherRecord>
       >()
     })
 
@@ -34,17 +32,17 @@ describe('Matcher', () => {
       expectTypeOf(
         matcher.resolve(
           { path: 'foo' },
-          {} as NEW_LocationResolved<TMatcherRecord>
+          {} as ResolverLocationResolved<TMatcherRecord>
         )
-      ).toEqualTypeOf<NEW_LocationResolved<TMatcherRecord>>()
+      ).toEqualTypeOf<ResolverLocationResolved<TMatcherRecord>>()
       expectTypeOf(
-        matcher.resolve('foo', {} as NEW_LocationResolved<TMatcherRecord>)
-      ).toEqualTypeOf<NEW_LocationResolved<TMatcherRecord>>()
+        matcher.resolve('foo', {} as ResolverLocationResolved<TMatcherRecord>)
+      ).toEqualTypeOf<ResolverLocationResolved<TMatcherRecord>>()
     })
 
     it('resolved named locations', () => {
       expectTypeOf(matcher.resolve({ name: 'foo', params: {} })).toEqualTypeOf<
-        NEW_LocationResolved<TMatcherRecord>
+        ResolverLocationResolved<TMatcherRecord>
       >()
     })
 
@@ -59,9 +57,9 @@ describe('Matcher', () => {
       expectTypeOf(
         matcher.resolve(
           { params: { id: 1 } },
-          {} as NEW_LocationResolved<TMatcherRecord>
+          {} as ResolverLocationResolved<TMatcherRecord>
         )
-      ).toEqualTypeOf<NEW_LocationResolved<TMatcherRecord>>()
+      ).toEqualTypeOf<ResolverLocationResolved<TMatcherRecord>>()
     })
   })
 
@@ -77,7 +75,7 @@ describe('Matcher', () => {
       // @ts-expect-error: name + currentLocation
       { name: 'a', params: {} },
       //
-      {} as NEW_LocationResolved<TMatcherRecord>
+      {} as ResolverLocationResolved<TMatcherRecord>
     )
   })
 })

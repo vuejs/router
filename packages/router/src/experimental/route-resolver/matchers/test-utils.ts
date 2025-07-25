@@ -1,10 +1,10 @@
-import { EmptyParams } from '../matcher-location'
+import { EmptyParams } from './matcher-pattern'
 import {
   MatcherPatternPath,
   MatcherPatternQuery,
   MatcherPatternHash,
-} from '../matcher-pattern'
-import { NEW_MatcherRecord } from '../resolver'
+} from './matcher-pattern'
+import { NEW_MatcherRecord } from '../resolver-abstract'
 import { invalid, miss } from './errors'
 
 export const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{

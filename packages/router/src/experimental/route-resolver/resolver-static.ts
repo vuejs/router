@@ -5,25 +5,23 @@ import {
   parseURL,
   resolveRelativePath,
 } from '../../location'
-import {
-  MatcherLocationAsNamed,
-  MatcherLocationAsPathAbsolute,
-  MatcherLocationAsPathRelative,
-  MatcherLocationAsRelative,
-  MatcherParamsFormatted,
-} from './matcher-location'
+import { MatcherParamsFormatted } from './matchers/matcher-pattern'
+import { ResolverLocationAsRelative } from './resolver-abstract'
+import { ResolverLocationAsPathAbsolute } from './resolver-abstract'
+import { ResolverLocationAsPathRelative } from './resolver-abstract'
+import { ResolverLocationAsNamed } from './resolver-abstract'
 import {
   RecordName,
   MatcherQueryParams,
-  NEW_LocationResolved,
+  ResolverLocationResolved,
   NEW_RouterResolver_Base,
   NO_MATCH_LOCATION,
-} from './resolver'
+} from './resolver-abstract'
 import type {
   MatcherPatternPath,
   MatcherPatternQuery,
   MatcherPatternHash,
-} from './matcher-pattern'
+} from './matchers/matcher-pattern'
 
 // TODO: find a better name than static that doesn't conflict with static params
 // maybe fixed or simple
@@ -53,7 +51,7 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
   // TODO: here or in router
   // redirect?: RouteRecordRedirectOption
 
-  parent?: EXPERIMENTAL_ResolverRecord | null // the parent can be matchable or not
+  parent?: EXPERIMENTAL_ResolverRecord | null // the parend can be matchable or not
   // TODO: implement aliases
   // aliasOf?: this
 }
@@ -120,31 +118,34 @@ export function createStaticResolver<
   // NOTE: because of the overloads for `resolve`, we need to manually type the arguments
   type _resolveArgs =
     | [absoluteLocation: `/${string}`, currentLocation?: undefined]
-    | [relativeLocation: string, currentLocation: NEW_LocationResolved<TRecord>]
     | [
-        absoluteLocation: MatcherLocationAsPathAbsolute,
+        relativeLocation: string,
+        currentLocation: ResolverLocationResolved<TRecord>,
+      ]
+    | [
+        absoluteLocation: ResolverLocationAsPathAbsolute,
         // Same as above
         // currentLocation?: NEW_LocationResolved<TRecord> | undefined
         currentLocation?: undefined,
       ]
     | [
-        relativeLocation: MatcherLocationAsPathRelative,
-        currentLocation: NEW_LocationResolved<TRecord>,
+        relativeLocation: ResolverLocationAsPathRelative,
+        currentLocation: ResolverLocationResolved<TRecord>,
       ]
     | [
-        location: MatcherLocationAsNamed,
+        location: ResolverLocationAsNamed,
         // Same as above
         // currentLocation?: NEW_LocationResolved<TRecord> | undefined
         currentLocation?: undefined,
       ]
     | [
-        relativeLocation: MatcherLocationAsRelative,
-        currentLocation: NEW_LocationResolved<TRecord>,
+        relativeLocation: ResolverLocationAsRelative,
+        currentLocation: ResolverLocationResolved<TRecord>,
       ]
 
   function resolve(
     ...[to, currentLocation]: _resolveArgs
-  ): NEW_LocationResolved<TRecord> {
+  ): ResolverLocationResolved<TRecord> {
     if (typeof to === 'object' && (to.name || to.path == null)) {
       // relative location by path or by name
       if (__DEV__ && to.name == null && currentLocation == null) {
@@ -218,7 +219,7 @@ export function createStaticResolver<
       }
 
       let record: TRecord | undefined
-      let matched: NEW_LocationResolved<TRecord>['matched'] | undefined
+      let matched: ResolverLocationResolved<TRecord>['matched'] | undefined
       let parsedParams: MatcherParamsFormatted | null | undefined
 
       for (record of records) {
