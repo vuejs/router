@@ -124,6 +124,7 @@ const r_profiles_layout = normalizeRouteRecord({
   meta: {
     layout: 'profile',
   },
+  query: PAGE_QUERY_PATTERN_MATCHER,
 })
 
 const r_profiles_list = normalizeRouteRecord({
