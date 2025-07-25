@@ -329,13 +329,20 @@ export type EXPERIMENTAL_RouteRecordNormalized =
   | EXPERIMENTAL_RouteRecordNormalized_Group
 
 export function normalizeRouteRecord(
+  record: EXPERIMENTAL_RouteRecord_Group
+): EXPERIMENTAL_RouteRecordNormalized_Group
+export function normalizeRouteRecord(
   record: EXPERIMENTAL_RouteRecord_Matchable
-): EXPERIMENTAL_RouteRecordNormalized_Matchable {
+): EXPERIMENTAL_RouteRecordNormalized_Matchable
+export function normalizeRouteRecord(
+  record: EXPERIMENTAL_RouteRecord_Matchable | EXPERIMENTAL_RouteRecord_Group
+):
+  | EXPERIMENTAL_RouteRecordNormalized_Matchable
+  | EXPERIMENTAL_RouteRecordNormalized_Group {
   // we can't define mods if we want to call defineProperty later
-  const normalizedRecord: Omit<
-    EXPERIMENTAL_RouteRecordNormalized_Matchable,
-    'mods'
-  > = {
+  const normalizedRecord:
+    | Omit<EXPERIMENTAL_RouteRecordNormalized_Matchable, 'mods'>
+    | Omit<EXPERIMENTAL_RouteRecordNormalized_Group, 'mods'> = {
     meta: {},
     // must be defined as non enumerable because it contains modules
     // mods: {},
@@ -354,7 +361,9 @@ export function normalizeRouteRecord(
     value: {},
   })
 
-  return normalizedRecord as EXPERIMENTAL_RouteRecordNormalized_Matchable
+  return normalizedRecord as
+    | EXPERIMENTAL_RouteRecordNormalized_Matchable
+    | EXPERIMENTAL_RouteRecordNormalized_Group
 }
 
 // TODO: probably need some generic types
@@ -671,9 +680,9 @@ export function experimental_createRouter(
     // }
 
     const matchedRoute = resolver.resolve(
-      // incompatible types
+      // FIXME: incompatible types
       rawLocation as any,
-      // incompatible `matched` requires casting
+      // FIXME: incompatible `matched` requires casting
       currentLocation as any
     )
     const href = routerHistory.createHref(matchedRoute.fullPath)
@@ -779,7 +788,8 @@ export function experimental_createRouter(
     const from = currentRoute.value
     const data: HistoryState | undefined = (to as RouteLocationOptions).state
     const force: boolean | undefined = (to as RouteLocationOptions).force
-    const replace = (to as RouteLocationOptions).replace ?? _replace
+    const replace = targetLocation.replace ?? _replace
+    console.log({ replace })
 
     const shouldRedirect = handleRedirectRecord(targetLocation)
 

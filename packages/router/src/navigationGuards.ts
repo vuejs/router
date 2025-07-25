@@ -241,7 +241,13 @@ export function extractComponentsGuards(
   const guards: Array<() => Promise<void>> = []
 
   for (const record of matched) {
-    if (__DEV__ && !record.components && !record.children.length) {
+    if (
+      __DEV__ &&
+      !record.components &&
+      // in the nex records, there is no children, only parents
+      record.children &&
+      !record.children.length
+    ) {
       warn(
         `Record with path "${record.path}" is either missing a "component(s)"` +
           ` or "children" property.`
