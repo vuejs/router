@@ -15,8 +15,12 @@ const url = ref('')
       <RouterLink to="/about">About</RouterLink>
       |
       <RouterLink to="/nested">Nested</RouterLink>
+      |
+      <RouterLink to="/nested/a">Nested A</RouterLink>
+      |
+      <RouterLink to="/profiles">Profiles list</RouterLink>
     </nav>
-    <form @submit.prevent="router.push(url)">
+    <form @submit.prevent="router.push(url, route)">
       <label for="path">Path:</label>
       <input
         id="path"
