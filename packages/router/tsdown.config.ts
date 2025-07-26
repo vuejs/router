@@ -36,20 +36,11 @@ const commonOptions = {
   dts: false,
 } satisfies Options
 
-const experimental = {
-  ...commonOptions,
-  sourcemap: true,
-  entry: {
-    'experimental/index': './src/experimental/index.ts',
-  },
-  dts: true,
-} satisfies Options
-
 const esm = {
   ...commonOptions,
   entry: {
     ...commonOptions.entry,
-    // 'experimental/index': './src/experimental/index.ts',
+    'experimental/index': './src/experimental/index.ts',
   },
   platform: 'neutral',
   dts: true,
@@ -119,5 +110,4 @@ export default [
   cjsProd,
   iife,
   iifeProd,
-  // experimental,
 ]
