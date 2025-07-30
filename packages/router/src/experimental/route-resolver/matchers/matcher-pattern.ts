@@ -273,10 +273,14 @@ export interface MatcherPatternQuery<
  */
 export interface MatcherPatternHash<
   TParams extends MatcherParamsFormatted = MatcherParamsFormatted,
-> extends MatcherPattern<string, TParams> {} /**
+> extends MatcherPattern<string, TParams> {}
+
+/**
  * Generic object of params that can be passed to a matcher.
  */
-export type MatcherParamsFormatted = Record<string, unknown> /**
+export type MatcherParamsFormatted = Record<string, unknown>
+
+/**
  * Empty object in TS.
  */
 export type EmptyParams = Record<PropertyKey, never>

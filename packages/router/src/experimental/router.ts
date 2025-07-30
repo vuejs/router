@@ -84,7 +84,6 @@ import {
   EXPERIMENTAL_ResolverRecord_Matchable,
   EXPERIMENTAL_ResolverStatic,
 } from './route-resolver/resolver-static'
-import { ResolverLocationResolved } from './route-resolver/resolver-abstract'
 
 /**
  * resolve, reject arguments of Promise constructor

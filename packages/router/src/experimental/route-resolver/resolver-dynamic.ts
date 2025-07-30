@@ -297,7 +297,9 @@ export function createCompiledMatcher<
     getRecord,
     getRecords,
   }
-} /**
+}
+
+/**
  * Performs a binary search to find the correct insertion index for a new matcher.
  *
  * Matchers are primarily sorted by their score. If scores are tied then we also consider parent/child relationships,
@@ -355,11 +357,12 @@ export function getInsertionAncestor<T extends NEW_MatcherDynamicRecord>(
   }
 
   return
-} /**
+}
+
+/**
  * Checks if a record or any of its parent is an alias
  * @param record
  */
-
 export function isAliasRecord<T extends NEW_MatcherDynamicRecord>(
   record: T | undefined
 ): boolean {

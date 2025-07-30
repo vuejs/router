@@ -28,4 +28,6 @@ export type {
   MatcherPatternHash,
   MatcherPatternPath,
   MatcherPatternQuery,
+  MatcherParamsFormatted,
+  EmptyParams,
 } from './route-resolver/matchers/matcher-pattern'
