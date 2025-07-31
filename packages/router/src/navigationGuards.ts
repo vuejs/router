@@ -244,7 +244,7 @@ export function extractComponentsGuards(
     if (
       __DEV__ &&
       !record.components &&
-      // in the nex records, there is no children, only parents
+      // in the new records, there is no children, only parents
       record.children &&
       !record.children.length
     ) {
