@@ -6,3 +6,6 @@ tests_output
 logs
 # copied from root during release
 README.md
+vue-router-*.tgz
+# size check router
+size-tests

@@ -1,4 +1,5 @@
 import type { DefaultTheme, LocaleSpecificConfig } from 'vitepress'
+import typedocSidebar from '../../api/typedoc-sidebar.json'
 
 export const META_URL = 'https://router.vuejs.org'
 export const META_TITLE = 'Vue Router'
@@ -53,6 +54,12 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
     ],
 
     sidebar: {
+      '/api/': [
+        {
+          text: 'API',
+          items: typedocSidebar,
+        },
+      ],
       // catch-all fallback
       '/': [
         {
@@ -177,13 +184,6 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/guide/migration/index.html',
             },
           ],
-        },
-      ],
-
-      '/api/': [
-        {
-          text: 'packages',
-          items: [{ text: 'vue-router', link: '/api/' }],
         },
       ],
     },
