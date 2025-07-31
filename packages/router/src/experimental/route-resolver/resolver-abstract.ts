@@ -5,8 +5,9 @@ import {
   encodeParam,
 } from '../../encoding'
 import type { MatcherParamsFormatted } from './matchers/matcher-pattern'
-import { _RouteRecordProps } from '../../typed-routes'
-import { NEW_MatcherDynamicRecord } from './resolver-dynamic'
+import type { _RouteRecordProps } from '../../typed-routes'
+import type { NEW_MatcherDynamicRecord } from './resolver-dynamic'
+import type { LocationNormalized } from '../../location'
 
 /**
  * Allowed types for a matcher name.
@@ -20,7 +21,7 @@ export type RecordName = string | symbol
  * - `TMatcherRecordRaw` represents the raw record type passed to {@link addMatcher}.
  * - `TMatcherRecord` represents the normalized record type returned by {@link getRecords}.
  */
-export interface NEW_RouterResolver_Base<TRecord> {
+export interface EXPERIMENTAL_Resolver_Base<TRecord> {
   /**
    * Resolves an absolute location (like `/path/to/somewhere`).
    *
@@ -92,7 +93,7 @@ export interface NEW_RouterResolver_Base<TRecord> {
 }
 
 /**
- * Allowed location objects to be passed to {@link NEW_RouterResolver['resolve']}
+ * Allowed location objects to be passed to {@link EXPERIMENTAL_Resolver_Base['resolve']}
  */
 export type MatcherLocationRaw =
   // | `/${string}`
@@ -103,17 +104,12 @@ export type MatcherLocationRaw =
   | ResolverLocationAsRelative
 
 /**
- * Returned location object by {@link NEW_RouterResolver['resolve']}.
+ * Returned location object by {@link EXPERIMENTAL_Resolver_Base['resolve']}.
  * It contains the resolved name, params, query, hash, and matched records.
  */
-export interface ResolverLocationResolved<TMatched> {
+export interface ResolverLocationResolved<TMatched> extends LocationNormalized {
   name: RecordName
   params: MatcherParamsFormatted
-
-  fullPath: string
-  path: string
-  query: LocationQuery
-  hash: string
 
   matched: TMatched[]
 }
@@ -209,10 +205,7 @@ export const NO_MATCH_LOCATION = {
   name: __DEV__ ? Symbol('no-match') : Symbol(),
   params: {},
   matched: [],
-} satisfies Omit<
-  ResolverLocationResolved<unknown>,
-  'path' | 'hash' | 'query' | 'fullPath'
->
+} satisfies Omit<ResolverLocationResolved<never>, keyof LocationNormalized>
 
 /**
  * Normalized version of a {@link NEW_MatcherRecordRaw} record.

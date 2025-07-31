@@ -14,7 +14,7 @@ import {
   RecordName,
   MatcherQueryParams,
   ResolverLocationResolved,
-  NEW_RouterResolver_Base,
+  EXPERIMENTAL_Resolver_Base,
   NO_MATCH_LOCATION,
 } from './resolver-abstract'
 import type {
@@ -84,7 +84,7 @@ export type EXPERIMENTAL_ResolverStaticRecord<T = {}> =
   EXPERIMENTAL_ResolverRecord<T>
 
 export interface EXPERIMENTAL_ResolverStatic<TRecord>
-  extends NEW_RouterResolver_Base<TRecord> {}
+  extends EXPERIMENTAL_Resolver_Base<TRecord> {}
 
 /**
  * Build the `matched` array of a record that includes all parent records from the root to the current one.

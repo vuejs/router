@@ -54,7 +54,6 @@ import type {
   RouteRecordNameGeneric,
 } from '../typed-routes'
 import {
-  isRouteLocation,
   Lazy,
   RawRouteComponent,
   RouteLocationOptions,
@@ -84,6 +83,12 @@ import {
   EXPERIMENTAL_ResolverRecord_Matchable,
   EXPERIMENTAL_ResolverStatic,
 } from './route-resolver/resolver-static'
+import {
+  ResolverLocationAsNamed,
+  ResolverLocationAsPathRelative,
+  ResolverLocationAsRelative,
+  ResolverLocationResolved,
+} from './route-resolver/resolver-abstract'
 
 /**
  * resolve, reject arguments of Promise constructor
@@ -636,38 +641,51 @@ export function experimental_createRouter(
       : to
   }
 
+  // NOTE: to support multiple overloads
+  type TRecord = EXPERIMENTAL_RouteRecordNormalized
+  type _resolveArgs =
+    // TODO: is it worth suppoting the absolute location variants?
+    // | [absoluteLocation: `/${string}`, currentLocation?: undefined]
+    | [
+        relativeLocation: string,
+        // FIXME: use router locations
+        currentLocation?: ResolverLocationResolved<TRecord>,
+      ]
+    // | [
+    //     absoluteLocation: ResolverLocationAsPathAbsolute,
+    //     // Same as above
+    //     // currentLocation?: NEW_LocationResolved<TRecord> | undefined
+    //     currentLocation?: undefined,
+    //   ]
+    | [
+        relativeLocation: ResolverLocationAsPathRelative,
+        currentLocation: ResolverLocationResolved<TRecord>,
+      ]
+    | [
+        location: ResolverLocationAsNamed,
+        // Same as above
+        // currentLocation?: NEW_LocationResolved<TRecord> | undefined
+        currentLocation?: undefined,
+      ]
+    | [
+        relativeLocation: ResolverLocationAsRelative,
+        currentLocation: ResolverLocationResolved<TRecord>,
+      ]
+    | [resolvedLocation: RouteLocationResolved, currentLocation?: undefined]
+
   function resolve(
-    rawLocation: RouteLocationRaw,
-    currentLocation?: RouteLocationNormalizedLoaded
+    ...[to, currentLocation]: _resolveArgs
   ): RouteLocationResolved {
     // const resolve: Router['resolve'] = (rawLocation: RouteLocationRaw, currentLocation) => {
     // const objectLocation = routerLocationAsObject(rawLocation)
     // we create a copy to modify it later
     // TODO: in the experimental version, allow configuring this
     currentLocation =
+      // TODO: || currentRoute.value never evaluated
       currentLocation && assign({}, currentLocation || currentRoute.value)
     // currentLocation = assign({}, currentLocation || currentRoute.value)
 
-    if (__DEV__) {
-      if (!isRouteLocation(rawLocation)) {
-        warn(
-          `router.resolve() was passed an invalid location. This will fail in production.\n- Location:`,
-          rawLocation
-        )
-        return resolve({})
-      }
-
-      if (
-        typeof rawLocation === 'object' &&
-        rawLocation.hash?.startsWith('#')
-      ) {
-        warn(
-          `A \`hash\` should always start with the character "#". Replace "${rawLocation.hash}" with "#${rawLocation.hash}".`
-        )
-      }
-    }
-
-    // FIXME: is this achieved by matchers?
+    // FIXME: should this be achieved by matchers?
     // remove any nullish param
     // if ('params' in rawLocation) {
     //   const targetParams = assign({}, rawLocation.params)
@@ -680,10 +698,10 @@ export function experimental_createRouter(
     // }
 
     const matchedRoute = resolver.resolve(
-      // FIXME: incompatible types
-      rawLocation as any,
+      // @ts-expect-error FIXME: incompatible types
+      to,
       // FIXME: incompatible `matched` requires casting
-      currentLocation as any
+      currentLocation
     )
     const href = routerHistory.createHref(matchedRoute.fullPath)
 
@@ -691,17 +709,17 @@ export function experimental_createRouter(
       if (href.startsWith('//')) {
         warn(
           `Location ${JSON.stringify(
-            rawLocation
+            to
           )} resolved to "${href}". A resolved location cannot start with multiple slashes.`
         )
       }
       if (!matchedRoute.matched.length) {
-        warn(`No match found for location with path "${rawLocation}"`)
+        warn(`No match found for location with path "${to}"`)
       }
     }
 
     // matchedRoute is always a new object
-    // @ts-expect-error: the `matched` property is different
+    // @ts-expect-error: FIXME: the `matched` property is different
     return assign(matchedRoute, {
       redirectedFrom: undefined,
       href,
@@ -724,13 +742,10 @@ export function experimental_createRouter(
     }
   }
 
-  function push(to: RouteLocationRaw) {
-    return pushWithRedirect(to)
-  }
+  const push = (...args: _resolveArgs) => pushWithRedirect(resolve(...args))
 
-  function replace(to: RouteLocationRaw) {
-    return pushWithRedirect(to, true)
-  }
+  const replace = (...args: _resolveArgs) =>
+    pushWithRedirect(resolve(...args), true)
 
   function handleRedirectRecord(to: RouteLocation): RouteLocationRaw | void {
     const lastMatched = to.matched[to.matched.length - 1]
@@ -780,40 +795,42 @@ export function experimental_createRouter(
   }
 
   function pushWithRedirect(
-    to: RouteLocationRaw | RouteLocation,
-    _replace?: boolean,
+    to: RouteLocationResolved,
+    replace?: boolean,
     redirectedFrom?: RouteLocation
   ): Promise<NavigationFailure | void | undefined> {
-    const targetLocation: RouteLocation = (pendingLocation = resolve(to))
+    replace = to.replace ?? replace
+    pendingLocation = to
     const from = currentRoute.value
     const data: HistoryState | undefined = (to as RouteLocationOptions).state
     const force: boolean | undefined = (to as RouteLocationOptions).force
-    const replace = targetLocation.replace ?? _replace
-    console.log({ replace })
 
-    const shouldRedirect = handleRedirectRecord(targetLocation)
+    const shouldRedirect = handleRedirectRecord(to)
 
-    if (shouldRedirect)
+    if (shouldRedirect) {
       return pushWithRedirect(
-        assign(locationAsObject(shouldRedirect), {
+        {
+          // @ts-expect-error: FIXME: refactor location types
+          ...resolve(shouldRedirect, currentRoute.value),
           state:
             typeof shouldRedirect === 'object'
               ? assign({}, data, shouldRedirect.state)
               : data,
           force,
-        }),
+        },
         replace,
         // keep original redirectedFrom if it exists
-        redirectedFrom || targetLocation
+        redirectedFrom || to
       )
+    }
 
     // if it was a redirect we already called `pushWithRedirect` above
-    const toLocation = targetLocation as RouteLocationNormalized
+    const toLocation = to as RouteLocationNormalized
 
     toLocation.redirectedFrom = redirectedFrom
     let failure: NavigationFailure | void | undefined
 
-    if (!force && isSameRouteLocation(stringifyQuery, from, targetLocation)) {
+    if (!force && isSameRouteLocation(stringifyQuery, from, to)) {
       failure = createRouterError<NavigationFailure>(
         ErrorTypes.NAVIGATION_DUPLICATED,
         { to: toLocation, from }
@@ -851,6 +868,7 @@ export function experimental_createRouter(
               // we are redirecting to the same location we were already at
               isSameRouteLocation(
                 stringifyQuery,
+                // @ts-expect-error: FIXME: failure.to should not contain relative locations
                 resolve(failure.to),
                 toLocation
               ) &&
@@ -871,14 +889,15 @@ export function experimental_createRouter(
             }
 
             return pushWithRedirect(
-              // keep options
-              assign(locationAsObject(failure.to), {
+              {
+                // @ts-expect-error: FIXME: refactor location types
+                ...resolve(shouldRedirect, currentRoute.value),
                 state:
                   typeof failure.to === 'object'
                     ? assign({}, data, failure.to.state)
                     : data,
                 force,
-              }),
+              },
               // preserve an existing replacement but allow the redirect to override it
               replace,
               // preserve the original redirectedFrom if any
@@ -1123,7 +1142,11 @@ export function experimental_createRouter(
       const shouldRedirect = handleRedirectRecord(toLocation)
       if (shouldRedirect) {
         pushWithRedirect(
-          assign(shouldRedirect, { force: true }),
+          assign(
+            // @ts-expect-error: FIXME: refactor location types
+            resolve(shouldRedirect),
+            { force: true }
+          ),
           true,
           toLocation
         ).catch(noop)
@@ -1165,9 +1188,15 @@ export function experimental_createRouter(
             // the error is already handled by router.push we just want to avoid
             // logging the error
             pushWithRedirect(
-              assign(locationAsObject((error as NavigationRedirectError).to), {
-                force: true,
-              }),
+              assign(
+                resolve(
+                  // @ts-expect-error: to should be an absolute location
+                  (error as NavigationRedirectError).to
+                ),
+                {
+                  force: true,
+                }
+              ),
               undefined,
               toLocation
               // avoid an uncaught rejection, let push call triggerError
@@ -1337,10 +1366,13 @@ export function experimental_createRouter(
 
     hasRoute,
     getRoutes,
+    // @ts-expect-error FIXME: update EXPERIMENTAL_Router types
     resolve,
     options,
 
+    // @ts-expect-error FIXME: update EXPERIMENTAL_Router types
     push,
+    // @ts-expect-error FIXME: update EXPERIMENTAL_Router types
     replace,
     go,
     back: () => go(-1),

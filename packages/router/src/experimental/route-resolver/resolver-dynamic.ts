@@ -12,7 +12,7 @@ import type { ResolverLocationAsPathRelative } from './resolver-abstract'
 import type { ResolverLocationAsNamed } from './resolver-abstract'
 import {
   MatcherQueryParams,
-  NEW_RouterResolver_Base,
+  EXPERIMENTAL_Resolver_Base,
   NO_MATCH_LOCATION,
   RecordName,
   ResolverLocationResolved,
@@ -34,7 +34,7 @@ import type {
  */
 
 export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord>
-  extends NEW_RouterResolver_Base<TMatcherRecord> {
+  extends EXPERIMENTAL_Resolver_Base<TMatcherRecord> {
   /**
    * Add a matcher record. Previously named `addRoute()`.
    * @param matcher - The matcher record to add.
