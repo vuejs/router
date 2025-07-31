@@ -1,3 +1,4 @@
+import { warn } from '../../../warning'
 import { decode, MatcherQueryParams } from '../resolver-abstract'
 import { miss } from './errors'
 
@@ -236,7 +237,7 @@ export class MatcherPatternPathDynamic<
     }
 
     if (__DEV__ && i !== match.length) {
-      console.warn(
+      warn(
         `Regexp matched ${match.length} params, but ${i} params are defined. Found when matching "${path}" against ${String(this.re)}`
       )
     }

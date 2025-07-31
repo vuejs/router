@@ -22,6 +22,7 @@ import type {
   MatcherPatternQuery,
   MatcherPatternHash,
 } from './matchers/matcher-pattern'
+import { warn } from '../../warning'
 
 // TODO: find a better name than static that doesn't conflict with static params
 // maybe fixed or simple
@@ -151,7 +152,7 @@ export function createStaticResolver<
     if (typeof to === 'object' && (to.name || to.path == null)) {
       // relative location by path or by name
       if (__DEV__ && to.name == null && currentLocation == null) {
-        console.warn(
+        warn(
           `Cannot resolve relative location "${JSON.stringify(to)}"without a current location. This will throw in production.`,
           to
         )
@@ -175,8 +176,17 @@ export function createStaticResolver<
       // either one of them must be defined and is catched by the dev only warn above
       const name = to.name ?? currentLocation!.name
       const record = recordMap.get(name)!
-      if (__DEV__ && (!record || !name)) {
-        throw new Error(`Record "${String(name)}" not found`)
+
+      if (__DEV__) {
+        if (!record || !name) {
+          throw new Error(`Record "${String(name)}" not found`)
+        }
+
+        if (typeof to === 'object' && to.hash?.startsWith('#')) {
+          warn(
+            `A \`hash\` should always start with the character "#". Replace "${to.hash}" with "#${to.hash}".`
+          )
+        }
       }
 
       // unencoded params in a formatted form that the user came up with
