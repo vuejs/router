@@ -144,3 +144,18 @@ export const router = experimental_createRouter({
     r_profiles_list,
   ]),
 })
+
+router.beforeEach(to => {
+  console.log(`➡️ ${to.fullPath}`)
+})
+router.afterEach((to, _from, failure) => {
+  if (failure) {
+    console.log('╳ ', failure)
+  } else {
+    console.log(`✔️ ${to.fullPath}`)
+  }
+})
+
+router.onError(error => {
+  console.error('❌', error)
+})
