@@ -87,6 +87,7 @@ export function parseURL(
   )
 
   return {
+    // we can't directly use the location parameter because it can be a relative path
     fullPath: path + searchString + hash,
     path,
     query,
