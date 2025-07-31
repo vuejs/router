@@ -41,7 +41,7 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
   /**
    * {@link MatcherPattern} for the query section of the URI.
    */
-  query?: MatcherPatternQuery
+  query?: MatcherPatternQuery[]
 
   /**
    * {@link MatcherPattern} for the hash section of the URI.
@@ -63,7 +63,9 @@ export interface EXPERIMENTAL_ResolverRecord_Group
   extends EXPERIMENTAL_ResolverRecord_Base {
   name?: undefined
   path?: undefined
-  query?: undefined
+  // Query is the only kind of matcher that is non-exclusive
+  // all matched records get their queries merged
+  // query?: undefined
   hash?: undefined
 }
 
@@ -190,7 +192,9 @@ export function createStaticResolver<
           ...currentLocation?.query,
           ...normalizeQuery(to.query),
         },
-        ...matched.map(record => record.query?.build(params))
+        ...matched.flatMap(record =>
+          record.query?.map(query => query.build(params))
+        )
       )
 
       return {
@@ -233,7 +237,9 @@ export function createStaticResolver<
           matched = buildMatched(record)
           const queryParams: MatcherQueryParams = Object.assign(
             {},
-            ...matched.map(record => record.query?.match(url.query))
+            ...matched.flatMap(record =>
+              record.query?.map(query => query.match(url.query))
+            )
           )
           // TODO: test performance
           // for (const record of matched) {

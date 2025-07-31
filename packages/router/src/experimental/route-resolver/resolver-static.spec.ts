@@ -117,7 +117,7 @@ describe('StaticResolver', () => {
           {
             name: 'any-path',
             path: ANY_PATH_PATTERN_MATCHER,
-            query: PAGE_QUERY_PATTERN_MATCHER_LOCAL,
+            query: [PAGE_QUERY_PATTERN_MATCHER_LOCAL],
           },
         ])
 
@@ -156,7 +156,7 @@ describe('StaticResolver', () => {
           {
             name: 'user-detail',
             path: USER_ID_PATH_PATTERN_MATCHER,
-            query: PAGE_QUERY_PATTERN_MATCHER_LOCAL,
+            query: [PAGE_QUERY_PATTERN_MATCHER_LOCAL],
             hash: ANY_HASH_PATTERN_MATCHER,
           },
         ])
@@ -317,14 +317,16 @@ describe('StaticResolver', () => {
             {
               name: 'query',
               path: EMPTY_PATH_PATTERN_MATCHER,
-              query: {
-                match(q) {
-                  return { q }
-                },
-                build({ q }) {
-                  return { ...q }
-                },
-              } satisfies MatcherPatternQuery<{ q: MatcherQueryParams }>,
+              query: [
+                {
+                  match(q) {
+                    return { q }
+                  },
+                  build({ q }) {
+                    return { ...q }
+                  },
+                } satisfies MatcherPatternQuery<{ q: MatcherQueryParams }>,
+              ],
             },
           ])
           expect(resolver.resolve('/?%23%2F%3F=%23%2F%3F')).toMatchObject({

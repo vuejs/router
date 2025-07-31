@@ -11,6 +11,7 @@ import type {
   MatcherPatternQuery,
 } from 'vue-router/experimental'
 import PageHome from '../pages/(home).vue'
+import type { EmptyParams } from 'vue-router/experimental'
 
 // type ExtractMatcherQueryParams<T> =
 //   T extends MatcherPatternQuery<infer P> ? P : never
@@ -34,14 +35,16 @@ const PAGE_QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ page: number }> = {
   build: params => ({ page: String(params.page) }),
 }
 
-const QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ q: string }> = {
+const QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ q?: string }> = {
   match: query => {
     return {
       q: typeof query.q === 'string' ? query.q : '',
     }
   },
-  build: params => {
-    return { q: params.q || '' }
+  // NOTE: we need either to cast or to add an explicit return type annotation
+  // because of the special meaning of {} in TypeScript.
+  build: (params): { q?: string } => {
+    return params.q ? { q: params.q } : ({} as EmptyParams)
   },
 }
 
@@ -72,22 +75,6 @@ const QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ q: string }> = {
 //   QUERY_PATTERN_MATCHER
 // )
 
-const QUERY_MATCHER_COMBINED: MatcherPatternQuery<{
-  page: number
-  q: string
-}> = {
-  match: query => {
-    return {
-      ...PAGE_QUERY_PATTERN_MATCHER.match(query),
-      ...QUERY_PATTERN_MATCHER.match(query),
-    }
-  },
-  build: params => ({
-    ...PAGE_QUERY_PATTERN_MATCHER.build(params),
-    ...QUERY_PATTERN_MATCHER.build(params),
-  }),
-}
-
 const ANY_HASH_PATTERN_MATCHER: MatcherPatternHash<// hash could be named anything, in this case it creates a param named hash
 { hash: string | null }> = {
   match: hash => ({ hash: hash ? hash.slice(1) : null }),
@@ -104,7 +91,7 @@ const r_group = normalizeRouteRecord({
 const r_home = normalizeRouteRecord({
   name: 'home',
   path: new MatcherPatternPathStatic('/'),
-  query: QUERY_MATCHER_COMBINED,
+  query: [PAGE_QUERY_PATTERN_MATCHER, QUERY_PATTERN_MATCHER],
   parent: r_group,
   components: { default: PageHome },
 })
@@ -124,7 +111,7 @@ const r_profiles_layout = normalizeRouteRecord({
   meta: {
     layout: 'profile',
   },
-  query: PAGE_QUERY_PATTERN_MATCHER,
+  query: [PAGE_QUERY_PATTERN_MATCHER],
 })
 
 const r_profiles_list = normalizeRouteRecord({
