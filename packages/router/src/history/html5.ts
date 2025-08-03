@@ -126,15 +126,15 @@ function useHistoryListeners(
     return teardown
   }
 
-  function beforeHiddenListener() { document.hidden && beforeUnloadListener() }
-
   function beforeUnloadListener() {
-    const { history } = window
-    if (!history.state) return
-    history.replaceState(
-      assign({}, history.state, { scroll: computeScrollPosition() }),
-      ''
-    )
+    if (document.visibilityState === 'hidden') {
+      const { history } = window
+      if (!history.state) return
+      history.replaceState(
+        assign({}, history.state, { scroll: computeScrollPosition() }),
+        ''
+      )
+    }
   }
 
   function destroy() {
@@ -142,7 +142,7 @@ function useHistoryListeners(
     teardowns = []
     window.removeEventListener('popstate', popStateHandler)
     window.removeEventListener('pagehide', beforeUnloadListener)
-    document.removeEventListener('visibilitychange', beforeHiddenListener)
+    document.removeEventListener('visibilitychange', beforeUnloadListener)
   }
 
   // set up the listeners and prepare teardown callbacks
@@ -151,7 +151,7 @@ function useHistoryListeners(
   // note: iOS safari does not fire beforeunload, so we
   // use pagehide and visibilitychange instead
   window.addEventListener('pagehide', beforeUnloadListener)
-  document.addEventListener('visibilitychange', beforeHiddenListener)
+  document.addEventListener('visibilitychange', beforeUnloadListener)
 
   return {
     pauseListeners,
