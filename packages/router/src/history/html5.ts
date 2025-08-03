@@ -126,6 +126,10 @@ function useHistoryListeners(
     return teardown
   }
 
+  function beforeHiddenListener() {
+    document.hidden && beforeUnloadListener()
+  }
+
   function beforeUnloadListener() {
     const { history } = window
     if (!history.state) return
@@ -140,15 +144,20 @@ function useHistoryListeners(
     teardowns = []
     window.removeEventListener('popstate', popStateHandler)
     window.removeEventListener('beforeunload', beforeUnloadListener)
+    window.removeEventListener('pagehide', beforeUnloadListener)
+    document.removeEventListener('visibilitychange', beforeHiddenListener)
   }
 
   // set up the listeners and prepare teardown callbacks
   window.addEventListener('popstate', popStateHandler)
-  // TODO: could we use 'pagehide' or 'visibilitychange' instead?
   // https://developer.chrome.com/blog/page-lifecycle-api/
+  // note: iOS safari does not fire beforeunload, so we
+  // use pagehide and visibilitychange instead
   window.addEventListener('beforeunload', beforeUnloadListener, {
     passive: true,
   })
+  window.addEventListener('pagehide', beforeUnloadListener)
+  document.addEventListener('visibilitychange', beforeHiddenListener)
 
   return {
     pauseListeners,
