@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   MatcherPatternPathStatic,
   MatcherPatternPathStar,
-  MatcherPatternPathCustom,
+  MatcherPatternPathCustomParams,
 } from './matcher-pattern'
 import { pathEncoded } from '../resolver-abstract'
 import { invalid } from './errors'
@@ -106,7 +106,7 @@ describe('MatcherPatternPathStar', () => {
 
 describe('MatcherPatternPathCustom', () => {
   it('single param', () => {
-    const pattern = new MatcherPatternPathCustom(
+    const pattern = new MatcherPatternPathCustomParams(
       /^\/teams\/([^/]+?)\/b$/i,
       {
         // all defaults
@@ -133,7 +133,7 @@ describe('MatcherPatternPathCustom', () => {
   })
 
   it('decodes single param', () => {
-    const pattern = new MatcherPatternPathCustom(
+    const pattern = new MatcherPatternPathCustomParams(
       /^\/teams\/([^/]+?)$/i,
       {
         teamId: {},
@@ -150,7 +150,7 @@ describe('MatcherPatternPathCustom', () => {
   })
 
   it('optional param', () => {
-    const pattern = new MatcherPatternPathCustom(
+    const pattern = new MatcherPatternPathCustomParams(
       /^\/teams(?:\/([^/]+?))?\/b$/i,
       {
         teamId: { optional: true },
@@ -172,7 +172,7 @@ describe('MatcherPatternPathCustom', () => {
   })
 
   it('repeatable param', () => {
-    const pattern = new MatcherPatternPathCustom(
+    const pattern = new MatcherPatternPathCustomParams(
       /^\/teams\/(.+?)\/b$/i,
       {
         teamId: { repeat: true },
@@ -196,7 +196,7 @@ describe('MatcherPatternPathCustom', () => {
   })
 
   it('repeatable optional param', () => {
-    const pattern = new MatcherPatternPathCustom(
+    const pattern = new MatcherPatternPathCustomParams(
       /^\/teams(?:\/(.+?))?\/b$/i,
       {
         teamId: { repeat: true, optional: true },

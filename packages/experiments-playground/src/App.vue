@@ -59,7 +59,13 @@ const queryPage = computed({
     params: <code>{{ route.params }}</code>
     <br />
     <template v-if="queryPage != null">
-      page: <input type="number" v-model.number="queryPage" />
+      page:
+      <input
+        type="number"
+        v-model.number="queryPage"
+        autocomplete="off"
+        data-1p-ignore
+      />
       <br />
     </template>
     meta: <code>{{ route.meta }}</code>

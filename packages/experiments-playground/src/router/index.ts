@@ -1,17 +1,18 @@
-import { createWebHistory } from 'vue-router'
+import { createWebHistory, type RouteParamValue } from 'vue-router'
 import {
   experimental_createRouter,
   createStaticResolver,
   MatcherPatternPathStatic,
+  MatcherPatternPathCustomParams,
   normalizeRouteRecord,
 } from 'vue-router/experimental'
 import type {
   EXPERIMENTAL_RouteRecordNormalized_Matchable,
   MatcherPatternHash,
   MatcherPatternQuery,
+  EmptyParams,
 } from 'vue-router/experimental'
 import PageHome from '../pages/(home).vue'
-import type { EmptyParams } from 'vue-router/experimental'
 
 // type ExtractMatcherQueryParams<T> =
 //   T extends MatcherPatternQuery<infer P> ? P : never
@@ -134,6 +135,31 @@ const r_nested_a = normalizeRouteRecord({
   path: new MatcherPatternPathStatic('/nested/a'),
 })
 
+const r_profiles_detail = normalizeRouteRecord({
+  name: 'profiles-detail',
+  components: { default: () => import('../pages/profiles/[userId].vue') },
+  parent: r_profiles_layout,
+  path: new MatcherPatternPathCustomParams(
+    /^\/profiles\/(?<userId>[^/]+)$/i,
+    {
+      userId: {
+        parser: {
+          // @ts-expect-error: FIXME: should would with generic class
+          get: (value: string): number => Number(value),
+          // @ts-expect-error: FIXME: should would with generic class
+          set: (value: number): string => String(value),
+        },
+      },
+    },
+    ({ userId }) => {
+      if (typeof userId !== 'number') {
+        throw new Error('userId must be a number')
+      }
+      return `/profiles/${userId}`
+    }
+  ),
+})
+
 export const router = experimental_createRouter({
   history: createWebHistory(),
   resolver: createStaticResolver<EXPERIMENTAL_RouteRecordNormalized_Matchable>([
@@ -142,6 +168,7 @@ export const router = experimental_createRouter({
     r_nested,
     r_nested_a,
     r_profiles_list,
+    r_profiles_detail,
   ]),
 })
 

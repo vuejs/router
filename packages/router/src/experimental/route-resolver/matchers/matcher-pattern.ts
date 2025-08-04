@@ -193,17 +193,8 @@ export type ParamsFromParsers<P extends Record<string, ParamParser_Generic>> = {
     : never
 }
 
-/**
- * TODO: it should accept a dict of param parsers for each param and if they are repeatable and optional
- * The object order matters, they get matched in that order
- */
-
-interface MatcherPatternPathDynamicParam<
-  TIn extends string | string[] | null | undefined =
-    | string
-    | string[]
-    | null
-    | undefined,
+interface MatcherPatternPathCustomParamOptions<
+  TIn extends string | string[] | null = string | string[] | null,
   TOut = string | string[] | null,
 > {
   repeat?: boolean
@@ -211,12 +202,40 @@ interface MatcherPatternPathDynamicParam<
   parser?: Param_GetSet<TIn, TOut>
 }
 
-export class MatcherPatternPathCustom implements MatcherPatternPath {
+export const PARAM_NUMBER = {
+  get: (value: string) => {
+    const num = Number(value)
+    if (Number.isFinite(num)) {
+      return num
+    }
+    throw miss()
+  },
+  set: (value: number) => String(value),
+} satisfies Param_GetSet<string, number>
+
+export const PARAM_NUMBER_OPTIONAL = {
+  get: (value: string | null) =>
+    value == null ? null : PARAM_NUMBER.get(value),
+  set: (value: number | null) =>
+    value != null ? PARAM_NUMBER.set(value) : null,
+} satisfies Param_GetSet<string | null, number | null>
+
+export const PARAM_NUMBER_REPEATABLE = {
+  get: (value: string[]) => value.map(PARAM_NUMBER.get),
+  set: (value: number[]) => value.map(PARAM_NUMBER.set),
+} satisfies Param_GetSet<string[], number[]>
+
+export class MatcherPatternPathCustomParams implements MatcherPatternPath {
   // private paramsKeys: string[]
 
   constructor(
+    // TODO: make this work with named groups and simplify `params` to be an array of the repeat flag
     readonly re: RegExp,
-    readonly params: Record<string, MatcherPatternPathDynamicParam>,
+    readonly params: Record<
+      string,
+      // @ts-expect-error: adapt with generic class
+      MatcherPatternPathCustomParamOptions<unknown, unknown>
+    >,
     readonly build: (params: MatcherParamsFormatted) => string
     // A better version could be using all the parts to join them
     // .e.g ['users', 0, 'profile', 1] -> /users/123/profile/456
@@ -236,7 +255,7 @@ export class MatcherPatternPathCustom implements MatcherPatternPath {
     for (const paramName in this.params) {
       const currentParam = this.params[paramName]
       // an optional group in the regexp will return undefined
-      const currentMatch = match[i++] as string | undefined
+      const currentMatch = (match[i++] as string | undefined) ?? null
       if (__DEV__ && !currentParam.optional && !currentMatch) {
         warn(
           `Unexpected undefined value for param "${paramName}". Regexp: ${String(this.re)}. path: "${path}". This is likely a bug.`
@@ -251,9 +270,7 @@ export class MatcherPatternPathCustom implements MatcherPatternPath {
           )
         : decode(currentMatch)
 
-      console.log(paramName, currentParam, value)
-
-      params[paramName] = (currentParam.parser?.get || (v => v ?? null))(value)
+      params[paramName] = (currentParam.parser?.get || (v => v))(value)
     }
 
     if (__DEV__ && i !== match.length) {

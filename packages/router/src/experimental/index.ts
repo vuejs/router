@@ -22,6 +22,7 @@ export {
   MatcherPatternPathDynamic,
   MatcherPatternPathStatic,
   MatcherPatternPathStar,
+  MatcherPatternPathCustomParams,
 } from './route-resolver/matchers/matcher-pattern'
 export type {
   MatcherPattern,
