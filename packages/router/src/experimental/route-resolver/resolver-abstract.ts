@@ -228,7 +228,7 @@ export function pathEncoded(
         ? params[i].map(encodeParam).join('/')
         : encodeParam(params[i]))
     )
-  })
+  }, '')
 }
 export interface ResolverLocationAsNamed {
   name: RecordName

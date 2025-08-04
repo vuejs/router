@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   MatcherPatternPathStatic,
   MatcherPatternPathStar,
+  MatcherPatternPathCustom,
 } from './matcher-pattern'
+import { pathEncoded } from '../resolver-abstract'
+import { invalid } from './errors'
 
 describe('MatcherPatternPathStatic', () => {
   describe('match()', () => {
@@ -98,5 +101,128 @@ describe('MatcherPatternPathStar', () => {
       const pattern = new MatcherPatternPathStar('/team/')
       expect(pattern.build({ pathMatch: '/hey' })).toBe('/team//hey')
     })
+  })
+})
+
+describe('MatcherPatternPathCustom', () => {
+  it('single param', () => {
+    const pattern = new MatcherPatternPathCustom(
+      /^\/teams\/([^/]+?)\/b$/i,
+      {
+        // all defaults
+        teamId: {},
+      },
+      ({ teamId }) => {
+        if (typeof teamId !== 'string') {
+          throw invalid('teamId must be a string')
+        }
+        return pathEncoded`/teams/${teamId}/b`
+      }
+    )
+
+    expect(pattern.match('/teams/123/b')).toEqual({
+      teamId: '123',
+    })
+    expect(pattern.match('/teams/abc/b')).toEqual({
+      teamId: 'abc',
+    })
+    expect(() => pattern.match('/teams/123/c')).toThrow()
+    expect(() => pattern.match('/teams/123/b/c')).toThrow()
+    expect(() => pattern.match('/teams')).toThrow()
+    expect(() => pattern.match('/teams/')).toThrow()
+  })
+
+  it('decodes single param', () => {
+    const pattern = new MatcherPatternPathCustom(
+      /^\/teams\/([^/]+?)$/i,
+      {
+        teamId: {},
+      },
+      ({ teamId }) => {
+        if (typeof teamId !== 'string') {
+          throw invalid('teamId must be a string')
+        }
+        return pathEncoded`/teams/${teamId}`
+      }
+    )
+    expect(pattern.match('/teams/a%20b')).toEqual({ teamId: 'a b' })
+    expect(pattern.build({ teamId: 'a b' })).toBe('/teams/a%20b')
+  })
+
+  it('optional param', () => {
+    const pattern = new MatcherPatternPathCustom(
+      /^\/teams(?:\/([^/]+?))?\/b$/i,
+      {
+        teamId: { optional: true },
+      },
+      ({ teamId }) => {
+        if (teamId != null && typeof teamId !== 'string') {
+          throw invalid('teamId must be a string')
+        }
+        return teamId ? pathEncoded`/teams/${teamId}/b` : '/teams/b'
+      }
+    )
+
+    expect(pattern.match('/teams/b')).toEqual({ teamId: null })
+    expect(pattern.match('/teams/123/b')).toEqual({ teamId: '123' })
+    expect(() => pattern.match('/teams/123/c')).toThrow()
+    expect(() => pattern.match('/teams/123/b/c')).toThrow()
+    expect(pattern.build({ teamId: '123' })).toBe('/teams/123/b')
+    expect(pattern.build({ teamId: null })).toBe('/teams/b')
+  })
+
+  it('repeatable param', () => {
+    const pattern = new MatcherPatternPathCustom(
+      /^\/teams\/(.+?)\/b$/i,
+      {
+        teamId: { repeat: true },
+      },
+      ({ teamId }) => {
+        if (!Array.isArray(teamId)) {
+          throw invalid('teamId must be an array')
+        }
+        return '/teams/' + teamId.join('/') + '/b'
+      }
+    )
+
+    expect(pattern.match('/teams/123/b')).toEqual({ teamId: ['123'] })
+    expect(pattern.match('/teams/123/456/b')).toEqual({
+      teamId: ['123', '456'],
+    })
+    expect(() => pattern.match('/teams/123/c')).toThrow()
+    expect(() => pattern.match('/teams/123/b/c')).toThrow()
+    expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123/b')
+    expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/b')
+  })
+
+  it('repeatable optional param', () => {
+    const pattern = new MatcherPatternPathCustom(
+      /^\/teams(?:\/(.+?))?\/b$/i,
+      {
+        teamId: { repeat: true, optional: true },
+      },
+      ({ teamId }) => {
+        if (!Array.isArray(teamId)) {
+          throw invalid('teamId must be an array')
+        }
+        const joined = teamId.join('/')
+        return teamId
+          ? '/teams' + (joined ? '/' + joined : '') + '/b'
+          : '/teams/b'
+      }
+    )
+
+    expect(pattern.match('/teams/123/b')).toEqual({ teamId: ['123'] })
+    expect(pattern.match('/teams/123/456/b')).toEqual({
+      teamId: ['123', '456'],
+    })
+    expect(pattern.match('/teams/b')).toEqual({ teamId: [] })
+
+    expect(() => pattern.match('/teams/123/c')).toThrow()
+    expect(() => pattern.match('/teams/123/b/c')).toThrow()
+
+    expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123/b')
+    expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/b')
+    expect(pattern.build({ teamId: [] })).toBe('/teams/b')
   })
 })

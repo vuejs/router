@@ -119,8 +119,12 @@ export class MatcherPatternPathStar
 // new MatcherPatternPathStatic('/team')
 
 export interface Param_GetSet<
-  TIn extends string | string[] = string | string[],
-  TOut = TIn,
+  TIn extends string | string[] | null | undefined =
+    | string
+    | string[]
+    | null
+    | undefined,
+  TOut = string | string[] | null,
 > {
   get?: (value: NoInfer<TIn>) => TOut
   set?: (value: NoInfer<TOut>) => TIn
@@ -145,7 +149,13 @@ export function defineParamParser<TOut, TIn extends string | string[]>(parser: {
   return parser
 }
 
-const PATH_PARAM_DEFAULT_GET = (value: string | string[]) => value
+interface IdFn {
+  (v: undefined | null): null
+  (v: string): string
+  (v: string[]): string[]
+}
+
+const PATH_PARAM_DEFAULT_GET = (value => value ?? null) as IdFn
 const PATH_PARAM_DEFAULT_SET = (value: unknown) =>
   value && Array.isArray(value) ? value.map(String) : String(value)
 // TODO: `(value an null | undefined)` for types
@@ -181,6 +191,79 @@ export type ParamsFromParsers<P extends Record<string, ParamParser_Generic>> = {
       ? TIn
       : TOut
     : never
+}
+
+/**
+ * TODO: it should accept a dict of param parsers for each param and if they are repeatable and optional
+ * The object order matters, they get matched in that order
+ */
+
+interface MatcherPatternPathDynamicParam<
+  TIn extends string | string[] | null | undefined =
+    | string
+    | string[]
+    | null
+    | undefined,
+  TOut = string | string[] | null,
+> {
+  repeat?: boolean
+  optional?: boolean
+  parser?: Param_GetSet<TIn, TOut>
+}
+
+export class MatcherPatternPathCustom implements MatcherPatternPath {
+  // private paramsKeys: string[]
+
+  constructor(
+    readonly re: RegExp,
+    readonly params: Record<string, MatcherPatternPathDynamicParam>,
+    readonly build: (params: MatcherParamsFormatted) => string
+    // A better version could be using all the parts to join them
+    // .e.g ['users', 0, 'profile', 1] -> /users/123/profile/456
+    // numbers are indexes of the params in the params object keys
+    // readonly pathParts: Array<string | number>
+  ) {
+    // this.paramsKeys = Object.keys(this.params)
+  }
+
+  match(path: string): MatcherParamsFormatted {
+    const match = path.match(this.re)
+    if (!match) {
+      throw miss()
+    }
+    const params = {} as MatcherParamsFormatted
+    let i = 1 // index in match array
+    for (const paramName in this.params) {
+      const currentParam = this.params[paramName]
+      // an optional group in the regexp will return undefined
+      const currentMatch = match[i++] as string | undefined
+      if (__DEV__ && !currentParam.optional && !currentMatch) {
+        warn(
+          `Unexpected undefined value for param "${paramName}". Regexp: ${String(this.re)}. path: "${path}". This is likely a bug.`
+        )
+        throw miss()
+      }
+
+      const value = currentParam.repeat
+        ? (currentMatch?.split('/') || []).map(
+            // using  just decode makes the type inference fail
+            v => decode(v)
+          )
+        : decode(currentMatch)
+
+      console.log(paramName, currentParam, value)
+
+      params[paramName] = (currentParam.parser?.get || (v => v ?? null))(value)
+    }
+
+    if (__DEV__ && i !== match.length) {
+      warn(
+        `Regexp matched ${match.length} params, but ${i} params are defined. Found when matching "${path}" against ${String(this.re)}`
+      )
+    }
+
+    return params
+  }
 }
 
 /**
