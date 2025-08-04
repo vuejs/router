@@ -44,6 +44,12 @@ const esm = {
   },
   platform: 'neutral',
   dts: true,
+  copy: [
+    {
+      from: './vue-router.node.mjs',
+      to: 'dist/vue-router.node.mjs',
+    },
+  ],
   // sourcemap: true,
 } satisfies Options
 
