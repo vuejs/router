@@ -11,9 +11,9 @@
       "types": "./dist/vue-router.d.mts",
       "node": {
         "import": {
-          "production": "./dist/vue-router.node.mjs",
-          "development": "./dist/vue-router.node.mjs",
-          "default": "./dist/vue-router.node.mjs"
+          "production": "./vue-router.node.mjs",
+          "development": "./vue-router.node.mjs",
+          "default": "./vue-router.node.mjs"
         },
         "require": {
           "production": "./dist/vue-router.prod.cjs",
@@ -32,9 +32,9 @@
       "types": "./vue-router-auto-routes.d.ts",
       "node": {
         "import": {
-          "production": "./dist/vue-router.node.mjs",
-          "development": "./dist/vue-router.node.mjs",
-          "default": "./dist/vue-router.node.mjs"
+          "production": "./vue-router.node.mjs",
+          "development": "./vue-router.node.mjs",
+          "default": "./vue-router.node.mjs"
         },
         "require": {
           "production": "./dist/vue-router.prod.cjs",
@@ -49,9 +49,9 @@
       "types": "./vue-router-auto.d.ts",
       "node": {
         "import": {
-          "production": "./dist/vue-router.node.mjs",
-          "development": "./dist/vue-router.node.mjs",
-          "default": "./dist/vue-router.node.mjs"
+          "production": "./vue-router.node.mjs",
+          "development": "./vue-router.node.mjs",
+          "default": "./vue-router.node.mjs"
         },
         "require": {
           "production": "./dist/vue-router.prod.cjs",
@@ -80,10 +80,11 @@
   "homepage": "https://router.vuejs.org",
   "files": [
     "index.js",
-    "dist/**/*.{js,cjs,mjs}",
-    "dist/**/*.d.{ts,mts}",
+    "vue-router.node.mjs",
     "vue-router-auto.d.ts",
     "vue-router-auto-routes.d.ts",
+    "dist/**/*.{js,cjs,mjs}",
+    "dist/**/*.d.{ts,mts}",
     "vetur/tags.json",
     "vetur/attributes.json",
     "README.md"
