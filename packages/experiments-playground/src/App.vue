@@ -4,6 +4,10 @@ import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
+// @ts-expect-error:
+window.$router = router
+// @ts-expect-error:
+window.$route = route
 const url = ref('')
 
 const queryPage = computed({
