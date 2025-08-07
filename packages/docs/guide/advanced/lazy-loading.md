@@ -67,8 +67,7 @@ webpack will group any async module with the same chunk name into the same async
 
 In Vite you can define the chunks under the [`rollupOptions`](https://vite.dev/config/build-options.html#build-rollupoptions):
 
-```js
-// vite.config.js
+```js [vite.config.js]
 export default defineConfig({
   build: {
     rollupOptions: {
