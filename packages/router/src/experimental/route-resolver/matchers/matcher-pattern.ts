@@ -202,11 +202,15 @@ interface MatcherPatternPathCustomParamOptions<
   parser?: Param_GetSet<TIn, TOut>
 }
 
-export const PARAM_NUMBER = {
+const IS_INTEGER_RE = /^-?[1-9]\d*$/
+
+export const PARAM_INTEGER = {
   get: (value: string) => {
-    const num = Number(value)
-    if (Number.isFinite(num)) {
-      return num
+    if (IS_INTEGER_RE.test(value)) {
+      const num = Number(value)
+      if (Number.isFinite(num)) {
+        return num
+      }
     }
     throw miss()
   },
@@ -215,15 +219,22 @@ export const PARAM_NUMBER = {
 
 export const PARAM_NUMBER_OPTIONAL = {
   get: (value: string | null) =>
-    value == null ? null : PARAM_NUMBER.get(value),
+    value == null ? null : PARAM_INTEGER.get(value),
   set: (value: number | null) =>
-    value != null ? PARAM_NUMBER.set(value) : null,
+    value != null ? PARAM_INTEGER.set(value) : null,
 } satisfies Param_GetSet<string | null, number | null>
 
 export const PARAM_NUMBER_REPEATABLE = {
-  get: (value: string[]) => value.map(PARAM_NUMBER.get),
-  set: (value: number[]) => value.map(PARAM_NUMBER.set),
+  get: (value: string[]) => value.map(PARAM_INTEGER.get),
+  set: (value: number[]) => value.map(PARAM_INTEGER.set),
 } satisfies Param_GetSet<string[], number[]>
+
+export const PARAM_NUMBER_REPEATABLE_OPTIONAL = {
+  get: (value: string[] | null) =>
+    value == null ? null : PARAM_NUMBER_REPEATABLE.get(value),
+  set: (value: number[] | null) =>
+    value != null ? PARAM_NUMBER_REPEATABLE.set(value) : null,
+} satisfies Param_GetSet<string[] | null, number[] | null>
 
 export class MatcherPatternPathCustomParams implements MatcherPatternPath {
   // private paramsKeys: string[]

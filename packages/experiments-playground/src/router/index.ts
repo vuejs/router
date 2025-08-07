@@ -1,10 +1,12 @@
-import { createWebHistory, type RouteParamValue } from 'vue-router'
+import { createWebHistory } from 'vue-router'
 import {
   experimental_createRouter,
   createStaticResolver,
   MatcherPatternPathStatic,
+  MatcherPatternPathStar,
   MatcherPatternPathCustomParams,
   normalizeRouteRecord,
+  PARAM_INTEGER,
 } from 'vue-router/experimental'
 import type {
   EXPERIMENTAL_RouteRecordNormalized_Matchable,
@@ -143,12 +145,8 @@ const r_profiles_detail = normalizeRouteRecord({
     /^\/profiles\/(?<userId>[^/]+)$/i,
     {
       userId: {
-        parser: {
-          // @ts-expect-error: FIXME: should would with generic class
-          get: (value: string): number => Number(value),
-          // @ts-expect-error: FIXME: should would with generic class
-          set: (value: number): string => String(value),
-        },
+        // @ts-expect-error: FIXME: should allow the type
+        parser: PARAM_INTEGER,
       },
     },
     ({ userId }) => {

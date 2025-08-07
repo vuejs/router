@@ -23,6 +23,12 @@ export {
   MatcherPatternPathStatic,
   MatcherPatternPathStar,
   MatcherPatternPathCustomParams,
+  // custom param parsers
+  // TODO: find a more elegant format than having 4 variants per param type
+  PARAM_INTEGER,
+  PARAM_NUMBER_OPTIONAL,
+  PARAM_NUMBER_REPEATABLE,
+  PARAM_NUMBER_REPEATABLE_OPTIONAL,
 } from './route-resolver/matchers/matcher-pattern'
 export type {
   MatcherPattern,
