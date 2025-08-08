@@ -1,3 +1,4 @@
+import { encodeParam } from '../../../encoding'
 import { warn } from '../../../warning'
 import { decode, MatcherQueryParams } from '../resolver-abstract'
 import { miss } from './errors'
@@ -198,6 +199,7 @@ interface MatcherPatternPathCustomParamOptions<
   TOut = string | string[] | null,
 > {
   repeat?: boolean
+  // TODO: not needed because in the regexp, the value is undefined if the group is optional and not given
   optional?: boolean
   parser?: Param_GetSet<TIn, TOut>
 }
@@ -237,23 +239,20 @@ export const PARAM_NUMBER_REPEATABLE_OPTIONAL = {
 } satisfies Param_GetSet<string[] | null, number[] | null>
 
 export class MatcherPatternPathCustomParams implements MatcherPatternPath {
-  // private paramsKeys: string[]
+  private paramsKeys: string[]
 
   constructor(
-    // TODO: make this work with named groups and simplify `params` to be an array of the repeat flag
     readonly re: RegExp,
     readonly params: Record<
       string,
-      // @ts-expect-error: adapt with generic class
       MatcherPatternPathCustomParamOptions<unknown, unknown>
     >,
-    readonly build: (params: MatcherParamsFormatted) => string
     // A better version could be using all the parts to join them
     // .e.g ['users', 0, 'profile', 1] -> /users/123/profile/456
     // numbers are indexes of the params in the params object keys
-    // readonly pathParts: Array<string | number>
+    readonly pathParts: Array<string | number>
   ) {
-    // this.paramsKeys = Object.keys(this.params)
+    this.paramsKeys = Object.keys(this.params)
   }
 
   match(path: string): MatcherParamsFormatted {
@@ -261,36 +260,48 @@ export class MatcherPatternPathCustomParams implements MatcherPatternPath {
     if (!match) {
       throw miss()
     }
+    // NOTE: if we have params, we assume named groups
     const params = {} as MatcherParamsFormatted
     let i = 1 // index in match array
     for (const paramName in this.params) {
-      const currentParam = this.params[paramName]
-      // an optional group in the regexp will return undefined
-      const currentMatch = (match[i++] as string | undefined) ?? null
-      if (__DEV__ && !currentParam.optional && !currentMatch) {
-        warn(
-          `Unexpected undefined value for param "${paramName}". Regexp: ${String(this.re)}. path: "${path}". This is likely a bug.`
-        )
-        throw miss()
-      }
+      const paramOptions = this.params[paramName]
+      const currentMatch = (match[i] as string | undefined) ?? null
 
-      const value = currentParam.repeat
+      const value = paramOptions.repeat
         ? (currentMatch?.split('/') || []).map(
             // using  just decode makes the type inference fail
             v => decode(v)
           )
         : decode(currentMatch)
 
-      params[paramName] = (currentParam.parser?.get || (v => v))(value)
+      params[paramName] = (paramOptions.parser?.get || (v => v))(value)
     }
 
-    if (__DEV__ && i !== match.length) {
+    if (
+      __DEV__ &&
+      Object.keys(params).length !== Object.keys(this.params).length
+    ) {
       warn(
         `Regexp matched ${match.length} params, but ${i} params are defined. Found when matching "${path}" against ${String(this.re)}`
       )
     }
 
     return params
+  }
+
+  build(params: MatcherParamsFormatted): string {
+    return this.pathParts.reduce((acc, part) => {
+      if (typeof part === 'string') {
+        return acc + '/' + part
+      }
+      const paramName = this.paramsKeys[part]
+      const paramOptions = this.params[paramName]
+      const value = (paramOptions.parser?.set || (v => v))(params[paramName])
+      const encodedValue = Array.isArray(value)
+        ? value.map(encodeParam).join('/')
+        : encodeParam(value)
+      return encodedValue ? acc + '/' + encodedValue : acc
+    }, '')
   }
 }
 

@@ -112,12 +112,7 @@ describe('MatcherPatternPathCustom', () => {
         // all defaults
         teamId: {},
       },
-      ({ teamId }) => {
-        if (typeof teamId !== 'string') {
-          throw invalid('teamId must be a string')
-        }
-        return pathEncoded`/teams/${teamId}/b`
-      }
+      ['teams', 0, 'b']
     )
 
     expect(pattern.match('/teams/123/b')).toEqual({
@@ -138,12 +133,7 @@ describe('MatcherPatternPathCustom', () => {
       {
         teamId: {},
       },
-      ({ teamId }) => {
-        if (typeof teamId !== 'string') {
-          throw invalid('teamId must be a string')
-        }
-        return pathEncoded`/teams/${teamId}`
-      }
+      ['teams', 0]
     )
     expect(pattern.match('/teams/a%20b')).toEqual({ teamId: 'a b' })
     expect(pattern.build({ teamId: 'a b' })).toBe('/teams/a%20b')
@@ -155,12 +145,7 @@ describe('MatcherPatternPathCustom', () => {
       {
         teamId: { optional: true },
       },
-      ({ teamId }) => {
-        if (teamId != null && typeof teamId !== 'string') {
-          throw invalid('teamId must be a string')
-        }
-        return teamId ? pathEncoded`/teams/${teamId}/b` : '/teams/b'
-      }
+      ['teams', 0, 'b']
     )
 
     expect(pattern.match('/teams/b')).toEqual({ teamId: null })
@@ -177,12 +162,7 @@ describe('MatcherPatternPathCustom', () => {
       {
         teamId: { repeat: true },
       },
-      ({ teamId }) => {
-        if (!Array.isArray(teamId)) {
-          throw invalid('teamId must be an array')
-        }
-        return '/teams/' + teamId.join('/') + '/b'
-      }
+      ['teams', 0, 'b']
     )
 
     expect(pattern.match('/teams/123/b')).toEqual({ teamId: ['123'] })
@@ -201,15 +181,7 @@ describe('MatcherPatternPathCustom', () => {
       {
         teamId: { repeat: true, optional: true },
       },
-      ({ teamId }) => {
-        if (!Array.isArray(teamId)) {
-          throw invalid('teamId must be an array')
-        }
-        const joined = teamId.join('/')
-        return teamId
-          ? '/teams' + (joined ? '/' + joined : '') + '/b'
-          : '/teams/b'
-      }
+      ['teams', 0, 'b']
     )
 
     expect(pattern.match('/teams/123/b')).toEqual({ teamId: ['123'] })
