@@ -150,12 +150,6 @@ export function defineParamParser<TOut, TIn extends string | string[]>(parser: {
   return parser
 }
 
-interface IdFn {
-  (v: undefined | null): null
-  (v: string): string
-  (v: string[]): string[]
-}
-
 const PATH_PARAM_DEFAULT_GET = (value: string | string[] | null | undefined) =>
   value ?? null
 export const PATH_PARAM_SINGLE_DEFAULT: Param_GetSet<string, string> = {}
@@ -343,52 +337,6 @@ export class MatcherPatternPathCustomParams<
     )
   }
 }
-
-const aaa = new MatcherPatternPathCustomParams(
-  /^\/profiles\/([^/]+)$/i,
-  {
-    userId: {
-      parser: PARAM_INTEGER,
-      // parser: PATH_PARAM_DEFAULT_PARSER,
-    },
-  },
-  ['profiles', 0]
-)
-// @ts-expect-error: not existing param
-aaa.build({ a: '2' })
-// @ts-expect-error: must be a number
-aaa.build({ userId: '2' })
-aaa.build({ userId: 2 })
-// @ts-expect-error: not existing param
-aaa.match('/profiles/2')?.e
-// @ts-expect-error: not existing param
-aaa.match('/profiles/2').e
-aaa.match('/profiles/2').userId.toFixed(2)
-
-// Factory function for better type inference
-export function createMatcherPatternPathCustomParams<
-  TParamsOptions extends Record<
-    string,
-    MatcherPatternPathCustomParamOptions<any, any>
-  >,
->(
-  re: RegExp,
-  params: TParamsOptions,
-  pathParts: Array<string | number>
-): MatcherPatternPathCustomParams<TParamsOptions> {
-  return new MatcherPatternPathCustomParams(re, params, pathParts)
-}
-
-// Now use it like this:
-const aab = createMatcherPatternPathCustomParams(
-  /^\/profiles\/([^/]+)$/i,
-  {
-    userId: {
-      parser: PARAM_INTEGER,
-    },
-  },
-  ['profiles', 0]
-)
 
 /**
  * Matcher for dynamic paths, e.g. `/team/:id/:name`.
