@@ -5,7 +5,6 @@ import {
   PATH_PARAM_DEFAULT_PARSER,
   PATH_PARAM_SINGLE_DEFAULT,
 } from './matcher-pattern'
-import { PATH_PARSER_OPTIONS_DEFAULTS } from 'src/matcher/pathParserRanker'
 
 describe('MatcherPatternPathCustomParams', () => {
   it('can be generic', () => {
