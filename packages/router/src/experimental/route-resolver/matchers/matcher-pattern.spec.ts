@@ -195,4 +195,26 @@ describe('MatcherPatternPathCustom', () => {
     expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/b')
     expect(pattern.build({ teamId: [] })).toBe('/teams/b')
   })
+
+  it('multiple params', () => {
+    const pattern = new MatcherPatternPathCustomParams(
+      /^\/teams\/([^/]+?)\/([^/]+?)$/i,
+      {
+        teamId: {},
+        otherId: {},
+      },
+      ['teams', 0, 0]
+    )
+
+    expect(pattern.match('/teams/123/456')).toEqual({
+      teamId: '123',
+      otherId: '456',
+    })
+    expect(() => pattern.match('/teams/123')).toThrow()
+    expect(() => pattern.match('/teams/123/456/c')).toThrow()
+    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.build({ teamId: '123', otherId: '456' })).toBe(
+      '/teams/123/456'
+    )
+  })
 })

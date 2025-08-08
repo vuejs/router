@@ -208,7 +208,7 @@ interface MatcherPatternPathCustomParamOptions<
   repeat?: boolean
   // TODO: not needed because in the regexp, the value is undefined if the group is optional and not given
   optional?: boolean
-  parser: Param_GetSet<TIn, TOut>
+  parser?: Param_GetSet<TIn, TOut>
 }
 
 /**
