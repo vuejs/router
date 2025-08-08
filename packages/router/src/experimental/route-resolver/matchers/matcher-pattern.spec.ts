@@ -4,8 +4,6 @@ import {
   MatcherPatternPathStar,
   MatcherPatternPathCustomParams,
 } from './matcher-pattern'
-import { pathEncoded } from '../resolver-abstract'
-import { invalid } from './errors'
 
 describe('MatcherPatternPathStatic', () => {
   describe('match()', () => {

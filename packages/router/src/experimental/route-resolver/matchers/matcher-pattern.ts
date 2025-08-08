@@ -156,10 +156,17 @@ interface IdFn {
   (v: string[]): string[]
 }
 
-const PATH_PARAM_DEFAULT_GET = (value => value ?? null) as IdFn
+const PATH_PARAM_DEFAULT_GET = (value: string | string[] | null | undefined) =>
+  value ?? null
+export const PATH_PARAM_SINGLE_DEFAULT: Param_GetSet<string, string> = {}
+
 const PATH_PARAM_DEFAULT_SET = (value: unknown) =>
   value && Array.isArray(value) ? value.map(String) : String(value)
 // TODO: `(value an null | undefined)` for types
+export const PATH_PARAM_DEFAULT_PARSER: Param_GetSet = {
+  get: PATH_PARAM_DEFAULT_GET,
+  set: PATH_PARAM_DEFAULT_SET,
+}
 
 /**
  * NOTE: I tried to make this generic and infer the types from the params but failed. This is what I tried:
@@ -201,7 +208,20 @@ interface MatcherPatternPathCustomParamOptions<
   repeat?: boolean
   // TODO: not needed because in the regexp, the value is undefined if the group is optional and not given
   optional?: boolean
-  parser?: Param_GetSet<TIn, TOut>
+  parser: Param_GetSet<TIn, TOut>
+}
+
+/**
+ * Helper type to extract the params from the options object.
+ * @internal
+ */
+type ExtractParamTypeFromOptions<TParamsOptions> = {
+  [K in keyof TParamsOptions]: TParamsOptions[K] extends MatcherPatternPathCustomParamOptions<
+    any,
+    infer TOut
+  >
+    ? TOut
+    : never
 }
 
 const IS_INTEGER_RE = /^-?[1-9]\d*$/
@@ -238,43 +258,53 @@ export const PARAM_NUMBER_REPEATABLE_OPTIONAL = {
     value != null ? PARAM_NUMBER_REPEATABLE.set(value) : null,
 } satisfies Param_GetSet<string[] | null, number[] | null>
 
-export class MatcherPatternPathCustomParams implements MatcherPatternPath {
-  private paramsKeys: string[]
+export class MatcherPatternPathCustomParams<
+  TParamsOptions,
+  // TODO: | EmptyObject ?
+  // TParamsOptions extends Record<string, MatcherPatternPathCustomParamOptions>,
+  // TParams extends MatcherParamsFormatted = ExtractParamTypeFromOptions<TParamsOptions>
+> implements MatcherPatternPath<ExtractParamTypeFromOptions<TParamsOptions>>
+{
+  private paramsKeys: Array<keyof TParamsOptions>
 
   constructor(
     readonly re: RegExp,
-    readonly params: Record<
-      string,
-      MatcherPatternPathCustomParamOptions<unknown, unknown>
-    >,
+    // NOTE: this version instead of extends allows the constructor
+    // to properly infer the types of the params when using `new MatcherPatternPathCustomParams()`
+    // otherwise, we need to use a factory function: https://github.com/microsoft/TypeScript/issues/40451
+    readonly params: TParamsOptions &
+      Record<string, MatcherPatternPathCustomParamOptions<any, any>>,
     // A better version could be using all the parts to join them
     // .e.g ['users', 0, 'profile', 1] -> /users/123/profile/456
     // numbers are indexes of the params in the params object keys
     readonly pathParts: Array<string | number>
   ) {
-    this.paramsKeys = Object.keys(this.params)
+    this.paramsKeys = Object.keys(this.params) as Array<keyof TParamsOptions>
   }
 
-  match(path: string): MatcherParamsFormatted {
+  match(path: string): ExtractParamTypeFromOptions<TParamsOptions> {
     const match = path.match(this.re)
     if (!match) {
       throw miss()
     }
     // NOTE: if we have params, we assume named groups
-    const params = {} as MatcherParamsFormatted
-    let i = 1 // index in match array
-    for (const paramName in this.params) {
-      const paramOptions = this.params[paramName]
-      const currentMatch = (match[i] as string | undefined) ?? null
+    const params = {} as ExtractParamTypeFromOptions<TParamsOptions>
+    for (var i = 0; i < this.paramsKeys.length; i++) {
+      var paramName = this.paramsKeys[i]
+      var paramOptions = this.params[paramName]
+      var currentMatch = (match[i + 1] as string | undefined) ?? null
 
-      const value = paramOptions.repeat
+      var value = paramOptions.repeat
         ? (currentMatch?.split('/') || []).map(
-            // using  just decode makes the type inference fail
+            // using just decode makes the type inference fail
             v => decode(v)
           )
         : decode(currentMatch)
 
-      params[paramName] = (paramOptions.parser?.get || (v => v))(value)
+      params[paramName] = (paramOptions.parser?.get || (v => v))(
+        value
+        // NOTE: paramName and paramOptions are not connected from TS point of view
+      )
     }
 
     if (
@@ -289,21 +319,75 @@ export class MatcherPatternPathCustomParams implements MatcherPatternPath {
     return params
   }
 
-  build(params: MatcherParamsFormatted): string {
-    return this.pathParts.reduce((acc, part) => {
-      if (typeof part === 'string') {
-        return acc + '/' + part
-      }
-      const paramName = this.paramsKeys[part]
-      const paramOptions = this.params[paramName]
-      const value = (paramOptions.parser?.set || (v => v))(params[paramName])
-      const encodedValue = Array.isArray(value)
-        ? value.map(encodeParam).join('/')
-        : encodeParam(value)
-      return encodedValue ? acc + '/' + encodedValue : acc
-    }, '')
+  build(params: ExtractParamTypeFromOptions<TParamsOptions>): string {
+    return (
+      '/' +
+      this.pathParts
+        .map(part => {
+          if (typeof part === 'string') {
+            return part
+          }
+          const paramName = this.paramsKeys[part]
+          const paramOptions = this.params[paramName]
+          const value: ReturnType<NonNullable<Param_GetSet['set']>> = (
+            paramOptions.parser?.set || (v => v)
+          )(params[paramName])
+
+          return Array.isArray(value)
+            ? value.map(encodeParam).join('/')
+            : encodeParam(value)
+        })
+        .filter(Boolean)
+        .join('/')
+    )
   }
 }
+
+const aaa = new MatcherPatternPathCustomParams(
+  /^\/profiles\/([^/]+)$/i,
+  {
+    userId: {
+      parser: PARAM_INTEGER,
+      // parser: PATH_PARAM_DEFAULT_PARSER,
+    },
+  },
+  ['profiles', 0]
+)
+// @ts-expect-error: not existing param
+aaa.build({ a: '2' })
+// @ts-expect-error: must be a number
+aaa.build({ userId: '2' })
+aaa.build({ userId: 2 })
+// @ts-expect-error: not existing param
+aaa.match('/profiles/2')?.e
+// @ts-expect-error: not existing param
+aaa.match('/profiles/2').e
+aaa.match('/profiles/2').userId.toFixed(2)
+
+// Factory function for better type inference
+export function createMatcherPatternPathCustomParams<
+  TParamsOptions extends Record<
+    string,
+    MatcherPatternPathCustomParamOptions<any, any>
+  >,
+>(
+  re: RegExp,
+  params: TParamsOptions,
+  pathParts: Array<string | number>
+): MatcherPatternPathCustomParams<TParamsOptions> {
+  return new MatcherPatternPathCustomParams(re, params, pathParts)
+}
+
+// Now use it like this:
+const aab = createMatcherPatternPathCustomParams(
+  /^\/profiles\/([^/]+)$/i,
+  {
+    userId: {
+      parser: PARAM_INTEGER,
+    },
+  },
+  ['profiles', 0]
+)
 
 /**
  * Matcher for dynamic paths, e.g. `/team/:id/:name`.

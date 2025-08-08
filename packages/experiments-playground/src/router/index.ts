@@ -142,19 +142,13 @@ const r_profiles_detail = normalizeRouteRecord({
   components: { default: () => import('../pages/profiles/[userId].vue') },
   parent: r_profiles_layout,
   path: new MatcherPatternPathCustomParams(
-    /^\/profiles\/(?<userId>[^/]+)$/i,
+    /^\/profiles\/([^/]+)$/i,
     {
       userId: {
-        // @ts-expect-error: FIXME: should allow the type
         parser: PARAM_INTEGER,
       },
     },
-    ({ userId }) => {
-      if (typeof userId !== 'number') {
-        throw new Error('userId must be a number')
-      }
-      return `/profiles/${userId}`
-    }
+    ['profiles', 0]
   ),
 })
 
