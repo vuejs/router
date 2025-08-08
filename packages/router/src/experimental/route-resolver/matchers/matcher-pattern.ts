@@ -320,6 +320,7 @@ export class MatcherPatternPathCustomParams<
   }
 
   build(params: ExtractParamTypeFromOptions<TParamsOptions>): string {
+    let paramIndex = 0
     return (
       '/' +
       this.pathParts
@@ -327,7 +328,7 @@ export class MatcherPatternPathCustomParams<
           if (typeof part === 'string') {
             return part
           }
-          const paramName = this.paramsKeys[part]
+          const paramName = this.paramsKeys[paramIndex++]
           const paramOptions = this.params[paramName]
           const value: ReturnType<NonNullable<Param_GetSet['set']>> = (
             paramOptions.parser?.set || (v => v)
