@@ -3,8 +3,8 @@ import {
   LocationNormalized,
   parseURL,
   resolveRelativePath,
-} from 'src/location'
-import { normalizeQuery, stringifyQuery, parseQuery } from 'src/query'
+} from '../../location'
+import { normalizeQuery, stringifyQuery, parseQuery } from '../../query'
 import type { MatcherParamsFormatted } from './matchers/matcher-pattern'
 import type { ResolverLocationAsRelative } from './resolver-abstract'
 import type { ResolverLocationAsPathAbsolute } from './resolver-abstract'
@@ -17,8 +17,8 @@ import {
   RecordName,
   ResolverLocationResolved,
 } from './resolver-abstract'
-import { comparePathParserScore } from 'src/matcher/pathParserRanker'
-import { warn } from 'src/warning'
+import { comparePathParserScore } from '../../matcher/pathParserRanker'
+import { warn } from '../../warning'
 import type {
   MatcherPatternPath,
   MatcherPatternQuery,
