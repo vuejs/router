@@ -10,18 +10,8 @@ import {
   USER_ID_PATH_PATTERN_MATCHER,
   ANY_PATH_PATTERN_MATCHER,
   ANY_HASH_PATTERN_MATCHER,
+  PAGE_QUERY_PATTERN_MATCHER,
 } from './matchers/test-utils'
-
-const PAGE_QUERY_PATTERN_MATCHER_LOCAL: MatcherPatternQuery<{ page: number }> =
-  {
-    match: query => {
-      const page = Number(query.page)
-      return {
-        page: Number.isNaN(page) ? 1 : page,
-      }
-    },
-    build: params => ({ page: String(params.page) }),
-  } satisfies MatcherPatternQuery<{ page: number }>
 
 describe('StaticResolver', () => {
   describe('new matchers', () => {
@@ -117,7 +107,7 @@ describe('StaticResolver', () => {
           {
             name: 'any-path',
             path: ANY_PATH_PATTERN_MATCHER,
-            query: [PAGE_QUERY_PATTERN_MATCHER_LOCAL],
+            query: [PAGE_QUERY_PATTERN_MATCHER],
           },
         ])
 
@@ -156,7 +146,7 @@ describe('StaticResolver', () => {
           {
             name: 'user-detail',
             path: USER_ID_PATH_PATTERN_MATCHER,
-            query: [PAGE_QUERY_PATTERN_MATCHER_LOCAL],
+            query: [PAGE_QUERY_PATTERN_MATCHER],
             hash: ANY_HASH_PATTERN_MATCHER,
           },
         ])
