@@ -144,9 +144,7 @@ const r_profiles_detail = normalizeRouteRecord({
   path: new MatcherPatternPathCustomParams(
     /^\/profiles\/([^/]+)$/i,
     {
-      userId: {
-        parser: PARAM_INTEGER,
-      },
+      userId: PARAM_INTEGER,
     },
     ['profiles', 0]
   ),

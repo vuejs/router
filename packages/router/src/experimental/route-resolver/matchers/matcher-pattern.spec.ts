@@ -141,7 +141,7 @@ describe('MatcherPatternPathCustom', () => {
     const pattern = new MatcherPatternPathCustomParams(
       /^\/teams(?:\/([^/]+?))?\/b$/i,
       {
-        teamId: { optional: true },
+        teamId: {},
       },
       ['teams', 0, 'b']
     )
@@ -177,7 +177,7 @@ describe('MatcherPatternPathCustom', () => {
     const pattern = new MatcherPatternPathCustomParams(
       /^\/teams(?:\/(.+?))?\/b$/i,
       {
-        teamId: { repeat: true, optional: true },
+        teamId: { repeat: true },
       },
       ['teams', 0, 'b']
     )

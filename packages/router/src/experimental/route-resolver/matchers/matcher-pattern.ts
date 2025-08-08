@@ -198,11 +198,11 @@ export type ParamsFromParsers<P extends Record<string, ParamParser_Generic>> = {
 interface MatcherPatternPathCustomParamOptions<
   TIn extends string | string[] | null = string | string[] | null,
   TOut = string | string[] | null,
-> {
+> extends Param_GetSet<TIn, TOut> {
   repeat?: boolean
-  // TODO: not needed because in the regexp, the value is undefined if the group is optional and not given
-  optional?: boolean
-  parser?: Param_GetSet<TIn, TOut>
+  // NOTE: not needed because in the regexp, the value is undefined if
+  // the group is optional and not given
+  // optional?: boolean
 }
 
 /**
@@ -295,7 +295,7 @@ export class MatcherPatternPathCustomParams<
           )
         : decode(currentMatch)
 
-      params[paramName] = (paramOptions.parser?.get || (v => v))(
+      params[paramName] = (paramOptions.get || (v => v))(
         value
         // NOTE: paramName and paramOptions are not connected from TS point of view
       )
@@ -325,7 +325,7 @@ export class MatcherPatternPathCustomParams<
           const paramName = this.paramsKeys[paramIndex++]
           const paramOptions = this.params[paramName]
           const value: ReturnType<NonNullable<Param_GetSet['set']>> = (
-            paramOptions.parser?.set || (v => v)
+            paramOptions.set || (v => v)
           )(params[paramName])
 
           return Array.isArray(value)
