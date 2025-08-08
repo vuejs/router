@@ -182,8 +182,6 @@ function createReplacePlugin(
   isNodeBuild
 ) {
   const replacements = {
-    __COMMIT__: `"${process.env.COMMIT}"`,
-    __VERSION__: `"${pkg.version}"`,
     __DEV__: isBundlerESMBuild
       ? // preserve to be handled by bundlers
         `(process.env.NODE_ENV !== 'production')`
@@ -196,11 +194,6 @@ function createReplacePlugin(
     __FEATURE_PROD_DEVTOOLS__: isBundlerESMBuild
       ? `__VUE_PROD_DEVTOOLS__`
       : 'false',
-    // is targeting bundlers?
-    __BUNDLER__: JSON.stringify(isBundlerESMBuild),
-    __GLOBAL__: JSON.stringify(isGlobalBuild),
-    // is targeting Node (SSR)?
-    __NODE_JS__: JSON.stringify(isNodeBuild),
   }
   // allow inline overrides like
   //__RUNTIME_COMPILE__=true yarn build

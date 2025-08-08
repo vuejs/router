@@ -1,5 +1,9 @@
 import type { MatcherLocationRaw, MatcherLocation } from './types'
-import type { RouteLocationRaw, RouteLocationNormalized } from './typed-routes'
+import type {
+  RouteLocationRaw,
+  RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+} from './typed-routes'
 import { assign } from './utils'
 
 /**
@@ -198,4 +202,20 @@ function stringifyRoute(to: RouteLocationRaw): string {
     if (key in to) location[key] = to[key]
   }
   return JSON.stringify(location, null, 2)
+}
+/**
+ * Internal type to define an ErrorHandler
+ *
+ * @param error - error thrown
+ * @param to - location we were navigating to when the error happened
+ * @param from - location we were navigating from when the error happened
+ * @internal
+ */
+
+export interface _ErrorListener {
+  (
+    error: any,
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalizedLoaded
+  ): any
 }

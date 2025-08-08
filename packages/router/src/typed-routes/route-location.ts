@@ -2,7 +2,6 @@ import type {
   RouteLocationOptions,
   RouteQueryAndHash,
   _RouteLocationBase,
-  RouteParamsGeneric,
   RouteLocationMatched,
   RouteParamsRawGeneric,
 } from '../types'
@@ -16,7 +15,9 @@ import type { RouteRecordNameGeneric } from './route-records'
 /**
  * Generic version of {@link RouteLocation}. It is used when no {@link RouteMap} is provided.
  */
-export interface RouteLocationGeneric extends _RouteLocationBase {
+export interface RouteLocationGeneric
+  extends _RouteLocationBase,
+    RouteLocationOptions {
   /**
    * Array of {@link RouteRecord} containing components as they were
    * passed when adding records. It can also contain redirect records. This
@@ -50,7 +51,6 @@ export type RouteLocationTypedList<
  */
 export interface RouteLocationNormalizedGeneric extends _RouteLocationBase {
   name: RouteRecordNameGeneric
-  params: RouteParamsGeneric
   /**
    * Array of {@link RouteRecordNormalized}
    */
