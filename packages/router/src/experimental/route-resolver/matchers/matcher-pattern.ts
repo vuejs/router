@@ -260,6 +260,9 @@ export class MatcherPatternPathCustomParams<
   // TParams extends MatcherParamsFormatted = ExtractParamTypeFromOptions<TParamsOptions>
 > implements MatcherPatternPath<ExtractParamTypeFromOptions<TParamsOptions>>
 {
+  /**
+   * Cached keys of the {@link params} object.
+   */
   private paramsKeys: Array<keyof TParamsOptions>
 
   constructor(
@@ -282,9 +285,9 @@ export class MatcherPatternPathCustomParams<
     if (!match) {
       throw miss()
     }
-    // NOTE: if we have params, we assume named groups
     const params = {} as ExtractParamTypeFromOptions<TParamsOptions>
     for (var i = 0; i < this.paramsKeys.length; i++) {
+      // var for performance in for loop
       var paramName = this.paramsKeys[i]
       var paramOptions = this.params[paramName]
       var currentMatch = (match[i + 1] as string | undefined) ?? null
@@ -293,10 +296,7 @@ export class MatcherPatternPathCustomParams<
         ? (currentMatch?.split('/') || []).map<string>(decode)
         : decode(currentMatch)
 
-      params[paramName] = (paramOptions.get || identityFn)(
-        value
-        // NOTE: paramName and paramOptions are not connected from TS point of view
-      )
+      params[paramName] = (paramOptions.get || identityFn)(value)
     }
 
     if (
