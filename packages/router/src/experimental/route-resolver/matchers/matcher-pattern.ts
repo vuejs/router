@@ -1,3 +1,4 @@
+import { identityFn } from '../../../utils'
 import { encodeParam } from '../../../encoding'
 import { warn } from '../../../warning'
 import { decode, MatcherQueryParams } from '../resolver-abstract'
@@ -289,13 +290,10 @@ export class MatcherPatternPathCustomParams<
       var currentMatch = (match[i + 1] as string | undefined) ?? null
 
       var value = paramOptions.repeat
-        ? (currentMatch?.split('/') || []).map(
-            // using just decode makes the type inference fail
-            v => decode(v)
-          )
+        ? (currentMatch?.split('/') || []).map<string>(decode)
         : decode(currentMatch)
 
-      params[paramName] = (paramOptions.get || (v => v))(
+      params[paramName] = (paramOptions.get || identityFn)(
         value
         // NOTE: paramName and paramOptions are not connected from TS point of view
       )
@@ -325,7 +323,7 @@ export class MatcherPatternPathCustomParams<
           const paramName = this.paramsKeys[paramIndex++]
           const paramOptions = this.params[paramName]
           const value: ReturnType<NonNullable<Param_GetSet['set']>> = (
-            paramOptions.set || (v => v)
+            paramOptions.set || identityFn
           )(params[paramName])
 
           return Array.isArray(value)

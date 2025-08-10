@@ -5,6 +5,15 @@ import {
   RawRouteComponent,
 } from '../types'
 
+/**
+ * Identity function that returns the value as is.
+ *
+ * @param v - the value to return
+ *
+ * @internal
+ */
+export const identityFn = <T>(v: T) => v
+
 export * from './env'
 
 /**
