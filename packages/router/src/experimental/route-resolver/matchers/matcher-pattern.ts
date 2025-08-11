@@ -330,7 +330,7 @@ export class MatcherPatternPathCustomParams<
             ? value.map(encodeParam).join('/')
             : encodeParam(value)
         })
-        .filter(Boolean)
+        .filter(identityFn) // filter out empty values
         .join('/')
     )
   }
