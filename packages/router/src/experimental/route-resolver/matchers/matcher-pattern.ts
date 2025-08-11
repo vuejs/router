@@ -254,7 +254,7 @@ export const PARAM_NUMBER_REPEATABLE_OPTIONAL = {
  *
  * @internal
  */
-export const PARAM_PARSER_INTEGER: Param_GetSet<number | number[] | null> = {
+export const PARAM_PARSER_INT: Param_GetSet<number | number[] | null> = {
   get: value =>
     Array.isArray(value)
       ? PARAM_NUMBER_REPEATABLE.get(value)

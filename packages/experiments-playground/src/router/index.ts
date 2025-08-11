@@ -5,7 +5,7 @@ import {
   MatcherPatternPathStatic,
   MatcherPatternPathCustomParams,
   normalizeRouteRecord,
-  PARAM_PARSER_INTEGER,
+  PARAM_PARSER_INT,
 } from 'vue-router/experimental'
 import type {
   EXPERIMENTAL_RouteRecordNormalized_Matchable,
@@ -146,7 +146,7 @@ const r_profiles_detail = normalizeRouteRecord({
       // this version handles all kind of params but in practice,
       // the generation should recognize this is a single required param
       // and therefore userId is of type number
-      userId: PARAM_PARSER_INTEGER,
+      userId: PARAM_PARSER_INT,
     },
     ['profiles', 0]
   ),
