@@ -1,7 +1,7 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import {
   MatcherPatternPathCustomParams,
-  PARAM_INTEGER,
+  PARAM_INTEGER_SINGLE,
   PATH_PARAM_DEFAULT_PARSER,
   PATH_PARAM_SINGLE_DEFAULT,
 } from './matcher-pattern'
@@ -10,7 +10,7 @@ describe('MatcherPatternPathCustomParams', () => {
   it('can be generic', () => {
     const matcher = new MatcherPatternPathCustomParams(
       /^\/users\/([^/]+)$/i,
-      { userId: { parser: PATH_PARAM_DEFAULT_PARSER } },
+      { userId: { ...PATH_PARAM_DEFAULT_PARSER } },
       ['users', 0]
     )
 
@@ -35,7 +35,7 @@ describe('MatcherPatternPathCustomParams', () => {
   it('can be a simple param', () => {
     const matcher = new MatcherPatternPathCustomParams(
       /^\/users\/([^/]+)\/([^/]+)$/i,
-      { userId: { parser: PATH_PARAM_SINGLE_DEFAULT, repeat: true } },
+      { userId: { ...PATH_PARAM_SINGLE_DEFAULT, repeat: true } },
       ['users', 0]
     )
     expectTypeOf(matcher.match('/users/123/456')).toEqualTypeOf<{
@@ -55,7 +55,7 @@ describe('MatcherPatternPathCustomParams', () => {
       /^\/profiles\/([^/]+)$/i,
       {
         userId: {
-          parser: PARAM_INTEGER,
+          ...PARAM_INTEGER_SINGLE,
           // parser: PATH_PARAM_DEFAULT_PARSER,
         },
       },
