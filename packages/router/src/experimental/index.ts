@@ -25,7 +25,8 @@ export {
   MatcherPatternPathCustomParams,
   // custom param parsers
   // TODO: find a more elegant format than having 4 variants per param type
-  PARAM_INTEGER,
+  PARAM_PARSER_INTEGER,
+  PARAM_INTEGER_SINGLE,
   PARAM_NUMBER_OPTIONAL,
   PARAM_NUMBER_REPEATABLE,
   PARAM_NUMBER_REPEATABLE_OPTIONAL,
