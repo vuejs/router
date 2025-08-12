@@ -76,6 +76,8 @@ export interface _PathParserOptions {
   /**
    * Should the RegExp match until the end by appending a `$` to it.
    *
+   * @deprecated this option will alsways be `true` in the future. Open a discussion in vuejs/router if you need this to be `false`
+   *
    * @defaultValue `true`
    */
   end?: boolean
