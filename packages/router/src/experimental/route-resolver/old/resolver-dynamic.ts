@@ -3,27 +3,27 @@ import {
   LocationNormalized,
   parseURL,
   resolveRelativePath,
-} from '../../location'
-import { normalizeQuery, stringifyQuery, parseQuery } from '../../query'
-import type { MatcherParamsFormatted } from './matchers/matcher-pattern'
-import type { ResolverLocationAsRelative } from './resolver-abstract'
-import type { ResolverLocationAsPathAbsolute } from './resolver-abstract'
-import type { ResolverLocationAsPathRelative } from './resolver-abstract'
-import type { ResolverLocationAsNamed } from './resolver-abstract'
+} from '../../../location'
+import { normalizeQuery, stringifyQuery, parseQuery } from '../../../query'
+import type { MatcherParamsFormatted } from '../matchers/matcher-pattern'
+import type { ResolverLocationAsRelative } from '../resolver-abstract'
+import type { ResolverLocationAsPathAbsolute } from '../resolver-abstract'
+import type { ResolverLocationAsPathRelative } from '../resolver-abstract'
+import type { ResolverLocationAsNamed } from '../resolver-abstract'
 import {
   MatcherQueryParams,
   EXPERIMENTAL_Resolver_Base,
   NO_MATCH_LOCATION,
   RecordName,
   ResolverLocationResolved,
-} from './resolver-abstract'
-import { comparePathParserScore } from '../../matcher/pathParserRanker'
-import { warn } from '../../warning'
+} from '../resolver-abstract'
+import { comparePathParserScore } from '../../../matcher/pathParserRanker'
+import { warn } from '../../../warning'
 import type {
   MatcherPatternPath,
   MatcherPatternQuery,
   MatcherPatternHash,
-} from './matchers/matcher-pattern'
+} from '../matchers/matcher-pattern'
 
 /**
  * Manage and resolve routes. Also handles the encoding, decoding, parsing and
@@ -468,3 +468,8 @@ export interface NEW_MatcherRecordRaw {
 
   score: Array<number[]>
 }
+
+/**
+ * Normalized version of a {@link NEW_MatcherRecordRaw} record.
+ */
+export interface NEW_MatcherRecord extends NEW_MatcherDynamicRecord {}

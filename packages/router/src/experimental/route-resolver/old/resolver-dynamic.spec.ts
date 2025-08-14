@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { NO_MATCH_LOCATION, pathEncoded } from './resolver-abstract'
+import { NO_MATCH_LOCATION, pathEncoded } from '../resolver-abstract'
 import { createCompiledMatcher } from './resolver-dynamic'
 import {
   MatcherPatternQuery,
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,
-} from './matchers/matcher-pattern'
+} from '../matchers/matcher-pattern'
 import {
   EMPTY_PATH_ROUTE,
   USER_ID_ROUTE,
@@ -14,7 +14,7 @@ import {
   EMPTY_PATH_PATTERN_MATCHER,
   USER_ID_PATH_PATTERN_MATCHER,
   ANY_HASH_PATTERN_MATCHER,
-} from './matchers/test-utils'
+} from '../matchers/test-utils'
 
 const PAGE_QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ page: number }> = {
   match: query => {

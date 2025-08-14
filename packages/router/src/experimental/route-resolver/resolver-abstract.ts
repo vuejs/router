@@ -6,7 +6,6 @@ import {
 } from '../../encoding'
 import type { MatcherParamsFormatted } from './matchers/matcher-pattern'
 import type { _RouteRecordProps } from '../../typed-routes'
-import type { NEW_MatcherDynamicRecord } from './resolver-dynamic'
 import type { LocationNormalized } from '../../location'
 
 /**
@@ -206,11 +205,6 @@ export const NO_MATCH_LOCATION = {
   params: {},
   matched: [],
 } satisfies Omit<ResolverLocationResolved<never>, keyof LocationNormalized>
-
-/**
- * Normalized version of a {@link NEW_MatcherRecordRaw} record.
- */
-export interface NEW_MatcherRecord extends NEW_MatcherDynamicRecord {}
 
 // FIXME: move somewhere else
 /**

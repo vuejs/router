@@ -1,8 +1,8 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import { ResolverLocationResolved } from './resolver-abstract'
+import { ResolverLocationResolved } from '../resolver-abstract'
 import { NEW_MatcherRecordRaw } from './resolver-dynamic'
 import { NEW_RouterResolver } from './resolver-dynamic'
-import { EXPERIMENTAL_RouteRecordNormalized } from '../router'
+import { EXPERIMENTAL_RouteRecordNormalized } from '../../router'
 
 describe('Matcher', () => {
   type TMatcherRecordRaw = NEW_MatcherRecordRaw

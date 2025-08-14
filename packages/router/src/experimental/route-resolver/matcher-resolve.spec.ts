@@ -6,11 +6,11 @@ import { mockWarn } from '../../../__tests__/vitest-mock-warn'
 import {
   type MatcherLocationRaw,
   type ResolverLocationResolved,
-  type NEW_MatcherRecord,
   NO_MATCH_LOCATION,
 } from './resolver-abstract'
-import { type NEW_MatcherRecordRaw } from './resolver-dynamic'
-import { createCompiledMatcher } from './resolver-dynamic'
+import { type NEW_MatcherRecord } from './old/resolver-dynamic'
+import { type NEW_MatcherRecordRaw } from './old/resolver-dynamic'
+import { createCompiledMatcher } from './old/resolver-dynamic'
 import { miss } from './matchers/errors'
 import {
   MatcherPatternPath,
