@@ -40,6 +40,7 @@ export type {
   MatcherPatternQuery,
   MatcherParamsFormatted,
   EmptyParams,
+  ParamParser,
 } from './route-resolver/matchers/matcher-pattern'
 
 import type { RouteRecordNormalized } from '../matcher/types'

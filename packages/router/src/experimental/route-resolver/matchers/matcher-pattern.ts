@@ -120,7 +120,7 @@ export class MatcherPatternPathStar
 // new MatcherPatternPathStatic('/')
 // new MatcherPatternPathStatic('/team')
 
-export interface Param_GetSet<
+export interface ParamParser<
   TOut = string | string[] | null,
   TIn extends string | string[] | null = string | string[] | null,
 > {
@@ -129,8 +129,8 @@ export interface Param_GetSet<
 }
 
 export type ParamParser_Generic =
-  | Param_GetSet<any, string>
-  | Param_GetSet<any, string[]>
+  | ParamParser<any, string>
+  | ParamParser<any, string[]>
 // TODO: these are possible values for optional params
 // | null | undefined
 
@@ -143,18 +143,18 @@ export type ParamParser_Generic =
 export function defineParamParser<TOut, TIn extends string | string[]>(parser: {
   get?: (value: TIn) => TOut
   set?: (value: TOut) => TIn
-}): Param_GetSet<TOut, TIn> {
+}): ParamParser<TOut, TIn> {
   return parser
 }
 
 const PATH_PARAM_DEFAULT_GET = (value: string | string[] | null | undefined) =>
   value ?? null
-export const PATH_PARAM_SINGLE_DEFAULT: Param_GetSet<string, string> = {}
+export const PATH_PARAM_SINGLE_DEFAULT: ParamParser<string, string> = {}
 
 const PATH_PARAM_DEFAULT_SET = (value: unknown) =>
   value && Array.isArray(value) ? value.map(String) : String(value)
 // TODO: `(value an null | undefined)` for types
-export const PATH_PARAM_DEFAULT_PARSER: Param_GetSet = {
+export const PATH_PARAM_DEFAULT_PARSER: ParamParser = {
   get: PATH_PARAM_DEFAULT_GET,
   set: PATH_PARAM_DEFAULT_SET,
 }
@@ -185,7 +185,7 @@ export const PATH_PARAM_DEFAULT_PARSER: Param_GetSet = {
  */
 
 export type ParamsFromParsers<P extends Record<string, ParamParser_Generic>> = {
-  [K in keyof P]: P[K] extends Param_GetSet<infer TOut, infer TIn>
+  [K in keyof P]: P[K] extends ParamParser<infer TOut, infer TIn>
     ? unknown extends TOut // if any or unknown, use the value of TIn, which defaults to string | string[]
       ? TIn
       : TOut
@@ -195,7 +195,7 @@ export type ParamsFromParsers<P extends Record<string, ParamParser_Generic>> = {
 interface MatcherPatternPathCustomParamOptions<
   TIn extends string | string[] | null = string | string[] | null,
   TOut = string | string[] | null,
-> extends Param_GetSet<TOut, TIn> {
+> extends ParamParser<TOut, TIn> {
   repeat?: boolean
   // NOTE: not needed because in the regexp, the value is undefined if
   // the group is optional and not given
@@ -228,33 +228,33 @@ export const PARAM_INTEGER_SINGLE = {
     throw miss()
   },
   set: (value: number) => String(value),
-} satisfies Param_GetSet<number, string>
+} satisfies ParamParser<number, string>
 
 export const PARAM_NUMBER_OPTIONAL = {
   get: (value: string | null) =>
     value == null ? null : PARAM_INTEGER_SINGLE.get(value),
   set: (value: number | null) =>
     value != null ? PARAM_INTEGER_SINGLE.set(value) : null,
-} satisfies Param_GetSet<number | null, string | null>
+} satisfies ParamParser<number | null, string | null>
 
 export const PARAM_NUMBER_REPEATABLE = {
   get: (value: string[]) => value.map(PARAM_INTEGER_SINGLE.get),
   set: (value: number[]) => value.map(PARAM_INTEGER_SINGLE.set),
-} satisfies Param_GetSet<number[], string[]>
+} satisfies ParamParser<number[], string[]>
 
 export const PARAM_NUMBER_REPEATABLE_OPTIONAL = {
   get: (value: string[] | null) =>
     value == null ? null : PARAM_NUMBER_REPEATABLE.get(value),
   set: (value: number[] | null) =>
     value != null ? PARAM_NUMBER_REPEATABLE.set(value) : null,
-} satisfies Param_GetSet<number[] | null, string[] | null>
+} satisfies ParamParser<number[] | null, string[] | null>
 
 /**
  * Native Param parser for integers.
  *
  * @internal
  */
-export const PARAM_PARSER_INT: Param_GetSet<number | number[] | null> = {
+export const PARAM_PARSER_INT: ParamParser<number | number[] | null> = {
   get: value =>
     Array.isArray(value)
       ? PARAM_NUMBER_REPEATABLE.get(value)
@@ -338,7 +338,7 @@ export class MatcherPatternPathCustomParams<
           }
           const paramName = this.paramsKeys[paramIndex++]
           const paramOptions = this.params[paramName]
-          const value: ReturnType<NonNullable<Param_GetSet['set']>> = (
+          const value: ReturnType<NonNullable<ParamParser['set']>> = (
             paramOptions.set || identityFn
           )(params[paramName])
 
