@@ -25,6 +25,9 @@ export default defineConfig({
         // '/node_modules/',
         'src/index.ts',
         'src/devtools.ts',
+        'src/experimental/index.ts',
+        // FIXME: add more tests
+        'src/experimental/**/*.ts',
       ],
     },
     typecheck: {
