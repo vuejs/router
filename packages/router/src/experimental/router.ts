@@ -206,7 +206,8 @@ export interface EXPERIMENTAL_RouteRecord_Base
    */
   // alias?: string | string[]
 
-  // TODO:
+  // TODO: deprecate, expose utils to compare resolved routes, and document
+  // how to create a meta field that does the same
   /**
    * Before Enter guard specific to this record. Note `beforeEnter` has no
    * effect if the record has a `redirect` property.
@@ -301,7 +302,8 @@ export interface EXPERIMENTAL_RouteRecordNoramlized_Base {
    */
   updateGuards: Set<NavigationGuard>
 
-  // FIXME: remove the need for these
+  // FIXME: remove the need for this, it's only needed if using options API
+  // for in-options navigation guards (beforeRouteLeave, beforeRouteUpdate's this)
   instances: Record<string, unknown>
 }
 
@@ -322,9 +324,6 @@ export interface EXPERIMENTAL_RouteRecordNormalized_Matchable
 
   // TODO:
   // redirect?: unknown
-
-  // TODO:
-  // props: Record<string, _RouteRecordProps>
 
   components: Record<string, RawRouteComponent>
 }
@@ -567,33 +566,14 @@ export interface EXPERIMENTAL_Router
   readonly options: EXPERIMENTAL_RouterOptions
 }
 
-// export interface EXPERIMENTAL_RouteRecordRaw extends NEW_MatcherRecordRaw {
-//   /**
-//    * Arbitrary data attached to the record.
-//    */
-//   meta?: RouteMeta
-//
-//   components?: Record<string, unknown>
-//   component?: unknown
-//
-//   redirect?: unknown
-//   // TODO: Not needed
-//   score: Array<number[]>
-// }
-//
-//
-// function normalizeRouteRecord(
-//   record: EXPERIMENTAL_RouteRecordRaw
-// ): EXPERIMENTAL_RouteRecordNormalized {
-//   // FIXME: implementation
-//   return {
-//     name: __DEV__ ? Symbol('anonymous route record') : Symbol(),
-//     meta: {},
-//     ...record,
-//     children: (record.children || []).map(normalizeRouteRecord),
-//   }
-// }
-
+/**
+ * Creates an experimental Router that allows passing a resolver instead of a
+ * routes array. This router does not have `addRoute()` and `removeRoute()`
+ * methods and is meant to be used with unplugin-vue-router by generating the
+ * resolver from the `pages/` folder
+ *
+ * @param options - Options to initialize the router
+ */
 export function experimental_createRouter(
   options: EXPERIMENTAL_RouterOptions
 ): EXPERIMENTAL_Router {
@@ -603,13 +583,6 @@ export function experimental_createRouter(
     stringifyQuery = originalStringifyQuery,
     history: routerHistory,
   } = options
-
-  // FIXME: can be removed, it was for migration purposes
-  if (__DEV__ && !routerHistory)
-    throw new Error(
-      'Provide the "history" option when calling "createRouter()":' +
-        ' https://router.vuejs.org/api/interfaces/RouterOptions.html#history'
-    )
 
   const beforeGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
   const beforeResolveGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
@@ -632,6 +605,7 @@ export function experimental_createRouter(
     return !!resolver.getRecord(name)
   }
 
+  // TODO: replace usage with resolver.resolve()
   function locationAsObject(
     to: RouteLocationRaw | RouteLocationNormalized,
     currentLocation: string = currentRoute.value.path
@@ -645,6 +619,7 @@ export function experimental_createRouter(
   type TRecord = EXPERIMENTAL_RouteRecordNormalized
   type _resolveArgs =
     // TODO: is it worth suppoting the absolute location variants?
+    // I think that a dev only runtime error is better because then types get a bit complex
     // | [absoluteLocation: `/${string}`, currentLocation?: undefined]
     | [
         relativeLocation: string,
@@ -653,7 +628,7 @@ export function experimental_createRouter(
       ]
     // | [
     //     absoluteLocation: ResolverLocationAsPathAbsolute,
-    //     // Same as above
+    //     // TODO: Same as above
     //     // currentLocation?: NEW_LocationResolved<TRecord> | undefined
     //     currentLocation?: undefined,
     //   ]
@@ -748,12 +723,15 @@ export function experimental_createRouter(
     pushWithRedirect(resolve(...args), true)
 
   function handleRedirectRecord(to: RouteLocation): RouteLocationRaw | void {
-    const lastMatched = to.matched[to.matched.length - 1]
-    if (lastMatched && lastMatched.redirect) {
-      const { redirect } = lastMatched
+    const redirect = to.matched.at(-1)?.redirect
+    if (redirect) {
       let newTargetLocation =
         typeof redirect === 'function' ? redirect(to) : redirect
 
+      // TODO: we should be able to just resolve(newTargetLocation)
+      // maybe we need a way to return the current location: return [redirect, current]
+      // (to, from) => [redirect, from] // relative to current location
+      // (to, from) => [redirect, to] // relative to target location
       if (typeof newTargetLocation === 'string') {
         newTargetLocation =
           newTargetLocation.includes('?') || newTargetLocation.includes('#')
@@ -765,6 +743,7 @@ export function experimental_createRouter(
         newTargetLocation.params = {}
       }
 
+      // TODO: should be removed if we use the resolve method
       if (
         __DEV__ &&
         newTargetLocation.path == null &&
@@ -938,12 +917,7 @@ export function experimental_createRouter(
 
   function runWithContext<T>(fn: () => T): T {
     const app: App | undefined = installedApps.values().next().value
-    // FIXME: remove safeguard and ensure
-    // TODO: remove safeguard and bump required minimum version of Vue
-    // support Vue < 3.3
-    return typeof app?.runWithContext === 'function'
-      ? app.runWithContext(fn)
-      : fn()
+    return app?.runWithContext ? app.runWithContext(fn) : fn()
   }
 
   // TODO: refactor the whole before guards by internally using router.beforeEach
@@ -1410,7 +1384,7 @@ export function experimental_createRouter(
         // see above
         started = true
         push(routerHistory.location).catch(err => {
-          if (__DEV__) warn('Unexpected error when starting the router:', err)
+          if (__DEV__) warn('Unexpected error on initial navigation:', err)
         })
       }
 
