@@ -870,7 +870,7 @@ export function experimental_createRouter(
             return pushWithRedirect(
               {
                 // @ts-expect-error: FIXME: refactor location types
-                ...resolve(shouldRedirect, currentRoute.value),
+                ...resolve(failure.to, currentRoute.value),
                 state:
                   typeof failure.to === 'object'
                     ? assign({}, data, failure.to.state)
