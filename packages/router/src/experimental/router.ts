@@ -278,7 +278,7 @@ export type EXPERIMENTAL_RouteRecordRaw =
 // | RouteRecordMultipleViewsWithChildren
 // | RouteRecordRedirect
 
-export interface EXPERIMENTAL_RouteRecordNoramlized_Base {
+export interface EXPERIMENTAL_RouteRecordNormalized_Base {
   /**
    * Contains the original modules for lazy loaded components.
    *
@@ -308,7 +308,7 @@ export interface EXPERIMENTAL_RouteRecordNoramlized_Base {
 }
 
 export interface EXPERIMENTAL_RouteRecordNormalized_Group
-  extends EXPERIMENTAL_RouteRecordNoramlized_Base,
+  extends EXPERIMENTAL_RouteRecordNormalized_Base,
     EXPERIMENTAL_RouteRecord_Group {
   meta: RouteMeta
   parent: EXPERIMENTAL_RouteRecordNormalized | null
@@ -316,7 +316,7 @@ export interface EXPERIMENTAL_RouteRecordNormalized_Group
 
 // TODO: is it worth to have 2 types for the undefined values?
 export interface EXPERIMENTAL_RouteRecordNormalized_Matchable
-  extends EXPERIMENTAL_RouteRecordNoramlized_Base,
+  extends EXPERIMENTAL_RouteRecordNormalized_Base,
     EXPERIMENTAL_RouteRecord_Matchable {
   meta: RouteMeta
 
