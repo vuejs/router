@@ -110,7 +110,7 @@ export function createCompiledMatcher<
     if (typeof to === 'object' && (to.name || to.path == null)) {
       // relative location or by name
       if (__DEV__ && to.name == null && currentLocation == null) {
-        console.warn(
+        warn(
           `Cannot resolve an unnamed relative location without a current location. This will throw in production.`,
           to
         )
