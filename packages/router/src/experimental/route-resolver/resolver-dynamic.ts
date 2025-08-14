@@ -52,7 +52,7 @@ export interface NEW_RouterResolver<TMatcherRecordRaw, TMatcherRecord>
   removeMatcher(matcher: TMatcherRecord): void
 
   /**
-   * Remove all matcher records. Prevoisly named `clearRoutes()`.
+   * Remove all matcher records. Previously named `clearRoutes()`.
    */
   clearMatchers(): void
 }
