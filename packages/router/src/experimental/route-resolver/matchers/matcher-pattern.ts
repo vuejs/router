@@ -88,6 +88,7 @@ export class MatcherPatternPathStatic
  * ```ts
  * const matcher = new MatcherPatternPathStar('/team')
  * matcher.match('/team/123') // { pathMatch: '/123' }
+ * matcher.match('/team/123/more') // { pathMatch: '/123/more' }
  * matcher.match('/team-123') // { pathMatch: '-123' }
  * matcher.match('/team') // { pathMatch: '' }
  * matcher.build({ pathMatch: '/123' }) // '/team/123'
@@ -102,12 +103,11 @@ export class MatcherPatternPathStar
   }
 
   match(path: string): { pathMatch: string } {
-    const pathMatchIndex = path.toLowerCase().indexOf(this.path)
-    if (pathMatchIndex < 0) {
+    if (!path.toLowerCase().startsWith(this.path)) {
       throw miss()
     }
     return {
-      pathMatch: path.slice(pathMatchIndex + this.path.length),
+      pathMatch: path.slice(this.path.length),
     }
   }
 
