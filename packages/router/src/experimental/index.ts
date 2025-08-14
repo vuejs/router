@@ -36,12 +36,13 @@ export type {
   ParamParser,
 } from './route-resolver/matchers/matcher-pattern'
 
-import type { RouteRecordNormalized } from '../matcher/types'
-
 // in the new experimental router, there are only parents
 // this should create type errors if someone is realying on children
 declare module 'vue-router' {
   export interface RouteLocationMatched {
-    children?: RouteRecordNormalized['children']
+    /**
+     * The experimental router uses a `parent` property instead of `children`.
+     */
+    children?: never
   }
 }
