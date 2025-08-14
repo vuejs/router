@@ -215,7 +215,7 @@ type ExtractParamTypeFromOptions<TParamsOptions> = {
     : never
 }
 
-const IS_INTEGER_RE = /^-?[1-9]\d*$/
+const IS_INTEGER_RE = /^-?\d+$/
 
 export const PARAM_INTEGER_SINGLE = {
   get: (value: string) => {
