@@ -151,7 +151,7 @@ const PATH_PARAM_DEFAULT_GET = (value: string | string[] | null | undefined) =>
   value ?? null
 export const PATH_PARAM_SINGLE_DEFAULT: ParamParser<string, string> = {}
 
-const PATH_PARAM_DEFAULT_SET = (value: unknown) =>
+const PATH_PARAM_DEFAULT_SET = (value: string | string[] | null | undefined) =>
   value && Array.isArray(value) ? value.map(String) : String(value)
 // TODO: `(value an null | undefined)` for types
 export const PATH_PARAM_DEFAULT_PARSER: ParamParser = {
