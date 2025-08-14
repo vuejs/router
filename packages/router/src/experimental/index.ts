@@ -23,15 +23,8 @@ export {
   MatcherPatternPathStatic,
   MatcherPatternPathStar,
   MatcherPatternPathCustomParams,
-  // custom param parsers
-  // TODO: find a more elegant format than having 4 variants per param type
-  // NOTE: I think in exported types, we should only export the generic version that can
-  // handle all types of params consistently
+  // native param parsers
   PARAM_PARSER_INT,
-  PARAM_INTEGER_SINGLE,
-  PARAM_NUMBER_OPTIONAL,
-  PARAM_NUMBER_REPEATABLE,
-  PARAM_NUMBER_REPEATABLE_OPTIONAL,
 } from './route-resolver/matchers/matcher-pattern'
 export type {
   MatcherPattern,
