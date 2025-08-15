@@ -291,7 +291,7 @@ export class MatcherPatternPathCustomParams<
     // A better version could be using all the parts to join them
     // .e.g ['users', 0, 'profile', 1] -> /users/123/profile/456
     // numbers are indexes of the params in the params object keys
-    readonly pathParts: Array<string | number>
+    readonly pathParts: Array<string | number | Array<string | number>>
   ) {
     this.paramsKeys = Object.keys(this.params) as Array<keyof TParamsOptions>
   }
@@ -335,16 +335,35 @@ export class MatcherPatternPathCustomParams<
         .map(part => {
           if (typeof part === 'string') {
             return part
-          }
-          const paramName = this.paramsKeys[paramIndex++]
-          const paramOptions = this.params[paramName]
-          const value: ReturnType<NonNullable<ParamParser['set']>> = (
-            paramOptions.set || identityFn
-          )(params[paramName])
+          } else if (typeof part === 'number') {
+            const paramName = this.paramsKeys[paramIndex++]
+            const paramOptions = this.params[paramName]
+            const value: ReturnType<NonNullable<ParamParser['set']>> = (
+              paramOptions.set || identityFn
+            )(params[paramName])
 
-          return Array.isArray(value)
-            ? value.map(encodeParam).join('/')
-            : encodeParam(value)
+            return Array.isArray(value)
+              ? value.map(encodeParam).join('/')
+              : encodeParam(value)
+          } else {
+            return part
+              .map(subPart => {
+                if (typeof subPart === 'string') {
+                  return subPart
+                }
+
+                const paramName = this.paramsKeys[paramIndex++]
+                const paramOptions = this.params[paramName]
+                const value: ReturnType<NonNullable<ParamParser['set']>> = (
+                  paramOptions.set || identityFn
+                )(params[paramName])
+
+                return Array.isArray(value)
+                  ? value.map(encodeParam).join('/')
+                  : encodeParam(value)
+              })
+              .join('')
+          }
         })
         .filter(identityFn) // filter out empty values
         .join('/')

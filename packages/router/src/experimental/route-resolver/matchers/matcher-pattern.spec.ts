@@ -217,4 +217,26 @@ describe('MatcherPatternPathCustom', () => {
       '/teams/123/456'
     )
   })
+
+  it('sub segments (params + static)', () => {
+    const pattern = new MatcherPatternPathCustomParams(
+      /^\/teams\/([^/]+?)-b-([^/]+?)$/i,
+      {
+        teamId: {},
+        otherId: {},
+      },
+      ['teams', [0, '-b-', 0]]
+    )
+
+    expect(pattern.match('/teams/123-b-456')).toEqual({
+      teamId: '123',
+      otherId: '456',
+    })
+    expect(() => pattern.match('/teams/123-b')).toThrow()
+    expect(() => pattern.match('/teams/123-b-456/c')).toThrow()
+    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.build({ teamId: '123', otherId: '456' })).toBe(
+      '/teams/123-b-456'
+    )
+  })
 })
