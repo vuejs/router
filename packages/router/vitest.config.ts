@@ -1,8 +1,6 @@
 import { defineConfig } from 'vitest/config'
 import Vue from '@vitejs/plugin-vue'
-import { fileURLToPath } from 'node:url'
 
-const __dirname = new URL('.', import.meta.url).pathname
 export default defineConfig({
   resolve: {
     alias: [],
@@ -28,6 +26,7 @@ export default defineConfig({
         'src/experimental/index.ts',
         // FIXME: add more tests
         'src/experimental/**/*.ts',
+        'src/**/test-utils.ts',
       ],
     },
     typecheck: {

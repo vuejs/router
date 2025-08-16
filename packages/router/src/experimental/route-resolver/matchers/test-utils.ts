@@ -4,7 +4,6 @@ import {
   MatcherPatternQuery,
   MatcherPatternHash,
 } from './matcher-pattern'
-import { NEW_MatcherRecord } from '../old/resolver-dynamic'
 import { miss } from './errors'
 
 export const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{
@@ -62,27 +61,3 @@ export const ANY_HASH_PATTERN_MATCHER: MatcherPatternHash<// hash could be named
   match: hash => ({ hash: hash ? hash.slice(1) : null }),
   build: ({ hash }) => (hash ? `#${hash}` : ''),
 }
-
-export const EMPTY_PATH_ROUTE = {
-  name: 'no params',
-  path: EMPTY_PATH_PATTERN_MATCHER,
-  score: [[80]],
-  children: [],
-  parent: undefined,
-} satisfies NEW_MatcherRecord
-
-export const ANY_PATH_ROUTE = {
-  name: 'any path',
-  path: ANY_PATH_PATTERN_MATCHER,
-  score: [[-10]],
-  children: [],
-  parent: undefined,
-} satisfies NEW_MatcherRecord
-
-export const USER_ID_ROUTE = {
-  name: 'user-id',
-  path: USER_ID_PATH_PATTERN_MATCHER,
-  score: [[80], [70]],
-  children: [],
-  parent: undefined,
-} satisfies NEW_MatcherRecord
