@@ -11,12 +11,12 @@ import type { ResolverLocationAsPathAbsolute } from '../resolver-abstract'
 import type { ResolverLocationAsPathRelative } from '../resolver-abstract'
 import type { ResolverLocationAsNamed } from '../resolver-abstract'
 import {
-  MatcherQueryParams,
   EXPERIMENTAL_Resolver_Base,
   NO_MATCH_LOCATION,
   RecordName,
   ResolverLocationResolved,
 } from '../resolver-abstract'
+import { MatcherQueryParams } from '../matchers/matcher-pattern'
 import { comparePathParserScore } from '../../../matcher/pathParserRanker'
 import { warn } from '../../../warning'
 import type {

@@ -1,5 +1,4 @@
-import { type LocationQuery, type LocationQueryRaw } from '../../query'
-import { warn } from '../../warning'
+import { type LocationQueryRaw } from '../../query'
 import {
   encodeQueryValue as _encodeQueryValue,
   encodeParam,
@@ -33,8 +32,9 @@ export interface EXPERIMENTAL_Resolver_Base<TRecord> {
   ): ResolverLocationResolved<TRecord>
 
   /**
-   * Resolves a string location relative to another location. A relative location can be `./same-folder`,
-   * `../parent-folder`, `same-folder`, or even `?page=2`.
+   * Resolves a string location relative to another location. A relative
+   * location can be `./same-folder`, `../parent-folder`, `same-folder`, or
+   * even `?page=2`.
    */
   resolve(
     relativeLocation: string,
@@ -42,7 +42,8 @@ export interface EXPERIMENTAL_Resolver_Base<TRecord> {
   ): ResolverLocationResolved<TRecord>
 
   /**
-   * Resolves a location by its name. Any required params or query must be passed in the `options` argument.
+   * Resolves a location by its name. Any required params or query must be
+   * passed in the `options` argument.
    */
   resolve(
     location: ResolverLocationAsNamed,
@@ -53,6 +54,7 @@ export interface EXPERIMENTAL_Resolver_Base<TRecord> {
 
   /**
    * Resolves a location by its absolute path (starts with `/`). Any required query must be passed.
+   *
    * @param location - The location to resolve.
    */
   resolve(
@@ -70,8 +72,8 @@ export interface EXPERIMENTAL_Resolver_Base<TRecord> {
   // NOTE: in practice, this overload can cause bugs. It's better to use named locations
 
   /**
-   * Resolves a location relative to another location. It reuses existing properties in the `currentLocation` like
-   * `params`, `query`, and `hash`.
+   * Resolves a location relative to another location. It reuses existing
+   * properties in the `currentLocation` like `params`, `query`, and `hash`.
    */
   resolve(
     relativeLocation: ResolverLocationAsRelative,
@@ -107,94 +109,23 @@ export type MatcherLocationRaw =
  * It contains the resolved name, params, query, hash, and matched records.
  */
 export interface ResolverLocationResolved<TMatched> extends LocationNormalized {
+  /**
+   * Name of the route record. A symbol if no name is provided.
+   */
   name: RecordName
+
+  /**
+   * Parsed params. Already decoded and formatted.
+   */
   params: MatcherParamsFormatted
 
+  /**
+   * Chain of route records that lead to the matched one. The last record is
+   * the the one that matched the location. Each previous record is the parent
+   * of the next one.
+   */
   matched: TMatched[]
 }
-
-export type MatcherPathParamsValue = string | null | string[]
-/**
- * Params in a string format so they can be encoded/decoded and put into a URL.
- */
-export type MatcherPathParams = Record<string, MatcherPathParamsValue>
-
-// TODO: move to matcher-pattern
-export type MatcherQueryParamsValue = string | null | Array<string | null>
-export type MatcherQueryParams = Record<string, MatcherQueryParamsValue>
-
-/**
- * Apply a function to all properties in an object. It's used to encode/decode params and queries.
- * @internal
- */
-export function applyFnToObject<R>(
-  fn: (v: string | number | null | undefined) => R,
-  params: MatcherPathParams | LocationQuery | undefined
-): Record<string, R | R[]> {
-  const newParams: Record<string, R | R[]> = {}
-
-  for (const key in params) {
-    const value = params[key]
-    newParams[key] = Array.isArray(value) ? value.map(fn) : fn(value)
-  }
-
-  return newParams
-}
-
-/**
- * Decode text using `decodeURIComponent`. Returns the original text if it
- * fails.
- *
- * @param text - string to decode
- * @returns decoded string
- */
-export function decode(text: string | number): string
-export function decode(text: null | undefined): null
-export function decode(text: string | number | null | undefined): string | null
-export function decode(
-  text: string | number | null | undefined
-): string | null {
-  if (text == null) return null
-  try {
-    return decodeURIComponent('' + text)
-  } catch (err) {
-    __DEV__ && warn(`Error decoding "${text}". Using original value`)
-  }
-  return '' + text
-}
-// TODO: just add the null check to the original function in encoding.ts
-
-interface FnStableNull {
-  (value: null | undefined): null
-  (value: string | number): string
-  // needed for the general case and must be last
-  (value: string | number | null | undefined): string | null
-}
-
-// function encodeParam(text: null | undefined, encodeSlash?: boolean): null
-// function encodeParam(text: string | number, encodeSlash?: boolean): string
-// function encodeParam(
-//   text: string | number | null | undefined,
-//   encodeSlash?: boolean
-// ): string | null
-// function encodeParam(
-//   text: string | number | null | undefined,
-//   encodeSlash = true
-// ): string | null {
-//   if (text == null) return null
-//   text = encodePath(text)
-//   return encodeSlash ? text.replace(SLASH_RE, '%2F') : text
-// }
-
-// @ts-expect-error: overload are not correctly identified
-const encodeQueryValue: FnStableNull =
-  // for ts
-  value => (value == null ? null : _encodeQueryValue(value))
-
-// // @ts-expect-error: overload are not correctly identified
-// const encodeQueryKey: FnStableNull =
-//   // for ts
-//   value => (value == null ? null : _encodeQueryKey(value))
 
 /**
  * Common properties for a location that couldn't be matched. This ensures
@@ -206,24 +137,16 @@ export const NO_MATCH_LOCATION = {
   matched: [],
 } satisfies Omit<ResolverLocationResolved<never>, keyof LocationNormalized>
 
-// FIXME: move somewhere else
 /**
- * Tagged template helper to encode params into a path. Doesn't work with null
+ * Location object that can be passed to {@link
+ * EXPERIMENTAL_Resolver_Base['resolve']} and is recognized as a `name`.
+ *
+ * @example
+ * ```ts
+ * resolver.resolve({ name: 'user', params: { id: 123 } })
+ * resolver.resolve({ name: 'user-search', params: {}, query: { page: 2 } })
+ * ```
  */
-export function pathEncoded(
-  parts: TemplateStringsArray,
-  ...params: Array<string | number | (string | number)[]>
-): string {
-  return parts.reduce((result, part, i) => {
-    return (
-      result +
-      part +
-      (Array.isArray(params[i])
-        ? params[i].map(encodeParam).join('/')
-        : encodeParam(params[i]))
-    )
-  }, '')
-}
 export interface ResolverLocationAsNamed {
   name: RecordName
   // FIXME: should this be optional?
@@ -236,6 +159,17 @@ export interface ResolverLocationAsNamed {
    */
   path?: undefined
 }
+
+/**
+ * Location object that can be passed to {@link EXPERIMENTAL_Resolver_Base['resolve']}
+ * and is recognized as a relative path.
+ *
+ * @example
+ * ```ts
+ * resolver.resolve({ path: './123' }, currentLocation)
+ * resolver.resolve({ path: '..' }, currentLocation)
+ * ```
+ */
 export interface ResolverLocationAsPathRelative {
   path: string
   query?: LocationQueryRaw
@@ -249,12 +183,35 @@ export interface ResolverLocationAsPathRelative {
    * @deprecated This is ignored when `path` (instead of `name`) is provided
    */
   params?: undefined
-} // TODO: does it make sense to support absolute paths objects?
+}
 
+// TODO: does it make sense to support absolute paths objects?
+
+/**
+ * Location object that can be passed to {@link EXPERIMENTAL_Resolver_Base['resolve']}
+ * and is recognized as an absolute path.
+ *
+ * @example
+ * ```ts
+ * resolver.resolve({ path: '/team/123' })
+ * ```
+ */
 export interface ResolverLocationAsPathAbsolute
   extends ResolverLocationAsPathRelative {
   path: `/${string}`
 }
+
+/**
+ * Relative location object that can be passed to {@link EXPERIMENTAL_Resolver_Base['resolve']}
+ * and is recognized as a relative location, copying the `params`, `query`, and
+ * `hash` if not provided.
+ *
+ * @example
+ * ```ts
+ * resolver.resolve({ params: { id: 123 } }, currentLocation)
+ * resolver.resolve({ hash: '#bottom' }, currentLocation)
+ * ```
+ */
 export interface ResolverLocationAsRelative {
   params?: MatcherParamsFormatted
   query?: LocationQueryRaw

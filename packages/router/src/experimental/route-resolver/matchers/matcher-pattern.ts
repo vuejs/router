@@ -1,7 +1,6 @@
 import { identityFn } from '../../../utils'
-import { encodeParam } from '../../../encoding'
+import { decode, encodeParam } from '../../../encoding'
 import { warn } from '../../../warning'
-import { decode, MatcherQueryParams } from '../resolver-abstract'
 import { miss } from './errors'
 import { ParamParser } from './param-parsers/types'
 
@@ -241,4 +240,11 @@ export type MatcherParamsFormatted = Record<string, unknown>
 /**
  * Empty object in TS.
  */
-export type EmptyParams = Record<PropertyKey, never>
+export type EmptyParams = Record<PropertyKey, never> // TODO: move to matcher-pattern
+
+/**
+ * Possible values for query params in a matcher.
+ */
+export type MatcherQueryParamsValue = string | null | Array<string | null>
+
+export type MatcherQueryParams = Record<string, MatcherQueryParamsValue>

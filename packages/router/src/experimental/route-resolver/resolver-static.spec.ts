@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createStaticResolver } from './resolver-static'
-import { MatcherQueryParams, NO_MATCH_LOCATION } from './resolver-abstract'
+import { NO_MATCH_LOCATION } from './resolver-abstract'
+import { MatcherQueryParams } from './matchers/matcher-pattern'
 import {
   MatcherPatternQuery,
   MatcherPatternPathStatic,

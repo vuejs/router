@@ -14,10 +14,6 @@ export type {
 } from './router'
 
 export { createStaticResolver } from './route-resolver/resolver-static'
-export type {
-  MatcherQueryParams,
-  MatcherQueryParamsValue,
-} from './route-resolver/resolver-abstract'
 export {
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,
@@ -30,6 +26,8 @@ export type {
   MatcherPatternPath,
   MatcherPatternQuery,
   MatcherParamsFormatted,
+  MatcherQueryParams,
+  MatcherQueryParamsValue,
   MatcherPatternPathDynamic_ParamOptions,
 } from './route-resolver/matchers/matcher-pattern'
 

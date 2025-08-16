@@ -12,11 +12,11 @@ import { ResolverLocationAsPathRelative } from './resolver-abstract'
 import { ResolverLocationAsNamed } from './resolver-abstract'
 import {
   RecordName,
-  MatcherQueryParams,
   ResolverLocationResolved,
   EXPERIMENTAL_Resolver_Base,
   NO_MATCH_LOCATION,
 } from './resolver-abstract'
+import { MatcherQueryParams } from './matchers/matcher-pattern'
 import type {
   MatcherPatternPath,
   MatcherPatternQuery,

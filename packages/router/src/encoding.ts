@@ -139,7 +139,13 @@ export function encodeParam(text: string | number | null | undefined): string {
  * @param text - string to decode
  * @returns decoded string
  */
-export function decode(text: string | number): string {
+export function decode(text: string | number): string
+export function decode(text: null | undefined): null
+export function decode(text: string | number | null | undefined): string | null
+export function decode(
+  text: string | number | null | undefined
+): string | null {
+  if (text == null) return null
   try {
     return decodeURIComponent('' + text)
   } catch (err) {
@@ -147,3 +153,4 @@ export function decode(text: string | number): string {
   }
   return '' + text
 }
+// TODO: just add the null check to the original function in encoding.ts
