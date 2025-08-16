@@ -36,6 +36,8 @@ export type {
   ParamParser,
 } from './route-resolver/matchers/matcher-pattern'
 
+export { miss, MatchMiss } from './route-resolver/matchers/errors'
+
 // in the new experimental router, there are only parents
 // this should create type errors if someone is realying on children
 declare module 'vue-router' {

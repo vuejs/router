@@ -5,7 +5,7 @@ import {
   MatcherPatternHash,
 } from './matcher-pattern'
 import { NEW_MatcherRecord } from '../old/resolver-dynamic'
-import { invalid, miss } from './errors'
+import { miss } from './errors'
 
 export const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{
   pathMatch: string
@@ -37,8 +37,7 @@ export const USER_ID_PATH_PATTERN_MATCHER: MatcherPatternPath<{ id: number }> =
       }
       const id = Number(match[1])
       if (Number.isNaN(id)) {
-        throw invalid('id')
-        // throw miss()
+        throw miss(`Invalid number: ${String(match[1])}`)
       }
       return { id }
     },
