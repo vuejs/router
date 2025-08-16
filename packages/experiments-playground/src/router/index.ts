@@ -15,18 +15,6 @@ import type {
 } from 'vue-router/experimental'
 import PageHome from '../pages/(home).vue'
 
-// type ExtractMatcherQueryParams<T> =
-//   T extends MatcherPatternQuery<infer P> ? P : never
-
-// type CombineMatcherParams<T extends readonly MatcherPatternQuery[]> =
-//   T extends readonly [infer First, ...infer Rest]
-//     ? First extends MatcherPatternQuery
-//       ? Rest extends readonly MatcherPatternQuery[]
-//         ? ExtractMatcherQueryParams<First> & CombineMatcherParams<Rest>
-//         : ExtractMatcherQueryParams<First>
-//       : never
-//     : {}
-
 const PAGE_QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ page: number }> = {
   match: query => {
     const page = Number(query.page)
@@ -49,33 +37,6 @@ const QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ q?: string }> = {
     return params.q ? { q: params.q } : ({} as EmptyParams)
   },
 }
-
-// function combineQueryMatchers<const T extends MatcherPatternQuery[]>(
-//   ...matchers: T
-// ): MatcherPatternQuery<CombineMatcherParams<T>> {
-//   return {
-//     match: (query: MatcherQueryParams): CombineMatcherParams<T> => {
-//       return matchers.reduce((acc, matcher) => {
-//         return { ...acc, ...matcher.match(query) }
-//       }, {} as CombineMatcherParams<T>)
-//     },
-//     build: (
-//       params: CombineMatcherParams<T>
-//     ): Record<string, string | string[]> => {
-//       return matchers.reduce(
-//         (acc, matcher) => {
-//           return { ...acc, ...matcher.build(params) }
-//         },
-//         {} as Record<string, string | string[]>
-//       )
-//     },
-//   }
-// }
-//
-// const a = combineQueryMatchers(
-//   PAGE_QUERY_PATTERN_MATCHER,
-//   QUERY_PATTERN_MATCHER
-// )
 
 const ANY_HASH_PATTERN_MATCHER: MatcherPatternHash<// hash could be named anything, in this case it creates a param named hash
 { hash: string | null }> = {
