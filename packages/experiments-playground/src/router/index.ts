@@ -1,7 +1,7 @@
 import { createWebHistory } from 'vue-router'
 import {
   experimental_createRouter,
-  createStaticResolver,
+  createFixedResolver,
   MatcherPatternPathStatic,
   MatcherPatternPathCustomParams,
   normalizeRouteRecord,
@@ -115,7 +115,7 @@ const r_profiles_detail = normalizeRouteRecord({
 
 export const router = experimental_createRouter({
   history: createWebHistory(),
-  resolver: createStaticResolver<EXPERIMENTAL_RouteRecordNormalized_Matchable>([
+  resolver: createFixedResolver<EXPERIMENTAL_RouteRecordNormalized_Matchable>([
     r_home,
     r_about,
     r_nested,

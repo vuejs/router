@@ -81,8 +81,8 @@ import {
   EXPERIMENTAL_ResolverRecord_Base,
   EXPERIMENTAL_ResolverRecord_Group,
   EXPERIMENTAL_ResolverRecord_Matchable,
-  EXPERIMENTAL_ResolverStatic,
-} from './route-resolver/resolver-static'
+  EXPERIMENTAL_ResolverFixed,
+} from './route-resolver/resolver-fixed'
 import {
   ResolverLocationAsNamed,
   ResolverLocationAsPathRelative,
@@ -383,7 +383,7 @@ export interface EXPERIMENTAL_RouterOptions
    *
    * @experimental
    */
-  resolver: EXPERIMENTAL_ResolverStatic<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+  resolver: EXPERIMENTAL_ResolverFixed<EXPERIMENTAL_RouteRecordNormalized_Matchable>
 }
 
 /**

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createStaticResolver } from './resolver-static'
+import { createFixedResolver } from './resolver-fixed'
 import { NO_MATCH_LOCATION } from './resolver-abstract'
 import { MatcherQueryParams } from './matchers/matcher-pattern'
 import {
@@ -14,10 +14,10 @@ import {
   PAGE_QUERY_PATTERN_MATCHER,
 } from './matchers/test-utils'
 
-describe('StaticResolver', () => {
+describe('fixed resolver', () => {
   describe('new matchers', () => {
     it('static path', () => {
-      const resolver = createStaticResolver([
+      const resolver = createFixedResolver([
         { name: 'root', path: new MatcherPatternPathStatic('/') },
         { name: 'users', path: new MatcherPatternPathStatic('/users') },
       ])
@@ -40,7 +40,7 @@ describe('StaticResolver', () => {
     })
 
     it('dynamic path', () => {
-      const resolver = createStaticResolver([
+      const resolver = createFixedResolver([
         {
           name: 'user-detail',
           path: USER_ID_PATH_PATTERN_MATCHER,
@@ -58,7 +58,7 @@ describe('StaticResolver', () => {
   describe('resolve()', () => {
     describe('absolute locations as strings', () => {
       it('resolves string locations with no params', () => {
-        const resolver = createStaticResolver([
+        const resolver = createFixedResolver([
           { name: 'root', path: EMPTY_PATH_PATTERN_MATCHER },
         ])
 
@@ -71,7 +71,7 @@ describe('StaticResolver', () => {
       })
 
       it('resolves a not found string', () => {
-        const resolver = createStaticResolver([])
+        const resolver = createFixedResolver([])
         expect(resolver.resolve('/bar?q=1#hash')).toEqual({
           ...NO_MATCH_LOCATION,
           fullPath: '/bar?q=1#hash',
@@ -83,7 +83,7 @@ describe('StaticResolver', () => {
       })
 
       it('resolves string locations with params', () => {
-        const resolver = createStaticResolver([
+        const resolver = createFixedResolver([
           { name: 'user-detail', path: USER_ID_PATH_PATTERN_MATCHER },
         ])
 
@@ -102,7 +102,7 @@ describe('StaticResolver', () => {
       })
 
       it('resolve string locations with query', () => {
-        const resolver = createStaticResolver([
+        const resolver = createFixedResolver([
           {
             name: 'any-path',
             path: ANY_PATH_PATTERN_MATCHER,
@@ -122,7 +122,7 @@ describe('StaticResolver', () => {
       })
 
       it('resolves string locations with hash', () => {
-        const resolver = createStaticResolver([
+        const resolver = createFixedResolver([
           {
             name: 'any-path',
             path: ANY_PATH_PATTERN_MATCHER,
@@ -139,7 +139,7 @@ describe('StaticResolver', () => {
       })
 
       it('combines path, query and hash params', () => {
-        const resolver = createStaticResolver([
+        const resolver = createFixedResolver([
           {
             name: 'user-detail',
             path: USER_ID_PATH_PATTERN_MATCHER,
@@ -156,7 +156,7 @@ describe('StaticResolver', () => {
 
     describe('relative locations as strings', () => {
       it('resolves a simple object relative location', () => {
-        const resolver = createStaticResolver([
+        const resolver = createFixedResolver([
           { name: 'any-path', path: ANY_PATH_PATTERN_MATCHER },
         ])
 
@@ -197,7 +197,7 @@ describe('StaticResolver', () => {
     })
 
     it('resolves a simple string relative location', () => {
-      const resolver = createStaticResolver([
+      const resolver = createFixedResolver([
         { name: 'any-path', path: ANY_PATH_PATTERN_MATCHER },
       ])
 
@@ -229,7 +229,7 @@ describe('StaticResolver', () => {
 
     describe('absolute locations', () => {
       it('resolves an object location', () => {
-        const resolver = createStaticResolver([
+        const resolver = createFixedResolver([
           { name: 'root', path: EMPTY_PATH_PATTERN_MATCHER },
         ])
         expect(resolver.resolve({ path: '/' })).toMatchObject({
@@ -242,7 +242,7 @@ describe('StaticResolver', () => {
       })
 
       it('resolves an absolute string location', () => {
-        const resolver = createStaticResolver([
+        const resolver = createFixedResolver([
           { name: 'root', path: EMPTY_PATH_PATTERN_MATCHER },
         ])
         expect(resolver.resolve('/')).toMatchObject({
@@ -255,7 +255,7 @@ describe('StaticResolver', () => {
       })
 
       it('treats object path as pathname only (no query/hash parsing)', () => {
-        const resolver = createStaticResolver([
+        const resolver = createFixedResolver([
           { name: 'any-path', path: ANY_PATH_PATTERN_MATCHER },
         ])
         // Object with path containing query/hash should treat entire string as pathname
@@ -270,7 +270,7 @@ describe('StaticResolver', () => {
 
     describe('named locations', () => {
       it('resolves named locations with no params', () => {
-        const resolver = createStaticResolver([
+        const resolver = createFixedResolver([
           {
             name: 'home',
             path: EMPTY_PATH_PATTERN_MATCHER,
@@ -288,7 +288,7 @@ describe('StaticResolver', () => {
     })
 
     describe('encoding', () => {
-      const resolver = createStaticResolver([
+      const resolver = createFixedResolver([
         { name: 'any-path', path: ANY_PATH_PATTERN_MATCHER },
       ])
       describe('decodes', () => {
@@ -311,7 +311,7 @@ describe('StaticResolver', () => {
         })
 
         it('passes a decoded query to the matcher', () => {
-          const resolver = createStaticResolver([
+          const resolver = createFixedResolver([
             {
               name: 'query',
               path: EMPTY_PATH_PATTERN_MATCHER,

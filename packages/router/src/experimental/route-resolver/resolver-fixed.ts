@@ -24,9 +24,6 @@ import type {
 } from './matchers/matcher-pattern'
 import { warn } from '../../warning'
 
-// TODO: find a better name than static that doesn't conflict with static params
-// maybe fixed or simple
-
 export interface EXPERIMENTAL_ResolverRecord_Base {
   /**
    * Name of the matcher. Unique across all matchers. If missing, this record
@@ -49,10 +46,8 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
    */
   hash?: MatcherPatternHash
 
-  // TODO: here or in router
-  // redirect?: RouteRecordRedirectOption
+  parent?: EXPERIMENTAL_ResolverRecord | null // the parent can be matchable or not
 
-  parent?: EXPERIMENTAL_ResolverRecord | null // the parend can be matchable or not
   // TODO: implement aliases
   // aliasOf?: this
 }
@@ -70,20 +65,23 @@ export interface EXPERIMENTAL_ResolverRecord_Group
   hash?: undefined
 }
 
+/**
+ * A matchable record is a record that can be matched by a path, query or hash and will resolve to a location.
+ */
 export interface EXPERIMENTAL_ResolverRecord_Matchable
   extends EXPERIMENTAL_ResolverRecord_Base {
   name: RecordName
   path: MatcherPatternPath
 }
 
-export type EXPERIMENTAL_ResolverRecord<T = {}> =
-  | (EXPERIMENTAL_ResolverRecord_Matchable & T)
-  | (EXPERIMENTAL_ResolverRecord_Group & T)
+export type EXPERIMENTAL_ResolverRecord<ExtensionT = {}> =
+  | (EXPERIMENTAL_ResolverRecord_Matchable & ExtensionT)
+  | (EXPERIMENTAL_ResolverRecord_Group & ExtensionT)
 
-export type EXPERIMENTAL_ResolverStaticRecord<T = {}> =
-  EXPERIMENTAL_ResolverRecord<T>
+export type EXPERIMENTAL_ResolverFixedRecord<ExtensionT = {}> =
+  EXPERIMENTAL_ResolverRecord<ExtensionT>
 
-export interface EXPERIMENTAL_ResolverStatic<TRecord>
+export interface EXPERIMENTAL_ResolverFixed<TRecord>
   extends EXPERIMENTAL_Resolver_Base<TRecord> {}
 
 /**
@@ -102,16 +100,16 @@ export function buildMatched<T extends EXPERIMENTAL_ResolverRecord>(
 }
 
 /**
- * Creates a simple resolver that must have all records defined at creation
+ * Creates a fixed resolver that must have all records defined at creation
  * time.
  *
  * @template TRecord - extended type of the records
  * @param {TRecord[]} records - Ordered array of records that will be used to resolve routes
  * @returns a resolver that can be passed to the router
  */
-export function createStaticResolver<
+export function createFixedResolver<
   TRecord extends EXPERIMENTAL_ResolverRecord_Matchable,
->(records: TRecord[]): EXPERIMENTAL_ResolverStatic<TRecord> {
+>(records: TRecord[]): EXPERIMENTAL_ResolverFixed<TRecord> {
   // allows fast access to a matcher by name
   const recordMap = new Map<RecordName, TRecord>()
   for (const record of records) {
@@ -184,7 +182,7 @@ export function createStaticResolver<
           throw new Error(`Record "${String(name)}" not found`)
         }
 
-        if (typeof to === 'object' && to.hash?.startsWith('#')) {
+        if (typeof to === 'object' && to.hash && to.hash.startsWith('#')) {
           warn(
             `A \`hash\` should always start with the character "#". Replace "${to.hash}" with "#${to.hash}".`
           )

@@ -153,4 +153,3 @@ export function decode(
   }
   return '' + text
 }
-// TODO: just add the null check to the original function in encoding.ts

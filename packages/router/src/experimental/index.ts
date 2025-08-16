@@ -13,7 +13,7 @@ export type {
   EXPERIMENTAL_RouteRecordNormalized_Matchable,
 } from './router'
 
-export { createStaticResolver } from './route-resolver/resolver-static'
+export { createFixedResolver } from './route-resolver/resolver-fixed'
 export {
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,
