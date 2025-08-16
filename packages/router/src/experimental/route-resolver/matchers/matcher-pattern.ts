@@ -63,13 +63,18 @@ export interface MatcherPatternPath<
 export class MatcherPatternPathStatic
   implements MatcherPatternPath<EmptyParams>
 {
-  private path: string
-  constructor(path: string) {
-    this.path = path.toLowerCase()
+  /**
+   * lowercase version of the path to match against.
+   * This is used to make the matching case insensitive.
+   */
+  private pathi: string
+
+  constructor(private path: string) {
+    this.pathi = path.toLowerCase()
   }
 
   match(path: string): EmptyParams {
-    if (path.toLowerCase() !== this.path) {
+    if (path.toLowerCase() !== this.pathi) {
       throw miss()
     }
     return {}

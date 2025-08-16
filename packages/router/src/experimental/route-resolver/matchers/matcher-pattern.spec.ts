@@ -41,6 +41,11 @@ describe('MatcherPatternPathStatic', () => {
       const pattern = new MatcherPatternPathStatic('/')
       expect(pattern.build()).toBe('/')
     })
+
+    it('preserves case', () => {
+      const pattern = new MatcherPatternPathStatic('/Team')
+      expect(pattern.build()).toBe('/Team')
+    })
   })
 })
 
