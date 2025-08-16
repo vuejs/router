@@ -55,13 +55,13 @@ describe('StaticResolver', () => {
   })
 
   describe('resolve()', () => {
-    describe.todo('absolute locations as strings', () => {
+    describe('absolute locations as strings', () => {
       it('resolves string locations with no params', () => {
         const resolver = createStaticResolver([
           { name: 'root', path: EMPTY_PATH_PATTERN_MATCHER },
         ])
 
-        expect(resolver.resolve({ path: '/?a=a&b=b#h' })).toMatchObject({
+        expect(resolver.resolve('/?a=a&b=b#h')).toMatchObject({
           path: '/',
           params: {},
           query: { a: 'a', b: 'b' },
@@ -71,7 +71,7 @@ describe('StaticResolver', () => {
 
       it('resolves a not found string', () => {
         const resolver = createStaticResolver([])
-        expect(resolver.resolve({ path: '/bar?q=1#hash' })).toEqual({
+        expect(resolver.resolve('/bar?q=1#hash')).toEqual({
           ...NO_MATCH_LOCATION,
           fullPath: '/bar?q=1#hash',
           path: '/bar',
@@ -86,20 +86,18 @@ describe('StaticResolver', () => {
           { name: 'user-detail', path: USER_ID_PATH_PATTERN_MATCHER },
         ])
 
-        expect(resolver.resolve({ path: '/users/1?a=a&b=b#h' })).toMatchObject({
+        expect(resolver.resolve('/users/1?a=a&b=b#h')).toMatchObject({
           path: '/users/1',
           params: { id: 1 },
           query: { a: 'a', b: 'b' },
           hash: '#h',
         })
-        expect(resolver.resolve({ path: '/users/54?a=a&b=b#h' })).toMatchObject(
-          {
-            path: '/users/54',
-            params: { id: 54 },
-            query: { a: 'a', b: 'b' },
-            hash: '#h',
-          }
-        )
+        expect(resolver.resolve('/users/54?a=a&b=b#h')).toMatchObject({
+          path: '/users/54',
+          params: { id: 54 },
+          query: { a: 'a', b: 'b' },
+          hash: '#h',
+        })
       })
 
       it('resolve string locations with query', () => {
@@ -111,17 +109,15 @@ describe('StaticResolver', () => {
           },
         ])
 
-        expect(resolver.resolve({ path: '/foo?page=100&b=b#h' })).toMatchObject(
-          {
-            params: { page: 100 },
-            path: '/foo',
-            query: {
-              page: '100',
-              b: 'b',
-            },
-            hash: '#h',
-          }
-        )
+        expect(resolver.resolve('/foo?page=100&b=b#h')).toMatchObject({
+          params: { page: 100 },
+          path: '/foo',
+          query: {
+            page: '100',
+            b: 'b',
+          },
+          hash: '#h',
+        })
       })
 
       it('resolves string locations with hash', () => {
@@ -133,7 +129,7 @@ describe('StaticResolver', () => {
           },
         ])
 
-        expect(resolver.resolve({ path: '/foo?a=a&b=b#bar' })).toMatchObject({
+        expect(resolver.resolve('/foo?a=a&b=b#bar')).toMatchObject({
           hash: '#bar',
           params: { hash: 'bar' },
           path: '/foo',
@@ -151,9 +147,7 @@ describe('StaticResolver', () => {
           },
         ])
 
-        expect(
-          resolver.resolve({ path: '/users/24?page=100#bar' })
-        ).toMatchObject({
+        expect(resolver.resolve('/users/24?page=100#bar')).toMatchObject({
           params: { id: 24, page: 100, hash: 'bar' },
         })
       })
@@ -256,6 +250,19 @@ describe('StaticResolver', () => {
           params: {},
           query: {},
           hash: '',
+        })
+      })
+
+      it('treats object path as pathname only (no query/hash parsing)', () => {
+        const resolver = createStaticResolver([
+          { name: 'any-path', path: ANY_PATH_PATTERN_MATCHER },
+        ])
+        // Object with path containing query/hash should treat entire string as pathname
+        expect(resolver.resolve({ path: '/?a=a&b=b#h' })).toMatchObject({
+          path: '/?a=a&b=b#h', // Full string treated as path
+          query: {}, // Empty query
+          hash: '', // Empty hash
+          params: { pathMatch: '/?a=a&b=b#h' }, // Matcher sees full string
         })
       })
     })

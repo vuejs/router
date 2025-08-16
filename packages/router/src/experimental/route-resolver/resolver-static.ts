@@ -149,6 +149,8 @@ export function createStaticResolver<
   function resolve(
     ...[to, currentLocation]: _resolveArgs
   ): ResolverLocationResolved<TRecord> {
+    // named location, e.g. { name: 'foo', params }
+    // or relative location (second argument is current location)
     if (typeof to === 'object' && (to.name || to.path == null)) {
       // relative location by path or by name
       if (__DEV__ && to.name == null && currentLocation == null) {

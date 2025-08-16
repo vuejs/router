@@ -83,8 +83,6 @@ function compileRouteRecord(
     mergeOptions(PATH_PARSER_OPTIONS_DEFAULTS, record)
   )
 
-  // console.log({ record, parser })
-
   return {
     group: !isMatchable(record),
     name: record.name,
@@ -93,7 +91,6 @@ function compileRouteRecord(
     path: {
       match(value) {
         const params = parser.parse(value)
-        // console.log('🌟', parser.re, value, params)
         if (params) {
           return params
         }
@@ -212,17 +209,12 @@ describe('RouterMatcher.resolve', () => {
           fromLocation
         )
 
-    // console.log(matcher.getMatchers())
-    // console.log({ toLocation, resolved, expectedLocation, resolvedFrom })
-
     const result = matcher.resolve(
       // FIXME: should work now
       // @ts-expect-error
       toLocation,
       resolvedFrom === START_LOCATION ? undefined : resolvedFrom
     )
-
-    // console.log(result)
 
     if (
       expectedLocation.name === undefined ||
