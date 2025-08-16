@@ -19,22 +19,25 @@ export type {
   MatcherQueryParamsValue,
 } from './route-resolver/resolver-abstract'
 export {
-  MatcherPatternPathDynamic,
   MatcherPatternPathStatic,
-  MatcherPatternPathStar,
-  MatcherPatternPathCustomParams,
-  // native param parsers
-  PARAM_PARSER_INT,
+  MatcherPatternPathDynamic,
 } from './route-resolver/matchers/matcher-pattern'
+
 export type {
+  EmptyParams,
   MatcherPattern,
   MatcherPatternHash,
   MatcherPatternPath,
   MatcherPatternQuery,
   MatcherParamsFormatted,
-  EmptyParams,
-  ParamParser,
+  MatcherPatternPathDynamic_ParamOptions,
 } from './route-resolver/matchers/matcher-pattern'
+
+export {
+  PARAM_PARSER_INT,
+  type ParamParser,
+  defineParamParser,
+} from './route-resolver/matchers/param-parsers'
 
 export { miss, MatchMiss } from './route-resolver/matchers/errors'
 

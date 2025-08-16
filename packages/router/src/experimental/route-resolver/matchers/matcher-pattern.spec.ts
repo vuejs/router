@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
   MatcherPatternPathStatic,
-  MatcherPatternPathStar,
-  MatcherPatternPathCustomParams,
+  MatcherPatternPathDynamic,
 } from './matcher-pattern'
+import { MatcherPatternPathStar } from './matcher-pattern-path-star'
 
 describe('MatcherPatternPathStatic', () => {
   describe('match()', () => {
@@ -109,7 +109,7 @@ describe('MatcherPatternPathStar', () => {
 
 describe('MatcherPatternPathCustom', () => {
   it('single param', () => {
-    const pattern = new MatcherPatternPathCustomParams(
+    const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)\/b$/i,
       {
         // all defaults
@@ -131,7 +131,7 @@ describe('MatcherPatternPathCustom', () => {
   })
 
   it('decodes single param', () => {
-    const pattern = new MatcherPatternPathCustomParams(
+    const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)$/i,
       {
         teamId: {},
@@ -143,7 +143,7 @@ describe('MatcherPatternPathCustom', () => {
   })
 
   it('optional param', () => {
-    const pattern = new MatcherPatternPathCustomParams(
+    const pattern = new MatcherPatternPathDynamic(
       /^\/teams(?:\/([^/]+?))?\/b$/i,
       {
         teamId: {},
@@ -160,7 +160,7 @@ describe('MatcherPatternPathCustom', () => {
   })
 
   it('repeatable param', () => {
-    const pattern = new MatcherPatternPathCustomParams(
+    const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/(.+?)\/b$/i,
       {
         teamId: { repeat: true },
@@ -179,7 +179,7 @@ describe('MatcherPatternPathCustom', () => {
   })
 
   it('repeatable optional param', () => {
-    const pattern = new MatcherPatternPathCustomParams(
+    const pattern = new MatcherPatternPathDynamic(
       /^\/teams(?:\/(.+?))?\/b$/i,
       {
         teamId: { repeat: true },
@@ -202,7 +202,7 @@ describe('MatcherPatternPathCustom', () => {
   })
 
   it('multiple params', () => {
-    const pattern = new MatcherPatternPathCustomParams(
+    const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)\/([^/]+?)$/i,
       {
         teamId: {},
@@ -224,7 +224,7 @@ describe('MatcherPatternPathCustom', () => {
   })
 
   it('sub segments (params + static)', () => {
-    const pattern = new MatcherPatternPathCustomParams(
+    const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)-b-([^/]+?)$/i,
       {
         teamId: {},

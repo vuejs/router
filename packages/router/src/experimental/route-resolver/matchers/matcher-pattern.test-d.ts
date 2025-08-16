@@ -1,14 +1,12 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import {
-  MatcherPatternPathCustomParams,
-  PARAM_INTEGER_SINGLE,
-  PATH_PARAM_DEFAULT_PARSER,
-  PATH_PARAM_SINGLE_DEFAULT,
-} from './matcher-pattern'
+import { MatcherPatternPathDynamic } from './matcher-pattern'
+import { PARAM_INTEGER_SINGLE } from './param-parsers/numbers'
+import { PATH_PARAM_DEFAULT_PARSER } from './param-parsers'
+import { PATH_PARAM_SINGLE_DEFAULT } from './param-parsers'
 
 describe('MatcherPatternPathCustomParams', () => {
   it('can be generic', () => {
-    const matcher = new MatcherPatternPathCustomParams(
+    const matcher = new MatcherPatternPathDynamic(
       /^\/users\/([^/]+)$/i,
       { userId: { ...PATH_PARAM_DEFAULT_PARSER } },
       ['users', 0]
@@ -33,7 +31,7 @@ describe('MatcherPatternPathCustomParams', () => {
   })
 
   it('can be a simple param', () => {
-    const matcher = new MatcherPatternPathCustomParams(
+    const matcher = new MatcherPatternPathDynamic(
       /^\/users\/([^/]+)\/([^/]+)$/i,
       { userId: { ...PATH_PARAM_SINGLE_DEFAULT, repeat: true } },
       ['users', 0]
@@ -51,7 +49,7 @@ describe('MatcherPatternPathCustomParams', () => {
   })
 
   it('can be a custom type', () => {
-    const matcher = new MatcherPatternPathCustomParams(
+    const matcher = new MatcherPatternPathDynamic(
       /^\/profiles\/([^/]+)$/i,
       {
         userId: {
