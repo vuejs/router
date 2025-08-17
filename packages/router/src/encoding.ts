@@ -58,11 +58,13 @@ const ENC_SPACE_RE = /%20/g // }
  * @param text - string to encode
  * @returns encoded string
  */
-export function commonEncode(text: string | number): string {
-  return encodeURI('' + text)
-    .replace(ENC_PIPE_RE, '|')
-    .replace(ENC_BRACKET_OPEN_RE, '[')
-    .replace(ENC_BRACKET_CLOSE_RE, ']')
+export function commonEncode(text: string | number | null | undefined): string {
+  return text == null
+    ? ''
+    : encodeURI('' + text)
+        .replace(ENC_PIPE_RE, '|')
+        .replace(ENC_BRACKET_OPEN_RE, '[')
+        .replace(ENC_BRACKET_CLOSE_RE, ']')
 }
 
 /**
@@ -115,7 +117,7 @@ export function encodeQueryKey(text: string | number): string {
  * @param text - string to encode
  * @returns encoded string
  */
-export function encodePath(text: string | number): string {
+export function encodePath(text: string | number | null | undefined): string {
   return commonEncode(text).replace(HASH_RE, '%23').replace(IM_RE, '%3F')
 }
 
@@ -129,7 +131,7 @@ export function encodePath(text: string | number): string {
  * @returns encoded string
  */
 export function encodeParam(text: string | number | null | undefined): string {
-  return text == null ? '' : encodePath(text).replace(SLASH_RE, '%2F')
+  return encodePath(text).replace(SLASH_RE, '%2F')
 }
 
 /**

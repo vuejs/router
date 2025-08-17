@@ -1,5 +1,5 @@
 import { identityFn } from '../../../utils'
-import { decode, encodeParam } from '../../../encoding'
+import { decode, encodeParam, encodePath } from '../../../encoding'
 import { warn } from '../../../warning'
 import { miss } from './errors'
 import { ParamParser } from './param-parsers/types'
@@ -92,7 +92,11 @@ export interface MatcherPatternPathDynamic_ParamOptions<
   TIn extends string | string[] | null = string | string[] | null,
   TOut = string | string[] | null,
 > extends ParamParser<TOut, TIn> {
+  /**
+   * Is tha param a repeatable param and should be converted to an array
+   */
   repeat?: boolean
+
   // NOTE: not needed because in the regexp, the value is undefined if
   // the group is optional and not given
   // optional?: boolean
@@ -133,9 +137,7 @@ export class MatcherPatternPathDynamic<
     // otherwise, we need to use a factory function: https://github.com/microsoft/TypeScript/issues/40451
     readonly params: TParamsOptions &
       Record<string, MatcherPatternPathDynamic_ParamOptions<any, any>>,
-    // A better version could be using all the parts to join them
-    // .e.g ['users', 0, 'profile', 1] -> /users/123/profile/456
-    // numbers are indexes of the params in the params object keys
+    // 0 means a regular param, 1 means a splat, the order comes from the keys in params
     readonly pathParts: Array<string | number | Array<string | number>>
   ) {
     this.paramsKeys = Object.keys(this.params) as Array<keyof TParamsOptions>
@@ -174,22 +176,30 @@ export class MatcherPatternPathDynamic<
 
   build(params: ExtractParamTypeFromOptions<TParamsOptions>): string {
     let paramIndex = 0
-    return (
+    let paramName: keyof TParamsOptions
+    let paramOptions: (TParamsOptions &
+      Record<
+        string,
+        MatcherPatternPathDynamic_ParamOptions<any, any>
+      >)[keyof TParamsOptions]
+    let lastParamPart: number | undefined
+    let value: ReturnType<NonNullable<ParamParser['set']>> | undefined
+    const path =
       '/' +
       this.pathParts
         .map(part => {
           if (typeof part === 'string') {
             return part
           } else if (typeof part === 'number') {
-            const paramName = this.paramsKeys[paramIndex++]
-            const paramOptions = this.params[paramName]
-            const value: ReturnType<NonNullable<ParamParser['set']>> = (
-              paramOptions.set || identityFn
-            )(params[paramName])
+            paramName = this.paramsKeys[paramIndex++]
+            paramOptions = this.params[paramName]
+            lastParamPart = part
+            value = (paramOptions.set || identityFn)(params[paramName])
 
             return Array.isArray(value)
               ? value.map(encodeParam).join('/')
-              : encodeParam(value)
+              : // part == 0 means a regular param, 1 means a splat
+                (part /* part !== 0 */ ? encodePath : encodeParam)(value)
           } else {
             return part
               .map(subPart => {
@@ -197,11 +207,9 @@ export class MatcherPatternPathDynamic<
                   return subPart
                 }
 
-                const paramName = this.paramsKeys[paramIndex++]
-                const paramOptions = this.params[paramName]
-                const value: ReturnType<NonNullable<ParamParser['set']>> = (
-                  paramOptions.set || identityFn
-                )(params[paramName])
+                paramName = this.paramsKeys[paramIndex++]
+                paramOptions = this.params[paramName]
+                value = (paramOptions.set || identityFn)(params[paramName])
 
                 return Array.isArray(value)
                   ? value.map(encodeParam).join('/')
@@ -212,7 +220,14 @@ export class MatcherPatternPathDynamic<
         })
         .filter(identityFn) // filter out empty values
         .join('/')
-    )
+
+    /**
+     * If the last part of the path is a splat param and its value is empty, it gets
+     * filteretd out, resulting in a path that doesn't end with a `/` and doesn't even match
+     * with the original splat path: e.g. /teams/[...pathMatch] does not match /teams, so it makes
+     * no sense to build a path it cannot match.
+     */
+    return lastParamPart && !value ? path + '/' : path
   }
 }
 

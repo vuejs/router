@@ -155,8 +155,10 @@ describe('MatcherPatternPathCustom', () => {
     expect(pattern.match('/teams/123/b')).toEqual({ teamId: '123' })
     expect(() => pattern.match('/teams/123/c')).toThrow()
     expect(() => pattern.match('/teams/123/b/c')).toThrow()
+    expect(() => pattern.match('/teams//b')).toThrow()
     expect(pattern.build({ teamId: '123' })).toBe('/teams/123/b')
     expect(pattern.build({ teamId: null })).toBe('/teams/b')
+    expect(pattern.build({ teamId: '' })).toBe('/teams/b')
   })
 
   it('repeatable param', () => {
@@ -176,6 +178,29 @@ describe('MatcherPatternPathCustom', () => {
     expect(() => pattern.match('/teams/123/b/c')).toThrow()
     expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123/b')
     expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/b')
+  })
+
+  it('catch all route', () => {
+    // const pattern = new MatcherPatternPathDynamic(
+  })
+
+  it('splat params with prefix', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/teams\/(.*)$/i,
+      {
+        pathMatch: {},
+      },
+      ['teams', 1]
+    )
+    expect(pattern.match('/teams/')).toEqual({ pathMatch: '' })
+    expect(pattern.match('/teams/123/b')).toEqual({ pathMatch: '123/b' })
+    expect(() => pattern.match('/teams')).toThrow()
+    expect(() => pattern.match('/teamso/123/c')).toThrow()
+
+    expect(pattern.build({ pathMatch: null })).toBe('/teams/')
+    expect(pattern.build({ pathMatch: '' })).toBe('/teams/')
+    expect(pattern.build({ pathMatch: '124' })).toBe('/teams/124')
+    expect(pattern.build({ pathMatch: '124/b' })).toBe('/teams/124/b')
   })
 
   it('repeatable optional param', () => {
