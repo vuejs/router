@@ -1,41 +1,34 @@
 import { miss } from '../errors'
 import { ParamParser } from './types'
 
-/**
- * @internal
- */
-const IS_INTEGER_RE = /^-?\d+$/
-
 export const PARAM_INTEGER_SINGLE = {
   get: (value: string) => {
-    if (IS_INTEGER_RE.test(value)) {
-      const num = Number(value)
-      if (Number.isFinite(num)) {
-        return num
-      }
+    const num = Number(value)
+    if (Number.isInteger(num)) {
+      return num
     }
     throw miss()
   },
   set: (value: number) => String(value),
 } satisfies ParamParser<number, string>
 
-export const PARAM_NUMBER_OPTIONAL = {
+export const PARAM_INTEGER_OPTIONAL = {
   get: (value: string | null) =>
     value == null ? null : PARAM_INTEGER_SINGLE.get(value),
   set: (value: number | null) =>
     value != null ? PARAM_INTEGER_SINGLE.set(value) : null,
 } satisfies ParamParser<number | null, string | null>
 
-export const PARAM_NUMBER_REPEATABLE = {
+export const PARAM_INTEGER_REPEATABLE = {
   get: (value: string[]) => value.map(PARAM_INTEGER_SINGLE.get),
   set: (value: number[]) => value.map(PARAM_INTEGER_SINGLE.set),
 } satisfies ParamParser<number[], string[]>
 
-export const PARAM_NUMBER_REPEATABLE_OPTIONAL = {
+export const PARAM_INTEGER_REPEATABLE_OPTIONAL = {
   get: (value: string[] | null) =>
-    value == null ? null : PARAM_NUMBER_REPEATABLE.get(value),
+    value == null ? null : PARAM_INTEGER_REPEATABLE.get(value),
   set: (value: number[] | null) =>
-    value != null ? PARAM_NUMBER_REPEATABLE.set(value) : null,
+    value != null ? PARAM_INTEGER_REPEATABLE.set(value) : null,
 } satisfies ParamParser<number[] | null, string[] | null>
 
 /**
@@ -46,13 +39,13 @@ export const PARAM_NUMBER_REPEATABLE_OPTIONAL = {
 export const PARAM_PARSER_INT: ParamParser<number | number[] | null> = {
   get: value =>
     Array.isArray(value)
-      ? PARAM_NUMBER_REPEATABLE.get(value)
+      ? PARAM_INTEGER_REPEATABLE.get(value)
       : value != null
         ? PARAM_INTEGER_SINGLE.get(value)
         : null,
   set: value =>
     Array.isArray(value)
-      ? PARAM_NUMBER_REPEATABLE.set(value)
+      ? PARAM_INTEGER_REPEATABLE.set(value)
       : value != null
         ? PARAM_INTEGER_SINGLE.set(value)
         : null,
