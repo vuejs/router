@@ -168,6 +168,7 @@ describe('fixed resolver', () => {
         ).toMatchObject({
           params: {},
           path: '/nested/foo',
+          fullPath: '/nested/foo',
           query: {},
           hash: '',
         })
@@ -179,6 +180,7 @@ describe('fixed resolver', () => {
         ).toMatchObject({
           params: {},
           path: '/foo',
+          fullPath: '/foo',
           query: {},
           hash: '',
         })
@@ -190,6 +192,7 @@ describe('fixed resolver', () => {
         ).toMatchObject({
           params: {},
           path: '/nested/foo',
+          fullPath: '/nested/foo',
           query: {},
           hash: '',
         })

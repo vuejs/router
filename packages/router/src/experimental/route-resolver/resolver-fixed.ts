@@ -224,9 +224,10 @@ export function createFixedResolver<
         url = parseURL(parseQuery, to, currentLocation?.path)
       } else {
         const query = normalizeQuery(to.query)
+        const path = resolveRelativePath(to.path, currentLocation?.path || '/')
         url = {
-          fullPath: NEW_stringifyURL(stringifyQuery, to.path, query, to.hash),
-          path: resolveRelativePath(to.path, currentLocation?.path || '/'),
+          fullPath: NEW_stringifyURL(stringifyQuery, path, query, to.hash),
+          path,
           query,
           hash: to.hash || '',
         }
