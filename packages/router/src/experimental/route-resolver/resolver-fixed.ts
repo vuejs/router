@@ -182,7 +182,7 @@ export function createFixedResolver<
           throw new Error(`Record "${String(name)}" not found`)
         }
 
-        if (typeof to === 'object' && to.hash && to.hash.startsWith('#')) {
+        if (typeof to === 'object' && to.hash && !to.hash.startsWith('#')) {
           warn(
             `A \`hash\` should always start with the character "#". Replace "${to.hash}" with "#${to.hash}".`
           )
