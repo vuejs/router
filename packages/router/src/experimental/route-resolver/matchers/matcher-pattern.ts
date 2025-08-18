@@ -211,9 +211,17 @@ export class MatcherPatternPathDynamic<
                 paramOptions = this.params[paramName]
                 value = (paramOptions.set || identityFn)(params[paramName])
 
-                return Array.isArray(value)
-                  ? value.map(encodeParam).join('/')
-                  : encodeParam(value)
+                // param cannot be repeatable when in a sub segment
+                if (__DEV__ && paramOptions.repeat) {
+                  warn(
+                    `Param "${String(paramName)}" is repeatable, but used in a sub segment of the path: "${this.pathParts.join('')}". Repeated params can only be used as a full path segment: "/file/[ids]+/something-else". This will break in production.`
+                  )
+                  return Array.isArray(value)
+                    ? value.map(encodeParam).join('/')
+                    : encodeParam(value)
+                }
+
+                return encodeParam(value as string | null | undefined)
               })
               .join('')
           }
