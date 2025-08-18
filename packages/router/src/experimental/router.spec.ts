@@ -43,7 +43,6 @@ import {
   createMemoryHistory,
   createWebHistory,
   createWebHashHistory,
-  loadRouteLocation,
   RouteLocationRaw,
 } from '../index'
 import { NavigationFailureType } from '../errors'
