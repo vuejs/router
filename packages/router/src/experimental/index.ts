@@ -39,6 +39,13 @@ export {
 
 export { miss, MatchMiss } from './route-resolver/matchers/errors'
 
+/**
+ * Internal functions and types for the experimental router.
+ * They should all be prefixed with `_` to avoid conflicts with the public API.
+ */
+
+export { mergeRouteRecord as _mergeRouteRecord } from './router'
+
 // in the new experimental router, there are only parents
 // this should create type errors if someone is realying on children
 declare module 'vue-router' {

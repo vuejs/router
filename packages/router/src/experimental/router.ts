@@ -370,6 +370,27 @@ export function normalizeRouteRecord(
     | EXPERIMENTAL_RouteRecordNormalized_Group
 }
 
+/**
+ * Merges route record objects for the experimental resolver format.
+ * This function is specifically designed to work with objects that will be passed to normalizeRouteRecord().
+ *
+ * @internal
+ *
+ * @param main - main route record object
+ * @param routeRecords - route records to merge (from definePage imports)
+ * @returns merged route record object
+ */
+export function mergeRouteRecord(
+  main: EXPERIMENTAL_RouteRecordNormalized,
+  // TODO: actual type
+  ...routeRecords: Partial<EXPERIMENTAL_RouteRecordNormalized>[]
+) {
+  for (const record of routeRecords) {
+    main.meta = { ...main.meta, ...record.meta }
+  }
+  return main
+}
+
 // TODO: probably need some generic types
 // <TResolver extends NEW_RouterResolver_Base>,
 /**
