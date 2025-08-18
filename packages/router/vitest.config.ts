@@ -25,7 +25,6 @@ export default defineConfig({
         'src/devtools.ts',
         'src/experimental/index.ts',
         // FIXME: add more tests
-        'src/experimental/**/*.ts',
         'src/**/test-utils.ts',
       ],
     },
