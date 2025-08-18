@@ -233,12 +233,14 @@ describe('Experimental Router', () => {
   it('merges meta properties from component-less route records', async () => {
     // Create routes that match the original test pattern more closely
     const appMainRecord = normalizeRouteRecord({
+      name: 'app-main',
       path: new MatcherPatternPathStatic('/app'),
       components: { default: components.Foo },
       meta: { parent: true, child: true },
     })
 
     const appNestedRecord = normalizeRouteRecord({
+      name: 'app-nested',
       path: new MatcherPatternPathStatic('/app/nested/a/b'),
       components: { default: components.Foo },
       meta: { parent: true },

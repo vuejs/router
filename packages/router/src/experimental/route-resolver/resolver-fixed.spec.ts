@@ -317,6 +317,62 @@ describe('fixed resolver', () => {
           path: '/users/posva/admin',
         })
       })
+
+      it('preserves currentLocation.hash in relative-by-name navigation without to.hash', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'home',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            hash: ANY_HASH_PATTERN_MATCHER,
+          },
+        ])
+
+        const currentLocation = resolver.resolve('/#current-hash')
+
+        expect(resolver.resolve({}, currentLocation)).toMatchObject({
+          name: 'home',
+          path: '/',
+          hash: '#current-hash',
+        })
+      })
+
+      it('uses currentLocation values when matcher and to values are nullish', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'page',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            query: [PAGE_QUERY_PATTERN_MATCHER],
+            hash: ANY_HASH_PATTERN_MATCHER,
+          },
+        ])
+
+        // Create currentLocation using the resolver to ensure it's properly formed
+        const currentLocation = resolver.resolve({
+          name: 'page',
+          params: { page: 10, hash: 'current' },
+          query: { existing: 'value' },
+        })
+
+        // Verify currentLocation was created correctly
+        expect(currentLocation).toMatchObject({
+          name: 'page',
+          path: '/',
+          params: { page: 10, hash: 'current' },
+          query: { existing: 'value', page: '10' }, // matcher adds page to query
+          hash: '#current', // matcher builds hash from params
+          fullPath: '/?existing=value&page=10#current',
+        })
+
+        // Now test that relative navigation preserves currentLocation values
+        expect(resolver.resolve({}, currentLocation)).toMatchObject({
+          name: 'page',
+          path: '/',
+          params: { page: 10, hash: 'current' }, // from currentLocation
+          query: { existing: 'value', page: '10' }, // matcher builds with currentLocation params
+          hash: '#current', // matcher builds with currentLocation params
+          fullPath: '/?existing=value&page=10#current',
+        })
+      })
     })
 
     describe('absolute locations', () => {
@@ -401,6 +457,200 @@ describe('fixed resolver', () => {
         expect(() =>
           resolver.resolve({ name: 'nonexistent', params: {} })
         ).toThrowError('Record "nonexistent" not found')
+      })
+
+      it('resolves named locations with explicit query', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'home',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'home',
+            params: {},
+            query: { foo: 'bar', baz: 'qux' },
+          })
+        ).toMatchObject({
+          name: 'home',
+          path: '/',
+          params: {},
+          query: { foo: 'bar', baz: 'qux' },
+          hash: '',
+          fullPath: '/?foo=bar&baz=qux',
+        })
+      })
+
+      it('resolves named locations with explicit hash', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'home',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'home',
+            params: {},
+            hash: '#section',
+          })
+        ).toMatchObject({
+          name: 'home',
+          path: '/',
+          params: {},
+          query: {},
+          hash: '#section',
+          fullPath: '/#section',
+        })
+      })
+
+      it('resolves named locations with both query and hash', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'home',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'home',
+            params: {},
+            query: { page: '1' },
+            hash: '#top',
+          })
+        ).toMatchObject({
+          name: 'home',
+          path: '/',
+          params: {},
+          query: { page: '1' },
+          hash: '#top',
+          fullPath: '/?page=1#top',
+        })
+      })
+
+      it('resolves named locations with params, query, and hash', () => {
+        const resolver = createFixedResolver([
+          { name: 'user-edit', path: USERS_ID_OTHER_PATH_MATCHER },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'user-edit',
+            params: { id: 'posva', other: 'profile' },
+            query: { tab: 'settings' },
+            hash: '#bio',
+          })
+        ).toMatchObject({
+          name: 'user-edit',
+          path: '/users/posva/profile',
+          params: { id: 'posva', other: 'profile' },
+          query: { tab: 'settings' },
+          hash: '#bio',
+          fullPath: '/users/posva/profile?tab=settings#bio',
+        })
+      })
+
+      it('query matcher params take precedence over to.query', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'search',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            query: [PAGE_QUERY_PATTERN_MATCHER],
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'search',
+            params: { page: 42 },
+            query: { page: '1', other: 'value' },
+          })
+        ).toMatchObject({
+          name: 'search',
+          path: '/',
+          params: { page: 42 },
+          query: { page: '42', other: 'value' }, // matcher param overrides to.query
+          fullPath: '/?page=42&other=value',
+        })
+      })
+
+      it('hash matcher params take precedence over to.hash', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'document',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            hash: ANY_HASH_PATTERN_MATCHER,
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'document',
+            params: { hash: 'section1' },
+            hash: '#section2',
+          })
+        ).toMatchObject({
+          name: 'document',
+          path: '/',
+          params: { hash: 'section1' },
+          hash: '#section1', // matcher param overrides to.hash
+          fullPath: '/#section1',
+        })
+      })
+
+      it('preserves empty string hash from matcher over to.hash', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'document',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            hash: ANY_HASH_PATTERN_MATCHER,
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'document',
+            params: { hash: '' },
+            hash: '#fallback',
+          })
+        ).toMatchObject({
+          name: 'document',
+          path: '/',
+          params: { hash: '' },
+          hash: '', // empty string from matcher is preserved
+          fullPath: '/',
+        })
+      })
+
+      it('combines query and hash matchers correctly', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'page',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            query: [PAGE_QUERY_PATTERN_MATCHER],
+            hash: ANY_HASH_PATTERN_MATCHER,
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'page',
+            params: { page: 5, hash: 'top' },
+            query: { page: '1', sort: 'name' },
+            hash: '#bottom',
+          })
+        ).toMatchObject({
+          name: 'page',
+          path: '/',
+          params: { page: 5, hash: 'top' },
+          query: { page: '5', sort: 'name' }, // matcher overrides, regular query preserved
+          hash: '#top', // matcher overrides to.hash
+          fullPath: '/?page=5&sort=name#top',
+        })
       })
     })
 

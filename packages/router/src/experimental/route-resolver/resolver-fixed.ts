@@ -195,7 +195,8 @@ export function createFixedResolver<
         ...to.params,
       }
       const path = record.path.build(params)
-      const hash = record.hash?.build(params) ?? ''
+      const hash =
+        record.hash?.build(params) ?? to.hash ?? currentLocation?.hash ?? ''
       const matched = buildMatched(record)
       const query = Object.assign(
         {
