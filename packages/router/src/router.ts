@@ -376,12 +376,15 @@ export function createRouter(options: RouterOptions): Router {
     return push(assign(locationAsObject(to), { replace: true }))
   }
 
-  function handleRedirectRecord(to: RouteLocation): RouteLocationRaw | void {
+  function handleRedirectRecord(
+    to: RouteLocation,
+    from: RouteLocationNormalizedLoaded
+  ): RouteLocationRaw | void {
     const lastMatched = to.matched[to.matched.length - 1]
     if (lastMatched && lastMatched.redirect) {
       const { redirect } = lastMatched
       let newTargetLocation =
-        typeof redirect === 'function' ? redirect(to) : redirect
+        typeof redirect === 'function' ? redirect(to, from) : redirect
 
       if (typeof newTargetLocation === 'string') {
         newTargetLocation =
@@ -434,7 +437,7 @@ export function createRouter(options: RouterOptions): Router {
     // to could be a string where `replace` is a function
     const replace = (to as RouteLocationOptions).replace === true
 
-    const shouldRedirect = handleRedirectRecord(targetLocation)
+    const shouldRedirect = handleRedirectRecord(targetLocation, from)
 
     if (shouldRedirect)
       return pushWithRedirect(
@@ -766,7 +769,10 @@ export function createRouter(options: RouterOptions): Router {
       // due to dynamic routing, and to hash history with manual navigation
       // (manually changing the url or calling history.hash = '#/somewhere'),
       // there could be a redirect record in history
-      const shouldRedirect = handleRedirectRecord(toLocation)
+      const shouldRedirect = handleRedirectRecord(
+        toLocation,
+        router.currentRoute.value
+      )
       if (shouldRedirect) {
         pushWithRedirect(
           assign(shouldRedirect, { replace: true, force: true }),

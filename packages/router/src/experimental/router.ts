@@ -15,7 +15,7 @@ import {
   warn,
   type App,
 } from 'vue'
-import { RouterLink } from '../RouterLink'
+import { type RouterLink } from '../RouterLink'
 import {
   NavigationType,
   type HistoryState,
@@ -60,11 +60,7 @@ import {
   RouteMeta,
 } from '../types'
 import { useCallbacks } from '../utils/callbacks'
-import {
-  isSameRouteLocation,
-  parseURL,
-  START_LOCATION_NORMALIZED,
-} from '../location'
+import { isSameRouteLocation, START_LOCATION_NORMALIZED } from '../location'
 import { assign, isArray, isBrowser, noop } from '../utils'
 import {
   extractChangingRecords,
@@ -600,7 +596,9 @@ export function experimental_createRouter(
 ): EXPERIMENTAL_Router {
   const {
     resolver,
-    parseQuery = originalParseQuery,
+    // TODO: document that a custom parsing can be handled with a custom param that parses the whole query
+    // and adds a $query property to the params added at the root record, parent of all records
+    // parseQuery = originalParseQuery,
     stringifyQuery = originalStringifyQuery,
     history: routerHistory,
   } = options
@@ -627,14 +625,6 @@ export function experimental_createRouter(
   }
 
   // TODO: replace usage with resolver.resolve()
-  function locationAsObject(
-    to: RouteLocationRaw | RouteLocationNormalized,
-    currentLocation: string = currentRoute.value.path
-  ): Exclude<RouteLocationRaw, string> | RouteLocationNormalized {
-    return typeof to === 'string'
-      ? parseURL(parseQuery, to, currentLocation)
-      : to
-  }
 
   // NOTE: to support multiple overloads
   type TRecord = EXPERIMENTAL_RouteRecordNormalized
@@ -743,53 +733,16 @@ export function experimental_createRouter(
   const replace = (...args: _resolveArgs) =>
     pushWithRedirect(resolve(...args), true)
 
-  function handleRedirectRecord(to: RouteLocation): RouteLocationRaw | void {
+  function handleRedirectRecord(
+    to: RouteLocation,
+    from: RouteLocationNormalizedLoaded
+  ): RouteLocationRaw | void {
     const redirect = to.matched.at(-1)?.redirect
     if (redirect) {
-      let newTargetLocation =
-        typeof redirect === 'function' ? redirect(to) : redirect
-
-      // TODO: we should be able to just resolve(newTargetLocation)
-      // maybe we need a way to return the current location: return [redirect, current]
-      // (to, from) => [redirect, from] // relative to current location
-      // (to, from) => [redirect, to] // relative to target location
-      if (typeof newTargetLocation === 'string') {
-        newTargetLocation =
-          newTargetLocation.includes('?') || newTargetLocation.includes('#')
-            ? (newTargetLocation = locationAsObject(newTargetLocation))
-            : // force empty params
-              { path: newTargetLocation }
-        // @ts-expect-error: force empty params when a string is passed to let
-        // the router parse them again
-        newTargetLocation.params = {}
-      }
-
-      // TODO: should be removed if we use the resolve method
-      if (
-        __DEV__ &&
-        newTargetLocation.path == null &&
-        !('name' in newTargetLocation)
-      ) {
-        warn(
-          `Invalid redirect found:\n${JSON.stringify(
-            newTargetLocation,
-            null,
-            2
-          )}\n when navigating to "${
-            to.fullPath
-          }". A redirect must contain a name or path. This will break in production.`
-        )
-        throw new Error('Invalid redirect')
-      }
-
-      return assign(
-        {
-          query: to.query,
-          hash: to.hash,
-          // avoid transferring params if the redirect has a path
-          params: newTargetLocation.path != null ? {} : to.params,
-        },
-        newTargetLocation
+      return resolve(
+        // @ts-expect-error: TODO: allow redirect to return the first argument of resolve or a tuple consisting of the arguments?
+        typeof redirect === 'function' ? redirect(to, from) : redirect,
+        from
       )
     }
   }
@@ -805,7 +758,7 @@ export function experimental_createRouter(
     const data: HistoryState | undefined = (to as RouteLocationOptions).state
     const force: boolean | undefined = (to as RouteLocationOptions).force
 
-    const shouldRedirect = handleRedirectRecord(to)
+    const shouldRedirect = handleRedirectRecord(to, from)
 
     if (shouldRedirect) {
       return pushWithRedirect(
@@ -1134,7 +1087,10 @@ export function experimental_createRouter(
       // due to dynamic routing, and to hash history with manual navigation
       // (manually changing the url or calling history.hash = '#/somewhere'),
       // there could be a redirect record in history
-      const shouldRedirect = handleRedirectRecord(toLocation)
+      const shouldRedirect = handleRedirectRecord(
+        toLocation,
+        router.currentRoute.value
+      )
       if (shouldRedirect) {
         pushWithRedirect(
           assign(
