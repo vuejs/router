@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { createFixedResolver } from './resolver-fixed'
 import { NO_MATCH_LOCATION } from './resolver-abstract'
-import { MatcherQueryParams } from './matchers/matcher-pattern'
+import {
+  EmptyParams,
+  MatcherPatternHash,
+  MatcherQueryParams,
+} from './matchers/matcher-pattern'
 import {
   MatcherPatternQuery,
   MatcherPatternPathStatic,
@@ -13,7 +17,7 @@ import {
   ANY_HASH_PATTERN_MATCHER,
   PAGE_QUERY_PATTERN_MATCHER,
 } from './matchers/test-utils'
-import { miss } from './matchers/errors'
+import { MatchMiss, miss } from './matchers/errors'
 import { MatcherPatternPath } from './matchers/matcher-pattern'
 
 // Additional pattern matchers for testing advanced scenarios
@@ -64,6 +68,35 @@ const REPEATABLE_PARAM_MATCHER: MatcherPatternPath<{ p: string | string[] }> = {
   build({ p }) {
     const segments = Array.isArray(p) ? p : [p]
     return `/a/${segments.join('/')}`
+  },
+}
+
+const OPTIONAL_NUMBER_HASH_MATCHER: MatcherPatternHash<{
+  hash: number | null
+}> = {
+  match(hash) {
+    if (!hash || hash === '#') return { hash: null }
+    const num = Number(hash.slice(1))
+    if (Number.isNaN(num)) throw miss('Hash must be a number')
+    return { hash: num }
+  },
+  build({ hash }) {
+    return hash != null ? `#${hash}` : ''
+  },
+}
+
+const OPTIONAL_NUMBER_QUERY_MATCHER: MatcherPatternQuery<{
+  count: number | null
+}> = {
+  match(query) {
+    if (!query.count) return { count: null }
+    const count = Number(query.count)
+    if (Number.isNaN(count)) throw miss('Count must be a number')
+    return { count }
+  },
+  build({ count }) {
+    // return { count: count != null ? String(count) : null }
+    return count != null ? { count: String(count) } : ({} as EmptyParams)
   },
 }
 
@@ -602,7 +635,7 @@ describe('fixed resolver', () => {
         })
       })
 
-      it('preserves empty string hash from matcher over to.hash', () => {
+      it('preserves hash from param even if empty', () => {
         const resolver = createFixedResolver([
           {
             name: 'document',
@@ -620,8 +653,8 @@ describe('fixed resolver', () => {
         ).toMatchObject({
           name: 'document',
           path: '/',
-          params: { hash: '' },
-          hash: '', // empty string from matcher is preserved
+          params: { hash: null },
+          hash: '',
           fullPath: '/',
         })
       })
@@ -650,6 +683,210 @@ describe('fixed resolver', () => {
           query: { page: '5', sort: 'name' }, // matcher overrides, regular query preserved
           hash: '#top', // matcher overrides to.hash
           fullPath: '/?page=5&sort=name#top',
+        })
+      })
+    })
+
+    describe('manual values breaking re-resolution', () => {
+      it('throws when manual hash cannot be parsed by hash matcher', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'page',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            hash: OPTIONAL_NUMBER_HASH_MATCHER,
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'page',
+            params: {},
+            hash: '#invalid-text',
+          })
+        ).toMatchObject({
+          name: 'page',
+          params: { hash: null },
+          fullPath: '/',
+          hash: '',
+        })
+      })
+
+      it('throws when manual query cannot be parsed by query matcher', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'search',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            // this query returns {} if no count is provided as a param
+            // that {} gets merged with the invalid query and throws
+            query: [OPTIONAL_NUMBER_QUERY_MATCHER],
+          },
+        ])
+
+        expect(() =>
+          resolver.resolve({
+            name: 'search',
+            params: {},
+            query: { count: 'invalid', other: 'value' }, // Not a number
+          })
+        ).toThrow(MatchMiss)
+      })
+
+      it('ignores the hash if a parser is provided', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'page',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            hash: OPTIONAL_NUMBER_HASH_MATCHER,
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'page',
+            params: {},
+            hash: '#42',
+          })
+        ).toEqual({
+          name: 'page',
+          params: { hash: null },
+          fullPath: '/',
+          path: '/',
+          query: {},
+          hash: '',
+          matched: expect.any(Array),
+        })
+      })
+
+      it('succeeds and parses when manual query is valid for matcher', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'search',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            query: [OPTIONAL_NUMBER_QUERY_MATCHER],
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'search',
+            params: {},
+            query: { count: '10', other: 'value' }, // Valid number
+          })
+        ).toEqual({
+          name: 'search',
+          path: '/',
+          params: { count: 10 },
+          query: { count: '10', other: 'value' },
+          hash: '',
+          fullPath: '/?count=10&other=value',
+          matched: expect.any(Array),
+        })
+      })
+
+      it('keeps other query values that are not params', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'page',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            query: [OPTIONAL_NUMBER_QUERY_MATCHER],
+            hash: OPTIONAL_NUMBER_HASH_MATCHER,
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'page',
+            params: { hash: 42 },
+            query: { count: '10', other: 'value' },
+          })
+        ).toEqual({
+          name: 'page',
+          path: '/',
+          params: { count: 10, hash: 42 },
+          query: { count: '10', other: 'value' },
+          hash: '#42',
+          fullPath: '/?count=10&other=value#42',
+          matched: expect.any(Array),
+        })
+      })
+
+      it('ignores manual hash if defined as param', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'page',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            hash: OPTIONAL_NUMBER_HASH_MATCHER,
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'page',
+            params: { hash: 100 },
+            hash: '#invalid',
+          })
+        ).toMatchObject({
+          name: 'page',
+          params: { hash: 100 },
+          hash: '#100',
+        })
+      })
+
+      it('preserves currentLocation hash fallback when no manual values', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'page',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            hash: OPTIONAL_NUMBER_HASH_MATCHER,
+          },
+        ])
+
+        const currentLocation = resolver.resolve({
+          name: 'page',
+          params: { hash: 50 },
+        })
+
+        // No manual values, should preserve currentLocation
+        expect(resolver.resolve({}, currentLocation)).toEqual({
+          name: 'page',
+          path: '/',
+          params: { hash: 50 },
+          hash: '#50',
+          fullPath: '/#50',
+          query: {},
+          matched: expect.any(Array),
+        })
+      })
+
+      it('preserves currentLocation query fallback when no manual values', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'search',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            query: [OPTIONAL_NUMBER_QUERY_MATCHER],
+          },
+        ])
+
+        const currentLocation = resolver.resolve({
+          name: 'search',
+          params: { count: 20 },
+        })
+
+        expect(
+          resolver.resolve(
+            {
+              query: {
+                other: 'value',
+              },
+            },
+            currentLocation
+          )
+        ).toMatchObject({
+          name: 'search',
+          path: '/',
+          params: { count: 20 },
+          query: { count: '20', other: 'value' },
+          fullPath: '/?count=20&other=value',
         })
       })
     })

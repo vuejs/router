@@ -254,6 +254,8 @@ export interface MatcherPatternQuery<
 export interface MatcherPatternHash<
   TParams extends MatcherParamsFormatted = MatcherParamsFormatted,
 > extends MatcherPattern<string, TParams> {}
+// TODO: is this worth? It doesn't look like it is as it makes typing stricter but annoying
+// > extends MatcherPattern<`#${string}` | '', TParams> {}
 
 /**
  * Generic object of params that can be passed to a matcher.

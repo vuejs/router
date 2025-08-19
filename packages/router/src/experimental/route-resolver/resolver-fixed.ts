@@ -144,6 +144,29 @@ export function createFixedResolver<
         currentLocation: ResolverLocationResolved<TRecord>,
       ]
 
+  function validateMatch(record: TRecord, url: LocationNormalized) {
+    // match the path because the path matcher only needs to be matched here
+    // match the hash because only the deepest child matters
+    // End up by building up the matched array, (reversed so it goes from
+    // root to child) and then match and merge all queries
+    const pathParams = record.path.match(url.path)
+    const hashParams = record.hash?.match(url.hash)
+    const matched = buildMatched(record)
+    const queryParams: MatcherQueryParams = Object.assign(
+      {},
+      ...matched.flatMap(record =>
+        record.query?.map(query => query.match(url.query))
+      )
+    )
+    // TODO: test performance
+    // for (const record of matched) {
+    //   Object.assign(queryParams, record.query?.match(url.query))
+    // }
+
+    // we found our match!
+    return [matched, { ...pathParams, ...queryParams, ...hashParams }] as const
+  }
+
   function resolve(
     ...[to, currentLocation]: _resolveArgs
   ): ResolverLocationResolved<TRecord> {
@@ -190,14 +213,14 @@ export function createFixedResolver<
       }
 
       // unencoded params in a formatted form that the user came up with
-      const params: MatcherParamsFormatted = {
+      let params: MatcherParamsFormatted = {
         ...currentLocation?.params,
         ...to.params,
       }
       const path = record.path.build(params)
       const hash =
         record.hash?.build(params) ?? to.hash ?? currentLocation?.hash ?? ''
-      const matched = buildMatched(record)
+      let matched = buildMatched(record)
       const query = Object.assign(
         {
           ...currentLocation?.query,
@@ -208,15 +231,28 @@ export function createFixedResolver<
         )
       )
 
-      return {
-        name,
-        fullPath: NEW_stringifyURL(stringifyQuery, path, query, hash),
+      const url: LocationNormalized = {
+        fullPath: NEW_stringifyURL(
+          stringifyQuery,
+          path,
+          query,
+          hash
+        ) as `/${string}`,
         path,
-        query,
         hash,
-        params,
-        matched,
+        query,
       }
+
+      // we avoid inconsistencies in params coming from query and hash
+      ;[matched, params] = validateMatch(record, url)
+
+      return {
+        ...url,
+        name,
+        matched,
+        params,
+      }
+
       // string location, e.g. '/foo', '../bar', 'baz', '?page=1'
     } else {
       // parseURL handles relative paths
@@ -244,22 +280,8 @@ export function createFixedResolver<
         // End up by building up the matched array, (reversed so it goes from
         // root to child) and then match and merge all queries
         try {
-          const pathParams = record.path.match(url.path)
-          const hashParams = record.hash?.match(url.hash)
-          matched = buildMatched(record)
-          const queryParams: MatcherQueryParams = Object.assign(
-            {},
-            ...matched.flatMap(record =>
-              record.query?.map(query => query.match(url.query))
-            )
-          )
-          // TODO: test performance
-          // for (const record of matched) {
-          //   Object.assign(queryParams, record.query?.match(url.query))
-          // }
-
-          parsedParams = { ...pathParams, ...queryParams, ...hashParams }
-          // we found our match!
+          ;[matched, parsedParams] = validateMatch(record, url)
+          // validate throws if no match, so we should break here
           break
         } catch (e) {
           // for debugging tests

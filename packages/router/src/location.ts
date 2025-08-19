@@ -19,6 +19,7 @@ export interface LocationNormalized {
 
 /**
  * Location object accepted by {@link `stringifyURL`}.
+ *
  * @internal
  */
 interface LocationPartial {
@@ -106,7 +107,19 @@ export function parseURL(
  */
 export function NEW_stringifyURL(
   stringifyQuery: (query?: LocationQueryRaw) => string,
-  path: LocationPartial['path'],
+  path: `/${string}`,
+  query?: LocationPartial['query'],
+  hash?: LocationPartial['hash']
+): `/${string}`
+export function NEW_stringifyURL(
+  stringifyQuery: (query?: LocationQueryRaw) => string,
+  path: string,
+  query?: LocationPartial['query'],
+  hash?: LocationPartial['hash']
+): string
+export function NEW_stringifyURL(
+  stringifyQuery: (query?: LocationQueryRaw) => string,
+  path: string,
   query?: LocationPartial['query'],
   hash: LocationPartial['hash'] = ''
 ): string {
