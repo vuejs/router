@@ -52,6 +52,7 @@ import type {
   RouteLocationResolved,
   RouteMap,
   RouteRecordNameGeneric,
+  RouteRecordRedirectOption,
 } from '../typed-routes'
 import {
   Lazy,
@@ -180,7 +181,6 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
   // linkInactiveClass?: string
 }
 
-// TODO: non matchable and parent
 /**
  * Internal type for common properties among all kind of {@link RouteRecordRaw}.
  */
@@ -192,7 +192,7 @@ export interface EXPERIMENTAL_RouteRecord_Base
    * before any navigation guard and triggers a new navigation with the new
    * target location.
    */
-  // redirect?: RouteRecordRedirectOption;
+  redirect?: RouteRecordRedirectOption
 
   // TODO:
   /**
@@ -216,12 +216,6 @@ export interface EXPERIMENTAL_RouteRecord_Base
    * Arbitrary data attached to the record.
    */
   meta?: RouteMeta
-
-  // TODO:
-  /**
-   * Array of nested routes.
-   */
-  // children?: RouteRecordRaw[]
 
   /**
    * Components to display when the URL matches this route. Allow using named views.
@@ -247,8 +241,6 @@ export interface EXPERIMENTAL_RouteRecord_Matchable
   components: Record<string, RawRouteComponent>
 
   parent?: EXPERIMENTAL_RouteRecordNormalized | null
-
-  redirect?: never
 }
 
 export interface EXPERIMENTAL_RouteRecord_Group
@@ -261,9 +253,6 @@ export interface EXPERIMENTAL_RouteRecord_Group
   components?: Record<string, RawRouteComponent>
 
   parent?: EXPERIMENTAL_RouteRecordNormalized | null
-
-  // TODO:
-  // redirect?: something
 }
 
 export type EXPERIMENTAL_RouteRecordRaw =
@@ -317,9 +306,6 @@ export interface EXPERIMENTAL_RouteRecordNormalized_Matchable
   meta: RouteMeta
 
   parent: EXPERIMENTAL_RouteRecordNormalized | null
-
-  // TODO:
-  // redirect?: unknown
 
   components: Record<string, RawRouteComponent>
 }
@@ -383,6 +369,7 @@ export function mergeRouteRecord(
 ) {
   for (const record of routeRecords) {
     main.meta = { ...main.meta, ...record.meta }
+    main.props = { ...main.props, ...record.props }
   }
   return main
 }
@@ -624,8 +611,6 @@ export function experimental_createRouter(
     return !!resolver.getRecord(name)
   }
 
-  // TODO: replace usage with resolver.resolve()
-
   // NOTE: to support multiple overloads
   type TRecord = EXPERIMENTAL_RouteRecordNormalized
   type _resolveArgs =
@@ -662,27 +647,6 @@ export function experimental_createRouter(
   function resolve(
     ...[to, currentLocation]: _resolveArgs
   ): RouteLocationResolved {
-    // const resolve: Router['resolve'] = (rawLocation: RouteLocationRaw, currentLocation) => {
-    // const objectLocation = routerLocationAsObject(rawLocation)
-    // we create a copy to modify it later
-    // TODO: in the experimental version, allow configuring this
-    currentLocation =
-      // TODO: || currentRoute.value never evaluated
-      currentLocation && assign({}, currentLocation || currentRoute.value)
-    // currentLocation = assign({}, currentLocation || currentRoute.value)
-
-    // FIXME: should this be achieved by matchers?
-    // remove any nullish param
-    // if ('params' in rawLocation) {
-    //   const targetParams = assign({}, rawLocation.params)
-    //   for (const key in targetParams) {
-    //     if (targetParams[key] == null) {
-    //       delete targetParams[key]
-    //     }
-    //   }
-    //   rawLocation.params = targetParams
-    // }
-
     const matchedRoute = resolver.resolve(
       // @ts-expect-error FIXME: incompatible types
       to,
@@ -739,7 +703,7 @@ export function experimental_createRouter(
   ): RouteLocationRaw | void {
     const redirect = to.matched.at(-1)?.redirect
     if (redirect) {
-      return resolve(
+      return resolver.resolve(
         // @ts-expect-error: TODO: allow redirect to return the first argument of resolve or a tuple consisting of the arguments?
         typeof redirect === 'function' ? redirect(to, from) : redirect,
         from
