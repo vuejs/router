@@ -2,7 +2,7 @@ import { miss } from '../errors'
 import { ParamParser } from './types'
 
 export const PARAM_INTEGER_SINGLE = {
-  get: (value: string) => {
+  get: (value: string | null) => {
     const num = Number(value)
     if (value && Number.isInteger(num)) {
       return num
@@ -10,7 +10,7 @@ export const PARAM_INTEGER_SINGLE = {
     throw miss()
   },
   set: (value: number) => String(value),
-} satisfies ParamParser<number, string>
+} satisfies ParamParser<number, string | null>
 
 export const PARAM_INTEGER_OPTIONAL = {
   get: (value: string | null) =>
@@ -20,9 +20,9 @@ export const PARAM_INTEGER_OPTIONAL = {
 } satisfies ParamParser<number | null, string | null>
 
 export const PARAM_INTEGER_REPEATABLE = {
-  get: (value: string[]) => value.map(PARAM_INTEGER_SINGLE.get),
+  get: (value: (string | null)[]) => value.map(PARAM_INTEGER_SINGLE.get),
   set: (value: number[]) => value.map(PARAM_INTEGER_SINGLE.set),
-} satisfies ParamParser<number[], string[]>
+} satisfies ParamParser<number[], (string | null)[]>
 
 export const PARAM_INTEGER_REPEATABLE_OPTIONAL = {
   get: (value: string[] | null) =>

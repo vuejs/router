@@ -13,18 +13,30 @@ export function defineParamParser<TOut, TIn extends string | string[]>(parser: {
   return parser
 }
 
-export const PATH_PARAM_DEFAULT_GET = (
-  value: string | string[] | null | undefined
-) => value ?? null
-export const PATH_PARAM_DEFAULT_SET = (
-  value: string | string[] | null | undefined
-) => (value && Array.isArray(value) ? value.map(String) : String(value)) // TODO: `(value an null | undefined)` for types
-
 export const PATH_PARAM_SINGLE_DEFAULT: ParamParser<string, string> = {}
-export const PATH_PARAM_DEFAULT_PARSER = {
-  get: PATH_PARAM_DEFAULT_GET,
-  set: PATH_PARAM_DEFAULT_SET,
+
+/**
+ * Default parser for params that will keep values as is, and will use `String()`
+ */
+export const PARAM_PARSER_DEFAULTS = {
+  get: value => value ?? null,
+  set: value =>
+    value == null
+      ? null
+      : Array.isArray(value)
+        ? value.map(v => (v == null ? null : String(v)))
+        : String(value),
 } satisfies ParamParser
+
+export const PATH_PARAM_PARSER_DEFAULTS = {
+  get: value => value ?? null,
+  set: value =>
+    value == null
+      ? null
+      : Array.isArray(value)
+        ? value.map(String)
+        : String(value),
+} satisfies ParamParser<string | string[] | null, string | string[] | null>
 
 export type { ParamParser }
 
