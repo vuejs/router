@@ -400,4 +400,109 @@ describe('MatcherPatternQueryParam', () => {
       expect(matcher.match({ other: 'value' })).toEqual({ missing: 'default' })
     })
   })
+
+  describe('defaultValue', () => {
+    describe('match', () => {
+      it('should fallback to PARAM_PARSER_DEFAULTS.get when parser.get is undefined', () => {
+        const matcher = new MatcherPatternQueryParam(
+          'test',
+          'test_param',
+          'value',
+          {}
+        )
+        // Should use PARAM_PARSER_DEFAULTS.get which returns value ?? null
+        expect(matcher.match({ test_param: 'value' })).toEqual({
+          test: 'value',
+        })
+        expect(matcher.match({ test_param: null })).toEqual({ test: null })
+        expect(matcher.match({})).toEqual({ test: undefined })
+      })
+
+      it('should handle array format with missing get method', () => {
+        const matcher = new MatcherPatternQueryParam(
+          'test',
+          'test_param',
+          'array',
+          {}
+        )
+        // Should use PARAM_PARSER_DEFAULTS.get which returns value ?? null
+        expect(matcher.match({ test_param: ['a', 'b'] })).toEqual({
+          test: ['a', 'b'],
+        })
+        expect(matcher.match({ test_param: 'single' })).toEqual({
+          test: ['single'],
+        })
+      })
+
+      it('should handle both format with missing get method', () => {
+        const matcher = new MatcherPatternQueryParam(
+          'test',
+          'test_param',
+          'both',
+          {}
+        )
+        // Should use PARAM_PARSER_DEFAULTS.get which returns value ?? null
+        expect(matcher.match({ test_param: 'value' })).toEqual({
+          test: 'value',
+        })
+        expect(matcher.match({ test_param: ['a', 'b'] })).toEqual({
+          test: ['a', 'b'],
+        })
+      })
+    })
+
+    describe('build', () => {
+      it('should fallback to PARAM_PARSER_DEFAULTS.set when parser.set is undefined', () => {
+        const matcher = new MatcherPatternQueryParam(
+          'test',
+          'test_param',
+          'value',
+          {}
+        )
+        // Should use PARAM_PARSER_DEFAULTS.set which converts to string
+        expect(matcher.build({ test: 'value' })).toEqual({
+          test_param: 'value',
+        })
+        expect(matcher.build({ test: 123 })).toEqual({ test_param: '123' })
+        expect(matcher.build({ test: true })).toEqual({ test_param: 'true' })
+        expect(matcher.build({ test: null })).toEqual({ test_param: null })
+        expect(matcher.build({ test: undefined })).toEqual({})
+      })
+
+      it('should handle array values with missing set method', () => {
+        const matcher = new MatcherPatternQueryParam(
+          'test',
+          'test_param',
+          'array',
+          {}
+        )
+        // Should use PARAM_PARSER_DEFAULTS.set which handles arrays
+        expect(matcher.build({ test: ['a', 'b'] })).toEqual({
+          test_param: ['a', 'b'],
+        })
+        expect(matcher.build({ test: [1, 2] })).toEqual({
+          test_param: ['1', '2'],
+        })
+        expect(matcher.build({ test: [1, true] })).toEqual({
+          test_param: ['1', 'true'],
+        })
+      })
+
+      it('should handle both format with missing set method', () => {
+        const matcher = new MatcherPatternQueryParam(
+          'test',
+          'test_param',
+          'both',
+          {}
+        )
+        // Should use PARAM_PARSER_DEFAULTS.set
+        expect(matcher.build({ test: 'value' })).toEqual({
+          test_param: 'value',
+        })
+        expect(matcher.build({ test: ['a', 'b'] })).toEqual({
+          test_param: ['a', 'b'],
+        })
+      })
+    })
+  })
 })

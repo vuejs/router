@@ -5,7 +5,7 @@ import {
   MatcherPattern,
   MatcherQueryParams,
 } from './matcher-pattern'
-import { ParamParser } from './param-parsers'
+import { ParamParser, PARAM_PARSER_DEFAULTS } from './param-parsers'
 
 /**
  * Handles the `query` part of a URL. It can transform a query object into an
@@ -55,7 +55,7 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
           try {
             ;(value as unknown[]).push(
               // for ts errors
-              this.parser.get!(v)
+              (this.parser.get ?? PARAM_PARSER_DEFAULTS.get)(v) as T
             )
           } catch (error) {
             // we skip the invalid value unless there is no defaultValue
@@ -75,12 +75,13 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
       }
     } else {
       try {
-        // FIXME: fallback to default getter
         value =
           // non existing query param should falll back to defaultValue
           valueBeforeParse === undefined
             ? valueBeforeParse
-            : this.parser.get!(valueBeforeParse)
+            : ((this.parser.get ?? PARAM_PARSER_DEFAULTS.get)(
+                valueBeforeParse
+              ) as T)
       } catch (error) {
         if (this.defaultValue === undefined) {
           throw error
@@ -103,8 +104,9 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
     }
 
     return {
-      // FIXME: default setter
-      [this.queryKey]: this.parser.set!(paramValue),
+      [this.queryKey]: (this.parser.set ?? PARAM_PARSER_DEFAULTS.set)(
+        paramValue as any
+      ),
     }
   }
 }
