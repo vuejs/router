@@ -240,14 +240,6 @@ export class MatcherPatternPathDynamic<
 }
 
 /**
- * Handles the `query` part of a URL. It can transform a query object into an
- * object of params and vice versa.
- */
-export interface MatcherPatternQuery<
-  TParams extends MatcherParamsFormatted = MatcherParamsFormatted,
-> extends MatcherPattern<MatcherQueryParams, TParams> {}
-
-/**
  * Handles the `hash` part of a URL. It can transform a hash string into an
  * object of params and vice versa.
  */

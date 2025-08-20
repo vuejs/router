@@ -4,7 +4,7 @@ import { ParamParser } from './types'
 export const PARAM_INTEGER_SINGLE = {
   get: (value: string) => {
     const num = Number(value)
-    if (Number.isInteger(num)) {
+    if (value && Number.isInteger(num)) {
       return num
     }
     throw miss()

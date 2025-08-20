@@ -21,10 +21,10 @@ export const PATH_PARAM_DEFAULT_SET = (
 ) => (value && Array.isArray(value) ? value.map(String) : String(value)) // TODO: `(value an null | undefined)` for types
 
 export const PATH_PARAM_SINGLE_DEFAULT: ParamParser<string, string> = {}
-export const PATH_PARAM_DEFAULT_PARSER: ParamParser = {
+export const PATH_PARAM_DEFAULT_PARSER = {
   get: PATH_PARAM_DEFAULT_GET,
   set: PATH_PARAM_DEFAULT_SET,
-}
+} satisfies ParamParser
 
 export type { ParamParser }
 

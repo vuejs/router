@@ -19,9 +19,9 @@ import {
 import { MatcherQueryParams } from './matchers/matcher-pattern'
 import type {
   MatcherPatternPath,
-  MatcherPatternQuery,
   MatcherPatternHash,
 } from './matchers/matcher-pattern'
+import type { MatcherPatternQuery } from './matchers/matcher-pattern-query'
 import { warn } from '../../warning'
 
 export interface EXPERIMENTAL_ResolverRecord_Base {

@@ -24,12 +24,16 @@ export type {
   MatcherPattern,
   MatcherPatternHash,
   MatcherPatternPath,
-  MatcherPatternQuery,
   MatcherParamsFormatted,
   MatcherQueryParams,
   MatcherQueryParamsValue,
   MatcherPatternPathDynamic_ParamOptions,
 } from './route-resolver/matchers/matcher-pattern'
+
+export {
+  type MatcherPatternQuery,
+  MatcherPatternQueryParam,
+} from './route-resolver/matchers/matcher-pattern-query'
 
 export {
   PARAM_PARSER_INT,

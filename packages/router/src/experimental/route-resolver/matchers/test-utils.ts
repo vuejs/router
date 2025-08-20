@@ -1,9 +1,6 @@
 import { EmptyParams } from './matcher-pattern'
-import {
-  MatcherPatternPath,
-  MatcherPatternQuery,
-  MatcherPatternHash,
-} from './matcher-pattern'
+import { MatcherPatternPath, MatcherPatternHash } from './matcher-pattern'
+import { MatcherPatternQuery } from './matcher-pattern-query'
 import { miss } from './errors'
 
 export const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{

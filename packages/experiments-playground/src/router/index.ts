@@ -3,9 +3,10 @@ import {
   experimental_createRouter,
   createFixedResolver,
   MatcherPatternPathStatic,
-  MatcherPatternPathCustomParams,
+  MatcherPatternPathDynamic,
   normalizeRouteRecord,
   PARAM_PARSER_INT,
+  MatcherPatternQueryParam,
 } from 'vue-router/experimental'
 import type {
   EXPERIMENTAL_RouteRecordNormalized_Matchable,
@@ -49,12 +50,29 @@ const r_group = normalizeRouteRecord({
   meta: {
     fromGroup: 'r_group',
   },
+
+  query: [
+    new MatcherPatternQueryParam(
+      'group',
+      'isGroup',
+      'value',
+      PARAM_PARSER_INT,
+      undefined
+    ),
+  ],
 })
 
 const r_home = normalizeRouteRecord({
   name: 'home',
   path: new MatcherPatternPathStatic('/'),
-  query: [PAGE_QUERY_PATTERN_MATCHER, QUERY_PATTERN_MATCHER],
+  query: [
+    new MatcherPatternQueryParam('pageArray', 'p', 'array', PARAM_PARSER_INT, [
+      1,
+    ]),
+    new MatcherPatternQueryParam('pageBoth', 'p', 'both', PARAM_PARSER_INT, 1),
+    new MatcherPatternQueryParam('page', 'p', 'value', PARAM_PARSER_INT, 1),
+    QUERY_PATTERN_MATCHER,
+  ],
   parent: r_group,
   components: { default: PageHome },
 })
@@ -101,7 +119,7 @@ const r_profiles_detail = normalizeRouteRecord({
   name: 'profiles-detail',
   components: { default: () => import('../pages/profiles/[userId].vue') },
   parent: r_profiles_layout,
-  path: new MatcherPatternPathCustomParams(
+  path: new MatcherPatternPathDynamic(
     /^\/profiles\/([^/]+)$/i,
     {
       // this version handles all kind of params but in practice,

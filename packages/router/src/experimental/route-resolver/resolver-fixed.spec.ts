@@ -6,10 +6,8 @@ import {
   MatcherPatternHash,
   MatcherQueryParams,
 } from './matchers/matcher-pattern'
-import {
-  MatcherPatternQuery,
-  MatcherPatternPathStatic,
-} from './matchers/matcher-pattern'
+import { MatcherPatternPathStatic } from './matchers/matcher-pattern'
+import { MatcherPatternQuery } from './matchers/matcher-pattern-query'
 import {
   EMPTY_PATH_PATTERN_MATCHER,
   USER_ID_PATH_PATTERN_MATCHER,
