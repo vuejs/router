@@ -401,7 +401,18 @@ describe('MatcherPatternQueryParam', () => {
     })
   })
 
-  describe('defaultValue', () => {
+  it('should work without parser parameter', () => {
+    const matcher = new MatcherPatternQueryParam('test', 'test_param', 'value')
+    // Should use PARAM_PARSER_DEFAULTS.get which returns value ?? null
+    expect(matcher.match({ test_param: 'value' })).toEqual({
+      test: 'value',
+    })
+    expect(matcher.build({ test: 'value' })).toEqual({
+      test_param: 'value',
+    })
+  })
+
+  describe('parser fallback', () => {
     describe('match', () => {
       it('should fallback to PARAM_PARSER_DEFAULTS.get when parser.get is undefined', () => {
         const matcher = new MatcherPatternQueryParam(

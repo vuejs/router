@@ -23,10 +23,7 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
     private paramName: ParamName,
     private queryKey: string,
     private format: 'value' | 'array' | 'both',
-    private parser: ParamParser<T>,
-    // TODO: optional values
-    // private format: 'value' | 'array' | 'both' = 'both',
-    // private parser: ParamParser<T> = PATH_PARAM_DEFAULT_PARSER,
+    private parser: ParamParser<T> = {},
     private defaultValue?: (() => T) | T
   ) {}
 
