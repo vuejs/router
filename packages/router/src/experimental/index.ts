@@ -37,6 +37,7 @@ export {
 
 export {
   PARAM_PARSER_INT,
+  PARAM_PARSER_BOOL,
   type ParamParser,
   defineParamParser,
 } from './route-resolver/matchers/param-parsers'

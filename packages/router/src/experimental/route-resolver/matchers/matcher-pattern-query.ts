@@ -59,7 +59,7 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
             )
           } catch (error) {
             // we skip the invalid value unless there is no defaultValue
-            if (this.defaultValue == null) {
+            if (this.defaultValue === undefined) {
               throw error
             }
           }
@@ -67,22 +67,30 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
       }
 
       // if we have no values, we want to fall back to the default value
-      if ((value as unknown[]).length === 0) {
+      if (
+        (this.format === 'both' || this.defaultValue !== undefined) &&
+        (value as unknown[]).length === 0
+      ) {
         value = undefined
       }
     } else {
       try {
         // FIXME: fallback to default getter
-        value = this.parser.get!(valueBeforeParse)
+        value =
+          // non existing query param should falll back to defaultValue
+          valueBeforeParse === undefined
+            ? valueBeforeParse
+            : this.parser.get!(valueBeforeParse)
       } catch (error) {
-        if (this.defaultValue == null) {
+        if (this.defaultValue === undefined) {
           throw error
         }
       }
     }
 
     return {
-      [this.paramName]: value ?? toValue(this.defaultValue),
+      [this.paramName]:
+        value === undefined ? toValue(this.defaultValue) : value,
       // This is a TS limitation
     } as Record<ParamName, T>
   }
@@ -90,7 +98,7 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
   build(params: Record<ParamName, T>): MatcherQueryParams {
     const paramValue = params[this.paramName]
 
-    if (paramValue == null) {
+    if (paramValue === undefined) {
       return {} as EmptyParams
     }
 

@@ -36,8 +36,10 @@ export const PATH_PARAM_PARSER_DEFAULTS = {
       : Array.isArray(value)
         ? value.map(String)
         : String(value),
+  // differently from PARAM_PARSER_DEFAULTS, this doesn't allow null values in arrays
 } satisfies ParamParser<string | string[] | null, string | string[] | null>
 
 export type { ParamParser }
 
 export { PARAM_PARSER_INT } from './numbers'
+export { PARAM_PARSER_BOOL } from './booleans'
