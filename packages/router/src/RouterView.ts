@@ -165,12 +165,36 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
         }
       }
 
+      const isHMRRuntime =
+        (__DEV__ || __FEATURE_PROD_DEVTOOLS__) &&
+        isBrowser &&
+        (import.meta as any).hot
+
+      const onVnodeMounted: VNodeProps['onVnodeMounted'] | undefined =
+        isHMRRuntime
+          ? (vnode: VNode) => {
+              if (
+                matchedRoute &&
+                vnode.component &&
+                matchedRoute === route.matched[depth.value]
+              ) {
+                matchedRoute.instances[currentName] = vnode.component.proxy
+              }
+            }
+          : undefined
+
       const component = h(
         ViewComponent,
-        assign({}, routeProps, attrs, {
-          onVnodeUnmounted,
-          ref: viewRef,
-        })
+        assign(
+          {},
+          routeProps,
+          attrs,
+          onVnodeMounted ? { onVnodeMounted } : null,
+          {
+            onVnodeUnmounted,
+            ref: viewRef,
+          }
+        )
       )
 
       if (
