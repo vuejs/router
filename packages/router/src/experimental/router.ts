@@ -568,6 +568,17 @@ export interface EXPERIMENTAL_Router
    * Original options object passed to create the Router
    */
   readonly options: EXPERIMENTAL_RouterOptions
+
+  /**
+   * Dev only method to replace the resolver used by the router. Used during HMR
+   *
+   * @param newResolver - new resolver to use
+   *
+   * @internal
+   */
+  _hmrReplaceResolver?: (
+    newResolver: EXPERIMENTAL_ResolverFixed<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+  ) => void
 }
 
 /**
@@ -581,7 +592,7 @@ export interface EXPERIMENTAL_Router
 export function experimental_createRouter(
   options: EXPERIMENTAL_RouterOptions
 ): EXPERIMENTAL_Router {
-  const {
+  let {
     resolver,
     // TODO: document that a custom parsing can be handled with a custom param that parses the whole query
     // and adds a $query property to the params added at the root record, parent of all records
@@ -1371,6 +1382,12 @@ export function experimental_createRouter(
       (promise, guard) => promise.then(() => runWithContext(guard)),
       Promise.resolve()
     )
+  }
+
+  if (__DEV__) {
+    router._hmrReplaceResolver = newResolver => {
+      resolver = newResolver
+    }
   }
 
   return router
