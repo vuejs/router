@@ -2,6 +2,7 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, vi } from 'vitest'
+import type { WatchStopHandle } from 'vue'
 
 describe('RouterView – HMR (Options API)', () => {
   it('Registers the instance on re-mount → nextTick via onVnodeMounted, even if watch(post) is blocked', async () => {
@@ -17,7 +18,7 @@ describe('RouterView – HMR (Options API)', () => {
         watch: (source: any, cb: any, options: any) => {
           if (options?.flush === 'post') {
             hoisted.blockedPostWatchCalls++
-            return { stop() {} } as any // completely suppress post-watch callbacks
+            return (() => {}) as WatchStopHandle
           }
           return (actual as any).watch(source, cb, options)
         },
