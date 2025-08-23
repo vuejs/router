@@ -3,11 +3,21 @@ import { ParamParser } from './types'
 
 export const PARAM_BOOLEAN_SINGLE = {
   get: (value: string | null) => {
-    if (value === 'true') return true
-    if (value === 'false') return false
+    if (!value) return false
+
+    const lowercaseValue = value.toLowerCase()
+
+    if (lowercaseValue === 'true') {
+      return true
+    }
+
+    if (lowercaseValue === 'false') {
+      return false
+    }
+
     throw miss()
   },
-  set: (value: boolean) => String(value),
+  set: (value: boolean | null) => String(!!value),
 } satisfies ParamParser<boolean, string | null>
 
 export const PARAM_BOOLEAN_OPTIONAL = {
@@ -38,13 +48,9 @@ export const PARAM_PARSER_BOOL: ParamParser<boolean | boolean[] | null> = {
   get: value =>
     Array.isArray(value)
       ? PARAM_BOOLEAN_REPEATABLE.get(value)
-      : value != null
-        ? PARAM_BOOLEAN_SINGLE.get(value)
-        : null,
+      : PARAM_BOOLEAN_SINGLE.get(value),
   set: value =>
     Array.isArray(value)
       ? PARAM_BOOLEAN_REPEATABLE.set(value)
-      : value != null
-        ? PARAM_BOOLEAN_SINGLE.set(value)
-        : null,
+      : PARAM_BOOLEAN_SINGLE.set(value),
 }
