@@ -4,7 +4,7 @@ import { PARAM_INTEGER_SINGLE } from './param-parsers/numbers'
 import { PATH_PARAM_PARSER_DEFAULTS } from './param-parsers'
 import { PATH_PARAM_SINGLE_DEFAULT } from './param-parsers'
 
-describe('MatcherPatternPathCustomParams', () => {
+describe('MatcherPatternPathDynamic', () => {
   it('can be generic', () => {
     const matcher = new MatcherPatternPathDynamic(
       /^\/users\/([^/]+)$/i,

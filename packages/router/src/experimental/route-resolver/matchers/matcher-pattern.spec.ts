@@ -107,7 +107,7 @@ describe('MatcherPatternPathStar', () => {
   })
 })
 
-describe('MatcherPatternPathCustom', () => {
+describe('MatcherPatternPathDynamic', () => {
   it('single param', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)\/b$/i,
