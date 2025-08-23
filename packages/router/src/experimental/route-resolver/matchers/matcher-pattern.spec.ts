@@ -161,6 +161,25 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: '' })).toBe('/teams/b')
   })
 
+  it.todo('optional param in the end', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/teams(?:\/([^/]+?))?\/b$/i,
+      {
+        teamId: {},
+      },
+      ['teams', 0, 'b']
+    )
+
+    expect(pattern.match('/teams/b')).toEqual({ teamId: null })
+    expect(pattern.match('/teams/123/b')).toEqual({ teamId: '123' })
+    expect(() => pattern.match('/teams/123/c')).toThrow()
+    expect(() => pattern.match('/teams/123/b/c')).toThrow()
+    expect(() => pattern.match('/teams//b')).toThrow()
+    expect(pattern.build({ teamId: '123' })).toBe('/teams/123/b')
+    expect(pattern.build({ teamId: null })).toBe('/teams/b')
+    expect(pattern.build({ teamId: '' })).toBe('/teams/b')
+  })
+
   it('repeatable param', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/(.+?)\/b$/i,
