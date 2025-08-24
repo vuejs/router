@@ -29,6 +29,20 @@ describe('MatcherPatternPathStatic', () => {
       expect(pattern.match('/TEAM')).toEqual({})
       expect(pattern.match('/tEAm')).toEqual({})
     })
+
+    it('keeps a trailing slash', () => {
+      const pattern = new MatcherPatternPathStatic('/team/')
+      expect(pattern.match('/team/')).toEqual({})
+    })
+
+    it('strict on trailing slash', () => {
+      expect(() =>
+        new MatcherPatternPathStatic('/team').match('/team/')
+      ).toThrow()
+      expect(() =>
+        new MatcherPatternPathStatic('/team/').match('/team')
+      ).toThrow()
+    })
   })
 
   describe('build()', () => {
