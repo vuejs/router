@@ -134,7 +134,7 @@ describe('MatcherPatternPathDynamic', () => {
         // all defaults
         teamId: {},
       },
-      ['teams', 0, 'b']
+      ['teams', 1, 'b']
     )
 
     expect(pattern.match('/teams/123/b')).toEqual({
@@ -155,7 +155,7 @@ describe('MatcherPatternPathDynamic', () => {
       {
         teamId: {},
       },
-      ['teams', 0]
+      ['teams', 1]
     )
     expect(pattern.match('/teams/a%20b')).toEqual({ teamId: 'a b' })
     expect(pattern.build({ teamId: 'a b' })).toBe('/teams/a%20b')
@@ -167,7 +167,7 @@ describe('MatcherPatternPathDynamic', () => {
       {
         teamId: {},
       },
-      ['teams', 0, 'b']
+      ['teams', 1, 'b']
     )
 
     expect(pattern.match('/teams/b')).toEqual({ teamId: null })
@@ -186,7 +186,7 @@ describe('MatcherPatternPathDynamic', () => {
       {
         teamId: {},
       },
-      ['teams', 0, 'b']
+      ['teams', 1, 'b']
     )
 
     expect(pattern.match('/teams/b')).toEqual({ teamId: null })
@@ -205,7 +205,7 @@ describe('MatcherPatternPathDynamic', () => {
       {
         teamId: { repeat: true },
       },
-      ['teams', 0, 'b']
+      ['teams', 1, 'b']
     )
 
     expect(pattern.match('/teams/123/b')).toEqual({ teamId: ['123'] })
@@ -228,7 +228,7 @@ describe('MatcherPatternPathDynamic', () => {
       {
         pathMatch: {},
       },
-      ['teams', 1]
+      ['teams', 0]
     )
     expect(pattern.match('/teams/')).toEqual({ pathMatch: '' })
     expect(pattern.match('/teams/123/b')).toEqual({ pathMatch: '123/b' })
@@ -247,7 +247,7 @@ describe('MatcherPatternPathDynamic', () => {
       {
         teamId: { repeat: true },
       },
-      ['teams', 0, 'b']
+      ['teams', 1, 'b']
     )
 
     expect(pattern.match('/teams/123/b')).toEqual({ teamId: ['123'] })
@@ -271,7 +271,7 @@ describe('MatcherPatternPathDynamic', () => {
         teamId: {},
         otherId: {},
       },
-      ['teams', 0, 0]
+      ['teams', 1, 1]
     )
 
     expect(pattern.match('/teams/123/456')).toEqual({
@@ -293,7 +293,7 @@ describe('MatcherPatternPathDynamic', () => {
         teamId: {},
         otherId: {},
       },
-      ['teams', [0, '-b-', 0]]
+      ['teams', [1, '-b-', 1]]
     )
 
     expect(pattern.match('/teams/123-b-456')).toEqual({
@@ -314,7 +314,7 @@ describe('MatcherPatternPathDynamic', () => {
       {
         teamId: {},
       },
-      ['teams', [0, '/']]
+      ['teams', [1, '/']]
     )
 
     expect(pattern.match('/teams/123/')).toEqual({
@@ -345,7 +345,7 @@ describe('MatcherPatternPathDynamic', () => {
       {
         teamId: { repeat: true },
       },
-      ['teams', [0, '/']]
+      ['teams', [1, '/']]
     )
 
     expect(pattern.match('/teams/123/')).toEqual({ teamId: ['123'] })
@@ -365,7 +365,7 @@ describe('MatcherPatternPathDynamic', () => {
       {
         teamId: { repeat: true },
       },
-      ['teams', [0, '/']]
+      ['teams', [1, '/']]
     )
 
     expect(pattern.match('/teams/123/')).toEqual({ teamId: ['123'] })

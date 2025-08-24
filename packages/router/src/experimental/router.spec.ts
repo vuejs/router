@@ -55,25 +55,25 @@ import { mockWarn } from '../../__tests__/vitest-mock-warn'
 const paramMatcher = new MatcherPatternPathDynamic(
   /^\/p\/([^/]+)$/,
   { p: {} },
-  ['p', 0]
+  ['p', 1]
 )
 
 const optionalMatcher = new MatcherPatternPathDynamic(
   /^\/optional(?:\/([^/]+))?$/,
   { p: {} },
-  ['optional', 0]
+  ['optional', 1]
 )
 
 const repeatMatcher = new MatcherPatternPathDynamic(
   /^\/repeat\/(.+)$/,
   { r: { repeat: true } },
-  ['repeat', 1]
+  ['repeat', 0]
 )
 
 const catchAllMatcher = new MatcherPatternPathDynamic(
   /^\/(.*)$/,
   { pathMatch: { repeat: true } },
-  [1]
+  [0]
 )
 
 // Create experimental route records using proper structure
@@ -380,7 +380,7 @@ describe('Experimental Router', () => {
     const testCatchAllMatcher = new MatcherPatternPathDynamic(
       /^\/(.*)$/,
       { pathMatch: { repeat: true } },
-      [1]
+      [0]
     )
     const catchAllRecord = normalizeRouteRecord({
       name: 'notfound',

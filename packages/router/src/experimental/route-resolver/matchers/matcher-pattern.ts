@@ -137,7 +137,7 @@ export class MatcherPatternPathDynamic<
     // otherwise, we need to use a factory function: https://github.com/microsoft/TypeScript/issues/40451
     readonly params: TParamsOptions &
       Record<string, MatcherPatternPathDynamic_ParamOptions<any, any>>,
-    // 0 means a regular param, 1 means a splat, the order comes from the keys in params
+    // 1 means a regular param, 0 means a splat, the order comes from the keys in params
     readonly pathParts: Array<string | number | Array<string | number>>
   ) {
     this.paramsKeys = Object.keys(this.params) as Array<keyof TParamsOptions>
@@ -198,8 +198,8 @@ export class MatcherPatternPathDynamic<
 
             return Array.isArray(value)
               ? value.map(encodeParam).join('/')
-              : // part == 0 means a regular param, 1 means a splat
-                (part /* part !== 0 */ ? encodePath : encodeParam)(value)
+              : // part == 1 means a regular param, 0 means a splat
+                (part ? encodeParam : encodePath)(value)
           } else {
             return part
               .map(subPart => {
@@ -235,7 +235,9 @@ export class MatcherPatternPathDynamic<
      * with the original splat path: e.g. /teams/[...pathMatch] does not match /teams, so it makes
      * no sense to build a path it cannot match.
      */
-    return lastParamPart && !value ? path + '/' : path
+    return !lastParamPart /** lastParamPart == 0 */ && !value
+      ? path + '/'
+      : path
   }
 }
 

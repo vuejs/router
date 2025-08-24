@@ -121,7 +121,7 @@ const r_profiles_detail = normalizeRouteRecord({
       // and therefore userId is of type number
       userId: PARAM_PARSER_INT,
     },
-    ['profiles', 0]
+    ['profiles', 1]
   ),
 })
 
