@@ -1,6 +1,6 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import { MatcherPatternPathDynamic } from './matcher-pattern'
-import { PARAM_INTEGER_SINGLE } from './param-parsers/numbers'
+import { PARAM_INTEGER_SINGLE } from './param-parsers/integers'
 import { PATH_PARAM_PARSER_DEFAULTS } from './param-parsers'
 import { PATH_PARAM_SINGLE_DEFAULT } from './param-parsers'
 

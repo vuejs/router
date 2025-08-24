@@ -41,5 +41,5 @@ export const PATH_PARAM_PARSER_DEFAULTS = {
 
 export type { ParamParser }
 
-export { PARAM_PARSER_INT } from './numbers'
+export { PARAM_PARSER_INT } from './integers'
 export { PARAM_PARSER_BOOL } from './booleans'
