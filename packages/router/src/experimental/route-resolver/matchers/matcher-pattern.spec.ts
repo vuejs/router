@@ -60,6 +60,11 @@ describe('MatcherPatternPathStatic', () => {
       const pattern = new MatcherPatternPathStatic('/Team')
       expect(pattern.build()).toBe('/Team')
     })
+
+    it('preserves trailing slash', () => {
+      const pattern = new MatcherPatternPathStatic('/team/')
+      expect(pattern.build()).toBe('/team/')
+    })
   })
 })
 
@@ -213,7 +218,7 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/b')
   })
 
-  it('catch all route', () => {
+  it.todo('catch all route', () => {
     // const pattern = new MatcherPatternPathDynamic(
   })
 
@@ -301,5 +306,79 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: '123', otherId: '456' })).toBe(
       '/teams/123-b-456'
     )
+  })
+
+  it('can have a trailing slash after a single param', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/teams\/([^/]+?)\/$/i,
+      {
+        teamId: {},
+      },
+      ['teams', [0, '/']]
+    )
+
+    expect(pattern.match('/teams/123/')).toEqual({
+      teamId: '123',
+    })
+    expect(() => pattern.match('/teams/123')).toThrow()
+    expect(() => pattern.match('/teams/123/b')).toThrow()
+    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.build({ teamId: '123' })).toBe('/teams/123/')
+  })
+
+  it('can have a trailing slash after a static segment', () => {
+    const pattern = new MatcherPatternPathDynamic(/^\/teams\/b\/$/i, {}, [
+      'teams',
+      ['b', '/'],
+    ])
+
+    expect(pattern.match('/teams/b/')).toEqual({})
+    expect(() => pattern.match('/teams/b')).toThrow()
+    expect(() => pattern.match('/teams/123/b')).toThrow()
+    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.build({})).toBe('/teams/b/')
+  })
+
+  it('can have a trailing slash after repeatable param', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/teams\/(.+?)\/$/,
+      {
+        teamId: { repeat: true },
+      },
+      ['teams', [0, '/']]
+    )
+
+    expect(pattern.match('/teams/123/')).toEqual({ teamId: ['123'] })
+    expect(pattern.match('/teams/123/456/')).toEqual({
+      teamId: ['123', '456'],
+    })
+    expect(() => pattern.match('/teams/123')).toThrow()
+    expect(() => pattern.match('/teams/123/b')).toThrow()
+    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123/')
+    expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/')
+  })
+
+  it.todo('can have a trailing slash after optional repeatable param', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/teams(?:\/(.+?))?\/$/,
+      {
+        teamId: { repeat: true },
+      },
+      ['teams', [0, '/']]
+    )
+
+    expect(pattern.match('/teams/123/')).toEqual({ teamId: ['123'] })
+    expect(pattern.match('/teams/123/456/')).toEqual({
+      teamId: ['123', '456'],
+    })
+    expect(pattern.match('/teams/')).toEqual({ teamId: [] })
+
+    expect(() => pattern.match('/teams/123')).toThrow()
+    expect(() => pattern.match('/teams/123/b')).toThrow()
+
+    expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123/')
+    expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/')
+    expect(pattern.build({ teamId: [] })).toBe('/teams/')
   })
 })
