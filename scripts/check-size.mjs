@@ -40,6 +40,10 @@ async function checkFileSize(filePath) {
         __dirname,
         '../packages/router/dist/vue-router.global.prod.js'
       ),
+      path.resolve(
+        __dirname,
+        '../packages/router/size-checks/dist/webRouter_experimental.js'
+      ),
     ].map(checkFileSize)
   )
 })()
