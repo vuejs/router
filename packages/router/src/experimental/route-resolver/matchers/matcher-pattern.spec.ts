@@ -341,7 +341,7 @@ describe('MatcherPatternPathDynamic', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)\/$/i,
       {
-        teamId: [{}],
+        teamId: [],
       },
       ['teams', 1],
       true
@@ -375,7 +375,7 @@ describe('MatcherPatternPathDynamic', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/(.+?)\/$/,
       {
-        teamId: [{}, true],
+        teamId: [, true],
       },
       ['teams', 1],
       true
