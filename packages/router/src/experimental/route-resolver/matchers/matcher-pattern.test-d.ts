@@ -8,7 +8,7 @@ describe('MatcherPatternPathDynamic', () => {
   it('can be generic', () => {
     const matcher = new MatcherPatternPathDynamic(
       /^\/users\/([^/]+)$/i,
-      { userId: { ...PATH_PARAM_PARSER_DEFAULTS } },
+      { userId: [PATH_PARAM_PARSER_DEFAULTS] },
       ['users', 1]
     )
 
@@ -33,7 +33,7 @@ describe('MatcherPatternPathDynamic', () => {
   it('can be a simple param', () => {
     const matcher = new MatcherPatternPathDynamic(
       /^\/users\/([^/]+)\/([^/]+)$/i,
-      { userId: { ...PATH_PARAM_SINGLE_DEFAULT, repeat: true } },
+      { userId: [PATH_PARAM_SINGLE_DEFAULT, true] },
       ['users', 1]
     )
     expectTypeOf(matcher.match('/users/123/456')).toEqualTypeOf<{
@@ -52,10 +52,10 @@ describe('MatcherPatternPathDynamic', () => {
     const matcher = new MatcherPatternPathDynamic(
       /^\/profiles\/([^/]+)$/i,
       {
-        userId: {
-          ...PARAM_INTEGER_SINGLE,
+        userId: [
+          PARAM_INTEGER_SINGLE,
           // parser: PATH_PARAM_DEFAULT_PARSER,
-        },
+        ],
       },
       ['profiles', 1]
     )

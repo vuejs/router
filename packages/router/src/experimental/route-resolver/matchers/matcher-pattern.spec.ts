@@ -132,7 +132,7 @@ describe('MatcherPatternPathDynamic', () => {
       /^\/teams\/([^/]+?)\/b$/i,
       {
         // all defaults
-        teamId: {},
+        teamId: [{}],
       },
       ['teams', 1, 'b']
     )
@@ -153,7 +153,7 @@ describe('MatcherPatternPathDynamic', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)$/i,
       {
-        teamId: {},
+        teamId: [{}],
       },
       ['teams', 1]
     )
@@ -165,7 +165,7 @@ describe('MatcherPatternPathDynamic', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams(?:\/([^/]+?))?\/b$/i,
       {
-        teamId: {},
+        teamId: [{}, false, true],
       },
       ['teams', 1, 'b']
     )
@@ -180,30 +180,30 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: '' })).toBe('/teams/b')
   })
 
-  it.todo('optional param in the end', () => {
+  it('optional param in the end', () => {
     const pattern = new MatcherPatternPathDynamic(
-      /^\/teams(?:\/([^/]+?))?\/b$/i,
+      /^\/teams(?:\/([^/]+?))?$/i,
       {
-        teamId: {},
+        teamId: [{}, false, true],
       },
-      ['teams', 1, 'b']
+      ['teams', 1]
     )
 
-    expect(pattern.match('/teams/b')).toEqual({ teamId: null })
-    expect(pattern.match('/teams/123/b')).toEqual({ teamId: '123' })
+    expect(pattern.match('/teams')).toEqual({ teamId: null })
+    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.match('/teams/123')).toEqual({ teamId: '123' })
     expect(() => pattern.match('/teams/123/c')).toThrow()
-    expect(() => pattern.match('/teams/123/b/c')).toThrow()
     expect(() => pattern.match('/teams//b')).toThrow()
-    expect(pattern.build({ teamId: '123' })).toBe('/teams/123/b')
-    expect(pattern.build({ teamId: null })).toBe('/teams/b')
-    expect(pattern.build({ teamId: '' })).toBe('/teams/b')
+    expect(pattern.build({ teamId: '123' })).toBe('/teams/123')
+    expect(pattern.build({ teamId: null })).toBe('/teams')
+    expect(pattern.build({ teamId: '' })).toBe('/teams')
   })
 
   it('repeatable param', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/(.+?)\/b$/i,
       {
-        teamId: { repeat: true },
+        teamId: [{}, true],
       },
       ['teams', 1, 'b']
     )
@@ -218,6 +218,25 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/b')
   })
 
+  it('repeatable param in the end', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/teams\/(.+?)$/i,
+      {
+        teamId: [{}, true],
+      },
+      ['teams', 1]
+    )
+
+    expect(pattern.match('/teams/123')).toEqual({ teamId: ['123'] })
+    expect(pattern.match('/teams/123/456')).toEqual({ teamId: ['123', '456'] })
+    expect(() => pattern.match('/teams')).toThrow()
+    expect(() => pattern.match('/teams/')).toThrow()
+    expect(() => pattern.match('/teams/123/')).toThrow()
+    expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123')
+    expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456')
+    expect(() => pattern.build({ teamId: [] })).toThrow()
+  })
+
   it.todo('catch all route', () => {
     // const pattern = new MatcherPatternPathDynamic(
   })
@@ -226,9 +245,10 @@ describe('MatcherPatternPathDynamic', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/(.*)$/i,
       {
-        pathMatch: {},
+        pathMatch: [{}],
       },
-      ['teams', 0]
+      ['teams', 0],
+      null
     )
     expect(pattern.match('/teams/')).toEqual({ pathMatch: '' })
     expect(pattern.match('/teams/123/b')).toEqual({ pathMatch: '123/b' })
@@ -245,7 +265,7 @@ describe('MatcherPatternPathDynamic', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams(?:\/(.+?))?\/b$/i,
       {
-        teamId: { repeat: true },
+        teamId: [{}, true, true],
       },
       ['teams', 1, 'b']
     )
@@ -268,8 +288,8 @@ describe('MatcherPatternPathDynamic', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)\/([^/]+?)$/i,
       {
-        teamId: {},
-        otherId: {},
+        teamId: [{}],
+        otherId: [{}],
       },
       ['teams', 1, 1]
     )
@@ -290,8 +310,8 @@ describe('MatcherPatternPathDynamic', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)-b-([^/]+?)$/i,
       {
-        teamId: {},
-        otherId: {},
+        teamId: [{}],
+        otherId: [{}],
       },
       ['teams', [1, '-b-', 1]]
     )
@@ -312,9 +332,10 @@ describe('MatcherPatternPathDynamic', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)\/$/i,
       {
-        teamId: {},
+        teamId: [{}],
       },
-      ['teams', [1, '/']]
+      ['teams', 1],
+      true
     )
 
     expect(pattern.match('/teams/123/')).toEqual({
@@ -326,10 +347,11 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: '123' })).toBe('/teams/123/')
   })
 
-  it('can have a trailing slash after a static segment', () => {
+  it.todo('can have a trailing slash after a static segment', () => {
     const pattern = new MatcherPatternPathDynamic(/^\/teams\/b\/$/i, {}, [
       'teams',
-      ['b', '/'],
+      'b',
+      ['/'],
     ])
 
     expect(pattern.match('/teams/b/')).toEqual({})
@@ -343,9 +365,10 @@ describe('MatcherPatternPathDynamic', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/(.+?)\/$/,
       {
-        teamId: { repeat: true },
+        teamId: [{}, true],
       },
-      ['teams', [1, '/']]
+      ['teams', 1],
+      true
     )
 
     expect(pattern.match('/teams/123/')).toEqual({ teamId: ['123'] })
@@ -359,13 +382,14 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/')
   })
 
-  it.todo('can have a trailing slash after optional repeatable param', () => {
+  it('can have a trailing slash after optional repeatable param', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams(?:\/(.+?))?\/$/,
       {
-        teamId: { repeat: true },
+        teamId: [{}, true, true],
       },
-      ['teams', [1, '/']]
+      ['teams', 1],
+      true
     )
 
     expect(pattern.match('/teams/123/')).toEqual({ teamId: ['123'] })

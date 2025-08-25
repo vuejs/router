@@ -54,25 +54,25 @@ import { mockWarn } from '../../__tests__/vitest-mock-warn'
 // Create dynamic pattern matchers using the proper constructor
 const paramMatcher = new MatcherPatternPathDynamic(
   /^\/p\/([^/]+)$/,
-  { p: {} },
+  { p: [{}] },
   ['p', 1]
 )
 
 const optionalMatcher = new MatcherPatternPathDynamic(
   /^\/optional(?:\/([^/]+))?$/,
-  { p: {} },
+  { p: [{}] },
   ['optional', 1]
 )
 
 const repeatMatcher = new MatcherPatternPathDynamic(
   /^\/repeat\/(.+)$/,
-  { r: { repeat: true } },
+  { r: [{}, true] },
   ['repeat', 0]
 )
 
 const catchAllMatcher = new MatcherPatternPathDynamic(
   /^\/(.*)$/,
-  { pathMatch: { repeat: true } },
+  { pathMatch: [{}, true] },
   [0]
 )
 
@@ -379,7 +379,7 @@ describe('Experimental Router', () => {
   it('can redirect to a star route when encoding the param', () => {
     const testCatchAllMatcher = new MatcherPatternPathDynamic(
       /^\/(.*)$/,
-      { pathMatch: { repeat: true } },
+      { pathMatch: [{}, true] },
       [0]
     )
     const catchAllRecord = normalizeRouteRecord({

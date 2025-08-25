@@ -88,19 +88,25 @@ export class MatcherPatternPathStatic
 /**
  * Options for param parsers in {@link MatcherPatternPathDynamic}.
  */
-export interface MatcherPatternPathDynamic_ParamOptions<
+export type MatcherPatternPathDynamic_ParamOptions<
   TIn extends string | string[] | null = string | string[] | null,
   TOut = string | string[] | null,
-> extends ParamParser<TOut, TIn> {
+> = [
+  /**
+   * Param parser to use for this param.
+   */
+  parser: ParamParser<TOut, TIn>,
+
   /**
    * Is tha param a repeatable param and should be converted to an array
    */
-  repeat?: boolean
+  repeatable?: boolean,
 
-  // NOTE: not needed because in the regexp, the value is undefined if
-  // the group is optional and not given
-  // optional?: boolean
-}
+  /**
+   * Can this parameter be omitted or empty (for repeatable params, an empty array).
+   */
+  optional?: boolean,
+]
 
 /**
  * Helper type to extract the params from the options object.
@@ -114,6 +120,13 @@ type ExtractParamTypeFromOptions<TParamsOptions> = {
     ? TOut
     : never
 }
+
+/**
+ * Regex to remove trailing slashes from a path.
+ *
+ * @internal
+ */
+const RE_TRAILING_SLASHES = /\/*$/
 
 /**
  * Handles the `path` part of a URL with dynamic parameters.
@@ -138,12 +151,21 @@ export class MatcherPatternPathDynamic<
     readonly params: TParamsOptions &
       Record<string, MatcherPatternPathDynamic_ParamOptions<any, any>>,
     // 1 means a regular param, 0 means a splat, the order comes from the keys in params
-    readonly pathParts: Array<string | number | Array<string | number>>
+    readonly pathParts: Array<string | number | Array<string | number>>,
+    // null means "do not care", it's only for splat params
+    readonly trailingSlash: boolean | null = false
   ) {
     this.paramsKeys = Object.keys(this.params) as Array<keyof TParamsOptions>
   }
 
   match(path: string): ExtractParamTypeFromOptions<TParamsOptions> {
+    if (
+      this.trailingSlash != null &&
+      this.trailingSlash === !path.endsWith('/')
+    ) {
+      throw miss()
+    }
+
     const match = path.match(this.re)
     if (!match) {
       throw miss()
@@ -152,14 +174,14 @@ export class MatcherPatternPathDynamic<
     for (var i = 0; i < this.paramsKeys.length; i++) {
       // var for performance in for loop
       var paramName = this.paramsKeys[i]
-      var paramOptions = this.params[paramName]
+      var [parser, repeatable] = this.params[paramName]
       var currentMatch = (match[i + 1] as string | undefined) ?? null
 
-      var value = paramOptions.repeat
+      var value = repeatable
         ? (currentMatch?.split('/') || []).map<string>(decode)
         : decode(currentMatch)
 
-      params[paramName] = (paramOptions.get || identityFn)(value)
+      params[paramName] = (parser.get || identityFn)(value)
     }
 
     if (
@@ -177,11 +199,13 @@ export class MatcherPatternPathDynamic<
   build(params: ExtractParamTypeFromOptions<TParamsOptions>): string {
     let paramIndex = 0
     let paramName: keyof TParamsOptions
-    let paramOptions: (TParamsOptions &
+    let parser: (TParamsOptions &
       Record<
         string,
         MatcherPatternPathDynamic_ParamOptions<any, any>
-      >)[keyof TParamsOptions]
+      >)[keyof TParamsOptions][0]
+    let repeatable: boolean | undefined
+    let optional: boolean | undefined
     let lastParamPart: number | undefined
     let value: ReturnType<NonNullable<ParamParser['set']>> | undefined
     const path =
@@ -192,9 +216,13 @@ export class MatcherPatternPathDynamic<
             return part
           } else if (typeof part === 'number') {
             paramName = this.paramsKeys[paramIndex++]
-            paramOptions = this.params[paramName]
+            ;[parser, repeatable, optional] = this.params[paramName]
             lastParamPart = part
-            value = (paramOptions.set || identityFn)(params[paramName])
+            value = (parser.set || identityFn)(params[paramName])
+
+            if (Array.isArray(value) && !value.length && !optional) {
+              throw miss()
+            }
 
             return Array.isArray(value)
               ? value.map(encodeParam).join('/')
@@ -208,11 +236,11 @@ export class MatcherPatternPathDynamic<
                 }
 
                 paramName = this.paramsKeys[paramIndex++]
-                paramOptions = this.params[paramName]
-                value = (paramOptions.set || identityFn)(params[paramName])
+                ;[parser, repeatable, optional] = this.params[paramName]
+                value = (parser.set || identityFn)(params[paramName])
 
                 // param cannot be repeatable when in a sub segment
-                if (__DEV__ && paramOptions.repeat) {
+                if (__DEV__ && repeatable) {
                   warn(
                     `Param "${String(paramName)}" is repeatable, but used in a sub segment of the path: "${this.pathParts.join('')}". Repeated params can only be used as a full path segment: "/file/[ids]+/something-else". This will break in production.`
                   )
@@ -235,9 +263,9 @@ export class MatcherPatternPathDynamic<
      * with the original splat path: e.g. /teams/[...pathMatch] does not match /teams, so it makes
      * no sense to build a path it cannot match.
      */
-    return !lastParamPart /** lastParamPart == 0 */ && !value
-      ? path + '/'
-      : path
+    return this.trailingSlash == null
+      ? path + (!value ? '/' : '')
+      : path.replace(RE_TRAILING_SLASHES, this.trailingSlash ? '/' : '')
   }
 }
 
