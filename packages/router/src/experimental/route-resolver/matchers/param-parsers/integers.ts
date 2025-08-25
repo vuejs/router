@@ -36,7 +36,7 @@ export const PARAM_INTEGER_REPEATABLE_OPTIONAL = {
  *
  * @internal
  */
-export const PARAM_PARSER_INT: ParamParser<number | number[] | null> = {
+export const PARAM_PARSER_INT = {
   get: value =>
     Array.isArray(value)
       ? PARAM_INTEGER_REPEATABLE.get(value)
@@ -49,4 +49,4 @@ export const PARAM_PARSER_INT: ParamParser<number | number[] | null> = {
       : value != null
         ? PARAM_INTEGER_SINGLE.set(value)
         : null,
-}
+} satisfies ParamParser<number | number[] | null>

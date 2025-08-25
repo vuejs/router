@@ -44,7 +44,7 @@ export const PARAM_BOOLEAN_REPEATABLE_OPTIONAL = {
  *
  * @internal
  */
-export const PARAM_PARSER_BOOL: ParamParser<boolean | boolean[] | null> = {
+export const PARAM_PARSER_BOOL = {
   get: value =>
     Array.isArray(value)
       ? PARAM_BOOLEAN_REPEATABLE.get(value)
@@ -53,4 +53,4 @@ export const PARAM_PARSER_BOOL: ParamParser<boolean | boolean[] | null> = {
     Array.isArray(value)
       ? PARAM_BOOLEAN_REPEATABLE.set(value)
       : PARAM_BOOLEAN_SINGLE.set(value),
-}
+} satisfies ParamParser<boolean | boolean[] | null>
