@@ -1,6 +1,7 @@
 import type {
   RouteLocation,
   RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
   RouteLocationRaw,
 } from './route-location'
 import type { RouteMap, RouteMapGeneric } from './route-map'
@@ -10,7 +11,10 @@ import type { RouteMap, RouteMapGeneric } from './route-map'
  */
 export type RouteRecordRedirectOption =
   | RouteLocationRaw
-  | ((to: RouteLocation) => RouteLocationRaw)
+  | ((
+      to: RouteLocation,
+      from: RouteLocationNormalizedLoaded
+    ) => RouteLocationRaw)
 
 /**
  * Generic version of {@link RouteRecordName}.
