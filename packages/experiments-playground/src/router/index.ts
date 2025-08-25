@@ -119,7 +119,7 @@ const r_profiles_detail = normalizeRouteRecord({
       // this version handles all kind of params but in practice,
       // the generation should recognize this is a single required param
       // and therefore userId is of type number
-      userId: PARAM_PARSER_INT,
+      userId: [PARAM_PARSER_INT],
     },
     ['profiles', 1]
   ),
