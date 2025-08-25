@@ -237,8 +237,17 @@ describe('MatcherPatternPathDynamic', () => {
     expect(() => pattern.build({ teamId: [] })).toThrow()
   })
 
-  it.todo('catch all route', () => {
-    // const pattern = new MatcherPatternPathDynamic(
+  it('catch all route', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/(.*)$/,
+      { pathMatch: [] },
+      [0],
+      null
+    )
+
+    expect(pattern.match('/ok')).toEqual({ pathMatch: 'ok' })
+    expect(pattern.match('/ok/ok/ok')).toEqual({ pathMatch: 'ok/ok/ok' })
+    expect(pattern.match('/')).toEqual({ pathMatch: '' })
   })
 
   it('splat params with prefix', () => {
@@ -347,12 +356,13 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: '123' })).toBe('/teams/123/')
   })
 
-  it.todo('can have a trailing slash after a static segment', () => {
-    const pattern = new MatcherPatternPathDynamic(/^\/teams\/b\/$/i, {}, [
-      'teams',
-      'b',
-      ['/'],
-    ])
+  it('can have a trailing slash after a static segment', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/teams\/b\/$/i,
+      {},
+      ['teams', 'b'],
+      true
+    )
 
     expect(pattern.match('/teams/b/')).toEqual({})
     expect(() => pattern.match('/teams/b')).toThrow()
