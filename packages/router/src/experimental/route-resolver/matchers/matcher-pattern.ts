@@ -95,7 +95,7 @@ export type MatcherPatternPathDynamic_ParamOptions<
   /**
    * Param parser to use for this param.
    */
-  parser: ParamParser<TOut, TIn>,
+  parser?: ParamParser<TOut, TIn>,
 
   /**
    * Is tha param a repeatable param and should be converted to an array
@@ -181,7 +181,7 @@ export class MatcherPatternPathDynamic<
         ? (currentMatch?.split('/') || []).map<string>(decode)
         : decode(currentMatch)
 
-      params[paramName] = (parser.get || identityFn)(value)
+      params[paramName] = (parser?.get || identityFn)(value)
     }
 
     if (
@@ -206,7 +206,6 @@ export class MatcherPatternPathDynamic<
       >)[keyof TParamsOptions][0]
     let repeatable: boolean | undefined
     let optional: boolean | undefined
-    let lastParamPart: number | undefined
     let value: ReturnType<NonNullable<ParamParser['set']>> | undefined
     const path =
       '/' +
@@ -217,8 +216,7 @@ export class MatcherPatternPathDynamic<
           } else if (typeof part === 'number') {
             paramName = this.paramsKeys[paramIndex++]
             ;[parser, repeatable, optional] = this.params[paramName]
-            lastParamPart = part
-            value = (parser.set || identityFn)(params[paramName])
+            value = (parser?.set || identityFn)(params[paramName])
 
             if (Array.isArray(value) && !value.length && !optional) {
               throw miss()
@@ -237,7 +235,7 @@ export class MatcherPatternPathDynamic<
 
                 paramName = this.paramsKeys[paramIndex++]
                 ;[parser, repeatable, optional] = this.params[paramName]
-                value = (parser.set || identityFn)(params[paramName])
+                value = (parser?.set || identityFn)(params[paramName])
 
                 // param cannot be repeatable when in a sub segment
                 if (__DEV__ && repeatable) {
