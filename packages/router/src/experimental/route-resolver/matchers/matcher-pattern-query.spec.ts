@@ -40,18 +40,6 @@ describe('MatcherPatternQueryParam', () => {
       )
       expect(matcher.match({ user_id: null })).toEqual({ userId: null })
     })
-
-    it('handles missing query param', () => {
-      const matcher = new MatcherPatternQueryParam(
-        'userId',
-        'user_id',
-        'value',
-        PARAM_PARSER_DEFAULTS
-      )
-      expect(matcher.match({})).toEqual({
-        userId: undefined,
-      })
-    })
   })
 
   describe('match() - format: array', () => {
@@ -95,50 +83,6 @@ describe('MatcherPatternQueryParam', () => {
         PARAM_PARSER_DEFAULTS
       )
       expect(matcher.match({})).toEqual({ tags: [] })
-    })
-  })
-
-  describe('match() - format: both', () => {
-    it('preserves single string value', () => {
-      const matcher = new MatcherPatternQueryParam(
-        'data',
-        'value',
-        'both',
-        PARAM_PARSER_DEFAULTS
-      )
-      expect(matcher.match({ value: 'single' })).toEqual({ data: 'single' })
-    })
-
-    it('preserves array value', () => {
-      const matcher = new MatcherPatternQueryParam(
-        'data',
-        'values',
-        'both',
-        PARAM_PARSER_DEFAULTS
-      )
-      expect(matcher.match({ values: ['a', 'b'] })).toEqual({
-        data: ['a', 'b'],
-      })
-    })
-
-    it('preserves null', () => {
-      const matcher = new MatcherPatternQueryParam(
-        'data',
-        'value',
-        'both',
-        PARAM_PARSER_DEFAULTS
-      )
-      expect(matcher.match({ value: null })).toEqual({ data: null })
-    })
-
-    it('handles missing query param', () => {
-      const matcher = new MatcherPatternQueryParam(
-        'data',
-        'value',
-        'both',
-        PARAM_PARSER_DEFAULTS
-      )
-      expect(matcher.match({})).toEqual({ data: undefined })
     })
   })
 
@@ -201,40 +145,6 @@ describe('MatcherPatternQueryParam', () => {
           PARAM_PARSER_DEFAULTS
         )
         expect(matcher.build({ tags: ['vue'] })).toEqual({ tag: ['vue'] })
-      })
-    })
-
-    describe('format: both', () => {
-      it('builds query from single value', () => {
-        const matcher = new MatcherPatternQueryParam(
-          'data',
-          'value',
-          'both',
-          PARAM_PARSER_DEFAULTS
-        )
-        expect(matcher.build({ data: 'single' })).toEqual({ value: 'single' })
-      })
-
-      it('builds query from array value', () => {
-        const matcher = new MatcherPatternQueryParam(
-          'data',
-          'values',
-          'both',
-          PARAM_PARSER_DEFAULTS
-        )
-        expect(matcher.build({ data: ['a', 'b'] })).toEqual({
-          values: ['a', 'b'],
-        })
-      })
-
-      it('builds query from null value', () => {
-        const matcher = new MatcherPatternQueryParam(
-          'data',
-          'value',
-          'both',
-          PARAM_PARSER_DEFAULTS
-        )
-        expect(matcher.build({ data: null })).toEqual({ value: null })
       })
     })
   })
@@ -323,14 +233,27 @@ describe('MatcherPatternQueryParam', () => {
   })
 
   describe('missing query parameters', () => {
-    it('returns undefined when query param missing with parser and no default', () => {
+    it('handles missing query param with default', () => {
       const matcher = new MatcherPatternQueryParam(
-        'count',
-        'c',
+        'userId',
+        'user_id',
         'value',
-        PARAM_PARSER_INT
+        PARAM_PARSER_DEFAULTS,
+        'default'
       )
-      expect(matcher.match({ other: 'value' })).toEqual({ count: undefined })
+      expect(matcher.match({})).toEqual({
+        userId: 'default',
+      })
+    })
+
+    it('throws if a required param is missing and no default', () => {
+      const matcher = new MatcherPatternQueryParam(
+        'userId',
+        'user_id',
+        'value',
+        PARAM_PARSER_DEFAULTS
+      )
+      expect(() => matcher.match({})).toThrow(MatchMiss)
     })
 
     it('uses default when query param missing', () => {
@@ -419,14 +342,15 @@ describe('MatcherPatternQueryParam', () => {
           'test',
           'test_param',
           'value',
-          {}
+          {},
+          'default'
         )
         // Should use PARAM_PARSER_DEFAULTS.get which returns value ?? null
         expect(matcher.match({ test_param: 'value' })).toEqual({
           test: 'value',
         })
         expect(matcher.match({ test_param: null })).toEqual({ test: null })
-        expect(matcher.match({})).toEqual({ test: undefined })
+        expect(matcher.match({})).toEqual({ test: 'default' })
       })
 
       it('should handle array format with missing get method', () => {
@@ -442,22 +366,6 @@ describe('MatcherPatternQueryParam', () => {
         })
         expect(matcher.match({ test_param: 'single' })).toEqual({
           test: ['single'],
-        })
-      })
-
-      it('should handle both format with missing get method', () => {
-        const matcher = new MatcherPatternQueryParam(
-          'test',
-          'test_param',
-          'both',
-          {}
-        )
-        // Should use PARAM_PARSER_DEFAULTS.get which returns value ?? null
-        expect(matcher.match({ test_param: 'value' })).toEqual({
-          test: 'value',
-        })
-        expect(matcher.match({ test_param: ['a', 'b'] })).toEqual({
-          test: ['a', 'b'],
         })
       })
     })
@@ -496,22 +404,6 @@ describe('MatcherPatternQueryParam', () => {
         })
         expect(matcher.build({ test: [1, true] })).toEqual({
           test_param: ['1', 'true'],
-        })
-      })
-
-      it('should handle both format with missing set method', () => {
-        const matcher = new MatcherPatternQueryParam(
-          'test',
-          'test_param',
-          'both',
-          {}
-        )
-        // Should use PARAM_PARSER_DEFAULTS.set
-        expect(matcher.build({ test: 'value' })).toEqual({
-          test_param: 'value',
-        })
-        expect(matcher.build({ test: ['a', 'b'] })).toEqual({
-          test_param: ['a', 'b'],
         })
       })
     })

@@ -1,8 +1,8 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import { MatcherPatternPathDynamic } from './matcher-pattern'
-import { PARAM_INTEGER_SINGLE } from './param-parsers/integers'
 import { PATH_PARAM_PARSER_DEFAULTS } from './param-parsers'
 import { PATH_PARAM_SINGLE_DEFAULT } from './param-parsers'
+import { definePathParamParser } from './param-parsers/types'
 
 describe('MatcherPatternPathDynamic', () => {
   it('can be generic', () => {
@@ -11,7 +11,6 @@ describe('MatcherPatternPathDynamic', () => {
       { userId: [PATH_PARAM_PARSER_DEFAULTS] },
       ['users', 1]
     )
-
     expectTypeOf(matcher.match('/users/123')).toEqualTypeOf<{
       userId: string | string[] | null
     }>()
@@ -49,11 +48,33 @@ describe('MatcherPatternPathDynamic', () => {
   })
 
   it('can be a custom type', () => {
+    // naive number parser but types should be good
+    const numberParser = definePathParamParser({
+      get: value => {
+        return Number(value)
+      },
+      set: (value: number | null) => {
+        return String(value ?? 0)
+      },
+    })
+
+    expectTypeOf(numberParser.get('0')).toEqualTypeOf<number>()
+    expectTypeOf(numberParser.set(0)).toEqualTypeOf<string>()
+    expectTypeOf(numberParser.set(null)).toEqualTypeOf<string>()
+    numberParser.get(
+      // @ts-expect-error: must be a string
+      null
+    )
+    numberParser.set(
+      // @ts-expect-error: must be a number or null
+      '0'
+    )
+
     const matcher = new MatcherPatternPathDynamic(
       /^\/profiles\/([^/]+)$/i,
       {
         userId: [
-          PARAM_INTEGER_SINGLE,
+          numberParser,
           // parser: PATH_PARAM_DEFAULT_PARSER,
         ],
       },

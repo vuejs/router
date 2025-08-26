@@ -25,7 +25,7 @@ export type _Awaitable<T> = T | PromiseLike<T>
 /**
  * @internal
  */
-export type _Simplify<T> = { [K in keyof T]: T[K] }
+export type Simplify<T> = { [K in keyof T]: T[K] } & {}
 
 /**
  * @internal

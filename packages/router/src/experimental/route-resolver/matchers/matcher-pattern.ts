@@ -2,13 +2,14 @@ import { identityFn } from '../../../utils'
 import { decode, encodeParam, encodePath } from '../../../encoding'
 import { warn } from '../../../warning'
 import { miss } from './errors'
-import { ParamParser } from './param-parsers/types'
+import type { ParamParser } from './param-parsers/types'
+import type { Simplify } from '../../../types/utils'
 
 /**
  * Base interface for matcher patterns that extract params from a URL.
  *
  * @template TIn - type of the input value to match against the pattern
- * @template TOut - type of the output value after matching
+ * @template TParams - type of the output value after matching
  *
  * In the case of the `path`, the `TIn` is a `string`, but in the case of the
  * query, it's the object of query params.
@@ -18,7 +19,8 @@ import { ParamParser } from './param-parsers/types'
  */
 export interface MatcherPattern<
   TIn = string,
-  TOut extends MatcherParamsFormatted = MatcherParamsFormatted,
+  TParams extends MatcherParamsFormatted = MatcherParamsFormatted,
+  TParamsRaw extends MatcherParamsFormatted = TParams,
 > {
   /**
    * Matches a serialized params value against the pattern.
@@ -27,7 +29,7 @@ export interface MatcherPattern<
    * @throws {MatchMiss} if the value doesn't match
    * @returns parsed params object
    */
-  match(value: TIn): TOut
+  match(value: TIn): TParams
 
   /**
    * Build a serializable value from parsed params. Should apply encoding if the
@@ -37,7 +39,7 @@ export interface MatcherPattern<
    * @param value - params value to parse
    * @returns serialized params value
    */
-  build(params: TOut): TIn
+  build(params: TParamsRaw): TIn
 }
 
 /**
@@ -47,7 +49,8 @@ export interface MatcherPattern<
 export interface MatcherPatternPath<
   // TODO: should we allow to not return anything? It's valid to spread null and undefined
   TParams extends MatcherParamsFormatted = MatcherParamsFormatted, // | null // | undefined // | void // so it might be a bit more convenient
-> extends MatcherPattern<string, TParams> {}
+  TParamsRaw extends MatcherParamsFormatted = TParams,
+> extends MatcherPattern<string, TParams, TParamsRaw> {}
 
 /**
  * Allows matching a static path.
@@ -69,7 +72,7 @@ export class MatcherPatternPathStatic
    */
   private pathi: string
 
-  constructor(private path: string) {
+  constructor(readonly path: string) {
     this.pathi = path.toLowerCase()
   }
 
@@ -89,13 +92,14 @@ export class MatcherPatternPathStatic
  * Options for param parsers in {@link MatcherPatternPathDynamic}.
  */
 export type MatcherPatternPathDynamic_ParamOptions<
-  TIn extends string | string[] | null = string | string[] | null,
-  TOut = string | string[] | null,
-> = [
+  TUrlParam extends string | string[] | null = string | string[] | null,
+  TParam = string | string[] | null,
+  TParamRaw = TParam,
+> = readonly [
   /**
    * Param parser to use for this param.
    */
-  parser?: ParamParser<TOut, TIn>,
+  parser?: ParamParser<TParam, TUrlParam, TParamRaw>,
 
   /**
    * Is tha param a repeatable param and should be converted to an array
@@ -115,9 +119,20 @@ export type MatcherPatternPathDynamic_ParamOptions<
 type ExtractParamTypeFromOptions<TParamsOptions> = {
   [K in keyof TParamsOptions]: TParamsOptions[K] extends MatcherPatternPathDynamic_ParamOptions<
     any,
-    infer TOut
+    infer TParam,
+    any
   >
-    ? TOut
+    ? TParam
+    : never
+}
+
+type ExtractLocationParamTypeFromOptions<TParamsOptions> = {
+  [K in keyof TParamsOptions]: TParamsOptions[K] extends MatcherPatternPathDynamic_ParamOptions<
+    any,
+    any,
+    infer TParamRaw
+  >
+    ? TParamRaw
     : never
 }
 
@@ -136,7 +151,11 @@ export class MatcherPatternPathDynamic<
   // TODO: | EmptyObject ?
   // TParamsOptions extends Record<string, MatcherPatternPathCustomParamOptions>,
   // TParams extends MatcherParamsFormatted = ExtractParamTypeFromOptions<TParamsOptions>
-> implements MatcherPatternPath<ExtractParamTypeFromOptions<TParamsOptions>>
+> implements
+    MatcherPatternPath<
+      ExtractParamTypeFromOptions<TParamsOptions>,
+      ExtractLocationParamTypeFromOptions<TParamsOptions>
+    >
 {
   /**
    * Cached keys of the {@link params} object.
@@ -158,7 +177,7 @@ export class MatcherPatternPathDynamic<
     this.paramsKeys = Object.keys(this.params) as Array<keyof TParamsOptions>
   }
 
-  match(path: string): ExtractParamTypeFromOptions<TParamsOptions> {
+  match(path: string): Simplify<ExtractParamTypeFromOptions<TParamsOptions>> {
     if (
       this.trailingSlash != null &&
       this.trailingSlash === !path.endsWith('/')
@@ -196,7 +215,9 @@ export class MatcherPatternPathDynamic<
     return params
   }
 
-  build(params: ExtractParamTypeFromOptions<TParamsOptions>): string {
+  build(
+    params: Simplify<ExtractLocationParamTypeFromOptions<TParamsOptions>>
+  ): string {
     let paramIndex = 0
     let paramName: keyof TParamsOptions
     let parser: (TParamsOptions &
@@ -290,6 +311,10 @@ export type EmptyParams = Record<PropertyKey, never> // TODO: move to matcher-pa
 /**
  * Possible values for query params in a matcher.
  */
-export type MatcherQueryParamsValue = string | null | Array<string | null>
+export type MatcherQueryParamsValue =
+  | string
+  | null
+  | undefined
+  | Array<string | null>
 
 export type MatcherQueryParams = Record<string, MatcherQueryParamsValue>

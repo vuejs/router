@@ -6,6 +6,7 @@ import {
   MatcherQueryParams,
 } from './matcher-pattern'
 import { ParamParser, PARAM_PARSER_DEFAULTS } from './param-parsers'
+import { miss } from './errors'
 
 /**
  * Handles the `query` part of a URL. It can transform a query object into an
@@ -65,7 +66,7 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
 
       // if we have no values, we want to fall back to the default value
       if (
-        (this.format === 'both' || this.defaultValue !== undefined) &&
+        this.defaultValue !== undefined &&
         (value as unknown[]).length === 0
       ) {
         value = undefined
@@ -86,9 +87,16 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
       }
     }
 
+    // miss if there is no default and there was no value in the query
+    if (value === undefined) {
+      if (this.defaultValue === undefined) {
+        throw miss()
+      }
+      value = toValue(this.defaultValue)
+    }
+
     return {
-      [this.paramName]:
-        value === undefined ? toValue(this.defaultValue) : value,
+      [this.paramName]: value,
       // This is a TS limitation
     } as Record<ParamName, T>
   }

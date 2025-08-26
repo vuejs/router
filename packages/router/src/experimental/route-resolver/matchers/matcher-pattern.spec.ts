@@ -4,6 +4,8 @@ import {
   MatcherPatternPathDynamic,
 } from './matcher-pattern'
 import { MatcherPatternPathStar } from './matcher-pattern-path-star'
+import { miss } from './errors'
+import { definePathParamParser } from './param-parsers/types'
 
 describe('MatcherPatternPathStatic', () => {
   describe('match()', () => {
@@ -414,5 +416,49 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123/')
     expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/')
     expect(pattern.build({ teamId: [] })).toBe('/teams/')
+  })
+
+  describe('custom param parsers', () => {
+    const doubleParser = definePathParamParser({
+      get: (v: string | null) => {
+        const value = Number(v) * 2
+        if (!Number.isFinite(value)) {
+          throw miss()
+        }
+        return value
+      },
+      set: (v: number | null) => (v == null ? null : String(v / 2)),
+    })
+
+    it('single regular param', () => {
+      const pattern = new MatcherPatternPathDynamic(
+        /^\/teams\/([^/]+?)$/i,
+        {
+          teamId: [doubleParser],
+        },
+        ['teams', 1]
+      )
+
+      expect(pattern.match('/teams/123')).toEqual({ teamId: 246 })
+      expect(() => pattern.match('/teams/abc')).toThrow()
+      expect(pattern.build({ teamId: 246 })).toBe('/teams/123')
+    })
+
+    it('can transform optional params', () => {
+      const pattern = new MatcherPatternPathDynamic(
+        /^\/teams(?:\/([^/]+?))?$/i,
+        {
+          teamId: [doubleParser, false, true],
+        },
+        ['teams', 1]
+      )
+
+      expect(pattern.match('/teams')).toEqual({ teamId: 0 })
+      expect(pattern.match('/teams/123')).toEqual({ teamId: 246 })
+      expect(() => pattern.match('/teams/abc')).toThrow()
+      expect(pattern.build({ teamId: 246 })).toBe('/teams/123')
+      expect(pattern.build({ teamId: 0 })).toBe('/teams/0')
+      expect(pattern.build({ teamId: null })).toBe('/teams')
+    })
   })
 })

@@ -1,9 +1,12 @@
 import { miss } from '../errors'
 import { ParamParser } from './types'
 
-export const PARAM_BOOLEAN_SINGLE = {
-  get: (value: string | null) => {
-    if (!value) return false
+const PARAM_BOOLEAN_SINGLE = {
+  get: (value: string | null | undefined) => {
+    // we want to differentiate between the absence of a value
+    if (value === undefined) return undefined
+
+    if (value == null) return true
 
     const lowercaseValue = value.toLowerCase()
 
@@ -17,27 +20,21 @@ export const PARAM_BOOLEAN_SINGLE = {
 
     throw miss()
   },
-  set: (value: boolean | null) => String(!!value),
-} satisfies ParamParser<boolean, string | null>
+  set: (value: boolean | null | undefined) =>
+    value == null ? value : String(value),
+} satisfies ParamParser<boolean | null | undefined, string | null | undefined>
 
-export const PARAM_BOOLEAN_OPTIONAL = {
-  get: (value: string | null) =>
-    value == null ? null : PARAM_BOOLEAN_SINGLE.get(value),
-  set: (value: boolean | null) =>
-    value != null ? PARAM_BOOLEAN_SINGLE.set(value) : null,
-} satisfies ParamParser<boolean | null, string | null>
-
-export const PARAM_BOOLEAN_REPEATABLE = {
-  get: (value: (string | null)[]) => value.map(PARAM_BOOLEAN_SINGLE.get),
-  set: (value: boolean[]) => value.map(PARAM_BOOLEAN_SINGLE.set),
+const PARAM_BOOLEAN_REPEATABLE = {
+  get: (value: (string | null)[]) =>
+    value.map(v => {
+      const result = PARAM_BOOLEAN_SINGLE.get(v)
+      // Filter out undefined values to ensure arrays only contain booleans
+      return result === undefined ? false : result
+    }),
+  set: (value: boolean[]) =>
+    // since v is always a boolean, set always returns a string
+    value.map(v => PARAM_BOOLEAN_SINGLE.set(v) as string),
 } satisfies ParamParser<boolean[], (string | null)[]>
-
-export const PARAM_BOOLEAN_REPEATABLE_OPTIONAL = {
-  get: (value: string[] | null) =>
-    value == null ? null : PARAM_BOOLEAN_REPEATABLE.get(value),
-  set: (value: boolean[] | null) =>
-    value != null ? PARAM_BOOLEAN_REPEATABLE.set(value) : null,
-} satisfies ParamParser<boolean[] | null, string[] | null>
 
 /**
  * Native Param parser for booleans.
@@ -53,4 +50,4 @@ export const PARAM_PARSER_BOOL = {
     Array.isArray(value)
       ? PARAM_BOOLEAN_REPEATABLE.set(value)
       : PARAM_BOOLEAN_SINGLE.set(value),
-} satisfies ParamParser<boolean | boolean[] | null>
+} satisfies ParamParser<boolean | boolean[] | null | undefined>
