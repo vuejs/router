@@ -176,7 +176,7 @@ export function createFixedResolver<
       // relative location by path or by name
       if (__DEV__ && to.name == null && currentLocation == null) {
         warn(
-          `Cannot resolve relative location "${JSON.stringify(to)}"without a current location. This will throw in production.`,
+          `Cannot resolve relative location "${JSON.stringify(to)}"without a "name" or a current location. This will crash in production.`,
           to
         )
         // NOTE: normally there is no query, hash or path but this helps debug
