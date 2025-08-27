@@ -40,6 +40,8 @@ export {
   PARAM_PARSER_BOOL,
   type ParamParser,
   defineParamParser,
+  definePathParamParser,
+  defineQueryParamParser,
 } from './route-resolver/matchers/param-parsers'
 
 export { miss, MatchMiss } from './route-resolver/matchers/errors'

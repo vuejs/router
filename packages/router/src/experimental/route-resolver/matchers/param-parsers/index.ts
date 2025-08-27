@@ -1,17 +1,10 @@
 import type { ParamParser } from './types'
 
-/**
- * Type safe helper to define a param parser.
- *
- * @param parser - the parser to define. Will be returned as is.
- */
-/*! #__NO_SIDE_EFFECTS__ */
-export function defineParamParser<TOut, TIn extends string | string[]>(parser: {
-  get?: (value: TIn) => TOut
-  set?: (value: TOut) => TIn
-}): ParamParser<TOut, TIn> {
-  return parser
-}
+export {
+  definePathParamParser,
+  defineParamParser,
+  defineQueryParamParser,
+} from './types'
 
 export const PATH_PARAM_SINGLE_DEFAULT: ParamParser<string, string> = {}
 
