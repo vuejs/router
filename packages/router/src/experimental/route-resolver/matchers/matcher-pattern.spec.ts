@@ -5,7 +5,7 @@ import {
 } from './matcher-pattern'
 import { MatcherPatternPathStar } from './matcher-pattern-path-star'
 import { miss } from './errors'
-import { definePathParamParser } from './param-parsers/types'
+import { definePathParamParser } from './param-parsers'
 
 describe('MatcherPatternPathStatic', () => {
   describe('match()', () => {

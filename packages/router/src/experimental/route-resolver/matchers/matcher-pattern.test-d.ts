@@ -2,7 +2,7 @@ import { describe, expectTypeOf, it } from 'vitest'
 import { MatcherPatternPathDynamic } from './matcher-pattern'
 import { PATH_PARAM_PARSER_DEFAULTS } from './param-parsers'
 import { PATH_PARAM_SINGLE_DEFAULT } from './param-parsers'
-import { definePathParamParser } from './param-parsers/types'
+import { definePathParamParser } from './param-parsers'
 
 describe('MatcherPatternPathDynamic', () => {
   it('can be generic', () => {
