@@ -283,7 +283,7 @@ export class MatcherPatternPathDynamic<
      * no sense to build a path it cannot match.
      */
     return this.trailingSlash == null
-      ? path + (!value ? '/' : '')
+      ? path + (!value && path.at(-1) !== '/' ? '/' : '')
       : path.replace(RE_TRAILING_SLASHES, this.trailingSlash ? '/' : '')
   }
 }

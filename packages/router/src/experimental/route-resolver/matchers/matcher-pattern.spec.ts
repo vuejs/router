@@ -272,6 +272,27 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ pathMatch: '124/b' })).toBe('/teams/124/b')
   })
 
+  it('splat param without prefix', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/(.*)$/,
+      {
+        pathMatch: [],
+      },
+      [0],
+      null
+    )
+    expect(pattern.match('/')).toEqual({ pathMatch: '' })
+    expect(pattern.match('/123/b')).toEqual({ pathMatch: '123/b' })
+    expect(pattern.match('/anything/goes/here')).toEqual({
+      pathMatch: 'anything/goes/here',
+    })
+
+    expect(pattern.build({ pathMatch: null })).toBe('/')
+    expect(pattern.build({ pathMatch: '' })).toBe('/')
+    expect(pattern.build({ pathMatch: '124' })).toBe('/124')
+    expect(pattern.build({ pathMatch: '124/b' })).toBe('/124/b')
+  })
+
   it('repeatable optional param', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams(?:\/(.+?))?\/b$/i,
