@@ -182,6 +182,30 @@ describe('MatcherPatternQueryParam', () => {
       )
       expect(matcher.match({ p: '5' })).toEqual({ page: '5' })
     })
+
+    it('lets the parser handle null values', () => {
+      expect(
+        new MatcherPatternQueryParam(
+          'active',
+          'a',
+          'value',
+          // transforms null to true
+          PARAM_PARSER_BOOL,
+          false
+        ).match({ a: null })
+      ).toEqual({ active: true })
+
+      expect(
+        new MatcherPatternQueryParam(
+          'active',
+          'a',
+          'value',
+          // this leavs the value as null
+          PARAM_PARSER_DEFAULTS,
+          'ko'
+        ).match({ a: null })
+      ).toEqual({ active: null })
+    })
   })
 
   describe('parser integration', () => {
@@ -301,7 +325,20 @@ describe('MatcherPatternQueryParam', () => {
       expect(matcher.match({ item: [] })).toEqual({ items: [] })
     })
 
-    it('filters out null values in arrays', () => {
+    it('integer parser filters out null values in arrays', () => {
+      const matcher = new MatcherPatternQueryParam(
+        'ids',
+        'id',
+        'array',
+        PARAM_PARSER_INT
+      )
+      // Integer parser filters out null values from arrays
+      expect(matcher.match({ id: ['1', null, '3'] })).toEqual({
+        ids: [1, 3],
+      })
+    })
+
+    it('integer parser with default also filters null values', () => {
       const matcher = new MatcherPatternQueryParam(
         'ids',
         'id',
@@ -309,7 +346,36 @@ describe('MatcherPatternQueryParam', () => {
         PARAM_PARSER_INT,
         () => []
       )
-      expect(matcher.match({ id: ['1', null, '3'] })).toEqual({ ids: [1, 3] })
+      // Integer parser filters null values even with default
+      expect(matcher.match({ id: ['1', null, '3'] })).toEqual({
+        ids: [1, 3],
+      })
+    })
+
+    it('passes null values to boolean parser in arrays', () => {
+      const matcher = new MatcherPatternQueryParam(
+        'flags',
+        'flag',
+        'array',
+        PARAM_PARSER_BOOL
+      )
+      // Now that null filtering is removed, null values get passed to parser
+      expect(matcher.match({ flag: ['true', null, 'false'] })).toEqual({
+        flags: [true, true, false],
+      })
+    })
+
+    it('handles null values with default parser in arrays', () => {
+      const matcher = new MatcherPatternQueryParam(
+        'values',
+        'value',
+        'array',
+        PARAM_PARSER_DEFAULTS
+      )
+      // Now that null filtering is removed, null values get passed to parser
+      expect(matcher.match({ value: ['a', null, 'b'] })).toEqual({
+        values: ['a', null, 'b'],
+      })
     })
 
     it('handles undefined query param with default', () => {

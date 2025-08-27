@@ -92,9 +92,10 @@ describe('PARAM_PARSER_INT', () => {
       expect(() => PARAM_PARSER_INT.get(['', '2'])).toThrow()
     })
 
-    it('throws for arrays with null values', () => {
-      expect(() => PARAM_PARSER_INT.get(['1', null, '3'])).toThrow()
-      expect(() => PARAM_PARSER_INT.get([null])).toThrow()
+    it('filters out null values from arrays', () => {
+      expect(PARAM_PARSER_INT.get(['1', null, '3'])).toEqual([1, 3])
+      expect(PARAM_PARSER_INT.get([null])).toEqual([])
+      expect(PARAM_PARSER_INT.get(['42', null, null, '7'])).toEqual([42, 7])
     })
   })
 

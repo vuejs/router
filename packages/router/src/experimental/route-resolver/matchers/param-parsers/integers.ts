@@ -13,7 +13,8 @@ const PARAM_INTEGER_SINGLE = {
 } satisfies ParamParser<number, string | null>
 
 const PARAM_INTEGER_REPEATABLE = {
-  get: (value: (string | null)[]) => value.map(PARAM_INTEGER_SINGLE.get),
+  get: (value: (string | null)[]) =>
+    value.filter((v): v is string => v != null).map(PARAM_INTEGER_SINGLE.get),
   set: (value: number[]) => value.map(PARAM_INTEGER_SINGLE.set),
 } satisfies ParamParser<number[], (string | null)[]>
 

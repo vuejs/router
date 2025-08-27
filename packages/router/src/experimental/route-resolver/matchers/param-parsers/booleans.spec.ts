@@ -66,6 +66,25 @@ describe('PARAM_PARSER_BOOL', () => {
       expect(PARAM_PARSER_BOOL.get([null, null])).toEqual([true, true])
     })
 
+    it('handles mixed arrays with null values correctly', () => {
+      expect(PARAM_PARSER_BOOL.get([null, 'true', null])).toEqual([
+        true,
+        true,
+        true,
+      ])
+      expect(PARAM_PARSER_BOOL.get(['false', null, 'TRUE'])).toEqual([
+        false,
+        true,
+        true,
+      ])
+      expect(PARAM_PARSER_BOOL.get([null, 'false', null, 'true'])).toEqual([
+        true,
+        false,
+        true,
+        true,
+      ])
+    })
+
     it('throws for arrays with invalid values', () => {
       expect(() => PARAM_PARSER_BOOL.get(['true', 'invalid'])).toThrow()
       expect(() => PARAM_PARSER_BOOL.get(['invalid'])).toThrow()

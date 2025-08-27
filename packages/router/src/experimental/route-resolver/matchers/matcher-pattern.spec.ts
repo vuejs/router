@@ -430,6 +430,16 @@ describe('MatcherPatternPathDynamic', () => {
       set: (v: number | null) => (v == null ? null : String(v / 2)),
     })
 
+    const nullAwareParser = definePathParamParser({
+      get: (v: string | null) => {
+        if (v === null) return 'was-null'
+        if (v === undefined) return 'was-undefined'
+        return `processed-${v}`
+      },
+      set: (v: string | null) =>
+        v === 'was-null' ? null : String(v).replace('processed-', ''),
+    })
+
     it('single regular param', () => {
       const pattern = new MatcherPatternPathDynamic(
         /^\/teams\/([^/]+?)$/i,
@@ -459,6 +469,23 @@ describe('MatcherPatternPathDynamic', () => {
       expect(pattern.build({ teamId: 246 })).toBe('/teams/123')
       expect(pattern.build({ teamId: 0 })).toBe('/teams/0')
       expect(pattern.build({ teamId: null })).toBe('/teams')
+    })
+
+    it('handles null values in optional params with custom parser', () => {
+      const pattern = new MatcherPatternPathDynamic(
+        /^\/teams(?:\/([^/]+?))?$/i,
+        {
+          teamId: [nullAwareParser, false, true],
+        },
+        ['teams', 1]
+      )
+
+      expect(pattern.match('/teams')).toEqual({ teamId: 'was-null' })
+      expect(pattern.match('/teams/hello')).toEqual({
+        teamId: 'processed-hello',
+      })
+      expect(pattern.build({ teamId: 'was-null' })).toBe('/teams')
+      expect(pattern.build({ teamId: 'processed-world' })).toBe('/teams/world')
     })
   })
 })

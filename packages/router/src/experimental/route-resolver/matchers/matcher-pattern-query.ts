@@ -4,6 +4,7 @@ import {
   MatcherParamsFormatted,
   MatcherPattern,
   MatcherQueryParams,
+  MatcherQueryParamsValue,
 } from './matcher-pattern'
 import { ParamParser, PARAM_PARSER_DEFAULTS } from './param-parsers'
 import { miss } from './errors'
@@ -29,47 +30,40 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
   ) {}
 
   match(query: MatcherQueryParams): Record<ParamName, T> {
-    const queryValue = query[this.queryKey]
+    const queryValue: MatcherQueryParamsValue | undefined = query[this.queryKey]
+
+    // Check if query param is missing for default value handling
 
     let valueBeforeParse =
       this.format === 'value'
         ? Array.isArray(queryValue)
           ? queryValue[0]
           : queryValue
-        : this.format === 'array'
-          ? Array.isArray(queryValue)
-            ? queryValue
+        : // format === 'array'
+          Array.isArray(queryValue)
+          ? queryValue
+          : queryValue == null
+            ? []
             : [queryValue]
-          : queryValue
 
     let value: T | undefined
 
-    // if we have an array, we need to try catch each value
+    // if we have an array, pass the whole array to the parser
     if (Array.isArray(valueBeforeParse)) {
-      // @ts-expect-error: T is not connected to valueBeforeParse
-      value = []
-      for (const v of valueBeforeParse) {
-        if (v != null) {
-          try {
-            ;(value as unknown[]).push(
-              // for ts errors
-              (this.parser.get ?? PARAM_PARSER_DEFAULTS.get)(v) as T
-            )
-          } catch (error) {
-            // we skip the invalid value unless there is no defaultValue
-            if (this.defaultValue === undefined) {
-              throw error
-            }
+      // for arrays, if original query param was missing and we have a default, use it
+      if (queryValue === undefined && this.defaultValue !== undefined) {
+        value = toValue(this.defaultValue)
+      } else {
+        try {
+          value = (this.parser.get ?? PARAM_PARSER_DEFAULTS.get)(
+            valueBeforeParse
+          ) as T
+        } catch (error) {
+          if (this.defaultValue === undefined) {
+            throw error
           }
+          value = undefined
         }
-      }
-
-      // if we have no values, we want to fall back to the default value
-      if (
-        this.defaultValue !== undefined &&
-        (value as unknown[]).length === 0
-      ) {
-        value = undefined
       }
     } else {
       try {
