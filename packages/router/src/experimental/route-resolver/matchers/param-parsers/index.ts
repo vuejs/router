@@ -41,7 +41,6 @@ export type { ParamParser }
  * @see {@link defineParamParser}
  */
 /*! #__NO_SIDE_EFFECTS__ */
-
 export function definePathParamParser<
   TParam,
   // path params are parsed by the router as these
@@ -63,7 +62,6 @@ export function definePathParamParser<
  * @see {@link defineParamParser}
  */
 /*! #__NO_SIDE_EFFECTS__ */
-
 export function defineQueryParamParser<
   TParam,
   // we can allow pushing with extra values
@@ -80,5 +78,4 @@ export function defineQueryParamParser<
  * @see {@link definePathParamParser}
  */
 /*! #__NO_SIDE_EFFECTS__ */
-
 export const defineParamParser = defineQueryParamParser
