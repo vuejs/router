@@ -32,12 +32,13 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
   match(query: MatcherQueryParams): Record<ParamName, T> {
     const queryValue: MatcherQueryParamsValue | undefined = query[this.queryKey]
 
-    // Check if query param is missing for default value handling
-
+    // normalize the value coming from the query based on the expected format
+    // value => keep the last value if multiple
+    // array => null becomes [], single value becomes [value]
     let valueBeforeParse =
       this.format === 'value'
         ? Array.isArray(queryValue)
-          ? queryValue[0]
+          ? queryValue.at(-1)
           : queryValue
         : // format === 'array'
           Array.isArray(queryValue)

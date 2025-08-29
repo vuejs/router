@@ -19,7 +19,7 @@ describe('MatcherPatternQueryParam', () => {
       expect(matcher.match({ user_id: 'abc123' })).toEqual({ userId: 'abc123' })
     })
 
-    it('takes first value from array', () => {
+    it('takes last value from array', () => {
       const matcher = new MatcherPatternQueryParam(
         'userId',
         'user_id',
@@ -27,7 +27,7 @@ describe('MatcherPatternQueryParam', () => {
         PARAM_PARSER_DEFAULTS
       )
       expect(matcher.match({ user_id: ['first', 'second'] })).toEqual({
-        userId: 'first',
+        userId: 'second',
       })
     })
 
