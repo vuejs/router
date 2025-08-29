@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { PARAM_PARSER_STRING } from './strings'
-import { MatchMiss } from '../errors'
 
 describe('PARAM_PARSER_STRING', () => {
   describe('get() - Single Values', () => {
