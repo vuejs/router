@@ -94,7 +94,7 @@ export interface Router
   readonly options: RouterOptions
 
   /**
-   * Add a new {@link EXPERIMENTAL_RouteRecordRaw | route record} as the child of an existing route.
+   * Add a new {@link RouteRecordRaw | route record} as the child of an existing route.
    *
    * @param parentName - Parent Route Record where `route` should be appended at
    * @param route - Route Record to add
@@ -105,7 +105,7 @@ export interface Router
     route: RouteRecordRaw
   ): () => void
   /**
-   * Add a new {@link EXPERIMENTAL_RouteRecordRaw | route record} to the router.
+   * Add a new {@link RouteRecordRaw | route record} to the router.
    *
    * @param route - Route Record to add
    */
