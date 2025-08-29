@@ -60,16 +60,19 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
             valueBeforeParse
           ) as T
         } catch (error) {
+          // if there is a miss but we have a default, use it
+          // otherwise rethrow the error
           if (this.defaultValue === undefined) {
             throw error
           }
+          // ensure the default value is used
           value = undefined
         }
       }
     } else {
       try {
         value =
-          // non existing query param should falll back to defaultValue
+          // non existing query param should fall back to defaultValue
           valueBeforeParse === undefined
             ? valueBeforeParse
             : ((this.parser.get ?? PARAM_PARSER_DEFAULTS.get)(
@@ -83,6 +86,8 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
     }
 
     // miss if there is no default and there was no value in the query
+    // otherwise, use the default value. This allows parsers to return undefined
+    // when they want to possibly fallback to the default value
     if (value === undefined) {
       if (this.defaultValue === undefined) {
         throw miss()
