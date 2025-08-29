@@ -16,7 +16,7 @@ import { isArray } from './utils'
  */
 export type LocationQueryValue = string | null
 /**
- * Possible values when defining a query.
+ * Possible values when defining a query. `undefined` allows to remove a value.
  *
  * @internal
  */
@@ -56,8 +56,7 @@ export function parseQuery(search: string): LocationQuery {
   // avoid creating an object with an empty key and empty value
   // because of split('&')
   if (search === '' || search === '?') return query
-  const hasLeadingIM = search[0] === '?'
-  const searchParams = (hasLeadingIM ? search.slice(1) : search).split('&')
+  const searchParams = (search[0] === '?' ? search.slice(1) : search).split('&')
   for (let i = 0; i < searchParams.length; ++i) {
     // pre decode the + into space
     const searchParam = searchParams[i].replace(PLUS_RE, ' ')
@@ -90,7 +89,7 @@ export function parseQuery(search: string): LocationQuery {
  * @param query - query object to stringify
  * @returns string version of the query without the leading `?`
  */
-export function stringifyQuery(query: LocationQueryRaw): string {
+export function stringifyQuery(query: LocationQueryRaw | undefined): string {
   let search = ''
   for (let key in query) {
     const value = query[key]
