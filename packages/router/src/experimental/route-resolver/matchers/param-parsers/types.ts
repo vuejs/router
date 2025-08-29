@@ -9,8 +9,9 @@ import type { MatcherQueryParamsValue } from '../matcher-pattern'
 export interface ParamParser<
   // type of the param after parsing as exposed in `route.params`
   TParam = MatcherQueryParamsValue,
-  // this is the most permissive type that can be passed to get and set, it's from the query
-  // path params stricter as they do not allow `null` within an array or `undefined`
+  // this is the most permissive type that can be passed to get and returned by
+  // set. By default it's the type of query path params (stricter as they do
+  // not allow `null` within an array or `undefined`)
   TUrlParam = MatcherQueryParamsValue,
   // the type that can be passed as a location when navigating: `router.push({ params: { }})`
   // it's sometimes for more permissive than TParam, for example allowing nullish values
