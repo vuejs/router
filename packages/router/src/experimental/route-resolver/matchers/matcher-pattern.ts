@@ -200,6 +200,8 @@ export class MatcherPatternPathDynamic<
         ? (currentMatch?.split('/') || []).map<string>(decode)
         : decode(currentMatch)
 
+      // we intentionally pass null and empty arrays to the parser
+      // so they can better control the outcome
       params[paramName] = (parser?.get || identityFn)(value)
     }
 
@@ -239,6 +241,7 @@ export class MatcherPatternPathDynamic<
             ;[parser, repeatable, optional] = this.params[paramName]
             value = (parser?.set || identityFn)(params[paramName])
 
+            // non optional repeatable params cannot be empty
             if (Array.isArray(value) && !value.length && !optional) {
               throw miss()
             }
