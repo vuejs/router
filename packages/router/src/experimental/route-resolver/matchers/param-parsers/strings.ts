@@ -12,7 +12,11 @@ const PARAM_STRING_REPEATABLE = {
 } satisfies ParamParser<string[], (string | null)[]>
 
 /**
- * Native Param parser for strings.
+ * Native Param parser for strings. This is a permissive parser that will
+ * transform `null` and `undefined` values to empty strings in single mode, and
+ * will filter out `null` values in arrays. It's meant to be used for query
+ * params. It doesn't make much sense to use it for path params will be `null |
+ * string | string[]` (all cases combined).
  *
  * @internal
  */
