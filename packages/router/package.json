@@ -110,7 +110,7 @@
     "test:e2e:bs-test": "node e2e/runner.mjs --local --env browserstack.local_chrome --tag browserstack"
   },
   "peerDependencies": {
-    "vue": "^3.2.0"
+    "vue": "^3.5.0"
   },
   "vetur": {
     "tags": "vetur/tags.json",
