@@ -63,7 +63,6 @@ const r_home = normalizeRouteRecord({
     new MatcherPatternQueryParam('pageArray', 'p', 'array', PARAM_PARSER_INT, [
       1,
     ]),
-    new MatcherPatternQueryParam('pageBoth', 'p', 'both', PARAM_PARSER_INT, 1),
     new MatcherPatternQueryParam('page', 'p', 'value', PARAM_PARSER_INT, 1),
     QUERY_PATTERN_MATCHER,
   ],

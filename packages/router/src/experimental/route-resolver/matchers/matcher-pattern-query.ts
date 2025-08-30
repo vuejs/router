@@ -24,7 +24,7 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
   constructor(
     private paramName: ParamName,
     private queryKey: string,
-    private format: 'value' | 'array' | 'both',
+    private format: 'value' | 'array',
     private parser: ParamParser<T> = {},
     private defaultValue?: (() => T) | T
   ) {}
