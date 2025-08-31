@@ -66,7 +66,7 @@ export interface EXPERIMENTAL_Resolver_Base<TRecord> {
     currentLocation: ResolverLocationResolved<TRecord>
   ): ResolverLocationResolved<TRecord>
 
-  // NOTE: in practice, this overload can cause bugs. It's better to use named locations
+  // NOTE: in practice, this overload (above) can cause bugs. It's better to use named locations
 
   /**
    * Resolves a location relative to another location. It reuses existing

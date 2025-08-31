@@ -1,29 +1,33 @@
 import { normalizeQuery, parseQuery, stringifyQuery } from '../../query'
 import {
-  LocationNormalized,
+  type LocationNormalized,
   NEW_stringifyURL,
   parseURL,
   resolveRelativePath,
 } from '../../location'
-import { MatcherParamsFormatted } from './matchers/matcher-pattern'
-import { ResolverLocationAsRelative } from './resolver-abstract'
-import { ResolverLocationAsPathAbsolute } from './resolver-abstract'
-import { ResolverLocationAsPathRelative } from './resolver-abstract'
-import { ResolverLocationAsNamed } from './resolver-abstract'
-import {
-  RecordName,
-  ResolverLocationResolved,
-  EXPERIMENTAL_Resolver_Base,
-  NO_MATCH_LOCATION,
-} from './resolver-abstract'
-import { MatcherQueryParams } from './matchers/matcher-pattern'
 import type {
   MatcherPatternPath,
   MatcherPatternHash,
+  MatcherPattern,
+  MatcherParamsFormatted,
+  MatcherQueryParams,
 } from './matchers/matcher-pattern'
+import type {
+  ResolverLocationAsRelative,
+  ResolverLocationAsPathAbsolute,
+  ResolverLocationAsPathRelative,
+  ResolverLocationAsNamed,
+  RecordName,
+  ResolverLocationResolved,
+  EXPERIMENTAL_Resolver_Base,
+} from './resolver-abstract'
+import { NO_MATCH_LOCATION } from './resolver-abstract'
 import type { MatcherPatternQuery } from './matchers/matcher-pattern-query'
 import { warn } from '../../warning'
 
+/**
+ * Base interface for a resolver record that can be extended.
+ */
 export interface EXPERIMENTAL_ResolverRecord_Base {
   /**
    * Name of the matcher. Unique across all matchers. If missing, this record
@@ -46,6 +50,10 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
    */
   hash?: MatcherPatternHash
 
+  /**
+   * Parent record. The parent can be a group or a matchable record.
+   * It will be included in the `matched` array of a resolved location.
+   */
   parent?: EXPERIMENTAL_ResolverRecord | null // the parent can be matchable or not
 
   // TODO: implement aliases
@@ -74,13 +82,17 @@ export interface EXPERIMENTAL_ResolverRecord_Matchable
   path: MatcherPatternPath
 }
 
+/**
+ * A record that can be passed to the resolver. It can be extended via the
+ * `ExtensionT` type param.
+ */
 export type EXPERIMENTAL_ResolverRecord<ExtensionT = {}> =
   | (EXPERIMENTAL_ResolverRecord_Matchable & ExtensionT)
   | (EXPERIMENTAL_ResolverRecord_Group & ExtensionT)
 
-export type EXPERIMENTAL_ResolverFixedRecord<ExtensionT = {}> =
-  EXPERIMENTAL_ResolverRecord<ExtensionT>
-
+/**
+ * @alias EXPERIMENTAL_Resolver_Base
+ */
 export interface EXPERIMENTAL_ResolverFixed<TRecord>
   extends EXPERIMENTAL_Resolver_Base<TRecord> {}
 
@@ -207,7 +219,7 @@ export function createFixedResolver<
 
         if (typeof to === 'object' && to.hash && !to.hash.startsWith('#')) {
           warn(
-            `A \`hash\` should always start with the character "#". Replace "${to.hash}" with "#${to.hash}".`
+            `A "hash" should always start with the character "#". Replace "${to.hash}" with "#${to.hash}".`
           )
         }
       }
@@ -307,7 +319,6 @@ export function createFixedResolver<
         params: parsedParams,
         matched,
       }
-      // TODO: handle object location { path, query, hash }
     }
   }
 
