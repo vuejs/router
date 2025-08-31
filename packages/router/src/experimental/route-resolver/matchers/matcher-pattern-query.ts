@@ -13,11 +13,13 @@ import { miss } from './errors'
  * Handles the `query` part of a URL. It can transform a query object into an
  * object of params and vice versa.
  */
-
 export interface MatcherPatternQuery<
   TParams extends MatcherParamsFormatted = MatcherParamsFormatted,
 > extends MatcherPattern<MatcherQueryParams, TParams> {}
 
+/**
+ * Matcher for a specific query parameter. It will read and write the parameter
+ */
 export class MatcherPatternQueryParam<T, ParamName extends string>
   implements MatcherPatternQuery<Record<ParamName, T>>
 {
