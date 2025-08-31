@@ -114,6 +114,7 @@ export type MatcherPatternPathDynamic_ParamOptions<
 
 /**
  * Helper type to extract the params from the options object.
+ *
  * @internal
  */
 type ExtractParamTypeFromOptions<TParamsOptions> = {
@@ -126,6 +127,11 @@ type ExtractParamTypeFromOptions<TParamsOptions> = {
     : never
 }
 
+/**
+ * Helper type to extract the raw params from the options object.
+ *
+ * @internal
+ */
 type ExtractLocationParamTypeFromOptions<TParamsOptions> = {
   [K in keyof TParamsOptions]: TParamsOptions[K] extends MatcherPatternPathDynamic_ParamOptions<
     any,
@@ -146,12 +152,8 @@ const RE_TRAILING_SLASHES = /\/*$/
 /**
  * Handles the `path` part of a URL with dynamic parameters.
  */
-export class MatcherPatternPathDynamic<
-  TParamsOptions,
-  // TODO: | EmptyObject ?
-  // TParamsOptions extends Record<string, MatcherPatternPathCustomParamOptions>,
-  // TParams extends MatcherParamsFormatted = ExtractParamTypeFromOptions<TParamsOptions>
-> implements
+export class MatcherPatternPathDynamic<TParamsOptions>
+  implements
     MatcherPatternPath<
       ExtractParamTypeFromOptions<TParamsOptions>,
       ExtractLocationParamTypeFromOptions<TParamsOptions>
@@ -309,7 +311,7 @@ export type MatcherParamsFormatted = Record<string, unknown>
 /**
  * Empty object in TS.
  */
-export type EmptyParams = Record<PropertyKey, never> // TODO: move to matcher-pattern
+export type EmptyParams = Record<PropertyKey, never>
 
 /**
  * Possible values for query params in a matcher.
