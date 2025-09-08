@@ -67,6 +67,8 @@ const router = createRouter({
   history: createMemoryHistory(),
   routes,
 })
+
+export default router
 ```
 
 The `routes` option defines the routes themselves, mapping URL paths to components. The component specified by the `component` option is the one that will be rendered by the `<RouterView>` in our earlier `App.vue`. These route components are sometimes referred to as _views_, though they are just normal Vue components.
