@@ -63,7 +63,7 @@ const routes = [
   { path: '/about', component: AboutView },
 ]
 
-const router = createRouter({
+export const router = createRouter({
   history: createMemoryHistory(),
   routes,
 })
