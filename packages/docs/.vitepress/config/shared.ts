@@ -108,7 +108,7 @@ export const sharedConfig = defineConfig({
     [
       'script',
       {
-        src: 'https://vueschool.io/banner.js?affiliate=vuerouter&type=top',
+        src: 'https://media.bitterbrains.com/main.js?from=vuerouter&type=top',
         // @ts-expect-error: vitepress bug
         async: true,
         type: 'text/javascript',
