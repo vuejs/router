@@ -716,6 +716,33 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     )
   }
 
+  async function start(location: RouteLocationRaw) {
+    const to = resolve(location) as RouteLocationNormalized
+    const from = START_LOCATION_NORMALIZED
+
+    pendingLocation = to
+
+    try {
+      await resolveNavigationGuards(to, from)
+      finalizeNavigation(to, from)
+    } catch (error) {
+      const failure = error as NavigationFailure
+      // at start, a guard failure cannot be reverted, we just notify.
+      finalizeNavigation(to, from, failure)
+      if (isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)) {
+        // if there is a redirect, we navigate to it replacing the current entry.
+        await navigate((failure as NavigationRedirectError).to, {
+          replace: true,
+        })
+      } else {
+        // for other errors we just notify, the user is left in the blank page.
+        triggerError(failure, to, from)
+      }
+    } finally {
+      pendingLocation = null
+    }
+  }
+
   const history: RouterHistory = {
     base: options.base || '/',
     location: options.location,
@@ -784,7 +811,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
           window.location.pathname +
           window.location.search +
           window.location.hash
-        navigate(initialLocation).catch(err => {
+        start(initialLocation).catch(err => {
           if (__DEV__) warn('Unexpected error when starting the router:', err)
         })
       }
