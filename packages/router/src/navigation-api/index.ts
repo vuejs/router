@@ -100,18 +100,9 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded
   ): Promise<void> {
-    const [leavingRecords, updatingRecords, enteringRecords] =
-      extractChangingRecords(to, from)
+    const [updatingRecords, enteringRecords] = extractChangingRecords(to, from)
 
-    let guards = extractComponentsGuards(
-      leavingRecords.reverse(),
-      'beforeRouteLeave',
-      to,
-      from
-    )
-    await runGuardQueue(guards)
-
-    guards = []
+    let guards: (() => Promise<void>)[] = []
     for (const guard of beforeGuards.list()) {
       guards.push(guardToPromiseFn(guard, to, from))
     }
@@ -328,6 +319,35 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
         }
       )
       finalizeNavigation(from, from, failure)
+      return failure
+    }
+
+    // here the beforeRouteLeave guards are called: intercept handler can be too late to find the components
+    try {
+      const [leavingRecords] = extractChangingRecords(
+        toLocation as RouteLocationNormalized,
+        from
+      )
+
+      let guards = extractComponentsGuards(
+        leavingRecords.reverse(),
+        'beforeRouteLeave',
+        toLocation as RouteLocationNormalized,
+        from
+      )
+      await runGuardQueue(guards)
+    } catch (err) {
+      const failure = err as NavigationFailure
+
+      // Comprobamos si el fallo es una REDIRECCIÓN
+      if (isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)) {
+        // Si es así, iniciamos una nueva navegación con el destino de la redirección
+        // y devolvemos su resultado.
+        return navigate((failure as NavigationRedirectError).to, true)
+      }
+
+      finalizeNavigation(from, from, failure)
+      triggerError(failure, toLocation as RouteLocationNormalized, from)
       return failure
     }
 
