@@ -592,16 +592,6 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     )
   }
 
-  async function handler(event: NavigateEvent) {
-    const destination = new URL(event.destination.url)
-    const pathWithSearchAndHash =
-      destination.pathname + destination.search + destination.hash
-    const to = resolve(pathWithSearchAndHash) as RouteLocationNormalized
-    const from = currentRoute.value
-    pendingLocation = to
-    await resolveNavigationGuards(to, from)
-  }
-
   async function handleNavigate(event: NavigateEvent) {
     if (!event.canIntercept) return
 
@@ -616,16 +606,10 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
           delta > 0 ? NavigationDirection.forward : NavigationDirection.back,
         delta,
       }
-
-      try {
-        await handler(event)
-      } catch {
-        event.preventDefault()
-      }
-      return
-    }
-
-    if (event.navigationType === 'push' || event.navigationType === 'replace') {
+    } else if (
+      event.navigationType === 'push' ||
+      event.navigationType === 'replace'
+    ) {
       navigationInfo = {
         type:
           event.navigationType === 'push'
@@ -637,7 +621,15 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     }
 
     event.intercept({
-      handler: () => handler(event),
+      async handler() {
+        const destination = new URL(event.destination.url)
+        const pathWithSearchAndHash =
+          destination.pathname + destination.search + destination.hash
+        const to = resolve(pathWithSearchAndHash) as RouteLocationNormalized
+        const from = currentRoute.value
+        pendingLocation = to
+        await resolveNavigationGuards(to, from)
+      },
     })
   }
 
@@ -648,9 +640,10 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       return
     }
 
-    const to = resolve(
-      window.navigation.currentEntry!.url!
-    ) as RouteLocationNormalized
+    const destination = new URL(window.navigation.currentEntry!.url!)
+    const pathWithSearchAndHash =
+      destination.pathname + destination.search + destination.hash
+    const to = resolve(pathWithSearchAndHash) as RouteLocationNormalized
     const from = lastSuccessfulLocation
 
     const fromIndex = event.from.index
@@ -800,7 +793,11 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       ) {
         // see above
         started = true
-        navigate(options.location).catch(err => {
+        const initialLocation =
+          window.location.pathname +
+          window.location.search +
+          window.location.hash
+        navigate(initialLocation).catch(err => {
           if (__DEV__) warn('Unexpected error when starting the router:', err)
         })
       }
