@@ -298,15 +298,12 @@ export function extractComponentsGuards(
         const guard = options[guardType]
         guard &&
           guards.push(
-            guardToPromiseFn(
-              guard,
-              to,
-              from,
+            guardToPromiseFn(guard, to, from, {
               record,
               name,
               runWithContext,
-              info
-            )
+              info,
+            })
           )
       } else {
         // start requesting the chunk already
@@ -342,15 +339,12 @@ export function extractComponentsGuards(
 
             return (
               guard &&
-              guardToPromiseFn(
-                guard,
-                to,
-                from,
+              guardToPromiseFn(guard, to, from, {
                 record,
                 name,
                 runWithContext,
-                info
-              )()
+                info,
+              })()
             )
           })
         )
