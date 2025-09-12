@@ -639,6 +639,8 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
         } catch (error) {
           const failure = error as NavigationFailure
 
+          finalizeNavigation(to, from, failure)
+
           if (
             isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
           ) {
@@ -646,7 +648,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
           } else if (
             !isNavigationFailure(failure, ErrorTypes.NAVIGATION_CANCELLED)
           ) {
-            await triggerError(failure, to, from)
+            triggerError(failure, to, from)
           }
           throw failure
         }
@@ -694,6 +696,8 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       isRevertingNavigation = true
       go(fromIndex - toIndex)
 
+      finalizeNavigation(to, from, failure)
+
       if (isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)) {
         navigate((failure as NavigationRedirectError).to, { replace: true })
       } else {
@@ -714,33 +718,6 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       'currententrychange',
       handleCurrentEntryChange
     )
-  }
-
-  async function start(location: RouteLocationRaw) {
-    const to = resolve(location) as RouteLocationNormalized
-    const from = START_LOCATION_NORMALIZED
-
-    pendingLocation = to
-
-    try {
-      await resolveNavigationGuards(to, from)
-      finalizeNavigation(to, from)
-    } catch (error) {
-      const failure = error as NavigationFailure
-      // at start, a guard failure cannot be reverted, we just notify.
-      finalizeNavigation(to, from, failure)
-      if (isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)) {
-        // if there is a redirect, we navigate to it replacing the current entry.
-        await navigate((failure as NavigationRedirectError).to, {
-          replace: true,
-        })
-      } else {
-        // for other errors we just notify, the user is left in the blank page.
-        triggerError(failure, to, from)
-      }
-    } finally {
-      pendingLocation = undefined
-    }
   }
 
   const history: RouterHistory = {
@@ -811,7 +788,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
           window.location.pathname +
           window.location.search +
           window.location.hash
-        start(initialLocation).catch(err => {
+        navigate(initialLocation).catch(err => {
           if (__DEV__) warn('Unexpected error when starting the router:', err)
         })
       }
