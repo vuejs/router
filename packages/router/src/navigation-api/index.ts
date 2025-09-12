@@ -181,7 +181,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       lastSuccessfulLocation = to
     }
     currentRoute.value = to as RouteLocationNormalizedLoaded
-    markAsReady() // Marcamos como listo en la primera navegación exitosa
+    markAsReady()
     afterGuards.list().forEach(guard => guard(to, from, failure))
   }
 
