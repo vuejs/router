@@ -548,7 +548,10 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
 
     event.intercept({
       async handler() {
-        const to = resolve(event.destination.url) as RouteLocationNormalized
+        const destination = new URL(event.destination.url)
+        const pathWithSearchAndHash =
+          destination.pathname + destination.search + destination.hash
+        const to = resolve(pathWithSearchAndHash) as RouteLocationNormalized
         const from = currentRoute.value
         pendingLocation = to
         await resolveNavigationGuards(to, from)
