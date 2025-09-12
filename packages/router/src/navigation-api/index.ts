@@ -78,6 +78,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     START_LOCATION_NORMALIZED
   )
 
+  let isRevertingNavigation = false
   let pendingLocation: RouteLocation | undefined
   let lastSuccessfulLocation: RouteLocationNormalizedLoaded =
     START_LOCATION_NORMALIZED
@@ -657,6 +658,11 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
   async function handleCurrentEntryChange(
     event: NavigationCurrentEntryChangeEvent
   ) {
+    if (isRevertingNavigation) {
+      isRevertingNavigation = false
+      return
+    }
+
     if (event.navigationType !== 'traverse') {
       return
     }
@@ -686,6 +692,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     } catch (error) {
       const failure = error as NavigationFailure
 
+      isRevertingNavigation = true
       go(fromIndex - toIndex)
 
       finalizeNavigation(from, to, failure)
