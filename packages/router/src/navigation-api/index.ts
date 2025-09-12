@@ -86,6 +86,29 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
   let started: boolean | undefined
   const installedApps = new Set<App>()
 
+  function checkCanceledNavigation(
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized
+  ): NavigationFailure | void {
+    if (pendingLocation !== to) {
+      return createRouterError<NavigationFailure>(
+        ErrorTypes.NAVIGATION_CANCELLED,
+        {
+          from,
+          to,
+        }
+      )
+    }
+  }
+
+  function checkCanceledNavigationAndReject(
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized
+  ): Promise<void> {
+    const error = checkCanceledNavigation(to, from)
+    return error ? Promise.reject(error) : Promise.resolve()
+  }
+
   function runWithContext<T>(fn: () => T): T {
     const app: App | undefined = installedApps.values().next().value
     // support Vue < 3.3
@@ -119,6 +142,15 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       undefined,
       navigationInfo
     )
+
+    const canceledNavigationCheck = checkCanceledNavigationAndReject.bind(
+      null,
+      to,
+      from
+    )
+
+    guards.push(canceledNavigationCheck)
+
     await runGuardQueue(guards)
 
     guards = []
@@ -560,7 +592,17 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     )
   }
 
-  function handleNavigate(event: NavigateEvent) {
+  async function handler(event: NavigateEvent) {
+    const destination = new URL(event.destination.url)
+    const pathWithSearchAndHash =
+      destination.pathname + destination.search + destination.hash
+    const to = resolve(pathWithSearchAndHash) as RouteLocationNormalized
+    const from = currentRoute.value
+    pendingLocation = to
+    await resolveNavigationGuards(to, from)
+  }
+
+  async function handleNavigate(event: NavigateEvent) {
     if (!event.canIntercept) return
 
     if (event.navigationType === 'traverse') {
@@ -574,10 +616,16 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
           delta > 0 ? NavigationDirection.forward : NavigationDirection.back,
         delta,
       }
-    } else if (
-      event.navigationType === 'push' ||
-      event.navigationType === 'replace'
-    ) {
+
+      try {
+        await handler(event)
+      } catch {
+        event.preventDefault()
+      }
+      return
+    }
+
+    if (event.navigationType === 'push' || event.navigationType === 'replace') {
       navigationInfo = {
         type:
           event.navigationType === 'push'
@@ -589,15 +637,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     }
 
     event.intercept({
-      async handler() {
-        const destination = new URL(event.destination.url)
-        const pathWithSearchAndHash =
-          destination.pathname + destination.search + destination.hash
-        const to = resolve(pathWithSearchAndHash) as RouteLocationNormalized
-        const from = currentRoute.value
-        pendingLocation = to
-        await resolveNavigationGuards(to, from)
-      },
+      handler: () => handler(event),
     })
   }
 
