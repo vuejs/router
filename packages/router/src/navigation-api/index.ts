@@ -51,7 +51,12 @@ import {
   routerKey,
   routerViewLocationKey,
 } from '../injectionSymbols'
-import { RouterHistory } from '../history/common'
+import {
+  NavigationDirection,
+  NavigationInformation,
+  NavigationType,
+  RouterHistory,
+} from '../history/common'
 import { RouteRecordNormalized } from '../matcher/types'
 
 export interface RouterApiOptions extends Omit<RouterOptions, 'history'> {
@@ -73,7 +78,10 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     START_LOCATION_NORMALIZED
   )
 
-  let pendingLocation: RouteLocation = START_LOCATION_NORMALIZED
+  let pendingLocation: RouteLocation | undefined
+  let navigationInfo: NavigationInformation | undefined
+  let lastSuccessfulLocation: RouteLocationNormalizedLoaded =
+    START_LOCATION_NORMALIZED
 
   let started: boolean | undefined
   const installedApps = new Set<App>()
@@ -107,13 +115,15 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       leavingRecords.reverse(),
       'beforeRouteLeave',
       to,
-      from
+      from,
+      undefined,
+      navigationInfo
     )
     await runGuardQueue(guards)
 
     guards = []
     for (const guard of beforeGuards.list()) {
-      guards.push(guardToPromiseFn(guard, to, from))
+      guards.push(guardToPromiseFn(guard, to, from, { info: navigationInfo }))
     }
     await runGuardQueue(guards)
 
@@ -130,9 +140,15 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       if (record.beforeEnter) {
         if (isArray(record.beforeEnter)) {
           for (const beforeEnter of record.beforeEnter)
-            guards.push(guardToPromiseFn(beforeEnter, to, from))
+            guards.push(
+              guardToPromiseFn(beforeEnter, to, from, { info: navigationInfo })
+            )
         } else {
-          guards.push(guardToPromiseFn(record.beforeEnter, to, from))
+          guards.push(
+            guardToPromiseFn(record.beforeEnter, to, from, {
+              info: navigationInfo,
+            })
+          )
         }
       }
     }
@@ -143,13 +159,15 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       enteringRecords,
       'beforeRouteEnter',
       to,
-      from
+      from,
+      undefined,
+      navigationInfo
     )
     await runGuardQueue(guards)
 
     guards = []
     for (const guard of beforeResolveGuards.list()) {
-      guards.push(guardToPromiseFn(guard, to, from))
+      guards.push(guardToPromiseFn(guard, to, from, { info: navigationInfo }))
     }
     await runGuardQueue(guards)
   }
@@ -159,6 +177,9 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     from: RouteLocationNormalizedLoaded,
     failure?: NavigationFailure
   ) {
+    if (!failure) {
+      lastSuccessfulLocation = to
+    }
     currentRoute.value = to as RouteLocationNormalizedLoaded
     markAsReady() // Marcamos como listo en la primera navegación exitosa
     afterGuards.list().forEach(guard => guard(to, from, failure))
@@ -299,19 +320,15 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
 
   async function navigate(
     to: RouteLocationRaw,
-    replace?: boolean
+    options: { replace?: boolean; state?: any } = {}
   ): Promise<NavigationFailure | void> {
+    const { replace = false, state } = options
     const toLocation = resolve(to)
     const from = currentRoute.value
 
     const redirect = handleRedirectRecord(toLocation)
     if (redirect) {
-      return navigate(
-        assign(typeof redirect === 'string' ? { path: redirect } : redirect, {
-          replace,
-        }),
-        true
-      )
+      return navigate(assign({ replace }, redirect), { replace: true, state })
     }
 
     pendingLocation = toLocation as RouteLocationNormalized
@@ -546,6 +563,31 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
   function handleNavigate(event: NavigateEvent) {
     if (!event.canIntercept) return
 
+    if (event.navigationType === 'traverse') {
+      const fromIndex = window.navigation.currentEntry?.index ?? -1
+      const toIndex = event.destination.index
+      const delta = fromIndex === -1 ? 0 : toIndex - fromIndex
+
+      navigationInfo = {
+        type: NavigationType.pop, // 'traverse' maps to 'pop' in vue-router's terminology.
+        direction:
+          delta > 0 ? NavigationDirection.forward : NavigationDirection.back,
+        delta,
+      }
+    } else if (
+      event.navigationType === 'push' ||
+      event.navigationType === 'replace'
+    ) {
+      navigationInfo = {
+        type:
+          event.navigationType === 'push'
+            ? NavigationType.push
+            : NavigationType.pop,
+        direction: NavigationDirection.unknown, // No specific direction for push/replace.
+        delta: event.navigationType === 'push' ? 1 : 0,
+      }
+    }
+
     event.intercept({
       async handler() {
         const destination = new URL(event.destination.url)
@@ -559,45 +601,94 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     })
   }
 
+  async function handleCurrentEntryChange(
+    event: NavigationCurrentEntryChangeEvent
+  ) {
+    if (event.navigationType !== 'traverse') {
+      return
+    }
+
+    const to = resolve(
+      window.navigation.currentEntry!.url!
+    ) as RouteLocationNormalized
+    const from = lastSuccessfulLocation
+
+    const fromIndex = event.from.index
+    const toIndex = window.navigation.currentEntry!.index
+    const delta = toIndex - fromIndex
+    navigationInfo = {
+      type: NavigationType.pop,
+      direction:
+        delta > 0 ? NavigationDirection.forward : NavigationDirection.back,
+      delta,
+    }
+
+    pendingLocation = to
+
+    try {
+      // then browser has been done the navigation, we just run the guards
+      await resolveNavigationGuards(to, from)
+      finalizeNavigation(to, from)
+    } catch (error) {
+      const failure = error as NavigationFailure
+
+      go(fromIndex - toIndex)
+
+      finalizeNavigation(from, to, failure)
+
+      if (isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)) {
+        navigate((failure as NavigationRedirectError).to, { replace: true })
+      } else {
+        triggerError(failure, to, from)
+      }
+    }
+  }
+
   function handleNavigateSuccess(event: Event) {
-    if (pendingLocation !== START_LOCATION_NORMALIZED) {
+    navigationInfo = undefined
+    if (pendingLocation) {
       finalizeNavigation(
         resolve(pendingLocation) as RouteLocationNormalized,
         currentRoute.value
       )
-      pendingLocation = START_LOCATION_NORMALIZED
+      pendingLocation = undefined
     }
   }
 
   function handleNavigateError(event: ErrorEvent) {
+    navigationInfo = undefined
+
     const failure = event.error as NavigationFailure
 
-    if (pendingLocation !== START_LOCATION_NORMALIZED) {
-      finalizeNavigation(
-        pendingLocation as RouteLocationNormalized,
-        currentRoute.value,
-        failure
-      )
+    if (pendingLocation) {
+      const to = pendingLocation as RouteLocationNormalized
+      const from = currentRoute.value
+      pendingLocation = undefined
+
+      finalizeNavigation(to, from, failure)
 
       if (isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)) {
-        navigate((failure as NavigationRedirectError).to, true)
+        navigate((failure as NavigationRedirectError).to, { replace: true })
       } else {
-        triggerError(
-          failure,
-          pendingLocation as RouteLocationNormalized,
-          currentRoute.value
-        )
+        triggerError(failure, to, from)
       }
-      pendingLocation = START_LOCATION_NORMALIZED
     }
   }
 
   window.navigation.addEventListener('navigate', handleNavigate)
+  window.navigation.addEventListener(
+    'currententrychange',
+    handleCurrentEntryChange
+  )
   window.navigation.addEventListener('navigatesuccess', handleNavigateSuccess)
   window.navigation.addEventListener('navigateerror', handleNavigateError)
 
   function destroy() {
     window.navigation.removeEventListener('navigate', handleNavigate)
+    window.navigation.removeEventListener(
+      'currententrychange',
+      handleCurrentEntryChange
+    )
     window.navigation.removeEventListener(
       'navigatesuccess',
       handleNavigateSuccess
@@ -615,8 +706,8 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     listen(): () => void {
       throw new Error('unsupported operation')
     },
-    push: (to: RouteLocationRaw) => navigate(to, false),
-    replace: (to: RouteLocationRaw) => navigate(to, true),
+    push: (to: RouteLocationRaw) => navigate(to),
+    replace: (to: RouteLocationRaw) => navigate(to, { replace: true }),
   }
 
   const router: Router = {
@@ -634,8 +725,8 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       history,
     },
 
-    push: (to: RouteLocationRaw) => navigate(to, false),
-    replace: (to: RouteLocationRaw) => navigate(to, true),
+    push: (to: RouteLocationRaw) => navigate(to),
+    replace: (to: RouteLocationRaw) => navigate(to, { replace: true }),
     go,
     back: () => go(-1),
     forward: () => go(1),

@@ -22,6 +22,7 @@ import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
 import { isESModule, isRouteComponent } from './utils'
 import { warn } from './warning'
+import { NavigationInformation } from './history/common'
 
 function registerGuard(
   record: RouteRecordNormalized,
@@ -106,27 +107,20 @@ export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
   registerGuard(activeRecord, 'updateGuards', updateGuard)
 }
 
-export function guardToPromiseFn(
-  guard: NavigationGuard,
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalizedLoaded
-): () => Promise<void>
-export function guardToPromiseFn(
-  guard: NavigationGuard,
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalizedLoaded,
-  record: RouteRecordNormalized,
-  name: string,
-  runWithContext: <T>(fn: () => T) => T
-): () => Promise<void>
+interface GuardToPromiseFnOptions {
+  record?: RouteRecordNormalized
+  name?: string
+  runWithContext?: <T>(fn: () => T) => T
+  info?: NavigationInformation
+}
+
 export function guardToPromiseFn(
   guard: NavigationGuard,
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded,
-  record?: RouteRecordNormalized,
-  name?: string,
-  runWithContext: <T>(fn: () => T) => T = fn => fn()
+  options: GuardToPromiseFnOptions = {}
 ): () => Promise<void> {
+  const { record, name, runWithContext = fn => fn(), info } = options
   // keep a reference to the enterCallbackArray to prevent pushing callbacks if a new navigation took place
   const enterCallbackArray =
     record &&
@@ -179,7 +173,7 @@ export function guardToPromiseFn(
           record && record.instances[name!],
           to,
           from,
-          __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
+          __DEV__ ? canOnlyBeCalledOnce(next, to, from, info) : next
         )
       )
       let guardCall = Promise.resolve(guardReturn)
@@ -214,14 +208,19 @@ export function guardToPromiseFn(
 function canOnlyBeCalledOnce(
   next: NavigationGuardNext,
   to: RouteLocationNormalized,
-  from: RouteLocationNormalized
+  from: RouteLocationNormalized,
+  info?: NavigationInformation
 ): NavigationGuardNext {
   let called = 0
   return function () {
-    if (called++ === 1)
+    if (called++ === 1) {
+      const showInfo = info
+        ? ` (type=${info.type},direction=${info.direction},delta=${info.delta})`
+        : ''
       warn(
-        `The "next" callback was called more than once in one navigation guard when going from "${from.fullPath}" to "${to.fullPath}". It should be called exactly one time in each navigation guard. This will fail in production.`
+        `The "next" callback was called more than once in one navigation guard when going from "${from.fullPath}" to "${to.fullPath}"${showInfo}. It should be called exactly one time in each navigation guard. This will fail in production.`
       )
+    }
     // @ts-expect-error: we put it in the original one because it's easier to check
     next._called = true
     if (called === 1) next.apply(null, arguments as any)
@@ -235,7 +234,8 @@ export function extractComponentsGuards(
   guardType: GuardType,
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded,
-  runWithContext: <T>(fn: () => T) => T = fn => fn()
+  runWithContext: <T>(fn: () => T) => T = fn => fn(),
+  info?: NavigationInformation
 ) {
   const guards: Array<() => Promise<void>> = []
 
@@ -298,7 +298,15 @@ export function extractComponentsGuards(
         const guard = options[guardType]
         guard &&
           guards.push(
-            guardToPromiseFn(guard, to, from, record, name, runWithContext)
+            guardToPromiseFn(
+              guard,
+              to,
+              from,
+              record,
+              name,
+              runWithContext,
+              info
+            )
           )
       } else {
         // start requesting the chunk already
@@ -334,7 +342,15 @@ export function extractComponentsGuards(
 
             return (
               guard &&
-              guardToPromiseFn(guard, to, from, record, name, runWithContext)()
+              guardToPromiseFn(
+                guard,
+                to,
+                from,
+                record,
+                name,
+                runWithContext,
+                info
+              )()
             )
           })
         )
