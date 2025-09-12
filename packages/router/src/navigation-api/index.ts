@@ -392,9 +392,13 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     return !!matcher.getRecordMatcher(name)
   }
 
-  const BEFORE_HASH_RE = /^[^#]+#/
-  function createHref(base: string, location: string): string {
-    return base.replace(BEFORE_HASH_RE, '#') + location
+  function createHref(base: string, path: string): string {
+    if (path === '/') return base || '/'
+    return (
+      (base.endsWith('/') ? base.slice(0, -1) : base) +
+      (path.startsWith('/') ? '' : '/') +
+      path
+    )
   }
 
   function resolve(
