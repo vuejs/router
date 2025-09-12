@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@types/dom-navigation':
+        specifier: ^1.0.6
+        version: 1.0.6
       '@vitest/coverage-v8':
         specifier: ^2.1.9
         version: 2.1.9(vitest@2.1.9(@types/node@22.15.2)(@vitest/ui@2.1.9)(happy-dom@15.11.7)(jsdom@19.0.0)(terser@5.32.0))
@@ -766,6 +769,9 @@ packages:
 
   '@types/chai@4.3.16':
     resolution: {integrity: sha512-PatH4iOdyh3MyWtmHVFXLWCCIhUbopaltqddG9BzB+gMIzee2MJrvd+jouii9Z3wzQJruGWAm7WOMjgfG8hQlQ==}
+
+  '@types/dom-navigation@1.0.6':
+    resolution: {integrity: sha512-4srBpebg8rFDm0LafYuWhZMgLoSr5J4gx4q1uaTqOXwVk00y+CkTdJ4SC57sR1cMhP0ZRjApMRdHVcFYOvPGTw==}
 
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
@@ -4318,6 +4324,8 @@ snapshots:
   '@types/argparse@1.0.38': {}
 
   '@types/chai@4.3.16': {}
+
+  '@types/dom-navigation@1.0.6': {}
 
   '@types/estree@1.0.6': {}
 

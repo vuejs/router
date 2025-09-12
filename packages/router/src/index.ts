@@ -138,7 +138,9 @@ export type {
 } from './typed-routes'
 
 export { createRouter } from './router'
+export { createNavigationApiRouter } from './navigation-api'
 export type { Router, RouterOptions, RouterScrollBehavior } from './router'
+export type { RouterApiOptions } from './navigation-api'
 
 export { NavigationFailureType, isNavigationFailure } from './errors'
 export type {
