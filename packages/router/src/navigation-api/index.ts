@@ -1,5 +1,3 @@
-/// <reference types="dom-navigation" />
-
 import { App, shallowReactive, shallowRef, unref } from 'vue'
 import {
   parseURL,
@@ -169,9 +167,9 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
   function markAsReady(err?: any): void {
     if (!ready) {
       ready = !err
-      // @ts-expect-error we need to add some types
       readyHandlers
         .list()
+        // @ts-expect-error we need to add some types
         .forEach(([resolve, reject]) => (err ? reject(err) : resolve()))
       readyHandlers.reset()
     }
