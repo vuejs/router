@@ -739,7 +739,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
         triggerError(failure, to, from)
       }
     } finally {
-      pendingLocation = null
+      pendingLocation = undefined
     }
   }
 
