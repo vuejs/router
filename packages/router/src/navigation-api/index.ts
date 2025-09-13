@@ -639,7 +639,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
         } catch (error) {
           const failure = error as NavigationFailure
 
-          finalizeNavigation(to, from, failure)
+          afterGuards.list().forEach(guard => guard(to, from, failure))
 
           if (
             isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
@@ -696,11 +696,13 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       isRevertingNavigation = true
       go(fromIndex - toIndex)
 
-      finalizeNavigation(to, from, failure)
+      afterGuards.list().forEach(guard => guard(to, from, failure))
 
       if (isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)) {
         navigate((failure as NavigationRedirectError).to, { replace: true })
-      } else {
+      } else if (
+        !isNavigationFailure(failure, ErrorTypes.NAVIGATION_CANCELLED)
+      ) {
         triggerError(failure, to, from)
       }
     }
