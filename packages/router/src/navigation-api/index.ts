@@ -90,7 +90,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
   function checkCanceledNavigation(
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
-  ): NavigationFailure | void {
+  ): NavigationFailure | undefined {
     if (pendingLocation !== to) {
       return createRouterError<NavigationFailure>(
         ErrorTypes.NAVIGATION_CANCELLED,
@@ -100,14 +100,16 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
         }
       )
     }
+
+    return undefined
   }
 
   function checkCanceledNavigationAndReject(
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
-  ): Promise<void> {
+  ) {
     const error = checkCanceledNavigation(to, from)
-    return error ? Promise.reject(error) : Promise.resolve()
+    if (error) throw error
   }
 
   function runWithContext<T>(fn: () => T): T {
@@ -118,11 +120,10 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       : fn()
   }
 
-  function runGuardQueue(guards: Lazy<any>[]): Promise<any> {
-    return guards.reduce(
-      (promise, guard) => promise.then(() => runWithContext(guard)),
-      Promise.resolve()
-    )
+  async function runGuardQueue(guards: Lazy<any>[]): Promise<any> {
+    for (const guard of guards) {
+      await runWithContext(guard)
+    }
   }
 
   let ready: boolean = false
@@ -146,14 +147,11 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       navigationInfo
     )
 
-    const canceledNavigationCheck = checkCanceledNavigationAndReject.bind(
-      null,
-      to,
-      from
-    )
+    const canceledNavigationCheck = async () => {
+      checkCanceledNavigationAndReject(to, from)
+    }
 
     guards.push(canceledNavigationCheck)
-
     await runGuardQueue(guards)
 
     // check global guards beforeEach
