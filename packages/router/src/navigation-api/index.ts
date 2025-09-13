@@ -622,6 +622,8 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
                 ? NavigationDirection.forward
                 : NavigationDirection.back,
             delta,
+            isBackBrowserButton: delta < 0,
+            isForwardBrowserButton: delta > 0,
           }
         } else if (
           event.navigationType === 'push' ||
@@ -689,6 +691,8 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       direction:
         delta > 0 ? NavigationDirection.forward : NavigationDirection.back,
       delta,
+      isBackBrowserButton: delta < 0,
+      isForwardBrowserButton: delta > 0,
     }
 
     pendingLocation = to
