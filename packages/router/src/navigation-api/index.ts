@@ -602,7 +602,11 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
         const pathWithSearchAndHash =
           destination.pathname + destination.search + destination.hash
         const to = resolve(pathWithSearchAndHash) as RouteLocationNormalized
-        const from = currentRoute.value
+        const from =
+          currentRoute.value === START_LOCATION_NORMALIZED
+            ? lastSuccessfulLocation
+            : currentRoute.value
+
         pendingLocation = to
 
         let navigationInfo: NavigationInformation | undefined
@@ -793,17 +797,13 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       ) {
         // see above
         started = true
-        // De esta forma, el navegador siempre sabe qué está pasando.
         const initialLocation =
           window.location.pathname +
           window.location.search +
           window.location.hash
-
-        navigate(initialLocation).catch(err => {
-          // El `catch` aquí es solo para errores catastróficos.
-          // Los fallos de guards ya los gestiona el handler.
-          if (__DEV__) warn('Unexpected error when starting the router:', err)
-        })
+        lastSuccessfulLocation = resolve(
+          initialLocation
+        ) as RouteLocationNormalized
       }
 
       const reactiveRoute = {} as RouteLocationNormalizedLoaded
