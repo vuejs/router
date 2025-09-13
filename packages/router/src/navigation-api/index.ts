@@ -651,6 +651,9 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
             triggerError(failure, to, from)
           }
           throw failure
+        } finally {
+          // update always, we'll have some race condition it the user clicks 2 links
+          pendingLocation = undefined
         }
       },
     })
@@ -696,7 +699,8 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       isRevertingNavigation = true
       go(fromIndex - toIndex)
 
-      afterGuards.list().forEach(guard => guard(to, from, failure))
+      // we end up at from to keep consistency
+      finalizeNavigation(from, to, failure)
 
       if (isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)) {
         navigate((failure as NavigationRedirectError).to, { replace: true })
@@ -705,6 +709,9 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       ) {
         triggerError(failure, to, from)
       }
+    } finally {
+      // update always, we'll have some race condition it the user clicks 2 links
+      pendingLocation = undefined
     }
   }
 
@@ -786,13 +793,25 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       ) {
         // see above
         started = true
-        const initialLocation =
+        const initialLocation = resolve(
           window.location.pathname +
-          window.location.search +
-          window.location.hash
-        navigate(initialLocation).catch(err => {
-          if (__DEV__) warn('Unexpected error when starting the router:', err)
-        })
+            window.location.search +
+            window.location.hash
+        ) as RouteLocationNormalized
+        resolveNavigationGuards(initialLocation, START_LOCATION_NORMALIZED)
+          .then(() => {
+            finalizeNavigation(initialLocation, START_LOCATION_NORMALIZED)
+          })
+          .catch(err => {
+            if (
+              isNavigationFailure(err, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
+            ) {
+              navigate(err.to, { replace: true })
+            } else {
+              if (__DEV__)
+                warn('Unexpected error when starting the router:', err)
+            }
+          })
       }
 
       const reactiveRoute = {} as RouteLocationNormalizedLoaded
