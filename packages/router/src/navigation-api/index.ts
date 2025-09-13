@@ -136,6 +136,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     const [leavingRecords, updatingRecords, enteringRecords] =
       extractChangingRecords(to, from)
 
+    // run the queue of per route beforeRouteLeave guards
     let guards = extractComponentsGuards(
       leavingRecords.reverse(),
       'beforeRouteLeave',
@@ -155,20 +156,25 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
 
     await runGuardQueue(guards)
 
+    // check global guards beforeEach
     guards = []
     for (const guard of beforeGuards.list()) {
       guards.push(guardToPromiseFn(guard, to, from, { info: navigationInfo }))
     }
+    guards.push(canceledNavigationCheck)
     await runGuardQueue(guards)
 
+    // check in components beforeRouteUpdate
     guards = extractComponentsGuards(
       updatingRecords,
       'beforeRouteUpdate',
       to,
       from
     )
+    guards.push(canceledNavigationCheck)
     await runGuardQueue(guards)
 
+    // check the route beforeEnter
     guards = []
     for (const record of enteringRecords) {
       if (record.beforeEnter) {
@@ -186,7 +192,12 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
         }
       }
     }
+    guards.push(canceledNavigationCheck)
     await runGuardQueue(guards)
+
+    // NOTE: at this point to.matched is normalized and does not contain any () => Promise<Component>
+    // clear existing enterCallbacks, these are added by extractComponentsGuards
+    to.matched.forEach(record => (record.enterCallbacks = {}))
 
     // Resolve async components and run beforeRouteEnter
     guards = extractComponentsGuards(
@@ -194,15 +205,18 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       'beforeRouteEnter',
       to,
       from,
-      undefined,
+      runWithContext,
       navigationInfo
     )
+    guards.push(canceledNavigationCheck)
     await runGuardQueue(guards)
 
+    // check global guards beforeResolve
     guards = []
     for (const guard of beforeResolveGuards.list()) {
       guards.push(guardToPromiseFn(guard, to, from, { info: navigationInfo }))
     }
+    guards.push(canceledNavigationCheck)
     await runGuardQueue(guards)
   }
 
