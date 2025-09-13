@@ -697,7 +697,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       const failure = error as NavigationFailure
 
       isRevertingNavigation = true
-      go(fromIndex - toIndex)
+      go(event.from.index - window.navigation.currentEntry!.index)
 
       // we end up at from to keep consistency
       finalizeNavigation(from, to, failure)
@@ -793,25 +793,17 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       ) {
         // see above
         started = true
-        const initialLocation = resolve(
+        // De esta forma, el navegador siempre sabe qué está pasando.
+        const initialLocation =
           window.location.pathname +
-            window.location.search +
-            window.location.hash
-        ) as RouteLocationNormalized
-        resolveNavigationGuards(initialLocation, START_LOCATION_NORMALIZED)
-          .then(() => {
-            finalizeNavigation(initialLocation, START_LOCATION_NORMALIZED)
-          })
-          .catch(err => {
-            if (
-              isNavigationFailure(err, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
-            ) {
-              navigate(err.to, { replace: true })
-            } else {
-              if (__DEV__)
-                warn('Unexpected error when starting the router:', err)
-            }
-          })
+          window.location.search +
+          window.location.hash
+
+        navigate(initialLocation).catch(err => {
+          // El `catch` aquí es solo para errores catastróficos.
+          // Los fallos de guards ya los gestiona el handler.
+          if (__DEV__) warn('Unexpected error when starting the router:', err)
+        })
       }
 
       const reactiveRoute = {} as RouteLocationNormalizedLoaded
