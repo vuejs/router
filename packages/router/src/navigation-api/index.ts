@@ -78,6 +78,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     START_LOCATION_NORMALIZED
   )
 
+  let initialNavigation = true
   let isRevertingNavigation = false
   let pendingLocation: RouteLocation | undefined
   let lastSuccessfulLocation: RouteLocationNormalizedLoaded =
@@ -596,6 +597,11 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
   async function handleNavigate(event: NavigateEvent) {
     if (!event.canIntercept) return
 
+    if (initialNavigation) {
+      initialNavigation = false
+      return
+    }
+
     event.intercept({
       async handler() {
         const destination = new URL(event.destination.url)
@@ -801,13 +807,32 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       ) {
         // see above
         started = true
-        const initialLocation =
+        const initialLocation = resolve(
           window.location.pathname +
-          window.location.search +
-          window.location.hash
-        lastSuccessfulLocation = resolve(
-          initialLocation
+            window.location.search +
+            window.location.hash
         ) as RouteLocationNormalized
+        pendingLocation = initialLocation
+        resolveNavigationGuards(initialLocation, START_LOCATION_NORMALIZED)
+          .then(() => {
+            finalizeNavigation(initialLocation, START_LOCATION_NORMALIZED)
+          })
+          .catch(err => {
+            const failure = err as NavigationFailure
+            if (
+              isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
+            ) {
+              return navigate((failure as NavigationRedirectError).to, {
+                replace: true,
+              })
+            } else {
+              return triggerError(
+                failure,
+                initialLocation,
+                START_LOCATION_NORMALIZED
+              )
+            }
+          })
       }
 
       const reactiveRoute = {} as RouteLocationNormalizedLoaded
