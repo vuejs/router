@@ -612,10 +612,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
         const pathWithSearchAndHash =
           destination.pathname + destination.search + destination.hash
         const to = resolve(pathWithSearchAndHash) as RouteLocationNormalized
-        const from =
-          currentRoute.value === START_LOCATION_NORMALIZED
-            ? lastSuccessfulLocation
-            : currentRoute.value
+        const from = currentRoute.value
 
         pendingLocation = to
 
@@ -647,6 +644,14 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
             direction: NavigationDirection.unknown, // No specific direction for push/replace.
             delta: event.navigationType === 'push' ? 1 : 0,
           }
+        }
+
+        if (
+          from !== START_LOCATION_NORMALIZED &&
+          !(to as RouteLocationOptions).force &&
+          isSameRouteLocation(stringifyQuery, from, to)
+        ) {
+          return
         }
 
         try {
@@ -811,32 +816,6 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       ) {
         // see above
         started = true
-        const initialLocation = resolve(
-          window.location.pathname +
-            window.location.search +
-            window.location.hash
-        ) as RouteLocationNormalized
-        pendingLocation = initialLocation
-        resolveNavigationGuards(initialLocation, START_LOCATION_NORMALIZED)
-          .then(() => {
-            finalizeNavigation(initialLocation, START_LOCATION_NORMALIZED)
-          })
-          .catch(err => {
-            const failure = err as NavigationFailure
-            if (
-              isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
-            ) {
-              return navigate((failure as NavigationRedirectError).to, {
-                replace: true,
-              })
-            } else {
-              return triggerError(
-                failure,
-                initialLocation,
-                START_LOCATION_NORMALIZED
-              )
-            }
-          })
       }
 
       const reactiveRoute = {} as RouteLocationNormalizedLoaded
