@@ -612,7 +612,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
           ) as RouteLocationNormalized
         }
 
-        const to = pendingLocation
+        const to = pendingLocation as RouteLocationNormalized
         const from = currentRoute.value
 
         let navigationInfo: NavigationInformation | undefined
