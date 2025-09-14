@@ -236,8 +236,8 @@ export function extractComponentsGuards(
   guardType: GuardType,
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded,
-  info?: NavigationInformation,
-  runWithContext: <T>(fn: () => T) => T = fn => fn()
+  runWithContext: <T>(fn: () => T) => T = fn => fn(),
+  info?: NavigationInformation
 ) {
   const guards: Array<() => Promise<void>> = []
 

@@ -923,8 +923,8 @@ export function createRouter(options: RouterOptions): Router {
             'beforeRouteEnter',
             to,
             from,
-            undefined,
-            runWithContext
+            runWithContext,
+            undefined
           )
           guards.push(canceledNavigationCheck)
 

@@ -143,6 +143,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       'beforeRouteLeave',
       to,
       from,
+      undefined,
       navigationInfo
     )
 
@@ -174,6 +175,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       'beforeRouteUpdate',
       to,
       from,
+      undefined,
       navigationInfo
     )
     guards.push(canceledNavigationCheck)
@@ -210,8 +212,8 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       'beforeRouteEnter',
       to,
       from,
-      navigationInfo,
-      runWithContext
+      runWithContext,
+      navigationInfo
     )
     guards.push(canceledNavigationCheck)
     await runGuardQueue(guards)
