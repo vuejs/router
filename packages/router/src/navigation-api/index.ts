@@ -259,6 +259,10 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
   }
 
   function go(delta: number) {
+    if (delta === 0 && isRevertingNavigation) {
+      return
+    }
+
     // Case 1: go(0) should trigger a reload.
     if (delta === 0) {
       window.navigation.reload()
@@ -718,6 +722,9 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       finalizeNavigation(to, from)
     } catch (error) {
       const failure = error as NavigationFailure
+      if (isNavigationFailure(failure, ErrorTypes.NAVIGATION_DUPLICATED)) {
+        return
+      }
 
       isRevertingNavigation = true
       go(event.from.index - window.navigation.currentEntry!.index)
