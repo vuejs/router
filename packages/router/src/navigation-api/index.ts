@@ -145,6 +145,13 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       from
     )
 
+    // leavingRecords is already reversed
+    for (const record of leavingRecords) {
+      record.leaveGuards.forEach(guard => {
+        guards.push(guardToPromiseFn(guard, to, from))
+      })
+    }
+
     const canceledNavigationCheck = async () => {
       checkCanceledNavigationAndReject(to, from)
     }
