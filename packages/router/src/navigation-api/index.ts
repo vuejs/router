@@ -816,6 +816,32 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       ) {
         // see above
         started = true
+        const initialLocation = resolve(
+          window.location.pathname +
+            window.location.search +
+            window.location.hash
+        ) as RouteLocationNormalized
+        pendingLocation = initialLocation
+        resolveNavigationGuards(initialLocation, START_LOCATION_NORMALIZED)
+          .then(() => {
+            finalizeNavigation(initialLocation, START_LOCATION_NORMALIZED)
+          })
+          .catch(err => {
+            const failure = err as NavigationFailure
+            if (
+              isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
+            ) {
+              return navigate((failure as NavigationRedirectError).to, {
+                replace: true,
+              })
+            } else {
+              return triggerError(
+                failure,
+                initialLocation,
+                START_LOCATION_NORMALIZED
+              )
+            }
+          })
       }
 
       const reactiveRoute = {} as RouteLocationNormalizedLoaded
