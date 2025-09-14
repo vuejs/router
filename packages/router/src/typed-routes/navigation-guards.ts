@@ -6,6 +6,7 @@ import type {
 } from './route-location'
 import type { TypesConfig } from '../config'
 import type { NavigationFailure } from '../errors'
+import type { NavigationInformation } from '../history/common'
 import { ComponentPublicInstance } from 'vue'
 
 /**
@@ -25,7 +26,8 @@ export interface NavigationGuardWithThis<T> {
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
     // intentionally not typed to make people use the return
-    next: NavigationGuardNext
+    next: NavigationGuardNext,
+    info?: NavigationInformation
   ): _Awaitable<NavigationGuardReturn>
 }
 
@@ -41,7 +43,8 @@ export interface _NavigationGuardResolved {
     to: RouteLocationNormalizedLoaded,
     from: RouteLocationNormalizedLoaded,
     // intentionally not typed to make people use the return
-    next: NavigationGuardNext
+    next: NavigationGuardNext,
+    info?: NavigationInformation
   ): _Awaitable<NavigationGuardReturn>
 }
 
@@ -53,7 +56,8 @@ export interface NavigationGuard {
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
     // intentionally not typed to make people use the return
-    next: NavigationGuardNext
+    next: NavigationGuardNext,
+    info?: NavigationInformation
   ): _Awaitable<NavigationGuardReturn>
 }
 

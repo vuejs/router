@@ -142,13 +142,14 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       leavingRecords.reverse(),
       'beforeRouteLeave',
       to,
-      from
+      from,
+      navigationInfo
     )
 
     // leavingRecords is already reversed
     for (const record of leavingRecords) {
       record.leaveGuards.forEach(guard => {
-        guards.push(guardToPromiseFn(guard, to, from))
+        guards.push(guardToPromiseFn(guard, to, from, { info: navigationInfo }))
       })
     }
 
@@ -162,7 +163,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     // check global guards beforeEach
     guards = []
     for (const guard of beforeGuards.list()) {
-      guards.push(guardToPromiseFn(guard, to, from))
+      guards.push(guardToPromiseFn(guard, to, from, { info: navigationInfo }))
     }
     guards.push(canceledNavigationCheck)
     await runGuardQueue(guards)
@@ -172,7 +173,8 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       updatingRecords,
       'beforeRouteUpdate',
       to,
-      from
+      from,
+      navigationInfo
     )
     guards.push(canceledNavigationCheck)
     await runGuardQueue(guards)
@@ -183,9 +185,15 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       if (record.beforeEnter) {
         if (isArray(record.beforeEnter)) {
           for (const beforeEnter of record.beforeEnter)
-            guards.push(guardToPromiseFn(beforeEnter, to, from))
+            guards.push(
+              guardToPromiseFn(beforeEnter, to, from, { info: navigationInfo })
+            )
         } else {
-          guards.push(guardToPromiseFn(record.beforeEnter, to, from))
+          guards.push(
+            guardToPromiseFn(record.beforeEnter, to, from, {
+              info: navigationInfo,
+            })
+          )
         }
       }
     }
@@ -202,6 +210,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       'beforeRouteEnter',
       to,
       from,
+      navigationInfo,
       runWithContext
     )
     guards.push(canceledNavigationCheck)
@@ -210,7 +219,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     // check global guards beforeResolve
     guards = []
     for (const guard of beforeResolveGuards.list()) {
-      guards.push(guardToPromiseFn(guard, to, from))
+      guards.push(guardToPromiseFn(guard, to, from, { info: navigationInfo }))
     }
     guards.push(canceledNavigationCheck)
     await runGuardQueue(guards)
@@ -634,9 +643,9 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
               delta > 0
                 ? NavigationDirection.forward
                 : NavigationDirection.back,
-            delta /*,
+            delta,
             isBackBrowserButton: delta < 0,
-            isForwardBrowserButton: delta > 0*/,
+            isForwardBrowserButton: delta > 0,
           }
         } else if (
           event.navigationType === 'push' ||
@@ -711,9 +720,9 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       type: NavigationType.pop,
       direction:
         delta > 0 ? NavigationDirection.forward : NavigationDirection.back,
-      delta /*,
+      delta,
       isBackBrowserButton: delta < 0,
-      isForwardBrowserButton: delta > 0*/,
+      isForwardBrowserButton: delta > 0,
     }
 
     pendingLocation = to
