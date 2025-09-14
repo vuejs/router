@@ -174,7 +174,8 @@ export function guardToPromiseFn(
           record && record.instances[name!],
           to,
           from,
-          __DEV__ ? canOnlyBeCalledOnce(next, to, from, info) : next
+          __DEV__ ? canOnlyBeCalledOnce(next, to, from, info) : next,
+          info
         )
       )
       let guardCall = Promise.resolve(guardReturn)
