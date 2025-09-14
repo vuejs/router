@@ -120,10 +120,12 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       : fn()
   }
 
-  async function runGuardQueue(guards: Lazy<any>[]): Promise<any> {
-    for (const guard of guards) {
-      await runWithContext(guard)
-    }
+  // TODO: type this as NavigationGuardReturn or similar instead of any
+  function runGuardQueue(guards: Lazy<any>[]): Promise<any> {
+    return guards.reduce(
+      (promise, guard) => promise.then(() => runWithContext(guard)),
+      Promise.resolve()
+    )
   }
 
   let ready: boolean = false
