@@ -48,14 +48,6 @@ export interface NavigationInformation {
   type: NavigationType
   direction: NavigationDirection
   delta: number
-  /**
-   * True if the navigation was triggered by the browser back button.
-   */
-  isBackBrowserButton?: boolean
-  /**
-   * True if the navigation was triggered by the browser forward button.
-   */
-  isForwardBrowserButton?: boolean
 }
 
 export interface NavigationCallback {

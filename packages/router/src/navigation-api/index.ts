@@ -1,4 +1,5 @@
-import { App, shallowReactive, shallowRef, unref } from 'vue'
+import type { App } from 'vue'
+import { shallowReactive, shallowRef, unref } from 'vue'
 import {
   parseURL,
   stringifyURL,
@@ -142,9 +143,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       leavingRecords.reverse(),
       'beforeRouteLeave',
       to,
-      from,
-      undefined,
-      navigationInfo
+      from
     )
 
     const canceledNavigationCheck = async () => {
@@ -157,7 +156,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     // check global guards beforeEach
     guards = []
     for (const guard of beforeGuards.list()) {
-      guards.push(guardToPromiseFn(guard, to, from, { info: navigationInfo }))
+      guards.push(guardToPromiseFn(guard, to, from))
     }
     guards.push(canceledNavigationCheck)
     await runGuardQueue(guards)
@@ -178,15 +177,9 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       if (record.beforeEnter) {
         if (isArray(record.beforeEnter)) {
           for (const beforeEnter of record.beforeEnter)
-            guards.push(
-              guardToPromiseFn(beforeEnter, to, from, { info: navigationInfo })
-            )
+            guards.push(guardToPromiseFn(beforeEnter, to, from))
         } else {
-          guards.push(
-            guardToPromiseFn(record.beforeEnter, to, from, {
-              info: navigationInfo,
-            })
-          )
+          guards.push(guardToPromiseFn(record.beforeEnter, to, from))
         }
       }
     }
@@ -203,8 +196,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       'beforeRouteEnter',
       to,
       from,
-      runWithContext,
-      navigationInfo
+      runWithContext
     )
     guards.push(canceledNavigationCheck)
     await runGuardQueue(guards)
@@ -212,7 +204,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     // check global guards beforeResolve
     guards = []
     for (const guard of beforeResolveGuards.list()) {
-      guards.push(guardToPromiseFn(guard, to, from, { info: navigationInfo }))
+      guards.push(guardToPromiseFn(guard, to, from))
     }
     guards.push(canceledNavigationCheck)
     await runGuardQueue(guards)
@@ -639,9 +631,9 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
               delta > 0
                 ? NavigationDirection.forward
                 : NavigationDirection.back,
-            delta,
+            delta /*,
             isBackBrowserButton: delta < 0,
-            isForwardBrowserButton: delta > 0,
+            isForwardBrowserButton: delta > 0*/,
           }
         } else if (
           event.navigationType === 'push' ||
@@ -708,9 +700,9 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       type: NavigationType.pop,
       direction:
         delta > 0 ? NavigationDirection.forward : NavigationDirection.back,
-      delta,
+      delta /*,
       isBackBrowserButton: delta < 0,
-      isForwardBrowserButton: delta > 0,
+      isForwardBrowserButton: delta > 0*/,
     }
 
     pendingLocation = to
