@@ -79,7 +79,6 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     START_LOCATION_NORMALIZED
   )
 
-  let initialNavigation = true
   let isRevertingNavigation = false
   let pendingLocation: RouteLocation | undefined
   let lastSuccessfulLocation: RouteLocationNormalizedLoaded =
@@ -215,6 +214,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     from: RouteLocationNormalizedLoaded,
     failure?: NavigationFailure
   ) {
+    pendingLocation = undefined
     if (!failure) {
       lastSuccessfulLocation = to
     }
@@ -259,10 +259,6 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
   }
 
   function go(delta: number) {
-    if (delta === 0 && isRevertingNavigation) {
-      return
-    }
-
     // Case 1: go(0) should trigger a reload.
     if (delta === 0) {
       window.navigation.reload()
@@ -605,20 +601,19 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
   async function handleNavigate(event: NavigateEvent) {
     if (!event.canIntercept) return
 
-    if (initialNavigation) {
-      initialNavigation = false
-      return
-    }
-
     event.intercept({
       async handler() {
-        const destination = new URL(event.destination.url)
-        const pathWithSearchAndHash =
-          destination.pathname + destination.search + destination.hash
-        const to = resolve(pathWithSearchAndHash) as RouteLocationNormalized
-        const from = currentRoute.value
+        if (!pendingLocation) {
+          const destination = new URL(event.destination.url)
+          const pathWithSearchAndHash =
+            destination.pathname + destination.search + destination.hash
+          pendingLocation = resolve(
+            pathWithSearchAndHash
+          ) as RouteLocationNormalized
+        }
 
-        pendingLocation = to
+        const to = pendingLocation
+        const from = currentRoute.value
 
         let navigationInfo: NavigationInformation | undefined
         if (event.navigationType === 'traverse') {
@@ -722,9 +717,6 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       finalizeNavigation(to, from)
     } catch (error) {
       const failure = error as NavigationFailure
-      if (isNavigationFailure(failure, ErrorTypes.NAVIGATION_DUPLICATED)) {
-        return
-      }
 
       isRevertingNavigation = true
       go(event.from.index - window.navigation.currentEntry!.index)
@@ -823,32 +815,13 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       ) {
         // see above
         started = true
-        const initialLocation = resolve(
+        const initialLocation =
           window.location.pathname +
-            window.location.search +
-            window.location.hash
-        ) as RouteLocationNormalized
-        pendingLocation = initialLocation
-        resolveNavigationGuards(initialLocation, START_LOCATION_NORMALIZED)
-          .then(() => {
-            finalizeNavigation(initialLocation, START_LOCATION_NORMALIZED)
-          })
-          .catch(err => {
-            const failure = err as NavigationFailure
-            if (
-              isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
-            ) {
-              return navigate((failure as NavigationRedirectError).to, {
-                replace: true,
-              })
-            } else {
-              return triggerError(
-                failure,
-                initialLocation,
-                START_LOCATION_NORMALIZED
-              )
-            }
-          })
+          window.location.search +
+          window.location.hash
+        navigate(initialLocation).catch(err => {
+          if (__DEV__) warn('Unexpected error when starting the router:', err)
+        })
       }
 
       const reactiveRoute = {} as RouteLocationNormalizedLoaded
