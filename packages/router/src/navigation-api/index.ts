@@ -1,4 +1,4 @@
-import type { App } from 'vue'
+import { App, shallowReactive, unref } from 'vue'
 import { shallowReactive, shallowRef, unref } from 'vue'
 import {
   parseURL,
@@ -59,13 +59,17 @@ import {
   RouterHistory,
 } from '../history/common'
 import { RouteRecordNormalized } from '../matcher/types'
+import { TransitionMode, transitionModeKey } from '../transition'
 
 export interface RouterApiOptions extends Omit<RouterOptions, 'history'> {
   base?: string
   location: string
 }
 
-export function createNavigationApiRouter(options: RouterApiOptions): Router {
+export function createNavigationApiRouter(
+  options: RouterApiOptions,
+  transitionMode: TransitionMode = 'auto'
+): Router {
   const matcher = createRouterMatcher(options.routes, options)
   const parseQuery = options.parseQuery || originalParseQuery
   const stringifyQuery = options.stringifyQuery || originalStringifyQuery
@@ -789,6 +793,10 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
     replace: (to: RouteLocationRaw) => navigate(to, { replace: true }),
   }
 
+  let beforeResolveTransitionGuard: (() => void) | undefined
+  let afterEachTransitionGuard: (() => void) | undefined
+  let onErrorTransitionGuard: (() => void) | undefined
+
   const router: Router = {
     currentRoute,
     listening: true,
@@ -816,6 +824,70 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
 
     onError: errorListeners.add,
     isReady,
+
+    enableViewTransition(options) {
+      beforeResolveTransitionGuard?.()
+      afterEachTransitionGuard?.()
+      onErrorTransitionGuard?.()
+
+      if (typeof document === 'undefined' || !document.startViewTransition) {
+        return
+      }
+
+      const defaultTransitionSetting =
+        options.transition?.defaultViewTransition ?? true
+
+      let finishTransition: (() => void) | undefined
+      let abortTransition: (() => void) | undefined
+
+      const resetTransitionState = () => {
+        finishTransition = undefined
+        abortTransition = undefined
+      }
+
+      beforeResolveTransitionGuard = this.beforeResolve(
+        (to, from, next, info) => {
+          const transitionMode =
+            to.meta.viewTransition ?? defaultTransitionSetting
+          if (
+            info?.isBackBrowserButton ||
+            info?.isForwardBrowserButton ||
+            transitionMode === false ||
+            (transitionMode !== 'always' &&
+              window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+          ) {
+            next(true)
+            return
+          }
+
+          const promise = new Promise<void>((resolve, reject) => {
+            finishTransition = resolve
+            abortTransition = reject
+          })
+
+          const transition = document.startViewTransition(() => promise)
+
+          options.onStart?.(transition)
+          transition.finished
+            .then(() => options.onFinished?.(transition))
+            .catch(() => options.onAborted?.(transition))
+            .finally(resetTransitionState)
+
+          next(true)
+
+          return promise
+        }
+      )
+
+      afterEachTransitionGuard = this.afterEach(() => {
+        finishTransition?.()
+      })
+
+      onErrorTransitionGuard = this.onError((error, to, from) => {
+        abortTransition?.()
+        resetTransitionState()
+      })
+    },
 
     install(app) {
       app.component('RouterLink', RouterLink)
@@ -859,6 +931,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       app.provide(routerKey, router)
       app.provide(routeLocationKey, shallowReactive(reactiveRoute))
       app.provide(routerViewLocationKey, currentRoute)
+      app.provide(transitionModeKey, transitionMode)
 
       const unmountApp = app.unmount
       installedApps.add(app)

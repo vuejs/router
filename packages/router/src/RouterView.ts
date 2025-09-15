@@ -30,6 +30,7 @@ import {
 import { assign, isArray, isBrowser } from './utils'
 import { warn } from './warning'
 import { isSameRouteRecord } from './location'
+import { transitionModeKey } from './transition'
 
 export interface RouterViewProps {
   name?: string
@@ -62,6 +63,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     __DEV__ && warnDeprecatedUsage()
 
     const injectedRoute = inject(routerViewLocationKey)!
+    const transitionMode = inject(transitionModeKey)!
     const routeToDisplay = computed<RouteLocationNormalizedLoaded>(
       () => props.route || injectedRoute.value
     )
@@ -199,8 +201,11 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       return (
         // pass the vnode to the slot as a prop.
         // h and <component :is="..."> both accept vnodes
-        normalizeSlot(slots.default, { Component: component, route }) ||
-        component
+        normalizeSlot(slots.default, {
+          Component: component,
+          route,
+          transitionMode,
+        }) || component
       )
     }
   },

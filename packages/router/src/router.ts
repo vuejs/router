@@ -69,6 +69,11 @@ import { addDevtools } from './devtools'
 import { _LiteralUnion } from './types/utils'
 import { RouteLocationAsRelativeTyped } from './typed-routes/route-location'
 import { RouteMap } from './typed-routes/route-map'
+import {
+  RouterViewTransition,
+  TransitionMode,
+  transitionModeKey,
+} from './transition'
 
 /**
  * Internal type to define an ErrorHandler
@@ -206,6 +211,15 @@ export interface Router {
   listening: boolean
 
   /**
+   * Enable native view transition.
+   *
+   * NOTE: will be a no-op if the browser does not support it.
+   *
+   * @param options The options to use.
+   */
+  enableViewTransition(options: RouterViewTransition)
+
+  /**
    * Add a new {@link RouteRecordRaw | route record} as the child of an existing route.
    *
    * @param parentName - Parent Route Record where `route` should be appended at
@@ -216,6 +230,7 @@ export interface Router {
     parentName: NonNullable<RouteRecordNameGeneric>,
     route: RouteRecordRaw
   ): () => void
+
   /**
    * Add a new {@link RouteRecordRaw | route record} to the router.
    *
@@ -382,7 +397,10 @@ export interface Router {
  *
  * @param options - {@link RouterOptions}
  */
-export function createRouter(options: RouterOptions): Router {
+export function createRouter(
+  options: RouterOptions,
+  transitionMode: TransitionMode = 'auto'
+): Router {
   const matcher = createRouterMatcher(options.routes, options)
   const parseQuery = options.parseQuery || originalParseQuery
   const stringifyQuery = options.stringifyQuery || originalStringifyQuery
@@ -1230,6 +1248,11 @@ export function createRouter(options: RouterOptions): Router {
   let started: boolean | undefined
   const installedApps = new Set<App>()
 
+  let beforeResolveTransitionGuard: (() => void) | undefined
+  let afterEachTransitionGuard: (() => void) | undefined
+  let onErrorTransitionGuard: (() => void) | undefined
+  let popStateListener: (() => void) | undefined
+
   const router: Router = {
     currentRoute,
     listening: true,
@@ -1254,6 +1277,26 @@ export function createRouter(options: RouterOptions): Router {
 
     onError: errorListeners.add,
     isReady,
+
+    enableViewTransition(options) {
+      beforeResolveTransitionGuard?.()
+      afterEachTransitionGuard?.()
+      onErrorTransitionGuard?.()
+      if (popStateListener) {
+        window.removeEventListener('popstate', popStateListener)
+      }
+
+      if (typeof document === 'undefined' || !document.startViewTransition) {
+        return
+      }
+
+      ;[
+        beforeResolveTransitionGuard,
+        afterEachTransitionGuard,
+        onErrorTransitionGuard,
+        popStateListener,
+      ] = enableViewTransition(this, options)
+    },
 
     install(app: App) {
       app.component('RouterLink', RouterLink)
@@ -1293,6 +1336,7 @@ export function createRouter(options: RouterOptions): Router {
       app.provide(routerKey, router)
       app.provide(routeLocationKey, shallowReactive(reactiveRoute))
       app.provide(routerViewLocationKey, currentRoute)
+      app.provide(transitionModeKey, transitionMode)
 
       const unmountApp = app.unmount
       installedApps.add(app)
@@ -1355,4 +1399,95 @@ function extractChangingRecords(
   }
 
   return [leavingRecords, updatingRecords, enteringRecords]
+}
+
+function isChangingPage(
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized
+) {
+  if (to === from || from === START_LOCATION) {
+    return false
+  }
+
+  // If route keys are different then it will result in a rerender
+  if (generateRouteKey(to) !== generateRouteKey(from)) {
+    return true
+  }
+
+  const areComponentsSame = to.matched.every(
+    (comp, index) =>
+      comp.components &&
+      comp.components.default === from.matched[index]?.components?.default
+  )
+  return !areComponentsSame
+}
+
+function enableViewTransition(router: Router, options: RouterViewTransition) {
+  let transition: undefined | ViewTransition
+  let hasUAVisualTransition = false
+  let finishTransition: (() => void) | undefined
+  let abortTransition: (() => void) | undefined
+
+  const defaultTransitionSetting =
+    options.transition?.defaultViewTransition ?? true
+
+  const resetTransitionState = () => {
+    transition = undefined
+    hasUAVisualTransition = false
+    abortTransition = undefined
+    finishTransition = undefined
+  }
+
+  function popStateListener(event: PopStateEvent) {
+    hasUAVisualTransition = event.hasUAVisualTransition
+    if (hasUAVisualTransition) {
+      transition?.skipTransition()
+    }
+  }
+
+  window.addEventListener('popstate', popStateListener)
+
+  const beforeResolveTransitionGuard = router.beforeResolve((to, from) => {
+    const transitionMode = to.meta.viewTransition ?? defaultTransitionSetting
+    if (
+      hasUAVisualTransition ||
+      transitionMode === false ||
+      (transitionMode !== 'always' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+      !isChangingPage(to, from)
+    ) {
+      return
+    }
+
+    const promise = new Promise<void>((resolve, reject) => {
+      finishTransition = resolve
+      abortTransition = reject
+    })
+
+    const transition = document.startViewTransition(() => promise)
+
+    options.onStart?.(transition)
+    transition.finished
+      .then(() => options.onFinished?.(transition))
+      .catch(() => options.onAborted?.(transition))
+      .finally(resetTransitionState)
+
+    return promise
+  })
+
+  const afterEachTransitionGuard = router.afterEach(() => {
+    finishTransition?.()
+  })
+
+  const onErrorTransitionGuard = router.onError(() => {
+    abortTransition?.()
+    resetTransitionState()
+  })
+
+  return [
+    beforeResolveTransitionGuard,
+    afterEachTransitionGuard,
+    onErrorTransitionGuard,
+    popStateListener,
+  ]
 }
