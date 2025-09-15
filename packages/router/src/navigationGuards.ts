@@ -169,15 +169,27 @@ export function guardToPromiseFn(
       }
 
       // wrapping with Promise.resolve allows it to work with both async and sync guards
-      const guardReturn = runWithContext(() =>
-        guard.call(
-          record && record.instances[name!],
-          to,
-          from,
-          __DEV__ ? canOnlyBeCalledOnce(next, to, from, info) : next,
-          info
-        )
-      )
+      const guardReturn =
+        guard.length > 3
+          ? runWithContext(() =>
+              guard.call(
+                record && record.instances[name!],
+                to,
+                from,
+                __DEV__ ? canOnlyBeCalledOnce(next, to, from, info) : next,
+                info
+              )
+            )
+          : runWithContext(() =>
+              guard.call(
+                record && record.instances[name!],
+                to,
+                from,
+                __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next,
+                info
+              )
+            )
+
       let guardCall = Promise.resolve(guardReturn)
 
       if (guard.length < 3) guardCall = guardCall.then(next)
