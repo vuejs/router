@@ -1291,6 +1291,13 @@ export function createRouter(
         return
       }
 
+      if (transitionMode !== 'view-transition') {
+        if (__DEV__) {
+          console.warn('Native View Transition is disabled in auto mode.')
+        }
+        return
+      }
+
       ;[
         beforeResolveTransitionGuard,
         afterEachTransitionGuard,

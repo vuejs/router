@@ -838,6 +838,13 @@ export function createNavigationApiRouter(
         return
       }
 
+      if (transitionMode !== 'view-transition') {
+        if (__DEV__) {
+          console.warn('Native View Transition is disabled in auto mode.')
+        }
+        return
+      }
+
       const defaultTransitionSetting = options.defaultViewTransition ?? true
 
       let finishTransition: (() => void) | undefined
