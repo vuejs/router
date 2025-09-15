@@ -265,13 +265,14 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
   function triggerError(
     error: any,
     to: RouteLocationNormalized,
-    from: RouteLocationNormalizedLoaded
+    from: RouteLocationNormalizedLoaded,
+    silent = false
   ): Promise<unknown> {
     markAsReady(error)
     const list = errorListeners.list()
     if (list.length) {
       list.forEach(handler => handler(error, to, from))
-    } else {
+    } else if (!silent) {
       console.error('uncaught error during route navigation:')
       console.error(error)
     }
@@ -752,7 +753,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
         !isNavigationFailure(failure, ErrorTypes.NAVIGATION_CANCELLED)
       ) {
         // just ignore errors caused by the cancellation of the navigation
-        triggerError(failure, to, from).catch(() => {})
+        triggerError(failure, to, from, true).catch(() => {})
       }
     } finally {
       // update always, we'll have some race condition it the user clicks 2 links
