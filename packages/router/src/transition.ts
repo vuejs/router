@@ -12,7 +12,7 @@ export function injectTransitionMode(): TransitionMode {
 }
 
 export interface RouterViewTransition {
-  defaultTransitionView?: boolean | 'always'
+  defaultViewTransition?: boolean | 'always'
   /** Hook called right after the view transition starts */
   onStart?: (transition: ViewTransition) => void
   /** Hook called when the view transition animation is finished */
