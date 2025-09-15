@@ -31,7 +31,7 @@ export function createClientRouter(options: ClientRouterOptions): Router {
   if (
     options?.viewTransition &&
     typeof document !== 'undefined' &&
-    document.startViewTransition
+    !!document.startViewTransition
   ) {
     transitionMode = 'view-transition'
   }
