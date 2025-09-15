@@ -1407,8 +1407,7 @@ function enableViewTransition(router: Router, options: RouterViewTransition) {
   let finishTransition: (() => void) | undefined
   let abortTransition: (() => void) | undefined
 
-  const defaultTransitionSetting =
-    options.transition?.defaultViewTransition ?? true
+  const defaultTransitionSetting = options?.defaultViewTransition ?? true
 
   const resetTransitionState = () => {
     transition = undefined
@@ -1468,5 +1467,5 @@ function enableViewTransition(router: Router, options: RouterViewTransition) {
     afterEachTransitionGuard,
     onErrorTransitionGuard,
     popStateListener,
-  ]
+  ] as const
 }

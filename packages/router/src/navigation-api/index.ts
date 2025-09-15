@@ -835,8 +835,7 @@ export function createNavigationApiRouter(
         return
       }
 
-      const defaultTransitionSetting =
-        options.transition?.defaultViewTransition ?? true
+      const defaultTransitionSetting = options.defaultViewTransition ?? true
 
       let finishTransition: (() => void) | undefined
       let abortTransition: (() => void) | undefined
