@@ -1,9 +1,8 @@
 import type { Router } from './router'
-import type {
-  RouterApiOptions,
-  createNavigationApiRouter,
-} from './navigation-api'
+import type { RouterApiOptions } from './navigation-api'
 import type { RouterViewTransition, TransitionMode } from './transition'
+import { createNavigationApiRouter } from './navigation-api'
+import { isBrowser } from './utils'
 
 export interface ClientRouterOptions {
   /**
@@ -38,7 +37,7 @@ export function createClientRouter(options: ClientRouterOptions): Router {
   }
 
   const useNavigationApi =
-    options.navigationApi && inBrowser && window.navigation
+    options.navigationApi && isBrowser && window.navigation
 
   if (useNavigationApi) {
     return createNavigationApiRouter(
