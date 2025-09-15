@@ -50,12 +50,22 @@ export interface NavigationInformation {
   delta: number
   /**
    * True if the navigation was triggered by the browser back button.
+   *
+   * Note: available only with the new Navigation API.
    */
   isBackBrowserButton?: boolean
   /**
    * True if the navigation was triggered by the browser forward button.
+   *
+   * Note: available only with the new Navigation API.
    */
   isForwardBrowserButton?: boolean
+  /**
+   * AbortSignal that will be emitted when the navigation is aborted.
+   *
+   * Note: available only with the new Navigation API.
+   */
+  signal?: AbortSignal
 }
 
 export interface NavigationCallback {

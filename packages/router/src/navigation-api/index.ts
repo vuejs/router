@@ -650,6 +650,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
             delta,
             isBackBrowserButton: delta < 0,
             isForwardBrowserButton: delta > 0,
+            signal: event.signal,
           }
         } else if (
           event.navigationType === 'push' ||
@@ -662,6 +663,7 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
                 : NavigationType.pop,
             direction: NavigationDirection.unknown, // No specific direction for push/replace.
             delta: event.navigationType === 'push' ? 1 : 0,
+            signal: event.signal,
           }
         }
 
@@ -749,7 +751,8 @@ export function createNavigationApiRouter(options: RouterApiOptions): Router {
       } else if (
         !isNavigationFailure(failure, ErrorTypes.NAVIGATION_CANCELLED)
       ) {
-        triggerError(failure, to, from)
+        // just ignore errors caused by the cancellation of the navigation
+        triggerError(failure, to, from).catch(() => {})
       }
     } finally {
       // update always, we'll have some race condition it the user clicks 2 links
