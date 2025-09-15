@@ -20,8 +20,3 @@ export interface RouterViewTransition {
   /** Hook called if the transition is aborted */
   onAborted?: (transition: ViewTransition) => void
 }
-
-export interface RouterTransitionOptions<T extends TransitionMode = 'auto'> {
-  mode: T
-  options?: T extends 'view-transition' ? ViewTransitionOptions : undefined
-}

@@ -60,6 +60,7 @@ import {
 } from '../history/common'
 import { RouteRecordNormalized } from '../matcher/types'
 import { TransitionMode, transitionModeKey } from '../transition'
+import { isChangingPage } from '../utils/routes'
 
 export interface RouterApiOptions extends Omit<RouterOptions, 'history'> {
   base?: string
@@ -854,7 +855,8 @@ export function createNavigationApiRouter(
             info?.isForwardBrowserButton ||
             transitionMode === false ||
             (transitionMode !== 'always' &&
-              window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+              window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+            !isChangingPage(to, from)
           ) {
             next(true)
             return

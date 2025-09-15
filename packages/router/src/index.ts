@@ -141,6 +141,10 @@ export { createRouter } from './router'
 export { createNavigationApiRouter } from './navigation-api'
 export type { Router, RouterOptions, RouterScrollBehavior } from './router'
 export type { RouterApiOptions } from './navigation-api'
+export type { TransitionMode, RouterViewTransition } from './transition'
+export type { ClientRouterOptions } from './client-router'
+export { injectTransitionMode, transitionModeKey } from './transition'
+export { createClientRouter } from './client-router'
 
 export { NavigationFailureType, isNavigationFailure } from './errors'
 export type {
@@ -162,6 +166,7 @@ export type {
   UseLinkReturn,
 } from './RouterLink'
 export { RouterView } from './RouterView'
+export { isChangingPage } from './utils/routes'
 export type { RouterViewProps } from './RouterView'
 
 export type { TypesConfig } from './config'

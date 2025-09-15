@@ -66,7 +66,6 @@ import {
   routerViewLocationKey,
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
-import { _LiteralUnion } from './types/utils'
 import { RouteLocationAsRelativeTyped } from './typed-routes/route-location'
 import { RouteMap } from './typed-routes/route-map'
 import {
@@ -74,6 +73,7 @@ import {
   TransitionMode,
   transitionModeKey,
 } from './transition'
+import { isChangingPage } from './utils/routes'
 
 /**
  * Internal type to define an ErrorHandler
@@ -1251,7 +1251,7 @@ export function createRouter(
   let beforeResolveTransitionGuard: (() => void) | undefined
   let afterEachTransitionGuard: (() => void) | undefined
   let onErrorTransitionGuard: (() => void) | undefined
-  let popStateListener: (() => void) | undefined
+  let popStateListener: ((event: PopStateEvent) => void) | undefined
 
   const router: Router = {
     currentRoute,
@@ -1399,27 +1399,6 @@ function extractChangingRecords(
   }
 
   return [leavingRecords, updatingRecords, enteringRecords]
-}
-
-function isChangingPage(
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized
-) {
-  if (to === from || from === START_LOCATION) {
-    return false
-  }
-
-  // If route keys are different then it will result in a rerender
-  if (generateRouteKey(to) !== generateRouteKey(from)) {
-    return true
-  }
-
-  const areComponentsSame = to.matched.every(
-    (comp, index) =>
-      comp.components &&
-      comp.components.default === from.matched[index]?.components?.default
-  )
-  return !areComponentsSame
 }
 
 function enableViewTransition(router: Router, options: RouterViewTransition) {
