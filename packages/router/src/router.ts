@@ -1302,14 +1302,12 @@ export function createRouter(
         return
       }
 
-      this.isReady().then(() => {
-        ;[
-          beforeResolveTransitionGuard,
-          afterEachTransitionGuard,
-          onErrorTransitionGuard,
-          popStateListener,
-        ] = enableViewTransition(this, options)
-      })
+      ;[
+        beforeResolveTransitionGuard,
+        afterEachTransitionGuard,
+        onErrorTransitionGuard,
+        popStateListener,
+      ] = enableViewTransition(this, options)
     },
 
     install(app: App) {

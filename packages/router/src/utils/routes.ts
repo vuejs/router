@@ -1,5 +1,5 @@
 import { RouteLocationNormalized } from '../typed-routes'
-import { START_LOCATION } from '../index'
+import { START_LOCATION_NORMALIZED } from '../location'
 
 // from Nuxt
 const ROUTE_KEY_PARENTHESES_RE = /(:\w+)\([^)]+\)/g
@@ -24,7 +24,11 @@ export function isChangingPage(
   to: RouteLocationNormalized,
   from: RouteLocationNormalized
 ) {
-  if (to === from || from === START_LOCATION) {
+  if (
+    to === START_LOCATION_NORMALIZED ||
+    to === from ||
+    from === START_LOCATION_NORMALIZED
+  ) {
     return false
   }
 
