@@ -1283,7 +1283,7 @@ export function createRouter(
       beforeResolveTransitionGuard?.()
       afterEachTransitionGuard?.()
       onErrorTransitionGuard?.()
-      if (popStateListener) {
+      if (typeof window !== 'undefined' && popStateListener) {
         window.removeEventListener('popstate', popStateListener)
       }
 

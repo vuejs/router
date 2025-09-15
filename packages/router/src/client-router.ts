@@ -37,7 +37,10 @@ export function createClientRouter(options: ClientRouterOptions): Router {
   }
 
   const useNavigationApi =
-    options.navigationApi && isBrowser && window.navigation
+    options.navigationApi &&
+    isBrowser &&
+    typeof window !== 'undefined' &&
+    window.navigation
 
   if (useNavigationApi) {
     return createNavigationApiRouter(

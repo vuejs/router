@@ -71,6 +71,9 @@ export function createNavigationApiRouter(
   options: RouterApiOptions,
   transitionMode: TransitionMode = 'auto'
 ): Router {
+  if (typeof window === 'undefined' || !window.navigation) {
+    throw new Error('Navigation API is not supported in this environment.')
+  }
   const matcher = createRouterMatcher(options.routes, options)
   const parseQuery = options.parseQuery || originalParseQuery
   const stringifyQuery = options.stringifyQuery || originalStringifyQuery
