@@ -1,6 +1,6 @@
 import type { Router } from './router'
 import type { RouterApiOptions } from './navigation-api'
-import type { RouterViewTransition, TransitionMode } from './transition'
+import type { TransitionMode } from './transition'
 import { createNavigationApiRouter } from './navigation-api'
 import { isBrowser } from './utils'
 
@@ -20,9 +20,11 @@ export interface ClientRouterOptions {
     options: RouterApiOptions
   }
   /**
-   * Enable native View Transitions.
+   * Enable Native View Transitions.
+   *
+   * @default false
    */
-  viewTransition?: true | RouterViewTransition
+  viewTransition?: boolean
 }
 
 export function createClientRouter(options: ClientRouterOptions): Router {
