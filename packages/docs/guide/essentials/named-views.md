@@ -61,8 +61,7 @@ It is possible to create complex layouts using named views with nested views. Wh
 
 The `<template>` section for `UserSettings` component in the above layout would look something like this:
 
-```vue-html
-<!-- UserSettings.vue -->
+```vue-html [UserSettings.vue]
 <div>
   <h1>User Settings</h1>
   <NavBar />

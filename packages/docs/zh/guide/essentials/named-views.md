@@ -59,8 +59,7 @@ const router = createRouter({
 
 `UserSettings` 组件的 `<template>` 部分应该是类似下面的这段代码:
 
-```html
-<!-- UserSettings.vue -->
+```vue-html [UserSettings.vue]
 <div>
   <h1>User Settings</h1>
   <NavBar />
