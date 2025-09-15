@@ -63,7 +63,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     __DEV__ && warnDeprecatedUsage()
 
     const injectedRoute = inject(routerViewLocationKey)!
-    const transitionMode = inject(transitionModeKey)!
+    const transitionMode = inject(transitionModeKey, 'auto')!
     const routeToDisplay = computed<RouteLocationNormalizedLoaded>(
       () => props.route || injectedRoute.value
     )
