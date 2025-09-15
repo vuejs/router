@@ -1254,6 +1254,15 @@ export function createRouter(
   let onErrorTransitionGuard: (() => void) | undefined
   let popStateListener: ((event: PopStateEvent) => void) | undefined
 
+  function cleanupNativeViewTransition() {
+    beforeResolveTransitionGuard?.()
+    afterEachTransitionGuard?.()
+    onErrorTransitionGuard?.()
+    if (typeof window !== 'undefined' && popStateListener) {
+      window.removeEventListener('popstate', popStateListener)
+    }
+  }
+
   const router: Router = {
     currentRoute,
     listening: true,
@@ -1280,12 +1289,7 @@ export function createRouter(
     isReady,
 
     enableViewTransition(options) {
-      beforeResolveTransitionGuard?.()
-      afterEachTransitionGuard?.()
-      onErrorTransitionGuard?.()
-      if (typeof window !== 'undefined' && popStateListener) {
-        window.removeEventListener('popstate', popStateListener)
-      }
+      cleanupNativeViewTransition()
 
       if (typeof document === 'undefined' || !document.startViewTransition) {
         return
@@ -1298,12 +1302,14 @@ export function createRouter(
         return
       }
 
-      ;[
-        beforeResolveTransitionGuard,
-        afterEachTransitionGuard,
-        onErrorTransitionGuard,
-        popStateListener,
-      ] = enableViewTransition(this, options)
+      this.isReady().then(() => {
+        ;[
+          beforeResolveTransitionGuard,
+          afterEachTransitionGuard,
+          onErrorTransitionGuard,
+          popStateListener,
+        ] = enableViewTransition(this, options)
+      })
     },
 
     install(app: App) {
@@ -1357,6 +1363,7 @@ export function createRouter(
           removeHistoryListener && removeHistoryListener()
           removeHistoryListener = null
           currentRoute.value = START_LOCATION_NORMALIZED
+          cleanupNativeViewTransition()
           started = false
           ready = false
         }

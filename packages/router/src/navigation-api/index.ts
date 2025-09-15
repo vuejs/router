@@ -801,6 +801,12 @@ export function createNavigationApiRouter(
   let afterEachTransitionGuard: (() => void) | undefined
   let onErrorTransitionGuard: (() => void) | undefined
 
+  function cleanupNativeViewTransition() {
+    beforeResolveTransitionGuard?.()
+    afterEachTransitionGuard?.()
+    onErrorTransitionGuard?.()
+  }
+
   const router: Router = {
     currentRoute,
     listening: true,
@@ -830,9 +836,7 @@ export function createNavigationApiRouter(
     isReady,
 
     enableViewTransition(options) {
-      beforeResolveTransitionGuard?.()
-      afterEachTransitionGuard?.()
-      onErrorTransitionGuard?.()
+      cleanupNativeViewTransition()
 
       if (typeof document === 'undefined' || !document.startViewTransition) {
         return
@@ -953,6 +957,7 @@ export function createNavigationApiRouter(
           // invalidate the current navigation
           pendingLocation = START_LOCATION_NORMALIZED
           currentRoute.value = START_LOCATION_NORMALIZED
+          cleanupNativeViewTransition()
           started = false
           ready = false
         }
