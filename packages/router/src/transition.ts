@@ -11,12 +11,16 @@ export function injectTransitionMode(): TransitionMode {
   return inject(transitionModeKey, 'auto')
 }
 
+export type RouteViewTransitionHook = (
+  transition: ViewTransition
+) => void | Promise<void>
+
 export interface RouterViewTransition {
   defaultViewTransition?: boolean | 'always'
   /** Hook called right after the view transition starts */
-  onStart?: (transition: ViewTransition) => void
+  onStart?: RouteViewTransitionHook
   /** Hook called when the view transition animation is finished */
-  onFinished?: (transition: ViewTransition) => void
+  onFinished?: RouteViewTransitionHook
   /** Hook called if the transition is aborted */
-  onAborted?: (transition: ViewTransition) => void
+  onAborted?: RouteViewTransitionHook
 }

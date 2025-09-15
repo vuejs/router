@@ -860,7 +860,7 @@ export function createNavigationApiRouter(
       }
 
       beforeResolveTransitionGuard = this.beforeResolve(
-        (to, from, next, info) => {
+        async (to, from, next, info) => {
           const transitionMode =
             to.meta.viewTransition ?? defaultTransitionSetting
           if (
@@ -871,7 +871,6 @@ export function createNavigationApiRouter(
               window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
             !isChangingPage(to, from)
           ) {
-            next(true)
             return
           }
 
@@ -882,13 +881,11 @@ export function createNavigationApiRouter(
 
           const transition = document.startViewTransition(() => promise)
 
-          options.onStart?.(transition)
+          await options.onStart?.(transition)
           transition.finished
             .then(() => options.onFinished?.(transition))
             .catch(() => options.onAborted?.(transition))
             .finally(resetTransitionState)
-
-          next(true)
 
           return promise
         }

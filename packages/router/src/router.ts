@@ -1438,33 +1438,41 @@ function enableViewTransition(router: Router, options: RouterViewTransition) {
 
   window.addEventListener('popstate', popStateListener)
 
-  const beforeResolveTransitionGuard = router.beforeResolve((to, from) => {
-    const transitionMode = to.meta.viewTransition ?? defaultTransitionSetting
-    if (
-      hasUAVisualTransition ||
-      transitionMode === false ||
-      (transitionMode !== 'always' &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
-      !isChangingPage(to, from)
-    ) {
-      return
+  const beforeResolveTransitionGuard = router.beforeResolve(
+    async (to, from) => {
+      const transitionMode = to.meta.viewTransition ?? defaultTransitionSetting
+      if (
+        hasUAVisualTransition ||
+        transitionMode === false ||
+        (transitionMode !== 'always' &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+        !isChangingPage(to, from)
+      ) {
+        return
+      }
+
+      const promise = new Promise<void>((resolve, reject) => {
+        finishTransition = resolve
+        abortTransition = reject
+      })
+
+      let changeRoute: () => void
+      const ready = new Promise<void>(resolve => (changeRoute = resolve))
+
+      const transition = document.startViewTransition(() => {
+        changeRoute()
+        return promise
+      })
+
+      await options.onStart?.(transition)
+      transition.finished
+        .then(() => options.onFinished?.(transition))
+        .catch(() => options.onAborted?.(transition))
+        .finally(resetTransitionState)
+
+      return ready
     }
-
-    const promise = new Promise<void>((resolve, reject) => {
-      finishTransition = resolve
-      abortTransition = reject
-    })
-
-    const transition = document.startViewTransition(() => promise)
-
-    options.onStart?.(transition)
-    transition.finished
-      .then(() => options.onFinished?.(transition))
-      .catch(() => options.onAborted?.(transition))
-      .finally(resetTransitionState)
-
-    return promise
-  })
+  )
 
   const afterEachTransitionGuard = router.afterEach(() => {
     finishTransition?.()
