@@ -396,6 +396,7 @@ export interface Router {
  * Creates a Router instance that can be used by a Vue app.
  *
  * @param options - {@link RouterOptions}
+ * @param transitionMode The new transition mode option.
  */
 export function createRouter(
   options: RouterOptions,
