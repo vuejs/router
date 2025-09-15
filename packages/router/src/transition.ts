@@ -3,9 +3,9 @@ import { inject } from 'vue'
 
 export type TransitionMode = 'auto' | 'view-transition'
 
-export const transitionModeKey: InjectionKey<TransitionMode> = Symbol(
-  'vue-router-transition-mode'
-)
+export const transitionModeKey = Symbol(
+  __DEV__ ? 'transition mode' : ''
+) as InjectionKey<TransitionMode>
 
 export function injectTransitionMode(): TransitionMode {
   return inject(transitionModeKey, 'auto')
