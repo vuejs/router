@@ -185,8 +185,7 @@ export function guardToPromiseFn(
                 record && record.instances[name!],
                 to,
                 from,
-                __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next,
-                info
+                __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
               )
             )
 
