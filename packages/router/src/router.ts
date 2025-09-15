@@ -217,7 +217,7 @@ export interface Router {
    *
    * @param options The options to use.
    */
-  enableViewTransition(options: RouterViewTransition)
+  enableViewTransition(options: RouterViewTransition): void
 
   /**
    * Add a new {@link RouteRecordRaw | route record} as the child of an existing route.
