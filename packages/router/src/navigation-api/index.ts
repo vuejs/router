@@ -888,7 +888,6 @@ export function createNavigationApiRouter(
             .catch(() => options.onAborted?.(transition))
             .finally(resetTransitionState)
 
-          // promise will be resolved
           next(true)
         }
       )
