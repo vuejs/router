@@ -871,6 +871,7 @@ export function createNavigationApiRouter(
               window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
             !isChangingPage(to, from)
           ) {
+            next(true)
             return
           }
 
@@ -887,7 +888,8 @@ export function createNavigationApiRouter(
             .catch(() => options.onAborted?.(transition))
             .finally(resetTransitionState)
 
-          return promise
+          // promise will be resolved
+          next(true)
         }
       )
 
