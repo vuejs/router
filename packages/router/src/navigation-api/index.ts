@@ -1,4 +1,4 @@
-import { App, shallowReactive, unref } from 'vue'
+import type { App } from 'vue'
 import { shallowReactive, shallowRef, unref } from 'vue'
 import {
   parseURL,
