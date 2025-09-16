@@ -16,7 +16,7 @@ export interface PathParser {
   /**
    * The regexp used to match a url
    */
-  re: RegExp
+  re: { test: (str: string) => boolean }
 
   /**
    * The score of the parser
@@ -89,7 +89,7 @@ export type PathParserOptions = Pick<
 // default pattern for a param: non-greedy everything but /
 const BASE_PARAM_PATTERN = '[^/]+?'
 
-const BASE_PATH_PARSER_OPTIONS: Required<_PathParserOptions> = {
+export const BASE_PATH_PARSER_OPTIONS: Required<_PathParserOptions> = {
   sensitive: false,
   strict: false,
   start: true,
@@ -97,7 +97,7 @@ const BASE_PATH_PARSER_OPTIONS: Required<_PathParserOptions> = {
 }
 
 // Scoring values used in tokensToParser
-const enum PathScore {
+export const enum PathScore {
   _multiplier = 10,
   Root = 9 * _multiplier, // just /
   Segment = 4 * _multiplier, // /a-segment
