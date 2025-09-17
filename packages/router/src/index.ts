@@ -142,9 +142,9 @@ export { createNavigationApiRouter } from './navigation-api'
 export type { Router, RouterOptions, RouterScrollBehavior } from './router'
 export type { RouterApiOptions } from './navigation-api'
 export type { TransitionMode, RouterViewTransition } from './transition'
-export type { ClientRouterOptions } from './client-router'
+export type { ModernRouterOptions } from './modern-router-factory'
 export { injectTransitionMode, transitionModeKey } from './transition'
-export { createClientRouter } from './client-router'
+export { createModernRouter } from './modern-router-factory'
 
 export { NavigationFailureType, isNavigationFailure } from './errors'
 export type {

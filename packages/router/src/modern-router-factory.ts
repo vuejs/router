@@ -4,7 +4,7 @@ import type { TransitionMode } from './transition'
 import { createNavigationApiRouter } from './navigation-api'
 import { isBrowser } from './utils'
 
-export interface ClientRouterOptions {
+export interface ModernRouterOptions {
   /**
    * Factory function that creates a legacy router instance.
    * Typically: () =&gt; createRouter({@ history: createWebHistory(), routes })
@@ -27,7 +27,7 @@ export interface ClientRouterOptions {
   viewTransition?: boolean
 }
 
-export function createClientRouter(options: ClientRouterOptions): Router {
+export function createModernRouter(options: ModernRouterOptions): Router {
   let transitionMode: TransitionMode = 'auto'
 
   if (
