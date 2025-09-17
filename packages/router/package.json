@@ -91,7 +91,7 @@
     "dev": "vitest --ui",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 1",
     "build": "rimraf dist && rollup -c rollup.config.mjs",
-    "build:dts": "api-extractor run --local --verbose && tail -n +10 src/globalExtensions.ts >> dist/vue-router.d.ts",
+    "build:dts": "api-extractor run --local --verbose && node ./add-dts-module-augmentation.js",
     "build:playground": "vue-tsc --noEmit && vite build --config playground/vite.config.ts",
     "build:e2e": "vue-tsc --noEmit && vite build --config e2e/vite.config.mjs",
     "build:size": "pnpm run build && rollup -c size-checks/rollup.config.mjs",
