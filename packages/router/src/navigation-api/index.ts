@@ -1050,17 +1050,7 @@ export function createNavigationApiRouter(
         }
       )
 
-      afterEachTransitionGuard = this.afterEach((to, from) => {
-        const transitionMode =
-          to.meta.viewTransition ?? defaultTransitionSetting
-        if (
-          transitionMode === false ||
-          (transitionMode !== 'always' &&
-            window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
-          !isChangingPage(to, from)
-        ) {
-          return
-        }
+      afterEachTransitionGuard = this.afterEach(() => {
         finishTransition?.()
       })
 
