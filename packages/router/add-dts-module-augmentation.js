@@ -16,7 +16,7 @@ async function patchVueRouterDts() {
   await fs.writeFile(
     './dist/vue-router.d.ts',
     `${targetContent}
-${content.slice(moduleAugmentationIdx)}    `,
+${content.slice(moduleAugmentationIdx)}`,
     { encoding: 'utf8' }
   )
 }
