@@ -1,5 +1,6 @@
 import type { RouteLocationNormalized } from './typed-routes'
 import { Router, RouterOptions } from './router'
+import { nextTick } from 'vue'
 
 export function enableFocusManagement(router: Router) {
   // navigation-api router will handle this for us
@@ -13,7 +14,7 @@ export function enableFocusManagement(router: Router) {
     clearFocusTimeout()
   })
 
-  const unregister = router.afterEach(async (to, from) => {
+  const unregister = router.afterEach(async to => {
     const focusManagement =
       to.meta.focusManagement ?? router.options.focusManagement
 
@@ -30,6 +31,9 @@ export function enableFocusManagement(router: Router) {
     ) {
       selector = focusManagement
     }
+
+    // ensure DOM is updated, enqueuing a microtask before handling focus
+    await nextTick()
 
     handleFocus(selector)
   })
@@ -65,6 +69,7 @@ export function prepareFocusReset(
 
 export function createFocusManagementHandler() {
   let timeoutId: ReturnType<typeof setTimeout> | undefined
+
   return {
     handleFocus: (selector: string) => {
       clearTimeout(timeoutId)
@@ -100,5 +105,5 @@ function handleFocusManagement(
     target.focus({ preventScroll: true })
     // remove tabindex and event listener if focus still not worked
     if (document.activeElement !== target) restoreTabindex()
-  }, 0)
+  }, 150) // screen readers may need more time to react
 }

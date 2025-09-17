@@ -1,4 +1,4 @@
-import type { App } from 'vue'
+import { App, nextTick } from 'vue'
 import { shallowReactive, shallowRef, unref } from 'vue'
 import {
   parseURL,
@@ -310,7 +310,10 @@ export function createNavigationApiRouter(
       // - focusReset: manual, selector with value -> prevent scrolling when focusing the target selector element
       // We don't need to handle scroll here, the browser or user guards or components lifecycle hooks will handle it
       if (focusReset === 'manual' && selector) {
-        handleFocus(selector)
+        // ensure DOM is updated, enqueuing a microtask before handling focus
+        nextTick(() => {
+          handleFocus(selector)
+        })
       }
     }
   }
