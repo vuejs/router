@@ -192,6 +192,7 @@ export interface RouterOptions extends PathParserOptions {
  * Router instance.
  */
 export interface Router {
+  readonly name: 'legacy' | 'navigation-api'
   /**
    * @internal
    */
@@ -1264,6 +1265,7 @@ export function createRouter(
   }
 
   const router: Router = {
+    name: 'legacy',
     currentRoute,
     listening: true,
 

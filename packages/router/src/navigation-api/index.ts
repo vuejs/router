@@ -952,6 +952,7 @@ export function createNavigationApiRouter(
   }
 
   const router: Router = {
+    name: 'navigation-api',
     currentRoute,
     listening: true,
 
