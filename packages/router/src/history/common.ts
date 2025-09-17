@@ -44,10 +44,50 @@ export enum NavigationDirection {
   unknown = '',
 }
 
+export interface NavigationApiEvent {
+  readonly navigationType: 'reload' | 'push' | 'replace' | 'traverse'
+  readonly canIntercept: boolean
+  readonly userInitiated: boolean
+  readonly hashChange: boolean
+  readonly hasUAVisualTransition: boolean
+  readonly destination: {
+    readonly url: string
+    readonly key: string | null
+    readonly id: string | null
+    readonly index: number
+    readonly sameDocument: boolean
+    getState(): unknown
+  }
+  readonly signal: AbortSignal
+  readonly formData: FormData | null
+  readonly downloadRequest: string | null
+  readonly info?: unknown
+
+  scroll(): void
+}
+
 export interface NavigationInformation {
   type: NavigationType
   direction: NavigationDirection
   delta: number
+  /**
+   * True if the navigation was triggered by the browser back button.
+   *
+   * Note: available only with the new Navigation API Router.
+   */
+  isBackBrowserButton?: boolean
+  /**
+   * True if the navigation was triggered by the browser forward button.
+   *
+   * Note: available only with the new Navigation API Router.
+   */
+  isForwardBrowserButton?: boolean
+  /**
+   * The native Navigation API Event.
+   *
+   * Note: available only with the new Navigation API Router.
+   */
+  navigationApiEvent?: NavigationApiEvent
 }
 
 export interface NavigationCallback {

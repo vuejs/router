@@ -20,7 +20,12 @@ import type {
   RouteLocationAsString,
   RouteRecordNameGeneric,
 } from './typed-routes'
-import { RouterHistory, HistoryState, NavigationType } from './history/common'
+import {
+  RouterHistory,
+  HistoryState,
+  NavigationType,
+  NavigationInformation,
+} from './history/common'
 import {
   ScrollPosition,
   getSavedScrollPosition,
@@ -66,9 +71,15 @@ import {
   routerViewLocationKey,
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
-import { _LiteralUnion } from './types/utils'
 import { RouteLocationAsRelativeTyped } from './typed-routes/route-location'
 import { RouteMap } from './typed-routes/route-map'
+import {
+  RouterViewTransition,
+  TransitionMode,
+  transitionModeKey,
+} from './transition'
+import { isChangingPage } from './utils/routes'
+import { enableFocusManagement } from './focus'
 
 /**
  * Internal type to define an ErrorHandler
@@ -102,7 +113,8 @@ export interface RouterScrollBehavior {
   (
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
-    savedPosition: _ScrollPositionNormalized | null
+    savedPosition: _ScrollPositionNormalized | null,
+    info?: NavigationInformation
   ): Awaitable<ScrollPosition | false | void>
 }
 
@@ -181,12 +193,37 @@ export interface RouterOptions extends PathParserOptions {
    * `router-link-inactive` will be applied.
    */
   // linkInactiveClass?: string
+  /**
+   * Focus management.
+   *
+   * This can be overridden per route by passing `focusManagement` in the route meta, will take precedence over this option.
+   *
+   * If `undefined`, the router will not manage focus: will use the [default behavior](https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept#focusreset).
+   *
+   * If `true`, the router will focus the first element in the dom using `document.querySelector('[autofocus], h1, main, body')`.
+   *
+   * If `false`, the router and the browser will not manage the focus, the consumer should manage the focus in the router guards or target page components.
+   *
+   * If a `string`, the router will use `document.querySelector(focusManagement)` to find the element to be focused, if the element is not found, then it will try to find the element using the selector when the option is `true`.
+   *
+   * @default undefined
+   */
+  focusManagement?: boolean | string
+  /**
+   * Enable automatic scroll restoration when navigating the history.
+   *
+   * Enabling this option, will register a custom `scrollBehavior` if none is provided.
+   *
+   * `focusManagement` and this option are just used to enable some sort of "polyfills" for browsers that do not support the Navigation API.
+   */
+  enableScrollManagement?: true
 }
 
 /**
  * Router instance.
  */
 export interface Router {
+  readonly name: 'legacy' | 'navigation-api'
   /**
    * @internal
    */
@@ -206,6 +243,15 @@ export interface Router {
   listening: boolean
 
   /**
+   * Enable native view transition.
+   *
+   * NOTE: will be a no-op if the browser does not support it.
+   *
+   * @param options The options to use.
+   */
+  enableViewTransition(options: RouterViewTransition): void
+
+  /**
    * Add a new {@link RouteRecordRaw | route record} as the child of an existing route.
    *
    * @param parentName - Parent Route Record where `route` should be appended at
@@ -216,6 +262,7 @@ export interface Router {
     parentName: NonNullable<RouteRecordNameGeneric>,
     route: RouteRecordRaw
   ): () => void
+
   /**
    * Add a new {@link RouteRecordRaw | route record} to the router.
    *
@@ -381,8 +428,12 @@ export interface Router {
  * Creates a Router instance that can be used by a Vue app.
  *
  * @param options - {@link RouterOptions}
+ * @param transitionMode The new transition mode option.
  */
-export function createRouter(options: RouterOptions): Router {
+export function createRouter(
+  options: RouterOptions,
+  transitionMode: TransitionMode = 'auto'
+): Router {
   const matcher = createRouterMatcher(options.routes, options)
   const parseQuery = options.parseQuery || originalParseQuery
   const stringifyQuery = options.stringifyQuery || originalStringifyQuery
@@ -923,7 +974,8 @@ export function createRouter(options: RouterOptions): Router {
             'beforeRouteEnter',
             to,
             from,
-            runWithContext
+            runWithContext,
+            undefined
           )
           guards.push(canceledNavigationCheck)
 
@@ -1028,6 +1080,7 @@ export function createRouter(options: RouterOptions): Router {
         return
       }
 
+      toLocation.meta.__info = info
       pendingLocation = toLocation
       const from = currentRoute.value
 
@@ -1200,6 +1253,23 @@ export function createRouter(options: RouterOptions): Router {
     return err
   }
 
+  const { enableScrollManagement, scrollBehavior } = options
+
+  const useScrollBehavior: RouterScrollBehavior | undefined =
+    scrollBehavior ??
+    (enableScrollManagement
+      ? async (to, from, savedPosition, info) => {
+          await nextTick()
+          if (info?.type === 'pop' && savedPosition) {
+            return scrollToPosition(savedPosition)
+          }
+          if (to.hash) {
+            return scrollToPosition({ el: to.hash, behavior: 'smooth' })
+          }
+          return scrollToPosition({ top: 0, left: 0 })
+        }
+      : undefined)
+
   // Scroll behavior
   function handleScroll(
     to: RouteLocationNormalizedLoaded,
@@ -1208,8 +1278,9 @@ export function createRouter(options: RouterOptions): Router {
     isFirstNavigation: boolean
   ): // the return is not meant to be used
   Promise<unknown> {
-    const { scrollBehavior } = options
-    if (!isBrowser || !scrollBehavior) return Promise.resolve()
+    const info = to.meta.__info as NavigationInformation | undefined
+    delete to.meta.__info
+    if (!isBrowser || !useScrollBehavior) return Promise.resolve()
 
     const scrollPosition: _ScrollPositionNormalized | null =
       (!isPush && getSavedScrollPosition(getScrollKey(to.fullPath, 0))) ||
@@ -1219,7 +1290,7 @@ export function createRouter(options: RouterOptions): Router {
       null
 
     return nextTick()
-      .then(() => scrollBehavior(to, from, scrollPosition))
+      .then(() => useScrollBehavior(to, from, scrollPosition, info))
       .then(position => position && scrollToPosition(position))
       .catch(err => triggerError(err, to, from))
   }
@@ -1229,7 +1300,22 @@ export function createRouter(options: RouterOptions): Router {
   let started: boolean | undefined
   const installedApps = new Set<App>()
 
+  let beforeResolveTransitionGuard: (() => void) | undefined
+  let afterEachTransitionGuard: (() => void) | undefined
+  let onErrorTransitionGuard: (() => void) | undefined
+  let popStateListener: ((event: PopStateEvent) => void) | undefined
+
+  function cleanupNativeViewTransition() {
+    beforeResolveTransitionGuard?.()
+    afterEachTransitionGuard?.()
+    onErrorTransitionGuard?.()
+    if (typeof window !== 'undefined' && popStateListener) {
+      window.removeEventListener('popstate', popStateListener)
+    }
+  }
+
   const router: Router = {
+    name: 'legacy',
     currentRoute,
     listening: true,
 
@@ -1254,6 +1340,28 @@ export function createRouter(options: RouterOptions): Router {
     onError: errorListeners.add,
     isReady,
 
+    enableViewTransition(options) {
+      cleanupNativeViewTransition()
+
+      if (typeof document === 'undefined' || !document.startViewTransition) {
+        return
+      }
+
+      if (transitionMode !== 'view-transition') {
+        if (__DEV__) {
+          console.warn('Native View Transition is disabled in auto mode.')
+        }
+        return
+      }
+
+      ;[
+        beforeResolveTransitionGuard,
+        afterEachTransitionGuard,
+        onErrorTransitionGuard,
+        popStateListener,
+      ] = enableViewTransition(this, options)
+    },
+
     install(app: App) {
       app.component('RouterLink', RouterLink)
       app.component('RouterView', RouterView)
@@ -1263,6 +1371,8 @@ export function createRouter(options: RouterOptions): Router {
         enumerable: true,
         get: () => unref(currentRoute),
       })
+
+      let cleanupFocusManagement: (() => void) | undefined
 
       // this initial navigation is only necessary on client, on server it doesn't
       // make sense because it will create an extra unnecessary navigation and could
@@ -1274,6 +1384,9 @@ export function createRouter(options: RouterOptions): Router {
         !started &&
         currentRoute.value === START_LOCATION_NORMALIZED
       ) {
+        if ('focusManagement' in options) {
+          cleanupFocusManagement = enableFocusManagement(router)
+        }
         // see above
         started = true
         push(routerHistory.location).catch(err => {
@@ -1292,6 +1405,7 @@ export function createRouter(options: RouterOptions): Router {
       app.provide(routerKey, router)
       app.provide(routeLocationKey, shallowReactive(reactiveRoute))
       app.provide(routerViewLocationKey, currentRoute)
+      app.provide(transitionModeKey, transitionMode)
 
       const unmountApp = app.unmount
       installedApps.add(app)
@@ -1304,6 +1418,8 @@ export function createRouter(options: RouterOptions): Router {
           removeHistoryListener && removeHistoryListener()
           removeHistoryListener = null
           currentRoute.value = START_LOCATION_NORMALIZED
+          cleanupFocusManagement?.()
+          cleanupNativeViewTransition()
           started = false
           ready = false
         }
@@ -1354,4 +1470,81 @@ function extractChangingRecords(
   }
 
   return [leavingRecords, updatingRecords, enteringRecords]
+}
+
+function enableViewTransition(router: Router, options: RouterViewTransition) {
+  let transition: undefined | ViewTransition
+  let hasUAVisualTransition = false
+  let finishTransition: (() => void) | undefined
+  let abortTransition: (() => void) | undefined
+
+  const defaultTransitionSetting = options?.defaultViewTransition ?? true
+
+  const resetTransitionState = () => {
+    transition = undefined
+    hasUAVisualTransition = false
+    abortTransition = undefined
+    finishTransition = undefined
+  }
+
+  function popStateListener(event: PopStateEvent) {
+    hasUAVisualTransition = event.hasUAVisualTransition
+    if (hasUAVisualTransition) {
+      transition?.skipTransition()
+    }
+  }
+
+  window.addEventListener('popstate', popStateListener)
+
+  const beforeResolveTransitionGuard = router.beforeResolve(
+    async (to, from) => {
+      const transitionMode = to.meta.viewTransition ?? defaultTransitionSetting
+      if (
+        hasUAVisualTransition ||
+        transitionMode === false ||
+        (transitionMode !== 'always' &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+        !isChangingPage(to, from)
+      ) {
+        return
+      }
+
+      const promise = new Promise<void>((resolve, reject) => {
+        finishTransition = resolve
+        abortTransition = reject
+      })
+
+      let changeRoute: () => void
+      const ready = new Promise<void>(resolve => (changeRoute = resolve))
+
+      const transition = document.startViewTransition(() => {
+        changeRoute()
+        return promise
+      })
+
+      await options.onStart?.(transition)
+      transition.finished
+        .then(() => options.onFinished?.(transition))
+        .catch(() => options.onAborted?.(transition))
+        .finally(resetTransitionState)
+
+      return ready
+    }
+  )
+
+  const afterEachTransitionGuard = router.afterEach(() => {
+    finishTransition?.()
+  })
+
+  const onErrorTransitionGuard = router.onError(() => {
+    abortTransition?.()
+    resetTransitionState()
+  })
+
+  return [
+    beforeResolveTransitionGuard,
+    afterEachTransitionGuard,
+    onErrorTransitionGuard,
+    popStateListener,
+  ] as const
 }

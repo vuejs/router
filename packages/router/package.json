@@ -91,7 +91,7 @@
     "dev": "vitest --ui",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 1",
     "build": "rimraf dist && rollup -c rollup.config.mjs",
-    "build:dts": "api-extractor run --local --verbose && tail -n +10 src/globalExtensions.ts >> dist/vue-router.d.ts",
+    "build:dts": "api-extractor run --local --verbose && node ./add-dts-module-augmentation.mjs",
     "build:playground": "vue-tsc --noEmit && vite build --config playground/vite.config.ts",
     "build:e2e": "vue-tsc --noEmit && vite build --config e2e/vite.config.mjs",
     "build:size": "pnpm run build && rollup -c size-checks/rollup.config.mjs",
@@ -117,12 +117,13 @@
     "@vue/devtools-api": "^6.6.4"
   },
   "devDependencies": {
-    "@microsoft/api-extractor": "^7.48.0",
+    "@microsoft/api-extractor": "^7.52.13",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-commonjs": "^25.0.8",
     "@rollup/plugin-node-resolve": "^15.3.1",
     "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-terser": "^0.4.4",
+    "@types/dom-navigation": "^1.0.6",
     "@types/jsdom": "^21.1.7",
     "@types/nightwatch": "^2.3.32",
     "@vitejs/plugin-vue": "^5.2.3",

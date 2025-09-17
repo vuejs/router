@@ -34,7 +34,8 @@
     ],
     "types": [
       "node",
-      "vite/client"
+      "vite/client",
+      "dom-navigation"
     ]
   }
 }
