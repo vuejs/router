@@ -74,6 +74,7 @@ import {
   transitionModeKey,
 } from './transition'
 import { isChangingPage } from './utils/routes'
+import { enableFocusManagement } from './focus'
 
 /**
  * Internal type to define an ErrorHandler
@@ -186,6 +187,22 @@ export interface RouterOptions extends PathParserOptions {
    * `router-link-inactive` will be applied.
    */
   // linkInactiveClass?: string
+  /**
+   * Focus management.
+   *
+   * This can be overridden per route by passing `focusManagement` in the route meta, will take precedence over this option.
+   *
+   * If `undefined`, the router will not manage focus: will use the [default behavior](https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept#focusreset).
+   *
+   * If `true`, the router will focus the first element in the dom using `document.querySelector('[autofocus], h1, main, body')`.
+   *
+   * If `false`, the router and the browser will not manage the focus, the consumer should manage the focus in the router guards or target page components.
+   *
+   * If a `string`, the router will use `document.querySelector(focusManagement)` to find the element to be focused, if the element is not found, then it will try to find the element using the selector when the option is `true`.
+   *
+   * @default undefined
+   */
+  focusManagement?: boolean | string
 }
 
 /**
@@ -1322,6 +1339,8 @@ export function createRouter(
         get: () => unref(currentRoute),
       })
 
+      let cleanupFocusManagement: (() => void) | undefined
+
       // this initial navigation is only necessary on client, on server it doesn't
       // make sense because it will create an extra unnecessary navigation and could
       // lead to problems
@@ -1332,6 +1351,9 @@ export function createRouter(
         !started &&
         currentRoute.value === START_LOCATION_NORMALIZED
       ) {
+        if ('focusManagement' in options) {
+          cleanupFocusManagement = enableFocusManagement(router)
+        }
         // see above
         started = true
         push(routerHistory.location).catch(err => {
@@ -1363,6 +1385,7 @@ export function createRouter(
           removeHistoryListener && removeHistoryListener()
           removeHistoryListener = null
           currentRoute.value = START_LOCATION_NORMALIZED
+          cleanupFocusManagement?.()
           cleanupNativeViewTransition()
           started = false
           ready = false

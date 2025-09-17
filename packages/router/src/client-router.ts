@@ -7,7 +7,7 @@ import { isBrowser } from './utils'
 export interface ClientRouterOptions {
   /**
    * Factory function that creates a legacy router instance.
-   * Typically: () => createRouter({ history: createWebHistory(), routes })
+   * Typically: () =&gt; createRouter({@ history: createWebHistory(), routes })
    */
   legacy: {
     factory: (transitionMode: TransitionMode) => Router
@@ -22,7 +22,7 @@ export interface ClientRouterOptions {
   /**
    * Enable Native View Transitions.
    *
-   * @default false
+   * @default undefined
    */
   viewTransition?: boolean
 }

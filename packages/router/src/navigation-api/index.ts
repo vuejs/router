@@ -61,6 +61,7 @@ import {
 import { RouteRecordNormalized } from '../matcher/types'
 import { TransitionMode, transitionModeKey } from '../transition'
 import { isChangingPage } from '../utils/routes'
+import { createFocusManagementHandler, prepareFocusReset } from '../focus'
 
 /**
  * Options for {@link createNavigationApiRouter}.
@@ -82,22 +83,6 @@ export interface RouterApiOptions
   extends Omit<RouterOptions, 'history' | 'scrollBehavior'> {
   base?: string
   location: string
-  /**
-   * Focus management.
-   *
-   * This can be overridden per route by passing `focusManagement` in the route meta, will take precedence over this option.
-   *
-   * If `undefined`, the router will not manage focus: will use the [default behavior](https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept#focusreset).
-   *
-   * If `true`, the router will focus the first element in the dom using `document.querySelector('[autofocus], h1, main, body')`.
-   *
-   * If `false`, the router and the browser will not manage the focus, the consumer should manage the focus in the router guards or target page components.
-   *
-   * If a `string`, the router will use `document.querySelector(focusManagement)` to find the element to be focused, if the element is not found, then it will try to find the element using the selector when the option is `true`.
-   *
-   * @default undefined
-   */
-  focusManagement?: boolean | string
   /**
    * Controls the scroll management strategy, allowing you to opt-into the
    * manual `vue-router` `scrollBehavior` system for fine-grained control
@@ -143,7 +128,6 @@ export function createNavigationApiRouter(
 
   let isRevertingNavigation = false
   let pendingLocation: RouteLocation | undefined
-  let focusTimeoutId: ReturnType<typeof setTimeout> | undefined
   let lastSuccessfulLocation: RouteLocationNormalizedLoaded =
     START_LOCATION_NORMALIZED
 
@@ -300,6 +284,8 @@ export function createNavigationApiRouter(
     }
   }
 
+  const { handleFocus, clearFocusTimeout } = createFocusManagementHandler()
+
   function finalizeNavigation(
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
@@ -324,29 +310,7 @@ export function createNavigationApiRouter(
       // - focusReset: manual, selector with value -> prevent scrolling when focusing the target selector element
       // We don't need to handle scroll here, the browser or user guards or components lifecycle hooks will handle it
       if (focusReset === 'manual' && selector) {
-        clearTimeout(focusTimeoutId)
-        requestAnimationFrame(() => {
-          focusTimeoutId = setTimeout(() => {
-            const target = document.querySelector<HTMLElement>(selector)
-            if (!target) return
-            target.focus({ preventScroll: true })
-            if (document.activeElement === target) return
-            // element has tabindex already, likely not focusable
-            // because of some other reason, bail out
-            if (target.hasAttribute('tabindex')) return
-            const restoreTabindex = () => {
-              target.removeAttribute('tabindex')
-              target.removeEventListener('blur', restoreTabindex)
-            }
-            // temporarily make the target element focusable
-            target.setAttribute('tabindex', '-1')
-            target.addEventListener('blur', restoreTabindex)
-            // try to focus again
-            target.focus({ preventScroll: true })
-            // remove tabindex and event listener if focus still not worked
-            if (document.activeElement !== target) restoreTabindex()
-          }, 0)
-        })
+        handleFocus(selector)
       }
     }
   }
@@ -740,25 +704,6 @@ export function createNavigationApiRouter(
     return pendingLocation as RouteLocationNormalized
   }
 
-  function prepareFocusReset(to: RouteLocationNormalized) {
-    let focusReset: 'after-transition' | 'manual' = 'after-transition'
-    let selector: string | undefined
-
-    const focusManagement = to.meta.focusManagement ?? options.focusManagement
-    if (focusManagement === false) {
-      focusReset = 'manual'
-    }
-    if (focusManagement === true) {
-      focusReset = 'manual'
-      selector = '[autofocus],h1,main,body'
-    } else if (typeof focusManagement === 'string') {
-      focusReset = 'manual'
-      selector = focusManagement || '[autofocus],h1,main,body'
-    }
-
-    return [focusReset, selector] as const
-  }
-
   function prepareScrollManagement(
     to: RouteLocationNormalized
   ): 'after-transition' | 'manual' {
@@ -772,7 +717,7 @@ export function createNavigationApiRouter(
   }
 
   async function handleNavigate(event: NavigateEvent) {
-    clearTimeout(focusTimeoutId)
+    clearFocusTimeout()
 
     // won't handle here 'traverse' navigations to avoid race conditions, see handleCurrentEntryChange
     if (!event.canIntercept || event.navigationType === 'traverse') {
@@ -798,7 +743,10 @@ export function createNavigationApiRouter(
       }
     }
 
-    const [focusReset, focusSelector] = prepareFocusReset(targetLocation)
+    const [focusReset, focusSelector] = prepareFocusReset(
+      targetLocation,
+      options.focusManagement
+    )
 
     event.intercept({
       focusReset,
@@ -852,7 +800,7 @@ export function createNavigationApiRouter(
   async function handleCurrentEntryChange(
     event: NavigationCurrentEntryChangeEvent
   ) {
-    clearTimeout(focusTimeoutId)
+    clearFocusTimeout()
     if (isRevertingNavigation) {
       isRevertingNavigation = false
       return
@@ -880,7 +828,10 @@ export function createNavigationApiRouter(
       isForwardBrowserButton: delta > 0,
     }
 
-    const [focusReset, focusSelector] = prepareFocusReset(to)
+    const [focusReset, focusSelector] = prepareFocusReset(
+      to,
+      options.focusManagement
+    )
 
     pendingLocation = to
 
