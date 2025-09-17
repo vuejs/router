@@ -774,6 +774,7 @@ export function createNavigationApiRouter(
   async function handleNavigate(event: NavigateEvent) {
     clearTimeout(focusTimeoutId)
 
+    // won't handle here 'traverse' navigations to avoid race conditions, see handleCurrentEntryChange
     if (!event.canIntercept || event.navigationType === 'traverse') {
       return
     }
@@ -785,24 +786,7 @@ export function createNavigationApiRouter(
     // the back and forward buttons cannot be detected properly since the currentEntry
     // is already updated when the handler is executed.
     let navigationInfo: NavigationInformation | undefined
-    /*if (event.navigationType === 'traverse') {
-      const fromIndex = window.navigation.currentEntry?.index ?? -1
-      const toIndex = event.destination.index
-      const delta = fromIndex === -1 ? 0 : toIndex - fromIndex
-
-      navigationInfo = {
-        type: NavigationType.pop, // 'traverse' maps to 'pop' in vue-router's terminology.
-        direction:
-          delta > 0 ? NavigationDirection.forward : NavigationDirection.back,
-        delta,
-        isBackBrowserButton: delta < 0,
-        isForwardBrowserButton: delta > 0,
-        navigationApiEvent: event,
-      }
-    } else */ if (
-      event.navigationType === 'push' ||
-      event.navigationType === 'replace'
-    ) {
+    if (event.navigationType === 'push' || event.navigationType === 'replace') {
       navigationInfo = {
         type:
           event.navigationType === 'push'
