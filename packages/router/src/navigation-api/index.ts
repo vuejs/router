@@ -774,7 +774,7 @@ export function createNavigationApiRouter(
   async function handleNavigate(event: NavigateEvent) {
     clearTimeout(focusTimeoutId)
 
-    if (!event.canIntercept) {
+    if (!event.canIntercept || event.navigationType === 'traverse') {
       return
     }
 
@@ -785,7 +785,7 @@ export function createNavigationApiRouter(
     // the back and forward buttons cannot be detected properly since the currentEntry
     // is already updated when the handler is executed.
     let navigationInfo: NavigationInformation | undefined
-    if (event.navigationType === 'traverse') {
+    /*if (event.navigationType === 'traverse') {
       const fromIndex = window.navigation.currentEntry?.index ?? -1
       const toIndex = event.destination.index
       const delta = fromIndex === -1 ? 0 : toIndex - fromIndex
@@ -799,7 +799,7 @@ export function createNavigationApiRouter(
         isForwardBrowserButton: delta > 0,
         navigationApiEvent: event,
       }
-    } else if (
+    } else */ if (
       event.navigationType === 'push' ||
       event.navigationType === 'replace'
     ) {
