@@ -62,9 +62,63 @@ import { RouteRecordNormalized } from '../matcher/types'
 import { TransitionMode, transitionModeKey } from '../transition'
 import { isChangingPage } from '../utils/routes'
 
-export interface RouterApiOptions extends Omit<RouterOptions, 'history'> {
+/**
+ * Options for {@link createNavigationApiRouter}.
+ *
+ * This function creates an "opinionated" router that provides smart, modern
+ * defaults for features like scroll restoration, focus management, and View
+ * Transitions, aiming to deliver a best-in-class, accessible user experience
+ * out of the box with zero configuration.
+ *
+ * It differs from the legacy `createRouter`, which acts more like a library by
+ * providing the tools (`scrollBehavior`) but leaving the implementation of these
+ * features to the developer.
+ *
+ * While this router provides smart defaults, it also allows for full customization
+ * by providing your own `scroll behavior` function or fine-tuning focus management,
+ * giving you the best of both worlds.
+ */
+export interface RouterApiOptions
+  extends Omit<RouterOptions, 'history' | 'scrollBehavior'> {
   base?: string
   location: string
+  /**
+   * Focus management.
+   *
+   * This can be overridden per route by passing `focusManagement` in the route meta, will take precedence over this option.
+   *
+   * If `undefined`, the router will not manage focus: will use the [default behavior](https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/intercept#focusreset).
+   *
+   * If `true`, the router will focus the first element in the dom using `document.querySelector('[autofocus], h1, main, body')`.
+   *
+   * If `false`, the router and the browser will not manage the focus, the consumer should manage the focus in the router guards or target page components.
+   *
+   * If a `string`, the router will use `document.querySelector(focusManagement)` to find the element to be focused, if the element is not found, then it will try to find the element using the selector when the option is `true`.
+   *
+   * @default undefined
+   */
+  focusManagement?: boolean | string
+  /**
+   * Controls the scroll management strategy, allowing you to opt-into the
+   * manual `vue-router` `scrollBehavior` system for fine-grained control
+   * via [NavigateEvent.scroll](https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/scroll)
+   * in your route guards.
+   *
+   * This can be overridden per-route by defining a `scrollManagement` in the
+   * route's `meta` field. This takes precedence over this option.
+   *
+   * The default behavior is to leverage the browser's native scroll handling:
+   * - `undefined` (default) or `after-transition`: The router leverages the
+   * browser's built-in, performant scroll handling (`scroll: 'after-transition'`).
+   * This provides an excellent default experience that respects modern CSS
+   * properties like `scroll-padding-top` and restores scroll position automatically
+   * on back/forward navigations.
+   * - `manual`: Disables the browser's native scroll management (`scroll: 'manual'`)
+   * and enables using scroll via native [NavigateEvent.scroll](https://developer.mozilla.org/en-US/docs/Web/API/NavigateEvent/scroll) in your route guards.
+   *
+   * @default undefined
+   */
+  scrollManagement?: 'after-transition' | 'manual'
 }
 
 export function createNavigationApiRouter(
@@ -89,6 +143,7 @@ export function createNavigationApiRouter(
 
   let isRevertingNavigation = false
   let pendingLocation: RouteLocation | undefined
+  let focusTimeoutId: ReturnType<typeof setTimeout> | undefined
   let lastSuccessfulLocation: RouteLocationNormalizedLoaded =
     START_LOCATION_NORMALIZED
 
@@ -237,18 +292,63 @@ export function createNavigationApiRouter(
     await runGuardQueue(guards)
   }
 
+  interface FinalizeNavigationOptions {
+    failure?: NavigationFailure
+    focus?: {
+      focusReset: 'after-transition' | 'manual'
+      selector?: string
+    }
+  }
+
   function finalizeNavigation(
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
-    failure?: NavigationFailure
+    options: FinalizeNavigationOptions = {}
   ) {
     pendingLocation = undefined
+    const { failure, focus } = options
     if (!failure) {
       lastSuccessfulLocation = to
     }
     currentRoute.value = to as RouteLocationNormalizedLoaded
     markAsReady()
     afterGuards.list().forEach(guard => guard(to, from, failure))
+
+    if (!failure && focus) {
+      const { focusReset, selector } = focus
+      // We only need to handle focus here, to prevent scrolling.
+      // When focusManagement is false, selector is undefined.
+      // So we can have the following cases:
+      // - focusReset: after-transition -> default browser behavior: no action required here
+      // - focusReset: manual, selector undefined -> no action required here
+      // - focusReset: manual, selector with value -> prevent scrolling when focusing the target selector element
+      // We don't need to handle scroll here, the browser or user guards or components lifecycle hooks will handle it
+      if (focusReset === 'manual' && selector) {
+        clearTimeout(focusTimeoutId)
+        requestAnimationFrame(() => {
+          focusTimeoutId = setTimeout(() => {
+            const target = document.querySelector<HTMLElement>(selector)
+            if (!target) return
+            target.focus({ preventScroll: true })
+            if (document.activeElement === target) return
+            // element has tabindex already, likely not focusable
+            // because of some other reason, bail out
+            if (target.hasAttribute('tabindex')) return
+            const restoreTabindex = () => {
+              target.removeAttribute('tabindex')
+              target.removeEventListener('blur', restoreTabindex)
+            }
+            // temporarily make the target element focusable
+            target.setAttribute('tabindex', '-1')
+            target.addEventListener('blur', restoreTabindex)
+            // try to focus again
+            target.focus({ preventScroll: true })
+            // remove tabindex and event listener if focus still not worked
+            if (document.activeElement !== target) restoreTabindex()
+          }, 0)
+        })
+      }
+    }
   }
 
   function markAsReady(err?: any): void {
@@ -411,7 +511,7 @@ export function createNavigationApiRouter(
           from,
         }
       )
-      finalizeNavigation(from, from, failure)
+      finalizeNavigation(from, from, { failure })
       return failure
     }
 
@@ -627,54 +727,104 @@ export function createNavigationApiRouter(
     )
   }
 
+  function prepareTargetLocation(
+    event: NavigateEvent
+  ): RouteLocationNormalized {
+    if (!pendingLocation) {
+      const destination = new URL(event.destination.url)
+      const pathWithSearchAndHash =
+        destination.pathname + destination.search + destination.hash
+      return resolve(pathWithSearchAndHash) as RouteLocationNormalized
+    }
+
+    return pendingLocation as RouteLocationNormalized
+  }
+
+  function prepareFocusReset(to: RouteLocationNormalized) {
+    let focusReset: 'after-transition' | 'manual' = 'after-transition'
+    let selector: string | undefined
+
+    const focusManagement = to.meta.focusManagement ?? options.focusManagement
+    if (focusManagement === false) {
+      focusReset = 'manual'
+    }
+    if (focusManagement === true) {
+      focusReset = 'manual'
+      selector = '[autofocus],h1,main,body'
+    } else if (typeof focusManagement === 'string') {
+      focusReset = 'manual'
+      selector = focusManagement || '[autofocus],h1,main,body'
+    }
+
+    return [focusReset, selector] as const
+  }
+
+  function prepareScrollManagement(
+    to: RouteLocationNormalized
+  ): 'after-transition' | 'manual' {
+    let scrollManagement: 'after-transition' | 'manual' = 'after-transition'
+    const scrollMeta = to.meta.scrollManagement ?? options.scrollManagement
+    if (scrollMeta === 'manual') {
+      scrollManagement = 'manual'
+    }
+
+    return scrollManagement
+  }
+
   async function handleNavigate(event: NavigateEvent) {
-    if (!event.canIntercept) return
+    clearTimeout(focusTimeoutId)
+
+    if (!event.canIntercept) {
+      return
+    }
+
+    const targetLocation = prepareTargetLocation(event)
+    const from = currentRoute.value
+
+    // the calculation should be here, if running this logic inside the intercept handler
+    // the back and forward buttons cannot be detected properly since the currentEntry
+    // is already updated when the handler is executed.
+    let navigationInfo: NavigationInformation | undefined
+    if (event.navigationType === 'traverse') {
+      const fromIndex = window.navigation.currentEntry?.index ?? -1
+      const toIndex = event.destination.index
+      const delta = fromIndex === -1 ? 0 : toIndex - fromIndex
+
+      navigationInfo = {
+        type: NavigationType.pop, // 'traverse' maps to 'pop' in vue-router's terminology.
+        direction:
+          delta > 0 ? NavigationDirection.forward : NavigationDirection.back,
+        delta,
+        isBackBrowserButton: delta < 0,
+        isForwardBrowserButton: delta > 0,
+        navigationApiEvent: event,
+      }
+    } else if (
+      event.navigationType === 'push' ||
+      event.navigationType === 'replace'
+    ) {
+      navigationInfo = {
+        type:
+          event.navigationType === 'push'
+            ? NavigationType.push
+            : NavigationType.pop,
+        direction: NavigationDirection.unknown, // No specific direction for push/replace.
+        delta: event.navigationType === 'push' ? 1 : 0,
+        navigationApiEvent: event,
+      }
+    }
+
+    const [focusReset, focusSelector] = prepareFocusReset(targetLocation)
 
     event.intercept({
+      focusReset,
+      scroll: prepareScrollManagement(targetLocation),
       async handler() {
         if (!pendingLocation) {
-          const destination = new URL(event.destination.url)
-          const pathWithSearchAndHash =
-            destination.pathname + destination.search + destination.hash
-          pendingLocation = resolve(
-            pathWithSearchAndHash
-          ) as RouteLocationNormalized
+          pendingLocation = targetLocation
         }
 
         const to = pendingLocation as RouteLocationNormalized
-        const from = currentRoute.value
-
-        let navigationInfo: NavigationInformation | undefined
-        if (event.navigationType === 'traverse') {
-          const fromIndex = window.navigation.currentEntry?.index ?? -1
-          const toIndex = event.destination.index
-          const delta = fromIndex === -1 ? 0 : toIndex - fromIndex
-
-          navigationInfo = {
-            type: NavigationType.pop, // 'traverse' maps to 'pop' in vue-router's terminology.
-            direction:
-              delta > 0
-                ? NavigationDirection.forward
-                : NavigationDirection.back,
-            delta,
-            isBackBrowserButton: delta < 0,
-            isForwardBrowserButton: delta > 0,
-            signal: event.signal,
-          }
-        } else if (
-          event.navigationType === 'push' ||
-          event.navigationType === 'replace'
-        ) {
-          navigationInfo = {
-            type:
-              event.navigationType === 'push'
-                ? NavigationType.push
-                : NavigationType.pop,
-            direction: NavigationDirection.unknown, // No specific direction for push/replace.
-            delta: event.navigationType === 'push' ? 1 : 0,
-            signal: event.signal,
-          }
-        }
 
         if (
           from !== START_LOCATION_NORMALIZED &&
@@ -686,7 +836,12 @@ export function createNavigationApiRouter(
 
         try {
           await resolveNavigationGuards(to, from, navigationInfo)
-          finalizeNavigation(to, from)
+          finalizeNavigation(to, from, {
+            focus: {
+              focusReset,
+              selector: focusSelector,
+            },
+          })
         } catch (error) {
           const failure = error as NavigationFailure
 
@@ -713,6 +868,7 @@ export function createNavigationApiRouter(
   async function handleCurrentEntryChange(
     event: NavigationCurrentEntryChangeEvent
   ) {
+    clearTimeout(focusTimeoutId)
     if (isRevertingNavigation) {
       isRevertingNavigation = false
       return
@@ -740,12 +896,16 @@ export function createNavigationApiRouter(
       isForwardBrowserButton: delta > 0,
     }
 
+    const [focusReset, focusSelector] = prepareFocusReset(to)
+
     pendingLocation = to
 
     try {
       // then browser has been done the navigation, we just run the guards
       await resolveNavigationGuards(to, from, navigationInfo)
-      finalizeNavigation(to, from)
+      finalizeNavigation(to, from, {
+        focus: { focusReset, selector: focusSelector },
+      })
     } catch (error) {
       const failure = error as NavigationFailure
 
@@ -753,7 +913,7 @@ export function createNavigationApiRouter(
       go(event.from.index - window.navigation.currentEntry!.index)
 
       // we end up at from to keep consistency
-      finalizeNavigation(from, to, failure)
+      finalizeNavigation(from, to, { failure })
 
       if (isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)) {
         navigate((failure as NavigationRedirectError).to, { replace: true })
