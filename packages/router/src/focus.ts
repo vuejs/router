@@ -1,5 +1,5 @@
 import type { RouteLocationNormalized } from './typed-routes'
-import { Router, RouterOptions } from './router'
+import type { Router, RouterOptions } from './router'
 import { nextTick } from 'vue'
 
 export function enableFocusManagement(router: Router) {

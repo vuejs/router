@@ -80,7 +80,10 @@ import { createFocusManagementHandler, prepareFocusReset } from '../focus'
  * giving you the best of both worlds.
  */
 export interface RouterApiOptions
-  extends Omit<RouterOptions, 'history' | 'scrollBehavior'> {
+  extends Omit<
+    RouterOptions,
+    'history' | 'scrollBehavior' | 'enableScrollManagement'
+  > {
   base?: string
   location: string
   /**

@@ -20,7 +20,12 @@ import type {
   RouteLocationAsString,
   RouteRecordNameGeneric,
 } from './typed-routes'
-import { RouterHistory, HistoryState, NavigationType } from './history/common'
+import {
+  RouterHistory,
+  HistoryState,
+  NavigationType,
+  NavigationInformation,
+} from './history/common'
 import {
   ScrollPosition,
   getSavedScrollPosition,
@@ -108,7 +113,8 @@ export interface RouterScrollBehavior {
   (
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
-    savedPosition: _ScrollPositionNormalized | null
+    savedPosition: _ScrollPositionNormalized | null,
+    info?: NavigationInformation
   ): Awaitable<ScrollPosition | false | void>
 }
 
@@ -203,6 +209,14 @@ export interface RouterOptions extends PathParserOptions {
    * @default undefined
    */
   focusManagement?: boolean | string
+  /**
+   * Enable automatic scroll restoration when navigating the history.
+   *
+   * Enabling this option, will register a custom `scrollBehavior` if none is provided.
+   *
+   * `focusManagement` and this option are just used to enable some sort of "polyfills" for browsers that do not support the Navigation API.
+   */
+  enableScrollManagement?: true
 }
 
 /**
@@ -1066,6 +1080,7 @@ export function createRouter(
         return
       }
 
+      toLocation.meta.__info = info
       pendingLocation = toLocation
       const from = currentRoute.value
 
@@ -1238,6 +1253,23 @@ export function createRouter(
     return err
   }
 
+  const { enableScrollManagement, scrollBehavior } = options
+
+  const useScrollBehavior: RouterScrollBehavior | undefined =
+    scrollBehavior ??
+    (enableScrollManagement
+      ? async (to, from, savedPosition, info) => {
+          await nextTick()
+          if (info?.type === 'pop' && savedPosition) {
+            return scrollToPosition(savedPosition)
+          }
+          if (to.hash) {
+            return scrollToPosition({ el: to.hash, behavior: 'smooth' })
+          }
+          return scrollToPosition({ top: 0, left: 0 })
+        }
+      : undefined)
+
   // Scroll behavior
   function handleScroll(
     to: RouteLocationNormalizedLoaded,
@@ -1246,8 +1278,9 @@ export function createRouter(
     isFirstNavigation: boolean
   ): // the return is not meant to be used
   Promise<unknown> {
-    const { scrollBehavior } = options
-    if (!isBrowser || !scrollBehavior) return Promise.resolve()
+    const info = to.meta.__info as NavigationInformation | undefined
+    delete to.meta.__info
+    if (!isBrowser || !useScrollBehavior) return Promise.resolve()
 
     const scrollPosition: _ScrollPositionNormalized | null =
       (!isPush && getSavedScrollPosition(getScrollKey(to.fullPath, 0))) ||
@@ -1257,7 +1290,7 @@ export function createRouter(
       null
 
     return nextTick()
-      .then(() => scrollBehavior(to, from, scrollPosition))
+      .then(() => useScrollBehavior(to, from, scrollPosition, info))
       .then(position => position && scrollToPosition(position))
       .catch(err => triggerError(err, to, from))
   }
