@@ -36,7 +36,6 @@ jobs:
       - run: pnpm install
       - run: pnpm run lint
       - run: pnpm run -r build
-      - run: pnpm run -r build:dts
       - run: pnpm run -r test:types
       - run: pnpm run -r test:unit
 
