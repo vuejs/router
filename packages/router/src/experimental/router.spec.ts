@@ -314,7 +314,7 @@ describe('Experimental Router', () => {
     const homeOnlyRoutes = [experimentalRoutes.find(r => r.name === 'home')!]
     const resolver = createFixedResolver(homeOnlyRoutes)
     const { router } = await newRouter({ resolver })
-    const spy = vi.fn((to, from, next) => next())
+    const spy = vi.fn((_to, _from) => {})
     router.beforeEach(spy)
     await router.push('/idontexist')
     expect(spy).toHaveBeenCalledTimes(1)
@@ -466,15 +466,15 @@ describe('Experimental Router', () => {
       const history = createMemoryHistory()
       const resolver = createFixedResolver(experimentalRoutes)
       const router = experimental_createRouter({ history, resolver })
-      router.beforeEach(async (to, from, next) => {
-        if (to.name !== 'Param') return next()
+      router.beforeEach(async (to, from) => {
+        if (to.name !== 'Param') return
         // the first navigation gets passed target
         if (to.params.p === 'a') {
           await p1
-          target ? next(target) : next()
+          return target || undefined
         } else {
           // the second one just passes
-          next()
+          return
         }
       })
       const from = router.currentRoute.value
@@ -521,17 +521,17 @@ describe('Experimental Router', () => {
       await router.push('/p/a')
       await router.push('/p/b')
 
-      router.beforeEach(async (to, from, next) => {
-        if (to.name !== 'Param' && to.name !== 'Foo') return next()
+      router.beforeEach(async (to, from) => {
+        if (to.name !== 'Param' && to.name !== 'Foo') return
         if (to.fullPath === '/foo') {
           await p1
-          next()
+          return
         } else if (from.fullPath === '/p/b') {
           await p2
           // @ts-ignore: same as function above
-          next(target)
+          return target
         } else {
-          next()
+          return
         }
       })
 
@@ -644,7 +644,7 @@ describe('Experimental Router', () => {
     })
   })
 
-  describe('Dynamic Routing', () => {
+  describe.todo('Dynamic Routing', () => {
     it.skip('resolves new added routes', async () => {})
 
     it.skip('checks if a route exists', async () => {})

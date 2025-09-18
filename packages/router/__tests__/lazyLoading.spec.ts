@@ -159,7 +159,7 @@ describe('Lazy Loading', () => {
 
   it('avoid fetching async component if navigation is cancelled through beforeEnter', async () => {
     const { component, resolve } = createLazyComponent()
-    const spy = vi.fn((to, from, next) => next(false))
+    const spy = vi.fn((to, from) => false)
     const { router } = newRouter({
       routes: [
         {
@@ -187,7 +187,7 @@ describe('Lazy Loading', () => {
       ],
     })
 
-    const spy = vi.fn((to, from, next) => next(false))
+    const spy = vi.fn((to, from) => false)
 
     router.beforeEach(spy)
 
@@ -199,7 +199,7 @@ describe('Lazy Loading', () => {
 
   it('invokes beforeRouteEnter after lazy loading the component', async () => {
     const { promise, resolve } = createLazyComponent()
-    const spy = vi.fn((to, from, next) => next())
+    const spy = vi.fn((to, from) => {})
     const component = vi.fn(() =>
       promise.then(() => ({ beforeRouteEnter: spy }))
     )
@@ -215,7 +215,7 @@ describe('Lazy Loading', () => {
 
   it('beforeRouteLeave works on a lazy loaded component', async () => {
     const { promise, resolve } = createLazyComponent()
-    const spy = vi.fn((to, from, next) => next())
+    const spy = vi.fn((to, from) => {})
     const component = vi.fn(() =>
       promise.then(() => ({ beforeRouteLeave: spy }))
     )
@@ -240,7 +240,7 @@ describe('Lazy Loading', () => {
 
   it('beforeRouteUpdate works on a lazy loaded component', async () => {
     const { promise, resolve } = createLazyComponent()
-    const spy = vi.fn((to, from, next) => next())
+    const spy = vi.fn((to, from) => {})
     const component = vi.fn(() =>
       promise.then(() => ({ beforeRouteUpdate: spy }))
     )

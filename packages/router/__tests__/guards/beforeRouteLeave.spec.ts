@@ -94,9 +94,9 @@ describe('beforeRouteLeave', () => {
 
   it('calls beforeRouteLeave guard on navigation', async () => {
     const router = createRouter({ routes })
-    beforeRouteLeave.mockImplementationOnce((to, from, next) => {
-      if (to.path === 'foo') next(false)
-      else next()
+    beforeRouteLeave.mockImplementationOnce((to, from) => {
+      if (to.path === 'foo') return false
+      else return
     })
     await router.push('/guard')
     expect(beforeRouteLeave).not.toHaveBeenCalled()
@@ -110,8 +110,8 @@ describe('beforeRouteLeave', () => {
 
   it('does not call beforeRouteLeave guard if the view is not mounted', async () => {
     const router = createRouter({ routes })
-    beforeRouteLeave.mockImplementationOnce((to, from, next) => {
-      next()
+    beforeRouteLeave.mockImplementationOnce((to, from) => {
+      return
     })
     await router.push('/guard')
     expect(beforeRouteLeave).not.toHaveBeenCalled()
@@ -158,17 +158,17 @@ describe('beforeRouteLeave', () => {
     await router.push({ name: 'nested-nested-foo' })
     resetMocks()
     let count = 0
-    nested.nestedNestedFoo.mockImplementation((to, from, next) => {
+    nested.nestedNestedFoo.mockImplementation((to, from) => {
       expect(count++).toBe(0)
-      next()
+      return
     })
-    nested.nestedNested.mockImplementation((to, from, next) => {
+    nested.nestedNested.mockImplementation((to, from) => {
       expect(count++).toBe(1)
-      next()
+      return
     })
-    nested.parent.mockImplementation((to, from, next) => {
+    nested.parent.mockImplementation((to, from) => {
       expect(count++).toBe(2)
-      next()
+      return
     })
 
     // simulate a mounted route component
@@ -184,8 +184,8 @@ describe('beforeRouteLeave', () => {
 
   it('can cancel navigation', async () => {
     const router = createRouter({ routes })
-    beforeRouteLeave.mockImplementationOnce(async (to, from, next) => {
-      next(false)
+    beforeRouteLeave.mockImplementationOnce(async (to, from) => {
+      return false
     })
     await router.push('/guard')
     const p = router.push('/')
