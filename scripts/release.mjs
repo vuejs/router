@@ -246,7 +246,6 @@ async function main() {
   step('\nBuilding all packages...')
   if (!skipBuild && !isDryRun) {
     await run('pnpm', ['run', 'build'])
-    await run('pnpm', ['run', 'build:dts'])
   } else {
     console.log(`(skipped)`)
   }

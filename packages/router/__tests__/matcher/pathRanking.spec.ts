@@ -13,19 +13,9 @@ describe('Path ranking', () => {
       return comparePathParserScore(
         {
           score: a,
-          re: /a/,
-          // @ts-expect-error
-          stringify: v => v,
-          // @ts-expect-error
-          parse: v => v,
-          keys: [],
         },
         {
           score: b,
-          re: /a/,
-          stringify: v => v,
-          parse: v => v,
-          keys: [],
         }
       )
     }

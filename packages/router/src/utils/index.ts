@@ -2,9 +2,17 @@ import {
   RouteParamsGeneric,
   RouteComponent,
   RouteParamsRawGeneric,
-  RouteParamValueRaw,
   RawRouteComponent,
 } from '../types'
+
+/**
+ * Identity function that returns the value as is.
+ *
+ * @param v - the value to return
+ *
+ * @internal
+ */
+export const identityFn = <T>(v: T) => v
 
 export * from './env'
 
@@ -45,9 +53,7 @@ export function applyToParams(
 
   for (const key in params) {
     const value = params[key]
-    newParams[key] = isArray(value)
-      ? value.map(fn)
-      : fn(value as Exclude<RouteParamValueRaw, any[]>)
+    newParams[key] = isArray(value) ? value.map(fn) : fn(value)
   }
 
   return newParams
@@ -61,3 +67,15 @@ export const noop = () => {}
  */
 export const isArray: (arg: ArrayLike<any> | any) => arg is ReadonlyArray<any> =
   Array.isArray
+
+export function mergeOptions<T extends object>(
+  defaults: T,
+  partialOptions: Partial<T>
+): T {
+  const options = {} as T
+  for (const key in defaults) {
+    options[key] = key in partialOptions ? partialOptions[key]! : defaults[key]
+  }
+
+  return options
+}

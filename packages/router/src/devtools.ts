@@ -18,6 +18,7 @@ import { UseLinkDevtoolsContext } from './RouterLink'
 import { RouterViewDevtoolsContext } from './RouterView'
 import { assign, isArray } from './utils'
 import { RouteLocationNormalized } from './typed-routes'
+import { warn } from './warning'
 
 /**
  * Copies a route location and removes any problematic properties that cannot be shown in devtools (e.g. Vue instances).
@@ -80,7 +81,7 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
     },
     api => {
       if (typeof api.now !== 'function') {
-        console.warn(
+        warn(
           '[Vue Router]: You seem to be using an outdated version of Vue Devtools. Are you still using the Beta release instead of the stable one? You can find the links at https://devtools.vuejs.org/guide/installation.html.'
         )
       }

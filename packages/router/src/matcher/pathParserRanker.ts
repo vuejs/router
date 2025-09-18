@@ -76,6 +76,8 @@ export interface _PathParserOptions {
   /**
    * Should the RegExp match until the end by appending a `$` to it.
    *
+   * @deprecated this option will alsways be `true` in the future. Open a discussion in vuejs/router if you need this to be `false`
+   *
    * @defaultValue `true`
    */
   end?: boolean
@@ -331,7 +333,10 @@ function compareScoreArray(a: number[], b: number[]): number {
  * @param b - second PathParser
  * @returns 0 if both are equal, < 0 if a should be sorted first, > 0 if b
  */
-export function comparePathParserScore(a: PathParser, b: PathParser): number {
+export function comparePathParserScore(
+  a: Pick<PathParser, 'score'>,
+  b: Pick<PathParser, 'score'>
+): number {
   let i = 0
   const aScore = a.score
   const bScore = b.score
@@ -366,4 +371,9 @@ export function comparePathParserScore(a: PathParser, b: PathParser): number {
 function isLastScoreNegative(score: PathParser['score']): boolean {
   const last = score[score.length - 1]
   return score.length > 0 && last[last.length - 1] < 0
+}
+export const PATH_PARSER_OPTIONS_DEFAULTS: PathParserOptions = {
+  strict: false,
+  end: true,
+  sensitive: false,
 }

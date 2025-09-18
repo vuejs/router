@@ -1,7 +1,7 @@
 {
   "name": "@vue/router-root",
   "private": true,
-  "packageManager": "pnpm@9.10.0",
+  "packageManager": "pnpm@10.15.0",
   "type": "module",
   "engines": {
     "node": ">=20.9.0"
@@ -13,7 +13,6 @@
     "release": "node scripts/release.mjs",
     "size": "node scripts/check-size.mjs",
     "build": "pnpm run -r build",
-    "build:dts": "pnpm run -r build:dts",
     "docs": "pnpm run --filter ./packages/docs -r docs",
     "docs:api": "pnpm run --filter ./packages/docs -r docs:api",
     "docs:translation:compare": "pnpm run --filter ./packages/docs -r docs:translation:compare",
@@ -34,19 +33,19 @@
     "@vitest/coverage-v8": "^2.1.9",
     "@vitest/ui": "^2.1.9",
     "brotli": "^1.3.3",
-    "chalk": "^5.4.1",
+    "chalk": "^5.6.0",
     "enquirer": "^2.4.1",
-    "execa": "^9.5.2",
+    "execa": "^9.6.0",
     "globby": "^14.1.0",
-    "lint-staged": "^15.5.1",
+    "lint-staged": "^15.5.2",
     "minimist": "^1.2.8",
     "p-series": "^3.0.0",
     "prettier": "^3.5.3",
-    "semver": "^7.7.1",
-    "simple-git-hooks": "^2.13.0",
-    "typedoc": "^0.26.11",
-    "typedoc-plugin-markdown": "^4.2.10",
-    "typescript": "~5.6.3",
+    "semver": "^7.7.2",
+    "simple-git-hooks": "^2.13.1",
+    "typedoc": "^0.28.7",
+    "typedoc-plugin-markdown": "^4.7.0",
+    "typescript": "~5.8.3",
     "vitest": "^2.1.9"
   },
   "simple-git-hooks": {
@@ -71,9 +70,14 @@
         "@types/react",
         "react-dom"
       ]
-    }
+    },
+    "onlyBuiltDependencies": [
+      "chromedriver",
+      "esbuild",
+      "geckodriver"
+    ]
   },
   "volta": {
-    "node": "20.11.1"
+    "node": "24.7.0"
   }
 }

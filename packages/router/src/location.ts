@@ -3,14 +3,14 @@ import { RouteParamValue, RouteParamsGeneric } from './types'
 import { RouteRecord } from './matcher/types'
 import { warn } from './warning'
 import { isArray } from './utils'
-import { decode } from './encoding'
+import { decode, encodeHash } from './encoding'
 import { RouteLocation, RouteLocationNormalizedLoaded } from './typed-routes'
 
 /**
  * Location object returned by {@link `parseURL`}.
  * @internal
  */
-interface LocationNormalized {
+export interface LocationNormalized {
   path: string
   fullPath: string
   hash: string
@@ -19,6 +19,7 @@ interface LocationNormalized {
 
 /**
  * Location object accepted by {@link `stringifyURL`}.
+ *
  * @internal
  */
 interface LocationPartial {
@@ -50,41 +51,80 @@ export function parseURL(
     searchString = '',
     hash = ''
 
-  // Could use URL and URLSearchParams but IE 11 doesn't support it
-  // TODO: move to new URL()
+  // NOTE: we could use URL and URLSearchParams but they are 2 to 5 times slower than this method
   const hashPos = location.indexOf('#')
   let searchPos = location.indexOf('?')
-  // the hash appears before the search, so it's not part of the search string
-  if (hashPos < searchPos && hashPos >= 0) {
-    searchPos = -1
-  }
 
-  if (searchPos > -1) {
+  // This ensures that the ? is not part of the hash
+  // e.g. /foo#hash?query -> has no query
+  searchPos = hashPos >= 0 && searchPos > hashPos ? -1 : searchPos
+
+  if (searchPos >= 0) {
     path = location.slice(0, searchPos)
+    // keep the ? char
     searchString = location.slice(
-      searchPos + 1,
-      hashPos > -1 ? hashPos : location.length
+      searchPos,
+      // hashPos cannot be 0 because there is a search section in the location
+      hashPos > 0 ? hashPos : location.length
     )
 
     query = parseQuery(searchString)
   }
 
-  if (hashPos > -1) {
+  if (hashPos >= 0) {
+    // TODO(major): path ||=
     path = path || location.slice(0, hashPos)
     // keep the # character
     hash = location.slice(hashPos, location.length)
   }
 
-  // no search and no query
-  path = resolveRelativePath(path != null ? path : location, currentLocation)
-  // empty path means a relative query or hash `?foo=f`, `#thing`
+  path = resolveRelativePath(
+    // TODO(major): path ?? location
+    path != null
+      ? path
+      : // empty path means a relative query or hash `?foo=f`, `#thing`
+        location,
+    currentLocation
+  )
 
   return {
-    fullPath: path + (searchString && '?') + searchString + hash,
+    // we can't directly use the location parameter because it can be a relative path
+    fullPath: path + searchString + hash,
     path,
     query,
     hash: decode(hash),
   }
+}
+
+/**
+ * Creates a `fullPath` property from the `path`, `query` and `hash` properties
+ *
+ * @param  stringifyQuery - custom function to stringify the query object. It should handle encoding values
+ * @param  path - An encdoded path
+ * @param  query - A decoded query object
+ * @param  hash - A decoded hash
+ * @returns a valid `fullPath`
+ */
+export function NEW_stringifyURL(
+  stringifyQuery: (query?: LocationQueryRaw) => string,
+  path: `/${string}`,
+  query?: LocationPartial['query'],
+  hash?: LocationPartial['hash']
+): `/${string}`
+export function NEW_stringifyURL(
+  stringifyQuery: (query?: LocationQueryRaw) => string,
+  path: string,
+  query?: LocationPartial['query'],
+  hash?: LocationPartial['hash']
+): string
+export function NEW_stringifyURL(
+  stringifyQuery: (query?: LocationQueryRaw) => string,
+  path: string,
+  query?: LocationPartial['query'],
+  hash: LocationPartial['hash'] = ''
+): string {
+  const searchText = stringifyQuery(query)
+  return path + (searchText && '?') + searchText + encodeHash(hash)
 }
 
 /**
@@ -207,11 +247,12 @@ export function resolveRelativePath(to: string, from: string): string {
     return to
   }
 
+  // resolve to: '' with from: '/anything' -> '/anything'
   if (!to) return from
 
   const fromSegments = from.split('/')
   const toSegments = to.split('/')
-  const lastToSegment = toSegments[toSegments.length - 1]
+  const lastToSegment: string | undefined = toSegments[toSegments.length - 1]
 
   // make . and ./ the same (../ === .., ../../ === ../..)
   // this is the same behavior as new URL()

@@ -1,8 +1,6 @@
 import { defineConfig } from 'vitest/config'
 import Vue from '@vitejs/plugin-vue'
-import { fileURLToPath } from 'node:url'
 
-const __dirname = new URL('.', import.meta.url).pathname
 export default defineConfig({
   resolve: {
     alias: [],
@@ -25,6 +23,8 @@ export default defineConfig({
         // '/node_modules/',
         'src/index.ts',
         'src/devtools.ts',
+        'src/experimental/index.ts',
+        'src/**/test-utils.ts',
       ],
     },
     typecheck: {
