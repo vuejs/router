@@ -412,6 +412,7 @@ export interface EXPERIMENTAL_Router_Base<TRecord> {
    */
   listening: boolean
 
+  // TODO: deprecate in favor of getRoute(name) and add it
   /**
    * Checks if a route with a given name exists
    *
