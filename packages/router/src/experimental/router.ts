@@ -390,6 +390,10 @@ export interface EXPERIMENTAL_RouterOptions
   resolver: EXPERIMENTAL_ResolverFixed<EXPERIMENTAL_RouteRecordNormalized_Matchable>
 }
 
+// TODO: Make the Router extends the resolver so that it automatically exposes
+// getRoutes and resolve. This should make it automatic to have a dynamic
+// resolver
+
 /**
  * Router base instance.
  *
@@ -612,14 +616,6 @@ export function experimental_createRouter(
   // leave the scrollRestoration if no scrollBehavior is provided
   if (isBrowser && options.scrollBehavior) {
     history.scrollRestoration = 'manual'
-  }
-
-  function getRoutes() {
-    return resolver.getRecords()
-  }
-
-  function hasRoute(name: NonNullable<RouteRecordNameGeneric>): boolean {
-    return !!resolver.getRecord(name)
   }
 
   // NOTE: to support multiple overloads
@@ -1290,8 +1286,8 @@ export function experimental_createRouter(
     currentRoute,
     listening: true,
 
-    hasRoute,
-    getRoutes,
+    hasRoute: name => !!resolver.getRoute(name),
+    getRoutes: () => resolver.getRoutes(),
     // @ts-expect-error FIXME: update EXPERIMENTAL_Router types
     resolve,
     options,

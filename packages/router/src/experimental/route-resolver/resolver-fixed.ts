@@ -65,6 +65,9 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
  */
 export interface EXPERIMENTAL_ResolverRecord_Group
   extends EXPERIMENTAL_ResolverRecord_Base {
+  /**
+   * A group route cannot be matched directly and so names are not allowed.
+   */
   name?: undefined
   path?: undefined
   // Query is the only kind of matcher that is non-exclusive
@@ -74,7 +77,8 @@ export interface EXPERIMENTAL_ResolverRecord_Group
 }
 
 /**
- * A matchable record is a record that can be matched by a path, query or hash and will resolve to a location.
+ * A matchable record is a record that can be matched by a path, query or hash
+ * and will resolve to a location.
  */
 export interface EXPERIMENTAL_ResolverRecord_Matchable
   extends EXPERIMENTAL_ResolverRecord_Base {
@@ -324,7 +328,7 @@ export function createFixedResolver<
 
   return {
     resolve,
-    getRecords: () => records,
-    getRecord: name => recordMap.get(name),
+    getRoutes: () => records,
+    getRoute: name => recordMap.get(name),
   }
 }

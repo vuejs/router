@@ -14,7 +14,7 @@ export interface ParamParser<
   // not allow `null` within an array or `undefined`)
   TUrlParam = MatcherQueryParamsValue,
   // the type that can be passed as a location when navigating: `router.push({ params: { }})`
-  // it's sometimes for more permissive than TParam, for example allowing nullish values
+  // it's sometimes more permissive than TParam, for example allowing nullish values
   TParamRaw = TParam,
 > {
   get?: (value: NoInfer<TUrlParam>) => TParam

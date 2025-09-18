@@ -14,7 +14,7 @@ export type RecordName = string | symbol
  * serialization of params, query, and hash.
  *
  * - `TMatcherRecordRaw` represents the raw record type passed to {@link addMatcher}.
- * - `TMatcherRecord` represents the normalized record type returned by {@link getRecords}.
+ * - `TMatcherRecord` represents the normalized record type returned by {@link getRoutes}.
  */
 export interface EXPERIMENTAL_Resolver_Base<TRecord> {
   /**
@@ -44,7 +44,7 @@ export interface EXPERIMENTAL_Resolver_Base<TRecord> {
    */
   resolve(
     location: ResolverLocationAsNamed,
-    // TODO: is this useful?
+    // TODO: is this type strictness useful?
     currentLocation?: undefined
     // currentLocation?: undefined | NEW_LocationResolved<TMatcherRecord>
   ): ResolverLocationResolved<TRecord>
@@ -78,16 +78,15 @@ export interface EXPERIMENTAL_Resolver_Base<TRecord> {
   ): ResolverLocationResolved<TRecord>
 
   /**
-   * Get a list of all resolver records.
-   * Previously named `getRoutes()`
+   * Get a list of all resolver route records.
    */
-  getRecords(): TRecord[]
+  getRoutes(): TRecord[]
 
   /**
    * Get a resolver record by its name.
    * Previously named `getRecordMatcher()`
    */
-  getRecord(name: RecordName): TRecord | undefined
+  getRoute(name: RecordName): TRecord | undefined
 }
 
 /**

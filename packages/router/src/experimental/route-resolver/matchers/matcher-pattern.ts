@@ -10,9 +10,12 @@ import type { Simplify } from '../../../types/utils'
  *
  * @template TIn - type of the input value to match against the pattern
  * @template TParams - type of the output value after matching
+ * @template TParamsRaw - type of the input value to build the input from
  *
  * In the case of the `path`, the `TIn` is a `string`, but in the case of the
- * query, it's the object of query params.
+ * query, it's the object of query params. `TParamsRaw` allows for a more permissive
+ * type when building the value, for example allowing numbers and strings like
+ * the old params.
  *
  * @internal this is the base interface for all matcher patterns, it shouldn't
  * be used directly
