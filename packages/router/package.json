@@ -28,6 +28,9 @@
     "./vetur/*": "./vetur/*",
     "./package.json": "./package.json",
     "./experimental": "./dist/experimental/index.mjs",
+    "./auto-resolver": {
+      "types": "./auto-resolver.d.mts"
+    },
     "./auto-routes": {
       "types": "./vue-router-auto-routes.d.ts",
       "node": {
@@ -79,6 +82,7 @@
   },
   "homepage": "https://router.vuejs.org",
   "files": [
+    "auto-resolver.d.mts",
     "index.js",
     "vue-router.node.mjs",
     "vue-router-auto.d.ts",
