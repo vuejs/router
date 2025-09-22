@@ -15,7 +15,7 @@
   "dependencies": {
     "simple-git": "^3.28.0",
     "typedoc-vitepress-theme": "^1.1.2",
-    "vitepress": "1.6.3",
+    "vitepress": "1.6.4",
     "vitepress-translation-helper": "^0.2.2",
     "vue-router": "workspace:*"
   }

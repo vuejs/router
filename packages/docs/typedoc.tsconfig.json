@@ -1,6 +1,10 @@
 {
   "include": ["../router/src/global.d.ts", "../router/src/**/*.ts"],
-  "exclude": ["../*/__tests__/**/*.ts", "**/*.spec.ts"],
+  "exclude": [
+    "../*/__tests__/**/*.ts",
+    "**/*.spec.ts",
+    "../router/src/experimental/**/*.ts"
+  ],
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": "..",
