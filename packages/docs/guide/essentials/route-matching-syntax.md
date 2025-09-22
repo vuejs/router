@@ -41,6 +41,15 @@ Now, going to `/25` will match `/:orderId` while going to anything else will mat
 Make sure to **escape backslashes (`\`)** like we did with `\d` (becomes `\\d`) to actually pass the backslash character in a string in JavaScript.
 :::
 
+Since the closing parentheses `)` is used to mark the end of a custom regex, you must escape it inside of the regexp (e.g. nested groups):
+
+```js
+const routes = [
+  // note the escaped closing parentheses of the group within the regexp
+  { path: '/:custom(somethnig-(nested|other\\))' },
+]
+```
+
 ## Repeatable params
 
 If you need to match routes with multiple sections like `/first/second/third`, you should mark a param as repeatable with `*` (0 or more) and `+` (1 or more):
