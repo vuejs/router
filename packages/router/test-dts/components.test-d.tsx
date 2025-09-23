@@ -27,6 +27,17 @@ describe('Components', () => {
     expectTypeOf<JSX.Element>(<RouterLink class="link" to="/foo" />)
     expectTypeOf<JSX.Element>(<RouterLink to={{ path: '/foo' }} />)
     expectTypeOf<JSX.Element>(<RouterLink to={{ path: '/foo' }} custom />)
+    // event handlers and anchor attrs are allowed when not custom
+    expectTypeOf<JSX.Element>(
+      <RouterLink to="/" onFocus={() => {}} onClick={() => {}} />
+    )
+    expectTypeOf<JSX.Element>(
+      <RouterLink to="/" target="_blank" rel="noopener" />
+    )
+    // @ts-expect-error: href is intentionally omitted
+    expectError(<RouterLink to="/" href="/bar" />)
+    // @ts-expect-error: onFocus should not be allowed with custom
+    expectError(<RouterLink to="/" custom onFocus={() => {}} />)
 
     // RouterView
     expectTypeOf<JSX.Element>(<RouterView class="view" />)
