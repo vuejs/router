@@ -1,22 +1,22 @@
 import {
   defineComponent,
   h,
-  PropType,
+  type PropType,
   inject,
   computed,
   reactive,
   unref,
-  VNode,
-  UnwrapRef,
-  VNodeProps,
-  AllowedComponentProps,
-  ComponentCustomProps,
+  type VNode,
+  type UnwrapRef,
+  type VNodeProps,
+  type AllowedComponentProps,
+  type ComponentCustomProps,
   getCurrentInstance,
   watchEffect,
   // this is a workaround for https://github.com/microsoft/rushstack/issues/1050
   // this file is meant to be prepended to the generated dist/src/RouterLink.d.ts
   // @ts-ignore
-  ComputedRef,
+  type ComputedRef,
   // @ts-ignore
   DefineComponent,
   // @ts-ignore
@@ -25,8 +25,8 @@ import {
   RendererNode,
   // @ts-ignore
   ComponentOptionsMixin,
-  MaybeRef,
-  AnchorHTMLAttributes,
+  type MaybeRef,
+  type AnchorHTMLAttributes,
 } from 'vue'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
