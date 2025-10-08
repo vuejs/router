@@ -1,3 +1,7 @@
+/**
+ * TODO: remove the declaration if possible when merging unplugin-vue-router into this monorepo
+ */
+
 declare module 'vue-router/auto-resolver' {
   import type {
     EXPERIMENTAL_Router,
