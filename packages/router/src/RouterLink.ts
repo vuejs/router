@@ -363,7 +363,7 @@ export const RouterLink: _RouterLinkI = RouterLinkImpl as any
 /**
  * @internal
  */
-type _BaseRouterLinkProps = AllowedComponentProps &
+type _RouterLinkPropsTypedBase = AllowedComponentProps &
   ComponentCustomProps &
   VNodeProps &
   RouterLinkProps
@@ -371,10 +371,10 @@ type _BaseRouterLinkProps = AllowedComponentProps &
 /**
  * @internal
  */
-type RouterLinkTypedProps<Custom extends boolean | undefined> =
+type RouterLinkPropsTyped<Custom extends boolean | undefined> =
   Custom extends true
-    ? _BaseRouterLinkProps & { custom: true }
-    : _BaseRouterLinkProps & { custom?: false | undefined } & Omit<
+    ? _RouterLinkPropsTypedBase & { custom: true }
+    : _RouterLinkPropsTypedBase & { custom?: false | undefined } & Omit<
           AnchorHTMLAttributes,
           'href'
         >
@@ -387,7 +387,7 @@ type RouterLinkTypedProps<Custom extends boolean | undefined> =
  */
 export interface _RouterLinkI {
   new <Custom extends boolean | undefined = boolean | undefined>(): {
-    $props: RouterLinkTypedProps<Custom>
+    $props: RouterLinkPropsTyped<Custom>
 
     $slots: {
       default?: ({
