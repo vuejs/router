@@ -26,6 +26,7 @@ import {
   // @ts-ignore
   ComponentOptionsMixin,
   MaybeRef,
+  AnchorHTMLAttributes,
 } from 'vue'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
@@ -360,17 +361,33 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
 export const RouterLink: _RouterLinkI = RouterLinkImpl as any
 
 /**
+ * @internal
+ */
+type _RouterLinkPropsTypedBase = AllowedComponentProps &
+  ComponentCustomProps &
+  VNodeProps &
+  RouterLinkProps
+
+/**
+ * @internal
+ */
+type RouterLinkPropsTyped<Custom extends boolean | undefined> =
+  Custom extends true
+    ? _RouterLinkPropsTypedBase & { custom: true }
+    : _RouterLinkPropsTypedBase & { custom?: false | undefined } & Omit<
+          AnchorHTMLAttributes,
+          'href'
+        >
+
+/**
  * Typed version of the `RouterLink` component. Its generic defaults to the typed router, so it can be inferred
  * automatically for JSX.
  *
  * @internal
  */
 export interface _RouterLinkI {
-  new (): {
-    $props: AllowedComponentProps &
-      ComponentCustomProps &
-      VNodeProps &
-      RouterLinkProps
+  new <Custom extends boolean | undefined = boolean | undefined>(): {
+    $props: RouterLinkPropsTyped<Custom>
 
     $slots: {
       default?: ({
