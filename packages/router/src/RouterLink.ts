@@ -361,25 +361,33 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
 export const RouterLink: _RouterLinkI = RouterLinkImpl as any
 
 /**
- * Typed version of the `RouterLink` component. Its generic defaults to the typed router, so it can be inferred
- * automatically for JSX.
- *
  * @internal
  */
-type LinkAnchorAttrs = Omit<AnchorHTMLAttributes, 'href'>
-
 type _BaseRouterLinkProps = AllowedComponentProps &
   ComponentCustomProps &
   VNodeProps &
   RouterLinkProps
 
-type RouterLinkTypedProps<C extends boolean | undefined> = C extends true
-  ? _BaseRouterLinkProps & { custom: true }
-  : _BaseRouterLinkProps & { custom?: false | undefined } & LinkAnchorAttrs
+/**
+ * @internal
+ */
+type RouterLinkTypedProps<Custom extends boolean | undefined> =
+  Custom extends true
+    ? _BaseRouterLinkProps & { custom: true }
+    : _BaseRouterLinkProps & { custom?: false | undefined } & Omit<
+          AnchorHTMLAttributes,
+          'href'
+        >
 
+/**
+ * Typed version of the `RouterLink` component. Its generic defaults to the typed router, so it can be inferred
+ * automatically for JSX.
+ *
+ * @internal
+ */
 export interface _RouterLinkI {
-  new <C extends boolean | undefined = boolean | undefined>(): {
-    $props: RouterLinkTypedProps<C>
+  new <Custom extends boolean | undefined = boolean | undefined>(): {
+    $props: RouterLinkTypedProps<Custom>
 
     $slots: {
       default?: ({
