@@ -9,8 +9,7 @@
 
 回到我们之前的示例：
 
-```vue
-<!-- User.vue -->
+```vue [User.vue]
 <template>
   <div>
     User {{ $route.params.id }}

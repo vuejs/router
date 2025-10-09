@@ -22,15 +22,13 @@
 
 接着上节创建的 app ：
 
-```vue
-<!-- App.vue -->
+```vue [App.vue]
 <template>
   <router-view />
 </template>
 ```
 
-```vue
-<!-- User.vue -->
+```vue [User.vue]
 <template>
   <div>
     User {{ $route.params.id }}
@@ -47,8 +45,7 @@ const routes = [{ path: '/user/:id', component: User }]
 
 这里的 `<router-view>` 是一个顶层的 `router-view`。它渲染顶层路由匹配的组件。同样地，一个被渲染的组件也可以包含自己嵌套的 `<router-view>`。例如，如果我们在 `User` 组件的模板内添加一个 `<router-view>`：
 
-```vue
-<!-- User.vue -->
+```vue [User.vue]
 <template>
   <div class="user">
     <h2>User {{ $route.params.id }}</h2>

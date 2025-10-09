@@ -25,8 +25,7 @@ Vue Router 基于 Vue 的组件系统构建，你可以通过配置**路由**来
 让我们首先来看根组件, `App.vue`。
 
 ### App.vue
-
-```vue
+```vue [App.vue]
 <template>
   <h1>Hello App!</h1>
   <p><strong>Current route path:</strong> {{ $route.fullPath }}</p>

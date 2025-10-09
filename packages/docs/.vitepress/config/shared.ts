@@ -1,5 +1,9 @@
 import { defineConfig, HeadConfig } from 'vitepress'
 import { zhSearch } from './zh'
+import {
+  groupIconMdPlugin,
+  groupIconVitePlugin,
+} from 'vitepress-plugin-group-icons'
 
 // TODO:
 // export const META_IMAGE = 'https://router.vuejs.org/social.png'
@@ -59,6 +63,9 @@ export const sharedConfig = defineConfig({
 
     anchor: {
       slugify,
+    },
+    config: md => {
+      md.use(groupIconMdPlugin)
     },
   },
 
@@ -160,5 +167,8 @@ export const sharedConfig = defineConfig({
       // custom: 'CEBICK3M',
       placement: 'routervuejsorg',
     },
+  },
+  vite: {
+    plugins: [groupIconVitePlugin()],
   },
 })

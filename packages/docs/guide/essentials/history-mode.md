@@ -128,7 +128,7 @@ For Node.js/Express, consider using [connect-history-api-fallback middleware](ht
 1. Install [IIS UrlRewrite](https://www.iis.net/downloads/microsoft/url-rewrite)
 2. Create a `web.config` file in the root directory of your site with the following:
 
-```xml
+```xml [web.config ~vscode-icons:file-type-xml~]
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
   <system.webServer>
@@ -167,7 +167,7 @@ rewrite {
 
 Add this to your `firebase.json`:
 
-```json
+```json [firebase.json ~vscode-icons:file-type-firebase~]
 {
   "hosting": {
     "public": "dist",
@@ -185,7 +185,7 @@ Add this to your `firebase.json`:
 
 Create a `_redirects` file that is included with your deployed files:
 
-```
+``` [_redirects ~vscode-icons:file-type-light-netlify~]
 /* /index.html 200
 ```
 
@@ -197,7 +197,7 @@ You can read more about the syntax on [Netlify documentation](https://docs.netli
 
 Create a `vercel.json` file under the root directory of your project with the following:
 
-```json
+```json [vercel.json ~vscode-icons:file-type-light-vercel~]
 {
   "rewrites": [{ "source": "/:path*", "destination": "/index.html" }]
 }
