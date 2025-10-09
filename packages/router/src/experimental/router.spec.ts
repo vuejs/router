@@ -336,9 +336,30 @@ describe('Experimental Router', () => {
 
   it.skip('warns on null location during dev', async () => {})
 
-  it.skip('removes null/undefined optional params when current location has it', async () => {})
+  it('can pass an optional param', async () => {
+    const { router } = await newRouter()
+    expect(
+      router.resolve({ name: 'optional', params: { p: 'a' } })
+    ).toHaveProperty('params', { p: 'a' })
+  })
 
-  it('keeps empty strings in optional params', async () => {
+  it('removes optional params when current location has it', async () => {
+    const { router } = await newRouter()
+
+    await router.push({ name: 'optional', params: { p: 'a' } })
+    await router.push({ name: 'optional', params: { p: null } })
+    expect(router.currentRoute.value.params).toEqual({ p: null })
+
+    await router.push({ name: 'optional', params: { p: 'a' } })
+    await router.push({ name: 'optional', params: { p: undefined } })
+    expect(router.currentRoute.value.params).toEqual({ p: null })
+
+    await router.push({ name: 'optional', params: { p: 'a' } })
+    await router.push({ name: 'optional', params: {} })
+    expect(router.currentRoute.value.params).toEqual({ p: null })
+  })
+
+  it('keeps consistent optional null param value', async () => {
     const { router } = await newRouter()
     expect(
       router.resolve({ name: 'optional', params: { p: '' } })
@@ -349,6 +370,25 @@ describe('Experimental Router', () => {
     expect(router.resolve({ name: 'optional', params: {} })).toHaveProperty(
       'params',
       { p: null }
+    )
+    expect(router.resolve({ name: 'optional' })).toHaveProperty('params', {
+      p: null,
+    })
+    expect(router.resolve('/optional').params).toEqual({ p: null })
+  })
+
+  it('does not fail for missing optional params', async () => {
+    const { router } = await newRouter()
+    expect(
+      router.resolve({
+        name: 'optional',
+        params: {},
+      })
+    ).toHaveProperty('name', 'optional')
+
+    expect(router.resolve({ name: 'optional' })).toHaveProperty(
+      'name',
+      'optional'
     )
   })
 
@@ -373,8 +413,6 @@ describe('Experimental Router', () => {
   it.skip('fails if required repeated params are missing', async () => {})
 
   it.skip('fails with arrays for non repeatable params', async () => {})
-
-  it.skip('does not fail for optional params', async () => {})
 
   it('can redirect to a star route when encoding the param', () => {
     const testCatchAllMatcher = new MatcherPatternPathDynamic(

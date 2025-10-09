@@ -505,8 +505,11 @@ describe('MatcherPatternPathDynamic', () => {
       expect(pattern.match('/teams/hello')).toEqual({
         teamId: 'processed-hello',
       })
+      expect(pattern.build({ teamId: '' })).toBe('/teams')
       expect(pattern.build({ teamId: 'was-null' })).toBe('/teams')
       expect(pattern.build({ teamId: 'processed-world' })).toBe('/teams/world')
+      // null is intentionally handled differently
+      expect(pattern.build({ teamId: null })).toBe('/teams/null')
     })
   })
 })
