@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createFixedResolver } from './resolver-fixed'
-import { MatcherLocationRaw, NO_MATCH_LOCATION } from './resolver-abstract'
+import { NO_MATCH_LOCATION } from './resolver-abstract'
 import {
   EmptyParams,
   MatcherPatternHash,
