@@ -47,7 +47,12 @@ import {
   loadRouteLocation,
 } from '../index'
 import { NavigationFailureType } from '../errors'
-import { createDom, components, tick } from '../../__tests__/utils'
+import {
+  createDom,
+  components,
+  tick,
+  nextNavigation,
+} from '../../__tests__/utils'
 import { START_LOCATION_NORMALIZED } from '../location'
 import { vi, describe, expect, it, beforeAll } from 'vitest'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
@@ -107,9 +112,68 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
     components: { default: components.Home },
   },
   {
+    name: 'home-redirect',
+    path: new MatcherPatternPathStatic('/home'),
+    // TODO: this should not be needed in a redirect record
+    components: { default: components.Home },
+    redirect: { name: 'home' },
+  },
+  {
+    name: 'home-before',
+    path: new MatcherPatternPathStatic('/home-before'),
+    components: { default: components.Home },
+    // TODO: add as deprecated feature + helpers that allow to check from, updating, leaving records
+    // beforeEnter: (to, from) => {
+    //   return { name: 'home' }
+    // },
+  },
+
+  {
     name: 'search',
     path: new MatcherPatternPathStatic('/search'),
     components: { default: components.Home },
+  },
+
+  {
+    name: Symbol('to-foo'),
+    path: new MatcherPatternPathStatic('/to-foo'),
+    // TODO: this should not be needed in a redirect record
+    components: { default: components.Home },
+    redirect: to => ({
+      path: '/foo',
+      query: to.query,
+      hash: to.hash,
+    }),
+  },
+  {
+    name: Symbol('to-foo2'),
+    path: new MatcherPatternPathStatic('/to-foo2'),
+    // TODO: this should not be needed in a redirect record
+    components: { default: components.Home },
+    redirect: '/to-foo',
+  },
+  {
+    path: new MatcherPatternPathStatic('/to-foo-query'),
+    name: Symbol('to-foo-query'),
+    // TODO: this should not be needed in a redirect record
+    components: { default: components.Home },
+    redirect: '/foo?a=2#b',
+  },
+
+  {
+    name: Symbol('to-p'),
+    path: new MatcherPatternPathDynamic(/^\/to-p\/([^/]+)$/, { p: [] }, [
+      'to-p',
+      1,
+    ]),
+    // TODO: this should not be needed in a redirect record
+    components: { default: components.Home },
+    redirect: to => ({
+      name: 'Param',
+      params: to.params,
+      query: to.query,
+      hash: to.hash,
+    }),
   },
   {
     name: 'Foo',
@@ -121,6 +185,7 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
     path: paramMatcher,
     components: { default: components.Bar },
   },
+
   {
     name: 'optional',
     path: optionalMatcher,
@@ -138,11 +203,7 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
   },
   parentRawRecord,
   childRawRecord,
-  {
-    name: 'catch-all',
-    path: catchAllMatcher,
-    components: { default: components.Home },
-  },
+
   {
     name: 'param-with-slashes',
     path: new MatcherPatternPathDynamic(
@@ -163,6 +224,25 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
       [0]
     ),
     components: { default: components.Foo },
+  },
+
+  {
+    // path: '/redirect-with-param/:p',
+    name: Symbol('redirect-with-param'),
+    path: new MatcherPatternPathDynamic(
+      /^\/redirect-with-param\/([^/]+)$/,
+      { p: [] },
+      ['redirect-with-param', 1]
+    ),
+    // TODO: shouldn't be needed in a redirect record
+    components: { default: components.Foo },
+    redirect: () => `/`,
+  },
+
+  {
+    name: 'catch-all',
+    path: catchAllMatcher,
+    components: { default: components.Home },
   },
 ]
 
@@ -480,11 +560,34 @@ describe('Experimental Router', () => {
     expect(router.currentRoute.value.hash).toBe('#two')
   })
 
-  it.skip('fails if required params are missing', async () => {})
+  it('throws if required params are missing', async () => {
+    const { router } = await newRouter()
+    expect(() => router.resolve({ name: 'Param', params: {} })).toThrowError()
+    expect(() =>
+      router.resolve({ name: 'Param', params: { p: 'po' } })
+    ).not.toThrow()
+  })
 
-  it.skip('fails if required repeated params are missing', async () => {})
+  it('throws if required repeated params are missing', async () => {
+    const { router } = await newRouter()
+    expect(() => router.resolve({ name: 'repeat', params: {} })).toThrowError()
+    expect(() =>
+      router.resolve({ name: 'repeat', params: { r: [] } })
+    ).toThrowError()
+    expect(() =>
+      router.resolve({ name: 'repeat', params: { r: ['a'] } })
+    ).not.toThrow()
+  })
 
-  it.skip('fails with arrays for non repeatable params', async () => {})
+  it('fails with arrays for non repeatable params', async () => {
+    const { router } = await newRouter()
+    expect(() =>
+      router.resolve({ name: 'Param', params: { p: [] } })
+    ).toThrowError()
+    expect(() =>
+      router.resolve({ name: 'optional', params: { p: [] } })
+    ).toThrowError()
+  })
 
   it('can redirect to a star route when encoding the param', () => {
     const testCatchAllMatcher = new MatcherPatternPathDynamic(
@@ -747,29 +850,153 @@ describe('Experimental Router', () => {
   })
 
   describe('redirectedFrom', () => {
-    it.skip('adds a redirectedFrom property with a redirect in record', async () => {})
+    it('adds a redirectedFrom property with a redirect in record', async () => {
+      const { router } = await newRouter({ history: createMemoryHistory() })
+      // go to a different route first
+      await router.push('/foo')
+      router.beforeEach(to => {
+        if (to.path === '/home') {
+          return { name: 'home' }
+        }
+        return
+      })
+      await router.push('/home')
+      expect(router.currentRoute.value).toMatchObject({
+        path: '/',
+        name: 'home',
+        redirectedFrom: { path: '/home' },
+      })
+    })
 
-    it.skip('adds a redirectedFrom property with beforeEnter', async () => {})
+    it.todo('adds a redirectedFrom property with beforeEnter', async () => {
+      const { router } = await newRouter()
+      // go to a different route first
+      await router.push('/foo')
+      await router.push('/home-before')
+      expect(router.currentRoute.value).toMatchObject({
+        path: '/',
+        name: 'home',
+        redirectedFrom: { path: '/home-before' },
+      })
+    })
   })
 
   describe('redirect', () => {
-    it.skip('handles one redirect from route record', async () => {})
+    it('handles one redirect from route record', async () => {
+      const { router } = await newRouter()
+      await router.push('/foo')
+      await expect(router.push('/home')).resolves.toEqual(undefined)
+      const loc = router.currentRoute.value
+      expect(loc.name).toBe('home')
+      expect(loc.redirectedFrom).toMatchObject({
+        path: '/home',
+      })
+    })
 
-    it.skip('only triggers guards once with a redirect option', async () => {})
+    it('only triggers guards once with a redirect option', async () => {
+      const { router } = await newRouter()
+      const spy = vi.fn((to, from) => {})
+      router.beforeEach(spy)
+      await router.push('/to-foo')
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({ path: '/foo' }),
+        expect.objectContaining({ path: '/' }),
+        expect.any(Function)
+      )
+    })
 
-    it.skip('handles a double redirect from route record', async () => {})
+    it('handles a double redirect from route record', async () => {
+      const { router } = await newRouter()
+      await expect(router.push('/to-foo2')).resolves.toEqual(undefined)
+      const loc = router.currentRoute.value
+      expect(loc.name).toBe('Foo')
+      expect(loc.redirectedFrom).toMatchObject({
+        path: '/to-foo2',
+      })
+    })
 
-    it.skip('handles query and hash passed in redirect string', async () => {})
+    it('handles query and hash passed in redirect string', async () => {
+      const { router } = await newRouter()
+      await expect(router.push('/to-foo-query')).resolves.toEqual(undefined)
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Foo',
+        path: '/foo',
+        params: {},
+        query: { a: '2' },
+        hash: '#b',
+        redirectedFrom: expect.objectContaining({
+          fullPath: '/to-foo-query',
+        }),
+      })
+    })
 
-    it.skip('keeps query and hash when redirect is a string', async () => {})
+    it('can keep query and hash if redirect handles it', async () => {
+      const { router } = await newRouter()
+      await expect(router.push('/to-foo?hey=foo#fa')).resolves.toEqual(
+        undefined
+      )
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Foo',
+        path: '/foo',
+        params: {},
+        query: { hey: 'foo' },
+        hash: '#fa',
+        redirectedFrom: expect.objectContaining({
+          fullPath: '/to-foo?hey=foo#fa',
+        }),
+      })
+    })
 
-    it.skip('keeps params, query and hash from targetLocation on redirect', async () => {})
+    it('keeps params, query and hash from targetLocation on redirect', async () => {
+      const { router } = await newRouter()
+      await expect(router.push('/to-p/1?hey=foo#fa')).resolves.toEqual(
+        undefined
+      )
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Param',
+        params: { p: '1' },
+        query: { hey: 'foo' },
+        hash: '#fa',
+        redirectedFrom: expect.objectContaining({
+          fullPath: '/to-p/1?hey=foo#fa',
+        }),
+      })
+    })
 
-    it.skip('discard params on string redirect', async () => {})
+    it('can discard params on string redirect', async () => {
+      const { router } = await newRouter()
+      await router.push('/foo')
+      await expect(router.push('/redirect-with-param/test')).resolves.toEqual(
+        undefined
+      )
+      expect(router.currentRoute.value.params).toEqual({})
+      expect(router.currentRoute.value.query).toEqual({})
+      expect(router.currentRoute.value).toMatchObject({
+        hash: '',
+        redirectedFrom: expect.objectContaining({
+          fullPath: '/redirect-with-param/test',
+          params: { p: 'test' },
+        }),
+      })
+    })
 
-    it.skip('allows object in redirect', async () => {})
+    it.skip('keeps original replace if redirect', async () => {
+      const { router } = await newRouter()
+      await router.push('/search')
 
-    it.skip('keeps original replace if redirect', async () => {})
+      await expect(router.replace('/to-foo')).resolves.toEqual(undefined)
+      expect(router.currentRoute.value).toMatchObject({
+        path: '/foo',
+        redirectedFrom: expect.objectContaining({ path: '/to-foo' }),
+      })
+
+      history.go(-1)
+      await nextNavigation(router as any)
+      expect(router.currentRoute.value).not.toMatchObject({
+        path: '/search',
+      })
+    })
 
     it.skip('can pass on query and hash when redirecting', async () => {})
 
