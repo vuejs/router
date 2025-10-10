@@ -316,6 +316,22 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: [] })).toBe('/teams/b')
   })
 
+  it('works with empty values for repeatable optional param', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/teams(?:\/(.+?))?\/b$/i,
+      {
+        teamId: [{}, true, true],
+      },
+      ['teams', 1, 'b']
+    )
+
+    expect(pattern.build({ teamId: '' })).toBe('/teams/b')
+    expect(pattern.build({ teamId: null })).toBe('/teams/b')
+    expect(pattern.build({ teamId: undefined })).toBe('/teams/b')
+    // @ts-expect-error: shouldn't this one be optional
+    expect(pattern.build({})).toBe('/teams/b')
+  })
+
   it('multiple params', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)\/([^/]+?)$/i,
@@ -437,6 +453,107 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123/')
     expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/')
     expect(pattern.build({ teamId: [] })).toBe('/teams/')
+  })
+
+  it('can have params with slashes in their regex (end)', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      // same as above but with multiple params, some encoded, other not
+      /^\/(lang\/(en|fr))$/i,
+      { p: [] },
+      [0]
+    )
+
+    expect(pattern.match('/lang/en')).toEqual({ p: 'lang/en' })
+    expect(pattern.match('/lang/fr')).toEqual({ p: 'lang/fr' })
+    expect(() => pattern.match('/lang/de')).toThrow()
+    expect(() => pattern.match('/lang/en/')).toThrow()
+
+    expect(pattern.build({ p: 'lang/en' })).toBe('/lang/en')
+    expect(pattern.build({ p: 'lang/fr' })).toBe('/lang/fr')
+    // NOTE: the builder does not validate the param against the regex
+    expect(() => pattern.build({ p: 'lang/de' })).not.toThrow()
+    expect(() => pattern.build({ p: 'lang/fr/' })).not.toThrow()
+  })
+
+  it('can have params with slashes in their regex (middle)', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      // same as above but with multiple params, some encoded, other not
+      /^\/prefix\/(lang\/(en|fr))\/suffix$/i,
+      { p: [] },
+      ['prefix', 0, 'suffix']
+    )
+
+    expect(pattern.match('/prefix/lang/en/suffix')).toEqual({ p: 'lang/en' })
+    expect(pattern.match('/prefix/lang/fr/suffix')).toEqual({ p: 'lang/fr' })
+    expect(() => pattern.match('/prefix/lang/de/suffix')).toThrow()
+    expect(() => pattern.match('/prefix/lang/en/suffix/')).toThrow()
+    expect(() => pattern.match('/prefix/lang/en')).toThrow()
+    expect(() => pattern.match('/lang/en/suffix')).toThrow()
+    expect(() => pattern.match('/prefix//suffix')).toThrow()
+
+    expect(pattern.build({ p: 'lang/en' })).toBe('/prefix/lang/en/suffix')
+    expect(pattern.build({ p: 'lang/fr' })).toBe('/prefix/lang/fr/suffix')
+
+    // NOTE: the builder does not validate the param against the regex
+    // maybe it should
+    expect(() => pattern.build({ p: 'lang/de' })).not.toThrow()
+    expect(() => pattern.build({ p: 'lang/fr/' })).not.toThrow()
+  })
+
+  it('can have a non capturing group in the regex', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      // same as above but with multiple params, some encoded, other not
+      /^\/(?:lang\/(en|fr))$/i,
+      { p: [] },
+      [['lang/', 1]]
+    )
+
+    expect(pattern.match('/lang/en')).toEqual({ p: 'en' })
+    expect(pattern.match('/lang/fr')).toEqual({ p: 'fr' })
+    expect(() => pattern.match('/lang/de')).toThrow()
+
+    expect(pattern.build({ p: 'en' })).toBe('/lang/en')
+    expect(pattern.build({ p: 'fr' })).toBe('/lang/fr')
+  })
+
+  it('can reject invalid param values with a custom param matcher', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/(lang\/(en|fr))$/i,
+      {
+        p: [
+          {
+            get(value: string) {
+              const v = value.toLowerCase().slice(5 /* 'lang/'.length */)
+              if (v !== 'fr' && v !== 'en') {
+                throw miss()
+              }
+              return v
+            },
+            set(value: 'fr' | 'en') {
+              if (value !== 'fr' && value !== 'en') {
+                throw miss()
+              }
+              return `lang/${value}`
+            },
+          },
+        ],
+      },
+      // we don't encode the slash
+      [0]
+    )
+
+    expect(pattern.match('/lang/en')).toEqual({ p: 'en' })
+    expect(pattern.match('/lang/fr')).toEqual({ p: 'fr' })
+    expect(() => pattern.match('/lang/de')).toThrow()
+
+    expect(pattern.build({ p: 'en' })).toBe('/lang/en')
+    expect(pattern.build({ p: 'fr' })).toBe('/lang/fr')
+    expect(() =>
+      pattern.build({
+        // @ts-expect-error: not valid
+        p: 'de',
+      })
+    ).toThrow()
   })
 
   describe('custom param parsers', () => {

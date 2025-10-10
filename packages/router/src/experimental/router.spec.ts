@@ -60,7 +60,7 @@ const paramMatcher = new MatcherPatternPathDynamic(
 
 const optionalMatcher = new MatcherPatternPathDynamic(
   /^\/optional(?:\/([^/]+))?$/,
-  { p: [{}] },
+  { p: [] },
   ['optional', 1]
 )
 
@@ -71,9 +71,10 @@ const repeatMatcher = new MatcherPatternPathDynamic(
 )
 
 const catchAllMatcher = new MatcherPatternPathDynamic(
-  /^\/(.*)$/,
-  { pathMatch: [{}, true] },
-  [0]
+  /^\/(.*)$/i,
+  { pathMatch: [] },
+  [0],
+  null
 )
 
 // Create experimental route records using proper structure
@@ -140,6 +141,27 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
     name: 'catch-all',
     path: catchAllMatcher,
     components: { default: components.Home },
+  },
+  {
+    name: 'param-with-slashes',
+    path: new MatcherPatternPathDynamic(
+      // https://github.com/vuejs/router/issues/1638
+      // we should be able to keep slashes in params
+      /^\/(lang\/(en|fr))$/i,
+      { p: [] },
+      [0]
+    ),
+    components: { default: components.Foo },
+  },
+  {
+    name: 'mixed-param-with-slashes',
+    path: new MatcherPatternPathDynamic(
+      // same as above but with multiple params, some encoded, other not
+      /^\/(lang\/(en|fr))$/i,
+      { p: [] },
+      [0]
+    ),
+    components: { default: components.Foo },
   },
 ]
 
@@ -453,6 +475,57 @@ describe('Experimental Router', () => {
       fullPath: href,
       path: href,
       href: href,
+    })
+  })
+
+  it('keeps slashes in star params', async () => {
+    const { router } = await newRouter()
+
+    expect(
+      router.resolve({
+        name: 'catch-all',
+        params: { pathMatch: 'some/path/with/slashes' },
+        query: { a: '1' },
+        hash: '#hash',
+      })
+    ).toMatchObject({
+      fullPath: '/some/path/with/slashes?a=1#hash',
+      path: '/some/path/with/slashes',
+      query: { a: '1' },
+      hash: '#hash',
+    })
+  })
+
+  it('keeps slashes in params containing slashes', async () => {
+    const { router } = await newRouter()
+
+    expect(
+      router.resolve({ name: 'param-with-slashes', params: { p: 'lang/en' } })
+    ).toMatchObject({
+      fullPath: '/lang/en',
+      path: '/lang/en',
+      params: { p: 'lang/en' },
+    })
+
+    expect(() =>
+      router.resolve({ name: 'param-with-slashes', params: { p: 'lang/es' } })
+    ).toThrowError()
+    expect(() =>
+      router.resolve({
+        name: 'param-with-slashes',
+        params: { p: 'lang/fr/nope' },
+      })
+    ).toThrowError()
+    // NOTE: this version of the matcher is not strict on the trailing slash
+    expect(
+      router.resolve({
+        name: 'param-with-slashes',
+        params: { p: 'lang/fr/' },
+      })
+    ).toMatchObject({
+      fullPath: '/lang/fr',
+      path: '/lang/fr',
+      params: { p: 'lang/fr' },
     })
   })
 
