@@ -167,6 +167,14 @@ export class MatcherPatternPathDynamic<TParamsOptions>
    */
   private paramsKeys: Array<keyof TParamsOptions>
 
+  /**
+   * Creates a new dynamic path matcher.
+   *
+   * @param re - regex to match the path against
+   * @param params - object of param parsers as {@link MatcherPatternPathDynamic_ParamOptions}
+   * @param pathParts - array of path parts, where strings are static parts, 1 are regular params, and 0 are splat params (not encode slash)
+   * @param trailingSlash - whether the path should end with a trailing slash, null means "do not care" (for trailing splat params)
+   */
   constructor(
     readonly re: RegExp,
     // NOTE: this version instead of extends allows the constructor
@@ -174,9 +182,7 @@ export class MatcherPatternPathDynamic<TParamsOptions>
     // otherwise, we need to use a factory function: https://github.com/microsoft/TypeScript/issues/40451
     readonly params: TParamsOptions &
       Record<string, MatcherPatternPathDynamic_ParamOptions<any, any>>,
-    // 1 means a regular param, 0 means a splat, the order comes from the keys in params
     readonly pathParts: Array<string | number | Array<string | number>>,
-    // null means "do not care", it's only for splat params
     readonly trailingSlash: boolean | null = false
   ) {
     this.paramsKeys = Object.keys(this.params) as Array<keyof TParamsOptions>
