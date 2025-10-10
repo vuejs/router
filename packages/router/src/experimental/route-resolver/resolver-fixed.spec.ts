@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createFixedResolver } from './resolver-fixed'
-import { NO_MATCH_LOCATION } from './resolver-abstract'
+import { MatcherLocationRaw, NO_MATCH_LOCATION } from './resolver-abstract'
 import {
   EmptyParams,
   MatcherPatternHash,
@@ -266,6 +266,37 @@ describe('fixed resolver', () => {
         })
       })
 
+      it('keeps extra properties like state and replace from target location', () => {
+        const resolver = createFixedResolver([
+          { name: 'any-path', path: ANY_PATH_PATTERN_MATCHER },
+        ])
+
+        const currentLocation = resolver.resolve({ path: '/bar' })
+
+        // extra parameters that should be preserved
+        const extra = { state: { a: 1 }, replace: true }
+
+        for (const path of ['foo', './foo', '../foo']) {
+          expect(
+            resolver.resolve(
+              {
+                // done this way because TS accepts this kind of combination
+                path,
+                ...extra,
+              },
+              currentLocation
+            )
+          ).toMatchObject({
+            params: {},
+            path: '/foo',
+            query: {},
+            hash: {},
+            state: { a: 1 },
+            replace: true,
+          })
+        }
+      })
+
       it('resolves relative object locations', () => {
         const resolver = createFixedResolver([
           { name: 'any-path', path: ANY_PATH_PATTERN_MATCHER },
@@ -445,6 +476,30 @@ describe('fixed resolver', () => {
           params: { pathMatch: '/?a=a&b=b#h' },
         })
       })
+
+      it('keeps extra properties like state and replace from target location', () => {
+        const resolver = createFixedResolver([
+          { name: 'any-path', path: ANY_PATH_PATTERN_MATCHER },
+        ])
+
+        // extra parameters that should be preserved
+        const extra = { state: { a: 1 }, replace: true }
+
+        expect(
+          resolver.resolve({
+            // done this way because TS accepts this kind of combination
+            path: '/foo',
+            ...extra,
+          })
+        ).toMatchObject({
+          params: {},
+          path: '/foo',
+          query: {},
+          hash: {},
+          state: { a: 1 },
+          replace: true,
+        })
+      })
     })
 
     describe('named locations', () => {
@@ -488,6 +543,32 @@ describe('fixed resolver', () => {
         expect(() =>
           resolver.resolve({ name: 'nonexistent', params: {} })
         ).toThrowError('Record "nonexistent" not found')
+      })
+
+      it('keeps extra properties like state and replace from target location', () => {
+        const resolver = createFixedResolver([
+          { name: 'home', path: EMPTY_PATH_PATTERN_MATCHER },
+        ])
+
+        // extra parameters that should be preserved
+        const extra = { state: { a: 1 }, replace: true }
+
+        expect(
+          resolver.resolve({
+            // done this way because TS accepts this kind of combination
+            name: 'home',
+            params: {},
+            ...extra,
+          })
+        ).toMatchObject({
+          name: 'home',
+          params: {},
+          path: '/',
+          query: {},
+          hash: {},
+          state: { a: 1 },
+          replace: true,
+        })
       })
 
       it('resolves named locations with explicit query', () => {

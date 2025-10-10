@@ -204,6 +204,8 @@ export function createFixedResolver<
         // @ts-expect-error: to is never
         const path = to.path ?? '/'
         return {
+          // type is never
+          ...(to as any),
           ...NO_MATCH_LOCATION,
           fullPath: NEW_stringifyURL(stringifyQuery, path, query, hash),
           path,
@@ -248,6 +250,8 @@ export function createFixedResolver<
       )
 
       const url: LocationNormalized = {
+        // preserve other fields like `state` and `replace`
+        ...to,
         fullPath: NEW_stringifyURL(
           stringifyQuery,
           path,
@@ -279,6 +283,8 @@ export function createFixedResolver<
         const query = normalizeQuery(to.query)
         const path = resolveRelativePath(to.path, currentLocation?.path || '/')
         url = {
+          // preserve other fields like `state` and `replace`
+          ...to,
           fullPath: NEW_stringifyURL(stringifyQuery, path, query, to.hash),
           path,
           query,
