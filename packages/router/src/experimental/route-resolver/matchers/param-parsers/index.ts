@@ -78,5 +78,4 @@ export function defineQueryParamParser<
  * @see {@link defineQueryParamParser}
  * @see {@link definePathParamParser}
  */
-/*! #__NO_SIDE_EFFECTS__ */
 export const defineParamParser = defineQueryParamParser
