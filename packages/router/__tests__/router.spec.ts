@@ -142,6 +142,10 @@ describe('Router', () => {
     await router.push('/search')
     vi.spyOn(history, 'replace')
     vi.spyOn(history, 'push')
+    router.beforeEach(to => {
+      if (to.fullPath !== '/') return '/'
+      return
+    })
     await router.replace('/home-before')
     expect(history.push).toHaveBeenCalledTimes(0)
     expect(history.replace).toHaveBeenCalledTimes(1)

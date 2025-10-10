@@ -659,7 +659,10 @@ export function experimental_createRouter(
       // @ts-expect-error FIXME: incompatible types
       to,
       // FIXME: incompatible `matched` requires casting
-      currentLocation
+      currentLocation ??
+        // relative string locations are always valid
+        // so this is more of a convenience default
+        (typeof to === 'string' ? currentRoute.value : undefined)
     )
     const href = routerHistory.createHref(matchedRoute.fullPath)
 

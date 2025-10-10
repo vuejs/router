@@ -44,6 +44,7 @@ import {
   createWebHistory,
   createWebHashHistory,
   RouteLocationRaw,
+  loadRouteLocation,
 } from '../index'
 import { NavigationFailureType } from '../errors'
 import { createDom, components, tick } from '../../__tests__/utils'
@@ -226,9 +227,41 @@ describe('Experimental Router', () => {
     )
   })
 
-  it.skip('replaces if a guard redirects', async () => {})
+  it('replaces if a guard redirects', async () => {
+    const history = createMemoryHistory()
+    const { router } = await newRouter({ history })
+    // move somewhere else
+    await router.push('/search')
+    vi.spyOn(history, 'replace')
+    vi.spyOn(history, 'push')
+    router.beforeEach(to => {
+      if (to.fullPath !== '/') return '/'
+      return
+    })
+    await router.replace('/home-before')
+    expect(history.push).toHaveBeenCalledTimes(0)
+    expect(history.replace).toHaveBeenCalledTimes(1)
+    expect(history.replace).toHaveBeenCalledWith('/', expect.anything())
+  })
 
-  it.skip('replaces if a guard redirect replaces', async () => {})
+  it('replaces if a guard redirect replaces', async () => {
+    const history = createMemoryHistory()
+    const { router } = await newRouter({ history })
+    // move somewhere else
+    router.beforeEach(to => {
+      if (to.name !== 'Foo') {
+        return { name: 'Foo', replace: true }
+      }
+      return // no warn
+    })
+    vi.spyOn(history, 'replace')
+    vi.spyOn(history, 'push')
+    await router.push('/search')
+    expect(history.location).toBe('/foo')
+    expect(history.push).toHaveBeenCalledTimes(0)
+    expect(history.replace).toHaveBeenCalledTimes(1)
+    expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
+  })
 
   it.skip('allows to customize parseQuery', async () => {})
 
@@ -314,7 +347,13 @@ describe('Experimental Router', () => {
     })
   })
 
-  it.skip('can pass replace option to push', async () => {})
+  it('can pass replace option to push', async () => {
+    const { router, history } = await newRouter()
+    vi.spyOn(history, 'replace')
+    await router.push({ path: '/foo', replace: true })
+    expect(history.replace).toHaveBeenCalledTimes(1)
+    expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
+  })
 
   it('can replaces current location with a string location', async () => {
     const { router, history } = await newRouter()
@@ -348,15 +387,26 @@ describe('Experimental Router', () => {
     expect('No match found').toHaveBeenWarnedTimes(2)
   })
 
-  it.skip('casts number params to string', async () => {})
+  it('casts number params to string', async () => {
+    const { router } = await newRouter()
+    await router.push({ name: 'Param', params: { p: 0 } })
+    expect(router.currentRoute.value).toMatchObject({ params: { p: '0' } })
+  })
 
-  it.skip('removes null/undefined params', async () => {})
+  it('handles undefined path in relative navigations', async () => {
+    const { router } = await newRouter()
+    await router.push({ name: 'Param', params: { p: 'a' } })
 
-  it.skip('handles undefined path', async () => {})
-
-  it.skip('warns on undefined location during dev', async () => {})
-
-  it.skip('warns on null location during dev', async () => {})
+    const route1 = router.resolve(
+      {
+        path: undefined,
+        params: { p: 'b' },
+      },
+      router.currentRoute.value
+    )
+    expect(route1.params).toEqual({ p: 'b' })
+    expect(route1.path).toBe('/p/b')
+  })
 
   it('can pass an optional param', async () => {
     const { router } = await newRouter()
@@ -529,11 +579,32 @@ describe('Experimental Router', () => {
     })
   })
 
-  it.skip('can pass a currentLocation to resolve', async () => {})
+  it('can pass a currentLocation to resolve', async () => {
+    const { router } = await newRouter()
+    expect(
+      router.resolve(
+        { params: { p: 1 } },
+        await loadRouteLocation(
+          router.resolve({ name: 'Param', params: { p: 2 } })
+        )
+      )
+    ).toMatchObject({
+      name: 'Param',
+      params: { p: '1' },
+    })
+  })
 
-  it.skip('resolves relative locations', async () => {})
+  it('resolves relative string locations', async () => {
+    const { router } = await newRouter()
+    await router.push('/users/posva')
+    await router.push('add')
+    expect(router.currentRoute.value.path).toBe('/users/add')
+    await router.push('/users/posva')
+    await router.push('./add')
+    expect(router.currentRoute.value.path).toBe('/users/add')
+  })
 
-  it('resolves parent relative locations', async () => {
+  it('resolves parent relative string locations', async () => {
     const { router } = await newRouter()
     await router.push('/users/posva')
     await router.push('../add')
@@ -577,7 +648,7 @@ describe('Experimental Router', () => {
       const history = createMemoryHistory()
       const resolver = createFixedResolver(experimentalRoutes)
       const router = experimental_createRouter({ history, resolver })
-      router.beforeEach(async (to, from) => {
+      router.beforeEach(async to => {
         if (to.name !== 'Param') return
         // the first navigation gets passed target
         if (to.params.p === 'a') {
