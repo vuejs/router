@@ -8,7 +8,7 @@
   ],
   "exclude": ["./dist"],
   "compilerOptions": {
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "rootDir": ".",
     "outDir": "dist",
     "sourceMap": false,

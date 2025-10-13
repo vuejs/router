@@ -7,7 +7,7 @@ import {
   isSameRouteLocation,
   resolveRelativePath,
 } from '../src/location'
-import { RouteLocationNormalizedLoaded } from 'src'
+import { type RouteLocationNormalizedLoaded } from '../src'
 import { vi, describe, expect, it } from 'vitest'
 import { mockWarn } from './vitest-mock-warn'
 
