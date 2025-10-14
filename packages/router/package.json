@@ -137,7 +137,6 @@
     "browserstack-local": "^1.5.8",
     "chromedriver": "^138.0.5",
     "connect-history-api-fallback": "^1.6.0",
-    "conventional-changelog-cli": "^2.2.2",
     "dotenv": "^17.2.3",
     "faked-promise": "^2.2.2",
     "geckodriver": "^6.0.2",

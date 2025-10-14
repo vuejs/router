@@ -209,8 +209,6 @@ async function main() {
           .concat([{ value: 'custom', title: 'custom' }]),
       })
 
-      console.log(release)
-
       if (release === 'custom') {
         version = (
           await prompts({
