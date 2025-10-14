@@ -1,15 +1,40 @@
-## [4.5.1](https://github.com/vuejs/router/compare/v4.5.0...v4.5.1) (2025-04-25)
+## 4.6.0 (2025-10-14)
+
+This release refactors the build to use `tsup`. Please report any issue you may find regarding to types or incorrectly unresolved exports
+
+There is a new `vue-router/experimental` export which is used mainly by `unplugin-vue-router` with the new custom resolvers that bring a smaller router runtime, faster route matching, custom param types and matching on query parameters. There is still some work to do so the API is still experimental and may change in future releases. If you want to give it a try, check the [experimental playground in unplugin-vue-router](https://github.com/posva/unplugin-vue-router/tree/main/playground-experimental). If you use file based routing, this will be a transparent upgrade for you (in the future). Currently it still lacks a couple of features like `alias` and dynamic routing.
+
+### Features
+
+- A new experimental Custom resolvers features, meant to replace in the future the current implementation but partially introduced through `vue-router/experimental`. Meant to be used in combination with `unplugin-vue-router` for the moment. Still lacking documentation
 
 ### Bug Fixes
 
-- missing viewTransition prop on RouterLink ([#2465](https://github.com/vuejs/router/issues/2465)) ([2ddd19f](https://github.com/vuejs/router/commit/2ddd19fcfb9877b6952d55c75989fea6ba6a1367))
+- **routerlink:** allow event handlers under strictTemplates (fix [#2484](https://github.com/vuejs/router/issues/2484)) ([#2548](https://github.com/vuejs/router/issues/2548)) ([8f35c6d](https://github.com/vuejs/router/commit/8f35c6db0b6bd49c6f947331d5d4c249febb483c))
+- **router:** use pagehide for iOS navigation ([#2537](https://github.com/vuejs/router/issues/2537)) ([e0e38ab](https://github.com/vuejs/router/commit/e0e38abd0ba1cabdaaf4616b59296701fe4942a0))
+- **types:** missing options in RouteLocationGeneric ([3be0abd](https://github.com/vuejs/router/commit/3be0abd56190b957806c97d5a1412948f230fc39))
+
+### Performance Improvements
+
+- parseURL minor improvements ([f89a842](https://github.com/vuejs/router/commit/f89a842f580a632bdb60a7ef84fd119f4bf3e199))
+
+## 4.5.1 (2025-04-25)
 
 ### Features
 
 - memory history stores state ([#2491](https://github.com/vuejs/router/issues/2491)) ([24ff936](https://github.com/vuejs/router/commit/24ff936bed41166a03f365ab1437960f6426bed1))
 - **types:** add support for children routes as union ([#2475](https://github.com/vuejs/router/issues/2475)) ([0ce408d](https://github.com/vuejs/router/commit/0ce408dadbb45a4790e2ccee311a032cc7c6d957))
 
-# [4.5.0](https://github.com/vuejs/router/compare/v4.4.5...v4.5.0) (2024-11-25)
+### Bug Fixes
+
+- missing viewTransition prop on RouterLink ([#2465](https://github.com/vuejs/router/issues/2465)) ([2ddd19f](https://github.com/vuejs/router/commit/2ddd19fcfb9877b6952d55c75989fea6ba6a1367))
+
+## 4.5.0 (2024-11-25)
+
+### Features
+
+- **link:** add view-transition prop ([#2356](https://github.com/vuejs/router/issues/2356)) ([e978eb8](https://github.com/vuejs/router/commit/e978eb8efeef193dfaf5f358a56109633d17fc56))
+- throw if parent and child routes have the same name ([#2267](https://github.com/vuejs/router/issues/2267)) ([8c73877](https://github.com/vuejs/router/commit/8c73877dc159fb7d736f9d0a71ba22e8130012a3))
 
 ### Bug Fixes
 
@@ -17,90 +42,101 @@
 - custom directive doesn't work when custom=true ([#2377](https://github.com/vuejs/router/issues/2377)) ([0d8d997](https://github.com/vuejs/router/commit/0d8d9978cbf1cae77ee4d9ac6cec69cc341a8243))
 - **router:** allow duplicated navigation on back + redirect ([#2133](https://github.com/vuejs/router/issues/2133)) ([d992bb2](https://github.com/vuejs/router/commit/d992bb2085cadf01b270e4f04b3d91c4fd5a70e3))
 
-### Features
-
-- **link:** add view-transition prop ([#2356](https://github.com/vuejs/router/issues/2356)) ([e978eb8](https://github.com/vuejs/router/commit/e978eb8efeef193dfaf5f358a56109633d17fc56))
-- throw if parent and child routes have the same name ([#2267](https://github.com/vuejs/router/issues/2267)) ([8c73877](https://github.com/vuejs/router/commit/8c73877dc159fb7d736f9d0a71ba22e8130012a3))
-
-## [4.4.5](https://github.com/vuejs/router/compare/v4.4.4...v4.4.5) (2024-09-13)
+## 4.4.5 (2024-09-13)
 
 ### Bug Fixes
 
-- make internal property non enumerable to avoid errors with `{{route}}` ([a8df616](https://github.com/vuejs/router/commit/a8df616bfda2feb7aa6b738054a02e241d4f276b))
+- fix mods in aliases ([5e20afb](https://github.com/vuejs/router/commit/5e20afb899503aa2101b3e67fd6341d26d2865cd))
+- make internal property non enumerable ([a8df616](https://github.com/vuejs/router/commit/a8df616bfda2feb7aa6b738054a02e241d4f276b))
+- mods must be added only wiht defineProperty ([c7dd2a1](https://github.com/vuejs/router/commit/c7dd2a1d686beecbc6883c3f9614c50aea30a5d2))
 
-## [4.4.4](https://github.com/vuejs/router/compare/v4.4.3...v4.4.4) (2024-09-10)
-
-### Bug Fixes
-
-- **ssr:** handle symboless Modules in dynamic imports ([#2355](https://github.com/vuejs/router/issues/2355)) ([4861467](https://github.com/vuejs/router/commit/4861467e60a9e20d00cb46e4b9bbce1a2e129e0e))
+## 4.4.4 (2024-09-10)
 
 ### Features
 
 - **loaders:** internal mods in route records ([5ff2cd0](https://github.com/vuejs/router/commit/5ff2cd09d656a6f5ff38517c87d48b89f41ff49b))
 
-## [4.4.3](https://github.com/vuejs/router/compare/v4.4.2...v4.4.3) (2024-08-06)
+### Bug Fixes
+
+- **ssr:** handle symboless Modules in dynamic imports ([#2355](https://github.com/vuejs/router/issues/2355)) ([4861467](https://github.com/vuejs/router/commit/4861467e60a9e20d00cb46e4b9bbce1a2e129e0e))
+
+## 4.4.3 (2024-08-06)
 
 ### Bug Fixes
 
 - reorder exports in `package.json` ([#2323](https://github.com/vuejs/router/issues/2323)) ([7422b15](https://github.com/vuejs/router/commit/7422b15e6fcf57819f82a1384c9a2a73e32e186f))
 
-## [4.4.2](https://github.com/vuejs/router/compare/v4.4.1...v4.4.2) (2024-08-01)
+## 4.4.2 (2024-08-01)
 
 ### Bug Fixes
 
 - **types:** revert stricter meta ([d4d0087](https://github.com/vuejs/router/commit/d4d0087eae5721f73bde445be33407875a92a1ca)), closes [#2319](https://github.com/vuejs/router/issues/2319)
 
-## [4.4.1](https://github.com/vuejs/router/compare/v4.4.0...v4.4.1) (2024-07-31)
-
-### Bug Fixes
-
-> [!IMPORTANT]
-> This release replaces `declare module '@vue/runtime-core'` with `declare module 'vue'` [like it's supposed to be](https://vuejs.org/guide/typescript/options-api.html#augmenting-global-properties). If you are also augmenting `@vue/runtime-core`, you will likely have to change it to `vue`. It is also recommended to use an up-to-date TypeScript version (>=5.4) and `"moduleResolution": "Bundler"` in your `tsconfig.json`.
-
-- router typescript definitions related to vue package ([#2295](https://github.com/vuejs/router/issues/2295)) ([a495ce0](https://github.com/vuejs/router/commit/a495ce0e1d545d521673d21af43e63a761b53e27))
-- **types:** stricter meta with required fields ([423d9f7](https://github.com/vuejs/router/commit/423d9f763ed033dd6687ce7687c859c92554a60d))
+## 4.4.1 (2024-07-31)
 
 ### Features
 
 - **warn:** fix links to docs ([0cb5797](https://github.com/vuejs/router/commit/0cb57971efd767777011e872e9cc327e0a0da79f))
 
-# [4.4.0](https://github.com/vuejs/router/compare/v4.4.0-alpha.3...v4.4.0) (2024-06-21)
+### Bug Fixes
 
-This version introduces native support for [typed routes via the `RouteNamedMap`](https://router.vuejs.org/guide/advanced/typed-routes.html). It is now possible to define a map without [unplugin-vue-router](https://uvr.esm.is) and have the types inferred automatically. It is still recommended to use [unplugin-vue-router](https://uvr.esm.is) to automatically generate these types.
+- router typescript definations related to vue package ([#2295](https://github.com/vuejs/router/issues/2295)) ([a495ce0](https://github.com/vuejs/router/commit/a495ce0e1d545d521673d21af43e63a761b53e27))
+- **types:** stricter meta with required fields ([423d9f7](https://github.com/vuejs/router/commit/423d9f763ed033dd6687ce7687c859c92554a60d))
+
+## 4.4.0 (2024-06-21)
+
+## 4.4.0-alpha.3 (2024-06-19)
 
 ### Features
 
 - add a clearRoutes method ([abe223d](https://github.com/vuejs/router/commit/abe223dab44a092682eed5f77b0e231ff2392076))
-- typed routes ([f92282b](https://github.com/vuejs/router/commit/f92282b896ccf92360d781832435e1ae86314e0e))
+
+## 4.4.0-alpha.2 (2024-06-12)
 
 ### Bug Fixes
 
 - allow arbitrary strings in RouteLocationRaw ([a7a8452](https://github.com/vuejs/router/commit/a7a8452d137024d607d803a4009a5d55419259f2))
 
-## [4.3.3](https://github.com/vuejs/router/compare/v4.3.2...v4.3.3) (2024-06-10)
+## 4.4.0-alpha.1 (2024-06-12)
+
+### Features
+
+- type useLink ([6a90774](https://github.com/vuejs/router/commit/6a907746db930161902d80e0d254c56e6a273482))
+
+## 4.4.0-alpha.0 (2024-06-11)
+
+### Features
+
+- wip typed routes ([f92282b](https://github.com/vuejs/router/commit/f92282b896ccf92360d781832435e1ae86314e0e))
+
+## 4.3.3 (2024-06-10)
 
 ### Performance Improvements
 
-- use a binary search for insertMatcher ([#2137](https://github.com/vuejs/router/issues/2137)) ([e9f6ae3](https://github.com/vuejs/router/commit/e9f6ae3d61b91892f88fa26a6c224e0166b874ff)) This partially addresses #2132
+- use a binary search for insertMatcher ([#2137](https://github.com/vuejs/router/issues/2137)) ([e9f6ae3](https://github.com/vuejs/router/commit/e9f6ae3d61b91892f88fa26a6c224e0166b874ff))
 
-## [4.3.2](https://github.com/vuejs/router/compare/v4.3.1...v4.3.2) (2024-04-18)
-
-### Bug Fixes
-
-- Revert "fix: avoid normalizing the fullPath ([#2189](https://github.com/vuejs/router/issues/2189))" ([b78aa98](https://github.com/vuejs/router/commit/b78aa98792e86e08b76eb879e496fe1c300c1e18)), closes [vuejs/router#2216](https://github.com/vuejs/router/issues/2216). This was creating other bugs when reusing a normalized location (common pattern). The original issue wasn't a problem in practice as the consistent values are the query, params, and hash.
-
-## [4.3.1](https://github.com/vuejs/router/compare/v4.3.0...v4.3.1) (2024-04-17)
+## 4.3.2 (2024-04-18)
 
 ### Bug Fixes
 
-- avoid normalizing the fullPath ([#2189](https://github.com/vuejs/router/issues/2189)) ([c54fc84](https://github.com/vuejs/router/commit/c54fc8407bd1944a3b724fbcc7f6fbac5ff45f0f)), closes [vuejs/router#2187](https://github.com/vuejs/router/issues/2187)
+- Revert "fix: avoid normalizing the fullPath ([#2189](https://github.com/vuejs/router/issues/2189))" ([b78aa98](https://github.com/vuejs/router/commit/b78aa98792e86e08b76eb879e496fe1c300c1e18)), closes [vuejs/router#2216](https://github.com/vuejs/router/issues/2216)
+
+## 4.3.1 (2024-04-17)
 
 ### Features
 
 - **dx:** warn when `addRoute` cannot find the parent ([#2157](https://github.com/vuejs/router/issues/2157)) ([6377083](https://github.com/vuejs/router/commit/63770832d01a86a7464fde744e94058aae07de2e))
 - **dx:** warn when passing undefined/null locations ([#2158](https://github.com/vuejs/router/issues/2158)) ([089378b](https://github.com/vuejs/router/commit/089378bb973a6d91ddfe8eea76a670cd805fb5cf))
 
-# [4.3.0](https://github.com/vuejs/router/compare/v4.2.5...v4.3.0) (2024-02-21)
+### Bug Fixes
+
+- avoid normalizing the fullPath ([#2189](https://github.com/vuejs/router/issues/2189)) ([c54fc84](https://github.com/vuejs/router/commit/c54fc8407bd1944a3b724fbcc7f6fbac5ff45f0f)), closes [vuejs/router#2187](https://github.com/vuejs/router/issues/2187)
+
+## 4.3.0 (2024-02-21)
+
+### Features
+
+- allow auto types ([2d1dd2a](https://github.com/vuejs/router/commit/2d1dd2ad721d7e62d801d6788ba056444aa09bad))
 
 ### Bug Fixes
 
@@ -110,45 +146,33 @@ This version introduces native support for [typed routes via the `RouteNamedMap`
 - handle undefined path in router resolve ([0ec4862](https://github.com/vuejs/router/commit/0ec4862ff54207c1c207027ed240e24efcfeb6cf))
 - keep optional params coming from a parent record ([#2031](https://github.com/vuejs/router/issues/2031)) ([04b50e5](https://github.com/vuejs/router/commit/04b50e5a2cf82f896f5200497386d8a2acdae738))
 
-### Features
-
-- (internal) add types for unplugin-vue-router ([2d1dd2a](https://github.com/vuejs/router/commit/2d1dd2ad721d7e62d801d6788ba056444aa09bad)).
-
-## [4.2.5](https://github.com/vuejs/router/compare/v4.2.4...v4.2.5) (2023-09-22)
+## 4.2.5 (2023-09-22)
 
 ### Bug Fixes
 
 - **devtools:** display children with empty parent ([d7af338](https://github.com/vuejs/router/commit/d7af338d9e27e77ac109bf7495e057a2df9a8752)), closes [posva/unplugin-vue-router#235](https://github.com/posva/unplugin-vue-router/issues/235)
 
-## [4.2.4](https://github.com/vuejs/router/compare/v4.2.3...v4.2.4) (2023-07-06)
+## 4.2.4 (2023-07-06)
 
 ### Bug Fixes
 
 - allow removing guards within the guard ([d60d36c](https://github.com/vuejs/router/commit/d60d36c49bbbd308618926ff0131890bfed2cdff))
 
-## [4.2.3](https://github.com/vuejs/router/compare/v4.2.2...v4.2.3) (2023-07-05)
+## 4.2.3 (2023-07-05)
 
 ### Performance Improvements
 
 - use getter instead of `computed` for route location ([#1916](https://github.com/vuejs/router/issues/1916)) ([f1b839e](https://github.com/vuejs/router/commit/f1b839e7fc46d5b24dadb64cdc8e3cc95010ccfa))
 
-## [4.2.2](https://github.com/vuejs/router/compare/v4.2.1...v4.2.2) (2023-05-29)
+## 4.2.2 (2023-05-29)
 
-This version contains no code changes.
-
-## [4.2.1](https://github.com/vuejs/router/compare/v4.2.0...v4.2.1) (2023-05-18)
+## 4.2.1 (2023-05-18)
 
 ### Bug Fixes
 
 - **types:** revert declare module vue ([b8d417a](https://github.com/vuejs/router/commit/b8d417a5b81c94aa5eb252782b07cb2b471d3a4e))
 
-# [4.2.0](https://github.com/vuejs/router/compare/v4.1.6...v4.2.0) (2023-05-11)
-
-### Bug Fixes
-
-- **location:** correctly parse url ending with . ([cc6e255](https://github.com/vuejs/router/commit/cc6e255b9c579ad975fbc9bd309e7b2f1f80bf82)), closes [#1620](https://github.com/vuejs/router/issues/1620)
-- remove nullish params when resolving ([#1814](https://github.com/vuejs/router/issues/1814)) ([15e20cb](https://github.com/vuejs/router/commit/15e20cbb7baedb42e44e10d5d69ffb2a3124360f))
-- **warn:** avoid redundant usage warn ([#1797](https://github.com/vuejs/router/issues/1797)) ([bbd80ad](https://github.com/vuejs/router/commit/bbd80adb627d4ee3f3e0ef7f7a1f99a2c5e0edf6))
+## 4.2.0 (2023-05-11)
 
 ### Features
 
@@ -156,70 +180,31 @@ This version contains no code changes.
 - **warn:** improve infinite redirect warning message ([2abecb7](https://github.com/vuejs/router/commit/2abecb71500e08f11e1686a57110afb71f625433))
 - **warn:** infinite redirection up to 30 ([376edd3](https://github.com/vuejs/router/commit/376edd32c39af004ee3689f569f0da65418c9577)), closes [#1643](https://github.com/vuejs/router/issues/1643)
 
-## [4.1.6](https://github.com/vuejs/router/compare/v4.1.5...v4.1.6) (2022-10-24)
+### Bug Fixes
+
+- **location:** correctly parse url ending with . ([cc6e255](https://github.com/vuejs/router/commit/cc6e255b9c579ad975fbc9bd309e7b2f1f80bf82)), closes [#1620](https://github.com/vuejs/router/issues/1620)
+- remove nullish params when resolving ([#1814](https://github.com/vuejs/router/issues/1814)) ([15e20cb](https://github.com/vuejs/router/commit/15e20cbb7baedb42e44e10d5d69ffb2a3124360f))
+- **warn:** avoid redundant usage warn ([#1797](https://github.com/vuejs/router/issues/1797)) ([bbd80ad](https://github.com/vuejs/router/commit/bbd80adb627d4ee3f3e0ef7f7a1f99a2c5e0edf6))
+
+## 4.1.6 (2022-10-24)
 
 ### Features
 
 - **matcher:** avoid empty records to be reached ([756f755](https://github.com/vuejs/router/commit/756f755731284f0f1899a2f8b62cb074b6f0f842))
 - **types:** improve link and view slots ([#1544](https://github.com/vuejs/router/issues/1544)) ([4a0cc8b](https://github.com/vuejs/router/commit/4a0cc8b9c1e642cdf47cc007fa5bbebde70afc66))
 
-## [4.1.5](https://github.com/vuejs/router/compare/v4.1.4...v4.1.5) (2022-08-26)
+## 4.1.5 (2022-08-26)
 
 ### Features
 
 - **warn:** better wording ([4cc3093](https://github.com/vuejs/router/commit/4cc3093d0485cbd968ff096d1878bee40b7e47a9)), closes [#1530](https://github.com/vuejs/router/issues/1530)
 - **warn:** warn against removed params ([fdbaf83](https://github.com/vuejs/router/commit/fdbaf83a5fa359343697ec26f4f4a54aac73b241)), closes [#1527](https://github.com/vuejs/router/issues/1527)
 
-## [4.1.4](https://github.com/vuejs/router/compare/v4.1.3...v4.1.4) (2022-08-22)
+## 4.1.4 (2022-08-22)
 
-## Important Note
+### Features
 
-Changes introduced by e8875705eb8b8a0756544174b85a1a3c2de55ff6.
-
-If you were relying on passing `params` that were not defined as part of the `path`, eg: having a route defined as follows:
-
-```js
-{
-  path: '/somewhere',
-  name: 'somewhere'
-}
-```
-
-And pushing with an _artificial_ param:
-
-```js
-router.push({ name: 'somewhere', params: { oops: 'gets removed' } })
-```
-
-This change will break your app. This behavior has worked in some scenarios but has been **advised against** for years as it's an anti-pattern in routing for many reasons, one of them being reloading the page lose the params. Fortunately, there are multiple alternatives to this anti-pattern:
-
-- Putting the data in a store like [pinia](https://pinia.vuejs.org): this is relevant if the data is used across multiple pages
-- Move the data to an actual _param_ by defining it on the route's `path` or pass it as `query` params: this is relevant if you have small pieces of data that can fit in the URL and should be preserved when reloading the page
-- Pass the data as [`state` to save it to the History API state](https://router.vuejs.org/api/interfaces/routelocationoptions.html#state):
-
-  ```vue
-  <router-link :to="{ name: 'somewhere', state: { myData } }">...</router-link>
-  <button
-    @click="$router.push({ name: 'somewhere', state: { myData } })"
-  >...</button>
-  ```
-
-  Note `state` is subject to [History state limitations](https://developer.mozilla.org/en-US/docs/Web/API/History/state).
-
-- Pass it as a new property to `to.meta` **during navigation guards**:
-
-  ```ts
-  router.beforeEach(async to => {
-    if (to.meta.shouldFetch) {
-      // name `data` whatever you want
-      to.meta.data = await fetchSomething()
-    }
-  })
-  ```
-
-  This is known an _transient state_ and since it's in a navigation guard, it will be preserved when reloading the page. [Check the documentation for more details](https://router.vuejs.org/guide/advanced/meta.html#typescript).
-
-Fixing #1497, required getting rid of unused params and therefore will break this long standing anti-pattern usage.
+- pass state in guards and redirect ([add447b](https://github.com/vuejs/router/commit/add447b4595330750b05e9c1dda07cd5b2e6d41f)), closes [#1472](https://github.com/vuejs/router/issues/1472)
 
 ### Bug Fixes
 
@@ -227,11 +212,7 @@ Fixing #1497, required getting rid of unused params and therefore will break thi
 - **build:** remove devtools in cjs production ([5b8983d](https://github.com/vuejs/router/commit/5b8983d04592c1420837c4533ee3b6cf6a07a314)), closes [#1524](https://github.com/vuejs/router/issues/1524)
 - **matcher:** remove unused params ([e887570](https://github.com/vuejs/router/commit/e8875705eb8b8a0756544174b85a1a3c2de55ff6)), closes [#1497](https://github.com/vuejs/router/issues/1497)
 
-### Features
-
-- pass state in guards and redirect ([add447b](https://github.com/vuejs/router/commit/add447b4595330750b05e9c1dda07cd5b2e6d41f)), closes [#1472](https://github.com/vuejs/router/issues/1472)
-
-## [4.1.3](https://github.com/vuejs/router/compare/v4.1.2...v4.1.3) (2022-07-27)
+## 4.1.3 (2022-07-27)
 
 ### Bug Fixes
 
@@ -240,20 +221,20 @@ Fixing #1497, required getting rid of unused params and therefore will break thi
 - **matcher:** correctly resolve empty paths with optional params ([4d5182a](https://github.com/vuejs/router/commit/4d5182a3e8e74e1bb66b641c39391349be6d963b)), closes [#1475](https://github.com/vuejs/router/issues/1475)
 - **types:** allow redirect with children ([9f0d999](https://github.com/vuejs/router/commit/9f0d9997b681b33b5ad2180399612fba14898372)), closes [#1476](https://github.com/vuejs/router/issues/1476)
 
-## [4.1.2](https://github.com/vuejs/router/compare/v4.1.1...v4.1.2) (2022-07-11)
-
-### Bug Fixes
-
-- allow requiring in cjs context ([#1465](https://github.com/vuejs/router/issues/1465)) ([5f3febe](https://github.com/vuejs/router/commit/5f3febe86bf2ee656e64c430f102c19ec081abc7))
-- force relative link in types exports ([8082035](https://github.com/vuejs/router/commit/8082035b097bcb1e50c659a802b127d26c56afa5))
-- **types:** adds ESM export of types ([#1457](https://github.com/vuejs/router/issues/1457)) ([e82a89c](https://github.com/vuejs/router/commit/e82a89c19a367fd91348c0e0f2bbbdacb646d2aa))
-- **types:** allow `symbol` type ([#1460](https://github.com/vuejs/router/issues/1460)) ([0f053db](https://github.com/vuejs/router/commit/0f053db4cbafdac8d5174e9ae841969274f916f1))
+## 4.1.2 (2022-07-11)
 
 ### Features
 
 - **types:** simplify props types ([2df87ef](https://github.com/vuejs/router/commit/2df87efda150027b5e455958f284db8f755caa1a))
 
-## [4.1.1](https://github.com/vuejs/router/compare/v4.1.0...v4.1.1) (2022-07-05)
+### Bug Fixes
+
+- allow requiring in cjs context ([#1465](https://github.com/vuejs/router/issues/1465)) ([5f3febe](https://github.com/vuejs/router/commit/5f3febe86bf2ee656e64c430f102c19ec081abc7))
+- force relativse link in types exportcs ([8082035](https://github.com/vuejs/router/commit/8082035b097bcb1e50c659a802b127d26c56afa5))
+- **types:** adds ESM export of types ([#1457](https://github.com/vuejs/router/issues/1457)) ([e82a89c](https://github.com/vuejs/router/commit/e82a89c19a367fd91348c0e0f2bbbdacb646d2aa))
+- **types:** allow `symbol` type ([#1460](https://github.com/vuejs/router/issues/1460)) ([0f053db](https://github.com/vuejs/router/commit/0f053db4cbafdac8d5174e9ae841969274f916f1))
+
+## 4.1.1 (2022-07-05)
 
 ### Bug Fixes
 
@@ -261,24 +242,18 @@ Fixing #1497, required getting rid of unused params and therefore will break thi
 - **types:** allow simpler type check of route records ([#1453](https://github.com/vuejs/router/issues/1453)) ([e3078a4](https://github.com/vuejs/router/commit/e3078a4190c799ec4f01fa5c46d64c54c0e95034)), closes [#1452](https://github.com/vuejs/router/issues/1452)
 - **types:** remove unnecessary readonly ([4bb989d](https://github.com/vuejs/router/commit/4bb989d36798243df1eb186c4ec01d9fd97d1f26))
 
-# [4.1.0](https://github.com/vuejs/router/compare/v4.0.16...v4.1.0) (2022-07-04)
-
-### Bug Fixes
-
-- correctly resolve hash including a search ([136bf21](https://github.com/vuejs/router/commit/136bf2146071d017702c3989f08d26dc5cbe5292)), closes [#1422](https://github.com/vuejs/router/issues/1422)
-- discard params in path redirect ([8d12db4](https://github.com/vuejs/router/commit/8d12db4ffd2406dcc45777a68c6e601546dfce36)), closes [#1401](https://github.com/vuejs/router/issues/1401)
-- resolve relative paths to / ([23e25e5](https://github.com/vuejs/router/commit/23e25e5b55592790805b98e21836bd4e57eb037c)), closes [#1410](https://github.com/vuejs/router/issues/1410)
+## 4.1.0 (2022-07-04)
 
 ### Features
 
-- **devtools:** add more options in devtools routes ([606f852](https://github.com/vuejs/router/commit/606f852dc9cca1b78e2161a14aa037817936d011)), closes [#1033](https://github.com/vuejs/router/issues/1033)
+- add typed router link ([d02d19f](https://github.com/vuejs/router/commit/d02d19f07985c7d6edf167eb59c3f18273b91ec0))
 - **devtools:** warn against old devtools version ([8462551](https://github.com/vuejs/router/commit/8462551c6b9354772689e56d3718375f3211b0eb)), closes [#1338](https://github.com/vuejs/router/issues/1338)
-- expose RouterView and RouterLink as GlobalComponents ([#1372](https://github.com/vuejs/router/issues/1372)) ([3b3e123](https://github.com/vuejs/router/commit/3b3e123f51d71bfae5d9cb99891e6d2f38f5ed26))
-- loadRouteLocation() ([d352ee4](https://github.com/vuejs/router/commit/d352ee4d76f5e7d60aba03d275df9a35459bd300)), closes [#1048](https://github.com/vuejs/router/issues/1048)
-- **router:** allow pausing listeners ([58460bc](https://github.com/vuejs/router/commit/58460bca1fca9f4c48f101b6c295ad9f42ca397a)), closes [#1270](https://github.com/vuejs/router/issues/1270)
 - **types:** allow extending global types ([31aaf3b](https://github.com/vuejs/router/commit/31aaf3b82aae5c553a0bacd52d0be1c602e0ab30))
-- **view:** handle empty components as pass through ([e07c469](https://github.com/vuejs/router/commit/e07c46938d0cc2ca2bc2b1d07fd543465121b60a))
-- warn against named parent routes ([#1396](https://github.com/vuejs/router/issues/1396)) ([4dab4d0](https://github.com/vuejs/router/commit/4dab4d0e46315d2a5a2763ec2559dfafd843063f))
+- **types:** typed string routes ([fdcb946](https://github.com/vuejs/router/commit/fdcb94651cb44d4149782403978b37dc4b3312e7))
+
+### Performance Improvements
+
+- **types:** reduce tuple amount for string paths ([be942c8](https://github.com/vuejs/router/commit/be942c838684613393c726b7eccfa115617c7fad))
 
 ## [4.0.16](https://github.com/vuejs/router/compare/v4.0.15...v4.0.16) (2022-06-09)
 
@@ -610,7 +585,7 @@ Build related fixes
 - **router-view:** `onBeforeRouteLeave` and `onBeforeRouteUpdate` used to
   have access to the component instance through `instance.proxy` but given
   that:
-  1. It has been marked as `internal` (https://github.com/vuejs/vue-next/pull/1849)
+  1. It has been marked as `internal` (<https://github.com/vuejs/vue-next/pull/1849>)
   2. When using `setup`, all variables are accessible on the scope (and
      should be accessed that way because the code minimizes better)
      It has been removed to prevent wrong usage and lighten Vue Router
@@ -746,11 +721,11 @@ export const router = createRouter({ history, routes: [] })
 ### BREAKING CHANGES
 
 - **scroll:** this change follows the RFC at
-  https://github.com/vuejs/rfcs/pull/176:
+  <https://github.com/vuejs/rfcs/pull/176>:
 
-* `selector` is renamed into `el`
-* `el` also accepts an `Element`
-* `left` and `top` are passed along `el` instead of inside an object
+- `selector` is renamed into `el`
+- `el` also accepts an `Element`
+- `left` and `top` are passed along `el` instead of inside an object
   passed as `offset`
 
 - **scroll:** `scrollBehavior` doesn't accept an object with `x` and `y`
@@ -760,7 +735,7 @@ export const router = createRouter({ history, routes: [] })
   [`behavior`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions/behavior)
   property to enable smooth scrolling in most browsers.
 - It is now necessary to escape id selectors like
-  explained at https://mathiasbynens.be/notes/css-escapes. This was
+  explained at <https://mathiasbynens.be/notes/css-escapes>. This was
   necessary to allow selectors like `#container > child`.
 
 # [4.0.0-alpha.12](https://github.com/vuejs/router/compare/v4.0.0-alpha.11...v4.0.0-alpha.12) (2020-05-19)
@@ -876,7 +851,7 @@ export const router = createRouter({ history, routes: [] })
 
 ### BREAKING CHANGES
 
-- This follows the RFC at https://github.com/vuejs/rfcs/pull/150
+- This follows the RFC at <https://github.com/vuejs/rfcs/pull/150>
   Summary: `router.afterEach` and `router.onError` are now the global equivalent of
   `router.push`/`router.replace` as well as navigation through the interface
   (`history.go()`). A navigation only rejects if there was an unexpected error.
@@ -971,6 +946,7 @@ export const router = createRouter({ history, routes: [] })
 
 - `useRoute` now retrieves a reactive RouteLocationNormalized instead of a Ref<RouteLocationNormalized>.
   This means there is no need to use `.value` when accessing the route. You still need to wrap it with `toRefs` if you want to expose parts of the route:
+
   ```js
   setup () {
     return { params: toRefs(useRoute()).params }
@@ -1022,7 +998,7 @@ export const router = createRouter({ history, routes: [] })
 
 ## Known issues
 
-### Breaking changes compared to vue-router@3.x
+### Breaking changes compared to `vue-router@3.x`
 
 - `mode: 'history'` -> `history: createHistory()`
 - Catch all routes (`/*`) must now be defined using a parameter with a custom regex: `/:catchAll(.*)`
