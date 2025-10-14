@@ -36,5 +36,23 @@ export default defineConfig({
 
       // tsconfig: './tsconfig.typecheck.json',
     },
+    // projects: [
+    //   {
+    //     test: {
+    //       name: 'router:browser',
+    //       include: ['./__tests__/history/html5.spec.ts'],
+    //       browser: {
+    //         enabled: true,
+    //         provider: 'playwright',
+    //         // https://vitest.dev/guide/browser/playwright
+    //         instances: [
+    //           { browser: 'chromium' },
+    //           // { browser: 'firefox' },
+    //           // { browser: 'webkit' },
+    //         ],
+    //       },
+    //     },
+    //   },
+    // ],
   },
 })
