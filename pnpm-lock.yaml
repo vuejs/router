@@ -162,14 +162,14 @@ importers:
         version: 6.6.4
     devDependencies:
       '@rollup/plugin-commonjs':
-        specifier: ^25.0.8
-        version: 25.0.8(rollup@3.29.5)
+        specifier: ^28.0.6
+        version: 28.0.6(rollup@3.29.5)
       '@rollup/plugin-node-resolve':
-        specifier: ^15.3.1
-        version: 15.3.1(rollup@3.29.5)
+        specifier: ^16.0.3
+        version: 16.0.3(rollup@3.29.5)
       '@rollup/plugin-replace':
-        specifier: ^5.0.7
-        version: 5.0.7(rollup@3.29.5)
+        specifier: ^6.0.2
+        version: 6.0.2(rollup@3.29.5)
       '@rollup/plugin-terser':
         specifier: ^0.4.4
         version: 0.4.4(rollup@3.29.5)
@@ -1158,17 +1158,17 @@ packages:
   '@rolldown/pluginutils@1.0.0-beta.43':
     resolution: {integrity: sha512-5Uxg7fQUCmfhax7FJke2+8B6cqgeUJUD9o2uXIKXhD+mG0mL6NObmVoi9wXEU1tY89mZKgAYA6fTbftx3q2ZPQ==}
 
-  '@rollup/plugin-commonjs@25.0.8':
-    resolution: {integrity: sha512-ZEZWTK5n6Qde0to4vS9Mr5x/0UZoqCxPVR9KRUjU4kA2sO7GEUn1fop0DAwpO6z0Nw/kJON9bDmSxdWxO/TT1A==}
-    engines: {node: '>=14.0.0'}
+  '@rollup/plugin-commonjs@28.0.6':
+    resolution: {integrity: sha512-XSQB1K7FUU5QP+3lOQmVCE3I0FcbbNvmNT4VJSj93iUjayaARrTQeoRdiYQoftAJBLrR9t2agwAd3ekaTgHNlw==}
+    engines: {node: '>=16.0.0 || 14 >= 14.17'}
     peerDependencies:
       rollup: ^2.68.0||^3.0.0||^4.0.0
     peerDependenciesMeta:
       rollup:
         optional: true
 
-  '@rollup/plugin-node-resolve@15.3.1':
-    resolution: {integrity: sha512-tgg6b91pAybXHJQMAAwW9VuWBO6Thi+q7BCNARLwSqlmsHz0XYURtGvh/AuwSADXSI4h/2uHbs7s4FzlZDGSGA==}
+  '@rollup/plugin-node-resolve@16.0.3':
+    resolution: {integrity: sha512-lUYM3UBGuM93CnMPG1YocWu7X802BrNF3jW2zny5gQyLQgRFJhV1Sq0Zi74+dh/6NBx1DxFC4b4GXg9wUCG5Qg==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^2.78.0||^3.0.0||^4.0.0
@@ -1176,8 +1176,8 @@ packages:
       rollup:
         optional: true
 
-  '@rollup/plugin-replace@5.0.7':
-    resolution: {integrity: sha512-PqxSfuorkHz/SPpyngLyg5GCEkOcee9M1bkxiVDr41Pd61mqP1PLOoDPbpl44SB2mQGKwV/In74gqQmGITOhEQ==}
+  '@rollup/plugin-replace@6.0.2':
+    resolution: {integrity: sha512-7QaYCf8bqF04dOy7w/eHmJeNExxTYwvKAmlSAH/EaWWUzbT0h5sbF6bktFoX/0F/0qwng5/dWFMyf3gzaM8DsQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
@@ -1198,8 +1198,8 @@ packages:
     resolution: {integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==}
     engines: {node: '>= 8.0.0'}
 
-  '@rollup/pluginutils@5.2.0':
-    resolution: {integrity: sha512-qWJ2ZTbmumwiLFomfzTyt5Kng4hwPi9rwCYN4SHb6eaRU1KNO4ccxINHr/VhH4GgPlt1XfSTLX2LBTme8ne4Zw==}
+  '@rollup/pluginutils@5.3.0':
+    resolution: {integrity: sha512-5EdhGZtnu3V88ces7s53hhfK5KSASnJZv8Lulpc04cWO3REESroJXg73DFsOmgbU2BhwV0E20bu2IDZb3VKW4Q==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
@@ -5935,20 +5935,21 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.0-beta.43': {}
 
-  '@rollup/plugin-commonjs@25.0.8(rollup@3.29.5)':
+  '@rollup/plugin-commonjs@28.0.6(rollup@3.29.5)':
     dependencies:
-      '@rollup/pluginutils': 5.2.0(rollup@3.29.5)
+      '@rollup/pluginutils': 5.3.0(rollup@3.29.5)
       commondir: 1.0.1
       estree-walker: 2.0.2
-      glob: 8.1.0
+      fdir: 6.5.0(picomatch@4.0.3)
       is-reference: 1.2.1
       magic-string: 0.30.19
+      picomatch: 4.0.3
     optionalDependencies:
       rollup: 3.29.5
 
-  '@rollup/plugin-node-resolve@15.3.1(rollup@3.29.5)':
+  '@rollup/plugin-node-resolve@16.0.3(rollup@3.29.5)':
     dependencies:
-      '@rollup/pluginutils': 5.2.0(rollup@3.29.5)
+      '@rollup/pluginutils': 5.3.0(rollup@3.29.5)
       '@types/resolve': 1.20.2
       deepmerge: 4.3.1
       is-module: 1.0.0
@@ -5956,9 +5957,9 @@ snapshots:
     optionalDependencies:
       rollup: 3.29.5
 
-  '@rollup/plugin-replace@5.0.7(rollup@3.29.5)':
+  '@rollup/plugin-replace@6.0.2(rollup@3.29.5)':
     dependencies:
-      '@rollup/pluginutils': 5.2.0(rollup@3.29.5)
+      '@rollup/pluginutils': 5.3.0(rollup@3.29.5)
       magic-string: 0.30.19
     optionalDependencies:
       rollup: 3.29.5
@@ -5976,7 +5977,7 @@ snapshots:
       estree-walker: 2.0.2
       picomatch: 2.3.1
 
-  '@rollup/pluginutils@5.2.0(rollup@3.29.5)':
+  '@rollup/pluginutils@5.3.0(rollup@3.29.5)':
     dependencies:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
