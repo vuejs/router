@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
 import { existsSync } from 'node:fs'
-import { dirname, join, relative } from 'node:path'
+import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import minimist from 'minimist'
 import chalk from 'chalk'
@@ -8,7 +8,6 @@ import semver from 'semver'
 import prompts from '@posva/prompts'
 import { execa } from 'execa'
 import pSeries from 'p-series'
-import { globby } from 'globby'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -258,6 +257,22 @@ async function main() {
 
   step('\nUpdating versions in package.json files...')
   await updateVersions(pkgWithVersions)
+
+  if (!IS_MAIN_PKG_ROOT) {
+    step('\nCopying README from root to main package...')
+    const originalReadme = resolve(__dirname, '../README.md')
+    const targetReadme = resolve(
+      __dirname,
+      '../',
+      pkgWithVersions.find(p => p.name === MAIN_PKG_NAME).relativePath,
+      'README.md'
+    )
+    if (!isDryRun) {
+      await fs.copyFile(originalReadme, targetReadme)
+    } else {
+      console.log(`(skipped) cp "${originalReadme}" "${targetReadme}"`)
+    }
+  }
 
   if (!noLockUpdate) {
     step('\nUpdating lock...')
