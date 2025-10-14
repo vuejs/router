@@ -1,6 +1,7 @@
 {
   "name": "@vue/router-playground",
   "private": true,
+  "type": "module",
   "version": "0.0.0",
   "scripts": {
     "play": "vite",
@@ -16,7 +17,7 @@
     "@vitejs/plugin-vue": "^5.2.4",
     "@vue/compiler-sfc": "~3.5.22",
     "@vue/tsconfig": "^0.7.0",
-    "vite": "^5.4.20",
+    "vite": "^7.1.9",
     "vue-router": "workspace:*",
     "vue-tsc": "^2.2.12"
   }
