@@ -45,7 +45,7 @@
     "simple-git-hooks": "^2.13.1",
     "typedoc": "^0.28.14",
     "typedoc-plugin-markdown": "^4.9.0",
-    "typescript": "~5.8.3",
+    "typescript": "~5.9.3",
     "vitest": "^3.2.4"
   },
   "simple-git-hooks": {

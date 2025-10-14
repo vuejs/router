@@ -13,12 +13,12 @@
     "vue": "~3.6.0-alpha.2"
   },
   "devDependencies": {
-    "@types/node": "^20.19.21",
-    "@vitejs/plugin-vue": "^5.2.4",
+    "@types/node": "^24.7.2",
+    "@vitejs/plugin-vue": "^6.0.1",
     "@vue/compiler-sfc": "~3.5.22",
-    "@vue/tsconfig": "^0.7.0",
+    "@vue/tsconfig": "^0.8.1",
     "vite": "^7.1.9",
     "vue-router": "workspace:*",
-    "vue-tsc": "^2.2.12"
+    "vue-tsc": "^3.1.1"
   }
 }
