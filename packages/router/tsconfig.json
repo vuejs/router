@@ -6,7 +6,7 @@
     "__tests__/**/*.ts",
     "test-dts/**/*.ts"
   ],
-  "exclude": ["./dist"],
+  "exclude": ["./dist", "./src/experimental/vapor/"],
   "compilerOptions": {
     // "baseUrl": ".",
     "rootDir": ".",

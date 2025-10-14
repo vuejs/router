@@ -131,8 +131,8 @@
     "@types/nightwatch": "^2.3.32",
     "@typescript/native-preview": "7.0.0-dev.20250718.1",
     "@vitejs/plugin-vue": "^5.2.4",
-    "@vue/compiler-sfc": "~3.5.20",
-    "@vue/server-renderer": "~3.5.20",
+    "@vue/compiler-sfc": "~3.5.22",
+    "@vue/server-renderer": "~3.5.22",
     "@vue/test-utils": "^2.4.6",
     "browserstack-local": "^1.5.8",
     "chromedriver": "^138.0.5",
@@ -149,7 +149,7 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "tsdown": "^0.12.9",
     "tsup": "^8.5.0",
-    "vite": "^7.1.3",
-    "vue": "~3.5.20"
+    "vite": "^7.1.9",
+    "vue": "~3.6.0-alpha.2"
   }
 }
