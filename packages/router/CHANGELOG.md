@@ -1,3 +1,7 @@
+## [4.6.1](https://github.com/vuejs/router/compare/v4.6.0...v4.6.1) (2025-10-15)
+
+Add back `dist/vue-router.esm-bundler.js` for better retro compatibility with existing wrappers. Note this will be removed in next major and a warning has been added. See #2569
+
 ## [4.6.0](https://github.com/vuejs/router/compare/v4.5.1...v4.6.0) (2025-10-14)
 
 This release refactors the build to use `tsup`. Please report any issue you may find regarding to types or incorrectly unresolved exports
