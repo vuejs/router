@@ -175,7 +175,7 @@ describe('Router', () => {
     const parseQuery = vi.fn(_ => ({}))
     const { router } = await newRouter({ parseQuery })
     const to = router.resolve('/foo?bar=baz')
-    expect(parseQuery).toHaveBeenCalledWith('?bar=baz')
+    expect(parseQuery).toHaveBeenCalledWith('bar=baz')
     expect(to.query).toEqual({})
   })
 

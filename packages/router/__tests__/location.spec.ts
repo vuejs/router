@@ -248,7 +248,7 @@ describe('parseURL', () => {
     const parseQuery = vi.fn()
     originalParseURL(parseQuery, '/?é=é&é=a')
     expect(parseQuery).toHaveBeenCalledTimes(1)
-    expect(parseQuery).toHaveBeenCalledWith('?é=é&é=a')
+    expect(parseQuery).toHaveBeenCalledWith('é=é&é=a')
   })
 })
 

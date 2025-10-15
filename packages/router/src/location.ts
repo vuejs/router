@@ -68,7 +68,10 @@ export function parseURL(
       hashPos > 0 ? hashPos : location.length
     )
 
-    query = parseQuery(searchString)
+    query = parseQuery(
+      // remove the leading ?
+      searchString.slice(1)
+    )
   }
 
   if (hashPos >= 0) {
