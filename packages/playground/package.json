@@ -17,7 +17,7 @@
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/compiler-sfc": "~3.5.22",
     "@vue/tsconfig": "^0.8.1",
-    "vite": "^7.1.9",
+    "vite": "^7.1.10",
     "vue-router": "workspace:*",
     "vue-tsc": "^3.1.1"
   }
