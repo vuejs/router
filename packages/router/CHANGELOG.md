@@ -1,3 +1,9 @@
+## [4.6.2](https://github.com/vuejs/router/compare/v4.6.1...v4.6.2) (2025-10-15)
+
+### Bug Fixes
+
+- avoid passing leading ? to parseQuery ([af822e4](https://github.com/vuejs/router/commit/af822e46ba67f45a8aa087bdf16cdaaa8a02c623)), closes [#2571](https://github.com/vuejs/router/issues/2571)
+
 ## [4.6.1](https://github.com/vuejs/router/compare/v4.6.0...v4.6.1) (2025-10-15)
 
 Add back `dist/vue-router.esm-bundler.js` for better retro compatibility with existing wrappers. Note this will be removed in next major and a warning has been added. See #2569
