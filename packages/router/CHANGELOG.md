@@ -1,4 +1,4 @@
-## 4.6.0 (2025-10-14)
+## [4.6.0](https://github.com/vuejs/router/compare/v4.5.1...v4.6.0) (2025-10-14)
 
 This release refactors the build to use `tsup`. Please report any issue you may find regarding to types or incorrectly unresolved exports
 
@@ -18,7 +18,7 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 
 - parseURL minor improvements ([f89a842](https://github.com/vuejs/router/commit/f89a842f580a632bdb60a7ef84fd119f4bf3e199))
 
-## 4.5.1 (2025-04-25)
+## [4.5.1](https://github.com/vuejs/router/compare/v4.5.0...v4.5.1) (2025-04-25)
 
 ### Features
 
@@ -29,7 +29,7 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 
 - missing viewTransition prop on RouterLink ([#2465](https://github.com/vuejs/router/issues/2465)) ([2ddd19f](https://github.com/vuejs/router/commit/2ddd19fcfb9877b6952d55c75989fea6ba6a1367))
 
-## 4.5.0 (2024-11-25)
+## [4.5.0](https://github.com/vuejs/router/compare/v4.4.5...v4.5.0) (2024-11-25)
 
 ### Features
 
@@ -42,7 +42,7 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 - custom directive doesn't work when custom=true ([#2377](https://github.com/vuejs/router/issues/2377)) ([0d8d997](https://github.com/vuejs/router/commit/0d8d9978cbf1cae77ee4d9ac6cec69cc341a8243))
 - **router:** allow duplicated navigation on back + redirect ([#2133](https://github.com/vuejs/router/issues/2133)) ([d992bb2](https://github.com/vuejs/router/commit/d992bb2085cadf01b270e4f04b3d91c4fd5a70e3))
 
-## 4.4.5 (2024-09-13)
+## [4.4.5](https://github.com/vuejs/router/compare/v4.4.4...v4.4.5) (2024-09-13)
 
 ### Bug Fixes
 
@@ -50,7 +50,7 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 - make internal property non enumerable ([a8df616](https://github.com/vuejs/router/commit/a8df616bfda2feb7aa6b738054a02e241d4f276b))
 - mods must be added only wiht defineProperty ([c7dd2a1](https://github.com/vuejs/router/commit/c7dd2a1d686beecbc6883c3f9614c50aea30a5d2))
 
-## 4.4.4 (2024-09-10)
+## [4.4.4](https://github.com/vuejs/router/compare/v4.4.3...v4.4.4) (2024-09-10)
 
 ### Features
 
@@ -60,19 +60,19 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 
 - **ssr:** handle symboless Modules in dynamic imports ([#2355](https://github.com/vuejs/router/issues/2355)) ([4861467](https://github.com/vuejs/router/commit/4861467e60a9e20d00cb46e4b9bbce1a2e129e0e))
 
-## 4.4.3 (2024-08-06)
+## [4.4.3](https://github.com/vuejs/router/compare/v4.4.2...v4.4.3) (2024-08-06)
 
 ### Bug Fixes
 
 - reorder exports in `package.json` ([#2323](https://github.com/vuejs/router/issues/2323)) ([7422b15](https://github.com/vuejs/router/commit/7422b15e6fcf57819f82a1384c9a2a73e32e186f))
 
-## 4.4.2 (2024-08-01)
+## [4.4.2](https://github.com/vuejs/router/compare/v4.4.1...v4.4.2) (2024-08-01)
 
 ### Bug Fixes
 
 - **types:** revert stricter meta ([d4d0087](https://github.com/vuejs/router/commit/d4d0087eae5721f73bde445be33407875a92a1ca)), closes [#2319](https://github.com/vuejs/router/issues/2319)
 
-## 4.4.1 (2024-07-31)
+## [4.4.1](https://github.com/vuejs/router/compare/v4.4.0...v4.4.1) (2024-07-31)
 
 ### Features
 
@@ -83,45 +83,45 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 - router typescript definations related to vue package ([#2295](https://github.com/vuejs/router/issues/2295)) ([a495ce0](https://github.com/vuejs/router/commit/a495ce0e1d545d521673d21af43e63a761b53e27))
 - **types:** stricter meta with required fields ([423d9f7](https://github.com/vuejs/router/commit/423d9f763ed033dd6687ce7687c859c92554a60d))
 
-## 4.4.0 (2024-06-21)
+## [4.4.0](https://github.com/vuejs/router/compare/v4.4.0-alpha.3...v4.4.0) (2024-06-21)
 
-## 4.4.0-alpha.3 (2024-06-19)
+## [4.4.0-alpha.3](https://github.com/vuejs/router/compare/v4.4.0-alpha.2...v4.4.0-alpha.3) (2024-06-19)
 
 ### Features
 
 - add a clearRoutes method ([abe223d](https://github.com/vuejs/router/commit/abe223dab44a092682eed5f77b0e231ff2392076))
 
-## 4.4.0-alpha.2 (2024-06-12)
+## [4.4.0-alpha.2](https://github.com/vuejs/router/compare/v4.4.0-alpha.1...v4.4.0-alpha.2) (2024-06-12)
 
 ### Bug Fixes
 
 - allow arbitrary strings in RouteLocationRaw ([a7a8452](https://github.com/vuejs/router/commit/a7a8452d137024d607d803a4009a5d55419259f2))
 
-## 4.4.0-alpha.1 (2024-06-12)
+## [4.4.0-alpha.1](https://github.com/vuejs/router/compare/v4.4.0-alpha.0...v4.4.0-alpha.1) (2024-06-12)
 
 ### Features
 
 - type useLink ([6a90774](https://github.com/vuejs/router/commit/6a907746db930161902d80e0d254c56e6a273482))
 
-## 4.4.0-alpha.0 (2024-06-11)
+## [4.4.0-alpha.0](https://github.com/vuejs/router/compare/v4.3.3...v4.4.0-alpha.0) (2024-06-11)
 
 ### Features
 
 - wip typed routes ([f92282b](https://github.com/vuejs/router/commit/f92282b896ccf92360d781832435e1ae86314e0e))
 
-## 4.3.3 (2024-06-10)
+## [4.3.3](https://github.com/vuejs/router/compare/v4.3.2...v4.3.3) (2024-06-10)
 
 ### Performance Improvements
 
 - use a binary search for insertMatcher ([#2137](https://github.com/vuejs/router/issues/2137)) ([e9f6ae3](https://github.com/vuejs/router/commit/e9f6ae3d61b91892f88fa26a6c224e0166b874ff))
 
-## 4.3.2 (2024-04-18)
+## [4.3.2](https://github.com/vuejs/router/compare/v4.3.1...v4.3.2) (2024-04-18)
 
 ### Bug Fixes
 
 - Revert "fix: avoid normalizing the fullPath ([#2189](https://github.com/vuejs/router/issues/2189))" ([b78aa98](https://github.com/vuejs/router/commit/b78aa98792e86e08b76eb879e496fe1c300c1e18)), closes [vuejs/router#2216](https://github.com/vuejs/router/issues/2216)
 
-## 4.3.1 (2024-04-17)
+## [4.3.1](https://github.com/vuejs/router/compare/v4.3.0...v4.3.1) (2024-04-17)
 
 ### Features
 
@@ -132,7 +132,7 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 
 - avoid normalizing the fullPath ([#2189](https://github.com/vuejs/router/issues/2189)) ([c54fc84](https://github.com/vuejs/router/commit/c54fc8407bd1944a3b724fbcc7f6fbac5ff45f0f)), closes [vuejs/router#2187](https://github.com/vuejs/router/issues/2187)
 
-## 4.3.0 (2024-02-21)
+## [4.3.0](https://github.com/vuejs/router/compare/v4.2.5...v4.3.0) (2024-02-21)
 
 ### Features
 
@@ -146,33 +146,33 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 - handle undefined path in router resolve ([0ec4862](https://github.com/vuejs/router/commit/0ec4862ff54207c1c207027ed240e24efcfeb6cf))
 - keep optional params coming from a parent record ([#2031](https://github.com/vuejs/router/issues/2031)) ([04b50e5](https://github.com/vuejs/router/commit/04b50e5a2cf82f896f5200497386d8a2acdae738))
 
-## 4.2.5 (2023-09-22)
+## [4.2.5](https://github.com/vuejs/router/compare/v4.2.4...v4.2.5) (2023-09-22)
 
 ### Bug Fixes
 
 - **devtools:** display children with empty parent ([d7af338](https://github.com/vuejs/router/commit/d7af338d9e27e77ac109bf7495e057a2df9a8752)), closes [posva/unplugin-vue-router#235](https://github.com/posva/unplugin-vue-router/issues/235)
 
-## 4.2.4 (2023-07-06)
+## [4.2.4](https://github.com/vuejs/router/compare/v4.2.3...v4.2.4) (2023-07-06)
 
 ### Bug Fixes
 
 - allow removing guards within the guard ([d60d36c](https://github.com/vuejs/router/commit/d60d36c49bbbd308618926ff0131890bfed2cdff))
 
-## 4.2.3 (2023-07-05)
+## [4.2.3](https://github.com/vuejs/router/compare/v4.2.2...v4.2.3) (2023-07-05)
 
 ### Performance Improvements
 
 - use getter instead of `computed` for route location ([#1916](https://github.com/vuejs/router/issues/1916)) ([f1b839e](https://github.com/vuejs/router/commit/f1b839e7fc46d5b24dadb64cdc8e3cc95010ccfa))
 
-## 4.2.2 (2023-05-29)
+## [4.2.2](https://github.com/vuejs/router/compare/v4.2.1...v4.2.2) (2023-05-29)
 
-## 4.2.1 (2023-05-18)
+## [4.2.1](https://github.com/vuejs/router/compare/v4.2.0...v4.2.1) (2023-05-18)
 
 ### Bug Fixes
 
 - **types:** revert declare module vue ([b8d417a](https://github.com/vuejs/router/commit/b8d417a5b81c94aa5eb252782b07cb2b471d3a4e))
 
-## 4.2.0 (2023-05-11)
+## [4.2.0](https://github.com/vuejs/router/compare/v4.1.6...v4.2.0) (2023-05-11)
 
 ### Features
 
@@ -186,21 +186,21 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 - remove nullish params when resolving ([#1814](https://github.com/vuejs/router/issues/1814)) ([15e20cb](https://github.com/vuejs/router/commit/15e20cbb7baedb42e44e10d5d69ffb2a3124360f))
 - **warn:** avoid redundant usage warn ([#1797](https://github.com/vuejs/router/issues/1797)) ([bbd80ad](https://github.com/vuejs/router/commit/bbd80adb627d4ee3f3e0ef7f7a1f99a2c5e0edf6))
 
-## 4.1.6 (2022-10-24)
+## [4.1.6](https://github.com/vuejs/router/compare/v4.1.5...v4.1.6) (2022-10-24)
 
 ### Features
 
 - **matcher:** avoid empty records to be reached ([756f755](https://github.com/vuejs/router/commit/756f755731284f0f1899a2f8b62cb074b6f0f842))
 - **types:** improve link and view slots ([#1544](https://github.com/vuejs/router/issues/1544)) ([4a0cc8b](https://github.com/vuejs/router/commit/4a0cc8b9c1e642cdf47cc007fa5bbebde70afc66))
 
-## 4.1.5 (2022-08-26)
+## [4.1.5](https://github.com/vuejs/router/compare/v4.1.4...v4.1.5) (2022-08-26)
 
 ### Features
 
 - **warn:** better wording ([4cc3093](https://github.com/vuejs/router/commit/4cc3093d0485cbd968ff096d1878bee40b7e47a9)), closes [#1530](https://github.com/vuejs/router/issues/1530)
 - **warn:** warn against removed params ([fdbaf83](https://github.com/vuejs/router/commit/fdbaf83a5fa359343697ec26f4f4a54aac73b241)), closes [#1527](https://github.com/vuejs/router/issues/1527)
 
-## 4.1.4 (2022-08-22)
+## [4.1.4](https://github.com/vuejs/router/compare/v4.1.3...v4.1.4) (2022-08-22)
 
 ### Features
 
@@ -212,7 +212,7 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 - **build:** remove devtools in cjs production ([5b8983d](https://github.com/vuejs/router/commit/5b8983d04592c1420837c4533ee3b6cf6a07a314)), closes [#1524](https://github.com/vuejs/router/issues/1524)
 - **matcher:** remove unused params ([e887570](https://github.com/vuejs/router/commit/e8875705eb8b8a0756544174b85a1a3c2de55ff6)), closes [#1497](https://github.com/vuejs/router/issues/1497)
 
-## 4.1.3 (2022-07-27)
+## [4.1.3](https://github.com/vuejs/router/compare/v4.1.2...v4.1.3) (2022-07-27)
 
 ### Bug Fixes
 
@@ -221,7 +221,7 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 - **matcher:** correctly resolve empty paths with optional params ([4d5182a](https://github.com/vuejs/router/commit/4d5182a3e8e74e1bb66b641c39391349be6d963b)), closes [#1475](https://github.com/vuejs/router/issues/1475)
 - **types:** allow redirect with children ([9f0d999](https://github.com/vuejs/router/commit/9f0d9997b681b33b5ad2180399612fba14898372)), closes [#1476](https://github.com/vuejs/router/issues/1476)
 
-## 4.1.2 (2022-07-11)
+## [4.1.2](https://github.com/vuejs/router/compare/v4.1.1...v4.1.2) (2022-07-11)
 
 ### Features
 
@@ -234,7 +234,7 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 - **types:** adds ESM export of types ([#1457](https://github.com/vuejs/router/issues/1457)) ([e82a89c](https://github.com/vuejs/router/commit/e82a89c19a367fd91348c0e0f2bbbdacb646d2aa))
 - **types:** allow `symbol` type ([#1460](https://github.com/vuejs/router/issues/1460)) ([0f053db](https://github.com/vuejs/router/commit/0f053db4cbafdac8d5174e9ae841969274f916f1))
 
-## 4.1.1 (2022-07-05)
+## [4.1.1](https://github.com/vuejs/router/compare/v4.1.0...v4.1.1) (2022-07-05)
 
 ### Bug Fixes
 
@@ -242,7 +242,7 @@ There is a new `vue-router/experimental` export which is used mainly by `unplugi
 - **types:** allow simpler type check of route records ([#1453](https://github.com/vuejs/router/issues/1453)) ([e3078a4](https://github.com/vuejs/router/commit/e3078a4190c799ec4f01fa5c46d64c54c0e95034)), closes [#1452](https://github.com/vuejs/router/issues/1452)
 - **types:** remove unnecessary readonly ([4bb989d](https://github.com/vuejs/router/commit/4bb989d36798243df1eb186c4ec01d9fd97d1f26))
 
-## 4.1.0 (2022-07-04)
+## [4.1.0](https://github.com/vuejs/router/compare/v4.0.16...v4.1.0) (2022-07-04)
 
 ### Features
 
