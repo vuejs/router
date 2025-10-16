@@ -63,6 +63,34 @@ const esm = {
   // sourcemap: true,
 } satisfies Options
 
+const esmBrowser = {
+  ...commonOptions,
+  outputOptions: {
+    ...commonOptions.outputOptions,
+    dir: undefined, // must be unset with file
+    file: 'dist/vue-router.esm-browser.js',
+  },
+  define: {
+    ...commonOptions.define,
+    __DEV__: 'true',
+    __FEATURE_PROD_DEVTOOLS__: 'true',
+  },
+} satisfies Options
+
+const esmBrowserProd = {
+  ...esmBrowser,
+  minify: true,
+  outputOptions: {
+    ...esmBrowser.outputOptions,
+    file: 'dist/vue-router.esm-browser.prod.js',
+  },
+  define: {
+    ...esmBrowser.define,
+    __DEV__: 'false',
+    __FEATURE_PROD_DEVTOOLS__: 'false',
+  },
+} satisfies Options
+
 const cjs = {
   ...commonOptions,
   format: 'cjs',
@@ -122,6 +150,8 @@ const iifeProd = {
 export default [
   //
   esm,
+  esmBrowser,
+  esmBrowserProd,
   cjs,
   cjsProd,
   iife,
