@@ -1,3 +1,9 @@
+## [4.6.3](https://github.com/vuejs/router/compare/v4.6.2...v4.6.3) (2025-10-16)
+
+### Bug Fixes
+
+- reinstate ESM browser builds ([#2572](https://github.com/vuejs/router/issues/2572)) ([09d63d3](https://github.com/vuejs/router/commit/09d63d3ff836a775231bf65ceaa11839bfed191f))
+
 ## [4.6.2](https://github.com/vuejs/router/compare/v4.6.1...v4.6.2) (2025-10-15)
 
 ### Bug Fixes
