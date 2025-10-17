@@ -543,6 +543,7 @@ async function getChangedPackages(...folders) {
           '--name-only',
           lastTag,
           '--',
+          // TODO: should allow build files tsdown.config.ts
           // apparently {src,package.json} doesn't work
           join(folder, 'src'),
           // TODO: should not check dev deps and should compare to last tag changes
