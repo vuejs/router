@@ -833,10 +833,9 @@ describe('Router', () => {
     })
 
     it('allows a redirect with children', async () => {
-      const history = createMemoryHistory()
-      const router = createRouter({
-        history,
+      const { router } = await newRouter({
         routes: [
+          { path: '/', component: components.Home },
           {
             path: '/parent',
             redirect: { name: 'child' },
