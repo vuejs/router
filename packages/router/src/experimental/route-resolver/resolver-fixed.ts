@@ -66,13 +66,22 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
 export interface EXPERIMENTAL_ResolverRecord_Group
   extends EXPERIMENTAL_ResolverRecord_Base {
   /**
-   * A group route cannot be matched directly and so names are not allowed.
+   * A group route cannot be matched directly and cannot be named.
    */
   name?: undefined
+
+  /**
+   * A group route can **only** match the `query`.
+   */
   path?: undefined
+
   // Query is the only kind of matcher that is non-exclusive
   // all matched records get their queries merged
   // query?: undefined
+
+  /**
+   * A group route can **only** match the `query`.
+   */
   hash?: undefined
 }
 
