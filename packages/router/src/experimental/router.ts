@@ -310,21 +310,18 @@ export interface EXPERIMENTAL_RouteRecordNormalized_Group
   extends EXPERIMENTAL_RouteRecordNormalized_Base,
     EXPERIMENTAL_RouteRecord_Group {
   meta: RouteMeta
-  parent: EXPERIMENTAL_RouteRecordNormalized | null
 }
 
 export interface EXPERIMENTAL_RouteRecordNormalized_Redirect
   extends EXPERIMENTAL_RouteRecordNormalized_Base,
     EXPERIMENTAL_RouteRecord_Redirect {
   meta: RouteMeta
-  parent: EXPERIMENTAL_RouteRecordNormalized | null
 }
 
 export interface EXPERIMENTAL_RouteRecordNormalized_Components
   extends EXPERIMENTAL_RouteRecordNormalized_Base,
     EXPERIMENTAL_RouteRecord_Components {
   meta: RouteMeta
-  parent: EXPERIMENTAL_RouteRecordNormalized | null
 }
 
 export type EXPERIMENTAL_RouteRecordNormalized_Matchable =
@@ -352,11 +349,12 @@ export function normalizeRouteRecord(
     | Omit<EXPERIMENTAL_RouteRecordNormalized_Group, 'mods'> = {
     meta: {},
     // must be defined as non enumerable because it contains modules
+    // which are complex objects that cannot be stringified
+    // when user does {{ $route }}
     // mods: {},
     props: {},
-    // TODO :make it optional as it changes nothing
-    parent: null,
-    // not having the property changes nothing
+    // NOTE: not having the property changes nothing
+    // parent: null,
     // aliasOf: null,
     ...record,
     // FIXME: to be removed
