@@ -104,6 +104,9 @@ const childRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
   parent: parentRecord,
 }
 
+// NOTE: this redirect is not needed, the router should match by default the child
+// and it's better to simply not name the route to make it non matchable with
+// the new router
 const parentWithRedirectRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
   name: 'parent-with-redirect',
   path: new MatcherPatternPathStatic('/parent-with-redirect'),
