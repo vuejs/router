@@ -21,12 +21,10 @@
  * - ✅ Meta field merging from parent to child
  * - ❌ Dynamic routing (addRoute, removeRoute, hasRoute)
  * - ❌ Aliases (not implemented in experimental router)
- * - ❌ Redirects (limited support)
- * - ❌ Complex object-based resolve (may work differently)
+ * - ✅ Redirects (limited support)
+ * - ✅ Complex object-based resolve (may work differently)
  * - ❌ beforeEnter guards (not implemented)
- * - ❌ Param validation/casting (works differently)
- *
- * PASSING TESTS: 26/71 (45 skipped due to experimental router limitations)
+ * - ✅ Param validation/casting (works differently)
  */
 
 import fakePromise from 'faked-promise'
@@ -57,45 +55,13 @@ import { START_LOCATION_NORMALIZED } from '../location'
 import { vi, describe, expect, it, beforeAll } from 'vitest'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
 
-// Create dynamic pattern matchers using the proper constructor
-const paramMatcher = new MatcherPatternPathDynamic(
-  /^\/p\/([^/]+)$/,
-  { p: [{}] },
-  ['p', 1]
-)
-
-const optionalMatcher = new MatcherPatternPathDynamic(
-  /^\/optional(?:\/([^/]+))?$/,
-  { p: [] },
-  ['optional', 1]
-)
-
-const repeatMatcher = new MatcherPatternPathDynamic(
-  /^\/repeat\/(.+)$/,
-  { r: [{}, true] },
-  ['repeat', 0]
-)
-
-const catchAllMatcher = new MatcherPatternPathDynamic(
-  /^\/(.*)$/i,
-  { pathMatch: [] },
-  [0],
-  null
-)
-
-// Create experimental route records using proper structure
-// First create parent records
-const parentRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
+const parentRecord = normalizeRouteRecord({
   name: 'parent',
   path: new MatcherPatternPathStatic('/parent'),
   components: { default: components.Foo },
   meta: { fromParent: 'foo' },
-}
+})
 
-// Normalize parent record
-const parentRecord = normalizeRouteRecord(parentRawRecord)
-
-// Create child record with parent reference
 const childRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
   name: 'parent-child',
   path: new MatcherPatternPathStatic('/parent/child'),
@@ -107,14 +73,11 @@ const childRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
 // NOTE: this redirect is not needed, the router should match by default the child
 // and it's better to simply not name the route to make it non matchable with
 // the new router
-const parentWithRedirectRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
+const parentWithRedirectRecord = normalizeRouteRecord({
   name: 'parent-with-redirect',
   path: new MatcherPatternPathStatic('/parent-with-redirect'),
   redirect: { name: 'child-for-redirect' },
-}
-const parentWithRedirectRecord = normalizeRouteRecord(
-  parentWithRedirectRawRecord
-)
+})
 
 const childDefaultRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
   name: 'child-for-redirect',
@@ -122,6 +85,29 @@ const childDefaultRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
   components: { default: components.Foo },
   meta: { fromParent: 'foo' },
   parent: parentWithRedirectRecord,
+}
+
+const aliasParentRecord = normalizeRouteRecord({
+  name: Symbol('aliases'),
+  path: new MatcherPatternPathStatic('/aliases'),
+  // alias: ['/aliases1', '/aliases2'],
+  components: { default: components.Nested },
+})
+
+const aliasChildOneRecord = normalizeRouteRecord({
+  name: Symbol('one'),
+  path: new MatcherPatternPathStatic('/aliases/one'),
+  // alias: ['o', 'o2'],
+  components: { default: components.Foo },
+  parent: aliasParentRecord,
+})
+
+const aliasChildTwoRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
+  name: Symbol('two'),
+  path: new MatcherPatternPathStatic('/aliases/one/two'),
+  // alias: ['t', 't2'],
+  components: { default: components.Bar },
+  parent: aliasChildOneRecord,
 }
 
 // Create all route records
@@ -192,18 +178,28 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
   },
   {
     name: 'Param',
-    path: paramMatcher,
+    path: new MatcherPatternPathDynamic(/^\/p\/([^/]+)$/, { p: [{}] }, [
+      'p',
+      1,
+    ]),
     components: { default: components.Bar },
   },
 
   {
     name: 'optional',
-    path: optionalMatcher,
+    path: new MatcherPatternPathDynamic(
+      /^\/optional(?:\/([^/]+))?$/,
+      { p: [] },
+      ['optional', 1]
+    ),
     components: { default: components.Bar },
   },
   {
     name: 'repeat',
-    path: repeatMatcher,
+    path: new MatcherPatternPathDynamic(/^\/repeat\/(.+)$/, { r: [{}, true] }, [
+      'repeat',
+      0,
+    ]),
     components: { default: components.Bar },
   },
   {
@@ -213,7 +209,7 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
   },
 
   childRawRecord,
-  parentRawRecord,
+  parentRecord,
 
   childDefaultRawRecord,
   parentWithRedirectRecord,
@@ -261,16 +257,35 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
     }),
   },
 
+  // aliases
+  {
+    // path: '/basic',
+    // alias: '/basic-alias',
+    name: Symbol('basic-alias'),
+    path: new MatcherPatternPathStatic('/basic-alias'),
+    components: { default: components.Foo },
+  },
+
+  aliasChildOneRecord,
+  aliasChildTwoRawRecord,
+
   {
     name: 'catch-all',
-    path: catchAllMatcher,
+    path: new MatcherPatternPathDynamic(
+      /^\/(.*)$/i,
+      { pathMatch: [] },
+      [0],
+      null
+    ),
     components: { default: components.Home },
   },
 ]
 
-// Normalize all records
 const experimentalRoutes = routeRecords.map(record =>
-  normalizeRouteRecord(record)
+  'mods' in record
+    ? // avoid double normalizing to keep same references
+      (record as ReturnType<typeof normalizeRouteRecord>)
+    : normalizeRouteRecord(record)
 )
 
 async function newRouter(
