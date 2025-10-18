@@ -186,7 +186,6 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
  */
 export interface EXPERIMENTAL_RouteRecord_Base
   extends EXPERIMENTAL_ResolverRecord_Base {
-  // TODO:
   /**
    * Where to redirect if the route is directly matched. The redirection happens
    * before any navigation guard and triggers a new navigation with the new
@@ -196,11 +195,9 @@ export interface EXPERIMENTAL_RouteRecord_Base
 
   // TODO:
   /**
-   * Aliases for the record. Allows defining extra paths that will behave like a
-   * copy of the record. Allows having paths shorthands like `/users/:id` and
-   * `/u/:id`. All `alias` and `path` values must share the same params.
+   * References another record if this record is an alias of it.
    */
-  // alias?: string | string[]
+  aliasOf?: unknown
 
   // TODO: deprecate, expose utils to compare resolved routes, and document
   // how to create a meta field that does the same
@@ -357,7 +354,10 @@ export function normalizeRouteRecord(
     // must be defined as non enumerable because it contains modules
     // mods: {},
     props: {},
+    // TODO :make it optional as it changes nothing
     parent: null,
+    // not having the property changes nothing
+    // aliasOf: null,
     ...record,
     // FIXME: to be removed
     instances: {},

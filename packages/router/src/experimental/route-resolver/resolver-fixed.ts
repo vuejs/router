@@ -55,9 +55,6 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
    * It will be included in the `matched` array of a resolved location.
    */
   parent?: EXPERIMENTAL_ResolverRecord | null // the parent can be matchable or not
-
-  // TODO: implement aliases
-  // aliasOf?: this
 }
 
 /**

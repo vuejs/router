@@ -87,6 +87,19 @@ const childDefaultRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
   parent: parentWithRedirectRecord,
 }
 
+const aliasRecordOriginal = normalizeRouteRecord({
+  // path: '/basic',
+  // alias: '/basic-alias',
+  name: Symbol('basic-alias'),
+  path: new MatcherPatternPathStatic('/basic'),
+  components: { default: components.Foo },
+})
+const aliasRecord = normalizeRouteRecord({
+  ...aliasRecordOriginal,
+  path: new MatcherPatternPathStatic('/basic-alias'),
+  aliasOf: aliasRecordOriginal,
+})
+
 const aliasParentRecord = normalizeRouteRecord({
   name: Symbol('aliases'),
   path: new MatcherPatternPathStatic('/aliases'),
@@ -258,13 +271,8 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
   },
 
   // aliases
-  {
-    // path: '/basic',
-    // alias: '/basic-alias',
-    name: Symbol('basic-alias'),
-    path: new MatcherPatternPathStatic('/basic-alias'),
-    components: { default: components.Foo },
-  },
+  aliasRecordOriginal,
+  aliasRecord,
 
   aliasChildOneRecord,
   aliasChildTwoRawRecord,
@@ -758,7 +766,26 @@ describe('Experimental Router', () => {
   })
 
   describe('alias', () => {
-    it.skip('does not navigate to alias if already on original record', async () => {})
+    it('navigates to alias', async () => {
+      const { router } = await newRouter()
+      await router.push('/basic-alias')
+      expect(router.currentRoute.value.path).toBe('/basic-alias')
+      expect(router.currentRoute.value.matched.at(0)).toBe(aliasRecord)
+      expect(router.currentRoute.value.matched.at(0)?.aliasOf).toBe(
+        aliasRecordOriginal
+      )
+    })
+
+    it('does not navigate to alias if already on original record', async () => {
+      const { router } = await newRouter()
+      const spy = vi.fn()
+      await router.push('/basic')
+      expect(router.currentRoute.value.path).toBe('/basic')
+      router.beforeEach(spy)
+      await router.push('/basic-alias')
+      expect(spy).not.toHaveBeenCalled()
+      expect(router.currentRoute.value.path).toBe('/basic')
+    })
 
     it.skip('does not navigate to alias with children if already on original record', async () => {})
 
