@@ -1055,8 +1055,6 @@ describe('Experimental Router', () => {
         path: '/parent-with-redirect',
       })
     })
-
-    it.skip('works with named routes', async () => {})
   })
 
   describe('base', () => {
