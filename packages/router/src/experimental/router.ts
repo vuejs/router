@@ -234,11 +234,13 @@ export interface EXPERIMENTAL_RouteRecord_Base
   // props?: _RouteRecordProps | Record<string, _RouteRecordProps>
 }
 
-export interface EXPERIMENTAL_RouteRecord_Matchable
+export interface EXPERIMENTAL_RouteRecord_Redirect
   // preserve the values from the type EXPERIMENTAL_ResolverRecord_Matchable
   extends Omit<EXPERIMENTAL_RouteRecord_Base, 'name' | 'path' | 'parent'>,
     EXPERIMENTAL_ResolverRecord_Matchable {
-  components: Record<string, RawRouteComponent>
+  components?: Record<string, RawRouteComponent>
+
+  redirect: RouteRecordRedirectOption // must be defined
 
   parent?: EXPERIMENTAL_RouteRecordNormalized | null
 }
@@ -254,6 +256,21 @@ export interface EXPERIMENTAL_RouteRecord_Group
 
   parent?: EXPERIMENTAL_RouteRecordNormalized | null
 }
+
+export interface EXPERIMENTAL_RouteRecord_Components
+  // preserve the values from the type EXPERIMENTAL_ResolverRecord_Matchable
+  extends Omit<EXPERIMENTAL_RouteRecord_Base, 'name' | 'path' | 'parent'>,
+    EXPERIMENTAL_ResolverRecord_Matchable {
+  components: Record<string, RawRouteComponent>
+
+  redirect?: never
+
+  parent?: EXPERIMENTAL_RouteRecordNormalized | null
+}
+
+export type EXPERIMENTAL_RouteRecord_Matchable =
+  | EXPERIMENTAL_RouteRecord_Components
+  | EXPERIMENTAL_RouteRecord_Redirect
 
 export type EXPERIMENTAL_RouteRecordRaw =
   | EXPERIMENTAL_RouteRecord_Matchable
@@ -299,16 +316,23 @@ export interface EXPERIMENTAL_RouteRecordNormalized_Group
   parent: EXPERIMENTAL_RouteRecordNormalized | null
 }
 
-// TODO: is it worth to have 2 types for the undefined values?
-export interface EXPERIMENTAL_RouteRecordNormalized_Matchable
+export interface EXPERIMENTAL_RouteRecordNormalized_Redirect
   extends EXPERIMENTAL_RouteRecordNormalized_Base,
-    EXPERIMENTAL_RouteRecord_Matchable {
+    EXPERIMENTAL_RouteRecord_Redirect {
   meta: RouteMeta
-
   parent: EXPERIMENTAL_RouteRecordNormalized | null
-
-  components: Record<string, RawRouteComponent>
 }
+
+export interface EXPERIMENTAL_RouteRecordNormalized_Components
+  extends EXPERIMENTAL_RouteRecordNormalized_Base,
+    EXPERIMENTAL_RouteRecord_Components {
+  meta: RouteMeta
+  parent: EXPERIMENTAL_RouteRecordNormalized | null
+}
+
+export type EXPERIMENTAL_RouteRecordNormalized_Matchable =
+  | EXPERIMENTAL_RouteRecordNormalized_Components
+  | EXPERIMENTAL_RouteRecordNormalized_Redirect
 
 export type EXPERIMENTAL_RouteRecordNormalized =
   | EXPERIMENTAL_RouteRecordNormalized_Matchable

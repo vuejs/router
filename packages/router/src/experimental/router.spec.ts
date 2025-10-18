@@ -104,6 +104,23 @@ const childRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
   parent: parentRecord,
 }
 
+const parentWithRedirectRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
+  name: 'parent-with-redirect',
+  path: new MatcherPatternPathStatic('/parent-with-redirect'),
+  redirect: { name: 'child-for-redirect' },
+}
+const parentWithRedirectRecord = normalizeRouteRecord(
+  parentWithRedirectRawRecord
+)
+
+const childDefaultRawRecord: EXPERIMENTAL_RouteRecord_Matchable = {
+  name: 'child-for-redirect',
+  path: new MatcherPatternPathStatic('/parent-with-redirect'),
+  components: { default: components.Foo },
+  meta: { fromParent: 'foo' },
+  parent: parentWithRedirectRecord,
+}
+
 // Create all route records
 const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
   {
@@ -114,8 +131,6 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
   {
     name: 'home-redirect',
     path: new MatcherPatternPathStatic('/home'),
-    // TODO: this should not be needed in a redirect record
-    components: { default: components.Home },
     redirect: { name: 'home' },
   },
   {
@@ -137,8 +152,6 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
   {
     name: Symbol('to-foo'),
     path: new MatcherPatternPathStatic('/to-foo'),
-    // TODO: this should not be needed in a redirect record
-    components: { default: components.Home },
     redirect: to => ({
       path: '/foo',
       query: to.query,
@@ -148,15 +161,11 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
   {
     name: Symbol('to-foo2'),
     path: new MatcherPatternPathStatic('/to-foo2'),
-    // TODO: this should not be needed in a redirect record
-    components: { default: components.Home },
     redirect: '/to-foo',
   },
   {
     path: new MatcherPatternPathStatic('/to-foo-query'),
     name: Symbol('to-foo-query'),
-    // TODO: this should not be needed in a redirect record
-    components: { default: components.Home },
     redirect: '/foo?a=2#b',
   },
 
@@ -166,8 +175,6 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
       'to-p',
       1,
     ]),
-    // TODO: this should not be needed in a redirect record
-    components: { default: components.Home },
     redirect: to => ({
       name: 'Param',
       params: to.params,
@@ -201,8 +208,12 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
     path: new MatcherPatternPathStatic('/before-leave'),
     components: { default: components.BeforeLeave },
   },
-  parentRawRecord,
+
   childRawRecord,
+  parentRawRecord,
+
+  childDefaultRawRecord,
+  parentWithRedirectRecord,
 
   {
     name: 'param-with-slashes',
@@ -234,9 +245,17 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
       { p: [] },
       ['redirect-with-param', 1]
     ),
-    // TODO: shouldn't be needed in a redirect record
-    components: { default: components.Foo },
     redirect: () => `/`,
+  },
+  {
+    name: Symbol('inc-query-hash'),
+    // path: '/inc-query-hash',
+    path: new MatcherPatternPathStatic('/inc-query-hash'),
+    redirect: to => ({
+      name: 'Foo',
+      query: { n: to.query.n + '-2' },
+      hash: to.hash + '-2',
+    }),
   },
 
   {
@@ -991,16 +1010,46 @@ describe('Experimental Router', () => {
         redirectedFrom: expect.objectContaining({ path: '/to-foo' }),
       })
 
+      const navPromise = nextNavigation(router as any)
       history.go(-1)
-      await nextNavigation(router as any)
+      await navPromise
       expect(router.currentRoute.value).not.toMatchObject({
         path: '/search',
       })
     })
 
-    it.skip('can pass on query and hash when redirecting', async () => {})
+    it('can pass on query and hash when redirecting', async () => {
+      const { router } = await newRouter()
+      await router.push('/inc-query-hash?n=3#fa')
+      const loc = router.currentRoute.value
+      expect(loc).toMatchObject({
+        name: 'Foo',
+        query: {
+          n: '3-2',
+        },
+        hash: '#fa-2',
+      })
+      expect(loc.redirectedFrom).toMatchObject({
+        fullPath: '/inc-query-hash?n=3#fa',
+        query: { n: '3' },
+        hash: '#fa',
+        path: '/inc-query-hash',
+      })
+    })
 
-    it.skip('allows a redirect with children', async () => {})
+    it('allows a redirect with children', async () => {
+      const { router } = await newRouter()
+      await expect(
+        router.push({ name: 'parent-with-redirect' })
+      ).resolves.toEqual(undefined)
+      const loc = router.currentRoute.value
+      expect(loc.path).toBe('/parent-with-redirect')
+      expect(loc.name).toBe('child-for-redirect')
+      expect(loc.redirectedFrom).toMatchObject({
+        name: 'parent-with-redirect',
+        path: '/parent-with-redirect',
+      })
+    })
 
     it.skip('works with named routes', async () => {})
   })
