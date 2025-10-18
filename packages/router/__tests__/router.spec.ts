@@ -797,7 +797,7 @@ describe('Router', () => {
 
     it('keeps original replace if redirect', async () => {
       const history = createMemoryHistory()
-      const router = createRouter({ history, routes })
+      const { router } = await newRouter({ history })
       await router.push('/search')
 
       await expect(router.replace('/to-foo')).resolves.toEqual(undefined)

@@ -35,8 +35,8 @@ import {
   createFixedResolver,
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,
-  EXPERIMENTAL_RouteRecord_Matchable,
-  EXPERIMENTAL_RouterOptions,
+  type EXPERIMENTAL_RouteRecord_Matchable,
+  type EXPERIMENTAL_RouterOptions,
   normalizeRouteRecord,
 } from './index'
 import {
@@ -1000,8 +1000,11 @@ describe('Experimental Router', () => {
       })
     })
 
-    it.skip('keeps original replace if redirect', async () => {
-      const { router } = await newRouter()
+    it('keeps original replace if redirect', async () => {
+      const history = createMemoryHistory()
+      const { router } = await newRouter({
+        history,
+      })
       await router.push('/search')
 
       await expect(router.replace('/to-foo')).resolves.toEqual(undefined)
@@ -1010,9 +1013,8 @@ describe('Experimental Router', () => {
         redirectedFrom: expect.objectContaining({ path: '/to-foo' }),
       })
 
-      const navPromise = nextNavigation(router as any)
       history.go(-1)
-      await navPromise
+      await nextNavigation(router)
       expect(router.currentRoute.value).not.toMatchObject({
         path: '/search',
       })
