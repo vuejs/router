@@ -5,11 +5,14 @@ import {
   createWebHistory,
   useRoute,
   loadRouteLocation,
+  useHistoryState,
 } from 'vue-router'
 import {
   createApp,
   readonly,
   ref,
+  watch,
+  shallowRef,
   watchEffect,
   computed,
   defineComponent,
@@ -72,6 +75,7 @@ const Home = defineComponent({
     const route = useRoute()
 
     const userId = computed(() => route.params.id)
+    const historyState = useHistoryState<{ backgroundView?: string }>()
 
     watchEffect(
       () => {
@@ -187,14 +191,17 @@ router.beforeEach(to => {
 const app = createApp({
   setup() {
     const route = useRoute()
+    const historyState = useHistoryState<{ backgroundView?: string }>()
 
-    const routeWithModal = computed(() => {
+    const routeWithModal = shallowRef<RouteLocationNormalizedLoaded>(route)
+    watch(historyState, async () => {
       if (historyState.value.backgroundView) {
-        return router.resolve(
+        routeWithModal.value = router.resolve(
           historyState.value.backgroundView
         ) as RouteLocationNormalizedLoaded
+        await loadRouteLocation(routeWithModal.value)
       } else {
-        return route
+        routeWithModal.value = route
       }
     })
 
