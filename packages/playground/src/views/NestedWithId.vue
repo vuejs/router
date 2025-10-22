@@ -17,20 +17,11 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { defineComponent, inject, provide } from 'vue'
 
-export default defineComponent({
-  props: ['id'],
-  name: 'NestedWithId',
-  setup(props) {
-    const level = inject('level', 1)
-    provide('level', level + 1)
+const props = defineProps<{id: string}>()
 
-    return {
-      props,
-      level,
-    }
-  },
-})
+const level = inject('level', 1)
+provide('level', level + 1)
 </script>
