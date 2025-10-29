@@ -197,7 +197,7 @@ export interface EXPERIMENTAL_RouteRecord_Base
   /**
    * References another record if this record is an alias of it.
    */
-  aliasOf?: unknown
+  aliasOf?: this
 
   // TODO: deprecate, expose utils to compare resolved routes, and document
   // how to create a meta field that does the same
