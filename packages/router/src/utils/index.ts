@@ -64,9 +64,12 @@ export const noop = () => {}
 /**
  * Typesafe alternative to Array.isArray
  * https://github.com/microsoft/TypeScript/pull/48228
+ *
+ * @internal
  */
-export const isArray: (arg: ArrayLike<any> | any) => arg is ReadonlyArray<any> =
-  Array.isArray
+export const isArray: (
+  arg: ArrayLike<any> | unknown
+) => arg is ReadonlyArray<any> = Array.isArray
 
 export function mergeOptions<T extends object>(
   defaults: T,
