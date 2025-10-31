@@ -150,7 +150,7 @@ type ExtractLocationParamTypeFromOptions<TParamsOptions> = {
  *
  * @internal
  */
-const RE_TRAILING_SLASHES = /\/*$/
+const TRAILING_SLASHES_RE = /\/*$/
 
 /**
  * Handles the `path` part of a URL with dynamic parameters.
@@ -298,7 +298,7 @@ export class MatcherPatternPathDynamic<TParamsOptions>
      */
     return this.trailingSlash == null
       ? path + (!value && path.at(-1) !== '/' ? '/' : '')
-      : path.replace(RE_TRAILING_SLASHES, this.trailingSlash ? '/' : '')
+      : path.replace(TRAILING_SLASHES_RE, this.trailingSlash ? '/' : '')
   }
 }
 
