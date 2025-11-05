@@ -24,22 +24,16 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
 
 <h4 align="center">Silver Sponsors</h4>
 <p align="center">
-    <a href="https://www.vuemastery.com/" target="_blank" rel="noopener noreferrer">
-    <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/vuemastery-dark.png" media="(prefers-color-scheme: dark)" height="42px" alt="VueMastery" />
-      <img src="https://posva-sponsors.pages.dev/logos/vuemastery-light.svg" height="42px" alt="VueMastery" />
-    </picture>
-  </a>
-    <a href="https://www.prefect.io/" target="_blank" rel="noopener noreferrer">
-    <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/prefectlogo-dark.svg" media="(prefers-color-scheme: dark)" height="42px" alt="Prefect" />
-      <img src="https://posva-sponsors.pages.dev/logos/prefectlogo-light.svg" height="42px" alt="Prefect" />
-    </picture>
-  </a>
     <a href="https://www.controla.ai/?utm_source=posva" target="_blank" rel="noopener noreferrer">
     <picture>
       <source srcset="https://posva-sponsors.pages.dev/logos/controla-dark.png" media="(prefers-color-scheme: dark)" height="42px" alt="Controla" />
       <img src="https://posva-sponsors.pages.dev/logos/controla-light.png" height="42px" alt="Controla" />
+    </picture>
+  </a>
+    <a href="https://www.vuemastery.com/" target="_blank" rel="noopener noreferrer">
+    <picture>
+      <source srcset="https://posva-sponsors.pages.dev/logos/vuemastery-dark.png" media="(prefers-color-scheme: dark)" height="42px" alt="VueMastery" />
+      <img src="https://posva-sponsors.pages.dev/logos/vuemastery-light.svg" height="42px" alt="VueMastery" />
     </picture>
   </a>
     <a href=" https://jobs.sendcloud.com" target="_blank" rel="noopener noreferrer">
@@ -62,12 +56,6 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
     <picture>
       <source srcset="https://posva-sponsors.pages.dev/logos/storyblok.png" media="(prefers-color-scheme: dark)" height="26px" alt="Storyblok" />
       <img src="https://posva-sponsors.pages.dev/logos/storyblok.png" height="26px" alt="Storyblok" />
-    </picture>
-  </a>
-    <a href="https://nuxtlabs.com" target="_blank" rel="noopener noreferrer">
-    <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/nuxt-dark.svg" media="(prefers-color-scheme: dark)" height="26px" alt="NuxtLabs" />
-      <img src="https://posva-sponsors.pages.dev/logos/nuxt-light.svg" height="26px" alt="NuxtLabs" />
     </picture>
   </a>
     <a href="https://stormier.ninja" target="_blank" rel="noopener noreferrer">
