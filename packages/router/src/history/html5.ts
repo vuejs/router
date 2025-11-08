@@ -7,6 +7,7 @@ import {
   ValueContainer,
   normalizeBase,
   createHref,
+  createCurrentLocation,
   HistoryLocation,
 } from './common'
 import {
@@ -14,7 +15,6 @@ import {
   _ScrollPositionNormalized,
 } from '../scrollBehavior'
 import { warn } from '../warning'
-import { stripBase } from '../location'
 import { assign } from '../utils'
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
@@ -28,31 +28,6 @@ interface StateEntry extends HistoryState {
   position: number
   replaced: boolean
   scroll: _ScrollPositionNormalized | null | false
-}
-
-/**
- * Creates a normalized history location from a window.location object
- * @param base - The base path
- * @param location - The window.location object
- */
-function createCurrentLocation(
-  base: string,
-  location: Location
-): HistoryLocation {
-  const { pathname, search, hash } = location
-  // allows hash bases like #, /#, #/, #!, #!/, /#!/, or even /folder#end
-  const hashPos = base.indexOf('#')
-  if (hashPos > -1) {
-    let slicePos = hash.includes(base.slice(hashPos))
-      ? base.slice(hashPos).length
-      : 1
-    let pathFromHash = hash.slice(slicePos)
-    // prepend the starting slash to hash so the url starts with /#
-    if (pathFromHash[0] !== '/') pathFromHash = '/' + pathFromHash
-    return stripBase(pathFromHash, '')
-  }
-  const path = stripBase(pathname, base)
-  return path + search + hash
 }
 
 function useHistoryListeners(

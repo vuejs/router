@@ -72,6 +72,7 @@ import {
   EXPERIMENTAL_Router_Base,
   _OnReadyCallback,
 } from './experimental/router'
+import { createCurrentLocation } from './history/common'
 
 /**
  * Options to initialize a {@link Router} instance.
@@ -730,15 +731,21 @@ export function createRouter(options: RouterOptions): Router {
     // only consider as push if it's not the first navigation
     const isFirstNavigation = from === START_LOCATION_NORMALIZED
     const state: Partial<HistoryState> | null = !isBrowser ? {} : history.state
-
     // change URL only if the user did a push/replace and if it's not the initial navigation because
     // it's just reflecting the url
     if (isPush) {
       // on the initial navigation, we want to reuse the scroll position from
       // history state if it exists
-      if (replace || isFirstNavigation)
+      if (replace || isFirstNavigation) {
+        // In the first navigation, we regard the current browser location as the target,
+        // As the state of routerHistory maybe stale when initializing the router.
+        const toLocationPath =
+          isFirstNavigation && isBrowser
+            ? createCurrentLocation(routerHistory.base, location)
+            : toLocation.fullPath
+
         routerHistory.replace(
-          toLocation.fullPath,
+          toLocationPath,
           assign(
             {
               scroll: isFirstNavigation && state && state.scroll,
@@ -746,7 +753,7 @@ export function createRouter(options: RouterOptions): Router {
             data
           )
         )
-      else routerHistory.push(toLocation.fullPath, data)
+      } else routerHistory.push(toLocation.fullPath, data)
     }
 
     // accept current navigation
