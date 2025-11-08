@@ -1,3 +1,4 @@
+import { createApp } from 'vue'
 import { JSDOM } from 'jsdom'
 import { createRouter, createWebHistory } from '../src'
 import { createDom, components, nextNavigation } from './utils'
@@ -73,5 +74,18 @@ describe('Initial Navigation', () => {
     history.go(-1)
     await nextNavigation(router)
     expect(router.currentRoute.value).toMatchObject({ path: '/' })
+  })
+
+  it('Should respect the replaced state right after the initial navigation', async () => {
+    const { router, history } = newRouter('/')
+    window.history.replaceState({}, '', '/bar')
+    const app = createApp({
+      template: `
+      <router-view />
+      `,
+    })
+    app.use(router)
+    await router.isReady()
+    expect(history.location).toBe('/bar')
   })
 })
