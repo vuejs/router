@@ -1,5 +1,5 @@
 import { isBrowser } from '../utils'
-import { removeTrailingSlash } from '../location'
+import { removeTrailingSlash, stripBase } from '../location'
 
 export type HistoryLocation = string
 /**
@@ -182,4 +182,29 @@ export function normalizeBase(base?: string): string {
 const BEFORE_HASH_RE = /^[^#]+#/
 export function createHref(base: string, location: HistoryLocation): string {
   return base.replace(BEFORE_HASH_RE, '#') + location
+}
+
+/**
+ * Creates a normalized history location from a window.location object
+ * @param base - The base path
+ * @param location - The window.location object
+ */
+export function createCurrentLocation(
+  base: string,
+  location: Location
+): HistoryLocation {
+  const { pathname, search, hash } = location
+  // allows hash bases like #, /#, #/, #!, #!/, /#!/, or even /folder#end
+  const hashPos = base.indexOf('#')
+  if (hashPos > -1) {
+    let slicePos = hash.includes(base.slice(hashPos))
+      ? base.slice(hashPos).length
+      : 1
+    let pathFromHash = hash.slice(slicePos)
+    // prepend the starting slash to hash so the url starts with /#
+    if (pathFromHash[0] !== '/') pathFromHash = '/' + pathFromHash
+    return stripBase(pathFromHash, '')
+  }
+  const path = stripBase(pathname, base)
+  return path + search + hash
 }
