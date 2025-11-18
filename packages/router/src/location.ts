@@ -219,7 +219,7 @@ function isSameRouteLocationParamsValue(
     ? isEquivalentArray(a, b)
     : isArray(b)
       ? isEquivalentArray(b, a)
-      : a === b
+      : a?.valueOf() === b?.valueOf()
 }
 
 /**

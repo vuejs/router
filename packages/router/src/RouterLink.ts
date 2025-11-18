@@ -442,7 +442,9 @@ function includesParams(
       if (
         !isArray(outerValue) ||
         outerValue.length !== innerValue.length ||
-        innerValue.some((value, i) => value !== outerValue[i])
+        innerValue.some(
+          (value, i) => value.valueOf() !== outerValue[i].valueOf()
+        )
       )
         return false
     }
