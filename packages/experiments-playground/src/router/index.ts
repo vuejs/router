@@ -52,7 +52,13 @@ const r_group = normalizeRouteRecord({
   },
 
   query: [
-    new MatcherPatternQueryParam('group', 'isGroup', 'value', PARAM_PARSER_INT),
+    new MatcherPatternQueryParam(
+      'group',
+      'isGroup',
+      'value',
+      PARAM_PARSER_INT,
+      0
+    ),
   ],
 })
 

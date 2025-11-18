@@ -77,3 +77,12 @@ const queryPage = computed({
 
   <RouterView />
 </template>
+
+<style>
+.router-link-active {
+  color: darkorange;
+}
+.router-link-exact-active {
+  color: crimson;
+}
+</style>
