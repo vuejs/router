@@ -220,7 +220,7 @@ export function createFixedResolver<
         }
       }
 
-      // either one of them must be defined and is catched by the dev only warn above
+      // either one of them must be defined and is caught by the dev only warn above
       const name = to.name ?? currentLocation!.name
       const record = recordMap.get(name)!
 
