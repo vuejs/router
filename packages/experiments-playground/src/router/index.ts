@@ -7,6 +7,7 @@ import {
   normalizeRouteRecord,
   PARAM_PARSER_INT,
   MatcherPatternQueryParam,
+  MatchMiss,
 } from 'vue-router/experimental'
 import type {
   EXPERIMENTAL_RouteRecordNormalized_Matchable,
@@ -24,6 +25,25 @@ const PAGE_QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ page: number }> = {
     }
   },
   build: params => ({ page: String(params.page) }),
+}
+
+const PARAM_PARSER_DATE = {
+  get(value: string): Date {
+    const asDate = new Date(value)
+    if (Number.isNaN(asDate.getTime())) {
+      throw new MatchMiss(`Invalid date param: "${value}"`)
+    }
+
+    return asDate
+  },
+  set(value: Date): string {
+    return (
+      value
+        .toISOString()
+        // allows keeping simple dates like 2023-10-01 without time
+        .replace('T00:00:00.000Z', '')
+    )
+  },
 }
 
 const QUERY_PATTERN_MATCHER: MatcherPatternQuery<{ q?: string }> = {
@@ -130,13 +150,58 @@ const r_profiles_detail = normalizeRouteRecord({
   ),
 })
 
+const r_events = normalizeRouteRecord({
+  components: { default: () => import('../pages/events.vue') },
+})
+
+const r_events_list = normalizeRouteRecord({
+  name: 'events',
+  path: new MatcherPatternPathStatic('/events'),
+  components: { default: () => import('../pages/events/(event-list).vue') },
+  parent: r_events,
+})
+
+const r_events_date = normalizeRouteRecord({
+  name: 'events-date',
+  components: { default: () => import('../pages/events/[when=date].vue') },
+  path: new MatcherPatternPathDynamic(
+    /^\/events\/([^/]+?)$/i,
+    {
+      when: [PARAM_PARSER_DATE],
+    },
+    ['events', 1]
+  ),
+  parent: r_events,
+})
+
+const r_events_nested = normalizeRouteRecord({
+  name: 'events-date-nested',
+  components: {
+    default: () => import('../pages/events/[when=date]/nested.vue'),
+  },
+  path: new MatcherPatternPathDynamic(
+    /^\/events\/([^/]+?)\/nested$/i,
+    {
+      when: [PARAM_PARSER_DATE],
+    },
+    ['events', 1, 'nested']
+  ),
+  parent: r_events_date,
+})
+
 export const router = experimental_createRouter({
   history: createWebHistory(),
   resolver: createFixedResolver<EXPERIMENTAL_RouteRecordNormalized_Matchable>([
     r_home,
     r_about,
+
+    r_events_list,
+    r_events_date,
+    r_events_nested,
+
     r_nested,
     r_nested_a,
+
     r_profiles_list,
     r_profiles_detail,
   ]),

@@ -38,6 +38,8 @@ const queryPage = computed({
       <RouterLink to="/nested/a">Nested A</RouterLink>
       |
       <RouterLink to="/profiles">Profiles list</RouterLink>
+      |
+      <RouterLink to="/events">Events</RouterLink>
     </nav>
     <form @submit.prevent="router.push(url)">
       <label for="path">Path:</label>
