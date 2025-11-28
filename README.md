@@ -2,6 +2,7 @@
 
 > - This is the repository for Vue Router 4 (for Vue 3)
 > - For Vue Router 3 (for Vue 2) see [vuejs/vue-router](https://github.com/vuejs/vue-router).
+>   To see what versions are currently supported, please refer to the [Security Policy](./packages/router/SECURITY.md).
 
 <h2 align="center">Supporting Vue Router</h2>
 
