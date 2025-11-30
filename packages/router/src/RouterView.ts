@@ -251,7 +251,7 @@ function warnDeprecatedUsage() {
   ) {
     const comp = parentName === 'KeepAlive' ? 'keep-alive' : 'transition'
     warn(
-      `<router-view> can no longer be used directly inside <transition> or <keep-alive>.\n` +
+      `<router-view> can no longer be used directly inside <${comp}>.\n` +
         `Use slot props instead:\n\n` +
         `<router-view v-slot="{ Component }">\n` +
         `  <${comp}>\n` +
