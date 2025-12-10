@@ -79,6 +79,7 @@ const esmBrowser = {
 
 const esmBrowserProd = {
   ...esmBrowser,
+  target: 'es2015',
   minify: true,
   outputOptions: {
     ...esmBrowser.outputOptions,
@@ -135,6 +136,7 @@ const iife = {
 
 const iifeProd = {
   ...iife,
+  target: 'es2015',
   minify: true,
   outputOptions: {
     ...iife.outputOptions,
