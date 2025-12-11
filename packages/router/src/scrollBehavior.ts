@@ -29,6 +29,22 @@ export type _ScrollPositionNormalized = {
   top: number
 }
 
+/**
+ * Type of the `scrollBehavior` option that can be passed to `createRouter`.
+ */
+export interface RouterScrollBehavior {
+  /**
+   * @param to - Route location where we are navigating to
+   * @param from - Route location where we are navigating from
+   * @param savedPosition - saved position if it exists, `null` otherwise
+   */
+  (
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalizedLoaded,
+    savedPosition: _ScrollPositionNormalized | null
+  ): Awaitable<ScrollPosition | false | void>
+}
+
 export interface ScrollPositionElement extends ScrollToOptions {
   /**
    * A valid CSS selector. Note some characters must be escaped in id selectors (https://mathiasbynens.be/notes/css-escapes).

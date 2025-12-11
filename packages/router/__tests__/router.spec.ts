@@ -14,16 +14,14 @@ import { START_LOCATION_NORMALIZED } from '../src/location'
 import { vi, describe, expect, it, beforeAll } from 'vitest'
 import { mockWarn } from './vitest-mock-warn'
 
-declare var __DEV__: boolean
-
 const routes: RouteRecordRaw[] = [
   { path: '/', component: components.Home, name: 'home' },
   { path: '/home', redirect: '/' },
   {
     path: '/home-before',
     component: components.Home,
-    beforeEnter: (to, from, next) => {
-      next('/')
+    beforeEnter: (to, from) => {
+      return '/'
     },
   },
   { path: '/search', component: components.Home },
@@ -144,6 +142,10 @@ describe('Router', () => {
     await router.push('/search')
     vi.spyOn(history, 'replace')
     vi.spyOn(history, 'push')
+    router.beforeEach(to => {
+      if (to.fullPath !== '/') return '/'
+      return
+    })
     await router.replace('/home-before')
     expect(history.push).toHaveBeenCalledTimes(0)
     expect(history.replace).toHaveBeenCalledTimes(1)
@@ -279,7 +281,7 @@ describe('Router', () => {
 
   it('navigates if the location does not exist', async () => {
     const { router } = await newRouter({ routes: [routes[0]] })
-    const spy = vi.fn((to, from, next) => next())
+    const spy = vi.fn((to, from) => {})
     router.beforeEach(spy)
     await router.push('/idontexist')
     expect(spy).toHaveBeenCalledTimes(1)
@@ -504,7 +506,7 @@ describe('Router', () => {
   describe('alias', () => {
     it('does not navigate to alias if already on original record', async () => {
       const { router } = await newRouter()
-      const spy = vi.fn((to, from, next) => next())
+      const spy = vi.fn((to, from) => {})
       await router.push('/basic')
       router.beforeEach(spy)
       await router.push('/basic-alias')
@@ -513,7 +515,7 @@ describe('Router', () => {
 
     it('does not navigate to alias with children if already on original record', async () => {
       const { router } = await newRouter()
-      const spy = vi.fn((to, from, next) => next())
+      const spy = vi.fn((to, from) => {})
       await router.push('/aliases')
       router.beforeEach(spy)
       await router.push('/aliases1')
@@ -524,7 +526,7 @@ describe('Router', () => {
 
     it('does not navigate to child alias if already on original record', async () => {
       const { router } = await newRouter()
-      const spy = vi.fn((to, from, next) => next())
+      const spy = vi.fn((to, from) => {})
       await router.push('/aliases/one')
       router.beforeEach(spy)
       await router.push('/aliases1/one')
@@ -561,15 +563,15 @@ describe('Router', () => {
       const [p1, r1] = fakePromise()
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
-      router.beforeEach(async (to, from, next) => {
-        if (to.name !== 'Param') return next()
+      router.beforeEach(async (to, from) => {
+        if (to.name !== 'Param') return
         // the first navigation gets passed target
         if (to.params.p === 'a') {
           await p1
-          target ? next(target) : next()
+          return target || undefined
         } else {
           // the second one just passes
-          next()
+          return
         }
       })
       const from = router.currentRoute.value
@@ -615,17 +617,17 @@ describe('Router', () => {
       await router.push('/p/a')
       await router.push('/p/b')
 
-      router.beforeEach(async (to, from, next) => {
-        if (to.name !== 'Param') return next()
+      router.beforeEach(async (to, from) => {
+        if (to.name !== 'Param') return
         if (to.fullPath === '/foo') {
           await p1
-          next()
+          return
         } else if (from.fullPath === '/p/b') {
           await p2
           // @ts-ignore: same as function above
-          next(target)
+          return target
         } else {
-          next()
+          return
         }
       })
 
@@ -660,7 +662,7 @@ describe('Router', () => {
 
   describe('redirectedFrom', () => {
     it('adds a redirectedFrom property with a redirect in record', async () => {
-      const { router } = await newRouter({ history: createMemoryHistory() })
+      const { router } = await newRouter()
       // go to a different route first
       await router.push('/foo')
       await router.push('/home')
@@ -672,7 +674,7 @@ describe('Router', () => {
     })
 
     it('adds a redirectedFrom property with beforeEnter', async () => {
-      const { router } = await newRouter({ history: createMemoryHistory() })
+      const { router } = await newRouter()
       // go to a different route first
       await router.push('/foo')
       await router.push('/home-before')
@@ -686,8 +688,7 @@ describe('Router', () => {
 
   describe('redirect', () => {
     it('handles one redirect from route record', async () => {
-      const history = createMemoryHistory()
-      const router = createRouter({ history, routes })
+      const { router } = await newRouter()
       await expect(router.push('/to-foo')).resolves.toEqual(undefined)
       const loc = router.currentRoute.value
       expect(loc.name).toBe('Foo')
@@ -697,9 +698,8 @@ describe('Router', () => {
     })
 
     it('only triggers guards once with a redirect option', async () => {
-      const history = createMemoryHistory()
-      const router = createRouter({ history, routes })
-      const spy = vi.fn((to, from, next) => next())
+      const { router } = await newRouter()
+      const spy = vi.fn((to, from) => {})
       router.beforeEach(spy)
       await router.push('/to-foo')
       expect(spy).toHaveBeenCalledTimes(1)
@@ -711,8 +711,7 @@ describe('Router', () => {
     })
 
     it('handles a double redirect from route record', async () => {
-      const history = createMemoryHistory()
-      const router = createRouter({ history, routes })
+      const { router } = await newRouter()
       await expect(router.push('/to-foo2')).resolves.toEqual(undefined)
       const loc = router.currentRoute.value
       expect(loc.name).toBe('Foo')
@@ -722,8 +721,7 @@ describe('Router', () => {
     })
 
     it('handles query and hash passed in redirect string', async () => {
-      const history = createMemoryHistory()
-      const router = createRouter({ history, routes })
+      const { router } = await newRouter()
       await expect(router.push('/to-foo-query')).resolves.toEqual(undefined)
       expect(router.currentRoute.value).toMatchObject({
         name: 'Foo',
@@ -738,8 +736,7 @@ describe('Router', () => {
     })
 
     it('keeps query and hash when redirect is a string', async () => {
-      const history = createMemoryHistory()
-      const router = createRouter({ history, routes })
+      const { router } = await newRouter()
       await expect(router.push('/to-foo?hey=foo#fa')).resolves.toEqual(
         undefined
       )
@@ -756,8 +753,7 @@ describe('Router', () => {
     })
 
     it('keeps params, query and hash from targetLocation on redirect', async () => {
-      const history = createMemoryHistory()
-      const router = createRouter({ history, routes })
+      const { router } = await newRouter()
       await expect(router.push('/to-p/1?hey=foo#fa')).resolves.toEqual(
         undefined
       )
@@ -773,8 +769,8 @@ describe('Router', () => {
     })
 
     it('discard params on string redirect', async () => {
-      const history = createMemoryHistory()
-      const router = createRouter({ history, routes })
+      const { router } = await newRouter()
+      await router.push('/foo')
       await expect(router.push('/redirect-with-param/test')).resolves.toEqual(
         undefined
       )
@@ -790,8 +786,7 @@ describe('Router', () => {
     })
 
     it('allows object in redirect', async () => {
-      const history = createMemoryHistory()
-      const router = createRouter({ history, routes })
+      const { router } = await newRouter()
       await expect(router.push('/to-foo-named')).resolves.toEqual(undefined)
       const loc = router.currentRoute.value
       expect(loc.name).toBe('Foo')
@@ -802,7 +797,7 @@ describe('Router', () => {
 
     it('keeps original replace if redirect', async () => {
       const history = createMemoryHistory()
-      const router = createRouter({ history, routes })
+      const { router } = await newRouter({ history })
       await router.push('/search')
 
       await expect(router.replace('/to-foo')).resolves.toEqual(undefined)
@@ -819,8 +814,7 @@ describe('Router', () => {
     })
 
     it('can pass on query and hash when redirecting', async () => {
-      const history = createMemoryHistory()
-      const router = createRouter({ history, routes })
+      const { router } = await newRouter()
       await router.push('/inc-query-hash?n=3#fa')
       const loc = router.currentRoute.value
       expect(loc).toMatchObject({
@@ -839,10 +833,9 @@ describe('Router', () => {
     })
 
     it('allows a redirect with children', async () => {
-      const history = createMemoryHistory()
-      const router = createRouter({
-        history,
+      const { router } = await newRouter({
         routes: [
+          { path: '/', component: components.Home },
           {
             path: '/parent',
             redirect: { name: 'child' },
@@ -976,15 +969,15 @@ describe('Router', () => {
         name: 'dynamic parent',
         end: false,
         strict: true,
-        beforeEnter(to, from, next) {
+        beforeEnter(to, from) {
           if (!removeRoute) {
             removeRoute = router.addRoute('dynamic parent', {
               path: 'child',
               name: 'dynamic child',
               component: components.Foo,
             })
-            next(to.fullPath)
-          } else next()
+            return to.fullPath
+          } else return
         },
       })
 

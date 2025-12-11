@@ -33,6 +33,8 @@ Now the menu will close once the navigation is finished but it will also close i
 
 If a navigation is prevented, resulting in the user staying on the same page, the resolved value of the `Promise` returned by `router.push` will be a _Navigation Failure_. Otherwise, it will be a _falsy_ value (usually `undefined`). This allows us to differentiate the case where we navigated away from where we are or not:
 
+<RuleKitLink />
+
 ```js
 const navigationResult = await router.push('/my-profile')
 

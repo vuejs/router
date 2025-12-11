@@ -1,22 +1,22 @@
 import {
   defineComponent,
   h,
-  PropType,
+  type PropType,
   inject,
   computed,
   reactive,
   unref,
-  VNode,
-  UnwrapRef,
-  VNodeProps,
-  AllowedComponentProps,
-  ComponentCustomProps,
+  type VNode,
+  type UnwrapRef,
+  type VNodeProps,
+  type AllowedComponentProps,
+  type ComponentCustomProps,
   getCurrentInstance,
   watchEffect,
   // this is a workaround for https://github.com/microsoft/rushstack/issues/1050
   // this file is meant to be prepended to the generated dist/src/RouterLink.d.ts
   // @ts-ignore
-  ComputedRef,
+  type ComputedRef,
   // @ts-ignore
   DefineComponent,
   // @ts-ignore
@@ -25,7 +25,8 @@ import {
   RendererNode,
   // @ts-ignore
   ComponentOptionsMixin,
-  MaybeRef,
+  type MaybeRef,
+  type AnchorHTMLAttributes,
 } from 'vue'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
@@ -360,17 +361,33 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
 export const RouterLink: _RouterLinkI = RouterLinkImpl as any
 
 /**
+ * @internal
+ */
+type _RouterLinkPropsTypedBase = AllowedComponentProps &
+  ComponentCustomProps &
+  VNodeProps &
+  RouterLinkProps
+
+/**
+ * @internal
+ */
+type RouterLinkPropsTyped<Custom extends boolean | undefined> =
+  Custom extends true
+    ? _RouterLinkPropsTypedBase & { custom: true }
+    : _RouterLinkPropsTypedBase & { custom?: false | undefined } & Omit<
+          AnchorHTMLAttributes,
+          'href'
+        >
+
+/**
  * Typed version of the `RouterLink` component. Its generic defaults to the typed router, so it can be inferred
  * automatically for JSX.
  *
  * @internal
  */
 export interface _RouterLinkI {
-  new (): {
-    $props: AllowedComponentProps &
-      ComponentCustomProps &
-      VNodeProps &
-      RouterLinkProps
+  new <Custom extends boolean | undefined = boolean | undefined>(): {
+    $props: RouterLinkPropsTyped<Custom>
 
     $slots: {
       default?: ({
@@ -425,7 +442,9 @@ function includesParams(
       if (
         !isArray(outerValue) ||
         outerValue.length !== innerValue.length ||
-        innerValue.some((value, i) => value !== outerValue[i])
+        innerValue.some(
+          (value, i) => value.valueOf() !== outerValue[i].valueOf()
+        )
       )
         return false
     }

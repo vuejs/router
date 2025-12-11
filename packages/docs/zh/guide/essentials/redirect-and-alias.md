@@ -109,3 +109,5 @@ const routes = [
 ```
 
 **关于 SEO 的注意事项**: 使用别名时，一定要[定义规范链接](https://support.google.com/webmasters/answer/139066?hl=en).
+
+<RuleKitLink />

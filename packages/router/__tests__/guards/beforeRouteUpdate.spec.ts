@@ -68,9 +68,9 @@ describe('beforeRouteUpdate', () => {
   it('waits before navigating', async () => {
     const [promise, resolve] = fakePromise()
     const router = createRouter({ routes })
-    beforeRouteUpdate.mockImplementationOnce(async (to, from, next) => {
+    beforeRouteUpdate.mockImplementationOnce(async (to, from) => {
       await promise
-      next()
+      return
     })
     await router.push('/guard/one')
     const p = router.push('/guard/foo')

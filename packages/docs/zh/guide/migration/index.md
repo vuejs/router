@@ -1,5 +1,7 @@
 # 从 Vue2 迁移
 
+<RuleKitLink />
+
 在 Vue Router API 从 v3（Vue2）到 v4（Vue3）的重写过程中，大部分的 Vue Router API 都没有变化，但是在迁移你的程序时，你可能会遇到一些破坏性的变化。本指南将帮助你了解为什么会发生这些变化，以及如何调整你的程序，使其与 Vue Router4 兼容。
 
 ## 破坏性变化

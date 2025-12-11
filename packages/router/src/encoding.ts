@@ -22,7 +22,7 @@ import { warn } from './warning'
 
 const HASH_RE = /#/g // %23
 const AMPERSAND_RE = /&/g // %26
-const SLASH_RE = /\//g // %2F
+export const SLASH_RE = /\//g // %2F
 const EQUAL_RE = /=/g // %3D
 const IM_RE = /\?/g // %3F
 export const PLUS_RE = /\+/g // %2B
@@ -58,11 +58,13 @@ const ENC_SPACE_RE = /%20/g // }
  * @param text - string to encode
  * @returns encoded string
  */
-function commonEncode(text: string | number): string {
-  return encodeURI('' + text)
-    .replace(ENC_PIPE_RE, '|')
-    .replace(ENC_BRACKET_OPEN_RE, '[')
-    .replace(ENC_BRACKET_CLOSE_RE, ']')
+export function commonEncode(text: string | number | null | undefined): string {
+  return text == null
+    ? ''
+    : encodeURI('' + text)
+        .replace(ENC_PIPE_RE, '|')
+        .replace(ENC_BRACKET_OPEN_RE, '[')
+        .replace(ENC_BRACKET_CLOSE_RE, ']')
 }
 
 /**
@@ -115,7 +117,7 @@ export function encodeQueryKey(text: string | number): string {
  * @param text - string to encode
  * @returns encoded string
  */
-export function encodePath(text: string | number): string {
+export function encodePath(text: string | number | null | undefined): string {
   return commonEncode(text).replace(HASH_RE, '%23').replace(IM_RE, '%3F')
 }
 
@@ -129,7 +131,7 @@ export function encodePath(text: string | number): string {
  * @returns encoded string
  */
 export function encodeParam(text: string | number | null | undefined): string {
-  return text == null ? '' : encodePath(text).replace(SLASH_RE, '%2F')
+  return encodePath(text).replace(SLASH_RE, '%2F')
 }
 
 /**
@@ -139,7 +141,13 @@ export function encodeParam(text: string | number | null | undefined): string {
  * @param text - string to decode
  * @returns decoded string
  */
-export function decode(text: string | number): string {
+export function decode(text: string | number): string
+export function decode(text: null | undefined): null
+export function decode(text: string | number | null | undefined): string | null
+export function decode(
+  text: string | number | null | undefined
+): string | null {
+  if (text == null) return null
   try {
     return decodeURIComponent('' + text)
   } catch (err) {

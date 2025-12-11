@@ -87,10 +87,10 @@ describe('router.beforeEach', () => {
     const spy = vi.fn()
     const router = createRouter({ routes })
     await router.push('/foo')
-    spy.mockImplementation((to, from, next) => {
+    spy.mockImplementation((to, from) => {
       // only allow going to /other
-      if (to.fullPath !== '/other') next('/other')
-      else next()
+      if (to.fullPath !== '/other') return '/other'
+      else return
     })
     router.beforeEach(spy)
     expect(spy).not.toHaveBeenCalled()
@@ -160,11 +160,11 @@ describe('router.beforeEach', () => {
     const spy = vi.fn()
     const router = createRouter({ routes })
     await router.push('/')
-    spy.mockImplementation((to, from, next) => {
+    spy.mockImplementation((to, from) => {
       // only allow going to /other
       const i = Number(to.params.i)
-      if (i >= 3) next()
-      else next(redirectFn(String(i + 1)))
+      if (i >= 3) return
+      else return redirectFn(String(i + 1))
     })
     router.beforeEach(spy)
     expect(spy).not.toHaveBeenCalled()
@@ -210,9 +210,9 @@ describe('router.beforeEach', () => {
   it('waits before navigating', async () => {
     const [promise, resolve] = fakePromise()
     const router = createRouter({ routes })
-    router.beforeEach(async (to, from, next) => {
+    router.beforeEach(async (to, from) => {
       await promise
-      next()
+      return
     })
     const p = router.push('/foo')
     expect(router.currentRoute.value.fullPath).toBe('/')
@@ -227,17 +227,17 @@ describe('router.beforeEach', () => {
     const router = createRouter({ routes })
     const guard1 = vi.fn()
     let order = 0
-    guard1.mockImplementationOnce(async (to, from, next) => {
+    guard1.mockImplementationOnce(async (to, from) => {
       expect(order++).toBe(0)
       await p1
-      next()
+      return
     })
     router.beforeEach(guard1)
     const guard2 = vi.fn()
-    guard2.mockImplementationOnce(async (to, from, next) => {
+    guard2.mockImplementationOnce(async (to, from) => {
       expect(order++).toBe(1)
       await p2
-      next()
+      return
     })
     router.beforeEach(guard2)
     let navigation = router.push('/foo')

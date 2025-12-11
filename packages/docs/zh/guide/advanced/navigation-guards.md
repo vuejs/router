@@ -5,6 +5,8 @@
   title="Learn how to add navigation guards"
 />
 
+<RuleKitLink />
+
 正如其名，vue-router 提供的导航守卫主要用来通过跳转或取消的方式守卫导航。这里有很多方式植入路由导航中：全局的，单个路由独享的，或者组件级的。
 
 ## 全局前置守卫
@@ -139,8 +141,7 @@ router.afterEach((to, from, failure) => {
 
 从 Vue 3.3 开始，你可以在导航守卫内使用 `inject()` 方法。这在注入像 [pinia stores](https://pinia.vuejs.org) 这样的全局属性时很有用。在 `app.provide()` 中提供的所有内容都可以在 `router.beforeEach()`、`router.beforeResolve()`、`router.afterEach()` 内获取到：
 
-```ts
-// main.ts
+```ts [main.ts]
 const app = createApp(App)
 app.provide('global', 'hello injections')
 

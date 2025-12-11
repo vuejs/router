@@ -3,12 +3,18 @@
   "gold": [
     {
       "alt": "CodeRabbit",
-      "href": "https://www.coderabbit.ai/?utm_source=cr_org&utm_medium=github",
+      "href": "https://www.coderabbit.ai/?utm_source=vuerouter&utm_medium=sponsor",
       "imgSrcDark": "https://posva-sponsors.pages.dev/logos/coderabbitai-dark.svg",
       "imgSrcLight": "https://posva-sponsors.pages.dev/logos/coderabbitai-light.svg"
     }
   ],
   "silver": [
+    {
+      "alt": "Controla",
+      "href": "https://www.controla.ai/?utm_source=posva",
+      "imgSrcDark": "https://posva-sponsors.pages.dev/logos/controla-dark.png",
+      "imgSrcLight": "https://posva-sponsors.pages.dev/logos/controla-light.png"
+    },
     {
       "alt": "VueMastery",
       "href": "https://www.vuemastery.com/",
@@ -16,10 +22,10 @@
       "imgSrcLight": "https://posva-sponsors.pages.dev/logos/vuemastery-light.svg"
     },
     {
-      "alt": "Prefect",
-      "href": "https://www.prefect.io/",
-      "imgSrcDark": "https://posva-sponsors.pages.dev/logos/prefectlogo-dark.svg",
-      "imgSrcLight": "https://posva-sponsors.pages.dev/logos/prefectlogo-light.svg"
+      "alt": "SendCloud",
+      "href": " https://jobs.sendcloud.com",
+      "imgSrcDark": "https://posva-sponsors.pages.dev/logos/sendcloud-dark.svg",
+      "imgSrcLight": "https://posva-sponsors.pages.dev/logos/sendcloud-light.svg"
     },
     {
       "alt": "Route Optimizer and Route Planner Software",
@@ -34,12 +40,6 @@
       "href": "https://storyblok.com",
       "imgSrcDark": "https://posva-sponsors.pages.dev/logos/storyblok.png",
       "imgSrcLight": "https://posva-sponsors.pages.dev/logos/storyblok.png"
-    },
-    {
-      "alt": "NuxtLabs",
-      "href": "https://nuxtlabs.com",
-      "imgSrcDark": "https://posva-sponsors.pages.dev/logos/nuxt-dark.svg",
-      "imgSrcLight": "https://posva-sponsors.pages.dev/logos/nuxt-light.svg"
     },
     {
       "alt": "Stanislas Ormières",

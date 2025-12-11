@@ -7,7 +7,7 @@
 
 当打包构建应用时，JavaScript 包会变得非常大，影响页面加载。如果我们能把不同路由对应的组件分割成不同的代码块，然后当路由被访问的时候才加载对应组件，这样就会更加高效。
 
-Vue Router 支持开箱即用的[动态导入](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#Dynamic_Imports)，这意味着你可以用动态导入代替静态导入：
+Vue Router 支持开箱即用的[动态导入](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import)，这意味着你可以用动态导入代替静态导入：
 
 ```js
 // 将
@@ -26,6 +26,8 @@ const router = createRouter({
 ```
 
 `component` (和 `components`) 配置接收一个返回 Promise 组件的函数，Vue Router **只会在第一次进入页面时才会获取这个函数**，然后使用缓存数据。这意味着你也可以使用更复杂的函数，只要它们返回一个 Promise ：
+
+<RuleKitLink />
 
 ```js
 const UserDetails = () =>
@@ -65,8 +67,7 @@ webpack 会将任何一个异步模块与相同的块名称组合到相同的异
 
 在Vite中，你可以在[`rollupOptions`](https://cn.vite.dev/config/build-options.html#build-rollupoptions)下定义分块：
 
-```js
-// vite.config.js
+```js [vite.config.js]
 export default defineConfig({
   build: {
     rollupOptions: {

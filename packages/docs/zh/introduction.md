@@ -18,6 +18,8 @@ Vue Router 是 [Vue.js](https://cn.vuejs.org/) 的官方路由。它与 Vue.js �
 - 可定制的滚动行为
 - URL 的正确编码
 
+<RuleKitLink />
+
 [入门](./guide/)或使用 [playground](https://github.com/vuejs/router/tree/main/packages/playground) (详见[`README.md`](https://github.com/vuejs/router)来运行它们)。
 
 <HomeSponsors />

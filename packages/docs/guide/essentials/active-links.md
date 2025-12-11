@@ -53,6 +53,8 @@ Then consider these two links:
 
 If the current location path is `/user/erina/role/admin` then these would both be considered _active_, so the class `router-link-active` would be applied to both links. But only the second link would be considered _exact_, so only that second link would have the class `router-link-exact-active`.
 
+<RuleKitLink />
+
 ## Configuring the classes
 
 The RouterLink component has two props, `activeClass` and `exactActiveClass`, that can be used to change the names of the classes that are applied:

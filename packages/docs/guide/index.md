@@ -10,9 +10,9 @@ Client-side routing is used by single-page applications (SPAs) to tie the browse
 
 Vue Router is built on Vue's component system. You configure **routes** to tell Vue Router which components to show for each URL path.
 
-::: tip Prerequisites
 This guide will assume that you are already familiar with Vue itself. You don't need to be a Vue expert, but you may occasionally need to refer back to [the core Vue documentation](https://vuejs.org/) for more information about certain features.
-:::
+
+<RuleKitLink />
 
 ## An example
 
@@ -24,12 +24,10 @@ Let's start by looking at the root component, `App.vue`.
 
 ### App.vue
 
-```vue
+```vue [App.vue]
 <template>
   <h1>Hello App!</h1>
-  <p>
-    <strong>Current route path:</strong> {{ $route.fullPath }}
-  </p>
+  <p><strong>Current route path:</strong> {{ $route.fullPath }}</p>
   <nav>
     <RouterLink to="/">Go to Home</RouterLink>
     <RouterLink to="/about">Go to About</RouterLink>
@@ -65,13 +63,22 @@ const routes = [
   { path: '/about', component: AboutView },
 ]
 
-const router = createRouter({
+export const router = createRouter({
   history: createMemoryHistory(),
   routes,
 })
 ```
 
 The `routes` option defines the routes themselves, mapping URL paths to components. The component specified by the `component` option is the one that will be rendered by the `<RouterView>` in our earlier `App.vue`. These route components are sometimes referred to as _views_, though they are just normal Vue components.
+
+It's worth noting that if you want to use _functional components_ as route components, you must give them a `displayName` so they can be differentiated from [lazy loaded routes](./advanced/lazy-loading.md):
+
+```ts
+const AboutPage: FunctionalComponent = () => {
+  return h('h1', {}, 'About')
+}
+AboutPage.displayName = 'AboutPage'
+```
 
 Routes support various other options that we'll see later in the guide, but for now we only need `path` and `component`.
 
@@ -82,9 +89,7 @@ The `history` option controls how routes are mapped onto URLs and vice versa. Fo
 Once we've created our router instance, we need to register it as a plugin by calling `use()` on our application:
 
 ```js
-createApp(App)
-  .use(router)
-  .mount('#app')
+createApp(App).use(router).mount('#app')
 ```
 
 Or, equivalently:
@@ -142,7 +147,7 @@ const search = computed({
   },
   set(search) {
     router.replace({ query: { search } })
-  }
+  },
 })
 </script>
 ```

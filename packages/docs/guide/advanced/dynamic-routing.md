@@ -36,6 +36,8 @@ router.replace(router.currentRoute.value.fullPath)
 
 Remember you can `await router.replace()` if you need to wait for the new route to be displayed.
 
+<RuleKitLink />
+
 ## Adding routes inside navigation guards
 
 If you decide to add or remove routes inside of a navigation guard, you should not call `router.replace()` but trigger a redirection by returning the new location:

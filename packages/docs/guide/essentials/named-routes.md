@@ -36,6 +36,8 @@ Using a `name` has various advantages:
 - Avoids URL typos.
 - Bypassing path ranking, e.g. to display a lower-ranked route that matches the same path.
 
+<RuleKitLink />
+
 Each name **must be unique** across all routes. If you add the same name to multiple routes, the router will only keep the last one. You can read more about this [in the Dynamic Routing](../advanced/dynamic-routing#Removing-routes) section.
 
 There are various other parts of Vue Router that can be passed a location, e.g. the methods `router.push()` and `router.replace()`. We'll go into more detail about those methods in the guide to [programmatic navigation](./navigation). Just like the `to` prop, these methods also support passing a location by `name`:

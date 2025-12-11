@@ -19,8 +19,8 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/home-before',
     component,
-    beforeEnter: (to, from, next) => {
-      next('/')
+    beforeEnter: (to, from) => {
+      return '/'
     },
   },
   { path: '/bar', component },

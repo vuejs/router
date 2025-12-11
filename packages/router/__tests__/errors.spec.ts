@@ -86,9 +86,9 @@ describe('Errors & Navigation failures', () => {
 
   it('next("/location") triggers afterEach', async () => {
     await testNavigation(
-      ((to, from, next) => {
-        if (to.path === '/location') next()
-        else next('/location')
+      ((to, from) => {
+        if (to.path === '/location') return
+        else return '/location'
       }) as NavigationGuard,
       undefined
     )
@@ -109,10 +109,13 @@ describe('Errors & Navigation failures', () => {
   it('triggers afterEach if a new navigation happens', async () => {
     const { router } = createRouter()
     const [promise, resolve] = fakePromise()
-    router.beforeEach((to, from, next) => {
+    router.beforeEach(async (to, from) => {
       // let it hang otherwise
-      if (to.path === '/') next()
-      else promise.then(() => next())
+      if (to.path === '/') return
+      else {
+        await promise
+        return
+      }
     })
 
     let from = router.currentRoute.value
@@ -236,9 +239,9 @@ describe('Errors & Navigation failures', () => {
 
     it('next("/location") triggers afterEach with history.back', async () => {
       await testHistoryNavigation(
-        ((to, from, next) => {
-          if (to.path === '/location') next()
-          else next('/location')
+        ((to, from) => {
+          if (to.path === '/location') return
+          else return '/location'
         }) as NavigationGuard,
         undefined
       )

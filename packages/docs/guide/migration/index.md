@@ -1,5 +1,7 @@
 # Migrating from Vue 2
 
+<RuleKitLink />
+
 Most of Vue Router API has remained unchanged during its rewrite from v3 (for Vue 2) to v4 (for Vue 3) but there are still a few breaking changes that you might encounter while migrating your application. This guide is here to help you understand why these changes happened and how to adapt your application to make it work with Vue Router 4.
 
 ## Breaking Changes

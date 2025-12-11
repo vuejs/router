@@ -9,8 +9,7 @@ Using `$route` or `useRoute()` in your component creates a tight coupling with t
 
 Let's return to our earlier example:
 
-```vue
-<!-- User.vue -->
+```vue [User.vue]
 <template>
   <div>
     User {{ $route.params.id }}
@@ -143,3 +142,5 @@ You can also pass any props via the [`<RouterView>` slot](../advanced/router-vie
 ::: warning
 In this case, **all view components** will receive `view-prop`. This is usually not a good idea as  it means that all of the view components have declared a `view-prop` prop, which is not necessarily true. If possible, use any of the options above.
 :::
+
+<RuleKitLink />

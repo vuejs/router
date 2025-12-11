@@ -59,8 +59,7 @@ const router = createRouter({
 
 `UserSettings` 组件的 `<template>` 部分应该是类似下面的这段代码:
 
-```html
-<!-- UserSettings.vue -->
+```vue-html [UserSettings.vue]
 <div>
   <h1>User Settings</h1>
   <NavBar />
@@ -90,3 +89,5 @@ const router = createRouter({
 ```
 
 以上案例相关的可运行代码请[移步这里](https://codesandbox.io/s/nested-named-views-vue-router-4-examples-re9yl?&initialpath=%2Fsettings%2Femails).
+
+<RuleKitLink />

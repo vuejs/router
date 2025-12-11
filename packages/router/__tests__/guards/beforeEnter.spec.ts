@@ -157,9 +157,9 @@ describe('beforeEnter', () => {
   it('waits before navigating', async () => {
     const [promise, resolve] = fakePromise()
     const router = createRouter({ routes })
-    beforeEnter.mockImplementationOnce(async (to, from, next) => {
+    beforeEnter.mockImplementationOnce(async (to, from) => {
       await promise
-      next()
+      return
     })
     const p = router.push('/foo')
     expect(router.currentRoute.value.fullPath).toBe('/')
@@ -172,13 +172,13 @@ describe('beforeEnter', () => {
     const [p1, r1] = fakePromise()
     const [p2, r2] = fakePromise()
     const router = createRouter({ routes })
-    beforeEnters[0].mockImplementationOnce(async (to, from, next) => {
+    beforeEnters[0].mockImplementationOnce(async (to, from) => {
       await p1
-      next()
+      return
     })
-    beforeEnters[1].mockImplementationOnce(async (to, from, next) => {
+    beforeEnters[1].mockImplementationOnce(async (to, from) => {
       await p2
-      next()
+      return
     })
     const p = router.push('/multiple')
     expect(router.currentRoute.value.fullPath).toBe('/')

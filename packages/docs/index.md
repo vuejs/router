@@ -15,6 +15,9 @@ hero:
     - theme: brand
       text: Get Started
       link: /installation
+    - theme: cta rulekit
+      text: RuleKit
+      link: https://rulekit.dev?from=vuerouter
     - theme: cta vueschool
       text: Free Video Course
       link: https://vueschool.io/courses/vue-router-4-for-everyone?friend=vuerouter&utm_source=vuerouter&utm_medium=link&utm_campaign=homepage

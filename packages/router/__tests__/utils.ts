@@ -17,6 +17,7 @@ import {
   RouteLocationNormalized,
 } from '../src'
 import { _RouteRecordProps } from '../src/typed-routes'
+import { type EXPERIMENTAL_Router } from '../src/experimental'
 
 export const tick = (time?: number) =>
   new Promise(resolve => {
@@ -32,7 +33,7 @@ export async function ticks(n: number) {
 
 export const delay = (t: number) => new Promise(r => setTimeout(r, t))
 
-export function nextNavigation(router: Router) {
+export function nextNavigation(router: Router | EXPERIMENTAL_Router) {
   return new Promise((resolve, reject) => {
     let removeAfter = router.afterEach((_to, _from, failure) => {
       removeAfter()
@@ -47,11 +48,10 @@ export function nextNavigation(router: Router) {
   })
 }
 
-export interface RouteRecordViewLoose
-  extends Pick<
-    RouteRecordMultipleViews,
-    'path' | 'name' | 'meta' | 'beforeEnter'
-  > {
+export interface RouteRecordViewLoose extends Pick<
+  RouteRecordMultipleViews,
+  'path' | 'name' | 'meta' | 'beforeEnter'
+> {
   leaveGuards?: any
   updateGuards?: any
   instances: Record<string, any>

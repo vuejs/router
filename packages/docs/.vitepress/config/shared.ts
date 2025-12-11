@@ -1,5 +1,9 @@
 import { defineConfig, HeadConfig } from 'vitepress'
 import { zhSearch } from './zh'
+import {
+  groupIconMdPlugin,
+  groupIconVitePlugin,
+} from 'vitepress-plugin-group-icons'
 
 // TODO:
 // export const META_IMAGE = 'https://router.vuejs.org/social.png'
@@ -60,6 +64,9 @@ export const sharedConfig = defineConfig({
     anchor: {
       slugify,
     },
+    config: md => {
+      md.use(groupIconMdPlugin)
+    },
   },
 
   head: [
@@ -108,7 +115,7 @@ export const sharedConfig = defineConfig({
     [
       'script',
       {
-        src: 'https://vueschool.io/banner.js?affiliate=vuerouter&type=top',
+        src: 'https://media.bitterbrains.com/main.js?from=vuerouter&type=top',
         // @ts-expect-error: vitepress bug
         async: true,
         type: 'text/javascript',
@@ -135,8 +142,7 @@ export const sharedConfig = defineConfig({
     ],
 
     footer: {
-      copyright:
-        'Copyright © 2014-present Evan You, Eduardo San Martin Morote',
+      copyright: 'Copyright © 2014-present Evan You, Eduardo San Martin Morote',
       message: 'Released under the MIT License.',
     },
 
@@ -160,5 +166,8 @@ export const sharedConfig = defineConfig({
       // custom: 'CEBICK3M',
       placement: 'routervuejsorg',
     },
+  },
+  vite: {
+    plugins: [groupIconVitePlugin()],
   },
 })

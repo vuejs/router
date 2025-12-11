@@ -63,3 +63,5 @@ Projects using package managers will typically use ES modules to access Vue Rout
 <!--/email_off-->
 
 This will expose Vue Router via a global `VueRouter` object, e.g. `VueRouter.createRouter(...)`.
+
+<RuleKitLink />

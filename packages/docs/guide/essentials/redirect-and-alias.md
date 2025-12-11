@@ -109,3 +109,5 @@ const routes = [
 ```
 
 **Note about SEO**: when using aliases, make sure to [define canonical links](https://support.google.com/webmasters/answer/139066?hl=en).
+
+<RuleKitLink />

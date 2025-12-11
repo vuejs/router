@@ -9,8 +9,7 @@
 
 回到我们之前的示例：
 
-```vue
-<!-- User.vue -->
+```vue [User.vue]
 <template>
   <div>
     User {{ $route.params.id }}
@@ -143,3 +142,5 @@ URL `/search?q=vue` 将传递 `{query: 'vue'}` 作为 props 传给 `SearchUser` 
 ::: warning
 在这种情况下，**所有视图组件**都会接收到 `view-prop`。通常这并不是一个好主意，因为这意味着所有的视图组件都声明了一个 `view-prop` prop，但这未必需要。所以请尽可能使用上述的其他选项。
 :::
+
+<RuleKitLink />
