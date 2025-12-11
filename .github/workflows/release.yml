@@ -1,0 +1,133 @@
+name: Publish to npm
+
+# When releasing for the first time, you first need to publish manually a 0.0.0
+#
+# npm login
+# npm publish
+#
+# Add "repository": "posva/npm-posva", to package.json
+# Go to the settings page on npm: https://www.npmjs.com/package/@pinia/colada/access
+# Set the Trusted Published, add an environment if added on GitHub repository settings / Environments
+# Disallow tokens
+#
+# Update this file:
+# - use environment if set
+# - Adapt the if condition that prevents running on forks
+# - Update the MAP variable to match your packages
+
+on:
+  push:
+    tags:
+      - '**' # we filter manually otherwise it doesn't work well
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    # prevent runing on forks and with other tags
+    if: |
+      (startsWith(github.ref_name, 'v') ||
+      contains(github.ref_name, '@')) &&
+      github.repository == 'vuejs/router'
+
+    environment: release
+
+    permissions:
+      contents: write # for the GitHub Changelog
+      id-token: write # required for npm trusted publishing
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # needed for changelogithub
+
+      - name: Resolve tag info
+        id: resolve
+        run: |
+          echo "Resolving tag info…"
+
+          TAG="${GITHUB_REF#refs/tags/}"
+          echo "Current tag: $TAG"
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+
+          # ========= Determine package type =========
+          if [[ "$TAG" =~ ^v[0-9] ]]; then
+            # Main package
+            PKG_NAME="<main>"
+            PACKAGE_PATH="."
+            GIT_DESCRIBE_MATCH="v*"
+          else
+            # Scoped package: extract prefix before last @
+            PKG_NAME="${TAG%@*}"
+            GIT_DESCRIBE_MATCH="${PKG_NAME}@*"
+
+            # Package folder mapping
+            declare -A MAP=(
+              # ["@posva/mono-repo-test-plugin-a"]="plugins/test-a"
+              # ["@posva/mono-repo-test-package"]="test-package"
+            )
+
+            if [[ -z "${MAP[$PKG_NAME]}" ]]; then
+              echo "❌ Unknown package name '$PKG_NAME'" >&2
+              exit 1
+            fi
+
+            PACKAGE_PATH="${MAP[$PKG_NAME]}"
+          fi
+
+          echo "PKG_NAME=$PKG_NAME" >> $GITHUB_OUTPUT
+          echo "PACKAGE_PATH=$PACKAGE_PATH" >> $GITHUB_OUTPUT
+          echo "GIT_DESCRIBE_MATCH=$GIT_DESCRIBE_MATCH" >> $GITHUB_OUTPUT
+
+          # ========= Compute previous tag (skip current tag) =========
+          echo "Finding previous tag using: git describe --match '$GIT_DESCRIBE_MATCH'"
+
+          set +e
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 --match "$GIT_DESCRIBE_MATCH" "${TAG}^" 2>/dev/null)
+          STATUS=$?
+          set -e
+
+          if [[ $STATUS -eq 0 ]]; then
+            echo "Found previous tag: $PREVIOUS_TAG"
+          else
+            echo "No previous tag found. Using first commit."
+            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+
+          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+
+          echo "Resolved:"
+          echo "  TAG=$TAG"
+          echo "  PKG_NAME=$PKG_NAME"
+          echo "  PACKAGE_PATH=$PACKAGE_PATH"
+          echo "  PREVIOUS_TAG=$PREVIOUS_TAG"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: pnpm
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate GitHub Changelog
+        run: pnpx changelogithub --from "$FROM_TAG" --to "$TAG"
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.resolve.outputs.TAG }}
+          FROM_TAG: ${{ steps.resolve.FROM_TAG }}
+
+      - name: Build
+        run: pnpm build
+        working-directory: ${{ steps.resolve.outputs.PACKAGE_PATH }}
+
+      - name: Publish to NPM
+        run: pnpm publish --access public --no-git-checks
+        working-directory: ${{ steps.resolve.outputs.PACKAGE_PATH }}
