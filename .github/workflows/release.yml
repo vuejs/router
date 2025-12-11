@@ -117,6 +117,12 @@ jobs:
         shell: bash
         run: pnpm install --frozen-lockfile
 
+      - name: Copy root README for main package
+        if: ${{ steps.resolve.outputs.PKG_NAME == '<main>' && steps.resolve.outputs.PACKAGE_PATH != '.' }}
+        run: |
+          echo "Copying README.md to ${{ steps.resolve.outputs.PACKAGE_PATH }}"
+          cp README.md "${{ steps.resolve.outputs.PACKAGE_PATH }}/README.md"
+
       - name: Build
         run: pnpm build
         working-directory: ${{ steps.resolve.outputs.PACKAGE_PATH }}
