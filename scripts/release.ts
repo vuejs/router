@@ -73,11 +73,6 @@ const FILES_TO_COMMIT = [
   'packages/router/package.json',
   'packages/router/CHANGELOG.md',
 
-  'plugins/*/package.json',
-  'plugins/*/CHANGELOG.md',
-
-  'test-package/package.json',
-  'test-package/CHANGELOG.md',
   // 'packages/*/package.json',
   // 'packages/*/CHANGELOG.md',
 ]
