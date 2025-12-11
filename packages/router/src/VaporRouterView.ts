@@ -1,51 +1,37 @@
 import {
-  h,
   inject,
   provide,
-  defineComponent,
   PropType,
   ref,
   unref,
   ComponentPublicInstance,
   VNodeProps,
-  getCurrentInstance,
   computed,
   AllowedComponentProps,
   ComponentCustomProps,
   watch,
-  Slot,
   VNode,
-  Component,
+  createTemplateRefSetter,
+  createComponent,
+  createKeyedFragment,
+  defineVaporComponent,
+  type VaporComponent,
 } from 'vue'
-import type {
-  RouteLocationNormalized,
-  RouteLocationNormalizedLoaded,
-} from './typed-routes'
+import type { RouteLocationNormalizedLoaded } from './typed-routes'
 import type { RouteLocationMatched } from './types'
 import {
   matchedRouteKey,
   viewDepthKey,
   routerViewLocationKey,
 } from './injectionSymbols'
-import { assign, isArray, isBrowser } from './utils'
-import { warn } from './warning'
+import { assign } from './utils'
 import { isSameRouteRecord } from './location'
+import type { RouterViewProps, RouterViewDevtoolsContext } from './RouterView'
 
-export interface RouterViewProps {
-  name?: string
-  // allow looser type for user facing api
-  route?: RouteLocationNormalized
-}
+export type { RouterViewProps, RouterViewDevtoolsContext }
 
-export interface RouterViewDevtoolsContext extends Pick<
-  RouteLocationMatched,
-  'path' | 'name' | 'meta'
-> {
-  depth: number
-}
-
-export const RouterViewImpl = /*#__PURE__*/ defineComponent({
-  name: 'RouterView',
+export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
+  name: 'VaporRouterView',
   // #674 we manually inherit them
   inheritAttrs: false,
   props: {
@@ -56,13 +42,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     route: Object as PropType<RouteLocationNormalizedLoaded>,
   },
 
-  // Better compat for @vue/compat users
-  // https://github.com/vuejs/router/issues/1315
-  compatConfig: { MODE: 3 },
-
   setup(props, { attrs, slots }) {
-    __DEV__ && warnDeprecatedUsage()
-
     const injectedRoute = inject(routerViewLocationKey)!
     const routeToDisplay = computed<RouteLocationNormalizedLoaded>(
       () => props.route || injectedRoute.value
@@ -99,7 +79,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     // rendering, and the name
     watch(
       () => [viewRef.value, matchedRouteRef.value, props.name] as const,
-      ([instance, to, name], [oldInstance, from, oldName]) => {
+      ([instance, to, name], [oldInstance, from]) => {
         // copy reused instances
         if (to) {
           // this will update the instance for new instances as well as reused
@@ -137,89 +117,69 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       { flush: 'post' }
     )
 
-    return () => {
+    const ViewComponent = computed(() => {
+      const matchedRoute = matchedRouteRef.value
+      return matchedRoute && matchedRoute.components![props.name]
+    })
+
+    // props from route configuration
+    const routeProps = computed(() => {
       const route = routeToDisplay.value
-      // we need the value at the time we render because when we unmount, we
-      // navigated to a different location so the value is different
       const currentName = props.name
       const matchedRoute = matchedRouteRef.value
-      const ViewComponent =
-        matchedRoute && matchedRoute.components![currentName]
-
-      if (!ViewComponent) {
-        return normalizeSlot(slots.default, { Component: ViewComponent, route })
-      }
-
-      // props from route configuration
-      const routePropsOption = matchedRoute.props[currentName]
-      const routeProps = routePropsOption
+      const routePropsOption = matchedRoute && matchedRoute.props[currentName]
+      return routePropsOption
         ? routePropsOption === true
           ? route.params
           : typeof routePropsOption === 'function'
             ? routePropsOption(route)
             : routePropsOption
         : null
+    })
 
-      const onVnodeUnmounted: VNodeProps['onVnodeUnmounted'] = vnode => {
-        // remove the instance reference to prevent leak
-        if (vnode.component!.isUnmounted) {
-          matchedRoute.instances[currentName] = null
-        }
+    const setRef = createTemplateRefSetter()
+
+    const render = computed(() => {
+      if (!ViewComponent.value) {
+        return () =>
+          slots.default
+            ? slots.default({
+                Component: ViewComponent.value,
+                route: routeToDisplay.value,
+              })
+            : []
       }
 
-      const component = h(
-        ViewComponent,
-        assign({}, routeProps, attrs, {
-          onVnodeUnmounted,
-          ref: viewRef,
-        })
-      )
+      return () => {
+        const component = createComponent(
+          ViewComponent.value as VaporComponent,
+          {
+            $: [() => assign({}, routeProps.value, attrs)],
+          }
+        )
+        setRef(component, viewRef)
 
-      if (
-        (__DEV__ || __FEATURE_PROD_DEVTOOLS__) &&
-        isBrowser &&
-        component.ref
-      ) {
-        // TODO: can display if it's an alias, its props
-        const info: RouterViewDevtoolsContext = {
-          depth: depth.value,
-          name: matchedRoute.name,
-          path: matchedRoute.path,
-          meta: matchedRoute.meta,
-        }
-
-        const internalInstances = isArray(component.ref)
-          ? component.ref.map(r => r.i)
-          : [component.ref.i]
-
-        internalInstances.forEach(instance => {
-          // @ts-expect-error
-          instance.__vrv_devtools = info
-        })
+        return slots.default
+          ? slots.default({
+              Component: component,
+              route: routeToDisplay.value,
+            })
+          : component
       }
-
-      return (
-        // pass the vnode to the slot as a prop.
-        // h and <component :is="..."> both accept vnodes
-        normalizeSlot(slots.default, { Component: component, route }) ||
-        component
-      )
-    }
+    })
+    return createKeyedFragment(
+      () => routeToDisplay.value,
+      () => render.value()
+    )
   },
 })
-
-function normalizeSlot(slot: Slot | undefined, data: any) {
-  if (!slot) return null
-  const slotContent = slot(data)
-  return slotContent.length === 1 ? slotContent[0] : slotContent
-}
 
 // export the public type for h/tsx inference
 // also to avoid inline import() in generated d.ts files
 /**
  * Component to display the current route the user is at.
  */
-export const RouterView = RouterViewImpl as unknown as {
+export const VaporRouterView = VaporRouterViewImpl as unknown as {
   new (): {
     $props: AllowedComponentProps &
       ComponentCustomProps &
@@ -235,31 +195,5 @@ export const RouterView = RouterViewImpl as unknown as {
         route: RouteLocationNormalizedLoaded
       }) => VNode[]
     }
-  }
-}
-
-// warn against deprecated usage with <transition> & <keep-alive>
-// due to functional component being no longer eager in Vue 3
-function warnDeprecatedUsage() {
-  const instance = getCurrentInstance()!
-  const parentName = instance.parent && instance.parent.type.name
-  const parentSubTreeType =
-    instance.parent && instance.parent.subTree && instance.parent.subTree.type
-  if (
-    parentName &&
-    (parentName === 'KeepAlive' || parentName.includes('Transition')) &&
-    typeof parentSubTreeType === 'object' &&
-    (parentSubTreeType as Component).name === 'RouterView'
-  ) {
-    const comp = parentName === 'KeepAlive' ? 'keep-alive' : 'transition'
-    warn(
-      `<router-view> can no longer be used directly inside <transition> or <keep-alive>.\n` +
-        `Use slot props instead:\n\n` +
-        `<router-view v-slot="{ Component }">\n` +
-        `  <${comp}>\n` +
-        `    <component :is="Component" />\n` +
-        `  </${comp}>\n` +
-        `</router-view>`
-    )
   }
 }

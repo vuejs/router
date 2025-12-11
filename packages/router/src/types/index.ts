@@ -129,9 +129,7 @@ export interface RouteLocationOptions {
  * @internal
  */
 export interface RouteLocationNamedRaw
-  extends RouteQueryAndHash,
-    LocationAsRelativeRaw,
-    RouteLocationOptions {}
+  extends RouteQueryAndHash, LocationAsRelativeRaw, RouteLocationOptions {}
 
 /**
  * Route Location that can infer the possible paths.
@@ -139,9 +137,7 @@ export interface RouteLocationNamedRaw
  * @internal
  */
 export interface RouteLocationPathRaw
-  extends RouteQueryAndHash,
-    MatcherLocationAsPath,
-    RouteLocationOptions {}
+  extends RouteQueryAndHash, MatcherLocationAsPath, RouteLocationOptions {}
 
 // TODO: rename in next major to RouteRecordMatched?
 export interface RouteLocationMatched extends RouteRecordNormalized {
@@ -154,8 +150,10 @@ export interface RouteLocationMatched extends RouteRecordNormalized {
  *
  * @internal
  */
-export interface _RouteLocationBase
-  extends Pick<MatcherLocation, 'name' | 'path' | 'params' | 'meta'> {
+export interface _RouteLocationBase extends Pick<
+  MatcherLocation,
+  'name' | 'path' | 'params' | 'meta'
+> {
   /**
    * The whole location including the `search` and `hash`. This string is
    * percentage encoded.
