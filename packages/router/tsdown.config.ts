@@ -1,4 +1,4 @@
-import { type Options } from 'tsdown'
+import { type InlineConfig } from 'tsdown'
 import pkg from './package.json' with { type: 'json' }
 import fs from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
@@ -50,7 +50,7 @@ export * from './vue-router.mjs'
 `.trimStart()
     )
   },
-} satisfies Options
+} satisfies InlineConfig
 
 const esm = {
   ...commonOptions,
@@ -61,7 +61,7 @@ const esm = {
   platform: 'neutral',
   dts: true,
   // sourcemap: true,
-} satisfies Options
+} satisfies InlineConfig
 
 const esmBrowser = {
   ...commonOptions,
@@ -75,7 +75,7 @@ const esmBrowser = {
     __DEV__: 'true',
     __FEATURE_PROD_DEVTOOLS__: 'true',
   },
-} satisfies Options
+} satisfies InlineConfig
 
 const esmBrowserProd = {
   ...esmBrowser,
@@ -90,7 +90,7 @@ const esmBrowserProd = {
     __DEV__: 'false',
     __FEATURE_PROD_DEVTOOLS__: 'false',
   },
-} satisfies Options
+} satisfies InlineConfig
 
 const cjs = {
   ...commonOptions,
@@ -106,7 +106,7 @@ const cjs = {
     __BROWSER__: 'false',
     __FEATURE_PROD_DEVTOOLS__: `false`,
   },
-} satisfies Options
+} satisfies InlineConfig
 
 const cjsProd = {
   ...cjs,
@@ -115,7 +115,7 @@ const cjsProd = {
     ...cjs.outputOptions,
     file: 'dist/vue-router.prod.cjs',
   },
-} satisfies Options
+} satisfies InlineConfig
 
 const iife = {
   ...commonOptions,
@@ -132,7 +132,7 @@ const iife = {
     __DEV__: 'true',
     __FEATURE_PROD_DEVTOOLS__: `true`,
   },
-} satisfies Options
+} satisfies InlineConfig
 
 const iifeProd = {
   ...iife,
@@ -147,7 +147,7 @@ const iifeProd = {
     __DEV__: 'false',
     __FEATURE_PROD_DEVTOOLS__: `false`,
   },
-} satisfies Options
+} satisfies InlineConfig
 
 export default [
   //
