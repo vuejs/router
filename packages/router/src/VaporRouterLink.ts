@@ -8,8 +8,8 @@ import {
 import { RouteLocationRaw } from './typed-routes'
 import {
   computed,
-  createComponentWithFallback,
-  createDynamicComponent,
+  createKeyedFragment,
+  createPlainElement,
   defineVaporComponent,
   inject,
   PropType,
@@ -18,8 +18,6 @@ import {
 
 export const VaporRouterLinkImpl = /*#__PURE__*/ defineVaporComponent({
   name: 'RouterLink',
-  // @ts-ignore
-  compatConfig: { MODE: 3 },
   props: {
     to: {
       type: [String, Object] as PropType<RouteLocationRaw>,
@@ -36,8 +34,6 @@ export const VaporRouterLinkImpl = /*#__PURE__*/ defineVaporComponent({
     },
     viewTransition: Boolean,
   },
-
-  useLink,
 
   setup(props, { slots, attrs }) {
     const link = reactive(useLink(props))
@@ -61,29 +57,35 @@ export const VaporRouterLinkImpl = /*#__PURE__*/ defineVaporComponent({
       )]: link.isExactActive,
     }))
 
-    return createDynamicComponent(() => {
-      const children = slots.default && slots.default(link)
-      return props.custom
-        ? () => children
-        : () =>
-            createComponentWithFallback(
-              'a',
-              {
-                'aria-current': () =>
-                  link.isExactActive ? props.ariaCurrentValue : null,
-                href: () => link.href,
-                // this would override user added attrs but Vue will still add
-                // the listener, so we end up triggering both
-                onClick: () => link.navigate,
-                class: () => elClass.value,
-                $: [() => attrs],
-              },
-              {
-                default: () => children,
-              }
-            )
+    const render = computed(() => {
+      if (props.custom && slots.default) {
+        return () => slots.default(link)
+      }
+      return () =>
+        createPlainElement(
+          'a',
+          {
+            'aria-current': () =>
+              link.isExactActive ? props.ariaCurrentValue : null,
+            href: () => link.href,
+            // this would override user added attrs but Vue will still add
+            // the listener, so we end up triggering both
+            onClick: () => link.navigate,
+            class: () => elClass.value,
+            $: [() => attrs],
+          },
+          slots
+        )
     })
+
+    return createKeyedFragment(
+      () => render.value,
+      () => render.value()
+    )
   },
 })
+
+// @ts-ignore
+VaporRouterLinkImpl.useLink = useLink
 
 export const VaporRouterLink: _RouterLinkI = VaporRouterLinkImpl as any

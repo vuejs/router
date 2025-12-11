@@ -149,6 +149,6 @@
     "tsdown": "^0.15.7",
     "tsup": "^8.5.0",
     "vite": "^7.1.10",
-    "vue": "~3.6.0-alpha.6"
+    "vue": "https://pkg.pr.new/vue@918c7ad"
   }
 }
