@@ -1,3 +1,15 @@
+## [4.6.4](https://github.com/vuejs/router/compare/v4.6.3...v4.6.4) (2025-12-11)
+
+### Bug Fixes
+
+- **experimental:** isActive with custom params ([edca66c](https://github.com/vuejs/router/commit/edca66c6da5650aaa98f47ff9f4c125bbb05bb7f))
+- make the build output compatible with v4.5 ([#2591](https://github.com/vuejs/router/issues/2591)) ([42bc246](https://github.com/vuejs/router/commit/42bc246f74d2c0720ebe444d35fc4977b4c4fc6c))
+
+### Features
+
+- **experimental:** basic alias ([ded2d57](https://github.com/vuejs/router/commit/ded2d578954752e5d1fb3f0ed0fc028bb7bd0786))
+- **experimental:** handle redirect types ([92efba7](https://github.com/vuejs/router/commit/92efba791e263e9bda23eb6f9e97c44b4e6ddb57))
+
 ## [4.6.3](https://github.com/vuejs/router/compare/v4.6.2...v4.6.3) (2025-10-16)
 
 ### Bug Fixes
