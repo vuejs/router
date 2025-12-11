@@ -16,8 +16,8 @@ import {
   reactive,
 } from 'vue'
 
-export const VaporRouterLinkImpl = /*#__PURE__*/ defineVaporComponent({
-  name: 'RouterLink',
+export const VaporRouterLinkImpl = defineVaporComponent({
+  name: 'VaporRouterLink',
   props: {
     to: {
       type: [String, Object] as PropType<RouteLocationRaw>,
