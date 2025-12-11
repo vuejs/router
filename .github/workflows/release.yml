@@ -117,14 +117,6 @@ jobs:
         shell: bash
         run: pnpm install --frozen-lockfile
 
-      - name: Generate GitHub Changelog
-        run: pnpx changelogithub --from "$FROM_TAG" --to "$TAG"
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ steps.resolve.outputs.TAG }}
-          FROM_TAG: ${{ steps.resolve.FROM_TAG }}
-
       - name: Build
         run: pnpm build
         working-directory: ${{ steps.resolve.outputs.PACKAGE_PATH }}
@@ -132,3 +124,11 @@ jobs:
       - name: Publish to NPM
         run: pnpm publish --access public --no-git-checks
         working-directory: ${{ steps.resolve.outputs.PACKAGE_PATH }}
+
+      - name: Generate GitHub Changelog
+        run: pnpx changelogithub --from "$FROM_TAG" --to "$TAG"
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.resolve.outputs.TAG }}
+          FROM_TAG: ${{ steps.resolve.FROM_TAG }}
