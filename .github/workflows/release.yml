@@ -13,6 +13,7 @@ name: Publish to npm
 # Update this file:
 # - use environment if set
 # - Adapt the if condition that prevents running on forks
+# - update PACKAGE_PATH="." if package is not at root
 # - Update the MAP variable to match your packages
 
 on:
@@ -54,7 +55,7 @@ jobs:
           if [[ "$TAG" =~ ^v[0-9] ]]; then
             # Main package
             PKG_NAME="<main>"
-            PACKAGE_PATH="."
+            PACKAGE_PATH="packages/router"
             GIT_DESCRIBE_MATCH="v*"
           else
             # Scoped package: extract prefix before last @
