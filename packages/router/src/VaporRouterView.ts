@@ -13,10 +13,9 @@ import {
   VNode,
   createTemplateRefSetter,
   createComponent,
-  createDynamicComponent,
+  createKeyedFragment,
   defineVaporComponent,
   type VaporComponent,
-  type VaporSlot,
 } from 'vue'
 import type { RouteLocationNormalizedLoaded } from './typed-routes'
 import type { RouteLocationMatched } from './types'
@@ -42,11 +41,6 @@ export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
     },
     route: Object as PropType<RouteLocationNormalizedLoaded>,
   },
-
-  // Better compat for @vue/compat users
-  // https://github.com/vuejs/router/issues/1315
-  // @ts-ignore
-  compatConfig: { MODE: 3 },
 
   setup(props, { attrs, slots }) {
     const injectedRoute = inject(routerViewLocationKey)!
@@ -145,13 +139,15 @@ export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
 
     const setRef = createTemplateRefSetter()
 
-    return createDynamicComponent(() => {
+    const render = computed(() => {
       if (!ViewComponent.value) {
         return () =>
-          normalizeSlot(slots.default, {
-            Component: ViewComponent.value,
-            route: routeToDisplay.value,
-          })
+          slots.default
+            ? slots.default({
+                Component: ViewComponent.value,
+                route: routeToDisplay.value,
+              })
+            : []
       }
 
       return () => {
@@ -163,21 +159,20 @@ export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
         )
         setRef(component, viewRef)
 
-        return (
-          normalizeSlot(slots.default, {
-            Component: component,
-            route: routeToDisplay.value,
-          }) || component
-        )
+        return slots.default
+          ? slots.default({
+              Component: component,
+              route: routeToDisplay.value,
+            })
+          : component
       }
     })
+    return createKeyedFragment(
+      () => routeToDisplay.value,
+      () => render.value()
+    )
   },
 })
-
-function normalizeSlot(slot: VaporSlot | undefined, data: any) {
-  if (!slot) return null
-  return slot(data)
-}
 
 // export the public type for h/tsx inference
 // also to avoid inline import() in generated d.ts files
