@@ -31,7 +31,7 @@ import type { RouterViewProps, RouterViewDevtoolsContext } from './RouterView'
 export type { RouterViewProps, RouterViewDevtoolsContext }
 
 export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
-  name: 'RouterView',
+  name: 'VaporRouterView',
   // #674 we manually inherit them
   inheritAttrs: false,
   props: {
