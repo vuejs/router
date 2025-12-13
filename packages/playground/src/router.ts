@@ -15,6 +15,9 @@ import ComponentWithData from './views/ComponentWithData.vue'
 import { globalState } from './store'
 import { scrollWaiter } from './scrollWaiter'
 import RepeatedParams from './views/RepeatedParams.vue'
+import RerenderCheck from './views/RerenderCheck.vue'
+import { h } from 'vue'
+
 let removeRoute: (() => void) | undefined
 
 export const routerHistory = createWebHistory()
@@ -157,6 +160,15 @@ export const router = createRouter({
         { path: '', component },
         { path: 'dashboard', component },
         { path: 'settings', component },
+      ],
+    },
+
+    {
+      path: '/rerender',
+      component: RerenderCheck,
+      children: [
+        { path: 'a', component: { render: () => h('div', 'Child A') } },
+        { path: 'b', component: { render: () => h('div', 'Child B') } },
       ],
     },
   ],
