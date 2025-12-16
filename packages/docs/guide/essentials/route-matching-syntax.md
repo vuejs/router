@@ -46,7 +46,7 @@ Since the closing parentheses `)` is used to mark the end of a custom regex, you
 ```js
 const routes = [
   // note the escaped closing parentheses of the group within the regexp
-  { path: '/:custom(somethnig-(nested|other\\))' },
+  { path: '/:custom(something-(nested|other\\))' },
 ]
 ```
 
