@@ -2,6 +2,13 @@ import { defineConfig } from 'vitest/config'
 import Vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
+  // FIXME: shouldn't be needed
+  resolve: {
+    alias: {
+      // cjs does not export vapor runtime, use esm instead.
+      vue: 'vue/dist/vue.esm-bundler.js',
+    },
+  },
   define: {
     __DEV__: true,
     __TEST__: true,
