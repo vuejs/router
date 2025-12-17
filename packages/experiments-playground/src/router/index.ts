@@ -86,13 +86,9 @@ const r_home = normalizeRouteRecord({
   name: 'home',
   path: new MatcherPatternPathStatic('/'),
   query: [
-    new MatcherPatternQueryParam(
-      'pageArray',
-      'p',
-      'array',
-      PARAM_PARSER_INT,
-      [1]
-    ),
+    new MatcherPatternQueryParam('pageArray', 'p', 'array', PARAM_PARSER_INT, [
+      1,
+    ]),
     new MatcherPatternQueryParam('page', 'p', 'value', PARAM_PARSER_INT, 1),
     QUERY_PATTERN_MATCHER,
   ],

@@ -78,10 +78,8 @@ export interface NavigationFailure extends Error {
  *
  * @internal
  */
-export interface NavigationRedirectError extends Omit<
-  NavigationFailure,
-  'to' | 'type'
-> {
+export interface NavigationRedirectError
+  extends Omit<NavigationFailure, 'to' | 'type'> {
   type: ErrorTypes.NAVIGATION_GUARD_REDIRECT
   to: RouteLocationRaw
 }
