@@ -8,7 +8,7 @@ import {
 import { RouteLocationRaw } from './typed-routes'
 import {
   computed,
-  createKeyedFragment,
+  createDynamicComponent,
   createPlainElement,
   defineVaporComponent,
   inject,
@@ -57,31 +57,25 @@ export const VaporRouterLinkImpl = defineVaporComponent({
       )]: link.isExactActive,
     }))
 
-    const render = computed(() => {
+    return createDynamicComponent(() => {
       if (props.custom && slots.default) {
-        return () => slots.default(link)
+        return slots.default(link)
       }
-      return () =>
-        createPlainElement(
-          'a',
-          {
-            'aria-current': () =>
-              link.isExactActive ? props.ariaCurrentValue : null,
-            href: () => link.href,
-            // this would override user added attrs but Vue will still add
-            // the listener, so we end up triggering both
-            onClick: () => link.navigate,
-            class: () => elClass.value,
-            $: [() => attrs],
-          },
-          slots
-        )
+      return createPlainElement(
+        'a',
+        {
+          'aria-current': () =>
+            link.isExactActive ? props.ariaCurrentValue : null,
+          href: () => link.href,
+          // this would override user added attrs but Vue will still add
+          // the listener, so we end up triggering both
+          onClick: () => link.navigate,
+          class: () => elClass.value,
+          $: [() => attrs],
+        },
+        slots
+      )
     })
-
-    return createKeyedFragment(
-      () => render.value,
-      () => render.value()
-    )
   },
 })
 
