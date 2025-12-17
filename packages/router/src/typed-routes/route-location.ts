@@ -16,7 +16,8 @@ import type { RouteRecordNameGeneric } from './route-records'
  * Generic version of {@link RouteLocation}. It is used when no {@link RouteMap} is provided.
  */
 export interface RouteLocationGeneric
-  extends _RouteLocationBase, RouteLocationOptions {
+  extends _RouteLocationBase,
+    RouteLocationOptions {
   /**
    * Array of {@link RouteRecord} containing components as they were
    * passed when adding records. It can also contain redirect records. This
@@ -88,7 +89,8 @@ export type RouteLocationNormalizedTypedList<
 /**
  * Generic version of {@link RouteLocationNormalizedLoaded} that is used when no {@link RouteMap} is provided.
  */
-export interface RouteLocationNormalizedLoadedGeneric extends RouteLocationNormalizedGeneric {
+export interface RouteLocationNormalizedLoadedGeneric
+  extends RouteLocationNormalizedGeneric {
   /**
    * Array of {@link RouteLocationMatched} containing only plain components (any
    * lazy-loaded components have been loaded and were replaced inside the
@@ -122,7 +124,8 @@ export type RouteLocationNormalizedLoadedTypedList<
  * Generic version of {@link RouteLocationAsRelative}. It is used when no {@link RouteMap} is provided.
  */
 export interface RouteLocationAsRelativeGeneric
-  extends RouteQueryAndHash, RouteLocationOptions {
+  extends RouteQueryAndHash,
+    RouteLocationOptions {
   name?: RouteRecordNameGeneric
   params?: RouteParamsRawGeneric
   /**
@@ -156,7 +159,8 @@ export type RouteLocationAsRelativeTypedList<
  * Generic version of {@link RouteLocationAsPath}. It is used when no {@link RouteMap} is provided.
  */
 export interface RouteLocationAsPathGeneric
-  extends RouteQueryAndHash, RouteLocationOptions {
+  extends RouteQueryAndHash,
+    RouteLocationOptions {
   /**
    * Percentage encoded pathname section of the URL.
    */

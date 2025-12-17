@@ -37,10 +37,8 @@ export interface RouterViewProps {
   route?: RouteLocationNormalized
 }
 
-export interface RouterViewDevtoolsContext extends Pick<
-  RouteLocationMatched,
-  'path' | 'name' | 'meta'
-> {
+export interface RouterViewDevtoolsContext
+  extends Pick<RouteLocationMatched, 'path' | 'name' | 'meta'> {
   depth: number
 }
 

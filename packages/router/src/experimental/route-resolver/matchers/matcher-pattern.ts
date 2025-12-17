@@ -66,7 +66,9 @@ export interface MatcherPatternPath<
  * matcher.build() // '/team'
  * ```
  */
-export class MatcherPatternPathStatic implements MatcherPatternPath<EmptyParams> {
+export class MatcherPatternPathStatic
+  implements MatcherPatternPath<EmptyParams>
+{
   /**
    * lowercase version of the path to match against.
    * This is used to make the matching case insensitive.
@@ -153,12 +155,13 @@ const TRAILING_SLASHES_RE = /\/*$/
 /**
  * Handles the `path` part of a URL with dynamic parameters.
  */
-export class MatcherPatternPathDynamic<
-  TParamsOptions,
-> implements MatcherPatternPath<
-  ExtractParamTypeFromOptions<TParamsOptions>,
-  ExtractLocationParamTypeFromOptions<TParamsOptions>
-> {
+export class MatcherPatternPathDynamic<TParamsOptions>
+  implements
+    MatcherPatternPath<
+      ExtractParamTypeFromOptions<TParamsOptions>,
+      ExtractLocationParamTypeFromOptions<TParamsOptions>
+    >
+{
   /**
    * Cached keys of the {@link params} object.
    */
