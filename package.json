@@ -4,13 +4,13 @@
   "packageManager": "pnpm@10.18.2",
   "type": "module",
   "engines": {
-    "node": ">=20.9.0"
+    "node": ">=22.18.0"
   },
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "release": "node scripts/release.mjs",
+    "release": "node scripts/release.ts",
     "size": "node scripts/check-size.mjs",
     "build": "pnpm run -r build",
     "docs": "pnpm run --filter ./packages/docs -r docs",
@@ -37,11 +37,10 @@
     "@vitest/ui": "^3.2.4",
     "brotli": "^1.3.3",
     "chalk": "^5.6.2",
-    "conventional-changelog-cli": "^5.0.0",
+    "conventional-changelog": "^7.1.1",
+    "conventional-changelog-angular": "^8.1.0",
     "execa": "^9.6.0",
     "lint-staged": "^16.2.4",
-    "minimist": "^1.2.8",
-    "p-series": "^3.0.0",
     "playwright": "^1.56.0",
     "prettier": "^3.6.2",
     "semver": "^7.7.3",
