@@ -192,7 +192,8 @@ export interface ResolverLocationAsPathRelative {
  * resolver.resolve({ path: '/team/123' })
  * ```
  */
-export interface ResolverLocationAsPathAbsolute extends ResolverLocationAsPathRelative {
+export interface ResolverLocationAsPathAbsolute
+  extends ResolverLocationAsPathRelative {
   path: `/${string}`
 }
 
