@@ -9,10 +9,6 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build"
   },
-  "dependencies": {
-    "vue": "3.6.0-beta.2",
-    "vue-router": "workspace:*"
-  },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.5",
     "@types/node": "^24.10.4",
@@ -21,6 +17,8 @@
     "typescript": "~5.9.3",
     "vite": "^7.3.0",
     "vite-plugin-vue-devtools": "^8.0.5",
+    "vue": "^3.6.0-beta.5",
+    "vue-router": "workspace:*",
     "vue-tsc": "^3.2.4"
   }
 }
