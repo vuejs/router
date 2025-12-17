@@ -3,7 +3,10 @@ import Vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   resolve: {
-    alias: [],
+    alias: {
+      // cjs does not export vapor runtime, use esm instead.
+      vue: 'vue/dist/vue.esm-bundler.js',
+    },
   },
   define: {
     __DEV__: true,
