@@ -13,9 +13,9 @@ import {
   VNode,
   createTemplateRefSetter,
   createComponent,
-  createKeyedFragment,
   defineVaporComponent,
   type VaporComponent,
+  createDynamicComponent,
 } from 'vue'
 import type { RouteLocationNormalizedLoaded } from './typed-routes'
 import type { RouteLocationMatched } from './types'
@@ -139,38 +139,21 @@ export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
 
     const setRef = createTemplateRefSetter()
 
-    const render = computed(() => {
-      if (!ViewComponent.value) {
-        return () =>
-          slots.default
-            ? slots.default({
-                Component: ViewComponent.value,
-                route: routeToDisplay.value,
-              })
-            : []
-      }
+    return createDynamicComponent(() => {
+      if (!ViewComponent.value) return []
 
-      return () => {
-        const component = createComponent(
-          ViewComponent.value as VaporComponent,
-          {
-            $: [() => assign({}, routeProps.value, attrs)],
-          }
-        )
-        setRef(component, viewRef)
+      const component = createComponent(ViewComponent.value as VaporComponent, {
+        $: [() => assign({}, routeProps.value, attrs)],
+      })
+      setRef(component, viewRef)
 
-        return slots.default
-          ? slots.default({
-              Component: component,
-              route: routeToDisplay.value,
-            })
-          : component
-      }
+      return slots.default
+        ? slots.default({
+            Component: component,
+            route: routeToDisplay.value,
+          })
+        : component
     })
-    return createKeyedFragment(
-      () => routeToDisplay.value,
-      () => render.value()
-    )
   },
 })
 
