@@ -184,7 +184,8 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
 /**
  * Internal type for common properties among all kind of {@link RouteRecordRaw}.
  */
-export interface EXPERIMENTAL_RouteRecord_Base extends EXPERIMENTAL_ResolverRecord_Base {
+export interface EXPERIMENTAL_RouteRecord_Base
+  extends EXPERIMENTAL_ResolverRecord_Base {
   /**
    * Where to redirect if the route is directly matched. The redirection happens
    * before any navigation guard and triggers a new navigation with the new
@@ -232,8 +233,7 @@ export interface EXPERIMENTAL_RouteRecord_Base extends EXPERIMENTAL_ResolverReco
 
 export interface EXPERIMENTAL_RouteRecord_Redirect
   // preserve the values from the type EXPERIMENTAL_ResolverRecord_Matchable
-  extends
-    Omit<EXPERIMENTAL_RouteRecord_Base, 'name' | 'path'>,
+  extends Omit<EXPERIMENTAL_RouteRecord_Base, 'name' | 'path'>,
     EXPERIMENTAL_ResolverRecord_Matchable {
   components?: Record<string, RawRouteComponent>
 
@@ -243,8 +243,7 @@ export interface EXPERIMENTAL_RouteRecord_Redirect
 }
 
 export interface EXPERIMENTAL_RouteRecord_Group
-  extends
-    Omit<
+  extends Omit<
       EXPERIMENTAL_RouteRecord_Base,
       // preserve the values from the type EXPERIMENTAL_ResolverRecord_Group
       'name' | 'path' | 'query' | 'hash'
@@ -257,8 +256,7 @@ export interface EXPERIMENTAL_RouteRecord_Group
 
 export interface EXPERIMENTAL_RouteRecord_Components
   // preserve the values from the type EXPERIMENTAL_ResolverRecord_Matchable
-  extends
-    Omit<EXPERIMENTAL_RouteRecord_Base, 'name' | 'path'>,
+  extends Omit<EXPERIMENTAL_RouteRecord_Base, 'name' | 'path'>,
     EXPERIMENTAL_ResolverRecord_Matchable {
   components: Record<string, RawRouteComponent>
 
@@ -309,22 +307,19 @@ export interface EXPERIMENTAL_RouteRecordNormalized_Base {
 }
 
 export interface EXPERIMENTAL_RouteRecordNormalized_Group
-  extends
-    EXPERIMENTAL_RouteRecordNormalized_Base,
+  extends EXPERIMENTAL_RouteRecordNormalized_Base,
     EXPERIMENTAL_RouteRecord_Group {
   meta: RouteMeta
 }
 
 export interface EXPERIMENTAL_RouteRecordNormalized_Redirect
-  extends
-    EXPERIMENTAL_RouteRecordNormalized_Base,
+  extends EXPERIMENTAL_RouteRecordNormalized_Base,
     EXPERIMENTAL_RouteRecord_Redirect {
   meta: RouteMeta
 }
 
 export interface EXPERIMENTAL_RouteRecordNormalized_Components
-  extends
-    EXPERIMENTAL_RouteRecordNormalized_Base,
+  extends EXPERIMENTAL_RouteRecordNormalized_Base,
     EXPERIMENTAL_RouteRecord_Components {
   meta: RouteMeta
 }
@@ -407,7 +402,8 @@ export function mergeRouteRecord(
  * Options to initialize an experimental {@link EXPERIMENTAL_Router} instance.
  * @experimental
  */
-export interface EXPERIMENTAL_RouterOptions extends EXPERIMENTAL_RouterOptions_Base {
+export interface EXPERIMENTAL_RouterOptions
+  extends EXPERIMENTAL_RouterOptions_Base {
   /**
    * Matcher to use to resolve routes.
    *
