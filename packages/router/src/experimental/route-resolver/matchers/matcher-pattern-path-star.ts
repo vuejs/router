@@ -15,9 +15,12 @@ import type { MatcherPatternPath } from './matcher-pattern'
  * matcher.build({ pathMatch: '/123' }) // '/team/123'
  * ```
  */
-export class MatcherPatternPathStar implements MatcherPatternPath<{
-  pathMatch: string
-}> {
+export class MatcherPatternPathStar
+  implements
+    MatcherPatternPath<{
+      pathMatch: string
+    }>
+{
   private path: string
   /**
    * lowercase version of the path to match against.

@@ -47,10 +47,11 @@ export function nextNavigation(router: Router | EXPERIMENTAL_Router) {
   })
 }
 
-export interface RouteRecordViewLoose extends Pick<
-  RouteRecordMultipleViews,
-  'path' | 'name' | 'meta' | 'beforeEnter'
-> {
+export interface RouteRecordViewLoose
+  extends Pick<
+    RouteRecordMultipleViews,
+    'path' | 'name' | 'meta' | 'beforeEnter'
+  > {
   leaveGuards?: any
   updateGuards?: any
   instances: Record<string, any>
