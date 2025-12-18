@@ -139,21 +139,27 @@ export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
 
     const setRef = createTemplateRefSetter()
 
-    return createDynamicComponent(() => {
+    const initComponent = () => {
       if (!ViewComponent.value) return []
-
-      const component = createComponent(ViewComponent.value as VaporComponent, {
+      const instance = createComponent(ViewComponent.value as VaporComponent, {
         $: [() => assign({}, routeProps.value, attrs)],
       })
-      setRef(component, viewRef)
+      setRef(instance, viewRef)
+      return instance
+    }
 
-      return slots.default
-        ? slots.default({
-            Component: component,
-            route: routeToDisplay.value,
-          })
-        : component
-    })
+    if (slots.default) {
+      return slots.default({
+        // lazy initialization via getter (created on demand)
+        get Component() {
+          return initComponent()
+        },
+        get route() {
+          return routeToDisplay.value
+        },
+      })
+    }
+    return createDynamicComponent(initComponent)
   },
 })
 
