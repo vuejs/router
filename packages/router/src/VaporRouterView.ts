@@ -150,7 +150,7 @@ export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
 
     if (slots.default) {
       return slots.default({
-        // lazy initialization via getter (created on demand)
+        // lazy initialization via getter (created on demand) for KeepAlive
         get Component() {
           return initComponent()
         },
