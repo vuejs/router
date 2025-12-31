@@ -520,12 +520,13 @@ export function checkChildMissingNameWithEmptyPath(
     parent &&
     parent.record.name &&
     !mainNormalizedRecord.name &&
-    !mainNormalizedRecord.path
+    !mainNormalizedRecord.path &&
+    mainNormalizedRecord.children.length === 0
   ) {
     warn(
       `The route named "${String(
         parent.record.name
-      )}" has a child without a name and an empty path. Using that name won't render the empty path child so you probably want to move the name to the child instead. If this is intentional, add a name to the child route to remove the warning.`
+      )}" has a child without a name, an empty path, and no children. This is probably a mistake: using that name won't render the empty path child so you probably want to move the name to the child instead. If this is intentional, add a name to the child route to silence the warning.`
     )
   }
 }
