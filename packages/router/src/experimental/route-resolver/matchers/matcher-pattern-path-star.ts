@@ -16,7 +16,10 @@ import { MatcherPatternPath } from './matcher-pattern'
  * ```
  */
 export class MatcherPatternPathStar
-  implements MatcherPatternPath<{ pathMatch: string }>
+  implements
+    MatcherPatternPath<{
+      pathMatch: string
+    }>
 {
   private path: string
   constructor(path: string = '') {
