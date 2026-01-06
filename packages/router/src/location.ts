@@ -219,7 +219,8 @@ function isSameRouteLocationParamsValue(
     ? isEquivalentArray(a, b)
     : isArray(b)
       ? isEquivalentArray(b, a)
-      : a?.valueOf() === b?.valueOf()
+      : // TODO: update to ?.valueOf() when we target ES2020
+        (a && a.valueOf()) === (b && b.valueOf())
 }
 
 /**
