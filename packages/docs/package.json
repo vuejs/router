@@ -13,10 +13,10 @@
     "docs:preview": "vitepress preview ."
   },
   "dependencies": {
-    "simple-git": "^3.28.0",
+    "simple-git": "^3.30.0",
     "typedoc-vitepress-theme": "^1.1.2",
     "vitepress": "1.6.4",
-    "vitepress-plugin-group-icons": "^1.6.4",
+    "vitepress-plugin-group-icons": "^1.6.5",
     "vitepress-translation-helper": "^0.2.2",
     "vue-router": "workspace:*"
   }
