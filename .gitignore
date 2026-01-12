@@ -19,3 +19,4 @@ packages/*/LICENSE
 tracing_output
 tsconfig.vitest-temp.json
 .claude/settings.local.json
+.osgrep
