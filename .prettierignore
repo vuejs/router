@@ -3,3 +3,5 @@ dist
 coverage
 tests_output
 packages/docs/.vitepress/cache
+routes.d.ts
+packages/router/e2e/
