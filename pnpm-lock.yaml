@@ -176,6 +176,9 @@ importers:
       '@vue/tsconfig':
         specifier: ^0.8.1
         version: 0.8.1(typescript@5.9.3)(vue@3.6.0-beta.2(typescript@5.9.3))
+      auto-scaffold:
+        specifier: ^0.2.0
+        version: 0.2.0(esbuild@0.27.2)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(terser@5.43.1)(yaml@2.8.2))
       vite:
         specifier: ^7.3.0
         version: 7.3.0(@types/node@24.10.4)(jiti@2.6.1)(terser@5.43.1)(yaml@2.8.2)
@@ -342,9 +345,6 @@ importers:
       vue:
         specifier: 3.6.0-beta.2
         version: 3.6.0-beta.2(typescript@5.9.3)
-      vue-router-mock:
-        specifier: ^2.0.0
-        version: 2.0.0(vue-router@4.6.4(vue@3.6.0-beta.2(typescript@5.9.3)))(vue@3.6.0-beta.2(typescript@5.9.3))
 
 packages:
 
@@ -1999,6 +1999,32 @@ packages:
 
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+
+  auto-scaffold@0.2.0:
+    resolution: {integrity: sha512-zj5BaZX/ocifVrifpIzmdOpBu7ujdwPYiS99/mIL+ppH7F/gNeD3aDv1x5YmS+EETq6G1dfTfyYOzk1zB+TsmA==}
+    peerDependencies:
+      '@farmfe/core': '>=1'
+      '@nuxt/kit': ^3
+      '@nuxt/schema': ^3
+      esbuild: '*'
+      rollup: ^3
+      vite: ^7.3.0
+      webpack: ^4 || ^5
+    peerDependenciesMeta:
+      '@farmfe/core':
+        optional: true
+      '@nuxt/kit':
+        optional: true
+      '@nuxt/schema':
+        optional: true
+      esbuild:
+        optional: true
+      rollup:
+        optional: true
+      vite:
+        optional: true
+      webpack:
+        optional: true
 
   available-typed-arrays@1.0.7:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
@@ -4608,17 +4634,6 @@ packages:
   vue-component-type-helpers@2.0.21:
     resolution: {integrity: sha512-3NaicyZ7N4B6cft4bfb7dOnPbE9CjLcx+6wZWAg5zwszfO4qXRh+U52dN5r5ZZfc6iMaxKCEcoH9CmxxoFZHLg==}
 
-  vue-router-mock@2.0.0:
-    resolution: {integrity: sha512-UmfJ9C4odcC8P2d8+yZWGPnjK7MMc1Uk3bmchpq+8lcGEdpwrO18RPQOMUEiwAjqjTVN5Z955Weaz2Ev9UrXMw==}
-    peerDependencies:
-      vue: ^3.2.23
-      vue-router: ^4.0.12
-
-  vue-router@4.6.4:
-    resolution: {integrity: sha512-Hz9q5sa33Yhduglwz6g9skT8OBPii+4bFn88w6J+J4MfEo4KRRpmiNG/hHHkdbRFlLBOqxN8y8gf2Fb0MTUgVg==}
-    peerDependencies:
-      vue: ^3.5.0
-
   vue-tsc@3.2.2:
     resolution: {integrity: sha512-r9YSia/VgGwmbbfC06hDdAatH634XJ9nVl6Zrnz1iK4ucp8Wu78kawplXnIDa3MSu1XdQQePTHLXYwPDWn+nyQ==}
     hasBin: true
@@ -6574,6 +6589,15 @@ snapshots:
   async@3.2.6: {}
 
   asynckit@0.4.0: {}
+
+  auto-scaffold@0.2.0(esbuild@0.27.2)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(terser@5.43.1)(yaml@2.8.2)):
+    dependencies:
+      chokidar: 5.0.0
+      pathe: 2.0.3
+      unplugin: 2.3.11
+    optionalDependencies:
+      esbuild: 0.27.2
+      vite: 7.3.0(@types/node@24.10.4)(jiti@2.6.1)(terser@5.43.1)(yaml@2.8.2)
 
   available-typed-arrays@1.0.7:
     dependencies:
@@ -9430,16 +9454,6 @@ snapshots:
   vscode-uri@3.1.0: {}
 
   vue-component-type-helpers@2.0.21: {}
-
-  vue-router-mock@2.0.0(vue-router@4.6.4(vue@3.6.0-beta.2(typescript@5.9.3)))(vue@3.6.0-beta.2(typescript@5.9.3)):
-    dependencies:
-      vue: 3.6.0-beta.2(typescript@5.9.3)
-      vue-router: 4.6.4(vue@3.6.0-beta.2(typescript@5.9.3))
-
-  vue-router@4.6.4(vue@3.6.0-beta.2(typescript@5.9.3)):
-    dependencies:
-      '@vue/devtools-api': 6.6.4
-      vue: 3.6.0-beta.2(typescript@5.9.3)
 
   vue-tsc@3.2.2(typescript@5.9.3):
     dependencies:
