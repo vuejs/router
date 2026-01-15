@@ -1,14 +1,10 @@
 {
   "name": "@vue/router-root",
   "private": true,
-  "packageManager": "pnpm@10.18.2",
-  "type": "module",
-  "engines": {
-    "node": ">=22.18.0"
-  },
   "workspaces": [
     "packages/*"
   ],
+  "type": "module",
   "scripts": {
     "release": "node scripts/release.ts",
     "size": "node scripts/check-size.mjs",
@@ -30,8 +26,8 @@
     "postinstall": "simple-git-hooks"
   },
   "devDependencies": {
-    "@types/node": "^24.10.4",
     "@posva/prompts": "^2.4.4",
+    "@types/node": "^24.10.4",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vitest/browser": "^3.2.4",
     "@vitest/coverage-v8": "^3.2.4",
@@ -58,16 +54,15 @@
     "commit-msg": "node scripts/verifyCommit.mjs"
   },
   "lint-staged": {
-    "*.?(m)js": [
-      "prettier --write"
-    ],
-    "*.?(m)ts?(x)": [
-      "prettier --parser=typescript --write"
-    ],
-    "*.html": [
-      "prettier --parser=html --write"
-    ]
+    "*": "oxfmt --no-error-on-unmatched-pattern"
   },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "volta": {
+    "node": "24.7.0"
+  },
+  "packageManager": "pnpm@10.18.2",
   "pnpm": {
     "overrides": {
       "@types/node": "^24.10.4",
@@ -85,8 +80,5 @@
       "esbuild",
       "geckodriver"
     ]
-  },
-  "volta": {
-    "node": "24.7.0"
   }
 }
