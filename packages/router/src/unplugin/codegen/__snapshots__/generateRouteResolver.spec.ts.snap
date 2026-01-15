@@ -1,0 +1,96 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateRouteResolver > does not encode RFC 3986 valid path characters 1`] = `
+"
+const __route_0 = normalizeRouteRecord({
+  name: '/@profile',
+  path: new MatcherPatternPathStatic('/@profile'),
+  components: {
+    'default': () => import('@profile.vue')
+  },
+})
+
+const __route_1 = normalizeRouteRecord({
+  name: '/foo*bar',
+  path: new MatcherPatternPathStatic('/foo*bar'),
+  components: {
+    'default': () => import('foo*bar.vue')
+  },
+})
+
+const __route_2 = normalizeRouteRecord({
+  name: '/hello!',
+  path: new MatcherPatternPathStatic('/hello!'),
+  components: {
+    'default': () => import('hello!.vue')
+  },
+})
+
+const __route_3 = normalizeRouteRecord({
+  name: '/it's-fine',
+  path: new MatcherPatternPathStatic('/it's-fine'),
+  components: {
+    'default': () => import('it's-fine.vue')
+  },
+})
+
+const __route_4 = normalizeRouteRecord({
+  name: '/item(1)',
+  path: new MatcherPatternPathStatic('/item(1)'),
+  components: {
+    'default': () => import('item(1).vue')
+  },
+})
+
+const __route_5 = normalizeRouteRecord({
+  name: '/user',
+  path: new MatcherPatternPathStatic('/user'),
+  components: {
+    'domain': () => import('user@domain.vue')
+  },
+})
+
+export const resolver = createFixedResolver([
+  __route_0,  // /@profile
+  __route_1,  // /foo*bar
+  __route_2,  // /hello!
+  __route_3,  // /it's-fine
+  __route_4,  // /item(1)
+  __route_5,  // /user
+])
+"
+`;
+
+exports[`generateRouteResolver > encodes special characters in route resolver paths 1`] = `
+"
+const __route_0 = normalizeRouteRecord({
+  name: '/café',
+  path: new MatcherPatternPathStatic('/caf%C3%A9'),
+  components: {
+    'default': () => import('café.vue')
+  },
+})
+
+const __route_1 = normalizeRouteRecord({
+  name: '/my page',
+  path: new MatcherPatternPathStatic('/my%20page'),
+  components: {
+    'default': () => import('my page.vue')
+  },
+})
+
+const __route_2 = normalizeRouteRecord({
+  name: '/users/hello world',
+  path: new MatcherPatternPathStatic('/users/hello%20world'),
+  components: {
+    'default': () => import('users/hello world.vue')
+  },
+})
+
+export const resolver = createFixedResolver([
+  __route_2,  // /users/hello%20world
+  __route_0,  // /caf%C3%A9
+  __route_1,  // /my%20page
+])
+"
+`;
