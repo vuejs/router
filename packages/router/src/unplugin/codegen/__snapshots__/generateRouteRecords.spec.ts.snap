@@ -1,0 +1,823 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateRouteRecord > adds children and name when folder and component exist 1`] = `
+"[
+  {
+    path: '/a',
+    name: '/a',
+    component: () => import('a.vue'),
+    children: [
+      {
+        path: 'c',
+        name: '/a/c',
+        component: () => import('a/c.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: '/b',
+    /* internal name: '/b' */
+    /* no component */
+    children: [
+      {
+        path: 'c',
+        name: '/b/c',
+        component: () => import('b/c.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: '/d',
+    name: '/d',
+    component: () => import('d.vue'),
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > correctly names index files 1`] = `
+"[
+  {
+    path: '/',
+    name: '/',
+    component: () => import('index.vue'),
+    /* no children */
+  },
+  {
+    path: '/b',
+    /* internal name: '/b' */
+    /* no component */
+    children: [
+      {
+        path: '',
+        name: '/b/',
+        component: () => import('b/index.vue'),
+        /* no children */
+      }
+    ],
+  }
+]"
+`;
+
+exports[`generateRouteRecord > does not encode RFC 3986 valid path characters 1`] = `
+"[
+  {
+    path: '/@profile',
+    name: '/@profile',
+    component: () => import('@profile.vue'),
+    /* no children */
+  },
+  {
+    path: '/foo*bar',
+    name: '/foo*bar',
+    component: () => import('foo*bar.vue'),
+    /* no children */
+  },
+  {
+    path: '/hello!',
+    name: '/hello!',
+    component: () => import('hello!.vue'),
+    /* no children */
+  },
+  {
+    path: '/it's-fine',
+    name: '/it's-fine',
+    component: () => import('it's-fine.vue'),
+    /* no children */
+  },
+  {
+    path: '/item(1)',
+    name: '/item(1)',
+    component: () => import('item(1).vue'),
+    /* no children */
+  },
+  {
+    path: '/user',
+    name: '/user',
+    components: {
+      'domain': () => import('user@domain.vue')
+    },
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > encodes special characters in path segments 1`] = `
+"[
+  {
+    path: '/caf%C3%A9',
+    name: '/café',
+    component: () => import('café.vue'),
+    /* no children */
+  },
+  {
+    path: '/my%20page',
+    name: '/my page',
+    component: () => import('my page.vue'),
+    /* no children */
+  },
+  {
+    path: '/users',
+    /* internal name: '/users' */
+    /* no component */
+    children: [
+      {
+        path: 'hello%20world',
+        name: '/users/hello world',
+        component: () => import('users/hello world.vue'),
+        /* no children */
+      }
+    ],
+  }
+]"
+`;
+
+exports[`generateRouteRecord > generate custom imports 1`] = `
+"[
+  {
+    path: '/a',
+    name: '/a',
+    component: _page_0,
+    /* no children */
+  },
+  {
+    path: '/b',
+    name: '/b',
+    component: () => import('b.vue'),
+    /* no children */
+  },
+  {
+    path: '/nested',
+    /* internal name: '/nested' */
+    /* no component */
+    children: [
+      {
+        path: 'file',
+        /* internal name: '/nested/file' */
+        /* no component */
+        children: [
+          {
+            path: 'c',
+            name: '/nested/file/c',
+            component: () => import('nested/file/c.vue'),
+            /* no children */
+          }
+        ],
+      }
+    ],
+  }
+]"
+`;
+
+exports[`generateRouteRecord > generate custom imports 2`] = `
+"import _page_0 from 'a.vue'
+"
+`;
+
+exports[`generateRouteRecord > generate static imports 1`] = `
+"[
+  {
+    path: '/a',
+    name: '/a',
+    component: _page_0,
+    /* no children */
+  },
+  {
+    path: '/b',
+    name: '/b',
+    component: _page_1,
+    /* no children */
+  },
+  {
+    path: '/nested',
+    /* internal name: '/nested' */
+    /* no component */
+    children: [
+      {
+        path: 'file',
+        /* internal name: '/nested/file' */
+        /* no component */
+        children: [
+          {
+            path: 'c',
+            name: '/nested/file/c',
+            component: _page_2,
+            /* no children */
+          }
+        ],
+      }
+    ],
+  }
+]"
+`;
+
+exports[`generateRouteRecord > generate static imports 2`] = `
+"import _page_0 from 'a.vue'
+import _page_1 from 'b.vue'
+import _page_2 from 'nested/file/c.vue'
+"
+`;
+
+exports[`generateRouteRecord > handles multiple named views 1`] = `
+"[
+  {
+    path: '/foo',
+    name: '/foo',
+    components: {
+      'default': () => import('foo.vue'),
+      'a': () => import('foo@a.vue'),
+      'b': () => import('foo@b.vue')
+    },
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > handles non nested routes 1`] = `
+"[
+  {
+    path: '/users',
+    name: '/users',
+    component: () => import('users.vue'),
+    children: [
+      {
+        path: '',
+        name: '/users/',
+        component: () => import('users/index.vue'),
+        /* no children */
+      },
+      {
+        path: ':id',
+        name: '/users/[id]',
+        component: () => import('users/[id].vue'),
+        children: [
+          {
+            path: '',
+            name: '/users/[id]/',
+            component: () => import('users/[id]/index.vue'),
+            /* no children */
+          },
+          {
+            path: 'other',
+            name: '/users/[id]/other',
+            component: () => import('users/[id]/other.vue'),
+            /* no children */
+          }
+        ],
+      },
+      {
+        path: ':id/not-nested',
+        name: '/users/[id].not-nested',
+        component: () => import('users/[id].not-nested.vue'),
+        /* no children */
+      },
+      {
+        path: 'other',
+        name: '/users/other',
+        component: () => import('users/other.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: '/users/:id/also-not-nested',
+    name: '/users.[id].also-not-nested',
+    component: () => import('users.[id].also-not-nested.vue'),
+    /* no children */
+  },
+  {
+    path: '/users/not-nested',
+    name: '/users.not-nested',
+    component: () => import('users.not-nested.vue'),
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > handles single named views 1`] = `
+"[
+  {
+    path: '/foo',
+    name: '/foo',
+    components: {
+      'a': () => import('foo@a.vue')
+    },
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > names > creates multi word names 1`] = `
+"[
+  {
+    path: '/',
+    name: '/',
+    component: () => import('index.vue'),
+    /* no children */
+  },
+  {
+    path: '/my-users',
+    name: '/my-users',
+    component: () => import('my-users.vue'),
+    /* no children */
+  },
+  {
+    path: '/MyPascalCaseUsers',
+    name: '/MyPascalCaseUsers',
+    component: () => import('MyPascalCaseUsers.vue'),
+    /* no children */
+  },
+  {
+    path: '/some-nested',
+    /* internal name: '/some-nested' */
+    /* no component */
+    children: [
+      {
+        path: 'file-with-:id-in-the-middle',
+        name: '/some-nested/file-with-[id]-in-the-middle',
+        component: () => import('some-nested/file-with-[id]-in-the-middle.vue'),
+        /* no children */
+      }
+    ],
+  }
+]"
+`;
+
+exports[`generateRouteRecord > names > creates single word names 1`] = `
+"[
+  {
+    path: '/',
+    name: '/',
+    component: () => import('index.vue'),
+    /* no children */
+  },
+  {
+    path: '/about',
+    name: '/about',
+    component: () => import('about.vue'),
+    /* no children */
+  },
+  {
+    path: '/users',
+    /* internal name: '/users' */
+    /* no component */
+    children: [
+      {
+        path: '',
+        name: '/users/',
+        component: () => import('users/index.vue'),
+        /* no children */
+      },
+      {
+        path: ':id',
+        name: '/users/[id]',
+        component: () => import('users/[id].vue'),
+        children: [
+          {
+            path: 'edit',
+            name: '/users/[id]/edit',
+            component: () => import('users/[id]/edit.vue'),
+            /* no children */
+          }
+        ],
+      },
+      {
+        path: 'new',
+        name: '/users/new',
+        component: () => import('users/new.vue'),
+        /* no children */
+      }
+    ],
+  }
+]"
+`;
+
+exports[`generateRouteRecord > names > handles empty names 1`] = `
+"[
+  {
+    path: '/about',
+    /* no name */
+    component: () => import('about.vue'),
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > names > works with nested views 1`] = `
+"[
+  {
+    path: '/',
+    name: '/',
+    component: () => import('index.vue'),
+    /* no children */
+  },
+  {
+    path: '/users',
+    name: '/users',
+    component: () => import('users.vue'),
+    children: [
+      {
+        path: '',
+        name: '/users/',
+        component: () => import('users/index.vue'),
+        /* no children */
+      },
+      {
+        path: ':id',
+        name: '/users/[id]',
+        component: () => import('users/[id].vue'),
+        children: [
+          {
+            path: 'edit',
+            name: '/users/[id]/edit',
+            component: () => import('users/[id]/edit.vue'),
+            /* no children */
+          }
+        ],
+      }
+    ],
+  }
+]"
+`;
+
+exports[`generateRouteRecord > nested children 1`] = `
+"[
+  {
+    path: '/a',
+    /* internal name: '/a' */
+    /* no component */
+    children: [
+      {
+        path: 'a',
+        name: '/a/a',
+        component: () => import('a/a.vue'),
+        /* no children */
+      },
+      {
+        path: 'b',
+        name: '/a/b',
+        component: () => import('a/b.vue'),
+        /* no children */
+      },
+      {
+        path: 'c',
+        name: '/a/c',
+        component: () => import('a/c.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: '/b',
+    /* internal name: '/b' */
+    /* no component */
+    children: [
+      {
+        path: 'b',
+        name: '/b/b',
+        component: () => import('b/b.vue'),
+        /* no children */
+      },
+      {
+        path: 'c',
+        name: '/b/c',
+        component: () => import('b/c.vue'),
+        /* no children */
+      },
+      {
+        path: 'd',
+        name: '/b/d',
+        component: () => import('b/d.vue'),
+        /* no children */
+      }
+    ],
+  }
+]"
+`;
+
+exports[`generateRouteRecord > nested children 2`] = `
+"[
+  {
+    path: '/a',
+    /* internal name: '/a' */
+    /* no component */
+    children: [
+      {
+        path: 'a',
+        name: '/a/a',
+        component: () => import('a/a.vue'),
+        /* no children */
+      },
+      {
+        path: 'b',
+        name: '/a/b',
+        component: () => import('a/b.vue'),
+        /* no children */
+      },
+      {
+        path: 'c',
+        name: '/a/c',
+        component: () => import('a/c.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: '/b',
+    /* internal name: '/b' */
+    /* no component */
+    children: [
+      {
+        path: 'b',
+        name: '/b/b',
+        component: () => import('b/b.vue'),
+        /* no children */
+      },
+      {
+        path: 'c',
+        name: '/b/c',
+        component: () => import('b/c.vue'),
+        /* no children */
+      },
+      {
+        path: 'd',
+        name: '/b/d',
+        component: () => import('b/d.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: '/c',
+    name: '/c',
+    component: () => import('c.vue'),
+    /* no children */
+  },
+  {
+    path: '/d',
+    name: '/d',
+    component: () => import('d.vue'),
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > raw paths insertions > dedupes sync imports for the same component 1`] = `
+"[
+  {
+    path: '/a/b',
+    name: '/a/b',
+    component: _page_0,
+    /* no children */
+  },
+  {
+    path: '/a/c',
+    name: '/a/c',
+    component: _page_0,
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > raw paths insertions > do not nest raw segments with file based 1`] = `
+"[
+  {
+    path: '/a',
+    /* internal name: '/a' */
+    /* no component */
+    children: [
+      {
+        path: 'b',
+        name: '/a/b',
+        component: () => import('a/b.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: '/a/b/c',
+    name: '/a/b/c',
+    component: () => import('a.vue'),
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > raw paths insertions > works with mixed nodes 1`] = `
+"[
+  {
+    path: '/a',
+    name: '/a',
+    component: () => import('a.vue'),
+    /* no children */
+  },
+  {
+    path: '/b',
+    name: '/b',
+    component: () => import('b.vue'),
+    /* no children */
+  },
+  {
+    path: '/c',
+    name: '/c',
+    component: () => import('c.vue'),
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > raw paths insertions > works with nested nodes 1`] = `
+"[
+  {
+    path: '/a/b/c',
+    name: '/a/b/c',
+    component: () => import('a.vue'),
+    /* no children */
+  },
+  {
+    path: '/a/b/d',
+    name: '/a/b/d',
+    component: () => import('a.vue'),
+    /* no children */
+  },
+  {
+    path: '/a/d/c',
+    name: '/a/d/c',
+    component: () => import('a.vue'),
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > raw paths insertions > works with raw paths 1`] = `
+"[
+  {
+    path: '/a',
+    name: '/a',
+    component: () => import('a.vue'),
+    /* no children */
+  },
+  {
+    path: '/b',
+    name: '/b',
+    component: () => import('b.vue'),
+    /* no children */
+  },
+  {
+    path: '/c',
+    name: '/c',
+    component: () => import('c.vue'),
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > removes trailing slashes 1`] = `
+"[
+  {
+    path: '/nested',
+    name: '/nested',
+    component: () => import('nested.vue'),
+    children: [
+      {
+        path: '',
+        name: '/nested/',
+        component: () => import('nested/index.vue'),
+        /* no children */
+      },
+      {
+        path: 'other',
+        name: '/nested/other',
+        component: () => import('nested/other.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: '/users',
+    /* internal name: '/users' */
+    /* no component */
+    children: [
+      {
+        path: '',
+        name: '/users/',
+        component: () => import('users/index.vue'),
+        /* no children */
+      },
+      {
+        path: 'other',
+        name: '/users/other',
+        component: () => import('users/other.vue'),
+        /* no children */
+      }
+    ],
+  }
+]"
+`;
+
+exports[`generateRouteRecord > route block > adds meta data 1`] = `
+"[
+  {
+    path: '/',
+    name: '/',
+    component: () => import('index.vue'),
+    /* no children */
+    meta: {
+      "auth": true,
+      "title": "Home"
+    },
+  }
+]"
+`;
+
+exports[`generateRouteRecord > route block > handles named views with empty route blocks 1`] = `
+"[
+  {
+    path: '/',
+    name: '/',
+    components: {
+      'default': () => import('index.vue'),
+      'named': () => import('index@named.vue')
+    },
+    /* no children */
+    meta: {
+      "auth": true,
+      "title": "Home"
+    },
+  }
+]"
+`;
+
+exports[`generateRouteRecord > route block > merges deep meta properties 1`] = `
+"[
+  {
+    path: '/',
+    name: '/',
+    component: () => import('index.vue'),
+    /* no children */
+    meta: {
+      "a": {
+        "one": 1,
+        "two": 1
+      },
+      "b": {
+        "a": [
+          2,
+          3
+        ]
+      }
+    },
+  }
+]"
+`;
+
+exports[`generateRouteRecord > route block > merges multiple meta properties 1`] = `
+"[
+  {
+    path: '/custom',
+    name: 'hello',
+    component: () => import('index.vue'),
+    /* no children */
+    meta: {
+      "one": true,
+      "two": true
+    },
+  }
+]"
+`;
+
+exports[`generateRouteRecord > route block > merges regardless of order 1`] = `
+"[
+  {
+    path: '/',
+    name: 'b',
+    component: () => import('index.vue'),
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > works with some paths at root 1`] = `
+"[
+  {
+    path: '/a',
+    name: '/a',
+    component: () => import('a.vue'),
+    /* no children */
+  },
+  {
+    path: '/b',
+    name: '/b',
+    component: () => import('b.vue'),
+    /* no children */
+  },
+  {
+    path: '/c',
+    name: '/c',
+    component: () => import('c.vue'),
+    /* no children */
+  }
+]"
+`;
