@@ -168,7 +168,7 @@
   },
   "devDependencies": {
     "@babel/types": "^7.28.6",
-    "@pinia/colada": "^0.18.1",
+    "@pinia/colada": "^0.21.1",
     "@playwright/test": "^1.57.0",
     "@rollup/plugin-commonjs": "^28.0.9",
     "@rollup/plugin-node-resolve": "^16.0.3",
@@ -189,7 +189,7 @@
     "dotenv": "^17.2.3",
     "faked-promise": "^2.2.2",
     "geckodriver": "^6.1.0",
-    "happy-dom": "^20.0.11",
+    "happy-dom": "^20.3.0",
     "nightwatch": "^3.14.0",
     "nightwatch-helpers": "^1.2.0",
     "pinia": "^3.0.4",
@@ -198,7 +198,7 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "tsdown": "0.20.0-beta.3",
     "tsup": "^8.5.1",
-    "vite": "^7.3.0",
+    "vite": "^7.3.1",
     "vue": "3.6.0-beta.2"
   },
   "peerDependencies": {
