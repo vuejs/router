@@ -30,6 +30,7 @@
     "postinstall": "simple-git-hooks"
   },
   "devDependencies": {
+    "@types/node": "^24.10.4",
     "@posva/prompts": "^2.4.4",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vitest/browser": "^3.2.4",
@@ -69,6 +70,7 @@
   },
   "pnpm": {
     "overrides": {
+      "@types/node": "^24.10.4",
       "vite": "^7.3.0"
     },
     "peerDependencyRules": {
