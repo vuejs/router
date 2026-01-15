@@ -10,6 +10,7 @@
     "dist",
     "coverage",
     "tests_output",
-    "packages/docs/.vitepress/cache"
+    "packages/docs/.vitepress/cache",
+    "routes.d.ts"
   ]
 }
