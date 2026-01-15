@@ -9,3 +9,5 @@ README.md
 vue-router-*.tgz
 # size check router
 size-tests
+playwright-report
+test-results

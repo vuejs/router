@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "name": "fixture-hmr",
+  "scripts": {
+    "dev": "vite -c vite.config.routes.ts",
+    "build": "vite build"
+  }
+}
