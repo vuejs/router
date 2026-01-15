@@ -44,7 +44,9 @@ export interface RouteLocationTyped<
  */
 export type RouteLocationTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
-> = { [N in keyof RouteMap]: RouteLocationTyped<RouteMap, N> }
+> = {
+  [N in keyof RouteMap]: RouteLocationTyped<RouteMap, N>
+}
 
 /**
  * Generic version of {@link RouteLocationNormalized} that is used when no {@link RouteMap} is provided.
@@ -80,7 +82,9 @@ export interface RouteLocationNormalizedTyped<
  */
 export type RouteLocationNormalizedTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
-> = { [N in keyof RouteMap]: RouteLocationNormalizedTyped<RouteMap, N> }
+> = {
+  [N in keyof RouteMap]: RouteLocationNormalizedTyped<RouteMap, N>
+}
 
 /**
  * Generic version of {@link RouteLocationNormalizedLoaded} that is used when no {@link RouteMap} is provided.
@@ -147,7 +151,9 @@ export interface RouteLocationAsRelativeTyped<
  */
 export type RouteLocationAsRelativeTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
-> = { [N in keyof RouteMap]: RouteLocationAsRelativeTyped<RouteMap, N> }
+> = {
+  [N in keyof RouteMap]: RouteLocationAsRelativeTyped<RouteMap, N>
+}
 
 /**
  * Generic version of {@link RouteLocationAsPath}. It is used when no {@link RouteMap} is provided.
@@ -180,7 +186,9 @@ export interface RouteLocationAsPathTyped<
  */
 export type RouteLocationAsPathTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
-> = { [N in keyof RouteMap]: RouteLocationAsPathTyped<RouteMap, N> }
+> = {
+  [N in keyof RouteMap]: RouteLocationAsPathTyped<RouteMap, N>
+}
 
 /**
  * Helper to generate a type safe version of the {@link RouteLocationAsString} type.
@@ -196,7 +204,9 @@ export type RouteLocationAsStringTyped<
  */
 export type RouteLocationAsStringTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
-> = { [N in keyof RouteMap]: RouteLocationAsStringTyped<RouteMap, N> }
+> = {
+  [N in keyof RouteMap]: RouteLocationAsStringTyped<RouteMap, N>
+}
 
 /**
  * Generic version of {@link RouteLocationResolved}. It is used when no {@link RouteMap} is provided.
@@ -227,7 +237,9 @@ export interface RouteLocationResolvedTyped<
  */
 export type RouteLocationResolvedTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
-> = { [N in keyof RouteMap]: RouteLocationResolvedTyped<RouteMap, N> }
+> = {
+  [N in keyof RouteMap]: RouteLocationResolvedTyped<RouteMap, N>
+}
 
 /**
  * Type safe versions of types that are exposed by vue-router. We have to use a generic check to allow for names to be `undefined` when no `RouteMap` is provided.

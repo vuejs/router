@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "arrowParens": "avoid",
+  "printWidth": 80,
+  "ignorePatterns": [
+    "__build__",
+    "dist",
+    "coverage",
+    "tests_output",
+    "packages/docs/.vitepress/cache"
+  ]
+}
