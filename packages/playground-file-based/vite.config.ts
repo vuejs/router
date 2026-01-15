@@ -2,14 +2,16 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 // import VueRouter from "vue-router/vite";
-import { default as VueRouter } from 'vue-router/unplugin'
+import VueRouter from 'vue-router/unplugin'
+import AutoScaffold from 'auto-scaffold/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    AutoScaffold({
+      presets: ['vue', 'vue-router'],
+    }),
     // FIXME: why doesn't it work when imported from vue-router/vite
-    // VueRouterV(),
-    //
     VueRouter.vite({
       logs: true,
       dts: './src/routes.d.ts',
