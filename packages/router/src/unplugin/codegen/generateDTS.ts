@@ -54,8 +54,10 @@ ${paramsTypesDeclaration}
 
 `.trimStart()
     : ''
-}declare module 'vue-router/auto-resolver' {
-  export type ParamParserCustom = ${customParamsType}
+}declare module 'vue-router' {
+  interface TypesConfig {
+    ParamParsers: ${customParamsType}
+  }
 }
 
 declare module '${routesModule}' {
