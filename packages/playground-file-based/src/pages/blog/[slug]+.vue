@@ -1,7 +1,7 @@
 <script lang="ts" setup></script>
 
 <template>
-  <h1>Home</h1>
+  <h1>Blog</h1>
 
-  <p>This is the homepage.</p>
+  <pre>{{ $route.params }}</pre>
 </template>
