@@ -41,11 +41,12 @@
     "conventional-changelog-angular": "^8.1.0",
     "execa": "^9.6.1",
     "lint-staged": "^16.2.7",
+    "oxfmt": "^0.24.0",
     "playwright": "^1.57.0",
     "prettier": "^3.6.2",
     "semver": "^7.7.3",
     "simple-git-hooks": "^2.13.1",
-    "typedoc": "^0.28.15",
+    "typedoc": "^0.28.16",
     "typedoc-plugin-markdown": "^4.9.0",
     "typescript": "~5.9.3",
     "vitest": "^3.2.4",
@@ -67,6 +68,9 @@
     ]
   },
   "pnpm": {
+    "overrides": {
+      "vite": "^7.3.0"
+    },
     "peerDependencyRules": {
       "ignoreMissing": [
         "react",

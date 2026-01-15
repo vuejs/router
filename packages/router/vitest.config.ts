@@ -2,9 +2,6 @@ import { defineConfig } from 'vitest/config'
 import Vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
-  resolve: {
-    alias: [],
-  },
   define: {
     __DEV__: true,
     __TEST__: true,
@@ -14,6 +11,12 @@ export default defineConfig({
 
   test: {
     // open: false,
+    include: ['__tests__/**/*.spec.ts', 'src/**/*.spec.ts'],
+    exclude: [
+      'src/**/*.test-d.ts',
+      // Playwright handles HMR E2E tests
+      'e2e/unplugin/hmr/**',
+    ],
     coverage: {
       include: ['src/**/*.ts'],
       exclude: [
@@ -25,6 +28,16 @@ export default defineConfig({
         'src/devtools.ts',
         'src/experimental/index.ts',
         'src/**/test-utils.ts',
+        // Unplugin entry points
+        'src/unplugin/index.ts',
+        'src/unplugin/vite.ts',
+        'src/unplugin/webpack.ts',
+        'src/unplugin/rollup.ts',
+        'src/unplugin/rolldown.ts',
+        'src/unplugin/esbuild.ts',
+        'src/unplugin/types.ts',
+        // Volar
+        'src/volar/**',
       ],
     },
     typecheck: {
@@ -32,7 +45,7 @@ export default defineConfig({
       checker: 'vue-tsc',
       // only: true,
       // by default it includes all specs too
-      // include: ['**/*.test-d.ts'],
+      include: ['src/**/*.test-d.ts'],
 
       // tsconfig: './tsconfig.typecheck.json',
     },

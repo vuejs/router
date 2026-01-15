@@ -537,7 +537,9 @@ describe('Experimental Router', () => {
     const { router } = await newRouter()
     expect(
       router.resolve({ name: 'optional', params: { p: 'a' } })
-    ).toHaveProperty('params', { p: 'a' })
+    ).toHaveProperty('params', {
+      p: 'a',
+    })
   })
 
   it('removes optional params when current location has it', async () => {
@@ -560,10 +562,14 @@ describe('Experimental Router', () => {
     const { router } = await newRouter()
     expect(
       router.resolve({ name: 'optional', params: { p: '' } })
-    ).toHaveProperty('params', { p: null })
+    ).toHaveProperty('params', {
+      p: null,
+    })
     expect(
       router.resolve({ name: 'optional', params: { p: null } })
-    ).toHaveProperty('params', { p: null })
+    ).toHaveProperty('params', {
+      p: null,
+    })
     expect(router.resolve({ name: 'optional', params: {} })).toHaveProperty(
       'params',
       { p: null }

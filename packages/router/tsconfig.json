@@ -1,10 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "include": [
-    "src/global.d.ts",
+    // multiline
     "src/**/*.ts",
-    "__tests__/**/*.ts",
-    "test-dts/**/*.ts"
+    "__tests__/**/*.ts"
+    // FIXME: use project references maybe to isolate module augmentation
+    // "test-dts/**/*.ts"
   ],
   "exclude": ["./dist", "./src/experimental/vapor/"],
   "compilerOptions": {
