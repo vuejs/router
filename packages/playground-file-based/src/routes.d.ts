@@ -18,8 +18,10 @@ import type {
 // Custom route params parsers
 type Param_date = ReturnType<NonNullable<typeof import('./src/params/date.ts').parser['get']>>
 
-declare module 'vue-router/auto-resolver' {
-  export type ParamParserCustom = 'date'
+declare module 'vue-router' {
+  interface TypesConfig {
+    ParamParsers: 'date'
+  }
 }
 
 declare module 'vue-router/auto-routes' {
