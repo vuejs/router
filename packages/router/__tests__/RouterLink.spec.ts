@@ -1,5 +1,5 @@
 /**
- * @vitest-environment jsdom
+ * @vitest-environment happy-dom
  */
 import { RouterLink } from '../src/RouterLink'
 import { RouteQueryAndHash, MatcherLocationRaw } from '../src/types'

@@ -1,6 +1,9 @@
-import { createDom, noGuard, newRouter as createRouter } from '../utils'
+/**
+ * @vitest-environment happy-dom
+ */
+import { noGuard, newRouter as createRouter } from '../utils'
 import { RouteRecordRaw } from '../../src/types'
-import { vi, describe, expect, it, beforeAll, beforeEach } from 'vitest'
+import { vi, describe, expect, it, beforeEach } from 'vitest'
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
@@ -88,10 +91,6 @@ beforeEach(() => {
 })
 
 describe('beforeRouteLeave', () => {
-  beforeAll(() => {
-    createDom()
-  })
-
   it('calls beforeRouteLeave guard on navigation', async () => {
     const router = createRouter({ routes })
     beforeRouteLeave.mockImplementationOnce((to, from) => {

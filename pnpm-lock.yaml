@@ -271,9 +271,6 @@ importers:
       '@types/babel__generator':
         specifier: ^7.27.0
         version: 7.27.0
-      '@types/jsdom':
-        specifier: ^21.1.7
-        version: 21.1.7
       '@types/nightwatch':
         specifier: ^2.3.32
         version: 2.3.32
@@ -1462,9 +1459,6 @@ packages:
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
 
-  '@types/jsdom@21.1.7':
-    resolution: {integrity: sha512-yOriVnggzrnQ3a9OKOCxaVuSug3w3/SbOj5i7VwXWZEyUNl3bLF9V3MfxGbZKuwqJOQyRfqXyROBB1CoZLFWzA==}
-
   '@types/linkify-it@5.0.0':
     resolution: {integrity: sha512-sVDA58zAw4eWAffKOaQH5/5j3XeayukzDk+ewSsnv3p4yJEZHCCzMDiZM8e0OUrRvmpGZ85jf4yDHkHsgBNr9Q==}
 
@@ -1494,9 +1488,6 @@ packages:
 
   '@types/selenium-webdriver@4.35.1':
     resolution: {integrity: sha512-mAt5iZv1D2/9Sb9eCdwxh5ePxbgwvJGTkD7hGdgZOjemABF8Qrde7H0qI5GKSp9f4+wGvOY/yNdBOver817/6A==}
-
-  '@types/tough-cookie@4.0.5':
-    resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
@@ -5876,12 +5867,6 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
 
-  '@types/jsdom@21.1.7':
-    dependencies:
-      '@types/node': 24.10.4
-      '@types/tough-cookie': 4.0.5
-      parse5: 7.3.0
-
   '@types/linkify-it@5.0.0': {}
 
   '@types/markdown-it@14.1.2':
@@ -5916,8 +5901,6 @@ snapshots:
     dependencies:
       '@types/node': 24.10.4
       '@types/ws': 8.18.1
-
-  '@types/tough-cookie@4.0.5': {}
 
   '@types/unist@3.0.3': {}
 

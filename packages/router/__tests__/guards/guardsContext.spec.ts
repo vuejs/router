@@ -1,5 +1,5 @@
 /**
- * @vitest-environment jsdom
+ * @vitest-environment happy-dom
  */
 import { createRouter, createMemoryHistory } from '../../src'
 import { createApp, defineComponent } from 'vue'
