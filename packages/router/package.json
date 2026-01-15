@@ -1,11 +1,54 @@
 {
   "name": "vue-router",
   "version": "4.6.4",
+  "homepage": "https://router.vuejs.org",
+  "bugs": {
+    "url": "https://github.com/vuejs/router/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Eduardo San Martin Morote",
+    "email": "posva13@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vuejs/router.git"
+  },
+  "funding": "https://github.com/sponsors/posva",
+  "files": [
+    "dist",
+    "index.js",
+    "README.md",
+    "route.schema.json",
+    "vue-router-auto-resolver.d.mts",
+    "vue-router-auto-routes.d.ts",
+    "vue-router-auto.d.ts",
+    "vue-router.node.mjs",
+    "vetur/attributes.json",
+    "vetur/tags.json"
+  ],
+  "sideEffects": false,
   "main": "index.js",
-  "unpkg": "dist/vue-router.global.js",
-  "jsdelivr": "dist/vue-router.global.js",
   "module": "dist/vue-router.mjs",
   "types": "dist/vue-router.d.mts",
+  "typesVersions": {
+    "*": {
+      "vite": [
+        "./dist/unplugin/vite.d.mts"
+      ],
+      "unplugin": [
+        "./dist/unplugin/index.d.mts"
+      ],
+      "unplugin/*": [
+        "./dist/unplugin/*.d.mts"
+      ],
+      "volar/*": [
+        "./dist/volar/*.d.cts"
+      ]
+    }
+  },
+  "unpkg": "dist/vue-router.global.js",
+  "jsdelivr": "dist/vue-router.global.js",
   "exports": {
     ".": {
       "types": "./dist/vue-router.d.mts",
@@ -86,49 +129,6 @@
       "default": "./dist/volar/sfc-typed-router.cjs"
     }
   },
-  "typesVersions": {
-    "*": {
-      "vite": [
-        "./dist/unplugin/vite.d.mts"
-      ],
-      "unplugin": [
-        "./dist/unplugin/index.d.mts"
-      ],
-      "unplugin/*": [
-        "./dist/unplugin/*.d.mts"
-      ],
-      "volar/*": [
-        "./dist/volar/*.d.cts"
-      ]
-    }
-  },
-  "sideEffects": false,
-  "author": {
-    "name": "Eduardo San Martin Morote",
-    "email": "posva13@gmail.com"
-  },
-  "funding": "https://github.com/sponsors/posva",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vuejs/router.git"
-  },
-  "bugs": {
-    "url": "https://github.com/vuejs/router/issues"
-  },
-  "homepage": "https://router.vuejs.org",
-  "files": [
-    "index.js",
-    "vue-router.node.mjs",
-    "vue-router-auto.d.ts",
-    "vue-router-auto-routes.d.ts",
-    "vue-router-auto-resolver.d.mts",
-    "route.schema.json",
-    "dist",
-    "vetur/tags.json",
-    "vetur/attributes.json",
-    "README.md"
-  ],
   "scripts": {
     "dev": "vitest --ui",
     "build": "tsdown",
@@ -146,27 +146,6 @@
     "test:e2e:ci": "node e2e/runner.mjs --env chrome-headless --retries 2",
     "test:e2e:bs": "node e2e/runner.mjs --local -e android5 --tag browserstack",
     "test:e2e:bs-test": "node e2e/runner.mjs --local --env browserstack.local_chrome --tag browserstack"
-  },
-  "peerDependencies": {
-    "@pinia/colada": "^0.18.1",
-    "@vue/compiler-sfc": "^3.5.17",
-    "pinia": "^3.0.4",
-    "vue": "^3.5.0"
-  },
-  "peerDependenciesMeta": {
-    "@vue/compiler-sfc": {
-      "optional": true
-    },
-    "pinia": {
-      "optional": true
-    },
-    "@pinia/colada": {
-      "optional": true
-    }
-  },
-  "vetur": {
-    "tags": "vetur/tags.json",
-    "attributes": "vetur/attributes.json"
   },
   "dependencies": {
     "@babel/generator": "^7.28.6",
@@ -221,7 +200,27 @@
     "tsdown": "0.20.0-beta.3",
     "tsup": "^8.5.1",
     "vite": "^7.3.0",
-    "vue": "3.6.0-beta.2",
-    "vue-router-mock": "^2.0.0"
+    "vue": "3.6.0-beta.2"
+  },
+  "peerDependencies": {
+    "@pinia/colada": "^0.18.1",
+    "@vue/compiler-sfc": "^3.5.17",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.0"
+  },
+  "peerDependenciesMeta": {
+    "@vue/compiler-sfc": {
+      "optional": true
+    },
+    "pinia": {
+      "optional": true
+    },
+    "@pinia/colada": {
+      "optional": true
+    }
+  },
+  "vetur": {
+    "tags": "vetur/tags.json",
+    "attributes": "vetur/attributes.json"
   }
 }
