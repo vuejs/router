@@ -1,7 +1,5 @@
 <script lang="ts" setup></script>
 
 <template>
-  <h1>Home</h1>
-
-  <p>This is the homepage.</p>
+  <h1>{{ String($route.name) }} - {{ $route.path }}</h1>
 </template>

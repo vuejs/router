@@ -14,8 +14,13 @@ import type {
   ParamValueZeroOrOne,
 } from 'vue-router'
 
+// Custom route params parsers
+type Param_date = ReturnType<
+  NonNullable<(typeof import('./src/params/date.ts').parser)['get']>
+>
+
 declare module 'vue-router/auto-resolver' {
-  export type ParamParserCustom = never
+  export type ParamParserCustom = 'date'
 }
 
 declare module 'vue-router/auto-routes' {
@@ -30,9 +35,186 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       never
     >
+    '/[a].[b]': RouteRecordInfo<
+      '/[a].[b]',
+      '/:a/:b',
+      { a: string; b: string },
+      { a: string; b: string },
+      never
+    >
+    'not-found': RouteRecordInfo<
+      'not-found',
+      '/:path(.*)',
+      {
+        path: string
+        page?: number
+        other?: boolean
+        active?: boolean
+        multi: string[]
+        req?: number
+        when?: Exclude<Param_date, unknown[]>
+      },
+      {
+        path: string
+        page: number
+        other: boolean
+        active: boolean
+        multi: string[]
+        req: number
+        when: Exclude<Param_date, unknown[]>
+      },
+      never
+    >
+    '/a.[b].c.[d]': RouteRecordInfo<
+      '/a.[b].c.[d]',
+      '/a/:b/c/:d',
+      { b: string; d: string },
+      { b: string; d: string },
+      never
+    >
     '/about': RouteRecordInfo<
       '/about',
       '/about',
+      Record<never, never>,
+      Record<never, never>,
+      never
+    >
+    '/b': RouteRecordInfo<
+      '/b',
+      '/b',
+      Record<never, never>,
+      Record<never, never>,
+      never
+    >
+    '/blog/[slug]+': RouteRecordInfo<
+      '/blog/[slug]+',
+      '/blog/:slug+',
+      { slug: string[] },
+      { slug: string[] },
+      never
+    >
+    '/blog/[[slugOptional]]+': RouteRecordInfo<
+      '/blog/[[slugOptional]]+',
+      '/blog/:slugOptional*',
+      { slugOptional?: string[] },
+      { slugOptional: string[] },
+      never
+    >
+    '/blog/info/(info)': RouteRecordInfo<
+      '/blog/info/(info)',
+      '/blog/info',
+      Record<never, never>,
+      Record<never, never>,
+      never
+    >
+    '/blog/info/[[section]]': RouteRecordInfo<
+      '/blog/info/[[section]]',
+      '/blog/info/:section?',
+      { section?: string | null },
+      { section: string | null },
+      never
+    >
+    '/emoji-🤡': RouteRecordInfo<
+      '/emoji-🤡',
+      '/emoji-%F0%9F%A4%A1',
+      Record<never, never>,
+      Record<never, never>,
+      never
+    >
+    '/events/[when=date]': RouteRecordInfo<
+      '/events/[when=date]',
+      '/events/:when',
+      { when: Exclude<Param_date, unknown[]> },
+      { when: Exclude<Param_date, unknown[]> },
+      never
+    >
+    '/events/repeat/[when=date]+': RouteRecordInfo<
+      '/events/repeat/[when=date]+',
+      '/events/repeat/:when+',
+      { when: Extract<Param_date, unknown[]> },
+      { when: Extract<Param_date, unknown[]> },
+      never
+    >
+    '/nested/': RouteRecordInfo<
+      '/nested/',
+      '/nested',
+      Record<never, never>,
+      Record<never, never>,
+      never
+    >
+    '/nested/other': RouteRecordInfo<
+      '/nested/other',
+      '/nested/other',
+      Record<never, never>,
+      Record<never, never>,
+      never
+    >
+    '/opt.[[num=int]]': RouteRecordInfo<
+      '/opt.[[num=int]]',
+      '/opt/:num?',
+      { num?: number | null },
+      { num: number | null },
+      never
+    >
+    '/tests/[[optional]]/end': RouteRecordInfo<
+      '/tests/[[optional]]/end',
+      '/tests/:optional?/end',
+      { optional?: string | null },
+      { optional: string | null },
+      never
+    >
+    '/u[name]': RouteRecordInfo<
+      '/u[name]',
+      '/u:name',
+      { name: string },
+      { name: string },
+      '/u[name]/24' | '/u[name]/[userId=int]'
+    >
+    '/u[name]/[userId=int]': RouteRecordInfo<
+      '/u[name]/[userId=int]',
+      '/u:name/:userId',
+      { name: string; userId: number },
+      { name: string; userId: number },
+      never
+    >
+    '/u[name]/24': RouteRecordInfo<
+      '/u[name]/24',
+      '/u:name/24',
+      { name: string },
+      { name: string },
+      never
+    >
+    '/users/[userId=int]': RouteRecordInfo<
+      '/users/[userId=int]',
+      '/users/:userId',
+      { userId: number; anyParam?: string; page?: number },
+      { userId: number; anyParam: string; page: number },
+      never
+    >
+    '/users/sub-[first]-[second]': RouteRecordInfo<
+      '/users/sub-[first]-[second]',
+      '/users/sub-:first-:second',
+      { first: string; second: string },
+      { first: string; second: string },
+      never
+    >
+    '/with-layout/(home)': RouteRecordInfo<
+      '/with-layout/(home)',
+      '/with-layout',
+      Record<never, never>,
+      Record<never, never>,
+      never
+    >
+    '/with-layout/+layout': RouteRecordInfo<
+      '/with-layout/+layout',
+      '/with-layout/+layout',
+      Record<never, never>,
+      Record<never, never>,
+      never
+    >
+    '/with-layout/other': RouteRecordInfo<
+      '/with-layout/other',
+      '/with-layout/other',
       Record<never, never>,
       Record<never, never>,
       never
@@ -54,8 +236,104 @@ declare module 'vue-router/auto-routes' {
       routes: '/(home)'
       views: never
     }
+    'src/pages/[a].[b].vue': {
+      routes: '/[a].[b]'
+      views: never
+    }
+    'src/pages/[...path].vue': {
+      routes: 'not-found'
+      views: never
+    }
+    'src/pages/a.[b].c.[d].vue': {
+      routes: '/a.[b].c.[d]'
+      views: never
+    }
     'src/pages/about.vue': {
       routes: '/about'
+      views: never
+    }
+    'src/pages/b.vue': {
+      routes: '/b'
+      views: never
+    }
+    'src/pages/blog/[slug]+.vue': {
+      routes: '/blog/[slug]+'
+      views: never
+    }
+    'src/pages/blog/[[slugOptional]]+.vue': {
+      routes: '/blog/[[slugOptional]]+'
+      views: never
+    }
+    'src/pages/blog/info/(info).vue': {
+      routes: '/blog/info/(info)'
+      views: never
+    }
+    'src/pages/blog/info/[[section]].vue': {
+      routes: '/blog/info/[[section]]'
+      views: never
+    }
+    'src/pages/emoji-🤡.vue': {
+      routes: '/emoji-🤡'
+      views: never
+    }
+    'src/pages/events/[when=date].vue': {
+      routes: '/events/[when=date]'
+      views: never
+    }
+    'src/pages/events/repeat/[when=date]+.vue': {
+      routes: '/events/repeat/[when=date]+'
+      views: never
+    }
+    'src/pages/nested.vue': {
+      routes: '/nested/' | '/nested/other'
+      views: 'default'
+    }
+    'src/pages/nested/index.vue': {
+      routes: '/nested/'
+      views: never
+    }
+    'src/pages/nested/other.vue': {
+      routes: '/nested/other'
+      views: never
+    }
+    'src/pages/opt.[[num=int]].vue': {
+      routes: '/opt.[[num=int]]'
+      views: never
+    }
+    'src/pages/tests/[[optional]]/end.vue': {
+      routes: '/tests/[[optional]]/end'
+      views: never
+    }
+    'src/pages/u[name].vue': {
+      routes: '/u[name]' | '/u[name]/24' | '/u[name]/[userId=int]'
+      views: 'default'
+    }
+    'src/pages/u[name]/[userId=int].vue': {
+      routes: '/u[name]/[userId=int]'
+      views: never
+    }
+    'src/pages/u[name]/24.vue': {
+      routes: '/u[name]/24'
+      views: never
+    }
+    'src/pages/users/[userId=int].vue': {
+      routes: '/users/[userId=int]'
+      views: never
+    }
+    'src/pages/users/sub-[first]-[second].vue': {
+      routes: '/users/sub-[first]-[second]'
+      views: never
+    }
+    'src/pages/with-layout/(home).vue': {
+      routes: '/with-layout/(home)'
+      views: never
+    }
+    'src/pages/with-layout/+layout.vue': {
+      routes: '/with-layout/+layout'
+      views: never
+    }
+    'src/pages/with-layout/other.vue': {
+      routes: '/with-layout/other'
       views: never
     }
   }
