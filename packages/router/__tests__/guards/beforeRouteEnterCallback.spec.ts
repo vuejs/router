@@ -1,5 +1,5 @@
 /**
- * @vitest-environment jsdom
+ * @vitest-environment happy-dom
  */
 import { defineComponent, h } from 'vue'
 import { mount } from '@vue/test-utils'

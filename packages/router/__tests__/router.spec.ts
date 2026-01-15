@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment happy-dom
+ */
 import fakePromise from 'faked-promise'
 import {
   createRouter,
@@ -8,10 +11,10 @@ import {
   RouteLocationRaw,
 } from '../src'
 import { NavigationFailureType } from '../src/errors'
-import { createDom, components, tick, nextNavigation } from './utils'
+import { components, tick, nextNavigation } from './utils'
 import { RouteRecordRaw } from '../src/types'
 import { START_LOCATION_NORMALIZED } from '../src/location'
-import { vi, describe, expect, it, beforeAll } from 'vitest'
+import { vi, describe, expect, it } from 'vitest'
 import { mockWarn } from './vitest-mock-warn'
 
 const routes: RouteRecordRaw[] = [
@@ -88,10 +91,6 @@ async function newRouter(
 
 describe('Router', () => {
   mockWarn()
-
-  beforeAll(() => {
-    createDom()
-  })
 
   it('fails if history option is missing', () => {
     // @ts-expect-error

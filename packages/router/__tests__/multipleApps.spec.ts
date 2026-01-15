@@ -1,6 +1,8 @@
+/**
+ * @vitest-environment happy-dom
+ */
 import { createRouter, createMemoryHistory } from '../src'
 import { h } from 'vue'
-import { createDom } from './utils'
 import { vi, describe, expect, it, beforeAll } from 'vitest'
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
@@ -25,7 +27,6 @@ function newRouter(options: Partial<Parameters<typeof createRouter>[0]> = {}) {
 
 describe('Multiple apps', () => {
   beforeAll(() => {
-    createDom()
     const rootEl = document.createElement('div')
     rootEl.id = 'app'
     document.body.appendChild(rootEl)

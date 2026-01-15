@@ -1,5 +1,5 @@
 /**
- * @vitest-environment jsdom
+ * @vitest-environment happy-dom
  */
 import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
