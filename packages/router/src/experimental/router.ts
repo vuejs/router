@@ -37,6 +37,7 @@ import {
   type RouterScrollBehavior,
 } from '../scrollBehavior'
 import type {
+  _NavigationGuardResolved,
   _RouteRecordProps,
   NavigationGuard,
   NavigationGuardWithThis,
@@ -530,7 +531,7 @@ export interface EXPERIMENTAL_Router_Base<TRecord> {
    * ```
    *
    */
-  beforeResolve(guard: NavigationGuardWithThis<undefined>): () => void
+  beforeResolve(guard: _NavigationGuardResolved): () => void
 
   /**
    * Add a navigation hook that is executed after every navigation. Returns a
@@ -783,7 +784,10 @@ export function experimental_createRouter(
     if (!force && isSameRouteLocation(stringifyQuery, from, to)) {
       failure = createRouterError<NavigationFailure>(
         ErrorTypes.NAVIGATION_DUPLICATED,
-        { to: toLocation, from }
+        {
+          to: toLocation,
+          from,
+        }
       )
       // trigger scroll to allow scrolling to the same anchor
       handleScroll(
