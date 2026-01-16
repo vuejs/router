@@ -16,7 +16,13 @@ import {
   NavigationFailure,
   NavigationRedirectError,
 } from './errors'
-import { ComponentOptions, onUnmounted, onActivated, onDeactivated } from 'vue'
+import {
+  ComponentOptions,
+  onUnmounted,
+  onActivated,
+  onDeactivated,
+  ComputedRef,
+} from 'vue'
 import { inject, getCurrentInstance } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
@@ -25,22 +31,51 @@ import { warn } from './warning'
 import { isSameRouteRecord } from './location'
 
 function registerGuard(
-  record: RouteRecordNormalized,
+  activeRecordRef: ComputedRef<RouteRecordNormalized | undefined>,
   name: 'leaveGuards' | 'updateGuards',
   guard: NavigationGuard
 ) {
+  const record = activeRecordRef.value
+  if (!record) {
+    if (__DEV__) {
+      const fnName =
+        name === 'updateGuards' ? 'onBeforeRouteUpdate' : 'onBeforeRouteLeave'
+      warn(
+        `No active route record was found when calling \`${fnName}()\`. ` +
+          `Make sure you call this function inside a component child of <router-view>. ` +
+          `Maybe you called it inside of App.vue?`
+      )
+    }
+    return
+  }
+
+  // Track the current record the guard is registered with
+  let currentRecord = record
+
   const removeFromList = () => {
-    record[name].delete(guard)
+    currentRecord[name].delete(guard)
   }
 
   onUnmounted(removeFromList)
   onDeactivated(removeFromList)
 
   onActivated(() => {
-    record[name].add(guard)
+    // When reactivated, check if the active record has changed (e.g., keep-alive
+    // component reactivated for a different route). If so, register with the new record.
+    const newRecord = activeRecordRef.value
+    if (__DEV__ && !newRecord) {
+      warn(
+        'No active route record was found when reactivating component with navigation guard. ' +
+          'This is likely a bug in vue-router. Please report it.'
+      )
+    }
+    if (newRecord) {
+      currentRecord = newRecord
+    }
+    currentRecord[name].add(guard)
   })
 
-  record[name].add(guard)
+  currentRecord[name].add(guard)
 }
 
 /**
@@ -58,21 +93,13 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
     return
   }
 
-  const activeRecord: RouteRecordNormalized | undefined = inject(
+  const activeRecordRef = inject(
     matchedRouteKey,
     // to avoid warning
     {} as any
-  ).value
+  ) as ComputedRef<RouteRecordNormalized | undefined>
 
-  if (!activeRecord) {
-    __DEV__ &&
-      warn(
-        'No active route record was found when calling `onBeforeRouteLeave()`. Make sure you call this function inside a component child of <router-view>. Maybe you called it inside of App.vue?'
-      )
-    return
-  }
-
-  registerGuard(activeRecord, 'leaveGuards', leaveGuard)
+  registerGuard(activeRecordRef, 'leaveGuards', leaveGuard)
 }
 
 /**
@@ -90,21 +117,13 @@ export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
     return
   }
 
-  const activeRecord: RouteRecordNormalized | undefined = inject(
+  const activeRecordRef = inject(
     matchedRouteKey,
     // to avoid warning
     {} as any
-  ).value
+  ) as ComputedRef<RouteRecordNormalized | undefined>
 
-  if (!activeRecord) {
-    __DEV__ &&
-      warn(
-        'No active route record was found when calling `onBeforeRouteUpdate()`. Make sure you call this function inside a component child of <router-view>. Maybe you called it inside of App.vue?'
-      )
-    return
-  }
-
-  registerGuard(activeRecord, 'updateGuards', updateGuard)
+  registerGuard(activeRecordRef, 'updateGuards', updateGuard)
 }
 
 export function guardToPromiseFn(
