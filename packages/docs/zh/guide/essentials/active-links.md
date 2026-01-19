@@ -34,9 +34,9 @@ const routes = [
       {
         path: 'role/:roleId',
         component: Role,
-      }
-    ]
-  }
+      },
+    ],
+  },
 ]
 ```
 

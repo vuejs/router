@@ -4,9 +4,7 @@
     "noEmit": true,
     "declaration": true,
     "paths": {
-      "vue-router": [
-        "../dist"
-      ]
+      "vue-router": ["../dist"]
     },
     "noImplicitReturns": false
   },
@@ -15,8 +13,5 @@
     "components.test-d.tsx",
     "../__tests__/createRouter.test-d.ts"
   ],
-  "exclude": [
-    "../__tests__",
-    "../src"
-  ]
+  "exclude": ["../__tests__", "../src"]
 }

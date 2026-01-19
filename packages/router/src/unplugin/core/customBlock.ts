@@ -17,13 +17,12 @@ export function getRouteBlock(
   if (blockStr) return parseCustomBlock(blockStr, path, options)
 }
 
-export interface CustomRouteBlock
-  extends Partial<
-    Omit<
-      RouteRecordRaw,
-      'components' | 'component' | 'children' | 'beforeEnter' | 'name'
-    >
-  > {
+export interface CustomRouteBlock extends Partial<
+  Omit<
+    RouteRecordRaw,
+    'components' | 'component' | 'children' | 'beforeEnter' | 'name'
+  >
+> {
   name?: string | undefined | false
 
   params?: {

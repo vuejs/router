@@ -37,7 +37,6 @@ const translations = {
   </div>
 </template>
 
-
 <style scoped>
 .become-sponsor {
   font-size: 0.9em;
@@ -47,7 +46,7 @@ const translations = {
   background-color: transparent;
   padding: 0.75em 2em;
   border-radius: 2em;
-  transition: all 0.30s ease;
+  transition: all 0.3s ease;
   box-sizing: border-box;
   border: 2px solid var(--vp-button-brand-hover-bg);
   text-decoration: none;
@@ -69,7 +68,9 @@ const translations = {
   text-align: center;
   padding: 35px 40px 45px;
   /* transition when toggling dark mode */
-  transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+  transition:
+    background-color 300ms ease-in-out,
+    color 300ms ease-in-out;
 }
 
 .cta {
