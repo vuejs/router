@@ -202,8 +202,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.2(vue@3.6.0-beta.2(typescript@5.9.3))
       '@vue/devtools-api':
-        specifier: ^6.6.4
-        version: 6.6.4
+        specifier: ^7.3.0
+        version: 7.7.7
       ast-walker-scope:
         specifier: ^0.8.3
         version: 0.8.3
@@ -1690,9 +1690,6 @@ packages:
 
   '@vue/compiler-vapor@3.6.0-beta.2':
     resolution: {integrity: sha512-6hVPlf2iXpBnjxeEUxeBytHqBu/CeUQWcI66Zne0xj1Z+Uo7BJ1dQT8EhvhMkxTUIF6FqVzBGvAfdYY/e3B+GA==}
-
-  '@vue/devtools-api@6.6.4':
-    resolution: {integrity: sha512-sGhTPMuXqZ1rVOk32RylztWkfXTRhuS7vgAKv0zjqk8gbsHkJ7xfFf+jbySxt7tWObEJwyKaHMikV/WGDiQm8g==}
 
   '@vue/devtools-api@7.7.7':
     resolution: {integrity: sha512-lwOnNBH2e7x1fIIbVT7yF5D+YWhqELm55/4ZKf45R9T8r9dE2AIOy8HKjfqzGsoTHFbWbr337O4E0A0QADnjBg==}
@@ -6214,8 +6211,6 @@ snapshots:
       '@vue/shared': 3.6.0-beta.2
       estree-walker: 2.0.2
       source-map-js: 1.2.1
-
-  '@vue/devtools-api@6.6.4': {}
 
   '@vue/devtools-api@7.7.7':
     dependencies:
