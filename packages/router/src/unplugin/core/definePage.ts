@@ -378,7 +378,7 @@ function extractQueryParams(
                 paramInfo.default = generate(paramProp.value).code
               } else {
                 warn(
-                  `Unrecognized default value in definePage() for query param "${paramName}". Typeof value: "${paramProp.value.type}". This is a bug or a missing type of value, open an issue on https://github.com/posva/unplugin-vue-router and provide the definePage() code.`
+                  `Unrecognized default value in definePage() for query param "${paramName}". Typeof value: "${paramProp.value.type}". This is a bug or a missing type of value, open an issue on https://github.com/vuejs/router and provide the definePage() code.`
                 )
               }
             }

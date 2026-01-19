@@ -12,8 +12,9 @@ export const enum TreeNodeType {
   param,
 }
 
-export interface RouteRecordOverride
-  extends Partial<Pick<RouteRecordRaw, 'meta' | 'props' | 'alias' | 'path'>> {
+export interface RouteRecordOverride extends Partial<
+  Pick<RouteRecordRaw, 'meta' | 'props' | 'alias' | 'path'>
+> {
   name?: string | undefined | false
 
   /**
@@ -26,8 +27,7 @@ export interface RouteRecordOverride
   }
 }
 
-export interface RouteRecordOverrideQueryParamOptions
-  extends CustomRouteBlockQueryParamOptions {
+export interface RouteRecordOverrideQueryParamOptions extends CustomRouteBlockQueryParamOptions {
   default?: string
 }
 
@@ -463,7 +463,7 @@ export type TreeNodeValue =
 
 export interface TreeNodeValueOptions extends ParseSegmentOptions {
   /**
-   * Format of the route path. Defaults to `file` which is the format used by unplugin-vue-router and matches the file
+   * Format of the route path. Defaults to `file` which is the format used by vue-router and matches the file
    * structure (e.g. `index`, ``, or `users/[id]`). In `path` format, routes are expected in the format of vue-router
    * (e.g. `/` or '/users/:id' ).
    *
