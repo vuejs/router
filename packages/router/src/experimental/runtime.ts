@@ -46,10 +46,9 @@ export function _mergeRouteRecord(
 /**
  * Type to define a page. Can be augmented to add custom properties.
  */
-export interface DefinePage
-  extends Partial<
-    Omit<RouteRecordRaw, 'children' | 'components' | 'component' | 'name'>
-  > {
+export interface DefinePage extends Partial<
+  Omit<RouteRecordRaw, 'children' | 'components' | 'component' | 'name'>
+> {
   /**
    * A route name. If not provided, the name will be generated based on the file path.
    * Can be set to `false` to remove the name from types.

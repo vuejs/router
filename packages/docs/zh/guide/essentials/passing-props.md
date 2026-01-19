@@ -11,9 +11,7 @@
 
 ```vue [User.vue]
 <template>
-  <div>
-    User {{ $route.params.id }}
-  </div>
+  <div>User {{ $route.params.id }}</div>
 </template>
 ```
 
@@ -23,9 +21,7 @@
 import User from './User.vue'
 
 // 传入 `createRouter`
-const routes = [
-  { path: '/users/:id', component: User },
-]
+const routes = [{ path: '/users/:id', component: User }]
 ```
 
 我们可以通过声明 prop 来在 `User.vue` 中删除对 `$route` 的直接依赖：
@@ -36,14 +32,12 @@ const routes = [
 <!-- User.vue -->
 <script setup>
 defineProps({
-  id: String
+  id: String,
 })
 </script>
 
 <template>
-  <div>
-    User {{ id }}
-  </div>
+  <div>User {{ id }}</div>
 </template>
 ```
 
@@ -52,15 +46,13 @@ defineProps({
 <script>
 export default {
   props: {
-    id: String
-  }
+    id: String,
+  },
 }
 </script>
 
 <template>
-  <div>
-    User {{ id }}
-  </div>
+  <div>User {{ id }}</div>
 </template>
 ```
 
@@ -69,9 +61,7 @@ export default {
 然后我们可以通过设置 `props: true` 来配置路由将 `id` 参数作为 prop 传递给组件：
 
 ```js
-const routes = [
-  { path: '/user/:id', component: User, props: true }
-]
+const routes = [{ path: '/user/:id', component: User, props: true }]
 ```
 
 这允许你在任何地方使用该组件，使得该组件更容易重用和测试。
@@ -89,8 +79,8 @@ const routes = [
   {
     path: '/user/:id',
     components: { default: User, sidebar: Sidebar },
-    props: { default: true, sidebar: false }
-  }
+    props: { default: true, sidebar: false },
+  },
 ]
 ```
 
@@ -103,8 +93,8 @@ const routes = [
   {
     path: '/promotion/from-newsletter',
     component: Promotion,
-    props: { newsletterPopup: false }
-  }
+    props: { newsletterPopup: false },
+  },
 ]
 ```
 
@@ -117,8 +107,8 @@ const routes = [
   {
     path: '/search',
     component: SearchUser,
-    props: route => ({ query: route.query.q })
-  }
+    props: route => ({ query: route.query.q }),
+  },
 ]
 ```
 

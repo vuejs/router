@@ -1,8 +1,8 @@
 {
   "name": "@vue/router-playground",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
-  "version": "0.0.0",
   "scripts": {
     "play": "vite",
     "build": "vite build",

@@ -1,8 +1,8 @@
 {
   "name": "@vue/router-docs",
   "version": "0.0.0",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
     "docs": "vitepress dev .",
     "docs:api": "node run-typedoc.mjs",

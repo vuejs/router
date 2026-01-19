@@ -35,18 +35,18 @@ router.beforeEach((to, from) => {
 - `false`: 取消当前的导航。如果浏览器的 URL 改变了(可能是用户手动或者浏览器后退按钮)，那么 URL 地址会重置到 `from` 路由对应的地址。
 - 一个[路由地址](../../api/#Type-Aliases-RouteLocationRaw): 通过一个路由地址重定向到一个不同的地址，如同调用 `router.push()`，且可以传入诸如 `replace: true` 或 `name: 'home'` 之类的选项。它会中断当前的导航，同时用相同的 `from` 创建一个新导航。
 
- ```js
-  router.beforeEach(async (to, from) => {
-    if (
-      // 检查用户是否已登录
-      !isAuthenticated &&
-      // ❗️ 避免无限重定向
-      to.name !== 'Login'
-    ) {
-      // 将用户重定向到登录页面
-      return { name: 'Login' }
-    }
-  })
+```js
+router.beforeEach(async (to, from) => {
+  if (
+    // 检查用户是否已登录
+    !isAuthenticated &&
+    // ❗️ 避免无限重定向
+    to.name !== 'Login'
+  ) {
+    // 将用户重定向到登录页面
+    return { name: 'Login' }
+  }
+})
 ```
 
 如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](../../api/interfaces/Router.md#onError) 注册过的回调。
@@ -135,7 +135,6 @@ router.afterEach((to, from, failure) => {
 ```
 
 了解更多关于 navigation failures 的信息在[它的指南](./navigation-failures.md)中。
-
 
 ## 在守卫内的全局注入
 

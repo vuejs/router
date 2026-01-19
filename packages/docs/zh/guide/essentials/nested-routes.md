@@ -8,7 +8,7 @@
 一些应用程序的 UI 由多层嵌套的组件组成。在这种情况下，URL 的片段通常对应于特定的嵌套组件结构，例如：
 
 ```
-/user/johnny/profile                   /user/johnny/posts 
+/user/johnny/profile                   /user/johnny/posts
 ┌──────────────────┐                  ┌──────────────────┐
 │ User             │                  │ User             │
 │ ┌──────────────┐ │                  │ ┌──────────────┐ │
@@ -30,9 +30,7 @@
 
 ```vue [User.vue]
 <template>
-  <div>
-    User {{ $route.params.id }}
-  </div>
+  <div>User {{ $route.params.id }}</div>
 </template>
 ```
 
@@ -126,12 +124,12 @@ const routes = [
 
 ```js
 const routes = [
-  {
-    path: '/user/:id',
-    name: 'user-parent',
-    component: User,
-    children: [{ path: '', name: 'user', component: UserHome }],
-  },
+  {
+    path: '/user/:id',
+    name: 'user-parent',
+    component: User,
+    children: [{ path: '', name: 'user', component: UserHome }],
+  },
 ]
 ```
 
@@ -149,7 +147,7 @@ const routes = [
       { path: '', component: AdminOverview },
       { path: 'users', component: AdminUserList },
       { path: 'users/:id', component: AdminUserDetails },
-    ], 
+    ],
   },
 ]
 ```

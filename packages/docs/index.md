@@ -4,7 +4,7 @@ layout: home
 title: Vue Router
 titleTemplate: The official Router for Vue.js
 
-hero: 
+hero:
   name: Vue Router
   text: The official Router for Vue.js
   tagline: Expressive, configurable and convenient routing for Vue.js

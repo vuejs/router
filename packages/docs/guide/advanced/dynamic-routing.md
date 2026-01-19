@@ -77,6 +77,7 @@ There are few different ways to remove existing routes:
   ```
 
   This is useful when the routes do not have a name
+
 - By using `router.removeRoute()` to remove a route by its name:
 
   ```js
