@@ -49,7 +49,7 @@ jobs:
 
           TAG="${GITHUB_REF#refs/tags/}"
           echo "Current tag: $TAG"
-          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+          echo "TAG=$TAG" >>$GITHUB_OUTPUT
 
           # ========= Determine package type =========
           if [[ "$TAG" =~ ^v[0-9] ]]; then
@@ -76,9 +76,9 @@ jobs:
             PACKAGE_PATH="${MAP[$PKG_NAME]}"
           fi
 
-          echo "PKG_NAME=$PKG_NAME" >> $GITHUB_OUTPUT
-          echo "PACKAGE_PATH=$PACKAGE_PATH" >> $GITHUB_OUTPUT
-          echo "GIT_DESCRIBE_MATCH=$GIT_DESCRIBE_MATCH" >> $GITHUB_OUTPUT
+          echo "PKG_NAME=$PKG_NAME" >>$GITHUB_OUTPUT
+          echo "PACKAGE_PATH=$PACKAGE_PATH" >>$GITHUB_OUTPUT
+          echo "GIT_DESCRIBE_MATCH=$GIT_DESCRIBE_MATCH" >>$GITHUB_OUTPUT
 
           # ========= Compute previous tag (skip current tag) =========
           echo "Finding previous tag using: git describe --match '$GIT_DESCRIBE_MATCH'"
@@ -95,13 +95,33 @@ jobs:
             PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
           fi
 
-          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >>$GITHUB_OUTPUT
+
+          # ========= Determine npm dist-tag =========
+          if [[ "$TAG" =~ ^v[0-9] ]]; then
+            VERSION="${TAG#v}"
+          else
+            VERSION="${TAG##*@}"
+          fi
+
+          if [[ "$VERSION" =~ -beta ]]; then
+            NPM_TAG="beta"
+          elif [[ "$VERSION" =~ -alpha ]]; then
+            NPM_TAG="alpha"
+          elif [[ "$VERSION" =~ -rc ]]; then
+            NPM_TAG="rc"
+          else
+            NPM_TAG="latest"
+          fi
+
+          echo "NPM_TAG=$NPM_TAG" >>$GITHUB_OUTPUT
 
           echo "Resolved:"
           echo "  TAG=$TAG"
           echo "  PKG_NAME=$PKG_NAME"
           echo "  PACKAGE_PATH=$PACKAGE_PATH"
           echo "  PREVIOUS_TAG=$PREVIOUS_TAG"
+          echo "  NPM_TAG=$NPM_TAG"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -128,7 +148,7 @@ jobs:
         working-directory: ${{ steps.resolve.outputs.PACKAGE_PATH }}
 
       - name: Publish to NPM
-        run: pnpm publish --access public --no-git-checks
+        run: pnpm publish --access public --no-git-checks --tag ${{ steps.resolve.outputs.NPM_TAG }}
         working-directory: ${{ steps.resolve.outputs.PACKAGE_PATH }}
 
       - name: Generate GitHub Changelog
