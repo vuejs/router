@@ -22,7 +22,14 @@ import { join } from 'pathe'
 import { appendExtensionListToPattern } from './core/utils'
 import { createAutoExportPlugin } from '../experimental/data-loaders/auto-exports'
 
-export type * from './types'
+export type { Options } from './options'
+export type { TreeNode } from './core/tree'
+export type {
+  TreeNodeValue,
+  TreeNodeValueStatic,
+  TreeNodeValueParam,
+  TreeNodeValueGroup,
+} from './core/treeNodeValue'
 
 export { DEFAULT_OPTIONS }
 
