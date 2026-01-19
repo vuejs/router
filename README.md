@@ -25,22 +25,16 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
 
 <h4 align="center">Silver Sponsors</h4>
 <p align="center">
-    <a href="https://www.controla.ai/?utm_source=posva" target="_blank" rel="noopener noreferrer">
-    <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/controla-dark.png" media="(prefers-color-scheme: dark)" height="42px" alt="Controla" />
-      <img src="https://posva-sponsors.pages.dev/logos/controla-light.png" height="42px" alt="Controla" />
-    </picture>
-  </a>
     <a href="https://www.vuemastery.com/" target="_blank" rel="noopener noreferrer">
     <picture>
       <source srcset="https://posva-sponsors.pages.dev/logos/vuemastery-dark.png" media="(prefers-color-scheme: dark)" height="42px" alt="VueMastery" />
       <img src="https://posva-sponsors.pages.dev/logos/vuemastery-light.svg" height="42px" alt="VueMastery" />
     </picture>
   </a>
-    <a href=" https://jobs.sendcloud.com" target="_blank" rel="noopener noreferrer">
+    <a href="https://www.controla.ai/?utm_source=posva" target="_blank" rel="noopener noreferrer">
     <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/sendcloud-dark.svg" media="(prefers-color-scheme: dark)" height="42px" alt="SendCloud" />
-      <img src="https://posva-sponsors.pages.dev/logos/sendcloud-light.svg" height="42px" alt="SendCloud" />
+      <source srcset="https://posva-sponsors.pages.dev/logos/controla-dark.png" media="(prefers-color-scheme: dark)" height="42px" alt="Controla" />
+      <img src="https://posva-sponsors.pages.dev/logos/controla-light.png" height="42px" alt="Controla" />
     </picture>
   </a>
     <a href="https://route4me.com" target="_blank" rel="noopener noreferrer">
@@ -49,20 +43,32 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
       <img src="https://posva-sponsors.pages.dev/logos/route4me.png" height="42px" alt="Route Optimizer and Route Planner Software" />
     </picture>
   </a>
+    <a href="https://jobs.sendcloud.com" target="_blank" rel="noopener noreferrer">
+    <picture>
+      <source srcset="https://posva-sponsors.pages.dev/logos/sendcloud-dark.svg" media="(prefers-color-scheme: dark)" height="42px" alt="SendCloud" />
+      <img src="https://posva-sponsors.pages.dev/logos/sendcloud-light.svg" height="42px" alt="SendCloud" />
+    </picture>
+  </a>
 </p>
 
 <h4 align="center">Bronze Sponsors</h4>
 <p align="center">
+    <a href="https://stormier.ninja" target="_blank" rel="noopener noreferrer">
+    <picture>
+      <source srcset="https://avatars.githubusercontent.com/u/2486424" media="(prefers-color-scheme: dark)" height="26px" alt="Stanislas Ormières" />
+      <img src="https://avatars.githubusercontent.com/u/2486424" height="26px" alt="Stanislas Ormières" />
+    </picture>
+  </a>
+    <a href="https://www.rtvision.com/" target="_blank" rel="noopener noreferrer">
+    <picture>
+      <source srcset="https://avatars.githubusercontent.com/u/8292810" media="(prefers-color-scheme: dark)" height="26px" alt="RTVision" />
+      <img src="https://avatars.githubusercontent.com/u/8292810" height="26px" alt="RTVision" />
+    </picture>
+  </a>
     <a href="https://storyblok.com" target="_blank" rel="noopener noreferrer">
     <picture>
       <source srcset="https://posva-sponsors.pages.dev/logos/storyblok.png" media="(prefers-color-scheme: dark)" height="26px" alt="Storyblok" />
       <img src="https://posva-sponsors.pages.dev/logos/storyblok.png" height="26px" alt="Storyblok" />
-    </picture>
-  </a>
-    <a href="https://stormier.ninja" target="_blank" rel="noopener noreferrer">
-    <picture>
-      <source srcset="https://avatars.githubusercontent.com/u/2486424?u=7b0c73ae5d090ce53bf59473094e9606fe082c59&v=4" media="(prefers-color-scheme: dark)" height="26px" alt="Stanislas Ormières" />
-      <img src="https://avatars.githubusercontent.com/u/2486424?u=7b0c73ae5d090ce53bf59473094e9606fe082c59&v=4" height="26px" alt="Stanislas Ormières" />
     </picture>
   </a>
 </p>
