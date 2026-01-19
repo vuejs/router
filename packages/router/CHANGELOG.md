@@ -1,3 +1,197 @@
+# [5.0.0-beta.0](https://github.com/vuejs/router/compare/v4.6.4...v5.0.0-beta.0) (2026-01-19)
+
+Vue Router 5 merges [unplugin-vue-router](https://uvr.esm.is) into the core package. It has no breaking changes itself, so you should be able to upgrade it no matter if you use unplugin-vue-router or Vue Router 4 without file-based routing, and everything should just work. If not, please open an issue!
+
+> [!NOTE]
+> If you are not using unplugin-vue-router, there are no breaking changes affecting you
+
+---
+
+## Migrating from unplugin-vue-router
+
+If you're already using `unplugin-vue-router`, migration is mostly import changes.
+
+### Migration Checklist (unplugin-vue-router)
+
+This is the TLDR version of the steps below:
+
+- [ ] Remove `unplugin-vue-router` dependency
+- [ ] Update `vue-router` to v5
+- [ ] Change plugin import: `unplugin-vue-router/vite` → `vue-router/vite`
+- [ ] Change data loader imports: `unplugin-vue-router/data-loaders/*` → `vue-router/experimental`
+- [ ] Change utility imports: `unplugin-vue-router` → `vue-router/unplugin`
+- [ ] Change Volar plugins: `unplugin-vue-router/volar/*` → `vue-router/volar/*`
+- [ ] Remove `unplugin-vue-router/client` from tsconfig / env.d.ts
+
+### 1. Update Dependencies
+
+```bash
+pnpm remove unplugin-vue-router
+pnpm update vue-router@5
+```
+
+### 2. Update Imports
+
+**Vite plugin:**
+
+```ts
+// Before
+import VueRouter from 'unplugin-vue-router/vite'
+
+// After
+import VueRouter from 'vue-router/vite'
+```
+
+Other build tools (Webpack, Rollup, esbuild) import from `vue-router/unplugin`:
+
+```ts
+import VueRouter from 'vue-router/unplugin'
+
+VueRouter.webpack({
+  /* ... */
+})
+VueRouter.rollup({
+  /* ... */
+})
+// etc.
+```
+
+**Data loaders:**
+
+```ts
+// Before
+import { defineBasicLoader } from 'unplugin-vue-router/data-loaders/basic'
+import { defineColadaLoader } from 'unplugin-vue-router/data-loaders/pinia-colada'
+import { DataLoaderPlugin } from 'unplugin-vue-router/data-loaders'
+
+// After
+import { defineBasicLoader, DataLoaderPlugin } from 'vue-router/experimental'
+import { defineColadaLoader } from 'vue-router/experimental/pinia-colada'
+```
+
+**Unplugin utilities (for custom integrations):**
+
+```ts
+// Before
+import {
+  VueRouterAutoImports,
+  EditableTreeNode,
+  createTreeNodeValue,
+  createRoutesContext,
+  getFileBasedRouteName,
+  getPascalCaseRouteName,
+} from 'unplugin-vue-router'
+
+// After
+import {
+  VueRouterAutoImports,
+  EditableTreeNode,
+  createTreeNodeValue,
+  createRoutesContext,
+  getFileBasedRouteName,
+  getPascalCaseRouteName,
+} from 'vue-router/unplugin'
+```
+
+**Types:**
+
+```ts
+// Before
+import type { Options, EditableTreeNode } from 'unplugin-vue-router'
+
+// After
+import type { Options, EditableTreeNode } from 'vue-router/unplugin'
+```
+
+**Volar plugins:**
+
+```jsonc
+// Before (tsconfig.json)
+{
+  "compilerOptions": {
+    // needed for the volar plugin
+    "rootDir": "."
+  },
+  "vueCompilerOptions": {
+    "plugins": [
+      "unplugin-vue-router/volar/sfc-typed-router",
+      "unplugin-vue-router/volar/sfc-route-blocks"
+    ]
+  }
+}
+
+// After
+{
+  "compilerOptions": {
+    // needed for the volar plugin
+    "rootDir": "."
+  },
+  "vueCompilerOptions": {
+    "plugins": [
+      "vue-router/volar/sfc-typed-router",
+      "vue-router/volar/sfc-route-blocks"
+    ]
+  }
+}
+```
+
+These enable automatic typing `useRoute()` when using file-based routing:
+
+```vue
+<!-- src/pages/users/[id].vue -->
+<script setup lang="ts">
+// Before: had to pass route name for typing
+const route = useRoute('/users/[id]')
+
+// After: automatically typed based on file location!
+const route = useRoute()
+route.params.id // ✅ typed as string
+</script>
+
+<template>
+  <!-- $route is also automatically typed -->
+  <p>User ID: {{ $route.params.id }}</p>
+</template>
+```
+
+### 3. Update tsconfig.json
+
+Remove the old client types reference. These were either added to an `env.d.ts`:
+
+```diff
+-/// <reference types="unplugin-vue-router/client" />
+```
+
+or to your `tsconfig.json`:
+
+```json
+// Before
+{
+  "include": ["./typed-router.d.ts", "unplugin-vue-router/client"]
+}
+
+// After
+{
+  "include": ["./typed-router.d.ts"]
+}
+```
+
+It's also recommended to remove the `./typed-router.d.ts` from your `tsconfig.json` and place it inside `src/`, as it's automatically included by most setups:
+
+```ts
+// vite.config.ts
+export default defineConfig({
+  plugins: [
+    VueRouter({
+      dts: 'src/routes.d.ts',
+    }),
+    Vue(),
+  ],
+})
+```
+
+This will be the default in a future version.
+
 ## [4.6.4](https://github.com/vuejs/router/compare/v4.6.3...v4.6.4) (2025-12-11)
 
 ### Bug Fixes
