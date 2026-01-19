@@ -49,10 +49,10 @@ watch(() => route.params.id, fetchData, { immediate: true })
 async function fetchData(id) {
   error.value = post.value = null
   loading.value = true
-  
+
   try {
     // replace `getPost` with your data fetching util / API wrapper
-    post.value = await getPost(id)  
+    post.value = await getPost(id)
   } catch (err) {
     error.value = err.toString()
   } finally {
@@ -152,8 +152,8 @@ export default {
     },
     setError(err) {
       this.error = err.toString()
-    }
-  }
+    },
+  },
 }
 ```
 

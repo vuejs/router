@@ -54,9 +54,6 @@ importers:
       playwright:
         specifier: ^1.57.0
         version: 1.57.0
-      prettier:
-        specifier: ^3.6.2
-        version: 3.6.2
       semver:
         specifier: ^7.7.3
         version: 7.7.3
@@ -3742,11 +3739,6 @@ packages:
 
   preact@10.27.2:
     resolution: {integrity: sha512-5SYSgFKSyhCbk6SrXyMpqjb5+MQBgfvEKE/OC+PujcY34sOpqtr+0AZQtPYx5IA6VxynQ7rUPCtKzyovpj9Bpg==}
-
-  prettier@3.6.2:
-    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
-    engines: {node: '>=14'}
-    hasBin: true
 
   pretty-format@27.5.1:
     resolution: {integrity: sha512-Qb1gy5OrP5+zDf2Bvnzdl3jsTf1qXVMazbvCoKhtKqVs4/YK4ozX4gKQJJVyNe+cajNPn0KoC0MC3FUmaHWEmQ==}
@@ -8394,8 +8386,6 @@ snapshots:
       source-map-js: 1.2.1
 
   preact@10.27.2: {}
-
-  prettier@3.6.2: {}
 
   pretty-format@27.5.1:
     dependencies:

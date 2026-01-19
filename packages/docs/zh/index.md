@@ -4,7 +4,7 @@ layout: home
 title: Vue Router
 titleTemplate: Vue.js 的官方路由
 
-hero: 
+hero:
   name: Vue Router
   text: Vue.js 的官方路由
   tagline: 为 Vue.js 提供富有表现力、可配置的、方便的路由

@@ -11,6 +11,7 @@
     "coverage",
     "tests_output",
     "packages/docs/.vitepress/cache",
+    "playwright-report",
     "routes.d.ts"
   ]
 }
