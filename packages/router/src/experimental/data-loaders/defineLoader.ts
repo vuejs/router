@@ -198,7 +198,7 @@ export function defineBasicLoader<Data>(
     if (process.env.NODE_ENV !== 'production') {
       if (parent !== currentContext[0]) {
         console.warn(
-          `❌👶 "${options.key}" has a different parent than the current context. This shouldn't be happening. Please report a bug with a reproduction to https://github.com/posva/unplugin-vue-router/`
+          `❌👶 "${options.key}" has a different parent than the current context. This shouldn't be happening. Please report a bug with a reproduction to https://github.com/vuejs/router/`
         )
       }
     }
@@ -336,7 +336,7 @@ export function defineBasicLoader<Data>(
   }
 
   // @ts-expect-error: return type has the generics
-  const useDataLoader // for ts
+  const useDataLoader// for ts
   : UseDataLoaderBasic_LaxData<Data> = () => {
     // work with nested data loaders
     const currentContext = getCurrentContext()
@@ -387,7 +387,7 @@ export function defineBasicLoader<Data>(
     if (parentEntry) {
       if (parentEntry === entry) {
         console.warn(
-          `👶❌ "${options.key}" has itself as parent. This shouldn't be happening. Please report a bug with a reproduction to https://github.com/posva/unplugin-vue-router/`
+          `👶❌ "${options.key}" has itself as parent. This shouldn't be happening. Please report a bug with a reproduction to https://github.com/vuejs/router/`
         )
       }
       // console.log(`👶 "${options.key}" has parent ${parentEntry}`)
@@ -401,9 +401,9 @@ export function defineBasicLoader<Data>(
       error,
       isLoading,
       reload: (to: RouteLocationNormalizedLoaded = router.currentRoute.value) =>
-        router[APP_KEY].runWithContext(() => load(to, router)).then(() =>
-          entry!.commit(to)
-        ),
+        router[APP_KEY]
+          .runWithContext(() => load(to, router))
+          .then(() => entry!.commit(to)),
     } satisfies UseDataLoaderResult<Data | undefined, ErrorDefault>
 
     // load ensures there is a pending load
@@ -467,16 +467,14 @@ function warnNonExposedLoader({
   }
 }
 
-export interface DefineDataLoaderOptions_LaxData
-  extends DefineDataLoaderOptionsBase_LaxData {
+export interface DefineDataLoaderOptions_LaxData extends DefineDataLoaderOptionsBase_LaxData {
   /**
    * Key to use for SSR state. This will be used to read the initial data from `initialData`'s object.
    */
   key?: string
 }
 
-export interface DefineDataLoaderOptions_DefinedData
-  extends DefineDataLoaderOptionsBase_DefinedData {
+export interface DefineDataLoaderOptions_DefinedData extends DefineDataLoaderOptionsBase_DefinedData {
   key?: string
 }
 
@@ -520,16 +518,20 @@ declare module '../../router' {
   }
 }
 
-export interface UseDataLoaderBasic_LaxData<Data>
-  extends UseDataLoader<Data | undefined, ErrorDefault> {}
+export interface UseDataLoaderBasic_LaxData<Data> extends UseDataLoader<
+  Data | undefined,
+  ErrorDefault
+> {}
 
 /**
  * @deprecated use {@link UseDataLoaderBasic_LaxData} instead
  */
 export type UseDataLoaderBasic<Data> = UseDataLoaderBasic_LaxData<Data>
 
-export interface UseDataLoaderBasic_DefinedData<Data>
-  extends UseDataLoader<Data, ErrorDefault> {}
+export interface UseDataLoaderBasic_DefinedData<Data> extends UseDataLoader<
+  Data,
+  ErrorDefault
+> {}
 
 export interface DataLoaderBasicEntry<
   TData,

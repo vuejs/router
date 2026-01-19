@@ -287,7 +287,7 @@ if (import.meta.hot) {
   import.meta.hot.accept((mod) => {
     const router = import.meta.hot.data.router
     if (!router) {
-      import.meta.hot.invalidate('[unplugin-vue-router:HMR] Cannot replace the resolver because there is no active router. Reloading.')
+      import.meta.hot.invalidate('[vue-router:HMR] Cannot replace the resolver because there is no active router. Reloading.')
       return
     }
     router._hmrReplaceResolver(mod.resolver)
@@ -330,7 +330,7 @@ if (import.meta.hot) {
   import.meta.hot.accept((mod) => {
     const router = import.meta.hot.data.router
     if (!router) {
-      import.meta.hot.invalidate('[unplugin-vue-router:HMR] Cannot replace the routes because there is no active router. Reloading.')
+      import.meta.hot.invalidate('[vue-router:HMR] Cannot replace the routes because there is no active router. Reloading.')
       return
     }
     router.clearRoutes()

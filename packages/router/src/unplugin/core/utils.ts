@@ -11,7 +11,7 @@ export function warn(
   msg: string,
   type: 'warn' | 'error' | 'debug' = 'warn'
 ): void {
-  console[type](`⚠️  [unplugin-vue-router]: ${msg}`)
+  console[type](`⚠️  [vue-router]: ${msg}`)
 }
 
 export function logTree(tree: TreeNode, log: (str: string) => any) {

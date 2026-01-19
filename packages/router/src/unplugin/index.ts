@@ -56,7 +56,7 @@ export default createUnplugin<Options | undefined>((opt = {}, _meta) => {
 
   const plugins: UnpluginOptions[] = [
     {
-      name: 'unplugin-vue-router',
+      name: 'vue-router',
       enforce: 'pre',
 
       resolveId: {
