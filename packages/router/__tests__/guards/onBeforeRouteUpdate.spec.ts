@@ -6,9 +6,16 @@ import {
   createMemoryHistory,
   onBeforeRouteUpdate,
   RouterView,
-  RouteRecordRaw,
+  type RouteRecordRaw,
 } from '../../src'
-import { defineComponent, h, ComponentOptions, FunctionalComponent } from 'vue'
+import {
+  defineComponent,
+  h,
+  ComponentOptions,
+  FunctionalComponent,
+  onActivated,
+  onDeactivated,
+} from 'vue'
 import { mount } from '@vue/test-utils'
 import { delay } from '../utils'
 import { vi, describe, expect, it } from 'vitest'
@@ -54,25 +61,20 @@ function factory(
 }
 describe('onBeforeRouteUpdate', () => {
   it('triggers when shared KeepAlive component is reactivated for a different route', async () => {
-    const spy = vi.fn()
-    let mountCount = 0
-    let activatedCount = 0
-    let deactivatedCount = 0
+    const routeUpdateSpy = vi.fn()
+    const activatedSpy = vi.fn()
+    const deactivatedSpy = vi.fn()
+    const setupSpy = vi.fn(() => {
+      onBeforeRouteUpdate(routeUpdateSpy)
+      onActivated(activatedSpy)
+      onDeactivated(deactivatedSpy)
+      return {}
+    })
 
     // A shared component used by multiple routes (simulates list pages)
     const SharedComponent = defineComponent({
       template: '<div>Shared: {{ $route.path }}</div>',
-      setup() {
-        mountCount++
-        onBeforeRouteUpdate(spy)
-        return {}
-      },
-      activated() {
-        activatedCount++
-      },
-      deactivated() {
-        deactivatedCount++
-      },
+      setup: setupSpy,
     })
 
     // A different component (simulates detail page)
@@ -97,29 +99,29 @@ describe('onBeforeRouteUpdate', () => {
         `,
       }
     )
+    await router.isReady()
 
     // Step 1: Navigate to /a - component mounts and registers guard with /a's record
     await router.push('/a')
-    await router.isReady()
-    expect(spy).not.toHaveBeenCalled()
-    expect(mountCount).toBe(1)
-    expect(activatedCount).toBe(1) // activated on mount
+    expect(routeUpdateSpy).not.toHaveBeenCalled()
+    expect(setupSpy).toHaveBeenCalledTimes(1)
+    expect(activatedSpy).toHaveBeenCalledTimes(1) // activated on mount
 
     // Step 2: Navigate to /a/123 - SharedComponent is deactivated (kept alive)
     await router.push('/a/123')
-    expect(deactivatedCount).toBe(1)
+    expect(deactivatedSpy).toHaveBeenCalledTimes(1)
 
     // Step 3: Navigate to /b - SharedComponent is reactivated for a DIFFERENT route
     // This is where the bug occurs: guard is added back to /a's record, not /b's
     await router.push('/b')
-    expect(activatedCount).toBe(2) // reactivated
-    expect(mountCount).toBe(1) // still only mounted once (kept alive)
+    expect(activatedSpy).toHaveBeenCalledTimes(2) // reactivated
+    expect(setupSpy).toHaveBeenCalledTimes(1) // still only mounted once (kept alive)
 
     // Step 4: Update query on /b - onBeforeRouteUpdate SHOULD be triggered
     // BUG: The guard was registered with /a's record, not /b's record
     // So when /b updates, the guard is not called
     await router.push('/b?page=2')
-    expect(spy).toHaveBeenCalledTimes(1)
+    expect(routeUpdateSpy).toHaveBeenCalledTimes(1)
 
     wrapper.unmount()
   })
