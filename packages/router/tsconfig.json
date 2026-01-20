@@ -7,9 +7,12 @@
     // FIXME: use project references maybe to isolate module augmentation
     // "test-dts/**/*.ts"
   ],
-  "exclude": ["./dist", "./src/experimental/vapor/"],
+  "exclude": ["dist", "src/experimental/vapor/"],
   "compilerOptions": {
-    // "baseUrl": ".",
+    "baseUrl": ".",
+    "paths": {
+      "vue-router": ["./src/index.ts"]
+    },
     "rootDir": ".",
     "outDir": "dist",
     "sourceMap": false,
