@@ -5,15 +5,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, toRefs, reactive } from 'vue'
 import { getData, delay } from '../api'
 import { onBeforeRouteUpdate } from 'vue-router'
 
-export default defineComponent({
+const ComponentWithData = defineComponent({
   name: 'ComponentWithData',
   async setup() {
-    const data = reactive({ other: 'old', fromApi: null })
+    const data = reactive<{ other: string, fromApi: null | {message: string, time: number }}>({ other: 'old', fromApi: null })
 
     onBeforeRouteUpdate(async (to, from, next) => {
       data.fromApi = await getData()
@@ -30,9 +30,12 @@ export default defineComponent({
     console.log('this in beforeRouteEnter', this)
     await delay(300)
     next(vm => {
-      console.log('got vm', vm)
-      vm.other = 'Hola'
+      console.log('got vm', vm);
+      // Workaround for https://github.com/vuejs/router/issues/701
+      (vm as InstanceType<typeof ComponentWithData>).other = 'Hola'
     })
   },
 })
+
+export default ComponentWithData
 </script>
