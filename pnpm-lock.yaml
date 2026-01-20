@@ -202,8 +202,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.2(vue@3.6.0-beta.2(typescript@5.9.3))
       '@vue/devtools-api':
-        specifier: ^7.3.0
-        version: 7.7.7
+        specifier: ^8.0.0
+        version: 8.0.5
       ast-walker-scope:
         specifier: ^0.8.3
         version: 0.8.3
@@ -1693,6 +1693,9 @@ packages:
 
   '@vue/devtools-api@7.7.7':
     resolution: {integrity: sha512-lwOnNBH2e7x1fIIbVT7yF5D+YWhqELm55/4ZKf45R9T8r9dE2AIOy8HKjfqzGsoTHFbWbr337O4E0A0QADnjBg==}
+
+  '@vue/devtools-api@8.0.5':
+    resolution: {integrity: sha512-DgVcW8H/Nral7LgZEecYFFYXnAvGuN9C3L3DtWekAncFBedBczpNW8iHKExfaM559Zm8wQWrwtYZ9lXthEHtDw==}
 
   '@vue/devtools-core@8.0.5':
     resolution: {integrity: sha512-dpCw8nl0GDBuiL9SaY0mtDxoGIEmU38w+TQiYEPOLhW03VDC0lfNMYXS/qhl4I0YlysGp04NLY4UNn6xgD0VIQ==}
@@ -6215,6 +6218,10 @@ snapshots:
   '@vue/devtools-api@7.7.7':
     dependencies:
       '@vue/devtools-kit': 7.7.7
+
+  '@vue/devtools-api@8.0.5':
+    dependencies:
+      '@vue/devtools-kit': 8.0.5
 
   '@vue/devtools-core@8.0.5(vite@7.3.1(@types/node@24.10.8)(jiti@2.6.1)(terser@5.43.1)(yaml@2.8.2))(vue@3.6.0-beta.2(typescript@5.9.3))':
     dependencies:
