@@ -86,7 +86,6 @@ describe('onBeforeRouteUpdate', () => {
       [
         { path: '/', component },
         { path: '/a', component: SharedComponent },
-        { path: '/a/:id', component: DetailComponent },
         { path: '/b', component: SharedComponent },
       ],
       {
@@ -107,8 +106,8 @@ describe('onBeforeRouteUpdate', () => {
     expect(setupSpy).toHaveBeenCalledTimes(1)
     expect(activatedSpy).toHaveBeenCalledTimes(1) // activated on mount
 
-    // Step 2: Navigate to /a/123 - SharedComponent is deactivated (kept alive)
-    await router.push('/a/123')
+    // Step 2: Navigate somewhere else - SharedComponent is deactivated
+    await router.push('/')
     expect(deactivatedSpy).toHaveBeenCalledTimes(1)
 
     // Step 3: Navigate to /b - SharedComponent is reactivated for a DIFFERENT route
@@ -118,7 +117,7 @@ describe('onBeforeRouteUpdate', () => {
     expect(setupSpy).toHaveBeenCalledTimes(1) // still only mounted once (kept alive)
 
     // Step 4: Update query on /b - onBeforeRouteUpdate SHOULD be triggered
-    // BUG: The guard was registered with /a's record, not /b's record
+    // BUG (before fix): The guard was registered with /a's record, not /b's record
     // So when /b updates, the guard is not called
     await router.push('/b?page=2')
     expect(routeUpdateSpy).toHaveBeenCalledTimes(1)

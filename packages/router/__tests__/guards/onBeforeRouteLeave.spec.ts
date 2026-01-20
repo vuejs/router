@@ -74,7 +74,7 @@ describe('onBeforeRouteLeave', () => {
     expect(setupSpy).toHaveBeenCalledTimes(1)
     expect(activatedSpy).toHaveBeenCalledTimes(1)
 
-    // Step 2: Navigate to /a/123 - SharedComponent is deactivated (kept alive)
+    // Step 2: Navigate to another route so SharedComponent is deactivated (kept alive)
     // Leave guard is called when leaving /a
     await router.push('/other')
     expect(deactivatedSpy).toHaveBeenCalledTimes(1)
