@@ -11,8 +11,10 @@ const app = createApp(App)
 
 app.use(createPinia())
 app.use(PiniaColada, {})
-// @ts-expect-error: FIXME: should be doable
-app.use(DataLoaderPlugin, { router })
+app.use(DataLoaderPlugin, {
+  // FIXME: should be doable without `as any`
+  router: router as any,
+})
 app.component('RouterLink', RouterLink)
 app.component('RouterView', RouterView)
 app.use(router)

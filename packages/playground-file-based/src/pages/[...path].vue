@@ -4,7 +4,13 @@ import doc from '../main.ts?raw'
 
 const route = useRoute()
 const router = useRouter()
-route.params.path
+// router.push({
+//   name: 'not-found',
+//   params: {
+//     path: 'yoooo',
+//   }
+// })
+// route.params.optionalWhen
 
 console.log('typeof', typeof route.params.active)
 console.log('value', route.params.active)
@@ -28,7 +34,6 @@ definePage({
       },
       other: {
         parser: 'bool',
-        default: false,
       },
       active: {
         parser: 'bool',
@@ -44,6 +49,10 @@ definePage({
         default: -1,
       },
 
+      // optionalWhen: {
+      //   parser: 'date',
+      // },
+      //
       when: {
         parser: 'date',
         default: () => new Date(),
