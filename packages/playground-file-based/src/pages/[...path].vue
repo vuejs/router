@@ -3,6 +3,7 @@ import { useRoute, useRouter } from 'vue-router'
 import doc from '../main.ts?raw'
 
 const route = useRoute()
+console.log('route.params', route.params)
 const router = useRouter()
 // router.push({
 //   name: 'not-found',
@@ -49,10 +50,10 @@ definePage({
         default: -1,
       },
 
-      // optionalWhen: {
-      //   parser: 'date',
-      // },
-      //
+      optionalWhen: {
+        parser: 'date',
+      },
+
       when: {
         parser: 'date',
         default: () => new Date(),

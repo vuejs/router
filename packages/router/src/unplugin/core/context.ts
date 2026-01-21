@@ -38,6 +38,7 @@ export function createRoutesContext(options: ResolvedOptions) {
       : preferDTS === true
         ? resolve(root, 'typed-router.d.ts')
         : resolve(root, preferDTS)
+  const dtsDir = dts ? dirname(dts) : root
 
   const routeTree = new PrefixTree(options)
   const editableRoutes = new EditableTreeNode(routeTree)
@@ -142,7 +143,7 @@ export function createRoutesContext(options: ResolvedOptions) {
               name,
               typeName: `Param_${name}`,
               absolutePath,
-              relativePath: relative(options.root, absolutePath),
+              relativePath: relative(dtsDir, absolutePath),
             })
           }
           logger.log(
@@ -227,7 +228,7 @@ export function createRoutesContext(options: ResolvedOptions) {
           name,
           typeName: `Param_${name}`,
           absolutePath,
-          relativePath: './' + relative(options.root, absolutePath),
+          relativePath: relative(dtsDir, absolutePath),
         })
         writeConfigFiles()
       })
