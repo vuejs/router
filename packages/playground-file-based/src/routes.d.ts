@@ -46,8 +46,8 @@ declare module 'vue-router/auto-routes' {
     'not-found': RouteRecordInfo<
       'not-found',
       '/:path(.*)',
-      { path: string, page?: number, other?: boolean, active?: boolean, multi: string[], req?: number, when?: Exclude<Param_date, unknown[]> },
-      { path: string, page: number, other: boolean, active: boolean, multi: string[], req: number, when: Exclude<Param_date, unknown[]> },
+      { path: string, page?: number, other?: boolean, active?: boolean, multi?: string[], req?: number, when?: Exclude<Param_date, unknown[]> },
+      { path: string, page: number, other: boolean | undefined, active: boolean, multi: string[] | undefined, req: number, when: Exclude<Param_date, unknown[]> },
       | never
     >,
     '/a.[b].c.[d]': RouteRecordInfo<
@@ -81,7 +81,7 @@ declare module 'vue-router/auto-routes' {
     '/blog/[[slugOptional]]+': RouteRecordInfo<
       '/blog/[[slugOptional]]+',
       '/blog/:slugOptional*',
-      { slugOptional?: string[] },
+      { slugOptional: string[] },
       { slugOptional: string[] },
       | never
     >,
@@ -95,7 +95,7 @@ declare module 'vue-router/auto-routes' {
     '/blog/info/[[section]]': RouteRecordInfo<
       '/blog/info/[[section]]',
       '/blog/info/:section?',
-      { section?: string | null },
+      { section: string | null },
       { section: string | null },
       | never
     >,
@@ -137,14 +137,14 @@ declare module 'vue-router/auto-routes' {
     '/opt.[[num=int]]': RouteRecordInfo<
       '/opt.[[num=int]]',
       '/opt/:num?',
-      { num?: number | null },
+      { num: number | null },
       { num: number | null },
       | never
     >,
     '/tests/[[optional]]/end': RouteRecordInfo<
       '/tests/[[optional]]/end',
       '/tests/:optional?/end',
-      { optional?: string | null },
+      { optional: string | null },
       { optional: string | null },
       | never
     >,
