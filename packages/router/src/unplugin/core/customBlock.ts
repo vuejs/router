@@ -37,6 +37,7 @@ export interface CustomRouteBlockQueryParamOptions {
   format?: DefinePageQueryParamOptions['format']
   // TODO: queryKey?: string
   default?: string
+  required?: boolean
 }
 
 function parseCustomBlock(

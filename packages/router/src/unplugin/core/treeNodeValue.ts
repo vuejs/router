@@ -29,6 +29,7 @@ export interface RouteRecordOverride extends Partial<
 
 export interface RouteRecordOverrideQueryParamOptions extends CustomRouteBlockQueryParamOptions {
   default?: string
+  required?: boolean
 }
 
 export type SubSegment = string | TreePathParam
@@ -133,6 +134,7 @@ class _TreeNodeValueBase {
           parser: config.parser || null,
           format: config.format || 'value',
           defaultValue: config.default,
+          required: config.required,
         })
       }
     }
@@ -311,6 +313,13 @@ export interface TreeQueryParam {
    * Expression to be passed as is to the default value of the param.
    */
   defaultValue?: string
+
+  /**
+   * Whether the query param is required.
+   *
+   * @default false
+   */
+  required?: boolean
 }
 
 /**
@@ -324,7 +333,8 @@ export function isTreeParamOptional(
   if ('optional' in param) {
     return param.optional
   }
-  return param.defaultValue !== undefined
+  // Query params are optional if they have a defaultValue OR if they're not required
+  return param.defaultValue !== undefined || !param.required
 }
 
 /**
