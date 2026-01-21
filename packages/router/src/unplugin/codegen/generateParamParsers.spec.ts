@@ -97,6 +97,28 @@ describe('generateParamParsersTypesDeclarations', () => {
     )
   })
 
+  it('generates correct import path when parser is outside dts directory', () => {
+    // This tests the case where dts is in a subfolder (e.g., types/typed-router.d.ts)
+    // and parsers are at project root (e.g., parsers/uuid.ts)
+    // The relativePath should be computed relative to the dts directory
+    const paramParsers: ParamParsersMap = new Map([
+      [
+        'uuid',
+        {
+          name: 'uuid',
+          typeName: 'Param_uuid',
+          relativePath: '../parsers/uuid',
+          absolutePath: '/project/parsers/uuid',
+        },
+      ],
+    ])
+
+    const result = generateParamParsersTypesDeclarations(paramParsers)
+    expect(result).toBe(
+      `type Param_uuid = ReturnType<NonNullable<typeof import('../parsers/uuid').parser['get']>>`
+    )
+  })
+
   it('generates multiple param parsers type declarations', () => {
     const paramParsers: ParamParsersMap = new Map([
       [

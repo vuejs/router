@@ -16,7 +16,7 @@ import type {
 } from 'vue-router'
 
 // Custom route params parsers
-type Param_date = ReturnType<NonNullable<typeof import('./src/params/date.ts').parser['get']>>
+type Param_date = ReturnType<NonNullable<typeof import('./params/date.ts').parser['get']>>
 
 declare module 'vue-router' {
   interface TypesConfig {
@@ -46,8 +46,8 @@ declare module 'vue-router/auto-routes' {
     'not-found': RouteRecordInfo<
       'not-found',
       '/:path(.*)',
-      { path: string, page?: number, other?: boolean, active?: boolean, multi?: string[], req?: number, when?: Exclude<Param_date, unknown[]> },
-      { path: string, page: number, other: boolean | undefined, active: boolean, multi: string[] | undefined, req: number, when: Exclude<Param_date, unknown[]> },
+      { path: string, page?: number, other?: boolean, active?: boolean, multi?: string[], req?: number, optionalWhen?: Exclude<Param_date, unknown[]>, when?: Exclude<Param_date, unknown[]> },
+      { path: string, page: number, other: boolean | undefined, active: boolean, multi: string[] | undefined, req: number, optionalWhen: Exclude<Param_date, unknown[]> | undefined, when: Exclude<Param_date, unknown[]> },
       | never
     >,
     '/a.[b].c.[d]': RouteRecordInfo<

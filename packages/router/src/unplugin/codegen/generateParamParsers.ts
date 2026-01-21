@@ -41,10 +41,12 @@ export function generateParamParsersTypesDeclarations(
   paramParsers: ParamParsersMap
 ) {
   return Array.from(paramParsers.values())
-    .map(
-      ({ typeName, relativePath }) =>
-        `type ${typeName} = ReturnType<NonNullable<typeof import('./${relativePath}').parser['get']>>`
-    )
+    .map(({ typeName, relativePath }) => {
+      const importPath = relativePath.startsWith('.')
+        ? relativePath
+        : './' + relativePath
+      return `type ${typeName} = ReturnType<NonNullable<typeof import('${importPath}').parser['get']>>`
+    })
     .join('\n')
 }
 
