@@ -453,22 +453,37 @@ function updateDeps(
  * Get the last tag published for a package or null if there are no tags
  */
 async function getLastTag(pkgName: string): Promise<string> {
-  try {
-    const { stdout } = await run(
-      'git',
-      [
-        'describe',
-        '--tags',
-        '--abbrev=0',
-        '--match',
-        pkgName === MAIN_PKG_NAME ? 'v*' : `${pkgName}@*`,
-      ],
-      {
-        stdio: 'pipe',
-      }
-    )
+  const pattern = pkgName === MAIN_PKG_NAME ? 'v*' : `${pkgName}@*`
+  const prefix = pkgName === MAIN_PKG_NAME ? 'v' : `${pkgName}@`
 
-    return stdout as string
+  try {
+    // Get all matching tags and sort by semver to find the highest version
+    const { stdout } = await run('git', ['tag', '-l', pattern], {
+      stdio: 'pipe',
+    })
+
+    const tags = (stdout as string).split('\n').filter(Boolean)
+
+    if (tags.length === 0) {
+      throw new Error('No tags found')
+    }
+
+    // Parse and sort tags by semver (highest first)
+    const sortedTags = tags
+      .map(tag => ({
+        tag,
+        version: semver.parse(tag.replace(prefix, '')),
+      }))
+      .filter(
+        (t): t is { tag: string; version: semver.SemVer } => t.version !== null
+      )
+      .sort((a, b) => semver.rcompare(a.version, b.version))
+
+    if (sortedTags.length === 0) {
+      throw new Error('No valid semver tags found')
+    }
+
+    return sortedTags[0].tag
   } catch (error: any) {
     console.log(
       chalk.dim(
@@ -476,8 +491,10 @@ async function getLastTag(pkgName: string): Promise<string> {
       )
     )
 
-    // 128 is the git exit code when there is nothing to describe
-    if (error.exitCode !== 128) {
+    if (
+      error.message !== 'No tags found' &&
+      error.message !== 'No valid semver tags found'
+    ) {
       console.error(error)
     }
     const { stdout } = await run(
