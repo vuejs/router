@@ -20,11 +20,13 @@ function toString(value: Date): string {
 }
 
 export const parser = defineParamParser({
-  get: (value: string | string[] | null) => {
+  get: value => {
     if (!value) {
       throw miss()
     }
-    return Array.isArray(value) ? value.map(toDate) : toDate(value)
+    return Array.isArray(value)
+      ? value.filter((v): v is string => !!v).map(toDate)
+      : toDate(value)
   },
   set: (value: Date | Date[]) =>
     Array.isArray(value) ? value.map(toString) : toString(value),
