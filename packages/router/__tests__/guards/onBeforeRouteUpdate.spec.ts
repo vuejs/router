@@ -77,11 +77,6 @@ describe('onBeforeRouteUpdate', () => {
       setup: setupSpy,
     })
 
-    // A different component (simulates detail page)
-    const DetailComponent = defineComponent({
-      template: '<div>Detail</div>',
-    })
-
     const { router, wrapper } = factory(
       [
         { path: '/', component },
