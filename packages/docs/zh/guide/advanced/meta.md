@@ -24,9 +24,9 @@ const routes = [
         component: PostsDetail,
         // 任何人都可以阅读文章
         meta: { requiresAuth: false },
-      }
-    ]
-  }
+      },
+    ],
+  },
 ]
 ```
 
