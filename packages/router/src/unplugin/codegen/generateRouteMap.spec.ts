@@ -811,6 +811,158 @@ describe('generateRouteNamedMap', () => {
       }"
     `)
   })
+
+  describe('experimental param parsers with query params', () => {
+    const OPTIONS_WITH_PARSERS = resolveOptions({
+      experimental: { paramParsers: true },
+    })
+
+    it('includes undefined for optional query params without default', () => {
+      const tree = new PrefixTree(OPTIONS_WITH_PARSERS)
+      const node = tree.insert('search', 'search.vue')
+      node.value.setEditOverride('params', {
+        query: { q: {} },
+      })
+      expect(
+        formatExports(
+          generateRouteNamedMap(tree, OPTIONS_WITH_PARSERS, new Map())
+        )
+      ).toMatchInlineSnapshot(`
+        "export interface RouteNamedMap {
+          '/search': RouteRecordInfo<
+            '/search',
+            '/search',
+            { q?: string },
+            { q: string | undefined },
+            | never
+          >,
+        }"
+      `)
+    })
+
+    it('does not include undefined for query params with default', () => {
+      const tree = new PrefixTree(OPTIONS_WITH_PARSERS)
+      const node = tree.insert('search', 'search.vue')
+      node.value.setEditOverride('params', {
+        query: { limit: { parser: 'int', default: '10' } },
+      })
+      expect(
+        formatExports(
+          generateRouteNamedMap(tree, OPTIONS_WITH_PARSERS, new Map())
+        )
+      ).toMatchInlineSnapshot(`
+        "export interface RouteNamedMap {
+          '/search': RouteRecordInfo<
+            '/search',
+            '/search',
+            { limit?: number },
+            { limit: number },
+            | never
+          >,
+        }"
+      `)
+    })
+
+    it('does not include undefined for required query params', () => {
+      const tree = new PrefixTree(OPTIONS_WITH_PARSERS)
+      const node = tree.insert('search', 'search.vue')
+      node.value.setEditOverride('params', {
+        query: { q: { required: true } },
+      })
+      expect(
+        formatExports(
+          generateRouteNamedMap(tree, OPTIONS_WITH_PARSERS, new Map())
+        )
+      ).toMatchInlineSnapshot(`
+        "export interface RouteNamedMap {
+          '/search': RouteRecordInfo<
+            '/search',
+            '/search',
+            { q: string },
+            { q: string },
+            | never
+          >,
+        }"
+      `)
+    })
+
+    it('includes undefined for default: undefined', () => {
+      const tree = new PrefixTree(OPTIONS_WITH_PARSERS)
+      const node = tree.insert('search', 'search.vue')
+      node.value.setEditOverride('params', {
+        query: { q: { default: 'undefined' } },
+      })
+      expect(
+        formatExports(
+          generateRouteNamedMap(tree, OPTIONS_WITH_PARSERS, new Map())
+        )
+      ).toMatchInlineSnapshot(`
+        "export interface RouteNamedMap {
+          '/search': RouteRecordInfo<
+            '/search',
+            '/search',
+            { q?: string },
+            { q: string | undefined },
+            | never
+          >,
+        }"
+      `)
+    })
+
+    it('handles mixed optional and required query params', () => {
+      const tree = new PrefixTree(OPTIONS_WITH_PARSERS)
+      const node = tree.insert('search', 'search.vue')
+      node.value.setEditOverride('params', {
+        query: {
+          q: { required: true },
+          page: { parser: 'int', default: '1' },
+          sort: {},
+          filter: { parser: 'int' },
+        },
+      })
+      expect(
+        formatExports(
+          generateRouteNamedMap(tree, OPTIONS_WITH_PARSERS, new Map())
+        )
+      ).toMatchInlineSnapshot(`
+        "export interface RouteNamedMap {
+          '/search': RouteRecordInfo<
+            '/search',
+            '/search',
+            { q: string, page?: number, sort?: string, filter?: number },
+            { q: string, page: number, sort: string | undefined, filter: number | undefined },
+            | never
+          >,
+        }"
+      `)
+    })
+
+    it('handles array format query params', () => {
+      const tree = new PrefixTree(OPTIONS_WITH_PARSERS)
+      const node = tree.insert('search', 'search.vue')
+      node.value.setEditOverride('params', {
+        query: {
+          tags: { format: 'array' },
+          ids: { parser: 'int', format: 'array', required: true },
+        },
+      })
+      expect(
+        formatExports(
+          generateRouteNamedMap(tree, OPTIONS_WITH_PARSERS, new Map())
+        )
+      ).toMatchInlineSnapshot(`
+        "export interface RouteNamedMap {
+          '/search': RouteRecordInfo<
+            '/search',
+            '/search',
+            { tags?: string[], ids: number[] },
+            { tags: string[] | undefined, ids: number[] },
+            | never
+          >,
+        }"
+      `)
+    })
+  })
 })
 
 /**

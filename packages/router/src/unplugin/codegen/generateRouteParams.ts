@@ -60,12 +60,35 @@ export function EXPERIMENTAL_generateRouteParams(
             extractedType = `${type ?? 'string'}${isRepeatable ? '[]' : ''}`
           }
 
-          extractedType +=
-            isTreePathParam(param) && isOptional && !isRepeatable
-              ? ' | null'
-              : ''
+          // Track if this is an optional query param (no default, not required)
+          let isOptionalQueryParam = false
 
-          return `${param.paramName}${isRaw && isOptional ? '?' : ''}: ${extractedType}`
+          // Add | null for optional path params
+          if (isTreePathParam(param)) {
+            if (isOptional && !isRepeatable) {
+              extractedType += ' | null'
+            }
+          } else {
+            // Handle query params
+            if (!param.required) {
+              isOptionalQueryParam = true
+              // For non-raw types (route.params), add explicit | undefined union
+              // ONLY if there's no default value (with default, value is always present)
+              if (
+                !isRaw &&
+                (param.defaultValue === undefined ||
+                  param.defaultValue === 'undefined')
+              ) {
+                extractedType += ' | undefined'
+              }
+            }
+          }
+
+          return `${param.paramName}${
+            // For raw types (router.push), use ? marker for optional query params
+            // For non-raw types (route.params), the | undefined is explicit in the union
+            isRaw && isOptionalQueryParam ? '?' : ''
+          }: ${extractedType}`
         })
         .join(', ')} }`
     : // no params allowed

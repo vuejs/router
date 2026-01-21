@@ -270,25 +270,14 @@ describe('MatcherPatternQueryParam', () => {
       })
     })
 
-    it('throws if a required param is missing and no default', () => {
+    it('returns undefined for missing optional param without default', () => {
       const matcher = new MatcherPatternQueryParam(
         'userId',
         'user_id',
         'value',
         PARAM_PARSER_DEFAULTS
       )
-      expect(() => matcher.match({})).toThrow(MatchMiss)
-    })
-
-    it('uses default when query param missing', () => {
-      const matcher = new MatcherPatternQueryParam(
-        'optional',
-        'opt',
-        'value',
-        PARAM_PARSER_DEFAULTS,
-        'fallback'
-      )
-      expect(matcher.match({})).toEqual({ optional: 'fallback' })
+      expect(matcher.match({})).toEqual({ userId: undefined })
     })
 
     it('uses function default when query param missing', () => {
@@ -311,6 +300,103 @@ describe('MatcherPatternQueryParam', () => {
         ['a']
       )
       expect(matcher.match({})).toEqual({ items: ['a'] })
+    })
+  })
+
+  describe('required parameter', () => {
+    it('throws MatchMiss for required: true when param is missing', () => {
+      const matcher = new MatcherPatternQueryParam(
+        'requiredParam',
+        'req',
+        'value',
+        PARAM_PARSER_DEFAULTS,
+        undefined,
+        true
+      )
+      expect(() => matcher.match({})).toThrow(MatchMiss)
+    })
+
+    it('uses actual value when required: true and param exists', () => {
+      const matcher = new MatcherPatternQueryParam(
+        'requiredParam',
+        'req',
+        'value',
+        PARAM_PARSER_DEFAULTS,
+        undefined,
+        true
+      )
+      expect(matcher.match({ req: 'value' })).toEqual({
+        requiredParam: 'value',
+      })
+    })
+
+    it('uses default over required (default takes precedence)', () => {
+      const matcher = new MatcherPatternQueryParam(
+        'param',
+        'p',
+        'value',
+        PARAM_PARSER_DEFAULTS,
+        'default',
+        true
+      )
+      // Even with required: true, default should be used if param is missing
+      expect(matcher.match({})).toEqual({ param: 'default' })
+    })
+
+    it('throws MatchMiss for required: true with invalid parser value', () => {
+      const matcher = new MatcherPatternQueryParam(
+        'count',
+        'c',
+        'value',
+        PARAM_PARSER_INT,
+        undefined,
+        true
+      )
+      // Parser throws on invalid value, should propagate
+      expect(() => matcher.match({ c: 'invalid' })).toThrow(MatchMiss)
+    })
+
+    it('returns empty array for missing optional param with array format', () => {
+      const matcher = new MatcherPatternQueryParam(
+        'items',
+        'item',
+        'array',
+        PARAM_PARSER_DEFAULTS,
+        undefined,
+        false
+      )
+      // Array format with missing param returns [], not undefined
+      expect(matcher.match({})).toEqual({ items: [] })
+    })
+
+    it('returns empty array for required: true with array format (parsed value is [])', () => {
+      const matcher = new MatcherPatternQueryParam(
+        'items',
+        'item',
+        'array',
+        PARAM_PARSER_DEFAULTS,
+        undefined,
+        true
+      )
+      // Array format normalizes missing query param to [] *before* the parser runs.
+      // Since [] is a valid parsed value (not undefined), required: true doesn't trigger.
+      // This is expected behavior - array format treats missing as "empty array".
+      expect(matcher.match({})).toEqual({ items: [] })
+    })
+
+    it('handles null value differently from missing value with required: true', () => {
+      const matcher = new MatcherPatternQueryParam(
+        'param',
+        'p',
+        'value',
+        PARAM_PARSER_DEFAULTS,
+        undefined,
+        true
+      )
+      // null is a valid value, not missing
+      expect(matcher.match({ p: null })).toEqual({ param: null })
+      // missing throws
+      expect(() => matcher.match({})).toThrow(MatchMiss)
     })
   })
 
@@ -376,17 +462,6 @@ describe('MatcherPatternQueryParam', () => {
       expect(matcher.match({ value: ['a', null, 'b'] })).toEqual({
         values: ['a', null, 'b'],
       })
-    })
-
-    it('handles undefined query param with default', () => {
-      const matcher = new MatcherPatternQueryParam(
-        'missing',
-        'miss',
-        'value',
-        PARAM_PARSER_DEFAULTS,
-        'default'
-      )
-      expect(matcher.match({ other: 'value' })).toEqual({ missing: 'default' })
     })
   })
 

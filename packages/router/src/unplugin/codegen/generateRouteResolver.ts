@@ -325,12 +325,17 @@ ${queryParams
       `'${param.format}'`,
     ]
 
-    if (parserOptions || param.defaultValue !== undefined) {
+    if (parserOptions || param.defaultValue !== undefined || param.required) {
       args.push(parserOptions || '{}')
     }
 
-    if (param.defaultValue !== undefined) {
-      args.push(param.defaultValue)
+    if (param.defaultValue !== undefined || param.required) {
+      args.push(param.defaultValue || 'undefined')
+    }
+
+    // we can strip any non true value to save bytes
+    if (param.required) {
+      args.push(String(param.required))
     }
 
     return `    new MatcherPatternQueryParam(${args.join(', ')})`

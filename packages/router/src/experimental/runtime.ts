@@ -95,7 +95,7 @@ export interface DefinePageQueryParamOptions<T = unknown> {
   /**
    * Default value if the query parameter is missing or if the match fails
    * (e.g. a invalid number is passed to the int param parser). If not provided
-   * and the param parser throws, the route will not match.
+   * and the param is not required, the route will match with undefined.
    */
   default?: (() => T) | T
 
@@ -108,6 +108,14 @@ export interface DefinePageQueryParamOptions<T = unknown> {
    * @default 'value'
    */
   format?: 'value' | 'array'
+
+  /**
+   * Whether this query parameter is required. If true and the parameter is
+   * missing (and no default is provided), the route will not match.
+   *
+   * @default false
+   */
+  required?: boolean
 }
 
 /**
