@@ -378,6 +378,7 @@ async function main() {
           '--same-file',
           '-p',
           'angular',
+          '-u',
           '-r',
           changelogExists ? '1' : '0',
           '--commit-path',
