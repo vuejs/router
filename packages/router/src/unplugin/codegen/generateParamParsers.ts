@@ -37,6 +37,33 @@ export function warnMissingParamParsers(
   }
 }
 
+export interface MissingParamParser {
+  parser: string
+  routePath: string
+  filePaths: string[]
+}
+
+export function collectMissingParamParsers(
+  tree: PrefixTree,
+  paramParsers: ParamParsersMap
+): MissingParamParser[] {
+  const missing: MissingParamParser[] = []
+  for (const node of tree.getChildrenDeepSorted()) {
+    for (const param of node.params) {
+      if (param.parser && !paramParsers.has(param.parser)) {
+        if (!NATIVE_PARAM_PARSERS.includes(param.parser)) {
+          missing.push({
+            parser: param.parser,
+            routePath: node.fullPath,
+            filePaths: Array.from(node.value.components.values()),
+          })
+        }
+      }
+    }
+  }
+  return missing
+}
+
 export function generateParamParsersTypesDeclarations(
   paramParsers: ParamParsersMap
 ) {
