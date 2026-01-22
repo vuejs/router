@@ -245,16 +245,26 @@ async function main() {
     const prerelease = semver.prerelease(version)
     const preId = prerelease && prerelease[0]
 
-    const versionIncrements: ReleaseType[] = [
-      'patch',
-      'minor',
-      'major',
-      ...(preId
-        ? (['prepatch', 'preminor', 'premajor', 'prerelease'] as const)
-        : []),
-    ]
+    const prereleaseTypes = ['beta', 'alpha', 'rc']
+    const isPrereleaseTag = !!optionTag && prereleaseTypes.includes(optionTag)
 
-    const betaVersion = semver.inc(version, 'prerelease', 'beta')
+    // For prerelease tags: show prepatch/preminor/premajor with the tag, plus prerelease if already on one
+    // For regular releases: show patch/minor/major, plus pre* variants if already on a prerelease
+    const versionIncrements: ReleaseType[] = isPrereleaseTag
+      ? [
+          'prepatch',
+          'preminor',
+          'premajor',
+          ...(preId ? (['prerelease'] as const) : []),
+        ]
+      : [
+          'patch',
+          'minor',
+          'major',
+          ...(preId
+            ? (['prepatch', 'preminor', 'premajor', 'prerelease'] as const)
+            : []),
+        ]
 
     const { release } = await prompts({
       type: 'select',
@@ -262,22 +272,14 @@ async function main() {
       message: `Select release type for ${chalk.bold.white(name)}`,
       choices: versionIncrements
         .map(release => {
-          const newVersion = semver.inc(version, release, preId as string)
+          // Use optionTag for prerelease increments when a prerelease tag is specified
+          const identifier = isPrereleaseTag ? optionTag : (preId as string)
+          const newVersion = semver.inc(version, release, identifier)
           return {
             value: newVersion,
             title: `${release}: ${name} (${newVersion})`,
           }
         })
-        .concat(
-          optionTag === 'beta'
-            ? [
-                {
-                  title: `beta: ${name} (${betaVersion})`,
-                  value: betaVersion,
-                },
-              ]
-            : []
-        )
         .concat([{ value: 'custom', title: 'custom' }]),
     })
 
