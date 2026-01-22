@@ -1,3 +1,11 @@
+# [5.0.0-beta.1](https://github.com/vuejs/router/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2026-01-22)
+
+- fix(experimental)!: query params are optional by default ([7f00038](https://github.com/vuejs/router/commit/7f00038b50887d668314505e9f0540d620812747))
+
+### BREAKING CHANGES
+
+- Pass `required: true` to their query params definition to make them required and _miss a match_ if not provided in a location.
+
 # [5.0.0-beta.0](https://github.com/vuejs/router/compare/v4.6.4...v5.0.0-beta.0) (2026-01-19)
 
 Vue Router 5 merges [unplugin-vue-router](https://uvr.esm.is) into the core package. It has no breaking changes itself, so you should be able to upgrade it no matter if you use unplugin-vue-router or Vue Router 4 without file-based routing, and everything should just work. If not, please open an issue!
