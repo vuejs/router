@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   warnMissingParamParsers,
+  collectMissingParamParsers,
   generateParamParsersTypesDeclarations,
   generateParamsTypes,
   generateParamParserOptions,
@@ -68,6 +69,87 @@ describe('warnMissingParamParsers', () => {
     ])
 
     warnMissingParamParsers(tree, paramParsers)
+  })
+})
+
+describe('collectMissingParamParsers', () => {
+  it('returns empty array for routes without param parsers', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('users', 'users.vue')
+    tree.insert('posts/[id]', 'posts/[id].vue')
+
+    const paramParsers: ParamParsersMap = new Map()
+
+    const result = collectMissingParamParsers(tree, paramParsers)
+    expect(result).toEqual([])
+  })
+
+  it('returns empty array for native parsers', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('users/[id=int]', 'users/[id=int].vue')
+    tree.insert('posts/[active=bool]', 'posts/[active=bool].vue')
+
+    const paramParsers: ParamParsersMap = new Map()
+
+    const result = collectMissingParamParsers(tree, paramParsers)
+    expect(result).toEqual([])
+  })
+
+  it('collects missing custom parsers with route and file info', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('users/[id=uuid]', 'users/[id=uuid].vue')
+
+    const paramParsers: ParamParsersMap = new Map()
+
+    const result = collectMissingParamParsers(tree, paramParsers)
+    expect(result).toEqual([
+      {
+        parser: 'uuid',
+        routePath: '/users/:id',
+        filePaths: ['users/[id=uuid].vue'],
+      },
+    ])
+  })
+
+  it('returns empty array when custom parsers exist in map', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('users/[id=uuid]', 'users/[id=uuid].vue')
+
+    const paramParsers: ParamParsersMap = new Map([
+      [
+        'uuid',
+        {
+          name: 'uuid',
+          typeName: 'Param_uuid',
+          relativePath: 'parsers/uuid',
+          absolutePath: '/path/to/parsers/uuid',
+        },
+      ],
+    ])
+
+    const result = collectMissingParamParsers(tree, paramParsers)
+    expect(result).toEqual([])
+  })
+
+  it('collects multiple missing parsers from different routes', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('users/[id=uuid]', 'users/[id=uuid].vue')
+    tree.insert('posts/[slug=slug]', 'posts/[slug=slug].vue')
+
+    const paramParsers: ParamParsersMap = new Map()
+
+    const result = collectMissingParamParsers(tree, paramParsers)
+    expect(result).toHaveLength(2)
+    expect(result).toContainEqual({
+      parser: 'uuid',
+      routePath: '/users/:id',
+      filePaths: ['users/[id=uuid].vue'],
+    })
+    expect(result).toContainEqual({
+      parser: 'slug',
+      routePath: '/posts/:slug',
+      filePaths: ['posts/[slug=slug].vue'],
+    })
   })
 })
 

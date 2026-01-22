@@ -26,6 +26,7 @@ import {
   generateParamParserCustomType,
   ParamParsersMap,
   warnMissingParamParsers,
+  collectMissingParamParsers,
 } from '../codegen/generateParamParsers'
 import picomatch from 'picomatch'
 import { camelCase } from 'scule'
@@ -276,6 +277,24 @@ export function createRoutesContext(options: ResolvedOptions) {
       imports += '\n'
     }
 
+    // collect missing param parsers and generate runtime errors
+    const missingParsers = collectMissingParamParsers(
+      routeTree,
+      paramParsersMap
+    )
+    let missingParserErrors = ''
+    if (missingParsers.length > 0) {
+      missingParserErrors =
+        '\n' +
+        missingParsers
+          .map(
+            ({ parser, routePath, filePaths }) =>
+              `console.error('[vue-router] Parameter parser "${parser}" not found for route "${routePath}". File: ${filePaths.join(', ')}')`
+          )
+          .join('\n') +
+        '\n'
+    }
+
     const hmr = ts`
 export function handleHotUpdate(_router, _hotUpdateCallback) {
   if (import.meta.hot) {
@@ -304,7 +323,7 @@ if (import.meta.hot) {
   })
 }`
 
-    const newAutoResolver = `${imports}${resolverCode}\n${hmr}`
+    const newAutoResolver = `${imports}${missingParserErrors}${resolverCode}\n${hmr}`
 
     // prepend it to the code
     return newAutoResolver
