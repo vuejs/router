@@ -356,6 +356,19 @@ describe('MatcherPatternQueryParam', () => {
       expect(() => matcher.match({ c: 'invalid' })).toThrow(MatchMiss)
     })
 
+    it('falls back to default on parser error even when required', () => {
+      const matcher = new MatcherPatternQueryParam(
+        'count',
+        'c',
+        'value',
+        PARAM_PARSER_INT,
+        0, // default value
+        true // required
+      )
+      // Invalid value should fallback to default instead of throwing
+      expect(matcher.match({ c: 'invalid' })).toEqual({ count: 0 })
+    })
+
     it('returns empty array for missing optional param with array format', () => {
       const matcher = new MatcherPatternQueryParam(
         'items',
