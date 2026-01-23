@@ -195,6 +195,20 @@ describe('generateRouteRecordQuery', () => {
     `)
   })
 
+  it('generates query param with required and default', () => {
+    const node = new PrefixTree(DEFAULT_OPTIONS).insert('a', 'a.vue')
+    node.value.setEditOverride('params', {
+      query: { page: { parser: 'int', default: '1', required: true } },
+    })
+    expect(
+      generateRouteRecordQuery({ importsMap, node, paramParsersMap: new Map() })
+    ).toMatchInlineSnapshot(`
+      "query: [
+          new MatcherPatternQueryParam('page', 'page', 'value', PARAM_PARSER_INT, 1, true)
+        ],"
+    `)
+  })
+
   it('generates mixed query params with different configurations', () => {
     const node = new PrefixTree(DEFAULT_OPTIONS).insert('a', 'a.vue')
     node.value.setEditOverride('params', {
