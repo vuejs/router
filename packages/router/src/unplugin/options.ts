@@ -83,16 +83,25 @@ export interface RoutesFolderOptionResolved extends RoutesFolderOption {
   extensions: string[]
 }
 
+/**
+ * An option that can be overridden by providing a function that receives the
+ * existing value and returns a new one.
+ *
+ * @internal
+ */
 export type _OverridableOption<T, AllowedTypes = T> =
   | AllowedTypes
   | ((existing: T) => T)
 
 /**
- * Resolves an overridable option by calling the function with the existing value if it's a function, otherwise
- * returning the passed `value`. If `value` is undefined, it returns the `defaultValue` instead.
+ * Resolves an overridable option by calling the function with the existing
+ * value if it's a function, otherwise returning the passed `value`. If `value`
+ * is undefined, it returns the `defaultValue` instead.
  *
  * @param defaultValue default value for the option
  * @param value and overridable option
+ *
+ * @internal
  */
 export function resolveOverridableOption<T>(
   defaultValue: T,
@@ -103,7 +112,14 @@ export function resolveOverridableOption<T>(
     : (value ?? defaultValue)
 }
 
+/**
+ * @internal
+ */
 export type _RoutesFolder = string | RoutesFolderOption
+
+/**
+ * Type for the {@link Options.routesFolder} option.
+ */
 export type RoutesFolder = _RoutesFolder[] | _RoutesFolder
 
 /**
@@ -151,7 +167,7 @@ export interface Options {
   getRouteName?: (node: TreeNode) => string
 
   /**
-   * Allows to extend a route by modifying its node, adding children, or even deleting it. This will be invoked once for
+   * Allows extending a route by modifying its node, adding children, or even deleting it. This will be invoked once for
    * each route.
    *
    * @param route - {@link EditableTreeNode} of the route to extend
@@ -236,6 +252,9 @@ export interface Options {
   }
 }
 
+/**
+ * Options for experimental param parsers.
+ */
 export interface ParamParsersOptions {
   /**
    * Folder(s) to scan for param matchers. Set to an empty array to disable the feature.
@@ -245,10 +264,16 @@ export interface ParamParsersOptions {
   dir?: string | string[]
 }
 
+/**
+ * Default options for experimental param parsers.
+ */
 export const DEFAULT_PARAM_PARSERS_OPTIONS = {
   dir: ['src/params'],
 } satisfies Required<ParamParsersOptions>
 
+/**
+ * Default plugin options.
+ */
 export const DEFAULT_OPTIONS = {
   extensions: ['.vue'],
   exclude: [],
@@ -268,6 +293,11 @@ export const DEFAULT_OPTIONS = {
   experimental: {},
 } satisfies Options
 
+/**
+ * Expected server context provided to hooks.
+ *
+ * @internal
+ */
 export interface ServerContext {
   /**
    * Invalidates a module by its id.

@@ -22,7 +22,15 @@ import { join } from 'pathe'
 import { appendExtensionListToPattern } from './core/utils'
 import { createAutoExportPlugin } from '../experimental/data-loaders/auto-exports'
 
-export type { Options } from './options'
+export type {
+  Options,
+  ResolvedOptions,
+  RoutesFolder,
+  RoutesFolderOption,
+  RoutesFolderOptionResolved,
+  ParamParsersOptions,
+} from './options'
+export { resolveOptions } from './options'
 export type { TreeNode } from './core/tree'
 export type {
   TreeNodeValue,
