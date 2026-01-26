@@ -1,7 +1,7 @@
-import { SFCBlock, parse } from '@vue/compiler-sfc'
+import { SFCBlock, parse as parseSFC } from '@vue/compiler-sfc'
 import { ResolvedOptions } from '../options'
 import JSON5 from 'json5'
-import { parse as YAMLParser } from 'yaml'
+import { parse as parseYaml } from 'yaml'
 import { warn } from './utils'
 import type { DefinePageQueryParamOptions } from '../../experimental/runtime'
 import type { RouteRecordRaw } from '../../types'
@@ -11,7 +11,7 @@ export function getRouteBlock(
   content: string,
   options: ResolvedOptions
 ) {
-  const parsedSFC = parse(content, { pad: 'space' }).descriptor
+  const parsedSFC = parseSFC(content, { pad: 'space' }).descriptor
   const blockStr = parsedSFC?.customBlocks.find(b => b.type === 'route')
 
   if (blockStr) return parseCustomBlock(blockStr, path, options)
@@ -65,7 +65,7 @@ function parseCustomBlock(
     }
   } else if (lang === 'yaml' || lang === 'yml') {
     try {
-      return YAMLParser(block.content)
+      return parseYaml(block.content)
     } catch (err: any) {
       warn(
         `Invalid YAML format of <${block.type}> content in ${filePath}\n${err.message}`
