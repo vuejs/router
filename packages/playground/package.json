@@ -19,6 +19,6 @@
     "@vue/tsconfig": "^0.8.1",
     "vite": "^7.3.0",
     "vue-router": "workspace:*",
-    "vue-tsc": "^3.2.2"
+    "vue-tsc": "^3.2.4"
   }
 }
