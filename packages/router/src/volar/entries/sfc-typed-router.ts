@@ -20,7 +20,7 @@ const plugin: VueLanguagePlugin<{ rootDir?: string }> = ({
   config,
 }) => {
   // Prioritize plugin options over tsconfig
-  const rootDir = config?.rootDir ?? compilerOptions.rootDir
+  const rootDir = config.rootDir ?? compilerOptions.rootDir
 
   // Warn if no rootDir specified
   if (!rootDir) {
