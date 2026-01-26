@@ -14,15 +14,13 @@ import type ts from 'typescript'
   - (low priority) Enhance typing of `to` route in `beforeEnter` route guards defined in `definePage`
 */
 
-const plugin: VueLanguagePlugin = ({
+const plugin: VueLanguagePlugin<{ rootDir?: string }> = ({
   compilerOptions,
   modules: { typescript: ts },
-  ...options
+  config,
 }) => {
-  // rootDir comes from plugin options (vuejs/language-tools#5678)
-  const optionsRootDir = (options as { rootDir?: string }).rootDir
   // Prioritize plugin options over tsconfig
-  const rootDir = optionsRootDir ?? compilerOptions.rootDir
+  const rootDir = config?.rootDir ?? compilerOptions.rootDir
 
   // Warn if no rootDir specified
   if (!rootDir) {

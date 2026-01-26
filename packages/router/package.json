@@ -184,7 +184,7 @@
     "@vue/server-renderer": "3.6.0-beta.2",
     "@vue/test-utils": "^2.4.6",
     "browserstack-local": "^1.5.8",
-    "chromedriver": "^143.0.3",
+    "chromedriver": "^144.0.0",
     "connect-history-api-fallback": "^2.0.0",
     "dotenv": "^17.2.3",
     "faked-promise": "^2.2.2",
@@ -198,7 +198,7 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "tsdown": "0.20.0-beta.3",
     "tsup": "^8.5.1",
-    "vite": "^7.3.1",
+    "vite": "^7.3.0",
     "vue": "3.6.0-beta.2"
   },
   "peerDependencies": {
