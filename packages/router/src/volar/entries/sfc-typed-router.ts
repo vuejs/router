@@ -17,7 +17,20 @@ import type ts from 'typescript'
 const plugin: VueLanguagePlugin = ({
   compilerOptions,
   modules: { typescript: ts },
+  ...options
 }) => {
+  // rootDir comes from plugin options (vuejs/language-tools#5678)
+  const optionsRootDir = (options as { rootDir?: string }).rootDir
+  // Prioritize plugin options over tsconfig
+  const rootDir = optionsRootDir ?? compilerOptions.rootDir
+
+  // Warn if no rootDir specified
+  if (!rootDir) {
+    console.warn(
+      '[vue-router] No rootDir specified. Set it in the Volar plugin options or tsconfig compilerOptions.rootDir for proper typed routes.'
+    )
+  }
+
   const RE = {
     DOLLAR_ROUTE: {
       /**
@@ -38,9 +51,7 @@ const plugin: VueLanguagePlugin = ({
       // TODO: Do we want to apply this to EVERY .vue file or only to components that the user wrote themselves?
 
       // NOTE: this might not work if different from the root passed to VueRouter unplugin
-      const relativeFilePath = compilerOptions.rootDir
-        ? relative(compilerOptions.rootDir, fileName)
-        : fileName
+      const relativeFilePath = rootDir ? relative(rootDir, fileName) : fileName
 
       const useRouteNameType = `import('vue-router/auto-routes')._RouteNamesForFilePath<'${relativeFilePath}'>`
       const useRouteNameTypeParam = `<${useRouteNameType}>`
