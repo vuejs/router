@@ -1,3 +1,9 @@
+# [5.0.0-beta.2](https://github.com/vuejs/router/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2026-01-26)
+
+### Bug Fixes
+
+- **volar:** upgrade config read ([73398a7](https://github.com/vuejs/router/commit/73398a7b9fd363dbab0b2b3e8e56aaf5d359a6c4))
+
 # [5.0.0-beta.1](https://github.com/vuejs/router/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2026-01-22)
 
 - fix(experimental)!: query params are optional by default ([7f00038](https://github.com/vuejs/router/commit/7f00038b50887d668314505e9f0540d620812747))
