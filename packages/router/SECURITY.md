@@ -5,10 +5,10 @@
 This is the list of versions of Vue Router which are
 currently being supported with security updates.
 
-| Version    | Supported          |
-| ---------- | ------------------ |
-| 4.x      | :white_check_mark: |
-| &lt;3.x      | :x: |
+| Version | Supported          |
+| ------- | ------------------ |
+| 4.x     | :white_check_mark: |
+| &lt;3.x | :x:                |
 
 ## Reporting a Vulnerability
 

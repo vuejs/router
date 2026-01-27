@@ -50,6 +50,9 @@ export * from './vue-router.mjs'
 `.trimStart()
     )
   },
+  // Externalize everything and avoid mistakenly including dependencies in the
+  // bundle of vue-router runtime
+  skipNodeModulesBundle: true,
 } satisfies InlineConfig
 
 const esm = {
@@ -57,6 +60,8 @@ const esm = {
   entry: {
     ...commonOptions.entry,
     'experimental/index': './src/experimental/index.ts',
+    'experimental/pinia-colada':
+      './src/experimental/data-loaders/entries/pinia-colada.ts',
   },
   platform: 'neutral',
   dts: true,
@@ -149,6 +154,46 @@ const iifeProd = {
   },
 } satisfies InlineConfig
 
+// Unplugin build configuration
+const unplugin = {
+  format: ['cjs', 'esm'] as const,
+  entry: {
+    'unplugin/index': './src/unplugin/index.ts',
+    'unplugin/options': './src/unplugin/options.ts',
+    'unplugin/vite': './src/unplugin/vite.ts',
+    'unplugin/webpack': './src/unplugin/webpack.ts',
+    'unplugin/rollup': './src/unplugin/rollup.ts',
+    'unplugin/rolldown': './src/unplugin/rolldown.ts',
+    'unplugin/esbuild': './src/unplugin/esbuild.ts',
+    'unplugin/types': './src/unplugin/types.ts',
+  },
+  platform: 'node' as const,
+  dts: true,
+  // avoid inlining rolldown and other unplugin deps
+  skipNodeModulesBundle: true,
+  sourcemap: false,
+  outputOptions: {
+    banner,
+    exports: 'named',
+  },
+} satisfies InlineConfig
+
+// Volar plugin build configuration
+const volar = {
+  format: ['cjs'] as const,
+  entry: {
+    'volar/sfc-route-blocks': './src/volar/entries/sfc-route-blocks.ts',
+    'volar/sfc-typed-router': './src/volar/entries/sfc-typed-router.ts',
+  },
+  // these are part of volar core
+  external: ['@vue/language-core', 'muggle-string', 'pathe'],
+  dts: true,
+  sourcemap: false,
+  outputOptions: {
+    banner,
+  },
+} satisfies InlineConfig
+
 export default [
   //
   esm,
@@ -158,4 +203,6 @@ export default [
   cjsProd,
   iife,
   iifeProd,
+  unplugin,
+  volar,
 ]

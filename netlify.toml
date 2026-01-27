@@ -1,8 +1,8 @@
 [build.environment]
 CHROMEDRIVER_SKIP_DOWNLOAD = "true"
-NODE_VERSION = "22"
+NODE_VERSION = "24"
 
 [build]
-command = "pnpm run docs:build"
+command = "pnpm run netlify"
 ignore = "./scripts/docs-check.sh"
 publish = "packages/docs/.vitepress/dist"

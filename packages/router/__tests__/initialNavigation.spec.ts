@@ -1,10 +1,18 @@
-import { JSDOM } from 'jsdom'
+/**
+ * @vitest-environment happy-dom
+ */
 import { createRouter, createWebHistory } from '../src'
-import { createDom, components, nextNavigation } from './utils'
+import { components, nextNavigation } from './utils'
 import { RouteRecordRaw } from '../src/types'
-import { describe, expect, it, beforeAll, vi, afterAll } from 'vitest'
+import { Window as HappyDomWindow } from 'happy-dom'
+import { describe, expect, it, vi } from 'vitest'
 
-// override the value of isBrowser because the variable is created before JSDOM
+// to get a typed window
+function getWindow(): HappyDomWindow {
+  return window as unknown as HappyDomWindow
+}
+
+// override the value of isBrowser because the variable is created before happy-dom
 // is created
 vi.mock('../src/utils/env', () => ({
   isBrowser: true,
@@ -29,25 +37,16 @@ const routes: RouteRecordRaw[] = [
 ]
 
 describe('Initial Navigation', () => {
-  let dom: JSDOM
   function newRouter(
     url: string,
     options: Partial<Parameters<typeof createRouter>[0]> = {}
   ) {
-    dom.reconfigure({ url: 'https://example.com' + url })
+    getWindow().happyDOM.setURL('https://example.com' + url)
     const history = options.history || createWebHistory()
     const router = createRouter({ history, routes, ...options })
 
     return { history, router }
   }
-
-  beforeAll(() => {
-    dom = createDom()
-  })
-
-  afterAll(() => {
-    dom.window.close()
-  })
 
   it('handles initial navigation with redirect', async () => {
     const { history, router } = newRouter('/home')

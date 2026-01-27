@@ -65,7 +65,7 @@ router.resolve({ name: 'chapters', params: { chapters: ['a', 'b'] } }).href
 
 // 给定 { path: '/:chapters+', name: 'chapters' },
 router.resolve({ name: 'chapters', params: { chapters: [] } }).href
-// 抛出错误，因为 `chapters` 为空 
+// 抛出错误，因为 `chapters` 为空
 ```
 
 这些也可以通过在**右括号后**添加它们与自定义正则结合使用：

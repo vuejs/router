@@ -4,6 +4,12 @@ import {
   groupIconMdPlugin,
   groupIconVitePlugin,
 } from 'vitepress-plugin-group-icons'
+import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
+import { ModuleResolutionKind } from 'typescript'
+// TODO: simplify and only importwm from '../twoslash/files'
+import { typedRouterFileAsModule } from '../twoslash-files'
+import { extraFiles } from '../twoslash/files'
+import llmstxt from 'vitepress-plugin-llms'
 
 // TODO:
 // export const META_IMAGE = 'https://router.vuejs.org/social.png'
@@ -35,15 +41,15 @@ export const slugify = (str: string): string =>
     .replace(/^(\d)/, '_$1')
 
 const productionHead: HeadConfig[] = [
-  // NOTE: removed because there is a bug that makes it load forever
-  // [
-  //   'script',
-  //   {
-  //     src: 'https://unpkg.com/thesemetrics@latest',
-  //     async: '',
-  //     type: 'text/javascript',
-  //   },
-  // ],
+  [
+    'script',
+    {
+      src: 'https://cdn.usefathom.com/script.js',
+      'data-site': 'RENJQDQI',
+      'data-spa': 'auto',
+      defer: '',
+    },
+  ],
 ]
 
 export const sharedConfig = defineConfig({
@@ -67,6 +73,20 @@ export const sharedConfig = defineConfig({
     config: md => {
       md.use(groupIconMdPlugin)
     },
+    codeTransformers: [
+      transformerTwoslash({
+        twoslashOptions: {
+          compilerOptions: {
+            moduleResolution: ModuleResolutionKind.Bundler,
+          },
+          extraFiles: {
+            ...extraFiles,
+            'router.ts': typedRouterFileAsModule,
+            // 'typed-router.d.ts': typedRouterFile,
+          },
+        },
+      }),
+    ],
   },
 
   head: [
@@ -101,16 +121,6 @@ export const sharedConfig = defineConfig({
     //   },
     // ],
 
-    [
-      'script',
-      {
-        src: 'https://cdn.usefathom.com/script.js',
-        'data-site': 'RENJQDQI',
-        'data-spa': 'auto',
-        defer: '',
-      },
-    ],
-
     // Vue School Top banner
     [
       'script',
@@ -122,6 +132,7 @@ export const sharedConfig = defineConfig({
       },
     ],
 
+    // analytics and other prod only head tags
     ...(isProduction ? productionHead : []),
   ],
 
@@ -142,8 +153,7 @@ export const sharedConfig = defineConfig({
     ],
 
     footer: {
-      copyright:
-        'Copyright © 2014-present Evan You, Eduardo San Martin Morote',
+      copyright: 'Copyright © 2014-present Evan You, Eduardo San Martin Morote',
       message: 'Released under the MIT License.',
     },
 
@@ -169,6 +179,18 @@ export const sharedConfig = defineConfig({
     },
   },
   vite: {
-    plugins: [groupIconVitePlugin()],
+    plugins: [
+      groupIconVitePlugin(),
+      // TODO: write a proper llms.txt
+      llmstxt({
+        description: 'The official Router for Vue.js',
+        details: `
+- Type Safe routes
+- File based routing
+- Data Loaders for efficient data fetching
+`.trim(),
+        ignoreFiles: ['index.md', 'api/**/*'],
+      }),
+    ],
   },
 })

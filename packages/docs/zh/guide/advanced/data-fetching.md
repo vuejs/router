@@ -49,10 +49,10 @@ watch(() => route.params.id, fetchData, { immediate: true })
 async function fetchData(id) {
   error.value = post.value = null
   loading.value = true
-  
+
   try {
     // 用获取数据的工具函数 / API 包裹器替换 `getPost`
-    post.value = await getPost(id)  
+    post.value = await getPost(id)
   } catch (err) {
     error.value = err.toString()
   } finally {

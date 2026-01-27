@@ -1,40 +1,29 @@
-import { JSDOM } from 'jsdom'
+/**
+ * @vitest-environment happy-dom
+ */
 import { createWebHashHistory } from '../../src/history/hash'
 import { createWebHistory } from '../../src/history/html5'
-import { createDom } from '../utils'
 import { mockWarn } from '../vitest-mock-warn'
-import {
-  vi,
-  describe,
-  expect,
-  it,
-  beforeAll,
-  beforeEach,
-  Mock,
-  afterAll,
-  afterEach,
-} from 'vitest'
+import { Window as HappyDomWindow } from 'happy-dom'
+import { vi, describe, expect, it, beforeEach, Mock, afterEach } from 'vitest'
+
+// to get a typed window
+function getWindow(): HappyDomWindow {
+  return window as unknown as HappyDomWindow
+}
 
 vi.mock('../../src/history/html5')
-// override the value of isBrowser because the variable is created before JSDOM
+// override the value of isBrowser because the variable is created before happy-dom
 // is created
 vi.mock('../../src/utils/env', () => ({
   isBrowser: true,
 }))
 
 describe('History Hash', () => {
-  let dom: JSDOM
-  beforeAll(() => {
-    dom = createDom()
-  })
   mockWarn()
 
   beforeEach(() => {
     ;(createWebHistory as Mock).mockClear()
-  })
-
-  afterAll(() => {
-    dom.window.close()
   })
 
   afterEach(() => {
@@ -46,11 +35,11 @@ describe('History Hash', () => {
 
   describe('url', () => {
     beforeEach(() => {
-      dom.reconfigure({ url: 'https://example.com' })
+      getWindow().happyDOM.setURL('https://example.com')
     })
 
     it('should use a correct base', () => {
-      dom.reconfigure({ url: 'https://esm.dev' })
+      getWindow().happyDOM.setURL('https://esm.dev')
       createWebHashHistory()
       // starts with a `/`
       expect(createWebHistory).toHaveBeenCalledWith('/#')
@@ -85,19 +74,19 @@ describe('History Hash', () => {
 
     describe('url with pathname', () => {
       it('keeps the pathname as base', () => {
-        dom.reconfigure({ url: 'https://esm.dev/subfolder' })
+        getWindow().happyDOM.setURL('https://esm.dev/subfolder')
         createWebHashHistory()
         expect(createWebHistory).toHaveBeenCalledWith('/subfolder#')
       })
 
       it('keeps the pathname without a trailing slash as base', () => {
-        dom.reconfigure({ url: 'https://esm.dev/subfolder#/foo' })
+        getWindow().happyDOM.setURL('https://esm.dev/subfolder#/foo')
         createWebHashHistory()
         expect(createWebHistory).toHaveBeenCalledWith('/subfolder#')
       })
 
       it('keeps the pathname with trailing slash as base', () => {
-        dom.reconfigure({ url: 'https://esm.dev/subfolder/#/foo' })
+        getWindow().happyDOM.setURL('https://esm.dev/subfolder/#/foo')
         createWebHashHistory()
         expect(createWebHistory).toHaveBeenCalledWith('/subfolder/#')
       })
@@ -106,7 +95,7 @@ describe('History Hash', () => {
 
   describe('file://', () => {
     beforeEach(() => {
-      dom.reconfigure({ url: 'file:///usr/some-file.html' })
+      getWindow().happyDOM.setURL('file:///usr/some-file.html')
     })
 
     it('should use a correct base', () => {

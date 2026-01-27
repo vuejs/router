@@ -38,7 +38,9 @@ export type RouteRecordInfoGeneric = RouteRecordInfo<
 >
 
 /**
- * Convenience type to get the typed RouteMap or a generic one if not provided. It is extracted from the {@link TypesConfig} if it exists, it becomes {@link RouteMapGeneric} otherwise.
+ * Convenience type to get the typed RouteMap or a generic one if not provided.
+ * It is extracted from the {@link TypesConfig} if it exists, it becomes
+ * {@link RouteMapGeneric} otherwise.
  */
 export type RouteMap =
   TypesConfig extends Record<'RouteNamedMap', infer RouteNamedMap>

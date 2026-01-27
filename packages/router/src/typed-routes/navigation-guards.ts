@@ -62,7 +62,7 @@ export interface NavigationGuard {
  */
 export interface NavigationHookAfter {
   (
-    to: RouteLocationNormalized,
+    to: RouteLocationNormalizedLoaded,
     from: RouteLocationNormalizedLoaded,
     failure?: NavigationFailure | void
   ): unknown

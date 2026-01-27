@@ -1,4 +1,3 @@
-import { JSDOM, ConstructorOptions } from 'jsdom'
 import {
   RouteRecordMultipleViews,
   MatcherLocation,
@@ -48,11 +47,10 @@ export function nextNavigation(router: Router | EXPERIMENTAL_Router) {
   })
 }
 
-export interface RouteRecordViewLoose
-  extends Pick<
-    RouteRecordMultipleViews,
-    'path' | 'name' | 'meta' | 'beforeEnter'
-  > {
+export interface RouteRecordViewLoose extends Pick<
+  RouteRecordMultipleViews,
+  'path' | 'name' | 'meta' | 'beforeEnter'
+> {
   leaveGuards?: any
   updateGuards?: any
   instances: Record<string, any>
@@ -83,42 +81,6 @@ export interface MatcherLocationNormalizedLoose {
   meta: any
   matched: Partial<RouteRecordViewLoose>[]
   instances: Record<string, any>
-}
-
-declare global {
-  namespace NodeJS {
-    interface Global {
-      window: JSDOM['window']
-      location: JSDOM['window']['location']
-      history: JSDOM['window']['history']
-      document: JSDOM['window']['document']
-      before?: Function
-    }
-  }
-}
-
-export function createDom(options?: ConstructorOptions) {
-  const dom = new JSDOM(
-    `<!DOCTYPE html><html><head></head><body></body></html>`,
-    {
-      url: 'https://example.com/',
-      referrer: 'https://example.com/',
-      contentType: 'text/html',
-      ...options,
-    }
-  )
-
-  try {
-    // @ts-expect-error: not the same window
-    global.window = dom.window
-    global.location = dom.window.location
-    global.history = dom.window.history
-    global.document = dom.window.document
-  } catch (erro) {
-    // it's okay, some are readonly
-  }
-
-  return dom
 }
 
 export const noGuard: NavigationGuard = (to, from, next) => {

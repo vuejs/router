@@ -4,9 +4,9 @@ import { dirname, join, relative, resolve } from 'node:path'
 import { parseArgs } from 'node:util'
 import { fileURLToPath } from 'node:url'
 import chalk from 'chalk'
-import semver from 'semver'
+import semver, { type ReleaseType } from 'semver'
 import prompts from '@posva/prompts'
-import { execa, type Options as ExecaOptions } from 'execa'
+import { spawn } from 'node:child_process'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -77,8 +77,58 @@ const FILES_TO_COMMIT = [
   // 'packages/*/CHANGELOG.md',
 ]
 
-const run = (bin: string, args: string[], opts: ExecaOptions = {}) =>
-  execa(bin, args, { stdio: 'inherit', ...opts })
+interface RunOptions {
+  stdio?: 'inherit' | 'pipe'
+  cwd?: string
+}
+
+interface RunResult {
+  stdout: string
+}
+
+function run(
+  bin: string,
+  args: string[],
+  opts: RunOptions = {}
+): Promise<RunResult> {
+  return new Promise((resolve, reject) => {
+    const { stdio = 'inherit', cwd } = opts
+
+    const child = spawn(bin, args, {
+      cwd,
+      stdio: stdio === 'pipe' ? ['inherit', 'pipe', 'pipe'] : 'inherit',
+    })
+
+    let stdout = ''
+    let stderr = ''
+
+    if (stdio === 'pipe') {
+      child.stdout?.on('data', (data: Buffer) => {
+        stdout += data.toString()
+      })
+      child.stderr?.on('data', (data: Buffer) => {
+        stderr += data.toString()
+      })
+    }
+
+    child.on('error', reject)
+
+    child.on('close', code => {
+      const result = { stdout: stdout.trimEnd() }
+      if (code !== 0) {
+        const error = new Error(
+          `Command failed: ${bin} ${args.join(' ')}`
+        ) as Error & {
+          exitCode: number | null
+        }
+        error.exitCode = code
+        reject(error)
+      } else {
+        resolve(result)
+      }
+    })
+  })
+}
 
 const dryRun = async (bin: string, args: string[], opts: unknown = {}) =>
   console.log(chalk.blue(`[dry-run] ${bin} ${args.join(' ')}`), opts)
@@ -195,16 +245,26 @@ async function main() {
     const prerelease = semver.prerelease(version)
     const preId = prerelease && prerelease[0]
 
-    const versionIncrements = [
-      'patch',
-      'minor',
-      'major',
-      ...(preId
-        ? (['prepatch', 'preminor', 'premajor', 'prerelease'] as const)
-        : []),
-    ]
+    const prereleaseTypes = ['beta', 'alpha', 'rc']
+    const isPrereleaseTag = !!optionTag && prereleaseTypes.includes(optionTag)
 
-    const betaVersion = semver.inc(version, 'prerelease', 'beta')
+    // For prerelease tags: show prepatch/preminor/premajor with the tag, plus prerelease if already on one
+    // For regular releases: show patch/minor/major, plus pre* variants if already on a prerelease
+    const versionIncrements: ReleaseType[] = isPrereleaseTag
+      ? [
+          'prepatch',
+          'preminor',
+          'premajor',
+          ...(preId ? (['prerelease'] as const) : []),
+        ]
+      : [
+          'patch',
+          'minor',
+          'major',
+          ...(preId
+            ? (['prepatch', 'preminor', 'premajor', 'prerelease'] as const)
+            : []),
+        ]
 
     const { release } = await prompts({
       type: 'select',
@@ -212,22 +272,14 @@ async function main() {
       message: `Select release type for ${chalk.bold.white(name)}`,
       choices: versionIncrements
         .map(release => {
-          const newVersion = semver.inc(version, release, preId as string)
+          // Use optionTag for prerelease increments when a prerelease tag is specified
+          const identifier = isPrereleaseTag ? optionTag : (preId as string)
+          const newVersion = semver.inc(version, release, identifier)
           return {
             value: newVersion,
             title: `${release}: ${name} (${newVersion})`,
           }
         })
-        .concat(
-          optionTag === 'beta'
-            ? [
-                {
-                  title: `beta: ${name} (${betaVersion})`,
-                  value: betaVersion,
-                },
-              ]
-            : []
-        )
         .concat([{ value: 'custom', title: 'custom' }]),
     })
 
@@ -326,6 +378,7 @@ async function main() {
           '--same-file',
           '-p',
           'angular',
+          '-u',
           '-r',
           changelogExists ? '1' : '0',
           '--commit-path',
@@ -429,7 +482,7 @@ function updateDeps(
   Object.keys(deps).forEach(dep => {
     const updatedDep = updatedPackages.find(pkg => pkg.name === dep)
     // avoid updated peer deps that are external like @vue/devtools-api
-    if (dep && updatedDep) {
+    if (dep && updatedDep && deps[dep]) {
       // skip any workspace reference, pnpm will handle it
       if (deps[dep].startsWith('workspace:')) {
         console.log(
@@ -453,22 +506,37 @@ function updateDeps(
  * Get the last tag published for a package or null if there are no tags
  */
 async function getLastTag(pkgName: string): Promise<string> {
-  try {
-    const { stdout } = await run(
-      'git',
-      [
-        'describe',
-        '--tags',
-        '--abbrev=0',
-        '--match',
-        pkgName === MAIN_PKG_NAME ? 'v*' : `${pkgName}@*`,
-      ],
-      {
-        stdio: 'pipe',
-      }
-    )
+  const pattern = pkgName === MAIN_PKG_NAME ? 'v*' : `${pkgName}@*`
+  const prefix = pkgName === MAIN_PKG_NAME ? 'v' : `${pkgName}@`
 
-    return stdout as string
+  try {
+    // Get all matching tags and sort by semver to find the highest version
+    const { stdout } = await run('git', ['tag', '-l', pattern], {
+      stdio: 'pipe',
+    })
+
+    const tags = (stdout as string).split('\n').filter(Boolean)
+
+    if (tags.length === 0) {
+      throw new Error('No tags found')
+    }
+
+    // Parse and sort tags by semver (highest first)
+    const sortedTags = tags
+      .map(tag => ({
+        tag,
+        version: semver.parse(tag.replace(prefix, '')),
+      }))
+      .filter(
+        (t): t is { tag: string; version: semver.SemVer } => t.version !== null
+      )
+      .sort((a, b) => semver.rcompare(a.version, b.version))
+
+    if (sortedTags.length === 0) {
+      throw new Error('No valid semver tags found')
+    }
+
+    return sortedTags[0].tag
   } catch (error: any) {
     console.log(
       chalk.dim(
@@ -476,8 +544,10 @@ async function getLastTag(pkgName: string): Promise<string> {
       )
     )
 
-    // 128 is the git exit code when there is nothing to describe
-    if (error.exitCode !== 128) {
+    if (
+      error.message !== 'No tags found' &&
+      error.message !== 'No valid semver tags found'
+    ) {
       console.error(error)
     }
     const { stdout } = await run(

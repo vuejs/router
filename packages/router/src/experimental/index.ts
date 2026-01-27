@@ -51,15 +51,69 @@ export { miss, MatchMiss } from './route-resolver/matchers/errors'
  * They should all be prefixed with `_` to avoid conflicts with the public API.
  */
 
-export { mergeRouteRecord as _mergeRouteRecord } from './router'
+// Runtime exports (definePage macro)
+export {
+  definePage,
+  _mergeRouteRecord,
+  type DefinePage,
+  type ParamParserType,
+  type ParamParserType_Native,
+  type DefinePageQueryParamOptions,
+} from './runtime'
+
+// Data loaders exports
+export {
+  // Core
+  DataLoaderPlugin,
+  NavigationResult,
+  useIsDataLoading,
+  type DataLoaderPluginOptions,
+  type SetupLoaderGuardOptions,
+  // Loader types
+  type UseDataLoader,
+  type UseDataLoaderInternals,
+  type UseDataLoaderResult,
+  type DataLoaderContextBase,
+  type DataLoaderEntryBase,
+  type DefineDataLoaderOptionsBase_LaxData,
+  type DefineDataLoaderOptionsBase_DefinedData,
+  type DefineLoaderFn,
+  // Utilities
+  getCurrentContext,
+  setCurrentContext,
+  withLoaderContext,
+  trackRoute,
+  toLazyValue,
+  // Types config
+  type ErrorDefault,
+} from './data-loaders/entries/index'
+
+// Basic loader
+export {
+  defineBasicLoader,
+  type DefineDataLoaderOptions_LaxData,
+  type DefineDataLoaderOptions_DefinedData,
+  type DataLoaderContext,
+  type UseDataLoaderBasic_LaxData,
+  type UseDataLoaderBasic_DefinedData,
+  type DataLoaderBasicEntry,
+  // deprecated
+  type DefineDataLoaderOptions,
+  type UseDataLoaderBasic,
+} from './data-loaders/defineLoader'
+
+// FIXME: this was getting merged with non experimental code
+// it should only affect when importing from experimental
+// this means some interfaces import from experimental from core and they shouldn't
+// we need to refactor those interface to be outside of experimental
 
 // in the new experimental router, there are only parents
-// this should create type errors if someone is realying on children
-declare module 'vue-router' {
-  export interface RouteLocationMatched {
-    /**
-     * The experimental router uses a `parent` property instead of `children`.
-     */
-    children?: never
-  }
-}
+// this should create type errors if someone is relying on children
+// declare module 'vue-router' {
+//   export interface RouteLocationMatched {
+//     /**
+//      * The experimental router uses a `parent` property instead of `children`.
+//      */
+//     children?: never
+//   }
+// }

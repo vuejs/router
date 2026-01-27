@@ -26,15 +26,15 @@ https://github.com/vuejs-translations/docs-zh-cn/wiki/%E7%BF%BB%E8%AF%91%E9%A1%B
 
 其次，针对 Vue Router 本身的特殊语境，我们在上述翻译须知的基础上整理了一份附加的术语约定：
 
-| 英文 | 建议翻译 |
-| --- | --- |
-| active (link) | 匹配当前路由 (的链接) |
+| 英文                | 建议翻译                  |
+| ------------------- | ------------------------- |
+| active (link)       | 匹配当前路由 (的链接)     |
 | exact active (link) | 严格匹配当前路由 (的链接) |
-| location | 地址 |
-| (navigate) from | (导航) 离开 |
-| (navigate) to | (导航) 进入 |
-| (navigation) guard | (导航) 守卫 |
-| path | 路径 |
+| location            | 地址                      |
+| (navigate) from     | (导航) 离开               |
+| (navigate) to       | (导航) 进入               |
+| (navigation) guard  | (导航) 守卫               |
+| path                | 路径                      |
 
 ## 中文格式校验
 

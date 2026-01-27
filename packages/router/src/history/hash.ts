@@ -36,10 +36,7 @@ export function createWebHashHistory(base?: string): RouterHistory {
 
   if (__DEV__ && !base.endsWith('#/') && !base.endsWith('#')) {
     warn(
-      `A hash base must end with a "#":\n"${base}" should be "${base.replace(
-        /#.*$/,
-        '#'
-      )}".`
+      `A hash base must end with a "#":\n"${base}" should be "${base.replace(/#.*$/, '#')}".`
     )
   }
   return createWebHistory(base)

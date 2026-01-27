@@ -8,7 +8,7 @@
 Some applications' UIs are composed of components that are nested multiple levels deep. In this case, it is very common that the segments of a URL correspond to a certain structure of nested components, for example:
 
 ```
-/user/johnny/profile                   /user/johnny/posts 
+/user/johnny/profile                   /user/johnny/posts
 ┌──────────────────┐                  ┌──────────────────┐
 │ User             │                  │ User             │
 │ ┌──────────────┐ │                  │ ┌──────────────┐ │
@@ -30,9 +30,7 @@ Given the app we created in the last chapter:
 
 ```vue [User.vue]
 <template>
-  <div>
-    User {{ $route.params.id }}
-  </div>
+  <div>User {{ $route.params.id }}</div>
 </template>
 ```
 
@@ -149,7 +147,7 @@ const routes = [
       { path: '', component: AdminOverview },
       { path: 'users', component: AdminUserList },
       { path: 'users/:id', component: AdminUserDetails },
-    ], 
+    ],
   },
 ]
 ```

@@ -10,6 +10,8 @@ import VueMasteryLogoLink from './components/VueMasteryLogoLink.vue'
 import status from '../translation-status.json'
 import RuleKitLink from './components/RuleKitLink.vue'
 import 'virtual:group-icons.css'
+import TwoslashFloatingVue from '@shikijs/vitepress-twoslash/client'
+import '@shikijs/vitepress-twoslash/style.css'
 
 const i18nLabels = {
   zh: '该翻译已同步到了 ${date} 的版本，其对应的 commit hash 是 <code>${hash}</code>。',
@@ -29,6 +31,7 @@ const theme: Theme = {
     app.component('VueSchoolLink', VueSchoolLink)
     app.component('RuleKitLink', RuleKitLink)
     app.component('VueMasteryLogoLink', VueMasteryLogoLink)
+    app.use(TwoslashFloatingVue)
   },
 
   // TODO: real date

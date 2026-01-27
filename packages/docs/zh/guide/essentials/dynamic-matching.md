@@ -32,7 +32,7 @@ _路径参数_ 用冒号 `:` 表示。当一个路由被匹配时，它的 _para
 
 你可以在同一个路由中设置有多个 _路径参数_，它们会映射到 `$route.params` 上的相应字段。例如：
 
-| 匹配模式                       | 匹配路径                 | route.params                           |
+| 匹配模式                       | 匹配路径                 | route.params                             |
 | ------------------------------ | ------------------------ | ---------------------------------------- |
 | /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`                |
 | /users/:username/posts/:postId | /users/eduardo/posts/123 | `{ username: 'eduardo', postId: '123' }` |
@@ -69,9 +69,12 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-watch(() => route.params.id, (newId, oldId) => {
-  // 对路由变化做出响应...
-})
+watch(
+  () => route.params.id,
+  (newId, oldId) => {
+    // 对路由变化做出响应...
+  }
+)
 </script>
 ```
 

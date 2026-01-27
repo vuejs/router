@@ -12,8 +12,8 @@ const routes = [
   {
     path: '/user/:username',
     name: 'profile', // [!code highlight]
-    component: User
-  }
+    component: User,
+  },
 ]
 ```
 

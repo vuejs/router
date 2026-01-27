@@ -57,4 +57,3 @@ pnpm create vue
 这将把 Vue Router 暴露在一个全局的 `VueRouter` 对象上，例如 `VueRouter.createRouter(...)`。
 
 <RuleKitLink />
-

@@ -1,5 +1,5 @@
 /**
- * @vitest-environment jsdom
+ * @vitest-environment happy-dom
  */
 import { RouterView } from '../src/RouterView'
 import { components, RouteLocationNormalizedLoose } from './utils'

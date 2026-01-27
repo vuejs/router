@@ -1,12 +1,12 @@
 import { toValue } from 'vue'
-import {
+import type {
   EmptyParams,
   MatcherParamsFormatted,
   MatcherPattern,
   MatcherQueryParams,
   MatcherQueryParamsValue,
 } from './matcher-pattern'
-import { ParamParser, PARAM_PARSER_DEFAULTS } from './param-parsers'
+import { type ParamParser, PARAM_PARSER_DEFAULTS } from './param-parsers'
 import { miss } from './errors'
 
 /**
@@ -20,15 +20,17 @@ export interface MatcherPatternQuery<
 /**
  * Matcher for a specific query parameter. It will read and write the parameter
  */
-export class MatcherPatternQueryParam<T, ParamName extends string>
-  implements MatcherPatternQuery<Record<ParamName, T>>
-{
+export class MatcherPatternQueryParam<
+  T,
+  ParamName extends string,
+> implements MatcherPatternQuery<Record<ParamName, T>> {
   constructor(
     private paramName: ParamName,
     private queryKey: string,
     private format: 'value' | 'array',
     private parser: ParamParser<T> = {},
-    private defaultValue?: (() => T) | T
+    private defaultValue?: (() => T) | T,
+    private required?: boolean
   ) {}
 
   match(query: MatcherQueryParams): Record<ParamName, T> {
@@ -91,10 +93,14 @@ export class MatcherPatternQueryParam<T, ParamName extends string>
     // otherwise, use the default value. This allows parsers to return undefined
     // when they want to possibly fallback to the default value
     if (value === undefined) {
-      if (this.defaultValue === undefined) {
+      if (this.defaultValue !== undefined) {
+        // Has default: use it
+        value = toValue(this.defaultValue)
+      } else if (this.required) {
+        // Required but no default and no value: throw
         throw miss()
       }
-      value = toValue(this.defaultValue)
+      // else: optional param without default, value stays undefined
     }
 
     return {

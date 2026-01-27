@@ -20,12 +20,10 @@ Hi! I'm really excited that you are interested in contributing to Vue Router. Be
 - Check out a topic branch from a base branch, e.g. `main`, and merge back against that branch.
 
 - If adding a new feature:
-
   - Add accompanying test case.
   - Provide a convincing reason to add this feature. Ideally, you should open a suggestion issue first and have it approved before working on it.
 
 - If fixing bug:
-
   - If you are resolving a particular issue, add `(fix #xxxx[,#xxxx])` (#xxxx is the issue id) in your PR title for a better release log, e.g. `update entities encoding/decoding (fix #3899)`.
   - Provide a detailed description of the bug in the PR. Live demo preferred.
   - Add appropriate test coverage if applicable. You can check the coverage of your code addition by running `pnpm test --coverage`.

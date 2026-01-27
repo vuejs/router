@@ -86,8 +86,7 @@ export interface RouterOptions extends EXPERIMENTAL_RouterOptions_Base {
 /**
  * Router instance.
  */
-export interface Router
-  extends EXPERIMENTAL_Router_Base<RouteRecordNormalized> {
+export interface Router extends EXPERIMENTAL_Router_Base<RouteRecordNormalized> {
   /**
    * Original options object passed to create the Router
    */
@@ -172,9 +171,7 @@ export function createRouter(options: RouterOptions): Router {
       parent = matcher.getRecordMatcher(parentOrRoute)
       if (__DEV__ && !parent) {
         warn(
-          `Parent route "${String(
-            parentOrRoute
-          )}" not found when adding child route`,
+          `Parent route "${String(parentOrRoute)}" not found when adding child route`,
           route
         )
       }
@@ -462,7 +459,10 @@ export function createRouter(options: RouterOptions): Router {
     if (!force && isSameRouteLocation(stringifyQuery, from, targetLocation)) {
       failure = createRouterError<NavigationFailure>(
         ErrorTypes.NAVIGATION_DUPLICATED,
-        { to: toLocation, from }
+        {
+          to: toLocation,
+          from,
+        }
       )
       // trigger scroll to allow scrolling to the same anchor
       handleScroll(
@@ -982,7 +982,10 @@ export function createRouter(options: RouterOptions): Router {
   let started: boolean | undefined
   const installedApps = new Set<App>()
 
-  const router: Router = {
+  // NOTE: we need to cast router as Router because the experimental
+  // data-loaders add many properties that aren't available here. We might want
+  // to add them later on instead of having declare module in experimental
+  const router = {
     currentRoute,
     listening: true,
 
@@ -1011,7 +1014,7 @@ export function createRouter(options: RouterOptions): Router {
       app.component('RouterLink', RouterLink)
       app.component('RouterView', RouterView)
 
-      app.config.globalProperties.$router = router
+      app.config.globalProperties.$router = router as Router
       Object.defineProperty(app.config.globalProperties, '$route', {
         enumerable: true,
         get: () => unref(currentRoute),
@@ -1042,7 +1045,7 @@ export function createRouter(options: RouterOptions): Router {
         })
       }
 
-      app.provide(routerKey, router)
+      app.provide(routerKey, router as Router)
       app.provide(routeLocationKey, shallowReactive(reactiveRoute))
       app.provide(routerViewLocationKey, currentRoute)
 
@@ -1065,10 +1068,10 @@ export function createRouter(options: RouterOptions): Router {
 
       // TODO: this probably needs to be updated so it can be used by vue-termui
       if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
-        addDevtools(app, router, matcher)
+        addDevtools(app, router as Router, matcher)
       }
     },
-  }
+  } satisfies Pick<Router, Extract<keyof Router, string>>
 
   // TODO: type this as NavigationGuardReturn or similar instead of any
   function runGuardQueue(guards: Lazy<any>[]): Promise<any> {
@@ -1078,5 +1081,5 @@ export function createRouter(options: RouterOptions): Router {
     )
   }
 
-  return router
+  return router as Router
 }

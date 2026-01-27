@@ -168,7 +168,6 @@ export type {
 } from './RouterLink'
 export { RouterView } from './RouterView'
 export type { RouterViewProps } from './RouterView'
-
 export type { TypesConfig } from './config'
 
 export * from './useApi'

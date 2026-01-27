@@ -11,9 +11,7 @@ Let's return to our earlier example:
 
 ```vue [User.vue]
 <template>
-  <div>
-    User {{ $route.params.id }}
-  </div>
+  <div>User {{ $route.params.id }}</div>
 </template>
 ```
 
@@ -23,9 +21,7 @@ with:
 import User from './User.vue'
 
 // these are passed to `createRouter`
-const routes = [
-  { path: '/users/:id', component: User },
-]
+const routes = [{ path: '/users/:id', component: User }]
 ```
 
 We can remove the direct dependency on `$route` in `User.vue` by declaring a prop instead:
@@ -36,14 +32,12 @@ We can remove the direct dependency on `$route` in `User.vue` by declaring a pro
 <!-- User.vue -->
 <script setup>
 defineProps({
-  id: String
+  id: String,
 })
 </script>
 
 <template>
-  <div>
-    User {{ id }}
-  </div>
+  <div>User {{ id }}</div>
 </template>
 ```
 
@@ -52,15 +46,13 @@ defineProps({
 <script>
 export default {
   props: {
-    id: String
-  }
+    id: String,
+  },
 }
 </script>
 
 <template>
-  <div>
-    User {{ id }}
-  </div>
+  <div>User {{ id }}</div>
 </template>
 ```
 
@@ -69,9 +61,7 @@ export default {
 We can then configure the route to pass the `id` param as a prop by setting `props: true`:
 
 ```js
-const routes = [
-  { path: '/user/:id', component: User, props: true }
-]
+const routes = [{ path: '/user/:id', component: User, props: true }]
 ```
 
 This allows you to use the component anywhere, which makes the component easier to reuse and test.
@@ -89,8 +79,8 @@ const routes = [
   {
     path: '/user/:id',
     components: { default: User, sidebar: Sidebar },
-    props: { default: true, sidebar: false }
-  }
+    props: { default: true, sidebar: false },
+  },
 ]
 ```
 
@@ -103,8 +93,8 @@ const routes = [
   {
     path: '/promotion/from-newsletter',
     component: Promotion,
-    props: { newsletterPopup: false }
-  }
+    props: { newsletterPopup: false },
+  },
 ]
 ```
 
@@ -117,8 +107,8 @@ const routes = [
   {
     path: '/search',
     component: SearchUser,
-    props: route => ({ query: route.query.q })
-  }
+    props: route => ({ query: route.query.q }),
+  },
 ]
 ```
 
@@ -140,7 +130,7 @@ You can also pass any props via the [`<RouterView>` slot](../advanced/router-vie
 ```
 
 ::: warning
-In this case, **all view components** will receive `view-prop`. This is usually not a good idea as  it means that all of the view components have declared a `view-prop` prop, which is not necessarily true. If possible, use any of the options above.
+In this case, **all view components** will receive `view-prop`. This is usually not a good idea as it means that all of the view components have declared a `view-prop` prop, which is not necessarily true. If possible, use any of the options above.
 :::
 
 <RuleKitLink />

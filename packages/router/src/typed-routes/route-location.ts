@@ -16,8 +16,7 @@ import type { RouteRecordNameGeneric } from './route-records'
  * Generic version of {@link RouteLocation}. It is used when no {@link RouteMap} is provided.
  */
 export interface RouteLocationGeneric
-  extends _RouteLocationBase,
-    RouteLocationOptions {
+  extends _RouteLocationBase, RouteLocationOptions {
   /**
    * Array of {@link RouteRecord} containing components as they were
    * passed when adding records. It can also contain redirect records. This
@@ -44,7 +43,9 @@ export interface RouteLocationTyped<
  */
 export type RouteLocationTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
-> = { [N in keyof RouteMap]: RouteLocationTyped<RouteMap, N> }
+> = {
+  [N in keyof RouteMap]: RouteLocationTyped<RouteMap, N>
+}
 
 /**
  * Generic version of {@link RouteLocationNormalized} that is used when no {@link RouteMap} is provided.
@@ -80,13 +81,14 @@ export interface RouteLocationNormalizedTyped<
  */
 export type RouteLocationNormalizedTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
-> = { [N in keyof RouteMap]: RouteLocationNormalizedTyped<RouteMap, N> }
+> = {
+  [N in keyof RouteMap]: RouteLocationNormalizedTyped<RouteMap, N>
+}
 
 /**
  * Generic version of {@link RouteLocationNormalizedLoaded} that is used when no {@link RouteMap} is provided.
  */
-export interface RouteLocationNormalizedLoadedGeneric
-  extends RouteLocationNormalizedGeneric {
+export interface RouteLocationNormalizedLoadedGeneric extends RouteLocationNormalizedGeneric {
   /**
    * Array of {@link RouteLocationMatched} containing only plain components (any
    * lazy-loaded components have been loaded and were replaced inside the
@@ -120,8 +122,7 @@ export type RouteLocationNormalizedLoadedTypedList<
  * Generic version of {@link RouteLocationAsRelative}. It is used when no {@link RouteMap} is provided.
  */
 export interface RouteLocationAsRelativeGeneric
-  extends RouteQueryAndHash,
-    RouteLocationOptions {
+  extends RouteQueryAndHash, RouteLocationOptions {
   name?: RouteRecordNameGeneric
   params?: RouteParamsRawGeneric
   /**
@@ -147,14 +148,15 @@ export interface RouteLocationAsRelativeTyped<
  */
 export type RouteLocationAsRelativeTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
-> = { [N in keyof RouteMap]: RouteLocationAsRelativeTyped<RouteMap, N> }
+> = {
+  [N in keyof RouteMap]: RouteLocationAsRelativeTyped<RouteMap, N>
+}
 
 /**
  * Generic version of {@link RouteLocationAsPath}. It is used when no {@link RouteMap} is provided.
  */
 export interface RouteLocationAsPathGeneric
-  extends RouteQueryAndHash,
-    RouteLocationOptions {
+  extends RouteQueryAndHash, RouteLocationOptions {
   /**
    * Percentage encoded pathname section of the URL.
    */
@@ -180,7 +182,9 @@ export interface RouteLocationAsPathTyped<
  */
 export type RouteLocationAsPathTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
-> = { [N in keyof RouteMap]: RouteLocationAsPathTyped<RouteMap, N> }
+> = {
+  [N in keyof RouteMap]: RouteLocationAsPathTyped<RouteMap, N>
+}
 
 /**
  * Helper to generate a type safe version of the {@link RouteLocationAsString} type.
@@ -196,7 +200,9 @@ export type RouteLocationAsStringTyped<
  */
 export type RouteLocationAsStringTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
-> = { [N in keyof RouteMap]: RouteLocationAsStringTyped<RouteMap, N> }
+> = {
+  [N in keyof RouteMap]: RouteLocationAsStringTyped<RouteMap, N>
+}
 
 /**
  * Generic version of {@link RouteLocationResolved}. It is used when no {@link RouteMap} is provided.
@@ -227,7 +233,9 @@ export interface RouteLocationResolvedTyped<
  */
 export type RouteLocationResolvedTypedList<
   RouteMap extends RouteMapGeneric = RouteMapGeneric,
-> = { [N in keyof RouteMap]: RouteLocationResolvedTyped<RouteMap, N> }
+> = {
+  [N in keyof RouteMap]: RouteLocationResolvedTyped<RouteMap, N>
+}
 
 /**
  * Type safe versions of types that are exposed by vue-router. We have to use a generic check to allow for names to be `undefined` when no `RouteMap` is provided.

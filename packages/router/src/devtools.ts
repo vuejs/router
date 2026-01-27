@@ -1,13 +1,11 @@
-import {
-  App,
+import { setupDevtoolsPlugin } from '@vue/devtools-api'
+import type {
   CustomInspectorNode,
   InspectorNodeTag,
   CustomInspectorState,
-  HookPayloads,
-  setupDevtoolsPlugin,
   TimelineEvent,
-} from '@vue/devtools-api'
-import { watch } from 'vue'
+} from '@vue/devtools-kit'
+import { type App, watch } from 'vue'
 import { decode } from './encoding'
 import { isSameRouteRecord } from './location'
 import { RouterMatcher } from './matcher'
@@ -18,7 +16,6 @@ import { UseLinkDevtoolsContext } from './RouterLink'
 import { RouterViewDevtoolsContext } from './RouterView'
 import { assign, isArray } from './utils'
 import { RouteLocationNormalized } from './typed-routes'
-import { warn } from './warning'
 
 /**
  * Copies a route location and removes any problematic properties that cannot be shown in devtools (e.g. Vue instances).
@@ -80,14 +77,8 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
       app,
     },
     api => {
-      if (typeof api.now !== 'function') {
-        warn(
-          '[Vue Router]: You seem to be using an outdated version of Vue Devtools. Are you still using the Beta release instead of the stable one? You can find the links at https://devtools.vuejs.org/guide/installation.html.'
-        )
-      }
-
       // display state added by the router
-      api.on.inspectComponent((payload, ctx) => {
+      api.on.inspectComponent(payload => {
         if (payload.instanceData) {
           payload.instanceData.state.push({
             type: 'Routing',
@@ -299,7 +290,11 @@ export function addDevtools(app: App, router: Router, matcher: RouterMatcher) {
         payload.rootNodes = routes.map(formatRouteRecordForInspector)
       }
 
-      let activeRoutesPayload: HookPayloads['getInspectorTree'] | undefined
+      type GetInspectorTreePayload = Parameters<
+        Parameters<typeof api.on.getInspectorTree>[0]
+      >[0]
+
+      let activeRoutesPayload: GetInspectorTreePayload | undefined
       api.on.getInspectorTree(payload => {
         activeRoutesPayload = payload
         if (payload.app === app && payload.inspectorId === routerInspectorId) {

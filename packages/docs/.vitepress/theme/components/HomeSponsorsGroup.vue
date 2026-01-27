@@ -4,9 +4,9 @@ import { computed } from 'vue'
 import { useData } from 'vitepress'
 
 const { name, size = 140 } = defineProps<{
-    name: 'Gold' | 'Platinum' | 'Silver' | 'Bronze'
-    size?: number | string
-  }>()
+  name: 'Gold' | 'Platinum' | 'Silver' | 'Bronze'
+  size?: number | string
+}>()
 
 const { isDark } = useData()
 

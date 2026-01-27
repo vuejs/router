@@ -1,4 +1,7 @@
 /**
+ * @vitest-environment happy-dom
+ */
+/**
  * Experimental Router Test Suite
  *
  * This file adapts the original router.spec.ts tests for the experimental router implementation.
@@ -45,14 +48,9 @@ import {
   loadRouteLocation,
 } from '../index'
 import { NavigationFailureType } from '../errors'
-import {
-  createDom,
-  components,
-  tick,
-  nextNavigation,
-} from '../../__tests__/utils'
+import { components, tick, nextNavigation } from '../../__tests__/utils'
 import { START_LOCATION_NORMALIZED } from '../location'
-import { vi, describe, expect, it, beforeAll } from 'vitest'
+import { vi, describe, expect, it } from 'vitest'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
 
 const parentRecord = normalizeRouteRecord({
@@ -312,10 +310,6 @@ async function newRouter(
 describe('Experimental Router', () => {
   mockWarn()
 
-  beforeAll(() => {
-    createDom()
-  })
-
   it('starts at START_LOCATION', () => {
     const history = createMemoryHistory()
     const resolver = createFixedResolver(experimentalRoutes)
@@ -537,7 +531,9 @@ describe('Experimental Router', () => {
     const { router } = await newRouter()
     expect(
       router.resolve({ name: 'optional', params: { p: 'a' } })
-    ).toHaveProperty('params', { p: 'a' })
+    ).toHaveProperty('params', {
+      p: 'a',
+    })
   })
 
   it('removes optional params when current location has it', async () => {
@@ -560,10 +556,14 @@ describe('Experimental Router', () => {
     const { router } = await newRouter()
     expect(
       router.resolve({ name: 'optional', params: { p: '' } })
-    ).toHaveProperty('params', { p: null })
+    ).toHaveProperty('params', {
+      p: null,
+    })
     expect(
       router.resolve({ name: 'optional', params: { p: null } })
-    ).toHaveProperty('params', { p: null })
+    ).toHaveProperty('params', {
+      p: null,
+    })
     expect(router.resolve({ name: 'optional', params: {} })).toHaveProperty(
       'params',
       { p: null }

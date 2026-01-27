@@ -111,7 +111,7 @@ const {
   // boolean ref indicating if the link is exactly active
   isExactActive,
   // function to navigate to the link
-  navigate
+  navigate,
 } = useLink(props)
 
 const isExternalLink = computed(

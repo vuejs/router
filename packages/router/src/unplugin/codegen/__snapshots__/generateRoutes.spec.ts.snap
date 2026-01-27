@@ -1,0 +1,207 @@
+// Vitest Snapshot v1
+
+exports[`toRouteRecordSTring > adds children and name when folder and component exist 1`] = `
+"[
+  {
+    path: \\"/a\\",
+    name: \\"/a\\",
+    component: () => import('a.vue'),
+    children: [
+      {
+        path: \\"c\\",
+        name: \\"/a/c\\",
+        component: () => import('a/c.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: \\"/b\\",
+    /* no name */
+    /* no component */
+    children: [
+      {
+        path: \\"c\\",
+        name: \\"/b/c\\",
+        component: () => import('b/c.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: \\"/d\\",
+    name: \\"/d\\",
+    component: () => import('d.vue'),
+    /* no children */
+  }
+]"
+`;
+
+exports[`toRouteRecordSTring > correctly names index.vue files 1`] = `
+"[
+  {
+    path: \\"/\\",
+    name: \\"/\\",
+    component: () => import('index.vue'),
+    /* no children */
+  },
+  {
+    path: \\"/b\\",
+    /* no name */
+    /* no component */
+    children: [
+      {
+        path: \\"\\",
+        name: \\"/b/\\",
+        component: () => import('b/index.vue'),
+        /* no children */
+      }
+    ],
+  }
+]"
+`;
+
+exports[`toRouteRecordSTring > nested children 1`] = `
+"[
+  {
+    path: \\"/a\\",
+    /* no name */
+    /* no component */
+    children: [
+      {
+        path: \\"a\\",
+        name: \\"/a/a\\",
+        component: () => import('a/a.vue'),
+        /* no children */
+      },
+      {
+        path: \\"b\\",
+        name: \\"/a/b\\",
+        component: () => import('a/b.vue'),
+        /* no children */
+      },
+      {
+        path: \\"c\\",
+        name: \\"/a/c\\",
+        component: () => import('a/c.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: \\"/b\\",
+    /* no name */
+    /* no component */
+    children: [
+      {
+        path: \\"b\\",
+        name: \\"/b/b\\",
+        component: () => import('b/b.vue'),
+        /* no children */
+      },
+      {
+        path: \\"c\\",
+        name: \\"/b/c\\",
+        component: () => import('b/c.vue'),
+        /* no children */
+      },
+      {
+        path: \\"d\\",
+        name: \\"/b/d\\",
+        component: () => import('b/d.vue'),
+        /* no children */
+      }
+    ],
+  }
+]"
+`;
+
+exports[`toRouteRecordSTring > nested children 2`] = `
+"[
+  {
+    path: \\"/a\\",
+    /* no name */
+    /* no component */
+    children: [
+      {
+        path: \\"a\\",
+        name: \\"/a/a\\",
+        component: () => import('a/a.vue'),
+        /* no children */
+      },
+      {
+        path: \\"b\\",
+        name: \\"/a/b\\",
+        component: () => import('a/b.vue'),
+        /* no children */
+      },
+      {
+        path: \\"c\\",
+        name: \\"/a/c\\",
+        component: () => import('a/c.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: \\"/b\\",
+    /* no name */
+    /* no component */
+    children: [
+      {
+        path: \\"b\\",
+        name: \\"/b/b\\",
+        component: () => import('b/b.vue'),
+        /* no children */
+      },
+      {
+        path: \\"c\\",
+        name: \\"/b/c\\",
+        component: () => import('b/c.vue'),
+        /* no children */
+      },
+      {
+        path: \\"d\\",
+        name: \\"/b/d\\",
+        component: () => import('b/d.vue'),
+        /* no children */
+      }
+    ],
+  },
+  {
+    path: \\"/c\\",
+    name: \\"/c\\",
+    component: () => import('c.vue'),
+    /* no children */
+  },
+  {
+    path: \\"/d\\",
+    name: \\"/d\\",
+    component: () => import('d.vue'),
+    /* no children */
+  }
+]"
+`;
+
+exports[`toRouteRecordSTring > works with some paths at root 1`] = `
+"[
+  {
+    path: \\"/a\\",
+    name: \\"/a\\",
+    component: () => import('a.vue'),
+    /* no children */
+  },
+  {
+    path: \\"/b\\",
+    name: \\"/b\\",
+    component: () => import('b.vue'),
+    /* no children */
+  },
+  {
+    path: \\"/c\\",
+    name: \\"/c\\",
+    component: () => import('c.vue'),
+    /* no children */
+  }
+]"
+`;

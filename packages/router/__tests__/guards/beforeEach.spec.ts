@@ -1,8 +1,11 @@
+/**
+ * @vitest-environment happy-dom
+ */
 import fakePromise from 'faked-promise'
-import { createDom, tick, noGuard, newRouter as createRouter } from '../utils'
+import { tick, noGuard, newRouter as createRouter } from '../utils'
 import { RouteRecordRaw } from '../../src/types'
 import { RouteLocationRaw } from '../../src'
-import { vi, describe, expect, it, beforeAll } from 'vitest'
+import { vi, describe, expect, it } from 'vitest'
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
@@ -28,10 +31,6 @@ const routes: RouteRecordRaw[] = [
 ]
 
 describe('router.beforeEach', () => {
-  beforeAll(() => {
-    createDom()
-  })
-
   it('calls beforeEach guards on navigation', async () => {
     const spy = vi.fn()
     const router = createRouter({ routes })

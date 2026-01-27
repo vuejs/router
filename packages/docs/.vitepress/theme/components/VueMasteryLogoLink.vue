@@ -21,7 +21,9 @@ a {
   background-color: var(--vp-c-bg-alt);
   border-radius: 8px;
   padding: 8px 16px 8px 8px;
-  transition: color 0.5s, background-color 0.5s;
+  transition:
+    color 0.5s,
+    background-color 0.5s;
   display: flex;
   align-items: center;
   margin-top: 10px;

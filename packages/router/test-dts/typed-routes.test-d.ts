@@ -66,11 +66,11 @@ type RouteLocationNormalizedLoaded<
 > = RouteLocationNormalizedLoadedTypedList<RouteMap>[Name]
 // type Test = RouteLocationNormalizedLoaded<'/a' | '/a/b' | '/a/b/c'>
 
-declare module './index' {
-  interface TypesConfig {
-    RouteNamedMap: RouteMap
-  }
-}
+// declare module './index' {
+//   interface TypesConfig {
+//     RouteNamedMap: RouteMap
+//   }
+// }
 
 describe('RouterTyped', () => {
   const router = createRouter({

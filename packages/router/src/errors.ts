@@ -78,8 +78,10 @@ export interface NavigationFailure extends Error {
  *
  * @internal
  */
-export interface NavigationRedirectError
-  extends Omit<NavigationFailure, 'to' | 'type'> {
+export interface NavigationRedirectError extends Omit<
+  NavigationFailure,
+  'to' | 'type'
+> {
   type: ErrorTypes.NAVIGATION_GUARD_REDIRECT
   to: RouteLocationRaw
 }
@@ -97,9 +99,7 @@ const ErrorTypeMessages = {
     from,
     to,
   }: NavigationRedirectError) {
-    return `Redirected from "${from.fullPath}" to "${stringifyRoute(
-      to
-    )}" via a navigation guard.`
+    return `Redirected from "${from.fullPath}" to "${stringifyRoute(to)}" via a navigation guard.`
   },
   [ErrorTypes.NAVIGATION_ABORTED]({ from, to }: NavigationFailure) {
     return `Navigation aborted from "${from.fullPath}" to "${to.fullPath}" via a navigation guard.`

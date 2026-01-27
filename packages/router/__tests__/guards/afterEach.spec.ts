@@ -1,6 +1,9 @@
-import { createDom, newRouter as createRouter } from '../utils'
+/**
+ * @vitest-environment happy-dom
+ */
+import { newRouter as createRouter } from '../utils'
 import { RouteRecordRaw } from '../../src/types'
-import { vi, describe, expect, it, beforeAll } from 'vitest'
+import { vi, describe, expect, it } from 'vitest'
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }
@@ -20,10 +23,6 @@ const routes: RouteRecordRaw[] = [
 ]
 
 describe('router.afterEach', () => {
-  beforeAll(() => {
-    createDom()
-  })
-
   it('calls afterEach guards on push', async () => {
     const spy = vi.fn()
     const router = createRouter({ routes })

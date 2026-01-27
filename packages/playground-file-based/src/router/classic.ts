@@ -1,0 +1,41 @@
+import {
+  createRouter,
+  createWebHistory,
+  useRoute,
+  useRouter,
+  type RouteLocationMatched,
+  type RouteLocationNormalizedGeneric,
+} from 'vue-router'
+import { routes, handleHotUpdate } from 'vue-router/auto-routes'
+
+export const router = createRouter({
+  history: createWebHistory(),
+  routes,
+})
+
+if (import.meta.hot) {
+  handleHotUpdate(router)
+}
+
+export function __internalTest() {
+  definePage({
+    name: 'hey',
+  })
+  const route = useRoute('/(home)')
+  // @ts-expect-error: not possible
+  route.name === '/about'
+  route.name === '/(home)'
+  const router = useRouter()
+  router.push(
+    // @ts-expect-error: not existing
+    { name: 'nope' }
+  )
+  router.push({ name: '/(home)' })
+
+  const a = {} as RouteLocationNormalizedGeneric
+  const b = {} as RouteLocationMatched
+
+  // createFixedResolver([])
+  a.matched[0]?.children.length
+  b.children?.length
+}

@@ -1,18 +1,16 @@
-import { JSDOM } from 'jsdom'
+/**
+ * @vitest-environment happy-dom
+ */
 import { createWebHistory } from '../../src/history/html5'
-import { createDom } from '../utils'
-import {
-  vi,
-  describe,
-  expect,
-  it,
-  beforeAll,
-  beforeEach,
-  afterAll,
-  afterEach,
-} from 'vitest'
+import { Window as HappyDomWindow } from 'happy-dom'
+import { vi, describe, expect, it, beforeEach, afterEach } from 'vitest'
 
-// override the value of isBrowser because the variable is created before JSDOM
+// to get a typed window
+function getWindow(): HappyDomWindow {
+  return window as unknown as HappyDomWindow
+}
+
+// override the value of isBrowser because the variable is created before happy-dom
 // is created
 vi.mock('../../src/utils/env', () => ({
   isBrowser: true,
@@ -21,18 +19,9 @@ vi.mock('../../src/utils/env', () => ({
 // These unit tests are supposed to tests very specific scenarios that are easier to setup
 // on a unit test than an e2e tests
 describe('History HTMl5', () => {
-  let dom: JSDOM
-  beforeAll(() => {
-    dom = createDom()
-  })
-
   beforeEach(() => {
     // empty the state to simulate an initial navigation by default
     window.history.replaceState(null, '', '')
-  })
-
-  afterAll(() => {
-    dom.window.close()
   })
 
   afterEach(() => {
@@ -104,20 +93,20 @@ describe('History HTMl5', () => {
     expect(spy).toHaveBeenCalledWith(
       expect.anything(),
       expect.any(String),
-      'https://example.com/foo'
+      'http://localhost:3000/foo'
     )
     history.push('//foo')
     expect(spy).toHaveBeenLastCalledWith(
       expect.anything(),
       expect.any(String),
-      'https://example.com//foo'
+      'http://localhost:3000//foo'
     )
     spy.mockRestore()
   })
 
   describe('specific to base containing a hash', () => {
     it('calls push with hash part of the url with a base', () => {
-      dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+      getWindow().happyDOM.setURL('file:///usr/etc/index.html')
       let initialSpy = vi.spyOn(window.history, 'replaceState')
       let history = createWebHistory('#')
       // initial navigation
@@ -138,7 +127,7 @@ describe('History HTMl5', () => {
     })
 
     it('works with something after the hash in the base', () => {
-      dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+      getWindow().happyDOM.setURL('file:///usr/etc/index.html')
       let initialSpy = vi.spyOn(window.history, 'replaceState')
       let history = createWebHistory('#something')
       // initial navigation
@@ -159,7 +148,7 @@ describe('History HTMl5', () => {
     })
 
     it('works with #! and on a file with initial location', () => {
-      dom.reconfigure({ url: 'file:///usr/etc/index.html#!/foo' })
+      getWindow().happyDOM.setURL('file:///usr/etc/index.html#!/foo')
       let spy = vi.spyOn(window.history, 'replaceState')
       createWebHistory('#!')
       expect(spy).toHaveBeenCalledWith(
@@ -171,7 +160,7 @@ describe('History HTMl5', () => {
     })
 
     it('works with #other', () => {
-      dom.reconfigure({ url: 'file:///usr/etc/index.html' })
+      getWindow().happyDOM.setURL('file:///usr/etc/index.html')
       let spy = vi.spyOn(window.history, 'replaceState')
       createWebHistory('#other')
       expect(spy).toHaveBeenCalledWith(
@@ -183,7 +172,7 @@ describe('History HTMl5', () => {
     })
 
     it('works with custom#other in domain', () => {
-      dom.reconfigure({ url: 'https://esm.dev/custom' })
+      getWindow().happyDOM.setURL('https://esm.dev/custom')
       let spy = vi.spyOn(window.history, 'replaceState')
       createWebHistory('custom#other')
       expect(spy).toHaveBeenCalledWith(
@@ -195,7 +184,7 @@ describe('History HTMl5', () => {
     })
 
     it('works with #! and a host with initial location', () => {
-      dom.reconfigure({ url: 'https://esm.dev/#!/foo' })
+      getWindow().happyDOM.setURL('https://esm.dev/#!/foo')
       let spy = vi.spyOn(window.history, 'replaceState')
       createWebHistory('/#!')
       expect(spy).toHaveBeenCalledWith(

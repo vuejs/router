@@ -1,14 +1,10 @@
 {
   "name": "@vue/router-root",
   "private": true,
-  "packageManager": "pnpm@10.18.2",
-  "type": "module",
-  "engines": {
-    "node": ">=22.18.0"
-  },
   "workspaces": [
     "packages/*"
   ],
+  "type": "module",
   "scripts": {
     "release": "node scripts/release.ts",
     "size": "node scripts/check-size.mjs",
@@ -18,19 +14,19 @@
     "docs:translation:compare": "pnpm run --filter ./packages/docs -r docs:translation:compare",
     "docs:translation:update": "pnpm run --filter ./packages/docs -r docs:translation:update",
     "docs:translation:status": "pnpm run --filter ./packages/docs -r docs:translation:status",
+    "netlify": "pnpm run -C packages/router build && pnpm run docs:build",
     "docs:build": "pnpm run docs:api && pnpm run --filter ./packages/docs -r docs:build",
     "docs:preview": "pnpm run --filter ./packages/docs -r docs:preview",
     "play": "pnpm run -r play",
     "build:size": "pnpm run -r build:size",
-    "lint": "pnpm run lint:script && pnpm run lint:html",
-    "lint:script": "prettier -c --parser typescript \"packages/**/*.?(m)[jt]s?(x)\" \"scripts/*.mjs\"",
-    "lint:html": "prettier -c --parser html \"packages/**/*.html\"",
-    "lint:fix": "pnpm run lint:script --write && pnpm run lint:html --write",
+    "lint": "oxfmt --check",
+    "lint:fix": "oxfmt",
     "test": "pnpm run -r test",
     "postinstall": "simple-git-hooks"
   },
   "devDependencies": {
     "@posva/prompts": "^2.4.4",
+    "@types/node": "^24.10.4",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vitest/browser": "^3.2.4",
     "@vitest/coverage-v8": "^3.2.4",
@@ -39,13 +35,12 @@
     "chalk": "^5.6.2",
     "conventional-changelog": "^7.1.1",
     "conventional-changelog-angular": "^8.1.0",
-    "execa": "^9.6.1",
     "lint-staged": "^16.2.7",
+    "oxfmt": "^0.24.0",
     "playwright": "^1.57.0",
-    "prettier": "^3.6.2",
     "semver": "^7.7.3",
     "simple-git-hooks": "^2.13.1",
-    "typedoc": "^0.28.15",
+    "typedoc": "^0.28.16",
     "typedoc-plugin-markdown": "^4.9.0",
     "typescript": "~5.9.3",
     "vitest": "^3.2.4",
@@ -56,17 +51,20 @@
     "commit-msg": "node scripts/verifyCommit.mjs"
   },
   "lint-staged": {
-    "*.?(m)js": [
-      "prettier --write"
-    ],
-    "*.?(m)ts?(x)": [
-      "prettier --parser=typescript --write"
-    ],
-    "*.html": [
-      "prettier --parser=html --write"
-    ]
+    "*": "oxfmt --no-error-on-unmatched-pattern"
   },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "volta": {
+    "node": "24.7.0"
+  },
+  "packageManager": "pnpm@10.28.2",
   "pnpm": {
+    "overrides": {
+      "@types/node": "^24.10.4",
+      "vite": "^7.3.0"
+    },
     "peerDependencyRules": {
       "ignoreMissing": [
         "react",
@@ -79,8 +77,5 @@
       "esbuild",
       "geckodriver"
     ]
-  },
-  "volta": {
-    "node": "24.7.0"
   }
 }

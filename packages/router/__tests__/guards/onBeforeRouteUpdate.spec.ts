@@ -1,5 +1,5 @@
 /**
- * @vitest-environment jsdom
+ * @vitest-environment happy-dom
  */
 import {
   createRouter,
@@ -75,11 +75,6 @@ describe('onBeforeRouteUpdate', () => {
     const SharedComponent = defineComponent({
       template: '<div>Shared: {{ $route.path }}</div>',
       setup: setupSpy,
-    })
-
-    // A different component (simulates detail page)
-    const DetailComponent = defineComponent({
-      template: '<div>Detail</div>',
     })
 
     const { router, wrapper } = factory(
