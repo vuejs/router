@@ -1,5 +1,6 @@
 /**
- * TODO: remove the declaration if possible when merging unplugin-vue-router into this monorepo
+ * TODO: remove the declaration if possible when merging unplugin-vue-router
+ * into this monorepo in v6
  */
 
 import type {
