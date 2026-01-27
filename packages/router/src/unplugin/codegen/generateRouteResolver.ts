@@ -2,7 +2,7 @@ import { getLang } from '@vue-macros/common'
 import { PrefixTree, type TreeNode } from '../core/tree'
 import { ImportsMap } from '../core/utils'
 import { type ResolvedOptions } from '../options'
-import { ts } from '../utils'
+import { toStringLiteral, ts } from '../utils'
 import {
   generatePathParamsOptions,
   generateParamParserOptions,
@@ -167,10 +167,10 @@ export function generateRouteRecord({
         varName,
         score: node.score,
       })
-      recordName = `name: '${node.name}',`
+      recordName = `name: ${toStringLiteral(node.name)},`
     } else {
       recordName = node.name
-        ? `/* (internal) name: '${node.name}' */`
+        ? `/* (internal) name: ${toStringLiteral(node.name)} */`
         : `/* (removed) name: false */`
     }
 
@@ -242,7 +242,7 @@ function generateRouteRecordComponent(
 ${files
   .map(
     ([key, path]) =>
-      `${indentStr + '  '}'${key}': ${generatePageImport(path, importMode, importsMap)}`
+      `${indentStr + '  '}${toStringLiteral(key)}: ${generatePageImport(path, importMode, importsMap)}`
   )
   .join(',\n')}
 ${indentStr}},`
@@ -286,7 +286,7 @@ export function generateRouteRecordPath({
     ${node.isSplat ? 'null,' : '/* trailingSlash */'}
   ),`
   } else {
-    return `path: new MatcherPatternPathStatic('${node.fullPath}'),`
+    return `path: new MatcherPatternPathStatic(${toStringLiteral(node.fullPath)}),`
   }
 }
 

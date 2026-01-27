@@ -5,7 +5,7 @@ import {
   EXPERIMENTAL_generateRouteParams,
   generateRouteParams,
 } from './generateRouteParams'
-import { pad, formatMultilineUnion, stringToStringType } from '../utils'
+import { pad, formatMultilineUnion, toStringLiteral } from '../utils'
 
 export function generateRouteNamedMap(
   node: TreeNode,
@@ -26,7 +26,7 @@ ${node
     (node.value.components.size && node.isNamed()
       ? pad(
           2,
-          `${stringToStringType(node.name)}: ${generateRouteRecordInfo(node, options, paramParsersMap)},\n`
+          `${toStringLiteral(node.name)}: ${generateRouteRecordInfo(node, options, paramParsersMap)},\n`
         )
       : '') +
     (node.children.size > 0
@@ -49,8 +49,8 @@ export function generateRouteRecordInfo(
   }
 
   const typeParams = [
-    stringToStringType(node.name),
-    stringToStringType(node.fullPath),
+    toStringLiteral(node.name),
+    toStringLiteral(node.fullPath),
     options.experimental.paramParsers
       ? EXPERIMENTAL_generateRouteParams(node, paramParsers, true)
       : generateRouteParams(node, true),
@@ -73,9 +73,7 @@ export function generateRouteRecordInfo(
           .sort()
       : []
 
-  typeParams.push(
-    formatMultilineUnion(childRouteNames.map(stringToStringType), 4)
-  )
+  typeParams.push(formatMultilineUnion(childRouteNames.map(toStringLiteral), 4))
 
   return `RouteRecordInfo<
 ${typeParams.map(line => pad(4, line)).join(',\n')}

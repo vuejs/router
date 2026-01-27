@@ -120,6 +120,13 @@ declare module 'vue-router/auto-routes' {
       { when: Extract<Param_date, unknown[]> },
       | never
     >,
+    '/it\'s-fine/(lol)': RouteRecordInfo<
+      '/it\'s-fine/(lol)',
+      '/it\'s-fine',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/nested/': RouteRecordInfo<
       '/nested/',
       '/nested',
@@ -293,6 +300,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/events/repeat/[when=date]+.vue': {
       routes:
         | '/events/repeat/[when=date]+'
+      views:
+        | never
+    }
+    'src/pages/it's-fine/(lol).vue': {
+      routes:
+        | '/it\'s-fine/(lol)'
       views:
         | never
     }

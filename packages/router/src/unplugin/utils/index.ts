@@ -55,15 +55,16 @@ export function formatMultilineUnion(items: string[], spaces: number): string {
 }
 
 /**
- * Converts a string value to a TS string literal type.
+ * Converts a string value to a string literal, escaping as necessary.
  *
  * @internal
  *
  * @param str the string to convert to a string type
- * @returns The string wrapped in single quotes.
+ * @returns The string wrapped in single quotes and escaped.
  * @example
- * stringToStringType('hello') // returns "'hello'"
+ * toStringLiteral('hello') // returns "'hello'"
+ * toStringLiteral("it's fine") // returns "'it\'s fine'"
  */
-export function stringToStringType(str: string): string {
-  return `'${str}'`
+export function toStringLiteral(str: string): string {
+  return `'${str.replace(/'/g, "\\'")}'`
 }
