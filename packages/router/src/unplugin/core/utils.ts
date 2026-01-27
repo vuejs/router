@@ -6,6 +6,7 @@ import {
   RoutesFolderOptionResolved,
   _OverridableOption,
 } from '../options'
+import { toStringLiteral } from '../utils'
 
 export function warn(
   msg: string,
@@ -366,6 +367,8 @@ export class ImportsMap {
     for (const [path, imports] of this.map) {
       if (!imports.size) continue
 
+      const fromImportPath = toStringLiteral(path)
+
       // only one import and it's the default one
       if (imports.size === 1) {
         // we extract the first and only entry
@@ -374,13 +377,13 @@ export class ImportsMap {
         ]
         // we only care if this is the default import
         if (maybeDefault === 'default') {
-          importStatements += `import ${importName} from '${path}'\n`
+          importStatements += `import ${importName} from ${fromImportPath}\n`
           continue
         }
       }
       importStatements += `import { ${Array.from(imports)
         .map(([as, name]) => (as === name ? name : `${name} as ${as}`))
-        .join(', ')} } from '${path}'\n`
+        .join(', ')} } from ${fromImportPath}\n`
     }
 
     return importStatements

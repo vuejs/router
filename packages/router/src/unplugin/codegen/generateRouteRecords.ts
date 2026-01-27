@@ -2,7 +2,7 @@ import { getLang } from '@vue-macros/common'
 import type { TreeNode } from '../core/tree'
 import { ImportsMap } from '../core/utils'
 import { type ResolvedOptions } from '../options'
-import { pad, stringToStringType } from '../utils'
+import { pad, toStringLiteral } from '../utils'
 
 /**
  * Generate the route records for the given node.
@@ -57,14 +57,14 @@ ${node
 
   // path
   const routeRecord = `${startIndent}{
-${indentStr}path: '${node.path}',
+${indentStr}path: ${toStringLiteral(node.path)},
 ${indentStr}${
     node.value.components.size
       ? node.isNamed()
-        ? `name: ${stringToStringType(node.name)},`
+        ? `name: ${toStringLiteral(node.name)},`
         : `/* no name */`
       : // node.name can still be false and we don't want that to result in string literal 'false'
-        `/* internal name: ${typeof node.name === 'string' ? stringToStringType(node.name) : node.name} */`
+        `/* internal name: ${typeof node.name === 'string' ? toStringLiteral(node.name) : node.name} */`
   }
 ${
   // component
@@ -126,7 +126,7 @@ function generateRouteRecordComponent(
 ${files
   .map(
     ([key, path]) =>
-      `${indentStr + '  '}'${key}': ${generatePageImport(path, importMode, importsMap)}`
+      `${indentStr + '  '}${toStringLiteral(key)}: ${generatePageImport(path, importMode, importsMap)}`
   )
   .join(',\n')}
 ${indentStr}},`
@@ -148,7 +148,7 @@ export function generatePageImport(
   const mode =
     typeof importMode === 'function' ? importMode(filepath) : importMode
   if (mode === 'async') {
-    return `() => import('${filepath}')`
+    return `() => import(${toStringLiteral(filepath)})`
   }
   // mode === 'sync'
   // return the name of the import e.g. `_page_0` for `import _page_0 from '...'`

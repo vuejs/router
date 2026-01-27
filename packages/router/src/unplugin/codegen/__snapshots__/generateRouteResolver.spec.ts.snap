@@ -27,10 +27,10 @@ const __route_2 = normalizeRouteRecord({
 })
 
 const __route_3 = normalizeRouteRecord({
-  name: '/it's-fine',
-  path: new MatcherPatternPathStatic('/it's-fine'),
+  name: '/it\\'s-fine',
+  path: new MatcherPatternPathStatic('/it\\'s-fine'),
   components: {
-    'default': () => import('it's-fine.vue')
+    'default': () => import('it\\'s-fine.vue')
   },
 })
 

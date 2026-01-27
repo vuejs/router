@@ -82,9 +82,9 @@ exports[`generateRouteRecord > does not encode RFC 3986 valid path characters 1`
     /* no children */
   },
   {
-    path: '/it's-fine',
-    name: '/it's-fine',
-    component: () => import('it's-fine.vue'),
+    path: '/it\\'s-fine',
+    name: '/it\\'s-fine',
+    component: () => import('it\\'s-fine.vue'),
     /* no children */
   },
   {
