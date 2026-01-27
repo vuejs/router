@@ -1,9 +1,20 @@
 import { defineConfig, HeadConfig } from 'vitepress'
+import fs from 'node:fs'
+import path from 'node:path'
 import { zhSearch } from './zh'
 import {
   groupIconMdPlugin,
   groupIconVitePlugin,
 } from 'vitepress-plugin-group-icons'
+import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
+import { ModuleResolutionKind } from 'typescript'
+// TODO: simplify and only importwm from '../twoslash/files'
+import { typedRouterFile, typedRouterFileAsModule } from '../twoslash-files'
+import { extraFiles } from '../twoslash/files'
+import llmstxt from 'vitepress-plugin-llms'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 // TODO:
 // export const META_IMAGE = 'https://router.vuejs.org/social.png'
@@ -67,6 +78,20 @@ export const sharedConfig = defineConfig({
     config: md => {
       md.use(groupIconMdPlugin)
     },
+    codeTransformers: [
+      transformerTwoslash({
+        twoslashOptions: {
+          compilerOptions: {
+            moduleResolution: ModuleResolutionKind.Bundler,
+          },
+          extraFiles: {
+            ...extraFiles,
+            'router.ts': typedRouterFileAsModule,
+            // 'typed-router.d.ts': typedRouterFile,
+          },
+        },
+      }),
+    ],
   },
 
   head: [
@@ -168,6 +193,18 @@ export const sharedConfig = defineConfig({
     },
   },
   vite: {
-    plugins: [groupIconVitePlugin()],
+    plugins: [
+      groupIconVitePlugin(),
+      // TODO: write a proper llms.txt
+      llmstxt({
+        description: 'The official Router for Vue.js',
+        details: `
+- Type Safe routes
+- File based routing
+- Data Loaders for efficient data fetching
+`.trim(),
+        ignoreFiles: ['index.md', 'api/**/*'],
+      }),
+    ],
   },
 })
