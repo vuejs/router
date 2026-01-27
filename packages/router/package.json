@@ -21,7 +21,7 @@
     "README.md",
     "route.schema.json",
     "vue-router-auto-resolver.d.mts",
-    "vue-router-auto-routes.d.ts",
+    "vue-router-auto-routes.d.mts",
     "vue-router-auto.d.ts",
     "vue-router.node.mjs",
     "vetur/attributes.json",
@@ -76,21 +76,7 @@
       "types": "./vue-router-auto-resolver.d.mts"
     },
     "./auto-routes": {
-      "types": "./vue-router-auto-routes.d.ts",
-      "node": {
-        "import": {
-          "production": "./vue-router.node.mjs",
-          "development": "./vue-router.node.mjs",
-          "default": "./vue-router.node.mjs"
-        },
-        "require": {
-          "production": "./dist/vue-router.prod.cjs",
-          "development": "./dist/vue-router.cjs",
-          "default": "./index.js"
-        }
-      },
-      "import": "./dist/vue-router.mjs",
-      "require": "./index.js"
+      "types": "./vue-router-auto-routes.d.mts"
     },
     "./auto": {
       "types": "./vue-router-auto.d.ts",
