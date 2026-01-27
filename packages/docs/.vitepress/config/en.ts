@@ -177,6 +177,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             },
           ],
         },
+        sidebarDataLoaders(),
         {
           items: [
             {
@@ -188,4 +189,71 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
       ],
     },
   },
+}
+
+type SidebarGroup = DefaultTheme.SidebarItem
+
+function sidebarDataLoaders(): SidebarGroup {
+  return {
+    collapsed: false,
+    text: 'Data Loaders',
+    items: [
+      {
+        text: 'Introduction',
+        link: '/data-loaders/',
+      },
+      {
+        text: 'Defining Data Loaders',
+        link: '/data-loaders/defining-loaders',
+      },
+      {
+        text: 'Reloading data',
+        link: '/data-loaders/reloading-data',
+      },
+      {
+        text: 'Navigation Aware',
+        link: '/data-loaders/navigation-aware',
+      },
+      {
+        text: 'Error Handling',
+        link: '/data-loaders/error-handling',
+      },
+      {
+        text: 'Organizing Loaders',
+        link: '/data-loaders/organization',
+      },
+      {
+        text: 'Nested Loaders',
+        link: '/data-loaders/nested-loaders',
+      },
+      {
+        text: 'Cancelling a load',
+        link: '/data-loaders/load-cancellation',
+      },
+      {
+        text: 'Nuxt',
+        link: '/data-loaders/nuxt',
+      },
+      {
+        text: 'SSR',
+        link: '/data-loaders/ssr',
+      },
+
+      // loaders
+      {
+        text: 'Basic Loader',
+        link: '/data-loaders/basic/',
+      },
+      {
+        text: 'Colada Loader',
+        link: '/data-loaders/colada/',
+      },
+
+      // last
+      {
+        text: 'RFC',
+        link: '/data-loaders/rfc',
+      },
+    ],
+  }
 }
