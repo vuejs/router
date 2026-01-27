@@ -1,6 +1,4 @@
 import { defineConfig, HeadConfig } from 'vitepress'
-import fs from 'node:fs'
-import path from 'node:path'
 import { zhSearch } from './zh'
 import {
   groupIconMdPlugin,
@@ -9,12 +7,9 @@ import {
 import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
 import { ModuleResolutionKind } from 'typescript'
 // TODO: simplify and only importwm from '../twoslash/files'
-import { typedRouterFile, typedRouterFileAsModule } from '../twoslash-files'
+import { typedRouterFileAsModule } from '../twoslash-files'
 import { extraFiles } from '../twoslash/files'
 import llmstxt from 'vitepress-plugin-llms'
-import { fileURLToPath } from 'node:url'
-
-const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 // TODO:
 // export const META_IMAGE = 'https://router.vuejs.org/social.png'
