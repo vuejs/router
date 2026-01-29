@@ -415,7 +415,7 @@ async function main() {
     return
   }
 
-  const { stdout } = await run('git', ['diff'], { stdio: 'pipe' })
+  const { stdout } = await run('git', ['diff', 'HEAD'], { stdio: 'pipe' })
   if (stdout) {
     step('\nCommitting changes...')
     await runIfNotDry('git', ['add', ...FILES_TO_COMMIT])
