@@ -179,7 +179,12 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         },
         sidebarDataLoaders(),
         {
+          text: 'Migration',
           items: [
+            {
+              text: 'Migrating to v5',
+              link: '/guide/migration/v4-to-v5.html',
+            },
             {
               text: 'Migrating from Vue 2',
               link: '/guide/migration/index.html',
