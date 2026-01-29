@@ -1,3 +1,11 @@
+# [5.0.0](https://github.com/vuejs/router/compare/v4.6.4...v5.0.0) (2026-01-29)
+
+Vue Router 5 merges [unplugin-vue-router](https://uvr.esm.is) into the core package. See [the migration guide](https://router.vuejs.org/guide/migration/v4-to-v5.html) for instructions on how to upgrade from unplugin-vue-router to Vue Router 5.
+
+### Bug Fixes
+
+- trigger navigation guards when keep-alive component is reactivated for different route ([#2604](https://github.com/vuejs/router/issues/2604)) ([c7735d3](https://github.com/vuejs/router/commit/c7735d30963617e8e096d1b241d86fd7869c6c3b)), closes [#2601](https://github.com/vuejs/router/issues/2601)
+
 # [5.0.0-beta.2](https://github.com/vuejs/router/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2026-01-26)
 
 ### Bug Fixes
