@@ -1,5 +1,3 @@
-import { access, constants } from 'node:fs/promises'
-
 /**
  * Maybe a promise maybe not
  * @internal
@@ -16,15 +14,6 @@ export type LiteralStringUnion<LiteralType, BaseType extends string = string> =
 
 // for highlighting
 export const ts = String.raw
-
-export async function fileExists(filePath: string) {
-  try {
-    await access(filePath, constants.F_OK)
-    return true
-  } catch {
-    return false
-  }
-}
 
 /**
  * Pads a single-line string with spaces.
