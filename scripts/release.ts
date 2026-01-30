@@ -378,7 +378,6 @@ async function main() {
           '--same-file',
           '-p',
           'angular',
-          '-u',
           '-r',
           changelogExists ? '1' : '0',
           '--commit-path',
@@ -387,9 +386,10 @@ async function main() {
           ...(pkg.name === MAIN_PKG_NAME && IS_MAIN_PKG_AT_ROOT
             ? [join(pkg.path, 'src'), join(pkg.path, 'package.json')]
             : ['.']),
-          ...(pkg.name === MAIN_PKG_NAME && IS_MAIN_PKG_AT_ROOT
-            ? []
-            : ['--lerna-package', pkg.name]),
+          // NOTE: this was breaking vue-router
+          // ...(pkg.name === MAIN_PKG_NAME && IS_MAIN_PKG_AT_ROOT
+          //   ? []
+          //   : ['--lerna-package', pkg.name]),
           ...(pkg.name === MAIN_PKG_NAME
             ? []
             : ['--tag-prefix', `${pkg.name}@`]),
