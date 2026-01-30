@@ -1,3 +1,9 @@
+## [5.0.1](https://github.com/vuejs/router/compare/v5.0.0...v5.0.1) (2026-01-30)
+
+### Bug Fixes
+
+- **volar:** make typed plugin work with vue-tsc ([#2607](https://github.com/vuejs/router/issues/2607)) ([7845e32](https://github.com/vuejs/router/commit/7845e327f3786bd3b3f9574c24b0a2a048e8c9f1))
+
 # [5.0.0](https://github.com/vuejs/router/compare/v4.6.4...v5.0.0) (2026-01-29)
 
 Vue Router 5 merges [unplugin-vue-router](https://uvr.esm.is) into the core package. See [the migration guide](https://router.vuejs.org/guide/migration/v4-to-v5.html) for instructions on how to upgrade from unplugin-vue-router to Vue Router 5.
