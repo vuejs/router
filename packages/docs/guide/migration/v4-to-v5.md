@@ -3,7 +3,7 @@
 <RuleKitLink />
 
 > [!TIP]
-> Vue Router 5 is a transition release that merges [unplugin-vue-router](https://uvr.esm.is) (file-based routing) into the core package. **If you're using Vue Router 4 without unplugin-vue-router, there are no breaking changes** - you can upgrade without any code modifications.
+> Vue Router 5 is a transition release that merges [unplugin-vue-router](https://uvr.esm.is) (file-based routing) into the core package. **If you're using Vue Router 4 without unplugin-vue-router, there are no breaking changes** - you can upgrade without any code modifications. The only exception is that the _iife_ build no longer includes `@vue/devtools-api` because it has been upgraded to v8 and does not expose an IIFE build itself. You can track that change in [this issue](https://github.com/vuejs/devtools/issues/989).
 >
 > Vue Router 6 will be ESM-only and remove deprecated APIs. v5 gives you time to prepare for that transition.
 
