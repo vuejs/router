@@ -62,7 +62,7 @@ const plugin: VueLanguagePlugin<{ options: { rootDir?: string } }> = ({
         if (
           ts.isCallExpression(node) &&
           ts.isIdentifier(node.expression) &&
-          node.expression.text === 'useRoute' &&
+          ts.idText(node.expression) === 'useRoute' &&
           !node.typeArguments &&
           !node.arguments.length
         ) {
