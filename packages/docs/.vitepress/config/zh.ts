@@ -36,7 +36,7 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         activeMatch: '^/zh/api/',
       },
       {
-        text: 'v4.x',
+        text: 'v4.x/v5.x',
         items: [{ text: 'v3.x', link: 'https://v3.router.vuejs.org/zh' }],
       },
       {
