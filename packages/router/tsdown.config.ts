@@ -37,6 +37,8 @@ const commonOptions = {
     __BROWSER__: 'true',
     // is replaced by the vite vue plugin
     __FEATURE_PROD_DEVTOOLS__: `__VUE_PROD_DEVTOOLS__`,
+    // by default we keep them
+    __STRIP_DEVTOOLS__: `false`,
   },
   dts: false,
   // TODO: remove in v5
@@ -125,8 +127,6 @@ const cjsProd = {
 const iife = {
   ...commonOptions,
   format: 'iife',
-  // TODO: remove when upgrading to devtools-api v7 because it's too big
-  noExternal: ['@vue/devtools-api'],
   outputOptions: {
     ...commonOptions.outputOptions,
     dir: undefined, // must be unset with file
@@ -135,7 +135,9 @@ const iife = {
   define: {
     ...commonOptions.define,
     __DEV__: 'true',
-    __FEATURE_PROD_DEVTOOLS__: `true`,
+    // the new devtools api does not have iife support and are too heavy
+    __FEATURE_PROD_DEVTOOLS__: `false`,
+    __STRIP_DEVTOOLS__: `true`,
   },
 } satisfies InlineConfig
 
