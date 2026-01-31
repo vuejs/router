@@ -5,26 +5,18 @@
   </div>
 </template>
 
-<script>
-// @ts-check
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { ref } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 
-export default defineComponent({
-  name: 'GuardedWithLeave',
-  data: () => ({ tries: 0 }),
+const tries = ref(0)
 
-  setup() {
-    console.log('setup in cant leave')
-    onBeforeRouteLeave(function (to, from, next) {
-      if (window.confirm('Do you really want to leave?')) next()
-      else {
-        // @ts-ignore
-        this.tries++
-        next(false)
-      }
-    })
-    return {}
-  },
+console.log('setup in cant leave')
+onBeforeRouteLeave((to, from, next) => {
+  if (window.confirm('Do you really want to leave?')) next()
+  else {
+    tries.value++
+    next(false)
+  }
 })
 </script>
