@@ -100,6 +100,8 @@ const config = env => {
       __DEV__: JSON.stringify(!env.prod),
       __CI__: JSON.stringify(process.env.CI || false),
       __BROWSER__: 'true',
+      __FEATURE_PROD_DEVTOOLS__: 'false',
+      __STRIP_DEVTOOLS__: 'false',
       'process.env': {
         NODE_ENV: JSON.stringify(env.prod ? 'production' : 'development'),
       },
