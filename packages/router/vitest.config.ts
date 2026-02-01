@@ -6,6 +6,8 @@ export default defineConfig({
     __DEV__: true,
     __TEST__: true,
     __BROWSER__: true,
+    __FEATURE_PROD_DEVTOOLS__: false,
+    __STRIP_DEVTOOLS__: true,
   },
   plugins: [Vue()],
 
