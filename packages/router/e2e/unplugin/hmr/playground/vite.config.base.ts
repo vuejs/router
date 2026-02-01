@@ -12,6 +12,12 @@ export default defineConfig({
       '~': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  define: {
+    __DEV__: 'true',
+    __BROWSER__: 'true',
+    __FEATURE_PROD_DEVTOOLS__: 'false',
+    __STRIP_DEVTOOLS__: 'false',
+  },
   build: {
     sourcemap: true,
   },
