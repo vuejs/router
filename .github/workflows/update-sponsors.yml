@@ -62,10 +62,14 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
 
+      - name: Format sponsor files
+        run: |
+          pnpm exec oxfmt packages/docs/.vitepress/theme/components/sponsors.json README.md
+
       - name: Check for changes
         id: sponsors-after
         run: |
-          if git diff --quiet; then
+          if git diff --quiet -- packages/docs/.vitepress/theme/components/sponsors.json README.md; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
