@@ -4,7 +4,7 @@
 > - For Vue Router 3 (for Vue 2) see [vuejs/vue-router](https://github.com/vuejs/vue-router).
 >   To see what versions are currently supported, please refer to the [Security Policy](./packages/router/SECURITY.md).
 
-<h2 align="center">Supporting Vue Router</h2>   
+<h2 align="center">Supporting Vue Router</h2>
 
 Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source project with its ongoing development made possible entirely by the support of Sponsors. If you would like to become a sponsor, please consider:
 
