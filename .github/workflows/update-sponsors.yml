@@ -77,7 +77,9 @@ jobs:
 
       - name: Commit
         if: steps.sponsors-after.outputs.changed == 'true'
-        uses: EndBug/add-and-commit@v9
-        with:
-          message: 'chore: update sponsors'
-          add: 'packages/docs/.vitepress/theme/components/sponsors.json README.md'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add packages/docs/.vitepress/theme/components/sponsors.json README.md
+          git commit -m "chore: update sponsors" --no-verify
+          git push
