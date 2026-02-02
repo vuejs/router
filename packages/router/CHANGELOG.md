@@ -1,3 +1,11 @@
+## [5.0.2](https://github.com/vuejs/router/compare/v5.0.1...v5.0.2) (2026-02-02)
+
+### Bug Fixes
+
+- loose version check @pinia/colada ([90e4bb8](https://github.com/vuejs/router/commit/90e4bb804cc9e9e50e4cd58a3fbd06d3e49b8e2d))
+- remove devtools from iife build ([58c033c](https://github.com/vuejs/router/commit/58c033c0e89707efb9cf1d6131b174f2eba7f57c)), closes [#2608](https://github.com/vuejs/router/issues/2608)
+- **volar:** empty options ([022758a](https://github.com/vuejs/router/commit/022758a79bf7675e335eaab37ffe2c7bbb81c8e1)), closes [#2609](https://github.com/vuejs/router/issues/2609)
+
 ## [5.0.1](https://github.com/vuejs/router/compare/v5.0.0...v5.0.1) (2026-01-30)
 
 ### Bug Fixes
