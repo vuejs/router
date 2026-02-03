@@ -189,7 +189,7 @@ export const sharedConfig = defineConfig({
 - File based routing
 - Data Loaders for efficient data fetching
 `.trim(),
-        ignoreFiles: ['index.md', 'api/**/*'],
+        ignoreFiles: ['index.md', 'api/**/*', 'zh/**/*'],
       }),
     ],
   },
