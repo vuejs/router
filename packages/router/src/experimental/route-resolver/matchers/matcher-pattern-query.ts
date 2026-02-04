@@ -20,9 +20,10 @@ export interface MatcherPatternQuery<
 /**
  * Matcher for a specific query parameter. It will read and write the parameter
  */
-export class MatcherPatternQueryParam<T, ParamName extends string>
-  implements MatcherPatternQuery<Record<ParamName, T>>
-{
+export class MatcherPatternQueryParam<
+  T,
+  ParamName extends string,
+> implements MatcherPatternQuery<Record<ParamName, T>> {
   constructor(
     private paramName: ParamName,
     private queryKey: string,
