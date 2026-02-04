@@ -5,17 +5,14 @@ import {
   ref,
   unref,
   ComponentPublicInstance,
-  VNodeProps,
   computed,
-  AllowedComponentProps,
-  ComponentCustomProps,
   watch,
-  VNode,
   createTemplateRefSetter,
   createComponent,
   defineVaporComponent,
   type VaporComponent,
   createDynamicComponent,
+  Block,
 } from 'vue'
 import type { RouteLocationNormalizedLoaded } from './typed-routes'
 import type { RouteLocationMatched } from './types'
@@ -30,7 +27,7 @@ import type { RouterViewProps, RouterViewDevtoolsContext } from './RouterView'
 
 export type { RouterViewProps, RouterViewDevtoolsContext }
 
-export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
+export const VaporRouterView = /*#__PURE__*/ defineVaporComponent({
   name: 'VaporRouterView',
   // #674 we manually inherit them
   inheritAttrs: false,
@@ -40,6 +37,16 @@ export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
       default: 'default',
     },
     route: Object as PropType<RouteLocationNormalizedLoaded>,
+  },
+
+  slots: {} as {
+    default?: ({
+      Component,
+      route,
+    }: {
+      Component: Block
+      route: RouteLocationNormalizedLoaded
+    }) => Block
   },
 
   setup(props, { attrs, slots }) {
@@ -162,27 +169,3 @@ export const VaporRouterViewImpl = /*#__PURE__*/ defineVaporComponent({
     return createDynamicComponent(initComponent)
   },
 })
-
-// export the public type for h/tsx inference
-// also to avoid inline import() in generated d.ts files
-/**
- * Component to display the current route the user is at.
- */
-export const VaporRouterView = VaporRouterViewImpl as unknown as {
-  new (): {
-    $props: AllowedComponentProps &
-      ComponentCustomProps &
-      VNodeProps &
-      RouterViewProps
-
-    $slots: {
-      default?: ({
-        Component,
-        route,
-      }: {
-        Component: VNode
-        route: RouteLocationNormalizedLoaded
-      }) => VNode[]
-    }
-  }
-}
