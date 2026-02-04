@@ -566,7 +566,8 @@ export function testDefineLoader<Context = void>(
       )
 
       const p = router.push('/fetch?p=one')
-      await vi.runOnlyPendingTimersAsync()
+      // Let the loaders start
+      await vi.advanceTimersByTimeAsync(0)
 
       l1.reject(new Error('nope'))
       await expect(p).rejects.toThrow('nope')
@@ -1317,7 +1318,8 @@ export function testDefineLoader<Context = void>(
 
     expect(dataOneSpy).toHaveBeenCalledTimes(0)
     await router.push('/fetch')
-    await vi.runOnlyPendingTimersAsync()
+    // One tick to let the lazy loader start
+    await vi.advanceTimersByTimeAsync(0)
     expect(dataOneSpy).toHaveBeenCalledTimes(1)
     expect(wrapper.text()).toMatchInlineSnapshot('"resolved 1resolved 1"')
   })
@@ -1358,9 +1360,9 @@ export function testDefineLoader<Context = void>(
     })
 
     router.push('/fetch?p=one')
-    await vi.runOnlyPendingTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     l1.resolve('ok')
-    await vi.runOnlyPendingTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     // should have navigated and called the nested loader once
     expect(l1.spy).toHaveBeenCalledTimes(1)
     expect(router.currentRoute.value.fullPath).toBe('/fetch?p=one')
@@ -1404,9 +1406,9 @@ export function testDefineLoader<Context = void>(
     })
 
     router.push('/fetch?p=one')
-    await vi.runOnlyPendingTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     l1.resolve('ok')
-    await vi.runOnlyPendingTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     // should have navigated and called the nested loader once
     expect(l1.spy).toHaveBeenCalledTimes(1)
     expect(router.currentRoute.value.fullPath).toBe('/fetch?p=one')
@@ -1440,19 +1442,20 @@ export function testDefineLoader<Context = void>(
     const app: App = wrapper.vm.$.appContext.app
 
     const p = router.push('/fetch')
-    await vi.runOnlyPendingTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     l1.resolve('one')
-    await vi.runOnlyPendingTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
 
     const { data: one } = app.runWithContext(() => l1.loader())
     const { data: two } = app.runWithContext(() => l2.loader())
+
     expect(l1.spy).toHaveBeenCalledTimes(1)
     expect(l2.spy).toHaveBeenCalledTimes(1)
 
     // it waits for both to be resolved
     expect(one.value).toEqual(undefined)
     l2.resolve('two')
-    await vi.runOnlyPendingTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     await p
     expect(one.value).toEqual('one')
     expect(two.value).toEqual('two')
@@ -1489,9 +1492,9 @@ export function testDefineLoader<Context = void>(
 
       // we catch because in non-lazy loaders, throwing an error propagates it
       const p = router.push('/fetch').catch(() => {})
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       l1.resolve('ko')
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       expect(l1.spy).toHaveBeenCalledTimes(1)
       expect(l2.spy).toHaveBeenCalledTimes(1)
       if (resolvedValue instanceof NavigationResult) {
@@ -1499,7 +1502,7 @@ export function testDefineLoader<Context = void>(
       } else {
         l2.reject(resolvedValue)
       }
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       await p
       const { data: one, error: e1 } = app.runWithContext(() => l1.loader())
       const { data: two, error: e2 } = app.runWithContext(() => l2.loader())
@@ -1523,13 +1526,13 @@ export function testDefineLoader<Context = void>(
     )
 
     router.push('/fetch?p=one')
-    await vi.runOnlyPendingTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
 
     const { data } = useData()
     expect(data.value).toEqual(undefined)
 
     l1.resolve('ok')
-    await vi.runOnlyPendingTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(data.value).toEqual('ok,one')
   })
 
@@ -1587,7 +1590,7 @@ export function testDefineLoader<Context = void>(
     })
 
     router.push('/fetch?p=one')
-    await vi.runOnlyPendingTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     l1.resolve('search')
     await flushPromises()
 
