@@ -22,7 +22,6 @@ import {
   routerViewLocationKey,
 } from './injectionSymbols'
 import { assign } from './utils'
-import { isSameRouteRecord } from './location'
 import type { RouterViewProps, RouterViewDevtoolsContext } from './RouterView'
 
 export type { RouterViewProps, RouterViewDevtoolsContext }
@@ -106,19 +105,6 @@ export const VaporRouterView = /*#__PURE__*/ defineVaporComponent({
               to.updateGuards = from.updateGuards
             }
           }
-        }
-
-        // trigger beforeRouteEnter next callbacks
-        if (
-          instance &&
-          to &&
-          // if there is no instance but to and from are the same this might be
-          // the first visit
-          (!from || !isSameRouteRecord(to, from) || !oldInstance)
-        ) {
-          ;(to.enterCallbacks[name] || []).forEach(callback =>
-            callback(instance)
-          )
         }
       },
       { flush: 'post' }
