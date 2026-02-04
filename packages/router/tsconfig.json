@@ -36,6 +36,6 @@
     "removeComments": false,
     "jsx": "preserve",
     "lib": ["esnext", "dom"],
-    "types": ["node", "vite/client", "@vitest/browser/providers/playwright"]
+    "types": ["node", "vite/client"]
   }
 }

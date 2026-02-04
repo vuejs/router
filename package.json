@@ -64,7 +64,8 @@
   "pnpm": {
     "overrides": {
       "@types/node": "^24.10.4",
-      "vite": "^7.3.0"
+      "vite": "^7.3.0",
+      "vue": "https://pkg.pr.new/vue@8248ce9"
     },
     "peerDependencyRules": {
       "ignoreMissing": [
