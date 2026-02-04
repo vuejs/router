@@ -36,6 +36,11 @@
     "removeComments": false,
     "jsx": "preserve",
     "lib": ["esnext", "dom"],
-    "types": ["node", "vite/client", "@vitest/browser/providers/playwright"]
+    "types": [
+      "node",
+      "vite/client"
+      // FIXME: breaks in vitest 4
+      // "@vitest/browser/providers/playwright"
+    ]
   }
 }
