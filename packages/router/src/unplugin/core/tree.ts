@@ -533,6 +533,46 @@ export class PrefixTree extends TreeNode {
 }
 
 /**
+ * Conflict between `_parent` files and same-name files.
+ *
+ * @internal
+ */
+export interface ParentConflict {
+  routePath: string
+  parentFilePath: string
+  filePath: string
+}
+
+/**
+ * Collects conflicts between `_parent` files and same-name files.
+ *
+ * @param tree - prefix tree to scan
+ *
+ * @internal
+ */
+export function collectParentConflicts(tree: PrefixTree): ParentConflict[] {
+  const conflicts: ParentConflict[] = []
+  const seen = new Set<string>()
+
+  for (const [filePath, node] of tree.map) {
+    if (!isParentFile(filePath)) continue
+    const siblingFilePath = getSiblingFilePath(filePath)
+    if (!siblingFilePath || !tree.map.has(siblingFilePath)) continue
+
+    const key = `${node.fullPath}::${filePath}::${siblingFilePath}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    conflicts.push({
+      routePath: node.fullPath,
+      parentFilePath: filePath,
+      filePath: siblingFilePath,
+    })
+  }
+
+  return conflicts
+}
+
+/**
  * Splits a path into by finding the first '/' and returns the tail and segment. If it has an extension, it removes it.
  * If it contains a named view, it returns the view name as well (otherwise it's default).
  *
@@ -558,4 +598,13 @@ function splitFilePath(filePath: string) {
     tail,
     viewName,
   }
+}
+
+function isParentFile(filePath: string) {
+  return filePath.includes('/_parent.') || filePath.includes('/_parent@')
+}
+
+function getSiblingFilePath(filePath: string) {
+  const siblingFilePath = filePath.replace(/\/_parent(?=[@.])/, '')
+  return siblingFilePath === filePath ? null : siblingFilePath
 }

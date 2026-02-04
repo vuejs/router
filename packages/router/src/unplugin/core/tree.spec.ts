@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { DEFAULT_OPTIONS, Options, resolveOptions } from '../options'
-import { PrefixTree, TreeNodeValueMatcherPart } from './tree'
+import {
+  collectParentConflicts,
+  PrefixTree,
+  TreeNodeValueMatcherPart,
+} from './tree'
 import { TreeNodeType, type TreePathParam } from './treeNodeValue'
 import { resolve } from 'pathe'
 import { mockWarn } from '../../tests/vitest-mock-warn'
@@ -1184,6 +1188,36 @@ describe('Tree', () => {
       const c = tree.children.get('a')!.children.get('b')!.children.get('c')!
       expect(c.value.components.get('default')).toBe('a/b/c/_parent.vue')
       expect(c.children.has('_parent')).toBe(false)
+    })
+
+    it('collects _parent conflicts', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('nested/_parent', 'nested/_parent.vue')
+      tree.insert('nested', 'nested.vue')
+
+      expect(collectParentConflicts(tree)).toEqual([
+        {
+          routePath: '/nested',
+          parentFilePath: 'nested/_parent.vue',
+          filePath: 'nested.vue',
+        },
+      ])
+    })
+
+    it('keeps nested children when removing same-name file', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('nested', 'nested.vue')
+      tree.insert('nested/_parent', 'nested/_parent.vue')
+      tree.insert('nested/index', 'nested/index.vue')
+      tree.insert('nested/other', 'nested/other.vue')
+
+      tree.removeChild('nested.vue')
+
+      const nested = tree.children.get('nested')!
+      expect(nested).toBeDefined()
+      expect(nested.value.components.get('default')).toBe('nested/_parent.vue')
+      expect(nested.children.has('index')).toBe(true)
+      expect(nested.children.has('other')).toBe(true)
     })
   })
 
