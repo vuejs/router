@@ -90,6 +90,12 @@ export class TreeNode {
   insert(path: string, filePath: string): TreeNode {
     const { tail, segment, viewName } = splitFilePath(path)
 
+    // Handle _parent convention: _parent.vue sets component on current node
+    if (segment === '_parent' && !tail) {
+      this.value.components.set(viewName, filePath)
+      return this
+    }
+
     if (!this.children.has(segment)) {
       this.children.set(segment, new TreeNode(this.options, segment, this))
     } // TODO: else error or still override?
@@ -208,6 +214,12 @@ export class TreeNode {
   remove(path: string) {
     // TODO: rename remove to removeChild
     const { tail, segment, viewName } = splitFilePath(path)
+
+    // Handle _parent convention: remove component from current node
+    if (segment === '_parent' && !tail) {
+      this.value.components.delete(viewName)
+      return
+    }
 
     const child = this.children.get(segment)
     if (!child) {

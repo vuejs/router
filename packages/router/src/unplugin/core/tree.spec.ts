@@ -1124,6 +1124,69 @@ describe('Tree', () => {
     })
   })
 
+  describe('_parent convention', () => {
+    it('handles _parent.vue as parent component', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('admin/_parent', 'admin/_parent.vue')
+
+      const admin = tree.children.get('admin')!
+      expect(admin).toBeDefined()
+      expect(admin.value.components.get('default')).toBe('admin/_parent.vue')
+      expect(admin.children.has('_parent')).toBe(false) // No _parent child
+      expect(admin.fullPath).toBe('/admin')
+    })
+
+    it('handles _parent.vue with sibling routes', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('admin/_parent', 'admin/_parent.vue')
+      tree.insert('admin/dashboard', 'admin/dashboard.vue')
+
+      const admin = tree.children.get('admin')!
+      expect(admin.value.components.get('default')).toBe('admin/_parent.vue')
+      expect(admin.children.has('dashboard')).toBe(true)
+      expect(admin.children.has('_parent')).toBe(false)
+    })
+
+    it('handles named views with _parent@viewName', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('admin/_parent@sidebar', 'admin/_parent@sidebar.vue')
+
+      const admin = tree.children.get('admin')!
+      expect(admin.value.components.get('sidebar')).toBe(
+        'admin/_parent@sidebar.vue'
+      )
+    })
+
+    it('removes _parent.vue correctly', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('admin/_parent', 'admin/_parent.vue')
+      tree.insert('admin/dashboard', 'admin/dashboard.vue')
+
+      tree.remove('admin/_parent')
+
+      const admin = tree.children.get('admin')!
+      expect(admin.value.components.size).toBe(0)
+      expect(admin.children.has('dashboard')).toBe(true)
+    })
+
+    it('removes folder when _parent and all children removed', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('admin/_parent', 'admin/_parent.vue')
+      tree.remove('admin/_parent')
+
+      expect(tree.children.has('admin')).toBe(false)
+    })
+
+    it('handles deeply nested _parent', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('a/b/c/_parent', 'a/b/c/_parent.vue')
+
+      const c = tree.children.get('a')!.children.get('b')!.children.get('c')!
+      expect(c.value.components.get('default')).toBe('a/b/c/_parent.vue')
+      expect(c.children.has('_parent')).toBe(false)
+    })
+  })
+
   describe('Empty parameter names', () => {
     it('assigns default name "pathMatch" to empty parameter names', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
