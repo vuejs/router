@@ -35,6 +35,8 @@ export const VaporRouterLinkImpl = defineVaporComponent({
     viewTransition: Boolean,
   },
 
+  useLink,
+
   setup(props, { slots, attrs }) {
     const link = reactive(useLink(props))
     const { options } = inject(routerKey)!
@@ -78,8 +80,5 @@ export const VaporRouterLinkImpl = defineVaporComponent({
     })
   },
 })
-
-// @ts-ignore
-VaporRouterLinkImpl.useLink = useLink
 
 export const VaporRouterLink: _RouterLinkI = VaporRouterLinkImpl as any
