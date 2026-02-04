@@ -20,6 +20,7 @@
     "play": "pnpm run -r play",
     "build:size": "pnpm run -r build:size",
     "lint": "oxfmt --check",
+    "fmt": "oxfmt",
     "lint:fix": "oxfmt",
     "test": "pnpm run -r test",
     "postinstall": "simple-git-hooks"

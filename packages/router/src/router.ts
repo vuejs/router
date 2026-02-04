@@ -86,8 +86,7 @@ export interface RouterOptions extends EXPERIMENTAL_RouterOptions_Base {
 /**
  * Router instance.
  */
-export interface Router
-  extends EXPERIMENTAL_Router_Base<RouteRecordNormalized> {
+export interface Router extends EXPERIMENTAL_Router_Base<RouteRecordNormalized> {
   /**
    * Original options object passed to create the Router
    */
