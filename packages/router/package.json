@@ -154,7 +154,7 @@
   },
   "devDependencies": {
     "@babel/types": "^7.29.0",
-    "@pinia/colada": "^0.21.1",
+    "@pinia/colada": "^0.21.2",
     "@playwright/test": "^1.58.1",
     "@rollup/plugin-commonjs": "^28.0.9",
     "@rollup/plugin-node-resolve": "^16.0.3",
