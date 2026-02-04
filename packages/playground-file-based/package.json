@@ -10,7 +10,7 @@
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
-    "vue": "^3.6.0-beta.2",
+    "vue": "https://pkg.pr.new/vue@8248ce9",
     "vue-router": "workspace:*"
   },
   "devDependencies": {
@@ -20,7 +20,7 @@
     "auto-scaffold": "^0.2.0",
     "unplugin-auto-import": "^21.0.0",
     "vite": "^7.3.0",
-    "vite-plugin-vue-devtools": "^8.0.5",
+    "vite-plugin-vue-devtools": "^8.0.6",
     "vue-tsc": "^3.2.4"
   }
 }

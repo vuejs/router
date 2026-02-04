@@ -20,6 +20,7 @@
     "play": "pnpm run -r play",
     "build:size": "pnpm run -r build:size",
     "lint": "oxfmt --check",
+    "fmt": "oxfmt",
     "lint:fix": "oxfmt",
     "test": "pnpm run -r test",
     "postinstall": "simple-git-hooks"
@@ -63,7 +64,9 @@
   "pnpm": {
     "overrides": {
       "@types/node": "^24.10.4",
-      "vite": "^7.3.0"
+      "vite": "^7.3.0",
+      "vue": "https://pkg.pr.new/vue@8248ce9",
+      "@vue/server-renderer": "https://pkg.pr.new/@vue/server-renderer@8248ce9"
     },
     "peerDependencyRules": {
       "ignoreMissing": [

@@ -136,7 +136,7 @@
   "dependencies": {
     "@babel/generator": "^7.28.6",
     "@vue-macros/common": "^3.1.1",
-    "@vue/devtools-api": "^8.0.0",
+    "@vue/devtools-api": "^8.0.6",
     "ast-walker-scope": "^0.8.3",
     "chokidar": "^5.0.0",
     "json5": "^2.2.3",
@@ -150,12 +150,13 @@
     "tinyglobby": "^0.2.15",
     "unplugin": "^3.0.0",
     "unplugin-utils": "^0.3.1",
+    "vue": "https://pkg.pr.new/vue@8248ce9",
     "yaml": "^2.8.2"
   },
   "devDependencies": {
     "@babel/types": "^7.28.6",
     "@pinia/colada": "^0.21.1",
-    "@playwright/test": "^1.57.0",
+    "@playwright/test": "^1.58.1",
     "@rollup/plugin-commonjs": "^28.0.9",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.3",
@@ -180,18 +181,18 @@
     "nightwatch-helpers": "^1.2.0",
     "pinia": "^3.0.4",
     "rimraf": "^6.1.2",
-    "rollup": "^4.55.1",
+    "rollup": "^4.57.1",
     "rollup-plugin-typescript2": "^0.36.0",
     "tsdown": "^0.20.1",
     "tsup": "^8.5.1",
     "vite": "^7.3.0",
-    "vue": "3.6.0-beta.2"
+    "vue": "https://pkg.pr.new/vue@8248ce9"
   },
   "peerDependencies": {
     "@pinia/colada": ">=0.21.2",
     "@vue/compiler-sfc": "^3.5.17",
     "pinia": "^3.0.4",
-    "vue": "^3.5.0"
+    "vue": "^3.5.0 || ^3.6.0-beta.5"
   },
   "peerDependenciesMeta": {
     "@vue/compiler-sfc": {
