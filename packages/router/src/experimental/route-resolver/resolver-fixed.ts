@@ -66,8 +66,7 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
 /**
  * A group can contain other useful properties like `meta` defined by the router.
  */
-export interface EXPERIMENTAL_ResolverRecord_Group
-  extends EXPERIMENTAL_ResolverRecord_Base {
+export interface EXPERIMENTAL_ResolverRecord_Group extends EXPERIMENTAL_ResolverRecord_Base {
   /**
    * A group route cannot be matched directly and cannot be named.
    */
@@ -92,8 +91,7 @@ export interface EXPERIMENTAL_ResolverRecord_Group
  * A matchable record is a record that can be matched by a path, query or hash
  * and will resolve to a location.
  */
-export interface EXPERIMENTAL_ResolverRecord_Matchable
-  extends EXPERIMENTAL_ResolverRecord_Base {
+export interface EXPERIMENTAL_ResolverRecord_Matchable extends EXPERIMENTAL_ResolverRecord_Base {
   name: RecordName
   path: MatcherPatternPath
 }
@@ -109,8 +107,9 @@ export type EXPERIMENTAL_ResolverRecord<ExtensionT = {}> =
 /**
  * @alias EXPERIMENTAL_Resolver_Base
  */
-export interface EXPERIMENTAL_ResolverFixed<TRecord>
-  extends EXPERIMENTAL_Resolver_Base<TRecord> {}
+export interface EXPERIMENTAL_ResolverFixed<
+  TRecord,
+> extends EXPERIMENTAL_Resolver_Base<TRecord> {}
 
 /**
  * Build the `matched` array of a record that includes all parent records from the root to the current one.
