@@ -226,12 +226,12 @@ describe('navigation-guard', () => {
     })
 
     router.push('/fetch')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     l1.resolve()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(router.currentRoute.value.path).not.toBe('/fetch')
     l2.resolve()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(router.currentRoute.value.path).toBe('/fetch')
   })
 
@@ -250,13 +250,13 @@ describe('navigation-guard', () => {
     })
 
     router.push('/fetch')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(router.currentRoute.value.path).not.toBe('/fetch')
     l2.resolve()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(router.currentRoute.value.path).toBe('/fetch')
     l1.resolve()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(router.currentRoute.value.path).toBe('/fetch')
   })
 
@@ -275,13 +275,13 @@ describe('navigation-guard', () => {
     })
 
     const p = router.push('/fetch')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(router.currentRoute.value.path).not.toBe('/fetch')
     l2.resolve()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(router.currentRoute.value.path).not.toBe('/fetch')
     l1.resolve()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     await p
     expect(router.currentRoute.value.path).toBe('/fetch')
   })
@@ -322,7 +322,7 @@ describe('navigation-guard', () => {
       })
 
       const p = router.push('/fetch')
-      await vi.runAllTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       l1.reject()
       await expect(p).rejects.toThrow('ko')
       expect(router.currentRoute.value.path).not.toBe('/fetch')
@@ -343,7 +343,7 @@ describe('navigation-guard', () => {
     })
 
     const p = router.push('/fetch')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     l1.reject()
     await expect(p).resolves.toBeUndefined()
     expect(router.currentRoute.value.path).toBe('/fetch')
@@ -363,7 +363,7 @@ describe('navigation-guard', () => {
     })
 
     const p = router.push('/fetch')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     l1.reject()
     await expect(p).rejects.toThrow('ko')
     expect(router.currentRoute.value.path).not.toBe('/fetch')
@@ -391,14 +391,14 @@ describe('navigation-guard', () => {
     })
 
     router.push('/fetch')
-    await vi.runOnlyPendingTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(isGloballyLoading.value).toBe(true)
 
     l1.resolve()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(isGloballyLoading.value).toBe(true)
     l2.resolve()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(isGloballyLoading.value).toBe(false)
   })
 
@@ -461,7 +461,7 @@ describe('navigation-guard', () => {
       })
 
       router.push('/fetch')
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       l1.resolve(new NavigationResult('/#ok'))
       await getPendingNavigation()
       expect(selectNavigationResult).toHaveBeenCalledTimes(1)
@@ -484,7 +484,7 @@ describe('navigation-guard', () => {
       })
 
       router.push('/fetch')
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       const r1 = new NavigationResult('/#ok')
       const r2 = new NavigationResult('/#ok2')
       l1.resolve(r1)
@@ -511,7 +511,7 @@ describe('navigation-guard', () => {
 
       selectNavigationResult.mockImplementation(() => true)
       router.push('/fetch')
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       const r1 = new NavigationResult('/#ok')
       const r2 = new NavigationResult('/#ok2')
       l1.resolve(r1)
@@ -534,7 +534,7 @@ describe('navigation-guard', () => {
       })
 
       router.push('/fetch')
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       const r1 = new NavigationResult('/#ok')
       l1.reject(r1)
       await getPendingNavigation()?.catch(() => {})
@@ -560,7 +560,7 @@ describe('navigation-guard', () => {
       })
 
       router.push('/fetch')
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       l1.reject(new CustomError('expected'))
       await getPendingNavigation()
       expect(router.currentRoute.value.fullPath).toBe('/fetch')
@@ -580,7 +580,7 @@ describe('navigation-guard', () => {
       })
 
       router.push('/fetch')
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       l1.reject(new Error('unexpected'))
       await expect(getPendingNavigation()).rejects.toThrow('unexpected')
       expect(router.currentRoute.value.fullPath).not.toBe('/fetch')
@@ -602,7 +602,7 @@ describe('navigation-guard', () => {
       })
 
       router.push('/fetch')
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       l1.reject(new Error('expected'))
       await getPendingNavigation()
       expect(router.currentRoute.value.fullPath).toBe('/fetch')
@@ -610,7 +610,7 @@ describe('navigation-guard', () => {
       // use an unexpected error
       await router.push('/')
       router.push('/fetch')
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       l1.reject(new Error('unexpected'))
       await getPendingNavigation()?.catch(() => {})
       expect(router.currentRoute.value.fullPath).not.toBe('/fetch')
@@ -638,14 +638,14 @@ describe('navigation-guard', () => {
 
       // not covered by any
       router.push('/fetch')
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       l1.reject(new Error('unexpected'))
       await getPendingNavigation()?.catch(() => {})
       expect(router.currentRoute.value.fullPath).not.toBe('/fetch')
 
       // covered locally only
       router.push('/fetch')
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       l1.reject(new Error('expected'))
       await getPendingNavigation()?.catch(() => {})
       expect(router.currentRoute.value.fullPath).toBe('/fetch')
@@ -673,7 +673,7 @@ describe('navigation-guard', () => {
       //
       // covered locally only
       router.push('/fetch')
-      await vi.runOnlyPendingTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       l1.reject(new CustomError())
       await getPendingNavigation()?.catch(() => {})
       // the navigation was not aborted

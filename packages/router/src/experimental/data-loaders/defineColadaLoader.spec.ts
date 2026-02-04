@@ -191,7 +191,7 @@ describe(
       // it cannot be a beforeEach because it wouldn't run the loaders
       router.beforeResolve(() => false)
       await router.push('/fetch?v=2')
-      await vi.runAllTimersAsync()
+      await vi.advanceTimersByTimeAsync(0)
       // we ensure that it was called
       expect(query).toHaveBeenCalledTimes(2)
       expect(loaderData.value).toBe('1')

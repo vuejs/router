@@ -244,7 +244,7 @@ export function testDefineLoader<Context = void>(
         const { error, reload } = useData()
         spy.mockRejectedValueOnce(new Error('ok'))
         await reload().catch(() => {})
-        await vi.runAllTimersAsync()
+        await vi.advanceTimersByTimeAsync(0)
         expect(spy).toHaveBeenCalledTimes(2)
         expect(error.value).toEqual(new Error('ok'))
       })
@@ -374,7 +374,7 @@ export function testDefineLoader<Context = void>(
         navigationPromise = router.push('/fetch#one')
         await vi.advanceTimersByTimeAsync(10)
         await expect(navigationPromise).resolves.toBeUndefined()
-        // await vi.runAllTimersAsync()
+        // await vi.advanceTimersByTimeAsync(0)
         expect(l.spy).toHaveBeenCalledTimes(2)
         const { data, error } = useData()
         expect(error.value).toBe(null)
@@ -391,16 +391,16 @@ export function testDefineLoader<Context = void>(
         // force the error
         l.spy.mockRejectedValueOnce(new Error('ok'))
         await reload().catch(() => {})
-        await vi.runAllTimersAsync()
+        await vi.advanceTimersByTimeAsync(0)
         expect(error.value).toEqual(new Error('ok'))
 
         // trigger a new navigation
         router.push('/fetch?p=ok')
-        await vi.runAllTimersAsync()
+        await vi.advanceTimersByTimeAsync(0)
         // we still see the error
         expect(error.value).toEqual(new Error('ok'))
         l.resolve('resolved')
-        await vi.runAllTimersAsync()
+        await vi.advanceTimersByTimeAsync(0)
         // not anymore
         expect(data.value).toBe('resolved')
       })
@@ -960,7 +960,7 @@ export function testDefineLoader<Context = void>(
     const [spy, resolve] = mockPromise('resolved')
     const { useData, router } = singleLoaderOneRoute(loaderFactory({ fn: spy }))
     const p = router.push('/fetch')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(spy).toHaveBeenCalled()
     const { data } = useData()
     expect(data.value).toEqual(undefined)
@@ -988,7 +988,7 @@ export function testDefineLoader<Context = void>(
     const { data } = useData()
     expect(data.value).toEqual(undefined)
     resolve()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(data.value).toEqual('resolved')
     expect(wrapper.get('#isLoading').text()).toBe('false')
     expect(wrapper.get('#data').text()).toBe('resolved')
@@ -1015,9 +1015,9 @@ export function testDefineLoader<Context = void>(
     )
     const firstNavigation = router.push('/fetch?p=one')
     // if we don't wait a little bit, the first navigation won't have the time to trigger the loader once
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     const secondNavigation = router.push('/fetch?p=two')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     resolveSecondCall()
     await secondNavigation
     const { data } = useData()
@@ -1076,7 +1076,7 @@ export function testDefineLoader<Context = void>(
     // we resolve the first root to give the nested loader a chance to run
     resolveRootFirstCall()
     // allows root loader to run
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
 
     expect(rootLoaderSpy).toHaveBeenCalledTimes(1)
     // using toHaveBeenCalledWith yields an error that is difficult to debug
@@ -1090,13 +1090,13 @@ export function testDefineLoader<Context = void>(
 
     // now trigger the second navigation while the nested loader is pending
     const secondNavigation = router.push('/fetch?p=two')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
 
     expect(rootLoaderSpy).toHaveBeenCalledTimes(2)
     expect(rootLoaderSpy.mock.calls.at(1)?.at(0)?.fullPath).toBe('/fetch?p=two')
 
     resolveRootSecondCall()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
 
     expect(nestedLoaderSpy).toHaveBeenCalledTimes(2)
     expect(nestedLoaderSpy.mock.calls.at(-1)?.at(0)?.fullPath).toBe(
@@ -1106,7 +1106,7 @@ export function testDefineLoader<Context = void>(
     // the nested gets resolved for the first time
     resolveNestedFirstCall()
     resolveNestedSecondCall()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
 
     // explicitly wait for both navigations to ensure everything ran
     await firstNavigation
@@ -1171,17 +1171,17 @@ export function testDefineLoader<Context = void>(
       })
     )
     const firstNavigation = router.push('/fetch?p=one')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     const secondNavigation = router.push('/fetch?p=two')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     resolveRootSecondCall()
     // the nested gets called for the first time
     resolveNestedFirstCall()
 
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     resolveRootFirstCall()
     resolveNestedSecondCall()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
 
     // explicitly wait for both navigations to ensure everything ran
     await firstNavigation
@@ -1229,15 +1229,15 @@ export function testDefineLoader<Context = void>(
 
     // try running two navigations to a different location
     router.push('/fetch?p=ko')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(spy).toHaveBeenCalledTimes(2)
     router.push('/fetch?p=ko')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(spy).toHaveBeenCalledTimes(3)
 
     // but roll back to the initial one
     router.push('/fetch?p=ok')
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     // it runs 3 times because in vue router, going from /fetch?p=ok to /fetch?p=ok fails right away, so the loader are never called
     // We simply don't test it because it doesn't matter, what matters is what value is preserved in the end
     // expect(spy).toHaveBeenCalledTimes(3)
@@ -1245,7 +1245,7 @@ export function testDefineLoader<Context = void>(
     resolveCall1()
     resolveCall2()
     resolveCall3()
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     await getPendingNavigation()
 
     // it preserves the initial value
@@ -1260,9 +1260,9 @@ export function testDefineLoader<Context = void>(
     )
     router.push('/fetch')
     // ensures the useData is called first
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     const useDataPromise = app.runWithContext(() => useData())
-    await vi.runAllTimersAsync()
+    await vi.advanceTimersByTimeAsync(0)
     expect(useDataPromise).toBeInstanceOf(Promise)
     resolve()
     const data = await useDataPromise
