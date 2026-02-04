@@ -12,7 +12,7 @@
   "dependencies": {
     "semver": "^7.8.5",
     "valibot": "^1.5.0",
-    "vue": "^3.5.43",
+    "vue": "^3.6.0-beta.5",
     "vue-router": "workspace:*",
     "zod": "^4.6.5"
   },
