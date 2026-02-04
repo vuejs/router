@@ -92,6 +92,7 @@ export class TreeNode {
 
     // Handle _parent convention: _parent.vue sets component on current node
     if (segment === '_parent' && !tail) {
+      this.value.setOverride(filePath, { name: false })
       this.value.components.set(viewName, filePath)
       return this
     }

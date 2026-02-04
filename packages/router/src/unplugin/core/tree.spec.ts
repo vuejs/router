@@ -1161,6 +1161,25 @@ describe('Tree', () => {
       )
     })
 
+    it('treats _parent nodes as non matchable', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('admin/_parent', 'admin/_parent.vue')
+
+      const admin = tree.children.get('admin')!
+      expect(admin.name).toBe(false)
+      expect(admin.isMatchable()).toBe(false)
+    })
+
+    it('honors explicit name overrides for _parent', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const admin = tree.insert('admin/_parent', 'admin/_parent.vue')
+      admin.setCustomRouteBlock('admin/_parent.vue', { name: 'Admin' })
+
+      expect(admin.name).toBe('Admin')
+      expect(admin.isNamed()).toBe(true)
+      expect(admin.isMatchable()).toBe(true)
+    })
+
     it('removes _parent.vue correctly', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
       tree.insert('admin/_parent', 'admin/_parent.vue')
