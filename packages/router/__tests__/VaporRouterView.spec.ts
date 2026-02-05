@@ -2,15 +2,19 @@
  * @vitest-environment happy-dom
  */
 import { VaporRouterView } from '../src/VaporRouterView'
-import { RouteLocationNormalizedLoose, vaporComponents } from './utils'
+import { RouteLocationNormalizedLoose } from './utils'
 import { START_LOCATION_NORMALIZED } from '../src/location'
 import {
+  createComponent,
   createComponentWithFallback,
   createDynamicComponent,
+  createIf,
   createVaporApp,
+  defineVaporComponent,
   markRaw,
   renderEffect,
   resolveComponent,
+  setInsertionState,
   setText,
   template,
   txt,
@@ -19,7 +23,7 @@ import {
   withVaporCtx,
 } from 'vue'
 import { createMockedRoute } from './mount'
-import { RouteLocationNormalized } from '../src'
+import { RouteComponent, RouteLocationNormalized } from '../src'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { mockWarn } from './vitest-mock-warn'
 
@@ -40,6 +44,57 @@ function createRoutes<T extends Record<string, RouteLocationNormalizedLoose>>(
   return nonReactiveRoutes
 }
 
+const components = {
+  Home: { setup: () => template('<div>Home')() },
+  Foo: { render: () => template('<div>Foo')() },
+  Bar: { render: () => template('<div>Bar')() },
+  User: defineVaporComponent({
+    props: {
+      id: {
+        default: 'default',
+      },
+    },
+    setup(props: any) {
+      const n0 = template('<div> ', true)()
+      const x0 = txt(n0 as any)
+      renderEffect(() => setText(x0 as any, `User: ${props.id}`))
+      return n0
+    },
+  }),
+  WithProps: {
+    props: {
+      id: {
+        default: 'default',
+      },
+      other: {
+        default: 'other',
+      },
+    },
+    setup(props: any) {
+      const n0 = template('<div> ', true)()
+      const x0 = txt(n0 as any)
+      renderEffect(() =>
+        setText(x0 as any, 'id:' + props.id + ';other:' + props.other)
+      )
+      return n0
+    },
+  } as RouteComponent,
+  Nested: {
+    render: () => {
+      const n3 = template('<div><h2>Nested', true)()
+      setInsertionState(n3 as any, null, 1, true)
+      createIf(
+        () => VaporRouterView,
+        () => {
+          const n2 = createComponent(VaporRouterView)
+          return n2
+        }
+      )
+      return n3
+    },
+  },
+}
+
 const props = { default: false }
 
 const routes = createRoutes({
@@ -53,7 +108,7 @@ const routes = createRoutes({
     meta: {},
     matched: [
       {
-        components: { default: vaporComponents.Home },
+        components: { default: components.Home },
         instances: {},
         enterCallbacks: {},
         path: '/',
@@ -71,7 +126,7 @@ const routes = createRoutes({
     meta: {},
     matched: [
       {
-        components: { default: vaporComponents.Foo },
+        components: { default: components.Foo },
         instances: {},
         enterCallbacks: {},
         path: '/foo',
@@ -89,14 +144,14 @@ const routes = createRoutes({
     meta: {},
     matched: [
       {
-        components: { default: vaporComponents.Nested },
+        components: { default: components.Nested },
         instances: {},
         enterCallbacks: {},
         path: '/',
         props,
       },
       {
-        components: { default: vaporComponents.Foo },
+        components: { default: components.Foo },
         instances: {},
         enterCallbacks: {},
         path: 'a',
@@ -114,21 +169,21 @@ const routes = createRoutes({
     meta: {},
     matched: [
       {
-        components: { default: vaporComponents.Nested },
+        components: { default: components.Nested },
         instances: {},
         enterCallbacks: {},
         path: '/',
         props,
       },
       {
-        components: { default: vaporComponents.Nested },
+        components: { default: components.Nested },
         instances: {},
         enterCallbacks: {},
         path: 'a',
         props,
       },
       {
-        components: { default: vaporComponents.Foo },
+        components: { default: components.Foo },
         instances: {},
         enterCallbacks: {},
         path: 'b',
@@ -146,7 +201,7 @@ const routes = createRoutes({
     meta: {},
     matched: [
       {
-        components: { foo: vaporComponents.Foo },
+        components: { foo: components.Foo },
         instances: {},
         enterCallbacks: {},
         path: '/',
@@ -164,7 +219,7 @@ const routes = createRoutes({
     meta: {},
     matched: [
       {
-        components: { default: vaporComponents.User },
+        components: { default: components.User },
 
         instances: {},
         enterCallbacks: {},
@@ -183,7 +238,7 @@ const routes = createRoutes({
     meta: {},
     matched: [
       {
-        components: { default: vaporComponents.WithProps },
+        components: { default: components.WithProps },
 
         instances: {},
         enterCallbacks: {},
@@ -203,7 +258,7 @@ const routes = createRoutes({
     meta: {},
     matched: [
       {
-        components: { default: vaporComponents.WithProps },
+        components: { default: components.WithProps },
 
         instances: {},
         enterCallbacks: {},
@@ -235,7 +290,7 @@ const routes = createRoutes({
         props,
       },
       {
-        components: { default: vaporComponents.Foo },
+        components: { default: components.Foo },
         instances: {},
         enterCallbacks: {},
         path: 'foo',
@@ -287,17 +342,17 @@ describe('RouterView', () => {
     }
   }
 
-  it('displays current route component', async () => {
+  it('displays current route component', () => {
     const { wrapper } = factory(routes.root)
     expect(wrapper.html()).toBe(`<div>Home</div><!--dynamic-component-->`)
   })
 
-  it('displays named views', async () => {
+  it('displays named views', () => {
     const { wrapper } = factory(routes.named, { name: 'foo' })
     expect(wrapper.html()).toBe(`<div>Foo</div><!--dynamic-component-->`)
   })
 
-  it('displays nothing when route is unmatched', async () => {
+  it('displays nothing when route is unmatched', () => {
     const { wrapper } = factory(START_LOCATION_NORMALIZED as any)
     // NOTE: I wonder if this will stay stable in future releases
     expect('Router').not.toHaveBeenWarned()
@@ -309,14 +364,14 @@ describe('RouterView', () => {
     ).toHaveLength(0)
   })
 
-  it('displays nested views', async () => {
+  it('displays nested views', () => {
     const { wrapper } = factory(routes.nested)
     expect(wrapper.html()).toMatchInlineSnapshot(
       `"<div><h2>Nested</h2><div>Foo</div><!--dynamic-component--><!--if--></div><!--dynamic-component-->"`
     )
   })
 
-  it('displays deeply nested views', async () => {
+  it('displays deeply nested views', () => {
     const { wrapper } = factory(routes.nestedNested)
     expect(wrapper.html()).toMatchInlineSnapshot(
       `"<div><h2>Nested</h2><div><h2>Nested</h2><div>Foo</div><!--dynamic-component--><!--if--></div><!--dynamic-component--><!--if--></div><!--dynamic-component-->"`
@@ -335,7 +390,7 @@ describe('RouterView', () => {
       ...routes.withParams,
       matched: [
         {
-          components: { default: vaporComponents.User },
+          components: { default: components.User },
           instances: {},
           enterCallbacks: {},
           path: '/users/:id',
@@ -399,7 +454,7 @@ describe('RouterView', () => {
       initialRoute: RouteLocationNormalizedLoose,
       props: any = {}
     ) {
-      const route = createMockedRoute(routes.root)
+      const route = createMockedRoute(initialRoute)
       const wrapper = mount(
         {
           setup: () => {
