@@ -6,7 +6,9 @@ export default defineConfig({
   resolve: {
     alias: {
       // cjs does not export vapor runtime, use esm instead.
-      vue: 'vue/dist/vue.esm-bundler.js',
+      // "@vue/runtime-core": require.resolve('@vue/runtime-dom').replace('index.js', 'dist/runtime-dom.esm-bundler.js'),
+      // "@vue/runtime-dom": require.resolve('@vue/runtime-core').replace('index.js', 'dist/runtime-core.esm-bundler.js'),
+      // vue: 'vue/dist/vue.runtime.esm-bundler.js',
     },
   },
   define: {
