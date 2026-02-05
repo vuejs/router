@@ -17,7 +17,7 @@
     "typescript": "~5.9.3",
     "vite": "^7.3.0",
     "vite-plugin-vue-devtools": "^8.0.6",
-    "vue": "https://pkg.pr.new/vue@8248ce9",
+    "vue": "https://pkg.pr.new/vue@d3fca3b",
     "vue-router": "workspace:*",
     "vue-tsc": "^3.2.4"
   }
