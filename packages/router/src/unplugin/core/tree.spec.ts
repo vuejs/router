@@ -817,7 +817,7 @@ describe('Tree', () => {
   describe('path regexp', () => {
     function checkRegexp(
       path: string,
-      expectedRe: string,
+      expectedRe: string | RegExp,
       {
         options,
         matcherParts,
@@ -829,7 +829,7 @@ describe('Tree', () => {
       const node = new PrefixTree(
         options ? resolveOptions(options) : RESOLVED_OPTIONS
       ).insert(path, path + '.vue')
-      expect(node.regexp).toBe(expectedRe)
+      expect(node.regexp).toBe(String(expectedRe))
       if (matcherParts) {
         expect(node.matcherPatternPathDynamicParts).toEqual(matcherParts)
       }
@@ -1004,6 +1004,56 @@ describe('Tree', () => {
     it('works with a splat param with a prefix', () => {
       checkRegexp('a/some-[id]/[...all]', '/^\\/a\\/some-([^/]+?)\\/(.*)$/i', {
         matcherParts: ['a', ['some-', 1], 0],
+      })
+    })
+
+    describe('group', () => {
+      it('handles multiple groups after param', () => {
+        checkRegexp('[username]/(user-home)/(nested)', /^\/([^/]+?)$/i, {
+          matcherParts: [1],
+        })
+      })
+
+      it('handles group after param with nested static', () => {
+        checkRegexp('[username]/(user)/profile', /^\/([^/]+?)\/profile$/i, {
+          matcherParts: [1, 'profile'],
+        })
+      })
+
+      it('handles group before param', () => {
+        checkRegexp('(admin)/[id]', /^\/([^/]+?)$/i, {
+          matcherParts: [1],
+        })
+      })
+
+      it('handles group between static and param', () => {
+        checkRegexp('users/(auth)/[id]', /^\/users\/([^/]+?)$/i, {
+          matcherParts: ['users', 1],
+        })
+      })
+
+      it('handles group between two params', () => {
+        checkRegexp('[org]/(settings)/[id]', /^\/([^/]+?)\/([^/]+?)$/i, {
+          matcherParts: [1, 1],
+        })
+      })
+
+      it('handles group between static segments', () => {
+        checkRegexp('users/(group)/profile', /^\/users\/profile$/i, {
+          matcherParts: ['users', 'profile'],
+        })
+      })
+
+      it('handles optional param followed by group', () => {
+        checkRegexp('[[id]]/(admin)/settings', /^(?:\/([^/]+?))?\/settings$/i, {
+          matcherParts: [1, 'settings'],
+        })
+      })
+
+      it('handles deeply nested groups', () => {
+        checkRegexp('app/(dashboard)/(analytics)/[id]', /^\/app\/([^/]+?)$/i, {
+          matcherParts: ['app', 1],
+        })
       })
     })
   })

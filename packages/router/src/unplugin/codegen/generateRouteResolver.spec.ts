@@ -1199,4 +1199,46 @@ describe('generateRouteResolver', () => {
 
     expect(resolver).toMatchSnapshot()
   })
+
+  it('handles multiple nested groups', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    const importsMap = new ImportsMap()
+
+    // Layout for [username]
+    tree.insert('[username]/_parent', '[username]/_parent.vue')
+    // Nested groups under [username] - user home page
+    tree.insert(
+      '[username]/(user-home)/(user-home)',
+      '[username]/(user-home)/(user-home).vue'
+    )
+    // layout for the home only
+    tree.insert(
+      '[username]/(user-home)/_parent',
+      '[username]/(user-home)/_parent.vue'
+    )
+    // Different group structure - user settings
+    tree.insert(
+      '[username]/(user-settings)/settings',
+      '[username]/(user-settings)/settings.vue'
+    )
+    // layout for settings
+    tree.insert(
+      '[username]/(user-settings)/_parent',
+      '[username]/(user-settings)/_parent.vue'
+    )
+    // Another nested group - user posts
+    tree.insert(
+      '[username]/(user-posts)/posts/(posts-list)',
+      '[username]/(user-posts)/posts/(posts-list).vue'
+    )
+
+    const resolver = generateRouteResolver(
+      tree,
+      DEFAULT_OPTIONS,
+      importsMap,
+      new Map()
+    )
+
+    expect(resolver).toMatchSnapshot()
+  })
 })

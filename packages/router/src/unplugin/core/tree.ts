@@ -389,7 +389,8 @@ export class TreeNode {
         } else {
           re += (re ? '\\/' : '') + nodeRe
         }
-      } else {
+      } else if (node.value.pathSegment) {
+        // append the path segment to the regexp after escaping it
         re += (re ? '\\/' : '') + escapeRegex(node.value.pathSegment)
       }
     }
@@ -436,6 +437,12 @@ export class TreeNode {
     let node: TreeNode | undefined = this
 
     while (node && !node.isRoot()) {
+      // skip group folders (empty pathSegment)
+      if (!node.value.pathSegment) {
+        node = node.parent
+        continue
+      }
+
       const subSegments = node.value.subSegments.map(segment =>
         typeof segment === 'string'
           ? segment

@@ -94,3 +94,82 @@ export const resolver = createFixedResolver([
 ])
 "
 `;
+
+exports[`generateRouteResolver > handles multiple nested groups 1`] = `
+"
+const __route_0 = normalizeRouteRecord({
+  /* (removed) name: false */
+  path: new MatcherPatternPathDynamic(
+    /^\\/([^/]+?)$/i,
+    {
+      username: [/* no parser */],
+    },
+    [1],
+    /* trailingSlash */
+  ),
+  components: {
+    'default': () => import('[username]/_parent.vue')
+  },
+})
+const __route_1 = normalizeRouteRecord({
+  /* (removed) name: false */
+  path: __route_0.path,
+  components: {
+    'default': () => import('[username]/(user-home)/_parent.vue')
+  },
+  parent: __route_0,
+})
+const __route_2 = normalizeRouteRecord({
+  name: '/[username]/(user-home)/(user-home)',
+  path: __route_1.path,
+  components: {
+    'default': () => import('[username]/(user-home)/(user-home).vue')
+  },
+  parent: __route_1,
+})
+const __route_3 = normalizeRouteRecord({
+  /* (removed) name: false */
+  path: __route_0.path,
+  components: {
+    'default': () => import('[username]/(user-settings)/_parent.vue')
+  },
+  parent: __route_0,
+})
+const __route_4 = normalizeRouteRecord({
+  name: '/[username]/(user-settings)/settings',
+  path: new MatcherPatternPathDynamic(
+    /^\\/([^/]+?)\\/settings$/i,
+    {
+      username: [/* no parser */],
+    },
+    [1,"settings"],
+    /* trailingSlash */
+  ),
+  components: {
+    'default': () => import('[username]/(user-settings)/settings.vue')
+  },
+  parent: __route_3,
+})
+const __route_5 = normalizeRouteRecord({
+  name: '/[username]/(user-posts)/posts/(posts-list)',
+  path: new MatcherPatternPathDynamic(
+    /^\\/([^/]+?)\\/posts$/i,
+    {
+      username: [/* no parser */],
+    },
+    [1,"posts"],
+    /* trailingSlash */
+  ),
+  components: {
+    'default': () => import('[username]/(user-posts)/posts/(posts-list).vue')
+  },
+  parent: __route_0,
+})
+
+export const resolver = createFixedResolver([
+  __route_5,  // /:username/posts
+  __route_2,  // /:username
+  __route_4,  // /:username/settings
+])
+"
+`;
