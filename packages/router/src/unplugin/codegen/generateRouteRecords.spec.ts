@@ -29,6 +29,25 @@ describe('generateRouteRecord', () => {
     `)
   })
 
+  it('skips routes for lone _parent files', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('nested/_parent', 'nested/_parent.vue')
+
+    expect(generateRouteRecordSimple(tree)).toMatchInlineSnapshot(`
+      "[
+
+      ]"
+    `)
+  })
+
+  it('keeps routes with _parent when children exist', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('nested/_parent', 'nested/_parent.vue')
+    tree.insert('nested/index', 'nested/index.vue')
+
+    expect(generateRouteRecordSimple(tree)).toContain("path: '/nested'")
+  })
+
   it('works with some paths at root', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('a', 'a.vue')

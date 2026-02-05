@@ -28,6 +28,12 @@ ${node
 ]`
   }
 
+  // Skip lone parent nodes - they only provide layout wrapping for children
+  // so without children they don't make sense to be included in the route records
+  if (!node.isMatchable() && node.children.size === 0) {
+    return ''
+  }
+
   const definePageDataList: string[] = []
 
   if (node.hasDefinePage) {
