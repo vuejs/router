@@ -90,8 +90,10 @@ export class TreeNode {
   insert(path: string, filePath: string): TreeNode {
     const { tail, segment, viewName } = splitFilePath(path)
 
-    // Handle _parent convention: _parent.vue sets component on current node
+    // _parent.vue is set on the current node to handle nesting
+    // similar to nested.vue when we have a folder nested/
     if (segment === '_parent' && !tail) {
+      // a parent can't be matched
       this.value.setOverride(filePath, { name: false })
       this.value.components.set(viewName, filePath)
       return this
@@ -216,7 +218,7 @@ export class TreeNode {
     // TODO: rename remove to removeChild
     const { tail, segment, viewName } = splitFilePath(path)
 
-    // Handle _parent convention: remove component from current node
+    // nested/_parent.vue is stored in the nested/ node
     if (segment === '_parent' && !tail) {
       this.value.components.delete(viewName)
       return
@@ -491,6 +493,16 @@ export class TreeNode {
         : ''
     }${this.hasDefinePage ? ' ⚑ definePage()' : ''}`
   }
+
+  *[Symbol.iterator](): Generator<TreeNode, void, unknown> {
+    for (const [_name, child] of this.children) {
+      yield child
+    }
+    // we need to traverse again in case the user removed a route
+    for (const [_name, child] of this.children) {
+      yield* child[Symbol.iterator]()
+    }
+  }
 }
 
 /**
@@ -527,50 +539,85 @@ export class PrefixTree extends TreeNode {
    */
   removeChild(filePath: string) {
     if (this.map.has(filePath)) {
-      this.map.get(filePath)!.delete()
+      const node = this.map.get(filePath)!
+      const components = node.value.components
+      for (const [viewName, componentPath] of components) {
+        if (componentPath === filePath) {
+          components.delete(viewName)
+          break
+        }
+      }
+
       this.map.delete(filePath)
+
+      if (node.children.size === 0 && node.value.components.size === 0) {
+        node.delete()
+        for (const [key, mappedNode] of this.map) {
+          if (mappedNode === node) {
+            this.map.delete(key)
+          }
+        }
+      }
     }
   }
 }
 
 /**
- * Conflict between `_parent` files and same-name files.
+ * Conflict between files that create the same route. This can happen for a
+ * variety of reasons depending on user's config. One example is
+ * `nested/_parent.vue` + `nested.vue`: only `nested/_parent.vue` is valid.
  *
  * @internal
  */
-export interface ParentConflict {
-  routePath: string
-  parentFilePath: string
+export interface DuplicatedRouteConflict {
+  node: TreeNode
   filePath: string
 }
 
 /**
- * Collects conflicts between `_parent` files and same-name files.
+ * Returns a list of tree nodes that create the same route, the last one in the
+ * list is the one that takes precedence. This is used to warn about duplicated
+ * routes.
  *
  * @param tree - prefix tree to scan
- *
- * @internal
  */
-export function collectParentConflicts(tree: PrefixTree): ParentConflict[] {
-  const conflicts: ParentConflict[] = []
-  const seen = new Set<string>()
+export function collectDuplicatedRouteNodes(
+  tree: PrefixTree
+): DuplicatedRouteConflict[][] {
+  const seen = new Map<string, DuplicatedRouteConflict[]>()
+  // find which nodes take precedence to reorder the list
+  const treeNodes = new Set<TreeNode>(...tree)
 
+  // by reading through the map, we get every node that was added to the tree
   for (const [filePath, node] of tree.map) {
-    if (!isParentFile(filePath)) continue
-    const siblingFilePath = getSiblingFilePath(filePath)
-    if (!siblingFilePath || !tree.map.has(siblingFilePath)) continue
-
-    const key = `${node.fullPath}::${filePath}::${siblingFilePath}`
-    if (seen.has(key)) continue
-    seen.add(key)
-    conflicts.push({
-      routePath: node.fullPath,
-      parentFilePath: filePath,
-      filePath: siblingFilePath,
-    })
+    const key = `${node.fullPath}::${node.toString()}`
+    let nodes = seen.get(key)
+    if (!nodes) {
+      nodes = []
+      seen.set(key, nodes)
+    }
+    nodes.push({ filePath, node })
   }
 
-  return conflicts
+  const dups = Array.from(
+    seen
+      .values()
+      .filter(nodes => Object.keys(nodes).length > 1)
+      .map(nodes =>
+        nodes.toSorted(({ node: a }, { node: b }) => {
+          // put the one that takes precedence at the end of the list
+          if (treeNodes.has(a) && !treeNodes.has(b)) {
+            return -1
+          } else if (!treeNodes.has(a) && treeNodes.has(b)) {
+            return 1
+          } else {
+            return 0
+          }
+        })
+      )
+  )
+
+  return dups
 }
 
 /**
@@ -599,13 +646,4 @@ function splitFilePath(filePath: string) {
     tail,
     viewName,
   }
-}
-
-function isParentFile(filePath: string) {
-  return filePath.includes('/_parent.') || filePath.includes('/_parent@')
-}
-
-function getSiblingFilePath(filePath: string) {
-  const siblingFilePath = filePath.replace(/\/_parent(?=[@.])/, '')
-  return siblingFilePath === filePath ? null : siblingFilePath
 }

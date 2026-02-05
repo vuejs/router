@@ -1,6 +1,8 @@
 <script setup lang="ts">
 definePage({
-  // name: false,
+  meta: {
+    title: 'Nested root',
+  },
 })
 </script>
 

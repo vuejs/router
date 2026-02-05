@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { DEFAULT_OPTIONS, Options, resolveOptions } from '../options'
 import {
-  collectParentConflicts,
+  collectDuplicatedRouteNodes,
   PrefixTree,
   TreeNodeValueMatcherPart,
 } from './tree'
@@ -1211,15 +1211,24 @@ describe('Tree', () => {
 
     it('collects _parent conflicts', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
-      tree.insert('nested/_parent', 'nested/_parent.vue')
-      tree.insert('nested', 'nested.vue')
+      const nested = tree.insert('nested', 'nested.vue')
+      const parent = tree.insert('nested/_parent', 'nested/_parent.vue')
+      tree.insert('nested/index', 'nested/index.vue')
+      tree.insert('nested/other', 'nested/other.vue')
 
-      expect(collectParentConflicts(tree)).toEqual([
-        {
-          routePath: '/nested',
-          parentFilePath: 'nested/_parent.vue',
-          filePath: 'nested.vue',
-        },
+      console.log(collectDuplicatedRouteNodes(tree))
+
+      expect(collectDuplicatedRouteNodes(tree)).toEqual([
+        [
+          {
+            filePath: 'nested.vue',
+            node: nested,
+          },
+          {
+            filePath: 'nested/_parent.vue',
+            node: parent,
+          },
+        ],
       ])
     })
 

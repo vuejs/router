@@ -20,7 +20,7 @@ import { definePageTransform, extractDefinePageInfo } from './definePage'
 import { EditableTreeNode } from './extendRoutes'
 import { ts } from '../utils'
 import { generateRouteResolver } from '../codegen/generateRouteResolver'
-import { generateParentConflictWarnings } from '../codegen/generateParentConflicts'
+import { generateDuplicatedRoutesWarnings } from '../codegen/generateDuplicateRoutesWarnings'
 import { type FSWatcher, watch as fsWatch } from 'chokidar'
 import {
   generateParamParsersTypesDeclarations,
@@ -296,7 +296,7 @@ export function createRoutesContext(options: ResolvedOptions) {
         '\n'
     }
 
-    const parentConflictWarnings = generateParentConflictWarnings(routeTree)
+    const routeDupsWarns = generateDuplicatedRoutesWarnings(routeTree)
 
     const hmr = ts`
 export function handleHotUpdate(_router, _hotUpdateCallback) {
@@ -326,7 +326,7 @@ if (import.meta.hot) {
   })
 }`
 
-    const newAutoResolver = `${imports}${parentConflictWarnings}${missingParserErrors}${resolverCode}\n${hmr}`
+    const newAutoResolver = `${imports}${routeDupsWarns}\n${missingParserErrors}${resolverCode}\n${hmr}`
 
     // prepend it to the code
     return newAutoResolver
@@ -383,9 +383,9 @@ if (import.meta.hot) {
       imports += '\n'
     }
 
-    const parentConflictWarnings = generateParentConflictWarnings(routeTree)
+    const routeDupsWarns = generateDuplicatedRoutesWarnings(routeTree)
 
-    const newAutoRoutes = `${imports}${parentConflictWarnings}${routeList}${hmr}\n`
+    const newAutoRoutes = `${imports}${routeDupsWarns}\n${routeList}${hmr}\n`
 
     // prepend it to the code
     return newAutoRoutes
