@@ -303,13 +303,13 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/it's-fine/(lol).vue': {
+    'src/pages/it\'s-fine/(lol).vue': {
       routes:
         | '/it\'s-fine/(lol)'
       views:
         | never
     }
-    'src/pages/nested.vue': {
+    'src/pages/nested/_parent.vue': {
       routes:
         | '/nested/'
         | '/nested/other'
