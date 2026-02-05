@@ -56,6 +56,10 @@ export const sharedConfig = defineConfig({
   title: 'Vue Router',
   appearance: 'dark',
 
+  sitemap: {
+    hostname: 'https://router.vuejs.org',
+  },
+
   markdown: {
     theme: {
       dark: 'one-dark-pro',
