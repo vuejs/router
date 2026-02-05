@@ -4,7 +4,14 @@ import {
   RouteComponent,
   RouteRecordRaw,
 } from '../src/types'
-import { h, ComponentOptions } from 'vue'
+import {
+  h,
+  ComponentOptions,
+  template,
+  createIf,
+  createComponent,
+  setInsertionState,
+} from 'vue'
 import {
   RouterOptions,
   createWebHistory,
@@ -14,6 +21,7 @@ import {
   RouteRecordNormalized,
   NavigationGuard,
   RouteLocationNormalized,
+  VaporRouterView,
 } from '../src'
 import { _RouteRecordProps } from '../src/typed-routes'
 import { type EXPERIMENTAL_Router } from '../src/experimental'
@@ -120,6 +128,55 @@ export const components = {
         h('h2', {}, 'Nested'),
         RouterView ? h(RouterView) : [],
       ])
+    },
+  },
+  BeforeLeave: {
+    render: () => h('div', {}, 'before leave'),
+    beforeRouteLeave(to, from, next) {
+      next()
+    },
+  } as RouteComponent,
+}
+
+export const vaporComponents = {
+  Home: { setup: () => template('<div>Home')() },
+  Foo: { render: () => template('<div>Foo')() },
+  Bar: { render: () => template('<div>Bar')() },
+  User: {
+    props: {
+      id: {
+        default: 'default',
+      },
+    },
+    render() {
+      return h('div', {}, 'User: ' + this.id)
+    },
+  } as ComponentOptions,
+  WithProps: {
+    props: {
+      id: {
+        default: 'default',
+      },
+      other: {
+        default: 'other',
+      },
+    },
+    render() {
+      return h('div', {}, `id:${this.id};other:${this.other}`)
+    },
+  } as RouteComponent,
+  Nested: {
+    render: () => {
+      const n3 = template('<div>Nested', true)()
+      setInsertionState(n3 as any, null, 1, true)
+      createIf(
+        () => VaporRouterView,
+        () => {
+          const n2 = createComponent(VaporRouterView)
+          return n2
+        }
+      )
+      return n3
     },
   },
   BeforeLeave: {
