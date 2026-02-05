@@ -155,6 +155,20 @@ declare module 'vue-router/auto-routes' {
       { optional: string | null },
       | never
     >,
+    '/tests/users/[username]/(user-home)/(user-home)': RouteRecordInfo<
+      '/tests/users/[username]/(user-home)/(user-home)',
+      '/tests/users/:username',
+      { username: string },
+      { username: string },
+      | never
+    >,
+    '/tests/users/[username]/(user)/profile': RouteRecordInfo<
+      '/tests/users/[username]/(user)/profile',
+      '/tests/users/:username/profile',
+      { username: string },
+      { username: string },
+      | never
+    >,
     '/u[name]': RouteRecordInfo<
       '/u[name]',
       '/u:name',
@@ -337,6 +351,18 @@ declare module 'vue-router/auto-routes' {
     'src/pages/tests/[[optional]]/end.vue': {
       routes:
         | '/tests/[[optional]]/end'
+      views:
+        | never
+    }
+    'src/pages/tests/users/[username]/(user-home)/(user-home).vue': {
+      routes:
+        | '/tests/users/[username]/(user-home)/(user-home)'
+      views:
+        | never
+    }
+    'src/pages/tests/users/[username]/(user)/profile.vue': {
+      routes:
+        | '/tests/users/[username]/(user)/profile'
       views:
         | never
     }
