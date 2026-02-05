@@ -42,7 +42,7 @@ export function generateRouteFileInfoMap(
     .map(
       ([file, { routes, views }]) =>
         `
-  '${file}': {
+  ${toStringLiteral(file)}: {
     routes:
       ${formatMultilineUnion(routes.sort().map(toStringLiteral), 6)}
     views:

@@ -389,4 +389,21 @@ describe('generateRouteFileInfoMap', () => {
         }"
       `)
   })
+
+  it('escapes quoites in file paths', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('path', "src/pages/it's fine.vue")
+
+    expect(formatExports(generateRouteFileInfoMap(tree, { root: '' })))
+      .toMatchInlineSnapshot(`
+      "export interface _RouteFileInfoMap {
+        'src/pages/it\\'s fine.vue': {
+          routes:
+            | '/path'
+          views:
+            | never
+        }
+      }"
+    `)
+  })
 })
