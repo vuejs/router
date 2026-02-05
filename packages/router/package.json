@@ -17,7 +17,7 @@
   "funding": "https://github.com/sponsors/posva",
   "files": [
     "dist",
-    "index.js",
+    "index.cjs",
     "README.md",
     "route.schema.json",
     "vue-router-auto-resolver.d.mts",
@@ -27,8 +27,9 @@
     "vetur/attributes.json",
     "vetur/tags.json"
   ],
+  "type": "module",
   "sideEffects": false,
-  "main": "index.js",
+  "main": "index.cjs",
   "module": "dist/vue-router.mjs",
   "types": "dist/vue-router.d.mts",
   "typesVersions": {
@@ -61,11 +62,11 @@
         "require": {
           "production": "./dist/vue-router.prod.cjs",
           "development": "./dist/vue-router.cjs",
-          "default": "./index.js"
+          "default": "./index.cjs"
         }
       },
       "import": "./dist/vue-router.mjs",
-      "require": "./index.js"
+      "require": "./index.cjs"
     },
     "./dist/*": "./dist/*",
     "./vetur/*": "./vetur/*",
@@ -89,11 +90,11 @@
         "require": {
           "production": "./dist/vue-router.prod.cjs",
           "development": "./dist/vue-router.cjs",
-          "default": "./index.js"
+          "default": "./index.cjs"
         }
       },
       "import": "./dist/vue-router.mjs",
-      "require": "./index.js"
+      "require": "./index.cjs"
     },
     "./vite": {
       "types": "./dist/unplugin/vite.d.mts",
