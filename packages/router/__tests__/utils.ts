@@ -11,6 +11,9 @@ import {
   createIf,
   createComponent,
   setInsertionState,
+  txt,
+  renderEffect,
+  setText,
 } from 'vue'
 import {
   RouterOptions,
@@ -148,8 +151,11 @@ export const vaporComponents = {
         default: 'default',
       },
     },
-    render() {
-      return h('div', {}, 'User: ' + this.id)
+    setup(props: any) {
+      const n0 = template('<div> ', true)()
+      const x0 = txt(n0 as any)
+      renderEffect(() => setText(x0 as any, `User: ${props.id}`))
+      return n0
     },
   } as ComponentOptions,
   WithProps: {
@@ -161,13 +167,18 @@ export const vaporComponents = {
         default: 'other',
       },
     },
-    render() {
-      return h('div', {}, `id:${this.id};other:${this.other}`)
+    setup(props: any) {
+      const n0 = template('<div> ', true)()
+      const x0 = txt(n0 as any)
+      renderEffect(() =>
+        setText(x0 as any, 'id:' + props.id + ';other:' + props.other)
+      )
+      return n0
     },
   } as RouteComponent,
   Nested: {
     render: () => {
-      const n3 = template('<div>Nested', true)()
+      const n3 = template('<div><h2>Nested', true)()
       setInsertionState(n3 as any, null, 1, true)
       createIf(
         () => VaporRouterView,

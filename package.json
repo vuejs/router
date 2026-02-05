@@ -65,8 +65,9 @@
     "overrides": {
       "@types/node": "^24.10.4",
       "vite": "^7.3.0",
-      "vue": "https://pkg.pr.new/vue@8248ce9",
-      "@vue/server-renderer": "https://pkg.pr.new/@vue/server-renderer@8248ce9"
+      "vue": "https://pkg.pr.new/vue@d3fca3b",
+      "@vue/runtime-dom": "https://pkg.pr.new/@vue/runtime-dom@d3fca3b",
+      "@vue/server-renderer": "https://pkg.pr.new/@vue/server-renderer@d3fca3b"
     },
     "peerDependencyRules": {
       "ignoreMissing": [

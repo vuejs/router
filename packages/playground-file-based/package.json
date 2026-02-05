@@ -10,7 +10,7 @@
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
-    "vue": "https://pkg.pr.new/vue@8248ce9",
+    "vue": "https://pkg.pr.new/vue@d3fca3b",
     "vue-router": "workspace:*"
   },
   "devDependencies": {

@@ -150,7 +150,7 @@
     "tinyglobby": "^0.2.15",
     "unplugin": "^3.0.0",
     "unplugin-utils": "^0.3.1",
-    "vue": "https://pkg.pr.new/vue@8248ce9",
+    "vue": "https://pkg.pr.new/vue@d3fca3b",
     "yaml": "^2.8.2"
   },
   "devDependencies": {
@@ -186,7 +186,7 @@
     "tsdown": "^0.20.1",
     "tsup": "^8.5.1",
     "vite": "^7.3.0",
-    "vue": "https://pkg.pr.new/vue@8248ce9"
+    "vue": "https://pkg.pr.new/vue@d3fca3b"
   },
   "peerDependencies": {
     "@pinia/colada": ">=0.21.2",
