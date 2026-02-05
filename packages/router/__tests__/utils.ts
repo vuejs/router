@@ -4,17 +4,7 @@ import {
   RouteComponent,
   RouteRecordRaw,
 } from '../src/types'
-import {
-  h,
-  ComponentOptions,
-  template,
-  createIf,
-  createComponent,
-  setInsertionState,
-  txt,
-  renderEffect,
-  setText,
-} from 'vue'
+import { h, ComponentOptions } from 'vue'
 import {
   RouterOptions,
   createWebHistory,
@@ -24,7 +14,6 @@ import {
   RouteRecordNormalized,
   NavigationGuard,
   RouteLocationNormalized,
-  VaporRouterView,
 } from '../src'
 import { _RouteRecordProps } from '../src/typed-routes'
 import { type EXPERIMENTAL_Router } from '../src/experimental'
@@ -131,63 +120,6 @@ export const components = {
         h('h2', {}, 'Nested'),
         RouterView ? h(RouterView) : [],
       ])
-    },
-  },
-  BeforeLeave: {
-    render: () => h('div', {}, 'before leave'),
-    beforeRouteLeave(to, from, next) {
-      next()
-    },
-  } as RouteComponent,
-}
-
-export const vaporComponents = {
-  Home: { setup: () => template('<div>Home')() },
-  Foo: { render: () => template('<div>Foo')() },
-  Bar: { render: () => template('<div>Bar')() },
-  User: {
-    props: {
-      id: {
-        default: 'default',
-      },
-    },
-    setup(props: any) {
-      const n0 = template('<div> ', true)()
-      const x0 = txt(n0 as any)
-      renderEffect(() => setText(x0 as any, `User: ${props.id}`))
-      return n0
-    },
-  } as ComponentOptions,
-  WithProps: {
-    props: {
-      id: {
-        default: 'default',
-      },
-      other: {
-        default: 'other',
-      },
-    },
-    setup(props: any) {
-      const n0 = template('<div> ', true)()
-      const x0 = txt(n0 as any)
-      renderEffect(() =>
-        setText(x0 as any, 'id:' + props.id + ';other:' + props.other)
-      )
-      return n0
-    },
-  } as RouteComponent,
-  Nested: {
-    render: () => {
-      const n3 = template('<div><h2>Nested', true)()
-      setInsertionState(n3 as any, null, 1, true)
-      createIf(
-        () => VaporRouterView,
-        () => {
-          const n2 = createComponent(VaporRouterView)
-          return n2
-        }
-      )
-      return n3
     },
   },
   BeforeLeave: {
