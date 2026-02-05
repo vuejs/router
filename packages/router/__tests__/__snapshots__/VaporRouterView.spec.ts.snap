@@ -1,3 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`RouterView > displays deeply nested views 1`] = `"<div>Nested<div>Nested<div>Foo</div><!--dynamic-component--><!--if--></div><!--dynamic-component--><!--if--></div><!--dynamic-component-->"`;
