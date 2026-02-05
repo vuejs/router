@@ -5,6 +5,7 @@ import {
   isTreePathParam,
 } from '../core/treeNodeValue'
 
+// TODO: simplify the generateRouteParams to not use the type helpers ParamValueOneOrMore, ParamValueZeroOrMore, ParamValueZeroOrOne, and ParamValue, just output raw unions like string | string[]
 export function generateRouteParams(node: TreeNode, isRaw: boolean): string {
   // node.pathParams is a getter so we compute it once
   // this version does not support query params
