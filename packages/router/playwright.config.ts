@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
 
-export default defineConfig({
+export default defineConfig<{ playgroundName: string }>({
   testDir: './e2e/unplugin/hmr',
 
   fullyParallel: true,
@@ -25,6 +25,7 @@ export default defineConfig({
       testMatch: 'routes/hmr.spec.ts',
       use: {
         ...devices['Desktop Safari'],
+        playgroundName: 'routes',
       },
     },
     {
@@ -32,6 +33,7 @@ export default defineConfig({
       testMatch: 'resolver/hmr.spec.ts',
       use: {
         ...devices['Desktop Safari'],
+        playgroundName: 'resolver',
       },
     },
   ],

@@ -128,6 +128,7 @@
     "test:unit": "vitest --coverage run",
     "test": "pnpm run build && pnpm run test:types && pnpm run test:unit && pnpm run test:e2e",
     "test:e2e": "pnpm run test:e2e:headless",
+    "test:e2e:hmr": "pnpm exec playwright test",
     "test:e2e:headless": "node e2e/runner.mjs --env chrome-headless",
     "test:e2e:native": "node e2e/runner.mjs --env chrome",
     "test:e2e:ci": "node e2e/runner.mjs --env chrome-headless --retries 2",
