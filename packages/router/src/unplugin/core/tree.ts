@@ -494,6 +494,11 @@ export class TreeNode {
     }${this.hasDefinePage ? ' ⚑ definePage()' : ''}`
   }
 
+  /**
+   * Iterates over the tree in a breadth-first way. It first yields the direct
+   * children of the node, then their children and so on. The order of the
+   * children is not guaranteed.
+   */
   *[Symbol.iterator](): Generator<TreeNode, void, unknown> {
     for (const [_name, child] of this.children) {
       yield child
