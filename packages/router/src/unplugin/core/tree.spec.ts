@@ -1216,8 +1216,6 @@ describe('Tree', () => {
       tree.insert('nested/index', 'nested/index.vue')
       tree.insert('nested/other', 'nested/other.vue')
 
-      console.log(collectDuplicatedRouteNodes(tree))
-
       expect(collectDuplicatedRouteNodes(tree)).toEqual([
         [
           {
