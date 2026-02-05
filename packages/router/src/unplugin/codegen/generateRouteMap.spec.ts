@@ -739,6 +739,66 @@ describe('generateRouteNamedMap', () => {
     )
   })
 
+  it('excludes _parent routes from route map', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('nested/_parent', 'nested/_parent.vue')
+    tree.insert('nested/index', 'nested/index.vue')
+    tree.insert('nested/other', 'nested/other.vue')
+
+    // _parent route creates a parent component but is non-matchable (name: false)
+    // so it should NOT appear in the RouteNamedMap
+    expect(
+      formatExports(generateRouteNamedMap(tree, DEFAULT_OPTIONS, new Map()))
+    ).toMatchInlineSnapshot(`
+      "export interface RouteNamedMap {
+        '/nested/': RouteRecordInfo<
+          '/nested/',
+          '/nested',
+          Record<never, never>,
+          Record<never, never>,
+          | never
+        >,
+        '/nested/other': RouteRecordInfo<
+          '/nested/other',
+          '/nested/other',
+          Record<never, never>,
+          Record<never, never>,
+          | never
+        >,
+      }"
+    `)
+  })
+
+  it('excludes _parent routes without index from children union', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('nested/_parent', 'nested/_parent.vue')
+    tree.insert('nested/child', 'nested/child.vue')
+    tree.insert('nested/other', 'nested/other.vue')
+
+    // _parent is non-matchable so it doesn't appear in the map
+    // and its children (child, other) should not list _parent in their unions
+    expect(
+      formatExports(generateRouteNamedMap(tree, DEFAULT_OPTIONS, new Map()))
+    ).toMatchInlineSnapshot(`
+      "export interface RouteNamedMap {
+        '/nested/child': RouteRecordInfo<
+          '/nested/child',
+          '/nested/child',
+          Record<never, never>,
+          Record<never, never>,
+          | never
+        >,
+        '/nested/other': RouteRecordInfo<
+          '/nested/other',
+          '/nested/other',
+          Record<never, never>,
+          Record<never, never>,
+          | never
+        >,
+      }"
+    `)
+  })
+
   it('excludes routes with empty names from route map', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('parent', 'parent.vue')

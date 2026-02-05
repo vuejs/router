@@ -157,7 +157,10 @@ export class TreeNode {
     filePath: string,
     routeBlock: CustomRouteBlock | undefined
   ) {
-    this.value.setOverride(filePath, routeBlock)
+    // Use mergeOverride to preserve existing override properties (e.g. name: false for _parent routes)
+    if (routeBlock) {
+      this.value.mergeOverride(filePath, routeBlock)
+    }
   }
 
   /**
