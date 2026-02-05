@@ -5,7 +5,7 @@ import type {
   RouteRecordRaw,
 } from '../src/types'
 import type { ComponentOptions } from 'vue'
-import { h } from 'vue'
+import { h, template, createIf, createComponent, setInsertionState } from 'vue'
 import type { RouterOptions, Router } from '../src/router'
 import type { RouteRecordNormalized } from '../src/matcher/types'
 import type {
@@ -16,6 +16,7 @@ import type {
 import { createWebHistory } from '../src/history/html5'
 import { createRouter } from '../src/router'
 import { RouterView } from '../src/RouterView'
+import { VaporRouterView } from '../src/VaporRouterView'
 import { type EXPERIMENTAL_Router } from '../src/experimental'
 
 export const tick = (time?: number) =>
@@ -123,6 +124,55 @@ export const components = {
   BeforeLeave: {
     render: () => h('div', {}, 'before leave'),
     beforeRouteLeave(_to, _from) {},
+  } as RouteComponent,
+}
+
+export const vaporComponents = {
+  Home: { setup: () => template('<div>Home')() },
+  Foo: { render: () => template('<div>Foo')() },
+  Bar: { render: () => template('<div>Bar')() },
+  User: {
+    props: {
+      id: {
+        default: 'default',
+      },
+    },
+    render() {
+      return h('div', {}, 'User: ' + this.id)
+    },
+  } as ComponentOptions,
+  WithProps: {
+    props: {
+      id: {
+        default: 'default',
+      },
+      other: {
+        default: 'other',
+      },
+    },
+    render() {
+      return h('div', {}, `id:${this.id};other:${this.other}`)
+    },
+  } as RouteComponent,
+  Nested: {
+    render: () => {
+      const n3 = template('<div>Nested', true)()
+      setInsertionState(n3 as any, null, 1, true)
+      createIf(
+        () => VaporRouterView,
+        () => {
+          const n2 = createComponent(VaporRouterView)
+          return n2
+        }
+      )
+      return n3
+    },
+  },
+  BeforeLeave: {
+    render: () => h('div', {}, 'before leave'),
+    beforeRouteLeave(to, from, next) {
+      next()
+    },
   } as RouteComponent,
 }
 
