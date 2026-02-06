@@ -189,10 +189,10 @@ describe('Errors & Navigation failures', () => {
       onError.mockReset()
 
       const [promise, resolve] = fakePromise()
-      router.beforeEach((to, from, next) => {
+      router.beforeEach(to => {
         // let it hang otherwise
-        if (to.path === '/') next()
-        else promise.then(() => next())
+        if (to.path === '/') return
+        else return promise.then(() => undefined)
       })
 
       let from = router.currentRoute.value
@@ -350,11 +350,7 @@ async function testError(
 ) {
   const { router } = createRouter()
   router.beforeEach(
-    typeof nextArgument === 'function'
-      ? nextArgument
-      : (to, from, next) => {
-          next(nextArgument)
-        }
+    typeof nextArgument === 'function' ? nextArgument : () => nextArgument
   )
 
   if (expectedError !== undefined) {
@@ -380,11 +376,7 @@ async function testNavigation(
 ) {
   const { router } = createRouter()
   router.beforeEach(
-    typeof nextArgument === 'function'
-      ? nextArgument
-      : (to, from, next) => {
-          next(nextArgument)
-        }
+    typeof nextArgument === 'function' ? nextArgument : () => nextArgument
   )
 
   await expect(router.push(to)).resolves.toEqual(expectedFailure)
@@ -408,11 +400,7 @@ async function testHistoryNavigation(
   await router.push(to)
 
   router.beforeEach(
-    typeof nextArgument === 'function'
-      ? nextArgument
-      : (to, from, next) => {
-          next(nextArgument)
-        }
+    typeof nextArgument === 'function' ? nextArgument : () => nextArgument
   )
 
   afterEach.mockReset()
@@ -441,11 +429,7 @@ async function testHistoryError(
   await router.push(to)
 
   router.beforeEach(
-    typeof nextArgument === 'function'
-      ? nextArgument
-      : (to, from, next) => {
-          next(nextArgument)
-        }
+    typeof nextArgument === 'function' ? nextArgument : () => nextArgument
   )
 
   afterEach.mockReset()
