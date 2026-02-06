@@ -525,13 +525,13 @@ describe('MatcherPatternPathDynamic', () => {
             get(value: string) {
               const v = value.toLowerCase().slice(5 /* 'lang/'.length */)
               if (v !== 'fr' && v !== 'en') {
-                throw miss()
+                miss()
               }
               return v
             },
             set(value: 'fr' | 'en') {
               if (value !== 'fr' && value !== 'en') {
-                throw miss()
+                miss()
               }
               return `lang/${value}`
             },
@@ -561,7 +561,7 @@ describe('MatcherPatternPathDynamic', () => {
       get: (v: string | null) => {
         const value = Number(v) * 2
         if (!Number.isFinite(value)) {
-          throw miss()
+          miss()
         }
         return value
       },

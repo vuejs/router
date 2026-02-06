@@ -98,7 +98,7 @@ export class MatcherPatternQueryParam<
         value = toValue(this.defaultValue)
       } else if (this.required) {
         // Required but no default and no value: throw
-        throw miss()
+        miss()
       }
       // else: optional param without default, value stays undefined
     }

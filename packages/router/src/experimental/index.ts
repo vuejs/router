@@ -44,7 +44,7 @@ export {
   defineQueryParamParser,
 } from './route-resolver/matchers/param-parsers'
 
-export { miss, MatchMiss } from './route-resolver/matchers/errors'
+export { miss, MatchMiss as _MatchMiss } from './route-resolver/matchers/errors'
 
 /**
  * Internal functions and types for the experimental router.

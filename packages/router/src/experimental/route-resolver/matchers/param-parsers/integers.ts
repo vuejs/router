@@ -7,7 +7,7 @@ const PARAM_INTEGER_SINGLE = {
     if (value && Number.isSafeInteger(num)) {
       return num
     }
-    throw miss()
+    miss()
   },
   set: (value: number) => String(value),
 } satisfies ParamParser<number, string | null>

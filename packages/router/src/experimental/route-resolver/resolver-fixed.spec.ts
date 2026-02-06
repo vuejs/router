@@ -25,7 +25,7 @@ const USERS_ID_OTHER_PATH_MATCHER: MatcherPatternPath<{
 }> = {
   match(path) {
     const match = path.match(/^\/users\/([^/]+)\/([^/]+)$/)
-    if (!match) throw miss()
+    if (!match) miss()
     return { id: match[1], other: match[2] }
   },
   build({ id, other }) {
@@ -36,7 +36,7 @@ const USERS_ID_OTHER_PATH_MATCHER: MatcherPatternPath<{
 const AB_PARAMS_PATH_MATCHER: MatcherPatternPath<{ a: string; b: string }> = {
   match(path) {
     const match = path.match(/^\/([^/]+)\/([^/]+)$/)
-    if (!match) throw miss()
+    if (!match) miss()
     return { a: match[1], b: match[2] }
   },
   build({ a, b }) {
@@ -48,7 +48,7 @@ const AB_OPTIONAL_PATH_MATCHER: MatcherPatternPath<{ a: string; b?: string }> =
   {
     match(path) {
       const match = path.match(/^\/([^/]+)(?:\/([^/]+))?$/)
-      if (!match) throw miss()
+      if (!match) miss()
       return { a: match[1], b: match[2] || '' }
     },
     build({ a, b }) {
@@ -59,7 +59,7 @@ const AB_OPTIONAL_PATH_MATCHER: MatcherPatternPath<{ a: string; b?: string }> =
 const REPEATABLE_PARAM_MATCHER: MatcherPatternPath<{ p: string | string[] }> = {
   match(path) {
     const match = path.match(/^\/a\/(.+)$/)
-    if (!match) throw miss()
+    if (!match) miss()
     const segments = match[1].split('/')
     return { p: segments.length === 1 ? segments[0] : segments }
   },
@@ -75,7 +75,7 @@ const OPTIONAL_NUMBER_HASH_MATCHER: MatcherPatternHash<{
   match(hash) {
     if (!hash || hash === '#') return { hash: null }
     const num = Number(hash.slice(1))
-    if (Number.isNaN(num)) throw miss('Hash must be a number')
+    if (Number.isNaN(num)) miss('Hash must be a number')
     return { hash: num }
   },
   build({ hash }) {
@@ -89,7 +89,7 @@ const OPTIONAL_NUMBER_QUERY_MATCHER: MatcherPatternQuery<{
   match(query) {
     if (!query.count) return { count: null }
     const count = Number(query.count)
-    if (Number.isNaN(count)) throw miss('Count must be a number')
+    if (Number.isNaN(count)) miss('Count must be a number')
     return { count }
   },
   build({ count }) {

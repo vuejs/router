@@ -1,20 +1,25 @@
 /**
  * Error throw when a matcher matches by regex but validation fails.
+ *
+ * @internal
  */
 export class MatchMiss extends Error {
   name = 'MatchMiss'
 }
 
 /**
- * Helper to create a {@link MatchMiss} error.
+ * Helper to throw a {@link MatchMiss} error.
  * @param args - Arguments to pass to the `MatchMiss` constructor.
  *
  * @example
  * ```ts
- * throw miss()
+ * miss()
  * // in a number param matcher
- * throw miss('Number must be finite')
+ * miss('Number must be finite')
  * ```
  */
-export const miss = (...args: ConstructorParameters<typeof MatchMiss>) =>
-  new MatchMiss(...args)
+export const miss = (
+  ...args: ConstructorParameters<typeof MatchMiss>
+): never => {
+  throw new MatchMiss(...args)
+}

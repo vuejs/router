@@ -79,7 +79,7 @@ export class MatcherPatternPathStatic implements MatcherPatternPath<EmptyParams>
 
   match(path: string): EmptyParams {
     if (path.toLowerCase() !== this.pathi) {
-      throw miss()
+      miss()
     }
     return {}
   }
@@ -190,12 +190,12 @@ export class MatcherPatternPathDynamic<
       this.trailingSlash != null &&
       this.trailingSlash === !path.endsWith('/')
     ) {
-      throw miss()
+      miss()
     }
 
     const match = path.match(this.re)
     if (!match) {
-      throw miss()
+      miss()
     }
     const params = {} as ExtractParamTypeFromOptions<TParamsOptions>
     for (var i = 0; i < this.paramsKeys.length; i++) {
@@ -251,7 +251,7 @@ export class MatcherPatternPathDynamic<
 
             // non optional repeatable params cannot be empty
             if (Array.isArray(value) && !value.length && !optional) {
-              throw miss()
+              miss()
             }
 
             return Array.isArray(value)

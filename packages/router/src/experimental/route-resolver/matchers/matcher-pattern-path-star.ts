@@ -25,7 +25,7 @@ export class MatcherPatternPathStar implements MatcherPatternPath<{
 
   match(path: string): { pathMatch: string } {
     if (!path.toLowerCase().startsWith(this.path)) {
-      throw miss()
+      miss()
     }
     return {
       pathMatch: path.slice(this.path.length),

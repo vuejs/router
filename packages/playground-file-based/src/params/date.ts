@@ -3,7 +3,7 @@ import { defineParamParser, miss } from 'vue-router/experimental'
 function toDate(value: string): Date {
   const asDate = new Date(value)
   if (Number.isNaN(asDate.getTime())) {
-    throw miss(`Invalid date: "${value}"`)
+    miss(`Invalid date: "${value}"`)
   }
 
   return asDate
@@ -22,7 +22,7 @@ function toString(value: Date): string {
 export const parser = defineParamParser({
   get: value => {
     if (!value) {
-      throw miss()
+      miss()
     }
     return Array.isArray(value)
       ? value.filter((v): v is string => !!v).map(toDate)

@@ -18,7 +18,7 @@ const PARAM_BOOLEAN_SINGLE = {
       return false
     }
 
-    throw miss()
+    miss()
   },
   set: (value: boolean | null | undefined) =>
     value == null ? value : String(value),
