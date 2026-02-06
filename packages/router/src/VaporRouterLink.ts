@@ -4,9 +4,11 @@ import {
   getLinkClass,
   type RouterLinkProps,
   useLink,
+  UseLinkReturn,
 } from './RouterLink'
 import { RouteLocationRaw } from './typed-routes'
 import {
+  Block,
   computed,
   createDynamicComponent,
   createPlainElement,
@@ -14,10 +16,12 @@ import {
   inject,
   PropType,
   reactive,
+  UnwrapRef,
 } from 'vue'
 
-export const VaporRouterLinkImpl = defineVaporComponent({
+export const VaporRouterLink = defineVaporComponent({
   name: 'VaporRouterLink',
+  inheritAttrs: false,
   props: {
     to: {
       type: [String, Object] as PropType<RouteLocationRaw>,
@@ -33,6 +37,17 @@ export const VaporRouterLinkImpl = defineVaporComponent({
       default: 'page',
     },
     viewTransition: Boolean,
+  },
+
+  slots: {} as {
+    default?: ({
+      route,
+      href,
+      isActive,
+      isExactActive,
+      navigate,
+    }: // TODO: How do we add the name generic
+    UnwrapRef<UseLinkReturn>) => Block
   },
 
   useLink,
@@ -69,16 +84,17 @@ export const VaporRouterLinkImpl = defineVaporComponent({
           'aria-current': () =>
             link.isExactActive ? props.ariaCurrentValue : null,
           href: () => link.href,
-          // this would override user added attrs but Vue will still add
-          // the listener, so we end up triggering both
-          onClick: () => link.navigate,
           class: () => elClass.value,
-          $: [() => attrs],
+          $: [
+            () => attrs,
+            {
+              onClick: () =>
+                attrs.onClick ? [link.navigate, attrs.onClick] : link.navigate,
+            },
+          ],
         },
-        slots
+        slots.default ? { default: () => slots.default!(link) } : null
       )
     })
   },
 })
-
-export const VaporRouterLink: _RouterLinkI = VaporRouterLinkImpl as any
