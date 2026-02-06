@@ -420,10 +420,10 @@ describe('generateRouteResolver', () => {
       })
 
       export const resolver = createFixedResolver([
-        __route_1,  // /a
         __route_2,  // /a/about
-        __route_4,  // /p/:id
+        __route_1,  // /a
         __route_5,  // /p/:id/details
+        __route_4,  // /p/:id
         __route_3,  // /p/:id
         __route_0,  // /a
       ])
@@ -513,12 +513,12 @@ describe('generateRouteResolver', () => {
       })
 
       export const resolver = createFixedResolver([
-        __route_3,  // /a/b
         __route_4,  // /a/b/c
         __route_5,  // /a/b/e
-        __route_1,  // /a
+        __route_3,  // /a/b
         __route_2,  // /a/b
         __route_6,  // /a/d
+        __route_1,  // /a
         __route_0,  // /a
       ])
       "
@@ -830,16 +830,15 @@ describe('generateRouteResolver', () => {
         '/prefix/static/suffix',
         '/prefix/sub-end',
         '/prefix/sub-:id-end/suffix',
-        '/prefix/:id-end/suffix',
         '/prefix/sub-:id/suffix',
         '/prefix/sub-:id',
+        '/prefix/sub-:opt?-end/suffix',
+        '/prefix/sub-:opt?/suffix',
+        '/prefix/sub-:opt?',
+        '/prefix/:id-end/suffix',
         '/prefix/:id/suffix',
         '/prefix/:id',
-        // this could be before /prefix/:id, but since it has a suffix, it works too
-        '/prefix/sub-:opt?-end/suffix',
         '/prefix/:opt?-end/suffix',
-        '/prefix/sub-:opt?/suffix',
-        '/prefix/sub-:opt?', // FIXME: should be before /prefix/:id
         '/prefix/:opt?/suffix',
         '/prefix/:opt?',
         '/prefix/:repeat+/suffix',
@@ -956,8 +955,8 @@ describe('generateRouteResolver', () => {
       })
 
       export const resolver = createFixedResolver([
-        __route_1,  // /a
         __route_2,  // /a/b
+        __route_1,  // /a
       ])
       "
     `)

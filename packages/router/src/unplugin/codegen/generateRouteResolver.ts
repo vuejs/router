@@ -11,47 +11,53 @@ import {
 import { generatePageImport, formatMeta } from './generateRouteRecords'
 
 /**
- * Compare two score arrays for sorting routes by priority.
- * Higher scores should come first (more specific routes).
+ * Compare two score sub-arrays element by element.
+ * Ported from pathParserRanker.ts compareScoreArray.
  */
-function compareRouteScore(a: number[][], b: number[][]): number {
-  const maxLength = Math.max(a.length, b.length)
-
-  for (let i = 0; i < maxLength; i++) {
-    const aSegment = a[i] || []
-    const bSegment = b[i] || []
-
-    // Compare segment by segment, but consider the "minimum" score of each segment
-    // since mixed segments with params should rank lower than pure static
-    const aMinScore = aSegment.length > 0 ? Math.min(...aSegment) : 0
-    const bMinScore = bSegment.length > 0 ? Math.min(...bSegment) : 0
-
-    if (aMinScore !== bMinScore) {
-      return bMinScore - aMinScore // Higher minimum score wins
-    }
-
-    // If minimum scores are equal, compare average scores
-    const aAvgScore =
-      aSegment.length > 0
-        ? aSegment.reduce((sum, s) => sum + s, 0) / aSegment.length
-        : 0
-    const bAvgScore =
-      bSegment.length > 0
-        ? bSegment.reduce((sum, s) => sum + s, 0) / bSegment.length
-        : 0
-
-    if (aAvgScore !== bAvgScore) {
-      return bAvgScore - aAvgScore // Higher average score wins
-    }
-
-    // If averages are equal, prefer fewer subsegments (less complexity)
-    if (aSegment.length !== bSegment.length) {
-      return aSegment.length - bSegment.length
-    }
+function compareScoreArray(a: number[], b: number[]): number {
+  let i = 0
+  while (i < a.length && i < b.length) {
+    const diff = b[i] - a[i]
+    if (diff) return diff
+    i++
   }
 
-  // If all segments are equal, prefer fewer segments (shorter paths)
-  return a.length - b.length
+  // if the shorter array is a pure static segment, it should sort first
+  // otherwise sort the longer segment first
+  if (a.length < b.length) {
+    return a.length === 1 && a[0] === 300 ? -1 : 1
+  } else if (a.length > b.length) {
+    return b.length === 1 && b[0] === 300 ? 1 : -1
+  }
+
+  return 0
+}
+
+function isLastScoreNegative(score: number[][]): boolean {
+  const last = score[score.length - 1]
+  return score.length > 0 && last[last.length - 1] < 0
+}
+
+/**
+ * Compare two score arrays for sorting routes by priority.
+ * Ported from pathParserRanker.ts comparePathParserScore.
+ */
+function compareRouteScore(a: number[][], b: number[][]): number {
+  let i = 0
+  while (i < a.length && i < b.length) {
+    const comp = compareScoreArray(a[i], b[i])
+    if (comp) return comp
+    i++
+  }
+
+  // handle wildcard (splat) routes
+  if (Math.abs(b.length - a.length) === 1) {
+    if (isLastScoreNegative(a)) return 1
+    if (isLastScoreNegative(b)) return -1
+  }
+
+  // more segments = more specific = sort first
+  return b.length - a.length
 }
 
 interface GenerateRouteResolverState {
@@ -94,7 +100,13 @@ ${records.join('\n\n')}
 
 export const resolver = createFixedResolver([
 ${state.matchableRecords
-  .sort((a, b) => compareRouteScore(a.score, b.score))
+  .sort(
+    (a, b) =>
+      compareRouteScore(a.score, b.score) ||
+      // fallback to sorting by path depth to ensure consistent order between routes with the same score
+      b.path.split('/').filter(Boolean).length -
+        a.path.split('/').filter(Boolean).length
+  )
   .map(
     ({ varName, path }) =>
       `  ${varName},  ${' '.repeat(String(state.id).length - varName.length + ROUTE_RECORD_VAR_PREFIX.length)}// ${path}`
