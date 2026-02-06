@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RouterLink > v-slot > provides information on v-slot 1`] = `"<a aria-current="page" href="/home" class="router-link-active router-link-exact-active"><span> route: {"href":"/home","fullPath":"/home","path":"/home","params":{},"meta":{},"query":{},"hash":"","matched":[{}],"name":"home"} href: "/home" isActive: "true" isExactActive: "true" </span></a><!--dynamic-component-->"`;
