@@ -1,10 +1,18 @@
-import { nextTick, shallowRef, shallowReactive } from 'vue'
+import {
+  nextTick,
+  shallowRef,
+  shallowReactive,
+  VaporComponentOptions,
+  createVaporApp,
+  VaporKeepAlive,
+} from 'vue'
 import { RouteLocationNormalizedLoose } from './utils'
 import {
   routeLocationKey,
   routerViewLocationKey,
 } from '../src/injectionSymbols'
-import { RouteLocationNormalized } from '../src'
+import { RouteLocationNormalized, VaporRouterView } from '../src'
+import { afterEach, beforeEach } from 'vitest'
 
 export function createMockedRoute(
   initialValue: RouteLocationNormalizedLoose | RouteLocationNormalized
@@ -38,5 +46,39 @@ export function createMockedRoute(
       [routeLocationKey as symbol]: value,
       [routerViewLocationKey as symbol]: routeRef,
     },
+  }
+}
+
+export function createVaporMount() {
+  let element = undefined as unknown as Element
+  beforeEach(() => {
+    element = document.createElement('div')
+    element.setAttribute('id', 'host')
+    document.body.appendChild(element)
+  })
+  afterEach(() => {
+    element.remove()
+  })
+
+  return function mount(
+    comp: VaporComponentOptions,
+    props: any = {},
+    provides: any = {}
+  ) {
+    const app = createVaporApp(comp, props)
+    app._context.provides = provides
+    app._context.components = {
+      RouterView: VaporRouterView,
+      KeepAlive: VaporKeepAlive,
+    }
+    app.mount(element)
+    return {
+      element,
+      html: () => element.innerHTML,
+      find: (selector: string) =>
+        element.querySelector(selector) as
+          | (Element & { click: () => any })
+          | undefined,
+    }
   }
 }
