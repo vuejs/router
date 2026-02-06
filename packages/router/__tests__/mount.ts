@@ -51,12 +51,15 @@ export function createMockedRoute(
 
 export function createVaporMount() {
   let element = undefined as unknown as Element
+  let currentApp: ReturnType<typeof createVaporApp> | undefined
   beforeEach(() => {
     element = document.createElement('div')
     element.setAttribute('id', 'host')
     document.body.appendChild(element)
   })
   afterEach(() => {
+    currentApp?.unmount()
+    currentApp = undefined
     element.remove()
   })
 
@@ -72,6 +75,7 @@ export function createVaporMount() {
       KeepAlive: VaporKeepAlive,
     }
     app.mount(element)
+    currentApp = app
     return {
       element,
       html: () => element.innerHTML,
