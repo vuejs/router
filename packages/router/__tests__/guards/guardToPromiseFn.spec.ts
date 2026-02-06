@@ -4,6 +4,9 @@ import { ErrorTypes } from '../../src/errors'
 import { mockWarn } from '../vitest-mock-warn'
 import { vi, describe, expect, it } from 'vitest'
 
+const NEXT_DEPRECATION_MESSAGE =
+  'The `next()` callback in navigation guards is deprecated. Return the value instead of calling `next(value)`.'
+
 // stub those two
 const to = START_LOCATION_NORMALIZED
 const from = {
@@ -15,28 +18,31 @@ const from = {
 describe('guardToPromiseFn', () => {
   mockWarn()
   it('calls the guard with to, from and, next', async () => {
-    expect.assertions(2)
+    expect.assertions(3)
     const spy = vi.fn((to, from, next) => next())
     await expect(guardToPromiseFn(spy, to, from)()).resolves.toEqual(undefined)
     expect(spy).toHaveBeenCalledWith(to, from, expect.any(Function))
+    expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarned()
   })
 
   it('resolves if next is called with no arguments', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     await expect(
       guardToPromiseFn((to, from, next) => next(), to, from)()
     ).resolves.toEqual(undefined)
+    expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarned()
   })
 
   it('resolves if next is called with true', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     await expect(
       guardToPromiseFn((to, from, next) => next(true), to, from)()
     ).resolves.toEqual(undefined)
+    expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarned()
   })
 
   it('rejects if next is called with false', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     try {
       await guardToPromiseFn((to, from, next) => next(false), to, from)()
     } catch (err) {
@@ -46,10 +52,11 @@ describe('guardToPromiseFn', () => {
         type: ErrorTypes.NAVIGATION_ABORTED,
       })
     }
+    expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarned()
   })
 
   it('rejects if next is called with a string location', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     try {
       await guardToPromiseFn((to, from, next) => next('/new'), to, from)()
     } catch (err) {
@@ -59,10 +66,11 @@ describe('guardToPromiseFn', () => {
         type: ErrorTypes.NAVIGATION_GUARD_REDIRECT,
       })
     }
+    expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarned()
   })
 
   it('rejects if next is called with an object location', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     let redirectTo = { path: '/new' }
     try {
       await guardToPromiseFn((to, from, next) => next(redirectTo), to, from)()
@@ -73,14 +81,16 @@ describe('guardToPromiseFn', () => {
         type: ErrorTypes.NAVIGATION_GUARD_REDIRECT,
       })
     }
+    expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarned()
   })
 
   it('rejects if next is called with an error', async () => {
-    expect.assertions(1)
+    expect.assertions(2)
     let error = new Error('nope')
     await expect(
       guardToPromiseFn((to, from, next) => next(error), to, from)()
     ).rejects.toBe(error)
+    expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarned()
   })
 
   it('rejects if guard rejects a Promise', async () => {
@@ -265,7 +275,7 @@ describe('guardToPromiseFn', () => {
   })
 
   it('does not warn if guard returns undefined', async () => {
-    expect.assertions(2)
+    expect.assertions(3)
     await expect(
       guardToPromiseFn(
         (to, from, next) => {
@@ -278,5 +288,38 @@ describe('guardToPromiseFn', () => {
     ).resolves.toEqual(undefined)
 
     expect('callback was never called').not.toHaveBeenWarned()
+    expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarned()
+  })
+
+  describe('next() callback deprecation', () => {
+    it('warns when guard calls next()', async () => {
+      await guardToPromiseFn((to, from, next) => next(), to, from)()
+      expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarned()
+    })
+
+    it('warns only once per guard run when next() is called multiple times', async () => {
+      await expect(
+        guardToPromiseFn(
+          (to, from, next) => {
+            next()
+            next()
+          },
+          to,
+          from
+        )()
+      ).resolves.toEqual(undefined)
+      expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarnedTimes(1)
+      expect('called more than once').toHaveBeenWarned()
+    })
+
+    it('does not warn when guard returns value without next parameter', async () => {
+      await guardToPromiseFn((to, from) => true, to, from)()
+      expect(NEXT_DEPRECATION_MESSAGE).not.toHaveBeenWarned()
+    })
+
+    it('does not warn when guard returns undefined without next parameter', async () => {
+      await guardToPromiseFn((to, from) => {}, to, from)()
+      expect(NEXT_DEPRECATION_MESSAGE).not.toHaveBeenWarned()
+    })
   })
 })

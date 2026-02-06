@@ -199,7 +199,9 @@ export function guardToPromiseFn(
           record && record.instances[name!],
           to,
           from,
-          __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
+          __DEV__
+            ? withDeprecationWarning(canOnlyBeCalledOnce(next, to, from))
+            : next
         )
       )
       let guardCall = Promise.resolve(guardReturn)
@@ -229,6 +231,28 @@ export function guardToPromiseFn(
       }
       guardCall.catch(err => reject(err))
     })
+}
+
+/**
+ * Wraps the next callback to warn when it is used. Dev-only: when __DEV__ is
+ * false (production builds), this branch is dead code and is stripped from the
+ * bundle.
+ *
+ * @internal
+ */
+function withDeprecationWarning(
+  next: NavigationGuardNext
+): NavigationGuardNext {
+  let warned = false
+  return function (this: any) {
+    if (!warned) {
+      warned = true
+      warn(
+        'The `next()` callback in navigation guards is deprecated. Return the value instead of calling `next(value)`.'
+      )
+    }
+    return next.apply(this, arguments as any)
+  }
 }
 
 function canOnlyBeCalledOnce(

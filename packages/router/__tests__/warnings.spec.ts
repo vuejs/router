@@ -10,6 +10,9 @@ import { mockWarn } from './vitest-mock-warn'
 
 let component = defineComponent({})
 
+const NEXT_DEPRECATION_MESSAGE =
+  'The `next()` callback in navigation guards is deprecated. Return the value instead of calling `next(value)`.'
+
 describe('warnings', () => {
   mockWarn()
   it('warns on missing name and path for redirect', async () => {
@@ -119,7 +122,7 @@ describe('warnings', () => {
   })
 
   it('warns if next is called multiple times in one navigation guard', async () => {
-    expect.assertions(3)
+    expect.assertions(4)
     let router = createRouter({
       history: createMemoryHistory(),
       routes: [
@@ -130,7 +133,7 @@ describe('warnings', () => {
 
     router.beforeEach((to, from, next) => {
       next()
-      expect('').not.toHaveBeenWarned()
+      expect('called more than once').not.toHaveBeenWarned()
       next()
       expect('called more than once').toHaveBeenWarnedTimes(1)
       next()
@@ -138,6 +141,7 @@ describe('warnings', () => {
     })
 
     await router.push('/b')
+    expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarned()
   })
 
   it('warns if a non valid function is passed as a component', async () => {
@@ -289,6 +293,7 @@ describe('warnings', () => {
     expect(
       'It should be called exactly one time in each navigation guard'
     ).toHaveBeenWarned()
+    expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarned()
   })
 
   it('warns when discarding params', () => {

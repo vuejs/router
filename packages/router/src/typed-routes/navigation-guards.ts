@@ -24,7 +24,10 @@ export interface NavigationGuardWithThis<T> {
     this: T,
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
-    // intentionally not typed to make people use the return
+    /**
+     * @deprecated Return a value from the guard instead of calling `next(value)`.
+     * The callback will be removed in a future version of Vue Router.
+     */
     next: NavigationGuardNext
   ): _Awaitable<NavigationGuardReturn>
 }
@@ -40,7 +43,10 @@ export interface _NavigationGuardResolved {
     this: undefined,
     to: RouteLocationNormalizedLoaded,
     from: RouteLocationNormalizedLoaded,
-    // intentionally not typed to make people use the return
+    /**
+     * @deprecated Return a value from the guard instead of calling `next(value)`.
+     * The callback will be removed in a future version of Vue Router.
+     */
     next: NavigationGuardNext
   ): _Awaitable<NavigationGuardReturn>
 }
@@ -52,7 +58,10 @@ export interface NavigationGuard {
   (
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded,
-    // intentionally not typed to make people use the return
+    /**
+     * @deprecated Return a value from the guard instead of calling `next(value)`.
+     * The callback will be removed in a future version of Vue Router.
+     */
     next: NavigationGuardNext
   ): _Awaitable<NavigationGuardReturn>
 }
@@ -69,7 +78,10 @@ export interface NavigationHookAfter {
 }
 
 /**
- * `next()` callback passed to navigation guards.
+ * Callback passed to navigation guards to continue or abort the navigation.
+ *
+ * @deprecated Prefer returning a value from the guard instead of calling
+ * `next(value)`. The callback will be removed in a future version of Vue Router.
  */
 export interface NavigationGuardNext {
   (): void
