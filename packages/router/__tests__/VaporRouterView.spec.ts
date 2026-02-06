@@ -9,7 +9,6 @@ import {
   createComponentWithFallback,
   createDynamicComponent,
   createIf,
-  createVaporApp,
   defineVaporComponent,
   markRaw,
   renderEffect,
@@ -18,13 +17,11 @@ import {
   setText,
   template,
   txt,
-  VaporComponentOptions,
-  VaporKeepAlive,
   withVaporCtx,
 } from 'vue'
-import { createMockedRoute } from './mount'
+import { createMockedRoute, createVaporMount } from './mount'
 import { RouteComponent, RouteLocationNormalized } from '../src'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { mockWarn } from './vitest-mock-warn'
 
 // to have autocompletion
@@ -303,33 +300,7 @@ const routes = createRoutes({
 describe('RouterView', () => {
   mockWarn()
 
-  let element = undefined as unknown as Element
-  beforeEach(() => {
-    element = document.createElement('div')
-    element.setAttribute('id', 'host')
-    document.body.appendChild(element)
-  })
-  afterEach(() => {
-    element?.remove()
-  })
-
-  function mount(
-    comp: VaporComponentOptions,
-    props: any = {},
-    provides: any = {}
-  ) {
-    const app = createVaporApp(comp, props || {})
-    app._context.provides = provides
-    app._context.components = {
-      RouterView: VaporRouterView,
-      KeepAlive: VaporKeepAlive,
-    }
-    app.mount(element)
-    return {
-      element,
-      html: () => element.innerHTML,
-    }
-  }
+  const mount = createVaporMount()
 
   function factory(
     initialRoute: RouteLocationNormalizedLoose,
@@ -366,16 +337,12 @@ describe('RouterView', () => {
 
   it('displays nested views', () => {
     const { wrapper } = factory(routes.nested)
-    expect(wrapper.html()).toMatchInlineSnapshot(
-      `"<div><h2>Nested</h2><div>Foo</div><!--dynamic-component--><!--if--></div><!--dynamic-component-->"`
-    )
+    expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('displays deeply nested views', () => {
     const { wrapper } = factory(routes.nestedNested)
-    expect(wrapper.html()).toMatchInlineSnapshot(
-      `"<div><h2>Nested</h2><div><h2>Nested</h2><div>Foo</div><!--dynamic-component--><!--if--></div><!--dynamic-component--><!--if--></div><!--dynamic-component-->"`
-    )
+    expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('renders when the location changes', async () => {
@@ -458,9 +425,8 @@ describe('RouterView', () => {
       const wrapper = mount(
         {
           setup: () => {
-            const component_router_view = resolveComponent('router-view')
             const n3 = createComponentWithFallback(
-              component_router_view as any,
+              VaporRouterView,
               null,
               {
                 default: withVaporCtx((_slotProps0: any) => {
@@ -483,9 +449,7 @@ describe('RouterView', () => {
     }
     it('passes a Component and route', () => {
       const { wrapper } = factory(routes.root)
-      expect(wrapper.html()).toMatchInlineSnapshot(
-        `"<span>home</span><div>Home</div><!--dynamic-component-->"`
-      )
+      expect(wrapper.html()).toMatchSnapshot()
     })
   })
 
@@ -525,13 +489,9 @@ describe('RouterView', () => {
 
     it('works', async () => {
       const { route, wrapper } = factory(routes.root)
-      expect(wrapper.html()).toMatchInlineSnapshot(
-        `"<div>Home</div><!--dynamic-component-->"`
-      )
+      expect(wrapper.html()).toMatchSnapshot()
       await route.set(routes.foo)
-      expect(wrapper.html()).toMatchInlineSnapshot(
-        `"<div>Foo</div><!--dynamic-component-->"`
-      )
+      expect(wrapper.html()).toMatchSnapshot()
     })
   })
 
