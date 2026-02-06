@@ -48,7 +48,7 @@ const commonOptions = {
       resolve(__dirname, 'dist/vue-router.esm-bundler.js'),
       `
 console.warn("[vue-router]: importing from 'vue-router/dist/vue-router.esm-bundler.js' is deprecated. Use 'vue-router' directly.")
-export * from './vue-router.mjs'
+export * from './vue-router.js'
 `.trimStart()
     )
   },

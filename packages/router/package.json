@@ -30,8 +30,8 @@
   "type": "module",
   "sideEffects": false,
   "main": "index.cjs",
-  "module": "dist/vue-router.mjs",
-  "types": "dist/vue-router.d.mts",
+  "module": "dist/vue-router.js",
+  "types": "dist/vue-router.d.ts",
   "typesVersions": {
     "*": {
       "vite": [
@@ -52,7 +52,7 @@
   "jsdelivr": "dist/vue-router.global.js",
   "exports": {
     ".": {
-      "types": "./dist/vue-router.d.mts",
+      "types": "./dist/vue-router.d.ts",
       "node": {
         "import": {
           "production": "./vue-router.node.mjs",
@@ -65,14 +65,20 @@
           "default": "./index.cjs"
         }
       },
-      "import": "./dist/vue-router.mjs",
+      "import": "./dist/vue-router.js",
       "require": "./index.cjs"
     },
     "./dist/*": "./dist/*",
     "./vetur/*": "./vetur/*",
     "./package.json": "./package.json",
-    "./experimental": "./dist/experimental/index.mjs",
-    "./experimental/pinia-colada": "./dist/experimental/pinia-colada.mjs",
+    "./experimental": {
+      "types": "./dist/experimental/index.d.ts",
+      "default": "./dist/experimental/index.js"
+    },
+    "./experimental/pinia-colada": {
+      "types": "./dist/experimental/pinia-colada.d.ts",
+      "default": "./dist/experimental/pinia-colada.js"
+    },
     "./auto-resolver": {
       "types": "./vue-router-auto-resolver.d.mts"
     },
@@ -93,7 +99,7 @@
           "default": "./index.cjs"
         }
       },
-      "import": "./dist/vue-router.mjs",
+      "import": "./dist/vue-router.js",
       "require": "./index.cjs"
     },
     "./vite": {
