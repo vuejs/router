@@ -684,6 +684,34 @@ describe('generateRouteNamedMap', () => {
     `)
   })
 
+  it('produces stable output for sibling group folders with same path', () => {
+    const createTree = (insertionOrder: string[]) => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      insertionOrder.forEach(route => {
+        tree.insert(route, `${route}.vue`)
+      })
+      return formatExports(
+        generateRouteNamedMap(tree, DEFAULT_OPTIONS, new Map())
+      )
+    }
+
+    // Group folders (user) and (user-home) both resolve to empty path segments
+    // but should produce stable output regardless of insertion order
+    const order1 = [
+      '[username]/(user)/profile',
+      '[username]/(user-home)/(user-home)',
+    ]
+    const order2 = [
+      '[username]/(user-home)/(user-home)',
+      '[username]/(user)/profile',
+    ]
+
+    const result1 = createTree(order1)
+    const result2 = createTree(order2)
+
+    expect(result1).toBe(result2)
+  })
+
   it('treats files named with parentheses as index inside static folder', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
 

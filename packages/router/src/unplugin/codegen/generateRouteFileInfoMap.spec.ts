@@ -226,6 +226,30 @@ describe('generateRouteFileInfoMap', () => {
     `)
   })
 
+  it('produces stable output for sibling group folders with same path', () => {
+    const createTree = (insertionOrder: string[]) => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      insertionOrder.forEach(route => {
+        tree.insert(route, `${route}.vue`)
+      })
+      return formatExports(generateRouteFileInfoMap(tree, { root: '' }))
+    }
+
+    const order1 = [
+      '[username]/(user)/profile',
+      '[username]/(user-home)/(user-home)',
+    ]
+    const order2 = [
+      '[username]/(user-home)/(user-home)',
+      '[username]/(user)/profile',
+    ]
+
+    const result1 = createTree(order1)
+    const result2 = createTree(order2)
+
+    expect(result1).toBe(result2)
+  })
+
   it('works with children', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('parent', 'src/pages/parent.vue')

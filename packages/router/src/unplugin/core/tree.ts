@@ -182,7 +182,10 @@ export class TreeNode {
   static compare(a: TreeNode, b: TreeNode): number {
     // for this case, ASCII, short list, it's better than Internation Collator
     // https://stackoverflow.com/questions/77246375/why-localecompare-can-be-faster-than-collator-compare
-    return a.path.localeCompare(b.path, 'en')
+    return (
+      a.path.localeCompare(b.path, 'en') ||
+      a.value.rawSegment.localeCompare(b.value.rawSegment, 'en')
+    )
   }
 
   /**
