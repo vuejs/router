@@ -55,6 +55,13 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
    * It will be included in the `matched` array of a resolved location.
    */
   parent?: EXPERIMENTAL_ResolverRecord | null // the parent can be matchable or not
+
+  /**
+   * If this record is an alias of another record, this points to the original
+   * record. Alias records are not added to the name map and resolve to the
+   * original record's name.
+   */
+  aliasOf?: EXPERIMENTAL_ResolverRecord | null
 }
 
 /**
@@ -132,9 +139,12 @@ export function createFixedResolver<
   TRecord extends EXPERIMENTAL_ResolverRecord_Matchable,
 >(records: TRecord[]): EXPERIMENTAL_ResolverFixed<TRecord> {
   // allows fast access to a matcher by name
+  // alias records are excluded so name lookups always return the original
   const recordMap = new Map<RecordName, TRecord>()
   for (const record of records) {
-    recordMap.set(record.name, record)
+    if (!record.aliasOf) {
+      recordMap.set(record.name, record)
+    }
   }
 
   // NOTE: because of the overloads for `resolve`, we need to manually type the arguments

@@ -1240,4 +1240,109 @@ describe('generateRouteResolver', () => {
 
     expect(resolver).toMatchSnapshot()
   })
+
+  describe('aliases', () => {
+    it('generates alias records for static alias paths', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const importsMap = new ImportsMap()
+      const node = tree.insert('users', 'users.vue')
+      node.setCustomRouteBlock('users.vue', { alias: ['/people'] })
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        importsMap,
+        new Map()
+      )
+
+      expect(resolver).toMatchInlineSnapshot(`
+        "
+        const __route_0 = normalizeRouteRecord({
+          name: '/users',
+          path: new MatcherPatternPathStatic('/users'),
+          components: {
+            'default': () => import('users.vue')
+          },
+        })
+        const __route_1 = normalizeRouteRecord({
+          ...__route_0,
+          path: new MatcherPatternPathStatic('/people'),
+          aliasOf: __route_0,
+        })
+
+        export const resolver = createFixedResolver([
+          __route_0,  // /users
+          __route_1,  // /people
+        ])
+        "
+      `)
+    })
+
+    it('generates alias records for dynamic alias paths', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const importsMap = new ImportsMap()
+      const node = tree.insert('users/[id]', 'users/[id].vue')
+      node.setCustomRouteBlock('users/[id].vue', {
+        alias: ['/people/:id'],
+      })
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        importsMap,
+        new Map()
+      )
+
+      expect(resolver).toContain('aliasOf: __route_0')
+      expect(resolver).toContain('MatcherPatternPathDynamic')
+      expect(resolver).toContain('/people/')
+    })
+
+    it('generates multiple alias records', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const importsMap = new ImportsMap()
+      const node = tree.insert('users', 'users.vue')
+      node.setCustomRouteBlock('users.vue', {
+        alias: ['/people', '/members'],
+      })
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        importsMap,
+        new Map()
+      )
+
+      expect(resolver).toContain('aliasOf: __route_0')
+      expect(resolver).toContain(
+        "path: new MatcherPatternPathStatic('/people')"
+      )
+      expect(resolver).toContain(
+        "path: new MatcherPatternPathStatic('/members')"
+      )
+      // original + 2 aliases = 3 route entries in the resolver
+      const routeEntries = resolver
+        .split('\n')
+        .filter(l => l.trim().startsWith('__route_'))
+      expect(routeEntries).toHaveLength(3)
+    })
+
+    it('alias records are included in the resolver array', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const importsMap = new ImportsMap()
+      const node = tree.insert('users', 'users.vue')
+      node.setCustomRouteBlock('users.vue', { alias: ['/people'] })
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        importsMap,
+        new Map()
+      )
+
+      // Both records should be in the createFixedResolver array
+      expect(resolver).toMatch(/createFixedResolver\(\[[\s\S]*__route_0/)
+      expect(resolver).toMatch(/createFixedResolver\(\[[\s\S]*__route_1/)
+    })
+  })
 })
