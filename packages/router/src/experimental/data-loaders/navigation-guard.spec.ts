@@ -89,19 +89,15 @@ describe('navigation-guard', () => {
   function setupApp(options: Omit<DataLoaderPluginOptions, 'router'>) {
     const app = createApp({ render: () => null })
     const r = getRouter()
-    const selectNavigationResult = vi
-      .fn()
-      .mockImplementation(results => results[0].value)
     app.use(DataLoaderPlugin, {
       router: r,
-      selectNavigationResult,
       ...options,
     })
     app.use(r)
     // invalidate current context
     setCurrentContext(undefined)
     globalApp = app
-    return { app, selectNavigationResult }
+    return { app }
   }
 
   afterEach(() => {
@@ -464,103 +460,6 @@ describe('navigation-guard', () => {
     l1.reject(new NavigationResult('/#ok'))
     await getPendingNavigation()?.catch(() => {})
     expect(router.currentRoute.value.fullPath).toBe('/#ok')
-  })
-
-  describe('selectNavigationResult', () => {
-    it('can change the navigation result within a loader', async () => {
-      const { selectNavigationResult } = setupApp({ isSSR: false })
-      const router = getRouter()
-      const l1 = mockedLoader()
-      router.addRoute({
-        name: '_test',
-        path: '/fetch',
-        component,
-        meta: {
-          loaders: [l1.loader],
-        },
-      })
-
-      router.push('/fetch')
-      await vi.advanceTimersByTimeAsync(0)
-      l1.resolve(new NavigationResult('/#ok'))
-      await getPendingNavigation()
-      expect(selectNavigationResult).toHaveBeenCalledTimes(1)
-      expect(router.currentRoute.value.fullPath).toBe('/#ok')
-    })
-
-    it('selectNavigationResult is called with an array of all the results returned by the loaders', async () => {
-      const { selectNavigationResult } = setupApp({ isSSR: false })
-      const router = getRouter()
-      const l1 = mockedLoader()
-      const l2 = mockedLoader()
-      const l3 = mockedLoader()
-      router.addRoute({
-        name: '_test',
-        path: '/fetch',
-        component,
-        meta: {
-          loaders: [l1.loader, l2.loader, l3.loader],
-        },
-      })
-
-      router.push('/fetch')
-      await vi.advanceTimersByTimeAsync(0)
-      const r1 = new NavigationResult('/#ok')
-      const r2 = new NavigationResult('/#ok2')
-      l1.resolve(r1)
-      l2.resolve('some data')
-      l3.resolve(r2)
-      await getPendingNavigation()
-      expect(selectNavigationResult).toHaveBeenCalledTimes(1)
-      expect(selectNavigationResult).toHaveBeenCalledWith([r1, r2])
-    })
-
-    it('can change the navigation result returned by multiple loaders', async () => {
-      const { selectNavigationResult } = setupApp({ isSSR: false })
-      const router = getRouter()
-      const l1 = mockedLoader()
-      const l2 = mockedLoader()
-      router.addRoute({
-        name: '_test',
-        path: '/fetch',
-        component,
-        meta: {
-          loaders: [l1.loader, l2.loader],
-        },
-      })
-
-      selectNavigationResult.mockImplementation(() => true)
-      router.push('/fetch')
-      await vi.advanceTimersByTimeAsync(0)
-      const r1 = new NavigationResult('/#ok')
-      const r2 = new NavigationResult('/#ok2')
-      l1.resolve(r1)
-      l2.resolve(r2)
-      await getPendingNavigation()
-      expect(router.currentRoute.value.fullPath).toBe('/fetch')
-    })
-
-    it('immediately stops if a NavigationResult is thrown instead of returned inside the loader', async () => {
-      const { selectNavigationResult } = setupApp({ isSSR: false })
-      const router = getRouter()
-      const l1 = mockedLoader()
-      router.addRoute({
-        name: '_test',
-        path: '/fetch',
-        component,
-        meta: {
-          loaders: [l1.loader],
-        },
-      })
-
-      router.push('/fetch')
-      await vi.advanceTimersByTimeAsync(0)
-      const r1 = new NavigationResult('/#ok')
-      l1.reject(r1)
-      await getPendingNavigation()?.catch(() => {})
-      expect(selectNavigationResult).not.toHaveBeenCalled()
-      expect(router.currentRoute.value.fullPath).toBe('/#ok')
-    })
   })
 
   describe('errors', () => {

@@ -14,15 +14,12 @@ import {
   IS_SSR_KEY,
   LOADER_ENTRIES_KEY,
   LOADER_SET_KEY,
-  NAVIGATION_RESULTS_KEY,
   PENDING_LOCATION_KEY,
 } from './meta-extensions'
 import { assign, isDataLoader, setCurrentContext } from './utils'
-import { type _Awaitable } from '../../types/utils'
 import { toLazyValue, type UseDataLoader } from './createDataLoader'
 import {
   NavigationGuard,
-  NavigationGuardReturn,
   RouteLocationNormalizedLoaded,
 } from '../../typed-routes'
 import { isNavigationFailure, NavigationFailureType } from '../../errors'
@@ -52,7 +49,6 @@ export function setupLoaderGuard({
   effect: scope,
   isSSR,
   errors: globalErrors = [],
-  selectNavigationResult = results => results[0]!.value,
 }: SetupLoaderGuardOptions) {
   // avoid creating the guards multiple times
   if (router[LOADER_ENTRIES_KEY] != null) {
@@ -101,8 +97,6 @@ export function setupLoaderGuard({
     to.meta[LOADER_SET_KEY] = new Set()
     // adds an abort controller that can pass a signal to loaders
     to.meta[ABORT_CONTROLLER_KEY] = new AbortController()
-    // allow loaders to add navigation results
-    to.meta[NAVIGATION_RESULTS_KEY] = []
 
     // setup the sets for loaders in each record based on the meta.loaders
     for (const record of to.matched) {
@@ -213,9 +207,6 @@ export function setupLoaderGuard({
             }
             throw result
           }
-        }
-        if (to.meta[NAVIGATION_RESULTS_KEY]!.length) {
-          return selectNavigationResult(to.meta[NAVIGATION_RESULTS_KEY]!)
         }
       })
       .catch(error =>
@@ -419,15 +410,6 @@ export interface DataLoaderPluginOptions {
   router: Router
 
   isSSR?: boolean
-
-  /**
-   * Called if any data loader returns a `NavigationResult` with an array of them. Should decide what is the outcome of
-   * the data fetching guard. Note this isn't called if no data loaders return a `NavigationResult` or if an error is thrown.
-   * @defaultValue `(results) => results[0].value`
-   */
-  selectNavigationResult?: (
-    results: NavigationResult[]
-  ) => _Awaitable<Exclude<NavigationGuardReturn, Function | Promise<unknown>>>
 
   /**
    * List of _expected_ errors that shouldn't abort the navigation (for non-lazy loaders). Provide a list of

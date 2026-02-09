@@ -42,12 +42,6 @@ export const APP_KEY = Symbol()
 export const ABORT_CONTROLLER_KEY = Symbol()
 
 /**
- * Gives access to the navigation results when the navigation is aborted by the user within a data loader.
- * @internal
- */
-export const NAVIGATION_RESULTS_KEY = Symbol()
-
-/**
  * Symbol used to save the initial data on the router.
  * @internal
  */

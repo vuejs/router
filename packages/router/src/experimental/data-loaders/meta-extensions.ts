@@ -6,11 +6,9 @@ import type {
   LOADER_SET_KEY,
   PENDING_LOCATION_KEY,
   ABORT_CONTROLLER_KEY,
-  NAVIGATION_RESULTS_KEY,
   IS_SSR_KEY,
   DATA_LOADERS_EFFECT_SCOPE_KEY,
 } from './symbols'
-import type { NavigationResult } from './navigation-guard'
 import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
 
 /**
@@ -85,11 +83,5 @@ declare module '../../types' {
      * @internal
      */
     [ABORT_CONTROLLER_KEY]?: AbortController
-
-    /**
-     * The navigation results when the navigation is canceled by the user within a data loader.
-     * @internal
-     */
-    [NAVIGATION_RESULTS_KEY]?: NavigationResult[]
   }
 }
