@@ -216,6 +216,41 @@ const ${varName} = normalizeRouteRecord(${routeRecordObject})
             .join('\n')
   }
 
+  // Generate alias records for each alias path
+  let aliasDeclarations = ''
+  const aliases = node.value.overrides.alias
+  if (varName && isMatchable && aliases && aliases.length > 0) {
+    for (const aliasPath of aliases) {
+      const aliasVarName = `${ROUTE_RECORD_VAR_PREFIX}${state.id++}`
+
+      const tempTree = new PrefixTree(options)
+      // FIXME: should always remove the first character since they all must start with a slash
+      const strippedAlias = aliasPath.replace(/^\//, '')
+      // TODO: allow the new file based syntax
+      const tempNode = tempTree.insertParsedPath(strippedAlias)
+
+      const aliasPathCode = generatePathCode(
+        tempNode,
+        importsMap,
+        paramParsersMap
+      )
+
+      const aliasRecordObject = `{
+  ...${varName},
+  ${aliasPathCode}
+  aliasOf: ${varName},
+}`
+
+      aliasDeclarations += `\nconst ${aliasVarName} = normalizeRouteRecord(${aliasRecordObject})`
+
+      state.matchableRecords.push({
+        path: tempNode.fullPath,
+        varName: aliasVarName,
+        score: tempNode.score,
+      })
+    }
+  }
+
   const children = node.getChildrenSorted().map(child =>
     generateRouteRecord({
       node: child,
@@ -232,8 +267,10 @@ const ${varName} = normalizeRouteRecord(${routeRecordObject})
 
   return (
     recordDeclaration +
+    aliasDeclarations +
     (children.length
-      ? (recordDeclaration ? '\n' : '') + children.join('\n')
+      ? (recordDeclaration || aliasDeclarations ? '\n' : '') +
+        children.join('\n')
       : '')
   )
 }
@@ -258,6 +295,27 @@ ${files
   )
   .join(',\n')}
 ${indentStr}},`
+}
+
+/**
+ * Generates the dynamic/static `path: ...` property from a TreeNode.
+ */
+function generatePathCode(
+  node: TreeNode,
+  importsMap: ImportsMap,
+  paramParsersMap: ParamParsersMap
+): string {
+  const params = node.pathParams
+  if (params.length > 0) {
+    return `path: new MatcherPatternPathDynamic(
+    ${node.regexp},
+    ${generatePathParamsOptions(params, importsMap, paramParsersMap)},
+    ${JSON.stringify(node.matcherPatternPathDynamicParts)},
+    ${node.isSplat ? 'null,' : '/* trailingSlash */'}
+  ),`
+  } else {
+    return `path: new MatcherPatternPathStatic(${toStringLiteral(node.fullPath)}),`
+  }
 }
 
 /**
@@ -289,17 +347,7 @@ export function generateRouteRecordPath({
     return `path: ${parentVar}.path,`
   }
 
-  const params = node.pathParams
-  if (params.length > 0) {
-    return `path: new MatcherPatternPathDynamic(
-    ${node.regexp},
-    ${generatePathParamsOptions(params, importsMap, paramParsersMap)},
-    ${JSON.stringify(node.matcherPatternPathDynamicParts)},
-    ${node.isSplat ? 'null,' : '/* trailingSlash */'}
-  ),`
-  } else {
-    return `path: new MatcherPatternPathStatic(${toStringLiteral(node.fullPath)}),`
-  }
+  return generatePathCode(node, importsMap, paramParsersMap)
 }
 
 /**
