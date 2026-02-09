@@ -204,8 +204,8 @@ export function setupLoaderGuard({
               console.warn(
                 '[vue-router]: Returning a NavigationResult from a loader is deprecated. Use reroute() instead, which throws internally.'
               )
+              throw result
             }
-            throw result
           }
         }
       })
