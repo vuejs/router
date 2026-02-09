@@ -83,9 +83,7 @@ export interface MatcherLocationNormalizedLoose {
   instances: Record<string, any>
 }
 
-export const noGuard: NavigationGuard = (to, from, next) => {
-  next()
-}
+export const noGuard: NavigationGuard = (to, from) => {}
 
 export const components = {
   Home: { render: () => h('div', {}, 'Home') },
@@ -124,9 +122,7 @@ export const components = {
   },
   BeforeLeave: {
     render: () => h('div', {}, 'before leave'),
-    beforeRouteLeave(to, from, next) {
-      next()
-    },
+    beforeRouteLeave(to, from) {},
   } as RouteComponent,
 }
 

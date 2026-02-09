@@ -3,9 +3,9 @@
  */
 import fakePromise from 'faked-promise'
 import { tick, noGuard, newRouter as createRouter } from '../utils'
-import { RouteRecordRaw } from '../../src/types'
-import { RouteLocationRaw } from '../../src'
+import type { RouteRecordRaw } from '../../src/types'
 import { vi, describe, expect, it } from 'vitest'
+import type { RouteLocationRaw } from '../../src/typed-routes/route-location'
 
 const Home = { template: `<div>Home</div>` }
 const Foo = { template: `<div>Foo</div>` }

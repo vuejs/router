@@ -12,12 +12,9 @@ const component = {
 describe('beforeRouteLeave', () => {
   it('invokes with the component context', async () => {
     expect.assertions(2)
-    const spy = vi
-      .fn()
-      .mockImplementationOnce(function (this: any, to, from, next) {
-        expect(typeof this.counter).toBe('number')
-        next()
-      })
+    const spy = vi.fn().mockImplementationOnce(function (this: any, to, from) {
+      expect(typeof this.counter).toBe('number')
+    })
     const WithLeave = defineComponent({
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
@@ -56,9 +53,8 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from) {
           expect(typeof this.counter).toBe('number')
-          next()
         }),
     })
     const WithLeaveTwo = defineComponent({
@@ -67,9 +63,8 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from) {
           expect(typeof this.counter).toBe('number')
-          next()
         }),
     })
 
@@ -110,9 +105,8 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from) {
           expect(typeof this.counter).toBe('number')
-          next()
         }),
     })
     const WithLeave = defineComponent({
@@ -121,9 +115,8 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from) {
           expect(typeof this.counter).toBe('number')
-          next()
         }),
     })
 
@@ -169,9 +162,8 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from) {
           expect(typeof this.counter).toBe('number')
-          next()
         }),
     })
     const WithLeaveOne = defineComponent({
@@ -180,9 +172,8 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from) {
           expect(typeof this.counter).toBe('number')
-          next()
         }),
     })
     const WithLeaveTwo = defineComponent({
@@ -191,9 +182,8 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from, next) {
+        .mockImplementationOnce(function (this: any, to, from) {
           expect(typeof this.counter).toBe('number')
-          next()
         }),
     })
 
@@ -235,12 +225,9 @@ describe('beforeRouteLeave', () => {
 describe('beforeRouteUpdate', () => {
   it('invokes with the component context', async () => {
     expect.assertions(2)
-    const spy = vi
-      .fn()
-      .mockImplementationOnce(function (this: any, to, from, next) {
-        expect(typeof this.counter).toBe('number')
-        next()
-      })
+    const spy = vi.fn().mockImplementationOnce(function (this: any, to, from) {
+      expect(typeof this.counter).toBe('number')
+    })
     const WithParam = defineComponent({
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
