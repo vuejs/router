@@ -210,9 +210,9 @@ export function setupLoaderGuard({
         }
       })
       .catch(error =>
+        // Handle redirection of NavigationResult
         error instanceof NavigationResult
-          ? // TODO: why? add comment explaining
-            error.value
+          ? error.value
           : // we don't want to propagate an error if it was our own abort signal
             // this includes cancelled navigations + signal.throwIfAborted() calls
             signal.aborted && error === signal.reason
