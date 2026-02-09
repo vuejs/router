@@ -213,6 +213,7 @@ type DefinePageParamsInfo = NonNullable<CustomRouteBlock['params']>
 export interface DefinePageInfo {
   name?: string | false
   path?: string
+  alias?: string[]
   params?: CustomRouteBlock['params']
 }
 
@@ -286,6 +287,8 @@ export function extractDefinePageInfo(
         } else {
           routeInfo.path = prop.value.value
         }
+      } else if (prop.key.name === 'alias') {
+        routeInfo.alias = extractRouteAlias(prop.value, id)
       } else if (prop.key.name === 'params') {
         if (prop.value.type === 'ObjectExpression') {
           routeInfo.params = extractParamsInfo(prop.value, id)
@@ -418,16 +421,17 @@ function extractPathParams(
   return pathParams
 }
 
-// TODO: use
 export function extractRouteAlias(
   aliasValue: ObjectProperty['value'],
   id: string
-): string[] | void {
+): string[] | undefined {
   if (
     aliasValue.type !== 'StringLiteral' &&
     aliasValue.type !== 'ArrayExpression'
   ) {
-    warn(`route alias must be a string literal. Found in "${id}".`)
+    warn(
+      `route alias must be a string literal or an array of string literals. Found in "${id}".`
+    )
   } else {
     return aliasValue.type === 'StringLiteral'
       ? [aliasValue.value]
@@ -435,6 +439,7 @@ export function extractRouteAlias(
           .filter(node => node?.type === 'StringLiteral')
           .map(el => el.value)
   }
+  return undefined
 }
 
 const getIdentifiers = (stmts: Statement[]) => {

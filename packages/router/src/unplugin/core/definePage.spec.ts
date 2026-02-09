@@ -243,6 +243,74 @@ definePage({
     })
   })
 
+  it('extracts alias as a string', () => {
+    const code = vue`
+<script setup>
+definePage({
+  alias: '/other',
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({
+      alias: ['/other'],
+    })
+  })
+
+  it('extracts alias as an array of strings', () => {
+    const code = vue`
+<script setup>
+definePage({
+  alias: ['/a', '/b'],
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({
+      alias: ['/a', '/b'],
+    })
+  })
+
+  it('warns on invalid alias (number)', () => {
+    const code = vue`
+<script setup>
+definePage({
+  alias: 123,
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({})
+    expect(
+      'route alias must be a string literal or an array of string literals'
+    ).toHaveBeenWarned()
+  })
+
+  it('warns on invalid alias (variable)', () => {
+    const code = vue`
+<script setup>
+const someVar = '/other'
+definePage({
+  alias: someVar,
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({})
+    expect(
+      'route alias must be a string literal or an array of string literals'
+    ).toHaveBeenWarned()
+  })
+
+  it('filters non-string elements from alias array', () => {
+    const code = vue`
+<script setup>
+definePage({
+  alias: ['/a', 123, '/b'],
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({
+      alias: ['/a', '/b'],
+    })
+  })
+
   it('extract name skipped when non existent', async () => {
     expect(
       extractDefinePageInfo(
