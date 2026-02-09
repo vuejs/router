@@ -250,74 +250,6 @@ export function testDefineLoader<Context = void>(
         expect(error.value).toEqual(new Error('ok'))
       })
 
-      it(`can return a NavigationResult without affecting initial data, commit: ${commit} lazy: ${lazy}`, async () => {
-        let calls = 0
-        const spy = vi.fn(async (to: RouteLocationNormalizedLoaded) => {
-          if (calls++ === 0) reroute('/other')
-          return to.query.p
-        })
-        const { useData, router } = singleLoaderOneRoute(
-          loaderFactory({ lazy, commit, fn: spy })
-        )
-        await router.push('/fetch?p=ko')
-        expect(spy).toHaveBeenCalled()
-        const { data } = useData()
-        expect(data.value).toEqual(undefined)
-      })
-
-      it('can return a NavigationResult without affecting loaded data', async () => {
-        let calls = 0
-        const spy = vi.fn(async (to: RouteLocationNormalizedLoaded) => {
-          if (calls++ > 0) reroute('/other')
-          return to.query.p
-        })
-        const { useData, router } = singleLoaderOneRoute(
-          loaderFactory({ lazy, commit, fn: spy })
-        )
-        await router.push('/fetch?p=ok')
-        const { data } = useData()
-        expect(spy).toHaveBeenCalled()
-        expect(data.value).toEqual('ok')
-        await router.push('/fetch?p=ko')
-        expect(data.value).toEqual('ok')
-      })
-
-      // in lazy false, commit after-load, the error prevents the navigation
-      // so the error doesn't even get a chance to be used if we navigate. This is why we do a first regular navigation and then a reload: to force the fetch again
-      it('can return a NavigationResult without affecting the last error', async () => {
-        const spy = vi.fn().mockResolvedValueOnce('ko')
-        const { useData, router } = singleLoaderOneRoute(
-          loaderFactory({ lazy, commit, fn: spy })
-        )
-        await router.push('/fetch?p=ok').catch(() => {})
-        const { error, reload } = useData()
-        spy.mockRejectedValueOnce(new Error('ok'))
-        await reload().catch(() => {})
-        expect(spy).toHaveBeenCalled()
-        expect(error.value).toEqual(new Error('ok'))
-        spy.mockRejectedValueOnce(new NavigationResult('/other'))
-        await router.push('/fetch?p=ko').catch(() => {})
-        expect(error.value).toEqual(new Error('ok'))
-      })
-
-      it(`the resolved data is present after navigation`, async () => {
-        const spy = vi
-          .fn<(...args: unknown[]) => Promise<string>>()
-          .mockResolvedValueOnce('resolved')
-        const { wrapper, useData, router } = singleLoaderOneRoute(
-          // loaders are not require to allow sync return values
-          loaderFactory({ lazy, commit, fn: spy })
-        )
-        expect(spy).not.toHaveBeenCalled()
-        await router.push('/fetch')
-        expect(wrapper.get('#error').text()).toBe('')
-        expect(wrapper.get('#isLoading').text()).toBe('false')
-        expect(wrapper.get('#data').text()).toBe('resolved')
-        expect(spy).toHaveBeenCalledTimes(1)
-        const { data } = useData()
-        expect(data.value).toEqual('resolved')
-      })
-
       it(`can be forced reloaded`, async () => {
         const spy = vi
           .fn<(...args: unknown[]) => Promise<string>>()
@@ -707,6 +639,74 @@ export function testDefineLoader<Context = void>(
         // the error was not propagated
         expect(onError).toHaveBeenCalledTimes(1)
       })
+    })
+
+    it(`can reroute() without affecting initial data, commit: ${commit}`, async () => {
+      let calls = 0
+      const spy = vi.fn(async (to: RouteLocationNormalizedLoaded) => {
+        if (calls++ === 0) reroute('/other')
+        return to.query.p
+      })
+      const { useData, router } = singleLoaderOneRoute(
+        loaderFactory({ lazy: false, commit, fn: spy })
+      )
+      await router.push('/fetch?p=ko')
+      expect(spy).toHaveBeenCalled()
+      const { data } = useData()
+      expect(data.value).toEqual(undefined)
+    })
+
+    it('can reroute() without affecting loaded data', async () => {
+      let calls = 0
+      const spy = vi.fn(async (to: RouteLocationNormalizedLoaded) => {
+        if (calls++ > 0) reroute('/other')
+        return to.query.p
+      })
+      const { useData, router } = singleLoaderOneRoute(
+        loaderFactory({ lazy: false, commit, fn: spy })
+      )
+      await router.push('/fetch?p=ok')
+      const { data } = useData()
+      expect(spy).toHaveBeenCalled()
+      expect(data.value).toEqual('ok')
+      await router.push('/fetch?p=ko')
+      expect(data.value).toEqual('ok')
+    })
+
+    // in lazy false, commit after-load, the error prevents the navigation
+    // so the error doesn't even get a chance to be used if we navigate. This is why we do a first regular navigation and then a reload: to force the fetch again
+    it('can reroute without affecting the last error', async () => {
+      const spy = vi.fn().mockResolvedValueOnce('ko')
+      const { useData, router } = singleLoaderOneRoute(
+        loaderFactory({ lazy: false, commit, fn: spy })
+      )
+      await router.push('/fetch?p=ok').catch(() => {})
+      const { error, reload } = useData()
+      spy.mockRejectedValueOnce(new Error('ok'))
+      await reload().catch(() => {})
+      expect(spy).toHaveBeenCalled()
+      expect(error.value).toEqual(new Error('ok'))
+      spy.mockRejectedValueOnce(new NavigationResult('/other'))
+      await router.push('/fetch?p=ko').catch(() => {})
+      expect(error.value).toEqual(new Error('ok'))
+    })
+
+    it(`the resolved data is present after navigation`, async () => {
+      const spy = vi
+        .fn<(...args: unknown[]) => Promise<string>>()
+        .mockResolvedValueOnce('resolved')
+      const { wrapper, useData, router } = singleLoaderOneRoute(
+        // loaders are not require to allow sync return values
+        loaderFactory({ lazy: false, commit, fn: spy })
+      )
+      expect(spy).not.toHaveBeenCalled()
+      await router.push('/fetch')
+      expect(wrapper.get('#error').text()).toBe('')
+      expect(wrapper.get('#isLoading').text()).toBe('false')
+      expect(wrapper.get('#data').text()).toBe('resolved')
+      expect(spy).toHaveBeenCalledTimes(1)
+      const { data } = useData()
+      expect(data.value).toEqual('resolved')
     })
 
     // https://github.com/posva/unplugin-vue-router/issues/584
