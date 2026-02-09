@@ -71,15 +71,6 @@ export const router = createRouter({
 
 The `routes` option defines the routes themselves, mapping URL paths to components. The component specified by the `component` option is the one that will be rendered by the `<RouterView>` in our earlier `App.vue`. These route components are sometimes referred to as _views_, though they are just normal Vue components.
 
-It's worth noting that if you want to use _functional components_ as route components, you must give them a `displayName` so they can be differentiated from [lazy loaded routes](./advanced/lazy-loading.md):
-
-```ts
-const AboutPage: FunctionalComponent = () => {
-  return h('h1', {}, 'About')
-}
-AboutPage.displayName = 'AboutPage'
-```
-
 Routes support various other options that we'll see later in the guide, but for now we only need `path` and `component`.
 
 The `history` option controls how routes are mapped onto URLs and vice versa. For the Playground example we're using `createMemoryHistory()`, which ignores the browser URL entirely and uses its own internal URL instead. That works well for the Playground, but it's unlikely to be what you'd want in a real application. Typically, you'd want to use `createWebHistory()` instead, or perhaps `createWebHashHistory()`. We'll cover that topic in more detail in the guide to [History modes](./essentials/history-mode).
