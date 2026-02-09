@@ -18,8 +18,8 @@ export class MatchMiss extends Error {
  * miss('Number must be finite')
  * ```
  */
-export const miss = (
+export const miss: (
   ...args: ConstructorParameters<typeof MatchMiss>
-): never => {
+) => never = (...args) => {
   throw new MatchMiss(...args)
 }
