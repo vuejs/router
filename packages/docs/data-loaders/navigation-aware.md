@@ -3,23 +3,23 @@
 Since the data fetching happens within a navigation guard, it's possible to control the navigation like in regular navigation guards:
 
 - Thrown errors (or rejected Promises) cancel the navigation (same behavior as in a regular navigation guard) and are intercepted by [Vue Router's error handling](https://router.vuejs.org/api/interfaces/router.html#onerror)
-- By returning a `NavigationResult`, you can redirect, cancel, or modify the navigation
+- By calling `reroute()`, you can redirect or cancel the navigation
 
 Any other returned value is considered as the _resolved data_ and will appear in the `data` property.
 
-## Controlling the navigation with `NavigationResult`
+## Controlling the navigation with `reroute()`
 
-`NavigationResult` is a class that can be returned or thrown from a loader to _change_ the navigation. It accepts the same arguments as the [return value of a navigation guard](https://router.vuejs.org/guide/advanced/navigation-guards.html#Global-Before-Guards) **as long as it changes the navigation**. It doesn't accept `true` or `undefined` as these values do not change the navigation.
+`reroute()` changes the current navigation from within a data loader. It accepts the same arguments as the [return value of a navigation guard](https://router.vuejs.org/guide/advanced/navigation-guards.html#Global-Before-Guards) **as long as it changes the navigation**. It doesn't accept `true` or `undefined` as these values do not change the navigation. It **throws internally** to immediately stop the loader execution.
 
 ```ts{1,6-8,16,18}
-import { NavigationResult } from 'vue-router/experimental'
+import { reroute } from 'vue-router/experimental'
 import { defineBasicLoader } from 'vue-router/experimental'
 
 export const useUserData = defineBasicLoader(
   async (to) => {
     // cancel the navigation for invalid IDs
     if (isInvalidId(to.params.id)) {
-      return new NavigationResult(false)
+      reroute(false)
     }
 
     try {
@@ -28,7 +28,7 @@ export const useUserData = defineBasicLoader(
       return user
     } catch (error) {
       if (error.status === 404) {
-        return new NavigationResult({ name: 'not-found' })
+        reroute({ name: 'not-found' })
       } else {
         throw error // aborts the router navigation
       }
@@ -36,6 +36,12 @@ export const useUserData = defineBasicLoader(
   }
 )
 ```
+
+::: tip
+
+Since `reroute()` throws internally (its return type is `never`), you don't need to use `return` or `else` after calling it.
+
+:::
 
 ### Handling multiple navigation results
 
@@ -108,7 +114,7 @@ During a navigation, data loaders are grouped together like a _pack_. If the nav
 
 ## Lazy loaders
 
-Apart from consistent updates, lazy loaders are not navigation-aware. They cannot control the navigation with errors or `NavigationResult`. They still start loading as soon as the navigation is initiated.
+Apart from consistent updates, lazy loaders are not navigation-aware. They cannot control the navigation with errors or `reroute()`. They still start loading as soon as the navigation is initiated.
 
 ## Loading after the navigation
 

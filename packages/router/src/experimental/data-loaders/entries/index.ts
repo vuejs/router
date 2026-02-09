@@ -16,6 +16,8 @@ export { toLazyValue } from '../createDataLoader'
 export {
   DataLoaderPlugin,
   NavigationResult,
+  NavigationResult as _NavigationResult,
+  reroute,
   useIsDataLoading,
 } from '../navigation-guard'
 export type {

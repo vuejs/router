@@ -1,6 +1,6 @@
 # Defining Data Loaders
 
-In order to use data loaders, you need to define them first. Data loaders themselves are the composables returned by the different `defineLoader` functions. Each loader definition is specific to the `defineLoader` function used. For example, `defineBasicLoader` expects an async function as the first argument while `defineColadaLoader` expects an object with a `query` function. All loaders should allow to pass an async function that can throw errors, and `NavigationResult`.
+In order to use data loaders, you need to define them first. Data loaders themselves are the composables returned by the different `defineLoader` functions. Each loader definition is specific to the `defineLoader` function used. For example, `defineBasicLoader` expects an async function as the first argument while `defineColadaLoader` expects an object with a `query` function. All loaders should allow to pass an async function that can throw errors, and call `reroute()` to control the navigation.
 
 Any composables returned by _any_ `defineLoader` function share the same signature:
 
@@ -89,10 +89,10 @@ Why doesn't this work?
 
 ### Navigation control
 
-Since loaders happen within the context of a navigation, you can control the navigation by returning a `NavigationResult` object. This is similar to returning a value in a navigation guard
+Since loaders happen within the context of a navigation, you can control the navigation by calling `reroute()`. This is similar to returning a value in a navigation guard. It throws internally, so execution stops immediately.
 
 ```ts{1,8,9}
-import { NavigationResult } from 'vue-router/experimental'
+import { reroute } from 'vue-router/experimental'
 
 const useDashboardStats = defineBasicLoader('/admin', async (to) => {
   try {
@@ -100,7 +100,7 @@ const useDashboardStats = defineBasicLoader('/admin', async (to) => {
   } catch (err) {
     if (err.code === 401) {
       // same as returning '/login' in a navigation guard
-      return new NavigationResult('/login')
+      reroute('/login')
     }
     throw err // unexpected error
   }

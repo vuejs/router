@@ -9,7 +9,6 @@ import {
   APP_KEY,
   IS_USE_DATA_LOADER_KEY,
   LOADER_ENTRIES_KEY,
-  NAVIGATION_RESULTS_KEY,
   PENDING_LOCATION_KEY,
   STAGED_NO_VALUE,
   NavigationResult,
@@ -153,7 +152,6 @@ export function defineBasicLoader<Data>(
         pendingTo: null,
         staged: STAGED_NO_VALUE,
         stagedError: null,
-        stagedNavigationResult: null,
         commit,
       } satisfies DataLoaderBasicEntry<Data, ErrorDefault>)
     }
@@ -207,7 +205,6 @@ export function defineBasicLoader<Data>(
     entry.staged = STAGED_NO_VALUE
     // preserve error until data is committed
     entry.stagedError = error.value
-    entry.stagedNavigationResult = null
 
     // Promise.resolve() allows loaders to also be sync
     const currentLoad = Promise.resolve(
@@ -220,14 +217,16 @@ export function defineBasicLoader<Data>(
         //   `accepted: ${entry.pendingLoad === currentLoad}; data: ${d}`
         // )
         if (entry.pendingLoad === currentLoad) {
-          // let the navigation guard collect the result
           if (d instanceof NavigationResult) {
-            to.meta[NAVIGATION_RESULTS_KEY]!.push(d)
-            entry.stagedNavigationResult = d
-            // help users find non-exposed loaders during development
             if (process.env.NODE_ENV !== 'production') {
+              console.warn(
+                '[vue-router]: Returning a NavigationResult is deprecated. Use reroute() instead, which throws internally.'
+              )
               warnNonExposedLoader({ to, options, useDataLoader })
             }
+            // prevent commit from running in finally
+            entry.pendingTo = null
+            throw d
           } else {
             entry.staged = d
             entry.stagedError = null
@@ -235,21 +234,17 @@ export function defineBasicLoader<Data>(
         }
       })
       .catch((error: unknown) => {
-        // console.log(
-        //   '‼️ rejected',
-        //   to.fullPath,
-        //   `accepted: ${entry.pendingLoad === currentLoad} =`,
-        //   e
-        // )
         if (entry.pendingLoad === currentLoad) {
-          // help users find non-exposed loaders during development
-          if (process.env.NODE_ENV !== 'production') {
-            if (error instanceof NavigationResult) {
+          // NavigationResult is always propagated (not treated as a data error)
+          if (error instanceof NavigationResult) {
+            if (process.env.NODE_ENV !== 'production') {
               warnNonExposedLoader({ to, options, useDataLoader })
             }
+            // prevent commit from running in finally
+            entry.pendingTo = null
+            throw error
           }
           // in this case, commit will never be called so we should just drop the error
-          // console.log(`🚨 error in "${options.key}"`, e)
           entry.stagedError = error
           // propagate error if non lazy or during SSR
           // NOTE: Cannot be handled at the guard level because of nested loaders
@@ -300,11 +295,7 @@ export function defineBasicLoader<Data>(
     if (this.pendingTo === to) {
       // console.log('👉 commit', this.staged)
       if (process.env.NODE_ENV !== 'production') {
-        if (
-          this.staged === STAGED_NO_VALUE &&
-          this.stagedError === null &&
-          this.stagedNavigationResult === null
-        ) {
+        if (this.staged === STAGED_NO_VALUE && this.stagedError === null) {
           console.warn(
             `Loader "${options.key}"'s "commit()" was called but there is no staged data.`
           )
@@ -322,8 +313,6 @@ export function defineBasicLoader<Data>(
       this.staged = STAGED_NO_VALUE
       // preserve error until data is committed
       this.stagedError = this.error.value
-      // we do not restore the stagedNavigationResult intentionally because
-      // commit can be called too early depending on the commit value
       this.pendingTo = null
       this.to = to
       // we intentionally keep pendingLoad so it can be reused until the navigation is finished
@@ -411,12 +400,7 @@ export function defineBasicLoader<Data>(
       .pendingLoad!.then(() => {
         // nested loaders might wait for all loaders to be ready before setting data
         // so we need to return the staged value if it exists as it will be the latest one
-        return entry.staged === STAGED_NO_VALUE
-          ? // exclude navigation results from the returned data
-            entry.stagedNavigationResult
-            ? Promise.reject(entry.stagedNavigationResult)
-            : data.value
-          : entry.staged
+        return entry.staged === STAGED_NO_VALUE ? data.value : entry.staged
       })
       // we only want the error if we are nesting the loader
       // otherwise this will end up in "Unhandled promise rejection"

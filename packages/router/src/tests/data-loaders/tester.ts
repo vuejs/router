@@ -26,6 +26,7 @@ import {
   setCurrentContext,
   DataLoaderPlugin,
   NavigationResult,
+  reroute,
   type DataLoaderPluginOptions,
   type DataLoaderContextBase,
   type DefineDataLoaderOptionsBase_LaxData,
@@ -252,7 +253,8 @@ export function testDefineLoader<Context = void>(
       it(`can return a NavigationResult without affecting initial data, commit: ${commit} lazy: ${lazy}`, async () => {
         let calls = 0
         const spy = vi.fn(async (to: RouteLocationNormalizedLoaded) => {
-          return calls++ === 0 ? new NavigationResult('/other') : to.query.p
+          if (calls++ === 0) reroute('/other')
+          return to.query.p
         })
         const { useData, router } = singleLoaderOneRoute(
           loaderFactory({ lazy, commit, fn: spy })
@@ -266,7 +268,8 @@ export function testDefineLoader<Context = void>(
       it('can return a NavigationResult without affecting loaded data', async () => {
         let calls = 0
         const spy = vi.fn(async (to: RouteLocationNormalizedLoaded) => {
-          return calls++ > 0 ? new NavigationResult('/other') : to.query.p
+          if (calls++ > 0) reroute('/other')
+          return to.query.p
         })
         const { useData, router } = singleLoaderOneRoute(
           loaderFactory({ lazy, commit, fn: spy })
@@ -292,7 +295,7 @@ export function testDefineLoader<Context = void>(
         await reload().catch(() => {})
         expect(spy).toHaveBeenCalled()
         expect(error.value).toEqual(new Error('ok'))
-        spy.mockResolvedValueOnce(new NavigationResult('/other'))
+        spy.mockRejectedValueOnce(new NavigationResult('/other'))
         await router.push('/fetch?p=ko').catch(() => {})
         expect(error.value).toEqual(new Error('ok'))
       })
@@ -707,14 +710,14 @@ export function testDefineLoader<Context = void>(
     })
 
     // https://github.com/posva/unplugin-vue-router/issues/584
-    it(`skips child loaders if parent returns a NavigationResult, commit: ${commit}`, async () => {
+    it(`skips child loaders if parent throws a NavigationResult, commit: ${commit}`, async () => {
       // Parent loader that redirects
       const parentLoader = mockedLoader({
         key: 'parent',
         commit,
         lazy: false,
       })
-      parentLoader.spy.mockResolvedValue(new NavigationResult('/redirect'))
+      parentLoader.spy.mockRejectedValue(new NavigationResult('/redirect'))
 
       const childLoader = mockedLoader({
         key: 'child',
@@ -774,7 +777,7 @@ export function testDefineLoader<Context = void>(
         commit,
         lazy: false,
       })
-      parentLoader.spy.mockResolvedValue(new NavigationResult('/redirect'))
+      parentLoader.spy.mockRejectedValue(new NavigationResult('/redirect'))
 
       const childLoader = mockedLoader({
         key: 'child',
@@ -1462,8 +1465,8 @@ export function testDefineLoader<Context = void>(
   })
 
   it.each([new NavigationResult(false), new Error('ko')] as const)(
-    'does not commit new data if loader returns %s',
-    async resolvedValue => {
+    'does not commit new data if loader throws %s',
+    async rejectedValue => {
       const l1 = mockedLoader({ lazy: false, commit: 'after-load', key: 'l1' })
       const l2 = mockedLoader({ lazy: false, commit: 'after-load', key: 'l2' })
       const router = getRouter()
@@ -1497,11 +1500,7 @@ export function testDefineLoader<Context = void>(
       await vi.advanceTimersByTimeAsync(0)
       expect(l1.spy).toHaveBeenCalledTimes(1)
       expect(l2.spy).toHaveBeenCalledTimes(1)
-      if (resolvedValue instanceof NavigationResult) {
-        l2.resolve(resolvedValue)
-      } else {
-        l2.reject(resolvedValue)
-      }
+      l2.reject(rejectedValue)
       await vi.advanceTimersByTimeAsync(0)
       await p
       const { data: one, error: e1 } = app.runWithContext(() => l1.loader())

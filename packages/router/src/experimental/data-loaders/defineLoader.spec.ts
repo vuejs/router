@@ -260,7 +260,7 @@ describe(
     describe('warns', () => {
       // this might happen if the user forgets to export a loader
       // https://github.com/posva/unplugin-vue-router/issues/759
-      it('warns if a NavigationResult is committed', async () => {
+      it('warns if a NavigationResult is returned (deprecated)', async () => {
         const router = getRouter()
         const l1 = mockedLoader({ key: 'my-key' })
         router.addRoute({
@@ -297,10 +297,12 @@ describe(
 
         await router.push('/fetch')
         await vi.advanceTimersByTimeAsync(1)
+        // non-exposed loader can't redirect — stays on /fetch
         expect(router.currentRoute.value.fullPath).toBe('/fetch')
         // no data
         expect(wrapper.text()).toBe('false')
 
+        expect('Returning a NavigationResult is deprecated').toHaveBeenWarned()
         expect('NavigationResult').toHaveBeenWarned()
         expect('key: "my-key"').toHaveBeenWarned()
       })

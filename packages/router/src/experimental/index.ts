@@ -65,7 +65,8 @@ export {
 export {
   // Core
   DataLoaderPlugin,
-  NavigationResult,
+  NavigationResult as _NavigationResult,
+  reroute,
   useIsDataLoading,
   type DataLoaderPluginOptions,
   type SetupLoaderGuardOptions,
@@ -87,6 +88,13 @@ export {
   // Types config
   type ErrorDefault,
 } from './data-loaders/entries/index'
+
+// TODO: only keep _NavigationResult in next major
+import { NavigationResult as NavResult } from './data-loaders/entries/index'
+/**
+ * @deprecated Use {@link reroute} instead.
+ */
+export const NavigationResult = NavResult
 
 // Basic loader
 export {

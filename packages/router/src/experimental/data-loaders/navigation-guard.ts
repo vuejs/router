@@ -203,12 +203,17 @@ export function setupLoaderGuard({
             })
       })
     ) // let the navigation go through by returning true or void
-      .then(() => {
-        // console.log(
-        //   `✨ Navigation results "${to.fullPath}": [${to.meta[
-        //     NAVIGATION_RESULTS_KEY
-        //   ]!.map((r) => JSON.stringify(r.value)).join(', ')}]`
-        // )
+      .then(results => {
+        if (process.env.NODE_ENV !== 'production') {
+          for (const result of results as unknown[]) {
+            if (result instanceof NavigationResult) {
+              console.warn(
+                '[vue-router]: Returning a NavigationResult from a loader is deprecated. Use reroute() instead, which throws internally.'
+              )
+            }
+            throw result
+          }
+        }
         if (to.meta[NAVIGATION_RESULTS_KEY]!.length) {
           return selectNavigationResult(to.meta[NAVIGATION_RESULTS_KEY]!)
         }
@@ -349,23 +354,31 @@ export type _DataLoaderRedirectResult = Exclude<
 >
 
 /**
- * Possible values to change the result of a navigation within a loader. Can be returned from a data loader and will
- * appear in `selectNavigationResult`. If thrown, it will immediately cancel the navigation. It can only contain values
- * that cancel the navigation.
+ * Allows data loaders to change navigation. Called by {@link reroute}.
+ *
+ * @internal
+ */
+export class NavigationResult {
+  constructor(public readonly value: _DataLoaderRedirectResult) {}
+}
+
+/**
+ * Changes the navigation from within a data loader. Accepts the same values as a navigation
+ * guard return: a route location to redirect to, or `false` to cancel the navigation.
  *
  * @example
  * ```ts
- * export const useUserData = defineLoader(async (to) => {
+ * export const useUserData = defineBasicLoader(async (to) => {
  *   const user = await fetchUser(to.params.id)
  *   if (!user) {
- *     return new NavigationResult('/404')
+ *     reroute('/404')
  *   }
  *   return user
  * })
  * ```
  */
-export class NavigationResult {
-  constructor(public readonly value: _DataLoaderRedirectResult) {}
+export function reroute(to: _DataLoaderRedirectResult): never {
+  throw new NavigationResult(to)
 }
 
 /**

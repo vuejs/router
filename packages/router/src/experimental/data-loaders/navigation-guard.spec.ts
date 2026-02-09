@@ -446,6 +446,26 @@ describe('navigation-guard', () => {
     })
   })
 
+  it('redirects when a NavigationResult is thrown (via reroute)', async () => {
+    setupApp({ isSSR: false })
+    const router = getRouter()
+    const l1 = mockedLoader()
+    router.addRoute({
+      name: '_test',
+      path: '/fetch',
+      component,
+      meta: {
+        loaders: [l1.loader],
+      },
+    })
+
+    router.push('/fetch')
+    await vi.advanceTimersByTimeAsync(0)
+    l1.reject(new NavigationResult('/#ok'))
+    await getPendingNavigation()?.catch(() => {})
+    expect(router.currentRoute.value.fullPath).toBe('/#ok')
+  })
+
   describe('selectNavigationResult', () => {
     it('can change the navigation result within a loader', async () => {
       const { selectNavigationResult } = setupApp({ isSSR: false })
