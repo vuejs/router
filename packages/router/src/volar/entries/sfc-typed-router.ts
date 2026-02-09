@@ -39,6 +39,7 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
     },
   }
 
+  const defineNames = new Set(['definePage', 'definePageMeta'])
   const methodKeys = new Set([
     // vue-router
     'beforeEnter',
@@ -72,8 +73,7 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
         if (
           ts.isCallExpression(node) &&
           ts.isIdentifier(node.expression) &&
-          (node.expression.text === 'definePage' ||
-            node.expression.text === 'definePageMeta') &&
+          defineNames.has(node.expression.text) &&
           node.arguments.length >= 1 &&
           ts.isObjectLiteralExpression(node.arguments[0])
         ) {
