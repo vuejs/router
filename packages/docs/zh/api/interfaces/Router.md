@@ -89,13 +89,13 @@ ___
 
 ▸ **afterEach**(`guard`): () => `void`
 
-添加一个导航钩子，它会在每次导航之后被执行。返回一个用来移除该钩子的函数。
+添加一个导航守卫，它会在每次导航之后被执行。返回一个用来移除该钩子的函数。
 
 #### 参数 %{#Methods-afterEach-Parameters}%
 
 | 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `guard` | [`NavigationHookAfter`](NavigationHookAfter.md) | 要加入的导航钩子 |
+| `guard` | [`NavigationHookAfter`](NavigationHookAfter.md) | 要加入的导航守卫 |
 
 #### 返回值 %{#Methods-afterEach-Returns}%
 
@@ -105,7 +105,7 @@ a function that removes the registered hook
 
 ▸ (): `void`
 
-添加一个导航钩子，它会在每次导航之后被执行。返回一个用来移除该钩子的函数。
+添加一个导航守卫，它会在每次导航之后被执行。返回一个用来移除该钩子的函数。
 
 **`Example`**
 
@@ -139,13 +139,13 @@ ___
 
 ▸ **beforeEach**(`guard`): () => `void`
 
-添加一个导航钩子，它会在每次导航之前被执行。返回一个用来移除该钩子的函数。
+添加一个导航守卫，它会在每次导航之前被执行。返回一个用来移除该钩子的函数。
 
 #### 参数 %{#Methods-beforeEach-Parameters}%
 
 | 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> | 要加入的导航钩子 |
+| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> | 要加入的导航守卫 |
 
 #### 返回值 %{#Methods-beforeEach-Returns}%
 
@@ -153,7 +153,7 @@ ___
 
 ▸ (): `void`
 
-添加一个导航钩子，它会在每次导航之前被执行。返回一个用来移除该钩子的函数。
+添加一个导航守卫，它会在每次导航之前被执行。返回一个用来移除该钩子的函数。
 
 ##### 返回值 %{#Methods-beforeEach-Returns-Returns}%
 
@@ -171,7 +171,7 @@ ___
 
 | 名称 | 类型 | 描述 |
 | :------ | :------ | :------ |
-| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> | navigation guard to add |
+| `guard` | [`NavigationGuardWithThis`](NavigationGuardWithThis.md)\<`undefined`\> | 要加入的导航守卫 |
 
 #### 返回值 %{#Methods-beforeResolve-Returns}%
 
