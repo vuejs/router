@@ -2,20 +2,15 @@
   <div>User: {{ id }}</div>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { onBeforeRouteUpdate } from 'vue-router'
 
-export default defineComponent({
-  name: 'User',
-  props: {
-    id: String,
-  },
+defineProps<{ id: string }>()
 
-  beforeRouteUpdate(to, from, next) {
-    console.log('in beforeRouteUpdate this', this)
+onBeforeRouteUpdate((to, from, next) => {
+  console.log('in beforeRouteUpdate this', this)
     next(vm => {
       console.log('in next callback', vm)
     })
-  },
 })
 </script>
