@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { createFixedResolver } from './resolver-fixed'
+import {
+  createFixedResolver,
+  type EXPERIMENTAL_ResolverRecord_Matchable,
+} from './resolver-fixed'
 import { NO_MATCH_LOCATION } from './resolver-abstract'
 import {
   EmptyParams,
@@ -1288,7 +1291,7 @@ describe('fixed resolver', () => {
       })
 
       it('original path still resolves normally', () => {
-        const original = {
+        const original: EXPERIMENTAL_ResolverRecord_Matchable = {
           name: 'users',
           path: new MatcherPatternPathStatic('/users'),
         }
@@ -1305,7 +1308,7 @@ describe('fixed resolver', () => {
       })
 
       it('matched array entry has aliasOf pointing to original', () => {
-        const original = {
+        const original: EXPERIMENTAL_ResolverRecord_Matchable = {
           name: 'users',
           path: new MatcherPatternPathStatic('/users'),
         }
@@ -1366,11 +1369,11 @@ describe('fixed resolver', () => {
       })
 
       it('child alias resolves with parent in matched', () => {
-        const parent = {
+        const parent: EXPERIMENTAL_ResolverRecord_Matchable = {
           name: 'parent',
           path: new MatcherPatternPathStatic('/parent'),
         }
-        const child = {
+        const child: EXPERIMENTAL_ResolverRecord_Matchable = {
           name: 'child',
           path: new MatcherPatternPathStatic('/child'),
           parent,

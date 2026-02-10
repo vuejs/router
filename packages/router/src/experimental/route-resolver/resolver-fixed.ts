@@ -54,14 +54,14 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
    * Parent record. The parent can be a group or a matchable record.
    * It will be included in the `matched` array of a resolved location.
    */
-  parent?: EXPERIMENTAL_ResolverRecord | null // the parent can be matchable or not
+  parent?: EXPERIMENTAL_ResolverRecord_Base | null // the parent can be matchable or not
 
   /**
    * If this record is an alias of another record, this points to the original
    * record. Alias records are not added to the name map and resolve to the
    * original record's name.
    */
-  aliasOf?: EXPERIMENTAL_ResolverRecord | null
+  aliasOf?: EXPERIMENTAL_ResolverRecord_Base | null
 }
 
 /**
@@ -115,7 +115,7 @@ export interface EXPERIMENTAL_ResolverFixed<
 /**
  * Build the `matched` array of a record that includes all parent records from the root to the current one.
  */
-export function buildMatched<T extends EXPERIMENTAL_ResolverRecord>(
+export function buildMatched<T extends EXPERIMENTAL_ResolverRecord_Base>(
   record: T
 ): T[] {
   const matched: T[] = []
