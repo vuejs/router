@@ -1,5 +1,6 @@
 import { type ResolvedOptions } from '../options'
 import {
+  CONVENTION_OVERRIDE_NAME,
   createTreeNodeValue,
   escapeRegex,
   type TreeNodeValueOptions,
@@ -93,8 +94,9 @@ export class TreeNode {
     // _parent.vue is set on the current node to handle nesting
     // similar to nested.vue when we have a folder nested/
     if (segment === '_parent' && !tail) {
-      // a parent can't be matched
-      this.value.setOverride(filePath, { name: false })
+      // a parent can't be matched, equivalent to name: false unless
+      // overridden by the user
+      this.value.setOverride(CONVENTION_OVERRIDE_NAME, { name: false })
       this.value.components.set(viewName, filePath)
       return this
     }

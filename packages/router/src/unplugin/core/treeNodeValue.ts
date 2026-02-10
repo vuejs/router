@@ -39,6 +39,8 @@ export interface RouteRecordOverrideQueryParamOptions extends CustomRouteBlockQu
 
 export type SubSegment = string | TreePathParam
 
+// internal name used for overrides set by file-based conventions (e.g. _parent)
+export const CONVENTION_OVERRIDE_NAME = '@@convention'
 // internal name used for overrides done by the user at build time
 export const EDITS_OVERRIDE_NAME = '@@edits'
 
@@ -196,9 +198,10 @@ class _TreeNodeValueBase {
       .sort(([nameA], [nameB]) =>
         nameA === nameB
           ? 0
-          : // EDITS_OVERRIDE_NAME should always be last
-            nameA !== EDITS_OVERRIDE_NAME &&
-              (nameA < nameB || nameB === EDITS_OVERRIDE_NAME)
+          : // CONVENTION_OVERRIDE_NAME should always be first, EDITS_OVERRIDE_NAME should always be last
+            nameA === CONVENTION_OVERRIDE_NAME ||
+              (nameA !== EDITS_OVERRIDE_NAME &&
+                (nameA < nameB || nameB === EDITS_OVERRIDE_NAME))
             ? -1
             : 1
       )
