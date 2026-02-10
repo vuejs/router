@@ -8,6 +8,7 @@ import {
 } from './generateRouteResolver'
 import { ImportsMap } from '../core/utils'
 import { ParamParsersMap } from './generateParamParsers'
+import { generateAliasWarnings } from './generateAliasWarnings'
 
 const DEFAULT_OPTIONS = resolveOptions({})
 let DEFAULT_STATE: Parameters<typeof generateRouteRecord>[0]['state'] = {
@@ -1343,6 +1344,43 @@ describe('generateRouteResolver', () => {
       // Both records should be in the createFixedResolver array
       expect(resolver).toMatch(/createFixedResolver\(\[[\s\S]*__route_0/)
       expect(resolver).toMatch(/createFixedResolver\(\[[\s\S]*__route_1/)
+    })
+
+    it('warns on relative aliases', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('admin/users', 'admin/users.vue')
+      node.setCustomRouteBlock('admin/users.vue', { alias: ['users'] })
+
+      const warnings = generateAliasWarnings(tree)
+
+      expect(warnings).toContain('console.warn')
+      expect(warnings).toContain('Alias "users"')
+      expect(warnings).toContain('must be absolute')
+    })
+
+    it('does not warn on absolute aliases', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('users', 'users.vue')
+      node.setCustomRouteBlock('users.vue', { alias: ['/people'] })
+
+      const warnings = generateAliasWarnings(tree)
+
+      expect(warnings).toBe('')
+    })
+
+    it('warns on each relative alias individually', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('users', 'users.vue')
+      node.setCustomRouteBlock('users.vue', {
+        alias: ['people', '/members', 'folks'],
+      })
+
+      const warnings = generateAliasWarnings(tree)
+
+      expect(warnings).toContain('"people"')
+      expect(warnings).toContain('"folks"')
+      expect(warnings).not.toContain('"members"')
+      expect(warnings).not.toContain('"/members"')
     })
   })
 })

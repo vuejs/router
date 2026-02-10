@@ -21,6 +21,7 @@ import { EditableTreeNode } from './extendRoutes'
 import { ts } from '../utils'
 import { generateRouteResolver } from '../codegen/generateRouteResolver'
 import { generateDuplicatedRoutesWarnings } from '../codegen/generateDuplicateRoutesWarnings'
+import { generateAliasWarnings } from '../codegen/generateAliasWarnings'
 import { type FSWatcher, watch as fsWatch } from 'chokidar'
 import {
   generateParamParsersTypesDeclarations,
@@ -297,6 +298,7 @@ export function createRoutesContext(options: ResolvedOptions) {
     }
 
     const routeDupsWarns = generateDuplicatedRoutesWarnings(routeTree)
+    const aliasWarns = generateAliasWarnings(routeTree)
 
     const hmr = ts`
 export function handleHotUpdate(_router, _hotUpdateCallback) {
@@ -326,7 +328,7 @@ if (import.meta.hot) {
   })
 }`
 
-    const newAutoResolver = `${imports}${routeDupsWarns}\n${missingParserErrors}${resolverCode}\n${hmr}`
+    const newAutoResolver = `${imports}${routeDupsWarns}\n${aliasWarns}\n${missingParserErrors}${resolverCode}\n${hmr}`
 
     // prepend it to the code
     return newAutoResolver
