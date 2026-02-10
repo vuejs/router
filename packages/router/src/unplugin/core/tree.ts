@@ -147,8 +147,8 @@ export class TreeNode {
   }
 
   /**
-   * Saves a custom route block for a specific file path. The file path is used as a key. Some special file paths will
-   * have a lower or higher priority.
+   * Saves a custom route block for a specific file path. The file path is used
+   * as a key. Some special file paths will have a lower or higher priority.
    *
    * @param filePath - file path where the custom block is located
    * @param routeBlock - custom block to set
@@ -157,12 +157,7 @@ export class TreeNode {
     filePath: string,
     routeBlock: CustomRouteBlock | undefined
   ) {
-    // FIXME: No, we can't do this because we are adding stuff this way like aliases are never removed
-    // Use mergeOverride to preserve existing override properties (e.g. name: false for _parent routes)
-    // this.value.setOverride(filePath, routeBlock)
-    if (routeBlock) {
-      this.value.mergeOverride(filePath, routeBlock)
-    }
+    this.value.setOverride(filePath, routeBlock)
   }
 
   /**
@@ -270,6 +265,13 @@ export class TreeNode {
    */
   get fullPath() {
     return this.value.fullPath
+  }
+
+  /**
+   * Returns the alias of the node
+   */
+  get alias(): string[] {
+    return this.value.alias
   }
 
   /**

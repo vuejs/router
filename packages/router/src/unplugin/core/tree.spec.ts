@@ -814,6 +814,22 @@ describe('Tree', () => {
     expect(`"(home" is missing the closing ")"`).toHaveBeenWarned()
   })
 
+  it('overrides existing properties with setCustomRouteBlock', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+    const page = tree.insert('page', 'page.vue')
+    page.setCustomRouteBlock('page.vue', {
+      alias: ['/home'],
+      name: 'Page',
+    })
+    // same as editing the file
+    page.setCustomRouteBlock('page.vue', {
+      // we drop the name
+      alias: ['/other'],
+    })
+    expect(page.alias).toEqual(['/other'])
+    expect(page.name).toBe('/page')
+  })
+
   describe('path regexp', () => {
     function checkRegexp(
       path: string,
