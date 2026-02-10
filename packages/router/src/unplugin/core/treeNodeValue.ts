@@ -100,6 +100,13 @@ class _TreeNodeValueBase {
   }
 
   /**
+   * Aliases of the node if any.
+   */
+  get alias(): string[] {
+    return this.overrides.alias ?? []
+  }
+
+  /**
    * Full path of the node including parent nodes.
    */
   get fullPath(): string {
@@ -156,13 +163,20 @@ class _TreeNodeValueBase {
   }
 
   toString(): string {
+    let value = ''
     // index.vue (home).vue
     if (!this.pathSegment) {
-      return (
+      value +=
         '<index>' + (this.rawSegment === 'index' ? '' : ' ' + this.rawSegment)
-      )
+    } else {
+      value += this.pathSegment
     }
-    return this.pathSegment
+
+    if (this.alias.length) {
+      value += ` alias(${this.alias.join(', ')})`
+    }
+
+    return value
   }
 
   isParam(): this is TreeNodeValueParam {
