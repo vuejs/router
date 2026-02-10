@@ -157,7 +157,9 @@ export class TreeNode {
     filePath: string,
     routeBlock: CustomRouteBlock | undefined
   ) {
+    // FIXME: No, we can't do this because we are adding stuff this way like aliases are never removed
     // Use mergeOverride to preserve existing override properties (e.g. name: false for _parent routes)
+    // this.value.setOverride(filePath, routeBlock)
     if (routeBlock) {
       this.value.mergeOverride(filePath, routeBlock)
     }
