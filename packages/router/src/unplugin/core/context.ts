@@ -166,10 +166,10 @@ export function createRoutesContext(options: ResolvedOptions) {
 
   async function writeRouteInfoToNode(node: TreeNode, filePath: string) {
     const content = await fs.readFile(filePath, 'utf8')
-    // TODO: cache the result of parsing the SFC (in the extractDefinePageAndName) so the transform can reuse the parsing
-    node.hasDefinePage ||= content.includes('definePage')
     // TODO: track if it changed and to not always trigger HMR
     const definedPageInfo = extractDefinePageInfo(content, filePath)
+    // TODO: add a test that this can be set to true and then to false
+    node.hasDefinePage = definedPageInfo?.hasRemainingProperties ?? false
     // TODO: track if it changed and if generateRoutes should be called again
     const routeBlock = getRouteBlock(filePath, content, options)
     // TODO: should warn if hasDefinePage and customRouteBlock
