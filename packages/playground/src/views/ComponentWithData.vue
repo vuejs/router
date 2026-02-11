@@ -13,11 +13,13 @@ import { onBeforeRouteUpdate } from 'vue-router'
 const ComponentWithData = defineComponent({
   name: 'ComponentWithData',
   async setup() {
-    const data = reactive<{ other: string, fromApi: null | {message: string, time: number }}>({ other: 'old', fromApi: null })
+    const data = reactive<{
+      other: string
+      fromApi: null | { message: string; time: number }
+    }>({ other: 'old', fromApi: null })
 
-    onBeforeRouteUpdate(async (to, from, next) => {
+    onBeforeRouteUpdate(async () => {
       data.fromApi = await getData()
-      next()
     })
 
     data.fromApi = await getData()
@@ -30,9 +32,9 @@ const ComponentWithData = defineComponent({
     console.log('this in beforeRouteEnter', this)
     await delay(300)
     next(vm => {
-      console.log('got vm', vm);
+      console.log('got vm', vm)
       // Workaround for https://github.com/vuejs/router/issues/701
-      (vm as InstanceType<typeof ComponentWithData>).other = 'Hola'
+      ;(vm as InstanceType<typeof ComponentWithData>).other = 'Hola'
     })
   },
 })

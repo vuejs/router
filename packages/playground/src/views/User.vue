@@ -7,10 +7,7 @@ import { onBeforeRouteUpdate } from 'vue-router'
 
 defineProps<{ id: string }>()
 
-onBeforeRouteUpdate((to, from, next) => {
+onBeforeRouteUpdate(() => {
   console.log('in beforeRouteUpdate this', this)
-    next(vm => {
-      console.log('in next callback', vm)
-    })
 })
 </script>

@@ -28,10 +28,12 @@
 
 <script setup lang="ts">
 import { START_LOCATION, useLink, useRoute } from 'vue-router'
-import { computed, useAttrs,  } from 'vue'
+import { computed, useAttrs } from 'vue'
 import type { RouterLinkProps } from 'vue-router'
 
-const { replace, to, disabled } = defineProps<RouterLinkProps & {disabled?: boolean}>()
+const { replace, to, disabled } = defineProps<
+  RouterLinkProps & { disabled?: boolean }
+>()
 const attrs = useAttrs()
 
 const isExternalLink = computed(
