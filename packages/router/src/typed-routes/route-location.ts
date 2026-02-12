@@ -7,7 +7,11 @@ import type {
 } from '../types'
 import type { _LiteralUnion } from '../types/utils'
 // inlining the type as it avoids code splitting issues
-import type { RouteMap, RouteMapGeneric } from './route-map'
+import type {
+  RouteMap,
+  RouteMapGeneric,
+  RouteRecordInfoGeneric,
+} from './route-map'
 import type { Router } from '../router'
 import type { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import type { RouteRecordNameGeneric } from './route-records'
@@ -29,7 +33,7 @@ export interface RouteLocationGeneric
  * Helper to generate a type safe version of the {@link RouteLocation} type.
  */
 export interface RouteLocationTyped<
-  RouteMap extends RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric },
   Name extends keyof RouteMap,
 > extends RouteLocationGeneric {
   // Extract is needed because keyof can produce numbers
@@ -42,7 +46,8 @@ export interface RouteLocationTyped<
  * @internal
  */
 export type RouteLocationTypedList<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } =
+    RouteMapGeneric,
 > = {
   [N in keyof RouteMap]: RouteLocationTyped<RouteMap, N>
 }
@@ -62,7 +67,8 @@ export interface RouteLocationNormalizedGeneric extends _RouteLocationBase {
  * Helper to generate a type safe version of the {@link RouteLocationNormalized} type.
  */
 export interface RouteLocationNormalizedTyped<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } =
+    RouteMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap,
 > extends RouteLocationNormalizedGeneric {
   name: Extract<Name, string | symbol>
@@ -80,7 +86,8 @@ export interface RouteLocationNormalizedTyped<
  * @internal
  */
 export type RouteLocationNormalizedTypedList<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } =
+    RouteMapGeneric,
 > = {
   [N in keyof RouteMap]: RouteLocationNormalizedTyped<RouteMap, N>
 }
@@ -102,7 +109,8 @@ export interface RouteLocationNormalizedLoadedGeneric extends RouteLocationNorma
  * Helper to generate a type safe version of the {@link RouteLocationNormalizedLoaded} type.
  */
 export interface RouteLocationNormalizedLoadedTyped<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } =
+    RouteMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap,
 > extends RouteLocationNormalizedLoadedGeneric {
   name: Extract<Name, string | symbol>
@@ -115,7 +123,8 @@ export interface RouteLocationNormalizedLoadedTyped<
  * @internal
  */
 export type RouteLocationNormalizedLoadedTypedList<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } =
+    RouteMapGeneric,
 > = { [N in keyof RouteMap]: RouteLocationNormalizedLoadedTyped<RouteMap, N> }
 
 /**
@@ -135,7 +144,8 @@ export interface RouteLocationAsRelativeGeneric
  * Helper to generate a type safe version of the {@link RouteLocationAsRelative} type.
  */
 export interface RouteLocationAsRelativeTyped<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } =
+    RouteMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap,
 > extends RouteLocationAsRelativeGeneric {
   name?: Extract<Name, string | symbol>
@@ -147,7 +157,8 @@ export interface RouteLocationAsRelativeTyped<
  * @internal
  */
 export type RouteLocationAsRelativeTypedList<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } =
+    RouteMapGeneric,
 > = {
   [N in keyof RouteMap]: RouteLocationAsRelativeTyped<RouteMap, N>
 }
@@ -167,7 +178,8 @@ export interface RouteLocationAsPathGeneric
  * Helper to generate a type safe version of the {@link RouteLocationAsPath} type.
  */
 export interface RouteLocationAsPathTyped<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } =
+    RouteMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap,
 > extends RouteLocationAsPathGeneric {
   path: _LiteralUnion<RouteMap[Name]['path']>
@@ -181,7 +193,8 @@ export interface RouteLocationAsPathTyped<
  * @internal
  */
 export type RouteLocationAsPathTypedList<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } =
+    RouteMapGeneric,
 > = {
   [N in keyof RouteMap]: RouteLocationAsPathTyped<RouteMap, N>
 }
@@ -190,7 +203,8 @@ export type RouteLocationAsPathTypedList<
  * Helper to generate a type safe version of the {@link RouteLocationAsString} type.
  */
 export type RouteLocationAsStringTyped<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } =
+    RouteMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap,
 > = RouteMap[Name]['path']
 
@@ -199,7 +213,8 @@ export type RouteLocationAsStringTyped<
  * @internal
  */
 export type RouteLocationAsStringTypedList<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } =
+    RouteMapGeneric,
 > = {
   [N in keyof RouteMap]: RouteLocationAsStringTyped<RouteMap, N>
 }
@@ -218,7 +233,7 @@ export interface RouteLocationResolvedGeneric extends RouteLocationGeneric {
  * Helper to generate a type safe version of the {@link RouteLocationResolved} type.
  */
 export interface RouteLocationResolvedTyped<
-  RouteMap extends RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric },
   Name extends keyof RouteMap,
 > extends RouteLocationTyped<RouteMap, Name> {
   /**
@@ -232,7 +247,8 @@ export interface RouteLocationResolvedTyped<
  * @internal
  */
 export type RouteLocationResolvedTypedList<
-  RouteMap extends RouteMapGeneric = RouteMapGeneric,
+  RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } =
+    RouteMapGeneric,
 > = {
   [N in keyof RouteMap]: RouteLocationResolvedTyped<RouteMap, N>
 }
