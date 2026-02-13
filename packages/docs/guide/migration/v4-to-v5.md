@@ -120,7 +120,7 @@ import type { Options, EditableTreeNode } from 'vue-router/unplugin' // [!code +
 }
 ```
 
-### 3. Update tsconfig.json
+### 3. Update vite.config.ts and tsconfig.json
 
 It's recommended to move the generated types file inside `src/` and rename it to `route-map.d.ts`, as it's automatically included by most setups:
 
@@ -149,14 +149,14 @@ or to your `tsconfig.json`:
   "include": [
     "./typed-router.d.ts", // [!code --]
     "unplugin-vue-router/client", // [!code --]
-    "./route-map.d.ts", // [!code ++]
+    "./src/route-map.d.ts", // [!code ++]
   ],
 }
 ```
 
 ## Troubleshooting
 
-**Types not recognized:** Restart your TypeScript server and check that your generated types file (e.g., `route-map.d.ts`) is included in your tsconfig.
+**Types not recognized:** Restart your TypeScript server and check that your generated types file (e.g., `src/route-map.d.ts`) is included in your tsconfig.
 
 **Routes not generating:** Verify your `routesFolder` path and check file extensions.
 
