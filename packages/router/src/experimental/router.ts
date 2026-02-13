@@ -1078,8 +1078,25 @@ export function experimental_createRouter(
   function setupListeners() {
     // avoid setting up listeners twice due to an invalid first navigation
     if (removeHistoryListener) return
+
+    // process one popstate navigation at a time; correct any position drift after it resolves
+    let isProcessingPopstate = false
+    // track the latest position reported by the listener, used for drift detection
+    let lastKnownPosition: number | undefined
+
     removeHistoryListener = routerHistory.listen((to, _from, info) => {
       if (!router.listening) return
+
+      // track the latest position, even for ignored popstate events
+      lastKnownPosition = info.position
+
+      if (isProcessingPopstate) {
+        // a navigation guard is already processing, ignore this popstate
+        return
+      }
+
+      isProcessingPopstate = true
+
       // cannot be a redirect route because it was in history
       const toLocation = resolve(to) as RouteLocationNormalized
 
@@ -1099,12 +1116,32 @@ export function experimental_createRouter(
           ),
           true,
           toLocation
-        ).catch(noop)
+        )
+          .catch(noop)
+          .finally(() => {
+            isProcessingPopstate = false
+          })
         return
       }
 
       pendingLocation = toLocation
       const from = currentRoute.value
+
+      // position reported by this popstate event
+      const popstatePosition = info.position
+      // position to restore when the guard rejects
+      const revertPosition =
+        popstatePosition != null ? popstatePosition - info.delta : undefined
+
+      // prefer absolute revert when position is available; fallback to relative delta
+      function revertNavigation() {
+        if (revertPosition != null && lastKnownPosition != null) {
+          const absoluteDelta = revertPosition - lastKnownPosition
+          if (absoluteDelta !== 0) routerHistory.go(absoluteDelta, false)
+        } else {
+          routerHistory.go(-info.delta, false)
+        }
+      }
 
       // TODO: should be moved to web history?
       if (isBrowser) {
@@ -1171,10 +1208,7 @@ export function experimental_createRouter(
             // avoid the then branch
             return Promise.reject()
           }
-          // do not restore history on unknown direction
-          if (info.delta) {
-            routerHistory.go(-info.delta, false)
-          }
+          if (info.delta) revertNavigation()
           // unrecognized error, transfer to the global handler
           return triggerError(error, toLocation, from)
         })
@@ -1192,11 +1226,11 @@ export function experimental_createRouter(
           if (failure) {
             if (
               info.delta &&
-              // a new navigation has been triggered, so we do not want to revert, that will change the current history
-              // entry while a different route is displayed
+              // do not revert if a new navigation was triggered, as it would
+              // overwrite the entry of the in-progress navigation
               !isNavigationFailure(failure, ErrorTypes.NAVIGATION_CANCELLED)
             ) {
-              routerHistory.go(-info.delta, false)
+              revertNavigation()
             } else if (
               info.type === NavigationType.pop &&
               isNavigationFailure(
@@ -1208,6 +1242,15 @@ export function experimental_createRouter(
               // it's like a push but lacks the information of the direction
               routerHistory.go(-1, false)
             }
+          } else {
+            // correct history drift caused by ignored popstate events
+            if (
+              popstatePosition != null &&
+              lastKnownPosition != null &&
+              lastKnownPosition !== popstatePosition
+            ) {
+              routerHistory.go(popstatePosition - lastKnownPosition, false)
+            }
           }
 
           triggerAfterEach(
@@ -1218,6 +1261,9 @@ export function experimental_createRouter(
         })
         // avoid warnings in the console about uncaught rejections, they are logged by triggerErrors
         .catch(noop)
+        .finally(() => {
+          isProcessingPopstate = false
+        })
     })
   }
 

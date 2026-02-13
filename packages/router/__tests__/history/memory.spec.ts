@@ -111,6 +111,7 @@ describe('Memory history', () => {
       direction: 'back',
       delta: -1,
       type: 'pop',
+      position: 0,
     })
     history.go(1)
     expect(spy).toHaveBeenCalledTimes(2)
@@ -118,6 +119,7 @@ describe('Memory history', () => {
       direction: 'forward',
       delta: 1,
       type: 'pop',
+      position: 1,
     })
   })
 

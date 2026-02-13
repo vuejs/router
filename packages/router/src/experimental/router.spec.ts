@@ -48,7 +48,7 @@ import {
   loadRouteLocation,
 } from '../index'
 import { NavigationFailureType } from '../errors'
-import { components, tick, nextNavigation } from '../../__tests__/utils'
+import { components, ticks, nextNavigation } from '../../__tests__/utils'
 import { START_LOCATION_NORMALIZED } from '../location'
 import { vi, describe, expect, it } from 'vitest'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
@@ -856,56 +856,134 @@ describe('Experimental Router', () => {
       await checkNavigationCancelledOnPush(undefined)
     })
 
-    async function checkNavigationCancelledOnPopstate(
-      target?: RouteLocationRaw | false
-    ) {
+    it('serializes popstate: second go is ignored, first resolves normally (from history)', async () => {
+      const [p1, r1] = fakePromise()
+      const history = createMemoryHistory()
+      const resolver = createFixedResolver(experimentalRoutes)
+      const router = experimental_createRouter({ history, resolver })
+
+      await router.push('/foo')
+      await router.push('/p/a')
+      await router.push('/p/b')
+
+      router.beforeEach(async (to, from) => {
+        if (to.name !== 'Param') return
+        if (from.fullPath === '/p/b') {
+          await p1
+        }
+      })
+
+      // first go(-1) starts navigation to /p/a, second is ignored
+      history.go(-1)
+      history.go(-1)
+
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
+
+      r1()
+      // guard resolve + finalizeNavigation + drift correction
+      await ticks(3)
+
+      // Guard resolved, drift corrected to /p/a
+      expect(router.currentRoute.value.fullPath).toBe('/p/a')
+    })
+
+    it('serializes popstate: reverts to confirmed position when guard returns false (from history)', async () => {
+      const [p1, r1] = fakePromise()
+      const history = createMemoryHistory()
+      const resolver = createFixedResolver(experimentalRoutes)
+      const router = experimental_createRouter({ history, resolver })
+
+      await router.push('/foo')
+      await router.push('/p/a')
+      await router.push('/p/b')
+
+      router.beforeEach(async (to, from) => {
+        if (to.name !== 'Param') return true
+        if (from.fullPath === '/p/b') {
+          await p1
+          return false
+        }
+        return true
+      })
+
+      history.go(-1)
+      history.go(-1)
+
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
+
+      r1()
+      await ticks(3)
+
+      // Guard rejected, should revert to /p/b (confirmed position)
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
+    })
+
+    it('serializes popstate: handles guard redirect during rapid back (from history)', async () => {
+      const [p1, r1] = fakePromise()
+      const history = createMemoryHistory()
+      const resolver = createFixedResolver(experimentalRoutes)
+      const router = experimental_createRouter({ history, resolver })
+
+      await router.push('/foo')
+      await router.push('/p/a')
+      await router.push('/p/b')
+
+      router.beforeEach(async (to, from) => {
+        if (to.name !== 'Param') return true
+        if (from.fullPath === '/p/b' && to.fullPath === '/p/a') {
+          await p1
+          return '/p/other-place'
+        }
+        return true
+      })
+
+      history.go(-1)
+      history.go(-1)
+
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
+
+      r1()
+      await ticks(3)
+
+      expect(router.currentRoute.value.fullPath).toBe('/p/other-place')
+    })
+
+    it('allows navigation after a cancelled rapid-popstate sequence (from history)', async () => {
       const [p1, r1] = fakePromise()
       const [p2, r2] = fakePromise()
       const history = createMemoryHistory()
       const resolver = createFixedResolver(experimentalRoutes)
       const router = experimental_createRouter({ history, resolver })
 
-      // navigate first to add entries to the history stack
       await router.push('/foo')
       await router.push('/p/a')
       await router.push('/p/b')
 
-      router.beforeEach(async (to, from) => {
-        if (to.name !== 'Param' && to.name !== 'Foo') return
-        if (to.fullPath === '/foo') {
+      let guardCallCount = 0
+      router.beforeEach(async to => {
+        if (to.name !== 'Param') return true
+        guardCallCount++
+        if (guardCallCount === 1 && to.fullPath === '/p/a') {
           await p1
-          return
-        } else if (from.fullPath === '/p/b') {
-          await p2
-          // @ts-ignore: same as function above
-          return target
-        } else {
-          return
+          return false
         }
+        if (guardCallCount === 2 && to.fullPath === '/p/a') {
+          await p2
+        }
+        return true
       })
 
-      // trigger to history.back()
+      // First attempt: rejected
       history.go(-1)
-      history.go(-1)
-
-      expect(router.currentRoute.value.fullPath).toBe('/p/b')
-      // resolves the last call to history.back() first
-      // so we end up on /p/initial
       r1()
-      await tick()
-      expect(router.currentRoute.value.fullPath).toBe('/foo')
-      // resolves the pending navigation, this should be cancelled
+      await ticks(3)
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
+
+      // Second attempt: approved
+      history.go(-1)
       r2()
-      await tick()
-      expect(router.currentRoute.value.fullPath).toBe('/foo')
-    }
-
-    it('cancels pending navigations if a newer one is finished on user navigation (from history)', async () => {
-      await checkNavigationCancelledOnPopstate(undefined)
-    })
-
-    it('cancels pending in-guard navigations if a newer one is finished on user navigation (from history)', async () => {
-      await checkNavigationCancelledOnPopstate('/p/other-place')
+      await ticks(3)
+      expect(router.currentRoute.value.fullPath).toBe('/p/a')
     })
 
     it('cancels navigation abort if a newer one is finished on user navigation (from history)', async () => {

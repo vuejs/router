@@ -48,6 +48,7 @@ export interface NavigationInformation {
   type: NavigationType
   direction: NavigationDirection
   delta: number
+  position?: number
 }
 
 export interface NavigationCallback {
