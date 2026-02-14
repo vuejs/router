@@ -685,12 +685,12 @@ describe('RouterMatcher.resolve', () => {
       assertRecordMatch(
         { path: '/:a?', components, name: 'a' },
         { path: '/' },
-        { path: '/', params: { a: '' }, name: 'a' }
+        { path: '/', params: {}, name: 'a' }
       )
       assertRecordMatch(
         { path: '/a/:a?', components, name: 'a' },
         { path: '/a/' },
-        { path: '/a/', params: { a: '' }, name: 'a' }
+        { path: '/a/', params: {}, name: 'a' }
       )
     })
 
