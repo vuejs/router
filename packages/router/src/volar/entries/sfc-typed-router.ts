@@ -75,10 +75,7 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
               useRouteNameTypeParam
             )
           } else {
-            const start: number = (ts as any).getTokenPosOfNode(
-              node,
-              sfc.scriptSetup!.ast
-            )
+            const { start, end } = getStartEnd(node, sfc.scriptSetup!.ast)
             replaceSourceRange(
               embeddedCode.content,
               sfc.scriptSetup!.name,
@@ -89,8 +86,8 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
             replaceSourceRange(
               embeddedCode.content,
               sfc.scriptSetup!.name,
-              node.end,
-              node.end,
+              end,
+              end,
               ` as ReturnType<typeof useRoute${useRouteNameTypeParam}>)`
             )
           }
@@ -119,6 +116,13 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
         augmentVlsCtx(embeddedCode.content, vlsCtxAugmentations)
       }
     },
+  }
+
+  function getStartEnd(node: ts.Node, ast: ts.SourceFile) {
+    return {
+      start: (ts as any).getTokenPosOfNode(node, ast) as number,
+      end: node.end,
+    }
   }
 }
 
