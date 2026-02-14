@@ -149,7 +149,7 @@ or to your `tsconfig.json`:
   "include": [
     "./typed-router.d.ts", // [!code --]
     "unplugin-vue-router/client", // [!code --]
-    "./src/route-map.d.ts", // [!code ++]
+    // ...
   ],
 }
 ```
