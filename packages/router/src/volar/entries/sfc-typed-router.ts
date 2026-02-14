@@ -75,7 +75,10 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
               useRouteNameTypeParam
             )
           } else {
-            const start = node.getStart(sfc.scriptSetup!.ast)
+            const start: number = (ts as any).getTokenPosOfNode(
+              node,
+              sfc.scriptSetup!.ast
+            )
             replaceSourceRange(
               embeddedCode.content,
               sfc.scriptSetup!.name,
