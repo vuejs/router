@@ -20,10 +20,12 @@ export function getRouteBlock(
 export interface CustomRouteBlock extends Partial<
   Omit<
     RouteRecordRaw,
-    'components' | 'component' | 'children' | 'beforeEnter' | 'name'
+    'components' | 'component' | 'children' | 'beforeEnter' | 'name' | 'alias'
   >
 > {
   name?: string | undefined | false
+
+  alias?: string[]
 
   params?: {
     path?: Record<string, string>

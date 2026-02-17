@@ -732,6 +732,49 @@ exports[`generateRouteRecord > route block > adds meta data 1`] = `
 ]"
 `;
 
+exports[`generateRouteRecord > route block > handles a single static alias 1`] = `
+"[
+  {
+    path: '/users',
+    name: '/users',
+    component: () => import('users.vue'),
+    alias: ["/people"],
+    /* no children */
+  }
+]"
+`;
+
+exports[`generateRouteRecord > route block > handles dynamic alias path 1`] = `
+"[
+  {
+    path: '/users',
+    /* internal name: '/users' */
+    /* no component */
+    children: [
+      {
+        path: ':id',
+        name: '/users/[id]',
+        component: () => import('users/[id].vue'),
+        alias: ["/people/:id"],
+        /* no children */
+      }
+    ],
+  }
+]"
+`;
+
+exports[`generateRouteRecord > route block > handles multiple aliases 1`] = `
+"[
+  {
+    path: '/users',
+    name: '/users',
+    component: () => import('users.vue'),
+    alias: ["/people","/members"],
+    /* no children */
+  }
+]"
+`;
+
 exports[`generateRouteRecord > route block > handles named views with empty route blocks 1`] = `
 "[
   {
@@ -746,6 +789,18 @@ exports[`generateRouteRecord > route block > handles named views with empty rout
       "auth": true,
       "title": "Home"
     },
+  }
+]"
+`;
+
+exports[`generateRouteRecord > route block > merges alias properties 1`] = `
+"[
+  {
+    path: '/',
+    name: '/',
+    component: () => import('index.vue'),
+    alias: ["/one","/two","/three"],
+    /* no children */
   }
 ]"
 `;

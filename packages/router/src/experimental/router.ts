@@ -193,12 +193,6 @@ export interface EXPERIMENTAL_RouteRecord_Base extends EXPERIMENTAL_ResolverReco
    */
   redirect?: RouteRecordRedirectOption
 
-  // TODO:
-  /**
-   * References another record if this record is an alias of it.
-   */
-  aliasOf?: this
-
   // TODO: deprecate, expose utils to compare resolved routes, and document
   // how to create a meta field that does the same
   /**
@@ -224,6 +218,11 @@ export interface EXPERIMENTAL_RouteRecord_Base extends EXPERIMENTAL_ResolverReco
    */
   parent?: EXPERIMENTAL_RouteRecordNormalized | null
 
+  /**
+   * References another record if this record is an alias of it.
+   */
+  aliasOf?: EXPERIMENTAL_RouteRecordNormalized | null
+
   // TODO:
   /**
    * Allow passing down params as props to the component rendered by `router-view`.
@@ -235,12 +234,10 @@ export interface EXPERIMENTAL_RouteRecord_Redirect
   // preserve the values from the type EXPERIMENTAL_ResolverRecord_Matchable
   extends
     Omit<EXPERIMENTAL_RouteRecord_Base, 'name' | 'path'>,
-    EXPERIMENTAL_ResolverRecord_Matchable {
+    Omit<EXPERIMENTAL_ResolverRecord_Matchable, 'parent' | 'aliasOf'> {
   components?: Record<string, RawRouteComponent>
 
   redirect: RouteRecordRedirectOption // must be defined
-
-  parent?: EXPERIMENTAL_RouteRecordNormalized | null // must be redifined because of ResolverRecord_Matchable
 }
 
 export interface EXPERIMENTAL_RouteRecord_Group
@@ -250,22 +247,18 @@ export interface EXPERIMENTAL_RouteRecord_Group
       // preserve the values from the type EXPERIMENTAL_ResolverRecord_Group
       'name' | 'path' | 'query' | 'hash'
     >,
-    EXPERIMENTAL_ResolverRecord_Group {
+    Omit<EXPERIMENTAL_ResolverRecord_Group, 'parent' | 'aliasOf'> {
   components?: Record<string, RawRouteComponent>
-
-  parent?: EXPERIMENTAL_RouteRecordNormalized | null // must be redifined because of ResolverRecord_Matchable
 }
 
 export interface EXPERIMENTAL_RouteRecord_Components
   // preserve the values from the type EXPERIMENTAL_ResolverRecord_Matchable
   extends
     Omit<EXPERIMENTAL_RouteRecord_Base, 'name' | 'path'>,
-    EXPERIMENTAL_ResolverRecord_Matchable {
+    Omit<EXPERIMENTAL_ResolverRecord_Matchable, 'parent' | 'aliasOf'> {
   components: Record<string, RawRouteComponent>
 
   redirect?: never
-
-  parent?: EXPERIMENTAL_RouteRecordNormalized | null // must be redifined because of ResolverRecord_Matchable
 }
 
 export type EXPERIMENTAL_RouteRecord_Matchable =

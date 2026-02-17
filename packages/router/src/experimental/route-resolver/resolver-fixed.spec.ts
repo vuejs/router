@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { createFixedResolver } from './resolver-fixed'
+import {
+  createFixedResolver,
+  type EXPERIMENTAL_ResolverRecord_Matchable,
+} from './resolver-fixed'
 import { NO_MATCH_LOCATION } from './resolver-abstract'
 import {
   EmptyParams,
@@ -1216,6 +1219,177 @@ describe('fixed resolver', () => {
           params: { id: 123 },
           matched: [parentRecord, childRecord],
         })
+      })
+    })
+
+    describe('aliases', () => {
+      // A matcher for /people/:id to use as an alias path
+      const PEOPLE_ID_PATH_PATTERN_MATCHER: MatcherPatternPath<{
+        id: number
+      }> = {
+        match(value) {
+          const match = value.match(/^\/people\/(\d+)$/)
+          if (!match?.[1]) miss()
+          const id = Number(match[1])
+          if (Number.isNaN(id)) miss()
+          return { id }
+        },
+        build({ id }) {
+          return `/people/${id}`
+        },
+      }
+
+      it('excludes aliasOf records from name map', () => {
+        const original = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/users'),
+        }
+        const alias = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/people'),
+          aliasOf: original,
+        }
+        const resolver = createFixedResolver([original, alias])
+
+        expect(resolver.getRoute('users')).toBe(original)
+      })
+
+      it('resolves alias path to the original route name', () => {
+        const original = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/users'),
+        }
+        const alias = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/people'),
+          aliasOf: original,
+        }
+        const resolver = createFixedResolver([original, alias])
+
+        expect(resolver.resolve({ path: '/people' })).toMatchObject({
+          name: 'users',
+          path: '/people',
+        })
+      })
+
+      it('resolves by name using original path, not alias', () => {
+        const original = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/users'),
+        }
+        const alias = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/people'),
+          aliasOf: original,
+        }
+        const resolver = createFixedResolver([original, alias])
+
+        expect(resolver.resolve({ name: 'users', params: {} })).toMatchObject({
+          name: 'users',
+          path: '/users',
+        })
+      })
+
+      it('original path still resolves normally', () => {
+        const original: EXPERIMENTAL_ResolverRecord_Matchable = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/users'),
+        }
+        const alias = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/people'),
+          aliasOf: original,
+        }
+        const resolver = createFixedResolver([original, alias])
+
+        const result = resolver.resolve({ path: '/users' })
+        expect(result.name).toBe('users')
+        expect(result.matched[0].aliasOf).toBeUndefined()
+      })
+
+      it('matched array entry has aliasOf pointing to original', () => {
+        const original: EXPERIMENTAL_ResolverRecord_Matchable = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/users'),
+        }
+        const alias = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/people'),
+          aliasOf: original,
+        }
+        const resolver = createFixedResolver([original, alias])
+
+        const result = resolver.resolve({ path: '/people' })
+        expect(result.matched).toHaveLength(1)
+        expect(result.matched[0].aliasOf).toBe(original)
+      })
+
+      it('alias with dynamic params resolves correctly', () => {
+        const original = {
+          name: 'user-detail',
+          path: USER_ID_PATH_PATTERN_MATCHER,
+        }
+        const alias = {
+          name: 'user-detail',
+          path: PEOPLE_ID_PATH_PATTERN_MATCHER,
+          aliasOf: original,
+        }
+        const resolver = createFixedResolver([original, alias])
+
+        expect(resolver.resolve({ path: '/people/42' })).toMatchObject({
+          name: 'user-detail',
+          params: { id: 42 },
+          path: '/people/42',
+        })
+      })
+
+      it('supports multiple aliases', () => {
+        const original = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/users'),
+        }
+        const alias1 = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/people'),
+          aliasOf: original,
+        }
+        const alias2 = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/members'),
+          aliasOf: original,
+        }
+        const resolver = createFixedResolver([original, alias1, alias2])
+
+        expect(resolver.resolve({ path: '/people' })).toMatchObject({
+          name: 'users',
+        })
+        expect(resolver.resolve({ path: '/members' })).toMatchObject({
+          name: 'users',
+        })
+      })
+
+      it('child alias resolves with parent in matched', () => {
+        const parent: EXPERIMENTAL_ResolverRecord_Matchable = {
+          name: 'parent',
+          path: new MatcherPatternPathStatic('/parent'),
+        }
+        const child: EXPERIMENTAL_ResolverRecord_Matchable = {
+          name: 'child',
+          path: new MatcherPatternPathStatic('/child'),
+          parent,
+        }
+        const childAlias = {
+          name: 'child',
+          path: new MatcherPatternPathStatic('/child-alias'),
+          parent,
+          aliasOf: child,
+        }
+        const resolver = createFixedResolver([parent, child, childAlias])
+
+        const result = resolver.resolve({ path: '/child-alias' })
+        expect(result.matched).toHaveLength(2)
+        expect(result.matched[0]).toBe(parent)
+        expect(result.matched[1].aliasOf).toBe(child)
       })
     })
   })

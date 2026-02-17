@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { defineComponent, inject, provide } from 'vue'
 
-const props = defineProps<{id: string}>()
+const props = defineProps<{ id: string }>()
 
 const level = inject('level', 1)
 provide('level', level + 1)

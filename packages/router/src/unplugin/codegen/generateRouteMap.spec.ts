@@ -827,6 +827,39 @@ describe('generateRouteNamedMap', () => {
     `)
   })
 
+  it('excludes _parent routes from route map after setCustomRouteBlock', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('nested/_parent', 'nested/_parent.vue')
+    tree.insert('nested/index', 'nested/index.vue')
+    tree.insert('nested/other', 'nested/other.vue')
+
+    // Simulate what context.ts:writeRouteInfoToNode does
+    const nestedNode = tree.children.get('nested')!
+    nestedNode.setCustomRouteBlock('nested/_parent.vue', {})
+
+    // Should NOT contain '/nested' entry — _parent convention override persists
+    expect(
+      formatExports(generateRouteNamedMap(tree, DEFAULT_OPTIONS, new Map()))
+    ).toMatchInlineSnapshot(`
+      "export interface RouteNamedMap {
+        '/nested/': RouteRecordInfo<
+          '/nested/',
+          '/nested',
+          Record<never, never>,
+          Record<never, never>,
+          | never
+        >,
+        '/nested/other': RouteRecordInfo<
+          '/nested/other',
+          '/nested/other',
+          Record<never, never>,
+          Record<never, never>,
+          | never
+        >,
+      }"
+    `)
+  })
+
   it('excludes routes with empty names from route map', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('parent', 'parent.vue')

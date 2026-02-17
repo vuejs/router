@@ -302,28 +302,47 @@ describe('generateRouteRecord', () => {
       expect(generateRouteRecordSimple(tree)).toMatchSnapshot()
     })
 
-    // FIXME: allow aliases
-    it.todo('merges alias properties', async () => {
+    it('merges alias properties', async () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
       const node = tree.insert('index', 'index.vue')
       node.setCustomRouteBlock('index', {
-        alias: '/one',
+        alias: ['/one'],
       })
       node.setCustomRouteBlock('index@named', {
         alias: ['/two', '/three'],
       })
 
-      expect(generateRouteRecordSimple(tree)).toMatchInlineSnapshot(`
-        "[
-          {
-            path: '/',
-            name: '/',
-            component: () => import('index'),
-            /* no props */
-            /* no children */
-          }
-        ]"
-      `)
+      expect(generateRouteRecordSimple(tree)).toMatchSnapshot()
+    })
+
+    it('handles a single static alias', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('users', 'users.vue')
+      node.setCustomRouteBlock('users', {
+        alias: ['/people'],
+      })
+
+      expect(generateRouteRecordSimple(tree)).toMatchSnapshot()
+    })
+
+    it('handles multiple aliases', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('users', 'users.vue')
+      node.setCustomRouteBlock('users', {
+        alias: ['/people', '/members'],
+      })
+
+      expect(generateRouteRecordSimple(tree)).toMatchSnapshot()
+    })
+
+    it('handles dynamic alias path', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('users/[id]', 'users/[id].vue')
+      node.setCustomRouteBlock('users/[id]', {
+        alias: ['/people/:id'],
+      })
+
+      expect(generateRouteRecordSimple(tree)).toMatchSnapshot()
     })
 
     it('merges deep meta properties', async () => {

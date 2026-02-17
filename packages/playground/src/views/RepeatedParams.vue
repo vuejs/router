@@ -28,5 +28,4 @@ const moreNesting = computed(() => {
 
   return { params: { a } }
 })
-
 </script>

@@ -102,7 +102,10 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
               !targetArg.dotDotDotToken
             ) {
               const source = sfc.scriptSetup!.name
-              const start = targetArg.name.getStart(sfc.scriptSetup!.ast)
+              const { start, end } = getStartEnd(
+                targetArg.name,
+                sfc.scriptSetup!.ast
+              )
               const token = Symbol()
               replaceSourceRange(
                 embeddedCode.content,
@@ -120,8 +123,8 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
               replaceSourceRange(
                 embeddedCode.content,
                 source,
-                targetArg.name.end,
-                targetArg.name.end,
+                end,
+                end,
                 ` = {} as any }`,
                 [``, source, start, { __combineToken: token }],
                 `: Record<string, any> & { key?: ReturnType<typeof import('vue-router').useRoute${useRouteNameTypeParam}> }`
@@ -144,7 +147,7 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
               useRouteNameTypeParam
             )
           } else {
-            const start = node.getStart(sfc.scriptSetup!.ast)
+            const { start, end } = getStartEnd(node, sfc.scriptSetup!.ast)
             replaceSourceRange(
               embeddedCode.content,
               sfc.scriptSetup!.name,
@@ -155,8 +158,8 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
             replaceSourceRange(
               embeddedCode.content,
               sfc.scriptSetup!.name,
-              node.end,
-              node.end,
+              end,
+              end,
               ` as ReturnType<typeof useRoute${useRouteNameTypeParam}>)`
             )
           }
@@ -185,6 +188,13 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
         augmentVlsCtx(embeddedCode.content, vlsCtxAugmentations)
       }
     },
+  }
+
+  function getStartEnd(node: ts.Node, ast: ts.SourceFile) {
+    return {
+      start: (ts as any).getTokenPosOfNode(node, ast) as number,
+      end: node.end,
+    }
   }
 }
 

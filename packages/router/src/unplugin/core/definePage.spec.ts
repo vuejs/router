@@ -183,6 +183,7 @@ definePage({
     expect(extractDefinePageInfo(sampleCode, 'src/pages/basic.vue')).toEqual({
       name: 'custom',
       path: '/custom',
+      hasRemainingProperties: false,
     })
   })
 
@@ -217,6 +218,7 @@ definePage({
     expect(
       extractDefinePageInfo(codeWithAllParams, 'src/pages/test.vue')
     ).toEqual({
+      hasRemainingProperties: false,
       params: {
         path: {
           userId: 'int',
@@ -240,6 +242,125 @@ definePage({
           },
         },
       },
+    })
+  })
+
+  it('extracts alias as a string', () => {
+    const code = vue`
+<script setup>
+definePage({
+  alias: '/other',
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({
+      alias: ['/other'],
+      hasRemainingProperties: false,
+    })
+  })
+
+  it('extracts alias as an array of strings', () => {
+    const code = vue`
+<script setup>
+definePage({
+  alias: ['/a', '/b'],
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({
+      alias: ['/a', '/b'],
+      hasRemainingProperties: false,
+    })
+  })
+
+  it('warns on invalid alias (number)', () => {
+    const code = vue`
+<script setup>
+definePage({
+  alias: 123,
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({
+      hasRemainingProperties: false,
+    })
+    expect(
+      'route alias must be a string literal or an array of string literals'
+    ).toHaveBeenWarned()
+  })
+
+  it('warns on invalid alias (variable)', () => {
+    const code = vue`
+<script setup>
+const someVar = '/other'
+definePage({
+  alias: someVar,
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({
+      hasRemainingProperties: false,
+    })
+    expect(
+      'route alias must be a string literal or an array of string literals'
+    ).toHaveBeenWarned()
+  })
+
+  it('filters non-string elements from alias array', () => {
+    const code = vue`
+<script setup>
+definePage({
+  alias: ['/a', 123, '/b'],
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({
+      alias: ['/a', '/b'],
+      hasRemainingProperties: false,
+    })
+
+    expect(
+      `route alias array must only contain string literals.`
+    ).toHaveBeenWarned()
+  })
+
+  describe('hasRemainingProperties', () => {
+    it('is false when only name/path/alias/params are present', () => {
+      const code = vue`
+<script setup>
+definePage({
+  name: 'home',
+  path: '/home',
+  alias: ['/'],
+  params: { path: { id: 'int' } },
+})
+</script>
+`
+      const result = extractDefinePageInfo(code, 'src/pages/test.vue')
+      expect(result?.hasRemainingProperties).toBe(false)
+    })
+
+    it('is true when meta is present', () => {
+      const code = vue`
+<script setup>
+definePage({
+  name: 'home',
+  meta: { requiresAuth: true },
+})
+</script>
+`
+      const result = extractDefinePageInfo(code, 'src/pages/test.vue')
+      expect(result?.hasRemainingProperties).toBe(true)
+    })
+
+    it('is false for empty definePage object', () => {
+      const code = vue`
+<script setup>
+definePage({})
+</script>
+`
+      const result = extractDefinePageInfo(code, 'src/pages/test.vue')
+      expect(result?.hasRemainingProperties).toBe(false)
     })
   })
 
@@ -315,6 +436,7 @@ export default {
     ).toEqual({
       name: 'custom',
       path: '/custom',
+      hasRemainingProperties: false,
     })
   })
 

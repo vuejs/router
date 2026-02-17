@@ -14,6 +14,7 @@ import type {
   ObjectProperty,
   Program,
   Statement,
+  StringLiteral,
 } from '@babel/types'
 import { generate } from '@babel/generator'
 import { walkAST } from 'ast-walker-scope'
@@ -213,7 +214,13 @@ type DefinePageParamsInfo = NonNullable<CustomRouteBlock['params']>
 export interface DefinePageInfo {
   name?: string | false
   path?: string
+  alias?: string[]
   params?: CustomRouteBlock['params']
+  /**
+   * Whether definePage has properties beyond the statically extracted ones
+   * (name, path, alias, params)
+   */
+  hasRemainingProperties: boolean
 }
 
 /**
@@ -264,7 +271,7 @@ export function extractDefinePageInfo(
     )
   }
 
-  const routeInfo: DefinePageInfo = {}
+  const routeInfo: DefinePageInfo = { hasRemainingProperties: false }
 
   for (const prop of routeRecord.properties) {
     if (prop.type === 'ObjectProperty' && prop.key.type === 'Identifier') {
@@ -286,10 +293,14 @@ export function extractDefinePageInfo(
         } else {
           routeInfo.path = prop.value.value
         }
+      } else if (prop.key.name === 'alias') {
+        routeInfo.alias = extractRouteAlias(prop.value, id)
       } else if (prop.key.name === 'params') {
         if (prop.value.type === 'ObjectExpression') {
           routeInfo.params = extractParamsInfo(prop.value, id)
         }
+      } else {
+        routeInfo.hasRemainingProperties = true
       }
     }
   }
@@ -418,23 +429,33 @@ function extractPathParams(
   return pathParams
 }
 
-// TODO: use
 export function extractRouteAlias(
   aliasValue: ObjectProperty['value'],
   id: string
-): string[] | void {
+): string[] | undefined {
   if (
     aliasValue.type !== 'StringLiteral' &&
     aliasValue.type !== 'ArrayExpression'
   ) {
-    warn(`route alias must be a string literal. Found in "${id}".`)
+    warn(
+      `route alias must be a string literal or an array of string literals. Found in "${id}".`
+    )
   } else {
     return aliasValue.type === 'StringLiteral'
       ? [aliasValue.value]
       : aliasValue.elements
-          .filter(node => node?.type === 'StringLiteral')
+          .filter((node): node is StringLiteral => {
+            if (node?.type === 'StringLiteral') {
+              return true
+            }
+            warn(
+              `route alias array must only contain string literals. Found ${node?.type ? `"${node.type}" ` : ''}in "${id}".`
+            )
+            return false
+          })
           .map(el => el.value)
   }
+  return undefined
 }
 
 const getIdentifiers = (stmts: Statement[]) => {

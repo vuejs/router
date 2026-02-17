@@ -21,6 +21,7 @@ import { EditableTreeNode } from './extendRoutes'
 import { ts } from '../utils'
 import { generateRouteResolver } from '../codegen/generateRouteResolver'
 import { generateDuplicatedRoutesWarnings } from '../codegen/generateDuplicateRoutesWarnings'
+import { generateAliasWarnings } from '../codegen/generateAliasWarnings'
 import { type FSWatcher, watch as fsWatch } from 'chokidar'
 import {
   generateParamParsersTypesDeclarations,
@@ -166,10 +167,10 @@ export function createRoutesContext(options: ResolvedOptions) {
 
   async function writeRouteInfoToNode(node: TreeNode, filePath: string) {
     const content = await fs.readFile(filePath, 'utf8')
-    // TODO: cache the result of parsing the SFC (in the extractDefinePageAndName) so the transform can reuse the parsing
-    node.hasDefinePage ||= content.includes('definePage')
     // TODO: track if it changed and to not always trigger HMR
     const definedPageInfo = extractDefinePageInfo(content, filePath)
+    // TODO: add a test that this can be set to true and then to false
+    node.hasDefinePage = definedPageInfo?.hasRemainingProperties ?? false
     // TODO: track if it changed and if generateRoutes should be called again
     const routeBlock = getRouteBlock(filePath, content, options)
     // TODO: should warn if hasDefinePage and customRouteBlock
@@ -297,6 +298,7 @@ export function createRoutesContext(options: ResolvedOptions) {
     }
 
     const routeDupsWarns = generateDuplicatedRoutesWarnings(routeTree)
+    const aliasWarns = generateAliasWarnings(routeTree)
 
     const hmr = ts`
 export function handleHotUpdate(_router, _hotUpdateCallback) {
@@ -326,7 +328,7 @@ if (import.meta.hot) {
   })
 }`
 
-    const newAutoResolver = `${imports}${routeDupsWarns}\n${missingParserErrors}${resolverCode}\n${hmr}`
+    const newAutoResolver = `${imports}${routeDupsWarns}\n${aliasWarns}\n${missingParserErrors}${resolverCode}\n${hmr}`
 
     // prepend it to the code
     return newAutoResolver
