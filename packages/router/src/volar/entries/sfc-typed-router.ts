@@ -120,6 +120,7 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
 
   function getStartEnd(node: ts.Node, ast: ts.SourceFile) {
     return {
+      // NOTE: internal API, used by volar
       start: (ts as any).getTokenPosOfNode(node, ast) as number,
       end: node.end,
     }
