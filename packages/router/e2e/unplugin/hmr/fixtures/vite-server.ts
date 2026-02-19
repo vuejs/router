@@ -10,6 +10,7 @@ type ViteFixtures = {
   baseURL: string
   projectRoot: string
   applyEditFile: (sourceFilePath: string, newContentFilePath: string) => void
+  deleteFile: (filePath: string) => void
   playgroundName: string
 }
 
@@ -90,6 +91,12 @@ export const test = base.extend<ViteFixtures>({
         fs.readFileSync(path.join(projectRoot, newContentFilePath), 'utf8'),
         'utf8'
       )
+    })
+  },
+
+  deleteFile: async ({ projectRoot }, use) => {
+    await use(function deleteFile(filePath: string) {
+      fs.unlinkSync(path.join(projectRoot, filePath))
     })
   },
 })

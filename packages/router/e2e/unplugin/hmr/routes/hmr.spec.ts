@@ -128,6 +128,33 @@ test.describe('Pages HMR', () => {
     await expect(page.getByTestId('route')).toHaveText('/alias-path')
   })
 
+  test('deleting a file with same name as folder keeps children routes', async ({
+    page,
+    baseURL,
+    deleteFile,
+  }) => {
+    // Navigate to a nested child route to confirm it works
+    await page.goto(baseURL + '/nested/a')
+    await expect(page.getByTestId('nested-parent')).toBeVisible()
+    await expect(page.getByTestId('nested-a')).toHaveText('Nested A')
+
+    await ensureHmrToken(page)
+
+    // Delete the parent layout file (nested.vue) — should NOT remove children
+    deleteFile('src/pages/nested.vue')
+
+    // Wait for HMR to process: the parent layout wrapper should disappear
+    await expect(page.getByTestId('nested-parent')).not.toBeVisible()
+
+    // The child route content should still be visible
+    await expect(page.getByTestId('nested-a')).toHaveText('Nested A')
+
+    // Navigate away and back to confirm the route still resolves
+    await navigate(page, '/')
+    await navigate(page, '/nested/a')
+    await expect(page.getByTestId('nested-a')).toHaveText('Nested A')
+  })
+
   test('updates definePage properties', async ({
     page,
     baseURL,
