@@ -1,3 +1,46 @@
+## [5.0.3](https://github.com/vuejs/router/compare/v5.0.2...v5.0.3) (2026-02-19)
+
+- refactor(experimental)!: remove selectNavigationResult ([9e88aed](https://github.com/vuejs/router/commit/9e88aed4257865c297dc854ad3b9dcf5404459d8))
+- refactor(experimental)!: make miss() throw internally and return never ([077e174](https://github.com/vuejs/router/commit/077e1740610d4436fa84dc87465c0fad00ead841))
+
+### Bug Fixes
+
+- avoid non matchable routes in auto-routes ([4864903](https://github.com/vuejs/router/commit/4864903000afb5b237376e61e555ab93be9e7b20))
+- avoid route entry in map for \_parent ([1dfccf8](https://github.com/vuejs/router/commit/1dfccf828bfa1c29bab3479be084bc1784343af3))
+- cleanup old route overrides ([b28a71e](https://github.com/vuejs/router/commit/b28a71e2602dcad8c1720eb7d44392362daef05a))
+- correct route ordering for group nodes with inflated scores ([515f484](https://github.com/vuejs/router/commit/515f4843e51fcb701fc0155788f03e308d614c47))
+- **experimental:** resolve TS errors in resolver/router type hierarchy ([a86f1f3](https://github.com/vuejs/router/commit/a86f1f3a97c6b959779cbe5b7456253fc1da9f35))
+- handle nested groups ([4a4bed9](https://github.com/vuejs/router/commit/4a4bed944bddce25effa6453b13ab79ac55885a5))
+- handle quotes in d.ts ([d776470](https://github.com/vuejs/router/commit/d7764700f190c990ac89d3b85bcad784b60813b3))
+- remove name from \_parent.vue files ([6e8f1a1](https://github.com/vuejs/router/commit/6e8f1a113d78905c0bc74b27d7bb2e0e362a78ea))
+- stable route ordering for group folders with same path ([1db9467](https://github.com/vuejs/router/commit/1db9467cc3d963ae97cf2df4ab63b26390aa617d))
+- **types:** relax RouteMapGeneric constraint for interface-based RouteNamedMap ([#2624](https://github.com/vuejs/router/issues/2624)) ([cdf7b44](https://github.com/vuejs/router/commit/cdf7b4423f5c589afba5083bd82c6a0522311705))
+- **volar:** use `ts.getTokenPosOfNode` instead of `node.getStart` ([#2630](https://github.com/vuejs/router/issues/2630)) ([0b0504b](https://github.com/vuejs/router/commit/0b0504bd65a1b946e68dfb1c92bfe44f48a956cf))
+
+### Features
+
+- add deprecation warning for next() callback in navigation guards ([797f55d](https://github.com/vuejs/router/commit/797f55de909bc6bd51a033bb0acaa118bb083fee))
+- deprecate new NavigationResult(to) in favor of reroute(to) ([382e34b](https://github.com/vuejs/router/commit/382e34b41e4eea1c90b1e1cd0f049352b6d24e7d))
+- display aliases in logs ([7aa607f](https://github.com/vuejs/router/commit/7aa607fc6f74795befffeb1107fed7fc5fb8c0f9))
+- **experimental:** generate aliases from override in resolver ([a00ac35](https://github.com/vuejs/router/commit/a00ac355a234cfd585b4c2533a222733bd326593))
+- **experimental:** handle aliasOf in resolvers ([8fe453c](https://github.com/vuejs/router/commit/8fe453c90fad2f3053d9ea0c8d3189ef2e2cd973))
+- **experimental:** warn against non absolute aliases ([476c669](https://github.com/vuejs/router/commit/476c66974f31766978bf5c8b9e4aac3b1f1ffc5e))
+- extract alias from definePage ([835df1f](https://github.com/vuejs/router/commit/835df1ffee1d465bc20318f1b2dd874a7f1f9e1f))
+- set \_parent as non matchable by default ([8f91c99](https://github.com/vuejs/router/commit/8f91c99f044d024a35d5ccde95f37cebee1f67c6))
+- support \_parent in nested folders ([0a37f47](https://github.com/vuejs/router/commit/0a37f47471a847d0e64070c74e66937a503e88d9))
+- use type module ([dc9ffe8](https://github.com/vuejs/router/commit/dc9ffe81f271edf399dd4527c399918208815f65))
+- warn on \_parent conflict ([182fe03](https://github.com/vuejs/router/commit/182fe03ada479f009949c77776ae904b35e3d181))
+- warn on conflicting components for routes ([34aceb9](https://github.com/vuejs/router/commit/34aceb98cd7de07340e0735b74d76195c5138284))
+
+### Performance Improvements
+
+- avoid merging empty object in record ([4213eb6](https://github.com/vuejs/router/commit/4213eb665e52695cdad531d543c942cb35e6ccaa))
+
+### BREAKING CHANGES
+
+- Remove the selectNavigationResult option and NAVIGATION_RESULTS_KEY since reroute() now throws immediately, making the collection and selection of navigation results unnecessary.
+- `miss()` now throws the `MatchMiss` error internally instead of returning it. If you were using `throw miss()`, replace it with just `miss()`. This change prevents silently swallowing misses when forgetting to `throw` and hides the fact that this is implemented through a class, making it an implementation detail. **Most users won't be affected as this only impacts custom matchers using the experimental route resolver API. Also renames `MatchMiss` export to `_MatchMiss` (internal).**
+
 ## [5.0.2](https://github.com/vuejs/router/compare/v5.0.1...v5.0.2) (2026-02-02)
 
 ### Bug Fixes
