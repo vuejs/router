@@ -1,6 +1,6 @@
 import { getLang } from '@vue-macros/common'
 import { PrefixTree, type TreeNode } from '../core/tree'
-import { ImportsMap } from '../core/utils'
+import { ImportsMap, joinPath } from '../core/utils'
 import { type ResolvedOptions } from '../options'
 import { toStringLiteral, ts } from '../utils'
 import {
@@ -67,6 +67,14 @@ interface GenerateRouteResolverState {
     varName: string
     score: number[][]
   }[]
+  parsedPathCache?: Map<string, TreeNode>
+}
+
+interface ParentVariantContext {
+  parentVar: string | null | undefined
+  parentNode: TreeNode | null | undefined
+  parentFullPath: string
+  isAliasBranch: boolean
 }
 
 const ROUTE_RECORD_VAR_PREFIX = '__route_'
@@ -77,12 +85,22 @@ export function generateRouteResolver(
   importsMap: ImportsMap,
   paramParsersMap: ParamParsersMap
 ): string {
-  const state: GenerateRouteResolverState = { id: 0, matchableRecords: [] }
+  const state: GenerateRouteResolverState = {
+    id: 0,
+    matchableRecords: [],
+    parsedPathCache: new Map(),
+  }
   const records = tree.getChildrenSorted().map(node =>
     generateRouteRecord({
       node,
-      parentVar: null,
-      parentNode: null,
+      parentContexts: [
+        {
+          parentVar: null,
+          parentNode: null,
+          parentFullPath: '',
+          isAliasBranch: false,
+        },
+      ],
       state,
       options,
       importsMap,
@@ -123,27 +141,34 @@ export function generateRouteRecord({
   node,
   parentVar,
   parentNode,
+  parentContexts,
   state,
   options,
   importsMap,
   paramParsersMap,
 }: {
   node: TreeNode
-  parentVar: string | null | undefined
-  parentNode: TreeNode | null | undefined
+  parentVar?: string | null | undefined
+  parentNode?: TreeNode | null | undefined
+  parentContexts?: ParentVariantContext[]
   state: GenerateRouteResolverState
   options: ResolvedOptions
   importsMap: ImportsMap
   paramParsersMap: ParamParsersMap
 }): string {
   const isMatchable = node.isMatchable()
+  const resolvedParentContexts: ParentVariantContext[] = parentContexts || [
+    {
+      parentVar,
+      parentNode,
+      parentFullPath: parentNode?.fullPath ?? node.parent?.fullPath ?? '',
+      isAliasBranch: false,
+    },
+  ]
 
   // we want to skip adding routes that add no options (components, meta, props, etc)
   // that simplifies the generated tree
   const shouldSkipNode = !isMatchable && !node.meta && !node.hasComponents
-
-  let varName: string | null = null
-  let recordDeclaration = ''
 
   // Handle definePage imports
   const definePageDataList: string[] = []
@@ -162,102 +187,155 @@ export function generateRouteRecord({
     }
   }
 
-  if (!shouldSkipNode) {
-    varName = `${ROUTE_RECORD_VAR_PREFIX}${state.id++}`
+  const aliases = node.value.overrides.alias || []
+  const declarations: string[] = []
+  const childParentContexts: ParentVariantContext[] = []
 
-    let recordName: string
+  const createDeclaration = (varName: string, routeRecordObject: string) => {
+    if (definePageDataList.length > 0) {
+      return `
+const ${varName} = normalizeRouteRecord(
+  ${generateRouteRecordMerge(routeRecordObject, definePageDataList, importsMap)}
+)
+`
+    }
+
+    return `
+const ${varName} = normalizeRouteRecord(${routeRecordObject})
+`
+      .trim()
+      .split('\n')
+      .filter(line => line.trimStart().length > 0)
+      .join('\n')
+  }
+
+  if (shouldSkipNode) {
+    for (const parentContext of resolvedParentContexts) {
+      childParentContexts.push({
+        ...parentContext,
+        parentFullPath: resolveRoutePath(
+          node.path,
+          parentContext.parentFullPath
+        ),
+      })
+    }
+  } else {
     const recordComponents = generateRouteRecordComponent(
       node,
       '  ',
       options.importMode,
       importsMap
     )
-
-    if (isMatchable) {
-      state.matchableRecords.push({
-        path: node.fullPath,
-        varName,
-        score: node.score,
-      })
-      recordName = `name: ${toStringLiteral(node.name)},`
-    } else {
-      recordName = node.name
-        ? `/* (internal) name: ${toStringLiteral(node.name)} */`
-        : `/* (removed) name: false */`
-    }
-
     const queryProperty = generateRouteRecordQuery({
       node,
       importsMap,
       paramParsersMap,
     })
-    const routeRecordObject = `{
-  ${recordName}
-  ${generateRouteRecordPath({ node, importsMap, paramParsersMap, parentVar, parentNode })}${
-    queryProperty ? `\n  ${queryProperty}` : ''
-  }${formatMeta(node, '  ')}
-  ${recordComponents}${parentVar ? `\n  parent: ${parentVar},` : ''}
-}`
+    const recordName = isMatchable
+      ? `name: ${toStringLiteral(node.name)},`
+      : node.name
+        ? `/* (internal) name: ${toStringLiteral(node.name)} */`
+        : `/* (removed) name: false */`
 
-    recordDeclaration =
-      definePageDataList.length > 0
-        ? `
-const ${varName} = normalizeRouteRecord(
-  ${generateRouteRecordMerge(routeRecordObject, definePageDataList, importsMap)}
-)
-`
-        : `
-const ${varName} = normalizeRouteRecord(${routeRecordObject})
-`
-            .trim()
-            .split('\n')
-            // remove empty lines
-            .filter(l => l.trimStart().length > 0)
-            .join('\n')
-  }
+    let originalVarName: string | null = null
 
-  // Generate alias records for each alias path
-  let aliasDeclarations = ''
-  const aliases = node.value.overrides.alias
-  if (varName && isMatchable && aliases && aliases.length > 0) {
-    for (const aliasPath of aliases) {
-      const aliasVarName = `${ROUTE_RECORD_VAR_PREFIX}${state.id++}`
-
-      const tempTree = new PrefixTree(options)
-      // FIXME: should always remove the first character since they all must start with a slash
-      const strippedAlias = aliasPath.replace(/^\//, '')
-      // TODO: allow the new file based syntax
-      const tempNode = tempTree.insertParsedPath(strippedAlias)
-
-      const aliasPathCode = generatePathCode(
-        tempNode,
-        importsMap,
-        paramParsersMap
+    for (const parentContext of resolvedParentContexts) {
+      const currentFullPath = resolveRoutePath(
+        node.path,
+        parentContext.parentFullPath
       )
+      const varName = `${ROUTE_RECORD_VAR_PREFIX}${state.id++}`
+      if (!originalVarName) {
+        originalVarName = varName
+      }
+      const aliasOfVar = varName === originalVarName ? null : originalVarName
+      const pathCode = generateRouteRecordPathForVariant({
+        node,
+        fullPath: currentFullPath,
+        parentContext,
+        state,
+        options,
+        importsMap,
+        paramParsersMap,
+      })
 
-      const aliasRecordObject = `{
+      const routeRecordObject = `{
+  ${recordName}
+  ${pathCode}${queryProperty ? `\n  ${queryProperty}` : ''}${formatMeta(node, '  ')}
+  ${recordComponents}${parentContext.parentVar ? `\n  parent: ${parentContext.parentVar},` : ''}${
+    aliasOfVar ? `\n  aliasOf: ${aliasOfVar},` : ''
+  }
+}`
+      declarations.push(createDeclaration(varName, routeRecordObject))
+
+      if (isMatchable) {
+        const matchableNode =
+          !parentContext.isAliasBranch && currentFullPath === node.fullPath
+            ? node
+            : getParsedPathNode(currentFullPath, options, state)
+        state.matchableRecords.push({
+          path: matchableNode.fullPath,
+          varName,
+          score: matchableNode.score,
+        })
+      }
+
+      childParentContexts.push({
+        parentVar: varName,
+        parentNode: node,
+        parentFullPath: currentFullPath,
+        isAliasBranch: aliasOfVar != null,
+      })
+
+      if (!isMatchable) {
+        continue
+      }
+
+      for (const aliasPath of aliases) {
+        const aliasVarName = `${ROUTE_RECORD_VAR_PREFIX}${state.id++}`
+        const aliasFullPath = resolveRoutePath(
+          aliasPath,
+          parentContext.parentFullPath
+        )
+        const aliasNode = getParsedPathNode(aliasFullPath, options, state)
+        const aliasPathCode =
+          parentContext.parentVar &&
+          aliasFullPath === parentContext.parentFullPath
+            ? `path: ${parentContext.parentVar}.path,`
+            : generatePathCode(
+                aliasNode,
+                importsMap,
+                paramParsersMap,
+                applySourceParamParsers(aliasNode.pathParams, node.pathParams)
+              )
+
+        const aliasRecordObject = `{
   ...${varName},
   ${aliasPathCode}
-  aliasOf: ${varName},
+  aliasOf: ${originalVarName},
 }`
+        declarations.push(createDeclaration(aliasVarName, aliasRecordObject))
 
-      aliasDeclarations += `\nconst ${aliasVarName} = normalizeRouteRecord(${aliasRecordObject})`
+        state.matchableRecords.push({
+          path: aliasNode.fullPath,
+          varName: aliasVarName,
+          score: aliasNode.score,
+        })
 
-      state.matchableRecords.push({
-        path: tempNode.fullPath,
-        varName: aliasVarName,
-        score: tempNode.score,
-      })
+        childParentContexts.push({
+          parentVar: aliasVarName,
+          parentNode: node,
+          parentFullPath: aliasFullPath,
+          isAliasBranch: true,
+        })
+      }
     }
   }
 
   const children = node.getChildrenSorted().map(child =>
     generateRouteRecord({
       node: child,
-      // If we skipped this node, pass the parent var from above, otherwise use our var
-      parentVar: shouldSkipNode ? parentVar : varName,
-      // Track the actual node that parentVar represents
-      parentNode: shouldSkipNode ? parentNode : node,
+      parentContexts: childParentContexts,
       state,
       options,
       importsMap,
@@ -265,14 +343,14 @@ const ${varName} = normalizeRouteRecord(${routeRecordObject})
     })
   )
 
-  return (
-    recordDeclaration +
-    aliasDeclarations +
-    (children.length
-      ? (recordDeclaration || aliasDeclarations ? '\n' : '') +
-        children.join('\n')
-      : '')
-  )
+  const declarationsCode = declarations.join('\n')
+  const childrenCode = children.filter(Boolean).join('\n')
+
+  if (declarationsCode && childrenCode) {
+    return `${declarationsCode}\n${childrenCode}`
+  }
+
+  return declarationsCode || childrenCode
 }
 
 function generateRouteRecordComponent(
@@ -297,15 +375,82 @@ ${files
 ${indentStr}},`
 }
 
+function resolveRoutePath(path: string, parentFullPath: string): string {
+  return path.startsWith('/') ? path : joinPath(parentFullPath, path)
+}
+
+function getParsedPathNode(
+  fullPath: string,
+  options: ResolvedOptions,
+  state: GenerateRouteResolverState
+): TreeNode {
+  const cache = (state.parsedPathCache ||= new Map())
+  let parsedPathNode = cache.get(fullPath)
+  if (!parsedPathNode) {
+    const tempTree = new PrefixTree(options)
+    parsedPathNode = tempTree.insertParsedPath(fullPath.replace(/^\//, ''))
+    cache.set(fullPath, parsedPathNode)
+  }
+  return parsedPathNode
+}
+
+function applySourceParamParsers(
+  params: TreeNode['pathParams'],
+  sourceParams: TreeNode['pathParams']
+): TreeNode['pathParams'] {
+  if (!sourceParams.some(param => param.parser != null)) {
+    return params
+  }
+
+  const sourceParsersByName = new Map<string, Array<string | null>>()
+  for (const sourceParam of sourceParams) {
+    const sourceParsers = sourceParsersByName.get(sourceParam.paramName) || []
+    sourceParsers.push(sourceParam.parser)
+    sourceParsersByName.set(sourceParam.paramName, sourceParsers)
+  }
+
+  const seenByName = new Map<string, number>()
+  let hasChanges = false
+  const paramsWithParsers = params.map(param => {
+    const sourceParsers = sourceParsersByName.get(param.paramName)
+    if (!sourceParsers) {
+      return param
+    }
+
+    const sourceIndex = seenByName.get(param.paramName) ?? 0
+    seenByName.set(param.paramName, sourceIndex + 1)
+
+    const sourceParser = sourceParsers[sourceIndex]
+    if (!sourceParser || sourceParser === param.parser) {
+      return param
+    }
+
+    hasChanges = true
+    return {
+      ...param,
+      parser: sourceParser,
+    }
+  })
+
+  return hasChanges ? paramsWithParsers : params
+}
+
 /**
  * Generates the dynamic/static `path: ...` property from a TreeNode.
  */
 function generatePathCode(
-  node: TreeNode,
+  node: Pick<
+    TreeNode,
+    | 'pathParams'
+    | 'regexp'
+    | 'matcherPatternPathDynamicParts'
+    | 'isSplat'
+    | 'fullPath'
+  >,
   importsMap: ImportsMap,
-  paramParsersMap: ParamParsersMap
+  paramParsersMap: ParamParsersMap,
+  params = node.pathParams
 ): string {
-  const params = node.pathParams
   if (params.length > 0) {
     return `path: new MatcherPatternPathDynamic(
     ${node.regexp},
@@ -316,6 +461,52 @@ function generatePathCode(
   } else {
     return `path: new MatcherPatternPathStatic(${toStringLiteral(node.fullPath)}),`
   }
+}
+
+function generateRouteRecordPathForVariant({
+  node,
+  fullPath,
+  parentContext,
+  state,
+  options,
+  importsMap,
+  paramParsersMap,
+}: {
+  node: TreeNode
+  fullPath: string
+  parentContext: ParentVariantContext
+  state: GenerateRouteResolverState
+  options: ResolvedOptions
+  importsMap: ImportsMap
+  paramParsersMap: ParamParsersMap
+}): string {
+  if (!node.isMatchable() && node.name) {
+    return ''
+  }
+
+  // Keep the current code path for the original branch to preserve behavior
+  // around index records and matcher reuse with parent nodes.
+  if (!parentContext.isAliasBranch && fullPath === node.fullPath) {
+    return generateRouteRecordPath({
+      node,
+      importsMap,
+      paramParsersMap,
+      parentVar: parentContext.parentVar,
+      parentNode: parentContext.parentNode,
+    })
+  }
+
+  if (parentContext.parentVar && fullPath === parentContext.parentFullPath) {
+    return `path: ${parentContext.parentVar}.path,`
+  }
+
+  const parsedPathNode = getParsedPathNode(fullPath, options, state)
+  return generatePathCode(
+    parsedPathNode,
+    importsMap,
+    paramParsersMap,
+    applySourceParamParsers(parsedPathNode.pathParams, node.pathParams)
+  )
 }
 
 /**
