@@ -8,7 +8,6 @@ import {
 } from './generateRouteResolver'
 import { ImportsMap } from '../core/utils'
 import { ParamParsersMap } from './generateParamParsers'
-import { generateAliasWarnings } from './generateAliasWarnings'
 
 const DEFAULT_OPTIONS = resolveOptions({})
 let DEFAULT_STATE: Parameters<typeof generateRouteRecord>[0]['state'] = {
@@ -1346,41 +1345,72 @@ describe('generateRouteResolver', () => {
       expect(resolver).toMatch(/createFixedResolver\(\[[\s\S]*__route_1/)
     })
 
-    it('warns on relative aliases', () => {
+    it('resolves relative aliases against the parent path', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const importsMap = new ImportsMap()
       const node = tree.insert('admin/users', 'admin/users.vue')
       node.setCustomRouteBlock('admin/users.vue', { alias: ['users'] })
 
-      const warnings = generateAliasWarnings(tree)
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        importsMap,
+        new Map()
+      )
 
-      expect(warnings).toContain('console.warn')
-      expect(warnings).toContain('Alias "users"')
-      expect(warnings).toContain('must be absolute')
+      expect(resolver).toContain(
+        "path: new MatcherPatternPathStatic('/admin/users')"
+      )
+      expect(resolver).not.toContain(
+        "path: new MatcherPatternPathStatic('/users')"
+      )
     })
 
-    it('does not warn on absolute aliases', () => {
+    it('creates child alias routes when parent has aliases', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
-      const node = tree.insert('users', 'users.vue')
-      node.setCustomRouteBlock('users.vue', { alias: ['/people'] })
+      const importsMap = new ImportsMap()
+      const parentNode = tree.insert('users', 'users.vue')
+      parentNode.setCustomRouteBlock('users.vue', { alias: ['/people'] })
+      tree.insert('users/[id]', 'users/[id].vue')
 
-      const warnings = generateAliasWarnings(tree)
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        importsMap,
+        new Map()
+      )
 
-      expect(warnings).toBe('')
+      expect(resolver).toContain('/^\\/users\\/([^/]+?)$/i')
+      expect(resolver).toContain('/^\\/people\\/([^/]+?)$/i')
     })
 
-    it('warns on each relative alias individually', () => {
+    it('composes parent aliases with child relative aliases', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
-      const node = tree.insert('users', 'users.vue')
-      node.setCustomRouteBlock('users.vue', {
-        alias: ['people', '/members', 'folks'],
-      })
+      const importsMap = new ImportsMap()
+      const parentNode = tree.insert('users', 'users.vue')
+      parentNode.setCustomRouteBlock('users.vue', { alias: ['/people'] })
+      const childNode = tree.insert('users/settings', 'users/settings.vue')
+      childNode.setCustomRouteBlock('users/settings.vue', { alias: ['prefs'] })
 
-      const warnings = generateAliasWarnings(tree)
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        importsMap,
+        new Map()
+      )
 
-      expect(warnings).toContain('"people"')
-      expect(warnings).toContain('"folks"')
-      expect(warnings).not.toContain('"members"')
-      expect(warnings).not.toContain('"/members"')
+      expect(resolver).toContain(
+        "path: new MatcherPatternPathStatic('/users/settings')"
+      )
+      expect(resolver).toContain(
+        "path: new MatcherPatternPathStatic('/users/prefs')"
+      )
+      expect(resolver).toContain(
+        "path: new MatcherPatternPathStatic('/people/settings')"
+      )
+      expect(resolver).toContain(
+        "path: new MatcherPatternPathStatic('/people/prefs')"
+      )
     })
   })
 })

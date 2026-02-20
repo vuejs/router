@@ -1,6 +1,6 @@
 import { getLang } from '@vue-macros/common'
 import { PrefixTree, type TreeNode } from '../core/tree'
-import { ImportsMap } from '../core/utils'
+import { ImportsMap, joinPath } from '../core/utils'
 import { type ResolvedOptions } from '../options'
 import { toStringLiteral, ts } from '../utils'
 import {
@@ -67,9 +67,53 @@ interface GenerateRouteResolverState {
     varName: string
     score: number[][]
   }[]
+  pathInfoCache?: Map<
+    string,
+    {
+      pathCode: string
+      score: number[][]
+    }
+  >
 }
 
 const ROUTE_RECORD_VAR_PREFIX = '__route_'
+
+interface ParentVariantContext {
+  parentVar: string | null | undefined
+  parentNode: TreeNode | null | undefined
+  parentPath: string
+  isAlias: boolean
+}
+
+function resolvePathFromParent(path: string, parentPath: string): string {
+  return path.startsWith('/') ? path : joinPath(parentPath, path)
+}
+
+function getPathInfoFromFullPath(
+  fullPath: string,
+  state: GenerateRouteResolverState,
+  options: ResolvedOptions,
+  importsMap: ImportsMap,
+  paramParsersMap: ParamParsersMap
+) {
+  if (!state.pathInfoCache) {
+    state.pathInfoCache = new Map()
+  }
+  const cachedPathInfo = state.pathInfoCache.get(fullPath)
+  if (cachedPathInfo) {
+    return cachedPathInfo
+  }
+
+  const tempTree = new PrefixTree(options)
+  // parsed-path format expects a path without the leading slash
+  const tempNode = tempTree.insertParsedPath(fullPath.replace(/^\//, ''))
+  const pathInfo = {
+    pathCode: generatePathCode(tempNode, importsMap, paramParsersMap),
+    score: tempNode.score,
+  }
+  state.pathInfoCache.set(fullPath, pathInfo)
+  return pathInfo
+}
 
 export function generateRouteResolver(
   tree: PrefixTree,
@@ -77,12 +121,24 @@ export function generateRouteResolver(
   importsMap: ImportsMap,
   paramParsersMap: ParamParsersMap
 ): string {
-  const state: GenerateRouteResolverState = { id: 0, matchableRecords: [] }
+  const state: GenerateRouteResolverState = {
+    id: 0,
+    matchableRecords: [],
+    pathInfoCache: new Map(),
+  }
   const records = tree.getChildrenSorted().map(node =>
     generateRouteRecord({
       node,
       parentVar: null,
       parentNode: null,
+      parentContexts: [
+        {
+          parentVar: null,
+          parentNode: null,
+          parentPath: '',
+          isAlias: false,
+        },
+      ],
       state,
       options,
       importsMap,
@@ -123,6 +179,7 @@ export function generateRouteRecord({
   node,
   parentVar,
   parentNode,
+  parentContexts,
   state,
   options,
   importsMap,
@@ -131,18 +188,37 @@ export function generateRouteRecord({
   node: TreeNode
   parentVar: string | null | undefined
   parentNode: TreeNode | null | undefined
+  parentContexts?: ParentVariantContext[]
   state: GenerateRouteResolverState
   options: ResolvedOptions
   importsMap: ImportsMap
   paramParsersMap: ParamParsersMap
 }): string {
   const isMatchable = node.isMatchable()
+  const aliases = node.value.overrides.alias || []
 
   // we want to skip adding routes that add no options (components, meta, props, etc)
   // that simplifies the generated tree
-  const shouldSkipNode = !isMatchable && !node.meta && !node.hasComponents
+  const shouldSkipNode =
+    !isMatchable && !node.meta && !node.hasComponents && aliases.length === 0
+
+  const resolvedParentContexts: ParentVariantContext[] =
+    parentContexts && parentContexts.length > 0
+      ? parentContexts
+      : [
+          {
+            parentVar,
+            parentNode,
+            parentPath: parentNode?.fullPath ?? '',
+            isAlias: false,
+          },
+        ]
+  const canonicalParentContext =
+    resolvedParentContexts.find(parentContext => !parentContext.isAlias) ||
+    resolvedParentContexts[0]!
 
   let varName: string | null = null
+  let canonicalFullPath = ''
   let recordDeclaration = ''
 
   // Handle definePage imports
@@ -172,12 +248,38 @@ export function generateRouteRecord({
       options.importMode,
       importsMap
     )
+    canonicalFullPath = canonicalParentContext.isAlias
+      ? resolvePathFromParent(
+          node.value.path,
+          canonicalParentContext.parentPath
+        )
+      : node.fullPath
+    const canonicalPathInfo = getPathInfoFromFullPath(
+      canonicalFullPath,
+      state,
+      options,
+      importsMap,
+      paramParsersMap
+    )
+    const routePathProperty =
+      canonicalFullPath === node.fullPath && !canonicalParentContext.isAlias
+        ? generateRouteRecordPath({
+            node,
+            importsMap,
+            paramParsersMap,
+            parentVar: canonicalParentContext.parentVar,
+            parentNode: canonicalParentContext.parentNode,
+          })
+        : canonicalPathInfo.pathCode
 
     if (isMatchable) {
       state.matchableRecords.push({
-        path: node.fullPath,
+        path: canonicalFullPath,
         varName,
-        score: node.score,
+        score:
+          canonicalFullPath === node.fullPath && !canonicalParentContext.isAlias
+            ? node.score
+            : canonicalPathInfo.score,
       })
       recordName = `name: ${toStringLiteral(node.name)},`
     } else {
@@ -193,10 +295,14 @@ export function generateRouteRecord({
     })
     const routeRecordObject = `{
   ${recordName}
-  ${generateRouteRecordPath({ node, importsMap, paramParsersMap, parentVar, parentNode })}${
+  ${routePathProperty}${
     queryProperty ? `\n  ${queryProperty}` : ''
   }${formatMeta(node, '  ')}
-  ${recordComponents}${parentVar ? `\n  parent: ${parentVar},` : ''}
+  ${recordComponents}${
+    canonicalParentContext.parentVar
+      ? `\n  parent: ${canonicalParentContext.parentVar},`
+      : ''
+  }
 }`
 
     recordDeclaration =
@@ -216,48 +322,111 @@ const ${varName} = normalizeRouteRecord(${routeRecordObject})
             .join('\n')
   }
 
-  // Generate alias records for each alias path
+  const aliasVariantsForChildren: ParentVariantContext[] = []
+  const generatedAliasKeys = new Set<string>()
+  // Generate alias records for inherited alias branches and local aliases
   let aliasDeclarations = ''
-  const aliases = node.value.overrides.alias
-  if (varName && isMatchable && aliases && aliases.length > 0) {
-    for (const aliasPath of aliases) {
+  if (varName) {
+    const addAliasVariant = (
+      fullPath: string,
+      parentContext: ParentVariantContext,
+      forceParent: boolean
+    ) => {
+      const variantKey = `${parentContext.parentVar ?? ''}::${fullPath}`
+      if (generatedAliasKeys.has(variantKey)) {
+        return
+      }
+      generatedAliasKeys.add(variantKey)
+
       const aliasVarName = `${ROUTE_RECORD_VAR_PREFIX}${state.id++}`
-
-      const tempTree = new PrefixTree(options)
-      // FIXME: should always remove the first character since they all must start with a slash
-      const strippedAlias = aliasPath.replace(/^\//, '')
-      // TODO: allow the new file based syntax
-      const tempNode = tempTree.insertParsedPath(strippedAlias)
-
-      const aliasPathCode = generatePathCode(
-        tempNode,
+      const aliasPathInfo = getPathInfoFromFullPath(
+        fullPath,
+        state,
+        options,
         importsMap,
         paramParsersMap
       )
 
       const aliasRecordObject = `{
   ...${varName},
-  ${aliasPathCode}
+  ${aliasPathInfo.pathCode}${
+    forceParent && parentContext.parentVar
+      ? `\n  parent: ${parentContext.parentVar},`
+      : ''
+  }
   aliasOf: ${varName},
 }`
 
       aliasDeclarations += `\nconst ${aliasVarName} = normalizeRouteRecord(${aliasRecordObject})`
 
-      state.matchableRecords.push({
-        path: tempNode.fullPath,
-        varName: aliasVarName,
-        score: tempNode.score,
+      if (isMatchable) {
+        state.matchableRecords.push({
+          path: fullPath,
+          varName: aliasVarName,
+          score: aliasPathInfo.score,
+        })
+      }
+
+      aliasVariantsForChildren.push({
+        parentVar: aliasVarName,
+        parentNode: node,
+        parentPath: fullPath,
+        isAlias: true,
       })
     }
+
+    for (const parentContext of resolvedParentContexts) {
+      if (parentContext === canonicalParentContext) continue
+      const inheritedPath = resolvePathFromParent(
+        node.value.path,
+        parentContext.parentPath
+      )
+      addAliasVariant(
+        inheritedPath,
+        parentContext,
+        parentContext.parentVar !== canonicalParentContext.parentVar
+      )
+    }
+
+    for (const aliasPath of aliases) {
+      for (const parentContext of resolvedParentContexts) {
+        const resolvedAliasPath = resolvePathFromParent(
+          aliasPath,
+          parentContext.parentPath
+        )
+        addAliasVariant(
+          resolvedAliasPath,
+          parentContext,
+          parentContext.parentVar !== canonicalParentContext.parentVar
+        )
+      }
+    }
   }
+
+  const childParentContexts = shouldSkipNode
+    ? resolvedParentContexts.map(parentContext => ({
+        ...parentContext,
+        parentPath: resolvePathFromParent(
+          node.value.path,
+          parentContext.parentPath
+        ),
+      }))
+    : [
+        {
+          parentVar: varName,
+          parentNode: node,
+          parentPath: canonicalFullPath,
+          isAlias: false,
+        },
+        ...aliasVariantsForChildren,
+      ]
 
   const children = node.getChildrenSorted().map(child =>
     generateRouteRecord({
       node: child,
-      // If we skipped this node, pass the parent var from above, otherwise use our var
-      parentVar: shouldSkipNode ? parentVar : varName,
-      // Track the actual node that parentVar represents
-      parentNode: shouldSkipNode ? parentNode : node,
+      parentVar: childParentContexts[0]?.parentVar ?? null,
+      parentNode: childParentContexts[0]?.parentNode ?? null,
+      parentContexts: childParentContexts,
       state,
       options,
       importsMap,
