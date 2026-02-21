@@ -177,6 +177,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             },
           ],
         },
+        sidebarFileBasedRouting(),
         sidebarDataLoaders(),
         {
           text: 'Migration',
@@ -197,6 +198,27 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
 }
 
 type SidebarGroup = DefaultTheme.SidebarItem
+
+function sidebarFileBasedRouting(): SidebarGroup {
+  return {
+    collapsed: false,
+    text: 'File-Based Routing',
+    items: [
+      { text: 'Getting Started', link: '/file-based-routing/' },
+      {
+        text: 'File Conventions',
+        link: '/file-based-routing/file-based-routing',
+      },
+      { text: 'Configuration', link: '/file-based-routing/configuration' },
+      {
+        text: 'Extending Routes',
+        link: '/file-based-routing/extending-routes',
+      },
+      { text: 'HMR', link: '/file-based-routing/hmr' },
+      { text: 'ESLint', link: '/file-based-routing/eslint' },
+    ],
+  }
+}
 
 function sidebarDataLoaders(): SidebarGroup {
   return {
