@@ -7,6 +7,7 @@
 
 当创建一个路由时，我们可以选择给路由一个 `name`：
 
+<!-- prettier-ignore -->
 ```js
 const routes = [
   {

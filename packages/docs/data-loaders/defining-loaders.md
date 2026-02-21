@@ -60,6 +60,7 @@ It's important to avoid side effects in the loader function. Don't call `watch`,
 
 In the loader function, you can access global properties like the router instance, a store, etc. This is because using `inject()` within the loader function **is possible**, just like within navigation guards. Since loaders are asynchronous, make sure you are using the `inject` function **before any `await`**:
 
+<!-- prettier-ignore -->
 ```ts twoslash
 import 'vue-router/auto-routes'
 import { defineBasicLoader } from 'vue-router/experimental'

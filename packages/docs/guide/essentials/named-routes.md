@@ -7,6 +7,7 @@
 
 When creating a route, we can optionally give the route a `name`:
 
+<!-- prettier-ignore -->
 ```js
 const routes = [
   {

@@ -38,6 +38,7 @@ pnpm update vue-router@5
 
 **Vite plugin:**
 
+<!-- prettier-ignore -->
 ```ts
 import VueRouter from 'unplugin-vue-router/vite' // [!code --]
 import VueRouter from 'vue-router/vite' // [!code ++]
@@ -59,6 +60,7 @@ VueRouter.rollup({
 
 **Data loaders:**
 
+<!-- prettier-ignore -->
 ```ts
 import { defineBasicLoader } from 'unplugin-vue-router/data-loaders/basic' // [!code --]
 import { defineColadaLoader } from 'unplugin-vue-router/data-loaders/pinia-colada' // [!code --]
@@ -69,6 +71,7 @@ import { defineColadaLoader } from 'vue-router/experimental/pinia-colada' // [!c
 
 **Unplugin utilities (for custom integrations):**
 
+<!-- prettier-ignore -->
 ```ts
 import {
   VueRouterAutoImports,
@@ -83,6 +86,7 @@ import {
 
 **Types:**
 
+<!-- prettier-ignore -->
 ```ts
 import type { Options, EditableTreeNode } from 'unplugin-vue-router' // [!code --]
 import type { Options, EditableTreeNode } from 'vue-router/unplugin' // [!code ++]
@@ -90,6 +94,7 @@ import type { Options, EditableTreeNode } from 'vue-router/unplugin' // [!code +
 
 **Volar plugins:**
 
+<!-- prettier-ignore -->
 ```jsonc
 // tsconfig.json
 {
@@ -105,6 +110,7 @@ import type { Options, EditableTreeNode } from 'vue-router/unplugin' // [!code +
 }
 ```
 
+<!-- prettier-ignore -->
 ```jsonc
 // tsconfig.json
 {
@@ -124,6 +130,7 @@ import type { Options, EditableTreeNode } from 'vue-router/unplugin' // [!code +
 
 It's recommended to move the generated types file inside `src/` and rename it to `route-map.d.ts`, as it's automatically included by most setups:
 
+<!-- prettier-ignore -->
 ```ts
 // vite.config.ts
 export default defineConfig({
@@ -138,12 +145,14 @@ export default defineConfig({
 
 Remove the old client types reference. These were either added to an `env.d.ts`:
 
+<!-- prettier-ignore -->
 ```ts
 /// <reference types="unplugin-vue-router/client" /> // [!code --]
 ```
 
 or to your `tsconfig.json`:
 
+<!-- prettier-ignore -->
 ```jsonc
 {
   "include": [

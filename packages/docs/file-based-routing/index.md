@@ -171,6 +171,7 @@ Given the following route configuration:
 
 ::: code-group
 
+<!-- prettier-ignore -->
 ```ts [src/router.ts]
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes, handleHotUpdate } from 'vue-router/auto-routes' // [!code ++]
@@ -253,6 +254,7 @@ Check the [file conventions](./file-based-routing) guide for more information ab
 
 You can pass the `routes` to any plugin that needs to add changes to them but note that **these changes will not be reflected in types**. Use [build-time routes instead](./extending-routes) if you want to have types support. Here is an example with [Vitesse starter](https://github.com/antfu-collective/vitesse/blob/main/src/main.ts):
 
+<!-- prettier-ignore -->
 ```ts
 import { ViteSSG } from 'vite-ssg'
 import { setupLayouts } from 'virtual:generated-layouts'
@@ -290,6 +292,7 @@ export const createApp = ViteSSG(
 
 If you are using [unplugin-auto-import](https://github.com/unplugin/unplugin-auto-import), make sure to remove the `vue-router` preset and use the one exported by `vue-router`:
 
+<!-- prettier-ignore -->
 ```ts
 import { defineConfig } from 'vite'
 import AutoImport from 'unplugin-auto-import/vite'

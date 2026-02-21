@@ -123,6 +123,7 @@ router.resolve({
 
 当你使用 `useRoute()` 或 `this.$route` 获取路由信息时这并不会带来任何变化，如果想要直接在路由器实例上访问它，你需要通过 `currentRoute.value` 来访问实际的路由对象：
 
+<!-- prettier-ignore -->
 ```ts
 const { page } = router.currentRoute.query // [!code --]
 const { page } = router.currentRoute.value.query // [!code ++]

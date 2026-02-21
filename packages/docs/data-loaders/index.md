@@ -17,6 +17,7 @@ This is achieved by extracting the loading logic **outside** of the component `s
 
 Install the `DataLoaderPlugin` **before the `router`**.
 
+<!-- prettier-ignore -->
 ```ts{12-15} twoslash
 // @errors: 2769 2345
 import { createApp } from 'vue'
