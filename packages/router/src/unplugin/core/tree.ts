@@ -623,23 +623,20 @@ export function collectDuplicatedRouteNodes(
     nodes.push({ filePath, node })
   }
 
-  const dups = Array.from(
-    seen
-      .values()
-      .filter(nodes => Object.keys(nodes).length > 1)
-      .map(nodes =>
-        nodes.toSorted(({ node: a }, { node: b }) => {
-          // put the one that takes precedence at the end of the list
-          if (treeNodes.has(a) && !treeNodes.has(b)) {
-            return -1
-          } else if (!treeNodes.has(a) && treeNodes.has(b)) {
-            return 1
-          } else {
-            return 0
-          }
-        })
-      )
-  )
+  const dups = Array.from(seen.values())
+    .filter(nodes => Object.keys(nodes).length > 1)
+    .map(nodes =>
+      nodes.toSorted(({ node: a }, { node: b }) => {
+        // put the one that takes precedence at the end of the list
+        if (treeNodes.has(a) && !treeNodes.has(b)) {
+          return -1
+        } else if (!treeNodes.has(a) && treeNodes.has(b)) {
+          return 1
+        } else {
+          return 0
+        }
+      })
+    )
 
   return dups
 }
