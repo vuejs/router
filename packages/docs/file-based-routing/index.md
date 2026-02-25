@@ -296,7 +296,7 @@ If you are using [unplugin-auto-import](https://github.com/unplugin/unplugin-aut
 ```ts
 import { defineConfig } from 'vite'
 import AutoImport from 'unplugin-auto-import/vite'
-import { VueRouterAutoImports } from 'vue-router' // [!code ++]
+import { VueRouterAutoImports } from 'vue-router/unplugin' // [!code ++]
 
 export default defineConfig({
   plugins: [
