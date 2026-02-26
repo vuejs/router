@@ -394,7 +394,7 @@ function pickParams(
  * @returns the normalized version
  */
 export function normalizeRouteRecord(
-  record: RouteRecordRaw & { aliasOf?: RouteRecordNormalized }
+  record: RouteRecordRaw & { aliasOf?: RouteRecordNormalized | undefined }
 ): RouteRecordNormalized {
   const normalized: Omit<RouteRecordNormalized, 'mods'> = {
     path: record.path,

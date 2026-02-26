@@ -33,22 +33,22 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
    * Name of the matcher. Unique across all matchers. If missing, this record
    * cannot be matched. This is useful for grouping records.
    */
-  name?: RecordName
+  name?: RecordName | undefined
 
   /**
    * {@link MatcherPattern} for the path section of the URI.
    */
-  path?: MatcherPatternPath
+  path?: MatcherPatternPath | undefined
 
   /**
    * {@link MatcherPattern} for the query section of the URI.
    */
-  query?: MatcherPatternQuery[]
+  query?: MatcherPatternQuery[] | undefined
 
   /**
    * {@link MatcherPattern} for the hash section of the URI.
    */
-  hash?: MatcherPatternHash
+  hash?: MatcherPatternHash | undefined
 
   /**
    * Parent record. The parent can be a group or a matchable record.

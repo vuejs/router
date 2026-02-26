@@ -114,13 +114,13 @@ export interface RouteLocationOptions {
    * Note this will also add a new entry to the history unless `replace: true`
    * is passed.
    */
-  force?: boolean
+  force?: boolean | undefined
   /**
    * State to save using the History API. This cannot contain any reactive
    * values and some primitives like Symbols are forbidden. More info at
    * https://developer.mozilla.org/en-US/docs/Web/API/History/state
    */
-  state?: HistoryState
+  state?: HistoryState | undefined
 }
 
 /**
@@ -201,7 +201,7 @@ export interface _RouteRecordBase extends PathParserOptions {
    * before any navigation guard and triggers a new navigation with the new
    * target location.
    */
-  redirect?: RouteRecordRedirectOption
+  redirect?: RouteRecordRedirectOption | undefined
 
   /**
    * Aliases for the record. Allows defining extra paths that will behave like a
@@ -222,6 +222,7 @@ export interface _RouteRecordBase extends PathParserOptions {
   beforeEnter?:
     | NavigationGuardWithThis<undefined>
     | NavigationGuardWithThis<undefined>[]
+    | undefined
 
   /**
    * Arbitrary data attached to the record.

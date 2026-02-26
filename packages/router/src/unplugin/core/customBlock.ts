@@ -25,13 +25,17 @@ export interface CustomRouteBlock extends Partial<
 > {
   name?: string | undefined | false
 
-  alias?: string[]
+  alias?: string[] | undefined
 
-  params?: {
-    path?: Record<string, string>
+  params?:
+    | {
+        path?: Record<string, string> | undefined
 
-    query?: Record<string, string | CustomRouteBlockQueryParamOptions>
-  }
+        query?:
+          | Record<string, string | CustomRouteBlockQueryParamOptions>
+          | undefined
+      }
+    | undefined
 }
 
 export interface CustomRouteBlockQueryParamOptions {
