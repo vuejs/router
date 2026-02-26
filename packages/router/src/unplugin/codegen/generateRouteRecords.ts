@@ -98,6 +98,7 @@ ${overrides.props != null ? indentStr + `props: ${overrides.props},\n` : ''}${
 ${node
   .getChildrenSorted()
   .map(child => generateRouteRecords(child, options, importsMap, indent + 2))
+  .filter(Boolean)
   .join(',\n')}
 ${indentStr}],`
       : '/* no children */'
