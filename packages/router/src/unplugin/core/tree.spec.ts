@@ -511,6 +511,15 @@ describe('Tree', () => {
     expect(tree.children.size).toBe(1)
   })
 
+  it('removes parent when deleting last child of a non-matchable node', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+    const abc = tree.insert('a/b/c', 'a/b/c.vue')
+    tree.insert('admin/_parent', 'admin/_parent.vue')
+    expect(tree.children.has('a')).toBe(true)
+    abc.delete()
+    expect(tree.children.has('a')).toBe(false)
+  })
+
   it('handles multiple params', () => {
     const tree = new PrefixTree(RESOLVED_OPTIONS)
     tree.insert('[a]-[b]', '[a]-[b].vue')
