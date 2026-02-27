@@ -8,9 +8,13 @@ route.params.anyParam
 route.params.page
 
 definePage({
+  // path: '/users/:userId(\\d+)',
   // this doesn't work in custom param version and should warn
   // path: '/users/:userId',
   params: {
+    path: {
+      // id: 'int',
+    },
     query: {
       anyParam: {
         default: '',
@@ -29,7 +33,7 @@ definePage({
 </script>
 
 <template>
-  <h1>{{ String($route.name) }} - {{ $route.path }}</h1>
+  <h1>User by id - {{ $route.path }}</h1>
 
   <pre>{{ route.params }}</pre>
 </template>
