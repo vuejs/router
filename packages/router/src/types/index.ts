@@ -155,6 +155,10 @@ export interface _RouteLocationBase extends Pick<
   'name' | 'path' | 'params' | 'meta'
 > {
   /**
+   * Runtime base path used to expose the route in the URL.
+   */
+  basePath?: string
+  /**
    * The whole location including the `search` and `hash`. This string is
    * percentage encoded.
    */

@@ -37,6 +37,24 @@
       <input type="checkbox" v-model="state.cancelNextNavigation" /> Cancel Next
       Navigation
     </label>
+    <div style="margin-top: 8px">
+      basePath:
+      <code id="basePath">{{ currentBasePath || '(none)' }}</code>
+      <input
+        id="basePathInput"
+        v-model="draftBasePath"
+        placeholder="/acme"
+        style="margin: 0 8px"
+      />
+      <button id="applyBasePath" @click="applyBasePath">Apply</button>
+      <button
+        id="clearBasePath"
+        @click="clearBasePath"
+        style="margin-left: 8px"
+      >
+        Clear
+      </button>
+    </div>
     <ul>
       <li>
         <router-link to="/n/%E2%82%AC">/n/%E2%82%AC</router-link>
@@ -186,10 +204,11 @@
 <script lang="ts" setup>
 import { inject, computed, ref } from 'vue'
 import { scrollWaiter } from './scrollWaiter'
-import { useLink, useRoute, RouterLink } from 'vue-router'
+import { useLink, useRoute, useRouter, RouterLink } from 'vue-router'
 import AppLink from './AppLink.vue'
 
 const route = useRoute()
+const router = useRouter()
 const state = inject('state')
 const viewName = ref('default')
 
@@ -212,6 +231,32 @@ function setupWaiter() {
 const nextUserLink = computed(
   () => '/users/' + String((Number(route.params.id) || 0) + 1)
 )
+const currentBasePath = computed(() => router.basePath)
+const draftBasePath = ref('')
+
+function stripBasePath(path: string, basePath: string): string {
+  if (!basePath) return path
+  if (path === basePath) return '/'
+  if (path.startsWith(basePath + '/')) return path.slice(basePath.length) || '/'
+  return path
+}
+
+async function applyBasePath() {
+  const previousBasePath = router.getBasePath()
+  const cleanPath = stripBasePath(route.path, previousBasePath)
+  router.setBasePath(draftBasePath.value)
+  await router.replace({
+    path: cleanPath,
+    query: route.query,
+    hash: route.hash,
+  })
+  draftBasePath.value = router.getBasePath()
+}
+
+async function clearBasePath() {
+  draftBasePath.value = ''
+  await applyBasePath()
+}
 
 function toggleViewName() {
   viewName.value = viewName.value === 'default' ? 'other' : 'default'

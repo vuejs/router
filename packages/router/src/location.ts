@@ -178,6 +178,7 @@ export function isSameRouteLocation(
     aLastIndex > -1 &&
     aLastIndex === bLastIndex &&
     isSameRouteRecord(a.matched[aLastIndex], b.matched[bLastIndex]) &&
+    (a.basePath || '') === (b.basePath || '') &&
     isSameRouteLocationParams(a.params, b.params) &&
     stringifyQuery(a.query) === stringifyQuery(b.query) &&
     a.hash === b.hash
@@ -306,6 +307,7 @@ export function resolveRelativePath(to: string, from: string): string {
  * ```
  */
 export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = {
+  basePath: '',
   path: '/',
   // TODO: could we use a symbol in the future?
   name: undefined,

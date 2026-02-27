@@ -187,6 +187,136 @@ describe('Router', () => {
     expect(to.fullPath).toBe('/')
   })
 
+  it('supports normalized matching and transformed fullPath for multi-tenant resolve', async () => {
+    const tenant = '/acme'
+    const normalizeLocationPath = (path: string) =>
+      path.startsWith(tenant + '/') ? path.slice(tenant.length) : path
+    const transformFullPath = (fullPath: string) =>
+      fullPath.startsWith(tenant + '/') ? fullPath : tenant + fullPath
+
+    const { router } = await newRouter({
+      normalizeLocationPath,
+      transformFullPath,
+    })
+
+    expect(router.resolve('/foo')).toMatchObject({
+      name: 'Foo',
+      fullPath: '/acme/foo',
+      href: '/acme/foo',
+      path: '/acme/foo',
+    })
+
+    expect(router.resolve('/acme/foo')).toMatchObject({
+      name: 'Foo',
+      fullPath: '/acme/foo',
+      href: '/acme/foo',
+      path: '/acme/foo',
+    })
+  })
+
+  it('supports transformed fullPath on push and replace for multi-tenant', async () => {
+    const tenant = '/acme'
+    const normalizeLocationPath = (path: string) =>
+      path.startsWith(tenant + '/') ? path.slice(tenant.length) : path
+    const transformFullPath = (fullPath: string) =>
+      fullPath.startsWith(tenant + '/') ? fullPath : tenant + fullPath
+
+    const history = createMemoryHistory()
+    const { router } = await newRouter({
+      history,
+      normalizeLocationPath,
+      transformFullPath,
+    })
+
+    vi.spyOn(history, 'push')
+    vi.spyOn(history, 'replace')
+
+    await router.push('/foo')
+    await router.push('/acme/foo')
+    await router.replace('/foo')
+    await router.replace('/acme/foo')
+
+    expect(history.push).toHaveBeenCalledTimes(1)
+    expect(history.push).toHaveBeenCalledWith('/acme/foo', undefined)
+    expect(history.replace).toHaveBeenCalledTimes(0)
+  })
+
+  it('supports basePath in resolve without changing route matching', async () => {
+    const { router } = await newRouter({ basePath: '/acme' })
+
+    expect(router.resolve('/')).toMatchObject({
+      basePath: '/acme',
+      fullPath: '/acme',
+      href: '/acme',
+      path: '/acme',
+    })
+
+    expect(router.resolve('/foo')).toMatchObject({
+      name: 'Foo',
+      basePath: '/acme',
+      fullPath: '/acme/foo',
+      href: '/acme/foo',
+      path: '/acme/foo',
+    })
+
+    expect(router.resolve('/acme/foo')).toMatchObject({
+      name: 'Foo',
+      fullPath: '/acme/foo',
+      href: '/acme/foo',
+      path: '/acme/foo',
+    })
+  })
+
+  it('supports basePath in push/replace and avoids duplicate prefix', async () => {
+    const history = createMemoryHistory()
+    const { router } = await newRouter({ history, basePath: '/acme' })
+    vi.spyOn(history, 'push')
+    vi.spyOn(history, 'replace')
+
+    await router.push('/foo')
+    await router.push('/acme/foo')
+    await router.replace('/foo')
+    await router.replace('/acme/foo')
+
+    expect(history.push).toHaveBeenCalledTimes(1)
+    expect(history.push).toHaveBeenCalledWith('/acme/foo', undefined)
+    expect(history.replace).toHaveBeenCalledTimes(0)
+  })
+
+  it('allows changing basePath at runtime', async () => {
+    const history = createMemoryHistory()
+    const { router } = await newRouter({ history, basePath: '/acme' })
+    vi.spyOn(history, 'push')
+
+    expect(router.currentRoute.value.basePath).toBe('/acme')
+    expect(router.basePath).toBe('/acme')
+    expect(router.resolve('/foo').href).toBe('/acme/foo')
+
+    router.setBasePath('/globex')
+    expect(router.getBasePath()).toBe('/globex')
+    expect(router.resolve('/foo').href).toBe('/globex/foo')
+
+    router.basePath = '/initech/'
+    expect(router.basePath).toBe('/initech')
+    await router.push('/foo')
+    expect(history.push).toHaveBeenCalledWith('/initech/foo', undefined)
+  })
+
+  it('does not treat navigations as duplicated when only basePath changes', async () => {
+    const history = createMemoryHistory()
+    const { router } = await newRouter({ history, basePath: '/acme' })
+    vi.spyOn(history, 'replace')
+
+    await router.push('/foo')
+    router.setBasePath('/globex')
+    await router.replace('/foo')
+
+    expect(history.replace).toHaveBeenCalledWith(
+      '/globex/foo',
+      expect.anything()
+    )
+  })
+
   it('creates an empty query with no query', async () => {
     const stringifyQuery = vi.fn(_ => '')
     const { router } = await newRouter({ stringifyQuery })

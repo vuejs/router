@@ -81,6 +81,32 @@ export interface RouterOptions extends EXPERIMENTAL_RouterOptions_Base {
    * Initial list of routes that should be added to the router.
    */
   routes: Readonly<RouteRecordRaw[]>
+
+  /**
+   * Optional base path to expose routes under a runtime prefix while keeping
+   * route records unchanged.
+   *
+   * E.g. with `basePath: '/acme'`, `/dashboard` still matches internally, but
+   * links are resolved as `/acme/dashboard`.
+   */
+  basePath?: string
+
+  /**
+   * Optional hook to normalize an incoming location path before route matching.
+   *
+   * Useful for scenarios like multi-tenant prefixes where the public URL
+   * (`/acme/dashboard`) should match routes declared without the prefix
+   * (`/dashboard`).
+   */
+  normalizeLocationPath?: (path: string) => string
+
+  /**
+   * Optional hook to transform a resolved internal fullPath into a public one.
+   *
+   * Useful for scenarios like multi-tenant prefixes where links should resolve
+   * to `/acme/...` while route records remain `/...`.
+   */
+  transformFullPath?: (fullPath: string) => string
 }
 
 /**
@@ -121,6 +147,21 @@ export interface Router extends EXPERIMENTAL_Router_Base<RouteRecordNormalized> 
    * Delete all routes from the router.
    */
   clearRoutes(): void
+
+  /**
+   * Current runtime base path used for route matching and resolved links.
+   */
+  basePath: string
+
+  /**
+   * Updates the runtime base path.
+   */
+  setBasePath(basePath: string): void
+
+  /**
+   * Returns the current runtime base path.
+   */
+  getBasePath(): string
 }
 
 /**
@@ -132,6 +173,10 @@ export function createRouter(options: RouterOptions): Router {
   const matcher = createRouterMatcher(options.routes, options)
   const parseQuery = options.parseQuery || originalParseQuery
   const stringifyQuery = options.stringifyQuery || originalStringifyQuery
+  const normalizeLocationPath =
+    options.normalizeLocationPath || ((p: string) => p)
+  const transformFullPath = options.transformFullPath || ((p: string) => p)
+  let runtimeBasePath = normalizeBasePath(options.basePath || '')
   const routerHistory = options.history
   if (__DEV__ && !routerHistory)
     throw new Error(
@@ -160,6 +205,105 @@ export function createRouter(options: RouterOptions): Router {
   const decodeParams: (params: RouteParams | undefined) => RouteParams =
     // @ts-expect-error: intentionally avoid the type check
     applyToParams.bind(null, decode)
+
+  function normalizeBasePath(basePath: string): string {
+    if (!basePath || basePath === '/') return ''
+    const normalized = (
+      basePath[0] === '/' ? basePath : '/' + basePath
+    ).replace(/\/+$/, '')
+    return normalized === '/' ? '' : normalized
+  }
+
+  function applyBasePathToResolvedPath(path: string): string {
+    if (!runtimeBasePath) return path
+    if (path === runtimeBasePath || path.startsWith(runtimeBasePath + '/')) {
+      return path
+    }
+    return path === '/' ? runtimeBasePath : runtimeBasePath + path
+  }
+
+  function removeBasePathFromMatchingPath(path: string): string {
+    if (!runtimeBasePath) return path
+    if (path === runtimeBasePath) return '/'
+    if (path.startsWith(runtimeBasePath + '/')) {
+      return path.slice(runtimeBasePath.length) || '/'
+    }
+    return path
+  }
+
+  function normalizePathForMatching(path: string): string {
+    const normalized = normalizeLocationPath(
+      removeBasePathFromMatchingPath(path)
+    )
+    if (__DEV__ && typeof normalized !== 'string') {
+      warn(
+        `normalizeLocationPath() must return a string. Received "${typeof normalized}". Falling back to original path.`
+      )
+      return path
+    }
+    return normalized
+  }
+
+  function splitPathSearchHash(fullPath: string): {
+    path: string
+    search: string
+    hash: string
+  } {
+    const hashPos = fullPath.indexOf('#')
+    let searchPos = fullPath.indexOf('?')
+    searchPos = hashPos >= 0 && searchPos > hashPos ? -1 : searchPos
+
+    const pathEnd =
+      searchPos >= 0 ? searchPos : hashPos >= 0 ? hashPos : fullPath.length
+    const path = fullPath.slice(0, pathEnd) || '/'
+    const search =
+      searchPos >= 0
+        ? fullPath.slice(searchPos, hashPos > searchPos ? hashPos : undefined)
+        : ''
+    const hash = hashPos >= 0 ? fullPath.slice(hashPos) : ''
+
+    return {
+      path,
+      search,
+      hash,
+    }
+  }
+
+  function resolvePublicPathFromInternal(internalFullPath: string): {
+    fullPath: string
+    path: string
+    href: string
+  } {
+    const internalLocation = splitPathSearchHash(internalFullPath)
+    const fullPathWithBase =
+      applyBasePathToResolvedPath(internalLocation.path) +
+      internalLocation.search +
+      internalLocation.hash
+
+    const transformed = transformFullPath(fullPathWithBase)
+    let fullPath = fullPathWithBase
+    if (typeof transformed === 'string') {
+      fullPath = transformed
+      if (__DEV__ && fullPath[0] !== '/') {
+        warn(
+          `transformFullPath() must return an absolute path starting with "/". Received "${fullPath}". Falling back to "${fullPathWithBase}".`
+        )
+        fullPath = fullPathWithBase
+      }
+    } else if (__DEV__) {
+      warn(
+        `transformFullPath() must return a string. Received "${typeof transformed}". Falling back to original path.`
+      )
+    }
+
+    const resolved = splitPathSearchHash(fullPath)
+
+    return {
+      fullPath,
+      path: resolved.path,
+      href: routerHistory.createHref(fullPath),
+    }
+  }
 
   function addRoute(
     parentOrRoute: NonNullable<RouteRecordNameGeneric> | RouteRecordRaw,
@@ -208,34 +352,37 @@ export function createRouter(options: RouterOptions): Router {
     // const objectLocation = routerLocationAsObject(rawLocation)
     // we create a copy to modify it later
     currentLocation = assign({}, currentLocation || currentRoute.value)
+    currentLocation.path = normalizePathForMatching(currentLocation.path)
     if (typeof rawLocation === 'string') {
       const locationNormalized = parseURL(
         parseQuery,
         rawLocation,
         currentLocation.path
       )
+      const normalizedPath = normalizePathForMatching(locationNormalized.path)
+      const internalFullPath = locationNormalized.fullPath
       const matchedRoute = matcher.resolve(
-        { path: locationNormalized.path },
+        { path: normalizedPath },
         currentLocation
       )
+      const publicLocation = resolvePublicPathFromInternal(internalFullPath)
 
-      const href = routerHistory.createHref(locationNormalized.fullPath)
       if (__DEV__) {
-        if (href.startsWith('//'))
+        if (publicLocation.href.startsWith('//'))
           warn(
-            `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
+            `Location "${rawLocation}" resolved to "${publicLocation.href}". A resolved location cannot start with multiple slashes.`
           )
         else if (!matchedRoute.matched.length) {
           warn(`No match found for location with path "${rawLocation}"`)
         }
       }
 
-      // locationNormalized is always a new object
-      return assign(locationNormalized, matchedRoute, {
+      return assign({}, matchedRoute, publicLocation, {
+        basePath: runtimeBasePath,
+        query: locationNormalized.query,
         params: decodeParams(matchedRoute.params),
         hash: decode(locationNormalized.hash),
         redirectedFrom: undefined,
-        href,
       })
     }
 
@@ -263,7 +410,9 @@ export function createRouter(options: RouterOptions): Router {
         )
       }
       matcherLocation = assign({}, rawLocation, {
-        path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path,
+        path: normalizePathForMatching(
+          parseURL(parseQuery, rawLocation.path, currentLocation.path).path
+        ),
       })
     } else {
       // remove any nullish param
@@ -295,19 +444,18 @@ export function createRouter(options: RouterOptions): Router {
     // we need to run the decoding again
     matchedRoute.params = normalizeParams(decodeParams(matchedRoute.params))
 
-    const fullPath = stringifyURL(
+    const internalFullPath = stringifyURL(
       stringifyQuery,
       assign({}, rawLocation, {
         hash: encodeHash(hash),
         path: matchedRoute.path,
       })
     )
-
-    const href = routerHistory.createHref(fullPath)
+    const publicLocation = resolvePublicPathFromInternal(internalFullPath)
     if (__DEV__) {
-      if (href.startsWith('//')) {
+      if (publicLocation.href.startsWith('//')) {
         warn(
-          `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
+          `Location "${rawLocation}" resolved to "${publicLocation.href}". A resolved location cannot start with multiple slashes.`
         )
       } else if (!matchedRoute.matched.length) {
         warn(
@@ -318,35 +466,33 @@ export function createRouter(options: RouterOptions): Router {
       }
     }
 
-    return assign(
-      {
-        fullPath,
-        // keep the hash encoded so fullPath is effectively path + encodedQuery +
-        // hash
-        hash,
-        query:
-          // if the user is using a custom query lib like qs, we might have
-          // nested objects, so we keep the query as is, meaning it can contain
-          // numbers at `$route.query`, but at the point, the user will have to
-          // use their own type anyway.
-          // https://github.com/vuejs/router/issues/328#issuecomment-649481567
-          stringifyQuery === originalStringifyQuery
-            ? normalizeQuery(rawLocation.query)
-            : ((rawLocation.query || {}) as LocationQuery),
-      },
-      matchedRoute,
-      {
-        redirectedFrom: undefined,
-        href,
-      }
-    )
+    return assign({}, matchedRoute, publicLocation, {
+      basePath: runtimeBasePath,
+      // keep the hash encoded so fullPath is effectively path + encodedQuery +
+      // hash
+      hash,
+      query:
+        // if the user is using a custom query lib like qs, we might have
+        // nested objects, so we keep the query as is, meaning it can contain
+        // numbers at `$route.query`, but at the point, the user will have to
+        // use their own type anyway.
+        // https://github.com/vuejs/router/issues/328#issuecomment-649481567
+        stringifyQuery === originalStringifyQuery
+          ? normalizeQuery(rawLocation.query)
+          : ((rawLocation.query || {}) as LocationQuery),
+      redirectedFrom: undefined,
+    })
   }
 
   function locationAsObject(
     to: RouteLocationRaw | RouteLocationNormalized
   ): Exclude<RouteLocationRaw, string> | RouteLocationNormalized {
     return typeof to === 'string'
-      ? parseURL(parseQuery, to, currentRoute.value.path)
+      ? parseURL(
+          parseQuery,
+          to,
+          normalizePathForMatching(currentRoute.value.path)
+        )
       : assign({}, to)
   }
 
@@ -996,6 +1142,18 @@ export function createRouter(options: RouterOptions): Router {
     getRoutes,
     resolve,
     options,
+    get basePath() {
+      return runtimeBasePath
+    },
+    set basePath(basePath: string) {
+      runtimeBasePath = normalizeBasePath(basePath)
+    },
+    setBasePath(basePath: string) {
+      runtimeBasePath = normalizeBasePath(basePath)
+    },
+    getBasePath() {
+      return runtimeBasePath
+    },
 
     push,
     replace,
