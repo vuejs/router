@@ -211,7 +211,11 @@ export class TreeNode {
     this.parent.children.delete(this.value.rawSegment)
     // delete lone parent nodes - they only provide layout wrapping for children
     // so without children they don't make sense to be included in the route records
-    if (!this.parent.isMatchable() && this.parent.children.size === 0) {
+    if (
+      !this.parent.isRoot() &&
+      !this.parent.isMatchable() &&
+      this.parent.children.size === 0
+    ) {
       this.parent.delete()
     }
     // clear link to parent
