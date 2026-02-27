@@ -365,6 +365,18 @@ describe('generateRouteRecord', () => {
     })
   })
 
+  it('preserves backslashes in path overrides', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('test/[id]', 'test/[id].vue')
+    const node = tree.insert('test/[id]/index', 'test/[id]/index.vue')
+    node.setCustomRouteBlock('test/[id]/index', {
+      path: '/:id(\\d+)',
+    })
+
+    const result = generateRouteRecordSimple(tree)
+    expect(result).toContain("path: '/:id(\\\\d+)'")
+  })
+
   describe('raw paths insertions', () => {
     it('works with raw paths', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)

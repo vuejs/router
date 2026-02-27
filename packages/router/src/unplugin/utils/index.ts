@@ -55,5 +55,5 @@ export function formatMultilineUnion(items: string[], spaces: number): string {
  * toStringLiteral("it's fine") // returns "'it\'s fine'"
  */
 export function toStringLiteral(str: string): string {
-  return `'${str.replace(/'/g, "\\'")}'`
+  return `'${str.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
 }
