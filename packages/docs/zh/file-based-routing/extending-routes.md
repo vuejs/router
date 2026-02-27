@@ -54,7 +54,7 @@ definePage({
 
 ### SFC `<route>` 自定义块
 
-`<route>` 自定义块是一种扩展现有路由的方法。它可用于添加新的 `meta` 字段，覆盖 `path`、`name` 或路由中的任何其他内容。**它必须添加到 [路由文件夹](./file-based-routing#routes-folder-structure) 内的 `.vue` 组件中**。它类似于 [vite-plugin-pages 中的相同功能](https://github.com/hannoeru/vite-plugin-pages#sfc-custom-block-for-route-data) 以方便迁移。
+`<route>` 自定义块是一种扩展现有路由的方法。它可用于添加新的 `meta` 字段，覆盖 `path`、`name` 或路由中的任何其他内容。**它必须添加到 [路由文件夹](./file-based-routing#路由文件夹结构) 内的 `.vue` 组件中**。它类似于 [vite-plugin-pages 中的相同功能](https://github.com/hannoeru/vite-plugin-pages#sfc-custom-block-for-route-data) 以方便迁移。
 
 ```vue
 <route lang="json">
@@ -91,7 +91,7 @@ const router = createRouter({
 ```
 
 ::: warning
-在运行时添加的路由 [需要特殊处理 HMR](./hmr#runtime-routes)。
+在运行时添加的路由 [需要特殊处理 HMR](./hmr#运行时路由)。
 :::
 
 随着此插件的发展，这种情况应该越来越少，并且只在特定场景下才需要。
