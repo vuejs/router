@@ -19,7 +19,7 @@ export function generateRouteRecords(
   importsMap: ImportsMap,
   indent = 0
 ): string {
-  // delete lone children nodes - they only provide layout wrapping for children
+  // delete lone parent nodes - they only provide layout wrapping for children
   // so without children they don't make sense to be included in the route records
   node.children.forEach(child => {
     if (!child.isMatchable() && child.children.size === 0) {
