@@ -514,7 +514,6 @@ describe('Tree', () => {
   it('removes parent when deleting last child of a non-matchable node', () => {
     const tree = new PrefixTree(RESOLVED_OPTIONS)
     const abc = tree.insert('a/b/c', 'a/b/c.vue')
-    tree.insert('admin/_parent', 'admin/_parent.vue')
     expect(tree.children.has('a')).toBe(true)
     abc.delete()
     expect(tree.children.has('a')).toBe(false)
