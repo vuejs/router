@@ -182,6 +182,36 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
           ],
         },
         {
+          text: '基于文件的路由',
+          collapsed: false,
+          items: [
+            {
+              text: '入门',
+              link: '/zh/file-based-routing/',
+            },
+            {
+              text: '文件约定',
+              link: '/zh/file-based-routing/file-based-routing.html',
+            },
+            {
+              text: '配置',
+              link: '/zh/file-based-routing/configuration.html',
+            },
+            {
+              text: '扩展路由',
+              link: '/zh/file-based-routing/extending-routes.html',
+            },
+            {
+              text: '热模块替换',
+              link: '/zh/file-based-routing/hmr.html',
+            },
+            {
+              text: 'ESLint',
+              link: '/zh/file-based-routing/eslint.html',
+            },
+          ],
+        },
+        {
           items: [
             {
               text: '从 Vue2 迁移',
