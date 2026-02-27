@@ -19,14 +19,6 @@ export function generateRouteRecords(
   importsMap: ImportsMap,
   indent = 0
 ): string {
-  // delete lone parent nodes - they only provide layout wrapping for children
-  // so without children they don't make sense to be included in the route records
-  node.children.forEach(child => {
-    if (!child.isMatchable() && child.children.size === 0) {
-      child.delete()
-    }
-  })
-
   if (node.isRoot()) {
     return `[
 ${node
@@ -34,6 +26,12 @@ ${node
   .map(child => generateRouteRecords(child, options, importsMap, indent + 1))
   .join(',\n')}
 ]`
+  }
+
+  // Skip lone parent nodes - they only provide layout wrapping for children
+  // so without children they don't make sense to be included in the route records
+  if (!node.isMatchable() && node.children.size === 0) {
+    return ''
   }
 
   const definePageDataList: string[] = []
