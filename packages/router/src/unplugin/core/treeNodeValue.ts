@@ -161,7 +161,36 @@ class _TreeNodeValueBase {
    * does not include params from parent nodes.
    */
   get params(): (TreePathParam | TreeQueryParam)[] {
-    return [...(this.isParam() ? this.pathParams : []), ...this.queryParams]
+    return [...this.getPathParams(), ...this.queryParams]
+  }
+
+  /**
+   * Gets all path params for the node, including params defined in path overrides.
+   */
+  getPathParams(): TreePathParam[] {
+    const overridePath = this.overrides.path
+
+    if (!overridePath) {
+      return this.isParam() ? [...this.pathParams] : []
+    }
+
+    const overrideParsers = this.overrides.params?.path ?? {}
+    const params: TreePathParam[] = []
+
+    for (const segment of overridePath.split('/')) {
+      if (!segment) continue
+
+      const [, segmentParams] = parseRawPathSegment(segment)
+
+      for (const param of segmentParams) {
+        params.push({
+          ...param,
+          parser: overrideParsers[param.paramName] ?? param.parser,
+        })
+      }
+    }
+
+    return params
   }
 
   toString(): string {
