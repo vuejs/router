@@ -136,33 +136,23 @@ declare module 'vue-router/auto-routes' {
 
 :::
 
-Then, if you have an `env.d.ts` file, add the `vue-router/auto` types to it:
+### Volar Plugins
 
-::: code-group
+To get the best TypeScript experience in Single File Components, add the following Volar plugins to your `tsconfig.json` (or `tsconfig.app.json`):
 
-```ts{2} [env.d.ts]
-/// <reference types="vite/client" />
-/// <reference types="vue-router/auto" />
-```
-
-:::
-
-If you don't have an `env.d.ts` file, you can create one or add them to the `types` property in your `tsconfig.json`:
-
-::: code-group
-
-```json [tsconfig.json]
+```jsonc [tsconfig.json]
 {
-  "compilerOptions": {
-    // ...
-    "types": [
-      "vue-router/auto" // [!code ++]
-    ]
-  }
+  "vueCompilerOptions": {
+    "plugins": [
+      "vue-router/volar/sfc-route-blocks",
+      "vue-router/volar/sfc-typed-router",
+    ],
+  },
 }
 ```
 
-:::
+- `vue-router/volar/sfc-route-blocks` — enables `<route>` blocks in SFCs for defining per-page route metadata
+- `vue-router/volar/sfc-typed-router` — makes `useRoute()` return a typed route based on the current page component, so `route.params` is correctly typed
 
 ### Migrating an existing project
 
