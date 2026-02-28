@@ -64,7 +64,7 @@ const routes = [
 const routes = [
   {
     path: '/users',
-    // 注意这里没有组件
+    // 注意这里没有 component
     children: [
       { path: '', component: () => import('src/pages/users/index.vue') },
     ],
@@ -111,7 +111,7 @@ const routes = [
 
 ## 路由组
 
-有时，它有助于以不改变路由 URL 的方式组织你的文件结构。路由组让你以逻辑方式组织你的路由，以对你有意义的方式，而不影响实际的 URL。例如，如果你有几个共享相同布局的路由，你可以使用路由组将它们分组在一起。考虑以下文件结构：
+有时，需要在不改变路由 URL 的前提下组织文件结构会有所帮助。路由组让你以逻辑方式组织你的路由，以对你有意义的方式，而不影响实际的 URL。例如，如果你有几个共享相同布局的路由，你可以使用路由组将它们分组在一起。考虑以下文件结构：
 
 ```text
 src/pages/
@@ -132,7 +132,7 @@ src/pages/
 - `/order` -> 渲染 `src/pages/(user)/order.vue`
 ```
 
-这种方法允许你为了更好地可维护性而组织你的文件，而不改变应用路由的结构。
+这种方法允许你组织你的文件，以提高可维护性，且无需更改应用程序的路由结构。
 
 你也可以在页面组件中使用路由组。这等同于将页面组件命名为 `index.vue`：
 
@@ -192,7 +192,7 @@ VueRouter({
     'src/pages',
     {
       src: 'src/admin/routes',
-      // 注意总是有尾随斜杠，并且永远没有前导斜杠
+      // 注意总是有尾部斜杠，并且前面头部斜杠
       path: 'admin/',
       // src/admin/routes/dashboard.vue -> /admin/dashboard
     },
@@ -204,7 +204,7 @@ VueRouter({
     },
     {
       src: 'src/promos',
-      // 你可以省略尾随斜杠
+      // 你可以省略尾部斜杠
       path: 'promos-',
       // src/promos/black-friday.vue -> /promos-black-friday
     },

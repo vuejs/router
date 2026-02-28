@@ -70,7 +70,7 @@ build({
 
 :::
 
-添加此插件后，**启动开发服务器**（通常是 `npm run dev`）以在 `typed-router.d.ts` 生成第一版本的类型文件，该文件应该与 `"moduleResolution": "Bundler"` 一起添加到你的 `tsconfig.json` 中。它应该看起来像这样：
+添加此插件后，**启动开发服务器**（通常是 `npm run dev`）在 `typed-router.d.ts` 生成第一版本的类型文件，该文件应该与 `"moduleResolution": "Bundler"` 一起添加到你的 `tsconfig.json` 中。它应该看起来像这样：
 
 ::: code-group
 
@@ -250,9 +250,9 @@ createApp(App)
 
 查看 [文件约定](./file-based-routing) 指南以获取有关命名约定的更多信息。
 
-### 操作路由
+### 修改路由
 
-你可以将 `routes` 传递给任何需要添加更改的路由的插件，但请注意**这些更改不会反映在类型中**。如果你想要类型支持，请改用 [构建时路由](./extending-routes)。以下是使用 [Vitesse 启动器](https://github.com/antfu-collective/vitesse/blob/main/src/main.ts) 的示例：
+你可以将 `routes` 传递给任何需要对其进行修改的插件，但请注意**这些更改不会反映在类型中**。如果你想要类型支持，请改用 [构建时路由](./extending-routes)。以下是使用 [Vitesse 启动器](https://github.com/antfu-collective/vitesse/blob/main/src/main.ts) 的示例：
 
 <!-- prettier-ignore -->
 ```ts
