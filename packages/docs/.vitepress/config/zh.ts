@@ -202,7 +202,7 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/zh/file-based-routing/extending-routes.html',
             },
             {
-              text: '热模块替换',
+              text: '热更新',
               link: '/zh/file-based-routing/hmr.html',
             },
             {

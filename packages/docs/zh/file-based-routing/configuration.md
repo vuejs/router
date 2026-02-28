@@ -18,16 +18,16 @@ VueRouter({
     },
   ],
 
-  // 哪些文件应被视为页面
+  // 哪些类型的文件应被视为页面
   extensions: ['.vue'],
 
   // 要包含哪些文件
   filePatterns: ['**/*'],
 
-  // 从扫描中排除的文件
+  // 要排除的文件
   exclude: [],
 
-  // 在哪里生成类型
+  // 生成的 d.ts 文件路径
   dts: './typed-router.d.ts',
 
   // 如何生成路由名称
@@ -39,7 +39,7 @@ VueRouter({
   // 如何导入路由，也可以是字符串
   importMode: 'async',
 
-  // 路径相对于哪里
+  // 根目录
   root: process.cwd(),
 
   // 路径解析器的选项
