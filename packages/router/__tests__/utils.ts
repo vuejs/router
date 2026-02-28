@@ -57,7 +57,7 @@ export interface RouteRecordViewLoose extends Pick<
   enterCallbacks: Record<string, Function[]>
   props: Record<string, _RouteRecordProps>
   aliasOf: RouteRecordNormalized | RouteRecordViewLoose | undefined
-  children?: RouteRecordRaw[]
+  children?: RouteRecordRaw[] | undefined
   components: Record<string, RouteComponent> | null | undefined
 }
 
@@ -67,7 +67,7 @@ export interface RouteLocationNormalizedLoose extends RouteLocationNormalized {
   path: string
   // record?
   params: any
-  redirectedFrom?: Partial<MatcherLocation>
+  redirectedFrom?: Partial<MatcherLocation> | undefined
   meta: any
   matched: Partial<RouteRecordViewLoose>[]
 }
@@ -77,7 +77,7 @@ export interface MatcherLocationNormalizedLoose {
   path: string
   // record?
   params: any
-  redirectedFrom?: Partial<MatcherLocation>
+  redirectedFrom?: Partial<MatcherLocation> | undefined
   meta: any
   matched: Partial<RouteRecordViewLoose>[]
   instances: Record<string, any>

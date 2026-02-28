@@ -214,7 +214,7 @@ type DefinePageParamsInfo = NonNullable<CustomRouteBlock['params']>
 export interface DefinePageInfo {
   name?: string | false
   path?: string
-  alias?: string[]
+  alias?: string[] | undefined
   params?: CustomRouteBlock['params']
   /**
    * Whether definePage has properties beyond the statically extracted ones
