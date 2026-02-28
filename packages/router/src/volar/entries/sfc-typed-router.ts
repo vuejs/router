@@ -39,6 +39,17 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
     },
   }
 
+  const defineNames = new Set(['definePage', 'definePageMeta'])
+  const methodKeys = new Set([
+    // vue-router
+    'beforeEnter',
+    'redirect',
+    // nuxt
+    'key',
+    'scrollToTop',
+    'validate',
+  ])
+
   return {
     version: 2.1,
     resolveEmbeddedCode(fileName, sfc, embeddedCode) {
@@ -60,6 +71,67 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
 
       function visit(node: ts.Node) {
         if (
+          ts.isCallExpression(node) &&
+          ts.isIdentifier(node.expression) &&
+          defineNames.has(node.expression.text) &&
+          node.arguments.length >= 1 &&
+          ts.isObjectLiteralExpression(node.arguments[0])
+        ) {
+          for (const prop of node.arguments[0].properties) {
+            if (
+              !prop.name ||
+              !ts.isIdentifier(prop.name) ||
+              !methodKeys.has(prop.name.text)
+            ) {
+              continue
+            }
+
+            const targetArg = (
+              ts.isPropertyAssignment(prop) &&
+              ts.isFunctionLike(prop.initializer)
+                ? prop.initializer
+                : ts.isMethodDeclaration(prop)
+                  ? prop
+                  : undefined
+            )?.parameters[0]
+
+            if (
+              targetArg &&
+              ts.isIdentifier(targetArg.name) &&
+              !targetArg.type &&
+              !targetArg.dotDotDotToken
+            ) {
+              const source = sfc.scriptSetup!.name
+              const { start, end } = getStartEnd(
+                targetArg.name,
+                sfc.scriptSetup!.ast
+              )
+              const token = Symbol()
+              replaceSourceRange(
+                embeddedCode.content,
+                source,
+                start,
+                start,
+                [
+                  ``,
+                  source,
+                  start,
+                  { __combineToken: token, verification: true },
+                ],
+                `{ key: `
+              )
+              replaceSourceRange(
+                embeddedCode.content,
+                source,
+                end,
+                end,
+                ` = {} as any }`,
+                [``, source, start, { __combineToken: token }],
+                `: Record<string, any> & { key?: ReturnType<typeof import('vue-router').useRoute${useRouteNameTypeParam}> }`
+              )
+            }
+          }
+        } else if (
           ts.isCallExpression(node) &&
           ts.isIdentifier(node.expression) &&
           ts.idText(node.expression) === 'useRoute' &&
