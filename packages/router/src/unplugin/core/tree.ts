@@ -624,7 +624,12 @@ export function collectDuplicatedRouteNodes(
   }
 
   const dups = Array.from(seen.values())
-    .filter(nodes => Object.keys(nodes).length > 1)
+    // All entries in a group reference the same TreeNode instance, so
+    // comparing the number of files to components.size tells us if any
+    // file was overwritten (e.g. index.vue vs index@default.vue both
+    // targeting the "default" view). Different named views on the same
+    // node (e.g. index.vue + index@header.vue) are not conflicts.
+    .filter(nodes => nodes.length > nodes[0].node.value.components.size)
     .map(nodes =>
       nodes.toSorted(({ node: a }, { node: b }) => {
         // put the one that takes precedence at the end of the list

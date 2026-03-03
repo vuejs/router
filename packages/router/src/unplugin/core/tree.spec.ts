@@ -1275,6 +1275,14 @@ describe('Tree', () => {
       expect(c.children.has('_parent')).toBe(false)
     })
 
+    it('does not flag named views as conflicts', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('posts/index', 'posts/index.vue')
+      tree.insert('posts/index@header', 'posts/index@header.vue')
+
+      expect(collectDuplicatedRouteNodes(tree)).toEqual([])
+    })
+
     it('collects _parent conflicts', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
       const nested = tree.insert('nested', 'nested.vue')
