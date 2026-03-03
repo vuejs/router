@@ -17,10 +17,17 @@ import type {
 
 // Custom route params parsers
 type Param_date = ReturnType<NonNullable<typeof import('./params/date.ts').parser['get']>>
+type Param_npmOrg = ReturnType<NonNullable<typeof import('./params/npm-org.ts').parser['get']>>
+type Param_semver = ReturnType<NonNullable<typeof import('./params/semver.ts').parser['get']>>
+type Param_versionRange = ReturnType<NonNullable<typeof import('./params/version-range.ts').parser['get']>>
 
 declare module 'vue-router' {
   interface TypesConfig {
-    ParamParsers: 'date'
+    ParamParsers:
+      | 'date'
+      | 'npm-org'
+      | 'semver'
+      | 'version-range'
   }
 }
 
@@ -34,6 +41,27 @@ declare module 'vue-router/auto-routes' {
       '/',
       Record<never, never>,
       Record<never, never>,
+      | never
+    >,
+    '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]': RouteRecordInfo<
+      '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]',
+      '/package/:org?/:pkgName/:pkgVersion',
+      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_semver, unknown[]> },
+      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_semver, unknown[]> },
+      | never
+    >,
+    '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]': RouteRecordInfo<
+      '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]',
+      '/package-old/:org?/:pkgName/:pkgVersion',
+      { org: string | null, pkgName: string, pkgVersion: string },
+      { org: string | null, pkgName: string, pkgVersion: string },
+      | never
+    >,
+    '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]': RouteRecordInfo<
+      '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]',
+      '/package-range/:org?/:pkgName/:pkgVersion',
+      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_versionRange, unknown[]> },
+      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_versionRange, unknown[]> },
       | never
     >,
     '/[a].[b]': RouteRecordInfo<
@@ -242,6 +270,32 @@ declare module 'vue-router/auto-routes' {
     'src/pages/(home).vue': {
       routes:
         | '/(home)'
+      views:
+        | never
+    }
+    'src/pages/(packages)/_parent.vue': {
+      routes:
+        | '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]'
+        | '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]'
+        | '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]'
+      views:
+        | 'default'
+    }
+    'src/pages/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver].vue': {
+      routes:
+        | '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]'
+      views:
+        | never
+    }
+    'src/pages/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion].vue': {
+      routes:
+        | '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]'
+      views:
+        | never
+    }
+    'src/pages/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range].vue': {
+      routes:
+        | '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]'
       views:
         | never
     }

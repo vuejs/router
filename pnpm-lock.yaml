@@ -164,6 +164,9 @@ importers:
 
   packages/playground-file-based:
     dependencies:
+      semver:
+        specifier: ^7.7.3
+        version: 7.7.3
       vue:
         specifier: 3.6.0-beta.5
         version: 3.6.0-beta.5(typescript@5.9.3)
@@ -171,6 +174,9 @@ importers:
         specifier: workspace:*
         version: link:../router
     devDependencies:
+      '@types/semver':
+        specifier: ^7.7.1
+        version: 7.7.1
       '@vitejs/plugin-vue':
         specifier: ^6.0.4
         version: 6.0.4(vite@7.3.1(@types/node@24.10.10)(jiti@2.6.1)(terser@5.43.1)(yaml@2.8.2))(vue@3.6.0-beta.5(typescript@5.9.3))
@@ -1562,6 +1568,9 @@ packages:
 
   '@types/selenium-webdriver@4.35.1':
     resolution: {integrity: sha512-mAt5iZv1D2/9Sb9eCdwxh5ePxbgwvJGTkD7hGdgZOjemABF8Qrde7H0qI5GKSp9f4+wGvOY/yNdBOver817/6A==}
+
+  '@types/semver@7.7.1':
+    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
@@ -6273,6 +6282,8 @@ snapshots:
     dependencies:
       '@types/node': 24.10.10
       '@types/ws': 8.18.1
+
+  '@types/semver@7.7.1': {}
 
   '@types/unist@3.0.3': {}
 

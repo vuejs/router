@@ -10,10 +10,12 @@
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
+    "semver": "^7.7.3",
     "vue": "3.6.0-beta.5",
     "vue-router": "workspace:*"
   },
   "devDependencies": {
+    "@types/semver": "^7.7.1",
     "@vitejs/plugin-vue": "^6.0.4",
     "@vue/compiler-sfc": "~3.5.26",
     "@vue/tsconfig": "^0.8.1",
