@@ -35,8 +35,11 @@ const targetRoute = ref('')
     </div>
 
     <div>
-      <p>Currently at "{{ $route.name }}" ({{ $route.fullPath }})</p>
-      <pre>{{ $route.params }}</pre>
+      <details>
+        <summary>Route Info</summary>
+        <p>Currently at "{{ $route.name }}" ({{ $route.fullPath }})</p>
+        <pre>{{ $route.params }}</pre>
+      </details>
       <form @submit.prevent="router.push(targetRoute)">
         <label>
           Navigate to:
