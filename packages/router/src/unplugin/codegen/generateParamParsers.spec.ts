@@ -6,7 +6,7 @@ import {
   generateParamsTypes,
   generateParamParserOptions,
   generatePathParamsOptions,
-  generateParamParserCustomType,
+  generateCustomParamParsersList,
   type ParamParsersMap,
 } from './generateParamParsers'
 import { PrefixTree } from '../core/tree'
@@ -573,8 +573,8 @@ describe('generatePathParamsOptions', () => {
 describe('generateParamParserCustomType', () => {
   it('returns never for empty param parsers map', () => {
     const paramParsers: ParamParsersMap = new Map()
-    const result = generateParamParserCustomType(paramParsers)
-    expect(result).toBe('never')
+    const result = generateCustomParamParsersList(paramParsers)
+    expect(result).toEqual(['never'])
   })
 
   it('returns single quoted parser name for one parser', () => {
@@ -590,11 +590,11 @@ describe('generateParamParserCustomType', () => {
       ],
     ])
 
-    const result = generateParamParserCustomType(paramParsers)
-    expect(result).toBe("'date'")
+    const result = generateCustomParamParsersList(paramParsers)
+    expect(result).toEqual(["'date'"])
   })
 
-  it('returns union of quoted parser names for multiple parsers in alphabetical order on separate lines', () => {
+  it('returns a list of quoted parser names for multiple parsers in alphabetical order', () => {
     const paramParsers: ParamParsersMap = new Map([
       [
         'uuid',
@@ -616,8 +616,8 @@ describe('generateParamParserCustomType', () => {
       ],
     ])
 
-    const result = generateParamParserCustomType(paramParsers)
-    expect(result).toBe("  | 'date'\n  | 'uuid'")
+    const result = generateCustomParamParsersList(paramParsers)
+    expect(result).toEqual(["'date'", "'uuid'"])
   })
 
   it('handles parser names with special characters correctly', () => {
@@ -633,43 +633,8 @@ describe('generateParamParserCustomType', () => {
       ],
     ])
 
-    const result = generateParamParserCustomType(paramParsers)
-    expect(result).toBe("'custom-parser'")
-  })
-
-  it('formats multiple parsers with proper indentation for three or more types', () => {
-    const paramParsers: ParamParsersMap = new Map([
-      [
-        'uuid',
-        {
-          name: 'uuid',
-          typeName: 'Param_uuid',
-          relativePath: 'parsers/uuid',
-          absolutePath: '/path/to/parsers/uuid',
-        },
-      ],
-      [
-        'date',
-        {
-          name: 'date',
-          typeName: 'Param_date',
-          relativePath: 'parsers/date',
-          absolutePath: '/path/to/parsers/date',
-        },
-      ],
-      [
-        'slug',
-        {
-          name: 'slug',
-          typeName: 'Param_slug',
-          relativePath: 'parsers/slug',
-          absolutePath: '/path/to/parsers/slug',
-        },
-      ],
-    ])
-
-    const result = generateParamParserCustomType(paramParsers)
-    expect(result).toBe("  | 'date'\n  | 'slug'\n  | 'uuid'")
+    const result = generateCustomParamParsersList(paramParsers)
+    expect(result).toEqual(["'custom-parser'"])
   })
 
   it('converts kebab-case filenames to valid camelCase identifiers', () => {
@@ -719,9 +684,9 @@ describe('generateParamParserCustomType', () => {
       "
     `)
 
-    expect(generateParamParserCustomType(paramParsers)).toMatchInlineSnapshot(`
-      "  | 'date-with-dashes'
-        | 'user-id'"
-    `)
+    expect(generateCustomParamParsersList(paramParsers)).toEqual([
+      "'date-with-dashes'",
+      "'user-id'",
+    ])
   })
 })

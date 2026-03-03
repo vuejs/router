@@ -1,6 +1,7 @@
 import { TreePathParam, TreeQueryParam } from '../core/treeNodeValue'
 import { ImportsMap } from '../core/utils'
 import { PrefixTree } from '../core/tree'
+import { toStringLiteral } from '../utils'
 
 export type ParamParsersMap = Map<
   string,
@@ -116,20 +117,16 @@ export function generateParamParserOptions(
   return ''
 }
 
-export function generateParamParserCustomType(
+export function generateCustomParamParsersList(
   paramParsers: ParamParsersMap
-): string {
+): string[] {
   const parserNames = Array.from(paramParsers.keys()).sort()
 
   if (parserNames.length === 0) {
-    return 'never'
+    return ['never']
   }
 
-  if (parserNames.length === 1) {
-    return `'${parserNames[0]}'`
-  }
-
-  return parserNames.map(name => `  | '${name}'`).join('\n')
+  return parserNames.map(toStringLiteral)
 }
 
 export function generatePathParamsOptions(

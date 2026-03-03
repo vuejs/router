@@ -20,13 +20,13 @@ export function generateDTS({
   routeNamedMap,
   routeFileInfoMap,
   paramsTypesDeclaration,
-  customParamsType,
+  customParamsTypeList,
 }: {
   routesModule: string
   routeNamedMap: string
   routeFileInfoMap: string
   paramsTypesDeclaration: string
-  customParamsType: string
+  customParamsTypeList: string[]
 }) {
   return ts`
 /* eslint-disable */
@@ -56,7 +56,8 @@ ${paramsTypesDeclaration}
     : ''
 }declare module 'vue-router' {
   interface TypesConfig {
-    ParamParsers: ${customParamsType}
+    ParamParsers:
+${customParamsTypeList.map(literal => ' '.repeat(6) + '| ' + literal).join('\n')}
   }
 }
 

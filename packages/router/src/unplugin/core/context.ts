@@ -25,7 +25,7 @@ import { generateAliasWarnings } from '../codegen/generateAliasWarnings'
 import { type FSWatcher, watch as fsWatch } from 'chokidar'
 import {
   generateParamParsersTypesDeclarations,
-  generateParamParserCustomType,
+  generateCustomParamParsersList,
   ParamParsersMap,
   warnMissingParamParsers,
   collectMissingParamParsers,
@@ -406,7 +406,7 @@ if (import.meta.hot) {
       }),
       paramsTypesDeclaration:
         generateParamParsersTypesDeclarations(paramParsersMap),
-      customParamsType: generateParamParserCustomType(paramParsersMap),
+      customParamsTypeList: generateCustomParamParsersList(paramParsersMap),
     })
 
     // TODO: parser auto copmlete for definePage
