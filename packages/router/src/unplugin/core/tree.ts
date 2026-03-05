@@ -3,6 +3,7 @@ import {
   CONVENTION_OVERRIDE_NAME,
   createTreeNodeValue,
   escapeRegex,
+  isTreePathParam,
   type TreeNodeValueOptions,
   type TreePathParam,
   type TreeQueryParam,
@@ -328,10 +329,17 @@ export class TreeNode {
    */
   get params(): (TreePathParam | TreeQueryParam)[] {
     const params = [...this.value.params]
+    if (this.value.overrides.path?.startsWith('/')) {
+      return params
+    }
+
     let node = this.parent
     // add all the params from the parents
     while (node) {
       params.unshift(...node.value.params)
+      if (node.value.overrides.path?.startsWith('/')) {
+        break
+      }
       node = node.parent
     }
 
@@ -342,12 +350,17 @@ export class TreeNode {
    * Array of route params coming from the path. It includes all the params from the parents as well.
    */
   get pathParams(): TreePathParam[] {
-    const params = this.value.isParam() ? [...this.value.pathParams] : []
+    const params = this.value.params.filter(isTreePathParam)
+    if (this.value.overrides.path?.startsWith('/')) {
+      return params
+    }
+
     let node = this.parent
     // add all the params from the parents
     while (node) {
-      if (node.value.isParam()) {
-        params.unshift(...node.value.pathParams)
+      params.unshift(...node.value.params.filter(isTreePathParam))
+      if (node.value.overrides.path?.startsWith('/')) {
+        break
       }
       node = node.parent
     }
