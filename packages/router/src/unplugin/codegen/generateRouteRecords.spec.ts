@@ -48,6 +48,17 @@ describe('generateRouteRecord', () => {
     expect(generateRouteRecordSimple(tree)).toContain("path: '/nested'")
   })
 
+  it('skips nested lone _parent files', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('users/index', 'users/index.vue')
+    tree.insert('users/settings/_parent', 'users/settings/_parent.vue')
+
+    const routes = generateRouteRecordSimple(tree)
+
+    expect(routes).toContain("path: '/users'")
+    expect(routes).not.toContain("path: '/users/settings'")
+  })
+
   it('works with some paths at root', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('a', 'a.vue')
