@@ -44,6 +44,7 @@ import type {
 import { useRoute, useRouter } from '../../useApi'
 import type { Router } from '../../router'
 import type { LocationQuery } from '../../query'
+import type { RouteParamsGeneric } from '../../types'
 
 /**
  * Creates a Pinia Colada data loader with `data` is always defined.
@@ -729,7 +730,7 @@ export interface DataLoaderColadaEntry<
 
 interface TrackedRoute {
   ready: boolean
-  params: Partial<LocationQuery>
+  params: Partial<RouteParamsGeneric>
   query: Partial<LocationQuery>
   hash: { v: string | null }
 }

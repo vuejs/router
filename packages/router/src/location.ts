@@ -24,8 +24,8 @@ export interface LocationNormalized {
  */
 interface LocationPartial {
   path: string
-  query?: LocationQueryRaw
-  hash?: string
+  query?: LocationQueryRaw | undefined
+  hash?: string | undefined
 }
 
 const TRAILING_SLASH_RE = /\/$/
