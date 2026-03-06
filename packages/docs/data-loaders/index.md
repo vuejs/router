@@ -40,7 +40,7 @@ app.mount('#app')
 
 ## Quick start
 
-There are different data loaders implementation, the simplest one is the [Basic Loader](./basic/) which always reruns data fetching. A more efficient one, is the [Colada Loader](./colada/) which uses [@pinia/colada](https://github.com/posva/pinia-colada) under the hood. In the following examples, we will be using the _basic loader_.
+There are different data loader implementations, the simplest one is the [Basic Loader](./basic/) which always reruns data fetching. A more efficient one, is the [Colada Loader](./colada/) which uses [@pinia/colada](https://github.com/posva/pinia-colada) under the hood. In the following examples, we will be using the _basic loader_.
 
 Loaders are [composables](https://vuejs.org/guide/reusability/composables.html) defined through a `defineLoader` function like `defineBasicLoader` or `defineColadaLoader`. They are _used_ in the component `setup` to extract the needed information.
 
@@ -92,4 +92,4 @@ On top of that, you are free to _reuse_ the returned composable `useUserData` in
 
 ## Why Data Loaders?
 
-Data fetching is the most common need for a web application. There are many ways of handling data fetching, and they all have their pros and cons. Data loaders are a way to streamline data fetching in your application. Instead of forcing you to choose between different libraries, data loaders provide a consistent way to manage data fetching in your application no matter the underlying library or strategy you use.
+Data fetching is the most common needs for a web application. There are many ways of handling data fetching, and they all have their pros and cons. Data loaders are a way to streamline data fetching in your application. Instead of forcing you to choose between different libraries, data loaders provide a consistent way to manage data fetching in your application no matter the underlying library or strategy you use.
