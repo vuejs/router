@@ -12,7 +12,8 @@
   "dependencies": {
     "semver": "^7.7.3",
     "vue": "3.6.0-beta.5",
-    "vue-router": "workspace:*"
+    "vue-router": "workspace:*",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/semver": "^7.7.1",

@@ -64,6 +64,13 @@ declare module 'vue-router/auto-routes' {
       { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_versionRange, unknown[]> },
       | never
     >,
+    '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]': RouteRecordInfo<
+      '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]',
+      '/package-zod/:org?/:pkgName/:pkgVersion',
+      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: string },
+      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: string },
+      | never
+    >,
     '/[a].[b]': RouteRecordInfo<
       '/[a].[b]',
       '/:a/:b',
@@ -277,6 +284,7 @@ declare module 'vue-router/auto-routes' {
       routes:
         | '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]'
         | '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]'
+        | '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]'
         | '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]'
       views:
         | 'default'
@@ -296,6 +304,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range].vue': {
       routes:
         | '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]'
+      views:
+        | never
+    }
+    'src/pages/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion].vue': {
+      routes:
+        | '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]'
       views:
         | never
     }
