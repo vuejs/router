@@ -400,9 +400,9 @@ export function defineColadaLoader<Data>(
   const useDataLoader: // for ts
   UseDataLoaderColada_LaxData<Data> = () => {
     // work with nested data loaders
-    const currentEntry = getCurrentContext()
+    const currentContext = getCurrentContext()
     // TODO: should _route also contain from?
-    const [parentEntry, _router, _route] = currentEntry
+    const [parentEntry, _router, _route] = currentContext
     // fallback to the global router and routes for useDataLoaders used within components
     const router = _router || useRouter()
     const route = _route || (useRoute() as RouteLocationNormalizedLoaded)
@@ -516,7 +516,7 @@ export function defineColadaLoader<Data>(
       .catch(e => (parentEntry ? Promise.reject(e) : null))
 
     // Restore the context to avoid sequential calls to be nested
-    setCurrentContext(currentEntry)
+    setCurrentContext(currentContext)
     return assign(promise, useDataLoaderResult)
   }
 
