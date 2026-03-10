@@ -278,27 +278,6 @@ export const createApp = ViteSSG(
 )
 ```
 
-### Auto Imports
-
-If you are using [unplugin-auto-import](https://github.com/unplugin/unplugin-auto-import), make sure to remove the `vue-router` preset and use the one exported by `vue-router`:
-
-<!-- prettier-ignore -->
-```ts
-import { defineConfig } from 'vite'
-import AutoImport from 'unplugin-auto-import/vite'
-import { VueRouterAutoImports } from 'vue-router/unplugin' // [!code ++]
-
-export default defineConfig({
-  plugins: [
-    // other plugins
-    AutoImport({
-      imports: [
-        'vue-router', // [!code --]
-        VueRouterAutoImports, // [!code ++]
-      ],
-    }),
-  ],
-})
-```
+## ESLint
 
 If you use ESlint, check [the ESlint section](./eslint).
