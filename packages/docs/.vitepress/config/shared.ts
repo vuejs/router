@@ -64,7 +64,20 @@ async function getPackageVersion(
   if (!versionsCache[packagePath]) {
     const url = `https://unpkg.com/${packagePath}/package.json`
     console.log(`- Loading ${url}`)
-    const { version } = await fetch(url).then(resp => resp.json())
+    const response = await fetch(url)
+
+    if (!response.ok) {
+      throw new Error(`Failed to load ${url}, status code ${response.status}`)
+    }
+
+    const { version } = await response.json()
+
+    if (!version || typeof version !== 'string') {
+      throw new Error(
+        `Failed to load version for ${packageName}, version ${version}`
+      )
+    }
+
     versionsCache[packagePath] = version
     console.log(`- Loaded ${packageName}@${version}`)
   }
@@ -167,7 +180,7 @@ export const sharedConfig = defineConfig({
 
     const { packageVersions } = pageData.frontmatter
 
-    if (pageData.frontmatter.packageVersions) {
+    if (packageVersions) {
       console.log(
         `Updating frontmatter package versions for ${pageData.filePath}`
       )
