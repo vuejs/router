@@ -52,6 +52,26 @@ const productionHead: HeadConfig[] = [
   ],
 ]
 
+const versionsCache: Record<string, string> = {}
+
+async function getPackageVersion(
+  packageName: string,
+  oldVersion: string | number
+) {
+  const majorVersion = String(oldVersion).replace(/\..*/, '')
+  const packagePath = `${packageName}@${majorVersion}`
+
+  if (!versionsCache[packagePath]) {
+    const url = `https://unpkg.com/${packagePath}/package.json`
+    console.log(`- Loading ${url}`)
+    const { version } = await fetch(url).then(resp => resp.json())
+    versionsCache[packagePath] = version
+    console.log(`- Loaded ${packageName}@${version}`)
+  }
+
+  return versionsCache[packagePath]
+}
+
 export const sharedConfig = defineConfig({
   title: 'Vue Router',
   appearance: 'dark',
@@ -139,6 +159,27 @@ export const sharedConfig = defineConfig({
     // analytics and other prod only head tags
     ...(isProduction ? productionHead : []),
   ],
+
+  async transformPageData(pageData) {
+    if (!process.env.NETLIFY) {
+      return
+    }
+
+    const { packageVersions } = pageData.frontmatter
+
+    if (pageData.frontmatter.packageVersions) {
+      console.log(
+        `Updating frontmatter package versions for ${pageData.filePath}`
+      )
+
+      for (const pkg in packageVersions) {
+        packageVersions[pkg] = await getPackageVersion(
+          pkg,
+          packageVersions[pkg]
+        )
+      }
+    }
+  },
 
   themeConfig: {
     logo: '/logo.svg',
