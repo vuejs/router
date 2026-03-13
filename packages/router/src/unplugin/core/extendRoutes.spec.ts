@@ -35,6 +35,22 @@ describe('EditableTreeNode', () => {
     expect(tree.children.get('foo')?.path).toBe('/foo')
   })
 
+  it('removes parent when deleting last child of a non-matchable node', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+
+    const editable = new EditableTreeNode(tree)
+    editable.insert('about', 'about.vue')
+    const toDelete = editable.insert('a/b/c', 'a/b/c.vue')
+
+    expect(tree.children.size).toBe(2)
+    toDelete.delete()
+    expect(tree.children.size).toBe(1)
+    expect(tree.children.has('a')).toBe(false)
+    expect(tree.children.has('about')).toBe(true)
+    // repeatedly delete a node,  should be no error reported
+    expect(() => toDelete.delete()).not.toThrow()
+  })
+
   it('keeps nested routes flat', () => {
     const tree = new PrefixTree(RESOLVED_OPTIONS)
     const editable = new EditableTreeNode(tree)
