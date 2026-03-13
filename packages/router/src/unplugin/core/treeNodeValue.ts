@@ -20,16 +20,20 @@ export interface RouteRecordOverride extends Partial<
   /**
    * Path aliases.
    */
-  alias?: string[]
+  alias?: string[] | undefined
 
   /**
    * Param Parsers information.
    */
-  params?: {
-    path?: Record<string, string>
+  params?:
+    | {
+        path?: Record<string, string> | undefined
 
-    query?: Record<string, string | RouteRecordOverrideQueryParamOptions>
-  }
+        query?:
+          | Record<string, string | RouteRecordOverrideQueryParamOptions>
+          | undefined
+      }
+    | undefined
 }
 
 export interface RouteRecordOverrideQueryParamOptions extends CustomRouteBlockQueryParamOptions {
@@ -334,14 +338,14 @@ export interface TreeQueryParam {
   /**
    * Expression to be passed as is to the default value of the param.
    */
-  defaultValue?: string
+  defaultValue?: string | undefined
 
   /**
    * Whether the query param is required.
    *
    * @default false
    */
-  required?: boolean
+  required?: boolean | undefined
 }
 
 /**

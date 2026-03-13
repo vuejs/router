@@ -56,14 +56,14 @@ export interface _PathParserOptions {
    *
    * @defaultValue `false`
    */
-  sensitive?: boolean
+  sensitive?: boolean | undefined
 
   /**
    * Whether to disallow a trailing slash or not.
    *
    * @defaultValue `false`
    */
-  strict?: boolean
+  strict?: boolean | undefined
 
   /**
    * Should the RegExp match from the beginning by prepending a `^` to it.
@@ -71,7 +71,7 @@ export interface _PathParserOptions {
    *
    * @defaultValue `true`
    */
-  start?: boolean
+  start?: boolean | undefined
 
   /**
    * Should the RegExp match until the end by appending a `$` to it.
@@ -80,7 +80,7 @@ export interface _PathParserOptions {
    *
    * @defaultValue `true`
    */
-  end?: boolean
+  end?: boolean | undefined
 }
 
 export type PathParserOptions = Pick<
