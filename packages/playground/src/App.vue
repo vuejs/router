@@ -158,6 +158,16 @@
       <li>
         <router-link to="/p_1/absolute-a">/p_1/absolute-a</router-link>
       </li>
+      <li>
+        <router-link to="/entity/section:aaabbbccc"
+          >/entity/section:aaabbbccc</router-link
+        >
+      </li>
+      <li>
+        <router-link to="/entity/sectionaaabbbccc"
+          >/entity/sectionaaabbbccc</router-link
+        >
+      </li>
     </ul>
     <button @click="toggleViewName">Toggle view</button>
     <RouterView :name="viewName" v-slot="{ Component, route }">
