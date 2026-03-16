@@ -52,7 +52,7 @@ export type LocationQueryRaw = Record<
  * @returns a query object
  */
 export function parseQuery(search: string): LocationQuery {
-  const query: LocationQuery = {}
+  const query: LocationQuery = Object.create(null)
   // avoid creating an object with an empty key and empty value
   // because of split('&')
   if (search === '' || search === '?') return query
@@ -131,7 +131,7 @@ export function stringifyQuery(query: LocationQueryRaw | undefined): string {
 export function normalizeQuery(
   query: LocationQueryRaw | undefined
 ): LocationQuery {
-  const normalizedQuery: LocationQuery = {}
+  const normalizedQuery: LocationQuery = Object.create(null)
 
   for (const key in query) {
     const value = query[key]
