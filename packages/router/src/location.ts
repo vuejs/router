@@ -47,7 +47,7 @@ export function parseURL(
   currentLocation: string = '/'
 ): LocationNormalized {
   let path: string | undefined,
-    query: LocationQuery = {},
+    query: LocationQuery = Object.create(null),
     searchString = '',
     hash = ''
 
