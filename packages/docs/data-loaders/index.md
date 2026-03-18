@@ -92,4 +92,4 @@ On top of that, you are free to _reuse_ the returned composable `useUserData` in
 
 ## Why Data Loaders?
 
-Data fetching is the most common needs for a web application. There are many ways of handling data fetching, and they all have their pros and cons. Data loaders are a way to streamline data fetching in your application. Instead of forcing you to choose between different libraries, data loaders provide a consistent way to manage data fetching in your application no matter the underlying library or strategy you use.
+Data fetching is the most common need for a web application. There are many ways of handling data fetching, and they all have their pros and cons. Data loaders are a way to streamline data fetching in your application. Instead of forcing you to choose between different libraries, data loaders provide a consistent way to manage data fetching in your application no matter the underlying library or strategy you use.
