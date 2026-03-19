@@ -313,7 +313,8 @@ describe('warnings', () => {
         meta: {},
       }
     )
-    expect('invalid param(s) "no", "foo" ').toHaveBeenWarned()
+    expect('invalid param(s) "no", "foo"').toHaveBeenWarned()
+    expect('If you are using a catch-all route').toHaveBeenWarned()
     // from the previous location
     expect('"one"').not.toHaveBeenWarned()
   })
