@@ -168,6 +168,7 @@
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.3",
     "@rollup/plugin-terser": "^0.4.4",
+    "@standard-schema/spec": "^1.1.0",
     "@types/babel__generator": "^7.27.0",
     "@types/nightwatch": "^2.3.32",
     "@types/picomatch": "^4.0.2",
@@ -192,8 +193,10 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "tsdown": "^0.20.1",
     "tsup": "^8.5.1",
+    "valibot": "^1.3.1",
     "vite": "^7.3.0",
-    "vue": "3.6.0-beta.2"
+    "vue": "3.6.0-beta.2",
+    "zod": "^4.3.6"
   },
   "peerDependencies": {
     "@pinia/colada": ">=0.21.2",

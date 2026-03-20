@@ -73,7 +73,7 @@ export function generateParamParsersTypesDeclarations(
       const importPath = relativePath.startsWith('.')
         ? relativePath
         : './' + relativePath
-      return `type ${typeName} = ReturnType<NonNullable<typeof import('${importPath}').parser['get']>>`
+      return `type ${typeName} = _ExtractParamParserType<typeof import('${importPath}').parser>`
     })
     .join('\n')
 }
@@ -107,8 +107,9 @@ export function generateParamParserOptions(
   if (paramParsers.has(param.parser)) {
     const { name, absolutePath } = paramParsers.get(param.parser)!
     const varName = `PARAM_PARSER__${name}`
+    importsMap.add('vue-router/experimental', '_normalizeParamParser')
     importsMap.add(absolutePath, { name: 'parser', as: varName })
-    return varName
+    return `_normalizeParamParser(${varName})`
   } else if (NATIVE_PARAM_PARSERS.includes(param.parser)) {
     const varName = `PARAM_PARSER_${param.parser.toUpperCase()}`
     importsMap.add('vue-router/experimental', varName)

@@ -14,17 +14,24 @@ import type {
   ParamValueZeroOrMore,
   ParamValueZeroOrOne,
 } from 'vue-router'
+import type {
+  _ExtractParamParserType,
+} from 'vue-router/experimental
 
 // Custom route params parsers
-type Param_date = ReturnType<NonNullable<typeof import('./params/date.ts').parser['get']>>
-type Param_npmOrg = ReturnType<NonNullable<typeof import('./params/npm-org.ts').parser['get']>>
-type Param_semver = ReturnType<NonNullable<typeof import('./params/semver.ts').parser['get']>>
-type Param_versionRange = ReturnType<NonNullable<typeof import('./params/version-range.ts').parser['get']>>
+type Param_date = _ExtractParamParserType<typeof import('./params/date.ts').parser>
+type Param_monthValibot = _ExtractParamParserType<typeof import('./params/month-valibot.ts').parser>
+type Param_monthZod = _ExtractParamParserType<typeof import('./params/month-zod.ts').parser>
+type Param_npmOrg = _ExtractParamParserType<typeof import('./params/npm-org.ts').parser>
+type Param_semver = _ExtractParamParserType<typeof import('./params/semver.ts').parser>
+type Param_versionRange = _ExtractParamParserType<typeof import('./params/version-range.ts').parser>
 
 declare module 'vue-router' {
   interface TypesConfig {
     ParamParsers:
       | 'date'
+      | 'month-valibot'
+      | 'month-zod'
       | 'npm-org'
       | 'semver'
       | 'version-range'
@@ -160,6 +167,20 @@ declare module 'vue-router/auto-routes' {
       '/it\'s-fine',
       Record<never, never>,
       Record<never, never>,
+      | never
+    >,
+    '/months/valibot-[month=month-valibot]': RouteRecordInfo<
+      '/months/valibot-[month=month-valibot]',
+      '/months/valibot-:month',
+      { month: Exclude<Param_monthValibot, unknown[]> },
+      { month: Exclude<Param_monthValibot, unknown[]> },
+      | never
+    >,
+    '/months/zod-[month=month-zod]': RouteRecordInfo<
+      '/months/zod-[month=month-zod]',
+      '/months/zod-:month',
+      { month: Exclude<Param_monthZod, unknown[]>, mm?: Exclude<Param_monthZod, unknown[]> },
+      { month: Exclude<Param_monthZod, unknown[]>, mm: Exclude<Param_monthZod, unknown[]> },
       | never
     >,
     '/nested/': RouteRecordInfo<
@@ -388,6 +409,18 @@ declare module 'vue-router/auto-routes' {
     'src/pages/it\'s-fine/(lol).vue': {
       routes:
         | '/it\'s-fine/(lol)'
+      views:
+        | never
+    }
+    'src/pages/months/valibot-[month=month-valibot].vue': {
+      routes:
+        | '/months/valibot-[month=month-valibot]'
+      views:
+        | never
+    }
+    'src/pages/months/zod-[month=month-zod].vue': {
+      routes:
+        | '/months/zod-[month=month-zod]'
       views:
         | never
     }

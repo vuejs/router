@@ -75,7 +75,11 @@
     "onlyBuiltDependencies": [
       "chromedriver",
       "esbuild",
-      "geckodriver"
+      "geckodriver",
+      "simple-git-hooks"
+    ],
+    "ignoredBuiltDependencies": [
+      "@nightwatch/nightwatch-inspector"
     ]
   }
 }
