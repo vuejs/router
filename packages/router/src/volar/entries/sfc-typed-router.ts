@@ -46,6 +46,7 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
     'redirect',
     // nuxt
     'key',
+    'middleware',
     'scrollToTop',
     'validate',
   ])
