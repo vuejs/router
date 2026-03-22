@@ -314,7 +314,58 @@ describe('warnings', () => {
       }
     )
     expect('invalid param(s) "no", "foo" ').toHaveBeenWarned()
+    // workaround hint should NOT be shown for normal routes
+    expect('catch-all route with a named redirect').not.toHaveBeenWarned()
     // from the previous location
     expect('"one"').not.toHaveBeenWarned()
+  })
+
+  it('warns with workaround hint for catch-all route with named redirect', () => {
+    // This is the actual scenario from issue #1617
+    const record = {
+      path: '/:pathMatch(.*)*',
+      name: 'catch-all',
+      redirect: { name: 'HOME' }, // named redirect
+      components: {},
+    }
+    const matcher = createRouterMatcher([record], {})
+    // Use invalid params (foo, bar) to trigger the warning
+    // pathMatch is valid for catch-all, but foo/bar are not
+    matcher.resolve(
+      { name: 'catch-all', params: { foo: 'bar' } },
+      {
+        path: '/parent/one',
+        name: undefined,
+        params: { old: 'one' }, // has params
+        matched: [] as any,
+        meta: {},
+      }
+    )
+    expect('Discarded invalid param(s)').toHaveBeenWarned()
+    // workaround hint SHOULD be shown for catch-all with named redirect
+    expect('catch-all route with a named redirect').toHaveBeenWarned()
+  })
+
+  it('does not show hint when current location has no params', () => {
+    const record = {
+      path: '/:pathMatch(.*)*',
+      name: 'catch-all',
+      redirect: { name: 'HOME' },
+      components: {},
+    }
+    const matcher = createRouterMatcher([record], {})
+    matcher.resolve(
+      { name: 'catch-all', params: { foo: 'bar' } },
+      {
+        path: '/',
+        name: undefined,
+        params: {}, // no params
+        matched: [] as any,
+        meta: {},
+      }
+    )
+    expect('Discarded invalid param(s)').toHaveBeenWarned()
+    // workaround hint should NOT be shown when no params to suggest
+    expect('catch-all route with a named redirect').not.toHaveBeenWarned()
   })
 })

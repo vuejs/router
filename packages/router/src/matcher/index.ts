@@ -263,10 +263,20 @@ export function createRouterMatcher(
         ).filter(paramName => !matcher!.keys.find(k => k.name === paramName))
 
         if (invalidParams.length) {
+          // Check if this is a catch-all route (contains pathMatch) with a named redirect
+          const isCatchAllWithRedirect =
+            matcher!.record.path.includes('pathMatch') && // catch-all route
+            matcher!.record.redirect && // has redirect config
+            Object.keys(currentLocation.params).length // current location has params
+
           warn(
             `Discarded invalid param(s) "${invalidParams.join(
               '", "'
-            )}" when navigating. See https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22 for more details.`
+            )}" when navigating.` +
+              (isCatchAllWithRedirect
+                ? ` If you are using a catch-all route with a named redirect, pass an empty \`params\` object: \`redirect: { name: '...', params: {} }\`.`
+                : '') +
+              ` See https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22 for more details.`
           )
         }
       }
