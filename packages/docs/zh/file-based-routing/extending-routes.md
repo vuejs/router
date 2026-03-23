@@ -49,7 +49,11 @@ definePage({
 如果你使用 ESLint，你需要 [将其声明为全局变量](./eslint#definepage)。
 
 ::: danger
+
 你不能在 `definePage()` 中使用变量，因为它传递的参数在构建时被提取并从 `<script setup>` 中删除。类似于 Nuxt 中的其他宏，如 `definePageMeta()`。
+
+出于同样的原因，`definePage()` **不支持** `beforeEnter` 守卫。它们的函数特性使得它们看起来可以访问外部变量，但实际上并不能。**请使用[全局导航守卫](../guide/advanced/navigation-guards.md#全局前置守卫)配合[路由 meta 字段](../guide/advanced/meta.md)来代替，或者在运行时添加守卫（参见下方[在运行时扩展路由](#在运行时扩展路由)）**。
+
 :::
 
 ### SFC `<route>` 自定义块
