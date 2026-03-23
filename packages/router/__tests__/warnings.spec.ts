@@ -308,54 +308,47 @@ describe('warnings', () => {
       {
         path: '/parent/one',
         name: undefined,
-        params: { old: 'one' },
+        params: { old: 'one' }, // 'no' and 'foo' are not in currentLocation
         matched: [] as any,
         meta: {},
       }
     )
     expect('invalid param(s) "no", "foo" ').toHaveBeenWarned()
-    // workaround hint should NOT be shown for normal routes
+    // workaround hint should NOT be shown for explicitly passed params
     expect('catch-all route with a named redirect').not.toHaveBeenWarned()
-    // from the previous location
-    expect('"one"').not.toHaveBeenWarned()
   })
 
-  it('warns with workaround hint for catch-all route with named redirect', () => {
-    // This is the actual scenario from issue #1617
+  it('warns with workaround hint when discarded params are implicitly passed from previous location', () => {
     const record = {
-      path: '/:pathMatch(.*)*',
-      name: 'catch-all',
-      redirect: { name: 'HOME' }, // named redirect
+      path: '/a',
+      name: 'a',
       components: {},
     }
     const matcher = createRouterMatcher([record], {})
-    // Use invalid params (foo, bar) to trigger the warning
-    // pathMatch is valid for catch-all, but foo/bar are not
     matcher.resolve(
-      { name: 'catch-all', params: { foo: 'bar' } },
+      { name: 'a', params: { pathMatch: 'unknown' } },
       {
-        path: '/parent/one',
+        path: '/parent/unknown',
         name: undefined,
-        params: { old: 'one' }, // has params
+        params: { pathMatch: 'unknown' }, // The discarded param exists here!
         matched: [] as any,
         meta: {},
       }
     )
     expect('Discarded invalid param(s)').toHaveBeenWarned()
-    // workaround hint SHOULD be shown for catch-all with named redirect
+    // workaround hint SHOULD be shown because pathMatch is in currentLocation.params
     expect('catch-all route with a named redirect').toHaveBeenWarned()
   })
 
-  it('does not show hint when current location has no params', () => {
+  it('does not show hint when current location has no params to inherit', () => {
     const record = {
-      path: '/:pathMatch(.*)*',
-      name: 'catch-all',
-      redirect: { name: 'HOME' },
+      path: '/a',
+      name: 'a',
       components: {},
     }
     const matcher = createRouterMatcher([record], {})
     matcher.resolve(
-      { name: 'catch-all', params: { foo: 'bar' } },
+      { name: 'a', params: { foo: 'bar' } },
       {
         path: '/',
         name: undefined,
@@ -365,7 +358,6 @@ describe('warnings', () => {
       }
     )
     expect('Discarded invalid param(s)').toHaveBeenWarned()
-    // workaround hint should NOT be shown when no params to suggest
     expect('catch-all route with a named redirect').not.toHaveBeenWarned()
   })
 })
