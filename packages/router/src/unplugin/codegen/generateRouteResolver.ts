@@ -6,6 +6,7 @@ import { toStringLiteral, ts } from '../utils'
 import {
   generatePathParamsOptions,
   generateParamParserOptions,
+  generateNormalizedParamParsersDeclarations,
   ParamParsersMap,
 } from './generateParamParsers'
 import { generatePageImport, formatMeta } from './generateRouteRecords'
@@ -95,8 +96,13 @@ export function generateRouteResolver(
   importsMap.add('vue-router/experimental', 'MatcherPatternPathDynamic')
   importsMap.add('vue-router/experimental', 'normalizeRouteRecord')
 
+  const normalizedDeclarations = generateNormalizedParamParsersDeclarations(
+    paramParsersMap,
+    importsMap
+  )
+
   return ts`
-${records.join('\n\n')}
+${normalizedDeclarations ? normalizedDeclarations + '\n\n' : ''}${records.join('\n\n')}
 
 export const resolver = createFixedResolver([
 ${state.matchableRecords

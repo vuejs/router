@@ -7,6 +7,7 @@ import {
   generateParamParserOptions,
   generatePathParamsOptions,
   generateCustomParamParsersList,
+  generateNormalizedParamParsersDeclarations,
   type ParamParsersMap,
 } from './generateParamParsers'
 import { PrefixTree } from '../core/tree'
@@ -385,10 +386,9 @@ describe('generateParamParserOptions', () => {
     ])
 
     const result = generateParamParserOptions(param, importsMap, paramParsers)
-    expect(result).toBe('_normalizeParamParser(PARAM_PARSER__uuid)')
-    expect(importsMap.toString()).toContain(
-      `import { parser as PARAM_PARSER__uuid } from '/path/to/parsers/uuid'`
-    )
+    expect(result).toBe('_normalized_PARAM_PARSER__uuid')
+    // imports are no longer added by generateParamParserOptions for custom parsers
+    // they are handled by generateNormalizedParamParsersDeclarations
   })
 
   it('generates correct import for native int parser', () => {
@@ -562,7 +562,7 @@ describe('generatePathParamsOptions', () => {
     ])
 
     const result = generatePathParamsOptions(params, importsMap, paramParsers)
-    expect(result).toContain('id: [_normalizeParamParser(PARAM_PARSER__uuid)]')
+    expect(result).toContain('id: [_normalized_PARAM_PARSER__uuid]')
     expect(result).toContain(
       'page: [PARAM_PARSER_INT, /* repeatable: false */, /* optional: */ true]'
     )
@@ -676,16 +676,112 @@ describe('generateParamParserCustomType', () => {
       parser: 'user-id', // Route uses original kebab-case name
     }
     expect(generateParamParserOptions(param, importsMap, paramParsers)).toBe(
-      '_normalizeParamParser(PARAM_PARSER__userId)'
+      '_normalized_PARAM_PARSER__userId'
     ) // Generated variable is camelCase
-
-    expect(importsMap.toString()).toContain(
-      `import { parser as PARAM_PARSER__userId } from '/path/to/parsers/user-id'`
-    )
+    // imports are no longer added by generateParamParserOptions for custom parsers
 
     expect(generateCustomParamParsersList(paramParsers)).toEqual([
       "'date-with-dashes'",
       "'user-id'",
     ])
+  })
+})
+
+describe('generateNormalizedParamParsersDeclarations', () => {
+  it('returns empty string for empty param parsers map', () => {
+    const paramParsers: ParamParsersMap = new Map()
+    const importsMap = new ImportsMap()
+    const result = generateNormalizedParamParsersDeclarations(
+      paramParsers,
+      importsMap
+    )
+    expect(result).toBe('')
+  })
+
+  it('generates a const declaration for a single parser', () => {
+    const paramParsers: ParamParsersMap = new Map([
+      [
+        'uuid',
+        {
+          name: 'uuid',
+          typeName: 'Param_uuid',
+          relativePath: 'parsers/uuid',
+          absolutePath: '/path/to/parsers/uuid',
+        },
+      ],
+    ])
+    const importsMap = new ImportsMap()
+    const result = generateNormalizedParamParsersDeclarations(
+      paramParsers,
+      importsMap
+    )
+    expect(result).toBe(
+      'const _normalized_PARAM_PARSER__uuid = _normalizeParamParser(PARAM_PARSER__uuid)'
+    )
+    expect(importsMap.toString()).toContain(
+      `import { _normalizeParamParser } from 'vue-router/experimental'`
+    )
+    expect(importsMap.toString()).toContain(
+      `import { parser as PARAM_PARSER__uuid } from '/path/to/parsers/uuid'`
+    )
+  })
+
+  it('generates declarations for multiple parsers', () => {
+    const paramParsers: ParamParsersMap = new Map([
+      [
+        'uuid',
+        {
+          name: 'uuid',
+          typeName: 'Param_uuid',
+          relativePath: 'parsers/uuid',
+          absolutePath: '/path/to/parsers/uuid',
+        },
+      ],
+      [
+        'slug',
+        {
+          name: 'slug',
+          typeName: 'Param_slug',
+          relativePath: 'parsers/slug',
+          absolutePath: '/path/to/parsers/slug',
+        },
+      ],
+    ])
+    const importsMap = new ImportsMap()
+    const result = generateNormalizedParamParsersDeclarations(
+      paramParsers,
+      importsMap
+    )
+    expect(result).toContain(
+      'const _normalized_PARAM_PARSER__uuid = _normalizeParamParser(PARAM_PARSER__uuid)'
+    )
+    expect(result).toContain(
+      'const _normalized_PARAM_PARSER__slug = _normalizeParamParser(PARAM_PARSER__slug)'
+    )
+  })
+
+  it('handles camelCase names from kebab-case filenames', () => {
+    const paramParsers: ParamParsersMap = new Map([
+      [
+        'user-id',
+        {
+          name: 'userId',
+          typeName: 'Param_userId',
+          relativePath: 'parsers/user-id',
+          absolutePath: '/path/to/parsers/user-id',
+        },
+      ],
+    ])
+    const importsMap = new ImportsMap()
+    const result = generateNormalizedParamParsersDeclarations(
+      paramParsers,
+      importsMap
+    )
+    expect(result).toBe(
+      'const _normalized_PARAM_PARSER__userId = _normalizeParamParser(PARAM_PARSER__userId)'
+    )
+    expect(importsMap.toString()).toContain(
+      `import { parser as PARAM_PARSER__userId } from '/path/to/parsers/user-id'`
+    )
   })
 })

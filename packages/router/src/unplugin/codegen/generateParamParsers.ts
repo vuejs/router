@@ -105,17 +105,31 @@ export function generateParamParserOptions(
 
   // we prioritize custom parsers to let users override them
   if (paramParsers.has(param.parser)) {
-    const { name, absolutePath } = paramParsers.get(param.parser)!
-    const varName = `PARAM_PARSER__${name}`
-    importsMap.add('vue-router/experimental', '_normalizeParamParser')
-    importsMap.add(absolutePath, { name: 'parser', as: varName })
-    return `_normalizeParamParser(${varName})`
+    const { name } = paramParsers.get(param.parser)!
+    return `_normalized_PARAM_PARSER__${name}`
   } else if (NATIVE_PARAM_PARSERS.includes(param.parser)) {
     const varName = `PARAM_PARSER_${param.parser.toUpperCase()}`
     importsMap.add('vue-router/experimental', varName)
     return varName
   }
   return ''
+}
+
+export function generateNormalizedParamParsersDeclarations(
+  paramParsers: ParamParsersMap,
+  importsMap: ImportsMap
+): string {
+  const declarations: string[] = []
+  for (const [, { name, absolutePath }] of paramParsers) {
+    const rawVar = `PARAM_PARSER__${name}`
+    const normalizedVar = `_normalized_PARAM_PARSER__${name}`
+    importsMap.add('vue-router/experimental', '_normalizeParamParser')
+    importsMap.add(absolutePath, { name: 'parser', as: rawVar })
+    declarations.push(
+      `const ${normalizedVar} = _normalizeParamParser(${rawVar})`
+    )
+  }
+  return declarations.join('\n')
 }
 
 export function generateCustomParamParsersList(
