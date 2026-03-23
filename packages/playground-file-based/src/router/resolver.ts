@@ -13,6 +13,19 @@ export const router = createRouter({
   resolver,
 })
 
+export type RouteMetaGuard = 'auth' | 'admin'
+declare module 'vue-router' {
+  interface RouteMeta {
+    guards?: RouteMetaGuard[]
+  }
+}
+
+router.beforeEach(to => {
+  if (to.matched.some(record => record.meta.guards?.includes('auth'))) {
+    console.log('This route requires authentication 🔐')
+  }
+})
+
 if (import.meta.hot) {
   handleHotUpdate(router)
 }
