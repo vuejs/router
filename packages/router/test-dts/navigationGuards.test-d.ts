@@ -36,7 +36,7 @@ describe('Navigation guards', () => {
     })
 
     // @ts-expect-error
-    router.beforeEach((to, from, next) => {
+    router.beforeEach((_to, _from, _next) => {
       return Symbol('not supported')
     })
     // @ts-expect-error

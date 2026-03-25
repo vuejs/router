@@ -190,7 +190,7 @@ describe('beforeRouteLeave', () => {
     const p = router.push('/')
     const currentRoute = router.currentRoute.value
     expect(currentRoute.fullPath).toBe('/guard')
-    await p.catch(err => {}) // catch the navigation abortion
+    await p.catch(_err => {}) // catch the navigation abortion
     expect(currentRoute.fullPath).toBe('/guard')
   })
 })

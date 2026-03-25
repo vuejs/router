@@ -239,7 +239,7 @@ describe('Errors & Navigation failures', () => {
 
     it('next("/location") triggers afterEach with history.back', async () => {
       await testHistoryNavigation(
-        ((to, from) => {
+        ((to, _from) => {
           if (to.path === '/location') return
           else return '/location'
         }) as NavigationGuard,

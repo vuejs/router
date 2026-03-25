@@ -97,7 +97,7 @@ describe('guardToPromiseFn', () => {
     expect.assertions(1)
     await expect(
       guardToPromiseFn(
-        async (_to, _from, next) => {
+        async (_to, _from, _next) => {
           throw new Error()
         },
         to,
@@ -111,7 +111,7 @@ describe('guardToPromiseFn', () => {
     let error = new Error('nope')
     await expect(
       guardToPromiseFn(
-        (_to, _from, next) => {
+        (_to, _from, _next) => {
           throw error
         },
         to,
@@ -241,7 +241,7 @@ describe('guardToPromiseFn', () => {
     expect.assertions(2)
     await expect(
       guardToPromiseFn(
-        async (_to, _from, next) => {
+        async (_to, _from, _next) => {
           // oops not called next
         },
         to,
@@ -255,7 +255,7 @@ describe('guardToPromiseFn', () => {
     expect.assertions(2)
     await expect(
       guardToPromiseFn(
-        async (_to, _from, next) => {
+        async (_to, _from, _next) => {
           // oops not called next
           throw new Error('nope')
         },
@@ -269,7 +269,7 @@ describe('guardToPromiseFn', () => {
   it('warns if guard returns without calling next', async () => {
     expect.assertions(2)
     await expect(
-      guardToPromiseFn((_to, _from, next) => false, to, from)()
+      guardToPromiseFn((_to, _from, _next) => false, to, from)()
     ).rejects.toThrowError()
     expect('callback was never called').toHaveBeenWarned()
   })
