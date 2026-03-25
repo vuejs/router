@@ -2,6 +2,7 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript"],
   "rules": {
+    "no-unused-expressions": "off",
     "typescript/consistent-type-imports": [
       "warn",
       {
