@@ -97,7 +97,7 @@ describe('guardToPromiseFn', () => {
     expect.assertions(1)
     await expect(
       guardToPromiseFn(
-        async (to, from, next) => {
+        async (_to, _from, next) => {
           throw new Error()
         },
         to,
@@ -111,7 +111,7 @@ describe('guardToPromiseFn', () => {
     let error = new Error('nope')
     await expect(
       guardToPromiseFn(
-        (to, from, next) => {
+        (_to, _from, next) => {
           throw error
         },
         to,
@@ -124,7 +124,7 @@ describe('guardToPromiseFn', () => {
     it('rejects if returns false', async () => {
       expect.assertions(1)
       try {
-        await guardToPromiseFn((to, from) => false, to, from)()
+        await guardToPromiseFn((_to, _from) => false, to, from)()
       } catch (err) {
         expect(err).toMatchObject({
           from,
@@ -137,21 +137,21 @@ describe('guardToPromiseFn', () => {
     it('resolves no value is returned', async () => {
       expect.assertions(1)
       await expect(
-        guardToPromiseFn((to, from) => {}, to, from)()
+        guardToPromiseFn((_to, _from) => {}, to, from)()
       ).resolves.toEqual(undefined)
     })
 
     it('resolves if true is returned', async () => {
       expect.assertions(1)
       await expect(
-        guardToPromiseFn((to, from) => true, to, from)()
+        guardToPromiseFn((_to, _from) => true, to, from)()
       ).resolves.toEqual(undefined)
     })
 
     it('rejects if false is returned', async () => {
       expect.assertions(1)
       try {
-        await guardToPromiseFn((to, from) => false, to, from)()
+        await guardToPromiseFn((_to, _from) => false, to, from)()
       } catch (err) {
         expect(err).toMatchObject({
           from,
@@ -164,7 +164,7 @@ describe('guardToPromiseFn', () => {
     it('rejects if async false is returned', async () => {
       expect.assertions(1)
       try {
-        await guardToPromiseFn(async (to, from) => false, to, from)()
+        await guardToPromiseFn(async (_to, _from) => false, to, from)()
       } catch (err) {
         expect(err).toMatchObject({
           from,
@@ -177,7 +177,7 @@ describe('guardToPromiseFn', () => {
     it('rejects if a string location is returned', async () => {
       expect.assertions(1)
       try {
-        await guardToPromiseFn((to, from) => '/new', to, from)()
+        await guardToPromiseFn((_to, _from) => '/new', to, from)()
       } catch (err) {
         expect(err).toMatchObject({
           from: to,
@@ -191,7 +191,7 @@ describe('guardToPromiseFn', () => {
       expect.assertions(1)
       let redirectTo = { path: '/new' }
       try {
-        await guardToPromiseFn((to, from) => redirectTo, to, from)()
+        await guardToPromiseFn((_to, _from) => redirectTo, to, from)()
       } catch (err) {
         expect(err).toMatchObject({
           from: to,
@@ -205,7 +205,7 @@ describe('guardToPromiseFn', () => {
       expect.assertions(1)
       let error = new Error('nope')
       await expect(
-        guardToPromiseFn((to, from) => error, to, from)()
+        guardToPromiseFn((_to, _from) => error, to, from)()
       ).rejects.toBe(error)
     })
 
@@ -214,7 +214,7 @@ describe('guardToPromiseFn', () => {
       let error = new Error('nope')
       await expect(
         guardToPromiseFn(
-          async (to, from) => {
+          async (_to, _from) => {
             throw error
           },
           to,
@@ -227,7 +227,7 @@ describe('guardToPromiseFn', () => {
       let error = new Error('nope')
       await expect(
         guardToPromiseFn(
-          (to, from) => {
+          (_to, _from) => {
             throw error
           },
           to,
@@ -241,7 +241,7 @@ describe('guardToPromiseFn', () => {
     expect.assertions(2)
     await expect(
       guardToPromiseFn(
-        async (to, from, next) => {
+        async (_to, _from, next) => {
           // oops not called next
         },
         to,
@@ -255,7 +255,7 @@ describe('guardToPromiseFn', () => {
     expect.assertions(2)
     await expect(
       guardToPromiseFn(
-        async (to, from, next) => {
+        async (_to, _from, next) => {
           // oops not called next
           throw new Error('nope')
         },
@@ -269,7 +269,7 @@ describe('guardToPromiseFn', () => {
   it('warns if guard returns without calling next', async () => {
     expect.assertions(2)
     await expect(
-      guardToPromiseFn((to, from, next) => false, to, from)()
+      guardToPromiseFn((_to, _from, next) => false, to, from)()
     ).rejects.toThrowError()
     expect('callback was never called').toHaveBeenWarned()
   })
@@ -278,7 +278,7 @@ describe('guardToPromiseFn', () => {
     expect.assertions(3)
     await expect(
       guardToPromiseFn(
-        (to, from, next) => {
+        (_to, _from, next) => {
           // there could be a callback somewhere
           setTimeout(next, 10)
         },
@@ -293,14 +293,14 @@ describe('guardToPromiseFn', () => {
 
   describe('next() callback deprecation', () => {
     it('warns when guard calls next()', async () => {
-      await guardToPromiseFn((to, from, next) => next(), to, from)()
+      await guardToPromiseFn((_to, _from, next) => next(), to, from)()
       expect(NEXT_DEPRECATION_MESSAGE).toHaveBeenWarned()
     })
 
     it('warns only once per guard run when next() is called multiple times', async () => {
       await expect(
         guardToPromiseFn(
-          (to, from, next) => {
+          (_to, _from, next) => {
             next()
             next()
           },
@@ -313,12 +313,12 @@ describe('guardToPromiseFn', () => {
     })
 
     it('does not warn when guard returns value without next parameter', async () => {
-      await guardToPromiseFn((to, from) => true, to, from)()
+      await guardToPromiseFn((_to, _from) => true, to, from)()
       expect(NEXT_DEPRECATION_MESSAGE).not.toHaveBeenWarned()
     })
 
     it('does not warn when guard returns undefined without next parameter', async () => {
-      await guardToPromiseFn((to, from) => {}, to, from)()
+      await guardToPromiseFn((_to, _from) => {}, to, from)()
       expect(NEXT_DEPRECATION_MESSAGE).not.toHaveBeenWarned()
     })
   })

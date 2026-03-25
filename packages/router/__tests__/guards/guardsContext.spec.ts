@@ -12,9 +12,11 @@ const component = {
 describe('beforeRouteLeave', () => {
   it('invokes with the component context', async () => {
     expect.assertions(2)
-    const spy = vi.fn().mockImplementationOnce(function (this: any, to, from) {
-      expect(typeof this.counter).toBe('number')
-    })
+    const spy = vi
+      .fn()
+      .mockImplementationOnce(function (this: any, _to, _from) {
+        expect(typeof this.counter).toBe('number')
+      })
     const WithLeave = defineComponent({
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings
@@ -53,7 +55,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from) {
+        .mockImplementationOnce(function (this: any, _to, _from) {
           expect(typeof this.counter).toBe('number')
         }),
     })
@@ -63,7 +65,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from) {
+        .mockImplementationOnce(function (this: any, _to, _from) {
           expect(typeof this.counter).toBe('number')
         }),
     })
@@ -105,7 +107,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from) {
+        .mockImplementationOnce(function (this: any, _to, _from) {
           expect(typeof this.counter).toBe('number')
         }),
     })
@@ -115,7 +117,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from) {
+        .mockImplementationOnce(function (this: any, _to, _from) {
           expect(typeof this.counter).toBe('number')
         }),
     })
@@ -162,7 +164,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from) {
+        .mockImplementationOnce(function (this: any, _to, _from) {
           expect(typeof this.counter).toBe('number')
         }),
     })
@@ -172,7 +174,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from) {
+        .mockImplementationOnce(function (this: any, _to, _from) {
           expect(typeof this.counter).toBe('number')
         }),
     })
@@ -182,7 +184,7 @@ describe('beforeRouteLeave', () => {
       data: () => ({ counter: 0 }),
       beforeRouteLeave: vi
         .fn()
-        .mockImplementationOnce(function (this: any, to, from) {
+        .mockImplementationOnce(function (this: any, _to, _from) {
           expect(typeof this.counter).toBe('number')
         }),
     })
@@ -225,9 +227,11 @@ describe('beforeRouteLeave', () => {
 describe('beforeRouteUpdate', () => {
   it('invokes with the component context', async () => {
     expect.assertions(2)
-    const spy = vi.fn().mockImplementationOnce(function (this: any, to, from) {
-      expect(typeof this.counter).toBe('number')
-    })
+    const spy = vi
+      .fn()
+      .mockImplementationOnce(function (this: any, _to, _from) {
+        expect(typeof this.counter).toBe('number')
+      })
     const WithParam = defineComponent({
       template: `text`,
       // we use data to check if the context is the right one because saving `this` in a variable logs a few warnings

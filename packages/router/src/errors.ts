@@ -107,7 +107,7 @@ const ErrorTypeMessages = {
   [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationFailure) {
     return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new navigation.`
   },
-  [ErrorTypes.NAVIGATION_DUPLICATED]({ from, to }: NavigationFailure) {
+  [ErrorTypes.NAVIGATION_DUPLICATED]({ from, to: _to }: NavigationFailure) {
     return `Avoided redundant navigation to current location: "${from.fullPath}".`
   },
 }

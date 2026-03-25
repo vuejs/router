@@ -110,7 +110,7 @@ beforeEach(() => {
 describe('beforeRouteEnter', () => {
   it('calls beforeRouteEnter guards on navigation', async () => {
     const router = createRouter({ routes })
-    beforeRouteEnter.mockImplementationOnce((to, from) => {
+    beforeRouteEnter.mockImplementationOnce((to, _from) => {
       if (to.params.n !== 'valid') return false
       return
     })
@@ -182,11 +182,11 @@ describe('beforeRouteEnter', () => {
 
   it('aborts navigation if one of the named views aborts', async () => {
     const router = createRouter({ routes })
-    named.default.mockImplementationOnce((to, from) => {
+    named.default.mockImplementationOnce((_to, _from) => {
       return false
     })
     named.other.mockImplementationOnce(noGuard)
-    await router.push('/named').catch(err => {}) // catch abort
+    await router.push('/named').catch(_err => {}) // catch abort
     expect(named.default).toHaveBeenCalledTimes(1)
     expect(router.currentRoute.value.fullPath).not.toBe('/named')
   })
@@ -203,7 +203,7 @@ describe('beforeRouteEnter', () => {
   it('waits before navigating', async () => {
     const [promise, resolve] = fakePromise()
     const router = createRouter({ routes })
-    beforeRouteEnter.mockImplementationOnce(async (to, from) => {
+    beforeRouteEnter.mockImplementationOnce(async (_to, _from) => {
       await promise
       return
     })

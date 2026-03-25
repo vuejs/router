@@ -3,8 +3,8 @@
  */
 import { createRouter, createWebHistory } from '../src'
 import { components, nextNavigation } from './utils'
-import { RouteRecordRaw } from '../src/types'
-import { Window as HappyDomWindow } from 'happy-dom'
+import type { RouteRecordRaw } from '../src/types'
+import type { Window as HappyDomWindow } from 'happy-dom'
 import { describe, expect, it, vi } from 'vitest'
 
 // to get a typed window
@@ -27,7 +27,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/home-before',
     component,
-    beforeEnter: (to, from) => {
+    beforeEnter: (to, _from) => {
       return '/'
     },
   },

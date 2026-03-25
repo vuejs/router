@@ -17,7 +17,7 @@ let server = null
 let internalResolve = () => {}
 
 export function getServer() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     if (server) {
       resolve(server)
     } else {

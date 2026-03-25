@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import { noGuard, newRouter as createRouter } from '../utils'
-import { RouteRecordRaw } from '../../src/types'
+import type { RouteRecordRaw } from '../../src/types'
 import { vi, describe, expect, it, beforeEach } from 'vitest'
 
 const Home = { template: `<div>Home</div>` }
@@ -93,7 +93,7 @@ beforeEach(() => {
 describe('beforeRouteLeave', () => {
   it('calls beforeRouteLeave guard on navigation', async () => {
     const router = createRouter({ routes })
-    beforeRouteLeave.mockImplementationOnce((to, from) => {
+    beforeRouteLeave.mockImplementationOnce((to, _from) => {
       if (to.path === 'foo') return false
       else return
     })
@@ -109,7 +109,7 @@ describe('beforeRouteLeave', () => {
 
   it('does not call beforeRouteLeave guard if the view is not mounted', async () => {
     const router = createRouter({ routes })
-    beforeRouteLeave.mockImplementationOnce((to, from) => {
+    beforeRouteLeave.mockImplementationOnce((_to, _from) => {
       return
     })
     await router.push('/guard')
@@ -157,15 +157,15 @@ describe('beforeRouteLeave', () => {
     await router.push({ name: 'nested-nested-foo' })
     resetMocks()
     let count = 0
-    nested.nestedNestedFoo.mockImplementation((to, from) => {
+    nested.nestedNestedFoo.mockImplementation((_to, _from) => {
       expect(count++).toBe(0)
       return
     })
-    nested.nestedNested.mockImplementation((to, from) => {
+    nested.nestedNested.mockImplementation((_to, _from) => {
       expect(count++).toBe(1)
       return
     })
-    nested.parent.mockImplementation((to, from) => {
+    nested.parent.mockImplementation((_to, _from) => {
       expect(count++).toBe(2)
       return
     })
@@ -183,7 +183,7 @@ describe('beforeRouteLeave', () => {
 
   it('can cancel navigation', async () => {
     const router = createRouter({ routes })
-    beforeRouteLeave.mockImplementationOnce(async (to, from) => {
+    beforeRouteLeave.mockImplementationOnce(async (_to, _from) => {
       return false
     })
     await router.push('/guard')

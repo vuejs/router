@@ -4,7 +4,7 @@ export interface User {
   photoURL: string
 }
 
-export async function getUserById(id: string | number | string[]) {
+export async function getUserById(_id: string | number | string[]) {
   return {} as User
 }
 export async function getUserList() {
@@ -12,8 +12,8 @@ export async function getUserList() {
 }
 
 export async function getCommonFriends(
-  userAId: string | number | string[],
-  userBId: string | number | string[]
+  _userAId: string | number | string[],
+  _userBId: string | number | string[]
 ) {
   return [] as User[]
 }
@@ -22,6 +22,6 @@ export async function getCurrentUser() {
   return {} as User
 }
 
-export async function getFriends(id: string | number | string[]) {
+export async function getFriends(_id: string | number | string[]) {
   return [] as User[]
 }

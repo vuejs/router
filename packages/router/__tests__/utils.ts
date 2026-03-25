@@ -1,21 +1,20 @@
-import {
+import type {
   RouteRecordMultipleViews,
   MatcherLocation,
   RouteComponent,
   RouteRecordRaw,
 } from '../src/types'
-import { h, ComponentOptions } from 'vue'
-import {
+import type { ComponentOptions } from 'vue'
+import { h } from 'vue'
+import type {
   RouterOptions,
-  createWebHistory,
-  createRouter,
   Router,
-  RouterView,
   RouteRecordNormalized,
   NavigationGuard,
   RouteLocationNormalized,
 } from '../src'
-import { _RouteRecordProps } from '../src/typed-routes'
+import { createWebHistory, createRouter, RouterView } from '../src'
+import type { _RouteRecordProps } from '../src/typed-routes'
 import { type EXPERIMENTAL_Router } from '../src/experimental'
 
 export const tick = (time?: number) =>
@@ -83,7 +82,7 @@ export interface MatcherLocationNormalizedLoose {
   instances: Record<string, any>
 }
 
-export const noGuard: NavigationGuard = (to, from) => {}
+export const noGuard: NavigationGuard = (_to, _from) => {}
 
 export const components = {
   Home: { render: () => h('div', {}, 'Home') },
@@ -122,7 +121,7 @@ export const components = {
   },
   BeforeLeave: {
     render: () => h('div', {}, 'before leave'),
-    beforeRouteLeave(to, from) {},
+    beforeRouteLeave(_to, _from) {},
   } as RouteComponent,
 }
 

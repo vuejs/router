@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouterView } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Home from './views/Home.vue'
 import Nested from './views/Nested.vue'
 import NestedWithId from './views/NestedWithId.vue'
@@ -210,10 +210,10 @@ router.afterEach((to, from) => {
   }
 })
 
-router.afterEach((to, from) => {
+router.afterEach((_to, _from) => {
   // console.log(
-  //   `After guard: from ${from.fullPath} to ${
-  //     to.fullPath
+  //   `After guard: from ${_from.fullPath} to ${
+  //     _to.fullPath
   //   } | location = ${location.href.replace(location.origin, '')}`
   // )
 })

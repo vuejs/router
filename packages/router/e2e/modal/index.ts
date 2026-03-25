@@ -1,6 +1,7 @@
 import '../global.css'
+import type {
+  RouteLocationNormalizedLoaded} from 'vue-router';
 import {
-  RouteLocationNormalizedLoaded,
   createRouter,
   createWebHistory,
   useRoute,
@@ -168,7 +169,7 @@ router.beforeEach((to, from) => {
   console.log('---')
 })
 
-router.beforeResolve(async to => {
+router.beforeResolve(async _to => {
   if (historyState.value && historyState.value.backgroundView) {
     await loadRouteLocation(router.resolve(historyState.value.backgroundView))
   }

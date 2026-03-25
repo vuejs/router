@@ -1,21 +1,23 @@
+import type {
+  PropType,
+  ComponentPublicInstance,
+  VNodeProps,
+  AllowedComponentProps,
+  ComponentCustomProps,
+  Slot,
+  VNode,
+  Component,
+} from 'vue'
 import {
   h,
   inject,
   provide,
   defineComponent,
-  PropType,
   ref,
   unref,
-  ComponentPublicInstance,
-  VNodeProps,
   getCurrentInstance,
   computed,
-  AllowedComponentProps,
-  ComponentCustomProps,
   watch,
-  Slot,
-  VNode,
-  Component,
 } from 'vue'
 import type {
   RouteLocationNormalized,
@@ -99,7 +101,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     // rendering, and the name
     watch(
       () => [viewRef.value, matchedRouteRef.value, props.name] as const,
-      ([instance, to, name], [oldInstance, from, oldName]) => {
+      ([instance, to, name], [oldInstance, from, _oldName]) => {
         // copy reused instances
         if (to) {
           // this will update the instance for new instances as well as reused
