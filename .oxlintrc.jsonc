@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript"],
+  "rules": {
+    "typescript/consistent-type-imports": [
+      "warn",
+      {
+        "fixStyle": "separate-type-imports",
+      },
+    ],
+  },
+  "ignorePatterns": [
+    "__build__",
+    "dist",
+    "coverage",
+    "tests_output",
+    "packages/docs/.vitepress/cache",
+    "playwright-report",
+    "routes.d.ts",
+    "vue-router-auto-routes.d.mts",
+  ],
+}
