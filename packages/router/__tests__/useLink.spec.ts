@@ -4,13 +4,8 @@
 import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { mockWarn } from './vitest-mock-warn'
-import {
-  createMemoryHistory,
-  createRouter,
-  RouteLocationRaw,
-  useLink,
-  UseLinkOptions,
-} from '../src'
+import type { RouteLocationRaw, UseLinkOptions } from '../src'
+import { createMemoryHistory, createRouter, useLink } from '../src'
 import { describe, expect, it } from 'vitest'
 
 async function callUseLink(args: UseLinkOptions) {

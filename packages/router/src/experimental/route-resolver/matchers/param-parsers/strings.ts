@@ -1,4 +1,4 @@
-import { ParamParser } from './types'
+import type { ParamParser } from './types'
 
 const PARAM_STRING_SINGLE = {
   get: (value: string | null | undefined): string => value ?? '',

@@ -2,7 +2,8 @@
  * @vitest-environment node
  */
 import { createRouter, createMemoryHistory } from '../src'
-import { createSSRApp, resolveComponent, Component } from 'vue'
+import type { Component } from 'vue'
+import { createSSRApp, resolveComponent } from 'vue'
 import {
   renderToString,
   ssrInterpolate,

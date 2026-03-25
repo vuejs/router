@@ -3,6 +3,7 @@
  */
 import { scrollToPosition } from '../src/scrollBehavior'
 import { mockWarn } from './vitest-mock-warn'
+import type { MockInstance } from 'vitest'
 import {
   vi,
   describe,
@@ -11,7 +12,6 @@ import {
   beforeEach,
   afterAll,
   beforeAll,
-  MockInstance,
 } from 'vitest'
 
 describe('scrollBehavior', () => {

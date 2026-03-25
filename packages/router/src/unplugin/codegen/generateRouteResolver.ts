@@ -1,13 +1,13 @@
 import { getLang } from '@vue-macros/common'
 import { PrefixTree, type TreeNode } from '../core/tree'
-import { ImportsMap } from '../core/utils'
+import type { ImportsMap } from '../core/utils'
 import { type ResolvedOptions } from '../options'
 import { toStringLiteral, ts } from '../utils'
+import type { ParamParsersMap } from './generateParamParsers'
 import {
   generatePathParamsOptions,
   generateParamParserOptions,
   generateNormalizedParamParsersDeclarations,
-  ParamParsersMap,
 } from './generateParamParsers'
 import { generatePageImport, formatMeta } from './generateRouteRecords'
 

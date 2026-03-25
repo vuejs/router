@@ -1,7 +1,7 @@
 import type { StandardSchemaV1 } from './standard-schema-types'
 import { miss } from '../errors'
 import type { ParamParser } from './types'
-import { MatcherQueryParamsValue } from '../matcher-pattern'
+import type { MatcherQueryParamsValue } from '../matcher-pattern'
 
 /**
  * Normalizes a param parser input, converting a StandardSchema-compliant object

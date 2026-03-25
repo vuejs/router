@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import { createWebHistory } from '../../src/history/html5'
-import { Window as HappyDomWindow } from 'happy-dom'
+import type { Window as HappyDomWindow } from 'happy-dom'
 import { vi, describe, expect, it, beforeEach, afterEach } from 'vitest'
 
 // to get a typed window

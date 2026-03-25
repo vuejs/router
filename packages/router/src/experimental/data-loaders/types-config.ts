@@ -1,4 +1,4 @@
-import { TypesConfig } from '../../config'
+import type { TypesConfig } from '../../config'
 
 /**
  * The default error type used for data loaders. Can be customized via {@link TypesConfig}.

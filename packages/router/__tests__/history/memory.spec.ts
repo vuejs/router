@@ -1,5 +1,6 @@
 import { createMemoryHistory } from '../../src/history/memory'
-import { START, HistoryLocation } from '../../src/history/common'
+import type { HistoryLocation } from '../../src/history/common'
+import { START } from '../../src/history/common'
 import { vi, describe, expect, it } from 'vitest'
 
 const loc: HistoryLocation = '/foo'

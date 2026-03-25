@@ -1,34 +1,30 @@
+import type { NavigationRedirectError } from '../errors'
 import {
   createRouterError,
   ErrorTypes,
   isNavigationFailure,
-  NavigationRedirectError,
   type _ErrorListener,
   type NavigationFailure,
 } from '../errors'
+import type { ShallowRef } from 'vue'
 import {
   nextTick,
   shallowReactive,
-  ShallowRef,
   shallowRef,
   unref,
   warn,
   type App,
 } from 'vue'
-import { type RouterLink } from '../RouterLink'
 import {
   NavigationType,
   type HistoryState,
   type RouterHistory,
 } from '../history/common'
 import type { PathParserOptions } from '../matcher'
+import type { parseQuery as originalParseQuery } from '../query'
+import { stringifyQuery as originalStringifyQuery } from '../query'
+import type { _ScrollPositionNormalized } from '../scrollBehavior'
 import {
-  parseQuery as originalParseQuery,
-  stringifyQuery as originalStringifyQuery,
-} from '../query'
-import type { Router } from '../router'
-import {
-  _ScrollPositionNormalized,
   computeScrollPosition,
   getSavedScrollPosition,
   getScrollKey,
@@ -55,7 +51,7 @@ import type {
   RouteRecordNameGeneric,
   RouteRecordRedirectOption,
 } from '../typed-routes'
-import {
+import type {
   Lazy,
   RawRouteComponent,
   RouteLocationOptions,
@@ -75,13 +71,13 @@ import {
   routerKey,
   routerViewLocationKey,
 } from '../injectionSymbols'
-import {
+import type {
   EXPERIMENTAL_ResolverRecord_Base,
   EXPERIMENTAL_ResolverRecord_Group,
   EXPERIMENTAL_ResolverRecord_Matchable,
   EXPERIMENTAL_ResolverFixed,
 } from './route-resolver/resolver-fixed'
-import {
+import type {
   ResolverLocationAsNamed,
   ResolverLocationAsPathRelative,
   ResolverLocationAsRelative,

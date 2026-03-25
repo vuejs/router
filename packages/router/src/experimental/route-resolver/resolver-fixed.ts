@@ -8,7 +8,6 @@ import {
 import type {
   MatcherPatternPath,
   MatcherPatternHash,
-  MatcherPattern,
   MatcherParamsFormatted,
   MatcherQueryParams,
 } from './matchers/matcher-pattern'
@@ -320,9 +319,9 @@ export function createFixedResolver<
           ;[matched, parsedParams] = validateMatch(record, url)
           // validate throws if no match, so we should break here
           break
-        } catch (e) {
+        } catch {
           // for debugging tests
-          // console.log('❌ ERROR matching', e)
+          // console.log('❌ ERROR matching')
         }
       }
 

@@ -3,7 +3,8 @@
  */
 import { defineComponent, h } from 'vue'
 import { mount } from '@vue/test-utils'
-import { createRouter, createMemoryHistory, RouterOptions } from '../../src'
+import type { RouterOptions } from '../../src'
+import { createRouter, createMemoryHistory } from '../../src'
 import { vi, describe, expect, it, beforeEach } from 'vitest'
 
 const nextCallbacks = {

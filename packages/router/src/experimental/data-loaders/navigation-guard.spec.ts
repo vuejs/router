@@ -1,12 +1,13 @@
 /**
  * @vitest-environment happy-dom
  */
-import { App, createApp, defineComponent } from 'vue'
-import {
+import type { App } from 'vue'
+import { createApp, defineComponent } from 'vue'
+import type {
   DefineDataLoaderOptions_LaxData,
   DefineDataLoaderOptions_DefinedData,
-  defineBasicLoader,
 } from './defineLoader'
+import { defineBasicLoader } from './defineLoader'
 import {
   afterAll,
   afterEach,
@@ -19,19 +20,19 @@ import {
 } from 'vitest'
 import { createRouter } from '../../router'
 import { createMemoryHistory } from '../../history/memory'
+import type { DataLoaderPluginOptions } from './entries/index'
 import {
   ABORT_CONTROLLER_KEY,
   LOADER_SET_KEY,
   setCurrentContext,
   DataLoaderPlugin,
   NavigationResult,
-  DataLoaderPluginOptions,
   useIsDataLoading,
 } from './entries/index'
 import { mockPromise } from '../../tests/utils'
 import { useDataOne, useDataTwo } from '../../tests/data-loaders/loaders'
 import { type NavigationFailure } from '../../errors'
-import { Router } from '../../router'
+import type { Router } from '../../router'
 
 function mockedLoader<T = string | NavigationResult>(
   // boolean is easier to handle for router mock

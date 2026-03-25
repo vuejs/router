@@ -1,6 +1,6 @@
 import { createRouter as newRouter } from '../src/router'
 import { components } from './utils'
-import { RouteRecordRaw } from '../src/types'
+import type { RouteRecordRaw } from '../src/types'
 import { createMemoryHistory } from '../src'
 import * as encoding from '../src/encoding'
 import { vi, describe, expect, it, beforeEach } from 'vitest'

@@ -7,12 +7,13 @@ import {
   type Mock,
   afterAll,
 } from 'vitest'
+import type { HandlerContext } from './RoutesFolderWatcher'
 import {
-  HandlerContext,
   RoutesFolderWatcher,
   resolveFolderOptions,
 } from './RoutesFolderWatcher'
-import { resolveOptions, RoutesFolderOption } from '../options'
+import type { RoutesFolderOption } from '../options'
+import { resolveOptions } from '../options'
 import pathe from 'pathe'
 import fs from 'node:fs/promises'
 import { tmpdir } from 'node:os'

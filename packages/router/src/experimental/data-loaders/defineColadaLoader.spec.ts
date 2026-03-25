@@ -1,27 +1,23 @@
 /**
  * @vitest-environment happy-dom
  */
-import { App, defineComponent, nextTick } from 'vue'
+import type { App } from 'vue'
+import { defineComponent, nextTick } from 'vue'
 import { defineColadaLoader } from './defineColadaLoader'
 import { describe, it, expect, vi, afterEach } from 'vitest'
+import type { DataLoaderPluginOptions, UseDataLoader } from './entries/index'
 import {
   DataLoaderPlugin,
-  DataLoaderPluginOptions,
   getCurrentContext,
   setCurrentContext,
-  UseDataLoader,
 } from './entries/index'
 import { getRouter, testDefineLoader } from '../../tests/data-loaders'
 // import { getRouter } from 'vue-router-mock'
 import { enableAutoUnmount, mount } from '@vue/test-utils'
 import RouterViewMock from '../../tests/data-loaders/RouterViewMock.vue'
 import { setActivePinia, createPinia, getActivePinia } from 'pinia'
-import {
-  PiniaColada,
-  useQueryCache,
-  serializeQueryCache,
-  hydrateQueryCache,
-} from '@pinia/colada'
+import type { serializeQueryCache } from '@pinia/colada'
+import { PiniaColada, useQueryCache, hydrateQueryCache } from '@pinia/colada'
 import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
 
 describe(

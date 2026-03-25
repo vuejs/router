@@ -1,4 +1,3 @@
-import { defineParamParser } from 'vue-router/experimental'
 import { z } from 'zod'
 
 const MonthSchema = z.coerce.number().int().min(1).max(12)

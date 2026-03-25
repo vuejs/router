@@ -1,6 +1,6 @@
-import { LocationQuery } from '../../query'
-import { Router } from '../../router'
-import { RouteLocationNormalizedLoaded } from '../../typed-routes'
+import type { LocationQuery } from '../../query'
+import type { Router } from '../../router'
+import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
 import type { DataLoaderEntryBase, UseDataLoader } from './createDataLoader'
 import { IS_USE_DATA_LOADER_KEY } from './meta-extensions'
 

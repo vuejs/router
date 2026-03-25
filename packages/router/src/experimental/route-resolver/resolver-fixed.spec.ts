@@ -4,13 +4,13 @@ import {
   type EXPERIMENTAL_ResolverRecord_Matchable,
 } from './resolver-fixed'
 import { NO_MATCH_LOCATION } from './resolver-abstract'
-import {
+import type {
   EmptyParams,
   MatcherPatternHash,
   MatcherQueryParams,
 } from './matchers/matcher-pattern'
 import { MatcherPatternPathStatic } from './matchers/matcher-pattern'
-import { MatcherPatternQuery } from './matchers/matcher-pattern-query'
+import type { MatcherPatternQuery } from './matchers/matcher-pattern-query'
 import {
   EMPTY_PATH_PATTERN_MATCHER,
   USER_ID_PATH_PATTERN_MATCHER,
@@ -19,7 +19,7 @@ import {
   PAGE_QUERY_PATTERN_MATCHER,
 } from './matchers/test-utils'
 import { MatchMiss, miss } from './matchers/errors'
-import { MatcherPatternPath } from './matchers/matcher-pattern'
+import type { MatcherPatternPath } from './matchers/matcher-pattern'
 
 // Additional pattern matchers for testing advanced scenarios
 const USERS_ID_OTHER_PATH_MATCHER: MatcherPatternPath<{

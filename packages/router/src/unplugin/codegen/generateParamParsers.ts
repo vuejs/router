@@ -1,6 +1,6 @@
-import { TreePathParam, TreeQueryParam } from '../core/treeNodeValue'
-import { ImportsMap } from '../core/utils'
-import { PrefixTree } from '../core/tree'
+import type { TreePathParam, TreeQueryParam } from '../core/treeNodeValue'
+import type { ImportsMap } from '../core/utils'
+import type { PrefixTree } from '../core/tree'
 import { toStringLiteral } from '../utils'
 
 export type ParamParsersMap = Map<

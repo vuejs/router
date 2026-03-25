@@ -1,18 +1,18 @@
-import {
+import type {
   RouterHistory,
   NavigationCallback,
-  NavigationType,
-  NavigationDirection,
   HistoryState,
   ValueContainer,
-  normalizeBase,
-  createHref,
   HistoryLocation,
 } from './common'
 import {
-  computeScrollPosition,
-  _ScrollPositionNormalized,
-} from '../scrollBehavior'
+  NavigationType,
+  NavigationDirection,
+  normalizeBase,
+  createHref,
+} from './common'
+import type { _ScrollPositionNormalized } from '../scrollBehavior'
+import { computeScrollPosition } from '../scrollBehavior'
 import { warn } from '../warning'
 import { stripBase } from '../location'
 import { assign } from '../utils'

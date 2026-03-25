@@ -150,7 +150,7 @@ export function decode(
   if (text == null) return null
   try {
     return decodeURIComponent('' + text)
-  } catch (err) {
+  } catch {
     if (process.env.NODE_ENV !== 'production') {
       warn(`Error decoding "${text}". Using original value`)
     }

@@ -1,10 +1,6 @@
 import { createMemoryHistory, createRouter, createRouterMatcher } from '../src'
-import {
-  defineAsyncComponent,
-  defineComponent,
-  FunctionalComponent,
-  h,
-} from 'vue'
+import type { FunctionalComponent } from 'vue'
+import { defineAsyncComponent, defineComponent, h } from 'vue'
 import { describe, expect, it } from 'vitest'
 import { mockWarn } from './vitest-mock-warn'
 
@@ -26,7 +22,7 @@ describe('warnings', () => {
     })
     try {
       await router.push('/redirect')
-    } catch (err) {}
+    } catch {}
     expect('Invalid redirect found').toHaveBeenWarned()
   })
 

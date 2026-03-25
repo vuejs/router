@@ -201,6 +201,6 @@ describe('RouteMap constraint with interface (no index signatures)', () => {
       RouteLocationNormalizedTypedList<RouteNamedMapInterface>
 
     // @ts-expect-error: '/nonexistent' is not a valid route name
-    type Invalid = NormalizedList['/nonexistent']
+    type _Invalid = NormalizedList['/nonexistent']
   })
 })

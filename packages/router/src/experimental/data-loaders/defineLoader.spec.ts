@@ -1,20 +1,20 @@
 /**
  * @vitest-environment happy-dom
  */
-import { App, defineComponent } from 'vue'
+import type { App } from 'vue'
+import { defineComponent } from 'vue'
+import type { DefineDataLoaderOptions_DefinedData } from './defineLoader'
 import {
   type DefineDataLoaderOptions_LaxData,
-  DefineDataLoaderOptions_DefinedData,
   INITIAL_DATA_KEY,
   SERVER_INITIAL_DATA_KEY,
   defineBasicLoader,
 } from './defineLoader'
 import { describe, it, expect, vi, afterEach } from 'vitest'
+import type { DataLoaderPluginOptions, UseDataLoader } from './entries/index'
 import {
   DataLoaderPlugin,
-  DataLoaderPluginOptions,
   NavigationResult,
-  UseDataLoader,
   setCurrentContext,
 } from './entries/index'
 import { getRouter, testDefineLoader } from '../../tests/data-loaders'

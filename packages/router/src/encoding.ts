@@ -150,7 +150,7 @@ export function decode(
   if (text == null) return null
   try {
     return decodeURIComponent('' + text)
-  } catch (err) {
+  } catch {
     __DEV__ && warn(`Error decoding "${text}". Using original value`)
   }
   return '' + text

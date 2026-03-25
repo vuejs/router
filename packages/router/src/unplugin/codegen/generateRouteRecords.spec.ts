@@ -1,6 +1,7 @@
 import { basename } from 'pathe'
 import { describe, expect, it } from 'vitest'
-import { PrefixTree, TreeNode } from '../core/tree'
+import type { TreeNode } from '../core/tree'
+import { PrefixTree } from '../core/tree'
 import { resolveOptions } from '../options'
 import { generateRouteRecords } from './generateRouteRecords'
 import { ImportsMap } from '../core/utils'

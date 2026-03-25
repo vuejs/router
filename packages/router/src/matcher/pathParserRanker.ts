@@ -1,4 +1,5 @@
-import { Token, TokenType } from './pathTokenizer'
+import type { Token } from './pathTokenizer'
+import { TokenType } from './pathTokenizer'
 import { assign, isArray } from '../utils'
 
 export type PathParams = Record<string, string | string[]>

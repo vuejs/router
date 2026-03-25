@@ -1,6 +1,7 @@
 import type { TreeNode, TreeNodeNamed } from '../core/tree'
 import type { ResolvedOptions } from '../options'
-import { generateParamsTypes, ParamParsersMap } from './generateParamParsers'
+import type { ParamParsersMap } from './generateParamParsers'
+import { generateParamsTypes } from './generateParamParsers'
 import {
   EXPERIMENTAL_generateRouteParams,
   generateRouteParams,

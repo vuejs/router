@@ -32,9 +32,9 @@ import {
   defineQuery,
   useQueryCache,
 } from '@pinia/colada'
+import type { DefineDataLoaderOptionsBase_DefinedData } from './createDataLoader'
 import {
   _DefineDataLoaderOptionsBase_Common,
-  DefineDataLoaderOptionsBase_DefinedData,
   toLazyValue,
 } from './createDataLoader'
 import type {

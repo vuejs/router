@@ -4,8 +4,9 @@
 import { createWebHashHistory } from '../../src/history/hash'
 import { createWebHistory } from '../../src/history/html5'
 import { mockWarn } from '../vitest-mock-warn'
-import { Window as HappyDomWindow } from 'happy-dom'
-import { vi, describe, expect, it, beforeEach, Mock, afterEach } from 'vitest'
+import type { Window as HappyDomWindow } from 'happy-dom'
+import type { Mock } from 'vitest'
+import { vi, describe, expect, it, beforeEach, afterEach } from 'vitest'
 
 // to get a typed window
 function getWindow(): HappyDomWindow {

@@ -1,4 +1,5 @@
-import { defineConfig, HeadConfig } from 'vitepress'
+import type { HeadConfig } from 'vitepress'
+import { defineConfig } from 'vitepress'
 import { zhSearch } from './zh'
 import {
   groupIconMdPlugin,

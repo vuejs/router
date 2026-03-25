@@ -1,4 +1,5 @@
 import { describe, it, expectTypeOf } from 'vitest'
+import type { RouteLocationNormalizedLoadedTypedList } from './index'
 import {
   type RouteRecordInfo,
   type ParamValue,
@@ -7,7 +8,6 @@ import {
   createRouter,
   createWebHistory,
   useRoute,
-  RouteLocationNormalizedLoadedTypedList,
 } from './index'
 
 // type is needed instead of an interface
@@ -120,9 +120,9 @@ describe('RouterTyped', () => {
       } else if (to.name === '/[a]') {
         expectTypeOf<{ a: ParamValue<true> }>(to.params)
       }
-      if (Math.random()) {
+      if (Math.random() > 0.5) {
         return { name: '/[a]', params: { a: 2 } }
-      } else if (Math.random()) {
+      } else if (Math.random() > 0.3) {
         return '/any route does'
       }
       return true
@@ -141,9 +141,9 @@ describe('RouterTyped', () => {
       } else if (to.name === '/[a]') {
         expectTypeOf<{ a: ParamValue<true> }>(to.params)
       }
-      if (Math.random()) {
+      if (Math.random() > 0.5) {
         return { name: '/[a]', params: { a: 2 } }
-      } else if (Math.random()) {
+      } else if (Math.random() > 0.3) {
         return '/any route does'
       }
       return true
@@ -162,9 +162,9 @@ describe('RouterTyped', () => {
       } else if (to.name === '/[a]') {
         expectTypeOf<{ a: ParamValue<true> }>(to.params)
       }
-      if (Math.random()) {
+      if (Math.random() > 0.5) {
         return { name: '/[a]', params: { a: 2 } }
-      } else if (Math.random()) {
+      } else if (Math.random() > 0.3) {
         return '/any route does'
       }
       return true

@@ -17,25 +17,17 @@ import {
   // this file is meant to be prepended to the generated dist/src/RouterLink.d.ts
   // @ts-ignore
   type ComputedRef,
-  // @ts-ignore
-  DefineComponent,
-  // @ts-ignore
-  RendererElement,
-  // @ts-ignore
-  RendererNode,
-  // @ts-ignore
-  ComponentOptionsMixin,
   type MaybeRef,
   type AnchorHTMLAttributes,
 } from 'vue'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
-import { RouteRecord } from './matcher/types'
-import { NavigationFailure } from './errors'
+import type { RouteRecord } from './matcher/types'
+import type { NavigationFailure } from './errors'
 import { isArray, isBrowser, noop } from './utils'
 import { warn } from './warning'
 import { isRouteLocation } from './types'
-import {
+import type {
   RouteLocation,
   RouteLocationAsPath,
   RouteLocationAsRelativeTyped,

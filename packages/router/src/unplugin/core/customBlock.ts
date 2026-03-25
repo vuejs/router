@@ -1,5 +1,6 @@
-import { SFCBlock, parse as parseSFC } from '@vue/compiler-sfc'
-import { ResolvedOptions } from '../options'
+import type { SFCBlock } from '@vue/compiler-sfc'
+import { parse as parseSFC } from '@vue/compiler-sfc'
+import type { ResolvedOptions } from '../options'
 import JSON5 from 'json5'
 import { parse as parseYaml } from 'yaml'
 import { warn } from './utils'

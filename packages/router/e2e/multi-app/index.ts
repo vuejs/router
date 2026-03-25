@@ -1,6 +1,8 @@
 import '../global.css'
-import { RouteComponent, createRouter, createWebHistory } from 'vue-router'
-import { createApp, ref, watchEffect, App, inject } from 'vue'
+import type { RouteComponent} from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
+import type { App} from 'vue';
+import { createApp, ref, watchEffect, inject } from 'vue'
 
 const Home: RouteComponent = {
   template: `<div class="home">Home</div>`,

@@ -1,6 +1,5 @@
 import type { TypesConfig } from '../config'
 import type { RouteParamsGeneric, RouteParamsRawGeneric } from '../types'
-import type { RouteRecord } from '../matcher/types'
 
 /**
  * Helper type to define a Typed `RouteRecord`

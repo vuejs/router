@@ -1,8 +1,9 @@
 import { loadRouteLocation } from '../../src/navigationGuards'
-import { RouteRecordRaw } from '../../src/types'
+import type { RouteRecordRaw } from '../../src/types'
 import { components } from '../utils'
-import { RouteLocationRaw, createMemoryHistory, createRouter } from '../../src'
-import { FunctionalComponent } from 'vue'
+import type { RouteLocationRaw } from '../../src'
+import { createMemoryHistory, createRouter } from '../../src'
+import type { FunctionalComponent } from 'vue'
 import { describe, expect, it } from 'vitest'
 import { isRouteComponent } from '../../src/utils'
 

@@ -1,5 +1,6 @@
-import { ResolvedOptions } from '../options'
-import { TreeNode, PrefixTree } from './tree'
+import type { ResolvedOptions } from '../options'
+import type { TreeNode } from './tree'
+import { PrefixTree } from './tree'
 import { promises as fs } from 'node:fs'
 import { asRoutePath, ImportsMap, logTree, throttle } from './utils'
 import { generateRouteNamedMap } from '../codegen/generateRouteMap'
@@ -8,11 +9,11 @@ import { MODULE_ROUTES_PATH } from './moduleConstants'
 import { generateRouteRecords } from '../codegen/generateRouteRecords'
 import { glob } from 'tinyglobby'
 import { dirname, parse as parsePathe, relative, resolve } from 'pathe'
-import { ServerContext } from '../options'
+import type { ServerContext } from '../options'
 import { getRouteBlock } from './customBlock'
+import type { HandlerContext } from './RoutesFolderWatcher'
 import {
   RoutesFolderWatcher,
-  HandlerContext,
   resolveFolderOptions,
 } from './RoutesFolderWatcher'
 import { generateDTS as _generateDTS } from '../codegen/generateDTS'
@@ -23,10 +24,10 @@ import { generateRouteResolver } from '../codegen/generateRouteResolver'
 import { generateDuplicatedRoutesWarnings } from '../codegen/generateDuplicateRoutesWarnings'
 import { generateAliasWarnings } from '../codegen/generateAliasWarnings'
 import { type FSWatcher, watch as fsWatch } from 'chokidar'
+import type { ParamParsersMap } from '../codegen/generateParamParsers'
 import {
   generateParamParsersTypesDeclarations,
   generateCustomParamParsersList,
-  ParamParsersMap,
   warnMissingParamParsers,
   collectMissingParamParsers,
 } from '../codegen/generateParamParsers'

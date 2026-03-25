@@ -8,14 +8,8 @@ import {
   RouterView,
   type RouteRecordRaw,
 } from '../../src'
-import {
-  defineComponent,
-  h,
-  ComponentOptions,
-  FunctionalComponent,
-  onActivated,
-  onDeactivated,
-} from 'vue'
+import type { ComponentOptions, FunctionalComponent } from 'vue'
+import { defineComponent, h, onActivated, onDeactivated } from 'vue'
 import { mount } from '@vue/test-utils'
 import { delay } from '../utils'
 import { vi, describe, expect, it } from 'vitest'

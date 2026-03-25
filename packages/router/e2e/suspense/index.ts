@@ -7,12 +7,13 @@ import {
   RouterView,
   useRoute,
 } from 'vue-router'
+import type {
+  FunctionalComponent} from 'vue';
 import {
   createApp,
   ref,
   reactive,
   defineComponent,
-  FunctionalComponent,
   h,
 } from 'vue'
 

@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_OPTIONS, Options, resolveOptions } from '../options'
-import {
-  collectDuplicatedRouteNodes,
-  PrefixTree,
-  TreeNodeValueMatcherPart,
-} from './tree'
+import type { Options } from '../options'
+import { DEFAULT_OPTIONS, resolveOptions } from '../options'
+import type { TreeNodeValueMatcherPart } from './tree'
+import { collectDuplicatedRouteNodes, PrefixTree } from './tree'
 import { TreeNodeType, type TreePathParam } from './treeNodeValue'
 import { resolve } from 'pathe'
 import { mockWarn } from '../../tests/vitest-mock-warn'

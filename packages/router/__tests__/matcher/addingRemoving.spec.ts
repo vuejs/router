@@ -1,5 +1,5 @@
 import { createRouterMatcher } from '../../src/matcher'
-import { MatcherLocation } from '../../src/types'
+import type { MatcherLocation } from '../../src/types'
 import { mockWarn } from '../vitest-mock-warn'
 import { describe, expect, it } from 'vitest'
 

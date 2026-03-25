@@ -1,6 +1,7 @@
 import './global.css'
-import { createApp, ComponentPublicInstance, App } from 'vue'
-import { Router } from '../src'
+import type { ComponentPublicInstance, App } from 'vue';
+import { createApp } from 'vue'
+import type { Router } from '../src'
 
 const tsmap = import.meta.glob('./**/index.ts')
 
