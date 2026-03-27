@@ -3,6 +3,7 @@
   "plugins": ["typescript"],
   "rules": {
     "no-unused-expressions": "off",
+    "typescript/triple-slash-reference": "off",
     "typescript/consistent-type-imports": [
       "warn",
       {
