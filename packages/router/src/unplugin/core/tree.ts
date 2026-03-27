@@ -366,7 +366,6 @@ export class TreeNode {
    * Generates a regexp based on this node and its parents. This regexp is used by the custom resolver
    */
   get regexp(): string {
-    // eslint-disable-next-line no-this-alias -- walking up the tree
     let node: TreeNode | undefined = this
     // we build the node list from parent to child
     const nodeList: TreeNode[] = []
@@ -421,7 +420,6 @@ export class TreeNode {
    */
   get score(): number[][] {
     const scores: number[][] = []
-    // eslint-disable-next-line no-this-alias -- walking up the tree
     let node: TreeNode | undefined = this
 
     while (node && !node.isRoot()) {
@@ -445,7 +443,6 @@ export class TreeNode {
    */
   get matcherPatternPathDynamicParts(): TreeNodeValueMatcherPart {
     const parts: TreeNodeValueMatcherPart = []
-    // eslint-disable-next-line no-this-alias -- walking up the tree
     let node: TreeNode | undefined = this
 
     while (node && !node.isRoot()) {
