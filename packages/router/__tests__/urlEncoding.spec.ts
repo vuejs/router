@@ -1,3 +1,4 @@
+/* eslint-disable no-import-assign */
 import { createRouter as newRouter } from '../src/router'
 import { components } from './utils'
 import type { RouteRecordRaw } from '../src/types'

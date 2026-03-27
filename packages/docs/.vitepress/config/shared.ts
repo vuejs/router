@@ -22,6 +22,7 @@ if (process.env.NETLIFY) {
   console.log('Netlify build', process.env.CONTEXT)
 }
 
+// eslint-disable-next-line no-control-regex -- intentional control char matching for slug generation
 const rControl = /[\u0000-\u001f]/g
 const rSpecial = /[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/g
 const rCombining = /[\u0300-\u036F]/g
