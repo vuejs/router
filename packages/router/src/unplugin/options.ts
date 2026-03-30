@@ -51,13 +51,13 @@ export interface RoutesFolderOption {
    * Allows to override the global `filePattern` option for this folder. It can also extend the global values by passing
    * a function that returns an array.
    */
-  filePatterns?: _OverridableOption<string[], string | string[]>
+  filePatterns?: _OverridableOption<string[], string | string[]> | undefined
 
   /**
    * Allows to override the global `exclude` option for this folder. It can
    * also extend the global values by passing a function that returns an array.
    */
-  exclude?: _OverridableOption<string[], string | string[]>
+  exclude?: _OverridableOption<string[], string | string[]> | undefined
 
   /**
    * Allows to override the global `extensions` option for this folder. It can
@@ -242,13 +242,13 @@ export interface Options {
      * the backslash) to automatically re export any imported variable from files in the `src/loaders` folder within a
      * page component.
      */
-    autoExportsDataLoaders?: string | string[]
+    autoExportsDataLoaders?: string | string[] | undefined
 
     /**
      * Enable experimental support for the new custom resolvers and allows
      * defining custom param matchers.
      */
-    paramParsers?: boolean | ParamParsersOptions
+    paramParsers?: boolean | ParamParsersOptions | undefined
   }
 }
 

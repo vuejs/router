@@ -55,7 +55,7 @@ export interface AutoExportLoadersOptions {
    * Root of the project. All paths are resolved relatively to this one.
    * @default `process.cwd()`
    */
-  root?: string
+  root?: string | undefined
 }
 
 /**
