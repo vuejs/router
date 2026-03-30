@@ -1,6 +1,6 @@
 import { createMemoryHistory, createRouter } from '../src'
 import { components } from './utils'
-import { RouteRecordRaw } from '../src/types'
+import type { RouteRecordRaw } from '../src/types'
 import { vi, describe, expect, it } from 'vitest'
 
 // generic component because we are not displaying anything so it doesn't matter

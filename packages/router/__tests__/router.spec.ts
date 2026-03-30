@@ -2,17 +2,17 @@
  * @vitest-environment happy-dom
  */
 import fakePromise from 'faked-promise'
+import type { RouteLocationRaw } from '../src'
 import {
   createRouter,
   createMemoryHistory,
   createWebHistory,
   createWebHashHistory,
   loadRouteLocation,
-  RouteLocationRaw,
 } from '../src'
 import { NavigationFailureType } from '../src/errors'
 import { components, tick, nextNavigation } from './utils'
-import { RouteRecordRaw } from '../src/types'
+import type { RouteRecordRaw } from '../src/types'
 import { START_LOCATION_NORMALIZED } from '../src/location'
 import { vi, describe, expect, it } from 'vitest'
 import { mockWarn } from './vitest-mock-warn'
@@ -23,7 +23,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/home-before',
     component: components.Home,
-    beforeEnter: (to, from) => {
+    beforeEnter: (_to, _from) => {
       return '/'
     },
   },
@@ -280,7 +280,7 @@ describe('Router', () => {
 
   it('navigates if the location does not exist', async () => {
     const { router } = await newRouter({ routes: [routes[0]] })
-    const spy = vi.fn((to, from) => {})
+    const spy = vi.fn((_to, _from) => {})
     router.beforeEach(spy)
     await router.push('/idontexist')
     expect(spy).toHaveBeenCalledTimes(1)
@@ -505,7 +505,7 @@ describe('Router', () => {
   describe('alias', () => {
     it('does not navigate to alias if already on original record', async () => {
       const { router } = await newRouter()
-      const spy = vi.fn((to, from) => {})
+      const spy = vi.fn((_to, _from) => {})
       await router.push('/basic')
       router.beforeEach(spy)
       await router.push('/basic-alias')
@@ -514,7 +514,7 @@ describe('Router', () => {
 
     it('does not navigate to alias with children if already on original record', async () => {
       const { router } = await newRouter()
-      const spy = vi.fn((to, from) => {})
+      const spy = vi.fn((_to, _from) => {})
       await router.push('/aliases')
       router.beforeEach(spy)
       await router.push('/aliases1')
@@ -525,7 +525,7 @@ describe('Router', () => {
 
     it('does not navigate to child alias if already on original record', async () => {
       const { router } = await newRouter()
-      const spy = vi.fn((to, from) => {})
+      const spy = vi.fn((_to, _from) => {})
       await router.push('/aliases/one')
       router.beforeEach(spy)
       await router.push('/aliases1/one')
@@ -562,7 +562,7 @@ describe('Router', () => {
       const [p1, r1] = fakePromise()
       const history = createMemoryHistory()
       const router = createRouter({ history, routes })
-      router.beforeEach(async (to, from) => {
+      router.beforeEach(async (to, _from) => {
         if (to.name !== 'Param') return
         // the first navigation gets passed target
         if (to.params.p === 'a') {
@@ -698,7 +698,7 @@ describe('Router', () => {
 
     it('only triggers guards once with a redirect option', async () => {
       const { router } = await newRouter()
-      const spy = vi.fn((to, from) => {})
+      const spy = vi.fn((_to, _from) => {})
       router.beforeEach(spy)
       await router.push('/to-foo')
       expect(spy).toHaveBeenCalledTimes(1)
@@ -968,7 +968,7 @@ describe('Router', () => {
         name: 'dynamic parent',
         end: false,
         strict: true,
-        beforeEnter(to, from) {
+        beforeEnter(to, _from) {
           if (!removeRoute) {
             removeRoute = router.addRoute('dynamic parent', {
               path: 'child',

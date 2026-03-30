@@ -1,10 +1,10 @@
 import { nextTick, shallowRef, shallowReactive } from 'vue'
-import { RouteLocationNormalizedLoose } from './utils'
+import type { RouteLocationNormalizedLoose } from './utils'
 import {
   routeLocationKey,
   routerViewLocationKey,
 } from '../src/injectionSymbols'
-import { RouteLocationNormalized } from '../src'
+import type { RouteLocationNormalized } from '../src'
 
 export function createMockedRoute(
   initialValue: RouteLocationNormalizedLoose | RouteLocationNormalized

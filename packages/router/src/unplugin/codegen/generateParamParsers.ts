@@ -1,6 +1,7 @@
-import { TreePathParam, TreeQueryParam } from '../core/treeNodeValue'
-import { ImportsMap } from '../core/utils'
-import { PrefixTree } from '../core/tree'
+import type { TreePathParam, TreeQueryParam } from '../core/treeNodeValue'
+import type { ImportsMap } from '../core/utils'
+import type { PrefixTree } from '../core/tree'
+import { toStringLiteral } from '../utils'
 
 export type ParamParsersMap = Map<
   string,
@@ -72,7 +73,7 @@ export function generateParamParsersTypesDeclarations(
       const importPath = relativePath.startsWith('.')
         ? relativePath
         : './' + relativePath
-      return `type ${typeName} = ReturnType<NonNullable<typeof import('${importPath}').parser['get']>>`
+      return `type ${typeName} = _ExtractParamParserType<typeof import('${importPath}').parser>`
     })
     .join('\n')
 }
@@ -104,10 +105,8 @@ export function generateParamParserOptions(
 
   // we prioritize custom parsers to let users override them
   if (paramParsers.has(param.parser)) {
-    const { name, absolutePath } = paramParsers.get(param.parser)!
-    const varName = `PARAM_PARSER__${name}`
-    importsMap.add(absolutePath, { name: 'parser', as: varName })
-    return varName
+    const { name } = paramParsers.get(param.parser)!
+    return `_normalized_PARAM_PARSER__${name}`
   } else if (NATIVE_PARAM_PARSERS.includes(param.parser)) {
     const varName = `PARAM_PARSER_${param.parser.toUpperCase()}`
     importsMap.add('vue-router/experimental', varName)
@@ -116,20 +115,33 @@ export function generateParamParserOptions(
   return ''
 }
 
-export function generateParamParserCustomType(
-  paramParsers: ParamParsersMap
+export function generateNormalizedParamParsersDeclarations(
+  paramParsers: ParamParsersMap,
+  importsMap: ImportsMap
 ): string {
+  const declarations: string[] = []
+  for (const [, { name, absolutePath }] of paramParsers) {
+    const rawVar = `PARAM_PARSER__${name}`
+    const normalizedVar = `_normalized_PARAM_PARSER__${name}`
+    importsMap.add('vue-router/experimental', '_normalizeParamParser')
+    importsMap.add(absolutePath, { name: 'parser', as: rawVar })
+    declarations.push(
+      `const ${normalizedVar} = _normalizeParamParser(${rawVar})`
+    )
+  }
+  return declarations.join('\n')
+}
+
+export function generateCustomParamParsersList(
+  paramParsers: ParamParsersMap
+): string[] {
   const parserNames = Array.from(paramParsers.keys()).sort()
 
   if (parserNames.length === 0) {
-    return 'never'
+    return ['never']
   }
 
-  if (parserNames.length === 1) {
-    return `'${parserNames[0]}'`
-  }
-
-  return parserNames.map(name => `  | '${name}'`).join('\n')
+  return parserNames.map(toStringLiteral)
 }
 
 export function generatePathParamsOptions(

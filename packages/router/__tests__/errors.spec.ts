@@ -1,7 +1,7 @@
 import fakePromise from 'faked-promise'
 import { createRouter as newRouter, createMemoryHistory } from '../src'
+import type { NavigationFailure } from '../src/errors'
 import {
-  NavigationFailure,
   NavigationFailureType,
   isNavigationFailure,
   createRouterError,
@@ -86,7 +86,7 @@ describe('Errors & Navigation failures', () => {
 
   it('next("/location") triggers afterEach', async () => {
     await testNavigation(
-      ((to, from) => {
+      ((to, _from) => {
         if (to.path === '/location') return
         else return '/location'
       }) as NavigationGuard,
@@ -109,7 +109,7 @@ describe('Errors & Navigation failures', () => {
   it('triggers afterEach if a new navigation happens', async () => {
     const { router } = createRouter()
     const [promise, resolve] = fakePromise()
-    router.beforeEach(async (to, from) => {
+    router.beforeEach(async (to, _from) => {
       // let it hang otherwise
       if (to.path === '/') return
       else {
@@ -239,7 +239,7 @@ describe('Errors & Navigation failures', () => {
 
     it('next("/location") triggers afterEach with history.back', async () => {
       await testHistoryNavigation(
-        ((to, from) => {
+        ((to, _from) => {
           if (to.path === '/location') return
           else return '/location'
         }) as NavigationGuard,

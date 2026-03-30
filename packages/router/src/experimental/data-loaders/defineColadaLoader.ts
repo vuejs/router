@@ -32,9 +32,9 @@ import {
   defineQuery,
   useQueryCache,
 } from '@pinia/colada'
+import type { DefineDataLoaderOptionsBase_DefinedData } from './createDataLoader'
 import {
   _DefineDataLoaderOptionsBase_Common,
-  DefineDataLoaderOptionsBase_DefinedData,
   toLazyValue,
 } from './createDataLoader'
 import type {
@@ -401,9 +401,9 @@ export function defineColadaLoader<Data>(
   const useDataLoader: // for ts
   UseDataLoaderColada_LaxData<Data> = () => {
     // work with nested data loaders
-    const currentEntry = getCurrentContext()
+    const currentContext = getCurrentContext()
     // TODO: should _route also contain from?
-    const [parentEntry, _router, _route] = currentEntry
+    const [parentEntry, _router, _route] = currentContext
     // fallback to the global router and routes for useDataLoaders used within components
     const router = _router || useRouter()
     const route = _route || (useRoute() as RouteLocationNormalizedLoaded)
@@ -507,17 +507,20 @@ export function defineColadaLoader<Data>(
 
     // load ensures there is a pending load
     const promise = entry
-      .pendingLoad!.then(() => {
+      .pendingLoad!.then(() =>
         // nested loaders might wait for all loaders to be ready before setting data
         // so we need to return the staged value if it exists as it will be the latest one
-        return entry.staged === STAGED_NO_VALUE ? ext.data.value : entry.staged
-      })
+        entry.staged === STAGED_NO_VALUE ? ext.data.value : entry.staged
+      )
       // we only want the error if we are nesting the loader
       // otherwise this will end up in "Unhandled promise rejection"
-      .catch(e => (parentEntry ? Promise.reject(e) : null))
+      .catch((e: unknown) => (parentEntry ? Promise.reject(e) : null))
+      // restore the caller's context so that sequential awaits
+      // (e.g. await useOne(); await useTwo()) preserve the parent
+      .finally(() => setCurrentContext(currentContext))
 
     // Restore the context to avoid sequential calls to be nested
-    setCurrentContext(currentEntry)
+    setCurrentContext(currentContext)
     return assign(promise, useDataLoaderResult)
   }
 

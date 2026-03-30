@@ -1,6 +1,7 @@
 import { basename } from 'pathe'
 import { describe, expect, it } from 'vitest'
-import { PrefixTree, TreeNode } from '../core/tree'
+import type { TreeNode } from '../core/tree'
+import { PrefixTree } from '../core/tree'
 import { resolveOptions } from '../options'
 import { generateRouteRecords } from './generateRouteRecords'
 import { ImportsMap } from '../core/utils'
@@ -363,6 +364,18 @@ describe('generateRouteRecord', () => {
 
       expect(generateRouteRecordSimple(tree)).toMatchSnapshot()
     })
+  })
+
+  it('preserves backslashes in path overrides', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('test/[id]', 'test/[id].vue')
+    const node = tree.insert('test/[id]/index', 'test/[id]/index.vue')
+    node.setCustomRouteBlock('test/[id]/index', {
+      path: '/:id(\\d+)',
+    })
+
+    const result = generateRouteRecordSimple(tree)
+    expect(result).toContain("path: '/:id(\\\\d+)'")
   })
 
   describe('raw paths insertions', () => {

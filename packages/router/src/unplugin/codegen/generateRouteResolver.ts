@@ -1,12 +1,13 @@
 import { getLang } from '@vue-macros/common'
 import { PrefixTree, type TreeNode } from '../core/tree'
-import { ImportsMap } from '../core/utils'
+import type { ImportsMap } from '../core/utils'
 import { type ResolvedOptions } from '../options'
 import { toStringLiteral, ts } from '../utils'
+import type { ParamParsersMap } from './generateParamParsers'
 import {
   generatePathParamsOptions,
   generateParamParserOptions,
-  ParamParsersMap,
+  generateNormalizedParamParsersDeclarations,
 } from './generateParamParsers'
 import { generatePageImport, formatMeta } from './generateRouteRecords'
 
@@ -95,8 +96,13 @@ export function generateRouteResolver(
   importsMap.add('vue-router/experimental', 'MatcherPatternPathDynamic')
   importsMap.add('vue-router/experimental', 'normalizeRouteRecord')
 
+  const normalizedDeclarations = generateNormalizedParamParsersDeclarations(
+    paramParsersMap,
+    importsMap
+  )
+
   return ts`
-${records.join('\n\n')}
+${normalizedDeclarations ? normalizedDeclarations + '\n\n' : ''}${records.join('\n\n')}
 
 export const resolver = createFixedResolver([
 ${state.matchableRecords

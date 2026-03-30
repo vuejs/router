@@ -1,11 +1,10 @@
-import {
+import type {
   RouteRecordRaw,
   Lazy,
-  isRouteLocation,
-  isRouteName,
   RouteLocationOptions,
   MatcherLocationRaw,
 } from './types'
+import { isRouteLocation, isRouteName } from './types'
 import type {
   RouteLocation,
   RouteLocationRaw,
@@ -17,35 +16,35 @@ import type {
   RouteLocationResolved,
   RouteRecordNameGeneric,
 } from './typed-routes'
-import { HistoryState, NavigationType } from './history/common'
+import type { HistoryState } from './history/common'
+import { NavigationType } from './history/common'
+import type { _ScrollPositionNormalized } from './scrollBehavior'
 import {
   getSavedScrollPosition,
   getScrollKey,
   saveScrollPosition,
   computeScrollPosition,
   scrollToPosition,
-  _ScrollPositionNormalized,
 } from './scrollBehavior'
 import { createRouterMatcher } from './matcher'
-import {
-  createRouterError,
-  ErrorTypes,
+import type {
   NavigationFailure,
   NavigationRedirectError,
-  isNavigationFailure,
   _ErrorListener,
 } from './errors'
+import { createRouterError, ErrorTypes, isNavigationFailure } from './errors'
 import { applyToParams, isBrowser, assign, noop, isArray } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
+import type { LocationQuery } from './query'
 import {
   normalizeQuery,
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
-  LocationQuery,
 } from './query'
-import { shallowRef, nextTick, App, unref, shallowReactive } from 'vue'
-import { RouteRecordNormalized } from './matcher/types'
+import type { App } from 'vue'
+import { shallowRef, nextTick, unref, shallowReactive } from 'vue'
+import type { RouteRecordNormalized } from './matcher/types'
 import {
   parseURL,
   stringifyURL,
@@ -67,7 +66,7 @@ import {
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
 import { _LiteralUnion } from './types/utils'
-import {
+import type {
   EXPERIMENTAL_RouterOptions_Base,
   EXPERIMENTAL_Router_Base,
   _OnReadyCallback,
@@ -939,7 +938,7 @@ export function createRouter(options: RouterOptions): Router {
    * @param err - optional error
    */
   function markAsReady<E = any>(err: E): E
-  function markAsReady<E = any>(): void
+  function markAsReady<_E = any>(): void
   function markAsReady<E = any>(err?: E): E | void {
     if (!ready) {
       // still not ready if an error happened

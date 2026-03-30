@@ -1,5 +1,5 @@
 import { miss } from './errors'
-import { MatcherPatternPath } from './matcher-pattern'
+import type { MatcherPatternPath } from './matcher-pattern'
 
 /**
  * Allows matching a static path folllowed by anything.

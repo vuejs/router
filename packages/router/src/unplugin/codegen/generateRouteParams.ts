@@ -1,4 +1,4 @@
-import { TreeNode } from '../core/tree'
+import type { TreeNode } from '../core/tree'
 import {
   isTreeParamOptional,
   isTreeParamRepeatable,
@@ -56,7 +56,9 @@ export function EXPERIMENTAL_generateRouteParams(
           let extractedType: string
 
           if (type?.startsWith('Param_')) {
-            extractedType = `${isRepeatable ? 'Extract' : 'Exclude'}<${type}, unknown[]>`
+            extractedType = isRepeatable
+              ? `Extract<${type}, unknown[]>`
+              : `Exclude<${type}, unknown[] | null>`
           } else {
             extractedType = `${type ?? 'string'}${isRepeatable ? '[]' : ''}`
           }

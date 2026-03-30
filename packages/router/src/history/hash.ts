@@ -1,4 +1,4 @@
-import { RouterHistory } from './common'
+import type { RouterHistory } from './common'
 import { createWebHistory } from './html5'
 import { warn } from '../warning'
 

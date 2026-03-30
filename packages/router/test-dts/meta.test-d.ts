@@ -53,7 +53,7 @@ describe('RouteMeta', () => {
       routes: [],
     })
     router.beforeEach(to => {
-      expectTypeOf<{ requiresAuth?: Boolean; nested?: { foo: string } }>(
+      expectTypeOf<{ requiresAuth?: boolean; nested?: { foo: string } }>(
         to.meta
       )
       expectTypeOf<unknown>(to.meta.lol)

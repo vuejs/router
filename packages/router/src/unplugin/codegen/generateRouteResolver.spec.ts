@@ -7,7 +7,7 @@ import {
   generateRouteRecordQuery,
 } from './generateRouteResolver'
 import { ImportsMap } from '../core/utils'
-import { ParamParsersMap } from './generateParamParsers'
+import type { ParamParsersMap } from './generateParamParsers'
 import { generateAliasWarnings } from './generateAliasWarnings'
 
 const DEFAULT_OPTIONS = resolveOptions({})

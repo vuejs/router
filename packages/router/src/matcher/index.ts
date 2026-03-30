@@ -1,12 +1,14 @@
-import {
+import type {
   RouteRecordRaw,
   MatcherLocationRaw,
   MatcherLocation,
-  isRouteName,
 } from '../types'
-import { createRouterError, ErrorTypes, MatcherError } from '../errors'
-import { createRouteRecordMatcher, RouteRecordMatcher } from './pathMatcher'
-import { RouteRecordNormalized } from './types'
+import { isRouteName } from '../types'
+import type { MatcherError } from '../errors'
+import { createRouterError, ErrorTypes } from '../errors'
+import type { RouteRecordMatcher } from './pathMatcher'
+import { createRouteRecordMatcher } from './pathMatcher'
+import type { RouteRecordNormalized } from './types'
 
 import type {
   PathParams,

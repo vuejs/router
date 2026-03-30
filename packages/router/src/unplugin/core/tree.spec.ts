@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_OPTIONS, Options, resolveOptions } from '../options'
-import {
-  collectDuplicatedRouteNodes,
-  PrefixTree,
-  TreeNodeValueMatcherPart,
-} from './tree'
+import type { Options } from '../options'
+import { DEFAULT_OPTIONS, resolveOptions } from '../options'
+import type { TreeNodeValueMatcherPart } from './tree'
+import { collectDuplicatedRouteNodes, PrefixTree } from './tree'
 import { TreeNodeType, type TreePathParam } from './treeNodeValue'
 import { resolve } from 'pathe'
 import { mockWarn } from '../../tests/vitest-mock-warn'
@@ -1273,6 +1271,14 @@ describe('Tree', () => {
       const c = tree.children.get('a')!.children.get('b')!.children.get('c')!
       expect(c.value.components.get('default')).toBe('a/b/c/_parent.vue')
       expect(c.children.has('_parent')).toBe(false)
+    })
+
+    it('does not flag named views as conflicts', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('posts/index', 'posts/index.vue')
+      tree.insert('posts/index@header', 'posts/index@header.vue')
+
+      expect(collectDuplicatedRouteNodes(tree)).toEqual([])
     })
 
     it('collects _parent conflicts', () => {

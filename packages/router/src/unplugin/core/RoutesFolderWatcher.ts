@@ -1,12 +1,12 @@
 import { type FSWatcher, watch as fsWatch } from 'chokidar'
 import picomatch from 'picomatch'
 import { resolve } from 'pathe'
-import {
+import type {
   ResolvedOptions,
   RoutesFolderOption,
   RoutesFolderOptionResolved,
-  _OverridableOption,
 } from '../options'
+import { _OverridableOption } from '../options'
 import { appendExtensionListToPattern, asRoutePath } from './utils'
 import path from 'pathe'
 

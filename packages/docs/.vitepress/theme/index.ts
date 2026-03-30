@@ -1,5 +1,5 @@
 import { h } from 'vue'
-import { Theme } from 'vitepress'
+import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import AsideSponsors from './components/AsideSponsors.vue'
 // import HomeSponsors from './components/HomeSponsors.vue'

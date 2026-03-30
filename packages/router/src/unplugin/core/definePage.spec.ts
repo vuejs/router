@@ -1,4 +1,4 @@
-import { TransformResult } from 'vite'
+import type { TransformResult } from 'vite'
 import { expect, describe, it } from 'vitest'
 import { definePageTransform, extractDefinePageInfo } from './definePage'
 import { ts } from '../utils'

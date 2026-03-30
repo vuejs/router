@@ -40,11 +40,11 @@ import {
   type EXPERIMENTAL_RouterOptions,
   normalizeRouteRecord,
 } from './index'
+import type { RouteLocationRaw } from '../index'
 import {
   createMemoryHistory,
   createWebHistory,
   createWebHashHistory,
-  RouteLocationRaw,
   loadRouteLocation,
 } from '../index'
 import { NavigationFailureType } from '../errors'
@@ -959,7 +959,7 @@ describe('Experimental Router', () => {
 
     it('only triggers guards once with a redirect option', async () => {
       const { router } = await newRouter()
-      const spy = vi.fn((to, from) => {})
+      const spy = vi.fn((_to, _from) => {})
       router.beforeEach(spy)
       await router.push('/to-foo')
       expect(spy).toHaveBeenCalledTimes(1)

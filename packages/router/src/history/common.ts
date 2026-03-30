@@ -162,7 +162,7 @@ export function normalizeBase(base?: string): string {
       const baseEl = document.querySelector('base')
       base = (baseEl && baseEl.getAttribute('href')) || '/'
       // strip full URL origin
-      base = base.replace(/^\w+:\/\/[^\/]+/, '')
+      base = base.replace(/^\w+:\/\/[^/]+/, '')
     } else {
       base = '/'
     }

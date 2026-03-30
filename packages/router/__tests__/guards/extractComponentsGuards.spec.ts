@@ -40,7 +40,7 @@ const ErrorLazyLoad: RouteRecordRaw = {
 
 beforeEach(() => {
   beforeRouteEnter.mockReset()
-  beforeRouteEnter.mockImplementation((to, from) => {
+  beforeRouteEnter.mockImplementation((_to, _from) => {
     return
   })
 })

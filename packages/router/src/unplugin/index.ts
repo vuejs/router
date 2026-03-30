@@ -11,12 +11,8 @@ import {
   DEFINE_PAGE_QUERY_RE,
   MODULE_RESOLVER_PATH,
 } from './core/moduleConstants'
-import {
-  Options,
-  resolveOptions,
-  DEFAULT_OPTIONS,
-  mergeAllExtensions,
-} from './options'
+import type { Options } from './options'
+import { resolveOptions, DEFAULT_OPTIONS, mergeAllExtensions } from './options'
 import { createViteContext } from './core/vite'
 import { join } from 'pathe'
 import { appendExtensionListToPattern } from './core/utils'

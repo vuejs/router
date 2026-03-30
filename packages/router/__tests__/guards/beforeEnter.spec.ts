@@ -3,7 +3,7 @@
  */
 import fakePromise from 'faked-promise'
 import { noGuard, tick, newRouter as createRouter } from '../utils'
-import { RouteRecordRaw } from '../../src/types'
+import type { RouteRecordRaw } from '../../src/types'
 import { vi, describe, expect, it, beforeEach } from 'vitest'
 
 const Home = { template: `<div>Home</div>` }
@@ -156,7 +156,7 @@ describe('beforeEnter', () => {
   it('waits before navigating', async () => {
     const [promise, resolve] = fakePromise()
     const router = createRouter({ routes })
-    beforeEnter.mockImplementationOnce(async (to, from) => {
+    beforeEnter.mockImplementationOnce(async (_to, _from) => {
       await promise
       return
     })
@@ -171,11 +171,11 @@ describe('beforeEnter', () => {
     const [p1, r1] = fakePromise()
     const [p2, r2] = fakePromise()
     const router = createRouter({ routes })
-    beforeEnters[0].mockImplementationOnce(async (to, from) => {
+    beforeEnters[0].mockImplementationOnce(async (_to, _from) => {
       await p1
       return
     })
-    beforeEnters[1].mockImplementationOnce(async (to, from) => {
+    beforeEnters[1].mockImplementationOnce(async (_to, _from) => {
       await p2
       return
     })

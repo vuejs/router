@@ -2,17 +2,18 @@
  * @vitest-environment happy-dom
  */
 import { RouterLink } from '../src/RouterLink'
-import { RouteQueryAndHash, MatcherLocationRaw } from '../src/types'
+import type { RouteQueryAndHash, MatcherLocationRaw } from '../src/types'
 import { START_LOCATION_NORMALIZED } from '../src/location'
-import {
-  createMemoryHistory,
+import type {
   RouterOptions,
   RouteLocationNormalized,
   RouteLocationResolved,
 } from '../src'
+import { createMemoryHistory } from '../src'
 import { createMockedRoute } from './mount'
-import { defineComponent, PropType } from 'vue'
-import { RouteRecordNormalized } from '../src/matcher/types'
+import type { PropType } from 'vue'
+import { defineComponent } from 'vue'
+import type { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/injectionSymbols'
 import { tick } from './utils'
 import { mount } from '@vue/test-utils'

@@ -3,12 +3,12 @@ import type {
   NavigationGuardNextCallback,
   _RouteRecordProps,
 } from '../typed-routes'
-import {
+import type {
   RouteRecordMultipleViews,
   _RouteRecordBase,
   RouteRecordRaw,
 } from '../types'
-import { ComponentPublicInstance } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
 
 // normalize component/components into components and make every property always present
 /**

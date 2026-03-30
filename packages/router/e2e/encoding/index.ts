@@ -1,6 +1,8 @@
 import '../global.css'
-import { createRouter, createWebHistory, RouteComponent } from 'vue-router'
-import { createApp, defineComponent, FunctionalComponent, h } from 'vue'
+import type { RouteComponent } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
+import type { FunctionalComponent} from 'vue';
+import { createApp, defineComponent, h } from 'vue'
 
 const component: RouteComponent = {
   template: `<div>A component</div>`,

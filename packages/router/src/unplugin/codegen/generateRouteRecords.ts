@@ -1,6 +1,6 @@
 import { getLang } from '@vue-macros/common'
 import type { TreeNode } from '../core/tree'
-import { ImportsMap } from '../core/utils'
+import type { ImportsMap } from '../core/utils'
 import { type ResolvedOptions } from '../options'
 import { pad, toStringLiteral } from '../utils'
 

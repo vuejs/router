@@ -35,7 +35,7 @@ describe('Multiple apps', () => {
   it('does not listen to url changes before being ready', async () => {
     const { router, history } = newRouter()
 
-    const spy = vi.fn((to, from) => {
+    const spy = vi.fn((_to, _from) => {
       return
     })
     router.beforeEach(spy)

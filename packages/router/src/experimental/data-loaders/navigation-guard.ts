@@ -18,12 +18,12 @@ import {
 } from './meta-extensions'
 import { assign, isDataLoader, setCurrentContext } from './utils'
 import { toLazyValue, type UseDataLoader } from './createDataLoader'
-import {
+import type {
   NavigationGuard,
   RouteLocationNormalizedLoaded,
 } from '../../typed-routes'
 import { isNavigationFailure, NavigationFailureType } from '../../errors'
-import { Router } from '../../router'
+import type { Router } from '../../router'
 
 /**
  * Key to inject the global loading state for loaders used in `useIsDataLoading`.

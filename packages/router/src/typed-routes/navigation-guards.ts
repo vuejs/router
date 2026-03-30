@@ -4,9 +4,8 @@ import type {
   RouteLocationNormalized,
   RouteLocationRaw,
 } from './route-location'
-import type { TypesConfig } from '../config'
 import type { NavigationFailure } from '../errors'
-import { ComponentPublicInstance } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
 
 /**
  * Return types for a Navigation Guard. Based on `TypesConfig`

@@ -1,19 +1,13 @@
 import fakePromise from 'faked-promise'
 import { createRouter, createMemoryHistory } from '../src'
-import { RouterOptions } from '../src/router'
-import { RouteComponent } from '../src/types'
+import type { RouterOptions } from '../src/router'
+import type { RouteComponent } from '../src/types'
 import { ticks } from './utils'
-import { FunctionalComponent, h } from 'vue'
+import type { FunctionalComponent } from 'vue'
+import { h } from 'vue'
 import { mockWarn } from './vitest-mock-warn'
-import {
-  vi,
-  describe,
-  expect,
-  it,
-  beforeEach,
-  MockInstance,
-  afterEach,
-} from 'vitest'
+import type { MockInstance } from 'vitest'
+import { vi, describe, expect, it, beforeEach, afterEach } from 'vitest'
 
 function newRouter(options: Partial<RouterOptions> = {}) {
   let history = createMemoryHistory()
@@ -159,7 +153,7 @@ describe('Lazy Loading', () => {
 
   it('avoid fetching async component if navigation is cancelled through beforeEnter', async () => {
     const { component, resolve } = createLazyComponent()
-    const spy = vi.fn((to, from) => false)
+    const spy = vi.fn((_to, _from) => false)
     const { router } = newRouter({
       routes: [
         {
@@ -187,7 +181,7 @@ describe('Lazy Loading', () => {
       ],
     })
 
-    const spy = vi.fn((to, from) => false)
+    const spy = vi.fn((_to, _from) => false)
 
     router.beforeEach(spy)
 
@@ -199,7 +193,7 @@ describe('Lazy Loading', () => {
 
   it('invokes beforeRouteEnter after lazy loading the component', async () => {
     const { promise, resolve } = createLazyComponent()
-    const spy = vi.fn((to, from) => {})
+    const spy = vi.fn((_to, _from) => {})
     const component = vi.fn(() =>
       promise.then(() => ({ beforeRouteEnter: spy }))
     )
@@ -215,7 +209,7 @@ describe('Lazy Loading', () => {
 
   it('beforeRouteLeave works on a lazy loaded component', async () => {
     const { promise, resolve } = createLazyComponent()
-    const spy = vi.fn((to, from) => {})
+    const spy = vi.fn((_to, _from) => {})
     const component = vi.fn(() =>
       promise.then(() => ({ beforeRouteLeave: spy }))
     )
@@ -240,7 +234,7 @@ describe('Lazy Loading', () => {
 
   it('beforeRouteUpdate works on a lazy loaded component', async () => {
     const { promise, resolve } = createLazyComponent()
-    const spy = vi.fn((to, from) => {})
+    const spy = vi.fn((_to, _from) => {})
     const component = vi.fn(() =>
       promise.then(() => ({ beforeRouteUpdate: spy }))
     )

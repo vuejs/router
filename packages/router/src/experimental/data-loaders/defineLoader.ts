@@ -397,14 +397,17 @@ export function defineBasicLoader<Data>(
 
     // load ensures there is a pending load
     const promise = entry
-      .pendingLoad!.then(() => {
+      .pendingLoad!.then(() =>
         // nested loaders might wait for all loaders to be ready before setting data
         // so we need to return the staged value if it exists as it will be the latest one
-        return entry.staged === STAGED_NO_VALUE ? data.value : entry.staged
-      })
+        entry.staged === STAGED_NO_VALUE ? data.value : entry.staged
+      )
       // we only want the error if we are nesting the loader
       // otherwise this will end up in "Unhandled promise rejection"
       .catch((e: unknown) => (parentEntry ? Promise.reject(e) : null))
+      // restore the caller's context so that sequential awaits
+      // (e.g. await useOne(); await useTwo()) preserve the parent
+      .finally(() => setCurrentContext(currentContext))
 
     setCurrentContext(currentContext)
     return Object.assign(promise, useDataLoaderResult)

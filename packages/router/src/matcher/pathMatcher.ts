@@ -1,9 +1,6 @@
-import { RouteRecord } from './types'
-import {
-  tokensToParser,
-  PathParser,
-  PathParserOptions,
-} from './pathParserRanker'
+import type { RouteRecord } from './types'
+import type { PathParser, PathParserOptions } from './pathParserRanker'
+import { tokensToParser } from './pathParserRanker'
 import { tokenizePath } from './pathTokenizer'
 import { warn } from '../warning'
 import { assign } from '../utils'

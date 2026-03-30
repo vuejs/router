@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import { noGuard, newRouter as createRouter } from '../utils'
-import { RouteRecordRaw } from '../../src/types'
+import type { RouteRecordRaw } from '../../src/types'
 import { vi, describe, expect, it } from 'vitest'
 
 const Home = { template: `<div>Home</div>` }

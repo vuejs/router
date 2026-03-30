@@ -1,10 +1,13 @@
-import { LocationQuery, LocationQueryRaw } from './query'
-import { RouteParamValue, RouteParamsGeneric } from './types'
-import { RouteRecord } from './matcher/types'
+import type { LocationQuery, LocationQueryRaw } from './query'
+import type { RouteParamValue, RouteParamsGeneric } from './types'
+import type { RouteRecord } from './matcher/types'
 import { warn } from './warning'
 import { isArray } from './utils'
 import { decode, encodeHash } from './encoding'
-import { RouteLocation, RouteLocationNormalizedLoaded } from './typed-routes'
+import type {
+  RouteLocation,
+  RouteLocationNormalizedLoaded,
+} from './typed-routes'
 
 /**
  * Location object returned by {@link `parseURL`}.

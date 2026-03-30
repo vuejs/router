@@ -1,4 +1,5 @@
-import { isRouteLocation, Lazy, RouteComponent } from './types'
+import type { Lazy, RouteComponent } from './types'
+import { isRouteLocation } from './types'
 
 import type {
   RouteLocationNormalized,
@@ -10,22 +11,13 @@ import type {
   NavigationGuardNextCallback,
 } from './typed-routes'
 
-import {
-  createRouterError,
-  ErrorTypes,
-  NavigationFailure,
-  NavigationRedirectError,
-} from './errors'
-import {
-  ComponentOptions,
-  onUnmounted,
-  onActivated,
-  onDeactivated,
-  ComputedRef,
-} from 'vue'
+import type { NavigationFailure, NavigationRedirectError } from './errors'
+import { createRouterError, ErrorTypes } from './errors'
+import type { ComponentOptions, ComputedRef } from 'vue'
+import { onUnmounted, onActivated, onDeactivated } from 'vue'
 import { inject, getCurrentInstance } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
-import { RouteRecordNormalized } from './matcher/types'
+import type { RouteRecordNormalized } from './matcher/types'
 import { isESModule, isRouteComponent } from './utils'
 import { warn } from './warning'
 import { isSameRouteRecord } from './location'

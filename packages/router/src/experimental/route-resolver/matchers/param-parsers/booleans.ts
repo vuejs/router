@@ -1,5 +1,5 @@
 import { miss } from '../errors'
-import { ParamParser } from './types'
+import type { ParamParser } from './types'
 
 const PARAM_BOOLEAN_SINGLE = {
   get: (value: string | null | undefined) => {

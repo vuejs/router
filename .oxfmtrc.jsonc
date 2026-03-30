@@ -13,6 +13,6 @@
     "packages/docs/.vitepress/cache",
     "playwright-report",
     "CLAUDE.md",
-    "routes.d.ts"
-  ]
+    "routes.d.ts",
+  ],
 }

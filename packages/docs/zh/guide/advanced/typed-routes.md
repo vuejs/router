@@ -72,6 +72,6 @@ declare module 'vue-router' {
 
 ::: tip
 
-这种方式确实繁琐且容易出错。正因如此，强烈推荐使用 [unplugin-vue-router](https://github.com/posva/unplugin-vue-router) 来自动生成路由和类型。
+这种方式确实繁琐且容易出错。正因如此，强烈推荐使用内置的[基于文件的路由](/file-based-routing/)来自动生成路由和类型。
 
 :::

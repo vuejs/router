@@ -1,11 +1,11 @@
 import { createRouterMatcher, normalizeRouteRecord } from '../../src/matcher'
-import {
+import type {
   RouteComponent,
   RouteRecordRaw,
   MatcherLocationRaw,
   MatcherLocation,
 } from '../../src/types'
-import { MatcherLocationNormalizedLoose } from '../utils'
+import type { MatcherLocationNormalizedLoose } from '../utils'
 import { defineComponent } from 'vue'
 import { START_LOCATION_NORMALIZED } from '../../src/location'
 import { mockWarn } from '../vitest-mock-warn'

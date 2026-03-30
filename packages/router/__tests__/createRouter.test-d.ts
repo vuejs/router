@@ -36,12 +36,12 @@ describe('createRouter', () => {
         { path: '/foo', component: Foo },
         { path: '/', component: WithProps },
       ],
-      parseQuery: search => ({}),
-      stringifyQuery: query => '',
+      parseQuery: _search => ({}),
+      stringifyQuery: _query => '',
       strict: true,
       end: true,
       sensitive: true,
-      scrollBehavior(to, from, savedPosition) {},
+      scrollBehavior(_to, _from, _savedPosition) {},
     })
   })
 })

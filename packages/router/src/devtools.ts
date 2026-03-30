@@ -8,14 +8,14 @@ import type {
 import { type App, watch } from 'vue'
 import { decode } from './encoding'
 import { isSameRouteRecord } from './location'
-import { RouterMatcher } from './matcher'
-import { RouteRecordMatcher } from './matcher/pathMatcher'
-import { PathParser } from './matcher/pathParserRanker'
-import { Router } from './router'
-import { UseLinkDevtoolsContext } from './RouterLink'
-import { RouterViewDevtoolsContext } from './RouterView'
+import type { RouterMatcher } from './matcher'
+import type { RouteRecordMatcher } from './matcher/pathMatcher'
+import type { PathParser } from './matcher/pathParserRanker'
+import type { Router } from './router'
+import type { UseLinkDevtoolsContext } from './RouterLink'
+import type { RouterViewDevtoolsContext } from './RouterView'
 import { assign, isArray } from './utils'
-import { RouteLocationNormalized } from './typed-routes'
+import type { RouteLocationNormalized } from './typed-routes'
 
 /**
  * Copies a route location and removes any problematic properties that cannot be shown in devtools (e.g. Vue instances).

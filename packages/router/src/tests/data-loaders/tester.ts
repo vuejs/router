@@ -1302,6 +1302,65 @@ export function testDefineLoader<Context = void>(
     expect(data.value).toEqual('one,two')
   })
 
+  it('preserves context across sequential nested loader awaits', async () => {
+    const l1 = mockedLoader({ key: 'one' })
+    const l2 = mockedLoader({ key: 'two' })
+
+    const useLoaderThree = loaderFactory({
+      fn: async () => {
+        const one = await l1.loader()
+        const two = await l2.loader()
+        return `${one},${two}`
+      },
+      key: 'three',
+    })
+
+    const router = getRouter()
+    router.addRoute({
+      name: '_test',
+      path: '/fetch',
+      component: defineComponent({
+        setup() {
+          const { data, error, isLoading } = useLoaderThree()
+
+          return { data, error, isLoading }
+        },
+        template: `<p>{{ isLoading }}|{{ error ?? '<no>' }}|{{ data }}</p>`,
+      }),
+      meta: {
+        // All three exported as root loaders (like when all are exported from page component)
+        // The nested loaders are listed BEFORE the parent to trigger the bug:
+        // the guard calls load() for l1/l2 as roots with context [],
+        // so their .finally() restores context to [] instead of the parent's context
+        loaders: [l1.loader, l2.loader, useLoaderThree],
+        nested: { foo: 'bar' },
+      },
+    })
+    const wrapper = mount(RouterViewMock, {
+      global: {
+        plugins: [
+          [DataLoaderPlugin, { router }],
+          ...(plugins?.(customContext!) || []),
+          router,
+        ],
+      },
+    })
+
+    const p = router.push('/fetch')
+    await vi.advanceTimersByTimeAsync(0)
+    l1.resolve('1')
+    await vi.advanceTimersByTimeAsync(0)
+    // If context is lost after l1 resolves, l2.loader() inside useLoaderThree's fn
+    // would throw because router is undefined (no parent context)
+    l2.resolve('2')
+    await vi.advanceTimersByTimeAsync(0)
+    // Navigation should complete without errors
+    await expect(p).resolves.not.toThrow()
+    expect(l1.spy).toHaveBeenCalledTimes(1)
+    expect(l2.spy).toHaveBeenCalledTimes(1)
+    expect(wrapper.text()).toBe('false|<no>|1,2')
+  })
+
   it('fetches once with lazy across components', async () => {
     const router = getRouter()
     router.addRoute({

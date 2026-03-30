@@ -1,14 +1,16 @@
-import {
+import type {
   RouterHistory,
   NavigationCallback,
-  START,
   HistoryState,
+  NavigationInformation,
+  HistoryLocation,
+} from './common'
+import {
+  START,
   NavigationType,
   NavigationDirection,
-  NavigationInformation,
   normalizeBase,
   createHref,
-  HistoryLocation,
 } from './common'
 
 /**

@@ -1,3 +1,13 @@
+## [5.0.4](https://github.com/vuejs/router/compare/v5.0.3...v5.0.4) (2026-03-19)
+
+### Bug Fixes
+
+- allow pushing to auto routes ([47f0334](https://github.com/vuejs/router/commit/47f0334b7d92217318e43914c2718551ebcd5747)), closes [#2656](https://github.com/vuejs/router/issues/2656)
+- avoid false duplicate route warning for named views ([72012ab](https://github.com/vuejs/router/commit/72012ab023ee13cc547418d09bed3fc0ebb23248)), closes [#2648](https://github.com/vuejs/router/issues/2648)
+- avoid iterator helpers for Node 20 compat ([#2635](https://github.com/vuejs/router/issues/2635)) ([4713069](https://github.com/vuejs/router/commit/4713069dc673af5fb5095fa0eee36569e735c0bc)), closes [#2633](https://github.com/vuejs/router/issues/2633)
+- escape backslahes in string literals ([71fdbf3](https://github.com/vuejs/router/commit/71fdbf366aa54ac3f97f953f0e26e69970e1cb42)), closes [#2640](https://github.com/vuejs/router/issues/2640)
+- **loaders:** restore context in sequential awaits ([fce5d1e](https://github.com/vuejs/router/commit/fce5d1e3b805509832feb259e8ee420a2ef6089e)), closes [#2652](https://github.com/vuejs/router/issues/2652)
+
 ## [5.0.3](https://github.com/vuejs/router/compare/v5.0.2...v5.0.3) (2026-02-19)
 
 - refactor(experimental)!: remove selectNavigationResult ([9e88aed](https://github.com/vuejs/router/commit/9e88aed4257865c297dc854ad3b9dcf5404459d8))

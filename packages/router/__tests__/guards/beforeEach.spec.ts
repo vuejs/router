@@ -86,7 +86,7 @@ describe('router.beforeEach', () => {
     const spy = vi.fn()
     const router = createRouter({ routes })
     await router.push('/foo')
-    spy.mockImplementation((to, from) => {
+    spy.mockImplementation((to, _from) => {
       // only allow going to /other
       if (to.fullPath !== '/other') return '/other'
       else return
@@ -114,7 +114,7 @@ describe('router.beforeEach', () => {
   it('can add state when redirecting', async () => {
     const router = createRouter({ routes })
     await router.push('/foo')
-    router.beforeEach((to, from) => {
+    router.beforeEach((to, _from) => {
       // only allow going to /other
       if (to.fullPath !== '/other') {
         return {
@@ -159,7 +159,7 @@ describe('router.beforeEach', () => {
     const spy = vi.fn()
     const router = createRouter({ routes })
     await router.push('/')
-    spy.mockImplementation((to, from) => {
+    spy.mockImplementation((to, _from) => {
       // only allow going to /other
       const i = Number(to.params.i)
       if (i >= 3) return
@@ -209,7 +209,7 @@ describe('router.beforeEach', () => {
   it('waits before navigating', async () => {
     const [promise, resolve] = fakePromise()
     const router = createRouter({ routes })
-    router.beforeEach(async (to, from) => {
+    router.beforeEach(async (_to, _from) => {
       await promise
       return
     })
@@ -226,14 +226,14 @@ describe('router.beforeEach', () => {
     const router = createRouter({ routes })
     const guard1 = vi.fn()
     let order = 0
-    guard1.mockImplementationOnce(async (to, from) => {
+    guard1.mockImplementationOnce(async (_to, _from) => {
       expect(order++).toBe(0)
       await p1
       return
     })
     router.beforeEach(guard1)
     const guard2 = vi.fn()
-    guard2.mockImplementationOnce(async (to, from) => {
+    guard2.mockImplementationOnce(async (_to, _from) => {
       expect(order++).toBe(1)
       await p2
       return

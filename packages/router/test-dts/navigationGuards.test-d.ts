@@ -1,12 +1,14 @@
 import { expectTypeOf, describe, it } from 'vitest'
+import type {
+  NavigationFailure,
+  RouteLocationNormalized,
+  RouteLocationRaw,
+} from './index'
 import {
   createRouter,
   createWebHistory,
   isNavigationFailure,
-  NavigationFailure,
   NavigationFailureType,
-  RouteLocationNormalized,
-  RouteLocationRaw,
 } from './index'
 
 const router = createRouter({
@@ -17,15 +19,15 @@ const router = createRouter({
 describe('Navigation guards', () => {
   // TODO: split into multiple tests
   it('works', () => {
-    router.beforeEach((to, from) => {
+    router.beforeEach((_to, _from) => {
       return { path: '/' }
     })
 
-    router.beforeEach((to, from) => {
+    router.beforeEach((_to, _from) => {
       return '/'
     })
 
-    router.beforeEach((to, from) => {
+    router.beforeEach((_to, _from) => {
       return false
     })
 
@@ -34,7 +36,7 @@ describe('Navigation guards', () => {
     })
 
     // @ts-expect-error
-    router.beforeEach((to, from, next) => {
+    router.beforeEach((_to, _from, _next) => {
       return Symbol('not supported')
     })
     // @ts-expect-error

@@ -19,9 +19,10 @@ import type {
 import { generate } from '@babel/generator'
 import { walkAST } from 'ast-walker-scope'
 import { warn } from './utils'
-import { ParsedStaticImport, findStaticImports, parseStaticImport } from 'mlly'
+import type { ParsedStaticImport } from 'mlly'
+import { findStaticImports, parseStaticImport } from 'mlly'
 import type { ParamParserType } from '../../experimental/runtime'
-import { CustomRouteBlock } from './customBlock'
+import type { CustomRouteBlock } from './customBlock'
 
 const MACRO_DEFINE_PAGE = 'definePage'
 export const MACRO_DEFINE_PAGE_QUERY = /[?&]definePage\b/

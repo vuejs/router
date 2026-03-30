@@ -49,7 +49,11 @@ definePage({
 If you are using ESLint, you will need [to declare it as a global variable](./eslint#definepage).
 
 ::: danger
+
 You cannot use variables in `definePage()` as its passed parameter gets extracted at build time and is removed from `<script setup>`. Similar to other macros like `definePageMeta()` in Nuxt.
+
+For similar reasons, `beforeEnter` guards are **not supported** in `definePage()`. Their function nature make them look like they can access outside variable when they can't. **Use a [global navigation guard](../guide/advanced/navigation-guards.md#global-before-guards**) with [route meta fields](../guide/advanced/meta.md) instead, **or add the guard at runtime (see [Extending routes at runtime](#extending-routes-at-runtime) below)**.
+
 :::
 
 ### SFC `<route>` custom block

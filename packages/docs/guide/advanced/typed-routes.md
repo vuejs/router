@@ -72,6 +72,6 @@ declare module 'vue-router' {
 
 ::: tip
 
-This is indeed tedious and error-prone. That's why it's recommended to use [unplugin-vue-router](https://github.com/posva/unplugin-vue-router) to generate the routes and the types automatically from a file-based routing system.
+This is indeed tedious and error-prone. That's why it's recommended to use the built-in [file-based routing](/file-based-routing/) to generate the routes and the types automatically.
 
 :::

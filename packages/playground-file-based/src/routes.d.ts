@@ -14,13 +14,27 @@ import type {
   ParamValueZeroOrMore,
   ParamValueZeroOrOne,
 } from 'vue-router'
+import type {
+  _ExtractParamParserType,
+} from 'vue-router/experimental
 
 // Custom route params parsers
-type Param_date = ReturnType<NonNullable<typeof import('./params/date.ts').parser['get']>>
+type Param_date = _ExtractParamParserType<typeof import('./params/date.ts').parser>
+type Param_monthValibot = _ExtractParamParserType<typeof import('./params/month-valibot.ts').parser>
+type Param_monthZod = _ExtractParamParserType<typeof import('./params/month-zod.ts').parser>
+type Param_npmOrg = _ExtractParamParserType<typeof import('./params/npm-org.ts').parser>
+type Param_semver = _ExtractParamParserType<typeof import('./params/semver.ts').parser>
+type Param_versionRange = _ExtractParamParserType<typeof import('./params/version-range.ts').parser>
 
 declare module 'vue-router' {
   interface TypesConfig {
-    ParamParsers: 'date'
+    ParamParsers:
+      | 'date'
+      | 'month-valibot'
+      | 'month-zod'
+      | 'npm-org'
+      | 'semver'
+      | 'version-range'
   }
 }
 
@@ -34,6 +48,34 @@ declare module 'vue-router/auto-routes' {
       '/',
       Record<never, never>,
       Record<never, never>,
+      | never
+    >,
+    '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]': RouteRecordInfo<
+      '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]',
+      '/package/:org?/:pkgName/:pkgVersion',
+      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_semver, unknown[]> },
+      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_semver, unknown[]> },
+      | never
+    >,
+    '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]': RouteRecordInfo<
+      '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]',
+      '/package-old/:org?/:pkgName/:pkgVersion',
+      { org: string | null, pkgName: string, pkgVersion: string },
+      { org: string | null, pkgName: string, pkgVersion: string },
+      | never
+    >,
+    '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]': RouteRecordInfo<
+      '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]',
+      '/package-range/:org?/:pkgName/:pkgVersion',
+      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_versionRange, unknown[]> },
+      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_versionRange, unknown[]> },
+      | never
+    >,
+    '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]': RouteRecordInfo<
+      '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]',
+      '/package-zod/:org?/:pkgName/:pkgVersion',
+      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: string },
+      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: string },
       | never
     >,
     '/[a].[b]': RouteRecordInfo<
@@ -125,6 +167,20 @@ declare module 'vue-router/auto-routes' {
       '/it\'s-fine',
       Record<never, never>,
       Record<never, never>,
+      | never
+    >,
+    '/months/valibot-[month=month-valibot]': RouteRecordInfo<
+      '/months/valibot-[month=month-valibot]',
+      '/months/valibot-:month',
+      { month: Exclude<Param_monthValibot, unknown[]> },
+      { month: Exclude<Param_monthValibot, unknown[]> },
+      | never
+    >,
+    '/months/zod-[month=month-zod]': RouteRecordInfo<
+      '/months/zod-[month=month-zod]',
+      '/months/zod-:month',
+      { month: Exclude<Param_monthZod, unknown[]>, mm?: Exclude<Param_monthZod, unknown[]> },
+      { month: Exclude<Param_monthZod, unknown[]>, mm: Exclude<Param_monthZod, unknown[]> },
       | never
     >,
     '/nested/': RouteRecordInfo<
@@ -245,6 +301,39 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/(packages)/_parent.vue': {
+      routes:
+        | '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]'
+        | '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]'
+        | '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]'
+        | '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]'
+      views:
+        | 'default'
+    }
+    'src/pages/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver].vue': {
+      routes:
+        | '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]'
+      views:
+        | never
+    }
+    'src/pages/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion].vue': {
+      routes:
+        | '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]'
+      views:
+        | never
+    }
+    'src/pages/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range].vue': {
+      routes:
+        | '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]'
+      views:
+        | never
+    }
+    'src/pages/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion].vue': {
+      routes:
+        | '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]'
+      views:
+        | never
+    }
     'src/pages/[a].[b].vue': {
       routes:
         | '/[a].[b]'
@@ -320,6 +409,18 @@ declare module 'vue-router/auto-routes' {
     'src/pages/it\'s-fine/(lol).vue': {
       routes:
         | '/it\'s-fine/(lol)'
+      views:
+        | never
+    }
+    'src/pages/months/valibot-[month=month-valibot].vue': {
+      routes:
+        | '/months/valibot-[month=month-valibot]'
+      views:
+        | never
+    }
+    'src/pages/months/zod-[month=month-zod].vue': {
+      routes:
+        | '/months/zod-[month=month-zod]'
       views:
         | never
     }

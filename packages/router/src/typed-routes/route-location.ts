@@ -12,7 +12,6 @@ import type {
   RouteMapGeneric,
   RouteRecordInfoGeneric,
 } from './route-map'
-import type { Router } from '../router'
 import type { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import type { RouteRecordNameGeneric } from './route-records'
 

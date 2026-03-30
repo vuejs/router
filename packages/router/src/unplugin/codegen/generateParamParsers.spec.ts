@@ -6,7 +6,8 @@ import {
   generateParamsTypes,
   generateParamParserOptions,
   generatePathParamsOptions,
-  generateParamParserCustomType,
+  generateCustomParamParsersList,
+  generateNormalizedParamParsersDeclarations,
   type ParamParsersMap,
 } from './generateParamParsers'
 import { PrefixTree } from '../core/tree'
@@ -175,7 +176,7 @@ describe('generateParamParsersTypesDeclarations', () => {
 
     const result = generateParamParsersTypesDeclarations(paramParsers)
     expect(result).toBe(
-      `type Param_uuid = ReturnType<NonNullable<typeof import('./parsers/uuid').parser['get']>>`
+      `type Param_uuid = _ExtractParamParserType<typeof import('./parsers/uuid').parser>`
     )
   })
 
@@ -197,7 +198,7 @@ describe('generateParamParsersTypesDeclarations', () => {
 
     const result = generateParamParsersTypesDeclarations(paramParsers)
     expect(result).toBe(
-      `type Param_uuid = ReturnType<NonNullable<typeof import('../parsers/uuid').parser['get']>>`
+      `type Param_uuid = _ExtractParamParserType<typeof import('../parsers/uuid').parser>`
     )
   })
 
@@ -225,8 +226,8 @@ describe('generateParamParsersTypesDeclarations', () => {
 
     const result = generateParamParsersTypesDeclarations(paramParsers)
     expect(result).toMatchInlineSnapshot(`
-      "type Param_uuid = ReturnType<NonNullable<typeof import('./parsers/uuid').parser['get']>>
-      type Param_slug = ReturnType<NonNullable<typeof import('./parsers/slug').parser['get']>>"
+      "type Param_uuid = _ExtractParamParserType<typeof import('./parsers/uuid').parser>
+      type Param_slug = _ExtractParamParserType<typeof import('./parsers/slug').parser>"
     `)
   })
 })
@@ -385,10 +386,9 @@ describe('generateParamParserOptions', () => {
     ])
 
     const result = generateParamParserOptions(param, importsMap, paramParsers)
-    expect(result).toBe('PARAM_PARSER__uuid')
-    expect(importsMap.toString()).toContain(
-      `import { parser as PARAM_PARSER__uuid } from '/path/to/parsers/uuid'`
-    )
+    expect(result).toBe('_normalized_PARAM_PARSER__uuid')
+    // imports are no longer added by generateParamParserOptions for custom parsers
+    // they are handled by generateNormalizedParamParsersDeclarations
   })
 
   it('generates correct import for native int parser', () => {
@@ -562,7 +562,7 @@ describe('generatePathParamsOptions', () => {
     ])
 
     const result = generatePathParamsOptions(params, importsMap, paramParsers)
-    expect(result).toContain('id: [PARAM_PARSER__uuid]')
+    expect(result).toContain('id: [_normalized_PARAM_PARSER__uuid]')
     expect(result).toContain(
       'page: [PARAM_PARSER_INT, /* repeatable: false */, /* optional: */ true]'
     )
@@ -573,8 +573,8 @@ describe('generatePathParamsOptions', () => {
 describe('generateParamParserCustomType', () => {
   it('returns never for empty param parsers map', () => {
     const paramParsers: ParamParsersMap = new Map()
-    const result = generateParamParserCustomType(paramParsers)
-    expect(result).toBe('never')
+    const result = generateCustomParamParsersList(paramParsers)
+    expect(result).toEqual(['never'])
   })
 
   it('returns single quoted parser name for one parser', () => {
@@ -590,11 +590,11 @@ describe('generateParamParserCustomType', () => {
       ],
     ])
 
-    const result = generateParamParserCustomType(paramParsers)
-    expect(result).toBe("'date'")
+    const result = generateCustomParamParsersList(paramParsers)
+    expect(result).toEqual(["'date'"])
   })
 
-  it('returns union of quoted parser names for multiple parsers in alphabetical order on separate lines', () => {
+  it('returns a list of quoted parser names for multiple parsers in alphabetical order', () => {
     const paramParsers: ParamParsersMap = new Map([
       [
         'uuid',
@@ -616,8 +616,8 @@ describe('generateParamParserCustomType', () => {
       ],
     ])
 
-    const result = generateParamParserCustomType(paramParsers)
-    expect(result).toBe("  | 'date'\n  | 'uuid'")
+    const result = generateCustomParamParsersList(paramParsers)
+    expect(result).toEqual(["'date'", "'uuid'"])
   })
 
   it('handles parser names with special characters correctly', () => {
@@ -633,43 +633,8 @@ describe('generateParamParserCustomType', () => {
       ],
     ])
 
-    const result = generateParamParserCustomType(paramParsers)
-    expect(result).toBe("'custom-parser'")
-  })
-
-  it('formats multiple parsers with proper indentation for three or more types', () => {
-    const paramParsers: ParamParsersMap = new Map([
-      [
-        'uuid',
-        {
-          name: 'uuid',
-          typeName: 'Param_uuid',
-          relativePath: 'parsers/uuid',
-          absolutePath: '/path/to/parsers/uuid',
-        },
-      ],
-      [
-        'date',
-        {
-          name: 'date',
-          typeName: 'Param_date',
-          relativePath: 'parsers/date',
-          absolutePath: '/path/to/parsers/date',
-        },
-      ],
-      [
-        'slug',
-        {
-          name: 'slug',
-          typeName: 'Param_slug',
-          relativePath: 'parsers/slug',
-          absolutePath: '/path/to/parsers/slug',
-        },
-      ],
-    ])
-
-    const result = generateParamParserCustomType(paramParsers)
-    expect(result).toBe("  | 'date'\n  | 'slug'\n  | 'uuid'")
+    const result = generateCustomParamParsersList(paramParsers)
+    expect(result).toEqual(["'custom-parser'"])
   })
 
   it('converts kebab-case filenames to valid camelCase identifiers', () => {
@@ -698,9 +663,9 @@ describe('generateParamParserCustomType', () => {
 
     expect(generateParamParsersTypesDeclarations(paramParsers))
       .toMatchInlineSnapshot(`
-      "type Param_userId = ReturnType<NonNullable<typeof import('./parsers/user-id').parser['get']>>
-      type Param_dateWithDashes = ReturnType<NonNullable<typeof import('./parsers/date-with-dashes').parser['get']>>"
-    `)
+        "type Param_userId = _ExtractParamParserType<typeof import('./parsers/user-id').parser>
+        type Param_dateWithDashes = _ExtractParamParserType<typeof import('./parsers/date-with-dashes').parser>"
+      `)
 
     const param: TreePathParam = {
       paramName: 'id',
@@ -711,17 +676,112 @@ describe('generateParamParserCustomType', () => {
       parser: 'user-id', // Route uses original kebab-case name
     }
     expect(generateParamParserOptions(param, importsMap, paramParsers)).toBe(
-      'PARAM_PARSER__userId'
+      '_normalized_PARAM_PARSER__userId'
     ) // Generated variable is camelCase
+    // imports are no longer added by generateParamParserOptions for custom parsers
 
-    expect(importsMap.toString()).toMatchInlineSnapshot(`
-      "import { parser as PARAM_PARSER__userId } from '/path/to/parsers/user-id'
-      "
-    `)
+    expect(generateCustomParamParsersList(paramParsers)).toEqual([
+      "'date-with-dashes'",
+      "'user-id'",
+    ])
+  })
+})
 
-    expect(generateParamParserCustomType(paramParsers)).toMatchInlineSnapshot(`
-      "  | 'date-with-dashes'
-        | 'user-id'"
-    `)
+describe('generateNormalizedParamParsersDeclarations', () => {
+  it('returns empty string for empty param parsers map', () => {
+    const paramParsers: ParamParsersMap = new Map()
+    const importsMap = new ImportsMap()
+    const result = generateNormalizedParamParsersDeclarations(
+      paramParsers,
+      importsMap
+    )
+    expect(result).toBe('')
+  })
+
+  it('generates a const declaration for a single parser', () => {
+    const paramParsers: ParamParsersMap = new Map([
+      [
+        'uuid',
+        {
+          name: 'uuid',
+          typeName: 'Param_uuid',
+          relativePath: 'parsers/uuid',
+          absolutePath: '/path/to/parsers/uuid',
+        },
+      ],
+    ])
+    const importsMap = new ImportsMap()
+    const result = generateNormalizedParamParsersDeclarations(
+      paramParsers,
+      importsMap
+    )
+    expect(result).toBe(
+      'const _normalized_PARAM_PARSER__uuid = _normalizeParamParser(PARAM_PARSER__uuid)'
+    )
+    expect(importsMap.toString()).toContain(
+      `import { _normalizeParamParser } from 'vue-router/experimental'`
+    )
+    expect(importsMap.toString()).toContain(
+      `import { parser as PARAM_PARSER__uuid } from '/path/to/parsers/uuid'`
+    )
+  })
+
+  it('generates declarations for multiple parsers', () => {
+    const paramParsers: ParamParsersMap = new Map([
+      [
+        'uuid',
+        {
+          name: 'uuid',
+          typeName: 'Param_uuid',
+          relativePath: 'parsers/uuid',
+          absolutePath: '/path/to/parsers/uuid',
+        },
+      ],
+      [
+        'slug',
+        {
+          name: 'slug',
+          typeName: 'Param_slug',
+          relativePath: 'parsers/slug',
+          absolutePath: '/path/to/parsers/slug',
+        },
+      ],
+    ])
+    const importsMap = new ImportsMap()
+    const result = generateNormalizedParamParsersDeclarations(
+      paramParsers,
+      importsMap
+    )
+    expect(result).toContain(
+      'const _normalized_PARAM_PARSER__uuid = _normalizeParamParser(PARAM_PARSER__uuid)'
+    )
+    expect(result).toContain(
+      'const _normalized_PARAM_PARSER__slug = _normalizeParamParser(PARAM_PARSER__slug)'
+    )
+  })
+
+  it('handles camelCase names from kebab-case filenames', () => {
+    const paramParsers: ParamParsersMap = new Map([
+      [
+        'user-id',
+        {
+          name: 'userId',
+          typeName: 'Param_userId',
+          relativePath: 'parsers/user-id',
+          absolutePath: '/path/to/parsers/user-id',
+        },
+      ],
+    ])
+    const importsMap = new ImportsMap()
+    const result = generateNormalizedParamParsersDeclarations(
+      paramParsers,
+      importsMap
+    )
+    expect(result).toBe(
+      'const _normalized_PARAM_PARSER__userId = _normalizeParamParser(PARAM_PARSER__userId)'
+    )
+    expect(importsMap.toString()).toContain(
+      `import { parser as PARAM_PARSER__userId } from '/path/to/parsers/user-id'`
+    )
   })
 })
