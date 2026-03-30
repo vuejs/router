@@ -84,6 +84,11 @@ export const router = createRouter({
     },
     { path: '/with-data', component: ComponentWithData, name: 'WithData' },
     { path: '/rep/:a*', component: RepeatedParams, name: 'repeat' },
+    {
+      path: '/entity/:entityType([^:]+)\\::entityID',
+      name: 'entity',
+      component,
+    },
     { path: '/:data(.*)', component: NotFound, name: 'NotFound' },
     {
       path: '/nested',

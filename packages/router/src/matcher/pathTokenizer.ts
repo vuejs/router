@@ -119,6 +119,14 @@ export function tokenizePath(path: string): Array<Token[]> {
     char = path[i++]
 
     if (char === '\\' && state !== TokenizerState.ParamRegExp) {
+      if (
+        state === TokenizerState.Param ||
+        state === TokenizerState.ParamRegExpEnd
+      ) {
+        consumeBuffer()
+        customRe = ''
+        state = TokenizerState.Static
+      }
       previousState = state
       state = TokenizerState.EscapeNext
       continue
