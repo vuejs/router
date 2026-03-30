@@ -17,6 +17,7 @@
     "dist",
     "coverage",
     "tests_output",
+    ".claude/worktrees",
     "packages/docs/.vitepress/cache",
     "playwright-report",
     "routes.d.ts",
