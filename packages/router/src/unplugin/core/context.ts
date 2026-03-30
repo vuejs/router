@@ -170,8 +170,10 @@ export function createRoutesContext(options: ResolvedOptions) {
     const content = await fs.readFile(filePath, 'utf8')
     // TODO: track if it changed and to not always trigger HMR
     const definedPageInfo = extractDefinePageInfo(content, filePath)
-    // TODO: add a test that this can be set to true and then to false
-    node.hasDefinePage = definedPageInfo?.hasRemainingProperties ?? false
+    node.setDefinePageImport(
+      filePath,
+      definedPageInfo?.hasRemainingProperties ?? false
+    )
     // TODO: track if it changed and if generateRoutes should be called again
     const routeBlock = getRouteBlock(filePath, content, options)
     // TODO: should warn if hasDefinePage and customRouteBlock

@@ -36,8 +36,9 @@ ${node
 
   const definePageDataList: string[] = []
 
-  if (node.hasDefinePage) {
+  if (node.needsDefinePageImport) {
     for (const [name, filePath] of node.value.components) {
+      if (!node.fileNeedsDefinePageImport(filePath)) continue
       const pageDataImport = `_definePage_${name}_${importsMap.size}`
       definePageDataList.push(pageDataImport)
       const lang = getLang(filePath)

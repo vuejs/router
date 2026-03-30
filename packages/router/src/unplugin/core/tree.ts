@@ -55,11 +55,38 @@ export class TreeNode {
    */
   options: TreeNodeOptions
 
-  // FIXME: refactor this code. It currently helps to keep track if a page has at least one component with `definePage()` but it doesn't tell which. It should keep track of which one while still caching the result per file.
   /**
-   * Should this page import the page info
+   * Set of file paths that use `definePage()` with runtime properties (meta, props, etc.) that require a `?definePage`
+   * import at build time. Tracked per-file to avoid race conditions when multiple files (e.g. named views) map to the
+   * same node.
    */
-  hasDefinePage: boolean = false
+  private _needsDefinePageImport: Set<string> = new Set()
+
+  /**
+   * Whether at least one component file uses `definePage()` with runtime properties (meta, props, etc.) that require a
+   * `?definePage` import at build time.
+   */
+  get needsDefinePageImport(): boolean {
+    return this._needsDefinePageImport.size > 0
+  }
+
+  /**
+   * Mark whether a file needs a `?definePage` import.
+   */
+  setDefinePageImport(filePath: string, needsImport: boolean) {
+    if (needsImport) {
+      this._needsDefinePageImport.add(filePath)
+    } else {
+      this._needsDefinePageImport.delete(filePath)
+    }
+  }
+
+  /**
+   * Check if a specific file needs a `?definePage` import.
+   */
+  fileNeedsDefinePageImport(filePath: string): boolean {
+    return this._needsDefinePageImport.has(filePath)
+  }
 
   /**
    * Creates a new tree node.
@@ -510,7 +537,7 @@ export class TreeNode {
         !this.value.components.get('default'))
         ? ` ⎈(${Array.from(this.value.components.keys()).join(', ')})`
         : ''
-    }${this.hasDefinePage ? ' ⚑ definePage()' : ''}`
+    }${this.needsDefinePageImport ? ' ⚑ definePage()' : ''}`
   }
 
   /**
@@ -572,6 +599,7 @@ export class PrefixTree extends TreeNode {
         }
       }
 
+      node.setDefinePageImport(filePath, false)
       this.map.delete(filePath)
 
       if (node.children.size === 0 && node.value.components.size === 0) {

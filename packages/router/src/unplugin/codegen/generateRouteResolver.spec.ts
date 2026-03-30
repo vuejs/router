@@ -1086,8 +1086,8 @@ describe('generateRouteResolver', () => {
     tree.insert('profile', 'profile.vue')
     const profileNode = tree.children.get('profile')!
 
-    // Mark it as having definePage (this would normally be set by the plugin when parsing the file)
-    profileNode.hasDefinePage = true
+    // Mark it as having definePage with runtime properties (this would normally be set by the plugin when parsing the file)
+    profileNode.setDefinePageImport('profile.vue', true)
 
     const resolver = generateRouteResolver(
       tree,
@@ -1118,6 +1118,27 @@ describe('generateRouteResolver', () => {
       ])
       "
     `)
+  })
+
+  it('only imports definePage for files that need it in named views', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('dashboard', 'dashboard.vue')
+    tree.insert('dashboard@sidebar', 'dashboard@sidebar.vue')
+    const dashboardNode = tree.children.get('dashboard')!
+
+    // Only the default view has definePage with runtime properties (e.g. meta)
+    dashboardNode.setDefinePageImport('dashboard.vue', true)
+
+    const resolver = generateRouteResolver(
+      tree,
+      DEFAULT_OPTIONS,
+      new ImportsMap(),
+      new Map()
+    )
+
+    // Should only import ?definePage for dashboard.vue, not dashboard@sidebar.vue
+    expect(resolver).toContain('_definePage_default_')
+    expect(resolver).not.toContain('_definePage_sidebar_')
   })
 
   it('includes query property in route records with query params', () => {

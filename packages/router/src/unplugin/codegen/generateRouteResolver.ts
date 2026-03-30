@@ -153,9 +153,9 @@ export function generateRouteRecord({
 
   // Handle definePage imports
   const definePageDataList: string[] = []
-  // TODO: optimize to only add the record merge when needed
-  if (node.hasDefinePage) {
+  if (node.needsDefinePageImport) {
     for (const [name, filePath] of node.value.components) {
+      if (!node.fileNeedsDefinePageImport(filePath)) continue
       const pageDataImport = `_definePage_${name}_${importsMap.size}`
       definePageDataList.push(pageDataImport)
       const lang = getLang(filePath)
