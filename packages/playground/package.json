@@ -10,7 +10,7 @@
     "preview": "vite preview --port 4173"
   },
   "devDependencies": {
-    "@types/node": "^24.10.10",
+    "@types/node": "^24.10.4",
     "@vitejs/plugin-vue": "^6.0.4",
     "@vue/compiler-sfc": "~3.5.26",
     "@vue/tsconfig": "^0.8.1",
