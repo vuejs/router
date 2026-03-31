@@ -158,6 +158,7 @@
     "tinyglobby": "^0.2.15",
     "unplugin": "^3.0.0",
     "unplugin-utils": "^0.3.1",
+    "vue": "https://pkg.pr.new/vue@d3fca3b",
     "yaml": "^2.8.2"
   },
   "devDependencies": {
@@ -176,15 +177,15 @@
     "@vitejs/plugin-vue": "^6.0.4",
     "@vue/compiler-sfc": "3.6.0-beta.2",
     "@vue/language-core": "^3.2.1",
-    "@vue/server-renderer": "3.6.0-beta.2",
+    "@vue/server-renderer": "https://pkg.pr.new/@vue/server-renderer@d3fca3b",
     "@vue/test-utils": "^2.4.6",
     "browserstack-local": "^1.5.8",
-    "chromedriver": "^144.0.1",
+    "chromedriver": "^146.0.6",
     "connect-history-api-fallback": "^2.0.0",
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.3.1",
     "faked-promise": "^2.2.2",
     "geckodriver": "^6.1.0",
-    "happy-dom": "^20.5.0",
+    "happy-dom": "^20.8.9",
     "nightwatch": "^3.15.0",
     "nightwatch-helpers": "^1.2.0",
     "pinia": "^3.0.4",
@@ -195,14 +196,14 @@
     "tsup": "^8.5.1",
     "valibot": "^1.3.1",
     "vite": "^7.3.0",
-    "vue": "3.6.0-beta.2",
+    "vue": "https://pkg.pr.new/vue@d3fca3b",
     "zod": "^4.3.6"
   },
   "peerDependencies": {
     "@pinia/colada": ">=0.21.2",
     "@vue/compiler-sfc": "^3.5.17",
     "pinia": "^3.0.4",
-    "vue": "^3.5.0"
+    "vue": "^3.5.0 || ^3.6.0-beta.5"
   },
   "peerDependenciesMeta": {
     "@vue/compiler-sfc": {
