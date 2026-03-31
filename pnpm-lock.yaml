@@ -2102,7 +2102,7 @@ packages:
     resolution: {integrity: sha512-igShbeGL2Yn1UDw2tv9Sy2XFR8zJTx0CqNplzvYUASmM8iR4xtZQGm1f3+GG/xaU0e21/RNGldalddDtqBOApQ==}
 
   '@vue/compiler-core@https://pkg.pr.new/vuejs/core/@vue/compiler-core@d3fca3b':
-    resolution: {integrity: sha512-qQmymCntONQmTmnh4pRogf2KlDi2a93Qm+YnE6WGaFLGumw5UjoKLkSIg1OPDLJb4oJvZtWK6nH7R5sqSjL64g==, tarball: https://pkg.pr.new/vuejs/core/@vue/compiler-core@d3fca3b}
+    resolution: {tarball: https://pkg.pr.new/vuejs/core/@vue/compiler-core@d3fca3b}
     version: 3.6.0-beta.5
 
   '@vue/compiler-dom@3.5.27':
@@ -2112,7 +2112,7 @@ packages:
     resolution: {integrity: sha512-Xw2R9gUrwUIXRq7T0d7Klbk/NmPG2og3t7nCAAvOl93uQNhbwltU18fS4xEW89VSPSsia6EiEnMGChcpqf2FdA==}
 
   '@vue/compiler-dom@https://pkg.pr.new/vuejs/core/@vue/compiler-dom@d3fca3b':
-    resolution: {integrity: sha512-JNy26nS0Y5hDxckkgfHoGVXCzV3Iy85GT7V8aWKCO+xwQnerYHKxhg3PVg117kkQ8vqv07GeGfjy3o0FRkA1/A==, tarball: https://pkg.pr.new/vuejs/core/@vue/compiler-dom@d3fca3b}
+    resolution: {tarball: https://pkg.pr.new/vuejs/core/@vue/compiler-dom@d3fca3b}
     version: 3.6.0-beta.5
 
   '@vue/compiler-sfc@3.6.0-beta.5':
@@ -2157,7 +2157,7 @@ packages:
     resolution: {integrity: sha512-34ABVlvu+ROGQxyGTG+bkNG/Zly68Rxq9Kwv8EGcOUcu8eQs0Mght31qkikvjoyrRnbE6dZnYuYWBwB481BKlg==}
 
   '@vue/reactivity@https://pkg.pr.new/vuejs/core/@vue/reactivity@d3fca3b':
-    resolution: {integrity: sha512-xBYOh5X5PCDCM2G+AQ/Fq+/25m5MogCcd14QvMvemv+G54WXFarSl55bd0ep6GIvTkSCIWw0XiQV6s03xfOLBQ==, tarball: https://pkg.pr.new/vuejs/core/@vue/reactivity@d3fca3b}
+    resolution: {tarball: https://pkg.pr.new/vuejs/core/@vue/reactivity@d3fca3b}
     version: 3.6.0-beta.5
 
   '@vue/runtime-core@3.6.0-beta.5':
@@ -2172,7 +2172,7 @@ packages:
       '@vue/runtime-dom': ^3.6.0-beta.5
 
   '@vue/runtime-vapor@https://pkg.pr.new/vuejs/core/@vue/runtime-vapor@d3fca3b':
-    resolution: {integrity: sha512-kJbnjOuhK99GdamZIiLxGWwjYX4j9Vx35nb2r9j2lxnjiS5sDHOKg2h6njJL4QKGKPNealrBC4K9IMaCnfilpg==, tarball: https://pkg.pr.new/vuejs/core/@vue/runtime-vapor@d3fca3b}
+    resolution: {tarball: https://pkg.pr.new/vuejs/core/@vue/runtime-vapor@d3fca3b}
     version: 3.6.0-beta.5
     peerDependencies:
       '@vue/runtime-dom': ^3.6.0-beta.5
@@ -2487,7 +2487,7 @@ packages:
   basic-ftp@5.1.0:
     resolution: {integrity: sha512-RkaJzeJKDbaDWTIPiJwubyljaEPwpVWkm9Rt5h9Nd6h7tEXTJ3VB4qxdZBioV7JO5yLUaOKwz7vDOzlncUsegw==}
     engines: {node: '>=10.0.0'}
-    deprecated: Security vulnerability fixed in 5.2.1, please upgrade
+    deprecated: Security vulnerability fixed in 5.2.0, please upgrade
 
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
@@ -5082,7 +5082,6 @@ packages:
 
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   valibot@1.4.0:
