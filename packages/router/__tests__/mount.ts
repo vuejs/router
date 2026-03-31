@@ -1,5 +1,11 @@
-import { nextTick, shallowRef, shallowReactive, createVaporApp } from 'vue'
-import type { VaporComponentOptions, VaporKeepAlive } from 'vue'
+import {
+  nextTick,
+  shallowRef,
+  shallowReactive,
+  createVaporApp,
+  VaporKeepAlive,
+} from 'vue'
+import type { VaporComponentOptions } from 'vue'
 import type { RouteLocationNormalizedLoose } from './utils'
 import {
   routeLocationKey,
