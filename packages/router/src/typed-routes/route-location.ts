@@ -131,8 +131,8 @@ export type RouteLocationNormalizedLoadedTypedList<
  */
 export interface RouteLocationAsRelativeGeneric
   extends RouteQueryAndHash, RouteLocationOptions {
-  name?: RouteRecordNameGeneric
-  params?: RouteParamsRawGeneric
+  name?: RouteRecordNameGeneric | undefined
+  params?: RouteParamsRawGeneric | undefined
   /**
    * A relative path to the current location. This property should be removed
    */
@@ -147,8 +147,8 @@ export interface RouteLocationAsRelativeTyped<
     RouteMapGeneric,
   Name extends keyof RouteMap = keyof RouteMap,
 > extends RouteLocationAsRelativeGeneric {
-  name?: Extract<Name, string | symbol>
-  params?: RouteMap[Name]['paramsRaw']
+  name?: Extract<Name, string | symbol> | undefined
+  params?: RouteMap[Name]['paramsRaw'] | undefined
 }
 
 /**

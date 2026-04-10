@@ -131,7 +131,7 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
    * }
    * ```
    */
-  scrollBehavior?: RouterScrollBehavior
+  scrollBehavior?: RouterScrollBehavior | undefined
 
   /**
    * Custom implementation to parse a query. See its counterpart,
@@ -150,26 +150,26 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
    * })
    * ```
    */
-  parseQuery?: typeof originalParseQuery
+  parseQuery?: typeof originalParseQuery | undefined
 
   /**
    * Custom implementation to stringify a query object. Should not prepend a leading `?`.
    * {@link parseQuery} counterpart to handle query parsing.
    */
 
-  stringifyQuery?: typeof originalStringifyQuery
+  stringifyQuery?: typeof originalStringifyQuery | undefined
 
   /**
    * Default class applied to active {@link RouterLink}. If none is provided,
    * `router-link-active` will be applied.
    */
-  linkActiveClass?: string
+  linkActiveClass?: string | undefined
 
   /**
    * Default class applied to exact active {@link RouterLink}. If none is provided,
    * `router-link-exact-active` will be applied.
    */
-  linkExactActiveClass?: string
+  linkExactActiveClass?: string | undefined
 
   /**
    * Default class applied to non-active {@link RouterLink}. If none is provided,
@@ -187,7 +187,7 @@ export interface EXPERIMENTAL_RouteRecord_Base extends EXPERIMENTAL_ResolverReco
    * before any navigation guard and triggers a new navigation with the new
    * target location.
    */
-  redirect?: RouteRecordRedirectOption
+  redirect?: RouteRecordRedirectOption | undefined
 
   // TODO: deprecate, expose utils to compare resolved routes, and document
   // how to create a meta field that does the same
@@ -202,22 +202,22 @@ export interface EXPERIMENTAL_RouteRecord_Base extends EXPERIMENTAL_ResolverReco
   /**
    * Arbitrary data attached to the record.
    */
-  meta?: RouteMeta
+  meta?: RouteMeta | undefined
 
   /**
    * Components to display when the URL matches this route. Allow using named views.
    */
-  components?: Record<string, RawRouteComponent>
+  components?: Record<string, RawRouteComponent> | undefined
 
   /**
    * Parent of this component if any
    */
-  parent?: EXPERIMENTAL_RouteRecordNormalized | null
+  parent?: EXPERIMENTAL_RouteRecordNormalized | null | undefined
 
   /**
    * References another record if this record is an alias of it.
    */
-  aliasOf?: EXPERIMENTAL_RouteRecordNormalized | null
+  aliasOf?: EXPERIMENTAL_RouteRecordNormalized | null | undefined
 
   // TODO:
   /**
@@ -231,7 +231,7 @@ export interface EXPERIMENTAL_RouteRecord_Redirect
   extends
     Omit<EXPERIMENTAL_RouteRecord_Base, 'name' | 'path'>,
     Omit<EXPERIMENTAL_ResolverRecord_Matchable, 'parent' | 'aliasOf'> {
-  components?: Record<string, RawRouteComponent>
+  components?: Record<string, RawRouteComponent> | undefined
 
   redirect: RouteRecordRedirectOption // must be defined
 }
@@ -244,7 +244,7 @@ export interface EXPERIMENTAL_RouteRecord_Group
       'name' | 'path' | 'query' | 'hash'
     >,
     Omit<EXPERIMENTAL_ResolverRecord_Group, 'parent' | 'aliasOf'> {
-  components?: Record<string, RawRouteComponent>
+  components?: Record<string, RawRouteComponent> | undefined
 }
 
 export interface EXPERIMENTAL_RouteRecord_Components
@@ -254,7 +254,7 @@ export interface EXPERIMENTAL_RouteRecord_Components
     Omit<EXPERIMENTAL_ResolverRecord_Matchable, 'parent' | 'aliasOf'> {
   components: Record<string, RawRouteComponent>
 
-  redirect?: never
+  redirect?: never | undefined
 }
 
 export type EXPERIMENTAL_RouteRecord_Matchable =
