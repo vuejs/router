@@ -126,14 +126,26 @@ function useHistoryListeners(
     return teardown
   }
 
+  function saveScrollToHistory() {
+    const { history } = window
+    if (!history.state) return
+    history.replaceState(
+      assign({}, history.state, { scroll: computeScrollPosition() }),
+      ''
+    )
+  }
+
+  // pagehide and beforeunload only fire when the page is going away, so we
+  // can save unconditionally.
   function beforeUnloadListener() {
+    saveScrollToHistory()
+  }
+
+  // visibilitychange fires in both directions (hidden and visible), so we
+  // must guard to only save when the page is being hidden.
+  function visibilityChangeListener() {
     if (document.visibilityState === 'hidden') {
-      const { history } = window
-      if (!history.state) return
-      history.replaceState(
-        assign({}, history.state, { scroll: computeScrollPosition() }),
-        ''
-      )
+      saveScrollToHistory()
     }
   }
 
@@ -141,17 +153,20 @@ function useHistoryListeners(
     for (const teardown of teardowns) teardown()
     teardowns = []
     window.removeEventListener('popstate', popStateHandler)
+    window.removeEventListener('beforeunload', beforeUnloadListener)
     window.removeEventListener('pagehide', beforeUnloadListener)
-    document.removeEventListener('visibilitychange', beforeUnloadListener)
+    document.removeEventListener('visibilitychange', visibilityChangeListener)
   }
 
   // set up the listeners and prepare teardown callbacks
   window.addEventListener('popstate', popStateHandler)
   // https://developer.chrome.com/blog/page-lifecycle-api/
-  // note: iOS safari does not fire beforeunload, so we
-  // use pagehide and visibilitychange instead
+  // note: iOS safari does not fire beforeunload, so we use pagehide and
+  // visibilitychange additionally. beforeunload is also needed because Chrome
+  // does not fire pagehide / visibilitychange on a page reload (F5).
+  window.addEventListener('beforeunload', beforeUnloadListener)
   window.addEventListener('pagehide', beforeUnloadListener)
-  document.addEventListener('visibilitychange', beforeUnloadListener)
+  document.addEventListener('visibilitychange', visibilityChangeListener)
 
   return {
     pauseListeners,
