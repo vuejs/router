@@ -1,5 +1,7 @@
 # ESLint
 
+## Configuration
+
 If you are not using auto imports, you will need to tell ESLint about `vue-router/auto-routes`. Add these lines to your eslint configuration:
 
 ```json{3}
@@ -9,6 +11,18 @@ If you are not using auto imports, you will need to tell ESLint about `vue-route
   }
 }
 ```
+
+If you face [multi-word-component-names](https://eslint.vuejs.org/rules/multi-word-component-names.html) warning, you can omit that rule from specific files or folders by adding these lines to your eslint configuration:
+
+```json{3}
+{
+    files: ['src/pages/**/*.vue'],
+    rules: {
+      'vue/multi-word-component-names': 'off',
+    }
+}
+```
+
 
 ## `definePage()`
 
