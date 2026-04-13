@@ -77,6 +77,10 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   { path: '/:pathMatch(.*)', component: components.Home, name: 'catch-all' },
+  {
+    path: '/catch-all-redirect/:pathMatch(.*)*',
+    redirect: { name: 'Foo' },
+  },
 ]
 
 async function newRouter(
@@ -792,6 +796,18 @@ describe('Router', () => {
       expect(loc.redirectedFrom).toMatchObject({
         path: '/to-foo-named',
       })
+    })
+
+    it('does not warn when catch-all redirects to a named route', async () => {
+      const { router } = await newRouter()
+      await expect(
+        router.push('/catch-all-redirect/some/path')
+      ).resolves.toEqual(undefined)
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Foo',
+        path: '/foo',
+      })
+      expect('invalid param').not.toHaveBeenWarned()
     })
 
     it('keeps original replace if redirect', async () => {
