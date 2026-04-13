@@ -372,6 +372,27 @@ export function createRouter(options: RouterOptions): Router {
     return push(assign(locationAsObject(to), { replace: true }))
   }
 
+  /**
+   * Filters params to only include those accepted by the target named route.
+   * This prevents warnings when redirecting from routes with params (e.g.
+   * catch-all) to named routes that don't accept those params.
+   */
+  function filterParams(
+    params: RouteLocation['params'],
+    targetName: NonNullable<RouteRecordNameGeneric>
+  ): RouteLocation['params'] {
+    const targetMatcher = matcher.getRecordMatcher(targetName)
+    if (!targetMatcher) return params
+    const targetParamNames = targetMatcher.keys.map(k => k.name)
+    const filtered: RouteLocation['params'] = {}
+    for (const key of targetParamNames) {
+      if (key in params) {
+        filtered[key] = params[key]
+      }
+    }
+    return filtered
+  }
+
   function handleRedirectRecord(
     to: RouteLocation,
     from: RouteLocationNormalizedLoaded
@@ -415,7 +436,12 @@ export function createRouter(options: RouterOptions): Router {
           query: to.query,
           hash: to.hash,
           // avoid transferring params if the redirect has a path
-          params: newTargetLocation.path != null ? {} : to.params,
+          params:
+            newTargetLocation.path != null
+              ? {}
+              : 'name' in newTargetLocation && newTargetLocation.name
+                ? filterParams(to.params, newTargetLocation.name)
+                : to.params,
         },
         newTargetLocation
       )
