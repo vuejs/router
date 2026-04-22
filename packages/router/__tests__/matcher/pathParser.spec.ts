@@ -30,6 +30,36 @@ describe('Path parser', () => {
       ])
     })
 
+    it('escapes non-colon char after param', () => {
+      expect(tokenizePath('/:foo\\-abc')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'foo',
+            regexp: '',
+            repeatable: false,
+            optional: false,
+          },
+          { type: TokenType.Static, value: '-abc' },
+        ],
+      ])
+    })
+
+    it('escapes : after optional param with custom re', () => {
+      expect(tokenizePath('/:foo([^:]+)?\\:abc')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'foo',
+            regexp: '[^:]+',
+            repeatable: false,
+            optional: true,
+          },
+          { type: TokenType.Static, value: ':abc' },
+        ],
+      ])
+    })
+
     it('escapes : after param', () => {
       expect(tokenizePath('/:foo\\:abc')).toEqual([
         [
