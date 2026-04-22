@@ -93,6 +93,20 @@ location / {
 }
 ```
 
+For a standalone server config (e.g. when using the official `nginx` docker image), drop the following into `/etc/nginx/conf.d/default.conf`:
+
+```nginx
+server {
+  listen 80;
+  server_name localhost;
+  root /usr/share/nginx/html;
+  index index.html;
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+}
+```
+
 ### Native Node.js
 
 ```js
