@@ -116,6 +116,15 @@ describe('parseURL', () => {
     })
   })
 
+  it('decodes the hash exactly once', () => {
+    expect(parseURL('/#%2526')).toEqual({
+      fullPath: '/#%2526',
+      path: '/',
+      hash: '#%26',
+      query: {},
+    })
+  })
+
   it('extracts query and hash', () => {
     expect(parseURL('/foo?a=one#bar')).toEqual({
       fullPath: '/foo?a=one#bar',

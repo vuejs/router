@@ -605,6 +605,18 @@ describe('Experimental Router', () => {
     expect(router.currentRoute.value.hash).toBe('#two')
   })
 
+  it('does not double-decode a percent-encoded hash', async () => {
+    const { router } = await newRouter()
+    // object push keeps the raw hash, encodes % in fullPath
+    await router.push({ path: '/', hash: '#%26' })
+    expect(router.currentRoute.value.hash).toBe('#%26')
+    expect(router.currentRoute.value.fullPath).toBe('/#%2526')
+    // string push (what happens on reload) must decode exactly once
+    await router.push('/#%2526')
+    expect(router.currentRoute.value.hash).toBe('#%26')
+    expect(router.currentRoute.value.fullPath).toBe('/#%2526')
+  })
+
   it('throws if required params are missing', async () => {
     const { router } = await newRouter()
     expect(() => router.resolve({ name: 'Param', params: {} })).toThrowError()

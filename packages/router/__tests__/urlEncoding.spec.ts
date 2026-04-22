@@ -69,16 +69,16 @@ describe('URL Encoding', () => {
   it('calls decode with a path', async () => {
     const router = createRouter()
     await router.push('/p/foo')
-    // one extra time for hash
-    expect(encoding.decode).toHaveBeenCalledTimes(3)
+    // one extra time for hash (decoded once by parseURL)
+    expect(encoding.decode).toHaveBeenCalledTimes(2)
     expect(encoding.decode).toHaveBeenNthCalledWith(2, 'foo')
   })
 
   it('calls decode with a path with repeatable params', async () => {
     const router = createRouter()
     await router.push('/p/foo/bar')
-    // one extra time for hash
-    expect(encoding.decode).toHaveBeenCalledTimes(4)
+    // one extra time for hash (decoded once by parseURL)
+    expect(encoding.decode).toHaveBeenCalledTimes(3)
     expect(encoding.decode).toHaveBeenNthCalledWith(2, 'foo', 0, ['foo', 'bar'])
     expect(encoding.decode).toHaveBeenNthCalledWith(3, 'bar', 1, ['foo', 'bar'])
   })
@@ -109,8 +109,8 @@ describe('URL Encoding', () => {
   it('calls decode with query', async () => {
     const router = createRouter()
     await router.push('/?p=foo')
-    // one extra time for hash
-    expect(encoding.decode).toHaveBeenCalledTimes(4)
+    // one extra time for hash (decoded once by parseURL)
+    expect(encoding.decode).toHaveBeenCalledTimes(3)
     expect(encoding.decode).toHaveBeenNthCalledWith(1, 'p')
     expect(encoding.decode).toHaveBeenNthCalledWith(2, 'foo')
   })
