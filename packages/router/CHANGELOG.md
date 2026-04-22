@@ -1,3 +1,9 @@
+## [5.0.6](https://github.com/vuejs/router/compare/v5.0.5...v5.0.6) (2026-04-22)
+
+### Bug Fixes
+
+- missing closing quote in generated import ([#2688](https://github.com/vuejs/router/issues/2688)) ([32f78c7](https://github.com/vuejs/router/commit/32f78c77782baf4500c5e710ee4c16a180551c19)), closes [#2687](https://github.com/vuejs/router/issues/2687)
+
 ## [5.0.5](https://github.com/vuejs/router/compare/v5.0.4...v5.0.5) (2026-04-22)
 
 ### Bug Fixes
