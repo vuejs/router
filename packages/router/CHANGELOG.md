@@ -1,3 +1,15 @@
+## [5.0.5](https://github.com/vuejs/router/compare/v5.0.4...v5.0.5) (2026-04-22)
+
+### Bug Fixes
+
+- avoid double decoding hash on string location ([1578c9e](https://github.com/vuejs/router/commit/1578c9e92f7411739dc697463e4ec1633e43ff31)), closes [#2685](https://github.com/vuejs/router/issues/2685)
+- track definePage imports per-file to fix named view race condition ([11191bc](https://github.com/vuejs/router/commit/11191bca938b538fd9963ad4ba0fdfbd6142bacb)), closes [#2670](https://github.com/vuejs/router/issues/2670)
+
+### Features
+
+- enable standard schema param parsers ([ea8e3e2](https://github.com/vuejs/router/commit/ea8e3e216d8b6daaace531db369ec49c0e884721))
+- normalize param parsers once ([480877c](https://github.com/vuejs/router/commit/480877cc181d776c8ca524f486fbb49ee9e60141))
+
 ## [5.0.4](https://github.com/vuejs/router/compare/v5.0.3...v5.0.4) (2026-03-19)
 
 ### Bug Fixes
