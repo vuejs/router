@@ -312,5 +312,44 @@ describe('warnings', () => {
     expect('invalid param(s) "no", "foo" ').toHaveBeenWarned()
     // from the previous location
     expect('"one"').not.toHaveBeenWarned()
+    // explicit params (not inherited) should not trigger the workaround hint
+    expect('catch-all route with a named redirect').not.toHaveBeenWarned()
+  })
+
+  it('hints at the `params: {}` workaround when discarded params are inherited', () => {
+    const record = {
+      path: '/a',
+      name: 'a',
+      components: {},
+    }
+    const matcher = createRouterMatcher([record], {})
+    matcher.resolve(
+      { name: 'a', params: { pathMatch: 'unknown' } },
+      {
+        path: '/unknown',
+        name: undefined,
+        params: { pathMatch: 'unknown' },
+        matched: [] as any,
+        meta: {},
+      }
+    )
+    expect('Discarded invalid param(s)').toHaveBeenWarned()
+    expect('catch-all route with a named redirect').toHaveBeenWarned()
+  })
+
+  it('does not warn for a catch-all redirect using the `params: {}` workaround', async () => {
+    const history = createMemoryHistory()
+    const router = createRouter({
+      history,
+      routes: [
+        { path: '/', name: 'HOME', component },
+        {
+          path: '/:pathMatch(.*)*',
+          redirect: { name: 'HOME', params: {} },
+        },
+      ],
+    })
+    await router.push('/anything')
+    expect('Discarded invalid param(s)').not.toHaveBeenWarned()
   })
 })
