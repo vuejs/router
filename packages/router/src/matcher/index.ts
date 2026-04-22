@@ -265,10 +265,20 @@ export function createRouterMatcher(
         ).filter(paramName => !matcher!.keys.find(k => k.name === paramName))
 
         if (invalidParams.length) {
+          // when the invalid params are inherited from the current location
+          // (e.g. `pathMatch` from a catch-all redirecting to a named route),
+          // suggest the `params: {}` workaround
+          const isInherited =
+            !matcher!.keys.length &&
+            invalidParams.some(name => name in currentLocation.params)
           warn(
             `Discarded invalid param(s) "${invalidParams.join(
               '", "'
-            )}" when navigating. See https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22 for more details.`
+            )}" when navigating.` +
+              (isInherited
+                ? ` If you are using a catch-all route with a named redirect, pass an empty \`params\` object: \`redirect: { name: '...', params: {} }\`.`
+                : '') +
+              ` See https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22 for more details.`
           )
         }
       }
