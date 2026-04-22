@@ -159,7 +159,9 @@
         <router-link to="/p_1/absolute-a">/p_1/absolute-a</router-link>
       </li>
       <li>
-        <router-link :to="{ name: 'features' }">Go to Features (name)</router-link>
+        <router-link :to="{ name: 'features' }"
+          >Go to Features (name)</router-link
+        >
       </li>
       <li>
         <router-link to="/features">Go to Features (string)</router-link>
