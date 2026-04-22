@@ -30,6 +30,132 @@ describe('Path parser', () => {
       ])
     })
 
+    it('escapes non-colon char after param', () => {
+      expect(tokenizePath('/:foo\\-abc')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'foo',
+            regexp: '',
+            repeatable: false,
+            optional: false,
+          },
+          { type: TokenType.Static, value: '-abc' },
+        ],
+      ])
+    })
+
+    it('escapes ) inside custom re to allow nested groups', () => {
+      expect(tokenizePath('/:id((?:a-[^/]+\\)?)')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '(?:a-[^/]+)?',
+            repeatable: false,
+            optional: false,
+          },
+        ],
+      ])
+    })
+
+    it('escapes + after empty custom re', () => {
+      expect(tokenizePath('/:p()\\+')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'p',
+            regexp: '',
+            repeatable: false,
+            optional: false,
+          },
+          { type: TokenType.Static, value: '+' },
+        ],
+      ])
+    })
+
+    it('escapes + after param', () => {
+      expect(tokenizePath('/:p\\+')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'p',
+            regexp: '',
+            repeatable: false,
+            optional: false,
+          },
+          { type: TokenType.Static, value: '+' },
+        ],
+      ])
+    })
+
+    it('escapes : after optional param with custom re', () => {
+      expect(tokenizePath('/:foo([^:]+)?\\:abc')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'foo',
+            regexp: '[^:]+',
+            repeatable: false,
+            optional: true,
+          },
+          { type: TokenType.Static, value: ':abc' },
+        ],
+      ])
+    })
+
+    it('escapes : after param', () => {
+      expect(tokenizePath('/:foo\\:abc')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'foo',
+            regexp: '',
+            repeatable: false,
+            optional: false,
+          },
+          { type: TokenType.Static, value: ':abc' },
+        ],
+      ])
+    })
+
+    it('escapes : after param with custom re', () => {
+      expect(tokenizePath('/:foo([^:]+)\\:abc')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'foo',
+            regexp: '[^:]+',
+            repeatable: false,
+            optional: false,
+          },
+          { type: TokenType.Static, value: ':abc' },
+        ],
+      ])
+    })
+
+    it('escapes : between two params', () => {
+      expect(tokenizePath('/:foo([^:]+)\\::bar')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'foo',
+            regexp: '[^:]+',
+            repeatable: false,
+            optional: false,
+          },
+          { type: TokenType.Static, value: ':' },
+          {
+            type: TokenType.Param,
+            value: 'bar',
+            regexp: '',
+            repeatable: false,
+            optional: false,
+          },
+        ],
+      ])
+    })
+
     // not sure how useful this is and if it's worth supporting because of the
     // cost to support the ranking as well
     it.skip('groups', () => {
@@ -806,6 +932,24 @@ describe('Path parser', () => {
       matchParams('/one/:a*', '/one/two/three', {
         a: ['two', 'three'],
       })
+    })
+
+    it('param followed by escaped colon and static', () => {
+      matchParams('/:foo\\:abc', '/section:abc', { foo: 'section' })
+      matchParams('/:foo\\:abc', '/sectionabc', null)
+    })
+
+    it('param with custom re followed by escaped colon and another param', () => {
+      matchParams('/:foo([^:]+)\\::bar', '/section:aaabbbccc', {
+        foo: 'section',
+        bar: 'aaabbbccc',
+      })
+    })
+
+    it('escaped + becomes part of static path, not a repeat modifier', () => {
+      matchParams('/:p\\+', '/abc+', { p: 'abc' })
+      matchParams('/:p\\+', '/abc', null)
+      matchParams('/:p()\\+', '/abc+', { p: 'abc' })
     })
 
     // end of parsing urls
