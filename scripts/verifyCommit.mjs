@@ -3,10 +3,10 @@
 import chalk from 'chalk'
 import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
-import path from 'node:path'
 
-const gitDir = execSync('git rev-parse --git-dir', { encoding: 'utf-8' }).trim()
-const msgPath = path.resolve(gitDir, 'COMMIT_EDITMSG')
+const msgPath = execSync('git rev-parse --git-path COMMIT_EDITMSG', {
+  encoding: 'utf-8',
+}).trim()
 const msg = readFileSync(msgPath, 'utf-8').trim()
 
 const commitRE =
