@@ -45,6 +45,50 @@ describe('Path parser', () => {
       ])
     })
 
+    it('escapes ) inside custom re to allow nested groups', () => {
+      expect(tokenizePath('/:id((?:a-[^/]+\\)?)')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'id',
+            regexp: '(?:a-[^/]+)?',
+            repeatable: false,
+            optional: false,
+          },
+        ],
+      ])
+    })
+
+    it('escapes + after empty custom re', () => {
+      expect(tokenizePath('/:p()\\+')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'p',
+            regexp: '',
+            repeatable: false,
+            optional: false,
+          },
+          { type: TokenType.Static, value: '+' },
+        ],
+      ])
+    })
+
+    it('escapes + after param', () => {
+      expect(tokenizePath('/:p\\+')).toEqual([
+        [
+          {
+            type: TokenType.Param,
+            value: 'p',
+            regexp: '',
+            repeatable: false,
+            optional: false,
+          },
+          { type: TokenType.Static, value: '+' },
+        ],
+      ])
+    })
+
     it('escapes : after optional param with custom re', () => {
       expect(tokenizePath('/:foo([^:]+)?\\:abc')).toEqual([
         [
@@ -900,6 +944,12 @@ describe('Path parser', () => {
         foo: 'section',
         bar: 'aaabbbccc',
       })
+    })
+
+    it('escaped + becomes part of static path, not a repeat modifier', () => {
+      matchParams('/:p\\+', '/abc+', { p: 'abc' })
+      matchParams('/:p\\+', '/abc', null)
+      matchParams('/:p()\\+', '/abc+', { p: 'abc' })
     })
 
     // end of parsing urls
