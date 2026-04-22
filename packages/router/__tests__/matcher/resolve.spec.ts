@@ -888,6 +888,29 @@ describe('RouterMatcher.resolve', () => {
         { name: 'h', path: '/', params: {} }
       )
     })
+
+    // #2419 (skirtles-code's comment): `{ params: { id: undefined } }`
+    // should resolve the same as omitting the key entirely so active-link
+    // comparisons stay consistent. `null` is a type error and is not
+    // supported (see commented-out case below).
+    it('treats explicit undefined optional params as absent', () => {
+      const record = {
+        path: '/features/:id?',
+        name: 'features',
+        components,
+      }
+      assertRecordMatch(
+        record,
+        { name: 'features', params: { id: undefined } },
+        { name: 'features', path: '/features', params: {} }
+      )
+      // null is rejected by the types and not supported at runtime:
+      // assertRecordMatch(
+      //   record,
+      //   { name: 'features', params: { id: null } },
+      //   { name: 'features', path: '/features', params: {} }
+      // )
+    })
   })
 
   describe('LocationAsRelative', () => {

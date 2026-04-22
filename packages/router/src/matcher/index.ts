@@ -399,7 +399,7 @@ function pickParams(
   const newParams = {} as MatcherLocation['params']
 
   for (const key of keys) {
-    if (key in params) newParams[key] = params[key]
+    if (key in params && params[key] !== undefined) newParams[key] = params[key]
   }
 
   return newParams
