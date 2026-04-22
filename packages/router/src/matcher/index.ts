@@ -326,8 +326,10 @@ export function createRouterMatcher(
         params = matcher.parse(path)!
         name = matcher.record.name
 
+        // delete all optional params that have falsy values
+        // noramlizes '', null, and undefined into deleting the key
         matcher.keys.forEach(key => {
-          if (key.optional && params[key.name] === '') {
+          if (key.optional && !params[key.name]) {
             delete params[key.name]
           }
         })
@@ -399,7 +401,7 @@ function pickParams(
   const newParams = {} as MatcherLocation['params']
 
   for (const key of keys) {
-    if (key in params && params[key] !== undefined) newParams[key] = params[key]
+    if (key in params) newParams[key] = params[key]
   }
 
   return newParams
