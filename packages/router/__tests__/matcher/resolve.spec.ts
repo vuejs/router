@@ -842,6 +842,69 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
+    // NOTE: Breaking change for the upcoming version to normalize missing optional params
+    // still unsure about the id: '' behavior
+    it.todo('normalizes empty optional params', () => {
+      const record = {
+        path: '/features/:id?',
+        name: 'features',
+        components,
+      }
+      assertRecordMatch(
+        record,
+        {
+          name: 'features',
+          params: {
+            id: '',
+          },
+        },
+        {
+          name: 'features',
+          path: '/features',
+          params: {
+            id: null,
+          },
+        }
+      )
+
+      assertRecordMatch(
+        record,
+        {
+          name: 'features',
+          params: {
+            // @ts-expect-error: might or not be allowed in the future
+            id: undefined,
+          },
+        },
+        {
+          name: 'features',
+          path: '/features',
+          params: {
+            id: null,
+          },
+        }
+      )
+
+      // null is rejected by the types and not supported at runtime:
+      assertRecordMatch(
+        record,
+        {
+          name: 'features',
+          params: {
+            // @ts-expect-error: might or not be allowed in the future
+            id: null,
+          },
+        },
+        {
+          name: 'features',
+          path: '/features',
+          params: {
+            id: null,
+          },
+        }
+      )
+    })
+
     it('keeps optional params passed as empty strings', () => {
       assertRecordMatch(
         { path: '/:a/:b?', name: 'p', components },
