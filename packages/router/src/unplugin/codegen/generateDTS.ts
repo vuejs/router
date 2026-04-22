@@ -47,7 +47,7 @@ import type {
 } from 'vue-router'
 import type {
   _ExtractParamParserType,
-} from 'vue-router/experimental
+} from 'vue-router/experimental'
 
 ${
   paramsTypesDeclaration

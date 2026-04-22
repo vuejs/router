@@ -16,7 +16,7 @@ import type {
 } from 'vue-router'
 import type {
   _ExtractParamParserType,
-} from 'vue-router/experimental
+} from 'vue-router/experimental'
 
 // Custom route params parsers
 type Param_date = _ExtractParamParserType<typeof import('./params/date.ts').parser>
