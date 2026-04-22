@@ -325,6 +325,14 @@ export function createRouterMatcher(
         // we know the matcher works because we tested the regexp
         params = matcher.parse(path)!
         name = matcher.record.name
+
+        // delete all optional params that have falsy values
+        // noramlizes '', null, and undefined into deleting the key
+        matcher.keys.forEach(key => {
+          if (key.optional && !params[key.name]) {
+            delete params[key.name]
+          }
+        })
       }
       // location is a relative path
     } else {

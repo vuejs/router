@@ -685,12 +685,31 @@ describe('RouterMatcher.resolve', () => {
       assertRecordMatch(
         { path: '/:a?', components, name: 'a' },
         { path: '/' },
-        { path: '/', params: { a: '' }, name: 'a' }
+        { path: '/', params: {}, name: 'a' }
       )
       assertRecordMatch(
         { path: '/a/:a?', components, name: 'a' },
         { path: '/a/' },
-        { path: '/a/', params: { a: '' }, name: 'a' }
+        { path: '/a/', params: {}, name: 'a' }
+      )
+    })
+
+    // #2419: resolving by string path must match the same-named route's
+    // missing-optional-params behavior so active-link comparisons stay in sync
+    it('drops missing optional splat when resolving by path', () => {
+      assertRecordMatch(
+        { path: '/features/:pathMatch(.*)*', components, name: 'features' },
+        { path: '/features' },
+        { path: '/features', params: {}, name: 'features' }
+      )
+      assertRecordMatch(
+        { path: '/features/:pathMatch(.*)*', components, name: 'features' },
+        { path: '/features/one' },
+        {
+          path: '/features/one',
+          params: { pathMatch: ['one'] },
+          name: 'features',
+        }
       )
     })
 
