@@ -87,15 +87,22 @@ Instead of `mod_rewrite`, you could also use [`FallbackResource`](https://httpd.
 
 ### nginx
 
-`/etc/nginx/conf.d/default.conf`
+```nginx
+location / {
+  try_files $uri $uri/ /index.html;
+}
+```
+
+For a standalone server config (e.g. when using the official `nginx` docker image), drop the following into `/etc/nginx/conf.d/default.conf`:
+
 ```nginx
 server {
-    listen 80;
-    server_name localhost;
-    root /usr/share/nginx/html;
-    index index.html;
-    location / {
-      try_files $uri $uri/ /index.html;
+  listen 80;
+  server_name localhost;
+  root /usr/share/nginx/html;
+  index index.html;
+  location / {
+    try_files $uri $uri/ /index.html;
   }
 }
 ```
