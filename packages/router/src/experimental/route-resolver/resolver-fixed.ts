@@ -32,35 +32,35 @@ export interface EXPERIMENTAL_ResolverRecord_Base {
    * Name of the matcher. Unique across all matchers. If missing, this record
    * cannot be matched. This is useful for grouping records.
    */
-  name?: RecordName
+  name?: RecordName | undefined
 
   /**
    * {@link MatcherPattern} for the path section of the URI.
    */
-  path?: MatcherPatternPath
+  path?: MatcherPatternPath | undefined
 
   /**
    * {@link MatcherPattern} for the query section of the URI.
    */
-  query?: MatcherPatternQuery[]
+  query?: MatcherPatternQuery[] | undefined
 
   /**
    * {@link MatcherPattern} for the hash section of the URI.
    */
-  hash?: MatcherPatternHash
+  hash?: MatcherPatternHash | undefined
 
   /**
    * Parent record. The parent can be a group or a matchable record.
    * It will be included in the `matched` array of a resolved location.
    */
-  parent?: EXPERIMENTAL_ResolverRecord_Base | null // the parent can be matchable or not
+  parent?: EXPERIMENTAL_ResolverRecord_Base | null | undefined // the parent can be matchable or not
 
   /**
    * If this record is an alias of another record, this points to the original
    * record. Alias records are not added to the name map and resolve to the
    * original record's name.
    */
-  aliasOf?: EXPERIMENTAL_ResolverRecord_Base | null
+  aliasOf?: EXPERIMENTAL_ResolverRecord_Base | null | undefined
 }
 
 /**

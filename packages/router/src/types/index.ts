@@ -52,8 +52,8 @@ export type RouteParamsRawGeneric = Record<
  * @internal
  */
 export interface RouteQueryAndHash {
-  query?: LocationQueryRaw
-  hash?: string
+  query?: LocationQueryRaw | undefined
+  hash?: string | undefined
 }
 
 /**
@@ -73,7 +73,7 @@ export interface MatcherLocationAsName {
    * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
    */
   path?: undefined
-  params?: RouteParamsGeneric
+  params?: RouteParamsGeneric | undefined
 }
 
 /**
@@ -85,20 +85,20 @@ export interface MatcherLocationAsRelative {
    * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
    */
   path?: undefined
-  params?: RouteParamsGeneric
+  params?: RouteParamsGeneric | undefined
 }
 
 /**
  * @internal
  */
 export interface LocationAsRelativeRaw {
-  name?: RouteRecordNameGeneric
+  name?: RouteRecordNameGeneric | undefined
   // to allow checking location.path == null
   /**
    * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
    */
   path?: undefined
-  params?: RouteParamsRawGeneric
+  params?: RouteParamsRawGeneric | undefined
 }
 
 /**
@@ -108,19 +108,19 @@ export interface RouteLocationOptions {
   /**
    * Replace the entry in the history instead of pushing a new entry
    */
-  replace?: boolean
+  replace?: boolean | undefined
   /**
    * Triggers the navigation even if the location is the same as the current one.
    * Note this will also add a new entry to the history unless `replace: true`
    * is passed.
    */
-  force?: boolean
+  force?: boolean | undefined
   /**
    * State to save using the History API. This cannot contain any reactive
    * values and some primitives like Symbols are forbidden. More info at
    * https://developer.mozilla.org/en-US/docs/Web/API/History/state
    */
-  state?: HistoryState
+  state?: HistoryState | undefined
 }
 
 /**
@@ -201,19 +201,19 @@ export interface _RouteRecordBase extends PathParserOptions {
    * before any navigation guard and triggers a new navigation with the new
    * target location.
    */
-  redirect?: RouteRecordRedirectOption
+  redirect?: RouteRecordRedirectOption | undefined
 
   /**
    * Aliases for the record. Allows defining extra paths that will behave like a
    * copy of the record. Allows having paths shorthands like `/users/:id` and
    * `/u/:id`. All `alias` and `path` values must share the same params.
    */
-  alias?: string | string[]
+  alias?: string | string[] | undefined
 
   /**
    * Name for the route record. Must be unique.
    */
-  name?: RouteRecordNameGeneric
+  name?: RouteRecordNameGeneric | undefined
 
   /**
    * Before Enter guard specific to this record. Note `beforeEnter` has no
@@ -222,21 +222,22 @@ export interface _RouteRecordBase extends PathParserOptions {
   beforeEnter?:
     | NavigationGuardWithThis<undefined>
     | NavigationGuardWithThis<undefined>[]
+    | undefined
 
   /**
    * Arbitrary data attached to the record.
    */
-  meta?: RouteMeta
+  meta?: RouteMeta | undefined
 
   /**
    * Array of nested routes.
    */
-  children?: RouteRecordRaw[]
+  children?: RouteRecordRaw[] | undefined
 
   /**
    * Allow passing down params as props to the component rendered by `router-view`.
    */
-  props?: _RouteRecordProps | Record<string, _RouteRecordProps>
+  props?: _RouteRecordProps | Record<string, _RouteRecordProps> | undefined
 }
 
 /**
@@ -265,14 +266,14 @@ export interface RouteRecordSingleView extends _RouteRecordBase {
    * Component to display when the URL matches this route.
    */
   component: RawRouteComponent
-  components?: never
-  children?: never
-  redirect?: never
+  components?: never | undefined
+  children?: never | undefined
+  redirect?: never | undefined
 
   /**
    * Allow passing down params as props to the component rendered by `router-view`.
    */
-  props?: _RouteRecordProps
+  props?: _RouteRecordProps | undefined
 }
 
 /**
@@ -285,14 +286,14 @@ export interface RouteRecordSingleViewWithChildren extends _RouteRecordBase {
    * Component to display when the URL matches this route.
    */
   component?: RawRouteComponent | null | undefined
-  components?: never
+  components?: never | undefined
 
   children: RouteRecordRaw[]
 
   /**
    * Allow passing down params as props to the component rendered by `router-view`.
    */
-  props?: _RouteRecordProps
+  props?: _RouteRecordProps | undefined
 }
 
 /**
@@ -303,16 +304,16 @@ export interface RouteRecordMultipleViews extends _RouteRecordBase {
    * Components to display when the URL matches this route. Allow using named views.
    */
   components: Record<string, RawRouteComponent>
-  component?: never
-  children?: never
-  redirect?: never
+  component?: never | undefined
+  children?: never | undefined
+  redirect?: never | undefined
 
   /**
    * Allow passing down params as props to the component rendered by
    * `router-view`. Should be an object with the same keys as `components` or a
    * boolean to be applied to every component.
    */
-  props?: Record<string, _RouteRecordProps> | boolean
+  props?: Record<string, _RouteRecordProps> | boolean | undefined
 }
 
 /**
@@ -323,7 +324,7 @@ export interface RouteRecordMultipleViewsWithChildren extends _RouteRecordBase {
    * Components to display when the URL matches this route. Allow using named views.
    */
   components?: Record<string, RawRouteComponent> | null | undefined
-  component?: never
+  component?: never | undefined
 
   children: RouteRecordRaw[]
 
@@ -332,7 +333,7 @@ export interface RouteRecordMultipleViewsWithChildren extends _RouteRecordBase {
    * `router-view`. Should be an object with the same keys as `components` or a
    * boolean to be applied to every component.
    */
-  props?: Record<string, _RouteRecordProps> | boolean
+  props?: Record<string, _RouteRecordProps> | boolean | undefined
 }
 
 /**
@@ -341,9 +342,9 @@ export interface RouteRecordMultipleViewsWithChildren extends _RouteRecordBase {
  */
 export interface RouteRecordRedirect extends _RouteRecordBase {
   redirect: RouteRecordRedirectOption
-  component?: never
-  components?: never
-  props?: never
+  component?: never | undefined
+  components?: never | undefined
+  props?: never | undefined
 }
 
 export type RouteRecordRaw =
