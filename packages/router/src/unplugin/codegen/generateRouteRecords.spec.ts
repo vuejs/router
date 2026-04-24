@@ -49,6 +49,29 @@ describe('generateRouteRecord', () => {
     expect(generateRouteRecordSimple(tree)).toContain("path: '/nested'")
   })
 
+  it('skips nested lone _parent files', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('users/index', 'users/index.vue')
+    tree.insert('users/settings/_parent', 'users/settings/_parent.vue')
+
+    const routes = generateRouteRecordSimple(tree)
+
+    expect(routes).toContain("path: '/users'")
+    expect(routes).not.toContain("path: '/users/settings'")
+  })
+
+  // regression test for https://github.com/vuejs/router/issues/2641
+  // when beforeWriteFiles removes the only child of a wrapper node, the
+  // wrapper must disappear too instead of emitting an empty route record
+  it('drops the wrapper when its last child is deleted', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('home/user', 'home/user.vue')
+    const leaf = tree.insert('home/component/foo', 'home/component/foo.vue')
+    leaf.delete()
+
+    expect(generateRouteRecordSimple(tree)).toMatchSnapshot()
+  })
+
   it('works with some paths at root', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('a', 'a.vue')

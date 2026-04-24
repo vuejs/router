@@ -229,14 +229,29 @@ export class TreeNode {
   }
 
   /**
+   * Delete a child node. If the child node has no more children and no
+   * components, it will be deleted as well. This is used to recursively delete
+   * empty nodes after removing a route.
+   *
+   * @param child - child node to delete
+   */
+  protected deleteChild(child: TreeNode): void {
+    this.children.delete(child.value.rawSegment)
+    // recursively delete empty parents
+    if (!this.isRoot() && !this.isMatchable() && this.children.size === 0) {
+      this.delete()
+    }
+  }
+
+  /**
    * Delete and detach itself from the tree.
    */
-  delete() {
-    if (!this.parent) {
+  delete(): void {
+    if (this.isRoot()) {
       throw new Error('Cannot delete the root node.')
     }
-    this.parent.children.delete(this.value.rawSegment)
-    // clear link to parent
+    this.parent?.deleteChild(this)
+    // clear link to parent so a repeated delete() is a no-op
     this.parent = undefined
   }
 
