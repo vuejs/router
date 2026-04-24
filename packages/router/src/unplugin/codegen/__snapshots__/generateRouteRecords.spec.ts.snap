@@ -104,6 +104,24 @@ exports[`generateRouteRecord > does not encode RFC 3986 valid path characters 1`
 ]"
 `;
 
+exports[`generateRouteRecord > drops the wrapper when its last child is deleted 1`] = `
+"[
+  {
+    path: '/home',
+    /* internal name: '/home' */
+    /* no component */
+    children: [
+      {
+        path: 'user',
+        name: '/home/user',
+        component: () => import('home/user.vue'),
+        /* no children */
+      }
+    ],
+  }
+]"
+`;
+
 exports[`generateRouteRecord > encodes special characters in path segments 1`] = `
 "[
   {

@@ -47,7 +47,7 @@ describe('EditableTreeNode', () => {
     expect(tree.children.size).toBe(1)
     expect(tree.children.has('a')).toBe(false)
     expect(tree.children.has('about')).toBe(true)
-    // repeatedly delete a node,  should be no error reported
+    // repeatedly deleting a node should not throw
     expect(() => toDelete.delete()).not.toThrow()
   })
 
