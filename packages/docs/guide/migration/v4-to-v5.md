@@ -105,20 +105,6 @@ import type { Options, EditableTreeNode } from 'vue-router/unplugin' // [!code +
     "plugins": [
       "unplugin-vue-router/volar/sfc-typed-router", // [!code --]
       "unplugin-vue-router/volar/sfc-route-blocks", // [!code --]
-    ],
-  },
-}
-```
-
-<!-- prettier-ignore -->
-```jsonc
-// tsconfig.json
-{
-  "compilerOptions": {
-    "rootDir": ".",
-  },
-  "vueCompilerOptions": {
-    "plugins": [
       "vue-router/volar/sfc-typed-router", // [!code ++]
       "vue-router/volar/sfc-route-blocks", // [!code ++]
     ],
