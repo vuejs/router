@@ -22,6 +22,7 @@ import type {
 type Param_date = _ExtractParamParserType<typeof import('./params/date.ts').parser>
 type Param_monthValibot = _ExtractParamParserType<typeof import('./params/month-valibot.ts').parser>
 type Param_monthZod = _ExtractParamParserType<typeof import('./params/month-zod.ts').parser>
+type Param_myValue = _ExtractParamParserType<typeof import('./params/my-value.ts').parser>
 type Param_npmOrg = _ExtractParamParserType<typeof import('./params/npm-org.ts').parser>
 type Param_semver = _ExtractParamParserType<typeof import('./params/semver.ts').parser>
 type Param_versionRange = _ExtractParamParserType<typeof import('./params/version-range.ts').parser>
@@ -32,6 +33,7 @@ declare module 'vue-router' {
       | 'date'
       | 'month-valibot'
       | 'month-zod'
+      | 'my-value'
       | 'npm-org'
       | 'semver'
       | 'version-range'
@@ -53,8 +55,8 @@ declare module 'vue-router/auto-routes' {
     '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]': RouteRecordInfo<
       '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]',
       '/package/:org?/:pkgName/:pkgVersion',
-      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_semver, unknown[]> },
-      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_semver, unknown[]> },
+      { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: Exclude<Param_semver, unknown[] | null> },
+      { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: Exclude<Param_semver, unknown[] | null> },
       | never
     >,
     '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]': RouteRecordInfo<
@@ -67,15 +69,15 @@ declare module 'vue-router/auto-routes' {
     '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]': RouteRecordInfo<
       '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]',
       '/package-range/:org?/:pkgName/:pkgVersion',
-      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_versionRange, unknown[]> },
-      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: Exclude<Param_versionRange, unknown[]> },
+      { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: Exclude<Param_versionRange, unknown[] | null> },
+      { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: Exclude<Param_versionRange, unknown[] | null> },
       | never
     >,
     '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]': RouteRecordInfo<
       '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]',
       '/package-zod/:org?/:pkgName/:pkgVersion',
-      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: string },
-      { org: Exclude<Param_npmOrg, unknown[]> | null, pkgName: string, pkgVersion: string },
+      { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: string },
+      { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: string },
       | never
     >,
     '/[a].[b]': RouteRecordInfo<
@@ -88,8 +90,8 @@ declare module 'vue-router/auto-routes' {
     'not-found': RouteRecordInfo<
       'not-found',
       '/:path(.*)',
-      { path: string, page?: number, other?: boolean, active?: boolean, multi?: string[], req?: number, optionalWhen?: Exclude<Param_date, unknown[]>, when?: Exclude<Param_date, unknown[]> },
-      { path: string, page: number, other: boolean | undefined, active: boolean, multi: string[] | undefined, req: number, optionalWhen: Exclude<Param_date, unknown[]> | undefined, when: Exclude<Param_date, unknown[]> },
+      { path: string, page?: number, other?: boolean, active?: boolean, multi?: string[], req?: number, optionalWhen?: Exclude<Param_date, unknown[] | null>, when?: Exclude<Param_date, unknown[] | null> },
+      { path: string, page: number, other: boolean | undefined, active: boolean, multi: string[] | undefined, req: number, optionalWhen: Exclude<Param_date, unknown[] | null> | undefined, when: Exclude<Param_date, unknown[] | null> },
       | never
     >,
     '/a.[b].c.[d]': RouteRecordInfo<
@@ -151,8 +153,8 @@ declare module 'vue-router/auto-routes' {
     '/events/[when=date]': RouteRecordInfo<
       '/events/[when=date]',
       '/events/:when',
-      { when: Exclude<Param_date, unknown[]> },
-      { when: Exclude<Param_date, unknown[]> },
+      { when: Exclude<Param_date, unknown[] | null> },
+      { when: Exclude<Param_date, unknown[] | null> },
       | never
     >,
     '/events/repeat/[when=date]+': RouteRecordInfo<
@@ -172,15 +174,15 @@ declare module 'vue-router/auto-routes' {
     '/months/valibot-[month=month-valibot]': RouteRecordInfo<
       '/months/valibot-[month=month-valibot]',
       '/months/valibot-:month',
-      { month: Exclude<Param_monthValibot, unknown[]> },
-      { month: Exclude<Param_monthValibot, unknown[]> },
+      { month: Exclude<Param_monthValibot, unknown[] | null> },
+      { month: Exclude<Param_monthValibot, unknown[] | null> },
       | never
     >,
     '/months/zod-[month=month-zod]': RouteRecordInfo<
       '/months/zod-[month=month-zod]',
       '/months/zod-:month',
-      { month: Exclude<Param_monthZod, unknown[]>, mm?: Exclude<Param_monthZod, unknown[]> },
-      { month: Exclude<Param_monthZod, unknown[]>, mm: Exclude<Param_monthZod, unknown[]> },
+      { month: Exclude<Param_monthZod, unknown[] | null>, mm?: Exclude<Param_monthZod, unknown[] | null> },
+      { month: Exclude<Param_monthZod, unknown[] | null>, mm: Exclude<Param_monthZod, unknown[] | null> },
       | never
     >,
     '/nested/': RouteRecordInfo<

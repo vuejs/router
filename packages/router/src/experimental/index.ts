@@ -13,6 +13,14 @@ export type {
   EXPERIMENTAL_RouteRecordNormalized_Matchable,
 } from './router'
 
+export { RouterLink, useLink } from './RouterLink'
+export type {
+  RouterLinkProps,
+  RouterLinkOptions,
+  UseLinkOptions,
+  UseLinkReturn,
+} from './RouterLink'
+
 export { createFixedResolver } from './route-resolver/resolver-fixed'
 export {
   MatcherPatternPathStatic,

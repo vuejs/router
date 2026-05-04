@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { RouterLink as ERouterLink } from 'vue-router/experimental'
+import { default as VRouterLink } from './components/RouterLink.vue'
+import { default as GRouterLink } from './test-comp-generic'
 
 const router = useRouter()
 
@@ -14,6 +17,48 @@ const targetRoute = ref('')
     <div class="wrapper">
       <nav>
         <ul>
+          <li>
+            <VRouterLink
+              name="/[a].[b]"
+              :params="{
+                d: '5',
+                b: '5',
+              }"
+              >...</VRouterLink
+            >
+          </li>
+          <li>
+            <VRouterLink to="/:a/:b">Home</VRouterLink>
+            <VRouterLink
+              :to="{
+                name: '/[a].[b]',
+                params: {
+                  a: '2',
+                  b: '3',
+                },
+              }"
+              >Home</VRouterLink
+            >
+          </li>
+
+          <li>
+            <GRouterLink
+              route="/blog/info/[[section]]"
+              :params="{ section: 'oeu' }"
+              >Home</GRouterLink
+            >
+          </li>
+
+          <li>
+            <VRouterLink name="/about" :params="{ ok: 2 }">Home</VRouterLink>
+          </li>
+          <li>
+            <VRouterLink name="/about">Home</VRouterLink>
+          </li>
+
+          <li>
+            <ERouterLink route="/[a].[b]" :params="{}">Home</ERouterLink>
+          </li>
           <li>
             <RouterLink to="/">Home</RouterLink>
           </li>
