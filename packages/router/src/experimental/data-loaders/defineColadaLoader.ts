@@ -43,7 +43,7 @@ import type {
 } from '../../typed-routes'
 import { useRoute, useRouter } from '../../useApi'
 import type { Router } from '../../router'
-import type { LocationQuery } from '../../query'
+import type { LocationQuery } from '../query'
 
 /**
  * Creates a Pinia Colada data loader with `data` is always defined.

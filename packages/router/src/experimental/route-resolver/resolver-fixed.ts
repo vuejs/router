@@ -1,8 +1,12 @@
-import { normalizeQuery, parseQuery, stringifyQuery } from '../../query'
+import {
+  experimental_normalizeQuery as normalizeQuery,
+  experimental_parseQuery as parseQuery,
+} from '../query'
+import { stringifyQuery } from '../../query'
+import { experimental_parseURL as parseURL } from '../location'
 import {
   type LocationNormalized,
   NEW_stringifyURL,
-  parseURL,
   resolveRelativePath,
 } from '../../location'
 import type {

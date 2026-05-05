@@ -1,4 +1,4 @@
-import { type LocationQueryRaw } from '../../query'
+import { type LocationQueryRaw } from '../query'
 import { encodeQueryValue as _encodeQueryValue } from '../../encoding'
 import type { MatcherParamsFormatted } from './matchers/matcher-pattern'
 import type { _RouteRecordProps } from '../../typed-routes'
