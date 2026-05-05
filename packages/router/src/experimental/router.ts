@@ -22,10 +22,8 @@ import {
   type RouterHistory,
 } from '../history/common'
 import type { PathParserOptions } from '../matcher'
-import {
-  parseQuery as originalParseQuery,
-  stringifyQuery as originalStringifyQuery,
-} from '../query'
+import { experimental_parseQuery as originalParseQuery } from './query'
+import { stringifyQuery as originalStringifyQuery } from '../query'
 import type { Router } from '../router'
 import {
   _ScrollPositionNormalized,
