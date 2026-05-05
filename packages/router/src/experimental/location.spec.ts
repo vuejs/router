@@ -28,7 +28,7 @@ describe('parseURL', () => {
       fullPath: '/foo?f=foo#hash',
       path: '/foo',
       hash: '#hash',
-      query: { f: 'foo' },
+      query: { f: ['foo'] },
     })
   })
 
@@ -37,7 +37,7 @@ describe('parseURL', () => {
       fullPath: '/?f=foo',
       path: '/',
       hash: '',
-      query: { f: 'foo' },
+      query: { f: ['foo'] },
     })
   })
 
@@ -64,7 +64,7 @@ describe('parseURL', () => {
       fullPath: '/parent/foo?f=foo#hash',
       path: '/parent/foo',
       hash: '#hash',
-      query: { f: 'foo' },
+      query: { f: ['foo'] },
     })
   })
 
@@ -73,7 +73,7 @@ describe('parseURL', () => {
       fullPath: '/parent/bar?f=foo',
       path: '/parent/bar',
       hash: '',
-      query: { f: 'foo' },
+      query: { f: ['foo'] },
     })
   })
 
@@ -92,8 +92,8 @@ describe('parseURL', () => {
       path: '/foo',
       hash: '',
       query: {
-        a: 'one',
-        b: 'two',
+        a: ['one'],
+        b: ['two'],
       },
     })
   })
@@ -112,7 +112,7 @@ describe('parseURL', () => {
       fullPath: '/foo?a=one#bar',
       path: '/foo',
       hash: '#bar',
-      query: { a: 'one' },
+      query: { a: ['one'] },
     })
   })
 
@@ -136,7 +136,7 @@ describe('parseURL', () => {
       fullPath: '/foo/?a=two#?a=one',
       path: '/foo/',
       hash: '#?a=one',
-      query: { a: 'two' },
+      query: { a: ['two'] },
     })
   })
 
@@ -231,7 +231,7 @@ describe('parseURL', () => {
       fullPath: '/parent/bar?o=o',
       path: '/parent/bar',
       hash: '',
-      query: { o: 'o' },
+      query: { o: ['o'] },
     })
   })
 
@@ -239,6 +239,6 @@ describe('parseURL', () => {
     const parseQuery = vi.fn()
     originalParseURL(parseQuery, '/?é=é&é=a')
     expect(parseQuery).toHaveBeenCalledTimes(1)
-    expect(parseQuery).toHaveBeenCalledWith('é=é&é=a')
+    expect(parseQuery).toHaveBeenCalledWith('?é=é&é=a')
   })
 })

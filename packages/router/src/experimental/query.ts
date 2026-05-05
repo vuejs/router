@@ -2,30 +2,18 @@ import { decode, PLUS_RE } from '../encoding'
 import { isArray } from '../utils'
 
 /**
- * Possible values in normalized {@link LocationQuery}. `null` renders the query
- * param but without an `=`.
- *
- * @internal
- */
-export type LocationQueryValue = string | null
-
-/**
  * Possible values when defining a query. `undefined` allows to remove a value.
  *
  * @internal
  */
-export type LocationQueryValueRaw = LocationQueryValue | number | undefined
+export type LocationQueryValueRaw = string | null | number | undefined
 
 /**
  * Normalized query object that appears in {@link RouteLocationNormalized}
  *
  * @public
  */
-export type LocationQuery = Record<
-  string,
-  LocationQueryValue | LocationQueryValue[]
->
-
+export type LocationQuery = Record<string, (string | null)[]>
 /**
  * Loose {@link LocationQuery} object that can be passed to functions like
  * {@link Router.push} and {@link Router.replace} or anywhere when creating a
@@ -39,34 +27,31 @@ export type LocationQueryRaw = Record<
 >
 
 /**
- * Transforms a queryString into a {@link LocationQuery} object. Accept both, a
- * version with the leading `?` and without. Uses `Object.create(null)` so the
- * returned object cannot be exploited via prototype pollution.
+ * Transforms a location _search_ into a {@link LocationQuery} object. It
+ * expects the first character to be `?`. Normalizes values as arrays even if
+ * there is only one value.
  *
  * @internal
  *
- * @param search - search string to parse
+ * @param search - search string to parse. Must start with `?` or be empty
  * @returns a query object
  */
 export function experimental_parseQuery(search: string): LocationQuery {
   const query: LocationQuery = Object.create(null)
-  if (search === '' || search === '?') return query
-  const searchParams = (search[0] === '?' ? search.slice(1) : search).split('&')
-  for (let i = 0; i < searchParams.length; ++i) {
-    const searchParam = searchParams[i].replace(PLUS_RE, ' ')
-    const eqPos = searchParam.indexOf('=')
-    const key = decode(eqPos < 0 ? searchParam : searchParam.slice(0, eqPos))
-    const value = eqPos < 0 ? null : decode(searchParam.slice(eqPos + 1))
+  // remove leading ?
+  search = search.slice(1)
+  if (!search) return query
+  const searchParams = search.split('&')
+  for (var i = 0; i < searchParams.length; ++i) {
+    // pre decode the + into space
+    var searchParam = searchParams[i].replace(PLUS_RE, ' ')
+    // allow the = character
+    var eqPos = searchParam.indexOf('=')
+    var key = decode(eqPos < 0 ? searchParam : searchParam.slice(0, eqPos))
+    var value = eqPos < 0 ? null : decode(searchParam.slice(eqPos + 1))
 
-    if (key in query) {
-      let currentValue = query[key]
-      if (!isArray(currentValue)) {
-        currentValue = query[key] = [currentValue]
-      }
-      ;(currentValue as LocationQueryValue[]).push(value)
-    } else {
-      query[key] = value
-    }
+    query[key] ??= []
+    query[key].push(value)
   }
   return query
 }
@@ -74,8 +59,7 @@ export function experimental_parseQuery(search: string): LocationQuery {
 /**
  * Transforms a {@link LocationQueryRaw} into a {@link LocationQuery} by casting
  * numbers into strings, removing keys with an undefined value and replacing
- * undefined with null in arrays. Uses `Object.create(null)` so the returned
- * object cannot be exploited via prototype pollution.
+ * undefined with null in arrays
  *
  * @param query - query object to normalize
  * @returns a normalized query object
@@ -85,14 +69,12 @@ export function experimental_normalizeQuery(
 ): LocationQuery {
   const normalizedQuery: LocationQuery = Object.create(null)
 
-  for (const key in query) {
-    const value = query[key]
+  for (var key in query) {
+    var value = query[key]
     if (value !== undefined) {
       normalizedQuery[key] = isArray(value)
         ? value.map(v => (v == null ? null : '' + v))
-        : value == null
-          ? value
-          : '' + value
+        : [value == null ? value : '' + value]
     }
   }
 

@@ -5,9 +5,7 @@ import type { LocationQuery } from './query'
 // TODO: in next major, merge the two query.ts files and the two location.ts files
 
 /**
- * Transforms a URI into a normalized history location. Same behavior as the
- * legacy `parseURL` but uses `Object.create(null)` for the query object so it
- * cannot be exploited via prototype pollution.
+ * Transforms a URI into a normalized history location
  *
  * @param parseQuery
  * @param location - URI to normalize
@@ -42,10 +40,7 @@ export function experimental_parseURL(
       hashPos > 0 ? hashPos : location.length
     )
 
-    query = parseQuery(
-      // remove the leading ?
-      searchString.slice(1)
-    )
+    query = parseQuery(searchString)
   }
 
   if (hashPos >= 0) {
