@@ -2,6 +2,11 @@ import { decode, PLUS_RE } from '../encoding'
 import { isArray } from '../utils'
 
 /**
+ * NOTE: some types here are duplicated from ../query.ts
+ * because they will change to always have (string | null)[] values
+ */
+
+/**
  * Possible values in normalized {@link LocationQuery}. `null` renders the query
  * param but without an `=`.
  *
