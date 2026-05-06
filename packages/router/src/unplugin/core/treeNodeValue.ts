@@ -429,11 +429,6 @@ export class TreeNodeValueParam extends _TreeNodeValueBase {
   constructor(
     rawSegment: string,
     parent: TreeNodeValue | undefined,
-    /**
-     * Path params parsed from the file segment (filename convention).
-     * The public `pathParams` getter overlays `definePage()` parser
-     * overrides on top of these.
-     */
     private filenamePathParams: TreePathParam[],
     pathSegment: string,
     subSegments: SubSegment[]
