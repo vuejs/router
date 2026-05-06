@@ -1,4 +1,4 @@
-import { LocationQuery } from '../query'
+import { LocationQueryLegacy } from '../query'
 import { Router } from '../../router'
 import { RouteLocationNormalizedLoaded } from '../../typed-routes'
 import type { DataLoaderEntryBase, UseDataLoader } from './createDataLoader'
@@ -114,8 +114,8 @@ function trackObjectReads<T extends Record<string, unknown>>(obj: T) {
  * @param inner - the smaller params
  */
 export function isSubsetOf(
-  inner: Partial<LocationQuery>,
-  outer: LocationQuery
+  inner: Partial<LocationQueryLegacy>,
+  outer: LocationQueryLegacy
 ): boolean {
   for (const key in inner) {
     const innerValue = inner[key]

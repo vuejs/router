@@ -1,5 +1,6 @@
 import { decode, PLUS_RE } from '../encoding'
 import { isArray } from '../utils'
+import { LocationQueryValue as LocationQueryValueLegacy } from '../query'
 
 /**
  * Possible values when defining a query. `undefined` allows to remove a value.
@@ -14,6 +15,17 @@ export type LocationQueryValueRaw = string | null | number | undefined
  * @public
  */
 export type LocationQuery = Record<string, (string | null)[]>
+
+/**
+ * Used in internal code while migrating to the new {@link LocationQuery} type.
+ *
+ * @internal
+ */
+export type LocationQueryLegacy = Record<
+  string,
+  LocationQueryValueLegacy[] | LocationQueryValueLegacy
+>
+
 /**
  * Loose {@link LocationQuery} object that can be passed to functions like
  * {@link Router.push} and {@link Router.replace} or anywhere when creating a
