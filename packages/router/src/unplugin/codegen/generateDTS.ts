@@ -61,6 +61,7 @@ ${paramsTypesDeclaration}
   interface TypesConfig {
     ParamParsers:
 ${customParamsTypeList.map(literal => ' '.repeat(6) + '| ' + literal).join('\n')}
+    RouteNamedMap: import('${routesModule}').RouteNamedMap
   }
 }
 

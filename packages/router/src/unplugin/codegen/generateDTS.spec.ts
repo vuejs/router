@@ -36,6 +36,7 @@ describe('generateDTS', () => {
         interface TypesConfig {
           ParamParsers:
 
+          RouteNamedMap: import('vue-router/auto-routes').RouteNamedMap
         }
       }
 
@@ -72,5 +73,29 @@ describe('generateDTS', () => {
       export {}
       "
     `)
+  })
+
+  // Regression for https://github.com/vuejs/router/discussions/2696:
+  // typed routes must work when the user never imports `vue-router/auto-routes`.
+  // The wiring to `TypesConfig.RouteNamedMap` must live inside the `declare module 'vue-router'`
+  // block of the generated d.ts (which the user always includes), not inside the
+  // `vue-router/auto-routes` module declaration (which is only loaded if imported).
+  it('wires RouteNamedMap into the vue-router TypesConfig augmentation', () => {
+    const dts = generateDTS({
+      routesModule: 'vue-router/auto-routes',
+      routeNamedMap: 'export interface RouteNamedMap {}',
+      routeFileInfoMap: 'export interface _RouteFileInfoMap {}',
+      paramsTypesDeclaration: '',
+      customParamsTypeList: [],
+    })
+
+    const vueRouterBlock = dts.match(
+      /declare module 'vue-router' \{[\s\S]*?\n\}/
+    )?.[0]
+    expect(
+      vueRouterBlock,
+      "expected a 'declare module \\'vue-router\\'' block"
+    ).toBeTruthy()
+    expect(vueRouterBlock).toContain('RouteNamedMap:')
   })
 })
