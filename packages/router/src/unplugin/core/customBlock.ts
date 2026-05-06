@@ -29,7 +29,7 @@ export interface CustomRouteBlock extends Partial<
   alias?: string[]
 
   params?: {
-    path?: Record<string, string>
+    path?: Record<string, string | null>
 
     query?: Record<string, string | CustomRouteBlockQueryParamOptions>
   }
