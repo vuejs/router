@@ -50,6 +50,7 @@ export function parseURL(
   currentLocation: string = '/'
 ): LocationNormalized {
   let path: string | undefined,
+    // TODO: in next major, use Object.create(null) and remove src/experimental/location.ts
     query: LocationQuery = {},
     searchString = '',
     hash = ''

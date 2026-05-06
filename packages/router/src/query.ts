@@ -15,12 +15,14 @@ import { isArray } from './utils'
  * @internal
  */
 export type LocationQueryValue = string | null
+
 /**
  * Possible values when defining a query. `undefined` allows to remove a value.
  *
  * @internal
  */
 export type LocationQueryValueRaw = LocationQueryValue | number | undefined
+
 /**
  * Normalized query object that appears in {@link RouteLocationNormalized}
  *
@@ -52,6 +54,7 @@ export type LocationQueryRaw = Record<
  * @returns a query object
  */
 export function parseQuery(search: string): LocationQuery {
+  // TODO: in next major, use Object.create(null) and remove src/experimental/location.ts
   const query: LocationQuery = {}
   // avoid creating an object with an empty key and empty value
   // because of split('&')
@@ -131,6 +134,7 @@ export function stringifyQuery(query: LocationQueryRaw | undefined): string {
 export function normalizeQuery(
   query: LocationQueryRaw | undefined
 ): LocationQuery {
+  // TODO: in next major, use Object.create(null) and remove src/experimental/location.ts
   const normalizedQuery: LocationQuery = {}
 
   for (const key in query) {
