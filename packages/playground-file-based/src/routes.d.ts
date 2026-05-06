@@ -35,6 +35,7 @@ declare module 'vue-router' {
       | 'npm-org'
       | 'semver'
       | 'version-range'
+    RouteNamedMap: import('vue-router/auto-routes').RouteNamedMap
   }
 }
 
@@ -76,13 +77,6 @@ declare module 'vue-router/auto-routes' {
       '/package-zod/:org?/:pkgName/:pkgVersion',
       { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: string },
       { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: string },
-      | never
-    >,
-    '/[a].[b]': RouteRecordInfo<
-      '/[a].[b]',
-      '/:a/:b',
-      { a: string, b: string },
-      { a: string, b: string },
       | never
     >,
     'not-found': RouteRecordInfo<
@@ -181,6 +175,13 @@ declare module 'vue-router/auto-routes' {
       '/months/zod-:month',
       { month: Exclude<Param_monthZod, unknown[] | null>, mm?: Exclude<Param_monthZod, unknown[] | null> },
       { month: Exclude<Param_monthZod, unknown[] | null>, mm: Exclude<Param_monthZod, unknown[] | null> },
+      | never
+    >,
+    '/multi.[a].[b]': RouteRecordInfo<
+      '/multi.[a].[b]',
+      '/multi/:a/:b',
+      { a: string, b: string },
+      { a: string, b: string },
       | never
     >,
     '/nested/': RouteRecordInfo<
@@ -334,12 +335,6 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/[a].[b].vue': {
-      routes:
-        | '/[a].[b]'
-      views:
-        | never
-    }
     'src/pages/[...path].vue': {
       routes:
         | 'not-found'
@@ -421,6 +416,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/months/zod-[month=month-zod].vue': {
       routes:
         | '/months/zod-[month=month-zod]'
+      views:
+        | never
+    }
+    'src/pages/multi.[a].[b].vue': {
+      routes:
+        | '/multi.[a].[b]'
       views:
         | never
     }
