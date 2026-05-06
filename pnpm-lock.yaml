@@ -225,8 +225,8 @@ importers:
         specifier: ^8.0.6
         version: 8.0.6
       ast-walker-scope:
-        specifier: ^0.8.3
-        version: 0.8.3
+        specifier: ^0.9.0
+        version: 0.9.0
       chokidar:
         specifier: ^5.0.0
         version: 5.0.0
@@ -552,6 +552,11 @@ packages:
 
   '@babel/parser@7.29.0':
     resolution: {integrity: sha512-IyDgFV5GeDUVX4YdF/3CPULtVGSXXMLh1xVIgdCgxApktqnQV0r7/8Nqthg+8YLGaAtdyIlo2qIdZrbCv4+7ww==}
+    engines: {node: '>=6.0.0'}
+    hasBin: true
+
+  '@babel/parser@7.29.3':
+    resolution: {integrity: sha512-b3ctpQwp+PROvU/cttc4OYl4MzfJUWy6FZg+PMXfzmt/+39iHVF0sDfqay8TQM3JA2EUOyKcFZt75jWriQijsA==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -2225,8 +2230,8 @@ packages:
   ast-v8-to-istanbul@0.3.5:
     resolution: {integrity: sha512-9SdXjNheSiE8bALAQCQQuT6fgQaoxJh7IRYrRGZ8/9nv8WhJeC1aXAwN8TbaOssGOukUvyvnkgD9+Yuykvl1aA==}
 
-  ast-walker-scope@0.8.3:
-    resolution: {integrity: sha512-cbdCP0PGOBq0ASG+sjnKIoYkWMKhhz+F/h9pRexUdX2Hd38+WOlBkRKlqkGOSm0YQpcFMQBJeK4WspUAkwsEdg==}
+  ast-walker-scope@0.9.0:
+    resolution: {integrity: sha512-IJdzo2vLiElBxKzwS36VsCue/62d6IdWjnPB2v3nuPKeWGynp6FF/CYoLa5i/3jXH/z97ZDdsXz6abpgM6w07A==}
     engines: {node: '>=20.19.0'}
 
   async@3.2.6:
@@ -5519,6 +5524,10 @@ snapshots:
     dependencies:
       '@babel/types': 8.0.0-rc.4
 
+  '@babel/parser@7.29.3':
+    dependencies:
+      '@babel/types': 8.0.0-rc.4
+
   '@babel/parser@8.0.0-beta.4':
     dependencies:
       '@babel/types': 8.0.0-rc.4
@@ -7178,12 +7187,12 @@ snapshots:
 
   ast-kit@2.2.0:
     dependencies:
-      '@babel/parser': 7.29.0
+      '@babel/parser': 7.29.3
       pathe: 2.0.3
 
   ast-kit@3.0.0-beta.1:
     dependencies:
-      '@babel/parser': 8.0.0-beta.4
+      '@babel/parser': 8.0.0-rc.4
       estree-walker: 3.0.3
       pathe: 2.0.3
 
@@ -7197,9 +7206,10 @@ snapshots:
       estree-walker: 3.0.3
       js-tokens: 9.0.1
 
-  ast-walker-scope@0.8.3:
+  ast-walker-scope@0.9.0:
     dependencies:
-      '@babel/parser': 7.29.0
+      '@babel/parser': 7.29.3
+      '@babel/types': 8.0.0-rc.4
       ast-kit: 2.2.0
 
   async@3.2.6: {}
