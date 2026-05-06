@@ -144,6 +144,7 @@ describe('normalizeQuery', () => {
 
   it('returns a null-prototype object', () => {
     expect(Object.getPrototypeOf(normalizeQuery({ a: 'x' }))).toBe(null)
+    expect(Object.getPrototypeOf(normalizeQuery({}))).toBe(null)
     expect(Object.getPrototypeOf(normalizeQuery(undefined))).toBe(null)
   })
 })
