@@ -21,16 +21,17 @@ import {
   type RouterHistory,
 } from '../history/common'
 import type { PathParserOptions } from '../matcher'
-import type { parseQuery as originalParseQuery } from '../query'
+import type { experimental_parseQuery as originalParseQuery } from './query'
 import { stringifyQuery as originalStringifyQuery } from '../query'
-import type { _ScrollPositionNormalized } from '../scrollBehavior'
+import type { Router } from '../router'
 import {
+  type _ScrollPositionNormalized,
+  type RouterScrollBehavior,
   computeScrollPosition,
   getSavedScrollPosition,
   getScrollKey,
   saveScrollPosition,
   scrollToPosition,
-  type RouterScrollBehavior,
 } from '../scrollBehavior'
 import type {
   _NavigationGuardResolved,

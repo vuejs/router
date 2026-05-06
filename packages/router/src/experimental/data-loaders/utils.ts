@@ -1,4 +1,4 @@
-import type { LocationQuery } from '../../query'
+import type { LocationQuery } from '../query'
 import type { Router } from '../../router'
 import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
 import type { DataLoaderEntryBase, UseDataLoader } from './createDataLoader'
