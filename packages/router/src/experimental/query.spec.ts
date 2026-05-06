@@ -89,6 +89,11 @@ describe('parseQuery', () => {
   })
 
   it('does not pollute the prototype with __proto__', () => {
+    expect(Object.getPrototypeOf(parseQuery(''))).toBe(null)
+    expect(Object.getPrototypeOf(parseQuery('?'))).toBe(null)
+  })
+
+  it('does not pollute the prototype with __proto__', () => {
     const result = parseQuery('__proto__=polluted') as Record<string, unknown>
     expect(Object.getPrototypeOf(result)).toBe(null)
     expect(result['__proto__']).toBe('polluted')
