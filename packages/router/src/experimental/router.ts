@@ -26,12 +26,12 @@ import { stringifyQuery as originalStringifyQuery } from '../query'
 import type { Router } from '../router'
 import {
   type _ScrollPositionNormalized,
+  type RouterScrollBehavior,
   computeScrollPosition,
   getSavedScrollPosition,
   getScrollKey,
   saveScrollPosition,
   scrollToPosition,
-  type RouterScrollBehavior,
 } from '../scrollBehavior'
 import type {
   _NavigationGuardResolved,
