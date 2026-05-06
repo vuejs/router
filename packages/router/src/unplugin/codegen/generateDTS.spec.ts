@@ -75,11 +75,12 @@ describe('generateDTS', () => {
     `)
   })
 
-  // Regression for https://github.com/vuejs/router/discussions/2696:
+  // Bug found in for https://github.com/vuejs/router/discussions/2696:
   // typed routes must work when the user never imports `vue-router/auto-routes`.
   // The wiring to `TypesConfig.RouteNamedMap` must live inside the `declare module 'vue-router'`
   // block of the generated d.ts (which the user always includes), not inside the
   // `vue-router/auto-routes` module declaration (which is only loaded if imported).
+  // in v6, we should just move the interface to vue-router too
   it('wires RouteNamedMap into the vue-router TypesConfig augmentation', () => {
     const dts = generateDTS({
       routesModule: 'vue-router/auto-routes',
