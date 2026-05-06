@@ -26,7 +26,11 @@ export interface RouteRecordOverride extends Partial<
    * Param Parsers information.
    */
   params?: {
-    path?: Record<string, string>
+    /**
+     * Override the parser for a given path param. Set to `null` to remove a
+     * filename-based parser (e.g. revert `[id=int]` back to no parser).
+     */
+    path?: Record<string, string | null>
 
     query?: Record<string, string | RouteRecordOverrideQueryParamOptions>
   }
@@ -402,14 +406,50 @@ export const escapeRegex = (str: string): string =>
 export class TreeNodeValueParam extends _TreeNodeValueBase {
   override _type: TreeNodeType.param = TreeNodeType.param
 
+  /**
+   * @param rawSegment The raw segment as defined by the file structure, e.g.
+   * `[id]`, `prefix-[param]-end`, etc.
+   *
+   * @param parent The parent node in the tree, if any.
+   *
+   * @param filenamePathParams Path params parsed from the file segment
+   * (filename convention). The public `pathParams` getter overlays
+   * `definePage()` parser overrides on top of these.
+   *
+   * @param pathSegment The transformed version of the segment into a
+   * vue-router path, e.g. `:id`, `prefix-:param-end`, etc.
+   *
+   * @param subSegments Array of sub segments. This is usually one single
+   * element but can have more for paths like `prefix-[param]-end.vue`.
+   */
   constructor(
     rawSegment: string,
     parent: TreeNodeValue | undefined,
-    public pathParams: TreePathParam[],
+    /**
+     * Path params parsed from the file segment (filename convention).
+     * The public `pathParams` getter overlays `definePage()` parser
+     * overrides on top of these.
+     */
+    private filenamePathParams: TreePathParam[],
     pathSegment: string,
     subSegments: SubSegment[]
   ) {
     super(rawSegment, parent, pathSegment, subSegments)
+  }
+
+  /**
+   * Path params for this node, with `definePage({ params: { path: ... } })`
+   * parser overrides applied on top of the filename-based parsers.
+   */
+  get pathParams(): TreePathParam[] {
+    const overridePath = this.overrides.params?.path
+    if (!overridePath) return this.filenamePathParams
+    return this.filenamePathParams.map(p =>
+      // an explicit `null` override removes the filename-based parser
+      overridePath[p.paramName] !== undefined
+        ? { ...p, parser: overridePath[p.paramName] }
+        : p
+    )
   }
 
   // Calculate score for each subsegment to handle mixed static/param parts
