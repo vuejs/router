@@ -32,6 +32,10 @@ export interface RouteRecordOverride extends Partial<
      */
     path?: Record<string, string | null>
 
+    /**
+     * Declare query params for the route. The value is either a parser name
+     * or an options object with `parser`, `format`, `default`, and `required`.
+     */
     query?: Record<string, string | RouteRecordOverrideQueryParamOptions>
   }
 }
