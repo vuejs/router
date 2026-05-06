@@ -1,10 +1,6 @@
-import type {
-  CustomRouteBlock,
-  CustomRouteBlockQueryParamOptions,
-} from './customBlock'
+import type { CustomRouteBlock } from './customBlock'
 import { joinPath, mergeRouteRecordOverride, warn } from './utils'
 import { encodePath } from '../utils/encoding'
-import type { RouteRecordRaw } from '../../types'
 
 export const enum TreeNodeType {
   static,
@@ -12,30 +8,12 @@ export const enum TreeNodeType {
   param,
 }
 
-export interface RouteRecordOverride extends Partial<
-  Pick<RouteRecordRaw, 'meta' | 'props' | 'path'>
-> {
-  name?: string | undefined | false
-
-  /**
-   * Path aliases.
-   */
-  alias?: string[]
-
-  /**
-   * Param Parsers information.
-   */
-  params?: {
-    path?: Record<string, string>
-
-    query?: Record<string, string | RouteRecordOverrideQueryParamOptions>
-  }
-}
-
-export interface RouteRecordOverrideQueryParamOptions extends CustomRouteBlockQueryParamOptions {
-  default?: string
-  required?: boolean
-}
+/**
+ * Internal merged-overrides shape used by tree nodes. Same structure as
+ * {@link CustomRouteBlock} (the user-facing `<route>` block / `definePage()`
+ * payload).
+ */
+export type RouteRecordOverride = CustomRouteBlock
 
 export type SubSegment = string | TreePathParam
 
@@ -221,7 +199,6 @@ class _TreeNodeValueBase {
    */
   removeOverride(key: keyof CustomRouteBlock) {
     for (const [_filePath, routeBlock] of this._overrides) {
-      // @ts-expect-error
       delete routeBlock[key]
     }
   }
@@ -402,14 +379,45 @@ export const escapeRegex = (str: string): string =>
 export class TreeNodeValueParam extends _TreeNodeValueBase {
   override _type: TreeNodeType.param = TreeNodeType.param
 
+  /**
+   * @param rawSegment The raw segment as defined by the file structure, e.g.
+   * `[id]`, `prefix-[param]-end`, etc.
+   *
+   * @param parent The parent node in the tree, if any.
+   *
+   * @param filenamePathParams Path params parsed from the file segment
+   * (filename convention). The public `pathParams` getter overlays
+   * `definePage()` parser overrides on top of these.
+   *
+   * @param pathSegment The transformed version of the segment into a
+   * vue-router path, e.g. `:id`, `prefix-:param-end`, etc.
+   *
+   * @param subSegments Array of sub segments. This is usually one single
+   * element but can have more for paths like `prefix-[param]-end.vue`.
+   */
   constructor(
     rawSegment: string,
     parent: TreeNodeValue | undefined,
-    public pathParams: TreePathParam[],
+    private filenamePathParams: TreePathParam[],
     pathSegment: string,
     subSegments: SubSegment[]
   ) {
     super(rawSegment, parent, pathSegment, subSegments)
+  }
+
+  /**
+   * Path params for this node, with `definePage({ params: { path: ... } })`
+   * parser overrides applied on top of the filename-based parsers.
+   */
+  get pathParams(): TreePathParam[] {
+    const overridePath = this.overrides.params?.path
+    if (!overridePath) return this.filenamePathParams
+    return this.filenamePathParams.map(p =>
+      // an explicit `null` override removes the filename-based parser
+      overridePath[p.paramName] !== undefined
+        ? { ...p, parser: overridePath[p.paramName] }
+        : p
+    )
   }
 
   // Calculate score for each subsegment to handle mixed static/param parts

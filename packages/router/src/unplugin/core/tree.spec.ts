@@ -1200,6 +1200,63 @@ describe('Tree', () => {
     })
   })
 
+  describe('Path param parsers from definePage', () => {
+    it('applies a parser from definePage to a plain path param', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('events/[when]', 'events/[when].vue')
+
+      node.setCustomRouteBlock('events/[when].vue', {
+        params: { path: { when: 'date' } },
+      })
+
+      expect(node.pathParams).toEqual([
+        expect.objectContaining({ paramName: 'when', parser: 'date' }),
+      ])
+    })
+
+    it('definePage path parser overrides the filename parser', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('events/[when=int]', 'events/[when=int].vue')
+
+      node.setCustomRouteBlock('events/[when=int].vue', {
+        params: { path: { when: 'date' } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({
+        paramName: 'when',
+        parser: 'date',
+      })
+    })
+
+    it('leaves untouched path params when override only mentions some', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[a]-[b=int]', '[a]-[b=int].vue')
+
+      node.setCustomRouteBlock('[a]-[b=int].vue', {
+        params: { path: { a: 'date' } },
+      })
+
+      expect(node.pathParams).toEqual([
+        expect.objectContaining({ paramName: 'a', parser: 'date' }),
+        expect.objectContaining({ paramName: 'b', parser: 'int' }),
+      ])
+    })
+
+    it('removes the filename parser when the override is null', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('events/[when=int]', 'events/[when=int].vue')
+
+      node.setCustomRouteBlock('events/[when=int].vue', {
+        params: { path: { when: null } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({
+        paramName: 'when',
+        parser: null,
+      })
+    })
+  })
+
   describe('_parent convention', () => {
     it('handles _parent.vue as parent component', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
