@@ -1,10 +1,6 @@
-import type {
-  CustomRouteBlock,
-  CustomRouteBlockQueryParamOptions,
-} from './customBlock'
+import type { CustomRouteBlock } from './customBlock'
 import { joinPath, mergeRouteRecordOverride, warn } from './utils'
 import { encodePath } from '../utils/encoding'
-import type { RouteRecordRaw } from '../../types'
 
 export const enum TreeNodeType {
   static,
@@ -12,38 +8,12 @@ export const enum TreeNodeType {
   param,
 }
 
-export interface RouteRecordOverride extends Partial<
-  Pick<RouteRecordRaw, 'meta' | 'props' | 'path'>
-> {
-  name?: string | undefined | false
-
-  /**
-   * Path aliases.
-   */
-  alias?: string[]
-
-  /**
-   * Param Parsers information.
-   */
-  params?: {
-    /**
-     * Override the parser for a given path param. Set to `null` to remove a
-     * filename-based parser (e.g. revert `[id=int]` back to no parser).
-     */
-    path?: Record<string, string | null>
-
-    /**
-     * Declare query params for the route. The value is either a parser name
-     * or an options object with `parser`, `format`, `default`, and `required`.
-     */
-    query?: Record<string, string | RouteRecordOverrideQueryParamOptions>
-  }
-}
-
-export interface RouteRecordOverrideQueryParamOptions extends CustomRouteBlockQueryParamOptions {
-  default?: string
-  required?: boolean
-}
+/**
+ * Internal merged-overrides shape used by tree nodes. Same structure as
+ * {@link CustomRouteBlock} (the user-facing `<route>` block / `definePage()`
+ * payload).
+ */
+export type RouteRecordOverride = CustomRouteBlock
 
 export type SubSegment = string | TreePathParam
 
@@ -229,7 +199,6 @@ class _TreeNodeValueBase {
    */
   removeOverride(key: keyof CustomRouteBlock) {
     for (const [_filePath, routeBlock] of this._overrides) {
-      // @ts-expect-error
       delete routeBlock[key]
     }
   }

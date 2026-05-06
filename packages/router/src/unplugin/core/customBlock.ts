@@ -29,8 +29,16 @@ export interface CustomRouteBlock extends Partial<
   alias?: string[]
 
   params?: {
+    /**
+     * Override the parser for a given path param. Set to `null` to remove a
+     * filename-based parser (e.g. revert `[id=int]` back to no parser).
+     */
     path?: Record<string, string | null>
 
+    /**
+     * Declare query params for the route. The value is either a parser name
+     * or an options object with `parser`, `format`, `default`, and `required`.
+     */
     query?: Record<string, string | CustomRouteBlockQueryParamOptions>
   }
 }
