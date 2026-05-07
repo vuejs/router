@@ -22,3 +22,5 @@ tsconfig.vitest-temp.json
 .osgrep
 .erudita
 .cursor
+.claude/worktrees
+.claude/settings.local.json
