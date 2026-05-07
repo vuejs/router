@@ -89,8 +89,8 @@ declare module 'vue-router/auto-routes' {
     '/a.[b].c.[d]': RouteRecordInfo<
       '/a.[b].c.[d]',
       '/a/:b/c/:d',
-      { b: string, d: string },
-      { b: string, d: string },
+      { b: number, d: string },
+      { b: number, d: string },
       | never
     >,
     '/about': RouteRecordInfo<
