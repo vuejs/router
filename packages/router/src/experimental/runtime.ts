@@ -6,11 +6,40 @@ import type { RouteRecordRaw } from '../types'
  * Helper to define page properties with file-based routing.
  * **Doesn't do anything**, used for types only.
  *
+ * The `FilePath` type parameter is injected by the `sfc-typed-router` Volar
+ * plugin so that `params.path` keys are restricted to the file's actual path
+ * params. When omitted, `params.path` falls back to a loose record.
+ *
  * @param route - route information to be added to this page
  *
  * @internal
  */
-export const definePage = (route: DefinePage) => route
+export function definePage<FilePath extends string = string>(
+  route: DefinePage<FilePath>
+): DefinePage<FilePath> {
+  return route
+}
+
+/**
+ * Resolves the union of valid path-param names for a given file path. Falls
+ * back to `string` when no entry is augmented (default Volar-less usage).
+ *
+ * Wired via the `_RouteFileInfoMap` slot in the user's augmented
+ * {@link TypesConfig} so the lookup survives the bundler that otherwise
+ * inlines an empty version of the base interface.
+ *
+ * @internal
+ */
+export type _PathParamNamesForFilePath<FilePath extends string> =
+  TypesConfig extends { _RouteFileInfoMap: infer Map }
+    ? Map extends Record<FilePath, infer Info>
+      ? Info extends { pathParamNames: infer N }
+        ? N extends string
+          ? N
+          : string
+        : string
+      : string
+    : string
 
 /**
  * Merges route records.
@@ -45,8 +74,12 @@ export function _mergeRouteRecord(
 
 /**
  * Type to define a page. Can be augmented to add custom properties.
+ *
+ * @typeParam FilePath - File path of the SFC declaring this page, used to
+ * narrow `params.path` keys to the actual path parameters of the route. When
+ * left as the default `string`, keys are unrestricted.
  */
-export interface DefinePage extends Partial<
+export interface DefinePage<FilePath extends string = string> extends Partial<
   Omit<RouteRecordRaw, 'children' | 'components' | 'component' | 'name'>
 > {
   /**
@@ -61,7 +94,9 @@ export interface DefinePage extends Partial<
    * @experimental
    */
   params?: {
-    path?: Record<string, ParamParserType>
+    path?: string extends FilePath
+      ? Record<string, ParamParserType>
+      : { [K in _PathParamNamesForFilePath<FilePath>]?: ParamParserType }
 
     /**
      * Parameters extracted from the query.

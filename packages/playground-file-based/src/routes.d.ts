@@ -36,6 +36,7 @@ declare module 'vue-router' {
       | 'semver'
       | 'version-range'
     RouteNamedMap: import('vue-router/auto-routes').RouteNamedMap
+    _RouteFileInfoMap: import('vue-router/auto-routes')._RouteFileInfoMap
   }
 }
 
@@ -229,23 +230,23 @@ declare module 'vue-router/auto-routes' {
     '/u[name]': RouteRecordInfo<
       '/u[name]',
       '/u:name',
-      { name: string },
-      { name: string },
+      { name: Exclude<Param_date, unknown[] | null> },
+      { name: Exclude<Param_date, unknown[] | null> },
       | '/u[name]/24'
       | '/u[name]/[userId=int]'
     >,
     '/u[name]/[userId=int]': RouteRecordInfo<
       '/u[name]/[userId=int]',
       '/u:name/:userId',
-      { name: string, userId: number },
-      { name: string, userId: number },
+      { name: Exclude<Param_date, unknown[] | null>, userId: number },
+      { name: Exclude<Param_date, unknown[] | null>, userId: number },
       | never
     >,
     '/u[name]/24': RouteRecordInfo<
       '/u[name]/24',
       '/u:name/24',
-      { name: string },
-      { name: string },
+      { name: Exclude<Param_date, unknown[] | null> },
+      { name: Exclude<Param_date, unknown[] | null> },
       | never
     >,
     '/users/[userId=int]': RouteRecordInfo<
@@ -301,6 +302,8 @@ declare module 'vue-router/auto-routes' {
         | '/(home)'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/(packages)/_parent.vue': {
       routes:
@@ -310,47 +313,72 @@ declare module 'vue-router/auto-routes' {
         | '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]'
       views:
         | 'default'
+      pathParamNames:
+        | never
     }
     'src/pages/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver].vue': {
       routes:
         | '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]'
       views:
         | never
+      pathParamNames:
+        | 'org'
+        | 'pkgName'
+        | 'pkgVersion'
     }
     'src/pages/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion].vue': {
       routes:
         | '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]'
       views:
         | never
+      pathParamNames:
+        | 'org'
+        | 'pkgName'
+        | 'pkgVersion'
     }
     'src/pages/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range].vue': {
       routes:
         | '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]'
       views:
         | never
+      pathParamNames:
+        | 'org'
+        | 'pkgName'
+        | 'pkgVersion'
     }
     'src/pages/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion].vue': {
       routes:
         | '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]'
       views:
         | never
+      pathParamNames:
+        | 'org'
+        | 'pkgName'
+        | 'pkgVersion'
     }
     'src/pages/[...path].vue': {
       routes:
         | 'not-found'
       views:
         | never
+      pathParamNames:
+        | 'path'
     }
     'src/pages/a.[b].c.[d].vue': {
       routes:
         | '/a.[b].c.[d]'
       views:
         | never
+      pathParamNames:
+        | 'b'
+        | 'd'
     }
     'src/pages/about.vue': {
       routes:
         | '/about'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/b.vue': {
@@ -358,23 +386,31 @@ declare module 'vue-router/auto-routes' {
         | '/b'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/blog/[slug]+.vue': {
       routes:
         | '/blog/[slug]+'
       views:
         | never
+      pathParamNames:
+        | 'slug'
     }
     'src/pages/blog/[[slugOptional]]+.vue': {
       routes:
         | '/blog/[[slugOptional]]+'
       views:
         | never
+      pathParamNames:
+        | 'slugOptional'
     }
     'src/pages/blog/info/(info).vue': {
       routes:
         | '/blog/info/(info)'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/blog/info/[[section]].vue': {
@@ -382,11 +418,15 @@ declare module 'vue-router/auto-routes' {
         | '/blog/info/[[section]]'
       views:
         | never
+      pathParamNames:
+        | 'section'
     }
     'src/pages/emoji-🤡.vue': {
       routes:
         | '/emoji-🤡'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/events/[when=date].vue': {
@@ -394,17 +434,23 @@ declare module 'vue-router/auto-routes' {
         | '/events/[when=date]'
       views:
         | never
+      pathParamNames:
+        | 'when'
     }
     'src/pages/events/repeat/[when=date]+.vue': {
       routes:
         | '/events/repeat/[when=date]+'
       views:
         | never
+      pathParamNames:
+        | 'when'
     }
     'src/pages/it\'s-fine/(lol).vue': {
       routes:
         | '/it\'s-fine/(lol)'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/months/valibot-[month=month-valibot].vue': {
@@ -412,18 +458,25 @@ declare module 'vue-router/auto-routes' {
         | '/months/valibot-[month=month-valibot]'
       views:
         | never
+      pathParamNames:
+        | 'month'
     }
     'src/pages/months/zod-[month=month-zod].vue': {
       routes:
         | '/months/zod-[month=month-zod]'
       views:
         | never
+      pathParamNames:
+        | 'month'
     }
     'src/pages/multi.[a].[b].vue': {
       routes:
         | '/multi.[a].[b]'
       views:
         | never
+      pathParamNames:
+        | 'a'
+        | 'b'
     }
     'src/pages/nested/_parent.vue': {
       routes:
@@ -431,11 +484,15 @@ declare module 'vue-router/auto-routes' {
         | '/nested/other'
       views:
         | 'default'
+      pathParamNames:
+        | never
     }
     'src/pages/nested/index.vue': {
       routes:
         | '/nested/'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/nested/other.vue': {
@@ -443,30 +500,40 @@ declare module 'vue-router/auto-routes' {
         | '/nested/other'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/opt.[[num=int]].vue': {
       routes:
         | '/opt.[[num=int]]'
       views:
         | never
+      pathParamNames:
+        | 'num'
     }
     'src/pages/tests/[[optional]]/end.vue': {
       routes:
         | '/tests/[[optional]]/end'
       views:
         | never
+      pathParamNames:
+        | 'optional'
     }
     'src/pages/tests/users/[username]/(user-home)/(user-home).vue': {
       routes:
         | '/tests/users/[username]/(user-home)/(user-home)'
       views:
         | never
+      pathParamNames:
+        | 'username'
     }
     'src/pages/tests/users/[username]/(user)/profile.vue': {
       routes:
         | '/tests/users/[username]/(user)/profile'
       views:
         | never
+      pathParamNames:
+        | 'username'
     }
     'src/pages/u[name].vue': {
       routes:
@@ -475,35 +542,49 @@ declare module 'vue-router/auto-routes' {
         | '/u[name]/[userId=int]'
       views:
         | 'default'
+      pathParamNames:
+        | 'name'
     }
     'src/pages/u[name]/[userId=int].vue': {
       routes:
         | '/u[name]/[userId=int]'
       views:
         | never
+      pathParamNames:
+        | 'name'
+        | 'userId'
     }
     'src/pages/u[name]/24.vue': {
       routes:
         | '/u[name]/24'
       views:
         | never
+      pathParamNames:
+        | 'name'
     }
     'src/pages/users/[userId=int].vue': {
       routes:
         | '/users/[userId=int]'
       views:
         | never
+      pathParamNames:
+        | 'userId'
     }
     'src/pages/users/sub-[first]-[second].vue': {
       routes:
         | '/users/sub-[first]-[second]'
       views:
         | never
+      pathParamNames:
+        | 'first'
+        | 'second'
     }
     'src/pages/with-layout/(home).vue': {
       routes:
         | '/with-layout/(home)'
       views:
+        | never
+      pathParamNames:
         | never
     }
     'src/pages/with-layout/+layout.vue': {
@@ -511,11 +592,15 @@ declare module 'vue-router/auto-routes' {
         | '/with-layout/+layout'
       views:
         | never
+      pathParamNames:
+        | never
     }
     'src/pages/with-layout/other.vue': {
       routes:
         | '/with-layout/other'
       views:
+        | never
+      pathParamNames:
         | never
     }
   }

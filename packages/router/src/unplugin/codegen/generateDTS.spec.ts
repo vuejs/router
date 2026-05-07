@@ -37,6 +37,7 @@ describe('generateDTS', () => {
           ParamParsers:
 
           RouteNamedMap: import('vue-router/auto-routes').RouteNamedMap
+          _RouteFileInfoMap: import('vue-router/auto-routes')._RouteFileInfoMap
         }
       }
 
@@ -98,5 +99,6 @@ describe('generateDTS', () => {
       "expected a 'declare module \\'vue-router\\'' block"
     ).toBeTruthy()
     expect(vueRouterBlock).toContain('RouteNamedMap:')
+    expect(vueRouterBlock).toContain('_RouteFileInfoMap:')
   })
 })

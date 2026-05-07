@@ -37,6 +37,16 @@ export declare function handleHotUpdate(
 // TODO(v6): rename to `RouteMap` and host the interface directly on `vue-router`.
 export interface RouteNamedMap {}
 
+/**
+ * Map of route file paths (relative to the project root) to information about
+ * the routes they declare. Augmented from the user's generated `routes.d.ts`
+ * by the unplugin. Used by the `definePage` macro typing and the
+ * `sfc-typed-router` Volar plugin to type `useRoute()` per file.
+ *
+ * @internal
+ */
+export interface _RouteFileInfoMap {}
+
 // Make the macros globally available
 declare global {
   const definePage: (typeof import('vue-router/experimental'))['definePage']

@@ -27,11 +27,15 @@ describe('generateRouteFileInfoMap', () => {
               | '/'
             views:
               | never
+            pathParamNames:
+              | never
           }
           'src/pages/a.vue': {
             routes:
               | '/a'
             views:
+              | never
+            pathParamNames:
               | never
           }
           'src/pages/b.vue': {
@@ -39,11 +43,15 @@ describe('generateRouteFileInfoMap', () => {
               | '/b'
             views:
               | never
+            pathParamNames:
+              | never
           }
           'src/pages/c.vue': {
             routes:
               | '/c'
             views:
+              | never
+            pathParamNames:
               | never
           }
         }"
@@ -109,121 +117,151 @@ describe('generateRouteFileInfoMap', () => {
 
     expect(formatExports(generateRouteFileInfoMap(tree, { root: '' })))
       .toMatchInlineSnapshot(`
-      "export interface _RouteFileInfoMap {
-        '(auth).vue': {
-          routes:
-            | '/(auth)'
-            | '/(auth)/another'
-            | '/(auth)/deposit'
-            | '/(auth)/foo'
-            | '/(auth)/foo/bar'
-            | '/(auth)/foo/foo'
-            | '/(auth)/home'
-            | '/(auth)/login-another'
-            | '/(auth)/settings'
-            | '/(auth)/settings/edit-account'
-            | '/(auth)/settings/edit-email'
-            | '/(auth)/settings/edit-password'
-            | '/(auth)/settings/edit-phone-number'
-            | '/(auth)/settings/two-factor'
-            | '/(auth)/settings/verify-phone-number'
-          views:
-            | 'default'
-        }
-        '(auth)/another/index.vue': {
-          routes:
-            | '/(auth)/another'
-          views:
-            | never
-        }
-        '(auth)/deposit/index.vue': {
-          routes:
-            | '/(auth)/deposit'
-          views:
-            | never
-        }
-        '(auth)/foo/index.vue': {
-          routes:
-            | '/(auth)/foo'
-            | '/(auth)/foo/bar'
-            | '/(auth)/foo/foo'
-          views:
-            | 'default'
-        }
-        '(auth)/foo/bar.vue': {
-          routes:
-            | '/(auth)/foo/bar'
-          views:
-            | never
-        }
-        '(auth)/foo/foo.vue': {
-          routes:
-            | '/(auth)/foo/foo'
-          views:
-            | never
-        }
-        '(auth)/home/index.vue': {
-          routes:
-            | '/(auth)/home'
-          views:
-            | never
-        }
-        '(auth)/login-another/index.vue': {
-          routes:
-            | '/(auth)/login-another'
-          views:
-            | never
-        }
-        '(auth)/settings/index.vue': {
-          routes:
-            | '/(auth)/settings'
-            | '/(auth)/settings/edit-account'
-            | '/(auth)/settings/edit-email'
-            | '/(auth)/settings/edit-password'
-            | '/(auth)/settings/edit-phone-number'
-            | '/(auth)/settings/two-factor'
-            | '/(auth)/settings/verify-phone-number'
-          views:
-            | 'default'
-        }
-        '(auth)/settings/edit-account.vue': {
-          routes:
-            | '/(auth)/settings/edit-account'
-          views:
-            | never
-        }
-        '(auth)/settings/edit-email.vue': {
-          routes:
-            | '/(auth)/settings/edit-email'
-          views:
-            | never
-        }
-        '(auth)/settings/edit-password.vue': {
-          routes:
-            | '/(auth)/settings/edit-password'
-          views:
-            | never
-        }
-        '(auth)/settings/edit-phone-number.vue': {
-          routes:
-            | '/(auth)/settings/edit-phone-number'
-          views:
-            | never
-        }
-        '(auth)/settings/two-factor.vue': {
-          routes:
-            | '/(auth)/settings/two-factor'
-          views:
-            | never
-        }
-        '(auth)/settings/verify-phone-number.vue': {
-          routes:
-            | '/(auth)/settings/verify-phone-number'
-          views:
-            | never
-        }
-      }"
-    `)
+        "export interface _RouteFileInfoMap {
+          '(auth).vue': {
+            routes:
+              | '/(auth)'
+              | '/(auth)/another'
+              | '/(auth)/deposit'
+              | '/(auth)/foo'
+              | '/(auth)/foo/bar'
+              | '/(auth)/foo/foo'
+              | '/(auth)/home'
+              | '/(auth)/login-another'
+              | '/(auth)/settings'
+              | '/(auth)/settings/edit-account'
+              | '/(auth)/settings/edit-email'
+              | '/(auth)/settings/edit-password'
+              | '/(auth)/settings/edit-phone-number'
+              | '/(auth)/settings/two-factor'
+              | '/(auth)/settings/verify-phone-number'
+            views:
+              | 'default'
+            pathParamNames:
+              | never
+          }
+          '(auth)/another/index.vue': {
+            routes:
+              | '/(auth)/another'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+          '(auth)/deposit/index.vue': {
+            routes:
+              | '/(auth)/deposit'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+          '(auth)/foo/index.vue': {
+            routes:
+              | '/(auth)/foo'
+              | '/(auth)/foo/bar'
+              | '/(auth)/foo/foo'
+            views:
+              | 'default'
+            pathParamNames:
+              | never
+          }
+          '(auth)/foo/bar.vue': {
+            routes:
+              | '/(auth)/foo/bar'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+          '(auth)/foo/foo.vue': {
+            routes:
+              | '/(auth)/foo/foo'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+          '(auth)/home/index.vue': {
+            routes:
+              | '/(auth)/home'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+          '(auth)/login-another/index.vue': {
+            routes:
+              | '/(auth)/login-another'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+          '(auth)/settings/index.vue': {
+            routes:
+              | '/(auth)/settings'
+              | '/(auth)/settings/edit-account'
+              | '/(auth)/settings/edit-email'
+              | '/(auth)/settings/edit-password'
+              | '/(auth)/settings/edit-phone-number'
+              | '/(auth)/settings/two-factor'
+              | '/(auth)/settings/verify-phone-number'
+            views:
+              | 'default'
+            pathParamNames:
+              | never
+          }
+          '(auth)/settings/edit-account.vue': {
+            routes:
+              | '/(auth)/settings/edit-account'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+          '(auth)/settings/edit-email.vue': {
+            routes:
+              | '/(auth)/settings/edit-email'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+          '(auth)/settings/edit-password.vue': {
+            routes:
+              | '/(auth)/settings/edit-password'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+          '(auth)/settings/edit-phone-number.vue': {
+            routes:
+              | '/(auth)/settings/edit-phone-number'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+          '(auth)/settings/two-factor.vue': {
+            routes:
+              | '/(auth)/settings/two-factor'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+          '(auth)/settings/verify-phone-number.vue': {
+            routes:
+              | '/(auth)/settings/verify-phone-number'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+        }"
+      `)
   })
 
   it('produces stable output for sibling group folders with same path', () => {
@@ -263,11 +301,15 @@ describe('generateRouteFileInfoMap', () => {
               | '/parent/child'
             views:
               | 'default'
+            pathParamNames:
+              | never
           }
           'src/pages/parent/child.vue': {
             routes:
               | '/parent/child'
             views:
+              | never
+            pathParamNames:
               | never
           }
         }"
@@ -289,17 +331,23 @@ describe('generateRouteFileInfoMap', () => {
             views:
               | 'default'
               | 'test'
+            pathParamNames:
+              | never
           }
           'src/pages/parent/child.vue': {
             routes:
               | '/parent/child'
             views:
               | never
+            pathParamNames:
+              | never
           }
           'src/pages/parent/child@test.vue': {
             routes:
               | '/parent/child'
             views:
+              | never
+            pathParamNames:
               | never
           }
         }"
@@ -324,12 +372,16 @@ describe('generateRouteFileInfoMap', () => {
               | '/home'
             views:
               | never
+            pathParamNames:
+              | never
           }
           'nested/index.vue': {
             routes:
               | '/nested/path'
               | '/unnested'
             views:
+              | never
+            pathParamNames:
               | never
           }
         }"
@@ -353,18 +405,24 @@ describe('generateRouteFileInfoMap', () => {
               | '/optional/[[id]]'
             views:
               | never
+            pathParamNames:
+              | 'id'
           }
           'optional-repeatable/[[id]]+.vue': {
             routes:
               | '/optional-repeatable/[[id]]+'
             views:
               | never
+            pathParamNames:
+              | 'id'
           }
           'repeatable/[id]+.vue': {
             routes:
               | '/repeatable/[id]+'
             views:
               | never
+            pathParamNames:
+              | 'id'
           }
         }"
       `)
@@ -391,24 +449,75 @@ describe('generateRouteFileInfoMap', () => {
               | '/parent/repeatable/[id]+'
             views:
               | 'default'
+            pathParamNames:
+              | never
           }
           'parent/optional/[[id]].vue': {
             routes:
               | '/parent/optional/[[id]]'
             views:
               | never
+            pathParamNames:
+              | 'id'
           }
           'parent/optional-repeatable/[[id]]+.vue': {
             routes:
               | '/parent/optional-repeatable/[[id]]+'
             views:
               | never
+            pathParamNames:
+              | 'id'
           }
           'parent/repeatable/[id]+.vue': {
             routes:
               | '/parent/repeatable/[id]+'
             views:
               | never
+            pathParamNames:
+              | 'id'
+          }
+        }"
+      `)
+  })
+
+  it('lists path param names for the file (including ancestors)', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('a.[b].c.[d]', 'src/pages/a.[b].c.[d].vue')
+    tree.insert('users/[userId]', 'src/pages/users/[userId].vue')
+    tree.insert(
+      'users/[userId]/posts/[postId]',
+      'src/pages/users/[userId]/posts/[postId].vue'
+    )
+
+    expect(formatExports(generateRouteFileInfoMap(tree, { root: '' })))
+      .toMatchInlineSnapshot(`
+        "export interface _RouteFileInfoMap {
+          'src/pages/a.[b].c.[d].vue': {
+            routes:
+              | '/a.[b].c.[d]'
+            views:
+              | never
+            pathParamNames:
+              | 'b'
+              | 'd'
+          }
+          'src/pages/users/[userId].vue': {
+            routes:
+              | '/users/[userId]'
+              | '/users/[userId]/posts/[postId]'
+            views:
+              | 'default'
+            pathParamNames:
+              | 'userId'
+          }
+          'src/pages/users/[userId]/posts/[postId].vue': {
+            routes:
+              | '/users/[userId]/posts/[postId]'
+            views:
+              | never
+            pathParamNames:
+              | 'postId'
+              | 'userId'
           }
         }"
       `)
@@ -420,14 +529,16 @@ describe('generateRouteFileInfoMap', () => {
 
     expect(formatExports(generateRouteFileInfoMap(tree, { root: '' })))
       .toMatchInlineSnapshot(`
-      "export interface _RouteFileInfoMap {
-        'src/pages/it\\'s fine.vue': {
-          routes:
-            | '/path'
-          views:
-            | never
-        }
-      }"
-    `)
+        "export interface _RouteFileInfoMap {
+          'src/pages/it\\'s fine.vue': {
+            routes:
+              | '/path'
+            views:
+              | never
+            pathParamNames:
+              | never
+          }
+        }"
+      `)
   })
 })

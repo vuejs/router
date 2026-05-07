@@ -10,6 +10,11 @@ definePage({
 })
 
 const route = useRoute()
+
+function test() {
+  if (route.params.b === 'ok') {
+  }
+}
 </script>
 
 <template>
