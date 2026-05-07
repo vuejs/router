@@ -68,12 +68,12 @@ Exported from a non-setup `<script>` in a page component:
 import { defineComponent } from 'vue'
 import { defineBasicLoader as defineLoader } from 'vue-router/experimental'
 // ---cut-end---
-// @moduleResolution: bundler
+// @errors: 2339
 import { getUserById } from '../api'
 
 // name the loader however you want **and export it**
-export const useUserData = defineLoader(async route => {
-  const user = await getUserById(route.params.id as string)
+export const useUserData = defineLoader('/users/[id]', async route => {
+  const user = await getUserById(route.params.id)
   // ...
   // return anything you want to expose
   return user

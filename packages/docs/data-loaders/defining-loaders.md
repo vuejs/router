@@ -236,6 +236,7 @@ function fetchRelatedBooks(id: string | string[]): Promise<Book[]> {
 }
 // ---cut---
 export const useRelatedBooks = defineBasicLoader(
+  '/books/[id]',
   (to) => fetchRelatedBooks(to.params.id),
   { server: false }
 )

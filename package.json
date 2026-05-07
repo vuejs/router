@@ -26,8 +26,8 @@
   },
   "devDependencies": {
     "@posva/prompts": "^2.4.4",
-    "@types/node": "^24.10.10",
-    "@vitejs/plugin-vue": "^6.0.4",
+    "@types/node": "^24.10.4",
+    "@vitejs/plugin-vue": "^6.0.6",
     "@vitest/browser": "^3.2.4",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
@@ -41,8 +41,8 @@
     "playwright": "^1.58.1",
     "semver": "^7.7.3",
     "simple-git-hooks": "^2.13.1",
-    "typedoc": "^0.28.16",
-    "typedoc-plugin-markdown": "^4.9.0",
+    "typedoc": "^0.28.19",
+    "typedoc-plugin-markdown": "^4.11.0",
     "typescript": "~5.9.3",
     "vitest": "^3.2.4",
     "vitest-browser-vue": "^1.1.0"
@@ -67,7 +67,11 @@
       "@babel/generator": "^8.0.0-rc.4",
       "@babel/types": "^8.0.0-rc.4",
       "@types/node": "^24.10.4",
-      "vite": "^7.3.0"
+      "@vue/compiler-sfc": "^3.5.34",
+      "@vue/runtime-dom": "^3.5.34",
+      "@vue/server-renderer": "^3.5.34",
+      "vite": "^7.3.0",
+      "vue": "^3.5.34"
     },
     "peerDependencyRules": {
       "ignoreMissing": [
