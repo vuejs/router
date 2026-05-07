@@ -19,8 +19,8 @@ app.component('RouterLink', RouterLink)
 app.component('RouterView', RouterView)
 router.afterEach((to, from, failure) => {
   if (failure) {
-    console.error('⛔️ Failed navigation', from.fullPath, '->', to.fullPath)
-    console.error(failure)
+    console.info('⛔️ Failed navigation', from.fullPath, '->', to.fullPath)
+    console.warn(failure)
   }
 })
 router.onError(err => {
