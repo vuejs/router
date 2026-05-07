@@ -242,8 +242,10 @@ export class MatcherPatternPathDynamic<
       '/' +
       this.pathParts
         .map(part => {
+          // static part of the path, just return it
           if (typeof part === 'string') {
             return part
+            // path param
           } else if (typeof part === 'number') {
             paramName = this.paramsKeys[paramIndex++]
             ;[parser, repeatable, optional] = this.params[paramName]
@@ -258,6 +260,7 @@ export class MatcherPatternPathDynamic<
               ? value.map(encodeParam).join('/')
               : // part == 1 means a regular param, 0 means a splat
                 (part ? encodeParam : encodePath)(value)
+            // sub segments
           } else {
             return part
               .map(subPart => {

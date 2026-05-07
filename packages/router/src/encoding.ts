@@ -59,6 +59,7 @@ const ENC_SPACE_RE = /%20/g // }
  * @returns encoded string
  */
 export function commonEncode(text: string | number | null | undefined): string {
+  // 0 must become '0'
   return text == null
     ? ''
     : encodeURI('' + text)

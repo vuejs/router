@@ -1,11 +1,22 @@
 import { miss } from '../errors'
 import type { ParamParser } from './types'
 
+// NOTE: wondering if we should simplify booleans to just use defineParamParser2
+// export const ppp = defineParamParser2<boolean>({
+//   get: value =>
+//     value == null || value === 'true'
+//       ? true
+//       : value === 'false'
+//         ? false
+//         : miss(),
+//   set: value => (value == null ? null : String(value)),
+// })
+
 const PARAM_BOOLEAN_SINGLE = {
   get: (value: string | null | undefined) => {
     // we want to differentiate between the absence of a value
     if (value === undefined) return undefined
-
+    // and the empty value (?a&b)
     if (value == null) return true
 
     const lowercaseValue = value.toLowerCase()
