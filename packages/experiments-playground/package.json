@@ -10,7 +10,7 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "vue": "^3.5.0",
+    "vue": "^3.5.34",
     "vue-router": "workspace:*"
   },
   "devDependencies": {
@@ -20,7 +20,7 @@
     "@vue/tsconfig": "^0.8.1",
     "typescript": "~5.9.3",
     "vite": "^7.3.0",
-    "vite-plugin-vue-devtools": "^8.0.6",
+    "vite-plugin-vue-devtools": "^8.1.1",
     "vue-tsc": "^3.2.8"
   }
 }
