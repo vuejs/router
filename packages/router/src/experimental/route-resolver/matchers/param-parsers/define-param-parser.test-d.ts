@@ -1,10 +1,11 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import {
+  defineParamParserRaw,
   defineParamParser,
-  defineParamParser2,
   defineQueryParamParser,
 } from './define-param-parser'
 import type { MatcherQueryParamsValue } from '../matcher-pattern'
+import { miss } from '../errors'
 
 describe('defineQueryParamParser', () => {
   it('uses MatcherQueryParamsValue as the URL type', () => {
@@ -35,9 +36,9 @@ describe('defineQueryParamParser', () => {
   })
 })
 
-describe('defineParamParser', () => {
+describe('defineParamParserRaw', () => {
   it('forces an array-aware TParam', () => {
-    const parser = defineParamParser<number>({
+    const parser = defineParamParserRaw<number>({
       get: value => {
         if (value == null) return null
         if (Array.isArray(value))
@@ -69,25 +70,21 @@ describe('defineParamParser', () => {
   })
 })
 
-// TODO: rename defineParamParser2 to something better
-describe('defineParamParser2', () => {
-  const parser = defineParamParser2<Date>({
-    get: (value: string | null | undefined): Date | null => {
-      if (value == null) return null
+describe('defineParamParser', () => {
+  const parser = defineParamParser<Date>({
+    get: (value: string): Date => {
       const asDate = new Date(value)
-      return Number.isNaN(asDate.getTime()) ? null : asDate
+      return Number.isNaN(asDate.getTime()) ? miss('not a date') : asDate
     },
-    set: (value: Date | null | undefined): string | null =>
-      value == null ? null : value.toISOString(),
+    set: (value: Date): string => value.toISOString(),
   })
 
-  const parserInferred = defineParamParser2<Date>({
+  const parserInferred = defineParamParser<Date>({
     get: value => {
-      if (value == null) return null
       const asDate = new Date(value)
-      return Number.isNaN(asDate.getTime()) ? null : asDate
+      return Number.isNaN(asDate.getTime()) ? miss('not a date') : asDate
     },
-    set: value => (value == null ? null : value.toISOString()),
+    set: value => value.toISOString(),
   })
 
   it('infers the get parameters and return type', () => {
@@ -169,18 +166,13 @@ describe('defineParamParser2', () => {
   })
 
   it('supports a distinct TParamRaw', () => {
-    const wide = defineParamParser2<Date, Date | string>({
-      get: (value: string | null | undefined): Date | null => {
-        if (value == null) return null
+    const wide = defineParamParser<Date, Date | string>({
+      get: (value: string): Date => {
         const asDate = new Date(value)
-        return Number.isNaN(asDate.getTime()) ? null : asDate
+        return Number.isNaN(asDate.getTime()) ? miss('not a date') : asDate
       },
-      set: (value: Date | string | null | undefined): string | null =>
-        value == null
-          ? null
-          : value instanceof Date
-            ? value.toISOString()
-            : value,
+      set: (value: Date | string): string =>
+        value instanceof Date ? value.toISOString() : value,
     })
 
     expectTypeOf(wide.get(null)).toEqualTypeOf<Date | Date[] | null>()
@@ -199,14 +191,14 @@ describe('defineParamParser2', () => {
   })
 
   it('rejects an inner parser with the wrong shape', () => {
-    defineParamParser2<Date>({
-      // @ts-expect-error: get must return Date | null, not number
+    defineParamParser<Date>({
+      // @ts-expect-error: get must return Date, not number
       get: () => 1,
-      set: () => null,
+      set: () => '',
     })
-    defineParamParser2<Date>({
-      get: () => null,
-      // @ts-expect-error: set must return string | null, not number
+    defineParamParser<Date>({
+      get: () => new Date(),
+      // @ts-expect-error: set must return string, not number
       set: () => 1,
     })
   })

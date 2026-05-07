@@ -66,7 +66,13 @@ export function defineQueryParamParser<
 }
 
 /**
- * Defines a param parser that works with any kind of param (path, repeatable, optional, query, hash, ...)
+ * Defines a param parser that works with any kind of param (path, repeatable,
+ * optional, query, hash, ...) but requires the user to handle all cases in the
+ * get and set functions (nullish, undefined, arrays, etc). This allows you to
+ * have full control over the parsing logic, but it also means that you need to
+ * handle all edge cases yourself. If possible, prefer using {@see defineParamParser}
+ * which provides a more structured way to handle these
+ * cases and automatically handles arrays and nullish values.
  *
  * @example
  *
@@ -75,7 +81,7 @@ export function defineQueryParamParser<
  * parser and a query param parser.
  *
  * ```ts
- * export const parser = defineParamParser<number>({
+ * export const parser = defineParamParserRaw<number>({
  *   get: value => {
  *     if (value == null) return null
  *     if (Array.isArray(value)) {
@@ -99,10 +105,9 @@ export function defineQueryParamParser<
  * })
  * ```
  *
- * @see {@link defineQueryParamParser}
- * @see {@link definePathParamParser}
+ * @see {@link defineParamParser}
  */
-export function defineParamParser<
+export function defineParamParserRaw<
   TParam,
   // we can allow pushing with extra values
   TParamRaw = TParam,
@@ -118,9 +123,37 @@ export function defineParamParser<
   return parser
 }
 
-// FIXME: I think this one should be the defineParamParser. It's not released yet, so we can adapt it
-
-export function defineParamParser2<
+/**
+ * Defines a param parser that transforms strings to another type. Handles
+ * optional and repeatable params, so it can be used for both path and query
+ * params.
+ *
+ * @example
+ *
+ * Here is an example that allows arbitrary numbers (NaN values are filtered
+ * out). It supports repeatable params, so it can be used both as a path param
+ * parser and a query param parser.
+ *
+ * ```ts
+ * import { miss } from 'vue-router/experimental'
+ *
+ * export const parser = defineParamParser<number>({
+ *   get: value => {
+ *     const num = Number(value)
+ *     if (Number.isNaN(num)) {
+ *       miss(`"${value}" is not a valid number`)
+ *     }
+ *     return num
+ *   },
+ *
+ *   set: value => String(value),
+ * })
+ * ```
+ *
+ * @see {@link defineQueryParamParser}
+ * @see {@link definePathParamParser}
+ */
+export function defineParamParser<
   TParam,
   // we can allow pushing with extra values
   TParamRaw = TParam,
@@ -129,9 +162,9 @@ export function defineParamParser2<
     ParamParser<
       // TODO: I think it would make more sense to not allow null
       // so users can focus on parsing strings
-      TParam | null,
-      string | null | undefined,
-      TParamRaw | null | undefined
+      TParam,
+      string,
+      TParamRaw
     >
   >
 ): Required<
@@ -143,17 +176,16 @@ export function defineParamParser2<
 > {
   return {
     get: value =>
-      Array.isArray(value)
-        ? value.map(parser.get).filter(v => v != null)
-        : parser.get(value),
+      value == null
+        ? null // transforms undefined to null
+        : Array.isArray(value)
+          ? value.filter(v => v != null).map(parser.get)
+          : parser.get(value),
     set: value =>
       value == null
-        ? null // TODO: should probably be value to preserve undefined values
+        ? (value as null | undefined) // preserves null or undefined
         : Array.isArray(value)
-          ? value
-              .map(parser.set)
-              // needed if the setter can return undefined
-              .filter(v => v != null)
+          ? value.map(parser.set)
           : parser.set(value),
   }
 }

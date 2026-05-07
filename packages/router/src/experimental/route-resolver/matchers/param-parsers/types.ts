@@ -35,10 +35,6 @@ export interface ParamParser<
   set?: (value: TParamRaw) => TUrlParam
 }
 
-// TODO: I wonder if native param parsers should follow this or similar
-// these parsers can be used for both query and path params
-// export type ParamParserBoth<T> = ParamParser<T | T[] | null>
-
 /**
  * Generic type for a param parser that can handle both single and repeatable params.
  *

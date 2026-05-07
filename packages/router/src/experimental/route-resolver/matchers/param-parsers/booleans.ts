@@ -1,15 +1,16 @@
 import { miss } from '../errors'
+// import { defineParamParser } from './define-param-parser'
 import type { ParamParser } from './types'
 
 // NOTE: wondering if we should simplify booleans to just use defineParamParser2
-// export const ppp = defineParamParser2<boolean>({
+// export const ppp = defineParamParser<boolean>({
 //   get: value =>
-//     value == null || value === 'true'
+//     value === 'true'
 //       ? true
 //       : value === 'false'
 //         ? false
-//         : miss(),
-//   set: value => (value == null ? null : String(value)),
+//         : miss(`Invalid boolean value: "${value}"`),
+//   set: value => String(value),
 // })
 
 const PARAM_BOOLEAN_SINGLE = {

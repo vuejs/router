@@ -1,6 +1,6 @@
 export {
+  defineParamParserRaw,
   defineParamParser,
-  defineParamParser2,
   definePathParamParser,
   defineQueryParamParser,
   PARAM_PARSER_DEFAULTS,

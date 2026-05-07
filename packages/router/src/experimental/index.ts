@@ -40,6 +40,7 @@ export {
   PARAM_PARSER_BOOL,
   type ParamParser,
   defineParamParser,
+  defineParamParserRaw,
   definePathParamParser,
   defineQueryParamParser,
   normalizeParamParser as _normalizeParamParser,
