@@ -45,19 +45,19 @@ export interface RoutesFolderOption {
    * },
    * ```
    */
-  path?: string | ((filepath: string) => string)
+  path?: string | ((filepath: string) => string) | undefined
 
   /**
    * Allows to override the global `filePattern` option for this folder. It can also extend the global values by passing
    * a function that returns an array.
    */
-  filePatterns?: _OverridableOption<string[], string | string[]>
+  filePatterns?: _OverridableOption<string[], string | string[]> | undefined
 
   /**
    * Allows to override the global `exclude` option for this folder. It can
    * also extend the global values by passing a function that returns an array.
    */
-  exclude?: _OverridableOption<string[], string | string[]>
+  exclude?: _OverridableOption<string[], string | string[]> | undefined
 
   /**
    * Allows to override the global `extensions` option for this folder. It can
@@ -66,7 +66,7 @@ export interface RoutesFolderOption {
    * `.page.vue` allows to suffix all pages with `.page.vue` and remove it from
    * the route name.
    */
-  extensions?: _OverridableOption<string[]>
+  extensions?: _OverridableOption<string[]> | undefined
 }
 
 /**
@@ -131,7 +131,7 @@ export interface Options {
    * bigger part of the filename e.g. `index.page.vue` -> `index` if an extension of `.page.vue` is provided.
    * @default `['.vue']`
    */
-  extensions?: string[]
+  extensions?: string[] | undefined
 
   /**
    * Folder(s) to scan for files and generate routes. Can also be an array if you want to add multiple
@@ -140,7 +140,7 @@ export interface Options {
    *
    * @default `"src/pages"`
    */
-  routesFolder?: RoutesFolder
+  routesFolder?: RoutesFolder | undefined
 
   /**
    * Array of `picomatch` globs to ignore. Note the globs are relative to the cwd, so avoid writing
@@ -148,7 +148,7 @@ export interface Options {
    * `['src/pages/ignored/**']` or use `['**​/ignored']` to match every folder named `ignored`.
    * @default `[]`
    */
-  exclude?: string[] | string
+  exclude?: string[] | string | undefined
 
   /**
    * Pattern to match files in the `routesFolder`. Defaults to `*\/*` plus a
@@ -158,13 +158,13 @@ export interface Options {
    *
    * @default `['*\/*']`
    */
-  filePatterns?: string[] | string
+  filePatterns?: string[] | string | undefined
 
   /**
    * Method to generate the name of a route. It's recommended to keep the default value to guarantee a consistent,
    * unique, and predictable naming.
    */
-  getRouteName?: (node: TreeNode) => string
+  getRouteName?: ((node: TreeNode) => string) | undefined
 
   /**
    * Allows extending a route by modifying its node, adding children, or even deleting it. This will be invoked once for
@@ -172,55 +172,61 @@ export interface Options {
    *
    * @param route - {@link EditableTreeNode} of the route to extend
    */
-  extendRoute?: (route: EditableTreeNode) => _Awaitable<void>
+  extendRoute?: ((route: EditableTreeNode) => _Awaitable<void>) | undefined
 
   /**
    * Allows to do some changes before writing the files. This will be invoked **every time** the files need to be written.
    *
    * @param rootRoute - {@link EditableTreeNode} of the root route
    */
-  beforeWriteFiles?: (rootRoute: EditableTreeNode) => _Awaitable<void>
+  beforeWriteFiles?:
+    | ((rootRoute: EditableTreeNode) => _Awaitable<void>)
+    | undefined
 
   /**
    * Defines how page components should be imported. Defaults to dynamic imports to enable lazy loading of pages.
    * @default `'async'`
    */
-  importMode?: 'sync' | 'async' | ((filepath: string) => 'sync' | 'async')
+  importMode?:
+    | 'sync'
+    | 'async'
+    | ((filepath: string) => 'sync' | 'async')
+    | undefined
 
   /**
    * Root of the project. All paths are resolved relatively to this one.
    * @default `process.cwd()`
    */
-  root?: string
+  root?: string | undefined
 
   /**
    * Language for `<route>` blocks in SFC files.
    * @default `'json5'`
    */
-  routeBlockLang?: 'yaml' | 'yml' | 'json5' | 'json'
+  routeBlockLang?: 'yaml' | 'yml' | 'json5' | 'json' | undefined
 
   /**
    * Should we generate d.ts files or ont. Defaults to `true` if `typescript` is installed. Can be set to a string of
    * the filepath to write the d.ts files to. By default it will generate a file named `typed-router.d.ts`.
    * @default `true`
    */
-  dts?: boolean | string
+  dts?: boolean | string | undefined
 
   /**
    * Allows inspection by vite-plugin-inspect by not adding the leading `\0` to the id of virtual modules.
    * @internal
    */
-  _inspect?: boolean
+  _inspect?: boolean | undefined
 
   /**
    * Activates debug logs.
    */
-  logs?: boolean
+  logs?: boolean | undefined
 
   /**
    * @inheritDoc ParseSegmentOptions
    */
-  pathParser?: ParseSegmentOptions
+  pathParser?: ParseSegmentOptions | undefined
 
   /**
    * Whether to watch the files for changes.
@@ -229,27 +235,29 @@ export interface Options {
    *
    * @default `!process.env.CI`
    */
-  watch?: boolean
+  watch?: boolean | undefined
 
   /**
    * Experimental options. **Warning**: these can change or be removed at any time, even it patch releases. Keep an eye
    * on the Changelog.
    */
-  experimental?: {
-    /**
-     * (Vite only). File paths or globs where loaders are exported. This will be used to filter out imported loaders and
-     * automatically re export them in page components. You can for example set this to `'src/loaders/**\/*'` (without
-     * the backslash) to automatically re export any imported variable from files in the `src/loaders` folder within a
-     * page component.
-     */
-    autoExportsDataLoaders?: string | string[]
+  experimental?:
+    | {
+        /**
+         * (Vite only). File paths or globs where loaders are exported. This will be used to filter out imported loaders and
+         * automatically re export them in page components. You can for example set this to `'src/loaders/**\/*'` (without
+         * the backslash) to automatically re export any imported variable from files in the `src/loaders` folder within a
+         * page component.
+         */
+        autoExportsDataLoaders?: string | string[] | undefined
 
-    /**
-     * Enable experimental support for the new custom resolvers and allows
-     * defining custom param matchers.
-     */
-    paramParsers?: boolean | ParamParsersOptions
-  }
+        /**
+         * Enable experimental support for the new custom resolvers and allows
+         * defining custom param matchers.
+         */
+        paramParsers?: boolean | ParamParsersOptions | undefined
+      }
+    | undefined
 }
 
 /**
@@ -261,7 +269,7 @@ export interface ParamParsersOptions {
    *
    * @default `['src/params']`
    */
-  dir?: string | string[]
+  dir?: string | string[] | undefined
 }
 
 /**

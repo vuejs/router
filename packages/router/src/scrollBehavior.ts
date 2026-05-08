@@ -12,9 +12,9 @@ import { warn } from './warning'
  * Note that not all browsers support `behavior`.
  */
 export type ScrollPositionCoordinates = {
-  behavior?: ScrollOptions['behavior']
-  left?: number
-  top?: number
+  behavior?: ScrollOptions['behavior'] | undefined
+  left?: number | undefined
+  top?: number | undefined
 }
 
 /**
@@ -24,7 +24,7 @@ export type ScrollPositionCoordinates = {
  * @internal
  */
 export type _ScrollPositionNormalized = {
-  behavior?: ScrollOptions['behavior']
+  behavior?: ScrollOptions['behavior'] | undefined
   left: number
   top: number
 }

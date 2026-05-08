@@ -147,8 +147,8 @@ export interface ResolverLocationAsNamed {
   name: RecordName
   // FIXME: should this be optional?
   params: MatcherParamsFormatted
-  query?: LocationQueryRaw
-  hash?: string
+  query?: LocationQueryRaw | undefined
+  hash?: string | undefined
 
   /**
    * @deprecated This is ignored when `name` is provided
@@ -168,8 +168,8 @@ export interface ResolverLocationAsNamed {
  */
 export interface ResolverLocationAsPathRelative {
   path: string
-  query?: LocationQueryRaw
-  hash?: string
+  query?: LocationQueryRaw | undefined
+  hash?: string | undefined
 
   /**
    * @deprecated This is ignored when `path` is provided
@@ -208,9 +208,9 @@ export interface ResolverLocationAsPathAbsolute extends ResolverLocationAsPathRe
  * ```
  */
 export interface ResolverLocationAsRelative {
-  params?: MatcherParamsFormatted
-  query?: LocationQueryRaw
-  hash?: string
+  params?: MatcherParamsFormatted | undefined
+  query?: LocationQueryRaw | undefined
+  hash?: string | undefined
 
   /**
    * @deprecated This location is relative to the next parameter. This `name` will be ignored.
