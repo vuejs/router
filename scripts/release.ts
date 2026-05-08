@@ -3,7 +3,7 @@ import { dirname, join, relative, resolve } from 'node:path'
 import { parseArgs } from 'node:util'
 import { fileURLToPath } from 'node:url'
 import semver, { type ReleaseType } from 'semver'
-import prompts from '@posva/prompts'
+import * as p from '@clack/prompts'
 import { spawn } from 'node:child_process'
 
 /**
@@ -244,26 +244,28 @@ async function main() {
   // if there are more than one package, ask which ones to release
   if (packagesToRelease.length > 1) {
     // allow to select which packages
-    const { pickedPackages } = await prompts({
-      type: 'multiselect',
-      name: 'pickedPackages',
+    const pickedPackages = await p.multiselect<string>({
+      id: 'pickedPackages',
       message: 'What packages do you want to release?',
-      instructions: false,
-      min: 1,
-      choices: changedPackages.map(pkg => {
+      required: true,
+      initialValues: changedPackages.map(pkg => pkg.name),
+      options: changedPackages.map(pkg => {
         const rel = daysAgo(pkg.lastTagDate)
         const suffix = pkg.lastTag
           ? `${pkg.lastTag}${rel ? ` (${rel})` : ''}`
           : 'no previous release'
         return {
-          title: `${pkg.name} ${c.dim(`— ${suffix}`)}`,
+          label: `${pkg.name} ${c.dim(`— ${suffix}`)}`,
           value: pkg.name,
-          selected: true,
         }
       }),
     })
 
-    // const packagesToRelease = changedPackages
+    if (p.isCancel(pickedPackages)) {
+      p.cancel('Release aborted')
+      return
+    }
+
     packagesToRelease = changedPackages.filter(pkg =>
       pickedPackages.includes(pkg.name)
     )
@@ -273,16 +275,9 @@ async function main() {
     `Ready to release ${packagesToRelease.map(({ name }) => c.boldWhite(name)).join(', ')}`
   )
 
-  const pkgWithVersions: PackageInfo[] = []
-  for (const {
-    name,
-    path,
-    pkg,
-    relativePath,
-    lastTag,
-    lastTagDate,
-  } of packagesToRelease) {
-    let { version } = pkg
+  // Build per-package release-type options up front so we can batch the prompts
+  const releaseConfigs = packagesToRelease.map(({ name, pkg }) => {
+    const { version } = pkg
 
     const prerelease = semver.prerelease(version)
     const preId = prerelease && prerelease[0]
@@ -308,35 +303,99 @@ async function main() {
             : []),
         ]
 
-    const { release } = await prompts({
-      type: 'select',
-      name: 'release',
-      message: `Select release type for ${c.boldWhite(name)}`,
-      choices: versionIncrements
-        .map(release => {
-          // Use optionTag for prerelease increments when a prerelease tag is specified
-          const identifier = isPrereleaseTag ? optionTag : (preId as string)
-          const newVersion = semver.inc(version, release, identifier)
-          return {
-            value: newVersion,
-            title: `${release}: ${name} (${newVersion})`,
-          }
-        })
-        .concat([{ value: 'custom', title: 'custom' }]),
-    })
+    const options = versionIncrements
+      .map(release => {
+        // Use optionTag for prerelease increments when a prerelease tag is specified
+        const identifier = isPrereleaseTag ? optionTag : (preId as string)
+        const newVersion = semver.inc(version, release, identifier)
+        return {
+          value: newVersion!,
+          label: `${release}: ${name} (${newVersion})`,
+        }
+      })
+      .concat([{ value: 'custom', label: 'custom' }])
 
-    if (release === 'custom') {
-      version = (
-        await prompts({
-          type: 'text',
-          name: 'version',
-          message: `Input custom version (${c.boldWhite(name)})`,
-          initial: version,
-        })
-      ).version
-    } else {
-      version = release
+    return { name, currentVersion: version, options }
+  })
+
+  // Ask for release types — batch across packages when more than one
+  const releaseAnswers: Record<string, string | symbol> =
+    releaseConfigs.length === 1
+      ? {
+          [releaseConfigs[0]!.name]: await p.select<string>({
+            id: `release:${releaseConfigs[0]!.name}`,
+            message: `Select release type for ${c.boldWhite(releaseConfigs[0]!.name)}`,
+            options: releaseConfigs[0]!.options,
+          }),
+        }
+      : await p.batch(
+          Object.fromEntries(
+            releaseConfigs.map(cfg => [
+              cfg.name,
+              p.batch.select<string>({
+                id: `release:${cfg.name}`,
+                message: `Select release type for ${c.boldWhite(cfg.name)}`,
+                options: cfg.options,
+              }),
+            ])
+          )
+        )
+
+  for (const answer of Object.values(releaseAnswers)) {
+    if (p.isCancel(answer)) {
+      p.cancel('Release aborted')
+      return
     }
+  }
+
+  // For 'custom' selections, ask for an explicit version — batch when more than one
+  const customPkgs = releaseConfigs.filter(
+    cfg => releaseAnswers[cfg.name] === 'custom'
+  )
+
+  const customAnswers: Record<string, string | symbol> =
+    customPkgs.length === 0
+      ? {}
+      : customPkgs.length === 1
+        ? {
+            [customPkgs[0]!.name]: await p.text({
+              id: `custom:${customPkgs[0]!.name}`,
+              message: `Input custom version (${c.boldWhite(customPkgs[0]!.name)})`,
+              initialValue: customPkgs[0]!.currentVersion,
+            }),
+          }
+        : await p.batch(
+            Object.fromEntries(
+              customPkgs.map(cfg => [
+                cfg.name,
+                p.batch.text({
+                  id: `custom:${cfg.name}`,
+                  message: `Input custom version (${c.boldWhite(cfg.name)})`,
+                  initialValue: cfg.currentVersion,
+                }),
+              ])
+            )
+          )
+
+  for (const answer of Object.values(customAnswers)) {
+    if (p.isCancel(answer)) {
+      p.cancel('Release aborted')
+      return
+    }
+  }
+
+  const pkgWithVersions: PackageInfo[] = []
+  for (const {
+    name,
+    path,
+    pkg,
+    relativePath,
+    lastTag,
+    lastTagDate,
+  } of packagesToRelease) {
+    const selection = releaseAnswers[name] as string
+    const version =
+      selection === 'custom' ? (customAnswers[name] as string) : selection
 
     if (!semver.valid(version)) {
       throw new Error(`invalid target version: ${version}`)
@@ -363,19 +422,24 @@ async function main() {
     packagesToRelease.unshift(packagesToRelease.splice(mainPkgIndex, 1)[0])
   }
 
-  const { yes: isReleaseConfirmed } = await prompts({
-    type: 'confirm',
-    name: 'yes',
-    message: `Releasing \n${pkgWithVersions
-      .map(
-        ({ name, version }) =>
-          `  · ${c.white(name)}: ${c.boldYellow(`v${version}`)}`
-      )
-      .join('\n')}\nConfirm?`,
-  })
+  // Skip confirms in agent mode: they add no value, and a post-changelog confirm
+  // would force the script to re-run after changelog generation (duplicating the
+  // side-effects from updateVersions through conventional-changelog).
+  if (!p.isAgent()) {
+    const isReleaseConfirmed = await p.confirm({
+      id: 'confirmRelease',
+      message: `Releasing \n${pkgWithVersions
+        .map(
+          ({ name, version }) =>
+            `  · ${c.white(name)}: ${c.boldYellow(`v${version}`)}`
+        )
+        .join('\n')}\nConfirm?`,
+    })
 
-  if (!isReleaseConfirmed) {
-    return
+    if (p.isCancel(isReleaseConfirmed) || !isReleaseConfirmed) {
+      p.cancel('Release aborted')
+      return
+    }
   }
 
   step('\nUpdating versions in package.json files...')
@@ -448,15 +512,17 @@ async function main() {
     })
   )
 
-  const { yes: isChangelogCorrect } = await prompts({
-    type: 'confirm',
-    name: 'yes',
-    message: 'Are the changelogs correct?',
-    initial: true,
-  })
+  if (!p.isAgent()) {
+    const isChangelogCorrect = await p.confirm({
+      id: 'confirmChangelog',
+      message: 'Are the changelogs correct?',
+      initialValue: true,
+    })
 
-  if (!isChangelogCorrect) {
-    return
+    if (p.isCancel(isChangelogCorrect) || !isChangelogCorrect) {
+      p.cancel('Release aborted')
+      return
+    }
   }
 
   const { stdout } = await run('git', ['diff', 'HEAD'], { stdio: 'pipe' })
@@ -491,7 +557,11 @@ async function main() {
   }
 
   step('\nPushing to Github...')
-  await runIfNotDry('git', ['push', 'origin', ...versionsToPush])
+  // NOTE: push tags one by one, GitHub silently skips push events when >3
+  // tags are pushed in a single command, so CI workflows would never trigger.
+  for (const tag of versionsToPush) {
+    await runIfNotDry('git', ['push', 'origin', tag])
+  }
   await runIfNotDry('git', ['push'])
 }
 
