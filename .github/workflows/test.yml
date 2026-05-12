@@ -14,6 +14,9 @@ on:
       - 'packages/docs/**'
       - 'packages/playground/**'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
