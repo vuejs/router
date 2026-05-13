@@ -2,6 +2,7 @@ import type { TreePathParam, TreeQueryParam } from '../core/treeNodeValue'
 import type { ImportsMap } from '../core/utils'
 import type { PrefixTree } from '../core/tree'
 import { toStringLiteral } from '../utils'
+import { glob } from 'tinyglobby'
 
 export type ParamParsersMap = Map<
   string,
@@ -20,6 +21,27 @@ const NATIVE_PARAM_PARSERS_TYPES = {
   int: 'number',
   bool: 'boolean',
 } satisfies Record<(typeof _NATIVE_PARAM_PARSERS)[number], string>
+
+/**
+ * Scans a folder for param parser files matching `include` while filtering out `exclude`.
+ * Only flat matches are returned (no nested folders). Exported solely to make this
+ * filesystem-touching behavior testable.
+ *
+ * @internal
+ */
+export function scanParamParserFiles(
+  folder: string,
+  include: string[],
+  exclude: string[]
+): Promise<string[]> {
+  if (!include.length) return Promise.resolve([])
+  return glob(include as string[], {
+    cwd: folder,
+    onlyFiles: true,
+    ignore: exclude as string[],
+    expandDirectories: false,
+  })
+}
 
 export function warnMissingParamParsers(
   tree: PrefixTree,

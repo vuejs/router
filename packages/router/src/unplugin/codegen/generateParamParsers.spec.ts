@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, test } from 'vitest'
 import {
   warnMissingParamParsers,
   collectMissingParamParsers,
@@ -8,13 +8,17 @@ import {
   generatePathParamsOptions,
   generateCustomParamParsersList,
   generateNormalizedParamParsersDeclarations,
+  scanParamParserFiles,
   type ParamParsersMap,
 } from './generateParamParsers'
 import { PrefixTree } from '../core/tree'
-import { resolveOptions } from '../options'
+import { DEFAULT_PARAM_PARSERS_OPTIONS, resolveOptions } from '../options'
 import { ImportsMap } from '../core/utils'
 import type { TreePathParam } from '../core/treeNodeValue'
 import { mockWarn } from '../../tests/vitest-mock-warn'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 
 const DEFAULT_OPTIONS = resolveOptions({})
 
@@ -784,4 +788,70 @@ describe('generateNormalizedParamParsersDeclarations', () => {
       `import { parser as PARAM_PARSER__userId } from '/path/to/parsers/user-id'`
     )
   })
+})
+
+// Per-test temp folder via the recommended vitest `test.extend` fixture pattern.
+// Each test gets a fresh isolated directory; cleanup runs after `use` resolves.
+const parsersTest = test.extend<{ parsersDir: string }>({
+  parsersDir: async ({}, use) => {
+    const dir = mkdtempSync(join(tmpdir(), 'vue-router-param-parsers-'))
+    writeFileSync(join(dir, 'uuid.ts'), 'export const parser = {}')
+    writeFileSync(join(dir, 'slug.ts'), 'export const parser = {}')
+    writeFileSync(join(dir, 'uuid.test.ts'), 'test code')
+    writeFileSync(join(dir, 'slug.spec.ts'), 'test code')
+    writeFileSync(join(dir, 'legacy.js'), 'module.exports = {}')
+    writeFileSync(join(dir, 'legacy.test.js'), 'module.exports = {}')
+    writeFileSync(join(dir, 'README.md'), '# parsers')
+    mkdirSync(join(dir, 'nested'))
+    writeFileSync(join(dir, 'nested', 'deep.ts'), 'export const parser = {}')
+    await use(dir)
+    rmSync(dir, { recursive: true, force: true })
+  },
+})
+
+describe('scanParamParserFiles', () => {
+  parsersTest(
+    'picks parsers and ignores tests/specs/nested by default',
+    async ({ parsersDir }) => {
+      const files = await scanParamParserFiles(
+        parsersDir,
+        DEFAULT_PARAM_PARSERS_OPTIONS.include,
+        DEFAULT_PARAM_PARSERS_OPTIONS.exclude
+      )
+      expect(files.sort()).toEqual(['slug.ts', 'uuid.ts'])
+    }
+  )
+
+  parsersTest(
+    'respects a custom include that adds js',
+    async ({ parsersDir }) => {
+      const files = await scanParamParserFiles(
+        parsersDir,
+        ['*.{ts,js}'],
+        DEFAULT_PARAM_PARSERS_OPTIONS.exclude
+      )
+      expect(files.sort()).toEqual(['legacy.js', 'slug.ts', 'uuid.ts'])
+    }
+  )
+
+  parsersTest('respects a custom exclude', async ({ parsersDir }) => {
+    const files = await scanParamParserFiles(parsersDir, ['*.ts'], ['uuid*'])
+    expect(files.sort()).toEqual(['slug.spec.ts', 'slug.ts'])
+  })
+
+  parsersTest(
+    'returns no files when include is empty',
+    async ({ parsersDir }) => {
+      const files = await scanParamParserFiles(parsersDir, [], [])
+      expect(files).toEqual([])
+    }
+  )
+
+  parsersTest(
+    'never picks nested files even without exclude',
+    async ({ parsersDir }) => {
+      const files = await scanParamParserFiles(parsersDir, ['*.ts'], [])
+      expect(files.some(f => f.includes('nested'))).toBe(false)
+    }
+  )
 })

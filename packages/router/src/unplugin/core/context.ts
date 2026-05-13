@@ -28,6 +28,7 @@ import type { ParamParsersMap } from '../codegen/generateParamParsers'
 import {
   generateParamParsersTypesDeclarations,
   generateCustomParamParsersList,
+  scanParamParserFiles,
   warnMissingParamParsers,
   collectMissingParamParsers,
 } from '../codegen/generateParamParsers'
@@ -73,8 +74,14 @@ export function createRoutesContext(options: ResolvedOptions) {
       return
     }
 
-    const PARAM_PARSER_GLOB = '*.{ts,js}'
-    const isParamParserMatch = picomatch(PARAM_PARSER_GLOB)
+    const paramParsersInclude = options.experimental.paramParsers?.include ?? []
+    const paramParsersExclude = options.experimental.paramParsers?.exclude ?? []
+    const isParamParserExcluded = paramParsersExclude.length
+      ? picomatch(paramParsersExclude)
+      : () => false
+    const isParamParserIncluded = paramParsersInclude.length
+      ? picomatch(paramParsersInclude)
+      : () => false
 
     // get the initial list of pages
     await Promise.all([
@@ -125,7 +132,11 @@ export function createRoutesContext(options: ResolvedOptions) {
                     return false
                   }
 
-                  return !isParamParserMatch(relative(folder, filePath))
+                  const fileName = relative(folder, filePath)
+                  return (
+                    !isParamParserIncluded(fileName) ||
+                    isParamParserExcluded(fileName)
+                  )
                 },
               }),
               folder
@@ -133,11 +144,11 @@ export function createRoutesContext(options: ResolvedOptions) {
           )
         }
 
-        return glob(PARAM_PARSER_GLOB, {
-          cwd: folder,
-          onlyFiles: true,
-          expandDirectories: false,
-        }).then(paramParserFiles => {
+        return scanParamParserFiles(
+          folder,
+          paramParsersInclude,
+          paramParsersExclude
+        ).then(paramParserFiles => {
           for (const file of paramParserFiles) {
             const fileName = parsePathe(file).name
             const name = camelCase(fileName)

@@ -262,6 +262,22 @@ export interface ParamParsersOptions {
    * @default `['src/params']`
    */
   dir?: string | string[]
+
+  /**
+   * Glob pattern(s) of files to include when scanning param parser folders. Only flat
+   * matches are supported (no nested files).
+   *
+   * @default `['*.ts']`
+   */
+  include?: string | string[]
+
+  /**
+   * Glob pattern(s) of files to ignore when scanning param parser folders. Useful to skip
+   * test files that live next to their implementations.
+   *
+   * @default `['*.test.{ts,js}', '*.spec.{ts,js}']`
+   */
+  exclude?: string | string[]
 }
 
 /**
@@ -269,6 +285,8 @@ export interface ParamParsersOptions {
  */
 export const DEFAULT_PARAM_PARSERS_OPTIONS = {
   dir: ['src/params'],
+  include: ['*.ts'],
+  exclude: ['*.test.{ts,js}', '*.spec.{ts,js}'],
 } satisfies Required<ParamParsersOptions>
 
 /**
@@ -394,6 +412,18 @@ export function resolveOptions(options: Options) {
       : []
   ).map(dir => resolve(root, dir))
 
+  const paramParsersInclude = paramParsers?.include
+    ? isArray(paramParsers.include)
+      ? paramParsers.include
+      : [paramParsers.include]
+    : DEFAULT_PARAM_PARSERS_OPTIONS.include
+
+  const paramParsersExclude = paramParsers?.exclude
+    ? isArray(paramParsers.exclude)
+      ? paramParsers.exclude
+      : [paramParsers.exclude]
+    : DEFAULT_PARAM_PARSERS_OPTIONS.exclude
+
   const autoExportsDataLoaders = options.experimental?.autoExportsDataLoaders
     ? (isArray(options.experimental.autoExportsDataLoaders)
         ? options.experimental.autoExportsDataLoaders
@@ -408,6 +438,8 @@ export function resolveOptions(options: Options) {
     paramParsers: paramParsers && {
       ...paramParsers,
       dir: paramParsersDir,
+      include: paramParsersInclude,
+      exclude: paramParsersExclude,
     },
   }
 
