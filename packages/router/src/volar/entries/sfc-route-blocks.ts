@@ -1,5 +1,15 @@
-import { allCodeFeatures, type VueLanguagePlugin } from '@vue/language-core'
+import type { VueLanguagePlugin, CodeInformation } from '@vue/language-core'
 import { replace, toString } from 'muggle-string'
+
+// inlined from `@vue/language-core` to avoid an implicit dependency
+const allCodeFeatures = {
+  verification: true,
+  completion: true,
+  semantic: true,
+  navigation: true,
+  structure: true,
+  format: true,
+} satisfies CodeInformation
 
 const plugin: VueLanguagePlugin = () => {
   const routeBlockIdPrefix = 'route_'
