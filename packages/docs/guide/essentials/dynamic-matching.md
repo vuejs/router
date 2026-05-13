@@ -37,17 +37,9 @@ You can have multiple _params_ in the same route, and they will map to correspon
 | /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`                |
 | /users/:username/posts/:postId | /users/eduardo/posts/123 | `{ username: 'eduardo', postId: '123' }` |
 
+- [See it in the Playground](https://play.vuejs.org/#eNqdVOtu0zAUfhUrIDWVlrgdF6GQVYNpEkMCpgG/CD+yxm29ObZlO22nqu/O8SWX0W5IVErjnOt3zvmOd1FdUp7e6SiLaC2FMmiH5oqUhnyQEu3RQokajdYNGRW8M1CiMUR12hR7QW9ifVtdKWXq/Qvu7VLZ6FU8wo0mSmNSNaWqBJZCG42no3FqVoTH8RidzdCu4KjHE8MzthKEUnCOfbhWUouGm3j0AhKOQLaHJzqJQnqoLzeklgwizaxDvprObqw/kqUqa51jEDiFdC84aKMEX84uGqUIN75qsDarLMdBh3Y79NIp0kXD2DUo0X7vwmAfJ+flug3YsHCCM6PdGb58JQmj/B4ZcVZEx5tTRLPjijyMwEXok+BBlv/KeDp5KuXp5J85cxwKznHbhNzSrVUH9zUlG4SDYdDneDAs+NTmgRGk50KSCiTpIHNCtuXcJPDQNQmEEUyoDHhDay34e+CCjehigDOQIvDwGO2/kFqoh09UG3idBKEjSk944FPSUb4j/U/o0jX0pmN+K+joT7bOcC44WIUlOnuUInb4Vz67reAAUjw+sSbOW2fol++lc7M/R0/U7lZmX7ysSRhaZl9X1ciFsL+5AOwc2J118INu796/4T8s0rCaw22qaMtyazdYC79ddl0dENgOtKGwJRbJoZnH162QjzogA+Dw3U7qUsL8BAcorvgiKHQRZW07iqiflBUX0coYqTOMGy7vlylUj3uL8zfpJH0LObUZSFOi6+RWiQ0UAAmLKPSniM7BCFdkbYRgOiklfSrFgeH5u3SaTvtMQ91BPpsO2rGH0g0sAF/Q5V+F2yFSRtQ3aShQ61EDSsbE5rOTGdWQDvx8Reb3R+R3euvLuFYEEKzJoGBTqiUxXn35/SvZwrlT1qJqGFg/o7whWrDGYvRmHxteAeyBnUN75eZI+fKHvtwawnVblAXquuHs3XAvnim9h/sqfT3oorsHdDrXdvvhYjpB9tLxfrdCVQSujlO5RQCWVujFZDKBGwSBkVpSntwKY0SdoakitZPLsqoAbCeBLAWHsKhhPiaMGcgL27xgZOtcGAw+cTAyxGH9HscZpvNfXUhGMy5MnLESAohFYh4kGfssAZ6iyxUsc48l2v8BszmoiA==)
+
 In addition to `route.params`, the `route` object also exposes other useful information such as `route.query` (if there is a query in the URL), `route.hash`, etc. You can check out the full details in the [API Reference](../../api/#RouteLocationNormalized).
-
-A working demo of this example can be found [here](https://codesandbox.io/s/route-params-vue-router-examples-mlb14?from-embed&initialpath=%2Fusers%2Feduardo%2Fposts%2F1).
-
-<!-- <iframe
-  src="https://codesandbox.io/embed//route-params-vue-router-examples-mlb14?fontsize=14&theme=light&view=preview&initialpath=%2Fusers%2Feduardo%2Fposts%2F1"
-  style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-  title="Route Params example"
-  allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-></iframe> -->
 
 ## Reacting to Params Changes
 
