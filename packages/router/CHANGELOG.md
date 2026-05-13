@@ -1,3 +1,48 @@
+## [5.0.7](https://github.com/vuejs/router/compare/v5.0.6...v5.0.7) (2026-05-13)
+
+### Bug Fixes
+
+- **matcher:** finalize param token before processing escaped colon ([#2654](https://github.com/vuejs/router/issues/2654)) ([20521b0](https://github.com/vuejs/router/commit/20521b033352223f898cdb17505c520a5646e812))
+- **query:** use Object.create(null) to prevent prototype pollution ([#2661](https://github.com/vuejs/router/issues/2661)) ([be88c75](https://github.com/vuejs/router/commit/be88c75600d1ccdf180f16c3752b8f37ae9e94c6))
+- **resolve:** omit empty optional params from resolved params ([#2434](https://github.com/vuejs/router/issues/2434)) ([1ef0964](https://github.com/vuejs/router/commit/1ef09646f772c9275252f70906f50c8fbf28c6af)), closes [#2419](https://github.com/vuejs/router/issues/2419)
+- **types:** wire RouteNamedMap via generated routes.d.ts ([#2700](https://github.com/vuejs/router/issues/2700)) ([aef9941](https://github.com/vuejs/router/commit/aef994156f0fc34a9030091ffa2be2f726afdd3e))
+- **unplugin:** apply definePage path-param parser overrides ([#2699](https://github.com/vuejs/router/issues/2699)) ([c807486](https://github.com/vuejs/router/commit/c807486263576b21b7f3806e8b08173e5558b8ac))
+- **unplugin:** Avoid generating empty routes ([#2642](https://github.com/vuejs/router/issues/2642)) ([10a8b77](https://github.com/vuejs/router/commit/10a8b773eecaa7facfb9291fc01a86d2506479b0))
+- **volar:** drop runtime `@vue/language-core` import ([#2710](https://github.com/vuejs/router/issues/2710)) ([8af50c9](https://github.com/vuejs/router/commit/8af50c9ccdddbcd51778414b310408aeaa48eda7))
+
+### Code Refactoring
+
+- **param-parsers:** simplify defineParamParser ([641200a](https://github.com/vuejs/router/commit/641200a6ddddf4a0c4e713bf6259f318e8ed0d30))
+
+### Features
+
+- make `defineParamParser()` more intuitive ([8715b21](https://github.com/vuejs/router/commit/8715b2115f5f1ad850186ce0857f9322ea509966))
+- **matcher:** hint at `params: {}` workaround in discarded params warning ([#2689](https://github.com/vuejs/router/issues/2689)) ([c2b13c6](https://github.com/vuejs/router/commit/c2b13c61605798321086b62bbd4fb14fca6fe7df)), closes [#1617](https://github.com/vuejs/router/issues/1617)
+- **param-parsers:** add include/exclude options ([91cdec3](https://github.com/vuejs/router/commit/91cdec3b05b046c10daefd4beed5fa35ea69374c)), closes [#2706](https://github.com/vuejs/router/issues/2706)
+- upgrade `@vue/devtools-api` ([87c3aff](https://github.com/vuejs/router/commit/87c3affe5c76697b49e468201a6a9244772cab90))
+
+### BREAKING CHANGES
+
+- **param-parsers:** the new experimental `defineParamParser()` is simpler and
+  internally handles arrays and nullish values, simplifying the writing of param
+  parsers:
+
+  ```ts
+  export const parser = defineParamParser<Date>({
+    get: value => {
+      const asDate = new Date(value)
+      if (Number.isNaN(asDate.getTime())) {
+        miss(`Invalid date: "${value}"`)
+      }
+
+      return asDate
+    },
+    set: value => value.toISOString(),
+  })
+  ```
+
+  Setting the first type param (here `Date`) is all you need now.
+
 ## [5.0.6](https://github.com/vuejs/router/compare/v5.0.5...v5.0.6) (2026-04-22)
 
 ### Bug Fixes
