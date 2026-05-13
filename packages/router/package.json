@@ -202,6 +202,7 @@
     "@pinia/colada": ">=0.21.2",
     "@vue/compiler-sfc": "^3.5.34",
     "pinia": "^3.0.4",
+    "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0",
     "vue": "^3.5.34"
   },
   "peerDependenciesMeta": {
@@ -212,6 +213,9 @@
       "optional": true
     },
     "@pinia/colada": {
+      "optional": true
+    },
+    "vite": {
       "optional": true
     }
   },
