@@ -195,10 +195,8 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
           : [component.ref.i]
 
         internalInstances.forEach(instance => {
-          if (instance) {
-            // @ts-expect-error
-            instance.__vrv_devtools = info
-          }
+          // @ts-expect-error
+          instance.__vrv_devtools = info
         })
       }
 
