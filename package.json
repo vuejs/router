@@ -67,11 +67,19 @@
       "@babel/generator": "^8.0.0-rc.4",
       "@babel/types": "^8.0.0-rc.4",
       "@types/node": "^24.10.4",
-      "@vue/compiler-sfc": "^3.6.0-beta.10",
-      "@vue/runtime-dom": "^3.6.0-beta.10",
-      "@vue/server-renderer": "^3.6.0-beta.10",
+      "@vue/compiler-core": "^3.6.0-beta.12",
+      "@vue/compiler-dom": "^3.6.0-beta.12",
+      "@vue/compiler-sfc": "^3.6.0-beta.12",
+      "@vue/compiler-ssr": "^3.6.0-beta.12",
+      "@vue/compiler-vapor": "^3.6.0-beta.12",
+      "@vue/reactivity": "^3.6.0-beta.12",
+      "@vue/runtime-core": "^3.6.0-beta.12",
+      "@vue/runtime-dom": "^3.6.0-beta.12",
+      "@vue/runtime-vapor": "^3.6.0-beta.12",
+      "@vue/server-renderer": "^3.6.0-beta.12",
+      "@vue/shared": "^3.6.0-beta.12",
       "vite": "^7.3.0",
-      "vue": "^3.6.0-beta.10"
+      "vue": "^3.6.0-beta.12"
     },
     "peerDependencyRules": {
       "ignoreMissing": [
