@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import { VaporRouterView } from '../src/VaporRouterView'
-import { RouteLocationNormalizedLoose } from './utils'
+import type { RouteLocationNormalizedLoose } from './utils'
 import { START_LOCATION_NORMALIZED } from '../src/location'
 import {
   createComponent,
@@ -20,7 +20,7 @@ import {
   withVaporCtx,
 } from 'vue'
 import { createMockedRoute, createVaporMount } from './mount'
-import { RouteComponent, RouteLocationNormalized } from '../src'
+import type { RouteComponent, RouteLocationNormalized } from '../src'
 import { describe, expect, it } from 'vitest'
 import { mockWarn } from './vitest-mock-warn'
 
@@ -79,7 +79,7 @@ const components = {
   Nested: {
     render: () => {
       const n3 = template('<div><h2>Nested', true)()
-      setInsertionState(n3 as any, null, 1, true)
+      setInsertionState(n3 as any, null, 1)
       createIf(
         () => VaporRouterView,
         () => {
