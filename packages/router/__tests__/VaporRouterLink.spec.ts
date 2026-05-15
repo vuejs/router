@@ -2,16 +2,20 @@
  * @vitest-environment happy-dom
  */
 import { VaporRouterLink } from '../src/VaporRouterLink'
-import { RouteQueryAndHash, MatcherLocationRaw } from '../src/types'
+import type { RouteQueryAndHash, MatcherLocationRaw } from '../src/types'
 import { START_LOCATION_NORMALIZED } from '../src/location'
-import {
-  createMemoryHistory,
+import type {
   RouterOptions,
   RouteLocationNormalized,
-  RouteLocationResolved,
+  RouteLocationResolved} from '../src';
+import {
+  createMemoryHistory,
   _RouterLinkI,
 } from '../src'
 import { createMockedRoute, createVaporMount } from './mount'
+import type {
+  PropType,
+  VaporDirective} from 'vue';
 import {
   computed,
   createComponent,
@@ -20,7 +24,6 @@ import {
   createSlot,
   defineVaporComponent,
   nextTick,
-  PropType,
   ref,
   renderEffect,
   setDynamicProps,
@@ -28,11 +31,10 @@ import {
   setText,
   template,
   txt,
-  VaporDirective,
   withVaporCtx,
   withVaporDirectives,
 } from 'vue'
-import { RouteRecordNormalized } from '../src/matcher/types'
+import type { RouteRecordNormalized } from '../src/matcher/types'
 import { routerKey } from '../src/injectionSymbols'
 import { tick } from './utils'
 import { vi, describe, expect, it } from 'vitest'
@@ -993,7 +995,7 @@ describe('RouterLink', () => {
             () => isExternalLink.value,
             () => {
               const n3 = t0()
-              setInsertionState(n3 as any, null, 0, true)
+              setInsertionState(n3 as any, null, 0)
               createSlot('default')
               renderEffect(() =>
                 setDynamicProps(n3, [attrs, { href: props.to }])
@@ -1007,7 +1009,7 @@ describe('RouterLink', () => {
                 {
                   default: withVaporCtx((slotProps0: any) => {
                     const n6 = t0()
-                    setInsertionState(n6 as any, null, 0, true)
+                    setInsertionState(n6 as any, null, 0)
                     createSlot('default', null)
                     // @ts-ignore
                     n6.$evtclick = e => slotProps0.navigate(e)

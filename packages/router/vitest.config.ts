@@ -9,6 +9,17 @@ export default defineConfig({
     __FEATURE_PROD_DEVTOOLS__: false,
     __STRIP_DEVTOOLS__: true,
   },
+  resolve: {
+    alias: {
+      vue: 'vue/dist/vue.runtime.esm-bundler.js',
+      '@vue/runtime-core': '@vue/runtime-core/dist/runtime-core.esm-bundler.js',
+      '@vue/runtime-dom': '@vue/runtime-dom/dist/runtime-dom.esm-bundler.js',
+      '@vue/runtime-vapor':
+        '@vue/runtime-vapor/dist/runtime-vapor.esm-bundler.js',
+      '@vue/reactivity': '@vue/reactivity/dist/reactivity.esm-bundler.js',
+      '@vue/shared': '@vue/shared/dist/shared.esm-bundler.js',
+    },
+  },
   plugins: [Vue()],
 
   test: {
