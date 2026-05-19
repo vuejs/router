@@ -12,14 +12,14 @@
   "dependencies": {
     "semver": "^7.7.3",
     "valibot": "^1.4.0",
-    "vue": "^3.5.34",
+    "vue": "^3.6.0-beta.10",
     "vue-router": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/semver": "^7.7.1",
     "@vitejs/plugin-vue": "^6.0.6",
-    "@vue/compiler-sfc": "^3.5.34",
+    "@vue/compiler-sfc": "^3.6.0-beta.10",
     "@vue/tsconfig": "^0.8.1",
     "auto-scaffold": "^0.2.1",
     "unplugin-auto-import": "^21.0.0",

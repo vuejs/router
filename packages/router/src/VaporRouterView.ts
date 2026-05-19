@@ -1,0 +1,157 @@
+import {
+  inject,
+  provide,
+  PropType,
+  ref,
+  unref,
+  ComponentPublicInstance,
+  computed,
+  watch,
+  createTemplateRefSetter,
+  createComponent,
+  defineVaporComponent,
+  type VaporComponent,
+  createDynamicComponent,
+  Block,
+} from 'vue'
+import type { RouteLocationNormalizedLoaded } from './typed-routes'
+import type { RouteLocationMatched } from './types'
+import {
+  matchedRouteKey,
+  viewDepthKey,
+  routerViewLocationKey,
+} from './injectionSymbols'
+import { assign } from './utils'
+import type { RouterViewProps, RouterViewDevtoolsContext } from './RouterView'
+
+export type { RouterViewProps, RouterViewDevtoolsContext }
+
+export const VaporRouterView = /*#__PURE__*/ defineVaporComponent({
+  name: 'VaporRouterView',
+  // #674 we manually inherit them
+  inheritAttrs: false,
+  props: {
+    name: {
+      type: String as PropType<string>,
+      default: 'default',
+    },
+    route: Object as PropType<RouteLocationNormalizedLoaded>,
+  },
+
+  slots: {} as {
+    default?: ({
+      Component,
+      route,
+    }: {
+      Component: Block
+      route: RouteLocationNormalizedLoaded
+    }) => Block
+  },
+
+  setup(props, { attrs, slots }) {
+    const injectedRoute = inject(routerViewLocationKey)!
+    const routeToDisplay = computed<RouteLocationNormalizedLoaded>(
+      () => props.route || injectedRoute.value
+    )
+    const injectedDepth = inject(viewDepthKey, 0)
+    // The depth changes based on empty components option, which allows passthrough routes e.g. routes with children
+    // that are used to reuse the `path` property
+    const depth = computed<number>(() => {
+      let initialDepth = unref(injectedDepth)
+      const { matched } = routeToDisplay.value
+      let matchedRoute: RouteLocationMatched | undefined
+      while (
+        (matchedRoute = matched[initialDepth]) &&
+        !matchedRoute.components
+      ) {
+        initialDepth++
+      }
+      return initialDepth
+    })
+    const matchedRouteRef = computed<RouteLocationMatched | undefined>(
+      () => routeToDisplay.value.matched[depth.value]
+    )
+
+    provide(
+      viewDepthKey,
+      computed(() => depth.value + 1)
+    )
+    provide(matchedRouteKey, matchedRouteRef)
+    provide(routerViewLocationKey, routeToDisplay)
+
+    const viewRef = ref<ComponentPublicInstance>()
+
+    // watch at the same time the component instance, the route record we are
+    // rendering, and the name
+    watch(
+      () => [viewRef.value, matchedRouteRef.value, props.name] as const,
+      ([instance, to, name], [oldInstance, from]) => {
+        // copy reused instances
+        if (to) {
+          // this will update the instance for new instances as well as reused
+          // instances when navigating to a new route
+          to.instances[name] = instance
+          // the component instance is reused for a different route or name, so
+          // we copy any saved update or leave guards. With async setup, the
+          // mounting component will mount before the matchedRoute changes,
+          // making instance === oldInstance, so we check if guards have been
+          // added before. This works because we remove guards when
+          // unmounting/deactivating components
+          if (from && from !== to && instance && instance === oldInstance) {
+            if (!to.leaveGuards.size) {
+              to.leaveGuards = from.leaveGuards
+            }
+            if (!to.updateGuards.size) {
+              to.updateGuards = from.updateGuards
+            }
+          }
+        }
+      },
+      { flush: 'post' }
+    )
+
+    const ViewComponent = computed(() => {
+      const matchedRoute = matchedRouteRef.value
+      return matchedRoute && matchedRoute.components![props.name]
+    })
+
+    // props from route configuration
+    const routeProps = computed(() => {
+      const route = routeToDisplay.value
+      const currentName = props.name
+      const matchedRoute = matchedRouteRef.value
+      const routePropsOption = matchedRoute && matchedRoute.props[currentName]
+      return routePropsOption
+        ? routePropsOption === true
+          ? route.params
+          : typeof routePropsOption === 'function'
+            ? routePropsOption(route)
+            : routePropsOption
+        : null
+    })
+
+    const setRef = createTemplateRefSetter()
+
+    const initComponent = () => {
+      if (!ViewComponent.value) return []
+      const instance = createComponent(ViewComponent.value as VaporComponent, {
+        $: [() => assign({}, routeProps.value, attrs)],
+      })
+      setRef(instance, viewRef)
+      return instance
+    }
+
+    if (slots.default) {
+      return slots.default({
+        // lazy initialization via getter (created on demand) for KeepAlive
+        get Component() {
+          return initComponent()
+        },
+        get route() {
+          return routeToDisplay.value
+        },
+      })
+    }
+    return createDynamicComponent(initComponent)
+  },
+})

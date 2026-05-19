@@ -1,8 +1,9 @@
-<script setup lang="ts">
+<script setup lang="ts" vapor>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 
 console.log(`We have ${router.getRoutes().length} routes.`)
 
@@ -37,8 +38,8 @@ const targetRoute = ref('')
     <div>
       <details>
         <summary>Route Info</summary>
-        <p>Currently at "{{ $route.name }}" ({{ $route.fullPath }})</p>
-        <pre>{{ $route.params }}</pre>
+        <p>Currently at "{{ route.name }}" ({{ route.fullPath }})</p>
+        <pre>{{ route.params }}</pre>
       </details>
       <form @submit.prevent="router.push(targetRoute)">
         <label>
