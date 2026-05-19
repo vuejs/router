@@ -92,9 +92,10 @@ export interface DefinePage<FilePath extends string = string> extends Partial<
    * @experimental
    */
   params?: {
-    path?: string extends FilePath
-      ? Record<string, ParamParserType>
-      : { [K in PathParamNamesForFilePath<FilePath>]?: ParamParserType }
+    /**
+     * Parameters extracted from the path. Allows to setup custom parsers without changing the filename.
+     */
+    path?: { [K in PathParamNamesForFilePath<FilePath>]?: ParamParserType }
 
     /**
      * Parameters extracted from the query.
