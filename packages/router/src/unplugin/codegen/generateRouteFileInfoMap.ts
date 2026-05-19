@@ -103,10 +103,12 @@ function generateRouteFileInfoLines(
       return acc
     }, [])
 
-  // All path param names visible to this file's own route, including those
-  // contributed by ancestor segments. Children's params live in their own
-  // files and are recursed below.
-  const pathParamNames = node.pathParams.map(p => p.paramName)
+  // Only params owned by this node's own segment. Ancestor params belong to
+  // their own files (and cannot be retyped from here via `definePage()`), and
+  // children's params live in their own files and are recursed below.
+  const pathParamNames = node.value.isParam()
+    ? node.value.pathParams.map(p => p.paramName)
+    : []
 
   // Most of the time we only have one view, but with named views we can have multiple.
   const currentRouteInfo =

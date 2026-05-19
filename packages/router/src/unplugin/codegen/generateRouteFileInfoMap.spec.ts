@@ -480,7 +480,7 @@ describe('generateRouteFileInfoMap', () => {
       `)
   })
 
-  it('lists path param names for the file (including ancestors)', () => {
+  it('lists path param names owned by the file segment only', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('a.[b].c.[d]', 'src/pages/a.[b].c.[d].vue')
     tree.insert('users/[userId]', 'src/pages/users/[userId].vue')
@@ -517,7 +517,6 @@ describe('generateRouteFileInfoMap', () => {
               | never
             pathParamNames:
               | 'postId'
-              | 'userId'
           }
         }"
       `)
