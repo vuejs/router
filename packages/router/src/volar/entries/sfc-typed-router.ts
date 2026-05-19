@@ -51,8 +51,16 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
       // NOTE: this might not work if different from the root passed to VueRouter unplugin
       const relativeFilePath = rootDir ? relative(rootDir, fileName) : fileName
 
-      const useRouteNameType = `import('vue-router/auto-routes')._RouteNamesForFilePath<'${relativeFilePath}'>`
+      // Escape backslashes/apostrophes so we can safely embed the file path
+      // inside a single-quoted TS string literal type argument.
+      const escapedFilePath = relativeFilePath
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+
+      const useRouteNameType = `import('vue-router/auto-routes')._RouteNamesForFilePath<'${escapedFilePath}'>`
       const useRouteNameTypeParam = `<${useRouteNameType}>`
+
+      const definePageFilePathTypeParam = `<'${escapedFilePath}'>`
 
       if (sfc.scriptSetup) {
         visit(sfc.scriptSetup.ast)
@@ -91,6 +99,23 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
               ` as ReturnType<typeof useRoute${useRouteNameTypeParam}>)`
             )
           }
+        } else if (
+          ts.isCallExpression(node) &&
+          ts.isIdentifier(node.expression) &&
+          ts.idText(node.expression) === 'definePage' &&
+          !node.typeArguments &&
+          node.arguments.length === 1 &&
+          !sfc.scriptSetup!.lang.startsWith('js')
+        ) {
+          // Inject the file path so `definePage`'s `params.path` keys can be
+          // narrowed to this file's actual path params.
+          replaceSourceRange(
+            embeddedCode.content,
+            sfc.scriptSetup!.name,
+            node.expression.end,
+            node.expression.end,
+            definePageFilePathTypeParam
+          )
         } else {
           ts.forEachChild(node, visit)
         }

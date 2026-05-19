@@ -62,6 +62,7 @@ export {
   type ParamParserType,
   type ParamParserType_Native,
   type DefinePageQueryParamOptions,
+  type PathParamNamesForFilePath as _PathParamNamesForFilePath,
 } from './runtime'
 
 // Data loaders exports

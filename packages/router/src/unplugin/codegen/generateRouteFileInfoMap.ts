@@ -20,7 +20,10 @@ export function generateRouteFileInfoMap(
     .flatMap(child => generateRouteFileInfoLines(child, root))
 
   // because the same file can be used for multiple routes, we need to group them
-  const routesInfo = new Map<string, { routes: string[]; views: string[] }>()
+  const routesInfo = new Map<
+    string,
+    { routes: string[]; views: string[]; pathParamNames: string[] }
+  >()
   for (const routeInfo of routesInfoList) {
     // ensure we have an entry for the file
     let info = routesInfo.get(routeInfo.key)
@@ -30,23 +33,30 @@ export function generateRouteFileInfoMap(
         (info = {
           routes: [],
           views: [],
+          pathParamNames: [],
         })
       )
     }
 
     info.routes.push(...routeInfo.routeNames)
     info.views.push(...(routeInfo.childrenNamedViews || []))
+    info.pathParamNames.push(...routeInfo.pathParamNames)
   }
 
   const code = Array.from(routesInfo.entries())
     .map(
-      ([file, { routes, views }]) =>
+      ([file, { routes, views, pathParamNames }]) =>
         `
   ${toStringLiteral(file)}: {
     routes:
       ${formatMultilineUnion(routes.sort().map(toStringLiteral), 6)}
     views:
       ${formatMultilineUnion(views.sort().map(toStringLiteral), 6)}
+    pathParamNames:
+      ${formatMultilineUnion(
+        Array.from(new Set(pathParamNames)).sort().map(toStringLiteral),
+        6
+      )}
   }`
     )
     .join('\n')
@@ -66,6 +76,7 @@ function generateRouteFileInfoLines(
   key: string
   routeNames: string[]
   childrenNamedViews: string[] | null
+  pathParamNames: string[]
 }> {
   const deepChildren =
     node.children.size > 0 ? node.getChildrenDeepSorted() : null
@@ -92,6 +103,13 @@ function generateRouteFileInfoLines(
       return acc
     }, [])
 
+  // Only params owned by this node's own segment. Ancestor params belong to
+  // their own files (and cannot be retyped from here via `definePage()`), and
+  // children's params live in their own files and are recursed below.
+  const pathParamNames = node.value.isParam()
+    ? node.value.pathParams.map(p => p.paramName)
+    : []
+
   // Most of the time we only have one view, but with named views we can have multiple.
   const currentRouteInfo =
     routeNames.length === 0
@@ -100,6 +118,7 @@ function generateRouteFileInfoLines(
           key: relative(rootDir, file).replaceAll('\\', '/'),
           routeNames,
           childrenNamedViews: deepChildrenNamedViews,
+          pathParamNames,
         }))
 
   const childrenRouteInfo = node
