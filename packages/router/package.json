@@ -68,16 +68,15 @@
       "import": "./dist/vue-router.js",
       "require": "./index.cjs"
     },
-    "./dist/*": "./dist/*",
     "./vetur/*": "./vetur/*",
     "./package.json": "./package.json",
     "./experimental": {
       "types": "./dist/experimental/index.d.ts",
-      "default": "./dist/experimental/index.js"
+      "import": "./dist/experimental/index.js"
     },
     "./experimental/pinia-colada": {
       "types": "./dist/experimental/pinia-colada.d.ts",
-      "default": "./dist/experimental/pinia-colada.js"
+      "import": "./dist/experimental/pinia-colada.js"
     },
     "./auto-resolver": {
       "types": "./vue-router-auto-resolver.d.mts"
@@ -120,7 +119,8 @@
     "./volar/sfc-typed-router": {
       "types": "./dist/volar/sfc-typed-router.d.cts",
       "default": "./dist/volar/sfc-typed-router.cjs"
-    }
+    },
+    "./dist/*": "./dist/*"
   },
   "scripts": {
     "dev": "vitest --ui",
