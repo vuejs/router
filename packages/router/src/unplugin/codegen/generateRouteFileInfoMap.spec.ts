@@ -522,6 +522,46 @@ describe('generateRouteFileInfoMap', () => {
       `)
   })
 
+  it('excludes both ancestor and descendant path params from each file', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('[a]', 'src/pages/[a].vue')
+    tree.insert('[a]/[b]', 'src/pages/[a]/[b].vue')
+    tree.insert('[a]/[b]/[c]', 'src/pages/[a]/[b]/[c].vue')
+
+    expect(formatExports(generateRouteFileInfoMap(tree, { root: '' })))
+      .toMatchInlineSnapshot(`
+        "export interface _RouteFileInfoMap {
+          'src/pages/[a].vue': {
+            routes:
+              | '/[a]'
+              | '/[a]/[b]'
+              | '/[a]/[b]/[c]'
+            views:
+              | 'default'
+            pathParamNames:
+              | 'a'
+          }
+          'src/pages/[a]/[b].vue': {
+            routes:
+              | '/[a]/[b]'
+              | '/[a]/[b]/[c]'
+            views:
+              | 'default'
+            pathParamNames:
+              | 'b'
+          }
+          'src/pages/[a]/[b]/[c].vue': {
+            routes:
+              | '/[a]/[b]/[c]'
+            views:
+              | never
+            pathParamNames:
+              | 'c'
+          }
+        }"
+      `)
+  })
+
   it('escapes quoites in file paths', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('path', "src/pages/it's fine.vue")
