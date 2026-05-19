@@ -30,15 +30,13 @@ export function definePage<FilePath extends string = string>(
  *
  * @internal
  */
-export type _PathParamNamesForFilePath<FilePath extends string> =
-  TypesConfig extends { _RouteFileInfoMap: infer Map }
-    ? Map extends Record<FilePath, infer Info>
-      ? Info extends { pathParamNames: infer N }
-        ? N extends string
-          ? N
-          : string
-        : string
-      : string
+export type PathParamNamesForFilePath<FilePath extends string> =
+  TypesConfig extends {
+    _RouteFileInfoMap: {
+      [K in FilePath]: { pathParamNames: infer N extends string }
+    }
+  }
+    ? N
     : string
 
 /**
@@ -96,7 +94,7 @@ export interface DefinePage<FilePath extends string = string> extends Partial<
   params?: {
     path?: string extends FilePath
       ? Record<string, ParamParserType>
-      : { [K in _PathParamNamesForFilePath<FilePath>]?: ParamParserType }
+      : { [K in PathParamNamesForFilePath<FilePath>]?: ParamParserType }
 
     /**
      * Parameters extracted from the query.
