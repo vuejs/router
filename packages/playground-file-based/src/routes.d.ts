@@ -322,8 +322,6 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
       pathParamNames:
-        | 'org'
-        | 'pkgName'
         | 'pkgVersion'
     }
     'src/pages/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion].vue': {
@@ -332,8 +330,6 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
       pathParamNames:
-        | 'org'
-        | 'pkgName'
         | 'pkgVersion'
     }
     'src/pages/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range].vue': {
@@ -342,8 +338,6 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
       pathParamNames:
-        | 'org'
-        | 'pkgName'
         | 'pkgVersion'
     }
     'src/pages/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion].vue': {
@@ -352,8 +346,6 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
       pathParamNames:
-        | 'org'
-        | 'pkgName'
         | 'pkgVersion'
     }
     'src/pages/[...path].vue': {
@@ -517,7 +509,7 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
       pathParamNames:
-        | 'optional'
+        | never
     }
     'src/pages/tests/users/[username]/(user-home)/(user-home).vue': {
       routes:
@@ -525,7 +517,7 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
       pathParamNames:
-        | 'username'
+        | never
     }
     'src/pages/tests/users/[username]/(user)/profile.vue': {
       routes:
@@ -533,7 +525,7 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
       pathParamNames:
-        | 'username'
+        | never
     }
     'src/pages/u[name].vue': {
       routes:
@@ -551,7 +543,6 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
       pathParamNames:
-        | 'name'
         | 'userId'
     }
     'src/pages/u[name]/24.vue': {
@@ -560,7 +551,7 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
       pathParamNames:
-        | 'name'
+        | never
     }
     'src/pages/users/[userId=int].vue': {
       routes:
