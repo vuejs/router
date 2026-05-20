@@ -64,9 +64,9 @@ export class MatcherPatternQueryParam<
             valueBeforeParse
           ) as T
         } catch (error) {
-          // if there is a miss but we have a default, use it
-          // otherwise rethrow the error
-          if (this.defaultValue === undefined) {
+          // only propagate the miss for required params without a default
+          // otherwise let the value fall back to the default (or undefined)
+          if (this.required && this.defaultValue === undefined) {
             throw error
           }
           // ensure the default value is used
@@ -83,7 +83,9 @@ export class MatcherPatternQueryParam<
                 valueBeforeParse
               ) as T)
       } catch (error) {
-        if (this.defaultValue === undefined) {
+        // only propagate the miss for required params without a default
+        // otherwise let the value fall back to the default (or undefined)
+        if (this.required && this.defaultValue === undefined) {
           throw error
         }
       }

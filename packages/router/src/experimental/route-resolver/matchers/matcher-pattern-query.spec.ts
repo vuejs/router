@@ -220,14 +220,24 @@ describe('MatcherPatternQueryParam', () => {
       expect(matcher.build({ count: 42 })).toEqual({ c: '42' })
     })
 
-    it('throws on error without default', () => {
+    it('swallows parser miss for optional param without default', () => {
       const matcher = new MatcherPatternQueryParam(
         'count',
         'c',
         'value',
         PARAM_PARSER_INT
       )
-      expect(() => matcher.match({ c: 'invalid' })).toThrow(MatchMiss)
+      // optional query params should not propagate parser misses
+      expect(matcher.match({ c: 'invalid' })).toEqual({ count: undefined })
+    })
+
+    it('swallows parser miss for optional array param without default', () => {
+      const matcher = new MatcherPatternQueryParam('ids', 'id', 'array', {
+        get: () => {
+          throw new MatchMiss()
+        },
+      })
+      expect(matcher.match({ id: ['1', '2'] })).toEqual({ ids: undefined })
     })
 
     it('falls back to default on parser error', () => {
