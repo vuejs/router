@@ -8,6 +8,7 @@ import {
   generatePathParamsOptions,
   generateParamParserOptions,
   generateNormalizedParamParsersDeclarations,
+  collectUsedParamParserNames,
 } from './generateParamParsers'
 import { generatePageImport, formatMeta } from './generateRouteRecords'
 
@@ -78,6 +79,13 @@ export function generateRouteResolver(
   importsMap: ImportsMap,
   paramParsersMap: ParamParsersMap
 ): string {
+  // restrict imports + normalized declarations to parsers actually referenced
+  // by a route, so unused parser files don't get pulled into the bundle
+  const usedParserNames = collectUsedParamParserNames(tree)
+  const usedParamParsersMap: ParamParsersMap = new Map(
+    Array.from(paramParsersMap).filter(([key]) => usedParserNames.has(key))
+  )
+
   const state: GenerateRouteResolverState = { id: 0, matchableRecords: [] }
   const records = tree.getChildrenSorted().map(node =>
     generateRouteRecord({
@@ -87,7 +95,7 @@ export function generateRouteResolver(
       state,
       options,
       importsMap,
-      paramParsersMap,
+      paramParsersMap: usedParamParsersMap,
     })
   )
 
@@ -97,7 +105,7 @@ export function generateRouteResolver(
   importsMap.add('vue-router/experimental', 'normalizeRouteRecord')
 
   const normalizedDeclarations = generateNormalizedParamParsersDeclarations(
-    paramParsersMap,
+    usedParamParsersMap,
     importsMap
   )
 

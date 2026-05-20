@@ -1404,4 +1404,97 @@ describe('generateRouteResolver', () => {
       expect(warnings).not.toContain('"/members"')
     })
   })
+
+  describe('param parser filtering', () => {
+    type ParamParserEntry = NonNullable<ReturnType<ParamParsersMap['get']>>
+    const uuidEntry = {
+      name: 'uuid',
+      typeName: 'Param_uuid',
+      relativePath: 'parsers/uuid',
+      absolutePath: '/abs/parsers/uuid',
+    } satisfies ParamParserEntry
+    const slugEntry = {
+      name: 'slug',
+      typeName: 'Param_slug',
+      relativePath: 'parsers/slug',
+      absolutePath: '/abs/parsers/slug',
+    } satisfies ParamParserEntry
+
+    it('omits imports and normalized declarations for unused parsers', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      tree.insert('users/[id=uuid]', 'users/[id=uuid].vue')
+
+      const importsMap = new ImportsMap()
+      const paramParsersMap: ParamParsersMap = new Map([
+        ['uuid', uuidEntry],
+        ['slug', slugEntry],
+      ])
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        importsMap,
+        paramParsersMap
+      )
+
+      expect(resolver).toContain('_normalized_PARAM_PARSER__uuid')
+      expect(resolver).not.toContain('PARAM_PARSER__slug')
+      expect(resolver).not.toContain('_normalized_PARAM_PARSER__slug')
+
+      const imports = importsMap.toString()
+      expect(imports).toContain("from '/abs/parsers/uuid'")
+      expect(imports).not.toContain("from '/abs/parsers/slug'")
+    })
+
+    it('omits all parser imports when no route references any parser', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      tree.insert('users/[id]', 'users/[id].vue')
+
+      const importsMap = new ImportsMap()
+      const paramParsersMap: ParamParsersMap = new Map([
+        ['uuid', uuidEntry],
+        ['slug', slugEntry],
+      ])
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        importsMap,
+        paramParsersMap
+      )
+
+      expect(resolver).not.toContain('_normalizeParamParser')
+      expect(resolver).not.toContain('PARAM_PARSER__uuid')
+      expect(resolver).not.toContain('PARAM_PARSER__slug')
+
+      const imports = importsMap.toString()
+      expect(imports).not.toContain('_normalizeParamParser')
+      expect(imports).not.toContain("from '/abs/parsers/uuid'")
+      expect(imports).not.toContain("from '/abs/parsers/slug'")
+    })
+
+    it('detects parsers referenced from query params', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('search', 'search.vue')
+      node.setCustomRouteBlock('search.vue', {
+        params: { query: { id: 'uuid' } },
+      })
+
+      const importsMap = new ImportsMap()
+      const paramParsersMap: ParamParsersMap = new Map([
+        ['uuid', uuidEntry],
+        ['slug', slugEntry],
+      ])
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        importsMap,
+        paramParsersMap
+      )
+
+      expect(resolver).toContain('_normalized_PARAM_PARSER__uuid')
+      expect(resolver).not.toContain('_normalized_PARAM_PARSER__slug')
+    })
+  })
 })

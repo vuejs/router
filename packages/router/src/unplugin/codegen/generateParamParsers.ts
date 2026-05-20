@@ -66,6 +66,24 @@ export interface MissingParamParser {
   filePaths: string[]
 }
 
+/**
+ * Walks the route tree and returns the set of parser names referenced by any
+ * path or query param. Native parser names (`int`, `bool`) and references to
+ * parsers not present on disk are included as-is — callers decide what to do
+ * with them.
+ */
+export function collectUsedParamParserNames(tree: PrefixTree): Set<string> {
+  const used = new Set<string>()
+  for (const node of tree.getChildrenDeepSorted()) {
+    for (const param of node.params) {
+      if (param.parser) {
+        used.add(param.parser)
+      }
+    }
+  }
+  return used
+}
+
 export function collectMissingParamParsers(
   tree: PrefixTree,
   paramParsers: ParamParsersMap

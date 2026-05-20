@@ -2,6 +2,7 @@ import { describe, expect, it, test } from 'vitest'
 import {
   warnMissingParamParsers,
   collectMissingParamParsers,
+  collectUsedParamParserNames,
   generateParamParsersTypesDeclarations,
   generateParamsTypes,
   generateParamParserOptions,
@@ -155,6 +156,49 @@ describe('collectMissingParamParsers', () => {
       routePath: '/posts/:slug',
       filePaths: ['posts/[slug=slug].vue'],
     })
+  })
+})
+
+describe('collectUsedParamParserNames', () => {
+  it('returns an empty set when no route references a parser', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('users', 'users.vue')
+    tree.insert('posts/[id]', 'posts/[id].vue')
+
+    expect(collectUsedParamParserNames(tree).size).toBe(0)
+  })
+
+  it('collects parser names from path params', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('users/[id=uuid]', 'users/[id=uuid].vue')
+    tree.insert('posts/[slug=slug]', 'posts/[slug=slug].vue')
+
+    expect(collectUsedParamParserNames(tree)).toEqual(new Set(['uuid', 'slug']))
+  })
+
+  it('includes native parser names', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('users/[id=int]', 'users/[id=int].vue')
+
+    expect(collectUsedParamParserNames(tree)).toEqual(new Set(['int']))
+  })
+
+  it('collects parser names from query params', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    const node = tree.insert('search', 'search.vue')
+    node.setCustomRouteBlock('search.vue', {
+      params: { query: { id: 'uuid' } },
+    })
+
+    expect(collectUsedParamParserNames(tree)).toEqual(new Set(['uuid']))
+  })
+
+  it('deduplicates parsers referenced multiple times', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('users/[id=uuid]', 'users/[id=uuid].vue')
+    tree.insert('teams/[id=uuid]', 'teams/[id=uuid].vue')
+
+    expect(collectUsedParamParserNames(tree)).toEqual(new Set(['uuid']))
   })
 })
 
