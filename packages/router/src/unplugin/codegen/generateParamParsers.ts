@@ -90,14 +90,18 @@ export function collectMissingParamParsers(
 export function generateParamParsersTypesDeclarations(
   paramParsers: ParamParsersMap
 ) {
-  return Array.from(paramParsers.values())
-    .map(({ typeName, relativePath }) => {
-      const importPath = relativePath.startsWith('.')
-        ? relativePath
-        : './' + relativePath
-      return `type ${typeName} = _ExtractParamParserType<typeof import('${importPath}').parser>`
-    })
-    .join('\n')
+  return (
+    Array.from(paramParsers.values())
+      .map(({ typeName, relativePath }) => {
+        const importPath = relativePath.startsWith('.')
+          ? relativePath
+          : './' + relativePath
+        return `type ${typeName} = _ExtractParamParserType<typeof import('${importPath}').parser>`
+      })
+      // ensure deterministic order for testing, readability and git
+      .sort()
+      .join('\n')
+  )
 }
 
 export function generateParamsTypes(

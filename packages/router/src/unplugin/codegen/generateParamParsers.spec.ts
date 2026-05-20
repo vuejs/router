@@ -230,8 +230,8 @@ describe('generateParamParsersTypesDeclarations', () => {
 
     const result = generateParamParsersTypesDeclarations(paramParsers)
     expect(result).toMatchInlineSnapshot(`
-      "type Param_uuid = _ExtractParamParserType<typeof import('./parsers/uuid').parser>
-      type Param_slug = _ExtractParamParserType<typeof import('./parsers/slug').parser>"
+      "type Param_slug = _ExtractParamParserType<typeof import('./parsers/slug').parser>
+      type Param_uuid = _ExtractParamParserType<typeof import('./parsers/uuid').parser>"
     `)
   })
 })
@@ -667,8 +667,8 @@ describe('generateParamParserCustomType', () => {
 
     expect(generateParamParsersTypesDeclarations(paramParsers))
       .toMatchInlineSnapshot(`
-        "type Param_userId = _ExtractParamParserType<typeof import('./parsers/user-id').parser>
-        type Param_dateWithDashes = _ExtractParamParserType<typeof import('./parsers/date-with-dashes').parser>"
+        "type Param_dateWithDashes = _ExtractParamParserType<typeof import('./parsers/date-with-dashes').parser>
+        type Param_userId = _ExtractParamParserType<typeof import('./parsers/user-id').parser>"
       `)
 
     const param: TreePathParam = {
