@@ -100,28 +100,96 @@ export interface DefinePage<FilePath extends string = string> extends Partial<
     /**
      * Parameters extracted from the query.
      */
-    query?: Record<string, DefinePageQueryParamOptions | ParamParserType>
+    query?: Record<string, DefinePageQueryParamOptionsAny | ParamParserType>
   }
 }
 
-export type ParamParserType_Native = 'int' | 'bool'
+/**
+ * Built-in param parsers. Always available; merged into {@link ParamParsers}
+ * alongside any entries the user augments into {@link TypesConfig.ParamParsers}.
+ *
+ * @internal
+ */
+export interface ParamParsers_Native {
+  int: { type: number }
+  bool: { type: boolean }
+}
 
-export type ParamParserType =
-  | (TypesConfig extends Record<'ParamParsers', infer ParamParsers>
-      ? ParamParsers
-      : never)
-  | ParamParserType_Native
+export type ParamParserType_Native = keyof ParamParsers_Native
+
+/**
+ * Full registry of param parsers: built-ins merged with whatever the user
+ * augments into {@link TypesConfig.ParamParsers}. Each entry is shaped
+ * `{ type: T }` so the parsed value type can be looked up by name via
+ * {@link ParamParserTypeOf}. The vue-router codegen emits this augmentation
+ * automatically from files in the `params/` folder.
+ *
+ * @internal
+ */
+export type ParamParsers = ParamParsers_Native &
+  (TypesConfig extends { _ParamParsers: infer P } ? P : {})
+
+/**
+ * Union of all known parser names (built-in + augmented).
+ */
+export type ParamParserType = keyof ParamParsers
+
+/**
+ * Resolves the parsed value type for a given parser name. Distributes over a
+ * union of names, so `ParamParserTypeOf<'int' | 'date'>` → `number | Date`.
+ *
+ * Falls back to `unknown` when an entry is registered without a `type` field.
+ * The `_ParamParsers` slot is internal — vue-router's codegen populates it
+ * from files in `params/`.
+ *
+ * @example
+ * ```ts
+ * declare module 'vue-router' {
+ *   interface TypesConfig {
+ *     _ParamParsers: {
+ *       date: { type: Date }
+ *     }
+ *   }
+ * }
+ * ```
+ */
+export type ParamParserTypeOf<Name extends ParamParserType> =
+  Name extends keyof ParamParsers
+    ? ParamParsers[Name] extends { type: infer T }
+      ? T
+      : unknown
+    : unknown
+
+/**
+ * Distributive variant of {@link DefinePageQueryParamOptions} used in the
+ * `params.query` record. Distributing over `ParamParserType` produces one
+ * variant per literal parser name so the `parser` field acts as a discriminant
+ * and `default` is narrowed to that parser's resolved value type. Without
+ * this, the bare interface defaults `Parser` to the full `ParamParserType`
+ * union and `default` collapses to the union of every parser's value type.
+ *
+ * @internal
+ */
+export type DefinePageQueryParamOptionsAny<
+  P extends ParamParserType = ParamParserType,
+> = P extends ParamParserType ? DefinePageQueryParamOptions<P> : never
 
 /**
  * Configures how to extract a route param from a specific query parameter.
+ *
+ * @typeParam Parser - name of the param parser used for this query parameter,
+ * used to type the {@link DefinePageQueryParamOptions.default | `default`}
+ * value via {@link ParamParserTypeOf}.
  */
-export interface DefinePageQueryParamOptions<T = unknown> {
+export interface DefinePageQueryParamOptions<
+  Parser extends ParamParserType = ParamParserType,
+> {
   /**
    * The type of the query parameter. Allowed values are native param parsers
    * and any parser in the {@link https://uvr.esm.is/TODO | params folder }. If
    * not provided, the value will kept as is.
    */
-  parser?: ParamParserType
+  parser?: Parser
 
   // TODO: allow customizing the name in the query string
   // queryKey?: string
@@ -131,7 +199,7 @@ export interface DefinePageQueryParamOptions<T = unknown> {
    * (e.g. a invalid number is passed to the int param parser). If not provided
    * and the param is not required, the route will match with undefined.
    */
-  default?: (() => T) | T
+  default?: (() => ParamParserTypeOf<Parser>) | ParamParserTypeOf<Parser>
 
   /**
    * How to format the query parameter value.

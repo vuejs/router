@@ -59,8 +59,13 @@ ${paramsTypesDeclaration}
     : ''
 }declare module 'vue-router' {
   interface TypesConfig {
-    ParamParsers:
-${customParamsTypeList.map(literal => ' '.repeat(6) + '| ' + literal).join('\n')}
+    _ParamParsers: ${
+      customParamsTypeList.length === 0
+        ? '{}'
+        : `{
+${customParamsTypeList.map(entry => ' '.repeat(6) + entry).join('\n')}
+    }`
+    }
     RouteNamedMap: import('${routesModule}').RouteNamedMap
     _RouteFileInfoMap: import('${routesModule}')._RouteFileInfoMap
   }

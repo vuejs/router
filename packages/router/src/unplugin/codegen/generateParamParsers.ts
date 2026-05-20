@@ -176,16 +176,20 @@ export function generateNormalizedParamParsersDeclarations(
   return declarations.join('\n')
 }
 
+/**
+ * Generates one entry per registered custom parser for the
+ * `TypesConfig._ParamParsers` augmentation, e.g.
+ * `'date': { type: Param_date }`. Returns an empty array when there are no
+ * custom parsers so the consumer can emit an empty object literal.
+ */
 export function generateCustomParamParsersList(
   paramParsers: ParamParsersMap
 ): string[] {
-  const parserNames = Array.from(paramParsers.keys()).sort()
-
-  if (parserNames.length === 0) {
-    return ['never']
-  }
-
-  return parserNames.map(toStringLiteral)
+  return Array.from(paramParsers.entries())
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(
+      ([key, { typeName }]) => `${toStringLiteral(key)}: { type: ${typeName} }`
+    )
 }
 
 export function generatePathParamsOptions(

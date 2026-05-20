@@ -47,7 +47,7 @@ export default defineConfig({
       checker: 'vue-tsc',
       // only: true,
       // by default it includes all specs too
-      include: ['src/**/*.test-d.ts'],
+      include: ['src/**/*.test-d.ts', 'test-dts/**/*.test-d.ts'],
       // source type errors are already covered by test:types (tsc --build)
       // vitest uses --incremental with a shared tsBuildInfoFile that can go
       // stale and produce phantom errors in source files

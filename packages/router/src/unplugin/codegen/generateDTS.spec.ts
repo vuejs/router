@@ -34,8 +34,7 @@ describe('generateDTS', () => {
 
       declare module 'vue-router' {
         interface TypesConfig {
-          ParamParsers:
-
+          _ParamParsers: {}
           RouteNamedMap: import('vue-router/auto-routes').RouteNamedMap
           _RouteFileInfoMap: import('vue-router/auto-routes')._RouteFileInfoMap
         }
