@@ -392,11 +392,23 @@ ${queryParams
       paramParsersMap
     )
 
+    // raw parsers receive the URL value as-is, so force array format to
+    // guarantee they see the full set of values for the key.
+    const isRawParser = !!(
+      param.parser && paramParsersMap.get(param.parser)?.isRaw
+    )
+    if (isRawParser && param.format === 'value') {
+      console.warn(
+        `Query param "${param.paramName}" in route "${node.fullPath}" uses raw param parser "${param.parser}" but specifies \`format: 'value'\`. The format is ignored because raw parsers always receive the array form.`
+      )
+    }
+    const format = isRawParser ? 'array' : param.format
+
     const args = [
       `'${param.paramName}'`,
       // TODO: allow param.queryKey
       `'${param.paramName}'`,
-      `'${param.format}'`,
+      `'${format}'`,
     ]
 
     if (parserOptions || param.defaultValue !== undefined || param.required) {

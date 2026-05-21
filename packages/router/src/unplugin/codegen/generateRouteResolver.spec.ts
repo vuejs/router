@@ -9,6 +9,7 @@ import {
 import { ImportsMap } from '../core/utils'
 import type { ParamParsersMap } from './generateParamParsers'
 import { generateAliasWarnings } from './generateAliasWarnings'
+import { mockWarn } from '../../tests/vitest-mock-warn'
 
 const DEFAULT_OPTIONS = resolveOptions({})
 let DEFAULT_STATE: Parameters<typeof generateRouteRecord>[0]['state'] = {
@@ -230,6 +231,100 @@ describe('generateRouteRecordQuery', () => {
           new MatcherPatternQueryParam('active', 'active', 'value', {}, true)
         ],"
     `)
+  })
+
+  describe('raw param parsers', () => {
+    mockWarn()
+
+    function rawParsersMap(name: string): ParamParsersMap {
+      return new Map([
+        [
+          name,
+          {
+            name,
+            typeName: `Param_${name}`,
+            relativePath: `parsers/${name}`,
+            absolutePath: `/abs/parsers/${name}`,
+            isRaw: true,
+          },
+        ],
+      ])
+    }
+
+    it('forces format=array for raw query parsers without user format', () => {
+      const node = new PrefixTree(DEFAULT_OPTIONS).insert('a', 'a.vue')
+      node.value.setEditOverride('params', {
+        query: { tags: { parser: 'set' } },
+      })
+      const result = generateRouteRecordQuery({
+        importsMap,
+        node,
+        paramParsersMap: rawParsersMap('set'),
+      })
+      expect(result).toContain(
+        `new MatcherPatternQueryParam('tags', 'tags', 'array', _normalized_PARAM_PARSER__set)`
+      )
+    })
+
+    it('forces format=array and warns when user specifies format=value', () => {
+      const node = new PrefixTree(DEFAULT_OPTIONS).insert('a', 'a.vue')
+      node.value.setEditOverride('params', {
+        query: { tags: { parser: 'set', format: 'value' } },
+      })
+      const result = generateRouteRecordQuery({
+        importsMap,
+        node,
+        paramParsersMap: rawParsersMap('set'),
+      })
+      expect(result).toContain(
+        `new MatcherPatternQueryParam('tags', 'tags', 'array', _normalized_PARAM_PARSER__set)`
+      )
+      expect(
+        `Query param "tags" in route "/a" uses raw param parser "set"`
+      ).toHaveBeenWarned()
+    })
+
+    it('keeps user format=array for raw parsers without warning', () => {
+      const node = new PrefixTree(DEFAULT_OPTIONS).insert('a', 'a.vue')
+      node.value.setEditOverride('params', {
+        query: { tags: { parser: 'set', format: 'array' } },
+      })
+      const result = generateRouteRecordQuery({
+        importsMap,
+        node,
+        paramParsersMap: rawParsersMap('set'),
+      })
+      expect(result).toContain(
+        `new MatcherPatternQueryParam('tags', 'tags', 'array', _normalized_PARAM_PARSER__set)`
+      )
+    })
+
+    it('does not force array for non-raw parsers', () => {
+      const node = new PrefixTree(DEFAULT_OPTIONS).insert('a', 'a.vue')
+      node.value.setEditOverride('params', {
+        query: { page: { parser: 'date', format: 'value' } },
+      })
+      const paramParsersMap: ParamParsersMap = new Map([
+        [
+          'date',
+          {
+            name: 'date',
+            typeName: 'Param_date',
+            relativePath: 'parsers/date',
+            absolutePath: '/abs/parsers/date',
+            isRaw: false,
+          },
+        ],
+      ])
+      const result = generateRouteRecordQuery({
+        importsMap,
+        node,
+        paramParsersMap,
+      })
+      expect(result).toContain(
+        `new MatcherPatternQueryParam('page', 'page', 'value', _normalized_PARAM_PARSER__date)`
+      )
+    })
   })
 })
 
@@ -1407,18 +1502,18 @@ describe('generateRouteResolver', () => {
 
   describe('param parser filtering', () => {
     type ParamParserEntry = NonNullable<ReturnType<ParamParsersMap['get']>>
-    const uuidEntry = {
+    const uuidEntry: ParamParserEntry = {
       name: 'uuid',
       typeName: 'Param_uuid',
       relativePath: 'parsers/uuid',
       absolutePath: '/abs/parsers/uuid',
-    } satisfies ParamParserEntry
-    const slugEntry = {
+    }
+    const slugEntry: ParamParserEntry = {
       name: 'slug',
       typeName: 'Param_slug',
       relativePath: 'parsers/slug',
       absolutePath: '/abs/parsers/slug',
-    } satisfies ParamParserEntry
+    }
 
     it('omits imports and normalized declarations for unused parsers', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
