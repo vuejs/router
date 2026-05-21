@@ -24,17 +24,20 @@ type Param_monthValibot = _ExtractParamParserType<typeof import('./params/month-
 type Param_monthZod = _ExtractParamParserType<typeof import('./params/month-zod.ts').parser>
 type Param_npmOrg = _ExtractParamParserType<typeof import('./params/npm-org.ts').parser>
 type Param_semver = _ExtractParamParserType<typeof import('./params/semver.ts').parser>
+type Param_set = _ExtractParamParserType<typeof import('./params/set.ts').parser>
 type Param_versionRange = _ExtractParamParserType<typeof import('./params/version-range.ts').parser>
 
 declare module 'vue-router' {
   interface TypesConfig {
-    ParamParsers:
-      | 'date'
-      | 'month-valibot'
-      | 'month-zod'
-      | 'npm-org'
-      | 'semver'
-      | 'version-range'
+    _ParamParsers: {
+      'date': { type: Param_date }
+      'month-valibot': { type: Param_monthValibot }
+      'month-zod': { type: Param_monthZod }
+      'npm-org': { type: Param_npmOrg }
+      'semver': { type: Param_semver }
+      'set': { type: Param_set }
+      'version-range': { type: Param_versionRange }
+    }
     RouteNamedMap: import('vue-router/auto-routes').RouteNamedMap
     _RouteFileInfoMap: import('vue-router/auto-routes')._RouteFileInfoMap
   }
@@ -104,8 +107,8 @@ declare module 'vue-router/auto-routes' {
     '/b': RouteRecordInfo<
       '/b',
       '/b',
-      Record<never, never>,
-      Record<never, never>,
+      { test?: Exclude<Param_set, unknown[] | null>, date?: Extract<Param_date, unknown[]> },
+      { test: Exclude<Param_set, unknown[] | null> | undefined, date: Extract<Param_date, unknown[]> | undefined },
       | never
     >,
     '/blog/[slug]+': RouteRecordInfo<
