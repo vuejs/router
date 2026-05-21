@@ -1,4 +1,4 @@
-import { describe, expect, it, test } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, test, vi } from 'vitest'
 import {
   warnMissingParamParsers,
   collectMissingParamParsers,
@@ -9,6 +9,7 @@ import {
   generatePathParamsOptions,
   generateCustomParamParsersList,
   generateNormalizedParamParsersDeclarations,
+  isRawParamParserSource,
   scanParamParserFiles,
   type ParamParsersMap,
 } from './generateParamParsers'
@@ -901,4 +902,138 @@ describe('scanParamParserFiles', () => {
       expect(files.some(f => f.includes('nested'))).toBe(false)
     }
   )
+})
+
+describe('isRawParamParserSource', () => {
+  let warnSpy: ReturnType<typeof vi.spyOn>
+  beforeEach(() => {
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  })
+  afterEach(() => {
+    warnSpy.mockRestore()
+  })
+
+  it('returns true when parser is defined via defineParamParserRaw', () => {
+    const source = `
+      import { defineParamParserRaw } from 'vue-router/experimental'
+      export const parser = defineParamParserRaw({
+        get: v => v,
+        set: v => v,
+      })
+    `
+    expect(isRawParamParserSource(source)).toBe(true)
+  })
+
+  it('returns false when parser is defined via defineParamParser', () => {
+    const source = `
+      import { defineParamParser } from 'vue-router/experimental'
+      export const parser = defineParamParser({
+        get: v => v,
+        set: v => String(v),
+      })
+    `
+    expect(isRawParamParserSource(source)).toBe(false)
+  })
+
+  it('supports aliased imports of defineParamParserRaw', () => {
+    const source = `
+      import { defineParamParserRaw as defineRaw } from 'vue-router/experimental'
+      export const parser = defineRaw({
+        get: v => v,
+        set: v => v,
+      })
+    `
+    expect(isRawParamParserSource(source)).toBe(true)
+  })
+
+  it('returns false when the parser export uses a different identifier', () => {
+    const source = `
+      import { defineParamParserRaw, defineParamParser } from 'vue-router/experimental'
+      export const parser = defineParamParser({
+        get: v => v,
+        set: v => String(v),
+      })
+      export const other = defineParamParserRaw({
+        get: v => v,
+        set: v => v,
+      })
+    `
+    expect(isRawParamParserSource(source)).toBe(false)
+  })
+
+  it('returns false when defineParamParserRaw is not imported', () => {
+    const source = `
+      export const parser = {
+        get: v => v,
+        set: v => v,
+      }
+    `
+    expect(isRawParamParserSource(source)).toBe(false)
+  })
+
+  it('returns false for unparseable source', () => {
+    expect(isRawParamParserSource('this is not { valid ts')).toBe(false)
+  })
+
+  it('detects raw parser when declared under another name and re-exported as parser', () => {
+    const source = `
+      import { defineParamParserRaw } from 'vue-router/experimental'
+      const myParser = defineParamParserRaw({
+        get: v => v,
+        set: v => v,
+      })
+      export { myParser as parser }
+    `
+    expect(isRawParamParserSource(source)).toBe(true)
+  })
+
+  it('returns false when defineParamParserRaw comes from another module', () => {
+    const source = `
+      import { defineParamParserRaw } from 'some-other-package'
+      export const parser = defineParamParserRaw({
+        get: v => v,
+        set: v => v,
+      })
+    `
+    expect(isRawParamParserSource(source)).toBe(false)
+  })
+
+  it('warns when parser is re-exported from another module (direct name)', () => {
+    const source = `
+      import { defineParamParserRaw } from 'vue-router/experimental'
+      export { parser } from './other-parser'
+    `
+    expect(isRawParamParserSource(source, 'my-parser.ts')).toBe(false)
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Cannot statically determine if "parser" is raw in "my-parser.ts"'
+      )
+    )
+  })
+
+  it('warns when parser is re-exported from another module (aliased)', () => {
+    const source = `
+      import { defineParamParserRaw } from 'vue-router/experimental'
+      export { something as parser } from './other-parser'
+    `
+    expect(isRawParamParserSource(source, 'my-parser.ts')).toBe(false)
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Cannot statically determine if "parser" is raw in "my-parser.ts"'
+      )
+    )
+  })
+
+  it('does not warn for re-exports that are not the parser export', () => {
+    const source = `
+      import { defineParamParserRaw } from 'vue-router/experimental'
+      export { somethingElse } from './other'
+      export const parser = defineParamParserRaw({
+        get: v => v,
+        set: v => v,
+      })
+    `
+    expect(isRawParamParserSource(source, 'my-parser.ts')).toBe(true)
+    expect(warnSpy).not.toHaveBeenCalled()
+  })
 })

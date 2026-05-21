@@ -4,6 +4,7 @@ import {
   isTreeParamRepeatable,
   isTreePathParam,
 } from '../core/treeNodeValue'
+import type { ParamParsersMap } from './generateParamParsers'
 
 // TODO: simplify the generateRouteParams to not use the type helpers ParamValueOneOrMore, ParamValueZeroOrMore, ParamValueZeroOrOne, and ParamValue, just output raw unions like string | string[]
 export function generateRouteParams(node: TreeNode, isRaw: boolean): string {
@@ -41,7 +42,8 @@ export function generateRouteParams(node: TreeNode, isRaw: boolean): string {
 export function EXPERIMENTAL_generateRouteParams(
   node: TreeNode,
   types: Array<string | null>,
-  isRaw: boolean
+  isRaw: boolean,
+  paramParsersMap?: ParamParsersMap
 ) {
   // node.params is a getter so we compute it once
   const nodeParams = node.params
@@ -52,13 +54,18 @@ export function EXPERIMENTAL_generateRouteParams(
           const isRepeatable = isTreeParamRepeatable(param)
 
           const type = types[i]
+          const isRawParser = !!(
+            param.parser && paramParsersMap?.get(param.parser)?.isRaw
+          )
 
           let extractedType: string
 
           if (type?.startsWith('Param_')) {
-            extractedType = isRepeatable
-              ? `Extract<${type}, unknown[]>`
-              : `Exclude<${type}, unknown[] | null>`
+            extractedType = isRawParser
+              ? `${type} /* raw param parser */`
+              : isRepeatable
+                ? `Extract<${type}, unknown[]>`
+                : `Exclude<${type}, unknown[] | null>`
           } else {
             extractedType = `${type ?? 'string'}${isRepeatable ? '[]' : ''}`
           }
@@ -66,9 +73,9 @@ export function EXPERIMENTAL_generateRouteParams(
           // Track if this is an optional query param (no default, not required)
           let isOptionalQueryParam = false
 
-          // Add | null for optional path params
+          // Add | null for optional path params. Raw parsers are skipped since TParam is used as-is.
           if (isTreePathParam(param)) {
-            if (isOptional && !isRepeatable) {
+            if (isOptional && !isRepeatable && !isRawParser) {
               extractedType += ' | null'
             }
           } else {

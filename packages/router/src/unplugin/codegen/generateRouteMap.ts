@@ -53,10 +53,20 @@ export function generateRouteRecordInfo(
     toStringLiteral(node.name),
     toStringLiteral(node.fullPath),
     options.experimental.paramParsers
-      ? EXPERIMENTAL_generateRouteParams(node, paramParsers, true)
+      ? EXPERIMENTAL_generateRouteParams(
+          node,
+          paramParsers,
+          true,
+          paramParsersMap
+        )
       : generateRouteParams(node, true),
     options.experimental.paramParsers
-      ? EXPERIMENTAL_generateRouteParams(node, paramParsers, false)
+      ? EXPERIMENTAL_generateRouteParams(
+          node,
+          paramParsers,
+          false,
+          paramParsersMap
+        )
       : generateRouteParams(node, false),
   ]
 

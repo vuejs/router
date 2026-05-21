@@ -31,9 +31,9 @@ import {
   scanParamParserFiles,
   warnMissingParamParsers,
   collectMissingParamParsers,
+  addParamParserToMap,
 } from '../codegen/generateParamParsers'
 import picomatch from 'picomatch'
-import { camelCase } from 'scule'
 
 export function createRoutesContext(options: ResolvedOptions) {
   const { dts: preferDTS, root, routesFolder } = options
@@ -148,19 +148,12 @@ export function createRoutesContext(options: ResolvedOptions) {
           folder,
           paramParsersInclude,
           paramParsersExclude
-        ).then(paramParserFiles => {
-          for (const file of paramParserFiles) {
-            const fileName = parsePathe(file).name
-            const name = camelCase(fileName)
-            // TODO: could be simplified to only one import that starts with / for vite
-            const absolutePath = resolve(folder, file)
-            paramParsersMap.set(fileName, {
-              name,
-              typeName: `Param_${name}`,
-              absolutePath,
-              relativePath: relative(dtsDir, absolutePath),
-            })
-          }
+        ).then(async paramParserFiles => {
+          await Promise.all(
+            paramParserFiles.map(file =>
+              addParamParserToMap(file, folder, dtsDir, paramParsersMap)
+            )
+          )
           logger.log(
             'Parsed param parsers',
             [...paramParsersMap].map(p => p[0])
@@ -237,16 +230,12 @@ export function createRoutesContext(options: ResolvedOptions) {
   function setupParamParserWatcher(watcher: FSWatcher, cwd: string) {
     logger.log(`🤖 Scanning param parsers in ${cwd}`)
     return watcher
-      .on('add', file => {
-        const fileName = parsePathe(file).name
-        const name = camelCase(fileName)
-        const absolutePath = resolve(cwd, file)
-        paramParsersMap.set(fileName, {
-          name,
-          typeName: `Param_${name}`,
-          absolutePath,
-          relativePath: relative(dtsDir, absolutePath),
-        })
+      .on('add', async file => {
+        await addParamParserToMap(file, cwd, dtsDir, paramParsersMap)
+        writeConfigFiles()
+      })
+      .on('change', async file => {
+        await addParamParserToMap(file, cwd, dtsDir, paramParsersMap)
         writeConfigFiles()
       })
       .on('unlink', file => {
