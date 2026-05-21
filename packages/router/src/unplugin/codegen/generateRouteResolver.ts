@@ -405,10 +405,10 @@ ${queryParams
     const format = isRawParser ? 'array' : param.format || 'value'
 
     const args = [
-      `'${param.paramName}'`,
+      toStringLiteral(param.paramName),
       // TODO: allow param.queryKey
-      `'${param.paramName}'`,
-      `'${format}'`,
+      toStringLiteral(param.paramName),
+      toStringLiteral(format),
     ]
 
     if (parserOptions || param.defaultValue !== undefined || param.required) {
