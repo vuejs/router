@@ -111,31 +111,24 @@ export function defineParamParserRaw<
   TParam,
   // we can allow pushing with extra values
   TParamRaw = TParam,
->(
-  parser: Required<
-    ParamParser<
-      TParam | TParam[] | null,
-      MatcherQueryParamsValue,
-      TParamRaw | TParamRaw[] | null
-    >
-  >
-) {
+>(parser: Required<ParamParser<TParam, MatcherQueryParamsValue, TParamRaw>>) {
   return parser
 }
 
 /**
  * Defines a param parser that transforms strings to another type. Handles
- * optional and repeatable params, so it can be used for both path and query
- * params.
+ * optional and repeatable params:
+ *
+ * - Optional params: become `null` if the value is nullish
+ * - Repeatable params: the value becomes an array of the parsed type, and nullish values are filtered out
  *
  * @example
  *
- * Here is an example that allows arbitrary numbers (NaN values are filtered
- * out). It supports repeatable params, so it can be used both as a path param
- * parser and a query param parser.
+ * Here is an example that allows arbitrary valid numbers (NaN values are
+ * filtered out). It can be used in both, path, and query params.
  *
  * ```ts
- * import { miss } from 'vue-router/experimental'
+ * import { defineParamParser, miss } from 'vue-router/experimental'
  *
  * export const parser = defineParamParser<number>({
  *   get: value => {

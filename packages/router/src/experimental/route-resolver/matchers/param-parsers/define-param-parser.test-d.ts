@@ -37,36 +37,53 @@ describe('defineQueryParamParser', () => {
 })
 
 describe('defineParamParserRaw', () => {
-  it('forces an array-aware TParam', () => {
-    const parser = defineParamParserRaw<number>({
+  it('keeps TParam as-is without lifting to array/null', () => {
+    const parser = defineParamParserRaw<Set<string>>({
       get: value => {
-        if (value == null) return null
-        if (Array.isArray(value))
-          return value.filter(v => v != null).map(Number)
-        return Number(value)
+        const asArray = (Array.isArray(value) ? value : [value]).filter(
+          v => v != null
+        )
+        return new Set(asArray)
       },
-      set: value =>
-        value == null
-          ? null
-          : Array.isArray(value)
-            ? value.map(String)
-            : String(value),
+      set: value => [...value],
     })
 
-    expectTypeOf(parser.get('a')).toEqualTypeOf<number | number[] | null>()
-    expectTypeOf(parser.get(null)).toEqualTypeOf<number | number[] | null>()
-    expectTypeOf(parser.get(['a', null])).toEqualTypeOf<
-      number | number[] | null
-    >()
+    expectTypeOf(parser.get('a')).toEqualTypeOf<Set<string>>()
+    expectTypeOf(parser.get(null)).toEqualTypeOf<Set<string>>()
+    expectTypeOf(parser.get(['a', null])).toEqualTypeOf<Set<string>>()
 
-    expectTypeOf(parser.set(1)).toEqualTypeOf<MatcherQueryParamsValue>()
-    expectTypeOf(parser.set([1, 2])).toEqualTypeOf<MatcherQueryParamsValue>()
-    expectTypeOf(parser.set(null)).toEqualTypeOf<MatcherQueryParamsValue>()
+    expectTypeOf(
+      parser.set(new Set<string>())
+    ).toEqualTypeOf<MatcherQueryParamsValue>()
 
-    // @ts-expect-error: undefined not in TParamRaw
-    parser.set(undefined)
-    // @ts-expect-error: string not in TParamRaw
+    // @ts-expect-error: array of strings is not Set<string>
+    parser.set(['a'])
+    // @ts-expect-error: string is not Set<string>
     parser.set('1')
+    // @ts-expect-error: null is not Set<string>
+    parser.set(null)
+  })
+
+  it('supports a wider TParamRaw', () => {
+    const parser = defineParamParserRaw<Set<string>, Set<string> | string[]>({
+      get: value => {
+        const asArray = (Array.isArray(value) ? value : [value]).filter(
+          v => v != null
+        )
+        return new Set(asArray)
+      },
+      set: value => (Array.isArray(value) ? value : [...value]),
+    })
+
+    expectTypeOf(
+      parser.set(new Set<string>())
+    ).toEqualTypeOf<MatcherQueryParamsValue>()
+    expectTypeOf(
+      parser.set(['a', 'b'])
+    ).toEqualTypeOf<MatcherQueryParamsValue>()
+
+    // @ts-expect-error: number not in TParamRaw
+    parser.set(1)
   })
 })
 
