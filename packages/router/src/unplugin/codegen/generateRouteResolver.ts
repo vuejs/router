@@ -402,7 +402,7 @@ ${queryParams
         `Query param "${param.paramName}" in route "${node.fullPath}" uses raw param parser "${param.parser}" but specifies \`format: 'value'\`. The format is ignored because raw parsers always receive the array form.`
       )
     }
-    const format = isRawParser ? 'array' : param.format
+    const format = isRawParser ? 'array' : param.format || 'value'
 
     const args = [
       `'${param.paramName}'`,

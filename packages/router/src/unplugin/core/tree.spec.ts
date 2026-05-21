@@ -1138,25 +1138,25 @@ describe('Tree', () => {
         {
           paramName: 'search',
           parser: null,
-          format: 'value',
+          format: null,
           defaultValue: undefined,
         },
         {
           paramName: 'limit',
           parser: 'int',
-          format: 'value',
+          format: null,
           defaultValue: '10',
         },
         {
           paramName: 'tags',
           parser: 'bool',
-          format: 'value',
+          format: null,
           defaultValue: undefined,
         },
         {
           paramName: 'other',
           parser: null,
-          format: 'value',
+          format: null,
           defaultValue: '"defaultValue"',
         },
       ])
@@ -1188,13 +1188,13 @@ describe('Tree', () => {
       expect(node.params[1]).toMatchObject({
         paramName: 'tab',
         parser: null,
-        format: 'value',
+        format: null,
         defaultValue: undefined,
       }) // query param
       expect(node.params[2]).toMatchObject({
         paramName: 'expand',
         parser: 'bool',
-        format: 'value',
+        format: null,
         defaultValue: 'false',
       }) // query param
     })
