@@ -47,7 +47,7 @@ describe(
   'defineBasicLoader',
   // change it during dev while working on features
   // CI might need higher timeout
-  { timeout: process.env.CI ? 1000 : 100 },
+  { timeout: process.env.CI ? 1000 : 500 },
   () => {
     enableAutoUnmount(afterEach)
 

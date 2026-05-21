@@ -23,7 +23,7 @@ import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
 describe(
   'defineColadaLoader',
   // fail faster on unresolved promises
-  { timeout: process.env.CI ? 1000 : 100 },
+  { timeout: process.env.CI ? 1000 : 500 },
   () => {
     enableAutoUnmount(afterEach)
 
