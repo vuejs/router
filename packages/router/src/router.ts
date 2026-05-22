@@ -1013,6 +1013,8 @@ export function createRouter(options: RouterOptions): Router {
       app.component('RouterLink', RouterLink)
       app.component('RouterView', RouterView)
 
+      // augmented to the experimental shape it diverges from `createRouter`'s
+      // return type. FIXME.
       app.config.globalProperties.$router = router as Router
       Object.defineProperty(app.config.globalProperties, '$route', {
         enumerable: true,

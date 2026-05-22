@@ -144,7 +144,8 @@ export type {
 } from './typed-routes'
 
 export { createRouter } from './router'
-export type { Router, RouterOptions } from './router'
+export type { RouterOptions } from './router'
+export type { Router as _RouterClassic } from './router'
 export type { RouterScrollBehavior } from './scrollBehavior'
 
 export { NavigationFailureType, isNavigationFailure } from './errors'
@@ -174,7 +175,7 @@ export * from './useApi'
 
 // Global extensions for Vue
 import type { TypesConfig } from './config'
-import type { Router } from './router'
+import type { Router as RouterClassic } from './router'
 import type { RouterLink } from './RouterLink'
 import type { RouterView } from './RouterView'
 import type {
@@ -182,6 +183,25 @@ import type {
   NavigationGuardWithThis,
   RouteLocationNormalizedLoaded,
 } from './typed-routes'
+
+/**
+ * Router instance.
+ *
+ * By default this resolves to the classic {@link RouterClassic}. Augment
+ * {@link TypesConfig} with a `Router` slot to swap the public type — for
+ * example to the experimental router:
+ *
+ * ```ts
+ * import type { EXPERIMENTAL_Router } from 'vue-router/experimental'
+ * declare module 'vue-router' {
+ *   interface TypesConfig {
+ *     Router: EXPERIMENTAL_Router
+ *   }
+ * }
+ * ```
+ */
+export type Router =
+  TypesConfig extends Record<'Router', infer T> ? T : RouterClassic
 
 declare module 'vue' {
   export interface ComponentCustomOptions {

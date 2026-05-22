@@ -1,6 +1,7 @@
 /**
  * Allows customizing existing types of the router that are used globally like `$router`, `<RouterLink>`, etc. **ONLY FOR INTERNAL USAGE**.
  *
+ * - `Router` - swaps the public {@link Router} type (e.g. to `EXPERIMENTAL_Router`)
  * - `$router` - the router instance
  * - `$route` - the current route location
  * - `beforeRouteEnter` - Page component option

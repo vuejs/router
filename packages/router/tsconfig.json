@@ -17,6 +17,7 @@
     "outDir": "dist",
     "sourceMap": false,
     "noEmit": true,
+    "composite": true,
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "Bundler",
