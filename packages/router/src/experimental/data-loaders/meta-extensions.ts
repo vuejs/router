@@ -28,6 +28,8 @@ export type _DefineLoaderEntryMap<
 // we want to import from this meta extensions to include the changes to route
 export * from './symbols'
 
+// TODO: move to RouterBase
+
 declare module '../../router' {
   export interface Router {
     /**
