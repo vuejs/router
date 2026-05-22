@@ -107,8 +107,8 @@ declare module 'vue-router/auto-routes' {
     '/b': RouteRecordInfo<
       '/b',
       '/b',
-      { test?: Exclude<Param_set, unknown[] | null>, date?: Extract<Param_date, unknown[]> },
-      { test: Exclude<Param_set, unknown[] | null> | undefined, date: Extract<Param_date, unknown[]> | undefined },
+      { test?: Param_set /* raw param parser */, date?: Extract<Param_date, unknown[]> },
+      { test: Param_set /* raw param parser */ | undefined, date: Extract<Param_date, unknown[]> | undefined },
       | never
     >,
     '/blog/[slug]+': RouteRecordInfo<
