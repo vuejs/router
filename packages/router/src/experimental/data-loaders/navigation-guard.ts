@@ -390,14 +390,10 @@ export function reroute(to: _DataLoaderRedirectResult): never {
 export function DataLoaderPlugin(app: App, options: DataLoaderPluginOptions) {
   const effect = effectScope(true)
   const removeGuards = setupLoaderGuard(assign({ app, effect }, options))
-
-  // TODO: use https://github.com/vuejs/core/pull/8801 if merged
-  const { unmount } = app
-  app.unmount = () => {
+  app.onUnmount(() => {
     effect.stop()
     removeGuards()
-    unmount.call(app)
-  }
+  })
 }
 
 /**
