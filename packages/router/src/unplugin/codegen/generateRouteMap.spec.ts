@@ -953,7 +953,7 @@ describe('generateRouteNamedMap', () => {
           '/search': RouteRecordInfo<
             '/search',
             '/search',
-            { q?: string },
+            { q?: string | undefined },
             { q: string | undefined },
             | never
           >,
@@ -1022,7 +1022,7 @@ describe('generateRouteNamedMap', () => {
           '/search': RouteRecordInfo<
             '/search',
             '/search',
-            { q?: string },
+            { q?: string | undefined },
             { q: string | undefined },
             | never
           >,
@@ -1050,7 +1050,7 @@ describe('generateRouteNamedMap', () => {
           '/search': RouteRecordInfo<
             '/search',
             '/search',
-            { q: string, page?: number, sort?: string, filter?: number },
+            { q: string, page?: number, sort?: string | undefined, filter?: number | undefined },
             { q: string, page: number, sort: string | undefined, filter: number | undefined },
             | never
           >,
@@ -1076,7 +1076,7 @@ describe('generateRouteNamedMap', () => {
           '/search': RouteRecordInfo<
             '/search',
             '/search',
-            { tags?: string[], ids: number[] },
+            { tags?: string[] | undefined, ids: number[] },
             { tags: string[] | undefined, ids: number[] },
             | never
           >,

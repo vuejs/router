@@ -86,7 +86,7 @@ declare module 'vue-router/auto-routes' {
     'not-found': RouteRecordInfo<
       'not-found',
       '/:path(.*)',
-      { path: string, page?: number, other?: boolean, active?: boolean, multi?: string[], req?: number, optionalWhen?: Exclude<Param_date, unknown[] | null>, when?: Exclude<Param_date, unknown[] | null> },
+      { path: string, page?: number, other?: boolean | undefined, active?: boolean, multi?: string[] | undefined, req?: number, optionalWhen?: Exclude<Param_date, unknown[] | null> | undefined, when?: Exclude<Param_date, unknown[] | null> },
       { path: string, page: number, other: boolean | undefined, active: boolean, multi: string[] | undefined, req: number, optionalWhen: Exclude<Param_date, unknown[] | null> | undefined, when: Exclude<Param_date, unknown[] | null> },
       | never
     >,
@@ -107,8 +107,8 @@ declare module 'vue-router/auto-routes' {
     '/b': RouteRecordInfo<
       '/b',
       '/b',
-      { test?: Param_set /* raw param parser */, date?: Extract<Param_date, unknown[]> },
-      { test: Param_set /* raw param parser */ | undefined, date: Extract<Param_date, unknown[]> | undefined },
+      { test?: Param_set /* raw param parser */ | undefined, date?: Extract<Param_date, unknown[]> | undefined },
+      { test: Param_set /* raw param parser */, date: Extract<Param_date, unknown[]> | undefined },
       | never
     >,
     '/blog/[slug]+': RouteRecordInfo<

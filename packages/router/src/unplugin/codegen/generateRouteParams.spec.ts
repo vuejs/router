@@ -13,6 +13,21 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     return tree.insert(segment, `${segment}.vue`)
   }
 
+  function makeParsersMap(name: string, isRaw: boolean): ParamParsersMap {
+    return new Map([
+      [
+        name,
+        {
+          name,
+          typeName: `Param_${name}`,
+          relativePath: `parsers/${name}`,
+          absolutePath: `/abs/parsers/${name}`,
+          isRaw,
+        },
+      ],
+    ])
+  }
+
   describe('excludes null from custom parser types', () => {
     it('required path param excludes null', () => {
       const node = createTreeWithParam('[version=semver]')
@@ -74,21 +89,6 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
   })
 
   describe('raw param parsers', () => {
-    function makeParsersMap(name: string, isRaw: boolean): ParamParsersMap {
-      return new Map([
-        [
-          name,
-          {
-            name,
-            typeName: `Param_${name}`,
-            relativePath: `parsers/${name}`,
-            absolutePath: `/abs/parsers/${name}`,
-            isRaw,
-          },
-        ],
-      ])
-    }
-
     it('emits Param_X /* raw param parser */ for raw path params', () => {
       const node = createTreeWithParam('[id=raw]')
       const result = EXPERIMENTAL_generateRouteParams(
@@ -152,6 +152,78 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         makeParsersMap('plain', false)
       )
       expect(result).toBe('{ id: Exclude<Param_plain, unknown[] | null> }')
+    })
+  })
+
+  describe('raw query param parsers', () => {
+    function createNodeWithQueryParam(
+      paramName: string,
+      parserName: string
+    ): TreeNode {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('b', 'b.vue')
+      node.setCustomRouteBlock('b.vue', {
+        params: {
+          query: {
+            [paramName]: { parser: parserName, format: 'value' },
+          },
+        },
+      })
+      return node
+    }
+
+    it('omits | undefined on route.params for raw query parsers', () => {
+      const node = createNodeWithQueryParam('test', 'set')
+      // route.params side (isRaw=false): runtime always calls the raw parser
+      // with the array form, so the value never ends up undefined.
+      const result = EXPERIMENTAL_generateRouteParams(
+        node,
+        ['Param_set'],
+        false,
+        makeParsersMap('set', true)
+      )
+      expect(result).toBe('{ test: Param_set /* raw param parser */ }')
+    })
+
+    it('adds explicit | undefined on router.push for raw query parsers', () => {
+      const node = createNodeWithQueryParam('test', 'set')
+      // router.push side (isRaw=true): allow users to pass `undefined`
+      // explicitly even under exactOptionalPropertyTypes.
+      const result = EXPERIMENTAL_generateRouteParams(
+        node,
+        ['Param_set'],
+        true,
+        makeParsersMap('set', true)
+      )
+      expect(result).toBe(
+        '{ test?: Param_set /* raw param parser */ | undefined }'
+      )
+    })
+
+    it('keeps | undefined on route.params for non-raw query parsers', () => {
+      const node = createNodeWithQueryParam('test', 'plain')
+      const result = EXPERIMENTAL_generateRouteParams(
+        node,
+        ['Param_plain'],
+        false,
+        makeParsersMap('plain', false)
+      )
+      expect(result).toBe(
+        '{ test: Exclude<Param_plain, unknown[] | null> | undefined }'
+      )
+    })
+
+    it('adds | undefined on router.push for non-raw query parsers', () => {
+      const node = createNodeWithQueryParam('test', 'plain')
+      const result = EXPERIMENTAL_generateRouteParams(
+        node,
+        ['Param_plain'],
+        true,
+        makeParsersMap('plain', false)
+      )
+      expect(result).toBe(
+        '{ test?: Exclude<Param_plain, unknown[] | null> | undefined }'
+      )
     })
   })
 })
