@@ -11,7 +11,7 @@ import type {
   RouteRecordNameGeneric,
 } from '../typed-routes'
 import type { _Awaitable } from './utils'
-import type { UseDataLoader } from '../experimental'
+import type { UseDataLoader, DataLoaderPlugin } from '../experimental'
 import type {
   LOADER_SET_KEY,
   ABORT_CONTROLLER_KEY,
@@ -262,21 +262,30 @@ export interface _RouteRecordBase extends PathParserOptions {
  */
 export interface RouteMeta extends Record<PropertyKey, unknown> {
   /**
-   * The data loaders for a route record. Add any data loader to this array to have it called when the route is
-   * navigated to. Note this is only needed when **not** using lazy components (`() => import('./pages/Home.vue')`) or
+   * The data loaders for a route record. Add any data loader to this array to
+   * have it called when the route is navigated to. Note this is only needed
+   * when **not** using lazy components (`() => import('./pages/Home.vue')`) or
    * when not explicitly exporting data loaders from page components.
+   *
+   * This requires the use of the experimental data loaders and is ignored otherwise.
+   *
+   * @see {@link DataLoaderPlugin}
    */
   loaders?: UseDataLoader[]
 
   /**
-   * Set of loaders for the current route. This is built once during navigation and is used to merge the loaders from
-   * the lazy import in components or the `loaders` array in the route record.
+   * Set of loaders for the current route. This is built once during navigation
+   * and is used to merge the loaders from the lazy import in components or the
+   * `loaders` array in the route record.
+   *
    * @internal
    */
   [LOADER_SET_KEY]?: Set<UseDataLoader>
 
   /**
-   * The signal that is aborted when the navigation is canceled or an error occurs.
+   * The signal that is aborted when the navigation is canceled or an error
+   * occurs.
+   *
    * @internal
    */
   [ABORT_CONTROLLER_KEY]?: AbortController
