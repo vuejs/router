@@ -7,12 +7,16 @@ on:
     paths-ignore:
       - 'packages/docs/**'
       - 'packages/playground/**'
+      - 'packages/playground-file-based/**'
+      - 'packages/experiments-playground/**'
   pull_request:
     branches:
       - main
     paths-ignore:
       - 'packages/docs/**'
       - 'packages/playground/**'
+      - 'packages/playground-file-based/**'
+      - 'packages/experiments-playground/**'
 
 permissions:
   contents: read
