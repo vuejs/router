@@ -10,6 +10,7 @@ import type {
   DATA_LOADERS_EFFECT_SCOPE_KEY,
 } from './symbols'
 import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
+import type { INITIAL_DATA_KEY, SERVER_INITIAL_DATA_KEY } from './defineLoader'
 
 /**
  * Map type for the entries used by data loaders.
@@ -28,40 +29,57 @@ export type _DefineLoaderEntryMap<
 // we want to import from this meta extensions to include the changes to route
 export * from './symbols'
 
-// TODO: move to RouterBase
+/**
+ * The extensions added to the router instance for data loaders. These are used
+ * internally by the router and should not be accessed directly by users.
+ *
+ * @internal
+ */
+export interface DataLoaderExtensions {
+  /**
+   * The entries used by data loaders. Put on the router for convenience.
+   * @internal
+   */
+  [LOADER_ENTRIES_KEY]: _DefineLoaderEntryMap
 
-declare module '../../router' {
-  export interface Router {
-    /**
-     * The entries used by data loaders. Put on the router for convenience.
-     * @internal
-     */
-    [LOADER_ENTRIES_KEY]: _DefineLoaderEntryMap
+  /**
+   * Pending navigation that is waiting for data loaders to resolve.
+   * @internal
+   */
+  [PENDING_LOCATION_KEY]: RouteLocationNormalizedLoaded | null
 
-    /**
-     * Pending navigation that is waiting for data loaders to resolve.
-     * @internal
-     */
-    [PENDING_LOCATION_KEY]: RouteLocationNormalizedLoaded | null
+  /**
+   * The app instance that is used by the router.
+   * @internal
+   */
+  [APP_KEY]: App<unknown>
 
-    /**
-     * The app instance that is used by the router.
-     * @internal
-     */
-    [APP_KEY]: App<unknown>
+  /**
+   * Whether the router is running in server-side rendering mode.
+   * @internal
+   */
+  [IS_SSR_KEY]: boolean
 
-    /**
-     * Whether the router is running in server-side rendering mode.
-     * @internal
-     */
-    [IS_SSR_KEY]: boolean
+  /**
+   * The effect scope used to run data loaders.
+   * @internal
+   */
+  [DATA_LOADERS_EFFECT_SCOPE_KEY]: EffectScope
 
-    /**
-     * The effect scope used to run data loaders.
-     * @internal
-     */
-    [DATA_LOADERS_EFFECT_SCOPE_KEY]: EffectScope
-  }
+  /**
+   * Gives access to the initial state during rendering. Should be set to `false` once it's consumed.
+   * Used by `defineLoader`
+   *
+   * @internal
+   */
+  [SERVER_INITIAL_DATA_KEY]?: Record<string, unknown> | false
+
+  /**
+   * Used by `defineLoader`
+   *
+   * @internal
+   */
+  [INITIAL_DATA_KEY]?: Record<string, unknown> | false
 }
 
 declare module '../../types' {

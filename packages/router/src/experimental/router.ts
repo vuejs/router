@@ -84,6 +84,7 @@ import type {
   ResolverLocationAsRelative,
   ResolverLocationResolved,
 } from './route-resolver/resolver-abstract'
+import type { DataLoaderExtensions } from './data-loaders/meta-extensions'
 
 /**
  * resolve, reject arguments of Promise constructor
@@ -416,7 +417,9 @@ export interface EXPERIMENTAL_RouterOptions extends EXPERIMENTAL_RouterOptions_B
  *
  * @experimental This version is not stable, it's meant to replace {@link Router} in the future.
  */
-export interface EXPERIMENTAL_Router_Base<TRecord> {
+export interface EXPERIMENTAL_Router_Base<
+  TRecord,
+> extends DataLoaderExtensions {
   // NOTE: for dynamic routing we need this
   // <TRouteRecordRaw, TRouteRecord>
   /**

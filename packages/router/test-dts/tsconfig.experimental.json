@@ -1,0 +1,23 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "noEmit": true,
+    "noImplicitReturns": false,
+    "paths": {
+      "vue-router": ["../dist"]
+    }
+  },
+  // Only `experimental.test-d.ts` — it globally augments `TypesConfig.Router`
+  // and must NOT be compiled alongside files that re-export from
+  // `../dist`, which carries the un-augmented classic `Router`.
+  "include": ["./experimental.test-d.ts"],
+  "exclude": [
+    "../src",
+    "../dist",
+    "../src/experimental/vapor/",
+    "../__tests__",
+    "../src/**/*.spec.ts"
+  ]
+}

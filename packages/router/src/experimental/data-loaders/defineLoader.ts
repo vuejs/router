@@ -492,19 +492,6 @@ export const SERVER_INITIAL_DATA_KEY = Symbol()
  */
 export const INITIAL_DATA_KEY = Symbol()
 
-// TODO: is it better to move this to an ambient declaration file so it's not included in the final bundle?
-
-declare module '../../router' {
-  interface Router {
-    /**
-     * Gives access to the initial state during rendering. Should be set to `false` once it's consumed.
-     * @internal
-     */
-    [SERVER_INITIAL_DATA_KEY]?: Record<string, unknown> | false
-    [INITIAL_DATA_KEY]?: Record<string, unknown> | false
-  }
-}
-
 export interface UseDataLoaderBasic_LaxData<Data> extends UseDataLoader<
   Data | undefined,
   ErrorDefault

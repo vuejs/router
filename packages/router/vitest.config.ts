@@ -43,7 +43,7 @@ export default defineConfig({
       ],
     },
     typecheck: {
-      enabled: true,
+      enabled: false,
       checker: 'vue-tsc',
       // only: true,
       // by default it includes all specs too
@@ -52,8 +52,9 @@ export default defineConfig({
       // vitest uses --incremental with a shared tsBuildInfoFile that can go
       // stale and produce phantom errors in source files
       ignoreSourceErrors: true,
+      // FIXME: but it ignores the errors so kinda useless, so disabled
 
-      // tsconfig: './tsconfig.typecheck.json',
+      // tsconfig: './test-dts/tsconfig.json',
     },
     // projects: [
     //   {
