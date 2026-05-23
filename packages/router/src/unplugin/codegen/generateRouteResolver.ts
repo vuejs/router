@@ -397,11 +397,11 @@ ${queryParams
     const isRawParser = !!(
       param.parser && paramParsersMap.get(param.parser)?.isRaw
     )
-    if (isRawParser && param.format === 'value') {
-      console.warn(
-        `Query param "${param.paramName}" in route "${node.fullPath}" uses raw param parser "${param.parser}" but specifies \`format: 'value'\`. The format is ignored because raw parsers always receive the array form.`
-      )
-    }
+    const invalidFormatWarn =
+      isRawParser &&
+      param.format === 'value' &&
+      `console.warn(${toStringLiteral(`Query param "${param.paramName}" in route "${node.fullPath}" uses raw param parser "${param.parser}" but specifies \`format: 'value'\`. The format is ignored because raw parsers always receive the array form. Set it to 'array' to silence the warning.`)}) ||`
+
     const format = isRawParser ? 'array' : param.format || 'value'
 
     const args = [
@@ -424,7 +424,7 @@ ${queryParams
       args.push(String(param.required))
     }
 
-    return `    new MatcherPatternQueryParam(${args.join(', ')})`
+    return `    ${invalidFormatWarn || ''}new MatcherPatternQueryParam(${args.join(', ')})`
   })
   .join(',\n')}
   ],`

@@ -9,7 +9,6 @@ import {
 import { ImportsMap } from '../core/utils'
 import type { ParamParsersMap } from './generateParamParsers'
 import { generateAliasWarnings } from './generateAliasWarnings'
-import { mockWarn } from '../../tests/vitest-mock-warn'
 
 const DEFAULT_OPTIONS = resolveOptions({})
 let DEFAULT_STATE: Parameters<typeof generateRouteRecord>[0]['state'] = {
@@ -234,8 +233,6 @@ describe('generateRouteRecordQuery', () => {
   })
 
   describe('raw param parsers', () => {
-    mockWarn()
-
     function rawParsersMap(name: string): ParamParsersMap {
       return new Map([
         [
@@ -266,7 +263,7 @@ describe('generateRouteRecordQuery', () => {
       )
     })
 
-    it('forces format=array and warns when user specifies format=value', () => {
+    it('forces format=array and emits a runtime warn when user specifies format=value', () => {
       const node = new PrefixTree(DEFAULT_OPTIONS).insert('a', 'a.vue')
       node.value.setEditOverride('params', {
         query: { tags: { parser: 'set', format: 'value' } },
@@ -279,12 +276,13 @@ describe('generateRouteRecordQuery', () => {
       expect(result).toContain(
         `new MatcherPatternQueryParam('tags', 'tags', 'array', _normalized_PARAM_PARSER__set)`
       )
-      expect(
+      expect(result).toContain('console.warn(')
+      expect(result).toContain(
         `Query param "tags" in route "/a" uses raw param parser "set"`
-      ).toHaveBeenWarned()
+      )
     })
 
-    it('keeps user format=array for raw parsers without warning', () => {
+    it('keeps user format=array for raw parsers without emitting a runtime warn', () => {
       const node = new PrefixTree(DEFAULT_OPTIONS).insert('a', 'a.vue')
       node.value.setEditOverride('params', {
         query: { tags: { parser: 'set', format: 'array' } },
@@ -297,6 +295,7 @@ describe('generateRouteRecordQuery', () => {
       expect(result).toContain(
         `new MatcherPatternQueryParam('tags', 'tags', 'array', _normalized_PARAM_PARSER__set)`
       )
+      expect(result).not.toContain('console.warn(')
     })
 
     it('does not force array for non-raw parsers', () => {
