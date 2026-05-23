@@ -1,11 +1,9 @@
 import type { EffectScope, App } from 'vue'
-import type { DataLoaderEntryBase, UseDataLoader } from './createDataLoader'
+import type { DataLoaderEntryBase } from './createDataLoader'
 import type {
   APP_KEY,
   LOADER_ENTRIES_KEY,
-  LOADER_SET_KEY,
   PENDING_LOCATION_KEY,
-  ABORT_CONTROLLER_KEY,
   IS_SSR_KEY,
   DATA_LOADERS_EFFECT_SCOPE_KEY,
 } from './symbols'
@@ -80,28 +78,4 @@ export interface DataLoaderExtensions {
    * @internal
    */
   [INITIAL_DATA_KEY]?: Record<string, unknown> | false
-}
-
-declare module '../../types' {
-  export interface RouteMeta {
-    /**
-     * The data loaders for a route record. Add any data loader to this array to have it called when the route is
-     * navigated to. Note this is only needed when **not** using lazy components (`() => import('./pages/Home.vue')`) or
-     * when not explicitly exporting data loaders from page components.
-     */
-    loaders?: UseDataLoader[]
-
-    /**
-     * Set of loaders for the current route. This is built once during navigation and is used to merge the loaders from
-     * the lazy import in components or the `loaders` array in the route record.
-     * @internal
-     */
-    [LOADER_SET_KEY]?: Set<UseDataLoader>
-
-    /**
-     * The signal that is aborted when the navigation is canceled or an error occurs.
-     * @internal
-     */
-    [ABORT_CONTROLLER_KEY]?: AbortController
-  }
 }
