@@ -19,7 +19,7 @@ export default defineConfig({
     }),
     // FIXME: why doesn't it work when imported from vue-router/vite
     VueRouter({
-      logs: true,
+      // logs: true,
       dts: './src/routes.d.ts',
 
       experimental: {
