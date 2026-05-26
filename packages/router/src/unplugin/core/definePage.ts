@@ -21,7 +21,6 @@ import { walkAST } from 'ast-walker-scope'
 import { warn } from './utils'
 import type { ParsedStaticImport } from 'mlly'
 import { findStaticImports, parseStaticImport } from 'mlly'
-import type { ParamParserType } from '../../experimental/runtime'
 import type { CustomRouteBlock } from './customBlock'
 
 const MACRO_DEFINE_PAGE = 'definePage'
@@ -344,7 +343,7 @@ function extractQueryParams(
       // we normalize short form for convenience
       if (prop.value.type === 'StringLiteral') {
         queryParams[paramName] = {
-          parser: prop.value.value as ParamParserType,
+          parser: prop.value.value,
         }
       } else if (prop.value.type === 'ObjectExpression') {
         // Full form: param: { parser: 'int', default: 1, format: 'value' }
@@ -359,7 +358,7 @@ function extractQueryParams(
               paramProp.key.name === 'parser' &&
               paramProp.value.type === 'StringLiteral'
             ) {
-              paramInfo.parser = paramProp.value.value as ParamParserType
+              paramInfo.parser = paramProp.value.value
             } else if (
               paramProp.key.name === 'format' &&
               paramProp.value.type === 'StringLiteral'
@@ -423,7 +422,7 @@ function extractPathParams(
       prop.value.type === 'StringLiteral'
     ) {
       // TODO: we should check if the value is a valid parser type
-      pathParams[prop.key.name] = prop.value.value as ParamParserType
+      pathParams[prop.key.name] = prop.value.value
     }
   }
 
