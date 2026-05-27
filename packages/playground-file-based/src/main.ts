@@ -39,3 +39,9 @@ router.isReady().then(() => {
     console.log('🧭', from.fullPath, '->', to.fullPath)
   })
 })
+
+declare module 'vue-router' {
+  export interface TypesConfig {
+    Router: typeof router
+  }
+}
