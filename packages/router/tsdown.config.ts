@@ -52,13 +52,16 @@ export * from './vue-router.js'
 `.trimStart()
     )
   },
-  // Externalize everything and avoid mistakenly including dependencies in the
-  // bundle of vue-router runtime
-  skipNodeModulesBundle: true,
+  deps: {
+    // Externalize everything and avoid mistakenly including dependencies in the
+    // bundle of vue-router runtime
+    skipNodeModulesBundle: true,
+  },
 } satisfies InlineConfig
 
 const esm = {
   ...commonOptions,
+  name: 'vue-router esm',
   entry: {
     ...commonOptions.entry,
     'experimental/index': './src/experimental/index.ts',
@@ -72,6 +75,7 @@ const esm = {
 
 const esmBrowser = {
   ...commonOptions,
+  name: 'vue-router esm-browser',
   outputOptions: {
     ...commonOptions.outputOptions,
     dir: undefined, // must be unset with file
@@ -86,6 +90,7 @@ const esmBrowser = {
 
 const esmBrowserProd = {
   ...esmBrowser,
+  name: 'vue-router esm-browser prod',
   target: 'es2015',
   minify: true,
   outputOptions: {
@@ -101,6 +106,7 @@ const esmBrowserProd = {
 
 const cjs = {
   ...commonOptions,
+  name: 'vue-router cjs',
   format: 'cjs',
   outputOptions: {
     ...commonOptions.outputOptions,
@@ -117,6 +123,7 @@ const cjs = {
 
 const cjsProd = {
   ...cjs,
+  name: 'vue-router cjs prod',
   minify: true,
   outputOptions: {
     ...cjs.outputOptions,
@@ -127,6 +134,7 @@ const cjsProd = {
 const iife = {
   ...commonOptions,
   format: 'iife',
+  name: 'vue-router iife',
   outputOptions: {
     ...commonOptions.outputOptions,
     dir: undefined, // must be unset with file
@@ -144,6 +152,7 @@ const iife = {
 const iifeProd = {
   ...iife,
   target: 'es2015',
+  name: 'vue-router iife prod',
   minify: true,
   outputOptions: {
     ...iife.outputOptions,
@@ -170,9 +179,19 @@ const unplugin = {
     'unplugin/types': './src/unplugin/types.ts',
   },
   platform: 'node' as const,
-  dts: true,
-  // avoid inlining rolldown and other unplugin deps
-  skipNodeModulesBundle: true,
+  dts: {
+    enabled: true,
+    eager: true,
+  },
+  name: 'unplugin',
+  deps: {
+    // avoid inlining rolldown and other unplugin deps
+    skipNodeModulesBundle: true,
+  },
+  checks: {
+    // FIXME: this currently fails for no reason, maybe a bug in rolldown?
+    importIsUndefined: false,
+  },
   sourcemap: false,
   outputOptions: {
     banner,
@@ -183,12 +202,15 @@ const unplugin = {
 // Volar plugin build configuration
 const volar = {
   format: ['cjs'] as const,
+  name: 'volar',
   entry: {
     'volar/sfc-route-blocks': './src/volar/entries/sfc-route-blocks.ts',
     'volar/sfc-typed-router': './src/volar/entries/sfc-typed-router.ts',
   },
-  // these are part of volar core
-  external: ['@vue/language-core', 'muggle-string', 'pathe'],
+  deps: {
+    // these are part of volar core
+    neverBundle: ['@vue/language-core', 'muggle-string', 'pathe'],
+  },
   dts: true,
   sourcemap: false,
   outputOptions: {
