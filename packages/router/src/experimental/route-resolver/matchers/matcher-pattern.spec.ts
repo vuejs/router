@@ -6,6 +6,7 @@ import {
 import { MatcherPatternPathStar } from './matcher-pattern-path-star'
 import { miss } from './errors'
 import { definePathParamParser } from './param-parsers'
+import { mockWarn } from '../../../../__tests__/vitest-mock-warn'
 
 describe('MatcherPatternPathStatic', () => {
   describe('match()', () => {
@@ -129,6 +130,8 @@ describe('MatcherPatternPathStar', () => {
 })
 
 describe('MatcherPatternPathDynamic', () => {
+  mockWarn()
+
   it('single param', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)\/b$/i,
@@ -373,6 +376,48 @@ describe('MatcherPatternPathDynamic', () => {
     expect(() => pattern.match('/teams/')).toThrow()
     expect(pattern.build({ teamId: '123', otherId: '456' })).toBe(
       '/teams/123-b-456'
+    )
+  })
+
+  it('repeatable param in a sub segment', () => {
+    // produced by file-based routing for `set.[ids]+.other`
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/set\/(.+?)\/other$/,
+      {
+        ids: [{}, true],
+      },
+      [['set/', 1, '/other']]
+    )
+
+    expect(pattern.match('/set/123/other')).toEqual({ ids: ['123'] })
+    expect(pattern.match('/set/123/456/other')).toEqual({
+      ids: ['123', '456'],
+    })
+    expect(pattern.build({ ids: ['123'] })).toBe('/set/123/other')
+    expect(pattern.build({ ids: ['123', '456'] })).toBe('/set/123/456/other')
+  })
+
+  it('multiple repeatable params in a sub segment', () => {
+    // produced by file-based routing for `before.[ids]+.middle.[other]+.after`
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/before\/(.+?)\/middle\/(.+?)\/after$/,
+      {
+        ids: [{}, true],
+        other: [{}, true],
+      },
+      [['before/', 1, '/middle/', 1, '/after']]
+    )
+
+    expect(pattern.match('/before/a/middle/c/after')).toEqual({
+      ids: ['a'],
+      other: ['c'],
+    })
+    expect(pattern.match('/before/a/b/middle/c/d/after')).toEqual({
+      ids: ['a', 'b'],
+      other: ['c', 'd'],
+    })
+    expect(pattern.build({ ids: ['a', 'b'], other: ['c', 'd'] })).toBe(
+      '/before/a/b/middle/c/d/after'
     )
   })
 
