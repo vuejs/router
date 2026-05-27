@@ -3,7 +3,7 @@ import type {
   EXPERIMENTAL_Router,
   EXPERIMENTAL_RouterOptions,
 } from 'vue-router/experimental'
-import type { Router } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 declare module 'vue-router' {
   interface TypesConfig {
@@ -12,13 +12,12 @@ declare module 'vue-router' {
 }
 
 describe('Router conditional via TypesConfig', () => {
+  const router = useRouter()
   it('resolves to EXPERIMENTAL_Router when augmented', () => {
-    expectTypeOf<Router>().toEqualTypeOf<EXPERIMENTAL_Router>()
+    expectTypeOf(router).toEqualTypeOf<EXPERIMENTAL_Router>()
   })
 
   it('options shape follows the augmented Router', () => {
-    expectTypeOf<
-      Router['options']
-    >().toEqualTypeOf<EXPERIMENTAL_RouterOptions>()
+    expectTypeOf(router.options).toEqualTypeOf<EXPERIMENTAL_RouterOptions>()
   })
 })

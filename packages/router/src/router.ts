@@ -71,6 +71,7 @@ import type {
   EXPERIMENTAL_Router_Base,
   _OnReadyCallback,
 } from './experimental/router'
+import type { TypesConfig } from './config'
 
 /**
  * Options to initialize a {@link Router} instance.
@@ -85,7 +86,7 @@ export interface RouterOptions extends EXPERIMENTAL_RouterOptions_Base {
 /**
  * Router instance.
  */
-export interface Router extends EXPERIMENTAL_Router_Base<RouteRecordNormalized> {
+export interface RouterClassic extends EXPERIMENTAL_Router_Base<RouteRecordNormalized> {
   /**
    * Original options object passed to create the Router
    */
@@ -121,6 +122,24 @@ export interface Router extends EXPERIMENTAL_Router_Base<RouteRecordNormalized> 
    */
   clearRoutes(): void
 }
+
+/**
+ * Router instance.
+ *
+ * By default this resolves to the classic {@link RouterClassic}. Augment
+ * {@link TypesConfig} with a `Router` slot to swap the public type.
+ *
+ * ```ts
+ * import { router } from './router'
+ * declare module 'vue-router' {
+ *   interface TypesConfig {
+ *     Router: typeof router
+ *   }
+ * }
+ * ```
+ */
+export type Router =
+  TypesConfig extends Record<'Router', infer T> ? T : RouterClassic
 
 /**
  * Creates a Router instance that can be used by a Vue app.
