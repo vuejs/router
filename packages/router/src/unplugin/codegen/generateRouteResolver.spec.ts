@@ -107,6 +107,37 @@ describe('generateRouteRecordQuery', () => {
     `)
   })
 
+  it("emits identical query code for parser: 'string' and no parser", () => {
+    const treeNone = new PrefixTree(DEFAULT_OPTIONS)
+    const nodeNone = treeNone.insert('a', 'a.vue')
+    nodeNone.value.setEditOverride('params', {
+      query: { search: {} },
+    })
+
+    const treeString = new PrefixTree(DEFAULT_OPTIONS)
+    const nodeString = treeString.insert('a', 'a.vue')
+    nodeString.value.setEditOverride('params', {
+      query: { search: { parser: 'string' } },
+    })
+
+    const noneImports = new ImportsMap()
+    const stringImports = new ImportsMap()
+
+    const noneCode = generateRouteRecordQuery({
+      importsMap: noneImports,
+      node: nodeNone,
+      paramParsersMap: new Map(),
+    })
+    const stringCode = generateRouteRecordQuery({
+      importsMap: stringImports,
+      node: nodeString,
+      paramParsersMap: new Map(),
+    })
+
+    expect(stringCode).toBe(noneCode)
+    expect(stringImports.toString()).toBe(noneImports.toString())
+  })
+
   it('generates query property with multiple query params', () => {
     const node = new PrefixTree(DEFAULT_OPTIONS).insert('a', 'a.vue')
     node.value.setEditOverride('params', {
@@ -370,6 +401,37 @@ describe('generateRouteRecord', () => {
         },
       })"
     `)
+  })
+
+  it('emits identical path code for [id=string] and [id]', () => {
+    const treeNone = new PrefixTree(DEFAULT_OPTIONS)
+    const treeString = new PrefixTree(DEFAULT_OPTIONS)
+
+    const noneImports = new ImportsMap()
+    const stringImports = new ImportsMap()
+
+    const noneCode = generateRouteRecord({
+      node: treeNone.insert('p/[id]', 'p/[id].vue'),
+      parentVar: null,
+      parentNode: null,
+      state: { id: 0, matchableRecords: [] },
+      options: DEFAULT_OPTIONS,
+      importsMap: noneImports,
+      paramParsersMap: new Map(),
+    })
+    const stringCode = generateRouteRecord({
+      node: treeString.insert('p/[id=string]', 'p/[id=string].vue'),
+      parentVar: null,
+      parentNode: null,
+      state: { id: 0, matchableRecords: [] },
+      options: DEFAULT_OPTIONS,
+      importsMap: stringImports,
+      paramParsersMap: new Map(),
+    })
+
+    // file paths differ between fixtures; align them before comparison
+    expect(stringCode.replace(/\[id=string\]/g, '[id]')).toBe(noneCode)
+    expect(stringImports.toString()).toBe(noneImports.toString())
   })
 })
 

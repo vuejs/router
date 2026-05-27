@@ -86,6 +86,28 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
       const result = EXPERIMENTAL_generateRouteParams(node, [null], false)
       expect(result).toBe('{ id: string | null }')
     })
+
+    it("native 'string' type matches no-parser output for required path", () => {
+      const node = createTreeWithParam('[id]')
+      const nullResult = EXPERIMENTAL_generateRouteParams(node, [null], false)
+      const stringResult = EXPERIMENTAL_generateRouteParams(
+        node,
+        ['string'],
+        false
+      )
+      expect(stringResult).toBe(nullResult)
+    })
+
+    it("native 'string' type matches no-parser output for optional path", () => {
+      const node = createTreeWithParam('[[id]]')
+      const nullResult = EXPERIMENTAL_generateRouteParams(node, [null], false)
+      const stringResult = EXPERIMENTAL_generateRouteParams(
+        node,
+        ['string'],
+        false
+      )
+      expect(stringResult).toBe(nullResult)
+    })
   })
 
   describe('raw param parsers', () => {

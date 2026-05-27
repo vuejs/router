@@ -113,6 +113,7 @@ export interface DefinePage<FilePath extends string = string> extends Partial<
 export interface ParamParsers_Native {
   int: { type: number }
   bool: { type: boolean }
+  string: { type: string }
 }
 
 export type ParamParserType_Native = keyof ParamParsers_Native

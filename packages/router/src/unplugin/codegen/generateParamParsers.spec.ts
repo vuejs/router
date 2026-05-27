@@ -40,6 +40,7 @@ describe('warnMissingParamParsers', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('users/[id=int]', 'users/[id=int].vue')
     tree.insert('posts/[active=bool]', 'posts/[active=bool].vue')
+    tree.insert('blog/[slug=string]', 'blog/[slug=string].vue')
 
     const paramParsers: ParamParsersMap = new Map()
 
@@ -95,6 +96,7 @@ describe('collectMissingParamParsers', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('users/[id=int]', 'users/[id=int].vue')
     tree.insert('posts/[active=bool]', 'posts/[active=bool].vue')
+    tree.insert('blog/[slug=string]', 'blog/[slug=string].vue')
 
     const paramParsers: ParamParsersMap = new Map()
 
@@ -344,11 +346,19 @@ describe('generateParamsTypes', () => {
         isSplat: false,
         parser: 'bool',
       },
+      {
+        paramName: 'slug',
+        modifier: '',
+        optional: false,
+        repeatable: false,
+        isSplat: false,
+        parser: 'string',
+      },
     ]
     const paramParsers: ParamParsersMap = new Map()
 
     const result = generateParamsTypes(params, paramParsers)
-    expect(result).toEqual(['number', 'boolean'])
+    expect(result).toEqual(['number', 'boolean', 'string'])
   })
 
   it('handles mixed params with and without parsers', () => {
@@ -476,6 +486,49 @@ describe('generateParamParserOptions', () => {
     expect(importsMap.toString()).toContain(
       `import { PARAM_PARSER_BOOL } from 'vue-router/experimental'`
     )
+  })
+
+  it("returns empty string for native 'string' parser (treated as no parser)", () => {
+    const param: TreePathParam = {
+      paramName: 'slug',
+      modifier: '',
+      optional: false,
+      repeatable: false,
+      isSplat: false,
+      parser: 'string',
+    }
+    const importsMap = new ImportsMap()
+    const paramParsers: ParamParsersMap = new Map()
+
+    const result = generateParamParserOptions(param, importsMap, paramParsers)
+    expect(result).toBe('')
+    expect(importsMap.toString()).not.toContain('PARAM_PARSER_STRING')
+  })
+
+  it("lets custom parser named 'string' override the native default", () => {
+    const param: TreePathParam = {
+      paramName: 'slug',
+      modifier: '',
+      optional: false,
+      repeatable: false,
+      isSplat: false,
+      parser: 'string',
+    }
+    const importsMap = new ImportsMap()
+    const paramParsers: ParamParsersMap = new Map([
+      [
+        'string',
+        {
+          name: 'string',
+          typeName: 'Param_string',
+          relativePath: 'parsers/string',
+          absolutePath: '/path/to/parsers/string',
+        },
+      ],
+    ])
+
+    const result = generateParamParserOptions(param, importsMap, paramParsers)
+    expect(result).toBe('_normalized_PARAM_PARSER__string')
   })
 
   it('returns empty string for missing parser', () => {

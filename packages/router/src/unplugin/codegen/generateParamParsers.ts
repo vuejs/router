@@ -38,11 +38,12 @@ export type ParamParsersMap = Map<
 >
 
 // just for type strictness
-const _NATIVE_PARAM_PARSERS = ['int', 'bool'] as const
+const _NATIVE_PARAM_PARSERS = ['int', 'bool', 'string'] as const
 const NATIVE_PARAM_PARSERS = _NATIVE_PARAM_PARSERS as readonly string[]
 const NATIVE_PARAM_PARSERS_TYPES = {
   int: 'number',
   bool: 'boolean',
+  string: 'string',
 } satisfies Record<(typeof _NATIVE_PARAM_PARSERS)[number], string>
 
 const RAW_PARAM_PARSER_DEFINER = 'defineParamParserRaw'
@@ -337,6 +338,10 @@ export function generateParamParserOptions(
   if (paramParsers.has(param.parser)) {
     const { name } = paramParsers.get(param.parser)!
     return `_normalized_PARAM_PARSER__${name}`
+    // 'string' is the implicit default but it's part of NATIVE_PARAM_PARSERS
+    // so we need to skip it here
+  } else if (param.parser === 'string') {
+    return ''
   } else if (NATIVE_PARAM_PARSERS.includes(param.parser)) {
     const varName = `PARAM_PARSER_${param.parser.toUpperCase()}`
     importsMap.add('vue-router/experimental', varName)
