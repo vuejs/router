@@ -1,3 +1,38 @@
+# [5.1.0](https://github.com/vuejs/router/compare/v5.0.7...v5.1.0) (2026-05-28)
+
+### Bug Fixes
+
+- allow undefined values for params in query ([4726e2b](https://github.com/vuejs/router/commit/4726e2b642cf846694cf53076809c53cc9dda907))
+- avoid importing unused param parsers ([41c00e7](https://github.com/vuejs/router/commit/41c00e7c7c716cc9ac4cc572a2717e9ea9fafede))
+- detect not set format ([aa89e2e](https://github.com/vuejs/router/commit/aa89e2ee07af714aaf4dd160f70e1ac436f46833))
+- deterministic param parser types order ([bf0fc9b](https://github.com/vuejs/router/commit/bf0fc9b60552966f5ad2bbe5d9250cc18d1e9123))
+- **experimental:** repeatable params in subsegments ([846640e](https://github.com/vuejs/router/commit/846640e4b50030223ca909b4f1f6d8179b833c1d))
+- filter invalid query params without failing to match ([db7178a](https://github.com/vuejs/router/commit/db7178a5945dac0d281b7651388b15994bbc8655))
+- fix auto import fixes and make experimental esm only ([db3a6b3](https://github.com/vuejs/router/commit/db3a6b376e26cdf8dad501d6f2cac01891f7e481))
+- **types:** add vite as optional peer dependency ([#2712](https://github.com/vuejs/router/issues/2712)) ([facbf6b](https://github.com/vuejs/router/commit/facbf6b1457fb4a754639748d02877881faffd55))
+
+### Code Refactoring
+
+- **experimental:** remove defineQueryParamParser and definePathParamParser ([315cc09](https://github.com/vuejs/router/commit/315cc09e6779615434186272503aba71684f7bc4))
+
+### Features
+
+- allow overriding the global Router type ([1cd93b3](https://github.com/vuejs/router/commit/1cd93b33b19209d486d852aedf7012b005dfe713))
+- allow string as a param parser for convenience ([be37b79](https://github.com/vuejs/router/commit/be37b79841437cd356adeb94bc62aa975ca31438))
+- emit runtime warning for invalid format in query params ([8259a09](https://github.com/vuejs/router/commit/8259a09c93f41bc152edb75869181b7f6704b35a))
+- force array type raw param parsers ([7a68b87](https://github.com/vuejs/router/commit/7a68b87c9ea18f870f7233c178cd9a8870c02f7c))
+- override useRouter() return with experimental types config ([39a344f](https://github.com/vuejs/router/commit/39a344f7b14525d5c607a6e17b671e7e32f9930c))
+- strict type for definePage param default ([0ae10cd](https://github.com/vuejs/router/commit/0ae10cdd5f14b1689a5e0f65856df93f4a000525))
+- support raw param parsers ([eadec55](https://github.com/vuejs/router/commit/eadec558824d9536ada998147acc652b4329af5c))
+- typed definePage params.path ([#2716](https://github.com/vuejs/router/issues/2716)) ([d65de74](https://github.com/vuejs/router/commit/d65de7494cf844d8abceab67741bf60e962535ed))
+
+### BREAKING CHANGES
+
+- **experimental:** these are now replaced by `defineParamParser` and
+  `defineParamParserRaw`. They should cover more use cases in a more
+  intuitive way. Feedback is welcome. See
+  https://router.vuejs.org/experimental/param-parsers.html
+
 ## [5.0.7](https://github.com/vuejs/router/compare/v5.0.6...v5.0.7) (2026-05-13)
 
 ### Bug Fixes
