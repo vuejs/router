@@ -1,15 +1,11 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import {
-  defineParamParserRaw,
-  defineParamParser,
-  defineQueryParamParser,
-} from './define-param-parser'
+import { defineParamParserRaw, defineParamParser } from './define-param-parser'
 import type { MatcherQueryParamsValue } from '../matcher-pattern'
 import { miss } from '../errors'
 
-describe('defineQueryParamParser', () => {
+describe('defineParamParserRaw', () => {
   it('uses MatcherQueryParamsValue as the URL type', () => {
-    const parser = defineQueryParamParser<number>({
+    const parser = defineParamParserRaw<number>({
       get: value => Number(Array.isArray(value) ? value[0] : value),
       set: value => (value == null ? null : String(value)),
     })
@@ -25,18 +21,16 @@ describe('defineQueryParamParser', () => {
   })
 
   it('requires both get and set', () => {
-    defineQueryParamParser<number>(
+    defineParamParserRaw<number>(
       // @ts-expect-error: missing set
       { get: value => Number(value) }
     )
-    defineQueryParamParser<number>(
+    defineParamParserRaw<number>(
       // @ts-expect-error: missing get
       { set: value => String(value) }
     )
   })
-})
 
-describe('defineParamParserRaw', () => {
   it('keeps TParam as-is without lifting to array/null', () => {
     const parser = defineParamParserRaw<Set<string>>({
       get: value => {

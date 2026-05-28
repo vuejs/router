@@ -1,8 +1,10 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import { MatcherPatternPathDynamic } from './matcher-pattern'
-import { PATH_PARAM_PARSER_DEFAULTS } from './param-parsers'
+import {
+  defineParamParserRaw,
+  PATH_PARAM_PARSER_DEFAULTS,
+} from './param-parsers'
 import { PATH_PARAM_SINGLE_DEFAULT } from './param-parsers'
-import { definePathParamParser } from './param-parsers'
 
 describe('MatcherPatternPathDynamic', () => {
   it('can be generic', () => {
@@ -49,7 +51,7 @@ describe('MatcherPatternPathDynamic', () => {
 
   it('can be a custom type', () => {
     // naive number parser but types should be good
-    const numberParser = definePathParamParser({
+    const numberParser = defineParamParserRaw({
       get: value => {
         return Number(value)
       },

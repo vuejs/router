@@ -5,7 +5,7 @@ import {
 } from './matcher-pattern'
 import { MatcherPatternPathStar } from './matcher-pattern-path-star'
 import { miss } from './errors'
-import { definePathParamParser } from './param-parsers'
+import { defineParamParser, defineParamParserRaw } from './param-parsers'
 import { mockWarn } from '../../../../__tests__/vitest-mock-warn'
 
 describe('MatcherPatternPathStatic', () => {
@@ -602,25 +602,31 @@ describe('MatcherPatternPathDynamic', () => {
   })
 
   describe('custom param parsers', () => {
-    const doubleParser = definePathParamParser({
-      get: (v: string | null) => {
+    const doubleParser = defineParamParser<number>({
+      get: v => {
         const value = Number(v) * 2
         if (!Number.isFinite(value)) {
           miss()
         }
         return value
       },
-      set: (v: number | null) => (v == null ? null : String(v / 2)),
+      set: v => String(v / 2),
     })
 
-    const nullAwareParser = definePathParamParser({
-      get: (v: string | null) => {
+    const nullAwareParser = defineParamParserRaw<
+      | 'was-null'
+      | 'was-undefined'
+      | `processed-${string}`
+      // allow extra values that are impossible for tests
+      | null
+      | ''
+    >({
+      get: v => {
         if (v === null) return 'was-null'
         if (v === undefined) return 'was-undefined'
         return `processed-${v}`
       },
-      set: (v: string | null) =>
-        v === 'was-null' ? null : String(v).replace('processed-', ''),
+      set: v => (v === 'was-null' ? null : String(v).replace('processed-', '')),
     })
 
     it('single regular param', () => {

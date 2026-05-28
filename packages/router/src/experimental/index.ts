@@ -41,8 +41,6 @@ export {
   type ParamParser,
   defineParamParser,
   defineParamParserRaw,
-  definePathParamParser,
-  defineQueryParamParser,
   normalizeParamParser as _normalizeParamParser,
   type ExtractParamParserType as _ExtractParamParserType,
 } from './route-resolver/matchers/param-parsers'

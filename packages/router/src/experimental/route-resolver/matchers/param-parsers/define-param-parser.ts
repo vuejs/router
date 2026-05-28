@@ -28,44 +28,6 @@ export const PATH_PARAM_PARSER_DEFAULTS = {
 } satisfies ParamParser<string | string[] | null, string | string[] | null>
 
 /**
- * Defines a path param parser.
- *
- * @param parser - the parser to define. Will be returned as is.
- *
- * @see {@link defineQueryParamParser}
- * @see {@link defineParamParser}
- */
-/*! #__NO_SIDE_EFFECTS__ */
-export function definePathParamParser<
-  TParam,
-  // path params are parsed by the router as these
-  // we use extend to allow infering a more specific type
-  TUrlParam extends string | string[] | null = string | string[] | null,
-  // we can allow pushing with extra values
-  TParamRaw = TParam,
->(parser: Required<ParamParser<TParam, TUrlParam, TParamRaw>>) {
-  return parser
-}
-
-/**
- * Defines a query param parser. Note that query params can also be used as
- * path param parsers.
- *
- * @param parser - the parser to define. Will be returned as is.
- *
- * @see {@link definePathParamParser}
- * @see {@link defineParamParser}
- */
-/*! #__NO_SIDE_EFFECTS__ */
-export function defineQueryParamParser<
-  TParam,
-  // we can allow pushing with extra values
-  TParamRaw = TParam,
->(parser: Required<ParamParser<TParam, MatcherQueryParamsValue, TParamRaw>>) {
-  return parser
-}
-
-/**
  * Defines a param parser that works with any kind of param (path, repeatable,
  * optional, query, hash, ...) but requires the user to handle all cases in the
  * get and set functions (nullish, undefined, arrays, etc). This allows you to
@@ -107,11 +69,14 @@ export function defineQueryParamParser<
  *
  * @see {@link defineParamParser}
  */
+/*! #__NO_SIDE_EFFECTS__ */
 export function defineParamParserRaw<
   TParam,
   // we can allow pushing with extra values
   TParamRaw = TParam,
->(parser: Required<ParamParser<TParam, MatcherQueryParamsValue, TParamRaw>>) {
+  // what gets passed to `get`
+  TUrlParam = MatcherQueryParamsValue,
+>(parser: Required<ParamParser<TParam, TUrlParam, TParamRaw>>) {
   return parser
 }
 
@@ -143,8 +108,7 @@ export function defineParamParserRaw<
  * })
  * ```
  *
- * @see {@link defineQueryParamParser}
- * @see {@link definePathParamParser}
+ * @see {@link defineParamParserRaw}
  */
 export function defineParamParser<
   TParam,
