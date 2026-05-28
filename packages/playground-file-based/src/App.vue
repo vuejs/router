@@ -30,6 +30,11 @@ const targetRoute = ref('')
           <li>
             <RouterLink to="/nested" #default="{ href }">{{ href }}</RouterLink>
           </li>
+          <li>
+            <RouterLink to="/test-params" #default="{ href }">{{
+              href
+            }}</RouterLink>
+          </li>
         </ul>
       </nav>
     </div>

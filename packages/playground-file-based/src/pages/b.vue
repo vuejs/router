@@ -5,7 +5,8 @@ definePage({
   params: {
     query: {
       test: {
-        format: 'value',
+        // uncomment and warns
+        // format: 'value',
         parser: 'set',
       },
 
@@ -21,9 +22,6 @@ definePage({
 
 const route = useRoute()
 const router = useRouter()
-
-route.params.date
-console.log(route.params)
 
 function smokeTest() {
   // never
@@ -74,6 +72,30 @@ smokeTest()
 
 <template>
   <h1>Page B</h1>
+  <button
+    @click="
+      router.push({
+        name: route.name,
+        params: {
+          test: new Set(),
+        },
+      })
+    "
+  >
+    Empty set
+  </button>
+  <button
+    @click="
+      router.push({
+        name: route.name,
+        params: {
+          test: new Set(['a', 'b', 'c']),
+        },
+      })
+    "
+  >
+    multiple values
+  </button>
 
   <pre>{{ route.params }}</pre>
 </template>

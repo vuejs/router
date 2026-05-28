@@ -25,6 +25,12 @@ type Param_monthZod = _ExtractParamParserType<typeof import('./params/month-zod.
 type Param_npmOrg = _ExtractParamParserType<typeof import('./params/npm-org.ts').parser>
 type Param_semver = _ExtractParamParserType<typeof import('./params/semver.ts').parser>
 type Param_set = _ExtractParamParserType<typeof import('./params/set.ts').parser>
+type Param_testBoolQ = _ExtractParamParserType<typeof import('./params/test-bool-q.ts').parser>
+type Param_testColor = _ExtractParamParserType<typeof import('./params/test-color.ts').parser>
+type Param_testCsv = _ExtractParamParserType<typeof import('./params/test-csv.ts').parser>
+type Param_testNum = _ExtractParamParserType<typeof import('./params/test-num.ts').parser>
+type Param_testSet = _ExtractParamParserType<typeof import('./params/test-set.ts').parser>
+type Param_testSetShape = _ExtractParamParserType<typeof import('./params/test-set-shape.ts').parser>
 type Param_versionRange = _ExtractParamParserType<typeof import('./params/version-range.ts').parser>
 
 declare module 'vue-router' {
@@ -36,6 +42,12 @@ declare module 'vue-router' {
       'npm-org': { type: Param_npmOrg }
       'semver': { type: Param_semver }
       'set': { type: Param_set }
+      'test-bool-q': { type: Param_testBoolQ }
+      'test-color': { type: Param_testColor }
+      'test-csv': { type: Param_testCsv }
+      'test-num': { type: Param_testNum }
+      'test-set': { type: Param_testSet }
+      'test-set-shape': { type: Param_testSetShape }
       'version-range': { type: Param_versionRange }
     }
     RouteNamedMap: import('vue-router/auto-routes').RouteNamedMap
@@ -207,6 +219,118 @@ declare module 'vue-router/auto-routes' {
       '/opt/:num?',
       { num: number | null },
       { num: number | null },
+      | never
+    >,
+    '/test-params/(list)': RouteRecordInfo<
+      '/test-params/(list)',
+      '/test-params',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/test-params/color.[c]': RouteRecordInfo<
+      '/test-params/color.[c]',
+      '/test-params/color/:c',
+      { c: Exclude<Param_testColor, unknown[] | null> },
+      { c: Exclude<Param_testColor, unknown[] | null> },
+      | never
+    >,
+    '/test-params/opt.[[id]]': RouteRecordInfo<
+      '/test-params/opt.[[id]]',
+      '/test-params/opt/:id?',
+      { id: Exclude<Param_testNum, unknown[] | null> | null },
+      { id: Exclude<Param_testNum, unknown[] | null> | null },
+      | never
+    >,
+    '/test-params/query': RouteRecordInfo<
+      '/test-params/query',
+      '/test-params/query',
+      { page?: number, tag?: string[] | undefined, active?: Exclude<Param_testBoolQ, unknown[] | null>, ids?: Param_testCsv /* raw param parser */ | undefined },
+      { page: number, tag: string[] | undefined, active: Exclude<Param_testBoolQ, unknown[] | null>, ids: Param_testCsv /* raw param parser */ },
+      | never
+    >,
+    '/test-params/raw/opt.[[ids]]': RouteRecordInfo<
+      '/test-params/raw/opt.[[ids]]',
+      '/test-params/raw/opt/:ids?',
+      { ids: Param_testCsv /* raw param parser */ },
+      { ids: Param_testCsv /* raw param parser */ },
+      | never
+    >,
+    '/test-params/raw/rep.[ids]+': RouteRecordInfo<
+      '/test-params/raw/rep.[ids]+',
+      '/test-params/raw/rep/:ids+',
+      { ids: Param_testCsv /* raw param parser */ },
+      { ids: Param_testCsv /* raw param parser */ },
+      | never
+    >,
+    '/test-params/raw/repo.[[ids]]+': RouteRecordInfo<
+      '/test-params/raw/repo.[[ids]]+',
+      '/test-params/raw/repo/:ids*',
+      { ids: Param_testCsv /* raw param parser */ },
+      { ids: Param_testCsv /* raw param parser */ },
+      | never
+    >,
+    '/test-params/raw/req.[ids]': RouteRecordInfo<
+      '/test-params/raw/req.[ids]',
+      '/test-params/raw/req/:ids',
+      { ids: Param_testCsv /* raw param parser */ },
+      { ids: Param_testCsv /* raw param parser */ },
+      | never
+    >,
+    '/test-params/rep.[id]+': RouteRecordInfo<
+      '/test-params/rep.[id]+',
+      '/test-params/rep/:id+',
+      { id: Extract<Param_testNum, unknown[]> },
+      { id: Extract<Param_testNum, unknown[]> },
+      | never
+    >,
+    '/test-params/repo.[[id]]+': RouteRecordInfo<
+      '/test-params/repo.[[id]]+',
+      '/test-params/repo/:id*',
+      { id: Extract<Param_testNum, unknown[]> },
+      { id: Extract<Param_testNum, unknown[]> },
+      | never
+    >,
+    '/test-params/req.[id]': RouteRecordInfo<
+      '/test-params/req.[id]',
+      '/test-params/req/:id',
+      { id: Exclude<Param_testNum, unknown[] | null> },
+      { id: Exclude<Param_testNum, unknown[] | null> },
+      | never
+    >,
+    '/test-params/set/opt.[[ids]]': RouteRecordInfo<
+      '/test-params/set/opt.[[ids]]',
+      '/test-params/set/opt/:ids?',
+      { ids: Param_testSet /* raw param parser */ },
+      { ids: Param_testSet /* raw param parser */ },
+      | never
+    >,
+    '/test-params/set/rep.[ids]+': RouteRecordInfo<
+      '/test-params/set/rep.[ids]+',
+      '/test-params/set/rep/:ids+',
+      { ids: Param_testSet /* raw param parser */ },
+      { ids: Param_testSet /* raw param parser */ },
+      | never
+    >,
+    '/test-params/set/repo.[[ids]]+': RouteRecordInfo<
+      '/test-params/set/repo.[[ids]]+',
+      '/test-params/set/repo/:ids*',
+      { ids: Param_testSet /* raw param parser */ },
+      { ids: Param_testSet /* raw param parser */ },
+      | never
+    >,
+    '/test-params/set/req.[ids]': RouteRecordInfo<
+      '/test-params/set/req.[ids]',
+      '/test-params/set/req/:ids',
+      { ids: Param_testSet /* raw param parser */ },
+      { ids: Param_testSet /* raw param parser */ },
+      | never
+    >,
+    '/test-params/set-shape/repo.[[ids]]+': RouteRecordInfo<
+      '/test-params/set-shape/repo.[[ids]]+',
+      '/test-params/set-shape/repo/:ids*',
+      { ids: Param_testSetShape /* raw param parser */ },
+      { ids: Param_testSetShape /* raw param parser */ },
       | never
     >,
     '/tests/[[optional]]/end': RouteRecordInfo<
@@ -505,6 +629,134 @@ declare module 'vue-router/auto-routes' {
         | never
       pathParamNames:
         | 'num'
+    }
+    'src/pages/test-params/(list).vue': {
+      routes:
+        | '/test-params/(list)'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/test-params/color.[c].vue': {
+      routes:
+        | '/test-params/color.[c]'
+      views:
+        | never
+      pathParamNames:
+        | 'c'
+    }
+    'src/pages/test-params/opt.[[id]].vue': {
+      routes:
+        | '/test-params/opt.[[id]]'
+      views:
+        | never
+      pathParamNames:
+        | 'id'
+    }
+    'src/pages/test-params/query.vue': {
+      routes:
+        | '/test-params/query'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/test-params/raw/opt.[[ids]].vue': {
+      routes:
+        | '/test-params/raw/opt.[[ids]]'
+      views:
+        | never
+      pathParamNames:
+        | 'ids'
+    }
+    'src/pages/test-params/raw/rep.[ids]+.vue': {
+      routes:
+        | '/test-params/raw/rep.[ids]+'
+      views:
+        | never
+      pathParamNames:
+        | 'ids'
+    }
+    'src/pages/test-params/raw/repo.[[ids]]+.vue': {
+      routes:
+        | '/test-params/raw/repo.[[ids]]+'
+      views:
+        | never
+      pathParamNames:
+        | 'ids'
+    }
+    'src/pages/test-params/raw/req.[ids].vue': {
+      routes:
+        | '/test-params/raw/req.[ids]'
+      views:
+        | never
+      pathParamNames:
+        | 'ids'
+    }
+    'src/pages/test-params/rep.[id]+.vue': {
+      routes:
+        | '/test-params/rep.[id]+'
+      views:
+        | never
+      pathParamNames:
+        | 'id'
+    }
+    'src/pages/test-params/repo.[[id]]+.vue': {
+      routes:
+        | '/test-params/repo.[[id]]+'
+      views:
+        | never
+      pathParamNames:
+        | 'id'
+    }
+    'src/pages/test-params/req.[id].vue': {
+      routes:
+        | '/test-params/req.[id]'
+      views:
+        | never
+      pathParamNames:
+        | 'id'
+    }
+    'src/pages/test-params/set/opt.[[ids]].vue': {
+      routes:
+        | '/test-params/set/opt.[[ids]]'
+      views:
+        | never
+      pathParamNames:
+        | 'ids'
+    }
+    'src/pages/test-params/set/rep.[ids]+.vue': {
+      routes:
+        | '/test-params/set/rep.[ids]+'
+      views:
+        | never
+      pathParamNames:
+        | 'ids'
+    }
+    'src/pages/test-params/set/repo.[[ids]]+.vue': {
+      routes:
+        | '/test-params/set/repo.[[ids]]+'
+      views:
+        | never
+      pathParamNames:
+        | 'ids'
+    }
+    'src/pages/test-params/set/req.[ids].vue': {
+      routes:
+        | '/test-params/set/req.[ids]'
+      views:
+        | never
+      pathParamNames:
+        | 'ids'
+    }
+    'src/pages/test-params/set-shape/repo.[[ids]]+.vue': {
+      routes:
+        | '/test-params/set-shape/repo.[[ids]]+'
+      views:
+        | never
+      pathParamNames:
+        | 'ids'
     }
     'src/pages/tests/[[optional]]/end.vue': {
       routes:
