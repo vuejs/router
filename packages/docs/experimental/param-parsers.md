@@ -40,14 +40,13 @@ route.params.id // number
 
 You define param parsers as modules exporting a `parser` in `src/params/*`. The file name is the parser name you use in routes. For example, `src/params/uuid.ts` exports a `parser` that validates UUIDs and can be used as `[id=uuid]` in route files.
 
-A parser is just an object with a _getter_ and a _setter_ but to make things simpler to use, Vue Router provides two helpers:
+A parser is just an object with a _getter_ and a _setter_ but to make things simpler to use, Vue Router provides two helpers: [`defineParamParser()`](#defineParamParser) and [`defineParamParserRaw()`](#defineParamParserRaw).
 
-- `defineParamParser`: define a single-value transform. The router wraps it for optional/repeatable usage and handles `null`/arrays for you.
-- `defineParamParserRaw`: full control. You must handle every shape (`null`, `undefined`, single, array) yourself, but in exchange you can collapse them all into one output type (e.g. always return a `Set<string>`, whether the input was missing, a single value, or an array).
-
-> Reach for `defineParamParser` first, it's the most common use case for simple one-to-one transforms. Use `defineParamParserRaw` when you need to collapse multiple input shapes into one output type or you want to reject _nullish_ or array values outright.
+Reach for `defineParamParser` first, it's the most common use case for simple one-to-one transforms. Use `defineParamParserRaw` when you need to collapse multiple input shapes into one output type or you want to reject _nullish_ or array values outright.
 
 ### `defineParamParser`
+
+`defineParamParser` defines a single-value transform. The router wraps it for optional/repeatable usage and handles `null`/arrays for you.
 
 ```ts
 // src/params/number.ts
@@ -84,7 +83,8 @@ The logic of the param parser is simple because `defineParamParser()` handles th
 
 ### `defineParamParserRaw`
 
-Requires handling every input shape (`null`, `undefined`, single value, array). The payoff: `get` can always return the same type. Below, the result is always a `Set<string>`, regardless of whether the URL provided nothing, one value, or many.
+`defineParamParserRaw` gives full control over the transformation. You must handle every shape (`null`, `undefined`, single, array) yourself, but in exchange you can collapse them all into one output type (e.g. always return a `Set<string>`, whether the input was missing, a single value, or an array).
+Below, the result is always a `Set<string>`, regardless of whether the URL provided nothing, one value, or many.
 
 ```ts
 // src/params/test-set.ts
