@@ -4,9 +4,9 @@
  * @packageDocumentation
  */
 
+export { createWebHashHistory } from './history/hash'
 export { createWebHistory } from './history/html5'
 export { createMemoryHistory } from './history/memory'
-export { createWebHashHistory } from './history/hash'
 export { createRouterMatcher } from './matcher'
 export type { RouterMatcher } from './matcher'
 
@@ -18,147 +18,131 @@ export type {
   LocationQueryValueRaw,
 } from './query'
 
-export type { RouterHistory, HistoryState } from './history/common'
+export type { HistoryState, RouterHistory } from './history/common'
 
 export type { RouteRecord, RouteRecordNormalized } from './matcher/types'
 
 export type {
-  PathParserOptions,
   _PathParserOptions,
+  PathParserOptions,
 } from './matcher/pathParserRanker'
 
 export {
-  routeLocationKey,
-  routerViewLocationKey,
-  routerKey,
   matchedRouteKey,
+  routeLocationKey,
+  routerKey,
+  routerViewLocationKey,
   viewDepthKey,
 } from './injectionSymbols'
 
 export { START_LOCATION_NORMALIZED as START_LOCATION } from './location'
 export type {
-  // route location
   _RouteLocationBase,
-  MatcherLocationAsPath,
+  _RouteRecordBase,
   LocationAsRelativeRaw,
-  RouteQueryAndHash,
-
-  // route params
-  RouteParamValue,
-  RouteParamValueRaw,
-
-  // Partial route location
+  MatcherLocation,
+  MatcherLocationAsPath,
+  RouteComponent,
+  // exported for backwards compat for old RouteLocationRaw
+  RouteLocationMatched,
   RouteLocationNamedRaw,
+  RouteLocationOptions,
   // exported for backwards compat for old RouteLocationRaw
   RouteLocationPathRaw,
-  RouteLocationMatched,
-
-  // extra options when navigating
-  RouteLocationOptions,
-
-  // route records
-  _RouteRecordBase,
-  RouteRecordRaw,
-  RouteRecordSingleView,
-  RouteRecordSingleViewWithChildren,
-  RouteRecordMultipleViews,
-  RouteRecordMultipleViewsWithChildren,
-  RouteRecordRedirect,
   RouteMeta,
-  RouteComponent,
   // RawRouteComponent,
   RouteParamsGeneric,
   RouteParamsRawGeneric,
-  MatcherLocation,
+  RouteParamValue,
+  RouteParamValueRaw,
+  RouteQueryAndHash,
+  RouteRecordMultipleViews,
+  RouteRecordMultipleViewsWithChildren,
+  RouteRecordRaw,
+  RouteRecordRedirect,
+  RouteRecordSingleView,
+  RouteRecordSingleViewWithChildren,
 } from './types'
 export type { _Awaitable } from './types/utils'
 
 // Experimental Type Safe API
 export type {
-  RouteMap,
-  RouteMapGeneric,
-
-  // route location
-  RouteLocationRaw,
-  RouteLocation,
-  RouteLocationGeneric,
-  RouteLocationTyped,
-  RouteLocationTypedList,
-
-  // RouteLocationNormalized
-  RouteLocationNormalizedGeneric,
-  RouteLocationNormalized,
-  RouteLocationNormalizedTyped,
-  RouteLocationNormalizedTypedList,
-
-  // RouteLocationNormalizedLoaded
-  RouteLocationNormalizedLoadedGeneric,
-  RouteLocationNormalizedLoaded,
-  RouteLocationNormalizedLoadedTyped,
-  RouteLocationNormalizedLoadedTypedList,
-
-  // RouteLocationResolved
-  RouteLocationResolvedGeneric,
-  RouteLocationResolved,
-  RouteLocationResolvedTyped,
-  RouteLocationResolvedTypedList,
-
-  // relative
-  RouteLocationAsRelativeGeneric,
-  RouteLocationAsRelative,
-  RouteLocationAsRelativeTyped,
-  RouteLocationAsRelativeTypedList,
-  // string
-  RouteLocationAsStringTyped,
-  RouteLocationAsString,
-  RouteLocationAsStringTypedList,
-  // as path
-  RouteLocationAsPathGeneric,
-  RouteLocationAsPath,
-  RouteLocationAsPathTyped,
-  RouteLocationAsPathTypedList,
-
-  // route records
-  RouteRecordInfoGeneric,
-  RouteRecordInfo,
-  RouteRecordNameGeneric,
-  RouteRecordName,
   _RouteRecordProps,
-  RouteRecordRedirectOption,
-
-  // params
-  RouteParams,
-  RouteParamsRaw,
+  // navigation guards
+  NavigationGuard,
+  NavigationGuardNext,
+  NavigationGuardNextCallback,
+  NavigationGuardReturn,
+  NavigationGuardWithThis,
+  NavigationHookAfter,
   ParamValue,
   ParamValueOneOrMore,
   ParamValueZeroOrMore,
   ParamValueZeroOrOne,
-
-  // navigation guards
-  NavigationGuard,
-  NavigationGuardWithThis,
-  NavigationHookAfter,
-  NavigationGuardReturn,
-  NavigationGuardNext,
-  NavigationGuardNextCallback,
+  RouteLocation,
+  // as path
+  RouteLocationAsPath,
+  RouteLocationAsPathGeneric,
+  RouteLocationAsPathTyped,
+  RouteLocationAsPathTypedList,
+  // relative
+  RouteLocationAsRelative,
+  RouteLocationAsRelativeGeneric,
+  RouteLocationAsRelativeTyped,
+  RouteLocationAsRelativeTypedList,
+  // string
+  RouteLocationAsString,
+  RouteLocationAsStringTyped,
+  RouteLocationAsStringTypedList,
+  RouteLocationGeneric,
+  RouteLocationNormalized,
+  RouteLocationNormalizedGeneric,
+  RouteLocationNormalizedLoaded,
+  RouteLocationNormalizedLoadedGeneric,
+  RouteLocationNormalizedLoadedTyped,
+  RouteLocationNormalizedLoadedTypedList,
+  RouteLocationNormalizedTyped,
+  RouteLocationNormalizedTypedList,
+  RouteLocationRaw,
+  RouteLocationResolved,
+  RouteLocationResolvedGeneric,
+  RouteLocationResolvedTyped,
+  RouteLocationResolvedTypedList,
+  RouteLocationTyped,
+  RouteLocationTypedList,
+  RouteMap,
+  RouteMapGeneric,
+  // params
+  RouteParams,
+  RouteParamsRaw,
+  RouteRecordInfo,
+  // route records
+  RouteRecordInfoGeneric,
+  RouteRecordName,
+  RouteRecordNameGeneric,
+  RouteRecordRedirectOption,
 } from './typed-routes'
 
 export { createRouter } from './router'
-export type { RouterOptions } from './router'
-export type { RouterClassic as _RouterClassic } from './router'
+export type {
+  RouterClassic as _RouterClassic,
+  Router,
+  RouterOptions,
+} from './router'
 export type { RouterScrollBehavior } from './scrollBehavior'
 
-export { NavigationFailureType, isNavigationFailure } from './errors'
+export { isNavigationFailure, NavigationFailureType } from './errors'
 export type {
-  NavigationFailure,
   ErrorTypes,
+  NavigationFailure,
   NavigationRedirectError,
 } from './errors'
 
+export type { TypesConfig } from './config'
 export {
+  loadRouteLocation,
   onBeforeRouteLeave,
   onBeforeRouteUpdate,
-  loadRouteLocation,
 } from './navigationGuards'
 export { RouterLink, useLink } from './RouterLink'
 export type {
@@ -169,7 +153,6 @@ export type {
 } from './RouterLink'
 export { RouterView } from './RouterView'
 export type { RouterViewProps } from './RouterView'
-export type { TypesConfig } from './config'
 
 export * from './useApi'
 
