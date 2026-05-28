@@ -235,7 +235,6 @@ export class MatcherPatternPathDynamic<
         string,
         MatcherPatternPathDynamic_ParamOptions<any, any>
       >)[keyof TParamsOptions][0]
-    let repeatable: boolean | undefined
     let optional: boolean | undefined
     let value: ReturnType<NonNullable<ParamParser['set']>> | undefined
     const path =
@@ -248,7 +247,7 @@ export class MatcherPatternPathDynamic<
             // path param
           } else if (typeof part === 'number') {
             paramName = this.paramsKeys[paramIndex++]
-            ;[parser, repeatable, optional] = this.params[paramName]
+            ;[parser /* repeatable */, , optional] = this.params[paramName]
             value = (parser?.set || identityFn)(params[paramName])
 
             // non optional repeatable params cannot be empty
@@ -269,7 +268,7 @@ export class MatcherPatternPathDynamic<
                 }
 
                 paramName = this.paramsKeys[paramIndex++]
-                ;[parser, repeatable, optional] = this.params[paramName]
+                ;[parser /* repeatable */, , optional] = this.params[paramName]
                 value = (parser?.set || identityFn)(params[paramName])
 
                 // a repeatable param in a sub segment joins its values with `/`
