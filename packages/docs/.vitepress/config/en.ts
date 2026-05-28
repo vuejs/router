@@ -216,6 +216,14 @@ function sidebarFileBasedRouting(): SidebarGroup {
       },
       { text: 'HMR', link: '/file-based-routing/hmr' },
       { text: 'ESLint', link: '/file-based-routing/eslint' },
+      {
+        text: 'Router Resolver (experimental)',
+        link: '/experimental/router-resolver',
+      },
+      {
+        text: 'Param Parsers (experimental)',
+        link: '/experimental/param-parsers',
+      },
     ],
   }
 }
