@@ -114,5 +114,5 @@ router.addRoute({
 
 Vue Router gives you two functions to look at existing routes:
 
-- [`router.hasRoute()`](/api/interfaces/Router.md#hasRoute): check if a route exists.
-- [`router.getRoutes()`](/api/interfaces/Router.md#getRoutes): get an array with all the route records.
+- [`router.hasRoute()`](/api/interfaces/RouterClassic.md#hasRoute-): check if a route exists.
+- [`router.getRoutes()`](/api/interfaces/RouterClassic.md#getRoutes-): get an array with all the route records.

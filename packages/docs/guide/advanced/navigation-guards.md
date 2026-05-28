@@ -49,7 +49,7 @@ And can optionally return any of the following values:
   })
   ```
 
-It's also possible to throw an `Error` if an unexpected situation was met. This will also cancel the navigation and call any callback registered via [`router.onError()`](../../api/interfaces/Router.md#onError).
+It's also possible to throw an `Error` if an unexpected situation was met. This will also cancel the navigation and call any callback registered via [`router.onError()`](/api/interfaces/RouterClassic.md#onError-).
 
 If nothing, `undefined` or `true` is returned, **the navigation is validated**, and the next navigation guard is called.
 
