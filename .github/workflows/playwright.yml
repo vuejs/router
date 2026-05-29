@@ -32,9 +32,9 @@ jobs:
       - name: Build router
         run: pnpm run build
         working-directory: packages/router
-      - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
-        working-directory: packages/router
+      # Browsers + OS deps are baked into the mcr.microsoft.com/playwright
+      # image, so no `playwright install` is needed (it would also fail under
+      # the non-root --user 1001 since --with-deps needs root for apt).
       - name: Run Playwright tests
         run: pnpm exec playwright test
         working-directory: packages/router
