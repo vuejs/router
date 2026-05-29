@@ -44,6 +44,35 @@ A parser is just an object with a _getter_ and a _setter_ but to make things sim
 
 Reach for `defineParamParser` first, it's the most common use case for simple one-to-one transforms. Use `defineParamParserRaw` when you need to collapse multiple input shapes into one output type or you want to reject _nullish_ or array values outright.
 
+::: warning Configuration Required
+To make custom parsers work, you must enable the `experimental.paramParsers`
+option in the Vite plugin. This is what tells the plugin to scan your
+`src/params/` folder and register parsers both at runtime and in the generated
+`typed-router.d.ts`.
+
+```ts [vite.config.ts]
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import VueRouter from 'vue-router/vite'
+
+export default defineConfig({
+  plugins: [
+    VueRouter({
+      experimental: {
+        paramParsers: true, 
+      },
+    }),
+    vue(),
+    // ....
+  ],
+})
+
+```
+Without this, the router won't find your custom parsers and you'll see errors like:
+[vue-router] Parameter parser "number" not found for route "/users/:id".
+:::
+
+
 ### `defineParamParser`
 
 `defineParamParser` defines a single-value transform. The router wraps it for optional/repeatable usage and handles `null`/arrays for you.
