@@ -138,8 +138,7 @@
     "test:e2e:headless": "node e2e/runner.mjs --env chrome-headless",
     "test:e2e:native": "node e2e/runner.mjs --env chrome",
     "test:e2e:ci": "node e2e/runner.mjs --env chrome-headless --retries 2",
-    "test:e2e:firefox": "node e2e/runner.mjs --env firefox-headless",
-    "test:e2e:ci:firefox": "node e2e/runner.mjs --env firefox-headless --retries 2"
+    "test:e2e:firefox": "node e2e/runner.mjs --env firefox-headless"
   },
   "dependencies": {
     "@babel/generator": "^8.0.0-rc.4",

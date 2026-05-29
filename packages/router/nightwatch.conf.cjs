@@ -18,6 +18,14 @@ module.exports = {
   // if this is not specified, the test source must be passed as the second argument to the test runner.
   src_folders: ['e2e/specs'],
 
+  // Run spec files in parallel. 'auto' uses the number of CPU cores,
+  // capped by the number of spec files. Specs are isolated (own browser
+  // session each) and only share the read-only dev server, so this is safe.
+  test_workers: {
+    enabled: true,
+    workers: 'auto',
+  },
+
   // See https://nightwatchjs.org/guide/working-with-page-objects/using-page-objects.html
   page_objects_path: [],
 
