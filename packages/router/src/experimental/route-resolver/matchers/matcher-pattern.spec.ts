@@ -602,7 +602,7 @@ describe('MatcherPatternPathDynamic', () => {
   })
 
   describe('custom param parsers', () => {
-    const doubleParser = defineParamParser<number>({
+    const doubleParser = defineParamParserRaw<number | null>({
       get: v => {
         const value = Number(v) * 2
         if (!Number.isFinite(value)) {
@@ -610,7 +610,7 @@ describe('MatcherPatternPathDynamic', () => {
         }
         return value
       },
-      set: v => String(v / 2),
+      set: v => (v == null ? null : String(v / 2)),
     })
 
     const nullAwareParser = defineParamParserRaw<
