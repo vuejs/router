@@ -5,7 +5,7 @@ import {
 } from './matcher-pattern'
 import { MatcherPatternPathStar } from './matcher-pattern-path-star'
 import { miss } from './errors'
-import { defineParamParser, defineParamParserRaw } from './param-parsers'
+import { defineParamParserRaw } from './param-parsers'
 import { mockWarn } from '../../../../__tests__/vitest-mock-warn'
 
 describe('MatcherPatternPathStatic', () => {
