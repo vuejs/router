@@ -1,5 +1,5 @@
-module.exports = {
-  '@tags': ['no-headless'],
+export default {
+  '@tags': [],
 
   transitions: function (browser) {
     const TIMEOUT = 3000

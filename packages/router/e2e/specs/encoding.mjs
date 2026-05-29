@@ -6,7 +6,7 @@ const rawText = ' !"#$&\'()*+,/:;<=>?@[]^`{|}'
 
 const TIMEOUT = 2000
 
-module.exports = {
+export default {
   // ...bsStatus(),
 
   '@tags': ['history', 'encoding', 'browserstack'],

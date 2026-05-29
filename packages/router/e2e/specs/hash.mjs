@@ -1,6 +1,6 @@
 const baseURL = 'http://localhost:3000/hash/#'
 
-module.exports = {
+export default {
   '@tags': ['hash', 'encoding'],
 
   /** @type {import('nightwatch').NightwatchTest} */

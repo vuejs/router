@@ -1,6 +1,6 @@
 const baseURL = 'http://localhost:3000/modal'
 
-module.exports = {
+export default {
   '@tags': ['history'],
 
   /** @type {import('nightwatch').NightwatchTest} */

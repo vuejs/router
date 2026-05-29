@@ -81,9 +81,7 @@
       ]
     },
     "onlyBuiltDependencies": [
-      "chromedriver",
       "esbuild",
-      "geckodriver",
       "simple-git-hooks"
     ],
     "ignoredBuiltDependencies": [

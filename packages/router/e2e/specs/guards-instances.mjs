@@ -40,7 +40,7 @@ function testCase(browser, name) {
 
 const baseURL = 'http://localhost:3000/guards-instances'
 
-module.exports = {
+export default {
   '@tags': [],
 
   /** @type {import('nightwatch').NightwatchTest} */

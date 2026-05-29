@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   '@tags': [],
 
   /** @type {import('nightwatch').NightwatchTest} */

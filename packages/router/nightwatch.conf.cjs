@@ -19,13 +19,11 @@ module.exports = {
   src_folders: ['e2e/specs'],
 
   // See https://nightwatchjs.org/guide/working-with-page-objects/using-page-objects.html
-  page_objects_path: ['node_modules/nightwatch/examples/pages/'],
+  page_objects_path: [],
 
-  // See https://nightwatchjs.org/guide/extending-nightwatch/custom-commands.html
-  custom_commands_path: ['node_modules/nightwatch-helpers/commands'],
-
-  // See https://nightwatchjs.org/guide/extending-nightwatch/custom-assertions.html
-  custom_assertions_path: ['node_modules/nightwatch-helpers/assertions'],
+  // Specs rely on Nightwatch's built-in assertions/commands; no custom helpers.
+  custom_commands_path: [],
+  custom_assertions_path: [],
 
   // See https://nightwatchjs.org/guide/extending-nightwatch/plugin-api.html
   plugins: [],
@@ -131,6 +129,21 @@ module.exports = {
       },
     },
 
+    // geckodriver is resolved automatically by Selenium Manager
+    'firefox-headless': {
+      desiredCapabilities: {
+        browserName: 'firefox',
+        acceptInsecureCerts: true,
+        'moz:firefoxOptions': {
+          args: ['-headless'],
+        },
+      },
+      webdriver: {
+        start_process: true,
+        server_path: '',
+      },
+    },
+
     edge: {
       desiredCapabilities: {
         browserName: 'MicrosoftEdge',
@@ -151,89 +164,6 @@ module.exports = {
         cli_args: [
           // --verbose
         ],
-      },
-    },
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // Configuration for when using the browserstack.com cloud service               |
-    //                                                                               |
-    // Please set the username and access key by setting the environment variables:  |
-    // - BROWSERSTACK_USERNAME                                                       |
-    // - BROWSERSTACK_ACCESS_KEY                                                     |
-    // .env files are supported                                                      |
-    //////////////////////////////////////////////////////////////////////////////////
-    browserstack: {
-      selenium: {
-        host: 'hub.browserstack.com',
-        port: 443,
-      },
-      // More info on configuring capabilities can be found on:
-      // https://www.browserstack.com/automate/capabilities?tag=selenium-4
-      desiredCapabilities: {
-        'bstack:options': {
-          userName: '${BROWSERSTACK_USERNAME}',
-          accessKey: '${BROWSERSTACK_ACCESS_KEY}',
-        },
-      },
-
-      disable_error_log: true,
-      webdriver: {
-        timeout_options: {
-          timeout: 15000,
-          retry_attempts: 3,
-        },
-        keep_alive: true,
-        start_process: false,
-      },
-    },
-
-    'browserstack.local': {
-      extends: 'browserstack',
-      desiredCapabilities: {
-        'browserstack.local': true,
-      },
-    },
-
-    'browserstack.local_chrome': {
-      extends: 'browserstack.local',
-      desiredCapabilities: {
-        browserName: 'chrome',
-      },
-    },
-
-    'browserstack.local_firefox': {
-      extends: 'browserstack.local',
-      desiredCapabilities: {
-        browserName: 'firefox',
-        browserVersion: '58.0',
-      },
-    },
-
-    // Use https://www.browserstack.com/automate/capabilities?tag=selenium-4 to generate configs
-
-    edge_pre_chrome: {
-      extends: 'browserstack.local',
-      desiredCapabilities: {
-        browserName: 'Edge',
-        browserVersion: '18.0',
-      },
-    },
-
-    android5: {
-      extends: 'browserstack.local',
-      desiredCapabilities: {
-        deviceName: 'Samsung Galaxy S6',
-        realMobile: 'true',
-        osVersion: '5.0',
-      },
-    },
-
-    ios10: {
-      extends: 'browserstack.local',
-      desiredCapabilities: {
-        deviceName: 'iPhone 7',
-        realMobile: 'true',
-        osVersion: '10',
       },
     },
   },
