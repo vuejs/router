@@ -2,8 +2,18 @@ name: Playwright Tests
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'packages/docs/**'
+      - 'packages/playground/**'
+      - 'packages/playground-file-based/**'
+      - 'packages/experiments-playground/**'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'packages/docs/**'
+      - 'packages/playground/**'
+      - 'packages/playground-file-based/**'
+      - 'packages/experiments-playground/**'
 
 permissions:
   contents: read
@@ -12,25 +22,46 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    # Official Playwright image with all three browser engines + OS deps baked
+    # in, so CI no longer spends ~15 min on `playwright install --with-deps`.
+    # The image MUST match the @playwright/test version in the lockfile
+    # (currently 1.59.1) or the bundled browsers won't be found; bump both
+    # together. Pinned by digest (= v1.59.1-noble) so a moved/re-pushed tag
+    # can't change what runs on untrusted PRs.
+    container:
+      image: mcr.microsoft.com/playwright@sha256:b0ab6f3cb99aa7803adbc14d9027ec1785fc6e433b97e134e0f8fe61683b6b53
+      # --user 1001 runs non-root (matches the runner uid and keeps the Chromium
+      # sandbox enabled); --ipc=host stops Chromium OOM-crashing on a small
+      # container /dev/shm.
+      options: --user 1001 --ipc=host
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
           node-version: lts/*
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
       - name: Build router
         run: pnpm run build
         working-directory: packages/router
-      - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
+      # The HMR projects spin up a Vite dev server per worker and must run
+      # serially, so they get their own single-worker invocation first.
+      - name: Run HMR tests (single worker)
+        run: pnpm exec playwright test --project=hmr-routes --project=hmr-resolver --workers=1
         working-directory: packages/router
-      - name: Run Playwright tests
-        run: pnpm exec playwright test
+      # Behavioural e2e specs. The config default (undefined => 50% of cores)
+      # only yields 2 workers on a 4-vCPU runner; these specs are I/O-bound, so
+      # we use all cores via '100%'.
+      # NOTE: temporarily chromium-only while we measure CI timing. Re-add
+      # `--project=firefox --project=webkit` to restore full browser coverage.
+      - name: Run e2e tests (parallel)
+        run: pnpm exec playwright test --project=chromium --workers=100%
         working-directory: packages/router
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: ${{ !cancelled() }}
         with:
           name: playwright-report

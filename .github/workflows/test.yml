@@ -26,43 +26,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 'lts/*'
           cache: pnpm
-      - name: 'BrowserStack Env Setup'
-        uses: 'browserstack/github-actions/setup-env@master'
-        # forks do not have access to secrets so just skip this
-        if: ${{ github.repository == 'vuejs/router' && !github.event.pull_request.head.repo.fork }}
-        with:
-          username: ${{ secrets.BROWSERSTACK_USERNAME }}
-          access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
 
-      - run: pnpm install
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
       - run: pnpm run -r build
       - run: pnpm run -r test:types
       - run: pnpm run -r test:unit
 
-      # e2e tests that that run locally
-      - run: pnpm run -r test:e2e:ci
-
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      # - name: 'Start BrowserStackLocal Tunnel'
-      #   uses: 'browserstack/github-actions/setup-local@master'
-      #   with:
-      #     local-testing: 'start'
-      #     local-logging-level: 'all-logs'
-      #     local-identifier: 'random'
-
-      # - run: pnpm run -r test:e2e:bs-test
-
-      # - name: 'Stop BrowserStackLocal'
-      #   uses: 'browserstack/github-actions/setup-local@master'
-      #   with:
-      #     local-testing: 'stop'
+      # End-to-end tests (all browsers + HMR) run in the dedicated
+      # "Playwright Tests" workflow (.github/workflows/playwright.yml).
