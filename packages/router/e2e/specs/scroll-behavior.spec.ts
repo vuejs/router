@@ -1,28 +1,40 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, type Locator, type Page } from '@playwright/test'
 import { reloadKeepingState } from './utils'
 
-// Clicking a link via Playwright's locator.click() scrolls the target into
-// view, which would corrupt the scroll-position assertions this suite relies
-// on. Dispatch the click through the DOM instead so the page does not
+// Playwright's locator.click() scrolls the target into view, which would
+// corrupt the scroll-position assertions this suite relies on. Trigger the
+// element's own click() through the DOM instead so the page does not
 // auto-scroll.
-async function clickLink(page: Page, selector: string) {
-  await page.evaluate(
-    sel => (document.querySelector(sel) as HTMLElement).click(),
-    selector
-  )
+async function clickLink(link: Locator) {
+  await link.evaluate(el => (el as HTMLElement).click())
 }
+
+// nav links render their `to` as their text; `exact` avoids `/bar` matching
+// `/bar#anchor`, `/` matching everything, etc.
+const link = (page: Page, name: string) =>
+  page.getByRole('link', { name, exact: true })
+
+const scrollY = (page: Page) => page.evaluate(() => window.scrollY)
+
+const anchorTop = (page: Page, id: string) =>
+  page.evaluate(
+    sel => document.getElementById(sel)!.getBoundingClientRect().top,
+    id
+  )
 
 test.describe('scroll-behavior', () => {
   test('scroll behavior', async ({ page }) => {
-    await page.goto('http://localhost:3000/scroll-behavior/')
-    await expect(page.locator('#app > *').first()).toBeVisible()
-    await expect(page.locator('li a')).toHaveCount(6)
+    await page.goto('/scroll-behavior/')
+    await expect(
+      page.getByRole('heading', { name: 'Scroll Behavior' })
+    ).toBeVisible()
+    await expect(page.locator('ul').getByRole('link')).toHaveCount(6)
     await expect(page.locator('.view')).toContainText('home')
 
     await page.evaluate(() => {
       window.scrollTo(0, 100)
     })
-    await clickLink(page, 'li:nth-child(2) a')
+    await clickLink(link(page, '/foo'))
     await expect(page.locator('.view.foo')).toBeVisible()
     await expect(page.locator('.view')).toContainText('foo')
     await page.evaluate(() => {
@@ -32,10 +44,10 @@ test.describe('scroll-behavior', () => {
     await expect(page.locator('.view.home')).toBeVisible()
     await expect(page.locator('.view')).toContainText('home')
     await expect
-      .poll(() => page.evaluate(() => window.pageYOffset === 100), {
+      .poll(() => scrollY(page), {
         message: 'restore scroll position on back',
       })
-      .toBe(true)
+      .toBe(100)
 
     // scroll on a popped entry
     await page.evaluate(() => {
@@ -45,10 +57,10 @@ test.describe('scroll-behavior', () => {
     await expect(page.locator('.view.foo')).toBeVisible()
     await expect(page.locator('.view')).toContainText('foo')
     await expect
-      .poll(() => page.evaluate(() => window.pageYOffset === 200), {
+      .poll(() => scrollY(page), {
         message: 'restore scroll position on forward',
       })
-      .toBe(true)
+      .toBe(200)
 
     await page.evaluate(() => {
       window.history.back()
@@ -56,100 +68,74 @@ test.describe('scroll-behavior', () => {
     await expect(page.locator('.view.home')).toBeVisible()
     await expect(page.locator('.view')).toContainText('home')
     await expect
-      .poll(() => page.evaluate(() => window.pageYOffset === 50), {
+      .poll(() => scrollY(page), {
         message: 'restore scroll position on back again',
       })
-      .toBe(true)
-    await clickLink(page, 'li:nth-child(3) a')
+      .toBe(50)
+    await clickLink(link(page, '/bar'))
     await expect(page.locator('.view.bar')).toBeVisible()
     await expect
-      .poll(() => page.evaluate(() => window.pageYOffset === 0), {
+      .poll(() => scrollY(page), {
         message: 'scroll to top on new entry',
       })
-      .toBe(true)
+      .toBe(0)
 
-    await clickLink(page, 'li:nth-child(4) a')
+    await clickLink(link(page, '/bar#anchor'))
     await expect
-      .poll(
-        () =>
-          page.evaluate(
-            () =>
-              document.getElementById('anchor')!.getBoundingClientRect().top < 1
-          ),
-        { message: 'scroll to anchor' }
-      )
-      .toBe(true)
+      .poll(() => anchorTop(page, 'anchor'), { message: 'scroll to anchor' })
+      .toBeLessThan(1)
 
-    await clickLink(page, 'li:nth-child(5) a')
+    await clickLink(link(page, '/bar#anchor2'))
     await expect
-      .poll(
-        () =>
-          page.evaluate(
-            () =>
-              document.getElementById('anchor2')!.getBoundingClientRect().top <
-              101
-          ),
-        { message: 'scroll to anchor with offset' }
-      )
-      .toBe(true)
-    await clickLink(page, 'li:nth-child(6) a')
+      .poll(() => anchorTop(page, 'anchor2'), {
+        message: 'scroll to anchor with offset',
+      })
+      .toBeLessThan(101)
+    await clickLink(link(page, '/bar#1number'))
     await expect
-      .poll(
-        () =>
-          page.evaluate(
-            () =>
-              document.getElementById('1number')!.getBoundingClientRect().top <
-              1
-          ),
-        { message: 'scroll to anchor that starts with number' }
-      )
-      .toBe(true)
+      .poll(() => anchorTop(page, '1number'), {
+        message: 'scroll to anchor that starts with number',
+      })
+      .toBeLessThan(1)
 
     // go to /foo first
-    await clickLink(page, 'li:nth-child(2) a')
+    await clickLink(link(page, '/foo'))
     await expect(page.locator('.view.foo')).toBeVisible()
     await page.evaluate(() => {
       window.scrollTo(0, 150)
-      // revisiting the same hash should scroll again
-      ;(document.querySelector('li:nth-child(4) a') as HTMLElement).click()
     })
+    // revisiting the same hash should scroll again
+    await clickLink(link(page, '/bar#anchor'))
     await expect(page.locator('.view.bar')).toBeVisible()
     await page.evaluate(() => {
       window.scrollTo(0, 50)
-      ;(document.querySelector('li:nth-child(4) a') as HTMLElement).click()
     })
+    await clickLink(link(page, '/bar#anchor'))
     await expect
-      .poll(
-        () =>
-          page.evaluate(
-            () =>
-              document.getElementById('anchor')!.getBoundingClientRect().top < 1
-          ),
-        { message: 'scroll to anchor when the route is the same' }
-      )
-      .toBe(true)
+      .poll(() => anchorTop(page, 'anchor'), {
+        message: 'scroll to anchor when the route is the same',
+      })
+      .toBeLessThan(1)
     await page.evaluate(() => {
       history.back()
     })
     await expect(page.locator('.view.foo')).toBeVisible()
     await expect
-      .poll(() => page.evaluate(() => window.pageYOffset === 150), {
+      .poll(() => scrollY(page), {
         message:
           'restores previous position without intermediate history entry',
       })
-      .toBe(true)
+      .toBe(150)
     await reloadKeepingState(page)
     await expect(page.locator('.view.foo')).toBeVisible()
     await expect
-      .poll(() => page.evaluate(() => window.pageYOffset === 150), {
+      .poll(() => scrollY(page), {
         message: 'restores scroll position when reloading',
       })
-      .toBe(true)
+      .toBe(150)
 
     // going to an anchor entry, scrolling, then back then forward restores the position
-    await page.evaluate(() => {
-      ;(document.querySelector('li:nth-child(4) a') as HTMLElement).click()
-    })
+    await clickLink(link(page, '/bar#anchor'))
     await expect(page.locator('.view.bar')).toBeVisible()
     // at this point we scrolled to the anchor, scroll again somewhere else
     // and then go back
@@ -163,17 +149,15 @@ test.describe('scroll-behavior', () => {
     })
     await expect(page.locator('.view.bar')).toBeVisible()
     await expect
-      .poll(() => page.evaluate(() => window.pageYOffset === 100), {
+      .poll(() => scrollY(page), {
         message: 'scroll to stored position over anchor',
       })
-      .toBe(true)
+      .toBe(100)
 
     // going again to a popped entry should not restore the saved position
-    await page.evaluate(() => {
-      ;(document.querySelector('li:nth-child(1) a') as HTMLElement).click()
-    })
+    await clickLink(link(page, '/'))
     await expect(page.locator('.view.home')).toBeVisible()
-    await clickLink(page, 'li:nth-child(4) a')
+    await clickLink(link(page, '/bar#anchor'))
     await expect(page.locator('.view.bar')).toBeVisible()
     // at this point we scrolled to the anchor, scroll again somewhere else
     // and then go back
@@ -183,30 +167,18 @@ test.describe('scroll-behavior', () => {
     })
     await expect(page.locator('.view.home')).toBeVisible()
     // go to the same location again but without using history.forward
-    await clickLink(page, 'li:nth-child(4) a')
+    await clickLink(link(page, '/bar#anchor'))
     await expect(page.locator('.view.bar')).toBeVisible()
     await expect
-      .poll(
-        () =>
-          page.evaluate(
-            () =>
-              document.getElementById('anchor')!.getBoundingClientRect().top < 1
-          ),
-        { message: 'scroll to anchor' }
-      )
-      .toBe(true)
+      .poll(() => anchorTop(page, 'anchor'), { message: 'scroll to anchor' })
+      .toBeLessThan(1)
 
-    await page.goto('http://localhost:3000/scroll-behavior/bar#anchor')
+    await page.goto('/scroll-behavior/bar#anchor')
     await expect(page.locator('.view.bar')).toBeVisible()
     await expect
-      .poll(
-        () =>
-          page.evaluate(
-            () =>
-              document.getElementById('anchor')!.getBoundingClientRect().top < 1
-          ),
-        { message: 'scroll to anchor when directly navigating to it' }
-      )
-      .toBe(true)
+      .poll(() => anchorTop(page, 'anchor'), {
+        message: 'scroll to anchor when directly navigating to it',
+      })
+      .toBeLessThan(1)
   })
 })
