@@ -9,8 +9,11 @@ export default defineConfig<{ playgroundName: string }>({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  // Each worker gets its own isolated temp folder for HMR tests
-  workers: process.env.CI ? 1 : undefined,
+  // undefined => Playwright auto-scales to half the logical CPU cores. The HMR
+  // projects need a single worker (see comment below); CI runs them in their
+  // own `playwright test --workers=1` invocation, so they don't constrain the
+  // worker count of the behavioural e2e specs.
+  workers: undefined,
   reporter: [
     // for console logs
     ['list'],
