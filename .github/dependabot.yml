@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # Keep the SHA-pinned GitHub Actions in .github/workflows up to date.
+  # Dependabot bumps both the commit SHA and the trailing `# vX.Y.Z` comment,
+  # so we keep supply-chain pinning without re-resolving hashes by hand.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      # One grouped PR per run instead of one PR per action.
+      actions:
+        patterns: ['*']
+    commit-message:
+      prefix: ci
