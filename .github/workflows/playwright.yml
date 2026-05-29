@@ -53,10 +53,11 @@ jobs:
       - name: Run HMR tests (single worker)
         run: pnpm exec playwright test --project=hmr-routes --project=hmr-resolver --workers=1
         working-directory: packages/router
-      # Behavioural e2e specs across chromium/firefox/webkit. No --workers flag,
-      # so the config's `undefined` lets Playwright auto-scale across cores.
+      # Behavioural e2e specs across chromium/firefox/webkit. The config default
+      # (undefined => 50% of cores) only yields 2 workers on a 4-vCPU runner;
+      # these specs are I/O-bound, so we use all cores via '100%'.
       - name: Run e2e tests (parallel)
-        run: pnpm exec playwright test --project=chromium --project=firefox --project=webkit
+        run: pnpm exec playwright test --project=chromium --project=firefox --project=webkit --workers=100%
         working-directory: packages/router
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: ${{ !cancelled() }}
