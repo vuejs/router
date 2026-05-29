@@ -2,8 +2,18 @@ name: Playwright Tests
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'packages/docs/**'
+      - 'packages/playground/**'
+      - 'packages/playground-file-based/**'
+      - 'packages/experiments-playground/**'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'packages/docs/**'
+      - 'packages/playground/**'
+      - 'packages/playground-file-based/**'
+      - 'packages/experiments-playground/**'
 
 permissions:
   contents: read
@@ -25,9 +35,11 @@ jobs:
         run: pnpm run build
         working-directory: packages/router
       - name: Install Playwright Browsers
+        # installs chromium, firefox and webkit (the full engine matrix)
         run: pnpm exec playwright install --with-deps
         working-directory: packages/router
       - name: Run Playwright tests
+        # behavioural e2e specs across chromium/firefox/webkit + unplugin HMR
         run: pnpm exec playwright test
         working-directory: packages/router
       - uses: actions/upload-artifact@v6
