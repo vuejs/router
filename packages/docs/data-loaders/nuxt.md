@@ -26,6 +26,8 @@ The two required options are:
 - `router`: the Vue Router instance
 - `isSSR`: a boolean indicating if the app is running on the server side
 
+You can find a full working example at [posva/nuxt-examples-data-loaders](https://github.com/posva/nuxt-examples-data-loaders), along with a [live demo](https://nuxt-examples-data-loaders.vercel.app/).
+
 ## No module?
 
 > "Why do I need to write the plugin myself instead of using a Module?"
