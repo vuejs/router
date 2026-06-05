@@ -50,7 +50,15 @@ import {
 import { NavigationFailureType } from '../errors'
 import { components, tick, nextNavigation } from '../../__tests__/utils'
 import { START_LOCATION_NORMALIZED } from '../location'
-import { vi, describe, expect, it, beforeEach, afterEach } from 'vitest'
+import {
+  vi,
+  describe,
+  expect,
+  it,
+  beforeAll,
+  afterAll,
+  beforeEach,
+} from 'vitest'
 import type { MockInstance } from 'vitest'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
 
@@ -929,12 +937,16 @@ describe('Experimental Router', () => {
   describe('scrollBehavior', () => {
     let scrollTo: MockInstance
 
-    beforeEach(() => {
+    beforeAll(() => {
       vi.useFakeTimers()
       scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
     })
 
-    afterEach(() => {
+    beforeEach(() => {
+      scrollTo.mockClear()
+    })
+
+    afterAll(() => {
       scrollTo.mockRestore()
       vi.useRealTimers()
     })
