@@ -50,7 +50,16 @@ import {
 import { NavigationFailureType } from '../errors'
 import { components, tick, nextNavigation } from '../../__tests__/utils'
 import { START_LOCATION_NORMALIZED } from '../location'
-import { vi, describe, expect, it } from 'vitest'
+import {
+  vi,
+  describe,
+  expect,
+  it,
+  beforeAll,
+  afterAll,
+  beforeEach,
+} from 'vitest'
+import type { MockInstance } from 'vitest'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
 
 const parentRecord = normalizeRouteRecord({
@@ -922,6 +931,94 @@ describe('Experimental Router', () => {
 
     it('cancels navigation abort if a newer one is finished on user navigation (from history)', async () => {
       await checkNavigationCancelledOnPush(undefined)
+    })
+  })
+
+  describe('scrollBehavior', () => {
+    let scrollTo: MockInstance
+
+    beforeAll(() => {
+      vi.useFakeTimers()
+      scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+    })
+
+    beforeEach(() => {
+      scrollTo.mockClear()
+    })
+
+    afterAll(() => {
+      scrollTo.mockRestore()
+      vi.useRealTimers()
+    })
+
+    // top position to scroll to for each path, distinct so we can tell which
+    // navigation applied its scroll
+    const positions: Record<string, number> = {
+      '/': 3000,
+      '/foo': 1000,
+      '/p/a': 2000,
+    }
+
+    it('ignores the scroll of navigations superseded before they finish', async () => {
+      // scrollBehavior resolves asynchronously, simulating waiting for the DOM
+      const scrollBehavior = vi.fn((to: { path: string }) => {
+        return new Promise<{ top: number }>(resolve => {
+          setTimeout(() => resolve({ top: positions[to.path] }), 100)
+        })
+      })
+      const { router } = await newRouter({ scrollBehavior })
+      scrollBehavior.mockClear()
+
+      // a navigation that fully resolves, but whose async scroll is still pending
+      await router.push('/foo')
+      // superseded before it finishes: it never reaches finalizeNavigation
+      router.push('/p/a')
+      // the navigation that actually wins
+      await router.push('/')
+
+      // /p/a was cancelled before completing so its scrollBehavior never ran
+      expect(scrollBehavior).not.toHaveBeenCalledWith(
+        expect.objectContaining({ path: '/p/a' }),
+        expect.anything(),
+        expect.anything()
+      )
+
+      // flush the pending scrollBehavior promises
+      await vi.runAllTimersAsync()
+
+      expect(router.currentRoute.value.path).toBe('/')
+      // only the current navigation's scroll is applied, the stale /foo and the
+      // initial / are ignored
+      expect(scrollTo).toHaveBeenCalledTimes(1)
+      expect(scrollTo).toHaveBeenCalledWith(
+        expect.objectContaining({ top: 3000 })
+      )
+    })
+
+    it('does not report scroll errors from superseded navigations', async () => {
+      const staleError = new Error('stale scroll')
+      const scrollBehavior = vi.fn((to: { path: string }) => {
+        return new Promise<{ top: number }>((resolve, reject) => {
+          setTimeout(() => {
+            if (to.path === '/foo') reject(staleError)
+            else resolve({ top: positions[to.path] })
+          }, 100)
+        })
+      })
+      const onError = vi.fn()
+      const { router } = await newRouter({ scrollBehavior })
+      router.onError(onError)
+
+      await router.push('/foo')
+      await router.push('/')
+
+      await vi.runAllTimersAsync()
+
+      expect(router.currentRoute.value.path).toBe('/')
+      expect(onError).not.toHaveBeenCalled()
+      expect(scrollTo).toHaveBeenCalledWith(
+        expect.objectContaining({ top: 3000 })
+      )
     })
   })
 

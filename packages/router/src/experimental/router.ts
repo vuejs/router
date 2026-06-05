@@ -1299,10 +1299,16 @@ export function experimental_createRouter(
         history.state.scroll) ||
       null
 
-    return nextTick()
-      .then(() => scrollBehavior(to, from, scrollPosition))
-      .then(position => position && scrollToPosition(position))
-      .catch(err => triggerError(err, to, from))
+    return (
+      nextTick()
+        .then(() => scrollBehavior(to, from, scrollPosition))
+        // avoid scrollBehavior on old navigations
+        .then(
+          position =>
+            to === currentRoute.value && position && scrollToPosition(position)
+        )
+        .catch(err => to === currentRoute.value && triggerError(err, to, from))
+    )
   }
 
   const go = (delta: number) => routerHistory.go(delta)
