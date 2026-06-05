@@ -727,6 +727,141 @@ describe('Tree', () => {
     } satisfies Partial<TreePathParam>)
   })
 
+  describe('path override and params extraction', () => {
+    it('reproduces missing params from custom path override', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('users/profile', 'users/profile.vue')
+
+      node.setCustomRouteBlock('users/profile.vue', {
+        path: '/users/:id',
+      })
+
+      expect(node.pathParams.map(param => param.paramName)).toEqual(['id'])
+    })
+
+    it('preserves parser, optional, repeatable, and splat metadata from custom path override', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('x/y', 'x/y.vue')
+      node.setCustomRouteBlock('x/y.vue', {
+        path: '/docs/:chapters+/:tags*/:path(.*)',
+        params: {
+          path: {
+            chapters: 'int',
+          },
+        },
+      })
+
+      expect(node.pathParams).toEqual([
+        expect.objectContaining({
+          paramName: 'chapters',
+          parser: 'int',
+          modifier: '+',
+          optional: false,
+          repeatable: true,
+          isSplat: false,
+        }),
+        expect.objectContaining({
+          paramName: 'tags',
+          modifier: '*',
+          optional: true,
+          repeatable: true,
+          isSplat: false,
+        }),
+        expect.objectContaining({
+          paramName: 'path',
+          modifier: '',
+          optional: false,
+          repeatable: false,
+          isSplat: true,
+        }),
+      ])
+    })
+
+    it('uses absolute path overrides as param inheritance boundaries', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+
+      const parent = tree.insert('org/[orgId]', 'org/[orgId].vue')
+      parent.setCustomRouteBlock('org/[orgId].vue', {
+        params: {
+          query: {
+            q: {},
+          },
+        },
+      })
+
+      const absoluteChild = tree.insert(
+        'org/[orgId]/dashboard',
+        'org/[orgId]/dashboard.vue'
+      )
+      absoluteChild.setCustomRouteBlock('org/[orgId]/dashboard.vue', {
+        path: '/dash/:id',
+        params: {
+          query: {
+            tab: {},
+          },
+        },
+      })
+
+      const relativeChild = tree.insert(
+        'org/[orgId]/reports',
+        'org/[orgId]/reports.vue'
+      )
+      relativeChild.setCustomRouteBlock('org/[orgId]/reports.vue', {
+        path: ':id',
+        params: {
+          query: {
+            tab: {},
+          },
+        },
+      })
+
+      const middle = tree.insert(
+        'org/[orgId]/projects/[projectId]',
+        'org/[orgId]/projects/[projectId].vue'
+      )
+      middle.setCustomRouteBlock('org/[orgId]/projects/[projectId].vue', {
+        path: '/p/:projectId',
+        params: {
+          query: {
+            page: {},
+          },
+        },
+      })
+
+      const leaf = tree.insert(
+        'org/[orgId]/projects/[projectId]/settings/[section]',
+        'org/[orgId]/projects/[projectId]/settings/[section].vue'
+      )
+
+      expect(absoluteChild.pathParams.map(param => param.paramName)).toEqual([
+        'id',
+      ])
+      expect(absoluteChild.params.map(param => param.paramName)).toEqual([
+        'id',
+        'tab',
+      ])
+      expect(relativeChild.pathParams.map(param => param.paramName)).toEqual([
+        'orgId',
+        'id',
+      ])
+      expect(relativeChild.params.map(param => param.paramName)).toEqual([
+        'orgId',
+        'q',
+        'id',
+        'tab',
+      ])
+      expect(leaf.pathParams.map(param => param.paramName)).toEqual([
+        'projectId',
+        'section',
+      ])
+      expect(leaf.params.map(param => param.paramName)).toEqual([
+        'projectId',
+        'page',
+        'section',
+      ])
+    })
+  })
+
   it('removes trailing slash from path but not from name', () => {
     const tree = new PrefixTree(RESOLVED_OPTIONS)
     tree.insert('a/index', 'a/index.vue')
