@@ -18,6 +18,31 @@ In the stable router, params and query come in as `string | string[] | null`. Yo
 
 This works but the type system can't help you, every consumer has to know the convention, and query params are even worse.
 
+## Setup
+
+Enable `experimental.paramParsers` in the Vue Router Vite plugin. This tells the plugin where to scan for custom parsers and registers them both at runtime and in the generated `typed-router.d.ts`.
+
+```ts [vite.config.ts]
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import VueRouter from 'vue-router/vite'
+
+export default defineConfig({
+  plugins: [
+    VueRouter({
+      experimental: {
+        paramParsers: {
+          dir: 'src/params',
+        },
+      },
+    }),
+    vue(),
+  ],
+})
+```
+
+`src/params` is the default directory when setting `paramParsers` to `true`, but you can point `dir` to any project-relative folder, or to an array of folders.
+
 ## Built-in parsers
 
 | Name     | Path | Query | Type      |
@@ -38,7 +63,7 @@ route.params.id // number
 
 ## Defining custom parsers
 
-You define param parsers as modules exporting a `parser` in `src/params/*`. The file name is the parser name you use in routes. For example, `src/params/uuid.ts` exports a `parser` that validates UUIDs and can be used as `[id=uuid]` in route files.
+You define param parsers as modules exporting a `parser` in the configured param parser directory. The file name is the parser name you use in routes. For example, `src/params/uuid.ts` exports a `parser` that validates UUIDs and can be used as `[id=uuid]` in route files.
 
 A parser is just an object with a _getter_ and a _setter_ but to make things simpler to use, Vue Router provides two helpers: [`defineParamParser()`](#defineParamParser) and [`defineParamParserRaw()`](#defineParamParserRaw).
 
