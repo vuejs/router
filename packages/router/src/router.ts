@@ -164,6 +164,8 @@ export function createRouter(options: RouterOptions): Router {
     START_LOCATION_NORMALIZED
   )
   let pendingLocation: RouteLocation = START_LOCATION_NORMALIZED
+  // only the latest handleScroll call may apply its result
+  let latestScrollId = 0
 
   // leave the scrollRestoration if no scrollBehavior is provided
   if (isBrowser && options.scrollBehavior && 'scrollRestoration' in history) {
@@ -989,10 +991,18 @@ export function createRouter(options: RouterOptions): Router {
         history.state.scroll) ||
       null
 
+    const scrollId = ++latestScrollId
+
     return nextTick()
       .then(() => scrollBehavior(to, from, scrollPosition))
-      .then(position => position && scrollToPosition(position))
-      .catch(err => triggerError(err, to, from))
+      .then(position => {
+        if (scrollId !== latestScrollId) return
+        return position && scrollToPosition(position)
+      })
+      .catch(err => {
+        if (scrollId !== latestScrollId) return
+        return triggerError(err, to, from)
+      })
   }
 
   const go = (delta: number) => routerHistory.go(delta)
