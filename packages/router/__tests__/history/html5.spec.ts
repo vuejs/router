@@ -104,6 +104,73 @@ describe('History HTMl5', () => {
     spy.mockRestore()
   })
 
+  // https://github.com/vuejs/router/issues/2714
+  describe('document URL with userinfo (HTTP basic auth)', () => {
+    it('passes a relative URL to push/replaceState to avoid SecurityError', () => {
+      getWindow().happyDOM.setURL('http://test:test@localhost:3000/')
+      let history = createWebHistory()
+      let spy = vi.spyOn(window.history, 'pushState')
+      history.push('/foo')
+      // No absolute URL is constructed - the path resolves against the
+      // current document origin, so the userinfo does not get re-anchored
+      // and pushState does not throw SecurityError.
+      expect(spy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        '/foo'
+      )
+      spy.mockRestore()
+    })
+
+    it('still prepends the host for protocol-relative urls (// prefix)', () => {
+      getWindow().happyDOM.setURL('http://test:test@localhost:3000/')
+      let history = createWebHistory()
+      let spy = vi.spyOn(window.history, 'pushState')
+      history.push('//foo')
+      // // urls need the host prepended so the browser does not treat them
+      // as protocol-relative cross-origin navigations.
+      expect(spy).toHaveBeenLastCalledWith(
+        expect.anything(),
+        expect.any(String),
+        'http://localhost:3000//foo'
+      )
+      spy.mockRestore()
+    })
+
+    it('keeps existing behavior when document has no userinfo', () => {
+      // baseline regression guard: the change must not affect the default
+      // http(s) document URL path covered by the existing test above
+      getWindow().happyDOM.setURL('http://localhost:3000/')
+      let history = createWebHistory()
+      let spy = vi.spyOn(window.history, 'pushState')
+      history.push('/foo')
+      expect(spy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        'http://localhost:3000/foo'
+      )
+      spy.mockRestore()
+    })
+
+    it('keeps existing behavior for file:// urls', () => {
+      // file:// document urls must keep prepending the location even though
+      // they cannot have userinfo - the user-info-only path is opt-in via
+      // the userinfo guard.
+      getWindow().happyDOM.setURL('file:///usr/etc/index.html')
+      let initialSpy = vi.spyOn(window.history, 'replaceState')
+      let history = createWebHistory()
+      initialSpy.mockRestore()
+      let spy = vi.spyOn(window.history, 'pushState')
+      history.push('/foo')
+      expect(spy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        'file:///foo'
+      )
+      spy.mockRestore()
+    })
+  })
+
   describe('specific to base containing a hash', () => {
     it('calls push with hash part of the url with a base', () => {
       getWindow().happyDOM.setURL('file:///usr/etc/index.html')
