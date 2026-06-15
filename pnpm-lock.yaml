@@ -252,6 +252,9 @@ importers:
       muggle-string:
         specifier: ^0.4.1
         version: 0.4.1
+      nostics:
+        specifier: ^1.0.0
+        version: 1.0.0
       pathe:
         specifier: ^2.0.3
         version: 2.0.3
@@ -3367,6 +3370,9 @@ packages:
   normalize-package-data@7.0.1:
     resolution: {integrity: sha512-linxNAT6M0ebEYZOx2tO6vBEFsVgnPpv+AVjk0wJHfaUIbq31Jm3T6vvZaarnOeWDh8ShnwXuaAyM7WT3RzErA==}
     engines: {node: ^18.17.0 || >=20.5.0}
+
+  nostics@1.0.0:
+    resolution: {integrity: sha512-6fxJiZwndMOLX0FaeZNiM1D5PmyWjkqfyZBD32jnYgFBwU+UpJSauRhDaQmz5zykoNEbktAwQJOdmNGhxsMY8w==}
 
   nwsapi@2.2.23:
     resolution: {integrity: sha512-7wfH4sLbt4M0gCDzGE6vzQBo0bfTKjU7Sfpqy/7gs1qBfYz2vEJH6vXcBKpO3+6Yu1telwd0t9HpyOoLEQQbIQ==}
@@ -7615,6 +7621,8 @@ snapshots:
       hosted-git-info: 8.1.0
       semver: 7.7.3
       validate-npm-package-license: 3.0.4
+
+  nostics@1.0.0: {}
 
   nwsapi@2.2.23:
     optional: true

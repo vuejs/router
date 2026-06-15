@@ -5,7 +5,7 @@ import { mockWarn } from '../vitest-mock-warn'
 import { vi, describe, expect, it } from 'vitest'
 
 const NEXT_DEPRECATION_MESSAGE =
-  'The `next()` callback in navigation guards is deprecated. Return the value instead of calling `next(value)`.'
+  'The `next()` callback in navigation guards is deprecated.'
 
 // stub those two
 const to = START_LOCATION_NORMALIZED

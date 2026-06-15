@@ -1,6 +1,6 @@
 import type { RouterHistory } from './common'
 import { createWebHistory } from './html5'
-import { warn } from '../warning'
+import { diagnostics } from '../diagnostics'
 
 /**
  * Creates a hash history. Useful for web applications with no host (e.g. `file://`) or when configuring a server to
@@ -35,9 +35,10 @@ export function createWebHashHistory(base?: string): RouterHistory {
   if (!base.includes('#')) base += '#'
 
   if (__DEV__ && !base.endsWith('#/') && !base.endsWith('#')) {
-    warn(
-      `A hash base must end with a "#":\n"${base}" should be "${base.replace(/#.*$/, '#')}".`
-    )
+    diagnostics.VR_R0110({
+      base,
+      suggestion: base.replace(/#.*$/, '#'),
+    })
   }
   return createWebHistory(base)
 }

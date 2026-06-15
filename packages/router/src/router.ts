@@ -56,7 +56,7 @@ import {
   extractComponentsGuards,
   guardToPromiseFn,
 } from './navigationGuards'
-import { warn } from './warning'
+import { diagnostics } from './diagnostics'
 import { RouterLink } from './RouterLink'
 import { RouterView } from './RouterView'
 import {
@@ -188,10 +188,7 @@ export function createRouter(options: RouterOptions): Router {
     if (isRouteName(parentOrRoute)) {
       parent = matcher.getRecordMatcher(parentOrRoute)
       if (__DEV__ && !parent) {
-        warn(
-          `Parent route "${String(parentOrRoute)}" not found when adding child route`,
-          route
-        )
+        diagnostics.VR_R0001({ name: String(parentOrRoute) })
       }
       record = route!
     } else {
@@ -206,7 +203,7 @@ export function createRouter(options: RouterOptions): Router {
     if (recordMatcher) {
       matcher.removeRoute(recordMatcher)
     } else if (__DEV__) {
-      warn(`Cannot remove non-existent route "${String(name)}"`)
+      diagnostics.VR_R0002({ name: String(name) })
     }
   }
 
@@ -240,11 +237,9 @@ export function createRouter(options: RouterOptions): Router {
       const href = routerHistory.createHref(locationNormalized.fullPath)
       if (__DEV__) {
         if (href.startsWith('//'))
-          warn(
-            `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
-          )
+          diagnostics.VR_R0003({ location: rawLocation, href })
         else if (!matchedRoute.matched.length) {
-          warn(`No match found for location with path "${rawLocation}"`)
+          diagnostics.VR_R0004({ path: rawLocation })
         }
       }
 
@@ -258,10 +253,7 @@ export function createRouter(options: RouterOptions): Router {
     }
 
     if (__DEV__ && !isRouteLocation(rawLocation)) {
-      warn(
-        `router.resolve() was passed an invalid location. This will fail in production.\n- Location:`,
-        rawLocation
-      )
+      diagnostics.VR_R0005()
       return resolve({})
     }
 
@@ -276,9 +268,7 @@ export function createRouter(options: RouterOptions): Router {
         // @ts-expect-error: the type is never
         Object.keys(rawLocation.params).length
       ) {
-        warn(
-          `Path "${rawLocation.path}" was passed with params but they will be ignored. Use a named route alongside params instead.`
-        )
+        diagnostics.VR_R0006({ path: rawLocation.path })
       }
       matcherLocation = assign({}, rawLocation, {
         path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path,
@@ -304,9 +294,7 @@ export function createRouter(options: RouterOptions): Router {
     const hash = rawLocation.hash || ''
 
     if (__DEV__ && hash && !hash.startsWith('#')) {
-      warn(
-        `A \`hash\` should always start with the character "#". Replace "${hash}" with "#${hash}".`
-      )
+      diagnostics.VR_R0007({ hash })
     }
 
     // the matcher might have merged current location params, so
@@ -324,15 +312,11 @@ export function createRouter(options: RouterOptions): Router {
     const href = routerHistory.createHref(fullPath)
     if (__DEV__) {
       if (href.startsWith('//')) {
-        warn(
-          `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
-        )
+        diagnostics.VR_R0003({ location: rawLocation, href })
       } else if (!matchedRoute.matched.length) {
-        warn(
-          `No match found for location with path "${
-            rawLocation.path != null ? rawLocation.path : rawLocation
-          }"`
-        )
+        diagnostics.VR_R0004({
+          path: rawLocation.path != null ? rawLocation.path : rawLocation,
+        })
       }
     }
 
@@ -417,15 +401,10 @@ export function createRouter(options: RouterOptions): Router {
         newTargetLocation.path == null &&
         !('name' in newTargetLocation)
       ) {
-        warn(
-          `Invalid redirect found:\n${JSON.stringify(
-            newTargetLocation,
-            null,
-            2
-          )}\n when navigating to "${
-            to.fullPath
-          }". A redirect must contain a name or path. This will break in production.`
-        )
+        diagnostics.VR_R0008({
+          target: JSON.stringify(newTargetLocation, null, 2),
+          to: to.fullPath,
+        })
         throw new Error('Invalid redirect')
       }
 
@@ -526,9 +505,10 @@ export function createRouter(options: RouterOptions): Router {
                   redirectedFrom._count + 1
                 : 1) > 30
             ) {
-              warn(
-                `Detected a possibly infinite redirection in a navigation guard when going from "${from.fullPath}" to "${toLocation.fullPath}". Aborting to avoid a Stack Overflow.\n Are you always returning a new location within a navigation guard? That would lead to this error. Only return when redirecting or aborting, that should fix this. This might break in production if not fixed.`
-              )
+              diagnostics.VR_R0009({
+                from: from.fullPath,
+                to: toLocation.fullPath,
+              })
               return Promise.reject(
                 new Error('Infinite redirect in navigation guard')
               )
@@ -935,7 +915,7 @@ export function createRouter(options: RouterOptions): Router {
       list.forEach(handler => handler(error, to, from))
     } else {
       if (__DEV__) {
-        warn('uncaught error during route navigation:')
+        diagnostics.VR_R0010()
       }
       console.error(error)
     }
@@ -1059,7 +1039,7 @@ export function createRouter(options: RouterOptions): Router {
         // see above
         started = true
         push(routerHistory.location).catch(err => {
-          if (__DEV__) warn('Unexpected error when starting the router:', err)
+          if (__DEV__) diagnostics.VR_R0011({ cause: err })
         })
       }
 

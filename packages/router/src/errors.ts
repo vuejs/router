@@ -194,7 +194,12 @@ export function isNavigationFailure(
 
 const propertiesToLog = ['params', 'query', 'hash'] as const
 
-function stringifyRoute(to: RouteLocationRaw): string {
+/**
+ * Stringifies a raw location for display in dev warnings.
+ *
+ * @internal
+ */
+export function stringifyRoute(to: RouteLocationRaw): string {
   if (typeof to === 'string') return to
   if (to.path != null) return to.path
   const location = {} as Record<string, unknown>

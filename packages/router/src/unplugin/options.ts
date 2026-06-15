@@ -1,5 +1,6 @@
 import { isPackageExists as isPackageInstalled } from 'local-pkg'
-import { getFileBasedRouteName, isArray, warn } from './core/utils'
+import { getFileBasedRouteName, isArray } from './core/utils'
+import { diagnostics } from './diagnostics'
 import type { TreeNode } from './core/tree'
 import { resolve } from 'pathe'
 import type { EditableTreeNode } from './core/extendRoutes'
@@ -450,7 +451,7 @@ export function resolveOptions(options: Options) {
       // in src/index.ts
       .map(ext => {
         if (!ext.startsWith('.')) {
-          warn(`Invalid extension "${ext}". Extensions must start with a dot.`)
+          diagnostics.VR_B0009({ ext })
           return '.' + ext
         }
         return ext

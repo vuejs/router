@@ -2,7 +2,7 @@ import type {
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
 } from './typed-routes'
-import { warn } from './warning'
+import { diagnostics } from './diagnostics'
 
 // we use types instead of interfaces to make it work with HistoryStateValue type
 
@@ -125,16 +125,12 @@ export function scrollToPosition(position: ScrollPosition): void {
         try {
           const foundEl = document.querySelector(position.el)
           if (isIdSelector && foundEl) {
-            warn(
-              `The selector "${position.el}" should be passed as "el: document.querySelector('${position.el}')" because it starts with "#".`
-            )
+            diagnostics.VR_R0040({ el: position.el })
             // return to avoid other warnings
             return
           }
         } catch {
-          warn(
-            `The selector "${position.el}" is invalid. If you are using an id selector, make sure to escape it. You can find more information about escaping characters in selectors at https://mathiasbynens.be/notes/css-escapes or use CSS.escape (https://developer.mozilla.org/en-US/docs/Web/API/CSS/escape).`
-          )
+          diagnostics.VR_R0041({ el: position.el })
           // return to avoid other warnings
           return
         }
@@ -149,10 +145,7 @@ export function scrollToPosition(position: ScrollPosition): void {
         : positionEl
 
     if (!el) {
-      __DEV__ &&
-        warn(
-          `Couldn't find element using selector "${position.el}" returned by scrollBehavior.`
-        )
+      __DEV__ && diagnostics.VR_R0042({ el: position.el })
       return
     }
     scrollToOptions = getElementPosition(el, position)

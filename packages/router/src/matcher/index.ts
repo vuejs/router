@@ -21,7 +21,7 @@ import {
   PATH_PARSER_OPTIONS_DEFAULTS,
 } from './pathParserRanker'
 
-import { warn } from '../warning'
+import { diagnostics } from '../diagnostics'
 import { assign, mergeOptions, noop } from '../utils'
 import type { RouteRecordNameGeneric, _RouteRecordProps } from '../typed-routes'
 
@@ -271,15 +271,12 @@ export function createRouterMatcher(
           const isInherited =
             !matcher!.keys.length &&
             invalidParams.some(name => name in currentLocation.params)
-          warn(
-            `Discarded invalid param(s) "${invalidParams.join(
-              '", "'
-            )}" when navigating.` +
-              (isInherited
-                ? ` If you are using a catch-all route with a named redirect, pass an empty \`params\` object: \`redirect: { name: '...', params: {} }\`.`
-                : '') +
-              ` See https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22 for more details.`
-          )
+          diagnostics.VR_R0100({
+            params: invalidParams.join('", "'),
+            inherited: isInherited
+              ? ` If you are using a catch-all route with a named redirect, pass an empty \`params\` object: \`redirect: { name: '...', params: {} }\`.`
+              : '',
+          })
         }
       }
 
@@ -313,9 +310,7 @@ export function createRouterMatcher(
       path = location.path
 
       if (__DEV__ && !path.startsWith('/')) {
-        warn(
-          `The Matcher cannot resolve relative paths but received "${path}". Unless you directly called \`matcher.resolve("${path}")\`, this is probably a bug in vue-router. Please open an issue at https://github.com/vuejs/router/issues/new/choose.`
-        )
+        diagnostics.VR_R0101({ path })
       }
 
       matcher = matchers.find(m => m.re.test(path))
@@ -513,16 +508,24 @@ function isSameParam(a: ParamKey, b: ParamKey): boolean {
  */
 function checkSameParams(a: RouteRecordMatcher, b: RouteRecordMatcher) {
   for (const key of a.keys) {
-    if (!key.optional && !b.keys.find(isSameParam.bind(null, key)))
-      return warn(
-        `Alias "${b.record.path}" and the original record: "${a.record.path}" must have the exact same param named "${key.name}"`
-      )
+    if (!key.optional && !b.keys.find(isSameParam.bind(null, key))) {
+      diagnostics.VR_R0102({
+        alias: b.record.path,
+        original: a.record.path,
+        name: key.name,
+      })
+      return
+    }
   }
   for (const key of b.keys) {
-    if (!key.optional && !a.keys.find(isSameParam.bind(null, key)))
-      return warn(
-        `Alias "${b.record.path}" and the original record: "${a.record.path}" must have the exact same param named "${key.name}"`
-      )
+    if (!key.optional && !a.keys.find(isSameParam.bind(null, key))) {
+      diagnostics.VR_R0102({
+        alias: b.record.path,
+        original: a.record.path,
+        name: key.name,
+      })
+      return
+    }
   }
 }
 
@@ -543,11 +546,7 @@ export function checkChildMissingNameWithEmptyPath(
     !mainNormalizedRecord.path &&
     mainNormalizedRecord.children.length === 0
   ) {
-    warn(
-      `The route named "${String(
-        parent.record.name
-      )}" has a child without a name, an empty path, and no children. This is probably a mistake: using that name won't render the empty path child so you probably want to move the name to the child instead. If this is intentional, add a name to the child route to silence the warning.`
-    )
+    diagnostics.VR_R0103({ name: String(parent.record.name) })
   }
 }
 
@@ -571,10 +570,14 @@ function checkMissingParamsInAbsolutePath(
   parent: RouteRecordMatcher
 ) {
   for (const key of parent.keys) {
-    if (!record.keys.find(isSameParam.bind(null, key)))
-      return warn(
-        `Absolute path "${record.record.path}" must have the exact same param named "${key.name}" as its parent "${parent.record.path}".`
-      )
+    if (!record.keys.find(isSameParam.bind(null, key))) {
+      diagnostics.VR_R0104({
+        path: record.record.path,
+        name: key.name,
+        parent: parent.record.path,
+      })
+      return
+    }
   }
 }
 
@@ -614,9 +617,10 @@ function findInsertionIndex(
 
     if (__DEV__ && upper < 0) {
       // This should never happen
-      warn(
-        `Finding ancestor route "${insertionAncestor.record.path}" failed for "${matcher.record.path}"`
-      )
+      diagnostics.VR_R0105({
+        ancestor: insertionAncestor.record.path,
+        record: matcher.record.path,
+      })
     }
   }
 

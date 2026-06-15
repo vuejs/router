@@ -1,5 +1,6 @@
 import type { CustomRouteBlock } from './customBlock'
-import { joinPath, mergeRouteRecordOverride, warn } from './utils'
+import { joinPath, mergeRouteRecordOverride } from './utils'
+import { diagnostics } from '../diagnostics'
 import { encodePath } from '../utils/encoding'
 
 export const enum TreeNodeType {
@@ -556,9 +557,7 @@ export function createTreeNodeValue(
 
     const closingPar = segment.lastIndexOf(')')
     if (closingPar < 0 || closingPar < openingPar) {
-      warn(
-        `Segment "${segment}" is missing the closing ")". It will be treated as a static segment.`
-      )
+      diagnostics.VR_B0010({ segment })
 
       // avoid parsing errors
       return new TreeNodeValueStatic(segment, parent, segment)
@@ -839,9 +838,7 @@ function parseRawPathSegment(
     ) {
       // Check if the parameter name is empty and assign a default name
       if (!currentTreeRouteParam.paramName) {
-        warn(
-          `Invalid parameter in path "${segment}": parameter name cannot be empty. Using default name "pathMatch" for ':()'.`
-        )
+        diagnostics.VR_B0011({ segment })
         currentTreeRouteParam.paramName = 'pathMatch'
       }
       // we consume the current param

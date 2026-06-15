@@ -2,6 +2,7 @@ import type { TreePathParam, TreeQueryParam } from '../core/treeNodeValue'
 import type { ImportsMap } from '../core/utils'
 import type { PrefixTree } from '../core/tree'
 import { toStringLiteral } from '../utils'
+import { diagnostics } from '../diagnostics'
 import { glob } from 'tinyglobby'
 import { babelParse, walkAST } from '@vue-macros/common'
 import { promises as fs } from 'node:fs'
@@ -142,9 +143,10 @@ export function isRawParamParserSource(
             spec.exported.name === 'parser'
         )
         if (reExportsParser) {
-          console.warn(
-            `Cannot statically determine if "parser" is raw in "${filename}" because it is re-exported from "${exportNode.source.value}". The generated route param types may be incorrect. Define the parser inline in this file with \`defineParamParser\`/\`defineParamParserRaw\` instead of re-exporting it.`
-          )
+          diagnostics.VR_B0018({
+            filename,
+            source: String(exportNode.source.value),
+          })
         }
         return
       }
@@ -238,9 +240,10 @@ export function warnMissingParamParsers(
     for (const param of node.params) {
       if (param.parser && !paramParsers.has(param.parser)) {
         if (!NATIVE_PARAM_PARSERS.includes(param.parser)) {
-          console.warn(
-            `Parameter parser "${param.parser}" not found for route "${node.fullPath}".`
-          )
+          diagnostics.VR_B0019({
+            parser: param.parser,
+            fullPath: node.fullPath,
+          })
         }
       }
     }

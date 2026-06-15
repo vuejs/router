@@ -2,7 +2,7 @@ import type { RouteRecord } from './types'
 import type { PathParser, PathParserOptions } from './pathParserRanker'
 import { tokensToParser } from './pathParserRanker'
 import { tokenizePath } from './pathTokenizer'
-import { warn } from '../warning'
+import { diagnostics } from '../diagnostics'
 import { assign } from '../utils'
 
 export interface RouteRecordMatcher extends PathParser {
@@ -25,9 +25,7 @@ export function createRouteRecordMatcher(
     const existingKeys = new Set<string>()
     for (const key of parser.keys) {
       if (existingKeys.has(key.name))
-        warn(
-          `Found duplicated params with name "${key.name}" for path "${record.path}". Only the last one will be available on "$route.params".`
-        )
+        diagnostics.VR_R0090({ name: key.name, path: record.path })
       existingKeys.add(key.name)
     }
   }

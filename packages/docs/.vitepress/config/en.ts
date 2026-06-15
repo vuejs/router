@@ -46,6 +46,10 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             link: 'https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md',
           },
           {
+            text: 'Error Reference',
+            link: '/errors',
+          },
+          {
             text: 'Vue.js Certification',
             link: 'https://certificates.dev/vuejs/?friend=VUEROUTER&utm_source=router_vuejs&utm_medium=link&utm_campaign=router_vuejs_links&utm_content=navbar',
           },
@@ -189,6 +193,15 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             {
               text: 'Migrating from Vue 2',
               link: '/guide/migration/index.html',
+            },
+          ],
+        },
+        {
+          text: 'Reference',
+          items: [
+            {
+              text: 'Error Reference',
+              link: '/errors',
             },
           ],
         },
