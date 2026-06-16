@@ -185,14 +185,14 @@ describe('scrollBehavior', () => {
       it('warns if element cannot be found with id but can with selector', () => {
         scrollToPosition({ el: '#text .container' })
         expect(
-          `selector "#text .container" should be passed as "el: document.querySelector('#text .container')"`
+          `el: document.querySelector('#text .container')`
         ).toHaveBeenWarned()
       })
 
       it('warns if element cannot be found with id but can with selector', () => {
         scrollToPosition({ el: '#text .container' })
         expect(
-          `selector "#text .container" should be passed as "el: document.querySelector('#text .container')"`
+          `el: document.querySelector('#text .container')`
         ).toHaveBeenWarned()
       })
 

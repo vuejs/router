@@ -3,7 +3,7 @@ import { parse as parseSFC } from '@vue/compiler-sfc'
 import type { ResolvedOptions } from '../options'
 import JSON5 from 'json5'
 import { parse as parseYaml } from 'yaml'
-import { warn } from './utils'
+import { diagnostics } from '../diagnostics'
 import type { DefinePageQueryParamOptions } from '../../experimental/runtime'
 import type { RouteRecordRaw } from '../../types'
 
@@ -62,29 +62,33 @@ function parseCustomBlock(
     try {
       return JSON5.parse(block.content)
     } catch (err: any) {
-      warn(
-        `Invalid JSON5 format of <${block.type}> content in ${filePath}\n${err.message}`
-      )
+      diagnostics.VUE_ROUTER_B0012({
+        type: block.type,
+        filePath,
+        message: err.message,
+      })
     }
   } else if (lang === 'json') {
     try {
       return JSON.parse(block.content)
     } catch (err: any) {
-      warn(
-        `Invalid JSON format of <${block.type}> content in ${filePath}\n${err.message}`
-      )
+      diagnostics.VUE_ROUTER_B0013({
+        type: block.type,
+        filePath,
+        message: err.message,
+      })
     }
   } else if (lang === 'yaml' || lang === 'yml') {
     try {
       return parseYaml(block.content)
     } catch (err: any) {
-      warn(
-        `Invalid YAML format of <${block.type}> content in ${filePath}\n${err.message}`
-      )
+      diagnostics.VUE_ROUTER_B0014({
+        type: block.type,
+        filePath,
+        message: err.message,
+      })
     }
   } else {
-    warn(
-      `Language "${lang}" for <${block.type}> is not supported. Supported languages are: json5, json, yaml, yml. Found in in ${filePath}.`
-    )
+    diagnostics.VUE_ROUTER_B0015({ lang, type: block.type, filePath })
   }
 }

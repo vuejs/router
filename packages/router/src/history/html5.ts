@@ -13,7 +13,7 @@ import {
 } from './common'
 import type { _ScrollPositionNormalized } from '../scrollBehavior'
 import { computeScrollPosition } from '../scrollBehavior'
-import { warn } from '../warning'
+import { diagnostics } from '../diagnostics'
 import { stripBase } from '../location'
 import { assign } from '../utils'
 
@@ -235,7 +235,7 @@ function useHistoryStateNavigation(base: string) {
       historyState.value = state
     } catch (err) {
       if (__DEV__) {
-        warn('Error with push/replace State', err)
+        diagnostics.VUE_ROUTER_R0120({ cause: err })
       } else {
         console.error(err)
       }
@@ -280,11 +280,7 @@ function useHistoryStateNavigation(base: string) {
     )
 
     if (__DEV__ && !history.state) {
-      warn(
-        `history.state seems to have been manually replaced without preserving the necessary values. Make sure to preserve existing history state if you are manually calling history.replaceState:\n\n` +
-          `history.replaceState(history.state, '', url)\n\n` +
-          `You can find more information at https://router.vuejs.org/guide/migration/#Usage-of-history-state`
-      )
+      diagnostics.VUE_ROUTER_R0121()
     }
 
     changeLocation(currentState.current, currentState, true)

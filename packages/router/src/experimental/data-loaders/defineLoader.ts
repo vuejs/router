@@ -25,7 +25,7 @@ import {
   toLazyValue,
 } from './createDataLoader'
 import type { ErrorDefault } from './types-config'
-import { warn } from '../../unplugin/core/utils'
+import { diagnostics } from '../../diagnostics'
 import type {
   RouteLocationNormalizedLoaded,
   RouteMap,
@@ -195,9 +195,7 @@ export function defineBasicLoader<Data>(
 
     if (process.env.NODE_ENV !== 'production') {
       if (parent !== currentContext[0]) {
-        console.warn(
-          `❌👶 "${options.key}" has a different parent than the current context. This shouldn't be happening. Please report a bug with a reproduction to https://github.com/vuejs/router/`
-        )
+        diagnostics.VUE_ROUTER_R1001({ key: options.key })
       }
     }
     // set the current context before loading so nested loaders can use it
@@ -219,9 +217,7 @@ export function defineBasicLoader<Data>(
         if (entry.pendingLoad === currentLoad) {
           if (d instanceof NavigationResult) {
             if (process.env.NODE_ENV !== 'production') {
-              console.warn(
-                '[vue-router]: Returning a NavigationResult is deprecated. Use reroute() instead, which throws internally.'
-              )
+              diagnostics.VUE_ROUTER_R1002()
               warnNonExposedLoader({ to, options, useDataLoader })
             }
             // prevent commit from running in finally
@@ -296,9 +292,7 @@ export function defineBasicLoader<Data>(
       // console.log('👉 commit', this.staged)
       if (process.env.NODE_ENV !== 'production') {
         if (this.staged === STAGED_NO_VALUE && this.stagedError === null) {
-          console.warn(
-            `Loader "${options.key}"'s "commit()" was called but there is no staged data.`
-          )
+          diagnostics.VUE_ROUTER_R1003({ key: options.key })
         }
       }
 
@@ -374,10 +368,8 @@ export function defineBasicLoader<Data>(
 
     // add ourselves to the parent entry children
     if (parentEntry) {
-      if (parentEntry === entry) {
-        console.warn(
-          `👶❌ "${options.key}" has itself as parent. This shouldn't be happening. Please report a bug with a reproduction to https://github.com/vuejs/router/`
-        )
+      if (__DEV__ && parentEntry === entry) {
+        diagnostics.VUE_ROUTER_R1005({ key: options.key })
       }
       // console.log(`👶 "${options.key}" has parent ${parentEntry}`)
       parentEntry.children.add(entry!)
@@ -447,10 +439,9 @@ function warnNonExposedLoader({
 }) {
   const loaders = to.meta[LOADER_SET_KEY]
   if (loaders && !loaders.has(useDataLoader)) {
-    warn(
-      'A loader returned a NavigationResult but is not registered on the route. Did you forget to "export" it from the page component?' +
-        (options.key ? ` (loader key: "${options.key}")` : '')
-    )
+    diagnostics.VUE_ROUTER_R1004({
+      key: options.key ? ` (loader key: "${options.key}")` : '',
+    })
   }
 }
 

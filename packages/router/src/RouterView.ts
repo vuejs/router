@@ -30,7 +30,7 @@ import {
   routerViewLocationKey,
 } from './injectionSymbols'
 import { assign, isArray, isBrowser } from './utils'
-import { warn } from './warning'
+import { diagnostics } from './diagnostics'
 import { isSameRouteRecord } from './location'
 
 export interface RouterViewProps {
@@ -254,14 +254,6 @@ function warnDeprecatedUsage() {
     (parentSubTreeType as Component).name === 'RouterView'
   ) {
     const comp = parentName === 'KeepAlive' ? 'keep-alive' : 'transition'
-    warn(
-      `<router-view> can no longer be used directly inside <${comp}>.\n` +
-        `Use slot props instead:\n\n` +
-        `<router-view v-slot="{ Component }">\n` +
-        `  <${comp}>\n` +
-        `    <component :is="Component" />\n` +
-        `  </${comp}>\n` +
-        `</router-view>`
-    )
+    diagnostics.VUE_ROUTER_R0060({ comp })
   }
 }

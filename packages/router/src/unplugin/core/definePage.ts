@@ -18,7 +18,7 @@ import type {
 } from '@babel/types'
 import { generate } from '@babel/generator'
 import { walkAST } from 'ast-walker-scope'
-import { warn } from './utils'
+import { diagnostics } from '../diagnostics'
 import type { ParsedStaticImport } from 'mlly'
 import { findStaticImports, parseStaticImport } from 'mlly'
 import type { CustomRouteBlock } from './customBlock'
@@ -86,9 +86,10 @@ export function definePageTransform({
     definePageNodes = result.definePageNodes
   } catch (error) {
     // Handle any syntax errors or parsing errors gracefully
-    warn(
-      `[${id}]: Failed to process definePage: ${error instanceof Error ? error.message : 'Unknown error'}`
-    )
+    diagnostics.VUE_ROUTER_B0001({
+      filename: id,
+      message: error instanceof Error ? error.message : 'Unknown error',
+    })
     return isExtractingDefinePage ? 'export default {}' : undefined
   }
 
@@ -115,7 +116,7 @@ export function definePageTransform({
 
     if (!routeRecord) {
       throw new SyntaxError(
-        `[${id}]: definePage() expects an object expression as its only argument`
+        `In file "${id}": definePage() expects an object expression as its only argument`
       )
     }
 
@@ -127,9 +128,13 @@ export function definePageTransform({
     try {
       checkInvalidScopeReference(routeRecord, MACRO_DEFINE_PAGE, scriptBindings)
     } catch (error) {
-      warn(
-        `[${id}]: ${error instanceof Error ? error.message : 'Invalid scope reference in definePage'}`
-      )
+      diagnostics.VUE_ROUTER_B0002({
+        filename: id,
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Invalid scope reference in definePage',
+      })
       return 'export default {}'
     }
 
@@ -242,9 +247,10 @@ export function extractDefinePageInfo(
     definePageNodes = result.definePageNodes
   } catch (error) {
     // Handle any syntax errors or parsing errors gracefully
-    warn(
-      `[${id}]: Failed to extract definePage info: ${error instanceof Error ? error.message : 'Unknown error'}`
-    )
+    diagnostics.VUE_ROUTER_B0003({
+      filename: id,
+      message: error instanceof Error ? error.message : 'Unknown error',
+    })
     return undefined
   }
 
@@ -261,13 +267,13 @@ export function extractDefinePageInfo(
   const routeRecord = definePageNode.arguments[0]
   if (!routeRecord) {
     throw new SyntaxError(
-      `[${id}]: definePage() expects an object expression as its only argument`
+      `In file "${id}": definePage() expects an object expression as its only argument`
     )
   }
 
   if (routeRecord.type !== 'ObjectExpression') {
     throw new SyntaxError(
-      `[${id}]: definePage() expects an object expression as its only argument`
+      `In file "${id}": definePage() expects an object expression as its only argument`
     )
   }
 
@@ -280,16 +286,14 @@ export function extractDefinePageInfo(
           prop.value.type !== 'StringLiteral' &&
           (prop.value.type !== 'BooleanLiteral' || prop.value.value !== false)
         ) {
-          warn(
-            `route name must be a string literal or false. Found in "${id}".`
-          )
+          diagnostics.VUE_ROUTER_B0004({ filename: id })
         } else {
           // TODO: why does TS not narrow down the type?
           routeInfo.name = prop.value.value as string | false
         }
       } else if (prop.key.name === 'path') {
         if (prop.value.type !== 'StringLiteral') {
-          warn(`route path must be a string literal. Found in "${id}".`)
+          diagnostics.VUE_ROUTER_B0005({ filename: id })
         } else {
           routeInfo.path = prop.value.value
         }
@@ -393,9 +397,10 @@ function extractQueryParams(
               } else if (paramProp.value.type === 'ArrowFunctionExpression') {
                 paramInfo.default = generate(paramProp.value).code
               } else {
-                warn(
-                  `Unrecognized default value in definePage() for query param "${paramName}". Typeof value: "${paramProp.value.type}". This is a bug or a missing type of value, open an issue on https://github.com/vuejs/router and provide the definePage() code.`
-                )
+                diagnostics.VUE_ROUTER_B0006({
+                  paramName,
+                  type: paramProp.value.type,
+                })
               }
             }
           }
@@ -437,9 +442,7 @@ export function extractRouteAlias(
     aliasValue.type !== 'StringLiteral' &&
     aliasValue.type !== 'ArrayExpression'
   ) {
-    warn(
-      `route alias must be a string literal or an array of string literals. Found in "${id}".`
-    )
+    diagnostics.VUE_ROUTER_B0007({ filename: id })
   } else {
     return aliasValue.type === 'StringLiteral'
       ? [aliasValue.value]
@@ -448,9 +451,10 @@ export function extractRouteAlias(
             if (node?.type === 'StringLiteral') {
               return true
             }
-            warn(
-              `route alias array must only contain string literals. Found ${node?.type ? `"${node.type}" ` : ''}in "${id}".`
-            )
+            diagnostics.VUE_ROUTER_B0008({
+              found: node?.type ? `"${node.type}" ` : '',
+              filename: id,
+            })
             return false
           })
           .map(el => el.value)

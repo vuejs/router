@@ -1,4 +1,4 @@
-import { warn } from './warning'
+import { diagnostics } from './diagnostics'
 
 /**
  * Encoding Rules (␣ = Space)
@@ -152,7 +152,7 @@ export function decode(
   try {
     return decodeURIComponent('' + text)
   } catch {
-    __DEV__ && warn(`Error decoding "${text}". Using original value`)
+    __DEV__ && diagnostics.VUE_ROUTER_R0080({ text: '' + text })
   }
   return '' + text
 }

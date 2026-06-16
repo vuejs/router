@@ -44,6 +44,7 @@ import type {
 import { useRoute, useRouter } from '../../useApi'
 import type { Router } from '../../router'
 import type { LocationQuery } from '../query'
+import { diagnostics } from '../../diagnostics'
 
 /**
  * Creates a Pinia Colada data loader with `data` is always defined.
@@ -200,9 +201,7 @@ export function defineColadaLoader<Data>(
 
     if (process.env.NODE_ENV !== 'production') {
       if (parent !== currentContext[0]) {
-        console.warn(
-          `❌👶 "${key}" has a different parent than the current context. This shouldn't be happening. Please report a bug with a reproduction to https://github.com/vuejs/router/`
-        )
+        diagnostics.VUE_ROUTER_R1001({ key: `[${key.join(',')}]` })
       }
     }
     // set the current context before loading so nested loaders can use it
@@ -288,9 +287,7 @@ export function defineColadaLoader<Data>(
             const newData = ext.data.value
             if (newData instanceof NavigationResult) {
               if (process.env.NODE_ENV !== 'production') {
-                console.warn(
-                  '[vue-router]: Returning a NavigationResult is deprecated. Use reroute() instead, which throws internally.'
-                )
+                diagnostics.VUE_ROUTER_R1002()
               }
               // prevent commit from running in finally
               entry.pendingTo = null
@@ -355,9 +352,7 @@ export function defineColadaLoader<Data>(
       // console.log(' ->', this.staged)
       if (process.env.NODE_ENV !== 'production') {
         if (this.staged === STAGED_NO_VALUE && this.stagedError === null) {
-          console.warn(
-            `Loader "${key}"'s "commit()" was called but there is no staged data.`
-          )
+          diagnostics.VUE_ROUTER_R1003({ key: String(key) })
         }
       }
       // if the entry is null, it means the loader never resolved, maybe there was an error
@@ -367,9 +362,7 @@ export function defineColadaLoader<Data>(
           process.env.NODE_ENV !== 'production' &&
           !this.tracked.has(joinKeys(key))
         ) {
-          console.warn(
-            `A query was defined with the same key as the loader "[${key.join(', ')}]". If the "key" is meant to be the same, you should directly use the data loader instead. If not, change the key of the "useQuery()".\nSee https://pinia-colada.esm.dev/#TODO`
-          )
+          diagnostics.VUE_ROUTER_R1006({ key: key.join(', ') })
           // avoid a crash that requires the page to be reloaded
           return
         }

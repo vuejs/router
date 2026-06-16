@@ -5,6 +5,7 @@ import {
   isTreePathParam,
 } from '../core/treeNodeValue'
 import type { ParamParsersMap } from './generateParamParsers'
+import { diagnostics } from '../diagnostics'
 
 // TODO: simplify the generateRouteParams to not use the type helpers ParamValueOneOrMore, ParamValueZeroOrMore, ParamValueZeroOrOne, and ParamValue, just output raw unions like string | string[]
 export function generateRouteParams(node: TreeNode, isRaw: boolean): string {
@@ -15,10 +16,10 @@ export function generateRouteParams(node: TreeNode, isRaw: boolean): string {
     ? `{ ${nodeParams
         .filter(param => {
           if (!param.paramName) {
-            console.warn(
-              `Warning: A parameter without a name was found in the route "${node.fullPath}" in segment "${node.path}".\n` +
-                `‼️ This is a bug, please report it at https://github.com/vuejs/router`
-            )
+            diagnostics.VUE_ROUTER_B0017({
+              fullPath: node.fullPath,
+              path: node.path,
+            })
             return false
           }
           return true

@@ -1,7 +1,7 @@
 import type { LocationQuery, LocationQueryRaw } from './query'
 import type { RouteParamValue, RouteParamsGeneric } from './types'
 import type { RouteRecord } from './matcher/types'
-import { warn } from './warning'
+import { diagnostics } from './diagnostics'
 import { isArray } from './utils'
 import { decode, encodeHash } from './encoding'
 import type {
@@ -249,9 +249,7 @@ function isEquivalentArray<T>(a: readonly T[], b: readonly T[] | T): boolean {
 export function resolveRelativePath(to: string, from: string): string {
   if (to.startsWith('/')) return to
   if (__DEV__ && !from.startsWith('/')) {
-    warn(
-      `Cannot resolve a relative location without an absolute path. Trying to resolve "${to}" from "${from}". It should look like "/${from}".`
-    )
+    diagnostics.VUE_ROUTER_R0070({ to, from })
     return to
   }
 

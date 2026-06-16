@@ -19,7 +19,7 @@ import { inject, getCurrentInstance } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import type { RouteRecordNormalized } from './matcher/types'
 import { isESModule, isRouteComponent } from './utils'
-import { warn } from './warning'
+import { diagnostics } from './diagnostics'
 import { isSameRouteRecord } from './location'
 
 function registerGuard(
@@ -32,11 +32,7 @@ function registerGuard(
     if (__DEV__) {
       const fnName =
         name === 'updateGuards' ? 'onBeforeRouteUpdate' : 'onBeforeRouteLeave'
-      warn(
-        `No active route record was found when calling \`${fnName}()\`. ` +
-          `Make sure you call this function inside a component child of <router-view>. ` +
-          `Maybe you called it inside of App.vue?`
-      )
+      diagnostics.VUE_ROUTER_R0020({ fn: fnName })
     }
     return
   }
@@ -56,10 +52,7 @@ function registerGuard(
     // component reactivated for a different route). If so, register with the new record.
     const newRecord = activeRecordRef.value
     if (__DEV__ && !newRecord) {
-      warn(
-        'No active route record was found when reactivating component with navigation guard. ' +
-          'This is likely a bug in vue-router. Please report it.'
-      )
+      diagnostics.VUE_ROUTER_R0021()
     }
     if (newRecord) {
       currentRecord = newRecord
@@ -79,9 +72,7 @@ function registerGuard(
  */
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
   if (__DEV__ && !getCurrentInstance()) {
-    warn(
-      'getCurrentInstance() returned null. onBeforeRouteLeave() must be called at the top of a setup function'
-    )
+    diagnostics.VUE_ROUTER_R0022({ fn: 'onBeforeRouteLeave' })
     return
   }
 
@@ -103,9 +94,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
  */
 export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
   if (__DEV__ && !getCurrentInstance()) {
-    warn(
-      'getCurrentInstance() returned null. onBeforeRouteUpdate() must be called at the top of a setup function'
-    )
+    diagnostics.VUE_ROUTER_R0022({ fn: 'onBeforeRouteUpdate' })
     return
   }
 
@@ -200,14 +189,12 @@ export function guardToPromiseFn(
 
       if (guard.length < 3) guardCall = guardCall.then(next)
       if (__DEV__ && guard.length > 2) {
-        const message = `The "next" callback was never called inside of ${
-          guard.name ? '"' + guard.name + '"' : ''
-        }:\n${guard.toString()}\n. If you are returning a value instead of calling "next", make sure to remove the "next" parameter from your function.`
+        const guardInfo = { name: guard.name, guard: guard.toString() }
         if (typeof guardReturn === 'object' && 'then' in guardReturn) {
           guardCall = guardCall.then(resolvedValue => {
             // @ts-expect-error: _called is added at canOnlyBeCalledOnce
             if (!next._called) {
-              warn(message)
+              diagnostics.VUE_ROUTER_R0023(guardInfo)
               return Promise.reject(new Error('Invalid navigation guard'))
             }
             return resolvedValue
@@ -215,7 +202,7 @@ export function guardToPromiseFn(
         } else if (guardReturn !== undefined) {
           // @ts-expect-error: _called is added at canOnlyBeCalledOnce
           if (!next._called) {
-            warn(message)
+            diagnostics.VUE_ROUTER_R0023(guardInfo)
             reject(new Error('Invalid navigation guard'))
             return
           }
@@ -239,9 +226,7 @@ function withDeprecationWarning(
   return function (this: any) {
     if (!warned) {
       warned = true
-      warn(
-        'The `next()` callback in navigation guards is deprecated. Return the value instead of calling `next(value)`.'
-      )
+      diagnostics.VUE_ROUTER_R0025()
     }
     return next.apply(this, arguments as any)
   }
@@ -255,9 +240,7 @@ function canOnlyBeCalledOnce(
   let called = 0
   return function () {
     if (called++ === 1)
-      warn(
-        `The "next" callback was called more than once in one navigation guard when going from "${from.fullPath}" to "${to.fullPath}". It should be called exactly one time in each navigation guard. This will fail in production.`
-      )
+      diagnostics.VUE_ROUTER_R0024({ from: from.fullPath, to: to.fullPath })
     // @ts-expect-error: we put it in the original one because it's easier to check
     next._called = true
     if (called === 1) next.apply(null, arguments as any)
@@ -283,10 +266,7 @@ export function extractComponentsGuards(
       record.children &&
       !record.children.length
     ) {
-      warn(
-        `Record with path "${record.path}" is either missing a "component(s)"` +
-          ` or "children" property.`
-      )
+      diagnostics.VUE_ROUTER_R0026({ path: record.path })
     }
     for (const name in record.components) {
       let rawComponent = record.components[name]
@@ -296,23 +276,18 @@ export function extractComponentsGuards(
           (typeof rawComponent !== 'object' &&
             typeof rawComponent !== 'function')
         ) {
-          warn(
-            `Component "${name}" in record with path "${record.path}" is not` +
-              ` a valid component. Received "${String(rawComponent)}".`
-          )
+          diagnostics.VUE_ROUTER_R0027({
+            name,
+            path: record.path,
+            received: String(rawComponent),
+          })
           // throw to ensure we stop here but warn to ensure the message isn't
           // missed by the user
           throw new Error('Invalid route component')
         } else if ('then' in rawComponent) {
           // warn if user wrote import('/component.vue') instead of () =>
           // import('./component.vue')
-          warn(
-            `Component "${name}" in record with path "${record.path}" is a ` +
-              `Promise instead of a function that returns a Promise. Did you ` +
-              `write "import('./MyPage.vue')" instead of ` +
-              `"() => import('./MyPage.vue')" ? This will break in ` +
-              `production if not fixed.`
-          )
+          diagnostics.VUE_ROUTER_R0028({ name, path: record.path })
           const promise = rawComponent
           rawComponent = () => promise
         } else if (
@@ -321,12 +296,7 @@ export function extractComponentsGuards(
           !(rawComponent as any).__warnedDefineAsync
         ) {
           ;(rawComponent as any).__warnedDefineAsync = true
-          warn(
-            `Component "${name}" in record with path "${record.path}" is defined ` +
-              `using "defineAsyncComponent()". ` +
-              `Write "() => import('./MyPage.vue')" instead of ` +
-              `"defineAsyncComponent(() => import('./MyPage.vue'))".`
-          )
+          diagnostics.VUE_ROUTER_R0029({ name, path: record.path })
         }
       }
 
@@ -350,9 +320,7 @@ export function extractComponentsGuards(
         > = (rawComponent as Lazy<RouteComponent>)()
 
         if (__DEV__ && !('catch' in componentPromise)) {
-          warn(
-            `Component "${name}" in record with path "${record.path}" is a function that does not return a Promise. If you were passing a functional component, make sure to add a "displayName" to the component. This will break in production if not fixed.`
-          )
+          diagnostics.VUE_ROUTER_R0030({ name, path: record.path })
           componentPromise = Promise.resolve(componentPromise as RouteComponent)
         }
 

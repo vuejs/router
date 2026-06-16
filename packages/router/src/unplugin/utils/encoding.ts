@@ -1,4 +1,4 @@
-import { warn } from '../core/utils'
+import { diagnostics } from '../diagnostics'
 
 /**
  * Encoding Rules (␣ = Space)
@@ -152,7 +152,7 @@ export function decode(
     return decodeURIComponent('' + text)
   } catch {
     if (process.env.NODE_ENV !== 'production') {
-      warn(`Error decoding "${text}". Using original value`)
+      diagnostics.VUE_ROUTER_B0016({ text: String(text) })
     }
   }
   return '' + text
