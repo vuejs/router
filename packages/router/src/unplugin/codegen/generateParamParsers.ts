@@ -145,7 +145,7 @@ export function isRawParamParserSource(
         if (reExportsParser) {
           diagnostics.VR_B0018({
             filename,
-            source: String(exportNode.source.value),
+            source: exportNode.source.value,
           })
         }
         return

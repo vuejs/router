@@ -87,7 +87,7 @@ export function definePageTransform({
   } catch (error) {
     // Handle any syntax errors or parsing errors gracefully
     diagnostics.VR_B0001({
-      id,
+      filename: id,
       message: error instanceof Error ? error.message : 'Unknown error',
     })
     return isExtractingDefinePage ? 'export default {}' : undefined
@@ -116,7 +116,7 @@ export function definePageTransform({
 
     if (!routeRecord) {
       throw new SyntaxError(
-        `[${id}]: definePage() expects an object expression as its only argument`
+        `In file "${id}": definePage() expects an object expression as its only argument`
       )
     }
 
@@ -129,7 +129,7 @@ export function definePageTransform({
       checkInvalidScopeReference(routeRecord, MACRO_DEFINE_PAGE, scriptBindings)
     } catch (error) {
       diagnostics.VR_B0002({
-        id,
+        filename: id,
         message:
           error instanceof Error
             ? error.message
@@ -248,7 +248,7 @@ export function extractDefinePageInfo(
   } catch (error) {
     // Handle any syntax errors or parsing errors gracefully
     diagnostics.VR_B0003({
-      id,
+      filename: id,
       message: error instanceof Error ? error.message : 'Unknown error',
     })
     return undefined
@@ -267,13 +267,13 @@ export function extractDefinePageInfo(
   const routeRecord = definePageNode.arguments[0]
   if (!routeRecord) {
     throw new SyntaxError(
-      `[${id}]: definePage() expects an object expression as its only argument`
+      `In file "${id}": definePage() expects an object expression as its only argument`
     )
   }
 
   if (routeRecord.type !== 'ObjectExpression') {
     throw new SyntaxError(
-      `[${id}]: definePage() expects an object expression as its only argument`
+      `In file "${id}": definePage() expects an object expression as its only argument`
     )
   }
 
@@ -286,14 +286,14 @@ export function extractDefinePageInfo(
           prop.value.type !== 'StringLiteral' &&
           (prop.value.type !== 'BooleanLiteral' || prop.value.value !== false)
         ) {
-          diagnostics.VR_B0004({ id })
+          diagnostics.VR_B0004({ filename: id })
         } else {
           // TODO: why does TS not narrow down the type?
           routeInfo.name = prop.value.value as string | false
         }
       } else if (prop.key.name === 'path') {
         if (prop.value.type !== 'StringLiteral') {
-          diagnostics.VR_B0005({ id })
+          diagnostics.VR_B0005({ filename: id })
         } else {
           routeInfo.path = prop.value.value
         }
@@ -442,7 +442,7 @@ export function extractRouteAlias(
     aliasValue.type !== 'StringLiteral' &&
     aliasValue.type !== 'ArrayExpression'
   ) {
-    diagnostics.VR_B0007({ id })
+    diagnostics.VR_B0007({ filename: id })
   } else {
     return aliasValue.type === 'StringLiteral'
       ? [aliasValue.value]
@@ -453,7 +453,7 @@ export function extractRouteAlias(
             }
             diagnostics.VR_B0008({
               found: node?.type ? `"${node.type}" ` : '',
-              id,
+              filename: id,
             })
             return false
           })

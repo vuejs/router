@@ -16,27 +16,28 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
   codes: {
     // --- core/definePage.ts ---
     VR_B0001: {
-      why: (p: { id: string; message: string }) =>
-        `[${p.id}]: Failed to process definePage: ${p.message}`,
+      why: (p: { filename: string; message: string }) =>
+        `In file "${p.filename}": Failed to process definePage: ${p.message}`,
       fix: 'Fix the syntax error in the definePage() macro of this file.',
     },
     VR_B0002: {
-      why: (p: { id: string; message: string }) => `[${p.id}]: ${p.message}`,
+      why: (p: { filename: string; message: string }) =>
+        `In file "${p.filename}": ${p.message}`,
       fix: 'Avoid referencing <script setup> bindings inside definePage(); pass static values instead.',
     },
     VR_B0003: {
-      why: (p: { id: string; message: string }) =>
-        `[${p.id}]: Failed to extract definePage info: ${p.message}`,
+      why: (p: { filename: string; message: string }) =>
+        `In file "${p.filename}": Failed to extract definePage info: ${p.message}`,
       fix: 'Fix the syntax error in the definePage() macro of this file.',
     },
     VR_B0004: {
-      why: (p: { id: string }) =>
-        `route name must be a string literal or false. Found in "${p.id}".`,
+      why: (p: { filename: string }) =>
+        `route name must be a string literal or false. Found in file "${p.filename}".`,
       fix: 'Use a string literal or `false` for the route `name`.',
     },
     VR_B0005: {
-      why: (p: { id: string }) =>
-        `route path must be a string literal. Found in "${p.id}".`,
+      why: (p: { filename: string }) =>
+        `route path must be a string literal. Found in file "${p.filename}".`,
       fix: 'Use a string literal for the route `path`.',
     },
     VR_B0006: {
@@ -45,13 +46,13 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       fix: 'Report a reproduction at https://github.com/vuejs/router with the definePage() code.',
     },
     VR_B0007: {
-      why: (p: { id: string }) =>
-        `route alias must be a string literal or an array of string literals. Found in "${p.id}".`,
+      why: (p: { filename: string }) =>
+        `route alias must be a string literal or an array of string literals. Found in file "${p.filename}".`,
       fix: 'Use a string literal or an array of string literals for the route `alias`.',
     },
     VR_B0008: {
-      why: (p: { found: string; id: string }) =>
-        `route alias array must only contain string literals. Found ${p.found}in "${p.id}".`,
+      why: (p: { found: string; filename: string }) =>
+        `route alias array must only contain string literals. Found ${p.found}in file "${p.filename}".`,
       fix: 'Only use string literals inside the route `alias` array.',
     },
 
@@ -106,7 +107,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     // --- codegen/generateRouteParams.ts ---
     VR_B0017: {
       why: (p: { fullPath: string; path: string }) =>
-        `Warning: A parameter without a name was found in the route "${p.fullPath}" in segment "${p.path}".\n‼️ This is a bug, please report it at https://github.com/vuejs/router`,
+        `A parameter without a name was found in the route "${p.fullPath}" in segment "${p.path}".`,
       fix: 'Report a reproduction at https://github.com/vuejs/router.',
     },
 

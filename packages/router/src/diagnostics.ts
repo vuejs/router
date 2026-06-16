@@ -286,7 +286,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     },
     VR_R1005: {
       why: (p: { key: string | undefined }) =>
-        `👶❌ "${p.key}" has itself as parent. This shouldn't be happening.`,
+        `Data loader "${p.key}" has itself as parent. This shouldn't be happening.`,
       fix: 'Report a bug with a minimal reproduction at https://github.com/vuejs/router/.',
     },
     VR_R1006: {
@@ -300,7 +300,6 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     },
     VR_R1008: {
       why: 'Data Loader is experimental and subject to breaking changes in the future.',
-      fix: 'Pin the vue-router version if you rely on the experimental Data Loaders API.',
     },
     VR_R1009: {
       why: 'Returning a NavigationResult from a loader is deprecated.',

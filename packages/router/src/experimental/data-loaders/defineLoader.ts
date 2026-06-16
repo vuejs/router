@@ -368,7 +368,7 @@ export function defineBasicLoader<Data>(
 
     // add ourselves to the parent entry children
     if (parentEntry) {
-      if (parentEntry === entry) {
+      if (__DEV__ && parentEntry === entry) {
         diagnostics.VR_R1005({ key: options.key })
       }
       // console.log(`👶 "${options.key}" has parent ${parentEntry}`)
