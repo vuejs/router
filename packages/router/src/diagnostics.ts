@@ -1,5 +1,9 @@
 import { createConsoleReporter, defineDiagnostics } from 'nostics'
-import type { RouteLocationRaw } from './typed-routes/route-location'
+import type {
+  RouteLocationAsPath,
+  RouteLocationAsRelative,
+  RouteLocationRaw,
+} from './typed-routes/route-location'
 import { stringifyRoute } from './errors'
 
 /**
@@ -43,12 +47,15 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       fix: 'Add a route matching this path or check for typos in the location.',
     },
     VR_R0005: {
-      why: 'router.resolve() was passed an invalid location. This will fail in production.\n- Location:',
+      why: (p: {
+        rawLocation: string | RouteLocationAsRelative | RouteLocationAsPath
+      }) =>
+        `router.resolve() was passed an invalid location. This will fail in production.\nLocation: ${stringifyRoute(p.rawLocation)}`,
       fix: 'Pass a valid route location: a string path or an object with `path` or `name`.',
     },
     VR_R0006: {
       why: (p: { path: string }) =>
-        `Path "${p.path}" was passed with params but they will be ignored.`,
+        `Path "${p.path}" was passed with params but they will be ignored because a "path" was passed.`,
       fix: 'Use a named route `{ name, params }` instead of `{ path, params }`.',
     },
     VR_R0007: {
@@ -68,7 +75,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       fix: 'A guard is returning a new location on every call; make that return conditional so it only redirects when actually needed.',
     },
     VR_R0010: {
-      why: 'uncaught error during route navigation:',
+      why: 'Uncaught error during route navigation',
       fix: 'Register an error handler with `router.onError()` to handle navigation errors.',
     },
     VR_R0011: {
@@ -265,8 +272,8 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
 
     // --- experimental/data-loaders ---
     VR_R1001: {
-      why: (p: { key: string | undefined }) =>
-        `❌👶 "${p.key}" has a different parent than the current context. This shouldn't be happening.`,
+      why: (p: { key: string[] }) =>
+        `Data loader [${p.key.join(',')}] has a different parent than the current context. This shouldn't be happening.`,
       fix: 'Report a bug with a minimal reproduction at https://github.com/vuejs/router/.',
     },
     VR_R1002: {

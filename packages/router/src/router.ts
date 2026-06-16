@@ -253,7 +253,7 @@ export function createRouter(options: RouterOptions): Router {
     }
 
     if (__DEV__ && !isRouteLocation(rawLocation)) {
-      diagnostics.VR_R0005()
+      diagnostics.VR_R0005({ rawLocation })
       return resolve({})
     }
 

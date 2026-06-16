@@ -201,7 +201,7 @@ export function defineColadaLoader<Data>(
 
     if (process.env.NODE_ENV !== 'production') {
       if (parent !== currentContext[0]) {
-        diagnostics.VR_R1001({ key: String(key) })
+        diagnostics.VR_R1001({ key })
       }
     }
     // set the current context before loading so nested loaders can use it
