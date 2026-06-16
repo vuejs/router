@@ -201,7 +201,7 @@ export function defineColadaLoader<Data>(
 
     if (process.env.NODE_ENV !== 'production') {
       if (parent !== currentContext[0]) {
-        diagnostics.VUE_ROUTER_R1001({ key })
+        diagnostics.VUE_ROUTER_R1001({ key: `[${key.join(',')}]` })
       }
     }
     // set the current context before loading so nested loaders can use it

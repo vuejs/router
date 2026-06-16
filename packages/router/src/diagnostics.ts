@@ -296,8 +296,8 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
 
     // --- experimental/data-loaders ---
     VUE_ROUTER_R1001: {
-      why: (p: { key: string[] }) =>
-        `Data loader [${p.key.join(',')}] has a different parent than the current context. This shouldn't be happening.`,
+      why: (p: { key: string | undefined }) =>
+        `Data loader "${String(p.key)}" has a different parent than the current context. This shouldn't be happening.`,
       fix: 'Report a bug with a minimal reproduction at https://github.com/vuejs/router/.',
     },
     VUE_ROUTER_R1002: {
