@@ -10,7 +10,7 @@ import { createConsoleReporter, defineDiagnostics } from 'nostics'
  * repeat a `[vue-router]` prefix. Codes are permanent: never rename or reuse.
  */
 export const diagnostics = /*#__PURE__*/ defineDiagnostics({
-  docsBase: code => `https://router.vuejs.org/errors/${code.toLowerCase()}`,
+  // docsBase: code => `https://router.vuejs.org/errors/${code.toLowerCase()}`,
   // TODO: could use the ansi reporter probably
   reporters: [/*#__PURE__*/ createConsoleReporter()],
   codes: {

@@ -18,7 +18,7 @@ import { stringifyRoute } from './errors'
  * - `VR_R1###` experimental data-loaders
  */
 export const diagnostics = /*#__PURE__*/ defineDiagnostics({
-  docsBase: code => `https://router.vuejs.org/errors/${code.toLowerCase()}`,
+  // docsBase: code => `https://router.vuejs.org/errors/${code.toLowerCase()}`,
   reporters: [/*#__PURE__*/ createConsoleReporter()],
   codes: {
     // --- router.ts ---
