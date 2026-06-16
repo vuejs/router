@@ -235,7 +235,7 @@ function useHistoryStateNavigation(base: string) {
       historyState.value = state
     } catch (err) {
       if (__DEV__) {
-        diagnostics.VR_R0120({ cause: err })
+        diagnostics.VUE_ROUTER_R0120({ cause: err })
       } else {
         console.error(err)
       }
@@ -280,7 +280,7 @@ function useHistoryStateNavigation(base: string) {
     )
 
     if (__DEV__ && !history.state) {
-      diagnostics.VR_R0121()
+      diagnostics.VUE_ROUTER_R0121()
     }
 
     changeLocation(currentState.current, currentState, true)

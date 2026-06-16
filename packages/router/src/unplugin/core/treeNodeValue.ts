@@ -557,7 +557,7 @@ export function createTreeNodeValue(
 
     const closingPar = segment.lastIndexOf(')')
     if (closingPar < 0 || closingPar < openingPar) {
-      diagnostics.VR_B0010({ segment })
+      diagnostics.VUE_ROUTER_B0010({ segment })
 
       // avoid parsing errors
       return new TreeNodeValueStatic(segment, parent, segment)
@@ -838,7 +838,7 @@ function parseRawPathSegment(
     ) {
       // Check if the parameter name is empty and assign a default name
       if (!currentTreeRouteParam.paramName) {
-        diagnostics.VR_B0011({ segment })
+        diagnostics.VUE_ROUTER_B0011({ segment })
         currentTreeRouteParam.paramName = 'pathMatch'
       }
       // we consume the current param

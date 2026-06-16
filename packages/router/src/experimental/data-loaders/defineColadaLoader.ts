@@ -201,7 +201,7 @@ export function defineColadaLoader<Data>(
 
     if (process.env.NODE_ENV !== 'production') {
       if (parent !== currentContext[0]) {
-        diagnostics.VR_R1001({ key })
+        diagnostics.VUE_ROUTER_R1001({ key })
       }
     }
     // set the current context before loading so nested loaders can use it
@@ -287,7 +287,7 @@ export function defineColadaLoader<Data>(
             const newData = ext.data.value
             if (newData instanceof NavigationResult) {
               if (process.env.NODE_ENV !== 'production') {
-                diagnostics.VR_R1002()
+                diagnostics.VUE_ROUTER_R1002()
               }
               // prevent commit from running in finally
               entry.pendingTo = null
@@ -352,7 +352,7 @@ export function defineColadaLoader<Data>(
       // console.log(' ->', this.staged)
       if (process.env.NODE_ENV !== 'production') {
         if (this.staged === STAGED_NO_VALUE && this.stagedError === null) {
-          diagnostics.VR_R1003({ key: String(key) })
+          diagnostics.VUE_ROUTER_R1003({ key: String(key) })
         }
       }
       // if the entry is null, it means the loader never resolved, maybe there was an error
@@ -362,7 +362,7 @@ export function defineColadaLoader<Data>(
           process.env.NODE_ENV !== 'production' &&
           !this.tracked.has(joinKeys(key))
         ) {
-          diagnostics.VR_R1006({ key: key.join(', ') })
+          diagnostics.VUE_ROUTER_R1006({ key: key.join(', ') })
           // avoid a crash that requires the page to be reloaded
           return
         }

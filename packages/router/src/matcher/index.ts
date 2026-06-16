@@ -271,7 +271,7 @@ export function createRouterMatcher(
           const isInherited =
             !matcher!.keys.length &&
             invalidParams.some(name => name in currentLocation.params)
-          diagnostics.VR_R0100({
+          diagnostics.VUE_ROUTER_R0100({
             params: invalidParams.join('", "'),
             inherited: isInherited
               ? ` If you are using a catch-all route with a named redirect, pass an empty \`params\` object: \`redirect: { name: '...', params: {} }\`.`
@@ -310,7 +310,7 @@ export function createRouterMatcher(
       path = location.path
 
       if (__DEV__ && !path.startsWith('/')) {
-        diagnostics.VR_R0101({ path })
+        diagnostics.VUE_ROUTER_R0101({ path })
       }
 
       matcher = matchers.find(m => m.re.test(path))
@@ -509,7 +509,7 @@ function isSameParam(a: ParamKey, b: ParamKey): boolean {
 function checkSameParams(a: RouteRecordMatcher, b: RouteRecordMatcher) {
   for (const key of a.keys) {
     if (!key.optional && !b.keys.find(isSameParam.bind(null, key))) {
-      diagnostics.VR_R0102({
+      diagnostics.VUE_ROUTER_R0102({
         alias: b.record.path,
         original: a.record.path,
         name: key.name,
@@ -519,7 +519,7 @@ function checkSameParams(a: RouteRecordMatcher, b: RouteRecordMatcher) {
   }
   for (const key of b.keys) {
     if (!key.optional && !a.keys.find(isSameParam.bind(null, key))) {
-      diagnostics.VR_R0102({
+      diagnostics.VUE_ROUTER_R0102({
         alias: b.record.path,
         original: a.record.path,
         name: key.name,
@@ -546,7 +546,7 @@ export function checkChildMissingNameWithEmptyPath(
     !mainNormalizedRecord.path &&
     mainNormalizedRecord.children.length === 0
   ) {
-    diagnostics.VR_R0103({ name: String(parent.record.name) })
+    diagnostics.VUE_ROUTER_R0103({ name: String(parent.record.name) })
   }
 }
 
@@ -571,7 +571,7 @@ function checkMissingParamsInAbsolutePath(
 ) {
   for (const key of parent.keys) {
     if (!record.keys.find(isSameParam.bind(null, key))) {
-      diagnostics.VR_R0104({
+      diagnostics.VUE_ROUTER_R0104({
         path: record.record.path,
         name: key.name,
         parent: parent.record.path,
@@ -617,7 +617,7 @@ function findInsertionIndex(
 
     if (__DEV__ && upper < 0) {
       // This should never happen
-      diagnostics.VR_R0105({
+      diagnostics.VUE_ROUTER_R0105({
         ancestor: insertionAncestor.record.path,
         record: matcher.record.path,
       })

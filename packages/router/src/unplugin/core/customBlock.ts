@@ -62,7 +62,7 @@ function parseCustomBlock(
     try {
       return JSON5.parse(block.content)
     } catch (err: any) {
-      diagnostics.VR_B0012({
+      diagnostics.VUE_ROUTER_B0012({
         type: block.type,
         filePath,
         message: err.message,
@@ -72,7 +72,7 @@ function parseCustomBlock(
     try {
       return JSON.parse(block.content)
     } catch (err: any) {
-      diagnostics.VR_B0013({
+      diagnostics.VUE_ROUTER_B0013({
         type: block.type,
         filePath,
         message: err.message,
@@ -82,13 +82,13 @@ function parseCustomBlock(
     try {
       return parseYaml(block.content)
     } catch (err: any) {
-      diagnostics.VR_B0014({
+      diagnostics.VUE_ROUTER_B0014({
         type: block.type,
         filePath,
         message: err.message,
       })
     }
   } else {
-    diagnostics.VR_B0015({ lang, type: block.type, filePath })
+    diagnostics.VUE_ROUTER_B0015({ lang, type: block.type, filePath })
   }
 }

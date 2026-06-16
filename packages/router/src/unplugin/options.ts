@@ -451,7 +451,7 @@ export function resolveOptions(options: Options) {
       // in src/index.ts
       .map(ext => {
         if (!ext.startsWith('.')) {
-          diagnostics.VR_B0009({ ext })
+          diagnostics.VUE_ROUTER_B0009({ ext })
           return '.' + ext
         }
         return ext

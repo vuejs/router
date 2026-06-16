@@ -25,7 +25,7 @@ export function createRouteRecordMatcher(
     const existingKeys = new Set<string>()
     for (const key of parser.keys) {
       if (existingKeys.has(key.name))
-        diagnostics.VR_R0090({ name: key.name, path: record.path })
+        diagnostics.VUE_ROUTER_R0090({ name: key.name, path: record.path })
       existingKeys.add(key.name)
     }
   }

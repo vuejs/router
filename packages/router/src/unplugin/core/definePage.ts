@@ -86,7 +86,7 @@ export function definePageTransform({
     definePageNodes = result.definePageNodes
   } catch (error) {
     // Handle any syntax errors or parsing errors gracefully
-    diagnostics.VR_B0001({
+    diagnostics.VUE_ROUTER_B0001({
       filename: id,
       message: error instanceof Error ? error.message : 'Unknown error',
     })
@@ -128,7 +128,7 @@ export function definePageTransform({
     try {
       checkInvalidScopeReference(routeRecord, MACRO_DEFINE_PAGE, scriptBindings)
     } catch (error) {
-      diagnostics.VR_B0002({
+      diagnostics.VUE_ROUTER_B0002({
         filename: id,
         message:
           error instanceof Error
@@ -247,7 +247,7 @@ export function extractDefinePageInfo(
     definePageNodes = result.definePageNodes
   } catch (error) {
     // Handle any syntax errors or parsing errors gracefully
-    diagnostics.VR_B0003({
+    diagnostics.VUE_ROUTER_B0003({
       filename: id,
       message: error instanceof Error ? error.message : 'Unknown error',
     })
@@ -286,14 +286,14 @@ export function extractDefinePageInfo(
           prop.value.type !== 'StringLiteral' &&
           (prop.value.type !== 'BooleanLiteral' || prop.value.value !== false)
         ) {
-          diagnostics.VR_B0004({ filename: id })
+          diagnostics.VUE_ROUTER_B0004({ filename: id })
         } else {
           // TODO: why does TS not narrow down the type?
           routeInfo.name = prop.value.value as string | false
         }
       } else if (prop.key.name === 'path') {
         if (prop.value.type !== 'StringLiteral') {
-          diagnostics.VR_B0005({ filename: id })
+          diagnostics.VUE_ROUTER_B0005({ filename: id })
         } else {
           routeInfo.path = prop.value.value
         }
@@ -397,7 +397,7 @@ function extractQueryParams(
               } else if (paramProp.value.type === 'ArrowFunctionExpression') {
                 paramInfo.default = generate(paramProp.value).code
               } else {
-                diagnostics.VR_B0006({
+                diagnostics.VUE_ROUTER_B0006({
                   paramName,
                   type: paramProp.value.type,
                 })
@@ -442,7 +442,7 @@ export function extractRouteAlias(
     aliasValue.type !== 'StringLiteral' &&
     aliasValue.type !== 'ArrayExpression'
   ) {
-    diagnostics.VR_B0007({ filename: id })
+    diagnostics.VUE_ROUTER_B0007({ filename: id })
   } else {
     return aliasValue.type === 'StringLiteral'
       ? [aliasValue.value]
@@ -451,7 +451,7 @@ export function extractRouteAlias(
             if (node?.type === 'StringLiteral') {
               return true
             }
-            diagnostics.VR_B0008({
+            diagnostics.VUE_ROUTER_B0008({
               found: node?.type ? `"${node.type}" ` : '',
               filename: id,
             })

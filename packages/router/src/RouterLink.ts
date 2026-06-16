@@ -146,7 +146,7 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
 
     if (__DEV__ && (!hasPrevious || to !== previousTo)) {
       if (!isRouteLocation(to)) {
-        diagnostics.VR_R0050({ to })
+        diagnostics.VUE_ROUTER_R0050({ to })
       }
 
       previousTo = to

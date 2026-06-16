@@ -16,7 +16,10 @@ export function generateRouteParams(node: TreeNode, isRaw: boolean): string {
     ? `{ ${nodeParams
         .filter(param => {
           if (!param.paramName) {
-            diagnostics.VR_B0017({ fullPath: node.fullPath, path: node.path })
+            diagnostics.VUE_ROUTER_B0017({
+              fullPath: node.fullPath,
+              path: node.path,
+            })
             return false
           }
           return true

@@ -32,7 +32,7 @@ function registerGuard(
     if (__DEV__) {
       const fnName =
         name === 'updateGuards' ? 'onBeforeRouteUpdate' : 'onBeforeRouteLeave'
-      diagnostics.VR_R0020({ fn: fnName })
+      diagnostics.VUE_ROUTER_R0020({ fn: fnName })
     }
     return
   }
@@ -52,7 +52,7 @@ function registerGuard(
     // component reactivated for a different route). If so, register with the new record.
     const newRecord = activeRecordRef.value
     if (__DEV__ && !newRecord) {
-      diagnostics.VR_R0021()
+      diagnostics.VUE_ROUTER_R0021()
     }
     if (newRecord) {
       currentRecord = newRecord
@@ -72,7 +72,7 @@ function registerGuard(
  */
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
   if (__DEV__ && !getCurrentInstance()) {
-    diagnostics.VR_R0022({ fn: 'onBeforeRouteLeave' })
+    diagnostics.VUE_ROUTER_R0022({ fn: 'onBeforeRouteLeave' })
     return
   }
 
@@ -94,7 +94,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
  */
 export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
   if (__DEV__ && !getCurrentInstance()) {
-    diagnostics.VR_R0022({ fn: 'onBeforeRouteUpdate' })
+    diagnostics.VUE_ROUTER_R0022({ fn: 'onBeforeRouteUpdate' })
     return
   }
 
@@ -194,7 +194,7 @@ export function guardToPromiseFn(
           guardCall = guardCall.then(resolvedValue => {
             // @ts-expect-error: _called is added at canOnlyBeCalledOnce
             if (!next._called) {
-              diagnostics.VR_R0023(guardInfo)
+              diagnostics.VUE_ROUTER_R0023(guardInfo)
               return Promise.reject(new Error('Invalid navigation guard'))
             }
             return resolvedValue
@@ -202,7 +202,7 @@ export function guardToPromiseFn(
         } else if (guardReturn !== undefined) {
           // @ts-expect-error: _called is added at canOnlyBeCalledOnce
           if (!next._called) {
-            diagnostics.VR_R0023(guardInfo)
+            diagnostics.VUE_ROUTER_R0023(guardInfo)
             reject(new Error('Invalid navigation guard'))
             return
           }
@@ -226,7 +226,7 @@ function withDeprecationWarning(
   return function (this: any) {
     if (!warned) {
       warned = true
-      diagnostics.VR_R0025()
+      diagnostics.VUE_ROUTER_R0025()
     }
     return next.apply(this, arguments as any)
   }
@@ -240,7 +240,7 @@ function canOnlyBeCalledOnce(
   let called = 0
   return function () {
     if (called++ === 1)
-      diagnostics.VR_R0024({ from: from.fullPath, to: to.fullPath })
+      diagnostics.VUE_ROUTER_R0024({ from: from.fullPath, to: to.fullPath })
     // @ts-expect-error: we put it in the original one because it's easier to check
     next._called = true
     if (called === 1) next.apply(null, arguments as any)
@@ -266,7 +266,7 @@ export function extractComponentsGuards(
       record.children &&
       !record.children.length
     ) {
-      diagnostics.VR_R0026({ path: record.path })
+      diagnostics.VUE_ROUTER_R0026({ path: record.path })
     }
     for (const name in record.components) {
       let rawComponent = record.components[name]
@@ -276,7 +276,7 @@ export function extractComponentsGuards(
           (typeof rawComponent !== 'object' &&
             typeof rawComponent !== 'function')
         ) {
-          diagnostics.VR_R0027({
+          diagnostics.VUE_ROUTER_R0027({
             name,
             path: record.path,
             received: String(rawComponent),
@@ -287,7 +287,7 @@ export function extractComponentsGuards(
         } else if ('then' in rawComponent) {
           // warn if user wrote import('/component.vue') instead of () =>
           // import('./component.vue')
-          diagnostics.VR_R0028({ name, path: record.path })
+          diagnostics.VUE_ROUTER_R0028({ name, path: record.path })
           const promise = rawComponent
           rawComponent = () => promise
         } else if (
@@ -296,7 +296,7 @@ export function extractComponentsGuards(
           !(rawComponent as any).__warnedDefineAsync
         ) {
           ;(rawComponent as any).__warnedDefineAsync = true
-          diagnostics.VR_R0029({ name, path: record.path })
+          diagnostics.VUE_ROUTER_R0029({ name, path: record.path })
         }
       }
 
@@ -320,7 +320,7 @@ export function extractComponentsGuards(
         > = (rawComponent as Lazy<RouteComponent>)()
 
         if (__DEV__ && !('catch' in componentPromise)) {
-          diagnostics.VR_R0030({ name, path: record.path })
+          diagnostics.VUE_ROUTER_R0030({ name, path: record.path })
           componentPromise = Promise.resolve(componentPromise as RouteComponent)
         }
 

@@ -125,12 +125,12 @@ export function scrollToPosition(position: ScrollPosition): void {
         try {
           const foundEl = document.querySelector(position.el)
           if (isIdSelector && foundEl) {
-            diagnostics.VR_R0040({ el: position.el })
+            diagnostics.VUE_ROUTER_R0040({ el: position.el })
             // return to avoid other warnings
             return
           }
         } catch {
-          diagnostics.VR_R0041({ el: position.el })
+          diagnostics.VUE_ROUTER_R0041({ el: position.el })
           // return to avoid other warnings
           return
         }
@@ -145,7 +145,7 @@ export function scrollToPosition(position: ScrollPosition): void {
         : positionEl
 
     if (!el) {
-      __DEV__ && diagnostics.VR_R0042({ el: position.el })
+      __DEV__ && diagnostics.VUE_ROUTER_R0042({ el: position.el })
       return
     }
     scrollToOptions = getElementPosition(el, position)

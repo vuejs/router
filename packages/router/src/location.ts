@@ -249,7 +249,7 @@ function isEquivalentArray<T>(a: readonly T[], b: readonly T[] | T): boolean {
 export function resolveRelativePath(to: string, from: string): string {
   if (to.startsWith('/')) return to
   if (__DEV__ && !from.startsWith('/')) {
-    diagnostics.VR_R0070({ to, from })
+    diagnostics.VUE_ROUTER_R0070({ to, from })
     return to
   }
 

@@ -188,7 +188,7 @@ export function createRouter(options: RouterOptions): Router {
     if (isRouteName(parentOrRoute)) {
       parent = matcher.getRecordMatcher(parentOrRoute)
       if (__DEV__ && !parent) {
-        diagnostics.VR_R0001({ name: String(parentOrRoute) })
+        diagnostics.VUE_ROUTER_R0001({ name: String(parentOrRoute) })
       }
       record = route!
     } else {
@@ -203,7 +203,7 @@ export function createRouter(options: RouterOptions): Router {
     if (recordMatcher) {
       matcher.removeRoute(recordMatcher)
     } else if (__DEV__) {
-      diagnostics.VR_R0002({ name: String(name) })
+      diagnostics.VUE_ROUTER_R0002({ name: String(name) })
     }
   }
 
@@ -237,9 +237,9 @@ export function createRouter(options: RouterOptions): Router {
       const href = routerHistory.createHref(locationNormalized.fullPath)
       if (__DEV__) {
         if (href.startsWith('//'))
-          diagnostics.VR_R0003({ location: rawLocation, href })
+          diagnostics.VUE_ROUTER_R0003({ location: rawLocation, href })
         else if (!matchedRoute.matched.length) {
-          diagnostics.VR_R0004({ path: rawLocation })
+          diagnostics.VUE_ROUTER_R0004({ path: rawLocation })
         }
       }
 
@@ -253,7 +253,7 @@ export function createRouter(options: RouterOptions): Router {
     }
 
     if (__DEV__ && !isRouteLocation(rawLocation)) {
-      diagnostics.VR_R0005({ rawLocation })
+      diagnostics.VUE_ROUTER_R0005({ rawLocation })
       return resolve({})
     }
 
@@ -268,7 +268,7 @@ export function createRouter(options: RouterOptions): Router {
         // @ts-expect-error: the type is never
         Object.keys(rawLocation.params).length
       ) {
-        diagnostics.VR_R0006({ path: rawLocation.path })
+        diagnostics.VUE_ROUTER_R0006({ path: rawLocation.path })
       }
       matcherLocation = assign({}, rawLocation, {
         path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path,
@@ -294,7 +294,7 @@ export function createRouter(options: RouterOptions): Router {
     const hash = rawLocation.hash || ''
 
     if (__DEV__ && hash && !hash.startsWith('#')) {
-      diagnostics.VR_R0007({ hash })
+      diagnostics.VUE_ROUTER_R0007({ hash })
     }
 
     // the matcher might have merged current location params, so
@@ -312,9 +312,9 @@ export function createRouter(options: RouterOptions): Router {
     const href = routerHistory.createHref(fullPath)
     if (__DEV__) {
       if (href.startsWith('//')) {
-        diagnostics.VR_R0003({ location: rawLocation, href })
+        diagnostics.VUE_ROUTER_R0003({ location: rawLocation, href })
       } else if (!matchedRoute.matched.length) {
-        diagnostics.VR_R0004({
+        diagnostics.VUE_ROUTER_R0004({
           path: rawLocation.path != null ? rawLocation.path : rawLocation,
         })
       }
@@ -401,7 +401,7 @@ export function createRouter(options: RouterOptions): Router {
         newTargetLocation.path == null &&
         !('name' in newTargetLocation)
       ) {
-        diagnostics.VR_R0008({
+        diagnostics.VUE_ROUTER_R0008({
           target: JSON.stringify(newTargetLocation, null, 2),
           to: to.fullPath,
         })
@@ -505,7 +505,7 @@ export function createRouter(options: RouterOptions): Router {
                   redirectedFrom._count + 1
                 : 1) > 30
             ) {
-              diagnostics.VR_R0009({
+              diagnostics.VUE_ROUTER_R0009({
                 from: from.fullPath,
                 to: toLocation.fullPath,
               })
@@ -915,7 +915,7 @@ export function createRouter(options: RouterOptions): Router {
       list.forEach(handler => handler(error, to, from))
     } else {
       if (__DEV__) {
-        diagnostics.VR_R0010()
+        diagnostics.VUE_ROUTER_R0010()
       }
       console.error(error)
     }
@@ -1039,7 +1039,7 @@ export function createRouter(options: RouterOptions): Router {
         // see above
         started = true
         push(routerHistory.location).catch(err => {
-          if (__DEV__) diagnostics.VR_R0011({ cause: err })
+          if (__DEV__) diagnostics.VUE_ROUTER_R0011({ cause: err })
         })
       }
 

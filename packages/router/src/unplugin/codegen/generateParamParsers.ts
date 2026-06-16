@@ -143,7 +143,7 @@ export function isRawParamParserSource(
             spec.exported.name === 'parser'
         )
         if (reExportsParser) {
-          diagnostics.VR_B0018({
+          diagnostics.VUE_ROUTER_B0018({
             filename,
             source: exportNode.source.value,
           })
@@ -240,7 +240,7 @@ export function warnMissingParamParsers(
     for (const param of node.params) {
       if (param.parser && !paramParsers.has(param.parser)) {
         if (!NATIVE_PARAM_PARSERS.includes(param.parser)) {
-          diagnostics.VR_B0019({
+          diagnostics.VUE_ROUTER_B0019({
             parser: param.parser,
             fullPath: node.fullPath,
           })

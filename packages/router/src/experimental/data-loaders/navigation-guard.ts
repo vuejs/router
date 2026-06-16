@@ -54,14 +54,14 @@ export function setupLoaderGuard({
   // avoid creating the guards multiple times
   if (router[LOADER_ENTRIES_KEY] != null) {
     if (process.env.NODE_ENV !== 'production') {
-      diagnostics.VR_R1007()
+      diagnostics.VUE_ROUTER_R1007()
     }
     return () => {}
   }
 
   // explicit dev to avoid warnings in tests
   if (process.env.NODE_ENV === 'development' && !isSSR) {
-    diagnostics.VR_R1008()
+    diagnostics.VUE_ROUTER_R1008()
   }
 
   // Access to the entries map for convenience
@@ -198,7 +198,7 @@ export function setupLoaderGuard({
         if (process.env.NODE_ENV !== 'production') {
           for (const result of results as unknown[]) {
             if (result instanceof NavigationResult) {
-              diagnostics.VR_R1009()
+              diagnostics.VUE_ROUTER_R1009()
               throw result
             }
           }

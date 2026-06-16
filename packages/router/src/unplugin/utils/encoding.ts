@@ -152,7 +152,7 @@ export function decode(
     return decodeURIComponent('' + text)
   } catch {
     if (process.env.NODE_ENV !== 'production') {
-      diagnostics.VR_B0016({ text: '' + text })
+      diagnostics.VUE_ROUTER_B0016({ text: '' + text })
     }
   }
   return '' + text

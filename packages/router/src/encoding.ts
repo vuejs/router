@@ -152,7 +152,7 @@ export function decode(
   try {
     return decodeURIComponent('' + text)
   } catch {
-    __DEV__ && diagnostics.VR_R0080({ text: '' + text })
+    __DEV__ && diagnostics.VUE_ROUTER_R0080({ text: '' + text })
   }
   return '' + text
 }

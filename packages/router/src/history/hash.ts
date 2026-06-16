@@ -35,7 +35,7 @@ export function createWebHashHistory(base?: string): RouterHistory {
   if (!base.includes('#')) base += '#'
 
   if (__DEV__ && !base.endsWith('#/') && !base.endsWith('#')) {
-    diagnostics.VR_R0110({
+    diagnostics.VUE_ROUTER_R0110({
       base,
       suggestion: base.replace(/#.*$/, '#'),
     })

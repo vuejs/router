@@ -254,6 +254,6 @@ function warnDeprecatedUsage() {
     (parentSubTreeType as Component).name === 'RouterView'
   ) {
     const comp = parentName === 'KeepAlive' ? 'keep-alive' : 'transition'
-    diagnostics.VR_R0060({ comp })
+    diagnostics.VUE_ROUTER_R0060({ comp })
   }
 }

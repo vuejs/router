@@ -195,7 +195,7 @@ export function defineBasicLoader<Data>(
 
     if (process.env.NODE_ENV !== 'production') {
       if (parent !== currentContext[0]) {
-        diagnostics.VR_R1001({ key: options.key })
+        diagnostics.VUE_ROUTER_R1001({ key: options.key })
       }
     }
     // set the current context before loading so nested loaders can use it
@@ -217,7 +217,7 @@ export function defineBasicLoader<Data>(
         if (entry.pendingLoad === currentLoad) {
           if (d instanceof NavigationResult) {
             if (process.env.NODE_ENV !== 'production') {
-              diagnostics.VR_R1002()
+              diagnostics.VUE_ROUTER_R1002()
               warnNonExposedLoader({ to, options, useDataLoader })
             }
             // prevent commit from running in finally
@@ -292,7 +292,7 @@ export function defineBasicLoader<Data>(
       // console.log('👉 commit', this.staged)
       if (process.env.NODE_ENV !== 'production') {
         if (this.staged === STAGED_NO_VALUE && this.stagedError === null) {
-          diagnostics.VR_R1003({ key: options.key })
+          diagnostics.VUE_ROUTER_R1003({ key: options.key })
         }
       }
 
@@ -369,7 +369,7 @@ export function defineBasicLoader<Data>(
     // add ourselves to the parent entry children
     if (parentEntry) {
       if (__DEV__ && parentEntry === entry) {
-        diagnostics.VR_R1005({ key: options.key })
+        diagnostics.VUE_ROUTER_R1005({ key: options.key })
       }
       // console.log(`👶 "${options.key}" has parent ${parentEntry}`)
       parentEntry.children.add(entry!)
@@ -439,7 +439,7 @@ function warnNonExposedLoader({
 }) {
   const loaders = to.meta[LOADER_SET_KEY]
   if (loaders && !loaders.has(useDataLoader)) {
-    diagnostics.VR_R1004({
+    diagnostics.VUE_ROUTER_R1004({
       key: options.key ? ` (loader key: "${options.key}")` : '',
     })
   }
