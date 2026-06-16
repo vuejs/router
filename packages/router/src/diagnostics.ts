@@ -104,7 +104,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     VUE_ROUTER_R0023: {
       why: (p: { name: string; guard: string }) =>
         `The "next" callback was never called inside of ${
-          p.name ? '"' + p.name + '"' : ''
+          p.name ? `"${p.name}"` : ''
         }:\n${p.guard}`,
       fix: 'Make sure `next()` runs on every branch, including early returns and async paths, or drop the `next` parameter and return the value instead.',
     },
@@ -253,9 +253,9 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
 
     // --- history/hash.ts ---
     VUE_ROUTER_R0110: {
-      why: (p: { base: string; suggestion: string }) =>
-        `A hash base must end with a "#":\n"${p.base}" should be "${p.suggestion}".`,
-      fix: 'Append `#` to the `base` argument passed to `createWebHashHistory()`.',
+      why: `A hash base must end with a "#"`,
+      fix: (p: { base: string; suggestion: string }) =>
+        `Append "#" to the "base" argument passed to "createWebHashHistory()": "${p.base}" should be "${p.suggestion}".`,
     },
 
     // --- history/html5.ts ---

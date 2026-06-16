@@ -93,7 +93,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     },
     VUE_ROUTER_B0015: {
       why: (p: { lang: string; type: string; filePath: string }) =>
-        `Language "${p.lang}" for <${p.type}> is not supported. Supported languages are: json5, json, yaml, yml. Found in in ${p.filePath}.`,
+        `Language "${p.lang}" for <${p.type}> is not supported. Supported languages are: json5, json, yaml, yml. Found in ${p.filePath}.`,
       fix: 'Use one of the supported languages: json5, json, yaml, yml.',
     },
 
