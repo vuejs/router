@@ -52,7 +52,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     },
     VUE_ROUTER_B0008: {
       why: (p: { found: string; filename: string }) =>
-        `route alias array must only contain string literals. Found ${p.found}in file "${p.filename}".`,
+        `route alias array must only contain string literals. Found "${p.found}" in file "${p.filename}".`,
       fix: 'Only use string literals inside the route `alias` array.',
     },
 
