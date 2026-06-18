@@ -169,6 +169,21 @@ describe('History HTMl5', () => {
       )
       spy.mockRestore()
     })
+
+    it('passes a relative URL to the initial replaceState', () => {
+      // The SecurityError in #2714 was thrown by createWebHistory() itself,
+      // which calls replaceState during initialization before any navigation.
+      // Spying before that call pins the regression at its real trigger.
+      getWindow().happyDOM.setURL('http://test:test@localhost:3000/')
+      let spy = vi.spyOn(window.history, 'replaceState')
+      createWebHistory()
+      expect(spy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        '/'
+      )
+      spy.mockRestore()
+    })
   })
 
   describe('specific to base containing a hash', () => {
