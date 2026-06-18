@@ -32,6 +32,10 @@ pnpm add vue-router
 bun add vue-router
 ```
 
+```bash [deno]
+deno add vue-router
+```
+
 :::
 
 If you're starting a new project, you might find it easier to use the [create-vue](https://github.com/vuejs/create-vue) scaffolding tool, which creates a Vite-based project with the option to include Vue Router:
