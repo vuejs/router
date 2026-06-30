@@ -225,6 +225,14 @@ describe('Tree', () => {
       )
     })
 
+    it('throws when only the second digit is not hex', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+
+      expect(() => tree.insert('[x+1g]', '[x+1g].vue')).toThrow(
+        /Invalid hex code "1g"/
+      )
+    })
+
     it('throws on too many digits in hex code', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
 
