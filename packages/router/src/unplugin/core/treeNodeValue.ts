@@ -684,13 +684,15 @@ function parseFileSegment(
           `Invalid character code in segment "${segment}". Hex code must be exactly 2 digits, got "${buffer}"`
         )
       }
-      const hexCode = parseInt(buffer, 16)
-      if (!Number.isInteger(hexCode) || hexCode < 0 || hexCode > 255) {
+      // `parseInt` stops at the first non-hex character, so a buffer like
+      // `1g` would be leniently parsed as `0x1` instead of being rejected.
+      // Require both characters to be hex digits before decoding.
+      if (!/^[0-9a-f]{2}$/i.test(buffer)) {
         throw new SyntaxError(
           `Invalid hex code "${buffer}" in segment "${segment}"`
         )
       }
-      pathSegment += String.fromCharCode(hexCode)
+      pathSegment += String.fromCharCode(parseInt(buffer, 16))
     }
     buffer = ''
   }
