@@ -9,6 +9,8 @@ export const enum TreeNodeType {
   param,
 }
 
+const RE_HEX_CHARS = /^[0-9a-fA-F]{2}$/
+
 /**
  * Internal merged-overrides shape used by tree nodes. Same structure as
  * {@link CustomRouteBlock} (the user-facing `<route>` block / `definePage()`
@@ -687,7 +689,7 @@ function parseFileSegment(
       // `parseInt` stops at the first non-hex character, so a buffer like
       // `1g` would be leniently parsed as `0x1` instead of being rejected.
       // Require both characters to be hex digits before decoding.
-      if (!/^[0-9a-f]{2}$/i.test(buffer)) {
+      if (!RE_HEX_CHARS.test(buffer)) {
         throw new SyntaxError(
           `Invalid hex code "${buffer}" in segment "${segment}"`
         )
