@@ -10,7 +10,6 @@
   "exclude": ["dist", "src/experimental/vapor/"],
   "compilerOptions": {
     "rootDir": ".",
-    "baseUrl": ".",
     "paths": {
       "vue-router": ["./src/index.ts"]
     },

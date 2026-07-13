@@ -4,7 +4,6 @@
   "exclude": ["**/node_modules", "**/.*/"],
   "compilerOptions": {
     "allowJs": false,
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "vue-router": ["../router/src"]

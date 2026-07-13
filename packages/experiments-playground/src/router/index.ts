@@ -7,7 +7,7 @@ import {
   normalizeRouteRecord,
   PARAM_PARSER_INT,
   MatcherPatternQueryParam,
-  MatchMiss,
+  miss,
 } from 'vue-router/experimental'
 import type {
   EXPERIMENTAL_RouteRecordNormalized_Matchable,
@@ -31,7 +31,7 @@ const PARAM_PARSER_DATE = {
   get(value: string): Date {
     const asDate = new Date(value)
     if (Number.isNaN(asDate.getTime())) {
-      throw new MatchMiss(`Invalid date param: "${value}"`)
+      miss(`Invalid date param: "${value}"`)
     }
 
     return asDate
