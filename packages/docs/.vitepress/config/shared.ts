@@ -117,6 +117,11 @@ export const sharedConfig = defineConfig({
         twoslashOptions: {
           compilerOptions: {
             moduleResolution: ModuleResolutionKind.Bundler,
+            // extraFiles are placed at the virtual fs root, e.g. '@/stores/index.ts'.
+            // TS 6 removed baseUrl so they must be mapped explicitly
+            paths: {
+              '@/*': ['./@/*'],
+            },
           },
           extraFiles: {
             ...extraFiles,

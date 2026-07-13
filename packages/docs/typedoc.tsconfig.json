@@ -7,7 +7,6 @@
     "../router/src/experimental/**/*.ts"
   ],
   "compilerOptions": {
-    "baseUrl": ".",
     "rootDir": "..",
     "outDir": "dist",
     "sourceMap": false,
