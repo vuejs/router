@@ -245,6 +245,140 @@ definePage({
     })
   })
 
+  it('extracts arrow function defaults in query params', () => {
+    const code = vue`
+<script setup lang="ts">
+definePage({
+  params: {
+    query: {
+      page: {
+        parser: 'int',
+        default: () => 1,
+      },
+      token: {
+        parser: 'string',
+        default: async () => 123,
+      },
+      search: {
+        default: (value: string) => value,
+      },
+    }
+  }
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({
+      hasRemainingProperties: false,
+      params: {
+        query: {
+          page: {
+            parser: 'int',
+            default: '() => 1',
+          },
+          token: {
+            parser: 'string',
+            default: 'async () => 123',
+          },
+          search: {
+            default: '(value: string) => value',
+          },
+        },
+      },
+    })
+  })
+
+  it('extracts multiline arrow function defaults in query params', () => {
+    const code = vue`
+<script setup lang="ts">
+definePage({
+  params: {
+    query: {
+      wrapped: {
+        default: (value: string) => ({ value }),
+      },
+      total: {
+        default: () => {
+          // a comment
+          const total = 1 + 2
+          return total
+        },
+      },
+    }
+  }
+})
+</script>
+`
+    // formatting (indentation, semicolons) may differ from the source, so
+    // only assert the parts that are stable
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toMatchObject({
+      params: {
+        query: {
+          wrapped: {
+            default: expect.stringContaining('(value: string) =>'),
+          },
+          total: {
+            default: expect.stringContaining('// a comment'),
+          },
+        },
+      },
+    })
+
+    const totalDefault = extractDefinePageInfo(code, 'src/pages/test.vue')
+      ?.params?.query?.total?.default
+    expect(totalDefault).toContain('() => {')
+    expect(totalDefault).toContain('const total = 1 + 2')
+    expect(totalDefault).toContain('return total')
+  })
+
+  it('extracts arrow function defaults in query params in a ts file', () => {
+    const code = ts`
+definePage({
+  params: {
+    query: {
+      page: {
+        parser: 'int',
+        default: () => 1,
+      },
+      token: {
+        default: async () => 123,
+      },
+      search: {
+        default: (value: string) => value,
+      },
+      total: {
+        default: () => {
+          // a comment
+          const total = 1 + 2
+          return total
+        },
+      },
+    }
+  }
+})
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.ts')).toMatchObject({
+      hasRemainingProperties: false,
+      params: {
+        query: {
+          page: {
+            parser: 'int',
+            default: '() => 1',
+          },
+          token: {
+            default: 'async () => 123',
+          },
+          search: {
+            default: '(value: string) => value',
+          },
+          total: {
+            // formatting may differ from the source
+            default: expect.stringContaining('// a comment'),
+          },
+        },
+      },
+    })
+  })
+
   it('extracts alias as a string', () => {
     const code = vue`
 <script setup>
