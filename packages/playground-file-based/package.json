@@ -10,21 +10,21 @@
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
-    "semver": "^7.7.3",
-    "valibot": "^1.4.0",
-    "vue": "^3.5.34",
+    "semver": "^7.8.5",
+    "valibot": "^1.4.2",
+    "vue": "^3.5.39",
     "vue-router": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/semver": "^7.7.1",
-    "@vitejs/plugin-vue": "^6.0.6",
-    "@vue/compiler-sfc": "^3.5.34",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "@vue/compiler-sfc": "^3.5.39",
     "@vue/tsconfig": "^0.8.1",
     "auto-scaffold": "^0.2.1",
     "unplugin-auto-import": "^21.0.0",
-    "vite": "^7.3.0",
-    "vite-plugin-vue-devtools": "^8.1.1",
-    "vue-tsc": "^3.2.8"
+    "vite": "^7.3.6",
+    "vite-plugin-vue-devtools": "^8.1.5",
+    "vue-tsc": "^3.3.7"
   }
 }
