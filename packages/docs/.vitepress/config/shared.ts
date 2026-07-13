@@ -10,7 +10,6 @@ import { ModuleResolutionKind } from 'typescript'
 // TODO: simplify and only importwm from '../twoslash/files'
 import { typedRouterFileAsModule } from '../twoslash-files'
 import { extraFiles } from '../twoslash/files'
-import llmstxt from 'vitepress-plugin-llms'
 
 // TODO:
 // export const META_IMAGE = 'https://router.vuejs.org/social.png'
@@ -117,6 +116,8 @@ export const sharedConfig = defineConfig({
         twoslashOptions: {
           compilerOptions: {
             moduleResolution: ModuleResolutionKind.Bundler,
+            // TS 6 removed baseUrl, resolve the virtual `@/` files via paths
+            paths: { '@/*': ['./@/*'] },
           },
           extraFiles: {
             ...extraFiles,
@@ -239,18 +240,6 @@ export const sharedConfig = defineConfig({
     },
   },
   vite: {
-    plugins: [
-      groupIconVitePlugin(),
-      // TODO: write a proper llms.txt
-      llmstxt({
-        description: 'The official Router for Vue.js',
-        details: `
-- Type Safe routes
-- File based routing
-- Data Loaders for efficient data fetching
-`.trim(),
-        ignoreFiles: ['index.md', 'api/**/*', 'zh/**/*'],
-      }),
-    ],
+    plugins: [groupIconVitePlugin()],
   },
 })
