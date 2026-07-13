@@ -464,4 +464,5 @@ Vue Router4 中需要关注的一些新功能包括：
 
 - [动态路由](../advanced/dynamic-routing.md)
 - [组合式 API](../advanced/composition-api.md)
+
 <!-- - Custom History implementation -->

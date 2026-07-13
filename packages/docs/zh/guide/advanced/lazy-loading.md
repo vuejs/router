@@ -30,10 +30,7 @@ const router = createRouter({
 <RuleKitLink />
 
 ```js
-const UserDetails = () =>
-  Promise.resolve({
-    /* 组件定义 */
-  })
+const UserDetails = () => Promise.resolve({/* 组件定义 */})
 ```
 
 一般来说，对所有的路由**都使用动态导入**是个好主意。

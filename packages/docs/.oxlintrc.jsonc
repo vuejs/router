@@ -1,0 +1,7 @@
+{
+  "$schema": "../../node_modules/oxlint/configuration_schema.json",
+  "rules": {
+    "typescript/consistent-type-imports": "off",
+  },
+  "ignorePatterns": [],
+}

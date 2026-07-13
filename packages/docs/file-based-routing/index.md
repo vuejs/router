@@ -14,7 +14,7 @@ import VueRouter from 'vue-router/vite'
 export default defineConfig({
   plugins: [
     VueRouter({
-      /* options */
+      // options
     }),
     // ⚠️ Vue must be placed after VueRouter()
     Vue(),
@@ -28,7 +28,7 @@ import VueRouter from 'vue-router/unplugin/rollup'
 export default {
   plugins: [
     VueRouter({
-      /* options */
+      // options
     }),
     // ⚠️ Vue must be placed after VueRouter()
     Vue(),
@@ -39,22 +39,14 @@ export default {
 ```ts [webpack.config.js]
 module.exports = {
   /* ... */
-  plugins: [
-    require('vue-router/unplugin/webpack')({
-      /* options */
-    }),
-  ],
+  plugins: [require('vue-router/unplugin/webpack')({/* options */})],
 }
 ```
 
 ```ts [vue.config.js]
 module.exports = {
   configureWebpack: {
-    plugins: [
-      require('vue-router/unplugin/webpack')({
-        /* options */
-      }),
-    ],
+    plugins: [require('vue-router/unplugin/webpack')({/* options */})],
   },
 }
 ```

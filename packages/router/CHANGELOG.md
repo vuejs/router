@@ -234,12 +234,8 @@ Other build tools (Webpack, Rollup, esbuild) import from `vue-router/unplugin`:
 ```ts
 import VueRouter from 'vue-router/unplugin'
 
-VueRouter.webpack({
-  /* ... */
-})
-VueRouter.rollup({
-  /* ... */
-})
+VueRouter.webpack({/* ... */})
+VueRouter.rollup({/* ... */})
 // etc.
 ```
 

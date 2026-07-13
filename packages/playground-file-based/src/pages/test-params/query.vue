@@ -71,14 +71,12 @@ function clearIds() {
   </div>
 
   <pre>
-page (number): {{ route.params.page }} ({{ typeof route.params.page }})</pre
-  >
+page (number): {{ route.params.page }} ({{ typeof route.params.page }})</pre>
   <pre>tag (string[]): {{ route.params.tag }}</pre>
   <pre>
 active (boolean): {{ route.params.active }} ({{
       typeof route.params.active
-    }})</pre
-  >
+    }})</pre>
   <pre>ids (csv → string[]): {{ route.params.ids }}</pre>
 
   <p>Try: <code>?page=3&tag=a&tag=b&active=1&ids=x,y,z</code></p>

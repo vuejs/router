@@ -467,4 +467,5 @@ Some of new features to keep an eye on in Vue Router 4 include:
 
 - [Dynamic Routing](../advanced/dynamic-routing.md)
 - [Composition API](../advanced/composition-api.md)
+
 <!-- - Custom History implementation -->
