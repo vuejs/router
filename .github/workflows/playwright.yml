@@ -25,8 +25,11 @@ jobs:
     # Official Playwright image with all three browser engines + OS deps baked
     # in, so CI no longer spends ~15 min on `playwright install --with-deps`.
     # The image MUST match the @playwright/test version in the lockfile
+    # (currently 1.61.1) or the bundled browsers won't be found; bump both
+    # together. Pinned by digest (= v1.61.1-noble) so a moved/re-pushed tag
+    # can't change what runs on untrusted PRs.
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48
       # --user 1001 runs non-root (matches the runner uid and keeps the Chromium
       # sandbox enabled); --ipc=host stops Chromium OOM-crashing on a small
       # container /dev/shm.
