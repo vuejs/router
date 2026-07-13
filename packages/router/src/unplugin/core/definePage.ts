@@ -10,13 +10,13 @@ import {
 import type { Thenable, TransformResult } from 'unplugin'
 import type {
   CallExpression,
+  Node,
   ObjectExpression,
   ObjectProperty,
   Program,
   Statement,
   StringLiteral,
 } from '@babel/types'
-import { generate } from '@babel/generator'
 import { walkAST } from 'ast-walker-scope'
 import { diagnostics } from '../diagnostics'
 import type { ParsedStaticImport } from 'mlly'
@@ -57,6 +57,26 @@ function getCodeAst(code: string, id: string) {
     .filter(node => !!node)
 
   return { ast, offset, definePageNodes }
+}
+
+/**
+ * Extract the source text of an ast node from the original code. Works with
+ * SFC and non-SFC files by applying the script block offset.
+ *
+ * @param source - full source code the ast was parsed from
+ * @param node - ast node with source range information
+ * @param offset - offset of the parsed script within the source
+ * @returns the source text of the node or `undefined` if the node has no range
+ */
+function getNodeSource(
+  source: string,
+  node: Node,
+  offset: number
+): string | undefined {
+  if (node.start == null || node.end == null) {
+    return undefined
+  }
+  return source.slice(offset + node.start, offset + node.end)
 }
 
 export function definePageTransform({
@@ -239,11 +259,13 @@ export function extractDefinePageInfo(
   if (!sfcCode.includes(MACRO_DEFINE_PAGE)) return
 
   let ast: Program | undefined
+  let offset: number
   let definePageNodes: CallExpression[]
 
   try {
     const result = getCodeAst(sfcCode, id)
     ast = result.ast
+    offset = result.offset
     definePageNodes = result.definePageNodes
   } catch (error) {
     // Handle any syntax errors or parsing errors gracefully
@@ -301,7 +323,7 @@ export function extractDefinePageInfo(
         routeInfo.alias = extractRouteAlias(prop.value, id)
       } else if (prop.key.name === 'params') {
         if (prop.value.type === 'ObjectExpression') {
-          routeInfo.params = extractParamsInfo(prop.value, id)
+          routeInfo.params = extractParamsInfo(prop.value, id, sfcCode, offset)
         }
       } else {
         routeInfo.hasRemainingProperties = true
@@ -314,14 +336,16 @@ export function extractDefinePageInfo(
 
 function extractParamsInfo(
   paramsObj: ObjectExpression,
-  id: string
+  id: string,
+  source: string,
+  offset: number
 ): DefinePageParamsInfo {
   const params: DefinePageParamsInfo = {}
 
   for (const prop of paramsObj.properties) {
     if (prop.type === 'ObjectProperty' && prop.key.type === 'Identifier') {
       if (prop.key.name === 'query' && prop.value.type === 'ObjectExpression') {
-        params.query = extractQueryParams(prop.value, id)
+        params.query = extractQueryParams(prop.value, id, source, offset)
       } else if (
         prop.key.name === 'path' &&
         prop.value.type === 'ObjectExpression'
@@ -336,7 +360,9 @@ function extractParamsInfo(
 
 function extractQueryParams(
   queryObj: ObjectExpression,
-  _id: string
+  _id: string,
+  source: string,
+  offset: number
 ): NonNullable<DefinePageInfo['params']>['query'] {
   const queryParams: NonNullable<DefinePageInfo['params']>['query'] = {}
 
@@ -395,7 +421,19 @@ function extractQueryParams(
                 // support negative numeric literals: -1, -1.5
                 paramInfo.default = `${paramProp.value.operator}${paramProp.value.argument.value}`
               } else if (paramProp.value.type === 'ArrowFunctionExpression') {
-                paramInfo.default = generate(paramProp.value).code
+                const expression = getNodeSource(
+                  source,
+                  paramProp.value,
+                  offset
+                )
+                if (expression === undefined) {
+                  diagnostics.VUE_ROUTER_B0006({
+                    paramName,
+                    type: paramProp.value.type,
+                  })
+                } else {
+                  paramInfo.default = expression
+                }
               } else {
                 diagnostics.VUE_ROUTER_B0006({
                   paramName,

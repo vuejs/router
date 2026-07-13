@@ -379,6 +379,35 @@ definePage({
     })
   })
 
+  it('preserves the exact source of multiline arrow function defaults', () => {
+    const code = [
+      'definePage({',
+      '  params: {',
+      '    query: {',
+      '      total: {',
+      '        default: () => {',
+      '          // a comment',
+      '          const total: number = 1 + 2',
+      '          return total',
+      '        },',
+      '      },',
+      '    }',
+      '  }',
+      '})',
+    ].join('\n')
+
+    expect(
+      extractDefinePageInfo(code, 'src/pages/test.ts')?.params?.query?.total
+    ).toEqual({
+      default:
+        '() => {\n' +
+        '          // a comment\n' +
+        '          const total: number = 1 + 2\n' +
+        '          return total\n' +
+        '        }',
+    })
+  })
+
   it('extracts alias as a string', () => {
     const code = vue`
 <script setup>
