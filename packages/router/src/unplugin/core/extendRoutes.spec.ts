@@ -35,6 +35,15 @@ describe('EditableTreeNode', () => {
     expect(tree.children.get('foo')?.path).toBe('/foo')
   })
 
+  it('allows filePath to be null on a route added in the editable tree', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+    const editable = new EditableTreeNode(tree)
+
+    editable.insert('foo', null)
+    expect(editable.children).toHaveLength(1)
+    expect(editable.children[0]?.path).toBe('/foo')
+  })
+
   it('removes parent when deleting last child of a non-matchable node', () => {
     const tree = new PrefixTree(RESOLVED_OPTIONS)
 
