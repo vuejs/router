@@ -42,6 +42,8 @@ describe('EditableTreeNode', () => {
     editable.insert('foo', null)
     expect(editable.children).toHaveLength(1)
     expect(editable.children[0]?.path).toBe('/foo')
+    // a null filePath registers no component, so the route is a pass-through
+    expect(editable.children[0]?.isPassThrough).toBe(true)
   })
 
   it('removes parent when deleting last child of a non-matchable node', () => {
