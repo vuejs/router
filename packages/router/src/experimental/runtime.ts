@@ -81,8 +81,9 @@ export interface DefinePage<FilePath extends string = string> extends Partial<
   Omit<RouteRecordRaw, 'children' | 'components' | 'component' | 'name'>
 > {
   /**
-   * A route name. If not provided, the name will be generated based on the file path.
-   * Can be set to `false` to remove the name from types.
+   * Override the route name. If not provided, the name will be generated based
+   * on the file path. Can be set to `false` to make the route _anonymous_
+   * which removes it from types and make the route unmatchable.
    */
   name?: string | false
 
