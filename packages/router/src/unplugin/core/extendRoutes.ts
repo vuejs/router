@@ -92,9 +92,12 @@ export class EditableTreeNode {
   }
 
   /**
-   * Override the name of the route.
+   * Override the name of the route. Pass `false` to unset the name: the route is
+   * then excluded from the generated route map and cannot be navigated to by name.
+   * Note `undefined` is ignored (the existing name, if any, is kept) rather than
+   * resetting to the generated name.
    */
-  set name(name: string | undefined) {
+  set name(name: string | undefined | false) {
     this.node.value.addEditOverride({ name })
   }
 

@@ -35,6 +35,26 @@ describe('EditableTreeNode', () => {
     expect(tree.children.get('foo')?.path).toBe('/foo')
   })
 
+  it('can unset a route name with false', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+    const editable = new EditableTreeNode(tree)
+
+    const node = editable.insert('foo', 'foo.vue')
+    expect(node.name).toBeTruthy()
+
+    // false unsets the name so the route is excluded from the route map
+    node.name = false
+    expect(node.name).toBe(false)
+
+    // a string overrides it
+    node.name = 'bar'
+    expect(node.name).toBe('bar')
+
+    // undefined is ignored: the previously set name is kept (not reset)
+    node.name = undefined
+    expect(node.name).toBe('bar')
+  })
+
   it('removes parent when deleting last child of a non-matchable node', () => {
     const tree = new PrefixTree(RESOLVED_OPTIONS)
 
