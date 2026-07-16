@@ -1,7 +1,7 @@
 packages:
   - 'packages/*'
 
-shellEmulator: true
+shamefullyHoist: true
 
 overrides:
   '@babel/generator': '^8.0.0-rc.4'
