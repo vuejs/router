@@ -102,7 +102,8 @@ export function definePageTransform({
       : // e.g. index.vue that contains a commented `definePage()
         null
   } else if (definePageNodes.length > 1) {
-    throw new SyntaxError(`duplicate definePage() call`)
+    // ignore the extra calls and keep only the first one instead of crashing
+    diagnostics.VUE_ROUTER_B0020({ filename: id })
   }
 
   const definePageNode = definePageNodes[0]!
@@ -207,8 +208,10 @@ export function definePageTransform({
 
     const s = new MagicString(code)
 
-    // s.removeNode(definePageNode, { offset })
-    s.remove(offset + definePageNode.start!, offset + definePageNode.end!)
+    // remove every definePage() call so duplicates don't leak into the component
+    for (const node of definePageNodes) {
+      s.remove(offset + node.start!, offset + node.end!)
+    }
 
     return generateTransform(s, id)
   }
@@ -259,7 +262,8 @@ export function extractDefinePageInfo(
   if (!definePageNodes.length) {
     return
   } else if (definePageNodes.length > 1) {
-    throw new SyntaxError(`duplicate definePage() call`)
+    // ignore the extra calls and keep only the first one instead of crashing
+    diagnostics.VUE_ROUTER_B0020({ filename: id })
   }
 
   const definePageNode = definePageNodes[0]!
