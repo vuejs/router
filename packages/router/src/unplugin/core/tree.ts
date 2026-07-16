@@ -149,9 +149,8 @@ export class TreeNode {
    * @param path - path segment to insert, already parsed (e.g. users/:id)
    * @param filePath - file path, defaults to path for convenience and testing
    */
-  insertParsedPath(path: string, filePath: string = path): TreeNode {
-    // TODO: allow null filePath?
-    const isComponent = true
+  insertParsedPath(path: string, filePath: string | null = path): TreeNode {
+    const isComponent = filePath != null
 
     const node = new TreeNode(
       {

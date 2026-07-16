@@ -37,7 +37,7 @@ export class EditableTreeNode {
    * @param filePath - file path
    * @returns the new editable route node
    */
-  insert(path: string, filePath: string) {
+  insert(path: string, filePath: string | null) {
     // adapt paths as they should match a file system
     let addBackLeadingSlash = false
     if (path.startsWith('/')) {
