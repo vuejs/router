@@ -400,6 +400,31 @@ describe('Router', () => {
     expect(router.currentRoute.value.fullPath).toBe('/#%2526')
   })
 
+  it('keeps an encoded hash when replacing with a string', async () => {
+    const { router } = await newRouter()
+    await router.replace('/#a=1%26b=2')
+    expect(router.currentRoute.value.hash).toBe('#a=1&b=2')
+    expect(router.currentRoute.value.fullPath).toBe('/#a=1%26b=2')
+  })
+
+  it('keeps an encoded hash when re-resolving a resolved route', async () => {
+    const { router } = await newRouter()
+    const resolved = router.resolve('/#a=1%26b=2')
+    expect(resolved.hash).toBe('#a=1&b=2')
+    expect(resolved.fullPath).toBe('/#a=1%26b=2')
+    await router.replace({ ...resolved, force: true })
+    expect(router.currentRoute.value.hash).toBe('#a=1&b=2')
+    expect(router.currentRoute.value.fullPath).toBe('/#a=1%26b=2')
+  })
+
+  it('encodes a hash set explicitly on a resolved route', async () => {
+    const { router } = await newRouter()
+    const resolved = router.resolve('/#a=1%26b=2')
+    await router.replace({ ...resolved, hash: '#c=3&d=4', force: true })
+    expect(router.currentRoute.value.hash).toBe('#c=3&d=4')
+    expect(router.currentRoute.value.fullPath).toBe('/#c=3&d=4')
+  })
+
   it('fails if required params are missing', async () => {
     const { router } = await newRouter()
     expect(() => router.resolve({ name: 'Param', params: {} })).toThrowError(

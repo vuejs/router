@@ -297,6 +297,16 @@ export function createRouter(options: RouterOptions): Router {
       diagnostics.VUE_ROUTER_R0007({ hash })
     }
 
+    let encodedHash = encodeHash(hash)
+    const rawFullPath = (rawLocation as { fullPath?: string }).fullPath
+    if (rawFullPath) {
+      const hashPos = rawFullPath.indexOf('#')
+      const originalHash = hashPos > -1 ? rawFullPath.slice(hashPos) : ''
+      if (decode(originalHash) === hash) {
+        encodedHash = originalHash
+      }
+    }
+
     // the matcher might have merged current location params, so
     // we need to run the decoding again
     matchedRoute.params = normalizeParams(decodeParams(matchedRoute.params))
@@ -304,7 +314,7 @@ export function createRouter(options: RouterOptions): Router {
     const fullPath = stringifyURL(
       stringifyQuery,
       assign({}, rawLocation, {
-        hash: encodeHash(hash),
+        hash: encodedHash,
         path: matchedRoute.path,
       })
     )
