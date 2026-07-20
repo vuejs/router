@@ -250,7 +250,10 @@ export function defineBasicLoader<Data>(
         }
       })
       .finally(() => {
-        setCurrentContext(currentContext)
+        // if this is a nested loader, context will be reset in useDataLoader
+        // if this is a root loader, of if it is called from reload or navigation guard,
+        // context is already reset in sync part
+
         // console.log(
         //   `😩 restored context ${options.key}`,
         //   currentContext?.[2]?.fullPath
@@ -348,13 +351,13 @@ export function defineBasicLoader<Data>(
     if (
       // if the entry doesn't exist, create it with load and ensure it's loading
       !entry ||
-      // the existing pending location isn't good, we need to load again
-      (parentEntry && entry.pendingTo !== route) ||
-      // we could also check for: but that would break nested loaders since they need to be always called to be associated with the parent
-      // && entry.to !== route
       // the user managed to render the router view after a valid navigation + a failed navigation
       // https://github.com/posva/unplugin-vue-router/issues/495
-      !entry.pendingLoad
+      !entry.pendingLoad ||
+      // the existing pending location isn't good, we need to load again
+      (parentEntry && entry.to !== route)
+      // we could also check for: but that would break nested loaders since they need to be always called to be associated with the parent
+      // && entry.to !== route
     ) {
       // console.log(
       //   `🔁 loading from useData for "${options.key}": "${route.fullPath}"`
@@ -383,7 +386,16 @@ export function defineBasicLoader<Data>(
       isLoading,
       reload: (to: RouteLocationNormalizedLoaded = router.currentRoute.value) =>
         router[APP_KEY]
-          .runWithContext(() => load(to, router))
+          .runWithContext(() => {
+            const entry = entries.get(loader)!
+            entry.children.forEach(childEntry => {
+              // for child loaders we usually want to avoid refetching,
+              // that's why we're checking that requested and loaded routes are the same
+              // when reloading, we want to refetch though, and so we make those routes different
+              childEntry.to = null
+            })
+            return load(to, router)
+          })
           .then(() => entry!.commit(to)),
     } satisfies UseDataLoaderResult<Data | undefined, ErrorDefault>
 
@@ -397,9 +409,20 @@ export function defineBasicLoader<Data>(
       // we only want the error if we are nesting the loader
       // otherwise this will end up in "Unhandled promise rejection"
       .catch((e: unknown) => (parentEntry ? Promise.reject(e) : null))
-      // restore the caller's context so that sequential awaits
-      // (e.g. await useOne(); await useTwo()) preserve the parent
-      .finally(() => setCurrentContext(currentContext))
+      .finally(() => {
+        // restore the caller's context so that sequential awaits
+        // (e.g. await useOne(); await useTwo()) preserve the parent
+        // this is only necessary if we were called from inside other loader
+        if (parentEntry) {
+          setCurrentContext(currentContext)
+
+          // when finally finishes, it will first put parent loader back to the job queue
+          // we want to schedule context reset after that task
+          // if we use finally on rejected promise, it will stay rejected and will trigger unhandledpromiserejection
+          const onFinally = () => setCurrentContext([])
+          promise.then(onFinally, onFinally)
+        }
+      })
 
     setCurrentContext(currentContext)
     return Object.assign(promise, useDataLoaderResult)
