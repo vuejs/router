@@ -3,12 +3,12 @@ import {
   experimental_parseQuery as parseQuery,
 } from '../query'
 import { stringifyQuery } from '../../query'
-import { experimental_parseURL as parseURL } from '../location'
 import {
-  type LocationNormalized,
-  NEW_stringifyURL,
-  resolveRelativePath,
-} from '../../location'
+  experimental_parseURL as parseURL,
+  experimental_stringifyURL as stringifyURL,
+} from '../location'
+import { encodeHash } from '../encoding'
+import { type LocationNormalized, resolveRelativePath } from '../../location'
 import type {
   MatcherPatternPath,
   MatcherPatternHash,
@@ -218,14 +218,14 @@ export function createFixedResolver<
         // @ts-expect-error: to is never
         const query = normalizeQuery(to.query)
         // @ts-expect-error: to is never
-        const hash = to.hash ?? ''
+        const hash = encodeHash(to.hash ?? '')
         // @ts-expect-error: to is never
         const path = to.path ?? '/'
         return {
           // type is never
           ...(to as any),
           ...NO_MATCH_LOCATION,
-          fullPath: NEW_stringifyURL(stringifyQuery, path, query, hash),
+          fullPath: stringifyURL(stringifyQuery, path, query, hash),
           path,
           query,
           hash,
@@ -254,8 +254,10 @@ export function createFixedResolver<
         ...to.params,
       }
       const path = record.path.build(params)
-      const hash =
+      // currentLocation.hash is already encoded, encodeHash is idempotent
+      const hash = encodeHash(
         record.hash?.build(params) ?? to.hash ?? currentLocation?.hash ?? ''
+      )
       let matched = buildMatched(record)
       const query = Object.assign(
         {
@@ -270,7 +272,7 @@ export function createFixedResolver<
       const url: LocationNormalized = {
         // preserve other fields like `state` and `replace`
         ...to,
-        fullPath: NEW_stringifyURL(
+        fullPath: stringifyURL(
           stringifyQuery,
           path,
           query,
@@ -300,13 +302,14 @@ export function createFixedResolver<
       } else {
         const query = normalizeQuery(to.query)
         const path = resolveRelativePath(to.path, currentLocation?.path || '/')
+        const hash = encodeHash(to.hash || '')
         url = {
           // preserve other fields like `state` and `replace`
           ...to,
-          fullPath: NEW_stringifyURL(stringifyQuery, path, query, to.hash),
+          fullPath: stringifyURL(stringifyQuery, path, query, hash),
           path,
           query,
-          hash: to.hash || '',
+          hash,
         }
       }
 
