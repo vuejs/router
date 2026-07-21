@@ -424,7 +424,7 @@ export function defineBasicLoader<Data>(
         }
       })
 
-    setCurrentContext(currentContext)
+    setCurrentContext([])
     return Object.assign(promise, useDataLoaderResult)
   }
 
