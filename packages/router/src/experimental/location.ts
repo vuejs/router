@@ -1,6 +1,5 @@
-import { decode } from '../encoding'
 import { type LocationNormalized, resolveRelativePath } from '../location'
-import type { LocationQuery } from './query'
+import type { LocationQuery, LocationQueryRaw } from './query'
 
 // TODO: in next major, merge the two query.ts files and the two location.ts files
 
@@ -69,6 +68,27 @@ export function experimental_parseURL(
     fullPath: path + searchString + hash,
     path,
     query,
-    hash: decode(hash),
+    // the hash is kept as it appears in the URL, like location.hash
+    hash,
   }
+}
+
+/**
+ * Stringifies a URL from its parts. The `hash` must already be encoded (as
+ * returned by `encodeHash` or read from a URL), it is appended as is.
+ *
+ * @param stringifyQuery - function to stringify the query object
+ * @param path - path section of the URL
+ * @param query - normalized query object
+ * @param hash - encoded hash section of the URL, with its leading `#`
+ * @returns the URL string
+ */
+export function experimental_stringifyURL(
+  stringifyQuery: (query?: LocationQueryRaw) => string,
+  path: string,
+  query?: LocationQueryRaw,
+  hash: string = ''
+): string {
+  const searchText = stringifyQuery(query)
+  return path + (searchText && '?') + searchText + hash
 }

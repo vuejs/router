@@ -1,4 +1,4 @@
-import { decode, PLUS_RE } from '../encoding'
+import { decode, PLUS_RE } from './encoding'
 import { isArray } from '../utils'
 
 /**

@@ -614,16 +614,27 @@ describe('Experimental Router', () => {
     expect(router.currentRoute.value.hash).toBe('#two')
   })
 
-  it('does not double-decode a percent-encoded hash', async () => {
+  it('never decodes nor double-encodes a percent-encoded hash', async () => {
     const { router } = await newRouter()
-    // object push keeps the raw hash, encodes % in fullPath
+    // object push keeps pre-encoded sequences as they are, like url.hash
     await router.push({ path: '/', hash: '#%26' })
     expect(router.currentRoute.value.hash).toBe('#%26')
-    expect(router.currentRoute.value.fullPath).toBe('/#%2526')
-    // string push (what happens on reload) must decode exactly once
+    expect(router.currentRoute.value.fullPath).toBe('/#%26')
+    // string push (what happens on reload) keeps the hash as it is
     await router.push('/#%2526')
-    expect(router.currentRoute.value.hash).toBe('#%26')
+    expect(router.currentRoute.value.hash).toBe('#%2526')
     expect(router.currentRoute.value.fullPath).toBe('/#%2526')
+  })
+
+  // https://github.com/nuxt/nuxt/issues/32774
+  it('keeps an encoded hash when re-resolving a resolved route', async () => {
+    const { router } = await newRouter()
+    const resolved = router.resolve('/#a=1%26b=2')
+    expect(resolved.hash).toBe('#a=1%26b=2')
+    expect(resolved.fullPath).toBe('/#a=1%26b=2')
+    await router.replace({ ...resolved, force: true })
+    expect(router.currentRoute.value.hash).toBe('#a=1%26b=2')
+    expect(router.currentRoute.value.fullPath).toBe('/#a=1%26b=2')
   })
 
   it('throws if required params are missing', async () => {
