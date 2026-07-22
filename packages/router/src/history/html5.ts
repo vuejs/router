@@ -19,7 +19,17 @@ import { assign } from '../utils'
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 
-let createBaseLocation = () => location.protocol + '//' + location.host
+let createBaseLocation = () => {
+  // location.host omits userinfo, but pushState/replaceState on Chromium
+  // requires the URL to match the document URL including userinfo (#2714).
+  // Parse it back via the URL constructor.
+  const { protocol, host } = location
+  const { username, password } = new URL(location.href)
+  const userinfo = username
+    ? username + (password ? ':' + password : '') + '@'
+    : ''
+  return protocol + '//' + userinfo + host
+}
 
 interface StateEntry extends HistoryState {
   back: HistoryLocation | null
@@ -227,7 +237,14 @@ function useHistoryStateNavigation(base: string) {
         ? (location.host && document.querySelector('base')
             ? base
             : base.slice(hashIndex)) + to
-        : createBaseLocation() + base + to
+        : // pass an absolute path on http(s) so the browser resolves it
+          // against the document URL — preserves userinfo and avoids
+          // Chromium's SecurityError on basic-auth URLs (#2714). The explicit
+          // origin is still needed for file:// (no host) and protocol-relative
+          // `//` paths (#261).
+          location.protocol === 'file:' || (base + to).startsWith('//')
+          ? createBaseLocation() + base + to
+          : base + to
     try {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds
