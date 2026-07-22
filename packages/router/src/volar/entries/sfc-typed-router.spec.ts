@@ -17,11 +17,12 @@ function transform(
   code: string,
   { lang = 'ts', fileName = FILE_NAME } = {}
 ): string {
-  const instance = plugin({
+  const result = plugin({
     compilerOptions: { rootDir: ROOT_DIR },
     modules: { typescript: ts },
     config: { options: { rootDir: ROOT_DIR } },
   } as any)
+  const instance = Array.isArray(result) ? result[0] : result
 
   const ast = ts.createSourceFile(
     fileName,
