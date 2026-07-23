@@ -1564,6 +1564,138 @@ export function testDefineLoader<Context = void>(
     expect(wrapper.get('#child').text()).toBe('parent|parent,one')
   })
 
+  it('does not leak context when reloading lazy loader with nested lazy loaders', async () => {
+    const parentSpy = vi
+      .fn<(to: RouteLocationNormalizedLoaded) => Promise<string>>()
+      // resolves instantly, like a cache hit
+      .mockImplementation(async () => 'parent')
+    const useParentLoader = loaderFactory({
+      fn: parentSpy,
+      key: 'parent',
+      lazy: true,
+    })
+    const childSpy = vi
+      .fn<(to: RouteLocationNormalizedLoaded) => Promise<string>>()
+      .mockImplementation(async to => {
+        // nested loader awaits the parent loader, then keeps loading. While it
+        // is still pending, the global loader context stays set to this child
+        // entry, so a component rendering meanwhile must not pick it up as a
+        // parent (which would re-run the parent loader and nest loaders under
+        // themselves)
+        const parent = await useParentLoader()
+        await delay(10)
+        return `${parent},${to.query.p}`
+      })
+    const useChildLoader = loaderFactory({
+      fn: childSpy,
+      key: 'child',
+      lazy: true,
+    })
+
+    // child component (like a nested page) reuses the parent loader directly
+    // plus its own nested loader
+    const ChildComp = defineComponent({
+      setup() {
+        const { data: child, reload } = useChildLoader()
+        return { child, reload }
+      },
+      template: `<p id="child">{{ child }}</p><button id="reload" @click="reload()"></button>`,
+    })
+    // parent component (like a parent page) uses the parent loader and renders
+    // the child component
+    const ParentComp = defineComponent({
+      components: { ChildComp },
+      setup() {
+        const { data } = useParentLoader()
+        return { data }
+      },
+      template: `<div id="parent">{{ data }}<ChildComp /></div>`,
+    })
+
+    const router = getRouter()
+    router.addRoute({
+      name: '_test',
+      path: '/fetch',
+      component: ParentComp,
+      meta: {
+        loaders: [useParentLoader, useChildLoader],
+        nested: { foo: 'bar' },
+      },
+    })
+
+    const wrapper = mount(RouterViewMock, {
+      global: {
+        plugins: [
+          [DataLoaderPlugin, { router }],
+          ...(plugins?.(customContext!) || []),
+          router,
+        ],
+      },
+    })
+
+    // navigation completes while the lazy child loader is still pending, so the
+    // components render with the child loader's context still active
+    await router.push('/fetch?p=one')
+    await flushPromises()
+    // let the child loader finish
+    await vi.advanceTimersByTimeAsync(20)
+    await flushPromises()
+
+    expect('has itself as parent').not.toHaveBeenWarned()
+    expect('a different parent').not.toHaveBeenWarned()
+    expect(parentSpy).toHaveBeenCalledTimes(1)
+    expect(childSpy).toHaveBeenCalledTimes(1)
+    expect(router.currentRoute.value.fullPath).toBe('/fetch?p=one')
+    expect(wrapper.get('#child').text()).toBe('parent,one')
+
+    await wrapper.find('#reload').trigger('click')
+    expect(parentSpy).toHaveBeenCalledTimes(2)
+    expect(childSpy).toHaveBeenCalledTimes(2)
+    expect('has itself as parent').not.toHaveBeenWarned()
+    expect('a different parent').not.toHaveBeenWarned()
+  })
+
+  it('reloading a loader also reloads deeply nested loaders', async () => {
+    const leafSpy = vi
+      .fn<(to: RouteLocationNormalizedLoaded) => Promise<string>>()
+      .mockImplementation(async () => 'leaf')
+    const useLeafLoader = loaderFactory({ fn: leafSpy, key: 'leaf' })
+    const midSpy = vi
+      .fn<(to: RouteLocationNormalizedLoaded) => Promise<string>>()
+      .mockImplementation(async () => {
+        const leaf = await useLeafLoader()
+        return `${leaf},mid`
+      })
+    const useMidLoader = loaderFactory({ fn: midSpy, key: 'mid' })
+    const rootSpy = vi
+      .fn<(to: RouteLocationNormalizedLoaded) => Promise<string>>()
+      .mockImplementation(async () => {
+        const mid = await useMidLoader()
+        return `${mid},root`
+      })
+    const useRootLoader = loaderFactory({ fn: rootSpy, key: 'root' })
+
+    const { router, useData } = singleLoaderOneRoute(useRootLoader)
+
+    await router.push('/fetch')
+    await flushPromises()
+    expect(rootSpy).toHaveBeenCalledTimes(1)
+    expect(midSpy).toHaveBeenCalledTimes(1)
+    expect(leafSpy).toHaveBeenCalledTimes(1)
+
+    const { data, reload } = useData()
+    expect(data.value).toBe('leaf,mid,root')
+
+    await reload()
+    await flushPromises()
+    expect(rootSpy).toHaveBeenCalledTimes(2)
+    expect(midSpy).toHaveBeenCalledTimes(2)
+    expect(leafSpy).toHaveBeenCalledTimes(2)
+    expect(data.value).toBe('leaf,mid,root')
+    expect('has itself as parent').not.toHaveBeenWarned()
+    expect('a different parent').not.toHaveBeenWarned()
+  })
+
   it('keeps the old data until all loaders are resolved', async () => {
     const router = getRouter()
     const l1 = mockedLoader({ commit: 'after-load', key: 'l1' })
