@@ -222,12 +222,22 @@ function useHistoryStateNavigation(base: string) {
      * base tag we can just use everything after the `#`.
      */
     const hashIndex = base.indexOf('#')
+    const path = base + to
+    // When the document URL contains userinfo (e.g. http://user:pass@host/
+    // behind HTTP basic auth), passing an absolute URL to history.replaceState
+    // / pushState throws a SecurityError because the userinfo makes the
+    // browser see the constructed URL as cross-origin. A relative URL avoids
+    // that path. createBaseLocation() is still needed when `path` begins with
+    // `//` (protocol-relative form) so it doesn't get re-anchored to a
+    // different host. See https://github.com/vuejs/router/issues/2714.
     const url =
       hashIndex > -1
         ? (location.host && document.querySelector('base')
             ? base
             : base.slice(hashIndex)) + to
-        : createBaseLocation() + base + to
+        : !new URL(location.href).username || path.startsWith('//')
+          ? createBaseLocation() + path
+          : path
     try {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds
