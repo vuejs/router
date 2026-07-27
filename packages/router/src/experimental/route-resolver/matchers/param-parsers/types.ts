@@ -1,6 +1,5 @@
 import type {
   MatcherQueryParamsValue,
-  // @ts-ignore: actually used in jsdoc, sometimes works in TS, sometimes doesn't...
   MatcherPattern,
 } from '../matcher-pattern'
 
@@ -21,7 +20,7 @@ import type {
  * navigating: `router.push({ params: {}})` it's sometimes more permissive than
  * TParam, for example allowing nullish values
  *
- * @see {MatcherPattern}
+ * @see {@link MatcherPattern}
  */
 export interface ParamParser<
   // the final type in route.params
