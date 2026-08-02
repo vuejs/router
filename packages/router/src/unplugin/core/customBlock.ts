@@ -1,8 +1,8 @@
 import type { SFCBlock } from '@vue/compiler-sfc'
 import { parse as parseSFC } from '@vue/compiler-sfc'
 import type { ResolvedOptions } from '../options'
-import JSON5 from 'json5'
-import { parse as parseYaml } from 'yaml'
+import { parseJSON5 } from 'confbox/json5'
+import { parseYAML } from 'confbox/yaml'
 import { diagnostics } from '../diagnostics'
 import type { DefinePageQueryParamOptions } from '../../experimental/runtime'
 import type { RouteRecordRaw } from '../../types'
@@ -60,7 +60,7 @@ function parseCustomBlock(
 
   if (lang === 'json5') {
     try {
-      return JSON5.parse(block.content)
+      return parseJSON5(block.content)
     } catch (err: any) {
       diagnostics.VUE_ROUTER_B0012({
         type: block.type,
@@ -80,7 +80,7 @@ function parseCustomBlock(
     }
   } else if (lang === 'yaml' || lang === 'yml') {
     try {
-      return parseYaml(block.content)
+      return parseYAML(block.content)
     } catch (err: any) {
       diagnostics.VUE_ROUTER_B0014({
         type: block.type,
