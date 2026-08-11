@@ -23,12 +23,12 @@ router.beforeEach((to, from) => {
 })
 ```
 
-当一个导航触发时，全局前置守卫按照创建顺序调用。守卫是异步解析执行，此时导航在所有守卫 resolve 完之前一直处于**等待中**。
+当一个导航触发时，全局前置守卫按照创建顺序调用。守卫可以异步解析，在所有守卫解析完之前，导航一直处于**等待中**。
 
 每个守卫方法接收两个参数：
 
-- **`to`**: 即将要进入的目标 [用一种标准化的方式](../../api/#routelocationnormalized)
-- **`from`**: 当前导航正要离开的路由 [用一种标准化的方式](../../api/#routelocationnormalized)
+- **`to`**: 即将要进入的目标[路由地址（标准化格式）](../../api/#routelocationnormalized)
+- **`from`**: 当前导航正要离开的[路由地址（标准化格式）](../../api/#routelocationnormalized)
 
 可以返回的值如下:
 
@@ -51,9 +51,9 @@ router.beforeEach(async (to, from) => {
 
 如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](../../api/interfaces/Router.md#onError) 注册过的回调。
 
-如果什么都没有，`undefined` 或返回 `true`，**则导航是有效的**，并调用下一个导航守卫
+如果没有返回任何值、返回 `undefined` 或返回 `true`，**则导航是有效的**，并调用下一个导航守卫。
 
-以上所有都同 **`async` 函数** 和 Promise 工作方式一样：
+以上所有逻辑在 **`async` 函数** 和 Promise 中的工作方式都一样：
 
 ```js
 router.beforeEach(async (to, from) => {
@@ -88,7 +88,7 @@ router.beforeEach((to, from, next) => {
 
 ## 全局解析守卫
 
-你可以用 `router.beforeResolve` 注册一个全局守卫。这和 `router.beforeEach` 类似，因为它在**每次导航**时都会触发，不同的是，解析守卫刚好会在导航被确认之前、**所有组件内守卫和异步路由组件被解析之后**调用。这里有一个例子，根据路由在[元信息](./meta.md)中的 `requiresCamera` 属性确保用户访问摄像头的权限：
+你可以用 `router.beforeResolve` 注册一个全局守卫。这和 `router.beforeEach` 类似，因为它在**每次导航**时都会触发，不同的是，解析守卫刚好会在导航被确认之前、**所有组件内守卫和异步路由组件被解析之后**调用。这里有一个例子，用于确保用户已授予访问摄像头的权限，适用于在[路由元信息](./meta.md)中定义了自定义属性 `requiresCamera` 的路由：
 
 ```js
 router.beforeResolve(async to => {
@@ -124,9 +124,9 @@ router.afterEach((to, from) => {
 
 <!-- TODO: maybe add links to examples -->
 
-它们对于分析、更改页面标题、声明页面等辅助功能以及许多其他事情都很有用。
+它们对于数据分析、更改页面标题、页面播报之类的无障碍功能以及许多其他事情都很有用。
 
-它们也反映了 [navigation failures](./navigation-failures.md) 作为第三个参数：
+它们也会通过第三个参数反映[导航失效](./navigation-failures.md)：
 
 ```js
 router.afterEach((to, from, failure) => {
@@ -134,7 +134,7 @@ router.afterEach((to, from, failure) => {
 })
 ```
 
-了解更多关于 navigation failures 的信息在[它的指南](./navigation-failures.md)中。
+在[导航失效指南](./navigation-failures.md)中可以了解更多信息。
 
 ## 在守卫内的全局注入
 
@@ -163,7 +163,7 @@ const routes = [
     path: '/users/:id',
     component: UserDetails,
     beforeEnter: (to, from) => {
-      // reject the navigation
+      // 拒绝导航
       return false
     },
   },
@@ -225,9 +225,9 @@ const routes = [
 
 最后，你可以在路由组件内直接定义路由导航守卫(传递给路由配置的)
 
-### 可用的配置 API
+### 使用选项式 API
 
-你可以为路由组件添加以下配置：
+你可以为路由组件添加以下选项：
 
 - `beforeRouteEnter`
 - `beforeRouteUpdate`
@@ -255,7 +255,7 @@ export default {
 </script>
 ```
 
-`beforeRouteEnter` 守卫 **不能** 访问 `this`，因为守卫在导航确认前被调用，因此即将登场的新组件还没被创建。
+`beforeRouteEnter` 守卫 **不能** 访问 `this`，因为守卫在导航确认前被调用，因此新进入的组件还没有被创建。
 
 不过，你可以通过传一个回调给 `next` 来访问组件实例。在导航被确认的时候执行回调，并且把组件实例作为回调方法的参数：
 
@@ -271,7 +271,7 @@ beforeRouteEnter (to, from, next) {
 
 ```js
 beforeRouteUpdate (to, from) {
-  // just use `this`
+  // 直接使用 `this`
   this.name = to.params.name
 }
 ```
@@ -285,7 +285,7 @@ beforeRouteLeave (to, from) {
 }
 ```
 
-### 使用组合 API
+### 使用组合式 API
 
 如果你正在使用组合式 API 编写组件，你可以通过 `onBeforeRouteUpdate` 和 `onBeforeRouteLeave` 分别添加 update 和 leave 守卫。 请参考[组合式 API 部分](./composition-api.md#导航守卫)以获得更多细节。
 

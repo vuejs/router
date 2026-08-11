@@ -5,11 +5,11 @@
   title="Learn how to customize scroll behavior"
 />
 
-使用前端路由，当切换到新路由时，想要页面滚到顶部，或者是保持原先的滚动位置，就像重新加载页面那样。 vue-router 能做到，而且更好，它让你可以自定义路由切换时页面如何滚动。
+使用前端路由，当切换到新路由时，想要页面滚到顶部，或者是保持原先的滚动位置，就像重新加载页面那样。 Vue Router 能做到，而且更好，它让你可以自定义路由切换时页面如何滚动。
 
 **注意: 这个功能只在支持 history.pushState 的浏览器中可用。**
 
-当创建一个 Router 实例，你可以提供一个 `scrollBehavior` 方法：
+当创建一个 Router 实例，你可以提供一个 `scrollBehavior` 函数：
 
 ```js
 const router = createRouter({
@@ -21,7 +21,7 @@ const router = createRouter({
 })
 ```
 
-`scrollBehavior` 函数接收 `to`和`from` 路由对象，如 [Navigation Guards](./navigation-guards.md)。第三个参数 `savedPosition`，只有当这是一个 `popstate` 导航时才可用（由浏览器的后退/前进按钮触发）。
+`scrollBehavior` 函数接收 `to`和`from` 路由对象，就像[导航守卫](./navigation-guards.md)一样。第三个参数 `savedPosition`，只有当这是一个 `popstate` 导航时才可用（由浏览器的后退/前进按钮触发）。
 
 <RuleKitLink />
 

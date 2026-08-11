@@ -25,7 +25,7 @@ const router = createRouter({
 })
 ```
 
-`component` (和 `components`) 配置接收一个返回 Promise 组件的函数，Vue Router **只会在第一次进入页面时才会获取这个函数**，然后使用缓存数据。这意味着你也可以使用更复杂的函数，只要它们返回一个 Promise ：
+`component`（和 `components`）配置接收一个返回组件 Promise 的函数，Vue Router **只会在第一次进入页面时才会获取这个函数**，然后使用缓存的数据。这意味着你也可以使用更复杂的函数，只要它们返回一个 Promise ：
 
 <RuleKitLink />
 
@@ -39,7 +39,7 @@ const UserDetails = () => Promise.resolve({/* 组件定义 */})
 **不要**在路由中使用[异步组件](https://cn.vuejs.org/guide/components/async.html)。异步组件仍然可以在路由组件中使用，但路由组件本身就是动态导入的。
 :::
 
-如果你使用的是 webpack 之类的打包器，它将自动从[代码分割](https://webpack.js.org/guides/code-splitting/)中受益。
+如果你使用的是 webpack 之类的打包器，它会自动受益于[代码分割](https://webpack.js.org/guides/code-splitting/)。
 
 如果你使用的是 Babel，你将需要添加 [syntax-dynamic-import](https://babeljs.io/docs/plugins/syntax-dynamic-import/) 插件，才能使 Babel 正确地解析语法。
 
@@ -62,7 +62,7 @@ webpack 会将任何一个异步模块与相同的块名称组合到相同的异
 
 ### 使用 Vite
 
-在Vite中，你可以在[`rollupOptions`](https://cn.vite.dev/config/build-options.html#build-rollupoptions)下定义分块：
+在 Vite 中，你可以在[`rollupOptions`](https://cn.vite.dev/config/build-options.html#build-rollupoptions)下定义分块：
 
 ```js [vite.config.js]
 export default defineConfig({
