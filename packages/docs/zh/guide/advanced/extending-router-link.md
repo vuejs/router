@@ -99,7 +99,7 @@ export default {
 
 :::
 
-如果你喜欢使用渲染函数或创建 `computed` 属性，你可以使用 [Composition API](./composition-api.md) 中的 `useLink` ：
+如果你喜欢使用渲染函数或创建 `computed` 属性，你可以使用[组合式 API](./composition-api.md) 中的 `useLink` ：
 
 ```js
 import { RouterLink, useLink } from 'vue-router'

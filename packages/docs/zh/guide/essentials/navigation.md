@@ -13,7 +13,7 @@ sidebarDepth: 0
 
 ## 导航到不同的位置
 
-**注意: 下面的示例中的 `router` 指代路由器实例。在组件内部，你可以使用 `$router` 属性访问路由，例如 `this.$router.push(...)`。如果使用组合式 API，你可以通过调用 [`useRouter()`](../advanced/composition-api) 来访问路由器。**
+**注意: 下面的示例中的 `router` 指代路由器实例。在组件内部，你可以使用 `$router` 属性访问路由器，例如 `this.$router.push(...)`。如果使用组合式 API，你可以通过调用 [`useRouter()`](../advanced/composition-api) 来访问路由器。**
 
 想要导航到不同的 URL，可以使用 `router.push` 方法。这个方法会向 history 栈添加一个新的记录，所以，当用户点击浏览器后退按钮时，会回到之前的 URL。
 
@@ -42,7 +42,7 @@ router.push({ path: '/register', query: { plan: 'private' } })
 router.push({ path: '/about', hash: '#team' })
 ```
 
-**注意**：如果提供了 `path`，`params` 会被忽略，上述例子中的 `query` 并不属于这种情况。取而代之的是下面例子的做法，你需要提供路由的 `name` 或手写完整的带有参数的 `path` ：
+**注意**：如果提供了 `path`，`params` 会被忽略，上述例子中的 `query` 并不属于这种情况。此时你需要提供路由的 `name`，或手写完整的带有参数的 `path`：
 
 ```js
 const username = 'eduardo/san martin'
@@ -67,11 +67,11 @@ router.push({ path: '/user', params: { username } }) // -> /user
 <RouterLink :to="{ name: 'user', params: { username } }">User</RouterLink>
 ```
 
-当指定 `params` 时，可提供 `string` 或 `number` 参数（或者对于[可重复的参数](./route-matching-syntax.md#repeatable-params)可提供一个数组）。**任何其他类型（如对象、布尔等）都将被自动字符串化**。对于[可选参数](./route-matching-syntax.md#repeatable-params)，你可以提供一个空字符串（`""`）或 `null` 来移除它。
+当指定 `params` 时，可提供 `string` 或 `number` 参数（或者对于[可重复的参数](./route-matching-syntax.md#可重复的参数)可提供一个数组）。**任何其他类型（如对象、布尔等）都将被自动字符串化**。对于[可选参数](./route-matching-syntax.md#可选参数)，你可以提供一个空字符串（`""`）或 `null` 来移除它。
 
 由于属性 `to` 与 `router.push` 接受的对象种类相同，所以两者的规则完全相同。
 
-`router.push` 和所有其他导航方法都会返回一个 _Promise_，让我们可以等到导航完成后才知道是成功还是失败。我们将在 [Navigation Handling](../advanced/navigation-failures.md) 中详细介绍。
+`router.push` 和所有其他导航方法都会返回一个 _Promise_，让我们可以等待导航完成，并得知导航是成功还是失败。我们将在 [等待导航结果](../advanced/navigation-failures.md) 中详细介绍。
 
 ## 替换当前位置
 
@@ -96,7 +96,7 @@ router.replace({ path: '/home' })
   title="Learn how to use Vue Router to go back"
 />
 
-该方法采用一个整数作为参数，表示在历史堆栈中前进或后退多少步，类似于 `window.history.go(n)`。
+该方法采用一个整数作为参数，表示在 history 栈中前进或后退多少步，类似于 `window.history.go(n)`。
 
 例子
 
@@ -115,7 +115,7 @@ router.go(-100)
 router.go(100)
 ```
 
-## 篡改历史
+## 操纵历史
 
 你可能已经注意到，`router.push`、`router.replace` 和 `router.go` 是 [`window.history.pushState`、`window.history.replaceState` 和 `window.history.go`](https://developer.mozilla.org/en-US/docs/Web/API/History) 的翻版，它们确实模仿了 `window.history` 的 API。
 

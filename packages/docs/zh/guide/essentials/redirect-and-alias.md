@@ -19,7 +19,7 @@ const routes = [{ path: '/home', redirect: '/' }]
 const routes = [{ path: '/home', redirect: { name: 'homepage' } }]
 ```
 
-甚至是一个方法，动态返回重定向目标：
+甚至是一个函数，动态返回重定向目标：
 
 ```js
 const routes = [
@@ -27,7 +27,7 @@ const routes = [
     // /search/screens -> /search?q=screens
     path: '/search/:searchText',
     redirect: to => {
-      // 方法接收目标路由作为参数
+      // 函数接收目标路由作为参数
       // return 重定向的字符串路径/路径对象
       return { path: '/search', query: { q: to.params.searchText } }
     },
@@ -72,7 +72,7 @@ const routes = [
 const routes = [{ path: '/', component: Homepage, alias: '/home' }]
 ```
 
-通过别名，你可以自由地将 UI 结构映射到一个任意的 URL，而不受配置的嵌套结构的限制。使别名以 `/` 开头，以使嵌套路径中的路径成为绝对路径。你甚至可以将两者结合起来，用一个数组提供多个别名：
+通过别名，你可以自由地将 UI 结构映射到一个任意的 URL，而不受配置的嵌套结构的限制。使别名以 `/` 开头，以使嵌套路由中的路径成为绝对路径。你甚至可以将两者结合起来，用一个数组提供多个别名：
 
 ```js
 const routes = [
@@ -108,6 +108,6 @@ const routes = [
 ]
 ```
 
-**关于 SEO 的注意事项**: 使用别名时，一定要[定义规范链接](https://support.google.com/webmasters/answer/139066?hl=en).
+**关于 SEO 的注意事项**: 使用别名时，一定要[定义规范链接](https://support.google.com/webmasters/answer/139066?hl=en)。
 
 <RuleKitLink />

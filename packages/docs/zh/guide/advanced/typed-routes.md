@@ -4,7 +4,7 @@
 
 ![RouterLink to autocomplete](https://user-images.githubusercontent.com/664177/176442066-c4e7fa31-4f06-4690-a49f-ed0fd880dfca.png)
 
-可以为路由配置一个类型化的映射表。 虽然可以手动实现，但更推荐使用 [unplugin-vue-router](https://github.com/posva/unplugin-vue-router) 插件来自动生成路由及其类型。
+可以为路由配置一个类型化的映射表。 虽然可以手动实现，但更推荐使用内置的[基于文件的路由](/file-based-routing/)插件来自动生成路由及其类型。
 
 ## 手动配置
 
@@ -62,7 +62,7 @@ export interface RouteNamedMap {
   >
 }
 
-// 最后，你需要把这份路由映射表扩展到 Vue Router 的类型定义中
+// 最后，你需要用这份路由映射表扩展 Vue Router 的类型定义
 declare module 'vue-router' {
   interface TypesConfig {
     RouteNamedMap: RouteNamedMap

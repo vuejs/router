@@ -5,7 +5,7 @@
   title="Learn about route transitions"
 />
 
-想要在你的路径组件上使用转场，并对导航进行动画处理，你需要使用 [`<RouterView>` 插槽](./router-view-slot)：
+想要在你的路由组件上使用转场，并对导航进行动画处理，你需要使用 [`<RouterView>` 插槽](./router-view-slot)：
 
 ```html
 <router-view v-slot="{ Component }">
@@ -19,7 +19,7 @@
 
 ## 单个路由的过渡
 
-上面的用法会对所有的路由使用相同的过渡。如果你想让每个路由的组件有不同的过渡，你可以将[元信息](./meta.md)和动态的 `name` 结合在一起，放在`<transition>` 上：
+上面的用法会对所有的路由使用相同的过渡。如果你想让每个路由的组件有不同的过渡，你可以将[路由元信息](./meta.md)和动态的 `name` 结合在一起，放在`<transition>` 上：
 
 ```js
 const routes = [
@@ -38,7 +38,7 @@ const routes = [
 
 ```html
 <router-view v-slot="{ Component, route }">
-  <!-- 使用任何自定义过渡和回退到 `fade` -->
+  <!-- 使用任何自定义过渡，或回退到 `fade` -->
   <transition :name="route.meta.transition || 'fade'">
     <component :is="Component" />
   </transition>
@@ -60,7 +60,7 @@ const routes = [
 </router-view>
 ```
 
-我们可以添加一个 [after navigation hook](./navigation-guards.md#全局后置钩子)，根据路径的深度动态添加信息到 `meta` 字段。
+我们可以添加一个[全局后置钩子](./navigation-guards.md#全局后置钩子)，根据路由的深度动态向 `meta` 字段添加信息。
 
 ```js
 router.afterEach((to, from) => {
@@ -72,7 +72,7 @@ router.afterEach((to, from) => {
 
 ## 强制在复用的视图之间进行过渡
 
-Vue 可能会自动复用看起来相似的组件，从而忽略了任何过渡。幸运的是，可以[添加一个 `key` 属性](https://cn.vuejs.org/api/built-in-special-attributes.html#key)来强制过渡。这也允许你在相同路由上使用不同的参数触发过渡：
+Vue 可能会自动复用看起来相似的组件，从而忽略了任何过渡。幸运的是，可以[添加一个 `key` 属性](https://cn.vuejs.org/api/built-in-special-attributes.html#key)来强制过渡。这也允许你在停留在相同路由上但参数不同时触发过渡：
 
 ```vue-html
 <router-view v-slot="{ Component, route }">

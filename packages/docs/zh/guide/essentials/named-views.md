@@ -13,7 +13,7 @@
 <router-view class="view right-sidebar" name="RightSidebar" />
 ```
 
-一个视图使用一个组件渲染，因此对于同个路由，多个视图就需要多个组件。确保正确使用 `components` 配置 (带上 **s**)：
+一个视图使用一个组件渲染，因此对于同一个路由，多个视图就需要多个组件。确保正确使用 `components` 配置（带上 **s**）：
 
 ```js
 const router = createRouter({
@@ -52,7 +52,7 @@ const router = createRouter({
 ```
 
 - `Nav` 只是一个常规组件。
-- `UserSettings` 是一个视图组件。
+- `UserSettings` 是一个父级视图组件。
 - `UserEmailsSubscriptions`、`UserProfile`、`UserProfilePreview` 是嵌套的视图组件。
 
 **注意**：_我们先忘记 HTML/CSS 具体的布局的样子，只专注在用到的组件上。_

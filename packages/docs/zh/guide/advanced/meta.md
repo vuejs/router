@@ -5,7 +5,7 @@
   title="Learn how to use route meta fields"
 />
 
-有时，你可能希望将任意信息附加到路由上，如过渡名称、谁可以访问路由等。这些事情可以通过接收属性对象的`meta`属性来实现，并且它可以在路由地址和导航守卫上都被访问到。定义路由的时候你可以这样配置 `meta` 字段：
+有时，你可能希望将任意信息附加到路由上，如过渡名称、谁可以访问路由等。这可以通过接收属性对象的 `meta` 属性来实现，它可以在路由地址和导航守卫中被访问到。你可以这样定义 `meta` 字段：
 
 ```js
 const routes = [
@@ -22,7 +22,7 @@ const routes = [
       {
         path: ':id',
         component: PostsDetail,
-        // 任何人都可以阅读文章
+        // 任何人都可以阅读帖子
         meta: { requiresAuth: false },
       },
     ],
@@ -36,9 +36,9 @@ const routes = [
 
 首先，我们称呼 `routes` 配置中的每个路由对象为 **路由记录**。路由记录可以是嵌套的，因此，当一个路由匹配成功后，它可能匹配多个路由记录。
 
-例如，根据上面的路由配置，`/posts/new` 这个 URL 将会匹配父路由记录 (`path: '/posts'`) 以及子路由记录 (`path: 'new'`)。
+例如，根据上面的路由配置，`/posts/new` 这个 URL 将会匹配父路由记录（`path: '/posts'`）以及子路由记录（`path: 'new'`）。
 
-一个路由匹配到的所有路由记录会暴露为 `route` 对象(还有在导航守卫中的路由对象)的`route.matched` 数组。我们需要遍历这个数组来检查路由记录中的 `meta` 字段，但是 Vue Router 还为你提供了一个 `route.meta` 方法，它是一个非递归合并**所有 `meta`** 字段（从父字段到子字段）的方法。这意味着你可以简单地写
+一个路由匹配到的所有路由记录会暴露为 `route` 对象（还有在导航守卫中的路由对象）的`route.matched` 数组。我们需要遍历这个数组来检查路由记录中的 `meta` 字段，但是 Vue Router 还为你提供了一个 `route.meta`，它是**所有 `meta`** 字段（从父到子）的非递归合并。这意味着你可以简单地写成：
 
 ```js
 router.beforeEach((to, from) => {
@@ -60,12 +60,12 @@ router.beforeEach((to, from) => {
 
 ## TypeScript
 
-也可以继承来自 `vue-router` 中的 `RouteMeta` 来为 meta 字段添加类型：
+也可以通过扩展 `vue-router` 中的 `RouteMeta` 接口来为 meta 字段添加类型：
 
 ```ts
 // 这段可以直接添加到你的任何 `.ts` 文件中，例如 `router.ts`
 // 也可以添加到一个 `.d.ts` 文件中。确保这个文件包含在
-// 项目的 `tsconfig.json` 中的 "file" 字段内。
+// 项目的 `tsconfig.json` 中的 "files" 字段内。
 import 'vue-router'
 
 // 为了确保这个文件被当作一个模块，添加至少一个 `export` 声明

@@ -8,7 +8,7 @@
 大多数应用都会使用 `/about` 这样的静态路由和 `/users/:userId` 这样的动态路由，就像我们刚才在[动态路由匹配](./dynamic-matching.md)中看到的那样，但是 Vue Router 可以提供更多的方式！
 
 :::tip
-为了简单起见，所有的路由**都省略了 `component` 属性**，只关注 `path` 值。
+为了简单起见，所有的路由记录**都省略了 `component` 属性**，只关注 `path` 值。
 :::
 
 ## 在参数中自定义正则
@@ -24,7 +24,7 @@ const routes = [
 ]
 ```
 
-但在某些情况下，我们并不想添加静态的 `/o` `/p` 部分。由于，`orderId` 总是一个数字，而 `productName` 可以是任何东西，所以我们可以在括号中为参数指定一个自定义的正则：
+但在某些情况下，我们并不想添加静态的 `/o` `/p` 部分。由于 `orderId` 总是一个数字，而 `productName` 可以是任何东西，所以我们可以在括号中为参数指定一个自定义的正则：
 
 ```js
 const routes = [
@@ -38,7 +38,7 @@ const routes = [
 现在，转到 `/25` 将匹配 `/:orderId`，其他情况将会匹配 `/:productName`。`routes` 数组的顺序并不重要!
 
 :::tip
-确保**转义反斜杠( `\` )**，就像我们对 `\d` (变成`\\d`)所做的那样，在 JavaScript 中实际传递字符串中的反斜杠字符。
+确保**转义反斜杠（`\`）**，就像我们对 `\d`（变成 `\\d`）所做的那样，以在 JavaScript 中实际传递字符串中的反斜杠字符。
 :::
 
 ## 可重复的参数
@@ -80,9 +80,9 @@ const routes = [
 ]
 ```
 
-## Sensitive 与 strict 路由配置
+## sensitive 与 strict 路由选项
 
-默认情况下，所有路由是不区分大小写的，并且能匹配带有或不带有尾部斜线的路由。例如，路由 `/users` 将匹配 `/users`、`/users/`、甚至 `/Users/`。这种行为可以通过 `strict` 和 `sensitive` 选项来修改，它们既可以应用在整个全局路由上，又可以应用于当前路由上：
+默认情况下，所有路由是不区分大小写的，并且能匹配带有或不带有尾部斜线的路由。例如，路由 `/users` 将匹配 `/users`、`/users/`、甚至 `/Users/`。这种行为可以通过 `strict` 和 `sensitive` 选项来修改，它们既可以设置在整个路由器上，也可以设置在单个路由上：
 
 ```js
 const router = createRouter({
@@ -116,6 +116,6 @@ const routes = [
 
 ## 调试
 
-如果你需要探究你的路由是如何转化为正则的，以了解为什么一个路由没有被匹配，或者，报告一个 bug，你可以使用[路径排名工具](https://paths.esm.dev/?p=AAMeJSyAwR4UbFDAFxAcAGAIJXMAAA..#)。它支持通过 URL 分享你的路由。
+如果你需要探究你的路由是如何转化为正则的，以了解为什么一个路由没有被匹配，或者，报告一个 bug，你可以使用[路径排序工具](https://paths.esm.dev/?p=AAMeJSyAwR4UbFDAFxAcAGAIJXMAAA..#)。它支持通过 URL 分享你的路由。
 
 <RuleKitLink />
