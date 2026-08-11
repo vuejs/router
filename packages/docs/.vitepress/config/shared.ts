@@ -101,6 +101,10 @@ export const sharedConfig = defineConfig({
       light: 'github-light',
     },
 
+    // twoslash renders the code fences found in JSDoc comments synchronously,
+    // so their languages can't be lazy loaded and must be preloaded here
+    languages: ['vue', 'ts', 'js'],
+
     attrs: {
       leftDelimiter: '%{',
       rightDelimiter: '}%',
