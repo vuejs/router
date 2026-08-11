@@ -9,7 +9,7 @@ Vue 的[组合式 API](https://cn.vuejs.org/guide/extras/composition-api-faq.htm
 
 ## 在 `setup` 中访问路由和当前路由
 
-因为我们在 `setup` 里面没有访问 `this`，所以我们不能直接访问 `this.$router` 或 `this.$route`。作为替代，我们使用 `useRouter` 和 `useRoute` 组合式函数：
+由于我们在 `setup` 中无法访问 `this`，所以不能直接访问 `this.$router` 或 `this.$route`。作为替代，我们使用 `useRouter` 和 `useRoute` 组合式函数：
 
 ```vue
 <script setup>

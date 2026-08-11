@@ -5,7 +5,7 @@
   title="Learn about route transitions"
 />
 
-想要在你的路由组件上使用转场，并对导航进行动画处理，你需要使用 [`<RouterView>` 插槽](./router-view-slot)：
+想要在你的路由组件上使用过渡效果，并对导航进行动画处理，你需要使用 [`<RouterView>` 插槽](./router-view-slot)：
 
 ```html
 <router-view v-slot="{ Component }">
