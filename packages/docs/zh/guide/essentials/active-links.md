@@ -13,7 +13,7 @@ RouterLink 组件会为匹配当前路由的链接添加两个 CSS 类，`router
 
 如果你使用了[嵌套路由](./nested-routes)，任何指向祖先路由的链接也会被认为是匹配当前路由的，只要相关的 `params` 匹配。
 
-其他路由属性，例如 [`query`](../../api/interfaces/RouteLocationNormalized#query)，不会被考虑在内。
+其他路由属性，例如 [`query`](../../api/interfaces/RouteLocationNormalized.md#Properties-query)，不会被考虑在内。
 
 路径不一定需要完全匹配。例如，使用 [`alias`](./redirect-and-alias#别名) 仍然会被认为是匹配的，只要它解析到相同的路由记录和 `params`。
 
