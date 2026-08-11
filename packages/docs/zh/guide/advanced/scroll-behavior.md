@@ -69,7 +69,7 @@ const router = createRouter({
 })
 ```
 
-如果你要模拟 “滚动到锚点” 的行为：
+如果你要模拟“滚动到锚点”的行为：
 
 ```js
 const router = createRouter({
