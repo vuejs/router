@@ -25,7 +25,7 @@ if (import.meta.hot) { // [!code ++]
 
 ## Runtime routes
 
-If you add routes at runtime, you will have to add them within a callback to ensure they are added during development.
+If you add routes at runtime, you will also have to add them within a callback to ensure they are re-added when the routes are hot-updated. `handleHotUpdate()` only runs the callback on updates, not on the initial load, so keep the regular call as well.
 
 <!-- prettier-ignore -->
 ```ts [src/router.ts]
@@ -44,13 +44,14 @@ function addRedirects() {
   })
 }
 
+addRedirects()
+
 if (import.meta.hot) {
+  // routes added at runtime are lost when routes are hot-updated
+  // so they need to be re-added after each update
   handleHotUpdate(router, (newRoutes) => { // [!code ++]
     addRedirects() // [!code ++]
   }) // [!code ++]
-} else {
-  // production
-  addRedirects()
 }
 ```
 

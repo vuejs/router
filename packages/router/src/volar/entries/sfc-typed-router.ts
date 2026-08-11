@@ -100,6 +100,24 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
             )
           }
         } else if (
+          ts.isTypeQueryNode(node) &&
+          ts.isIdentifier(node.exprName) &&
+          ts.idText(node.exprName) === 'useRoute' &&
+          !node.typeArguments &&
+          !sfc.scriptSetup!.lang.startsWith('js')
+        ) {
+          // Without type arguments, `typeof useRoute` falls back to the generic
+          // default (every route), so `ReturnType<typeof useRoute>` is wider
+          // than what `useRoute()` actually returns in this file. Instantiate
+          // it with this file's routes so both agree.
+          replaceSourceRange(
+            embeddedCode.content,
+            sfc.scriptSetup!.name,
+            node.exprName.end,
+            node.exprName.end,
+            useRouteNameTypeParam
+          )
+        } else if (
           ts.isCallExpression(node) &&
           ts.isIdentifier(node.expression) &&
           ts.idText(node.expression) === 'definePage' &&

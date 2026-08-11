@@ -1,3 +1,15 @@
+# [5.2.0](https://github.com/vuejs/router/compare/v5.1.0...v5.2.0) (2026-07-15)
+
+### Bug Fixes
+
+- allow pinia 4 ([1653533](https://github.com/vuejs/router/commit/165353372281f121dbfbe70479ffb5de2be4b4eb))
+- **scroll:** ignore stale async scrollBehavior results ([#2730](https://github.com/vuejs/router/issues/2730)) ([303dfe1](https://github.com/vuejs/router/commit/303dfe1974a164523ea268f6a608a04aca15a877))
+- **unplugin:** reject invalid hex digits in [x+hh] character codes ([#2744](https://github.com/vuejs/router/issues/2744)) ([4d96741](https://github.com/vuejs/router/commit/4d96741167d3d4cd25d447e218c3f56ac51348d2))
+
+### Features
+
+- add helpful diagnostics ([#2737](https://github.com/vuejs/router/issues/2737)) ([628fe18](https://github.com/vuejs/router/commit/628fe18af2ee49b6ac59ba1f72ccce1628c2fe7f))
+
 # [5.1.0](https://github.com/vuejs/router/compare/v5.0.7...v5.1.0) (2026-05-28)
 
 ### Bug Fixes

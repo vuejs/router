@@ -12,7 +12,7 @@
  * - Resolver-based: Uses createFixedResolver() instead of routes array
  * - Pattern-based matching: Uses MatcherPatternPath instances for route matching
  * - Parent-based hierarchy: Uses 'parent' property instead of 'children'
- * - Limited redirect support: Basic redirects not fully implemented
+ * - Redirects handled at the router level: the resolver knows nothing about them
  * - Different param handling: May not cast/validate params the same way
  *
  * TEST ADAPTATIONS:
@@ -24,7 +24,7 @@
  * - ✅ Meta field merging from parent to child
  * - ❌ Dynamic routing (addRoute, removeRoute, hasRoute)
  * - ❌ Aliases (not implemented in experimental router)
- * - ✅ Redirects (limited support)
+ * - ✅ Redirects (record redirect, chained, function form, query/hash/params handling)
  * - ✅ Complex object-based resolve (may work differently)
  * - ❌ beforeEnter guards (not implemented)
  * - ✅ Param validation/casting (works differently)

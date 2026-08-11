@@ -233,9 +233,9 @@ importers:
       chokidar:
         specifier: ^5.0.0
         version: 5.0.0
-      json5:
-        specifier: ^2.2.3
-        version: 2.2.3
+      confbox:
+        specifier: ^0.2.4
+        version: 0.2.4
       local-pkg:
         specifier: ^1.2.1
         version: 1.2.1
@@ -269,9 +269,6 @@ importers:
       unplugin-utils:
         specifier: ^0.3.2
         version: 0.3.2
-      yaml:
-        specifier: ^2.9.0
-        version: 2.9.0
     devDependencies:
       '@babel/types':
         specifier: ^8.0.0-rc.4
@@ -2618,8 +2615,8 @@ packages:
   confbox@0.1.8:
     resolution: {integrity: sha512-RMtmw0iFkeR4YV+fUOSucriAQNb9g8zFR52MWCtl+cCZOFRNL6zeB395vPzFhEjjn4fMxXudmELnl/KF/WrK6w==}
 
-  confbox@0.2.2:
-    resolution: {integrity: sha512-1NB+BKqhtNipMsov4xI/NnhCKp9XG9NamYp5PVm9klAT0fsrNPjaFICsCFhNhwZJKNh7zB/3q8qXz0E9oaMNtQ==}
+  confbox@0.2.4:
+    resolution: {integrity: sha512-ysOGlgTFbN2/Y6Cg3Iye8YKulHw+R2fNXHrgSmXISQdMnomY6eNDprVdW9R5xBguEqI954+S6709UyiO7B+6OQ==}
 
   config-chain@1.1.13:
     resolution: {integrity: sha512-qj+f8APARXHrM0hraqXYb2/bOVSV4PvJQlNZ/DVj0QrmNM2q2euizkeuVckQ57J+W0mRH6Hvi+k50M4Jul2VRQ==}
@@ -6951,7 +6948,7 @@ snapshots:
 
   confbox@0.1.8: {}
 
-  confbox@0.2.2: {}
+  confbox@0.2.4: {}
 
   config-chain@1.1.13:
     dependencies:
@@ -8261,7 +8258,7 @@ snapshots:
 
   pkg-types@2.3.0:
     dependencies:
-      confbox: 0.2.2
+      confbox: 0.2.4
       exsolve: 1.0.7
       pathe: 2.0.3
 

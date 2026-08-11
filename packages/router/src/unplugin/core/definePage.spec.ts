@@ -179,6 +179,52 @@ definePage({
     ).toHaveBeenWarned()
   })
 
+  describe('duplicate definePage()', () => {
+    const duplicateCode = vue`
+<script setup>
+definePage({
+  name: 'first',
+})
+definePage({
+  name: 'second',
+})
+</script>
+`
+
+    it('does not throw and keeps the first call when extracting', async () => {
+      const result = (await definePageTransform({
+        code: duplicateCode,
+        id: 'src/pages/dup.vue?definePage&vue',
+      })) as Exclude<TransformResult, string>
+
+      expect(result).toHaveProperty('code')
+      expect(result?.code).toContain('first')
+      expect(result?.code).not.toContain('second')
+      expect('duplicate definePage() call').toHaveBeenWarned()
+    })
+
+    it('removes every call from the component and does not throw', async () => {
+      const result = (await definePageTransform({
+        code: duplicateCode,
+        id: 'src/pages/dup.vue',
+      })) as Exclude<TransformResult, string>
+
+      expect(result).toHaveProperty('code')
+      expect(result?.code).not.toContain('definePage')
+      expect('duplicate definePage() call').toHaveBeenWarned()
+    })
+
+    it('extracts info from the first call only', () => {
+      expect(extractDefinePageInfo(duplicateCode, 'src/pages/dup.vue')).toEqual(
+        {
+          name: 'first',
+          hasRemainingProperties: false,
+        }
+      )
+      expect('duplicate definePage() call').toHaveBeenWarned()
+    })
+  })
+
   it('extracts name and path', () => {
     expect(extractDefinePageInfo(sampleCode, 'src/pages/basic.vue')).toEqual({
       name: 'custom',

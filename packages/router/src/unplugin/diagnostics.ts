@@ -55,6 +55,11 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `route alias array must only contain string literals. Found "${p.found}" in file "${p.filename}".`,
       fix: 'Only use string literals inside the route `alias` array.',
     },
+    VUE_ROUTER_B0020: {
+      why: (p: { filename: string }) =>
+        `duplicate definePage() call in file "${p.filename}". Only the first one is used, the rest are ignored.`,
+      fix: 'A file can only have one definePage() call. Merge them into a single definePage() call.',
+    },
 
     // --- options.ts ---
     VUE_ROUTER_B0009: {

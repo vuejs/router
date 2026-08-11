@@ -3,7 +3,9 @@
   "include": [
     // multiline
     "src/**/*.ts",
-    "__tests__/**/*.ts"
+    "__tests__/**/*.ts",
+    "tsdown.config.ts",
+    "package.json"
     // FIXME: use project references maybe to isolate module augmentation
     // "test-dts/**/*.ts"
   ],

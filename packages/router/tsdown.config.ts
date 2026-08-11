@@ -147,6 +147,11 @@ const iife = {
     __FEATURE_PROD_DEVTOOLS__: `false`,
     __STRIP_DEVTOOLS__: `true`,
   },
+  deps: {
+    // left out in prod but not in regular build
+    alwaysBundle: ['nostics'],
+    neverBundle: ['vue', '@vue/devtools-api'],
+  },
 } satisfies InlineConfig
 
 const iifeProd = {
