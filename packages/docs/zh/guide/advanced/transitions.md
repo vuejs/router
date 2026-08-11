@@ -82,5 +82,17 @@ Vue 可能会自动复用看起来相似的组件，从而忽略了任何过渡�
 </router-view>
 ```
 
-<!-- TODO: interactive example -->
+## 初始导航与过渡动效
+
+通常，除非我们添加 `appear` prop，否则 Vue 的 `<Transition>` 会忽略进入动画。但你会注意到，当它与 `<RouterView>` 一起使用时，即使没有设置 `appear` prop，过渡动效也**总是**会被应用。这是因为 Vue Router 中的导航是异步的，这意味着在初始导航完成之前，Vue 应用已经先渲染了一次。有多种方法可以适配这一点。最简单的一种是在挂载应用之前，使用 [`isReady`](../../api/interfaces/Router.md#Methods-isReady) 等待初始导航完成：
+
+```ts
+const app = createApp(App)
+app.use(router)
+
+// 在初始导航准备好之后再挂载
+await router.isReady()
+app.mount('#app')
+```
+
 <!-- See full example [here](https://github.com/vuejs/vue-router/blob/dev/examples/transitions/app.js). -->

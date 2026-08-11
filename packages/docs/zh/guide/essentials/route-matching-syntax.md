@@ -41,6 +41,15 @@ const routes = [
 确保**转义反斜杠（`\`）**，就像我们对 `\d`（变成 `\\d`）所做的那样，以在 JavaScript 中实际传递字符串中的反斜杠字符。
 :::
 
+由于右括号 `)` 用于标记自定义正则的结束，因此如果它出现在正则内部（例如嵌套分组），你必须对其进行转义：
+
+```js
+const routes = [
+  // 注意正则中分组的右括号被转义了
+  { path: '/:custom(something-(nested|other\\))' },
+]
+```
+
 ## 可重复的参数
 
 如果你需要匹配具有多个部分的路由，如 `/first/second/third`，你应该用 `*`（0 个或多个）和 `+`（1 个或多个）将参数标记为可重复：
@@ -114,8 +123,37 @@ const routes = [
 
 请注意，`*` 在技术上也标志着一个参数是可选的，但 `?` 参数不能重复。
 
+请注意，如果一个路由片段除了**可选参数**之外还包含其他内容，它将不会匹配**不带尾部斜线**的路径。例如：
+
+- `/users/:uid?-:name?` 不会匹配 `/users`，只会匹配 `/users/-` 甚至 `/users/-/`
+- `/users/:uid(\\d+)?:name?` 不会匹配 `/users`，只会匹配 `/users/`、`/users/2`、`/users/2/` 等
+
+你可以在[演练场](https://paths.esm.dev/?p=AAMsIPQg4AoKzidgQFoEXAmw-IEBBRYYOE0SkABTASiz1qgBpgQA1QTsFjAb3h2onsmlAmGIFsCXjXh4AIA.&t=/users/2/#)中体验匹配语法
+
 ## 调试
 
 如果你需要探究你的路由是如何转化为正则的，以了解为什么一个路由没有被匹配，或者，报告一个 bug，你可以使用[路径排序工具](https://paths.esm.dev/?p=AAMeJSyAwR4UbFDAFxAcAGAIJXMAAA..#)。它支持通过 URL 分享你的路由。
 
 <RuleKitLink />
+
+## 避免慢速正则
+
+在使用自定义正则时，确保避免使用慢速的正则模式。例如，使用 `.*` 会匹配任意字符，如果它与可重复修饰符 `*` 或 `+` 组合，且其后还有其他内容，可能会导致**严重的性能问题**：
+
+```ts
+const routes = [
+  // 由于贪婪的 `.*` 后面跟着 `*` 和一个静态字符串，这会创建一个非常慢的正则
+  { path: '/:pathMatch(.*)*/something-at-the-end' },
+]
+```
+
+在实际使用中，这些 _匹配一切_ 的参数只应放在 **URL 的最末尾**。如果你需要在路径的中间使用它们，**不要让它们可重复**：
+
+```ts
+const routes = [
+  // 这样是没问题的，因为 `.*` 位于末尾
+  { path: '/:pathMatch(.*)/something-at-the-end' },
+]
+```
+
+这会匹配相同的路由，但不会得到一个参数数组，而且速度快得多。

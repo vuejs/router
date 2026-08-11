@@ -30,24 +30,16 @@ _路径参数_ 用冒号 `:` 表示。当一个路由被匹配时，它的 _para
 </template>
 ```
 
-你可以在同一个路由中设置有多个 _路径参数_，它们会映射到 `$route.params` 上的相应字段。例如：
+你可以在同一个路由中设置有多个 _路径参数_，它们会映射到 `route.params` 上的相应字段。例如：
 
 | 匹配模式                       | 匹配路径                 | route.params                             |
 | ------------------------------ | ------------------------ | ---------------------------------------- |
 | /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`                |
 | /users/:username/posts/:postId | /users/eduardo/posts/123 | `{ username: 'eduardo', postId: '123' }` |
 
-除了 `route.params` 之外，`route` 对象还公开了其他有用的信息，如 `route.query`（如果 URL 中存在参数）、`route.hash` 等。你可以在 [API 参考](../../api/#routelocationnormalized)中查看完整的细节。
+- [在演练场中查看](https://play.vuejs.org/#eNqdVOtu0zAUfhUrIDWVlrgdF6GQVYNpEkMCpgG/CD+yxm29ObZlO22nqu/O8SWX0W5IVErjnOt3zvmOd1FdUp7e6SiLaC2FMmiH5oqUhnyQEu3RQokajdYNGRW8M1CiMUR12hR7QW9ifVtdKWXq/Qvu7VLZ6FU8wo0mSmNSNaWqBJZCG42no3FqVoTH8RidzdCu4KjHE8MzthKEUnCOfbhWUouGm3j0AhKOQLaHJzqJQnqoLzeklgwizaxDvprObqw/kqUqa51jEDiFdC84aKMEX84uGqUIN75qsDarLMdBh3Y79NIp0kXD2DUo0X7vwmAfJ+flug3YsHCCM6PdGb58JQmj/B4ZcVZEx5tTRLPjijyMwEXok+BBlv/KeDp5KuXp5J85cxwKznHbhNzSrVUH9zUlG4SDYdDneDAs+NTmgRGk50KSCiTpIHNCtuXcJPDQNQmEEUyoDHhDay34e+CCjehigDOQIvDwGO2/kFqoh09UG3idBKEjSk944FPSUb4j/U/o0jX0pmN+K+joT7bOcC44WIUlOnuUInb4Vz67reAAUjw+sSbOW2fol++lc7M/R0/U7lZmX7ysSRhaZl9X1ciFsL+5AOwc2J118INu796/4T8s0rCaw22qaMtyazdYC79ddl0dENgOtKGwJRbJoZnH162QjzogA+Dw3U7qUsL8BAcorvgiKHQRZW07iqiflBUX0coYqTOMGy7vlylUj3uL8zfpJH0LObUZSFOi6+RWiQ0UAAmLKPSniM7BCFdkbYRgOiklfSrFgeH5u3SaTvtMQ91BPpsO2rGH0g0sAF/Q5V+F2yFSRtQ3aShQ61EDSsbE5rOTGdWQDvx8Reb3R+R3euvLuFYEEKzJoGBTqiUxXn35/SvZwrlT1qJqGFg/o7whWrDGYvRmHxteAeyBnUN75eZI+fKHvtwawnVblAXquuHs3XAvnim9h/sqfT3oorsHdDrXdvvhYjpB9tLxfrdCVQSujlO5RQCWVujFZDKBGwSBkVpSntwKY0SdoakitZPLsqoAbCeBLAWHsKhhPiaMGcgL27xgZOtcGAw+cTAyxGH9HscZpvNfXUhGMy5MnLESAohFYh4kGfssAZ6iyxUsc48l2v8BszmoiA==)
 
-这个例子的 demo 可以在[这里](https://codesandbox.io/s/route-params-vue-router-examples-mlb14?from-embed&initialpath=%2Fusers%2Feduardo%2Fposts%2F1)找到。
-
-<!-- <iframe
-  src="https://codesandbox.io/embed//route-params-vue-router-examples-mlb14?fontsize=14&theme=light&view=preview&initialpath=%2Fusers%2Feduardo%2Fposts%2F1"
-  style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-  title="Route Params example"
-  allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-></iframe> -->
+除了 `route.params` 之外，`route` 对象还公开了其他有用的信息，如 `route.query`（如果 URL 中存在参数）、`route.hash` 等。你可以在 [API 参考](../../api/interfaces/RouteLocationNormalized)中查看完整的细节。
 
 ## 响应路由参数的变化
 
@@ -56,7 +48,7 @@ _路径参数_ 用冒号 `:` 表示。当一个路由被匹配时，它的 _para
   title="Learn how to react to param changes"
 />
 
-使用带有参数的路由时需要注意的是，当用户从 `/users/johnny` 导航到 `/users/jolyne` 时，**相同的组件实例将被重复使用**。因为两个路由都渲染同一个组件，比起销毁再创建，复用则显得更加高效。**不过，这也意味着组件的生命周期钩子不会被调用**。
+使用带有参数的路由时需要注意的是，当用户从 `/users/johnny` 导航到 `/users/jolyne` 时，**相同的组件实例将被重复使用**。因为两个路由都渲染同一个组件，比起销毁再创建，复用则显得更加高效。**不过，这也意味着组件的某些生命周期钩子不会被调用**。
 
 要对同一个组件中参数的变化做出响应的话，你可以简单地 watch `$route` 对象上的任意属性，在这个场景中，就是 `$route.params` ：
 
@@ -149,7 +141,7 @@ const routes = [
 router.push({
   name: 'NotFound',
   // 保留当前路径并删除第一个字符，以避免目标 URL 以 `//` 开头。
-  params: { pathMatch: this.$route.path.substring(1).split('/') },
+  params: { pathMatch: route.path.substring(1).split('/') },
   // 保留现有的查询和 hash 值，如果有的话
   query: route.query,
   hash: route.hash,

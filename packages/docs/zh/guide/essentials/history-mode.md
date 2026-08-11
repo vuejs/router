@@ -7,6 +7,27 @@
 
 在创建路由器实例时，`history` 配置允许我们在不同的历史模式中进行选择。
 
+## HTML5 模式
+
+用 `createWebHistory()` 创建 HTML5 模式，推荐使用这个模式：
+
+```js
+import { createRouter, createWebHistory } from 'vue-router'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    //...
+  ],
+})
+```
+
+当使用这种历史模式时，URL 会看起来很 "正常"，例如 `https://example.com/user/id`。漂亮!
+
+不过，问题来了。由于我们的应用是一个单页的客户端应用，如果没有适当的服务器配置，用户在浏览器中直接访问 `https://example.com/user/id`，就会得到一个 404 错误。这就尴尬了。
+
+不用担心：要解决这个问题，你需要做的就是在你的服务器上添加一个简单的回退路由。如果 URL 不匹配任何静态资源，它应返回你的应用所在的同一个 `index.html` 页面。漂亮依旧!
+
 ## Hash 模式
 
 hash 模式是用 `createWebHashHistory()` 创建的：
@@ -30,6 +51,7 @@ Memory 模式不会假定自己处于浏览器环境，因此不会与 URL 交�
 
 ```js
 import { createRouter, createMemoryHistory } from 'vue-router'
+
 const router = createRouter({
   history: createMemoryHistory(),
   routes: [
@@ -39,27 +61,6 @@ const router = createRouter({
 ```
 
 虽然不推荐，你仍可以在浏览器应用程序中使用此模式，但请注意**它不会有历史记录**，这意味着你无法*后退*或*前进*。
-
-## HTML5 模式
-
-用 `createWebHistory()` 创建 HTML5 模式，推荐使用这个模式：
-
-```js
-import { createRouter, createWebHistory } from 'vue-router'
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [
-    //...
-  ],
-})
-```
-
-当使用这种历史模式时，URL 会看起来很 "正常"，例如 `https://example.com/user/id`。漂亮!
-
-不过，问题来了。由于我们的应用是一个单页的客户端应用，如果没有适当的服务器配置，用户在浏览器中直接访问 `https://example.com/user/id`，就会得到一个 404 错误。这就尴尬了。
-
-不用担心：要解决这个问题，你需要做的就是在你的服务器上添加一个简单的回退路由。如果 URL 不匹配任何静态资源，它应返回你的应用所在的同一个 `index.html` 页面。漂亮依旧!
 
 ## 服务器配置示例
 
@@ -78,7 +79,7 @@ const router = createRouter({
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
+  RewriteRule . index.html [L]
 </IfModule>
 ```
 
@@ -89,6 +90,20 @@ const router = createRouter({
 ```nginx
 location / {
   try_files $uri $uri/ /index.html;
+}
+```
+
+对于独立的服务器配置（例如使用官方 `nginx` docker 镜像时），将以下内容放到 `/etc/nginx/conf.d/default.conf` 中：
+
+```nginx
+server {
+  listen 80;
+  server_name localhost;
+  root /usr/share/nginx/html;
+  index index.html;
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
 }
 ```
 
@@ -199,6 +214,19 @@ rewrite {
 ```json [vercel.json ~vscode-icons:file-type-json~]
 {
   "rewrites": [{ "source": "/:path*", "destination": "/index.html" }]
+}
+```
+
+### Azure Static Web Apps
+
+在 public 目录下创建一个 `staticwebapp.config.json` 文件，包含以下配置。如果请求的路由不存在，Azure 会将除资源和 favicon 之外的所有请求重写到 `index.html`。
+
+```json [staticwebapp.config.json ~vscode-icons:file-type-light-azure~]
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/favicons/*"]
+  }
 }
 ```
 
