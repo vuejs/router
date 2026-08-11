@@ -426,7 +426,7 @@ function extractQueryParams(
                   paramProp.value,
                   offset
                 )
-                if (expression === undefined) {
+                if (expression == null) {
                   diagnostics.VUE_ROUTER_B0006({
                     paramName,
                     type: paramProp.value.type,
