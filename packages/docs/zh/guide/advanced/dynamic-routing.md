@@ -5,7 +5,7 @@
   title="Learn how to add routes at runtime"
 />
 
-对路由的添加通常是通过 `routes` 选项来完成的，但是在某些情况下，你可能想在应用程序已经运行的时候添加或删除路由。具有可扩展接口(如 [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html) )这样的应用程序可以使用它来扩展应用程序。
+对路由的添加通常是通过 `routes` 选项来完成的，但是在某些情况下，你可能想在应用程序已经运行的时候添加或删除路由。具有可扩展接口 (如 [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html)) 这样的应用程序可以使用它来扩展应用程序。
 
 ## 添加路由
 
@@ -26,7 +26,7 @@ const router = createRouter({
 router.addRoute({ path: '/about', component: About })
 ```
 
-页面仍然会显示 `Article` 组件，我们需要手动调用 `router.replace()` 来改变当前的位置，并覆盖我们原来的位置（而不是推入一条新的历史记录，导致历史记录中同一个位置出现两次）：
+页面仍然会显示 `Article` 组件，我们需要手动调用 `router.replace()` 来改变当前的位置，并覆盖我们原来的位置 (而不是推入一条新的历史记录，导致历史记录中同一个位置出现两次)：
 
 ```js
 router.addRoute({ path: '/about', component: About })

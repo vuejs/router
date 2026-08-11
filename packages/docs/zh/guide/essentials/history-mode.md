@@ -22,11 +22,11 @@ const router = createRouter({
 })
 ```
 
-当使用这种历史模式时，URL 会看起来很 "正常"，例如 `https://example.com/user/id`。漂亮!
+当使用这种历史模式时，URL 会看起来很 “正常”，例如 `https://example.com/user/id`。漂亮！
 
 不过，问题来了。由于我们的应用是一个单页的客户端应用，如果没有适当的服务器配置，用户在浏览器中直接访问 `https://example.com/user/id`，就会得到一个 404 错误。这就尴尬了。
 
-不用担心：要解决这个问题，你需要做的就是在你的服务器上添加一个简单的回退路由。如果 URL 不匹配任何静态资源，它应返回你的应用所在的同一个 `index.html` 页面。漂亮依旧!
+不用担心：要解决这个问题，你需要做的就是在你的服务器上添加一个简单的回退路由。如果 URL 不匹配任何静态资源，它应返回你的应用所在的同一个 `index.html` 页面。漂亮依旧！
 
 ## Hash 模式
 
@@ -43,7 +43,7 @@ const router = createRouter({
 })
 ```
 
-它在内部传递的实际 URL 之前使用了一个井号（`#`）。由于这部分 URL 从未被发送到服务器，所以它不需要在服务器层面上进行任何特殊处理。不过，**它在 SEO 中确实有不好的影响**。如果你担心这个问题，可以使用 HTML5 模式。
+它在内部传递的实际 URL 之前使用了一个井号 (`#`)。由于这部分 URL 从未被发送到服务器，所以它不需要在服务器层面上进行任何特殊处理。不过，**它在 SEO 中确实有不好的影响**。如果你担心这个问题，可以使用 HTML5 模式。
 
 ## Memory 模式
 
@@ -64,7 +64,7 @@ const router = createRouter({
 
 ## 服务器配置示例
 
-**注意**：以下示例假定你正在从根目录提供服务。如果你部署到子目录，你应该使用[Vue CLI 的 `publicPath` 配置](https://cli.vuejs.org/config/#publicpath)和相关的[路由器的 `base` 属性](../../api/#Functions-createWebHistory)。你还需要调整下面的例子，以使用子目录而不是根目录（例如，将 `RewriteBase /` 替换为 `RewriteBase /name-of-your-subfolder/`）。
+**注意**：以下示例假定你正在从根目录提供服务。如果你部署到子目录，你应该使用 [Vue CLI 的 `publicPath` 配置](https://cli.vuejs.org/config/#publicpath)和相关的[路由器的 `base` 属性](../../api/#Functions-createWebHistory)。你还需要调整下面的例子，以使用子目录而不是根目录 (例如，将 `RewriteBase /` 替换为 `RewriteBase /name-of-your-subfolder/`)。
 
 ### Apache
 
@@ -93,7 +93,7 @@ location / {
 }
 ```
 
-对于独立的服务器配置（例如使用官方 `nginx` docker 镜像时），将以下内容放到 `/etc/nginx/conf.d/default.conf` 中：
+对于独立的服务器配置 (例如使用官方 `nginx` docker 镜像时)，将以下内容放到 `/etc/nginx/conf.d/default.conf` 中：
 
 ```nginx
 server {

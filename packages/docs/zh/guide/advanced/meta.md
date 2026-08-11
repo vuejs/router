@@ -34,11 +34,11 @@ const routes = [
 
 <!-- TODO: the explanation about route records should be explained before and things should be moved here -->
 
-首先，我们称呼 `routes` 配置中的每个路由对象为 **路由记录**。路由记录可以是嵌套的，因此，当一个路由匹配成功后，它可能匹配多个路由记录。
+首先，我们称呼 `routes` 配置中的每个路由对象为**路由记录**。路由记录可以是嵌套的，因此，当一个路由匹配成功后，它可能匹配多个路由记录。
 
-例如，根据上面的路由配置，`/posts/new` 这个 URL 将会匹配父路由记录（`path: '/posts'`）以及子路由记录（`path: 'new'`）。
+例如，根据上面的路由配置，`/posts/new` 这个 URL 将会匹配父路由记录 (`path: '/posts'`) 以及子路由记录 (`path: 'new'`)。
 
-一个路由匹配到的所有路由记录会暴露为 `route` 对象（还有在导航守卫中的路由对象）的`route.matched` 数组。我们需要遍历这个数组来检查路由记录中的 `meta` 字段，但是 Vue Router 还为你提供了一个 `route.meta`，它是**所有 `meta`** 字段（从父到子）的非递归合并。这意味着你可以简单地写成：
+一个路由匹配到的所有路由记录会暴露为 `route` 对象 (还有在导航守卫中的路由对象) 的 `route.matched` 数组。我们需要遍历这个数组来检查路由记录中的 `meta` 字段，但是 Vue Router 还为你提供了一个 `route.meta`，它是**所有 `meta`** 字段 (从父到子) 的非递归合并。这意味着你可以简单地写成：
 
 ```js
 router.beforeEach((to, from) => {

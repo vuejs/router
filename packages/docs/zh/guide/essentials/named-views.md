@@ -13,7 +13,7 @@
 <router-view name="footer" />
 ```
 
-一个视图使用一个组件渲染，因此对于同一个路由，多个视图就需要多个组件。确保正确使用 `components` 配置（带上 **s**）：
+一个视图使用一个组件渲染，因此对于同一个路由，多个视图就需要多个组件。确保正确使用 `components` 配置 (带上 **s**)：
 
 ```js
 const router = createRouter({
@@ -55,7 +55,7 @@ const router = createRouter({
 
 **注意**：_我们先忘记 HTML/CSS 具体的布局的样子，只专注在用到的组件上。_
 
-`UserSettings` 组件的 `<template>` 部分应该是类似下面的这段代码:
+`UserSettings` 组件的 `<template>` 部分应该是类似下面的这段代码：
 
 ```vue-html [UserSettings.vue]
 <div>

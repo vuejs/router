@@ -1,4 +1,4 @@
-# Vue Router 和 组合式 API
+# Vue Router 和组合式 API
 
 <VueSchoolLink
   href="https://vueschool.io/lessons/router-and-the-composition-api"
