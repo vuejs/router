@@ -27,8 +27,8 @@ router.beforeEach((to, from) => {
 
 每个守卫方法接收两个参数：
 
-- **`to`**: 即将要进入的目标[路由地址（标准化格式）](../../api/#routelocationnormalized)
-- **`from`**: 当前导航正要离开的[路由地址（标准化格式）](../../api/#routelocationnormalized)
+- **`to`**: 即将要进入的目标[路由地址（标准化格式）](../../api/interfaces/RouteLocationNormalized.md)
+- **`from`**: 当前导航正要离开的[路由地址（标准化格式）](../../api/interfaces/RouteLocationNormalized.md)
 
 可以返回的值如下:
 
@@ -49,7 +49,7 @@ router.beforeEach(async (to, from) => {
 })
 ```
 
-如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](../../api/interfaces/Router.md#onError) 注册过的回调。
+如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](../../api/interfaces/Router.md#Methods-onError) 注册过的回调。
 
 如果没有返回任何值、返回 `undefined` 或返回 `true`，**则导航是有效的**，并调用下一个导航守卫。
 
