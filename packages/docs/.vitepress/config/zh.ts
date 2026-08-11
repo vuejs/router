@@ -211,11 +211,11 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             },
             {
               text: '路由解析器（实验性）',
-              link: '/zh/experimental/router-resolver',
+              link: '/experimental/router-resolver',
             },
             {
               text: '参数解析器（实验性）',
-              link: '/zh/experimental/param-parsers',
+              link: '/experimental/param-parsers',
             },
           ],
         },
@@ -225,55 +225,55 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
           items: [
             {
               text: '介绍',
-              link: '/zh/data-loaders/',
+              link: '/data-loaders/',
             },
             {
               text: '定义数据加载器',
-              link: '/zh/data-loaders/defining-loaders',
+              link: '/data-loaders/defining-loaders',
             },
             {
               text: '重新加载数据',
-              link: '/zh/data-loaders/reloading-data',
+              link: '/data-loaders/reloading-data',
             },
             {
               text: '导航感知',
-              link: '/zh/data-loaders/navigation-aware',
+              link: '/data-loaders/navigation-aware',
             },
             {
               text: '错误处理',
-              link: '/zh/data-loaders/error-handling',
+              link: '/data-loaders/error-handling',
             },
             {
               text: '组织加载器',
-              link: '/zh/data-loaders/organization',
+              link: '/data-loaders/organization',
             },
             {
               text: '嵌套加载器',
-              link: '/zh/data-loaders/nested-loaders',
+              link: '/data-loaders/nested-loaders',
             },
             {
               text: '取消加载',
-              link: '/zh/data-loaders/load-cancellation',
+              link: '/data-loaders/load-cancellation',
             },
             {
               text: 'Nuxt',
-              link: '/zh/data-loaders/nuxt',
+              link: '/data-loaders/nuxt',
             },
             {
               text: 'SSR',
-              link: '/zh/data-loaders/ssr',
+              link: '/data-loaders/ssr',
             },
             {
               text: '基础加载器',
-              link: '/zh/data-loaders/basic/',
+              link: '/data-loaders/basic/',
             },
             {
               text: 'Colada 加载器',
-              link: '/zh/data-loaders/colada/',
+              link: '/data-loaders/colada/',
             },
             {
               text: 'RFC',
-              link: '/zh/data-loaders/rfc',
+              link: '/data-loaders/rfc',
             },
           ],
         },
@@ -282,7 +282,7 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
           items: [
             {
               text: '迁移到 v5',
-              link: '/zh/guide/migration/v4-to-v5.html',
+              link: '/guide/migration/v4-to-v5.html',
             },
             {
               text: '从 Vue 2 迁移',

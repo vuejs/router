@@ -25,7 +25,7 @@ const router = createRouter({
 })
 ```
 
-`component` (和 `components`) 配置接收一个返回组件 Promise 的函数，Vue Router **只会在第一次进入页面时才会获取这个函数**，然后使用缓存的数据。这意味着你也可以使用更复杂的函数，只要它们返回一个 Promise：
+`component` (和 `components`) 配置接收一个返回组件 Promise 的函数，Vue Router **只会在首次进入页面时调用该函数**并获取其返回的 Promise 结果，此后则缓存并复用已解析完成的组件。这意味着你也可以使用更复杂的函数，只要它们返回一个 Promise：
 
 ```js
 const UserDetails = () => Promise.resolve({/* 组件定义 */})
