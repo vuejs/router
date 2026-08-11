@@ -39,7 +39,7 @@ _路径参数_用冒号 `:` 表示。当一个路由被匹配时，它的 _param
 
 - [在演练场中查看](https://play.vuejs.org/#eNqdVOtu0zAUfhUrIDWVlrgdF6GQVYNpEkMCpgG/CD+yxm29ObZlO22nqu/O8SWX0W5IVErjnOt3zvmOd1FdUp7e6SiLaC2FMmiH5oqUhnyQEu3RQokajdYNGRW8M1CiMUR12hR7QW9ifVtdKWXq/Qvu7VLZ6FU8wo0mSmNSNaWqBJZCG42no3FqVoTH8RidzdCu4KjHE8MzthKEUnCOfbhWUouGm3j0AhKOQLaHJzqJQnqoLzeklgwizaxDvprObqw/kqUqa51jEDiFdC84aKMEX84uGqUIN75qsDarLMdBh3Y79NIp0kXD2DUo0X7vwmAfJ+flug3YsHCCM6PdGb58JQmj/B4ZcVZEx5tTRLPjijyMwEXok+BBlv/KeDp5KuXp5J85cxwKznHbhNzSrVUH9zUlG4SDYdDneDAs+NTmgRGk50KSCiTpIHNCtuXcJPDQNQmEEUyoDHhDay34e+CCjehigDOQIvDwGO2/kFqoh09UG3idBKEjSk944FPSUb4j/U/o0jX0pmN+K+joT7bOcC44WIUlOnuUInb4Vz67reAAUjw+sSbOW2fol++lc7M/R0/U7lZmX7ysSRhaZl9X1ciFsL+5AOwc2J118INu796/4T8s0rCaw22qaMtyazdYC79ddl0dENgOtKGwJRbJoZnH162QjzogA+Dw3U7qUsL8BAcorvgiKHQRZW07iqiflBUX0coYqTOMGy7vlylUj3uL8zfpJH0LObUZSFOi6+RWiQ0UAAmLKPSniM7BCFdkbYRgOiklfSrFgeH5u3SaTvtMQ91BPpsO2rGH0g0sAF/Q5V+F2yFSRtQ3aShQ61EDSsbE5rOTGdWQDvx8Reb3R+R3euvLuFYEEKzJoGBTqiUxXn35/SvZwrlT1qJqGFg/o7whWrDGYvRmHxteAeyBnUN75eZI+fKHvtwawnVblAXquuHs3XAvnim9h/sqfT3oorsHdDrXdvvhYjpB9tLxfrdCVQSujlO5RQCWVujFZDKBGwSBkVpSntwKY0SdoakitZPLsqoAbCeBLAWHsKhhPiaMGcgL27xgZOtcGAw+cTAyxGH9HscZpvNfXUhGMy5MnLESAohFYh4kGfssAZ6iyxUsc48l2v8BszmoiA==)
 
-除了 `route.params` 之外，`route` 对象还公开了其他有用的信息，如 `route.query` (如果 URL 中存在参数)、`route.hash` 等。你可以在 [API 参考](../../api/interfaces/RouteLocationNormalized)中查看完整的细节。
+除了 `route.params` 之外，`route` 对象还公开了其他有用的信息，如 `route.query` (如果 URL 中存在参数)、`route.hash` 等。你可以在 [API 参考](../../api/interfaces/RouteLocationNormalized.md)中查看完整的细节。
 
 ## 响应路由参数的变化
 

@@ -39,11 +39,11 @@ const UserDetails = () => Promise.resolve({/* 组件定义 */})
 
 ## 与异步组件的关系
 
-Vue Router 的懒加载可能看起来与 Vue 的[异步组件](https://vuejs.org/guide/components/async.html)相似，但它们是不同的特性。**不要**将异步组件用作路由组件。异步组件仍然可以在路由组件内部使用，但路由组件本身应该只是一个函数。
+Vue Router 的懒加载可能看起来与 Vue 的[异步组件](https://cn.vuejs.org/guide/components/async.html)相似，但它们是不同的特性。**不要**将异步组件用作路由组件。异步组件仍然可以在路由组件内部使用，但路由组件本身应该只是一个函数。
 
 ## 与函数式组件的关系
 
-虽然不常见，但将[函数式组件](https://vuejs.org/guide/extras/render-function.html#functional-components)用作路由组件也是可以的。然而，Vue Router 需要某种方式来区分函数式组件和懒加载。要使用函数式组件，我们必须给这个函数设置一个 `displayName`：
+虽然不常见，但将[函数式组件](https://cn.vuejs.org/guide/extras/render-function.html#functional-components)用作路由组件也是可以的。然而，Vue Router 需要某种方式来区分函数式组件和懒加载。要使用函数式组件，我们必须给这个函数设置一个 `displayName`：
 
 ```ts
 const AboutPage: FunctionalComponent = () => {
@@ -58,7 +58,7 @@ AboutPage.displayName = 'AboutPage'
 
 ### 使用 Vite
 
-我们可以在 [`rollupOptions`](https://vite.dev/config/build-options.html#build-rollupoptions) 下定义分块：
+我们可以在 [`rollupOptions`](https://cn.vite.dev/config/build-options.html#build-rollupoptions) 下定义分块：
 
 ```js [vite.config.js]
 export default defineConfig({
