@@ -5,7 +5,7 @@
   title="Learn about dynamic route matching with params"
 />
 
-很多时候，我们需要将给定匹配模式的路由映射到同一个组件。例如，我们可能有一个 `User` 组件，它应该对所有用户进行渲染，但用户 ID 不同。在 Vue Router 中，我们可以在路径中使用一个动态字段来实现，我们称之为 _路径参数_ ：
+很多时候，我们需要将给定匹配模式的路由映射到同一个组件。例如，我们可能有一个 `User` 组件，它应该对所有用户进行渲染，但用户 ID 不同。在 Vue Router 中，我们可以在路径中使用一个动态字段来实现，我们称之为_路径参数_：
 
 ```js
 import User from './User.vue'
@@ -19,7 +19,7 @@ const routes = [
 
 现在像 `/users/johnny` 和 `/users/jolyne` 这样的 URL 都会映射到同一个路由。
 
-_路径参数_ 用冒号 `:` 表示。当一个路由被匹配时，它的 _params_ 的值将在每个组件中以 `route.params` 的形式暴露出来。因此，我们可以通过更新 `User` 的模板来呈现当前的用户 ID：
+_路径参数_用冒号 `:` 表示。当一个路由被匹配时，它的 _params_ 的值将在每个组件中以 `route.params` 的形式暴露出来。因此，我们可以通过更新 `User` 的模板来呈现当前的用户 ID：
 
 ```vue
 <template>
@@ -30,7 +30,7 @@ _路径参数_ 用冒号 `:` 表示。当一个路由被匹配时，它的 _para
 </template>
 ```
 
-你可以在同一个路由中设置有多个 _路径参数_，它们会映射到 `route.params` 上的相应字段。例如：
+你可以在同一个路由中设置有多个_路径参数_，它们会映射到 `route.params` 上的相应字段。例如：
 
 | 匹配模式                       | 匹配路径                 | route.params                             |
 | ------------------------------ | ------------------------ | ---------------------------------------- |
@@ -39,7 +39,7 @@ _路径参数_ 用冒号 `:` 表示。当一个路由被匹配时，它的 _para
 
 - [在演练场中查看](https://play.vuejs.org/#eNqdVOtu0zAUfhUrIDWVlrgdF6GQVYNpEkMCpgG/CD+yxm29ObZlO22nqu/O8SWX0W5IVErjnOt3zvmOd1FdUp7e6SiLaC2FMmiH5oqUhnyQEu3RQokajdYNGRW8M1CiMUR12hR7QW9ifVtdKWXq/Qvu7VLZ6FU8wo0mSmNSNaWqBJZCG42no3FqVoTH8RidzdCu4KjHE8MzthKEUnCOfbhWUouGm3j0AhKOQLaHJzqJQnqoLzeklgwizaxDvprObqw/kqUqa51jEDiFdC84aKMEX84uGqUIN75qsDarLMdBh3Y79NIp0kXD2DUo0X7vwmAfJ+flug3YsHCCM6PdGb58JQmj/B4ZcVZEx5tTRLPjijyMwEXok+BBlv/KeDp5KuXp5J85cxwKznHbhNzSrVUH9zUlG4SDYdDneDAs+NTmgRGk50KSCiTpIHNCtuXcJPDQNQmEEUyoDHhDay34e+CCjehigDOQIvDwGO2/kFqoh09UG3idBKEjSk944FPSUb4j/U/o0jX0pmN+K+joT7bOcC44WIUlOnuUInb4Vz67reAAUjw+sSbOW2fol++lc7M/R0/U7lZmX7ysSRhaZl9X1ciFsL+5AOwc2J118INu796/4T8s0rCaw22qaMtyazdYC79ddl0dENgOtKGwJRbJoZnH162QjzogA+Dw3U7qUsL8BAcorvgiKHQRZW07iqiflBUX0coYqTOMGy7vlylUj3uL8zfpJH0LObUZSFOi6+RWiQ0UAAmLKPSniM7BCFdkbYRgOiklfSrFgeH5u3SaTvtMQ91BPpsO2rGH0g0sAF/Q5V+F2yFSRtQ3aShQ61EDSsbE5rOTGdWQDvx8Reb3R+R3euvLuFYEEKzJoGBTqiUxXn35/SvZwrlT1qJqGFg/o7whWrDGYvRmHxteAeyBnUN75eZI+fKHvtwawnVblAXquuHs3XAvnim9h/sqfT3oorsHdDrXdvvhYjpB9tLxfrdCVQSujlO5RQCWVujFZDKBGwSBkVpSntwKY0SdoakitZPLsqoAbCeBLAWHsKhhPiaMGcgL27xgZOtcGAw+cTAyxGH9HscZpvNfXUhGMy5MnLESAohFYh4kGfssAZ6iyxUsc48l2v8BszmoiA==)
 
-除了 `route.params` 之外，`route` 对象还公开了其他有用的信息，如 `route.query`（如果 URL 中存在参数）、`route.hash` 等。你可以在 [API 参考](../../api/interfaces/RouteLocationNormalized)中查看完整的细节。
+除了 `route.params` 之外，`route` 对象还公开了其他有用的信息，如 `route.query` (如果 URL 中存在参数)、`route.hash` 等。你可以在 [API 参考](../../api/interfaces/RouteLocationNormalized)中查看完整的细节。
 
 ## 响应路由参数的变化
 
@@ -50,7 +50,7 @@ _路径参数_ 用冒号 `:` 表示。当一个路由被匹配时，它的 _para
 
 使用带有参数的路由时需要注意的是，当用户从 `/users/johnny` 导航到 `/users/jolyne` 时，**相同的组件实例将被重复使用**。因为两个路由都渲染同一个组件，比起销毁再创建，复用则显得更加高效。**不过，这也意味着组件的某些生命周期钩子不会被调用**。
 
-要对同一个组件中参数的变化做出响应的话，你可以简单地 watch `$route` 对象上的任意属性，在这个场景中，就是 `$route.params` ：
+要对同一个组件中参数的变化做出响应的话，你可以简单地 watch `$route` 对象上的任意属性，在这个场景中，就是 `$route.params`：
 
 ::: code-group
 
@@ -124,7 +124,7 @@ export default {
   title="Learn how to make a catch all/404 not found route"
 />
 
-常规参数只匹配 url 片段之间的字符，用 `/` 分隔。如果我们想匹配**任意路径**，我们可以使用自定义的 _路径参数_ 正则表达式，在 _路径参数_ 后面的括号中加入正则表达式：
+常规参数只匹配 url 片段之间的字符，用 `/` 分隔。如果我们想匹配**任意路径**，我们可以使用自定义的_路径参数_正则表达式，在_路径参数_后面的括号中加入正则表达式：
 
 ```js
 const routes = [

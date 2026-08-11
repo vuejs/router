@@ -118,7 +118,7 @@ URL `/search?q=vue` 将传递 `{query: 'vue'}` 作为 props 传给 `SearchUser` 
 
 ## 通过 RouterView
 
-你还可以通过 [`<RouterView>` 插槽](../advanced/router-view-slot) 传递任意 **props**：
+你还可以通过 [`<RouterView>` 插槽](../advanced/router-view-slot)传递任意 **props**：
 
 ```vue-html
 <RouterView v-slot="{ Component }">

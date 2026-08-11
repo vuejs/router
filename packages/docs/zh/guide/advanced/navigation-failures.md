@@ -20,7 +20,7 @@ router.push('/my-profile')
 this.isMenuOpen = false
 ```
 
-但是这样做会马上关闭菜单，因为 **导航是异步的**，我们需要 `await` `router.push` 返回的 promise ：
+但是这样做会马上关闭菜单，因为**导航是异步的**，我们需要 `await` `router.push` 返回的 promise：
 
 ```js
 await router.push('/my-profile')
@@ -31,7 +31,7 @@ this.isMenuOpen = false
 
 ## 检测导航失效
 
-如果导航被阻止，导致用户停留在同一个页面上，由 `router.push` 返回的 `Promise` 的解析值将是 _Navigation Failure_。否则，它将是一个 _falsy_ 值（通常是 `undefined`）。这样我们就可以区分我们导航是否离开了当前位置：
+如果导航被阻止，导致用户停留在同一个页面上，由 `router.push` 返回的 `Promise` 的解析值将是 _Navigation Failure_。否则，它将是一个 _falsy_ 值 (通常是 `undefined`)。这样我们就可以区分我们导航是否离开了当前位置：
 
 <RuleKitLink />
 
@@ -61,7 +61,7 @@ if (isNavigationFailure(failure, NavigationFailureType.aborted)) {
 ```
 
 ::: tip
-如果你忽略第二个参数： `isNavigationFailure(failure)`，那么就只会检查这个 `failure` 是不是一个 _Navigation Failure_。
+如果你忽略第二个参数：`isNavigationFailure(failure)`，那么就只会检查这个 `failure` 是不是一个 _Navigation Failure_。
 :::
 
 ## 全局导航失效
@@ -81,7 +81,7 @@ router.afterEach((to, from, failure) => {
 正如我们在一开始所说的，有不同的情况会导致导航的中止，所有这些情况都会导致不同的 _Navigation Failure_。它们可以用 `isNavigationFailure` 和 `NavigationFailureType` 来区分。总共有三种不同的类型：
 
 - `aborted`：在导航守卫中返回 `false` 中断了本次导航。
-- `cancelled`： 在当前导航完成之前又有了一个新的导航。比如，在等待导航守卫的过程中又调用了 `router.push`。
+- `cancelled`：在当前导航完成之前又有了一个新的导航。比如，在等待导航守卫的过程中又调用了 `router.push`。
 - `duplicated`：导航被阻止，因为我们已经在目标位置了。
 
 ## *导航失效*的属性
