@@ -106,8 +106,8 @@ export const sharedConfig = defineConfig({
     languages: ['vue', 'ts', 'js'],
 
     attrs: {
-      leftDelimiter: '%{',
-      rightDelimiter: '}%',
+      left: '%{',
+      right: '}%',
     },
 
     anchor: {
@@ -207,7 +207,10 @@ export const sharedConfig = defineConfig({
 
   themeConfig: {
     logo: '/logo.svg',
-    outline: [2, 3],
+    // object form (not the `[2, 3]` array) so locale configs merge instead of
+    // replacing: VitePress 2 layers locale themeConfig with `stackView`, which
+    // only merges plain objects
+    outline: { level: [2, 3] },
 
     socialLinks: [
       { icon: 'x', link: 'https://twitter.com/posva' },
