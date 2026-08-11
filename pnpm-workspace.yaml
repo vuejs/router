@@ -10,7 +10,9 @@ overrides:
   '@vue/compiler-sfc': '^3.5.34'
   '@vue/runtime-dom': '^3.5.34'
   '@vue/server-renderer': '^3.5.34'
-  'vite': '^7.3.0'
+  'vite': '^8.2.0'
+  # vitepress 1 doesn't support vite 8 yet
+  'vitepress>vite': '^7.3.0'
   'vue': '^3.5.34'
 
 peerDependencyRules:
