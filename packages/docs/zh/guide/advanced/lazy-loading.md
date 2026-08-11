@@ -27,42 +27,38 @@ const router = createRouter({
 
 `component`（和 `components`）配置接收一个返回组件 Promise 的函数，Vue Router **只会在第一次进入页面时才会获取这个函数**，然后使用缓存的数据。这意味着你也可以使用更复杂的函数，只要它们返回一个 Promise ：
 
-<RuleKitLink />
-
 ```js
 const UserDetails = () => Promise.resolve({/* 组件定义 */})
 ```
 
 一般来说，对所有的路由**都使用动态导入**是个好主意。
 
-::: tip 注意
-**不要**在路由中使用[异步组件](https://cn.vuejs.org/guide/components/async.html)。异步组件仍然可以在路由组件中使用，但路由组件本身就是动态导入的。
-:::
+如果你使用的是 Vite 或 webpack 之类的打包器，它会自动受益于[代码分割](https://webpack.js.org/guides/code-splitting/)。
 
-如果你使用的是 webpack 之类的打包器，它会自动受益于[代码分割](https://webpack.js.org/guides/code-splitting/)。
+<RuleKitLink />
 
-如果你使用的是 Babel，你将需要添加 [syntax-dynamic-import](https://babeljs.io/docs/plugins/syntax-dynamic-import/) 插件，才能使 Babel 正确地解析语法。
+## 与异步组件的关系
+
+Vue Router 的懒加载可能看起来与 Vue 的[异步组件](https://vuejs.org/guide/components/async.html)相似，但它们是不同的特性。**不要**将异步组件用作路由组件。异步组件仍然可以在路由组件内部使用，但路由组件本身应该只是一个函数。
+
+## 与函数式组件的关系
+
+虽然不常见，但将[函数式组件](https://vuejs.org/guide/extras/render-function.html#functional-components)用作路由组件也是可以的。然而，Vue Router 需要某种方式来区分函数式组件和懒加载。要使用函数式组件，我们必须给这个函数设置一个 `displayName`：
+
+```ts
+const AboutPage: FunctionalComponent = () => {
+  return h('h1', {}, 'About')
+}
+AboutPage.displayName = 'AboutPage'
+```
 
 ## 把组件按组分块
 
-### 使用 webpack
-
-有时候我们想把某个路由下的所有组件都打包在同个异步块 (chunk) 中。只需要使用[命名 chunk](https://webpack.js.org/guides/code-splitting/#dynamic-imports)，一个特殊的注释语法来提供 chunk name (需要 Webpack > 2.4)：
-
-```js
-const UserDetails = () =>
-  import(/* webpackChunkName: "group-user" */ './UserDetails.vue')
-const UserDashboard = () =>
-  import(/* webpackChunkName: "group-user" */ './UserDashboard.vue')
-const UserProfileEdit = () =>
-  import(/* webpackChunkName: "group-user" */ './UserProfileEdit.vue')
-```
-
-webpack 会将任何一个异步模块与相同的块名称组合到相同的异步块中。
+我们可能想把同一个路由下嵌套的所有组件都分组到同一个块中，让它们可以通过一次请求全部加载。
 
 ### 使用 Vite
 
-在 Vite 中，你可以在[`rollupOptions`](https://cn.vite.dev/config/build-options.html#build-rollupoptions)下定义分块：
+我们可以在 [`rollupOptions`](https://vite.dev/config/build-options.html#build-rollupoptions) 下定义分块：
 
 ```js [vite.config.js]
 export default defineConfig({
@@ -82,3 +78,18 @@ export default defineConfig({
   },
 })
 ```
+
+### 使用 webpack
+
+我们可以使用一种特殊的注释语法来指定[块名称](https://webpack.js.org/api/module-methods/#webpackchunkname)：
+
+```js
+const UserDetails = () =>
+  import(/* webpackChunkName: "group-user" */ './UserDetails.vue')
+const UserDashboard = () =>
+  import(/* webpackChunkName: "group-user" */ './UserDashboard.vue')
+const UserProfileEdit = () =>
+  import(/* webpackChunkName: "group-user" */ './UserProfileEdit.vue')
+```
+
+webpack 会将任何一个异步模块与相同的块名称组合到相同的异步块中。
