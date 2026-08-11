@@ -369,8 +369,16 @@ definePage({
       },
     })
 
-    const totalDefault = extractDefinePageInfo(code, 'src/pages/test.vue')
-      ?.params?.query?.total?.default
+    const paramTotal = extractDefinePageInfo(code, 'src/pages/test.vue')?.params
+      ?.query?.total
+    // FIXME: should be normalized to the object shape
+    expect(
+      // @ts-expect-error: multiple possible types
+      paramTotal?.default
+    ).toBeTypeOf('string')
+    const totalDefault: string =
+      // @ts-expect-error
+      paramTotal?.default
     expect(totalDefault).toContain('() => {')
     expect(totalDefault).toContain('const total = 1 + 2')
     expect(totalDefault).toContain('return total')
