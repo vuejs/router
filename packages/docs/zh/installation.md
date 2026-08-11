@@ -80,9 +80,9 @@ Vue Router 同时支持 **_ES module_** 和 **_global_** 构建版本。我们�
 <script type="importmap">
   {
     "imports": {
-      "vue": "https://unpkg.com/vue@{{ $frontmatter.packageVersions.vue }}/dist/vue.esm-browser.js",
-      "vue-router": "https://unpkg.com/vue-router@{{ $frontmatter.packageVersions['vue-router'] }}/dist/vue-router.esm-browser.js",
-      "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@{{ $frontmatter.packageVersions['@vue/devtools-api'] }}/dist/vue-devtools-api.esm-browser.js"
+      "vue": "https://unpkg.com/vue@{{ $frontmatter.packageVersions?.vue }}/dist/vue.esm-browser.js",
+      "vue-router": "https://unpkg.com/vue-router@{{ $frontmatter.packageVersions?.['vue-router'] }}/dist/vue-router.esm-browser.js",
+      "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@{{ $frontmatter.packageVersions?.['@vue/devtools-api'] }}/dist/vue-devtools-api.esm-browser.js"
     }
   }
 </script>
@@ -99,8 +99,8 @@ Vue Router 同时支持 **_ES module_** 和 **_global_** 构建版本。我们�
 ### 使用 global 构建
 
 ```html-vue
-<script src="https://unpkg.com/vue@{{ $frontmatter.packageVersions.vue }}/dist/vue.global.js"></script>
-<script src="https://unpkg.com/vue-router@{{ $frontmatter.packageVersions['vue-router'] }}/dist/vue-router.global.js"></script>
+<script src="https://unpkg.com/vue@{{ $frontmatter.packageVersions?.vue }}/dist/vue.global.js"></script>
+<script src="https://unpkg.com/vue-router@{{ $frontmatter.packageVersions?.['vue-router'] }}/dist/vue-router.global.js"></script>
 <script>
   const { createApp } = Vue
   const { createRouter } = VueRouter

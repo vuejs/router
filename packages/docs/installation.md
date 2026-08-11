@@ -84,9 +84,9 @@ Each build comes with a development and production version. The development vers
 <script type="importmap">
   {
     "imports": {
-      "vue": "https://unpkg.com/vue@{{ $frontmatter.packageVersions.vue }}/dist/vue.esm-browser.js",
-      "vue-router": "https://unpkg.com/vue-router@{{ $frontmatter.packageVersions['vue-router'] }}/dist/vue-router.esm-browser.js",
-      "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@{{ $frontmatter.packageVersions['@vue/devtools-api'] }}/dist/vue-devtools-api.esm-browser.js"
+      "vue": "https://unpkg.com/vue@{{ $frontmatter.packageVersions?.vue }}/dist/vue.esm-browser.js",
+      "vue-router": "https://unpkg.com/vue-router@{{ $frontmatter.packageVersions?.['vue-router'] }}/dist/vue-router.esm-browser.js",
+      "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@{{ $frontmatter.packageVersions?.['@vue/devtools-api'] }}/dist/vue-devtools-api.esm-browser.js"
     }
   }
 </script>
@@ -103,8 +103,8 @@ Each build comes with a development and production version. The development vers
 ### Using the global build
 
 ```html-vue
-<script src="https://unpkg.com/vue@{{ $frontmatter.packageVersions.vue }}/dist/vue.global.js"></script>
-<script src="https://unpkg.com/vue-router@{{ $frontmatter.packageVersions['vue-router'] }}/dist/vue-router.global.js"></script>
+<script src="https://unpkg.com/vue@{{ $frontmatter.packageVersions?.vue }}/dist/vue.global.js"></script>
+<script src="https://unpkg.com/vue-router@{{ $frontmatter.packageVersions?.['vue-router'] }}/dist/vue-router.global.js"></script>
 <script>
   const { createApp } = Vue
   const { createRouter } = VueRouter
