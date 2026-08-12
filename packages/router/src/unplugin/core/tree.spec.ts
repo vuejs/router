@@ -1177,6 +1177,33 @@ describe('Tree', () => {
       expect(node.queryParams).toEqual([])
     })
 
+    it('node.queryParams includes the query params from the parents', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const parent = tree.insert('org', 'org.vue')
+      parent.setCustomRouteBlock('org.vue', {
+        params: { query: { q: {} } },
+      })
+      const child = tree.insert('org/[orgId]', 'org/[orgId].vue')
+      child.setCustomRouteBlock('org/[orgId].vue', {
+        params: { query: { tab: {} } },
+      })
+
+      // the query is matched for the whole chain of records
+      expect(child.queryParams.map(param => param.paramName)).toEqual([
+        'q',
+        'tab',
+      ])
+      // while `node.value` stays specific to the node
+      expect(child.value.queryParams.map(param => param.paramName)).toEqual([
+        'tab',
+      ])
+      expect(child.params.map(param => param.paramName)).toEqual([
+        'orgId',
+        'q',
+        'tab',
+      ])
+    })
+
     it('params includes both path and query params', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
       const node = tree.insert('posts/[id]', 'posts/[id].vue')
