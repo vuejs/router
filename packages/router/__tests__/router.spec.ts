@@ -713,6 +713,34 @@ describe('Router', () => {
       '/p/a': 2000,
     }
 
+    it('does not restore scroll positions for pop navigations with unknown direction', async () => {
+      const scrollBehavior = vi.fn()
+      const history = createMemoryHistory() as ReturnType<
+        typeof createMemoryHistory
+      > & { changeURL(url: string): void }
+      const { router } = await newRouter({ history, scrollBehavior })
+      scrollBehavior.mockClear()
+
+      history.changeURL('/foo')
+      await nextNavigation(router)
+      history.changeURL('/')
+      await nextNavigation(router)
+
+      expect(scrollBehavior).toHaveBeenCalledTimes(2)
+      expect(scrollBehavior).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ path: '/foo' }),
+        expect.objectContaining({ path: '/' }),
+        null
+      )
+      expect(scrollBehavior).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ path: '/' }),
+        expect.objectContaining({ path: '/foo' }),
+        null
+      )
+    })
+
     it('ignores the scroll of navigations superseded before they finish', async () => {
       // scrollBehavior resolves asynchronously, simulating waiting for the DOM
       const scrollBehavior = vi.fn((to: { path: string }) => {
