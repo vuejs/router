@@ -136,6 +136,30 @@ router.afterEach((to, from, failure) => {
 
 Learn more about navigation failures on [its guide](./navigation-failures.md).
 
+You can also combine after hooks with [route meta fields](./meta.md) to update
+the page title after a successful navigation. First, add a title to each route
+that needs one:
+
+```js
+const routes = [
+  {
+    path: '/about',
+    component: About,
+    meta: { title: 'About' },
+  },
+]
+```
+
+Then update the document title after navigation finishes:
+
+```js
+router.afterEach((to, from, failure) => {
+  if (!failure && typeof to.meta.title === 'string') {
+    document.title = to.meta.title
+  }
+})
+```
+
 ## Global injections within guards
 
 Since Vue 3.3, it is possible to use `inject()` within navigation guards. This is useful for injecting global properties like the [pinia stores](https://pinia.vuejs.org). Anything that is provided with `app.provide()` is also accessible within `router.beforeEach()`, `router.beforeResolve()`, `router.afterEach()`:
