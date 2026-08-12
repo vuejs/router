@@ -376,7 +376,9 @@ export function generateRouteRecordQuery({
   importsMap: ImportsMap
   paramParsersMap: ParamParsersMap
 }) {
-  const queryParams = node.queryParams
+  // each record only declares its own query params: the resolver matches the
+  // whole chain of records and merges them
+  const queryParams = node.value.queryParams
   if (queryParams.length === 0) {
     return ''
   }
