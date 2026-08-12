@@ -32,7 +32,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     it('required path param excludes null', () => {
       const node = createTreeWithParam('[version=semver]')
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_semver'],
         false
       )
@@ -44,7 +44,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     it('optional path param includes null', () => {
       const node = createTreeWithParam('[[version=semver]]')
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_semver'],
         false
       )
@@ -56,7 +56,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     it('repeatable path param uses Extract', () => {
       const node = createTreeWithParam('[version=semver]+')
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_semver'],
         false
       )
@@ -66,7 +66,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     it('optional repeatable path param uses Extract', () => {
       const node = createTreeWithParam('[[version=semver]]+')
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_semver'],
         false
       )
@@ -77,21 +77,33 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
   describe('non-parser types', () => {
     it('required path param is string', () => {
       const node = createTreeWithParam('[id]')
-      const result = EXPERIMENTAL_generateRouteParams(node, [null], false)
+      const result = EXPERIMENTAL_generateRouteParams(
+        node.params,
+        [null],
+        false
+      )
       expect(result).toBe('{ id: string }')
     })
 
     it('optional path param includes null', () => {
       const node = createTreeWithParam('[[id]]')
-      const result = EXPERIMENTAL_generateRouteParams(node, [null], false)
+      const result = EXPERIMENTAL_generateRouteParams(
+        node.params,
+        [null],
+        false
+      )
       expect(result).toBe('{ id: string | null }')
     })
 
     it("native 'string' type matches no-parser output for required path", () => {
       const node = createTreeWithParam('[id]')
-      const nullResult = EXPERIMENTAL_generateRouteParams(node, [null], false)
+      const nullResult = EXPERIMENTAL_generateRouteParams(
+        node.params,
+        [null],
+        false
+      )
       const stringResult = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['string'],
         false
       )
@@ -100,9 +112,13 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
 
     it("native 'string' type matches no-parser output for optional path", () => {
       const node = createTreeWithParam('[[id]]')
-      const nullResult = EXPERIMENTAL_generateRouteParams(node, [null], false)
+      const nullResult = EXPERIMENTAL_generateRouteParams(
+        node.params,
+        [null],
+        false
+      )
       const stringResult = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['string'],
         false
       )
@@ -114,7 +130,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     it('emits Param_X /* raw param parser */ for raw path params', () => {
       const node = createTreeWithParam('[id=raw]')
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_raw'],
         false,
         makeParsersMap('raw', true)
@@ -125,7 +141,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     it('does not append | null for optional raw path params', () => {
       const node = createTreeWithParam('[[id=raw]]')
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_raw'],
         false,
         makeParsersMap('raw', true)
@@ -136,7 +152,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     it('skips Extract for repeatable raw path params', () => {
       const node = createTreeWithParam('[id=raw]+')
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_raw'],
         false,
         makeParsersMap('raw', true)
@@ -147,7 +163,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     it('skips Extract for optional repeatable raw path params', () => {
       const node = createTreeWithParam('[[id=raw]]+')
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_raw'],
         false,
         makeParsersMap('raw', true)
@@ -158,7 +174,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     it('falls back to Exclude/Extract when paramParsersMap is omitted', () => {
       const node = createTreeWithParam('[id=raw]')
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_raw'],
         false
       )
@@ -168,7 +184,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     it('still uses Exclude for non-raw entries in the map', () => {
       const node = createTreeWithParam('[id=plain]')
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_plain'],
         false,
         makeParsersMap('plain', false)
@@ -199,7 +215,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
       // route.params side (isRaw=false): runtime always calls the raw parser
       // with the array form, so the value never ends up undefined.
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_set'],
         false,
         makeParsersMap('set', true)
@@ -212,7 +228,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
       // router.push side (isRaw=true): allow users to pass `undefined`
       // explicitly even under exactOptionalPropertyTypes.
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_set'],
         true,
         makeParsersMap('set', true)
@@ -225,7 +241,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     it('keeps | undefined on route.params for non-raw query parsers', () => {
       const node = createNodeWithQueryParam('test', 'plain')
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_plain'],
         false,
         makeParsersMap('plain', false)
@@ -238,7 +254,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     it('adds | undefined on router.push for non-raw query parsers', () => {
       const node = createNodeWithQueryParam('test', 'plain')
       const result = EXPERIMENTAL_generateRouteParams(
-        node,
+        node.params,
         ['Param_plain'],
         true,
         makeParsersMap('plain', false)

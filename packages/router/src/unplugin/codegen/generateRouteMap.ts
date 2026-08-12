@@ -5,6 +5,7 @@ import { generateParamsTypes } from './generateParamParsers'
 import {
   EXPERIMENTAL_generateRouteParams,
   generateRouteParams,
+  normalizeParamsForTypes,
 } from './generateRouteParams'
 import { pad, formatMultilineUnion, toStringLiteral } from '../utils'
 
@@ -45,8 +46,9 @@ export function generateRouteRecordInfo(
   paramParsersMap: ParamParsersMap
 ): string {
   let paramParsers: Array<string | null> = []
+  const params = normalizeParamsForTypes(node.params)
   if (options.experimental.paramParsers) {
-    paramParsers = generateParamsTypes(node.params, paramParsersMap)
+    paramParsers = generateParamsTypes(params, paramParsersMap)
   }
 
   const typeParams = [
@@ -54,7 +56,7 @@ export function generateRouteRecordInfo(
     toStringLiteral(node.fullPath),
     options.experimental.paramParsers
       ? EXPERIMENTAL_generateRouteParams(
-          node,
+          params,
           paramParsers,
           true,
           paramParsersMap
@@ -62,7 +64,7 @@ export function generateRouteRecordInfo(
       : generateRouteParams(node, true),
     options.experimental.paramParsers
       ? EXPERIMENTAL_generateRouteParams(
-          node,
+          params,
           paramParsers,
           false,
           paramParsersMap
