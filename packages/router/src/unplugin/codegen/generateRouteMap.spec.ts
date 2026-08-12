@@ -283,8 +283,8 @@ describe('generateRouteNamedMap', () => {
         '/[lang]/[id]': RouteRecordInfo<
           '/[lang]/[id]',
           '/:lang/:id',
-          { lang: ParamValue<true>, id: ParamValue<true> },
-          { lang: ParamValue<false>, id: ParamValue<false> },
+          { id: ParamValue<true>, lang: ParamValue<true> },
+          { id: ParamValue<false>, lang: ParamValue<false> },
           | never
         >,
         '/[lang]/a': RouteRecordInfo<
@@ -438,6 +438,24 @@ describe('generateRouteNamedMap', () => {
           '/child',
           Record<never, never>,
           Record<never, never>,
+          | never
+        >,
+      }"
+    `)
+  })
+
+  it('sorts params by name', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('[z]/[b]/[m]', '[z]/[b]/[m].vue')
+    expect(
+      formatExports(generateRouteNamedMap(tree, DEFAULT_OPTIONS, new Map()))
+    ).toMatchInlineSnapshot(`
+      "export interface RouteNamedMap {
+        '/[z]/[b]/[m]': RouteRecordInfo<
+          '/[z]/[b]/[m]',
+          '/:z/:b/:m',
+          { b: ParamValue<true>, m: ParamValue<true>, z: ParamValue<true> },
+          { b: ParamValue<false>, m: ParamValue<false>, z: ParamValue<false> },
           | never
         >,
       }"
@@ -629,8 +647,8 @@ describe('generateRouteNamedMap', () => {
         '/[lang]/[id]': RouteRecordInfo<
           '/[lang]/[id]',
           '/:lang/:id',
-          { lang: ParamValue<true>, id: ParamValue<true> },
-          { lang: ParamValue<false>, id: ParamValue<false> },
+          { id: ParamValue<true>, lang: ParamValue<true> },
+          { id: ParamValue<false>, lang: ParamValue<false> },
           | never
         >,
         '/[lang]/a': RouteRecordInfo<
@@ -1050,8 +1068,8 @@ describe('generateRouteNamedMap', () => {
           '/search': RouteRecordInfo<
             '/search',
             '/search',
-            { q: string, page?: number, sort?: string | undefined, filter?: number | undefined },
-            { q: string, page: number, sort: string | undefined, filter: number | undefined },
+            { filter?: number | undefined, page?: number, q: string, sort?: string | undefined },
+            { filter: number | undefined, page: number, q: string, sort: string | undefined },
             | never
           >,
         }"
@@ -1076,8 +1094,41 @@ describe('generateRouteNamedMap', () => {
           '/search': RouteRecordInfo<
             '/search',
             '/search',
-            { tags?: string[] | undefined, ids: number[] },
-            { tags: string[] | undefined, ids: number[] },
+            { ids: number[], tags?: string[] | undefined },
+            { ids: number[], tags: string[] | undefined },
+            | never
+          >,
+        }"
+      `)
+    })
+
+    it('dedupes a query param declared by a parent and a child', () => {
+      const tree = new PrefixTree(OPTIONS_WITH_PARSERS)
+      const parent = tree.insert('org', 'org.vue')
+      parent.value.setEditOverride('params', { query: { q: {} } })
+      const child = tree.insert('org/list', 'org/list.vue')
+      child.value.setEditOverride('params', { query: { q: { parser: 'int' } } })
+
+      // `q` is declared twice, it must appear once in the type and the child
+      // declaration wins
+      expect(
+        formatExports(
+          generateRouteNamedMap(tree, OPTIONS_WITH_PARSERS, new Map())
+        )
+      ).toMatchInlineSnapshot(`
+        "export interface RouteNamedMap {
+          '/org': RouteRecordInfo<
+            '/org',
+            '/org',
+            { q?: string | undefined },
+            { q: string | undefined },
+            | '/org/list'
+          >,
+          '/org/list': RouteRecordInfo<
+            '/org/list',
+            '/org/list',
+            { q?: number | undefined },
+            { q: number | undefined },
             | never
           >,
         }"

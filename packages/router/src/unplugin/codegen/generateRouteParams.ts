@@ -3,27 +3,51 @@ import {
   isTreeParamOptional,
   isTreeParamRepeatable,
   isTreePathParam,
+  type TreePathParam,
+  type TreeQueryParam,
 } from '../core/treeNodeValue'
 import type { ParamParsersMap } from './generateParamParsers'
 import { diagnostics } from '../diagnostics'
+
+/**
+ * Prepares params to be rendered as a type: a param can be declared more than
+ * once across the chain of records, and duplicated keys are invalid in a type
+ * literal. The deepest declaration wins like at runtime, then params are sorted
+ * by name to keep the generated types stable.
+ *
+ * @internal
+ */
+export function normalizeParamsForTypes<
+  T extends TreePathParam | TreeQueryParam,
+>(params: T[]): T[] {
+  const byName = new Map<string, T>()
+  for (const param of params) {
+    byName.set(param.paramName, param)
+  }
+
+  return Array.from(byName.values()).sort((a, b) =>
+    a.paramName < b.paramName ? -1 : a.paramName > b.paramName ? 1 : 0
+  )
+}
 
 // TODO: simplify the generateRouteParams to not use the type helpers ParamValueOneOrMore, ParamValueZeroOrMore, ParamValueZeroOrOne, and ParamValue, just output raw unions like string | string[]
 export function generateRouteParams(node: TreeNode, isRaw: boolean): string {
   // node.pathParams is a getter so we compute it once
   // this version does not support query params
-  const nodeParams = node.pathParams
+  const nodeParams = normalizeParamsForTypes(
+    node.pathParams.filter(param => {
+      if (!param.paramName) {
+        diagnostics.VUE_ROUTER_B0017({
+          fullPath: node.fullPath,
+          path: node.path,
+        })
+        return false
+      }
+      return true
+    })
+  )
   return nodeParams.length > 0
     ? `{ ${nodeParams
-        .filter(param => {
-          if (!param.paramName) {
-            diagnostics.VUE_ROUTER_B0017({
-              fullPath: node.fullPath,
-              path: node.path,
-            })
-            return false
-          }
-          return true
-        })
         .map(
           param =>
             `${param.paramName}${param.optional ? '?' : ''}: ` +
@@ -47,20 +71,18 @@ export function generateRouteParams(node: TreeNode, isRaw: boolean): string {
  *
  * @internal
  *
- * @param node - The tree node for which to generate the route params type.
+ * @param nodeParams - The params to generate the type for. Must be the same array passed to `generateParamsTypes()` since `types` is aligned with it by index.
  * @param types - An array of types corresponding to the params in the node. The order should match the order of params in the node.
  * @param isLoose - Whether to generate the type that is accepted when pushing (more persmissive)
  * @param paramParsersMap - An optional map of param parsers, used to determine if a param is defined with a raw parser.
  * @returns A string representing the TypeScript type for the route params of the given node.
  */
 export function EXPERIMENTAL_generateRouteParams(
-  node: TreeNode,
+  nodeParams: (TreePathParam | TreeQueryParam)[],
   types: Array<string | null>,
   isLoose: boolean,
   paramParsersMap?: ParamParsersMap
 ) {
-  // node.params is a getter so we compute it once
-  const nodeParams = node.params
   return nodeParams.length > 0
     ? `{ ${nodeParams
         .map((param, i) => {
