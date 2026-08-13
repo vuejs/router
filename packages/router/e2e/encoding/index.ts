@@ -1,7 +1,7 @@
 import '../global.css'
-import type { RouteComponent } from 'vue-router';
+import type { RouteComponent } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
-import type { FunctionalComponent} from 'vue';
+import type { FunctionalComponent } from 'vue'
 import { createApp, defineComponent, h } from 'vue'
 
 const component: RouteComponent = {
