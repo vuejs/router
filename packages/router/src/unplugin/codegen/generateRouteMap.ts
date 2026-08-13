@@ -45,11 +45,14 @@ export function generateRouteRecordInfo(
   options: ResolvedOptions,
   paramParsersMap: ParamParsersMap
 ): string {
-  let paramParsers: Array<string | null> = []
-  const params = normalizeParamsForTypes(node.params)
-  if (options.experimental.paramParsers) {
-    paramParsers = generateParamsTypes(params, paramParsersMap)
-  }
+  // only the experimental version handles query params and param parsers, the
+  // other one extracts the params from the node itself
+  const params = options.experimental.paramParsers
+    ? normalizeParamsForTypes(node, node.params)
+    : []
+  const paramParsers: Array<string | null> = options.experimental.paramParsers
+    ? generateParamsTypes(params, paramParsersMap)
+    : []
 
   const typeParams = [
     toStringLiteral(node.name),

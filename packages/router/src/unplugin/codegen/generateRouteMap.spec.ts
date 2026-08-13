@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { generateRouteNamedMap } from './generateRouteMap'
 import { PrefixTree } from '../core/tree'
 import { resolveOptions } from '../options'
+import { mockWarn } from '../../tests/vitest-mock-warn'
 
 const DEFAULT_OPTIONS = resolveOptions({})
 
@@ -1129,6 +1130,56 @@ describe('generateRouteNamedMap', () => {
             '/org/list',
             { q?: number | undefined },
             { q: number | undefined },
+            | never
+          >,
+        }"
+      `)
+    })
+  })
+
+  describe('unnamed params', () => {
+    mockWarn()
+    const OPTIONS_WITH_PARSERS = resolveOptions({
+      experimental: { paramParsers: true },
+    })
+
+    it('skips unnamed params with param parsers enabled', () => {
+      const tree = new PrefixTree(OPTIONS_WITH_PARSERS)
+      // `[[]]+` produces a param without a name
+      tree.insert('[[]]+', '[[]]+.vue')
+      const routeMap = formatExports(
+        generateRouteNamedMap(tree, OPTIONS_WITH_PARSERS, new Map())
+      )
+      expect('VUE_ROUTER_B0017').toHaveBeenWarnedTimes(1)
+
+      expect(routeMap).toMatchInlineSnapshot(`
+        "export interface RouteNamedMap {
+          '/[[]]+': RouteRecordInfo<
+            '/[[]]+',
+            '/:*',
+            Record<never, never>,
+            Record<never, never>,
+            | never
+          >,
+        }"
+      `)
+    })
+
+    it('skips unnamed params without param parsers', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      tree.insert('[[]]+', '[[]]+.vue')
+      const routeMap = formatExports(
+        generateRouteNamedMap(tree, DEFAULT_OPTIONS, new Map())
+      )
+      expect('VUE_ROUTER_B0017').toHaveBeenWarned()
+
+      expect(routeMap).toMatchInlineSnapshot(`
+        "export interface RouteNamedMap {
+          '/[[]]+': RouteRecordInfo<
+            '/[[]]+',
+            '/:*',
+            Record<never, never>,
+            Record<never, never>,
             | never
           >,
         }"
