@@ -46,10 +46,14 @@ export function generateRouteRecordInfo(
   paramParsersMap: ParamParsersMap
 ): string {
   // only the experimental version handles query params and param parsers, the
-  // other one extracts the params from the node itself
+  // other one only handles path params. Both normalize once so unnamed params
+  // are reported once per route instead of once per generated type
   const params = options.experimental.paramParsers
     ? normalizeParamsForTypes(node, node.params)
     : []
+  const pathParams = options.experimental.paramParsers
+    ? []
+    : normalizeParamsForTypes(node, node.pathParams)
   const paramParsers: Array<string | null> = options.experimental.paramParsers
     ? generateParamsTypes(params, paramParsersMap)
     : []
@@ -64,7 +68,7 @@ export function generateRouteRecordInfo(
           true,
           paramParsersMap
         )
-      : generateRouteParams(node, true),
+      : generateRouteParams(pathParams, true),
     options.experimental.paramParsers
       ? EXPERIMENTAL_generateRouteParams(
           params,
@@ -72,7 +76,7 @@ export function generateRouteRecordInfo(
           false,
           paramParsersMap
         )
-      : generateRouteParams(node, false),
+      : generateRouteParams(pathParams, false),
   ]
 
   const childRouteNames: string[] =
