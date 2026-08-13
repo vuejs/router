@@ -21,9 +21,10 @@ import { diagnostics } from '../diagnostics'
 export function normalizeParamsForTypes<
   T extends TreePathParam | TreeQueryParam,
 >(node: TreeNode, params: T[]): T[] {
+  // deduplicate by name, keeps the deepest declaration
   const byName = new Map<string, T>()
   for (const param of params) {
-    // invalid segments like `[[]]+` produce params without a name
+    // warn and skip invalid params without a name
     if (!param.paramName) {
       diagnostics.VUE_ROUTER_B0017({
         fullPath: node.fullPath,
@@ -34,6 +35,7 @@ export function normalizeParamsForTypes<
     byName.set(param.paramName, param)
   }
 
+  // to have cleaner git diffs, sort by paramName
   return Array.from(byName.values()).sort((a, b) =>
     a.paramName < b.paramName ? -1 : a.paramName > b.paramName ? 1 : 0
   )
