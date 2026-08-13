@@ -373,7 +373,9 @@ export class TreeNode {
   }
 
   /**
-   * Array of route params coming from the path. It includes all the params from the parents as well.
+   * Array of route params coming from the path. It includes all the params
+   * from the parents as well. Use `node.value.pathParams` for the ones
+   * declared by this specific node.
    */
   get pathParams(): TreePathParam[] {
     const params = this.value.isParam() ? [...this.value.pathParams] : []
@@ -391,8 +393,7 @@ export class TreeNode {
 
   /**
    * Array of query params extracted from definePage. It includes all the query
-   * params from the parents as well: unlike the path, the query is matched for
-   * the whole chain of records. Use `node.value.queryParams` for the ones
+   * params from the parents as well. Use `node.value.queryParams` for the ones
    * declared by this specific node.
    */
   get queryParams(): TreeQueryParam[] {
