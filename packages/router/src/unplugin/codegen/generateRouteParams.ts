@@ -10,18 +10,27 @@ import type { ParamParsersMap } from './generateParamParsers'
 import { diagnostics } from '../diagnostics'
 
 /**
- * Prepares params to be rendered as a type: a param can be declared more than
- * once across the chain of records, and duplicated keys are invalid in a type
- * literal. The deepest declaration wins like at runtime, then params are sorted
- * by name to keep the generated types stable.
+ * Prepares params to be rendered as a type: params without a name are dropped
+ * and reported as they would generate invalid types. A param can also be
+ * declared more than once across the chain of records, and duplicated keys are
+ * invalid in a type literal, so the deepest declaration wins like at runtime.
+ * Params are then sorted by name to keep the generated types stable.
  *
  * @internal
  */
 export function normalizeParamsForTypes<
   T extends TreePathParam | TreeQueryParam,
->(params: T[]): T[] {
+>(node: TreeNode, params: T[]): T[] {
   const byName = new Map<string, T>()
   for (const param of params) {
+    // invalid segments like `[[]]+` produce params without a name
+    if (!param.paramName) {
+      diagnostics.VUE_ROUTER_B0017({
+        fullPath: node.fullPath,
+        path: node.path,
+      })
+      continue
+    }
     byName.set(param.paramName, param)
   }
 
@@ -34,18 +43,7 @@ export function normalizeParamsForTypes<
 export function generateRouteParams(node: TreeNode, isRaw: boolean): string {
   // node.pathParams is a getter so we compute it once
   // this version does not support query params
-  const nodeParams = normalizeParamsForTypes(
-    node.pathParams.filter(param => {
-      if (!param.paramName) {
-        diagnostics.VUE_ROUTER_B0017({
-          fullPath: node.fullPath,
-          path: node.path,
-        })
-        return false
-      }
-      return true
-    })
-  )
+  const nodeParams = normalizeParamsForTypes(node, node.pathParams)
   return nodeParams.length > 0
     ? `{ ${nodeParams
         .map(
