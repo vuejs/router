@@ -379,7 +379,7 @@ export class TreeNode {
    * declared by this specific node.
    */
   get pathParams(): TreePathParam[] {
-    const params = this.value.params.filter(isTreePathParam)
+    const params = this.value.pathParams
     if (this.value.overrides.path?.startsWith('/')) {
       return params
     }
@@ -387,7 +387,8 @@ export class TreeNode {
     let node = this.parent
     // add all the params from the parents
     while (node) {
-      params.unshift(...node.value.params.filter(isTreePathParam))
+      params.unshift(...node.value.pathParams)
+      // an absolute path drops everything above it from the url
       if (node.value.overrides.path?.startsWith('/')) {
         break
       }
@@ -484,10 +485,13 @@ export class TreeNode {
   }
 
   /**
-   * Is this node a splat (catch-all) param
+   * True if the last segment of the path is a splat (catch-all) param e.g.
+   * /some/thing/:path(.*). Useful to compute the trailing slash behavior of
+   * the route.
    */
-  get isSplat(): boolean {
-    return this.value.isParam() && this.value.pathParams.some(p => p.isSplat)
+  get endsWithSplat(): boolean {
+    const lastSegment = this.value.subSegments.at(-1)
+    return !!lastSegment && isTreePathParam(lastSegment) && lastSegment.isSplat
   }
 
   /**

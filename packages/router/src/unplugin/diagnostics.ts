@@ -79,6 +79,16 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `Invalid parameter in path "${p.segment}": parameter name cannot be empty. Using default name "pathMatch" for ':()'.`,
       fix: 'Give the parameter a name, e.g. ":id".',
     },
+    VUE_ROUTER_B0021: {
+      why: (p: {
+        paramName: string
+        segment: string
+        filenameParser: string
+        declaredParser: string
+      }) =>
+        `param "${p.paramName}" declares a parser twice in "${p.segment}": "${p.filenameParser}" in the file name and "${p.declaredParser}" in \`params.path\`. Keeping "${p.declaredParser}".`,
+      fix: 'Remove one of the two parsers.',
+    },
 
     // --- core/customBlock.ts ---
     VUE_ROUTER_B0012: {

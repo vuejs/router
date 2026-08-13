@@ -736,7 +736,7 @@ describe('Tree', () => {
   })
 
   describe('path override and params extraction', () => {
-    it('reproduces missing params from custom path override', () => {
+    it('extracts params from a custom path override', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
       const node = tree.insert('users/profile', 'users/profile.vue')
 
@@ -745,6 +745,123 @@ describe('Tree', () => {
       })
 
       expect(node.pathParams.map(param => param.paramName)).toEqual(['id'])
+      expect(node.params.map(param => param.paramName)).toEqual(['id'])
+    })
+
+    it('extracts multiple params from a single override segment', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('users/profile', 'users/profile.vue')
+
+      node.setCustomRouteBlock('users/profile.vue', {
+        path: '/users/:id-:slug',
+      })
+
+      expect(node.pathParams.map(param => param.paramName)).toEqual([
+        'id',
+        'slug',
+      ])
+    })
+
+    it('has no params when the override path removes them', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[id]', '[id].vue')
+
+      node.setCustomRouteBlock('[id].vue', {
+        path: '/static',
+      })
+
+      expect(node.pathParams).toEqual([])
+    })
+
+    // NOTE: redeclaring a parent param in a relative override is invalid: it
+    // currently yields the param twice (a duplicated key in the generated
+    // types) instead of warning and keeping one. Might not be worth
+    // implementing, the case is unlikely to happen
+    it.todo('warns and keeps one param when a relative override redeclares a parent param', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('[a]', '[a].vue')
+      const node = tree.insert('[a]/b', '[a]/b.vue')
+      node.setCustomRouteBlock('[a]/b.vue', { path: ':a' })
+
+      expect(node.pathParams.map(param => param.paramName)).toEqual(['a'])
+      expect(`param "a" is declared twice`).toHaveBeenWarned()
+    })
+
+    it('keeps parent params on a static relative override', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('org/[orgId]', 'org/[orgId].vue')
+      const node = tree.insert('org/[orgId]/dashboard', 'dashboard.vue')
+      node.setCustomRouteBlock('dashboard.vue', { path: 'overview' })
+
+      expect(node.pathParams.map(param => param.paramName)).toEqual(['orgId'])
+      expect(node.fullPath).toBe('/org/:orgId/overview')
+    })
+
+    it('adds the params of a relative override to the parent ones', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('org/[orgId]', 'org/[orgId].vue')
+      const node = tree.insert('org/[orgId]/reports', 'reports.vue')
+      node.setCustomRouteBlock('reports.vue', { path: ':year/:month' })
+
+      expect(node.pathParams.map(param => param.paramName)).toEqual([
+        'orgId',
+        'year',
+        'month',
+      ])
+      expect(node.fullPath).toBe('/org/:orgId/:year/:month')
+    })
+
+    it('replaces its own param with the one of a relative override', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('org/[orgId]', 'org/[orgId].vue')
+      const node = tree.insert('org/[orgId]/[id]', '[id].vue')
+      node.setCustomRouteBlock('[id].vue', { path: ':slug' })
+
+      expect(node.pathParams.map(param => param.paramName)).toEqual([
+        'orgId',
+        'slug',
+      ])
+    })
+
+    it('drops its own param when a relative override is static', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('org/[orgId]', 'org/[orgId].vue')
+      const node = tree.insert('org/[orgId]/[id]', '[id].vue')
+      node.setCustomRouteBlock('[id].vue', { path: 'latest' })
+
+      expect(node.pathParams.map(param => param.paramName)).toEqual(['orgId'])
+    })
+
+    it('keeps params of all ancestors on a relative override', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('org/[orgId]', 'org/[orgId].vue')
+      tree.insert('org/[orgId]/projects/[projectId]', '[projectId].vue')
+      const node = tree.insert(
+        'org/[orgId]/projects/[projectId]/settings',
+        'settings.vue'
+      )
+      node.setCustomRouteBlock('settings.vue', { path: 'config/:section' })
+
+      expect(node.pathParams.map(param => param.paramName)).toEqual([
+        'orgId',
+        'projectId',
+        'section',
+      ])
+    })
+
+    it('keeps parent params when a relative override adds a parser', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('org/[orgId]', 'org/[orgId].vue')
+      const node = tree.insert('org/[orgId]/posts', 'posts.vue')
+      node.setCustomRouteBlock('posts.vue', {
+        path: ':page',
+        params: { path: { page: 'int' } },
+      })
+
+      expect(node.pathParams).toEqual([
+        expect.objectContaining({ paramName: 'orgId', parser: null }),
+        expect.objectContaining({ paramName: 'page', parser: 'int' }),
+      ])
     })
 
     it('preserves parser, optional, repeatable, and splat metadata from custom path override', () => {
@@ -785,7 +902,25 @@ describe('Tree', () => {
       ])
     })
 
-    it('uses absolute path overrides as param inheritance boundaries', () => {
+    it('stops inheriting parent path params on an absolute path override', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+
+      tree.insert('org/[orgId]', 'org/[orgId].vue')
+
+      const child = tree.insert(
+        'org/[orgId]/dashboard',
+        'org/[orgId]/dashboard.vue'
+      )
+      child.setCustomRouteBlock('org/[orgId]/dashboard.vue', {
+        path: '/dash/:id',
+      })
+
+      // `orgId` cannot be reached from `/dash/:id`
+      expect(child.pathParams.map(param => param.paramName)).toEqual(['id'])
+      expect(child.params.map(param => param.paramName)).toEqual(['id'])
+    })
+
+    it('inherits parent query params', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
 
       const parent = tree.insert('org/[orgId]', 'org/[orgId].vue')
@@ -797,11 +932,44 @@ describe('Tree', () => {
         },
       })
 
-      const absoluteChild = tree.insert(
+      const child = tree.insert(
         'org/[orgId]/dashboard',
         'org/[orgId]/dashboard.vue'
       )
-      absoluteChild.setCustomRouteBlock('org/[orgId]/dashboard.vue', {
+      child.setCustomRouteBlock('org/[orgId]/dashboard.vue', {
+        params: {
+          query: {
+            tab: {},
+          },
+        },
+      })
+
+      expect(child.params.map(param => param.paramName)).toEqual([
+        'orgId',
+        'q',
+        'tab',
+      ])
+    })
+
+    // query params are matched for the whole chain of records, so `q` survives
+    // an absolute override: only path param inheritance stops at the boundary
+    it('inherits parent query params across an absolute path override', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+
+      const parent = tree.insert('org/[orgId]', 'org/[orgId].vue')
+      parent.setCustomRouteBlock('org/[orgId].vue', {
+        params: {
+          query: {
+            q: {},
+          },
+        },
+      })
+
+      const child = tree.insert(
+        'org/[orgId]/dashboard',
+        'org/[orgId]/dashboard.vue'
+      )
+      child.setCustomRouteBlock('org/[orgId]/dashboard.vue', {
         path: '/dash/:id',
         params: {
           query: {
@@ -810,11 +978,36 @@ describe('Tree', () => {
         },
       })
 
-      const relativeChild = tree.insert(
+      // `orgId` is gone with the path, but the parent record is still matched
+      // so its query params still apply
+      expect(child.params.map(param => param.paramName)).toEqual([
+        'id',
+        'q',
+        'tab',
+      ])
+      expect(child.queryParams.map(param => param.paramName)).toEqual([
+        'q',
+        'tab',
+      ])
+    })
+
+    it('keeps inheriting parent params on a relative path override', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+
+      const parent = tree.insert('org/[orgId]', 'org/[orgId].vue')
+      parent.setCustomRouteBlock('org/[orgId].vue', {
+        params: {
+          query: {
+            q: {},
+          },
+        },
+      })
+
+      const child = tree.insert(
         'org/[orgId]/reports',
         'org/[orgId]/reports.vue'
       )
-      relativeChild.setCustomRouteBlock('org/[orgId]/reports.vue', {
+      child.setCustomRouteBlock('org/[orgId]/reports.vue', {
         path: ':id',
         params: {
           query: {
@@ -823,17 +1016,30 @@ describe('Tree', () => {
         },
       })
 
+      expect(child.pathParams.map(param => param.paramName)).toEqual([
+        'orgId',
+        'id',
+      ])
+      // `params` groups all path params before the query ones
+      expect(child.params.map(param => param.paramName)).toEqual([
+        'orgId',
+        'id',
+        'q',
+        'tab',
+      ])
+    })
+
+    it('stops at the closest ancestor with an absolute path override', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+
+      tree.insert('org/[orgId]', 'org/[orgId].vue')
+
       const middle = tree.insert(
         'org/[orgId]/projects/[projectId]',
         'org/[orgId]/projects/[projectId].vue'
       )
       middle.setCustomRouteBlock('org/[orgId]/projects/[projectId].vue', {
         path: '/p/:projectId',
-        params: {
-          query: {
-            page: {},
-          },
-        },
       })
 
       const leaf = tree.insert(
@@ -841,30 +1047,9 @@ describe('Tree', () => {
         'org/[orgId]/projects/[projectId]/settings/[section].vue'
       )
 
-      expect(absoluteChild.pathParams.map(param => param.paramName)).toEqual([
-        'id',
-      ])
-      expect(absoluteChild.params.map(param => param.paramName)).toEqual([
-        'id',
-        'tab',
-      ])
-      expect(relativeChild.pathParams.map(param => param.paramName)).toEqual([
-        'orgId',
-        'id',
-      ])
-      expect(relativeChild.params.map(param => param.paramName)).toEqual([
-        'orgId',
-        'q',
-        'id',
-        'tab',
-      ])
+      // `orgId` is left out: it is above the `/p/:projectId` boundary
       expect(leaf.pathParams.map(param => param.paramName)).toEqual([
         'projectId',
-        'section',
-      ])
-      expect(leaf.params.map(param => param.paramName)).toEqual([
-        'projectId',
-        'page',
         'section',
       ])
     })
@@ -1223,6 +1408,41 @@ describe('Tree', () => {
     })
   })
 
+  describe('endsWithSplat', () => {
+    function checkEndsWithSplat(path: string, expected: boolean) {
+      const node = new PrefixTree(RESOLVED_OPTIONS).insert(path, path + '.vue')
+      expect(node.endsWithSplat).toBe(expected)
+    }
+
+    it('is true for a splat segment', () => {
+      checkEndsWithSplat('[...path]', true)
+      checkEndsWithSplat('a/[...path]', true)
+    })
+
+    it('is true when a static sub segment precedes the splat', () => {
+      checkEndsWithSplat('prefix-[...path]', true)
+    })
+
+    it('is false when a static sub segment follows the splat', () => {
+      checkEndsWithSplat('[...path]-end', false)
+    })
+
+    it('is false when a param sub segment follows the splat', () => {
+      checkEndsWithSplat('[...path]-[id]', false)
+    })
+
+    it('is false for a child of a splat segment', () => {
+      checkEndsWithSplat('[...path]/other', false)
+      checkEndsWithSplat('[...path]/[id]', false)
+    })
+
+    it('is false without a splat', () => {
+      checkEndsWithSplat('about', false)
+      checkEndsWithSplat('[id]', false)
+      checkEndsWithSplat('[id]+', false)
+    })
+  })
+
   // TODO: check warns with different order
   it.todo(`warns when a group's path conflicts with an existing file`)
 
@@ -1396,6 +1616,17 @@ describe('Tree', () => {
         paramName: 'when',
         parser: 'date',
       })
+      expect('VUE_ROUTER_B0021').toHaveBeenWarned()
+    })
+
+    it('does not warn when only the filename declares a parser', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('events/[when=int]', 'events/[when=int].vue')
+
+      expect(node.pathParams).toEqual([
+        expect.objectContaining({ paramName: 'when', parser: 'int' }),
+      ])
+      expect('VUE_ROUTER_B0021').not.toHaveBeenWarned()
     })
 
     it('leaves untouched path params when override only mentions some', () => {
