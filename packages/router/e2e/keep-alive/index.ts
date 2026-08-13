@@ -1,11 +1,6 @@
 import '../global.css'
-import type {
-  RouteComponent} from 'vue-router';
-import {
-  createRouter,
-  createWebHistory,
-  useRouter,
-} from 'vue-router'
+import type { RouteComponent } from 'vue-router'
+import { createRouter, createWebHistory, useRouter } from 'vue-router'
 import { createApp, ref } from 'vue'
 
 const Home: RouteComponent = {
