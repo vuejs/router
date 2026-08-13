@@ -40,6 +40,9 @@ ${node
   )
 }
 
+// TODO: split into two functions, one for the experimental version and one for the non-experimental version, to avoid the if/else branching
+// and put the if/else branching in the caller function
+
 export function generateRouteRecordInfo(
   node: TreeNodeNamed,
   options: ResolvedOptions,
