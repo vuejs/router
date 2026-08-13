@@ -86,6 +86,11 @@ const esmBrowser = {
     __DEV__: 'true',
     __FEATURE_PROD_DEVTOOLS__: 'true',
   },
+  deps: {
+    // left out in prod but not in regular build
+    alwaysBundle: ['nostics'],
+    neverBundle: ['vue', '@vue/devtools-api'],
+  },
 } satisfies InlineConfig
 
 const esmBrowserProd = {
@@ -101,6 +106,11 @@ const esmBrowserProd = {
     ...esmBrowser.define,
     __DEV__: 'false',
     __FEATURE_PROD_DEVTOOLS__: 'false',
+  },
+  deps: {
+    // left out in prod but not in regular build
+    alwaysBundle: ['nostics'],
+    neverBundle: ['vue', '@vue/devtools-api'],
   },
 } satisfies InlineConfig
 
