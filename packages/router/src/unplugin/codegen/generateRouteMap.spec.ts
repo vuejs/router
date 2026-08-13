@@ -1171,7 +1171,7 @@ describe('generateRouteNamedMap', () => {
       const routeMap = formatExports(
         generateRouteNamedMap(tree, DEFAULT_OPTIONS, new Map())
       )
-      expect('VUE_ROUTER_B0017').toHaveBeenWarned()
+      expect('VUE_ROUTER_B0017').toHaveBeenWarnedTimes(1)
 
       expect(routeMap).toMatchInlineSnapshot(`
         "export interface RouteNamedMap {

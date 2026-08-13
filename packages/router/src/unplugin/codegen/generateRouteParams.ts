@@ -40,10 +40,14 @@ export function normalizeParamsForTypes<
 }
 
 // TODO: simplify the generateRouteParams to not use the type helpers ParamValueOneOrMore, ParamValueZeroOrMore, ParamValueZeroOrOne, and ParamValue, just output raw unions like string | string[]
-export function generateRouteParams(node: TreeNode, isRaw: boolean): string {
-  // node.pathParams is a getter so we compute it once
-  // this version does not support query params
-  const nodeParams = normalizeParamsForTypes(node, node.pathParams)
+/**
+ * @param nodeParams - path params already normalized with `normalizeParamsForTypes()`. This version does not support query params.
+ * @param isRaw - whether to generate the type accepted when pushing
+ */
+export function generateRouteParams(
+  nodeParams: TreePathParam[],
+  isRaw: boolean
+): string {
   return nodeParams.length > 0
     ? `{ ${nodeParams
         .map(
