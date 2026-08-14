@@ -98,8 +98,8 @@ declare module 'vue-router/auto-routes' {
     'not-found': RouteRecordInfo<
       'not-found',
       '/:path(.*)',
-      { path: string, page?: number, other?: boolean | undefined, active?: boolean, multi?: string[] | undefined, req?: number, optionalWhen?: Exclude<Param_date, unknown[] | null> | undefined, when?: Exclude<Param_date, unknown[] | null> },
-      { path: string, page: number, other: boolean | undefined, active: boolean, multi: string[] | undefined, req: number, optionalWhen: Exclude<Param_date, unknown[] | null> | undefined, when: Exclude<Param_date, unknown[] | null> },
+      { active?: boolean, multi?: string[] | undefined, optionalWhen?: Exclude<Param_date, unknown[] | null> | undefined, other?: boolean | undefined, page?: number, path: string, req?: number, when?: Exclude<Param_date, unknown[] | null> },
+      { active: boolean, multi: string[] | undefined, optionalWhen: Exclude<Param_date, unknown[] | null> | undefined, other: boolean | undefined, page: number, path: string, req: number, when: Exclude<Param_date, unknown[] | null> },
       | never
     >,
     '/a.[b].c.[d]': RouteRecordInfo<
@@ -119,8 +119,8 @@ declare module 'vue-router/auto-routes' {
     '/b': RouteRecordInfo<
       '/b',
       '/b',
-      { test?: Param_set /* raw param parser */ | undefined, date?: Extract<Param_date, unknown[]> | undefined },
-      { test: Param_set /* raw param parser */, date: Extract<Param_date, unknown[]> | undefined },
+      { date?: Extract<Param_date, unknown[]> | undefined, test?: Param_set /* raw param parser */ | undefined },
+      { date: Extract<Param_date, unknown[]> | undefined, test: Param_set /* raw param parser */ },
       | never
     >,
     '/blog/[slug]+': RouteRecordInfo<
@@ -189,8 +189,8 @@ declare module 'vue-router/auto-routes' {
     '/months/zod-[month=month-zod]': RouteRecordInfo<
       '/months/zod-[month=month-zod]',
       '/months/zod-:month',
-      { month: Exclude<Param_monthZod, unknown[] | null>, mm?: Exclude<Param_monthZod, unknown[] | null> },
-      { month: Exclude<Param_monthZod, unknown[] | null>, mm: Exclude<Param_monthZod, unknown[] | null> },
+      { mm?: Exclude<Param_monthZod, unknown[] | null>, month: Exclude<Param_monthZod, unknown[] | null> },
+      { mm: Exclude<Param_monthZod, unknown[] | null>, month: Exclude<Param_monthZod, unknown[] | null> },
       | never
     >,
     '/multi.[a].[b]': RouteRecordInfo<
@@ -245,8 +245,8 @@ declare module 'vue-router/auto-routes' {
     '/test-params/query': RouteRecordInfo<
       '/test-params/query',
       '/test-params/query',
-      { page?: number, tag?: string[] | undefined, active?: Exclude<Param_testBoolQ, unknown[] | null>, ids?: Param_testCsv /* raw param parser */ | undefined },
-      { page: number, tag: string[] | undefined, active: Exclude<Param_testBoolQ, unknown[] | null>, ids: Param_testCsv /* raw param parser */ },
+      { active?: Exclude<Param_testBoolQ, unknown[] | null>, ids?: Param_testCsv /* raw param parser */ | undefined, page?: number, tag?: string[] | undefined },
+      { active: Exclude<Param_testBoolQ, unknown[] | null>, ids: Param_testCsv /* raw param parser */, page: number, tag: string[] | undefined },
       | never
     >,
     '/test-params/raw/opt.[[ids]]': RouteRecordInfo<
@@ -379,8 +379,8 @@ declare module 'vue-router/auto-routes' {
     '/users/[userId=int]': RouteRecordInfo<
       '/users/[userId=int]',
       '/users/:userId',
-      { userId: number, anyParam?: string, page?: number },
-      { userId: number, anyParam: string, page: number },
+      { anyParam?: string, page?: number, userId: number },
+      { anyParam: string, page: number, userId: number },
       | never
     >,
     '/users/sub-[first]-[second]': RouteRecordInfo<

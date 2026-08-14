@@ -55,7 +55,7 @@ export * from './vue-router.js'
   deps: {
     // Externalize everything and avoid mistakenly including dependencies in the
     // bundle of vue-router runtime
-    skipNodeModulesBundle: true,
+    neverBundle: true,
   },
 } satisfies InlineConfig
 
@@ -191,7 +191,7 @@ const unplugin = {
   name: 'unplugin',
   deps: {
     // avoid inlining rolldown and other unplugin deps
-    skipNodeModulesBundle: true,
+    neverBundle: true,
   },
   checks: {
     // FIXME: this currently fails for no reason, maybe a bug in rolldown?
