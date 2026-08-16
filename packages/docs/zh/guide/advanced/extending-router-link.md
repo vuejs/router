@@ -32,7 +32,7 @@ const isExternalLink = computed(() => {
 </script>
 
 <template>
-  <a v-if="isExternalLink" v-bind="$attrs" :href="to" target="_blank">
+  <a v-if="isExternalLink" v-bind="$attrs" :href="props.to" target="_blank">
     <slot />
   </a>
   <router-link
@@ -45,13 +45,17 @@ const isExternalLink = computed(() => {
       v-bind="$attrs"
       :href="href"
       @click="navigate"
-      :class="isActive ? activeClass : inactiveClass"
+      :class="isActive ? props.activeClass : props.inactiveClass"
     >
       <slot />
     </a>
   </router-link>
 </template>
 ```
+
+当你在 TypeScript 中使用 `<script setup>` 时，请像上面的示例一样，通过
+`props` 对象访问从 `RouterLink.props` 展开的 prop。这样可以避免依赖编译器
+将这些展开的 prop 暴露为独立的模板绑定。
 
 ```vue [Options API]
 <script>

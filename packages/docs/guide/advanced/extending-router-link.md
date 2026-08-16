@@ -32,7 +32,7 @@ const isExternalLink = computed(() => {
 </script>
 
 <template>
-  <a v-if="isExternalLink" v-bind="$attrs" :href="to" target="_blank">
+  <a v-if="isExternalLink" v-bind="$attrs" :href="props.to" target="_blank">
     <slot />
   </a>
   <router-link
@@ -45,13 +45,18 @@ const isExternalLink = computed(() => {
       v-bind="$attrs"
       :href="href"
       @click="navigate"
-      :class="isActive ? activeClass : inactiveClass"
+      :class="isActive ? props.activeClass : props.inactiveClass"
     >
       <slot />
     </a>
   </router-link>
 </template>
 ```
+
+When using `<script setup>` with TypeScript, access props spread from
+`RouterLink.props` through the `props` object in the template, as shown above.
+This avoids relying on the compiler exposing those spread props as individual
+template bindings.
 
 ```vue [Options API]
 <script>
