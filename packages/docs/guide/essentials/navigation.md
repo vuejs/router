@@ -56,7 +56,7 @@ router.push({ name: 'user', params: { username } }) // -> /user/eduardo%2Fsan%20
 router.push({ path: '/user', params: { username } }) // -> /user
 ```
 
-When building a string path or an object with `path`, provide an encoded path. Use [`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) for each dynamic segment. The same rule applies to `<RouterLink>`:
+When building a string path or an object with `path`, provide an encoded path. Use [`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) for each dynamic segment (each section between `/`). Note that `encodeURIComponent` encodes the `/` character. The same rule applies to `<RouterLink>`:
 
 ```vue
 <RouterLink :to="`/user/${encodeURIComponent(username)}`">User</RouterLink>
