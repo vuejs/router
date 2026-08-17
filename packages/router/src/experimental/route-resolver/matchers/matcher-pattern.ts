@@ -1,5 +1,5 @@
 import { identityFn } from '../../../utils'
-import { decode, encodeParam, encodePath } from '../../../encoding'
+import { decode, encodeParam, encodePath } from '../../encoding'
 import { warn } from '../../../warning'
 import { miss } from './errors'
 import type { ParamParser } from './param-parsers/types'

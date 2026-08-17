@@ -1018,12 +1018,38 @@ describe('fixed resolver', () => {
           })
         })
 
-        it('decodes hash from a string', () => {
+        it('keeps the hash from a string as it is, like location.hash', () => {
           expect(resolver.resolve('/foo#%22')).toMatchObject({
             path: '/foo',
             fullPath: '/foo#%22',
-            hash: '#"',
+            hash: '#%22',
           })
+        })
+
+        it('keeps encoded reserved characters in the hash', () => {
+          expect(resolver.resolve('/foo#%26')).toMatchObject({
+            fullPath: '/foo#%26',
+            hash: '#%26',
+          })
+          expect(resolver.resolve('/foo#a=b%26c&d=e')).toMatchObject({
+            fullPath: '/foo#a=b%26c&d=e',
+            hash: '#a=b%26c&d=e',
+          })
+        })
+
+        it('resolving the fullPath of a resolved location is idempotent', () => {
+          for (const url of [
+            '/foo#%26',
+            '/foo#a=b%26c&d=e',
+            '/foo#%22%20%25',
+            '/foo#caf%C3%A9',
+            '/foo#100%',
+          ]) {
+            const location = resolver.resolve(url as `/${string}`)
+            const again = resolver.resolve(location.fullPath as `/${string}`)
+            expect(again.hash).toBe(location.hash)
+            expect(again.fullPath).toBe(location.fullPath)
+          }
         })
       })
 
@@ -1037,10 +1063,42 @@ describe('fixed resolver', () => {
           })
         })
 
-        it('encodes the hash', () => {
+        it('protects the hash like setting url.hash', () => {
           expect(resolver.resolve({ path: '/foo', hash: '#"' })).toMatchObject({
             fullPath: '/foo#%22',
-            hash: '#"',
+            hash: '#%22',
+          })
+          expect(
+            resolver.resolve({ path: '/foo', hash: '#a b' })
+          ).toMatchObject({
+            fullPath: '/foo#a%20b',
+            hash: '#a%20b',
+          })
+        })
+
+        it('keeps a pre-encoded hash as it is', () => {
+          expect(
+            resolver.resolve({ path: '/foo', hash: '#a=b%26c&d=e' })
+          ).toMatchObject({
+            fullPath: '/foo#a=b%26c&d=e',
+            hash: '#a=b%26c&d=e',
+          })
+        })
+
+        it('round trips a hash through the URL', () => {
+          const location = resolver.resolve({
+            path: '/foo',
+            hash: '#Hell 20% of es¶ña',
+          })
+          expect(location).toMatchObject({
+            fullPath: '/foo#Hell%2020%%20of%20es%C2%B6%C3%B1a',
+            hash: '#Hell%2020%%20of%20es%C2%B6%C3%B1a',
+          })
+          expect(
+            resolver.resolve(location.fullPath as `/${string}`)
+          ).toMatchObject({
+            fullPath: location.fullPath,
+            hash: location.hash,
           })
         })
       })
