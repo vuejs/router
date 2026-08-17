@@ -45,15 +45,26 @@ router.push({ path: '/about', hash: '#team' })
 **Note**: `params` are ignored if a `path` is provided, which is not the case for `query`, as shown in the example above. Instead, you need to provide the `name` of the route or manually specify the whole `path` with any parameter:
 
 ```js
-const username = 'eduardo'
+const username = 'eduardo/san martin'
 // we can manually build the url but we will have to handle the encoding ourselves
-router.push(`/user/${username}`) // -> /user/eduardo
+router.push(`/user/${encodeURIComponent(username)}`) // -> /user/eduardo%2Fsan%20martin
 // same as
-router.push({ path: `/user/${username}` }) // -> /user/eduardo
+router.push({ path: `/user/${encodeURIComponent(username)}` }) // -> /user/eduardo%2Fsan%20martin
 // if possible use `name` and `params` to benefit from automatic URL encoding
-router.push({ name: 'user', params: { username } }) // -> /user/eduardo
+router.push({ name: 'user', params: { username } }) // -> /user/eduardo%2Fsan%20martin
 // `params` cannot be used alongside `path`
 router.push({ path: '/user', params: { username } }) // -> /user
+```
+
+When building a string path or an object with `path`, provide an encoded path. Use [`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) for each dynamic segment (each section between `/`). Note that `encodeURIComponent` encodes the `/` character. The same rule applies to `<RouterLink>`:
+
+```vue
+<RouterLink :to="`/user/${encodeURIComponent(username)}`">User</RouterLink>
+<RouterLink
+  :to="{ path: `/user/${encodeURIComponent(username)}` }"
+>User</RouterLink>
+<!-- Prefer this form when a matching named route exists -->
+<RouterLink :to="{ name: 'user', params: { username } }">User</RouterLink>
 ```
 
 When specifying `params`, make sure to either provide a `string` or `number` (or an array of these for [repeatable params](./route-matching-syntax.md#Repeatable-params)). **Any other type (like objects, booleans, etc) will be automatically stringified**. For [optional params](./route-matching-syntax.md#Optional-parameters), you can provide an empty string (`""`) or `null` as the value to remove it.

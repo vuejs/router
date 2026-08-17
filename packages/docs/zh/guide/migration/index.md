@@ -446,6 +446,22 @@ const routes = [
 - 当使用 `push`、`resolve` 和 `replace` 并在对象中提供 `string` 地址或 `path` 属性时，**必须进行编码**(像以前的版本一样)。另一方面，`params`、`query` 和 `hash` 必须以未编码的版本提供。
 - 斜线字符(`/`)现在已在 `params` 内正确解码，同时仍在 URL 上产生一个编码版本：`%2F`。
 
+包含需要转义字符的静态路由记录路径也遵循同样的规则：
+
+```js
+const routes = [{ path: '/hello%20world', component: HelloWorld }]
+```
+
+手动构建字符串或对象 `path` 时，请自行编码动态片段。可能的话，优先使用带有 `params` 的命名路由：
+
+```js
+const username = 'eduardo/san martin'
+
+router.push(`/user/${encodeURIComponent(username)}`)
+router.push({ path: `/user/${encodeURIComponent(username)}` })
+router.push({ name: 'user', params: { username } })
+```
+
 **原因**：这样，在调用 `router.push()` 和 `router.resolve()` 时，可以很容易地复制一个地址的现有属性，并使产生的路由地址在各浏览器之间保持一致。`router.push()` 现在是幂等的，这意味着调用 `router.push(route.fullPath)`、`router.push({ hash: route.hash })`、`router.push({ query: route.query })` 和`router.push({ params: route.params })` 不会产生额外的编码。
 
 ### TypeScript 变化

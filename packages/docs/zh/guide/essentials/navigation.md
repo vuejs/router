@@ -45,15 +45,26 @@ router.push({ path: '/about', hash: '#team' })
 **注意**：如果提供了 `path`，`params` 会被忽略，上述例子中的 `query` 并不属于这种情况。取而代之的是下面例子的做法，你需要提供路由的 `name` 或手写完整的带有参数的 `path` ：
 
 ```js
-const username = 'eduardo'
+const username = 'eduardo/san martin'
 // 我们可以手动建立 url，但我们必须自己处理编码
-router.push(`/user/${username}`) // -> /user/eduardo
+router.push(`/user/${encodeURIComponent(username)}`) // -> /user/eduardo%2Fsan%20martin
 // 同样
-router.push({ path: `/user/${username}` }) // -> /user/eduardo
+router.push({ path: `/user/${encodeURIComponent(username)}` }) // -> /user/eduardo%2Fsan%20martin
 // 如果可能的话，使用 `name` 和 `params` 从自动 URL 编码中获益
-router.push({ name: 'user', params: { username } }) // -> /user/eduardo
+router.push({ name: 'user', params: { username } }) // -> /user/eduardo%2Fsan%20martin
 // `params` 不能与 `path` 一起使用
 router.push({ path: '/user', params: { username } }) // -> /user
+```
+
+构建字符串路径或带有 `path` 的对象时，请提供已编码的路径。使用 [`encodeURIComponent`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) 编码每个动态片段。同样的规则也适用于 `<RouterLink>`：
+
+```vue
+<RouterLink :to="`/user/${encodeURIComponent(username)}`">User</RouterLink>
+<RouterLink
+  :to="{ path: `/user/${encodeURIComponent(username)}` }"
+>User</RouterLink>
+<!-- 如果存在匹配的命名路由，优先使用这种形式 -->
+<RouterLink :to="{ name: 'user', params: { username } }">User</RouterLink>
 ```
 
 当指定 `params` 时，可提供 `string` 或 `number` 参数（或者对于[可重复的参数](./route-matching-syntax.md#repeatable-params)可提供一个数组）。**任何其他类型（如对象、布尔等）都将被自动字符串化**。对于[可选参数](./route-matching-syntax.md#repeatable-params)，你可以提供一个空字符串（`""`）或 `null` 来移除它。

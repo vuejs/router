@@ -443,6 +443,22 @@ Given any [normalized route location](/api/#RouteLocationNormalized):
 - When using `push`, `resolve`, and `replace` and providing a `string` location or a `path` property in an object, **it must be encoded** (like in the previous version). On the other hand, `params`, `query` and `hash` must be provided in its unencoded version.
 - The slash character (`/`) is now properly decoded inside `params` while still producing an encoded version on the URL: `%2F`.
 
+The same applies to static route record paths that contain characters requiring escaping:
+
+```js
+const routes = [{ path: '/hello%20world', component: HelloWorld }]
+```
+
+When manually building a string or object `path`, encode dynamic segments yourself. Prefer named routes with `params` when possible:
+
+```js
+const username = 'eduardo/san martin'
+
+router.push(`/user/${encodeURIComponent(username)}`)
+router.push({ path: `/user/${encodeURIComponent(username)}` })
+router.push({ name: 'user', params: { username } })
+```
+
 **Reason**: This allows to easily copy existing properties of a location when calling `router.push()` and `router.resolve()`, and make the resulting route location consistent across browsers. `router.push()` is now idempotent, meaning that calling `router.push(route.fullPath)`, `router.push({ hash: route.hash })`, `router.push({ query: route.query })`, and `router.push({ params: route.params })` will not create extra encoding.
 
 ### `$router.push()` and `$router.replace()` - `onComplete` and `onAbort` callbacks
