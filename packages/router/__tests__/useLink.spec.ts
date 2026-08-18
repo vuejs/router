@@ -94,6 +94,42 @@ describe('useLink', () => {
     })
   })
 
+  describe('active state', () => {
+    it('updates isActive and isExactActive after navigation', async () => {
+      const router = createRouter({
+        history: createMemoryHistory(),
+        routes: [
+          { path: '/', component: {} },
+          { path: '/a', component: {} },
+          { path: '/b', component: {} },
+        ],
+      })
+      await router.push('/')
+
+      let link!: ReturnType<typeof useLink>
+      mount(
+        {
+          setup() {
+            link = useLink({ to: '/a' })
+            return () => ''
+          },
+        },
+        { global: { plugins: [router] } }
+      )
+
+      expect(link.isActive.value).toBe(false)
+      expect(link.isExactActive.value).toBe(false)
+
+      await router.push('/a')
+      expect(link.isActive.value).toBe(true)
+      expect(link.isExactActive.value).toBe(true)
+
+      await router.push('/b')
+      expect(link.isActive.value).toBe(false)
+      expect(link.isExactActive.value).toBe(false)
+    })
+  })
+
   describe('warnings', () => {
     mockWarn()
 

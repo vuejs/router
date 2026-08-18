@@ -2,6 +2,7 @@
  * @vitest-environment happy-dom
  */
 import fakePromise from 'faked-promise'
+import { computed, effectScope } from 'vue'
 import type { RouteLocationRaw } from '../src/typed-routes'
 import { createRouter } from '../src/router'
 import { createMemoryHistory } from '../src/history/memory'
@@ -1027,6 +1028,93 @@ describe('Router', () => {
         path: '/foo',
         query: {},
       })
+    })
+  })
+
+  describe('resolve reactivity', () => {
+    it('resolves absolute locations the same regardless of the current location', async () => {
+      const { router } = await newRouter()
+      const locations: RouteLocationRaw[] = [
+        '/',
+        '/foo',
+        '/foo?q=1#h',
+        '/p/abc',
+        { path: '/foo', query: { q: '1' }, hash: '#h' },
+      ]
+      const before = locations.map(to => router.resolve(to))
+      await router.push('/parent/child')
+      const after = locations.map(to => router.resolve(to))
+      expect(after).toStrictEqual(before)
+    })
+
+    it('does not re-run a computed with an absolute location on navigation', async () => {
+      const { router } = await newRouter()
+      const scope = effectScope()
+      let runs = 0
+      const route = scope.run(() =>
+        computed(() => {
+          runs++
+          return router.resolve('/foo')
+        })
+      )!
+      expect(route.value.name).toBe('Foo')
+      expect(runs).toBe(1)
+      await router.push('/search')
+      expect(route.value.name).toBe('Foo')
+      expect(runs).toBe(1)
+      scope.stop()
+    })
+
+    it('re-runs a computed with a relative location on navigation', async () => {
+      const { router } = await newRouter()
+      const scope = effectScope()
+      const route = scope.run(() => computed(() => router.resolve('child')))!
+      expect(route.value.path).toBe('/child')
+      await router.push('/parent/child')
+      expect(route.value.path).toBe('/parent/child')
+      scope.stop()
+    })
+
+    it('re-runs a computed with a named location inheriting params on navigation', async () => {
+      const { router } = await newRouter()
+      await router.push('/p/a')
+      const scope = effectScope()
+      const route = scope.run(() =>
+        computed(() => router.resolve({ name: 'Param' }))
+      )!
+      expect(route.value.path).toBe('/p/a')
+      await router.push('/p/b')
+      expect(route.value.path).toBe('/p/b')
+      scope.stop()
+    })
+
+    it('re-runs a computed when routes are added or removed', async () => {
+      const { router } = await newRouter({ routes: [routes[0]] })
+      const scope = effectScope()
+      const route = scope.run(() => computed(() => router.resolve('/late')))!
+      expect(route.value.matched).toHaveLength(0)
+      expect('No match found').toHaveBeenWarned()
+      const remove = router.addRoute({
+        path: '/late',
+        name: 'late',
+        component: components.Foo,
+      })
+      expect(route.value.matched).toHaveLength(1)
+      remove()
+      expect(route.value.matched).toHaveLength(0)
+      router.addRoute({ path: '/late', component: components.Foo })
+      expect(route.value.matched).toHaveLength(1)
+      router.clearRoutes()
+      expect(route.value.matched).toHaveLength(0)
+      scope.stop()
+    })
+
+    it('uses an explicitly passed currentLocation', async () => {
+      const { router } = await newRouter()
+      const current = router.resolve('/parent/child')
+      expect(router.resolve('child', current).path).toBe('/parent/child')
+      await router.push('/foo')
+      expect(router.resolve('child', current).path).toBe('/parent/child')
     })
   })
 
