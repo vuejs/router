@@ -163,6 +163,9 @@ export function createRouter(options: RouterOptions): Router {
   const currentRoute = shallowRef<RouteLocationNormalizedLoaded>(
     START_LOCATION_NORMALIZED
   )
+  // incremented whenever the route table changes so that `resolve()` can be
+  // used within `computed()` and still pick up added or removed routes
+  const routesVersion = shallowRef(0)
   let pendingLocation: RouteLocation = START_LOCATION_NORMALIZED
 
   // leave the scrollRestoration if no scrollBehavior is provided
@@ -195,16 +198,27 @@ export function createRouter(options: RouterOptions): Router {
       record = parentOrRoute
     }
 
-    return matcher.addRoute(record, parent)
+    const removeRoute = matcher.addRoute(record, parent)
+    routesVersion.value++
+    return () => {
+      removeRoute()
+      routesVersion.value++
+    }
   }
 
   function removeRoute(name: NonNullable<RouteRecordNameGeneric>) {
     const recordMatcher = matcher.getRecordMatcher(name)
     if (recordMatcher) {
       matcher.removeRoute(recordMatcher)
+      routesVersion.value++
     } else if (__DEV__) {
       diagnostics.VUE_ROUTER_R0002({ name: String(name) })
     }
+  }
+
+  function clearRoutes() {
+    matcher.clearRoutes()
+    routesVersion.value++
   }
 
   function getRoutes() {
@@ -221,9 +235,17 @@ export function createRouter(options: RouterOptions): Router {
   ): RouteLocationResolved {
     // const resolve: Router['resolve'] = (rawLocation: RouteLocationRaw, currentLocation) => {
     // const objectLocation = routerLocationAsObject(rawLocation)
-    // we create a copy to modify it later
-    currentLocation = assign({}, currentLocation || currentRoute.value)
+    // depend on the route table so `computed()`s using `resolve()` are
+    // invalidated when routes are added or removed
+    routesVersion.value
     if (typeof rawLocation === 'string') {
+      // absolute locations do not depend on where the user currently is, so
+      // we avoid reading `currentRoute` to not track it as a dependency
+      currentLocation =
+        currentLocation ||
+        (rawLocation.startsWith('/')
+          ? START_LOCATION_NORMALIZED
+          : currentRoute.value)
       const locationNormalized = parseURL(
         parseQuery,
         rawLocation,
@@ -256,6 +278,17 @@ export function createRouter(options: RouterOptions): Router {
       diagnostics.VUE_ROUTER_R0005({ rawLocation })
       return resolve({})
     }
+
+    // we create a copy to modify it later
+    currentLocation = assign(
+      {},
+      currentLocation ||
+        (rawLocation.path != null &&
+        rawLocation.path.startsWith('/') &&
+        !('name' in rawLocation && rawLocation.name)
+          ? START_LOCATION_NORMALIZED
+          : currentRoute.value)
+    )
 
     let matcherLocation: MatcherLocationRaw
 
@@ -995,7 +1028,7 @@ export function createRouter(options: RouterOptions): Router {
 
     addRoute,
     removeRoute,
-    clearRoutes: matcher.clearRoutes,
+    clearRoutes,
     hasRoute,
     getRoutes,
     resolve,
