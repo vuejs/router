@@ -683,7 +683,9 @@ export function experimental_createRouter(
       currentLocation ??
         // relative string locations are always valid
         // so this is more of a convenience default
-        (typeof to === 'string' ? currentRoute.value : undefined)
+        (typeof to === 'string' && !to.startsWith('/')
+          ? currentRoute.value
+          : undefined)
     )
     const href = routerHistory.createHref(matchedRoute.fullPath)
 
