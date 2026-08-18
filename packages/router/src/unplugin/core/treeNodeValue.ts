@@ -19,7 +19,7 @@ const RE_HEX_CHARS = /^[0-9a-fA-F]{2}$/
  */
 export type RouteRecordOverride = CustomRouteBlock
 
-export type SubSegment = string | TreePathParam
+export type PathSubSegment = string | TreePathParam
 
 // internal name used for overrides set by file-based conventions (e.g. _parent)
 export const CONVENTION_OVERRIDE_NAME = '@@convention'
@@ -47,13 +47,19 @@ class _TreeNodeValueBase {
   /**
    * Array of sub segments. This is usually one single elements but can have more for paths like `prefix-[param]-end.vue`
    */
-  subSegments: SubSegment[]
+  subSegments: PathSubSegment[]
 
   /**
    * Overrides defined by each file. The map is necessary to handle named views.
    */
   private _overrides = new Map<string, RouteRecordOverride>()
   // TODO: measure perf bottlenecks with large trees and use caching if it can potentially improve
+
+  /**
+   * Params already warned about declaring a parser twice, so the warning is
+   * emitted once per param even though `pathParams` is a getter.
+   */
+  private _warnedParsers = new Set<string>()
 
   /**
    * View name (Vue Router feature) mapped to their corresponding file. By default, the view name is `default` unless
@@ -65,7 +71,7 @@ class _TreeNodeValueBase {
     rawSegment: string,
     parent: TreeNodeValue | undefined,
     pathSegment: string = rawSegment,
-    subSegments: SubSegment[] = [pathSegment]
+    subSegments: PathSubSegment[] = [pathSegment]
   ) {
     // type should be defined in child
     this._type = 0
@@ -143,7 +149,54 @@ class _TreeNodeValueBase {
    * does not include params from parent nodes.
    */
   get params(): (TreePathParam | TreeQueryParam)[] {
-    return [...(this.isParam() ? this.pathParams : []), ...this.queryParams]
+    return [...this.pathParams, ...this.queryParams]
+  }
+
+  /**
+   * Gets the path params for the node. They come from the `path` override when
+   * there is one, otherwise from the file based segment. Parsers declared in
+   * `params.path` are applied on top. This does not include params from parent
+   * nodes.
+   */
+  get pathParams(): TreePathParam[] {
+    const overridePath = this.overrides.path
+    const params: TreePathParam[] = []
+
+    if (overridePath) {
+      for (const segment of overridePath.split('/')) {
+        if (!segment) continue
+        const [, segmentParams] = parseRawPathSegment(segment)
+        params.push(...segmentParams)
+      }
+    } else {
+      // the params are the same objects referenced by `subSegments`
+      params.push(...this.subSegments.filter(isTreePathParam))
+    }
+
+    const declaredParsers = this.overrides.params?.path
+    if (!declaredParsers) {
+      return params
+    }
+
+    return params.map(param => {
+      const parser = declaredParsers[param.paramName]
+      // an explicit `null` removes the parser declared in the file name
+      if (parser === undefined) {
+        return param
+      }
+
+      if (parser && param.parser && !this._warnedParsers.has(param.paramName)) {
+        this._warnedParsers.add(param.paramName)
+        diagnostics.VUE_ROUTER_B0021({
+          paramName: param.paramName,
+          segment: this.rawSegment,
+          filenameParser: param.parser,
+          declaredParser: parser,
+        })
+      }
+
+      return { ...param, parser }
+    })
   }
 
   toString(): string {
@@ -360,9 +413,9 @@ export function isTreeParamRepeatable(
  * @internal
  */
 export function isTreePathParam(
-  param: TreePathParam | TreeQueryParam
+  param: TreePathParam | TreeQueryParam | PathSubSegment
 ): param is TreePathParam {
-  return 'modifier' in param
+  return typeof param !== 'string' && 'modifier' in param
 }
 
 /**
@@ -389,10 +442,6 @@ export class TreeNodeValueParam extends _TreeNodeValueBase {
    *
    * @param parent The parent node in the tree, if any.
    *
-   * @param filenamePathParams Path params parsed from the file segment
-   * (filename convention). The public `pathParams` getter overlays
-   * `definePage()` parser overrides on top of these.
-   *
    * @param pathSegment The transformed version of the segment into a
    * vue-router path, e.g. `:id`, `prefix-:param-end`, etc.
    *
@@ -402,26 +451,10 @@ export class TreeNodeValueParam extends _TreeNodeValueBase {
   constructor(
     rawSegment: string,
     parent: TreeNodeValue | undefined,
-    private filenamePathParams: TreePathParam[],
     pathSegment: string,
-    subSegments: SubSegment[]
+    subSegments: PathSubSegment[]
   ) {
     super(rawSegment, parent, pathSegment, subSegments)
-  }
-
-  /**
-   * Path params for this node, with `definePage({ params: { path: ... } })`
-   * parser overrides applied on top of the filename-based parsers.
-   */
-  get pathParams(): TreePathParam[] {
-    const overridePath = this.overrides.params?.path
-    if (!overridePath) return this.filenamePathParams
-    return this.filenamePathParams.map(p =>
-      // an explicit `null` override removes the filename-based parser
-      overridePath[p.paramName] !== undefined
-        ? { ...p, parser: overridePath[p.paramName] }
-        : p
-    )
   }
 
   // Calculate score for each subsegment to handle mixed static/param parts
@@ -583,13 +616,8 @@ export function createTreeNodeValue(
         parseFileSegment(segment, options)
 
   if (pathParams.length) {
-    return new TreeNodeValueParam(
-      segment,
-      parent,
-      pathParams,
-      pathSegment,
-      subSegments
-    )
+    // the params are read back from `subSegments` by `pathParams`
+    return new TreeNodeValueParam(segment, parent, pathSegment, subSegments)
   }
 
   return new TreeNodeValueStatic(segment, parent, pathSegment)
@@ -630,13 +658,13 @@ const IS_VARIABLE_CHAR_RE = /[0-9a-zA-Z_]/
 function parseFileSegment(
   segment: string,
   { dotNesting }: ParseSegmentOptions
-): [string, TreePathParam[], SubSegment[]] {
+): [string, TreePathParam[], PathSubSegment[]] {
   let buffer = ''
   let paramParserBuffer = ''
   let state: ParseFileSegmentState = ParseFileSegmentState.static
   const params: TreePathParam[] = []
   let pathSegment = ''
-  const subSegments: SubSegment[] = []
+  const subSegments: PathSubSegment[] = []
   let currentTreeRouteParam: TreePathParam = createEmptyRouteParam()
 
   // position in segment
@@ -820,11 +848,11 @@ const IS_MODIFIER_RE = /[+*?]/
  */
 function parseRawPathSegment(
   segment: string
-): [string, TreePathParam[], SubSegment[]] {
+): [string, TreePathParam[], PathSubSegment[]] {
   let buffer = ''
   let state: ParseRawPathSegmentState = ParseRawPathSegmentState.static
   const params: TreePathParam[] = []
-  const subSegments: SubSegment[] = []
+  const subSegments: PathSubSegment[] = []
   let currentTreeRouteParam: TreePathParam = createEmptyRouteParam()
 
   // position in segment

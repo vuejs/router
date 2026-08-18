@@ -1419,6 +1419,90 @@ describe('generateRouteResolver', () => {
     expect(resolver).toMatchSnapshot()
   })
 
+  describe('path overrides', () => {
+    // FIXME: `node.regexp` and `node.matcherPatternPathDynamicParts` are built
+    // from the file segments and ignore `overrides.path`, while
+    // `node.pathParams` follows the override. `MatcherPatternPathDynamic`
+    // consumes them positionally, so they disagree today. The snapshots below
+    // are the wanted output and are marked as failing until the matcher honors
+    // overrides.
+    it.todo('builds the matcher regexp from an absolute path override', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('shop/[id]', 'shop/[id].vue')
+      node.value.setOverride('shop/[id]', { path: '/store/:slug' })
+
+      // the regexp still matches `/shop/:id` while the param is named `slug`
+      expect(
+        generateRouteResolver(
+          tree,
+          DEFAULT_OPTIONS,
+          new ImportsMap(),
+          new Map()
+        )
+        // FIXME: should the name change and be similar to the path?
+      ).toMatchInlineSnapshot(`
+        "
+        const __route_0 = normalizeRouteRecord({
+          name: '/shop/[id]',
+          path: new MatcherPatternPathDynamic(
+            /^\\/store\\/([^/]+?)$/i,
+            {
+              slug: [/* no parser */],
+            },
+            ["store",1],
+            /* trailingSlash */
+          ),
+          components: {
+            'default': () => import('shop/[id].vue')
+          },
+        })
+
+        export const resolver = createFixedResolver([
+          __route_0,  // /store/:slug
+        ])
+        "
+      `)
+    })
+
+    it.todo('builds one capture group per param of the override path', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('shop/[id]', 'shop/[id].vue')
+      node.value.setOverride('shop/[id]', { path: '/shop/:a/:b' })
+
+      // two params for a single capture group
+      expect(
+        generateRouteResolver(
+          tree,
+          DEFAULT_OPTIONS,
+          new ImportsMap(),
+          new Map()
+        )
+      ).toMatchInlineSnapshot(`
+        "
+        const __route_0 = normalizeRouteRecord({
+          name: '/shop/[id]',
+          path: new MatcherPatternPathDynamic(
+            /^\\/shop\\/([^/]+?)\\/([^/]+?)$/i,
+            {
+              a: [/* no parser */],
+              b: [/* no parser */],
+            },
+            ["shop",1,1],
+            /* trailingSlash */
+          ),
+          components: {
+            'default': () => import('shop/[id].vue')
+          },
+        })
+
+        export const resolver = createFixedResolver([
+          __route_0,  // /shop/:a/:b
+        ])
+        "
+      `)
+    })
+  })
+
   describe('aliases', () => {
     it('generates alias records for static alias paths', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)

@@ -325,7 +325,7 @@ function generatePathCode(
     ${node.regexp},
     ${generatePathParamsOptions(params, importsMap, paramParsersMap)},
     ${JSON.stringify(node.matcherPatternPathDynamicParts)},
-    ${node.isSplat ? 'null,' : '/* trailingSlash */'}
+    ${node.endsWithSplat ? 'null,' : '/* trailingSlash */'}
   ),`
   } else {
     return `path: new MatcherPatternPathStatic(${toStringLiteral(node.fullPath)}),`

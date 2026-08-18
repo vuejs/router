@@ -463,6 +463,55 @@ describe('generateRouteNamedMap', () => {
     `)
   })
 
+  it('types params added by a path override', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    const node = tree.insert('users/profile', 'users/profile.vue')
+    node.value.setOverride('users/profile', { path: '/users/:id' })
+    expect(
+      formatExports(generateRouteNamedMap(tree, DEFAULT_OPTIONS, new Map()))
+    ).toMatchInlineSnapshot(`
+      "export interface RouteNamedMap {
+        '/users/profile': RouteRecordInfo<
+          '/users/profile',
+          '/users/:id',
+          { id: ParamValue<true> },
+          { id: ParamValue<false> },
+          | never
+        >,
+      }"
+    `)
+  })
+
+  it('does not inherit parent params on an absolute path override', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('org/[orgId]', 'org/[orgId].vue')
+    const child = tree.insert(
+      'org/[orgId]/dashboard',
+      'org/[orgId]/dashboard.vue'
+    )
+    child.value.setOverride('org/[orgId]/dashboard', { path: '/dash/:id' })
+    expect(
+      formatExports(generateRouteNamedMap(tree, DEFAULT_OPTIONS, new Map()))
+    ).toMatchInlineSnapshot(`
+      "export interface RouteNamedMap {
+        '/org/[orgId]': RouteRecordInfo<
+          '/org/[orgId]',
+          '/org/:orgId',
+          { orgId: ParamValue<true> },
+          { orgId: ParamValue<false> },
+          | '/org/[orgId]/dashboard'
+        >,
+        '/org/[orgId]/dashboard': RouteRecordInfo<
+          '/org/[orgId]/dashboard',
+          '/dash/:id',
+          { id: ParamValue<true> },
+          { id: ParamValue<false> },
+          | never
+        >,
+      }"
+    `)
+  })
+
   it('adds children route names', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('parent', 'parent.vue')

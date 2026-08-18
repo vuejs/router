@@ -3,6 +3,7 @@ import {
   CONVENTION_OVERRIDE_NAME,
   createTreeNodeValue,
   escapeRegex,
+  isTreePathParam,
   type TreeNodeValueOptions,
   type TreePathParam,
   type TreeQueryParam,
@@ -378,12 +379,18 @@ export class TreeNode {
    * declared by this specific node.
    */
   get pathParams(): TreePathParam[] {
-    const params = this.value.isParam() ? [...this.value.pathParams] : []
+    const params = this.value.pathParams
+    if (this.value.overrides.path?.startsWith('/')) {
+      return params
+    }
+
     let node = this.parent
     // add all the params from the parents
     while (node) {
-      if (node.value.isParam()) {
-        params.unshift(...node.value.pathParams)
+      params.unshift(...node.value.pathParams)
+      // an absolute path drops everything above it from the url
+      if (node.value.overrides.path?.startsWith('/')) {
+        break
       }
       node = node.parent
     }
@@ -478,10 +485,13 @@ export class TreeNode {
   }
 
   /**
-   * Is this node a splat (catch-all) param
+   * True if the last segment of the path is a splat (catch-all) param e.g.
+   * /some/thing/:path(.*). Useful to compute the trailing slash behavior of
+   * the route.
    */
-  get isSplat(): boolean {
-    return this.value.isParam() && this.value.pathParams.some(p => p.isSplat)
+  get endsWithSplat(): boolean {
+    const lastSegment = this.value.subSegments.at(-1)
+    return !!lastSegment && isTreePathParam(lastSegment) && lastSegment.isSplat
   }
 
   /**
