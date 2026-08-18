@@ -2,7 +2,7 @@ import type { LocationQuery, LocationQueryRaw } from './query'
 import type { RouteParamValue, RouteParamsGeneric } from './types'
 import type { RouteRecord } from './matcher/types'
 import { diagnostics } from './diagnostics'
-import { isArray } from './utils'
+import { isAbsolutePath, isArray } from './utils'
 import { decode, encodeHash } from './encoding'
 import type {
   RouteLocation,
@@ -247,8 +247,8 @@ function isEquivalentArray<T>(a: readonly T[], b: readonly T[] | T): boolean {
  * @param from - currentLocation.path, should start with `/`
  */
 export function resolveRelativePath(to: string, from: string): string {
-  if (to.startsWith('/')) return to
-  if (__DEV__ && !from.startsWith('/')) {
+  if (isAbsolutePath(to)) return to
+  if (__DEV__ && !isAbsolutePath(from)) {
     diagnostics.VUE_ROUTER_R0070({ to, from })
     return to
   }

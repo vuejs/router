@@ -14,6 +14,15 @@ import type {
  */
 export const identityFn = <T>(v: T) => v
 
+/**
+ * Checks if a path is absolute, meaning it starts with a `/`.
+ *
+ * @param path - path to check
+ *
+ * @internal
+ */
+export const isAbsolutePath = (path: string): boolean => path.startsWith('/')
+
 export * from './env'
 
 /**

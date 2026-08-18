@@ -1,4 +1,5 @@
 import type { PrefixTree } from '../core/tree'
+import { isAbsolutePath } from '../utils'
 
 /**
  * Generates runtime warnings for aliases that are not absolute paths.
@@ -12,7 +13,7 @@ export function generateAliasWarnings(tree: PrefixTree): string {
 
   for (const node of tree.getChildrenDeepSorted()) {
     for (const alias of node.value.alias) {
-      if (!alias.startsWith('/')) {
+      if (!isAbsolutePath(alias)) {
         warnings.push(
           `console.warn('[vue-router] Alias "${alias}" for route "${node.value.fullPath}" must be absolute (start with "/"). Relative aliases are not supported in file-based routing.')`
         )

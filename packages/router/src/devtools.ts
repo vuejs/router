@@ -14,7 +14,7 @@ import type { PathParser } from './matcher/pathParserRanker'
 import type { Router } from './router'
 import type { UseLinkDevtoolsContext } from './RouterLink'
 import type { RouterViewDevtoolsContext } from './RouterView'
-import { assign, isArray } from './utils'
+import { assign, isAbsolutePath, isArray } from './utils'
 import type { RouteLocationNormalized } from './typed-routes'
 
 /**
@@ -560,7 +560,7 @@ function isRouteMatching(route: RouteRecordMatcher, filter: string): boolean {
 
   // also allow partial matching on the path
   if (
-    !filter.startsWith('/') &&
+    !isAbsolutePath(filter) &&
     (decodedPath.includes(filter) || path.includes(filter))
   )
     return true

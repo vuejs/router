@@ -22,7 +22,7 @@ import {
 } from './pathParserRanker'
 
 import { diagnostics } from '../diagnostics'
-import { assign, mergeOptions, noop } from '../utils'
+import { assign, isAbsolutePath, mergeOptions, noop } from '../utils'
 import type { RouteRecordNameGeneric, _RouteRecordProps } from '../typed-routes'
 
 /**
@@ -129,7 +129,7 @@ export function createRouterMatcher(
       // Build up the path for nested routes if the child isn't an absolute
       // route. Only add the / delimiter if the child path isn't empty and if the
       // parent path doesn't have a trailing slash
-      if (parent && path[0] !== '/') {
+      if (parent && !isAbsolutePath(path)) {
         const parentPath = parent.record.path
         const connectingSlash =
           parentPath[parentPath.length - 1] === '/' ? '' : '/'
@@ -147,7 +147,7 @@ export function createRouterMatcher(
       // create the object beforehand, so it can be passed to children
       matcher = createRouteRecordMatcher(normalizedRecord, parent, options)
 
-      if (__DEV__ && parent && path[0] === '/')
+      if (__DEV__ && parent && isAbsolutePath(path))
         checkMissingParamsInAbsolutePath(matcher, parent)
 
       // if we are an alias we must tell the original record that we exist,
@@ -309,7 +309,7 @@ export function createRouterMatcher(
       // this also allows the user to control the encoding
       path = location.path
 
-      if (__DEV__ && !path.startsWith('/')) {
+      if (__DEV__ && !isAbsolutePath(path)) {
         diagnostics.VUE_ROUTER_R0101({ path })
       }
 

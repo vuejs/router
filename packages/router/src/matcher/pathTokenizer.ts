@@ -1,3 +1,5 @@
+import { isAbsolutePath } from '../utils'
+
 export const enum TokenType {
   Static,
   Param,
@@ -46,7 +48,7 @@ const VALID_PARAM_RE = /[a-zA-Z0-9_]/
 export function tokenizePath(path: string): Array<Token[]> {
   if (!path) return [[]]
   if (path === '/') return [[ROOT_TOKEN]]
-  if (!path.startsWith('/')) {
+  if (!isAbsolutePath(path)) {
     throw new Error(
       __DEV__
         ? `Route paths should start with a "/": "${path}" should be "/${path}".`

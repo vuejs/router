@@ -5,6 +5,7 @@ import { findStaticImports, parseStaticImport } from 'mlly'
 import { resolve } from 'pathe'
 import type { StringFilter } from 'unplugin'
 import { type UnpluginOptions } from 'unplugin'
+import { isAbsolutePath } from '../../utils'
 
 export function extractLoadersToExport(
   code: string,
@@ -18,7 +19,7 @@ export function extractLoadersToExport(
     // since we run post-post, vite will add a leading slash to the specifier
     const specifier = resolve(
       root,
-      parsed.specifier.startsWith('/')
+      isAbsolutePath(parsed.specifier)
         ? parsed.specifier.slice(1)
         : parsed.specifier
     )

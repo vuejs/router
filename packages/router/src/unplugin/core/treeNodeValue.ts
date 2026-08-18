@@ -2,6 +2,7 @@ import type { CustomRouteBlock } from './customBlock'
 import { joinPath, mergeRouteRecordOverride } from './utils'
 import { diagnostics } from '../diagnostics'
 import { encodePath } from '../utils/encoding'
+import { isAbsolutePath } from '../utils'
 
 export const enum TreeNodeType {
   static,
@@ -95,7 +96,7 @@ class _TreeNodeValueBase {
   get fullPath(): string {
     const pathSegment = this.path
     // if the path is absolute, we don't need to join it with the parent
-    if (pathSegment.startsWith('/')) {
+    if (isAbsolutePath(pathSegment)) {
       return pathSegment
     }
 

@@ -16,6 +16,16 @@ export type LiteralStringUnion<LiteralType, BaseType extends string = string> =
 export const ts = String.raw
 
 /**
+ * Checks if a path is absolute, meaning it starts with a `/`.
+ *
+ * @param path - path to check
+ *
+ * @internal
+ */
+// copy of the runtime `isAbsolutePath` to keep the unplugin build independent
+export const isAbsolutePath = (path: string): boolean => path.startsWith('/')
+
+/**
  * Pads a single-line string with spaces.
  *
  * @internal
