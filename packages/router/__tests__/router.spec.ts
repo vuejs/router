@@ -1111,7 +1111,7 @@ describe('Router', () => {
 
     it('uses an explicitly passed currentLocation', async () => {
       const { router } = await newRouter()
-      const current = router.resolve('/parent/child')
+      const current = await loadRouteLocation(router.resolve('/parent/child'))
       expect(router.resolve('child', current).path).toBe('/parent/child')
       await router.push('/foo')
       expect(router.resolve('child', current).path).toBe('/parent/child')
