@@ -31,6 +31,7 @@
  */
 
 import fakePromise from 'faked-promise'
+import { computed, effectScope } from 'vue'
 import {
   experimental_createRouter,
   createFixedResolver,
@@ -763,6 +764,15 @@ describe('Experimental Router', () => {
     })
   })
 
+  it('resolves a relative location against a passed currentLocation', async () => {
+    const { router } = await newRouter()
+    const current = await loadRouteLocation(router.resolve('/parent/child'))
+    expect(router.resolve('child', current).path).toBe('/parent/child')
+    // the explicit currentLocation takes precedence over the current route
+    await router.push('/foo')
+    expect(router.resolve('child', current).path).toBe('/parent/child')
+  })
+
   it('resolves relative string locations', async () => {
     const { router } = await newRouter()
     await router.push('/users/posva')
@@ -784,6 +794,54 @@ describe('Experimental Router', () => {
     await router.push('/users/posva')
     await router.push('../')
     expect(router.currentRoute.value.path).toBe('/')
+  })
+
+  describe('resolve reactivity', () => {
+    it('does not re-run a computed with an absolute location on navigation', async () => {
+      const { router } = await newRouter()
+      const scope = effectScope()
+      let runs = 0
+      const route = scope.run(() =>
+        computed(() => {
+          runs++
+          return router.resolve('/foo')
+        })
+      )!
+      expect(route.value.name).toBe('Foo')
+      expect(runs).toBe(1)
+      await router.push('/search')
+      expect(route.value.name).toBe('Foo')
+      expect(runs).toBe(1)
+      scope.stop()
+    })
+
+    it('does not re-run a computed with an absolute object location on navigation', async () => {
+      const { router } = await newRouter()
+      const scope = effectScope()
+      let runs = 0
+      const route = scope.run(() =>
+        computed(() => {
+          runs++
+          return router.resolve({ path: '/foo', query: { q: '1' }, hash: '#h' })
+        })
+      )!
+      expect(route.value.fullPath).toBe('/foo?q=1#h')
+      expect(runs).toBe(1)
+      await router.push('/search')
+      expect(route.value.fullPath).toBe('/foo?q=1#h')
+      expect(runs).toBe(1)
+      scope.stop()
+    })
+
+    it('re-runs a computed with a relative location on navigation', async () => {
+      const { router } = await newRouter()
+      const scope = effectScope()
+      const route = scope.run(() => computed(() => router.resolve('child')))!
+      expect(route.value.path).toBe('/child')
+      await router.push('/parent/child')
+      expect(route.value.path).toBe('/parent/child')
+      scope.stop()
+    })
   })
 
   describe('alias', () => {

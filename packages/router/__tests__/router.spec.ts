@@ -499,6 +499,15 @@ describe('Router', () => {
     })
   })
 
+  it('resolves a relative location against a passed currentLocation', async () => {
+    const { router } = await newRouter()
+    const current = await loadRouteLocation(router.resolve('/parent/child'))
+    expect(router.resolve('child', current).path).toBe('/parent/child')
+    // the explicit currentLocation takes precedence over the current route
+    await router.push('/foo')
+    expect(router.resolve('child', current).path).toBe('/parent/child')
+  })
+
   it('resolves relative locations', async () => {
     const { router } = await newRouter()
     await router.push('/users/posva')
@@ -1032,21 +1041,6 @@ describe('Router', () => {
   })
 
   describe('resolve reactivity', () => {
-    it('resolves absolute locations the same regardless of the current location', async () => {
-      const { router } = await newRouter()
-      const locations: RouteLocationRaw[] = [
-        '/',
-        '/foo',
-        '/foo?q=1#h',
-        '/p/abc',
-        { path: '/foo', query: { q: '1' }, hash: '#h' },
-      ]
-      const before = locations.map(to => router.resolve(to))
-      await router.push('/parent/child')
-      const after = locations.map(to => router.resolve(to))
-      expect(after).toStrictEqual(before)
-    })
-
     it('does not re-run a computed with an absolute location on navigation', async () => {
       const { router } = await newRouter()
       const scope = effectScope()
@@ -1061,6 +1055,24 @@ describe('Router', () => {
       expect(runs).toBe(1)
       await router.push('/search')
       expect(route.value.name).toBe('Foo')
+      expect(runs).toBe(1)
+      scope.stop()
+    })
+
+    it('does not re-run a computed with an absolute object location on navigation', async () => {
+      const { router } = await newRouter()
+      const scope = effectScope()
+      let runs = 0
+      const route = scope.run(() =>
+        computed(() => {
+          runs++
+          return router.resolve({ path: '/foo', query: { q: '1' }, hash: '#h' })
+        })
+      )!
+      expect(route.value.fullPath).toBe('/foo?q=1#h')
+      expect(runs).toBe(1)
+      await router.push('/search')
+      expect(route.value.fullPath).toBe('/foo?q=1#h')
       expect(runs).toBe(1)
       scope.stop()
     })
@@ -1107,14 +1119,6 @@ describe('Router', () => {
       router.clearRoutes()
       expect(route.value.matched).toHaveLength(0)
       scope.stop()
-    })
-
-    it('uses an explicitly passed currentLocation', async () => {
-      const { router } = await newRouter()
-      const current = await loadRouteLocation(router.resolve('/parent/child'))
-      expect(router.resolve('child', current).path).toBe('/parent/child')
-      await router.push('/foo')
-      expect(router.resolve('child', current).path).toBe('/parent/child')
     })
   })
 
