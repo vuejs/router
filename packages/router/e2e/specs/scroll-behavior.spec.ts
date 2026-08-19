@@ -32,32 +32,24 @@ test.describe('scroll-behavior', () => {
     await page.evaluate(() => {
       window.location.hash = '#anchor'
     })
-    await expect
-      .poll(() => anchorTop(page, 'anchor'))
-      .toBeLessThan(1)
+    await expect.poll(() => anchorTop(page, 'anchor')).toBeLessThan(1)
 
     await page.evaluate(() => {
       window.location.hash = '#anchor2'
     })
-    await expect
-      .poll(() => anchorTop(page, 'anchor2'))
-      .toBeLessThan(101)
+    await expect.poll(() => anchorTop(page, 'anchor2')).toBeLessThan(101)
 
     // Make a stale saved position visibly different from the anchor target.
     await page.evaluate(() => {
       window.scrollTo(0, 150)
       window.location.hash = '#anchor'
     })
-    await expect
-      .poll(() => anchorTop(page, 'anchor'))
-      .toBeLessThan(1)
+    await expect.poll(() => anchorTop(page, 'anchor')).toBeLessThan(1)
 
     await page.evaluate(() => {
       window.location.hash = '#anchor2'
     })
-    await expect
-      .poll(() => anchorTop(page, 'anchor2'))
-      .toBeLessThan(101)
+    await expect.poll(() => anchorTop(page, 'anchor2')).toBeLessThan(101)
   })
 
   test('scroll behavior', async ({ page }) => {
