@@ -196,6 +196,8 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
 
         internalInstances.forEach(instance => {
           // @ts-expect-error
+          // to prevent possible race condition in SSR
+          // https://github.com/vuejs/router/pull/2789
           if (instance) instance.__vrv_devtools = info
         })
       }
