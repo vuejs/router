@@ -30,6 +30,41 @@ export function getCurrentContext() {
   return currentContext || ([] as const)
 }
 
+/**
+ * Synchronous execution depth of data loader functions. Used to tell apart a
+ * genuinely nested loader call (a loader function calling another loader, even
+ * synchronously from within a component) from a stale context left behind by a
+ * still-pending lazy loader and read by an unrelated component render.
+ * INTERNAL ONLY.
+ * @internal
+ */
+let loaderFnDepth = 0
+
+/**
+ * Whether we are currently executing the synchronous part of a data loader
+ * function. INTERNAL ONLY.
+ * @internal
+ */
+export function isInsideLoaderFn(): boolean {
+  return loaderFnDepth > 0
+}
+
+/**
+ * Runs the synchronous part of a data loader function while marking that we are
+ * inside a loader execution. INTERNAL ONLY.
+ *
+ * @param fn - the data loader function call to run
+ * @internal
+ */
+export function runInsideLoaderFn<T>(fn: () => T): T {
+  loaderFnDepth++
+  try {
+    return fn()
+  } finally {
+    loaderFnDepth--
+  }
+}
+
 // TODO: rename parentContext
 /**
  * Sets the current context for data loaders. This allows for nested loaders to be aware of their parent context.

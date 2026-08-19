@@ -14,12 +14,14 @@ import {
   NavigationResult,
   getCurrentContext,
   setCurrentContext,
+  isInsideLoaderFn,
+  runInsideLoaderFn,
   IS_SSR_KEY,
   LOADER_SET_KEY,
   type _DefineLoaderEntryMap,
 } from './entries/index'
 
-import { shallowRef } from 'vue'
+import { getCurrentInstance, shallowRef } from 'vue'
 import {
   type DefineDataLoaderOptionsBase_DefinedData,
   toLazyValue,
@@ -206,7 +208,11 @@ export function defineBasicLoader<Data>(
 
     // Promise.resolve() allows loaders to also be sync
     const currentLoad = Promise.resolve(
-      loader(to, { signal: to.meta[ABORT_CONTROLLER_KEY]?.signal })
+      // mark that we are synchronously inside a loader function so nested
+      // loaders can tell apart their parent context from a leaked one
+      runInsideLoaderFn(() =>
+        loader(to, { signal: to.meta[ABORT_CONTROLLER_KEY]?.signal })
+      )
     )
       .then(d => {
         // console.log(
@@ -321,6 +327,14 @@ export function defineBasicLoader<Data>(
   // @ts-expect-error: return type has the generics
   const useDataLoader// for ts
   : UseDataLoaderBasic_LaxData<Data> = () => {
+    // When called from within a component (setup/render) and not synchronously
+    // from within a loader function, any active loader context is stale: it was
+    // left behind by a still-pending lazy loader. In a component, loaders are
+    // always used at the root, so we must drop it to avoid nesting a loader
+    // under an unrelated (or its own) entry. https://github.com/vuejs/router/issues/2684
+    if (getCurrentInstance() && !isInsideLoaderFn()) {
+      setCurrentContext([])
+    }
     // work with nested data loaders
     const currentContext = getCurrentContext()
     const [parentEntry, _router, _route] = currentContext
