@@ -60,6 +60,10 @@ definePage({
       },
     },
   },
+  beforeEnter(to) {
+    to.params.active satisfies boolean
+    to.params.other satisfies boolean | undefined
+  },
 })
 </script>
 
