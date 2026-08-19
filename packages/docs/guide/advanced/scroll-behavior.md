@@ -141,3 +141,7 @@ const router = createRouter({
   },
 })
 ```
+
+## Avoiding scroll computation
+
+Adding a `scrollBehavior` function will set `history.scrollRestoration` to `manual` and let the router compute and store the scroll position. If you need to avoid computing scroll positions, which might trigger layout recalculations, you can set `history.scrollRestoration` to `auto` and/or not set `scrollBehavior` at all. This will let the browser handle scroll restoration natively.
