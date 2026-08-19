@@ -27,7 +27,6 @@ import type { Router } from '../router'
 import {
   type _ScrollPositionNormalized,
   type RouterScrollBehavior,
-  computeScrollPosition,
   getSavedScrollPosition,
   getScrollKey,
   saveScrollPosition,
@@ -1110,10 +1109,7 @@ export function experimental_createRouter(
 
       // TODO: should be moved to web history?
       if (isBrowser) {
-        saveScrollPosition(
-          getScrollKey(from.fullPath, info.delta),
-          computeScrollPosition()
-        )
+        saveScrollPosition(getScrollKey(from.fullPath, info.delta))
       }
 
       navigate(toLocation, from)

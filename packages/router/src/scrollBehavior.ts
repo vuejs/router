@@ -87,10 +87,13 @@ function getElementPosition(
   }
 }
 
-export const computeScrollPosition = (): _ScrollPositionNormalized => ({
-  left: window.scrollX,
-  top: window.scrollY,
-})
+export const computeScrollPosition = (): _ScrollPositionNormalized | null =>
+  history.scrollRestoration === 'manual'
+    ? {
+        left: window.scrollX,
+        top: window.scrollY,
+      }
+    : null
 
 export function scrollToPosition(position: ScrollPosition): void {
   let scrollToOptions: ScrollPositionCoordinates
@@ -168,16 +171,18 @@ export function getScrollKey(path: string, delta: number): string {
   return position + path
 }
 
-export const scrollPositions = new Map<string, _ScrollPositionNormalized>()
+export const scrollPositions = new Map<
+  string,
+  _ScrollPositionNormalized | null
+>()
 
-export function saveScrollPosition(
-  key: string,
-  scrollPosition: _ScrollPositionNormalized
-) {
-  scrollPositions.set(key, scrollPosition)
+export function saveScrollPosition(key: string) {
+  scrollPositions.set(key, computeScrollPosition())
 }
 
-export function getSavedScrollPosition(key: string) {
+export function getSavedScrollPosition(
+  key: string
+): _ScrollPositionNormalized | null | undefined {
   const scroll = scrollPositions.get(key)
   // consume it so it's not used again
   scrollPositions.delete(key)

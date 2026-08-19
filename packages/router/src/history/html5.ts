@@ -130,7 +130,9 @@ function useHistoryListeners(
     const { history } = window
     if (!history.state) return
     history.replaceState(
-      assign({}, history.state, { scroll: computeScrollPosition() }),
+      assign({}, history.state, {
+        scroll: computeScrollPosition(),
+      }),
       ''
     )
   }
@@ -162,8 +164,7 @@ function buildState(
   back: HistoryLocation | null,
   current: HistoryLocation,
   forward: HistoryLocation | null,
-  replaced: boolean = false,
-  computeScroll: boolean = false
+  replaced: boolean = false
 ): StateEntry {
   return {
     back,
@@ -171,7 +172,7 @@ function buildState(
     forward,
     replaced,
     position: window.history.length,
-    scroll: computeScroll ? computeScrollPosition() : null,
+    scroll: null,
   }
 }
 
