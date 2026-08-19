@@ -1,4 +1,3 @@
-import './global.css'
 import type { ComponentPublicInstance, App } from 'vue'
 import { createApp } from 'vue'
 import type { Router } from '../src'

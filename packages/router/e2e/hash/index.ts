@@ -1,4 +1,3 @@
-import '../global.css'
 import type { RouteComponent } from 'vue-router'
 import { createRouter, useRoute, createWebHashHistory } from 'vue-router'
 import { createApp } from 'vue'
