@@ -698,6 +698,7 @@ describe('Router', () => {
 
     beforeEach(() => {
       scrollTo.mockClear()
+      window.history.replaceState(null, '', '/')
     })
 
     afterAll(() => {
@@ -712,6 +713,46 @@ describe('Router', () => {
       '/foo': 1000,
       '/p/a': 2000,
     }
+
+    it('does not restore scroll positions for pop navigations with unknown direction', async () => {
+      const scrollBehavior = vi.fn()
+      const { router } = await newRouter({
+        history: createWebHashHistory(),
+        scrollBehavior,
+      })
+      scrollBehavior.mockClear()
+
+      // Plain `<a href="#...">` links and manual `location.hash` writes create
+      // a history entry with no state, so the popstate fires with
+      // `state: null` and the router cannot compute a direction (delta 0).
+      // happy-dom does not fire popstate on hash changes, so dispatch it like
+      // a browser would.
+      function changeHash(hash: string) {
+        window.location.hash = hash
+        window.dispatchEvent(new PopStateEvent('popstate', { state: null }))
+      }
+
+      changeHash('#/foo')
+      await nextNavigation(router)
+      changeHash('#/')
+      await nextNavigation(router)
+
+      expect(scrollBehavior).toHaveBeenCalledTimes(2)
+      expect(scrollBehavior).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ path: '/foo' }),
+        expect.objectContaining({ path: '/' }),
+        null
+      )
+      // a stale position saved under the unknown-direction key would show up
+      // here as a non-null savedPosition and override the target anchor
+      expect(scrollBehavior).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ path: '/' }),
+        expect.objectContaining({ path: '/foo' }),
+        null
+      )
+    })
 
     it('ignores the scroll of navigations superseded before they finish', async () => {
       // scrollBehavior resolves asynchronously, simulating waiting for the DOM

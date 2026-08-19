@@ -1107,8 +1107,9 @@ export function experimental_createRouter(
       pendingLocation = toLocation
       const from = currentRoute.value
 
+      // Unknown-direction navigations cannot be tied to a history entry.
       // TODO: should be moved to web history?
-      if (isBrowser) {
+      if (isBrowser && info.delta) {
         saveScrollPosition(getScrollKey(from.fullPath, info.delta))
       }
 
