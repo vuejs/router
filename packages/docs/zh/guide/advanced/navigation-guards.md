@@ -136,6 +136,28 @@ router.afterEach((to, from, failure) => {
 
 在[导航失效指南](./navigation-failures.md)中可以了解更多信息。
 
+你也可以将后置钩子与[路由元信息](./meta.md)结合使用，在导航成功后更新页面标题。首先，为每个需要标题的路由添加一个标题：
+
+```js
+const routes = [
+  {
+    path: '/about',
+    component: About,
+    meta: { title: 'About' },
+  },
+]
+```
+
+然后在导航完成后更新文档标题：
+
+```js
+router.afterEach((to, from, failure) => {
+  if (!failure && typeof to.meta.title === 'string') {
+    document.title = to.meta.title
+  }
+})
+```
+
 ## 在守卫内的全局注入
 
 从 Vue 3.3 开始，你可以在导航守卫内使用 `inject()` 方法。这在注入像 [pinia stores](https://pinia.vuejs.org) 这样的全局属性时很有用。在 `app.provide()` 中提供的所有内容都可以在 `router.beforeEach()`、`router.beforeResolve()`、`router.afterEach()` 内获取到：
