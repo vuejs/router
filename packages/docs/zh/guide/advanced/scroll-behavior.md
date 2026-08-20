@@ -141,3 +141,7 @@ const router = createRouter({
   },
 })
 ```
+
+## 避免滚动计算
+
+添加 `scrollBehavior` 函数会将 `history.scrollRestoration` 设置为 `manual`，并让路由器计算和存储滚动位置。如果你需要避免计算滚动位置 (这可能会触发布局重新计算)，你可以将 `history.scrollRestoration` 设置为 `auto`，和/或完全不设置 `scrollBehavior`。这样浏览器就会以原生方式处理滚动恢复。

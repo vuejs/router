@@ -15,7 +15,7 @@ sidebarDepth: 0
 
 **注意：下面的示例中的 `router` 指代路由器实例。在组件内部，你可以使用 `$router` 属性访问路由器，例如 `this.$router.push(...)`。如果使用组合式 API，你可以通过调用 [`useRouter()`](../advanced/composition-api) 来访问路由器。**
 
-想要导航到不同的 URL，可以使用 `router.push` 方法。这个方法会向 history 栈添加一个新的记录，所以，当用户点击浏览器后退按钮时，会回到之前的 URL。
+想要导航到不同的 URL，可以使用 `router.push` 方法。这个方法会向 history 栈添加一条新记录，所以，当用户点击浏览器后退按钮时，会回到之前的 URL。
 
 当你点击 `<router-link>` 时，内部会调用这个方法，所以点击 `<router-link :to="...">` 相当于调用 `router.push(...)`：
 
@@ -71,7 +71,7 @@ router.push({ path: '/user', params: { username } }) // -> /user
 
 由于属性 `to` 与 `router.push` 接受的对象种类相同，所以两者的规则完全相同。
 
-`router.push` 和所有其他导航方法都会返回一个 _Promise_，让我们可以等待导航完成，并得知导航是成功还是失败。我们将在[等待导航结果](../advanced/navigation-failures.md)中详细介绍。
+`router.push` 和所有其他导航方法都会返回一个 _Promise_，让我们可以等待导航完成，并得知导航是否成功。我们将在[等待导航结果](../advanced/navigation-failures.md)中详细介绍。
 
 ## 替换当前位置
 
