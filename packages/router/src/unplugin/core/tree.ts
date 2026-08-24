@@ -667,8 +667,6 @@ export function collectDuplicatedRouteNodes(
   tree: PrefixTree
 ): DuplicatedRouteConflict[][] {
   const seen = new Map<string, DuplicatedRouteConflict[]>()
-  // find which nodes take precedence to reorder the list
-  const treeNodes = new Set<TreeNode>(...tree)
 
   // by reading through the map, we get every node that was added to the tree
   for (const [filePath, node] of tree.map) {
@@ -681,27 +679,36 @@ export function collectDuplicatedRouteNodes(
     nodes.push({ filePath, node })
   }
 
-  const dups = Array.from(seen.values())
-    // All entries in a group reference the same TreeNode instance, so
-    // comparing the number of files to components.size tells us if any
-    // file was overwritten (e.g. index.vue vs index@default.vue both
-    // targeting the "default" view). Different named views on the same
-    // node (e.g. index.vue + index@header.vue) are not conflicts.
-    .filter(nodes => nodes.length > nodes[0].node.value.components.size)
-    .map(nodes =>
-      nodes.toSorted(({ node: a }, { node: b }) => {
-        // put the one that takes precedence at the end of the list
-        if (treeNodes.has(a) && !treeNodes.has(b)) {
-          return -1
-        } else if (!treeNodes.has(a) && treeNodes.has(b)) {
-          return 1
-        } else {
-          return 0
-        }
-      })
-    )
+  const hasPathOverride = (node: TreeNode) => {
+    while (!node.isRoot()) {
+      if (node.value.overrides.path != null) return true
+      node = node.parent!
+    }
+    return false
+  }
 
-  return dups
+  // a file still referenced by the node won over the ones it overwrote
+  const takesPrecedence = ({ node, filePath }: DuplicatedRouteConflict) =>
+    Array.from(node.value.components.values()).includes(filePath) ? 1 : 0
+
+  return (
+    Array.from(seen.values())
+      // An explicit path can intentionally create multiple records for the
+      // same URL. Keep detecting convention-based collisions such as groups.
+      .map(nodes =>
+        new Set(nodes.map(({ node }) => node)).size === 1
+          ? nodes
+          : nodes.filter(({ node }) => !hasPathOverride(node))
+      )
+      .filter(
+        nodes =>
+          nodes.length > 0 && nodes.length > nodes[0].node.value.components.size
+      )
+      // put the one that takes precedence at the end of the list
+      .map(nodes =>
+        nodes.toSorted((a, b) => takesPrecedence(a) - takesPrecedence(b))
+      )
+  )
 }
 
 /**
