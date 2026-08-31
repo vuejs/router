@@ -1,22 +1,20 @@
 import { routerKey } from './injectionSymbols'
+import type { UseLinkReturn } from './RouterLink'
 import {
   _RouterLinkI,
   getLinkClass,
   type RouterLinkProps,
   useLink,
-  UseLinkReturn,
 } from './RouterLink'
-import { RouteLocationRaw } from './typed-routes'
+import type { RouteLocationRaw } from './typed-routes'
+import type { Block, PropType, UnwrapRef } from 'vue'
 import {
-  Block,
   computed,
   createDynamicComponent,
   createPlainElement,
   defineVaporComponent,
   inject,
-  PropType,
   reactive,
-  UnwrapRef,
 } from 'vue'
 
 export const VaporRouterLink = defineVaporComponent({

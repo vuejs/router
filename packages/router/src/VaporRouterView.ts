@@ -1,10 +1,9 @@
+import type { PropType, ComponentPublicInstance, Block } from 'vue'
 import {
   inject,
   provide,
-  PropType,
   ref,
   unref,
-  ComponentPublicInstance,
   computed,
   watch,
   createTemplateRefSetter,
@@ -12,7 +11,6 @@ import {
   defineVaporComponent,
   type VaporComponent,
   createDynamicComponent,
-  Block,
 } from 'vue'
 import type { RouteLocationNormalizedLoaded } from './typed-routes'
 import type { RouteLocationMatched } from './types'
