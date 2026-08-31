@@ -7,15 +7,11 @@ import { START_LOCATION_NORMALIZED } from '../src/location'
 import type {
   RouterOptions,
   RouteLocationNormalized,
-  RouteLocationResolved} from '../src';
-import {
-  createMemoryHistory,
-  _RouterLinkI,
+  RouteLocationResolved,
 } from '../src'
+import { createMemoryHistory, _RouterLinkI } from '../src'
 import { createMockedRoute, createVaporMount } from './mount'
-import type {
-  PropType,
-  VaporDirective} from 'vue';
+import type { PropType, VaporDirective } from 'vue'
 import {
   computed,
   createComponent,
