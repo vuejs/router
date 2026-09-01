@@ -27,7 +27,6 @@ import {
   setText,
   template,
   txt,
-  withVaporCtx,
   withVaporDirectives,
 } from 'vue'
 import type { RouteRecordNormalized } from '../src/matcher/types'
@@ -983,7 +982,7 @@ describe('RouterLink', () => {
           inactiveClass: String as PropType<string>,
         },
         setup: (props: any, { attrs }) => {
-          const t0 = template('<a>', true)
+          const t0 = template('<a>')
           const isExternalLink = computed(() => {
             return typeof props.to === 'string' && props.to.startsWith('http')
           })
@@ -991,7 +990,7 @@ describe('RouterLink', () => {
             () => isExternalLink.value,
             () => {
               const n3 = t0()
-              setInsertionState(n3 as any, null, 0)
+              setInsertionState(n3 as any)
               createSlot('default')
               renderEffect(() =>
                 setDynamicProps(n3, [attrs, { href: props.to }])
@@ -1003,9 +1002,9 @@ describe('RouterLink', () => {
                 VaporRouterLink,
                 { $: [() => props, { custom: () => '' }] },
                 {
-                  default: withVaporCtx((slotProps0: any) => {
+                  default: (slotProps0: any) => {
                     const n6 = t0()
-                    setInsertionState(n6 as any, null, 0)
+                    setInsertionState(n6 as any)
                     createSlot('default', null)
                     // @ts-ignore
                     n6.$evtclick = e => slotProps0.navigate(e)
@@ -1021,7 +1020,7 @@ describe('RouterLink', () => {
                       ])
                     )
                     return n6
-                  }),
+                  },
                 },
                 true
               )

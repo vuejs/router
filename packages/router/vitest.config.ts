@@ -13,7 +13,7 @@ export default defineConfig({
     __FEATURE_PROD_DEVTOOLS__: false,
     __STRIP_DEVTOOLS__: true,
   },
-  // Vue 3.6 beta packages expose vapor symbols only through their
+  // Vue 3.6 prerelease packages expose vapor symbols only through their
   // esm-bundler entries; the CJS bundles selected by Node's `node`
   // export condition omit `defineVaporComponent` and the internal
   // symbols `@vue/runtime-vapor` re-imports from `@vue/runtime-dom`.

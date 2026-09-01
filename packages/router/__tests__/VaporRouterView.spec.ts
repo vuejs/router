@@ -17,7 +17,7 @@ import {
   setText,
   template,
   txt,
-  withVaporCtx,
+  VaporKeepAlive,
 } from 'vue'
 import { createMockedRoute, createVaporMount } from './mount'
 import type { RouteComponent, RouteLocationNormalized } from '../src'
@@ -52,7 +52,7 @@ const components = {
       },
     },
     setup(props: any) {
-      const n0 = template('<div> ', true)()
+      const n0 = template('<div> ', 1)()
       const x0 = txt(n0 as any)
       renderEffect(() => setText(x0 as any, `User: ${props.id}`))
       return n0
@@ -68,7 +68,7 @@ const components = {
       },
     },
     setup(props: any) {
-      const n0 = template('<div> ', true)()
+      const n0 = template('<div> ', 1)()
       const x0 = txt(n0 as any)
       renderEffect(() =>
         setText(x0 as any, 'id:' + props.id + ';other:' + props.other)
@@ -78,8 +78,8 @@ const components = {
   } as RouteComponent,
   Nested: {
     render: () => {
-      const n3 = template('<div><h2>Nested', true)()
-      setInsertionState(n3 as any, null, 1)
+      const n3 = template('<div><h2>Nested', 1)()
+      setInsertionState(n3 as any, 1)
       createIf(
         () => VaporRouterView,
         () => {
@@ -429,13 +429,13 @@ describe('RouterView', () => {
               VaporRouterView,
               null,
               {
-                default: withVaporCtx((_slotProps0: any) => {
+                default: (_slotProps0: any) => {
                   const n0 = template('<span> ')()
                   const n1 = createDynamicComponent(() => _slotProps0.Component)
                   const x0 = txt(n0 as any)
                   renderEffect(() => setText(x0 as any, _slotProps0.route.name))
                   return [n0, n1]
-                }),
+                },
               },
               true
             )
@@ -463,17 +463,14 @@ describe('RouterView', () => {
         {
           setup: () => {
             const component_router_view = resolveComponent('router-view')
-            const component_keep_alive = resolveComponent('keep-alive')
-            const n1 = createComponentWithFallback(
-              component_keep_alive as any,
+            const n1 = createComponent(
+              VaporKeepAlive,
               null,
-              {
-                default: () => {
-                  const n0 = createComponentWithFallback(
-                    component_router_view as any
-                  )
-                  return n0
-                },
+              () => {
+                const n0 = createComponentWithFallback(
+                  component_router_view as any
+                )
+                return n0
               },
               true
             )
