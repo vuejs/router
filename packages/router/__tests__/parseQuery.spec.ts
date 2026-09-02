@@ -66,6 +66,18 @@ describe('parseQuery', () => {
     })
   })
 
+  it('does not collide with Object.prototype keys', () => {
+    expect(parseQuery('toString=foo')).toEqual({
+      toString: 'foo',
+    })
+    expect(parseQuery('valueOf=bar')).toEqual({
+      valueOf: 'bar',
+    })
+    expect(parseQuery('hasOwnProperty=baz')).toEqual({
+      hasOwnProperty: 'baz',
+    })
+  })
+
   it('decodes the + as space', () => {
     expect(parseQuery('a+b=c+d')).toEqual({
       'a b': 'c d',

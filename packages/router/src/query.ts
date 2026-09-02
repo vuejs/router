@@ -54,8 +54,8 @@ export type LocationQueryRaw = Record<
  * @returns a query object
  */
 export function parseQuery(search: string): LocationQuery {
-  // TODO: in next major, use Object.create(null) and remove src/experimental/location.ts
-  const query: LocationQuery = {}
+  // TODO: in next major, remove src/experimental/location.ts
+  const query: LocationQuery = Object.create(null)
   // avoid creating an object with an empty key and empty value
   // because of split('&')
   if (search === '' || search === '?') return query
