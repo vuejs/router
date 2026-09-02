@@ -126,6 +126,13 @@ describe('MatcherPatternPathStar', () => {
       const pattern = new MatcherPatternPathStar('/team/')
       expect(pattern.build({ pathMatch: '/hey' })).toBe('/team//hey')
     })
+
+    it('keeps the declared case of the prefix', () => {
+      const pattern = new MatcherPatternPathStar('/Team')
+      expect(pattern.build({ pathMatch: '/123' })).toBe('/Team/123')
+      // match() stays case insensitive
+      expect(pattern.match('/team/123')).toEqual({ pathMatch: '/123' })
+    })
   })
 })
 

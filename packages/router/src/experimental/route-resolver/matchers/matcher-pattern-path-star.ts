@@ -19,12 +19,18 @@ export class MatcherPatternPathStar implements MatcherPatternPath<{
   pathMatch: string
 }> {
   private path: string
+  /**
+   * lowercase version of the path to match against.
+   * This is used to make the matching case insensitive.
+   */
+  private pathi: string
   constructor(path: string = '') {
-    this.path = path.toLowerCase()
+    this.path = path
+    this.pathi = path.toLowerCase()
   }
 
   match(path: string): { pathMatch: string } {
-    if (!path.toLowerCase().startsWith(this.path)) {
+    if (!path.toLowerCase().startsWith(this.pathi)) {
       miss()
     }
     return {
