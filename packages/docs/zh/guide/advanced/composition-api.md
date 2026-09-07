@@ -1,4 +1,4 @@
-# Vue Router 和 组合式 API
+# Vue Router 和组合式 API
 
 <VueSchoolLink
   href="https://vueschool.io/lessons/router-and-the-composition-api"
@@ -9,7 +9,7 @@ Vue 的[组合式 API](https://cn.vuejs.org/guide/extras/composition-api-faq.htm
 
 ## 在 `setup` 中访问路由和当前路由
 
-因为我们在 `setup` 里面没有访问 `this`，所以我们不能直接访问 `this.$router` 或 `this.$route`。作为替代，我们使用 `useRouter` 和 `useRoute` 函数：
+由于我们在 `setup` 中无法访问 `this`，所以不能直接访问 `this.$router` 或 `this.$route`。作为替代，我们使用 `useRouter` 和 `useRoute` 组合式函数：
 
 ```vue
 <script setup>
@@ -30,7 +30,7 @@ function pushWithQuery(query) {
 </script>
 ```
 
-`route` 对象是一个响应式对象。在多数情况下，你应该**避免监听整个 `route`** 对象，同时直接监听你期望改变的参数。
+`route` 对象是一个响应式对象。在多数情况下，你应该**避免监听整个 `route`** 对象，而是直接监听你预期会改变的属性。
 
 <RuleKitLink />
 
@@ -99,7 +99,7 @@ const props = defineProps({
   // 如果使用 TypeScript，请添加 @ts-ignore
   ...RouterLink.props,
   inactiveClass: String,
-}）
+})
 
 const {
   // 解析出来的路由对象
@@ -111,7 +111,7 @@ const {
   // 布尔类型的 ref 标识链接是否严格匹配当前路由
   isExactActive,
   // 导航至该链接的函数
-  navigate
+  navigate,
 } = useLink(props)
 
 const isExternalLink = computed(

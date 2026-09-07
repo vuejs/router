@@ -5,13 +5,13 @@
   title="Learn how to add routes at runtime"
 />
 
-对路由的添加通常是通过 `routes` 选项来完成的，但是在某些情况下，你可能想在应用程序已经运行的时候添加或删除路由。具有可扩展接口(如 [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html) )这样的应用程序可以使用它来扩展应用程序。
+对路由的添加通常是通过 `routes` 选项来完成的，但是在某些情况下，你可能想在应用程序已经运行的时候添加或删除路由。具有可扩展接口 (如 [Vue CLI UI](https://cli.vuejs.org/dev-guide/ui-api.html)) 这样的应用程序可以使用它来扩展应用程序。
 
 ## 添加路由
 
-动态路由主要通过两个函数实现。`router.addRoute()` 和 `router.removeRoute()`。它们**只**注册一个新的路由，也就是说，如果新增加的路由与当前位置相匹配，就需要你用 `router.push()` 或 `router.replace()` 来**手动导航**，才能显示该新路由。我们来看一个例子：
+动态路由主要通过两个函数实现：`router.addRoute()` 用于注册一个新的路由，`router.removeRoute()` 用于删除一个已注册的路由。需要注意的是，新注册的路由如果与当前所处的位置相匹配，则需要你使用 `router.push()` 或 `router.replace()` 来**手动导航**，才能使该新路由生效并显示出来。我们来看一个例子：
 
-想象一下，只有一个路由的以下路由：
+想象一下，我们有以下这个只包含一条路由的路由器：
 
 ```js
 const router = createRouter({
@@ -26,7 +26,7 @@ const router = createRouter({
 router.addRoute({ path: '/about', component: About })
 ```
 
-页面仍然会显示 `Article` 组件，我们需要手动调用 `router.replace()` 来改变当前的位置，并覆盖我们原来的位置（而不是添加一个新的路由，最后在我们的历史中两次出现在同一个位置）：
+页面仍然会显示 `Article` 组件，我们需要手动调用 `router.replace()` 来改变当前的位置，并覆盖我们原来的位置 (而不是推入一条新的历史记录，导致历史记录中同一个位置出现两次)：
 
 ```js
 router.addRoute({ path: '/about', component: About })
@@ -54,13 +54,13 @@ router.beforeEach(to => {
 
 上面的例子有两个假设：第一，新添加的路由记录将与 `to` 位置相匹配，实际上导致与我们试图访问的位置不同。第二，`hasNecessaryRoute()` 在添加新的路由后返回 `true`，以避免无限重定向。
 
-因为是在重定向中，所以我们是在替换将要跳转的导航，实际上行为就像之前的例子一样。而在实际场景中，添加路由的行为更有可能发生在导航守卫之外，例如，当一个视图组件挂载时，它会注册新的路由。
+因为我们是在重定向，所以是在替换正在进行的导航，实际行为与前面的例子一样。而在实际场景中，添加路由的行为更有可能发生在导航守卫之外，例如，当一个视图组件挂载时，它会注册新的路由。
 
 ## 删除路由
 
 有几个不同的方法来删除现有的路由：
 
-- 通过添加一个名称冲突的路由。如果添加与现有途径名称相同的途径，会先删除路由，再添加路由：
+- 通过添加一个名称冲突的路由。如果添加与现有路由名称相同的路由，会先删除路由，再添加路由：
 
   ```js
   router.addRoute({ path: '/about', name: 'about', component: About })
@@ -72,7 +72,7 @@ router.beforeEach(to => {
 
   ```js
   const removeRoute = router.addRoute(routeRecord)
-  removeRoute() // 删除路由如果存在的话
+  removeRoute() // 如果路由存在则删除它
   ```
 
   当路由没有名称时，这很有用。
@@ -111,7 +111,7 @@ router.addRoute({
 
 ## 查看现有路由
 
-Vue Router 提供了两个功能来查看现有的路由：
+Vue Router 提供了两个函数来查看现有的路由：
 
 - [`router.hasRoute()`](../../api/interfaces/Router.md#Methods-hasRoute)：检查路由是否存在。
 - [`router.getRoutes()`](../../api/interfaces/Router.md#Methods-getRoutes)：获取一个包含所有路由记录的数组。

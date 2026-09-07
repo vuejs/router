@@ -14,7 +14,7 @@ RouterView 组件暴露了一个插槽，可以用来渲染路由组件：
 
 ## KeepAlive & Transition
 
-当在处理 [KeepAlive](https://vuejs.org/guide/built-ins/keep-alive.html) 组件时，我们通常想要保持路由组件活跃，而不是 RouterView 本身。为了实现这个目的，我们可以将 KeepAlive 组件放置在插槽内：
+在处理 [KeepAlive](https://vuejs.org/guide/built-ins/keep-alive.html) 组件时，我们通常想要保持路由组件活跃，而不是 RouterView 本身。为了实现这个目的，我们可以将 KeepAlive 组件放置在插槽内：
 
 ```vue-html
 <router-view v-slot="{ Component }">
@@ -24,7 +24,7 @@ RouterView 组件暴露了一个插槽，可以用来渲染路由组件：
 </router-view>
 ```
 
-类似地，插槽允许我们使用一个 [Transition](https://vuejs.org/guide/built-ins/transition.html) 组件来实现在路由组件之间切换时实现过渡效果：
+类似地，插槽允许我们使用 [Transition](https://vuejs.org/guide/built-ins/transition.html) 组件来实现路由组件之间切换时的过渡效果：
 
 ```vue-html
 <router-view v-slot="{ Component }">
@@ -60,7 +60,7 @@ RouterView 组件暴露了一个插槽，可以用来渲染路由组件：
 </router-view>
 ```
 
-实践中通常不会这么做，因为这样会导致所有路由组件**都使用相同的 props 和插槽**。请查阅[传递 props 给路由组件](../essentials/passing-props)获取其他传递 props 的方式。
+实践中通常不会这么做，因为这需要所有路由组件**都使用相同的 props 和插槽**。请查阅[传递 props 给路由组件](../essentials/passing-props)获取其他传递 props 的方式。
 
 ## 模板引用
 
@@ -72,4 +72,4 @@ RouterView 组件暴露了一个插槽，可以用来渲染路由组件：
 </router-view>
 ```
 
-而如果我们将引用放在 `<router-view>` 上，那引用将会被 RouterView 的实例填充，而不是路由组件本身。
+而如果我们将引用放在 `<router-view>` 上，那引用将会是 RouterView 的实例，而不是路由组件本身。

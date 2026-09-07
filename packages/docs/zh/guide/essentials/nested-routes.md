@@ -20,7 +20,7 @@
 
 通过 Vue Router，你可以使用嵌套路由配置来表达这种关系。
 
-接着上节创建的 app ：
+接着上节创建的 app：
 
 ```vue [App.vue]
 <template>
@@ -99,7 +99,7 @@ const routes = [
 ]
 ```
 
-这个例子的 demo 可以在[这里](https://codesandbox.io/s/nested-views-vue-router-4-examples-hl326?initialpath=%2Fusers%2Feduardo)找到。
+- [在演练场中查看](https://play.vuejs.org/#eNqtVm1v2zYQ/iuEOsDOFktOtg6D5hjZigLdgHVB9/Kl7gdGOltMJJIgKduF4f/e44skK1LcoqgBw9Ldc8fnjvfiQ1RRxuMHHaURq6RQhhxIpoAa+E1KciRrJSoy2dYwWfEWoERtQLXaOPGCDmJtGx2VMvb2K+5xsax1MZ0ktQalE8hrqnIxuYhNAXw6vSA3S3JYcdLxmOL3wkoIidFo6t00kkrU3EwnL/CgCcqO+I0uo3AsxrUwUMkSPS2twaK4Wr4FbSAn/zPY6UWCAqeQ7gcftFGCb5avaqWAGx8tkdQU6SIJOnI4kO+cIl7XZXmHSnI8OjeJ97PgdNs49HxnJeOPxIibVdQPfRUt+4JFSKiz+EIniVRizUoYOGsUX+dUaKNHXFrx0OEiaYJuHG8xxSRB0SI5uQV81eZjCURnQkKOkvjE1Yxmhm0h1IAohUqJUJRv4Fe8XWvdQ8Me8WM2mWKVFtwb2ZvDE/EorI1QhmNV/xdUQn18w7TBn8sgfNevdyyrWVvxbc3/hxlqi96+hKo/Ub8RFfQgVjCE3fkL6yGDbARsr6IPtZK25WDvoJngOpSyIje9uKYuaYUP2aZtkIfpxaWFOGudkve+eJyZ/bjWIE0/p/aH0womzsh+MoF8OfZS6ih38oKVOfZY69J+kqTL1Y6VJbkHgpgcFLYs45rl4AAT3auyUNHBww5HCXlKiDBNKmqyAvIOfGjoT/C2+zwdhSOyHZBrbujb8ms69TzPABrSbUiNM3Zl8q35Oqfn2VrICFdnaZl6/Ifw5CX2LYzxppGGczxnW5KVVGucWpYRTqkw1IrrpWvGbkZLqmil7e7whXA84ti/fjIE21llBxl670+twKXp2FE+S6sdt/UdO6uoxLEjOJq79lkFBc7YtGmoVdQNGCteRYUxUqdJUnP5uIkxlUmHuH0Zz+Of8UxtTqQx6Gp2r8TOpu8BvYf8rqJbBCU5bI0QpZ5RyZ47YgC8/SW+iq+6k051g/PscTh2jxi6wSnP12zzJHBbEViu6m9pGA6nXgJoWYrdn05mVA0teSyy7HFE/qD3Pow7Bchgi1uw1RmqNmC8+vU/b2GPz62yEnltd+YZ5TvQoqwtRw/7veY50j7BObZ/uHtkfPOvfr03gH0VgrJEXTYc3l3uqzOhd3R/jH86yeKTJTBefwHwfPm2u+EZe7/Xx6zd+tRxpu3SxDV/6f6KYZNZ43uhcJ6k5FruCWaL5eTFfD7HzUtwNKgN47N7YYyoEDGXeyeXNM8xW63ELXb06x3Skm34jCEB3Dcac2KcEdYeEsIltS7Bu7EPs5wpwP0vcJHg7q8ru/PPnLAk35Mf8OtOCvyMkCmZxy8VVO2/DBffkhTXp0hEjQBad5/PhDvpXBqi4ydEAunK)
 
 <RuleKitLink />
 
@@ -120,7 +120,7 @@ const routes = [
 
 这将确保导航到 `/user/:id` 时始终显示嵌套路由。
 
-在一些场景中，你可能希望导航到命名路由而不导航到嵌套路由。例如，你想导航 `/user/:id` 而不显示嵌套路由。那样的话，你还可以**命名父路由**，但请注意**重新加载页面将始终显示嵌套的子路由**，因为它被视为指向路径`/users/:id` 的导航，而不是命名路由：
+在一些场景中，你可能希望导航到命名路由而不导航到嵌套路由。例如，你想导航到 `/user/:id` 而不显示嵌套路由。那样的话，你还可以**命名父路由**，但请注意**重新加载页面将始终显示嵌套的子路由**，因为它被视为指向路径 `/user/:id` 的导航，而不是命名路由：
 
 ```js
 const routes = [
@@ -137,7 +137,7 @@ const routes = [
 
 我们还可以仅利用路由的父子关系，但不嵌套路由组件。这对于将具有公共路径前缀的路由分组在一起或使用更高级的功能时很有用，例如：[路由独享的守卫](../advanced/navigation-guards#Per-Route-Guard)或[路由元信息](../advanced/meta)。
 
-为了实现这一点, 我们在父路由中省略了 `component` 和 `components` 选项
+为了实现这一点，我们在父路由中省略了 `component` 和 `components` 选项：
 
 ```js
 const routes = [
@@ -152,4 +152,4 @@ const routes = [
 ]
 ```
 
-由于父级没有指定路由组件，顶级 `<router-view>` 将跳过父级并仅使用子路由组件。
+由于父级没有指定路由组件，顶级 `<router-view>` 将跳过父级，转而使用相应子路由的组件。
