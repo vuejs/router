@@ -443,7 +443,7 @@ function getOriginalPath(record: RouteRecord | undefined): string {
  * @param globalClass
  * @param defaultClass
  */
-const getLinkClass = (
+export const getLinkClass = (
   propClass: string | undefined,
   globalClass: string | undefined,
   defaultClass: string

@@ -165,9 +165,9 @@
     "@types/picomatch": "^4.0.3",
     "@typescript/native-preview": "7.0.0-dev.20260707.2",
     "@vitejs/plugin-vue": "^6.0.8",
-    "@vue/compiler-sfc": "^3.5.34",
+    "@vue/compiler-sfc": "^3.6.0-rc.6",
     "@vue/language-core": "^3.3.7",
-    "@vue/server-renderer": "^3.5.34",
+    "@vue/server-renderer": "^3.6.0-rc.6",
     "@vue/test-utils": "^2.4.11",
     "connect-history-api-fallback": "^2.0.0",
     "faked-promise": "^2.2.2",
@@ -180,15 +180,15 @@
     "tsup": "^8.5.1",
     "valibot": "^1.4.2",
     "vite": "^8.2.0",
-    "vue": "^3.5.34",
+    "vue": "^3.6.0-rc.6",
     "zod": "^4.4.3"
   },
   "peerDependencies": {
     "@pinia/colada": ">=0.21.2",
-    "@vue/compiler-sfc": "^3.5.34 || ^4.0.0",
+    "@vue/compiler-sfc": "^3.5.34 || ^3.6.0-rc.6 || ^4.0.0",
     "pinia": "^3.0.4 || ^4.0.2",
     "vite": "^7.3.0 || ^8.0.0",
-    "vue": "^3.5.34 || ^4.0.0"
+    "vue": "^3.5.34 || ^3.6.0-rc.6 || ^4.0.0"
   },
   "peerDependenciesMeta": {
     "@vue/compiler-sfc": {

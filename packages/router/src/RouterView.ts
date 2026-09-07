@@ -195,10 +195,12 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
           : [component.ref.i]
 
         internalInstances.forEach(instance => {
-          // @ts-expect-error
-          // to prevent possible race condition in SSR
-          // https://github.com/vuejs/router/pull/2789
-          if (instance) instance.__vrv_devtools = info
+          if (instance) {
+            // @ts-expect-error
+            // to prevent possible race condition in SSR
+            // https://github.com/vuejs/router/pull/2789
+            instance.__vrv_devtools = info
+          }
         })
       }
 
