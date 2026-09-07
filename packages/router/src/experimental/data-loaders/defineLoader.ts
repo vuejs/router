@@ -124,7 +124,8 @@ export function defineBasicLoader<Data>(
     to: RouteLocationNormalizedLoaded,
     router: Router,
     from?: RouteLocationNormalizedLoaded,
-    parent?: DataLoaderEntryBase
+    parent?: DataLoaderEntryBase,
+    force?: boolean
   ): Promise<void> {
     // we cast here because we can manipulate our ownn type of entries
     const entries = router[LOADER_ENTRIES_KEY]! as _DefineLoaderEntryMap<
@@ -198,8 +199,9 @@ export function defineBasicLoader<Data>(
         diagnostics.VUE_ROUTER_R1001({ key: options.key })
       }
     }
-    // set the current context before loading so nested loaders can use it
-    setCurrentContext([entry, router, to])
+    // set the current context before loading so nested loaders can use it.
+    // `force` is propagated so nested loaders re-run on explicit reloads
+    setCurrentContext([entry, router, to, force])
     entry.staged = STAGED_NO_VALUE
     // preserve error until data is committed
     entry.stagedError = error.value
@@ -345,22 +347,22 @@ export function defineBasicLoader<Data>(
     // console.log('is same route', entry?.pendingTo === route)
     // console.log('-- END --')
 
+    // a nested loader whose parent has already committed data for this route
+    // doesn't need to re-run. Otherwise, loaders that resolve instantly
+    // (committed before nested loaders run) are wrongly executed twice
+    // https://github.com/vuejs/router/issues/2684
+    const force =
+      currentContext.length > 3 && currentContext[3] === true
+    const hasDataForRoute =
+      !!entry && entry.to === route && !!entry.pendingLoad
     if (
-      // if the entry doesn't exist, create it with load and ensure it's loading
       !entry ||
-      // the existing pending location isn't good, we need to load again
-      (parentEntry && entry.pendingTo !== route) ||
-      // we could also check for: but that would break nested loaders since they need to be always called to be associated with the parent
-      // && entry.to !== route
-      // the user managed to render the router view after a valid navigation + a failed navigation
-      // https://github.com/posva/unplugin-vue-router/issues/495
-      !entry.pendingLoad
+      (parentEntry && entry.pendingTo !== route && !hasDataForRoute) ||
+      !entry.pendingLoad ||
+      force
     ) {
-      // console.log(
-      //   `🔁 loading from useData for "${options.key}": "${route.fullPath}"`
-      // )
       router[APP_KEY].runWithContext(() =>
-        load(route, router, undefined, parentEntry)
+        load(route, router, undefined, parentEntry, force)
       )
     }
 
@@ -383,7 +385,7 @@ export function defineBasicLoader<Data>(
       isLoading,
       reload: (to: RouteLocationNormalizedLoaded = router.currentRoute.value) =>
         router[APP_KEY]
-          .runWithContext(() => load(to, router))
+          .runWithContext(() => load(to, router, undefined, undefined, true))
           .then(() => entry!.commit(to)),
     } satisfies UseDataLoaderResult<Data | undefined, ErrorDefault>
 
