@@ -6,6 +6,7 @@
 
 export { createWebHashHistory } from './history/hash'
 export { createWebHistory } from './history/html5'
+export { useHistoryState } from './history/state'
 export { createMemoryHistory } from './history/memory'
 export { createRouterMatcher } from './matcher'
 export type { RouterMatcher } from './matcher'
