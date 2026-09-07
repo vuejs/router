@@ -29,6 +29,8 @@ export type {
 export {
   getCurrentContext,
   setCurrentContext,
+  isInsideLoaderFn,
+  runInsideLoaderFn,
   type _PromiseMerged,
   assign,
   isSubsetOf,
