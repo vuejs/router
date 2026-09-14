@@ -19,6 +19,34 @@ The path doesn't necessarily need to be a perfect match. For example, using an [
 
 If a route has a [`redirect`](./redirect-and-alias#Redirect), it won't be followed when checking whether a link is active.
 
+### Path prefixes
+
+Sharing a path prefix isn't enough on its own. Consider these two top-level routes:
+
+```js
+const routes = [
+  { path: '/users', component: UserList },
+  { path: '/users/:id', component: UserDetails },
+]
+```
+
+When the current location is `/users/1`, a link to `/users` is **not** active: the two paths belong to different route records and `/users/:id` isn't a child of `/users`. Vue Router 3 compared paths instead, which is why the [`exact` prop was removed](../migration/index.md#Removal-of-the-exact-prop-in-router-link-).
+
+If you want the `/users` link to be active on `/users/1`, the simplest option is to declare `/users/:id` as a child of `/users`. If the routes really need to stay separate, build your own link with [`useLink`](../advanced/composition-api.md#useLink) and compare the paths yourself:
+
+```js
+const currentRoute = useRoute()
+const { route, href, navigate } = useLink(props)
+
+const isActive = computed(
+  () =>
+    currentRoute.path === route.value.path ||
+    currentRoute.path.startsWith(route.value.path + '/')
+)
+```
+
+See [Extending RouterLink](../advanced/extending-router-link) for a complete component built this way.
+
 ## Exact active links
 
 An **_exact_** match does not include ancestor routes.
