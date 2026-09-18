@@ -25,3 +25,4 @@ tsconfig.vitest-temp.json
 .claude/worktrees
 .claude/settings.local.json
 .deepsec
+.pnpm-store/
