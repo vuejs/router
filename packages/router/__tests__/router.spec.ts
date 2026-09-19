@@ -5,6 +5,7 @@ import fakePromise from 'faked-promise'
 import { computed, effectScope } from 'vue'
 import type { RouteLocationRaw } from '../src/typed-routes'
 import { createRouter } from '../src/router'
+import { createRouterMatcher } from '../src/matcher'
 import { createMemoryHistory } from '../src/history/memory'
 import { createWebHistory } from '../src/history/html5'
 import { createWebHashHistory } from '../src/history/hash'
@@ -104,6 +105,31 @@ describe('Router', () => {
     // @ts-expect-error
     expect(() => createRouter({ routes })).toThrowError(
       'Provide the "history" option'
+    )
+  })
+
+  it('uses a matcher passed in options', () => {
+    const matcherRoutes: RouteRecordRaw[] = [
+      { path: '/shared', component: components.Foo, name: 'shared' },
+    ]
+    const matcher = createRouterMatcher(matcherRoutes, {})
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [],
+      matcher,
+    })
+
+    expect(router.resolve('/shared').name).toBe('shared')
+    expect(router.hasRoute('shared')).toBe(true)
+
+    const otherRouter = createRouter({
+      history: createMemoryHistory(),
+      routes: [],
+      matcher,
+    })
+
+    expect(otherRouter.resolve('/shared').matched).toEqual(
+      router.resolve('/shared').matched
     )
   })
 
