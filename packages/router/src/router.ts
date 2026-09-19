@@ -154,7 +154,8 @@ export type Router =
  * @param options - {@link RouterOptions}
  */
 export function createRouter(options: RouterOptions): Router {
-  const matcher = options.matcher || createRouterMatcher(options.routes, options)
+  const matcher =
+    options.matcher || createRouterMatcher(options.routes, options)
   const parseQuery = options.parseQuery || originalParseQuery
   const stringifyQuery = options.stringifyQuery || originalStringifyQuery
   const routerHistory = options.history
