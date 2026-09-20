@@ -56,7 +56,7 @@ router.push({ name: 'user', params: { username } }) // -> /user/eduardo%2Fsan%20
 router.push({ path: '/user', params: { username } }) // -> /user
 ```
 
-构建字符串路径或带有 `path` 的对象时，请提供已编码的路径。使用 [`encodeURIComponent`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) 编码每个动态片段。同样的规则也适用于 `<RouterLink>`：
+构建字符串路径或带有 `path` 的对象时，请提供已编码的路径。使用 [`encodeURIComponent`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) 对每个动态片段 (即每两个 `/` 之间的部分) 进行编码。请注意 `encodeURIComponent` 也会编码 `/` 字符。同样的规则也适用于 `<RouterLink>`：
 
 ```vue
 <RouterLink :to="`/user/${encodeURIComponent(username)}`">User</RouterLink>
