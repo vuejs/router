@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Vue Router e2e tests - Navigation API</title>
+    <link rel="stylesheet" href="/global.css" />
+
+    <style>
+      @view-transition {
+        navigation: auto;
+      }
+
+      .view {
+        view-transition-name: view;
+        margin: 1em 0;
+        padding: 1em;
+        border: 1px solid var(--link);
+        border-radius: 4px;
+        background: var(--surface);
+      }
+
+      :root {
+        --transition-duration-out: 200ms;
+        --transition-duration-in: 300ms;
+      }
+
+      ::view-transition-old(view) {
+        animation: var(--transition-duration-out) ease both view-fade-out;
+      }
+
+      ::view-transition-new(view) {
+        animation: var(--transition-duration-in) ease
+          var(--transition-duration-out) both view-fade-in;
+      }
+
+      @keyframes view-fade-out {
+        to {
+          opacity: 0;
+        }
+      }
+
+      @keyframes view-fade-in {
+        from {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a href="/">&lt;&lt; Back to Homepage</a>
+    <hr />
+
+    <main id="app">
+      <h1>Navigation API</h1>
+
+      <div class="view">
+        <h2>{{ path }}</h2>
+      </div>
+
+      <ul id="top">
+        <li><a href="/navigation-api/a">/navigation-api/a</a></li>
+        <li><a href="/navigation-api/b">/navigation-api/b</a></li>
+        <li><a href="#hey">#hey</a></li>
+        <li><a href="/navigation-api/?cancel">?cancel</a></li>
+        <li><a href="/navigation-api/?throw">?throw</a></li>
+        <li>
+          <a href="/navigation-api/guards-instances.html">
+            Guards instances exploration
+          </a>
+        </li>
+      </ul>
+
+      <div style="margin-top: 5000px">
+        <a href="#top">Go to top</a>
+      </div>
+    </main>
+
+    <script type="module" src="/navigation-api/index.ts"></script>
+  </body>
+</html>
