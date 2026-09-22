@@ -87,8 +87,9 @@ export interface RouterOptions extends EXPERIMENTAL_RouterOptions_Base {
    * `createRouterMatcher`. Sharing a matcher between routers is only safe when
    * no router mutates it (e.g. via `addRoute`).
    *
+   * @internal for Nuxt only
    * @deprecated This is only exposed for Nuxt, it's replaced in the
-   * experimental router by the `resolver` option
+   * upcoming router by the `resolver` option
    */
   matcher?: RouterMatcher
 }
