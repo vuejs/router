@@ -15,13 +15,11 @@ If you're using [nested routes](./nested-routes), any links to ancestor routes w
 
 Other route properties, such as the [`query`](../../api/interfaces/RouteLocationBase.html#query), are not taken into account.
 
-The path doesn't necessarily need to be a perfect match. For example, using an [`alias`](./redirect-and-alias#Alias) would still be considered a match, so long as it resolves to the same route record and `params`.
+Note that **the path doesn't necessarily need to be a perfect match**. For example, using an [`alias`](./redirect-and-alias#Alias) would still be considered a match, so long as it resolves to the same route record and `params`.
 
 If a route has a [`redirect`](./redirect-and-alias#Redirect), it won't be followed when checking whether a link is active.
 
-### Path prefixes
-
-Sharing a path prefix isn't enough on its own. Consider these two top-level routes:
+Similarly, sharing the same path isn't enough:
 
 ```js
 const routes = [
@@ -30,22 +28,21 @@ const routes = [
 ]
 ```
 
-When the current location is `/users/1`, a link to `/users` is **not** active: the two paths belong to different route records and `/users/:id` isn't a child of `/users`. Vue Router 3 compared paths instead, which is why the [`exact` prop was removed](../migration/index.md#Removal-of-the-exact-prop-in-router-link-).
+Being at `/users/1` will make a link to `/users/1` active, but a link to `/users` will not be active because the route records are unrelated (no nesting).
 
-If you want the `/users` link to be active on `/users/1`, the simplest option is to declare `/users/:id` as a child of `/users`. If the routes really need to stay separate, build your own link with [`useLink`](../advanced/composition-api.md#useLink) and compare the paths yourself:
+If you want the `/users` to be active on `/users/1`, the simplest option is to nest them:
 
 ```js
-const currentRoute = useRoute()
-const { route, href, navigate } = useLink(props)
-
-const isActive = computed(
-  () =>
-    currentRoute.path === route.value.path ||
-    currentRoute.path.startsWith(route.value.path + '/')
-)
+const routes = [
+  {
+    path: '/users',
+    children: [
+      { path: '', component: UserList },
+      { path: ':id', component: UserDetails },
+    ],
+  },
+]
 ```
-
-See [Extending RouterLink](../advanced/extending-router-link) for a complete component built this way.
 
 ## Exact active links
 
