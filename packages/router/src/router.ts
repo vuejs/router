@@ -26,6 +26,7 @@ import {
   scrollToPosition,
 } from './scrollBehavior'
 import { createRouterMatcher } from './matcher'
+import type { RouterMatcher } from './matcher'
 import type {
   NavigationFailure,
   NavigationRedirectError,
@@ -80,6 +81,16 @@ export interface RouterOptions extends EXPERIMENTAL_RouterOptions_Base {
    * Initial list of routes that should be added to the router.
    */
   routes: Readonly<RouteRecordRaw[]>
+
+  /**
+   * Allows Nuxt and SSR apps to pass a prebuilt matcher created with
+   * `createRouterMatcher`. Sharing a matcher between routers is only safe when
+   * no router mutates it (e.g. via `addRoute`).
+   *
+   * @deprecated This is only exposed for Nuxt, it's replaced in the
+   * experimental router by the `resolver` option
+   */
+  matcher?: RouterMatcher
 }
 
 /**
@@ -146,7 +157,8 @@ export type Router =
  * @param options - {@link RouterOptions}
  */
 export function createRouter(options: RouterOptions): Router {
-  const matcher = createRouterMatcher(options.routes, options)
+  const matcher =
+    options.matcher || createRouterMatcher(options.routes, options)
   const parseQuery = options.parseQuery || originalParseQuery
   const stringifyQuery = options.stringifyQuery || originalStringifyQuery
   const routerHistory = options.history
