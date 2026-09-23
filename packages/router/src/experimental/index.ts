@@ -13,6 +13,14 @@ export type {
   EXPERIMENTAL_RouteRecordNormalized_Matchable,
 } from './router'
 
+export {
+  ScrollRestoration,
+  USE_SCROLL_RESTORATION_DEFAULTS,
+  useScrollRestoration,
+  type ScrollRestorationPluginOptions,
+  type UseScrollRestorationOptions,
+} from './scroll-restoration'
+
 export { createFixedResolver } from './route-resolver/resolver-fixed'
 export {
   MatcherPatternPathStatic,
