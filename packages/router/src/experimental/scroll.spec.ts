@@ -1,7 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
-import { CAPTURE_LEGACY, RESTORE_LEGACY } from './scroll'
+import { CAPTURE_LEGACY, RESTORE_LEGACY } from './scroll-restoration'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
 import {
   vi,

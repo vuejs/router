@@ -18,6 +18,8 @@ export {
   USE_SCROLL_RESTORATION_DEFAULTS,
   useScrollRestoration,
   type ScrollRestorationPluginOptions,
+  type ScrollRestorationPosition,
+  type ScrollRestorationSessionEntry,
   type UseScrollRestorationOptions,
 } from './scroll-restoration'
 
