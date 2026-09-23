@@ -5,11 +5,11 @@ import { RouterView } from '../src/RouterView'
 import type { RouteLocationNormalizedLoose } from './utils'
 import { components } from './utils'
 import { START_LOCATION_NORMALIZED } from '../src/location'
-import { markRaw } from 'vue'
+import { h, markRaw } from 'vue'
 import { createMockedRoute } from './mount'
 import { mount } from '@vue/test-utils'
 import type { RouteLocationNormalized } from '../src/typed-routes'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { mockWarn } from './vitest-mock-warn'
 
 // to have autocompletion
@@ -285,6 +285,70 @@ describe('RouterView', () => {
     expect(wrapper.html()).toBe(`<div>Home</div>`)
     await route.set(routes.foo)
     expect(wrapper.html()).toBe(`<div>Foo</div>`)
+  })
+
+  it('does not update the parent view component when a child route changes', async () => {
+    const parentRender = vi.fn(() =>
+      h('div', [h('h2', {}, 'parent'), h(RouterView)])
+    )
+    const childRenderA = vi.fn(() => h('div', {}, 'child a'))
+    const childRenderB = vi.fn(() => h('div', {}, 'child b'))
+    const parentRecord = {
+      components: { default: { name: 'Parent', render: parentRender } },
+      instances: {},
+      enterCallbacks: {},
+      path: '/parent',
+      props,
+    }
+    const nested = createRoutes({
+      childA: {
+        fullPath: '/parent/a',
+        name: undefined,
+        path: '/parent/a',
+        query: {},
+        params: {},
+        hash: '',
+        meta: {},
+        matched: [
+          parentRecord,
+          {
+            components: { default: { name: 'ChildA', render: childRenderA } },
+            instances: {},
+            enterCallbacks: {},
+            path: 'a',
+            props,
+          },
+        ],
+      },
+      childB: {
+        fullPath: '/parent/b',
+        name: undefined,
+        path: '/parent/b',
+        query: {},
+        params: {},
+        hash: '',
+        meta: {},
+        matched: [
+          parentRecord,
+          {
+            components: { default: { name: 'ChildB', render: childRenderB } },
+            instances: {},
+            enterCallbacks: {},
+            path: 'b',
+            props,
+          },
+        ],
+      },
+    })
+    const { route, wrapper } = await factory(nested.childA)
+    expect(wrapper.text()).toContain('child a')
+    expect(parentRender).toHaveBeenCalledTimes(1)
+
+    await route.set(nested.childB)
+    expect(wrapper.text()).toContain('child b')
+    // the parent matched record did not change, so only the child view should
+    // be updated, not the parent component
+    expect(parentRender).toHaveBeenCalledTimes(1)
   })
 
   it('does not pass params as props by default', async () => {

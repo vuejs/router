@@ -139,10 +139,21 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       { flush: 'post' }
     )
 
+    // Cache the unmount hook per matched route and name. The hook must keep a
+    // stable identity so the view component isn't unnecessarily updated when
+    // navigating between child routes (#1701), but its captured values must
+    // still be bound to one route record because the component can unmount
+    // after we navigated elsewhere (e.g. transitions)
+    let unmountHook:
+      | {
+          matchedRoute: RouteLocationMatched
+          name: string
+          hook: VNodeProps['onVnodeUnmounted']
+        }
+      | undefined
+
     return () => {
       const route = routeToDisplay.value
-      // we need the value at the time we render because when we unmount, we
-      // navigated to a different location so the value is different
       const currentName = props.name
       const matchedRoute = matchedRouteRef.value
       const ViewComponent =
@@ -162,17 +173,29 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
             : routePropsOption
         : null
 
-      const onVnodeUnmounted: VNodeProps['onVnodeUnmounted'] = vnode => {
-        // remove the instance reference to prevent leak
-        if (vnode.component!.isUnmounted) {
-          matchedRoute.instances[currentName] = null
+      if (
+        !unmountHook ||
+        unmountHook.matchedRoute !== matchedRoute ||
+        unmountHook.name !== currentName
+      ) {
+        const capturedRoute = matchedRoute
+        const capturedName = currentName
+        unmountHook = {
+          matchedRoute,
+          name: currentName,
+          hook: vnode => {
+            // remove the instance reference to prevent leak
+            if (vnode.component!.isUnmounted) {
+              capturedRoute.instances[capturedName] = null
+            }
+          },
         }
       }
 
       const component = h(
         ViewComponent,
         assign({}, routeProps, attrs, {
-          onVnodeUnmounted,
+          onVnodeUnmounted: unmountHook.hook,
           ref: viewRef,
         })
       )
