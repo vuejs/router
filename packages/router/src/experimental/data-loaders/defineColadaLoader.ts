@@ -133,6 +133,17 @@ export function defineColadaLoader<Data>(
   options: DefineDataLoaderOptionsBase_LaxData
 ): UseDataLoaderColada_LaxData<Data>
 
+/**
+ * Creates a data loader from route-aware options or a reusable Pinia Colada query.
+ * Query callbacks receive the target route, while their query functions receive
+ * Pinia Colada's context. Loader settings are passed separately for callbacks.
+ *
+ * @param nameOrOptions - optional route name, loader options, or query callback
+ * @param _options - loader options or query callback when a name is provided;
+ * otherwise, the settings for a query callback
+ * @param _loaderOptions - settings for a named query callback
+ * @returns a composable exposing the loaded data and query state
+ */
 export function defineColadaLoader<Data>(
   nameOrOptions:
     | keyof RouteMap
@@ -181,6 +192,13 @@ export function defineColadaLoader<Data>(
     >
     const entry = entries.get(loader)!
 
+    /**
+     * Executes the query in the application context and records the route
+     * properties used by its key and query to detect changes during navigation.
+     *
+     * @param context - query context supplied by Pinia Colada
+     * @returns the pending query data
+     */
     const query: UseQueryOptions<
       Data,
       ErrorDefault,
@@ -218,6 +236,17 @@ export function defineColadaLoader<Data>(
     )
   })
 
+  /**
+   * Loads data for the target route and stages it until it can be committed.
+   * Reuses fresh cached data unless the tracked route properties have changed.
+   *
+   * @param to - route whose data should be loaded
+   * @param router - router owning the loader entry
+   * @param from - route being left during navigation
+   * @param parent - parent entry when this loader is nested
+   * @param reload - whether to force a refetch instead of refreshing the cache
+   * @returns a promise that resolves when loading and staging finish
+   */
   function load(
     to: RouteLocationNormalizedLoaded,
     router: Router,
@@ -412,6 +441,12 @@ export function defineColadaLoader<Data>(
     return currentLoad
   }
 
+  /**
+   * Publishes staged data and errors for the matching pending route, then commits
+   * any nested loaders. Results from superseded navigations are ignored.
+   *
+   * @param to - route for which the staged result should be committed
+   */
   function commit(
     this: DataLoaderColadaEntry<Data>,
     to: RouteLocationNormalizedLoaded

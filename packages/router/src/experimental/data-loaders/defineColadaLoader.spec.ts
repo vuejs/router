@@ -47,6 +47,14 @@ describe(
       }
     )
 
+    /**
+     * Mounts a route component that consumes the loader and exposes its result.
+     *
+     * @param useData - loader exported by the test route
+     * @param pluginOptions - data loader plugin settings for the test
+     * @param path - route pattern, optionally including dynamic parameters
+     * @returns the mounted wrapper, router, application, and loader result accessor
+     */
     function singleLoaderOneRoute<Loader extends UseDataLoader>(
       useData: Loader,
       pluginOptions?: Omit<DataLoaderPluginOptions, 'router'>,
