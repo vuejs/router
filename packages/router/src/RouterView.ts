@@ -18,6 +18,7 @@ import {
   getCurrentInstance,
   computed,
   watch,
+  nextTick,
 } from 'vue'
 import type {
   RouteLocationNormalized,
@@ -28,10 +29,12 @@ import {
   matchedRouteKey,
   viewDepthKey,
   routerViewLocationKey,
+  routerViewAfterNavigationKey,
 } from './injectionSymbols'
+import type { AfterNavigationCallback } from './injectionSymbols'
 import { assign, isArray, isBrowser } from './utils'
 import { diagnostics } from './diagnostics'
-import { isSameRouteRecord } from './location'
+import { isSameRouteRecord, START_LOCATION_NORMALIZED } from './location'
 
 export interface RouterViewProps {
   name?: string
@@ -95,7 +98,13 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     provide(matchedRouteKey, matchedRouteRef)
     provide(routerViewLocationKey, routeToDisplay)
 
+    // onRouteRendered() callbacks of descendants without a closer RouterView
+    const afterNavigationCallbacks = new Set<AfterNavigationCallback>()
+    provide(routerViewAfterNavigationKey, afterNavigationCallbacks)
+
     const viewRef = ref<ComponentPublicInstance>()
+    let settledRoute = START_LOCATION_NORMALIZED
+    const { app } = getCurrentInstance()!.appContext
 
     // watch at the same time the component instance, the route record we are
     // rendering, and the name
@@ -169,10 +178,42 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
         }
       }
 
+      // runs after the view's own mounted/updated/activated hooks, after
+      // Suspense resolves, and after an out-in Transition enters
+      const onVnodeSettled = (vnode: VNode) =>
+        // wait for the end of the render flush: other views and hooks of the
+        // same flush (nested RouterView, onActivated) run after this one, and
+        // the app container isn't set yet during the initial mount
+        nextTick(() => {
+          if (
+            // already called: unrelated re-render or failed navigation (the
+            // route didn't change)
+            settledRoute === route ||
+            // stale vnode (e.g. the old branch of a pending Suspense). Also
+            // skips views memoized with v-memo (e.g. `[route.path]`): they
+            // self-update with the props of the memoized render, so
+            // navigations that keep the memo key are missed
+            routeToDisplay.value !== route ||
+            // still in a Suspense hidden container, e.g. KeepAlive activating
+            // inside a pending Suspense, a later hook fires once it is moved
+            (vnode.el as Node).getRootNode() !==
+              (app._container as Node).getRootNode()
+          ) {
+            return
+          }
+          const from = settledRoute
+          settledRoute = route
+          for (const callback of afterNavigationCallbacks) {
+            callback(route, from)
+          }
+        })
+
       const component = h(
         ViewComponent,
         assign({}, routeProps, attrs, {
           onVnodeUnmounted,
+          onVnodeMounted: onVnodeSettled,
+          onVnodeUpdated: onVnodeSettled,
           ref: viewRef,
         })
       )

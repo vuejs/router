@@ -15,13 +15,17 @@ export type {
 
 export {
   ScrollRestoration,
-  USE_SCROLL_RESTORATION_DEFAULTS,
   useScrollRestoration,
   type ScrollRestorationPluginOptions,
   type ScrollRestorationPosition,
   type ScrollRestorationSessionEntry,
   type UseScrollRestorationOptions,
+  SCROLL_RESTORATION_CAPTURE_DEFAULT,
+  SCROLL_RESTORATION_RESTORE_DEFAULT,
 } from './scroll-restoration'
+
+export { onRouteRendered } from './on-route-rendered'
+export type { AfterNavigationCallback } from '../injectionSymbols'
 
 export { createFixedResolver } from './route-resolver/resolver-fixed'
 export {

@@ -4,6 +4,8 @@ import { createApp, defineComponent } from 'vue'
 import {
   ScrollRestoration,
   useScrollRestoration,
+  SCROLL_RESTORATION_CAPTURE_DEFAULT,
+  SCROLL_RESTORATION_RESTORE_DEFAULT,
 } from 'vue-router/experimental'
 
 function createAutomaticPage(name: string): RouteComponent {
@@ -47,7 +49,11 @@ const app = createApp({
   `,
 })
 
-app.use(ScrollRestoration, { router })
+app.use(ScrollRestoration, {
+  router,
+  capture: SCROLL_RESTORATION_CAPTURE_DEFAULT,
+  restore: SCROLL_RESTORATION_RESTORE_DEFAULT,
+})
 app.use(router)
 
 router.isReady().then(() => (window.vm = app.mount('#app')))

@@ -1,3 +1,3 @@
 - `key` allows to control when a scroll position should be shared between pages.
-- Nested `useScrollRestoration` take precedence over parent `useScrollRestoration` when the `key` is the same
-- Nested `useScrollRestoration` should never take over the scroll position of parent HTML that use the same key
+- Active `useScrollRestoration` calls with the same `key` all capture and restore; the last capture wins
+- Use one `key` per scroll container; same key with different `capture`/`restore` warns in dev

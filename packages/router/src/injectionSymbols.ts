@@ -51,3 +51,21 @@ export const routeLocationKey = Symbol(
 export const routerViewLocationKey = Symbol(
   __DEV__ ? 'router view location' : ''
 ) as InjectionKey<Ref<RouteLocationNormalizedLoaded>>
+
+/**
+ * Called once a navigation is displayed. See `onRouteRendered()`.
+ */
+export type AfterNavigationCallback = (
+  to: RouteLocationNormalizedLoaded,
+  from: RouteLocationNormalizedLoaded
+) => void
+
+/**
+ * Callbacks called by the closest ancestor router-view once it displays a new
+ * route. Used by `onRouteRendered()`.
+ *
+ * @internal
+ */
+export const routerViewAfterNavigationKey = Symbol(
+  __DEV__ ? 'router view after navigation' : ''
+) as InjectionKey<Set<AfterNavigationCallback>>

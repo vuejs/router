@@ -186,6 +186,13 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       docs: 'https://router.vuejs.org/guide/advanced/scroll-behavior.html',
     },
 
+    // experimental/scroll-restoration.ts
+    VUE_ROUTER_R0043: {
+      why: (p: { key: string }) =>
+        `Several active useScrollRestoration() calls use the key "${p.key}" with different "capture" or "restore" options. They overwrite each other's saved entry.`,
+      fix: 'Give each call a different "key", e.g. one per scroll container.',
+    },
+
     // --- RouterLink.ts ---
     VUE_ROUTER_R0050: {
       why: (p: { to: unknown }) => {

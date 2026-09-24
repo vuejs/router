@@ -1,14 +1,18 @@
-import type {
-  ComponentInternalInstance,
-  FunctionPlugin,
-  InjectionKey,
+import type { App, FunctionPlugin, InjectionKey, MaybeRefOrGetter } from 'vue'
+import {
+  inject,
+  onActivated,
+  onBeforeMount,
+  onDeactivated,
+  onUnmounted,
+  toValue,
 } from 'vue'
-import { getCurrentInstance, inject, onMounted, onUpdated } from 'vue'
 import { diagnostics } from '../diagnostics'
 import type { RouteLocationNormalized, RouteMap } from '../typed-routes'
 import type { Router } from '../router'
-import { useRouter } from '../useApi'
+import { noop } from '../utils'
 import type { EXPERIMENTAL_Router } from './router'
+import { onRouteRendered } from './on-route-rendered'
 
 /**
  * Saved position for one property of {@link ScrollRestorationSessionEntry}.
@@ -54,8 +58,8 @@ export interface ScrollRestorationPosition {
 }
 
 /**
- * Scroll positions saved to the session history. The explicit `default` key
- * provides an autocomplete suggestion, while other keys allow multiple saved
+ * Scroll positions saved to `sessionStorage`. The explicit `default` key
+ * provides an autocomplete suggestion, while other keys allow multiple named
  * positions for the page.
  */
 export interface ScrollRestorationSessionEntry {
@@ -71,8 +75,8 @@ export interface ScrollRestorationSessionEntry {
 }
 
 /**
- * Captures the current scroll position of the page using the session
- * history, the same way the legacy `scrollBehavior` implementation does.
+ * Captures the current window scroll position, the same way the legacy
+ * `scrollBehavior` implementation does.
  *
  * @returns the current scroll position or `null` if the browser handles
  * scroll restoration itself (`history.scrollRestoration !== 'manual'`)
@@ -86,12 +90,12 @@ export const CAPTURE_LEGACY = (): ScrollRestorationPosition | null =>
     : null
 
 /**
- * Scrolls the page to a saved position using the session history, the same
- * way the legacy `scrollBehavior` implementation does.
+ * Scrolls the page to a saved position, the same way the legacy
+ * `scrollBehavior` implementation does.
  *
  * @param position - the position to scroll to
  */
-export function RESTORE_LEGACY(position: ScrollRestorationPosition): void {
+export function RESTORE_LEGACY(position: ScrollRestorationPosition = {}): void {
   let scrollToOptions: ScrollToOptions
 
   if (position.el) {
@@ -164,33 +168,26 @@ export function RESTORE_LEGACY(position: ScrollRestorationPosition): void {
   }
 }
 
-export interface ScrollRestorationPluginOptions {
+/**
+ * Options for the {@link ScrollRestoration} plugin.
+ */
+export interface ScrollRestorationPluginOptions extends UseScrollRestorationOptions {
+  /**
+   * Router instance, must be passed because this plugin is installed before
+   * the router.
+   */
   router: EXPERIMENTAL_Router | Router
+
+  /**
+   * Prefix used for entries written to `sessionStorage`.
+   *
+   * @defaultValue `vue:scroll:`
+   */
+  storageKeyPrefix?: string
+
+  capture: NonNullable<UseScrollRestorationOptions['capture']>
+  restore: NonNullable<UseScrollRestorationOptions['restore']>
 }
-
-const HAS_PENDING_SCROLL_RESTORATION: InjectionKey<
-  Map<string, Set<ComponentInternalInstance>>
-> = Symbol(/* 'HAS_PENDING_SCROLL_RESTORATION' */)
-
-export const ScrollRestoration: FunctionPlugin<
-  [options: ScrollRestorationPluginOptions]
-> = (app, { router }) => {
-  window.history.scrollRestoration = 'manual'
-
-  const activatedInstances = new Map<string, Set<ComponentInternalInstance>>()
-  app.provide(HAS_PENDING_SCROLL_RESTORATION, activatedInstances)
-
-  const removeAfterEach = router.afterEach((to, from) => {
-    console.log('🚗 After each', from.fullPath, '->', to.fullPath)
-    activatedInstances.clear()
-  })
-
-  app.onUnmount(removeAfterEach)
-}
-
-export const USE_SCROLL_RESTORATION_DEFAULTS = {
-  key: (to: RouteLocationNormalized) => to.path + to.hash,
-} satisfies UseScrollRestorationOptions
 
 /**
  * Options for `useScrollRestoration()`.
@@ -205,56 +202,259 @@ export interface UseScrollRestorationOptions<
    * By default, the key is the route's path + hash, meaning going from
    * `/search?q=shoes` to `/search?q=shirts` will reuse the scroll position,
    * but going from `/search?q=shoes` to `/search?q=shoes#anchor` will not.
-   * Nested `useScrollRestoration()` calls with the same key will **take over**
-   * ancestor calls and completely **override** their scroll restoration
-   * behavior.
+   * All calls with the same key share one saved entry. Calls active at the
+   * same time should use different keys, one per scroll container: with the
+   * same key, each one captures and restores, and the last capture wins.
    */
   key?: string | ((to: RouteLocationNormalized<Name>) => string)
 
   /**
-   * If true, the user must call the returned `scroll()` to trigger the scroll
-   * restoration. Useful when the displayed content is not displayed immediately
-   * after the navigation, for example when using an animation or a virtualized
-   * list.
+   * Synchronously captures all positions that must be saved for this page.
+   * Returning `null` removes the previously saved entry.
    */
-  manual?: boolean
+  capture?: () => ScrollRestorationSessionEntry | null
+
+  /**
+   * Synchronously restores all positions previously returned by `capture`.
+   * Unless `manual` is enabled, it runs after each navigation, once the new
+   * route is displayed
+   *
+   * @see {@link onRouteRendered}
+   */
+  restore?: (entry: ScrollRestorationSessionEntry | null | undefined) => void
+
+  /**
+   * If this resolves to true, the returned `scroll()` must be manually invoked
+   * to restore the scroll. Capture still happens automatically. This is useful
+   * when the content is not displayed immediately after navigation, for
+   * example when using an animation or a virtualized list.
+   */
+  manual?: MaybeRefOrGetter<boolean>
 }
 
-export function useScrollRestoration<
+// NOTE: smaller and perf because one shared variable
+let defaultCapturePosition: ScrollRestorationPosition | null
+
+/**
+ * Default capture function that captures the current window scroll position.
+ * Can be passed to {@link ScrollRestoration} to use the legacy scroll behavior
+ * from v5.
+ *
+ * @see {@link ScrollRestoration}
+ */
+export const SCROLL_RESTORATION_CAPTURE_DEFAULT =
+  (): ScrollRestorationSessionEntry | null => (
+    (defaultCapturePosition = CAPTURE_LEGACY()),
+    defaultCapturePosition && { default: defaultCapturePosition }
+  )
+
+/**
+ * Default restore function that restores the saved window scroll position.
+ * Can be passed to {@link ScrollRestoration} to use the legacy scroll behavior
+ * from v5.
+ *
+ * @see {@link ScrollRestoration}
+ */
+export const SCROLL_RESTORATION_RESTORE_DEFAULT = (
+  entry: ScrollRestorationSessionEntry | null | undefined
+): void => RESTORE_LEGACY(entry?.default)
+
+const SCROLL_RESTORATION_REGISTRATIONS: InjectionKey<
+  [
+    registrations: Set<Required<UseScrollRestorationOptions>>,
+    restore: (
+      options: Required<UseScrollRestorationOptions>,
+      to?: RouteLocationNormalized
+    ) => void,
+  ]
+> = Symbol()
+
+const SCROLL_RESTORATION_PLUGIN_OPTIONS_DEFAULTS: Required<
+  Omit<
+    ScrollRestorationPluginOptions,
+    | 'router'
+    // required settings
+    | 'capture'
+    | 'restore'
+  >
+> = {
+  storageKeyPrefix: 'vue:scroll:',
+  // these should be passed by the user
+  // capture: SCROLL_RESTORATION_CAPTURE_DEFAULT,
+  // restore: SCROLL_RESTORATION_RESTORE_DEFAULT,
+  key: to => to.path + to.hash,
+  manual: false,
+}
+
+const SCROLL_RESTORATION_OPTIONS_KEY: InjectionKey<
+  Required<ScrollRestorationPluginOptions>
+> = Symbol()
+
+/**
+ * Enables component-owned scroll restoration backed by `sessionStorage`.
+ * Sets `history.scrollRestoration` to `manual` when `document` is defined, is
+ * a noop otherwise (SSR).
+ *
+ * Must be installedb before the router, and the router must be passed in the options.
+ *
+ * ```ts
+ * app.use(ScrollRestoration, { router })
+ * app.use(router)
+ * ```
+ */
+export const ScrollRestoration: FunctionPlugin<
+  [options: ScrollRestorationPluginOptions]
+> = typeof document === 'undefined' ? noop : ScrollRestorationClient
+
+// TODO: custom helper toValueFn like in pinia colada
+const resolveKey = (
+  key: NonNullable<UseScrollRestorationOptions['key']>,
+  route: RouteLocationNormalized
+): string => (typeof key === 'function' ? key(route) : key)
+
+// dev only map to warn on wrong usage
+let devTrackedCapturedOptions:
+  | Map<string, Required<UseScrollRestorationOptions>>
+  | undefined
+
+function ScrollRestorationClient(
+  app: App,
+  options: ScrollRestorationPluginOptions
+): void {
+  const optionsWithDefaults = {
+    ...SCROLL_RESTORATION_PLUGIN_OPTIONS_DEFAULTS,
+    ...options,
+  }
+  const { storageKeyPrefix, router } = optionsWithDefaults
+
+  app.provide(SCROLL_RESTORATION_OPTIONS_KEY, optionsWithDefaults)
+  const registrations = new Set<Required<UseScrollRestorationOptions>>()
+  history.scrollRestoration = 'manual'
+
+  function restoreScroll(
+    { restore, key }: Required<UseScrollRestorationOptions>,
+    to: RouteLocationNormalized = router.currentRoute.value
+  ) {
+    let entry: ScrollRestorationSessionEntry | null | undefined
+    let value: string | undefined | null
+    // using the sessionStorage can fail in many ways (security, quota, etc.), so we ignore any errors
+    try {
+      entry =
+        (value = sessionStorage[storageKeyPrefix + resolveKey(key, to)]) &&
+        JSON.parse(value)
+    } catch {}
+    restore(entry)
+  }
+
+  app.provide(SCROLL_RESTORATION_REGISTRATIONS, [registrations, restoreScroll])
+
+  function capture(route: RouteLocationNormalized) {
+    // track for dev warnings
+    if (__DEV__) {
+      devTrackedCapturedOptions = new Map()
+    }
+    for (const registration of registrations) {
+      const key = storageKeyPrefix + resolveKey(registration.key, route)
+      if (__DEV__) {
+        const other = devTrackedCapturedOptions!.get(key)
+        // same key with the defaults is harmless: same values
+        if (
+          other &&
+          (other.capture !== registration.capture ||
+            other.restore !== registration.restore)
+        ) {
+          diagnostics.VUE_ROUTER_R0043({
+            key: key.slice(storageKeyPrefix.length),
+          })
+        }
+        devTrackedCapturedOptions!.set(key, registration)
+      }
+      const entry = registration.capture()
+      try {
+        if (entry) sessionStorage[key] = JSON.stringify(entry)
+        else delete sessionStorage[key]
+        // blocked storage, full quota, or unserializable entry
+      } catch {}
+    }
+  }
+
+  // TODO: is this the right way? capturing on unmount within the composable seems safer
+  // the DOM still shows `from` until the next render flush
+  const removeAfterEach = router.afterEach((_to, from, failure) => {
+    if (!failure) capture(from)
+  })
+  const listenersController = new AbortController()
+  const captureOnPageHide = () => capture(router.currentRoute.value)
+  // a hidden page can be killed without pagehide
+  window.addEventListener('pagehide', captureOnPageHide, {
+    signal: listenersController.signal,
+  })
+  document.addEventListener(
+    'visibilitychange',
+    () => {
+      if (document.visibilityState === 'hidden') captureOnPageHide()
+    },
+    {
+      signal: listenersController.signal,
+    }
+  )
+
+  app.onUnmount(() => {
+    removeAfterEach()
+    listenersController.abort()
+  })
+}
+
+/**
+ * Registers scroll capture and restoration for the current component.
+ *
+ * @returns a `scroll` function that manually restores the saved entry
+ */
+export const useScrollRestoration: <
   Name extends keyof RouteMap = keyof RouteMap,
->(options?: UseScrollRestorationOptions<Name>) {
-  const router = useRouter()
-  const instance = getCurrentInstance()!
-  if (__DEV__ && !instance) {
+>(
+  options?: UseScrollRestorationOptions<Name>
+) => { scroll: () => void } =
+  typeof document === 'undefined'
+    ? useScrollRestorationSSR
+    : useScrollRestorationClient
+
+function useScrollRestorationSSR(): { scroll: () => void } {
+  return { scroll: noop }
+}
+
+function useScrollRestorationClient<
+  Name extends keyof RouteMap = keyof RouteMap,
+>(options?: UseScrollRestorationOptions<Name>): { scroll: () => void } {
+  // const context = inject(SCROLL_RESTORATION)
+  const [registrations, restore] = inject(SCROLL_RESTORATION_REGISTRATIONS)!
+  if (__DEV__ && !registrations) {
     throw new Error(
-      'TODO: useScrollRestoration() must be called in setup() of a component'
+      'useScrollRestoration() requires installing the ScrollRestoration plugin'
     )
   }
-  const scrollActivationMap = inject(HAS_PENDING_SCROLL_RESTORATION)!
+  const globalOptions = inject(SCROLL_RESTORATION_OPTIONS_KEY)!
+  const optionsWithDefaults = { ...globalOptions, ...options }
 
-  const key = options?.key ?? USE_SCROLL_RESTORATION_DEFAULTS.key
+  const add = () => registrations.add(optionsWithDefaults)
+  const remove = () => registrations.delete(optionsWithDefaults)
 
-  function triggerScrollRestoration() {
-    const keyValue =
-      typeof key === 'function' ? key(router.currentRoute.value) : key
-    let activatedInstances = scrollActivationMap.get(keyValue)
-    if (!activatedInstances) {
-      scrollActivationMap.set(keyValue, (activatedInstances = new Set()))
+  // not in setup() so a component that never mounts can't capture
+  onBeforeMount(add)
+  // a component cached by KeepAlive must not capture another page
+  onActivated(add)
+  onDeactivated(remove)
+  onUnmounted(remove)
+
+  onRouteRendered(to => {
+    if (!toValue(optionsWithDefaults.manual)) {
+      if (registrations.has(optionsWithDefaults)) {
+        restore(optionsWithDefaults, to)
+      }
     }
-    if (!activatedInstances.has(instance)) {
-      console.log(
-        '♻️ Restoring scroll position for',
-        router.currentRoute.value.fullPath
-      )
-      activatedInstances.add(instance)
-    }
-  }
-
-  // ensure that we trigger when the component is reused or not
-  onMounted(triggerScrollRestoration)
-  onUpdated(triggerScrollRestoration)
+  })
 
   return {
-    scroll: triggerScrollRestoration,
+    scroll: (to?: RouteLocationNormalized) => restore(optionsWithDefaults, to),
   }
 }
