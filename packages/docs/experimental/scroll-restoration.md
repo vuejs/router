@@ -40,9 +40,9 @@ app.use(router)
 app.mount('#app')
 ```
 
-The default functions save and restore the window scroll position and imitate the current mechanism combined with `scrollBehavior()` and some smart defaults. They are automatically inherited by nested components and can be overridden anywhere.
+The default functions save and restore the window scroll position and imitate the current mechanism combined with `scrollBehavior()` and some smart defaults. They are automatically inherited by nested components and can be overridden anywhere. Call `useScrollRestoration()` in a component to use them.
 
-If you only do this, the scroll restoration will happen _one tick_ after each navigation (similar to current's `scrollBehavior`)
+Installing the plugin sets `history.scrollRestoration` to `manual`. Setting it to auto can with scroll restoration, especially in the context of _anchor links_. Set it back to `auto` if this is not an issue for you.
 
 ## Restore a page
 
@@ -92,7 +92,7 @@ useScrollRestoration({
 
 ## Custom restore
 
-You can save an element selector and restore it with `scrollIntoView()`:
+You can save an element selector and scroll to it with a saved offset:
 
 ```vue [pages/Products.vue]
 <script setup lang="ts">
@@ -115,8 +115,14 @@ useScrollRestoration({
   restore: entry => {
     if (!entry?.default?.el) return
 
-    document.querySelector(entry.default.el)?.scrollIntoView({
-      block: 'center',
+    const element = document.querySelector(entry.default.el)
+    if (!element) return
+
+    window.scrollTo({
+      top:
+        element.getBoundingClientRect().top +
+        window.scrollY -
+        (entry.default.top ?? 0),
     })
   },
 })

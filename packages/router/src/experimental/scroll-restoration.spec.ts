@@ -122,6 +122,35 @@ enableAutoUnmount(afterEach)
 describe('useScrollRestoration', () => {
   mockWarn()
 
+  it('preserves the saved root position on initial navigation', async () => {
+    const savedPosition = JSON.stringify({ default: { left: 0, top: 123 } })
+    sessionStorage.setItem('vue:scroll:/', savedPosition)
+    const ScrollRoot = defineComponent({
+      components: { RouterView },
+      setup() {
+        useScrollRestoration()
+      },
+      template: '<RouterView />',
+    })
+    const { router } = await mountRouter([], { root: ScrollRoot })
+
+    await router.isReady()
+    expect(sessionStorage.getItem('vue:scroll:/')).toBe(savedPosition)
+  })
+
+  it('reports a missing plugin with the intended error', () => {
+    const Page = defineComponent({
+      setup() {
+        useScrollRestoration()
+      },
+      template: '<main />',
+    })
+
+    expect(() => mount(Page)).toThrow(
+      'useScrollRestoration() requires installing the ScrollRestoration plugin'
+    )
+  })
+
   it('scrolls to a custom position on a new page without a saved entry', async () => {
     const NewPage = defineComponent({
       setup() {
@@ -622,10 +651,10 @@ describe('useScrollRestoration', () => {
     expect(window.scrollY).toBe(0)
   })
 
-  it('keeps a saved entry after restoration', async () => {
+  it('restores the current route on clicks without deleting its saved entry', async () => {
     const ManualPage = defineComponent({
       setup() {
-        return useScrollRestoration({ key: 'kept-entry', manual: true })
+        return useScrollRestoration({ manual: true })
       },
       template:
         '<button data-testid="restore" @click="scroll">Restore</button>',

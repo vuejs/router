@@ -8,9 +8,10 @@ import {
   toValue,
 } from 'vue'
 import { diagnostics } from '../diagnostics'
+import { START_LOCATION_NORMALIZED } from '../location'
 import type { RouteLocationNormalized, RouteMap } from '../typed-routes'
 import type { Router } from '../router'
-import { noop } from '../utils'
+import { noop, toValueWithArgs } from '../utils'
 import type { EXPERIMENTAL_Router } from './router'
 import { onRouteRendered } from './on-route-rendered'
 
@@ -158,14 +159,7 @@ export function RESTORE_LEGACY(position: ScrollRestorationPosition = {}): void {
     scrollToOptions = position
   }
 
-  if ('scrollBehavior' in document.documentElement.style)
-    window.scrollTo(scrollToOptions)
-  else {
-    window.scrollTo(
-      scrollToOptions.left != null ? scrollToOptions.left : window.scrollX,
-      scrollToOptions.top != null ? scrollToOptions.top : window.scrollY
-    )
-  }
+  window.scrollTo(scrollToOptions)
 }
 
 /**
@@ -306,12 +300,6 @@ export const ScrollRestoration: FunctionPlugin<
   [options: ScrollRestorationPluginOptions]
 > = typeof document === 'undefined' ? noop : ScrollRestorationClient
 
-// TODO: custom helper toValueFn like in pinia colada
-const resolveKey = (
-  key: NonNullable<UseScrollRestorationOptions['key']>,
-  route: RouteLocationNormalized
-): string => (typeof key === 'function' ? key(route) : key)
-
 // dev only map to warn on wrong usage
 let devTrackedCapturedOptions:
   | Map<string, Required<UseScrollRestorationOptions>>
@@ -340,7 +328,7 @@ function ScrollRestorationClient(
     // using the sessionStorage can fail in many ways (security, quota, etc.), so we ignore any errors
     try {
       entry =
-        (value = sessionStorage[storageKeyPrefix + resolveKey(key, to)]) &&
+        (value = sessionStorage[storageKeyPrefix + toValueWithArgs(key, to)]) &&
         JSON.parse(value)
     } catch {}
     restore(entry)
@@ -354,7 +342,7 @@ function ScrollRestorationClient(
       devTrackedCapturedOptions = new Map()
     }
     for (const registration of registrations) {
-      const key = storageKeyPrefix + resolveKey(registration.key, route)
+      const key = storageKeyPrefix + toValueWithArgs(registration.key, route)
       if (__DEV__) {
         const other = devTrackedCapturedOptions!.get(key)
         // same key with the defaults is harmless: same values
@@ -381,7 +369,7 @@ function ScrollRestorationClient(
   // TODO: is this the right way? capturing on unmount within the composable seems safer
   // the DOM still shows `from` until the next render flush
   const removeAfterEach = router.afterEach((_to, from, failure) => {
-    if (!failure) capture(from)
+    if (!failure && from !== START_LOCATION_NORMALIZED) capture(from)
   })
   const listenersController = new AbortController()
   const captureOnPageHide = () => capture(router.currentRoute.value)
@@ -406,6 +394,18 @@ function ScrollRestorationClient(
 }
 
 /**
+ * Returned value of {@link useScrollRestoration}
+ *
+ * @see {@link useScrollRestoration}
+ */
+export interface UseScrollRestorationReturns {
+  /**
+   * Invokes the restoration of scroll. Usually combined with `manual: true`
+   */
+  scroll: () => void
+}
+
+/**
  * Registers scroll capture and restoration for the current component.
  *
  * @returns a `scroll` function that manually restores the saved entry
@@ -414,18 +414,18 @@ export const useScrollRestoration: <
   Name extends keyof RouteMap = keyof RouteMap,
 >(
   options?: UseScrollRestorationOptions<Name>
-) => { scroll: () => void } =
+) => UseScrollRestorationReturns =
   typeof document === 'undefined'
     ? useScrollRestorationSSR
     : useScrollRestorationClient
 
-function useScrollRestorationSSR(): { scroll: () => void } {
+function useScrollRestorationSSR(): UseScrollRestorationReturns {
   return { scroll: noop }
 }
 
 function useScrollRestorationClient<
   Name extends keyof RouteMap = keyof RouteMap,
->(options?: UseScrollRestorationOptions<Name>): { scroll: () => void } {
+>(options?: UseScrollRestorationOptions<Name>): UseScrollRestorationReturns {
   // const context = inject(SCROLL_RESTORATION)
   const [registrations, restore] = inject(SCROLL_RESTORATION_REGISTRATIONS)!
   if (__DEV__ && !registrations) {
@@ -455,6 +455,6 @@ function useScrollRestorationClient<
   })
 
   return {
-    scroll: (to?: RouteLocationNormalized) => restore(optionsWithDefaults, to),
+    scroll: () => restore(optionsWithDefaults),
   }
 }
