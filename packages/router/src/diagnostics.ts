@@ -186,6 +186,17 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       docs: 'https://router.vuejs.org/guide/advanced/scroll-behavior.html',
     },
 
+    // experimental/scroll-restoration.ts
+    VUE_ROUTER_R0043: {
+      why: (p: { key: string }) =>
+        `Several active useScrollRestoration() calls use the key "${p.key}" with different "capture" or "restore" options. They overwrite each other's saved entry.`,
+      fix: 'Give each call a different "key", or combine them if they are in the same component.',
+    },
+    VUE_ROUTER_R0044: {
+      why: 'No ScrollRestoration plugin is available to useScrollRestoration().',
+      fix: 'Install ScrollRestoration on the app before calling useScrollRestoration().',
+    },
+
     // --- RouterLink.ts ---
     VUE_ROUTER_R0050: {
       why: (p: { to: unknown }) => {

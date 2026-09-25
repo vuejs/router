@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitepress'
-import { enConfig } from './en'
-import { sharedConfig } from './shared'
-import { zhConfig } from './zh'
+import { enConfig } from './en.ts'
+import { sharedConfig } from './shared.ts'
+import { zhConfig } from './zh.ts'
 
 export default defineConfig({
   ...sharedConfig,

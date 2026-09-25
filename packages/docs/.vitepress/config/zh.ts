@@ -1,5 +1,5 @@
 import type { DefaultTheme, LocaleSpecificConfig } from 'vitepress'
-import typedocSidebar from '../../api/typedoc-sidebar.json'
+import typedocSidebar from '../../api/typedoc-sidebar.json' with { type: 'json' }
 // TODO: rework the typedoc sidebar to include the /zh/ prefix
 
 export const META_URL = 'https://router.vuejs.org'
