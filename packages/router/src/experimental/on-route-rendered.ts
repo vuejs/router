@@ -13,12 +13,14 @@ import { useRouter } from '../useApi'
 import { noop } from '../utils'
 
 function onRouteRenderedClient(callback: AfterNavigationCallback): void {
-  // provided by the closest ancestor RouterView, null outside of any
-  const callbacks = inject(routerViewAfterNavigationKey, null)
+  let callbacks = inject(routerViewAfterNavigationKey, null)
 
   if (!callbacks) {
+    // we are above RouterView in the tree, so we create our own set
+    callbacks = new Set()
     // outside of any RouterView: afterEach, before the new route renders
     const router = useRouter()
+    let reportedNavigation = false
     // created by the initial render after the initial navigation (e.g.
     // `app.mount()` after `router.isReady()`): afterEach already ran. Not for
     // components mounted later (e.g. v-if), they wait for the next navigation,
@@ -27,17 +29,28 @@ function onRouteRenderedClient(callback: AfterNavigationCallback): void {
       !getCurrentInstance()!.root.isMounted &&
       router.currentRoute.value !== START_LOCATION_NORMALIZED
     ) {
-      onMounted(() =>
-        callback(router.currentRoute.value, START_LOCATION_NORMALIZED)
-      )
+      onMounted(() => {
+        if (!reportedNavigation) {
+          for (const registeredCallback of callbacks!) {
+            registeredCallback(
+              router.currentRoute.value,
+              START_LOCATION_NORMALIZED
+            )
+          }
+        }
+      })
     }
     onUnmounted(
       router.afterEach((to, from, failure) => {
         // a failed navigation displays nothing, like within a RouterView
-        if (!failure) callback(to, from)
+        if (!failure) {
+          for (const registeredCallback of callbacks!) {
+            reportedNavigation = true
+            registeredCallback(to, from)
+          }
+        }
       })
     )
-    return
   }
 
   const add = () => callbacks.add(callback)

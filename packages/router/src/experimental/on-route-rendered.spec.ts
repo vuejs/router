@@ -12,7 +12,7 @@ import {
   ref,
   unref,
 } from 'vue'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory } from '../history/memory'
 import { RouterView } from '../RouterView'
 import { createRouter } from '../router'
@@ -59,7 +59,14 @@ async function setup(
   routes: RouteRecordRaw[],
   rootTemplate = '<RouterView />'
 ) {
-  const router = createRouter({ history: createMemoryHistory(), routes })
+  routes.push({
+    path: '/__start',
+    component: page('START'),
+  })
+  const history = createMemoryHistory()
+  // avoid the warning about no match found
+  history.replace('/__start')
+  const router = createRouter({ history, routes })
   const Root = defineComponent({
     components: { RouterView },
     template: rootTemplate,
@@ -312,13 +319,13 @@ describe('onRouteRendered', () => {
   })
 
   it('Suspense with async setup', async () => {
-    let resolve!: () => void
+    const { promise: pending, resolve } = Promise.withResolvers<void>()
     const Async = defineComponent({
       name: 'Async',
       async setup() {
         trackNavigations()
         onMounted(() => events.push('mounted:Async'))
-        await new Promise<void>(r => (resolve = r))
+        await pending
         return {}
       },
       template: '<p>Async</p>',
@@ -344,8 +351,48 @@ describe('onRouteRendered', () => {
     ])
   })
 
+  it('reports a navigation once after a descendant Suspense resolves', async () => {
+    const { promise: pending, resolve } = Promise.withResolvers<void>()
+    const rendered = vi.fn()
+    const Async = defineComponent({
+      async setup() {
+        onRouteRendered(rendered)
+        await pending
+        return () => h('p', 'Async')
+      },
+    })
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/a', component: Async },
+        { path: '/b', component: Async },
+      ],
+    })
+    await router.push('/a')
+    await router.isReady()
+    const Root = defineComponent({
+      components: { RouterView },
+      template:
+        '<RouterView v-slot="{ Component }"><Suspense><component :is="Component" /></Suspense></RouterView>',
+    })
+    const wrapper = mount(Root, { global: { plugins: [router] } })
+    await flushPromises()
+    await router.push('/b')
+    await flushPromises()
+    expect(rendered).not.toHaveBeenCalled()
+
+    resolve()
+    await flushPromises()
+    expect(wrapper.text()).toBe('Async')
+    expect(rendered).toHaveBeenCalledTimes(1)
+    expect(rendered).toHaveBeenCalledWith(
+      expect.objectContaining({ fullPath: '/b' }),
+      expect.objectContaining({ fullPath: '/' })
+    )
+  })
+
   it('Suspense keyed async component keeps the old branch', async () => {
-    const resolvers: Array<() => void> = []
+    const pending: Array<PromiseWithResolvers<void>> = []
     const Async = defineComponent({
       name: 'Async',
       async setup() {
@@ -353,7 +400,9 @@ describe('onRouteRendered', () => {
         trackNavigations()
         onMounted(() => events.push('mounted:Async'))
         onUpdated(() => events.push('updated:Async'))
-        await new Promise<void>(r => resolvers.push(r))
+        const deferred = Promise.withResolvers<void>()
+        pending.push(deferred)
+        await deferred.promise
         return { trigger }
       },
       template:
@@ -367,7 +416,7 @@ describe('onRouteRendered', () => {
     )
     const first = go('/async/1')
     await flushPromises()
-    resolvers.shift()!()
+    pending.shift()!.resolve()
     await first
     await flushPromises()
     await go('/async/2')
@@ -376,7 +425,7 @@ describe('onRouteRendered', () => {
     await wrapper.get('button').trigger('click')
     expect(wrapper.text()).toBe('Async /async/2 1')
     expect(events).toEqual([])
-    resolvers.shift()!()
+    pending.shift()!.resolve()
     await flushPromises()
     expect(events).toEqual([
       'updated:Async',
@@ -420,13 +469,13 @@ describe('onRouteRendered', () => {
   })
 
   it('Transition out-in + KeepAlive + Suspense with a new async page', async () => {
-    let resolve!: () => void
+    const { promise: pending, resolve } = Promise.withResolvers<void>()
     const Async = defineComponent({
       name: 'Async',
       async setup() {
         trackNavigations()
         onMounted(() => events.push('mounted:Async'))
-        await new Promise<void>(r => (resolve = r))
+        await pending
         return {}
       },
       template: '<p>Async</p>',
@@ -507,9 +556,12 @@ describe('onRouteRendered', () => {
   })
 
   it('works when the app is mounted in a detached element', async () => {
+    const history = createMemoryHistory()
+    history.replace('/__start')
     const router = createRouter({
-      history: createMemoryHistory(),
+      history,
       routes: [
+        { path: '/__start', component: page('START') },
         { path: '/a', component: page('A') },
         { path: '/b', component: page('B') },
       ],
@@ -531,9 +583,12 @@ describe('onRouteRendered', () => {
       },
       template: '<RouterView />',
     })
+    const history = createMemoryHistory()
+    history.replace('/__start')
     const router = createRouter({
-      history: createMemoryHistory(),
+      history,
       routes: [
+        { path: '/__start', component: page('START') },
         { path: '/a', component: page('A') },
         { path: '/b', component: page('B') },
       ],
@@ -688,9 +743,12 @@ describe('onRouteRendered', () => {
       },
       template: '<Late v-if="show" /><RouterView />',
     })
+    const history = createMemoryHistory()
+    history.replace('/__start')
     const router = createRouter({
-      history: createMemoryHistory(),
+      history,
       routes: [
+        { path: '/__start', component: page('START') },
         { path: '/', component: page('Home') },
         { path: '/a', component: page('A') },
       ],
@@ -723,9 +781,14 @@ describe('onRouteRendered', () => {
       },
       template: '<RouterView />',
     })
+    const history = createMemoryHistory()
+    history.replace('/__start')
     const router = createRouter({
-      history: createMemoryHistory(),
-      routes: [{ path: '/a', component: page('A') }],
+      history,
+      routes: [
+        { path: '/__start', component: page('START') },
+        { path: '/a', component: page('A') },
+      ],
     })
     mount(Root, { attachTo: document.body, global: { plugins: [router] } })
     await router.push('/a')
@@ -735,5 +798,99 @@ describe('onRouteRendered', () => {
       'mounted:A',
       'settled:0:/a dom="A /a"',
     ])
+  })
+
+  it('does not repeat a navigation that finishes before a suspended component mounts', async () => {
+    const { promise: pending, resolve: resolvePending } =
+      Promise.withResolvers<void>()
+    const rendered = vi.fn()
+    const Outside = defineComponent({
+      setup() {
+        onRouteRendered(rendered)
+      },
+      template: '<div>outside</div>',
+    })
+    const Pending = defineComponent({
+      async setup() {
+        await pending
+        return () => h('div')
+      },
+    })
+    const Root = defineComponent({
+      components: { Outside, Pending, RouterView },
+      template:
+        '<div><Suspense><div><Outside /><Pending /></div></Suspense><RouterView /></div>',
+    })
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/a', component: page('A') },
+        { path: '/b', component: page('B') },
+      ],
+    })
+    await router.push('/a')
+    await router.isReady()
+
+    const wrapper = mount(Root, { global: { plugins: [router] } })
+    await router.push('/b')
+    await flushPromises()
+    expect(wrapper.text()).toContain('B /b')
+    expect(rendered).toHaveBeenCalledTimes(1)
+
+    resolvePending()
+    await flushPromises()
+    expect(rendered).toHaveBeenCalledTimes(1)
+    expect(rendered).toHaveBeenCalledWith(
+      expect.objectContaining({ fullPath: '/b' }),
+      expect.objectContaining({ fullPath: '/a' })
+    )
+  })
+
+  it('pauses a cached component outside of RouterView while deactivated', async () => {
+    const show = ref(true)
+    const rendered = vi.fn()
+    const Outside = defineComponent({
+      setup() {
+        onRouteRendered(rendered)
+      },
+      template: '<p>outside</p>',
+    })
+    const Alternate = defineComponent({ template: '<p>alternate</p>' })
+    const Root = defineComponent({
+      components: { Outside, Alternate, RouterView },
+      setup: () => ({ show }),
+      template:
+        '<div><KeepAlive><Outside v-if="show" /><Alternate v-else /></KeepAlive><RouterView /></div>',
+    })
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/a', component: page('A') },
+        { path: '/b', component: page('B') },
+      ],
+    })
+    await router.push('/a')
+    await router.isReady()
+    const wrapper = mount(Root, { global: { plugins: [router] } })
+    await flushPromises()
+    rendered.mockClear()
+
+    show.value = false
+    await flushPromises()
+    expect(wrapper.text()).toContain('alternate')
+    await router.push('/b')
+    await flushPromises()
+    expect(rendered).not.toHaveBeenCalled()
+
+    show.value = true
+    await flushPromises()
+    expect(wrapper.text()).toContain('outside')
+    await router.push('/a')
+    await flushPromises()
+    expect(rendered).toHaveBeenCalledTimes(1)
+    expect(rendered).toHaveBeenCalledWith(
+      expect.objectContaining({ fullPath: '/a' }),
+      expect.objectContaining({ fullPath: '/b' })
+    )
   })
 })

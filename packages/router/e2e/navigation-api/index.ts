@@ -106,47 +106,6 @@ navigation.addEventListener('navigate', event => {
       : undefined
 
   event.intercept({
-    async handler() {
-      return
-      const transition = navigation.transition!
-      console.log(
-        '🚆 transition',
-        navigation.transition,
-        transition?.to === event.destination
-      )
-
-      if (transition) {
-        delta = event.destination.index - transition.from.index
-      }
-      console.log('𝚫', delta)
-
-      const delayTime = Number(url.searchParams.get('delay')) || 1000
-      if (scrollParam === 'manual') {
-        event.scroll()
-      }
-      console.log('🐢 navigating with delay of', delayTime, 'ms')
-      await delay(delayTime)
-      console.log('🐢 ✅')
-      console.log('Is aborted?', event.signal.aborted)
-
-      if (url.searchParams.has('cancel')) {
-        console.log('❌ cancel')
-        event.preventDefault()
-        if (transition) {
-          navigation.traverseTo(transition.from.key, {
-            info: { internal: true },
-          })
-        } else {
-          console.warn('No transition to traverse back to', event)
-        }
-        return
-      }
-
-      if (url.searchParams.has('throw')) {
-        throw new Error('Navigation aborted')
-      }
-    },
-
     async precommitHandler(controller) {
       const transition = navigation.transition
       console.log(
