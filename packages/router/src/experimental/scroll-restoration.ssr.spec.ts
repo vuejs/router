@@ -4,7 +4,12 @@ import { describe, expect, it } from 'vitest'
 import { createMemoryHistory } from '../history/memory'
 import { RouterView } from '../RouterView'
 import { createRouter } from '../router'
-import { ScrollRestoration, useScrollRestoration } from './scroll-restoration'
+import {
+  SCROLL_RESTORATION_CAPTURE_DEFAULT,
+  SCROLL_RESTORATION_RESTORE_DEFAULT,
+  ScrollRestoration,
+  useScrollRestoration,
+} from './scroll-restoration'
 
 describe('ssr', () => {
   it('does nothing during SSR', async () => {
@@ -25,7 +30,11 @@ describe('ssr', () => {
     })
     const app = createSSRApp(Root)
 
-    app.use(ScrollRestoration, { router })
+    app.use(ScrollRestoration, {
+      router,
+      capture: SCROLL_RESTORATION_CAPTURE_DEFAULT,
+      restore: SCROLL_RESTORATION_RESTORE_DEFAULT,
+    })
     app.use(router)
     await router.push('/')
     await router.isReady()
