@@ -1,3 +1,0 @@
-- `key` allows to control when a scroll position should be shared between pages.
-- Active `useScrollRestoration` calls with the same `key` all capture and restore; the last capture wins
-- Use one `key` per scroll container; same key with different `capture`/`restore` warns in dev
