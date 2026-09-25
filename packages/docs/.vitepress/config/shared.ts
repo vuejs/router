@@ -1,6 +1,6 @@
 import type { HeadConfig } from 'vitepress'
 import { defineConfig } from 'vitepress'
-import { zhSearch } from './zh'
+import { zhSearch } from './zh.ts'
 import {
   groupIconMdPlugin,
   groupIconVitePlugin,
@@ -8,8 +8,8 @@ import {
 import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
 import { ModuleResolutionKind } from 'typescript'
 // TODO: simplify and only importwm from '../twoslash/files'
-import { typedRouterFileAsModule } from '../twoslash-files'
-import { extraFiles } from '../twoslash/files'
+import { typedRouterFileAsModule } from '../twoslash-files.ts'
+import { extraFiles } from '../twoslash/files.ts'
 import llmstxt from 'vitepress-plugin-llms'
 
 // TODO:
