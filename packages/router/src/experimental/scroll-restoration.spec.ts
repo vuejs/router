@@ -10,6 +10,7 @@ import {
   useTemplateRef,
 } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { Diagnostic } from 'nostics'
 import { createMemoryHistory } from '../history/memory'
 import { RouterView } from '../RouterView'
 import { createRouter } from '../router'
@@ -138,7 +139,7 @@ describe('useScrollRestoration', () => {
     expect(sessionStorage.getItem('vue:scroll:/')).toBe(savedPosition)
   })
 
-  it('reports a missing plugin with the intended error', () => {
+  it('throws a diagnostic when the plugin is missing', () => {
     const Page = defineComponent({
       setup() {
         useScrollRestoration()
@@ -146,9 +147,8 @@ describe('useScrollRestoration', () => {
       template: '<main />',
     })
 
-    expect(() => mount(Page)).toThrow(
-      'useScrollRestoration() requires installing the ScrollRestoration plugin'
-    )
+    expect(() => mount(Page)).toThrow(Diagnostic)
+    expect('VUE_ROUTER_R0044').toHaveBeenWarned()
   })
 
   it('scrolls to a custom position on a new page without a saved entry', async () => {

@@ -6,11 +6,19 @@ import {
   onMounted,
   onUnmounted,
 } from 'vue'
-import type { OnRouteRenderedCallback } from '../injectionSymbols'
+import type { RouteLocationNormalizedLoaded } from '../typed-routes'
 import { routerViewOnRouteRenderedKey } from '../injectionSymbols'
 import { START_LOCATION_NORMALIZED } from '../location'
 import { useRouter } from '../useApi'
 import { noop } from '../utils'
+
+/**
+ * Called once a navigation is displayed. See `onRouteRendered()`.
+ */
+export type OnRouteRenderedCallback = (
+  to: RouteLocationNormalizedLoaded,
+  from: RouteLocationNormalizedLoaded
+) => void
 
 function onRouteRenderedClient(callback: OnRouteRenderedCallback): void {
   let callbacks = inject(routerViewOnRouteRenderedKey, null)

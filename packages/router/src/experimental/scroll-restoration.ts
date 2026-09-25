@@ -426,13 +426,10 @@ function useScrollRestorationSSR(): UseScrollRestorationReturns {
 function useScrollRestorationClient<
   Name extends keyof RouteMap = keyof RouteMap,
 >(options?: UseScrollRestorationOptions<Name>): UseScrollRestorationReturns {
-  // const context = inject(SCROLL_RESTORATION)
-  const [registrations, restore] = inject(SCROLL_RESTORATION_REGISTRATIONS)!
-  if (__DEV__ && !registrations) {
-    throw new Error(
-      'useScrollRestoration() requires installing the ScrollRestoration plugin'
-    )
+  if (__DEV__ && !inject(SCROLL_RESTORATION_REGISTRATIONS, null)) {
+    throw diagnostics.VUE_ROUTER_R0044()
   }
+  const [registrations, restore] = inject(SCROLL_RESTORATION_REGISTRATIONS)!
   const globalOptions = inject(SCROLL_RESTORATION_OPTIONS_KEY)!
   const optionsWithDefaults = { ...globalOptions, ...options }
 

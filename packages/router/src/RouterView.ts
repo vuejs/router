@@ -31,7 +31,7 @@ import {
   routerViewLocationKey,
   routerViewOnRouteRenderedKey,
 } from './injectionSymbols'
-import type { OnRouteRenderedCallback } from './injectionSymbols'
+import type { OnRouteRenderedCallback } from './experimental/on-route-rendered'
 import { assign, isArray, isBrowser } from './utils'
 import { diagnostics } from './diagnostics'
 import { isSameRouteRecord, START_LOCATION_NORMALIZED } from './location'

@@ -2,6 +2,7 @@ import type { InjectionKey, ComputedRef, Ref } from 'vue'
 import type { RouteLocationNormalizedLoaded } from './typed-routes'
 import type { RouteRecordNormalized } from './matcher/types'
 import type { Router } from './router'
+import type { OnRouteRenderedCallback } from './experimental/on-route-rendered'
 
 /**
  * RouteRecord being rendered by the closest ancestor Router View. Used for
@@ -51,14 +52,6 @@ export const routeLocationKey = Symbol(
 export const routerViewLocationKey = Symbol(
   __DEV__ ? 'router view location' : ''
 ) as InjectionKey<Ref<RouteLocationNormalizedLoaded>>
-
-/**
- * Called once a navigation is displayed. See `onRouteRendered()`.
- */
-export type OnRouteRenderedCallback = (
-  to: RouteLocationNormalizedLoaded,
-  from: RouteLocationNormalizedLoaded
-) => void
 
 /**
  * Callbacks called by the closest ancestor router-view once it displays a new

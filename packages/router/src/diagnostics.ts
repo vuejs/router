@@ -192,6 +192,10 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `Several active useScrollRestoration() calls use the key "${p.key}" with different "capture" or "restore" options. They overwrite each other's saved entry.`,
       fix: 'Give each call a different "key", e.g. one per scroll container.',
     },
+    VUE_ROUTER_R0044: {
+      why: 'No ScrollRestoration plugin is available to useScrollRestoration().',
+      fix: 'Install ScrollRestoration on the app before calling useScrollRestoration().',
+    },
 
     // --- RouterLink.ts ---
     VUE_ROUTER_R0050: {
