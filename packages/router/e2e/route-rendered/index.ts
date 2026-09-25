@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { createApp, defineComponent } from 'vue'
+import { createApp, defineComponent, shallowRef } from 'vue'
 import { onRouteRendered } from 'vue-router/experimental'
 
 declare global {
@@ -16,6 +16,8 @@ declare global {
 
 window.settled = []
 window.rootNavigations = []
+const renderedEvents = shallowRef(window.settled)
+const rootEvents = shallowRef(window.rootNavigations)
 
 const viewText = () => document.querySelector('#view')!.textContent!.trim()
 
@@ -28,6 +30,7 @@ function track(depth: number) {
       view: viewText(),
       leaving: document.querySelectorAll('.fade-leave-active').length,
     })
+    renderedEvents.value = [...window.settled]
   })
 }
 
@@ -104,7 +107,9 @@ const app = createApp({
     // outside of any RouterView: afterEach
     onRouteRendered(to => {
       window.rootNavigations.push({ path: to.fullPath, view: viewText() })
+      rootEvents.value = [...window.rootNavigations]
     })
+    return { renderedEvents, rootEvents }
   },
   template: `
     <nav>
@@ -139,6 +144,22 @@ const app = createApp({
         </transition>
       </router-view>
     </div>
+    <section aria-label="Route rendered events">
+      <h2>Route rendered events</h2>
+      <ol id="rendered-events">
+        <li v-for="event in renderedEvents">
+          <code>{{ JSON.stringify(event) }}</code>
+        </li>
+      </ol>
+    </section>
+    <section aria-label="Root navigation events">
+      <h2>Root navigation events</h2>
+      <ol id="root-events">
+        <li v-for="event in rootEvents">
+          <code>{{ JSON.stringify(event) }}</code>
+        </li>
+      </ol>
+    </section>
   `,
 })
 app.use(router)

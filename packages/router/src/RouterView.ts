@@ -29,9 +29,9 @@ import {
   matchedRouteKey,
   viewDepthKey,
   routerViewLocationKey,
-  routerViewAfterNavigationKey,
+  routerViewOnRouteRenderedKey,
 } from './injectionSymbols'
-import type { AfterNavigationCallback } from './injectionSymbols'
+import type { OnRouteRenderedCallback } from './injectionSymbols'
 import { assign, isArray, isBrowser } from './utils'
 import { diagnostics } from './diagnostics'
 import { isSameRouteRecord, START_LOCATION_NORMALIZED } from './location'
@@ -99,8 +99,8 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     provide(routerViewLocationKey, routeToDisplay)
 
     // onRouteRendered() callbacks of descendants without a closer RouterView
-    const afterNavigationCallbacks = new Set<AfterNavigationCallback>()
-    provide(routerViewAfterNavigationKey, afterNavigationCallbacks)
+    const onRouteRenderedCallbacks = new Set<OnRouteRenderedCallback>()
+    provide(routerViewOnRouteRenderedKey, onRouteRenderedCallbacks)
 
     const viewRef = ref<ComponentPublicInstance>()
     let settledRoute = START_LOCATION_NORMALIZED
@@ -203,7 +203,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
           }
           const from = settledRoute
           settledRoute = route
-          for (const callback of afterNavigationCallbacks) {
+          for (const callback of onRouteRenderedCallbacks) {
             callback(route, from)
           }
         })

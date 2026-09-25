@@ -6,14 +6,14 @@ import {
   onMounted,
   onUnmounted,
 } from 'vue'
-import type { AfterNavigationCallback } from '../injectionSymbols'
-import { routerViewAfterNavigationKey } from '../injectionSymbols'
+import type { OnRouteRenderedCallback } from '../injectionSymbols'
+import { routerViewOnRouteRenderedKey } from '../injectionSymbols'
 import { START_LOCATION_NORMALIZED } from '../location'
 import { useRouter } from '../useApi'
 import { noop } from '../utils'
 
-function onRouteRenderedClient(callback: AfterNavigationCallback): void {
-  let callbacks = inject(routerViewAfterNavigationKey, null)
+function onRouteRenderedClient(callback: OnRouteRenderedCallback): void {
+  let callbacks = inject(routerViewOnRouteRenderedKey, null)
 
   if (!callbacks) {
     // we are above RouterView in the tree, so we create our own set
@@ -83,5 +83,5 @@ function onRouteRenderedClient(callback: AfterNavigationCallback): void {
  * displayed one
  */
 // never during SSR: nothing is displayed
-export const onRouteRendered: (callback: AfterNavigationCallback) => void =
+export const onRouteRendered: (callback: OnRouteRenderedCallback) => void =
   typeof document === 'undefined' ? noop : onRouteRenderedClient

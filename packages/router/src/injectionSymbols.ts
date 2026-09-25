@@ -55,7 +55,7 @@ export const routerViewLocationKey = Symbol(
 /**
  * Called once a navigation is displayed. See `onRouteRendered()`.
  */
-export type AfterNavigationCallback = (
+export type OnRouteRenderedCallback = (
   to: RouteLocationNormalizedLoaded,
   from: RouteLocationNormalizedLoaded
 ) => void
@@ -66,6 +66,6 @@ export type AfterNavigationCallback = (
  *
  * @internal
  */
-export const routerViewAfterNavigationKey = Symbol(
-  __DEV__ ? 'router view after navigation' : ''
-) as InjectionKey<Set<AfterNavigationCallback>>
+export const routerViewOnRouteRenderedKey = Symbol(
+  __DEV__ ? 'router view on route rendered' : ''
+) as InjectionKey<Set<OnRouteRenderedCallback>>

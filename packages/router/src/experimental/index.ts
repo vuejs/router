@@ -25,7 +25,7 @@ export {
 } from './scroll-restoration'
 
 export { onRouteRendered } from './on-route-rendered'
-export type { AfterNavigationCallback } from '../injectionSymbols'
+export type { OnRouteRenderedCallback } from '../injectionSymbols'
 
 export { createFixedResolver } from './route-resolver/resolver-fixed'
 export {
