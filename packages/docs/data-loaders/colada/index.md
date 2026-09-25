@@ -92,6 +92,38 @@ export const useUserData = defineColadaLoader('/users/[id]', {
 
 :::
 
+## Reusing query options
+
+Pass a function that receives the target route and returns Pinia Colada query options to reuse queries created with `defineQueryOptions()`:
+
+```ts
+import { defineQueryOptions } from '@pinia/colada'
+import { defineColadaLoader } from 'vue-router/experimental/pinia-colada'
+import { getUserById } from '../api'
+
+const userQuery = defineQueryOptions((id: string) => ({
+  key: ['users', id],
+  query: ({ signal }) => getUserById(id, { signal }),
+  staleTime: 10000,
+}))
+
+export const useUserData = defineColadaLoader('/users/[id]', to =>
+  userQuery(to.params.id)
+)
+```
+
+The route name is optional. Route properties read by the callback are tracked, and the query options are updated when navigating. The reusable query receives Pinia Colada's query context, including its abort signal.
+
+Pass loader options such as `lazy`, `server`, `errors`, and `commit` as a separate argument:
+
+```ts
+export const useUserData = defineColadaLoader(
+  '/users/[id]',
+  to => userQuery(to.params.id),
+  { lazy: true }
+)
+```
+
 ## Refresh by default
 
 To avoid unnecessary frequent refreshes, Pinia Colada refreshes the data when navigating (instead of _refetching_). Change the `staleTime` option to control how often the data should be fetched, e.g. setting it to 0 will fetch the data every time the route changes.
