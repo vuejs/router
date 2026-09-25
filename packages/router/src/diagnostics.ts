@@ -190,7 +190,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     VUE_ROUTER_R0043: {
       why: (p: { key: string }) =>
         `Several active useScrollRestoration() calls use the key "${p.key}" with different "capture" or "restore" options. They overwrite each other's saved entry.`,
-      fix: 'Give each call a different "key", e.g. one per scroll container.',
+      fix: 'Give each call a different "key", or combine them if they are in the same component.',
     },
     VUE_ROUTER_R0044: {
       why: 'No ScrollRestoration plugin is available to useScrollRestoration().',
