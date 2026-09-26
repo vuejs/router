@@ -1739,6 +1739,50 @@ describe('Tree', () => {
       expect(c.children.has('_parent')).toBe(false)
     })
 
+    // https://github.com/vuejs/router/issues/2791
+    it('does not flag intentional same-URL routes as conflicts', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('settings', 'settings.vue')
+      const general = tree.insert('settings/general', 'settings/general.vue')
+      general.setCustomRouteBlock('settings/general.vue', {
+        name: 'settings-general',
+        meta: { full: true },
+      })
+      general.setDefinePageImport('settings/general.vue', true)
+
+      // an overlay version of the same URL, `path` is overridden to /settings
+      const overlay = tree.insert('settings.overlay', 'settings.overlay.vue')
+      overlay.setCustomRouteBlock('settings.overlay.vue', { path: '/settings' })
+      overlay.setDefinePageImport('settings.overlay.vue', true)
+      const overlayGeneral = tree.insert(
+        'settings.overlay/general',
+        'settings.overlay/general.vue'
+      )
+      overlayGeneral.setCustomRouteBlock('settings.overlay/general.vue', {
+        name: 'settings-general-overlay',
+        meta: { overlay: true },
+      })
+      overlayGeneral.setDefinePageImport('settings.overlay/general.vue', true)
+
+      expect(general).not.toBe(overlayGeneral)
+      expect(collectDuplicatedRouteNodes(tree)).toEqual([])
+    })
+
+    it('collects conflicts across route groups', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const foo = tree.insert('foo', 'foo.vue')
+      const groupedFoo = tree.insert('(group)/foo', '(group)/foo.vue')
+      const overriddenFoo = tree.insert('other/foo', 'other/foo.vue')
+      overriddenFoo.setCustomRouteBlock('other/foo.vue', { path: '/foo' })
+
+      expect(collectDuplicatedRouteNodes(tree)).toEqual([
+        [
+          { filePath: 'foo.vue', node: foo },
+          { filePath: '(group)/foo.vue', node: groupedFoo },
+        ],
+      ])
+    })
+
     it('does not flag named views as conflicts', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
       tree.insert('posts/index', 'posts/index.vue')
