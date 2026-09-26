@@ -153,7 +153,8 @@ export function defineColadaLoader<Data>(
     router: Router,
     from?: RouteLocationNormalizedLoaded,
     parent?: DataLoaderEntryBase,
-    reload?: boolean
+    reload?: boolean,
+    force?: boolean
   ): Promise<void> {
     const entries = router[LOADER_ENTRIES_KEY]! as _DefineLoaderEntryMap<
       DataLoaderColadaEntry<unknown>
@@ -204,8 +205,9 @@ export function defineColadaLoader<Data>(
         diagnostics.VUE_ROUTER_R1001({ key: `[${key.join(',')}]` })
       }
     }
-    // set the current context before loading so nested loaders can use it
-    setCurrentContext([entry, router, to])
+    // set the current context before loading so nested loaders can use it.
+    // `force` is propagated so nested loaders re-run on explicit reloads
+    setCurrentContext([entry, router, to, force])
 
     if (!entry.ext) {
       // console.log(`🚀 creating query for "${key}"`)
@@ -408,20 +410,29 @@ export function defineColadaLoader<Data>(
       | DataLoaderColadaEntry<Data, ErrorDefault>
       | undefined
 
+    // a nested loader whose parent has already committed data for this route
+    // doesn't need to be reloaded, it can reuse the resolved query. Otherwise,
+    // loaders that resolve instantly (committed before nested loaders run)
+    // are wrongly executed twice https://github.com/vuejs/router/issues/2684
+    const force = currentContext.length > 3 && currentContext[3] === true
+    const hasDataForRoute =
+      !!entry && entry.to === route && !!entry.pendingLoad
+
     if (
-      // if the entry doesn't exist, create it with load and ensure it's loading
       !entry ||
-      // we are nested and the parent is loading a different route than us
-      (parentEntry && entry.pendingTo !== route) ||
-      // The user somehow rendered the page without a navigation
-      !entry.pendingLoad
+      (parentEntry && entry.pendingTo !== route && !hasDataForRoute) ||
+      !entry.pendingLoad ||
+      force
     ) {
-      // console.log(
-      //   `🔁 loading from useData for "${options.key}": "${route.fullPath}"`
-      // )
       app.runWithContext(() =>
-        // in this case we always need to run the functions for nested loaders consistency
-        load(route, router, undefined, parentEntry, true)
+        load(
+          route,
+          router,
+          undefined,
+          parentEntry,
+          force || !hasDataForRoute,
+          force
+        )
       )
     }
 
@@ -476,7 +487,9 @@ export function defineColadaLoader<Data>(
       isLoading,
       reload: (to: RouteLocationNormalizedLoaded = router.currentRoute.value) =>
         app
-          .runWithContext(() => load(to, router, undefined, undefined, true))
+          .runWithContext(() =>
+            load(to, router, undefined, undefined, true, true)
+          )
           .then(() => entry!.commit(to)),
       // pinia colada
       refetch: (
