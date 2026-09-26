@@ -5,11 +5,11 @@
   title="Learn how to customize scroll behavior"
 />
 
-使用前端路由，当切换到新路由时，想要页面滚到顶部，或者是保持原先的滚动位置，就像重新加载页面那样。 vue-router 能做到，而且更好，它让你可以自定义路由切换时页面如何滚动。
+使用客户端路由时，当切换到新路由，我们可能会希望页面滚动到顶部，或者像重新加载页面一样保持原来的滚动位置。Vue Router 不仅支持此功能，还允许你自定义每次路由切换时的滚动行为。
 
-**注意: 这个功能只在支持 history.pushState 的浏览器中可用。**
+**注意：这个功能只在支持 history.pushState 的浏览器中可用。**
 
-当创建一个 Router 实例，你可以提供一个 `scrollBehavior` 方法：
+创建 Router 实例时，你可以提供一个 `scrollBehavior` 函数：
 
 ```js
 const router = createRouter({
@@ -21,11 +21,11 @@ const router = createRouter({
 })
 ```
 
-`scrollBehavior` 函数接收 `to`和`from` 路由对象，如 [Navigation Guards](./navigation-guards.md)。第三个参数 `savedPosition`，只有当这是一个 `popstate` 导航时才可用（由浏览器的后退/前进按钮触发）。
+`scrollBehavior` 函数接收 `to` 和 `from` 路由对象，就像[导航守卫](./navigation-guards.md)一样。第三个参数 `savedPosition`，只有当这是一个 `popstate` 导航时才可用 (由浏览器的后退/前进按钮触发)。
 
 <RuleKitLink />
 
-该函数可以返回一个 [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions) 位置对象:
+该函数可以返回一个 [`ScrollToOptions`](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions) 位置对象：
 
 ```js
 const router = createRouter({
@@ -55,7 +55,7 @@ const router = createRouter({
 
 如果返回一个 falsy 的值，或者是一个空对象，那么不会发生滚动。
 
-返回 `savedPosition`，在按下 后退/前进 按钮时，就会像浏览器的原生表现那样：
+返回 `savedPosition`，在按下后退/前进按钮时，就会像浏览器的原生表现那样：
 
 ```js
 const router = createRouter({
@@ -69,7 +69,7 @@ const router = createRouter({
 })
 ```
 
-如果你要模拟 “滚动到锚点” 的行为：
+如果你要模拟“滚动到锚点”的行为：
 
 ```js
 const router = createRouter({
@@ -141,3 +141,7 @@ const router = createRouter({
   },
 })
 ```
+
+## 避免滚动计算
+
+添加 `scrollBehavior` 函数会将 `history.scrollRestoration` 设置为 `manual`，并让路由器计算和存储滚动位置。如果你需要避免计算滚动位置 (这可能会触发布局重新计算)，你可以将 `history.scrollRestoration` 设置为 `auto`，和/或完全不设置 `scrollBehavior`。这样浏览器就会以原生方式处理滚动恢复。

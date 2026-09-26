@@ -2,7 +2,7 @@
 
 <RuleKitLink />
 
-有时候，进入某个路由后，需要从服务器获取数据。例如，在渲染用户信息时，你需要从服务器获取用户的数据。我们可以通过两种方式来实现：
+有时候，进入某个路由后，需要从服务器获取数据。例如，在渲染用户资料之前，你需要先从服务器获取用户的数据。我们可以通过两种方式来实现：
 
 - **导航完成之后获取**：先完成导航，然后在接下来的组件生命周期钩子中获取数据。在数据获取期间显示“加载中”之类的指示。
 
@@ -120,7 +120,7 @@ export default {
 
 ## 在导航完成前获取数据
 
-通过这种方式，我们在导航转入新的路由前获取数据。我们可以在接下来的组件的 `beforeRouteEnter` 守卫中获取数据，当数据获取成功后只调用 `next` 方法：
+通过这种方式，我们在导航转入新的路由前获取数据。我们可以在接下来的组件的 `beforeRouteEnter` 守卫中获取数据，当数据获取成功后只调用 `next` 方法。传递给 `next` 的回调将会在**组件挂载后**被调用：
 
 ```js
 export default {
@@ -130,7 +130,7 @@ export default {
       error: null,
     }
   },
-  beforeRouteEnter(to, from, next) {
+  async beforeRouteEnter(to, from, next) {
     try {
       const post = await getPost(to.params.id)
       // `setPost` 方法定义在下面的代码中
@@ -140,8 +140,8 @@ export default {
       next(vm => vm.setError(err))
     }
   },
-  // 路由改变前，组件就已经渲染完了
-  // 逻辑稍稍不同
+  // 当路由改变，且该组件已经被渲染时，
+  // 逻辑会稍有不同
   async beforeRouteUpdate(to, from) {
     this.post = null
     getPost(to.params.id).then(this.setPost).catch(this.setError)
@@ -152,8 +152,8 @@ export default {
     },
     setError(err) {
       this.error = err.toString()
-    }
-  }
+    },
+  },
 }
 ```
 
