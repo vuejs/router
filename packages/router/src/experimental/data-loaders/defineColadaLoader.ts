@@ -19,11 +19,13 @@ import {
   NavigationResult,
   assign,
   getCurrentContext,
+  isInsideLoaderFn,
   isSubsetOf,
+  runInsideLoaderFn,
   setCurrentContext,
   trackRoute,
 } from './entries/index'
-import { type ShallowRef, shallowRef, watch } from 'vue'
+import { type ShallowRef, getCurrentInstance, shallowRef, watch } from 'vue'
 import {
   type EntryKey,
   type UseQueryOptions,
@@ -134,10 +136,14 @@ export function defineColadaLoader<Data>(
         // needed for automatic refetching and nested loaders
         // https://github.com/posva/unplugin-vue-router/issues/583
         return router[APP_KEY].runWithContext(() =>
-          loader(trackedRoute, {
-            // TODO: provide the query signal too
-            signal: route.meta[ABORT_CONTROLLER_KEY]?.signal,
-          })
+          // mark that we are synchronously inside a loader function so nested
+          // loaders can tell apart their parent context from a leaked one
+          runInsideLoaderFn(() =>
+            loader(trackedRoute, {
+              // TODO: provide the query signal too
+              signal: route.meta[ABORT_CONTROLLER_KEY]?.signal,
+            })
+          )
         )
       },
       key: () => toValueWithParameters(options.key, entry.route.value),
@@ -392,6 +398,14 @@ export function defineColadaLoader<Data>(
   // @ts-expect-error: requires the internals and symbol that are added later
   const useDataLoader: // for ts
   UseDataLoaderColada_LaxData<Data> = () => {
+    // When called from within a component (setup/render) and not synchronously
+    // from within a loader function, any active loader context is stale: it was
+    // left behind by a still-pending lazy loader. In a component, loaders are
+    // always used at the root, so we must drop it to avoid nesting a loader
+    // under an unrelated (or its own) entry. https://github.com/vuejs/router/issues/2684
+    if (getCurrentInstance() && !isInsideLoaderFn()) {
+      setCurrentContext([])
+    }
     // work with nested data loaders
     const currentContext = getCurrentContext()
     // TODO: should _route also contain from?
