@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -33,7 +33,7 @@ definePage({
 </script>
 
 <template>
-  <h1>User by id - {{ $route.path }}</h1>
+  <h1>User by id - {{ route.path }}</h1>
 
   <pre>{{ route.params }}</pre>
 </template>

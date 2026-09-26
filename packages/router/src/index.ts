@@ -151,7 +151,9 @@ export type {
   UseLinkOptions,
   UseLinkReturn,
 } from './RouterLink'
+export { VaporRouterLink } from './VaporRouterLink'
 export { RouterView } from './RouterView'
+export { VaporRouterView } from './VaporRouterView'
 export type { RouterViewProps } from './RouterView'
 
 export * from './useApi'
