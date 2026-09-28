@@ -210,12 +210,16 @@ export interface UseScrollRestorationOptions<
 
   /**
    * Synchronously restores all positions previously returned by `capture`.
+   * The route can be used to handle a hash or other route details.
    * Unless `manual` is enabled, it runs after each navigation, once the new
    * route is displayed
    *
    * @see {@link onRouteRendered}
    */
-  restore?: (entry: ScrollRestorationSessionEntry | null | undefined) => void
+  restore?: (
+    entry: ScrollRestorationSessionEntry | null | undefined,
+    to: RouteLocationNormalized<Name>
+  ) => void
 
   /**
    * If this resolves to true, the returned `scroll()` must be manually invoked
@@ -230,9 +234,7 @@ export interface UseScrollRestorationOptions<
 let defaultCapturePosition: ScrollRestorationPosition | null
 
 /**
- * Default capture function that captures the current window scroll position.
- * Can be passed to {@link ScrollRestoration} to use the legacy scroll behavior
- * from v5.
+ * Captures the current window scroll position for default scroll restoration.
  *
  * @see {@link ScrollRestoration}
  */
@@ -243,15 +245,21 @@ export const SCROLL_RESTORATION_CAPTURE_DEFAULT =
   )
 
 /**
- * Default restore function that restores the saved window scroll position.
- * Can be passed to {@link ScrollRestoration} to use the legacy scroll behavior
- * from v5.
+ * Restores the saved window position, scrolls to the route hash target, or
+ * scrolls to the top when there is no saved position or hash target.
  *
  * @see {@link ScrollRestoration}
  */
 export const SCROLL_RESTORATION_RESTORE_DEFAULT = (
-  entry: ScrollRestorationSessionEntry | null | undefined
-): void => RESTORE_LEGACY(entry?.default)
+  entry: ScrollRestorationSessionEntry | null | undefined,
+  to?: RouteLocationNormalized
+): void => {
+  if (entry?.default) return RESTORE_LEGACY(entry.default)
+  if (to?.hash && document.getElementById(to.hash.slice(1))) {
+    return RESTORE_LEGACY({ el: to.hash })
+  }
+  RESTORE_LEGACY({ left: 0, top: 0 })
+}
 
 const SCROLL_RESTORATION_REGISTRATIONS: InjectionKey<
   [
@@ -331,7 +339,7 @@ function ScrollRestorationClient(
         (value = sessionStorage[storageKeyPrefix + toValueWithArgs(key, to)]) &&
         JSON.parse(value)
     } catch {}
-    restore(entry)
+    restore(entry, to)
   }
 
   app.provide(SCROLL_RESTORATION_REGISTRATIONS, [registrations, restoreScroll])
