@@ -59,6 +59,7 @@ function mockWindowScroll() {
 
 interface MountRouterOptions extends Partial<ScrollRestorationPluginOptions> {
   root?: typeof Root
+  attachTo?: Element
   // mount the app after this initial navigation
   initialPath?: string
 }
@@ -67,6 +68,7 @@ async function mountRouter(
   routes: RouteRecordRaw[],
   {
     root = Root,
+    attachTo,
     storageKeyPrefix,
     initialPath,
     capture = SCROLL_RESTORATION_CAPTURE_DEFAULT,
@@ -89,6 +91,7 @@ async function mountRouter(
   }
 
   const wrapper = mount(root, {
+    attachTo,
     global: {
       plugins: [
         [
@@ -171,6 +174,85 @@ describe('useScrollRestoration', () => {
 
     expect(wrapper.text()).toBe('New page')
     expect(window.scrollY).toBe(135)
+  })
+
+  it('scrolls to the top on a new page without a saved entry', async () => {
+    const NewPage = defineComponent({
+      setup() {
+        useScrollRestoration()
+      },
+      template: '<main>New page</main>',
+    })
+    const { navigate, setScroll, wrapper } = await mountRouter([
+      { path: '/new-page', component: NewPage },
+    ])
+
+    await navigate('/neutral')
+    setScroll(20, 40)
+    await navigate('/new-page')
+
+    expect(wrapper.text()).toBe('New page')
+    expect({ left: window.scrollX, top: window.scrollY }).toEqual({
+      left: 0,
+      top: 0,
+    })
+  })
+
+  it('scrolls to a new hash target and later restores its saved position', async () => {
+    const Page = defineComponent({
+      setup() {
+        useScrollRestoration()
+      },
+      template:
+        '<main><div id="details">Details</div><div id="details:advanced">Advanced</div></main>',
+    })
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
+      function (this: HTMLElement) {
+        return {
+          left: 0,
+          top:
+            this.id === 'details'
+              ? 180
+              : this.id === 'details:advanced'
+                ? 220
+                : 0,
+        } as DOMRect
+      }
+    )
+    const { navigate, setScroll, wrapper } = await mountRouter(
+      [{ path: '/page', component: Page }],
+      { attachTo: document.body }
+    )
+
+    await navigate('/neutral')
+    setScroll(0, 40)
+    await navigate('/page#details')
+
+    expect(wrapper.get('#details').text()).toBe('Details')
+    expect(window.scrollY).toBe(180)
+
+    setScroll(0, 300)
+    await navigate('/neutral')
+    expect(
+      JSON.parse(sessionStorage.getItem('vue:scroll:/page#details')!)
+    ).toEqual({ default: { left: 0, top: 300 } })
+    setScroll(0, 0)
+    await navigate('/page#details')
+
+    expect(window.scrollY).toBe(300)
+
+    setScroll(20, 55)
+    await navigate('/page#details%3Aadvanced')
+
+    expect(window.scrollY).toBe(220)
+
+    setScroll(20, 55)
+    await navigate('/page#missing')
+
+    expect({ left: window.scrollX, top: window.scrollY }).toEqual({
+      left: 0,
+      top: 0,
+    })
   })
 
   it('shares a scroll position between pages with the same key', async () => {
