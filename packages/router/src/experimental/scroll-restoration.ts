@@ -91,78 +91,6 @@ export const CAPTURE_LEGACY = (): ScrollRestorationPosition | null =>
     : null
 
 /**
- * Scrolls the page to a saved position, the same way the legacy
- * `scrollBehavior` implementation does.
- *
- * @param position - the position to scroll to
- */
-export function RESTORE_LEGACY(position: ScrollRestorationPosition = {}): void {
-  let scrollToOptions: ScrollToOptions
-
-  if (position.el) {
-    const { el } = position
-    const isIdSelector = el.startsWith('#')
-    /**
-     * `id`s can accept pretty much any characters, including CSS combinators
-     * like `>` or `~`. It's still possible to retrieve elements using
-     * `document.getElementById('~')` but it needs to be escaped when using
-     * `document.querySelector('#\\~')` for it to be valid. The only
-     * requirements for `id`s are them to be unique on the page and to not be
-     * empty (`id=""`). Because of that, when passing an id selector, it should
-     * be properly escaped for it to work with `querySelector`. We could check
-     * for the id selector to be simple (no CSS combinators `+ >~`) but that
-     * would make things inconsistent since they are valid characters for an
-     * `id` but would need to be escaped when using `querySelector`, breaking
-     * their usage and ending up in no selector returned. Selectors need to be
-     * escaped:
-     *
-     * - `#1-thing` becomes `#\31 -thing`
-     * - `#with~symbols` becomes `#with\\~symbols`
-     *
-     * - More information about  the topic can be found at
-     *   https://mathiasbynens.be/notes/html5-id-class.
-     * - Practical example: https://mathiasbynens.be/demo/html5-id
-     */
-    if (__DEV__) {
-      if (!isIdSelector || !document.getElementById(el.slice(1))) {
-        try {
-          const foundEl = document.querySelector(el)
-          if (isIdSelector && foundEl) {
-            diagnostics.VUE_ROUTER_R0040({ el })
-            return
-          }
-        } catch {
-          diagnostics.VUE_ROUTER_R0041({ el })
-          return
-        }
-      }
-    }
-
-    const foundEl = isIdSelector
-      ? document.getElementById(el.slice(1))
-      : document.querySelector(el)
-
-    if (!foundEl) {
-      __DEV__ && diagnostics.VUE_ROUTER_R0042({ el })
-      return
-    }
-
-    const docRect = document.documentElement.getBoundingClientRect()
-    const elRect = foundEl.getBoundingClientRect()
-
-    scrollToOptions = {
-      behavior: position.behavior,
-      left: elRect.left - docRect.left - (position.left || 0),
-      top: elRect.top - docRect.top - (position.top || 0),
-    }
-  } else {
-    scrollToOptions = position
-  }
-
-  window.scrollTo(scrollToOptions)
-}
-
-/**
  * Options for the {@link ScrollRestoration} plugin.
  */
 export interface ScrollRestorationPluginOptions extends UseScrollRestorationOptions {
@@ -250,15 +178,55 @@ export const SCROLL_RESTORATION_CAPTURE_DEFAULT =
  *
  * @see {@link ScrollRestoration}
  */
-export const SCROLL_RESTORATION_RESTORE_DEFAULT = (
+export function SCROLL_RESTORATION_RESTORE_DEFAULT(
   entry: ScrollRestorationSessionEntry | null | undefined,
   to?: RouteLocationNormalized
-): void => {
-  if (entry?.default) return RESTORE_LEGACY(entry.default)
-  if (to?.hash && document.getElementById(to.hash.slice(1))) {
-    return RESTORE_LEGACY({ el: to.hash })
+): void {
+  const position = entry?.default
+  let options: ScrollToOptions = position || { left: 0, top: 0 }
+  let element: Element | null | undefined
+
+  if (position?.el) {
+    const { el } = position
+    const isIdSelector = el.startsWith('#')
+    element = isIdSelector ? document.getElementById(el.slice(1)) : undefined
+
+    // Hash IDs can contain characters that are invalid in CSS selectors.
+    if (__DEV__ && !element) {
+      try {
+        const foundEl = document.querySelector(el)
+        if (isIdSelector && foundEl) {
+          diagnostics.VUE_ROUTER_R0040({ el })
+          return
+        }
+      } catch {
+        diagnostics.VUE_ROUTER_R0041({ el })
+        return
+      }
+    }
+
+    if (!isIdSelector) element = document.querySelector(el)
+
+    if (!element) {
+      __DEV__ && diagnostics.VUE_ROUTER_R0042({ el })
+      return
+    }
+  } else if (!position && to?.hash) {
+    element = document.getElementById(to.hash.slice(1))
   }
-  RESTORE_LEGACY({ left: 0, top: 0 })
+
+  if (element) {
+    const docRect = document.documentElement.getBoundingClientRect()
+    const elRect = element.getBoundingClientRect()
+
+    options = {
+      behavior: position?.behavior,
+      left: elRect.left - docRect.left - (position?.left || 0),
+      top: elRect.top - docRect.top - (position?.top || 0),
+    }
+  }
+
+  window.scrollTo(options)
 }
 
 const SCROLL_RESTORATION_REGISTRATIONS: InjectionKey<
