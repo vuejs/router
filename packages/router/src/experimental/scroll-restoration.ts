@@ -181,7 +181,27 @@ export function SCROLL_RESTORATION_RESTORE_DEFAULT(
     const isIdSelector = el.startsWith('#')
     element = isIdSelector ? document.getElementById(el.slice(1)) : undefined
 
-    // Hash IDs can contain characters that are invalid in CSS selectors.
+    /**
+     * `id`s can accept pretty much any characters, including CSS combinators
+     * like `>` or `~`. It's still possible to retrieve elements using
+     * `document.getElementById('~')` but it needs to be escaped when using
+     * `document.querySelector('#\\~')` for it to be valid. The only
+     * requirements for `id`s are them to be unique on the page and to not be
+     * empty (`id=""`). Because of that, when passing an id selector, it should
+     * be properly escaped for it to work with `querySelector`. We could check
+     * for the id selector to be simple (no CSS combinators `+ >~`) but that
+     * would make things inconsistent since they are valid characters for an
+     * `id` but would need to be escaped when using `querySelector`, breaking
+     * their usage and ending up in no selector returned. Selectors need to be
+     * escaped:
+     *
+     * - `#1-thing` becomes `#\31 -thing`
+     * - `#with~symbols` becomes `#with\\~symbols`
+     *
+     * - More information about  the topic can be found at
+     *   https://mathiasbynens.be/notes/html5-id-class.
+     * - Practical example: https://mathiasbynens.be/demo/html5-id
+     */
     if (__DEV__ && !element) {
       try {
         const foundEl = document.querySelector(el)
