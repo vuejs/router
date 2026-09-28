@@ -1,22 +1,22 @@
 # Scroll Restoration
 
 ::: warning Experimental
-This API is experimental and might have breaking changes.
+This API is experimental and might have breaking changes. It replaces the deprecated `scrollBehavior` option.
 :::
 
-The `scrollBehavior` option is deprecated. The `ScrollRestoration` plugin replaces it and lets components save and restore their own scroll positions.
+The `ScrollRestoration` + `useScrollRestoration()` plugin saves and restores scroll positions for pages.
 
 With it, you can:
 
-- Save multiple positions for one page
+- Save multiple positions from any component
 - Use custom capture and restore functions, for example with `scrollIntoView()`
-- Control how pages share scroll restoration rather than relying on history entries
+- Control which pages share scroll restoration
 
 [[toc]]
 
 ## Setup
 
-Install `ScrollRestoration` before the router. Give it the router, and the default capture and restore functions:
+Install `ScrollRestoration` before the router. Give it the router, and, optionally, the default capture and restore functions:
 
 ```ts [main.ts]
 import { createApp } from 'vue'
@@ -32,6 +32,8 @@ const app = createApp(App)
 
 app.use(ScrollRestoration, {
   router,
+  // default value, not needed
+  // key: to => to.path + to.hash,
   capture: SCROLL_RESTORATION_CAPTURE_DEFAULT,
   restore: SCROLL_RESTORATION_RESTORE_DEFAULT,
 })
@@ -40,59 +42,39 @@ app.use(router)
 app.mount('#app')
 ```
 
-The default functions capture and restore the window scroll position. Components that call `useScrollRestoration()` inherit these functions and can override either one.
+By default,
+
+The default functions capture and restore enable:
+
+- Save the window scroll position when leaving a page
+- If a position is saved, restore it
+- Else, scroll to an element specified by the hash, if it exists
+- Else, scroll to the top of the page
+
+Note that the `key` determines which pages share a saved position. By default, going from `/search?q=shoes` to `/search?q=shoes&p=2` will not scroll to the top, because both pages share the same key: `/search` and therefore reuse the saved position. You can customize this in the search page only, leaving the behavior default the same for other pages:
+
+```ts [pages/Search.vue]
+import { useScrollRestoration } from 'vue-router/experimental'
+
+useScrollRestoration({
+  key: to => to.path + `?p=${to.query.p}` + to.hash,
+})
+```
 
 Installing the plugin sets `history.scrollRestoration` to `manual`. Setting it to `auto` can conflict with scroll restoration, especially for anchor links. Set it back to `auto` if this is not an issue for you.
 
-## Default behavior
+## `useScrollRestoration()`
 
-The default `capture` function saves only the window's `left` and `top` scroll coordinates. It saves them under a route key: `path + hash` by default. The hash is part of the key, so `capture` does not need to return it.
-
-After a navigation, the default `restore` function uses this order for a registered page:
-
-1. If the route key has a saved window position, scroll to it. This also applies when the route has a hash.
-2. Otherwise, if the new route has a hash and an element with that ID exists, scroll to that element.
-3. Otherwise, scroll to `{ left: 0, top: 0 }`.
-
-Register each page that needs this behavior with `useScrollRestoration()`. Without a registration, the plugin does not capture or restore that page's position. See [Keys](#keys) to change which routes share a saved entry.
+The new `useScrollRestoration()` uses `onRouteRendered()` and triggers restoration after mounting or updating a page component. It can be called only once, in your root `App.vue`, if you have no animations between navigations. But you also have the freedom to call it in specific pages where scrolling requires waiting for animations to wait or if they are wrapped into a transition.
 
 ## Migrating from `scrollBehavior` {#migrating-from-scrollbehavior}
 
 1. Remove `scrollBehavior` from the router options.
-2. Install `ScrollRestoration` before the router, as shown in [Setup](#setup). Pass the router and the default `capture` and `restore` functions.
-3. Call `useScrollRestoration()` in each page component whose position you want to save and restore. The plugin only handles components that call this function.
+2. Install `ScrollRestoration` before the router, as shown in [Setup](#setup).
+3. If you have no `<Transition>` between pages, call `useScrollRestoration()` in your root `App.vue` component. If you have a layout system, call it in your layout components. Otherwise, call it in each page component that needs to restore its scroll position.
+4. Adapt the `capture` and `restore` functions to your needs, especially if you had a custom `scrollBehavior` function that doesn't match the default behavior.
 
-For example, this `scrollBehavior` option restores a position saved for a history entry, scrolls to a hash, or scrolls to the top:
-
-```ts [router.ts]
-scrollBehavior(to, _from, savedPosition) {
-  if (savedPosition) return savedPosition
-  if (to.hash) return { el: to.hash }
-  return { left: 0, top: 0 }
-}
-```
-
-After you remove it from the router, use the plugin setup above and register each page you want to restore:
-
-```vue [pages/Articles.vue]
-<script setup lang="ts">
-import { useScrollRestoration } from 'vue-router/experimental'
-
-useScrollRestoration()
-</script>
-```
-
-This changes when a saved position is available. Legacy `savedPosition` belongs to a history entry and is supplied for back or forward navigation. The plugin stores positions in `sessionStorage` by route key (`path + hash` by default). A new link visit to the same key can restore a saved position, and separate history entries with that key share it. Query strings do not affect the default key. See [Keys](#keys) if a query or another route detail must give a page its own position.
-
-The defaults handle the same saved position, hash, and top cases. If no element matches the hash when the page renders, the new default scrolls to the top.
-
-Move any other scroll rules into custom `capture` and `restore` functions. `capture()` returns an entry with a `default` position and, if needed, other named positions; see [Multiple positions](#multiple-positions). The default capture saves window coordinates only. A custom capture can save other coordinates or a CSS selector in `el`; `el` cannot be an `Element` object. You do not need to save the hash in an entry, because the route key includes it by default.
-
-`restore(entry, to)` receives the saved entry and the destination route. Use `to.hash` for custom anchor behavior, and call a scroll method to move the page: returning a position does not scroll. If you override `restore`, implement the saved position, hash, and top cases you still need. See [Custom restore](#custom-restore) for an example.
-
-If the old function returned a Promise to wait for content, use `manual: true` and call the returned `scroll()` after the content is ready. `capture` and `restore` must run synchronously.
-
-## Restore a page
+## Restore scroll
 
 Call `useScrollRestoration()` in any page component that needs to restore its scroll position:
 
@@ -104,11 +86,11 @@ useScrollRestoration()
 </script>
 ```
 
-The router _captures_ the position **when you leave the page** and _restores_ it after a navigation, when the component is mounted or updated using `onRouteRendered()`.
+The router _captures_ the position **when you leave the page** and _restores_ it after a navigation, when the component is mounted or updated using `onRouteRendered()` under the hood.
 
 ## Multiple positions
 
-`capture()` returns an object. Each property is one saved position. Use `default` for the main position and add other names for other scroll containers:
+In `capture`, use `default` for the main position and add other keys for other scroll containers:
 
 ```vue [pages/Docs.vue]
 <script setup lang="ts">
@@ -139,6 +121,8 @@ useScrollRestoration({
 `capture()` and `restore()` must be synchronous.
 
 ## Custom restore
+
+Inside of a custom restore you can use any method you want to scroll, like `scrollIntoView()` or `scrollTo()`. You can also use a saved offset to scroll a bit above the element.
 
 You can save an element selector and scroll to it with a saved offset:
 
@@ -177,6 +161,12 @@ useScrollRestoration({
 </script>
 ```
 
+:::tip
+
+Rely on `scroll-margin` in CSS instead of `el` + `top` to scroll a bit above an element. It is simpler and works with `scrollIntoView()`.
+
+:::
+
 Return `null` from `capture()` to remove the saved entry.
 
 ## Keys
@@ -206,7 +196,7 @@ Components that are active at the same time must use different keys.
 
 ## Manual restore
 
-Set `manual: true` when the content is not ready after navigation, like animations or virtualized list. Then call `scroll()` when the content is displayed:
+Set `manual: true` when the content is not ready after navigation, like animations or virtualized lists. Then call `scroll()` when the content is displayed:
 
 ```vue [pages/Feed.vue]
 <script setup lang="ts">
