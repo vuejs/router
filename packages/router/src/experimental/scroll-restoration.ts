@@ -178,8 +178,9 @@ export function SCROLL_RESTORATION_RESTORE_DEFAULT(
 
   if (position?.el) {
     const { el } = position
-    const isIdSelector = el.startsWith('#')
-    element = isIdSelector ? document.getElementById(el.slice(1)) : undefined
+    element = el.startsWith('#')
+      ? document.getElementById(el.slice(1))
+      : undefined
 
     /**
      * `id`s can accept pretty much any characters, including CSS combinators
@@ -205,7 +206,7 @@ export function SCROLL_RESTORATION_RESTORE_DEFAULT(
     if (__DEV__ && !element) {
       try {
         const foundEl = document.querySelector(el)
-        if (isIdSelector && foundEl) {
+        if (el.startsWith('#') && foundEl) {
           diagnostics.VUE_ROUTER_R0040({ el })
           return
         }
@@ -215,7 +216,7 @@ export function SCROLL_RESTORATION_RESTORE_DEFAULT(
       }
     }
 
-    if (!isIdSelector) element = document.querySelector(el)
+    element ??= document.querySelector(el)
 
     if (!element) {
       __DEV__ && diagnostics.VUE_ROUTER_R0042({ el })
