@@ -168,66 +168,67 @@ describe('useLink', () => {
       expect(link.isExactActive.value).toBe(true)
     })
 
-    it('keeps links with an empty (null) optional param active', async () => {
-      const optionalRoute = normalizeRouteRecord({
-        name: 'optional',
-        path: new MatcherPatternPathDynamic(
-          /^\/optional(?:\/([^/]+))?$/,
-          { p: [] },
-          ['optional', 1]
-        ),
-        components: { default: {} },
-      })
-      const router = experimental_createRouter({
-        history: createMemoryHistory(),
-        resolver: createFixedResolver([optionalRoute]),
-      })
-      await router.push('/optional')
+    describe('optional params', () => {
+      async function linkToAbout(to: UseLinkOptions['to']) {
+        const aboutRoute = normalizeRouteRecord({
+          name: 'about',
+          path: new MatcherPatternPathDynamic(
+            /^\/about(?:\/(test))?$/,
+            { mode: [] },
+            ['about', 1]
+          ),
+          components: { default: {} },
+        })
+        const router = experimental_createRouter({
+          history: createMemoryHistory(),
+          resolver: createFixedResolver([aboutRoute]),
+        })
+        await router.push('/about')
 
-      let link!: ReturnType<typeof useLink>
-      mount(
-        {
-          setup() {
-            link = useLink({ to: { name: 'optional', params: { p: null } } })
-            return () => ''
+        let link!: ReturnType<typeof useLink>
+        mount(
+          {
+            setup() {
+              link = useLink({ to })
+              return () => ''
+            },
           },
-        },
-        { global: { plugins: [router] } }
-      )
+          { global: { plugins: [router] } }
+        )
 
-      expect(link.isActive.value).toBe(true)
-      expect(link.isExactActive.value).toBe(true)
-    })
+        return link
+      }
 
-    it('keeps links with an empty (string) optional param active', async () => {
-      const optionalRoute = normalizeRouteRecord({
-        name: 'optional',
-        path: new MatcherPatternPathDynamic(
-          /^\/optional(?:\/([^/]+))?$/,
-          { p: [] },
-          ['optional', 1]
-        ),
-        components: { default: {} },
+      it('is active when the optional param is missing', async () => {
+        const link = await linkToAbout({ name: 'about', params: {} })
+
+        expect(link.isActive.value).toBe(true)
+        expect(link.isExactActive.value).toBe(true)
       })
-      const router = experimental_createRouter({
-        history: createMemoryHistory(),
-        resolver: createFixedResolver([optionalRoute]),
+
+      it('is active when the optional param is null', async () => {
+        const link = await linkToAbout({
+          name: 'about',
+          params: { mode: null },
+        })
+
+        expect(link.isActive.value).toBe(true)
+        expect(link.isExactActive.value).toBe(true)
       })
-      await router.push('/optional')
 
-      let link!: ReturnType<typeof useLink>
-      mount(
-        {
-          setup() {
-            link = useLink({ to: { name: 'optional', params: { p: '' } } })
-            return () => ''
-          },
-        },
-        { global: { plugins: [router] } }
-      )
+      it('is active for the path without a trailing slash', async () => {
+        const link = await linkToAbout('/about')
 
-      expect(link.isActive.value).toBe(true)
-      expect(link.isExactActive.value).toBe(true)
+        expect(link.isActive.value).toBe(true)
+        expect(link.isExactActive.value).toBe(true)
+      })
+
+      it('is inactive for the path with a trailing slash', async () => {
+        const link = await linkToAbout('/about/')
+
+        expect(link.isActive.value).toBe(false)
+        expect(link.isExactActive.value).toBe(false)
+      })
     })
   })
 
