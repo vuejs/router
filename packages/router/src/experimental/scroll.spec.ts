@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import {
-  CAPTURE_LEGACY,
+  SCROLL_RESTORATION_CAPTURE_DEFAULT as capture,
   SCROLL_RESTORATION_RESTORE_DEFAULT as restore,
 } from './scroll-restoration'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
@@ -19,7 +19,7 @@ import {
 describe('scroll', () => {
   mockWarn()
 
-  describe('cature', () => {
+  describe('capture', () => {
     let initialScrollRestoration: ScrollRestoration
     const scrollXMock = vi.spyOn(window, 'scrollX', 'get').mockReturnValue(10)
     const scrollYMock = vi.spyOn(window, 'scrollY', 'get').mockReturnValue(100)
@@ -39,15 +39,15 @@ describe('scroll', () => {
       scrollYMock.mockRestore()
     })
 
-    describe('CAPTURE_LEGACY', () => {
+    describe('SCROLL_RESTORATION_CAPTURE_DEFAULT', () => {
       it('captures the current scroll position when scrollRestoration is manual', () => {
         history.scrollRestoration = 'manual'
-        expect(CAPTURE_LEGACY()).toEqual({ left: 10, top: 100 })
+        expect(capture()).toEqual({ default: { left: 10, top: 100 } })
       })
 
       it('returns null when scrollRestoration is auto', () => {
         history.scrollRestoration = 'auto'
-        expect(CAPTURE_LEGACY()).toBe(null)
+        expect(capture()).toBe(null)
       })
     })
   })

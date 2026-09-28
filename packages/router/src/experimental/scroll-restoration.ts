@@ -76,21 +76,6 @@ export interface ScrollRestorationSessionEntry {
 }
 
 /**
- * Captures the current window scroll position, the same way the legacy
- * `scrollBehavior` implementation does.
- *
- * @returns the current scroll position or `null` if the browser handles
- * scroll restoration itself (`history.scrollRestoration !== 'manual'`)
- */
-export const CAPTURE_LEGACY = (): ScrollRestorationPosition | null =>
-  history.scrollRestoration === 'manual'
-    ? {
-        left: window.scrollX,
-        top: window.scrollY,
-      }
-    : null
-
-/**
  * Options for the {@link ScrollRestoration} plugin.
  */
 export interface ScrollRestorationPluginOptions extends UseScrollRestorationOptions {
@@ -158,19 +143,24 @@ export interface UseScrollRestorationOptions<
   manual?: MaybeRefOrGetter<boolean>
 }
 
-// NOTE: smaller and perf because one shared variable
-let defaultCapturePosition: ScrollRestorationPosition | null
-
 /**
  * Captures the current window scroll position for default scroll restoration.
+ *
+ * @returns the saved entry or `null` if the browser handles scroll restoration
+ * itself (`history.scrollRestoration !== 'manual'`)
  *
  * @see {@link ScrollRestoration}
  */
 export const SCROLL_RESTORATION_CAPTURE_DEFAULT =
-  (): ScrollRestorationSessionEntry | null => (
-    (defaultCapturePosition = CAPTURE_LEGACY()),
-    defaultCapturePosition && { default: defaultCapturePosition }
-  )
+  (): ScrollRestorationSessionEntry | null =>
+    history.scrollRestoration === 'manual'
+      ? {
+          default: {
+            left: window.scrollX,
+            top: window.scrollY,
+          },
+        }
+      : null
 
 /**
  * Restores the saved window position, scrolls to the route hash target, or
