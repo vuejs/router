@@ -716,6 +716,22 @@ describe('Experimental Router', () => {
     })
   })
 
+  it('keeps slashes in catch-all params when replacing the hash', async () => {
+    const { router } = await newRouter()
+
+    await router.push('/some/path/with/slashes')
+    await router.replace({
+      name: 'catch-all',
+      params: router.currentRoute.value.params,
+      hash: '#something',
+    })
+
+    expect(router.currentRoute.value.fullPath).toBe(
+      '/some/path/with/slashes#something'
+    )
+    expect(router.currentRoute.value.path).toBe('/some/path/with/slashes')
+  })
+
   it('keeps slashes in params containing slashes', async () => {
     const { router } = await newRouter()
 
@@ -1162,6 +1178,20 @@ describe('Experimental Router', () => {
       expect(loc.name).toBe('home')
       expect(loc.redirectedFrom).toMatchObject({
         path: '/home',
+      })
+    })
+
+    it('does not preserve query or hash on a plain redirect', async () => {
+      const { router } = await newRouter()
+      await router.push('/foo')
+
+      await router.push('/home?source=1#source')
+
+      expect(router.currentRoute.value).toMatchObject({
+        fullPath: '/',
+        query: {},
+        hash: '',
+        redirectedFrom: { fullPath: '/home?source=1#source' },
       })
     })
 
