@@ -167,6 +167,68 @@ describe('useLink', () => {
       expect(link.isActive.value).toBe(true)
       expect(link.isExactActive.value).toBe(true)
     })
+
+    it('keeps links with an empty (null) optional param active', async () => {
+      const optionalRoute = normalizeRouteRecord({
+        name: 'optional',
+        path: new MatcherPatternPathDynamic(
+          /^\/optional(?:\/([^/]+))?$/,
+          { p: [] },
+          ['optional', 1]
+        ),
+        components: { default: {} },
+      })
+      const router = experimental_createRouter({
+        history: createMemoryHistory(),
+        resolver: createFixedResolver([optionalRoute]),
+      })
+      await router.push('/optional')
+
+      let link!: ReturnType<typeof useLink>
+      mount(
+        {
+          setup() {
+            link = useLink({ to: { name: 'optional', params: { p: null } } })
+            return () => ''
+          },
+        },
+        { global: { plugins: [router] } }
+      )
+
+      expect(link.isActive.value).toBe(true)
+      expect(link.isExactActive.value).toBe(true)
+    })
+
+    it('keeps links with an empty (string) optional param active', async () => {
+      const optionalRoute = normalizeRouteRecord({
+        name: 'optional',
+        path: new MatcherPatternPathDynamic(
+          /^\/optional(?:\/([^/]+))?$/,
+          { p: [] },
+          ['optional', 1]
+        ),
+        components: { default: {} },
+      })
+      const router = experimental_createRouter({
+        history: createMemoryHistory(),
+        resolver: createFixedResolver([optionalRoute]),
+      })
+      await router.push('/optional')
+
+      let link!: ReturnType<typeof useLink>
+      mount(
+        {
+          setup() {
+            link = useLink({ to: { name: 'optional', params: { p: '' } } })
+            return () => ''
+          },
+        },
+        { global: { plugins: [router] } }
+      )
+
+      expect(link.isActive.value).toBe(true)
+      expect(link.isExactActive.value).toBe(true)
+    })
   })
 
   describe('warnings', () => {

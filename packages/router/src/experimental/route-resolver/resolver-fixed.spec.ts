@@ -47,17 +47,19 @@ const AB_PARAMS_PATH_MATCHER: MatcherPatternPath<{ a: string; b: string }> = {
   },
 }
 
-const AB_OPTIONAL_PATH_MATCHER: MatcherPatternPath<{ a: string; b?: string }> =
-  {
-    match(path) {
-      const match = path.match(/^\/([^/]+)(?:\/([^/]+))?$/)
-      if (!match) miss()
-      return { a: match[1], b: match[2] || '' }
-    },
-    build({ a, b }) {
-      return b ? `/${a}/${b}` : `/${a}`
-    },
-  }
+const AB_OPTIONAL_PATH_MATCHER: MatcherPatternPath<
+  { a: string; b: string | null },
+  { a: string; b?: string | null }
+> = {
+  match(path) {
+    const match = path.match(/^\/([^/]+)(?:\/([^/]+))?$/)
+    if (!match) miss()
+    return { a: match[1], b: match[2] ?? null }
+  },
+  build({ a, b }) {
+    return b ? `/${a}/${b}` : `/${a}`
+  },
+}
 
 const REPEATABLE_PARAM_MATCHER: MatcherPatternPath<{ p: string | string[] }> = {
   match(path) {
@@ -1119,7 +1121,7 @@ describe('fixed resolver', () => {
 
         expect(resolver.resolve({ path: '/foo' })).toMatchObject({
           name: 'optional',
-          params: { a: 'foo', b: '' },
+          params: { a: 'foo', b: null },
           path: '/foo',
         })
 
@@ -1140,11 +1142,11 @@ describe('fixed resolver', () => {
         ).toMatchObject({
           name: 'optional',
           path: '/b',
-          params: { a: 'b' },
+          params: { a: 'b', b: null },
         })
       })
 
-      it('keeps optional params passed as empty strings', () => {
+      it('normalizes optional params passed as empty strings', () => {
         const resolver = createFixedResolver([
           { name: 'optional', path: AB_OPTIONAL_PATH_MATCHER },
         ])
@@ -1154,7 +1156,7 @@ describe('fixed resolver', () => {
         ).toMatchObject({
           name: 'optional',
           path: '/b',
-          params: { a: 'b', b: '' },
+          params: { a: 'b', b: null },
         })
       })
     })
