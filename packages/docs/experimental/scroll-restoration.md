@@ -4,7 +4,7 @@
 This API is experimental and might have breaking changes.
 :::
 
-The `scrollBehavior` option in the experimental router is deprecated. The `ScrollRestoration` plugin replaces it and lets components save and restore their own scroll positions.
+The `scrollBehavior` option is deprecated. The `ScrollRestoration` plugin replaces it and lets components save and restore their own scroll positions.
 
 With it, you can:
 
@@ -58,7 +58,7 @@ Register each page that needs this behavior with `useScrollRestoration()`. Witho
 
 ## Migrating from `scrollBehavior` {#migrating-from-scrollbehavior}
 
-1. Remove `scrollBehavior` from the experimental router options.
+1. Remove `scrollBehavior` from the router options.
 2. Install `ScrollRestoration` before the router, as shown in [Setup](#setup). Pass the router and the default `capture` and `restore` functions.
 3. Call `useScrollRestoration()` in each page component whose position you want to save and restore. The plugin only handles components that call this function.
 
