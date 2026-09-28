@@ -84,6 +84,7 @@ import type {
   ResolverLocationResolved,
 } from './route-resolver/resolver-abstract'
 import type { DataLoaderExtensions } from './data-loaders/meta-extensions'
+import { diagnostics } from '../diagnostics'
 
 /**
  * resolve, reject arguments of Promise constructor
@@ -339,6 +340,17 @@ export function normalizeRouteRecord(
 ):
   | EXPERIMENTAL_RouteRecordNormalized_Matchable
   | EXPERIMENTAL_RouteRecordNormalized_Group {
+  if (
+    __DEV__ &&
+    !record.aliasOf &&
+    'beforeEnter' in record &&
+    record.beforeEnter
+  ) {
+    diagnostics.VUE_ROUTER_D0001({
+      name: record.name == null ? '(unnamed)' : String(record.name),
+    })
+  }
+
   // we can't define mods if we want to call defineProperty later
   const normalizedRecord:
     | Omit<EXPERIMENTAL_RouteRecordNormalized_Matchable, 'mods'>

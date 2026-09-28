@@ -9,7 +9,7 @@ import { stringifyRoute } from './errors'
 /**
  * Runtime diagnostics catalog for Vue Router.
  *
- * Every entry has a stable `VUE_ROUTER_R####` code, a `why` that states the problem
+ * Every entry has a stable `VUE_ROUTER_X####` code, a `why` that states the problem
  * (the diagnosis only, never the remedy) and a `fix` that states the remedy
  * (only, never the diagnosis). They are complementary: the reporter prints
  * both, so neither repeats the other. The diagnosis substrings asserted by the
@@ -20,11 +20,19 @@ import { stringifyRoute } from './errors'
  * Codes are permanent: never rename or reuse one.
  * - `VUE_ROUTER_R0###` core runtime warnings
  * - `VUE_ROUTER_R1###` experimental data-loaders
+ * - `VUE_ROUTER_D0###` deprecations
  */
 export const diagnostics = /*#__PURE__*/ defineDiagnostics({
   // docsBase: code => `https://router.vuejs.org/errors/${code.toLowerCase()}`,
   reporters: [/*#__PURE__*/ createConsoleReporter()],
   codes: {
+    // --- experimental/router.ts ---
+    VUE_ROUTER_D0001: {
+      why: (p: { name: string }) =>
+        `Route "${p.name}" uses beforeEnter, which is deprecated in the experimental router.`,
+      fix: 'Move the condition to the route meta field and check to.meta in router.beforeEach().',
+    },
+
     // --- router.ts ---
     VUE_ROUTER_R0001: {
       why: (p: { name: string }) =>
