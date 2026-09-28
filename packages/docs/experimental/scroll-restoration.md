@@ -4,7 +4,7 @@
 This API is experimental and might have breaking changes.
 :::
 
-Scroll restoration lets components save and restore their own scroll positions. It is the **upcoming replacement** for the `scrollBehavior` router option.
+The `scrollBehavior` option in the experimental router is deprecated. The `ScrollRestoration` plugin replaces it and lets components save and restore their own scroll positions.
 
 With it, you can:
 
@@ -40,9 +40,57 @@ app.use(router)
 app.mount('#app')
 ```
 
-The default functions save and restore the window scroll position and imitate the current mechanism combined with `scrollBehavior()` and some smart defaults. They are automatically inherited by nested components and can be overridden anywhere. Call `useScrollRestoration()` in a component to use them.
+The default functions capture and restore the window scroll position. Components that call `useScrollRestoration()` inherit these functions and can override either one.
 
-Installing the plugin sets `history.scrollRestoration` to `manual`. Setting it to auto can with scroll restoration, especially in the context of _anchor links_. Set it back to `auto` if this is not an issue for you.
+Installing the plugin sets `history.scrollRestoration` to `manual`. Setting it to `auto` can conflict with scroll restoration, especially for anchor links. Set it back to `auto` if this is not an issue for you.
+
+## Default behavior
+
+The default `capture` function saves only the window's `left` and `top` scroll coordinates. It saves them under a route key: `path + hash` by default. The hash is part of the key, so `capture` does not need to return it.
+
+After a navigation, the default `restore` function uses this order for a registered page:
+
+1. If the route key has a saved window position, scroll to it. This also applies when the route has a hash.
+2. Otherwise, if the new route has a hash and an element with that ID exists, scroll to that element.
+3. Otherwise, scroll to `{ left: 0, top: 0 }`.
+
+Register each page that needs this behavior with `useScrollRestoration()`. Without a registration, the plugin does not capture or restore that page's position. See [Keys](#keys) to change which routes share a saved entry.
+
+## Migrating from `scrollBehavior` {#migrating-from-scrollbehavior}
+
+1. Remove `scrollBehavior` from the experimental router options.
+2. Install `ScrollRestoration` before the router, as shown in [Setup](#setup). Pass the router and the default `capture` and `restore` functions.
+3. Call `useScrollRestoration()` in each page component whose position you want to save and restore. The plugin only handles components that call this function.
+
+For example, this `scrollBehavior` option restores a position saved for a history entry, scrolls to a hash, or scrolls to the top:
+
+```ts [router.ts]
+scrollBehavior(to, _from, savedPosition) {
+  if (savedPosition) return savedPosition
+  if (to.hash) return { el: to.hash }
+  return { left: 0, top: 0 }
+}
+```
+
+After you remove it from the router, use the plugin setup above and register each page you want to restore:
+
+```vue [pages/Articles.vue]
+<script setup lang="ts">
+import { useScrollRestoration } from 'vue-router/experimental'
+
+useScrollRestoration()
+</script>
+```
+
+This changes when a saved position is available. Legacy `savedPosition` belongs to a history entry and is supplied for back or forward navigation. The plugin stores positions in `sessionStorage` by route key (`path + hash` by default). A new link visit to the same key can restore a saved position, and separate history entries with that key share it. Query strings do not affect the default key. See [Keys](#keys) if a query or another route detail must give a page its own position.
+
+The defaults handle the same saved position, hash, and top cases. If no element matches the hash when the page renders, the new default scrolls to the top.
+
+Move any other scroll rules into custom `capture` and `restore` functions. `capture()` returns an entry with a `default` position and, if needed, other named positions; see [Multiple positions](#multiple-positions). The default capture saves window coordinates only. A custom capture can save other coordinates or a CSS selector in `el`; `el` cannot be an `Element` object. You do not need to save the hash in an entry, because the route key includes it by default.
+
+`restore(entry, to)` receives the saved entry and the destination route. Use `to.hash` for custom anchor behavior, and call a scroll method to move the page: returning a position does not scroll. If you override `restore`, implement the saved position, hash, and top cases you still need. See [Custom restore](#custom-restore) for an example.
+
+If the old function returned a Promise to wait for content, use `manual: true` and call the returned `scroll()` after the content is ready. `capture` and `restore` must run synchronously.
 
 ## Restore a page
 

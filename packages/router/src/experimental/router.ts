@@ -132,6 +132,10 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
    *   // `savedPosition` can be null if there isn't one
    * }
    * ```
+   *
+   * @deprecated Use `ScrollRestoration` and `useScrollRestoration()` from
+   * `vue-router/experimental` instead. See the
+   * [migration guide](https://router.vuejs.org/experimental/scroll-restoration.html#migrating-from-scrollbehavior).
    */
   scrollBehavior?: RouterScrollBehavior
 
