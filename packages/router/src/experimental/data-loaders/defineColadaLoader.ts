@@ -496,7 +496,9 @@ export function defineColadaLoader<Data>(
         to: RouteLocationNormalizedLoaded = router.currentRoute.value
       ) =>
         app
-          .runWithContext(() => load(to, router, undefined, undefined, true))
+          .runWithContext(() =>
+            load(to, router, undefined, undefined, true, true)
+          )
           .then(() => (entry!.commit(to), entry!.ext!.state.value)),
       refresh: (
         to: RouteLocationNormalizedLoaded = router.currentRoute.value
