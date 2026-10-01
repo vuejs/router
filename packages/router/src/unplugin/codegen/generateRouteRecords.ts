@@ -39,7 +39,8 @@ ${node
   if (node.needsDefinePageImport) {
     for (const [name, filePath] of node.value.components) {
       if (!node.fileNeedsDefinePageImport(filePath)) continue
-      const pageDataImport = `_definePage_${name}_${importsMap.size}`
+      // named views like `side-bar` can contain characters invalid in identifiers
+      const pageDataImport = `_definePage_${name.replace(/\W/g, '_')}_${importsMap.size}`
       definePageDataList.push(pageDataImport)
       const lang = getLang(filePath)
       importsMap.addDefault(

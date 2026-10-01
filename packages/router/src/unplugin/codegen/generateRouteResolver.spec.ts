@@ -1297,6 +1297,29 @@ describe('generateRouteResolver', () => {
     expect(resolver).not.toContain('_definePage_sidebar_')
   })
 
+  it('generates valid definePage imports for any named view name', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('dashboard', 'dashboard.vue')
+    const dashboardNode = tree.insert(
+      'dashboard@side-bar',
+      'dashboard@side-bar.vue'
+    )
+    dashboardNode.setDefinePageImport('dashboard@side-bar.vue', true)
+
+    const importsMap = new ImportsMap()
+    const resolver = generateRouteResolver(
+      tree,
+      DEFAULT_OPTIONS,
+      importsMap,
+      new Map()
+    )
+
+    expect(importsMap.toString()).toContain(
+      `import _definePage_side_bar_0 from 'dashboard@side-bar.vue?definePage&vue&lang.tsx'`
+    )
+    expect(resolver).toContain('_definePage_side_bar_0\n')
+  })
+
   it('includes query property in route records with query params', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('search', 'search.vue')

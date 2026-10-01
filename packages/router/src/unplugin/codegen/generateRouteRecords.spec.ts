@@ -94,6 +94,27 @@ describe('generateRouteRecord', () => {
     expect(generateRouteRecordSimple(tree)).toMatchSnapshot()
   })
 
+  it('generates valid definePage imports for any named view name', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('foo', 'foo.vue')
+    tree.insert('foo@side-bar', 'foo@side-bar.vue')
+    const node = tree.insert('foo@nav.top', 'foo@nav.top.vue')
+    node.setDefinePageImport('foo@side-bar.vue', true)
+    node.setDefinePageImport('foo@nav.top.vue', true)
+
+    const importsMap = new ImportsMap()
+    const routes = generateRouteRecords(tree, DEFAULT_OPTIONS, importsMap)
+
+    expect(importsMap.toString()).toMatchInlineSnapshot(`
+      "import _definePage_side_bar_0 from 'foo@side-bar.vue?definePage&vue&lang.tsx'
+      import _definePage_nav_top_1 from 'foo@nav.top.vue?definePage&vue&lang.tsx'
+      import { _mergeRouteRecord } from 'vue-router/experimental'
+      "
+    `)
+    expect(routes).toContain('_definePage_side_bar_0,\n')
+    expect(routes).toContain('_definePage_nav_top_1\n')
+  })
+
   it('nested children', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('a/a', 'a/a.vue')
