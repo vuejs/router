@@ -1345,6 +1345,12 @@ describe('Tree', () => {
       })
     })
 
+    it('keeps hex character codes in segments with params', () => {
+      checkRegexp('[id][x+2E]json', '/^\\/([^/]+?)\\.json$/i', {
+        matcherParts: [[1, '.', 'json']],
+      })
+    })
+
     it('works with a catch all route', () => {
       checkRegexp('[...all]', '/^\\/(.*)$/i', {
         matcherParts: [0],

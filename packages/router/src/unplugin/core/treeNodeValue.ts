@@ -723,7 +723,9 @@ function parseFileSegment(
           `Invalid hex code "${buffer}" in segment "${segment}"`
         )
       }
-      pathSegment += String.fromCharCode(parseInt(buffer, 16))
+      const char = String.fromCharCode(parseInt(buffer, 16))
+      pathSegment += char
+      subSegments.push(char)
     }
     buffer = ''
   }
