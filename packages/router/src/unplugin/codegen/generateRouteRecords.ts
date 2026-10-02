@@ -2,7 +2,7 @@ import { getLang } from '@vue-macros/common'
 import type { TreeNode } from '../core/tree'
 import type { ImportsMap } from '../core/utils'
 import { type ResolvedOptions } from '../options'
-import { pad, toStringLiteral } from '../utils'
+import { encodeImportIdentifierPart, pad, toStringLiteral } from '../utils'
 
 /**
  * Generate the route records for the given node.
@@ -39,8 +39,7 @@ ${node
   if (node.needsDefinePageImport) {
     for (const [name, filePath] of node.value.components) {
       if (!node.fileNeedsDefinePageImport(filePath)) continue
-      // named views like `side-bar` can contain characters invalid in identifiers
-      const pageDataImport = `_definePage_${name.replace(/\W/g, '_')}_${importsMap.size}`
+      const pageDataImport = `_definePage_${encodeImportIdentifierPart(name)}_${importsMap.size}`
       definePageDataList.push(pageDataImport)
       const lang = getLang(filePath)
       importsMap.addDefault(

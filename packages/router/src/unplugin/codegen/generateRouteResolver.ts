@@ -2,7 +2,7 @@ import { getLang } from '@vue-macros/common'
 import { PrefixTree, type TreeNode } from '../core/tree'
 import type { ImportsMap } from '../core/utils'
 import { type ResolvedOptions } from '../options'
-import { toStringLiteral, ts } from '../utils'
+import { encodeImportIdentifierPart, toStringLiteral, ts } from '../utils'
 import type { ParamParsersMap } from './generateParamParsers'
 import {
   generatePathParamsOptions,
@@ -164,8 +164,7 @@ export function generateRouteRecord({
   if (node.needsDefinePageImport) {
     for (const [name, filePath] of node.value.components) {
       if (!node.fileNeedsDefinePageImport(filePath)) continue
-      // named views like `side-bar` can contain characters invalid in identifiers
-      const pageDataImport = `_definePage_${name.replace(/\W/g, '_')}_${importsMap.size}`
+      const pageDataImport = `_definePage_${encodeImportIdentifierPart(name)}_${importsMap.size}`
       definePageDataList.push(pageDataImport)
       const lang = getLang(filePath)
       importsMap.addDefault(

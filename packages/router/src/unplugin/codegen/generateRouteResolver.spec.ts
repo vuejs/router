@@ -1315,9 +1315,9 @@ describe('generateRouteResolver', () => {
     )
 
     expect(importsMap.toString()).toContain(
-      `import _definePage_side_bar_0 from 'dashboard@side-bar.vue?definePage&vue&lang.tsx'`
+      `import _definePage_side_2d_bar_0 from 'dashboard@side-bar.vue?definePage&vue&lang.tsx'`
     )
-    expect(resolver).toContain('_definePage_side_bar_0\n')
+    expect(resolver).toContain('_definePage_side_2d_bar_0\n')
   })
 
   it('includes query property in route records with query params', () => {

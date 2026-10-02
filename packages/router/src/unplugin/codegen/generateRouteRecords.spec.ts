@@ -106,13 +106,13 @@ describe('generateRouteRecord', () => {
     const routes = generateRouteRecords(tree, DEFAULT_OPTIONS, importsMap)
 
     expect(importsMap.toString()).toMatchInlineSnapshot(`
-      "import _definePage_side_bar_0 from 'foo@side-bar.vue?definePage&vue&lang.tsx'
-      import _definePage_nav_top_1 from 'foo@nav.top.vue?definePage&vue&lang.tsx'
+      "import _definePage_side_2d_bar_0 from 'foo@side-bar.vue?definePage&vue&lang.tsx'
+      import _definePage_nav_2e_top_1 from 'foo@nav.top.vue?definePage&vue&lang.tsx'
       import { _mergeRouteRecord } from 'vue-router/experimental'
       "
     `)
-    expect(routes).toContain('_definePage_side_bar_0,\n')
-    expect(routes).toContain('_definePage_nav_top_1\n')
+    expect(routes).toContain('_definePage_side_2d_bar_0,\n')
+    expect(routes).toContain('_definePage_nav_2e_top_1\n')
   })
 
   it('nested children', () => {
