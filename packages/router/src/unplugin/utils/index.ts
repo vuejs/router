@@ -67,3 +67,10 @@ export function formatMultilineUnion(items: string[], spaces: number): string {
 export function toStringLiteral(str: string): string {
   return `'${str.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
 }
+
+export function encodeImportIdentifierPart(str: string): string {
+  return str.replace(
+    /[^A-Za-z0-9]/gu,
+    char => `_${char.codePointAt(0)!.toString(16)}_`
+  )
+}
