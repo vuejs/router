@@ -902,4 +902,41 @@ describe('useScrollRestoration', () => {
 
     expect(wrapper.text()).toBe('Page')
   })
+
+  it('restores the latest position after replacing the forward branch', async () => {
+    const Page = defineComponent({
+      setup() {
+        useScrollRestoration()
+      },
+      template: '<main>Page</main>',
+    })
+    const { navigate, router, setScroll } = await mountRouter([
+      { path: '/b', component: Page },
+    ])
+
+    async function go(delta: number) {
+      router.go(delta)
+      await flushPromises()
+    }
+
+    await navigate('/')
+    await navigate('/b')
+    setScroll(0, 1000)
+    // go back, then push a new entry that reuses the same URL: the forward
+    // branch is discarded but the key is shared by design
+    await go(-1)
+    await navigate('/b')
+    // revisiting the same URL restores its saved entry
+    expect(window.scrollY).toBe(1000)
+
+    setScroll(0, 2000)
+    await navigate('/')
+    await go(-1)
+
+    // the latest capture must win, not the stale 1000 from the old branch
+    expect(JSON.parse(sessionStorage.getItem('vue:scroll:/b')!)).toEqual({
+      default: { left: 0, top: 2000 },
+    })
+    expect(window.scrollY).toBe(2000)
+  })
 })
