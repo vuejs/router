@@ -12,7 +12,10 @@ import {
   createHref,
 } from './common'
 import type { _ScrollPositionNormalized } from '../scrollBehavior'
-import { computeScrollPosition } from '../scrollBehavior'
+import {
+  invalidateScrollPositions,
+  computeScrollPosition,
+} from '../scrollBehavior'
 import { diagnostics } from '../diagnostics'
 import { stripBase } from '../location'
 import { assign } from '../utils'
@@ -256,6 +259,7 @@ function useHistoryStateNavigation(base: string) {
     )
 
     changeLocation(to, state, true)
+    invalidateScrollPositions(state.position, true)
     currentLocation.value = to
   }
 
@@ -289,6 +293,8 @@ function useHistoryStateNavigation(base: string) {
     )
 
     changeLocation(to, state, false)
+    // The current entry's scroll was just updated in history state.
+    invalidateScrollPositions(currentState.position)
     currentLocation.value = to
   }
 

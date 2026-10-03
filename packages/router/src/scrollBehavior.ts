@@ -189,6 +189,15 @@ export function getSavedScrollPosition(
   return scroll
 }
 
+export function invalidateScrollPositions(position: number, replace = false) {
+  for (const key of scrollPositions.keys()) {
+    const entryPosition = parseInt(key, 10)
+    if (entryPosition === position || (!replace && entryPosition > position)) {
+      scrollPositions.delete(key)
+    }
+  }
+}
+
 // TODO: RFC about how to save scroll position
 /**
  * ScrollBehavior instance used by the router to compute and restore the scroll
