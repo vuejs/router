@@ -1,11 +1,14 @@
-import { createApp } from 'vue'
+import { createVaporApp as createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 import { createPinia } from 'pinia'
 import { PiniaColada } from '@pinia/colada'
 import { router } from './router/resolver'
 import { DataLoaderPlugin } from 'vue-router/experimental'
-import { RouterLink, RouterView } from 'vue-router'
+import {
+  VaporRouterLink as RouterLink,
+  VaporRouterView as RouterView,
+} from 'vue-router'
 
 const app = createApp(App)
 
