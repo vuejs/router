@@ -161,7 +161,8 @@ export class EditableTreeNode {
    * Alias of the route.
    */
   get alias() {
-    return this.node.value.overrides.alias
+    // copy so mutations do not leak into the cached overrides
+    return this.node.value.overrides.alias?.slice()
   }
 
   /**
