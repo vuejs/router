@@ -148,22 +148,21 @@ class _TreeNodeValueBase {
    * Gets hash params declared on this node.
    */
   get hashParams(): TreeHashParam[] {
-    const hash = this.overrides.params?.hash ?? {}
-    const paramNames = Object.keys(hash)
-    if (paramNames.length > 1) {
-      throw diagnostics.VUE_ROUTER_B0022({ paramNames: paramNames.join(', ') })
+    const entries = Object.entries(this.overrides.params?.hash ?? {})
+    if (entries.length > 1) {
+      throw diagnostics.VUE_ROUTER_B0022({
+        paramNames: entries.map(([name]) => name).join(', '),
+      })
     }
-    return Object.entries(hash).map(([paramName, config]) => {
-      const param: TreeHashParam = {
+    return entries.map(([paramName, config]) => {
+      if (typeof config === 'string') config = { parser: config }
+      return {
         paramName,
-        parser: typeof config === 'string' ? config : config.parser || null,
+        parser: config.parser || null,
+        defaultValue: config.default,
+        required: config.required,
         hash: true,
       }
-      if (typeof config !== 'string') {
-        if (config.default !== undefined) param.defaultValue = config.default
-        if (config.required !== undefined) param.required = config.required
-      }
-      return param
     })
   }
 
@@ -425,8 +424,13 @@ export function isTreeParamOptional(param: TreeParam): boolean {
   if ('optional' in param) {
     return param.optional
   }
-  // Query and hash params are optional with a default or without required.
-  return param.defaultValue !== undefined || !param.required
+  return hasTreeParamDefault(param) || !param.required
+}
+
+export function hasTreeParamDefault(
+  param: TreeQueryParam | TreeHashParam
+): boolean {
+  return param.defaultValue !== undefined && param.defaultValue !== 'undefined'
 }
 
 /**

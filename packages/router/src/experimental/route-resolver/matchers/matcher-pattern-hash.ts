@@ -18,24 +18,21 @@ export class MatcherPatternHashParam<
   ) {}
 
   match(hash: string): Record<ParamName, T | null> {
-    if (hash === '' && this.defaultValue !== undefined) {
-      return { [this.paramName]: toValue(this.defaultValue) } as Record<
-        ParamName,
-        T | null
-      >
-    }
     let value: T | string | null = null
-    try {
-      value = this.parser.get ? (this.parser.get(hash) ?? null) : hash || null
-    } catch (error) {
-      if (this.required && this.defaultValue === undefined) throw error
+    if (hash || this.defaultValue === undefined) {
+      try {
+        value = this.parser.get ? this.parser.get(hash) : hash || null
+      } catch (error) {
+        if (this.required && this.defaultValue === undefined) throw error
+      }
     }
     if (value == null) {
-      if (this.defaultValue !== undefined) {
-        value = toValue(this.defaultValue)
-      } else if (this.required) {
-        miss()
-      }
+      value =
+        this.defaultValue !== undefined
+          ? toValue(this.defaultValue)
+          : this.required
+            ? miss()
+            : null
     }
     return { [this.paramName]: value } as Record<ParamName, T | null>
   }

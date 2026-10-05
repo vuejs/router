@@ -1,6 +1,7 @@
 import type { TreeNode } from '../core/tree'
 import {
   isTreeParamOptional,
+  hasTreeParamDefault,
   isTreeParamRepeatable,
   isTreePathParam,
   isTreeHashParam,
@@ -96,9 +97,7 @@ export function EXPERIMENTAL_generateRouteParams(
             ? param.paramName
             : JSON.stringify(param.paramName)
           if (isTreeHashParam(param)) {
-            const hasDefault =
-              param.defaultValue !== undefined &&
-              param.defaultValue !== 'undefined'
+            const hasDefault = hasTreeParamDefault(param)
             const isOptional = !param.required || hasDefault
             let type = types[i] ?? 'string'
             if (
