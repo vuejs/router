@@ -45,11 +45,11 @@ export default defineConfig({
 
 ## Built-in parsers
 
-| Name     | Path | Query | Type      |
-| -------- | :--: | :---: | --------- |
-| `int`    |  ✅  |  ✅   | `number`  |
-| `bool`   |  ✅  |  ✅   | `boolean` |
-| `string` |  ✅  |  ✅   | `string`  |
+| Name     | Path | Query | Hash | Type      |
+| -------- | :--: | :---: | :--: | --------- |
+| `int`    |  ✅  |  ✅   |  ✅  | `number`  |
+| `bool`   |  ✅  |  ✅   |  ✅  | `boolean` |
+| `string` |  ✅  |  ✅   |  ✅  | `string`  |
 
 `string` is the default param parser and does nothing. It's equivalent to not setting the parser.
 
@@ -67,7 +67,7 @@ You define param parsers as modules exporting a `parser` in the configured param
 
 A parser is just an object with a _getter_ and a _setter_. Vue Router provides three helpers: [`defineParamParser()`](#defineParamParser), [`defineParamParserRaw()`](#defineParamParserRaw), and [`defineHashParamParser()`](#defineHashParamParser).
 
-Reach for `defineParamParser` first, it's the most common use case for simple one-to-one transforms. Use `defineParamParserRaw` when you need to collapse multiple input shapes into one output type or you want to reject _nullish_ or array values outright.
+Reach for `defineParamParser` first, it's the most common use case for simple one-to-one transforms. Use `defineParamParserRaw` when you need to collapse multiple input shapes into one output type or you want to reject _nullish_ or array values outright. Use `defineHashParamParser` for hash params.
 
 ### `defineParamParser`
 
@@ -155,23 +155,23 @@ Here is a table of the different meaningful combinations of return values from `
 
 ### `defineHashParamParser`
 
-`defineHashParamParser` defines a transform for the hash. Both `get` and `set` are required: `get` receives a `string`, and `set` returns a `string`. The helper returns your parser unchanged, without array or nullish wrapping. You can specify the parsed type with `defineHashParamParser<TParam>` and a wider setter input with `defineHashParamParser<TParam, TParamRaw>`.
+`defineHashParamParser` defines a parser for the hash. `get` receives the hash contents without the leading `#` and `set` returns them. Unlike `defineParamParser`, it does not wrap arrays or nullish values.
 
-The getter receives the hash contents without the leading `#`: `#setup` calls `get('setup')`, and a bare `#` calls `get('')`. An absent hash (`''`) skips the getter and produces `undefined`, or the configured default.
-
-For example, use the hash contents as a heading name:
+A route has only one hash param. To read several values from the hash, return an object:
 
 ```ts
-// src/params/heading.ts
-import { defineHashParamParser } from 'vue-router/experimental'
+// src/params/section.ts
+import { defineHashParamParser, miss } from 'vue-router/experimental'
 
-export const parser = defineHashParamParser<string>({
-  get: hash => hash,
-  set: heading => heading,
+export const parser = defineHashParamParser<{ heading: string; tab: string }>({
+  get: hash => {
+    const [heading, tab] = hash.split('/')
+    if (!heading || !tab) miss()
+    return { heading, tab }
+  },
+  set: ({ heading, tab }) => `${heading}/${tab}`,
 })
 ```
-
-Use `params: { hash: { heading: 'heading' } }` in `definePage()`. A hash of `#setup` gives `route.params.heading === 'setup'`. The setter returns contents without `#`. The matcher adds `#` to a present result, including `''`, which produces a bare `#`. Pass `undefined` to clear an optional hash param. You can also pass `null` when the parser or default type includes it.
 
 ## Errors
 
@@ -238,72 +238,51 @@ Options per query field:
 
 ### Hash params
 
-Declare one named hash param in `definePage()`:
+Declare one named hash param in `definePage()`. Without a parser, the param is the hash contents without `#`:
 
 ```vue
 <script setup lang="ts">
 definePage({
   params: {
-    hash: { section: 'section' },
+    hash: { heading: {} },
   },
 })
+// no hash → undefined, `#` → '', `#setup` → 'setup'
 </script>
 ```
 
-Hash params are optional by default. An absent hash skips the getter and produces `undefined`. Parsed values such as `null`, `false`, `0`, and `''` are preserved. For optional hash params, parser errors produce `undefined` or the configured default. Set `required: true` to reject missing hashes, parser errors, or `undefined` results. A default replaces only `undefined` results and parser errors:
+Use a native parser like `int`, or a custom one like the `section` parser above:
 
 ```vue
 <script setup lang="ts">
 definePage({
   params: {
     hash: {
-      section: {
-        parser: 'section',
-        default: () => ({ heading: 'overview', tab: 'vue' }),
-      },
+      // `#2` → 2, no hash or `#abc` → 1
+      page: { parser: 'int', default: 1 },
     },
   },
 })
 </script>
 ```
 
-- `parser`: parser name. Omit to use `string`, which returns the hash contents without `#`. An absent hash produces `undefined` unless you provide a default.
-- `required`: reject the match when the hash is absent, parsing fails, or the parsed value is `undefined`. Defaults to `false`.
-- `default`: a parsed value or factory used when the hash is absent, parsing fails, or the parsed value is `undefined`. An absent hash skips the getter.
-
-`required: true` and `default` cannot be used together.
-
-Without a parser, a default must be a `string`, `null`, or a factory that returns `string | null`. Other default types require an explicit parser: `{ default: 0 }` is invalid; `{ parser: 'int', default: 0 }` is valid.
-
-With `hash: { section: {} }`, an absent hash becomes `undefined`, `#` becomes `''`, and `#setup` becomes `'setup'`. The parsed type is `string | undefined`.
-
-A default can itself be `null`, including when the parser is omitted. For example, `{ default: null }` and `{ parser: 'heading', default: null }` have the parsed type `string | null`, using the `heading` parser above. An absent hash uses the `null` default, while a bare `#` preserves `''`. The parsed type includes the default type, including `null` for `default: null`. Without a default, an optional hash param also includes `undefined` for an absent hash.
-
-The API limits defaults without an explicit parser to `string | null`. However, code generation currently uses `unknown` if it cannot infer the type of such a default expression. Use an explicit parser to keep the generated type bounded by the parser's declared type.
-
-The parser receives the hash contents without `#`. An absent hash skips the getter. To extract several values, return an object from this one parser. Only the deepest matched route's hash parser runs.
-
 ```ts
-// src/params/section.ts
-import { defineHashParamParser } from 'vue-router/experimental'
-
-export const parser = defineHashParamParser<{ heading: string; tab: string }>({
-  get: hash => {
-    if (!hash) throw new Error('Missing section')
-    const [heading = '', tab = ''] = hash.split('/')
-    return { heading, tab }
-  },
-  set: ({ heading, tab }) => `${heading}/${tab}`,
-})
-```
-
-`route.params.section` contains `{ heading, tab }`. Navigate with the parsed value:
-
-```ts
+// in another page: hash: { section: 'section' }
 router.push({
   name: '/guide',
   params: { section: { heading: 'setup', tab: 'vue' } },
 })
+// → /guide#setup/vue
 ```
 
-You can omit an optional hash param or one with a default during navigation. Pass `undefined` to clear an optional hash param. You can also pass `null` when the parser or default type includes it. Required params without a default must be provided. Nullish values produce an empty hash without calling the setter. The setter returns contents without `#`. The matcher adds `#` to each present result, including `''`, which produces a bare `#`. The router then runs the getter on these contents to validate and normalize the result. Clearing the URL hash skips the getter and produces `undefined` or the configured default in `route.params`.
+Options:
+
+- `parser`: parser name. Omit it to use `string`.
+- `default`: value or `() => value` used when the hash is absent, the parser throws, or it returns `undefined`.
+- `required`: reject the match in these same cases instead. You cannot use it with `default`.
+
+Hash params are optional by default: their type includes `undefined` unless you set a `default`. An absent hash never calls the getter. Other parsed values, such as `null`, `0`, or `''`, are kept as they are.
+
+Without a parser, the default must be a `string` or `null`. For other types, set a parser: `{ default: 0 }` is invalid, `{ parser: 'int', default: 0 }` is valid. If code generation cannot infer the type of a default without a parser, it uses `unknown`.
+
+When you navigate, you can omit an optional hash param or one with a default. Set it to `undefined` (or `null` if its type allows it) to remove the hash. The router adds the `#` to the result of `set`, then runs `get` on it to validate and normalize the value.
