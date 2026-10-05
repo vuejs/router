@@ -232,7 +232,7 @@ definePage({
 
 Hash params are optional. A parser error or a nullish result becomes `null` and does not reject the route. Without a custom getter, an absent hash becomes `null`.
 
-The parser receives the entire decoded hash: an empty string when absent, or a string that starts with `#`. To extract several values, return an object from this one parser. Only the deepest matched route's hash parser runs.
+The parser receives the entire hash string: an empty string when absent, or a string that starts with `#`. To extract several values, return an object from this one parser. Only the deepest matched route's hash parser runs.
 
 ```ts
 // src/params/section.ts

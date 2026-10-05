@@ -5,6 +5,7 @@ import {
   escapeRegex,
   isTreePathParam,
   type TreeNodeValueOptions,
+  type TreeParam,
   type TreePathParam,
   type TreeQueryParam,
   type TreeHashParam,
@@ -377,7 +378,7 @@ export class TreeNode {
   /**
    * Inherited path and query params, followed by this node's hash params.
    */
-  get params(): (TreePathParam | TreeQueryParam | TreeHashParam)[] {
+  get params(): TreeParam[] {
     return [...this.pathParams, ...this.queryParams, ...this.hashParams]
   }
 

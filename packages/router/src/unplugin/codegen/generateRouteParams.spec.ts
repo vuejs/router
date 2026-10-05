@@ -57,18 +57,38 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     }
   )
 
-  it.each([null, 'string'])('makes native hash type %s nullable', type => {
+  it.each([null, 'string'])(
+    'makes hash params nullable with inferred type %s (missing or string)',
+    type => {
+      const node = createTreeWithParam('page')
+      node.setCustomRouteBlock('page.vue', {
+        params: { hash: { section: 'string' } },
+      })
+      expect(isTreeParamOptional(node.hashParams[0]!)).toBe(true)
+      expect(EXPERIMENTAL_generateRouteParams(node.params, [type], false)).toBe(
+        '{ section: string | null }'
+      )
+      expect(EXPERIMENTAL_generateRouteParams(node.params, [type], true)).toBe(
+        '{ section?: string | null | undefined }'
+      )
+    }
+  )
+
+  it.each([
+    ['active-tab', '"active-tab"'],
+    ["reader's-tab", '"reader\'s-tab"'],
+    ['line\nbreak', '"line\\nbreak"'],
+  ])('quotes hash param name %j in generated types', (name, key) => {
     const node = createTreeWithParam('page')
     node.setCustomRouteBlock('page.vue', {
-      params: { hash: { section: 'string' } },
+      params: { hash: { [name]: 'section' } },
     })
-    expect(isTreeParamOptional(node.hashParams[0]!)).toBe(true)
-    expect(EXPERIMENTAL_generateRouteParams(node.params, [type], false)).toBe(
-      '{ section: string | null }'
-    )
-    expect(EXPERIMENTAL_generateRouteParams(node.params, [type], true)).toBe(
-      '{ section?: string | null | undefined }'
-    )
+    expect(
+      EXPERIMENTAL_generateRouteParams(node.params, ['Param_section'], false)
+    ).toBe(`{ ${key}: Param_section | null }`)
+    expect(
+      EXPERIMENTAL_generateRouteParams(node.params, ['Param_section'], true)
+    ).toBe(`{ ${key}?: Param_section | null | undefined }`)
   })
 
   it('rejects multiple named hash params before generating types', () => {
