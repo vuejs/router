@@ -479,5 +479,13 @@ export function generateRouteRecordHash({
 
   importsMap.add('vue-router/experimental', 'MatcherPatternHashParam')
   const parser = generateParamParserOptions(param, importsMap, paramParsersMap)
-  return `hash: new MatcherPatternHashParam(${toStringLiteral(param.paramName)}${parser ? `, ${parser}` : ''}),`
+  const args = [toStringLiteral(param.paramName)]
+  if (parser || param.defaultValue !== undefined || param.required) {
+    args.push(parser || '{}')
+  }
+  if (param.defaultValue !== undefined || param.required) {
+    args.push(param.defaultValue ?? 'undefined')
+  }
+  if (param.required) args.push('true')
+  return `hash: new MatcherPatternHashParam(${args.join(', ')}),`
 }

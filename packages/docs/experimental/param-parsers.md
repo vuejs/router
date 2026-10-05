@@ -232,7 +232,29 @@ definePage({
 </script>
 ```
 
-Hash params are optional. A parser error or a nullish result becomes `null` and does not reject the route. Without a custom getter, an absent hash becomes `null`.
+Hash params are optional by default. A parser error or a nullish result becomes `null`. Set `required: true` to reject the match instead, or provide a default:
+
+```vue
+<script setup lang="ts">
+definePage({
+  params: {
+    hash: {
+      section: {
+        parser: 'section',
+        required: true,
+        default: () => ({ heading: 'overview', tab: 'vue' }),
+      },
+    },
+  },
+})
+</script>
+```
+
+- `parser`: parser name. Omit to keep the hash string.
+- `required`: reject the match when parsing fails and no default exists. Defaults to `false`.
+- `default`: a parsed value or factory used when the hash is absent or parsing fails, including for required params. A declared default takes precedence over the getter for an absent hash.
+
+Without a custom getter or a default, an absent hash becomes `null`.
 
 The parser receives the entire hash string: an empty string when absent, or a string that starts with `#`. To extract several values, return an object from this one parser. Only the deepest matched route's hash parser runs.
 
@@ -262,4 +284,4 @@ router.push({
 })
 ```
 
-You can omit the hash param during navigation or pass `null` to clear it. Nullish values produce an empty hash without calling the setter. The setter returns the entire hash, including `#`, or an empty string. The router then runs the getter to validate and normalize the result.
+You can omit an optional hash param or one with a default during navigation. Pass `null` to clear an optional hash param. Required params without a default must be provided. Nullish values produce an empty hash without calling the setter. The setter returns the entire hash, including `#`, or an empty string. The router then runs the getter to validate and normalize the result.
