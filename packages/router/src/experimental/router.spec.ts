@@ -210,7 +210,7 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
     name: 'optional',
     path: new MatcherPatternPathDynamic(
       /^\/optional(?:\/([^/]+))?$/,
-      { p: [] },
+      { p: [undefined, false, true] },
       ['optional', 1]
     ),
     components: { default: components.Bar },
@@ -560,7 +560,41 @@ describe('Experimental Router', () => {
     await router.push({ name: 'optional', params: { p: 'a' } })
     await router.push({ name: 'optional', params: {} })
     expect(router.currentRoute.value.params).toEqual({ p: null })
+    expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(1)
   })
+
+  it.each([null, undefined, ''])(
+    'removes an optional param with %s on relative navigation',
+    async p => {
+      const { router, history } = await newRouter()
+      await router.push({ name: 'optional', params: { p: 'a' } })
+      const current = router.currentRoute.value
+
+      expect(router.resolve({ params: {} }, current)).toMatchObject({
+        path: '/optional/a',
+        params: { p: 'a' },
+      })
+
+      const relative = router.resolve({ params: { p } }, current)
+      const named = router.resolve({ name: 'optional', params: { p } })
+      expect(relative).toMatchObject({
+        name: named.name,
+        path: '/optional',
+        fullPath: named.fullPath,
+        params: { p: null },
+      })
+      expect(current.params).toEqual({ p: 'a' })
+
+      await router.push(relative)
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'optional',
+        path: '/optional',
+        params: { p: null },
+      })
+      expect(history.location).toBe('/optional')
+      if (p !== null) expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(2)
+    }
+  )
 
   it('keeps consistent optional null param value', async () => {
     const { router } = await newRouter()
@@ -582,6 +616,7 @@ describe('Experimental Router', () => {
       p: null,
     })
     expect(router.resolve('/optional').params).toEqual({ p: null })
+    expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(1)
   })
 
   it('does not fail for missing optional params', async () => {
@@ -652,7 +687,7 @@ describe('Experimental Router', () => {
       router.resolve({ name: 'Param', params: { p: [] } })
     ).toThrowError()
     expect(() =>
-      router.resolve({ name: 'optional', params: { p: [] } })
+      router.resolve({ name: 'optional', params: { p: ['a', 'b'] } })
     ).toThrowError()
   })
 

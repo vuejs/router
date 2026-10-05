@@ -106,6 +106,8 @@ This gives us the possibility to transform a param to a number (including floats
 
 The logic of the param parser is simple because `defineParamParser()` handles the underlying transformation between single/array/nullish values. You just define how to get from a single string to your desired type and back.
 
+To remove an optional path param, pass `null` when navigating.
+
 ### `defineParamParserRaw`
 
 `defineParamParserRaw` gives full control over the transformation. You must handle every shape (`null`, `undefined`, single, array) yourself, but in exchange you can collapse them all into one output type (e.g. always return a `Set<string>`, whether the input was missing, a single value, or an array).

@@ -190,6 +190,7 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: '123' })).toBe('/teams/123/b')
     expect(pattern.build({ teamId: null })).toBe('/teams/b')
     expect(pattern.build({ teamId: '' })).toBe('/teams/b')
+    expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(1)
   })
 
   it('optional param in the end', () => {
@@ -209,6 +210,7 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: '123' })).toBe('/teams/123')
     expect(pattern.build({ teamId: null })).toBe('/teams')
     expect(pattern.build({ teamId: '' })).toBe('/teams')
+    expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(1)
   })
 
   it('repeatable param', () => {
@@ -340,6 +342,7 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: undefined })).toBe('/teams/b')
     // @ts-expect-error: shouldn't this one be optional
     expect(pattern.build({})).toBe('/teams/b')
+    expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(2)
   })
 
   it('multiple params', () => {
@@ -685,6 +688,7 @@ describe('MatcherPatternPathDynamic', () => {
       expect(pattern.build({ teamId: 'processed-world' })).toBe('/teams/world')
       // null is intentionally handled differently
       expect(pattern.build({ teamId: null })).toBe('/teams/null')
+      expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(1)
     })
   })
 })

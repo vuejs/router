@@ -1,6 +1,7 @@
 import { identityFn } from '../../../utils'
 import { decode, encodeParam, encodePath } from '../../../encoding'
 import { warn } from '../../../warning'
+import { diagnostics } from '../../../diagnostics'
 import { miss } from './errors'
 import type { ParamParser } from './param-parsers/types'
 import type { Simplify } from '../../../types/utils'
@@ -250,6 +251,14 @@ export class MatcherPatternPathDynamic<
             ;[parser /* repeatable */, , optional] = this.params[paramName]
             value = (parser?.set || identityFn)(params[paramName])
 
+            if (__DEV__ && optional && Object.hasOwn(params, paramName)) {
+              warnLegacyOptionalParam(
+                String(paramName),
+                params[paramName],
+                value
+              )
+            }
+
             // non optional repeatable params cannot be empty
             if (Array.isArray(value) && !value.length && !optional) {
               miss()
@@ -270,6 +279,14 @@ export class MatcherPatternPathDynamic<
                 paramName = this.paramsKeys[paramIndex++]
                 ;[parser /* repeatable */, , optional] = this.params[paramName]
                 value = (parser?.set || identityFn)(params[paramName])
+
+                if (__DEV__ && optional && Object.hasOwn(params, paramName)) {
+                  warnLegacyOptionalParam(
+                    String(paramName),
+                    params[paramName],
+                    value
+                  )
+                }
 
                 // a repeatable param in a sub segment joins its values with `/`
                 // so file-based routes like `rep.[ids]+` (sub segment
@@ -293,6 +310,18 @@ export class MatcherPatternPathDynamic<
     return this.trailingSlash == null
       ? path + (!value && path.at(-1) !== '/' ? '/' : '')
       : path.replace(TRAILING_SLASHES_RE, this.trailingSlash ? '/' : '')
+  }
+}
+
+function warnLegacyOptionalParam(param: string, raw: unknown, value: unknown) {
+  if (
+    (raw === undefined || raw === '') &&
+    (value == null || value === '' || (Array.isArray(value) && !value.length))
+  ) {
+    diagnostics.VUE_ROUTER_R0122({
+      param,
+      value: raw === undefined ? 'undefined' : 'an empty string',
+    })
   }
 }
 
