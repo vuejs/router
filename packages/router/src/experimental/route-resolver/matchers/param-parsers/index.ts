@@ -1,6 +1,7 @@
 export {
   defineParamParserRaw,
   defineParamParser,
+  defineHashParamParser,
   PARAM_PARSER_DEFAULTS,
   PATH_PARAM_PARSER_DEFAULTS,
   PATH_PARAM_SINGLE_DEFAULT,

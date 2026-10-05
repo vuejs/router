@@ -33,47 +33,15 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
 
   describe.each([false, true])('hash options with raw parser: %s', isRaw => {
     it.each([
-      [
-        false,
-        undefined,
-        'Param_section | null',
-        "'section'?: Param_section | null | undefined",
-      ],
-      [true, undefined, 'Param_section', "'section': Param_section"],
-      [
-        false,
-        'undefined',
-        'Param_section | null',
-        "'section'?: Param_section | null | undefined",
-      ],
-      [true, 'undefined', 'Param_section', "'section': Param_section"],
-      [
-        false,
-        '"intro"',
-        'Param_section',
-        "'section'?: Param_section | null | undefined",
-      ],
-      [
-        true,
-        '"intro"',
-        'Param_section',
-        "'section'?: Param_section | undefined",
-      ],
-      [
-        false,
-        'null',
-        'Param_section | null',
-        "'section'?: Param_section | null | undefined",
-      ],
-      [
-        true,
-        'null',
-        'Param_section | null',
-        "'section'?: Param_section | undefined",
-      ],
+      [false, undefined, 'Param_section | undefined'],
+      [true, undefined, 'Exclude<Param_section, undefined>'],
+      [false, 'undefined', 'Param_section | undefined'],
+      [false, 'null', 'Exclude<Param_section, undefined> | null'],
+      [false, '() => null', 'Exclude<Param_section, undefined> | null'],
+      [false, '() => 42', 'Exclude<Param_section, undefined> | number'],
     ] as const)(
-      'generates hash types for required=%s and default=%s',
-      (required, defaultValue, resolved, navigation) => {
+      'generates required=%s default=%s',
+      (required, defaultValue, resolved) => {
         const params = [
           {
             paramName: 'section',
@@ -99,73 +67,160 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
             true,
             parsers
           )
-        ).toBe(`{ ${navigation} }`)
+        ).toBe(
+          required
+            ? "{ 'section': Param_section }"
+            : defaultValue === 'null' || defaultValue === '() => null'
+              ? "{ 'section'?: Param_section | null | undefined }"
+              : "{ 'section'?: Param_section | undefined }"
+        )
       }
     )
   })
 
-  it.each([false, true])(
-    'includes an explicit null default for native strings, required=%s',
-    required => {
+  it.each([
+    ['() => undefined', 'Exclude<Param_section, undefined> | undefined'],
+    ['getDefaultSection', 'Param_section | null'],
+  ])(
+    'preserves default results for low-level required hashes: %s',
+    (defaultValue, type) => {
+      const params = [
+        {
+          paramName: 'section',
+          parser: 'section',
+          hash: true as const,
+          required: true,
+          defaultValue,
+        },
+      ]
+      expect(
+        EXPERIMENTAL_generateRouteParams(params, ['Param_section'], false)
+      ).toBe(`{ 'section': ${type} }`)
+    }
+  )
+
+  it.each([
+    ['false', 'boolean'],
+    ['0', 'number'],
+    ['-42', 'number'],
+    ['() => 42', 'number'],
+    ['() => -42', 'number'],
+    ['(undefined = 42) => undefined', 'unknown'],
+    ['function undefined() { return undefined }', 'unknown'],
+    ['async () => 42', 'unknown'],
+    ['function* () { return 42 }', 'unknown'],
+    ['() => null', 'null'],
+    ['function () { return null }', 'null'],
+    ['() => Math.random() ? null : 42', 'null | number'],
+    ['() => undefined', 'undefined'],
+    ['() => { if (Math.random()) return 42 }', 'unknown'],
+    ['getDefaultSection', 'unknown'],
+    ['() => ({ heading: "intro" })', 'unknown'],
+  ])('includes all possible default values from %s', (defaultValue, type) => {
+    const params = [
+      { paramName: 'section', parser: null, hash: true as const, defaultValue },
+    ]
+    expect(EXPERIMENTAL_generateRouteParams(params, [null], false)).toBe(
+      `{ 'section': string | ${type} }`
+    )
+  })
+
+  it.each([
+    ['false', 'string | boolean | undefined'],
+    ['0', 'string | number | undefined'],
+    ['() => 42', 'string | number | undefined'],
+    ['() => -42', 'string | number | undefined'],
+    ['() => Math.random() ? null : 42', 'string | null | number | undefined'],
+    ['() => null', 'string | null | undefined'],
+    ['() => undefined', 'string | undefined'],
+    ['getDefaultSection', 'string | undefined'],
+  ])(
+    'accepts known unparsed default values in navigation: %s',
+    (defaultValue, type) => {
       const params = [
         {
           paramName: 'section',
           parser: null,
           hash: true as const,
-          required,
-          defaultValue: 'null',
+          defaultValue,
         },
       ]
-      expect(EXPERIMENTAL_generateRouteParams(params, ['string'], false)).toBe(
-        "{ 'section': string | null }"
-      )
-      expect(EXPERIMENTAL_generateRouteParams(params, ['string'], true)).toBe(
-        required
-          ? "{ 'section'?: string | undefined }"
-          : "{ 'section'?: string | null | undefined }"
+      expect(EXPERIMENTAL_generateRouteParams(params, [null], true)).toBe(
+        `{ 'section'?: ${type} }`
       )
     }
   )
 
-  it.each([false, true])(
-    'keeps nullable hash parser results intact with a raw parser: %s',
-    isRaw => {
-      const node = createTreeWithParam('page')
-      node.setCustomRouteBlock('page.vue', {
-        params: { hash: { section: 'section' } },
-      })
+  it.each(['getDefaultSection', '() => { if (Math.random()) return 42 }'])(
+    'keeps the declared parser type for default %s',
+    defaultValue => {
+      const params = [
+        {
+          paramName: 'section',
+          parser: 'section',
+          hash: true as const,
+          defaultValue,
+        },
+      ]
       expect(
-        EXPERIMENTAL_generateRouteParams(
-          node.params,
-          ['Param_section'],
-          false,
-          makeParsersMap('section', isRaw)
-        )
+        EXPERIMENTAL_generateRouteParams(params, ['Param_section'], false)
       ).toBe("{ 'section': Param_section | null }")
-      expect(
-        EXPERIMENTAL_generateRouteParams(
-          node.params,
-          ['Param_section'],
-          true,
-          makeParsersMap('section', isRaw)
-        )
-      ).toBe("{ 'section'?: Param_section | null | undefined }")
     }
   )
 
-  it.each([null, 'string'])(
-    'makes hash params nullable with inferred type %s (missing or string)',
-    type => {
-      const node = createTreeWithParam('page')
-      node.setCustomRouteBlock('page.vue', {
-        params: { hash: { section: 'string' } },
-      })
-      expect(isTreeParamOptional(node.hashParams[0]!)).toBe(true)
-      expect(EXPERIMENTAL_generateRouteParams(node.params, [type], false)).toBe(
-        "{ 'section': string | null }"
+  it.each([
+    '[]',
+    '({ x: 42 })',
+    '() => []',
+    '() => ({ x: 42 })',
+    'function () { return [] }',
+    '() => { return { x: 42 } }',
+  ])('keeps non-null defaults within the parsed type: %s', defaultValue => {
+    const params = [
+      {
+        paramName: 'section',
+        parser: 'section',
+        hash: true as const,
+        defaultValue,
+      },
+    ]
+    expect(
+      EXPERIMENTAL_generateRouteParams(params, ['Param_section'], false)
+    ).toBe("{ 'section': Exclude<Param_section, undefined> }")
+    expect(
+      EXPERIMENTAL_generateRouteParams(params, ['Param_section'], true)
+    ).toBe("{ 'section'?: Param_section | undefined }")
+    expect(
+      EXPERIMENTAL_generateRouteParams(
+        [{ ...params[0], parser: null }],
+        [null],
+        false
       )
-      expect(EXPERIMENTAL_generateRouteParams(node.params, [type], true)).toBe(
-        "{ 'section'?: string | null | undefined }"
+    ).toBe("{ 'section': string | unknown }")
+  })
+
+  it('uses undefined for an empty hash declaration in both route map types', () => {
+    const node = createTreeWithParam('page')
+    node.setCustomRouteBlock('page.vue', { params: { hash: { myHash: {} } } })
+    expect(EXPERIMENTAL_generateRouteParams(node.params, [null], false)).toBe(
+      "{ 'myHash': string | undefined }"
+    )
+    expect(EXPERIMENTAL_generateRouteParams(node.params, [null], true)).toBe(
+      "{ 'myHash'?: string | undefined }"
+    )
+  })
+
+  it.each([null, 'string', 'Param_string', 'Param_section'])(
+    'uses undefined for absent hashes with type %s',
+    type => {
+      const params = [
+        { paramName: 'section', parser: 'string', hash: true as const },
+      ]
+      expect(EXPERIMENTAL_generateRouteParams(params, [type], false)).toBe(
+        `{ 'section': ${type ?? 'string'} | undefined }`
+      )
+      expect(EXPERIMENTAL_generateRouteParams(params, [type], true)).toBe(
+        `{ 'section'?: ${type ?? 'string'} | undefined }`
       )
     }
   )
@@ -180,10 +235,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     })
     expect(
       EXPERIMENTAL_generateRouteParams(node.params, ['Param_section'], false)
-    ).toBe(`{ ${key}: Param_section | null }`)
-    expect(
-      EXPERIMENTAL_generateRouteParams(node.params, ['Param_section'], true)
-    ).toBe(`{ ${key}?: Param_section | null | undefined }`)
+    ).toBe(`{ ${key}: Param_section | undefined }`)
   })
 
   it('treats an explicit undefined default as absent for required hashes', () => {

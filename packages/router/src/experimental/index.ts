@@ -56,6 +56,7 @@ export {
   PARAM_PARSER_BOOL,
   type ParamParser,
   defineParamParser,
+  defineHashParamParser,
   defineParamParserRaw,
   normalizeParamParser as _normalizeParamParser,
   type ExtractParamParserType as _ExtractParamParserType,
