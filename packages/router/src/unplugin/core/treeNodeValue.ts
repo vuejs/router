@@ -145,11 +145,26 @@ class _TreeNodeValueBase {
   }
 
   /**
-   * Gets all the params for the node including path and query params. This
-   * does not include params from parent nodes.
+   * Gets hash params declared on this node.
    */
-  get params(): (TreePathParam | TreeQueryParam)[] {
-    return [...this.pathParams, ...this.queryParams]
+  get hashParams(): TreeHashParam[] {
+    const hash = this.overrides.params?.hash ?? {}
+    const paramNames = Object.keys(hash)
+    if (paramNames.length > 1) {
+      throw diagnostics.VUE_ROUTER_B0022({ paramNames: paramNames.join(', ') })
+    }
+    return Object.entries(hash).map(([paramName, parser]) => ({
+      paramName,
+      parser,
+      hash: true,
+    }))
+  }
+
+  /**
+   * Gets path, query, and hash params declared on this node.
+   */
+  get params(): (TreePathParam | TreeQueryParam | TreeHashParam)[] {
+    return [...this.pathParams, ...this.queryParams, ...this.hashParams]
   }
 
   /**
@@ -356,6 +371,18 @@ export interface TreePathParam {
   parser: string | null
 }
 
+export interface TreeHashParam {
+  paramName: string
+  parser: string
+  hash: true
+}
+
+export function isTreeHashParam(
+  param: TreePathParam | TreeQueryParam | TreeHashParam | PathSubSegment
+): param is TreeHashParam {
+  return typeof param !== 'string' && 'hash' in param
+}
+
 export interface TreeQueryParam {
   paramName: string
 
@@ -384,8 +411,9 @@ export interface TreeQueryParam {
  * @internal
  */
 export function isTreeParamOptional(
-  param: TreePathParam | TreeQueryParam
+  param: TreePathParam | TreeQueryParam | TreeHashParam
 ): boolean {
+  if (isTreeHashParam(param)) return false
   if ('optional' in param) {
     return param.optional
   }
@@ -399,8 +427,9 @@ export function isTreeParamOptional(
  * @internal
  */
 export function isTreeParamRepeatable(
-  param: TreePathParam | TreeQueryParam
+  param: TreePathParam | TreeQueryParam | TreeHashParam
 ): boolean {
+  if (isTreeHashParam(param)) return false
   if ('repeatable' in param) {
     return param.repeatable
   }
@@ -413,7 +442,7 @@ export function isTreeParamRepeatable(
  * @internal
  */
 export function isTreePathParam(
-  param: TreePathParam | TreeQueryParam | PathSubSegment
+  param: TreePathParam | TreeQueryParam | TreeHashParam | PathSubSegment
 ): param is TreePathParam {
   return typeof param !== 'string' && 'modifier' in param
 }

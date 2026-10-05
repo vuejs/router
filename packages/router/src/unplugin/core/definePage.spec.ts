@@ -233,6 +233,22 @@ definePage({
     })
   })
 
+  it('extracts hash parser names without retaining runtime properties', () => {
+    const code = vue`
+<script setup>
+definePage({
+  params: {
+    hash: { 'active-tab': 'tab', invalid: { parser: 'int' } }
+  }
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({
+      hasRemainingProperties: false,
+      params: { hash: { 'active-tab': 'tab' } },
+    })
+  })
+
   it('extracts all types of params', () => {
     const codeWithAllParams = vue`
 <script setup>

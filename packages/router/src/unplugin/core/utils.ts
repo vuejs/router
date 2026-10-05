@@ -206,6 +206,10 @@ export function mergeRouteRecordOverride(
           ...a[key]?.query,
           ...b[key]?.query,
         },
+        hash: {
+          ...a[key]?.hash,
+          ...b[key]?.hash,
+        },
       }
     } else {
       // @ts-expect-error: TS cannot see it's the same key

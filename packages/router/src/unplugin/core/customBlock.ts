@@ -36,6 +36,11 @@ export interface CustomRouteBlock extends Partial<
     path?: Record<string, string | null>
 
     /**
+     * Declare one parser that receives the whole hash string.
+     */
+    hash?: Record<string, string>
+
+    /**
      * Declare query params for the route. The value is either a parser name
      * or an options object with `parser`, `format`, `default`, and `required`.
      */

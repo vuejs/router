@@ -4,7 +4,7 @@
 This feature is part of the [Experimental Router](./router-resolver.md). API and ergonomics may change. Make sure you've set it up first.
 :::
 
-Param parsers transform raw URL strings into rich JS values (and back) for both **path** and **query** params, with end-to-end TypeScript types.
+Param parsers transform raw URL strings into rich JS values (and back) for **path**, **query**, and **hash** params, with end-to-end TypeScript types.
 
 [[toc]]
 
@@ -215,3 +215,47 @@ Options per query field:
 - `format`: `'value'` (single, takes the **first** value if the URL has several) or `'array'`.
 - `default`: value or `() => value` used when the param is missing or parsing fails and it's not required.
 - `required`: navigation fails if absent (instead of using `default`).
+
+### Hash params
+
+Declare one named hash param in `definePage()`:
+
+```vue
+<script setup lang="ts">
+definePage({
+  params: {
+    hash: { section: 'section' },
+  },
+})
+</script>
+```
+
+The parser receives the entire decoded hash: an empty string when absent, or a string that starts with `#`. To extract several values, return an object from this one parser. Only the deepest matched route's hash parser runs.
+
+```ts
+// src/params/section.ts
+import { defineParamParserRaw } from 'vue-router/experimental'
+
+export const parser = defineParamParserRaw<
+  { heading: string; tab: string },
+  { heading: string; tab: string },
+  string
+>({
+  get: hash => {
+    const [heading = '', tab = ''] = hash.slice(1).split('/')
+    return { heading, tab }
+  },
+  set: ({ heading, tab }) => (heading ? `#${heading}/${tab}` : ''),
+})
+```
+
+`route.params.section` contains `{ heading, tab }`. Navigate with the parsed value:
+
+```ts
+router.push({
+  name: '/guide',
+  params: { section: { heading: 'setup', tab: 'vue' } },
+})
+```
+
+The setter returns the entire hash, including `#`, or an empty string. The router then runs the getter to validate and normalize the result.

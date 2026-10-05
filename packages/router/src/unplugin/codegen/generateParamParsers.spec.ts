@@ -1090,3 +1090,33 @@ describe('isRawParamParserSource', () => {
     expect(warnSpy).not.toHaveBeenCalled()
   })
 })
+
+describe('hash param parsers', () => {
+  it('discovers hash-only parsers and generates their result types', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    const node = tree.insert('page', 'page.vue')
+    node.setCustomRouteBlock('page.vue', {
+      params: { hash: { section: 'section' } },
+    })
+    const parsers: ParamParsersMap = new Map([
+      [
+        'section',
+        {
+          name: 'section',
+          typeName: 'Param_section',
+          relativePath: 'parsers/section.ts',
+          absolutePath: '/parsers/section.ts',
+        },
+      ],
+    ])
+    expect(collectUsedParamParserNames(tree)).toEqual(new Set(['section']))
+    expect(generateParamsTypes(node.params, parsers)).toEqual(['Param_section'])
+    expect(collectMissingParamParsers(tree, parsers)).toEqual([])
+    expect(collectMissingParamParsers(tree, new Map())).toEqual([
+      { parser: 'section', routePath: '/page', filePaths: ['page.vue'] },
+    ])
+    expect(
+      generateParamParserOptions(node.hashParams[0]!, new ImportsMap(), parsers)
+    ).toBe('_normalized_PARAM_PARSER__section')
+  })
+})

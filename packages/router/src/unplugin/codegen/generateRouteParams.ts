@@ -3,6 +3,8 @@ import {
   isTreeParamOptional,
   isTreeParamRepeatable,
   isTreePathParam,
+  isTreeHashParam,
+  type TreeHashParam,
   type TreePathParam,
   type TreeQueryParam,
 } from '../core/treeNodeValue'
@@ -19,7 +21,7 @@ import { diagnostics } from '../diagnostics'
  * @internal
  */
 export function normalizeParamsForTypes<
-  T extends TreePathParam | TreeQueryParam,
+  T extends TreePathParam | TreeQueryParam | TreeHashParam,
 >(node: TreeNode, params: T[]): T[] {
   // deduplicate by name, keeps the deepest declaration
   const byName = new Map<string, T>()
@@ -69,7 +71,7 @@ export function generateRouteParams(
 }
 
 /**
- * Enhanced version of `generateRouteParams` that supports both path and query
+ * Enhanced version of `generateRouteParams` that supports path, query, and hash
  * params, and also takes into account the types of the params and whether they
  * are defined with raw parsers.
  *
@@ -82,7 +84,7 @@ export function generateRouteParams(
  * @returns A string representing the TypeScript type for the route params of the given node.
  */
 export function EXPERIMENTAL_generateRouteParams(
-  nodeParams: (TreePathParam | TreeQueryParam)[],
+  nodeParams: (TreePathParam | TreeQueryParam | TreeHashParam)[],
   types: Array<string | null>,
   isLoose: boolean,
   paramParsersMap?: ParamParsersMap
@@ -90,6 +92,10 @@ export function EXPERIMENTAL_generateRouteParams(
   return nodeParams.length > 0
     ? `{ ${nodeParams
         .map((param, i) => {
+          if (isTreeHashParam(param)) {
+            return `${param.paramName}: ${types[i] ?? 'string'}`
+          }
+
           const isOptional = isTreeParamOptional(param)
           const isRepeatable = isTreeParamRepeatable(param)
 

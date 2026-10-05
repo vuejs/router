@@ -44,6 +44,8 @@ export type {
   MatcherPatternPathDynamic_ParamOptions,
 } from './route-resolver/matchers/matcher-pattern'
 
+export { MatcherPatternHashParam } from './route-resolver/matchers/matcher-pattern-hash'
+
 export {
   type MatcherPatternQuery,
   MatcherPatternQueryParam,
