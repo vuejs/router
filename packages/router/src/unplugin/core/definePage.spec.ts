@@ -316,7 +316,7 @@ definePage({ params: { hash: {
     expect(isTreeParamOptional(node.hashParams[0]!)).toBe(optional)
   })
 
-  it('rejects multiple named hash parameters with options', () => {
+  it('keeps the last of multiple named hash parameters with options', () => {
     const code = `definePage({ params: { hash: {
       section: { required: true }, tab: 'int'
     } } })`
@@ -324,8 +324,10 @@ definePage({ params: { hash: {
     node.setOverride('test.ts', {
       params: extractDefinePageInfo(code, 'test.ts')!.params,
     })
-    expect(() => node.hashParams).toThrow()
-    expect('Only one hash param can be declared per route.').toHaveBeenWarned()
+    expect(node.hashParams).toEqual([
+      { paramName: 'tab', parser: 'int', hash: true },
+    ])
+    expect('using "tab" and ignoring: section').toHaveBeenWarned()
   })
 
   it('extracts all types of params', () => {
