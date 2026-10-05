@@ -81,6 +81,16 @@ export function defineParamParserRaw<
 }
 
 /**
+ * Defines a parser for the hash content, without the leading `#`.
+ * A bare `#` passes an empty string; a missing hash skips the getter.
+ * The setter returns the content; the matcher adds the leading `#`.
+ * Unlike {@link defineParamParser}, this does not wrap arrays or nullish values.
+ */
+export const defineHashParamParser: <TParam, TParamRaw = TParam>(
+  parser: Required<ParamParser<TParam, string, TParamRaw>>
+) => Required<ParamParser<TParam, string, TParamRaw>> = defineParamParserRaw
+
+/**
  * Defines a param parser that transforms strings to another type. Handles
  * optional and repeatable params:
  *

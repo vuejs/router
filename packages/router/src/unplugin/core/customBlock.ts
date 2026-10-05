@@ -36,7 +36,7 @@ export interface CustomRouteBlock extends Partial<
     path?: Record<string, string | null>
 
     /**
-     * Declare one parser that receives the whole hash string.
+     * Declare one parser that receives the hash content without the leading `#`.
      */
     hash?: Record<string, string | CustomRouteBlockHashParamOptions>
 

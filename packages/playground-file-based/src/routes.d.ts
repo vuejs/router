@@ -28,6 +28,7 @@ type Param_set = _ExtractParamParserType<typeof import('./params/set.ts').parser
 type Param_testBoolQ = _ExtractParamParserType<typeof import('./params/test-bool-q.ts').parser>
 type Param_testColor = _ExtractParamParserType<typeof import('./params/test-color.ts').parser>
 type Param_testCsv = _ExtractParamParserType<typeof import('./params/test-csv.ts').parser>
+type Param_testHashSplit = _ExtractParamParserType<typeof import('./params/test-hash-split.ts').parser>
 type Param_testNum = _ExtractParamParserType<typeof import('./params/test-num.ts').parser>
 type Param_testSet = _ExtractParamParserType<typeof import('./params/test-set.ts').parser>
 type Param_testSetShape = _ExtractParamParserType<typeof import('./params/test-set-shape.ts').parser>
@@ -45,6 +46,7 @@ declare module 'vue-router' {
       'test-bool-q': { type: Param_testBoolQ }
       'test-color': { type: Param_testColor }
       'test-csv': { type: Param_testCsv }
+      'test-hash-split': { type: Param_testHashSplit }
       'test-num': { type: Param_testNum }
       'test-set': { type: Param_testSet }
       'test-set-shape': { type: Param_testSetShape }
@@ -63,50 +65,50 @@ declare module 'vue-router/auto-routes' {
     '/(home)': RouteRecordInfo<
       '/(home)',
       '/',
-      Record<never, never>,
-      Record<never, never>,
+      { 'myHash'?: number | undefined },
+      { 'myHash': number },
       | never
     >,
     '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]': RouteRecordInfo<
       '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]',
       '/package/:org?/:pkgName/:pkgVersion',
-      { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: Exclude<Param_semver, unknown[] | null> },
-      { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: Exclude<Param_semver, unknown[] | null> },
+      { 'org': Exclude<Param_npmOrg, unknown[] | null> | null, 'pkgName': string, 'pkgVersion': Exclude<Param_semver, unknown[] | null> },
+      { 'org': Exclude<Param_npmOrg, unknown[] | null> | null, 'pkgName': string, 'pkgVersion': Exclude<Param_semver, unknown[] | null> },
       | never
     >,
     '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]': RouteRecordInfo<
       '/(packages)/package-old/[[org]]/[pkgName]/[pkgVersion]',
       '/package-old/:org?/:pkgName/:pkgVersion',
-      { org: string | null, pkgName: string, pkgVersion: string },
-      { org: string | null, pkgName: string, pkgVersion: string },
+      { 'org': string | null, 'pkgName': string, 'pkgVersion': string },
+      { 'org': string | null, 'pkgName': string, 'pkgVersion': string },
       | never
     >,
     '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]': RouteRecordInfo<
       '/(packages)/package-range/[[org=npm-org]]/[pkgName]/[pkgVersion=version-range]',
       '/package-range/:org?/:pkgName/:pkgVersion',
-      { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: Exclude<Param_versionRange, unknown[] | null> },
-      { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: Exclude<Param_versionRange, unknown[] | null> },
+      { 'org': Exclude<Param_npmOrg, unknown[] | null> | null, 'pkgName': string, 'pkgVersion': Exclude<Param_versionRange, unknown[] | null> },
+      { 'org': Exclude<Param_npmOrg, unknown[] | null> | null, 'pkgName': string, 'pkgVersion': Exclude<Param_versionRange, unknown[] | null> },
       | never
     >,
     '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]': RouteRecordInfo<
       '/(packages)/package-zod/[[org=npm-org]]/[pkgName]/[pkgVersion]',
       '/package-zod/:org?/:pkgName/:pkgVersion',
-      { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: string },
-      { org: Exclude<Param_npmOrg, unknown[] | null> | null, pkgName: string, pkgVersion: string },
+      { 'org': Exclude<Param_npmOrg, unknown[] | null> | null, 'pkgName': string, 'pkgVersion': string },
+      { 'org': Exclude<Param_npmOrg, unknown[] | null> | null, 'pkgName': string, 'pkgVersion': string },
       | never
     >,
     'not-found': RouteRecordInfo<
       'not-found',
       '/:path(.*)',
-      { active?: boolean, multi?: string[] | undefined, optionalWhen?: Exclude<Param_date, unknown[] | null> | undefined, other?: boolean | undefined, page?: number, path: string, req?: number, when?: Exclude<Param_date, unknown[] | null> },
-      { active: boolean, multi: string[] | undefined, optionalWhen: Exclude<Param_date, unknown[] | null> | undefined, other: boolean | undefined, page: number, path: string, req: number, when: Exclude<Param_date, unknown[] | null> },
+      { 'active'?: boolean, 'multi'?: string[] | undefined, 'optionalWhen'?: Exclude<Param_date, unknown[] | null> | undefined, 'other'?: boolean | undefined, 'page'?: number, 'path': string, 'req'?: number, 'when'?: Exclude<Param_date, unknown[] | null> },
+      { 'active': boolean, 'multi': string[] | undefined, 'optionalWhen': Exclude<Param_date, unknown[] | null> | undefined, 'other': boolean | undefined, 'page': number, 'path': string, 'req': number, 'when': Exclude<Param_date, unknown[] | null> },
       | never
     >,
     '/a.[b].c.[d]': RouteRecordInfo<
       '/a.[b].c.[d]',
       '/a/:b/c/:d',
-      { b: number, d: string },
-      { b: number, d: string },
+      { 'b': number, 'd': string },
+      { 'b': number, 'd': string },
       | never
     >,
     '/about': RouteRecordInfo<
@@ -119,22 +121,22 @@ declare module 'vue-router/auto-routes' {
     '/b': RouteRecordInfo<
       '/b',
       '/b',
-      { date?: Extract<Param_date, unknown[]> | undefined, test?: Param_set /* raw param parser */ | undefined },
-      { date: Extract<Param_date, unknown[]> | undefined, test: Param_set /* raw param parser */ },
+      { 'date'?: Extract<Param_date, unknown[]> | undefined, 'test'?: Param_set /* raw param parser */ | undefined },
+      { 'date': Extract<Param_date, unknown[]> | undefined, 'test': Param_set /* raw param parser */ },
       | never
     >,
     '/blog/[slug]+': RouteRecordInfo<
       '/blog/[slug]+',
       '/blog/:slug+',
-      { slug: string[] },
-      { slug: string[] },
+      { 'slug': string[] },
+      { 'slug': string[] },
       | never
     >,
     '/blog/[[slugOptional]]+': RouteRecordInfo<
       '/blog/[[slugOptional]]+',
       '/blog/:slugOptional*',
-      { slugOptional: string[] },
-      { slugOptional: string[] },
+      { 'slugOptional': string[] },
+      { 'slugOptional': string[] },
       | never
     >,
     '/blog/info/(info)': RouteRecordInfo<
@@ -147,8 +149,8 @@ declare module 'vue-router/auto-routes' {
     '/blog/info/[[section]]': RouteRecordInfo<
       '/blog/info/[[section]]',
       '/blog/info/:section?',
-      { section: string | null },
-      { section: string | null },
+      { 'section': string | null },
+      { 'section': string | null },
       | never
     >,
     '/emoji-🤡': RouteRecordInfo<
@@ -161,15 +163,15 @@ declare module 'vue-router/auto-routes' {
     '/events/[when=date]': RouteRecordInfo<
       '/events/[when=date]',
       '/events/:when',
-      { when: Exclude<Param_date, unknown[] | null> },
-      { when: Exclude<Param_date, unknown[] | null> },
+      { 'when': Exclude<Param_date, unknown[] | null> },
+      { 'when': Exclude<Param_date, unknown[] | null> },
       | never
     >,
     '/events/repeat/[when=date]+': RouteRecordInfo<
       '/events/repeat/[when=date]+',
       '/events/repeat/:when+',
-      { when: Extract<Param_date, unknown[]> },
-      { when: Extract<Param_date, unknown[]> },
+      { 'when': Extract<Param_date, unknown[]> },
+      { 'when': Extract<Param_date, unknown[]> },
       | never
     >,
     '/it\'s-fine/(lol)': RouteRecordInfo<
@@ -182,22 +184,22 @@ declare module 'vue-router/auto-routes' {
     '/months/valibot-[month=month-valibot]': RouteRecordInfo<
       '/months/valibot-[month=month-valibot]',
       '/months/valibot-:month',
-      { month: Exclude<Param_monthValibot, unknown[] | null> },
-      { month: Exclude<Param_monthValibot, unknown[] | null> },
+      { 'month': Exclude<Param_monthValibot, unknown[] | null> },
+      { 'month': Exclude<Param_monthValibot, unknown[] | null> },
       | never
     >,
     '/months/zod-[month=month-zod]': RouteRecordInfo<
       '/months/zod-[month=month-zod]',
       '/months/zod-:month',
-      { mm?: Exclude<Param_monthZod, unknown[] | null>, month: Exclude<Param_monthZod, unknown[] | null> },
-      { mm: Exclude<Param_monthZod, unknown[] | null>, month: Exclude<Param_monthZod, unknown[] | null> },
+      { 'mm'?: Exclude<Param_monthZod, unknown[] | null>, 'month': Exclude<Param_monthZod, unknown[] | null> },
+      { 'mm': Exclude<Param_monthZod, unknown[] | null>, 'month': Exclude<Param_monthZod, unknown[] | null> },
       | never
     >,
     '/multi.[a].[b]': RouteRecordInfo<
       '/multi.[a].[b]',
       '/multi/:a/:b',
-      { a: string, b: string },
-      { a: string, b: string },
+      { 'a': string, 'b': string },
+      { 'a': string, 'b': string },
       | never
     >,
     '/nested/': RouteRecordInfo<
@@ -217,8 +219,8 @@ declare module 'vue-router/auto-routes' {
     '/opt.[[num=int]]': RouteRecordInfo<
       '/opt.[[num=int]]',
       '/opt/:num?',
-      { num: number | null },
-      { num: number | null },
+      { 'num': number | null },
+      { 'num': number | null },
       | never
     >,
     '/test-params/(list)': RouteRecordInfo<
@@ -231,163 +233,170 @@ declare module 'vue-router/auto-routes' {
     '/test-params/color.[c]': RouteRecordInfo<
       '/test-params/color.[c]',
       '/test-params/color/:c',
-      { c: Exclude<Param_testColor, unknown[] | null> },
-      { c: Exclude<Param_testColor, unknown[] | null> },
+      { 'c': Exclude<Param_testColor, unknown[] | null> },
+      { 'c': Exclude<Param_testColor, unknown[] | null> },
+      | never
+    >,
+    '/test-params/hash': RouteRecordInfo<
+      '/test-params/hash',
+      '/test-params/hash',
+      { 'section'?: Param_testHashSplit | undefined },
+      { 'section': Exclude<Param_testHashSplit, undefined> },
       | never
     >,
     '/test-params/opt.[[id]]': RouteRecordInfo<
       '/test-params/opt.[[id]]',
       '/test-params/opt/:id?',
-      { id: Exclude<Param_testNum, unknown[] | null> | null },
-      { id: Exclude<Param_testNum, unknown[] | null> | null },
+      { 'id': Exclude<Param_testNum, unknown[] | null> | null },
+      { 'id': Exclude<Param_testNum, unknown[] | null> | null },
       | never
     >,
     '/test-params/query': RouteRecordInfo<
       '/test-params/query',
       '/test-params/query',
-      { active?: Exclude<Param_testBoolQ, unknown[] | null>, ids?: Param_testCsv /* raw param parser */ | undefined, page?: number, tag?: string[] | undefined },
-      { active: Exclude<Param_testBoolQ, unknown[] | null>, ids: Param_testCsv /* raw param parser */, page: number, tag: string[] | undefined },
+      { 'active'?: Exclude<Param_testBoolQ, unknown[] | null>, 'ids'?: Param_testCsv /* raw param parser */ | undefined, 'page'?: number, 'tag'?: string[] | undefined },
+      { 'active': Exclude<Param_testBoolQ, unknown[] | null>, 'ids': Param_testCsv /* raw param parser */, 'page': number, 'tag': string[] | undefined },
       | never
     >,
     '/test-params/raw/opt.[[ids]]': RouteRecordInfo<
       '/test-params/raw/opt.[[ids]]',
       '/test-params/raw/opt/:ids?',
-      { ids: Param_testCsv /* raw param parser */ },
-      { ids: Param_testCsv /* raw param parser */ },
+      { 'ids': Param_testCsv /* raw param parser */ },
+      { 'ids': Param_testCsv /* raw param parser */ },
       | never
     >,
     '/test-params/raw/rep.[ids]+': RouteRecordInfo<
       '/test-params/raw/rep.[ids]+',
       '/test-params/raw/rep/:ids+',
-      { ids: Param_testCsv /* raw param parser */ },
-      { ids: Param_testCsv /* raw param parser */ },
+      { 'ids': Param_testCsv /* raw param parser */ },
+      { 'ids': Param_testCsv /* raw param parser */ },
       | never
     >,
     '/test-params/raw/repo.[[ids]]+': RouteRecordInfo<
       '/test-params/raw/repo.[[ids]]+',
       '/test-params/raw/repo/:ids*',
-      { ids: Param_testCsv /* raw param parser */ },
-      { ids: Param_testCsv /* raw param parser */ },
+      { 'ids': Param_testCsv /* raw param parser */ },
+      { 'ids': Param_testCsv /* raw param parser */ },
       | never
     >,
     '/test-params/raw/req.[ids]': RouteRecordInfo<
       '/test-params/raw/req.[ids]',
       '/test-params/raw/req/:ids',
-      { ids: Param_testCsv /* raw param parser */ },
-      { ids: Param_testCsv /* raw param parser */ },
+      { 'ids': Param_testCsv /* raw param parser */ },
+      { 'ids': Param_testCsv /* raw param parser */ },
       | never
     >,
     '/test-params/rep.[id]+': RouteRecordInfo<
       '/test-params/rep.[id]+',
       '/test-params/rep/:id+',
-      { id: Extract<Param_testNum, unknown[]> },
-      { id: Extract<Param_testNum, unknown[]> },
+      { 'id': Extract<Param_testNum, unknown[]> },
+      { 'id': Extract<Param_testNum, unknown[]> },
       | never
     >,
     '/test-params/repo.[[id]]+': RouteRecordInfo<
       '/test-params/repo.[[id]]+',
       '/test-params/repo/:id*',
-      { id: Extract<Param_testNum, unknown[]> },
-      { id: Extract<Param_testNum, unknown[]> },
+      { 'id': Extract<Param_testNum, unknown[]> },
+      { 'id': Extract<Param_testNum, unknown[]> },
       | never
     >,
     '/test-params/req.[id]': RouteRecordInfo<
       '/test-params/req.[id]',
       '/test-params/req/:id',
-      { id: Exclude<Param_testNum, unknown[] | null> },
-      { id: Exclude<Param_testNum, unknown[] | null> },
+      { 'id': Exclude<Param_testNum, unknown[] | null> },
+      { 'id': Exclude<Param_testNum, unknown[] | null> },
       | never
     >,
     '/test-params/set/opt.[[ids]]': RouteRecordInfo<
       '/test-params/set/opt.[[ids]]',
       '/test-params/set/opt/:ids?',
-      { ids: Param_testSet /* raw param parser */ },
-      { ids: Param_testSet /* raw param parser */ },
+      { 'ids': Param_testSet /* raw param parser */ },
+      { 'ids': Param_testSet /* raw param parser */ },
       | never
     >,
     '/test-params/set/rep.[ids]+': RouteRecordInfo<
       '/test-params/set/rep.[ids]+',
       '/test-params/set/rep/:ids+',
-      { ids: Param_testSet /* raw param parser */ },
-      { ids: Param_testSet /* raw param parser */ },
+      { 'ids': Param_testSet /* raw param parser */ },
+      { 'ids': Param_testSet /* raw param parser */ },
       | never
     >,
     '/test-params/set/repo.[[ids]]+': RouteRecordInfo<
       '/test-params/set/repo.[[ids]]+',
       '/test-params/set/repo/:ids*',
-      { ids: Param_testSet /* raw param parser */ },
-      { ids: Param_testSet /* raw param parser */ },
+      { 'ids': Param_testSet /* raw param parser */ },
+      { 'ids': Param_testSet /* raw param parser */ },
       | never
     >,
     '/test-params/set/req.[ids]': RouteRecordInfo<
       '/test-params/set/req.[ids]',
       '/test-params/set/req/:ids',
-      { ids: Param_testSet /* raw param parser */ },
-      { ids: Param_testSet /* raw param parser */ },
+      { 'ids': Param_testSet /* raw param parser */ },
+      { 'ids': Param_testSet /* raw param parser */ },
       | never
     >,
     '/test-params/set-shape/repo.[[ids]]+': RouteRecordInfo<
       '/test-params/set-shape/repo.[[ids]]+',
       '/test-params/set-shape/repo/:ids*',
-      { ids: Param_testSetShape /* raw param parser */ },
-      { ids: Param_testSetShape /* raw param parser */ },
+      { 'ids': Param_testSetShape /* raw param parser */ },
+      { 'ids': Param_testSetShape /* raw param parser */ },
       | never
     >,
     '/tests/[[optional]]/end': RouteRecordInfo<
       '/tests/[[optional]]/end',
       '/tests/:optional?/end',
-      { optional: string | null },
-      { optional: string | null },
+      { 'optional': string | null },
+      { 'optional': string | null },
       | never
     >,
     '/tests/users/[username]/(user-home)/(user-home)': RouteRecordInfo<
       '/tests/users/[username]/(user-home)/(user-home)',
       '/tests/users/:username',
-      { username: string },
-      { username: string },
+      { 'username': string },
+      { 'username': string },
       | never
     >,
     '/tests/users/[username]/(user)/profile': RouteRecordInfo<
       '/tests/users/[username]/(user)/profile',
       '/tests/users/:username/profile',
-      { username: string },
-      { username: string },
+      { 'username': string },
+      { 'username': string },
       | never
     >,
     '/u[name]': RouteRecordInfo<
       '/u[name]',
       '/u:name',
-      { name: Exclude<Param_date, unknown[] | null> },
-      { name: Exclude<Param_date, unknown[] | null> },
+      { 'name': Exclude<Param_date, unknown[] | null> },
+      { 'name': Exclude<Param_date, unknown[] | null> },
       | '/u[name]/24'
       | '/u[name]/[userId=int]'
     >,
     '/u[name]/[userId=int]': RouteRecordInfo<
       '/u[name]/[userId=int]',
       '/u:name/:userId',
-      { name: Exclude<Param_date, unknown[] | null>, userId: number },
-      { name: Exclude<Param_date, unknown[] | null>, userId: number },
+      { 'name': Exclude<Param_date, unknown[] | null>, 'userId': number },
+      { 'name': Exclude<Param_date, unknown[] | null>, 'userId': number },
       | never
     >,
     '/u[name]/24': RouteRecordInfo<
       '/u[name]/24',
       '/u:name/24',
-      { name: Exclude<Param_date, unknown[] | null> },
-      { name: Exclude<Param_date, unknown[] | null> },
+      { 'name': Exclude<Param_date, unknown[] | null> },
+      { 'name': Exclude<Param_date, unknown[] | null> },
       | never
     >,
     '/users/[userId=int]': RouteRecordInfo<
       '/users/[userId=int]',
       '/users/:userId',
-      { anyParam?: string, page?: number, userId: number },
-      { anyParam: string, page: number, userId: number },
+      { 'anyParam'?: string, 'page'?: number, 'userId': number },
+      { 'anyParam': string, 'page': number, 'userId': number },
       | never
     >,
     '/users/sub-[first]-[second]': RouteRecordInfo<
       '/users/sub-[first]-[second]',
       '/users/sub-:first-:second',
-      { first: string, second: string },
-      { first: string, second: string },
+      { 'first': string, 'second': string },
+      { 'first': string, 'second': string },
       | never
     >,
     '/with-layout/(home)': RouteRecordInfo<
@@ -645,6 +654,14 @@ declare module 'vue-router/auto-routes' {
         | never
       pathParamNames:
         | 'c'
+    }
+    'src/pages/test-params/hash.vue': {
+      routes:
+        | '/test-params/hash'
+      views:
+        | never
+      pathParamNames:
+        | never
     }
     'src/pages/test-params/opt.[[id]].vue': {
       routes:
