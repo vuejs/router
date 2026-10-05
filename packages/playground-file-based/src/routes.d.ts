@@ -65,8 +65,8 @@ declare module 'vue-router/auto-routes' {
     '/(home)': RouteRecordInfo<
       '/(home)',
       '/',
-      { 'myHash'?: number | undefined },
-      { 'myHash': number },
+      Record<never, never>,
+      Record<never, never>,
       | never
     >,
     '/(packages)/package/[[org=npm-org]]/[pkgName]/[pkgVersion=semver]': RouteRecordInfo<
@@ -242,6 +242,13 @@ declare module 'vue-router/auto-routes' {
       '/test-params/hash',
       { 'section'?: Param_testHashSplit | undefined },
       { 'section': Exclude<Param_testHashSplit, undefined> },
+      | never
+    >,
+    '/test-params/hash-int': RouteRecordInfo<
+      '/test-params/hash-int',
+      '/test-params/hash-int',
+      { 'myHash'?: number | undefined },
+      { 'myHash': number },
       | never
     >,
     '/test-params/opt.[[id]]': RouteRecordInfo<
@@ -658,6 +665,14 @@ declare module 'vue-router/auto-routes' {
     'src/pages/test-params/hash.vue': {
       routes:
         | '/test-params/hash'
+      views:
+        | never
+      pathParamNames:
+        | never
+    }
+    'src/pages/test-params/hash-int.vue': {
+      routes:
+        | '/test-params/hash-int'
       views:
         | never
       pathParamNames:

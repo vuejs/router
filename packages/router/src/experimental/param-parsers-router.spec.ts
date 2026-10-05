@@ -368,6 +368,19 @@ describe('raw param parsers', () => {
     ).toBe('/set/required/a')
   })
 
+  it('test-set required: cannot build multiple values into a single path param', () => {
+    expect(() =>
+      router.resolve({
+        name: 'set-required',
+        params: {
+          // FIXME: will be removed in v6 when params become unknown by default
+          // @ts-expect-error: should allow anything in the new version
+          ids: new Set(['a', 'b', 'c']),
+        },
+      })
+    ).toThrow()
+  })
+
   it('test-set optional: empty Set when missing', () => {
     expect(router.resolve('/set/optional').params).toEqual({ ids: new Set() })
     expect(router.resolve('/set/optional/x').params).toEqual({
