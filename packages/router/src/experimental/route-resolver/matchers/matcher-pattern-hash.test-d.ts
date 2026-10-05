@@ -26,7 +26,7 @@ expectTypeOf<DefinePageHashParamOptions<'int'>['default']>().toEqualTypeOf<
 >()
 definePage({
   params: {
-    hash: { count: { parser: 'int', required: true, default: () => 1 } },
+    hash: { count: { parser: 'int', required: true } },
   },
 })
 definePage({
@@ -45,6 +45,33 @@ definePage({
     hash: {
       // @ts-expect-error: hash parsers receive the entire string without a query format
       section: { parser: 'string', format: 'array' },
+    },
+  },
+})
+
+definePage({
+  params: {
+    hash: { count: { parser: 'int', default: () => 1 } },
+  },
+})
+definePage({
+  params: {
+    hash: { count: { parser: 'int', required: false, default: 1 } },
+  },
+})
+definePage({
+  params: {
+    hash: {
+      // @ts-expect-error: required params cannot have a default value
+      count: { parser: 'int', required: true, default: 1 },
+    },
+  },
+})
+definePage({
+  params: {
+    hash: {
+      // @ts-expect-error: required params cannot have a default factory
+      count: { parser: 'int', required: true, default: () => 1 },
     },
   },
 })
