@@ -26,11 +26,11 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
   // docsBase: code => `https://router.vuejs.org/errors/${code.toLowerCase()}`,
   reporters: [/*#__PURE__*/ createConsoleReporter()],
   codes: {
-    // --- experimental/route-resolver/resolver-fixed.ts ---
+    // --- experimental/route-resolver/matchers/matcher-pattern.ts ---
     VUE_ROUTER_R0122: {
-      why: (p: { name: string; error: string }) =>
-        `Cannot resolve params for route "${p.name}": ${p.error}`,
-      fix: 'Pass values allowed by the route param types. Check the get() and set() functions of custom param parsers.',
+      why: (p: { param: string; value: string }) =>
+        `The optional path param "${p.param}" is being removed with ${p.value}.`,
+      fix: 'Use null to remove an optional path param.',
     },
     // --- experimental/router.ts ---
     VUE_ROUTER_D0001: {

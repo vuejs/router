@@ -2,101 +2,119 @@ import { describe, expect, it } from 'vitest'
 import { createFixedResolver } from './route-resolver/resolver-fixed'
 import { MatcherPatternPathDynamic } from './route-resolver/matchers/matcher-pattern'
 import { defineParamParserRaw } from './route-resolver/matchers/param-parsers'
-import { miss } from './route-resolver/matchers/errors'
 import { mockWarn } from '../tests/vitest-mock-warn'
 
 mockWarn()
 
-function resolver() {
-  const parser = defineParamParserRaw<number | null>({
-    get: value => {
-      if (value == null) return null
-      const number = Number(value)
-      if (!Number.isFinite(number)) miss('Expected a number')
-      return number
-    },
-    set: value => (value == null ? null : String(value)),
-  })
+function resolver(subsegment = false) {
   return createFixedResolver([
     {
-      name: 'optional-number',
+      name: 'optional',
       path: new MatcherPatternPathDynamic(
-        /^\/optional(?:\/([^/]+))?$/,
-        { p: [parser, false, true] },
-        ['optional', 1]
+        subsegment ? /^\/optional\/pre([^/]+)?$/ : /^\/optional(?:\/([^/]+))?$/,
+        { p: [undefined, false, true] },
+        subsegment ? ['optional', ['pre', 1]] : ['optional', 1]
       ),
     },
   ])
 }
 
-describe('param resolution diagnostics', () => {
-  it.each([false, true])(
-    'reports a parser failure on relative=%s navigation',
-    relative => {
-      const routes = resolver()
-      const current = routes.resolve({
-        name: 'optional-number',
-        params: { p: 2 },
+describe('optional param removal diagnostics', () => {
+  it.each([undefined, ''])(
+    'advises null instead of %s in named navigation',
+    p => {
+      expect(
+        resolver().resolve({ name: 'optional', params: { p } })
+      ).toMatchObject({
+        path: '/optional',
+        params: { p: null },
       })
-      expect(() =>
-        relative
-          ? routes.resolve({ params: { p: 'invalid' } }, current)
-          : routes.resolve({
-              name: 'optional-number',
-              params: { p: 'invalid' },
-            })
-      ).toThrow('Expected a number')
       if (__DEV__) {
         expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(1)
-        expect('optional-number').toHaveBeenWarned()
-        expect('Expected a number').toHaveBeenWarned()
+        expect('Use null').toHaveBeenWarned()
+        expect('optional path param "p"').toHaveBeenWarned()
       }
     }
   )
 
-  it('does not report normal misses when resolving a URL', () => {
-    expect(resolver().resolve('/optional/invalid').matched).toEqual([])
-  })
+  it.each([undefined, ''])(
+    'advises null instead of %s in relative navigation',
+    p => {
+      const routes = resolver()
+      const current = routes.resolve({ name: 'optional', params: { p: 'a' } })
+      expect(routes.resolve({ params: { p } }, current)).toMatchObject({
+        path: '/optional',
+        params: { p: null },
+      })
+      expect(current.params).toEqual({ p: 'a' })
+      if (__DEV__) expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(1)
+    }
+  )
 
-  it('accepts the raw parser removal value', () => {
+  it.each([undefined, ''])('reports %s removal inside a subsegment', p => {
     expect(
-      resolver().resolve({ name: 'optional-number', params: { p: null } })
+      resolver(true).resolve({ name: 'optional', params: { p } })
     ).toMatchObject({
-      path: '/optional',
+      path: '/optional/pre',
       params: { p: null },
     })
+    if (__DEV__) expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(1)
   })
 
-  it('preserves an error thrown while serializing params', () => {
-    const cause = new TypeError('Expected a Set')
+  it('does not warn for null, omitted params, or normal values', () => {
+    const routes = resolver()
+    expect(
+      routes.resolve({ name: 'optional', params: { p: null } }).params
+    ).toEqual({ p: null })
+    expect(routes.resolve({ name: 'optional', params: {} }).params).toEqual({
+      p: null,
+    })
+    const current = routes.resolve({ name: 'optional', params: { p: 'a' } })
+    expect(routes.resolve({ params: {} }, current).params).toEqual({ p: 'a' })
+    expect(routes.resolve('/optional').params).toEqual({ p: null })
+  })
+
+  it('keeps custom parser removal values', () => {
     const parser = defineParamParserRaw<Set<string>>({
-      get: () => new Set(),
-      set: value => {
-        if (!(value instanceof Set)) throw cause
-        return [...value]
-      },
+      get: value => new Set(value == null ? [] : [String(value)]),
+      set: value => [...value],
     })
     const routes = createFixedResolver([
       {
-        name: 'raw-set',
+        name: 'raw',
         path: new MatcherPatternPathDynamic(
-          /^\/set(?:\/([^/]+))?$/,
-          { p: [parser] },
-          ['set', 1]
+          /^\/optional(?:\/([^/]+))?$/,
+          { p: [parser, false, true] },
+          ['optional', 1]
         ),
       },
     ])
-    let thrown: unknown
-    try {
-      routes.resolve({ name: 'raw-set', params: { p: '' } })
-    } catch (error) {
-      thrown = error
-    }
-    expect(thrown).toBe(cause)
-    if (__DEV__) {
-      expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(1)
-      expect('raw-set').toHaveBeenWarned()
-      expect('Expected a Set').toHaveBeenWarned()
-    }
+    expect(
+      routes.resolve({ name: 'raw', params: { p: new Set() } })
+    ).toMatchObject({
+      path: '/optional',
+      params: { p: new Set() },
+    })
+  })
+
+  it('does not warn when an empty string is serialized as a value', () => {
+    const parser = defineParamParserRaw<string>({
+      get: value => String(value),
+      set: value => (value === '' ? 'empty' : value),
+    })
+    const routes = createFixedResolver([
+      {
+        name: 'raw',
+        path: new MatcherPatternPathDynamic(
+          /^\/optional(?:\/([^/]+))?$/,
+          { p: [parser, false, true] },
+          ['optional', 1]
+        ),
+      },
+    ])
+    expect(routes.resolve({ name: 'raw', params: { p: '' } })).toMatchObject({
+      path: '/optional/empty',
+      params: { p: 'empty' },
+    })
   })
 })

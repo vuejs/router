@@ -106,7 +106,7 @@ This gives us the possibility to transform a param to a number (including floats
 
 The logic of the param parser is simple because `defineParamParser()` handles the underlying transformation between single/array/nullish values. You just define how to get from a single string to your desired type and back.
 
-To remove an optional path param, pass `null` when navigating. Generated route types reject `undefined`; numeric params also reject `''`. String params accept `''`. Raw parsers use their own input types instead of this rule.
+To remove an optional path param, pass `null` when navigating.
 
 ### `defineParamParserRaw`
 
@@ -158,8 +158,6 @@ Here is a table of the different meaningful combinations of return values from `
 ## Errors
 
 Throw any error from `get` to mark the value as not matching. The router skips the route (treat it like a 404 candidate). `miss(reason?)` is just sugar for throwing a typed error.
-
-For named or relative object navigation, a failure from `set` or subsequent validation still throws the original error. In development, `VUE_ROUTER_R0122` also reports the route name and error message. Normal misses while matching a URL do not produce this diagnostic. TypeScript input types are not runtime validators: a value rejected by the types can still serialize to a valid URL.
 
 ## Standard Schema (Zod / Valibot)
 
