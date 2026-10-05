@@ -865,6 +865,37 @@ describe('Path parser', () => {
       })
     })
 
+    it('repeatable catch all', () => {
+      matchParams('/:rest(.*)*/end', '/end', { rest: '' })
+      matchParams('/:rest(.*)*/end', '/a/end', { rest: ['a'] })
+      matchParams('/:rest(.*)*/end', '/a/b/c/end', { rest: ['a', 'b', 'c'] })
+      matchParams('/:rest(.*)*/end', '//end', { rest: '' })
+      matchParams('/:rest(.*)*/end', '/a/b/c/endx', null)
+      matchParams('/:rest(.*)+/end', '/a/b/c/end', { rest: ['a', 'b', 'c'] })
+      matchParams('/:rest(.*)+/end', '/end', null)
+    })
+
+    it('repeatable lazy catch all keeps per-segment captures', () => {
+      matchParams('/:rest(.*?)*/b/:other(.*)', '/a/b/c/b/d', {
+        rest: ['a', 'b', 'c'],
+        other: 'd',
+      })
+      matchParams('/:rest(.+?)*/b/:other(.*)', '/a/b/c/b/d', {
+        rest: ['a', 'b', 'c'],
+        other: 'd',
+      })
+    })
+
+    it('repeatable .-wildcard params do not produce an ambiguous repeat pattern', () => {
+      const pathParser = tokensToParser(tokenizePath('/:rest(.*)*/end'))
+      expect(pathParser.re.source).not.toContain('(?:\\/(?:.*))*')
+      // non `.` based or lazy repeatable params still need the repeat wrapper
+      const nonWildcard = tokensToParser(tokenizePath('/:rest([^/]*)*/end'))
+      expect(nonWildcard.re.source).toContain('(?:\\/(?:[^/]*))*')
+      const lazy = tokensToParser(tokenizePath('/:rest(.*?)*/end'))
+      expect(lazy.re.source).toContain('(?:\\/(?:.*?))*')
+    })
+
     it('param multiple', () => {
       matchParams('/:a-:b-:c', '/one-two-three', {
         a: 'one',

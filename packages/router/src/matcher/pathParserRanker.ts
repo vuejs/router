@@ -119,6 +119,10 @@ const enum PathScore {
 // Special Regex characters that must be escaped in static tokens
 const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\]/g
 
+// `.` greedy wildcards already match `/` so the repeat wrapper only adds
+// exponential backtracking; lazy variants still need it for capture splitting
+const SLASH_MATCHING_DOTS_RE = /^\.[+*]$/
+
 /**
  * Creates a path parser from an array of Segments (a segment is an array of Tokens)
  *
@@ -180,7 +184,10 @@ export function tokensToParser(
         }
 
         // when we repeat we must take care of the repeating leading slash
-        let subPattern = repeatable ? `((?:${re})(?:/(?:${re}))*)` : `(${re})`
+        let subPattern =
+          repeatable && !SLASH_MATCHING_DOTS_RE.test(re)
+            ? `((?:${re})(?:/(?:${re}))*)`
+            : `(${re})`
 
         // prepend the slash if we are starting a new segment
         if (!tokenIndex)
