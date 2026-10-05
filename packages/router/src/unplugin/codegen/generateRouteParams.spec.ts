@@ -277,15 +277,17 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     expect(isTreeParamOptional(node.hashParams[0]!)).toBe(false)
   })
 
-  it('rejects multiple named hash params before generating types', () => {
+  it('keeps only the last hash param when several are declared', () => {
     const node = createTreeWithParam('page')
     node.setCustomRouteBlock('page.vue', {
-      params: { hash: { section: 'string', tab: 'string' } },
+      params: { hash: { section: 'string', other: 'int', tab: 'bool' } },
     })
-    expect(() => node.params).toThrow(
-      expect.objectContaining({ name: 'VUE_ROUTER_B0022' })
-    )
-    expect('Only one hash param can be declared per route').toHaveBeenWarned()
+    expect(node.hashParams).toEqual([
+      { paramName: 'tab', parser: 'bool', hash: true },
+    ])
+    // the getter runs again but warns once
+    void node.params
+    expect('using "tab" and ignoring: section, other').toHaveBeenWarnedTimes(1)
   })
 
   it('preserves hash declarations when merging overrides', () => {

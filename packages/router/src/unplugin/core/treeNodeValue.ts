@@ -62,6 +62,11 @@ class _TreeNodeValueBase {
   private _warnedParsers = new Set<string>()
 
   /**
+   * Ignored hash params last warned about, for the same reason.
+   */
+  private _warnedHashParams = ''
+
+  /**
    * View name (Vue Router feature) mapped to their corresponding file. By default, the view name is `default` unless
    * specified with a `@` e.g. `index@aux.vue` will have a view name of `aux`.
    */
@@ -148,22 +153,36 @@ class _TreeNodeValueBase {
    * Gets hash params declared on this node.
    */
   get hashParams(): TreeHashParam[] {
-    const entries = Object.entries(this.overrides.params?.hash ?? {})
-    if (entries.length > 1) {
-      throw diagnostics.VUE_ROUTER_B0022({
-        paramNames: entries.map(([name]) => name).join(', '),
-      })
-    }
-    return entries.map(([paramName, config]) => {
-      if (typeof config === 'string') config = { parser: config }
-      return {
-        paramName,
-        parser: config.parser || null,
-        defaultValue: config.default,
-        required: config.required,
-        hash: true,
+    const hash = this.overrides.params?.hash ?? {}
+    const paramNames = Object.keys(hash)
+    // the last one wins, like other overrides
+    const paramName = paramNames.at(-1)
+    if (paramNames.length > 1) {
+      const ignoredParamNames = paramNames.slice(0, -1).join(', ')
+      if (this._warnedHashParams !== ignoredParamNames) {
+        this._warnedHashParams = ignoredParamNames
+        diagnostics.VUE_ROUTER_B0022({
+          segment: this.rawSegment,
+          usedParamName: paramName!,
+          ignoredParamNames,
+        })
       }
-    })
+    }
+
+    let config = paramName ? hash[paramName] : undefined
+    if (typeof config === 'string') config = { parser: config }
+
+    return paramName && config
+      ? [
+          {
+            paramName,
+            parser: config.parser || null,
+            defaultValue: config.default,
+            required: config.required,
+            hash: true,
+          },
+        ]
+      : []
   }
 
   /**

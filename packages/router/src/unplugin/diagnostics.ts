@@ -15,8 +15,12 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
   reporters: [/*#__PURE__*/ createConsoleReporter()],
   codes: {
     VUE_ROUTER_B0022: {
-      why: (p: { paramNames: string }) =>
-        `Only one hash param can be declared per route. Found: ${p.paramNames}.`,
+      why: (p: {
+        segment: string
+        usedParamName: string
+        ignoredParamNames: string
+      }) =>
+        `Only one hash param can be declared per route. In "${p.segment}", using "${p.usedParamName}" and ignoring: ${p.ignoredParamNames}.`,
       fix: 'Use one hash parser that returns an object with all extracted values.',
     },
     // --- core/definePage.ts ---
