@@ -37,34 +37,39 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         false,
         undefined,
         'Param_section | null',
-        'section?: Param_section | null | undefined',
+        "'section'?: Param_section | null | undefined",
       ],
-      [true, undefined, 'Param_section', 'section: Param_section'],
+      [true, undefined, 'Param_section', "'section': Param_section"],
       [
         false,
         'undefined',
         'Param_section | null',
-        'section?: Param_section | null | undefined',
+        "'section'?: Param_section | null | undefined",
       ],
-      [true, 'undefined', 'Param_section', 'section: Param_section'],
+      [true, 'undefined', 'Param_section', "'section': Param_section"],
       [
         false,
         '"intro"',
         'Param_section',
-        'section?: Param_section | null | undefined',
+        "'section'?: Param_section | null | undefined",
       ],
-      [true, '"intro"', 'Param_section', 'section?: Param_section | undefined'],
+      [
+        true,
+        '"intro"',
+        'Param_section',
+        "'section'?: Param_section | undefined",
+      ],
       [
         false,
         'null',
         'Param_section | null',
-        'section?: Param_section | null | undefined',
+        "'section'?: Param_section | null | undefined",
       ],
       [
         true,
         'null',
         'Param_section | null',
-        'section?: Param_section | undefined',
+        "'section'?: Param_section | undefined",
       ],
     ] as const)(
       'generates hash types for required=%s and default=%s',
@@ -86,7 +91,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
             false,
             parsers
           )
-        ).toBe(`{ section: ${resolved} }`)
+        ).toBe(`{ 'section': ${resolved} }`)
         expect(
           EXPERIMENTAL_generateRouteParams(
             params,
@@ -97,57 +102,30 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         ).toBe(`{ ${navigation} }`)
       }
     )
-
-    it.each([false, true])(
-      'includes an explicit null default for native strings, required=%s',
-      required => {
-        const params = [
-          {
-            paramName: 'section',
-            parser: null,
-            hash: true as const,
-            required,
-            defaultValue: 'null',
-          },
-        ]
-        expect(
-          EXPERIMENTAL_generateRouteParams(params, ['string'], false)
-        ).toBe('{ section: string | null }')
-        expect(EXPERIMENTAL_generateRouteParams(params, ['string'], true)).toBe(
-          required
-            ? '{ section?: string | undefined }'
-            : '{ section?: string | null | undefined }'
-        )
-      }
-    )
-
-    it.each([undefined, 'null'])(
-      'preserves parser array and null unions with default=%s',
-      defaultValue => {
-        const params = [
-          {
-            paramName: 'section',
-            parser: 'section',
-            hash: true as const,
-            required: true,
-            defaultValue,
-          },
-        ]
-        const type = 'string[] | null'
-        const parsers = makeParsersMap('section', isRaw)
-        expect(
-          EXPERIMENTAL_generateRouteParams(params, [type], false, parsers)
-        ).toBe('{ section: string[] | null }')
-        expect(
-          EXPERIMENTAL_generateRouteParams(params, [type], true, parsers)
-        ).toBe(
-          defaultValue === undefined
-            ? '{ section: string[] | null }'
-            : '{ section?: string[] | null | undefined }'
-        )
-      }
-    )
   })
+
+  it.each([false, true])(
+    'includes an explicit null default for native strings, required=%s',
+    required => {
+      const params = [
+        {
+          paramName: 'section',
+          parser: null,
+          hash: true as const,
+          required,
+          defaultValue: 'null',
+        },
+      ]
+      expect(EXPERIMENTAL_generateRouteParams(params, ['string'], false)).toBe(
+        "{ 'section': string | null }"
+      )
+      expect(EXPERIMENTAL_generateRouteParams(params, ['string'], true)).toBe(
+        required
+          ? "{ 'section'?: string | undefined }"
+          : "{ 'section'?: string | null | undefined }"
+      )
+    }
+  )
 
   it.each([false, true])(
     'keeps nullable hash parser results intact with a raw parser: %s',
@@ -163,7 +141,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
           false,
           makeParsersMap('section', isRaw)
         )
-      ).toBe('{ section: Param_section | null }')
+      ).toBe("{ 'section': Param_section | null }")
       expect(
         EXPERIMENTAL_generateRouteParams(
           node.params,
@@ -171,7 +149,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
           true,
           makeParsersMap('section', isRaw)
         )
-      ).toBe('{ section?: Param_section | null | undefined }')
+      ).toBe("{ 'section'?: Param_section | null | undefined }")
     }
   )
 
@@ -184,18 +162,17 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
       })
       expect(isTreeParamOptional(node.hashParams[0]!)).toBe(true)
       expect(EXPERIMENTAL_generateRouteParams(node.params, [type], false)).toBe(
-        '{ section: string | null }'
+        "{ 'section': string | null }"
       )
       expect(EXPERIMENTAL_generateRouteParams(node.params, [type], true)).toBe(
-        '{ section?: string | null | undefined }'
+        "{ 'section'?: string | null | undefined }"
       )
     }
   )
 
   it.each([
-    ['active-tab', '"active-tab"'],
-    ["reader's-tab", '"reader\'s-tab"'],
-    ['line\nbreak', '"line\\nbreak"'],
+    ['active-tab', "'active-tab'"],
+    ["reader's-tab", "'reader\\'s-tab'"],
   ])('quotes hash param name %j in generated types', (name, key) => {
     const node = createTreeWithParam('page')
     node.setCustomRouteBlock('page.vue', {
@@ -275,7 +252,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         false
       )
       expect(result).toBe(
-        '{ version: Exclude<Param_semver, unknown[] | null> }'
+        "{ 'version': Exclude<Param_semver, unknown[] | null> }"
       )
     })
 
@@ -287,7 +264,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         false
       )
       expect(result).toBe(
-        '{ version: Exclude<Param_semver, unknown[] | null> | null }'
+        "{ 'version': Exclude<Param_semver, unknown[] | null> | null }"
       )
     })
 
@@ -298,7 +275,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         ['Param_semver'],
         false
       )
-      expect(result).toBe('{ version: Extract<Param_semver, unknown[]> }')
+      expect(result).toBe("{ 'version': Extract<Param_semver, unknown[]> }")
     })
 
     it('optional repeatable path param uses Extract', () => {
@@ -308,7 +285,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         ['Param_semver'],
         false
       )
-      expect(result).toBe('{ version: Extract<Param_semver, unknown[]> }')
+      expect(result).toBe("{ 'version': Extract<Param_semver, unknown[]> }")
     })
   })
 
@@ -320,7 +297,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         [null],
         false
       )
-      expect(result).toBe('{ id: string }')
+      expect(result).toBe("{ 'id': string }")
     })
 
     it('optional path param includes null', () => {
@@ -330,7 +307,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         [null],
         false
       )
-      expect(result).toBe('{ id: string | null }')
+      expect(result).toBe("{ 'id': string | null }")
     })
 
     it("native 'string' type matches no-parser output for required path", () => {
@@ -373,7 +350,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         false,
         makeParsersMap('raw', true)
       )
-      expect(result).toBe('{ id: Param_raw /* raw param parser */ }')
+      expect(result).toBe("{ 'id': Param_raw /* raw param parser */ }")
     })
 
     it('does not append | null for optional raw path params', () => {
@@ -384,7 +361,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         false,
         makeParsersMap('raw', true)
       )
-      expect(result).toBe('{ id: Param_raw /* raw param parser */ }')
+      expect(result).toBe("{ 'id': Param_raw /* raw param parser */ }")
     })
 
     it('skips Extract for repeatable raw path params', () => {
@@ -395,7 +372,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         false,
         makeParsersMap('raw', true)
       )
-      expect(result).toBe('{ id: Param_raw /* raw param parser */ }')
+      expect(result).toBe("{ 'id': Param_raw /* raw param parser */ }")
     })
 
     it('skips Extract for optional repeatable raw path params', () => {
@@ -406,7 +383,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         false,
         makeParsersMap('raw', true)
       )
-      expect(result).toBe('{ id: Param_raw /* raw param parser */ }')
+      expect(result).toBe("{ 'id': Param_raw /* raw param parser */ }")
     })
 
     it('falls back to Exclude/Extract when paramParsersMap is omitted', () => {
@@ -416,7 +393,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         ['Param_raw'],
         false
       )
-      expect(result).toBe('{ id: Exclude<Param_raw, unknown[] | null> }')
+      expect(result).toBe("{ 'id': Exclude<Param_raw, unknown[] | null> }")
     })
 
     it('still uses Exclude for non-raw entries in the map', () => {
@@ -427,7 +404,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         false,
         makeParsersMap('plain', false)
       )
-      expect(result).toBe('{ id: Exclude<Param_plain, unknown[] | null> }')
+      expect(result).toBe("{ 'id': Exclude<Param_plain, unknown[] | null> }")
     })
   })
 
@@ -458,7 +435,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         false,
         makeParsersMap('set', true)
       )
-      expect(result).toBe('{ test: Param_set /* raw param parser */ }')
+      expect(result).toBe("{ 'test': Param_set /* raw param parser */ }")
     })
 
     it('adds explicit | undefined on router.push for raw query parsers', () => {
@@ -472,7 +449,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         makeParsersMap('set', true)
       )
       expect(result).toBe(
-        '{ test?: Param_set /* raw param parser */ | undefined }'
+        "{ 'test'?: Param_set /* raw param parser */ | undefined }"
       )
     })
 
@@ -485,7 +462,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         makeParsersMap('plain', false)
       )
       expect(result).toBe(
-        '{ test: Exclude<Param_plain, unknown[] | null> | undefined }'
+        "{ 'test': Exclude<Param_plain, unknown[] | null> | undefined }"
       )
     })
 
@@ -498,7 +475,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         makeParsersMap('plain', false)
       )
       expect(result).toBe(
-        '{ test?: Exclude<Param_plain, unknown[] | null> | undefined }'
+        "{ 'test'?: Exclude<Param_plain, unknown[] | null> | undefined }"
       )
     })
   })

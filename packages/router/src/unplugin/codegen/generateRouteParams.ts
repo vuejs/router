@@ -10,6 +10,7 @@ import {
 } from '../core/treeNodeValue'
 import type { ParamParsersMap } from './generateParamParsers'
 import { diagnostics } from '../diagnostics'
+import { toStringLiteral } from '../utils'
 
 /**
  * Prepares params to be rendered as a type: params without a name are dropped
@@ -93,25 +94,21 @@ export function EXPERIMENTAL_generateRouteParams(
   return nodeParams.length > 0
     ? `{ ${nodeParams
         .map((param, i) => {
-          const paramName = /^[a-z_$][\w$]*$/i.test(param.paramName)
-            ? param.paramName
-            : JSON.stringify(param.paramName)
+          const paramName = toStringLiteral(param.paramName)
           if (isTreeHashParam(param)) {
             const hasDefault = hasTreeParamDefault(param)
-            const isOptional = !param.required || hasDefault
+            const isOptional = isLoose && (!param.required || hasDefault)
             let type = types[i] ?? 'string'
             if (
               (!param.required && (isLoose || !hasDefault)) ||
               (!isLoose && param.defaultValue === 'null')
             ) {
-              if (!type.split('|').some(part => part.trim() === 'null')) {
-                type += ' | null'
-              }
+              type += ' | null'
             }
-            if (isLoose && isOptional) {
+            if (isOptional) {
               type += ' | undefined'
             }
-            return `${paramName}${isLoose && isOptional ? '?' : ''}: ${type}`
+            return `${paramName}${isOptional ? '?' : ''}: ${type}`
           }
 
           const isOptional = isTreeParamOptional(param)
