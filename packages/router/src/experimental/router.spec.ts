@@ -562,6 +562,38 @@ describe('Experimental Router', () => {
     expect(router.currentRoute.value.params).toEqual({ p: null })
   })
 
+  it.each([null, undefined, ''])(
+    'removes an optional param with %s on relative navigation',
+    async p => {
+      const { router, history } = await newRouter()
+      await router.push({ name: 'optional', params: { p: 'a' } })
+      const current = router.currentRoute.value
+
+      expect(router.resolve({ params: {} }, current)).toMatchObject({
+        path: '/optional/a',
+        params: { p: 'a' },
+      })
+
+      const relative = router.resolve({ params: { p } }, current)
+      const named = router.resolve({ name: 'optional', params: { p } })
+      expect(relative).toMatchObject({
+        name: named.name,
+        path: '/optional',
+        fullPath: named.fullPath,
+        params: { p: null },
+      })
+      expect(current.params).toEqual({ p: 'a' })
+
+      await router.push(relative)
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'optional',
+        path: '/optional',
+        params: { p: null },
+      })
+      expect(history.location).toBe('/optional')
+    }
+  )
+
   it('keeps consistent optional null param value', async () => {
     const { router } = await newRouter()
     expect(
@@ -633,6 +665,7 @@ describe('Experimental Router', () => {
     expect(() =>
       router.resolve({ name: 'Param', params: { p: 'po' } })
     ).not.toThrow()
+    expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(1)
   })
 
   it('throws if required repeated params are missing', async () => {
@@ -644,6 +677,7 @@ describe('Experimental Router', () => {
     expect(() =>
       router.resolve({ name: 'repeat', params: { r: ['a'] } })
     ).not.toThrow()
+    expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(2)
   })
 
   it('fails with arrays for non repeatable params', async () => {
@@ -654,6 +688,7 @@ describe('Experimental Router', () => {
     expect(() =>
       router.resolve({ name: 'optional', params: { p: [] } })
     ).toThrowError()
+    expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(2)
   })
 
   it('can redirect to a star route when encoding the param', () => {
@@ -753,6 +788,7 @@ describe('Experimental Router', () => {
       })
     ).toThrowError()
     // NOTE: this version of the matcher is not strict on the trailing slash
+    expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(2)
     expect(
       router.resolve({
         name: 'param-with-slashes',

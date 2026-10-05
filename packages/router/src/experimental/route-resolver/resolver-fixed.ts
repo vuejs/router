@@ -27,6 +27,7 @@ import type {
 import { NO_MATCH_LOCATION } from './resolver-abstract'
 import type { MatcherPatternQuery } from './matchers/matcher-pattern-query'
 import { warn } from '../../warning'
+import { diagnostics } from '../../diagnostics'
 
 /**
  * Base interface for a resolver record that can be extended.
@@ -253,42 +254,56 @@ export function createFixedResolver<
         ...currentLocation?.params,
         ...to.params,
       }
-      const path = record.path.build(params)
-      const hash =
-        record.hash?.build(params) ?? to.hash ?? currentLocation?.hash ?? ''
-      let matched = buildMatched(record)
-      const query = Object.assign(
-        {
-          ...currentLocation?.query,
-          ...normalizeQuery(to.query),
-        },
-        ...matched.flatMap(record =>
-          record.query?.map(query => query.build(params))
+      try {
+        const path = record.path.build(params)
+        const hash =
+          record.hash?.build(params) ?? to.hash ?? currentLocation?.hash ?? ''
+        let matched = buildMatched(record)
+        const query = Object.assign(
+          {
+            ...currentLocation?.query,
+            ...normalizeQuery(to.query),
+          },
+          ...matched.flatMap(record =>
+            record.query?.map(query => query.build(params))
+          )
         )
-      )
 
-      const url: LocationNormalized = {
-        // preserve other fields like `state` and `replace`
-        ...to,
-        fullPath: NEW_stringifyURL(
-          stringifyQuery,
+        const url: LocationNormalized = {
+          // preserve other fields like `state` and `replace`
+          ...to,
+          fullPath: NEW_stringifyURL(
+            stringifyQuery,
+            path,
+            query,
+            hash
+          ) as `/${string}`,
           path,
+          hash,
           query,
-          hash
-        ) as `/${string}`,
-        path,
-        hash,
-        query,
-      }
+        }
 
-      // we avoid inconsistencies in params coming from query and hash
-      ;[matched, params] = validateMatch(record, url)
+        // we avoid inconsistencies in params coming from query and hash
+        ;[matched, params] = validateMatch(record, url)
 
-      return {
-        ...url,
-        name,
-        matched,
-        params,
+        return {
+          ...url,
+          name,
+          matched,
+          params,
+        }
+      } catch (cause) {
+        if (__DEV__) {
+          diagnostics.VUE_ROUTER_R0122({
+            name: String(name),
+            error:
+              cause instanceof Error
+                ? cause.message || cause.name
+                : String(cause),
+            cause,
+          })
+        }
+        throw cause
       }
 
       // string location, e.g. '/foo', '../bar', 'baz', '?page=1'

@@ -26,6 +26,12 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
   // docsBase: code => `https://router.vuejs.org/errors/${code.toLowerCase()}`,
   reporters: [/*#__PURE__*/ createConsoleReporter()],
   codes: {
+    // --- experimental/route-resolver/resolver-fixed.ts ---
+    VUE_ROUTER_R0122: {
+      why: (p: { name: string; error: string }) =>
+        `Cannot resolve params for route "${p.name}": ${p.error}`,
+      fix: 'Pass values allowed by the route param types. Check the get() and set() functions of custom param parsers.',
+    },
     // --- experimental/router.ts ---
     VUE_ROUTER_D0001: {
       why: (p: { name: string }) =>
