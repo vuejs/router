@@ -313,6 +313,10 @@ export class MatcherPatternPathDynamic<
   }
 }
 
+/**
+ * Warns about a usage that is no longer supported: using undefined or an empty
+ * string for an optional param. Instead just use null
+ */
 function warnLegacyOptionalParam(param: string, raw: unknown, value: unknown) {
   if (
     (raw === undefined || raw === '') &&
