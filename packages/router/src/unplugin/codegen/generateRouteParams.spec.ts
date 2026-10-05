@@ -209,6 +209,14 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     ).toBe(`{ ${key}?: Param_section | null | undefined }`)
   })
 
+  it('treats an explicit undefined default as absent for required hashes', () => {
+    const node = createTreeWithParam('page')
+    node.setCustomRouteBlock('page.vue', {
+      params: { hash: { section: { required: true, default: 'undefined' } } },
+    })
+    expect(isTreeParamOptional(node.hashParams[0]!)).toBe(false)
+  })
+
   it('rejects multiple named hash params before generating types', () => {
     const node = createTreeWithParam('page')
     node.setCustomRouteBlock('page.vue', {
