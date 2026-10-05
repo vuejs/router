@@ -241,7 +241,6 @@ definePage({
     hash: {
       section: {
         parser: 'section',
-        required: true,
         default: () => ({ heading: 'overview', tab: 'vue' }),
       },
     },
@@ -251,8 +250,10 @@ definePage({
 ```
 
 - `parser`: parser name. Omit to keep the hash string.
-- `required`: reject the match when parsing fails and no default exists. Defaults to `false`.
-- `default`: a parsed value or factory used when the hash is absent or parsing fails, including for required params. A declared default takes precedence over the getter for an absent hash.
+- `required`: reject the match when parsing fails or returns a nullish result. Defaults to `false`.
+- `default`: a parsed value or factory used when the hash is absent or parsing fails. A declared default takes precedence over the getter for an absent hash.
+
+`required: true` and `default` cannot be used together.
 
 Without a custom getter or a default, an absent hash becomes `null`.
 

@@ -228,34 +228,27 @@ export interface DefinePageQueryParamOptions<
 }
 
 /**
- * Configures one parameter extracted from the whole hash.
+ * A param can be required or have a default value, but not both.
  */
-export interface DefinePageHashParamOptions<
+// TODO: use this for query param options too.
+export type DefinePageParamRequiredOrDefault<T> =
+  | { required: true; default?: never }
+  | { required?: false; default?: T | (() => T) }
+
+/**
+ * Configures one parameter extracted from the whole hash.
+ * Optional params return `null` on parser errors or nullish results.
+ * A default handles an absent hash before parsing, and parser failures.
+ */
+export type DefinePageHashParamOptions<
   Parser extends ParamParserType = ParamParserType,
-> {
+> = DefinePageParamRequiredOrDefault<ParamParserTypeOf<Parser>> & {
   /**
    * Parser to apply to the whole hash, including `#`. Without an explicit
    * default, the parser receives `''` when the hash is absent.
    * If omitted, keeps the hash string.
    */
   parser?: Parser
-
-  /**
-   * Value or factory used when the hash is absent, parsing fails, or the
-   * parser returns `null` or `undefined`. For an absent hash (`''`), this
-   * default is used before the parser runs, so it takes precedence over
-   * the parser's own fallback for an empty hash.
-   */
-  default?: ParamParserTypeOf<Parser> | (() => ParamParserTypeOf<Parser>)
-
-  /**
-   * Whether a parser failure or missing result prevents the route from
-   * matching when no default is provided. Optional hash params return
-   * `null` in these cases.
-   *
-   * @default false
-   */
-  required?: boolean
 }
 
 /**
