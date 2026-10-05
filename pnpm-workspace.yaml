@@ -25,4 +25,3 @@ allowBuilds:
   geckodriver: true
   simple-git-hooks: true
   '@nightwatch/nightwatch-inspector': false
-detect_chromedriver_version: true
