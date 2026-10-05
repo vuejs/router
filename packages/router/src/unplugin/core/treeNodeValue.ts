@@ -163,7 +163,7 @@ class _TreeNodeValueBase {
   /**
    * Gets path, query, and hash params declared on this node.
    */
-  get params(): (TreePathParam | TreeQueryParam | TreeHashParam)[] {
+  get params(): TreeParam[] {
     return [...this.pathParams, ...this.queryParams, ...this.hashParams]
   }
 
@@ -362,6 +362,8 @@ export class TreeNodeValueGroup extends _TreeNodeValueBase {
   }
 }
 
+export type TreeParam = TreePathParam | TreeQueryParam | TreeHashParam
+
 export interface TreePathParam {
   paramName: string
   modifier: string
@@ -378,7 +380,7 @@ export interface TreeHashParam {
 }
 
 export function isTreeHashParam(
-  param: TreePathParam | TreeQueryParam | TreeHashParam | PathSubSegment
+  param: TreeParam | PathSubSegment
 ): param is TreeHashParam {
   return typeof param !== 'string' && 'hash' in param
 }
@@ -410,9 +412,7 @@ export interface TreeQueryParam {
  *
  * @internal
  */
-export function isTreeParamOptional(
-  param: TreePathParam | TreeQueryParam | TreeHashParam
-): boolean {
+export function isTreeParamOptional(param: TreeParam): boolean {
   if (isTreeHashParam(param)) return true
   if ('optional' in param) {
     return param.optional
@@ -426,9 +426,7 @@ export function isTreeParamOptional(
  *
  * @internal
  */
-export function isTreeParamRepeatable(
-  param: TreePathParam | TreeQueryParam | TreeHashParam
-): boolean {
+export function isTreeParamRepeatable(param: TreeParam): boolean {
   if (isTreeHashParam(param)) return false
   if ('repeatable' in param) {
     return param.repeatable
@@ -442,7 +440,7 @@ export function isTreeParamRepeatable(
  * @internal
  */
 export function isTreePathParam(
-  param: TreePathParam | TreeQueryParam | TreeHashParam | PathSubSegment
+  param: TreeParam | PathSubSegment
 ): param is TreePathParam {
   return typeof param !== 'string' && 'modifier' in param
 }

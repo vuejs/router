@@ -4,9 +4,8 @@ import {
   isTreeParamRepeatable,
   isTreePathParam,
   isTreeHashParam,
-  type TreeHashParam,
+  type TreeParam,
   type TreePathParam,
-  type TreeQueryParam,
 } from '../core/treeNodeValue'
 import type { ParamParsersMap } from './generateParamParsers'
 import { diagnostics } from '../diagnostics'
@@ -20,9 +19,10 @@ import { diagnostics } from '../diagnostics'
  *
  * @internal
  */
-export function normalizeParamsForTypes<
-  T extends TreePathParam | TreeQueryParam | TreeHashParam,
->(node: TreeNode, params: T[]): T[] {
+export function normalizeParamsForTypes<T extends TreeParam>(
+  node: TreeNode,
+  params: T[]
+): T[] {
   // deduplicate by name, keeps the deepest declaration
   const byName = new Map<string, T>()
   for (const param of params) {
@@ -84,7 +84,7 @@ export function generateRouteParams(
  * @returns A string representing the TypeScript type for the route params of the given node.
  */
 export function EXPERIMENTAL_generateRouteParams(
-  nodeParams: (TreePathParam | TreeQueryParam | TreeHashParam)[],
+  nodeParams: TreeParam[],
   types: Array<string | null>,
   isLoose: boolean,
   paramParsersMap?: ParamParsersMap
@@ -92,8 +92,11 @@ export function EXPERIMENTAL_generateRouteParams(
   return nodeParams.length > 0
     ? `{ ${nodeParams
         .map((param, i) => {
+          const paramName = /^[a-z_$][\w$]*$/i.test(param.paramName)
+            ? param.paramName
+            : JSON.stringify(param.paramName)
           if (isTreeHashParam(param)) {
-            return `${param.paramName}${isLoose ? '?' : ''}: ${
+            return `${paramName}${isLoose ? '?' : ''}: ${
               types[i] ?? 'string'
             } | null${isLoose ? ' | undefined' : ''}`
           }
@@ -146,7 +149,7 @@ export function EXPERIMENTAL_generateRouteParams(
             }
           }
 
-          return `${param.paramName}${
+          return `${paramName}${
             // For raw types (router.push), use ? marker for optional query params
             // For non-raw types (route.params), the | undefined is explicit in the union
             isLoose && isOptionalQueryParam ? '?' : ''
