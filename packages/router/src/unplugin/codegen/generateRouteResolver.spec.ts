@@ -1794,7 +1794,10 @@ describe('generated hash params', () => {
       ])
     )
     const parser = {
-      get: (hash: string) => ({ heading: hash.slice(1), empty: hash === '' }),
+      get: (hash: string) => {
+        if (hash === '#invalid') throw new Error('Invalid section')
+        return { heading: hash.slice(1), empty: hash === '' }
+      },
       set: ({ heading }: { heading: string }) => (heading ? `#${heading}` : ''),
     }
     const bindings = {
@@ -1816,6 +1819,16 @@ describe('generated hash params', () => {
     })
     expect(resolver.resolve('/page').params).toEqual({
       section: { heading: '', empty: true },
+    })
+    expect(resolver.resolve('/page#invalid')).toMatchObject({
+      name: node.name,
+      params: { section: null },
+    })
+    expect(
+      resolver.resolve({ name: node.name as string, params: {} })
+    ).toMatchObject({
+      fullPath: '/page',
+      params: { section: { heading: '', empty: true } },
     })
     expect(
       resolver.resolve({

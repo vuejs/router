@@ -104,7 +104,8 @@ export interface DefinePage<FilePath extends string = string> extends Partial<
     query?: Record<string, DefinePageQueryParamOptionsAny | ParamParserType>
 
     /**
-     * One parameter extracted from the whole hash, including `#`, or an empty string.
+     * One optional parameter extracted from the whole hash, including `#`, or an empty string.
+     * Parser errors fall back to `null`.
      */
     hash?: Record<string, ParamParserType>
   }

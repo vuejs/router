@@ -406,14 +406,14 @@ export interface TreeQueryParam {
 }
 
 /**
- * Checks if a TreePathParam or TreeQueryParam is optional.
+ * Checks if a path, query, or hash param is optional.
  *
  * @internal
  */
 export function isTreeParamOptional(
   param: TreePathParam | TreeQueryParam | TreeHashParam
 ): boolean {
-  if (isTreeHashParam(param)) return false
+  if (isTreeHashParam(param)) return true
   if ('optional' in param) {
     return param.optional
   }

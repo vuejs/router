@@ -5,6 +5,7 @@ import { PrefixTree } from '../core/tree'
 import { EXPERIMENTAL_generateRouteParams } from './generateRouteParams'
 import type { ParamParsersMap } from './generateParamParsers'
 import { mockWarn } from '../../tests/vitest-mock-warn'
+import { isTreeParamOptional } from '../core/treeNodeValue'
 
 describe('EXPERIMENTAL_generateRouteParams', () => {
   mockWarn()
@@ -30,25 +31,44 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     ])
   }
 
-  it('keeps hash parser results intact for extraction and navigation', () => {
+  it.each([false, true])(
+    'keeps nullable hash parser results intact with a raw parser: %s',
+    isRaw => {
+      const node = createTreeWithParam('page')
+      node.setCustomRouteBlock('page.vue', {
+        params: { hash: { section: 'section' } },
+      })
+      expect(
+        EXPERIMENTAL_generateRouteParams(
+          node.params,
+          ['Param_section'],
+          false,
+          makeParsersMap('section', isRaw)
+        )
+      ).toBe('{ section: Param_section | null }')
+      expect(
+        EXPERIMENTAL_generateRouteParams(
+          node.params,
+          ['Param_section'],
+          true,
+          makeParsersMap('section', isRaw)
+        )
+      ).toBe('{ section?: Param_section | null | undefined }')
+    }
+  )
+
+  it.each([null, 'string'])('makes native hash type %s nullable', type => {
     const node = createTreeWithParam('page')
     node.setCustomRouteBlock('page.vue', {
-      params: { hash: { section: 'section' } },
+      params: { hash: { section: 'string' } },
     })
-    expect(
-      EXPERIMENTAL_generateRouteParams(node.params, ['Param_section'], false)
-    ).toBe('{ section: Param_section }')
-    expect(
-      EXPERIMENTAL_generateRouteParams(node.params, ['Param_section'], true)
-    ).toBe('{ section: Param_section }')
-    expect(
-      EXPERIMENTAL_generateRouteParams(
-        node.params,
-        ['Param_section'],
-        false,
-        makeParsersMap('section', true)
-      )
-    ).toBe('{ section: Param_section }')
+    expect(isTreeParamOptional(node.hashParams[0]!)).toBe(true)
+    expect(EXPERIMENTAL_generateRouteParams(node.params, [type], false)).toBe(
+      '{ section: string | null }'
+    )
+    expect(EXPERIMENTAL_generateRouteParams(node.params, [type], true)).toBe(
+      '{ section?: string | null | undefined }'
+    )
   })
 
   it('rejects multiple named hash params before generating types', () => {
