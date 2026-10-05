@@ -102,6 +102,11 @@ export interface DefinePage<FilePath extends string = string> extends Partial<
      * Parameters extracted from the query.
      */
     query?: Record<string, DefinePageQueryParamOptionsAny | ParamParserType>
+
+    /**
+     * One parameter extracted from the whole hash, including `#`, or an empty string.
+     */
+    hash?: Record<string, ParamParserType>
   }
 }
 

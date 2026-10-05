@@ -355,6 +355,11 @@ function extractParamsInfo(
         prop.value.type === 'ObjectExpression'
       ) {
         params.path = extractPathParams(prop.value, id)
+      } else if (
+        prop.key.name === 'hash' &&
+        prop.value.type === 'ObjectExpression'
+      ) {
+        params.hash = extractHashParams(prop.value)
       }
     }
   }
@@ -454,6 +459,25 @@ function extractQueryParams(
   }
 
   return queryParams
+}
+
+function extractHashParams(
+  hashObj: ObjectExpression
+): NonNullable<DefinePageInfo['params']>['hash'] {
+  const hashParams: Record<string, string> = {}
+  for (const prop of hashObj.properties) {
+    if (
+      prop.type === 'ObjectProperty' &&
+      !prop.computed &&
+      (prop.key.type === 'Identifier' || prop.key.type === 'StringLiteral') &&
+      prop.value.type === 'StringLiteral'
+    ) {
+      const name =
+        prop.key.type === 'Identifier' ? prop.key.name : prop.key.value
+      hashParams[name] = prop.value.value
+    }
+  }
+  return hashParams
 }
 
 function extractPathParams(

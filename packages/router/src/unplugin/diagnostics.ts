@@ -14,6 +14,11 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
   // TODO: could use the ansi reporter probably
   reporters: [/*#__PURE__*/ createConsoleReporter()],
   codes: {
+    VUE_ROUTER_B0022: {
+      why: (p: { paramNames: string }) =>
+        `Only one hash param can be declared per route. Found: ${p.paramNames}.`,
+      fix: 'Use one hash parser that returns an object with all extracted values.',
+    },
     // --- core/definePage.ts ---
     VUE_ROUTER_B0001: {
       why: (p: { filename: string; message: string }) =>

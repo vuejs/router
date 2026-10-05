@@ -205,11 +205,16 @@ export function generateRouteRecord({
       importsMap,
       paramParsersMap,
     })
+    const hashProperty = generateRouteRecordHash({
+      node,
+      importsMap,
+      paramParsersMap,
+    })
     const routeRecordObject = `{
   ${recordName}
   ${generateRouteRecordPath({ node, importsMap, paramParsersMap, parentVar, parentNode })}${
     queryProperty ? `\n  ${queryProperty}` : ''
-  }${formatMeta(node, '  ')}
+  }${hashProperty ? `\n  ${hashProperty}` : ''}${formatMeta(node, '  ')}
   ${recordComponents}${parentVar ? `\n  parent: ${parentVar},` : ''}
 }`
 
@@ -458,4 +463,21 @@ function generateRouteRecordMerge(
 ${indentedRouteObject},
 ${definePageDataList.map(name => `    ${name}`).join(',\n')}
   )`
+}
+
+export function generateRouteRecordHash({
+  node,
+  importsMap,
+  paramParsersMap,
+}: {
+  node: TreeNode
+  importsMap: ImportsMap
+  paramParsersMap: ParamParsersMap
+}): string {
+  const param = node.value.hashParams[0]
+  if (!param) return ''
+
+  importsMap.add('vue-router/experimental', 'MatcherPatternHashParam')
+  const parser = generateParamParserOptions(param, importsMap, paramParsersMap)
+  return `hash: new MatcherPatternHashParam(${toStringLiteral(param.paramName)}${parser ? `, ${parser}` : ''}),`
 }

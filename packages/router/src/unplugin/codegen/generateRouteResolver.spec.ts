@@ -9,6 +9,14 @@ import {
 import { ImportsMap } from '../core/utils'
 import type { ParamParsersMap } from './generateParamParsers'
 import { generateAliasWarnings } from './generateAliasWarnings'
+import { createFixedResolver } from '../../experimental/route-resolver/resolver-fixed'
+import {
+  MatcherPatternPathStatic,
+  MatcherPatternPathDynamic,
+} from '../../experimental/route-resolver/matchers/matcher-pattern'
+import { MatcherPatternHashParam } from '../../experimental/route-resolver/matchers/matcher-pattern-hash'
+import { normalizeParamParser } from '../../experimental/route-resolver/matchers/param-parsers'
+import { normalizeRouteRecord } from '../../experimental/router'
 
 const DEFAULT_OPTIONS = resolveOptions({})
 let DEFAULT_STATE: Parameters<typeof generateRouteRecord>[0]['state'] = {
@@ -1758,6 +1766,65 @@ describe('generateRouteResolver', () => {
 
       expect(resolver).toContain('_normalized_PARAM_PARSER__uuid')
       expect(resolver).not.toContain('_normalized_PARAM_PARSER__slug')
+    })
+  })
+})
+
+describe('generated hash params', () => {
+  it('resolves and builds a custom hash parser used only by the hash', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    const node = tree.insert('page', 'page.vue')
+    node.value.setEditOverride('params', { hash: { section: 'section' } })
+    const importsMap = new ImportsMap()
+    const code = generateRouteResolver(
+      tree,
+      DEFAULT_OPTIONS,
+      importsMap,
+      new Map([
+        [
+          'section',
+          {
+            name: 'section',
+            typeName: 'Param_section',
+            absolutePath: '/src/params/section.ts',
+            relativePath: './src/params/section.ts',
+            isRaw: true,
+          },
+        ],
+      ])
+    )
+    const parser = {
+      get: (hash: string) => ({ heading: hash.slice(1), empty: hash === '' }),
+      set: ({ heading }: { heading: string }) => (heading ? `#${heading}` : ''),
+    }
+    const bindings = {
+      createFixedResolver,
+      normalizeRouteRecord,
+      MatcherPatternPathStatic,
+      MatcherPatternPathDynamic,
+      MatcherPatternHashParam,
+      _normalizeParamParser: normalizeParamParser,
+      PARAM_PARSER__section: parser,
+    }
+    const resolver: ReturnType<typeof createFixedResolver> = new Function(
+      ...Object.keys(bindings),
+      code.replace('export const resolver =', 'return')
+    )(...Object.values(bindings))
+
+    expect(resolver.resolve('/page#intro').params).toEqual({
+      section: { heading: 'intro', empty: false },
+    })
+    expect(resolver.resolve('/page').params).toEqual({
+      section: { heading: '', empty: true },
+    })
+    expect(
+      resolver.resolve({
+        name: node.name as string,
+        params: { section: { heading: 'next' } },
+      })
+    ).toMatchObject({
+      fullPath: '/page#next',
+      params: { section: { heading: 'next', empty: false } },
     })
   })
 })

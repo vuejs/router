@@ -1,4 +1,8 @@
-import type { TreePathParam, TreeQueryParam } from '../core/treeNodeValue'
+import type {
+  TreePathParam,
+  TreeQueryParam,
+  TreeHashParam,
+} from '../core/treeNodeValue'
 import type { ImportsMap } from '../core/utils'
 import type { PrefixTree } from '../core/tree'
 import { toStringLiteral } from '../utils'
@@ -313,7 +317,7 @@ export function generateParamParsersTypesDeclarations(
 }
 
 export function generateParamsTypes(
-  params: (TreePathParam | TreeQueryParam)[],
+  params: (TreePathParam | TreeQueryParam | TreeHashParam)[],
   parparsersMap: ParamParsersMap
 ): Array<string | null> {
   return params.map(param => {
@@ -331,7 +335,7 @@ export function generateParamsTypes(
 }
 
 export function generateParamParserOptions(
-  param: TreePathParam | TreeQueryParam,
+  param: TreePathParam | TreeQueryParam | TreeHashParam,
   importsMap: ImportsMap,
   paramParsers: ParamParsersMap
 ): string {

@@ -7,6 +7,7 @@ import {
   type TreeNodeValueOptions,
   type TreePathParam,
   type TreeQueryParam,
+  type TreeHashParam,
 } from './treeNodeValue'
 import type { TreeNodeValue } from './treeNodeValue'
 import type { CustomRouteBlock } from './customBlock'
@@ -367,10 +368,17 @@ export class TreeNode {
   }
 
   /**
-   * Array of route params for this node. It includes **all** the params from the parents as well.
+   * Hash params declared by this node. Parent hash params are not inherited.
    */
-  get params(): (TreePathParam | TreeQueryParam)[] {
-    return [...this.pathParams, ...this.queryParams]
+  get hashParams(): TreeHashParam[] {
+    return this.value.hashParams
+  }
+
+  /**
+   * Inherited path and query params, followed by this node's hash params.
+   */
+  get params(): (TreePathParam | TreeQueryParam | TreeHashParam)[] {
+    return [...this.pathParams, ...this.queryParams, ...this.hashParams]
   }
 
   /**

@@ -4,8 +4,10 @@ import type { TreeNode } from '../core/tree'
 import { PrefixTree } from '../core/tree'
 import { EXPERIMENTAL_generateRouteParams } from './generateRouteParams'
 import type { ParamParsersMap } from './generateParamParsers'
+import { mockWarn } from '../../tests/vitest-mock-warn'
 
 describe('EXPERIMENTAL_generateRouteParams', () => {
+  mockWarn()
   const RESOLVED_OPTIONS = resolveOptions(DEFAULT_OPTIONS)
 
   function createTreeWithParam(segment: string): TreeNode {
@@ -27,6 +29,76 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
       ],
     ])
   }
+
+  it('keeps hash parser results intact for extraction and navigation', () => {
+    const node = createTreeWithParam('page')
+    node.setCustomRouteBlock('page.vue', {
+      params: { hash: { section: 'section' } },
+    })
+    expect(
+      EXPERIMENTAL_generateRouteParams(node.params, ['Param_section'], false)
+    ).toBe('{ section: Param_section }')
+    expect(
+      EXPERIMENTAL_generateRouteParams(node.params, ['Param_section'], true)
+    ).toBe('{ section: Param_section }')
+    expect(
+      EXPERIMENTAL_generateRouteParams(
+        node.params,
+        ['Param_section'],
+        false,
+        makeParsersMap('section', true)
+      )
+    ).toBe('{ section: Param_section }')
+  })
+
+  it('rejects multiple named hash params before generating types', () => {
+    const node = createTreeWithParam('page')
+    node.setCustomRouteBlock('page.vue', {
+      params: { hash: { section: 'string', tab: 'string' } },
+    })
+    expect(() => node.params).toThrow(
+      expect.objectContaining({ name: 'VUE_ROUTER_B0022' })
+    )
+    expect('Only one hash param can be declared per route').toHaveBeenWarned()
+  })
+
+  it('preserves hash declarations when merging overrides', () => {
+    const node = createTreeWithParam('page')
+    node.setCustomRouteBlock('page.vue', {
+      params: { hash: { section: 'string' } },
+    })
+    node.value.mergeOverride('page.vue', {
+      params: { hash: { section: 'int' }, query: { page: 'int' } },
+    })
+    expect(node.hashParams).toEqual([
+      { paramName: 'section', parser: 'int', hash: true },
+    ])
+    expect(node.queryParams.map(param => param.paramName)).toEqual(['page'])
+  })
+
+  it('inherits path and query params but keeps hash params local', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+    const parent = tree.insert('[id]', 'parent.vue')
+    parent.setCustomRouteBlock('parent.vue', {
+      params: { query: { page: 'int' }, hash: { section: 'string' } },
+    })
+    const child = tree.insert('[id]/child', 'child.vue')
+    expect(child.params.map(param => param.paramName)).toEqual(['id', 'page'])
+    child.setCustomRouteBlock('child.vue', {
+      params: { hash: { tab: 'string' } },
+    })
+    expect(child.hashParams).toEqual([
+      { paramName: 'tab', parser: 'string', hash: true },
+    ])
+    expect(child.params.map(param => param.paramName)).toEqual([
+      'id',
+      'page',
+      'tab',
+    ])
+    expect(parent.hashParams).toEqual([
+      { paramName: 'section', parser: 'string', hash: true },
+    ])
+  })
 
   describe('excludes null from custom parser types', () => {
     it('required path param excludes null', () => {
