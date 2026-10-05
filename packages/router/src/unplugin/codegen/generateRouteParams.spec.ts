@@ -31,6 +31,124 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     ])
   }
 
+  describe.each([false, true])('hash options with raw parser: %s', isRaw => {
+    it.each([
+      [
+        false,
+        undefined,
+        'Param_section | null',
+        'section?: Param_section | null | undefined',
+      ],
+      [true, undefined, 'Param_section', 'section: Param_section'],
+      [
+        false,
+        'undefined',
+        'Param_section | null',
+        'section?: Param_section | null | undefined',
+      ],
+      [true, 'undefined', 'Param_section', 'section: Param_section'],
+      [
+        false,
+        '"intro"',
+        'Param_section',
+        'section?: Param_section | null | undefined',
+      ],
+      [true, '"intro"', 'Param_section', 'section?: Param_section | undefined'],
+      [
+        false,
+        'null',
+        'Param_section | null',
+        'section?: Param_section | null | undefined',
+      ],
+      [
+        true,
+        'null',
+        'Param_section | null',
+        'section?: Param_section | undefined',
+      ],
+    ] as const)(
+      'generates hash types for required=%s and default=%s',
+      (required, defaultValue, resolved, navigation) => {
+        const params = [
+          {
+            paramName: 'section',
+            parser: 'section',
+            hash: true as const,
+            required,
+            defaultValue,
+          },
+        ]
+        const parsers = makeParsersMap('section', isRaw)
+        expect(
+          EXPERIMENTAL_generateRouteParams(
+            params,
+            ['Param_section'],
+            false,
+            parsers
+          )
+        ).toBe(`{ section: ${resolved} }`)
+        expect(
+          EXPERIMENTAL_generateRouteParams(
+            params,
+            ['Param_section'],
+            true,
+            parsers
+          )
+        ).toBe(`{ ${navigation} }`)
+      }
+    )
+
+    it.each([false, true])(
+      'includes an explicit null default for native strings, required=%s',
+      required => {
+        const params = [
+          {
+            paramName: 'section',
+            parser: null,
+            hash: true as const,
+            required,
+            defaultValue: 'null',
+          },
+        ]
+        expect(
+          EXPERIMENTAL_generateRouteParams(params, ['string'], false)
+        ).toBe('{ section: string | null }')
+        expect(EXPERIMENTAL_generateRouteParams(params, ['string'], true)).toBe(
+          required
+            ? '{ section?: string | undefined }'
+            : '{ section?: string | null | undefined }'
+        )
+      }
+    )
+
+    it.each([undefined, 'null'])(
+      'preserves parser array and null unions with default=%s',
+      defaultValue => {
+        const params = [
+          {
+            paramName: 'section',
+            parser: 'section',
+            hash: true as const,
+            required: true,
+            defaultValue,
+          },
+        ]
+        const type = 'string[] | null'
+        const parsers = makeParsersMap('section', isRaw)
+        expect(
+          EXPERIMENTAL_generateRouteParams(params, [type], false, parsers)
+        ).toBe('{ section: string[] | null }')
+        expect(
+          EXPERIMENTAL_generateRouteParams(params, [type], true, parsers)
+        ).toBe(
+          defaultValue === undefined
+            ? '{ section: string[] | null }'
+            : '{ section?: string[] | null | undefined }'
+        )
+      }
+    )
+  })
+
   it.each([false, true])(
     'keeps nullable hash parser results intact with a raw parser: %s',
     isRaw => {

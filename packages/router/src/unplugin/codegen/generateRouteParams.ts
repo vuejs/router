@@ -96,9 +96,23 @@ export function EXPERIMENTAL_generateRouteParams(
             ? param.paramName
             : JSON.stringify(param.paramName)
           if (isTreeHashParam(param)) {
-            return `${paramName}${isLoose ? '?' : ''}: ${
-              types[i] ?? 'string'
-            } | null${isLoose ? ' | undefined' : ''}`
+            const hasDefault =
+              param.defaultValue !== undefined &&
+              param.defaultValue !== 'undefined'
+            const isOptional = !param.required || hasDefault
+            let type = types[i] ?? 'string'
+            if (
+              (!param.required && (isLoose || !hasDefault)) ||
+              (!isLoose && param.defaultValue === 'null')
+            ) {
+              if (!type.split('|').some(part => part.trim() === 'null')) {
+                type += ' | null'
+              }
+            }
+            if (isLoose && isOptional) {
+              type += ' | undefined'
+            }
+            return `${paramName}${isLoose && isOptional ? '?' : ''}: ${type}`
           }
 
           const isOptional = isTreeParamOptional(param)

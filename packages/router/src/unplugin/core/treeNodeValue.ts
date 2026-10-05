@@ -153,11 +153,18 @@ class _TreeNodeValueBase {
     if (paramNames.length > 1) {
       throw diagnostics.VUE_ROUTER_B0022({ paramNames: paramNames.join(', ') })
     }
-    return Object.entries(hash).map(([paramName, parser]) => ({
-      paramName,
-      parser,
-      hash: true,
-    }))
+    return Object.entries(hash).map(([paramName, config]) => {
+      const param: TreeHashParam = {
+        paramName,
+        parser: typeof config === 'string' ? config : config.parser || null,
+        hash: true,
+      }
+      if (typeof config !== 'string') {
+        if (config.default !== undefined) param.defaultValue = config.default
+        if (config.required !== undefined) param.required = config.required
+      }
+      return param
+    })
   }
 
   /**
@@ -375,7 +382,9 @@ export interface TreePathParam {
 
 export interface TreeHashParam {
   paramName: string
-  parser: string
+  parser: string | null
+  defaultValue?: string
+  required?: boolean
   hash: true
 }
 
@@ -413,11 +422,10 @@ export interface TreeQueryParam {
  * @internal
  */
 export function isTreeParamOptional(param: TreeParam): boolean {
-  if (isTreeHashParam(param)) return true
   if ('optional' in param) {
     return param.optional
   }
-  // Query params are optional if they have a defaultValue OR if they're not required
+  // Query and hash params are optional with a default or without required.
   return param.defaultValue !== undefined || !param.required
 }
 

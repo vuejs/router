@@ -74,6 +74,91 @@ describe('hash param extraction', () => {
     expect(hash.match('#intro')).toEqual({ fragment: null })
   })
 
+  it('rejects required hashes without a default', () => {
+    const hash = new MatcherPatternHashParam(
+      'fragment',
+      {
+        get: value => (value === '#allowed' ? value : miss()),
+      },
+      undefined,
+      true
+    )
+    const resolver = createFixedResolver([
+      { name: 'required', path: new MatcherPatternPathStatic('/page'), hash },
+      { name: 'fallback', path: new MatcherPatternPathStatic('/page') },
+    ])
+    expect(resolver.resolve('/page#allowed').name).toBe('required')
+    expect(resolver.resolve('/page#other').name).toBe('fallback')
+    expect(resolver.resolve('/page').name).toBe('fallback')
+    expect(() => resolver.resolve({ name: 'required', params: {} })).toThrow()
+    const nullHash = new MatcherPatternHashParam(
+      'fragment',
+      {
+        get: () => null,
+      },
+      undefined,
+      true
+    )
+    expect(() => nullHash.match('#other')).toThrow()
+  })
+
+  it.each([false, true])(
+    'uses a default for missing or rejected hashes (required: %s)',
+    required => {
+      const hash = new MatcherPatternHashParam(
+        'fragment',
+        {
+          get: value => (value === '#allowed' ? value : miss()),
+        },
+        '#default',
+        required
+      )
+      const resolver = createFixedResolver([
+        { name: 'page', path: new MatcherPatternPathStatic('/page'), hash },
+      ])
+      expect(resolver.resolve('/page').params).toEqual({ fragment: '#default' })
+      expect(resolver.resolve('/page#other').params).toEqual({
+        fragment: '#default',
+      })
+      expect(resolver.resolve('/page#allowed').params).toEqual({
+        fragment: '#allowed',
+      })
+      expect(resolver.resolve({ name: 'page', params: {} })).toMatchObject({
+        fullPath: '/page',
+        params: { fragment: '#default' },
+      })
+    }
+  )
+
+  it('uses the declared default when the hash is absent even if the getter accepts empty strings', () => {
+    const hash = new MatcherPatternHashParam(
+      'fragment',
+      {
+        get: value => value || '#parser-default',
+      },
+      '#declared-default'
+    )
+    expect(hash.match('')).toEqual({ fragment: '#declared-default' })
+    expect(hash.match('#valid')).toEqual({ fragment: '#valid' })
+  })
+
+  it('evaluates factory defaults on each miss and preserves successful falsy results', () => {
+    const hash = new MatcherPatternHashParam(
+      'fragment',
+      {
+        get: value => (value === '#valid' ? [] : undefined),
+      },
+      () => ['default'],
+      true
+    )
+    const first = hash.match('')
+    const second = hash.match('#invalid')
+    expect(first).toEqual({ fragment: ['default'] })
+    expect(second).toEqual(first)
+    expect(second.fragment).not.toBe(first.fragment)
+    expect(hash.match('#valid')).toEqual({ fragment: [] })
+  })
+
   it('keeps strings unchanged without a custom parser', () => {
     const hash = new MatcherPatternHashParam('fragment')
     expect(hash.match('#intro')).toEqual({ fragment: '#intro' })

@@ -104,10 +104,9 @@ export interface DefinePage<FilePath extends string = string> extends Partial<
     query?: Record<string, DefinePageQueryParamOptionsAny | ParamParserType>
 
     /**
-     * One optional parameter extracted from the whole hash, including `#`, or an empty string.
-     * Parser errors fall back to `null`.
+     * One parameter extracted from the whole hash, including `#`, or an empty string.
      */
-    hash?: Record<string, ParamParserType>
+    hash?: Record<string, ParamParserType | DefinePageHashParamOptionsAny>
   }
 }
 
@@ -227,6 +226,46 @@ export interface DefinePageQueryParamOptions<
    */
   required?: boolean
 }
+
+/**
+ * Configures one parameter extracted from the whole hash.
+ */
+export interface DefinePageHashParamOptions<
+  Parser extends ParamParserType = ParamParserType,
+> {
+  /**
+   * Parser to apply to the whole hash, including `#`. Without an explicit
+   * default, the parser receives `''` when the hash is absent.
+   * If omitted, keeps the hash string.
+   */
+  parser?: Parser
+
+  /**
+   * Value or factory used when the hash is absent, parsing fails, or the
+   * parser returns `null` or `undefined`. For an absent hash (`''`), this
+   * default is used before the parser runs, so it takes precedence over
+   * the parser's own fallback for an empty hash.
+   */
+  default?: ParamParserTypeOf<Parser> | (() => ParamParserTypeOf<Parser>)
+
+  /**
+   * Whether a parser failure or missing result prevents the route from
+   * matching when no default is provided. Optional hash params return
+   * `null` in these cases.
+   *
+   * @default false
+   */
+  required?: boolean
+}
+
+/**
+ * Distributive hash options with defaults typed by parser name.
+ *
+ * @internal
+ */
+export type DefinePageHashParamOptionsAny<
+  P extends ParamParserType = ParamParserType,
+> = P extends ParamParserType ? DefinePageHashParamOptions<P> : never
 
 /**
  * TODO: native parsers ideas:

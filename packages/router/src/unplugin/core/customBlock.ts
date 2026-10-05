@@ -38,7 +38,7 @@ export interface CustomRouteBlock extends Partial<
     /**
      * Declare one parser that receives the whole hash string.
      */
-    hash?: Record<string, string>
+    hash?: Record<string, string | CustomRouteBlockHashParamOptions>
 
     /**
      * Declare query params for the route. The value is either a parser name
@@ -55,6 +55,11 @@ export interface CustomRouteBlockQueryParamOptions {
   default?: string
   required?: boolean
 }
+
+export type CustomRouteBlockHashParamOptions = Omit<
+  CustomRouteBlockQueryParamOptions,
+  'format'
+>
 
 function parseCustomBlock(
   block: SFCBlock,

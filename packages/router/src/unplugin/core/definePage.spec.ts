@@ -2,6 +2,7 @@ import type { TransformResult } from 'vite'
 import { expect, describe, it } from 'vitest'
 import { definePageTransform, extractDefinePageInfo } from './definePage'
 import { ts } from '../utils'
+import { TreeNodeValueStatic, isTreeParamOptional } from './treeNodeValue'
 import { mockWarn } from '../../tests/vitest-mock-warn'
 
 const vue = String.raw
@@ -238,7 +239,7 @@ definePage({
 <script setup>
 definePage({
   params: {
-    hash: { 'active-tab': 'tab', invalid: { parser: 'int' } }
+    hash: { 'active-tab': 'tab' }
   }
 })
 </script>
@@ -247,6 +248,84 @@ definePage({
       hasRemainingProperties: false,
       params: { hash: { 'active-tab': 'tab' } },
     })
+  })
+
+  it.each([
+    ['1', '1'],
+    ['-1.5', '-1.5'],
+    ["'overview'", "'overview'"],
+    ['false', 'false'],
+    ['null', 'null'],
+    ['() => 1', '() => 1'],
+    ['() => {\n  return 42\n}', '() => {\n  return 42\n}'],
+  ])('extracts hash options with default %s', (expression, expected) => {
+    const code = `<script setup lang="ts">
+definePage({ params: { hash: {
+  'active-tab': { parser: 'tab', required: true, default: ${expression} }
+} } })
+</script>`
+    expect(extractDefinePageInfo(code, 'src/pages/test.vue')).toEqual({
+      hasRemainingProperties: false,
+      params: {
+        hash: {
+          'active-tab': {
+            parser: 'tab',
+            required: true,
+            default: expected,
+          },
+        },
+      },
+    })
+  })
+
+  it('extracts hash options without a parser and ignores format', () => {
+    const code = `definePage({ params: { hash: {
+      section: { required: false, format: 'array' }
+    } } })`
+    expect(
+      extractDefinePageInfo(code, 'src/pages/test.ts')?.params?.hash
+    ).toEqual({
+      section: { required: false },
+    })
+  })
+
+  it.each([
+    ["'int'", { parser: 'int' }, true],
+    ["{ parser: 'int' }", { parser: 'int' }, true],
+    ['{}', { parser: null }, true],
+    ['{ required: true }', { parser: null, required: true }, false],
+    ['{ required: false }', { parser: null, required: false }, true],
+    [
+      '{ required: true, default: 0 }',
+      { parser: null, required: true, defaultValue: '0' },
+      true,
+    ],
+    [
+      "{ parser: 'int', default: () => 1 }",
+      { parser: 'int', defaultValue: '() => 1' },
+      true,
+    ],
+  ])('normalizes hash metadata from %s', (expression, expected, optional) => {
+    const code = `definePage({ params: { hash: { section: ${expression} } } })`
+    const info = extractDefinePageInfo(code, 'src/pages/test.ts')!
+    const node = new TreeNodeValueStatic('test', undefined)
+    node.setOverride('test.ts', { params: info.params })
+    expect(node.hashParams).toEqual([
+      { paramName: 'section', ...expected, hash: true },
+    ])
+    expect(isTreeParamOptional(node.hashParams[0]!)).toBe(optional)
+  })
+
+  it('rejects multiple named hash parameters with options', () => {
+    const code = `definePage({ params: { hash: {
+      section: { required: true }, tab: 'int'
+    } } })`
+    const node = new TreeNodeValueStatic('test', undefined)
+    node.setOverride('test.ts', {
+      params: extractDefinePageInfo(code, 'test.ts')!.params,
+    })
+    expect(() => node.hashParams).toThrow()
+    expect('Only one hash param can be declared per route.').toHaveBeenWarned()
   })
 
   it('extracts all types of params', () => {

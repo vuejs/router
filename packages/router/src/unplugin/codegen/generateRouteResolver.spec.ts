@@ -9,6 +9,7 @@ import {
 import { ImportsMap } from '../core/utils'
 import type { ParamParsersMap } from './generateParamParsers'
 import { generateAliasWarnings } from './generateAliasWarnings'
+import { NO_MATCH_LOCATION } from '../../experimental/route-resolver/resolver-abstract'
 import { createFixedResolver } from '../../experimental/route-resolver/resolver-fixed'
 import {
   MatcherPatternPathStatic,
@@ -17,6 +18,7 @@ import {
 import { MatcherPatternHashParam } from '../../experimental/route-resolver/matchers/matcher-pattern-hash'
 import { normalizeParamParser } from '../../experimental/route-resolver/matchers/param-parsers'
 import { normalizeRouteRecord } from '../../experimental/router'
+import type { CustomRouteBlockHashParamOptions } from '../core/customBlock'
 
 const DEFAULT_OPTIONS = resolveOptions({})
 let DEFAULT_STATE: Parameters<typeof generateRouteRecord>[0]['state'] = {
@@ -1771,10 +1773,12 @@ describe('generateRouteResolver', () => {
 })
 
 describe('generated hash params', () => {
-  it('resolves and builds a custom hash parser used only by the hash', () => {
+  function createHashResolver(
+    options: string | CustomRouteBlockHashParamOptions = 'section'
+  ) {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     const node = tree.insert('page', 'page.vue')
-    node.value.setEditOverride('params', { hash: { section: 'section' } })
+    node.value.setEditOverride('params', { hash: { section: options } })
     const importsMap = new ImportsMap()
     const code = generateRouteResolver(
       tree,
@@ -1814,6 +1818,11 @@ describe('generated hash params', () => {
       code.replace('export const resolver =', 'return')
     )(...Object.values(bindings))
 
+    return { resolver, name: node.name as string }
+  }
+
+  it('resolves and builds a custom hash parser used only by the hash', () => {
+    const { resolver, name } = createHashResolver()
     expect(resolver.resolve('/page#intro').params).toEqual({
       section: { heading: 'intro', empty: false },
     })
@@ -1821,18 +1830,16 @@ describe('generated hash params', () => {
       section: { heading: '', empty: true },
     })
     expect(resolver.resolve('/page#invalid')).toMatchObject({
-      name: node.name,
+      name,
       params: { section: null },
     })
-    expect(
-      resolver.resolve({ name: node.name as string, params: {} })
-    ).toMatchObject({
+    expect(resolver.resolve({ name, params: {} })).toMatchObject({
       fullPath: '/page',
       params: { section: { heading: '', empty: true } },
     })
     expect(
       resolver.resolve({
-        name: node.name as string,
+        name,
         params: { section: { heading: 'next' } },
       })
     ).toMatchObject({
@@ -1840,4 +1847,68 @@ describe('generated hash params', () => {
       params: { section: { heading: 'next', empty: false } },
     })
   })
+
+  it('uses a literal default without a custom parser', () => {
+    const { resolver, name } = createHashResolver({
+      required: true,
+      default: "'#overview'",
+    })
+    expect(resolver.resolve('/page')).toMatchObject({
+      name,
+      params: { section: '#overview' },
+    })
+    expect(resolver.resolve('/page#intro').params).toEqual({
+      section: '#intro',
+    })
+    expect(resolver.resolve({ name, params: {} })).toMatchObject({
+      fullPath: '/page',
+      params: { section: '#overview' },
+    })
+  })
+
+  it.each([
+    { required: true, defaultValue: undefined },
+    {
+      required: true,
+      defaultValue: "() => ({ heading: 'default', empty: false })",
+    },
+    {
+      required: false,
+      defaultValue: "() => ({ heading: 'default', empty: false })",
+    },
+  ])(
+    'honors required=$required and default=$defaultValue in generated code',
+    ({ required, defaultValue }) => {
+      const { resolver, name } = createHashResolver({
+        parser: 'section',
+        required,
+        default: defaultValue,
+      })
+      expect(resolver.resolve('/page#valid').params).toEqual({
+        section: { heading: 'valid', empty: false },
+      })
+      if (defaultValue === undefined) {
+        expect(resolver.resolve('/page#invalid').name).toBe(
+          NO_MATCH_LOCATION.name
+        )
+        expect(() =>
+          resolver.resolve({
+            name,
+            params: { section: { heading: 'invalid' } },
+          })
+        ).toThrow('Invalid section')
+      } else {
+        const params = { section: { heading: 'default', empty: false } }
+        expect(resolver.resolve('/page#invalid')).toMatchObject({
+          name,
+          params,
+        })
+        expect(resolver.resolve('/page')).toMatchObject({ name, params })
+        expect(resolver.resolve({ name, params: {} })).toMatchObject({
+          fullPath: '/page',
+          params,
+        })
+      }
+    }
+  )
 })

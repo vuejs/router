@@ -21,7 +21,10 @@ import { walkAST } from 'ast-walker-scope'
 import { diagnostics } from '../diagnostics'
 import type { ParsedStaticImport } from 'mlly'
 import { findStaticImports, parseStaticImport } from 'mlly'
-import type { CustomRouteBlock } from './customBlock'
+import type {
+  CustomRouteBlock,
+  CustomRouteBlockQueryParamOptions,
+} from './customBlock'
 
 const MACRO_DEFINE_PAGE = 'definePage'
 export const MACRO_DEFINE_PAGE_QUERY = /[?&]definePage\b/
@@ -359,7 +362,7 @@ function extractParamsInfo(
         prop.key.name === 'hash' &&
         prop.value.type === 'ObjectExpression'
       ) {
-        params.hash = extractHashParams(prop.value)
+        params.hash = extractHashParams(prop.value, source, offset)
       }
     }
   }
@@ -385,73 +388,13 @@ function extractQueryParams(
           parser: prop.value.value,
         }
       } else if (prop.value.type === 'ObjectExpression') {
-        // Full form: param: { parser: 'int', default: 1, format: 'value' }
-        const paramInfo: (typeof queryParams)[string] = {}
-
-        for (const paramProp of prop.value.properties) {
-          if (
-            paramProp.type === 'ObjectProperty' &&
-            paramProp.key.type === 'Identifier'
-          ) {
-            if (
-              paramProp.key.name === 'parser' &&
-              paramProp.value.type === 'StringLiteral'
-            ) {
-              paramInfo.parser = paramProp.value.value
-            } else if (
-              paramProp.key.name === 'format' &&
-              paramProp.value.type === 'StringLiteral'
-            ) {
-              paramInfo.format = paramProp.value.value as 'value' | 'array'
-            } else if (
-              paramProp.key.name === 'required' &&
-              paramProp.value.type === 'BooleanLiteral'
-            ) {
-              paramInfo.required = paramProp.value.value
-            } else if (paramProp.key.name === 'default') {
-              if (typeof paramProp.value.extra?.raw === 'string') {
-                paramInfo.default = paramProp.value.extra.raw
-              } else if (paramProp.value.type === 'NumericLiteral') {
-                paramInfo.default = String(paramProp.value.value)
-              } else if (paramProp.value.type === 'StringLiteral') {
-                paramInfo.default = JSON.stringify(paramProp.value.value)
-              } else if (paramProp.value.type === 'BooleanLiteral') {
-                paramInfo.default = String(paramProp.value.value)
-              } else if (paramProp.value.type === 'NullLiteral') {
-                paramInfo.default = 'null'
-              } else if (
-                paramProp.value.type === 'UnaryExpression' &&
-                (paramProp.value.operator === '-' ||
-                  paramProp.value.operator === '+' ||
-                  paramProp.value.operator === '!' ||
-                  paramProp.value.operator === '~') &&
-                paramProp.value.argument.type === 'NumericLiteral'
-              ) {
-                // support negative numeric literals: -1, -1.5
-                paramInfo.default = `${paramProp.value.operator}${paramProp.value.argument.value}`
-              } else if (paramProp.value.type === 'ArrowFunctionExpression') {
-                const expression = getNodeSource(
-                  source,
-                  paramProp.value,
-                  offset
-                )
-                if (expression == null) {
-                  diagnostics.VUE_ROUTER_B0006({
-                    paramName,
-                    type: paramProp.value.type,
-                  })
-                } else {
-                  paramInfo.default = expression
-                }
-              } else {
-                diagnostics.VUE_ROUTER_B0006({
-                  paramName,
-                  type: paramProp.value.type,
-                })
-              }
-            }
-          }
-        }
+        const paramInfo = extractParamOptions(
+          prop.value,
+          paramName,
+          source,
+          offset,
+          true
+        )
 
         queryParams[paramName] = paramInfo
       }
@@ -461,20 +404,103 @@ function extractQueryParams(
   return queryParams
 }
 
+function extractParamOptions(
+  optionsObj: ObjectExpression,
+  paramName: string,
+  source: string,
+  offset: number,
+  includeFormat: boolean
+): CustomRouteBlockQueryParamOptions {
+  const paramInfo: CustomRouteBlockQueryParamOptions = {}
+  for (const paramProp of optionsObj.properties) {
+    if (
+      paramProp.type === 'ObjectProperty' &&
+      paramProp.key.type === 'Identifier'
+    ) {
+      if (
+        paramProp.key.name === 'parser' &&
+        paramProp.value.type === 'StringLiteral'
+      ) {
+        paramInfo.parser = paramProp.value.value
+      } else if (
+        includeFormat &&
+        paramProp.key.name === 'format' &&
+        paramProp.value.type === 'StringLiteral'
+      ) {
+        paramInfo.format = paramProp.value.value as 'value' | 'array'
+      } else if (
+        paramProp.key.name === 'required' &&
+        paramProp.value.type === 'BooleanLiteral'
+      ) {
+        paramInfo.required = paramProp.value.value
+      } else if (paramProp.key.name === 'default') {
+        if (typeof paramProp.value.extra?.raw === 'string') {
+          paramInfo.default = paramProp.value.extra.raw
+        } else if (paramProp.value.type === 'NumericLiteral') {
+          paramInfo.default = String(paramProp.value.value)
+        } else if (paramProp.value.type === 'StringLiteral') {
+          paramInfo.default = JSON.stringify(paramProp.value.value)
+        } else if (paramProp.value.type === 'BooleanLiteral') {
+          paramInfo.default = String(paramProp.value.value)
+        } else if (paramProp.value.type === 'NullLiteral') {
+          paramInfo.default = 'null'
+        } else if (
+          paramProp.value.type === 'UnaryExpression' &&
+          (paramProp.value.operator === '-' ||
+            paramProp.value.operator === '+' ||
+            paramProp.value.operator === '!' ||
+            paramProp.value.operator === '~') &&
+          paramProp.value.argument.type === 'NumericLiteral'
+        ) {
+          // support negative numeric literals: -1, -1.5
+          paramInfo.default = `${paramProp.value.operator}${paramProp.value.argument.value}`
+        } else if (paramProp.value.type === 'ArrowFunctionExpression') {
+          const expression = getNodeSource(source, paramProp.value, offset)
+          if (expression == null) {
+            diagnostics.VUE_ROUTER_B0006({
+              paramName,
+              type: paramProp.value.type,
+            })
+          } else {
+            paramInfo.default = expression
+          }
+        } else {
+          diagnostics.VUE_ROUTER_B0006({
+            paramName,
+            type: paramProp.value.type,
+          })
+        }
+      }
+    }
+  }
+  return paramInfo
+}
+
 function extractHashParams(
-  hashObj: ObjectExpression
+  hashObj: ObjectExpression,
+  source: string,
+  offset: number
 ): NonNullable<DefinePageInfo['params']>['hash'] {
-  const hashParams: Record<string, string> = {}
+  const hashParams: NonNullable<DefinePageInfo['params']>['hash'] = {}
   for (const prop of hashObj.properties) {
     if (
       prop.type === 'ObjectProperty' &&
       !prop.computed &&
-      (prop.key.type === 'Identifier' || prop.key.type === 'StringLiteral') &&
-      prop.value.type === 'StringLiteral'
+      (prop.key.type === 'Identifier' || prop.key.type === 'StringLiteral')
     ) {
       const name =
         prop.key.type === 'Identifier' ? prop.key.name : prop.key.value
-      hashParams[name] = prop.value.value
+      if (prop.value.type === 'StringLiteral') {
+        hashParams[name] = prop.value.value
+      } else if (prop.value.type === 'ObjectExpression') {
+        hashParams[name] = extractParamOptions(
+          prop.value,
+          name,
+          source,
+          offset,
+          false
+        )
+      }
     }
   }
   return hashParams
