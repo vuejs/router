@@ -29,7 +29,11 @@ definePage({
         #setup/vue → ["setup", "vue"]
       </RouterLink>
     </li>
+    <li>
+      <RouterLink to="/test-params/hash-int">Integer hash parser</RouterLink>
+    </li>
   </ul>
   <pre>{{ $route.params }}</pre>
+  <RouterLink to="/test-params">All param parser examples</RouterLink>
   <RouterLink to="/">Hash without a custom parser</RouterLink>
 </template>

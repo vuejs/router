@@ -3,9 +3,11 @@ import { DEFAULT_OPTIONS, resolveOptions } from '../options'
 import type { TreeNode } from '../core/tree'
 import { PrefixTree } from '../core/tree'
 import { EXPERIMENTAL_generateRouteParams } from './generateRouteParams'
+import { generateParamsTypes } from './generateParamParsers'
 import type { ParamParsersMap } from './generateParamParsers'
 import { mockWarn } from '../../tests/vitest-mock-warn'
 import { isTreeParamOptional } from '../core/treeNodeValue'
+import type { CustomRouteBlockHashParamOptions } from '../core/customBlock'
 
 describe('EXPERIMENTAL_generateRouteParams', () => {
   mockWarn()
@@ -199,15 +201,44 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     ).toBe("{ 'section': string | unknown }")
   })
 
-  it('uses undefined for an empty hash declaration in both route map types', () => {
+  function generateHashTypes(options: CustomRouteBlockHashParamOptions) {
     const node = createTreeWithParam('page')
-    node.setCustomRouteBlock('page.vue', { params: { hash: { myHash: {} } } })
-    expect(EXPERIMENTAL_generateRouteParams(node.params, [null], false)).toBe(
-      "{ 'myHash': string | undefined }"
-    )
-    expect(EXPERIMENTAL_generateRouteParams(node.params, [null], true)).toBe(
-      "{ 'myHash'?: string | undefined }"
-    )
+    node.setCustomRouteBlock('page.vue', {
+      params: { hash: { myHash: options } },
+    })
+    const types = generateParamsTypes(node.params, new Map())
+    return [
+      EXPERIMENTAL_generateRouteParams(node.params, types, false),
+      EXPERIMENTAL_generateRouteParams(node.params, types, true),
+    ]
+  }
+
+  it('uses undefined for an empty hash declaration', () => {
+    expect(generateHashTypes({})).toEqual([
+      "{ 'myHash': string | undefined }",
+      "{ 'myHash'?: string | undefined }",
+    ])
+  })
+
+  it('uses null for a hash declaration with a null default', () => {
+    expect(generateHashTypes({ default: 'null' })).toEqual([
+      "{ 'myHash': string | null }",
+      "{ 'myHash'?: string | null | undefined }",
+    ])
+  })
+
+  it('uses the parser type for a hash declaration with a parser', () => {
+    expect(generateHashTypes({ parser: 'int' })).toEqual([
+      "{ 'myHash': number | undefined }",
+      "{ 'myHash'?: number | undefined }",
+    ])
+  })
+
+  it('uses null and the parser type for a hash declaration with both', () => {
+    expect(generateHashTypes({ parser: 'int', default: 'null' })).toEqual([
+      "{ 'myHash': number | null }",
+      "{ 'myHash'?: number | null | undefined }",
+    ])
   })
 
   it.each([null, 'string', 'Param_string', 'Param_section'])(

@@ -1,9 +1,43 @@
 <script setup lang="ts">
-const setOf = (...values: string[]) => new Set(values)
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const invalidSetParamError = ref(false)
+
+function tryResolveInvalidSetParam(type: 'required' | 'optional') {
+  try {
+    router.resolve(
+      type === 'required'
+        ? {
+            name: '/test-params/set/req.[ids]',
+            params: { ids: new Set(['a', 'b', 'c']) },
+          }
+        : {
+            name: '/test-params/set/opt.[[ids]]',
+            params: { ids: new Set(['x', 'y', 'z']) },
+          }
+    )
+  } catch {
+    invalidSetParamError.value = true
+  }
+}
 </script>
 
 <template>
   <h1>Param parser tests</h1>
+
+  <section>
+    <h2>Hash parsers</h2>
+    <ul>
+      <li>
+        <RouterLink to="/test-params/hash">Custom hash parser</RouterLink>
+      </li>
+      <li>
+        <RouterLink to="/test-params/hash-int">Integer hash parser</RouterLink>
+      </li>
+    </ul>
+  </section>
 
   <section>
     <h2>Required path <code>id: number</code></h2>
@@ -182,19 +216,16 @@ const setOf = (...values: string[]) => new Set(values)
         <RouterLink
           :to="{
             name: '/test-params/set/req.[ids]',
-            params: { ids: setOf('a') },
+            params: { ids: new Set(['a']) },
           }"
           >set/req {a}</RouterLink
         >
       </li>
       <li>
-        <RouterLink
-          :to="{
-            name: '/test-params/set/req.[ids]',
-            params: { ids: setOf('a', 'b', 'a', 'c') },
-          }"
-          >set/req {a,b,c} (dupes dropped)</RouterLink
-        >
+        <button type="button" @click="tryResolveInvalidSetParam('required')">
+          Try set/req {a,b,c} (duplicates dropped)
+        </button>
+        <span> (invalid: one path param cannot build multiple segments)</span>
       </li>
     </ul>
 
@@ -204,7 +235,7 @@ const setOf = (...values: string[]) => new Set(values)
         <RouterLink
           :to="{
             name: '/test-params/set/opt.[[ids]]',
-            params: { ids: setOf() },
+            params: { ids: new Set() },
           }"
           >set/opt (empty)</RouterLink
         >
@@ -213,19 +244,16 @@ const setOf = (...values: string[]) => new Set(values)
         <RouterLink
           :to="{
             name: '/test-params/set/opt.[[ids]]',
-            params: { ids: setOf('x') },
+            params: { ids: new Set(['x']) },
           }"
           >set/opt {x}</RouterLink
         >
       </li>
       <li>
-        <RouterLink
-          :to="{
-            name: '/test-params/set/opt.[[ids]]',
-            params: { ids: setOf('x', 'y', 'z') },
-          }"
-          >set/opt {x,y,z}</RouterLink
-        >
+        <button type="button" @click="tryResolveInvalidSetParam('optional')">
+          Try set/opt {x,y,z}
+        </button>
+        <span> (invalid: one path param cannot build multiple segments)</span>
       </li>
     </ul>
 
@@ -235,7 +263,7 @@ const setOf = (...values: string[]) => new Set(values)
         <RouterLink
           :to="{
             name: '/test-params/set/rep.[ids]+',
-            params: { ids: setOf('a') },
+            params: { ids: new Set(['a']) },
           }"
           >set/rep {a}</RouterLink
         >
@@ -244,7 +272,7 @@ const setOf = (...values: string[]) => new Set(values)
         <RouterLink
           :to="{
             name: '/test-params/set/rep.[ids]+',
-            params: { ids: setOf('a', 'b', 'c') },
+            params: { ids: new Set(['a', 'b', 'c']) },
           }"
           >set/rep {a,b,c}</RouterLink
         >
@@ -253,7 +281,7 @@ const setOf = (...values: string[]) => new Set(values)
         <RouterLink
           :to="{
             name: '/test-params/set/rep.[ids]+',
-            params: { ids: setOf('a', 'b', 'a', 'c', 'b') },
+            params: { ids: new Set(['a', 'b', 'a', 'c', 'b']) },
           }"
           >set/rep {a,b,c} (dupes dropped)</RouterLink
         >
@@ -266,7 +294,7 @@ const setOf = (...values: string[]) => new Set(values)
         <RouterLink
           :to="{
             name: '/test-params/set/repo.[[ids]]+',
-            params: { ids: setOf() },
+            params: { ids: new Set() },
           }"
           >set/repo (empty)</RouterLink
         >
@@ -275,7 +303,7 @@ const setOf = (...values: string[]) => new Set(values)
         <RouterLink
           :to="{
             name: '/test-params/set/repo.[[ids]]+',
-            params: { ids: setOf('a') },
+            params: { ids: new Set(['a']) },
           }"
           >set/repo {a}</RouterLink
         >
@@ -284,13 +312,17 @@ const setOf = (...values: string[]) => new Set(values)
         <RouterLink
           :to="{
             name: '/test-params/set/repo.[[ids]]+',
-            params: { ids: setOf('a', 'b', 'c', 'd') },
+            params: { ids: new Set(['a', 'b', 'c', 'd']) },
           }"
           >set/repo {a,b,c,d}</RouterLink
         >
       </li>
     </ul>
   </section>
+
+  <p v-if="invalidSetParamError" role="status">
+    The router cannot resolve multiple Set values for one path parameter.
+  </p>
 
   <section>
     <h2>Empty: <code>null</code> vs <code>[]</code> (optional repeatable)</h2>
@@ -306,7 +338,7 @@ const setOf = (...values: string[]) => new Set(values)
         <RouterLink
           :to="{
             name: '/test-params/set-shape/repo.[[ids]]+',
-            params: { ids: setOf() },
+            params: { ids: new Set() },
           }"
           >set-shape/repo (empty)</RouterLink
         >
@@ -316,7 +348,7 @@ const setOf = (...values: string[]) => new Set(values)
         <RouterLink
           :to="{
             name: '/test-params/set/repo.[[ids]]+',
-            params: { ids: setOf() },
+            params: { ids: new Set() },
           }"
           >set/repo (empty)</RouterLink
         >
