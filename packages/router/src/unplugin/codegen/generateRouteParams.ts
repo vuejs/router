@@ -93,7 +93,9 @@ export function EXPERIMENTAL_generateRouteParams(
     ? `{ ${nodeParams
         .map((param, i) => {
           if (isTreeHashParam(param)) {
-            return `${param.paramName}: ${types[i] ?? 'string'}`
+            return `${param.paramName}${isLoose ? '?' : ''}: ${
+              types[i] ?? 'string'
+            } | null${isLoose ? ' | undefined' : ''}`
           }
 
           const isOptional = isTreeParamOptional(param)

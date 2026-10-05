@@ -53,15 +53,36 @@ describe('hash param extraction', () => {
     })
   })
 
+  it('allows missing and null hash params during navigation', () => {
+    const current = resolver.resolve({ name: 'page', params: {} })
+    expect(current).toMatchObject({
+      fullPath: '/page',
+      params: { fragment: { hash: '', parts: [] } },
+    })
+    expect(
+      resolver.resolve({ params: { fragment: null } }, current)
+    ).toMatchObject({
+      fullPath: '/page',
+      params: current.params,
+    })
+  })
+
+  it('normalizes nullish parser results to null', () => {
+    const hash = new MatcherPatternHashParam('fragment', {
+      get: () => undefined,
+    })
+    expect(hash.match('#intro')).toEqual({ fragment: null })
+  })
+
   it('keeps strings unchanged without a custom parser', () => {
     const hash = new MatcherPatternHashParam('fragment')
     expect(hash.match('#intro')).toEqual({ fragment: '#intro' })
-    expect(hash.match('')).toEqual({ fragment: '' })
+    expect(hash.match('')).toEqual({ fragment: null })
     expect(hash.build({ fragment: '#intro' })).toBe('#intro')
     expect(hash.build({ fragment: '' })).toBe('')
   })
 
-  it('skips a route if a hash parser rejects the string', () => {
+  it('keeps the route with null if a hash parser rejects the string', () => {
     const resolver = createFixedResolver([
       {
         name: 'restricted',
@@ -73,6 +94,18 @@ describe('hash param extraction', () => {
       { name: 'fallback', path: new MatcherPatternPathStatic('/page') },
     ])
     expect(resolver.resolve('/page#allowed').name).toBe('restricted')
-    expect(resolver.resolve('/page#other').name).toBe('fallback')
+    expect(resolver.resolve('/page#other')).toMatchObject({
+      name: 'restricted',
+      params: { fragment: null },
+    })
+    expect(resolver.resolve('/page')).toMatchObject({
+      name: 'restricted',
+      params: { fragment: null },
+    })
+    expect(resolver.resolve({ name: 'restricted', params: {} })).toMatchObject({
+      name: 'restricted',
+      fullPath: '/page',
+      params: { fragment: null },
+    })
   })
 })
