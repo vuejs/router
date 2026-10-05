@@ -2,7 +2,7 @@ import type { LocationQuery, LocationQueryRaw } from './query'
 import type { RouteParamValue, RouteParamsGeneric } from './types'
 import type { RouteRecord } from './matcher/types'
 import { diagnostics } from './diagnostics'
-import { isAbsolutePath, isArray } from './utils'
+import { hasOwn, isAbsolutePath, isArray } from './utils'
 import { decode, encodeHash } from './encoding'
 import type {
   RouteLocation,
@@ -206,10 +206,12 @@ export function isSameRouteLocationParams(
   a: RouteParamsGeneric,
   b: RouteParamsGeneric
 ): boolean {
-  if (Object.keys(a).length !== Object.keys(b).length) return false
+  const aKeys = Object.keys(a)
+  if (aKeys.length !== Object.keys(b).length) return false
 
-  for (var key in a) {
-    if (!isSameRouteLocationParamsValue(a[key], b[key])) return false
+  for (const key of aKeys) {
+    if (!hasOwn(b, key) || !isSameRouteLocationParamsValue(a[key], b[key]))
+      return false
   }
 
   return true

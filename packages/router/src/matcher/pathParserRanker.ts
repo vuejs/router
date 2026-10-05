@@ -1,6 +1,6 @@
 import type { Token } from './pathTokenizer'
 import { TokenType } from './pathTokenizer'
-import { assign, isArray } from '../utils'
+import { assign, hasOwn, isArray, setOwnProperty } from '../utils'
 
 export type PathParams = Record<string, string | string[]>
 
@@ -233,7 +233,11 @@ export function tokensToParser(
     for (let i = 1; i < match.length; i++) {
       const value: string = match[i] || ''
       const key = keys[i - 1]
-      params[key.name] = value && key.repeatable ? value.split('/') : value
+      setOwnProperty(
+        params,
+        key.name,
+        value && key.repeatable ? value.split('/') : value
+      )
     }
 
     return params
@@ -252,8 +256,9 @@ export function tokensToParser(
           path += token.value
         } else if (token.type === TokenType.Param) {
           const { value, repeatable, optional } = token
-          const param: string | readonly string[] =
-            value in params ? params[value] : ''
+          const param: string | readonly string[] = hasOwn(params, value)
+            ? params[value]
+            : ''
 
           if (isArray(param) && !repeatable) {
             throw new Error(

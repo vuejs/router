@@ -1,5 +1,5 @@
 import { decode, encodeQueryKey, encodeQueryValue, PLUS_RE } from './encoding'
-import { isArray } from './utils'
+import { hasOwn, isArray, setOwnProperty } from './utils'
 
 /**
  * Possible values in normalized {@link LocationQuery}. `null` renders the query
@@ -68,7 +68,7 @@ export function parseQuery(search: string): LocationQuery {
     const key = decode(eqPos < 0 ? searchParam : searchParam.slice(0, eqPos))
     const value = eqPos < 0 ? null : decode(searchParam.slice(eqPos + 1))
 
-    if (key in query) {
+    if (hasOwn(query, key)) {
       // an extra variable for ts types
       let currentValue = query[key]
       if (!isArray(currentValue)) {
@@ -77,7 +77,7 @@ export function parseQuery(search: string): LocationQuery {
       // we force the modification
       ;(currentValue as LocationQueryValue[]).push(value)
     } else {
-      query[key] = value
+      setOwnProperty(query, key, value)
     }
   }
   return query
@@ -95,6 +95,7 @@ export function parseQuery(search: string): LocationQuery {
 export function stringifyQuery(query: LocationQueryRaw | undefined): string {
   let search = ''
   for (let key in query) {
+    if (!hasOwn(query, key)) continue
     const value = query[key]
     key = encodeQueryKey(key)
     if (value == null) {
@@ -138,13 +139,18 @@ export function normalizeQuery(
   const normalizedQuery: LocationQuery = {}
 
   for (const key in query) {
+    if (!hasOwn(query, key)) continue
     const value = query[key]
     if (value !== undefined) {
-      normalizedQuery[key] = isArray(value)
-        ? value.map(v => (v == null ? null : '' + v))
-        : value == null
-          ? value
-          : '' + value
+      setOwnProperty(
+        normalizedQuery,
+        key,
+        isArray(value)
+          ? value.map(v => (v == null ? null : '' + v))
+          : value == null
+            ? value
+            : '' + value
+      )
     }
   }
 

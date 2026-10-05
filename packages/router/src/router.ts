@@ -9,6 +9,7 @@ import type {
   RouteLocation,
   RouteLocationRaw,
   RouteParams,
+  RouteParamsRaw,
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
   NavigationGuardWithThis,
@@ -33,7 +34,14 @@ import type {
   _ErrorListener,
 } from './errors'
 import { createRouterError, ErrorTypes, isNavigationFailure } from './errors'
-import { applyToParams, isBrowser, assign, noop, isArray } from './utils'
+import {
+  applyToParams,
+  assignOwn,
+  isBrowser,
+  assign,
+  noop,
+  isArray,
+} from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
 import type { LocationQuery } from './query'
@@ -320,7 +328,7 @@ export function createRouter(options: RouterOptions): Router {
       })
     } else {
       // remove any nullish param
-      const targetParams = assign({}, rawLocation.params)
+      const targetParams = assignOwn({} as RouteParamsRaw, rawLocation.params)
       for (const key in targetParams) {
         if (targetParams[key] == null) {
           delete targetParams[key]

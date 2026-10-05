@@ -22,7 +22,15 @@ import {
 } from './pathParserRanker'
 
 import { diagnostics } from '../diagnostics'
-import { assign, isAbsolutePath, mergeOptions, noop } from '../utils'
+import {
+  assign,
+  assignOwn,
+  hasOwn,
+  isAbsolutePath,
+  mergeOptions,
+  noop,
+  setOwnProperty,
+} from '../utils'
 import type { RouteRecordNameGeneric, _RouteRecordProps } from '../typed-routes'
 
 /**
@@ -270,7 +278,7 @@ export function createRouterMatcher(
           // suggest the `params: {}` workaround
           const isInherited =
             !matcher!.keys.length &&
-            invalidParams.some(name => name in currentLocation.params)
+            invalidParams.some(name => hasOwn(currentLocation.params, name))
           diagnostics.VUE_ROUTER_R0100({
             params: invalidParams.join('", "'),
             inherited: isInherited
@@ -281,7 +289,7 @@ export function createRouterMatcher(
       }
 
       name = matcher.record.name
-      params = assign(
+      params = assignOwn(
         // paramsFromLocation is a new object
         pickParams(
           currentLocation.params,
@@ -343,7 +351,7 @@ export function createRouterMatcher(
       name = matcher.record.name
       // since we are navigating to the same location, we don't need to pick the
       // params like when `name` is provided
-      params = assign({}, currentLocation.params, location.params)
+      params = assignOwn({}, currentLocation.params, location.params)
       path = matcher.stringify(params)
     }
 
@@ -396,7 +404,7 @@ function pickParams(
   const newParams = {} as MatcherLocation['params']
 
   for (const key of keys) {
-    if (key in params) newParams[key] = params[key]
+    if (hasOwn(params, key)) setOwnProperty(newParams, key, params[key])
   }
 
   return newParams
@@ -458,8 +466,14 @@ export function normalizeRecordProps(
   } else {
     // NOTE: we could also allow a function to be applied to every component.
     // Would need user feedback for use cases
-    for (const name in record.components)
-      propsObject[name] = typeof props === 'object' ? props[name] : props
+    for (const name in record.components) {
+      if (!hasOwn(record.components, name)) continue
+      setOwnProperty(
+        propsObject,
+        name,
+        typeof props === 'object' ? props[name] : props
+      )
+    }
   }
 
   return propsObject

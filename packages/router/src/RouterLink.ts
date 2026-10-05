@@ -24,7 +24,7 @@ import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import type { RouteRecord } from './matcher/types'
 import type { NavigationFailure } from './errors'
-import { isArray, isBrowser, noop } from './utils'
+import { hasOwn, isArray, isBrowser, noop } from './utils'
 import { diagnostics } from './diagnostics'
 import { isRouteLocation } from './types'
 import type {
@@ -410,8 +410,9 @@ function includesParams(
   inner: RouteLocation['params']
 ): boolean {
   for (const key in inner) {
+    if (!hasOwn(inner, key)) continue
     const innerValue = inner[key]
-    const outerValue = outer[key]
+    const outerValue = hasOwn(outer, key) ? outer[key] : undefined
     if (isArray(innerValue)) {
       if (
         !isArray(outerValue) ||

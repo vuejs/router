@@ -54,6 +54,71 @@ export function isESModule(obj: any): obj is { default: RouteComponent } {
 
 export const assign = Object.assign
 
+/**
+ * Safe version of `Object.prototype.hasOwnProperty` that also works on objects
+ * that shadow `hasOwnProperty` or have no prototype.
+ *
+ * @param obj - object to check
+ * @param key - key to look for
+ * @internal
+ */
+export function hasOwn(obj: object, key: PropertyKey): boolean {
+  return Object.prototype.hasOwnProperty.call(obj, key)
+}
+
+/**
+ * Sets a regular own property on an object. A `__proto__` key is defined as a
+ * normal data property: a plain assignment would invoke the `__proto__` setter
+ * and change the object's prototype (or be silently ignored) instead.
+ *
+ * @param obj - object to write to
+ * @param key - key to write
+ * @param value - value to write
+ * @internal
+ */
+export function setOwnProperty(
+  obj: Record<string, unknown>,
+  key: string,
+  value: unknown
+): void {
+  if (key === '__proto__') {
+    Object.defineProperty(obj, key, {
+      value,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    })
+  } else {
+    obj[key] = value
+  }
+}
+
+/**
+ * `Object.assign` equivalent that only copies own enumerable properties and
+ * keeps `__proto__` as a regular key instead of changing the target's
+ * prototype.
+ *
+ * @param target - object to copy properties into
+ * @param sources - objects to copy properties from
+ * @internal
+ */
+export function assignOwn<T extends object>(
+  target: T,
+  ...sources: Array<object | null | undefined>
+): T {
+  for (const source of sources) {
+    if (!source) continue
+    for (const key of Object.keys(source)) {
+      setOwnProperty(
+        target as Record<string, unknown>,
+        key,
+        (source as Record<string, unknown>)[key]
+      )
+    }
+  }
+  return target
+}
+
 export function applyToParams(
   fn: (v: string | number | null | undefined) => string,
   params: RouteParamsRawGeneric | undefined
@@ -61,8 +126,9 @@ export function applyToParams(
   const newParams: RouteParamsGeneric = {}
 
   for (const key in params) {
+    if (!hasOwn(params, key)) continue
     const value = params[key]
-    newParams[key] = isArray(value) ? value.map(fn) : fn(value)
+    setOwnProperty(newParams, key, isArray(value) ? value.map(fn) : fn(value))
   }
 
   return newParams
