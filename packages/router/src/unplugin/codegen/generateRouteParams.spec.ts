@@ -48,7 +48,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
           {
             paramName: 'section',
             parser: 'section',
-            hash: true as const,
+            type: 'hash' as const,
             required,
             defaultValue,
           },
@@ -90,7 +90,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         {
           paramName: 'section',
           parser: 'section',
-          hash: true as const,
+          type: 'hash' as const,
           required: true,
           defaultValue,
         },
@@ -120,7 +120,12 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     ['() => ({ heading: "intro" })', 'unknown'],
   ])('includes all possible default values from %s', (defaultValue, type) => {
     const params = [
-      { paramName: 'section', parser: null, hash: true as const, defaultValue },
+      {
+        paramName: 'section',
+        parser: null,
+        type: 'hash' as const,
+        defaultValue,
+      },
     ]
     expect(EXPERIMENTAL_generateRouteParams(params, [null], false)).toBe(
       `{ 'section': string | ${type} }`
@@ -143,7 +148,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         {
           paramName: 'section',
           parser: null,
-          hash: true as const,
+          type: 'hash' as const,
           defaultValue,
         },
       ]
@@ -160,7 +165,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
         {
           paramName: 'section',
           parser: 'section',
-          hash: true as const,
+          type: 'hash' as const,
           defaultValue,
         },
       ]
@@ -182,7 +187,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
       {
         paramName: 'section',
         parser: 'section',
-        hash: true as const,
+        type: 'hash' as const,
         defaultValue,
       },
     ]
@@ -245,7 +250,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     'uses undefined for absent hashes with type %s',
     type => {
       const params = [
-        { paramName: 'section', parser: 'string', hash: true as const },
+        { paramName: 'section', parser: 'string', type: 'hash' as const },
       ]
       expect(EXPERIMENTAL_generateRouteParams(params, [type], false)).toBe(
         `{ 'section': ${type ?? 'string'} | undefined }`
@@ -283,7 +288,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
       params: { hash: { section: 'string', other: 'int', tab: 'bool' } },
     })
     expect(node.hashParams).toEqual([
-      { paramName: 'tab', parser: 'bool', hash: true },
+      { paramName: 'tab', parser: 'bool', type: 'hash' },
     ])
     // the getter runs again but warns once
     void node.params
@@ -299,7 +304,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
       params: { hash: { section: 'int' }, query: { page: 'int' } },
     })
     expect(node.hashParams).toEqual([
-      { paramName: 'section', parser: 'int', hash: true },
+      { paramName: 'section', parser: 'int', type: 'hash' },
     ])
     expect(node.queryParams.map(param => param.paramName)).toEqual(['page'])
   })
@@ -316,7 +321,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
       params: { hash: { tab: 'string' } },
     })
     expect(child.hashParams).toEqual([
-      { paramName: 'tab', parser: 'string', hash: true },
+      { paramName: 'tab', parser: 'string', type: 'hash' },
     ])
     expect(child.params.map(param => param.paramName)).toEqual([
       'id',
@@ -324,7 +329,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
       'tab',
     ])
     expect(parent.hashParams).toEqual([
-      { paramName: 'section', parser: 'string', hash: true },
+      { paramName: 'section', parser: 'string', type: 'hash' },
     ])
   })
 

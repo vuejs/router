@@ -54,6 +54,7 @@ describe('Tree', () => {
       rawSegment: '[id=int]',
       params: [
         {
+          type: 'path',
           paramName: 'id',
           parser: 'int',
         },
@@ -72,6 +73,7 @@ describe('Tree', () => {
       rawSegment: '[id=int]+',
       params: [
         {
+          type: 'path',
           paramName: 'id',
           parser: 'int',
           repeatable: true,
@@ -92,6 +94,7 @@ describe('Tree', () => {
       rawSegment: '[[id=int]]',
       params: [
         {
+          type: 'path',
           paramName: 'id',
           parser: 'int',
           optional: true,
@@ -112,6 +115,7 @@ describe('Tree', () => {
       rawSegment: '[[id=int]]+',
       params: [
         {
+          type: 'path',
           paramName: 'id',
           parser: 'int',
           repeatable: true,
@@ -133,6 +137,7 @@ describe('Tree', () => {
       rawSegment: 'a-[id=int]-b',
       params: [
         {
+          type: 'path',
           paramName: 'id',
           parser: 'int',
         },
@@ -319,6 +324,7 @@ describe('Tree', () => {
         isSplat: false,
         modifier: '',
         optional: false,
+        type: 'path',
         paramName: 'id',
         repeatable: false,
       }),
@@ -331,6 +337,7 @@ describe('Tree', () => {
         isSplat: false,
         modifier: '',
         optional: false,
+        type: 'path',
         paramName: 'id',
         repeatable: false,
       }),
@@ -348,6 +355,7 @@ describe('Tree', () => {
         isSplat: false,
         modifier: '',
         optional: false,
+        type: 'path',
         paramName: 'id',
         repeatable: false,
       }),
@@ -359,6 +367,7 @@ describe('Tree', () => {
         isSplat: false,
         modifier: '',
         optional: false,
+        type: 'path',
         paramName: 'id',
         repeatable: false,
       }),
@@ -371,6 +380,7 @@ describe('Tree', () => {
         isSplat: false,
         modifier: '',
         optional: false,
+        type: 'path',
         paramName: 'a',
         repeatable: false,
       }),
@@ -383,6 +393,7 @@ describe('Tree', () => {
         isSplat: false,
         modifier: '',
         optional: false,
+        type: 'path',
         paramName: 'id',
         repeatable: false,
       }),
@@ -396,6 +407,7 @@ describe('Tree', () => {
       rawSegment: '[id]+',
       params: [
         {
+          type: 'path',
           paramName: 'id',
           repeatable: true,
           optional: false,
@@ -414,6 +426,7 @@ describe('Tree', () => {
       rawSegment: '[[id]]+',
       params: [
         {
+          type: 'path',
           paramName: 'id',
           repeatable: true,
           optional: true,
@@ -432,6 +445,7 @@ describe('Tree', () => {
       rawSegment: '[[id]]',
       params: [
         {
+          type: 'path',
           paramName: 'id',
           repeatable: false,
           optional: true,
@@ -727,6 +741,7 @@ describe('Tree', () => {
     })
     expect(node.params).toHaveLength(1)
     expect(node.params[0]).toMatchObject({
+      type: 'path',
       paramName: 'a',
       isSplat: false,
       modifier: '',
@@ -878,6 +893,7 @@ describe('Tree', () => {
 
       expect(node.pathParams).toEqual([
         expect.objectContaining({
+          type: 'path',
           paramName: 'chapters',
           parser: 'int',
           modifier: '+',
@@ -886,6 +902,7 @@ describe('Tree', () => {
           isSplat: false,
         }),
         expect.objectContaining({
+          type: 'path',
           paramName: 'tags',
           modifier: '*',
           optional: true,
@@ -893,6 +910,7 @@ describe('Tree', () => {
           isSplat: false,
         }),
         expect.objectContaining({
+          type: 'path',
           paramName: 'path',
           modifier: '',
           optional: false,
@@ -1505,24 +1523,28 @@ describe('Tree', () => {
 
       expect(node.queryParams).toEqual([
         {
+          type: 'query',
           paramName: 'search',
           parser: null,
           format: null,
           defaultValue: undefined,
         },
         {
+          type: 'query',
           paramName: 'limit',
           parser: 'int',
           format: null,
           defaultValue: '10',
         },
         {
+          type: 'query',
           paramName: 'tags',
           parser: 'bool',
           format: null,
           defaultValue: undefined,
         },
         {
+          type: 'query',
           paramName: 'other',
           parser: null,
           format: null,
@@ -1582,12 +1604,14 @@ describe('Tree', () => {
       expect(node.params).toHaveLength(3)
       expect(node.params[0]).toMatchObject({ paramName: 'id' }) // path param
       expect(node.params[1]).toMatchObject({
+        type: 'query',
         paramName: 'tab',
         parser: null,
         format: null,
         defaultValue: undefined,
       }) // query param
       expect(node.params[2]).toMatchObject({
+        type: 'query',
         paramName: 'expand',
         parser: 'bool',
         format: null,
@@ -1619,6 +1643,7 @@ describe('Tree', () => {
       })
 
       expect(node.pathParams[0]).toMatchObject({
+        type: 'path',
         paramName: 'when',
         parser: 'date',
       })
@@ -1658,6 +1683,7 @@ describe('Tree', () => {
       })
 
       expect(node.pathParams[0]).toMatchObject({
+        type: 'path',
         paramName: 'when',
         parser: null,
       })
@@ -1804,6 +1830,7 @@ describe('Tree', () => {
       if (node.value.isParam()) {
         expect(node.value.pathParams).toHaveLength(1)
         expect(node.value.pathParams[0]).toMatchObject({
+          type: 'path',
           paramName: 'pathMatch',
         })
       }
@@ -1817,6 +1844,7 @@ describe('Tree', () => {
       if (node.value.isParam()) {
         expect(node.value.pathParams).toHaveLength(1)
         expect(node.value.pathParams[0]).toMatchObject({
+          type: 'path',
           paramName: 'pathMatch',
         })
       }
@@ -1830,6 +1858,7 @@ describe('Tree', () => {
       if (node.value.isParam()) {
         expect(node.value.pathParams).toHaveLength(1)
         expect(node.value.pathParams[0]).toMatchObject({
+          type: 'path',
           paramName: 'pathMatch',
         })
       }
@@ -1844,6 +1873,7 @@ describe('Tree', () => {
         expect(node.value.pathParams).toHaveLength(3)
         expect(node.value.pathParams[0]).toMatchObject({ paramName: 'a' })
         expect(node.value.pathParams[1]).toMatchObject({
+          type: 'path',
           paramName: 'pathMatch',
         })
         expect(node.value.pathParams[2]).toMatchObject({ paramName: 'b' })

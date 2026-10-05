@@ -311,7 +311,7 @@ definePage({ params: { hash: {
     const node = new TreeNodeValueStatic('test', undefined)
     node.setOverride('test.ts', { params: info.params })
     expect(node.hashParams).toEqual([
-      { paramName: 'section', ...expected, hash: true },
+      { paramName: 'section', ...expected, type: 'hash' },
     ])
     expect(isTreeParamOptional(node.hashParams[0]!)).toBe(optional)
   })
@@ -325,7 +325,7 @@ definePage({ params: { hash: {
       params: extractDefinePageInfo(code, 'test.ts')!.params,
     })
     expect(node.hashParams).toEqual([
-      { paramName: 'tab', parser: 'int', hash: true },
+      { paramName: 'tab', parser: 'int', type: 'hash' },
     ])
     expect('using "tab" and ignoring: section').toHaveBeenWarned()
   })
