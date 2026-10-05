@@ -287,6 +287,7 @@ describe('generateParamsTypes', () => {
   it('returns null for params without parsers', () => {
     const params: TreePathParam[] = [
       {
+        type: 'path',
         paramName: 'id',
         modifier: '',
         optional: false,
@@ -304,6 +305,7 @@ describe('generateParamsTypes', () => {
   it('returns correct type names for custom parsers', () => {
     const params: TreePathParam[] = [
       {
+        type: 'path',
         paramName: 'id',
         modifier: '',
         optional: false,
@@ -331,6 +333,7 @@ describe('generateParamsTypes', () => {
   it('returns correct types for native parsers', () => {
     const params: TreePathParam[] = [
       {
+        type: 'path',
         paramName: 'id',
         modifier: '',
         optional: false,
@@ -339,6 +342,7 @@ describe('generateParamsTypes', () => {
         parser: 'int',
       },
       {
+        type: 'path',
         paramName: 'active',
         modifier: '',
         optional: false,
@@ -347,6 +351,7 @@ describe('generateParamsTypes', () => {
         parser: 'bool',
       },
       {
+        type: 'path',
         paramName: 'slug',
         modifier: '',
         optional: false,
@@ -364,6 +369,7 @@ describe('generateParamsTypes', () => {
   it('handles mixed params with and without parsers', () => {
     const params: TreePathParam[] = [
       {
+        type: 'path',
         paramName: 'id',
         modifier: '',
         optional: false,
@@ -372,6 +378,7 @@ describe('generateParamsTypes', () => {
         parser: 'uuid',
       },
       {
+        type: 'path',
         paramName: 'page',
         modifier: '',
         optional: false,
@@ -380,6 +387,7 @@ describe('generateParamsTypes', () => {
         parser: null,
       },
       {
+        type: 'path',
         paramName: 'count',
         modifier: '',
         optional: false,
@@ -408,6 +416,7 @@ describe('generateParamsTypes', () => {
 describe('generateParamParserOptions', () => {
   it('returns empty string for param without parser', () => {
     const param: TreePathParam = {
+      type: 'path',
       paramName: 'id',
       modifier: '',
       optional: false,
@@ -424,6 +433,7 @@ describe('generateParamParserOptions', () => {
 
   it('generates import and returns variable for custom parser', () => {
     const param: TreePathParam = {
+      type: 'path',
       paramName: 'id',
       modifier: '',
       optional: false,
@@ -452,6 +462,7 @@ describe('generateParamParserOptions', () => {
 
   it('generates correct import for native int parser', () => {
     const param: TreePathParam = {
+      type: 'path',
       paramName: 'id',
       modifier: '',
       optional: false,
@@ -471,6 +482,7 @@ describe('generateParamParserOptions', () => {
 
   it('generates correct import for native bool parser', () => {
     const param: TreePathParam = {
+      type: 'path',
       paramName: 'active',
       modifier: '',
       optional: false,
@@ -490,6 +502,7 @@ describe('generateParamParserOptions', () => {
 
   it("returns empty string for native 'string' parser (treated as no parser)", () => {
     const param: TreePathParam = {
+      type: 'path',
       paramName: 'slug',
       modifier: '',
       optional: false,
@@ -507,6 +520,7 @@ describe('generateParamParserOptions', () => {
 
   it("lets custom parser named 'string' override the native default", () => {
     const param: TreePathParam = {
+      type: 'path',
       paramName: 'slug',
       modifier: '',
       optional: false,
@@ -533,6 +547,7 @@ describe('generateParamParserOptions', () => {
 
   it('returns empty string for missing parser', () => {
     const param: TreePathParam = {
+      type: 'path',
       paramName: 'id',
       modifier: '',
       optional: false,
@@ -561,6 +576,7 @@ describe('generatePathParamsOptions', () => {
   it('generates options for single param with parser', () => {
     const params: TreePathParam[] = [
       {
+        type: 'path',
         paramName: 'id',
         modifier: '',
         optional: false,
@@ -579,6 +595,7 @@ describe('generatePathParamsOptions', () => {
   it('generates options for param without parser', () => {
     const params: TreePathParam[] = [
       {
+        type: 'path',
         paramName: 'slug',
         modifier: '',
         optional: false,
@@ -597,6 +614,7 @@ describe('generatePathParamsOptions', () => {
   it('includes repeatable and optional flags when present', () => {
     const params: TreePathParam[] = [
       {
+        type: 'path',
         paramName: 'tags',
         modifier: '+',
         optional: false,
@@ -605,6 +623,7 @@ describe('generatePathParamsOptions', () => {
         parser: null,
       },
       {
+        type: 'path',
         paramName: 'category',
         modifier: '?',
         optional: true,
@@ -626,6 +645,7 @@ describe('generatePathParamsOptions', () => {
   it('handles multiple params with different configurations', () => {
     const params: TreePathParam[] = [
       {
+        type: 'path',
         paramName: 'id',
         modifier: '',
         optional: false,
@@ -634,6 +654,7 @@ describe('generatePathParamsOptions', () => {
         parser: 'uuid',
       },
       {
+        type: 'path',
         paramName: 'page',
         modifier: '?',
         optional: true,
@@ -642,6 +663,7 @@ describe('generatePathParamsOptions', () => {
         parser: 'int',
       },
       {
+        type: 'path',
         paramName: 'tags',
         modifier: '+',
         optional: false,
@@ -773,6 +795,7 @@ describe('generateParamParserCustomType', () => {
       `)
 
     const param: TreePathParam = {
+      type: 'path',
       paramName: 'id',
       modifier: '',
       optional: false,

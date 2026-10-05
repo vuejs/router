@@ -131,12 +131,14 @@ class _TreeNodeValueBase {
       if (!config) continue
       if (typeof config === 'string') {
         queryParams.push({
+          type: 'query',
           paramName,
           parser: config,
           format: null,
         })
       } else {
         queryParams.push({
+          type: 'query',
           paramName,
           parser: config.parser || null,
           format: config.format || null,
@@ -175,11 +177,11 @@ class _TreeNodeValueBase {
     return paramName && config
       ? [
           {
+            type: 'hash',
             paramName,
             parser: config.parser || null,
             defaultValue: config.default,
             required: config.required,
-            hash: true,
           },
         ]
       : []
@@ -390,6 +392,7 @@ export class TreeNodeValueGroup extends _TreeNodeValueBase {
 export type TreeParam = TreePathParam | TreeQueryParam | TreeHashParam
 
 export interface TreePathParam {
+  type: 'path'
   paramName: string
   modifier: string
   optional: boolean
@@ -399,20 +402,21 @@ export interface TreePathParam {
 }
 
 export interface TreeHashParam {
+  type: 'hash'
   paramName: string
   parser: string | null
   defaultValue?: string
   required?: boolean
-  hash: true
 }
 
 export function isTreeHashParam(
   param: TreeParam | PathSubSegment
 ): param is TreeHashParam {
-  return typeof param !== 'string' && 'hash' in param
+  return typeof param !== 'string' && param.type === 'hash'
 }
 
 export interface TreeQueryParam {
+  type: 'query'
   paramName: string
 
   queryKey?: string
@@ -440,7 +444,7 @@ export interface TreeQueryParam {
  * @internal
  */
 export function isTreeParamOptional(param: TreeParam): boolean {
-  if ('optional' in param) {
+  if (param.type === 'path') {
     return param.optional
   }
   return hasTreeParamDefault(param) || !param.required
@@ -459,7 +463,7 @@ export function hasTreeParamDefault(
  */
 export function isTreeParamRepeatable(param: TreeParam): boolean {
   if (isTreeHashParam(param)) return false
-  if ('repeatable' in param) {
+  if (param.type === 'path') {
     return param.repeatable
   }
   return param.format === 'array'
@@ -473,7 +477,7 @@ export function isTreeParamRepeatable(param: TreeParam): boolean {
 export function isTreePathParam(
   param: TreeParam | PathSubSegment
 ): param is TreePathParam {
-  return typeof param !== 'string' && 'modifier' in param
+  return typeof param !== 'string' && param.type === 'path'
 }
 
 /**
@@ -580,8 +584,8 @@ export class TreeNodeValueParam extends _TreeNodeValueBase {
           this.params
             .map(
               p =>
-                ('format' in p ? '?' : '') +
-                `${p.paramName}${'modifier' in p ? p.modifier : ''}` +
+                (p.type === 'query' ? '?' : '') +
+                `${p.paramName}${p.type === 'path' ? p.modifier : ''}` +
                 (p.parser ? '=' + p.parser : '')
             )
             .join(', ') +
@@ -1046,6 +1050,7 @@ function parseRawPathSegment(
  */
 function createEmptyRouteParam(): TreePathParam {
   return {
+    type: 'path',
     paramName: '',
     parser: null,
     modifier: '',
