@@ -1,5 +1,5 @@
 import { identityFn } from '../../../utils'
-import { decode, encodeParam, encodePath } from '../../../encoding'
+import { decode, encodeParam, encodePath } from '../../encoding'
 import { warn } from '../../../warning'
 import { diagnostics } from '../../../diagnostics'
 import { miss } from './errors'

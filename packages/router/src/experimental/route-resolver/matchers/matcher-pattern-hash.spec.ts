@@ -60,6 +60,29 @@ describe('hash param extraction', () => {
     })
   })
 
+  it('encodes the hash built from params', () => {
+    const location = resolver.resolve({
+      name: 'page',
+      params: { fragment: { parts: ['a b', '"<>`', 'café', '50%'] } },
+    })
+    expect(location.hash).toBe('#a%20b/%22%3C%3E%60/caf%C3%A9/50%25')
+    expect(location.fullPath).toBe('/page' + location.hash)
+    expect(location.params).toEqual({
+      fragment: { parts: ['a b', '"<>`', 'café', '50%'] },
+    })
+  })
+
+  it('round trips values with a percent sign', () => {
+    const current = resolver.resolve({
+      name: 'page',
+      params: { fragment: { parts: ['50%', '%20'] } },
+    })
+    expect(current.fullPath).toBe('/page#50%25/%2520')
+    expect(resolver.resolve('/page#50%25/%2520').params).toEqual({
+      fragment: { parts: ['50%', '%20'] },
+    })
+  })
+
   it('uses the default for an absent hash without calling the getter', () => {
     const hash = new MatcherPatternHashParam(
       'fragment',

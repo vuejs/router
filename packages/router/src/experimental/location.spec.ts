@@ -241,4 +241,30 @@ describe('parseURL', () => {
     expect(parseQuery).toHaveBeenCalledTimes(1)
     expect(parseQuery).toHaveBeenCalledWith('é=é&é=a')
   })
+
+  describe('hash', () => {
+    it('keeps the hash as it appears in the URL, like location.hash', () => {
+      expect(parseURL('/foo#%22%20%25')).toMatchObject({
+        fullPath: '/foo#%22%20%25',
+        hash: '#%22%20%25',
+      })
+      expect(parseURL('/foo#caf%C3%A9')).toMatchObject({
+        fullPath: '/foo#caf%C3%A9',
+        hash: '#caf%C3%A9',
+      })
+      expect(parseURL('/foo#%26')).toMatchObject({
+        fullPath: '/foo#%26',
+        hash: '#%26',
+      })
+      // userland structure like OAuth fragments is preserved
+      expect(parseURL('/foo#a=b%26c&d=e')).toMatchObject({
+        fullPath: '/foo#a=b%26c&d=e',
+        hash: '#a=b%26c&d=e',
+      })
+      expect(parseURL('/foo#100%')).toMatchObject({
+        fullPath: '/foo#100%',
+        hash: '#100%',
+      })
+    })
+  })
 })
