@@ -29,10 +29,10 @@ const ENC_CURLY_CLOSE_RE = /%7D/g // }
 export function encodeHash(text: string): string {
   return (
     commonEncode(text)
-      // restore every original %, so pre-encoded sequences pass through
-      .replace(ENC_PERCENT_RE, '%')
       .replace(ENC_CURLY_OPEN_RE, '{')
       .replace(ENC_CURLY_CLOSE_RE, '}')
       .replace(ENC_CARET_RE, '^')
+      // restore % last so pre-encoded sequences pass through
+      .replace(ENC_PERCENT_RE, '%')
   )
 }

@@ -17,6 +17,11 @@ describe('encodeHash', () => {
     expect(encodeHash('#%2526')).toBe('#%2526')
   })
 
+  it('keeps encoded braces and carets as they are', () => {
+    expect(encodeHash('#%7B%7D%5E')).toBe('#%7B%7D%5E')
+    expect(encodeHash('#%257B%257D%255E')).toBe('#%257B%257D%255E')
+  })
+
   it('keeps a lone % as it is like browsers do', () => {
     expect(encodeHash('#100%')).toBe('#100%')
     expect(encodeHash('#50% off')).toBe('#50%%20off')
