@@ -57,11 +57,8 @@ export function experimental_parseQuery(search: string): LocationQuery {
     const key = decode(eqPos < 0 ? searchParam : searchParam.slice(0, eqPos))
     const value = eqPos < 0 ? null : decode(searchParam.slice(eqPos + 1))
 
-    if (key in query) {
-      query[key].push(value)
-    } else {
-      query[key] = [value]
-    }
+    query[key] ??= []
+    query[key].push(value)
   }
   return query
 }
