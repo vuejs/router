@@ -48,7 +48,7 @@ import {
   createWebHashHistory,
   loadRouteLocation,
 } from '../index'
-import { NavigationFailureType } from '../errors'
+import { isNavigationFailure, NavigationFailureType } from '../errors'
 import { components, tick, nextNavigation } from '../../__tests__/utils'
 import { START_LOCATION_NORMALIZED } from '../location'
 import {
@@ -273,7 +273,7 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
     path: new MatcherPatternPathStatic('/inc-query-hash'),
     redirect: to => ({
       name: 'Foo',
-      query: { n: to.query.n + '-2' },
+      query: { n: [(to.query.n as string[])[0] + '-2'] },
       hash: to.hash + '-2',
     }),
   },
@@ -637,9 +637,37 @@ describe('Experimental Router', () => {
   it('navigates to same route record but different query', async () => {
     const { router } = await newRouter()
     await router.push('/?q=1')
-    expect(router.currentRoute.value.query).toEqual({ q: '1' })
+    expect(router.currentRoute.value.query).toEqual({ q: ['1'] })
     await router.push('/?q=2')
-    expect(router.currentRoute.value.query).toEqual({ q: '2' })
+    expect(router.currentRoute.value.query).toEqual({ q: ['2'] })
+  })
+
+  it('warns when a raw query value is not an array', async () => {
+    const { router } = await newRouter()
+    await router.push({ path: '/', query: { a: '1', b: 2, c: null } })
+    expect(router.currentRoute.value.query).toEqual({
+      a: ['1'],
+      b: ['2'],
+      c: [null],
+    })
+    expect('VUE_ROUTER_D0002').toHaveBeenWarnedTimes(3)
+  })
+
+  it('does not warn with array or undefined raw query values', async () => {
+    const { router } = await newRouter()
+    await router.push({ path: '/', query: { a: ['1', 2, null], b: undefined } })
+    expect(router.currentRoute.value.query).toEqual({ a: ['1', '2', null] })
+    await router.push('/?q=1&q')
+    expect(router.currentRoute.value.query).toEqual({ q: ['1', null] })
+  })
+
+  it('treats an empty array query value as a missing key', async () => {
+    const { router } = await newRouter()
+    await router.push('/')
+    const failure = await router.push({ path: '/', query: { a: [] } })
+    expect(isNavigationFailure(failure, NavigationFailureType.duplicated)).toBe(
+      true
+    )
   })
 
   it('navigates to same route record but different hash', async () => {
@@ -751,13 +779,13 @@ describe('Experimental Router', () => {
       router.resolve({
         name: 'catch-all',
         params: { pathMatch: 'some/path/with/slashes' },
-        query: { a: '1' },
+        query: { a: ['1'] },
         hash: '#hash',
       })
     ).toMatchObject({
       fullPath: '/some/path/with/slashes?a=1#hash',
       path: '/some/path/with/slashes',
-      query: { a: '1' },
+      query: { a: ['1'] },
       hash: '#hash',
     })
   })
@@ -884,7 +912,11 @@ describe('Experimental Router', () => {
       const route = scope.run(() =>
         computed(() => {
           runs++
-          return router.resolve({ path: '/foo', query: { q: '1' }, hash: '#h' })
+          return router.resolve({
+            path: '/foo',
+            query: { q: ['1'] },
+            hash: '#h',
+          })
         })
       )!
       expect(route.value.fullPath).toBe('/foo?q=1#h')
@@ -939,10 +971,10 @@ describe('Experimental Router', () => {
       // spread the current location
       ...router.currentRoute.value,
       // then update some stuff, creating inconsistencies,
-      query: { a: '1' },
+      query: { a: ['1'] },
     })
     expect(resolved).toMatchObject({
-      query: { a: '1' },
+      query: { a: ['1'] },
       path: '/',
       fullPath: '/?a=1',
     })
@@ -1271,7 +1303,7 @@ describe('Experimental Router', () => {
         name: 'Foo',
         path: '/foo',
         params: {},
-        query: { a: '2' },
+        query: { a: ['2'] },
         hash: '#b',
         redirectedFrom: expect.objectContaining({
           fullPath: '/to-foo-query',
@@ -1288,7 +1320,7 @@ describe('Experimental Router', () => {
         name: 'Foo',
         path: '/foo',
         params: {},
-        query: { hey: 'foo' },
+        query: { hey: ['foo'] },
         hash: '#fa',
         redirectedFrom: expect.objectContaining({
           fullPath: '/to-foo?hey=foo#fa',
@@ -1304,7 +1336,7 @@ describe('Experimental Router', () => {
       expect(router.currentRoute.value).toMatchObject({
         name: 'Param',
         params: { p: '1' },
-        query: { hey: 'foo' },
+        query: { hey: ['foo'] },
         hash: '#fa',
         redirectedFrom: expect.objectContaining({
           fullPath: '/to-p/1?hey=foo#fa',
@@ -1356,13 +1388,13 @@ describe('Experimental Router', () => {
       expect(loc).toMatchObject({
         name: 'Foo',
         query: {
-          n: '3-2',
+          n: ['3-2'],
         },
         hash: '#fa-2',
       })
       expect(loc.redirectedFrom).toMatchObject({
         fullPath: '/inc-query-hash?n=3#fa',
-        query: { n: '3' },
+        query: { n: ['3'] },
         hash: '#fa',
         path: '/inc-query-hash',
       })

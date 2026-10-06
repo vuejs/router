@@ -55,6 +55,27 @@ declare module 'vue-router' {
 }
 ```
 
+## Query values are arrays
+
+In the experimental router, every key in `route.query` has an array value. A key without a value gives `[null]`, and a missing key is `undefined`:
+
+```ts
+// /search?q=vue&tag=a&tag=b&debug
+route.query.q // ['vue']
+route.query.tag // ['a', 'b']
+route.query.debug // [null]
+route.query.page // undefined
+```
+
+When you navigate, also pass arrays. A non array value still works, but it shows a deprecation warning in development:
+
+```ts
+router.push({ query: { q: ['vue'] } }) // [!code ++]
+router.push({ query: { q: 'vue' } }) // [!code --]
+```
+
+An empty array is the same as a missing key: `{ tag: [] }` and `{}` give the same location.
+
 ## With Data Loaders
 
 If you use [Data Loaders](../data-loaders/), install the plugin **before** the router:

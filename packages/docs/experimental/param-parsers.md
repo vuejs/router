@@ -147,11 +147,11 @@ export const parser = defineParamParserRaw<Set<string>>({
 
 Here is a table of the different meaningful combinations of return values from `set` and how the router treats them for path and query params:
 
-| `set` returns        | Path param                | Query param                                                      |
-| -------------------- | ------------------------- | ---------------------------------------------------------------- |
-| `null` / `undefined` | param is omitted          | param is omitted (`undefined`) or rendered empty (`null`, `?k=`) |
-| `string`             | single segment (`/value`) | single entry (`?k=value`)                                        |
-| `string[]`           | repeatable (`/a/b/c`)     | repeated entries (`?k=a&k=b`)                                    |
+| `set` returns        | Path param                | Query param                                                               |
+| -------------------- | ------------------------- | ------------------------------------------------------------------------- |
+| `null` / `undefined` | param is omitted          | param is omitted (`undefined`) or rendered without a value (`null`, `?k`) |
+| `string`             | single segment (`/value`) | single entry (`?k=value`)                                                 |
+| `string[]`           | repeatable (`/a/b/c`)     | repeated entries (`?k=a&k=b`)                                             |
 
 :::
 

@@ -57,7 +57,7 @@ Note that the `key` determines which pages share a saved position. By default, g
 import { useScrollRestoration } from 'vue-router/experimental'
 
 useScrollRestoration({
-  key: to => to.path + `?p=${to.query.p}` + to.hash,
+  key: to => to.path + `?p=${to.query.p?.[0]}` + to.hash,
 })
 ```
 
