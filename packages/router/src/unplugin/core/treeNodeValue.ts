@@ -264,10 +264,14 @@ class _TreeNodeValueBase {
       reason = 'splat params always match everything'
     } else {
       try {
+        // escapes `/` in sources from `<route>` blocks
+        re = new RegExp(re).source
         // matching the empty alternative gives back one entry per group
         const groups = new RegExp(re + '|').exec('')!.length - 1
         if (groups > 0) {
           reason = 'it contains capturing groups, use `(?:...)` instead'
+        } else if (new RegExp(`^(?:${re})$`).test('')) {
+          reason = 'it matches an empty value'
         }
       } catch (err: any) {
         reason = err.message

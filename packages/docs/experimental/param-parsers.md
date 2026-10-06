@@ -230,7 +230,14 @@ definePage({
 </script>
 ```
 
-The regexp must not contain capturing groups (use `(?:...)` instead) and its flags are ignored: paths are always matched case-insensitively. For repeatable params, each value must match the regexp. Set `re` to `null` to use the default regexp.
+The regexp is inserted as a group inside the regexp of the whole path, so it must only describe the value of the param:
+
+- It must not contain capturing groups, use `(?:...)` instead.
+- It must not match an empty value (e.g. `/a*/`).
+- Do not use anchors like `^` or `$`: they apply to the whole path, not to the param value.
+- Its flags are ignored: paths are always matched case-insensitively.
+
+For repeatable params, each value must match the regexp. Set `re` to `null` to use the default regexp.
 
 ### Query params
 

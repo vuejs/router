@@ -1760,6 +1760,27 @@ describe('Tree', () => {
       expect(node.pathParams[0]).toMatchObject({ re: null })
       expect('VUE_ROUTER_B0023').toHaveBeenWarned()
     })
+
+    it('ignores regexps that match an empty value', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[org]', '[org].vue')
+      node.setCustomRouteBlock('[org].vue', {
+        params: { path: { org: { re: 'a*' } } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ re: null })
+      expect('VUE_ROUTER_B0023').toHaveBeenWarned()
+    })
+
+    it('generates a valid regexp with unescaped slashes in the source', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[org]', '[org].vue')
+      node.setCustomRouteBlock('[org].vue', {
+        params: { path: { org: { re: 'a/b' } } },
+      })
+
+      expect(node.regexp).toBe('/^\\/(a\\/b)$/i')
+    })
   })
 
   describe('_parent convention', () => {

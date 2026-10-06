@@ -182,9 +182,9 @@ export interface DefinePagePathParamOptions {
   parser?: ParamParserType | null
 
   /**
-   * Custom regexp to match the param. Must not contain capturing groups, use
-   * `(?:...)` instead. Flags are ignored. Set to `null` to use the default
-   * regexp.
+   * Custom regexp to match the param value. Must not contain capturing groups
+   * (use `(?:...)` instead), anchors, or match an empty value. Flags are
+   * ignored. Set to `null` to use the default regexp.
    *
    * @example
    * ```ts
