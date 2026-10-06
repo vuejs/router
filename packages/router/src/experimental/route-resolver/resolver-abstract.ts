@@ -40,13 +40,12 @@ export interface EXPERIMENTAL_Resolver_Base<TRecord> {
 
   /**
    * Resolves a location by its name. Any required params or query must be
-   * passed in the `options` argument.
+   * passed in the `options` argument. If `currentLocation` is passed, its
+   * `params`, `query`, and `hash` are reused, `location` takes precedence.
    */
   resolve(
     location: ResolverLocationAsNamed,
-    // TODO: is this type strictness useful?
-    currentLocation?: undefined
-    // currentLocation?: undefined | NEW_LocationResolved<TMatcherRecord>
+    currentLocation?: ResolverLocationResolved<TRecord>
   ): ResolverLocationResolved<TRecord>
 
   /**
