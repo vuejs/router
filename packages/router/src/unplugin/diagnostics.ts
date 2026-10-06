@@ -14,15 +14,6 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
   // TODO: could use the ansi reporter probably
   reporters: [/*#__PURE__*/ createConsoleReporter()],
   codes: {
-    VUE_ROUTER_B0022: {
-      why: (p: {
-        segment: string
-        usedParamName: string
-        ignoredParamNames: string
-      }) =>
-        `Only one hash param can be declared per route. In "${p.segment}", using "${p.usedParamName}" and ignoring: ${p.ignoredParamNames}.`,
-      fix: 'Use one hash parser that returns an object with all extracted values.',
-    },
     // --- core/definePage.ts ---
     VUE_ROUTER_B0001: {
       why: (p: { filename: string; message: string }) =>
@@ -145,6 +136,18 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       why: (p: { parser: string; fullPath: string }) =>
         `Parameter parser "${p.parser}" not found for route "${p.fullPath}".`,
       fix: 'Define the param parser or use one of the native parsers.',
+    },
+
+    // --- core/treeNodeValue.ts ---
+    VUE_ROUTER_B0022: {
+      why: (p: {
+        segment: string
+        usedParamName: string
+        ignoredParamNames: string
+      }) =>
+        `Only one hash param can be declared per route. In "${p.segment}", using "${p.usedParamName}" and ignoring: ${p.ignoredParamNames}.`,
+      fix: (p: { usedParamName: string; ignoredParamNames: string }) =>
+        `Keep only one from ${p.ignoredParamNames} and ${p.usedParamName} or merge them into one single property.`,
     },
   },
 })
