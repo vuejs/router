@@ -28,6 +28,7 @@ import type {
 import { NO_MATCH_LOCATION } from './resolver-abstract'
 import type { MatcherPatternQuery } from './matchers/matcher-pattern-query'
 import { warn } from '../../warning'
+import { assign } from '../../utils'
 
 /**
  * Base interface for a resolver record that can be extended.
@@ -170,9 +171,7 @@ export function createFixedResolver<
       ]
     | [
         location: ResolverLocationAsNamed,
-        // Same as above
-        // currentLocation?: NEW_LocationResolved<TRecord> | undefined
-        currentLocation?: undefined,
+        currentLocation?: ResolverLocationResolved<TRecord>,
       ]
     | [
         relativeLocation: ResolverLocationAsRelative,
@@ -266,7 +265,7 @@ export function createFixedResolver<
       let matched = buildMatched(record)
       // parser.set() can return non array values
       const query = normalizeQuery(
-        Object.assign(
+        assign(
           {
             ...currentLocation?.query,
             ...normalizeQuery(to.query),

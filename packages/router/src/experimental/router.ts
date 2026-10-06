@@ -752,11 +752,23 @@ export function experimental_createRouter(
   ): RouteLocationRaw | void {
     const redirect = to.matched.at(-1)?.redirect
     if (redirect) {
-      return resolver.resolve(
-        // @ts-expect-error: TODO: allow redirect to return the first argument of resolve or a tuple consisting of the arguments?
-        typeof redirect === 'function' ? redirect(to, from) : redirect,
-        from
-      )
+      const target =
+        typeof redirect === 'function' ? redirect(to, from) : redirect
+      if (__DEV__) {
+        const path = typeof target === 'string' ? target : target.path
+        // only named or absolute locations
+        if (
+          path == null
+            ? (target as { name?: unknown }).name == null
+            : !path.startsWith('/')
+        ) {
+          throw diagnostics.VUE_ROUTER_R0008({
+            target: JSON.stringify(target, null, 2),
+            to: to.fullPath,
+          })
+        }
+      }
+      return target
     }
   }
 
@@ -777,7 +789,7 @@ export function experimental_createRouter(
       return pushWithRedirect(
         {
           // @ts-expect-error: FIXME: refactor location types
-          ...resolve(shouldRedirect, currentRoute.value),
+          ...resolve(shouldRedirect),
           state:
             typeof shouldRedirect === 'object'
               ? assign({}, data, shouldRedirect.state)
@@ -860,7 +872,7 @@ export function experimental_createRouter(
             return pushWithRedirect(
               {
                 // @ts-expect-error: FIXME: refactor location types
-                ...resolve(failure.to, currentRoute.value),
+                ...resolve(failure.to),
                 state:
                   typeof failure.to === 'object'
                     ? assign({}, data, failure.to.state)

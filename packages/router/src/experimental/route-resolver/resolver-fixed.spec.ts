@@ -354,6 +354,26 @@ describe('fixed resolver', () => {
         })
       })
 
+      it('reuses the current location if passed', () => {
+        const resolver = createFixedResolver([
+          { name: 'ab', path: AB_PARAMS_PATH_MATCHER },
+        ])
+
+        const currentLocation = resolver.resolve('/A/B?q=1&q=2#h')
+
+        expect(
+          resolver.resolve(
+            { name: 'ab', params: { a: 'a', b: 'b' } },
+            currentLocation
+          )
+        ).toMatchObject({
+          fullPath: '/a/b?q=1&q=2#h',
+          params: { a: 'a', b: 'b' },
+          query: { q: ['1', '2'] },
+          hash: '#h',
+        })
+      })
+
       it('keeps params if not provided', () => {
         const resolver = createFixedResolver([
           { name: 'user-edit', path: USERS_ID_OTHER_PATH_MATCHER },

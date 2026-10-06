@@ -144,6 +144,21 @@ const routeRecords: EXPERIMENTAL_RouteRecord_Matchable[] = [
     redirect: { name: 'home' },
   },
   {
+    name: 'param-redirect',
+    path: new MatcherPatternPathStatic('/param-redirect'),
+    redirect: { name: 'Param' },
+  },
+  {
+    name: 'relative-object-redirect',
+    path: new MatcherPatternPathStatic('/redirect/relative-object'),
+    redirect: { query: { a: '1' } },
+  },
+  {
+    name: 'relative-string-redirect',
+    path: new MatcherPatternPathStatic('/redirect/relative-string'),
+    redirect: 'target',
+  },
+  {
     name: 'home-before',
     path: new MatcherPatternPathStatic('/home-before'),
     components: { default: components.Home },
@@ -1257,6 +1272,44 @@ describe('Experimental Router', () => {
       expect(loc.redirectedFrom).toMatchObject({
         path: '/home',
       })
+    })
+
+    it('does not inherit params from the current route on a named redirect', async () => {
+      const { router } = await newRouter()
+      await router.push('/p/42')
+      expect(() => router.push('/param-redirect')).toThrow()
+      expect(router.currentRoute.value.fullPath).toBe('/p/42')
+    })
+
+    it('does not inherit query or hash from the current route on a named redirect', async () => {
+      const { router } = await newRouter()
+      await router.push('/foo?a=1#h')
+      await router.push('/home')
+      expect(router.currentRoute.value.fullPath).toBe('/')
+    })
+
+    it('does not inherit query or hash from the current route on a guard redirect', async () => {
+      const { router } = await newRouter()
+      await router.push('/foo?a=1#h')
+      router.beforeEach(to =>
+        to.name === 'Foo' ? { name: 'Param', params: { p: '1' } } : undefined
+      )
+      await router.push('/foo')
+      expect(router.currentRoute.value.fullPath).toBe('/p/1')
+    })
+
+    it('rejects a redirect without a name or a path', async () => {
+      const { router } = await newRouter()
+      expect(() => router.push('/redirect/relative-object')).toThrow()
+      expect('VUE_ROUTER_R0008').toHaveBeenWarned()
+    })
+
+    it('disallows a redirect to a relative location', async () => {
+      const { router } = await newRouter()
+      await router.push('/foo')
+      expect(() => router.push('/redirect/relative-string')).toThrow()
+      expect('VUE_ROUTER_R0008').toHaveBeenWarned()
+      expect(router.currentRoute.value.fullPath).toBe('/foo')
     })
 
     it('does not preserve query or hash on a plain redirect', async () => {
