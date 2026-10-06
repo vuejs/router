@@ -188,9 +188,9 @@ export type DefinePageQueryParamOptionsAny<
  * used to type the {@link DefinePageQueryParamOptions.default | `default`}
  * value via {@link ParamParserTypeOf}.
  */
-export interface DefinePageQueryParamOptions<
+export type DefinePageQueryParamOptions<
   Parser extends ParamParserType = ParamParserType,
-> {
+> = DefinePageParamRequiredOrDefault<ParamParserTypeOf<Parser>> & {
   /**
    * The type of the query parameter. Allowed values are native param parsers
    * and any parser in the {@link https://uvr.esm.is/TODO | params folder }. If
@@ -202,13 +202,6 @@ export interface DefinePageQueryParamOptions<
   // queryKey?: string
 
   /**
-   * Default value if the query parameter is missing or if the match fails
-   * (e.g. a invalid number is passed to the int param parser). If not provided
-   * and the param is not required, the route will match with undefined.
-   */
-  default?: (() => ParamParserTypeOf<Parser>) | ParamParserTypeOf<Parser>
-
-  /**
    * How to format the query parameter value.
    *
    * - 'value' - keep the first value only and pass that to parser
@@ -217,23 +210,31 @@ export interface DefinePageQueryParamOptions<
    * @default 'value'
    */
   format?: 'value' | 'array'
-
-  /**
-   * Whether this query parameter is required. If true and the parameter is
-   * missing (and no default is provided), the route will not match.
-   *
-   * @default false
-   */
-  required?: boolean
 }
 
 /**
  * A param can be required or have a default value, but not both.
  */
-// TODO: use this for query param options too.
 export type DefinePageParamRequiredOrDefault<T> =
-  | { required: true; default?: never }
-  | { required?: false; default?: T | (() => T) }
+  | {
+      /**
+       * Whether this param is required. If true and the param is missing or
+       * fails to parse, the route will not match.
+       *
+       * @default false
+       */
+      required: true
+      default?: never
+    }
+  | {
+      required?: false
+      /**
+       * Default value if the param is missing or if the match fails (e.g. an
+       * invalid number is passed to the int param parser). If not provided,
+       * the route will match with `undefined`.
+       */
+      default?: T | (() => T)
+    }
 
 /**
  * Configures one parameter extracted from the whole hash.
