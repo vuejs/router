@@ -401,6 +401,25 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
     })
   })
 
+  it('makes query params with a default optional on push even if required', () => {
+    const params = [
+      {
+        paramName: 'page',
+        parser: 'int',
+        type: 'query' as const,
+        format: 'value' as const,
+        required: true,
+        defaultValue: '1',
+      },
+    ]
+    expect(EXPERIMENTAL_generateRouteParams(params, ['number'], false)).toBe(
+      "{ 'page': number }"
+    )
+    expect(EXPERIMENTAL_generateRouteParams(params, ['number'], true)).toBe(
+      "{ 'page'?: number }"
+    )
+  })
+
   describe('raw query param parsers', () => {
     function createNodeWithQueryParam(
       paramName: string,

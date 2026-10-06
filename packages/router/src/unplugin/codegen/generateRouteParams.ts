@@ -185,38 +185,25 @@ export function EXPERIMENTAL_generateRouteParams(
             extractedType = `${type ?? 'string'}${isRepeatable ? '[]' : ''}`
           }
 
-          // Track if this is an optional query param (no default, not required)
-          let isOptionalQueryParam = false
-
-          // Add | null for optional path params. Raw parsers are skipped since TParam is used as-is.
           if (isTreePathParam(param)) {
+            // Raw parsers are skipped since TParam is used as-is.
             if (isOptional && !isRepeatable && !isRawParser) {
               extractedType += ' | null'
             }
-          } else {
-            // Handle query params
-            if (!param.required) {
-              isOptionalQueryParam = true
-              const hasNoDefault =
-                param.defaultValue === undefined ||
-                param.defaultValue === 'undefined'
-              // For raw types (router.push), explicitly allow `undefined` so
-              // the param is assignable even under `exactOptionalPropertyTypes`.
-              // For non-raw types (route.params), only add `| undefined` when
-              // the parser is not a raw parser: raw parsers always receive
-              // the array form at runtime, so they never leave the value
-              // undefined.
-              if (hasNoDefault && (isLoose || !isRawParser)) {
-                extractedType += ' | undefined'
-              }
-            }
+            return `${paramName}: ${extractedType}`
           }
 
-          return `${paramName}${
-            // For raw types (router.push), use ? marker for optional query params
-            // For non-raw types (route.params), the | undefined is explicit in the union
-            isLoose && isOptionalQueryParam ? '?' : ''
-          }: ${extractedType}`
+          // Raw parsers always receive the array form at runtime, so they
+          // never leave route.params undefined. Pushing still accepts it under
+          // `exactOptionalPropertyTypes`.
+          if (
+            !param.required &&
+            !hasTreeParamDefault(param) &&
+            (isLoose || !isRawParser)
+          ) {
+            extractedType += ' | undefined'
+          }
+          return `${paramName}${isLoose && isOptional ? '?' : ''}: ${extractedType}`
         })
         .join(', ')} }`
     : // no params allowed
