@@ -81,6 +81,7 @@ export {
   type ParamParserTypeOf,
   type DefinePageParamRequiredOrDefault,
   type DefinePageHashParamOptions,
+  type DefinePagePathParamOptions,
   type DefinePageHashParamOptionsAny as _DefinePageHashParamOptionsAny,
   type DefinePageQueryParamOptions,
   type DefinePageQueryParamOptionsAny as _DefinePageQueryParamOptionsAny,

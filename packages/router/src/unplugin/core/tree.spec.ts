@@ -1690,6 +1690,133 @@ describe('Tree', () => {
     })
   })
 
+  describe('Path param custom regexp from definePage', () => {
+    it('keeps the regexp source in the param', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[org]', '[org].vue')
+      node.setCustomRouteBlock('[org].vue', {
+        params: { path: { org: { re: '@\\w+' } } },
+      })
+
+      expect(node.pathParams).toEqual([
+        expect.objectContaining({ paramName: 'org', re: '@\\w+' }),
+      ])
+    })
+
+    it('defaults the regexp to null', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[org]', '[org].vue')
+      node.setCustomRouteBlock('[org].vue', {
+        params: { path: { org: { re: null } } },
+      })
+
+      expect(node.pathParams).toEqual([
+        expect.objectContaining({ paramName: 'org', re: null }),
+      ])
+      expect(tree.insert('[id]', '[id].vue').pathParams).toEqual([
+        expect.objectContaining({ paramName: 'id', re: null }),
+      ])
+    })
+
+    it('keeps the parser along the regexp', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('users/[id]', 'users/[id].vue')
+      node.setCustomRouteBlock('users/[id].vue', {
+        params: { path: { id: { parser: 'int', re: '\\d{3}' } } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ parser: 'int', re: '\\d{3}' })
+    })
+
+    it('keeps the filename parser when only the regexp is set', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[id=int]', '[id=int].vue')
+      node.setCustomRouteBlock('[id=int].vue', {
+        params: { path: { id: { re: '\\d+' } } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ parser: 'int', re: '\\d+' })
+      expect('VUE_ROUTER_B0021').not.toHaveBeenWarned()
+    })
+
+    it('ignores regexps with capturing groups', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[org]', '[org].vue')
+      node.setCustomRouteBlock('[org].vue', {
+        params: { path: { org: { re: '(@)\\w+' } } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ re: null })
+      expect('VUE_ROUTER_B0023').toHaveBeenWarned()
+    })
+
+    it('ignores invalid regexps', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[org]', '[org].vue')
+      node.setCustomRouteBlock('[org].vue', {
+        params: { path: { org: { re: '[a-' } } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ re: null })
+      expect('VUE_ROUTER_B0023').toHaveBeenWarned()
+    })
+
+    it('ignores regexps that match an empty value', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[org]', '[org].vue')
+      node.setCustomRouteBlock('[org].vue', {
+        params: { path: { org: { re: 'a*' } } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ re: null })
+      expect('VUE_ROUTER_B0023').toHaveBeenWarned()
+    })
+
+    it('warns when a repeatable param regexp can match a slash', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[parts]+', '[parts]+.vue')
+      node.setCustomRouteBlock('[parts]+.vue', {
+        params: { path: { parts: { re: '.+' } } },
+      })
+
+      // the regexp is kept
+      expect(node.pathParams[0]).toMatchObject({ re: '.+' })
+      expect('VUE_ROUTER_B0024').toHaveBeenWarned()
+    })
+
+    it('does not warn when a repeatable param regexp cannot match a slash', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[parts]+', '[parts]+.vue')
+      node.setCustomRouteBlock('[parts]+.vue', {
+        params: { path: { parts: { re: '[^/]+' } } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ re: '[^/]+' })
+      expect('VUE_ROUTER_B0024').not.toHaveBeenWarned()
+    })
+
+    it('does not warn when a non repeatable param regexp can match a slash', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[org]', '[org].vue')
+      node.setCustomRouteBlock('[org].vue', {
+        params: { path: { org: { re: '.+' } } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ re: '.+' })
+      expect('VUE_ROUTER_B0024').not.toHaveBeenWarned()
+    })
+
+    it('generates a valid regexp with unescaped slashes in the source', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[org]', '[org].vue')
+      node.setCustomRouteBlock('[org].vue', {
+        params: { path: { org: { re: 'a/b' } } },
+      })
+
+      expect(node.regexp).toBe('/^\\/(a\\/b)$/i')
+    })
+  })
+
   describe('_parent convention', () => {
     it('handles _parent.vue as parent component', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)

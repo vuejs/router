@@ -1,4 +1,7 @@
-import type { CustomRouteBlock } from './customBlock'
+import type {
+  CustomRouteBlock,
+  CustomRouteBlockPathParamOptions,
+} from './customBlock'
 import { joinPath, mergeRouteRecordOverride } from './utils'
 import { diagnostics } from '../diagnostics'
 import { encodePath } from '../utils/encoding'
@@ -63,6 +66,7 @@ class _TreeNodeValueBase {
    * emitted once per param even though `pathParams` is a getter.
    */
   private _warnedParsers = new Set<string>()
+  private _warnedRegexps = new Set<string>()
 
   /**
    * Ignored hash params last warned about, for the same reason.
@@ -224,7 +228,16 @@ class _TreeNodeValueBase {
     }
 
     return params.map(param => {
-      const parser = declaredParsers[param.paramName]
+      const declared = declaredParsers[param.paramName]
+      const { parser, re }: CustomRouteBlockPathParamOptions =
+        declared && typeof declared === 'object'
+          ? declared
+          : { parser: declared }
+
+      if (re != null) {
+        param = { ...param, re: this._validateParamRe(param, re) }
+      }
+
       // an explicit `null` removes the parser declared in the file name
       if (parser === undefined) {
         return param
@@ -242,6 +255,58 @@ class _TreeNodeValueBase {
 
       return { ...param, parser }
     })
+  }
+
+  /**
+   * Returns the regexp source if it can be used to match the param, `null`
+   * otherwise.
+   */
+  private _validateParamRe(param: TreePathParam, re: string): string | null {
+    let reason: string | undefined
+    if (param.isSplat) {
+      reason = 'splat params always match everything'
+    } else {
+      try {
+        // escapes `/` in sources from `<route>` blocks
+        re = new RegExp(re).source
+        // matching the empty alternative gives back one entry per group
+        const groups = new RegExp(re + '|').exec('')!.length - 1
+        if (groups > 0) {
+          reason = 'it contains capturing groups, use `(?:...)` instead'
+        } else if (new RegExp(`^(?:${re})$`).test('')) {
+          reason = 'it matches an empty value'
+        }
+      } catch (err: any) {
+        reason = err.message
+      }
+    }
+
+    if (reason) {
+      if (!this._warnedRegexps.has(param.paramName)) {
+        this._warnedRegexps.add(param.paramName)
+        diagnostics.VUE_ROUTER_B0023({
+          paramName: param.paramName,
+          segment: this.rawSegment,
+          re,
+          reason,
+        })
+      }
+      return null
+    }
+
+    if (param.repeatable && !this._warnedRegexps.has(param.paramName)) {
+      // heuristic: misses regexps that only match `/` between other chars
+      if (new RegExp(`^(?:${re})$`).test('/')) {
+        this._warnedRegexps.add(param.paramName)
+        diagnostics.VUE_ROUTER_B0024({
+          paramName: param.paramName,
+          segment: this.rawSegment,
+          re,
+        })
+      }
+    }
+
+    return re
   }
 
   toString(): string {
@@ -406,6 +471,11 @@ export interface TreePathParam {
   repeatable: boolean
   isSplat: boolean
   parser: string | null
+  /**
+   * Source of the custom regexp used to match the param. `null` uses the
+   * default one.
+   */
+  re: string | null
 }
 
 export interface TreeHashParam {
@@ -547,6 +617,9 @@ export class TreeNodeValueParam extends _TreeNodeValueBase {
    * Generates the regex pattern for the path segment.
    */
   get re(): string {
+    const customRegexps = new Map(
+      this.pathParams.map(param => [param.paramName, param.re])
+    )
     let regexp = ''
     for (var i = 0; i < this.subSegments.length; i++) {
       var segment = this.subSegments[i]
@@ -558,7 +631,15 @@ export class TreeNodeValueParam extends _TreeNodeValueBase {
       } else if (segment.isSplat) {
         regexp += '(.*)'
       } else {
-        var re = segment.repeatable ? '(.+?)' : '([^/]+?)'
+        var customRe = customRegexps.get(segment.paramName)
+        var re = customRe
+          ? segment.repeatable
+            ? // each repetition must match the custom regexp
+              `((?:${customRe})(?:\\/(?:${customRe}))*)`
+            : `(${customRe})`
+          : segment.repeatable
+            ? '(.+?)'
+            : '([^/]+?)'
         if (segment.optional) {
           // check ahead if there is a static segment after this one that starts with a slash
           // TODO: trailingSlash behavior
@@ -1064,5 +1145,6 @@ function createEmptyRouteParam(): TreePathParam {
     optional: false,
     repeatable: false,
     isSplat: false,
+    re: null,
   }
 }

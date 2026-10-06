@@ -1851,3 +1851,60 @@ describe('generated hash params', () => {
     expect(importsMap.toString()).toContain("from '/src/params/section.ts'")
   })
 })
+
+describe('path params custom regexp', () => {
+  it('uses the custom regexp in the generated path matcher', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree
+      .insert('orgs/[org]', 'orgs/[org].vue')
+      .setCustomRouteBlock('orgs/[org].vue', {
+        params: { path: { org: { re: '@\\w+' } } },
+      })
+    tree
+      .insert('tags/[tags]+', 'tags/[tags]+.vue')
+      .setCustomRouteBlock('tags/[tags]+.vue', {
+        params: { path: { tags: { re: '[a-z]+' } } },
+      })
+
+    expect(
+      generateRouteResolver(tree, DEFAULT_OPTIONS, new ImportsMap(), new Map())
+    ).toMatchInlineSnapshot(`
+      "
+      const __route_0 = normalizeRouteRecord({
+        name: '/orgs/[org]',
+        path: new MatcherPatternPathDynamic(
+          /^\\/orgs\\/(@\\w+)$/i,
+          {
+            org: [/* no parser */],
+          },
+          ["orgs",1],
+          /* trailingSlash */
+        ),
+        components: {
+          'default': () => import('orgs/[org].vue')
+        },
+      })
+
+      const __route_1 = normalizeRouteRecord({
+        name: '/tags/[tags]+',
+        path: new MatcherPatternPathDynamic(
+          /^\\/tags\\/((?:[a-z]+)(?:\\/(?:[a-z]+))*)$/i,
+          {
+            tags: [/* no parser */, /* repeatable: */ true],
+          },
+          ["tags",1],
+          /* trailingSlash */
+        ),
+        components: {
+          'default': () => import('tags/[tags]+.vue')
+        },
+      })
+
+      export const resolver = createFixedResolver([
+        __route_0,  // /orgs/:org
+        __route_1,  // /tags/:tags+
+      ])
+      "
+    `)
+  })
+})
