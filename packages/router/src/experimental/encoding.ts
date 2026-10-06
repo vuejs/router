@@ -13,6 +13,8 @@ export {
   SLASH_RE,
 } from '../encoding'
 
+export const PERCENT_RE = /%/g // %
+
 const ENC_PERCENT_RE = /%25/g // %
 const ENC_CARET_RE = /%5E/g // ^
 const ENC_CURLY_OPEN_RE = /%7B/g // {

@@ -1,5 +1,6 @@
 import { toValue } from 'vue'
 import { miss } from './errors'
+import { decode, PERCENT_RE } from '../../encoding'
 import type { MatcherPatternHash } from './matcher-pattern'
 import type { ParamParser } from './param-parsers'
 
@@ -39,7 +40,7 @@ export class MatcherPatternHashParam<
   ): Record<ParamName, HashParamValue<T, TDefault, TRequired>> {
     let value
     if (hash) {
-      const content = hash.slice(1)
+      const content = decode(hash.slice(1))
       try {
         value = this.parser.get ? this.parser.get(content) : content
       } catch (error) {
@@ -66,6 +67,9 @@ export class MatcherPatternHashParam<
     const value = params[this.paramName]
     if (value == null) return ''
     const content = this.parser.set ? this.parser.set(value) : String(value)
-    return content == null ? '' : '#' + content
+    return content == null
+      ? ''
+      : // the resolver protects the rest with encodeHash, which keeps %
+        '#' + String(content).replace(PERCENT_RE, '%25')
   }
 }
