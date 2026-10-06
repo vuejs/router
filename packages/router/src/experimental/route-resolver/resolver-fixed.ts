@@ -1,6 +1,7 @@
 import {
   experimental_normalizeQuery as normalizeQuery,
   experimental_parseQuery as parseQuery,
+  warnNonArrayQueryValues,
 } from '../query'
 import { stringifyQuery } from '../../query'
 import {
@@ -204,6 +205,10 @@ export function createFixedResolver<
   function resolve(
     ...[to, currentLocation]: _resolveArgs
   ): ResolverLocationResolved<TRecord> {
+    if (__DEV__ && typeof to === 'object') {
+      warnNonArrayQueryValues(to.query)
+    }
+
     // named location, e.g. { name: 'foo', params }
     // or relative location (second argument is current location)
     if (typeof to === 'object' && (to.name || to.path == null)) {
@@ -259,13 +264,16 @@ export function createFixedResolver<
         record.hash?.build(params) ?? to.hash ?? currentLocation?.hash ?? ''
       )
       let matched = buildMatched(record)
-      const query = Object.assign(
-        {
-          ...currentLocation?.query,
-          ...normalizeQuery(to.query),
-        },
-        ...matched.flatMap(record =>
-          record.query?.map(query => query.build(params))
+      // parser.set() can return non array values
+      const query = normalizeQuery(
+        Object.assign(
+          {
+            ...currentLocation?.query,
+            ...normalizeQuery(to.query),
+          },
+          ...matched.flatMap(record =>
+            record.query?.map(query => query.build(params))
+          )
         )
       )
 

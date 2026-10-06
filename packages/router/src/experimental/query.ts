@@ -1,10 +1,6 @@
 import { decode, PLUS_RE } from './encoding'
 import { isArray } from '../utils'
-
-/**
- * NOTE: some types here are duplicated from ../query.ts
- * because they will change to always have (string | null)[] values
- */
+import { diagnostics } from '../diagnostics'
 
 /**
  * Possible values in normalized {@link LocationQuery}. `null` renders the query
@@ -22,14 +18,12 @@ export type LocationQueryValue = string | null
 export type LocationQueryValueRaw = LocationQueryValue | number | undefined
 
 /**
- * Normalized query object that appears in {@link RouteLocationNormalized}
+ * Normalized query object that appears in {@link RouteLocationNormalized}.
+ * Every present key has an array value. `?a` gives `{ a: [null] }`.
  *
  * @public
  */
-export type LocationQuery = Record<
-  string,
-  LocationQueryValue | LocationQueryValue[]
->
+export type LocationQuery = Record<string, LocationQueryValue[]>
 
 /**
  * Loose {@link LocationQuery} object that can be passed to functions like
@@ -64,13 +58,9 @@ export function experimental_parseQuery(search: string): LocationQuery {
     const value = eqPos < 0 ? null : decode(searchParam.slice(eqPos + 1))
 
     if (key in query) {
-      let currentValue = query[key]
-      if (!isArray(currentValue)) {
-        currentValue = query[key] = [currentValue]
-      }
-      ;(currentValue as LocationQueryValue[]).push(value)
+      query[key].push(value)
     } else {
-      query[key] = value
+      query[key] = [value]
     }
   }
   return query
@@ -78,9 +68,12 @@ export function experimental_parseQuery(search: string): LocationQuery {
 
 /**
  * Transforms a {@link LocationQueryRaw} into a {@link LocationQuery} by casting
- * numbers into strings, removing keys with an undefined value and replacing
- * undefined with null in arrays. Uses `Object.create(null)` so the returned
+ * numbers into strings, wrapping non array values in an array, removing keys
+ * with an undefined value and replacing undefined with null in arrays. Uses `Object.create(null)` so the returned
  * object cannot be exploited via prototype pollution.
+ *
+ * FIXME: remove once only arrays are accepted in {@link LocationQueryRaw}.
+ * Normalization will then only cast numbers and remove undefined keys.
  *
  * @param query - query object to normalize
  * @returns a normalized query object
@@ -93,13 +86,27 @@ export function experimental_normalizeQuery(
   for (const key in query) {
     const value = query[key]
     if (value !== undefined) {
-      normalizedQuery[key] = isArray(value)
-        ? value.map(v => (v == null ? null : '' + v))
-        : value == null
-          ? value
-          : '' + value
+      normalizedQuery[key] = (isArray(value) ? value : [value]).map(v =>
+        v == null ? null : '' + v
+      )
     }
   }
 
   return normalizedQuery
+}
+
+/**
+ * Warns about raw query values that are not arrays. Dev only.
+ * FIXME: remove with the non array normalization in
+ * {@link experimental_normalizeQuery}.
+ *
+ * @param query - raw query passed by the user
+ */
+export function warnNonArrayQueryValues(query: LocationQueryRaw | undefined) {
+  for (const key in query) {
+    const value = query[key]
+    if (value !== undefined && !isArray(value)) {
+      diagnostics.VUE_ROUTER_D0002({ key, value: JSON.stringify(value) })
+    }
+  }
 }

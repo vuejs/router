@@ -38,6 +38,13 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `Route "${p.name}" uses beforeEnter, which is deprecated in the experimental router.`,
       fix: 'Move the condition to the route meta field and check to.meta in router.beforeEach().',
     },
+    // --- experimental/route-resolver/resolver-fixed.ts ---
+    VUE_ROUTER_D0002: {
+      why: (p: { key: string; value: string }) =>
+        `The query value of "${p.key}" is not an array (${p.value}). Non array query values are deprecated in the experimental router.`,
+      fix: (p: { key: string; value: string }) =>
+        `Wrap the value in an array: \`{ ${JSON.stringify(p.key)}: [${p.value}] }\`. Use undefined to remove the key.`,
+    },
 
     // --- router.ts ---
     VUE_ROUTER_R0001: {
