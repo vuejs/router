@@ -96,7 +96,11 @@ export interface DefinePage<FilePath extends string = string> extends Partial<
     /**
      * Parameters extracted from the path. Allows to setup custom parsers without changing the filename.
      */
-    path?: { [K in PathParamNamesForFilePath<FilePath>]?: ParamParserType }
+    path?: {
+      [K in PathParamNamesForFilePath<FilePath>]?:
+        | ParamParserType
+        | DefinePagePathParamOptions
+    }
 
     /**
      * Parameters extracted from the query.
@@ -166,6 +170,29 @@ export type ParamParserTypeOf<Name extends ParamParserType> =
       ? T
       : unknown
     : unknown
+
+/**
+ * Configures how to extract a route param from the path.
+ */
+export interface DefinePagePathParamOptions {
+  /**
+   * The param parser to use. Set to `null` to remove the parser set in the
+   * file name.
+   */
+  parser?: ParamParserType | null
+
+  /**
+   * Custom regexp to match the param. Must not contain capturing groups, use
+   * `(?:...)` instead. Flags are ignored. Set to `null` to use the default
+   * regexp.
+   *
+   * @example
+   * ```ts
+   * definePage({ params: { path: { org: { re: /@\w+/ } } } })
+   * ```
+   */
+  re?: RegExp | null
+}
 
 /**
  * Distributive variant of {@link DefinePageQueryParamOptions} used in the

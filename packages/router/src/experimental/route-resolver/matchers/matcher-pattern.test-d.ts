@@ -5,6 +5,7 @@ import {
   PATH_PARAM_PARSER_DEFAULTS,
 } from './param-parsers'
 import { PATH_PARAM_SINGLE_DEFAULT } from './param-parsers'
+import { definePage } from '../../runtime'
 
 describe('MatcherPatternPathDynamic', () => {
   it('can be generic', () => {
@@ -93,5 +94,29 @@ describe('MatcherPatternPathDynamic', () => {
     matcher.build({ userId: '2' })
     // @ts-expect-error: missing userId param
     matcher.build({})
+  })
+})
+
+describe('definePage path params', () => {
+  it('accepts a parser or options with a custom regexp', () => {
+    definePage({
+      params: {
+        path: {
+          id: 'int',
+          org: { re: /@\w+/ },
+          slug: { parser: 'int', re: null },
+          other: { parser: null },
+        },
+      },
+    })
+  })
+
+  it('rejects a string regexp', () => {
+    definePage({
+      params: {
+        // @ts-expect-error: must be a RegExp
+        path: { org: { re: '@\\w+' } },
+      },
+    })
   })
 })

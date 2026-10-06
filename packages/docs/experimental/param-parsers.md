@@ -212,6 +212,26 @@ definePage({
 </script>
 ```
 
+Use the object form to also restrict the values the param matches with a custom regexp:
+
+```vue
+<!-- src/pages/[org].vue -->
+<script setup lang="ts">
+definePage({
+  params: {
+    path: {
+      // only matches `/@vuejs`, not `/vuejs`
+      org: { re: /@\w+/ },
+      // or combine it with a parser
+      // org: { parser: 'org', re: /@\w+/ },
+    },
+  },
+})
+</script>
+```
+
+The regexp must not contain capturing groups (use `(?:...)` instead) and its flags are ignored: paths are always matched case-insensitively. For repeatable params, each value must match the regexp. Set `re` to `null` to use the default regexp.
+
 ### Query params
 
 Declared inside `definePage()`:

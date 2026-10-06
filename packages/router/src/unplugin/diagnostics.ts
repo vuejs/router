@@ -89,6 +89,16 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `param "${p.paramName}" declares a parser twice in "${p.segment}": "${p.filenameParser}" in the file name and "${p.declaredParser}" in \`params.path\`. Keeping "${p.declaredParser}".`,
       fix: 'Remove one of the two parsers.',
     },
+    VUE_ROUTER_B0023: {
+      why: (p: {
+        paramName: string
+        segment: string
+        re: string
+        reason: string
+      }) =>
+        `Invalid custom regexp /${p.re}/ for param "${p.paramName}" in "${p.segment}": ${p.reason}. Using the default regexp.`,
+      fix: 'Fix the `re` option of the param in `params.path`.',
+    },
 
     // --- core/customBlock.ts ---
     VUE_ROUTER_B0012: {

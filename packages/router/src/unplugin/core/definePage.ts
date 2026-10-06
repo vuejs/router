@@ -23,6 +23,7 @@ import type { ParsedStaticImport } from 'mlly'
 import { findStaticImports, parseStaticImport } from 'mlly'
 import type {
   CustomRouteBlock,
+  CustomRouteBlockPathParamOptions,
   CustomRouteBlockQueryParamOptions,
 } from './customBlock'
 
@@ -513,13 +514,32 @@ function extractPathParams(
   const pathParams: NonNullable<DefinePageInfo['params']>['path'] = {}
 
   for (const prop of pathObj.properties) {
-    if (
-      prop.type === 'ObjectProperty' &&
-      prop.key.type === 'Identifier' &&
-      prop.value.type === 'StringLiteral'
-    ) {
+    if (prop.type !== 'ObjectProperty' || prop.key.type !== 'Identifier') {
+      continue
+    }
+    if (prop.value.type === 'StringLiteral') {
       // TODO: we should check if the value is a valid parser type
       pathParams[prop.key.name] = prop.value.value
+    } else if (prop.value.type === 'ObjectExpression') {
+      const options: CustomRouteBlockPathParamOptions = {}
+      for (const optionProp of prop.value.properties) {
+        if (
+          optionProp.type !== 'ObjectProperty' ||
+          optionProp.key.type !== 'Identifier'
+        ) {
+          continue
+        }
+        const { name } = optionProp.key
+        const { value } = optionProp
+        if (name === 'parser') {
+          if (value.type === 'StringLiteral') options.parser = value.value
+          else if (value.type === 'NullLiteral') options.parser = null
+        } else if (name === 're') {
+          if (value.type === 'RegExpLiteral') options.re = value.pattern
+          else if (value.type === 'NullLiteral') options.re = null
+        }
+      }
+      pathParams[prop.key.name] = options
     }
   }
 

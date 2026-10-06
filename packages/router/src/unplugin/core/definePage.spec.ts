@@ -278,6 +278,23 @@ definePage({ params: { hash: {
     })
   })
 
+  it('extracts path params options with a custom regexp', () => {
+    const code = `definePage({ params: { path: {
+      org: { re: /@\\w+/ },
+      id: { parser: 'int', re: null },
+      slug: { parser: null },
+      tab: 'tab',
+    } } })`
+    expect(
+      extractDefinePageInfo(code, 'src/pages/test.ts')?.params?.path
+    ).toEqual({
+      org: { re: '@\\w+' },
+      id: { parser: 'int', re: null },
+      slug: { parser: null },
+      tab: 'tab',
+    })
+  })
+
   it('extracts hash options without a parser and ignores format', () => {
     const code = `definePage({ params: { hash: {
       section: { required: false, format: 'array' }

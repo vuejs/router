@@ -293,6 +293,7 @@ describe('generateParamsTypes', () => {
         optional: false,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: null,
       },
     ]
@@ -311,6 +312,7 @@ describe('generateParamsTypes', () => {
         optional: false,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: 'uuid',
       },
     ]
@@ -339,6 +341,7 @@ describe('generateParamsTypes', () => {
         optional: false,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: 'int',
       },
       {
@@ -348,6 +351,7 @@ describe('generateParamsTypes', () => {
         optional: false,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: 'bool',
       },
       {
@@ -357,6 +361,7 @@ describe('generateParamsTypes', () => {
         optional: false,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: 'string',
       },
     ]
@@ -375,6 +380,7 @@ describe('generateParamsTypes', () => {
         optional: false,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: 'uuid',
       },
       {
@@ -384,6 +390,7 @@ describe('generateParamsTypes', () => {
         optional: false,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: null,
       },
       {
@@ -393,6 +400,7 @@ describe('generateParamsTypes', () => {
         optional: false,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: 'int',
       },
     ]
@@ -422,6 +430,7 @@ describe('generateParamParserOptions', () => {
       optional: false,
       repeatable: false,
       isSplat: false,
+      re: null,
       parser: null,
     }
     const importsMap = new ImportsMap()
@@ -439,6 +448,7 @@ describe('generateParamParserOptions', () => {
       optional: false,
       repeatable: false,
       isSplat: false,
+      re: null,
       parser: 'uuid',
     }
     const importsMap = new ImportsMap()
@@ -468,6 +478,7 @@ describe('generateParamParserOptions', () => {
       optional: false,
       repeatable: false,
       isSplat: false,
+      re: null,
       parser: 'int',
     }
     const importsMap = new ImportsMap()
@@ -488,6 +499,7 @@ describe('generateParamParserOptions', () => {
       optional: false,
       repeatable: false,
       isSplat: false,
+      re: null,
       parser: 'bool',
     }
     const importsMap = new ImportsMap()
@@ -508,6 +520,7 @@ describe('generateParamParserOptions', () => {
       optional: false,
       repeatable: false,
       isSplat: false,
+      re: null,
       parser: 'string',
     }
     const importsMap = new ImportsMap()
@@ -526,6 +539,7 @@ describe('generateParamParserOptions', () => {
       optional: false,
       repeatable: false,
       isSplat: false,
+      re: null,
       parser: 'string',
     }
     const importsMap = new ImportsMap()
@@ -553,6 +567,7 @@ describe('generateParamParserOptions', () => {
       optional: false,
       repeatable: false,
       isSplat: false,
+      re: null,
       parser: 'missing',
     }
     const importsMap = new ImportsMap()
@@ -582,6 +597,7 @@ describe('generatePathParamsOptions', () => {
         optional: false,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: 'int',
       },
     ]
@@ -601,6 +617,7 @@ describe('generatePathParamsOptions', () => {
         optional: false,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: null,
       },
     ]
@@ -620,6 +637,7 @@ describe('generatePathParamsOptions', () => {
         optional: false,
         repeatable: true,
         isSplat: false,
+        re: null,
         parser: null,
       },
       {
@@ -629,6 +647,7 @@ describe('generatePathParamsOptions', () => {
         optional: true,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: null,
       },
     ]
@@ -651,6 +670,7 @@ describe('generatePathParamsOptions', () => {
         optional: false,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: 'uuid',
       },
       {
@@ -660,6 +680,7 @@ describe('generatePathParamsOptions', () => {
         optional: true,
         repeatable: false,
         isSplat: false,
+        re: null,
         parser: 'int',
       },
       {
@@ -669,6 +690,7 @@ describe('generatePathParamsOptions', () => {
         optional: false,
         repeatable: true,
         isSplat: false,
+        re: null,
         parser: null,
       },
     ]
@@ -801,6 +823,7 @@ describe('generateParamParserCustomType', () => {
       optional: false,
       repeatable: false,
       isSplat: false,
+      re: null,
       parser: 'user-id', // Route uses original kebab-case name
     }
     expect(generateParamParserOptions(param, importsMap, paramParsers)).toBe(

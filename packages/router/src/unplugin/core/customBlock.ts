@@ -31,9 +31,10 @@ export interface CustomRouteBlock extends Partial<
   params?: {
     /**
      * Override the parser for a given path param. Set to `null` to remove a
-     * filename-based parser (e.g. revert `[id=int]` back to no parser).
+     * filename-based parser (e.g. revert `[id=int]` back to no parser). The
+     * options object also allows a custom regexp source with `re`.
      */
-    path?: Record<string, string | null>
+    path?: Record<string, string | null | CustomRouteBlockPathParamOptions>
 
     /**
      * Declare one parser that receives the hash content without the leading `#`.
@@ -46,6 +47,14 @@ export interface CustomRouteBlock extends Partial<
      */
     query?: Record<string, string | CustomRouteBlockQueryParamOptions>
   }
+}
+
+export interface CustomRouteBlockPathParamOptions {
+  parser?: string | null
+  /**
+   * Source of the regexp used to match the param. `null` uses the default one.
+   */
+  re?: string | null
 }
 
 export interface CustomRouteBlockQueryParamOptions {
