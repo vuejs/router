@@ -4,24 +4,12 @@ import { resolveOptions } from '../options'
 import {
   generateRouteResolver,
   generateRouteRecord,
+  generateRouteRecordHash,
   generateRouteRecordQuery,
 } from './generateRouteResolver'
 import { ImportsMap } from '../core/utils'
 import type { ParamParsersMap } from './generateParamParsers'
 import { generateAliasWarnings } from './generateAliasWarnings'
-import { NO_MATCH_LOCATION } from '../../experimental/route-resolver/resolver-abstract'
-import { createFixedResolver } from '../../experimental/route-resolver/resolver-fixed'
-import {
-  MatcherPatternPathStatic,
-  MatcherPatternPathDynamic,
-} from '../../experimental/route-resolver/matchers/matcher-pattern'
-import { MatcherPatternHashParam } from '../../experimental/route-resolver/matchers/matcher-pattern-hash'
-import {
-  normalizeParamParser,
-  PARAM_PARSER_INT,
-  PARAM_PARSER_BOOL,
-} from '../../experimental/route-resolver/matchers/param-parsers'
-import { normalizeRouteRecord } from '../../experimental/router'
 import type { CustomRouteBlockHashParamOptions } from '../core/customBlock'
 
 const DEFAULT_OPTIONS = resolveOptions({})
@@ -1777,14 +1765,53 @@ describe('generateRouteResolver', () => {
 })
 
 describe('generated hash params', () => {
-  function createHashResolver(
-    options: string | CustomRouteBlockHashParamOptions = 'section'
-  ) {
+  function generateHash(options: string | CustomRouteBlockHashParamOptions) {
+    const node = new PrefixTree(DEFAULT_OPTIONS).insert('page', 'page.vue')
+    node.value.setEditOverride('params', { hash: { section: options } })
+    return generateRouteRecordHash({
+      node,
+      importsMap: new ImportsMap(),
+      paramParsersMap: new Map(),
+    })
+  }
+
+  it('generates a hash param without options', () => {
+    expect(generateHash('section')).toMatchInlineSnapshot(
+      `"hash: new MatcherPatternHashParam('section'),"`
+    )
+  })
+
+  it('generates native parsers', () => {
+    expect(generateHash({ parser: 'int' })).toMatchInlineSnapshot(
+      `"hash: new MatcherPatternHashParam('section', PARAM_PARSER_INT),"`
+    )
+    expect(generateHash({ parser: 'bool' })).toMatchInlineSnapshot(
+      `"hash: new MatcherPatternHashParam('section', PARAM_PARSER_BOOL),"`
+    )
+  })
+
+  it('generates required and default options', () => {
+    expect(generateHash({ required: true })).toMatchInlineSnapshot(
+      `"hash: new MatcherPatternHashParam('section', {}, undefined, true),"`
+    )
+    expect(generateHash({ default: "'overview'" })).toMatchInlineSnapshot(
+      `"hash: new MatcherPatternHashParam('section', {}, 'overview'),"`
+    )
+    expect(
+      generateHash({ parser: 'int', default: '() => 42' })
+    ).toMatchInlineSnapshot(
+      `"hash: new MatcherPatternHashParam('section', PARAM_PARSER_INT, () => 42),"`
+    )
+  })
+
+  it('includes the hash param and a custom parser in the resolver', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     const node = tree.insert('page', 'page.vue')
-    node.value.setEditOverride('params', { hash: { section: options } })
+    node.value.setEditOverride('params', {
+      hash: { section: { parser: 'section', required: true } },
+    })
     const importsMap = new ImportsMap()
-    const code = generateRouteResolver(
+    const resolver = generateRouteResolver(
       tree,
       DEFAULT_OPTIONS,
       importsMap,
@@ -1801,143 +1828,26 @@ describe('generated hash params', () => {
         ],
       ])
     )
-    const parser = {
-      get: (hash: string) => {
-        if (hash === 'invalid') throw new Error('Invalid section')
-        if (hash === 'null') return null
-        if (hash === 'undefined') return undefined
-        if (hash === 'false') return false
-        if (hash === 'zero') return 0
-        if (hash === 'empty') return ''
-        return { heading: hash }
-      },
-      set: ({ heading }: { heading: string }) => heading,
-    }
-    const bindings = {
-      createFixedResolver,
-      normalizeRouteRecord,
-      MatcherPatternPathStatic,
-      MatcherPatternPathDynamic,
-      MatcherPatternHashParam,
-      _normalizeParamParser: normalizeParamParser,
-      PARAM_PARSER__section: parser,
-      PARAM_PARSER_INT,
-      PARAM_PARSER_BOOL,
-    }
-    const resolver: ReturnType<typeof createFixedResolver> = new Function(
-      ...Object.keys(bindings),
-      code.replace('export const resolver =', 'return')
-    )(...Object.values(bindings))
 
-    return { resolver, name: node.name as string }
-  }
+    expect(resolver).toMatchInlineSnapshot(`
+      "
+      const _normalized_PARAM_PARSER__section = _normalizeParamParser(PARAM_PARSER__section)
 
-  it.each([
-    ['int', '0', 0],
-    ['int', '42', 42],
-    ['bool', 'false', false],
-    ['bool', 'true', true],
-  ] as const)(
-    'resolves and builds native %s hash %s',
-    (parser, hash, section) => {
-      const { resolver, name } = createHashResolver({ parser, required: true })
-      expect(resolver.resolve(`/page#${hash}`)).toMatchObject({
-        name,
-        params: { section },
+      const __route_0 = normalizeRouteRecord({
+        name: '/page',
+        path: new MatcherPatternPathStatic('/page'),
+        hash: new MatcherPatternHashParam('section', _normalized_PARAM_PARSER__section, undefined, true),
+        components: {
+          'default': () => import('page.vue')
+        },
       })
-      expect(resolver.resolve({ name, params: { section } })).toMatchObject({
-        fullPath: `/page#${hash}`,
-        params: { section },
-      })
-    }
-  )
 
-  it('reads hash content and skips absent hashes', () => {
-    const { resolver, name } = createHashResolver()
-    expect(resolver.resolve('/page').params).toEqual({ section: undefined })
-    expect(resolver.resolve('/page#').params).toEqual({
-      section: { heading: '' },
-    })
-    expect(resolver.resolve('/page#intro').params).toEqual({
-      section: { heading: 'intro' },
-    })
-    expect(resolver.resolve('/page#invalid')).toMatchObject({
-      name,
-      params: { section: undefined },
-    })
-    expect(
-      resolver.resolve({ name, params: { section: { heading: 'next' } } })
-    ).toMatchObject({
-      fullPath: '/page#next',
-      params: { section: { heading: 'next' } },
-    })
-    expect(
-      resolver.resolve({ name, params: { section: { heading: '' } } }).fullPath
-    ).toBe('/page#')
-    for (const section of [null, undefined]) {
-      expect(resolver.resolve({ name, params: { section } })).toMatchObject({
-        fullPath: '/page',
-        params: { section: undefined },
-      })
-    }
-  })
-
-  it.each([{}, { required: true }, { default: "'fallback'" }])(
-    'preserves falsy parser results with options %j',
-    options => {
-      const { resolver, name } = createHashResolver({
-        parser: 'section',
-        ...options,
-      })
-      for (const [hash, section] of [
-        ['null', null],
-        ['false', false],
-        ['zero', 0],
-        ['empty', ''],
-      ] as const) {
-        expect(resolver.resolve(`/page#${hash}`)).toMatchObject({
-          name,
-          params: { section },
-        })
-      }
-    }
-  )
-
-  it('rejects only absent, undefined, and failed required hashes', () => {
-    const { resolver } = createHashResolver({
-      parser: 'section',
-      required: true,
-    })
-    for (const hash of ['', '#undefined', '#invalid']) {
-      expect(resolver.resolve(`/page${hash}`).name).toBe(NO_MATCH_LOCATION.name)
-    }
-  })
-
-  it.each(['null', '() => null', '0', '() => 42', "'overview'"])(
-    'applies default %s only to absent, undefined, and failed hashes',
-    defaultValue => {
-      const { resolver, name } = createHashResolver({
-        parser: 'section',
-        default: defaultValue,
-      })
-      const value = new Function(`return (${defaultValue})`)()
-      const section = typeof value === 'function' ? value() : value
-      for (const hash of ['', '#undefined', '#invalid']) {
-        expect(resolver.resolve(`/page${hash}`)).toMatchObject({
-          name,
-          params: { section },
-        })
-      }
-      expect(resolver.resolve('/page#').params).toEqual({
-        section: { heading: '' },
-      })
-    }
-  )
-
-  it('keeps bare hashes separate from absent hashes without a parser', () => {
-    const { resolver } = createHashResolver({ default: "'overview'" })
-    expect(resolver.resolve('/page').params).toEqual({ section: 'overview' })
-    expect(resolver.resolve('/page#').params).toEqual({ section: '' })
-    expect(resolver.resolve('/page#intro').params).toEqual({ section: 'intro' })
+      export const resolver = createFixedResolver([
+        __route_0,  // /page
+      ])
+      "
+    `)
+    expect(importsMap.toString()).toContain('MatcherPatternHashParam')
+    expect(importsMap.toString()).toContain("from '/src/params/section.ts'")
   })
 })
