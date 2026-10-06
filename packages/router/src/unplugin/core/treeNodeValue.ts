@@ -1,4 +1,7 @@
-import type { CustomRouteBlock } from './customBlock'
+import type {
+  CustomRouteBlock,
+  CustomRouteBlockPathParamOptions,
+} from './customBlock'
 import { joinPath, mergeRouteRecordOverride } from './utils'
 import { diagnostics } from '../diagnostics'
 import { encodePath } from '../utils/encoding'
@@ -223,19 +226,15 @@ class _TreeNodeValueBase {
 
     return params.map(param => {
       const declared = declaredParsers[param.paramName]
-      if (declared === undefined) {
-        return param
-      }
-
-      const options =
+      const { parser, re }: CustomRouteBlockPathParamOptions =
         declared && typeof declared === 'object'
           ? declared
           : { parser: declared }
-      if (options.re !== undefined) {
-        param = { ...param, re: this._validateParamRe(param, options.re) }
+
+      if (re != null) {
+        param = { ...param, re: this._validateParamRe(param, re) }
       }
 
-      const parser = options.parser
       // an explicit `null` removes the parser declared in the file name
       if (parser === undefined) {
         return param
@@ -259,12 +258,7 @@ class _TreeNodeValueBase {
    * Returns the regexp source if it can be used to match the param, `null`
    * otherwise.
    */
-  private _validateParamRe(
-    param: TreePathParam,
-    re: string | null
-  ): string | null {
-    if (re == null) return null
-
+  private _validateParamRe(param: TreePathParam, re: string): string | null {
     let reason: string | undefined
     if (param.isSplat) {
       reason = 'splat params always match everything'
