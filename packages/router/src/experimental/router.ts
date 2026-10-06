@@ -622,6 +622,17 @@ export interface EXPERIMENTAL_Router
 }
 
 /**
+ * Checks if a location is relative: a string or a `path` that does not start
+ * with `/`, or an object without a `name` or a `path`.
+ */
+function isRelativeLocation(to: RouteLocationRaw): boolean {
+  const path = typeof to === 'string' ? to : to.path
+  return path == null
+    ? (to as { name?: unknown }).name == null
+    : !path.startsWith('/')
+}
+
+/**
  * Creates an experimental Router that allows passing a resolver instead of a
  * routes array. This router does not have `addRoute()` and `removeRoute()`
  * methods and is meant to be used with file-based routing thanks to
@@ -754,19 +765,11 @@ export function experimental_createRouter(
     if (redirect) {
       const target =
         typeof redirect === 'function' ? redirect(to, from) : redirect
-      if (__DEV__) {
-        const path = typeof target === 'string' ? target : target.path
-        // only named or absolute locations
-        if (
-          path == null
-            ? (target as { name?: unknown }).name == null
-            : !path.startsWith('/')
-        ) {
-          throw diagnostics.VUE_ROUTER_R0008({
-            target: JSON.stringify(target, null, 2),
-            to: to.fullPath,
-          })
-        }
+      if (__DEV__ && isRelativeLocation(target)) {
+        throw diagnostics.VUE_ROUTER_R0008({
+          target: JSON.stringify(target, null, 2),
+          to: to.fullPath,
+        })
       }
       return target
     }
@@ -844,15 +847,16 @@ export function experimental_createRouter(
           if (
             isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
           ) {
+            const redirectTo = resolve(
+              // @ts-expect-error: FIXME: refactor location types
+              failure.to,
+              // relative guard redirects are relative to the target location
+              isRelativeLocation(failure.to) ? toLocation : undefined
+            )
             if (
               __DEV__ &&
               // we are redirecting to the same location we were already at
-              isSameRouteLocation(
-                stringifyQuery,
-                // @ts-expect-error: FIXME: failure.to should not contain relative locations
-                resolve(failure.to),
-                toLocation
-              ) &&
+              isSameRouteLocation(stringifyQuery, redirectTo, toLocation) &&
               // and we have done it a couple of times
               redirectedFrom &&
               // @ts-expect-error: added only in dev
@@ -871,8 +875,7 @@ export function experimental_createRouter(
 
             return pushWithRedirect(
               {
-                // @ts-expect-error: FIXME: refactor location types
-                ...resolve(failure.to),
+                ...redirectTo,
                 state:
                   typeof failure.to === 'object'
                     ? assign({}, data, failure.to.state)

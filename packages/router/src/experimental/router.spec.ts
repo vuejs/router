@@ -1298,6 +1298,36 @@ describe('Experimental Router', () => {
       expect(router.currentRoute.value.fullPath).toBe('/p/1')
     })
 
+    it('resolves a relative guard redirect against the target location', async () => {
+      const { router } = await newRouter()
+      await router.push('/p/1')
+      router.beforeEach(to =>
+        to.name === 'Foo' && !to.query.page
+          ? { query: { page: ['2'] } }
+          : undefined
+      )
+      await router.push('/foo?a=1')
+      expect(router.currentRoute.value.fullPath).toBe('/foo?a=1&page=2')
+    })
+
+    it('keeps the target params in a relative guard redirect', async () => {
+      const { router } = await newRouter()
+      router.beforeEach(to =>
+        to.name === 'Param' && to.params.p === '1' && !to.query.a
+          ? { query: { a: ['1'] } }
+          : undefined
+      )
+      await router.push('/p/1')
+      expect(router.currentRoute.value.fullPath).toBe('/p/1?a=1')
+    })
+
+    it('resolves a relative string guard redirect against the target location', async () => {
+      const { router } = await newRouter()
+      router.beforeEach(to => (to.path === '/users/posva' ? 'add' : undefined))
+      await router.push('/users/posva')
+      expect(router.currentRoute.value.path).toBe('/users/add')
+    })
+
     it('rejects a redirect without a name or a path', async () => {
       const { router } = await newRouter()
       expect(() => router.push('/redirect/relative-object')).toThrow()
