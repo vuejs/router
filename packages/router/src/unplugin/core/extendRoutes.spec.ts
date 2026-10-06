@@ -364,4 +364,68 @@ describe('EditableTreeNode', () => {
       ])
     })
   })
+
+  describe('overrides stay up to date after reads', () => {
+    it('name', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = new EditableTreeNode(tree).insert('foo', 'foo.vue')
+      expect(node.name).toBe('/foo')
+      node.name = 'custom'
+      expect(node.name).toBe('custom')
+    })
+
+    it('path and params', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = new EditableTreeNode(tree).insert('foo', 'foo.vue')
+      expect(node.path).toBe('/foo')
+      expect(node.params).toEqual([])
+      node.path = '/bar/:id'
+      expect(node.path).toBe('/bar/:id')
+      expect(node.params).toMatchObject([{ paramName: 'id' }])
+    })
+
+    it('meta with addToMeta and the setter', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = new EditableTreeNode(tree).insert('foo', 'foo.vue')
+      expect(node.meta).toEqual({})
+      node.addToMeta({ a: 1 })
+      expect(node.meta).toEqual({ a: 1 })
+      node.addToMeta({ b: 2 })
+      expect(node.meta).toEqual({ a: 1, b: 2 })
+      node.meta = { c: 3 }
+      expect(node.meta).toEqual({ c: 3 })
+      node.meta = { d: 4 }
+      expect(node.meta).toEqual({ d: 4 })
+    })
+
+    it('alias', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = new EditableTreeNode(tree).insert('foo', 'foo.vue')
+      expect(node.alias).toBeUndefined()
+      node.addAlias(['/a'])
+      expect(node.alias).toEqual(['/a'])
+      node.alias!.push('/ignored')
+      expect(node.alias).toEqual(['/a'])
+      node.addAlias(['/b'])
+      expect(node.alias).toEqual(['/a', '/b'])
+    })
+
+    it('custom route blocks', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('foo', 'foo.vue')
+      expect(node.name).toBe('/foo')
+      node.setCustomRouteBlock('foo.vue', { name: 'from-block' })
+      expect(node.name).toBe('from-block')
+      node.setCustomRouteBlock('foo.vue', undefined)
+      expect(node.name).toBe('/foo')
+    })
+
+    it('parent overrides in the full path', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const child = tree.insert('foo/bar', 'foo/bar.vue')
+      expect(child.fullPath).toBe('/foo/bar')
+      new EditableTreeNode(child.parent!).path = '/baz'
+      expect(child.fullPath).toBe('/baz/bar')
+    })
+  })
 })

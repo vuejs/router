@@ -53,7 +53,10 @@ class _TreeNodeValueBase {
    * Overrides defined by each file. The map is necessary to handle named views.
    */
   private _overrides = new Map<string, RouteRecordOverride>()
-  // TODO: measure perf bottlenecks with large trees and use caching if it can potentially improve
+  /**
+   * Merged result of `_overrides`. Reset by every method that writes to them.
+   */
+  private _mergedOverrides: RouteRecordOverride | null = null
 
   /**
    * Params already warned about declaring a parser twice, so the warning is
@@ -270,8 +273,8 @@ class _TreeNodeValueBase {
     return this._type === TreeNodeType.group
   }
 
-  get overrides() {
-    return [...this._overrides.entries()]
+  get overrides(): RouteRecordOverride {
+    return (this._mergedOverrides ??= [...this._overrides.entries()]
       .sort(([nameA], [nameB]) =>
         nameA === nameB
           ? 0
@@ -284,11 +287,12 @@ class _TreeNodeValueBase {
       )
       .reduce((acc, [_path, routeBlock]) => {
         return mergeRouteRecordOverride(acc, routeBlock)
-      }, {} as RouteRecordOverride)
+      }, {} as RouteRecordOverride))
   }
 
   setOverride(filePath: string, routeBlock: CustomRouteBlock | undefined) {
     this._overrides.set(filePath, routeBlock || {})
+    this._mergedOverrides = null
   }
 
   /**
@@ -300,6 +304,7 @@ class _TreeNodeValueBase {
     for (const [_filePath, routeBlock] of this._overrides) {
       delete routeBlock[key]
     }
+    this._mergedOverrides = null
   }
 
   /**
@@ -314,6 +319,7 @@ class _TreeNodeValueBase {
       filePath,
       mergeRouteRecordOverride(existing, routeBlock)
     )
+    this._mergedOverrides = null
   }
 
   /**
@@ -342,6 +348,7 @@ class _TreeNodeValueBase {
 
     const existing = this._overrides.get(EDITS_OVERRIDE_NAME)!
     existing[key] = value
+    this._mergedOverrides = null
   }
 }
 
