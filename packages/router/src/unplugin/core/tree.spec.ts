@@ -1772,6 +1772,40 @@ describe('Tree', () => {
       expect('VUE_ROUTER_B0023').toHaveBeenWarned()
     })
 
+    it('warns when a repeatable param regexp can match a slash', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[parts]+', '[parts]+.vue')
+      node.setCustomRouteBlock('[parts]+.vue', {
+        params: { path: { parts: { re: '.+' } } },
+      })
+
+      // the regexp is kept
+      expect(node.pathParams[0]).toMatchObject({ re: '.+' })
+      expect('VUE_ROUTER_B0024').toHaveBeenWarned()
+    })
+
+    it('does not warn when a repeatable param regexp cannot match a slash', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[parts]+', '[parts]+.vue')
+      node.setCustomRouteBlock('[parts]+.vue', {
+        params: { path: { parts: { re: '[^/]+' } } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ re: '[^/]+' })
+      expect('VUE_ROUTER_B0024').not.toHaveBeenWarned()
+    })
+
+    it('does not warn when a non repeatable param regexp can match a slash', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[org]', '[org].vue')
+      node.setCustomRouteBlock('[org].vue', {
+        params: { path: { org: { re: '.+' } } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ re: '.+' })
+      expect('VUE_ROUTER_B0024').not.toHaveBeenWarned()
+    })
+
     it('generates a valid regexp with unescaped slashes in the source', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
       const node = tree.insert('[org]', '[org].vue')

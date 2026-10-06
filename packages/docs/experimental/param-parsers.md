@@ -237,7 +237,7 @@ The regexp is inserted as a group inside the regexp of the whole path, so it mus
 - Do not use anchors like `^` or `$`: they apply to the whole path, not to the param value.
 - Its flags are ignored: paths are always matched case-insensitively.
 
-For repeatable params, each value must match the regexp. Set `re` to `null` to use the default regexp.
+For repeatable params, each value must match the regexp, so the regexp should not match `/` (e.g. use `[^/]+` instead of `.+`). Set `re` to `null` to use the default regexp.
 
 ### Query params
 

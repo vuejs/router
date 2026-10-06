@@ -291,6 +291,18 @@ class _TreeNodeValueBase {
       return null
     }
 
+    if (param.repeatable && !this._warnedRegexps.has(param.paramName)) {
+      // heuristic: misses regexps that only match `/` between other chars
+      if (new RegExp(`^(?:${re})$`).test('/')) {
+        this._warnedRegexps.add(param.paramName)
+        diagnostics.VUE_ROUTER_B0024({
+          paramName: param.paramName,
+          segment: this.rawSegment,
+          re,
+        })
+      }
+    }
+
     return re
   }
 

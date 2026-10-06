@@ -99,6 +99,11 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `Invalid custom regexp /${p.re}/ for param "${p.paramName}" in "${p.segment}": ${p.reason}. Using the default regexp.`,
       fix: 'Fix the `re` option of the param in `params.path`.',
     },
+    VUE_ROUTER_B0024: {
+      why: (p: { paramName: string; segment: string; re: string }) =>
+        `Custom regexp /${p.re}/ for repeatable param "${p.paramName}" in "${p.segment}" can match "/". Each value is not checked against the regexp after the path is split.`,
+      fix: 'Exclude "/" from the regexp, e.g. use `[^/]` instead of `.`.',
+    },
 
     // --- core/customBlock.ts ---
     VUE_ROUTER_B0012: {
