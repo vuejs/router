@@ -17,7 +17,12 @@ import { enableAutoUnmount, mount } from '@vue/test-utils'
 import RouterViewMock from '../../tests/data-loaders/RouterViewMock.vue'
 import { setActivePinia, createPinia, getActivePinia } from 'pinia'
 import type { serializeQueryCache } from '@pinia/colada'
-import { PiniaColada, useQueryCache, hydrateQueryCache } from '@pinia/colada'
+import {
+  PiniaColada,
+  useQueryCache,
+  hydrateQueryCache,
+  defineQueryOptions,
+} from '@pinia/colada'
 import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
 
 describe(
@@ -42,9 +47,18 @@ describe(
       }
     )
 
+    /**
+     * Mounts a route component that consumes the loader and exposes its result.
+     *
+     * @param useData - loader exported by the test route
+     * @param pluginOptions - data loader plugin settings for the test
+     * @param path - route pattern, optionally including dynamic parameters
+     * @returns the mounted wrapper, router, application, and loader result accessor
+     */
     function singleLoaderOneRoute<Loader extends UseDataLoader>(
       useData: Loader,
-      pluginOptions?: Omit<DataLoaderPluginOptions, 'router'>
+      pluginOptions?: Omit<DataLoaderPluginOptions, 'router'>,
+      path = '/fetch'
     ): {
       wrapper: ReturnType<typeof mount>
       router: ReturnType<typeof getRouter>
@@ -72,7 +86,7 @@ describe(
       const router = getRouter()
       router.addRoute({
         name: '_test',
-        path: '/fetch',
+        path,
         meta: {
           loaders: [useData],
           nested: { foo: 'bar' },
@@ -109,6 +123,101 @@ describe(
         app,
       }
     }
+
+    it.each([false, true])(
+      'accepts reusable query options (named: %s)',
+      async named => {
+        const query = vi.fn(async (id: string) => `data-${id}`)
+        const userQuery = defineQueryOptions((id: string) => ({
+          key: ['users', id],
+          query: () => query(id),
+          staleTime: 10000,
+        }))
+        const options = (to: RouteLocationNormalizedLoaded) =>
+          userQuery(to.params.id as string)
+        const useLoader = named
+          ? defineColadaLoader('_test', options)
+          : defineColadaLoader(options)
+        const { router, useData } = singleLoaderOneRoute(
+          useLoader,
+          undefined,
+          '/fetch/:id'
+        )
+
+        await router.push('/fetch/1')
+        expect(useData().data.value).toBe('data-1')
+        expect(query).toHaveBeenCalledTimes(1)
+
+        // Keep the reusable query's staleTime instead of the default 5 seconds.
+        await vi.advanceTimersByTimeAsync(6000)
+        await router.push('/fetch/1?other=changed')
+        expect(query).toHaveBeenCalledTimes(1)
+
+        await router.push('/fetch/2')
+        expect(useData().data.value).toBe('data-2')
+        expect(query).toHaveBeenCalledTimes(2)
+
+        await router.push('/fetch/1')
+        expect(useData().data.value).toBe('data-1')
+        expect(query).toHaveBeenCalledTimes(2)
+
+        await useData().reload()
+        expect(query).toHaveBeenCalledTimes(3)
+        expect(query).toHaveBeenLastCalledWith('1')
+      }
+    )
+
+    it('tracks route properties read by the query options callback', async () => {
+      const query = vi.fn(async (id: string) => `data-${id}`)
+      const userQuery = defineQueryOptions((id: string) => ({
+        key: ['user'],
+        query: () => query(id),
+        staleTime: Infinity,
+      }))
+      const { router, useData } = singleLoaderOneRoute(
+        defineColadaLoader(to => userQuery(to.query.id as string))
+      )
+
+      await router.push('/fetch?id=1')
+      await router.push('/fetch?id=2')
+      expect(useData().data.value).toBe('data-2')
+      expect(query).toHaveBeenCalledTimes(2)
+
+      await router.push('/fetch?id=2&other=changed')
+      expect(query).toHaveBeenCalledTimes(2)
+    })
+
+    it('passes the Pinia Colada query context to reusable queries', async () => {
+      const query = vi.fn(async () => 'data')
+      const options = defineQueryOptions({ key: ['user'], query })
+      const { router } = singleLoaderOneRoute(defineColadaLoader(() => options))
+
+      await router.push('/fetch')
+      expect(query).toHaveBeenCalledWith(
+        expect.objectContaining({ signal: expect.any(AbortSignal) })
+      )
+    })
+
+    it.each([false, true])(
+      'accepts loader options with reusable queries (named: %s)',
+      async named => {
+        const error = new Error('expected')
+        const options = defineQueryOptions({
+          key: ['user'],
+          query: async () => {
+            throw error
+          },
+        })
+        const useLoader = named
+          ? defineColadaLoader('_test', () => options, { errors: [Error] })
+          : defineColadaLoader(() => options, { errors: [Error] })
+        const { router, useData } = singleLoaderOneRoute(useLoader)
+
+        await router.push('/fetch')
+        expect(router.currentRoute.value.path).toBe('/fetch')
+        expect(useData().error.value).toBe(error)
+      }
+    )
 
     it('avoids refetching fresh data when navigating', async () => {
       const query = vi.fn().mockResolvedValue('data')
