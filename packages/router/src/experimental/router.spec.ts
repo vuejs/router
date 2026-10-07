@@ -1263,6 +1263,20 @@ describe('Experimental Router', () => {
   })
 
   describe('redirect', () => {
+    it('keeps target params when a guard redirects with only a query', async () => {
+      const { router } = await newRouter()
+      await router.push('/p/2')
+      router.beforeEach(to =>
+        to.path === '/p/1' && !to.query.page
+          ? { query: { page: ['2'] } }
+          : undefined
+      )
+
+      await router.push('/p/1')
+
+      expect(router.currentRoute.value.fullPath).toBe('/p/1?page=2')
+    })
+
     it('handles one redirect from route record', async () => {
       const { router } = await newRouter()
       await router.push('/foo')
@@ -1298,33 +1312,103 @@ describe('Experimental Router', () => {
       expect(router.currentRoute.value.fullPath).toBe('/p/1')
     })
 
-    it('resolves a relative guard redirect against the target location', async () => {
+    const relativeRedirects: [string, RouteLocationRaw, string][] = [
+      ['string', '2', '/p/2'],
+      ['path', { path: '2' }, '/p/2'],
+      ['query', { query: { page: ['2'] } }, '/p/1?page=2'],
+      ['params', { params: { p: '2' } }, '/p/2'],
+      ['hash', { hash: '#new' }, '/p/1#new'],
+    ]
+
+    describe.each(['initial', 'push', 'history'] as const)(
+      '%s navigation',
+      mode => {
+        it.each(relativeRedirects)(
+          'resolves a relative %s guard redirect against the target',
+          async (_type, redirect, expectedPath) => {
+            const history = createMemoryHistory()
+            const router = experimental_createRouter({
+              history,
+              resolver: createFixedResolver(experimentalRoutes),
+            })
+            if (mode === 'history') await router.push('/p/1')
+            if (mode !== 'initial') await router.push('/p/9')
+            router.beforeEach(to =>
+              to.fullPath === '/p/1' ? redirect : undefined
+            )
+
+            if (mode === 'history') {
+              const navigation = nextNavigation(router)
+              router.back()
+              await navigation
+            } else {
+              await router.push('/p/1')
+            }
+
+            expect(router.currentRoute.value.fullPath).toBe(expectedPath)
+            expect(history.location).toBe(expectedPath)
+            expect(router.currentRoute.value.redirectedFrom?.fullPath).toBe(
+              '/p/1'
+            )
+          }
+        )
+      }
+    )
+
+    it('keeps target query and hash in a relative guard redirect', async () => {
+      const { router, history } = await newRouter()
+      await router.push('/p/1?source=current#current')
+      router.beforeEach(to =>
+        to.path === '/foo' && !to.query.page
+          ? { query: { page: ['2'] } }
+          : undefined
+      )
+
+      await router.push('/foo?source=target#target')
+
+      expect(router.currentRoute.value.fullPath).toBe(
+        '/foo?source=target&page=2#target'
+      )
+      expect(history.location).toBe('/foo?source=target&page=2#target')
+    })
+
+    it('resolves a relative redirect passed to next against the target', async () => {
+      const { router, history } = await newRouter()
+      router.beforeEach((to, _from, next) => {
+        if (to.path === '/foo' && !to.query.page)
+          next({ query: { page: ['2'] } })
+        else next()
+      })
+
+      await router.push('/foo')
+
+      expect('VUE_ROUTER_R0025').toHaveBeenWarned()
+      expect(router.currentRoute.value.fullPath).toBe('/foo?page=2')
+      expect(history.location).toBe('/foo?page=2')
+    })
+
+    it('allows an explicitly resolved relative guard redirect', async () => {
       const { router } = await newRouter()
       await router.push('/p/1')
       router.beforeEach(to =>
         to.name === 'Foo' && !to.query.page
-          ? { query: { page: ['2'] } }
+          ? router.resolve({ query: { page: ['2'] } }, to)
           : undefined
       )
+
       await router.push('/foo?a=1')
+
       expect(router.currentRoute.value.fullPath).toBe('/foo?a=1&page=2')
     })
 
-    it('keeps the target params in a relative guard redirect', async () => {
+    it('allows an explicitly resolved relative string guard redirect', async () => {
       const { router } = await newRouter()
       router.beforeEach(to =>
-        to.name === 'Param' && to.params.p === '1' && !to.query.a
-          ? { query: { a: ['1'] } }
-          : undefined
+        to.path === '/users/posva' ? router.resolve('add', to) : undefined
       )
-      await router.push('/p/1')
-      expect(router.currentRoute.value.fullPath).toBe('/p/1?a=1')
-    })
 
-    it('resolves a relative string guard redirect against the target location', async () => {
-      const { router } = await newRouter()
-      router.beforeEach(to => (to.path === '/users/posva' ? 'add' : undefined))
       await router.push('/users/posva')
+
       expect(router.currentRoute.value.path).toBe('/users/add')
     })
 
