@@ -45,7 +45,7 @@ export interface EXPERIMENTAL_Resolver_Base<TRecord> {
    */
   resolve(
     location: ResolverLocationAsNamed,
-    currentLocation?: ResolverLocationResolved<TRecord>
+    currentLocation?: ResolverLocationResolved<TRecord> | undefined
   ): ResolverLocationResolved<TRecord>
 
   /**
