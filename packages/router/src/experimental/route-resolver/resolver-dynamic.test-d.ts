@@ -4,10 +4,16 @@ import { createMemoryHistory } from '../../history/memory'
 import {
   experimental_createRouter,
   type EXPERIMENTAL_Router,
-  type EXPERIMENTAL_RouterDynamic,
+  type EXPERIMENTAL_RouteRecordNormalized_Matchable,
 } from '../router'
-import { createDynamicResolver } from './resolver-dynamic'
-import { createFixedResolver } from './resolver-fixed'
+import {
+  createDynamicResolver,
+  type EXPERIMENTAL_ResolverDynamic,
+} from './resolver-dynamic'
+import {
+  createFixedResolver,
+  type EXPERIMENTAL_ResolverFixed,
+} from './resolver-fixed'
 
 const component = {}
 
@@ -45,21 +51,36 @@ describe('createDynamicResolver', () => {
       history: createMemoryHistory(),
       resolver: createDynamicResolver(),
     })
-    expectTypeOf(router).toEqualTypeOf<EXPERIMENTAL_RouterDynamic>()
+    expectTypeOf(router).toEqualTypeOf<
+      EXPERIMENTAL_Router<
+        EXPERIMENTAL_ResolverDynamic<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+      >
+    >()
+    // usable where any experimental router is expected
+    expectTypeOf(router).toExtend<EXPERIMENTAL_Router>()
     expectTypeOf(router.addRoute({ path: '/a', component })).toEqualTypeOf<
       () => void
     >()
     router.addRoute('parent', { path: 'a', component })
     router.removeRoute('a')
     router.clearRoutes()
+    expectTypeOf(router.getRoute('a')).toEqualTypeOf<
+      EXPERIMENTAL_RouteRecordNormalized_Matchable | undefined
+    >()
   })
 
   it('creates a router without dynamic routing methods with a fixed resolver', () => {
     const router = experimental_createRouter({
       history: createMemoryHistory(),
-      resolver: createFixedResolver([]),
+      resolver:
+        createFixedResolver<EXPERIMENTAL_RouteRecordNormalized_Matchable>([]),
     })
-    expectTypeOf(router).toEqualTypeOf<EXPERIMENTAL_Router>()
+    expectTypeOf(router).toEqualTypeOf<
+      EXPERIMENTAL_Router<
+        EXPERIMENTAL_ResolverFixed<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+      >
+    >()
+    expectTypeOf(router).toExtend<EXPERIMENTAL_Router>()
     // @ts-expect-error: not available with a fixed resolver
     router.addRoute({ path: '/a', component })
   })

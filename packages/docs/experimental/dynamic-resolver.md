@@ -60,7 +60,7 @@ removeRoute() // same as above
 router.clearRoutes()
 ```
 
-The resolver also has these methods, so you can create the routes before you create the router:
+These methods come from the resolver: the router exposes all the resolver methods that it does not define itself. With a fixed resolver, the router does not have them. You can also call them on the resolver, e.g. to create the routes before you create the router:
 
 ```ts
 const resolver = createDynamicResolver()

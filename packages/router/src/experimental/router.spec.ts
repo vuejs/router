@@ -319,11 +319,7 @@ const experimentalRoutes = routeRecords.map(record =>
     : normalizeRouteRecord(record)
 )
 
-async function newRouter(
-  options: Partial<Omit<EXPERIMENTAL_RouterOptions, 'resolver'>> & {
-    resolver?: any
-  } = {}
-) {
+async function newRouter(options: Partial<EXPERIMENTAL_RouterOptions> = {}) {
   const history = options.history || createMemoryHistory()
   const resolver = options.resolver || createFixedResolver(experimentalRoutes)
   const router = experimental_createRouter({ history, resolver, ...options })

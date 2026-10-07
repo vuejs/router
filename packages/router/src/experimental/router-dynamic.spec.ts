@@ -14,7 +14,7 @@ import {
   createFixedResolver,
   normalizeRouteRecord,
   MatcherPatternPathStatic,
-  type EXPERIMENTAL_RouterOptionsDynamic,
+  type EXPERIMENTAL_RouterOptions,
 } from './index'
 import type { RouteLocationRaw } from '../typed-routes'
 import type { RouteRecordRaw } from '../types'
@@ -102,7 +102,7 @@ const routes: RouteRecordRaw[] = [
 ]
 
 type NewRouterOptions = Partial<
-  Omit<EXPERIMENTAL_RouterOptionsDynamic, 'resolver'>
+  Omit<EXPERIMENTAL_RouterOptions, 'resolver'>
 > & { routes?: RouteRecordRaw[] }
 
 function createRouterWithRoutes({
@@ -1525,7 +1525,7 @@ describe('Experimental Router with createDynamicResolver()', () => {
       expect(router.hasRoute('a')).toBe(false)
     })
 
-    it('throws when adding a route to a router with a fixed resolver', () => {
+    it('does not have dynamic routing methods with a fixed resolver', () => {
       const router = experimental_createRouter({
         history: createMemoryHistory(),
         resolver: createFixedResolver([
@@ -1536,12 +1536,37 @@ describe('Experimental Router with createDynamicResolver()', () => {
           }),
         ]),
       })
-      expect(() =>
-        // @ts-expect-error: not available with a fixed resolver
-        router.addRoute({ path: '/a', component: components.Foo })
-      ).toThrowError('is not available because the router resolver is fixed')
-      expect('VUE_ROUTER_R0130').toHaveBeenWarned()
+      expect('addRoute' in router).toBe(false)
+      expect('removeRoute' in router).toBe(false)
+      expect('clearRoutes' in router).toBe(false)
       expect(router.hasRoute('home')).toBe(true)
+    })
+
+    it('exposes the methods of the resolver', () => {
+      const resolver = createDynamicResolver([
+        { path: '/', name: 'home', component: components.Home },
+      ])
+      const router = experimental_createRouter({
+        history: createMemoryHistory(),
+        resolver,
+      })
+      expect(router.getRoute('home')).toBe(resolver.getRoute('home'))
+      resolver.addRoute({ path: '/a', name: 'a', component: components.Foo })
+      expect(router.hasRoute('a')).toBe(true)
+      router.removeRoute('a')
+      expect(resolver.getRoute('a')).toBeUndefined()
+    })
+
+    it('uses the resolver replaced during HMR', () => {
+      const router = experimental_createRouter({
+        history: createMemoryHistory(),
+        resolver: createDynamicResolver(),
+      })
+      const newResolver = createDynamicResolver()
+      router._hmrReplaceResolver!(newResolver)
+      router.addRoute({ path: '/a', name: 'a', component: components.Foo })
+      expect(newResolver.getRoute('a')).toBeDefined()
+      expect(router.resolve('/a').name).toBe('a')
     })
   })
 })

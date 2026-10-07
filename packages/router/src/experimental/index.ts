@@ -2,8 +2,8 @@ export { experimental_createRouter, normalizeRouteRecord } from './router'
 export type {
   EXPERIMENTAL_Router_Base,
   EXPERIMENTAL_Router,
-  EXPERIMENTAL_RouterDynamic,
-  EXPERIMENTAL_RouterOptionsDynamic,
+  EXPERIMENTAL_Router_Core,
+  EXPERIMENTAL_RouterResolver,
   EXPERIMENTAL_RouteRecordNormalized,
   EXPERIMENTAL_RouterOptions_Base,
   EXPERIMENTAL_RouterOptions,
