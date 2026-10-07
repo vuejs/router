@@ -431,6 +431,8 @@ export interface EXPERIMENTAL_RouterOptions extends EXPERIMENTAL_RouterOptions_B
 /**
  * Router base instance.
  *
+ * Relative navigation guard redirects are resolved against the target location.
+ *
  * @experimental This version is not stable, it's meant to replace {@link Router} in the future.
  */
 export interface EXPERIMENTAL_Router_Base<
@@ -1172,8 +1174,14 @@ export function experimental_createRouter(
             pushWithRedirect(
               assign(
                 resolve(
-                  // @ts-expect-error: to should be an absolute location
-                  (error as NavigationRedirectError).to
+                  // @ts-expect-error: FIXME: refactor location types
+                  (error as NavigationRedirectError).to,
+                  isAbsoluteLocation(
+                    // @ts-expect-error: FIXME: refactor location types to stricter
+                    (error as NavigationRedirectError).to
+                  )
+                    ? undefined
+                    : toLocation
                 ),
                 {
                   force: true,
