@@ -33,11 +33,9 @@ export { createFixedResolver } from './route-resolver/resolver-fixed'
 export {
   createDynamicResolver,
   type EXPERIMENTAL_ResolverDynamic,
+  type EXPERIMENTAL_ResolverDynamicRecordRaw,
 } from './route-resolver/resolver-dynamic'
-export {
-  MatcherPatternPathParser,
-  type MatcherPatternPathParser_Params,
-} from './route-resolver/matchers/matcher-pattern-path-parser'
+export { parseClassicPath } from './route-resolver/matchers/parse-classic-path'
 export {
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,

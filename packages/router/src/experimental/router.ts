@@ -1485,9 +1485,17 @@ export function experimental_createRouter<
 
   if (__DEV__) {
     router._hmrReplaceResolver = newResolver => {
-      resolver = newResolver
-      // `resolve` is the only resolver method the router overrides
-      assign(router, newResolver, { resolve })
+      const { _hmrUpdate } = resolver as {
+        _hmrUpdate?: (newResolver: EXPERIMENTAL_RouterResolver) => void
+      }
+      // a dynamic resolver updates itself to keep the routes added at runtime
+      if (_hmrUpdate) {
+        _hmrUpdate(newResolver)
+      } else {
+        resolver = newResolver
+        // `resolve` is the only resolver method the router overrides
+        assign(router, newResolver, { resolve })
+      }
     }
   }
 

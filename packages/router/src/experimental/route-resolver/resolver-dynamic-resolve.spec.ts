@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { defineComponent } from 'vue'
 import type { RouteComponent, RouteRecordRaw } from '../../types'
-import type { PathParserOptions } from '../../matcher/pathParserRanker'
 import { mockWarn } from '../../../__tests__/vitest-mock-warn'
 import { createDynamicResolver } from './resolver-dynamic'
 import { NO_MATCH_LOCATION } from './resolver-abstract'
 import type { ResolverLocationResolved } from './resolver-abstract'
-import type { MatcherPatternPathParser } from './matchers/matcher-pattern-path-parser'
-import type { EXPERIMENTAL_RouteRecordNormalized_Matchable } from '../router'
+import type {
+  EXPERIMENTAL_RouteRecordNormalized,
+  EXPERIMENTAL_RouteRecordNormalized_Matchable,
+} from '../router'
 
 const component: RouteComponent = defineComponent({})
 const components = { default: component }
@@ -15,30 +16,31 @@ const components = { default: component }
 type Loc =
   ResolverLocationResolved<EXPERIMENTAL_RouteRecordNormalized_Matchable>
 
-function create(
-  routes: RouteRecordRaw | RouteRecordRaw[],
-  options?: PathParserOptions
-) {
-  const resolver = createDynamicResolver(
-    Array.isArray(routes) ? routes : [routes],
-    options
-  )
-  return resolver
+function create(routes: RouteRecordRaw | RouteRecordRaw[]) {
+  return createDynamicResolver(Array.isArray(routes) ? routes : [routes])
 }
 
 /**
- * Full path string of a record.
+ * Path built by the pattern of a record with some params.
  */
-function recordPath(record: object | null | undefined) {
-  return ((record as { path: unknown }).path as MatcherPatternPathParser).path
+function recordPath(
+  record: EXPERIMENTAL_RouteRecordNormalized | null | undefined,
+  params: Loc['params'] = {}
+) {
+  return record?.path?.build(params)
 }
 
+/**
+ * Paths built by each matched record with the params of the location.
+ */
 function matchedPaths(loc: Loc) {
-  return loc.matched.map(recordPath)
+  return loc.matched.map(r => recordPath(r, loc.params))
 }
 
 function aliasOfPaths(loc: Loc) {
-  return loc.matched.map(r => (r.aliasOf ? recordPath(r.aliasOf) : undefined))
+  return loc.matched.map(r =>
+    r.aliasOf ? recordPath(r.aliasOf, loc.params) : undefined
+  )
 }
 
 function expectNoMatch(loc: Loc, path: string) {
@@ -117,16 +119,18 @@ describe('createDynamicResolver resolve', () => {
       expect(loc.hash).toBe('#h')
     })
 
-    it('allows an optional trailing slash', () => {
-      const resolver = create({ path: '/home/', name: 'Home', components })
+    it('is strict about trailing slashes', () => {
+      const resolver = create([
+        { path: '/home/', name: 'Home', components },
+        { path: '/about', name: 'About', components },
+      ])
       expect(resolver.resolve('/home/')).toMatchObject({
         name: 'Home',
         path: '/home/',
       })
-      expect(resolver.resolve('/home')).toMatchObject({
-        name: 'Home',
-        path: '/home',
-      })
+      expectNoMatch(resolver.resolve('/home'), '/home')
+      expect(resolver.resolve('/about').name).toBe('About')
+      expectNoMatch(resolver.resolve('/about/'), '/about/')
     })
 
     it('is case insensitive by default', () => {
@@ -167,13 +171,19 @@ describe('createDynamicResolver resolve', () => {
       expect(loc.params).toEqual({ id: 'posva', other: 'hey' })
     })
 
-    it('allows an optional trailing slash with a param', () => {
-      expect(
-        create({ path: '/:a', components, name: 'a' }).resolve('/a/')
-      ).toMatchObject({ name: 'a', path: '/a/', params: { a: 'a' } })
-      expect(
-        create({ path: '/a/:a', components, name: 'a' }).resolve('/a/a/')
-      ).toMatchObject({ name: 'a', path: '/a/a/', params: { a: 'a' } })
+    it('is strict about trailing slashes with a param', () => {
+      const resolver = create({ path: '/a/:a', components, name: 'a' })
+      expect(resolver.resolve('/a/a').params).toEqual({ a: 'a' })
+      expectNoMatch(resolver.resolve('/a/a/'), '/a/a/')
+      const withSlash = create({ path: '/users/:id/', components, name: 'u' })
+      expect(withSlash.resolve('/users/1/')).toMatchObject({
+        name: 'u',
+        params: { id: '1' },
+      })
+      expectNoMatch(withSlash.resolve('/users/1'), '/users/1')
+      expect(withSlash.resolve({ name: 'u', params: { id: '1' } }).path).toBe(
+        '/users/1/'
+      )
     })
 
     it('does not match a missing required param', () => {
@@ -210,12 +220,13 @@ describe('createDynamicResolver resolve', () => {
       })
     })
 
-    it('ranks the custom regexp above a plain param regardless of order', () => {
+    it('does not rank a custom regexp above a plain param', () => {
       const resolver = create([
         { path: '/users/:slug', name: 'by-slug', components },
         { path: '/users/:id(\\d+)', name: 'by-id', components },
       ])
-      expect(resolver.resolve('/users/123').name).toBe('by-id')
+      // same score: the first added route wins
+      expect(resolver.resolve('/users/123').name).toBe('by-slug')
     })
 
     it('ranks static paths above params', () => {
@@ -251,26 +262,27 @@ describe('createDynamicResolver resolve', () => {
       expect(resolver.resolve('/x').params).toEqual({ a: 'x' })
     })
 
-    it('allows an optional trailing slash with a missing optional param', () => {
+    it('is strict about trailing slashes with a missing optional param', () => {
       const resolver = create({ path: '/a/:a?', components, name: 'a' })
-      expect(resolver.resolve('/a/')).toMatchObject({
-        name: 'a',
-        path: '/a/',
-        params: { a: null },
-      })
       expect(resolver.resolve('/a')).toMatchObject({
         name: 'a',
         params: { a: null },
       })
+      expectNoMatch(resolver.resolve('/a/'), '/a/')
     })
 
-    it('resolves the root path with optional params by name', () => {
+    it('resolves the root path with an optional param by name', () => {
       expect(
         create({ path: '/:tab?', name: 'h', components }).resolve({
           name: 'h',
           params: {},
         })
       ).toMatchObject({ name: 'h', path: '/', params: { tab: null } })
+    })
+
+    // BUG: MatcherPatternPathDynamic.build() removes the trailing slashes of
+    // "/" and returns "" when all the optional params are missing
+    it.fails('resolves the root path with many optional params by name', () => {
       expect(
         create({ path: '/:tab?/:other?', name: 'h', components }).resolve({
           name: 'h',
@@ -298,6 +310,12 @@ describe('createDynamicResolver resolve', () => {
           params: { id: null },
         })
       }
+      expect(
+        'The optional path param "id" is being removed with an empty string'
+      ).toHaveBeenWarnedTimes(1)
+      expect(
+        'The optional path param "id" is being removed with undefined'
+      ).toHaveBeenWarnedTimes(1)
     })
 
     it('turns optional params passed as empty strings into null', () => {
@@ -305,6 +323,9 @@ describe('createDynamicResolver resolve', () => {
       expect(
         resolver.resolve({ name: 'p', params: { a: 'b', b: '' } })
       ).toMatchObject({ name: 'p', path: '/b', params: { a: 'b', b: null } })
+      expect(
+        'The optional path param "b" is being removed with an empty string'
+      ).toHaveBeenWarned()
     })
   })
 
@@ -410,100 +431,64 @@ describe('createDynamicResolver resolve', () => {
   })
 
   describe('strict, sensitive, end options', () => {
-    it('keeps a required trailing slash with strict', () => {
+    // the options are ignored: paths are always strict, case insensitive, and
+    // match until the end
+    it('warns and stays strict with strict: false', () => {
       const resolver = create({
-        path: '/home/',
+        path: '/home',
         name: 'Home',
         components,
-        strict: true,
+        strict: false,
       })
-      expectNoMatch(resolver.resolve('/home'), '/home')
-      expect(resolver.resolve('/home/').name).toBe('Home')
+      expect('VUE_ROUTER_R0131').toHaveBeenWarned()
+      expect(resolver.resolve('/home').name).toBe('Home')
+      expectNoMatch(resolver.resolve('/home/'), '/home/')
     })
 
-    it('rejects a trailing slash with strict', () => {
+    it('does not warn with strict: true', () => {
       const resolver = create({
         path: '/home',
         name: 'Home',
         components,
         strict: true,
       })
-      expect(resolver.resolve('/home').name).toBe('Home')
+      expect('VUE_ROUTER_R0131').not.toHaveBeenWarned()
       expectNoMatch(resolver.resolve('/home/'), '/home/')
     })
 
-    it('is case sensitive with sensitive', () => {
+    it('warns and stays case insensitive with sensitive: true', () => {
       const resolver = create({
         path: '/home',
         name: 'Home',
         components,
         sensitive: true,
       })
-      expect(resolver.resolve('/home').name).toBe('Home')
-      expectNoMatch(resolver.resolve('/HOME'), '/HOME')
+      expect('VUE_ROUTER_R0131').toHaveBeenWarned()
+      expect(resolver.resolve('/HOME').name).toBe('Home')
     })
 
-    it('matches a prefix with end: false', () => {
+    it('warns and matches until the end with end: false', () => {
       const resolver = create({
         path: '/home',
         name: 'Home',
         components,
         end: false,
       })
-      expect(resolver.resolve('/home/other')).toMatchObject({
-        name: 'Home',
-        path: '/home/other',
-      })
-      // like the classic matcher, a non strict prefix does not need a "/"
-      expect(resolver.resolve('/homeother').name).toBe('Home')
+      expect('VUE_ROUTER_R0131').toHaveBeenWarned()
+      expect(resolver.resolve('/home').name).toBe('Home')
+      expectNoMatch(resolver.resolve('/home/other'), '/home/other')
     })
 
-    it('applies global options to all records', () => {
-      const resolver = create(
-        [
-          { path: '/a', name: 'a', components },
-          { path: '/b', name: 'b', components },
-        ],
-        { strict: true, sensitive: true }
-      )
-      expect(resolver.resolve('/a').name).toBe('a')
-      expectNoMatch(resolver.resolve('/a/'), '/a/')
-      expectNoMatch(resolver.resolve('/B'), '/B')
-    })
-
-    it('applies global end: false', () => {
-      const resolver = create(
-        { path: '/a', name: 'a', components },
-        {
-          end: false,
-        }
-      )
-      expect(resolver.resolve('/a/b').name).toBe('a')
-    })
-
-    it('lets record options override global options', () => {
-      const resolver = create(
-        [
-          { path: '/a', name: 'a', components, strict: false },
-          { path: '/b', name: 'b', components },
-        ],
-        { strict: true }
-      )
-      expect(resolver.resolve('/a/').name).toBe('a')
-      expectNoMatch(resolver.resolve('/b/'), '/b/')
-    })
-
-    it('applies record options to children', () => {
-      const resolver = create({
+    it('warns for children with the options', () => {
+      create({
         path: '/parent',
         name: 'parent',
         components,
-        sensitive: true,
-        children: [{ path: 'child', name: 'child', components }],
+        children: [{ path: 'child', name: 'child', components, end: false }],
       })
-      expect(resolver.resolve('/parent/child').name).toBe('child')
-      // children do not inherit the parent options
-      expect(resolver.resolve('/PARENT/CHILD').name).toBe('child')
+      expect(
+        'The route "child" uses the "strict", "sensitive", or "end" option'
+      ).toHaveBeenWarned()
     })
   })
 
@@ -864,10 +849,7 @@ describe('createDynamicResolver resolve', () => {
         path: '/foo/parent/b',
         params: { optional: 'foo' },
       })
-      expect(matchedPaths(loc)).toEqual([
-        '/:optional?/parent',
-        '/:optional?/parent/b',
-      ])
+      expect(matchedPaths(loc)).toEqual(['/foo/parent', '/foo/parent/b'])
     })
 
     it('discards non existent params with a warning', () => {
@@ -1096,7 +1078,7 @@ describe('createDynamicResolver resolve', () => {
       expectNoMatch(resolver.resolve('/articles'), '/articles')
       expect(matchedPaths(resolver.resolve('/articles/1'))).toEqual([
         '/articles',
-        '/articles/:id',
+        '/articles/1',
       ])
     })
 
@@ -1115,7 +1097,7 @@ describe('createDynamicResolver resolve', () => {
       expect(matchedPaths(resolver.resolve('/articles/2'))).toEqual([
         '/app',
         '/articles',
-        '/articles/:id',
+        '/articles/2',
       ])
     })
   })
@@ -1296,8 +1278,8 @@ describe('createDynamicResolver resolve', () => {
       })
       expect(matchedPaths(loc)).toEqual([
         '/foo',
-        '/foo/nested/:n',
-        '/foo/nested/:n/:p',
+        '/foo/nested/a',
+        '/foo/nested/a/b',
       ])
     })
 

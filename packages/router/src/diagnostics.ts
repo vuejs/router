@@ -38,6 +38,12 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `Route "${p.name}" uses beforeEnter, which is deprecated in the experimental router.`,
       fix: 'Move the condition to the route meta field and check to.meta in router.beforeEach().',
     },
+    // --- experimental/route-resolver/resolver-dynamic.ts ---
+    VUE_ROUTER_R0131: {
+      why: (p: { path: string }) =>
+        `The route "${p.path}" uses the "strict", "sensitive", or "end" option. The dynamic resolver ignores them: paths are always strict, case insensitive, and match until the end.`,
+      fix: 'Remove these options from the route record.',
+    },
     // --- experimental/route-resolver/resolver-fixed.ts ---
     VUE_ROUTER_D0002: {
       why: (p: { key: string; value: string }) =>

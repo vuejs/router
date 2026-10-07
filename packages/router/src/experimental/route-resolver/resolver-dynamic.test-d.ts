@@ -1,7 +1,9 @@
 import { describe, expectTypeOf, it } from 'vitest'
 import type { RouteRecordRaw } from '../../types'
 import { createMemoryHistory } from '../../history/memory'
+import { MatcherPatternPathStatic } from './matchers/matcher-pattern'
 import {
+  normalizeRouteRecord,
   experimental_createRouter,
   type EXPERIMENTAL_Router,
   type EXPERIMENTAL_RouteRecordNormalized_Matchable,
@@ -30,8 +32,30 @@ describe('createDynamicResolver', () => {
       },
       { path: '/old', redirect: '/' },
     ]
-    createDynamicResolver(routes, { strict: true })
+    createDynamicResolver(routes)
     createDynamicResolver()
+    // @ts-expect-error: global options were removed
+    createDynamicResolver(routes, { strict: true })
+  })
+
+  it('accepts experimental route records mixed with classic ones', () => {
+    const parent = normalizeRouteRecord({
+      name: 'parent',
+      path: new MatcherPatternPathStatic('/parent'),
+      components: { default: component },
+    })
+    const resolver = createDynamicResolver([
+      parent,
+      { path: '/about', component },
+      {
+        name: 'child',
+        path: new MatcherPatternPathStatic('/parent/child'),
+        components: { default: component },
+        parent,
+      },
+    ])
+    resolver.addRoute(parent)
+    resolver.addRoute('parent', { path: 'other', component })
   })
 
   it('adds routes with or without a parent', () => {
