@@ -1566,7 +1566,8 @@ describe('Experimental Router with createDynamicResolver()', () => {
       router._hmrReplaceResolver!(newResolver)
       router.addRoute({ path: '/a', name: 'a', component: components.Foo })
       expect(newResolver.getRoute('a')).toBeDefined()
-      expect(router.resolve('/a').name).toBe('a')
+      // the router keeps its own resolve() that adds `href`
+      expect(router.resolve('/a')).toMatchObject({ name: 'a', href: '/a' })
     })
   })
 })

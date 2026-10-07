@@ -664,8 +664,8 @@ export function experimental_createRouter<
 >(
   options: EXPERIMENTAL_RouterOptions<TResolver>
 ): EXPERIMENTAL_Router<TResolver> {
-  let resolver: EXPERIMENTAL_RouterResolver = options.resolver
-  const {
+  let {
+    resolver,
     // TODO: document that a custom parsing can be handled with a custom param that parses the whole query
     // and adds a $query property to the params added at the root record, parent of all records
     // parseQuery = originalParseQuery,
@@ -1384,12 +1384,13 @@ export function experimental_createRouter<
   let started: boolean | undefined
   const installedApps = new Set<App>()
 
-  const router: EXPERIMENTAL_Router_Core<EXPERIMENTAL_RouterResolver> = {
+  const router: EXPERIMENTAL_Router_Core<TResolver> = {
+    // exposes the resolver methods the router doesn't override (e.g. addRoute())
+    ...resolver,
     currentRoute,
     listening: true,
 
     hasRoute: name => !!resolver.getRoute(name),
-    getRoutes: () => resolver.getRoutes(),
     // @ts-expect-error FIXME: update EXPERIMENTAL_Router types
     resolve,
     options,
@@ -1485,15 +1486,8 @@ export function experimental_createRouter<
   if (__DEV__) {
     router._hmrReplaceResolver = newResolver => {
       resolver = newResolver
-    }
-  }
-
-  // expose the resolver methods the router does not define (e.g. addRoute()).
-  // `resolver` is read on each call because HMR can replace it
-  for (const key in resolver) {
-    if (!(key in router)) {
-      ;(router as any)[key] = (...args: unknown[]) =>
-        (resolver as any)[key](...args)
+      // `resolve` is the only resolver method the router overrides
+      assign(router, newResolver, { resolve })
     }
   }
 
