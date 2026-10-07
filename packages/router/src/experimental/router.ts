@@ -20,7 +20,6 @@ import {
   type HistoryState,
   type RouterHistory,
 } from '../history/common'
-import type { PathParserOptions } from '../matcher'
 import type { experimental_parseQuery as originalParseQuery } from './query'
 import { stringifyQuery as originalStringifyQuery } from '../query'
 import type { Router } from '../router'
@@ -102,7 +101,7 @@ export type _OnReadyCallback = [() => void, (reason?: any) => void]
 /**
  * Options to initialize a {@link Router} instance.
  */
-export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
+export interface EXPERIMENTAL_RouterOptions_Base {
   /**
    * History implementation used by the router. Most web applications should use
    * `createWebHistory` but it requires the server to be properly configured.
@@ -156,6 +155,10 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
    *   stringifyQuery: qs.stringify,
    * })
    * ```
+   *
+   * @deprecated this option is ignored in favor of using a custom resolver
+   * that handles query parsing and adds a `$query` property to the params. See
+   * the [TODO: migration guide](https://router.vuejs.org/experimental/query-parsing.html#migrating-from-parsequery-and-stringifyquery).
    */
   parseQuery?: typeof originalParseQuery
 
