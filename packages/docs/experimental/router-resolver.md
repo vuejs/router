@@ -76,6 +76,64 @@ router.push({ query: { q: 'vue' } }) // [!code --]
 
 An empty array is the same as a missing key: `{ tag: [] }` and `{}` give the same location.
 
+## Navigation and redirects
+
+Relative string locations passed to `router.push()`, `router.replace()`, or `router.resolve()` use the current route as their base:
+
+```ts
+// Current route: /users/posva
+router.push('add') // /users/add
+```
+
+Relative object locations need an explicit current location. Resolve them first, then navigate:
+
+```ts
+const target = router.resolve(
+  { query: { page: ['2'] } },
+  router.currentRoute.value
+)
+router.push(target)
+```
+
+### Navigation guard redirects
+
+Relative redirects returned by navigation guards use the **target route (`to`)** as their base. This also applies to initial navigation and back/forward navigation:
+
+```ts
+router.beforeEach(to => {
+  if (to.path === '/users/posva') return 'add'
+})
+// Navigating to /users/posva redirects to /users/add.
+```
+
+An object redirect without a `name` or `path` keeps the target's params, query, and hash unless the redirect overrides them:
+
+```ts
+router.beforeEach(to => {
+  if (to.path === '/search' && !to.query.page) {
+    return { query: { page: ['2'] } }
+  }
+})
+// /search?q=vue#results redirects to /search?q=vue&page=2#results.
+```
+
+Named redirects and absolute paths do not inherit params, query, or hash. Supply any required params when returning a named route.
+
+### Route record redirects
+
+A route record's `redirect` must return a named location or an absolute path (starting with `/`). It does not inherit params, query, or hash from the navigation target or current route. Copy values from `to` when you need to keep them:
+
+```ts
+// In a page's definePage() call
+definePage({
+  redirect: to => ({
+    path: '/search',
+    query: to.query,
+    hash: to.hash,
+  }),
+})
+```
+
 ## With Data Loaders
 
 If you use [Data Loaders](../data-loaders/), install the plugin **before** the router:

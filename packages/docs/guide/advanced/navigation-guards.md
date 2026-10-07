@@ -49,6 +49,10 @@ And can optionally return any of the following values:
   })
   ```
 
+::: tip Experimental router
+In the [experimental router](../../experimental/router-resolver.md#navigation-guard-redirects), relative guard redirects resolve against the target route (`to`), including during back/forward navigation. This differs from relative strings passed to `router.push()`, which use the current route.
+:::
+
 It's also possible to throw an `Error` if an unexpected situation was met. This will also cancel the navigation and call any callback registered via [`router.onError()`](/api/interfaces/RouterClassic.md#onError-).
 
 If nothing, `undefined` or `true` is returned, **the navigation is validated**, and the next navigation guard is called.

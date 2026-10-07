@@ -90,7 +90,7 @@ export const parser = defineParamParser<number>({
 ```
 
 ::: tip
-Only write validation logic in `get`. The router runs it after `set` to normalize params and the throw will make the `push()`/`resolve()` call fail.
+Write validation logic in `get`. For a named location, the router runs `get` after `set` to normalize params, and a validation error makes resolution fail. When matching a path, a validation error skips that route so another route, such as a catch-all, can match.
 :::
 
 This gives us the possibility to transform a param to a number (including floats), while preserving the _shape_ of the original params:
@@ -248,7 +248,7 @@ Declared inside `definePage()`:
 definePage({
   params: {
     query: {
-      // single value (first one wins if multiple are provided)
+      // single value (last one wins if multiple are provided)
       page: { parser: 'int', format: 'value', default: 1 },
       // array form: ?tag=a&tag=b → ['a','b']
       tag: { parser: 'string', format: 'array' },
@@ -261,9 +261,9 @@ definePage({
 Options per query field:
 
 - `parser`: parser name (from `src/params/*`). Omit for raw string.
-- `format`: `'value'` (single, takes the **first** value if the URL has several) or `'array'`.
+- `format`: `'value'` (single, takes the **last** value if the URL has several) or `'array'`.
 - `default`: value or `() => value` used when the param is missing or parsing fails and it's not required.
-- `required`: navigation fails if absent (instead of using `default`).
+- `required`: rejects a match if the param is absent (instead of using `default`).
 
 ### Hash params
 
