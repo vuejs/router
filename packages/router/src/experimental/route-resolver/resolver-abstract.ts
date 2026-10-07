@@ -100,6 +100,22 @@ export type MatcherLocationRaw =
   | ResolverLocationAsRelative
 
 /**
+ * Checks if a location is absolute, meaning it has a `name` or an absolute `path`.
+ *
+ * @param to - The location to check.
+ * @returns `true` if the location is absolute, `false` otherwise.
+ */
+export const isAbsoluteLocation = (
+  to: MatcherLocationRaw
+): to is
+  | ResolverLocationAsNamed
+  | ResolverLocationAsPathAbsolute
+  | `/${string}` =>
+  typeof to === 'string'
+    ? to.startsWith('/')
+    : to.name != null || !!to.path?.startsWith('/')
+
+/**
  * Returned location object by {@link EXPERIMENTAL_Resolver_Base['resolve']}.
  * It contains the resolved name, params, query, hash, and matched records.
  */

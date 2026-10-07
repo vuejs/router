@@ -77,6 +77,7 @@ import type {
   EXPERIMENTAL_ResolverRecord_Matchable,
   EXPERIMENTAL_ResolverFixed,
 } from './route-resolver/resolver-fixed'
+import { isAbsoluteLocation } from './route-resolver/resolver-abstract'
 import type {
   ResolverLocationAsNamed,
   ResolverLocationAsPathRelative,
@@ -622,17 +623,6 @@ export interface EXPERIMENTAL_Router
 }
 
 /**
- * Checks if a location is relative: a string or a `path` that does not start
- * with `/`, or an object without a `name` or a `path`.
- */
-function isRelativeLocation(to: RouteLocationRaw): boolean {
-  const path = typeof to === 'string' ? to : to.path
-  return path == null
-    ? (to as { name?: unknown }).name == null
-    : !path.startsWith('/')
-}
-
-/**
  * Creates an experimental Router that allows passing a resolver instead of a
  * routes array. This router does not have `addRoute()` and `removeRoute()`
  * methods and is meant to be used with file-based routing thanks to
@@ -765,7 +755,13 @@ export function experimental_createRouter(
     if (redirect) {
       const target =
         typeof redirect === 'function' ? redirect(to, from) : redirect
-      if (__DEV__ && isRelativeLocation(target)) {
+      if (
+        __DEV__ &&
+        !isAbsoluteLocation(
+          // @ts-expect-error: FIXME: Should be fixable after merging experimental code and making location types stricter
+          target
+        )
+      ) {
         throw diagnostics.VUE_ROUTER_R0008({
           target: JSON.stringify(target, null, 2),
           to: to.fullPath,
@@ -851,7 +847,12 @@ export function experimental_createRouter(
               // @ts-expect-error: FIXME: refactor location types
               failure.to,
               // relative guard redirects are relative to the target location
-              isRelativeLocation(failure.to) ? toLocation : undefined
+              isAbsoluteLocation(
+                // @ts-expect-error: FIXME: refactor location types to stricter
+                failure.to
+              )
+                ? undefined
+                : toLocation
             )
             if (
               __DEV__ &&
