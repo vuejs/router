@@ -68,7 +68,7 @@ export class MatcherPatternPathParser implements MatcherPatternPath<
       const value = raw[name]
       params[name] = repeatable
         ? value
-          ? (value as string[]).map(decode)
+          ? (value as string[]).map(v => decode(v))
           : []
         : optional && !value
           ? null

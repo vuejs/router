@@ -29,6 +29,14 @@ export type { OnRouteRenderedCallback } from './on-route-rendered'
 
 export { createFixedResolver } from './route-resolver/resolver-fixed'
 export {
+  createDynamicResolver,
+  type EXPERIMENTAL_ResolverDynamic,
+} from './route-resolver/resolver-dynamic'
+export {
+  MatcherPatternPathParser,
+  type MatcherPatternPathParser_Params,
+} from './route-resolver/matchers/matcher-pattern-path-parser'
+export {
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,
 } from './route-resolver/matchers/matcher-pattern'
