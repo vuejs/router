@@ -452,8 +452,6 @@ export interface EXPERIMENTAL_RouterOptions<
 export interface EXPERIMENTAL_Router_Base<
   TRecord,
 > extends DataLoaderExtensions {
-  // NOTE: for dynamic routing we need this
-  // <TRouteRecordRaw, TRouteRecord>
   /**
    * Current {@link RouteLocationNormalized}
    */
@@ -464,7 +462,8 @@ export interface EXPERIMENTAL_Router_Base<
    */
   listening: boolean
 
-  // TODO: deprecate in favor of getRoute(name) and add it
+  // TODO: deprecate in favor of getRoute(name). Experimental routers already
+  // expose it from their resolver, the classic router doesn't have it yet
   /**
    * Checks if a route with a given name exists
    *
