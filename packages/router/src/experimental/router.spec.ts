@@ -8,7 +8,7 @@
  * The experimental router differs significantly from the original:
  *
  * KEY DIFFERENCES:
- * - No dynamic routing: Cannot add/remove routes at runtime
+ * - No dynamic routing with a fixed resolver (see router-dynamic.spec.ts for createDynamicResolver())
  * - Resolver-based: Uses createFixedResolver() instead of routes array
  * - Pattern-based matching: Uses MatcherPatternPath instances for route matching
  * - Parent-based hierarchy: Uses 'parent' property instead of 'children'
@@ -22,7 +22,7 @@
  * - ✅ History integration and scroll behavior
  * - ✅ Error handling and navigation failures
  * - ✅ Meta field merging from parent to child
- * - ❌ Dynamic routing (addRoute, removeRoute, hasRoute)
+ * - ➡️ Dynamic routing (addRoute, removeRoute, hasRoute): in router-dynamic.spec.ts
  * - ❌ Aliases (not implemented in experimental router)
  * - ✅ Redirects (record redirect, chained, function form, query/hash/params handling)
  * - ✅ Complex object-based resolve (may work differently)
@@ -1624,29 +1624,5 @@ describe('Experimental Router', () => {
         query: {},
       })
     })
-  })
-
-  describe.todo('Dynamic Routing', () => {
-    it.skip('resolves new added routes', async () => {})
-
-    it.skip('checks if a route exists', async () => {})
-
-    it.skip('can redirect to children in the middle of navigation', async () => {})
-
-    it.skip('can reroute to a replaced route with the same component', async () => {})
-
-    it.skip('can reroute to child', async () => {})
-
-    it.skip('can reroute when adding a new route', async () => {})
-
-    it.skip('stops resolving removed routes', async () => {})
-
-    it.skip('can reroute when removing route', async () => {})
-
-    it.skip('can reroute when removing route through returned function', async () => {})
-
-    it.skip('warns when the parent route is missing', async () => {})
-
-    it.skip('warns when removing a missing route', async () => {})
   })
 })
