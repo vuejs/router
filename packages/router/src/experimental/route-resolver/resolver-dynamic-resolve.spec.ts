@@ -870,7 +870,7 @@ describe('createDynamicResolver resolve', () => {
       ])
     })
 
-    it('discards non existent params without a warning', () => {
+    it('discards non existent params with a warning', () => {
       const resolver = create([
         { path: '/', name: 'home', components },
         { path: '/:b', name: 'a', components },
@@ -881,6 +881,19 @@ describe('createDynamicResolver resolve', () => {
       expect(
         resolver.resolve({ name: 'a', params: { a: 'a', b: 'b' } })
       ).toMatchObject({ name: 'a', path: '/b', params: { b: 'b' } })
+      expect('invalid param(s) "a", "b"').toHaveBeenWarned()
+      expect('invalid param(s) "a"').toHaveBeenWarnedTimes(2)
+    })
+
+    it('does not warn for params of the record and its parents', () => {
+      const resolver = create({
+        path: '/u/:id',
+        name: 'user',
+        components,
+        children: [{ path: ':tab?', name: 'tab', components }],
+      })
+      resolver.resolve({ name: 'tab', params: { id: '1', tab: null } })
+      expect('invalid param').not.toHaveBeenWarned()
     })
 
     // classic drops the optional params of the current location that belong

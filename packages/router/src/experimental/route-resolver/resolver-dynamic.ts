@@ -300,6 +300,22 @@ export function createDynamicResolver(
     resolve: ((...args: Parameters<typeof resolveFn>) => {
       // track the routes so `computed()`s using `resolve()` are invalidated
       version.value
+      const to = args[0]
+      if (__DEV__ && typeof to === 'object' && to.name != null && to.params) {
+        const record = recordMap.get(to.name)
+        if (record) {
+          const keys = getRecordKeys(record).map(key => key.name)
+          const invalidParams = Object.keys(to.params).filter(
+            name => !keys.includes(name)
+          )
+          if (invalidParams.length) {
+            diagnostics.VUE_ROUTER_R0100({
+              params: invalidParams.join('", "'),
+              inherited: '',
+            })
+          }
+        }
+      }
       return resolveFn(...args)
     }) as typeof resolveFn,
     getRoutes: () => matchers,
