@@ -280,11 +280,18 @@ describe('createDynamicResolver resolve', () => {
       ).toMatchObject({ name: 'h', path: '/', params: { tab: null } })
     })
 
-    // BUG: MatcherPatternPathDynamic.build() removes the trailing slashes of
-    // "/" and returns "" when all the optional params are missing
-    it.fails('resolves the root path with many optional params by name', () => {
+    it('resolves the root path with many optional params by name', () => {
+      const resolver = create({ path: '/:tab?/:other?', name: 'h', components })
+      expect(resolver.resolve('/')).toMatchObject({
+        name: 'h',
+        params: { tab: null, other: null },
+      })
+      expect(resolver.resolve('/a')).toMatchObject({
+        name: 'h',
+        params: { tab: 'a', other: null },
+      })
       expect(
-        create({ path: '/:tab?/:other?', name: 'h', components }).resolve({
+        resolver.resolve({
           name: 'h',
           params: {},
         })

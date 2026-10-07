@@ -101,6 +101,11 @@ export function parseClassicPath(
     pathParts.push(parts.length === 1 ? parts[0] : parts)
   }
 
+  // when all the params are optional, the path can be empty but must match `/`
+  if (new RegExp(re + '$').test('')) {
+    re = '^(?:' + re.slice(1) + '|/)'
+  }
+
   return hasParams
     ? new MatcherPatternPathDynamic(
         new RegExp(re + '$', 'i'),
