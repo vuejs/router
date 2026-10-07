@@ -86,6 +86,7 @@ import type {
   ResolverLocationResolved,
 } from './route-resolver/resolver-abstract'
 import type { DataLoaderExtensions } from './data-loaders/meta-extensions'
+import type { EXPERIMENTAL_ResolverDynamicRecordRaw } from './route-resolver/resolver-dynamic'
 import { diagnostics } from '../diagnostics'
 
 /**
@@ -614,17 +615,80 @@ export interface EXPERIMENTAL_Router_Base<
 }
 
 /**
- * Properties of an {@link EXPERIMENTAL_Router} that do not come from its resolver.
+ * Experimental router. Its resolver is available as `router.resolver`, e.g.
+ * to call methods of a custom resolver.
  *
+ * @template TResolver - type of the resolver
  * @experimental
  */
-export interface EXPERIMENTAL_Router_Core<
+export interface EXPERIMENTAL_Router<
   TResolver extends EXPERIMENTAL_RouterResolver = EXPERIMENTAL_RouterResolver,
 > extends EXPERIMENTAL_Router_Base<EXPERIMENTAL_RouteRecordNormalized_Matchable> {
   /**
    * Original options object passed to create the Router
    */
   readonly options: EXPERIMENTAL_RouterOptions<TResolver>
+
+  /**
+   * Resolver used by the router. It is replaced during HMR, so read it again
+   * instead of keeping a reference.
+   */
+  readonly resolver: TResolver
+
+  /**
+   * Get a route record by its name.
+   *
+   * @param name - Name of the route
+   */
+  getRoute(
+    name: NonNullable<RouteRecordNameGeneric>
+  ): EXPERIMENTAL_RouteRecordNormalized_Matchable | undefined
+
+  /**
+   * Add a new route record as the child of an existing route. Warns in
+   * development if the resolver doesn't support it.
+   *
+   * @deprecated Use `router.resolver.addRoute()` with a resolver from
+   * `createDynamicResolver()`.
+   *
+   * @param parentName - Parent Route Record where `route` should be appended at
+   * @param route - Route Record to add
+   */
+  addRoute(
+    parentName: NonNullable<RouteRecordNameGeneric>,
+    route: EXPERIMENTAL_ResolverDynamicRecordRaw
+  ): () => void
+
+  /**
+   * Add a new route record to the router. Warns in development if the
+   * resolver doesn't support it.
+   *
+   * @deprecated Use `router.resolver.addRoute()` with a resolver from
+   * `createDynamicResolver()`.
+   *
+   * @param route - Route Record to add
+   */
+  addRoute(route: EXPERIMENTAL_ResolverDynamicRecordRaw): () => void
+
+  /**
+   * Remove an existing route by its name. Warns in development if the
+   * resolver doesn't support it.
+   *
+   * @deprecated Use `router.resolver.removeRoute()` with a resolver from
+   * `createDynamicResolver()`.
+   *
+   * @param name - Name of the route to remove
+   */
+  removeRoute(name: NonNullable<RouteRecordNameGeneric>): void
+
+  /**
+   * Delete all routes from the router. Warns in development if the resolver
+   * doesn't support it.
+   *
+   * @deprecated Use `router.resolver.clearRoutes()` with a resolver from
+   * `createDynamicResolver()`.
+   */
+  clearRoutes(): void
 
   /**
    * Dev only method to replace the resolver used by the router. Used during HMR
@@ -635,19 +699,6 @@ export interface EXPERIMENTAL_Router_Core<
    */
   _hmrReplaceResolver?(newResolver: TResolver): void
 }
-
-/**
- * Experimental router. It also exposes the methods of its resolver that it
- * does not define itself, e.g. `addRoute()` and `removeRoute()` with a
- * resolver from `createDynamicResolver()`.
- *
- * @template TResolver - type of the resolver
- * @experimental
- */
-export type EXPERIMENTAL_Router<
-  TResolver extends EXPERIMENTAL_RouterResolver = EXPERIMENTAL_RouterResolver,
-> = EXPERIMENTAL_Router_Core<TResolver> &
-  Omit<TResolver, keyof EXPERIMENTAL_Router_Core<TResolver>>
 
 /**
  * Creates an experimental Router that allows passing a resolver instead of a
@@ -1384,13 +1435,29 @@ export function experimental_createRouter<
   let started: boolean | undefined
   const installedApps = new Set<App>()
 
-  const router: EXPERIMENTAL_Router_Core<TResolver> = {
-    // exposes the resolver methods the router doesn't override (e.g. addRoute())
-    ...resolver,
+  /**
+   * Calls a method of the resolver that only some resolvers have, e.g.
+   * `addRoute()`. Warns in development if the resolver doesn't have it.
+   */
+  function callResolver(method: string, args: unknown[]): any {
+    const fn = (resolver as unknown as Record<string, unknown>)[method]
+    if (typeof fn === 'function') return fn.apply(resolver, args)
+    if (__DEV__) diagnostics.VUE_ROUTER_R0133({ method })
+  }
+
+  const router: EXPERIMENTAL_Router<TResolver> = {
     currentRoute,
     listening: true,
 
+    get resolver() {
+      return resolver as TResolver
+    },
     hasRoute: name => !!resolver.getRoute(name),
+    getRoute: name => resolver.getRoute(name),
+    getRoutes: () => resolver.getRoutes(),
+    addRoute: (...args: unknown[]) => callResolver('addRoute', args) || noop,
+    removeRoute: name => callResolver('removeRoute', [name]),
+    clearRoutes: () => callResolver('clearRoutes', []),
     // @ts-expect-error FIXME: update EXPERIMENTAL_Router types
     resolve,
     options,
@@ -1485,21 +1552,19 @@ export function experimental_createRouter<
 
   if (__DEV__) {
     router._hmrReplaceResolver = newResolver => {
-      const { _hmrUpdate } = resolver as {
+      const current = resolver as {
         _hmrUpdate?: (newResolver: EXPERIMENTAL_RouterResolver) => void
       }
       // a dynamic resolver updates itself to keep the routes added at runtime
-      if (_hmrUpdate) {
-        _hmrUpdate(newResolver)
+      if (current._hmrUpdate) {
+        current._hmrUpdate(newResolver)
       } else {
         resolver = newResolver
-        // `resolve` is the only resolver method the router overrides
-        assign(router, newResolver, { resolve })
       }
     }
   }
 
-  return router as EXPERIMENTAL_Router<TResolver>
+  return router
 }
 
 /**

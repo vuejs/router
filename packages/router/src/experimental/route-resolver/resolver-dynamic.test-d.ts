@@ -91,9 +91,13 @@ describe('createDynamicResolver', () => {
     expectTypeOf(router.getRoute('a')).toEqualTypeOf<
       EXPERIMENTAL_RouteRecordNormalized_Matchable | undefined
     >()
+    expectTypeOf(router.resolver).toEqualTypeOf<
+      EXPERIMENTAL_ResolverDynamic<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+    >()
+    router.resolver.addRoute('parent', { path: 'a', component })
   })
 
-  it('creates a router without dynamic routing methods with a fixed resolver', () => {
+  it('types the resolver of a router with a fixed resolver', () => {
     const router = experimental_createRouter({
       history: createMemoryHistory(),
       resolver:
@@ -105,7 +109,12 @@ describe('createDynamicResolver', () => {
       >
     >()
     expectTypeOf(router).toExtend<EXPERIMENTAL_Router>()
+    expectTypeOf(router.resolver).toEqualTypeOf<
+      EXPERIMENTAL_ResolverFixed<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+    >()
     // @ts-expect-error: not available with a fixed resolver
+    router.resolver.addRoute({ path: '/a', component })
+    // the deprecated router methods exist but warn at runtime
     router.addRoute({ path: '/a', component })
   })
 })

@@ -49,6 +49,11 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `Missing required param "${p.param}" when resolving the route "${p.name}".`,
       fix: 'Pass a value for every required param of the route.',
     },
+    VUE_ROUTER_R0133: {
+      why: (p: { method: string }) =>
+        `"router.${p.method}()" does nothing because the router resolver doesn't have a "${p.method}()" method.`,
+      fix: 'Use a resolver created with "createDynamicResolver()" or "vue-router/auto-resolver?dynamic" to add and remove routes at runtime.',
+    },
     // --- experimental/route-resolver/resolver-fixed.ts ---
     VUE_ROUTER_D0002: {
       why: (p: { key: string; value: string }) =>

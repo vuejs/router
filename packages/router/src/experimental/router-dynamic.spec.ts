@@ -1550,7 +1550,7 @@ describe('Experimental Router with createDynamicResolver()', () => {
       expect(router.hasRoute('a')).toBe(false)
     })
 
-    it('does not have dynamic routing methods with a fixed resolver', () => {
+    it('warns when adding or removing routes with a fixed resolver', () => {
       const router = experimental_createRouter({
         history: createMemoryHistory(),
         resolver: createFixedResolver([
@@ -1561,13 +1561,23 @@ describe('Experimental Router with createDynamicResolver()', () => {
           }),
         ]),
       })
-      expect('addRoute' in router).toBe(false)
-      expect('removeRoute' in router).toBe(false)
-      expect('clearRoutes' in router).toBe(false)
+      const remove = router.addRoute({
+        path: '/a',
+        name: 'a',
+        component: components.Foo,
+      })
+      expect('"router.addRoute()" does nothing').toHaveBeenWarned()
+      expect(router.hasRoute('a')).toBe(false)
+      // the returned function can be called
+      remove()
+      router.removeRoute('home')
+      expect('"router.removeRoute()" does nothing').toHaveBeenWarned()
+      router.clearRoutes()
+      expect('"router.clearRoutes()" does nothing').toHaveBeenWarned()
       expect(router.hasRoute('home')).toBe(true)
     })
 
-    it('exposes the methods of the resolver', () => {
+    it('exposes the resolver', () => {
       const resolver = createDynamicResolver([
         { path: '/', name: 'home', component: components.Home },
       ])
@@ -1575,11 +1585,77 @@ describe('Experimental Router with createDynamicResolver()', () => {
         history: createMemoryHistory(),
         resolver,
       })
+      expect(router.resolver).toBe(resolver)
       expect(router.getRoute('home')).toBe(resolver.getRoute('home'))
-      resolver.addRoute({ path: '/a', name: 'a', component: components.Foo })
+      router.resolver.addRoute({
+        path: '/a',
+        name: 'a',
+        component: components.Foo,
+      })
       expect(router.hasRoute('a')).toBe(true)
       router.removeRoute('a')
       expect(resolver.getRoute('a')).toBeUndefined()
+    })
+
+    it('works with resolvers that are class instances', () => {
+      class CustomResolver {
+        private dynamic = createDynamicResolver([
+          { path: '/', name: 'home', component: components.Home },
+        ])
+        added: string[] = []
+        resolve(...args: any[]): any {
+          return (this.dynamic.resolve as (...args: any[]) => unknown)(...args)
+        }
+        getRoutes() {
+          return this.dynamic.getRoutes()
+        }
+        getRoute(name: string | symbol) {
+          return this.dynamic.getRoute(name)
+        }
+        addRoute(route: RouteRecordRaw) {
+          this.added.push(route.path)
+          return this.dynamic.addRoute(route)
+        }
+        custom() {
+          return this.added.length
+        }
+      }
+      const resolver = new CustomResolver()
+      const router = experimental_createRouter({
+        history: createMemoryHistory(),
+        resolver,
+      })
+      router.addRoute({ path: '/a', name: 'a', component: components.Foo })
+      expect(resolver.added).toEqual(['/a'])
+      expect(router.resolver.custom()).toBe(1)
+      expect(router.resolve('/a').name).toBe('a')
+    })
+
+    it('exposes the resolver replaced during HMR', () => {
+      const router = experimental_createRouter({
+        history: createMemoryHistory(),
+        resolver: createFixedResolver([
+          normalizeRouteRecord({
+            name: 'old',
+            path: new MatcherPatternPathStatic('/old'),
+            components: { default: components.Foo },
+          }),
+        ]),
+      })
+      const newResolver = createFixedResolver([
+        normalizeRouteRecord({
+          name: 'new',
+          path: new MatcherPatternPathStatic('/new'),
+          components: { default: components.Foo },
+        }),
+      ])
+      router._hmrReplaceResolver!(newResolver)
+      expect(router.resolver).toBe(newResolver)
+      expect(router.getRoute('new')).toBeDefined()
+      expect(router.resolve('/new')).toMatchObject({
+        name: 'new',
+        href: '/new',
+      })
     })
 
     it('uses the records of the resolver replaced during HMR', () => {
