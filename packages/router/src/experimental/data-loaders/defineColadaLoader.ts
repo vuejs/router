@@ -23,9 +23,10 @@ import {
   setCurrentContext,
   trackRoute,
 } from './entries/index'
-import { type ShallowRef, shallowRef, watch } from 'vue'
+import { type EffectScope, type ShallowRef, shallowRef, watch } from 'vue'
 import {
   type EntryKey,
+  type UseQueryEntry,
   type UseQueryOptions,
   type UseQueryReturn,
   useQuery,
@@ -212,9 +213,10 @@ export function defineColadaLoader<Data>(
       entry.ext = useDefinedQuery()
       // remove the data loader effect scope so that queries
       // can be marked as inactive
-      useQueryCache()
-        .get(toValueWithParameters(options.key, to))
-        ?.deps.delete(router[DATA_LOADERS_EFFECT_SCOPE_KEY])
+      untrackLoaderQuery(
+        useQueryCache().get(toValueWithParameters(options.key, to)),
+        router[DATA_LOADERS_EFFECT_SCOPE_KEY]
+      )
 
       // avoid double reload since calling `useQuery()` will trigger a refresh
       // and we might also do it below for nested loaders
@@ -445,9 +447,10 @@ export function defineColadaLoader<Data>(
 
     // remove the data loader effect scope so that queries
     // can be marked as inactive when navigating away
-    useQueryCache()
-      .get(toValueWithParameters(options.key, route))
-      ?.deps.delete(router[DATA_LOADERS_EFFECT_SCOPE_KEY])
+    untrackLoaderQuery(
+      useQueryCache().get(toValueWithParameters(options.key, route)),
+      router[DATA_LOADERS_EFFECT_SCOPE_KEY]
+    )
 
     // TODO: add watchers only once alongside the entry
     // update the data when pinia colada updates it e.g. after visibility change
@@ -530,6 +533,22 @@ export function defineColadaLoader<Data>(
   }
 
   return useDataLoader
+}
+
+/**
+ * Removes loader scope consumers so unused queries can become inactive.
+ */
+function untrackLoaderQuery(
+  queryEntry: UseQueryEntry | undefined,
+  scope: EffectScope
+) {
+  if (!queryEntry) return
+
+  for (const consumer of queryEntry.deps) {
+    if (('owner' in consumer ? consumer.owner : consumer) === scope) {
+      queryEntry.deps.delete(consumer)
+    }
+  }
 }
 
 export const joinKeys = (keys: string[]): string => keys.join('|')

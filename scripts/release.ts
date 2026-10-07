@@ -483,7 +483,6 @@ async function main() {
           'conventional-changelog',
           '-i',
           'CHANGELOG.md',
-          '--same-file',
           '-p',
           'angular',
           '-r',

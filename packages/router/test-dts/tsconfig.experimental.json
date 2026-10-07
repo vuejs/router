@@ -6,7 +6,8 @@
     "noEmit": true,
     "noImplicitReturns": false,
     "paths": {
-      "vue-router": ["../dist"]
+      "vue-router": ["../dist"],
+      "vue-router/experimental": ["../dist/experimental/index.d.ts"]
     }
   },
   // Only `experimental.test-d.ts` — it globally augments `TypesConfig.Router`

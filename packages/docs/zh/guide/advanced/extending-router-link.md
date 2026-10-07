@@ -60,13 +60,11 @@ import { RouterLink } from 'vue-router'
 export default {
   name: 'AppLink',
   inheritAttrs: false,
-
   props: {
     // 如果使用 TypeScript，请添加 @ts-ignore
     ...RouterLink.props,
     inactiveClass: String,
   },
-
   computed: {
     isExternalLink() {
       return typeof this.to === 'string' && this.to.startsWith('http')

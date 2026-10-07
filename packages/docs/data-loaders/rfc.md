@@ -990,6 +990,7 @@ On top of this it's important to note that this RFC doesn't limit you: you can s
   ::: details
 
   Variables could be named differently and proposals are welcome:
+
   - `isLoading` -> `isPending`, `pending` (same as Nuxt)
   - Rename `defineLoader()` to `defineDataFetching()` (or others)
 
