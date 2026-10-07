@@ -1,6 +1,6 @@
 {
   "name": "vue-router",
-  "version": "5.3.1",
+  "version": "5.4.0",
   "homepage": "https://router.vuejs.org",
   "bugs": {
     "url": "https://github.com/vuejs/router/issues"

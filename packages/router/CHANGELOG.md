@@ -1,3 +1,42 @@
+# [5.4.0](https://github.com/vuejs/router/compare/v5.3.1...v5.4.0) (2026-10-07)
+
+- feat(experimental)!: normalize query values to arrays (#2824) ([f1fbc06](https://github.com/vuejs/router/commit/f1fbc067e489aa310c1ea028c48bcffa4f024b76)), closes [#2824](https://github.com/vuejs/router/issues/2824)
+
+### Bug Fixes
+
+- **experimental:** align hash parameter parsing with queries ([cf25179](https://github.com/vuejs/router/commit/cf25179f3e3e14a7cea46802e8e51d9bd4a70b47))
+- **experimental:** disallow required with a default for query params ([f60e9e3](https://github.com/vuejs/router/commit/f60e9e37a95b45bf65594667e36913fff1e82088))
+- **experimental:** do not inherit params, query, or hash on redirects ([02a9265](https://github.com/vuejs/router/commit/02a92656346b574d11f67545d5f2fb3d09bcdf9f))
+- **experimental:** exclude defaults from required hash params ([346e2cd](https://github.com/vuejs/router/commit/346e2cde82e6849f23229fd44f476cc463d08880))
+- **experimental:** keep declared case of static prefix in MatcherPatternPathStar.build() ([#2798](https://github.com/vuejs/router/issues/2798)) ([4dc6bfa](https://github.com/vuejs/router/commit/4dc6bfa165491877f98434036deaf000e1583aed))
+- **experimental:** keep last hash param instead of throwing ([d1e8ac1](https://github.com/vuejs/router/commit/d1e8ac174d274ebfbda693116ecd1fb0749cfe47))
+- **experimental:** make hash params optional and nullable ([d9a4ceb](https://github.com/vuejs/router/commit/d9a4ceb056e48cc6f19f95ed46328a6ed59a3541))
+- **experimental:** make query params with a default optional on push ([fb604ea](https://github.com/vuejs/router/commit/fb604ea61b37510ab71d95fd451bd28a2cc1b76b))
+- **history:** invalidate obsolete scroll positions ([#2814](https://github.com/vuejs/router/issues/2814)) ([071f196](https://github.com/vuejs/router/commit/071f1969be1348e797a55d0d8afb72b8068154dc))
+- resolve experimental guard redirects against target on history navigation ([2c5fbd6](https://github.com/vuejs/router/commit/2c5fbd6308d1091105531769da2e7b598aa9dfce))
+- **unplugin:** keep hex character codes in param segments regexp ([#2811](https://github.com/vuejs/router/issues/2811)) ([07663eb](https://github.com/vuejs/router/commit/07663eb6be6b44c9f65b1b0ea2caaffc25bf1431))
+- **unplugin:** sanitize named view in definePage import ([#2809](https://github.com/vuejs/router/issues/2809)) ([0711dff](https://github.com/vuejs/router/commit/0711dff9e2abf50d84db3276fe9bda0c5e84c879))
+
+### Features
+
+- accept a prebuilt matcher in `createRouter` ([#2804](https://github.com/vuejs/router/issues/2804)) ([9de967f](https://github.com/vuejs/router/commit/9de967f46ca4d39a962880684eee0a09d5d175e4))
+- diagnose experimental beforeEnter migration ([b695cd0](https://github.com/vuejs/router/commit/b695cd0f7f61585527d166d36a68da6a0bf1d351))
+- **experimental:** allow custom regexp for path params in definePage ([#2822](https://github.com/vuejs/router/issues/2822)) ([3a192ad](https://github.com/vuejs/router/commit/3a192ad18119ab636491af074448c4611e7de50f))
+- **experimental:** configure required and default hash params ([cef5cfa](https://github.com/vuejs/router/commit/cef5cfae42c87078a87f2f8939908a07fad505b3))
+- **experimental:** extract hash params with definePage ([dbf2d9e](https://github.com/vuejs/router/commit/dbf2d9e22f27826d9884929dbcad0d7bffa582bf))
+- **experimental:** never decode the hash, protect-only encoding ([#2760](https://github.com/vuejs/router/issues/2760)) ([aca2c83](https://github.com/vuejs/router/commit/aca2c83a5088cdfcaf153bf088dcf28e5b29c84f))
+- **experimental:** warn about legacy optional param removal ([#2818](https://github.com/vuejs/router/issues/2818)) ([c2f92a4](https://github.com/vuejs/router/commit/c2f92a4dd7c10bbd7a7414d866c61bbb7345c972))
+- **router:** restore hashes and top by default ([7c3851f](https://github.com/vuejs/router/commit/7c3851f830e461720cd5ab63caac1ce3b513a5bc))
+- useScrollRestoration and onRouteRendered ([#2805](https://github.com/vuejs/router/issues/2805)) ([e3dde5e](https://github.com/vuejs/router/commit/e3dde5eb545a81c4a3425bc3b635ff7fd89b6448))
+
+### Performance Improvements
+
+- **unplugin:** cache merged route overrides ([#2821](https://github.com/vuejs/router/issues/2821)) ([732b723](https://github.com/vuejs/router/commit/732b723e670065f76c69f782cc2c4ec0f3eb4d50))
+
+### BREAKING CHANGES
+
+- in the new experimental router, all query values are arrays by default, to simplify type checks. Using param parsers still allow to extract one single value and are unchanged
+
 ## [5.3.1](https://github.com/vuejs/router/compare/v5.3.0...v5.3.1) (2026-09-02)
 
 ### Bug Fixes
