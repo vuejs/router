@@ -843,6 +843,7 @@ export function experimental_createRouter(
           if (
             isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
           ) {
+            // navigation guards can return a relative location and we need to resolve it against the target location
             const redirectTo = resolve(
               // @ts-expect-error: FIXME: refactor location types
               failure.to,
