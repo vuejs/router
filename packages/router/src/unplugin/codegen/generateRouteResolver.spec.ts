@@ -580,10 +580,10 @@ describe('generateRouteResolver', () => {
 
       export const resolver = createFixedResolver([
         __route_2,  // /a/about
-        __route_1,  // /a
         __route_5,  // /p/:id/details
         __route_4,  // /p/:id
         __route_3,  // /p/:id
+        __route_1,  // /a
         __route_0,  // /a
       ])
       "

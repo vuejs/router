@@ -11,55 +11,31 @@ import {
   collectUsedParamParserNames,
 } from './generateParamParsers'
 import { generatePageImport, formatMeta } from './generateRouteRecords'
+import {
+  comparePathScore,
+  getPathScore,
+  type PathScore,
+} from '../../experimental/route-resolver/matchers/path-score'
 
 /**
- * Compare two score sub-arrays element by element.
- * Ported from pathParserRanker.ts compareScoreArray.
+ * Number of nodes from the root to this node.
  */
-function compareScoreArray(a: number[], b: number[]): number {
-  let i = 0
-  while (i < a.length && i < b.length) {
-    const diff = b[i] - a[i]
-    if (diff) return diff
-    i++
+function getNodeDepth(node: TreeNode): number {
+  let depth = 0
+  for (let n: TreeNode | undefined = node; n && !n.isRoot(); n = n.parent) {
+    depth++
   }
-
-  // if the shorter array is a pure static segment, it should sort first
-  // otherwise sort the longer segment first
-  if (a.length < b.length) {
-    return a.length === 1 && a[0] === 300 ? -1 : 1
-  } else if (a.length > b.length) {
-    return b.length === 1 && b[0] === 300 ? 1 : -1
-  }
-
-  return 0
-}
-
-function isLastScoreNegative(score: number[][]): boolean {
-  const last = score[score.length - 1]
-  return score.length > 0 && last[last.length - 1] < 0
+  return depth
 }
 
 /**
- * Compare two score arrays for sorting routes by priority.
- * Ported from pathParserRanker.ts comparePathParserScore.
+ * Score of a node, computed like the runtime does from the generated pattern.
  */
-function compareRouteScore(a: number[][], b: number[][]): number {
-  let i = 0
-  while (i < a.length && i < b.length) {
-    const comp = compareScoreArray(a[i], b[i])
-    if (comp) return comp
-    i++
-  }
-
-  // handle wildcard (splat) routes
-  if (Math.abs(b.length - a.length) === 1) {
-    if (isLastScoreNegative(a)) return 1
-    if (isLastScoreNegative(b)) return -1
-  }
-
-  // more segments = more specific = sort first
-  return b.length - a.length
+function getNodeScore(node: TreeNode): PathScore {
+  return getPathScore(
+    node.matcherPatternPathDynamicParts,
+    node.pathParams.map(param => [null, param.repeatable, param.optional])
+  )
 }
 
 interface GenerateRouteResolverState {
@@ -67,7 +43,8 @@ interface GenerateRouteResolverState {
   matchableRecords: {
     path: string
     varName: string
-    score: number[][]
+    score: PathScore
+    depth: number
   }[]
 }
 
@@ -116,7 +93,9 @@ export const resolver = createFixedResolver([
 ${state.matchableRecords
   .sort(
     (a, b) =>
-      compareRouteScore(a.score, b.score) ||
+      comparePathScore(a.score, b.score) ||
+      // descendants before ancestors, like the dynamic resolver
+      b.depth - a.depth ||
       // fallback to sorting by path depth to ensure consistent order between routes with the same score
       b.path.split('/').filter(Boolean).length -
         a.path.split('/').filter(Boolean).length
@@ -191,7 +170,8 @@ export function generateRouteRecord({
       state.matchableRecords.push({
         path: node.fullPath,
         varName,
-        score: node.score,
+        score: getNodeScore(node),
+        depth: getNodeDepth(node),
       })
       recordName = `name: ${toStringLiteral(node.name)},`
     } else {
@@ -265,7 +245,8 @@ const ${varName} = normalizeRouteRecord(${routeRecordObject})
       state.matchableRecords.push({
         path: tempNode.fullPath,
         varName: aliasVarName,
-        score: tempNode.score,
+        score: getNodeScore(tempNode),
+        depth: getNodeDepth(node),
       })
     }
   }
