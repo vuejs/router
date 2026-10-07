@@ -52,6 +52,7 @@ import type {
 } from '../typed-routes'
 import type {
   Lazy,
+  RouteRecordRaw,
   RawRouteComponent,
   RouteLocationOptions,
   RouteMeta,
@@ -76,6 +77,7 @@ import type {
   EXPERIMENTAL_ResolverRecord_Matchable,
   EXPERIMENTAL_ResolverFixed,
 } from './route-resolver/resolver-fixed'
+import type { EXPERIMENTAL_ResolverDynamic } from './route-resolver/resolver-dynamic'
 import { isAbsoluteLocation } from './route-resolver/resolver-abstract'
 import type {
   ResolverLocationAsNamed,
@@ -420,11 +422,30 @@ export function mergeRouteRecord(
  */
 export interface EXPERIMENTAL_RouterOptions extends EXPERIMENTAL_RouterOptions_Base {
   /**
-   * Matcher to use to resolve routes.
+   * Resolver to use to resolve routes. Use `createFixedResolver()` for routes
+   * known at build time or `createDynamicResolver()` to add and remove routes
+   * at runtime.
    *
    * @experimental
    */
-  resolver: EXPERIMENTAL_ResolverFixed<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+  resolver:
+    | EXPERIMENTAL_ResolverFixed<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+    | EXPERIMENTAL_ResolverDynamic<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+}
+
+/**
+ * Options to initialize an experimental {@link EXPERIMENTAL_RouterDynamic}
+ * instance.
+ *
+ * @experimental
+ */
+export interface EXPERIMENTAL_RouterOptionsDynamic extends EXPERIMENTAL_RouterOptions {
+  /**
+   * Resolver created with `createDynamicResolver()`.
+   *
+   * @experimental
+   */
+  resolver: EXPERIMENTAL_ResolverDynamic<EXPERIMENTAL_RouteRecordNormalized_Matchable>
 }
 
 // TODO: Make the Router extends the resolver so that it automatically exposes
@@ -623,22 +644,70 @@ export interface EXPERIMENTAL_Router
    * @internal
    */
   _hmrReplaceResolver?: (
-    newResolver: EXPERIMENTAL_ResolverFixed<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+    newResolver: EXPERIMENTAL_RouterOptions['resolver']
   ) => void
 }
 
 /**
+ * Experimental router created with a resolver from `createDynamicResolver()`.
+ * It allows adding and removing routes at runtime.
+ *
+ * @experimental
+ */
+export interface EXPERIMENTAL_RouterDynamic extends EXPERIMENTAL_Router {
+  readonly options: EXPERIMENTAL_RouterOptionsDynamic
+
+  /**
+   * Add a new {@link RouteRecordRaw | route record} as the child of an existing route.
+   *
+   * @param parentName - Parent Route Record where `route` should be appended at
+   * @param route - Route Record to add
+   */
+  addRoute(
+    // NOTE: it could be `keyof RouteMap` but the point of dynamic routes is not knowing the routes at build
+    parentName: NonNullable<RouteRecordNameGeneric>,
+    route: RouteRecordRaw
+  ): () => void
+
+  /**
+   * Add a new {@link RouteRecordRaw | route record} to the router.
+   *
+   * @param route - Route Record to add
+   */
+  addRoute(route: RouteRecordRaw): () => void
+
+  /**
+   * Remove an existing route by its name.
+   *
+   * @param name - Name of the route to remove
+   */
+  removeRoute(name: NonNullable<RouteRecordNameGeneric>): void
+
+  /**
+   * Delete all routes from the router.
+   */
+  clearRoutes(): void
+}
+
+/**
  * Creates an experimental Router that allows passing a resolver instead of a
- * routes array. This router does not have `addRoute()` and `removeRoute()`
- * methods and is meant to be used with file-based routing thanks to
+ * routes array. With a resolver from `createDynamicResolver()`, the router has
+ * `addRoute()`, `removeRoute()`, and `clearRoutes()` methods. With a fixed
+ * resolver, it is meant to be used with file-based routing thanks to
  * vue-router/vite or vue-router/unplugin resolver generation in
  * `'vue-router/auto-resolver'`.
  *
  * @param options - Options to initialize the router
  */
 export function experimental_createRouter(
+  options: EXPERIMENTAL_RouterOptionsDynamic
+): EXPERIMENTAL_RouterDynamic
+export function experimental_createRouter(
   options: EXPERIMENTAL_RouterOptions
-): EXPERIMENTAL_Router {
+): EXPERIMENTAL_Router
+export function experimental_createRouter(
+  options: EXPERIMENTAL_RouterOptions
+): EXPERIMENTAL_Router | EXPERIMENTAL_RouterDynamic {
   let {
     resolver,
     // TODO: document that a custom parsing can be handled with a custom param that parses the whole query
@@ -1356,18 +1425,30 @@ export function experimental_createRouter(
 
   const go = (delta: number) => routerHistory.go(delta)
 
+  function getDynamicResolver(method: string) {
+    if (__DEV__ && !('addRoute' in resolver)) {
+      throw diagnostics.VUE_ROUTER_R0130({ method })
+    }
+    return resolver as EXPERIMENTAL_ResolverDynamic<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+  }
+
   let started: boolean | undefined
   const installedApps = new Set<App>()
 
-  const router: EXPERIMENTAL_Router = {
+  const router: EXPERIMENTAL_RouterDynamic = {
     currentRoute,
     listening: true,
 
     hasRoute: name => !!resolver.getRoute(name),
     getRoutes: () => resolver.getRoutes(),
+    // only available with a dynamic resolver
+    addRoute: (...args: [any, any?]) =>
+      getDynamicResolver('addRoute').addRoute(...args),
+    removeRoute: name => getDynamicResolver('removeRoute').removeRoute(name),
+    clearRoutes: () => getDynamicResolver('clearRoutes').clearRoutes(),
     // @ts-expect-error FIXME: update EXPERIMENTAL_Router types
     resolve,
-    options,
+    options: options as EXPERIMENTAL_RouterOptionsDynamic,
 
     // @ts-expect-error FIXME: update EXPERIMENTAL_Router types
     push,

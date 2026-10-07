@@ -38,6 +38,11 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `Route "${p.name}" uses beforeEnter, which is deprecated in the experimental router.`,
       fix: 'Move the condition to the route meta field and check to.meta in router.beforeEach().',
     },
+    VUE_ROUTER_R0130: {
+      why: (p: { method: string }) =>
+        `"router.${p.method}()" is not available because the router resolver is fixed.`,
+      fix: 'Use "createDynamicResolver()" instead of "createFixedResolver()" to add or remove routes at runtime.',
+    },
     // --- experimental/route-resolver/resolver-fixed.ts ---
     VUE_ROUTER_D0002: {
       why: (p: { key: string; value: string }) =>
