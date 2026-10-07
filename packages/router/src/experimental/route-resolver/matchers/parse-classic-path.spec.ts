@@ -19,6 +19,41 @@ describe('parseClassicPath', () => {
   })
 
   describe('match', () => {
+    it('matches and builds escaped colons as static text', () => {
+      const pattern = parseClassicPath('/literal\\:name/child')
+      expect(pattern.match('/literal:name/child')).toEqual({})
+      expect(pattern.build({})).toBe('/literal:name/child')
+      expect(() => pattern.match('/literal\\:name/child')).toThrow(MatchMiss)
+    })
+
+    it('matches and builds escaped slashes as static text', () => {
+      const pattern = parseClassicPath('/a\\/b')
+      expect(pattern.match('/a/b')).toEqual({})
+      expect(pattern.build({})).toBe('/a/b')
+      expect(() => pattern.match('/a\\/b')).toThrow(MatchMiss)
+    })
+
+    it('matches and builds escaped backslashes as static text', () => {
+      const pattern = parseClassicPath('/a\\\\b')
+      expect(pattern.match('/a\\b')).toEqual({})
+      expect(pattern.build({})).toBe('/a\\b')
+      expect(() => pattern.match('/a\\\\b')).toThrow(MatchMiss)
+    })
+
+    it('preserves trailing slashes after escaped static text', () => {
+      const pattern = parseClassicPath('/literal\\:name/')
+      expect(pattern.match('/literal:name/')).toEqual({})
+      expect(pattern.build({})).toBe('/literal:name/')
+      expect(() => pattern.match('/literal:name')).toThrow(MatchMiss)
+    })
+
+    it('matches and builds the root path', () => {
+      const pattern = parseClassicPath('/')
+      expect(pattern.match('/')).toEqual({})
+      expect(pattern.build({})).toBe('/')
+      expect(() => pattern.match('')).toThrow(MatchMiss)
+    })
+
     it('matches / with an empty path', () => {
       expect(parseClassicPath('').match('/')).toEqual({})
       expect(parseClassicPath('').build({})).toBe('/')
@@ -115,6 +150,9 @@ describe('parseClassicPath', () => {
   describe('build', () => {
     it('builds static paths', () => {
       expect(parseClassicPath('/about').build({})).toBe('/about')
+      expect(parseClassicPath('/about/').build({})).toBe('/about/')
+      expect(parseClassicPath('/a/b').build({})).toBe('/a/b')
+      expect(parseClassicPath('/a/b/').build({})).toBe('/a/b/')
     })
 
     it('builds and encodes params', () => {

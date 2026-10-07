@@ -113,5 +113,7 @@ export function parseClassicPath(
         pathParts,
         trailingSlash
       )
-    : new MatcherPatternPathStatic(path)
+    : new MatcherPatternPathStatic(
+        '/' + pathParts.join('/') + (trailingSlash ? '/' : '')
+      )
 }
