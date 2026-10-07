@@ -476,12 +476,13 @@ export function createDynamicResolver(
     resolve: ((...args: Parameters<typeof resolveFn>) => {
       // track the routes so `computed()`s using `resolve()` are invalidated
       version.value
-      const to = args[0]
-      if (__DEV__ && typeof to === 'object' && to.name != null && to.params) {
+      const [to, currentLocation] = args
+      if (__DEV__ && typeof to === 'object' && to.name != null) {
         const record = recordMap.get(to.name)
         if (record) {
-          const keys = getPatternParams(record.path).map(([name]) => name)
-          const invalidParams = Object.keys(to.params).filter(
+          const patternParams = getPatternParams(record.path)
+          const keys = patternParams.map(([name]) => name)
+          const invalidParams = Object.keys(to.params || {}).filter(
             name => !keys.includes(name)
           )
           if (invalidParams.length) {
@@ -489,6 +490,22 @@ export function createDynamicResolver(
               params: invalidParams.join('", "'),
               inherited: '',
             })
+          }
+
+          const params = { ...currentLocation?.params, ...to.params }
+          for (const [name, repeatable, optional] of patternParams) {
+            const value = params[name]
+            if (
+              !optional &&
+              (value == null ||
+                value === '' ||
+                (repeatable && Array.isArray(value) && !value.length))
+            ) {
+              diagnostics.VUE_ROUTER_R0132({
+                param: name,
+                name: String(to.name),
+              })
+            }
           }
         }
       }

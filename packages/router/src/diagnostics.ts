@@ -44,6 +44,11 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `The route "${p.path}" uses the "strict", "sensitive", or "end" option. The dynamic resolver ignores them: paths are always strict, case insensitive, and match until the end.`,
       fix: 'Remove these options from the route record.',
     },
+    VUE_ROUTER_R0132: {
+      why: (p: { param: string; name: string }) =>
+        `Missing required param "${p.param}" when resolving the route "${p.name}".`,
+      fix: 'Pass a value for every required param of the route.',
+    },
     // --- experimental/route-resolver/resolver-fixed.ts ---
     VUE_ROUTER_D0002: {
       why: (p: { key: string; value: string }) =>

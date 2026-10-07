@@ -817,6 +817,7 @@ describe('createDynamicResolver resolve', () => {
     it('throws if a required param is missing', () => {
       const resolver = create({ path: '/users/:id', name: 'user', components })
       expect(() => resolver.resolve({ name: 'user', params: {} })).toThrow()
+      expect('Missing required param "id"').toHaveBeenWarned()
     })
 
     it('merges params from the current location', () => {
@@ -857,6 +858,29 @@ describe('createDynamicResolver resolve', () => {
         params: { optional: 'foo' },
       })
       expect(matchedPaths(loc)).toEqual(['/foo/parent', '/foo/parent/b'])
+    })
+
+    it('warns about missing required params', () => {
+      const resolver = create([
+        { path: '/u/:id/:tab?', name: 'user', components },
+        { path: '/f/:path+', name: 'files', components },
+      ])
+      expect(() => resolver.resolve({ name: 'user', params: {} })).toThrow()
+      expect('Missing required param "id"').toHaveBeenWarned()
+      expect(() =>
+        resolver.resolve({ name: 'files', params: { path: [] } })
+      ).toThrow()
+      expect('Missing required param "path"').toHaveBeenWarned()
+    })
+
+    it('does not warn about missing optional params', () => {
+      const resolver = create({
+        path: '/u/:id/:tab?',
+        name: 'user',
+        components,
+      })
+      resolver.resolve({ name: 'user', params: { id: '1' } })
+      expect('Missing required param').not.toHaveBeenWarned()
     })
 
     it('discards non existent params with a warning', () => {

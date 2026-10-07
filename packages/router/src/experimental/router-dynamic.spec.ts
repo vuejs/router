@@ -462,6 +462,7 @@ describe('Experimental Router with createDynamicResolver()', () => {
     expect(() =>
       router.resolve({ name: 'Param', params: { p: 'po' } })
     ).not.toThrow()
+    expect('Missing required param "p"').toHaveBeenWarned()
   })
 
   it('fails if required repeated params are missing', async () => {
@@ -475,6 +476,7 @@ describe('Experimental Router with createDynamicResolver()', () => {
     expect(() =>
       router.resolve({ name: 'repeat', params: { r: ['a'] } })
     ).not.toThrow()
+    expect('Missing required param "r"').toHaveBeenWarnedTimes(2)
   })
 
   it('fails with empty arrays for required non repeatable params', async () => {
@@ -1064,6 +1066,7 @@ describe('Experimental Router with createDynamicResolver()', () => {
     it('does not keep params from targetLocation on a named redirect', async () => {
       const { router } = await newRouter()
       expect(() => router.push('/to-p/1?hey=foo#fa')).toThrowError(_MatchMiss)
+      expect('Missing required param "p"').toHaveBeenWarned()
       expect(router.currentRoute.value.fullPath).toBe('/')
     })
 
@@ -1291,6 +1294,7 @@ describe('Experimental Router with createDynamicResolver()', () => {
       const { router } = await newRouter()
       await router.push('/p/a')
       expect(() => router.resolve({ name: 'Param' })).toThrow()
+      expect('Missing required param "p"').toHaveBeenWarned()
       const scope = effectScope()
       const route = scope.run(() =>
         computed(() =>
