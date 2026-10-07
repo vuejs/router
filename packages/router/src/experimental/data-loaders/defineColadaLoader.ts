@@ -23,9 +23,10 @@ import {
   setCurrentContext,
   trackRoute,
 } from './entries/index'
-import { type ShallowRef, shallowRef, watch } from 'vue'
+import { type EffectScope, type ShallowRef, shallowRef, watch } from 'vue'
 import {
   type EntryKey,
+  type UseQueryEntry,
   type UseQueryOptions,
   type UseQueryReturn,
   useQuery,
@@ -149,13 +150,9 @@ export function defineColadaLoader<Data>(
   })
 
   function untrackLoaderQuery(
-    to: RouteLocationNormalizedLoaded,
-    router: Router
+    queryEntry: UseQueryEntry | undefined,
+    scope: EffectScope
   ) {
-    const queryEntry = useQueryCache().get(
-      toValueWithParameters(options.key, to)
-    )
-    const scope = router[DATA_LOADERS_EFFECT_SCOPE_KEY]
     if (queryEntry) {
       for (const consumer of queryEntry.deps) {
         if (
@@ -232,7 +229,10 @@ export function defineColadaLoader<Data>(
       entry.ext = useDefinedQuery()
       // remove the data loader effect scope so that queries
       // can be marked as inactive
-      untrackLoaderQuery(to, router)
+      untrackLoaderQuery(
+        useQueryCache().get(toValueWithParameters(options.key, to)),
+        router[DATA_LOADERS_EFFECT_SCOPE_KEY]
+      )
 
       // avoid double reload since calling `useQuery()` will trigger a refresh
       // and we might also do it below for nested loaders
@@ -463,7 +463,10 @@ export function defineColadaLoader<Data>(
 
     // remove the data loader effect scope so that queries
     // can be marked as inactive when navigating away
-    untrackLoaderQuery(route, router)
+    untrackLoaderQuery(
+      useQueryCache().get(toValueWithParameters(options.key, route)),
+      router[DATA_LOADERS_EFFECT_SCOPE_KEY]
+    )
 
     // TODO: add watchers only once alongside the entry
     // update the data when pinia colada updates it e.g. after visibility change
