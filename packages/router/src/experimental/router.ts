@@ -85,6 +85,7 @@ import type {
 } from './route-resolver/resolver-abstract'
 import type { DataLoaderExtensions } from './data-loaders/meta-extensions'
 import { diagnostics } from '../diagnostics'
+import type { PathParserOptions } from '../matcher'
 
 /**
  * resolve, reject arguments of Promise constructor
@@ -98,10 +99,12 @@ export type _OnReadyCallback = [() => void, (reason?: any) => void]
 //   matched: EXPERIMENTAL_RouteRecordNormalized[]
 // }
 
+// TODO: completely remove the PathParserOptions extends here
+
 /**
  * Options to initialize a {@link Router} instance.
  */
-export interface EXPERIMENTAL_RouterOptions_Base {
+export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
   /**
    * History implementation used by the router. Most web applications should use
    * `createWebHistory` but it requires the server to be properly configured.
