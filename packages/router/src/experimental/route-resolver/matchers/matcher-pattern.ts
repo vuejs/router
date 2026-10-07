@@ -120,7 +120,9 @@ export type MatcherPatternPathDynamic_ParamOptions<
  * @internal
  */
 type ExtractParamTypeFromOptions<TParamsOptions> = {
-  [K in keyof TParamsOptions]: TParamsOptions[K] extends MatcherPatternPathDynamic_ParamOptions<
+  [
+    K in keyof TParamsOptions
+  ]: TParamsOptions[K] extends MatcherPatternPathDynamic_ParamOptions<
     any,
     infer TParam,
     any
@@ -135,7 +137,9 @@ type ExtractParamTypeFromOptions<TParamsOptions> = {
  * @internal
  */
 type ExtractLocationParamTypeFromOptions<TParamsOptions> = {
-  [K in keyof TParamsOptions]: TParamsOptions[K] extends MatcherPatternPathDynamic_ParamOptions<
+  [
+    K in keyof TParamsOptions
+  ]: TParamsOptions[K] extends MatcherPatternPathDynamic_ParamOptions<
     any,
     any,
     infer TParamRaw
