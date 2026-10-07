@@ -72,13 +72,9 @@ export default createUnplugin<Options | undefined>((opt = {}, _meta) => {
 
       resolveId: {
         filter: {
-          id: {
-            include: [
-              new RegExp(`^${MODULE_ROUTES_PATH}$`),
-              new RegExp(`^${MODULE_RESOLVER_PATH}$`),
-              routeBlockQueryRE,
-            ],
-          },
+          id: new RegExp(
+            `^${MODULE_ROUTES_PATH}$|^${MODULE_RESOLVER_PATH}$|${routeBlockQueryRE.source}`
+          ),
         },
         handler(id) {
           // vue-router/auto-routes

@@ -172,6 +172,7 @@ export function isRawParamParserSource(
           spec.type === 'ExportSpecifier' &&
           spec.exported.type === 'Identifier' &&
           spec.exported.name === 'parser' &&
+          spec.local.type === 'Identifier' &&
           rawLocals.has(spec.local.name)
         ) {
           isRaw = true

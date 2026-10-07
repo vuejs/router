@@ -148,6 +148,26 @@ export function defineColadaLoader<Data>(
     })
   })
 
+  function untrackLoaderQuery(
+    to: RouteLocationNormalizedLoaded,
+    router: Router
+  ) {
+    const queryEntry = useQueryCache().get(
+      toValueWithParameters(options.key, to)
+    )
+    const scope = router[DATA_LOADERS_EFFECT_SCOPE_KEY]
+    if (queryEntry) {
+      for (const consumer of queryEntry.deps) {
+        if (
+          consumer === scope ||
+          ('owner' in consumer && consumer.owner === scope)
+        ) {
+          queryEntry.deps.delete(consumer)
+        }
+      }
+    }
+  }
+
   function load(
     to: RouteLocationNormalizedLoaded,
     router: Router,
@@ -212,9 +232,7 @@ export function defineColadaLoader<Data>(
       entry.ext = useDefinedQuery()
       // remove the data loader effect scope so that queries
       // can be marked as inactive
-      useQueryCache()
-        .get(toValueWithParameters(options.key, to))
-        ?.deps.delete(router[DATA_LOADERS_EFFECT_SCOPE_KEY])
+      untrackLoaderQuery(to, router)
 
       // avoid double reload since calling `useQuery()` will trigger a refresh
       // and we might also do it below for nested loaders
@@ -445,9 +463,7 @@ export function defineColadaLoader<Data>(
 
     // remove the data loader effect scope so that queries
     // can be marked as inactive when navigating away
-    useQueryCache()
-      .get(toValueWithParameters(options.key, route))
-      ?.deps.delete(router[DATA_LOADERS_EFFECT_SCOPE_KEY])
+    untrackLoaderQuery(route, router)
 
     // TODO: add watchers only once alongside the entry
     // update the data when pinia colada updates it e.g. after visibility change

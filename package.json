@@ -26,8 +26,8 @@
   },
   "devDependencies": {
     "@clack/prompts": "npm:@posva/clack-prompts@^1.2.1",
-    "@types/node": "^24.10.4",
-    "@vitejs/plugin-vue": "^6.0.8",
+    "@types/node": "^26.6.4",
+    "@vitejs/plugin-vue": "^6.0.9",
     "@vitest/browser-playwright": "^4.1.10",
     "@vitest/coverage-v8": "^4.1.10",
     "@vitest/ui": "^4.1.10",
