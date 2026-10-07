@@ -149,22 +149,6 @@ export function defineColadaLoader<Data>(
     })
   })
 
-  function untrackLoaderQuery(
-    queryEntry: UseQueryEntry | undefined,
-    scope: EffectScope
-  ) {
-    if (queryEntry) {
-      for (const consumer of queryEntry.deps) {
-        if (
-          consumer === scope ||
-          ('owner' in consumer && consumer.owner === scope)
-        ) {
-          queryEntry.deps.delete(consumer)
-        }
-      }
-    }
-  }
-
   function load(
     to: RouteLocationNormalizedLoaded,
     router: Router,
@@ -549,6 +533,23 @@ export function defineColadaLoader<Data>(
   }
 
   return useDataLoader
+}
+
+/** Removes loader scope consumers so unused queries can become inactive. */
+function untrackLoaderQuery(
+  queryEntry: UseQueryEntry | undefined,
+  scope: EffectScope
+) {
+  if (queryEntry) {
+    for (const consumer of queryEntry.deps) {
+      if (
+        consumer === scope ||
+        ('owner' in consumer && consumer.owner === scope)
+      ) {
+        queryEntry.deps.delete(consumer)
+      }
+    }
+  }
 }
 
 export const joinKeys = (keys: string[]): string => keys.join('|')
