@@ -535,19 +535,18 @@ export function defineColadaLoader<Data>(
   return useDataLoader
 }
 
-/** Removes loader scope consumers so unused queries can become inactive. */
+/**
+ * Removes loader scope consumers so unused queries can become inactive.
+ */
 function untrackLoaderQuery(
   queryEntry: UseQueryEntry | undefined,
   scope: EffectScope
 ) {
-  if (queryEntry) {
-    for (const consumer of queryEntry.deps) {
-      if (
-        consumer === scope ||
-        ('owner' in consumer && consumer.owner === scope)
-      ) {
-        queryEntry.deps.delete(consumer)
-      }
+  if (!queryEntry) return
+
+  for (const consumer of queryEntry.deps) {
+    if (('owner' in consumer ? consumer.owner : consumer) === scope) {
+      queryEntry.deps.delete(consumer)
     }
   }
 }
