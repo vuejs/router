@@ -70,7 +70,7 @@ router.resolver.addRoute('admin', {
   component: AdminSettings,
 })
 
-router.hasRoute('admin') // true
+router.getRoute('admin') // the route record
 router.resolver.removeRoute('admin') // also removes its children and aliases
 removeRoute() // same as above
 router.resolver.clearRoutes()
@@ -78,7 +78,7 @@ router.resolver.clearRoutes()
 
 `router.addRoute()`, `router.removeRoute()`, and `router.clearRoutes()` still work to ease the migration, but they are deprecated. With a fixed resolver, they do nothing and warn in development.
 
-The router also has the methods that all the resolvers have: `router.getRoutes()`, `router.getRoute(name)`, and `router.hasRoute(name)`. Use `router.resolver` to call the other methods of a custom resolver. Prefer `router.resolve()` over `router.resolver.resolve()`: only the router adds `href` and merges `meta`.
+The router also has the methods that all the resolvers have: `router.getRoutes()` and `router.getRoute(name)`. Use `router.getRoute(name)` instead of `router.hasRoute(name)` to check if a route exists. Use `router.resolver` to call the other methods of a custom resolver. Prefer `router.resolve()` over `router.resolver.resolve()`: only the router adds `href` and merges `meta`.
 
 You can also call these methods on the resolver before you create the router:
 
