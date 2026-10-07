@@ -54,7 +54,8 @@ export function generateRouteResolver(
   tree: PrefixTree,
   options: ResolvedOptions,
   importsMap: ImportsMap,
-  paramParsersMap: ParamParsersMap
+  paramParsersMap: ParamParsersMap,
+  { dynamic = false }: { dynamic?: boolean } = {}
 ): string {
   // restrict imports + normalized declarations to parsers actually referenced
   // by a route, so unused parser files don't get pulled into the bundle
@@ -76,7 +77,11 @@ export function generateRouteResolver(
     })
   )
 
-  importsMap.add('vue-router/experimental', 'createFixedResolver')
+  // the dynamic resolver also ranks records at runtime, with the same score
+  const createResolver = dynamic
+    ? 'createDynamicResolver'
+    : 'createFixedResolver'
+  importsMap.add('vue-router/experimental', createResolver)
   importsMap.add('vue-router/experimental', 'MatcherPatternPathStatic')
   importsMap.add('vue-router/experimental', 'MatcherPatternPathDynamic')
   importsMap.add('vue-router/experimental', 'normalizeRouteRecord')
@@ -89,7 +94,7 @@ export function generateRouteResolver(
   return ts`
 ${normalizedDeclarations ? normalizedDeclarations + '\n\n' : ''}${records.join('\n\n')}
 
-export const resolver = createFixedResolver([
+export const resolver = ${createResolver}([
 ${state.matchableRecords
   .sort(
     (a, b) =>

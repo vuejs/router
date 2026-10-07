@@ -1,3 +1,4 @@
+/// <reference path="../vue-router-auto-resolver-dynamic.d.ts" />
 import { describe, it, expectTypeOf } from 'vitest'
 import type {
   EXPERIMENTAL_Router,
@@ -5,6 +6,10 @@ import type {
 } from 'vue-router/experimental'
 import { useScrollRestoration } from 'vue-router/experimental'
 import { useRouter } from 'vue-router'
+import {
+  resolver as dynamicResolver,
+  handleHotUpdate,
+} from 'vue-router/auto-resolver?dynamic'
 import { ref } from 'vue'
 
 // Structural records allow parsed params beyond the classic string constraint.
@@ -137,5 +142,14 @@ describe('useScrollRestoration', () => {
   it('accepts reactive manual options', () => {
     useScrollRestoration({ manual: ref(true) })
     useScrollRestoration({ manual: () => true })
+  })
+})
+
+describe('vue-router/auto-resolver?dynamic', () => {
+  it('exports a dynamic resolver', () => {
+    expectTypeOf(dynamicResolver.addRoute).toBeFunction()
+    expectTypeOf(dynamicResolver.removeRoute).toBeFunction()
+    dynamicResolver.addRoute({ path: '/a', component: {} })
+    handleHotUpdate(useRouter())
   })
 })

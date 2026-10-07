@@ -438,6 +438,36 @@ describe('generateRouteRecord', () => {
 })
 
 describe('generateRouteResolver', () => {
+  it('generates a dynamic resolver with the same records', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('a', 'a.vue')
+    tree.insert('users/[id]', 'users/[id].vue')
+    const fixedImports = new ImportsMap()
+    const fixed = generateRouteResolver(
+      tree,
+      DEFAULT_OPTIONS,
+      fixedImports,
+      new Map()
+    )
+    const dynamicImports = new ImportsMap()
+    const dynamic = generateRouteResolver(
+      tree,
+      DEFAULT_OPTIONS,
+      dynamicImports,
+      new Map(),
+      { dynamic: true }
+    )
+
+    expect(dynamic).toContain('export const resolver = createDynamicResolver([')
+    expect(dynamic).not.toContain('createFixedResolver')
+    expect(dynamicImports.toString()).toContain('createDynamicResolver')
+    expect(dynamicImports.toString()).not.toContain('createFixedResolver')
+    // only the factory changes
+    expect(
+      dynamic.replace('createDynamicResolver', 'createFixedResolver')
+    ).toBe(fixed)
+  })
+
   it('generates a resolver for a simple tree', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     const importsMap = new ImportsMap()

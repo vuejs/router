@@ -21,6 +21,7 @@
     "README.md",
     "route.schema.json",
     "vue-router-auto-resolver.d.mts",
+    "vue-router-auto-resolver-dynamic.d.ts",
     "vue-router-auto-routes.d.mts",
     "vue-router-auto.d.ts",
     "vue-router.node.mjs",
@@ -80,6 +81,9 @@
     },
     "./auto-resolver": {
       "types": "./vue-router-auto-resolver.d.mts"
+    },
+    "./auto-resolver-dynamic": {
+      "types": "./vue-router-auto-resolver-dynamic.d.ts"
     },
     "./auto-routes": {
       "types": "./vue-router-auto-routes.d.mts"
