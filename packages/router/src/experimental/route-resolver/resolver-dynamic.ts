@@ -212,7 +212,8 @@ export function createDynamicResolver(
         // replace any existing route with the same name
         if (isRootAdd && raw.name != null) {
           if (__DEV__) checkSameNameAsAncestor(raw, parent)
-          removeRoute(raw.name)
+          const existing = recordMap.get(raw.name)
+          if (existing) removeRecord(existing)
         }
       }
 
@@ -262,20 +263,28 @@ export function createDynamicResolver(
     const record = isRouteName(nameOrRecord)
       ? recordMap.get(nameOrRecord)
       : nameOrRecord
-    const node = record && nodes.get(record)
-    if (node) {
-      nodes.delete(record)
-      if (record.name != null && recordMap.get(record.name) === record) {
-        recordMap.delete(record.name)
-      }
-      const index = matchers.indexOf(record as TRecord)
-      if (index > -1) matchers.splice(index, 1)
-      node.children.forEach(removeRoute)
-      node.aliases.forEach(removeRoute)
+    if (record && nodes.has(record)) {
+      removeRecord(record)
       version.value++
     } else if (__DEV__ && isRouteName(nameOrRecord)) {
       diagnostics.VUE_ROUTER_R0002({ name: String(nameOrRecord) })
     }
+  }
+
+  /**
+   * Removes a record, its children, and its aliases.
+   */
+  function removeRecord(record: EXPERIMENTAL_RouteRecordNormalized) {
+    const node = nodes.get(record)
+    if (!node) return
+    nodes.delete(record)
+    if (record.name != null && recordMap.get(record.name) === record) {
+      recordMap.delete(record.name)
+    }
+    const index = matchers.indexOf(record as TRecord)
+    if (index > -1) matchers.splice(index, 1)
+    node.children.forEach(removeRecord)
+    node.aliases.forEach(removeRecord)
   }
 
   function clearRoutes() {
