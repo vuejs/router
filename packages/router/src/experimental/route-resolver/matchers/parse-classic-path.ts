@@ -28,6 +28,8 @@ export function parseClassicPath(
   | MatcherPatternPathDynamic<
       Record<string, MatcherPatternPathDynamic_ParamOptions>
     > {
+  // an empty root path is the same as `/`
+  path ||= '/'
   const segments = tokenizePath(path)
   const params: Record<string, MatcherPatternPathDynamic_ParamOptions> = {}
   const pathParts: Array<string | number | Array<string | number>> = []

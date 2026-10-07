@@ -19,6 +19,11 @@ describe('parseClassicPath', () => {
   })
 
   describe('match', () => {
+    it('matches / with an empty path', () => {
+      expect(parseClassicPath('').match('/')).toEqual({})
+      expect(parseClassicPath('').build({})).toBe('/')
+    })
+
     it('matches static paths case insensitively', () => {
       const pattern = parseClassicPath('/about')
       expect(pattern.match('/about')).toEqual({})

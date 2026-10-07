@@ -910,9 +910,7 @@ describe('createDynamicResolver', () => {
     // removed: "empty path before slash". It relied on a bonus of the
     // classic ranker. See the "matches / with an empty root path" test.
 
-    // BUG: parseClassicPath('') creates a static pattern '' that never
-    // matches. The classic router matched "/" with a root `path: ''`
-    it.fails('matches / with an empty root path', () => {
+    it('matches / with an empty root path', () => {
       const resolver = createDynamicResolver([
         { path: '', name: 'empty', component },
       ])
