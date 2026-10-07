@@ -48,12 +48,19 @@ describe('path score', () => {
 
   it('sorts splats last', () => {
     // /:path(.*), /:id, /
-    expect(sortPaths([[0], [PARAM]], [[1], [PARAM]], [[]])).toEqual([1, 2, 0])
+    expect(sortPaths([[0], [PARAM]], [[1], [PARAM]], [[]])).toEqual([2, 1, 0])
   })
 
   it('sorts a splat after the path without it', () => {
     // /users/:path(.*), /users
     expect(sortPaths([['users', 0], [PARAM]], [['users']])).toEqual([1, 0])
+  })
+
+  it('sorts the root before root optional params', () => {
+    // /:p?, /
+    expect(sortPaths([[1], [OPTIONAL]], [[]])).toEqual([1, 0])
+    // /:p*, /
+    expect(sortPaths([[1], [STAR]], [[]])).toEqual([1, 0])
   })
 
   it('sorts longer paths first', () => {

@@ -54,9 +54,12 @@ export function getPathScore(
     )
   }
 
-  return pathParts.map(part =>
-    typeof part === 'object' ? part.map(partScore) : [partScore(part)]
-  )
+  return pathParts.length
+    ? pathParts.map(part =>
+        typeof part === 'object' ? part.map(partScore) : [partScore(part)]
+      )
+    : // the root path `/` is a static segment
+      [[Score.Static]]
 }
 
 /**

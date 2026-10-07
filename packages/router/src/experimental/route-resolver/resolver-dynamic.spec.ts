@@ -833,9 +833,7 @@ describe('createDynamicResolver', () => {
       )
     })
 
-    // BUG: the score of "/" is empty and ranks below any path with one
-    // segment, so an optional param at the root shadows "/"
-    it.fails('puts the slash before optional parameters', () => {
+    it('puts the slash before optional parameters', () => {
       checkPathOrder(
         ['/', '/:a?'],
         [
@@ -1243,7 +1241,7 @@ describe('createDynamicResolver', () => {
       expect(resolver.resolve('/new').name).toBe('new')
       expect(resolver.resolve('/old')).toMatchObject(NO_MATCH)
       expect(resolver.getRoute('old')).toBeUndefined()
-      expect(resolver.getRoutes().map(r => r.name)).toEqual(['new', 'new-home'])
+      expect(resolver.getRoutes().map(r => r.name)).toEqual(['new-home', 'new'])
     })
 
     it('keeps the routes added with addRoute()', () => {
