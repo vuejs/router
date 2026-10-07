@@ -56,29 +56,42 @@ The route records keep the [same syntax](../guide/essentials/route-matching-synt
 
 ## Add and remove routes
 
-The router has the same methods as before:
+The methods to add and remove routes are on the resolver, available as `router.resolver`:
 
 ```ts
-const removeRoute = router.addRoute({
+const removeRoute = router.resolver.addRoute({
   path: '/admin',
   name: 'admin',
   component: AdminPage,
 })
 // add a child route
-router.addRoute('admin', { path: 'settings', component: AdminSettings })
+router.resolver.addRoute('admin', {
+  path: 'settings',
+  component: AdminSettings,
+})
 
 router.hasRoute('admin') // true
-router.removeRoute('admin') // also removes its children and aliases
+router.resolver.removeRoute('admin') // also removes its children and aliases
 removeRoute() // same as above
-router.clearRoutes()
+router.resolver.clearRoutes()
 ```
 
-These methods come from the resolver: the router exposes all the resolver methods that it does not define itself. With a fixed resolver, the router does not have them. You can also call them on the resolver, e.g. to add routes before you create the router:
+`router.addRoute()`, `router.removeRoute()`, and `router.clearRoutes()` still work to ease the migration, but they are deprecated. With a fixed resolver, they do nothing and warn in development.
+
+The router also has the methods that all the resolvers have: `router.getRoutes()`, `router.getRoute(name)`, and `router.hasRoute(name)`. Use `router.resolver` to call the other methods of a custom resolver. Prefer `router.resolve()` over `router.resolver.resolve()`: only the router adds `href` and merges `meta`.
+
+You can also call these methods on the resolver before you create the router:
 
 ```ts
 const resolver = createDynamicResolver()
 resolver.addRoute({ path: '/', component: Home })
 ```
+
+::: tip
+HMR can replace `router.resolver`. Read `router.resolver` when you need it instead of keeping a reference.
+:::
+
+A library that supports the classic router and the experimental router can use `(router.resolver ?? router).addRoute(route)`.
 
 A child route can be added to a generated route. Its params use the same param parsers as the parent route.
 
