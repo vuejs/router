@@ -13,12 +13,12 @@ import {
   inject,
   provide,
   defineComponent,
-  ref,
   unref,
   getCurrentInstance,
   computed,
   watch,
   nextTick,
+  shallowRef,
 } from 'vue'
 import type {
   RouteLocationNormalized,
@@ -49,17 +49,160 @@ export interface RouterViewDevtoolsContext extends Pick<
   depth: number
 }
 
+/**
+ * Props of `RouterView` and `VaporRouterView`.
+ * @internal
+ */
+export const routerViewProps = {
+  name: {
+    type: String as PropType<string>,
+    default: 'default',
+  },
+  route: Object as PropType<RouteLocationNormalizedLoaded>,
+}
+
+/**
+ * State shared by `RouterView` and `VaporRouterView`.
+ * @internal
+ */
+export function useRouterViewState(props: {
+  name: string
+  route?: RouteLocationNormalizedLoaded
+}) {
+  const injectedRoute = inject(routerViewLocationKey)!
+  const routeToDisplay = computed<RouteLocationNormalizedLoaded>(
+    () => props.route || injectedRoute.value
+  )
+  const injectedDepth = inject(viewDepthKey, 0)
+  // The depth changes based on empty components option, which allows passthrough routes e.g. routes with children
+  // that are used to reuse the `path` property
+  const depth = computed<number>(() => {
+    let initialDepth = unref(injectedDepth)
+    const { matched } = routeToDisplay.value
+    let matchedRoute: RouteLocationMatched | undefined
+    while ((matchedRoute = matched[initialDepth]) && !matchedRoute.components) {
+      initialDepth++
+    }
+    return initialDepth
+  })
+  const matchedRouteRef = computed<RouteLocationMatched | undefined>(
+    () => routeToDisplay.value.matched[depth.value]
+  )
+
+  provide(
+    viewDepthKey,
+    computed(() => depth.value + 1)
+  )
+  provide(matchedRouteKey, matchedRouteRef)
+  provide(routerViewLocationKey, routeToDisplay)
+
+  // onRouteRendered() callbacks of descendants without a closer RouterView
+  const onRouteRenderedCallbacks = new Set<OnRouteRenderedCallback>()
+  provide(routerViewOnRouteRenderedKey, onRouteRenderedCallbacks)
+
+  const viewRef = shallowRef<ComponentPublicInstance | null>()
+  let settledRoute = START_LOCATION_NORMALIZED
+
+  // watch at the same time the component instance, the route record we are
+  // rendering, and the name
+  watch(
+    () => [viewRef.value, matchedRouteRef.value, props.name] as const,
+    ([instance, to, name], [oldInstance, from, _oldName]) => {
+      // copy reused instances
+      if (to) {
+        // this will update the instance for new instances as well as reused
+        // instances when navigating to a new route
+        to.instances[name] = instance
+        // the component instance is reused for a different route or name, so
+        // we copy any saved update or leave guards. With async setup, the
+        // mounting component will mount before the matchedRoute changes,
+        // making instance === oldInstance, so we check if guards have been
+        // added before. This works because we remove guards when
+        // unmounting/deactivating components
+        if (from && from !== to && instance && instance === oldInstance) {
+          if (!to.leaveGuards.size) {
+            to.leaveGuards = from.leaveGuards
+          }
+          if (!to.updateGuards.size) {
+            to.updateGuards = from.updateGuards
+          }
+        }
+      }
+
+      // trigger beforeRouteEnter next callbacks
+      if (
+        instance &&
+        to &&
+        // if there is no instance but to and from are the same this might be
+        // the first visit
+        (!from || !isSameRouteRecord(to, from) || !oldInstance)
+      ) {
+        ;(to.enterCallbacks[name] || []).forEach(callback => callback(instance))
+      }
+    },
+    { flush: 'post' }
+  )
+
+  /**
+   * Calls the `onRouteRendered()` callbacks once `route` is displayed. Waits
+   * for the end of the render flush: other views and hooks of the same flush
+   * (nested RouterView, onActivated) run after this one.
+   *
+   * @param route - route being displayed
+   * @param isDisplayed - checks if the view is in the document
+   */
+  const settle = (
+    route: RouteLocationNormalizedLoaded,
+    isDisplayed: () => unknown
+  ) =>
+    nextTick(() => {
+      if (
+        // not already called: unrelated re-render or failed navigation (the
+        // route didn't change)
+        settledRoute !== route &&
+        // not stale (e.g. the old branch of a pending Suspense). Also skips
+        // views memoized with v-memo (e.g. `[route.path]`): they self-update
+        // with the props of the memoized render, so navigations that keep the
+        // memo key are missed
+        routeToDisplay.value === route &&
+        isDisplayed()
+      ) {
+        const from = settledRoute
+        settledRoute = route
+        for (const callback of onRouteRenderedCallbacks) {
+          callback(route, from)
+        }
+      }
+    })
+
+  // a tuple minifies better than an object
+  return [routeToDisplay, matchedRouteRef, viewRef, settle, depth] as const
+}
+
+/**
+ * Props passed to the route component from the route record `props` option.
+ * @internal
+ */
+export function getRouteProps(
+  route: RouteLocationNormalizedLoaded,
+  matchedRoute: RouteLocationMatched,
+  name: string
+) {
+  const routePropsOption = matchedRoute.props[name]
+  return routePropsOption
+    ? routePropsOption === true
+      ? route.params
+      : typeof routePropsOption === 'function'
+        ? routePropsOption(route)
+        : routePropsOption
+    : null
+}
+
 export const RouterViewImpl = /*#__PURE__*/ defineComponent({
   name: 'RouterView',
   // #674 we manually inherit them
   inheritAttrs: false,
-  props: {
-    name: {
-      type: String as PropType<string>,
-      default: 'default',
-    },
-    route: Object as PropType<RouteLocationNormalizedLoaded>,
-  },
+  props: routerViewProps,
 
   // Better compat for @vue/compat users
   // https://github.com/vuejs/router/issues/1315
@@ -68,85 +211,9 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
   setup(props, { attrs, slots }) {
     __DEV__ && warnDeprecatedUsage()
 
-    const injectedRoute = inject(routerViewLocationKey)!
-    const routeToDisplay = computed<RouteLocationNormalizedLoaded>(
-      () => props.route || injectedRoute.value
-    )
-    const injectedDepth = inject(viewDepthKey, 0)
-    // The depth changes based on empty components option, which allows passthrough routes e.g. routes with children
-    // that are used to reuse the `path` property
-    const depth = computed<number>(() => {
-      let initialDepth = unref(injectedDepth)
-      const { matched } = routeToDisplay.value
-      let matchedRoute: RouteLocationMatched | undefined
-      while (
-        (matchedRoute = matched[initialDepth]) &&
-        !matchedRoute.components
-      ) {
-        initialDepth++
-      }
-      return initialDepth
-    })
-    const matchedRouteRef = computed<RouteLocationMatched | undefined>(
-      () => routeToDisplay.value.matched[depth.value]
-    )
-
-    provide(
-      viewDepthKey,
-      computed(() => depth.value + 1)
-    )
-    provide(matchedRouteKey, matchedRouteRef)
-    provide(routerViewLocationKey, routeToDisplay)
-
-    // onRouteRendered() callbacks of descendants without a closer RouterView
-    const onRouteRenderedCallbacks = new Set<OnRouteRenderedCallback>()
-    provide(routerViewOnRouteRenderedKey, onRouteRenderedCallbacks)
-
-    const viewRef = ref<ComponentPublicInstance>()
-    let settledRoute = START_LOCATION_NORMALIZED
+    const [routeToDisplay, matchedRouteRef, viewRef, settle, depth] =
+      useRouterViewState(props)
     const { app } = getCurrentInstance()!.appContext
-
-    // watch at the same time the component instance, the route record we are
-    // rendering, and the name
-    watch(
-      () => [viewRef.value, matchedRouteRef.value, props.name] as const,
-      ([instance, to, name], [oldInstance, from, _oldName]) => {
-        // copy reused instances
-        if (to) {
-          // this will update the instance for new instances as well as reused
-          // instances when navigating to a new route
-          to.instances[name] = instance
-          // the component instance is reused for a different route or name, so
-          // we copy any saved update or leave guards. With async setup, the
-          // mounting component will mount before the matchedRoute changes,
-          // making instance === oldInstance, so we check if guards have been
-          // added before. This works because we remove guards when
-          // unmounting/deactivating components
-          if (from && from !== to && instance && instance === oldInstance) {
-            if (!to.leaveGuards.size) {
-              to.leaveGuards = from.leaveGuards
-            }
-            if (!to.updateGuards.size) {
-              to.updateGuards = from.updateGuards
-            }
-          }
-        }
-
-        // trigger beforeRouteEnter next callbacks
-        if (
-          instance &&
-          to &&
-          // if there is no instance but to and from are the same this might be
-          // the first visit
-          (!from || !isSameRouteRecord(to, from) || !oldInstance)
-        ) {
-          ;(to.enterCallbacks[name] || []).forEach(callback =>
-            callback(instance)
-          )
-        }
-      },
-      { flush: 'post' }
-    )
 
     return () => {
       const route = routeToDisplay.value
@@ -161,16 +228,6 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
         return normalizeSlot(slots.default, { Component: ViewComponent, route })
       }
 
-      // props from route configuration
-      const routePropsOption = matchedRoute.props[currentName]
-      const routeProps = routePropsOption
-        ? routePropsOption === true
-          ? route.params
-          : typeof routePropsOption === 'function'
-            ? routePropsOption(route)
-            : routePropsOption
-        : null
-
       const onVnodeUnmounted: VNodeProps['onVnodeUnmounted'] = vnode => {
         // remove the instance reference to prevent leak
         if (vnode.component!.isUnmounted) {
@@ -181,36 +238,20 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       // runs after the view's own mounted/updated/activated hooks, after
       // Suspense resolves, and after an out-in Transition enters
       const onVnodeSettled = (vnode: VNode) =>
-        // wait for the end of the render flush: other views and hooks of the
-        // same flush (nested RouterView, onActivated) run after this one, and
-        // the app container isn't set yet during the initial mount
-        nextTick(() => {
-          if (
-            // already called: unrelated re-render or failed navigation (the
-            // route didn't change)
-            settledRoute === route ||
-            // stale vnode (e.g. the old branch of a pending Suspense). Also
-            // skips views memoized with v-memo (e.g. `[route.path]`): they
-            // self-update with the props of the memoized render, so
-            // navigations that keep the memo key are missed
-            routeToDisplay.value !== route ||
-            // still in a Suspense hidden container, e.g. KeepAlive activating
-            // inside a pending Suspense, a later hook fires once it is moved
-            (vnode.el as Node).getRootNode() !==
-              (app._container as Node).getRootNode()
-          ) {
-            return
-          }
-          const from = settledRoute
-          settledRoute = route
-          for (const callback of onRouteRenderedCallbacks) {
-            callback(route, from)
-          }
-        })
+        settle(
+          route,
+          () =>
+            // not in a Suspense hidden container, e.g. KeepAlive activating
+            // inside a pending Suspense, a later hook fires once it is moved.
+            // nextTick: the app container isn't set yet during the initial
+            // mount
+            (vnode.el as Node).getRootNode() ===
+            (app._container as Node).getRootNode()
+        )
 
       const component = h(
         ViewComponent,
-        assign({}, routeProps, attrs, {
+        assign({}, getRouteProps(route, matchedRoute, currentName), attrs, {
           onVnodeUnmounted,
           onVnodeMounted: onVnodeSettled,
           onVnodeUpdated: onVnodeSettled,
