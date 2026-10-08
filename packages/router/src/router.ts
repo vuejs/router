@@ -1058,19 +1058,19 @@ export function createRouter(options: RouterOptions): Router {
     isReady,
 
     install(app: App) {
-      app.component('RouterLink', RouterLink)
-      app.component('RouterView', RouterView)
-
-      // TODO: move this part for composition API only
+      // Vapor apps register VaporRouterLink and VaporRouterView themselves
       if (!app.vapor) {
-        // augmented to the experimental shape it diverges from `createRouter`'s
-        // return type. FIXME.
-        app.config.globalProperties.$router = router as Router
-        Object.defineProperty(app.config.globalProperties, '$route', {
-          enumerable: true,
-          get: () => unref(currentRoute),
-        })
+        app.component('RouterLink', RouterLink)
+        app.component('RouterView', RouterView)
       }
+
+      // augmented to the experimental shape it diverges from `createRouter`'s
+      // return type. FIXME.
+      app.config.globalProperties.$router = router as Router
+      Object.defineProperty(app.config.globalProperties, '$route', {
+        enumerable: true,
+        get: () => unref(currentRoute),
+      })
 
       // this initial navigation is only necessary on client, on server it doesn't
       // make sense because it will create an extra unnecessary navigation and could
