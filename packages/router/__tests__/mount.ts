@@ -12,7 +12,7 @@ import {
   routerViewLocationKey,
 } from '../src/injectionSymbols'
 import type { RouteLocationNormalized } from '../src/typed-routes'
-import { VaporRouterView } from '../src/VaporRouterView'
+import { VaporRouterView } from '../src/vapor'
 import { afterEach, beforeEach } from 'vitest'
 
 export function createMockedRoute(

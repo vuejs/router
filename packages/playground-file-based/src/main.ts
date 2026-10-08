@@ -8,7 +8,7 @@ import { DataLoaderPlugin } from 'vue-router/experimental'
 import {
   VaporRouterLink as RouterLink,
   VaporRouterView as RouterView,
-} from 'vue-router'
+} from 'vue-router/vapor'
 
 const app = createApp(App)
 

@@ -1,7 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
-import { VaporRouterView } from '../src/VaporRouterView'
+import { VaporRouterView } from '../src/vapor'
 import type { RouteLocationNormalizedLoose } from './utils'
 import { START_LOCATION_NORMALIZED } from '../src/location'
 import {

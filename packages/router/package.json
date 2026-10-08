@@ -74,6 +74,10 @@
       "types": "./dist/experimental/index.d.ts",
       "import": "./dist/experimental/index.js"
     },
+    "./vapor": {
+      "types": "./dist/vapor/index.d.ts",
+      "import": "./dist/vapor/index.js"
+    },
     "./experimental/pinia-colada": {
       "types": "./dist/experimental/pinia-colada.d.ts",
       "import": "./dist/experimental/pinia-colada.js"

@@ -1,7 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
-import { VaporRouterLink } from '../src/VaporRouterLink'
+import { VaporRouterLink } from '../src/vapor'
 import type { RouteQueryAndHash, MatcherLocationRaw } from '../src/types'
 import { START_LOCATION_NORMALIZED } from '../src/location'
 import type {
