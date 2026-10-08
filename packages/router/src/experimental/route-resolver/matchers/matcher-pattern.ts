@@ -193,6 +193,8 @@ export class MatcherPatternPathDynamic<
   match(path: string): Simplify<ExtractParamTypeFromOptions<TParamsOptions>> {
     if (
       this.trailingSlash != null &&
+      // The root path has no trailing slash.
+      path !== '/' &&
       this.trailingSlash === !path.endsWith('/')
     ) {
       miss()
@@ -313,7 +315,7 @@ export class MatcherPatternPathDynamic<
      */
     return this.trailingSlash == null
       ? path + (!value && path.at(-1) !== '/' ? '/' : '')
-      : path.replace(TRAILING_SLASHES_RE, this.trailingSlash ? '/' : '')
+      : path.replace(TRAILING_SLASHES_RE, this.trailingSlash ? '/' : '') || '/'
   }
 }
 
