@@ -9,7 +9,9 @@ import { defineConfig } from 'rollup'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-const configs = ['webRouter', 'webRouter_experimental'].map(file => {
+const entries = ['webRouter', 'webRouter_experimental', 'webRouter_vapor']
+
+const configs = entries.map(file => {
   return defineConfig({
     external: ['vue'],
     output: {
