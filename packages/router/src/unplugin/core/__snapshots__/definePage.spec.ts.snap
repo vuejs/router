@@ -1,5 +1,15 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`definePage > imports > keeps used aliased named imports 1`] = `
+"import {my_var, my_func as fn} from './lib'
+export default {
+  meta: {
+    [my_var]: 'hello',
+    other: fn,
+  }
+}"
+`;
+
 exports[`definePage > imports > keeps used default imports 1`] = `
 "import my_var from './lib'
 export default {

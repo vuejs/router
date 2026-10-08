@@ -57,6 +57,26 @@ definePage({
       expect(result?.code).toMatchSnapshot()
     })
 
+    it('keeps used aliased named imports', async () => {
+      const result = (await definePageTransform({
+        code: vue`
+<script setup>
+import { my_var, my_func as fn, not_used } from './lib'
+definePage({
+  meta: {
+    [my_var]: 'hello',
+    other: fn,
+  }
+})
+</script>
+`,
+        id: 'src/pages/with-imports.vue&definePage&vue&lang.ts',
+      })) as Exclude<TransformResult, string>
+      expect(result).toHaveProperty('code')
+      expect(result?.code).toContain('my_func as fn')
+      expect(result?.code).toMatchSnapshot()
+    })
+
     it('keeps used default imports', async () => {
       const result = (await definePageTransform({
         code: vue`

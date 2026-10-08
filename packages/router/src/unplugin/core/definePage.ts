@@ -625,14 +625,13 @@ function generateFilteredImportStatement(
 
   let namedImportListCode = ''
   for (const importName in namedImports) {
-    if (usedIds.has(importName)) {
+    const localName = namedImports[importName]
+    if (usedIds.has(localName)) {
       // add comma if we have more than one named import
       namedImportListCode += namedImportListCode ? `, ` : ''
 
       namedImportListCode +=
-        importName === namedImports[importName]
-          ? importName
-          : `${importName} as ${namedImports[importName]}`
+        importName === localName ? importName : `${importName} as ${localName}`
     }
   }
 
