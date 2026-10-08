@@ -438,10 +438,18 @@ export class TreeNode {
     }
 
     let re = ''
+    let onlyOptionalParams = true
     for (var i = 0; i < nodeList.length; i++) {
       node = nodeList[i]!
       if (node.value.isParam()) {
         var nodeRe = node.value.re
+        const subSegment = node.value.subSegments[0]
+        const isOptionalSegment =
+          node.value.subSegments.length === 1 &&
+          subSegment != null &&
+          isTreePathParam(subSegment) &&
+          subSegment.optional
+        onlyOptionalParams &&= isOptionalSegment
         // Ensure we add a connecting slash
         // if we already have something in the regexp and if the only part of
         // the segment is an optional param, then the / must be put inside the
@@ -450,8 +458,7 @@ export class TreeNode {
           // if we have a segment before or after
           (re || i < nodeList.length - 1) &&
           // if the only part of the segment is an optional (can be repeatable) param
-          node.value.subSegments.length === 1 &&
-          (node.value.subSegments.at(0) as TreePathParam).optional
+          isOptionalSegment
         ) {
           // TODO: tweak if trailingSlash
           re += `(?:\\/${
@@ -462,20 +469,25 @@ export class TreeNode {
           re += (re ? '\\/' : '') + nodeRe
         }
       } else if (node.value.pathSegment) {
+        onlyOptionalParams = false
         // append the path segment to the regexp after escaping it
         re += (re ? '\\/' : '') + escapeRegex(node.value.pathSegment)
       }
     }
 
-    return (
-      '/^' +
+    re =
       // Avoid adding a leading slash if the first segment
       // is an optional segment that already includes it
       (re.startsWith('(?:\\/') ? '' : '\\/') +
       // TODO: trailingSlash
-      re.replace(ESCAPED_TRAILING_SLASH_RE, '') +
-      '$/i'
-    )
+      re.replace(ESCAPED_TRAILING_SLASH_RE, '')
+
+    if (onlyOptionalParams && re.startsWith('(?:\\/')) {
+      // Match / when all params are absent. The matcher rejects other trailing slashes.
+      re += '\\/?'
+    }
+
+    return '/^' + re + '$/i'
   }
 
   /**
