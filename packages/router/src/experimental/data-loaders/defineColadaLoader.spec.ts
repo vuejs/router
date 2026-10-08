@@ -365,6 +365,60 @@ describe(
       // expect(nestedQuery).toHaveBeenCalledTimes(2)
     })
 
+    it('re-runs nested loaders when the parent refetches', async () => {
+      const nestedQuery = vi.fn(async () => [{ id: 0 }, { id: 1 }])
+      const useListData = defineColadaLoader({
+        query: nestedQuery,
+        key: () => ['items'],
+      })
+
+      const useDetailData = defineColadaLoader({
+        key: to => ['items', { id: to.params.id as string }],
+        async query(to) {
+          const list = await useListData()
+          const item = list.find(
+            item => String(item.id) === (to.params.id as string)
+          )
+          if (!item) {
+            throw new Error('Not Found')
+          }
+          return { ...item, when: Date.now() }
+        },
+      })
+
+      let detailResult: ReturnType<typeof useDetailData> | undefined
+      const component = defineComponent({
+        setup() {
+          detailResult = useDetailData()
+          return { ...detailResult }
+        },
+        template: `<p/>`,
+      })
+
+      const router = getRouter()
+      router.addRoute({
+        name: 'item-id',
+        path: '/items/:id',
+        meta: { loaders: [useDetailData], nested: { foo: 'bar' } },
+        component,
+      })
+
+      const pinia = createPinia()
+
+      mount(RouterViewMock, {
+        global: {
+          plugins: [[DataLoaderPlugin, { router }], router, pinia, PiniaColada],
+        },
+      })
+
+      await router.push('/items/0')
+      expect(nestedQuery).toHaveBeenCalledTimes(1)
+
+      // like on main, refetching the parent must re-run the nested loader
+      await detailResult!.refetch()
+      expect(nestedQuery).toHaveBeenCalledTimes(2)
+    })
+
     it('marks loader queries as inactive when navigating away from the page', async () => {
       // Create two loaders with different keys
       const useLoader1 = defineColadaLoader({
