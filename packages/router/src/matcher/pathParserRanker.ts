@@ -180,7 +180,11 @@ export function tokensToParser(
         }
 
         // when we repeat we must take care of the repeating leading slash
-        let subPattern = repeatable ? `((?:${re})(?:/(?:${re}))*)` : `(${re})`
+        // Greedy dot wildcards match `/`; lazy variants need the repeat wrapper.
+        let subPattern =
+          repeatable && re !== '.+' && re !== '.*'
+            ? `((?:${re})(?:/(?:${re}))*)`
+            : `(${re})`
 
         // prepend the slash if we are starting a new segment
         if (!tokenIndex)
