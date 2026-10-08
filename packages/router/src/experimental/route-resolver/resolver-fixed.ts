@@ -152,6 +152,28 @@ export function createFixedResolver<
     }
   }
 
+  return {
+    resolve: createResolve(records, recordMap),
+    getRoutes: () => records,
+    getRoute: name => recordMap.get(name),
+  }
+}
+
+/**
+ * Creates the `resolve()` function of a resolver. `records` and `recordMap`
+ * are read on each call, so they can be mutated by a dynamic resolver.
+ *
+ * @internal
+ *
+ * @param records - ordered records to match against
+ * @param recordMap - records by name, without aliases
+ */
+export function createResolve<
+  TRecord extends EXPERIMENTAL_ResolverRecord_Matchable,
+>(
+  records: TRecord[],
+  recordMap: Map<RecordName, TRecord>
+): EXPERIMENTAL_Resolver_Base<TRecord>['resolve'] {
   // NOTE: because of the overloads for `resolve`, we need to manually type the arguments
   type _resolveArgs =
     | [absoluteLocation: `/${string}`, currentLocation?: undefined]
@@ -360,9 +382,5 @@ export function createFixedResolver<
     }
   }
 
-  return {
-    resolve,
-    getRoutes: () => records,
-    getRoute: name => recordMap.get(name),
-  }
+  return resolve as EXPERIMENTAL_Resolver_Base<TRecord>['resolve']
 }

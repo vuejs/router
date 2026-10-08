@@ -1,6 +1,8 @@
 // vue-router/auto/routes was more natural but didn't work well with TS
 export const MODULE_ROUTES_PATH = `vue-router/auto-routes`
 export const MODULE_RESOLVER_PATH = `vue-router/auto-resolver`
+// same as MODULE_RESOLVER_PATH but creates a dynamic resolver
+export const MODULE_RESOLVER_DYNAMIC_PATH = `${MODULE_RESOLVER_PATH}?dynamic`
 
 // NOTE: not sure if needed. Used for HMR the virtual routes
 let time = Date.now()

@@ -2,6 +2,7 @@ export { experimental_createRouter, normalizeRouteRecord } from './router'
 export type {
   EXPERIMENTAL_Router_Base,
   EXPERIMENTAL_Router,
+  EXPERIMENTAL_RouterResolver,
   EXPERIMENTAL_RouteRecordNormalized,
   EXPERIMENTAL_RouterOptions_Base,
   EXPERIMENTAL_RouterOptions,
@@ -28,6 +29,12 @@ export { onRouteRendered } from './on-route-rendered'
 export type { OnRouteRenderedCallback } from './on-route-rendered'
 
 export { createFixedResolver } from './route-resolver/resolver-fixed'
+export {
+  createDynamicResolver,
+  type EXPERIMENTAL_ResolverDynamic,
+  type EXPERIMENTAL_ResolverDynamicRecordRaw,
+} from './route-resolver/resolver-dynamic'
+export { parseClassicPath } from './route-resolver/matchers/parse-classic-path'
 export {
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,

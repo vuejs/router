@@ -1,6 +1,7 @@
 import { type ViteDevServer } from 'vite'
 import { type ServerContext } from '../../options'
 import {
+  MODULE_RESOLVER_DYNAMIC_PATH,
   MODULE_RESOLVER_PATH,
   MODULE_ROUTES_PATH,
   asVirtualId,
@@ -44,10 +45,14 @@ export function createViteContext(server: ViteDevServer): ServerContext {
     const autoResolvedMod = server.moduleGraph.getModuleById(
       asVirtualId(MODULE_RESOLVER_PATH)
     )
+    const autoResolvedDynamicMod = server.moduleGraph.getModuleById(
+      asVirtualId(MODULE_RESOLVER_DYNAMIC_PATH)
+    )
 
     await Promise.all([
       autoRoutesMod && server.reloadModule(autoRoutesMod),
       autoResolvedMod && server.reloadModule(autoResolvedMod),
+      autoResolvedDynamicMod && server.reloadModule(autoResolvedDynamicMod),
     ])
   }
 

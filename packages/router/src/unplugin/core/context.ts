@@ -265,14 +265,15 @@ export function createRoutesContext(options: ResolvedOptions) {
     // unlinkDir event
   }
 
-  function generateResolver() {
+  function generateResolver({ dynamic = false }: { dynamic?: boolean } = {}) {
     const importsMap = new ImportsMap()
 
     const resolverCode = generateRouteResolver(
       routeTree,
       options,
       importsMap,
-      paramParsersMap
+      paramParsersMap,
+      { dynamic }
     )
 
     // generate the list of imports

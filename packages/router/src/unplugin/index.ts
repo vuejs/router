@@ -10,11 +10,14 @@ import {
   VIRTUAL_PREFIX,
   DEFINE_PAGE_QUERY_RE,
   MODULE_RESOLVER_PATH,
+  MODULE_RESOLVER_DYNAMIC_PATH,
 } from './core/moduleConstants'
 import type { Options } from './options'
 import { resolveOptions, DEFAULT_OPTIONS, mergeAllExtensions } from './options'
 import { createViteContext } from './core/vite'
 import { join } from 'pathe'
+
+const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 import { appendExtensionListToPattern } from './core/utils'
 import { createAutoExportPlugin } from '../experimental/data-loaders/auto-exports'
 
@@ -73,13 +76,17 @@ export default createUnplugin<Options | undefined>((opt = {}, _meta) => {
       resolveId: {
         filter: {
           id: new RegExp(
-            `^${MODULE_ROUTES_PATH}$|^${MODULE_RESOLVER_PATH}$|${routeBlockQueryRE.source}`
+            `^${MODULE_ROUTES_PATH}$|^${MODULE_RESOLVER_PATH}$|^${escapeRegExp(MODULE_RESOLVER_DYNAMIC_PATH)}$|${routeBlockQueryRE.source}`
           ),
         },
         handler(id) {
           // vue-router/auto-routes
           // vue-router/auto-resolver
-          if (id === MODULE_ROUTES_PATH || id === MODULE_RESOLVER_PATH) {
+          if (
+            id === MODULE_ROUTES_PATH ||
+            id === MODULE_RESOLVER_PATH ||
+            id === MODULE_RESOLVER_DYNAMIC_PATH
+          ) {
             // must be a virtual module
             return asVirtualId(id)
           }
@@ -119,6 +126,9 @@ export default createUnplugin<Options | undefined>((opt = {}, _meta) => {
               new RegExp(`^${ROUTE_BLOCK_ID}$`),
               new RegExp(`^${VIRTUAL_PREFIX}${MODULE_ROUTES_PATH}$`),
               new RegExp(`^${VIRTUAL_PREFIX}${MODULE_RESOLVER_PATH}$`),
+              new RegExp(
+                `^${VIRTUAL_PREFIX}${escapeRegExp(MODULE_RESOLVER_DYNAMIC_PATH)}$`
+              ),
             ],
           },
         },
@@ -146,6 +156,12 @@ export default createUnplugin<Options | undefined>((opt = {}, _meta) => {
           if (resolvedId === MODULE_RESOLVER_PATH) {
             ROUTES_LAST_LOAD_TIME.update()
             return ctx.generateResolver()
+          }
+
+          // vue-router/auto-resolver?dynamic
+          if (resolvedId === MODULE_RESOLVER_DYNAMIC_PATH) {
+            ROUTES_LAST_LOAD_TIME.update()
+            return ctx.generateResolver({ dynamic: true })
           }
 
           return // ok TS...

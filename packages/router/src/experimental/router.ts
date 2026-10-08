@@ -74,9 +74,11 @@ import type {
   EXPERIMENTAL_ResolverRecord_Base,
   EXPERIMENTAL_ResolverRecord_Group,
   EXPERIMENTAL_ResolverRecord_Matchable,
-  EXPERIMENTAL_ResolverFixed,
 } from './route-resolver/resolver-fixed'
-import { isAbsoluteLocation } from './route-resolver/resolver-abstract'
+import {
+  isAbsoluteLocation,
+  type EXPERIMENTAL_Resolver_Base,
+} from './route-resolver/resolver-abstract'
 import type {
   ResolverLocationAsNamed,
   ResolverLocationAsPathRelative,
@@ -84,6 +86,7 @@ import type {
   ResolverLocationResolved,
 } from './route-resolver/resolver-abstract'
 import type { DataLoaderExtensions } from './data-loaders/meta-extensions'
+import type { EXPERIMENTAL_ResolverDynamicRecordRaw } from './route-resolver/resolver-dynamic'
 import { diagnostics } from '../diagnostics'
 import type { PathParserOptions } from '../matcher'
 
@@ -415,24 +418,33 @@ export function mergeRouteRecord(
   return main
 }
 
-// TODO: probably need some generic types
-// <TResolver extends NEW_RouterResolver_Base>,
 /**
- * Options to initialize an experimental {@link EXPERIMENTAL_Router} instance.
+ * Resolver accepted by {@link experimental_createRouter}.
+ *
  * @experimental
  */
-export interface EXPERIMENTAL_RouterOptions extends EXPERIMENTAL_RouterOptions_Base {
+export type EXPERIMENTAL_RouterResolver =
+  EXPERIMENTAL_Resolver_Base<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+
+/**
+ * Options to initialize an experimental {@link EXPERIMENTAL_Router} instance.
+ *
+ * @template TResolver - type of the resolver
+ * @experimental
+ */
+export interface EXPERIMENTAL_RouterOptions<
+  TResolver extends EXPERIMENTAL_RouterResolver = EXPERIMENTAL_RouterResolver,
+> extends EXPERIMENTAL_RouterOptions_Base {
   /**
-   * Matcher to use to resolve routes.
+   * Resolver to use to resolve routes. Use `createFixedResolver()` for routes
+   * known at build time or `createDynamicResolver()` to add and remove routes
+   * at runtime. The router exposes the methods of the resolver that it does
+   * not define itself (e.g. `addRoute()`).
    *
    * @experimental
    */
-  resolver: EXPERIMENTAL_ResolverFixed<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+  resolver: TResolver
 }
-
-// TODO: Make the Router extends the resolver so that it automatically exposes
-// getRoutes and resolve. This should make it automatic to have a dynamic
-// resolver
 
 /**
  * Router base instance.
@@ -444,8 +456,6 @@ export interface EXPERIMENTAL_RouterOptions extends EXPERIMENTAL_RouterOptions_B
 export interface EXPERIMENTAL_Router_Base<
   TRecord,
 > extends DataLoaderExtensions {
-  // NOTE: for dynamic routing we need this
-  // <TRouteRecordRaw, TRouteRecord>
   /**
    * Current {@link RouteLocationNormalized}
    */
@@ -456,7 +466,8 @@ export interface EXPERIMENTAL_Router_Base<
    */
   listening: boolean
 
-  // TODO: deprecate in favor of getRoute(name) and add it
+  // TODO: deprecate in favor of getRoute(name). Experimental routers already
+  // expose it from their resolver, the classic router doesn't have it yet
   /**
    * Checks if a route with a given name exists
    *
@@ -606,17 +617,81 @@ export interface EXPERIMENTAL_Router_Base<
   install(app: App): void
 }
 
-export interface EXPERIMENTAL_Router
-  // TODO: dynamic routing
-  //   <
-  //   TRouteRecordRaw, // extends NEW_MatcherRecordRaw,
-  //   TRouteRecord extends NEW_MatcherRecord,
-  // >
-  extends EXPERIMENTAL_Router_Base<EXPERIMENTAL_RouteRecordNormalized_Matchable> {
+/**
+ * Experimental router. Its resolver is available as `router.resolver`, e.g.
+ * to call methods of a custom resolver.
+ *
+ * @template TResolver - type of the resolver
+ * @experimental
+ */
+export interface EXPERIMENTAL_Router<
+  TResolver extends EXPERIMENTAL_RouterResolver = EXPERIMENTAL_RouterResolver,
+> extends EXPERIMENTAL_Router_Base<EXPERIMENTAL_RouteRecordNormalized_Matchable> {
   /**
    * Original options object passed to create the Router
    */
-  readonly options: EXPERIMENTAL_RouterOptions
+  readonly options: EXPERIMENTAL_RouterOptions<TResolver>
+
+  /**
+   * Resolver used by the router. It is replaced during HMR, so read it again
+   * instead of keeping a reference.
+   */
+  readonly resolver: TResolver
+
+  /**
+   * Get a route record by its name.
+   *
+   * @param name - Name of the route
+   */
+  getRoute(
+    name: NonNullable<RouteRecordNameGeneric>
+  ): EXPERIMENTAL_RouteRecordNormalized_Matchable | undefined
+
+  /**
+   * Add a new route record as the child of an existing route. Warns in
+   * development if the resolver doesn't support it.
+   *
+   * @deprecated Use `router.resolver.addRoute()` with a resolver from
+   * `createDynamicResolver()`.
+   *
+   * @param parentName - Parent Route Record where `route` should be appended at
+   * @param route - Route Record to add
+   */
+  addRoute(
+    parentName: NonNullable<RouteRecordNameGeneric>,
+    route: EXPERIMENTAL_ResolverDynamicRecordRaw
+  ): () => void
+
+  /**
+   * Add a new route record to the router. Warns in development if the
+   * resolver doesn't support it.
+   *
+   * @deprecated Use `router.resolver.addRoute()` with a resolver from
+   * `createDynamicResolver()`.
+   *
+   * @param route - Route Record to add
+   */
+  addRoute(route: EXPERIMENTAL_ResolverDynamicRecordRaw): () => void
+
+  /**
+   * Remove an existing route by its name. Warns in development if the
+   * resolver doesn't support it.
+   *
+   * @deprecated Use `router.resolver.removeRoute()` with a resolver from
+   * `createDynamicResolver()`.
+   *
+   * @param name - Name of the route to remove
+   */
+  removeRoute(name: NonNullable<RouteRecordNameGeneric>): void
+
+  /**
+   * Delete all routes from the router. Warns in development if the resolver
+   * doesn't support it.
+   *
+   * @deprecated Use `router.resolver.clearRoutes()` with a resolver from
+   * `createDynamicResolver()`.
+   */
+  clearRoutes(): void
 
   /**
    * Dev only method to replace the resolver used by the router. Used during HMR
@@ -625,23 +700,24 @@ export interface EXPERIMENTAL_Router
    *
    * @internal
    */
-  _hmrReplaceResolver?: (
-    newResolver: EXPERIMENTAL_ResolverFixed<EXPERIMENTAL_RouteRecordNormalized_Matchable>
-  ) => void
+  _hmrReplaceResolver?(newResolver: TResolver): void
 }
 
 /**
  * Creates an experimental Router that allows passing a resolver instead of a
- * routes array. This router does not have `addRoute()` and `removeRoute()`
- * methods and is meant to be used with file-based routing thanks to
- * vue-router/vite or vue-router/unplugin resolver generation in
- * `'vue-router/auto-resolver'`.
+ * routes array. The router exposes the methods of the resolver that it does
+ * not define itself: with `createDynamicResolver()`, it has `addRoute()`,
+ * `removeRoute()`, and `clearRoutes()`. A fixed resolver is meant to be used
+ * with file-based routing thanks to vue-router/vite or vue-router/unplugin
+ * resolver generation in `'vue-router/auto-resolver'`.
  *
  * @param options - Options to initialize the router
  */
-export function experimental_createRouter(
-  options: EXPERIMENTAL_RouterOptions
-): EXPERIMENTAL_Router {
+export function experimental_createRouter<
+  TResolver extends EXPERIMENTAL_RouterResolver,
+>(
+  options: EXPERIMENTAL_RouterOptions<TResolver>
+): EXPERIMENTAL_Router<TResolver> {
   let {
     resolver,
     // TODO: document that a custom parsing can be handled with a custom param that parses the whole query
@@ -1362,12 +1438,29 @@ export function experimental_createRouter(
   let started: boolean | undefined
   const installedApps = new Set<App>()
 
-  const router: EXPERIMENTAL_Router = {
+  /**
+   * Calls a method of the resolver that only some resolvers have, e.g.
+   * `addRoute()`. Warns in development if the resolver doesn't have it.
+   */
+  function callResolver(method: string, args: unknown[]): any {
+    const fn = (resolver as unknown as Record<string, unknown>)[method]
+    if (typeof fn === 'function') return fn.apply(resolver, args)
+    if (__DEV__) diagnostics.VUE_ROUTER_R0133({ method })
+  }
+
+  const router: EXPERIMENTAL_Router<TResolver> = {
     currentRoute,
     listening: true,
 
+    get resolver() {
+      return resolver as TResolver
+    },
     hasRoute: name => !!resolver.getRoute(name),
+    getRoute: name => resolver.getRoute(name),
     getRoutes: () => resolver.getRoutes(),
+    addRoute: (...args: unknown[]) => callResolver('addRoute', args) || noop,
+    removeRoute: name => callResolver('removeRoute', [name]),
+    clearRoutes: () => callResolver('clearRoutes', []),
     // @ts-expect-error FIXME: update EXPERIMENTAL_Router types
     resolve,
     options,
@@ -1462,7 +1555,15 @@ export function experimental_createRouter(
 
   if (__DEV__) {
     router._hmrReplaceResolver = newResolver => {
-      resolver = newResolver
+      const current = resolver as {
+        _hmrUpdate?: (newResolver: EXPERIMENTAL_RouterResolver) => void
+      }
+      // a dynamic resolver updates itself to keep the routes added at runtime
+      if (current._hmrUpdate) {
+        current._hmrUpdate(newResolver)
+      } else {
+        resolver = newResolver
+      }
     }
   }
 

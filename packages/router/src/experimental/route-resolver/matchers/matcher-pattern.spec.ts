@@ -161,6 +161,20 @@ describe('MatcherPatternPathDynamic', () => {
     expect(() => pattern.match('/teams/')).toThrow()
   })
 
+  it('matches and builds the root path with only optional params', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^(?:(?:\/([^/]+?))?(?:\/([^/]+?))?|\/)$/i,
+      { a: [{}, false, true], b: [{}, false, true] },
+      [1, 1]
+    )
+
+    expect(pattern.match('/')).toEqual({ a: null, b: null })
+    expect(pattern.match('/x')).toEqual({ a: 'x', b: null })
+    expect(() => pattern.match('/x/')).toThrow()
+    expect(pattern.build({ a: null, b: null })).toBe('/')
+    expect(pattern.build({ a: 'x', b: null })).toBe('/x')
+  })
+
   it('decodes single param', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)$/i,

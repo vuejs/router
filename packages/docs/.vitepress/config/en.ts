@@ -225,6 +225,10 @@ function sidebarFileBasedRouting(): SidebarGroup {
         link: '/experimental/router-resolver',
       },
       {
+        text: 'Dynamic Resolver (experimental)',
+        link: '/experimental/dynamic-resolver',
+      },
+      {
         text: 'Param Parsers (experimental)',
         link: '/experimental/param-parsers',
       },
