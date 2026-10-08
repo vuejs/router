@@ -10,7 +10,7 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-    "vue": "^3.6.0-rc.6",
+    "vue": "^3.6.0-rc.10",
     "vue-router": "workspace:*"
   },
   "devDependencies": {

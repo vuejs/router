@@ -10,12 +10,12 @@
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
-    "vue": "^3.6.0-rc.6"
+    "vue": "^3.6.0-rc.10"
   },
   "devDependencies": {
     "@types/node": "^26.6.4",
     "@vitejs/plugin-vue": "^6.0.9",
-    "@vue/compiler-sfc": "^3.6.0-rc.6",
+    "@vue/compiler-sfc": "^3.6.0-rc.10",
     "@vue/tsconfig": "^0.9.1",
     "vite": "^8.3.3",
     "vue-router": "workspace:*",

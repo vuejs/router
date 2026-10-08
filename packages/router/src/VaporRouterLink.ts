@@ -86,8 +86,7 @@ export const VaporRouterLink = defineVaporComponent({
           $: [
             () => attrs,
             {
-              onClick: () =>
-                attrs.onClick ? [link.navigate, attrs.onClick] : link.navigate,
+              onClick: () => link.navigate,
             },
           ],
         },
