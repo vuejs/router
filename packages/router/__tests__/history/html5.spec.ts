@@ -93,13 +93,46 @@ describe('History HTMl5', () => {
     expect(spy).toHaveBeenCalledWith(
       expect.anything(),
       expect.any(String),
-      'http://localhost:3000/foo'
+      '/foo'
     )
     history.push('//foo')
     expect(spy).toHaveBeenLastCalledWith(
       expect.anything(),
       expect.any(String),
       'http://localhost:3000//foo'
+    )
+    spy.mockRestore()
+  })
+
+  it('passes an absolute path when document URL contains userinfo', () => {
+    getWindow().happyDOM.setURL('http://test:test@localhost:3000/')
+    const spy = vi.spyOn(window.history, 'replaceState')
+    createWebHistory()
+    expect(spy).toHaveBeenCalledWith(expect.anything(), expect.any(String), '/')
+    spy.mockRestore()
+  })
+
+  it('keeps userinfo when prepending the host for // urls', () => {
+    getWindow().happyDOM.setURL('http://test:test@localhost:3000/')
+    const history = createWebHistory()
+    const spy = vi.spyOn(window.history, 'pushState')
+    history.push('//foo')
+    expect(spy).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'http://test:test@localhost:3000//foo'
+    )
+    spy.mockRestore()
+  })
+
+  it('prepends the file:// origin on file documents without a hash base', () => {
+    getWindow().happyDOM.setURL('file:///app/index.html')
+    const spy = vi.spyOn(window.history, 'replaceState')
+    createWebHistory()
+    expect(spy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'file:///app/index.html'
     )
     spy.mockRestore()
   })
