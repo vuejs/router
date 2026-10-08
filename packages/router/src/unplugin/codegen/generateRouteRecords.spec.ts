@@ -115,6 +115,29 @@ describe('generateRouteRecord', () => {
     expect(routes).toContain('_definePage_nav_2e_top_1\n')
   })
 
+  it.each(['webpack', 'rspack'] as const)(
+    'keeps definePage imports away from vue-loader with %s',
+    framework => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      tree.insert('foo', 'foo.vue').setDefinePageImport('foo.vue', true)
+      tree.insert('bar', 'bar.tsx').setDefinePageImport('bar.tsx', true)
+
+      const importsMap = new ImportsMap()
+      generateRouteRecords(
+        tree,
+        { ...DEFAULT_OPTIONS, _framework: framework },
+        importsMap
+      )
+
+      expect(importsMap.toString()).toMatchInlineSnapshot(`
+        "import _definePage_default_0 from 'bar.tsx?definePage&lang.tsx'
+        import { _mergeRouteRecord } from 'vue-router/experimental'
+        import _definePage_default_2 from 'foo.vue.definePage.tsx?definePage!=!foo.vue?definePage&vue&lang.tsx'
+        "
+      `)
+    }
+  )
+
   it('nested children', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('a/a', 'a/a.vue')

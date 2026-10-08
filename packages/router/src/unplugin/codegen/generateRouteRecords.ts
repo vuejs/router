@@ -1,4 +1,4 @@
-import { getLang } from '@vue-macros/common'
+import { getDefinePageImportId } from '../core/moduleConstants'
 import type { TreeNode } from '../core/tree'
 import type { ImportsMap } from '../core/utils'
 import { type ResolvedOptions } from '../options'
@@ -41,11 +41,8 @@ ${node
       if (!node.fileNeedsDefinePageImport(filePath)) continue
       const pageDataImport = `_definePage_${encodeImportIdentifierPart(name)}_${importsMap.size}`
       definePageDataList.push(pageDataImport)
-      const lang = getLang(filePath)
       importsMap.addDefault(
-        // TODO: apply the language used in the sfc
-        `${filePath}?definePage&` +
-          (lang === 'vue' ? 'vue&lang.tsx' : `lang.${lang}`),
+        getDefinePageImportId(filePath, options._framework),
         pageDataImport
       )
     }

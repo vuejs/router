@@ -6,6 +6,7 @@ import { resolve } from 'pathe'
 import type { EditableTreeNode } from './core/extendRoutes'
 import { type ParseSegmentOptions } from './core/treeNodeValue'
 import { type _Awaitable } from './utils'
+import type { UnpluginContextMeta } from 'unplugin'
 
 /**
  * Options for a routes folder.
@@ -212,6 +213,12 @@ export interface Options {
    * @internal
    */
   _inspect?: boolean
+
+  /**
+   * Bundler the plugin is running in. Set automatically by the plugin.
+   * @internal
+   */
+  _framework?: UnpluginContextMeta['framework']
 
   /**
    * Activates debug logs.
