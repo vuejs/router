@@ -78,21 +78,34 @@ An empty array is the same as a missing key: `{ tag: [] }` and `{}` give the sam
 
 ## Navigation and redirects
 
-Relative string locations passed to `router.push()`, `router.replace()`, or `router.resolve()` use the current route as their base:
+Relative locations passed to `router.push()`, `router.replace()`, `router.resolve()`, or `<RouterLink>` use the current route as their base. A relative location is a string that does not start with `/`, or an object without a `name` and without an absolute `path`:
 
 ```ts
 // Current route: /users/posva
 router.push('add') // /users/add
+router.push({ path: 'add' }) // /users/add
 ```
 
-Relative object locations need an explicit current location. Resolve them first, then navigate:
+An object without a `name` or `path` keeps the current params, query, and hash unless the object overrides them. The `query` object is merged with the current query. It does not replace it:
 
 ```ts
-const target = router.resolve(
-  { query: { page: ['2'] } },
-  router.currentRoute.value
-)
-router.push(target)
+// Each call starts from /search?q=vue#results
+router.push({ query: { page: ['2'] } }) // /search?q=vue&page=2#results
+router.push({ hash: '#top' }) // /search?q=vue#top
+```
+
+To use a different base, pass it as the second argument of `router.resolve()`:
+
+```ts
+router.push(router.resolve({ query: { page: ['2'] } }, otherRoute))
+```
+
+Named locations do not inherit params, query, or hash from the current route. Use a named location to replace the whole query:
+
+```ts
+const route = router.currentRoute.value
+router.push({ name: route.name, params: route.params, query: { page: ['2'] } })
+// /search?page=2
 ```
 
 ### Navigation guard redirects
