@@ -136,7 +136,7 @@ definePage({
 
 ## Path overrides are not supported
 
-With file-based routing, the experimental router builds the path matcher of each route from the file name. Do not change the `path` of a route with `definePage()`, the `<route>` custom block, or `extendRoute()`. The plugin shows the `VUE_ROUTER_B0025` warning when it generates `vue-router/auto-resolver` for a route with a path override.
+With file-based routing, the experimental router builds the path matcher of each route from the file name. Do not change the `path` of a route with `definePage()`, the `<route>` custom block, or `extendRoute()`.
 
 To change the path, rename the file. To add more paths to a route, use `alias`:
 

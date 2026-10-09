@@ -52,11 +52,6 @@ export function _mergeRouteRecord(
   main: RouteRecordRaw,
   ...routeRecords: Partial<RouteRecordRaw>[]
 ): RouteRecordRaw {
-  // resolver records (vue-router/auto-resolver) have a path matcher that a
-  // definePage() string path must not replace
-  const path = main.path
-  const keepPath = typeof path !== 'string'
-
   // @ts-expect-error: complicated types
   return routeRecords.reduce((acc, routeRecord) => {
     const meta = Object.assign({}, acc.meta, routeRecord.meta)
@@ -71,7 +66,6 @@ export function _mergeRouteRecord(
     Object.assign(acc, routeRecord)
     acc.meta = meta
     acc.alias = alias
-    if (keepPath) acc.path = path
     return acc
   }, main)
 }
@@ -84,7 +78,10 @@ export function _mergeRouteRecord(
  * left as the default `string`, keys are unrestricted.
  */
 export interface DefinePage<FilePath extends string = string> extends Partial<
-  Omit<RouteRecordRaw, 'children' | 'components' | 'component' | 'name'>
+  Omit<
+    RouteRecordRaw,
+    'children' | 'components' | 'component' | 'name' | 'path'
+  >
 > {
   /**
    * Override the route name. If not provided, the name will be generated based

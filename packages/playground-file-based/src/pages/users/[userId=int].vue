@@ -9,7 +9,7 @@ route.params.page
 
 definePage({
   // path: '/users/:userId(\\d+)',
-  // path overrides are not supported by the experimental router (VUE_ROUTER_B0025)
+  // path overrides are not supported by the experimental router
   // path: '/users/:userId',
   params: {
     path: {
