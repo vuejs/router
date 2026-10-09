@@ -160,12 +160,12 @@ export function generateRouteRecord({
   let recordDeclaration = ''
 
   // Handle definePage imports
-  const definePageDataList: string[] = []
+  const definePageDataList: Array<[viewName: string, importName: string]> = []
   if (node.needsDefinePageImport) {
     for (const [name, filePath] of node.value.components) {
       if (!node.fileNeedsDefinePageImport(filePath)) continue
       const pageDataImport = `_definePage_${encodeImportIdentifierPart(name)}_${importsMap.size}`
-      definePageDataList.push(pageDataImport)
+      definePageDataList.push([name, pageDataImport])
       importsMap.addDefault(
         getDefinePageImportId(filePath, options._framework),
         pageDataImport
@@ -439,14 +439,14 @@ ${queryParams
  */
 function generateRouteRecordMerge(
   routeRecordObject: string,
-  definePageDataList: string[],
+  definePageDataList: Array<[viewName: string, importName: string]>,
   importsMap: ImportsMap
 ): string {
   if (definePageDataList.length === 0) {
     return routeRecordObject
   }
 
-  importsMap.add('vue-router/experimental', '_mergeRouteRecord')
+  importsMap.add('vue-router/experimental', '_mergeRouteRecordViews')
 
   // Re-indent the route object to be 4 spaces (2 levels from normalizeRouteRecord)
   const indentedRouteObject = routeRecordObject
@@ -456,9 +456,13 @@ function generateRouteRecordMerge(
     })
     .join('\n')
 
-  return `_mergeRouteRecord(
+  return `_mergeRouteRecordViews(
 ${indentedRouteObject},
-${definePageDataList.map(name => `    ${name}`).join(',\n')}
+    {
+${definePageDataList
+  .map(([viewName, name]) => `      ${toStringLiteral(viewName)}: ${name},`)
+  .join('\n')}
+    }
   )`
 }
 

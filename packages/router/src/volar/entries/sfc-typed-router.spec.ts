@@ -68,4 +68,25 @@ describe('sfc-typed-router volar plugin', () => {
     const code = `type R = ReturnType<typeof useRoute>`
     expect(transform(code, { lang: 'js' })).toBe(code)
   })
+
+  it('injects the file path and the page component into `definePage()`', () => {
+    const out = transform(`definePage({ props: true })`)
+    expect(out).toBe(
+      `definePage<'src/pages/users/sub-[first]-[second].vue', typeof import('./sub-[first]-[second].vue').default>({ props: true })`
+    )
+  })
+
+  it('escapes quotes in the `definePage()` self import', () => {
+    const out = transform(`definePage({})`, {
+      fileName: `/app/src/pages/it's-fine.vue`,
+    })
+    expect(out).toBe(
+      `definePage<'src/pages/it\\'s-fine.vue', typeof import('./it\\'s-fine.vue').default>({})`
+    )
+  })
+
+  it('leaves `definePage()` with type arguments untouched', () => {
+    const code = `definePage<'a.vue'>({})`
+    expect(transform(code)).toBe(code)
+  })
 })

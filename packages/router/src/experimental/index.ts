@@ -1,4 +1,5 @@
 export { experimental_createRouter, normalizeRouteRecord } from './router'
+export type { EXPERIMENTAL_RouteRecordPropsOption } from './route-props'
 export type {
   EXPERIMENTAL_Router_Base,
   EXPERIMENTAL_Router,
@@ -73,6 +74,7 @@ export { miss, MatchMiss as _MatchMiss } from './route-resolver/matchers/errors'
 export {
   definePage,
   _mergeRouteRecord,
+  _mergeRouteRecordViews,
   type DefinePage,
   type ParamParserType,
   type ParamParserType_Native,
