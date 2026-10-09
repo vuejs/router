@@ -55,7 +55,7 @@ test.describe('scroll-restoration', () => {
     await expect.poll(() => scrollY(page)).toBe(600)
   })
 
-  test('captures on pagehide and restores after reload', async ({ page }) => {
+  test('captures when hidden and restores after reload', async ({ page }) => {
     await page.goto('/scroll-restoration/automatic-a')
     await expect(page.locator('.automatic-a')).toBeVisible()
     await page.evaluate(() => window.scrollTo(0, 720))
