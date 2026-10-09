@@ -7,13 +7,14 @@
     "noImplicitReturns": false,
     "paths": {
       "vue-router": ["../dist"],
-      "vue-router/experimental": ["../dist/experimental/index.d.ts"]
+      "vue-router/experimental": ["../dist/experimental/index.d.ts"],
+      "vue-router/auto-resolver": ["../vue-router-auto-resolver.d.mts"]
     }
   },
-  // Only `experimental.test-d.ts` — it globally augments `TypesConfig.Router`
-  // and must NOT be compiled alongside files that re-export from
-  // `../dist`, which carries the un-augmented classic `Router`.
-  "include": ["./experimental.test-d.ts"],
+  // Only experimental files: `experimental.test-d.ts` globally augments
+  // `TypesConfig.Router` and must NOT be compiled alongside files that
+  // re-export from `../dist`, which carries the un-augmented classic `Router`.
+  "include": ["./experimental.test-d.ts", "./auto-resolver.test-d.ts"],
   "exclude": [
     "../src",
     "../dist",
