@@ -52,6 +52,11 @@ export function _mergeRouteRecord(
   main: RouteRecordRaw,
   ...routeRecords: Partial<RouteRecordRaw>[]
 ): RouteRecordRaw {
+  // resolver records (vue-router/auto-resolver) have a path matcher that a
+  // definePage() string path must not replace
+  const path = main.path
+  const keepPath = typeof path !== 'string'
+
   // @ts-expect-error: complicated types
   return routeRecords.reduce((acc, routeRecord) => {
     const meta = Object.assign({}, acc.meta, routeRecord.meta)
@@ -66,6 +71,7 @@ export function _mergeRouteRecord(
     Object.assign(acc, routeRecord)
     acc.meta = meta
     acc.alias = alias
+    if (keepPath) acc.path = path
     return acc
   }, main)
 }
@@ -86,6 +92,12 @@ export interface DefinePage<FilePath extends string = string> extends Partial<
    * which removes it from types and make the route unmatchable.
    */
   name?: string | false
+
+  /**
+   * Override the route path. Not supported by the experimental router
+   * (`vue-router/auto-resolver`): rename the file instead.
+   */
+  path?: string
 
   /**
    * Custom parameters for the route. Requires `experimental.paramParsers` enabled.
