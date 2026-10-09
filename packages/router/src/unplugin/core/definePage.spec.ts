@@ -72,9 +72,15 @@ definePage({
 `,
         id: 'src/pages/with-imports.vue&definePage&vue&lang.ts',
       })) as Exclude<TransformResult, string>
-      expect(result).toHaveProperty('code')
-      expect(result?.code).toContain('my_func as fn')
-      expect(result?.code).toMatchSnapshot()
+      expect(result.code).toMatchInlineSnapshot(`
+        "import {my_var, my_func as fn} from './lib'
+        export default {
+          meta: {
+            [my_var]: 'hello',
+            other: fn,
+          }
+        }"
+      `)
     })
 
     it('keeps used default imports', async () => {
