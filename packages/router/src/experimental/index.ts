@@ -22,6 +22,7 @@ export {
   type UseScrollRestorationOptions,
   SCROLL_RESTORATION_CAPTURE_DEFAULT,
   SCROLL_RESTORATION_RESTORE_DEFAULT,
+  SCROLL_RESTORATION_SETUP_LISTENERS_DEFAULT,
 } from './scroll-restoration'
 
 export { onRouteRendered } from './on-route-rendered'
