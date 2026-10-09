@@ -110,7 +110,7 @@ const useDashboardStats = defineBasicLoader('/admin', async (to) => {
 
 ::: tip
 
-Note that [lazy loaders](#lazy-loaders) cannot control the navigation since they do not block it.
+Note that [lazy loaders](#Non-blocking-loaders-with-lazy) cannot control the navigation since they do not block it.
 
 :::
 
@@ -122,7 +122,7 @@ Any thrown Error will abort the navigation, just like in navigation guards. They
 
 ::: tip
 
-Note that [lazy loaders](#lazy-loaders) cannot control the navigation since they do not block it, any thrown error will appear in the `error` property and not abort the navigation nor appear in the `router.onError` handler.
+Note that [lazy loaders](#Non-blocking-loaders-with-lazy) cannot control the navigation since they do not block it, any thrown error will appear in the `error` property and not abort the navigation nor appear in the `router.onError` handler.
 
 :::
 
@@ -218,7 +218,7 @@ export const useBookCollection = defineBasicLoader(fetchBookCollection, {
 })
 ```
 
-In the case of [lazy loaders](#lazy-loaders), they also default to `commit: 'after-load'`. They will commit after all other non-lazy loaders if they can but since they are not awaited, they might not be able to. In this case, the data will be available when finished loading, which can be much later than the navigation is completed.
+In the case of [lazy loaders](#Non-blocking-loaders-with-lazy), they also default to `commit: 'after-load'`. They will commit after all other non-lazy loaders if they can but since they are not awaited, they might not be able to. In this case, the data will be available when finished loading, which can be much later than the navigation is completed.
 
 ### Server optimization with `server`
 
