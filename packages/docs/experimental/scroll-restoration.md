@@ -16,7 +16,7 @@ With it, you can:
 
 ## Setup
 
-Install `ScrollRestoration` before the router. Give it the router, and, optionally, the default capture and restore functions:
+Install `ScrollRestoration` before the router. Give it the router and the default `capture` and `restore` functions. These three options are required:
 
 ```ts [main.ts]
 import { createApp } from 'vue'
@@ -32,46 +32,53 @@ const app = createApp(App)
 
 app.use(ScrollRestoration, {
   router,
-  // default value, not needed
-  // key: to => to.path + to.hash,
   capture: SCROLL_RESTORATION_CAPTURE_DEFAULT,
   restore: SCROLL_RESTORATION_RESTORE_DEFAULT,
+  // optional, these are the default values
+  // key: to => to.path + to.hash,
+  // storageKeyPrefix: 'vue:scroll:',
 })
 app.use(router)
 
 app.mount('#app')
 ```
 
-By default,
+The plugin saves positions in `sessionStorage`, with keys that start with `storageKeyPrefix`. Saved positions stay after a page reload in the same tab.
 
-The default functions capture and restore enable:
+The default `capture` and `restore` functions do these steps:
 
-- Save the window scroll position when leaving a page
+- Save the window scroll position when you leave a page
 - If a position is saved, restore it
-- Else, scroll to an element specified by the hash, if it exists
+- Else, scroll to the element with the id in the hash, if it exists
 - Else, scroll to the top of the page
 
-Note that the `key` determines which pages share a saved position. By default, going from `/search?q=shoes` to `/search?q=shoes&p=2` will not scroll to the top, because both pages share the same key: `/search` and therefore reuse the saved position. You can customize this in the search page only, leaving the behavior default the same for other pages:
+The plugin alone does not capture or restore positions. At least one component must call [`useScrollRestoration()`](#useScrollRestoration).
+
+Note that the `key` determines which pages share a saved position. By default, going from `/search?q=shoes` to `/search?q=shoes&p=2` will not scroll to the top, because both pages share the same key: `/search` and therefore reuse the saved position. You can change this in the search page only. The other pages keep the default behavior:
 
 ```ts [pages/Search.vue]
 import { useScrollRestoration } from 'vue-router/experimental'
 
 useScrollRestoration({
-  key: to => to.path + `?p=${to.query.p?.[0]}` + to.hash,
+  key: to => to.path + `?p=${to.query.p ?? ''}` + to.hash,
 })
 ```
 
-Installing the plugin sets `history.scrollRestoration` to `manual`. Setting it to `auto` can conflict with scroll restoration, especially for anchor links. Set it back to `auto` if this is not an issue for you.
+Installing the plugin sets `history.scrollRestoration` to `manual`. Setting it to `auto` can conflict with scroll restoration, especially for anchor links. Set it back to `auto` if this is not an issue for you. When it is not `manual`, the default `capture` function saves nothing and lets the browser restore the scroll.
 
-## `useScrollRestoration()`
+## `useScrollRestoration()` {#useScrollRestoration}
 
-The new `useScrollRestoration()` uses `onRouteRendered()` and triggers restoration after mounting or updating a page component. It can be called only once, in your root `App.vue`, if you have no animations between navigations. But you also have the freedom to call it in specific pages where scrolling requires waiting for animations to wait or if they are wrapped into a transition.
+`useScrollRestoration()` uses `onRouteRendered()` to restore the scroll after each navigation. Call it in a component inside a `<RouterView>`, like a layout or a page component. The restore then runs when the closest `<RouterView>` shows the new route: after the page mounts or updates, after `<Suspense>` resolves, and after an out-in `<Transition>` enters.
+
+Do not call it in your root `App.vue` or in other components outside of a `<RouterView>`. There, `onRouteRendered()` runs in `router.afterEach()`, before the new route renders, so the restore runs on the old page.
+
+A layout component lets you call it once for all of its child pages. Call it in specific pages when they need different options, for example `manual: true` to wait for an animation.
 
 ## Migrating from `scrollBehavior` {#migrating-from-scrollbehavior}
 
 1. Remove `scrollBehavior` from the router options.
 2. Install `ScrollRestoration` before the router, as shown in [Setup](#Setup).
-3. If you have no `<Transition>` between pages, call `useScrollRestoration()` in your root `App.vue` component. If you have a layout system, call it in your layout components. Otherwise, call it in each page component that needs to restore its scroll position.
+3. Call `useScrollRestoration()` in your layout components. If you have no layouts, call it in each page component that needs to restore its scroll position. Do not call it in your root `App.vue`, see [`useScrollRestoration()`](#useScrollRestoration).
 4. Adapt the `capture` and `restore` functions to your needs, especially if you had a custom `scrollBehavior` function that doesn't match the default behavior.
 
 ## Restore scroll
@@ -86,7 +93,7 @@ useScrollRestoration()
 </script>
 ```
 
-The router _captures_ the position **when you leave the page** and _restores_ it after a navigation, when the component is mounted or updated using `onRouteRendered()` under the hood.
+The router _captures_ the position **when you leave the page**, and when the browser tab is hidden or closed. It _restores_ the position after a navigation, when the page is rendered. It uses `onRouteRendered()` under the hood.
 
 ## Multiple positions
 
@@ -171,7 +178,7 @@ Return `null` from `capture()` to remove the saved entry.
 
 ## Keys
 
-By default, the key is `to.path + to.hash`. The same path and hash always use the same saved entry, including a new visit from a link. For example, if the users navigates to `/articles/42#comments`, scrolls down, and then navigates to `/articles/43`, navigating back **or** navigating directly again to `/articles/42#comments` will restore the previous position.
+By default, the key is `to.path + to.hash`. The same path and hash always use the same saved entry, including a new visit from a link. For example, if the user navigates to `/articles/42#comments`, scrolls down, and then navigates to `/articles/43`, navigating back **or** navigating directly again to `/articles/42#comments` will restore the previous position.
 
 Use a different key when pages must share or split entries:
 
@@ -192,7 +199,7 @@ useScrollRestoration({
 })
 ```
 
-Components that are active at the same time must use different keys.
+Components that are active at the same time must use different keys, one for each scroll container. With the same key, they all capture and restore, and the last capture replaces the others.
 
 ## Manual restore
 
