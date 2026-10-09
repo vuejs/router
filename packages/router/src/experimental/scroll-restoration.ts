@@ -125,7 +125,7 @@ export interface UseScrollRestorationOptions<
    * Synchronously restores all positions previously returned by `capture`.
    * The route can be used to handle a hash or other route details.
    * Unless `manual` is enabled, it runs after each navigation, once the new
-   * route is displayed
+   * route is displayed.
    *
    * @see {@link onRouteRendered}
    */
@@ -276,10 +276,14 @@ const SCROLL_RESTORATION_OPTIONS_KEY: InjectionKey<
  * Sets `history.scrollRestoration` to `manual` when `document` is defined, is
  * a noop otherwise (SSR).
  *
- * Must be installedb before the router, and the router must be passed in the options.
+ * Must be installed before the router, and the router must be passed in the options.
  *
  * ```ts
- * app.use(ScrollRestoration, { router })
+ * app.use(ScrollRestoration, {
+ *   router,
+ *   capture: SCROLL_RESTORATION_CAPTURE_DEFAULT,
+ *   restore: SCROLL_RESTORATION_RESTORE_DEFAULT,
+ * })
  * app.use(router)
  * ```
  */
