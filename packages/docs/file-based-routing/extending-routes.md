@@ -23,7 +23,7 @@ VueRouter({
 
 Routes modified this way will be reflected in the generated `typed-router.d.ts` file.
 
-`beforeWriteFiles()` also exposes pass-through route nodes created by folders that only contain child routes. This lets you [configure a parent route without adding a component](./file-based-routing#configuring-parent-routes-without-a-component), including [route groups](./file-based-routing#adding-options-to-a-route-group).
+`beforeWriteFiles()` also exposes pass-through route nodes created by folders that only contain child routes. This lets you [configure a parent route without adding a component](./file-based-routing#Configuring-parent-routes-without-a-component), including [route groups](./file-based-routing#Adding-options-to-a-route-group).
 
 ## In-Component Routing
 
@@ -48,19 +48,19 @@ definePage({
 </template>
 ```
 
-If you are using ESLint, you will need [to declare it as a global variable](./eslint#definepage).
+If you are using ESLint, you will need [to declare it as a global variable](./eslint#definePage-).
 
 ::: danger
 
 You cannot use variables in `definePage()` as its passed parameter gets extracted at build time and is removed from `<script setup>`. Similar to other macros like `definePageMeta()` in Nuxt.
 
-For similar reasons, `beforeEnter` guards are **not supported** in `definePage()`. Their function nature make them look like they can access outside variable when they can't. **Use a [global navigation guard](../guide/advanced/navigation-guards.md#global-before-guards)** with [route meta fields](../guide/advanced/meta.md) instead, **or add the guard at runtime (see [Extending routes at runtime](#extending-routes-at-runtime) below)**.
+For similar reasons, `beforeEnter` guards are **not supported** in `definePage()`. Their function nature make them look like they can access outside variable when they can't. **Use a [global navigation guard](../guide/advanced/navigation-guards.md#Global-Before-Guards)** with [route meta fields](../guide/advanced/meta.md) instead, **or add the guard at runtime (see [Extending routes at runtime](#Extending-routes-at-runtime) below)**.
 
 :::
 
 ### SFC `<route>` custom block
 
-The `<route>` custom block is a way to extend existing routes. It can be used to add new `meta` fields, override the `path`, the `name`, or anything else in a route. **It has to be added to a `.vue` component inside of the [routes folder](./file-based-routing#routes-folder-structure)**. It is similar to [the same feature in vite-plugin-pages](https://github.com/hannoeru/vite-plugin-pages#sfc-custom-block-for-route-data) to facilitate migration.
+The `<route>` custom block is a way to extend existing routes. It can be used to add new `meta` fields, override the `path`, the `name`, or anything else in a route. **It has to be added to a `.vue` component inside of the [routes folder](./file-based-routing#Routes-folder-structure)**. It is similar to [the same feature in vite-plugin-pages](https://github.com/hannoeru/vite-plugin-pages#sfc-custom-block-for-route-data) to facilitate migration.
 
 ```vue
 <route lang="json">
@@ -97,7 +97,7 @@ const router = createRouter({
 ```
 
 ::: warning
-Routes added at runtime [require special handling for HMR](./hmr#runtime-routes).
+Routes added at runtime [require special handling for HMR](./hmr#Runtime-routes).
 :::
 
 As this plugin evolves, this should be used less and less and only become necessary in specific scenarios.

@@ -85,15 +85,15 @@ src/pages/
     └── index.vue
 ```
 
-Here, `users/_parent.vue` is the parent component for the `users` route and must contain a `<RouterView>` to render `users/index.vue`. It provides the same layout nesting as the preceding example with `users.vue`, but keeps the parent component together with its children. A route created by `_parent.vue` is anonymous by default, so only its children appear as navigable typed routes. Like other page components, `_parent.vue` can use [`definePage()`](./extending-routes#definepage) to configure its route record.
+Here, `users/_parent.vue` is the parent component for the `users` route and must contain a `<RouterView>` to render `users/index.vue`. It provides the same layout nesting as the preceding example with `users.vue`, but keeps the parent component together with its children. A route created by `_parent.vue` is anonymous by default, so only its children appear as navigable typed routes. Like other page components, `_parent.vue` can use [`definePage()`](./extending-routes#definePage-) to configure its route record.
 
 Do not define both `users.vue` and `users/_parent.vue` because they represent the same parent component.
 
 #### Configuring parent routes without a component
 
-A folder that only contains child routes still creates a _pass-through_ route node during generation. If you only need to add route options such as `meta`, you can keep the parent componentless and configure that node using [`beforeWriteFiles()`](./extending-routes#extending-routes-in-config).
+A folder that only contains child routes still creates a _pass-through_ route node during generation. If you only need to add route options such as `meta`, you can keep the parent componentless and configure that node using [`beforeWriteFiles()`](./extending-routes#Extending-routes-in-config).
 
-This behavior applies to any folder-only parent, including [route groups](#adding-options-to-a-route-group).
+This behavior applies to any folder-only parent, including [route groups](#Adding-options-to-a-route-group).
 
 #### Nested routes without nesting layouts
 
@@ -188,7 +188,7 @@ src/pages/
 
 ## Named views
 
-It is possible to define [named views](https://router.vuejs.org/guide/essentials/named-views.html#named-views) by appending an `@` + a name to their filename, e.g. a file named `src/pages/index@aux.vue` will generate a route of:
+It is possible to define [named views](https://router.vuejs.org/guide/essentials/named-views.html#Named-Views) by appending an `@` + a name to their filename, e.g. a file named `src/pages/index@aux.vue` will generate a route of:
 
 ```js
 {
@@ -205,9 +205,9 @@ Note that by default a non named route is named `default` and that you don't nee
 
 You can add [route params](https://router.vuejs.org/guide/essentials/dynamic-matching.html) by wrapping the _param name_ with brackets, e.g. `src/pages/users/[id].vue` will create a route with the following path: `/users/:id`. Note you can add a param in the middle in between static segments: `src/pages/users_[id].vue` -> `/users_:id`. You can even add multiple params: `src/pages/product_[skuId]_[seoDescription].vue`.
 
-You can create [**optional params**](https://router.vuejs.org/guide/essentials/route-matching-syntax.html#optional-parameters) by wrapping the _param name_ with an extra pair of brackets, e.g. `src/pages/users/[[id]].vue` will create a route with the following path: `/users/:id?`.
+You can create [**optional params**](https://router.vuejs.org/guide/essentials/route-matching-syntax.html#Optional-parameters) by wrapping the _param name_ with an extra pair of brackets, e.g. `src/pages/users/[[id]].vue` will create a route with the following path: `/users/:id?`.
 
-You can create [**repeatable params**](https://router.vuejs.org/guide/essentials/route-matching-syntax.html#repeatable-params) by adding a plus character (`+`) after the closing bracket, e.g. `src/pages/articles/[slugs]+.vue` will create a route with the following path: `/articles/:slugs+`.
+You can create [**repeatable params**](https://router.vuejs.org/guide/essentials/route-matching-syntax.html#Repeatable-params) by adding a plus character (`+`) after the closing bracket, e.g. `src/pages/articles/[slugs]+.vue` will create a route with the following path: `/articles/:slugs+`.
 
 And you can combine both to create optional repeatable params, e.g. `src/pages/articles/[[slugs]]+.vue` will create a route with the following path: `/articles/:slugs*`.
 
@@ -255,7 +255,7 @@ VueRouter({
 })
 ```
 
-Note that the provided folders must be separate and one _route folder_ cannot contain another specified _route folder_. If you need further customization, give [definePage()](./extending-routes#definepage) a try.
+Note that the provided folders must be separate and one _route folder_ cannot contain another specified _route folder_. If you need further customization, give [definePage()](./extending-routes#definePage-) a try.
 
 ## Custom extensions
 

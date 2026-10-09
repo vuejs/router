@@ -135,7 +135,7 @@ const routes = [
 ]
 ```
 
-In this specific scenario, we are using a [custom regexp](./route-matching-syntax.md#custom-regexp-in-params) between parentheses and marking the `pathMatch` param as [optionally repeatable](./route-matching-syntax.md#optional-parameters). This allows us to directly navigate to the route if we need to by splitting the `path` into an array:
+In this specific scenario, we are using a [custom regexp](./route-matching-syntax.md#Custom-regex-in-params) between parentheses and marking the `pathMatch` param as [optionally repeatable](./route-matching-syntax.md#Optional-parameters). This allows us to directly navigate to the route if we need to by splitting the `path` into an array:
 
 ```js
 router.push({

@@ -70,7 +70,7 @@ The new `useScrollRestoration()` uses `onRouteRendered()` and triggers restorati
 ## Migrating from `scrollBehavior` {#migrating-from-scrollbehavior}
 
 1. Remove `scrollBehavior` from the router options.
-2. Install `ScrollRestoration` before the router, as shown in [Setup](#setup).
+2. Install `ScrollRestoration` before the router, as shown in [Setup](#Setup).
 3. If you have no `<Transition>` between pages, call `useScrollRestoration()` in your root `App.vue` component. If you have a layout system, call it in your layout components. Otherwise, call it in each page component that needs to restore its scroll position.
 4. Adapt the `capture` and `restore` functions to your needs, especially if you had a custom `scrollBehavior` function that doesn't match the default behavior.
 

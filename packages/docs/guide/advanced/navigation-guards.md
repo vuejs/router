@@ -50,7 +50,7 @@ And can optionally return any of the following values:
   ```
 
 ::: tip Experimental router
-In the [experimental router](../../experimental/router-resolver.md#navigation-guard-redirects), relative guard redirects resolve against the target route (`to`), including during back/forward navigation. This differs from relative strings passed to `router.push()`, which use the current route.
+In the [experimental router](../../experimental/router-resolver.md#Navigation-guard-redirects), relative guard redirects resolve against the target route (`to`), including during back/forward navigation. This differs from relative strings passed to `router.push()`, which use the current route.
 :::
 
 It's also possible to throw an `Error` if an unexpected situation was met. This will also cancel the navigation and call any callback registered via [`router.onError()`](/api/interfaces/RouterClassic.md#onError-).
@@ -315,7 +315,7 @@ beforeRouteLeave (to, from) {
 
 ### Using the Composition API
 
-If you are writing your component using the Composition API, you can add update and leave guards through `onBeforeRouteUpdate` and `onBeforeRouteLeave` respectively. Please refer to the [Composition API section](./composition-api.md#navigation-guards) for more details.
+If you are writing your component using the Composition API, you can add update and leave guards through `onBeforeRouteUpdate` and `onBeforeRouteLeave` respectively. Please refer to the [Composition API section](./composition-api.md#Navigation-Guards) for more details.
 
 ## The Full Navigation Resolution Flow
 
