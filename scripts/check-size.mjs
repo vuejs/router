@@ -44,6 +44,10 @@ async function checkFileSize(filePath) {
         __dirname,
         '../packages/router/size-checks/dist/webRouter_experimental.js'
       ),
+      path.resolve(
+        __dirname,
+        '../packages/router/size-checks/dist/webRouter_vapor.js'
+      ),
     ].map(checkFileSize)
   )
 })()

@@ -42,6 +42,8 @@ app.use(router)
 app.mount('#app')
 ```
 
+In [Vapor Mode](../guide/advanced/vapor-mode), register `VaporRouterLink` and `VaporRouterView` instead. With SSR, pick the components for each environment, [like the history](../guide/advanced/vapor-mode#ssr).
+
 ## Opt-in to typed `useRouter()` / `useRoute()`
 
 To get a stricter router instance type from `useRouter()`, register your router on `TypesConfig`:

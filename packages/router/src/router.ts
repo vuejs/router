@@ -1058,8 +1058,11 @@ export function createRouter(options: RouterOptions): Router {
     isReady,
 
     install(app: App) {
-      app.component('RouterLink', RouterLink)
-      app.component('RouterView', RouterView)
+      // Vapor apps register VaporRouterLink and VaporRouterView themselves
+      if (!app.vapor) {
+        app.component('RouterLink', RouterLink)
+        app.component('RouterView', RouterView)
+      }
 
       // augmented to the experimental shape it diverges from `createRouter`'s
       // return type. FIXME.
