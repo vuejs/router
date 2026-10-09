@@ -1258,7 +1258,7 @@ describe('generateRouteResolver', () => {
       "
 
       const __route_0 = normalizeRouteRecord(
-        _mergeRouteRecord(
+        _mergeRouteRecordViews(
           {
             name: '/profile',
             path: new MatcherPatternPathStatic('/profile'),
@@ -1266,7 +1266,9 @@ describe('generateRouteResolver', () => {
               'default': () => import('profile.vue')
             },
           },
-          _definePage_default_0
+          {
+            'default': _definePage_default_0,
+          }
         )
       )
 
@@ -1319,7 +1321,26 @@ describe('generateRouteResolver', () => {
     expect(importsMap.toString()).toContain(
       `import _definePage_side_2d_bar_0 from 'dashboard@side-bar.vue?definePage&vue&lang.tsx'`
     )
-    expect(resolver).toContain('_definePage_side_2d_bar_0\n')
+    expect(resolver).toContain(`'side-bar': _definePage_side_2d_bar_0,`)
+  })
+
+  it('indexes definePage imports by view name', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    const dashboardNode = tree.insert('dashboard', 'dashboard.vue')
+    tree.insert('dashboard@sidebar', 'dashboard@sidebar.vue')
+    dashboardNode.setDefinePageImport('dashboard.vue', true)
+    dashboardNode.setDefinePageImport('dashboard@sidebar.vue', true)
+
+    const resolver = generateRouteResolver(
+      tree,
+      DEFAULT_OPTIONS,
+      new ImportsMap(),
+      new Map()
+    )
+
+    expect(resolver).toContain(`_mergeRouteRecordViews(`)
+    expect(resolver).toContain(`'default': _definePage_default_0,`)
+    expect(resolver).toContain(`'sidebar': _definePage_sidebar_1,`)
   })
 
   it('includes query property in route records with query params', () => {

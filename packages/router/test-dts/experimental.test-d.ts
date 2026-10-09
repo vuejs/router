@@ -3,17 +3,27 @@ import type {
   EXPERIMENTAL_Router,
   EXPERIMENTAL_RouterOptions,
 } from 'vue-router/experimental'
-import { useScrollRestoration } from 'vue-router/experimental'
+import {
+  definePage,
+  normalizeRouteRecord,
+  useScrollRestoration,
+  MatcherPatternPathStatic,
+} from 'vue-router/experimental'
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { defineComponent, ref, type FunctionalComponent } from 'vue'
 
 // Structural records allow parsed params beyond the classic string constraint.
-type ExperimentalRouteRecord<Name extends string, ParamsRaw, Params> = {
+type ExperimentalRouteRecord<
+  Name extends string,
+  ParamsRaw,
+  Params,
+  ChildrenNames extends string = never,
+> = {
   name: Name
   path: string
   paramsRaw: ParamsRaw
   params: Params
-  childrenNames: never
+  childrenNames: ChildrenNames
 }
 
 type RouteNamedMap = {
@@ -32,12 +42,38 @@ type RouteNamedMap = {
     { value: { input: string } },
     { value: number }
   >
+  // id is a path param, page a query param
+  user: ExperimentalRouteRecord<
+    'user',
+    { id: number; page?: number },
+    { id: number; page: number }
+  >
+  users: ExperimentalRouteRecord<'users', {}, {}, 'users-detail'>
+  'users-detail': ExperimentalRouteRecord<
+    'users-detail',
+    { id: number },
+    { id: number }
+  >
+}
+
+type RouteFileInfoMap = {
+  'src/pages/user.vue': {
+    routes: 'user'
+    views: never
+    pathParamNames: 'id'
+  }
+  'src/pages/users.vue': {
+    routes: 'users' | 'users-detail'
+    views: never
+    pathParamNames: never
+  }
 }
 
 declare module 'vue-router' {
   interface TypesConfig {
     Router: EXPERIMENTAL_Router
     RouteNamedMap: RouteNamedMap
+    _RouteFileInfoMap: RouteFileInfoMap
   }
 }
 
@@ -137,5 +173,199 @@ describe('useScrollRestoration', () => {
   it('accepts reactive manual options', () => {
     useScrollRestoration({ manual: ref(true) })
     useScrollRestoration({ manual: () => true })
+  })
+})
+
+describe('route record props', () => {
+  const User = defineComponent({
+    props: {
+      id: { type: Number, required: true },
+      page: Number,
+      label: String,
+    },
+  })
+  const Aside: FunctionalComponent<{ title: string }> = () => null
+  const Search = defineComponent({
+    props: { query: { type: String, required: true } },
+  })
+  const path = new MatcherPatternPathStatic('/')
+
+  it('accepts `true` when the params match the props', () => {
+    normalizeRouteRecord({
+      name: 'user',
+      path,
+      components: { default: User },
+      props: { default: true },
+    })
+    // lazy components are unwrapped
+    normalizeRouteRecord({
+      name: 'user',
+      path,
+      components: { default: async () => ({ default: User }) },
+      props: { default: true },
+    })
+  })
+
+  it('rejects `true` when the params do not match the props', () => {
+    normalizeRouteRecord({
+      name: 'user',
+      path,
+      components: { default: Search },
+      // @ts-expect-error: params do not contain `query`
+      props: { default: true },
+    })
+    normalizeRouteRecord({
+      name: 'users',
+      path,
+      components: { default: Search },
+      // @ts-expect-error: no route passes `query`
+      props: { default: true },
+    })
+  })
+
+  it('types the route location of the function form', () => {
+    normalizeRouteRecord({
+      name: 'user',
+      path,
+      components: { default: User },
+      props: {
+        default: to => {
+          expectTypeOf(to.name).toEqualTypeOf<'user'>()
+          expectTypeOf(to.params).toEqualTypeOf<{ id: number; page: number }>()
+          return { id: to.params.id }
+        },
+      },
+    })
+  })
+
+  it('includes the children of the route in the location', () => {
+    normalizeRouteRecord({
+      name: 'users',
+      path,
+      components: { default: User },
+      props: {
+        default: to => {
+          expectTypeOf(to.name).toEqualTypeOf<'users' | 'users-detail'>()
+          return { id: to.name === 'users-detail' ? to.params.id : 0 }
+        },
+      },
+    })
+  })
+
+  it('checks the returned props against the component', () => {
+    normalizeRouteRecord({
+      name: 'user',
+      path,
+      components: { default: User },
+      props: {
+        // @ts-expect-error: id must be a number
+        default: to => ({ id: String(to.params.id) }),
+      },
+    })
+    normalizeRouteRecord({
+      name: 'user',
+      path,
+      components: { default: User },
+      props: {
+        // @ts-expect-error: id is required
+        default: () => ({ label: 'a' }),
+      },
+    })
+  })
+
+  it('checks static props against the component', () => {
+    normalizeRouteRecord({
+      name: 'user',
+      path,
+      components: { default: User },
+      props: { default: { id: 1, label: 'a' } },
+    })
+    normalizeRouteRecord({
+      name: 'user',
+      path,
+      components: { default: User },
+      // @ts-expect-error: id is required
+      props: { default: { label: 'a' } },
+    })
+  })
+
+  it('checks each named view against its component', () => {
+    normalizeRouteRecord({
+      name: 'user',
+      path,
+      components: { default: User, aside: Aside },
+      props: { default: true, aside: { title: 'a' } },
+    })
+    normalizeRouteRecord({
+      name: 'user',
+      path,
+      components: { default: User, aside: Aside },
+      props: {
+        default: true,
+        // @ts-expect-error: params do not contain `title`
+        aside: true,
+      },
+    })
+    normalizeRouteRecord({
+      name: 'user',
+      path,
+      components: { default: User },
+      props: {
+        default: true,
+        // @ts-expect-error: no `aside` view
+        aside: true,
+      },
+    })
+  })
+
+  it('cannot check `true` on records without a typed name', () => {
+    normalizeRouteRecord({
+      components: { default: Search },
+      props: { default: true },
+    })
+  })
+})
+
+describe('definePage props', () => {
+  const User = defineComponent({
+    props: { id: { type: Number, required: true }, page: Number },
+  })
+  const Search = defineComponent({
+    props: { query: { type: String, required: true } },
+  })
+
+  it('accepts anything without the injected types', () => {
+    definePage({ props: true })
+    definePage({ props: { anything: 1 } })
+    definePage({ props: () => ({ anything: 1 }) })
+  })
+
+  it('checks `true` against the params of the file routes', () => {
+    definePage<'src/pages/user.vue', typeof User>({ props: true })
+    definePage<'src/pages/user.vue', typeof Search>({
+      // @ts-expect-error: params do not contain `query`
+      props: true,
+    })
+  })
+
+  it('types the route location of the function form', () => {
+    definePage<'src/pages/users.vue', typeof User>({
+      props: to => {
+        expectTypeOf(to.name).toEqualTypeOf<'users' | 'users-detail'>()
+        return { id: to.name === 'users-detail' ? to.params.id : 0 }
+      },
+    })
+    definePage<'src/pages/user.vue', typeof User>({
+      // @ts-expect-error: id must be a number
+      props: to => ({ id: String(to.params.id) }),
+    })
+  })
+
+  it('checks static props against the component', () => {
+    definePage<'src/pages/user.vue', typeof User>({ props: { id: 1 } })
+    definePage<'src/pages/user.vue', typeof User>({
+      // @ts-expect-error: id is required
+      props: { page: 1 },
+    })
   })
 })

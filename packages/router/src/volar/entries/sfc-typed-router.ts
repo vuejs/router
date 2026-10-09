@@ -1,4 +1,4 @@
-import { relative } from 'pathe'
+import { basename, relative } from 'pathe'
 import type { VueLanguagePlugin } from '@vue/language-core'
 import { replaceSourceRange, toString } from 'muggle-string'
 import { augmentVlsCtx } from '../utils/augment-vls-ctx'
@@ -60,7 +60,11 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
       const useRouteNameType = `import('vue-router/auto-routes')._RouteNamesForFilePath<'${escapedFilePath}'>`
       const useRouteNameTypeParam = `<${useRouteNameType}>`
 
-      const definePageFilePathTypeParam = `<'${escapedFilePath}'>`
+      // the page component imports itself to type check `props`
+      const escapedSelfImport = `./${basename(fileName)}`
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+      const definePageTypeParams = `<'${escapedFilePath}', typeof import('${escapedSelfImport}').default>`
 
       if (sfc.scriptSetup) {
         visit(sfc.scriptSetup.ast)
@@ -126,13 +130,14 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
           !sfc.scriptSetup!.lang.startsWith('js')
         ) {
           // Inject the file path so `definePage`'s `params.path` keys can be
-          // narrowed to this file's actual path params.
+          // narrowed to this file's actual path params, and the component
+          // type so `props` is checked against its props.
           replaceSourceRange(
             embeddedCode.content,
             sfc.scriptSetup!.name,
             node.expression.end,
             node.expression.end,
-            definePageFilePathTypeParam
+            definePageTypeParams
           )
         } else {
           ts.forEachChild(node, visit)
