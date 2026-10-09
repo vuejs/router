@@ -71,6 +71,7 @@ async function mountRouter(
     attachTo,
     storageKeyPrefix,
     initialPath,
+    setupListeners,
     capture = SCROLL_RESTORATION_CAPTURE_DEFAULT,
     restore = SCROLL_RESTORATION_RESTORE_DEFAULT,
   }: MountRouterOptions = {}
@@ -101,6 +102,7 @@ async function mountRouter(
             ...(storageKeyPrefix && { storageKeyPrefix }),
             capture,
             restore,
+            ...(setupListeners && { setupListeners }),
           },
         ],
         router,
@@ -125,6 +127,111 @@ enableAutoUnmount(afterEach)
 
 describe('useScrollRestoration', () => {
   mockWarn()
+
+  it('captures only when the document becomes hidden by default', async () => {
+    const Page = defineComponent({
+      setup() {
+        useScrollRestoration()
+      },
+      template: '<main>Page</main>',
+    })
+    const { navigate, setScroll, wrapper } = await mountRouter([
+      { path: '/events', component: Page },
+    ])
+    await navigate('/events')
+    setScroll(0, 75)
+
+    window.dispatchEvent(new Event('pagehide'))
+    expect(sessionStorage.getItem('vue:scroll:/events')).toBeNull()
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible')
+    document.dispatchEvent(new Event('visibilitychange'))
+    expect(sessionStorage.getItem('vue:scroll:/events')).toBeNull()
+
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    document.dispatchEvent(new Event('visibilitychange'))
+    expect(JSON.parse(sessionStorage.getItem('vue:scroll:/events')!)).toEqual({
+      default: { left: 0, top: 75 },
+    })
+
+    wrapper.unmount()
+    setScroll(0, 100)
+    document.dispatchEvent(new Event('visibilitychange'))
+    await navigate('/neutral')
+    expect(JSON.parse(sessionStorage.getItem('vue:scroll:/events')!)).toEqual({
+      default: { left: 0, top: 75 },
+    })
+  })
+
+  it('replaces default listeners and stops custom listeners on unmount', async () => {
+    const Page = defineComponent({
+      setup() {
+        useScrollRestoration()
+      },
+      template: '<main>Page</main>',
+    })
+    const { navigate, setScroll, wrapper } = await mountRouter(
+      [{ path: '/custom', component: Page }],
+      {
+        setupListeners(capture, signal) {
+          window.addEventListener('scroll', capture, { passive: true, signal })
+        },
+      }
+    )
+    await navigate('/custom')
+    setScroll(0, 45)
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    document.dispatchEvent(new Event('visibilitychange'))
+    expect(sessionStorage.getItem('vue:scroll:/custom')).toBeNull()
+
+    window.dispatchEvent(new Event('scroll'))
+    expect(JSON.parse(sessionStorage.getItem('vue:scroll:/custom')!)).toEqual({
+      default: { left: 0, top: 45 },
+    })
+
+    wrapper.unmount()
+    setScroll(0, 90)
+    window.dispatchEvent(new Event('scroll'))
+    expect(JSON.parse(sessionStorage.getItem('vue:scroll:/custom')!)).toEqual({
+      default: { left: 0, top: 45 },
+    })
+  })
+
+  it('allows manual capture of the current route without event listeners', async () => {
+    let captureNow!: () => void
+    const Page = defineComponent({
+      setup() {
+        useScrollRestoration()
+      },
+      template: '<main>Page</main>',
+    })
+    const { navigate, setScroll } = await mountRouter(
+      [
+        { path: '/first', component: Page },
+        { path: '/second', component: Page },
+      ],
+      {
+        setupListeners: capture => {
+          captureNow = capture
+        },
+      }
+    )
+    await navigate('/first')
+    setScroll(0, 30)
+    captureNow()
+    expect(JSON.parse(sessionStorage.getItem('vue:scroll:/first')!)).toEqual({
+      default: { left: 0, top: 30 },
+    })
+    setScroll(0, 60)
+    await navigate('/second')
+    expect(JSON.parse(sessionStorage.getItem('vue:scroll:/first')!)).toEqual({
+      default: { left: 0, top: 60 },
+    })
+    setScroll(0, 90)
+    captureNow()
+    expect(JSON.parse(sessionStorage.getItem('vue:scroll:/second')!)).toEqual({
+      default: { left: 0, top: 90 },
+    })
+  })
 
   it('preserves the saved root position on initial navigation', async () => {
     const savedPosition = JSON.stringify({ default: { left: 0, top: 123 } })
@@ -666,7 +773,8 @@ describe('useScrollRestoration', () => {
     await first.navigate('/initial')
     first.setScroll(0, 70)
     // reload
-    window.dispatchEvent(new Event('pagehide'))
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    document.dispatchEvent(new Event('visibilitychange'))
     first.wrapper.unmount()
     vi.restoreAllMocks()
 
@@ -690,7 +798,8 @@ describe('useScrollRestoration', () => {
     await first.navigate('/initial')
     first.setScroll(0, 85)
     // reload
-    window.dispatchEvent(new Event('pagehide'))
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    document.dispatchEvent(new Event('visibilitychange'))
     first.wrapper.unmount()
     vi.restoreAllMocks()
 

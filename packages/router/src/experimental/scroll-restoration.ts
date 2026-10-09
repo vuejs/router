@@ -92,6 +92,17 @@ export interface ScrollRestorationPluginOptions extends UseScrollRestorationOpti
    */
   storageKeyPrefix?: string
 
+  /**
+   * Registers additional capture triggers when the plugin is installed.
+   * Replaces the default listener, which captures when the document is hidden.
+   * Capture after successful navigation is always enabled.
+   *
+   * `capture` saves all active registrations for the current route. Use `signal`
+   * to remove listeners or cancel pending work when the app is unmounted.
+   * A function that registers no listeners allows manual capture.
+   */
+  setupListeners?: (capture: () => void, signal: AbortSignal) => void
+
   capture: NonNullable<UseScrollRestorationOptions['capture']>
   restore: NonNullable<UseScrollRestorationOptions['restore']>
 }
@@ -265,6 +276,15 @@ const SCROLL_RESTORATION_PLUGIN_OPTIONS_DEFAULTS: Required<
   // restore: SCROLL_RESTORATION_RESTORE_DEFAULT,
   key: to => to.path + to.hash,
   manual: false,
+  setupListeners(capture, signal) {
+    document.addEventListener(
+      'visibilitychange',
+      () => {
+        if (document.visibilityState === 'hidden') capture()
+      },
+      { signal }
+    )
+  },
 }
 
 const SCROLL_RESTORATION_OPTIONS_KEY: InjectionKey<
@@ -359,19 +379,9 @@ function ScrollRestorationClient(
     if (!failure && from !== START_LOCATION_NORMALIZED) capture(from)
   })
   const listenersController = new AbortController()
-  const captureOnPageHide = () => capture(router.currentRoute.value)
-  // a hidden page can be killed without pagehide
-  window.addEventListener('pagehide', captureOnPageHide, {
-    signal: listenersController.signal,
-  })
-  document.addEventListener(
-    'visibilitychange',
-    () => {
-      if (document.visibilityState === 'hidden') captureOnPageHide()
-    },
-    {
-      signal: listenersController.signal,
-    }
+  optionsWithDefaults.setupListeners(
+    () => capture(router.currentRoute.value),
+    listenersController.signal
   )
 
   app.onUnmount(() => {
