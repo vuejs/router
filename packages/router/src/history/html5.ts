@@ -131,7 +131,8 @@ function useHistoryListeners(
 
   function beforeUnloadListener() {
     const { history } = window
-    if (!history.state) return
+    // calling replaceState() during a pagehide can break the bfcache
+    if (!history.state || history.scrollRestoration === 'auto') return
     history.replaceState(
       assign({}, history.state, {
         scroll: computeScrollPosition(),
@@ -149,6 +150,7 @@ function useHistoryListeners(
 
   // set up the listeners and prepare teardown callbacks
   window.addEventListener('popstate', popStateHandler)
+  // TODO: remove the scroll computation in v6 since it's doen in the ScrollRestoration plugin
   // https://developer.chrome.com/blog/page-lifecycle-api/
   // note: iOS safari does not fire beforeunload, so we use pagehide instead
   window.addEventListener('pagehide', beforeUnloadListener)
