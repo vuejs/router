@@ -78,8 +78,7 @@ const esmBrowser = {
   name: 'vue-router esm-browser',
   outputOptions: {
     ...commonOptions.outputOptions,
-    dir: undefined, // must be unset with file
-    file: 'dist/vue-router.esm-browser.js',
+    entryFileNames: 'vue-router.esm-browser.js',
   },
   define: {
     ...commonOptions.define,
@@ -95,7 +94,7 @@ const esmBrowserProd = {
   minify: true,
   outputOptions: {
     ...esmBrowser.outputOptions,
-    file: 'dist/vue-router.esm-browser.prod.js',
+    entryFileNames: 'vue-router.esm-browser.prod.js',
   },
   define: {
     ...esmBrowser.define,
@@ -110,8 +109,7 @@ const cjs = {
   format: 'cjs',
   outputOptions: {
     ...commonOptions.outputOptions,
-    dir: undefined, // must be unset with file
-    file: 'dist/vue-router.cjs',
+    entryFileNames: 'vue-router.cjs',
   },
   define: {
     ...commonOptions.define,
@@ -127,7 +125,7 @@ const cjsProd = {
   minify: true,
   outputOptions: {
     ...cjs.outputOptions,
-    file: 'dist/vue-router.prod.cjs',
+    entryFileNames: 'vue-router.prod.cjs',
   },
 } satisfies InlineConfig
 
@@ -137,8 +135,7 @@ const iife = {
   name: 'vue-router iife',
   outputOptions: {
     ...commonOptions.outputOptions,
-    dir: undefined, // must be unset with file
-    file: 'dist/vue-router.global.js',
+    entryFileNames: 'vue-router.global.js',
   },
   define: {
     ...commonOptions.define,
@@ -161,7 +158,7 @@ const iifeProd = {
   minify: true,
   outputOptions: {
     ...iife.outputOptions,
-    file: 'dist/vue-router.global.prod.js',
+    entryFileNames: 'vue-router.global.prod.js',
   },
   define: {
     ...iife.define,
