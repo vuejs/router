@@ -88,9 +88,9 @@ The router _captures_ the position **when you leave the page** and _restores_ it
 
 ## Capture events
 
-The plugin captures positions after each successful navigation and when the document becomes hidden. It does not listen to `pagehide`.
+The plugin captures positions after each successful navigation, on `pagehide`, and when the document becomes hidden.
 
-Use `setupListeners(capture, signal)` to replace the default `visibilitychange` listener. The supplied `capture()` saves all active scroll registrations for the current route. Navigation capture remains enabled.
+Use `setupListeners(capture, signal)` to replace the default event listeners. The supplied `capture()` saves all active scroll registrations for the current route. Navigation capture remains enabled.
 
 For example, capture on scroll:
 
@@ -106,6 +106,22 @@ app.use(ScrollRestoration, {
 ```
 
 Pass `signal` to your listeners so they are removed when the app is unmounted. You can listen to your own event instead, or save the supplied `capture` function and call it manually. To disable additional capture events, use `setupListeners: () => {}`.
+
+To keep the default events and add your own, call `SCROLL_RESTORATION_SETUP_LISTENERS_DEFAULT`:
+
+```ts
+import { SCROLL_RESTORATION_SETUP_LISTENERS_DEFAULT } from 'vue-router/experimental'
+
+app.use(ScrollRestoration, {
+  router,
+  capture: SCROLL_RESTORATION_CAPTURE_DEFAULT,
+  restore: SCROLL_RESTORATION_RESTORE_DEFAULT,
+  setupListeners(capture, signal) {
+    SCROLL_RESTORATION_SETUP_LISTENERS_DEFAULT(capture, signal)
+    window.addEventListener('save-scroll', capture, { signal })
+  },
+})
+```
 
 A [`scroll` event cannot be canceled](https://developer.chrome.com/blog/passive-event-listeners), so `passive: true` does not improve scroll performance. Each capture calls all active capture functions and writes to `sessionStorage` synchronously. For frequent events, throttle captures and use the signal to cancel pending work on unmount.
 

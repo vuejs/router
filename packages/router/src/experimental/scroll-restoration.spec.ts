@@ -29,6 +29,13 @@ const Root = defineComponent({
   template: '<RouterView />',
 })
 
+const ScrollPage = defineComponent({
+  setup() {
+    useScrollRestoration()
+  },
+  template: '<main>Page</main>',
+})
+
 const EmptyPage = defineComponent({ template: '<main />' })
 const NeutralPage = defineComponent({ template: '<main>Neutral page</main>' })
 
@@ -128,49 +135,43 @@ enableAutoUnmount(afterEach)
 describe('useScrollRestoration', () => {
   mockWarn()
 
-  it('captures only when the document becomes hidden by default', async () => {
-    const Page = defineComponent({
-      setup() {
-        useScrollRestoration()
-      },
-      template: '<main>Page</main>',
-    })
+  it('captures on pagehide and hidden visibility and stops on unmount', async () => {
     const { navigate, setScroll, wrapper } = await mountRouter([
-      { path: '/events', component: Page },
+      { path: '/events', component: ScrollPage },
     ])
     await navigate('/events')
     setScroll(0, 75)
 
     window.dispatchEvent(new Event('pagehide'))
-    expect(sessionStorage.getItem('vue:scroll:/events')).toBeNull()
+    expect(JSON.parse(sessionStorage.getItem('vue:scroll:/events')!)).toEqual({
+      default: { left: 0, top: 75 },
+    })
+    setScroll(0, 100)
     vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible')
     document.dispatchEvent(new Event('visibilitychange'))
-    expect(sessionStorage.getItem('vue:scroll:/events')).toBeNull()
+    expect(JSON.parse(sessionStorage.getItem('vue:scroll:/events')!)).toEqual({
+      default: { left: 0, top: 75 },
+    })
 
     vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
     document.dispatchEvent(new Event('visibilitychange'))
     expect(JSON.parse(sessionStorage.getItem('vue:scroll:/events')!)).toEqual({
-      default: { left: 0, top: 75 },
+      default: { left: 0, top: 100 },
     })
 
     wrapper.unmount()
-    setScroll(0, 100)
+    setScroll(0, 150)
     document.dispatchEvent(new Event('visibilitychange'))
+    window.dispatchEvent(new Event('pagehide'))
     await navigate('/neutral')
     expect(JSON.parse(sessionStorage.getItem('vue:scroll:/events')!)).toEqual({
-      default: { left: 0, top: 75 },
+      default: { left: 0, top: 100 },
     })
   })
 
   it('replaces default listeners and stops custom listeners on unmount', async () => {
-    const Page = defineComponent({
-      setup() {
-        useScrollRestoration()
-      },
-      template: '<main>Page</main>',
-    })
     const { navigate, setScroll, wrapper } = await mountRouter(
-      [{ path: '/custom', component: Page }],
+      [{ path: '/custom', component: ScrollPage }],
       {
         setupListeners(capture, signal) {
           window.addEventListener('scroll', capture, { passive: true, signal })
@@ -181,6 +182,7 @@ describe('useScrollRestoration', () => {
     setScroll(0, 45)
     vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
     document.dispatchEvent(new Event('visibilitychange'))
+    window.dispatchEvent(new Event('pagehide'))
     expect(sessionStorage.getItem('vue:scroll:/custom')).toBeNull()
 
     window.dispatchEvent(new Event('scroll'))
@@ -198,16 +200,10 @@ describe('useScrollRestoration', () => {
 
   it('allows manual capture of the current route without event listeners', async () => {
     let captureNow!: () => void
-    const Page = defineComponent({
-      setup() {
-        useScrollRestoration()
-      },
-      template: '<main>Page</main>',
-    })
     const { navigate, setScroll } = await mountRouter(
       [
-        { path: '/first', component: Page },
-        { path: '/second', component: Page },
+        { path: '/first', component: ScrollPage },
+        { path: '/second', component: ScrollPage },
       ],
       {
         setupListeners: capture => {
@@ -761,53 +757,39 @@ describe('useScrollRestoration', () => {
     expect(window.scrollY).toBe(10)
   })
 
-  it('restores the initial navigation when mounted after it', async () => {
-    const Page = defineComponent({
-      setup() {
-        useScrollRestoration({ key: 'initial' })
-      },
-      template: '<main>Page</main>',
-    })
-    const routes = [{ path: '/initial', component: Page }]
-    const first = await mountRouter(routes)
-    await first.navigate('/initial')
-    first.setScroll(0, 70)
-    // reload
-    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
-    document.dispatchEvent(new Event('visibilitychange'))
-    first.wrapper.unmount()
-    vi.restoreAllMocks()
+  it.each(['page', 'root'] as const)(
+    'restores the initial navigation with a %s registration',
+    async registration => {
+      const ScrollRoot = defineComponent({
+        components: { RouterView },
+        setup() {
+          useScrollRestoration()
+        },
+        template: '<RouterView />',
+      })
+      const root = registration === 'root' ? ScrollRoot : Root
+      const component = registration === 'page' ? ScrollPage : NeutralPage
+      const routes = [{ path: '/initial', component }]
+      const first = await mountRouter(routes, { root })
+      await first.navigate('/initial')
+      first.setScroll(0, 70)
+      vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+      document.dispatchEvent(new Event('visibilitychange'))
+      first.wrapper.unmount()
+      vi.restoreAllMocks()
 
-    const { wrapper } = await mountRouter(routes, { initialPath: '/initial' })
-    await flushPromises()
+      const { wrapper } = await mountRouter(routes, {
+        root,
+        initialPath: '/initial',
+      })
+      await flushPromises()
 
-    expect(wrapper.text()).toBe('Page')
-    expect(window.scrollY).toBe(70)
-  })
-
-  it('restores the initial navigation at the root when mounted after it', async () => {
-    const ScrollRoot = defineComponent({
-      components: { RouterView },
-      setup() {
-        useScrollRestoration()
-      },
-      template: '<RouterView />',
-    })
-    const routes = [{ path: '/initial', component: EmptyPage }]
-    const first = await mountRouter(routes, { root: ScrollRoot })
-    await first.navigate('/initial')
-    first.setScroll(0, 85)
-    // reload
-    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
-    document.dispatchEvent(new Event('visibilitychange'))
-    first.wrapper.unmount()
-    vi.restoreAllMocks()
-
-    await mountRouter(routes, { root: ScrollRoot, initialPath: '/initial' })
-    await flushPromises()
-
-    expect(window.scrollY).toBe(85)
-  })
+      expect(wrapper.text()).toBe(
+        registration === 'page' ? 'Page' : 'Neutral page'
+      )
+      expect(window.scrollY).toBe(70)
+    }
+  )
 
   it('removes the saved entry when capture returns null', async () => {
     let shouldCapture = true
