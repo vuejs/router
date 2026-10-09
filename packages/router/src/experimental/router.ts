@@ -33,7 +33,6 @@ import {
 } from '../scrollBehavior'
 import type {
   _NavigationGuardResolved,
-  _RouteRecordProps,
   NavigationGuard,
   NavigationGuardWithThis,
   NavigationHookAfter,
@@ -86,6 +85,13 @@ import type {
 import type { DataLoaderExtensions } from './data-loaders/meta-extensions'
 import { diagnostics } from '../diagnostics'
 import type { PathParserOptions } from '../matcher'
+import type {
+  EXPERIMENTAL_RouteRecordPropsOption,
+  _RouteLocationForRecordName,
+  _RouteRecordPropsViews,
+} from './route-props'
+import type { RecordName } from './route-resolver/resolver-abstract'
+import type { RouteLocationNormalizedLoadedGeneric } from '../typed-routes'
 
 /**
  * resolve, reject arguments of Promise constructor
@@ -232,11 +238,12 @@ export interface EXPERIMENTAL_RouteRecord_Base extends EXPERIMENTAL_ResolverReco
    */
   aliasOf?: EXPERIMENTAL_RouteRecordNormalized | null
 
-  // TODO:
   /**
-   * Allow passing down params as props to the component rendered by `router-view`.
+   * Pass props to the components of `components`, one entry per view name.
+   * Use {@link normalizeRouteRecord} to type check them against the route
+   * params and the props of each component.
    */
-  // props?: _RouteRecordProps | Record<string, _RouteRecordProps>
+  props?: Record<string, EXPERIMENTAL_RouteRecordPropsOption>
 }
 
 export interface EXPERIMENTAL_RouteRecord_Redirect
@@ -290,7 +297,10 @@ export interface EXPERIMENTAL_RouteRecordNormalized_Base {
    */
   mods: Record<string, unknown>
 
-  props: Record<string, _RouteRecordProps>
+  /**
+   * Props passed to each view. Empty if no view receives props.
+   */
+  props: Record<string, EXPERIMENTAL_RouteRecordPropsOption>
 
   /**
    * Registered leave guards
@@ -316,6 +326,7 @@ export interface EXPERIMENTAL_RouteRecordNormalized_Group
     EXPERIMENTAL_RouteRecordNormalized_Base,
     EXPERIMENTAL_RouteRecord_Group {
   meta: RouteMeta
+  props: Record<string, EXPERIMENTAL_RouteRecordPropsOption>
 }
 
 export interface EXPERIMENTAL_RouteRecordNormalized_Redirect
@@ -323,6 +334,7 @@ export interface EXPERIMENTAL_RouteRecordNormalized_Redirect
     EXPERIMENTAL_RouteRecordNormalized_Base,
     EXPERIMENTAL_RouteRecord_Redirect {
   meta: RouteMeta
+  props: Record<string, EXPERIMENTAL_RouteRecordPropsOption>
 }
 
 export interface EXPERIMENTAL_RouteRecordNormalized_Components
@@ -330,6 +342,7 @@ export interface EXPERIMENTAL_RouteRecordNormalized_Components
     EXPERIMENTAL_RouteRecordNormalized_Base,
     EXPERIMENTAL_RouteRecord_Components {
   meta: RouteMeta
+  props: Record<string, EXPERIMENTAL_RouteRecordPropsOption>
 }
 
 export type EXPERIMENTAL_RouteRecordNormalized_Matchable =
@@ -340,14 +353,53 @@ export type EXPERIMENTAL_RouteRecordNormalized =
   | EXPERIMENTAL_RouteRecordNormalized_Matchable
   | EXPERIMENTAL_RouteRecordNormalized_Group
 
-export function normalizeRouteRecord(
-  record: EXPERIMENTAL_RouteRecord_Group
+/**
+ * Replaces `props` and `components` of a record type with typed versions.
+ *
+ * @internal
+ */
+export type _RouteRecordWithTypedProps<
+  TRecord,
+  Location extends RouteLocationNormalizedLoadedGeneric,
+  Components,
+> = TRecord extends unknown
+  ? Omit<TRecord, 'props' | 'components'> &
+      (TRecord extends { components: unknown }
+        ? { components: Components }
+        : { components?: Components }) & {
+        props?: _RouteRecordPropsViews<Location, Components>
+      }
+  : never
+
+/**
+ * Normalizes a route record so it can be passed to a resolver. The `props`
+ * option is type checked against the props of each component in
+ * `components` and against the params of the route (and its children) when
+ * the route is named in the typed route map.
+ *
+ * @param record - route record to normalize
+ */
+export function normalizeRouteRecord<
+  Components extends Record<string, RawRouteComponent> = {},
+>(
+  record: _RouteRecordWithTypedProps<
+    EXPERIMENTAL_RouteRecord_Group,
+    RouteLocationNormalizedLoadedGeneric,
+    Components
+  >
 ): EXPERIMENTAL_RouteRecordNormalized_Group
-export function normalizeRouteRecord(
-  record: EXPERIMENTAL_RouteRecord_Matchable
+export function normalizeRouteRecord<
+  const Name extends RecordName,
+  Components extends Record<string, RawRouteComponent> = {},
+>(
+  record: _RouteRecordWithTypedProps<
+    EXPERIMENTAL_RouteRecord_Matchable,
+    _RouteLocationForRecordName<Name>,
+    Components
+  > & { name: Name }
 ): EXPERIMENTAL_RouteRecordNormalized_Matchable
 export function normalizeRouteRecord(
-  record: EXPERIMENTAL_RouteRecord_Matchable | EXPERIMENTAL_RouteRecord_Group
+  record: _RouteRecordWithTypedProps<EXPERIMENTAL_RouteRecordRaw, any, any>
 ):
   | EXPERIMENTAL_RouteRecordNormalized_Matchable
   | EXPERIMENTAL_RouteRecordNormalized_Group {
@@ -375,7 +427,7 @@ export function normalizeRouteRecord(
     // NOTE: not having the property changes nothing
     // parent: null,
     // aliasOf: null,
-    ...record,
+    ...(record as EXPERIMENTAL_RouteRecordRaw),
     // FIXME: to be removed
     instances: {},
     leaveGuards: new Set(),
