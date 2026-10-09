@@ -4,6 +4,7 @@ import type { ImportsMap } from '../core/utils'
 import { type ResolvedOptions } from '../options'
 import { encodeImportIdentifierPart, toStringLiteral, ts } from '../utils'
 import type { ParamParsersMap } from './generateParamParsers'
+import { diagnostics } from '../diagnostics'
 import {
   generatePathParamsOptions,
   generateParamParserOptions,
@@ -85,6 +86,20 @@ export function generateRouteResolver(
   const usedParamParsersMap: ParamParsersMap = new Map(
     Array.from(paramParsersMap).filter(([key]) => usedParserNames.has(key))
   )
+
+  // the matcher is built from the file segments, an override would only rename params
+  for (const node of tree.getChildrenDeepSorted()) {
+    const path = node.value.overrides.path
+    if (path != null) {
+      const files = Array.from(node.value.components.values())
+      diagnostics.VUE_ROUTER_B0025({
+        path,
+        files: files.length
+          ? files.map(file => `"${file}"`).join(', ')
+          : `"${node.value.rawSegment}"`,
+      })
+    }
+  }
 
   const state: GenerateRouteResolverState = { id: 0, matchableRecords: [] }
   const records = tree.getChildrenSorted().map(node =>
