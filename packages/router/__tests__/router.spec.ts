@@ -11,7 +11,7 @@ import { createWebHistory } from '../src/history/html5'
 import { createWebHashHistory } from '../src/history/hash'
 import { loadRouteLocation } from '../src/navigationGuards'
 import { NavigationFailureType } from '../src/errors'
-import { components, tick, nextNavigation } from './utils'
+import { components, tick, nextNavigation, delay } from './utils'
 import type { RouteRecordRaw } from '../src/types'
 import { START_LOCATION_NORMALIZED } from '../src/location'
 import {
@@ -711,6 +711,33 @@ describe('Router', () => {
 
     it('cancels navigation abort if a newer one is finished on user navigation (from history)', async () => {
       await checkNavigationCancelledOnPush(undefined)
+    })
+
+    it('does not navigate when going forward from the last entry', async () => {
+      const { history, router } = await newRouter()
+      await router.push('/foo')
+      const spy = vi.fn(() => false)
+      router.beforeEach(spy)
+      router.forward()
+      await delay(0)
+      expect(spy).not.toHaveBeenCalled()
+      expect(router.currentRoute.value.fullPath).toBe('/foo')
+      expect(history.location).toBe('/foo')
+    })
+
+    it('restores the history entry when aborting a go() beyond the last entry', async () => {
+      const { history, router } = await newRouter()
+      await router.push('/foo')
+      await router.push('/p/a')
+      router.back()
+      await nextNavigation(router)
+      router.beforeEach(() => false)
+      router.go(5)
+      await expect(nextNavigation(router)).resolves.toMatchObject({
+        type: NavigationFailureType.aborted,
+      })
+      expect(router.currentRoute.value.fullPath).toBe('/foo')
+      expect(history.location).toBe('/foo')
     })
   })
 
