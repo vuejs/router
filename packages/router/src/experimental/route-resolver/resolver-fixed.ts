@@ -76,12 +76,12 @@ export interface EXPERIMENTAL_ResolverRecord_Group extends EXPERIMENTAL_Resolver
   /**
    * A group route cannot be matched directly and cannot be named.
    */
-  name?: undefined
+  name?: never
 
   /**
    * A group route can **only** match the `query`.
    */
-  path?: undefined
+  path?: never
 
   // Query is the only kind of matcher that is non-exclusive
   // all matched records get their queries merged
@@ -90,7 +90,7 @@ export interface EXPERIMENTAL_ResolverRecord_Group extends EXPERIMENTAL_Resolver
   /**
    * A group route can **only** match the `query`.
    */
-  hash?: undefined
+  hash?: never
 }
 
 /**
