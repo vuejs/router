@@ -7,39 +7,6 @@
 
 在创建路由器实例时，`history` 配置允许我们在不同的历史模式中进行选择。
 
-## Hash 模式
-
-hash 模式是用 `createWebHashHistory()` 创建的：
-
-```js
-import { createRouter, createWebHashHistory } from 'vue-router'
-
-const router = createRouter({
-  history: createWebHashHistory(),
-  routes: [
-    //...
-  ],
-})
-```
-
-它在内部传递的实际 URL 之前使用了一个井号（`#`）。由于这部分 URL 从未被发送到服务器，所以它不需要在服务器层面上进行任何特殊处理。不过，**它在 SEO 中确实有不好的影响**。如果你担心这个问题，可以使用 HTML5 模式。
-
-## Memory 模式
-
-Memory 模式不会假定自己处于浏览器环境，因此不会与 URL 交互**也不会自动触发初始导航**。这使得它非常适合 Node 环境和 SSR。它是用 `createMemoryHistory()` 创建的，并且**需要你在调用 `app.use(router)` 之后手动 push 到初始导航**。
-
-```js
-import { createRouter, createMemoryHistory } from 'vue-router'
-const router = createRouter({
-  history: createMemoryHistory(),
-  routes: [
-    //...
-  ],
-})
-```
-
-虽然不推荐，你仍可以在浏览器应用程序中使用此模式，但请注意**它不会有历史记录**，这意味着你无法*后退*或*前进*。
-
 ## HTML5 模式
 
 用 `createWebHistory()` 创建 HTML5 模式，推荐使用这个模式：
@@ -55,15 +22,49 @@ const router = createRouter({
 })
 ```
 
-当使用这种历史模式时，URL 会看起来很 "正常"，例如 `https://example.com/user/id`。漂亮!
+当使用这种历史模式时，URL 会看起来很“正常”，例如 `https://example.com/user/id`。漂亮！
 
 不过，问题来了。由于我们的应用是一个单页的客户端应用，如果没有适当的服务器配置，用户在浏览器中直接访问 `https://example.com/user/id`，就会得到一个 404 错误。这就尴尬了。
 
-不用担心：要解决这个问题，你需要做的就是在你的服务器上添加一个简单的回退路由。如果 URL 不匹配任何静态资源，它应提供与你的应用程序中的 `index.html` 相同的页面。漂亮依旧!
+不用担心：要解决这个问题，你需要做的就是在你的服务器上添加一个简单的回退路由。如果 URL 不匹配任何静态资源，它应返回你的应用所在的同一个 `index.html` 页面。漂亮依旧！
+
+## Hash 模式
+
+hash 模式是用 `createWebHashHistory()` 创建的：
+
+```js
+import { createRouter, createWebHashHistory } from 'vue-router'
+
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes: [
+    //...
+  ],
+})
+```
+
+它在内部传递的实际 URL 之前使用了一个井号 (`#`)。由于这部分 URL 从未被发送到服务器，所以它不需要在服务器层面上进行任何特殊处理。不过，**它在 SEO 中确实有不好的影响**。如果你担心这个问题，可以使用 HTML5 模式。
+
+## Memory 模式
+
+Memory 模式不会假定自己处于浏览器环境，因此不会与 URL 交互**也不会自动触发初始导航**。这使得它非常适合 Node 环境和 SSR。它是用 `createMemoryHistory()` 创建的，并且**需要你在调用 `app.use(router)` 之后手动 push 初始导航**。
+
+```js
+import { createRouter, createMemoryHistory } from 'vue-router'
+
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [
+    //...
+  ],
+})
+```
+
+虽然不推荐，你仍可以在浏览器应用程序中使用此模式，但请注意**它不会有历史记录**，这意味着你无法*后退*或*前进*。
 
 ## 服务器配置示例
 
-**注意**：以下示例假定你正在从根目录提供服务。如果你部署到子目录，你应该使用[Vue CLI 的 `publicPath` 配置](https://cli.vuejs.org/config/#publicpath)和相关的[路由器的 `base` 属性](../../api/#Functions-createWebHistory)。你还需要调整下面的例子，以使用子目录而不是根目录（例如，将`RewriteBase/` 替换为 `RewriteBase/name-of-your-subfolder/`）。
+**注意**：以下示例假定你正在从根目录提供服务。如果你部署到子目录，你应该使用 [Vue CLI 的 `publicPath` 配置](https://cli.vuejs.org/config/#publicpath)和相关的[路由器的 `base` 属性](../../api/#Functions-createWebHistory)。你还需要调整下面的例子，以使用子目录而不是根目录 (例如，将 `RewriteBase /` 替换为 `RewriteBase /name-of-your-subfolder/`)。
 
 ### Apache
 
@@ -78,7 +79,7 @@ const router = createRouter({
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
+  RewriteRule . index.html [L]
 </IfModule>
 ```
 
@@ -89,6 +90,20 @@ const router = createRouter({
 ```nginx
 location / {
   try_files $uri $uri/ /index.html;
+}
+```
+
+对于独立的服务器配置 (例如使用官方 `nginx` docker 镜像时)，将以下内容放到 `/etc/nginx/conf.d/default.conf` 中：
+
+```nginx
+server {
+  listen 80;
+  server_name localhost;
+  root /usr/share/nginx/html;
+  index index.html;
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
 }
 ```
 
@@ -190,11 +205,11 @@ rewrite {
 
 在 vue-cli、nuxt 和 vite 项目中，这个文件通常放在名为 `static` 或 `public` 的目录下。
 
-你可以在 [Netlify 文档](https://docs.netlify.com/routing/redirects/rewrites-proxies/#history-pushstate-and-single-page-apps)中找到更多关于语法的信息。你也可以[创建一个 `netlify.toml`](https://docs.netlify.com/configure-builds/file-based-configuration/) 来结合其他 Netlify 功能的重定向。
+你可以在 [Netlify 文档](https://docs.netlify.com/routing/redirects/rewrites-proxies/#history-pushstate-and-single-page-apps)中找到更多关于语法的信息。你也可以[创建一个 `netlify.toml`](https://docs.netlify.com/configure-builds/file-based-configuration/) 来将重定向与其他 Netlify 功能结合使用。
 
 ### Vercel
 
-在项目根目录创建一个`vercel.json`文件，内容如下：
+在项目根目录创建一个 `vercel.json` 文件，内容如下：
 
 ```json [vercel.json ~vscode-icons:file-type-json~]
 {
@@ -202,11 +217,24 @@ rewrite {
 }
 ```
 
+### Azure Static Web Apps
+
+在 public 目录下创建一个 `staticwebapp.config.json` 文件，包含以下配置。如果请求的路由不存在，Azure 会将除资源和 favicon 之外的所有请求重写到 `index.html`。
+
+```json [staticwebapp.config.json ~vscode-icons:file-type-light-azure~]
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/favicons/*"]
+  }
+}
+```
+
 <RuleKitLink />
 
-## 附加说明
+## 注意事项
 
-这有一个注意事项。你的服务器将不再报告 404 错误，因为现在所有未找到的路径都会显示你的 `index.html` 文件。为了解决这个问题，你应该在你的 Vue 应用程序中实现一个万能的路由来显示 404 页面。
+这里有一个注意事项：你的服务器将不再报告 404 错误，因为现在所有未找到的路径都会返回你的 `index.html` 文件。为了解决这个问题，你应该在你的 Vue 应用中实现一个能捕获所有请求的路由来显示 404 页面。
 
 ```js
 const router = createRouter({

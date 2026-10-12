@@ -95,12 +95,12 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/zh/guide/essentials/route-matching-syntax.html',
             },
             {
-              text: '嵌套路由',
-              link: '/zh/guide/essentials/nested-routes.html',
-            },
-            {
               text: '命名路由',
               link: '/zh/guide/essentials/named-routes.html',
+            },
+            {
+              text: '嵌套路由',
+              link: '/zh/guide/essentials/nested-routes.html',
             },
             {
               text: '编程式导航',
@@ -209,12 +209,83 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               text: 'ESLint',
               link: '/zh/file-based-routing/eslint.html',
             },
+            {
+              text: '路由解析器（实验性）',
+              link: '/experimental/router-resolver',
+            },
+            {
+              text: '参数解析器（实验性）',
+              link: '/experimental/param-parsers',
+            },
           ],
         },
         {
+          text: '数据加载器',
+          collapsed: false,
           items: [
             {
-              text: '从 Vue2 迁移',
+              text: '介绍',
+              link: '/data-loaders/',
+            },
+            {
+              text: '定义数据加载器',
+              link: '/data-loaders/defining-loaders',
+            },
+            {
+              text: '重新加载数据',
+              link: '/data-loaders/reloading-data',
+            },
+            {
+              text: '导航感知',
+              link: '/data-loaders/navigation-aware',
+            },
+            {
+              text: '错误处理',
+              link: '/data-loaders/error-handling',
+            },
+            {
+              text: '组织加载器',
+              link: '/data-loaders/organization',
+            },
+            {
+              text: '嵌套加载器',
+              link: '/data-loaders/nested-loaders',
+            },
+            {
+              text: '取消加载',
+              link: '/data-loaders/load-cancellation',
+            },
+            {
+              text: 'Nuxt',
+              link: '/data-loaders/nuxt',
+            },
+            {
+              text: 'SSR',
+              link: '/data-loaders/ssr',
+            },
+            {
+              text: '基础加载器',
+              link: '/data-loaders/basic/',
+            },
+            {
+              text: 'Colada 加载器',
+              link: '/data-loaders/colada/',
+            },
+            {
+              text: 'RFC',
+              link: '/data-loaders/rfc',
+            },
+          ],
+        },
+        {
+          text: '迁移',
+          items: [
+            {
+              text: '迁移到 v5',
+              link: '/guide/migration/v4-to-v5.html',
+            },
+            {
+              text: '从 Vue 2 迁移',
               link: '/zh/guide/migration/index.html',
             },
             {

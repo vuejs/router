@@ -5,7 +5,7 @@
   title="Learn how to pass props to route components"
 />
 
-在你的组件中使用 `$route` 或 `useRoute()` 会与路由紧密耦合，这限制了组件的灵活性，因为它只能用于特定的 URL。虽然这不一定是件坏事，但我们可以通过 `props` 配置来解除这种行为：
+在你的组件中使用 `$route` 或 `useRoute()` 会与路由紧密耦合，这限制了组件的灵活性，因为它只能用于特定的 URL。虽然这不一定是件坏事，但我们可以通过 `props` 配置来解耦这种行为：
 
 回到我们之前的示例：
 
@@ -15,7 +15,7 @@
 </template>
 ```
 
-和：
+以及：
 
 ```js
 import User from './User.vue'
@@ -24,7 +24,7 @@ import User from './User.vue'
 const routes = [{ path: '/users/:id', component: User }]
 ```
 
-我们可以通过声明 prop 来在 `User.vue` 中删除对 `$route` 的直接依赖：
+我们可以通过声明 prop 来在 `User.vue` 中移除对 `$route` 的直接依赖：
 
 ::: code-group
 
@@ -114,11 +114,11 @@ const routes = [
 
 URL `/search?q=vue` 将传递 `{query: 'vue'}` 作为 props 传给 `SearchUser` 组件。
 
-请尽可能保持 `props` 函数为无状态的，因为它只会在路由发生变化时起作用。如果你需要状态来定义 props，请使用包装组件，这样 vue 才可以对状态变化做出反应。
+请尽可能让 `props` 函数保持无状态，因为它只会在路由发生变化时被求值。如果你需要使用状态来定义 props，请使用包装组件，这样 Vue 才能对状态变化做出反应。
 
 ## 通过 RouterView
 
-你还可以通过 [`<RouterView>` 插槽](../advanced/router-view-slot) 传递任意参数：
+你还可以通过 [`<RouterView>` 插槽](../advanced/router-view-slot)传递任意 **props**：
 
 ```vue-html
 <RouterView v-slot="{ Component }">
@@ -130,7 +130,7 @@ URL `/search?q=vue` 将传递 `{query: 'vue'}` 作为 props 传给 `SearchUser` 
 ```
 
 ::: warning
-在这种情况下，**所有视图组件**都会接收到 `view-prop`。通常这并不是一个好主意，因为这意味着所有的视图组件都声明了一个 `view-prop` prop，但这未必需要。所以请尽可能使用上述的其他选项。
+在这种情况下，**所有视图组件**都会接收到 `view-prop`。通常这并不是一个好主意，因为这意味着所有的视图组件都声明了一个 `view-prop` prop，但这并不一定是事实。所以请尽可能使用上述的其他选项。
 :::
 
 <RuleKitLink />
