@@ -155,7 +155,8 @@ export function definePageTransform({
     if (isInvalid) {
       diagnostics.VUE_ROUTER_B0002({
         filename: id,
-        message: 'Invalid scope reference in definePage',
+        message:
+          '`definePage()` in <script setup> cannot reference locally declared variables',
       })
       return 'export default {}'
     }
