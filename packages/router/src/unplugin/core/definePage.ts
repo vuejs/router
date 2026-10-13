@@ -1,12 +1,5 @@
-import {
-  generateTransform,
-  isCallOf,
-  parseSFC,
-  MagicString,
-  checkInvalidScopeReference,
-  babelParse,
-  getLang,
-} from '@vue-macros/common'
+import { isCallOf, babelParse, getLang } from 'ast-kit'
+import { generateTransform, MagicString } from 'magic-string-ast'
 import type { Thenable, TransformResult } from 'unplugin'
 import type {
   CallExpression,
@@ -26,6 +19,7 @@ import type {
   CustomRouteBlockPathParamOptions,
   CustomRouteBlockQueryParamOptions,
 } from './customBlock'
+import { walkIdentifiers, parse } from '@vue/compiler-sfc'
 
 const MACRO_DEFINE_PAGE = 'definePage'
 export const MACRO_DEFINE_PAGE_QUERY = /[?&]definePage\b/
@@ -38,13 +32,15 @@ function getCodeAst(code: string, id: string) {
   let ast: Program | undefined
   const lang = getLang(id.split(MACRO_DEFINE_PAGE_QUERY)[0]!)
   if (lang === 'vue') {
-    const sfc = parseSFC(code, id)
-    if (sfc.scriptSetup) {
-      ast = sfc.getSetupAst()
-      offset = sfc.scriptSetup.loc.start.offset
-    } else if (sfc.script) {
-      ast = sfc.getScriptAst()
-      offset = sfc.script.loc.start.offset
+    const { descriptor } = parse(code, { filename: id })
+    for (const block of [descriptor.scriptSetup, descriptor.script]) {
+      if (block) {
+        ast = babelParse(block.content, block.lang, {
+          cache: true,
+        })
+        offset = block.loc.start.offset
+        break
+      }
     }
   } else if (/[jt]sx?$/.test(lang)) {
     ast = babelParse(code, lang)
@@ -149,16 +145,17 @@ export function definePageTransform({
 
     // TODO: remove information that was extracted already like name, path, params
 
-    // this will throw if a property from the script setup is used in definePage
-    try {
-      checkInvalidScopeReference(routeRecord, MACRO_DEFINE_PAGE, scriptBindings)
-    } catch (error) {
+    // check if a property from the script setup is used in definePage
+    let isInvalid = false
+    walkIdentifiers(routeRecord, id => {
+      if (scriptBindings.includes(id.name)) {
+        isInvalid = true
+      }
+    })
+    if (isInvalid) {
       diagnostics.VUE_ROUTER_B0002({
         filename: id,
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Invalid scope reference in definePage',
+        message: 'Invalid scope reference in definePage',
       })
       return 'export default {}'
     }

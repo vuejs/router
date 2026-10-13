@@ -1,4 +1,4 @@
-import { getLang } from '@vue-macros/common'
+import { getLang } from 'ast-kit'
 import type { UnpluginContextMeta } from 'unplugin'
 
 // vue-router/auto/routes was more natural but didn't work well with TS
