@@ -36,6 +36,8 @@ function getCodeAst(code: string, id: string) {
     for (const block of [descriptor.scriptSetup, descriptor.script]) {
       if (block) {
         ast = babelParse(block.content, block.lang, {
+          // @ts-expect-error `importAttributes` has been dropped in Babel 8
+          plugins: [['importAttributes', { deprecatedAssertSyntax: true }]],
           cache: true,
         })
         offset = block.loc.start.offset
