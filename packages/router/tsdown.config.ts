@@ -85,6 +85,11 @@ const esmBrowser = {
     __DEV__: 'true',
     __FEATURE_PROD_DEVTOOLS__: 'true',
   },
+  deps: {
+    // the import map in the installation docs only maps these two
+    alwaysBundle: ['nostics'],
+    neverBundle: ['vue', '@vue/devtools-api'],
+  },
 } satisfies InlineConfig
 
 const esmBrowserProd = {
