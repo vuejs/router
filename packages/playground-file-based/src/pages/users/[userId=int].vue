@@ -3,11 +3,18 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-route.params.userId
-route.params.anyParam
-route.params.page
+const props = defineProps<{
+  userId: number
+  anyParam: string
+  page: number
+}>()
+
+// route.params.userId
+// route.params.anyParam
+// route.params.page
 
 definePage({
+  props: true,
   // path: '/users/:userId(\\d+)',
   // this doesn't work in custom param version and should warn
   // path: '/users/:userId',

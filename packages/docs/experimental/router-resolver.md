@@ -168,17 +168,6 @@ definePage({
 
 With the `sfc-typed-router` Volar plugin, TypeScript checks `props` against the params of the route and against the props of the page component. In the example above, `props: true` gives an error if the component declares a required prop that the params do not supply, or if the types do not match (e.g. `userId: string` with the `int` parser).
 
-Without file-based routing, set `props` on the record, with one entry for each view in `components`. `normalizeRouteRecord()` checks each entry against its component:
-
-```ts
-normalizeRouteRecord({
-  name: 'user',
-  path: userPath,
-  components: { default: UserPage, aside: UserAside },
-  props: { default: true, aside: { compact: true } },
-})
-```
-
 ## With Data Loaders
 
 If you use [Data Loaders](../data-loaders/), install the plugin **before** the router:
