@@ -294,7 +294,7 @@ describe('useScrollRestoration', () => {
     })
   })
 
-  it('restores every active call with the same key', async () => {
+  it('lets a nested manual call own the key of a parent call', async () => {
     const Parent = defineComponent({
       components: { RouterView },
       setup() {
@@ -308,7 +308,7 @@ describe('useScrollRestoration', () => {
       },
       template: '<section>Child</section>',
     })
-    const { navigate, setScroll } = await mountRouter([
+    const { navigate, setScroll, wrapper } = await mountRouter([
       {
         path: '/parent',
         component: Parent,
@@ -325,20 +325,26 @@ describe('useScrollRestoration', () => {
     setScroll(0, 0)
     await navigate('/parent/b')
 
-    // a nested manual call doesn't prevent the parent from restoring
+    expect({ left: window.scrollX, top: window.scrollY }).toEqual({
+      left: 0,
+      top: 0,
+    })
+
+    wrapper.findComponent(Child).vm.scroll()
     expect({ left: window.scrollX, top: window.scrollY }).toEqual({
       left: 30,
       top: 90,
     })
   })
 
-  it('warns when active calls share a key with different capture or restore', async () => {
+  it('lets a nested call override the capture and restore of a parent call', async () => {
     const Parent = defineComponent({
       components: { RouterView },
       setup() {
         useScrollRestoration({
           key: 'same-key',
           capture: () => ({ default: { left: 0, top: 10 } }),
+          restore: () => window.scrollTo({ left: 0, top: 500 }),
         })
       },
       template: '<main>Parent<RouterView /></main>',
@@ -365,12 +371,89 @@ describe('useScrollRestoration', () => {
 
     await navigate('/same-key/a')
     await navigate('/neutral')
+    setScroll(0, 0)
+    await navigate('/same-key/b')
+
+    expect(window.scrollY).toBe(90)
+    expect('VUE_ROUTER_R0043').not.toHaveBeenWarned()
+  })
+
+  it('warns when sibling calls share a key with different capture or restore', async () => {
+    const First = defineComponent({
+      setup() {
+        useScrollRestoration({
+          key: 'same-key',
+          capture: () => ({ default: { left: 0, top: 10 } }),
+        })
+      },
+      template: '<section>First</section>',
+    })
+    const Second = defineComponent({
+      setup() {
+        useScrollRestoration({
+          key: 'same-key',
+          capture: () => ({ default: { left: 0, top: 90 } }),
+        })
+      },
+      template: '<section>Second</section>',
+    })
+    const Page = defineComponent({
+      components: { First, Second },
+      template: '<main><First /><Second /></main>',
+    })
+    const { navigate, setScroll } = await mountRouter([
+      { path: '/same-key/:id', component: Page },
+    ])
+
+    await navigate('/same-key/a')
+    await navigate('/neutral')
     expect('VUE_ROUTER_R0043').toHaveBeenWarned()
 
     setScroll(0, 0)
     await navigate('/same-key/b')
     // the last capture wins
     expect(window.scrollY).toBe(90)
+  })
+
+  it('restores a parent call when a nested call resolves a different key', async () => {
+    const Parent = defineComponent({
+      components: { RouterView },
+      setup() {
+        useScrollRestoration({ key: 'parent-only' })
+      },
+      template: '<main>Parent<RouterView /></main>',
+    })
+    const Child = defineComponent({
+      setup() {
+        const scroller = useTemplateRef<HTMLElement>('scroller')
+        useScrollRestoration({
+          key: to => `child:${to.path}`,
+          capture: () => ({ default: { top: scroller.value!.scrollTop } }),
+          restore: entry => {
+            scroller.value!.scrollTop = entry?.default?.top ?? 0
+          },
+        })
+      },
+      template: '<div ref="scroller" />',
+    })
+    const { navigate, setScroll } = await mountRouter([
+      {
+        path: '/parent-only',
+        component: Parent,
+        children: [
+          { path: 'a', component: Child },
+          { path: 'b', component: Child },
+        ],
+      },
+    ])
+
+    await navigate('/parent-only/a')
+    setScroll(0, 70)
+    await navigate('/neutral')
+    setScroll(0, 0)
+    await navigate('/parent-only/b')
+
+    expect(window.scrollY).toBe(70)
   })
 
   it('shares a parent position with a nested call using the same key', async () => {

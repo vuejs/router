@@ -72,7 +72,7 @@ Installing the plugin sets `history.scrollRestoration` to `manual`. Setting it t
 
 Do not call it in your root `App.vue` or in other components outside of a `<RouterView>`. There, `onRouteRendered()` runs in `router.afterEach()`, before the new route renders, so the restore runs on the old page.
 
-A layout component lets you call it once for all of its child pages. Call it in specific pages when they need different options, for example `manual: true` to wait for an animation.
+A layout component lets you call it once for all of its child pages. A page can call it again to use different options, for example `manual: true` to wait for an animation. When a page call and a layout call use the same key, the page call replaces the layout call: only the page captures and restores the position.
 
 ## Migrating from `scrollBehavior` {#migrating-from-scrollbehavior}
 
@@ -199,7 +199,7 @@ useScrollRestoration({
 })
 ```
 
-Components that are active at the same time must use different keys, one for each scroll container. With the same key, they all capture and restore, and the last capture replaces the others.
+A nested call with the same key replaces the calls of its parent components, see [`useScrollRestoration()`](#useScrollRestoration). Other components that are active at the same time, like two sibling components, must use different keys, one for each scroll container. With the same key, they all capture and restore, and the last capture replaces the others.
 
 ## Manual restore
 
