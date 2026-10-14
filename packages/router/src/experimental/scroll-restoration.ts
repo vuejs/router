@@ -1,5 +1,12 @@
-import type { App, FunctionPlugin, InjectionKey, MaybeRefOrGetter } from 'vue'
+import type {
+  App,
+  ComponentInternalInstance,
+  FunctionPlugin,
+  InjectionKey,
+  MaybeRefOrGetter,
+} from 'vue'
 import {
+  getCurrentInstance,
   inject,
   onActivated,
   onBeforeMount,
@@ -109,9 +116,11 @@ export interface UseScrollRestorationOptions<
    * By default, the key is the route's path + hash, meaning going from
    * `/search?q=shoes` to `/search?q=shirts` will reuse the scroll position,
    * but going from `/search?q=shoes` to `/search?q=shoes#anchor` will not.
-   * All calls with the same key share one saved entry. Calls active at the
-   * same time should use different keys, one per scroll container: with the
-   * same key, each one captures and restores, and the last capture wins.
+   * All calls with the same key share one saved entry. When a call and a
+   * nested call (e.g. a layout and its page) resolve to the same key, only
+   * the nested call captures and restores. Other calls active at the same time
+   * should use different keys, one per scroll container: with the same key,
+   * each one captures and restores, and the last capture wins.
    */
   key?: string | ((to: RouteLocationNormalized<Name>) => string)
 
@@ -240,13 +249,25 @@ export function SCROLL_RESTORATION_RESTORE_DEFAULT(
   window.scrollTo(options)
 }
 
+/**
+ * @internal
+ */
+type ScrollRestorationRegistration = Required<UseScrollRestorationOptions>
+
 const SCROLL_RESTORATION_REGISTRATIONS: InjectionKey<
   [
-    registrations: Set<Required<UseScrollRestorationOptions>>,
+    registrations: Map<
+      ScrollRestorationRegistration,
+      ComponentInternalInstance
+    >,
     restore: (
-      options: Required<UseScrollRestorationOptions>,
+      registration: ScrollRestorationRegistration,
       to?: RouteLocationNormalized
     ) => void,
+    isOverridden: (
+      registration: ScrollRestorationRegistration,
+      to: RouteLocationNormalized
+    ) => boolean,
   ]
 > = Symbol()
 
@@ -293,7 +314,7 @@ export const ScrollRestoration: FunctionPlugin<
 
 // dev only map to warn on wrong usage
 let devTrackedCapturedOptions:
-  | Map<string, Required<UseScrollRestorationOptions>>
+  | Map<string, ScrollRestorationRegistration>
   | undefined
 
 function ScrollRestorationClient(
@@ -307,11 +328,30 @@ function ScrollRestorationClient(
   const { storageKeyPrefix, router } = optionsWithDefaults
 
   app.provide(SCROLL_RESTORATION_OPTIONS_KEY, optionsWithDefaults)
-  const registrations = new Set<Required<UseScrollRestorationOptions>>()
+  const registrations = new Map<
+    ScrollRestorationRegistration,
+    ComponentInternalInstance
+  >()
   history.scrollRestoration = 'manual'
 
+  // a nested call with the same key owns it, e.g. a page inside its layout
+  function isOverridden(
+    registration: ScrollRestorationRegistration,
+    route: RouteLocationNormalized
+  ): boolean {
+    const instance = registrations.get(registration)
+    const key = toValueWithArgs(registration.key, route)
+    // calls of the same component never match: the walk starts at the parent
+    for (let [other, parent] of registrations) {
+      if (toValueWithArgs(other.key, route) === key) {
+        while ((parent = parent.parent!)) if (parent === instance) return true
+      }
+    }
+    return false
+  }
+
   function restoreScroll(
-    { restore, key }: Required<UseScrollRestorationOptions>,
+    { restore, key }: ScrollRestorationRegistration,
     to: RouteLocationNormalized = router.currentRoute.value
   ) {
     let entry: ScrollRestorationSessionEntry | null | undefined
@@ -325,14 +365,19 @@ function ScrollRestorationClient(
     restore(entry, to)
   }
 
-  app.provide(SCROLL_RESTORATION_REGISTRATIONS, [registrations, restoreScroll])
+  app.provide(SCROLL_RESTORATION_REGISTRATIONS, [
+    registrations,
+    restoreScroll,
+    isOverridden,
+  ])
 
   function capture(route: RouteLocationNormalized) {
     // track for dev warnings
     if (__DEV__) {
       devTrackedCapturedOptions = new Map()
     }
-    for (const registration of registrations) {
+    for (const registration of registrations.keys()) {
+      if (isOverridden(registration, route)) continue
       const key = storageKeyPrefix + toValueWithArgs(registration.key, route)
       if (__DEV__) {
         const other = devTrackedCapturedOptions!.get(key)
@@ -420,11 +465,14 @@ function useScrollRestorationClient<
   if (__DEV__ && !inject(SCROLL_RESTORATION_REGISTRATIONS, null)) {
     throw diagnostics.VUE_ROUTER_R0044()
   }
-  const [registrations, restore] = inject(SCROLL_RESTORATION_REGISTRATIONS)!
+  const [registrations, restore, isOverridden] = inject(
+    SCROLL_RESTORATION_REGISTRATIONS
+  )!
   const globalOptions = inject(SCROLL_RESTORATION_OPTIONS_KEY)!
   const optionsWithDefaults = { ...globalOptions, ...options }
+  const instance = getCurrentInstance()!
 
-  const add = () => registrations.add(optionsWithDefaults)
+  const add = () => registrations.set(optionsWithDefaults, instance)
   const remove = () => registrations.delete(optionsWithDefaults)
 
   // not in setup() so a component that never mounts can't capture
@@ -435,10 +483,12 @@ function useScrollRestorationClient<
   onUnmounted(remove)
 
   onRouteRendered(to => {
-    if (!toValue(optionsWithDefaults.manual)) {
-      if (registrations.has(optionsWithDefaults)) {
-        restore(optionsWithDefaults, to)
-      }
+    if (
+      !toValue(optionsWithDefaults.manual) &&
+      registrations.has(optionsWithDefaults) &&
+      !isOverridden(optionsWithDefaults, to)
+    ) {
+      restore(optionsWithDefaults, to)
     }
   })
 
