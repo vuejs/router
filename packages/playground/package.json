@@ -7,7 +7,6 @@
     "play": "vite",
     "build": "vite build",
     "types": "vue-tsc --noEmit",
-    "types:perf": "node ../playground-file-based/typecheck-perf.mjs . '{\"app\":\"tsconfig.json\",\"app-dist\":\"tsconfig.perf-package.json\",\"node\":\"tsconfig.config.json\"}'",
     "preview": "vite preview --port 4173"
   },
   "dependencies": {

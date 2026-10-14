@@ -7,7 +7,6 @@
     "dev": "vite",
     "build": "vite build",
     "types": "vue-tsc --noEmit",
-    "types:perf": "node typecheck-perf.mjs",
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
