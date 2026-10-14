@@ -86,9 +86,15 @@ function getNodeSource(
 export function definePageTransform({
   code,
   id,
+  getRoutePropNames,
 }: {
   code: string
   id: string
+  /**
+   * Returns the names of the params passed as props to the page file
+   * `filePath` by `definePage({ props: true })`.
+   */
+  getRoutePropNames?: (filePath: string) => string[]
 }): Thenable<TransformResult> {
   // are we extracting only the definePage object
   const isExtractingDefinePage = MACRO_DEFINE_PAGE_QUERY.test(id)
@@ -237,8 +243,77 @@ export function definePageTransform({
       s.remove(offset + node.start!, offset + node.end!)
     }
 
+    if (getRoutePropNames && hasPropsTrue(definePageNode)) {
+      const propNames = getRoutePropNames(id)
+      if (propNames.length) {
+        declareRouteProps(s, ast, offset, propNames)
+      }
+    }
+
     return generateTransform(s, id)
   }
+}
+
+/**
+ * Checks if a `definePage()` call has `props: true`.
+ */
+function hasPropsTrue(definePageNode: CallExpression): boolean {
+  const routeRecord = definePageNode.arguments[0]
+  return (
+    routeRecord?.type === 'ObjectExpression' &&
+    routeRecord.properties.some(
+      prop =>
+        prop.type === 'ObjectProperty' &&
+        !prop.computed &&
+        prop.key.type === 'Identifier' &&
+        prop.key.name === 'props' &&
+        prop.value.type === 'BooleanLiteral' &&
+        prop.value.value
+    )
+  )
+}
+
+/**
+ * Declares the route params passed by `definePage({ props: true })` in
+ * `defineProps()` before Vue compiles the SFC. Without this, Vue would pass
+ * the params as attrs because the injected types only exist for TypeScript.
+ * Runtime declarations like `defineProps(['a'])` are left untouched.
+ *
+ * @param s - MagicString of the SFC
+ * @param ast - ast of the script setup
+ * @param offset - offset of the script setup in the SFC
+ * @param propNames - names of the params passed as props
+ */
+function declareRouteProps(
+  s: MagicString,
+  ast: Program,
+  offset: number,
+  propNames: string[]
+) {
+  walkAST(ast, {
+    enter(node) {
+      if (!isCallOf(node, 'defineProps') || node.arguments.length) return
+      this.skip()
+
+      // babel 7 uses `typeParameters`
+      const typeArg = (
+        node.typeArguments ??
+        (node as { typeParameters?: typeof node.typeArguments }).typeParameters
+      )?.params[0]
+      if (typeArg) {
+        // `?:` keeps the optionality and runtime types of the props declared
+        // by the user. Vue ignores `any` in intersections
+        s.prependLeft(
+          offset + typeArg.start!,
+          `{ ${propNames.map(name => `${JSON.stringify(name)}?: any`).join('; ')} } & (`
+        )
+        s.appendRight(offset + typeArg.end!, `)`)
+      } else {
+        // right before the closing parenthesis
+        s.appendLeft(offset + node.end! - 1, JSON.stringify(propNames))
+      }
+    },
+  })
 }
 
 type DefinePageParamsInfo = NonNullable<CustomRouteBlock['params']>

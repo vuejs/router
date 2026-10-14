@@ -4,6 +4,7 @@ import { definePageTransform, extractDefinePageInfo } from './definePage'
 import { ts } from '../utils'
 import { TreeNodeValueStatic, isTreeParamOptional } from './treeNodeValue'
 import { mockWarn } from '../../tests/vitest-mock-warn'
+import { compileScript, parse } from '@vue/compiler-sfc'
 
 const vue = String.raw
 
@@ -204,6 +205,87 @@ definePage({
     expect(
       '`definePage()` in <script setup> cannot reference locally declared variables'
     ).toHaveBeenWarned()
+  })
+
+  describe('route props with `props: true`', () => {
+    const getRoutePropNames = () => ['userId', 'page']
+
+    async function transformScript(script: string, lang = 'ts') {
+      const result = (await definePageTransform({
+        code: `<script setup lang="${lang}">\n${script}\n</script>\n`,
+        id: 'src/pages/users/[userId].vue',
+        getRoutePropNames,
+      })) as Exclude<TransformResult, string> | undefined
+      return result?.code
+    }
+
+    /** Runtime props declared by Vue for the transformed SFC */
+    async function compileProps(script: string, lang = 'ts') {
+      const code = await transformScript(script, lang)
+      const { descriptor } = parse(code!, { filename: 'page.vue' })
+      const { content } = compileScript(descriptor, { id: 'page' })
+      return content.slice(
+        content.indexOf('props: '),
+        content.indexOf('setup(')
+      )
+    }
+
+    it('declares the params in `defineProps()`', async () => {
+      expect(
+        await transformScript(`const props = defineProps()
+definePage({ props: true })`)
+      ).toContain(`const props = defineProps(["userId","page"])`)
+    })
+
+    it('adds the params to the type argument of `defineProps()`', async () => {
+      expect(
+        await transformScript(`const props = withDefaults(defineProps<Props & { extra?: string }>(), {})
+definePage({ props: true })`)
+      ).toContain(
+        `const props = withDefaults(defineProps<{ "userId"?: any; "page"?: any } & (Props & { extra?: string })>(), {})`
+      )
+    })
+
+    it('makes Vue declare the params at runtime', async () => {
+      const props = await compileProps(`defineProps()
+definePage({ props: true })`)
+      expect(props).toContain('"userId"')
+      expect(props).toContain('"page"')
+    })
+
+    it('keeps the runtime types of props declared by the user', async () => {
+      const props =
+        await compileProps(`defineProps<{ page: number; extra: boolean }>()
+definePage({ props: true })`)
+      expect(props).toMatch(/"?userId"?: \{ type: null/)
+      expect(props).toMatch(/"?page"?: \{ type: Number/)
+      expect(props).toMatch(/"?extra"?: \{ type: Boolean, required: true/)
+    })
+
+    it('works in a js script', async () => {
+      const props = await compileProps(
+        `defineProps()
+definePage({ props: true })`,
+        'js'
+      )
+      expect(props).toContain('"userId"')
+    })
+
+    it('does nothing without `props: true`', async () => {
+      for (const props of ['false', 'to => to.params', '{}']) {
+        expect(
+          await transformScript(`defineProps()
+definePage({ props: ${props} })`)
+        ).toContain(`defineProps()`)
+      }
+    })
+
+    it('leaves runtime props declarations untouched', async () => {
+      expect(
+        await transformScript(`defineProps(['other'])
+definePage({ props: true })`)
+      ).toContain(`defineProps(['other'])`)
+    })
   })
 
   describe('duplicate definePage()', () => {

@@ -170,6 +170,25 @@ export function createRoutesContext(options: ResolvedOptions) {
     await _writeConfigFiles()
   }
 
+  /**
+   * Names of the params of the routes that render `filePath`: its routes and
+   * their children.
+   */
+  function getRoutePropNames(filePath: string): string[] {
+    const names = new Set<string>()
+    for (const node of routeTree.getChildrenDeep()) {
+      if (!Array.from(node.value.components.values()).includes(filePath)) {
+        continue
+      }
+      for (const route of [node, ...node.getChildrenDeep()]) {
+        for (const param of route.params) {
+          names.add(param.paramName)
+        }
+      }
+    }
+    return Array.from(names)
+  }
+
   async function writeRouteInfoToNode(node: TreeNode, filePath: string) {
     const content = await fs.readFile(filePath, 'utf8')
     // TODO: track if it changed and to not always trigger HMR
@@ -475,6 +494,7 @@ if (import.meta.hot) {
       return definePageTransform({
         code,
         id,
+        getRoutePropNames,
       })
     },
   }
