@@ -739,6 +739,21 @@ describe('Router', () => {
       expect(router.currentRoute.value.fullPath).toBe('/foo')
       expect(history.location).toBe('/foo')
     })
+
+    it('restores the history entry when aborting a go() beyond the first entry', async () => {
+      const { history, router } = await newRouter()
+      await router.push('/foo')
+      await router.push('/p/a')
+      router.back()
+      await nextNavigation(router)
+      router.beforeEach(() => false)
+      router.go(-5)
+      await expect(nextNavigation(router)).resolves.toMatchObject({
+        type: NavigationFailureType.aborted,
+      })
+      expect(router.currentRoute.value.fullPath).toBe('/foo')
+      expect(history.location).toBe('/foo')
+    })
   })
 
   describe('scrollBehavior', () => {

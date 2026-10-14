@@ -84,9 +84,8 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
     go(delta, shouldTrigger = true) {
       const from = this.location
       const direction: NavigationDirection =
-        // we are considering delta === 0 going forward, but in abstract mode
-        // using 0 for the delta doesn't make sense like it does in html5 where
-        // it reloads the page
+        // the clamped delta below keeps this sign, and when it ends up 0
+        // nothing is reported, so the requested delta is enough here
         delta < 0 ? NavigationDirection.back : NavigationDirection.forward
       const previousPosition = position
       position = Math.max(0, Math.min(position + delta, queue.length - 1))
