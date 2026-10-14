@@ -89,4 +89,75 @@ describe('sfc-typed-router volar plugin', () => {
     const code = `definePage<'a.vue'>({})`
     expect(transform(code)).toBe(code)
   })
+
+  describe('defineProps() with `props: true`', () => {
+    const ROUTE_PROPS = `import('vue-router/experimental')._RoutePropsForFilePath<'src/pages/users/sub-[first]-[second].vue'>`
+
+    /** Gets the `defineProps()` statement out of the transformed code. */
+    function transformProps(code: string, opts?: { lang?: string }) {
+      return transform(code, opts).split('\n')[0]
+    }
+
+    it('adds the route props as the type argument', () => {
+      expect(
+        transformProps(
+          `const props = defineProps()\ndefinePage({ props: true })`
+        )
+      ).toBe(`const props = defineProps<${ROUTE_PROPS}>()`)
+    })
+
+    it('intersects the route props with an inline type argument', () => {
+      expect(
+        transformProps(
+          `const props = defineProps<{ myProp: string; other: number }>()\ndefinePage({ props: true })`
+        )
+      ).toBe(
+        `const props = defineProps<${ROUTE_PROPS} & ({ myProp: string; other: number })>()`
+      )
+    })
+
+    it('intersects the route props with combined type references', () => {
+      expect(
+        transformProps(
+          `const props = defineProps<A & Omit<B, 'c'> | C>()\ndefinePage({ props: true })`
+        )
+      ).toBe(
+        `const props = defineProps<${ROUTE_PROPS} & (A & Omit<B, 'c'> | C)>()`
+      )
+    })
+
+    it('works with withDefaults() and definePage() first', () => {
+      expect(
+        transform(
+          `definePage({ props: true })\nconst props = withDefaults(defineProps<Props>(), { a: 1 })`
+        ).split('\n')[1]
+      ).toBe(
+        `const props = withDefaults(defineProps<${ROUTE_PROPS} & (Props)>(), { a: 1 })`
+      )
+    })
+
+    it('does nothing without `props: true`', () => {
+      for (const code of [
+        `const props = defineProps()\ndefinePage({ props: false })`,
+        `const props = defineProps()\ndefinePage({ props: to => to.params })`,
+        `const props = defineProps()\ndefinePage({})`,
+        `const props = defineProps()`,
+      ]) {
+        expect(transformProps(code)).toBe(code.split('\n')[0])
+      }
+    })
+
+    it('leaves runtime props declarations untouched', () => {
+      expect(
+        transformProps(
+          `const props = defineProps(['a'])\ndefinePage({ props: true })`
+        )
+      ).toBe(`const props = defineProps(['a'])`)
+    })
+
+    it('does nothing in a js script', () => {
+      const code = `const props = defineProps()\ndefinePage({ props: true })`
+      expect(transform(code, { lang: 'js' })).toBe(code)
+    })
+  })
 })

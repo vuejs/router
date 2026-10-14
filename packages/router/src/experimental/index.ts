@@ -89,6 +89,7 @@ export {
   type DefinePageQueryParamOptions,
   type DefinePageQueryParamOptionsAny as _DefinePageQueryParamOptionsAny,
   type PathParamNamesForFilePath as _PathParamNamesForFilePath,
+  type RoutePropsForFilePath as _RoutePropsForFilePath,
 } from './runtime'
 
 // Data loaders exports
