@@ -13,7 +13,7 @@ const navigation = computed(() =>
 )
 onMounted(() => {
   if (route.path === '/')
-    void router.replace({
+    router.replace({
       name: '/workspaces/[workspaceId]/projects/[recordId]/overview',
       params: { workspaceId: workspace.value, recordId: '1' },
     })
