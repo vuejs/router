@@ -99,17 +99,21 @@ export interface ScrollRestorationPluginOptions extends UseScrollRestorationOpti
   storageKeyPrefix?: string
 
   /**
-   * Registers additional capture triggers when the plugin is installed.
-   * Replaces the default pagehide and hidden visibilitychange listeners.
-   * Capture after successful navigation is always enabled.
+   * Registers capture triggers when the plugin is installed.
+   * Replaces all default triggers, including capture after navigation.
    *
-   * `capture` saves all active registrations for the current route. Use `signal`
+   * `capture(route?)` saves all active registrations for the supplied route,
+   * which defaults to the current route. Use `signal`
    * to remove listeners or cancel pending work when the app is unmounted.
    * A function that registers no listeners allows manual capture.
    *
    * @defaultValue {@link SCROLL_RESTORATION_SETUP_LISTENERS_DEFAULT}
    */
-  setupListeners?: (capture: () => void, signal: AbortSignal) => void
+  setupListeners?: (
+    capture: (route?: RouteLocationNormalized) => void,
+    signal: AbortSignal,
+    router: EXPERIMENTAL_Router | Router
+  ) => void
 
   capture: NonNullable<UseScrollRestorationOptions['capture']>
   restore: NonNullable<UseScrollRestorationOptions['restore']>
@@ -262,16 +266,22 @@ export function SCROLL_RESTORATION_RESTORE_DEFAULT(
 }
 
 /**
- * Captures on pagehide and when the document becomes hidden.
- * The signal removes both listeners when the app is unmounted.
+ * Captures after successful navigation, on pagehide, and when the document becomes hidden.
+ * The signal removes all listeners when the app is unmounted.
  *
  * @see {@link ScrollRestorationPluginOptions.setupListeners}
  */
 export function SCROLL_RESTORATION_SETUP_LISTENERS_DEFAULT(
-  capture: () => void,
-  signal: AbortSignal
+  capture: (route?: RouteLocationNormalized) => void,
+  signal: AbortSignal,
+  router: EXPERIMENTAL_Router | Router
 ): void {
-  window.addEventListener('pagehide', capture, { signal })
+  // The DOM still shows `from` until the next render flush.
+  const removeAfterEach = router.afterEach((_to, from, failure) => {
+    if (!failure && from !== START_LOCATION_NORMALIZED) capture(from)
+  })
+  signal.addEventListener('abort', removeAfterEach, { once: true })
+  window.addEventListener('pagehide', () => capture(), { signal })
   document.addEventListener(
     'visibilitychange',
     () => {
@@ -410,7 +420,7 @@ function ScrollRestorationClient(
     isActive,
   ])
 
-  function capture(route: RouteLocationNormalized) {
+  function capture(route: RouteLocationNormalized = router.currentRoute.value) {
     // track for dev warnings
     if (__DEV__) {
       devTrackedCapturedOptions = new Map()
@@ -441,19 +451,14 @@ function ScrollRestorationClient(
     }
   }
 
-  // TODO: is this the right way? capturing on unmount within the composable seems safer
-  // the DOM still shows `from` until the next render flush
-  const removeAfterEach = router.afterEach((_to, from, failure) => {
-    if (!failure && from !== START_LOCATION_NORMALIZED) capture(from)
-  })
   const listenersController = new AbortController()
   optionsWithDefaults.setupListeners(
-    () => capture(router.currentRoute.value),
-    listenersController.signal
+    capture,
+    listenersController.signal,
+    router
   )
 
   app.onUnmount(() => {
-    removeAfterEach()
     listenersController.abort()
   })
 }
