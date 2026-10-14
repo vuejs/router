@@ -168,22 +168,7 @@ definePage({
 
 With the `sfc-typed-router` Volar plugin, TypeScript checks `props` against the params of the route and against the props of the page component. In the example above, `props: true` gives an error if the component declares a required prop that the params do not supply, or if the types do not match (e.g. `userId: string` with the `int` parser).
 
-With `props: true`, the plugin also adds the params of the route to the type of `defineProps()`, so `defineProps<{ extra?: string }>()` is typed as `defineProps<RouteParams & { extra?: string }>()`. This only changes the types.
-
-To turn this off, set `typedDefineProps` to `false` in the plugin options:
-
-```json
-{
-  "vueCompilerOptions": {
-    "plugins": [
-      {
-        "name": "vue-router/volar/sfc-typed-router",
-        "options": { "typedDefineProps": false }
-      }
-    ]
-  }
-}
-```
+With `props: true`, the plugin also adds the params of the route to the type of `defineProps()`, so `defineProps<{ extra?: string }>()` is typed as `defineProps<RouteParams & { extra?: string }>()`. At build time, the Vite plugin also declares the params in `defineProps()`, so Vue passes them as props instead of attrs. Runtime declarations like `defineProps(['extra'])` are left untouched: list the params there yourself.
 
 ## With Data Loaders
 
