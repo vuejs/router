@@ -1,6 +1,6 @@
 # RouterView slot
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 The RouterView component exposes a slot that can be used to render the route component:
 

@@ -111,4 +111,4 @@ Vue Router 同时支持 **_ES module_** 和 **_global_** 构建版本。我们�
 
 对应的 Vue Router 生产构建版本为 `vue-router.global.prod.js`。
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->

@@ -160,7 +160,7 @@ router.push({
 
 如果你正在使用[历史模式](./history-mode.md)，请务必按照说明正确配置你的服务器。
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ## 高级匹配模式
 

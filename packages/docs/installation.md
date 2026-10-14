@@ -115,4 +115,4 @@ Each build comes with a development and production version. The development vers
 
 The corresponding production build of Vue Router is called `vue-router.global.prod.js`.
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->

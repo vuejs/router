@@ -45,7 +45,7 @@ const routes = [
 </router-view>
 ```
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ## Route-Based Dynamic Transition
 

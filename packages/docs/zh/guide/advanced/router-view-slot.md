@@ -1,6 +1,6 @@
 # RouterView 插槽
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 RouterView 组件暴露了一个插槽，可以用来渲染路由组件：
 

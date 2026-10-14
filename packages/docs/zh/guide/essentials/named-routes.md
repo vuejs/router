@@ -37,7 +37,7 @@ const routes = [
 - 防止你在 URL 中出现打字错误。
 - 绕过路径排序，例如展示一个匹配相同路径但排序较低的路由。
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 所有路由的命名**都必须是唯一的**。如果为多条路由添加相同的命名，路由器只会保留最后那一条。你可以在[动态路由](../advanced/dynamic-routing.md#Removing-routes)章节了解更多。
 

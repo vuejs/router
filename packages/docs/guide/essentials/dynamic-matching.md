@@ -152,7 +152,7 @@ See more in the [repeated params](./route-matching-syntax.md#Repeatable-params) 
 
 If you are using [History mode](./history-mode.md), make sure to follow the instructions to correctly configure your server as well.
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ## Advanced Matching Patterns
 

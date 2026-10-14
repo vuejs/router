@@ -32,7 +32,7 @@ function pushWithQuery(query) {
 
 `route` 对象是一个响应式对象。在多数情况下，你应该**避免监听整个 `route`** 对象，同时直接监听你期望改变的参数。
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ```vue
 <script setup>

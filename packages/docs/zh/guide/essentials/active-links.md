@@ -53,7 +53,7 @@ const routes = [
 
 如果当前路径是 `/user/erina/role/admin`，那么这两个链接都会被认为是**匹配当前路由的**，因此 `router-link-active` 类会应用于这两个链接。但只有第二个链接会被认为是**精确的**，因此只有第二个链接会有 `router-link-exact-active` 类。
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ## 配置类名
 

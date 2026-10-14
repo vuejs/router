@@ -36,7 +36,7 @@ router.replace(router.currentRoute.value.fullPath)
 
 Remember you can `await router.replace()` if you need to wait for the new route to be displayed.
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ## Adding routes inside navigation guards
 

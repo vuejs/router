@@ -32,7 +32,7 @@ function pushWithQuery(query) {
 
 The `route` object is a reactive object. In most scenarios, you should **avoid watching the whole `route`** object. Instead, you can directly watch the properties you are expecting to change:
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ```vue
 <script setup>

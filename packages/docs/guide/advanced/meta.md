@@ -56,7 +56,7 @@ router.beforeEach((to, from) => {
 })
 ```
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ## TypeScript
 

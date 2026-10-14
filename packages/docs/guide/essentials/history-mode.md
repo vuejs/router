@@ -230,7 +230,7 @@ Create a `staticwebapp.config.json` file in the public folder with the following
 }
 ```
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ## Caveat
 

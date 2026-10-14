@@ -134,7 +134,7 @@ You can play around with the matching syntax [in the playground](https://paths.e
 
 If you need to dig how your routes are transformed into a regex to understand why a route isn't being matched or, to report a bug, you can use the [path ranker tool](https://paths.esm.dev/?p=AAMeJSyAwR4UbFDAFxAcAGAIJXMAAA..#). It supports sharing your routes through the URL.
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ## Avoiding slow regex
 

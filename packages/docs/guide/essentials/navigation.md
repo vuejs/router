@@ -123,4 +123,4 @@ Therefore, if you are already familiar with [Browser History APIs](https://devel
 
 It is worth mentioning that Vue Router navigation methods (`push`, `replace`, `go`) work consistently no matter the `history` option passed when creating the router instance.
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->

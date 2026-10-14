@@ -122,7 +122,7 @@ export default {
 }
 ```
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 In practice, you might want to use your `AppLink` component for different parts of your application. e.g. using [Tailwind CSS](https://tailwindcss.com), you could create a `NavLink.vue` component with all the classes:
 

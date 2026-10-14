@@ -123,4 +123,4 @@ router.go(100)
 
 值得一提的是，无论在创建路由器实例时传递什么 `history` 配置，Vue Router 的导航方法 (`push`、`replace`、`go`) 都能始终正常工作。
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->

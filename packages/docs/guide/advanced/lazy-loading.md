@@ -35,7 +35,7 @@ In general, it's a good idea **to always use dynamic imports** for all your rout
 
 When using a bundler like Vite or webpack, this will automatically benefit from [code splitting](https://webpack.js.org/guides/code-splitting/).
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ## Relationship to async components
 

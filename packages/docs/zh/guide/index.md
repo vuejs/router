@@ -14,7 +14,7 @@ Vue Router 基于 Vue 的组件系统构建，你可以通过配置**路由**来
 这份指南假设你已经对 Vue 有了一定的了解。你不必是 Vue 的专家，但你也许偶尔需要查看 [Vue 的文档](https://cn.vuejs.org/)来了解某些特性。
 :::
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ## 示例
 

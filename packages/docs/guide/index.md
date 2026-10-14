@@ -12,7 +12,7 @@ Vue Router is built on Vue's component system. You configure **routes** to tell 
 
 This guide will assume that you are already familiar with Vue itself. You don't need to be a Vue expert, but you may occasionally need to refer back to [the core Vue documentation](https://vuejs.org/) for more information about certain features.
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ## An example
 

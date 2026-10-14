@@ -45,7 +45,7 @@ const routes = [
 </router-view>
 ```
 
-<RuleKitLink />
+<!-- <RuleKitLink /> -->
 
 ## 基于路由的动态过渡
 
