@@ -404,9 +404,6 @@ importers:
       magic-string:
         specifier: ^1.4.3
         version: 1.4.3
-      magic-string-ast:
-        specifier: ^2.1.1
-        version: 2.1.1
       mlly:
         specifier: ^1.8.2
         version: 1.8.2
@@ -2864,10 +2861,6 @@ packages:
 
   lz-string-es@1.0.0:
     resolution: {integrity: sha512-2VpNj4+9zmknzR80HPgcXnuvnzNwxneAwH75KKGJLcJg5OAoZLscmEeqdAzU3d9J/CGLzSfA3K7p8DQco+K+zA==}
-
-  magic-string-ast@2.1.1:
-    resolution: {integrity: sha512-pO1I6nw3/xeGpFhYikPhTzG9s2lw7oAbNElLJ9dhHfXa8r5K3PzrRdoshw4gdADagOjGKO40ae+ZnXNuqQEN4w==}
-    engines: {node: ^22.18.0 || >=24.0.0}
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
@@ -6024,10 +6017,6 @@ snapshots:
   lunr@2.3.9: {}
 
   lz-string-es@1.0.0: {}
-
-  magic-string-ast@2.1.1:
-    dependencies:
-      magic-string: 1.4.3
 
   magic-string@0.30.21:
     dependencies:

@@ -1,5 +1,4 @@
 import { isCallOf, babelParse, getLang } from 'ast-kit'
-import { generateTransform, MagicString } from 'magic-string-ast'
 import type { Thenable, TransformResult } from 'unplugin'
 import type {
   CallExpression,
@@ -12,6 +11,7 @@ import type {
 } from '@babel/types'
 import { walkAST } from 'ast-walker-scope'
 import { diagnostics } from '../diagnostics'
+import { MagicString } from 'magic-string'
 import type { ParsedStaticImport } from 'mlly'
 import { findStaticImports, parseStaticImport } from 'mlly'
 import type {
@@ -226,7 +226,14 @@ export function definePageTransform({
       }
     }
 
-    return generateTransform(s, id)
+    return {
+      code: s.toString(),
+      map: s.generateMap({
+        source: id,
+        includeContent: true,
+        hires: 'boundary',
+      }),
+    }
   } else {
     // console.log('!!!', definePageNode)
 
@@ -237,7 +244,14 @@ export function definePageTransform({
       s.remove(offset + node.start!, offset + node.end!)
     }
 
-    return generateTransform(s, id)
+    return {
+      code: s.toString(),
+      map: s.generateMap({
+        source: id,
+        includeContent: true,
+        hires: 'boundary',
+      }),
+    }
   }
 }
 
