@@ -12,6 +12,7 @@ import {
   onDeactivated,
   onScopeDispose,
   toValue,
+  useId,
 } from 'vue'
 import { diagnostics } from '../diagnostics'
 import { START_LOCATION_NORMALIZED } from '../location'
@@ -300,7 +301,8 @@ const SCROLL_RESTORATION_REGISTRATIONS: InjectionKey<
   [
     registrations: Map<
       ScrollRestorationRegistration,
-      ComponentInternalInstance
+      // vapor doesn't support getCurrentInstance()
+      ComponentInternalInstance | string
     >,
     restore: (
       registration: ScrollRestorationRegistration,
@@ -502,9 +504,11 @@ function useScrollRestorationClient<
   const [registrations, restore, isActive] = inject(
     SCROLL_RESTORATION_REGISTRATIONS
   )!
-  const globalOptions = inject(SCROLL_RESTORATION_OPTIONS_KEY)!
-  const optionsWithDefaults = { ...globalOptions, ...options }
-  const instance = getCurrentInstance()!
+  const optionsWithDefaults = {
+    ...inject(SCROLL_RESTORATION_OPTIONS_KEY)!,
+    ...options,
+  }
+  const instance = getCurrentInstance() || useId()
 
   const add = () => registrations.set(optionsWithDefaults, instance)
   const remove = () => registrations.delete(optionsWithDefaults)
