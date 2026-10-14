@@ -1,12 +1,4 @@
-import {
-  generateTransform,
-  isCallOf,
-  parseSFC,
-  MagicString,
-  checkInvalidScopeReference,
-  babelParse,
-  getLang,
-} from '@vue-macros/common'
+import { isCallOf, babelParse, getLang } from 'ast-kit'
 import type { Thenable, TransformResult } from 'unplugin'
 import type {
   CallExpression,
@@ -19,6 +11,7 @@ import type {
 } from '@babel/types'
 import { walkAST } from 'ast-walker-scope'
 import { diagnostics } from '../diagnostics'
+import { MagicString } from 'magic-string'
 import type { ParsedStaticImport } from 'mlly'
 import { findStaticImports, parseStaticImport } from 'mlly'
 import type {
@@ -26,6 +19,7 @@ import type {
   CustomRouteBlockPathParamOptions,
   CustomRouteBlockQueryParamOptions,
 } from './customBlock'
+import { walkIdentifiers, parse } from '@vue/compiler-sfc'
 
 const MACRO_DEFINE_PAGE = 'definePage'
 export const MACRO_DEFINE_PAGE_QUERY = /[?&]definePage\b/
@@ -38,13 +32,17 @@ function getCodeAst(code: string, id: string) {
   let ast: Program | undefined
   const lang = getLang(id.split(MACRO_DEFINE_PAGE_QUERY)[0]!)
   if (lang === 'vue') {
-    const sfc = parseSFC(code, id)
-    if (sfc.scriptSetup) {
-      ast = sfc.getSetupAst()
-      offset = sfc.scriptSetup.loc.start.offset
-    } else if (sfc.script) {
-      ast = sfc.getScriptAst()
-      offset = sfc.script.loc.start.offset
+    const { descriptor } = parse(code, { filename: id })
+    for (const block of [descriptor.scriptSetup, descriptor.script]) {
+      if (block) {
+        ast = babelParse(block.content, block.lang, {
+          // @ts-expect-error `importAttributes` has been dropped in Babel 8
+          plugins: [['importAttributes', { deprecatedAssertSyntax: true }]],
+          cache: true,
+        })
+        offset = block.loc.start.offset
+        break
+      }
     }
   } else if (/[jt]sx?$/.test(lang)) {
     ast = babelParse(code, lang)
@@ -149,16 +147,18 @@ export function definePageTransform({
 
     // TODO: remove information that was extracted already like name, path, params
 
-    // this will throw if a property from the script setup is used in definePage
-    try {
-      checkInvalidScopeReference(routeRecord, MACRO_DEFINE_PAGE, scriptBindings)
-    } catch (error) {
+    // check if a property from the script setup is used in definePage
+    let isInvalid = false
+    walkIdentifiers(routeRecord, id => {
+      if (scriptBindings.includes(id.name)) {
+        isInvalid = true
+      }
+    })
+    if (isInvalid) {
       diagnostics.VUE_ROUTER_B0002({
         filename: id,
         message:
-          error instanceof Error
-            ? error.message
-            : 'Invalid scope reference in definePage',
+          '`definePage()` in <script setup> cannot reference locally declared variables',
       })
       return 'export default {}'
     }
@@ -226,7 +226,14 @@ export function definePageTransform({
       }
     }
 
-    return generateTransform(s, id)
+    return {
+      code: s.toString(),
+      map: s.generateMap({
+        source: id,
+        includeContent: true,
+        hires: 'boundary',
+      }),
+    }
   } else {
     // console.log('!!!', definePageNode)
 
@@ -237,7 +244,14 @@ export function definePageTransform({
       s.remove(offset + node.start!, offset + node.end!)
     }
 
-    return generateTransform(s, id)
+    return {
+      code: s.toString(),
+      map: s.generateMap({
+        source: id,
+        includeContent: true,
+        hires: 'boundary',
+      }),
+    }
   }
 }
 

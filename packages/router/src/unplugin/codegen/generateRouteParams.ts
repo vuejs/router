@@ -12,7 +12,7 @@ import {
 import type { ParamParsersMap } from './generateParamParsers'
 import { diagnostics } from '../diagnostics'
 import { toStringLiteral } from '../utils'
-import { babelParse } from '@vue-macros/common'
+import { babelParse } from 'ast-kit'
 
 const NON_NULL_EXPRESSIONS = new Set<Expression['type']>([
   'StringLiteral',
