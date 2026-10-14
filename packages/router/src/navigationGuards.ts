@@ -15,7 +15,7 @@ import type { NavigationFailure, NavigationRedirectError } from './errors'
 import { createRouterError, ErrorTypes } from './errors'
 import type { ComponentOptions, ComputedRef } from 'vue'
 import { onUnmounted, onActivated, onDeactivated } from 'vue'
-import { inject, getCurrentInstance } from 'vue'
+import { inject, hasInjectionContext } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import type { RouteRecordNormalized } from './matcher/types'
 import { isESModule, isRouteComponent } from './utils'
@@ -71,7 +71,8 @@ function registerGuard(
  * @param leaveGuard - {@link NavigationGuard}
  */
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
-  if (__DEV__ && !getCurrentInstance()) {
+  // getCurrentInstance() is null in Vapor components
+  if (__DEV__ && !hasInjectionContext()) {
     diagnostics.VUE_ROUTER_R0022({ fn: 'onBeforeRouteLeave' })
     return
   }
@@ -93,7 +94,8 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
  * @param updateGuard - {@link NavigationGuard}
  */
 export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
-  if (__DEV__ && !getCurrentInstance()) {
+  // getCurrentInstance() is null in Vapor components
+  if (__DEV__ && !hasInjectionContext()) {
     diagnostics.VUE_ROUTER_R0022({ fn: 'onBeforeRouteUpdate' })
     return
   }

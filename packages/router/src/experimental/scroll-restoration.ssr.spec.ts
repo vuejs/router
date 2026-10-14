@@ -1,5 +1,5 @@
 import { renderToString } from '@vue/server-renderer'
-import { createSSRApp, defineComponent } from 'vue'
+import { createSSRApp, defineComponent, h } from 'vue'
 import { describe, expect, it } from 'vitest'
 import { createMemoryHistory } from '../history/memory'
 import { RouterView } from '../RouterView'
@@ -18,11 +18,10 @@ describe('ssr', () => {
         const { scroll } = useScrollRestoration()
         scroll()
       },
-      template: '<main>SSR page</main>',
+      render: () => h('main', 'SSR page'),
     })
     const Root = defineComponent({
-      components: { RouterView },
-      template: '<RouterView />',
+      render: () => h(RouterView),
     })
     const router = createRouter({
       history: createMemoryHistory(),

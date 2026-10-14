@@ -172,6 +172,10 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/guide/advanced/extending-router-link.html',
             },
             {
+              text: 'Vapor Mode',
+              link: '/guide/advanced/vapor-mode.html',
+            },
+            {
               text: 'Navigation Failures',
               link: '/guide/advanced/navigation-failures.html',
             },

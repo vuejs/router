@@ -263,49 +263,68 @@ function preferSingleVNode(vnodes: VNode[]) {
   return vnodes.length === 1 ? vnodes[0] : vnodes
 }
 
+/**
+ * Props of `RouterLink` and `VaporRouterLink`.
+ * @internal
+ */
+export const routerLinkProps = {
+  to: {
+    type: [String, Object] as PropType<RouteLocationRaw>,
+    required: true as const,
+  },
+  replace: Boolean,
+  activeClass: String,
+  // inactiveClass: String,
+  exactActiveClass: String,
+  custom: Boolean,
+  ariaCurrentValue: {
+    type: String as PropType<RouterLinkProps['ariaCurrentValue']>,
+    default: 'page',
+  },
+  viewTransition: Boolean,
+}
+
+/**
+ * Link state and classes shared by `RouterLink` and `VaporRouterLink`.
+ * @internal
+ */
+export function useRouterLink(
+  props: Pick<RouterLinkProps, 'activeClass' | 'exactActiveClass'> &
+    UseLinkOptions
+) {
+  const link = reactive(useLink(props))
+  const { options } = inject(routerKey)!
+
+  const elClass = computed(() => ({
+    [getLinkClass(
+      props.activeClass,
+      options.linkActiveClass,
+      'router-link-active'
+    )]: link.isActive,
+    // [getLinkClass(
+    //   props.inactiveClass,
+    //   options.linkInactiveClass,
+    //   'router-link-inactive'
+    // )]: !link.isExactActive,
+    [getLinkClass(
+      props.exactActiveClass,
+      options.linkExactActiveClass,
+      'router-link-exact-active'
+    )]: link.isExactActive,
+  }))
+
+  return [link, elClass] as const
+}
+
 export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
   name: 'RouterLink',
   compatConfig: { MODE: 3 },
-  props: {
-    to: {
-      type: [String, Object] as PropType<RouteLocationRaw>,
-      required: true,
-    },
-    replace: Boolean,
-    activeClass: String,
-    // inactiveClass: String,
-    exactActiveClass: String,
-    custom: Boolean,
-    ariaCurrentValue: {
-      type: String as PropType<RouterLinkProps['ariaCurrentValue']>,
-      default: 'page',
-    },
-    viewTransition: Boolean,
-  },
+  props: routerLinkProps,
 
   useLink,
 
   setup(props, { slots }) {
-    const link = reactive(useLink(props))
-    const { options } = inject(routerKey)!
-
-    const elClass = computed(() => ({
-      [getLinkClass(
-        props.activeClass,
-        options.linkActiveClass,
-        'router-link-active'
-      )]: link.isActive,
-      // [getLinkClass(
-      //   props.inactiveClass,
-      //   options.linkInactiveClass,
-      //   'router-link-inactive'
-      // )]: !link.isExactActive,
-      [getLinkClass(
-        props.exactActiveClass,
-        options.linkExactActiveClass,
-        'router-link-exact-active'
-      )]: link.isExactActive,
-    }))
+    const [link, elClass] = useRouterLink(props)
 
     return () => {
       const children = slots.default && preferSingleVNode(slots.default(link))
