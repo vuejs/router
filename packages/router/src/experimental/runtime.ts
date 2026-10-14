@@ -79,6 +79,16 @@ export type RouteLocationForFilePath<FilePath extends string> = [
   : RouteLocationNormalizedLoaded<RouteNamesForFilePath<FilePath>>
 
 /**
+ * Props that `definePage({ props: true })` passes to a page component: the
+ * params of the routes that render the page file. The `sfc-typed-router`
+ * Volar plugin injects it into `defineProps()`.
+ *
+ * @internal
+ */
+export type RoutePropsForFilePath<FilePath extends string> =
+  RouteLocationForFilePath<FilePath>['params']
+
+/**
  * Merges route records.
  *
  * @internal

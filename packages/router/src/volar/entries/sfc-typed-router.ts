@@ -66,8 +66,39 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
         .replace(/'/g, "\\'")
       const definePageTypeParams = `<'${escapedFilePath}', typeof import('${escapedSelfImport}').default>`
 
+      const routePropsType = `import('vue-router/experimental')._RoutePropsForFilePath<'${escapedFilePath}'>`
+
+      // `definePage()` can come after `defineProps()`
+      const hasPropsTrue =
+        !!sfc.scriptSetup &&
+        !sfc.scriptSetup.lang.startsWith('js') &&
+        sfc.scriptSetup.ast.statements.some(isDefinePageWithPropsTrue)
+
       if (sfc.scriptSetup) {
         visit(sfc.scriptSetup.ast)
+      }
+
+      function isDefinePageWithPropsTrue(statement: ts.Statement) {
+        if (
+          !ts.isExpressionStatement(statement) ||
+          !ts.isCallExpression(statement.expression) ||
+          !ts.isIdentifier(statement.expression.expression) ||
+          ts.idText(statement.expression.expression) !== 'definePage'
+        ) {
+          return false
+        }
+        const [arg] = statement.expression.arguments
+        return (
+          !!arg &&
+          ts.isObjectLiteralExpression(arg) &&
+          arg.properties.some(
+            prop =>
+              ts.isPropertyAssignment(prop) &&
+              ts.isIdentifier(prop.name) &&
+              ts.idText(prop.name) === 'props' &&
+              prop.initializer.kind === ts.SyntaxKind.TrueKeyword
+          )
+        )
       }
 
       function visit(node: ts.Node) {
@@ -139,6 +170,40 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
             node.expression.end,
             definePageTypeParams
           )
+        } else if (
+          hasPropsTrue &&
+          ts.isCallExpression(node) &&
+          ts.isIdentifier(node.expression) &&
+          ts.idText(node.expression) === 'defineProps' &&
+          !node.arguments.length
+        ) {
+          // `props: true` passes the route params as props
+          const [typeArg] = node.typeArguments ?? []
+          if (typeArg) {
+            const { start } = getStartEnd(typeArg, sfc.scriptSetup!.ast)
+            replaceSourceRange(
+              embeddedCode.content,
+              sfc.scriptSetup!.name,
+              start,
+              start,
+              `${routePropsType} & (`
+            )
+            replaceSourceRange(
+              embeddedCode.content,
+              sfc.scriptSetup!.name,
+              typeArg.end,
+              typeArg.end,
+              `)`
+            )
+          } else {
+            replaceSourceRange(
+              embeddedCode.content,
+              sfc.scriptSetup!.name,
+              node.expression.end,
+              node.expression.end,
+              `<${routePropsType}>`
+            )
+          }
         } else {
           ts.forEachChild(node, visit)
         }
