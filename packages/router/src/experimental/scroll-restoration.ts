@@ -9,9 +9,8 @@ import {
   getCurrentInstance,
   inject,
   onActivated,
-  onBeforeMount,
   onDeactivated,
-  onUnmounted,
+  onScopeDispose,
   toValue,
 } from 'vue'
 import { diagnostics } from '../diagnostics'
@@ -264,7 +263,7 @@ const SCROLL_RESTORATION_REGISTRATIONS: InjectionKey<
       registration: ScrollRestorationRegistration,
       to?: RouteLocationNormalized
     ) => void,
-    isOverridden: (
+    isActive: (
       registration: ScrollRestorationRegistration,
       to: RouteLocationNormalized
     ) => boolean,
@@ -334,20 +333,26 @@ function ScrollRestorationClient(
   >()
   history.scrollRestoration = 'manual'
 
-  // a nested call with the same key owns it, e.g. a page inside its layout
-  function isOverridden(
+  // a nested call with the same key owns it, e.g. a page inside its layout. A
+  // pending nested call (async setup) owns the restore but can't capture yet
+  function isActive(
     registration: ScrollRestorationRegistration,
-    route: RouteLocationNormalized
+    route: RouteLocationNormalized,
+    capturing?: boolean
   ): boolean {
     const instance = registrations.get(registration)
+    if (!instance?.isMounted) return false
     const key = toValueWithArgs(registration.key, route)
     // calls of the same component never match: the walk starts at the parent
     for (let [other, parent] of registrations) {
-      if (toValueWithArgs(other.key, route) === key) {
-        while ((parent = parent.parent!)) if (parent === instance) return true
+      if (
+        (!capturing || parent.isMounted) &&
+        toValueWithArgs(other.key, route) === key
+      ) {
+        while ((parent = parent.parent!)) if (parent === instance) return false
       }
     }
-    return false
+    return true
   }
 
   function restoreScroll(
@@ -368,7 +373,7 @@ function ScrollRestorationClient(
   app.provide(SCROLL_RESTORATION_REGISTRATIONS, [
     registrations,
     restoreScroll,
-    isOverridden,
+    isActive,
   ])
 
   function capture(route: RouteLocationNormalized) {
@@ -377,7 +382,7 @@ function ScrollRestorationClient(
       devTrackedCapturedOptions = new Map()
     }
     for (const registration of registrations.keys()) {
-      if (isOverridden(registration, route)) continue
+      if (!isActive(registration, route, true)) continue
       const key = storageKeyPrefix + toValueWithArgs(registration.key, route)
       if (__DEV__) {
         const other = devTrackedCapturedOptions!.get(key)
@@ -465,7 +470,7 @@ function useScrollRestorationClient<
   if (__DEV__ && !inject(SCROLL_RESTORATION_REGISTRATIONS, null)) {
     throw diagnostics.VUE_ROUTER_R0044()
   }
-  const [registrations, restore, isOverridden] = inject(
+  const [registrations, restore, isActive] = inject(
     SCROLL_RESTORATION_REGISTRATIONS
   )!
   const globalOptions = inject(SCROLL_RESTORATION_OPTIONS_KEY)!
@@ -475,18 +480,17 @@ function useScrollRestorationClient<
   const add = () => registrations.set(optionsWithDefaults, instance)
   const remove = () => registrations.delete(optionsWithDefaults)
 
-  // not in setup() so a component that never mounts can't capture
-  onBeforeMount(add)
+  // in setup() so a pending async page owns its key
+  add()
   // a component cached by KeepAlive must not capture another page
   onActivated(add)
   onDeactivated(remove)
-  onUnmounted(remove)
+  onScopeDispose(remove)
 
   onRouteRendered(to => {
     if (
       !toValue(optionsWithDefaults.manual) &&
-      registrations.has(optionsWithDefaults) &&
-      !isOverridden(optionsWithDefaults, to)
+      isActive(optionsWithDefaults, to)
     ) {
       restore(optionsWithDefaults, to)
     }
