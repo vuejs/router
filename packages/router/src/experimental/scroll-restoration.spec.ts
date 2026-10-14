@@ -337,6 +337,116 @@ describe('useScrollRestoration', () => {
     })
   })
 
+  it('lets a pending async page own the key of its parent before capturing', async () => {
+    const pending = Promise.withResolvers<void>()
+    const Parent = defineComponent({
+      components: { RouterView },
+      setup() {
+        useScrollRestoration({ key: 'async-page' })
+      },
+      template: `<main><RouterView v-slot="{ Component }">
+        <Suspense><component :is="Component" /></Suspense>
+      </RouterView></main>`,
+    })
+    const Child = defineComponent({
+      async setup() {
+        useScrollRestoration({
+          key: 'async-page',
+          capture: () => ({ default: { top: 999 } }),
+        })
+        await pending.promise
+      },
+      template: '<section>Child</section>',
+    })
+    const { navigate, setScroll } = await mountRouter([
+      {
+        path: '/async-parent',
+        component: Parent,
+        children: [{ path: 'child', component: Child }],
+      },
+    ])
+
+    setScroll(0, 77)
+    await navigate('/async-parent/child')
+    // the parent does not restore the page it does not own
+    expect(window.scrollY).toBe(77)
+
+    // the pending page cannot capture yet: the parent does
+    window.dispatchEvent(new Event('pagehide'))
+    setScroll(0, 12)
+    pending.resolve()
+    await flushPromises()
+    expect(window.scrollY).toBe(77)
+
+    await navigate('/neutral')
+    expect(
+      JSON.parse(sessionStorage.getItem('vue:scroll:async-page')!)
+    ).toEqual({ default: { top: 999 } })
+  })
+
+  it('does not restore a pending async descendant', async () => {
+    const Child = defineComponent({
+      async setup() {
+        useScrollRestoration({
+          key: 'pending-widget',
+          restore: () => window.scrollTo(0, 999),
+        })
+        await new Promise(() => {})
+      },
+      template: '<section>Widget</section>',
+    })
+    const Parent = defineComponent({
+      components: { Child },
+      setup() {
+        useScrollRestoration({ key: 'pending-widget' })
+      },
+      template: '<main><Suspense><Child /></Suspense></main>',
+    })
+    const { navigate, setScroll } = await mountRouter([
+      { path: '/pending-widget', component: Parent },
+    ])
+
+    setScroll(0, 77)
+    await navigate('/pending-widget')
+    expect(window.scrollY).toBe(77)
+  })
+
+  it('releases the key when a pending async page is abandoned', async () => {
+    const Parent = defineComponent({
+      components: { RouterView },
+      setup() {
+        useScrollRestoration({
+          key: 'abandoned-page',
+          restore: () => window.scrollTo(0, 123),
+        })
+      },
+      template: `<main><RouterView v-slot="{ Component }">
+        <Suspense><component :is="Component" /></Suspense>
+      </RouterView></main>`,
+    })
+    const Child = defineComponent({
+      async setup() {
+        useScrollRestoration({ key: 'abandoned-page' })
+        await new Promise(() => {})
+      },
+      template: '<section>Pending child</section>',
+    })
+    const { navigate } = await mountRouter([
+      {
+        path: '/abandoned-parent',
+        component: Parent,
+        children: [
+          { path: 'pending', component: Child },
+          { path: 'ready', component: NeutralPage },
+        ],
+      },
+    ])
+
+    await navigate('/abandoned-parent/pending')
+    await navigate('/abandoned-parent/ready')
+    expect(window.scrollY).toBe(123)
+  })
+
   it('lets a nested call override the capture and restore of a parent call', async () => {
     const Parent = defineComponent({
       components: { RouterView },
@@ -532,7 +642,10 @@ describe('useScrollRestoration', () => {
           key: 'parent-key',
           capture: () => ({ default: { top: scroller.value!.scrollTop } }),
           restore: entry => {
-            scroller.value!.scrollTop = entry?.default?.top!
+            // first visit: nothing saved yet
+            if (!entry) return
+            expect(entry.default?.top).toBeTypeOf('number')
+            scroller.value!.scrollTop = entry.default!.top!
           },
         })
       },
@@ -550,7 +663,10 @@ describe('useScrollRestoration', () => {
           key: 'child-key',
           capture: () => ({ default: { top: scroller.value!.scrollTop } }),
           restore: entry => {
-            scroller.value!.scrollTop = entry?.default?.top!
+            // first visit: nothing saved yet
+            if (!entry) return
+            expect(entry.default?.top).toBeTypeOf('number')
+            scroller.value!.scrollTop = entry.default!.top!
           },
         })
       },
@@ -626,8 +742,12 @@ describe('useScrollRestoration', () => {
             second: { top: second.value!.scrollTop },
           }),
           restore: entry => {
-            first.value!.scrollTop = entry?.first?.top!
-            second.value!.scrollTop = entry?.second?.top!
+            // first visit: nothing saved yet
+            if (!entry) return
+            expect(entry.first?.top).toBeTypeOf('number')
+            expect(entry.second?.top).toBeTypeOf('number')
+            first.value!.scrollTop = entry.first!.top!
+            second.value!.scrollTop = entry.second!.top!
           },
         })
       },
