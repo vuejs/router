@@ -69,4 +69,4 @@ Output goes to `results/` (not in git):
 - `<project>/*.log`: full command output.
 - `smoke.json`: browser check results.
 
-`smoke.mjs` exits with code 1 for `auto-resolver-props`, because the resolver does not yet pass route props to the page. See [REPORT.md](./REPORT.md#known-gap).
+`smoke.mjs` exits with code 1 if the `auto-resolver-props` build does not pass the route params as props.
