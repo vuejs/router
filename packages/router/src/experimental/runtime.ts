@@ -1,6 +1,6 @@
 // TODO: this file should be splitted into different features  since it's not about runtime anymore
 import type { TypesConfig } from '../config'
-import type { RouteRecordRaw } from '../types'
+import type { RouteParamsGeneric, RouteRecordRaw } from '../types'
 import type {
   RouteLocationNormalizedLoaded,
   RouteLocationNormalizedLoadedGeneric,
@@ -19,7 +19,8 @@ import type {
  * `sfc-typed-router` Volar plugin. `FilePath` restricts the `params.path`
  * keys to the path params of the file and types the route location of
  * `props`. `Component` is the type of the page component and type checks
- * `props` against its props. When omitted, both fall back to loose types.
+ * `props` against its props. It is only injected when `props` is set and not
+ * `false`. When omitted, both fall back to loose types.
  *
  * @param route - route information to be added to this page
  *
@@ -85,8 +86,11 @@ export type RouteLocationForFilePath<FilePath extends string> = [
  *
  * @internal
  */
-export type RoutePropsForFilePath<FilePath extends string> =
-  RouteLocationForFilePath<FilePath>['params']
+export type RoutePropsForFilePath<FilePath extends string> = [
+  RouteNamesForFilePath<FilePath>,
+] extends [never]
+  ? RouteParamsGeneric
+  : RouteMap[RouteNamesForFilePath<FilePath>]['params']
 
 /**
  * Merges route records.

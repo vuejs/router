@@ -14,22 +14,7 @@ import type ts from 'typescript'
   - (low priority) Enhance typing of `to` route in `beforeEnter` route guards defined in `definePage`
 */
 
-export interface SfcTypedRouterOptions {
-  /**
-   * Root directory of the project. Defaults to `compilerOptions.rootDir`.
-   */
-  rootDir?: string
-
-  /**
-   * Add the route params to the type of `defineProps()` when the page has
-   * `definePage({ props: true })`.
-   *
-   * @default true
-   */
-  typedDefineProps?: boolean
-}
-
-const plugin: VueLanguagePlugin<{ options?: SfcTypedRouterOptions }> = ({
+const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
   compilerOptions,
   modules: { typescript: ts },
   config: { options },
@@ -79,42 +64,26 @@ const plugin: VueLanguagePlugin<{ options?: SfcTypedRouterOptions }> = ({
       const escapedSelfImport = `./${basename(fileName)}`
         .replace(/\\/g, '\\\\')
         .replace(/'/g, "\\'")
-      const definePageTypeParams = `<'${escapedFilePath}', typeof import('${escapedSelfImport}').default>`
+      const definePageTypeParams = `<'${escapedFilePath}'>`
+      // the self import is only added when needed because it is costly
+      const definePageWithPropsTypeParams = `<'${escapedFilePath}', typeof import('${escapedSelfImport}').default>`
 
       const routePropsType = `import('vue-router/experimental')._RoutePropsForFilePath<'${escapedFilePath}'>`
 
       // `definePage()` can come after `defineProps()`
       const hasPropsTrue =
-        options?.typedDefineProps !== false &&
         !!sfc.scriptSetup &&
         !sfc.scriptSetup.lang.startsWith('js') &&
-        sfc.scriptSetup.ast.statements.some(isDefinePageWithPropsTrue)
+        sfc.scriptSetup.ast.statements.some(
+          statement =>
+            ts.isExpressionStatement(statement) &&
+            isDefinePageCall(statement.expression) &&
+            getPropsOption(statement.expression)?.kind ===
+              ts.SyntaxKind.TrueKeyword
+        )
 
       if (sfc.scriptSetup) {
         visit(sfc.scriptSetup.ast)
-      }
-
-      function isDefinePageWithPropsTrue(statement: ts.Statement) {
-        if (
-          !ts.isExpressionStatement(statement) ||
-          !ts.isCallExpression(statement.expression) ||
-          !ts.isIdentifier(statement.expression.expression) ||
-          ts.idText(statement.expression.expression) !== 'definePage'
-        ) {
-          return false
-        }
-        const [arg] = statement.expression.arguments
-        return (
-          !!arg &&
-          ts.isObjectLiteralExpression(arg) &&
-          arg.properties.some(
-            prop =>
-              ts.isPropertyAssignment(prop) &&
-              ts.isIdentifier(prop.name) &&
-              ts.idText(prop.name) === 'props' &&
-              prop.initializer.kind === ts.SyntaxKind.TrueKeyword
-          )
-        )
       }
 
       function visit(node: ts.Node) {
@@ -169,9 +138,7 @@ const plugin: VueLanguagePlugin<{ options?: SfcTypedRouterOptions }> = ({
             useRouteNameTypeParam
           )
         } else if (
-          ts.isCallExpression(node) &&
-          ts.isIdentifier(node.expression) &&
-          ts.idText(node.expression) === 'definePage' &&
+          isDefinePageCall(node) &&
           !node.typeArguments &&
           node.arguments.length === 1 &&
           !sfc.scriptSetup!.lang.startsWith('js')
@@ -179,12 +146,15 @@ const plugin: VueLanguagePlugin<{ options?: SfcTypedRouterOptions }> = ({
           // Inject the file path so `definePage`'s `params.path` keys can be
           // narrowed to this file's actual path params, and the component
           // type so `props` is checked against its props.
+          const props = getPropsOption(node)
           replaceSourceRange(
             embeddedCode.content,
             sfc.scriptSetup!.name,
             node.expression.end,
             node.expression.end,
-            definePageTypeParams
+            props && props.kind !== ts.SyntaxKind.FalseKeyword
+              ? definePageWithPropsTypeParams
+              : definePageTypeParams
           )
         } else if (
           hasPropsTrue &&
@@ -245,6 +215,34 @@ const plugin: VueLanguagePlugin<{ options?: SfcTypedRouterOptions }> = ({
         augmentVlsCtx(embeddedCode.content, vlsCtxAugmentations)
       }
     },
+  }
+
+  function isDefinePageCall(node: ts.Node): node is ts.CallExpression {
+    return (
+      ts.isCallExpression(node) &&
+      ts.isIdentifier(node.expression) &&
+      ts.idText(node.expression) === 'definePage'
+    )
+  }
+
+  /**
+   * Returns the value of `props` in `definePage({ props })`.
+   */
+  function getPropsOption(
+    definePageCall: ts.CallExpression
+  ): ts.Expression | undefined {
+    const [arg] = definePageCall.arguments
+    if (!arg || !ts.isObjectLiteralExpression(arg)) return undefined
+    for (const prop of arg.properties) {
+      if (
+        ts.isPropertyAssignment(prop) &&
+        ts.isIdentifier(prop.name) &&
+        ts.idText(prop.name) === 'props'
+      ) {
+        return prop.initializer
+      }
+    }
+    return undefined
   }
 
   function getStartEnd(node: ts.Node, ast: ts.SourceFile) {
