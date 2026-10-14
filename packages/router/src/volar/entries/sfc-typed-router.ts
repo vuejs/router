@@ -14,7 +14,22 @@ import type ts from 'typescript'
   - (low priority) Enhance typing of `to` route in `beforeEnter` route guards defined in `definePage`
 */
 
-const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
+export interface SfcTypedRouterOptions {
+  /**
+   * Root directory of the project. Defaults to `compilerOptions.rootDir`.
+   */
+  rootDir?: string
+
+  /**
+   * Add the route params to the type of `defineProps()` when the page has
+   * `definePage({ props: true })`.
+   *
+   * @default true
+   */
+  typedDefineProps?: boolean
+}
+
+const plugin: VueLanguagePlugin<{ options?: SfcTypedRouterOptions }> = ({
   compilerOptions,
   modules: { typescript: ts },
   config: { options },
@@ -70,6 +85,7 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
 
       // `definePage()` can come after `defineProps()`
       const hasPropsTrue =
+        options?.typedDefineProps !== false &&
         !!sfc.scriptSetup &&
         !sfc.scriptSetup.lang.startsWith('js') &&
         sfc.scriptSetup.ast.statements.some(isDefinePageWithPropsTrue)

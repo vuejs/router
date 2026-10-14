@@ -170,6 +170,21 @@ With the `sfc-typed-router` Volar plugin, TypeScript checks `props` against the 
 
 With `props: true`, the plugin also adds the params of the route to the type of `defineProps()`, so `defineProps<{ extra?: string }>()` is typed as `defineProps<RouteParams & { extra?: string }>()`. This only changes the types.
 
+To turn this off, set `typedDefineProps` to `false` in the plugin options:
+
+```json
+{
+  "vueCompilerOptions": {
+    "plugins": [
+      {
+        "name": "vue-router/volar/sfc-typed-router",
+        "options": { "typedDefineProps": false }
+      }
+    ]
+  }
+}
+```
+
 ## With Data Loaders
 
 If you use [Data Loaders](../data-loaders/), install the plugin **before** the router:

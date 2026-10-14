@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import ts from 'typescript'
 import { toString, type Segment } from 'muggle-string'
-import plugin from './sfc-typed-router'
+import plugin, { type SfcTypedRouterOptions } from './sfc-typed-router'
 
 const ROOT_DIR = '/app'
 const FILE_NAME = '/app/src/pages/users/sub-[first]-[second].vue'
@@ -15,12 +15,16 @@ const EXPECTED_TYPE_PARAM = `<import('vue-router/auto-routes')._RouteNamesForFil
  */
 function transform(
   code: string,
-  { lang = 'ts', fileName = FILE_NAME } = {}
+  {
+    lang = 'ts',
+    fileName = FILE_NAME,
+    options = {},
+  }: { lang?: string; fileName?: string; options?: SfcTypedRouterOptions } = {}
 ): string {
   const result = plugin({
     compilerOptions: { rootDir: ROOT_DIR },
     modules: { typescript: ts },
-    config: { options: { rootDir: ROOT_DIR } },
+    config: { options: { rootDir: ROOT_DIR, ...options } },
   } as any)
   const instance = Array.isArray(result) ? result[0] : result
 
@@ -94,7 +98,10 @@ describe('sfc-typed-router volar plugin', () => {
     const ROUTE_PROPS = `import('vue-router/experimental')._RoutePropsForFilePath<'src/pages/users/sub-[first]-[second].vue'>`
 
     /** Gets the `defineProps()` statement out of the transformed code. */
-    function transformProps(code: string, opts?: { lang?: string }) {
+    function transformProps(
+      code: string,
+      opts?: Parameters<typeof transform>[1]
+    ) {
       return transform(code, opts).split('\n')[0]
     }
 
@@ -153,6 +160,13 @@ describe('sfc-typed-router volar plugin', () => {
           `const props = defineProps(['a'])\ndefinePage({ props: true })`
         )
       ).toBe(`const props = defineProps(['a'])`)
+    })
+
+    it('does nothing with `typedDefineProps: false`', () => {
+      const code = `const props = defineProps<{ a: string }>()\ndefinePage({ props: true })`
+      expect(
+        transformProps(code, { options: { typedDefineProps: false } })
+      ).toBe(code.split('\n')[0])
     })
 
     it('does nothing in a js script', () => {
