@@ -243,7 +243,8 @@ export function setupLoaderGuard({
       ) {
         for (const loader of to.meta[LOADER_SET_KEY]!) {
           const entry = loader._.getEntry(router)
-          entry.resetPending()
+          // entries may not exist on the server
+          entry?.resetPending()
         }
       }
     } else {
