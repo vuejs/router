@@ -4,12 +4,12 @@ These projects measure TypeScript type-check time (`vue-tsc`) and Vite build tim
 
 All four projects are copies of the same app: a console with 50 lazy-loaded pages. Only the router setup is different.
 
-| Folder                | Router setup                                                    |
-| --------------------- | --------------------------------------------------------------- |
-| `classic`             | `createRouter()` with a hand-written `RouteRecordRaw[]`         |
-| `auto-routes`         | `createRouter()` with `vue-router/auto-routes`                  |
-| `auto-resolver`       | `experimental_createRouter()` with `vue-router/auto-resolver`   |
-| `auto-resolver-props` | `auto-resolver` plus `definePage({ props: true })` on each page |
+| Folder                | Router setup                                                             |
+| --------------------- | ------------------------------------------------------------------------ |
+| `classic`             | `createRouter()` with a hand-written `RouteRecordRaw[]` (untyped routes) |
+| `auto-routes`         | `createRouter()` with `vue-router/auto-routes`                           |
+| `auto-resolver`       | `experimental_createRouter()` with `vue-router/auto-resolver`            |
+| `auto-resolver-props` | `auto-resolver` plus `definePage({ props: true })` on each page          |
 
 Results: [REPORT.md](./REPORT.md).
 

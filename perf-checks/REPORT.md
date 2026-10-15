@@ -15,8 +15,9 @@ All type-checks, builds, and browser checks pass. In `auto-resolver-props`, the 
 
 ## Summary
 
+- **Typed routes:** `classic` has no typed routes. Its route names and params are not checked, and `useRoute().params` is generic. The generated projects check them. Compare `classic` with this difference in mind.
 - **Type-check:** the three generated projects are within 10 ms. `classic` is about 50 ms faster (40 ms in the check phase).
-- **Instantiations:** `classic` has about 9% fewer than `auto-resolver`. In the generated projects, the `sfc-typed-router` plugin types `useRoute()` in each page with the routes of that file. `auto-resolver-props` has about 11% more than `auto-resolver` (about 92 per page). Its pages do not call `useRoute()`, but the plugin checks `props: true` against the route params and the page props, and adds the params to `defineProps()`.
+- **Instantiations:** `classic` has about 9% fewer than `auto-resolver`, because it checks less. In the generated projects, the `sfc-typed-router` plugin types `useRoute()` in each page with the routes of that file. `auto-resolver-props` has about 11% more than `auto-resolver` (about 92 per page). Its pages do not call `useRoute()`, but the plugin checks `props: true` against the route params and the page props, and adds the params to `defineProps()`.
 - **Build:** the generated projects add about 70 to 110 ms for the `vue-router/vite` plugin. The props variant adds about 125 ms more. The plugin transforms the 50 `definePage()` macros and adds the params to `defineProps()`.
 - **Slowest files (traces):** `src/App.vue` (56 to 77 ms, 50 links and router component slots) in all projects. Each page takes 5 to 23 ms. The first page that TypeScript checks is the slowest. `src/router.ts` in `classic` takes 5 ms. No large route union cost is visible.
 
