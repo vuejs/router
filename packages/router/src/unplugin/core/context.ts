@@ -35,6 +35,13 @@ import {
 } from '../codegen/generateParamParsers'
 import picomatch from 'picomatch'
 
+function rendersFile(node: TreeNode, filePath: string) {
+  for (const component of node.value.components.values()) {
+    if (component === filePath) return true
+  }
+  return false
+}
+
 export function createRoutesContext(options: ResolvedOptions) {
   const { dts: preferDTS, root, routesFolder } = options
   const dts =
@@ -177,9 +184,7 @@ export function createRoutesContext(options: ResolvedOptions) {
   function getRoutePropNames(filePath: string): string[] {
     const names = new Set<string>()
     for (const node of routeTree.getChildrenDeep()) {
-      if (!Array.from(node.value.components.values()).includes(filePath)) {
-        continue
-      }
+      if (!rendersFile(node, filePath)) continue
       for (const route of [node, ...node.getChildrenDeep()]) {
         for (const param of route.params) {
           names.add(param.paramName)
@@ -187,6 +192,27 @@ export function createRoutesContext(options: ResolvedOptions) {
       }
     }
     return Array.from(names)
+  }
+
+  /**
+   * Joined prop names declared by the last transform of each page with
+   * `definePage({ props: true })`.
+   */
+  const declaredRoutePropNames = new Map<string, string>()
+
+  /**
+   * Reloads the pages whose route props changed since their last transform.
+   * Params are inherited from parents and children, so any page can change
+   * the props of another one.
+   */
+  function invalidateStaleRouteProps() {
+    for (const [filePath, declaredNames] of declaredRoutePropNames) {
+      const names = getRoutePropNames(filePath).join()
+      if (names !== declaredNames) {
+        declaredRoutePropNames.set(filePath, names)
+        server?.invalidatePage(filePath)
+      }
+    }
   }
 
   async function writeRouteInfoToNode(node: TreeNode, filePath: string) {
@@ -243,6 +269,7 @@ export function createRoutesContext(options: ResolvedOptions) {
   function removePage({ filePath, routePath }: HandlerContext) {
     logger.log(`remove "${routePath}" for "${filePath}"`)
     routeTree.removeChild(filePath)
+    declaredRoutePropNames.delete(filePath)
     server?.updateRoutes()
   }
 
@@ -447,6 +474,7 @@ if (import.meta.hot) {
     }
 
     logTree(routeTree, logger.log)
+    invalidateStaleRouteProps()
     if (dts) {
       const content = generateDTS()
       if (lastDTS !== content) {
@@ -491,10 +519,16 @@ if (import.meta.hot) {
     generateResolver,
 
     definePageTransform(code: string, id: string) {
+      // only set again if the page still uses `props: true`
+      declaredRoutePropNames.delete(id)
       return definePageTransform({
         code,
         id,
-        getRoutePropNames,
+        getRoutePropNames(filePath) {
+          const names = getRoutePropNames(filePath)
+          declaredRoutePropNames.set(filePath, names.join())
+          return names
+        },
       })
     },
   }
