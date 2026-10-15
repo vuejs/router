@@ -1,6 +1,7 @@
 ---
 name: migrate-v5-experimental-router
 disable-model-invocation: true
+disable-model-invocation: true
 description: Migrate Vue Router 4/5 apps to file-based routing, the Vue Router 5 experimental router, param parsers, or scroll restoration. Use when adopting vue-router/vite, vue-router/auto-resolver, experimental_createRouter, defineParamParser, ScrollRestoration, or useScrollRestoration. Covers migration blockers and hand-written resolvers.
 ---
 
