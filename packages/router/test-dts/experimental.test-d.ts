@@ -327,45 +327,31 @@ describe('route record props', () => {
 })
 
 describe('definePage props', () => {
-  const User = defineComponent({
-    props: { id: { type: Number, required: true }, page: Number },
-  })
-  const Search = defineComponent({
-    props: { query: { type: String, required: true } },
-  })
-
   it('accepts anything without the injected types', () => {
     definePage({ props: true })
     definePage({ props: { anything: 1 } })
     definePage({ props: () => ({ anything: 1 }) })
   })
 
-  it('checks `true` against the params of the file routes', () => {
-    definePage<'src/pages/user.vue', typeof User>({ props: true })
-    definePage<'src/pages/user.vue', typeof Search>({
-      // @ts-expect-error: params do not contain `query`
-      props: true,
-    })
+  it('accepts any props with the file path', () => {
+    definePage<'src/pages/user.vue'>({ props: true })
+    definePage<'src/pages/user.vue'>({ props: false })
+    definePage<'src/pages/user.vue'>({ props: { anything: 1 } })
+    definePage<'src/pages/user.vue'>({ props: () => ({ anything: 1 }) })
   })
 
   it('types the route location of the function form', () => {
-    definePage<'src/pages/users.vue', typeof User>({
+    definePage<'src/pages/users.vue'>({
       props: to => {
         expectTypeOf(to.name).toEqualTypeOf<'users' | 'users-detail'>()
-        return { id: to.name === 'users-detail' ? to.params.id : 0 }
+        return {}
       },
     })
-    definePage<'src/pages/user.vue', typeof User>({
-      // @ts-expect-error: id must be a number
-      props: to => ({ id: String(to.params.id) }),
-    })
-  })
-
-  it('checks static props against the component', () => {
-    definePage<'src/pages/user.vue', typeof User>({ props: { id: 1 } })
-    definePage<'src/pages/user.vue', typeof User>({
-      // @ts-expect-error: id is required
-      props: { page: 1 },
+    definePage<'src/pages/user.vue'>({
+      props: to => {
+        expectTypeOf(to.params.id).toEqualTypeOf<number>()
+        return {}
+      },
     })
   })
 })
