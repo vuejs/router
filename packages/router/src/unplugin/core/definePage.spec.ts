@@ -173,7 +173,7 @@ definePage({
     const a = 1
     definePage({
       name: 'custom',
-      path: '/custom',
+      meta: { a: 1 },
     })
     const b = 1
     `,
@@ -184,6 +184,53 @@ definePage({
     expect(result).toBeDefined()
     expect(result).toHaveProperty('code')
     expect(result?.code).toMatchSnapshot()
+  })
+
+  describe('properties extracted at build time', () => {
+    async function extract(definePageCode: string) {
+      const result = (await definePageTransform({
+        code: vue`
+<script setup>
+import { a, b } from './lib'
+${definePageCode}
+</script>
+`,
+        id: 'src/pages/basic.vue?definePage&vue',
+      })) as Exclude<TransformResult, string>
+      return result.code
+    }
+
+    it('removes name, path, alias, and params', async () => {
+      expect(
+        await extract(`definePage({
+  name: 'custom',
+  meta: { a: 1 },
+  path: '/custom',
+  'alias': ['/other'],
+  redirect: '/',
+  params: { query: { page: 'int' } },
+})`)
+      ).toMatchInlineSnapshot(`
+        "export default {
+          meta: { a: 1 },
+          redirect: '/',
+          }"
+      `)
+    })
+
+    it('removes invalid name and path and their unused imports', async () => {
+      expect(
+        await extract(`definePage({ name: a, path: b, meta: { a: 1 } })`)
+      ).toMatchInlineSnapshot(`"export default { meta: { a: 1 } }"`)
+    })
+
+    it('keeps imports used by other properties', async () => {
+      expect(await extract(`definePage({ alias: [a], meta: { b } })`))
+        .toMatchInlineSnapshot(`
+        "import {b} from './lib'
+        export default { meta: { b } }"
+      `)
+    })
   })
 
   it('handles definePage using a variable from setup gracefully', async () => {
@@ -302,7 +349,12 @@ definePage({
 
     it('does not throw and keeps the first call when extracting', async () => {
       const result = (await definePageTransform({
-        code: duplicateCode,
+        code: vue`
+<script setup>
+definePage({ meta: { first: true } })
+definePage({ meta: { second: true } })
+</script>
+`,
         id: 'src/pages/dup.vue?definePage&vue',
       })) as Exclude<TransformResult, string>
 
@@ -865,9 +917,7 @@ const b = 1
     ).toMatchObject({
       code: ts`
 export default {
-  name: 'custom',
-  path: '/custom',
-}`.trim(),
+  }`.trim(),
     })
 
     expect(

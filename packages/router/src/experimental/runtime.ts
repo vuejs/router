@@ -126,38 +126,32 @@ export function mergeRouteRecord(
 
 /**
  * Merges the `definePage()` data of each view into a route record of the
- * experimental router. The `props` of a page only apply to its view. `name`,
- * `path`, `alias`, and `params` are ignored because they are extracted at
- * build time.
+ * experimental router. The `meta` of all pages is merged and the `props` of a
+ * page only apply to its view. Expects `name`, `path`, `alias`, and `params`
+ * to be removed at build time.
  *
  * @internal
  *
- * @param main - route record generated from the file structure
+ * @param record - route record generated from the file structure, without `props`
  * @param pages - `definePage()` data, indexed by view name
  * @returns the merged route record
  */
 export function mergeRouteRecordViews<TRecord extends object>(
-  main: TRecord,
+  record: TRecord,
   pages: Record<string, DefinePage>
 ): TRecord {
-  const record = main as { meta?: object; props?: Record<string, unknown> }
+  const r = record as { meta?: object; props?: Record<string, unknown> }
+  const meta = assign({}, r.meta)
+  const props: Record<string, unknown> = {}
   for (const view in pages) {
-    const {
-      name: _name,
-      path: _path,
-      alias: _alias,
-      params: _params,
-      meta,
-      props,
-      ...rest
-    } = pages[view]!
-    assign(record, rest)
-    if (meta) record.meta = assign({}, record.meta, meta)
-    if (props !== undefined) {
-      record.props = assign({}, record.props, { [view]: props })
-    }
+    const page = pages[view]!
+    assign(r, page)
+    assign(meta, page.meta)
+    props[view] = page.props
   }
-  return main
+  r.meta = meta
+  r.props = props
+  return record
 }
 
 /**

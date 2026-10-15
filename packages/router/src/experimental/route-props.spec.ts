@@ -181,25 +181,9 @@ describe('mergeRouteRecordViews', () => {
     expect(record.meta).toEqual({ a: 1, b: 2, c: 3 })
   })
 
-  it('keeps the properties extracted at build time', () => {
-    const path = new MatcherPatternPathStatic('/about')
-    const record = mergeRouteRecordViews(
-      { name: '/about', path },
-      {
-        default: {
-          name: 'custom',
-          path: '/custom',
-          alias: ['/other'],
-          params: { query: { page: 'int' } },
-        },
-      }
-    )
-    expect(record).toEqual({ name: '/about', path })
-  })
-
   it('keeps other properties of the page', () => {
     const redirect = () => '/'
     const record = mergeRouteRecordViews({}, { default: { redirect } })
-    expect(record).toEqual({ redirect })
+    expect(record).toMatchObject({ redirect })
   })
 })
