@@ -7,14 +7,7 @@ import {
   type NavigationFailure,
 } from '../errors'
 import type { ShallowRef } from 'vue'
-import {
-  nextTick,
-  shallowReactive,
-  shallowRef,
-  unref,
-  warn,
-  type App,
-} from 'vue'
+import { nextTick, shallowRef, unref, warn, type App } from 'vue'
 import {
   NavigationType,
   type HistoryState,
@@ -57,7 +50,11 @@ import type {
   RouteMeta,
 } from '../types'
 import { useCallbacks } from '../utils/callbacks'
-import { isSameRouteLocation, START_LOCATION_NORMALIZED } from '../location'
+import {
+  createReactiveRoute,
+  isSameRouteLocation,
+  START_LOCATION_NORMALIZED,
+} from '../location'
 import { assign, isArray, isBrowser, noop } from '../utils'
 import {
   extractChangingRecords,
@@ -1416,17 +1413,9 @@ export function experimental_createRouter(
         })
       }
 
-      const reactiveRoute = {} as RouteLocationNormalizedLoaded
-      for (const key in START_LOCATION_NORMALIZED) {
-        Object.defineProperty(reactiveRoute, key, {
-          get: () => currentRoute.value[key as keyof RouteLocationNormalized],
-          enumerable: true,
-        })
-      }
-
       // @ts-expect-error: FIXME: refactor with new types once it's possible
       app.provide(routerKey, router)
-      app.provide(routeLocationKey, shallowReactive(reactiveRoute))
+      app.provide(routeLocationKey, createReactiveRoute(currentRoute))
       app.provide(routerViewLocationKey, currentRoute)
 
       installedApps.add(app)
