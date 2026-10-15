@@ -60,43 +60,27 @@ export {
   defineParamParser,
   defineHashParamParser,
   defineParamParserRaw,
-  normalizeParamParser as _normalizeParamParser,
-  type ExtractParamParserType as _ExtractParamParserType,
 } from './route-resolver/matchers/param-parsers'
 
-export { miss, MatchMiss as _MatchMiss } from './route-resolver/matchers/errors'
-
-/**
- * Internal functions and types for the experimental router.
- * They should all be prefixed with `_` to avoid conflicts with the public API.
- */
+export { miss } from './route-resolver/matchers/errors'
 
 // Runtime exports (definePage macro)
 export {
   definePage,
-  _mergeRouteRecord,
-  _mergeRouteRecordViews,
   type DefinePage,
   type ParamParserType,
   type ParamParserType_Native,
-  type ParamParsers as _ParamParsers,
-  type ParamParsers_Native as _ParamParsers_Native,
   type ParamParserTypeOf,
   type DefinePageParamRequiredOrDefault,
   type DefinePageHashParamOptions,
   type DefinePagePathParamOptions,
-  type DefinePageHashParamOptionsAny as _DefinePageHashParamOptionsAny,
   type DefinePageQueryParamOptions,
-  type DefinePageQueryParamOptionsAny as _DefinePageQueryParamOptionsAny,
-  type PathParamNamesForFilePath as _PathParamNamesForFilePath,
-  type RoutePropsForFilePath as _RoutePropsForFilePath,
 } from './runtime'
 
 // Data loaders exports
 export {
   // Core
   DataLoaderPlugin,
-  NavigationResult as _NavigationResult,
   reroute,
   useIsDataLoading,
   type DataLoaderPluginOptions,
@@ -163,3 +147,24 @@ export {
 //     children?: never
 //   }
 // }
+
+/**
+ * Internal functions and types for the experimental router.
+ * They should all be prefixed with `_` to avoid conflicts with the public API.
+ */
+export {
+  normalizeParamParser as _normalizeParamParser,
+  type ExtractParamParserType as _ExtractParamParserType,
+} from './route-resolver/matchers/param-parsers'
+export { MatchMiss as _MatchMiss } from './route-resolver/matchers/errors'
+export {
+  _mergeRouteRecord,
+  _mergeRouteRecordViews,
+  type ParamParsers as _ParamParsers,
+  type ParamParsers_Native as _ParamParsers_Native,
+  type DefinePageHashParamOptionsAny as _DefinePageHashParamOptionsAny,
+  type DefinePageQueryParamOptionsAny as _DefinePageQueryParamOptionsAny,
+  type PathParamNamesForFilePath as _PathParamNamesForFilePath,
+  type RoutePropsForFilePath as _RoutePropsForFilePath,
+} from './runtime'
+export { NavigationResult as _NavigationResult } from './data-loaders/entries/index'

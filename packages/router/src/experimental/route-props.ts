@@ -10,10 +10,10 @@ import type {
  *
  * @internal
  */
-export type _ComponentProps<C> = unknown extends C
+export type ComponentProps<C> = unknown extends C
   ? Record<string, any>
   : C extends () => Promise<infer M>
-    ? _ComponentProps<M extends { default: infer D } ? D : M>
+    ? ComponentProps<M extends { default: infer D } ? D : M>
     : C extends new (...args: any) => { $props: infer P }
       ? P
       : C extends (props: infer P, ...args: any) => any
@@ -26,7 +26,7 @@ export type _ComponentProps<C> = unknown extends C
  *
  * @internal
  */
-export type _RoutePropsTrue<Params, Props> = string extends keyof Params
+export type RoutePropsTrue<Params, Props> = string extends keyof Params
   ? true
   : [Params] extends [Props]
     ? true
@@ -50,7 +50,7 @@ export type EXPERIMENTAL_RouteRecordPropsOption<
   Props = Record<string, any>,
 > =
   | false
-  | _RoutePropsTrue<Location['params'], Props>
+  | RoutePropsTrue<Location['params'], Props>
   | Props
   | ((to: Location) => Props)
 
@@ -60,7 +60,7 @@ export type EXPERIMENTAL_RouteRecordPropsOption<
  *
  * @internal
  */
-export type _RouteLocationForRecordName<Name> = Name extends keyof RouteMap
+export type RouteLocationForRecordName<Name> = Name extends keyof RouteMap
   ? RouteLocationNormalizedLoaded<Name | RouteMap[Name]['childrenNames']>
   : RouteLocationNormalizedLoadedGeneric
 
@@ -69,12 +69,12 @@ export type _RouteLocationForRecordName<Name> = Name extends keyof RouteMap
  *
  * @internal
  */
-export type _RouteRecordPropsViews<
+export type RouteRecordPropsViews<
   Location extends RouteLocationNormalizedLoadedGeneric,
   Components,
 > = {
   [View in keyof Components]?: EXPERIMENTAL_RouteRecordPropsOption<
     Location,
-    _ComponentProps<Components[View]>
+    ComponentProps<Components[View]>
   >
 }

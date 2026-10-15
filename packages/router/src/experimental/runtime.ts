@@ -8,7 +8,7 @@ import type {
 } from '../typed-routes'
 import type {
   EXPERIMENTAL_RouteRecordPropsOption,
-  _ComponentProps,
+  ComponentProps,
 } from './route-props'
 
 /**
@@ -191,7 +191,7 @@ export interface DefinePage<
    */
   props?: EXPERIMENTAL_RouteRecordPropsOption<
     RouteLocationForFilePath<FilePath>,
-    _ComponentProps<Component>
+    ComponentProps<Component>
   >
 
   /**
