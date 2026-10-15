@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "noEmit": true,
+    "noImplicitReturns": false,
+    "exactOptionalPropertyTypes": true,
+    "paths": {
+      "vue-router": ["../dist"]
+    }
+  },
+  "include": ["./exactOptionalPropertyTypes.test-d.ts"],
+  "exclude": ["../src", "../dist", "../__tests__"]
+}
