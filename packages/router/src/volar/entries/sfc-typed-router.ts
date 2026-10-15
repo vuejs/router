@@ -226,8 +226,10 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
     for (const prop of arg.properties) {
       if (
         ts.isPropertyAssignment(prop) &&
-        ts.isIdentifier(prop.name) &&
-        ts.idText(prop.name) === 'props'
+        // `Identifier.text` is undefined in vue-tsc
+        (ts.isIdentifier(prop.name)
+          ? ts.idText(prop.name)
+          : ts.isStringLiteral(prop.name) && prop.name.text) === 'props'
       ) {
         return prop.initializer
       }

@@ -117,6 +117,14 @@ describe('sfc-typed-router volar plugin', () => {
       ).toBe(`const props = defineProps<${ROUTE_PROPS}>()`)
     })
 
+    it('detects a quoted `props` key', () => {
+      expect(
+        transformProps(
+          `const props = defineProps()\ndefinePage({ 'props': true })`
+        )
+      ).toBe(`const props = defineProps<${ROUTE_PROPS}>()`)
+    })
+
     it('intersects the route props with an inline type argument', () => {
       expect(
         transformProps(
