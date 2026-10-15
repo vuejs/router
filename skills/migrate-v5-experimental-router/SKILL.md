@@ -1,8 +1,7 @@
 ---
 name: migrate-v5-experimental-router
 disable-model-invocation: true
-disable-model-invocation: true
-description: Migrate Vue Router 4/5 apps to file-based routing, the Vue Router 5 experimental router, param parsers, or scroll restoration. Use when adopting vue-router/vite, vue-router/auto-resolver, experimental_createRouter, defineParamParser, ScrollRestoration, or useScrollRestoration. Covers migration blockers and hand-written resolvers.
+description: Step-by-step help to migrate your Vue Router app to file-based routing, the Vue Router 5 experimental router, param parsers, or scroll restoration.
 ---
 
 # Migrate to the Vue Router 5 experimental router
@@ -64,4 +63,3 @@ After each selected phase, use the project’s existing scripts and test tools:
 - [scroll-restoration.md](references/scroll-restoration.md): phase 4, `scrollBehavior` patterns.
 - [limitations.md](references/limitations.md): not implemented features and workarounds.
 - [diagnostics.md](references/diagnostics.md): diagnostic codes you can see during the migration.
-- [exports.md](references/exports.md): maintenance index of exports. Read only when checking an API name or updating this skill.
