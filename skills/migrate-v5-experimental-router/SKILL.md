@@ -1,6 +1,7 @@
 ---
 name: migrate-v5-experimental-router
-description: Migrate a Vue Router 4/5 app to the Vue Router 5 experimental stack, step by step. Covers file-based routing (vue-router/vite, vue-router/auto-routes), the experimental router with the fixed resolver (experimental_createRouter, vue-router/auto-resolver, createFixedResolver), custom param parsers (defineParamParser, [id=int], definePage params), and scroll restoration (ScrollRestoration, useScrollRestoration instead of scrollBehavior). Use when the user wants to adopt file-based routing, typed or parsed params, the new matcher, or replace scrollBehavior, or imports from vue-router/experimental. Also lists what the experimental router does not support yet (addRoute/removeRoute, beforeEnter, props, path overrides).
+disable-model-invocation: true
+description: Migrate Vue Router 4/5 apps to file-based routing, the Vue Router 5 experimental router, param parsers, or scroll restoration. Use when adopting vue-router/vite, vue-router/auto-resolver, experimental_createRouter, defineParamParser, ScrollRestoration, or useScrollRestoration. Covers migration blockers and hand-written resolvers.
 ---
 
 # Migrate to the Vue Router 5 experimental router
@@ -8,11 +9,11 @@ description: Migrate a Vue Router 4/5 app to the Vue Router 5 experimental stack
 The experimental router replaces the `routes` array and the path-ranking matcher with a **resolver**: a fixed, ordered list of route records. Each record has matcher objects for its path, query, and hash. File-based routing generates this resolver at build time. Param parsers convert URL strings to typed values (and back) inside the matchers.
 
 > [!WARNING]
-> The experimental router is **not production-ready**. APIs can change in a minor release. Tell the user this before you start. Do not migrate a production app without their explicit approval.
+> The experimental router is **not production-ready**. APIs can change in a minor release. Tell the user this before changing the app. For a production app, confirm that the user has authorized experimental APIs; ask only if their request leaves this unclear.
 
 ## Migration phases
 
-Do the phases in this order. Each phase gives a working app. Stop after each phase, run the checks, and commit only when the user asks.
+Select the phases needed for the user’s request. For a full migration, use the order below. Verify each phase before you continue. Commit only when the user asks.
 
 | Phase | What changes                                                    | Router                 | Reference                                                              |
 | ----- | --------------------------------------------------------------- | ---------------------- | ---------------------------------------------------------------------- |
@@ -28,13 +29,7 @@ If the app cannot use file-based routing, skip phase 1 and write the resolver by
 
 ## Before you start: check the blockers
 
-Read [references/limitations.md](references/limitations.md) first. These features block phase 2 or need a rewrite:
-
-- **Dynamic routing.** The experimental router has no `addRoute()`, `removeRoute()`, or `clearRoutes()`. Routes added at runtime (plugins, `setupLayouts()`, permission-based routes, `routes.push(redirect)`) must move to build time.
-- **`beforeEnter`** is deprecated (diagnostic `D0001`). Move the logic to `meta` + `router.beforeEach()`.
-- **`props`** on route records is not supported. Read params with `useRoute()`.
-- **`path` override in `definePage()` / `<route>`** does not change the generated matcher. Rename the file instead.
-- **`parseQuery`** is ignored. `route.query` values are always arrays.
+Before phase 2, read [references/limitations.md](references/limitations.md). Check dynamic routing, `beforeEnter`, route-record `props`, path overrides, and custom query parsing. The reference gives the current status and workarounds.
 
 If the audit finds a blocker that has no workaround, stop and report it to the user. Do not invent an API.
 
@@ -47,79 +42,16 @@ If the audit finds a blocker that has no workaround, stop and report it to the u
 5. **Use array query values.** `router.push({ query: { q: ['vue'] } })`. Non-array values warn (`D0002`).
 6. **Use `null` to remove an optional param.** `undefined` or `''` warns (`R0122`).
 7. **Do not put variables in `definePage()`.** It is extracted at build time (`B0002`). Imports are allowed.
-8. **Verify with the app.** Run the type check, the unit tests, and the dev server after each phase. See [Verification](#verification).
-
-## Quick reference: final setup
-
-```ts
-// vite.config.ts
-import VueRouter from 'vue-router/vite'
-import Vue from '@vitejs/plugin-vue'
-
-export default defineConfig({
-  plugins: [
-    VueRouter({
-      dts: 'src/route-map.d.ts',
-      experimental: { paramParsers: true }, // scans src/params
-    }),
-    Vue(), // must come after VueRouter()
-  ],
-})
-```
-
-```ts
-// src/router.ts
-import { createWebHistory } from 'vue-router'
-import { experimental_createRouter } from 'vue-router/experimental'
-import { resolver, handleHotUpdate } from 'vue-router/auto-resolver'
-
-export const router = experimental_createRouter({
-  history: createWebHistory(),
-  resolver,
-})
-
-if (import.meta.hot) handleHotUpdate(router)
-```
-
-```ts
-// src/main.ts
-import { createApp } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
-import {
-  ScrollRestoration,
-  SCROLL_RESTORATION_CAPTURE_DEFAULT,
-  SCROLL_RESTORATION_RESTORE_DEFAULT,
-} from 'vue-router/experimental'
-import App from './App.vue'
-import { router } from './router'
-
-const app = createApp(App)
-app.component('RouterLink', RouterLink)
-app.component('RouterView', RouterView)
-app.use(ScrollRestoration, {
-  router,
-  capture: SCROLL_RESTORATION_CAPTURE_DEFAULT,
-  restore: SCROLL_RESTORATION_RESTORE_DEFAULT,
-})
-app.use(router)
-app.mount('#app')
-
-declare module 'vue-router' {
-  interface TypesConfig {
-    Router: typeof router
-  }
-}
-```
 
 ## Verification
 
-After each phase:
+After each selected phase, use the project’s existing scripts and test tools:
 
-1. Start the dev server once so the plugin writes the route map `.d.ts`.
+1. Start the dev server. For file-based routing, check that the plugin writes the route map `.d.ts`.
 2. Run the type check (`vue-tsc --noEmit` or the project script).
-3. Run the unit and e2e tests.
-4. Open each top-level route, one dynamic route, the 404 route, and one redirect. Use back/forward.
-5. Read the browser console. Fix every Vue Router diagnostic. Codes are in [references/diagnostics.md](references/diagnostics.md).
+3. Run the relevant unit and e2e tests, if available.
+4. Test affected routes and representative dynamic, 404, and redirect cases. Use back/forward. For scroll changes, check capture and restoration.
+5. Read the browser console and build output. Resolve migration-related warnings and errors; explain informational diagnostics. Codes are in [references/diagnostics.md](references/diagnostics.md).
 
 ## Reference index
 
@@ -131,4 +63,4 @@ After each phase:
 - [scroll-restoration.md](references/scroll-restoration.md): phase 4, `scrollBehavior` patterns.
 - [limitations.md](references/limitations.md): not implemented features and workarounds.
 - [diagnostics.md](references/diagnostics.md): diagnostic codes you can see during the migration.
-- [exports.md](references/exports.md): every `vue-router/experimental` export and where this skill covers it.
+- [exports.md](references/exports.md): maintenance index of exports. Read only when checking an API name or updating this skill.

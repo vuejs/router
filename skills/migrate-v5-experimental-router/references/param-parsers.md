@@ -207,7 +207,7 @@ Limits:
 
 - One-way only. The router uses `String(value)` to build the URL. Use this only when `String(parsed)` gives back the URL value. Otherwise use `defineParamParser` with `set`.
 - Async validation is not supported. It throws in dev.
-- In a hand-written resolver, a raw schema is not wrapped for you. Wrap it with `_normalizeParamParser()` (internal) or write a `defineParamParser`.
+- In a hand-written resolver, a raw schema is not wrapped for you. Use `defineParamParser()` to provide `get` and `set`.
 
 ### Errors
 

@@ -64,7 +64,7 @@ rg -n "\.meta\.\w+" src
 
 ## 4. Make a route map
 
-Write a table of every record: full path, name, component file, params, meta, redirect, alias, guards. You use it in phase 1 to name files and in the verification step to test each route.
+Summarize the affected routes and exceptions. Include paths, names, component files, params, meta, redirects, aliases, and guards where they affect the migration. Use this map to name files in phase 1 and choose verification cases. Make a full table only when the migration needs a record-by-record map.
 
 Example:
 
@@ -76,9 +76,9 @@ Example:
 | `/admin`           |             | `layouts/Admin.vue`  | `meta.requiresAuth`        |
 | `/:pathMatch(.*)*` | `not-found` | `views/NotFound.vue` |                            |
 
-## 5. Decide the scope with the user
+## 5. Set the migration scope
 
-Ask the user which phases to do. Typical answers:
+Use the phases requested by the user. Ask which phases to do only when the request is unclear. Common scopes:
 
 - "File-based routing only": do phase 1, keep the stable router.
 - "Typed params": phases 1 to 3.

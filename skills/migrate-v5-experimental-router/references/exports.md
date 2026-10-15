@@ -1,6 +1,8 @@
-# `vue-router/experimental` exports
+# Maintenance index: `vue-router/experimental` exports
 
-Source of truth: `packages/router/src/experimental/index.ts`. Keep this table in sync with that file. Names that start with `_` are internal: do not tell users to import them unless no public API exists.
+Use this index to check an export name or maintain the skill. For migration steps, read the feature reference instead.
+
+Source of truth: `packages/router/src/experimental/index.ts`. Keep this table in sync with that file. Names that start with `_` are internal and are listed only for maintenance. Use public APIs in migration code.
 
 Data loader exports are listed for completeness. This skill does not cover data loaders in depth. See `packages/docs/data-loaders/`.
 

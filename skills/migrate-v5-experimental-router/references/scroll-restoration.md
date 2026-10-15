@@ -35,7 +35,7 @@ app.use(router) // after the plugin
 ```
 
 > [!NOTE]
-> The docs say `capture` and `restore` are optional, but the `ScrollRestorationPluginOptions` type makes them **required** and the runtime has no default for them. Always pass them. Report this conflict to the user if they ask.
+> The docs say `capture` and `restore` are optional, but the `ScrollRestorationPluginOptions` type makes them **required** and the runtime has no default for them. Report this conflict to the user before choosing a fix. Pass both options as shown above.
 
 What the defaults do:
 

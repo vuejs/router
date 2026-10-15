@@ -133,4 +133,3 @@ With the stable router you can still change the `routes` array before `createRou
 - Every old URL still opens the same component.
 - Every `push({ name })` compiles.
 - The 404 page shows for an unknown URL.
-- Commit only when the user asks.
