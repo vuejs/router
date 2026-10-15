@@ -172,4 +172,44 @@ test.describe('Pages HMR', () => {
 
     await expect(page.getByTestId('meta-foo')).toHaveText('updated')
   })
+
+  test('declares params of an added child page with `props: true`', async ({
+    page,
+    baseURL,
+    applyEditFile,
+  }) => {
+    await page.goto(baseURL + '/hmr-props-child-added')
+
+    await expect(page.getByTestId('parent-props')).toHaveText('')
+
+    await ensureHmrToken(page)
+    applyEditFile(
+      'src/pages/hmr-props-child-added/[id].vue',
+      'edits/src/pages/hmr-props-child-added-[id].vue'
+    )
+
+    await expect(page.getByTestId('parent-props')).toHaveText('id')
+  })
+
+  test('declares params of a changed parent page with `props: true`', async ({
+    page,
+    baseURL,
+    applyEditFile,
+  }) => {
+    await page.goto(baseURL + '/hmr-props-parent-changed/1')
+
+    await expect(page.getByTestId('child-props')).toHaveText('id')
+
+    await ensureHmrToken(page)
+    applyEditFile(
+      'src/pages/hmr-props-parent-changed.vue',
+      'edits/src/pages/hmr-props-parent-changed-define-page-with-team-path.vue'
+    )
+
+    // the current location no longer matches once the routes are updated
+    await expect(page.getByTestId('child-props')).toBeHidden()
+    await navigate(page, '/hmr-props-team/a/1')
+
+    await expect(page.getByTestId('child-props')).toHaveText('team,id')
+  })
 })
