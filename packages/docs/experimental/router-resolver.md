@@ -155,8 +155,8 @@ definePage({
 
 `props` accepts these values:
 
-- `true`: pass `route.params` as props. This includes the query and hash params.
-- `false`: pass no props.
+- `true`: pass `route.params` as props **and automatically types `defineProps()`**. This includes the query and hash params.
+- `false`: pass no props, same as not declaring `props`.
 - An object: pass these static props.
 - A function: receives the route location and returns the props.
 
