@@ -391,6 +391,93 @@ describe('onRouteRendered', () => {
     )
   })
 
+  it.each([
+    { root: 'async', registered: false, navigateAway: false },
+    { root: 'async', registered: true, navigateAway: false },
+    { root: 'nested', registered: true, navigateAway: false },
+    { root: 'element', registered: true, navigateAway: false },
+    { root: 'async', registered: true, navigateAway: true },
+  ])(
+    'nested navigation with an async child (root: $root, callback: $registered, navigate away: $navigateAway)',
+    async ({ root, registered, navigateAway }) => {
+      const { promise: pending, resolve } = Promise.withResolvers<void>()
+      const rendered = vi.fn(() => dom())
+      const Async = defineComponent({
+        async setup() {
+          await pending
+          return () => h('p', 'Async')
+        },
+      })
+      const Nested = defineComponent({ render: () => h(Async) })
+      const AsyncPage = defineComponent({
+        setup() {
+          if (registered) onRouteRendered(rendered)
+          return () =>
+            root === 'element'
+              ? h('div', h(Async))
+              : h(root === 'nested' ? Nested : Async)
+        },
+      })
+      const router = createRouter({
+        history: createMemoryHistory(),
+        routes: [
+          {
+            path: '/',
+            component: {
+              components: { RouterView },
+              template: '<section><RouterView /></section>',
+            },
+            children: [
+              { path: '', component: { render: () => h('p', 'Home') } },
+              { path: 'async', component: AsyncPage },
+            ],
+          },
+        ],
+      })
+      await router.push('/')
+      await router.isReady()
+      const Root = defineComponent({
+        components: { RouterView },
+        template: `<RouterView v-slot="{ Component }">
+          <Suspense><component :is="Component" /></Suspense>
+        </RouterView>`,
+      })
+      const wrapper = mount(Root, {
+        attachTo: document.body,
+        global: { plugins: [router] },
+      })
+
+      await flushPromises()
+      expect(wrapper.text()).toBe('Home')
+      // The ancestor Suspense has resolved and keeps the parent route mounted.
+      await router.push('/async')
+      await flushPromises()
+      expect(wrapper.text()).toBe('')
+      // The synchronous page has mounted, even though its child is pending.
+      // A component root should report at the same time as an element root.
+      if (registered) {
+        expect(rendered).toHaveBeenCalledTimes(1)
+        expect(rendered).toHaveBeenCalledWith(
+          expect.objectContaining({ fullPath: '/async' }),
+          expect.objectContaining({ fullPath: '/' })
+        )
+        expect(rendered).toHaveReturnedWith('')
+      } else {
+        expect(rendered).not.toHaveBeenCalled()
+      }
+
+      if (navigateAway) {
+        await router.push('/')
+        await flushPromises()
+      }
+      resolve()
+      await flushPromises()
+      expect(wrapper.text()).toBe(navigateAway ? 'Home' : 'Async')
+      // Resolving the child must not report the same or an abandoned route.
+      expect(rendered).toHaveBeenCalledTimes(registered ? 1 : 0)
+    }
+  )
+
   it('Suspense keyed async component keeps the old branch', async () => {
     const pending: Array<PromiseWithResolvers<void>> = []
     const Async = defineComponent({
