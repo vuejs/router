@@ -284,6 +284,23 @@ definePage({ props: true })`)
       ).toContain(`const props = defineProps(["userId","page"])`)
     })
 
+    it.each(["'props'", '"props"'])(
+      'declares the params with a %s key',
+      async key => {
+        expect(
+          await transformScript(`defineProps()
+definePage({ ${key}: true })`)
+        ).toContain(`defineProps(["userId","page"])`)
+      }
+    )
+
+    it('ignores a computed props key', async () => {
+      expect(
+        await transformScript(`defineProps()
+definePage({ ['props']: true })`)
+      ).toContain('defineProps()')
+    })
+
     it('adds the params to the type argument of `defineProps()`', async () => {
       expect(
         await transformScript(`const props = withDefaults(defineProps<Props & { extra?: string }>(), {})

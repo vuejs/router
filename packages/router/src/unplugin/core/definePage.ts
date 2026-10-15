@@ -296,8 +296,8 @@ function hasPropsTrue(definePageNode: CallExpression): boolean {
       prop =>
         prop.type === 'ObjectProperty' &&
         !prop.computed &&
-        prop.key.type === 'Identifier' &&
-        prop.key.name === 'props' &&
+        ((prop.key.type === 'Identifier' && prop.key.name === 'props') ||
+          (prop.key.type === 'StringLiteral' && prop.key.value === 'props')) &&
         prop.value.type === 'BooleanLiteral' &&
         prop.value.value
     )

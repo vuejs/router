@@ -114,12 +114,12 @@ export function mergeRouteRecord(
       routeRecord.alias || []
     )
 
-    // TODO: other nested properties
-    // const props = assign({}, acc.props, routeRecord.props)
+    const props = assign({}, acc.props, routeRecord.props)
 
     assign(acc, routeRecord)
     acc.meta = meta
     acc.alias = alias
+    acc.props = props
     return acc
   }, main)
 }
