@@ -12,16 +12,10 @@ import {
   type WorkRecord,
 } from '../../../../../domain'
 
-const props = defineProps<{ workspaceId?: string; recordId?: string }>()
 const route = useRoute()
 const router = useRouter()
-const workspaceId = computed(
-  () => props.workspaceId ?? String(route.params.workspaceId)
-)
-const recordId = computed(() => props.recordId ?? String(route.params.recordId))
-const paramSource = computed(() =>
-  props.workspaceId === undefined ? 'route' : 'props'
-)
+const workspaceId = computed(() => String(route.params.workspaceId))
+const recordId = computed(() => String(route.params.recordId))
 const section = 'invoices'
 const view = 'members'
 const rows = ref(makeRecords(section))
@@ -72,10 +66,7 @@ function changeRecord(id: string) {
     <div class="page-heading">
       <div>
         <h1>Invoices · members</h1>
-        <p>
-          Record {{ recordId }} · Parameter source:
-          <strong data-testid="param-source">{{ paramSource }}</strong>
-        </p>
+        <p>Record {{ recordId }}</p>
       </div>
       <span class="badge">Q4 planning</span>
     </div>

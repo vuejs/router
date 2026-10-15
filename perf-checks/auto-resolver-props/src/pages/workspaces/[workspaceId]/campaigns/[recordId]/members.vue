@@ -1,7 +1,6 @@
 <script setup lang="ts">
-definePage({ props: true })
 import { computed, reactive, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import RecordTable from '../../../../../components/RecordTable.vue'
 import StatsPanel from '../../../../../components/StatsPanel.vue'
 import ActivityFeed from '../../../../../components/ActivityFeed.vue'
@@ -13,16 +12,10 @@ import {
   type WorkRecord,
 } from '../../../../../domain'
 
-const props = defineProps<{ workspaceId?: string; recordId?: string }>()
-const route = useRoute()
+definePage({ props: true })
+
+const { workspaceId, recordId } = defineProps()
 const router = useRouter()
-const workspaceId = computed(
-  () => props.workspaceId ?? String(route.params.workspaceId)
-)
-const recordId = computed(() => props.recordId ?? String(route.params.recordId))
-const paramSource = computed(() =>
-  props.workspaceId === undefined ? 'route' : 'props'
-)
 const section = 'campaigns'
 const view = 'members'
 const rows = ref(makeRecords(section))
@@ -61,7 +54,7 @@ function save() {
 function changeRecord(id: string) {
   return router.push({
     name: '/workspaces/[workspaceId]/campaigns/[recordId]/members',
-    params: { workspaceId: workspaceId.value, recordId: id },
+    params: { workspaceId, recordId: id },
     query: { tab: view },
   })
 }
@@ -73,10 +66,7 @@ function changeRecord(id: string) {
     <div class="page-heading">
       <div>
         <h1>Campaigns · members</h1>
-        <p>
-          Record {{ recordId }} · Parameter source:
-          <strong data-testid="param-source">{{ paramSource }}</strong>
-        </p>
+        <p>Record {{ recordId }}</p>
       </div>
       <span class="badge">Q4 planning</span>
     </div>
