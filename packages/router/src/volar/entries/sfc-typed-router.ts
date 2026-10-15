@@ -62,19 +62,26 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
 
       const definePageTypeParams = `<'${escapedFilePath}'>`
 
-      const routePropsType = `import('vue-router/experimental')._RoutePropsForFilePath<'${escapedFilePath}'>`
-
       // `definePage()` can come after `defineProps()`
-      const hasPropsTrue =
-        !!sfc.scriptSetup &&
-        !sfc.scriptSetup.lang.startsWith('js') &&
-        sfc.scriptSetup.ast.statements.some(
-          statement =>
+      let propsOption: ts.Expression | undefined
+      if (sfc.scriptSetup && !sfc.scriptSetup.lang.startsWith('js')) {
+        for (const statement of sfc.scriptSetup.ast.statements) {
+          if (
             ts.isExpressionStatement(statement) &&
-            isDefinePageCall(statement.expression) &&
-            getPropsOption(statement.expression)?.kind ===
-              ts.SyntaxKind.TrueKeyword
-        )
+            isDefinePageCall(statement.expression)
+          ) {
+            propsOption = getPropsOption(statement.expression)
+            break
+          }
+        }
+      }
+
+      // without `props`, `experimental.propsDefault` decides in the dts
+      const routePropsType = !propsOption
+        ? `import('vue-router/experimental')._DefaultRoutePropsForFilePath<'${escapedFilePath}'>`
+        : propsOption.kind === ts.SyntaxKind.TrueKeyword
+          ? `import('vue-router/experimental')._RoutePropsForFilePath<'${escapedFilePath}'>`
+          : null
 
       if (sfc.scriptSetup) {
         visit(sfc.scriptSetup.ast)
@@ -147,7 +154,8 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
             definePageTypeParams
           )
         } else if (
-          hasPropsTrue &&
+          routePropsType &&
+          !sfc.scriptSetup!.lang.startsWith('js') &&
           ts.isCallExpression(node) &&
           ts.isIdentifier(node.expression) &&
           ts.idText(node.expression) === 'defineProps' &&
@@ -232,6 +240,11 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
           : ts.isStringLiteral(prop.name) && prop.name.text) === 'props'
       ) {
         return prop.initializer
+      } else if (
+        ts.isShorthandPropertyAssignment(prop) &&
+        ts.idText(prop.name) === 'props'
+      ) {
+        return prop.name
       }
     }
     return undefined

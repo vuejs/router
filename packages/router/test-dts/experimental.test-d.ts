@@ -2,6 +2,7 @@ import { describe, it, expectTypeOf } from 'vitest'
 import type {
   EXPERIMENTAL_Router,
   EXPERIMENTAL_RouterOptions,
+  _DefaultRoutePropsForFilePath,
 } from 'vue-router/experimental'
 import {
   definePage,
@@ -61,6 +62,8 @@ type RouteFileInfoMap = {
     routes: 'user'
     views: never
     pathParamNames: 'id'
+    // `experimental.propsDefault`
+    props: true
   }
   'src/pages/users.vue': {
     routes: 'users' | 'users-detail'
@@ -323,6 +326,23 @@ describe('route record props', () => {
       components: { default: Search },
       props: { default: true },
     })
+  })
+})
+
+describe('experimental.propsDefault', () => {
+  it('types the params of pages marked with props', () => {
+    expectTypeOf<
+      _DefaultRoutePropsForFilePath<'src/pages/user.vue'>
+    >().toEqualTypeOf<{ id: number; page: number }>()
+  })
+
+  it('adds no props to other files', () => {
+    expectTypeOf<
+      _DefaultRoutePropsForFilePath<'src/pages/users.vue'>
+    >().toEqualTypeOf<{}>()
+    expectTypeOf<
+      _DefaultRoutePropsForFilePath<'src/components/Foo.vue'>
+    >().toEqualTypeOf<{}>()
   })
 })
 

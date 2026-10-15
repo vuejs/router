@@ -170,6 +170,24 @@ With the `sfc-typed-router` Volar plugin, the function receives a typed route lo
 
 With `props: true`, the plugin adds the params of the route to the type of `defineProps()`, so `defineProps<{ extra?: string }>()` is typed as `defineProps<RouteParams & { extra?: string }>()`. At build time, the Vite plugin also declares the params in `defineProps()`, so Vue passes them as props instead of attrs. Runtime declarations like `defineProps(['extra'])` are left untouched: list the params there yourself.
 
+### Pass props to every page
+
+Set `experimental.propsDefault` in the Vue Router Vite plugin to pass the route params as props to every page component, as if each `definePage()` had `props: true`:
+
+```ts [vite.config.ts]
+VueRouter({
+  experimental: {
+    propsDefault: true,
+  },
+})
+```
+
+A page can still set `props` in `definePage()` to override it, e.g. `props: false` to pass no props. The params are also added to the type of `defineProps()` and declared at build time, as with `props: true`.
+
+::: warning
+Pages that do not call `defineProps()` receive the params as attrs. For example, `src/pages/users/[id].vue` renders `id="1"` on its root element. Set `props: false` in these pages, or call `defineProps()`.
+:::
+
 ## With Data Loaders
 
 If you use [Data Loaders](../data-loaders/), install the plugin **before** the router:

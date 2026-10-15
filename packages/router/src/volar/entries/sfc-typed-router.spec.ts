@@ -155,14 +155,26 @@ describe('sfc-typed-router volar plugin', () => {
       )
     })
 
-    it('does nothing without `props: true`', () => {
+    it('does nothing with other `props` values', () => {
       for (const code of [
         `const props = defineProps()\ndefinePage({ props: false })`,
+        `const props = defineProps()\ndefinePage({ 'props': false })`,
         `const props = defineProps()\ndefinePage({ props: to => to.params })`,
-        `const props = defineProps()\ndefinePage({})`,
-        `const props = defineProps()`,
+        `const props = defineProps()\ndefinePage({ props })`,
       ]) {
         expect(transformProps(code)).toBe(code.split('\n')[0])
+      }
+    })
+
+    it('adds the default route props without `props`', () => {
+      const DEFAULT_ROUTE_PROPS = `import('vue-router/experimental')._DefaultRoutePropsForFilePath<'src/pages/users/sub-[first]-[second].vue'>`
+      for (const code of [
+        `const props = defineProps<Props>()\ndefinePage({})`,
+        `const props = defineProps<Props>()`,
+      ]) {
+        expect(transformProps(code)).toBe(
+          `const props = defineProps<${DEFAULT_ROUTE_PROPS} & (Props)>()`
+        )
       }
     })
 

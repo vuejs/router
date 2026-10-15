@@ -88,6 +88,23 @@ export type RoutePropsForFilePath<FilePath extends string> = [
   : RouteMap[RouteNamesForFilePath<FilePath>]['params']
 
 /**
+ * Props that `experimental.propsDefault` passes to a page component without
+ * `props` in `definePage()`. `{}` for components that are not pages or when
+ * the option is disabled. The `sfc-typed-router` Volar plugin injects it into
+ * `defineProps()`.
+ *
+ * @internal
+ */
+export type DefaultRoutePropsForFilePath<FilePath extends string> =
+  TypesConfig extends {
+    _RouteFileInfoMap: {
+      [K in FilePath]: { props: true }
+    }
+  }
+    ? RoutePropsForFilePath<FilePath>
+    : {}
+
+/**
  * Merges route records.
  *
  * @internal
@@ -121,12 +138,12 @@ export function mergeRouteRecord(
 /**
  * Merges the `definePage()` data of each view into a route record of the
  * experimental router. The `meta` of all pages is merged and the `props` of a
- * page only apply to its view. Expects `name`, `path`, `alias`, and `params`
- * to be removed at build time.
+ * page only apply to its view and override the `props` of the record. Expects
+ * `name`, `path`, `alias`, and `params` to be removed at build time.
  *
  * @internal
  *
- * @param record - route record generated from the file structure, without `props`
+ * @param record - route record generated from the file structure
  * @param pages - `definePage()` data, indexed by view name
  * @returns the merged route record
  */
@@ -136,12 +153,12 @@ export function mergeRouteRecordViews<TRecord extends object>(
 ): TRecord {
   const r = record as { meta?: object; props?: Record<string, unknown> }
   const meta = assign({}, r.meta)
-  const props: Record<string, unknown> = {}
+  const props: Record<string, unknown> = assign({}, r.props)
   for (const view in pages) {
     const page = pages[view]!
     assign(r, page)
     assign(meta, page.meta)
-    props[view] = page.props
+    if (page.props !== undefined) props[view] = page.props
   }
   r.meta = meta
   r.props = props
