@@ -31,6 +31,11 @@ const MACRO_DEFINE_PAGE = 'definePage'
 export const MACRO_DEFINE_PAGE_QUERY = /[?&]definePage\b/
 
 /**
+ * `definePage()` properties read at build time by {@link extractDefinePageInfo}.
+ */
+const STATIC_PROPERTIES = new Set(['name', 'path', 'alias', 'params'])
+
+/**
  * Generate the ast from a code string and an id. Works with SFC and non-SFC files.
  */
 function getCodeAst(code: string, id: string) {
@@ -153,8 +158,6 @@ export function definePageTransform({
 
     const scriptBindings = ast.body ? getIdentifiers(ast.body) : []
 
-    // TODO: remove information that was extracted already like name, path, params
-
     // this will throw if a property from the script setup is used in definePage
     try {
       checkInvalidScopeReference(routeRecord, MACRO_DEFINE_PAGE, scriptBindings)
@@ -173,6 +176,32 @@ export function definePageTransform({
     s.remove(0, offset + routeRecord.start!)
     s.prepend(`export default `)
 
+    // extracted at build time (or invalid), so only dead weight in the bundle
+    const strippedProps = new Set<Node>()
+    if (routeRecord.type === 'ObjectExpression') {
+      const props = routeRecord.properties
+      props.forEach((prop, i) => {
+        if (
+          prop.type === 'ObjectProperty' &&
+          !prop.computed &&
+          STATIC_PROPERTIES.has(
+            prop.key.type === 'Identifier'
+              ? prop.key.name
+              : prop.key.type === 'StringLiteral'
+                ? prop.key.value
+                : ''
+          )
+        ) {
+          strippedProps.add(prop)
+          // up to the next property or `}` to also remove the comma
+          s.remove(
+            offset + prop.start!,
+            offset + (props[i + 1]?.start ?? routeRecord.end! - 1)
+          )
+        }
+      })
+    }
+
     // find all static imports and filter out the ones that are not used
     const staticImports = findStaticImports(code)
 
@@ -181,8 +210,10 @@ export function definePageTransform({
 
     walkAST(routeRecord, {
       enter(node) {
-        // skip literal keys from object properties
-        if (
+        if (strippedProps.has(node)) {
+          this.skip()
+          // skip literal keys from object properties
+        } else if (
           this.parent?.type === 'ObjectProperty' &&
           this.parent.key === node &&
           // still track computed keys [a + b]: 1
