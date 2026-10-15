@@ -20,8 +20,12 @@ import {
   type HistoryState,
   type RouterHistory,
 } from '../history/common'
-import type { experimental_parseQuery as originalParseQuery } from './query'
-import { stringifyQuery as originalStringifyQuery } from '../query'
+// `parseQuery` and `stringifyQuery` are only read by the classic router, so
+// they are typed after the classic query, whose values can also be scalars
+import {
+  stringifyQuery as originalStringifyQuery,
+  type parseQuery as originalParseQuery,
+} from '../query'
 import type { Router } from '../router'
 import {
   type _ScrollPositionNormalized,
