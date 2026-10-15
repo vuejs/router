@@ -16,7 +16,7 @@ import {
 } from './route-resolver/matchers/matcher-pattern'
 import { MatcherPatternQueryParam } from './route-resolver/matchers/matcher-pattern-query'
 import { PARAM_PARSER_INT } from './route-resolver/matchers/param-parsers'
-import { _mergeRouteRecordViews } from './runtime'
+import { mergeRouteRecordViews } from './runtime'
 import { createMemoryHistory } from '../history/memory'
 import { RouterView } from '../RouterView'
 
@@ -138,7 +138,7 @@ describe('Experimental route record props', () => {
   it('passes definePage() props to the view of the page', async () => {
     const { router, wrapper } = await mountRouter(
       normalizeRouteRecord(
-        _mergeRouteRecordViews(
+        mergeRouteRecordViews(
           {
             name: 'user',
             path: userPath,
@@ -158,9 +158,9 @@ describe('Experimental route record props', () => {
   })
 })
 
-describe('_mergeRouteRecordViews', () => {
+describe('mergeRouteRecordViews', () => {
   it('sets the props of each page on its view', () => {
-    const record = _mergeRouteRecordViews(
+    const record = mergeRouteRecordViews(
       { meta: {}, props: {} },
       {
         default: { props: true },
@@ -171,7 +171,7 @@ describe('_mergeRouteRecordViews', () => {
   })
 
   it('merges meta of all the pages', () => {
-    const record = _mergeRouteRecordViews(
+    const record = mergeRouteRecordViews(
       { meta: { a: 1 } },
       {
         default: { meta: { b: 2 } },
@@ -183,7 +183,7 @@ describe('_mergeRouteRecordViews', () => {
 
   it('keeps the properties extracted at build time', () => {
     const path = new MatcherPatternPathStatic('/about')
-    const record = _mergeRouteRecordViews(
+    const record = mergeRouteRecordViews(
       { name: '/about', path },
       {
         default: {
@@ -199,7 +199,7 @@ describe('_mergeRouteRecordViews', () => {
 
   it('keeps other properties of the page', () => {
     const redirect = () => '/'
-    const record = _mergeRouteRecordViews({}, { default: { redirect } })
+    const record = mergeRouteRecordViews({}, { default: { redirect } })
     expect(record).toEqual({ redirect })
   })
 })

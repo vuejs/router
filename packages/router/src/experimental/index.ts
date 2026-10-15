@@ -158,8 +158,8 @@ export {
 } from './route-resolver/matchers/param-parsers'
 export { MatchMiss as _MatchMiss } from './route-resolver/matchers/errors'
 export {
-  _mergeRouteRecord,
-  _mergeRouteRecordViews,
+  mergeRouteRecord as _mergeRouteRecord,
+  mergeRouteRecordViews as _mergeRouteRecordViews,
   type ParamParsers as _ParamParsers,
   type ParamParsers_Native as _ParamParsers_Native,
   type DefinePageHashParamOptionsAny as _DefinePageHashParamOptionsAny,

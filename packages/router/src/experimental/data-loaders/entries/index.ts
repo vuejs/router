@@ -30,7 +30,6 @@ export {
   getCurrentContext,
   setCurrentContext,
   type _PromiseMerged,
-  assign,
   isSubsetOf,
   trackRoute,
   withLoaderContext,

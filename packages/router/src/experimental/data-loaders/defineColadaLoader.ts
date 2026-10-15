@@ -17,7 +17,6 @@ import {
   IS_SSR_KEY,
   DATA_LOADERS_EFFECT_SCOPE_KEY,
   NavigationResult,
-  assign,
   getCurrentContext,
   isSubsetOf,
   setCurrentContext,
@@ -46,6 +45,7 @@ import { useRoute, useRouter } from '../../useApi'
 import type { Router } from '../../router'
 import type { LocationQuery } from '../../query'
 import { diagnostics } from '../../diagnostics'
+import { assign } from '../../utils'
 
 /**
  * Creates a Pinia Colada data loader with `data` is always defined.
