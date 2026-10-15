@@ -399,6 +399,7 @@ async function testHistoryNavigation(
   to: RouteLocationRaw = '/foo'
 ) {
   const { router, history } = createRouter()
+  await router.push('/')
   await router.push(to)
 
   router.beforeEach(
@@ -428,6 +429,7 @@ async function testHistoryError(
   to: RouteLocationRaw = '/foo'
 ) {
   const { router, history } = createRouter()
+  await router.push('/')
   await router.push(to)
 
   router.beforeEach(
