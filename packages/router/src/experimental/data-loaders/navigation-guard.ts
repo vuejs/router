@@ -16,7 +16,7 @@ import {
   LOADER_SET_KEY,
   PENDING_LOCATION_KEY,
 } from './meta-extensions'
-import { assign, isDataLoader, setCurrentContext } from './utils'
+import { isDataLoader, setCurrentContext } from './utils'
 import { toLazyValue, type UseDataLoader } from './createDataLoader'
 import type {
   NavigationGuard,
@@ -25,6 +25,7 @@ import type {
 import { isNavigationFailure, NavigationFailureType } from '../../errors'
 import type { Router } from '../../router'
 import { diagnostics } from '../../diagnostics'
+import { assign } from '../../utils'
 
 /**
  * Key to inject the global loading state for loaders used in `useIsDataLoading`.

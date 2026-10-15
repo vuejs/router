@@ -10,6 +10,7 @@ import type {
   EXPERIMENTAL_RouteRecordPropsOption,
   ComponentProps,
 } from './route-props'
+import { assign } from '../utils'
 
 /**
  * Helper to define page properties with file-based routing.
@@ -101,7 +102,7 @@ export type RoutePropsForFilePath<FilePath extends string> = [
  * @param routeRecords - route records to merge
  * @returns merged route record
  */
-export function _mergeRouteRecord(
+export function mergeRouteRecord(
   main: RouteRecordRaw,
   ...routeRecords: Partial<RouteRecordRaw>[]
 ): RouteRecordRaw {
@@ -135,7 +136,7 @@ export function _mergeRouteRecord(
  * @param pages - `definePage()` data, indexed by view name
  * @returns the merged route record
  */
-export function _mergeRouteRecordViews<TRecord extends object>(
+export function mergeRouteRecordViews<TRecord extends object>(
   main: TRecord,
   pages: Record<string, DefinePage>
 ): TRecord {
@@ -150,7 +151,7 @@ export function _mergeRouteRecordViews<TRecord extends object>(
       props,
       ...rest
     } = pages[view]!
-    Object.assign(record, rest)
+    assign(record, rest)
     if (meta) record.meta = Object.assign({}, record.meta, meta)
     if (props !== undefined) {
       record.props = Object.assign({}, record.props, { [view]: props })
