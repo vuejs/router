@@ -392,11 +392,11 @@ declare module 'vue-router/auto-routes' {
       { 'name': Exclude<Param_date, unknown[] | null> },
       | never
     >,
-    '/users/[userId=int]': RouteRecordInfo<
-      '/users/[userId=int]',
+    '/users/[userId]': RouteRecordInfo<
+      '/users/[userId]',
       '/users/:userId',
-      { 'anyParam'?: string, 'page'?: number, 'userId': number },
-      { 'anyParam': string, 'page': number, 'userId': number },
+      { 'userId': number },
+      { 'userId': number },
       | never
     >,
     '/users/sub-[first]-[second]': RouteRecordInfo<
@@ -840,9 +840,9 @@ declare module 'vue-router/auto-routes' {
       pathParamNames:
         | never
     }
-    'src/pages/users/[userId=int].vue': {
+    'src/pages/users/[userId].vue': {
       routes:
-        | '/users/[userId=int]'
+        | '/users/[userId]'
       views:
         | never
       pathParamNames:
