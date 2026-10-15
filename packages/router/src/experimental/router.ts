@@ -87,8 +87,8 @@ import { diagnostics } from '../diagnostics'
 import type { PathParserOptions } from '../matcher'
 import type {
   EXPERIMENTAL_RouteRecordPropsOption,
-  _RouteLocationForRecordName,
-  _RouteRecordPropsViews,
+  RouteLocationForRecordName,
+  RouteRecordPropsViews,
 } from './route-props'
 import type { RecordName } from './route-resolver/resolver-abstract'
 import type { RouteLocationNormalizedLoadedGeneric } from '../typed-routes'
@@ -358,7 +358,7 @@ export type EXPERIMENTAL_RouteRecordNormalized =
  *
  * @internal
  */
-export type _RouteRecordWithTypedProps<
+export type RouteRecordWithTypedProps<
   TRecord,
   Location extends RouteLocationNormalizedLoadedGeneric,
   Components,
@@ -367,7 +367,7 @@ export type _RouteRecordWithTypedProps<
       (TRecord extends { components: unknown }
         ? { components: Components }
         : { components?: Components }) & {
-        props?: _RouteRecordPropsViews<Location, Components>
+        props?: RouteRecordPropsViews<Location, Components>
       }
   : never
 
@@ -382,7 +382,7 @@ export type _RouteRecordWithTypedProps<
 export function normalizeRouteRecord<
   Components extends Record<string, RawRouteComponent> = {},
 >(
-  record: _RouteRecordWithTypedProps<
+  record: RouteRecordWithTypedProps<
     EXPERIMENTAL_RouteRecord_Group,
     RouteLocationNormalizedLoadedGeneric,
     Components
@@ -392,14 +392,14 @@ export function normalizeRouteRecord<
   const Name extends RecordName,
   Components extends Record<string, RawRouteComponent> = {},
 >(
-  record: _RouteRecordWithTypedProps<
+  record: RouteRecordWithTypedProps<
     EXPERIMENTAL_RouteRecord_Matchable,
-    _RouteLocationForRecordName<Name>,
+    RouteLocationForRecordName<Name>,
     Components
   > & { name: Name }
 ): EXPERIMENTAL_RouteRecordNormalized_Matchable
 export function normalizeRouteRecord(
-  record: _RouteRecordWithTypedProps<EXPERIMENTAL_RouteRecordRaw, any, any>
+  record: RouteRecordWithTypedProps<EXPERIMENTAL_RouteRecordRaw, any, any>
 ):
   | EXPERIMENTAL_RouteRecordNormalized_Matchable
   | EXPERIMENTAL_RouteRecordNormalized_Group {
