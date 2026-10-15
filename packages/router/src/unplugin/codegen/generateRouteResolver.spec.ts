@@ -11,6 +11,8 @@ import { ImportsMap } from '../core/utils'
 import type { ParamParsersMap } from './generateParamParsers'
 import { generateAliasWarnings } from './generateAliasWarnings'
 import type { CustomRouteBlockHashParamOptions } from '../core/customBlock'
+import { generateRouteRecords } from './generateRouteRecords'
+import { mockWarn } from '../../tests/vitest-mock-warn'
 
 const DEFAULT_OPTIONS = resolveOptions({})
 let DEFAULT_STATE: Parameters<typeof generateRouteRecord>[0]['state'] = {
@@ -1445,12 +1447,58 @@ describe('generateRouteResolver', () => {
   })
 
   describe('path overrides', () => {
+    mockWarn()
+
+    it('reports a path override from definePage or a route block', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('shop/[id]', 'shop/[id].vue')
+      node.value.setOverride('shop/[id].vue', { path: '/store/:slug' })
+
+      generateRouteResolver(tree, DEFAULT_OPTIONS, new ImportsMap(), new Map())
+
+      expect('VUE_ROUTER_B0025').toHaveBeenWarnedTimes(1)
+      expect(
+        'The route of "shop/[id].vue" has the path override "/store/:slug"'
+      ).toHaveBeenWarned()
+    })
+
+    it('reports a path override from extendRoute', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('about', 'about.vue')
+      node.value.addEditOverride({ path: '/about-us' })
+
+      generateRouteResolver(tree, DEFAULT_OPTIONS, new ImportsMap(), new Map())
+
+      expect('"/about-us"').toHaveBeenWarned()
+    })
+
+    it('does not report routes without a path override', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('shop/[id]', 'shop/[id].vue')
+      node.value.setOverride('shop/[id].vue', { name: 'shop' })
+
+      generateRouteResolver(tree, DEFAULT_OPTIONS, new ImportsMap(), new Map())
+
+      expect('VUE_ROUTER_B0025').not.toHaveBeenWarned()
+    })
+
+    it('does not report path overrides in auto-routes', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('shop/[id]', 'shop/[id].vue')
+      node.value.setOverride('shop/[id].vue', { path: '/store/:slug' })
+
+      expect(
+        generateRouteRecords(tree, DEFAULT_OPTIONS, new ImportsMap())
+      ).toContain(`path: '/store/:slug'`)
+      expect('VUE_ROUTER_B0025').not.toHaveBeenWarned()
+    })
+
     // FIXME: `node.regexp` and `node.matcherPatternPathDynamicParts` are built
     // from the file segments and ignore `overrides.path`, while
     // `node.pathParams` follows the override. `MatcherPatternPathDynamic`
-    // consumes them positionally, so they disagree today. The snapshots below
-    // are the wanted output and are marked as failing until the matcher honors
-    // overrides.
+    // consumes them positionally, so they disagree today. Path overrides are
+    // not supported in the resolver and report VUE_ROUTER_B0025. The todo
+    // snapshots below are the output if the matcher ever honors overrides.
     it.todo('builds the matcher regexp from an absolute path override', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
       const node = tree.insert('shop/[id]', 'shop/[id].vue')

@@ -50,6 +50,12 @@ definePage({
 
 If you are using ESLint, you will need [to declare it as a global variable](./eslint#definePage-).
 
+::: warning
+
+The [experimental router](../experimental/router-resolver.md#Path-overrides-are-not-supported) does not support a `path` override. This applies to `definePage()`, the `<route>` custom block, and `extendRoute()`. Rename the file instead.
+
+:::
+
 ::: danger
 
 You cannot use variables in `definePage()` as its passed parameter gets extracted at build time and is removed from `<script setup>`. Similar to other macros like `definePageMeta()` in Nuxt.

@@ -78,7 +78,10 @@ export function _mergeRouteRecord(
  * left as the default `string`, keys are unrestricted.
  */
 export interface DefinePage<FilePath extends string = string> extends Partial<
-  Omit<RouteRecordRaw, 'children' | 'components' | 'component' | 'name'>
+  Omit<
+    RouteRecordRaw,
+    'children' | 'components' | 'component' | 'name' | 'path'
+  >
 > {
   /**
    * Override the route name. If not provided, the name will be generated based
@@ -86,6 +89,12 @@ export interface DefinePage<FilePath extends string = string> extends Partial<
    * which removes it from types and make the route unmatchable.
    */
   name?: string | false
+
+  /**
+   * Override the route path. Not supported by the experimental router
+   * (`vue-router/auto-resolver`): rename the file instead.
+   */
+  path?: string
 
   /**
    * Custom parameters for the route. Requires `experimental.paramParsers` enabled.

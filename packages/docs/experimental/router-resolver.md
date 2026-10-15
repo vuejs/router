@@ -134,6 +134,22 @@ definePage({
 })
 ```
 
+## Path overrides are not supported
+
+With file-based routing, the experimental router builds the path matcher of each route from the file name. Do not change the `path` of a route with `definePage()`, the `<route>` custom block, or `extendRoute()`.
+
+To change the path, rename the file. To add more paths to a route, use `alias`:
+
+```vue
+<script setup lang="ts">
+// src/pages/users/[id].vue
+definePage({
+  // path: '/people/:id', // not supported
+  alias: ['/people/:id'],
+})
+</script>
+```
+
 ## With Data Loaders
 
 If you use [Data Loaders](../data-loaders/), install the plugin **before** the router:

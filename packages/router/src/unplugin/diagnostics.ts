@@ -153,6 +153,13 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       fix: 'Define the param parser or use one of the native parsers.',
     },
 
+    // --- codegen/generateRouteResolver.ts ---
+    VUE_ROUTER_B0025: {
+      why: (p: { path: string; files: string }) =>
+        `The route of ${p.files} has the path override "${p.path}". The experimental router (vue-router/auto-resolver) does not support path overrides: it builds the path matcher from the file name, so the route can match the wrong URLs.`,
+      fix: 'Remove `path` from definePage(), the <route> block, or extendRoute(), and rename the file to get the path. Use `alias` to add more paths.',
+    },
+
     // --- core/treeNodeValue.ts ---
     VUE_ROUTER_B0022: {
       why: (p: {
