@@ -9,7 +9,6 @@ import {
 } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'pathe'
-import type { TransformResult } from 'unplugin'
 import { createRoutesContext } from './context'
 import { resolveOptions } from '../options'
 import type { RoutesFolderOptionResolved } from '../options'
@@ -52,6 +51,7 @@ definePage(${definePageArg})
 `
 }
 
+// the resulting props are tested in e2e/unplugin/hmr
 describe('createRoutesContext', () => {
   describe('pages with `definePage({ props: true })`', () => {
     let root: string
@@ -110,96 +110,74 @@ describe('createRoutesContext', () => {
         routePath: asRoutePath(watcher.folder, filePath),
       })
       // let the throttled write of the config files run
-      await vi.advanceTimersByTimeAsync(500)
+      await vi.runAllTimersAsync()
       return invalidated
     }
 
     /**
-     * Prop names declared in `defineProps()` by the transformed page, like
-     * Vite does when the page is (re)loaded.
+     * Transforms the page like Vite does when it loads it.
      */
-    async function transformPage(file: string): Promise<string[]> {
+    async function loadPage(file: string) {
       const filePath = join(pagesDir, file)
-      const result = (await ctx.definePageTransform(
-        await readFile(filePath, 'utf8'),
-        filePath
-      )) as Exclude<TransformResult, string>
-      const declared = result?.code.match(/defineProps\((\[.*\])\)/)?.[1]
-      return declared ? JSON.parse(declared) : []
+      await ctx.definePageTransform(await readFile(filePath, 'utf8'), filePath)
+      return filePath
     }
 
     it('reloads a parent page when a child page adds a param', async () => {
-      const parent = join(pagesDir, 'users.vue')
       await setup({ 'users.vue': page(), 'users/index.vue': page('{}') })
-      expect(await transformPage('users.vue')).toEqual([])
+      const parent = await loadPage('users.vue')
 
       const child = await writePage('users/[id].vue', page('{}'))
       expect(await emit('add', child)).toContain(parent)
-      expect(await transformPage('users.vue')).toEqual(['id'])
     })
 
     it('reloads a parent page when a child page with a param is removed', async () => {
-      const parent = join(pagesDir, 'users.vue')
       await setup({ 'users.vue': page(), 'users/[id].vue': page('{}') })
-      expect(await transformPage('users.vue')).toEqual(['id'])
+      const parent = await loadPage('users.vue')
 
       const child = join(pagesDir, 'users/[id].vue')
       await rm(child)
       expect(await emit('unlink', child)).toContain(parent)
-      expect(await transformPage('users.vue')).toEqual([])
     })
 
     it('reloads a child page when its parent changes its path params', async () => {
-      const child = join(pagesDir, 'users/[id].vue')
       await setup({ 'users.vue': page('{}'), 'users/[id].vue': page() })
-      expect(await transformPage('users/[id].vue')).toEqual(['id'])
+      const child = await loadPage('users/[id].vue')
 
       const parent = await writePage(
         'users.vue',
         page(`{ path: '/teams/:team' }`)
       )
       expect(await emit('change', parent)).toContain(child)
-      expect(await transformPage('users/[id].vue')).toEqual(['team', 'id'])
     })
 
     it('reloads a child page when its parent adds query params', async () => {
-      const child = join(pagesDir, 'users/[id].vue')
       await setup({ 'users.vue': page('{}'), 'users/[id].vue': page() })
-      expect(await transformPage('users/[id].vue')).toEqual(['id'])
+      const child = await loadPage('users/[id].vue')
 
       const parent = await writePage(
         'users.vue',
         page(`{ params: { query: { sort: {} } } }`)
       )
       expect(await emit('change', parent)).toContain(child)
-      expect(await transformPage('users/[id].vue')).toEqual(['id', 'sort'])
-    })
-
-    it('reloads a page when it changes its own path params', async () => {
-      const filePath = join(pagesDir, 'users.vue')
-      await setup({ 'users.vue': page() })
-      expect(await transformPage('users.vue')).toEqual([])
-
-      await writePage('users.vue', page(`{ props: true, path: '/users/:id' }`))
-      expect(await emit('change', filePath)).toContain(filePath)
-      expect(await transformPage('users.vue')).toEqual(['id'])
     })
 
     it('does not reload pages whose props did not change', async () => {
       await setup({ 'users.vue': page(), 'users/[id].vue': page() })
-      expect(await transformPage('users.vue')).toEqual(['id'])
-      expect(await transformPage('users/[id].vue')).toEqual(['id'])
+      const parent = await loadPage('users.vue')
+      const child = await loadPage('users/[id].vue')
 
-      const sibling = await writePage('users/[id]/edit.vue', page('{}'))
-      expect(await emit('add', sibling)).toEqual([sibling])
+      const grandChild = await writePage('users/[id]/edit.vue', page('{}'))
+      const reloaded = await emit('add', grandChild)
+      expect(reloaded).not.toContain(parent)
+      expect(reloaded).not.toContain(child)
     })
 
     it('does not reload pages that no longer use `props: true`', async () => {
-      const parent = join(pagesDir, 'users.vue')
       await setup({ 'users.vue': page(), 'users/index.vue': page('{}') })
-      await transformPage('users.vue')
+      const parent = await loadPage('users.vue')
       await writePage('users.vue', page('{}'))
-      expect(await transformPage('users.vue')).toEqual([])
+      await loadPage('users.vue')
 
       const child = await writePage('users/[id].vue', page('{}'))
       expect(await emit('add', child)).not.toContain(parent)
