@@ -32,6 +32,7 @@ import type {
 } from '../../typed-routes'
 import type { Router } from '../../router'
 import { useRoute, useRouter } from '../../useApi'
+import { assign } from '../../utils'
 
 /**
  * Creates a data loader composable that can be exported by pages to attach the data loading to a route. In this version `data` is always defined.
@@ -402,7 +403,7 @@ export function defineBasicLoader<Data>(
       .finally(() => setCurrentContext(currentContext))
 
     setCurrentContext(currentContext)
-    return Object.assign(promise, useDataLoaderResult)
+    return assign(promise, useDataLoaderResult)
   }
 
   // mark it as a data loader

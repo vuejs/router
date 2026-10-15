@@ -108,16 +108,16 @@ export function mergeRouteRecord(
 ): RouteRecordRaw {
   // @ts-expect-error: complicated types
   return routeRecords.reduce((acc, routeRecord) => {
-    const meta = Object.assign({}, acc.meta, routeRecord.meta)
+    const meta = assign({}, acc.meta, routeRecord.meta)
     const alias: string[] = ([] as string[]).concat(
       acc.alias || [],
       routeRecord.alias || []
     )
 
     // TODO: other nested properties
-    // const props = Object.assign({}, acc.props, routeRecord.props)
+    // const props = assign({}, acc.props, routeRecord.props)
 
-    Object.assign(acc, routeRecord)
+    assign(acc, routeRecord)
     acc.meta = meta
     acc.alias = alias
     return acc
@@ -152,9 +152,9 @@ export function mergeRouteRecordViews<TRecord extends object>(
       ...rest
     } = pages[view]!
     assign(record, rest)
-    if (meta) record.meta = Object.assign({}, record.meta, meta)
+    if (meta) record.meta = assign({}, record.meta, meta)
     if (props !== undefined) {
-      record.props = Object.assign({}, record.props, { [view]: props })
+      record.props = assign({}, record.props, { [view]: props })
     }
   }
   return main

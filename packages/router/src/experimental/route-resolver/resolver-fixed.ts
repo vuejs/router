@@ -186,7 +186,7 @@ export function createFixedResolver<
     const pathParams = record.path.match(url.path)
     const hashParams = record.hash?.match(url.hash)
     const matched = buildMatched(record)
-    const queryParams: MatcherQueryParams = Object.assign(
+    const queryParams: MatcherQueryParams = assign(
       {},
       ...matched.flatMap(record =>
         record.query?.map(query => query.match(url.query))
@@ -194,7 +194,7 @@ export function createFixedResolver<
     )
     // TODO: test performance
     // for (const record of matched) {
-    //   Object.assign(queryParams, record.query?.match(url.query))
+    //   assign(queryParams, record.query?.match(url.query))
     // }
 
     // we found our match!
