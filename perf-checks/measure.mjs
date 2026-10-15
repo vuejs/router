@@ -62,6 +62,22 @@ async function filesIn(directory) {
   return files.sort()
 }
 
+// props pages get the params from defineProps() instead of useRoute()
+const propsPageChanges = [
+  [
+    "import { useRouter } from 'vue-router'\n",
+    "import { useRoute, useRouter } from 'vue-router'\n",
+  ],
+  [
+    'definePage({ props: true })\n\nconst { workspaceId, recordId } = defineProps()\nconst router = useRouter()\n',
+    'const route = useRoute()\nconst router = useRouter()\nconst workspaceId = computed(() => String(route.params.workspaceId))\nconst recordId = computed(() => String(route.params.recordId))\n',
+  ],
+  [
+    'params: { workspaceId, recordId: id },',
+    'params: { workspaceId: workspaceId.value, recordId: id },',
+  ],
+]
+
 async function validateCopies() {
   let original
   const validation = {}
@@ -81,20 +97,17 @@ async function validateCopies() {
       if (local === 'router.ts' || local === 'routes.d.ts') continue
       let contents = await readFile(path)
       if (name === 'auto-resolver-props' && pages.includes(path)) {
-        const text = contents.toString('utf8')
-        const normalized = text.replace(
-          /^definePage\(\{ props: true \}\)\n/gm,
-          ''
-        )
-        if (
-          text.length - normalized.length !==
-          'definePage({ props: true })\n'.length
-        ) {
-          throw new Error(
-            `${name}: src/${local} must contain exactly one line: definePage({ props: true })`
-          )
+        let text = contents.toString('utf8')
+        for (const [props, params] of propsPageChanges) {
+          const parts = text.split(props)
+          if (parts.length !== 2) {
+            throw new Error(
+              `${name}: src/${local} must contain exactly once: ${props}`
+            )
+          }
+          text = parts.join(params)
         }
-        contents = Buffer.from(normalized)
+        contents = Buffer.from(text)
         propsPages++
       }
       shared.set(local, contents)
@@ -117,7 +130,7 @@ async function validateCopies() {
       excludedSourceFiles: ['router.ts', 'routes.d.ts'],
       normalizedPropsPages: propsPages,
       allowedPageDifference: propsPages
-        ? 'One exact definePage({ props: true }) line per page'
+        ? 'definePage({ props: true }) and params from defineProps()'
         : null,
     }
   }

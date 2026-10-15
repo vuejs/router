@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { pages } from './navigation'
 const route = useRoute()
@@ -11,7 +11,7 @@ const navigation = computed(() =>
     page.label.toLowerCase().includes(search.value.toLowerCase())
   )
 )
-onMounted(() => {
+router.isReady().then(() => {
   if (route.path === '/')
     router.replace({
       name: '/workspaces/[workspaceId]/projects/[recordId]/overview',

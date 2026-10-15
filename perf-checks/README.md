@@ -4,12 +4,12 @@ These projects measure TypeScript type-check time (`vue-tsc`) and Vite build tim
 
 All four projects are copies of the same app: a console with 50 lazy-loaded pages. Only the router setup is different.
 
-| Folder                | Router setup                                                    |
-| --------------------- | --------------------------------------------------------------- |
-| `classic`             | `createRouter()` with a hand-written `RouteRecordRaw[]`         |
-| `auto-routes`         | `createRouter()` with `vue-router/auto-routes`                  |
-| `auto-resolver`       | `experimental_createRouter()` with `vue-router/auto-resolver`   |
-| `auto-resolver-props` | `auto-resolver` plus `definePage({ props: true })` on each page |
+| Folder                | Router setup                                                             |
+| --------------------- | ------------------------------------------------------------------------ |
+| `classic`             | `createRouter()` with a hand-written `RouteRecordRaw[]` (untyped routes) |
+| `auto-routes`         | `createRouter()` with `vue-router/auto-routes`                           |
+| `auto-resolver`       | `experimental_createRouter()` with `vue-router/auto-resolver`            |
+| `auto-resolver-props` | `auto-resolver` plus `definePage({ props: true })` on each page          |
 
 Results: [REPORT.md](./REPORT.md).
 
@@ -26,7 +26,7 @@ Results: [REPORT.md](./REPORT.md).
 When you change one project, apply the same change to all projects:
 
 - All of `src/` except `router.ts` and `routes.d.ts` must be byte-identical. `measure.mjs` checks this and stops if a file is different.
-- `auto-resolver-props` pages have exactly one more line: `definePage({ props: true })`.
+- `auto-resolver-props` pages call `definePage({ props: true })` and get the params from `defineProps()`. The other projects get them from `useRoute()`. `measure.mjs` checks that this is the only difference.
 - `index.html`, `tsconfig.node.json`, and `package.json` (except `name`) are identical.
 - `tsconfig.app.json` and `vite.config.ts` are identical in the three generated projects.
 
@@ -69,4 +69,4 @@ Output goes to `results/` (not in git):
 - `<project>/*.log`: full command output.
 - `smoke.json`: browser check results.
 
-`smoke.mjs` exits with code 1 if the `auto-resolver-props` build does not pass the route params as props.
+`smoke.mjs` fails if a page does not show the route params.
