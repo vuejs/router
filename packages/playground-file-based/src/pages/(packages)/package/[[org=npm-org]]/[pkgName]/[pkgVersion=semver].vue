@@ -5,15 +5,7 @@ const props = defineProps<{
   other?: number
 }>()
 
-props.pkgVersion
-
 definePage({
-  params: {
-    path: {
-      pkgVersion: 'semver',
-    },
-    query: {},
-  },
   props: true,
 })
 </script>
