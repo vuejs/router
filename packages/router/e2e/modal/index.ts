@@ -1,18 +1,5 @@
-import type { RouteLocationNormalizedLoaded } from 'vue-router'
-import {
-  createRouter,
-  createWebHistory,
-  useRoute,
-  loadRouteLocation,
-} from 'vue-router'
-import {
-  createApp,
-  readonly,
-  ref,
-  watchEffect,
-  computed,
-  defineComponent,
-} from 'vue'
+import { createRouter, createWebHistory, loadRouteLocation } from 'vue-router'
+import { createApp, readonly, ref, computed, defineComponent } from 'vue'
 
 const users = readonly([
   { name: 'John' },
@@ -49,55 +36,10 @@ const Home = defineComponent({
   </ul>
 
   <router-view />
-
-  <dialog ref="modal" id="dialog">
-    <div>
-      <div v-if="userId">
-        <p>
-        User #{{ userId }}
-        <br>
-        Name: {{ users[userId].name }}
-        </p>
-        <router-link to="/about">Go somewhere else</router-link>
-        <br>
-        <button @click="closeUserModal">Close</button>
-      </div>
-    </div>
-  </dialog>
   </div>`,
 
   setup() {
-    const modal = ref<HTMLDialogElement | HTMLElement>()
-    const route = useRoute()
-
-    const userId = computed(() => route.params.id)
-
-    watchEffect(
-      () => {
-        const el = modal.value
-        if (!el) return
-
-        const show = historyState.value.backgroundView
-        console.log('show modal?', show)
-        if (show) {
-          if ('show' in el) el.show()
-          else el.setAttribute('open', '')
-        } else {
-          if ('close' in el) el.close()
-          else el.removeAttribute('open')
-        }
-      },
-      { flush: 'post' }
-    )
-
-    return {
-      modal,
-      historyState,
-      showUserModal,
-      closeUserModal,
-      userId,
-      users,
-    }
+    return { users, showUserModal }
   },
 })
 
@@ -185,23 +127,27 @@ router.beforeEach(to => {
 
 const app = createApp({
   setup() {
-    const route = useRoute()
+    // the background view keeps showing the page we opened the modal from
+    const backgroundRoute = computed(() =>
+      historyState.value.backgroundView
+        ? router.resolve(historyState.value.backgroundView)
+        : undefined
+    )
 
-    const routeWithModal = computed(() => {
-      if (historyState.value.backgroundView) {
-        return router.resolve(
-          historyState.value.backgroundView
-        ) as RouteLocationNormalizedLoaded
-      } else {
-        return route
-      }
-    })
-
-    return { routeWithModal }
+    return { backgroundRoute, closeUserModal }
   },
 
   template: `
-    <router-view :route="routeWithModal"></router-view>
+    <router-view :route="backgroundRoute" />
+
+    <dialog v-if="backgroundRoute" open id="dialog">
+      <div>
+        <router-view />
+        <router-link to="/about">Go somewhere else</router-link>
+        <br>
+        <button @click="closeUserModal">Close</button>
+      </div>
+    </dialog>
   `,
 })
 app.use(router)

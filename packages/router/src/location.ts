@@ -1,3 +1,4 @@
+import { shallowReactive, type Ref } from 'vue'
 import type { LocationQuery, LocationQueryRaw } from './query'
 import type { RouteParamValue, RouteParamsGeneric } from './types'
 import type { RouteRecord } from './matcher/types'
@@ -287,4 +288,22 @@ export const START_LOCATION_NORMALIZED: RouteLocationNormalizedLoaded = {
   matched: [],
   meta: {},
   redirectedFrom: undefined,
+}
+
+/**
+ * Creates the reactive route returned by `useRoute()` from a route ref.
+ *
+ * @internal
+ */
+export function createReactiveRoute(
+  routeRef: Ref<RouteLocationNormalizedLoaded>
+): RouteLocationNormalizedLoaded {
+  const route = {} as RouteLocationNormalizedLoaded
+  for (const key in START_LOCATION_NORMALIZED) {
+    Object.defineProperty(route, key, {
+      get: () => routeRef.value[key as keyof RouteLocationNormalizedLoaded],
+      enumerable: true,
+    })
+  }
+  return shallowReactive(route)
 }

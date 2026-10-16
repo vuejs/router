@@ -29,15 +29,24 @@ import {
   matchedRouteKey,
   viewDepthKey,
   routerViewLocationKey,
+  routeLocationKey,
   routerViewOnRouteRenderedKey,
 } from './injectionSymbols'
 import type { OnRouteRenderedCallback } from './experimental/on-route-rendered'
 import { assign, isArray, isBrowser } from './utils'
 import { diagnostics } from './diagnostics'
-import { isSameRouteRecord, START_LOCATION_NORMALIZED } from './location'
+import {
+  createReactiveRoute,
+  isSameRouteRecord,
+  START_LOCATION_NORMALIZED,
+} from './location'
 
 export interface RouterViewProps {
   name?: string
+  /**
+   * Route to display instead of the current one. Nested views and `useRoute()`
+   * in descendants also use it.
+   */
   // allow looser type for user facing api
   route?: RouteLocationNormalized
 }
@@ -97,6 +106,8 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
     )
     provide(matchedRouteKey, matchedRouteRef)
     provide(routerViewLocationKey, routeToDisplay)
+    // #2673 descendants' useRoute() follows the `route` prop
+    provide(routeLocationKey, createReactiveRoute(routeToDisplay))
 
     // onRouteRendered() callbacks of descendants without a closer RouterView
     const onRouteRenderedCallbacks = new Set<OnRouteRenderedCallback>()

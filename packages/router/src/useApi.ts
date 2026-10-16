@@ -14,7 +14,8 @@ export function useRouter(): Router {
 
 /**
  * Returns the current route location. Equivalent to using `$route` inside
- * templates.
+ * templates. Inside a `<RouterView>` with a `route` prop, returns that route
+ * instead.
  */
 export function useRoute<Name extends keyof RouteMap = keyof RouteMap>(
   _name?: Name

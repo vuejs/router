@@ -43,13 +43,14 @@ import {
   stringifyQuery as originalStringifyQuery,
 } from './query'
 import type { App } from 'vue'
-import { shallowRef, nextTick, unref, shallowReactive } from 'vue'
+import { shallowRef, nextTick, unref } from 'vue'
 import type { RouteRecordNormalized } from './matcher/types'
 import {
   parseURL,
   stringifyURL,
   isSameRouteLocation,
   START_LOCATION_NORMALIZED,
+  createReactiveRoute,
 } from './location'
 import {
   extractChangingRecords,
@@ -1086,16 +1087,8 @@ export function createRouter(options: RouterOptions): Router {
         })
       }
 
-      const reactiveRoute = {} as RouteLocationNormalizedLoaded
-      for (const key in START_LOCATION_NORMALIZED) {
-        Object.defineProperty(reactiveRoute, key, {
-          get: () => currentRoute.value[key as keyof RouteLocationNormalized],
-          enumerable: true,
-        })
-      }
-
       app.provide(routerKey, router as Router)
-      app.provide(routeLocationKey, shallowReactive(reactiveRoute))
+      app.provide(routeLocationKey, createReactiveRoute(currentRoute))
       app.provide(routerViewLocationKey, currentRoute)
 
       const unmountApp = app.unmount
