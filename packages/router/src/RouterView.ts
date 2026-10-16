@@ -204,11 +204,23 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
             // skips views memoized with v-memo (e.g. `[route.path]`): they
             // self-update with the props of the memoized render, so
             // navigations that keep the memo key are missed
-            routeToDisplay.value !== route ||
+            routeToDisplay.value !== route
+          ) {
+            return
+          }
+
+          // A mounted view can render an unresolved async component as its
+          // root. Its own el is still null, but the async component's subtree
+          // contains the mounted placeholder.
+          let root = vnode
+          while (!root.el && root.component) {
+            root = root.component.subTree
+          }
+          if (
             // still in a Suspense hidden container, e.g. KeepAlive activating
             // inside a pending Suspense, a later hook fires once it is moved
-            (vnode.el as Node).getRootNode() !==
-              (app._container as Node).getRootNode()
+            (root.el as Node | null)?.getRootNode() !==
+            (app._container as Node).getRootNode()
           ) {
             return
           }
