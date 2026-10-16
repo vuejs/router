@@ -1114,6 +1114,7 @@ export function experimental_createRouter(
 
     // read before the url change invalidates it
     const savedPosition =
+      isBrowser &&
       (isFirstNavigation || !isPush) &&
       getSavedScrollPosition(toLocation.fullPath)
 

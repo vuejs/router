@@ -3,42 +3,61 @@
  */
 import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRouter, createWebHashHistory, createWebHistory } from '../src'
-import type { RouterHistory, RouterScrollBehavior } from '../src'
-import {
-  createFixedResolver,
-  experimental_createRouter,
-  MatcherPatternPathStatic,
-  normalizeRouteRecord,
-} from '../src/experimental'
+import type { Router, RouterHistory, RouterScrollBehavior } from '../src'
+import type { EXPERIMENTAL_Router } from '../src/experimental'
+import type * as VueRouter from '../src'
+import type * as Experimental from '../src/experimental'
 import { nextNavigation } from './utils'
 
-const routes = ['/', '/b', '/c'].map(path => ({ path, component: {} }))
-const resolver = createFixedResolver(
-  routes.map(({ path, component }) =>
-    normalizeRouteRecord({
-      name: path,
-      path: new MatcherPatternPathStatic(path),
-      components: { default: component },
-    })
-  )
-)
+type Modules = [typeof VueRouter, typeof Experimental]
+
+// a new document only keeps history.state and sessionStorage
+async function loadDocument(): Promise<Modules> {
+  vi.resetModules()
+  return [await import('../src'), await import('../src/experimental')]
+}
+
+const paths = ['/', '/b', '/c']
 
 describe.each([
   [
     'router',
-    (history: RouterHistory, scrollBehavior: RouterScrollBehavior) =>
-      createRouter({ history, routes, scrollBehavior }),
+    (
+      [{ createRouter }]: Modules,
+      history: RouterHistory,
+      scrollBehavior: RouterScrollBehavior
+    ): Router =>
+      createRouter({
+        history,
+        routes: paths.map(path => ({ path, component: {} })),
+        scrollBehavior,
+      }),
   ],
   [
     'experimental router',
-    (history: RouterHistory, scrollBehavior: RouterScrollBehavior) =>
-      experimental_createRouter({ history, resolver, scrollBehavior }),
+    (
+      [, experimental]: Modules,
+      history: RouterHistory,
+      scrollBehavior: RouterScrollBehavior
+    ): EXPERIMENTAL_Router =>
+      experimental.experimental_createRouter({
+        history,
+        resolver: experimental.createFixedResolver(
+          paths.map(path =>
+            experimental.normalizeRouteRecord({
+              name: path,
+              path: new experimental.MatcherPatternPathStatic(path),
+              components: { default: {} },
+            })
+          )
+        ),
+        scrollBehavior,
+      }),
   ],
 ] as const)('%s scroll history', (_name, create) => {
   describe.each([
-    ['web', createWebHistory],
-    ['hash', createWebHashHistory],
+    ['web', 'createWebHistory'],
+    ['hash', 'createWebHashHistory'],
   ] as const)('%s history', (mode, createHistory) => {
     let history: RouterHistory
     let top = 0
@@ -63,11 +82,12 @@ describe.each([
     })
 
     async function setup() {
-      history = createHistory()
+      const modules = await loadDocument()
+      history = modules[0][createHistory]()
       const scrollBehavior = vi.fn<RouterScrollBehavior>(
         (_to, _from, saved) => saved || { left: 0, top: 0 }
       )
-      const router = create(history, scrollBehavior)
+      const router = create(modules, history, scrollBehavior)
       // the current url, to support reloads
       await router.push(history.location)
       await nextTick()
@@ -141,6 +161,54 @@ describe.each([
       expect(scrollBehavior.mock.lastCall?.[2]).toEqual({ left: 0, top: 2000 })
       expect(top).toBe(2000)
     })
+
+    it.each([
+      [
+        'blocked',
+        {
+          get() {
+            throw new DOMException('Access is denied', 'SecurityError')
+          },
+        },
+      ],
+      [
+        'full',
+        {
+          value: new Proxy(sessionStorage, {
+            set() {
+              throw new DOMException('Quota exceeded', 'QuotaExceededError')
+            },
+          }),
+        },
+      ],
+    ] as const)(
+      'restores positions in the same document when sessionStorage is %s',
+      async (_state, descriptor) => {
+        const original = Object.getOwnPropertyDescriptor(
+          globalThis,
+          'sessionStorage'
+        )!
+        Object.defineProperty(globalThis, 'sessionStorage', {
+          configurable: true,
+          ...descriptor,
+        })
+        try {
+          const { scrollBehavior, push, go } = await setup()
+          await push('/b')
+          top = 1000
+          await push('/c')
+          await go(-1)
+
+          expect(scrollBehavior.mock.lastCall?.[2]).toEqual({
+            left: 0,
+            top: 1000,
+          })
+          expect(top).toBe(1000)
+        } finally {
+          Object.defineProperty(globalThis, 'sessionStorage', original)
+        }
+      }
+    )
 
     it('discards cached URLs from the whole removed branch', async () => {
       const { router, scrollBehavior, push, go } = await setup()

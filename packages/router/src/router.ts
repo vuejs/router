@@ -768,6 +768,7 @@ export function createRouter(options: RouterOptions): Router {
 
     // read before the url change invalidates it
     const savedPosition =
+      isBrowser &&
       (isFirstNavigation || !isPush) &&
       getSavedScrollPosition(toLocation.fullPath)
 
