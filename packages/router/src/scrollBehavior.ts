@@ -166,36 +166,56 @@ export function scrollToPosition(position: ScrollPosition): void {
   }
 }
 
+/**
+ * Prefix of the scroll positions saved in `sessionStorage`. They persist
+ * across reloads and documents of the same tab.
+ */
+const SCROLL_KEY_PREFIX = 'vue-router:scroll:'
+
 export function getScrollKey(path: string, delta: number): string {
   const position: number = history.state ? history.state.position - delta : -1
-  return position + path
+  return SCROLL_KEY_PREFIX + position + path
 }
 
-export const scrollPositions = new Map<
-  string,
-  _ScrollPositionNormalized | null
->()
+// sessionStorage can be blocked or full, so errors are ignored
 
 export function saveScrollPosition(key: string) {
-  scrollPositions.set(key, computeScrollPosition())
+  const scroll = computeScrollPosition()
+  try {
+    if (scroll) sessionStorage[key] = JSON.stringify(scroll)
+  } catch {}
 }
 
+/**
+ * Consumes the saved position of the current entry. Returns `null` if there is
+ * none or no storage (e.g. SSR).
+ */
 export function getSavedScrollPosition(
-  key: string
-): _ScrollPositionNormalized | null | undefined {
-  const scroll = scrollPositions.get(key)
-  // consume it so it's not used again
-  scrollPositions.delete(key)
-  return scroll
+  path: string
+): _ScrollPositionNormalized | null {
+  try {
+    const key = getScrollKey(path, 0)
+    const value = sessionStorage[key]
+    // consume it so it's not used again
+    delete sessionStorage[key]
+    return JSON.parse(value)
+  } catch {
+    return null
+  }
 }
 
 export function invalidateScrollPositions(position: number, replace = false) {
-  for (const key of scrollPositions.keys()) {
-    const entryPosition = parseInt(key, 10)
-    if (entryPosition === position || (!replace && entryPosition > position)) {
-      scrollPositions.delete(key)
+  try {
+    for (const key of Object.keys(sessionStorage)) {
+      const entryPosition = parseInt(key.slice(SCROLL_KEY_PREFIX.length), 10)
+      if (
+        key.startsWith(SCROLL_KEY_PREFIX) &&
+        (entryPosition === position || (!replace && entryPosition > position))
+      ) {
+        delete sessionStorage[key]
+      }
     }
-  }
+  } catch {}
 }
 
 // TODO: RFC about how to save scroll position
