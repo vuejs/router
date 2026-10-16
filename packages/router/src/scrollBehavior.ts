@@ -167,55 +167,63 @@ export function scrollToPosition(position: ScrollPosition): void {
 }
 
 /**
- * Prefix of the scroll positions saved in `sessionStorage`. They persist
- * across reloads and documents of the same tab.
+ * Key of the scroll positions saved in `sessionStorage`. They persist across
+ * reloads and documents of the same tab.
  */
-const SCROLL_KEY_PREFIX = 'vue-router:scroll:'
+const SCROLL_KEY = 'vue-router:scroll'
 
-export function getScrollKey(path: string, delta: number): string {
-  const position: number = history.state ? history.state.position - delta : -1
-  return SCROLL_KEY_PREFIX + position + path
-}
-
-// sessionStorage can be blocked or full, so errors are ignored
-
-export function saveScrollPosition(key: string) {
-  const scroll = computeScrollPosition()
+function readScrollPositions(): Record<string, _ScrollPositionNormalized> {
   try {
-    if (scroll) sessionStorage[key] = JSON.stringify(scroll)
-  } catch {}
-}
-
-/**
- * Consumes the saved position of the current entry. Returns `null` if there is
- * none or no storage (e.g. SSR).
- */
-export function getSavedScrollPosition(
-  path: string
-): _ScrollPositionNormalized | null {
-  try {
-    const key = getScrollKey(path, 0)
-    const value = sessionStorage[key]
-    // consume it so it's not used again
-    delete sessionStorage[key]
-    return JSON.parse(value)
+    return JSON.parse(sessionStorage[SCROLL_KEY]) || {}
   } catch {
-    return null
+    return {}
   }
 }
 
-export function invalidateScrollPositions(position: number, replace = false) {
+// source of truth: sessionStorage can be blocked or full
+const scrollPositions = /*#__PURE__*/ readScrollPositions()
+
+function persistScrollPositions() {
   try {
-    for (const key of Object.keys(sessionStorage)) {
-      const entryPosition = parseInt(key.slice(SCROLL_KEY_PREFIX.length), 10)
-      if (
-        key.startsWith(SCROLL_KEY_PREFIX) &&
-        (entryPosition === position || (!replace && entryPosition > position))
-      ) {
-        delete sessionStorage[key]
-      }
-    }
+    sessionStorage[SCROLL_KEY] = JSON.stringify(scrollPositions)
   } catch {}
+}
+
+export function getScrollKey(path: string, delta: number): string {
+  const position: number = history.state ? history.state.position - delta : -1
+  return position + path
+}
+
+export function saveScrollPosition(key: string) {
+  const scroll = computeScrollPosition()
+  if (scroll) {
+    scrollPositions[key] = scroll
+    persistScrollPositions()
+  }
+}
+
+/**
+ * Consumes the saved position of the current entry.
+ */
+export function getSavedScrollPosition(
+  path: string
+): _ScrollPositionNormalized | undefined {
+  const key = getScrollKey(path, 0)
+  const scroll = scrollPositions[key]
+  // consume it so it's not used again
+  delete scrollPositions[key]
+  persistScrollPositions()
+  return scroll
+}
+
+export function invalidateScrollPositions(position: number, replace = false) {
+  for (const key in scrollPositions) {
+    const entryPosition = parseInt(key, 10)
+    if (entryPosition === position || (!replace && entryPosition > position)) {
+      delete scrollPositions[key]
+    }
+  }
+  persistScrollPositions()
 }
 
 // TODO: RFC about how to save scroll position
