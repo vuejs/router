@@ -8,7 +8,7 @@ By default, `<RouterView>` displays the current route. Pass a `route` prop to di
 <RouterView :route="someOtherRoute" />
 ```
 
-The value must be a resolved route location, e.g. the result of `router.resolve()`. If the route components are lazy loaded, load them first with `loadRouteLocation()`. When the `route` prop is `undefined`, `<RouterView>` displays the current route.
+The value must be a resolved route location, e.g. the result of `router.resolve()`. If the route components are lazy loaded, load them first with `loadRouteLocation()`. When the `route` prop is `undefined`, `<RouterView>` inherits the route provided by the parent view. Only a top-level `<RouterView>` falls back to the current route from the URL.
 
 ## Modals with their own URL
 
