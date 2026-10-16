@@ -148,6 +148,10 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/guide/advanced/router-view-slot.html',
             },
             {
+              text: 'Displaying a different route',
+              link: '/guide/advanced/router-view-route.html',
+            },
+            {
               text: 'Transitions',
               link: '/guide/advanced/transitions.html',
             },
