@@ -11,10 +11,10 @@ import {
   normalizeBase,
   createHref,
 } from './common'
-import type { _ScrollPositionNormalized } from '../scrollBehavior'
 import {
   invalidateScrollPositions,
-  computeScrollPosition,
+  getScrollKey,
+  saveScrollPosition,
 } from '../scrollBehavior'
 import { diagnostics } from '../diagnostics'
 import { stripBase } from '../location'
@@ -30,7 +30,6 @@ interface StateEntry extends HistoryState {
   forward: HistoryLocation | null
   position: number
   replaced: boolean
-  scroll: _ScrollPositionNormalized | null | false
 }
 
 /**
@@ -129,31 +128,24 @@ function useHistoryListeners(
     return teardown
   }
 
-  function beforeUnloadListener() {
-    const { history } = window
-    // calling replaceState() during a pagehide can break the bfcache
-    if (!history.state || history.scrollRestoration === 'auto') return
-    history.replaceState(
-      assign({}, history.state, {
-        scroll: computeScrollPosition(),
-      }),
-      ''
-    )
+  // replaceState() during pagehide can break the bfcache
+  function pageHideListener() {
+    saveScrollPosition(getScrollKey(currentLocation.value, 0))
   }
 
   function destroy() {
     for (const teardown of teardowns) teardown()
     teardowns = []
     window.removeEventListener('popstate', popStateHandler)
-    window.removeEventListener('pagehide', beforeUnloadListener)
+    window.removeEventListener('pagehide', pageHideListener)
   }
 
   // set up the listeners and prepare teardown callbacks
   window.addEventListener('popstate', popStateHandler)
-  // TODO: remove the scroll computation in v6 since it's doen in the ScrollRestoration plugin
+  // TODO: remove the scroll computation in v6 since it's done in the ScrollRestoration plugin
   // https://developer.chrome.com/blog/page-lifecycle-api/
   // note: iOS safari does not fire beforeunload, so we use pagehide instead
-  window.addEventListener('pagehide', beforeUnloadListener)
+  window.addEventListener('pagehide', pageHideListener)
 
   return {
     pauseListeners,
@@ -177,7 +169,6 @@ function buildState(
     forward,
     replaced,
     position: window.history.length,
-    scroll: null,
   }
 }
 
@@ -200,9 +191,6 @@ function useHistoryStateNavigation(base: string) {
         // the length is off by one, we need to decrease it
         position: history.length - 1,
         replaced: true,
-        // don't add a scroll as the user may have an anchor, and we want
-        // scrollBehavior to be triggered without a saved position
-        scroll: null,
       },
       true
     )
@@ -267,7 +255,6 @@ function useHistoryStateNavigation(base: string) {
 
   function push(to: HistoryLocation, data?: HistoryState) {
     // Add to current entry the information of where we are going
-    // as well as saving the current position
     const currentState = assign(
       {},
       // use current history state to gracefully handle a wrong call to
@@ -275,10 +262,7 @@ function useHistoryStateNavigation(base: string) {
       // https://github.com/vuejs/router/issues/366
       historyState.value,
       history.state as Partial<StateEntry> | null,
-      {
-        forward: to,
-        scroll: computeScrollPosition(),
-      }
+      { forward: to }
     )
 
     if (__DEV__ && !history.state) {
@@ -286,6 +270,9 @@ function useHistoryStateNavigation(base: string) {
     }
 
     changeLocation(currentState.current, currentState, true)
+    // the forward branch is obsolete
+    invalidateScrollPositions(currentState.position)
+    saveScrollPosition(getScrollKey(currentState.current, 0))
 
     const state: StateEntry = assign(
       {},
@@ -295,8 +282,6 @@ function useHistoryStateNavigation(base: string) {
     )
 
     changeLocation(to, state, false)
-    // The current entry's scroll was just updated in history state.
-    invalidateScrollPositions(currentState.position)
     currentLocation.value = to
   }
 

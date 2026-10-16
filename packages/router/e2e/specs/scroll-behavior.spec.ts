@@ -60,9 +60,6 @@ test.describe('scroll-behavior', () => {
     await navigate(page, -1)
 
     await expect.poll(() => scrollY(page)).toBe(2000)
-    expect(await page.evaluate(() => window.history.state.scroll.top)).toBe(
-      2000
-    )
   })
 
   test('discards other URLs from a removed forward branch', async ({

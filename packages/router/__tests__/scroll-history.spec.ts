@@ -12,7 +12,6 @@ import {
   normalizeRouteRecord,
 } from '../src/experimental'
 import { nextNavigation } from './utils'
-import { scrollPositions } from '../src/scrollBehavior'
 
 const routes = ['/', '/b', '/c'].map(path => ({ path, component: {} }))
 const resolver = createFixedResolver(
@@ -45,7 +44,7 @@ describe.each([
     let top = 0
 
     beforeEach(() => {
-      scrollPositions.clear()
+      sessionStorage.clear()
       window.history.replaceState(null, '', '/')
       top = 0
       vi.spyOn(window, 'scrollX', 'get').mockReturnValue(0)
@@ -59,7 +58,7 @@ describe.each([
 
     afterEach(() => {
       history?.destroy()
-      scrollPositions.clear()
+      sessionStorage.clear()
       vi.restoreAllMocks()
     })
 
@@ -69,7 +68,8 @@ describe.each([
         (_to, _from, saved) => saved || { left: 0, top: 0 }
       )
       const router = create(history, scrollBehavior)
-      await router.push('/')
+      // the current url, to support reloads
+      await router.push(history.location)
       await nextTick()
 
       async function push(path: string) {
@@ -87,6 +87,47 @@ describe.each([
       return { router, scrollBehavior, push, go }
     }
 
+    it('restores the position saved on pagehide after a reload', async () => {
+      const { push } = await setup()
+      await push('/b')
+      top = 1000
+      const stateBefore = window.history.state
+      const replaceState = vi.spyOn(window.history, 'replaceState')
+      window.dispatchEvent(new Event('pagehide'))
+      // replaceState() during pagehide can break the bfcache
+      expect(replaceState).not.toHaveBeenCalled()
+      expect(window.history.state).toEqual(stateBefore)
+      replaceState.mockRestore()
+
+      // reload: a new document keeps history.state and sessionStorage
+      history.destroy()
+      top = 0
+      const { scrollBehavior } = await setup()
+
+      expect(scrollBehavior.mock.lastCall?.[2]).toEqual({ left: 0, top: 1000 })
+      expect(top).toBe(1000)
+    })
+
+    it('restores the position saved on push in a new document', async () => {
+      const { push } = await setup()
+      await push('/b')
+      top = 1000
+      await push('/c')
+
+      // a new document at the /b entry, e.g. after leaving the app
+      history.destroy()
+      const popped = new Promise(resolve =>
+        window.addEventListener('popstate', resolve, { once: true })
+      )
+      window.history.back()
+      await popped
+      top = 0
+      const { scrollBehavior } = await setup()
+
+      expect(scrollBehavior.mock.lastCall?.[2]).toEqual({ left: 0, top: 1000 })
+      expect(top).toBe(1000)
+    })
+
     it('restores the new entry after replacing the forward branch', async () => {
       const { scrollBehavior, push, go } = await setup()
       await push('/b')
@@ -97,7 +138,6 @@ describe.each([
       await push('/')
       await go(-1)
 
-      expect(window.history.state.scroll.top).toBe(2000)
       expect(scrollBehavior.mock.lastCall?.[2]).toEqual({ left: 0, top: 2000 })
       expect(top).toBe(2000)
     })
@@ -138,7 +178,6 @@ describe.each([
         if (operation === 'push') await go(-1)
         await go(-1)
 
-        expect(window.history.state.scroll.top).toBe(1000)
         expect(scrollBehavior.mock.lastCall?.[2]).toEqual({
           left: 0,
           top: 2000,
@@ -179,7 +218,6 @@ describe.each([
       await push('/c')
       await go(-1)
 
-      expect(window.history.state.scroll.top).toBe(2000)
       expect(scrollBehavior.mock.lastCall?.[2]).toEqual({ left: 0, top: 2000 })
       expect(top).toBe(2000)
     })
