@@ -391,6 +391,46 @@ describe('onRouteRendered', () => {
     )
   })
 
+  it('nested page rendering a pending async component as its root', async () => {
+    const { promise: pending, resolve } = Promise.withResolvers<void>()
+    const AsyncContent = defineComponent({
+      async setup() {
+        await pending
+        return () => h('p', 'Async')
+      },
+    })
+    const AsyncPage = defineComponent({
+      setup() {
+        trackNavigations()
+        return () => h(AsyncContent)
+      },
+    })
+    const { go, wrapper } = await setup(
+      [
+        {
+          path: '/',
+          component: { template: '<section><RouterView /></section>' },
+          children: [
+            { path: '', component: staticPage('Home') },
+            { path: 'async', component: AsyncPage },
+          ],
+        },
+      ],
+      `<RouterView v-slot="{ Component }">
+        <Suspense><component :is="Component" /></Suspense>
+      </RouterView>`
+    )
+    await go('/')
+    await go('/async')
+    // the ancestor Suspense is resolved: same as an element root
+    expect(events).toEqual(['settled:1:/async dom=""'])
+    events = []
+    resolve()
+    await flushPromises()
+    expect(wrapper.text()).toBe('Async')
+    expect(events).toEqual([])
+  })
+
   it('Suspense keyed async component keeps the old branch', async () => {
     const pending: Array<PromiseWithResolvers<void>> = []
     const Async = defineComponent({
