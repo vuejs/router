@@ -196,6 +196,9 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
         // same flush (nested RouterView, onActivated) run after this one, and
         // the app container isn't set yet during the initial mount
         nextTick(() => {
+          // a pending async component root has no el yet, only its
+          // placeholder comment does
+          while (!vnode.el && vnode.component) vnode = vnode.component.subTree
           if (
             // already called: unrelated re-render or failed navigation (the
             // route didn't change)
@@ -207,7 +210,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
             routeToDisplay.value !== route ||
             // still in a Suspense hidden container, e.g. KeepAlive activating
             // inside a pending Suspense, a later hook fires once it is moved
-            (vnode.el as Node).getRootNode() !==
+            (vnode.el as Node | null)?.getRootNode() !==
               (app._container as Node).getRootNode()
           ) {
             return
