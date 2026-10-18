@@ -218,9 +218,6 @@ importers:
       playwright:
         specifier: ^1.63.0
         version: 1.63.0
-      semver:
-        specifier: ^7.8.5
-        version: 7.8.5
       simple-git-hooks:
         specifier: ^2.14.0
         version: 2.14.0
@@ -233,6 +230,9 @@ importers:
       typescript:
         specifier: ~6.0.3
         version: 6.0.3
+      verkit:
+        specifier: ^0.5.0
+        version: 0.5.0
       vitest:
         specifier: ^5.0.3
         version: 5.0.3(@types/node@26.6.4)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(happy-dom@20.14.5)(vite@8.3.3(@types/node@26.6.4)(esbuild@0.27.7)(terser@5.49.2)(yaml@2.9.1))
@@ -334,12 +334,12 @@ importers:
 
   packages/playground-file-based:
     dependencies:
-      semver:
-        specifier: ^7.8.5
-        version: 7.8.5
       valibot:
         specifier: ^1.5.0
         version: 1.5.0(typescript@6.0.3)
+      verkit:
+        specifier: ^0.5.0
+        version: 0.5.0
       vue:
         specifier: ^3.5.43
         version: 3.5.43(typescript@6.0.3)
@@ -350,9 +350,6 @@ importers:
         specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
-      '@types/semver':
-        specifier: ^7.7.1
-        version: 7.8.0
       '@vitejs/plugin-vue':
         specifier: ^6.0.9
         version: 6.0.9(vite@8.3.3(@types/node@26.6.4)(esbuild@0.27.7)(terser@5.49.2)(yaml@2.9.0))(vue@3.5.43(typescript@6.0.3))
@@ -1644,9 +1641,6 @@ packages:
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
-
-  '@types/semver@7.8.0':
-    resolution: {integrity: sha512-1mAINjtQCXXeLkJ9ehXkwOcBpqtLxiVtKhpUf83DdRNdQKV0iXZpaHYqRr7nj+wvxuJzoAmAwXI+sCNMv1CzLQ==}
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
@@ -4984,8 +4978,6 @@ snapshots:
 
   '@types/resolve@1.20.2': {}
 
-  '@types/semver@7.8.0': {}
-
   '@types/unist@3.0.3': {}
 
   '@types/web-bluetooth@0.0.21': {}
@@ -7432,7 +7424,8 @@ snapshots:
 
   yallist@3.1.1: {}
 
-  yaml@2.9.0: {}
+  yaml@2.9.0:
+    optional: true
 
   yaml@2.9.1: {}
 

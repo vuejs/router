@@ -2,7 +2,15 @@ import fs from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import { parseArgs } from 'node:util'
 import { fileURLToPath } from 'node:url'
-import semver, { type ReleaseType } from 'semver'
+import {
+  compareReversed,
+  getPrerelease,
+  increment,
+  isValid,
+  tryParse,
+  type IncrementType,
+  type SemVer,
+} from 'verkit'
 import * as p from '@clack/prompts'
 import { spawn } from 'node:child_process'
 
@@ -69,7 +77,7 @@ Flags:
 
 // const preId =
 //   args.preId ||
-//   (semver.prerelease(currentVersion) && semver.prerelease(currentVersion)[0])
+//   getPrerelease(currentVersion)?.[0]
 const EXPECTED_BRANCH = 'main'
 // this package will use tags like v1.0.0 while the rest will use the full package name like @pinia/testing@1.0.0
 const MAIN_PKG_NAME = 'vue-router'
@@ -279,7 +287,7 @@ async function main() {
   const releaseConfigs = packagesToRelease.map(({ name, pkg }) => {
     const { version } = pkg
 
-    const prerelease = semver.prerelease(version)
+    const prerelease = getPrerelease(version)
     const preId = prerelease && prerelease[0]
 
     const prereleaseTypes = ['beta', 'alpha', 'rc']
@@ -287,7 +295,7 @@ async function main() {
 
     // For prerelease tags: show prepatch/preminor/premajor with the tag, plus prerelease if already on one
     // For regular releases: show patch/minor/major, plus pre* variants if already on a prerelease
-    const versionIncrements: ReleaseType[] = isPrereleaseTag
+    const versionIncrements: IncrementType[] = isPrereleaseTag
       ? [
           'prepatch',
           'preminor',
@@ -307,7 +315,9 @@ async function main() {
       .map(release => {
         // Use optionTag for prerelease increments when a prerelease tag is specified
         const identifier = isPrereleaseTag ? optionTag : (preId as string)
-        const newVersion = semver.inc(version, release, identifier)
+        const newVersion = increment(version, release, {
+          identifier: identifier || undefined,
+        })
         return {
           value: newVersion!,
           label: `${release}: ${name} (${newVersion})`,
@@ -397,7 +407,7 @@ async function main() {
     const version =
       selection === 'custom' ? (customAnswers[name] as string) : selection
 
-    if (!semver.valid(version)) {
+    if (!isValid(version)) {
       throw new Error(`invalid target version: ${version}`)
     }
 
@@ -636,11 +646,9 @@ async function getLastTag(
     }
 
     const sortedTags = tags
-      .map(tag => ({ tag, version: semver.parse(tag.replace(prefix, '')) }))
-      .filter(
-        (t): t is { tag: string; version: semver.SemVer } => t.version !== null
-      )
-      .sort((a, b) => semver.rcompare(a.version, b.version))
+      .map(tag => ({ tag, version: tryParse(tag.replace(prefix, '')) }))
+      .filter((t): t is { tag: string; version: SemVer } => t.version !== null)
+      .sort((a, b) => compareReversed(a.version, b.version))
 
     if (!sortedTags[0]) {
       return null
