@@ -48,8 +48,8 @@ export function experimental_parseURL(
   }
 
   if (hashPos >= 0) {
-    // TODO(major): path ||=
-    path = path || location.slice(0, hashPos)
+    // an empty path from a relative query like `?a=1#hash` must stay empty
+    if (path == null) path = location.slice(0, hashPos)
     // keep the # character
     hash = location.slice(hashPos, location.length)
   }
