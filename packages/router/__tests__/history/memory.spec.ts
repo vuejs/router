@@ -122,6 +122,39 @@ describe('Memory history', () => {
     })
   })
 
+  it('does not trigger listeners if the position does not change', () => {
+    const history = createMemoryHistory()
+    const spy = vi.fn()
+    history.listen(spy)
+    history.go(-1)
+    history.push(loc)
+    history.go(1)
+    history.go(0)
+    expect(spy).not.toHaveBeenCalled()
+  })
+
+  it('triggers listeners with the delta actually traveled', () => {
+    const history = createMemoryHistory()
+    const spy = vi.fn()
+    history.listen(spy)
+    history.push(loc)
+    history.push(loc2)
+    history.go(-5)
+    expect(history.location).toBe(START)
+    expect(spy).toHaveBeenLastCalledWith(START, loc2, {
+      direction: 'back',
+      delta: -2,
+      type: 'pop',
+    })
+    history.go(5)
+    expect(history.location).toBe(loc2)
+    expect(spy).toHaveBeenLastCalledWith(loc2, START, {
+      direction: 'forward',
+      delta: 2,
+      type: 'pop',
+    })
+  })
+
   it('can stop listening to navigation', () => {
     const history = createMemoryHistory()
     const spy = vi.fn()
