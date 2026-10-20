@@ -1044,6 +1044,60 @@ describe('Experimental Router', () => {
       await checkNavigationCancelledOnPush(undefined)
     })
 
+    it('ignores a redirect from a guard of a navigation cancelled while the guard was running', async () => {
+      const [p1, r1] = fakePromise()
+      const [guardEntered, enterGuard] = fakePromise()
+      const history = createMemoryHistory()
+      const resolver = createFixedResolver(experimentalRoutes)
+      const router = experimental_createRouter({ history, resolver })
+      router.beforeEach(async to => {
+        if (to.name !== 'Param' || to.params.p !== 'a') return
+        enterGuard()
+        await p1
+        return '/foo'
+      })
+      const from = router.currentRoute.value
+      const pA = router.push('/p/a')
+      // the guard of the first navigation is running
+      await guardEntered
+      await expect(router.push('/p/b')).resolves.toEqual(undefined)
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
+      r1()
+      await expect(pA).resolves.toEqual(
+        expect.objectContaining({
+          to: expect.objectContaining({ path: '/p/a' }),
+          from,
+          type: NavigationFailureType.cancelled,
+        })
+      )
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
+    })
+
+    it('ignores a redirect from a guard of a history navigation cancelled while the guard was running', async () => {
+      const [p1, r1] = fakePromise()
+      const [guardEntered, enterGuard] = fakePromise()
+      const history = createMemoryHistory()
+      const resolver = createFixedResolver(experimentalRoutes)
+      const router = experimental_createRouter({ history, resolver })
+      await router.push('/p/a')
+      await router.push('/')
+      router.beforeEach(async to => {
+        if (to.name !== 'Param' || to.params.p !== 'a') return
+        enterGuard()
+        await p1
+        return '/foo'
+      })
+      // trigger to history.back()
+      history.go(-1)
+      // the guard of the history navigation is running
+      await guardEntered
+      await router.push('/p/b')
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
+      r1()
+      await tick()
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
+    })
+
     async function checkNavigationCancelledOnPopstate(
       target?: RouteLocationRaw | false
     ) {
