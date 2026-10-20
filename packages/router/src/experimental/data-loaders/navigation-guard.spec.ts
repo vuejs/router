@@ -31,7 +31,11 @@ import {
 } from './entries/index'
 import { mockPromise } from '../../tests/utils'
 import { useDataOne, useDataTwo } from '../../tests/data-loaders/loaders'
-import { type NavigationFailure } from '../../errors'
+import {
+  isNavigationFailure,
+  NavigationFailureType,
+  type NavigationFailure,
+} from '../../errors'
 import type { Router } from '../../router'
 
 function mockedLoader<T = string | NavigationResult>(
@@ -301,6 +305,27 @@ describe('navigation-guard', () => {
     expect(router.currentRoute.value.path).toBe('/fetch')
     expect(l1.spy).not.toHaveBeenCalled()
     expect(l2.spy).not.toHaveBeenCalled()
+  })
+
+  it('does not throw on duplicated server-side navigations with server: false loaders', async () => {
+    setupApp({ isSSR: true })
+    const router = getRouter()
+    const l1 = mockedLoader({ server: false })
+    router.addRoute({
+      name: '_test',
+      path: '/fetch',
+      component,
+      meta: {
+        loaders: [l1.loader],
+      },
+    })
+
+    await router.push('/fetch')
+    expect(router.currentRoute.value.path).toBe('/fetch')
+    const failure = await router.push('/fetch')
+    expect(isNavigationFailure(failure, NavigationFailureType.duplicated)).toBe(
+      true
+    )
   })
 
   it.each([true, false] as const)(
