@@ -878,6 +878,13 @@ export function experimental_createRouter(
             triggerError(error, toLocation, from)
       )
       .then((failure: NavigationFailure | NavigationRedirectError | void) => {
+        // a guard redirect skips the remaining cancellation checks, so ignore
+        // it if a newer navigation started while the guard ran
+        if (
+          isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
+        ) {
+          failure = checkCanceledNavigation(toLocation, from) || failure
+        }
         if (failure) {
           if (
             isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
@@ -1198,6 +1205,11 @@ export function experimental_createRouter(
           if (
             isNavigationFailure(error, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
           ) {
+            // ignore the redirect if a newer navigation started while the
+            // guard ran
+            const cancelledFailure = checkCanceledNavigation(toLocation, from)
+            if (cancelledFailure) return cancelledFailure
+
             // Here we could call if (info.delta) routerHistory.go(-info.delta,
             // false) but this is bug prone as we have no way to wait the
             // navigation to be finished before calling pushWithRedirect. Using
