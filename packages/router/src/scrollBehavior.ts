@@ -88,14 +88,6 @@ function getElementPosition(
   }
 }
 
-export const computeScrollPosition = (): _ScrollPositionNormalized | null =>
-  history.scrollRestoration === 'manual'
-    ? {
-        left: window.scrollX,
-        top: window.scrollY,
-      }
-    : null
-
 export function scrollToPosition(position: ScrollPosition): void {
   let scrollToOptions: ScrollPositionCoordinates
 
@@ -191,15 +183,20 @@ function persistScrollPositions() {
   } catch {}
 }
 
-export function getScrollKey(path: string, delta: number): string {
+function getScrollKey(path: string, delta: number): string {
   const position: number = history.state ? history.state.position - delta : -1
   return position + path
 }
 
-export function saveScrollPosition(key: string) {
-  const scroll = computeScrollPosition()
-  if (scroll) {
-    scrollPositions[key] = scroll
+/**
+ * Saves the position of the entry `delta` steps before the current one.
+ */
+export function saveScrollPosition(path: string, delta = 0) {
+  if (history.scrollRestoration === 'manual') {
+    scrollPositions[getScrollKey(path, delta)] = {
+      left: window.scrollX,
+      top: window.scrollY,
+    }
     persistScrollPositions()
   }
 }

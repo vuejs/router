@@ -21,7 +21,6 @@ import { NavigationType } from './history/common'
 import type { _ScrollPositionNormalized } from './scrollBehavior'
 import {
   getSavedScrollPosition,
-  getScrollKey,
   saveScrollPosition,
   scrollToPosition,
 } from './scrollBehavior'
@@ -818,7 +817,7 @@ export function createRouter(options: RouterOptions): Router {
       // Unknown-direction navigations cannot be tied to a history entry.
       // TODO: should be moved to web history?
       if (isBrowser && info.delta) {
-        saveScrollPosition(getScrollKey(from.fullPath, info.delta))
+        saveScrollPosition(from.fullPath, info.delta)
       }
 
       navigate(toLocation, from)

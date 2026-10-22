@@ -13,7 +13,6 @@ import {
 } from './common'
 import {
   invalidateScrollPositions,
-  getScrollKey,
   saveScrollPosition,
 } from '../scrollBehavior'
 import { diagnostics } from '../diagnostics'
@@ -130,7 +129,7 @@ function useHistoryListeners(
 
   // replaceState() during pagehide can break the bfcache
   function pageHideListener() {
-    saveScrollPosition(getScrollKey(currentLocation.value, 0))
+    saveScrollPosition(currentLocation.value)
   }
 
   function destroy() {
@@ -272,7 +271,7 @@ function useHistoryStateNavigation(base: string) {
     changeLocation(currentState.current, currentState, true)
     // the forward branch is obsolete
     invalidateScrollPositions(currentState.position)
-    saveScrollPosition(getScrollKey(currentState.current, 0))
+    saveScrollPosition(currentState.current)
 
     const state: StateEntry = assign(
       {},
