@@ -126,6 +126,38 @@ test.describe('scroll-behavior', () => {
     await expect.poll(() => anchorTop(page, 'anchor2')).toBeLessThan(101)
   })
 
+  // https://github.com/nuxt/nuxt/issues/36660
+  test.describe('same page hash links', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto('/scroll-behavior/bar')
+      await expect(page.locator('.view.bar')).toBeVisible()
+      await page.evaluate(() => window.scrollTo(0, 300))
+    })
+
+    test('restores the position on back after a router-link', async ({
+      page,
+    }) => {
+      await clickLink(link(page, '/bar#anchor'))
+      await expect(page).toHaveURL(/\/bar#anchor$/)
+      await expect.poll(() => anchorTop(page, 'anchor')).toBeLessThan(1)
+
+      await page.evaluate(() => window.history.back())
+      await expect(page).toHaveURL(/\/bar$/)
+      await expect.poll(() => scrollY(page)).toBe(300)
+    })
+
+    test('scrolls to the top when pushing the path without the hash', async ({
+      page,
+    }) => {
+      await clickLink(page.locator('#native-anchor'))
+      await expect.poll(() => anchorTop(page, 'anchor')).toBeLessThan(1)
+
+      await clickLink(link(page, '/bar'))
+      await expect(page).toHaveURL(/\/bar$/)
+      await expect.poll(() => scrollY(page)).toBe(0)
+    })
+  })
+
   test('scroll behavior', async ({ page }) => {
     await page.goto('/scroll-behavior/')
     await expect(

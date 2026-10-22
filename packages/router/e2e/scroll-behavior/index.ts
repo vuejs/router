@@ -9,6 +9,7 @@ const Bar: RouteComponent = {
   template: `
     <div class="bar">
       bar
+      <a id="native-anchor" href="#anchor">native #anchor</a>
       <div style="height:1500px"></div>
       <p id="anchor" style="height:500px">Anchor</p>
       <p id="anchor2" style="height:500px">Anchor2</p>
