@@ -3,6 +3,7 @@ import type {
   RouteLocationNormalizedLoaded,
 } from './typed-routes'
 import { diagnostics } from './diagnostics'
+import { assign } from './utils'
 
 // we use types instead of interfaces to make it work with HistoryStateValue type
 
@@ -87,14 +88,6 @@ function getElementPosition(
   }
 }
 
-export const computeScrollPosition = (): _ScrollPositionNormalized | null =>
-  history.scrollRestoration === 'manual'
-    ? {
-        left: window.scrollX,
-        top: window.scrollY,
-      }
-    : null
-
 export function scrollToPosition(position: ScrollPosition): void {
   let scrollToOptions: ScrollPositionCoordinates
 
@@ -166,36 +159,70 @@ export function scrollToPosition(position: ScrollPosition): void {
   }
 }
 
-export function getScrollKey(path: string, delta: number): string {
+/**
+ * Key of the scroll positions saved in `sessionStorage`. They persist across
+ * reloads and documents of the same tab.
+ */
+const SCROLL_KEY = 'vue-router:scroll'
+
+function readScrollPositions(): Record<string, _ScrollPositionNormalized> {
+  try {
+    // the stored value can be anything, e.g. a number
+    return assign({}, JSON.parse(sessionStorage[SCROLL_KEY]))
+  } catch {
+    return {}
+  }
+}
+
+// source of truth: sessionStorage can be blocked or full
+const scrollPositions = /*#__PURE__*/ readScrollPositions()
+
+function persistScrollPositions() {
+  try {
+    sessionStorage[SCROLL_KEY] = JSON.stringify(scrollPositions)
+  } catch {}
+}
+
+function getScrollKey(path: string, delta: number): string {
   const position: number = history.state ? history.state.position - delta : -1
   return position + path
 }
 
-export const scrollPositions = new Map<
-  string,
-  _ScrollPositionNormalized | null
->()
-
-export function saveScrollPosition(key: string) {
-  scrollPositions.set(key, computeScrollPosition())
+/**
+ * Saves the position of the entry `delta` steps before the current one.
+ */
+export function saveScrollPosition(path: string, delta = 0) {
+  if (history.scrollRestoration === 'manual') {
+    scrollPositions[getScrollKey(path, delta)] = {
+      left: window.scrollX,
+      top: window.scrollY,
+    }
+    persistScrollPositions()
+  }
 }
 
+/**
+ * Consumes the saved position of the current entry.
+ */
 export function getSavedScrollPosition(
-  key: string
-): _ScrollPositionNormalized | null | undefined {
-  const scroll = scrollPositions.get(key)
+  path: string
+): _ScrollPositionNormalized | undefined {
+  const key = getScrollKey(path, 0)
+  const scroll = scrollPositions[key]
   // consume it so it's not used again
-  scrollPositions.delete(key)
+  delete scrollPositions[key]
+  persistScrollPositions()
   return scroll
 }
 
 export function invalidateScrollPositions(position: number, replace = false) {
-  for (const key of scrollPositions.keys()) {
+  for (const key in scrollPositions) {
     const entryPosition = parseInt(key, 10)
     if (entryPosition === position || (!replace && entryPosition > position)) {
-      scrollPositions.delete(key)
+      delete scrollPositions[key]
     }
   }
+  persistScrollPositions()
 }
 
 // TODO: RFC about how to save scroll position

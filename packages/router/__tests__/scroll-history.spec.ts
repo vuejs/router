@@ -3,49 +3,67 @@
  */
 import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRouter, createWebHashHistory, createWebHistory } from '../src'
-import type { RouterHistory, RouterScrollBehavior } from '../src'
-import {
-  createFixedResolver,
-  experimental_createRouter,
-  MatcherPatternPathStatic,
-  normalizeRouteRecord,
-} from '../src/experimental'
+import type { Router, RouterHistory, RouterScrollBehavior } from '../src'
+import type { EXPERIMENTAL_Router } from '../src/experimental'
+import type * as VueRouter from '../src'
+import type * as Experimental from '../src/experimental'
 import { nextNavigation } from './utils'
-import { scrollPositions } from '../src/scrollBehavior'
 
-const routes = ['/', '/b', '/c'].map(path => ({ path, component: {} }))
-const resolver = createFixedResolver(
-  routes.map(({ path, component }) =>
-    normalizeRouteRecord({
-      name: path,
-      path: new MatcherPatternPathStatic(path),
-      components: { default: component },
-    })
-  )
-)
+type Modules = [typeof VueRouter, typeof Experimental]
+
+// a new document only keeps history.state and sessionStorage
+async function loadDocument(): Promise<Modules> {
+  vi.resetModules()
+  return [await import('../src'), await import('../src/experimental')]
+}
+
+const paths = ['/', '/b', '/c']
 
 describe.each([
   [
     'router',
-    (history: RouterHistory, scrollBehavior: RouterScrollBehavior) =>
-      createRouter({ history, routes, scrollBehavior }),
+    (
+      [{ createRouter }]: Modules,
+      history: RouterHistory,
+      scrollBehavior: RouterScrollBehavior
+    ): Router =>
+      createRouter({
+        history,
+        routes: paths.map(path => ({ path, component: {} })),
+        scrollBehavior,
+      }),
   ],
   [
     'experimental router',
-    (history: RouterHistory, scrollBehavior: RouterScrollBehavior) =>
-      experimental_createRouter({ history, resolver, scrollBehavior }),
+    (
+      [, experimental]: Modules,
+      history: RouterHistory,
+      scrollBehavior: RouterScrollBehavior
+    ): EXPERIMENTAL_Router =>
+      experimental.experimental_createRouter({
+        history,
+        resolver: experimental.createFixedResolver(
+          paths.map(path =>
+            experimental.normalizeRouteRecord({
+              name: path,
+              path: new experimental.MatcherPatternPathStatic(path),
+              components: { default: {} },
+            })
+          )
+        ),
+        scrollBehavior,
+      }),
   ],
 ] as const)('%s scroll history', (_name, create) => {
   describe.each([
-    ['web', createWebHistory],
-    ['hash', createWebHashHistory],
+    ['web', 'createWebHistory'],
+    ['hash', 'createWebHashHistory'],
   ] as const)('%s history', (mode, createHistory) => {
     let history: RouterHistory
     let top = 0
 
     beforeEach(() => {
-      scrollPositions.clear()
+      sessionStorage.clear()
       window.history.replaceState(null, '', '/')
       top = 0
       vi.spyOn(window, 'scrollX', 'get').mockReturnValue(0)
@@ -59,17 +77,19 @@ describe.each([
 
     afterEach(() => {
       history?.destroy()
-      scrollPositions.clear()
+      sessionStorage.clear()
       vi.restoreAllMocks()
     })
 
     async function setup() {
-      history = createHistory()
+      const modules = await loadDocument()
+      history = modules[0][createHistory]()
       const scrollBehavior = vi.fn<RouterScrollBehavior>(
         (_to, _from, saved) => saved || { left: 0, top: 0 }
       )
-      const router = create(history, scrollBehavior)
-      await router.push('/')
+      const router = create(modules, history, scrollBehavior)
+      // the current url, to support reloads
+      await router.push(history.location)
       await nextTick()
 
       async function push(path: string) {
@@ -87,6 +107,47 @@ describe.each([
       return { router, scrollBehavior, push, go }
     }
 
+    it('restores the position saved on pagehide after a reload', async () => {
+      const { push } = await setup()
+      await push('/b')
+      top = 1000
+      const stateBefore = window.history.state
+      const replaceState = vi.spyOn(window.history, 'replaceState')
+      window.dispatchEvent(new Event('pagehide'))
+      // replaceState() during pagehide can break the bfcache
+      expect(replaceState).not.toHaveBeenCalled()
+      expect(window.history.state).toEqual(stateBefore)
+      replaceState.mockRestore()
+
+      // reload: a new document keeps history.state and sessionStorage
+      history.destroy()
+      top = 0
+      const { scrollBehavior } = await setup()
+
+      expect(scrollBehavior.mock.lastCall?.[2]).toEqual({ left: 0, top: 1000 })
+      expect(top).toBe(1000)
+    })
+
+    it('restores the position saved on push in a new document', async () => {
+      const { push } = await setup()
+      await push('/b')
+      top = 1000
+      await push('/c')
+
+      // a new document at the /b entry, e.g. after leaving the app
+      history.destroy()
+      const popped = new Promise(resolve =>
+        window.addEventListener('popstate', resolve, { once: true })
+      )
+      window.history.back()
+      await popped
+      top = 0
+      const { scrollBehavior } = await setup()
+
+      expect(scrollBehavior.mock.lastCall?.[2]).toEqual({ left: 0, top: 1000 })
+      expect(top).toBe(1000)
+    })
+
     it('restores the new entry after replacing the forward branch', async () => {
       const { scrollBehavior, push, go } = await setup()
       await push('/b')
@@ -97,9 +158,124 @@ describe.each([
       await push('/')
       await go(-1)
 
-      expect(window.history.state.scroll.top).toBe(2000)
       expect(scrollBehavior.mock.lastCall?.[2]).toEqual({ left: 0, top: 2000 })
       expect(top).toBe(2000)
+    })
+
+    it.each([
+      [
+        'blocked',
+        {
+          get() {
+            throw new DOMException('Access is denied', 'SecurityError')
+          },
+        },
+      ],
+      [
+        'full',
+        {
+          value: new Proxy(sessionStorage, {
+            set() {
+              throw new DOMException('Quota exceeded', 'QuotaExceededError')
+            },
+          }),
+        },
+      ],
+    ] as const)(
+      'restores positions in the same document when sessionStorage is %s',
+      async (_state, descriptor) => {
+        const original = Object.getOwnPropertyDescriptor(
+          globalThis,
+          'sessionStorage'
+        )!
+        Object.defineProperty(globalThis, 'sessionStorage', {
+          configurable: true,
+          ...descriptor,
+        })
+        try {
+          const { scrollBehavior, push, go } = await setup()
+          await push('/b')
+          top = 1000
+          await push('/c')
+          await go(-1)
+
+          expect(scrollBehavior.mock.lastCall?.[2]).toEqual({
+            left: 0,
+            top: 1000,
+          })
+          expect(top).toBe(1000)
+        } finally {
+          Object.defineProperty(globalThis, 'sessionStorage', original)
+        }
+      }
+    )
+
+    it.each(['42', '"ab"', '[]', 'null', '{bad'])(
+      'restores positions after a reload when sessionStorage holds %s',
+      async stored => {
+        sessionStorage['vue-router:scroll'] = stored
+        const { push } = await setup()
+        await push('/b')
+        top = 1000
+        window.dispatchEvent(new Event('pagehide'))
+
+        history.destroy()
+        top = 0
+        const { scrollBehavior } = await setup()
+
+        expect(scrollBehavior.mock.lastCall?.[2]).toEqual({
+          left: 0,
+          top: 1000,
+        })
+        expect(top).toBe(1000)
+      }
+    )
+
+    it('does not reuse a restored position after leaving with a native hash change', async () => {
+      const { router, scrollBehavior, push, go } = await setup()
+      await push('/b')
+      top = 1000
+      await push('/c')
+      await go(-1)
+      expect(top).toBe(1000)
+
+      top = 2000
+      const navigation = nextNavigation(router)
+      // a native anchor link adds an entry without state. happy-dom does
+      // neither for location.hash
+      window.history.pushState(
+        null,
+        '',
+        mode === 'hash' ? '/#/b#anchor' : '/b#anchor'
+      )
+      window.dispatchEvent(new PopStateEvent('popstate', { state: null }))
+      await navigation
+      await nextTick()
+      expect(router.currentRoute.value.fullPath).toBe('/b#anchor')
+
+      await go(-1)
+
+      expect(router.currentRoute.value.fullPath).toBe('/b')
+      // the position was not saved when leaving, 1000 is outdated
+      expect(scrollBehavior.mock.lastCall?.[2]).toBe(null)
+    })
+
+    it('does not reuse a restored position when the entry is left with auto scrollRestoration', async () => {
+      const { scrollBehavior, push, go } = await setup()
+      await push('/b')
+      top = 1000
+      await push('/c')
+      await go(-1)
+      top = 2000
+      // the browser restores this one, nothing is saved
+      const scrollRestoration = vi
+        .spyOn(window.history, 'scrollRestoration', 'get')
+        .mockReturnValue('auto')
+      await go(1)
+      scrollRestoration.mockRestore()
+      await go(-1)
+
+      expect(scrollBehavior.mock.lastCall?.[2]).toBe(null)
     })
 
     it('discards cached URLs from the whole removed branch', async () => {
@@ -138,7 +314,6 @@ describe.each([
         if (operation === 'push') await go(-1)
         await go(-1)
 
-        expect(window.history.state.scroll.top).toBe(1000)
         expect(scrollBehavior.mock.lastCall?.[2]).toEqual({
           left: 0,
           top: 2000,
@@ -179,7 +354,6 @@ describe.each([
       await push('/c')
       await go(-1)
 
-      expect(window.history.state.scroll.top).toBe(2000)
       expect(scrollBehavior.mock.lastCall?.[2]).toEqual({ left: 0, top: 2000 })
       expect(top).toBe(2000)
     })

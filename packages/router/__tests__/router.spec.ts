@@ -153,7 +153,7 @@ describe('Router', () => {
     vi.spyOn(history, 'replace')
     await router.replace('/foo')
     expect(history.replace).toHaveBeenCalledTimes(1)
-    expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
+    expect(history.location).toBe('/foo')
   })
 
   it('parses query and hash with router.replace', async () => {
@@ -162,10 +162,7 @@ describe('Router', () => {
     vi.spyOn(history, 'replace')
     await router.replace('/foo?q=2#a')
     expect(history.replace).toHaveBeenCalledTimes(1)
-    expect(history.replace).toHaveBeenCalledWith(
-      '/foo?q=2#a',
-      expect.anything()
-    )
+    expect(history.location).toBe('/foo?q=2#a')
   })
 
   it('replaces if a guard redirects', async () => {
@@ -182,7 +179,7 @@ describe('Router', () => {
     await router.replace('/home-before')
     expect(history.push).toHaveBeenCalledTimes(0)
     expect(history.replace).toHaveBeenCalledTimes(1)
-    expect(history.replace).toHaveBeenCalledWith('/', expect.anything())
+    expect(history.location).toBe('/')
   })
 
   it('replaces if a guard redirect replaces', async () => {
@@ -201,7 +198,6 @@ describe('Router', () => {
     expect(history.location).toBe('/foo')
     expect(history.push).toHaveBeenCalledTimes(0)
     expect(history.replace).toHaveBeenCalledTimes(1)
-    expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
   })
 
   it('allows to customize parseQuery', async () => {
@@ -293,7 +289,7 @@ describe('Router', () => {
     vi.spyOn(history, 'replace')
     await router.push({ path: '/foo', replace: true })
     expect(history.replace).toHaveBeenCalledTimes(1)
-    expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
+    expect(history.location).toBe('/foo')
   })
 
   it('can replaces current location with a string location', async () => {
@@ -301,7 +297,7 @@ describe('Router', () => {
     vi.spyOn(history, 'replace')
     await router.replace('/foo')
     expect(history.replace).toHaveBeenCalledTimes(1)
-    expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
+    expect(history.location).toBe('/foo')
   })
 
   it('can replaces current location with an object location', async () => {
@@ -309,7 +305,7 @@ describe('Router', () => {
     vi.spyOn(history, 'replace')
     await router.replace({ path: '/foo' })
     expect(history.replace).toHaveBeenCalledTimes(1)
-    expect(history.replace).toHaveBeenCalledWith('/foo', expect.anything())
+    expect(history.location).toBe('/foo')
   })
 
   it('navigates if the location does not exist', async () => {
