@@ -19,6 +19,26 @@ function createAutomaticPage(name: string): RouteComponent {
 
 const AutomaticA = createAutomaticPage('automatic-a')
 const AutomaticB = createAutomaticPage('automatic-b')
+const Anchors = defineComponent({
+  setup() {
+    useScrollRestoration()
+  },
+  template: `
+    <main class="view anchors">
+      <h2>anchors</h2>
+      <a id="native-anchor" href="#target">native #target</a>
+      <router-link id="router-link-anchor" to="#target">router-link #target</router-link>
+      <div style="height:2000px"></div>
+      <p id="target">target</p>
+    </main>
+  `,
+})
+const Other = defineComponent({
+  setup() {
+    useScrollRestoration()
+  },
+  template: `<main class="view other"><h2>other</h2></main>`,
+})
 const Neutral: RouteComponent = {
   template: '<main class="view neutral"><h2>neutral</h2></main>',
 }
@@ -29,8 +49,15 @@ const router = createRouter({
     { path: '/', redirect: '/automatic-a' },
     { path: '/automatic-a', component: AutomaticA },
     { path: '/automatic-b', component: AutomaticB },
+    { path: '/anchors', component: Anchors },
+    { path: '/other', component: Other },
     { path: '/neutral', component: Neutral },
   ],
+})
+
+// keeps navigations pending for a few frames
+router.beforeEach(async to => {
+  if (to.query.slow != null) await new Promise(r => setTimeout(r, 200))
 })
 
 const app = createApp({
@@ -40,6 +67,8 @@ const app = createApp({
       <router-link to="/automatic-a">automatic-a</router-link>
       <router-link to="/automatic-b">automatic-b</router-link>
       <router-link to="/neutral">neutral</router-link>
+      <router-link to="/other">other</router-link>
+      <router-link to="/anchors">anchors</router-link>
     </nav>
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">

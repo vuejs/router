@@ -277,9 +277,20 @@ export function SCROLL_RESTORATION_SETUP_LISTENERS_DEFAULT(
   signal: AbortSignal,
   router: EXPERIMENTAL_Router | Router
 ): void {
+  // entries created by the browser (e.g. native hash links) are already scrolled
+  let browserScrolled = false
+  // capture phase: runs before the router's own listener
+  window.addEventListener('popstate', e => (browserScrolled = !e.state), {
+    capture: true,
+    signal,
+  })
+  // runs before a native hash link scrolls
+  document.addEventListener('click', () => capture(), { capture: true, signal })
   // The DOM still shows `from` until the next render flush.
   const removeAfterEach = router.afterEach((_to, from, failure) => {
-    if (!failure && from !== START_LOCATION_NORMALIZED) capture(from)
+    if (!failure && !browserScrolled && from !== START_LOCATION_NORMALIZED)
+      capture(from)
+    browserScrolled = false
   })
   signal.addEventListener('abort', removeAfterEach, { once: true })
   window.addEventListener('pagehide', () => capture(), { signal })
@@ -378,6 +389,14 @@ function ScrollRestorationClient(
     ComponentInternalInstance
   >()
   history.scrollRestoration = 'manual'
+  // WebKit doesn't copy it to entries created by fragment navigations
+  // https://bugs.webkit.org/show_bug.cgi?id=325987
+  const listenersController = new AbortController()
+  window.addEventListener(
+    'popstate',
+    e => e.state || (history.scrollRestoration = 'manual'),
+    { signal: listenersController.signal }
+  )
 
   // a nested call with the same key owns it, e.g. a page inside its layout. A
   // pending nested call (async setup) owns the restore but can't capture yet
@@ -453,7 +472,6 @@ function ScrollRestorationClient(
     }
   }
 
-  const listenersController = new AbortController()
   optionsWithDefaults.setupListeners(
     capture,
     listenersController.signal,
