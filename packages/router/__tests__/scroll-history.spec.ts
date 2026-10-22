@@ -210,6 +210,27 @@ describe.each([
       }
     )
 
+    it.each(['42', '"ab"', '[]', 'null', '{bad'])(
+      'restores positions after a reload when sessionStorage holds %s',
+      async stored => {
+        sessionStorage['vue-router:scroll'] = stored
+        const { push } = await setup()
+        await push('/b')
+        top = 1000
+        window.dispatchEvent(new Event('pagehide'))
+
+        history.destroy()
+        top = 0
+        const { scrollBehavior } = await setup()
+
+        expect(scrollBehavior.mock.lastCall?.[2]).toEqual({
+          left: 0,
+          top: 1000,
+        })
+        expect(top).toBe(1000)
+      }
+    )
+
     it('discards cached URLs from the whole removed branch', async () => {
       const { router, scrollBehavior, push, go } = await setup()
       await push('/b')

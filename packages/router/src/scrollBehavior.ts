@@ -3,6 +3,7 @@ import type {
   RouteLocationNormalizedLoaded,
 } from './typed-routes'
 import { diagnostics } from './diagnostics'
+import { assign } from './utils'
 
 // we use types instead of interfaces to make it work with HistoryStateValue type
 
@@ -174,7 +175,8 @@ const SCROLL_KEY = 'vue-router:scroll'
 
 function readScrollPositions(): Record<string, _ScrollPositionNormalized> {
   try {
-    return JSON.parse(sessionStorage[SCROLL_KEY]) || {}
+    // the stored value can be anything, e.g. a number
+    return assign({}, JSON.parse(sessionStorage[SCROLL_KEY]))
   } catch {
     return {}
   }
