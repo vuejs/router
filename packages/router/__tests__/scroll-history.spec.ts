@@ -231,6 +231,53 @@ describe.each([
       }
     )
 
+    it('does not reuse a restored position after leaving with a native hash change', async () => {
+      const { router, scrollBehavior, push, go } = await setup()
+      await push('/b')
+      top = 1000
+      await push('/c')
+      await go(-1)
+      expect(top).toBe(1000)
+
+      top = 2000
+      const navigation = nextNavigation(router)
+      // a native anchor link adds an entry without state. happy-dom does
+      // neither for location.hash
+      window.history.pushState(
+        null,
+        '',
+        mode === 'hash' ? '/#/b#anchor' : '/b#anchor'
+      )
+      window.dispatchEvent(new PopStateEvent('popstate', { state: null }))
+      await navigation
+      await nextTick()
+      expect(router.currentRoute.value.fullPath).toBe('/b#anchor')
+
+      await go(-1)
+
+      expect(router.currentRoute.value.fullPath).toBe('/b')
+      // the position was not saved when leaving, 1000 is outdated
+      expect(scrollBehavior.mock.lastCall?.[2]).toBe(null)
+    })
+
+    it('does not reuse a restored position when the entry is left with auto scrollRestoration', async () => {
+      const { scrollBehavior, push, go } = await setup()
+      await push('/b')
+      top = 1000
+      await push('/c')
+      await go(-1)
+      top = 2000
+      // the browser restores this one, nothing is saved
+      const scrollRestoration = vi
+        .spyOn(window.history, 'scrollRestoration', 'get')
+        .mockReturnValue('auto')
+      await go(1)
+      scrollRestoration.mockRestore()
+      await go(-1)
+
+      expect(scrollBehavior.mock.lastCall?.[2]).toBe(null)
+    })
+
     it('discards cached URLs from the whole removed branch', async () => {
       const { router, scrollBehavior, push, go } = await setup()
       await push('/b')
