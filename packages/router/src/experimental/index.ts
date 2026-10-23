@@ -166,5 +166,6 @@ export {
   type DefinePageQueryParamOptionsAny as _DefinePageQueryParamOptionsAny,
   type PathParamNamesForFilePath as _PathParamNamesForFilePath,
   type RoutePropsForFilePath as _RoutePropsForFilePath,
+  type DefaultRoutePropsForFilePath as _DefaultRoutePropsForFilePath,
 } from './runtime'
 export { NavigationResult as _NavigationResult } from './data-loaders/entries/index'

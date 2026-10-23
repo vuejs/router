@@ -257,6 +257,15 @@ export interface Options {
      * defining custom param matchers.
      */
     paramParsers?: boolean | ParamParsersOptions
+
+    /**
+     * (Experimental router only). Pass the route params as props to every page
+     * component, as if each `definePage()` had `props: true`. Set `props` in
+     * `definePage()` to override it, e.g. `props: false`.
+     *
+     * @default `false`
+     */
+    propsDefault?: boolean
   }
 }
 

@@ -170,6 +170,17 @@ describe('mergeRouteRecordViews', () => {
     expect(record.props).toEqual({ default: true, aside: { title: 'a' } })
   })
 
+  it('keeps the record props of pages without props', () => {
+    const record = mergeRouteRecordViews(
+      { props: { default: true, aside: true, footer: true } },
+      {
+        default: { meta: { a: 1 } },
+        aside: { props: false },
+      }
+    )
+    expect(record.props).toEqual({ default: true, aside: false, footer: true })
+  })
+
   it('merges meta of all the pages', () => {
     const record = mergeRouteRecordViews(
       { meta: { a: 1 } },
