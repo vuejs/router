@@ -411,6 +411,26 @@ definePage({ meta: { second: true } })
     })
   })
 
+  it('extracts name, path, alias, and params with quoted keys', () => {
+    const code = vue`
+<script setup>
+definePage({
+  'name': 'custom',
+  "path": '/custom',
+  'alias': ['/other'],
+  'params': { hash: { tab: 'tab' } },
+})
+</script>
+`
+    expect(extractDefinePageInfo(code, 'src/pages/basic.vue')).toEqual({
+      name: 'custom',
+      path: '/custom',
+      alias: ['/other'],
+      params: { hash: { tab: 'tab' } },
+      hasRemainingProperties: false,
+    })
+  })
+
   it('extracts hash parser names without retaining runtime properties', () => {
     const code = vue`
 <script setup>
@@ -854,6 +874,23 @@ definePage({
 definePage({
   name: 'home',
   meta: { requiresAuth: true },
+})
+</script>
+`
+      const result = extractDefinePageInfo(code, 'src/pages/test.vue')
+      expect(result?.hasRemainingProperties).toBe(true)
+    })
+
+    it.each([
+      "'meta': { requiresAuth: true }",
+      '"meta": { requiresAuth: true }',
+      "['meta']: { requiresAuth: true }",
+      'props(to) { return to.params }',
+    ])('is true with %s', property => {
+      const code = vue`
+<script setup>
+definePage({
+  ${property},
 })
 </script>
 `

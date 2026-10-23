@@ -416,8 +416,17 @@ export function extractDefinePageInfo(
   const routeInfo: DefinePageInfo = { hasRemainingProperties: false }
 
   for (const prop of routeRecord.properties) {
-    if (prop.type === 'ObjectProperty' && prop.key.type === 'Identifier') {
-      if (prop.key.name === 'name') {
+    const key =
+      prop.type === 'ObjectProperty' && !prop.computed
+        ? prop.key.type === 'Identifier'
+          ? prop.key.name
+          : prop.key.type === 'StringLiteral'
+            ? prop.key.value
+            : undefined
+        : undefined
+
+    if (prop.type === 'ObjectProperty' && key !== undefined) {
+      if (key === 'name') {
         if (
           prop.value.type !== 'StringLiteral' &&
           (prop.value.type !== 'BooleanLiteral' || prop.value.value !== false)
@@ -427,21 +436,24 @@ export function extractDefinePageInfo(
           // TODO: why does TS not narrow down the type?
           routeInfo.name = prop.value.value as string | false
         }
-      } else if (prop.key.name === 'path') {
+      } else if (key === 'path') {
         if (prop.value.type !== 'StringLiteral') {
           diagnostics.VUE_ROUTER_B0005({ filename: id })
         } else {
           routeInfo.path = prop.value.value
         }
-      } else if (prop.key.name === 'alias') {
+      } else if (key === 'alias') {
         routeInfo.alias = extractRouteAlias(prop.value, id)
-      } else if (prop.key.name === 'params') {
+      } else if (key === 'params') {
         if (prop.value.type === 'ObjectExpression') {
           routeInfo.params = extractParamsInfo(prop.value, id, sfcCode, offset)
         }
       } else {
         routeInfo.hasRemainingProperties = true
       }
+    } else {
+      // methods, spreads, and computed keys are kept at runtime
+      routeInfo.hasRemainingProperties = true
     }
   }
 
