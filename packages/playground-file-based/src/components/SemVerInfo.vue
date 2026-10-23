@@ -1,27 +1,22 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { inc, type SemVer } from 'semver'
+import { increment, normalizeFull, type SemVer } from 'verkit'
 
 const { version } = defineProps<{ version: SemVer }>()
 
 const nextVersions = computed(() => ({
-  major: inc(version, 'major'),
-  minor: inc(version, 'minor'),
-  patch: inc(version, 'patch'),
-  prerelease: inc(version, 'prerelease'),
+  major: increment(version, 'major'),
+  minor: increment(version, 'minor'),
+  patch: increment(version, 'patch'),
+  prerelease: increment(version, 'prerelease'),
 }))
 </script>
 
 <template>
   <dl>
-    <dt>Raw</dt>
-    <dd>
-      <code>{{ version.raw }}</code>
-    </dd>
-
     <dt>Formatted</dt>
     <dd>
-      <code>{{ version.format() }}</code>
+      <code>{{ normalizeFull(version) }}</code>
     </dd>
 
     <dt>Major</dt>
@@ -35,7 +30,7 @@ const nextVersions = computed(() => ({
 
     <dt>Prerelease</dt>
     <dd>
-      <code v-if="version.prerelease.length">{{
+      <code v-if="version.prerelease?.length">{{
         version.prerelease.join('.')
       }}</code>
       <em v-else>none</em>
@@ -43,7 +38,7 @@ const nextVersions = computed(() => ({
 
     <dt>Build</dt>
     <dd>
-      <code v-if="version.build.length">{{ version.build.join('.') }}</code>
+      <code v-if="version.build?.length">{{ version.build.join('.') }}</code>
       <em v-else>none</em>
     </dd>
 

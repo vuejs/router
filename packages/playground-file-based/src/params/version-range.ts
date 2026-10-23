@@ -1,13 +1,21 @@
 import { defineParamParser, miss } from 'vue-router/experimental'
-import { parse, type SemVer, Range, validRange } from 'semver'
+import {
+  normalizeFull,
+  normalizeRange,
+  tryParse,
+  tryParseRange,
+  type SemVer,
+  type SemVerRange,
+} from 'verkit'
 
 export const parser = defineParamParser({
-  get: (value: string): SemVer | Range => {
+  get: (value: string): SemVer | SemVerRange => {
     return (
-      parse(value, false, false) ||
-      (validRange(value) && new Range(value)) ||
+      tryParse(value) ||
+      tryParseRange(value) ||
       miss(`Invalid version "${value}"`)
     )
   },
-  set: (value: SemVer | Range): string => value.format(),
+  set: (value: SemVer | SemVerRange): string =>
+    'sets' in value ? normalizeRange(value)! : normalizeFull(value)!,
 })
