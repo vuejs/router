@@ -89,10 +89,10 @@ Catch all routes (`*`, `/*`) must now be defined using a parameter with a custom
 
 ```js
 const routes = [
-  // pathMatch is the name of the param, e.g., going to /not/found yields
+  // pathMatch is a conventional name for the param, e.g., going to /not/found yields
   // { params: { pathMatch: ['not', 'found'] }}
-  // this is thanks to the last *, meaning repeated params and it is necessary if you
-  // plan on directly navigating to the not-found route using its name
+  // (.*) matches slashes; the last * makes the param repeatable and is necessary if you
+  // plan on navigating to the not-found route by name and want to preserve slashes
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
   // if you omit the last `*`, the `/` character in params will be encoded when resolving or pushing
   { path: '/:pathMatch(.*)', name: 'bad-not-found', component: NotFound },
