@@ -137,7 +137,7 @@ const routes = [
 
 The `pathMatch` name is a convention. You can choose any descriptive param name, such as `catchAll`.
 
-The `(.*)` [custom regexp](./route-matching-syntax.md#custom-regex-in-params) allows the param to match slashes. The trailing `*` is a [repeatable param modifier](./route-matching-syntax.md#repeatable-params), not part of the regexp. It makes the router store the matched path as an array of segments and build the URL from those segments when using a named route. Without it, the param is a single string and its slashes are percent-encoded.
+The `(.*)` [custom regexp](./route-matching-syntax.md#custom-regex-in-params) allows the param to match slashes. The trailing `*` is a [repeatable param modifier](./route-matching-syntax.md#repeatable-params), not part of the regexp. It makes the router store the matched path as an array of segments when it matches one or more segments, or as an empty string when it matches the root (`/`). The router then builds the URL from those segments when using a named route. Without the modifier, the param is a single string and its slashes are percent-encoded.
 
 This matters when navigating to a named catch-all route from the current path. Split the path into segments instead of passing it as one string:
 
