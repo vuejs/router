@@ -77,6 +77,8 @@ router.resolve({ name: 'chapters', params: { chapters: [] } }).href
 // throws an Error because `chapters` is empty
 ```
 
+The `*` and `+` modifiers are not regexp quantifiers. They apply to the route param and allow it to match multiple path segments. Each item in the array represents one segment. A non-repeatable param treats a slash as part of its value and percent-encodes it when the router builds a URL from a named route.
+
 These can also be combined with a custom regex by adding them **after the closing parentheses**:
 
 ```js

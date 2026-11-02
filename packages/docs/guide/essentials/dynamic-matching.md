@@ -124,18 +124,22 @@ export default {
   title="Learn how to make a catch all/404 not found route"
 />
 
-Regular params will only match characters in between url fragments, separated by `/`. If we want to match **anything**, we can use a custom _param_ regexp by adding the regexp inside parentheses right after the _param_:
+Regular params will only match characters in between URL fragments, separated by `/`. If we want to match **anything, including slashes**, we can use a custom _param_ regexp by adding the regexp inside parentheses right after the _param_:
 
 ```js
 const routes = [
-  // will match everything and put it under `route.params.pathMatch`
+  // will match any path and put it under `route.params.pathMatch`
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
-  // will match anything starting with `/user-` and put it under `route.params.afterUser`
+  // will match any path starting with `/user-` and put the rest under `route.params.afterUser`
   { path: '/user-:afterUser(.*)', component: UserGeneric },
 ]
 ```
 
-In this specific scenario, we are using a [custom regexp](./route-matching-syntax.md#Custom-regex-in-params) between parentheses and marking the `pathMatch` param as [optionally repeatable](./route-matching-syntax.md#Optional-parameters). This allows us to directly navigate to the route if we need to by splitting the `path` into an array:
+The `pathMatch` name is a convention. You can choose any descriptive param name, such as `catchAll`.
+
+The `(.*)` [custom regexp](./route-matching-syntax.md#custom-regex-in-params) allows the param to match slashes. The trailing `*` is a [repeatable param modifier](./route-matching-syntax.md#repeatable-params), not part of the regexp. It makes the router store the matched path as an array of segments when it matches one or more segments, or as an empty string when it matches the root (`/`). The router then builds the URL from those segments when using a named route. Without the modifier, the param is a single string and its slashes are percent-encoded.
+
+This matters when navigating to a named catch-all route from the current path. Split the path into segments instead of passing it as one string:
 
 ```js
 router.push({
@@ -148,7 +152,7 @@ router.push({
 })
 ```
 
-See more in the [repeated params](./route-matching-syntax.md#Repeatable-params) section.
+If you navigate with a path string instead, for example `router.push('/not/found')`, the repeatable modifier is not needed for this purpose.
 
 If you are using [History mode](./history-mode.md), make sure to follow the instructions to correctly configure your server as well.
 
