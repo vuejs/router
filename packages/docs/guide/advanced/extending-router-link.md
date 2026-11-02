@@ -32,7 +32,12 @@ const isExternalLink = computed(() => {
 </script>
 
 <template>
-  <a v-if="isExternalLink" v-bind="$attrs" :href="to" target="_blank">
+  <!--
+    Access spread RouterLink props through `props.*` in the template.
+    With `...RouterLink.props`, bare names like `to` / `activeClass` are not
+    reliably available to `<script setup>` templates (especially under TypeScript).
+  -->
+  <a v-if="isExternalLink" v-bind="$attrs" :href="props.to" target="_blank">
     <slot />
   </a>
   <router-link
@@ -45,7 +50,7 @@ const isExternalLink = computed(() => {
       v-bind="$attrs"
       :href="href"
       @click="navigate"
-      :class="isActive ? activeClass : inactiveClass"
+      :class="isActive ? props.activeClass : props.inactiveClass"
     >
       <slot />
     </a>
