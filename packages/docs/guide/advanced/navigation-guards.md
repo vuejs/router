@@ -69,7 +69,11 @@ router.beforeEach(async (to, from) => {
 
 ### Optional third argument `next`
 
-In previous versions of Vue Router, it was also possible to use a _third argument_ `next`, this was a common source of mistakes and went through an [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0037-router-return-guards.md#motivation) to remove it. However, it is still supported, meaning you can pass a third argument to any navigation guard. In that case, **you must call `next` exactly once** in any given pass through a navigation guard. It can appear more than once, but only if the logical paths have no overlap, otherwise the hook will never be resolved or produce errors. Here is **a bad example** of redirecting the user to `/login` if they are not authenticated:
+::: warning Deprecated
+Since Vue Router 5.0.3, calling `next` logs a deprecation warning in development, and it will be removed in a future version. Return a value from the guard instead, as shown [below](#Migrating-from-next).
+:::
+
+In previous versions of Vue Router, it was also possible to use a _third argument_ `next`, this was a common source of mistakes and went through an [RFC](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0037-router-return-guards.md#motivation) to remove it. It still works for now, meaning you can pass a third argument to any navigation guard. In that case, **you must call `next` exactly once** in any given pass through a navigation guard. It can appear more than once, but only if the logical paths have no overlap, otherwise the hook will never be resolved or produce errors. Here is **a bad example** of redirecting the user to `/login` if they are not authenticated:
 
 ```js
 // BAD
@@ -87,6 +91,28 @@ Here is the correct version:
 router.beforeEach((to, from, next) => {
   if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
   else next()
+})
+```
+
+#### Migrating from `next`
+
+Remove the `next` parameter and return the value you would have passed to it:
+
+- `next()` becomes `return` (or no return at all)
+- `next(false)` becomes `return false`
+- `next('/login')` or `next({ name: 'Login' })` becomes `return '/login'` or `return { name: 'Login' }`
+
+Make sure to remove the parameter itself. As long as a guard declares `next`, Vue Router expects it to be called: if it isn't, the navigation fails or never completes, even if the guard returns a value.
+
+If the guard needs to wait for a callback-based API, make it `async` and await a Promise instead:
+
+```js
+router.beforeResolve(async (to, from) => {
+  if (from.name && to.name !== from.name) {
+    await new Promise(resolve => {
+      document.startViewTransition(resolve)
+    })
+  }
 })
 ```
 
@@ -303,6 +329,10 @@ beforeRouteUpdate (to, from) {
   this.name = to.params.name
 }
 ```
+
+::: warning
+Passing a callback to `next` is deprecated along with [`next` itself](#Optional-third-argument-next). If you use it to load data before the component is rendered, consider the experimental [Data Loaders](../../data-loaders/) instead.
+:::
 
 The **leave guard** is usually used to prevent the user from accidentally leaving the route with unsaved edits. The navigation can be canceled by returning `false`.
 

@@ -120,6 +120,10 @@ export default {
 
 ## Fetching Before Navigation
 
+::: warning
+The example below relies on passing a callback to `next`, which is [deprecated](./navigation-guards.md#Optional-third-argument-next). For new code, consider the experimental [Data Loaders](../../data-loaders/) instead.
+:::
+
 With this approach we fetch the data before actually navigating to the new route. We can perform the data fetching in the `beforeRouteEnter` guard in the incoming component, and only call `next` when the fetch is complete. The callback passed to `next` will be called **after the component is mounted**:
 
 ```js
