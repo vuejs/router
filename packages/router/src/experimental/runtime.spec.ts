@@ -50,4 +50,16 @@ describe('mergeRouteRecord', () => {
 
     expect(record.props).toBe(true)
   })
+
+  it.each([
+    ['true', true],
+    ['a function', () => ({ id: '2' })],
+  ])('replaces %s with object props', (_label, props) => {
+    const record = mergeRouteRecord(
+      { path: '/:id', component: {}, props },
+      { props: { aside: { title: 'page' } } }
+    )
+
+    expect(record.props).toEqual({ aside: { title: 'page' } })
+  })
 })

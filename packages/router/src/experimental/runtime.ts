@@ -103,32 +103,20 @@ export type RoutePropsForFilePath<FilePath extends string> = [
  * @returns merged route record
  */
 export function mergeRouteRecord(
-  main: RouteRecordRaw,
+  main: Partial<RouteRecordRaw>,
   ...routeRecords: Partial<RouteRecordRaw>[]
 ): RouteRecordRaw {
-  // @ts-expect-error: complicated types
-  return routeRecords.reduce((acc, routeRecord) => {
-    const meta = assign({}, acc.meta, routeRecord.meta)
-    const alias: string[] = ([] as string[]).concat(
-      acc.alias || [],
-      routeRecord.alias || []
-    )
-
-    // only objects (named views) are merged, `assign()` would turn `true`
-    // and functions into `{}`
-    const props =
-      routeRecord.props === undefined
-        ? acc.props
-        : typeof acc.props === 'object' && typeof routeRecord.props === 'object'
-          ? assign({}, acc.props, routeRecord.props)
-          : routeRecord.props
-
-    assign(acc, routeRecord)
-    acc.meta = meta
-    acc.alias = alias
-    acc.props = props
-    return acc
-  }, main)
+  for (const record of routeRecords) {
+    const { meta, alias, props } = main
+    assign(main, record)
+    main.meta = assign({}, meta, record.meta)
+    main.alias = ([] as string[]).concat(alias || [], record.alias || [])
+    if (record.props == null) main.props = props
+    // named views are merged, `assign()` ignores a previous `true` or function
+    else if (typeof record.props == 'object')
+      main.props = assign({}, props, record.props)
+  }
+  return main as RouteRecordRaw
 }
 
 /**
