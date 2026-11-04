@@ -24,7 +24,6 @@ import {
   type _ScrollPositionNormalized,
   type RouterScrollBehavior,
   getSavedScrollPosition,
-  getScrollKey,
   saveScrollPosition,
   scrollToPosition,
 } from '../scrollBehavior'
@@ -854,17 +853,9 @@ export function experimental_createRouter(
           from,
         }
       )
-      // trigger scroll to allow scrolling to the same anchor
-      handleScroll(
-        from,
-        from,
-        // this is a push, the only way for it to be triggered from a
-        // history.listen is with a redirect, which makes it become a push
-        true,
-        // This cannot be the first navigation because the initial location
-        // cannot be manually navigated to
-        false
-      )
+      // trigger scroll to allow scrolling to the same anchor, without a
+      // saved position since it's a push
+      handleScroll(from, from)
     }
 
     return (failure ? Promise.resolve(failure) : navigate(toLocation, from))
@@ -1119,29 +1110,24 @@ export function experimental_createRouter(
 
     // only consider as push if it's not the first navigation
     const isFirstNavigation = from === START_LOCATION_NORMALIZED
-    const state: Partial<HistoryState> | null = !isBrowser ? {} : history.state
+
+    // read before the url change invalidates it
+    const savedPosition =
+      isBrowser &&
+      (isFirstNavigation || !isPush) &&
+      getSavedScrollPosition(toLocation.fullPath)
 
     // change URL only if the user did a push/replace and if it's not the initial navigation because
     // it's just reflecting the url
     if (isPush) {
-      // on the initial navigation, we want to reuse the scroll position from
-      // history state if it exists
       if (replace || isFirstNavigation)
-        routerHistory.replace(
-          toLocation.fullPath,
-          assign(
-            {
-              scroll: isFirstNavigation && state && state.scroll,
-            },
-            data
-          )
-        )
+        routerHistory.replace(toLocation.fullPath, data)
       else routerHistory.push(toLocation.fullPath, data)
     }
 
     // accept current navigation
     currentRoute.value = toLocation
-    handleScroll(toLocation, from, isPush, isFirstNavigation)
+    handleScroll(toLocation, from, savedPosition)
 
     markAsReady()
   }
@@ -1182,7 +1168,7 @@ export function experimental_createRouter(
       // Unknown-direction navigations cannot be tied to a history entry.
       // TODO: should be moved to web history?
       if (isBrowser && info.delta) {
-        saveScrollPosition(getScrollKey(from.fullPath, info.delta))
+        saveScrollPosition(from.fullPath, info.delta)
       }
 
       navigate(toLocation, from)
@@ -1362,23 +1348,15 @@ export function experimental_createRouter(
   function handleScroll(
     to: RouteLocationNormalizedLoaded,
     from: RouteLocationNormalizedLoaded,
-    isPush: boolean,
-    isFirstNavigation: boolean
+    savedPosition?: _ScrollPositionNormalized | null | false
   ): // the return is not meant to be used
   Promise<unknown> {
     const { scrollBehavior } = options
     if (!isBrowser || !scrollBehavior) return Promise.resolve()
 
-    const scrollPosition: _ScrollPositionNormalized | null =
-      (!isPush && getSavedScrollPosition(getScrollKey(to.fullPath, 0))) ||
-      ((isFirstNavigation || !isPush) &&
-        (history.state as HistoryState) &&
-        history.state.scroll) ||
-      null
-
     return (
       nextTick()
-        .then(() => scrollBehavior(to, from, scrollPosition))
+        .then(() => scrollBehavior(to, from, savedPosition || null))
         // avoid scrollBehavior on old navigations
         .then(
           position =>
