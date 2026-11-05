@@ -1248,8 +1248,9 @@ export function experimental_createRouter(
             // avoid the then branch
             return Promise.reject()
           }
-          // do not restore history on unknown direction
-          if (info.delta) {
+          // do not restore history on unknown direction, nor if a newer
+          // navigation finished meanwhile: the current entry belongs to it
+          if (info.delta && currentRoute.value === from) {
             routerHistory.go(-info.delta, false)
           }
           // unrecognized error, transfer to the global handler
@@ -1265,8 +1266,9 @@ export function experimental_createRouter(
               false
             )
 
-          // revert the navigation
-          if (failure) {
+          // revert the navigation, unless a newer one finished meanwhile: the
+          // current entry belongs to it
+          if (failure && currentRoute.value === from) {
             if (
               info.delta &&
               // a new navigation has been triggered, so we do not want to revert, that will change the current history
