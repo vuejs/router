@@ -42,6 +42,7 @@ import {
   normalizeRouteRecord,
 } from './index'
 import type { RouteLocationRaw } from '../index'
+import type { RouterHistory } from '../history/common'
 import {
   createMemoryHistory,
   createWebHistory,
@@ -62,6 +63,10 @@ import {
 } from 'vitest'
 import type { MockInstance } from 'vitest'
 import { mockWarn } from '../../__tests__/vitest-mock-warn'
+
+interface RouterHistory_Test extends RouterHistory {
+  changeURL(url: string): void
+}
 
 const parentRecord = normalizeRouteRecord({
   name: 'parent',
@@ -1133,7 +1138,11 @@ describe('Experimental Router', () => {
 
       const settled = nextNavigation(router)
       r1()
-      await settled.catch(() => {})
+      if (result) {
+        await expect(settled).rejects.toBe(result)
+      } else {
+        await expect(settled).resolves.toBeTruthy()
+      }
       // the entry still matches the route on screen
       expect(router.currentRoute.value.fullPath).toBe('/foo')
       expect(history.location).toBe('/foo')
@@ -1181,6 +1190,55 @@ describe('Experimental Router', () => {
       await settled
       expect(router.currentRoute.value.fullPath).toBe('/p/b')
       expect(history.location).toBe('/p/b')
+    })
+
+    it('keeps the history entry of a newer finished navigation if the redirect of a manual url change aborts', async () => {
+      const [p1, r1] = fakePromise()
+      const [guardEntered, enterGuard] = fakePromise()
+      const history = createMemoryHistory() as RouterHistory_Test
+      const resolver = createFixedResolver(experimentalRoutes)
+      const router = experimental_createRouter({ history, resolver })
+      await router.push('/foo')
+      await router.push('/p/a')
+
+      router.beforeEach(async to => {
+        if (to.fullPath === '/') return '/p/redirect'
+        if (to.fullPath !== '/p/redirect') return
+        enterGuard()
+        await p1
+        return false
+      })
+
+      history.changeURL('/')
+      await guardEntered
+      await router.push('/p/b')
+      expect(history.location).toBe('/p/b')
+
+      const settled = nextNavigation(router)
+      r1()
+      await settled
+      await tick() // the listener restores the url after afterEach
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
+      expect(history.location).toBe('/p/b')
+    })
+
+    it('restores the url if the redirect of a manual url change aborts', async () => {
+      const history = createMemoryHistory() as RouterHistory_Test
+      const resolver = createFixedResolver(experimentalRoutes)
+      const router = experimental_createRouter({ history, resolver })
+      await router.push('/foo')
+      await router.push('/p/a')
+
+      router.beforeEach(to => {
+        if (to.fullPath === '/') return '/p/redirect'
+        if (to.fullPath === '/p/redirect') return false
+        return
+      })
+
+      history.changeURL('/')
+      await tick()
+      expect(router.currentRoute.value.fullPath).toBe('/p/a')
+      expect(history.location).toBe('/p/a')
     })
   })
 

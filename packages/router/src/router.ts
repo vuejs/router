@@ -867,7 +867,8 @@ export function createRouter(options: RouterOptions): Router {
               .then(failure => {
                 // manual change in hash history #916 ending up in the URL not
                 // changing, but it was changed by the manual url change, so we
-                // need to manually change it ourselves
+                // need to manually change it ourselves, unless a newer
+                // navigation finished meanwhile: the entry belongs to it
                 if (
                   isNavigationFailure(
                     failure,
@@ -875,7 +876,8 @@ export function createRouter(options: RouterOptions): Router {
                       ErrorTypes.NAVIGATION_DUPLICATED
                   ) &&
                   !info.delta &&
-                  info.type === NavigationType.pop
+                  info.type === NavigationType.pop &&
+                  currentRoute.value === from
                 ) {
                   routerHistory.go(-1, false)
                 }

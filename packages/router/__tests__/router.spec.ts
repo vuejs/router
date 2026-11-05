@@ -745,7 +745,11 @@ describe('Router', () => {
 
       const settled = nextNavigation(router)
       r1()
-      await settled.catch(() => {})
+      if (result) {
+        await expect(settled).rejects.toBe(result)
+      } else {
+        await expect(settled).resolves.toBeTruthy()
+      }
       // the entry still matches the route on screen
       expect(router.currentRoute.value.fullPath).toBe('/foo')
       expect(history.location).toBe('/foo')
