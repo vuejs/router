@@ -1231,7 +1231,8 @@ export function experimental_createRouter(
               .then(failure => {
                 // manual change in hash history #916 ending up in the URL not
                 // changing, but it was changed by the manual url change, so we
-                // need to manually change it ourselves
+                // need to manually change it ourselves, unless a newer
+                // navigation finished meanwhile: the entry belongs to it
                 if (
                   isNavigationFailure(
                     failure,
@@ -1239,7 +1240,8 @@ export function experimental_createRouter(
                       ErrorTypes.NAVIGATION_DUPLICATED
                   ) &&
                   !info.delta &&
-                  info.type === NavigationType.pop
+                  info.type === NavigationType.pop &&
+                  currentRoute.value === from
                 ) {
                   routerHistory.go(-1, false)
                 }
@@ -1248,8 +1250,9 @@ export function experimental_createRouter(
             // avoid the then branch
             return Promise.reject()
           }
-          // do not restore history on unknown direction
-          if (info.delta) {
+          // do not restore history on unknown direction, nor if a newer
+          // navigation finished meanwhile: the current entry belongs to it
+          if (info.delta && currentRoute.value === from) {
             routerHistory.go(-info.delta, false)
           }
           // unrecognized error, transfer to the global handler
@@ -1265,8 +1268,9 @@ export function experimental_createRouter(
               false
             )
 
-          // revert the navigation
-          if (failure) {
+          // revert the navigation, unless a newer one finished meanwhile: the
+          // current entry belongs to it
+          if (failure && currentRoute.value === from) {
             if (
               info.delta &&
               // a new navigation has been triggered, so we do not want to revert, that will change the current history

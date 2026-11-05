@@ -712,6 +712,160 @@ describe('Router', () => {
     it('cancels navigation abort if a newer one is finished on user navigation (from history)', async () => {
       await checkNavigationCancelledOnPush(undefined)
     })
+
+    // the guard of the first history.back() is still running when the second one
+    // finishes, then `result` is what the first guard ends with
+    async function checkOlderPopstateFailsAfterNewerFinished(
+      result: false | Error
+    ) {
+      const [p1, r1] = fakePromise()
+      const [guardEntered, enterGuard] = fakePromise()
+      const history = createMemoryHistory()
+      const router = createRouter({ history, routes })
+
+      // navigate first to add entries to the history stack
+      await router.push('/foo')
+      await router.push('/p/a')
+      await router.push('/p/b')
+
+      router.beforeEach(async to => {
+        if (to.fullPath !== '/p/a') return
+        enterGuard()
+        await p1
+        if (result) throw result
+        return result
+      })
+
+      history.go(-1)
+      await guardEntered
+      history.go(-1)
+      await nextNavigation(router)
+      expect(router.currentRoute.value.fullPath).toBe('/foo')
+      expect(history.location).toBe('/foo')
+
+      const settled = nextNavigation(router)
+      r1()
+      if (result) {
+        await expect(settled).rejects.toBe(result)
+      } else {
+        await expect(settled).resolves.toBeTruthy()
+      }
+      // the entry still matches the route on screen
+      expect(router.currentRoute.value.fullPath).toBe('/foo')
+      expect(history.location).toBe('/foo')
+    }
+
+    it('keeps the history entry of a newer finished navigation if an older one aborts (from history)', async () => {
+      await checkOlderPopstateFailsAfterNewerFinished(false)
+    })
+
+    it('keeps the history entry of a newer finished navigation if an older one throws (from history)', async () => {
+      await checkOlderPopstateFailsAfterNewerFinished(new Error('failed'))
+    })
+
+    it('keeps the history entry of a newer finished navigation if the lazy route of an older one fails to load (from history)', async () => {
+      const [p1, , reject1] = fakePromise()
+      const [loaderCalled, loaderCall] = fakePromise()
+      const history = createMemoryHistory()
+      // like after a reload: the lazy component of an earlier entry is not loaded
+      history.push('/foo')
+      history.push('/lazy')
+      history.push('/p/b')
+      const router = createRouter({
+        history,
+        routes: [
+          ...routes,
+          {
+            path: '/lazy',
+            component: () => {
+              loaderCall()
+              return p1 as any
+            },
+          },
+        ],
+      })
+      await router.push(history.location)
+
+      history.go(-1)
+      await loaderCalled
+      history.go(-1)
+      await nextNavigation(router)
+      expect(router.currentRoute.value.fullPath).toBe('/foo')
+
+      const settled = nextNavigation(router)
+      const error = new Error('Failed to fetch dynamically imported module')
+      reject1(error)
+      await expect(settled).rejects.toBe(error)
+      expect(router.currentRoute.value.fullPath).toBe('/foo')
+      expect(history.location).toBe('/foo')
+    })
+
+    it('keeps the history entry of a newer finished push if an older history navigation aborts', async () => {
+      const [p1, r1] = fakePromise()
+      const [guardEntered, enterGuard] = fakePromise()
+      const history = createMemoryHistory()
+      const router = createRouter({ history, routes })
+      await router.push('/foo')
+      await router.push('/p/a')
+      await router.push('/p/b')
+
+      router.beforeEach(async to => {
+        if (to.fullPath !== '/p/a') return
+        enterGuard()
+        await p1
+        return false
+      })
+      const go = vi.spyOn(history, 'go')
+
+      history.go(-1)
+      await guardEntered
+      await router.push('/p/c')
+      go.mockClear()
+
+      const settled = nextNavigation(router)
+      r1()
+      await settled
+      expect(router.currentRoute.value.fullPath).toBe('/p/c')
+      expect(history.location).toBe('/p/c')
+      // history.go() on the last entry does nothing in a browser and no popstate
+      // would reset the paused listeners
+      expect(go).not.toHaveBeenCalled()
+    })
+
+    it('restores the original history entry if every pending history navigation aborts', async () => {
+      const [p1, r1] = fakePromise()
+      const [p2, r2] = fakePromise()
+      const [guardEntered, enterGuard] = fakePromise()
+      const history = createMemoryHistory()
+      const router = createRouter({ history, routes })
+      await router.push('/foo')
+      await router.push('/p/a')
+      await router.push('/p/b')
+
+      router.beforeEach(async to => {
+        if (to.fullPath === '/p/a') {
+          enterGuard()
+          await p1
+          return false
+        } else if (to.fullPath === '/foo') {
+          await p2
+          return false
+        }
+        return
+      })
+
+      history.go(-1)
+      await guardEntered
+      history.go(-1)
+      let settled = nextNavigation(router)
+      r2()
+      await settled
+      settled = nextNavigation(router)
+      r1()
+      await settled
+      expect(router.currentRoute.value.fullPath).toBe('/p/b')
+      expect(history.location).toBe('/p/b')
+    })
   })
 
   describe('scrollBehavior', () => {
