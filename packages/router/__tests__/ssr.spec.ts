@@ -3,8 +3,14 @@
  */
 import { createRouter } from '../src/router'
 import { createMemoryHistory } from '../src/history/memory'
+import { createRouterMatcher } from '../src/matcher'
+import {
+  onBeforeRouteLeave,
+  onBeforeRouteUpdate,
+} from '../src/navigationGuards'
+import { RouterView } from '../src/RouterView'
 import type { Component } from 'vue'
-import { createSSRApp, resolveComponent } from 'vue'
+import { createSSRApp, defineComponent, h, resolveComponent } from 'vue'
 import {
   renderToString,
   ssrInterpolate,
@@ -99,5 +105,38 @@ describe('SSR', () => {
 
     const xxx = await renderToString(app)
     expect(xxx).toMatchInlineSnapshot(`"/hello"`)
+  })
+
+  it('does not keep in-component guards on a shared matcher', async () => {
+    const GuardedPage = defineComponent({
+      setup() {
+        onBeforeRouteLeave(() => {})
+        onBeforeRouteUpdate(() => {})
+        return () => h('div', 'page')
+      },
+    })
+    const matcher = createRouterMatcher(
+      [{ path: '/', component: GuardedPage }],
+      {}
+    )
+
+    for (let i = 0; i < 3; i++) {
+      const router = createRouter({
+        history: createMemoryHistory(),
+        routes: [],
+        matcher,
+      })
+      const app = createSSRApp({ render: () => h(RouterView) })
+      app.use(router)
+      router.push('/')
+      await router.isReady()
+      expect(await renderToString(app)).toBe('<div>page</div>')
+    }
+
+    // components are never unmounted on the server, so guards added during a render would
+    // stay on the shared record and run in later requests
+    const { record } = matcher.getRoutes()[0]
+    expect(record.leaveGuards.size).toBe(0)
+    expect(record.updateGuards.size).toBe(0)
   })
 })
