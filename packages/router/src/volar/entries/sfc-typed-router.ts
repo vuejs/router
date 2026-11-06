@@ -1,4 +1,4 @@
-import { basename, relative } from 'pathe'
+import { relative } from 'pathe'
 import type { VueLanguagePlugin } from '@vue/language-core'
 import { replaceSourceRange, toString } from 'muggle-string'
 import { augmentVlsCtx } from '../utils/augment-vls-ctx'
@@ -60,27 +60,28 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
       const useRouteNameType = `import('vue-router/auto-routes')._RouteNamesForFilePath<'${escapedFilePath}'>`
       const useRouteNameTypeParam = `<${useRouteNameType}>`
 
-      // the page component imports itself to type check `props`
-      const escapedSelfImport = `./${basename(fileName)}`
-        .replace(/\\/g, '\\\\')
-        .replace(/'/g, "\\'")
       const definePageTypeParams = `<'${escapedFilePath}'>`
-      // the self import is only added when needed because it is costly
-      const definePageWithPropsTypeParams = `<'${escapedFilePath}', typeof import('${escapedSelfImport}').default>`
-
-      const routePropsType = `import('vue-router/experimental')._RoutePropsForFilePath<'${escapedFilePath}'>`
 
       // `definePage()` can come after `defineProps()`
-      const hasPropsTrue =
-        !!sfc.scriptSetup &&
-        !sfc.scriptSetup.lang.startsWith('js') &&
-        sfc.scriptSetup.ast.statements.some(
-          statement =>
+      let propsOption: ts.Expression | undefined
+      if (sfc.scriptSetup && !sfc.scriptSetup.lang.startsWith('js')) {
+        for (const statement of sfc.scriptSetup.ast.statements) {
+          if (
             ts.isExpressionStatement(statement) &&
-            isDefinePageCall(statement.expression) &&
-            getPropsOption(statement.expression)?.kind ===
-              ts.SyntaxKind.TrueKeyword
-        )
+            isDefinePageCall(statement.expression)
+          ) {
+            propsOption = getPropsOption(statement.expression)
+            break
+          }
+        }
+      }
+
+      // without `props`, `experimental.propsDefault` decides in the dts
+      const routePropsType = !propsOption
+        ? `import('vue-router/experimental')._DefaultRoutePropsForFilePath<'${escapedFilePath}'>`
+        : propsOption.kind === ts.SyntaxKind.TrueKeyword
+          ? `import('vue-router/experimental')._RoutePropsForFilePath<'${escapedFilePath}'>`
+          : null
 
       if (sfc.scriptSetup) {
         visit(sfc.scriptSetup.ast)
@@ -144,20 +145,17 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
           !sfc.scriptSetup!.lang.startsWith('js')
         ) {
           // Inject the file path so `definePage`'s `params.path` keys can be
-          // narrowed to this file's actual path params, and the component
-          // type so `props` is checked against its props.
-          const props = getPropsOption(node)
+          // narrowed to this file's actual path params
           replaceSourceRange(
             embeddedCode.content,
             sfc.scriptSetup!.name,
             node.expression.end,
             node.expression.end,
-            props && props.kind !== ts.SyntaxKind.FalseKeyword
-              ? definePageWithPropsTypeParams
-              : definePageTypeParams
+            definePageTypeParams
           )
         } else if (
-          hasPropsTrue &&
+          routePropsType &&
+          !sfc.scriptSetup!.lang.startsWith('js') &&
           ts.isCallExpression(node) &&
           ts.isIdentifier(node.expression) &&
           ts.idText(node.expression) === 'defineProps' &&
@@ -236,10 +234,17 @@ const plugin: VueLanguagePlugin<{ options?: { rootDir?: string } }> = ({
     for (const prop of arg.properties) {
       if (
         ts.isPropertyAssignment(prop) &&
-        ts.isIdentifier(prop.name) &&
-        ts.idText(prop.name) === 'props'
+        // `Identifier.text` is undefined in vue-tsc
+        (ts.isIdentifier(prop.name)
+          ? ts.idText(prop.name)
+          : ts.isStringLiteral(prop.name) && prop.name.text) === 'props'
       ) {
         return prop.initializer
+      } else if (
+        ts.isShorthandPropertyAssignment(prop) &&
+        ts.idText(prop.name) === 'props'
+      ) {
+        return prop.name
       }
     }
     return undefined

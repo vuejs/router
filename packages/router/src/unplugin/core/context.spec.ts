@@ -11,7 +11,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'pathe'
 import { createRoutesContext } from './context'
 import { resolveOptions } from '../options'
-import type { RoutesFolderOptionResolved } from '../options'
+import type { Options, RoutesFolderOptionResolved } from '../options'
 import type * as RoutesFolderWatcherModule from './RoutesFolderWatcher'
 import type { HandlerContext } from './RoutesFolderWatcher'
 import { asRoutePath } from './utils'
@@ -80,12 +80,18 @@ describe('createRoutesContext', () => {
       return filePath
     }
 
-    async function setup(pages: Record<string, string>) {
+    async function setup(pages: Record<string, string>, options: Options = {}) {
       for (const [file, content] of Object.entries(pages)) {
         await writePage(file, content)
       }
       ctx = createRoutesContext(
-        resolveOptions({ root, dts: false, logs: false, watch: true })
+        resolveOptions({
+          root,
+          dts: false,
+          logs: false,
+          watch: true,
+          ...options,
+        })
       )
       ctx.setServerContext({
         invalidate: () => false,
@@ -181,6 +187,20 @@ describe('createRoutesContext', () => {
 
       const child = await writePage('users/[id].vue', page('{}'))
       expect(await emit('add', child)).not.toContain(parent)
+    })
+
+    it('reloads pages without `definePage()` with `propsDefault`', async () => {
+      await setup(
+        {
+          'users.vue': `<script setup lang="ts">\ndefineProps()\n</script>\n`,
+          'users/index.vue': page('{}'),
+        },
+        { experimental: { propsDefault: true } }
+      )
+      const parent = await loadPage('users.vue')
+
+      const child = await writePage('users/[id].vue', page('{}'))
+      expect(await emit('add', child)).toContain(parent)
     })
   })
 })

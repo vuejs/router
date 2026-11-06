@@ -92,6 +92,7 @@ export function definePageTransform({
   code,
   id,
   getRoutePropNames,
+  propsDefault,
 }: {
   code: string
   id: string
@@ -100,11 +101,20 @@ export function definePageTransform({
    * `filePath` by `definePage({ props: true })`.
    */
   getRoutePropNames?: (filePath: string) => string[]
+  /**
+   * Whether pages without `props` in `definePage()` use `props: true`.
+   */
+  propsDefault?: boolean
 }): Thenable<TransformResult> {
   // are we extracting only the definePage object
   const isExtractingDefinePage = MACRO_DEFINE_PAGE_QUERY.test(id)
+  const declaresDefaultProps =
+    !isExtractingDefinePage &&
+    !!propsDefault &&
+    !!getRoutePropNames &&
+    code.includes('defineProps')
 
-  if (!code.includes(MACRO_DEFINE_PAGE)) {
+  if (!code.includes(MACRO_DEFINE_PAGE) && !declaresDefaultProps) {
     // avoid having an invalid module that is just empty
     // https://github.com/posva/unplugin-vue-router/issues/338
     return isExtractingDefinePage ? 'export default {}' : undefined
@@ -131,6 +141,13 @@ export function definePageTransform({
   if (!ast) return
 
   if (!definePageNodes.length) {
+    if (declaresDefaultProps) {
+      const propNames = getRoutePropNames!(id)
+      if (!propNames.length) return
+      const s = new MagicString(code)
+      declareRouteProps(s, ast, offset, propNames)
+      return generateTransform(s, id)
+    }
     return isExtractingDefinePage
       ? // e.g. index.vue?definePage that contains a commented `definePage()
         'export default {}'
@@ -274,7 +291,11 @@ export function definePageTransform({
       s.remove(offset + node.start!, offset + node.end!)
     }
 
-    if (getRoutePropNames && hasPropsTrue(definePageNode)) {
+    const props = getPropsOption(definePageNode)
+    if (
+      getRoutePropNames &&
+      (props ? props.type === 'BooleanLiteral' && props.value : propsDefault)
+    ) {
       const propNames = getRoutePropNames(id)
       if (propNames.length) {
         declareRouteProps(s, ast, offset, propNames)
@@ -286,22 +307,22 @@ export function definePageTransform({
 }
 
 /**
- * Checks if a `definePage()` call has `props: true`.
+ * Returns the value of `props` in `definePage({ props })`.
  */
-function hasPropsTrue(definePageNode: CallExpression): boolean {
+function getPropsOption(definePageNode: CallExpression): Node | undefined {
   const routeRecord = definePageNode.arguments[0]
-  return (
-    routeRecord?.type === 'ObjectExpression' &&
-    routeRecord.properties.some(
-      prop =>
-        prop.type === 'ObjectProperty' &&
-        !prop.computed &&
-        ((prop.key.type === 'Identifier' && prop.key.name === 'props') ||
-          (prop.key.type === 'StringLiteral' && prop.key.value === 'props')) &&
-        prop.value.type === 'BooleanLiteral' &&
-        prop.value.value
-    )
-  )
+  if (routeRecord?.type !== 'ObjectExpression') return undefined
+  for (const prop of routeRecord.properties) {
+    if (
+      prop.type === 'ObjectProperty' &&
+      !prop.computed &&
+      ((prop.key.type === 'Identifier' && prop.key.name === 'props') ||
+        (prop.key.type === 'StringLiteral' && prop.key.value === 'props'))
+    ) {
+      return prop.value
+    }
+  }
+  return undefined
 }
 
 /**

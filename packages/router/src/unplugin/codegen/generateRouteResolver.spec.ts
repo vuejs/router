@@ -1280,6 +1280,90 @@ describe('generateRouteResolver', () => {
     `)
   })
 
+  describe('experimental.propsDefault', () => {
+    const options = resolveOptions({ experimental: { propsDefault: true } })
+
+    it('passes props to every view', () => {
+      const tree = new PrefixTree(options)
+      tree.insert('users/[id]', 'users/[id].vue')
+      tree.insert('users/[id]@aside', 'users/[id]@aside.vue')
+
+      expect(generateRouteResolver(tree, options, new ImportsMap(), new Map()))
+        .toMatchInlineSnapshot(`
+          "
+          const __route_0 = normalizeRouteRecord({
+            name: '/users/[id]',
+            path: new MatcherPatternPathDynamic(
+              /^\\/users\\/([^/]+?)$/i,
+              {
+                id: [/* no parser */],
+              },
+              ["users",1],
+              /* trailingSlash */
+            ),
+            components: {
+              'default': () => import('users/[id].vue'),
+              'aside': () => import('users/[id]@aside.vue')
+            },
+            props: { 'default': true, 'aside': true },
+          })
+
+          export const resolver = createFixedResolver([
+            __route_0,  // /users/:id
+          ])
+          "
+        `)
+    })
+
+    it('adds the props before merging definePage()', () => {
+      const tree = new PrefixTree(options)
+      tree
+        .insert('profile', 'profile.vue')
+        .setDefinePageImport('profile.vue', true)
+
+      expect(generateRouteResolver(tree, options, new ImportsMap(), new Map()))
+        .toMatchInlineSnapshot(`
+          "
+
+          const __route_0 = normalizeRouteRecord(
+            _mergeRouteRecordViews(
+              {
+                name: '/profile',
+                path: new MatcherPatternPathStatic('/profile'),
+                components: {
+                  'default': () => import('profile.vue')
+                },
+                props: { 'default': true },
+              },
+              {
+                'default': _definePage_default_0,
+              }
+            )
+          )
+
+
+          export const resolver = createFixedResolver([
+            __route_0,  // /profile
+          ])
+          "
+        `)
+    })
+
+    it('adds no props by default', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      tree.insert('users/[id]', 'users/[id].vue')
+
+      expect(
+        generateRouteResolver(
+          tree,
+          DEFAULT_OPTIONS,
+          new ImportsMap(),
+          new Map()
+        )
+      ).not.toContain('props:')
+    })
+  })
+
   it('only imports definePage for files that need it in named views', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     tree.insert('dashboard', 'dashboard.vue')

@@ -580,4 +580,27 @@ describe('generateRouteFileInfoMap', () => {
         }"
       `)
   })
+
+  it('marks every page with props when `propsDefault` is set', () => {
+    const tree = new PrefixTree(DEFAULT_OPTIONS)
+    tree.insert('users/[id]', 'src/pages/users/[id].vue')
+
+    expect(
+      formatExports(
+        generateRouteFileInfoMap(tree, { root: '', propsDefault: true })
+      )
+    ).toMatchInlineSnapshot(`
+      "export interface _RouteFileInfoMap {
+        'src/pages/users/[id].vue': {
+          routes:
+            | '/users/[id]'
+          views:
+            | never
+          pathParamNames:
+            | 'id'
+          props: true
+        }
+      }"
+    `)
+  })
 })

@@ -1,16 +1,9 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import doc from '../main.ts?raw'
 
 const route = useRoute()
 console.log('route.params', route.params)
-const router = useRouter()
-// router.push({
-//   name: 'not-found',
-//   params: {
-//     path: 'yoooo',
-//   }
-// })
 // route.params.optionalWhen
 
 console.log('typeof', typeof route.params.active)

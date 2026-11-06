@@ -452,6 +452,7 @@ if (import.meta.hot) {
       routeNamedMap: generateRouteNamedMap(routeTree, options, paramParsersMap),
       routeFileInfoMap: generateRouteFileInfoMap(routeTree, {
         root,
+        propsDefault: options.experimental.propsDefault,
       }),
       paramsTypesDeclaration:
         generateParamParsersTypesDeclarations(paramParsersMap),
@@ -524,6 +525,7 @@ if (import.meta.hot) {
       return definePageTransform({
         code,
         id,
+        propsDefault: options.experimental.propsDefault,
         getRoutePropNames(filePath) {
           const names = getRoutePropNames(filePath)
           declaredRoutePropNames.set(filePath, names.join())

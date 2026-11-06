@@ -166,9 +166,27 @@ definePage({
 })
 ```
 
-With the `sfc-typed-router` Volar plugin, TypeScript checks `props` against the params of the route and against the props of the page component. In the example above, `props: true` gives an error if the component declares a required prop that the params do not supply, or if the types do not match (e.g. `userId: string` with the `int` parser).
+With the `sfc-typed-router` Volar plugin, the function receives a typed route location. TypeScript does not check objects and functions against the props of the page component: declare the matching types in `defineProps()` yourself.
 
-With `props: true`, the plugin also adds the params of the route to the type of `defineProps()`, so `defineProps<{ extra?: string }>()` is typed as `defineProps<RouteParams & { extra?: string }>()`. At build time, the Vite plugin also declares the params in `defineProps()`, so Vue passes them as props instead of attrs. Runtime declarations like `defineProps(['extra'])` are left untouched: list the params there yourself.
+With `props: true`, the plugin adds the params of the route to the type of `defineProps()`, so `defineProps<{ extra?: string }>()` is typed as `defineProps<RouteParams & { extra?: string }>()`. At build time, the Vite plugin also declares the params in `defineProps()`, so Vue passes them as props instead of attrs. Runtime declarations like `defineProps(['extra'])` are left untouched: list the params there yourself.
+
+### Pass props to every page
+
+Set `experimental.propsDefault` in the Vue Router Vite plugin to pass the route params as props to every page component, as if each `definePage()` had `props: true`:
+
+```ts [vite.config.ts]
+VueRouter({
+  experimental: {
+    propsDefault: true,
+  },
+})
+```
+
+A page can still set `props` in `definePage()` to override it, e.g. `props: false` to pass no props. The params are also added to the type of `defineProps()` and declared at build time, as with `props: true`.
+
+::: warning
+Pages that do not call `defineProps()` receive the params as attrs. For example, `src/pages/users/[id].vue` renders `id="1"` on its root element. Set `props: false` in these pages, or call `defineProps()`.
+:::
 
 ## With Data Loaders
 
