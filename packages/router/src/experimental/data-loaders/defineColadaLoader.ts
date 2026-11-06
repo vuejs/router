@@ -24,6 +24,7 @@ import {
 } from './entries/index'
 import { type EffectScope, type ShallowRef, shallowRef, watch } from 'vue'
 import {
+  type DefineQueryOptions,
   type EntryKey,
   type UseQueryEntry,
   type UseQueryOptions,
@@ -85,27 +86,102 @@ export function defineColadaLoader<Data>(
   options: DefineDataColadaLoaderOptions_LaxData<keyof RouteMap, Data>
 ): UseDataLoaderColada_LaxData<Data>
 
+/**
+ * Creates a Pinia Colada data loader from reusable query options with defined data.
+ *
+ * @param name - name of the route to have typed routes
+ * @param queryOptions - function returning query options for the route
+ * @param options - options to configure the data loader
+ */
+export function defineColadaLoader<Name extends keyof RouteMap, Data>(
+  name: Name,
+  queryOptions: DefineColadaLoaderQueryOptions<Name, Data>,
+  options?: DefineDataLoaderOptionsBase_DefinedData
+): UseDataLoaderColada_DefinedData<Data>
+
+/**
+ * Creates a Pinia Colada data loader from reusable query options with possibly undefined data.
+ *
+ * @param name - name of the route to have typed routes
+ * @param queryOptions - function returning query options for the route
+ * @param options - options to configure the data loader
+ */
+export function defineColadaLoader<Name extends keyof RouteMap, Data>(
+  name: Name,
+  queryOptions: DefineColadaLoaderQueryOptions<Name, Data>,
+  options: DefineDataLoaderOptionsBase_LaxData
+): UseDataLoaderColada_LaxData<Data>
+
+/**
+ * Creates a Pinia Colada data loader from reusable query options with defined data.
+ *
+ * @param queryOptions - function returning query options for the route
+ * @param options - options to configure the data loader
+ */
+export function defineColadaLoader<Data>(
+  queryOptions: DefineColadaLoaderQueryOptions<keyof RouteMap, Data>,
+  options?: DefineDataLoaderOptionsBase_DefinedData
+): UseDataLoaderColada_DefinedData<Data>
+
+/**
+ * Creates a Pinia Colada data loader from reusable query options with possibly undefined data.
+ *
+ * @param queryOptions - function returning query options for the route
+ * @param options - options to configure the data loader
+ */
+export function defineColadaLoader<Data>(
+  queryOptions: DefineColadaLoaderQueryOptions<keyof RouteMap, Data>,
+  options: DefineDataLoaderOptionsBase_LaxData
+): UseDataLoaderColada_LaxData<Data>
+
+/**
+ * Creates a data loader from route-aware options or a reusable Pinia Colada query.
+ * Query callbacks receive the target route, while their query functions receive
+ * Pinia Colada's context. Loader settings are passed separately for callbacks.
+ *
+ * @param nameOrOptions - optional route name, loader options, or query callback
+ * @param _options - loader options or query callback when a name is provided;
+ * otherwise, the settings for a query callback
+ * @param _loaderOptions - settings for a named query callback
+ * @returns a composable exposing the loaded data and query state
+ */
 export function defineColadaLoader<Data>(
   nameOrOptions:
     | keyof RouteMap
-    | DefineDataColadaLoaderOptions_LaxData<keyof RouteMap, Data>,
-  _options?: DefineDataColadaLoaderOptions_LaxData<keyof RouteMap, Data>
+    | DefineDataColadaLoaderOptions_LaxData<keyof RouteMap, Data>
+    | DefineColadaLoaderQueryOptions<keyof RouteMap, Data>,
+  _options?:
+    | DefineDataColadaLoaderOptions_LaxData<keyof RouteMap, Data>
+    | DefineColadaLoaderQueryOptions<keyof RouteMap, Data>
+    | DefineDataLoaderOptionsBase_LaxData,
+  _loaderOptions?: DefineDataLoaderOptionsBase_LaxData
 ): UseDataLoaderColada_LaxData<Data> {
   // TODO: make it DEV only and remove the first argument in production mode
-  // resolve option overrides
-  _options =
-    _options ||
-    (nameOrOptions as DefineDataColadaLoaderOptions_LaxData<
-      keyof RouteMap,
-      Data
-    >)
-  const loader = _options.query
+  const optionsOrQuery =
+    typeof nameOrOptions === 'object' || typeof nameOrOptions === 'function'
+      ? nameOrOptions
+      : (_options as
+          | DefineDataColadaLoaderOptions_LaxData<keyof RouteMap, Data>
+          | DefineColadaLoaderQueryOptions<keyof RouteMap, Data>)
+  const queryOptions =
+    typeof optionsOrQuery === 'function' ? optionsOrQuery : undefined
+  const objectOptions =
+    typeof optionsOrQuery === 'function' ? undefined : optionsOrQuery
+  const loaderOptions = queryOptions
+    ? typeof nameOrOptions === 'function'
+      ? (_options as DefineDataLoaderOptionsBase_LaxData | undefined)
+      : _loaderOptions
+    : objectOptions
+  const loader = queryOptions || objectOptions!.query
+  const keyOption = queryOptions
+    ? (to: RouteLocationNormalizedLoaded) => queryOptions(to).key
+    : objectOptions!.key
 
   const options = {
     ...DEFAULT_DEFINE_LOADER_OPTIONS,
-    ..._options,
-    commit: _options?.commit || 'after-load',
-  } as DefineDataColadaLoaderOptions_LaxData<keyof RouteMap, Data>
+    ...loaderOptions,
+    commit: loaderOptions?.commit || 'after-load',
+  }
 
   let isInitial = true
 
@@ -117,38 +193,61 @@ export function defineColadaLoader<Data>(
     >
     const entry = entries.get(loader)!
 
-    return useQuery({
-      ...options,
-      query: (): Promise<Data> => {
-        const route = entry.route.value
-        const [trackedRoute, params, query, hash] = trackRoute(route)
-        entry.tracked.set(
-          joinKeys(serializeQueryKey(options.key, trackedRoute)),
-          {
-            ready: false,
-            params,
-            query,
-            hash,
-          }
-        )
+    /**
+     * Executes the query in the application context and records the route
+     * properties used by its key and query to detect changes during navigation.
+     *
+     * @param context - query context supplied by Pinia Colada
+     * @returns the pending query data
+     */
+    const query: UseQueryOptions<
+      Data,
+      ErrorDefault,
+      Data | undefined
+    >['query'] = context => {
+      const route = entry.route.value
+      const [trackedRoute, params, query, hash] = trackRoute(route)
+      entry.tracked.set(joinKeys(serializeQueryKey(keyOption, trackedRoute)), {
+        ready: false,
+        params,
+        query,
+        hash,
+      })
 
-        // needed for automatic refetching and nested loaders
-        // https://github.com/posva/unplugin-vue-router/issues/583
-        return router[APP_KEY].runWithContext(() =>
-          loader(trackedRoute, {
-            // TODO: provide the query signal too
-            signal: route.meta[ABORT_CONTROLLER_KEY]?.signal,
-          })
-        )
-      },
-      key: () => toValueWithParameters(options.key, entry.route.value),
-      // TODO: cleanup if gc
-      // onDestroy() {
-      //   entries.delete(loader)
-      // }
-    })
+      // needed for automatic refetching and nested loaders
+      // https://github.com/posva/unplugin-vue-router/issues/583
+      return router[APP_KEY].runWithContext(() =>
+        queryOptions
+          ? queryOptions(trackedRoute).query(context)
+          : objectOptions!.query(trackedRoute, {
+              // TODO: provide the query signal too
+              signal: route.meta[ABORT_CONTROLLER_KEY]?.signal,
+            })
+      )
+    }
+
+    return useQuery<Data, ErrorDefault, Data | undefined>(
+      queryOptions
+        ? () => ({ ...queryOptions(entry.route.value), query })
+        : {
+            ...options,
+            query,
+            key: () => toValueWithParameters(keyOption, entry.route.value),
+          }
+    )
   })
 
+  /**
+   * Loads data for the target route and stages it until it can be committed.
+   * Reuses fresh cached data unless the tracked route properties have changed.
+   *
+   * @param to - route whose data should be loaded
+   * @param router - router owning the loader entry
+   * @param from - route being left during navigation
+   * @param parent - parent entry when this loader is nested
+   * @param reload - whether to force a refetch instead of refreshing the cache
+   * @returns a promise that resolves when loading and staging finish
+   */
   function load(
     to: RouteLocationNormalizedLoaded,
     router: Router,
@@ -160,7 +259,7 @@ export function defineColadaLoader<Data>(
       DataLoaderColadaEntry<unknown>
     >
     const isSSR = router[IS_SSR_KEY]
-    const key = serializeQueryKey(options.key, to)
+    const key = serializeQueryKey(keyOption, to)
     if (!entries.has(loader)) {
       const route = shallowRef<RouteLocationNormalizedLoaded>(to)
       entries.set(loader, {
@@ -214,7 +313,7 @@ export function defineColadaLoader<Data>(
       // remove the data loader effect scope so that queries
       // can be marked as inactive
       untrackLoaderQuery(
-        useQueryCache().get(toValueWithParameters(options.key, to)),
+        useQueryCache().get(toValueWithParameters(keyOption, to)),
         router[DATA_LOADERS_EFFECT_SCOPE_KEY]
       )
 
@@ -344,11 +443,17 @@ export function defineColadaLoader<Data>(
     return currentLoad
   }
 
+  /**
+   * Publishes staged data and errors for the matching pending route, then commits
+   * any nested loaders. Results from superseded navigations are ignored.
+   *
+   * @param to - route for which the staged result should be committed
+   */
   function commit(
     this: DataLoaderColadaEntry<Data>,
     to: RouteLocationNormalizedLoaded
   ) {
-    const key = serializeQueryKey(options.key, to)
+    const key = serializeQueryKey(keyOption, to)
     // console.log(`👉 commit "${key}"`)
     if (this.pendingTo === to) {
       // console.log(' ->', this.staged)
@@ -419,7 +524,7 @@ export function defineColadaLoader<Data>(
       !entry.pendingLoad
     ) {
       // console.log(
-      //   `🔁 loading from useData for "${options.key}": "${route.fullPath}"`
+      //   `🔁 loading from useData for "${keyOption}": "${route.fullPath}"`
       // )
       app.runWithContext(() =>
         // in this case we always need to run the functions for nested loaders consistency
@@ -448,7 +553,7 @@ export function defineColadaLoader<Data>(
     // remove the data loader effect scope so that queries
     // can be marked as inactive when navigating away
     untrackLoaderQuery(
-      useQueryCache().get(toValueWithParameters(options.key, route)),
+      useQueryCache().get(toValueWithParameters(keyOption, route)),
       router[DATA_LOADERS_EFFECT_SCOPE_KEY]
     )
 
@@ -552,6 +657,16 @@ function untrackLoaderQuery(
 }
 
 export const joinKeys = (keys: string[]): string => keys.join('|')
+
+/**
+ * Function returning reusable Pinia Colada query options for a route.
+ */
+export type DefineColadaLoaderQueryOptions<
+  Name extends keyof RouteMap,
+  Data,
+> = (
+  to: RouteLocationNormalizedLoaded<Name>
+) => DefineQueryOptions<Data, ErrorDefault, Data | undefined>
 
 /**
  * Base type with docs for the options of `defineColadaLoader`.
