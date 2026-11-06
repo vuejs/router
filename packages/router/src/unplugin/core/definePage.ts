@@ -416,8 +416,10 @@ export function extractDefinePageInfo(
   const routeInfo: DefinePageInfo = { hasRemainingProperties: false }
 
   for (const prop of routeRecord.properties) {
-    if (prop.type === 'ObjectProperty' && prop.key.type === 'Identifier') {
-      if (prop.key.name === 'name') {
+    const key = getStaticKey(prop)
+
+    if (prop.type === 'ObjectProperty' && key !== undefined) {
+      if (key === 'name') {
         if (
           prop.value.type !== 'StringLiteral' &&
           (prop.value.type !== 'BooleanLiteral' || prop.value.value !== false)
@@ -427,25 +429,41 @@ export function extractDefinePageInfo(
           // TODO: why does TS not narrow down the type?
           routeInfo.name = prop.value.value as string | false
         }
-      } else if (prop.key.name === 'path') {
+      } else if (key === 'path') {
         if (prop.value.type !== 'StringLiteral') {
           diagnostics.VUE_ROUTER_B0005({ filename: id })
         } else {
           routeInfo.path = prop.value.value
         }
-      } else if (prop.key.name === 'alias') {
+      } else if (key === 'alias') {
         routeInfo.alias = extractRouteAlias(prop.value, id)
-      } else if (prop.key.name === 'params') {
+      } else if (key === 'params') {
         if (prop.value.type === 'ObjectExpression') {
           routeInfo.params = extractParamsInfo(prop.value, id, sfcCode, offset)
         }
       } else {
         routeInfo.hasRemainingProperties = true
       }
+    } else {
+      // methods, spreads, and computed keys are kept at runtime
+      routeInfo.hasRemainingProperties = true
     }
   }
 
   return routeInfo
+}
+
+/**
+ * Returns the key of a `key: value` or `'key': value` property. Methods,
+ * spreads, and computed keys return `undefined`.
+ */
+function getStaticKey(
+  prop: ObjectExpression['properties'][number]
+): string | undefined {
+  if (prop.type !== 'ObjectProperty' || prop.computed) return undefined
+  if (prop.key.type === 'Identifier') return prop.key.name
+  if (prop.key.type === 'StringLiteral') return prop.key.value
+  return undefined
 }
 
 function extractParamsInfo(
@@ -457,18 +475,13 @@ function extractParamsInfo(
   const params: DefinePageParamsInfo = {}
 
   for (const prop of paramsObj.properties) {
-    if (prop.type === 'ObjectProperty' && prop.key.type === 'Identifier') {
-      if (prop.key.name === 'query' && prop.value.type === 'ObjectExpression') {
+    const key = getStaticKey(prop)
+    if (prop.type === 'ObjectProperty' && key !== undefined) {
+      if (key === 'query' && prop.value.type === 'ObjectExpression') {
         params.query = extractQueryParams(prop.value, id, source, offset)
-      } else if (
-        prop.key.name === 'path' &&
-        prop.value.type === 'ObjectExpression'
-      ) {
+      } else if (key === 'path' && prop.value.type === 'ObjectExpression') {
         params.path = extractPathParams(prop.value, id)
-      } else if (
-        prop.key.name === 'hash' &&
-        prop.value.type === 'ObjectExpression'
-      ) {
+      } else if (key === 'hash' && prop.value.type === 'ObjectExpression') {
         params.hash = extractHashParams(prop.value, source, offset)
       }
     }
@@ -486,9 +499,8 @@ function extractQueryParams(
   const queryParams: NonNullable<DefinePageInfo['params']>['query'] = {}
 
   for (const prop of queryObj.properties) {
-    if (prop.type === 'ObjectProperty' && prop.key.type === 'Identifier') {
-      const paramName = prop.key.name
-
+    const paramName = getStaticKey(prop)
+    if (prop.type === 'ObjectProperty' && paramName !== undefined) {
       // we normalize short form for convenience
       if (prop.value.type === 'StringLiteral') {
         queryParams[paramName] = {
@@ -520,27 +532,22 @@ function extractParamOptions(
 ): CustomRouteBlockQueryParamOptions {
   const paramInfo: CustomRouteBlockQueryParamOptions = {}
   for (const paramProp of optionsObj.properties) {
-    if (
-      paramProp.type === 'ObjectProperty' &&
-      paramProp.key.type === 'Identifier'
-    ) {
-      if (
-        paramProp.key.name === 'parser' &&
-        paramProp.value.type === 'StringLiteral'
-      ) {
+    const key = getStaticKey(paramProp)
+    if (paramProp.type === 'ObjectProperty' && key !== undefined) {
+      if (key === 'parser' && paramProp.value.type === 'StringLiteral') {
         paramInfo.parser = paramProp.value.value
       } else if (
         includeFormat &&
-        paramProp.key.name === 'format' &&
+        key === 'format' &&
         paramProp.value.type === 'StringLiteral'
       ) {
         paramInfo.format = paramProp.value.value as 'value' | 'array'
       } else if (
-        paramProp.key.name === 'required' &&
+        key === 'required' &&
         paramProp.value.type === 'BooleanLiteral'
       ) {
         paramInfo.required = paramProp.value.value
-      } else if (paramProp.key.name === 'default') {
+      } else if (key === 'default') {
         if (typeof paramProp.value.extra?.raw === 'string') {
           paramInfo.default = paramProp.value.extra.raw
         } else if (paramProp.value.type === 'NumericLiteral') {
@@ -620,22 +627,20 @@ function extractPathParams(
   const pathParams: NonNullable<DefinePageInfo['params']>['path'] = {}
 
   for (const prop of pathObj.properties) {
-    if (prop.type !== 'ObjectProperty' || prop.key.type !== 'Identifier') {
+    const paramName = getStaticKey(prop)
+    if (prop.type !== 'ObjectProperty' || paramName === undefined) {
       continue
     }
     if (prop.value.type === 'StringLiteral') {
       // TODO: we should check if the value is a valid parser type
-      pathParams[prop.key.name] = prop.value.value
+      pathParams[paramName] = prop.value.value
     } else if (prop.value.type === 'ObjectExpression') {
       const options: CustomRouteBlockPathParamOptions = {}
       for (const optionProp of prop.value.properties) {
-        if (
-          optionProp.type !== 'ObjectProperty' ||
-          optionProp.key.type !== 'Identifier'
-        ) {
+        const name = getStaticKey(optionProp)
+        if (optionProp.type !== 'ObjectProperty' || name === undefined) {
           continue
         }
-        const { name } = optionProp.key
         const { value } = optionProp
         if (name === 'parser') {
           if (value.type === 'StringLiteral') options.parser = value.value
@@ -645,7 +650,7 @@ function extractPathParams(
           else if (value.type === 'NullLiteral') options.re = null
         }
       }
-      pathParams[prop.key.name] = options
+      pathParams[paramName] = options
     }
   }
 
