@@ -21,6 +21,9 @@ export let currentContext:
       entry: DataLoaderEntryBase,
       router: Router,
       route: RouteLocationNormalizedLoaded,
+      // whether the current load was explicitly forced (e.g. `reload()`), so
+      // nested loaders re-execute even if they already have data for this route
+      force?: boolean,
     ]
   | undefined
   | null
