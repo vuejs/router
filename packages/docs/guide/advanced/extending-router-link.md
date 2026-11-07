@@ -12,19 +12,21 @@ Let's extend RouterLink to handle external links as well and adding a custom `in
 ::: code-group
 
 ```vue [Composition API]
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { type RouterLinkProps } from 'vue-router'
 
 defineOptions({
   inheritAttrs: false,
 })
 
-const props = defineProps({
-  // add @ts-ignore if using TypeScript
-  ...RouterLink.props,
-  inactiveClass: String,
-})
+// Prefer typing with RouterLinkProps over spreading RouterLink.props.
+// The runtime spread is not typed under TypeScript (see #1429).
+const props = defineProps<
+  RouterLinkProps & {
+    inactiveClass?: string
+  }
+>()
 
 const isExternalLink = computed(() => {
   return typeof props.to === 'string' && props.to.startsWith('http')
@@ -32,17 +34,12 @@ const isExternalLink = computed(() => {
 </script>
 
 <template>
-  <!--
-    Access spread RouterLink props through `props.*` in the template.
-    With `...RouterLink.props`, bare names like `to` / `activeClass` are not
-    reliably available to `<script setup>` templates (especially under TypeScript).
-  -->
   <a v-if="isExternalLink" v-bind="$attrs" :href="props.to" target="_blank">
     <slot />
   </a>
   <router-link
     v-else
-    v-bind="$props"
+    v-bind="props"
     custom
     v-slot="{ isActive, href, navigate }"
   >

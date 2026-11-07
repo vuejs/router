@@ -12,19 +12,21 @@ RouterLink 组件提供了足够的 `props` 来满足大多数基本应用程序
 ::: code-group
 
 ```vue [Composition API]
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { type RouterLinkProps } from 'vue-router'
 
 defineOptions({
   inheritAttrs: false,
 })
 
-const props = defineProps({
-  // 如果使用 TypeScript，请添加 @ts-ignore
-  ...RouterLink.props,
-  inactiveClass: String,
-})
+// 推荐使用 RouterLinkProps 进行类型定义，而不是展开 RouterLink.props。
+// 运行时展开在 TypeScript 下没有正确的类型（见 #1429）。
+const props = defineProps<
+  RouterLinkProps & {
+    inactiveClass?: string
+  }
+>()
 
 const isExternalLink = computed(() => {
   return typeof props.to === 'string' && props.to.startsWith('http')
@@ -32,17 +34,12 @@ const isExternalLink = computed(() => {
 </script>
 
 <template>
-  <!--
-    通过 `props.*` 访问展开的 RouterLink props。
-    使用 `...RouterLink.props` 时，模板中的裸名（如 `to` / `activeClass`）
-    在 `<script setup>` 下（尤其是 TypeScript）并不总是可用。
-  -->
   <a v-if="isExternalLink" v-bind="$attrs" :href="props.to" target="_blank">
     <slot />
   </a>
   <router-link
     v-else
-    v-bind="$props"
+    v-bind="props"
     custom
     v-slot="{ isActive, href, navigate }"
   >
