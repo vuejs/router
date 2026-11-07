@@ -381,6 +381,19 @@ describe('isSameRouteLocationParams', () => {
     expect(isSameRouteLocationParams({ a: ['2'] }, { a: '2' })).toBe(true)
     expect(isSameRouteLocationParams({ a: ['3'] }, { a: '2' })).toBe(false)
   })
+
+  it('compares custom values inside of arrays with valueOf', () => {
+    const date = (time: number) => new Date(time) as unknown as string
+    expect(isSameRouteLocationParams({ a: [date(1)] }, { a: [date(1)] })).toBe(
+      true
+    )
+    expect(isSameRouteLocationParams({ a: [date(1)] }, { a: date(1) })).toBe(
+      true
+    )
+    expect(isSameRouteLocationParams({ a: [date(1)] }, { a: [date(2)] })).toBe(
+      false
+    )
+  })
 })
 
 describe('isSameRouteLocation', () => {
