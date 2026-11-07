@@ -26,6 +26,30 @@ describe('Memory history', () => {
     expect(history.location).toEqual('/somewhere?foo=foo#hey')
   })
 
+  it('keeps forward entries when replacing in the middle of the history', () => {
+    const history = createMemoryHistory()
+    history.push(loc)
+    history.push(loc2)
+    history.go(-1)
+    history.replace('/replaced', { foo: 'bar' })
+    expect(history.location).toEqual('/replaced')
+    expect(history.state).toEqual({ foo: 'bar' })
+    history.go(1)
+    expect(history.location).toEqual(loc2)
+    history.go(-1)
+    expect(history.location).toEqual('/replaced')
+    expect(history.state).toEqual({ foo: 'bar' })
+    history.go(-1)
+    expect(history.location).toEqual(START)
+  })
+
+  it('resets the state when replacing without one', () => {
+    const history = createMemoryHistory()
+    history.push(loc, { foo: 'bar' })
+    history.replace(loc2)
+    expect(history.state).toEqual({})
+  })
+
   it('does not trigger listeners with push', () => {
     const history = createMemoryHistory()
     const spy = vi.fn()

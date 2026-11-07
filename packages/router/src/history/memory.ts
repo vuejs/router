@@ -58,10 +58,9 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
     base,
     createHref: createHref.bind(null, base),
 
-    replace(to, state?: HistoryState) {
-      // remove current entry and decrement position
-      queue.splice(position--, 1)
-      setLocation(to, state)
+    replace(to, state: HistoryState = {}) {
+      // only the current entry changes, forward entries must stay reachable
+      queue[position] = [to, state]
     },
 
     push(to, state?: HistoryState) {
