@@ -168,6 +168,86 @@ describe('useLink', () => {
       expect(link.isExactActive.value).toBe(true)
     })
 
+    describe('repeatable params', () => {
+      async function linkAt(current: RouteLocationRaw, to: RouteLocationRaw) {
+        const router = createRouter({
+          history: createMemoryHistory(),
+          routes: [
+            {
+              path: '/docs/:path+',
+              name: 'docs',
+              component: {},
+              children: [{ path: 'edit', name: 'edit', component: {} }],
+            },
+          ],
+        })
+        await router.push(current)
+
+        let link!: ReturnType<typeof useLink>
+        mount(
+          {
+            setup() {
+              link = useLink({ to })
+              return () => ''
+            },
+          },
+          { global: { plugins: [router] } }
+        )
+
+        return link
+      }
+
+      it('is active with a single value when the current param is an array', async () => {
+        const link = await linkAt('/docs/a', {
+          name: 'docs',
+          params: { path: 'a' },
+        })
+
+        expect(link.isActive.value).toBe(true)
+        expect(link.isExactActive.value).toBe(true)
+      })
+
+      it('is active with an array when the current param is a single value', async () => {
+        const link = await linkAt(
+          { name: 'docs', params: { path: 'a' } },
+          '/docs/a'
+        )
+
+        expect(link.isActive.value).toBe(true)
+        expect(link.isExactActive.value).toBe(true)
+      })
+
+      it('keeps the parent active with a single value on a child route', async () => {
+        const link = await linkAt('/docs/a/edit', {
+          name: 'docs',
+          params: { path: 'a' },
+        })
+
+        expect(link.isActive.value).toBe(true)
+        expect(link.isExactActive.value).toBe(false)
+      })
+
+      it('is inactive with a different single value', async () => {
+        const link = await linkAt('/docs/a', {
+          name: 'docs',
+          params: { path: 'b' },
+        })
+
+        expect(link.isActive.value).toBe(false)
+        expect(link.isExactActive.value).toBe(false)
+      })
+
+      it('is inactive with a single value for an array of many items', async () => {
+        const link = await linkAt('/docs/a/b', {
+          name: 'docs',
+          params: { path: 'a' },
+        })
+
+        expect(link.isActive.value).toBe(false)
+        expect(link.isExactActive.value).toBe(false)
+      })
+    })
+
     describe('optional params', () => {
       async function linkToAbout(to: UseLinkOptions['to']) {
         const aboutRoute = normalizeRouteRecord({

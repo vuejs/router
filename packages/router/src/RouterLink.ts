@@ -20,11 +20,15 @@ import {
   type MaybeRef,
   type AnchorHTMLAttributes,
 } from 'vue'
-import { isSameRouteLocationParams, isSameRouteRecord } from './location'
+import {
+  isSameRouteLocationParams,
+  isSameRouteLocationParamsValue,
+  isSameRouteRecord,
+} from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import type { RouteRecord } from './matcher/types'
 import type { NavigationFailure } from './errors'
-import { isArray, isBrowser, noop } from './utils'
+import { isBrowser, noop } from './utils'
 import { diagnostics } from './diagnostics'
 import { isRouteLocation } from './types'
 import type {
@@ -410,20 +414,7 @@ function includesParams(
   inner: RouteLocation['params']
 ): boolean {
   for (const key in inner) {
-    const innerValue = inner[key]
-    const outerValue = outer[key]
-    if (isArray(innerValue)) {
-      if (
-        !isArray(outerValue) ||
-        outerValue.length !== innerValue.length ||
-        innerValue.some(
-          (value, i) => value.valueOf() !== outerValue[i].valueOf()
-        )
-      )
-        return false
-    } else if (innerValue !== outerValue) {
-      return false
-    }
+    if (!isSameRouteLocationParamsValue(inner[key], outer[key])) return false
   }
 
   return true

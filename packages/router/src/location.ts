@@ -185,7 +185,15 @@ export function isSameRouteLocationParams(
   return true
 }
 
-function isSameRouteLocationParamsValue(
+/**
+ * Check if two param values are equal. An array with one single entry is the
+ * same as the entry itself: a repeatable param is a string when passed by name
+ * and an array when parsed from a path.
+ *
+ * @param a - first param value
+ * @param b - second param value
+ */
+export function isSameRouteLocationParamsValue(
   a: RouteParamValue | readonly RouteParamValue[],
   b: RouteParamValue | readonly RouteParamValue[]
 ): boolean {
@@ -204,10 +212,14 @@ function isSameRouteLocationParamsValue(
  * @param a - array of values
  * @param b - array of values or a single value
  */
-function isEquivalentArray<T>(a: readonly T[], b: readonly T[] | T): boolean {
+function isEquivalentArray(
+  a: readonly RouteParamValue[],
+  b: readonly RouteParamValue[] | RouteParamValue
+): boolean {
   return isArray(b)
-    ? a.length === b.length && a.every((value, i) => value === b[i])
-    : a.length === 1 && a[0] === b
+    ? a.length === b.length &&
+        a.every((value, i) => isSameRouteLocationParamsValue(value, b[i]))
+    : a.length === 1 && isSameRouteLocationParamsValue(a[0], b)
 }
 
 /**
