@@ -20,14 +20,11 @@ defineOptions({
   inheritAttrs: false,
 })
 
-// 推荐使用 RouterLinkProps 进行类型定义，而不是展开 RouterLink.props。
-// 运行时展开在 TypeScript 下没有正确的类型（见 #1429）。
 const props = defineProps<
   RouterLinkProps & {
     inactiveClass?: string
   }
 >()
-
 const isExternalLink = computed(() => {
   return typeof props.to === 'string' && props.to.startsWith('http')
 })

@@ -20,8 +20,6 @@ defineOptions({
   inheritAttrs: false,
 })
 
-// Prefer typing with RouterLinkProps over spreading RouterLink.props.
-// The runtime spread is not typed under TypeScript (see #1429).
 const props = defineProps<
   RouterLinkProps & {
     inactiveClass?: string
