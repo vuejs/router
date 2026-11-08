@@ -191,6 +191,35 @@ describe('History HTMl5', () => {
     })
   })
 
+  it('skips rewriting the initial entry with the same url and state', () => {
+    const history = createWebHistory()
+    const spy = vi.spyOn(window.history, 'replaceState')
+    history.replace(history.location)
+    expect(spy).not.toHaveBeenCalled()
+    spy.mockRestore()
+  })
+
+  it.each([{ replaced: false }, { extra: undefined }])(
+    'rewrites the initial entry with different state %o',
+    data => {
+      const history = createWebHistory()
+      const spy = vi.spyOn(window.history, 'replaceState')
+      history.replace(history.location, data)
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(window.history.state).toMatchObject(data)
+      spy.mockRestore()
+    }
+  )
+
+  it('rewrites the initial entry when replacing it with another location', () => {
+    const history = createWebHistory()
+    const spy = vi.spyOn(window.history, 'replaceState')
+    history.replace('/other', { current: history.location })
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(location.pathname).toBe('/other')
+    spy.mockRestore()
+  })
+
   describe('specific to base containing a hash', () => {
     it('writes the hash part of the url with a base', () => {
       getWindow().happyDOM.setURL('file:///usr/etc/index.html')
