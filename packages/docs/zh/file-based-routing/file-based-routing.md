@@ -33,7 +33,7 @@ src/pages/
 
 ### 嵌套路由
 
-嵌套路由是通过在文件夹旁边定义一个 `.vue` 文件**同名的**来自动定义的。如果你创建了 `src/pages/users/index.vue` 和 `src/pages/users.vue` 组件，`src/pages/users/index.vue` 将在 `src/pages/users.vue` 的 `<RouterView>` 中渲染。
+嵌套路由是通过在文件夹旁边定义一个 **同名的**`.vue` 文件来自动定义的。如果你创建了 `src/pages/users/index.vue` 和 `src/pages/users.vue` 组件，`src/pages/users/index.vue` 将在 `src/pages/users.vue` 的 `<RouterView>` 中渲染。
 
 换句话说，给定这个文件夹结构：
 
