@@ -353,10 +353,17 @@ describe('generated path matchers', () => {
       teamId: '123',
       otherId: null,
     })
+    expect(pattern.match('/teams/-456')).toEqual({
+      teamId: null,
+      otherId: '456',
+    })
     expect(pattern.match('/teams/-')).toEqual({ teamId: null, otherId: null })
     expect(pattern.build({ teamId: '123', otherId: '456' })).toBe(
       '/teams/123-456'
     )
+    expect(pattern.build({ teamId: null, otherId: '456' })).toBe('/teams/-456')
+    expect(pattern.build({ teamId: '123', otherId: null })).toBe('/teams/123-')
+    expect(pattern.build({ teamId: null, otherId: null })).toBe('/teams/-')
   })
 
   it('repeatable optional param at the start of a sub segment', () => {
