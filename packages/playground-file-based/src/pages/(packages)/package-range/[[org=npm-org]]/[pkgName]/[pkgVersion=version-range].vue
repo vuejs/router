@@ -1,9 +1,14 @@
 <script lang="ts" setup>
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { SemVer } from 'semver'
+import { normalizeRange, type SemVer, type SemVerRange } from 'verkit'
 import SemVerInfo from '@/components/SemVerInfo.vue'
 
 const route = useRoute()
+
+const parsed = computed(() => route.params.pkgVersion as SemVer | SemVerRange)
+const version = computed(() => ('sets' in parsed.value ? null : parsed.value))
+const range = computed(() => ('sets' in parsed.value ? parsed.value : null))
 </script>
 
 <template>
@@ -13,19 +18,14 @@ const route = useRoute()
   </h2>
   <h3>Version Range (param parser)</h3>
 
-  <template v-if="route.params.pkgVersion instanceof SemVer">
-    <SemVerInfo :version="route.params.pkgVersion" />
+  <template v-if="version">
+    <SemVerInfo :version="version" />
   </template>
-  <template v-else>
+  <template v-else-if="range">
     <dl>
-      <dt>Range</dt>
-      <dd>
-        <code>{{ route.params.pkgVersion.range }}</code>
-      </dd>
-
       <dt>Formatted</dt>
       <dd>
-        <code>{{ route.params.pkgVersion.format() }}</code>
+        <code>{{ normalizeRange(range) }}</code>
       </dd>
     </dl>
   </template>

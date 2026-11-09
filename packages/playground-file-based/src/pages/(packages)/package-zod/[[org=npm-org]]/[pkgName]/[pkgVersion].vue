@@ -2,12 +2,12 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { z } from 'zod'
-import { parse, valid } from 'semver'
+import { isValid, tryParse } from 'verkit'
 import SemVerInfo from '@/components/SemVerInfo.vue'
 
 const route = useRoute()
 
-const semverSchema = z.string().refine(val => valid(val, true) !== null, {
+const semverSchema = z.string().refine(val => isValid(val, { loose: true }), {
   message: 'Invalid semver version',
 })
 
@@ -16,7 +16,10 @@ const result = computed(() => {
   if (!validation.success) {
     return { ok: false as const, error: validation.error }
   }
-  return { ok: true as const, version: parse(validation.data, true, true)! }
+  return {
+    ok: true as const,
+    version: tryParse(validation.data, { loose: true })!,
+  }
 })
 </script>
 

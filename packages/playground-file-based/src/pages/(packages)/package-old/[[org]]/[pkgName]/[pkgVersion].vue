@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { parse } from 'semver'
+import { tryParse } from 'verkit'
 import SemVerInfo from '@/components/SemVerInfo.vue'
 
 const route = useRoute()
 
 const parsed = computed(() =>
-  parse(route.params.pkgVersion as string, true, true)
+  tryParse(route.params.pkgVersion as string, { loose: true })
 )
 </script>
 
