@@ -644,10 +644,15 @@ export class TreeNodeValueParam extends _TreeNodeValueBase {
           // check ahead if there is a static segment after this one that starts with a slash
           // TODO: trailingSlash behavior
           var prevSegment = this.subSegments[i - 1]
+          var nextSegment = this.subSegments[i + 1]
           // is there a slash right before us
           if (
             (!prevSegment ||
               (typeof prevSegment === 'string' && prevSegment.endsWith('/'))) &&
+            // and is the param alone in its segment (e.g. not `[[id]]-suffix`)
+            (!nextSegment ||
+              (typeof nextSegment === 'string' &&
+                nextSegment.startsWith('/'))) &&
             // avoid the transformation when the optional param is the whole path
             this.subSegments.length > 1
           ) {

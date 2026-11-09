@@ -321,6 +321,55 @@ describe('generated path matchers', () => {
     )
   })
 
+  it('optional param at the start of a sub segment', () => {
+    const pattern = generatePath('teams/[[teamId]]-b')
+
+    expect(pattern.match('/teams/123-b')).toEqual({ teamId: '123' })
+    expect(pattern.match('/teams/-b')).toEqual({ teamId: null })
+    expect(() => pattern.match('/teams//123-b')).toThrow()
+    expect(() => pattern.match('/teams-b')).toThrow()
+    expect(pattern.build({ teamId: '123' })).toBe('/teams/123-b')
+    expect(pattern.build({ teamId: null })).toBe('/teams/-b')
+  })
+
+  it('optional param at the start of a root sub segment', () => {
+    const pattern = generatePath('[[teamId]]-b')
+
+    expect(pattern.match('/123-b')).toEqual({ teamId: '123' })
+    expect(pattern.match('/-b')).toEqual({ teamId: null })
+    expect(() => pattern.match('-b')).toThrow()
+    expect(pattern.build({ teamId: '123' })).toBe('/123-b')
+    expect(pattern.build({ teamId: null })).toBe('/-b')
+  })
+
+  it('multiple optional params in a sub segment', () => {
+    const pattern = generatePath('teams/[[teamId]]-[[otherId]]')
+
+    expect(pattern.match('/teams/123-456')).toEqual({
+      teamId: '123',
+      otherId: '456',
+    })
+    expect(pattern.match('/teams/123-')).toEqual({
+      teamId: '123',
+      otherId: null,
+    })
+    expect(pattern.match('/teams/-')).toEqual({ teamId: null, otherId: null })
+    expect(pattern.build({ teamId: '123', otherId: '456' })).toBe(
+      '/teams/123-456'
+    )
+  })
+
+  it('repeatable optional param at the start of a sub segment', () => {
+    const pattern = generatePath('teams/[[teamId]]+-b')
+
+    expect(pattern.match('/teams/123/456-b')).toEqual({
+      teamId: ['123', '456'],
+    })
+    expect(pattern.match('/teams/-b')).toEqual({ teamId: [] })
+    expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456-b')
+    expect(pattern.build({ teamId: [] })).toBe('/teams/-b')
+  })
+
   it('matches and builds repeatable params in dot-separated paths', () => {
     const pattern = generatePath('set.[ids]+.other')
 
