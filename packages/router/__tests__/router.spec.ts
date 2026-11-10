@@ -397,6 +397,7 @@ describe('Router', () => {
     const { router } = await newRouter()
     const route1 = router.resolve({ name: 'optional', params: { p: '' } })
     expect(route1.params).toEqual({ p: '' })
+    expect('optional path param "p"').toHaveBeenWarned()
   })
 
   it('navigates to same route record but different query', async () => {

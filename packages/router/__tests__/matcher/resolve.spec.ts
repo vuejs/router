@@ -639,7 +639,7 @@ describe('RouterMatcher.resolve', () => {
         { name: 'a', path: '/a', params: { p: '' } }
       )
 
-      expect('Repeatable param "p"').toHaveBeenWarned()
+      expect('optional path param "p"').toHaveBeenWarned()
     })
 
     it('does not warn when an optional repeatable param is empty or omitted', () => {
@@ -970,6 +970,7 @@ describe('RouterMatcher.resolve', () => {
           name: undefined,
         }
       )
+      expect('optional path param "b"').toHaveBeenWarned()
     })
 
     it('resolves root path with optional params', () => {

@@ -281,7 +281,12 @@ export function createRouterMatcher(
 
         for (const key of matcher.keys) {
           const value = location.params?.[key.name]
-          if (key.repeatable && value != null && !Array.isArray(value)) {
+          if (key.optional && value === '') {
+            diagnostics.VUE_ROUTER_R0122({
+              param: key.name,
+              value: 'an empty string',
+            })
+          } else if (key.repeatable && value != null && !Array.isArray(value)) {
             diagnostics.VUE_ROUTER_R0106({ name: key.name })
           }
         }
