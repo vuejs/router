@@ -131,6 +131,40 @@ test.describe('scroll-behavior', () => {
       await page.evaluate(() => window.scrollTo(0, 300))
     })
 
+    // TODO: enable with the Navigation API history. A native hash link
+    // pops a null state, so delta is 0 and nothing is saved. Even with a
+    // save, Firefox and WebKit scroll before popstate. The navigate event
+    // fires before the scroll in all browsers.
+    test.skip('restores the position on back after a native link', async ({
+      page,
+    }) => {
+      await clickLink(page.locator('#native-anchor'))
+      await expect(page).toHaveURL(/\/bar#anchor$/)
+      await expect.poll(() => anchorTop(page, 'anchor')).toBeLessThan(1)
+
+      await page.evaluate(() => window.history.back())
+      await expect(page).toHaveURL(/\/bar$/)
+      await expect.poll(() => scrollY(page)).toBe(300)
+    })
+
+    // TODO: enable with the Navigation API history. popstate with a null
+    // state reuses the previous entry position, so leaving the hash entry has
+    // delta 0 and nothing is saved. The navigate event gives a real entry.
+    test.skip('restores the position on forward after a native link', async ({
+      page,
+    }) => {
+      await clickLink(page.locator('#native-anchor'))
+      await expect(page).toHaveURL(/\/bar#anchor$/)
+      await expect.poll(() => anchorTop(page, 'anchor')).toBeLessThan(1)
+      await page.evaluate(() => window.scrollTo(0, 2200))
+
+      await page.evaluate(() => window.history.back())
+      await expect(page).toHaveURL(/\/bar$/)
+      await page.evaluate(() => window.history.forward())
+      await expect(page).toHaveURL(/\/bar#anchor$/)
+      await expect.poll(() => scrollY(page)).toBe(2200)
+    })
+
     test('restores the position on back after a router-link', async ({
       page,
     }) => {
