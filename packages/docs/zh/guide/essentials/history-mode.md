@@ -190,7 +190,7 @@ rewrite {
 
 在 vue-cli、nuxt 和 vite 项目中，这个文件通常放在名为 `static` 或 `public` 的目录下。
 
-你可以在 [Netlify 文档](https://docs.netlify.com/routing/redirects/rewrites-proxies/#history-pushstate-and-single-page-apps)中找到更多关于语法的信息。你也可以[创建一个 `netlify.toml`](https://docs.netlify.com/configure-builds/file-based-configuration/) 来结合其他 Netlify 功能的重定向。
+你可以在 [Netlify 文档](https://docs.netlify.com/manage/routing/redirects/rewrites-proxies/)中找到更多关于语法的信息。你也可以[创建一个 `netlify.toml`](https://docs.netlify.com/build/configure-builds/file-based-configuration/) 来结合其他 Netlify 功能的重定向。
 
 ### Vercel
 
