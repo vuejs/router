@@ -618,14 +618,47 @@ describe('RouterMatcher.resolve', () => {
         { name: 'a', params: { p: ['b', 'c', 'd'] } },
         { name: 'a', path: '/a/b/c/d', params: { p: ['b', 'c', 'd'] } }
       )
+
+      expect('Repeatable param "p"').not.toHaveBeenWarned()
     })
 
-    it('resolves single params for a repeatable params', () => {
+    it('warns when a repeatable param is provided as a scalar', () => {
       assertRecordMatch(
         { path: '/a/:p+', name: 'a', components },
         { name: 'a', params: { p: 'b' } },
         { name: 'a', path: '/a/b', params: { p: 'b' } }
       )
+
+      expect('Repeatable param "p"').toHaveBeenWarned()
+    })
+
+    it('warns when an optional repeatable param is removed with an empty string', () => {
+      assertRecordMatch(
+        { path: '/a/:p*', name: 'a', components },
+        { name: 'a', params: { p: '' } },
+        { name: 'a', path: '/a', params: { p: '' } }
+      )
+
+      expect('Repeatable param "p"').toHaveBeenWarned()
+    })
+
+    it('does not warn when an optional repeatable param is empty or omitted', () => {
+      const matcher = createRouterMatcher(
+        [{ path: '/a/:p*', name: 'a', components }],
+        {}
+      )
+      expect(
+        matcher.resolve(
+          { name: 'a', params: { p: [] } },
+          START_LOCATION_NORMALIZED
+        ).path
+      ).toBe('/a')
+      expect(
+        matcher.resolve({ name: 'a', params: {} }, START_LOCATION_NORMALIZED)
+          .path
+      ).toBe('/a')
+
+      expect('Repeatable param "p"').not.toHaveBeenWarned()
     })
 
     it('keeps repeated params as a single one when provided through path', () => {

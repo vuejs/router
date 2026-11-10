@@ -450,6 +450,13 @@ describe('Router', () => {
     ).not.toThrow()
   })
 
+  it('removes an optional repeatable param with null without warning', async () => {
+    const { router } = await newRouter()
+    router.addRoute({ path: '/r/:r*', name: 'r', component: components.Bar })
+    expect(router.resolve({ name: 'r', params: { r: null } }).path).toBe('/r')
+    expect('Repeatable param "r"').not.toHaveBeenWarned()
+  })
+
   it('fails with arrays for non repeatable params', async () => {
     const { router } = await newRouter()
     router.addRoute({ path: '/r1/:r', name: 'r1', component: components.Bar })

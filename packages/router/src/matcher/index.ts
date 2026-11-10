@@ -278,6 +278,13 @@ export function createRouterMatcher(
               : '',
           })
         }
+
+        for (const key of matcher.keys) {
+          const value = location.params?.[key.name]
+          if (key.repeatable && value != null && !Array.isArray(value)) {
+            diagnostics.VUE_ROUTER_R0106({ name: key.name })
+          }
+        }
       }
 
       name = matcher.record.name

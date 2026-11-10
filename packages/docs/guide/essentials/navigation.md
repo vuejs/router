@@ -67,7 +67,7 @@ When building a string path or an object with `path`, provide an encoded path. U
 <RouterLink :to="{ name: 'user', params: { username } }">User</RouterLink>
 ```
 
-When specifying `params`, make sure to either provide a `string` or `number` (or an array of these for [repeatable params](./route-matching-syntax.md#Repeatable-params)). **Any other type (like objects, booleans, etc) will be automatically stringified**. For [optional params](./route-matching-syntax.md#Optional-parameters), you can provide an empty string (`""`) or `null` as the value to remove it.
+When specifying `params`, provide a `string` or `number` for a regular param. For [repeatable params](./route-matching-syntax.md#Repeatable-params), always provide an array, even when it has one item. To remove an optional repeatable param, provide an empty array (`[]`) or `null`. **Any other type (like objects or booleans) will be automatically stringified**. For other [optional params](./route-matching-syntax.md#Optional-parameters), you can provide an empty string (`""`) or `null` as the value to remove it.
 
 Since the prop `to` accepts the same kind of object as `router.push`, the exact same rules apply to both of them.
 

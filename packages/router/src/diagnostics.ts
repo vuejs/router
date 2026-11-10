@@ -312,6 +312,12 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `Finding ancestor route "${p.ancestor}" failed for "${p.record}"`,
       fix: 'Report a reproduction at https://github.com/vuejs/router/issues/new/choose.',
     },
+    VUE_ROUTER_R0106: {
+      why: (p: { name: string }) =>
+        `Repeatable param "${p.name}" was provided without an array.`,
+      fix: (p: { name: string }) =>
+        `Pass it as an array, even when it has one item: { ${JSON.stringify(p.name)}: [value] }. To remove it, pass an empty array or null.`,
+    },
 
     // --- history/hash.ts ---
     VUE_ROUTER_R0110: {
