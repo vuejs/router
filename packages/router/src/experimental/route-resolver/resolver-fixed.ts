@@ -28,6 +28,7 @@ import type {
 import { NO_MATCH_LOCATION } from './resolver-abstract'
 import type { MatcherPatternQuery } from './matchers/matcher-pattern-query'
 import { warn } from '../../warning'
+import { diagnostics } from '../../diagnostics'
 import { assign } from '../../utils'
 
 /**
@@ -275,6 +276,15 @@ export function createFixedResolver<
           )
         )
       )
+
+      if (__DEV__) {
+        for (const key in to.query) {
+          // a param overrode the value passed in `to.query`
+          if (String(query[key]) !== String(to.query[key])) {
+            diagnostics.VUE_ROUTER_R0123({ key })
+          }
+        }
+      }
 
       const url: LocationNormalized = {
         // preserve other fields like `state` and `replace`

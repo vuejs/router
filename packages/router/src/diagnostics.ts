@@ -32,6 +32,13 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `The optional path param "${p.param}" is being removed with ${p.value}.`,
       fix: 'Use null to remove an optional path param.',
     },
+    // --- experimental/route-resolver/resolver-fixed.ts ---
+    VUE_ROUTER_R0123: {
+      why: (p: { key: string }) =>
+        `The query value of "${p.key}" is ignored because a param already sets this key.`,
+      fix: (p: { key: string }) =>
+        `Pass the value in \`params\` instead of \`query\`, or omit "${p.key}" from \`query\`.`,
+    },
     // --- experimental/router.ts ---
     VUE_ROUTER_D0001: {
       why: (p: { name: string }) =>
