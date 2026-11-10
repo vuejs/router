@@ -4,7 +4,7 @@ import {
   MatcherPatternPathDynamic,
 } from './matcher-pattern'
 import { MatcherPatternPathStar } from './matcher-pattern-path-star'
-import { miss } from './errors'
+import { MatchMiss, miss } from './errors'
 import { defineParamParserRaw } from './param-parsers'
 import { mockWarn } from '../../../../__tests__/vitest-mock-warn'
 
@@ -20,10 +20,10 @@ describe('MatcherPatternPathStatic', () => {
       expect(pattern.match('/')).toEqual({})
     })
 
-    it('throws for non-matching path', () => {
+    it('returns null for non-matching path', () => {
       const pattern = new MatcherPatternPathStatic('/team')
-      expect(() => pattern.match('/users')).toThrow()
-      expect(() => pattern.match('/')).toThrow()
+      expect(pattern.match('/users')).toBe(null)
+      expect(pattern.match('/')).toBe(null)
     })
 
     it('is case insensitive', () => {
@@ -39,12 +39,8 @@ describe('MatcherPatternPathStatic', () => {
     })
 
     it('strict on trailing slash', () => {
-      expect(() =>
-        new MatcherPatternPathStatic('/team').match('/team/')
-      ).toThrow()
-      expect(() =>
-        new MatcherPatternPathStatic('/team/').match('/team')
-      ).toThrow()
+      expect(new MatcherPatternPathStatic('/team').match('/team/')).toBe(null)
+      expect(new MatcherPatternPathStatic('/team/').match('/team')).toBe(null)
     })
   })
 
@@ -87,10 +83,10 @@ describe('MatcherPatternPathStar', () => {
       expect(pattern.match('/team/123/456')).toEqual({ pathMatch: '/123/456' })
     })
 
-    it('throws if prefix does not match', () => {
+    it('returns null if prefix does not match', () => {
       const pattern = new MatcherPatternPathStar('/teams')
-      expect(() => pattern.match('/users')).toThrow()
-      expect(() => pattern.match('/team')).toThrow()
+      expect(pattern.match('/users')).toBe(null)
+      expect(pattern.match('/team')).toBe(null)
     })
 
     it('is case insensitive', () => {
@@ -152,9 +148,9 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.match('/teams/123/')).toEqual({
       teamId: '123',
     })
-    expect(() => pattern.match('/teams/123')).toThrow()
-    expect(() => pattern.match('/teams/123/b')).toThrow()
-    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.match('/teams/123')).toBe(null)
+    expect(pattern.match('/teams/123/b')).toBe(null)
+    expect(pattern.match('/teams/')).toBe(null)
     expect(pattern.build({ teamId: '123' })).toBe('/teams/123/')
   })
 
@@ -167,9 +163,9 @@ describe('MatcherPatternPathDynamic', () => {
     )
 
     expect(pattern.match('/teams/b/')).toEqual({})
-    expect(() => pattern.match('/teams/b')).toThrow()
-    expect(() => pattern.match('/teams/123/b')).toThrow()
-    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.match('/teams/b')).toBe(null)
+    expect(pattern.match('/teams/123/b')).toBe(null)
+    expect(pattern.match('/teams/')).toBe(null)
     expect(pattern.build({})).toBe('/teams/b/')
   })
 
@@ -187,9 +183,9 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.match('/teams/123/456/')).toEqual({
       teamId: ['123', '456'],
     })
-    expect(() => pattern.match('/teams/123')).toThrow()
-    expect(() => pattern.match('/teams/123/b')).toThrow()
-    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.match('/teams/123')).toBe(null)
+    expect(pattern.match('/teams/123/b')).toBe(null)
+    expect(pattern.match('/teams/')).toBe(null)
     expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123/')
     expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/')
   })
@@ -210,8 +206,8 @@ describe('MatcherPatternPathDynamic', () => {
     })
     expect(pattern.match('/teams/')).toEqual({ teamId: [] })
 
-    expect(() => pattern.match('/teams/123')).toThrow()
-    expect(() => pattern.match('/teams/123/b')).toThrow()
+    expect(pattern.match('/teams/123')).toBe(null)
+    expect(pattern.match('/teams/123/b')).toBe(null)
 
     expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123/')
     expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/')
@@ -228,8 +224,8 @@ describe('MatcherPatternPathDynamic', () => {
 
     expect(pattern.match('/lang/en')).toEqual({ p: 'lang/en' })
     expect(pattern.match('/lang/fr')).toEqual({ p: 'lang/fr' })
-    expect(() => pattern.match('/lang/de')).toThrow()
-    expect(() => pattern.match('/lang/en/')).toThrow()
+    expect(pattern.match('/lang/de')).toBe(null)
+    expect(pattern.match('/lang/en/')).toBe(null)
 
     expect(pattern.build({ p: 'lang/en' })).toBe('/lang/en')
     expect(pattern.build({ p: 'lang/fr' })).toBe('/lang/fr')
@@ -248,11 +244,11 @@ describe('MatcherPatternPathDynamic', () => {
 
     expect(pattern.match('/prefix/lang/en/suffix')).toEqual({ p: 'lang/en' })
     expect(pattern.match('/prefix/lang/fr/suffix')).toEqual({ p: 'lang/fr' })
-    expect(() => pattern.match('/prefix/lang/de/suffix')).toThrow()
-    expect(() => pattern.match('/prefix/lang/en/suffix/')).toThrow()
-    expect(() => pattern.match('/prefix/lang/en')).toThrow()
-    expect(() => pattern.match('/lang/en/suffix')).toThrow()
-    expect(() => pattern.match('/prefix//suffix')).toThrow()
+    expect(pattern.match('/prefix/lang/de/suffix')).toBe(null)
+    expect(pattern.match('/prefix/lang/en/suffix/')).toBe(null)
+    expect(pattern.match('/prefix/lang/en')).toBe(null)
+    expect(pattern.match('/lang/en/suffix')).toBe(null)
+    expect(pattern.match('/prefix//suffix')).toBe(null)
 
     expect(pattern.build({ p: 'lang/en' })).toBe('/prefix/lang/en/suffix')
     expect(pattern.build({ p: 'lang/fr' })).toBe('/prefix/lang/fr/suffix')
@@ -273,7 +269,7 @@ describe('MatcherPatternPathDynamic', () => {
 
     expect(pattern.match('/lang/en')).toEqual({ p: 'en' })
     expect(pattern.match('/lang/fr')).toEqual({ p: 'fr' })
-    expect(() => pattern.match('/lang/de')).toThrow()
+    expect(pattern.match('/lang/de')).toBe(null)
 
     expect(pattern.build({ p: 'en' })).toBe('/lang/en')
     expect(pattern.build({ p: 'fr' })).toBe('/lang/fr')
@@ -307,7 +303,7 @@ describe('MatcherPatternPathDynamic', () => {
 
     expect(pattern.match('/lang/en')).toEqual({ p: 'en' })
     expect(pattern.match('/lang/fr')).toEqual({ p: 'fr' })
-    expect(() => pattern.match('/lang/de')).toThrow()
+    expect(pattern.match('/lang/de')).toBe(null)
 
     expect(pattern.build({ p: 'en' })).toBe('/lang/en')
     expect(pattern.build({ p: 'fr' })).toBe('/lang/fr')
@@ -357,7 +353,7 @@ describe('MatcherPatternPathDynamic', () => {
       )
 
       expect(pattern.match('/teams/123')).toEqual({ teamId: 246 })
-      expect(() => pattern.match('/teams/abc')).toThrow()
+      expect(() => pattern.match('/teams/abc')).toThrow(MatchMiss)
       expect(pattern.build({ teamId: 246 })).toBe('/teams/123')
     })
 
@@ -372,7 +368,7 @@ describe('MatcherPatternPathDynamic', () => {
 
       expect(pattern.match('/teams')).toEqual({ teamId: 0 })
       expect(pattern.match('/teams/123')).toEqual({ teamId: 246 })
-      expect(() => pattern.match('/teams/abc')).toThrow()
+      expect(() => pattern.match('/teams/abc')).toThrow(MatchMiss)
       expect(pattern.build({ teamId: 246 })).toBe('/teams/123')
       expect(pattern.build({ teamId: 0 })).toBe('/teams/0')
       expect(pattern.build({ teamId: null })).toBe('/teams')

@@ -16,7 +16,7 @@ describe('MatcherPatternPathDynamic', () => {
     )
     expectTypeOf(matcher.match('/users/123')).toEqualTypeOf<{
       userId: string | string[] | null
-    }>()
+    } | null>()
 
     expectTypeOf(matcher.build({ userId: '123' })).toEqualTypeOf<string>()
     expectTypeOf(matcher.build({ userId: ['123'] })).toEqualTypeOf<string>()
@@ -40,7 +40,7 @@ describe('MatcherPatternPathDynamic', () => {
     )
     expectTypeOf(matcher.match('/users/123/456')).toEqualTypeOf<{
       userId: string
-    }>()
+    } | null>()
 
     expectTypeOf(matcher.build({ userId: '123' })).toEqualTypeOf<string>()
 
@@ -86,7 +86,7 @@ describe('MatcherPatternPathDynamic', () => {
 
     expectTypeOf(matcher.match('/profiles/2')).toEqualTypeOf<{
       userId: number
-    }>()
+    } | null>()
 
     expectTypeOf(matcher.build({ userId: 2 })).toEqualTypeOf<string>()
 

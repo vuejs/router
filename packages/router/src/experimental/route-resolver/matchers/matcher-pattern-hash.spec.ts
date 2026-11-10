@@ -3,9 +3,12 @@ import { MatcherPatternHashParam } from './matcher-pattern-hash'
 import { MatcherPatternPathStatic } from './matcher-pattern'
 import { createFixedResolver } from '../resolver-fixed'
 import { MatchMiss, miss } from './errors'
+import { mockWarn } from '../../../../__tests__/vitest-mock-warn'
 import { PARAM_PARSER_BOOL, PARAM_PARSER_INT } from './param-parsers'
 
 describe('hash param extraction', () => {
+  mockWarn()
+
   const hash = new MatcherPatternHashParam('fragment', {
     get: value => ({ parts: value.split('/') }),
     set: value => value.parts.join('/'),
@@ -100,7 +103,7 @@ describe('hash param extraction', () => {
       undefined,
       true
     )
-    expect(() => hash.match('')).toThrow(MatchMiss)
+    expect(hash.match('')).toBe(null)
     expect(hash.match('#')).toEqual({ fragment: 'parsed' })
   })
 
@@ -159,7 +162,7 @@ describe('hash param extraction', () => {
     for (const input of ['', '#invalid']) {
       const next = hash.match(input)
       expect(next).toEqual(first)
-      expect(next.fragment).not.toBe(first.fragment)
+      expect(next!.fragment).not.toBe(first!.fragment)
     }
     expect(hash.match('#valid')).toEqual({ fragment: [] })
   })
@@ -194,7 +197,7 @@ describe('hash param extraction', () => {
       undefined,
       true
     )
-    expect(() => hash.match('#')).toThrow(MatchMiss)
+    expect(hash.match('#')).toBe(null)
   })
 
   it('matches a required bare hash but rejects an absent hash', () => {
@@ -211,6 +214,7 @@ describe('hash param extraction', () => {
     expect(() => resolver.resolve({ name: 'required', params: {} })).toThrow(
       MatchMiss
     )
+    expect('VUE_ROUTER_R0125').toHaveBeenWarnedTimes(1)
   })
 
   it('uses null as an explicit default', () => {

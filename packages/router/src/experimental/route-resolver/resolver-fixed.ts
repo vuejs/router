@@ -30,6 +30,7 @@ import type { MatcherPatternQuery } from './matchers/matcher-pattern-query'
 import { warn } from '../../warning'
 import { diagnostics } from '../../diagnostics'
 import { assign } from '../../utils'
+import { MatchMiss, miss } from './matchers/errors'
 
 /**
  * Base interface for a resolver record that can be extended.
@@ -179,27 +180,46 @@ export function createFixedResolver<
         currentLocation: ResolverLocationResolved<TRecord>,
       ]
 
+  /**
+   * Matches the url against the record. Returns `null` if any matcher misses
+   * or throws (e.g. a param parser calling `miss()`).
+   */
   function validateMatch(record: TRecord, url: LocationNormalized) {
-    // match the path because the path matcher only needs to be matched here
-    // match the hash because only the deepest child matters
-    // End up by building up the matched array, (reversed so it goes from
-    // root to child) and then match and merge all queries
-    const pathParams = record.path.match(url.path)
-    const hashParams = record.hash?.match(url.hash)
-    const matched = buildMatched(record)
-    const queryParams: MatcherQueryParams = assign(
-      {},
-      ...matched.flatMap(record =>
-        record.query?.map(query => query.match(url.query))
-      )
-    )
-    // TODO: test performance
-    // for (const record of matched) {
-    //   assign(queryParams, record.query?.match(url.query))
-    // }
+    try {
+      // match the path because the path matcher only needs to be matched here
+      // match the hash because only the deepest child matters
+      // End up by building up the matched array, (reversed so it goes from
+      // root to child) and then match and merge all queries
+      const pathParams = record.path.match(url.path)
+      if (!pathParams) return null
+      const hashParams = record.hash?.match(url.hash)
+      if (hashParams === null) return null
+      const matched = buildMatched(record)
+      const queryParams: MatcherQueryParams = {}
+      for (const matchedRecord of matched) {
+        for (const query of matchedRecord.query || []) {
+          const params = query.match(url.query)
+          if (!params) return null
+          assign(queryParams, params)
+        }
+      }
 
-    // we found our match!
-    return [matched, { ...pathParams, ...queryParams, ...hashParams }] as const
+      // we found our match!
+      return [
+        matched,
+        { ...pathParams, ...queryParams, ...hashParams },
+      ] as const
+    } catch (error) {
+      // a MatchMiss is a regular miss, anything else is likely a bug
+      if (__DEV__ && !(error instanceof MatchMiss)) {
+        diagnostics.VUE_ROUTER_R0126({
+          name: String(record.name),
+          path: url.path,
+          cause: error,
+        })
+      }
+      return null
+    }
   }
 
   function resolve(
@@ -306,7 +326,17 @@ export function createFixedResolver<
       }
 
       // we avoid inconsistencies in params coming from query and hash
-      ;[matched, params] = validateMatch(record, url)
+      const validated = validateMatch(record, url)
+      if (!validated) {
+        if (__DEV__) {
+          diagnostics.VUE_ROUTER_R0125({ name: String(name) })
+        }
+        // Deliberate: a real error thrown by a matcher or parser is not
+        // rethrown. Dev logs it (R0126). Prod stays small, and parsers are
+        // the user's responsibility.
+        miss()
+      }
+      ;[matched, params] = validated
 
       return {
         ...url,
@@ -336,26 +366,14 @@ export function createFixedResolver<
       }
 
       let record: TRecord | undefined
-      let matched: ResolverLocationResolved<TRecord>['matched'] | undefined
-      let parsedParams: MatcherParamsFormatted | null | undefined
+      let validated: ReturnType<typeof validateMatch> | undefined
 
       for (record of records) {
-        // match the path because the path matcher only needs to be matched here
-        // match the hash because only the deepest child matters
-        // End up by building up the matched array, (reversed so it goes from
-        // root to child) and then match and merge all queries
-        try {
-          ;[matched, parsedParams] = validateMatch(record, url)
-          // validate throws if no match, so we should break here
-          break
-        } catch {
-          // for debugging tests
-          // console.log('❌ ERROR matching')
-        }
+        if ((validated = validateMatch(record, url))) break
       }
 
       // No match location
-      if (!parsedParams || !matched) {
+      if (!validated) {
         return {
           ...url,
           ...NO_MATCH_LOCATION,
@@ -367,10 +385,10 @@ export function createFixedResolver<
 
       return {
         ...url,
-        // record exists if matched exists
+        // record exists if validated exists
         name: record!.name,
-        params: parsedParams,
-        matched,
+        params: validated[1],
+        matched: validated[0],
       }
     }
   }

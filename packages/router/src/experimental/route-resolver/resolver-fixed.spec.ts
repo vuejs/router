@@ -11,10 +11,11 @@ import type {
 } from './matchers/matcher-pattern'
 import { MatcherPatternPathStatic } from './matchers/matcher-pattern'
 import {
-  MatcherPatternQueryParam,
   type MatcherPatternQuery,
+  MatcherPatternQueryParam,
 } from './matchers/matcher-pattern-query'
 import { PARAM_PARSER_INT } from './matchers/param-parsers'
+import { MatcherPatternPathStar } from './matchers/matcher-pattern-path-star'
 import {
   EMPTY_PATH_PATTERN_MATCHER,
   USER_ID_PATH_PATTERN_MATCHER,
@@ -23,6 +24,7 @@ import {
   PAGE_QUERY_PATTERN_MATCHER,
 } from './matchers/test-utils'
 import { MatchMiss, miss } from './matchers/errors'
+import { mockWarn } from '../../../__tests__/vitest-mock-warn'
 import type { MatcherPatternPath } from './matchers/matcher-pattern'
 
 // Additional pattern matchers for testing advanced scenarios
@@ -1543,6 +1545,96 @@ describe('fixed resolver', () => {
         expect(result.matched[0]).toBe(parent)
         expect(result.matched[1].aliasOf).toBe(child)
       })
+    })
+  })
+
+  describe('matcher misses', () => {
+    mockWarn()
+
+    const FALLBACK = {
+      name: 'fallback',
+      path: new MatcherPatternPathStar(),
+    } satisfies EXPERIMENTAL_ResolverRecord_Matchable
+
+    it('skips a record whose path matcher returns null', () => {
+      const resolver = createFixedResolver([
+        { name: 'never', path: { match: () => null, build: () => '/' } },
+        FALLBACK,
+      ])
+      expect(resolver.resolve('/a').name).toBe('fallback')
+    })
+
+    it('skips a record whose matcher throws a MatchMiss without warning', () => {
+      const resolver = createFixedResolver([
+        {
+          name: 'miss',
+          path: { match: () => miss('nope'), build: () => '/' },
+        },
+        FALLBACK,
+      ])
+      expect(resolver.resolve('/a').name).toBe('fallback')
+    })
+
+    it('skips a record whose matcher throws an error and warns in dev', () => {
+      const resolver = createFixedResolver([
+        {
+          name: 'broken',
+          path: {
+            match: () => {
+              throw new TypeError('bug in matcher')
+            },
+            build: () => '/',
+          },
+        },
+        FALLBACK,
+      ])
+      expect(resolver.resolve('/a').name).toBe('fallback')
+      expect('VUE_ROUTER_R0126').toHaveBeenWarnedTimes(1)
+      expect('"/a" against the route "broken"').toHaveBeenWarned()
+    })
+
+    it('skips a record when a required query param is missing', () => {
+      const resolver = createFixedResolver([
+        {
+          name: 'search',
+          path: new MatcherPatternPathStatic('/search'),
+          query: [
+            new MatcherPatternQueryParam(
+              'q',
+              'q',
+              'value',
+              undefined,
+              undefined,
+              true
+            ),
+          ],
+        },
+        FALLBACK,
+      ])
+      expect(resolver.resolve('/search').name).toBe('fallback')
+      expect(resolver.resolve('/search?q=a')).toMatchObject({
+        name: 'search',
+        params: { q: 'a' },
+      })
+    })
+
+    it('warns in dev when a named location matcher throws an error', () => {
+      const resolver = createFixedResolver([
+        {
+          name: 'broken',
+          path: {
+            match: () => {
+              throw new TypeError('bug in matcher')
+            },
+            build: () => '/',
+          },
+        },
+      ])
+      expect(() => resolver.resolve({ name: 'broken', params: {} })).toThrow(
+        MatchMiss
+      )
+      expect('VUE_ROUTER_R0126').toHaveBeenWarnedTimes(1)
+      expect('VUE_ROUTER_R0125').toHaveBeenWarnedTimes(1)
     })
   })
 })
