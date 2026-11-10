@@ -111,6 +111,9 @@ export class MatcherPatternQueryParam<
   }
 
   build(params: Record<ParamName, T>): MatcherQueryParams {
+    // a missing param lets `to.query` provide the value
+    if (!(this.paramName in params)) return {}
+
     const paramValue = params[this.paramName]
 
     return {
