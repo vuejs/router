@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { createFixedResolver } from './route-resolver/resolver-fixed'
-import { MatcherPatternPathDynamic } from './route-resolver/matchers/matcher-pattern'
+import {
+  MatcherPatternPathDynamic,
+  MatcherPatternPathStatic,
+} from './route-resolver/matchers/matcher-pattern'
+import { MatcherPatternQueryParam } from './route-resolver/matchers/matcher-pattern-query'
 import { defineParamParserRaw } from './route-resolver/matchers/param-parsers'
 import { mockWarn } from '../tests/vitest-mock-warn'
 
@@ -116,5 +120,32 @@ describe('optional param removal diagnostics', () => {
       path: '/optional/empty',
       params: { p: 'empty' },
     })
+  })
+})
+
+describe('ignored query param diagnostics', () => {
+  const r = createFixedResolver([
+    {
+      name: 'list',
+      path: new MatcherPatternPathStatic('/'),
+      query: [new MatcherPatternQueryParam('page', 'page', 'value')],
+    },
+  ])
+  const current = r.resolve('/?page=5')
+
+  it('warns when a query value is ignored for a param', () => {
+    expect(r.resolve({ query: { page: ['3'] } }, current)).toMatchObject({
+      fullPath: '/?page=5',
+    })
+    if (__DEV__) {
+      expect('VUE_ROUTER_R0123').toHaveBeenWarnedTimes(1)
+      expect('"page"').toHaveBeenWarned()
+    }
+  })
+
+  it('does not warn when the query value is used', () => {
+    r.resolve({ query: { ...current.query, other: ['x'] } }, current)
+    r.resolve({ name: 'list', params: {}, query: { page: ['3'] } })
+    expect('VUE_ROUTER_R0123').not.toHaveBeenWarned()
   })
 })
