@@ -571,6 +571,35 @@ describe('fixed resolver', () => {
     })
 
     describe('named locations', () => {
+      it('parses a query param passed in query and omitted from params', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'list',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            query: [
+              new MatcherPatternQueryParam(
+                'page',
+                'page',
+                'value',
+                PARAM_PARSER_INT,
+                1
+              ),
+            ],
+          },
+        ])
+
+        expect(
+          resolver.resolve({
+            name: 'list',
+            params: {},
+            query: { page: '3', other: 'x' },
+          })
+        ).toMatchObject({
+          fullPath: '/?page=3&other=x',
+          params: { page: 3 },
+        })
+      })
+
       it('resolves named locations with no params', () => {
         const resolver = createFixedResolver([
           {
