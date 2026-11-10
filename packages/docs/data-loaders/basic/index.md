@@ -73,4 +73,4 @@ const {
 
 ## Unresolved Questions
 
-- Should this basic version also track what is used in the route object, like [Svelte Data Loaders do](https://svelte.dev/docs/kit/load#rerunning-load-functions)?
+- Should this basic version also track what is used in the route object, like [Svelte Data Loaders do](https://svelte.dev/docs/kit/load#Rerunning-load-functions)?
