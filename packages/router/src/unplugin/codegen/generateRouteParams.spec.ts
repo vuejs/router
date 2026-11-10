@@ -416,7 +416,7 @@ describe('EXPERIMENTAL_generateRouteParams', () => {
       "{ 'page': number }"
     )
     expect(EXPERIMENTAL_generateRouteParams(params, ['number'], true)).toBe(
-      "{ 'page'?: number }"
+      "{ 'page'?: number | undefined }"
     )
   })
 

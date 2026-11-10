@@ -48,6 +48,12 @@ type RouteNamedMap = {
     { id: number; page?: number },
     { id: number; page: number }
   >
+  // query params, matching the generated types
+  list: ExperimentalRouteRecord<
+    'list',
+    { page?: number | undefined; q: string },
+    { page: number; q: string }
+  >
   users: ExperimentalRouteRecord<'users', {}, {}, 'users-detail'>
   'users-detail': ExperimentalRouteRecord<
     'users-detail',
@@ -166,6 +172,18 @@ describe('custom raw path params', () => {
     router.replace({ name: 'custom-raw', params: { value: null } })
     // @ts-expect-error: raw parser input does not include null
     router.resolve({ name: 'custom-raw', params: { value: null } })
+  })
+})
+
+describe('query params', () => {
+  const router = useRouter()
+
+  it('removes params with a default using undefined', () => {
+    router.push({ name: 'list', params: { q: 'a', page: undefined } })
+    // @ts-expect-error: null renders `?page`, it does not remove it
+    router.push({ name: 'list', params: { q: 'a', page: null } })
+    // @ts-expect-error: required params without a default cannot be removed
+    router.push({ name: 'list', params: { q: undefined } })
   })
 })
 
