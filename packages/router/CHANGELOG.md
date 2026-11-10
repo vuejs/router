@@ -1,3 +1,47 @@
+# [5.5.0](https://github.com/vuejs/router/compare/v5.4.0...v5.5.0) (2026-11-10)
+
+### Bug Fixes
+
+- avoid replaceState on pagehide if scrollRestoration is manual ([e9f34f6](https://github.com/vuejs/router/commit/e9f34f66e2de49cb1d60e64ae09524415f36566a)), closes [#2631](https://github.com/vuejs/router/issues/2631)
+- **experimental:** compare query values element by element in R0123 ([e619138](https://github.com/vuejs/router/commit/e61913816b3e6b96996c1239391804b10c9a59b6))
+- **experimental:** keep query value for params omitted from params ([cc734c0](https://github.com/vuejs/router/commit/cc734c022e4ec9fd06ccd35abd16d8242d27de90))
+- **experimental:** match root paths with multiple optional params ([#2830](https://github.com/vuejs/router/issues/2830)) ([04016f6](https://github.com/vuejs/router/commit/04016f633d1470ea05ea63db3992259dce0639f4))
+- **experimental:** remove query param set to undefined ([700deca](https://github.com/vuejs/router/commit/700deca88d4534e77ad730d25956533b1df56def))
+- fallback to useId for vapor ([89bc719](https://github.com/vuejs/router/commit/89bc719ceb39e560272e0c9b5ab6a49d826d5319))
+- keep non-object props when merging ([#2862](https://github.com/vuejs/router/issues/2862)) ([efa7188](https://github.com/vuejs/router/commit/efa7188510776dc31758835e9d21e99c93e4a629))
+- **matcher:** avoid exponential backtracking on .* repeatable params ([#2819](https://github.com/vuejs/router/issues/2819)) ([42462bd](https://github.com/vuejs/router/commit/42462bd1925abd6f663474f996c5a85a6b301122))
+- preserve named-view props and detect quoted props keys ([f6836fa](https://github.com/vuejs/router/commit/f6836faff23f9e61a06e2e9abbcf402f94cdf43c))
+- **router-view:** handle pending async component roots in onRouteRendered ([#2856](https://github.com/vuejs/router/issues/2856)) ([c97c8c4](https://github.com/vuejs/router/commit/c97c8c40b0adcfe4df327aaa31f182b4f1f20f42)), closes [#2851](https://github.com/vuejs/router/issues/2851)
+- **router-view:** useRoute() returns the route prop in descendants ([#2846](https://github.com/vuejs/router/issues/2846)) ([11baa8e](https://github.com/vuejs/router/commit/11baa8e5afac28ab4ea653519619bf467fad5257)), closes [#2673](https://github.com/vuejs/router/issues/2673) [#1478](https://github.com/vuejs/router/issues/1478)
+- **scroll-restoration:** overwrite parent capture and restore ([cb7714f](https://github.com/vuejs/router/commit/cb7714fe94d5a6d8d35cd1d1c0700b2b821fd947))
+- **scroll-restoration:** reserve keys for pending async pages ([35cf5e3](https://github.com/vuejs/router/commit/35cf5e3579cedb6c02ce1f4f2402d5cc681a257b))
+- **scroll-restoration:** restore position after native hash links ([57304c7](https://github.com/vuejs/router/commit/57304c7531c1ec6afcf47dbd8399acf0da4cf94e))
+- **scroll:** ignore invalid scroll positions in sessionStorage ([101f579](https://github.com/vuejs/router/commit/101f5797c55a6c5a778d8d9a34dea4bc3dbd1a00))
+- **scroll:** keep scroll positions in memory when sessionStorage fails ([3ffae5c](https://github.com/vuejs/router/commit/3ffae5c203f82d23bb0da88ab9acf62bef61fdb5))
+- **scroll:** save scroll positions in sessionStorage instead of history.state ([baa5f6f](https://github.com/vuejs/router/commit/baa5f6f880af525dafca008cdc399e709b8791d2))
+- **types:** accept classic parseQuery in RouterOptions ([#2848](https://github.com/vuejs/router/issues/2848)) ([6ef7a31](https://github.com/vuejs/router/commit/6ef7a313a1f6838208970416ac7a745c99e22a56))
+- **types:** add hotUpdateCallback to auto-resolver handleHotUpdate ([#2836](https://github.com/vuejs/router/issues/2836)) ([0729ce7](https://github.com/vuejs/router/commit/0729ce7298ad11b011378f439a506fc78bbce491))
+- **types:** allow undefined on push for query params with default ([0c74cb5](https://github.com/vuejs/router/commit/0c74cb5095ab56cbe4637b91eb4955571b345d97))
+- **unplugin:** keep aliased named imports in definePage extraction ([#2832](https://github.com/vuejs/router/issues/2832)) ([6dec1f4](https://github.com/vuejs/router/commit/6dec1f44ded2bdaa1ad97dba9f0a0d39d3973c9a))
+- **unplugin:** reload pages with stale route props ([f0563ae](https://github.com/vuejs/router/commit/f0563ae67c73794daf6c3ffc62766511e01af500))
+- **unplugin:** support definePage with webpack and rspack ([#2829](https://github.com/vuejs/router/issues/2829)) ([8c91f98](https://github.com/vuejs/router/commit/8c91f980bd7294bac30c368ba650fe93f1e8610a)), closes [posva/unplugin-vue-router#531](https://github.com/posva/unplugin-vue-router/issues/531)
+
+### Features
+
+- **experimental:** customize scroll restoration capture listeners ([062fa6d](https://github.com/vuejs/router/commit/062fa6d3a33f65a941bebdd10ea55a9259488ace))
+- **experimental:** export default scroll capture listener setup ([ce33787](https://github.com/vuejs/router/commit/ce3378720daf153f721ea4a6dfbebf7c74c0e091))
+- **experimental:** support type safe route record props ([f7f8f9f](https://github.com/vuejs/router/commit/f7f8f9fcedc4f52d85c6738c3e0218c3eeeca995))
+- **scroll-restoration:** make capture triggers configurable ([607f25d](https://github.com/vuejs/router/commit/607f25d8ae06317f4e61b0a6003bb39ad765cbdc))
+- **unplugin:** declare route params in defineProps() with definePage props true ([b659eaf](https://github.com/vuejs/router/commit/b659eaf70b6afe674bee6187da90f7713c28db9b))
+- **volar:** add typedDefineProps option to sfc-typed-router ([bc40984](https://github.com/vuejs/router/commit/bc40984183d6d53aad7c3fd825e045280e700b34))
+- **volar:** type defineProps() with route params when definePage props is true ([ca85aae](https://github.com/vuejs/router/commit/ca85aaef3adec46f2dad1c5f6f95d016dd17dd14))
+- warn on colliding query with params ([57a2057](https://github.com/vuejs/router/commit/57a205713470c4396f2b3d68d2313c3be9c11a5b))
+
+### Performance Improvements
+
+- strip build-time definePage properties ([6202f11](https://github.com/vuejs/router/commit/6202f111c701f08d4560f04839980e547ea8c9ed))
+- **unplugin:** watch page files only in dev server ([e407f0d](https://github.com/vuejs/router/commit/e407f0d2213ecf9aeb2487c6d8db1ec35e3ba29b))
+
 # [5.4.0](https://github.com/vuejs/router/compare/v5.3.1...v5.4.0) (2026-10-07)
 
 - feat(experimental)!: normalize query values to arrays (#2824) ([f1fbc06](https://github.com/vuejs/router/commit/f1fbc067e489aa310c1ea028c48bcffa4f024b76)), closes [#2824](https://github.com/vuejs/router/issues/2824)
