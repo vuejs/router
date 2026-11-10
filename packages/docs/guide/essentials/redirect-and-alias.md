@@ -112,6 +112,6 @@ const routes = [
 ]
 ```
 
-**Note about SEO**: when using aliases, make sure to [define canonical links](https://support.google.com/webmasters/answer/139066?hl=en).
+**Note about SEO**: when using aliases, make sure to [define canonical links](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls).
 
 <!-- <RuleKitLink /> -->
