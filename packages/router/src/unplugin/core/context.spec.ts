@@ -183,4 +183,31 @@ describe('createRoutesContext', () => {
       expect(await emit('add', child)).not.toContain(parent)
     })
   })
+
+  describe('scanPages', () => {
+    let root: string
+
+    beforeEach(async () => {
+      root = await realpath(await mkdtemp(join(tmpdir(), 'vue-router-ctx-')))
+      await mkdir(join(root, 'src/pages'), { recursive: true })
+      await writeFile(join(root, 'src/pages/index.vue'), page('{}'))
+    })
+
+    afterEach(async () => {
+      await rm(root, { recursive: true, force: true })
+    })
+
+    it('scans the pages again after the watchers stop', async () => {
+      const ctx = createRoutesContext(
+        resolveOptions({ root, dts: false, logs: false })
+      )
+      await ctx.scanPages(true)
+      ctx.stopWatcher()
+
+      await writeFile(join(root, 'src/pages/about.vue'), page('{}'))
+      await ctx.scanPages(false)
+
+      expect(ctx.generateRoutes()).toContain(`path: '/about'`)
+    })
+  })
 })

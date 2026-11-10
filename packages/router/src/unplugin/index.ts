@@ -43,6 +43,8 @@ export type { AutoExportLoadersOptions } from '../experimental/data-loaders/auto
 export default createUnplugin<Options | undefined>((opt = {}, meta) => {
   const options = resolveOptions({ ...opt, _framework: meta.framework })
   const ctx = createRoutesContext(options)
+  // watchers only update a dev server, builds close them in `buildEnd()`
+  let isDevServer = false
 
   function getVirtualId(id: string) {
     if (options._inspect) return id
@@ -91,7 +93,7 @@ export default createUnplugin<Options | undefined>((opt = {}, meta) => {
       },
 
       async buildStart() {
-        await ctx.scanPages(options.watch)
+        await ctx.scanPages(options.watch && isDevServer)
       },
 
       buildEnd() {
@@ -155,6 +157,7 @@ export default createUnplugin<Options | undefined>((opt = {}, meta) => {
       // for HMR
       vite: {
         configureServer(server) {
+          isDevServer = true
           // Cast needed: Vite version differences in monorepo
           ctx.setServerContext(createViteContext(server))
         },
