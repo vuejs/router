@@ -87,112 +87,60 @@ describe('History HTMl5', () => {
   })
 
   it('prepends the host to support // urls', () => {
-    let history = createWebHistory()
-    let spy = vi.spyOn(window.history, 'pushState')
+    const history = createWebHistory()
     history.push('/foo')
-    expect(spy).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.any(String),
-      'http://localhost:3000/foo'
-    )
+    expect(location.href).toBe('http://localhost:3000/foo')
     history.push('//foo')
-    expect(spy).toHaveBeenLastCalledWith(
-      expect.anything(),
-      expect.any(String),
-      'http://localhost:3000//foo'
-    )
-    spy.mockRestore()
+    expect(location.href).toBe('http://localhost:3000//foo')
   })
 
   describe('specific to base containing a hash', () => {
-    it('calls push with hash part of the url with a base', () => {
+    it('writes the hash part of the url with a base', () => {
       getWindow().happyDOM.setURL('file:///usr/etc/index.html')
-      let initialSpy = vi.spyOn(window.history, 'replaceState')
-      let history = createWebHistory('#')
-      // initial navigation
-      expect(initialSpy).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.any(String),
-        '#/'
-      )
-      let spy = vi.spyOn(window.history, 'pushState')
+      const history = createWebHistory('#')
+      history.replace(history.location)
+      expect(location.href).toBe('file:///usr/etc/index.html#/')
       history.push('/foo')
-      expect(spy).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.any(String),
-        '#/foo'
-      )
-      spy.mockRestore()
-      initialSpy.mockRestore()
+      expect(location.href).toBe('file:///usr/etc/index.html#/foo')
     })
 
     it('works with something after the hash in the base', () => {
       getWindow().happyDOM.setURL('file:///usr/etc/index.html')
-      let initialSpy = vi.spyOn(window.history, 'replaceState')
-      let history = createWebHistory('#something')
-      // initial navigation
-      expect(initialSpy).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.any(String),
-        '#something/'
-      )
-      let spy = vi.spyOn(window.history, 'pushState')
+      const history = createWebHistory('#something')
+      history.replace(history.location)
+      expect(location.href).toBe('file:///usr/etc/index.html#something/')
       history.push('/foo')
-      expect(spy).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.any(String),
-        '#something/foo'
-      )
-      spy.mockRestore()
-      initialSpy.mockRestore()
+      expect(location.href).toBe('file:///usr/etc/index.html#something/foo')
     })
 
     it('works with #! and on a file with initial location', () => {
       getWindow().happyDOM.setURL('file:///usr/etc/index.html#!/foo')
-      let spy = vi.spyOn(window.history, 'replaceState')
-      createWebHistory('#!')
-      expect(spy).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.any(String),
-        '#!/foo'
-      )
-      spy.mockRestore()
+      const history = createWebHistory('#!')
+      expect(history.location).toBe('/foo')
+      history.replace(history.location)
+      expect(location.href).toBe('file:///usr/etc/index.html#!/foo')
     })
 
     it('works with #other', () => {
       getWindow().happyDOM.setURL('file:///usr/etc/index.html')
-      let spy = vi.spyOn(window.history, 'replaceState')
-      createWebHistory('#other')
-      expect(spy).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.any(String),
-        '#other/'
-      )
-      spy.mockRestore()
+      const history = createWebHistory('#other')
+      history.replace(history.location)
+      expect(location.href).toBe('file:///usr/etc/index.html#other/')
     })
 
     it('works with custom#other in domain', () => {
       getWindow().happyDOM.setURL('https://esm.dev/custom')
-      let spy = vi.spyOn(window.history, 'replaceState')
-      createWebHistory('custom#other')
-      expect(spy).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.any(String),
-        '#other/'
-      )
-      spy.mockRestore()
+      const history = createWebHistory('custom#other')
+      history.replace(history.location)
+      expect(location.href).toBe('https://esm.dev/custom#other/')
     })
 
     it('works with #! and a host with initial location', () => {
       getWindow().happyDOM.setURL('https://esm.dev/#!/foo')
-      let spy = vi.spyOn(window.history, 'replaceState')
-      createWebHistory('/#!')
-      expect(spy).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.any(String),
-        '#!/foo'
-      )
-      spy.mockRestore()
+      const history = createWebHistory('/#!')
+      expect(history.location).toBe('/foo')
+      history.replace(history.location)
+      expect(location.href).toBe('https://esm.dev/#!/foo')
     })
   })
 })
