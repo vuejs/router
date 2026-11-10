@@ -2,14 +2,14 @@
 
 Since the data fetching happens within a navigation guard, it's possible to control the navigation like in regular navigation guards:
 
-- Thrown errors (or rejected Promises) cancel the navigation (same behavior as in a regular navigation guard) and are intercepted by [Vue Router's error handling](https://router.vuejs.org/api/interfaces/router.html#onerror)
+- Thrown errors (or rejected Promises) cancel the navigation (same behavior as in a regular navigation guard) and are intercepted by [Vue Router's error handling](/api/interfaces/RouterClassic.md#onError-)
 - By calling `reroute()`, you can redirect or cancel the navigation
 
 Any other returned value is considered as the _resolved data_ and will appear in the `data` property.
 
 ## Controlling the navigation with `reroute()`
 
-`reroute()` changes the current navigation from within a data loader. It accepts the same arguments as the [return value of a navigation guard](https://router.vuejs.org/guide/advanced/navigation-guards.html#Global-Before-Guards) **as long as it changes the navigation**. It doesn't accept `true` or `undefined` as these values do not change the navigation. It **throws internally** to immediately stop the loader execution.
+`reroute()` changes the current navigation from within a data loader. It accepts the same arguments as the [return value of a navigation guard](/guide/advanced/navigation-guards.md#Global-Before-Guards) **as long as it changes the navigation**. It doesn't accept `true` or `undefined` as these values do not change the navigation. It **throws internally** to immediately stop the loader execution.
 
 ```ts{1,6-8,16,18}
 import { reroute } from 'vue-router/experimental'
