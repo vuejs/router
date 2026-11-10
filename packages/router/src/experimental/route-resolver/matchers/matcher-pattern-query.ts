@@ -1,6 +1,5 @@
 import { toValue } from 'vue'
 import type {
-  EmptyParams,
   MatcherParamsFormatted,
   MatcherPattern,
   MatcherQueryParams,
@@ -114,14 +113,12 @@ export class MatcherPatternQueryParam<
   build(params: Record<ParamName, T>): MatcherQueryParams {
     const paramValue = params[this.paramName]
 
-    if (paramValue === undefined) {
-      return {} as EmptyParams
-    }
-
     return {
-      [this.queryKey]: (this.parser.set ?? PARAM_PARSER_DEFAULTS.set)(
-        paramValue as any
-      ),
+      // undefined removes the key from the current query
+      [this.queryKey]:
+        paramValue === undefined
+          ? undefined
+          : (this.parser.set ?? PARAM_PARSER_DEFAULTS.set)(paramValue as any),
     }
   }
 }

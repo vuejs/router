@@ -10,7 +10,11 @@ import type {
   MatcherQueryParams,
 } from './matchers/matcher-pattern'
 import { MatcherPatternPathStatic } from './matchers/matcher-pattern'
-import type { MatcherPatternQuery } from './matchers/matcher-pattern-query'
+import {
+  MatcherPatternQueryParam,
+  type MatcherPatternQuery,
+} from './matchers/matcher-pattern-query'
+import { PARAM_PARSER_INT } from './matchers/param-parsers'
 import {
   EMPTY_PATH_PATTERN_MATCHER,
   USER_ID_PATH_PATTERN_MATCHER,
@@ -458,6 +462,45 @@ describe('fixed resolver', () => {
           query: { existing: ['value'], page: ['10'] }, // matcher builds with currentLocation params
           hash: '#current', // matcher builds with currentLocation params
           fullPath: '/?existing=value&page=10#current',
+        })
+      })
+
+      describe('removes a query param set to undefined', () => {
+        const resolver = createFixedResolver([
+          {
+            name: 'list',
+            path: EMPTY_PATH_PATTERN_MATCHER,
+            query: [
+              new MatcherPatternQueryParam(
+                'page',
+                'page',
+                'value',
+                PARAM_PARSER_INT,
+                1
+              ),
+              new MatcherPatternQueryParam('q', 'q', 'value'),
+            ],
+            hash: ANY_HASH_PATTERN_MATCHER,
+          },
+        ])
+        const current = resolver.resolve('/?page=5&q=a&other=x#h')
+
+        it('with a default', () => {
+          expect(
+            resolver.resolve({ params: { page: undefined } }, current)
+          ).toMatchObject({
+            fullPath: '/?q=a&other=x#h',
+            params: { page: 1, q: 'a' },
+          })
+        })
+
+        it('without a default', () => {
+          expect(
+            resolver.resolve({ params: { q: undefined } }, current)
+          ).toMatchObject({
+            fullPath: '/?page=5&other=x#h',
+            params: { page: 5, q: undefined },
+          })
         })
       })
     })
