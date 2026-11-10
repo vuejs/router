@@ -195,11 +195,11 @@ export function EXPERIMENTAL_generateRouteParams(
 
           // Raw parsers always receive the array form at runtime, so they
           // never leave route.params undefined. Pushing still accepts it under
-          // `exactOptionalPropertyTypes`.
+          // `exactOptionalPropertyTypes`. Pushing `undefined` removes the key.
           if (
-            !param.required &&
-            !hasTreeParamDefault(param) &&
-            (isLoose || !isRawParser)
+            isLoose
+              ? isOptional
+              : !param.required && !hasTreeParamDefault(param) && !isRawParser
           ) {
             extractedType += ' | undefined'
           }

@@ -1029,7 +1029,7 @@ describe('generateRouteNamedMap', () => {
       `)
     })
 
-    it('does not include undefined for query params with default', () => {
+    it('only accepts undefined on push for query params with default', () => {
       const tree = new PrefixTree(OPTIONS_WITH_PARSERS)
       const node = tree.insert('search', 'search.vue')
       node.value.setEditOverride('params', {
@@ -1044,7 +1044,7 @@ describe('generateRouteNamedMap', () => {
           '/search': RouteRecordInfo<
             '/search',
             '/search',
-            { 'limit'?: number },
+            { 'limit'?: number | undefined },
             { 'limit': number },
             | never
           >,
@@ -1118,7 +1118,7 @@ describe('generateRouteNamedMap', () => {
           '/search': RouteRecordInfo<
             '/search',
             '/search',
-            { 'filter'?: number | undefined, 'page'?: number, 'q': string, 'sort'?: string | undefined },
+            { 'filter'?: number | undefined, 'page'?: number | undefined, 'q': string, 'sort'?: string | undefined },
             { 'filter': number | undefined, 'page': number, 'q': string, 'sort': string | undefined },
             | never
           >,
