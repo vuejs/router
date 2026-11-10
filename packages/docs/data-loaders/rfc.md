@@ -504,7 +504,7 @@ Handling the data loading in a navigation guards has the following advantages:
 
 Since the data fetching happens within a navigation guard, it's possible to control the navigation like in regular navigation guards:
 
-- Thrown errors (or rejected Promises) cancel the navigation (same behavior as in a regular navigation guard) and are intercepted by [Vue Router's error handling](https://router.vuejs.org/api/interfaces/router.html#onerror)
+- Thrown errors (or rejected Promises) cancel the navigation (same behavior as in a regular navigation guard) and are intercepted by [Vue Router's error handling](/api/interfaces/RouterClassic.md#onError-)
 - Redirection: `return new NavigationResult(targetLocation)` -> like `return targetLocation` in a regular navigation guard
 - Cancelling the navigation: `return new NavigationResult(false)` like `return false` in a regular navigation guard
 - Any other returned value is considered as the _resolved data_
