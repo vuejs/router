@@ -32,12 +32,27 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `The optional path param "${p.param}" is being removed with ${p.value}.`,
       fix: 'Use null to remove an optional path param.',
     },
+    VUE_ROUTER_R0124: {
+      why: (p: { param: string }) =>
+        `The repeatable param "${p.param}" cannot be empty.`,
+      fix: 'Pass at least one value, or make the param optional.',
+    },
     // --- experimental/route-resolver/resolver-fixed.ts ---
     VUE_ROUTER_R0123: {
       why: (p: { key: string }) =>
         `The query value of "${p.key}" is ignored because a param already sets this key.`,
       fix: (p: { key: string }) =>
         `Pass the value in \`params\` instead of \`query\`, or omit "${p.key}" from \`query\`.`,
+    },
+    VUE_ROUTER_R0126: {
+      why: (p: { name: string; path: string }) =>
+        `An error was thrown while matching "${p.path}" against the route "${p.name}". The route is skipped.`,
+      fix: 'Return null from match() to skip a route, or call miss() in a param parser. Fix the thrown error if it is a bug.',
+    },
+    VUE_ROUTER_R0125: {
+      why: (p: { name: string }) =>
+        `The params, query, or hash do not match the route "${p.name}".`,
+      fix: 'Pass params, query, and hash values that the route matchers accept.',
     },
     // --- experimental/router.ts ---
     VUE_ROUTER_D0001: {

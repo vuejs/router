@@ -49,7 +49,7 @@ describe('generated path matchers', () => {
 
       expect(pattern.match('/')).toEqual({ a: null, b: null })
       expect(pattern.match('/x')).toEqual({ a: 'x', b: null })
-      expect(() => pattern.match('/x/')).toThrow()
+      expect(pattern.match('/x/')).toBe(null)
       expect(pattern.build({ a: null, b: null })).toBe('/')
       expect(pattern.build({ a: 'x', b: null })).toBe('/x')
     }
@@ -60,8 +60,8 @@ describe('generated path matchers', () => {
     filePath => {
       const pattern = generatePath(filePath)
 
-      expect(() => pattern.match('/')).toThrow()
-      expect(() => pattern.match('')).toThrow()
+      expect(pattern.match('/')).toBe(null)
+      expect(pattern.match('')).toBe(null)
     }
   )
 
@@ -88,8 +88,8 @@ describe('generated path matchers', () => {
     expect(pattern.build({ a: ['12', '34'], b: [] })).toBe('/12/34')
     expect(pattern.build({ a: [], b: ['x', 'y'] })).toBe('/x/y')
     expect(pattern.build({ a: ['12', '34'], b: ['x', 'y'] })).toBe('/12/34/x/y')
-    expect(() => pattern.match('/12/x/34')).toThrow()
-    expect(() => pattern.match('/12/34/x/y/')).toThrow()
+    expect(pattern.match('/12/x/34')).toBe(null)
+    expect(pattern.match('/12/34/x/y/')).toBe(null)
   })
 
   it.each(optionalPaths)(
@@ -124,9 +124,9 @@ describe('generated path matchers', () => {
       expect(pattern.build({ a: '42', b: null })).toBe('/42')
       expect(pattern.build({ a: null, b: 'en' })).toBe('/en')
       expect(pattern.build({ a: '42', b: 'fr' })).toBe('/42/fr')
-      expect(() => pattern.match('/x')).toThrow(MatchMiss)
-      expect(() => pattern.match('/42/de')).toThrow()
-      expect(() => pattern.match('/42/')).toThrow()
+      expect(pattern.match('/x')).toBe(null)
+      expect(pattern.match('/42/de')).toBe(null)
+      expect(pattern.match('/42/')).toBe(null)
     }
   )
 
@@ -149,9 +149,9 @@ describe('generated path matchers', () => {
     expect(pattern.build({ a: [], b: null })).toBe('/')
     expect(pattern.build({ a: [], b: 'fr' })).toBe('/fr')
     expect(pattern.build({ a: ['12', '34'], b: 'en' })).toBe('/12/34/en')
-    expect(() => pattern.match('/12/x/en')).toThrow()
-    expect(() => pattern.match('/12/34/de')).toThrow()
-    expect(() => pattern.match('/12/34/')).toThrow()
+    expect(pattern.match('/12/x/en')).toBe(null)
+    expect(pattern.match('/12/34/de')).toBe(null)
+    expect(pattern.match('/12/34/')).toBe(null)
   })
 
   it('encodes static paths', () => {
@@ -159,7 +159,7 @@ describe('generated path matchers', () => {
 
     expect(pattern.match('/caf%C3%A9/my%20page')).toEqual({})
     expect(pattern.build({})).toBe('/caf%C3%A9/my%20page')
-    expect(() => pattern.match('/café/my page')).toThrow()
+    expect(pattern.match('/café/my page')).toBe(null)
   })
 
   it('single param', () => {
@@ -171,10 +171,10 @@ describe('generated path matchers', () => {
     expect(pattern.match('/teams/abc/b')).toEqual({
       teamId: 'abc',
     })
-    expect(() => pattern.match('/teams/123/c')).toThrow()
-    expect(() => pattern.match('/teams/123/b/c')).toThrow()
-    expect(() => pattern.match('/teams')).toThrow()
-    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.match('/teams/123/c')).toBe(null)
+    expect(pattern.match('/teams/123/b/c')).toBe(null)
+    expect(pattern.match('/teams')).toBe(null)
+    expect(pattern.match('/teams/')).toBe(null)
   })
 
   it('decodes single param', () => {
@@ -188,9 +188,9 @@ describe('generated path matchers', () => {
 
     expect(pattern.match('/teams/b')).toEqual({ teamId: null })
     expect(pattern.match('/teams/123/b')).toEqual({ teamId: '123' })
-    expect(() => pattern.match('/teams/123/c')).toThrow()
-    expect(() => pattern.match('/teams/123/b/c')).toThrow()
-    expect(() => pattern.match('/teams//b')).toThrow()
+    expect(pattern.match('/teams/123/c')).toBe(null)
+    expect(pattern.match('/teams/123/b/c')).toBe(null)
+    expect(pattern.match('/teams//b')).toBe(null)
     expect(pattern.build({ teamId: '123' })).toBe('/teams/123/b')
     expect(pattern.build({ teamId: null })).toBe('/teams/b')
     expect(pattern.build({ teamId: '' })).toBe('/teams/b')
@@ -201,10 +201,10 @@ describe('generated path matchers', () => {
     const pattern = generatePath('teams/[[teamId]]')
 
     expect(pattern.match('/teams')).toEqual({ teamId: null })
-    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.match('/teams/')).toBe(null)
     expect(pattern.match('/teams/123')).toEqual({ teamId: '123' })
-    expect(() => pattern.match('/teams/123/c')).toThrow()
-    expect(() => pattern.match('/teams//b')).toThrow()
+    expect(pattern.match('/teams/123/c')).toBe(null)
+    expect(pattern.match('/teams//b')).toBe(null)
     expect(pattern.build({ teamId: '123' })).toBe('/teams/123')
     expect(pattern.build({ teamId: null })).toBe('/teams')
     expect(pattern.build({ teamId: '' })).toBe('/teams')
@@ -218,8 +218,8 @@ describe('generated path matchers', () => {
     expect(pattern.match('/teams/123/456/b')).toEqual({
       teamId: ['123', '456'],
     })
-    expect(() => pattern.match('/teams/123/c')).toThrow()
-    expect(() => pattern.match('/teams/123/b/c')).toThrow()
+    expect(pattern.match('/teams/123/c')).toBe(null)
+    expect(pattern.match('/teams/123/b/c')).toBe(null)
     expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123/b')
     expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/b')
   })
@@ -229,20 +229,21 @@ describe('generated path matchers', () => {
 
     expect(pattern.match('/teams/123')).toEqual({ teamId: ['123'] })
     expect(pattern.match('/teams/123/456')).toEqual({ teamId: ['123', '456'] })
-    expect(() => pattern.match('/teams')).toThrow()
-    expect(() => pattern.match('/teams/')).toThrow()
-    expect(() => pattern.match('/teams/123/')).toThrow()
+    expect(pattern.match('/teams')).toBe(null)
+    expect(pattern.match('/teams/')).toBe(null)
+    expect(pattern.match('/teams/123/')).toBe(null)
     expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123')
     expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456')
-    expect(() => pattern.build({ teamId: [] })).toThrow()
+    expect(() => pattern.build({ teamId: [] })).toThrow(MatchMiss)
+    expect('VUE_ROUTER_R0124').toHaveBeenWarnedTimes(1)
   })
 
   it('splat params with prefix', () => {
     const pattern = generatePath('teams/[...pathMatch]')
     expect(pattern.match('/teams/')).toEqual({ pathMatch: '' })
     expect(pattern.match('/teams/123/b')).toEqual({ pathMatch: '123/b' })
-    expect(() => pattern.match('/teams')).toThrow()
-    expect(() => pattern.match('/teamso/123/c')).toThrow()
+    expect(pattern.match('/teams')).toBe(null)
+    expect(pattern.match('/teamso/123/c')).toBe(null)
 
     expect(pattern.build({ pathMatch: null })).toBe('/teams/')
     expect(pattern.build({ pathMatch: '' })).toBe('/teams/')
@@ -273,8 +274,8 @@ describe('generated path matchers', () => {
     })
     expect(pattern.match('/teams/b')).toEqual({ teamId: [] })
 
-    expect(() => pattern.match('/teams/123/c')).toThrow()
-    expect(() => pattern.match('/teams/123/b/c')).toThrow()
+    expect(pattern.match('/teams/123/c')).toBe(null)
+    expect(pattern.match('/teams/123/b/c')).toBe(null)
 
     expect(pattern.build({ teamId: ['123'] })).toBe('/teams/123/b')
     expect(pattern.build({ teamId: ['123', '456'] })).toBe('/teams/123/456/b')
@@ -298,9 +299,9 @@ describe('generated path matchers', () => {
       teamId: '123',
       otherId: '456',
     })
-    expect(() => pattern.match('/teams/123')).toThrow()
-    expect(() => pattern.match('/teams/123/456/c')).toThrow()
-    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.match('/teams/123')).toBe(null)
+    expect(pattern.match('/teams/123/456/c')).toBe(null)
+    expect(pattern.match('/teams/')).toBe(null)
     expect(pattern.build({ teamId: '123', otherId: '456' })).toBe(
       '/teams/123/456'
     )
@@ -313,9 +314,9 @@ describe('generated path matchers', () => {
       teamId: '123',
       otherId: '456',
     })
-    expect(() => pattern.match('/teams/123-b')).toThrow()
-    expect(() => pattern.match('/teams/123-b-456/c')).toThrow()
-    expect(() => pattern.match('/teams/')).toThrow()
+    expect(pattern.match('/teams/123-b')).toBe(null)
+    expect(pattern.match('/teams/123-b-456/c')).toBe(null)
+    expect(pattern.match('/teams/')).toBe(null)
     expect(pattern.build({ teamId: '123', otherId: '456' })).toBe(
       '/teams/123-b-456'
     )
@@ -351,7 +352,7 @@ describe('generated path matchers', () => {
 
     expect(pattern.match('/users/42')).toEqual({ id: '42' })
     expect(pattern.build({ id: '42' })).toBe('/users/42')
-    expect(() => pattern.match('/admin/users/42')).toThrow()
+    expect(pattern.match('/admin/users/42')).toBe(null)
   })
 
   it('uses custom regexps to reject invalid params', () => {
@@ -364,6 +365,6 @@ describe('generated path matchers', () => {
 
     expect(pattern.match('/orgs/@vue')).toEqual({ org: '@vue' })
     expect(pattern.build({ org: '@vue' })).toBe('/orgs/@vue')
-    expect(() => pattern.match('/orgs/vue')).toThrow()
+    expect(pattern.match('/orgs/vue')).toBe(null)
   })
 })

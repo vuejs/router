@@ -1,4 +1,3 @@
-import { miss } from './errors'
 import type { MatcherPatternPath } from './matcher-pattern'
 
 /**
@@ -29,13 +28,10 @@ export class MatcherPatternPathStar implements MatcherPatternPath<{
     this.pathi = path.toLowerCase()
   }
 
-  match(path: string): { pathMatch: string } {
-    if (!path.toLowerCase().startsWith(this.pathi)) {
-      miss()
-    }
-    return {
-      pathMatch: path.slice(this.path.length),
-    }
+  match(path: string): { pathMatch: string } | null {
+    return path.toLowerCase().startsWith(this.pathi)
+      ? { pathMatch: path.slice(this.path.length) }
+      : null
   }
 
   build(params: { pathMatch: string }): string {

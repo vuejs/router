@@ -10,7 +10,7 @@ const hash = new MatcherPatternHashParam('section', {
 
 expectTypeOf(hash.match('')).toEqualTypeOf<{
   section: { heading: string } | undefined
-}>()
+} | null>()
 expectTypeOf(hash.build).parameter(0).toEqualTypeOf<{
   section?: { heading: string } | undefined
 }>()
@@ -22,7 +22,7 @@ hash.build({ section: undefined })
 const stringHash = new MatcherPatternHashParam('fragment')
 expectTypeOf(stringHash.match('')).toEqualTypeOf<{
   fragment: string | undefined
-}>()
+} | null>()
 
 const nullDefaultHash = new MatcherPatternHashParam(
   'count',
@@ -31,7 +31,7 @@ const nullDefaultHash = new MatcherPatternHashParam(
 )
 expectTypeOf(nullDefaultHash.match('')).toEqualTypeOf<{
   count: number | null
-}>()
+} | null>()
 expectTypeOf(nullDefaultHash.build).parameter(0).toEqualTypeOf<{
   count?: number | null | undefined
 }>()
@@ -44,7 +44,7 @@ const literalDefaultHash = new MatcherPatternHashParam(
 )
 expectTypeOf(literalDefaultHash.match('')).toEqualTypeOf<{
   count: number
-}>()
+} | null>()
 
 const factoryDefaultHash = new MatcherPatternHashParam(
   'section',
@@ -54,7 +54,7 @@ const factoryDefaultHash = new MatcherPatternHashParam(
 )
 expectTypeOf(factoryDefaultHash.match('')).toEqualTypeOf<{
   section: { heading: string }
-}>()
+} | null>()
 expectTypeOf(factoryDefaultHash.build).parameter(0).toEqualTypeOf<{
   section?: { heading: string } | undefined
 }>()
@@ -136,7 +136,7 @@ definePage({
 type ParsedHash = 'intro' | '' | false | 0 | 0n | null | undefined
 const falsyParser = { get: (_value: string): ParsedHash => '' }
 const parsedHash = new MatcherPatternHashParam('section', falsyParser)
-expectTypeOf(parsedHash.match('').section).toEqualTypeOf<ParsedHash>()
+expectTypeOf(parsedHash.match('')!.section).toEqualTypeOf<ParsedHash>()
 
 const requiredHash = new MatcherPatternHashParam(
   'section',
@@ -144,17 +144,17 @@ const requiredHash = new MatcherPatternHashParam(
   undefined,
   true
 )
-expectTypeOf(requiredHash.match('').section).toEqualTypeOf<
+expectTypeOf(requiredHash.match('')!.section).toEqualTypeOf<
   Exclude<ParsedHash, undefined>
 >()
 
 const nullableHash = new MatcherPatternHashParam('section', falsyParser, null)
-expectTypeOf(nullableHash.match('').section).toEqualTypeOf<
+expectTypeOf(nullableHash.match('')!.section).toEqualTypeOf<
   Exclude<ParsedHash, undefined>
 >()
 
 const defaultHash = new MatcherPatternHashParam('section', falsyParser, 'intro')
-expectTypeOf(defaultHash.match('').section).toEqualTypeOf<
+expectTypeOf(defaultHash.match('')!.section).toEqualTypeOf<
   Exclude<ParsedHash, undefined>
 >()
 
@@ -164,17 +164,19 @@ const requiredStringHash = new MatcherPatternHashParam(
   undefined,
   true
 )
-expectTypeOf(requiredStringHash.match('').fragment).toEqualTypeOf<string>()
+expectTypeOf(requiredStringHash.match('')!.fragment).toEqualTypeOf<string>()
 
 const nullableFactoryHash = new MatcherPatternHashParam(
   'count',
   { get: Number },
   () => null
 )
-expectTypeOf(nullableFactoryHash.match('').count).toEqualTypeOf<number | null>()
+expectTypeOf(nullableFactoryHash.match('')!.count).toEqualTypeOf<
+  number | null
+>()
 
 const defaultStringHash = new MatcherPatternHashParam('fragment', {}, null)
-expectTypeOf(defaultStringHash.match('').fragment).toEqualTypeOf<
+expectTypeOf(defaultStringHash.match('')!.fragment).toEqualTypeOf<
   string | null
 >()
 
@@ -183,7 +185,7 @@ const undefinedFactoryHash = new MatcherPatternHashParam(
   { get: (_value: string): string | undefined => undefined },
   () => undefined
 )
-expectTypeOf(undefinedFactoryHash.match('').section).toEqualTypeOf<
+expectTypeOf(undefinedFactoryHash.match('')!.section).toEqualTypeOf<
   string | undefined
 >()
 
@@ -193,7 +195,7 @@ const requiredNullableHash = new MatcherPatternHashParam(
   undefined,
   true
 )
-expectTypeOf(requiredNullableHash.match('').section).toEqualTypeOf<
+expectTypeOf(requiredNullableHash.match('')!.section).toEqualTypeOf<
   string | null
 >()
 

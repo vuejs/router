@@ -1,5 +1,4 @@
 import { toValue } from 'vue'
-import { miss } from './errors'
 import { decode, PERCENT_RE } from '../../encoding'
 import type { MatcherPatternHash } from './matcher-pattern'
 import type { ParamParser } from './param-parsers'
@@ -37,7 +36,7 @@ export class MatcherPatternHashParam<
 
   match(
     hash: string
-  ): Record<ParamName, HashParamValue<T, TDefault, TRequired>> {
+  ): Record<ParamName, HashParamValue<T, TDefault, TRequired>> | null {
     let value
     if (hash) {
       const content = decode(hash.slice(1))
@@ -48,12 +47,11 @@ export class MatcherPatternHashParam<
       }
     }
     if (value === undefined) {
-      value =
-        this.defaultValue !== undefined
-          ? toValue(this.defaultValue)
-          : this.required
-            ? miss()
-            : undefined
+      if (this.defaultValue !== undefined) {
+        value = toValue(this.defaultValue)
+      } else if (this.required) {
+        return null
+      }
     }
     return { [this.paramName]: value } as Record<
       ParamName,

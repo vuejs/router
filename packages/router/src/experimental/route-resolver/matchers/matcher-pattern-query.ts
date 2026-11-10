@@ -6,7 +6,6 @@ import type {
   MatcherQueryParamsValue,
 } from './matcher-pattern'
 import { type ParamParser, PARAM_PARSER_DEFAULTS } from './param-parsers'
-import { miss } from './errors'
 
 /**
  * Handles the `query` part of a URL. It can transform a query object into an
@@ -32,7 +31,7 @@ export class MatcherPatternQueryParam<
     private required?: boolean
   ) {}
 
-  match(query: MatcherQueryParams): Record<ParamName, T> {
+  match(query: MatcherQueryParams): Record<ParamName, T> | null {
     const queryValue: MatcherQueryParamsValue | undefined = query[this.queryKey]
 
     // normalize the value coming from the query based on the expected format
@@ -98,8 +97,8 @@ export class MatcherPatternQueryParam<
         // Has default: use it
         value = toValue(this.defaultValue)
       } else if (this.required) {
-        // Required but no default and no value: throw
-        miss()
+        // Required but no default and no value
+        return null
       }
       // else: optional param without default, value stays undefined
     }

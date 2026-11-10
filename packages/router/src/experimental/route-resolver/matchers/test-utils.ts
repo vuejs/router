@@ -1,7 +1,6 @@
 import type { EmptyParams } from './matcher-pattern'
 import type { MatcherPatternPath, MatcherPatternHash } from './matcher-pattern'
 import type { MatcherPatternQuery } from './matcher-pattern-query'
-import { miss } from './errors'
 
 export const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{
   pathMatch: string
@@ -15,12 +14,7 @@ export const ANY_PATH_PATTERN_MATCHER: MatcherPatternPath<{
 }
 
 export const EMPTY_PATH_PATTERN_MATCHER: MatcherPatternPath<EmptyParams> = {
-  match: path => {
-    if (path !== '/') {
-      miss()
-    }
-    return {}
-  },
+  match: path => (path === '/' ? {} : null),
   build: () => '/',
 }
 
@@ -29,13 +23,10 @@ export const USER_ID_PATH_PATTERN_MATCHER: MatcherPatternPath<{ id: number }> =
     match(value) {
       const match = value.match(/^\/users\/(\d+)$/)
       if (!match?.[1]) {
-        miss()
+        return null
       }
       const id = Number(match[1])
-      if (Number.isNaN(id)) {
-        miss(`Invalid number: ${String(match[1])}`)
-      }
-      return { id }
+      return Number.isNaN(id) ? null : { id }
     },
     build({ id }) {
       return `/users/${id}`

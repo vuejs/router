@@ -719,6 +719,7 @@ describe('Experimental Router', () => {
   it('throws if required params are missing', async () => {
     const { router } = await newRouter()
     expect(() => router.resolve({ name: 'Param', params: {} })).toThrowError()
+    expect('VUE_ROUTER_R0125').toHaveBeenWarnedTimes(1)
     expect(() =>
       router.resolve({ name: 'Param', params: { p: 'po' } })
     ).not.toThrow()
@@ -730,6 +731,8 @@ describe('Experimental Router', () => {
     expect(() =>
       router.resolve({ name: 'repeat', params: { r: [] } })
     ).toThrowError()
+    expect('VUE_ROUTER_R0125').toHaveBeenWarnedTimes(1)
+    expect('VUE_ROUTER_R0124').toHaveBeenWarnedTimes(1)
     expect(() =>
       router.resolve({ name: 'repeat', params: { r: ['a'] } })
     ).not.toThrow()
@@ -743,6 +746,8 @@ describe('Experimental Router', () => {
     expect(() =>
       router.resolve({ name: 'optional', params: { p: ['a', 'b'] } })
     ).toThrowError()
+    expect('VUE_ROUTER_R0124').not.toHaveBeenWarned()
+    expect('VUE_ROUTER_R0125').toHaveBeenWarnedTimes(1)
   })
 
   it('can redirect to a star route when encoding the param', () => {
@@ -841,6 +846,7 @@ describe('Experimental Router', () => {
         params: { p: 'lang/fr/nope' },
       })
     ).toThrowError()
+    expect('VUE_ROUTER_R0125').toHaveBeenWarnedTimes(2)
     // NOTE: this version of the matcher is not strict on the trailing slash
     expect(
       router.resolve({
@@ -1292,6 +1298,7 @@ describe('Experimental Router', () => {
       const { router } = await newRouter()
       await router.push('/p/42')
       expect(() => router.push('/param-redirect')).toThrow()
+      expect('VUE_ROUTER_R0125').toHaveBeenWarnedTimes(1)
       expect(router.currentRoute.value.fullPath).toBe('/p/42')
     })
 

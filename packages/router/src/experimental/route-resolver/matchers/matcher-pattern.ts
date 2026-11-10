@@ -30,10 +30,9 @@ export interface MatcherPattern<
    * Matches a serialized params value against the pattern.
    *
    * @param value - params value to parse
-   * @throws {MatchMiss} if the value doesn't match
-   * @returns parsed params object
+   * @returns parsed params object or `null` if the value doesn't match
    */
-  match(value: TIn): TParams
+  match(value: TIn): TParams | null
 
   /**
    * Build a serializable value from parsed params. Should apply encoding if the
@@ -63,7 +62,7 @@ export interface MatcherPatternPath<
  * ```ts
  * const matcher = new MatcherPatternPathStatic('/team')
  * matcher.match('/team') // {}
- * matcher.match('/team/123') // throws MatchMiss
+ * matcher.match('/team/123') // null
  * matcher.build() // '/team'
  * ```
  */
@@ -78,11 +77,8 @@ export class MatcherPatternPathStatic implements MatcherPatternPath<EmptyParams>
     this.pathi = path.toLowerCase()
   }
 
-  match(path: string): EmptyParams {
-    if (path.toLowerCase() !== this.pathi) {
-      miss()
-    }
-    return {}
+  match(path: string): EmptyParams | null {
+    return path.toLowerCase() === this.pathi ? {} : null
   }
 
   build(): string {
@@ -190,19 +186,21 @@ export class MatcherPatternPathDynamic<
     this.paramsKeys = Object.keys(this.params) as Array<keyof TParamsOptions>
   }
 
-  match(path: string): Simplify<ExtractParamTypeFromOptions<TParamsOptions>> {
+  match(
+    path: string
+  ): Simplify<ExtractParamTypeFromOptions<TParamsOptions>> | null {
     if (
       this.trailingSlash != null &&
       // The root path has no trailing slash.
       path !== '/' &&
       this.trailingSlash === !path.endsWith('/')
     ) {
-      miss()
+      return null
     }
 
     const match = path.match(this.re)
     if (!match) {
-      miss()
+      return null
     }
     const params = {} as ExtractParamTypeFromOptions<TParamsOptions>
     for (var i = 0; i < this.paramsKeys.length; i++) {
@@ -267,6 +265,10 @@ export class MatcherPatternPathDynamic<
 
             // non optional repeatable params cannot be empty
             if (Array.isArray(value) && !value.length && !optional) {
+              // read the flag here so prod code does not keep it
+              if (__DEV__ && this.params[paramName][1]) {
+                diagnostics.VUE_ROUTER_R0124({ param: String(paramName) })
+              }
               miss()
             }
 

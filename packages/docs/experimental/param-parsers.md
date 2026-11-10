@@ -177,7 +177,7 @@ export const parser = defineHashParamParser<{ heading: string; tab: string }>({
 
 ## Errors
 
-Throw any error from `get` to mark the value as not matching. The router skips the route (treat it like a 404 candidate). `miss(reason?)` is just sugar for throwing a typed error.
+Call `miss(reason?)` in `get` to mark the value as not matching. The router skips the route (treat it like a 404 candidate). If `get` throws any other error, the router also skips the route, but in development it logs a warning because the error is probably a bug.
 
 ## Standard Schema (Zod / Valibot)
 

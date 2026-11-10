@@ -314,7 +314,7 @@ describe('MatcherPatternQueryParam', () => {
   })
 
   describe('required parameter', () => {
-    it('throws MatchMiss for required: true when param is missing', () => {
+    it('returns null for required: true when param is missing', () => {
       const matcher = new MatcherPatternQueryParam(
         'requiredParam',
         'req',
@@ -323,7 +323,7 @@ describe('MatcherPatternQueryParam', () => {
         undefined,
         true
       )
-      expect(() => matcher.match({})).toThrow(MatchMiss)
+      expect(matcher.match({})).toBe(null)
     })
 
     it('uses actual value when required: true and param exists', () => {
@@ -418,8 +418,8 @@ describe('MatcherPatternQueryParam', () => {
       )
       // null is a valid value, not missing
       expect(matcher.match({ p: null })).toEqual({ param: null })
-      // missing throws
-      expect(() => matcher.match({})).toThrow(MatchMiss)
+      // missing does not match
+      expect(matcher.match({})).toBe(null)
     })
   })
 
