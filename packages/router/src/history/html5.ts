@@ -215,7 +215,9 @@ function useHistoryStateNavigation(base: string) {
         ? (location.host && document.querySelector('base')
             ? base
             : base.slice(hashIndex)) + to
-        : createBaseLocation() + base + to
+        : location.protocol === 'file:' || (base + to).startsWith('//')
+          ? createBaseLocation() + base + to
+          : base + to
     try {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds

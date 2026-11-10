@@ -94,6 +94,20 @@ describe('History HTMl5', () => {
     expect(location.href).toBe('http://localhost:3000//foo')
   })
 
+  it('preserves userinfo in URL without stripping or causing SecurityError (#2714)', () => {
+    getWindow().happyDOM.setURL('http://user:pass@localhost:3000/')
+    const replaceStateSpy = vi.spyOn(window.history, 'replaceState')
+    const pushStateSpy = vi.spyOn(window.history, 'pushState')
+    const history = createWebHistory()
+    history.replace('/foo')
+    expect(replaceStateSpy).toHaveBeenCalledWith(expect.anything(), '', '/foo')
+    expect(location.href).toBe('http://user:pass@localhost:3000/foo')
+
+    history.push('/bar')
+    expect(pushStateSpy).toHaveBeenCalledWith(expect.anything(), '', '/bar')
+    expect(location.href).toBe('http://user:pass@localhost:3000/bar')
+  })
+
   describe('specific to base containing a hash', () => {
     it('writes the hash part of the url with a base', () => {
       getWindow().happyDOM.setURL('file:///usr/etc/index.html')
