@@ -278,9 +278,14 @@ export function createFixedResolver<
       )
 
       if (__DEV__) {
-        for (const key in to.query) {
+        const toQuery = normalizeQuery(to.query)
+        for (const key in toQuery) {
+          const value = query[key]
           // a param overrode the value passed in `to.query`
-          if (String(query[key]) !== String(to.query[key])) {
+          if (
+            value?.length !== toQuery[key]!.length ||
+            toQuery[key]!.some((v, i) => v !== value[i])
+          ) {
             diagnostics.VUE_ROUTER_R0123({ key })
           }
         }
