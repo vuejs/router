@@ -265,6 +265,8 @@ Options per query field:
 - `default`: value or `() => value` used when the param is missing or parsing fails and it's not required.
 - `required`: rejects a match if the param is absent (instead of using `default`).
 
+To remove an optional query param or one with a `default`, set it to `undefined` when navigating (e.g. `router.push({ params: { page: undefined } })`). The key is removed from the URL and `route.params.page` falls back to the `default`. Other query keys are kept.
+
 ### Hash params
 
 Declare one named hash param in `definePage()`. Without a parser, the param is the hash contents without `#`:
