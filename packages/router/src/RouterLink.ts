@@ -378,6 +378,11 @@ export interface _RouterLinkI {
   }
 
   /**
+   * Component props options for extending RouterLink
+   */
+  props: typeof RouterLinkImpl.props
+
+  /**
    * Access to `useLink()` without depending on using vue-router
    *
    * @internal

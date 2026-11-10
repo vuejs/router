@@ -39,6 +39,12 @@ describe('Components', () => {
     // @ts-expect-error: onFocus should not be allowed with custom
     expectError(<RouterLink to="/" custom onFocus={() => {}} />)
 
+    // RouterLink.props (#1429)
+    expectTypeOf(RouterLink.props).toBeObject()
+    expectTypeOf(RouterLink.props.to).toBeObject()
+    expectTypeOf(RouterLink.props.replace).toEqualTypeOf<BooleanConstructor>()
+    expectTypeOf(RouterLink.props.custom).toEqualTypeOf<BooleanConstructor>()
+
     // RouterView
     expectTypeOf<JSX.Element>(<RouterView class="view" />)
     expectTypeOf<JSX.Element>(<RouterView name="foo" />)
