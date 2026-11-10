@@ -128,7 +128,10 @@ describe('ignored query param diagnostics', () => {
     {
       name: 'list',
       path: new MatcherPatternPathStatic('/'),
-      query: [new MatcherPatternQueryParam('page', 'page', 'value')],
+      query: [
+        new MatcherPatternQueryParam('page', 'page', 'value'),
+        new MatcherPatternQueryParam('tags', 'tags', 'array'),
+      ],
     },
   ])
   const current = r.resolve('/?page=5')
@@ -147,5 +150,23 @@ describe('ignored query param diagnostics', () => {
     r.resolve({ query: { ...current.query, other: ['x'] } }, current)
     r.resolve({ name: 'list', params: {}, query: { page: ['3'] } })
     expect('VUE_ROUTER_R0123').not.toHaveBeenWarned()
+  })
+
+  it('does not warn for a null value on a key without a param', () => {
+    r.resolve({ name: 'list', params: {}, query: { flag: null } })
+    expect('VUE_ROUTER_R0123').not.toHaveBeenWarned()
+    // non array values are deprecated
+    if (__DEV__) expect('VUE_ROUTER_D0002').toHaveBeenWarnedTimes(1)
+  })
+
+  it('compares array values element by element', () => {
+    expect(
+      r.resolve({
+        name: 'list',
+        params: { tags: ['a', 'b'] },
+        query: { tags: ['a,b'] },
+      })
+    ).toMatchObject({ fullPath: '/?tags=a&tags=b' })
+    if (__DEV__) expect('VUE_ROUTER_R0123').toHaveBeenWarnedTimes(1)
   })
 })
