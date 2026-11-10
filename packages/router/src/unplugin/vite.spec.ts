@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'pathe'
-import { build } from 'vite'
+import { build, type InlineConfig, type Rollup } from 'vite'
 import { watch } from 'chokidar'
 import type * as Chokidar from 'chokidar'
 import VueRouter from './vite'
@@ -53,5 +53,26 @@ describe('vite plugin', () => {
     })
 
     expect(watch).not.toHaveBeenCalled()
+  })
+
+  it('updates the routes between builds', async () => {
+    const config = {
+      root,
+      configFile: false,
+      logLevel: 'silent',
+      build: { write: false, minify: false },
+      plugins: [VueRouter({ root, extensions: ['.js'], dts: false })],
+    } satisfies InlineConfig
+
+    await build(config)
+    await writeFile(join(root, 'src/pages/about.js'), 'export default {}\n')
+    await rm(join(root, 'src/pages/index.js'))
+    const { output } = (await build(config)) as Rollup.RollupOutput
+
+    const code = output
+      .map(chunk => ('code' in chunk ? chunk.code : ''))
+      .join('\n')
+    expect(code).toContain('path: "/about"')
+    expect(code).not.toContain('path: "/"')
   })
 })

@@ -76,10 +76,15 @@ export function createRoutesContext(options: ResolvedOptions) {
       )
     }
 
-    // initial scan was already done
+    // watchers keep the tree up to date
     if (watchers.length > 0) {
       return
     }
+
+    // start from scratch to drop pages removed since the last scan
+    routeTree.children.clear()
+    routeTree.map.clear()
+    paramParsersMap.clear()
 
     const paramParsersInclude = options.experimental.paramParsers?.include ?? []
     const paramParsersExclude = options.experimental.paramParsers?.exclude ?? []
@@ -500,6 +505,7 @@ if (import.meta.hot) {
     if (watchers.length) {
       logger.log('🛑 stopping watcher')
       watchers.forEach(watcher => watcher.close())
+      watchers.length = 0
     }
   }
 

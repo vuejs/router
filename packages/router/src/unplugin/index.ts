@@ -45,8 +45,6 @@ export default createUnplugin<Options | undefined>((opt = {}, meta) => {
   const ctx = createRoutesContext(options)
   // watchers only update a dev server, builds close them in `buildEnd()`
   let isDevServer = false
-  // rebuilds in watch mode call `buildStart()` again
-  let initialScan: Promise<void> | undefined
 
   function getVirtualId(id: string) {
     if (options._inspect) return id
@@ -95,8 +93,7 @@ export default createUnplugin<Options | undefined>((opt = {}, meta) => {
       },
 
       async buildStart() {
-        initialScan ??= ctx.scanPages(options.watch && isDevServer)
-        await initialScan
+        await ctx.scanPages(options.watch && isDevServer)
       },
 
       buildEnd() {
