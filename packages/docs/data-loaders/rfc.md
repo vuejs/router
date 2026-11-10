@@ -737,7 +737,7 @@ The arguments can be removed during the compilation step in production mode sinc
 
 ### Non blocking data fetching (Lazy Loaders)
 
-Also known as [lazy async data in Nuxt](https://v3.nuxtjs.org/api/composables/use-async-data), loaders can be marked as lazy to **not block the navigation**.
+Also known as [lazy async data in Nuxt](https://nuxt.com/docs/api/composables/use-async-data), loaders can be marked as lazy to **not block the navigation**.
 
 ```vue{10,16-17} twoslash
 <script lang="ts">
