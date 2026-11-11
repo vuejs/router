@@ -4,13 +4,13 @@ packages:
 shamefullyHoist: true
 
 overrides:
-  '@babel/generator': '^8.0.6'
-  '@babel/types': '^8.0.6'
-  '@types/node': '^26.6.4'
+  '@babel/generator': '^8.1.0'
+  '@babel/types': '^8.1.0'
+  '@types/node': '^26.6.6'
   '@vue/compiler-sfc': '^3.5.45'
   '@vue/runtime-dom': '^3.5.45'
   '@vue/server-renderer': '^3.5.45'
-  'vite': '^8.3.3'
+  'vite': '^8.3.7'
   'vue': '^3.5.45'
 
 peerDependencyRules:

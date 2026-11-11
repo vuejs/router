@@ -50,18 +50,10 @@ const nextVersions = computed(() => ({
     <dt>Next versions</dt>
     <dd>
       <ul>
-        <li>
-          Major: <code>{{ nextVersions.major }}</code>
-        </li>
-        <li>
-          Minor: <code>{{ nextVersions.minor }}</code>
-        </li>
-        <li>
-          Patch: <code>{{ nextVersions.patch }}</code>
-        </li>
-        <li>
-          Prerelease: <code>{{ nextVersions.prerelease ?? 'N/A' }}</code>
-        </li>
+        <li>Major: <code>{{ nextVersions.major }}</code></li>
+        <li>Minor: <code>{{ nextVersions.minor }}</code></li>
+        <li>Patch: <code>{{ nextVersions.patch }}</code></li>
+        <li>Prerelease: <code>{{ nextVersions.prerelease ?? 'N/A' }}</code></li>
       </ul>
     </dd>
   </dl>

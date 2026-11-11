@@ -27,8 +27,7 @@ const cards = computed(() => [
 <template>
   <section class="stats">
     <article v-for="card in cards" :key="card.label">
-      <span>{{ card.label }}</span
-      ><strong>{{ card.value }}</strong>
+      <span>{{ card.label }}</span><strong>{{ card.value }}</strong>
     </article>
   </section>
 </template>
