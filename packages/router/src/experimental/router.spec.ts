@@ -989,6 +989,7 @@ describe('Experimental Router', () => {
         resolver: createFixedResolver(experimentalRoutes),
       })
       expect(router.resolve({ query: { page: ['2'] } }).matched).toEqual([])
+      expect('VUE_ROUTER_R0127').toHaveBeenWarnedTimes(1)
       expect('Cannot resolve relative location').toHaveBeenWarned()
       expect('No match found').toHaveBeenWarned()
     })

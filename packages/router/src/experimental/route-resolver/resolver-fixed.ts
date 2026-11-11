@@ -234,10 +234,7 @@ export function createFixedResolver<
     if (typeof to === 'object' && (to.name || to.path == null)) {
       // relative location by path or by name
       if (__DEV__ && to.name == null && currentLocation == null) {
-        warn(
-          `Cannot resolve relative location "${JSON.stringify(to)}"without a "name" or a current location. This will crash in production.`,
-          to
-        )
+        diagnostics.VUE_ROUTER_R0127({ location: JSON.stringify(to) })
         // NOTE: normally there is no query, hash or path but this helps debug
         // what kind of object location was passed
         // @ts-expect-error: to is never

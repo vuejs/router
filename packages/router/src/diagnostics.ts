@@ -49,6 +49,11 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `An error was thrown while matching "${p.path}" against the route "${p.name}". The route is skipped.`,
       fix: 'Return null from match() to skip a route, or call miss() in a param parser. Fix the thrown error if it is a bug.',
     },
+    VUE_ROUTER_R0127: {
+      why: (p: { location: string }) =>
+        `Cannot resolve relative location ${p.location} without a "name" or a current location. This crashes in production.`,
+      fix: 'Pass the location it is relative to as the second argument of resolve(), or use a location with a "name" or an absolute "path".',
+    },
     VUE_ROUTER_R0125: {
       why: (p: { name: string }) =>
         `The params, query, or hash do not match the route "${p.name}".`,
