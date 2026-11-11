@@ -304,6 +304,9 @@ export function createWebHistory(base?: string): RouterHistory {
   if (__DEV__ && location.protocol === 'file:' && !base.includes('#')) {
     diagnostics.VUE_ROUTER_R0127()
   }
+  if (__DEV__ && location.protocol === 'about:') {
+    diagnostics.VUE_ROUTER_R0128()
+  }
 
   const historyNavigation = useHistoryStateNavigation(base)
   const historyListeners = useHistoryListeners(

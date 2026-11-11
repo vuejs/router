@@ -45,11 +45,13 @@ const router = createRouter({
 
 It uses a hash character (`#`) before the actual URL that is internally passed. Because this section of the URL is never sent to the server, it doesn't require any special treatment on the server level. **It does however have a bad impact in SEO**. If that's a concern for you, use the HTML5 history mode.
 
-Use the hash mode when the app is loaded from a `file://` URL (e.g. in Electron). Browsers do not let the HTML5 mode change the path of a `file://` URL.
+Use the hash mode when the app is loaded from a `file://` URL (e.g. in Electron). The HTML5 mode cannot reliably change the path of a `file://` URL.
 
 ## Memory mode
 
 The memory history mode doesn't assume a browser environment and therefore doesn't interact with the URL **nor automatically triggers the initial navigation**. This makes it perfect for Node environment and SSR. It is created with `createMemoryHistory()` and **requires you to push the initial navigation** after calling `app.use(router)`.
+
+Use the memory mode when the app is loaded in an `about:` URL, like an iframe with `srcdoc`. Browsers do not let the other modes change this URL.
 
 ```js
 import { createRouter, createMemoryHistory } from 'vue-router'

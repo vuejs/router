@@ -157,26 +157,37 @@ describe('History HTMl5', () => {
     expect(location.href).toBe('http://user:pass@localhost:3000/app/foo')
   })
 
-  describe('file:// protocol', () => {
+  describe('protocol warnings', () => {
     mockWarn()
 
-    it('warns to use hash history', () => {
+    it('warns to use hash history on file://', () => {
       getWindow().happyDOM.setURL('file:///app/index.html')
       createWebHistory()
       expect('VUE_ROUTER_R0127').toHaveBeenWarnedTimes(1)
     })
 
-    it('does not warn with a hash base', () => {
+    it('does not warn with a hash base on file://', () => {
       getWindow().happyDOM.setURL('file:///app/index.html')
       createWebHistory('#')
       createWebHashHistory()
       expect('VUE_ROUTER_R0127').not.toHaveBeenWarned()
     })
 
+    it.each([
+      ['web', () => createWebHistory()],
+      ['hash', () => createWebHashHistory()],
+    ])('warns to use memory history with %s history', (_, create) => {
+      getWindow().happyDOM.setURL('about:srcdoc')
+      create()
+      expect('VUE_ROUTER_R0128').toHaveBeenWarnedTimes(1)
+    })
+
     it('does not warn on http', () => {
       getWindow().happyDOM.setURL('http://localhost:3000/')
       createWebHistory()
+      createWebHashHistory()
       expect('VUE_ROUTER_R0127').not.toHaveBeenWarned()
+      expect('VUE_ROUTER_R0128').not.toHaveBeenWarned()
     })
   })
 
