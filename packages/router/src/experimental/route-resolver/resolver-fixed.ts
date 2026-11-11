@@ -256,7 +256,10 @@ export function createFixedResolver<
       }
 
       const name = to.name ?? currentLocation!.name
-      const record = recordMap.get(name)!
+      // relative locations keep the current (possibly alias) record
+      const record = to.name
+        ? recordMap.get(name)!
+        : currentLocation!.matched.at(-1)!
 
       if (__DEV__) {
         if (!record || !name) {
