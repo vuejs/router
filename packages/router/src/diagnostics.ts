@@ -347,6 +347,11 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       fix: "Merge the router's state into your own when calling it manually: `history.replaceState({ ...history.state, ...yourState }, '', url)`.",
       docs: 'https://router.vuejs.org/guide/migration.html#Usage-of-history-state',
     },
+    VUE_ROUTER_R0127: {
+      why: 'The page is loaded from a file:// URL. Browsers do not let createWebHistory() change the path of file:// URLs.',
+      fix: 'Use createWebHashHistory() instead.',
+      docs: 'https://router.vuejs.org/guide/essentials/history-mode.html#hash-mode',
+    },
 
     // --- experimental/data-loaders ---
     VUE_ROUTER_R1001: {

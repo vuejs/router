@@ -2,6 +2,8 @@
  * @vitest-environment happy-dom
  */
 import { createWebHistory } from '../../src/history/html5'
+import { createWebHashHistory } from '../../src/history/hash'
+import { mockWarn } from '../vitest-mock-warn'
 import type { Window as HappyDomWindow } from 'happy-dom'
 import { vi, describe, expect, it, beforeEach, afterEach } from 'vitest'
 
@@ -86,12 +88,75 @@ describe('History HTMl5', () => {
     expect(createWebHistory('#other/bar/').base).toBe('#other/bar')
   })
 
-  it('prepends the host to support // urls', () => {
+  it('keeps // urls on the same origin', () => {
+    getWindow().happyDOM.setURL('http://localhost:3000/')
     const history = createWebHistory()
     history.push('/foo')
     expect(location.href).toBe('http://localhost:3000/foo')
     history.push('//foo')
     expect(location.href).toBe('http://localhost:3000//foo')
+    history.replace('//bar')
+    expect(location.href).toBe('http://localhost:3000//bar')
+  })
+
+  it('keeps // urls on the same origin on initial navigation', () => {
+    getWindow().happyDOM.setURL('http://localhost:3000//invalid')
+    const history = createWebHistory()
+    expect(history.location).toBe('//invalid')
+    expect(location.href).toBe('http://localhost:3000//invalid')
+  })
+
+  // #2714
+  it('keeps the userinfo of the url', () => {
+    getWindow().happyDOM.setURL('http://user:pass@localhost:3000/')
+    const history = createWebHistory()
+    expect(location.href).toBe('http://user:pass@localhost:3000/')
+    history.push('/foo')
+    expect(location.href).toBe('http://user:pass@localhost:3000/foo')
+    history.replace('/bar?q=1#h')
+    expect(location.href).toBe('http://user:pass@localhost:3000/bar?q=1#h')
+    history.push('//foo')
+    expect(location.href).toBe('http://user:pass@localhost:3000//foo')
+  })
+
+  it('keeps the userinfo of the url with a base', () => {
+    getWindow().happyDOM.setURL('http://user:pass@localhost:3000/app/')
+    const history = createWebHistory('/app/')
+    history.push('/foo')
+    expect(location.href).toBe('http://user:pass@localhost:3000/app/foo')
+  })
+
+  it('keeps the userinfo of the url with a base tag', () => {
+    getWindow().happyDOM.setURL('http://user:pass@localhost:3000/app/')
+    const baseEl = document.createElement('base')
+    baseEl.href = '/app/'
+    document.head.appendChild(baseEl)
+    const history = createWebHistory()
+    history.push('/foo')
+    expect(location.href).toBe('http://user:pass@localhost:3000/app/foo')
+  })
+
+  describe('file:// protocol', () => {
+    mockWarn()
+
+    it('warns to use hash history', () => {
+      getWindow().happyDOM.setURL('file:///app/index.html')
+      createWebHistory()
+      expect('VUE_ROUTER_R0127').toHaveBeenWarnedTimes(1)
+    })
+
+    it('does not warn with a hash base', () => {
+      getWindow().happyDOM.setURL('file:///app/index.html')
+      createWebHistory('#')
+      createWebHashHistory()
+      expect('VUE_ROUTER_R0127').not.toHaveBeenWarned()
+    })
+
+    it('does not warn on http', () => {
+      getWindow().happyDOM.setURL('http://localhost:3000/')
+      createWebHistory()
+      expect('VUE_ROUTER_R0127').not.toHaveBeenWarned()
+    })
   })
 
   describe('specific to base containing a hash', () => {
