@@ -890,6 +890,124 @@ describe('Experimental Router', () => {
     expect(router.currentRoute.value.path).toBe('/users/add')
   })
 
+  describe('relative object locations', () => {
+    // without a current location, these crash in production
+    it('resolves query, params and hash without a current location argument', async () => {
+      const { router } = await newRouter()
+      await router.push('/p/1?a=1#h')
+      expect(router.resolve({ query: { b: ['2'] } })).toMatchObject({
+        name: 'Param',
+        fullPath: '/p/1?a=1&b=2#h',
+      })
+      expect(router.resolve({ params: { p: '2' } })).toMatchObject({
+        name: 'Param',
+        fullPath: '/p/2?a=1#h',
+      })
+      expect(router.resolve({ hash: '#x' })).toMatchObject({
+        name: 'Param',
+        fullPath: '/p/1?a=1#x',
+      })
+      expect('Cannot resolve relative location').not.toHaveBeenWarned()
+    })
+
+    it('pushes a query against the current route', async () => {
+      const { router, history } = await newRouter()
+      await router.push('/search?q=vue#results')
+      await router.push({ query: { page: ['2'] } })
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'search',
+        fullPath: '/search?q=vue&page=2#results',
+      })
+      expect(history.location).toBe('/search?q=vue&page=2#results')
+      expect('Cannot resolve relative location').not.toHaveBeenWarned()
+    })
+
+    it('replaces with params against the current route', async () => {
+      const { router, history } = await newRouter()
+      await router.push('/p/1?a=1')
+      await router.replace({ params: { p: '2' } })
+      expect(router.currentRoute.value).toMatchObject({
+        name: 'Param',
+        params: { p: '2' },
+        fullPath: '/p/2?a=1',
+      })
+      expect(history.location).toBe('/p/2?a=1')
+      expect('Cannot resolve relative location').not.toHaveBeenWarned()
+    })
+
+    it('pushes a hash against the current route', async () => {
+      const { router } = await newRouter()
+      await router.push('/foo?a=1#old')
+      await router.push({ hash: '#new' })
+      expect(router.currentRoute.value.fullPath).toBe('/foo?a=1#new')
+      expect('Cannot resolve relative location').not.toHaveBeenWarned()
+    })
+
+    it('replaces the whole query with a named location', async () => {
+      const { router } = await newRouter()
+      await router.push('/search?q=vue#results')
+      const route = router.currentRoute.value
+      await router.push({
+        name: route.name,
+        params: route.params,
+        query: { page: ['2'] },
+      })
+      expect(router.currentRoute.value.fullPath).toBe('/search?page=2')
+    })
+
+    it('resolves a relative path against the current route', async () => {
+      const { router } = await newRouter()
+      await router.push('/users/posva')
+      expect(router.resolve({ path: 'add' }).path).toBe('/users/add')
+      expect(router.resolve({ path: '../add' }).path).toBe('/add')
+    })
+
+    it('uses a passed currentLocation over the current route', async () => {
+      const { router } = await newRouter()
+      const current = await loadRouteLocation(router.resolve('/p/1?a=1'))
+      await router.push('/foo')
+      expect(router.resolve({ query: { b: ['2'] } }, current).fullPath).toBe(
+        '/p/1?a=1&b=2'
+      )
+    })
+
+    it('re-runs a computed on navigation', async () => {
+      const { router } = await newRouter()
+      const scope = effectScope()
+      const route = scope.run(() =>
+        computed(() => router.resolve({ query: { page: ['2'] } }))
+      )!
+      expect(route.value.fullPath).toBe('/?page=2')
+      await router.push('/search?q=vue')
+      expect(route.value.fullPath).toBe('/search?q=vue&page=2')
+      scope.stop()
+    })
+
+    it('warns before the initial navigation', () => {
+      const router = experimental_createRouter({
+        history: createMemoryHistory(),
+        resolver: createFixedResolver(experimentalRoutes),
+      })
+      expect(router.resolve({ query: { page: ['2'] } }).matched).toEqual([])
+      expect('VUE_ROUTER_R0129').toHaveBeenWarnedTimes(1)
+      expect('Cannot resolve relative location').toHaveBeenWarned()
+      expect('No match found').toHaveBeenWarned()
+    })
+
+    it('warns when the current route does not match', async () => {
+      const { router } = await newRouter({
+        resolver: createFixedResolver(
+          experimentalRoutes.filter(record => record.name !== 'catch-all')
+        ),
+      })
+      await router.push('/does-not-exist')
+      expect(router.currentRoute.value.matched).toEqual([])
+      expect(router.resolve({ query: { page: ['2'] } }).matched).toEqual([])
+      expect('VUE_ROUTER_R0129').toHaveBeenWarnedTimes(1)
+      expect('No match found').toHaveBeenWarned()
+    })
+  })
+
   it('resolves parent relative string locations', async () => {
     const { router } = await newRouter()
     await router.push('/users/posva')

@@ -77,6 +77,7 @@ import type {
 } from './route-resolver/resolver-fixed'
 import { isAbsoluteLocation } from './route-resolver/resolver-abstract'
 import type {
+  MatcherLocationRaw,
   ResolverLocationAsNamed,
   ResolverLocationAsPathRelative,
   ResolverLocationAsRelative,
@@ -735,11 +736,10 @@ export function experimental_createRouter(
       to,
       // FIXME: incompatible `matched` requires casting
       currentLocation ??
-        // relative string locations are always valid
-        // so this is more of a convenience default
-        (typeof to === 'string' && !to.startsWith('/')
-          ? currentRoute.value
-          : undefined)
+        // absolute locations skip currentRoute to not track it
+        (isAbsoluteLocation(to as MatcherLocationRaw)
+          ? undefined
+          : currentRoute.value)
     )
     const href = routerHistory.createHref(matchedRoute.fullPath)
 

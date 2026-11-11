@@ -233,22 +233,20 @@ export function createFixedResolver<
     // or relative location (second argument is current location)
     if (typeof to === 'object' && (to.name || to.path == null)) {
       // relative location by path or by name
-      if (__DEV__ && to.name == null && currentLocation == null) {
-        warn(
-          `Cannot resolve relative location "${JSON.stringify(to)}"without a "name" or a current location. This will crash in production.`,
-          to
-        )
+      // also catches START_LOCATION and no-match current locations
+      if (
+        __DEV__ &&
+        to.name == null &&
+        !(currentLocation && recordMap.has(currentLocation.name))
+      ) {
+        diagnostics.VUE_ROUTER_R0129({ location: JSON.stringify(to) })
         // NOTE: normally there is no query, hash or path but this helps debug
         // what kind of object location was passed
-        // @ts-expect-error: to is never
         const query = normalizeQuery(to.query)
-        // @ts-expect-error: to is never
         const hash = encodeHash(to.hash ?? '')
-        // @ts-expect-error: to is never
         const path = to.path ?? '/'
         return {
-          // type is never
-          ...(to as any),
+          ...to,
           ...NO_MATCH_LOCATION,
           fullPath: stringifyURL(stringifyQuery, path, query, hash),
           path,
@@ -257,9 +255,11 @@ export function createFixedResolver<
         }
       }
 
-      // either one of them must be defined and is caught by the dev only warn above
       const name = to.name ?? currentLocation!.name
-      const record = recordMap.get(name)!
+      // relative locations keep the current (possibly alias) record
+      const record = to.name
+        ? recordMap.get(name)!
+        : currentLocation!.matched.at(-1)!
 
       if (__DEV__) {
         if (!record || !name) {
@@ -285,11 +285,12 @@ export function createFixedResolver<
       )
       let matched = buildMatched(record)
       // parser.set() can return non array values
+      // raw `to.query` so an `undefined` value removes the inherited key
       const query = normalizeQuery(
         assign(
           {
             ...currentLocation?.query,
-            ...normalizeQuery(to.query),
+            ...to.query,
           },
           ...matched.flatMap(record =>
             record.query?.map(query => query.build(params))
