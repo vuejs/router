@@ -731,6 +731,17 @@ export function experimental_createRouter(
   function resolve(
     ...[to, currentLocation]: _resolveArgs
   ): RouteLocationResolved {
+    if (
+      __DEV__ &&
+      !currentLocation &&
+      typeof to === 'object' &&
+      to.name == null &&
+      to.path == null &&
+      currentRoute.value === START_LOCATION_NORMALIZED
+    ) {
+      diagnostics.VUE_ROUTER_R0130({ location: to })
+    }
+
     const matchedRoute = resolver.resolve(
       // @ts-expect-error FIXME: incompatible types
       to,
