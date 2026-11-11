@@ -239,7 +239,7 @@ export function createFixedResolver<
         to.name == null &&
         !(currentLocation && recordMap.has(currentLocation.name))
       ) {
-        diagnostics.VUE_ROUTER_R0127({ location: JSON.stringify(to) })
+        diagnostics.VUE_ROUTER_R0129({ location: JSON.stringify(to) })
         // NOTE: normally there is no query, hash or path but this helps debug
         // what kind of object location was passed
         const query = normalizeQuery(to.query)

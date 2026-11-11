@@ -989,7 +989,7 @@ describe('Experimental Router', () => {
         resolver: createFixedResolver(experimentalRoutes),
       })
       expect(router.resolve({ query: { page: ['2'] } }).matched).toEqual([])
-      expect('VUE_ROUTER_R0127').toHaveBeenWarnedTimes(1)
+      expect('VUE_ROUTER_R0129').toHaveBeenWarnedTimes(1)
       expect('Cannot resolve relative location').toHaveBeenWarned()
       expect('No match found').toHaveBeenWarned()
     })
@@ -1003,7 +1003,7 @@ describe('Experimental Router', () => {
       await router.push('/does-not-exist')
       expect(router.currentRoute.value.matched).toEqual([])
       expect(router.resolve({ query: { page: ['2'] } }).matched).toEqual([])
-      expect('VUE_ROUTER_R0127').toHaveBeenWarnedTimes(1)
+      expect('VUE_ROUTER_R0129').toHaveBeenWarnedTimes(1)
       expect('No match found').toHaveBeenWarned()
     })
   })
