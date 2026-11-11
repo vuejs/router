@@ -993,6 +993,19 @@ describe('Experimental Router', () => {
       expect('Cannot resolve relative location').toHaveBeenWarned()
       expect('No match found').toHaveBeenWarned()
     })
+
+    it('warns when the current route does not match', async () => {
+      const { router } = await newRouter({
+        resolver: createFixedResolver(
+          experimentalRoutes.filter(record => record.name !== 'catch-all')
+        ),
+      })
+      await router.push('/does-not-exist')
+      expect(router.currentRoute.value.matched).toEqual([])
+      expect(router.resolve({ query: { page: ['2'] } }).matched).toEqual([])
+      expect('VUE_ROUTER_R0127').toHaveBeenWarnedTimes(1)
+      expect('No match found').toHaveBeenWarned()
+    })
   })
 
   it('resolves parent relative string locations', async () => {

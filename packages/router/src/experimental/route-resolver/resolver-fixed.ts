@@ -233,19 +233,20 @@ export function createFixedResolver<
     // or relative location (second argument is current location)
     if (typeof to === 'object' && (to.name || to.path == null)) {
       // relative location by path or by name
-      if (__DEV__ && to.name == null && currentLocation == null) {
+      // also catches START_LOCATION and no-match current locations
+      if (
+        __DEV__ &&
+        to.name == null &&
+        !(currentLocation && recordMap.has(currentLocation.name))
+      ) {
         diagnostics.VUE_ROUTER_R0127({ location: JSON.stringify(to) })
         // NOTE: normally there is no query, hash or path but this helps debug
         // what kind of object location was passed
-        // @ts-expect-error: to is never
         const query = normalizeQuery(to.query)
-        // @ts-expect-error: to is never
         const hash = encodeHash(to.hash ?? '')
-        // @ts-expect-error: to is never
         const path = to.path ?? '/'
         return {
-          // type is never
-          ...(to as any),
+          ...to,
           ...NO_MATCH_LOCATION,
           fullPath: stringifyURL(stringifyQuery, path, query, hash),
           path,
@@ -254,7 +255,6 @@ export function createFixedResolver<
         }
       }
 
-      // either one of them must be defined and is caught by the dev only warn above
       const name = to.name ?? currentLocation!.name
       const record = recordMap.get(name)!
 

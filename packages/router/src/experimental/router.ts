@@ -736,11 +736,8 @@ export function experimental_createRouter(
       to,
       // FIXME: incompatible `matched` requires casting
       currentLocation ??
-        // absolute locations skip currentRoute to not track it. Relative
-        // objects need its record, absent before the initial navigation
-        (isAbsoluteLocation(to as MatcherLocationRaw) ||
-        (typeof to === 'object' &&
-          currentRoute.value === START_LOCATION_NORMALIZED)
+        // absolute locations skip currentRoute to not track it
+        (isAbsoluteLocation(to as MatcherLocationRaw)
           ? undefined
           : currentRoute.value)
     )

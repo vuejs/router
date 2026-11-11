@@ -51,7 +51,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     },
     VUE_ROUTER_R0127: {
       why: (p: { location: string }) =>
-        `Cannot resolve relative location ${p.location} without a "name" or a current location. This crashes in production.`,
+        `Cannot resolve relative location ${p.location} without a "name": there is no current location, or the current location has no route. This crashes in production.`,
       fix: 'Pass the location it is relative to as the second argument of resolve(), or use a location with a "name" or an absolute "path".',
     },
     VUE_ROUTER_R0125: {
