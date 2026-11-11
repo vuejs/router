@@ -282,11 +282,12 @@ export function createFixedResolver<
       )
       let matched = buildMatched(record)
       // parser.set() can return non array values
+      // raw `to.query` so an `undefined` value removes the inherited key
       const query = normalizeQuery(
         assign(
           {
             ...currentLocation?.query,
-            ...normalizeQuery(to.query),
+            ...to.query,
           },
           ...matched.flatMap(record =>
             record.query?.map(query => query.build(params))

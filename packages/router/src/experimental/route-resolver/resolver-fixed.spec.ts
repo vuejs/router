@@ -504,6 +504,15 @@ describe('fixed resolver', () => {
             params: { page: 5, q: undefined },
           })
         })
+
+        it('from the query', () => {
+          expect(
+            resolver.resolve({ query: { other: undefined } }, current)
+          ).toMatchObject({
+            fullPath: '/?page=5&q=a#h',
+            query: { page: ['5'], q: ['a'] },
+          })
+        })
       })
     })
 
