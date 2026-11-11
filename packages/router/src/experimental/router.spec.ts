@@ -891,6 +891,25 @@ describe('Experimental Router', () => {
   })
 
   describe('relative object locations', () => {
+    // without a current location, these crash in production
+    it('resolves query, params and hash without a current location argument', async () => {
+      const { router } = await newRouter()
+      await router.push('/p/1?a=1#h')
+      expect(router.resolve({ query: { b: ['2'] } })).toMatchObject({
+        name: 'Param',
+        fullPath: '/p/1?a=1&b=2#h',
+      })
+      expect(router.resolve({ params: { p: '2' } })).toMatchObject({
+        name: 'Param',
+        fullPath: '/p/2?a=1#h',
+      })
+      expect(router.resolve({ hash: '#x' })).toMatchObject({
+        name: 'Param',
+        fullPath: '/p/1?a=1#x',
+      })
+      expect('Cannot resolve relative location').not.toHaveBeenWarned()
+    })
+
     it('pushes a query against the current route', async () => {
       const { router, history } = await newRouter()
       await router.push('/search?q=vue#results')
