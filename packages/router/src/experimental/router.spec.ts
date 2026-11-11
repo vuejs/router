@@ -989,10 +989,21 @@ describe('Experimental Router', () => {
         resolver: createFixedResolver(experimentalRoutes),
       })
       expect(router.resolve({ query: { page: ['2'] } }).matched).toEqual([])
+      expect('VUE_ROUTER_R0130').toHaveBeenWarnedTimes(1)
       expect('VUE_ROUTER_R0129').toHaveBeenWarnedTimes(1)
       expect('Cannot resolve a relative location').toHaveBeenWarned()
       expect('\nLocation: {\n  "query"').toHaveBeenWarned()
       expect('No match found').toHaveBeenWarned()
+    })
+
+    it('does not warn before the initial navigation for absolute locations', () => {
+      const router = experimental_createRouter({
+        history: createMemoryHistory(),
+        resolver: createFixedResolver(experimentalRoutes),
+      })
+      router.resolve({ path: '/search' })
+      router.resolve({ name: 'search' })
+      expect('VUE_ROUTER_R0130').not.toHaveBeenWarned()
     })
 
     it('warns when the current route does not match', async () => {
@@ -1005,6 +1016,7 @@ describe('Experimental Router', () => {
       expect(router.currentRoute.value.matched).toEqual([])
       expect(router.resolve({ query: { page: ['2'] } }).matched).toEqual([])
       expect('VUE_ROUTER_R0129').toHaveBeenWarnedTimes(1)
+      expect('VUE_ROUTER_R0130').not.toHaveBeenWarned()
       expect('No match found').toHaveBeenWarned()
     })
   })
