@@ -24,6 +24,7 @@ import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import type { RouteRecord } from './matcher/types'
 import type { NavigationFailure } from './errors'
+import type { Router } from './router'
 import { isArray, isBrowser, noop } from './utils'
 import { diagnostics } from './diagnostics'
 import { isRouteLocation } from './types'
@@ -145,9 +146,7 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
     const to = unref(props.to)
 
     if (__DEV__ && (!hasPrevious || to !== previousTo)) {
-      if (!isRouteLocation(to)) {
-        diagnostics.VUE_ROUTER_R0050({ to })
-      }
+      checkRouteLocation(to)
 
       previousTo = to
       hasPrevious = true
@@ -156,67 +155,12 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
     return router.resolve(to)
   })
 
-  const activeRecordIndex = computed<number>(() => {
-    const { matched } = route.value
-    const { length } = matched
-    const routeMatched: RouteRecord | undefined = matched[length - 1]
-    const currentMatched = currentRoute.matched
-    if (!routeMatched || !currentMatched.length) return -1
-    const index = currentMatched.findIndex(
-      isSameRouteRecord.bind(null, routeMatched)
-    )
-    if (index > -1) return index
-    // possible parent record
-    const parentRecordPath = getOriginalPath(
-      matched[length - 2] as RouteRecord | undefined
-    )
-    return (
-      // we are dealing with nested routes
-      length > 1 &&
-        // if the parent and matched route have the same path, this link is
-        // referring to the empty child. Or we currently are on a different
-        // child of the same parent
-        getOriginalPath(routeMatched) === parentRecordPath &&
-        // avoid comparing the child with its parent
-        currentMatched[currentMatched.length - 1].path !== parentRecordPath
-        ? currentMatched.findIndex(
-            isSameRouteRecord.bind(null, matched[length - 2])
-          )
-        : index
-    )
-  })
+  const linkState = computed(() => resolveLinkState(route.value, currentRoute))
 
-  const isActive = computed<boolean>(
-    () =>
-      activeRecordIndex.value > -1 &&
-      includesParams(currentRoute.params, route.value.params)
-  )
-  const isExactActive = computed<boolean>(
-    () =>
-      activeRecordIndex.value > -1 &&
-      activeRecordIndex.value === currentRoute.matched.length - 1 &&
-      isSameRouteLocationParams(currentRoute.params, route.value.params)
-  )
+  const isActive = computed<boolean>(() => linkState.value.isActive)
+  const isExactActive = computed<boolean>(() => linkState.value.isExactActive)
 
-  function navigate(
-    e: MouseEvent = {} as MouseEvent
-  ): Promise<void | NavigationFailure> {
-    if (guardEvent(e)) {
-      const p = router[unref(props.replace) ? 'replace' : 'push'](
-        unref(props.to)
-        // avoid uncaught errors are they are logged anyway
-      ).catch(noop)
-      if (
-        props.viewTransition &&
-        typeof document !== 'undefined' &&
-        'startViewTransition' in document
-      ) {
-        document.startViewTransition(() => p)
-      }
-      return p
-    }
-    return Promise.resolve()
-  }
+  const navigate = createNavigate(router, props)
 
   // devtools only
   if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
@@ -259,6 +203,88 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
   }
 }
 
+function createNavigate(
+  router: Router,
+  props: Pick<UseLinkOptions, 'to' | 'replace' | 'viewTransition'>
+) {
+  return function navigate(
+    e: MouseEvent = {} as MouseEvent
+  ): Promise<void | NavigationFailure> {
+    if (guardEvent(e)) {
+      const p = router[unref(props.replace) ? 'replace' : 'push'](
+        unref(props.to)
+        // avoid uncaught errors are they are logged anyway
+      ).catch(noop)
+      if (
+        props.viewTransition &&
+        typeof document !== 'undefined' &&
+        'startViewTransition' in document
+      ) {
+        document.startViewTransition(() => p)
+      }
+      return p
+    }
+    return Promise.resolve()
+  }
+}
+
+function checkRouteLocation(to: unknown) {
+  if (!isRouteLocation(to)) {
+    diagnostics.VUE_ROUTER_R0050({ to })
+  }
+}
+
+/**
+ * Computes the active state of a resolved link location against the current
+ * route location.
+ */
+function resolveLinkState(
+  route: RouteLocationResolved,
+  currentRoute: RouteLocation
+): { isActive: boolean; isExactActive: boolean } {
+  const currentMatched = currentRoute.matched
+  const index = activeRecordIndex(route.matched, currentMatched)
+
+  return {
+    isActive: index > -1 && includesParams(currentRoute.params, route.params),
+    isExactActive:
+      index > -1 &&
+      index === currentMatched.length - 1 &&
+      isSameRouteLocationParams(currentRoute.params, route.params),
+  }
+}
+
+function activeRecordIndex(
+  matched: RouteLocationResolved['matched'],
+  currentMatched: RouteLocation['matched']
+): number {
+  const { length } = matched
+  const routeMatched: RouteRecord | undefined = matched[length - 1]
+  if (!routeMatched || !currentMatched.length) return -1
+  const index = currentMatched.findIndex(
+    isSameRouteRecord.bind(null, routeMatched)
+  )
+  if (index > -1) return index
+  // possible parent record
+  const parentRecordPath = getOriginalPath(
+    matched[length - 2] as RouteRecord | undefined
+  )
+  return (
+    // we are dealing with nested routes
+    length > 1 &&
+      // if the parent and matched route have the same path, this link is
+      // referring to the empty child. Or we currently are on a different
+      // child of the same parent
+      getOriginalPath(routeMatched) === parentRecordPath &&
+      // avoid comparing the child with its parent
+      currentMatched[currentMatched.length - 1].path !== parentRecordPath
+      ? currentMatched.findIndex(
+          isSameRouteRecord.bind(null, matched[length - 2])
+        )
+      : index
+  )
+}
+
 function preferSingleVNode(vnodes: VNode[]) {
   return vnodes.length === 1 ? vnodes[0] : vnodes
 }
@@ -286,8 +312,62 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
   useLink,
 
   setup(props, { slots }) {
+    const router = inject(routerKey)!
+    const { options } = router
+
+    // on the server the component renders once and nothing can invalidate its
+    // state in between, so the reactive machinery is pure overhead
+    if (!isBrowser) {
+      const currentRoute = inject(routeLocationKey)!
+      const navigate = createNavigate(router, props)
+
+      return () => {
+        const to = props.to
+        if (__DEV__) {
+          checkRouteLocation(to)
+        }
+        const route = router.resolve(to)
+        const { isActive, isExactActive } = resolveLinkState(
+          route,
+          currentRoute
+        )
+        const link = {
+          route,
+          href: route.href,
+          isActive,
+          isExactActive,
+          navigate,
+        }
+
+        const children = slots.default && preferSingleVNode(slots.default(link))
+
+        return props.custom
+          ? children
+          : h(
+              'a',
+              {
+                'aria-current': isExactActive ? props.ariaCurrentValue : null,
+                href: route.href,
+                onClick: navigate,
+                class: {
+                  [getLinkClass(
+                    props.activeClass,
+                    options.linkActiveClass,
+                    'router-link-active'
+                  )]: isActive,
+                  [getLinkClass(
+                    props.exactActiveClass,
+                    options.linkExactActiveClass,
+                    'router-link-exact-active'
+                  )]: isExactActive,
+                },
+              },
+              children
+            )
+      }
+    }
+
     const link = reactive(useLink(props))
-    const { options } = inject(routerKey)!
 
     const elClass = computed(() => ({
       [getLinkClass(
