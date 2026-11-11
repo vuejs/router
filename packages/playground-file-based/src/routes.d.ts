@@ -100,7 +100,7 @@ declare module 'vue-router/auto-routes' {
     'not-found': RouteRecordInfo<
       'not-found',
       '/:path(.*)',
-      { 'active'?: boolean, 'multi'?: string[] | undefined, 'optionalWhen'?: Exclude<Param_date, unknown[] | null> | undefined, 'other'?: boolean | undefined, 'page'?: number, 'path': string, 'req'?: number, 'when'?: Exclude<Param_date, unknown[] | null> },
+      { 'active'?: boolean | undefined, 'multi'?: string[] | undefined, 'optionalWhen'?: Exclude<Param_date, unknown[] | null> | undefined, 'other'?: boolean | undefined, 'page'?: number | undefined, 'path': string, 'req'?: number | undefined, 'when'?: Exclude<Param_date, unknown[] | null> | undefined },
       { 'active': boolean, 'multi': string[] | undefined, 'optionalWhen': Exclude<Param_date, unknown[] | null> | undefined, 'other': boolean | undefined, 'page': number, 'path': string, 'req': number, 'when': Exclude<Param_date, unknown[] | null> },
       | never
     >,
@@ -191,7 +191,7 @@ declare module 'vue-router/auto-routes' {
     '/months/zod-[month=month-zod]': RouteRecordInfo<
       '/months/zod-[month=month-zod]',
       '/months/zod-:month',
-      { 'mm'?: Exclude<Param_monthZod, unknown[] | null>, 'month': Exclude<Param_monthZod, unknown[] | null> },
+      { 'mm'?: Exclude<Param_monthZod, unknown[] | null> | undefined, 'month': Exclude<Param_monthZod, unknown[] | null> },
       { 'mm': Exclude<Param_monthZod, unknown[] | null>, 'month': Exclude<Param_monthZod, unknown[] | null> },
       | never
     >,
@@ -261,7 +261,7 @@ declare module 'vue-router/auto-routes' {
     '/test-params/query': RouteRecordInfo<
       '/test-params/query',
       '/test-params/query',
-      { 'active'?: Exclude<Param_testBoolQ, unknown[] | null>, 'ids'?: Param_testCsv /* raw param parser */ | undefined, 'page'?: number, 'tag'?: string[] | undefined },
+      { 'active'?: Exclude<Param_testBoolQ, unknown[] | null> | undefined, 'ids'?: Param_testCsv /* raw param parser */ | undefined, 'page'?: number | undefined, 'tag'?: string[] | undefined },
       { 'active': Exclude<Param_testBoolQ, unknown[] | null>, 'ids': Param_testCsv /* raw param parser */, 'page': number, 'tag': string[] | undefined },
       | never
     >,
