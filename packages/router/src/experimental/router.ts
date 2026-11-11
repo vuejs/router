@@ -739,7 +739,7 @@ export function experimental_createRouter(
       to.path == null &&
       currentRoute.value === START_LOCATION_NORMALIZED
     ) {
-      diagnostics.VUE_ROUTER_R0130({ location: JSON.stringify(to) })
+      diagnostics.VUE_ROUTER_R0130({ location: to })
     }
 
     const matchedRoute = resolver.resolve(
