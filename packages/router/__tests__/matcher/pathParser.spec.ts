@@ -529,7 +529,7 @@ describe('Path parser', () => {
       matchRegExp('^/foo\\[ea\\]$', [
         [{ type: TokenType.Static, value: 'foo[ea]' }],
       ])
-      matchRegExp('^/foo\\(e|a\\)$', [
+      matchRegExp('^/foo\\(e\\|a\\)$', [
         [{ type: TokenType.Static, value: 'foo(e|a)' }],
       ])
       matchRegExp('^/(\\d+)\\{2\\}$', [
@@ -981,6 +981,15 @@ describe('Path parser', () => {
       matchParams('/:p\\+', '/abc+', { p: 'abc' })
       matchParams('/:p\\+', '/abc', null)
       matchParams('/:p()\\+', '/abc+', { p: 'abc' })
+    })
+
+    it('matches | literally in static paths', () => {
+      matchParams('/a|b', '/a|b', {})
+      matchParams('/a|b', '/a', null)
+      matchParams('/a|b', '/about', null)
+      matchParams('/a|b', '/xb', null)
+      matchParams('/:id|b', '/1|b', { id: '1' })
+      matchParams('/:id|b', '/1', null)
     })
 
     // end of parsing urls
