@@ -26,6 +26,9 @@ export {
   SCROLL_RESTORATION_SETUP_LISTENERS_DEFAULT,
 } from './scroll-restoration'
 
+export { RouterLink, useLink } from './RouterLink'
+export type { UseLinkOptions } from './RouterLink'
+
 export { onRouteRendered } from './on-route-rendered'
 export type { OnRouteRenderedCallback } from './on-route-rendered'
 
