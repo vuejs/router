@@ -1,5 +1,6 @@
 export { defineColadaLoader } from '../defineColadaLoader'
 export type {
+  DefineColadaLoaderQueryOptions,
   DataLoaderColadaEntry,
   DataColadaLoaderContext,
   _DefineDataColadaLoaderOptions_Common,
