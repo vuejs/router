@@ -30,6 +30,8 @@ import type {
   EXPERIMENTAL_RouteRecordNormalized,
 } from './router'
 
+export type { _RouterLinkI, RouterLinkProps, UseLinkReturn }
+
 /**
  * Options passed to {@link useLink}.
  */

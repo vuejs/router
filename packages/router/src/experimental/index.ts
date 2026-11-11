@@ -27,7 +27,12 @@ export {
 } from './scroll-restoration'
 
 export { RouterLink, useLink } from './RouterLink'
-export type { UseLinkOptions } from './RouterLink'
+export type {
+  _RouterLinkI,
+  RouterLinkProps,
+  UseLinkOptions,
+  UseLinkReturn,
+} from './RouterLink'
 
 export { onRouteRendered } from './on-route-rendered'
 export type { OnRouteRenderedCallback } from './on-route-rendered'
