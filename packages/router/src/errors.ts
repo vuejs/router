@@ -199,7 +199,16 @@ const propertiesToLog = ['params', 'query', 'hash'] as const
  *
  * @internal
  */
-export function stringifyRoute(to: RouteLocationRaw): string {
+export function stringifyRoute(
+  to:
+    | string
+    | {
+        path?: string | null
+        params?: unknown
+        query?: unknown
+        hash?: unknown
+      }
+): string {
   if (!to || typeof to === 'string') return to
   if (to.path != null) return to.path
   const location = {} as Record<string, unknown>
