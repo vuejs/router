@@ -1,5 +1,7 @@
 name: Playwright Tests
 on:
+  merge_group:
+    types: [checks_requested]
   push:
     branches: [main]
     paths-ignore:
