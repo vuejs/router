@@ -208,14 +208,14 @@ function useHistoryStateNavigation(base: string) {
      * base tag we can just use everything after the `#`.
      */
     const hashIndex = base.indexOf('#')
-    let url =
+    const url =
       hashIndex > -1
         ? (location.host && document.querySelector('base')
             ? base
             : base.slice(hashIndex)) + to
-        : base + to
-    // relative to keep the userinfo; `/.` avoids a protocol-relative `//x`
-    if (url.startsWith('//')) url = '/.' + url
+        : // relative to keep the userinfo; `/.` keeps `//`, `/\` or `/\t/`
+          // in the path instead of being read as another host
+          '/.' + base + to
     try {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds

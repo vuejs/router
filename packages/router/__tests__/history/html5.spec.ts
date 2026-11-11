@@ -99,6 +99,27 @@ describe('History HTMl5', () => {
     expect(location.href).toBe('http://localhost:3000//bar')
   })
 
+  it.each([
+    ['/\\evil.com', 'http://localhost:3000//evil.com'],
+    ['/\t/evil.com', 'http://localhost:3000//evil.com'],
+    ['/\n/evil.com', 'http://localhost:3000//evil.com'],
+    ['/\\\\evil.com', 'http://localhost:3000///evil.com'],
+  ])('keeps %j on the same origin', (path, href) => {
+    getWindow().happyDOM.setURL('http://localhost:3000/')
+    const history = createWebHistory()
+    history.push(path)
+    expect(location.href).toBe(href)
+    history.replace(path)
+    expect(location.href).toBe(href)
+  })
+
+  it('keeps // urls on the same origin with a base', () => {
+    getWindow().happyDOM.setURL('http://localhost:3000/app/')
+    const history = createWebHistory('/app/')
+    history.push('//foo')
+    expect(location.href).toBe('http://localhost:3000/app//foo')
+  })
+
   it('keeps // urls on the same origin on initial navigation', () => {
     getWindow().happyDOM.setURL('http://localhost:3000//invalid')
     const history = createWebHistory()
