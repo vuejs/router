@@ -504,6 +504,15 @@ describe('fixed resolver', () => {
             params: { page: 5, q: undefined },
           })
         })
+
+        it('from the query', () => {
+          expect(
+            resolver.resolve({ query: { other: undefined } }, current)
+          ).toMatchObject({
+            fullPath: '/?page=5&q=a#h',
+            query: { page: ['5'], q: ['a'] },
+          })
+        })
       })
     })
 
@@ -1520,6 +1529,45 @@ describe('fixed resolver', () => {
         expect(resolver.resolve({ path: '/members' })).toMatchObject({
           name: 'users',
         })
+      })
+
+      it('keeps the alias record for relative locations', () => {
+        const original = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/users'),
+        }
+        const alias = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/people'),
+          aliasOf: original,
+        }
+        const resolver = createFixedResolver([original, alias])
+        const current = resolver.resolve('/people')
+
+        const result = resolver.resolve({ query: { a: ['1'] } }, current)
+        expect(result).toMatchObject({
+          name: 'users',
+          fullPath: '/people?a=1',
+        })
+        expect(result.matched[0]).toBe(alias)
+      })
+
+      it('uses the original record for named locations from an alias', () => {
+        const original = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/users'),
+        }
+        const alias = {
+          name: 'users',
+          path: new MatcherPatternPathStatic('/people'),
+          aliasOf: original,
+        }
+        const resolver = createFixedResolver([original, alias])
+        const current = resolver.resolve('/people')
+
+        const result = resolver.resolve({ name: 'users', params: {} }, current)
+        expect(result.fullPath).toBe('/users')
+        expect(result.matched[0]).toBe(original)
       })
 
       it('child alias resolves with parent in matched', () => {
