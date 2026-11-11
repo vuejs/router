@@ -728,23 +728,6 @@ export function experimental_createRouter(
       ]
     | [resolvedLocation: RouteLocationResolved, currentLocation?: undefined]
 
-  /**
-   * Returns the current route as the base of a relative location (no `name`
-   * and no absolute `path`). Absolute locations do not read `currentRoute` to
-   * avoid tracking it as a dependency.
-   */
-  function getRelativeBase(
-    to: _resolveArgs[0]
-  ): RouteLocationNormalizedLoaded | undefined {
-    if (isAbsoluteLocation(to as MatcherLocationRaw)) return undefined
-    const current = currentRoute.value
-    // relative objects reuse the current record, which does not exist before
-    // the initial navigation
-    return typeof to === 'object' && current === START_LOCATION_NORMALIZED
-      ? undefined
-      : current
-  }
-
   function resolve(
     ...[to, currentLocation]: _resolveArgs
   ): RouteLocationResolved {
@@ -752,7 +735,14 @@ export function experimental_createRouter(
       // @ts-expect-error FIXME: incompatible types
       to,
       // FIXME: incompatible `matched` requires casting
-      currentLocation ?? getRelativeBase(to)
+      currentLocation ??
+        // absolute locations skip currentRoute to not track it. Relative
+        // objects need its record, absent before the initial navigation
+        (isAbsoluteLocation(to as MatcherLocationRaw) ||
+        (typeof to === 'object' &&
+          currentRoute.value === START_LOCATION_NORMALIZED)
+          ? undefined
+          : currentRoute.value)
     )
     const href = routerHistory.createHref(matchedRoute.fullPath)
 
