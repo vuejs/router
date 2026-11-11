@@ -21,8 +21,6 @@ import { assign } from '../utils'
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 
-let createBaseLocation = () => location.protocol + '//' + location.host
-
 interface StateEntry extends HistoryState {
   back: HistoryLocation | null
   current: HistoryLocation
@@ -215,7 +213,9 @@ function useHistoryStateNavigation(base: string) {
         ? (location.host && document.querySelector('base')
             ? base
             : base.slice(hashIndex)) + to
-        : createBaseLocation() + base + to
+        : // relative to keep the userinfo; `/.` keeps `//`, `/\` or `/\t/`
+          // in the path instead of being read as another host
+          '/.' + base + to
     try {
       // BROWSER QUIRK
       // NOTE: Safari throws a SecurityError when calling this function 100 times in 30 seconds
@@ -300,6 +300,13 @@ function useHistoryStateNavigation(base: string) {
  */
 export function createWebHistory(base?: string): RouterHistory {
   base = normalizeBase(base)
+
+  if (__DEV__ && location.protocol === 'file:' && !base.includes('#')) {
+    diagnostics.VUE_ROUTER_R0127()
+  }
+  if (__DEV__ && location.protocol === 'about:') {
+    diagnostics.VUE_ROUTER_R0128()
+  }
 
   const historyNavigation = useHistoryStateNavigation(base)
   const historyListeners = useHistoryListeners(
