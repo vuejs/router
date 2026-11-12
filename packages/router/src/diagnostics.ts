@@ -316,7 +316,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       why: (p: { name: string }) =>
         `Repeatable param "${p.name}" was provided without an array.`,
       fix: (p: { name: string }) =>
-        `Pass it as an array, even when it has one item: { ${JSON.stringify(p.name)}: [value] }. To remove it, pass an empty array or null.`,
+        `Pass it as an array, even when it has one item: { ${JSON.stringify(p.name)}: [value] }. If the param is optional (e.g. ":${p.name}*"), pass an empty array or null to remove it.`,
     },
 
     // --- history/hash.ts ---
