@@ -190,7 +190,7 @@ describe('repeatable param diagnostics', () => {
       resolver(subsegment).resolve({ name: 'repeat', params: { p: 'a' } })
         .params
     ).toEqual({ p: ['a'] })
-    if (__DEV__) expect('Repeatable param "p"').toHaveBeenWarnedTimes(1)
+    if (__DEV__) expect('VUE_ROUTER_R0106').toHaveBeenWarnedTimes(1)
   })
 
   it('does not warn for arrays, null, or omitted params', () => {

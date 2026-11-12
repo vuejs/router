@@ -397,7 +397,7 @@ describe('Router', () => {
     const { router } = await newRouter()
     const route1 = router.resolve({ name: 'optional', params: { p: '' } })
     expect(route1.params).toEqual({ p: '' })
-    expect('optional path param "p"').toHaveBeenWarned()
+    expect('VUE_ROUTER_R0122').toHaveBeenWarned()
   })
 
   it('navigates to same route record but different query', async () => {
@@ -455,7 +455,7 @@ describe('Router', () => {
     const { router } = await newRouter()
     router.addRoute({ path: '/r/:r*', name: 'r', component: components.Bar })
     expect(router.resolve({ name: 'r', params: { r: null } }).path).toBe('/r')
-    expect('Repeatable param "r"').not.toHaveBeenWarned()
+    expect('VUE_ROUTER_R0106').not.toHaveBeenWarned()
   })
 
   it('fails with arrays for non repeatable params', async () => {

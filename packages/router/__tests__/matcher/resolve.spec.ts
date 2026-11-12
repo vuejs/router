@@ -619,7 +619,7 @@ describe('RouterMatcher.resolve', () => {
         { name: 'a', path: '/a/b/c/d', params: { p: ['b', 'c', 'd'] } }
       )
 
-      expect('Repeatable param "p"').not.toHaveBeenWarned()
+      expect('VUE_ROUTER_R0106').not.toHaveBeenWarned()
     })
 
     it('warns when a repeatable param is provided as a scalar', () => {
@@ -629,7 +629,7 @@ describe('RouterMatcher.resolve', () => {
         { name: 'a', path: '/a/b', params: { p: 'b' } }
       )
 
-      expect('Repeatable param "p"').toHaveBeenWarned()
+      expect('VUE_ROUTER_R0106').toHaveBeenWarned()
     })
 
     it('warns when an optional repeatable param is removed with an empty string', () => {
@@ -639,7 +639,7 @@ describe('RouterMatcher.resolve', () => {
         { name: 'a', path: '/a', params: { p: '' } }
       )
 
-      expect('optional path param "p"').toHaveBeenWarned()
+      expect('VUE_ROUTER_R0122').toHaveBeenWarned()
     })
 
     it('does not warn when an optional repeatable param is empty or omitted', () => {
@@ -658,7 +658,7 @@ describe('RouterMatcher.resolve', () => {
           .path
       ).toBe('/a')
 
-      expect('Repeatable param "p"').not.toHaveBeenWarned()
+      expect('VUE_ROUTER_R0106').not.toHaveBeenWarned()
     })
 
     it('keeps repeated params as a single one when provided through path', () => {
@@ -970,7 +970,7 @@ describe('RouterMatcher.resolve', () => {
           name: undefined,
         }
       )
-      expect('optional path param "b"').toHaveBeenWarned()
+      expect('VUE_ROUTER_R0122').toHaveBeenWarned()
     })
 
     it('resolves root path with optional params', () => {
@@ -1038,7 +1038,7 @@ describe('RouterMatcher.resolve', () => {
         }
       )
 
-      expect('Repeatable param "p"').toHaveBeenWarned()
+      expect('VUE_ROUTER_R0106').toHaveBeenWarned()
     })
 
     it('warns when an optional param is removed with an empty string', () => {
@@ -1056,7 +1056,7 @@ describe('RouterMatcher.resolve', () => {
         }
       )
 
-      expect('optional path param "p"').toHaveBeenWarned()
+      expect('VUE_ROUTER_R0122').toHaveBeenWarned()
     })
 
     it('does not warn for params inherited from the current location', () => {
@@ -1074,7 +1074,7 @@ describe('RouterMatcher.resolve', () => {
         }
       )
 
-      expect('Repeatable param "p"').not.toHaveBeenWarned()
+      expect('VUE_ROUTER_R0106').not.toHaveBeenWarned()
     })
 
     it('replace params even with no name', () => {
