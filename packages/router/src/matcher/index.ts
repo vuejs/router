@@ -279,17 +279,7 @@ export function createRouterMatcher(
           })
         }
 
-        for (const key of matcher.keys) {
-          const value = location.params?.[key.name]
-          if (key.optional && value === '') {
-            diagnostics.VUE_ROUTER_R0122({
-              param: key.name,
-              value: 'an empty string',
-            })
-          } else if (key.repeatable && value != null && !Array.isArray(value)) {
-            diagnostics.VUE_ROUTER_R0106({ name: key.name })
-          }
-        }
+        checkParamValues(matcher, location.params)
       }
 
       name = matcher.record.name
@@ -352,6 +342,7 @@ export function createRouterMatcher(
           location,
           currentLocation,
         })
+      if (__DEV__) checkParamValues(matcher, location.params)
       name = matcher.record.name
       // since we are navigating to the same location, we don't need to pick the
       // params like when `name` is provided
@@ -573,6 +564,30 @@ function checkSameNameAsAncestor(
           parent === ancestor ? 'child' : 'descendant'
         } of a route with the same name. Route names must be unique and a nested route cannot use the same name as an ancestor.`
       )
+    }
+  }
+}
+
+/**
+ * Warns about explicit param values that are probably mistakes.
+ *
+ * @param matcher - matcher of the resolved location
+ * @param params - params explicitly passed in the location
+ */
+function checkParamValues(
+  matcher: RouteRecordMatcher,
+  params: MatcherLocation['params'] | undefined
+) {
+  if (!params) return
+  for (const key of matcher.keys) {
+    const value = params[key.name]
+    if (key.optional && value === '') {
+      diagnostics.VUE_ROUTER_R0122({
+        param: key.name,
+        value: 'an empty string',
+      })
+    } else if (key.repeatable && value != null && !Array.isArray(value)) {
+      diagnostics.VUE_ROUTER_R0106({ name: key.name })
     }
   }
 }

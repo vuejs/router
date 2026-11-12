@@ -1023,6 +1023,60 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
+    it('warns when a repeatable param is provided as a scalar', () => {
+      const record = { path: '/a/:p+', name: 'a', components }
+      assertRecordMatch(
+        record,
+        { params: { p: 'b' } },
+        { name: 'a', path: '/a/b', params: { p: 'b' } },
+        {
+          path: '/a/c',
+          name: 'a',
+          params: { p: ['c'] },
+          matched: [record] as any,
+          meta: {},
+        }
+      )
+
+      expect('Repeatable param "p"').toHaveBeenWarned()
+    })
+
+    it('warns when an optional param is removed with an empty string', () => {
+      const record = { path: '/a/:p?', name: 'a', components }
+      assertRecordMatch(
+        record,
+        { params: { p: '' } },
+        { name: 'a', path: '/a', params: { p: '' } },
+        {
+          path: '/a/c',
+          name: 'a',
+          params: { p: 'c' },
+          matched: [record] as any,
+          meta: {},
+        }
+      )
+
+      expect('optional path param "p"').toHaveBeenWarned()
+    })
+
+    it('does not warn for params inherited from the current location', () => {
+      const record = { path: '/a/:p+', name: 'a', components }
+      assertRecordMatch(
+        record,
+        {},
+        { name: 'a', path: '/a/c', params: { p: 'c' } },
+        {
+          path: '/a/c',
+          name: 'a',
+          params: { p: 'c' },
+          matched: [record] as any,
+          meta: {},
+        }
+      )
+
+      expect('Repeatable param "p"').not.toHaveBeenWarned()
+    })
+
     it('replace params even with no name', () => {
       const record = { path: '/users/:id/m/:role', components }
       assertRecordMatch(
