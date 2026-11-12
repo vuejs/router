@@ -259,7 +259,8 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
   }
 }
 
-function preferSingleVNode(vnodes: VNode[]) {
+/** @internal */
+export function preferSingleVNode(vnodes: VNode[]) {
   return vnodes.length === 1 ? vnodes[0] : vnodes
 }
 
@@ -385,7 +386,8 @@ export interface _RouterLinkI {
   useLink: typeof useLink
 }
 
-function guardEvent(e: MouseEvent) {
+/** @internal */
+export function guardEvent(e: MouseEvent) {
   // don't redirect with control keys
   if (e.metaKey || e.altKey || e.ctrlKey || e.shiftKey) return
   // don't redirect when preventDefault called
@@ -405,7 +407,8 @@ function guardEvent(e: MouseEvent) {
   return true
 }
 
-function includesParams(
+/** @internal */
+export function includesParams(
   outer: RouteLocation['params'],
   inner: RouteLocation['params']
 ): boolean {
