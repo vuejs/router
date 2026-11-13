@@ -537,6 +537,20 @@ describe('Path parser', () => {
       ])
     })
 
+    it('param followed by a separator and a param', () => {
+      matchRegExp('^/([^/](?:(?!-)[^/])*)-([^/]+?)$', tokenizePath('/:a-:b'))
+      matchRegExp(
+        '^/([^/](?:(?!\\.json)[^/])*)\\.json([^/]+?)$',
+        tokenizePath('/:a.json:b')
+      )
+      matchRegExp(
+        '^/([^/](?:(?!\\|)[^/])*)\\|([^/]+?)$',
+        tokenizePath('/:a|:b')
+      )
+      matchRegExp('^/([^/]+?)-(\\d+)$', tokenizePath('/:a-:b(\\d+)'))
+      matchRegExp('^/([^/]+?)\\.json$', tokenizePath('/:a.json'))
+    })
+
     it('static and param+', () => {
       matchRegExp('^/ab/((?:\\d+)(?:/(?:\\d+))*)$', [
         [
@@ -745,6 +759,101 @@ describe('Path parser', () => {
         b: 'two',
         c: 'three',
       })
+    })
+
+    it('param multiple with ambiguous separators', () => {
+      matchParams('/:a-:b', '/x-y-y', { a: 'x', b: 'y-y' })
+      matchParams('/:a-:b', '/x--y', { a: 'x', b: '-y' })
+      matchParams('/:a-:b-:c', '/x--y-z', { a: 'x', b: '-y', c: 'z' })
+      matchParams('/:a-:b-:c', '/-x-y-z', { a: '-x', b: 'y', c: 'z' })
+      matchParams('/:a-:b-:c', '/x-y', null)
+      matchParams('/:a-:b-:c', '/x-y/z', null)
+      matchParams('/:a-:b-:c.json', '/a-b-c-d.json', {
+        a: 'a',
+        b: 'b',
+        c: 'c-d',
+      })
+      matchParams('/:a-:b-:c.json', '/a-b-c.json.json', {
+        a: 'a',
+        b: 'b',
+        c: 'c.json',
+      })
+    })
+
+    it('param multiple with multi-char separators', () => {
+      matchParams('/:a--:b--:c', '/x---y--z', { a: 'x', b: '-y', c: 'z' })
+      matchParams('/:a--:b--:c', '/x----y--z', { a: 'x', b: '--y', c: 'z' })
+      matchParams('/:a()ab:b', '/xabab', { a: 'x', b: 'ab' })
+      matchParams('/:a()ab:b', '/aabb', { a: 'a', b: 'b' })
+      matchParams('/:a()aa:b', '/xaaa', { a: 'x', b: 'a' })
+    })
+
+    it('param multiple with regex special separators', () => {
+      matchParams('/:a.:b.:c', '/1.2.3.4', { a: '1', b: '2', c: '3.4' })
+      matchParams('/:a\\+:b', '/x+y+z', { a: 'x', b: 'y+z' })
+      matchParams('/:a$:b^:c', '/1$2$3^4^5', { a: '1', b: '2$3', c: '4^5' })
+      matchParams('/:a[:b]:c', '/1[2[3]4]5', { a: '1', b: '2[3', c: '4]5' })
+    })
+
+    it('param multiple with letter separators', () => {
+      matchParams('/:a()X:b', '/1x2X3', { a: '1', b: '2X3' })
+      matchParams(
+        '/:a()X:b',
+        '/1x2X3',
+        { a: '1x2', b: '3' },
+        { sensitive: true }
+      )
+    })
+
+    it('param multiple with optional params', () => {
+      matchParams('/:a?-:b-:c', '/-x-y', { a: '', b: 'x', c: 'y' })
+      matchParams('/:a?-:b-:c', '/w-x-y', { a: 'w', b: 'x', c: 'y' })
+      matchParams('/:a-:b?-:c', '/x--y', { a: 'x', b: '', c: 'y' })
+    })
+
+    it('param multiple without separator', () => {
+      matchParams('/:a:b:c', '/xyzb', { a: 'x', b: 'y', c: 'zb' })
+    })
+
+    it('param with custom re followed by a separator and a param', () => {
+      matchParams('/:a(\\d+)-:b', '/x-y', null)
+      matchParams('/:a(\\d+)-:b-:c', '/1-2-3', { a: '1', b: '2', c: '3' })
+    })
+
+    it('param repeatable followed by a separator and a param', () => {
+      matchParams('/:a+-:b', '/x-y/z-w', { a: ['x-y', 'z'], b: 'w' })
+      matchParams('/:a+-:b', '/x/y-z', { a: ['x', 'y'], b: 'z' })
+    })
+
+    it('param followed by a separator and a param with custom re', () => {
+      matchParams('/:a-:b(\\d+)', '/x-y-1', { a: 'x-y', b: '1' })
+      matchParams('/:a-:b(\\d+)', '/x-1-1', { a: 'x-1', b: '1' })
+    })
+
+    it('param followed by a static with | and a param', () => {
+      matchParams('/:a-|:b-|:c', '/x-|y-|z', { a: 'x', b: 'y', c: 'z' })
+      matchParams('/:a|:b', '/x|y|z', { a: 'x', b: 'y|z' })
+      matchParams('/:a-|:b', '/x-y', null)
+    })
+
+    it('param multiple with a backreference in a custom re', () => {
+      matchParams('/:a-:b-:c(\\1)', '/x-y-z-x-y', {
+        a: 'x-y',
+        b: 'z',
+        c: 'x-y',
+      })
+      matchParams('/:a-:b/:c(\\1)', '/x-y-z/x-y', {
+        a: 'x-y',
+        b: 'z',
+        c: 'x-y',
+      })
+    })
+
+    it('param multiple with a long non matching path', () => {
+      const parser = tokensToParser(tokenizePath('/:a-:b-:c.json'))
+      const start = performance.now()
+      expect(parser.parse('/' + '-'.repeat(5000) + 'X')).toBe(null)
+      expect(performance.now() - start).toBeLessThan(1000)
     })
 
     it('param optional', () => {
