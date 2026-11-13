@@ -1606,6 +1606,25 @@ describe('generateRouteResolver', () => {
       expect(resolver).toContain('/people/')
     })
 
+    it('does not add a static part before a leading param of an alias', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      // `/1-x` matches both, the more specific route must come first
+      tree.insert('[id]-x', '[id]-x.vue')
+      const node = tree.insert('users', 'users.vue')
+      node.setCustomRouteBlock('users.vue', { alias: ['/:slug'] })
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        new ImportsMap(),
+        new Map()
+      )
+
+      const list = resolver.slice(resolver.indexOf('createFixedResolver(['))
+      expect(list.indexOf('// /:id-x')).toBeLessThan(list.indexOf('// /:slug'))
+      expect(resolver).toContain('[1],')
+    })
+
     it('generates multiple alias records', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
       const importsMap = new ImportsMap()

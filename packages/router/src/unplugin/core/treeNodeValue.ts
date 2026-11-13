@@ -1014,8 +1014,8 @@ function parseRawPathSegment(
 
   function consumeBuffer() {
     if (state === ParseRawPathSegmentState.static) {
-      // add the buffer to the path segment as is
-      subSegments.push(buffer)
+      // skip empty parts around params, like the file parser
+      if (buffer) subSegments.push(buffer)
     } else if (
       state === ParseRawPathSegmentState.param ||
       state === ParseRawPathSegmentState.regexp ||
