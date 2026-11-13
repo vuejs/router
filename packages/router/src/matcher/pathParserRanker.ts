@@ -117,7 +117,7 @@ const enum PathScore {
 }
 
 // Special Regex characters that must be escaped in static tokens
-const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\]/g
+const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\|]/g
 
 /**
  * Creates a path parser from an array of Segments (a segment is an array of Tokens)

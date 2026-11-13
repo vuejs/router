@@ -561,7 +561,7 @@ export function isTreePathParam(
  * To escape regex characters in the path segment.
  * @internal
  */
-const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\]/g
+const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\|]/g
 
 /**
  * Escapes regex characters in a string to be used in a regex pattern.

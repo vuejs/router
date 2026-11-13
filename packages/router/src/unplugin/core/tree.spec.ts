@@ -1369,6 +1369,14 @@ describe('Tree', () => {
       })
     })
 
+    it('escapes | in static parts', () => {
+      checkRegexp('a|b', '/^\\/a\\|b$/i', {})
+      checkRegexp('[x+7C]admin', '/^\\/\\|admin$/i', {})
+      checkRegexp('[a]-[x+7C][b]', '/^\\/([^/]+?)-\\|([^/]+?)$/i', {
+        matcherParts: [[1, '-', '|', 1]],
+      })
+    })
+
     it('works with a catch all route', () => {
       checkRegexp('[...all]', '/^\\/(.*)$/i', {
         matcherParts: [0],
