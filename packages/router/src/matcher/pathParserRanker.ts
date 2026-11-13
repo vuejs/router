@@ -138,6 +138,13 @@ export function tokensToParser(
   let pattern = options.start ? '^' : ''
   // extracted keys
   const keys: PathParserParamKey[] = []
+  // a backreference in a custom regexp can depend on where a previous param ends
+  const hasBackreference = segments.some(segment =>
+    segment.some(
+      token =>
+        token.type === TokenType.Param && /\\[1-9k]/.test(token.regexp || '')
+    )
+  )
 
   for (const segment of segments) {
     // the root segment needs special treatment
@@ -185,6 +192,20 @@ export function tokensToParser(
           repeatable && re !== '.+' && re !== '.*'
             ? `((?:${re})(?:/(?:${re}))*)`
             : `(${re})`
+
+        // `a` in /:a-:b ends at the first `-` after its first char
+        const next = segment[tokenIndex + 1]
+        const afterNext = segment[tokenIndex + 2]
+        if (
+          !hasBackreference &&
+          !regexp &&
+          !repeatable &&
+          afterNext &&
+          afterNext.type === TokenType.Param &&
+          !afterNext.regexp &&
+          next.type === TokenType.Static
+        )
+          subPattern = `([^/](?:(?!${next.value.replace(REGEX_CHARS_RE, '\\$&')})[^/])*)`
 
         // prepend the slash if we are starting a new segment
         if (!tokenIndex)
