@@ -1,3 +1,10 @@
+## [4.6.5](https://github.com/vuejs/router/compare/v4.6.4...v4.6.5) (2026-11-13)
+
+### Bug Fixes
+
+* escape | in static path tokens ([#2897](https://github.com/vuejs/router/issues/2897)) ([ae8c4b3](https://github.com/vuejs/router/commit/ae8c4b324fc5c09840bce2553537446ee36aa49f))
+* **matcher:** refine param separator matching ([#2898](https://github.com/vuejs/router/issues/2898)) ([9e7a9b1](https://github.com/vuejs/router/commit/9e7a9b1e390e03ccad9ce9eaac94d89e4d73fce3))
+
 ## [4.6.4](https://github.com/vuejs/router/compare/v4.6.3...v4.6.4) (2025-12-11)
 
 ### Bug Fixes
