@@ -4,6 +4,9 @@ import {
   createTreeNodeValue,
   escapeRegex,
   isTreePathParam,
+  subSegmentsToRe,
+  subSegmentsToScore,
+  type PathSubSegment,
   type TreeNodeValueOptions,
   type TreeParam,
   type TreePathParam,
@@ -426,52 +429,91 @@ export class TreeNode {
   }
 
   /**
-   * Generates a regexp based on this node and its parents. This regexp is used by the custom resolver
+   * Path segments of this node and its parents, from parent to child. It
+   * follows `path` overrides and stops at the first absolute one.
    */
-  get regexp(): string {
+  private get _pathSegments(): Array<{
+    subSegments: PathSubSegment[]
+    re: string
+    score: number[]
+  }> {
+    const segments: Array<{
+      subSegments: PathSubSegment[]
+      re: string
+      score: number[]
+    }> = []
     let node: TreeNode | undefined = this
-    // we build the node list from parent to child
-    const nodeList: TreeNode[] = []
+
     while (node && !node.isRoot()) {
-      nodeList.unshift(node)
+      const value: TreeNodeValue = node.value
+      const overridePath = value.overrides.path
+      if (overridePath == null) {
+        if (value.pathSegment) {
+          segments.unshift({
+            subSegments: value.subSegments,
+            re: value.isParam() ? value.re : escapeRegex(value.pathSegment),
+            score: value.score,
+          })
+        } else {
+          // groups don't add to the path but keep their score
+          segments.unshift({ subSegments: [], re: '', score: value.score })
+        }
+      } else {
+        const customRegexps = new Map(
+          value.pathParams.map(param => [param.paramName, param.re])
+        )
+        segments.unshift(
+          ...value.pathSubSegments.map(subSegments => ({
+            subSegments,
+            re: subSegmentsToRe(subSegments, customRegexps),
+            score: subSegmentsToScore(subSegments),
+          }))
+        )
+        // an absolute path drops everything above it from the url
+        if (overridePath.startsWith('/')) break
+      }
       node = node.parent
     }
 
+    return segments
+  }
+
+  /**
+   * Generates a regexp based on this node and its parents. This regexp is used by the custom resolver
+   */
+  get regexp(): string {
+    const segments = this._pathSegments.filter(
+      segment => segment.subSegments.length > 0
+    )
+
     let re = ''
     let onlyOptionalParams = true
-    for (var i = 0; i < nodeList.length; i++) {
-      node = nodeList[i]!
-      if (node.value.isParam()) {
-        var nodeRe = node.value.re
-        const subSegment = node.value.subSegments[0]
-        const isOptionalSegment =
-          node.value.subSegments.length === 1 &&
-          subSegment != null &&
-          isTreePathParam(subSegment) &&
-          subSegment.optional
-        onlyOptionalParams &&= isOptionalSegment
-        // Ensure we add a connecting slash
-        // if we already have something in the regexp and if the only part of
-        // the segment is an optional param, then the / must be put inside the
-        // non-capturing group
-        if (
-          // if we have a segment before or after
-          (re || i < nodeList.length - 1) &&
-          // if the only part of the segment is an optional (can be repeatable) param
-          isOptionalSegment
-        ) {
-          // TODO: tweak if trailingSlash
-          re += `(?:\\/${
-            // we remove the ? at the end because we add it later
-            nodeRe.slice(0, -1)
-          })?`
-        } else {
-          re += (re ? '\\/' : '') + nodeRe
-        }
-      } else if (node.value.pathSegment) {
-        onlyOptionalParams = false
-        // append the path segment to the regexp after escaping it
-        re += (re ? '\\/' : '') + escapeRegex(node.value.pathSegment)
+    for (var i = 0; i < segments.length; i++) {
+      const { subSegments, re: segmentRe } = segments[i]!
+      const subSegment = subSegments[0]
+      const isOptionalSegment =
+        subSegments.length === 1 &&
+        subSegment != null &&
+        isTreePathParam(subSegment) &&
+        subSegment.optional
+      onlyOptionalParams &&= isOptionalSegment
+      // Ensure we add a connecting slash
+      // if we already have something in the regexp and if the only part of
+      // the segment is an optional param, then the / must be put inside the
+      // non-capturing group
+      if (
+        // if we have a segment before or after
+        (re || i < segments.length - 1) &&
+        // if the only part of the segment is an optional (can be repeatable) param
+        isOptionalSegment
+      ) {
+        // TODO: tweak if trailingSlash
+        re += `(?:\\/${
+          // we remove the ? at the end because we add it later
+          segmentRe.slice(0, -1)
+        })?`
+      } else {
+        re += (re ? '\\/' : '') + segmentRe
       }
     }
 
@@ -494,15 +536,7 @@ export class TreeNode {
    * Score of the path used for sorting routes.
    */
   get score(): number[][] {
-    const scores: number[][] = []
-    let node: TreeNode | undefined = this
-
-    while (node && !node.isRoot()) {
-      scores.unshift(node.value.score)
-      node = node.parent
-    }
-
-    return scores
+    return this._pathSegments.map(segment => segment.score)
   }
 
   /**
@@ -511,7 +545,7 @@ export class TreeNode {
    * the route.
    */
   get endsWithSplat(): boolean {
-    const lastSegment = this.value.subSegments.at(-1)
+    const lastSegment = this.value.pathSubSegments.at(-1)?.at(-1)
     return !!lastSegment && isTreePathParam(lastSegment) && lastSegment.isSplat
   }
 
@@ -521,16 +555,9 @@ export class TreeNode {
    */
   get matcherPatternPathDynamicParts(): TreeNodeValueMatcherPart {
     const parts: TreeNodeValueMatcherPart = []
-    let node: TreeNode | undefined = this
 
-    while (node && !node.isRoot()) {
-      // skip group folders (empty pathSegment)
-      if (!node.value.pathSegment) {
-        node = node.parent
-        continue
-      }
-
-      const subSegments = node.value.subSegments.map(segment =>
+    for (const segment of this._pathSegments) {
+      const subSegments = segment.subSegments.map(segment =>
         typeof segment === 'string'
           ? segment
           : // param
@@ -540,11 +567,10 @@ export class TreeNode {
       )
 
       if (subSegments.length > 1) {
-        parts.unshift(subSegments)
+        parts.push(subSegments)
       } else if (subSegments.length === 1) {
-        parts.unshift(subSegments[0]!)
+        parts.push(subSegments[0]!)
       }
-      node = node.parent
     }
 
     return parts

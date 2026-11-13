@@ -1466,18 +1466,11 @@ describe('generateRouteResolver', () => {
   })
 
   describe('path overrides', () => {
-    // FIXME: `node.regexp` and `node.matcherPatternPathDynamicParts` are built
-    // from the file segments and ignore `overrides.path`, while
-    // `node.pathParams` follows the override. `MatcherPatternPathDynamic`
-    // consumes them positionally, so they disagree today. The snapshots below
-    // are the wanted output and are marked as failing until the matcher honors
-    // overrides.
-    it.todo('builds the matcher regexp from an absolute path override', () => {
+    it('builds the matcher regexp from an absolute path override', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
       const node = tree.insert('shop/[id]', 'shop/[id].vue')
       node.value.setOverride('shop/[id]', { path: '/store/:slug' })
 
-      // the regexp still matches `/shop/:id` while the param is named `slug`
       expect(
         generateRouteResolver(
           tree,
@@ -1510,12 +1503,11 @@ describe('generateRouteResolver', () => {
       `)
     })
 
-    it.todo('builds one capture group per param of the override path', () => {
+    it('builds one capture group per param of the override path', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
       const node = tree.insert('shop/[id]', 'shop/[id].vue')
       node.value.setOverride('shop/[id]', { path: '/shop/:a/:b' })
 
-      // two params for a single capture group
       expect(
         generateRouteResolver(
           tree,
@@ -1546,6 +1538,88 @@ describe('generateRouteResolver', () => {
         ])
         "
       `)
+    })
+    it.each([
+      ['/foo/:id', String.raw`/^\/foo\/([^/]+?)$/i`, '["foo",1]'],
+      ['foo/:id', String.raw`/^\/foo\/([^/]+?)$/i`, '["foo",1]'],
+      [':id-x', String.raw`/^\/([^/]+?)-x$/i`, '[[1,"-x"]]'],
+    ])('uses the override %s of a param file', (path, re, parts) => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('[id]', '[id].vue')
+      node.value.setOverride('[id]', { path })
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        new ImportsMap(),
+        new Map()
+      )
+      expect(resolver).toContain(re)
+      expect(resolver).toContain(parts)
+    })
+
+    it('adds the params of the override to a static file', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('about', 'about.vue')
+      node.value.setOverride('about', { path: '/about/:section?' })
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        new ImportsMap(),
+        new Map()
+      )
+      expect(resolver).toContain(String.raw`/^\/about(?:\/([^/]+?))?$/i`)
+      expect(resolver).toContain('["about",1]')
+    })
+
+    it('ignores the parents of an absolute override', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('users/[id]/posts', 'users/[id]/posts.vue')
+      node.value.setOverride('users/[id]/posts', { path: '/posts/:postId' })
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        new ImportsMap(),
+        new Map()
+      )
+      expect(resolver).toContain(String.raw`/^\/posts\/([^/]+?)$/i`)
+      expect(resolver).toContain('["posts",1]')
+    })
+
+    it('appends a relative override to the parent path', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('users/[id]/posts', 'users/[id]/posts.vue')
+      node.value.setOverride('users/[id]/posts', { path: 'articles/:postId' })
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        new ImportsMap(),
+        new Map()
+      )
+      expect(resolver).toContain(
+        String.raw`/^\/users\/([^/]+?)\/articles\/([^/]+?)$/i`
+      )
+      expect(resolver).toContain('["users",1,"articles",1]')
+    })
+
+    it('keeps the custom regexp of a param of the override', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('[id]', '[id].vue')
+      node.value.setOverride('[id]', {
+        path: '/item/:slug',
+        params: { path: { slug: { re: '\\d+' } } },
+      })
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        new ImportsMap(),
+        new Map()
+      )
+      expect(resolver).toContain(String.raw`/^\/item\/(\d+)$/i`)
     })
   })
 
