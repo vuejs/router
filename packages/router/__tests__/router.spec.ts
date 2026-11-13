@@ -424,13 +424,12 @@ describe('Router', () => {
     expect(router.resolve({ params: { r: null } }).path).toBe('/r')
   })
 
-  it('keeps an optional param passed as undefined in a relative location', async () => {
+  it('removes an optional param with undefined in a relative location', async () => {
     const { router } = await newRouter()
     await router.push({ name: 'optional', params: { p: 'a' } })
-    expect(router.resolve({ params: { p: undefined } }).path).toBe(
-      '/optional/a'
-    )
-    expect('VUE_ROUTER_R0107').toHaveBeenWarned()
+    expect(router.resolve({ params: { p: undefined } }).path).toBe('/optional')
+    expect('VUE_ROUTER_R0122').toHaveBeenWarned()
+    expect('VUE_ROUTER_R0107').not.toHaveBeenWarned()
   })
 
   it('keeps a required param passed as null or undefined', async () => {

@@ -573,8 +573,8 @@ function checkSameNameAsAncestor(
 }
 
 /**
- * Handles nullish values of explicit params. `null` removes an optional param.
- * Other nullish values keep the inherited value or remove the param.
+ * Handles nullish values of explicit params: they remove optional params and
+ * keep the inherited value of required params.
  *
  * @param matcher - matcher of the resolved location
  * @param params - merged params, modified in place
@@ -589,20 +589,18 @@ function applyNullishParams(
     const value = params[name]
     if (value == null) {
       const key = matcher.keys.find(k => k.name === name)
-      if (value !== null || !key?.optional) {
-        if (name in inheritedParams) {
-          params[name] = inheritedParams[name]
-          // the experimental router removes it or fails
-          if (__DEV__ && key) {
-            diagnostics.VUE_ROUTER_R0107({ param: name, value: String(value) })
-          }
-          continue
+      if (key && !key.optional && name in inheritedParams) {
+        params[name] = inheritedParams[name]
+        // the experimental router fails instead
+        if (__DEV__) {
+          diagnostics.VUE_ROUTER_R0107({ param: name, value: String(value) })
         }
-        if (__DEV__ && key?.optional) {
+      } else {
+        delete params[name]
+        if (__DEV__ && value === undefined && key?.optional) {
           diagnostics.VUE_ROUTER_R0122({ param: name, value: 'undefined' })
         }
       }
-      delete params[name]
     }
   }
 }

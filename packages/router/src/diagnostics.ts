@@ -345,9 +345,9 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     },
     VUE_ROUTER_R0107: {
       why: (p: { param: string; value: string }) =>
-        `The param "${p.param}" is set to ${p.value} but it keeps its current value.`,
+        `The required param "${p.param}" is set to ${p.value} but it keeps its current value.`,
       fix: (p: { param: string }) =>
-        `Omit "${p.param}" to keep its current value, pass a new value, or pass null to remove it if it is optional.`,
+        `Omit "${p.param}" to keep its current value, or pass a new value.`,
     },
 
     // --- history/hash.ts ---
