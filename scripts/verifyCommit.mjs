@@ -1,14 +1,16 @@
 // Invoked on the commit-msg git hook by simple-git-hooks.
 
 import chalk from 'chalk'
+import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
-import path from 'node:path'
 
-const msgPath = path.resolve('.git/COMMIT_EDITMSG')
+const msgPath = execSync('git rev-parse --git-path COMMIT_EDITMSG', {
+  encoding: 'utf-8',
+}).trim()
 const msg = readFileSync(msgPath, 'utf-8').trim()
 
 const commitRE =
-  /^(revert: )?(feat|fix|docs|dx|style|refactor|perf|test|workflow|build|ci|chore|types|wip|release)(\(.+\))?: .{1,50}/
+  /^(revert: )?(feat|fix|docs|dx|style|refactor|perf|test|workflow|build|ci|chore|types|wip|release)(\(.+\))?!?: .{1,50}/
 
 if (!commitRE.test(msg)) {
   console.log()
