@@ -56,7 +56,8 @@ Usage: node release.ts [flags]
        node release.ts [ -h | --help ]
 
 Flags:
-  --tag               Prerelease id (beta, alpha, rc). The npm dist-tag is set by CI
+  --tag               Prerelease id (beta, alpha, rc). CI publishes stable 4.x on the
+                      "v4-latest" npm dist-tag and prereleases on "v4-next"
   --dry               Dry run
   --skipCleanCheck    Skip checking if the git repo is clean
   --noDepsUpdate      Skip updating dependencies in package.json files

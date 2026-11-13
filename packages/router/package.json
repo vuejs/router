@@ -81,6 +81,9 @@
     "url": "https://github.com/vuejs/router/issues"
   },
   "homepage": "https://router.vuejs.org",
+  "publishConfig": {
+    "tag": "v4-latest"
+  },
   "files": [
     "vue-router-auto-resolver.d.mts",
     "index.js",

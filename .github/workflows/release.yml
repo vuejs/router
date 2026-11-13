@@ -106,20 +106,15 @@ jobs:
 
           # v4 is a maintenance line: never move "latest", "beta", etc. (they point to v5)
           # NOTE: "v4" alone is a valid semver range and npm rejects it as a dist-tag
-          if [[ "$VERSION" =~ ^4\. ]]; then
-            if [[ "$VERSION" == *-* ]]; then
-              NPM_TAG="v4-next"
-            else
-              NPM_TAG="v4-latest"
-            fi
-          elif [[ "$VERSION" =~ -beta ]]; then
-            NPM_TAG="beta"
-          elif [[ "$VERSION" =~ -alpha ]]; then
-            NPM_TAG="alpha"
-          elif [[ "$VERSION" =~ -rc ]]; then
-            NPM_TAG="rc"
+          if [[ ! "$VERSION" =~ ^4\. ]]; then
+            echo "❌ The v4 branch only publishes 4.x versions, got '$VERSION'" >&2
+            exit 1
+          fi
+
+          if [[ "$VERSION" == *-* ]]; then
+            NPM_TAG="v4-next"
           else
-            NPM_TAG="latest"
+            NPM_TAG="v4-latest"
           fi
 
           echo "NPM_TAG=$NPM_TAG" >>$GITHUB_OUTPUT
