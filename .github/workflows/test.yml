@@ -4,12 +4,14 @@ on:
   push:
     branches:
       - main
+      - v4
     paths-ignore:
       - 'packages/docs/**'
       - 'packages/playground/**'
   pull_request:
     branches:
       - main
+      - v4
     paths-ignore:
       - 'packages/docs/**'
       - 'packages/playground/**'
