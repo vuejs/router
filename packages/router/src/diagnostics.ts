@@ -26,7 +26,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
   // docsBase: code => `https://router.vuejs.org/errors/${code.toLowerCase()}`,
   reporters: [/*#__PURE__*/ createConsoleReporter()],
   codes: {
-    // --- experimental/route-resolver/matchers/matcher-pattern.ts ---
+    // --- experimental/route-resolver/matchers/matcher-pattern.ts, matcher/index.ts ---
     VUE_ROUTER_R0122: {
       why: (p: { param: string; value: string }) =>
         `The optional path param "${p.param}" is being removed with ${p.value}.`,
