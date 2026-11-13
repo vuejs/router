@@ -56,7 +56,7 @@ Usage: node release.ts [flags]
        node release.ts [ -h | --help ]
 
 Flags:
-  --tag               Publish under a given npm dist tag
+  --tag               Prerelease id (beta, alpha, rc). The npm dist-tag is set by CI
   --dry               Dry run
   --skipCleanCheck    Skip checking if the git repo is clean
   --noDepsUpdate      Skip updating dependencies in package.json files
@@ -626,9 +626,12 @@ async function getLastTag(
   const prefix = pkgName === MAIN_PKG_NAME ? 'v' : `${pkgName}@`
 
   try {
-    const { stdout } = await run('git', ['tag', '-l', pattern], {
-      stdio: 'pipe',
-    })
+    // --merged: ignore tags from other lines (e.g. v5 tags on the v4 branch)
+    const { stdout } = await run(
+      'git',
+      ['tag', '-l', '--merged', 'HEAD', pattern],
+      { stdio: 'pipe' }
+    )
     const tags = (stdout as string).split('\n').filter(Boolean)
 
     if (tags.length === 0) {
