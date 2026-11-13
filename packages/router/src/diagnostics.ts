@@ -343,6 +343,12 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       fix: (p: { name: string }) =>
         `Pass it as an array, even when it has one item: { ${JSON.stringify(p.name)}: [value] }. If the param is optional (e.g. ":${p.name}*"), pass an empty array or null to remove it.`,
     },
+    VUE_ROUTER_R0107: {
+      why: (p: { param: string; value: string }) =>
+        `The required param "${p.param}" is set to ${p.value} but it keeps its current value.`,
+      fix: (p: { param: string }) =>
+        `Omit "${p.param}" to keep its current value, or pass a new value.`,
+    },
 
     // --- history/hash.ts ---
     VUE_ROUTER_R0110: {

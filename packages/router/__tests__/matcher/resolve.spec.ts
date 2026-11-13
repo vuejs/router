@@ -924,7 +924,6 @@ describe('RouterMatcher.resolve', () => {
         {
           name: 'features',
           params: {
-            // @ts-expect-error: might or not be allowed in the future
             id: undefined,
           },
         },
@@ -937,13 +936,11 @@ describe('RouterMatcher.resolve', () => {
         }
       )
 
-      // null is rejected by the types and not supported at runtime:
       assertRecordMatch(
         record,
         {
           name: 'features',
           params: {
-            // @ts-expect-error: might or not be allowed in the future
             id: null,
           },
         },

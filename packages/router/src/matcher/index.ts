@@ -2,6 +2,7 @@ import type {
   RouteRecordRaw,
   MatcherLocationRaw,
   MatcherLocation,
+  MatcherParamsRaw,
 } from '../types'
 import { isRouteName } from '../types'
 import type { MatcherError } from '../errors'
@@ -260,9 +261,12 @@ export function createRouterMatcher(
 
       // warn if the user is passing invalid params so they can debug it better when they get removed
       if (__DEV__) {
-        const invalidParams: string[] = Object.keys(
-          location.params || {}
-        ).filter(paramName => !matcher!.keys.find(k => k.name === paramName))
+        const explicitParams = location.params || {}
+        const invalidParams: string[] = Object.keys(explicitParams).filter(
+          paramName =>
+            explicitParams[paramName] != null &&
+            !matcher!.keys.find(k => k.name === paramName)
+        )
 
         if (invalidParams.length) {
           // when the invalid params are inherited from the current location
@@ -283,19 +287,20 @@ export function createRouterMatcher(
       }
 
       name = matcher.record.name
+      const inheritedParams = pickParams(
+        currentLocation.params,
+        // only keep params that exist in the resolved location
+        // only keep optional params coming from a parent record
+        matcher.keys
+          .filter(k => !k.optional)
+          .concat(
+            matcher.parent ? matcher.parent.keys.filter(k => k.optional) : []
+          )
+          .map(k => k.name)
+      )
       params = assign(
-        // paramsFromLocation is a new object
-        pickParams(
-          currentLocation.params,
-          // only keep params that exist in the resolved location
-          // only keep optional params coming from a parent record
-          matcher.keys
-            .filter(k => !k.optional)
-            .concat(
-              matcher.parent ? matcher.parent.keys.filter(k => k.optional) : []
-            )
-            .map(k => k.name)
-        ),
+        {},
+        inheritedParams,
         // discard any existing params in the current location that do not exist here
         // #1497 this ensures better active/exact matching
         location.params &&
@@ -304,6 +309,7 @@ export function createRouterMatcher(
             matcher.keys.map(k => k.name)
           )
       )
+      applyNullishParams(matcher, params, inheritedParams)
       // throws if cannot be stringified
       path = matcher.stringify(params)
     } else if (location.path != null) {
@@ -347,6 +353,7 @@ export function createRouterMatcher(
       // since we are navigating to the same location, we don't need to pick the
       // params like when `name` is provided
       params = assign({}, currentLocation.params, location.params)
+      applyNullishParams(matcher, params, currentLocation.params)
       path = matcher.stringify(params)
     }
 
@@ -392,17 +399,14 @@ export function createRouterMatcher(
  * @param params - params object to pick from
  * @param keys - keys to pick
  */
-function pickParams(
-  params: MatcherLocation['params'],
-  keys: string[]
-): MatcherLocation['params'] {
-  const newParams = {} as MatcherLocation['params']
+function pickParams<T extends MatcherParamsRaw>(params: T, keys: string[]): T {
+  const newParams: MatcherParamsRaw = {}
 
   for (const key of keys) {
     if (key in params) newParams[key] = params[key]
   }
 
-  return newParams
+  return newParams as T
 }
 
 /**
@@ -569,6 +573,39 @@ function checkSameNameAsAncestor(
 }
 
 /**
+ * Handles nullish values of explicit params: they remove optional params and
+ * keep the inherited value of required params.
+ *
+ * @param matcher - matcher of the resolved location
+ * @param params - merged params, modified in place
+ * @param inheritedParams - params inherited from the current location
+ */
+function applyNullishParams(
+  matcher: RouteRecordMatcher,
+  params: MatcherParamsRaw,
+  inheritedParams: MatcherLocation['params']
+) {
+  for (const name in params) {
+    const value = params[name]
+    if (value == null) {
+      const key = matcher.keys.find(k => k.name === name)
+      if (key && !key.optional && name in inheritedParams) {
+        params[name] = inheritedParams[name]
+        // the experimental router fails instead
+        if (__DEV__) {
+          diagnostics.VUE_ROUTER_R0107({ param: name, value: String(value) })
+        }
+      } else {
+        delete params[name]
+        if (__DEV__ && value === undefined && key?.optional) {
+          diagnostics.VUE_ROUTER_R0122({ param: name, value: 'undefined' })
+        }
+      }
+    }
+  }
+}
+
+/**
  * Warns about explicit param values that are probably mistakes.
  *
  * @param matcher - matcher of the resolved location
@@ -576,7 +613,7 @@ function checkSameNameAsAncestor(
  */
 function checkParamValues(
   matcher: RouteRecordMatcher,
-  params: MatcherLocation['params'] | undefined
+  params: MatcherParamsRaw | undefined
 ) {
   if (!params) return
   for (const key of matcher.keys) {
