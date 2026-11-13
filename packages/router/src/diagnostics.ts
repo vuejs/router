@@ -26,7 +26,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
   // docsBase: code => `https://router.vuejs.org/errors/${code.toLowerCase()}`,
   reporters: [/*#__PURE__*/ createConsoleReporter()],
   codes: {
-    // --- experimental/route-resolver/matchers/matcher-pattern.ts ---
+    // --- experimental/route-resolver/matchers/matcher-pattern.ts, matcher/index.ts ---
     VUE_ROUTER_R0122: {
       why: (p: { param: string; value: string }) =>
         `The optional path param "${p.param}" is being removed with ${p.value}.`,
@@ -336,6 +336,12 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       why: (p: { ancestor: string; record: string }) =>
         `Finding ancestor route "${p.ancestor}" failed for "${p.record}"`,
       fix: 'Report a reproduction at https://github.com/vuejs/router/issues/new/choose.',
+    },
+    VUE_ROUTER_R0106: {
+      why: (p: { name: string }) =>
+        `Repeatable param "${p.name}" was provided without an array.`,
+      fix: (p: { name: string }) =>
+        `Pass it as an array, even when it has one item: { ${JSON.stringify(p.name)}: [value] }. If the param is optional (e.g. ":${p.name}*"), pass an empty array or null to remove it.`,
     },
 
     // --- history/hash.ts ---

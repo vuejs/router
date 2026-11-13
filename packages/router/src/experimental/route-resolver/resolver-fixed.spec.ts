@@ -71,8 +71,7 @@ const REPEATABLE_PARAM_MATCHER: MatcherPatternPath<{ p: string | string[] }> = {
   match(path) {
     const match = path.match(/^\/a\/(.+)$/)
     if (!match) miss()
-    const segments = match[1].split('/')
-    return { p: segments.length === 1 ? segments[0] : segments }
+    return { p: match[1].split('/') }
   },
   build({ p }) {
     const segments = Array.isArray(p) ? p : [p]
@@ -1258,7 +1257,7 @@ describe('fixed resolver', () => {
         ).toMatchObject({
           name: 'repeatable',
           path: '/a/b',
-          params: { p: 'b' },
+          params: { p: ['b'] },
         })
       })
 
@@ -1270,6 +1269,10 @@ describe('fixed resolver', () => {
         expect(resolver.resolve({ path: '/a/b/c' })).toMatchObject({
           name: 'repeatable',
           params: { p: ['b', 'c'] },
+        })
+        expect(resolver.resolve({ path: '/a/b' })).toMatchObject({
+          name: 'repeatable',
+          params: { p: ['b'] },
         })
       })
     })

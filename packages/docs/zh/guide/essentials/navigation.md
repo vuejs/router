@@ -67,7 +67,7 @@ router.push({ path: '/user', params: { username } }) // -> /user
 <RouterLink :to="{ name: 'user', params: { username } }">User</RouterLink>
 ```
 
-当指定 `params` 时，可提供 `string` 或 `number` 参数（或者对于[可重复的参数](./route-matching-syntax.md#repeatable-params)可提供一个数组）。**任何其他类型（如对象、布尔等）都将被自动字符串化**。对于[可选参数](./route-matching-syntax.md#repeatable-params)，你可以提供一个空字符串（`""`）或 `null` 来移除它。
+当指定 `params` 时，普通参数可提供 `string` 或 `number`。对于[可重复的参数](./route-matching-syntax.md#可重复的参数)，请始终提供一个数组，即使它只有一项。要移除一个可选的可重复参数，可提供一个空数组（`[]`）或 `null`。**任何其他类型（如对象、布尔等）都将被自动字符串化**。对于其他[可选参数](./route-matching-syntax.md#可选参数)，提供 `null` 来移除它。
 
 由于属性 `to` 与 `router.push` 接受的对象种类相同，所以两者的规则完全相同。
 
