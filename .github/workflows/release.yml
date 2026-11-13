@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # needed for changelogithub
 
@@ -49,7 +49,7 @@ jobs:
 
           TAG="${GITHUB_REF#refs/tags/}"
           echo "Current tag: $TAG"
-          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+          echo "TAG=$TAG" >>$GITHUB_OUTPUT
 
           # ========= Determine package type =========
           if [[ "$TAG" =~ ^v[0-9] ]]; then
@@ -76,9 +76,9 @@ jobs:
             PACKAGE_PATH="${MAP[$PKG_NAME]}"
           fi
 
-          echo "PKG_NAME=$PKG_NAME" >> $GITHUB_OUTPUT
-          echo "PACKAGE_PATH=$PACKAGE_PATH" >> $GITHUB_OUTPUT
-          echo "GIT_DESCRIBE_MATCH=$GIT_DESCRIBE_MATCH" >> $GITHUB_OUTPUT
+          echo "PKG_NAME=$PKG_NAME" >>$GITHUB_OUTPUT
+          echo "PACKAGE_PATH=$PACKAGE_PATH" >>$GITHUB_OUTPUT
+          echo "GIT_DESCRIBE_MATCH=$GIT_DESCRIBE_MATCH" >>$GITHUB_OUTPUT
 
           # ========= Compute previous tag (skip current tag) =========
           echo "Finding previous tag using: git describe --match '$GIT_DESCRIBE_MATCH'"
@@ -95,19 +95,42 @@ jobs:
             PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
           fi
 
-          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >>$GITHUB_OUTPUT
+
+          # ========= Determine npm dist-tag =========
+          if [[ "$TAG" =~ ^v[0-9] ]]; then
+            VERSION="${TAG#v}"
+          else
+            VERSION="${TAG##*@}"
+          fi
+
+          if [[ "$VERSION" =~ -beta ]]; then
+            NPM_TAG="beta"
+          elif [[ "$VERSION" =~ -alpha ]]; then
+            NPM_TAG="alpha"
+          elif [[ "$VERSION" =~ -rc ]]; then
+            NPM_TAG="rc"
+          elif [[ "$VERSION" =~ ^4\. ]]; then
+            # v4 is a maintenance line: never move "latest" (it points to v5)
+            NPM_TAG="v4-latest"
+          else
+            NPM_TAG="latest"
+          fi
+
+          echo "NPM_TAG=$NPM_TAG" >>$GITHUB_OUTPUT
 
           echo "Resolved:"
           echo "  TAG=$TAG"
           echo "  PKG_NAME=$PKG_NAME"
           echo "  PACKAGE_PATH=$PACKAGE_PATH"
           echo "  PREVIOUS_TAG=$PREVIOUS_TAG"
+          echo "  NPM_TAG=$NPM_TAG"
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
 
       - name: Setup node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: lts/*
           cache: pnpm
@@ -117,6 +140,20 @@ jobs:
         shell: bash
         run: pnpm install --frozen-lockfile
 
+      - name: Copy root README for main package
+        if: ${{ steps.resolve.outputs.PKG_NAME == '<main>' && steps.resolve.outputs.PACKAGE_PATH != '.' }}
+        run: |
+          echo "Copying README.md to ${{ steps.resolve.outputs.PACKAGE_PATH }}"
+          cp README.md "${{ steps.resolve.outputs.PACKAGE_PATH }}/README.md"
+
+      - name: Build
+        run: pnpm build
+        working-directory: ${{ steps.resolve.outputs.PACKAGE_PATH }}
+
+      - name: Publish to NPM
+        run: pnpm publish --access public --no-git-checks --tag ${{ steps.resolve.outputs.NPM_TAG }}
+        working-directory: ${{ steps.resolve.outputs.PACKAGE_PATH }}
+
       - name: Generate GitHub Changelog
         run: pnpx changelogithub --from "$FROM_TAG" --to "$TAG"
         continue-on-error: true
@@ -124,11 +161,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.resolve.outputs.TAG }}
           FROM_TAG: ${{ steps.resolve.FROM_TAG }}
-
-      - name: Build
-        run: pnpm build
-        working-directory: ${{ steps.resolve.outputs.PACKAGE_PATH }}
-
-      - name: Publish to NPM
-        run: pnpm publish --access public --no-git-checks
-        working-directory: ${{ steps.resolve.outputs.PACKAGE_PATH }}
