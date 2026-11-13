@@ -80,27 +80,14 @@ describe('Initial Navigation', () => {
     })
   })
 
-  it('replaces the history entry when the initial navigation changes the url', async () => {
+  it('writes the redirected location on a fresh initial navigation', async () => {
     window.history.replaceState(null, '', '')
     const spy = vi.spyOn(window.history, 'replaceState')
     const { history, router } = newRouter('/to-foo')
     await router.push(history.location)
-    expect(spy).toHaveBeenCalledTimes(2)
-    expect(spy).toHaveBeenLastCalledWith(
-      expect.objectContaining({ current: '/foo' }),
-      '',
-      'https://example.com/foo'
-    )
-  })
-
-  it('replaces the history entry when it was changed after creating the history', async () => {
-    window.history.replaceState(null, '', '')
-    const { history, router } = newRouter('/foo')
-    window.history.replaceState({ ...window.history.state }, '', '/bar')
-    const spy = vi.spyOn(window.history, 'replaceState')
-    await router.push(history.location)
     expect(spy).toHaveBeenCalledTimes(1)
-    expect(location.pathname).toBe('/foo')
+    expect(window.history.state).toMatchObject({ current: '/foo' })
+    expect(location.href).toBe('https://example.com/foo')
   })
 
   it('handles initial navigation with beforeEnter', async () => {

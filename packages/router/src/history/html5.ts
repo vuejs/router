@@ -177,23 +177,16 @@ function useHistoryStateNavigation(base: string) {
     value: createCurrentLocation(base, location),
   }
   const historyState: ValueContainer<StateEntry> = { value: history.state }
-  // `history.state` is a new object after any change to the entry
-  let initialState: StateEntry | undefined
-  // build current history entry as this is a fresh navigation
+  // a fresh entry is only written by the first replace() or push()
   if (!historyState.value) {
-    changeLocation(
-      currentLocation.value,
-      {
-        back: null,
-        current: currentLocation.value,
-        forward: null,
-        // the length is off by one, we need to decrease it
-        position: history.length - 1,
-        replaced: true,
-      },
-      true
-    )
-    initialState = history.state
+    historyState.value = {
+      back: null,
+      current: currentLocation.value,
+      forward: null,
+      // the length is off by one, we need to decrease it
+      position: history.length - 1,
+      replaced: true,
+    }
   }
 
   function changeLocation(
@@ -250,17 +243,7 @@ function useHistoryStateNavigation(base: string) {
       { position: historyState.value.position }
     )
 
-    const initial = initialState
-    if (
-      !initial ||
-      initial !== history.state ||
-      to !== initial.current ||
-      Object.keys(state).some(
-        key => !(key in initial) || state[key] !== initial[key]
-      )
-    ) {
-      changeLocation(to, state, true)
-    }
+    changeLocation(to, state, true)
     invalidateScrollPositions(state.position, true)
     currentLocation.value = to
   }
