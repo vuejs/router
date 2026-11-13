@@ -170,3 +170,40 @@ describe('ignored query param diagnostics', () => {
     if (__DEV__) expect('VUE_ROUTER_R0123').toHaveBeenWarnedTimes(1)
   })
 })
+
+describe('repeatable param diagnostics', () => {
+  function resolver(subsegment = false) {
+    return createFixedResolver([
+      {
+        name: 'repeat',
+        path: new MatcherPatternPathDynamic(
+          subsegment ? /^\/repeat\/pre(.+)?$/ : /^\/repeat(?:\/(.+))?$/,
+          { p: [undefined, true, true] },
+          subsegment ? ['repeat', ['pre', 1]] : ['repeat', 1]
+        ),
+      },
+    ])
+  }
+
+  it.each([false, true])('warns for a scalar (subsegment: %s)', subsegment => {
+    expect(
+      resolver(subsegment).resolve({ name: 'repeat', params: { p: 'a' } })
+        .params
+    ).toEqual({ p: ['a'] })
+    if (__DEV__) expect('VUE_ROUTER_R0106').toHaveBeenWarnedTimes(1)
+  })
+
+  it('does not warn for arrays, null, or omitted params', () => {
+    const routes = resolver()
+    expect(
+      routes.resolve({ name: 'repeat', params: { p: ['a', 'b'] } }).path
+    ).toBe('/repeat/a/b')
+    expect(routes.resolve({ name: 'repeat', params: { p: [] } }).path).toBe(
+      '/repeat'
+    )
+    expect(routes.resolve({ name: 'repeat', params: { p: null } }).path).toBe(
+      '/repeat'
+    )
+    expect(routes.resolve({ name: 'repeat', params: {} }).path).toBe('/repeat')
+  })
+})
