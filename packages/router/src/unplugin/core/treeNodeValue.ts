@@ -770,28 +770,29 @@ export function subSegmentsToRe(
 
     if (typeof segment === 'string') {
       regexp += escapeRegex(segment)
-    } else if (segment.isSplat) {
-      regexp += '(.*)'
     } else {
       var customRe = customRegexps.get(segment.paramName)
-      var re = customRe
-        ? segment.repeatable
-          ? // each repetition must match the custom regexp
-            `((?:${customRe})(?:\\/(?:${customRe}))*)`
-          : `(${customRe})`
-        : segment.repeatable
-          ? '(.+?)'
-          : '([^/]+?)'
+      var re = segment.isSplat
+        ? '(.*)'
+        : customRe
+          ? segment.repeatable
+            ? // each repetition must match the custom regexp
+              `((?:${customRe})(?:\\/(?:${customRe}))*)`
+            : `(${customRe})`
+          : segment.repeatable
+            ? '(.+?)'
+            : '([^/]+?)'
       if (segment.optional) {
-        // check ahead if there is a static segment after this one that starts with a slash
         // TODO: trailingSlash behavior
         var prevSegment = subSegments[i - 1]
-        // is there a slash right before us
+        var nextSegment = subSegments[i + 1]
+        // a slash next to the param becomes part of the optional group
         if (
-          (!prevSegment ||
-            (typeof prevSegment === 'string' && prevSegment.endsWith('/'))) &&
-          // avoid the transformation when the optional param is the whole path
-          subSegments.length > 1
+          typeof prevSegment === 'string'
+            ? prevSegment.endsWith('/')
+            : !prevSegment &&
+              typeof nextSegment === 'string' &&
+              nextSegment.startsWith('/')
         ) {
           re = `(?:\\/${re})?`
           // remove the escaped trailing slash from the previous static segment

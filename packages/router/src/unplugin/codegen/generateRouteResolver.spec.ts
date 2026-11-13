@@ -1605,6 +1605,70 @@ describe('generateRouteResolver', () => {
       expect(resolver).toContain('["users",1,"articles",1]')
     })
 
+    function resolverFor(file: string, path?: string, others: string[] = []) {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      for (const other of others) tree.insert(other, other + '.vue')
+      const node = tree.insert(file, file + '.vue')
+      if (path != null) node.value.setOverride(file, { path })
+      return generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        new ImportsMap(),
+        new Map()
+      )
+    }
+
+    it.each([
+      ['files/[[...path]]', undefined],
+      ['files/[id]', '/files/:path(.*)*'],
+    ])('closes the group of an optional splat (%s %s)', (file, path) => {
+      expect(resolverFor(file, path)).toContain(
+        String.raw`/^\/files(?:\/(.*))?$/i`
+      )
+    })
+
+    it.each([
+      ['item/[[id]]-edit', undefined],
+      ['item/[id]', '/item/:id?-edit'],
+    ])(
+      'adds one slash before a leading optional param (%s %s)',
+      (file, path) => {
+        expect(resolverFor(file, path)).toContain(
+          String.raw`/^\/item\/([^/]+?)?-edit$/i`
+        )
+      }
+    )
+
+    it('keeps the slash in the group of a leading optional param of an alias', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      const node = tree.insert('users', 'users.vue')
+      node.setCustomRouteBlock('users.vue', { alias: ['/:id?/foo'] })
+
+      expect(
+        generateRouteResolver(
+          tree,
+          DEFAULT_OPTIONS,
+          new ImportsMap(),
+          new Map()
+        )
+      ).toContain(String.raw`/^(?:\/([^/]+?))?\/foo$/i`)
+    })
+
+    it('keeps the slash in the group of a dot nested optional param', () => {
+      expect(resolverFor('item/[[id]].foo')).toContain(
+        String.raw`/^\/item(?:\/([^/]+?))?\/foo$/i`
+      )
+    })
+
+    it.each([
+      ['users/index', undefined],
+      ['users/settings', ''],
+    ])('sorts an empty child before its parent (%s %s)', (file, path) => {
+      const resolver = resolverFor(file, path, ['users'])
+      const list = resolver.slice(resolver.indexOf('createFixedResolver(['))
+      expect(list.indexOf('__route_1')).toBeLessThan(list.indexOf('__route_0'))
+    })
+
     it('keeps the custom regexp of a param of the override', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
       const node = tree.insert('[id]', '[id].vue')

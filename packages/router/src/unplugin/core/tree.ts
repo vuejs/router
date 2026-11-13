@@ -462,12 +462,16 @@ export class TreeNode {
         const customRegexps = new Map(
           value.pathParams.map(param => [param.paramName, param.re])
         )
+        const pathSubSegments = value.pathSubSegments
         segments.unshift(
-          ...value.pathSubSegments.map(subSegments => ({
-            subSegments,
-            re: subSegmentsToRe(subSegments, customRegexps),
-            score: subSegmentsToScore(subSegments),
-          }))
+          ...(pathSubSegments.length
+            ? pathSubSegments.map(subSegments => ({
+                subSegments,
+                re: subSegmentsToRe(subSegments, customRegexps),
+                score: subSegmentsToScore(subSegments),
+              }))
+            : // an empty path is scored like an index file
+              [{ subSegments: [], re: '', score: [300] }])
         )
         // an absolute path drops everything above it from the url
         if (overridePath.startsWith('/')) break
@@ -513,7 +517,8 @@ export class TreeNode {
           segmentRe.slice(0, -1)
         })?`
       } else {
-        re += (re ? '\\/' : '') + segmentRe
+        // a leading optional group already has its slash
+        re += (re && !segmentRe.startsWith('(?:\\/') ? '\\/' : '') + segmentRe
       }
     }
 
