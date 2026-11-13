@@ -1,3 +1,32 @@
+## [5.5.1](https://github.com/vuejs/router/compare/v5.5.0...v5.5.1) (2026-11-13)
+
+- perf(experimental)!: avoid full stack traces for match misses ([3176a5c](https://github.com/vuejs/router/commit/3176a5c9bf5b19dad48ea77f70528abc37181b9a))
+
+### Bug Fixes
+
+- escape | in static path tokens ([#2897](https://github.com/vuejs/router/issues/2897)) ([36eee12](https://github.com/vuejs/router/commit/36eee1251cf35804e0e2bcda0da052c6ba11786f))
+- **experimental:** display location on its own line in VUE_ROUTER_R0129 ([#2894](https://github.com/vuejs/router/issues/2894)) ([dacd36d](https://github.com/vuejs/router/commit/dacd36d8ef12c6cb38b45dfdb97dc711fdfc831e))
+- **experimental:** resolve relative object locations against the current route ([#2890](https://github.com/vuejs/router/issues/2890)) ([ad70a67](https://github.com/vuejs/router/commit/ad70a67f9b118ddfb56ef39b68035153656cefe1))
+- **history:** keep userinfo by using relative urls in pushState ([#2889](https://github.com/vuejs/router/issues/2889)) ([7e75407](https://github.com/vuejs/router/commit/7e754077893c41bb8afd322533ef8e2cd6fb5658))
+- **matcher:** refine param separator matching ([#2898](https://github.com/vuejs/router/issues/2898)) ([6bdcf9a](https://github.com/vuejs/router/commit/6bdcf9aa8df016dcf4b0d6b8df323cc8b8be44aa))
+- **unplugin:** read quoted keys in definePage() at build time ([#2860](https://github.com/vuejs/router/issues/2860)) ([9008820](https://github.com/vuejs/router/commit/900882050e6ddc718ba5fc9b5ba4a6b97f70c62c))
+
+### Features
+
+- **experimental:** add RouterLink and useLink for experimental_createRouter ([#2893](https://github.com/vuejs/router/issues/2893)) ([0b25603](https://github.com/vuejs/router/commit/0b25603efc418a5ae9414612152cbebdc4b4e36a))
+- **experimental:** warn on relative object locations before the initial navigation ([#2895](https://github.com/vuejs/router/issues/2895)) ([5921aa2](https://github.com/vuejs/router/commit/5921aa2600797626ae7ca2b1ea9d2db35d4998ee))
+- warn on repeatable params being passed as scalars ([#2879](https://github.com/vuejs/router/issues/2879)) ([16cf6a2](https://github.com/vuejs/router/commit/16cf6a2acce271256ad2b45811efeff038a7daa4))
+
+### BREAKING CHANGES
+
+- experimental router matchers now return `null` on a miss instead of throwing.
+
+  This affects only users of `vue-router/experimental`:
+
+  - `MatcherPattern.match()` (path, query, and hash) now returns `TParams | null`. Custom matchers should return `null` when they do not match. Throwing `miss()` from `match()` still works, but it is slower. Code that calls `match()` directly must handle `null`.
+  - `MatchMiss` no longer extends `Error` and has no `name` or stack trace. Code that catches router errors and checks `instanceof Error` or `error.name === 'MatchMiss'` must check `instanceof MatchMiss` instead.
+  - When a named location does not match, `resolve()` throws a `MatchMiss`. If a matcher or param parser throws a different error during a named resolve, the router no longer rethrows that error. It throws a `MatchMiss` instead. In development, the original error is logged as the cause (`VUE_ROUTER_R0123`). Make sure your param parsers do not throw unexpected errors, and call `miss()` to reject a value.
+
 # [5.5.0](https://github.com/vuejs/router/compare/v5.4.0...v5.5.0) (2026-11-10)
 
 ### Bug Fixes
