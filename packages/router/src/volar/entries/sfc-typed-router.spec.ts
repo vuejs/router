@@ -69,32 +69,21 @@ describe('sfc-typed-router volar plugin', () => {
     expect(transform(code, { lang: 'js' })).toBe(code)
   })
 
-  it('injects the file path and the page component into `definePage()`', () => {
-    const out = transform(`definePage({ props: true })`)
-    expect(out).toBe(
-      `definePage<'src/pages/users/sub-[first]-[second].vue', typeof import('./sub-[first]-[second].vue').default>({ props: true })`
-    )
-  })
-
-  it('escapes quotes in the `definePage()` self import', () => {
-    const out = transform(`definePage({ props: true })`, {
+  it('escapes quotes in the `definePage()` file path', () => {
+    const out = transform(`definePage({})`, {
       fileName: `/app/src/pages/it's-fine.vue`,
     })
-    expect(out).toBe(
-      `definePage<'src/pages/it\\'s-fine.vue', typeof import('./it\\'s-fine.vue').default>({ props: true })`
-    )
+    expect(out).toBe(`definePage<'src/pages/it\\'s-fine.vue'>({})`)
   })
 
-  it('injects the page component for every `props` form but `false`', () => {
-    for (const props of ['to => to.params', '{ a: 1 }']) {
-      expect(transform(`definePage({ props: ${props} })`)).toContain(
-        `typeof import('./sub-[first]-[second].vue').default>`
-      )
-    }
-  })
-
-  it('only injects the file path into `definePage()` without props', () => {
-    for (const code of [`definePage({})`, `definePage({ props: false })`]) {
+  it('only injects the file path into `definePage()`', () => {
+    for (const code of [
+      `definePage({})`,
+      `definePage({ props: false })`,
+      `definePage({ props: true })`,
+      `definePage({ props: { a: 1 } })`,
+      `definePage({ props: to => to.params })`,
+    ]) {
       expect(transform(code)).toBe(
         code.replace(
           'definePage(',
@@ -124,6 +113,14 @@ describe('sfc-typed-router volar plugin', () => {
       expect(
         transformProps(
           `const props = defineProps()\ndefinePage({ props: true })`
+        )
+      ).toBe(`const props = defineProps<${ROUTE_PROPS}>()`)
+    })
+
+    it('detects a quoted `props` key', () => {
+      expect(
+        transformProps(
+          `const props = defineProps()\ndefinePage({ 'props': true })`
         )
       ).toBe(`const props = defineProps<${ROUTE_PROPS}>()`)
     })
@@ -158,14 +155,26 @@ describe('sfc-typed-router volar plugin', () => {
       )
     })
 
-    it('does nothing without `props: true`', () => {
+    it('does nothing with other `props` values', () => {
       for (const code of [
         `const props = defineProps()\ndefinePage({ props: false })`,
+        `const props = defineProps()\ndefinePage({ 'props': false })`,
         `const props = defineProps()\ndefinePage({ props: to => to.params })`,
-        `const props = defineProps()\ndefinePage({})`,
-        `const props = defineProps()`,
+        `const props = defineProps()\ndefinePage({ props })`,
       ]) {
         expect(transformProps(code)).toBe(code.split('\n')[0])
+      }
+    })
+
+    it('adds the default route props without `props`', () => {
+      const DEFAULT_ROUTE_PROPS = `import('vue-router/experimental')._DefaultRoutePropsForFilePath<'src/pages/users/sub-[first]-[second].vue'>`
+      for (const code of [
+        `const props = defineProps<Props>()\ndefinePage({})`,
+        `const props = defineProps<Props>()`,
+      ]) {
+        expect(transformProps(code)).toBe(
+          `const props = defineProps<${DEFAULT_ROUTE_PROPS} & (Props)>()`
+        )
       }
     })
 

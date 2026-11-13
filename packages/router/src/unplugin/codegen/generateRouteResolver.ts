@@ -212,7 +212,7 @@ export function generateRouteRecord({
   ${generateRouteRecordPath({ node, importsMap, paramParsersMap, parentVar, parentNode })}${
     queryProperty ? `\n  ${queryProperty}` : ''
   }${hashProperty ? `\n  ${hashProperty}` : ''}${formatMeta(node, '  ')}
-  ${recordComponents}${parentVar ? `\n  parent: ${parentVar},` : ''}
+  ${recordComponents}${generateRouteRecordProps(node, options)}${parentVar ? `\n  parent: ${parentVar},` : ''}
 }`
 
     recordDeclaration =
@@ -432,6 +432,20 @@ ${queryParams
   })
   .join(',\n')}
   ],`
+}
+
+/**
+ * Generates the default `props` of a route record, one entry per view.
+ */
+function generateRouteRecordProps(
+  node: TreeNode,
+  options: ResolvedOptions
+): string {
+  if (!options.experimental.propsDefault || !node.hasComponents) return ''
+  return `\n  props: { ${Array.from(
+    node.value.components.keys(),
+    view => `${toStringLiteral(view)}: true`
+  ).join(', ')} },`
 }
 
 /**

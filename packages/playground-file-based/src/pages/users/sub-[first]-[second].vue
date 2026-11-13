@@ -2,9 +2,7 @@
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-type Route = typeof route
 type RouteFromType = ReturnType<typeof useRoute>
-type RouteOther = ReturnType<typeof useRoute<'/about'>>
 
 route.params.first satisfies RouteFromType['params']['first']
 route.params.second satisfies RouteFromType['params']['second']

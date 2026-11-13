@@ -6,8 +6,13 @@ export function generateRouteFileInfoMap(
   node: PrefixTree,
   {
     root,
+    propsDefault,
   }: {
     root: string
+    /**
+     * Mark every page as receiving the route params as props.
+     */
+    propsDefault?: boolean
   }
 ): string {
   if (!node.isRoot()) {
@@ -56,7 +61,7 @@ export function generateRouteFileInfoMap(
       ${formatMultilineUnion(
         Array.from(new Set(pathParamNames)).sort().map(toStringLiteral),
         6
-      )}
+      )}${propsDefault ? `\n    props: true` : ''}
   }`
     )
     .join('\n')

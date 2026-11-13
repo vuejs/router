@@ -352,6 +352,55 @@ definePage({ props: true })`)
     })
   })
 
+  describe('route props with `propsDefault`', () => {
+    async function transformScript(script: string, id = 'src/pages/a.vue') {
+      const result = (await definePageTransform({
+        code: `<script setup lang="ts">\n${script}\n</script>\n`,
+        id,
+        getRoutePropNames: () => ['userId'],
+        propsDefault: true,
+      })) as Exclude<TransformResult, string> | undefined
+      return result?.code
+    }
+
+    it('declares the params without `definePage()`', async () => {
+      expect(await transformScript(`defineProps()`)).toContain(
+        `defineProps(["userId"])`
+      )
+    })
+
+    it('declares the params without `props` in `definePage()`', async () => {
+      expect(
+        await transformScript(`defineProps()
+definePage({ meta: { a: 1 } })`)
+      ).toContain(`defineProps(["userId"])`)
+    })
+
+    it('lets `definePage()` override the default', async () => {
+      for (const props of ['false', 'to => to.params', '{}']) {
+        expect(
+          await transformScript(`defineProps()
+definePage({ props: ${props} })`)
+        ).toContain(`defineProps()`)
+      }
+    })
+
+    it('does not change files without `defineProps()`', async () => {
+      expect(await transformScript(`const a = 1`)).toBeUndefined()
+    })
+
+    it('extracts an empty definePage() without `definePage()`', async () => {
+      expect(
+        await definePageTransform({
+          code: `<script setup lang="ts">\ndefineProps()\n</script>\n`,
+          id: 'src/pages/a.vue?definePage&vue',
+          getRoutePropNames: () => ['userId'],
+          propsDefault: true,
+        })
+      ).toBe('export default {}')
+    })
+  })
+
   describe('duplicate definePage()', () => {
     const duplicateCode = vue`
 <script setup>
