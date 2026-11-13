@@ -403,7 +403,7 @@ describe('Path parser', () => {
       matchRegExp('^/foo\\[ea\\]$', [
         [{ type: TokenType.Static, value: 'foo[ea]' }],
       ])
-      matchRegExp('^/foo\\(e|a\\)$', [
+      matchRegExp('^/foo\\(e\\|a\\)$', [
         [{ type: TokenType.Static, value: 'foo(e|a)' }],
       ])
       matchRegExp('^/(\\d+)\\{2\\}$', [
@@ -607,6 +607,36 @@ describe('Path parser', () => {
       matchParams('/home/', '/home', null, { strict: true })
     })
 
+    it('treats | in static parts as a literal character', () => {
+      matchParams('/a|b', '/a|b', {})
+      matchParams('/a|b', '/a', null)
+      matchParams('/a|b', '/b', null)
+      matchParams('/a|b', '/azzz', null)
+      matchParams('/a|b', '/zzzb', null)
+      matchParams('/foo|', '/foo|', {})
+      matchParams('/foo|', '/', null)
+      matchParams('/foo|', '/other', null)
+      matchParams('/foo(e|a)', '/foo(e|a)', {})
+      matchParams('/foo(e|a)', '/foo(e', null)
+      matchParams('/:a-|:b', '/x-|y', { a: 'x', b: 'y' })
+      matchParams('/:a-|:b', '/x-y', null)
+      matchParams('/:a-|:b', '/y', null)
+    })
+
+    it('keeps | as alternation inside custom regexps', () => {
+      matchParams('/:lang(en|fr)', '/en', { lang: 'en' })
+      matchParams('/:lang(en|fr)', '/fr', { lang: 'fr' })
+      matchParams('/:lang(en|fr)', '/de', null)
+      matchParams('/a-:lang(en|fr)-b', '/a-fr-b', { lang: 'fr' })
+      matchParams('/a-:lang(en|fr)-b', '/a-en', null)
+      matchParams('/:lang(en|fr)+', '/en/fr', { lang: ['en', 'fr'] })
+      matchParams('/:lang(en|fr)+', '/en/de', null)
+      // static | next to a param with alternation
+      matchParams('/:lang(en|fr)|x', '/en|x', { lang: 'en' })
+      matchParams('/:lang(en|fr)|x', '/en', null)
+      matchParams('/:lang(en|fr)|x', '/fr|y', null)
+    })
+
     it('allow a trailing slash in repeated params', () => {
       matchParams('/a/:id+', '/a/b/c/d/', { id: ['b', 'c', 'd'] })
       matchParams('/a/:id*', '/a/b/c/d/', { id: ['b', 'c', 'd'] })
@@ -790,7 +820,6 @@ describe('Path parser', () => {
 
     it('param multiple with regex special separators', () => {
       matchParams('/:a.:b.:c', '/1.2.3.4', { a: '1', b: '2', c: '3.4' })
-      matchParams('/:a\\+:b', '/x+y+z', { a: 'x', b: 'y+z' })
       matchParams('/:a$:b^:c', '/1$2$3^4^5', { a: '1', b: '2$3', c: '4^5' })
       matchParams('/:a[:b]:c', '/1[2[3]4]5', { a: '1', b: '2[3', c: '4]5' })
     })
