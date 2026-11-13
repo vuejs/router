@@ -6,7 +6,7 @@ import { createWebHistory } from '../src/history/html5'
 import { components, nextNavigation } from './utils'
 import type { RouteRecordRaw } from '../src/types'
 import type { Window as HappyDomWindow } from 'happy-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 // to get a typed window
 function getWindow(): HappyDomWindow {
@@ -38,6 +38,10 @@ const routes: RouteRecordRaw[] = [
 ]
 
 describe('Initial Navigation', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   function newRouter(
     url: string,
     options: Partial<Parameters<typeof createRouter>[0]> = {}
@@ -60,6 +64,30 @@ describe('Initial Navigation', () => {
     history.go(-1)
     await nextNavigation(router)
     expect(router.currentRoute.value).toMatchObject({ path: '/' })
+  })
+
+  it('writes the history entry once on a fresh initial navigation', async () => {
+    window.history.replaceState(null, '', '')
+    const spy = vi.spyOn(window.history, 'replaceState')
+    const { history, router } = newRouter('/foo')
+    await router.push(history.location)
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(window.history.state).toMatchObject({
+      back: null,
+      current: '/foo',
+      forward: null,
+      replaced: true,
+    })
+  })
+
+  it('writes the redirected location on a fresh initial navigation', async () => {
+    window.history.replaceState(null, '', '')
+    const spy = vi.spyOn(window.history, 'replaceState')
+    const { history, router } = newRouter('/to-foo')
+    await router.push(history.location)
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(window.history.state).toMatchObject({ current: '/foo' })
+    expect(location.href).toBe('https://example.com/foo')
   })
 
   it('handles initial navigation with beforeEnter', async () => {

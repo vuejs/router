@@ -177,20 +177,16 @@ function useHistoryStateNavigation(base: string) {
     value: createCurrentLocation(base, location),
   }
   const historyState: ValueContainer<StateEntry> = { value: history.state }
-  // build current history entry as this is a fresh navigation
+  // a fresh entry is only written by the first replace() or push()
   if (!historyState.value) {
-    changeLocation(
-      currentLocation.value,
-      {
-        back: null,
-        current: currentLocation.value,
-        forward: null,
-        // the length is off by one, we need to decrease it
-        position: history.length - 1,
-        replaced: true,
-      },
-      true
-    )
+    historyState.value = {
+      back: null,
+      current: currentLocation.value,
+      forward: null,
+      // the length is off by one, we need to decrease it
+      position: history.length - 1,
+      replaced: true,
+    }
   }
 
   function changeLocation(
