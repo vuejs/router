@@ -337,6 +337,7 @@ describe('Router', () => {
     })
     expect(route1.path).toBe('/optional')
     expect(route1.params).toEqual({})
+    expect('VUE_ROUTER_R0122').toHaveBeenWarned()
 
     const route2 = router.resolve({
       name: 'optional',
@@ -387,6 +388,77 @@ describe('Router', () => {
     await router.push({ name: 'optional', params: { p: 'a' } })
     await router.push({ name: 'optional', params: { p: undefined } })
     expect(router.currentRoute.value.params).toEqual({})
+    expect('VUE_ROUTER_R0122').toHaveBeenWarned()
+  })
+
+  it('removes an optional param with null in a relative location', async () => {
+    const { router } = await newRouter()
+    await router.push({ name: 'optional', params: { p: 'a' } })
+    const route = router.resolve({ params: { p: null } })
+    expect(route.path).toBe('/optional')
+    expect(route.params).toEqual({})
+    expect('VUE_ROUTER_R0122').not.toHaveBeenWarned()
+    expect('VUE_ROUTER_R0107').not.toHaveBeenWarned()
+  })
+
+  it('removes an optional parent param with null', async () => {
+    const { router } = await newRouter()
+    router.addRoute({
+      path: '/po/:a?',
+      name: 'po',
+      component: components.Bar,
+      children: [{ path: 'c/:b', name: 'po-c', component: components.Foo }],
+    })
+    await router.push('/po/1/c/2')
+    expect(router.resolve({ name: 'po-c', params: { a: null } }).path).toBe(
+      '/po/c/2'
+    )
+    expect(router.resolve({ params: { a: null } }).path).toBe('/po/c/2')
+    expect('VUE_ROUTER_R0107').not.toHaveBeenWarned()
+  })
+
+  it('removes an optional repeatable param with null in a relative location', async () => {
+    const { router } = await newRouter()
+    router.addRoute({ path: '/r/:r*', name: 'r', component: components.Bar })
+    await router.push('/r/a/b')
+    expect(router.resolve({ params: { r: null } }).path).toBe('/r')
+  })
+
+  it('keeps an optional param passed as undefined in a relative location', async () => {
+    const { router } = await newRouter()
+    await router.push({ name: 'optional', params: { p: 'a' } })
+    expect(router.resolve({ params: { p: undefined } }).path).toBe(
+      '/optional/a'
+    )
+    expect('VUE_ROUTER_R0107').toHaveBeenWarned()
+  })
+
+  it('keeps a required param passed as null or undefined', async () => {
+    const { router } = await newRouter()
+    await router.push('/p/a')
+    expect(router.resolve({ name: 'Param', params: { p: null } }).path).toBe(
+      '/p/a'
+    )
+    expect(router.resolve({ params: { p: null } }).path).toBe('/p/a')
+    expect(router.resolve({ params: { p: undefined } }).path).toBe('/p/a')
+    expect('VUE_ROUTER_R0107').toHaveBeenWarnedTimes(3)
+  })
+
+  it('does not warn about unknown nullish params', async () => {
+    const { router } = await newRouter()
+    expect(
+      router.resolve({ name: 'Foo', params: { a: null, b: undefined } }).path
+    ).toBe('/foo')
+    expect('VUE_ROUTER_R0100').not.toHaveBeenWarned()
+  })
+
+  it('does not warn when params are omitted', async () => {
+    const { router } = await newRouter()
+    await router.push('/p/a')
+    expect(router.resolve({ name: 'Param', params: {} }).path).toBe('/p/a')
+    expect(router.resolve({ params: {} }).path).toBe('/p/a')
+    expect('VUE_ROUTER_R0107').not.toHaveBeenWarned()
+    expect('VUE_ROUTER_R0122').not.toHaveBeenWarned()
   })
 
   it('keeps empty strings in optional params', async () => {

@@ -3,6 +3,7 @@ import type {
   Lazy,
   RouteLocationOptions,
   MatcherLocationRaw,
+  RouteParamsRawGeneric,
 } from './types'
 import { isRouteLocation, isRouteName } from './types'
 import type {
@@ -189,7 +190,12 @@ export function createRouter(options: RouterOptions): Router {
     null,
     paramValue => '' + paramValue
   )
-  const encodeParams = applyToParams.bind(null, encodeParam)
+  // keeps nullish values for the matcher
+  const encodeParams: (
+    params: RouteParamsRawGeneric | undefined
+  ) => RouteParams =
+    // @ts-expect-error: intentionally avoid the type check
+    applyToParams.bind(null, v => (v == null ? v : encodeParam(v)))
   const decodeParams: (params: RouteParams | undefined) => RouteParams =
     // @ts-expect-error: intentionally avoid the type check
     applyToParams.bind(null, decode)
@@ -319,16 +325,9 @@ export function createRouter(options: RouterOptions): Router {
         path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path,
       })
     } else {
-      // remove any nullish param
-      const targetParams = assign({}, rawLocation.params)
-      for (const key in targetParams) {
-        if (targetParams[key] == null) {
-          delete targetParams[key]
-        }
-      }
       // pass encoded values to the matcher, so it can produce encoded path and fullPath
       matcherLocation = assign({}, rawLocation, {
-        params: encodeParams(targetParams),
+        params: encodeParams(rawLocation.params),
       })
       // current location params are decoded, we need to encode them in case the
       // matcher merges the params
