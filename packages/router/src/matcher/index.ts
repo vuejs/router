@@ -223,9 +223,10 @@ export function createRouterMatcher(
       if (index > -1) {
         matchers.splice(index, 1)
         if (matcherRef.record.name) matcherMap.delete(matcherRef.record.name)
-        matcherRef.children.forEach(removeRoute)
-        matcherRef.alias.forEach(removeRoute)
       }
+      // Unmatchable grouping records can still have children and aliases.
+      matcherRef.children.forEach(removeRoute)
+      matcherRef.alias.forEach(removeRoute)
     }
   }
 
