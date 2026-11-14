@@ -1194,6 +1194,62 @@ describe('Router', () => {
   })
 
   describe('Dynamic Routing', () => {
+    it.each(['callback', 'named parent'])(
+      'removes grouped descendants from future navigation through %s',
+      async removal => {
+        const { router } = await newRouter()
+        const group: RouteRecordRaw = {
+          path: '/admin',
+          alias: '/staff',
+          children: [
+            {
+              path: 'users',
+              alias: 'members',
+              name: 'users',
+              component: components.Foo,
+            },
+          ],
+        }
+        const remove = router.addRoute(
+          removal === 'callback'
+            ? group
+            : {
+                path: '/outer',
+                name: 'outer',
+                component: components.Nested,
+                children: [group],
+              }
+        )
+        const { router: otherRouter } = await newRouter()
+        otherRouter.addRoute(group)
+        expect(router.hasRoute('users')).toBe(true)
+        await router.push('/admin/users')
+        expect(router.currentRoute.value.name).toBe('users')
+
+        if (removal === 'callback') remove()
+        else router.removeRoute('outer')
+
+        expect(router.hasRoute('users')).toBe(false)
+        expect(router.getRoutes().some(route => route.name === 'users')).toBe(
+          false
+        )
+        for (const path of [
+          '/admin/users',
+          '/admin/members',
+          '/staff/users',
+          '/staff/members',
+        ]) {
+          expect(router.resolve(path).name).toBe('catch-all')
+        }
+        await router.push('/staff/members')
+        expect(router.currentRoute.value.name).toBe('catch-all')
+        expect(router.hasRoute('home')).toBe(true)
+        expect(otherRouter.hasRoute('users')).toBe(true)
+        await otherRouter.push('/staff/members')
+        expect(otherRouter.currentRoute.value.name).toBe('users')
+      }
+    )
+
     it('resolves new added routes', async () => {
       const { router } = await newRouter({ routes: [] })
       expect(router.resolve('/new-route')).toMatchObject({
