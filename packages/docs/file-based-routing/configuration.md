@@ -52,9 +52,6 @@ VueRouter({
   // disabled by default when the `CI` env variable is set
   watch: !process.env.CI,
 
-  // activate debug logs
-  logs: false,
-
   // modify routes individually
   async extendRoute(route) {
     // ...
