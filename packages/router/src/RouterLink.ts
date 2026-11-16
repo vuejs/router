@@ -32,6 +32,7 @@ import type {
   RouteLocationAsPath,
   RouteLocationAsRelativeTyped,
   RouteLocationAsString,
+  RouteLocationGeneric,
   RouteLocationRaw,
   RouteLocationResolved,
   RouteMap,
@@ -163,47 +164,11 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
     return router.resolve(to)
   })
 
-  const activeRecordIndex = computed<number>(() => {
-    const { matched } = route.value
-    const { length } = matched
-    const routeMatched: RouteRecord | undefined = matched[length - 1]
-    const currentMatched = currentRoute.matched
-    if (!routeMatched || !currentMatched.length) return -1
-    const index = currentMatched.findIndex(
-      isSameRouteRecord.bind(null, routeMatched)
-    )
-    if (index > -1) return index
-    // possible parent record
-    const parentRecordPath = getOriginalPath(
-      matched[length - 2] as RouteRecord | undefined
-    )
-    return (
-      // we are dealing with nested routes
-      length > 1 &&
-        // if the parent and matched route have the same path, this link is
-        // referring to the empty child. Or we currently are on a different
-        // child of the same parent
-        getOriginalPath(routeMatched) === parentRecordPath &&
-        // avoid comparing the child with its parent
-        currentMatched[currentMatched.length - 1].path !== parentRecordPath
-        ? currentMatched.findIndex(
-            isSameRouteRecord.bind(null, matched[length - 2])
-          )
-        : index
-    )
-  })
-
-  const isActive = computed<boolean>(
-    () =>
-      activeRecordIndex.value > -1 &&
-      includesParams(currentRoute.params, route.value.params)
+  const activeState = computed(() =>
+    getLinkActiveState(route.value, currentRoute)
   )
-  const isExactActive = computed<boolean>(
-    () =>
-      activeRecordIndex.value > -1 &&
-      activeRecordIndex.value === currentRoute.matched.length - 1 &&
-      isSameRouteLocationParams(currentRoute.params, route.value.params)
-  )
+  const isActive = computed<boolean>(() => activeState.value.isActive)
+  const isExactActive = computed<boolean>(() => activeState.value.isExactActive)
 
   function navigate(
     e: Partial<MouseEvent> = {}
@@ -449,6 +414,72 @@ export function includesParams(
  */
 function getOriginalPath(record: RouteRecord | undefined): string {
   return record ? (record.aliasOf ? record.aliasOf.path : record.path) : ''
+}
+
+/**
+ * Location fields used to compute the active state of a link.
+ */
+type LinkActiveLocation = Pick<RouteLocationGeneric, 'matched' | 'params'>
+
+/**
+ * Index of the record in `currentRoute.matched` that makes a link to `route`
+ * active, or `-1`.
+ */
+function getActiveRecordIndex(
+  route: LinkActiveLocation,
+  currentRoute: LinkActiveLocation
+): number {
+  const { matched } = route
+  const { length } = matched
+  const routeMatched: RouteRecord | undefined = matched[length - 1]
+  const currentMatched = currentRoute.matched
+  if (!routeMatched || !currentMatched.length) return -1
+  const index = currentMatched.findIndex(
+    isSameRouteRecord.bind(null, routeMatched)
+  )
+  if (index > -1) return index
+  // possible parent record
+  const parentRecordPath = getOriginalPath(
+    matched[length - 2] as RouteRecord | undefined
+  )
+  return (
+    // we are dealing with nested routes
+    length > 1 &&
+      // if the parent and matched route have the same path, this link is
+      // referring to the empty child. Or we currently are on a different
+      // child of the same parent
+      getOriginalPath(routeMatched) === parentRecordPath &&
+      // avoid comparing the child with its parent
+      currentMatched[currentMatched.length - 1].path !== parentRecordPath
+      ? currentMatched.findIndex(
+          isSameRouteRecord.bind(null, matched[length - 2])
+        )
+      : index
+  )
+}
+
+/**
+ * Computes the `isActive` and `isExactActive` values {@link RouterLink} and
+ * {@link useLink} expose for a link to `route` while on `currentRoute`.
+ *
+ * @internal This is an internal API with no semver guarantees. It can change
+ * in any release.
+ *
+ * @param route - resolved location of the link (e.g. `router.resolve(to)`)
+ * @param currentRoute - current location
+ */
+export function getLinkActiveState(
+  route: LinkActiveLocation,
+  currentRoute: LinkActiveLocation
+): { isActive: boolean; isExactActive: boolean } {
+  const index = getActiveRecordIndex(route, currentRoute)
+  return {
+    isActive: index > -1 && includesParams(currentRoute.params, route.params),
+    isExactActive:
+      index > -1 &&
+      index === currentRoute.matched.length - 1 &&
+      isSameRouteLocationParams(currentRoute.params, route.params),
+  }
 }
 
 /**

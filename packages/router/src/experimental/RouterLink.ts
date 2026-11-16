@@ -11,13 +11,12 @@ import {
   type PropType,
 } from 'vue'
 import { routerKey, routerViewLocationKey } from '../injectionSymbols'
-import { isSameRouteLocationParams } from '../location'
 import { diagnostics } from '../diagnostics'
 import { isRouteLocation } from '../types'
 import { isBrowser, noop } from '../utils'
 import {
   shouldHandleLinkClick,
-  includesParams,
+  getLinkActiveState,
   preferSingleVNode,
   type RouterLinkProps,
   type RouterLinkPropsTyped,
@@ -27,10 +26,7 @@ import {
 } from '../RouterLink'
 import type { NavigationFailure } from '../errors'
 import type { RouteLocationRaw } from '../typed-routes'
-import type {
-  EXPERIMENTAL_Router,
-  EXPERIMENTAL_RouteRecordNormalized,
-} from './router'
+import type { EXPERIMENTAL_Router } from './router'
 
 export type {
   RouterLinkI as _RouterLinkI,
@@ -38,6 +34,8 @@ export type {
   RouterLinkSlotScope,
   UseLinkReturn,
 }
+
+type LinkActiveLocation = Parameters<typeof getLinkActiveState>[0]
 
 /**
  * Options passed to {@link useLink}.
@@ -51,13 +49,6 @@ export interface UseLinkOptions {
    */
   viewTransition?: MaybeRefOrGetter<boolean | undefined>
 }
-
-type Record_ = EXPERIMENTAL_RouteRecordNormalized
-
-const orig = (r: Record_ | undefined) => r && (r.aliasOf || r)
-
-const indexOfRecord = (matched: Record_[], record: Record_) =>
-  matched.findIndex(r => orig(r) === orig(record))
 
 /**
  * Returns the behavior of a {@link RouterLink} without the rendering part.
@@ -75,36 +66,15 @@ export function useLink(options: UseLinkOptions): UseLinkReturn {
     return router.resolve(to)
   })
 
-  // 0: inactive, 1: active, 2: exact active
-  const state = computed<number>(() => {
-    const target = route.value
-    const matched = target.matched as unknown as Record_[]
-    const current = currentRoute.value
-    const currentMatched = current.matched as unknown as Record_[]
-    const record = matched.at(-1)
-    if (!record) return 0
-    let i = indexOfRecord(currentMatched, record)
-    const parent = matched.at(-2)
-    // an index child shares the path matcher of its parent: on a sibling of
-    // the index child, the link is active through the parent
-    if (
-      i < 0 &&
-      parent &&
-      orig(record)!.path === orig(parent)!.path &&
-      orig(currentMatched.at(-1))?.path !== orig(parent)!.path
-    ) {
-      i = indexOfRecord(currentMatched, parent)
-    }
-    return i < 0 || !includesParams(current.params, target.params)
-      ? 0
-      : i === currentMatched.length - 1 &&
-          isSameRouteLocationParams(current.params, target.params)
-        ? 2
-        : 1
-  })
-
-  const isActive = computed(() => state.value > 0)
-  const isExactActive = computed(() => state.value > 1)
+  const activeState = computed(() =>
+    getLinkActiveState(
+      // records only need `aliasOf` and a comparable `path`
+      route.value as unknown as LinkActiveLocation,
+      currentRoute.value as unknown as LinkActiveLocation
+    )
+  )
+  const isActive = computed(() => activeState.value.isActive)
+  const isExactActive = computed(() => activeState.value.isExactActive)
 
   function navigate(
     e: Partial<MouseEvent> = {}
