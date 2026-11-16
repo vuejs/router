@@ -1225,7 +1225,9 @@ describe('Tree', () => {
       })
 
       it('sub segment first position', () => {
-        checkRegexp('[id].static', '/^\\/([^/]+?)\\/static$/i', {})
+        checkRegexp('[id].static', '/^\\/([^/]+?)\\/static$/i', {
+          matcherParts: [1, 'static'],
+        })
       })
 
       it('middle position', () => {
@@ -1235,7 +1237,9 @@ describe('Tree', () => {
       })
 
       it('sub segment middle position', () => {
-        checkRegexp('static.[id].more', '/^\\/static\\/([^/]+?)\\/more$/i', {})
+        checkRegexp('static.[id].more', '/^\\/static\\/([^/]+?)\\/more$/i', {
+          matcherParts: ['static', 1, 'more'],
+        })
       })
 
       it('last position', () => {
@@ -1245,7 +1249,9 @@ describe('Tree', () => {
       })
 
       it('sub segment last position', () => {
-        checkRegexp('static.[id]', '/^\\/static\\/([^/]+?)$/i', {})
+        checkRegexp('static.[id]', '/^\\/static\\/([^/]+?)$/i', {
+          matcherParts: ['static', 1],
+        })
       })
     })
 
@@ -1263,7 +1269,9 @@ describe('Tree', () => {
       })
 
       it('sub segment first position', () => {
-        checkRegexp('[[id]].static', '/^(?:\\/([^/]+?))?\\/static$/i', {})
+        checkRegexp('[[id]].static', '/^(?:\\/([^/]+?))?\\/static$/i', {
+          matcherParts: [1, 'static'],
+        })
       })
 
       it('middle position', () => {
@@ -1280,7 +1288,7 @@ describe('Tree', () => {
         checkRegexp(
           'static.[[id]].more',
           '/^\\/static(?:\\/([^/]+?))?\\/more$/i',
-          {}
+          { matcherParts: ['static', 1, 'more'] }
         )
       })
 
@@ -1291,7 +1299,9 @@ describe('Tree', () => {
       })
 
       it('sub segment last position', () => {
-        checkRegexp('static.[[id]]', '/^\\/static(?:\\/([^/]+?))?$/i', {})
+        checkRegexp('static.[[id]]', '/^\\/static(?:\\/([^/]+?))?$/i', {
+          matcherParts: ['static', 1],
+        })
       })
     })
 
@@ -1402,12 +1412,39 @@ describe('Tree', () => {
     })
 
     it('keeps the slash in the group of a dot nested optional param', () => {
-      checkRegexp('item/[[id]].foo', '/^\\/item(?:\\/([^/]+?))?\\/foo$/i', {})
+      checkRegexp('item/[[id]].foo', '/^\\/item(?:\\/([^/]+?))?\\/foo$/i', {
+        matcherParts: ['item', 1, 'foo'],
+      })
+    })
+
+    it('splits dot nested static strings with a middle slash', () => {
+      checkRegexp(
+        'a.b.[[id]].c.d',
+        String.raw`/^\/a\/b(?:\/([^/]+?))?\/c\/d$/i`,
+        { matcherParts: ['a', 'b', 1, 'c', 'd'] }
+      )
+    })
+
+    it('splits dot nested static strings around an optional repeatable param', () => {
+      checkRegexp(
+        'static.[[id]]+.more',
+        String.raw`/^\/static(?:\/(.+?))?\/more$/i`,
+        { matcherParts: ['static', 1, 'more'] }
+      )
+    })
+
+    it('splits dot nested static strings around an optional splat', () => {
+      checkRegexp(
+        'files.[[...path]].x',
+        String.raw`/^\/files(?:\/(.*))?\/x$/i`,
+        { matcherParts: ['files', 0, 'x'] }
+      )
     })
 
     it('keeps the slash in the group of a leading optional param of a parsed path', () => {
       const node = new PrefixTree(RESOLVED_OPTIONS).insertParsedPath(':id?/foo')
       expect(node.regexp).toBe('/^(?:\\/([^/]+?))?\\/foo$/i')
+      expect(node.matcherPatternPathDynamicParts).toEqual([1, 'foo'])
     })
 
     describe('path override', () => {

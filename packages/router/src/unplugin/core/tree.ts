@@ -561,21 +561,32 @@ export class TreeNode {
   get matcherPatternPathDynamicParts(): TreeNodeValueMatcherPart {
     const parts: TreeNodeValueMatcherPart = []
 
-    for (const segment of this._pathSegments) {
-      const subSegments = segment.subSegments.map(segment =>
-        typeof segment === 'string'
-          ? segment
-          : // param
-            segment.isSplat
-            ? 0
-            : 1
-      )
-
-      if (subSegments.length > 1) {
-        parts.push(subSegments)
-      } else if (subSegments.length === 1) {
-        parts.push(subSegments[0]!)
+    const pushPart = (part: Array<string | 0 | 1>) => {
+      if (part.length > 1) {
+        parts.push(part)
+      } else if (part.length === 1) {
+        parts.push(part[0]!)
       }
+    }
+
+    for (const segment of this._pathSegments) {
+      let part: Array<string | 0 | 1> = []
+      for (const subSegment of segment.subSegments) {
+        if (typeof subSegment === 'string') {
+          // dot nesting keeps `/` in static strings (`static/`, `/more`):
+          // split them into their own parts so build() can drop absent
+          // optional params without leaving `//`
+          const [first, ...rest] = subSegment.split('/')
+          if (first) part.push(first)
+          for (const piece of rest) {
+            pushPart(part)
+            part = piece ? [piece] : []
+          }
+        } else {
+          part.push(subSegment.isSplat ? 0 : 1)
+        }
+      }
+      pushPart(part)
     }
 
     return parts
