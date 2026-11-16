@@ -209,7 +209,7 @@ class _TreeNodeValueBase {
   get pathSubSegments(): PathSubSegment[][] {
     const overridePath = this.overrides.path
     if (overridePath == null) {
-      return this.pathSegment ? [this.subSegments] : []
+      return this.pathSegment ? splitSubSegments(this.subSegments) : []
     }
     return overridePath
       .split('/')
@@ -741,6 +741,24 @@ export function createTreeNodeValue(
   }
 
   return new TreeNodeValueStatic(segment, parent, pathSegment)
+}
+
+/**
+ * Splits sub segments at the `/` kept in static strings by dot nesting
+ * (`a.[id].b`) and parsed paths (`:id/b`), one array per path segment.
+ */
+function splitSubSegments(subSegments: PathSubSegment[]): PathSubSegment[][] {
+  const segments: PathSubSegment[][] = [[]]
+  for (const subSegment of subSegments) {
+    if (typeof subSegment === 'string') {
+      const [first, ...rest] = subSegment.split('/')
+      if (first) segments.at(-1)!.push(first)
+      for (const piece of rest) segments.push(piece ? [piece] : [])
+    } else {
+      segments.at(-1)!.push(subSegment)
+    }
+  }
+  return segments.filter(segment => segment.length > 0)
 }
 
 /**

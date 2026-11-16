@@ -2,7 +2,6 @@ import { type ResolvedOptions } from '../options'
 import {
   CONVENTION_OVERRIDE_NAME,
   createTreeNodeValue,
-  escapeRegex,
   isTreePathParam,
   subSegmentsToRe,
   subSegmentsToScore,
@@ -446,36 +445,22 @@ export class TreeNode {
 
     while (node && !node.isRoot()) {
       const value: TreeNodeValue = node.value
-      const overridePath = value.overrides.path
-      if (overridePath == null) {
-        if (value.pathSegment) {
-          segments.unshift({
-            subSegments: value.subSegments,
-            re: value.isParam() ? value.re : escapeRegex(value.pathSegment),
-            score: value.score,
-          })
-        } else {
-          // groups don't add to the path but keep their score
-          segments.unshift({ subSegments: [], re: '', score: value.score })
-        }
-      } else {
-        const customRegexps = new Map(
-          value.pathParams.map(param => [param.paramName, param.re])
-        )
-        const pathSubSegments = value.pathSubSegments
-        segments.unshift(
-          ...(pathSubSegments.length
-            ? pathSubSegments.map(subSegments => ({
-                subSegments,
-                re: subSegmentsToRe(subSegments, customRegexps),
-                score: subSegmentsToScore(subSegments),
-              }))
-            : // an empty path is scored like an index file
-              [{ subSegments: [], re: '', score: [300] }])
-        )
-        // an absolute path drops everything above it from the url
-        if (overridePath.startsWith('/')) break
-      }
+      const customRegexps = new Map(
+        value.pathParams.map(param => [param.paramName, param.re])
+      )
+      const pathSubSegments = value.pathSubSegments
+      segments.unshift(
+        ...(pathSubSegments.length
+          ? pathSubSegments.map(subSegments => ({
+              subSegments,
+              re: subSegmentsToRe(subSegments, customRegexps),
+              score: subSegmentsToScore(subSegments),
+            }))
+          : // groups, index files and empty paths don't add to the path
+            [{ subSegments: [], re: '', score: [300] }])
+      )
+      // an absolute path drops everything above it from the url
+      if (value.overrides.path?.startsWith('/')) break
       node = node.parent
     }
 
@@ -561,32 +546,21 @@ export class TreeNode {
   get matcherPatternPathDynamicParts(): TreeNodeValueMatcherPart {
     const parts: TreeNodeValueMatcherPart = []
 
-    const pushPart = (part: Array<string | 0 | 1>) => {
-      if (part.length > 1) {
-        parts.push(part)
-      } else if (part.length === 1) {
-        parts.push(part[0]!)
-      }
-    }
-
     for (const segment of this._pathSegments) {
-      let part: Array<string | 0 | 1> = []
-      for (const subSegment of segment.subSegments) {
-        if (typeof subSegment === 'string') {
-          // dot nesting keeps `/` in static strings (`static/`, `/more`):
-          // split them into their own parts so build() can drop absent
-          // optional params without leaving `//`
-          const [first, ...rest] = subSegment.split('/')
-          if (first) part.push(first)
-          for (const piece of rest) {
-            pushPart(part)
-            part = piece ? [piece] : []
-          }
-        } else {
-          part.push(subSegment.isSplat ? 0 : 1)
-        }
+      const subSegments = segment.subSegments.map(segment =>
+        typeof segment === 'string'
+          ? segment
+          : // param
+            segment.isSplat
+            ? 0
+            : 1
+      )
+
+      if (subSegments.length > 1) {
+        parts.push(subSegments)
+      } else if (subSegments.length === 1) {
+        parts.push(subSegments[0]!)
       }
-      pushPart(part)
     }
 
     return parts

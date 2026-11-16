@@ -1417,6 +1417,12 @@ describe('Tree', () => {
       })
     })
 
+    it('matches a dot nested optional param followed by static text like a folder', () => {
+      checkRegexp('a.[[id]]-x.b', String.raw`/^\/a\/([^/]+?)?-x\/b$/i`, {
+        matcherParts: ['a', [1, '-x'], 'b'],
+      })
+    })
+
     it('splits dot nested static strings with a middle slash', () => {
       checkRegexp(
         'a.b.[[id]].c.d',

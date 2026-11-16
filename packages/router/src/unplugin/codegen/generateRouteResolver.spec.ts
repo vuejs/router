@@ -938,6 +938,21 @@ describe('generateRouteResolver', () => {
       return lines.map(line => line.split('// ')[1] || '')
     }
 
+    it('orders dot nested segments like folders', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      tree.insert('a/[x]', 'a/[x].vue')
+      tree.insert('a.b', 'a.b.vue')
+      tree.insert('a/[x]/[y]', 'a/[x]/[y].vue')
+      tree.insert('a.[id].c', 'a.[id].c.vue')
+
+      expect(getRouteOrderFromResolver(tree)).toEqual([
+        '/a/b',
+        '/a/:id/c',
+        '/a/:x/:y',
+        '/a/:x',
+      ])
+    })
+
     it('orders records based on specificity of paths', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
       // static at root
