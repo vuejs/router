@@ -37,9 +37,14 @@ export const removeTrailingSlash = (path: string) =>
   path.replace(TRAILING_SLASH_RE, '')
 
 /**
- * Transforms a URI into a normalized history location
+ * Transforms a URI into a normalized history location.
  *
- * @param parseQuery
+ * Only handles paths: a protocol and host (`https://a.com/x`) are not parsed
+ * and end up in `path`. `path` is not decoded, `hash` is decoded, `fullPath`
+ * keeps the raw input. Exposed as `_parseURL`.
+ *
+ * @internal no semver guarantee
+ * @param parseQuery - receives the search without the leading `?`
  * @param location - URI to normalize
  * @param currentLocation - current absolute location. Allows resolving relative
  * paths. Must start with `/`. Defaults to `/`
@@ -105,8 +110,10 @@ export function parseURL(
 }
 
 /**
- * Stringifies a URL object
+ * Stringifies a URL object. `path` and `hash` are used as is (no encoding),
+ * `hash` must start with `#`. Exposed as `_stringifyURL`.
  *
+ * @internal no semver guarantee
  * @param stringifyQuery
  * @param location
  */
