@@ -458,8 +458,6 @@ class _TreeNodeValueBase {
 export class TreeNodeValueStatic extends _TreeNodeValueBase {
   override _type: TreeNodeType.static = TreeNodeType.static
 
-  readonly score = [300]
-
   constructor(
     rawSegment: string,
     parent: TreeNodeValue | undefined,
@@ -472,8 +470,6 @@ export class TreeNodeValueStatic extends _TreeNodeValueBase {
 export class TreeNodeValueGroup extends _TreeNodeValueBase {
   override _type: TreeNodeType.group = TreeNodeType.group
   groupName: string
-
-  readonly score = [300]
 
   constructor(
     rawSegment: string,
@@ -619,20 +615,6 @@ export class TreeNodeValueParam extends _TreeNodeValueBase {
     subSegments: PathSubSegment[]
   ) {
     super(rawSegment, parent, pathSegment, subSegments)
-  }
-
-  get score(): number[] {
-    return subSegmentsToScore(this.subSegments)
-  }
-
-  /**
-   * Generates the regex pattern for the path segment.
-   */
-  get re(): string {
-    return subSegmentsToRe(
-      this.subSegments,
-      new Map(this.pathParams.map(param => [param.paramName, param.re]))
-    )
   }
 
   override toString(): string {
@@ -791,8 +773,7 @@ export function subSegmentsToRe(
   customRegexps: Map<string, string | null>
 ): string {
   let regexp = ''
-  for (var i = 0; i < subSegments.length; i++) {
-    var segment = subSegments[i]
+  for (const segment of subSegments) {
     // skip empty sub segments
     if (!segment) continue
 
@@ -810,26 +791,8 @@ export function subSegmentsToRe(
           : segment.repeatable
             ? '(.+?)'
             : '([^/]+?)'
-      if (segment.optional) {
-        // TODO: trailingSlash behavior
-        var prevSegment = subSegments[i - 1]
-        var nextSegment = subSegments[i + 1]
-        // a slash next to the param becomes part of the optional group
-        if (
-          typeof prevSegment === 'string'
-            ? prevSegment.endsWith('/')
-            : !prevSegment &&
-              typeof nextSegment === 'string' &&
-              nextSegment.startsWith('/')
-        ) {
-          re = `(?:\\/${re})?`
-          // remove the escaped trailing slash from the previous static segment
-          regexp = regexp.slice(0, -2)
-        } else {
-          // just make the regexp group optional
-          re += '?'
-        }
-      }
+      // the path regexp moves the slash of a lone optional param into the group
+      if (segment.optional) re += '?'
       regexp += re
     }
   }
