@@ -1460,6 +1460,12 @@ describe('Tree', () => {
         ],
         [
           '[id]',
+          String.raw`/foo/:id(\d+(?:-\d+\))`,
+          String.raw`/^\/foo\/(\d+(?:-\d+))$/i`,
+          ['foo', 1],
+        ],
+        [
+          '[id]',
           '/foo/:id([0-9]+)+',
           String.raw`/^\/foo\/((?:[0-9]+)(?:\/(?:[0-9]+))*)$/i`,
           ['foo', 1],

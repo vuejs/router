@@ -1518,8 +1518,14 @@ describe('generateRouteResolver', () => {
         new ImportsMap(),
         new Map()
       )
-      const list = resolver.slice(resolver.indexOf('createFixedResolver(['))
-      expect(list.indexOf('__route_1')).toBeLessThan(list.indexOf('__route_0'))
+      expect(resolver.slice(resolver.indexOf('createFixedResolver([')))
+        .toMatchInlineSnapshot(`
+        "createFixedResolver([
+          __route_1,  // /users
+          __route_0,  // /users
+        ])
+        "
+      `)
     })
   })
 

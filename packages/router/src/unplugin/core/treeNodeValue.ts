@@ -1087,9 +1087,11 @@ function parseRawPathSegment(
     if (c === '\\') {
       // skip the next char
       pos++
-      // regexps need the escape, e.g. `\d+`
+      // regexps keep the escape, e.g. `\d+`, except for the route syntax `\)`
       buffer +=
-        (state === ParseRawPathSegmentState.regexp ? c : '') + segment[pos]
+        (state === ParseRawPathSegmentState.regexp && segment[pos] !== ')'
+          ? c
+          : '') + segment[pos]
       continue
     }
 
