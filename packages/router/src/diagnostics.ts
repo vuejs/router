@@ -67,8 +67,8 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     },
     VUE_ROUTER_R0130: {
       why: (p: { location: Parameters<typeof stringifyRoute>[0] }) =>
-        `Cannot resolve a relative location before the initial navigation: there is no current route yet. This crashes in production.\nLocation: ${stringifyRoute(p.location)}`,
-      fix: 'Use a location with a "name" or an absolute "path", await router.isReady() before mounting the app, or render the <RouterLink> inside a page component so it only renders after the initial navigation.',
+        `Cannot resolve a relative location before the initial navigation. This throws in production.\nLocation: ${stringifyRoute(p.location)}`,
+      fix: 'Use a "name" or an absolute "path", or await router.isReady() before mounting the app.',
     },
     // --- experimental/route-resolver/resolver-fixed.ts ---
     VUE_ROUTER_D0002: {
