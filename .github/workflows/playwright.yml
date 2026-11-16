@@ -4,24 +4,20 @@ on:
     types: [checks_requested]
   push:
     branches: [main]
-    paths-ignore:
-      - 'packages/docs/**'
-      - 'packages/playground/**'
-      - 'packages/playground-file-based/**'
-      - 'packages/experiments-playground/**'
   pull_request:
     branches: [main]
-    paths-ignore:
-      - 'packages/docs/**'
-      - 'packages/playground/**'
-      - 'packages/playground-file-based/**'
-      - 'packages/experiments-playground/**'
 
 permissions:
   contents: read
 
 jobs:
+  changes:
+    uses: ./.github/workflows/test-changes.yml
+
   test:
+    needs: changes
+    # Run tests if change detection fails.
+    if: ${{ !cancelled() && needs.changes.outputs.run-tests != 'false' }}
     timeout-minutes: 60
     runs-on: ubuntu-latest
     # Official Playwright image with all three browser engines + OS deps baked

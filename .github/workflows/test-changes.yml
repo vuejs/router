@@ -1,0 +1,43 @@
+name: Detect test changes
+
+on:
+  workflow_call:
+    outputs:
+      run-tests:
+        description: Whether changes need unit and end-to-end tests
+        value: ${{ jobs.changes.outputs.run-tests }}
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      run-tests: ${{ steps.diff.outputs.run-tests }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
+        run: |
+          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+            BASE_SHA=$(git hash-object -t tree /dev/null)
+          fi
+          if git diff --quiet "$BASE_SHA" "$HEAD_SHA" -- . \
+            ':(exclude)packages/docs/**' \
+            ':(exclude)packages/playground/**' \
+            ':(exclude)packages/playground-file-based/**' \
+            ':(exclude)packages/experiments-playground/**'; then
+            echo 'run-tests=false' >> "$GITHUB_OUTPUT"
+          else
+            status=$?
+            if [[ "$status" != 1 ]]; then
+              exit "$status"
+            fi
+            echo 'run-tests=true' >> "$GITHUB_OUTPUT"
+          fi
