@@ -29,7 +29,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     // --- experimental/route-resolver/matchers/matcher-pattern.ts, matcher/index.ts ---
     VUE_ROUTER_R0122: {
       why: (p: { param: string; value: string }) =>
-        `The optional path param "${p.param}" is being removed with ${p.value}.`,
+        `The optional path param "${p.param}" is being removed with "${p.value}".`,
       fix: 'Use null to remove an optional path param.',
     },
     VUE_ROUTER_R0124: {
@@ -345,7 +345,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     },
     VUE_ROUTER_R0107: {
       why: (p: { param: string; value: string }) =>
-        `The required param "${p.param}" is set to ${p.value} but it keeps its current value.`,
+        `The required param "${p.param}" is set to "${p.value}" but it keeps its current value.`,
       fix: (p: { param: string }) =>
         `Omit "${p.param}" to keep its current value, or pass a new value.`,
     },

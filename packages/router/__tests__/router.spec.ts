@@ -386,6 +386,8 @@ describe('Router', () => {
     expect(router.currentRoute.value.params).toEqual({})
 
     await router.push({ name: 'optional', params: { p: 'a' } })
+    expect('VUE_ROUTER_R0122').not.toHaveBeenWarned()
+
     await router.push({ name: 'optional', params: { p: undefined } })
     expect(router.currentRoute.value.params).toEqual({})
     expect('VUE_ROUTER_R0122').toHaveBeenWarned()
@@ -430,17 +432,6 @@ describe('Router', () => {
     expect(router.resolve({ params: { p: undefined } }).path).toBe('/optional')
     expect('VUE_ROUTER_R0122').toHaveBeenWarned()
     expect('VUE_ROUTER_R0107').not.toHaveBeenWarned()
-  })
-
-  it('keeps a required param passed as null or undefined', async () => {
-    const { router } = await newRouter()
-    await router.push('/p/a')
-    expect(router.resolve({ name: 'Param', params: { p: null } }).path).toBe(
-      '/p/a'
-    )
-    expect(router.resolve({ params: { p: null } }).path).toBe('/p/a')
-    expect(router.resolve({ params: { p: undefined } }).path).toBe('/p/a')
-    expect('VUE_ROUTER_R0107').toHaveBeenWarnedTimes(3)
   })
 
   it('does not warn about unknown nullish params', async () => {

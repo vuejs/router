@@ -299,7 +299,6 @@ export function createRouterMatcher(
           .map(k => k.name)
       )
       params = assign(
-        {},
         inheritedParams,
         // discard any existing params in the current location that do not exist here
         // #1497 this ensures better active/exact matching
