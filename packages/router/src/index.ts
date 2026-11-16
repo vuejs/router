@@ -161,6 +161,7 @@ export {
   onBeforeRouteUpdate,
 } from './navigationGuards'
 export { RouterLink, useLink } from './RouterLink'
+export { guardEvent as _guardEvent } from './RouterLink'
 export type {
   _RouterLinkI,
   RouterLinkProps,

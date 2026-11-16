@@ -209,6 +209,8 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
     e: MouseEvent = {} as MouseEvent
   ): Promise<void | NavigationFailure> {
     if (guardEvent(e)) {
+      // this may be a Weex event which doesn't have this method
+      if (e.preventDefault) e.preventDefault()
       const p = router[unref(props.replace) ? 'replace' : 'push'](
         unref(props.to)
         // avoid uncaught errors are they are logged anyway
@@ -384,23 +386,32 @@ export interface _RouterLinkI {
   useLink: typeof useLink
 }
 
-/** @internal */
-export function guardEvent(e: MouseEvent) {
+/**
+ * Checks if a click on a link should trigger a client-side navigation. Does
+ * not call `e.preventDefault()`.
+ *
+ * @param e - the click event
+ * @param el - the link element. Defaults to `e.currentTarget`. Pass it when
+ * using event delegation.
+ *
+ * @internal no semver guarantee, can change in any release
+ */
+export function guardEvent(
+  e: MouseEvent,
+  el: EventTarget | null | undefined = e.currentTarget
+): boolean {
   // don't redirect with control keys
-  if (e.metaKey || e.altKey || e.ctrlKey || e.shiftKey) return
+  if (e.metaKey || e.altKey || e.ctrlKey || e.shiftKey) return false
   // don't redirect when preventDefault called
-  if (e.defaultPrevented) return
+  if (e.defaultPrevented) return false
   // don't redirect on right click
-  if (e.button !== undefined && e.button !== 0) return
+  if (e.button !== undefined && e.button !== 0) return false
   // don't redirect if `target="_blank"`
-  // @ts-expect-error getAttribute does exist
-  if (e.currentTarget && e.currentTarget.getAttribute) {
-    // @ts-expect-error getAttribute exists
-    const target = e.currentTarget.getAttribute('target')
-    if (/\b_blank\b/i.test(target)) return
+  // getAttribute can be missing in non DOM envs (e.g. Weex)
+  if (el && (el as Element).getAttribute) {
+    const target = (el as Element).getAttribute('target')
+    if (target && /\b_blank\b/i.test(target)) return false
   }
-  // this may be a Weex event which doesn't have this method
-  if (e.preventDefault) e.preventDefault()
 
   return true
 }

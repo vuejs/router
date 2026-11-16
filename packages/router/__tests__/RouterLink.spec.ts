@@ -802,6 +802,64 @@ describe('RouterLink', () => {
     expect(router.push).toHaveBeenCalledTimes(1)
   })
 
+  /**
+   * Clicks `el` and returns whether the default action was prevented by the
+   * existing listeners. Then prevents it so happy-dom doesn't follow the link.
+   */
+  function clickAndBlockNavigation(el: Element, init: MouseEventInit = {}) {
+    let prevented: boolean | undefined
+    const listener = (e: Event) => {
+      prevented = e.defaultPrevented
+      e.preventDefault()
+    }
+    el.addEventListener('click', listener)
+    el.dispatchEvent(
+      new MouseEvent('click', {
+        cancelable: true,
+        button: 0,
+        ...init,
+      })
+    )
+    el.removeEventListener('click', listener)
+    return prevented
+  }
+
+  it('prevents the default click behavior when navigating', async () => {
+    const { router, wrapper } = await factory(
+      START_LOCATION_NORMALIZED,
+      { to: locations.basic.string },
+      locations.basic.normalized
+    )
+    const e = new MouseEvent('click', { cancelable: true, button: 0 })
+    wrapper.find('a')!.element.dispatchEvent(e)
+    expect(router.push).toHaveBeenCalledTimes(1)
+    expect(e.defaultPrevented).toBe(true)
+  })
+
+  it('lets the browser handle modified clicks', async () => {
+    const { router, wrapper } = await factory(
+      START_LOCATION_NORMALIZED,
+      { to: locations.basic.string },
+      locations.basic.normalized
+    )
+    const prevented = clickAndBlockNavigation(wrapper.find('a')!.element, {
+      ctrlKey: true,
+    })
+    expect(router.push).not.toHaveBeenCalled()
+    expect(prevented).toBe(false)
+  })
+
+  it('lets the browser handle clicks on target="_blank" links', async () => {
+    const { router, wrapper } = await factory(
+      START_LOCATION_NORMALIZED,
+      { to: locations.basic.string, target: '_blank' },
+      locations.basic.normalized
+    )
+    const prevented = clickAndBlockNavigation(wrapper.find('a')!.element)
+    expect(router.push).not.toHaveBeenCalled()
+    expect(prevented).toBe(false)
+  })
+
   it('allows adding more click listeners', async () => {
     const onClick = vi.fn()
     const { router, wrapper } = await factory(

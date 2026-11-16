@@ -110,6 +110,8 @@ export function useLink(options: UseLinkOptions): UseLinkReturn {
     e: MouseEvent = {} as MouseEvent
   ): Promise<void | NavigationFailure> {
     if (guardEvent(e)) {
+      // this may be a Weex event which doesn't have this method
+      if (e.preventDefault) e.preventDefault()
       const p = router[toValue(options.replace) ? 'replace' : 'push'](
         toValue(options.to)
       ).catch(noop)
