@@ -137,8 +137,11 @@ describe('normalizeQuery', () => {
     })
   })
 
-  it('keeps existing arrays', () => {
-    expect(normalizeQuery({ a: ['x'], b: [] })).toEqual({ a: ['x'], b: [] })
+  it('removes empty arrays and keeps nonempty arrays', () => {
+    expect(normalizeQuery({ a: ['x'], b: [], c: [null] })).toEqual({
+      a: ['x'],
+      c: [null],
+    })
   })
 
   it('handles empty / undefined input', () => {
