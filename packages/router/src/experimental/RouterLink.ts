@@ -20,6 +20,7 @@ import {
   preferSingleVNode,
   type _RouterLinkI,
   type RouterLinkProps,
+  type RouterLinkSlotScope,
   type UseLinkDevtoolsContext,
   type UseLinkReturn,
 } from '../RouterLink'
@@ -30,7 +31,12 @@ import type {
   EXPERIMENTAL_RouteRecordNormalized,
 } from './router'
 
-export type { _RouterLinkI, RouterLinkProps, UseLinkReturn }
+export type {
+  _RouterLinkI,
+  RouterLinkProps,
+  RouterLinkSlotScope,
+  UseLinkReturn,
+}
 
 /**
  * Options passed to {@link useLink}.
