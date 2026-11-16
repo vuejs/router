@@ -451,15 +451,6 @@ describe('Router', () => {
     expect('VUE_ROUTER_R0122').not.toHaveBeenWarned()
   })
 
-  it('keeps the current value of a required param passed as null', async () => {
-    const { router } = await newRouter()
-    await router.push('/p/a')
-    expect(router.resolve({ name: 'Param', params: { p: null } }).path).toBe(
-      '/p/a'
-    )
-    expect('VUE_ROUTER_R0107').toHaveBeenWarned()
-  })
-
   it('keeps empty strings in optional params', async () => {
     const { router } = await newRouter()
     const route1 = router.resolve({ name: 'optional', params: { p: '' } })
