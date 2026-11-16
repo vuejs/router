@@ -5,6 +5,10 @@ import path from 'node:path'
 import fs from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
+// The playground config loads the unplugin from source, which imports runtime
+// modules that expect the build-time globals (see tsdown.config.ts).
+Object.assign(globalThis, { __DEV__: true, __BROWSER__: false })
+
 type ViteFixtures = {
   devServer: ViteDevServer
   baseURL: string
