@@ -783,7 +783,7 @@ const toValueWithParameters = <T, Arg>(
 /**
  * Transform the key to a string array so it can be used as a key in caches.
  *
- * @param key - key to transform
+ * @param keyOption - key to transform
  * @param to - route to use
  */
 function serializeQueryKey(
