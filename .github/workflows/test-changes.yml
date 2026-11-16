@@ -13,6 +13,7 @@ permissions:
 jobs:
   changes:
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     outputs:
       run-tests: ${{ steps.diff.outputs.run-tests }}
     steps:
@@ -20,24 +21,18 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      # HEAD is the PR merge commit, the merge group head, or the pushed commit.
+      # A missing base fails git diff, so tests run.
       - id: diff
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
         run: |
-          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
-            BASE_SHA=$(git hash-object -t tree /dev/null)
-          fi
-          if git diff --quiet "$BASE_SHA" "$HEAD_SHA" -- . \
-            ':(exclude)packages/docs/**' \
-            ':(exclude)packages/playground/**' \
-            ':(exclude)packages/playground-file-based/**' \
-            ':(exclude)packages/experiments-playground/**'; then
+          if git diff --quiet "$BASE_SHA" HEAD -- \
+            ':!packages/docs' \
+            ':!packages/playground' \
+            ':!packages/playground-file-based' \
+            ':!packages/experiments-playground'; then
             echo 'run-tests=false' >> "$GITHUB_OUTPUT"
           else
-            status=$?
-            if [[ "$status" != 1 ]]; then
-              exit "$status"
-            fi
             echo 'run-tests=true' >> "$GITHUB_OUTPUT"
           fi
