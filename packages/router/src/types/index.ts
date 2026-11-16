@@ -78,7 +78,7 @@ export interface MatcherLocationAsName {
    * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
    */
   path?: undefined
-  params?: RouteParamsGeneric
+  params?: MatcherParamsRaw
 }
 
 /**
@@ -90,8 +90,19 @@ export interface MatcherLocationAsRelative {
    * Ignored path property since we are dealing with a relative location. Only `undefined` is allowed.
    */
   path?: undefined
-  params?: RouteParamsGeneric
+  params?: MatcherParamsRaw
 }
+
+/**
+ * Encoded params passed to the matcher. `null` removes an optional param and
+ * `undefined` keeps the current value.
+ *
+ * @internal
+ */
+export type MatcherParamsRaw = Record<
+  string,
+  RouteParamValue | RouteParamValue[] | null | undefined
+>
 
 /**
  * @internal
