@@ -73,7 +73,11 @@ describe('query params with empty query arrays', () => {
           const resolver = createResolver()
           if (format === 'value' && required && defaultValue === undefined) {
             expect(() =>
-              resolver.resolve({ name: 'search', query: { a: value } })
+              resolver.resolve({
+                name: 'search',
+                params: {},
+                query: { a: value },
+              })
             ).toThrow(MatchMiss)
             expect('VUE_ROUTER_R0125').toHaveBeenWarnedTimes(1)
             return
@@ -81,12 +85,15 @@ describe('query params with empty query arrays', () => {
 
           const resolved = resolver.resolve({
             name: 'search',
+            params: {},
             query: { a: value },
           })
           expect(resolved.query).toEqual({})
           expect(resolved.params).toEqual({ a: expected })
           expect(resolved.fullPath).toBe('/search')
-          expect(resolver.resolve(resolved.fullPath)).toEqual(resolved)
+          expect(resolver.resolve(resolved.fullPath as `/${string}`)).toEqual(
+            resolved
+          )
         }
       )
 
@@ -94,6 +101,7 @@ describe('query params with empty query arrays', () => {
         const resolver = createResolver()
         const resolved = resolver.resolve({
           name: 'search',
+          params: {},
           query: { a: [null] },
         })
         expect(resolved.query).toEqual({ a: [null] })
@@ -101,7 +109,9 @@ describe('query params with empty query arrays', () => {
           a: format === 'array' ? [null] : null,
         })
         expect(resolved.fullPath).toBe('/search?a')
-        expect(resolver.resolve(resolved.fullPath)).toEqual(resolved)
+        expect(resolver.resolve(resolved.fullPath as `/${string}`)).toEqual(
+          resolved
+        )
       })
 
       it.each([{ value: [] }, { value: undefined }])(
@@ -115,7 +125,9 @@ describe('query params with empty query arrays', () => {
             a: format === 'array' ? ['old'] : 'old',
           })
           expect(resolved.fullPath).toBe('/search?a=old')
-          expect(resolver.resolve(resolved.fullPath)).toEqual(resolved)
+          expect(resolver.resolve(resolved.fullPath as `/${string}`)).toEqual(
+            resolved
+          )
         }
       )
     }
