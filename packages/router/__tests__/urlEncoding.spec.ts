@@ -56,14 +56,8 @@ describe('URL Encoding', () => {
     const router = createRouter()
     await router.push({ name: 'repeat', params: { p: ['foo', 'bar'] } })
     expect(encoding.encodeParam).toHaveBeenCalledTimes(2)
-    expect(encoding.encodeParam).toHaveBeenNthCalledWith(1, 'foo', 0, [
-      'foo',
-      'bar',
-    ])
-    expect(encoding.encodeParam).toHaveBeenNthCalledWith(2, 'bar', 1, [
-      'foo',
-      'bar',
-    ])
+    expect(encoding.encodeParam).toHaveBeenNthCalledWith(1, 'foo')
+    expect(encoding.encodeParam).toHaveBeenNthCalledWith(2, 'bar')
   })
 
   it('calls decode with a path', async () => {
