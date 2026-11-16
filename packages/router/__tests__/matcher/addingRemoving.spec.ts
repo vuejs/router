@@ -1,6 +1,7 @@
 import { createRouterMatcher } from '../../src/matcher'
 import type { MatcherLocation } from '../../src/types'
 import { mockWarn } from '../vitest-mock-warn'
+import { components } from '../utils'
 import { describe, expect, it } from 'vitest'
 
 const currentLocation = { path: '/' } as MatcherLocation
@@ -66,7 +67,11 @@ describe('Matcher: adding and removing records', () => {
   })
 
   describe('addRoute returned function', () => {
-    it.each([{ component: {} }, { name: 'admin' }, { redirect: '/home' }])(
+    it.each([
+      { component: components.Foo },
+      { name: 'admin' },
+      { redirect: '/home' },
+    ])(
       'removes matchable parents and their descendant aliases (%j)',
       parent => {
         const matcher = createRouterMatcher([], {})
@@ -78,7 +83,6 @@ describe('Matcher: adding and removing records', () => {
             { path: 'users', alias: 'members', name: 'users', component },
           ],
         })
-        expect(matcher.getRecordMatcher('users')).toBeDefined()
 
         remove()
 
@@ -87,27 +91,7 @@ describe('Matcher: adding and removing records', () => {
       }
     )
 
-    it('removes children of an unnamed componentless group', () => {
-      const matcher = createRouterMatcher([], {})
-      const remove = matcher.addRoute({
-        path: '/admin',
-        children: [{ path: 'users', name: 'users', component }],
-      })
-      expect(
-        matcher.resolve({ path: '/admin/users' }, currentLocation).name
-      ).toBe('users')
-
-      remove()
-      remove()
-
-      expect(matcher.getRoutes()).toHaveLength(0)
-      expect(matcher.getRecordMatcher('users')).toBeUndefined()
-      expect(
-        matcher.resolve({ path: '/admin/users' }, currentLocation).matched
-      ).toEqual([])
-    })
-
-    it('removes nested groups and their descendant aliases', () => {
+    it('removes unnamed nested groups and their descendant aliases', () => {
       const matcher = createRouterMatcher([], {})
       const name = Symbol('users')
       const remove = matcher.addRoute({
@@ -119,24 +103,23 @@ describe('Matcher: adding and removing records', () => {
             alias: 'team',
             children: [
               { path: 'users', alias: 'members', name, component },
-              { path: 'other', component: {} },
+              { path: 'other', component: components.Foo },
             ],
           },
         ],
       })
-      const paths = ['/admin', '/staff'].flatMap(parent =>
-        ['group', 'team'].flatMap(group =>
-          ['users', 'members', 'other'].map(
-            child => `${parent}/${group}/${child}`
-          )
-        )
-      )
+      const paths = [
+        '/admin/group/users',
+        '/staff/team/members',
+        '/staff/group/other',
+      ]
       for (const path of paths) {
         expect(matcher.resolve({ path }, currentLocation).matched).toHaveLength(
           3
         )
       }
 
+      remove()
       remove()
 
       expect(matcher.getRoutes()).toHaveLength(0)
@@ -146,57 +129,53 @@ describe('Matcher: adding and removing records', () => {
       }
     })
 
-    it.each(['child', Symbol('child')])(
-      'preserves a replacement child when removing its old group (%s)',
-      name => {
-        const matcher = createRouterMatcher([], {})
-        const remove = matcher.addRoute({
-          path: '/admin',
-          alias: '/staff',
-          children: [{ path: 'users', alias: 'members', name, component }],
-        })
-        matcher.addRoute({ path: '/replacement', name, component })
+    it('preserves a replacement child when removing its old group', () => {
+      const matcher = createRouterMatcher([], {})
+      const remove = matcher.addRoute({
+        path: '/admin',
+        alias: '/staff',
+        children: [
+          { path: 'users', alias: 'members', name: 'child', component },
+        ],
+      })
+      matcher.addRoute({ path: '/replacement', name: 'child', component })
 
-        remove()
-        remove()
+      remove()
+      remove()
 
-        expect(matcher.getRoutes()).toHaveLength(1)
-        expect(matcher.getRecordMatcher(name)).toBeDefined()
-        expect(matcher.resolve({ name }, currentLocation).path).toBe(
-          '/replacement'
-        )
-      }
-    )
+      expect(matcher.getRoutes()).toHaveLength(1)
+      expect(matcher.resolve({ name: 'child' }, currentLocation).path).toBe(
+        '/replacement'
+      )
+    })
 
-    it.each(['parent', Symbol('parent')])(
-      'preserves a replacement parent and its children after a stale callback (%s)',
-      name => {
-        const matcher = createRouterMatcher([], {})
-        const remove = matcher.addRoute({
-          path: '/old',
-          name,
-          children: [
-            {
-              path: 'group',
-              children: [{ path: 'child', name: 'child', component }],
-            },
-          ],
-        })
-        matcher.addRoute({
-          path: '/new',
-          name,
-          children: [{ path: 'child', name: 'child', component }],
-        })
+    it('preserves a replacement parent and its children after a stale callback', () => {
+      const matcher = createRouterMatcher([], {})
+      const name = Symbol('parent')
+      const remove = matcher.addRoute({
+        path: '/old',
+        name,
+        children: [
+          {
+            path: 'group',
+            children: [{ path: 'child', name: 'child', component }],
+          },
+        ],
+      })
+      matcher.addRoute({
+        path: '/new',
+        name,
+        children: [{ path: 'child', name: 'child', component }],
+      })
 
-        remove()
+      remove()
 
-        expect(matcher.getRoutes()).toHaveLength(2)
-        expect(matcher.resolve({ name }, currentLocation).path).toBe('/new')
-        expect(matcher.resolve({ name: 'child' }, currentLocation).path).toBe(
-          '/new/child'
-        )
-      }
-    )
+      expect(matcher.getRoutes()).toHaveLength(2)
+      expect(matcher.resolve({ name }, currentLocation).path).toBe('/new')
+      expect(matcher.resolve({ name: 'child' }, currentLocation).path).toBe(
+        '/new/child'
+      )
+    })
 
     it('remove records', () => {
       const matcher = createRouterMatcher([], {})

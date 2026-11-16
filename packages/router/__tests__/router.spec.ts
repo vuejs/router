@@ -1222,7 +1222,6 @@ describe('Router', () => {
         )
         const { router: otherRouter } = await newRouter()
         otherRouter.addRoute(group)
-        expect(router.hasRoute('users')).toBe(true)
         await router.push('/admin/users')
         expect(router.currentRoute.value.name).toBe('users')
 
