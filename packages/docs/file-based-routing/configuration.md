@@ -48,6 +48,10 @@ VueRouter({
     dotNesting: true,
   },
 
+  // watch the routes folders for changes during dev
+  // disabled by default when the `CI` env variable is set
+  watch: !process.env.CI,
+
   // modify routes individually
   async extendRoute(route) {
     // ...
