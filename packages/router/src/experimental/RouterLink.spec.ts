@@ -41,6 +41,12 @@ function createTestRouter(options: { linkActiveClass?: string } = {}) {
     components: { default: Page },
     parent: users,
   })
+  // alias of the parent only, without its children
+  const usersAlias = normalizeRouteRecord({
+    ...users,
+    path: new MatcherPatternPathStatic('/members'),
+    aliasOf: users,
+  })
   const user = normalizeRouteRecord({
     name: 'user',
     path: new MatcherPatternPathDynamic(
@@ -82,6 +88,7 @@ function createTestRouter(options: { linkActiveClass?: string } = {}) {
       home,
       usersIndex,
       users,
+      usersAlias,
       user,
       about,
       aboutAlias,
@@ -182,6 +189,19 @@ describe('experimental RouterLink', () => {
       await flushPromises()
       expect(router.currentRoute.value.matched).toHaveLength(1)
       expect(wrapper.find('a').classes()).toEqual([])
+    })
+
+    // same result as the classic RouterLink: only the raw path of the
+    // current record is compared with the parent path
+    it('is exact active when an alias of the parent is displayed', async () => {
+      const { wrapper } = await factory(
+        `<RouterLink to="/users">users</RouterLink>`,
+        { initial: '/members' }
+      )
+      expect(wrapper.find('a').classes()).toEqual([
+        'router-link-active',
+        'router-link-exact-active',
+      ])
     })
   })
 
