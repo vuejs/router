@@ -127,12 +127,7 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       fix: 'Use one of the supported languages: json5, json, yaml, yml.',
     },
 
-    // --- utils/encoding.ts ---
-    VUE_ROUTER_B0016: {
-      why: (p: { text: string }) =>
-        `Error decoding "${p.text}". Using original value`,
-      fix: 'Ensure the value is correctly percent-encoded.',
-    },
+    // VUE_ROUTER_B0016: retired (removed duplicated encoding.ts), do not reuse
 
     // --- codegen/generateRouteParams.ts ---
     VUE_ROUTER_B0017: {
