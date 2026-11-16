@@ -66,11 +66,11 @@ export function experimental_parseQuery(search: string): LocationQuery {
 /**
  * Transforms a {@link LocationQueryRaw} into a {@link LocationQuery} by casting
  * numbers into strings, wrapping non array values in an array, removing keys
- * with an undefined value and replacing undefined with null in arrays. Uses `Object.create(null)` so the returned
+ * with an undefined value or an empty array and replacing undefined with null in arrays. Uses `Object.create(null)` so the returned
  * object cannot be exploited via prototype pollution.
  *
  * FIXME: remove once only arrays are accepted in {@link LocationQueryRaw}.
- * Normalization will then only cast numbers and remove undefined keys.
+ * Normalization will then only cast numbers and remove undefined or empty array keys.
  *
  * @param query - query object to normalize
  * @returns a normalized query object
@@ -82,7 +82,7 @@ export function experimental_normalizeQuery(
 
   for (const key in query) {
     const value = query[key]
-    if (value !== undefined) {
+    if (value !== undefined && (!isArray(value) || value.length > 0)) {
       normalizedQuery[key] = (isArray(value) ? value : [value]).map(v =>
         v == null ? null : '' + v
       )

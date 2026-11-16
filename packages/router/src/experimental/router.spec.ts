@@ -672,6 +672,26 @@ describe('Experimental Router', () => {
     expect(router.currentRoute.value.query).toEqual({ q: ['1', null] })
   })
 
+  it.each([
+    { value: [], query: {}, fullPath: '/' },
+    { value: undefined, query: {}, fullPath: '/' },
+    { value: [null], query: { a: [null] }, fullPath: '/?a' },
+  ])(
+    'resolves query $value consistently with its fullPath',
+    async ({ value, query, fullPath }) => {
+      const { router } = await newRouter()
+      await router.push('/?a=1')
+
+      const resolved = router.resolve({ query: { a: value } })
+      expect(resolved.query).toEqual(query)
+      expect(resolved).toMatchObject({
+        fullPath,
+        href: fullPath,
+      })
+      expect(router.resolve(resolved.fullPath)).toEqual(resolved)
+    }
+  )
+
   it('treats an empty array query value as a missing key', async () => {
     const { router } = await newRouter()
     await router.push('/')
