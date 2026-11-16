@@ -67,6 +67,7 @@ class _TreeNodeValueBase {
    */
   private _warnedParsers = new Set<string>()
   private _warnedRegexps = new Set<string>()
+  private _warnedDuplicatedRegexps = new Set<string>()
 
   /**
    * Ignored hash params last warned about, for the same reason.
@@ -250,6 +251,15 @@ class _TreeNodeValueBase {
           : { parser: declared }
 
       if (re != null) {
+        if (param.re && !this._warnedDuplicatedRegexps.has(param.paramName)) {
+          this._warnedDuplicatedRegexps.add(param.paramName)
+          diagnostics.VUE_ROUTER_B0025({
+            paramName: param.paramName,
+            segment: this.rawSegment,
+            pathRe: param.re,
+            declaredRe: re,
+          })
+        }
         param = { ...param, re: this._validateParamRe(param, re) }
       }
 
@@ -1077,7 +1087,9 @@ function parseRawPathSegment(
     if (c === '\\') {
       // skip the next char
       pos++
-      buffer += segment[pos]
+      // regexps need the escape, e.g. `\d+`
+      buffer +=
+        (state === ParseRawPathSegmentState.regexp ? c : '') + segment[pos]
       continue
     }
 
@@ -1118,10 +1130,10 @@ function parseRawPathSegment(
       }
     } else if (state === ParseRawPathSegmentState.regexp) {
       if (c === ')') {
-        // we don't actually care about the regexp as it already on the segment
-        // currentTreeRouteParam.regexp = buffer
         if (buffer === '.*') {
           currentTreeRouteParam.isSplat = true
+        } else if (buffer) {
+          currentTreeRouteParam.re = buffer
         }
         // we don't reset the buffer but it needs to be consumed
         // check if there is a modifier
