@@ -1389,6 +1389,117 @@ describe('Tree', () => {
       })
     })
 
+    it('closes the group of an optional splat', () => {
+      checkRegexp('files/[[...path]]', '/^\\/files(?:\\/(.*))?$/i', {
+        matcherParts: ['files', 0],
+      })
+    })
+
+    it('adds one slash before a leading optional param of a sub segment', () => {
+      checkRegexp('item/[[id]]-edit', '/^\\/item\\/([^/]+?)?-edit$/i', {
+        matcherParts: ['item', [1, '-edit']],
+      })
+    })
+
+    it('keeps the slash in the group of a dot nested optional param', () => {
+      checkRegexp('item/[[id]].foo', '/^\\/item(?:\\/([^/]+?))?\\/foo$/i', {})
+    })
+
+    it('keeps the slash in the group of a leading optional param of a parsed path', () => {
+      const node = new PrefixTree(RESOLVED_OPTIONS).insertParsedPath(':id?/foo')
+      expect(node.regexp).toBe('/^(?:\\/([^/]+?))?\\/foo$/i')
+    })
+
+    describe('path override', () => {
+      it.each<[string, string, string, TreeNodeValueMatcherPart]>([
+        ['[id]', '/foo/:id', String.raw`/^\/foo\/([^/]+?)$/i`, ['foo', 1]],
+        ['[id]', 'foo/:id', String.raw`/^\/foo\/([^/]+?)$/i`, ['foo', 1]],
+        ['[id]', ':id-x', String.raw`/^\/([^/]+?)-x$/i`, [[1, '-x']]],
+        [
+          'shop/[id]',
+          '/shop/:a/:b',
+          String.raw`/^\/shop\/([^/]+?)\/([^/]+?)$/i`,
+          ['shop', 1, 1],
+        ],
+        [
+          'about',
+          '/about/:section?',
+          String.raw`/^\/about(?:\/([^/]+?))?$/i`,
+          ['about', 1],
+        ],
+        // absolute: drops the parents
+        [
+          'users/[id]/posts',
+          '/posts/:postId',
+          String.raw`/^\/posts\/([^/]+?)$/i`,
+          ['posts', 1],
+        ],
+        // relative: appended to the parents
+        [
+          'users/[id]/posts',
+          'articles/:postId',
+          String.raw`/^\/users\/([^/]+?)\/articles\/([^/]+?)$/i`,
+          ['users', 1, 'articles', 1],
+        ],
+        [
+          'files/[id]',
+          '/files/:path(.*)*',
+          String.raw`/^\/files(?:\/(.*))?$/i`,
+          ['files', 0],
+        ],
+        [
+          'item/[id]',
+          '/item/:id?-edit',
+          String.raw`/^\/item\/([^/]+?)?-edit$/i`,
+          ['item', [1, '-edit']],
+        ],
+        // inline regexps
+        [
+          '[id]',
+          '/foo/:id([0-9]+)',
+          String.raw`/^\/foo\/([0-9]+)$/i`,
+          ['foo', 1],
+        ],
+        [
+          '[id]',
+          String.raw`/foo/:id(\d+)`,
+          String.raw`/^\/foo\/(\d+)$/i`,
+          ['foo', 1],
+        ],
+        [
+          '[id]',
+          String.raw`/foo/:id(\d+(?:-\d+\))`,
+          String.raw`/^\/foo\/(\d+(?:-\d+))$/i`,
+          ['foo', 1],
+        ],
+        [
+          '[id]',
+          '/foo/:id([0-9]+)+',
+          String.raw`/^\/foo\/((?:[0-9]+)(?:\/(?:[0-9]+))*)$/i`,
+          ['foo', 1],
+        ],
+      ])('uses the override of %s: %s', (file, path, re, parts) => {
+        const node = new PrefixTree(RESOLVED_OPTIONS).insert(
+          file,
+          file + '.vue'
+        )
+        node.value.setOverride(file, { path })
+
+        expect(node.regexp).toBe(re)
+        expect(node.matcherPatternPathDynamicParts).toEqual(parts)
+      })
+
+      it('uses the params.path regexp of a param of the override', () => {
+        const node = new PrefixTree(RESOLVED_OPTIONS).insert('[id]', '[id].vue')
+        node.value.setOverride('[id]', {
+          path: '/item/:slug',
+          params: { path: { slug: { re: '\\d+' } } },
+        })
+
+        expect(node.regexp).toBe(String.raw`/^\/item\/(\d+)$/i`)
+      })
+    })
+
     describe('group', () => {
       it('handles multiple groups after param', () => {
         checkRegexp('[username]/(user-home)/(nested)', /^\/([^/]+?)$/i, {
@@ -1745,6 +1856,47 @@ describe('Tree', () => {
 
       expect(node.pathParams[0]).toMatchObject({ parser: 'int', re: '\\d+' })
       expect('VUE_ROUTER_B0021').not.toHaveBeenWarned()
+    })
+
+    it('prefers the params.path regexp over the inline one and warns', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[id]', '[id].vue')
+      node.setCustomRouteBlock('[id].vue', {
+        path: '/foo/:id([0-9]+)',
+        params: { path: { id: { re: '[a-z]+' } } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ re: '[a-z]+' })
+      expect(node.regexp).toBe(String.raw`/^\/foo\/([a-z]+)$/i`)
+      expect('VUE_ROUTER_B0025').toHaveBeenWarnedTimes(1)
+      // only once per param
+      node.pathParams
+      expect('VUE_ROUTER_B0025').toHaveBeenWarnedTimes(1)
+    })
+
+    it('still validates the params.path regexp that replaces the inline one', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[id]', '[id].vue')
+      node.setCustomRouteBlock('[id].vue', {
+        path: '/foo/:id([0-9]+)',
+        params: { path: { id: { re: '(a)' } } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ re: null })
+      expect('VUE_ROUTER_B0025').toHaveBeenWarned()
+      expect('VUE_ROUTER_B0023').toHaveBeenWarned()
+    })
+
+    it('does not warn when only the path declares a regexp', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[id]', '[id].vue')
+      node.setCustomRouteBlock('[id].vue', {
+        path: '/foo/:id([0-9]+)',
+        params: { path: { id: 'int' } },
+      })
+
+      expect(node.pathParams[0]).toMatchObject({ re: '[0-9]+', parser: 'int' })
+      expect('VUE_ROUTER_B0025').not.toHaveBeenWarned()
     })
 
     it('ignores regexps with capturing groups', () => {

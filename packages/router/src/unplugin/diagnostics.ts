@@ -104,6 +104,16 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `Custom regexp /${p.re}/ for repeatable param "${p.paramName}" in "${p.segment}" can match "/". Each value is not checked against the regexp after the path is split.`,
       fix: 'Exclude "/" from the regexp, e.g. use `[^/]` instead of `.`.',
     },
+    VUE_ROUTER_B0025: {
+      why: (p: {
+        paramName: string
+        segment: string
+        pathRe: string
+        declaredRe: string
+      }) =>
+        `param "${p.paramName}" declares a regexp twice in "${p.segment}": /${p.pathRe}/ in \`path\` and /${p.declaredRe}/ in \`params.path\`. Keeping /${p.declaredRe}/.`,
+      fix: 'Remove the regexp from `path`, e.g. use ":id" instead of ":id(...)".',
+    },
 
     // --- core/customBlock.ts ---
     VUE_ROUTER_B0012: {

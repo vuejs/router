@@ -1466,18 +1466,11 @@ describe('generateRouteResolver', () => {
   })
 
   describe('path overrides', () => {
-    // FIXME: `node.regexp` and `node.matcherPatternPathDynamicParts` are built
-    // from the file segments and ignore `overrides.path`, while
-    // `node.pathParams` follows the override. `MatcherPatternPathDynamic`
-    // consumes them positionally, so they disagree today. The snapshots below
-    // are the wanted output and are marked as failing until the matcher honors
-    // overrides.
-    it.todo('builds the matcher regexp from an absolute path override', () => {
+    it('builds the matcher regexp from an absolute path override', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
       const node = tree.insert('shop/[id]', 'shop/[id].vue')
       node.value.setOverride('shop/[id]', { path: '/store/:slug' })
 
-      // the regexp still matches `/shop/:id` while the param is named `slug`
       expect(
         generateRouteResolver(
           tree,
@@ -1510,39 +1503,26 @@ describe('generateRouteResolver', () => {
       `)
     })
 
-    it.todo('builds one capture group per param of the override path', () => {
+    it.each([
+      ['users/index', undefined],
+      ['users/settings', ''],
+    ])('sorts an empty child before its parent (%s %s)', (file, path) => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
-      const node = tree.insert('shop/[id]', 'shop/[id].vue')
-      node.value.setOverride('shop/[id]', { path: '/shop/:a/:b' })
+      tree.insert('users', 'users.vue')
+      const node = tree.insert(file, file + '.vue')
+      if (path != null) node.value.setOverride(file, { path })
 
-      // two params for a single capture group
-      expect(
-        generateRouteResolver(
-          tree,
-          DEFAULT_OPTIONS,
-          new ImportsMap(),
-          new Map()
-        )
-      ).toMatchInlineSnapshot(`
-        "
-        const __route_0 = normalizeRouteRecord({
-          name: '/shop/[id]',
-          path: new MatcherPatternPathDynamic(
-            /^\\/shop\\/([^/]+?)\\/([^/]+?)$/i,
-            {
-              a: [/* no parser */],
-              b: [/* no parser */],
-            },
-            ["shop",1,1],
-            /* trailingSlash */
-          ),
-          components: {
-            'default': () => import('shop/[id].vue')
-          },
-        })
-
-        export const resolver = createFixedResolver([
-          __route_0,  // /shop/:a/:b
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        new ImportsMap(),
+        new Map()
+      )
+      expect(resolver.slice(resolver.indexOf('createFixedResolver([')))
+        .toMatchInlineSnapshot(`
+        "createFixedResolver([
+          __route_1,  // /users
+          __route_0,  // /users
         ])
         "
       `)
@@ -1604,6 +1584,25 @@ describe('generateRouteResolver', () => {
       expect(resolver).toContain('aliasOf: __route_0')
       expect(resolver).toContain('MatcherPatternPathDynamic')
       expect(resolver).toContain('/people/')
+    })
+
+    it('does not add a static part before a leading param of an alias', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      // `/1-x` matches both, the more specific route must come first
+      tree.insert('[id]-x', '[id]-x.vue')
+      const node = tree.insert('users', 'users.vue')
+      node.setCustomRouteBlock('users.vue', { alias: ['/:slug'] })
+
+      const resolver = generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        new ImportsMap(),
+        new Map()
+      )
+
+      const list = resolver.slice(resolver.indexOf('createFixedResolver(['))
+      expect(list.indexOf('// /:id-x')).toBeLessThan(list.indexOf('// /:slug'))
+      expect(resolver).toContain('[1],')
     })
 
     it('generates multiple alias records', () => {

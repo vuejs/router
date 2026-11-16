@@ -67,6 +67,7 @@ class _TreeNodeValueBase {
    */
   private _warnedParsers = new Set<string>()
   private _warnedRegexps = new Set<string>()
+  private _warnedDuplicatedRegexps = new Set<string>()
 
   /**
    * Ignored hash params last warned about, for the same reason.
@@ -202,6 +203,21 @@ class _TreeNodeValueBase {
   }
 
   /**
+   * Sub segments of each `/` separated segment of the node path. They come
+   * from the `path` override when there is one, otherwise from the file.
+   */
+  get pathSubSegments(): PathSubSegment[][] {
+    const overridePath = this.overrides.path
+    if (overridePath == null) {
+      return this.pathSegment ? [this.subSegments] : []
+    }
+    return overridePath
+      .split('/')
+      .filter(Boolean)
+      .map(segment => parseRawPathSegment(segment)[2])
+  }
+
+  /**
    * Gets the path params for the node. They come from the `path` override when
    * there is one, otherwise from the file based segment. Parsers declared in
    * `params.path` are applied on top. This does not include params from parent
@@ -211,7 +227,7 @@ class _TreeNodeValueBase {
     const overridePath = this.overrides.path
     const params: TreePathParam[] = []
 
-    if (overridePath) {
+    if (overridePath != null) {
       for (const segment of overridePath.split('/')) {
         if (!segment) continue
         const [, segmentParams] = parseRawPathSegment(segment)
@@ -235,6 +251,15 @@ class _TreeNodeValueBase {
           : { parser: declared }
 
       if (re != null) {
+        if (param.re && !this._warnedDuplicatedRegexps.has(param.paramName)) {
+          this._warnedDuplicatedRegexps.add(param.paramName)
+          diagnostics.VUE_ROUTER_B0025({
+            paramName: param.paramName,
+            segment: this.rawSegment,
+            pathRe: param.re,
+            declaredRe: re,
+          })
+        }
         param = { ...param, re: this._validateParamRe(param, re) }
       }
 
@@ -596,73 +621,18 @@ export class TreeNodeValueParam extends _TreeNodeValueBase {
     super(rawSegment, parent, pathSegment, subSegments)
   }
 
-  // Calculate score for each subsegment to handle mixed static/param parts
   get score(): number[] {
-    return this.subSegments.map(segment => {
-      if (typeof segment === 'string') {
-        // Static subsegment gets highest score
-        return 300
-      } else {
-        // Parameter subsegment - calculate malus based on param properties
-        const malus = segment.isSplat
-          ? 500
-          : (segment.optional ? 10 : 0) + (segment.repeatable ? 20 : 0)
-
-        return 80 - malus
-      }
-    })
+    return subSegmentsToScore(this.subSegments)
   }
 
   /**
    * Generates the regex pattern for the path segment.
    */
   get re(): string {
-    const customRegexps = new Map(
-      this.pathParams.map(param => [param.paramName, param.re])
+    return subSegmentsToRe(
+      this.subSegments,
+      new Map(this.pathParams.map(param => [param.paramName, param.re]))
     )
-    let regexp = ''
-    for (var i = 0; i < this.subSegments.length; i++) {
-      var segment = this.subSegments[i]
-      // skip empty sub segments
-      if (!segment) continue
-
-      if (typeof segment === 'string') {
-        regexp += escapeRegex(segment)
-      } else if (segment.isSplat) {
-        regexp += '(.*)'
-      } else {
-        var customRe = customRegexps.get(segment.paramName)
-        var re = customRe
-          ? segment.repeatable
-            ? // each repetition must match the custom regexp
-              `((?:${customRe})(?:\\/(?:${customRe}))*)`
-            : `(${customRe})`
-          : segment.repeatable
-            ? '(.+?)'
-            : '([^/]+?)'
-        if (segment.optional) {
-          // check ahead if there is a static segment after this one that starts with a slash
-          // TODO: trailingSlash behavior
-          var prevSegment = this.subSegments[i - 1]
-          // is there a slash right before us
-          if (
-            (!prevSegment ||
-              (typeof prevSegment === 'string' && prevSegment.endsWith('/'))) &&
-            // avoid the transformation when the optional param is the whole path
-            this.subSegments.length > 1
-          ) {
-            re = `(?:\\/${re})?`
-            // remove the escaped trailing slash from the previous static segment
-            regexp = regexp.slice(0, -2)
-          } else {
-            // just make the regexp group optional
-            re += '?'
-          }
-        }
-        regexp += re
-      }
-    }
-    return regexp
   }
 
   override toString(): string {
@@ -771,6 +741,81 @@ export function createTreeNodeValue(
   }
 
   return new TreeNodeValueStatic(segment, parent, pathSegment)
+}
+
+/**
+ * Computes the score of a path segment. Handles mixed static/param parts.
+ */
+export function subSegmentsToScore(subSegments: PathSubSegment[]): number[] {
+  return subSegments.map(segment => {
+    if (typeof segment === 'string') {
+      // Static subsegment gets highest score
+      return 300
+    } else {
+      // Parameter subsegment - calculate malus based on param properties
+      const malus = segment.isSplat
+        ? 500
+        : (segment.optional ? 10 : 0) + (segment.repeatable ? 20 : 0)
+
+      return 80 - malus
+    }
+  })
+}
+
+/**
+ * Generates the regex pattern for a path segment.
+ *
+ * @param subSegments - sub segments of the path segment
+ * @param customRegexps - custom regexp source of each param, by name
+ */
+export function subSegmentsToRe(
+  subSegments: PathSubSegment[],
+  customRegexps: Map<string, string | null>
+): string {
+  let regexp = ''
+  for (var i = 0; i < subSegments.length; i++) {
+    var segment = subSegments[i]
+    // skip empty sub segments
+    if (!segment) continue
+
+    if (typeof segment === 'string') {
+      regexp += escapeRegex(segment)
+    } else {
+      var customRe = customRegexps.get(segment.paramName)
+      var re = segment.isSplat
+        ? '(.*)'
+        : customRe
+          ? segment.repeatable
+            ? // each repetition must match the custom regexp
+              `((?:${customRe})(?:\\/(?:${customRe}))*)`
+            : `(${customRe})`
+          : segment.repeatable
+            ? '(.+?)'
+            : '([^/]+?)'
+      if (segment.optional) {
+        // TODO: trailingSlash behavior
+        var prevSegment = subSegments[i - 1]
+        var nextSegment = subSegments[i + 1]
+        // a slash next to the param becomes part of the optional group
+        if (
+          typeof prevSegment === 'string'
+            ? prevSegment.endsWith('/')
+            : !prevSegment &&
+              typeof nextSegment === 'string' &&
+              nextSegment.startsWith('/')
+        ) {
+          re = `(?:\\/${re})?`
+          // remove the escaped trailing slash from the previous static segment
+          regexp = regexp.slice(0, -2)
+        } else {
+          // just make the regexp group optional
+          re += '?'
+        }
+      }
+      regexp += re
+    }
+  }
+  return regexp
 }
 
 const enum ParseFileSegmentState {
@@ -1014,8 +1059,8 @@ function parseRawPathSegment(
 
   function consumeBuffer() {
     if (state === ParseRawPathSegmentState.static) {
-      // add the buffer to the path segment as is
-      subSegments.push(buffer)
+      // skip empty parts around params, like the file parser
+      if (buffer) subSegments.push(buffer)
     } else if (
       state === ParseRawPathSegmentState.param ||
       state === ParseRawPathSegmentState.regexp ||
@@ -1042,7 +1087,11 @@ function parseRawPathSegment(
     if (c === '\\') {
       // skip the next char
       pos++
-      buffer += segment[pos]
+      // regexps keep the escape, e.g. `\d+`, except for the route syntax `\)`
+      buffer +=
+        (state === ParseRawPathSegmentState.regexp && segment[pos] !== ')'
+          ? c
+          : '') + segment[pos]
       continue
     }
 
@@ -1083,10 +1132,10 @@ function parseRawPathSegment(
       }
     } else if (state === ParseRawPathSegmentState.regexp) {
       if (c === ')') {
-        // we don't actually care about the regexp as it already on the segment
-        // currentTreeRouteParam.regexp = buffer
         if (buffer === '.*') {
           currentTreeRouteParam.isSplat = true
+        } else if (buffer) {
+          currentTreeRouteParam.re = buffer
         }
         // we don't reset the buffer but it needs to be consumed
         // check if there is a modifier
