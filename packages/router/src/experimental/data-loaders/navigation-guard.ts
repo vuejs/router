@@ -300,7 +300,7 @@ export function setupLoaderGuard({
  * Allows differentiating lazy components from functional components and vue-class-component
  * @internal
  *
- * @param component
+ * @param asyncMod
  */
 export function isAsyncModule(
   asyncMod: unknown

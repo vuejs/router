@@ -39,7 +39,7 @@ export interface MatcherPattern<
    * returned value is a string (e.g path and hash should be encoded but query
    * shouldn't).
    *
-   * @param value - params value to parse
+   * @param params - params object to serialize
    * @returns serialized params value
    */
   build(params: TParamsRaw): TIn
