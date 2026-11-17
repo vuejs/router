@@ -254,9 +254,6 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
     }
   }
 
-  /**
-   * NOTE: {@link RouterLinkSlotScope} (used by {@link _RouterLinkI}'s `$slots`) is derived from this
-   */
   return {
     route,
     href: computed(() => route.value.href),
@@ -355,7 +352,7 @@ type _RouterLinkPropsTypedBase = AllowedComponentProps &
 /**
  * @internal
  */
-type RouterLinkPropsTyped<Custom extends boolean | undefined> =
+export type RouterLinkPropsTyped<Custom extends boolean | undefined> =
   Custom extends true
     ? _RouterLinkPropsTypedBase & { custom: true }
     : _RouterLinkPropsTypedBase & { custom?: false | undefined } & Omit<

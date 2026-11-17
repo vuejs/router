@@ -4,6 +4,7 @@ import {
   getCurrentInstance,
   h,
   inject,
+  type VNode,
   toValue,
   watchEffect,
   type MaybeRefOrGetter,
@@ -18,8 +19,8 @@ import {
   guardEvent,
   includesParams,
   preferSingleVNode,
-  type _RouterLinkI,
   type RouterLinkProps,
+  type RouterLinkPropsTyped,
   type RouterLinkSlotScope,
   type UseLinkDevtoolsContext,
   type UseLinkReturn,
@@ -32,7 +33,7 @@ import type {
 } from './router'
 
 export type {
-  _RouterLinkI,
+  RouterLinkI as _RouterLinkI,
   RouterLinkProps,
   RouterLinkSlotScope,
   UseLinkReturn,
@@ -222,4 +223,25 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
  * Component to render a link that triggers a navigation on click. Made for
  * `experimental_createRouter()`.
  */
-export const RouterLink: _RouterLinkI = RouterLinkImpl as any
+export const RouterLink: RouterLinkI = RouterLinkImpl as any
+
+/**
+ * Typed version of the experimental `RouterLink` component.
+ *
+ * @internal
+ */
+interface RouterLinkI {
+  new <Custom extends boolean | undefined = boolean | undefined>(): {
+    $props: RouterLinkPropsTyped<Custom>
+    $slots: {
+      default?: (scope: RouterLinkSlotScope) => VNode[]
+    }
+  }
+
+  /**
+   * Access to `useLink()` without depending on using vue-router
+   *
+   * @internal
+   */
+  useLink: typeof useLink
+}
