@@ -2147,6 +2147,53 @@ describe('Tree', () => {
     })
   })
 
+  describe('Invalid param names in file names', () => {
+    it('strips invalid characters from the param name', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      expect(tree.insert('[my-param!]', 'a.vue').value).toMatchObject({
+        params: [{ paramName: 'myparam' }],
+        fullPath: '/:myparam',
+      })
+      expect(tree.insert(`[a'"}\`;b]`, 'b.vue').value).toMatchObject({
+        params: [{ paramName: 'ab' }],
+        fullPath: '/:ab',
+      })
+      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(2)
+    })
+
+    it('keeps modifiers, splats, and parsers', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      expect(tree.insert('[[my-id]]+', 'a.vue').value).toMatchObject({
+        params: [{ paramName: 'myid', optional: true, repeatable: true }],
+        fullPath: '/:myid*',
+      })
+      expect(tree.insert('[...my-path]', 'b.vue').value).toMatchObject({
+        params: [{ paramName: 'mypath', isSplat: true }],
+        fullPath: '/:mypath(.*)',
+      })
+      expect(tree.insert('[my-id=int]', 'c.vue').value).toMatchObject({
+        params: [{ paramName: 'myid', parser: 'int' }],
+        fullPath: '/:myid',
+      })
+      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(3)
+    })
+
+    it('warns about empty param names', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      expect(tree.insert('[[]]+', 'a.vue').value).toMatchObject({
+        params: [{ paramName: '' }],
+      })
+      expect('VUE_ROUTER_B0028').toHaveBeenWarnedTimes(1)
+
+      // nothing left after stripping
+      expect(tree.insert('[-]', 'b.vue').value).toMatchObject({
+        params: [{ paramName: '' }],
+      })
+      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(1)
+      expect('VUE_ROUTER_B0028').toHaveBeenWarnedTimes(2)
+    })
+  })
+
   describe('Empty parameter names', () => {
     it('assigns default name "pathMatch" to empty parameter names', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)

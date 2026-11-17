@@ -1,13 +1,20 @@
-import { expect, describe, it, beforeAll } from 'vitest'
+import { expect, describe, it } from 'vitest'
 import { PrefixTree } from './tree'
 import { DEFAULT_OPTIONS, resolveOptions } from '../options'
 import { EditableTreeNode } from './extendRoutes'
 import { mockWarn } from '../../tests/vitest-mock-warn'
 
+/**
+ * Finds a route like users do in `beforeWriteFiles()`.
+ */
+function findRoute(root: EditableTreeNode, name: string): EditableTreeNode {
+  const route = [...root].find(route => route.name === name)
+  expect(route).toBeDefined()
+  return route!
+}
+
 describe('EditableTreeNode', () => {
-  beforeAll(() => {
-    mockWarn()
-  })
+  mockWarn()
 
   const RESOLVED_OPTIONS = resolveOptions(DEFAULT_OPTIONS)
   it('creates an editable tree node', () => {
@@ -197,6 +204,65 @@ describe('EditableTreeNode', () => {
         isSplat: false,
       },
     ])
+  })
+
+  it('keeps renames of params with a declared parser or regexp', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+    const root = new EditableTreeNode(tree)
+    tree
+      .insert('[a]', 'a.vue')
+      .value.setOverride('a.vue', { params: { path: { a: 'int' } } })
+    tree
+      .insert('[b]', 'b.vue')
+      .value.setOverride('b.vue', { params: { path: { b: { re: '\\d+' } } } })
+    const withParser = findRoute(root, '/[a]')
+    const withRe = findRoute(root, '/[b]')
+
+    withParser.params[0]!.paramName = 'renamedA'
+    withRe.params[0]!.paramName = 'renamedB'
+    expect(withParser.params).toMatchObject([{ paramName: 'renamedA' }])
+    expect(withRe.params).toMatchObject([{ paramName: 'renamedB' }])
+  })
+
+  describe('param name validation', () => {
+    it('strips invalid characters when a param is renamed', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const root = new EditableTreeNode(tree)
+      root.insert(':id', 'a.vue')
+      tree.insert('[id]', 'b.vue')
+      const fromPath = findRoute(root, '/:id')
+      const fromFile = findRoute(root, '/[id]')
+      expect(fromPath.params[0]?.paramName).toBeDefined()
+      expect(fromFile.params[0]?.paramName).toBeDefined()
+
+      fromPath.params[0]!.paramName = `a'}-b`
+      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(1)
+      fromFile.params[0]!.paramName = 'my-id'
+      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(2)
+      expect(fromPath.params).toMatchObject([{ paramName: 'ab' }])
+      expect(fromFile.params).toMatchObject([{ paramName: 'myid' }])
+    })
+
+    it('keeps valid names when a param is renamed', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const root = new EditableTreeNode(tree)
+      root.insert(':id', 'a.vue')
+      const node = findRoute(root, '/:id')
+
+      node.params[0]!.paramName = 'user_Id2'
+      expect(node.params).toMatchObject([{ paramName: 'user_Id2' }])
+    })
+
+    it('warns when a param is renamed to an empty name', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const root = new EditableTreeNode(tree)
+      root.insert(':id', 'a.vue')
+      const node = findRoute(root, '/:id')
+
+      node.params[0]!.paramName = ''
+      expect(node.params).toMatchObject([{ paramName: '' }])
+      expect('VUE_ROUTER_B0028').toHaveBeenWarned()
+    })
   })
 
   it('adds params with custom regex', () => {
