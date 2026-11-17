@@ -30,6 +30,7 @@ export { RouterLink, useLink } from './RouterLink'
 export type {
   _RouterLinkI,
   RouterLinkProps,
+  RouterLinkSlotScope,
   UseLinkOptions,
   UseLinkReturn,
 } from './RouterLink'

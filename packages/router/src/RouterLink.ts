@@ -125,6 +125,13 @@ export interface UseLinkReturn<Name extends keyof RouteMap = keyof RouteMap> {
   navigate(e?: MouseEvent): Promise<void | NavigationFailure>
 }
 
+/**
+ * Scope passed to the default slot of {@link RouterLink} (`v-slot="{ href, navigate, ... }"`).
+ * Same as the return of {@link useLink} with refs unwrapped.
+ */
+export type RouterLinkSlotScope<Name extends keyof RouteMap = keyof RouteMap> =
+  UnwrapRef<UseLinkReturn<Name>>
+
 // TODO: we could allow currentRoute as a prop to expose `isActive` and
 // `isExactActive` behavior should go through an RFC
 /**
@@ -247,9 +254,6 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
     }
   }
 
-  /**
-   * NOTE: update {@link _RouterLinkI}'s `$slots` type when updating this
-   */
   return {
     route,
     href: computed(() => route.value.href),
@@ -348,7 +352,7 @@ type _RouterLinkPropsTypedBase = AllowedComponentProps &
 /**
  * @internal
  */
-type RouterLinkPropsTyped<Custom extends boolean | undefined> =
+export type RouterLinkPropsTyped<Custom extends boolean | undefined> =
   Custom extends true
     ? _RouterLinkPropsTypedBase & { custom: true }
     : _RouterLinkPropsTypedBase & { custom?: false | undefined } & Omit<
@@ -367,14 +371,8 @@ export interface _RouterLinkI {
     $props: RouterLinkPropsTyped<Custom>
 
     $slots: {
-      default?: ({
-        route,
-        href,
-        isActive,
-        isExactActive,
-        navigate,
-      }: // TODO: How do we add the name generic
-      UnwrapRef<UseLinkReturn>) => VNode[]
+      // TODO: How do we add the name generic
+      default?: (scope: RouterLinkSlotScope) => VNode[]
     }
   }
 
