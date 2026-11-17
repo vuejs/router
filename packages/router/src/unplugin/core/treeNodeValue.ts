@@ -863,7 +863,7 @@ function parseFileSegment(
   const params: TreePathParam[] = []
   let pathSegment = ''
   const subSegments: PathSubSegment[] = []
-  let currentTreeRouteParam: TreePathParam = createEmptyRouteParam(segment)
+  let currentTreeRouteParam: TreePathParam = new ParsedPathParam(segment)
 
   // position in segment
   let pos = 0
@@ -906,7 +906,7 @@ function parseFileSegment(
       }${currentTreeRouteParam.modifier}`
       params.push(currentTreeRouteParam)
       subSegments.push(currentTreeRouteParam)
-      currentTreeRouteParam = createEmptyRouteParam(segment)
+      currentTreeRouteParam = new ParsedPathParam(segment)
     } else if (state === ParseFileSegmentState.charCode) {
       if (buffer.length !== 2) {
         throw new SyntaxError(
@@ -1053,7 +1053,7 @@ function parseRawPathSegment(
   let state: ParseRawPathSegmentState = ParseRawPathSegmentState.static
   const params: TreePathParam[] = []
   const subSegments: PathSubSegment[] = []
-  let currentTreeRouteParam: TreePathParam = createEmptyRouteParam(segment)
+  let currentTreeRouteParam: TreePathParam = new ParsedPathParam(segment)
   let paramName = ''
 
   // position in segment
@@ -1080,7 +1080,7 @@ function parseRawPathSegment(
       // we consume the current param
       subSegments.push(currentTreeRouteParam)
       params.push(currentTreeRouteParam)
-      currentTreeRouteParam = createEmptyRouteParam(segment)
+      currentTreeRouteParam = new ParsedPathParam(segment)
     }
     // no other cases
 
@@ -1258,14 +1258,4 @@ class ParsedPathParam implements TreePathParam {
     copy.#renames = renames
     return copy
   }
-}
-
-/**
- * Helper function to create an empty route param used by the parser.
- *
- * @param segment - segment the param belongs to, used in diagnostics
- * @returns an empty route param
- */
-function createEmptyRouteParam(segment: string): TreePathParam {
-  return new ParsedPathParam(segment)
 }
