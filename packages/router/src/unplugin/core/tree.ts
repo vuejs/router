@@ -390,23 +390,7 @@ export class TreeNode {
    * declared by this specific node.
    */
   get pathParams(): TreePathParam[] {
-    const params = [...this.value.pathParams]
-    if (this.value.overrides.path?.startsWith('/')) {
-      return params
-    }
-
-    let node = this.parent
-    // add all the params from the parents
-    while (node) {
-      params.unshift(...node.value.pathParams)
-      // an absolute path drops everything above it from the url
-      if (node.value.overrides.path?.startsWith('/')) {
-        break
-      }
-      node = node.parent
-    }
-
-    return params
+    return this._pathSegments.flat().filter(isTreePathParam)
   }
 
   /**
