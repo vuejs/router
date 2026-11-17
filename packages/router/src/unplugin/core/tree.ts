@@ -390,7 +390,7 @@ export class TreeNode {
    * declared by this specific node.
    */
   get pathParams(): TreePathParam[] {
-    const params = this.value.pathParams
+    const params = [...this.value.pathParams]
     if (this.value.overrides.path?.startsWith('/')) {
       return params
     }
@@ -445,15 +445,12 @@ export class TreeNode {
 
     while (node && !node.isRoot()) {
       const value: TreeNodeValue = node.value
-      const customRegexps = new Map(
-        value.pathParams.map(param => [param.paramName, param.re])
-      )
       const pathSubSegments = value.pathSubSegments
       if (pathSubSegments.length) {
         segments.unshift(
           ...pathSubSegments.map(subSegments => ({
             subSegments,
-            re: subSegmentsToRe(subSegments, customRegexps),
+            re: subSegmentsToRe(subSegments),
             score: subSegmentsToScore(subSegments),
           }))
         )

@@ -211,17 +211,57 @@ describe('EditableTreeNode', () => {
     const root = new EditableTreeNode(tree)
     tree
       .insert('[a]', 'a.vue')
-      .value.setOverride('a.vue', { params: { path: { a: 'int' } } })
-    tree
-      .insert('[b]', 'b.vue')
-      .value.setOverride('b.vue', { params: { path: { b: { re: '\\d+' } } } })
+      .setCustomRouteBlock('a.vue', { params: { path: { a: 'int' } } })
+    const nodeB = tree.insert('[b]', 'b.vue')
+    nodeB.setCustomRouteBlock('b.vue', {
+      params: { path: { b: { re: '\\d+' } } },
+    })
     const withParser = findRoute(root, '/[a]')
     const withRe = findRoute(root, '/[b]')
 
     withParser.params[0]!.paramName = 'renamedA'
     withRe.params[0]!.paramName = 'renamedB'
-    expect(withParser.params).toMatchObject([{ paramName: 'renamedA' }])
-    expect(withRe.params).toMatchObject([{ paramName: 'renamedB' }])
+    expect(withParser.params).toMatchObject([
+      { paramName: 'renamedA', parser: 'int' },
+    ])
+    // the declared regexp is still applied after the rename
+    expect(withRe.params).toMatchObject([{ paramName: 'renamedB', re: '\\d+' }])
+    expect(nodeB.regexp).toBe('/^\\/(\\d+)$/i')
+  })
+
+  it('keeps param renames after other edits', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+    const root = new EditableTreeNode(tree)
+    const parent = tree.insert('[a]', '[a].vue')
+    parent.setCustomRouteBlock('[a].vue', { params: { path: { a: 'int' } } })
+    const node = tree.insert('[a]/[b]', '[a]/[b].vue')
+    node.setCustomRouteBlock('[a]/[b].vue', { path: ':b(\\d+)' })
+    const route = findRoute(root, '/[a]/[b]')
+
+    route.params[0]!.paramName = 'renamedA'
+    route.params[1]!.paramName = 'renamedB'
+    route.addToMeta({ a: 1 })
+    route.meta = { b: 2 }
+    route.name = 'custom'
+    route.addAlias(['/other'])
+    new EditableTreeNode(parent).addToMeta({ a: 1 })
+    parent.setCustomRouteBlock('[a].vue', { params: { path: { a: 'date' } } })
+    route.path = 'users/:b(\\d+)'
+
+    expect(route.params).toMatchObject([
+      { paramName: 'renamedA', parser: 'date' },
+      { paramName: 'renamedB', re: '\\d+' },
+    ])
+    expect(node.regexp).toBe('/^\\/([^/]+?)\\/users\\/(\\d+)$/i')
+    // the file segments keep the original names
+    expect(parent.value.subSegments).toMatchObject([{ paramName: 'a' }])
+
+    // params added by a path edit keep their own names
+    route.path = ':other'
+    expect(route.params).toMatchObject([
+      { paramName: 'renamedA' },
+      { paramName: 'other' },
+    ])
   })
 
   describe('param name validation', () => {
