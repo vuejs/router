@@ -245,10 +245,12 @@ class _TreeNodeValueBase {
 
     return params.map(param => {
       const declared = declaredParsers[param.paramName]
+      if (declared === undefined) return param
       const { parser, re }: CustomRouteBlockPathParamOptions =
         declared && typeof declared === 'object'
           ? declared
           : { parser: declared }
+      const changes: Partial<TreePathParam> = {}
 
       if (re != null) {
         if (param.re && !this._warnedDuplicatedRegexps.has(param.paramName)) {
@@ -260,25 +262,28 @@ class _TreeNodeValueBase {
             declaredRe: re,
           })
         }
-        param = { ...param, re: this._validateParamRe(param, re) }
+        changes.re = this._validateParamRe(param, re)
       }
 
       // an explicit `null` removes the parser declared in the file name
-      if (parser === undefined) {
-        return param
+      if (parser !== undefined) {
+        if (
+          parser &&
+          param.parser &&
+          !this._warnedParsers.has(param.paramName)
+        ) {
+          this._warnedParsers.add(param.paramName)
+          diagnostics.VUE_ROUTER_B0021({
+            paramName: param.paramName,
+            segment: this.rawSegment,
+            filenameParser: param.parser,
+            declaredParser: parser,
+          })
+        }
+        changes.parser = parser
       }
 
-      if (parser && param.parser && !this._warnedParsers.has(param.paramName)) {
-        this._warnedParsers.add(param.paramName)
-        diagnostics.VUE_ROUTER_B0021({
-          paramName: param.paramName,
-          segment: this.rawSegment,
-          filenameParser: param.parser,
-          declaredParser: parser,
-        })
-      }
-
-      return { ...param, parser }
+      return copyPathParam(param, changes)
     })
   }
 
@@ -824,6 +829,8 @@ export interface ParseSegmentOptions {
 }
 
 const IS_VARIABLE_CHAR_RE = /[0-9a-zA-Z_]/
+// same rule as the core path tokenizer
+const INVALID_PARAM_NAME_CHARS_RE = /[^0-9a-zA-Z_]/g
 
 /**
  * Parses a segment into the route path segment and the extracted params.
@@ -841,7 +848,7 @@ function parseFileSegment(
   const params: TreePathParam[] = []
   let pathSegment = ''
   const subSegments: PathSubSegment[] = []
-  let currentTreeRouteParam: TreePathParam = createEmptyRouteParam()
+  let currentTreeRouteParam: TreePathParam = createEmptyRouteParam(segment)
 
   // position in segment
   let pos = 0
@@ -884,7 +891,7 @@ function parseFileSegment(
       }${currentTreeRouteParam.modifier}`
       params.push(currentTreeRouteParam)
       subSegments.push(currentTreeRouteParam)
-      currentTreeRouteParam = createEmptyRouteParam()
+      currentTreeRouteParam = createEmptyRouteParam(segment)
     } else if (state === ParseFileSegmentState.charCode) {
       if (buffer.length !== 2) {
         throw new SyntaxError(
@@ -1031,7 +1038,8 @@ function parseRawPathSegment(
   let state: ParseRawPathSegmentState = ParseRawPathSegmentState.static
   const params: TreePathParam[] = []
   const subSegments: PathSubSegment[] = []
-  let currentTreeRouteParam: TreePathParam = createEmptyRouteParam()
+  let currentTreeRouteParam: TreePathParam = createEmptyRouteParam(segment)
+  let paramName = ''
 
   // position in segment
   let pos = 0
@@ -1048,14 +1056,16 @@ function parseRawPathSegment(
       state === ParseRawPathSegmentState.modifier
     ) {
       // Check if the parameter name is empty and assign a default name
-      if (!currentTreeRouteParam.paramName) {
+      if (!paramName) {
         diagnostics.VUE_ROUTER_B0011({ segment })
-        currentTreeRouteParam.paramName = 'pathMatch'
+        paramName = 'pathMatch'
       }
+      currentTreeRouteParam.paramName = paramName
+      paramName = ''
       // we consume the current param
       subSegments.push(currentTreeRouteParam)
       params.push(currentTreeRouteParam)
-      currentTreeRouteParam = createEmptyRouteParam()
+      currentTreeRouteParam = createEmptyRouteParam(segment)
     }
     // no other cases
 
@@ -1087,7 +1097,7 @@ function parseRawPathSegment(
     } else if (state === ParseRawPathSegmentState.param) {
       if (c === '(') {
         // consume the param name and start the regexp
-        currentTreeRouteParam.paramName = buffer
+        paramName = buffer
         buffer = ''
         state = ParseRawPathSegmentState.regexp
       } else if (IS_MODIFIER_RE.test(c)) {
@@ -1102,9 +1112,9 @@ function parseRawPathSegment(
       } else if (IS_VARIABLE_CHAR_RE.test(c)) {
         buffer += c
         // keep it as we could be at the end of the string
-        currentTreeRouteParam.paramName = buffer
+        paramName = buffer
       } else {
-        currentTreeRouteParam.paramName = buffer
+        paramName = buffer
         // we reached the end of the param
         consumeBuffer()
         // we need to parse this again
@@ -1162,19 +1172,77 @@ function parseRawPathSegment(
 }
 
 /**
+ * Returns `paramName` without the characters the core path tokenizer rejects.
+ * Reports a diagnostic if it changes or ends up empty.
+ */
+function validateParamName(paramName: string, segment: string): string {
+  const validParamName = paramName.replace(INVALID_PARAM_NAME_CHARS_RE, '')
+  if (validParamName !== paramName) {
+    diagnostics.VUE_ROUTER_B0027({ paramName, segment, validParamName })
+  }
+  if (!validParamName) {
+    diagnostics.VUE_ROUTER_B0028({ segment })
+  }
+  return validParamName
+}
+
+/**
+ * Path param created by the parsers. `paramName` is an accessor that validates
+ * every write, including the ones done in `extendRoutes()`. It lives on the
+ * prototype to keep fast properties, so a spread drops it: use
+ * {@link copyPathParam} instead.
+ */
+class ParsedPathParam implements TreePathParam {
+  type = 'path' as const
+  modifier = ''
+  optional = false
+  repeatable = false
+  isSplat = false
+  parser: string | null = null
+  re: string | null = null
+
+  #paramName = ''
+  #segment: string
+  /**
+   * Param that owns `paramName` when this one is a copy.
+   */
+  #source: TreePathParam | null
+
+  constructor(segment: string, source: TreePathParam | null = null) {
+    this.#segment = segment
+    this.#source = source
+  }
+
+  get paramName(): string {
+    return this.#source ? this.#source.paramName : this.#paramName
+  }
+
+  set paramName(value: string) {
+    if (this.#source) {
+      this.#source.paramName = value
+    } else {
+      this.#paramName = validateParamName(value, this.#segment)
+    }
+  }
+}
+
+/**
+ * Copies `param` with `changes`. `paramName` still reads and writes the
+ * original param, so renames are validated and reach the generated code.
+ */
+function copyPathParam(
+  param: TreePathParam,
+  changes: Partial<TreePathParam>
+): TreePathParam {
+  return Object.assign(new ParsedPathParam('', param), param, changes)
+}
+
+/**
  * Helper function to create an empty route param used by the parser.
  *
+ * @param segment - segment the param belongs to, used in diagnostics
  * @returns an empty route param
  */
-function createEmptyRouteParam(): TreePathParam {
-  return {
-    type: 'path',
-    paramName: '',
-    parser: null,
-    modifier: '',
-    optional: false,
-    repeatable: false,
-    isSplat: false,
-    re: null,
-  }
+function createEmptyRouteParam(segment: string): TreePathParam {
+  return new ParsedPathParam(segment)
 }

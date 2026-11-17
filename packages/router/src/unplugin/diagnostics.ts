@@ -114,6 +114,19 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `param "${p.paramName}" declares a regexp twice in "${p.segment}": /${p.pathRe}/ in \`path\` and /${p.declaredRe}/ in \`params.path\`. Keeping /${p.declaredRe}/.`,
       fix: 'Remove the regexp from `path`, e.g. use ":id" instead of ":id(...)".',
     },
+    VUE_ROUTER_B0027: {
+      why: (p: {
+        paramName: string
+        segment: string
+        validParamName: string
+      }) =>
+        `Invalid param name "${p.paramName}" in "${p.segment}": only letters, digits, and "_" are allowed. Using "${p.validParamName}" instead.`,
+      fix: 'Rename the param to only use letters (a-z, A-Z), digits (0-9), and "_".',
+    },
+    VUE_ROUTER_B0028: {
+      why: (p: { segment: string }) => `Empty param name in "${p.segment}".`,
+      fix: 'Give the param a name with letters (a-z, A-Z), digits (0-9), and "_", e.g. "[id]".',
+    },
 
     // --- core/customBlock.ts ---
     VUE_ROUTER_B0012: {
