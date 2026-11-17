@@ -245,10 +245,12 @@ class _TreeNodeValueBase {
 
     return params.map(param => {
       const declared = declaredParsers[param.paramName]
+      if (declared === undefined) return param
       const { parser, re }: CustomRouteBlockPathParamOptions =
         declared && typeof declared === 'object'
           ? declared
           : { parser: declared }
+      const changes: Partial<TreePathParam> = {}
 
       if (re != null) {
         if (param.re && !this._warnedDuplicatedRegexps.has(param.paramName)) {
@@ -260,25 +262,28 @@ class _TreeNodeValueBase {
             declaredRe: re,
           })
         }
-        param = { ...param, re: this._validateParamRe(param, re) }
+        changes.re = this._validateParamRe(param, re)
       }
 
       // an explicit `null` removes the parser declared in the file name
-      if (parser === undefined) {
-        return param
+      if (parser !== undefined) {
+        if (
+          parser &&
+          param.parser &&
+          !this._warnedParsers.has(param.paramName)
+        ) {
+          this._warnedParsers.add(param.paramName)
+          diagnostics.VUE_ROUTER_B0021({
+            paramName: param.paramName,
+            segment: this.rawSegment,
+            filenameParser: param.parser,
+            declaredParser: parser,
+          })
+        }
+        changes.parser = parser
       }
 
-      if (parser && param.parser && !this._warnedParsers.has(param.paramName)) {
-        this._warnedParsers.add(param.paramName)
-        diagnostics.VUE_ROUTER_B0021({
-          paramName: param.paramName,
-          segment: this.rawSegment,
-          filenameParser: param.parser,
-          declaredParser: parser,
-        })
-      }
-
-      return { ...param, parser }
+      return copyPathParam(param, changes)
     })
   }
 
@@ -1182,27 +1187,62 @@ function validateParamName(paramName: string, segment: string): string {
 }
 
 /**
+ * Path param created by the parsers. `paramName` is an accessor that validates
+ * every write, including the ones done in `extendRoutes()`. It lives on the
+ * prototype to keep fast properties, so a spread drops it: use
+ * {@link copyPathParam} instead.
+ */
+class ParsedPathParam implements TreePathParam {
+  type = 'path' as const
+  modifier = ''
+  optional = false
+  repeatable = false
+  isSplat = false
+  parser: string | null = null
+  re: string | null = null
+
+  #paramName = ''
+  #segment: string
+  /**
+   * Param that owns `paramName` when this one is a copy.
+   */
+  #source: TreePathParam | null
+
+  constructor(segment: string, source: TreePathParam | null = null) {
+    this.#segment = segment
+    this.#source = source
+  }
+
+  get paramName(): string {
+    return this.#source ? this.#source.paramName : this.#paramName
+  }
+
+  set paramName(value: string) {
+    if (this.#source) {
+      this.#source.paramName = value
+    } else {
+      this.#paramName = validateParamName(value, this.#segment)
+    }
+  }
+}
+
+/**
+ * Copies `param` with `changes`. `paramName` still reads and writes the
+ * original param, so renames are validated and reach the generated code.
+ */
+function copyPathParam(
+  param: TreePathParam,
+  changes: Partial<TreePathParam>
+): TreePathParam {
+  return Object.assign(new ParsedPathParam('', param), param, changes)
+}
+
+/**
  * Helper function to create an empty route param used by the parser.
  *
  * @param segment - segment the param belongs to, used in diagnostics
  * @returns an empty route param
  */
 function createEmptyRouteParam(segment: string): TreePathParam {
-  let paramName = ''
-  return {
-    type: 'path',
-    // validates names set by the parser and by `extendRoutes()`
-    get paramName() {
-      return paramName
-    },
-    set paramName(value: string) {
-      paramName = validateParamName(value, segment)
-    },
-    parser: null,
-    modifier: '',
-    optional: false,
-    repeatable: false,
-    isSplat: false,
-    re: null,
-  }
+  return new ParsedPathParam(segment)
 }
