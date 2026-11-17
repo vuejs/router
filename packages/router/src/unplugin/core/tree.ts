@@ -428,32 +428,20 @@ export class TreeNode {
   }
 
   /**
-   * Path segments of this node and its parents, from parent to child. It
-   * follows `path` overrides and stops at the first absolute one.
+   * Sub segments of each path segment of this node and its parents, from
+   * parent to child. It follows `path` overrides and stops at the first
+   * absolute one. Index files, group files and empty paths add an empty
+   * segment.
    */
-  private get _pathSegments(): Array<{
-    subSegments: PathSubSegment[]
-    re: string
-    score: number[]
-  }> {
-    const segments: Array<{
-      subSegments: PathSubSegment[]
-      re: string
-      score: number[]
-    }> = []
+  private get _pathSegments(): PathSubSegment[][] {
+    const segments: PathSubSegment[][] = []
     let node: TreeNode | undefined = this
 
     while (node && !node.isRoot()) {
       const value: TreeNodeValue = node.value
       const pathSubSegments = value.pathSubSegments
       if (pathSubSegments.length) {
-        segments.unshift(
-          ...pathSubSegments.map(subSegments => ({
-            subSegments,
-            re: subSegmentsToRe(subSegments),
-            score: subSegmentsToScore(subSegments),
-          }))
-        )
+        segments.unshift(...pathSubSegments)
       } else if (
         node === this ||
         !value.isGroup() ||
@@ -462,7 +450,7 @@ export class TreeNode {
         // index files, group files (like index files) and empty paths don't
         // add to the path but are scored. Group folders are not, so they don't
         // change the order of their children
-        segments.unshift({ subSegments: [], re: '', score: [300] })
+        segments.unshift([])
       }
       // an absolute path drops everything above it from the url
       if (value.overrides.path?.startsWith('/')) break
@@ -477,13 +465,14 @@ export class TreeNode {
    */
   get regexp(): string {
     const segments = this._pathSegments.filter(
-      segment => segment.subSegments.length > 0
+      subSegments => subSegments.length > 0
     )
 
     let re = ''
     let onlyOptionalParams = true
     for (var i = 0; i < segments.length; i++) {
-      const { subSegments, re: segmentRe } = segments[i]!
+      const subSegments = segments[i]!
+      const segmentRe = subSegmentsToRe(subSegments)
       const subSegment = subSegments[0]
       const isOptionalSegment =
         subSegments.length === 1 &&
@@ -531,7 +520,10 @@ export class TreeNode {
    * Score of the path used for sorting routes.
    */
   get score(): number[][] {
-    return this._pathSegments.map(segment => segment.score)
+    // an empty segment is scored like a static one
+    return this._pathSegments.map(subSegments =>
+      subSegments.length ? subSegmentsToScore(subSegments) : [300]
+    )
   }
 
   /**
@@ -551,8 +543,8 @@ export class TreeNode {
   get matcherPatternPathDynamicParts(): TreeNodeValueMatcherPart {
     const parts: TreeNodeValueMatcherPart = []
 
-    for (const segment of this._pathSegments) {
-      const subSegments = segment.subSegments.map(segment =>
+    for (const pathSubSegments of this._pathSegments) {
+      const subSegments = pathSubSegments.map(segment =>
         typeof segment === 'string'
           ? segment
           : // param
