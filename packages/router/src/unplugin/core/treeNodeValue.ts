@@ -209,7 +209,7 @@ class _TreeNodeValueBase {
   get pathSubSegments(): PathSubSegment[][] {
     const overridePath = this.overrides.path
     if (overridePath == null) {
-      return this.pathSegment ? [this.subSegments] : []
+      return this.pathSegment ? splitSubSegments(this.subSegments) : []
     }
     return overridePath
       .split('/')
@@ -458,8 +458,6 @@ class _TreeNodeValueBase {
 export class TreeNodeValueStatic extends _TreeNodeValueBase {
   override _type: TreeNodeType.static = TreeNodeType.static
 
-  readonly score = [300]
-
   constructor(
     rawSegment: string,
     parent: TreeNodeValue | undefined,
@@ -472,8 +470,6 @@ export class TreeNodeValueStatic extends _TreeNodeValueBase {
 export class TreeNodeValueGroup extends _TreeNodeValueBase {
   override _type: TreeNodeType.group = TreeNodeType.group
   groupName: string
-
-  readonly score = [300]
 
   constructor(
     rawSegment: string,
@@ -621,20 +617,6 @@ export class TreeNodeValueParam extends _TreeNodeValueBase {
     super(rawSegment, parent, pathSegment, subSegments)
   }
 
-  get score(): number[] {
-    return subSegmentsToScore(this.subSegments)
-  }
-
-  /**
-   * Generates the regex pattern for the path segment.
-   */
-  get re(): string {
-    return subSegmentsToRe(
-      this.subSegments,
-      new Map(this.pathParams.map(param => [param.paramName, param.re]))
-    )
-  }
-
   override toString(): string {
     const params =
       this.params.length > 0
@@ -744,6 +726,24 @@ export function createTreeNodeValue(
 }
 
 /**
+ * Splits sub segments at the `/` kept in static strings by dot nesting
+ * (`a.[id].b`) and parsed paths (`:id/b`), one array per path segment.
+ */
+function splitSubSegments(subSegments: PathSubSegment[]): PathSubSegment[][] {
+  const segments: PathSubSegment[][] = [[]]
+  for (const subSegment of subSegments) {
+    if (typeof subSegment === 'string') {
+      const [first, ...rest] = subSegment.split('/')
+      if (first) segments.at(-1)!.push(first)
+      for (const piece of rest) segments.push(piece ? [piece] : [])
+    } else {
+      segments.at(-1)!.push(subSegment)
+    }
+  }
+  return segments.filter(segment => segment.length > 0)
+}
+
+/**
  * Computes the score of a path segment. Handles mixed static/param parts.
  */
 export function subSegmentsToScore(subSegments: PathSubSegment[]): number[] {
@@ -773,8 +773,7 @@ export function subSegmentsToRe(
   customRegexps: Map<string, string | null>
 ): string {
   let regexp = ''
-  for (var i = 0; i < subSegments.length; i++) {
-    var segment = subSegments[i]
+  for (const segment of subSegments) {
     // skip empty sub segments
     if (!segment) continue
 
@@ -792,26 +791,8 @@ export function subSegmentsToRe(
           : segment.repeatable
             ? '(.+?)'
             : '([^/]+?)'
-      if (segment.optional) {
-        // TODO: trailingSlash behavior
-        var prevSegment = subSegments[i - 1]
-        var nextSegment = subSegments[i + 1]
-        // a slash next to the param becomes part of the optional group
-        if (
-          typeof prevSegment === 'string'
-            ? prevSegment.endsWith('/')
-            : !prevSegment &&
-              typeof nextSegment === 'string' &&
-              nextSegment.startsWith('/')
-        ) {
-          re = `(?:\\/${re})?`
-          // remove the escaped trailing slash from the previous static segment
-          regexp = regexp.slice(0, -2)
-        } else {
-          // just make the regexp group optional
-          re += '?'
-        }
-      }
+      // the path regexp moves the slash of a lone optional param into the group
+      if (segment.optional) re += '?'
       regexp += re
     }
   }

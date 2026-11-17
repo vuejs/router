@@ -11,6 +11,7 @@ import {
   collectUsedParamParserNames,
 } from './generateParamParsers'
 import { generatePageImport, formatMeta } from './generateRouteRecords'
+import { diagnostics } from '../diagnostics'
 
 /**
  * Compare two score sub-arrays element by element.
@@ -190,6 +191,7 @@ export function generateRouteRecord({
         varName,
         score: node.score,
       })
+      warnGroupFileWithSamePathChildren(node)
       recordName = `name: ${toStringLiteral(node.name)},`
     } else {
       recordName = node.name
@@ -280,7 +282,6 @@ const ${varName} = normalizeRouteRecord(${routeRecordObject})
       paramParsersMap,
     })
   )
-
   return (
     recordDeclaration +
     aliasDeclarations +
@@ -289,6 +290,26 @@ const ${varName} = normalizeRouteRecord(${routeRecordObject})
         children.join('\n')
       : '')
   )
+}
+
+/**
+ * A matchable pathless group file and its matchable children with the same
+ * path have no defined order. The group file should be a `_parent` file.
+ */
+function warnGroupFileWithSamePathChildren(node: TreeNode) {
+  if (!node.value.isGroup() || node.value.overrides.path != null) return
+
+  const childFilePaths = Array.from(node.getChildrenDeep())
+    .filter(child => child.isMatchable() && child.fullPath === node.fullPath)
+    .flatMap(child => Array.from(child.value.components.values()))
+  if (!childFilePaths.length) return
+
+  diagnostics.VUE_ROUTER_B0026({
+    path: node.fullPath,
+    filePath: Array.from(node.value.components.values()).join('", "'),
+    childFilePaths: childFilePaths.map(filePath => `"${filePath}"`).join(', '),
+    group: node.value.rawSegment,
+  })
 }
 
 function generateRouteRecordComponent(

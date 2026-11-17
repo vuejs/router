@@ -214,6 +214,19 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: [] })).toBe('/teams/')
   })
 
+  it('builds a path the regexp matches when an optional param is absent', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/item(?:\/([^/]+?))?\/foo$/i,
+      { id: [undefined, false, true] },
+      ['item', 1, 'foo']
+    )
+
+    expect(pattern.build({ id: null })).toBe('/item/foo')
+    expect(pattern.match('/item/foo')).toEqual({ id: null })
+    expect(pattern.build({ id: '1' })).toBe('/item/1/foo')
+    expect(pattern.match('/item/1/foo')).toEqual({ id: '1' })
+  })
+
   it('can have params with slashes in their regex (end)', () => {
     const pattern = new MatcherPatternPathDynamic(
       // same as above but with multiple params, some encoded, other not
