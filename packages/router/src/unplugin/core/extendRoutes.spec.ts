@@ -236,9 +236,9 @@ describe('EditableTreeNode', () => {
       expect(fromFile.params[0]?.paramName).toBeDefined()
 
       fromPath.params[0]!.paramName = `a'}-b`
-      expect('VUE_ROUTER_B0026').toHaveBeenWarnedTimes(1)
+      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(1)
       fromFile.params[0]!.paramName = 'my-id'
-      expect('VUE_ROUTER_B0026').toHaveBeenWarnedTimes(2)
+      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(2)
       expect(fromPath.params).toMatchObject([{ paramName: 'ab' }])
       expect(fromFile.params).toMatchObject([{ paramName: 'myid' }])
     })
@@ -261,7 +261,7 @@ describe('EditableTreeNode', () => {
 
       node.params[0]!.paramName = ''
       expect(node.params).toMatchObject([{ paramName: '' }])
-      expect('VUE_ROUTER_B0027').toHaveBeenWarned()
+      expect('VUE_ROUTER_B0028').toHaveBeenWarned()
     })
   })
 

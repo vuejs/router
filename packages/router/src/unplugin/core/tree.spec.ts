@@ -2158,7 +2158,7 @@ describe('Tree', () => {
         params: [{ paramName: 'ab' }],
         fullPath: '/:ab',
       })
-      expect('VUE_ROUTER_B0026').toHaveBeenWarnedTimes(2)
+      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(2)
     })
 
     it('keeps modifiers, splats, and parsers', () => {
@@ -2175,7 +2175,7 @@ describe('Tree', () => {
         params: [{ paramName: 'myid', parser: 'int' }],
         fullPath: '/:myid',
       })
-      expect('VUE_ROUTER_B0026').toHaveBeenWarnedTimes(3)
+      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(3)
     })
 
     it('warns about empty param names', () => {
@@ -2183,14 +2183,14 @@ describe('Tree', () => {
       expect(tree.insert('[[]]+', 'a.vue').value).toMatchObject({
         params: [{ paramName: '' }],
       })
-      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(1)
+      expect('VUE_ROUTER_B0028').toHaveBeenWarnedTimes(1)
 
       // nothing left after stripping
       expect(tree.insert('[-]', 'b.vue').value).toMatchObject({
         params: [{ paramName: '' }],
       })
-      expect('VUE_ROUTER_B0026').toHaveBeenWarnedTimes(1)
-      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(2)
+      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(1)
+      expect('VUE_ROUTER_B0028').toHaveBeenWarnedTimes(2)
     })
   })
 

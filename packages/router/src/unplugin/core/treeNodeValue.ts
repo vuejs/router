@@ -1178,10 +1178,10 @@ function parseRawPathSegment(
 function validateParamName(paramName: string, segment: string): string {
   const validParamName = paramName.replace(INVALID_PARAM_NAME_CHARS_RE, '')
   if (validParamName !== paramName) {
-    diagnostics.VUE_ROUTER_B0026({ paramName, segment, validParamName })
+    diagnostics.VUE_ROUTER_B0027({ paramName, segment, validParamName })
   }
   if (!validParamName) {
-    diagnostics.VUE_ROUTER_B0027({ segment })
+    diagnostics.VUE_ROUTER_B0028({ segment })
   }
   return validParamName
 }
