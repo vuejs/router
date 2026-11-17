@@ -1,13 +1,11 @@
-import { expect, describe, it, beforeAll } from 'vitest'
+import { expect, describe, it } from 'vitest'
 import { PrefixTree } from './tree'
 import { DEFAULT_OPTIONS, resolveOptions } from '../options'
 import { EditableTreeNode } from './extendRoutes'
 import { mockWarn } from '../../tests/vitest-mock-warn'
 
 describe('EditableTreeNode', () => {
-  beforeAll(() => {
-    mockWarn()
-  })
+  mockWarn()
 
   const RESOLVED_OPTIONS = resolveOptions(DEFAULT_OPTIONS)
   it('creates an editable tree node', () => {
@@ -197,6 +195,46 @@ describe('EditableTreeNode', () => {
         isSplat: false,
       },
     ])
+  })
+
+  describe('param name validation', () => {
+    it('strips invalid characters when a param is renamed', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const editable = new EditableTreeNode(tree)
+      editable.insert(':id', 'a.vue')
+      tree.insert('[id]', 'b.vue')
+      const [fromPath, fromFile] = editable.children
+      expect(fromPath?.params[0]?.paramName).toBeDefined()
+      expect(fromFile?.params[0]?.paramName).toBeDefined()
+
+      fromPath!.params[0]!.paramName = `a'}-b`
+      expect('VUE_ROUTER_B0026').toHaveBeenWarnedTimes(1)
+      fromFile!.params[0]!.paramName = 'my-id'
+      expect('VUE_ROUTER_B0026').toHaveBeenWarnedTimes(2)
+      expect(fromPath!.params).toMatchObject([{ paramName: 'ab' }])
+      expect(fromFile!.params).toMatchObject([{ paramName: 'myid' }])
+    })
+
+    it('keeps valid names when a param is renamed', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const editable = new EditableTreeNode(tree)
+      editable.insert(':id', 'a.vue')
+      const node = editable.children[0]!
+
+      node.params[0]!.paramName = 'user_Id2'
+      expect(node.params).toMatchObject([{ paramName: 'user_Id2' }])
+    })
+
+    it('warns when a param is renamed to an empty name', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const editable = new EditableTreeNode(tree)
+      editable.insert(':id', 'a.vue')
+      const node = editable.children[0]!
+
+      node.params[0]!.paramName = ''
+      expect(node.params).toMatchObject([{ paramName: '' }])
+      expect('VUE_ROUTER_B0027').toHaveBeenWarned()
+    })
   })
 
   it('adds params with custom regex', () => {

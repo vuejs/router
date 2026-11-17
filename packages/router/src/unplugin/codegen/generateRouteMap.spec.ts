@@ -1200,6 +1200,7 @@ describe('generateRouteNamedMap', () => {
         generateRouteNamedMap(tree, OPTIONS_WITH_PARSERS, new Map())
       )
       expect('VUE_ROUTER_B0017').toHaveBeenWarnedTimes(1)
+      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(1)
 
       expect(routeMap).toMatchInlineSnapshot(`
         "export interface RouteNamedMap {
@@ -1221,6 +1222,7 @@ describe('generateRouteNamedMap', () => {
         generateRouteNamedMap(tree, DEFAULT_OPTIONS, new Map())
       )
       expect('VUE_ROUTER_B0017').toHaveBeenWarnedTimes(1)
+      expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(1)
 
       expect(routeMap).toMatchInlineSnapshot(`
         "export interface RouteNamedMap {

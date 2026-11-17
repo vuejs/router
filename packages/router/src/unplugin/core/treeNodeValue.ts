@@ -824,6 +824,8 @@ export interface ParseSegmentOptions {
 }
 
 const IS_VARIABLE_CHAR_RE = /[0-9a-zA-Z_]/
+// same rule as the core path tokenizer
+const INVALID_PARAM_NAME_CHARS_RE = /[^0-9a-zA-Z_]/g
 
 /**
  * Parses a segment into the route path segment and the extracted params.
@@ -841,7 +843,7 @@ function parseFileSegment(
   const params: TreePathParam[] = []
   let pathSegment = ''
   const subSegments: PathSubSegment[] = []
-  let currentTreeRouteParam: TreePathParam = createEmptyRouteParam()
+  let currentTreeRouteParam: TreePathParam = createEmptyRouteParam(segment)
 
   // position in segment
   let pos = 0
@@ -884,7 +886,7 @@ function parseFileSegment(
       }${currentTreeRouteParam.modifier}`
       params.push(currentTreeRouteParam)
       subSegments.push(currentTreeRouteParam)
-      currentTreeRouteParam = createEmptyRouteParam()
+      currentTreeRouteParam = createEmptyRouteParam(segment)
     } else if (state === ParseFileSegmentState.charCode) {
       if (buffer.length !== 2) {
         throw new SyntaxError(
@@ -1031,7 +1033,8 @@ function parseRawPathSegment(
   let state: ParseRawPathSegmentState = ParseRawPathSegmentState.static
   const params: TreePathParam[] = []
   const subSegments: PathSubSegment[] = []
-  let currentTreeRouteParam: TreePathParam = createEmptyRouteParam()
+  let currentTreeRouteParam: TreePathParam = createEmptyRouteParam(segment)
+  let paramName = ''
 
   // position in segment
   let pos = 0
@@ -1048,14 +1051,16 @@ function parseRawPathSegment(
       state === ParseRawPathSegmentState.modifier
     ) {
       // Check if the parameter name is empty and assign a default name
-      if (!currentTreeRouteParam.paramName) {
+      if (!paramName) {
         diagnostics.VUE_ROUTER_B0011({ segment })
-        currentTreeRouteParam.paramName = 'pathMatch'
+        paramName = 'pathMatch'
       }
+      currentTreeRouteParam.paramName = paramName
+      paramName = ''
       // we consume the current param
       subSegments.push(currentTreeRouteParam)
       params.push(currentTreeRouteParam)
-      currentTreeRouteParam = createEmptyRouteParam()
+      currentTreeRouteParam = createEmptyRouteParam(segment)
     }
     // no other cases
 
@@ -1087,7 +1092,7 @@ function parseRawPathSegment(
     } else if (state === ParseRawPathSegmentState.param) {
       if (c === '(') {
         // consume the param name and start the regexp
-        currentTreeRouteParam.paramName = buffer
+        paramName = buffer
         buffer = ''
         state = ParseRawPathSegmentState.regexp
       } else if (IS_MODIFIER_RE.test(c)) {
@@ -1102,9 +1107,9 @@ function parseRawPathSegment(
       } else if (IS_VARIABLE_CHAR_RE.test(c)) {
         buffer += c
         // keep it as we could be at the end of the string
-        currentTreeRouteParam.paramName = buffer
+        paramName = buffer
       } else {
-        currentTreeRouteParam.paramName = buffer
+        paramName = buffer
         // we reached the end of the param
         consumeBuffer()
         // we need to parse this again
@@ -1162,14 +1167,37 @@ function parseRawPathSegment(
 }
 
 /**
+ * Returns `paramName` without the characters the core path tokenizer rejects.
+ * Reports a diagnostic if it changes or ends up empty.
+ */
+function validateParamName(paramName: string, segment: string): string {
+  const validParamName = paramName.replace(INVALID_PARAM_NAME_CHARS_RE, '')
+  if (validParamName !== paramName) {
+    diagnostics.VUE_ROUTER_B0026({ paramName, segment, validParamName })
+  }
+  if (!validParamName) {
+    diagnostics.VUE_ROUTER_B0027({ segment })
+  }
+  return validParamName
+}
+
+/**
  * Helper function to create an empty route param used by the parser.
  *
+ * @param segment - segment the param belongs to, used in diagnostics
  * @returns an empty route param
  */
-function createEmptyRouteParam(): TreePathParam {
+function createEmptyRouteParam(segment: string): TreePathParam {
+  let paramName = ''
   return {
     type: 'path',
-    paramName: '',
+    // validates names set by the parser and by `extendRoutes()`
+    get paramName() {
+      return paramName
+    },
+    set paramName(value: string) {
+      paramName = validateParamName(value, segment)
+    },
     parser: null,
     modifier: '',
     optional: false,
