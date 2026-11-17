@@ -1,6 +1,6 @@
 import { basename, relative } from 'pathe'
 import type { VueLanguagePlugin } from '@vue/language-core'
-import { replaceSourceRange, toString } from 'muggle-string'
+import { replaceSourceRange, toString } from '../utils/codes'
 import { augmentVlsCtx } from '../utils/augment-vls-ctx'
 import type ts from 'typescript'
 
