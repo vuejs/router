@@ -429,8 +429,9 @@ function ScrollRestorationClient(
     // using the sessionStorage can fail in many ways (security, quota, etc.), so we ignore any errors
     try {
       entry =
-        (value = sessionStorage[storageKeyPrefix + toValueWithArgs(key, to)]) &&
-        JSON.parse(value)
+        (value = sessionStorage.getItem(
+          storageKeyPrefix + toValueWithArgs(key, to)
+        )) && JSON.parse(value)
     } catch {}
     restore(entry, to)
   }
@@ -465,8 +466,8 @@ function ScrollRestorationClient(
       }
       const entry = registration.capture()
       try {
-        if (entry) sessionStorage[key] = JSON.stringify(entry)
-        else delete sessionStorage[key]
+        if (entry) sessionStorage.setItem(key, JSON.stringify(entry))
+        else sessionStorage.removeItem(key)
         // blocked storage, full quota, or unserializable entry
       } catch {}
     }

@@ -107,7 +107,7 @@ async function mountRouter(
           ScrollRestoration,
           {
             router,
-            ...(storageKeyPrefix && { storageKeyPrefix }),
+            ...(storageKeyPrefix !== undefined && { storageKeyPrefix }),
             capture,
             restore,
             ...(setupListeners && { setupListeners }),
@@ -299,6 +299,40 @@ describe('useScrollRestoration', () => {
     await flushPromises()
     expect(window.scrollY).toBe(123)
   })
+
+  it.each(['length', 'getItem', 'clear'])(
+    'captures, restores, and removes a position under the storage key %s',
+    async key => {
+      let entry: { default: { top: number } } | null = {
+        default: { top: 123 },
+      }
+      const restore = vi.fn()
+      const Page = defineComponent({
+        setup() {
+          useScrollRestoration({ key, capture: () => entry, restore })
+        },
+        template: '<main />',
+      })
+      const { navigate } = await mountRouter(
+        [
+          { path: '/first', component: Page },
+          { path: '/second', component: EmptyPage },
+        ],
+        { storageKeyPrefix: '' }
+      )
+
+      await navigate('/first')
+      await navigate('/second')
+      expect(JSON.parse(sessionStorage.getItem(key)!)).toEqual(entry)
+
+      await navigate('/first')
+      expect(restore.mock.lastCall?.[0]).toEqual(entry)
+
+      entry = null
+      await navigate('/second')
+      expect(sessionStorage.getItem(key)).toBeNull()
+    }
+  )
 
   it('throws a diagnostic when the plugin is missing', () => {
     const Page = defineComponent({
