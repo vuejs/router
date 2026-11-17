@@ -10,6 +10,7 @@ import {
 import { ImportsMap } from '../core/utils'
 import type { ParamParsersMap } from './generateParamParsers'
 import { generateAliasWarnings } from './generateAliasWarnings'
+import { mockWarn } from '../../tests/vitest-mock-warn'
 import type { CustomRouteBlockHashParamOptions } from '../core/customBlock'
 
 const DEFAULT_OPTIONS = resolveOptions({})
@@ -689,7 +690,7 @@ describe('generateRouteResolver', () => {
     const importsMap = new ImportsMap()
 
     // Create the file structure from issue #775
-    tree.insert('(layout)', '(layout).vue')
+    tree.insert('(layout)/_parent', '(layout)/_parent.vue')
     tree.insert('(layout)/(home)', '(layout)/(home).vue')
     tree.insert('(layout)/about/(about)', '(layout)/about/(about).vue')
 
@@ -704,10 +705,10 @@ describe('generateRouteResolver', () => {
     expect(resolver).toMatchInlineSnapshot(`
       "
       const __route_0 = normalizeRouteRecord({
-        name: '/(layout)',
+        /* (removed) name: false */
         path: new MatcherPatternPathStatic('/'),
         components: {
-          'default': () => import('(layout).vue')
+          'default': () => import('(layout)/_parent.vue')
         },
       })
       const __route_1 = normalizeRouteRecord({
@@ -730,7 +731,6 @@ describe('generateRouteResolver', () => {
       export const resolver = createFixedResolver([
         __route_2,  // /about
         __route_1,  // /
-        __route_0,  // /
       ])
       "
     `)
@@ -741,7 +741,7 @@ describe('generateRouteResolver', () => {
     const importsMap = new ImportsMap()
 
     // Test case: settings page with nested group layout
-    tree.insert('(layout)', '(layout).vue')
+    tree.insert('(layout)/_parent', '(layout)/_parent.vue')
     tree.insert('(layout)/(home)', '(layout)/(home).vue')
     tree.insert(
       '(layout)/(settings)/settings',
@@ -763,10 +763,10 @@ describe('generateRouteResolver', () => {
     expect(resolver).toMatchInlineSnapshot(`
       "
       const __route_0 = normalizeRouteRecord({
-        name: '/(layout)',
+        /* (removed) name: false */
         path: new MatcherPatternPathStatic('/'),
         components: {
-          'default': () => import('(layout).vue')
+          'default': () => import('(layout)/_parent.vue')
         },
       })
       const __route_1 = normalizeRouteRecord({
@@ -798,7 +798,6 @@ describe('generateRouteResolver', () => {
         __route_3,  // /settings
         __route_2,  // /settings
         __route_1,  // /
-        __route_0,  // /
       ])
       "
     `)
@@ -810,7 +809,7 @@ describe('generateRouteResolver', () => {
 
     // Test case: only nested (general-settings) without settings.vue
     // The intermediate settings directory should be skipped
-    tree.insert('(layout)', '(layout).vue')
+    tree.insert('(layout)/_parent', '(layout)/_parent.vue')
     tree.insert('(layout)/(home)', '(layout)/(home).vue')
     tree.insert(
       '(layout)/(settings)/settings/(general-settings)',
@@ -831,10 +830,10 @@ describe('generateRouteResolver', () => {
     expect(resolver).toMatchInlineSnapshot(`
       "
       const __route_0 = normalizeRouteRecord({
-        name: '/(layout)',
+        /* (removed) name: false */
         path: new MatcherPatternPathStatic('/'),
         components: {
-          'default': () => import('(layout).vue')
+          'default': () => import('(layout)/_parent.vue')
         },
       })
       const __route_1 = normalizeRouteRecord({
@@ -857,7 +856,6 @@ describe('generateRouteResolver', () => {
       export const resolver = createFixedResolver([
         __route_2,  // /settings
         __route_1,  // /
-        __route_0,  // /
       ])
       "
     `)
@@ -924,6 +922,47 @@ describe('generateRouteResolver', () => {
     `)
   })
 
+  describe('group layout files', () => {
+    mockWarn()
+
+    function generate(files: string[]) {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      for (const file of files) tree.insert(file, file + '.vue')
+      return generateRouteResolver(
+        tree,
+        DEFAULT_OPTIONS,
+        new ImportsMap(),
+        new Map()
+      )
+    }
+
+    it('warns when a group file and a group child have the same path', () => {
+      generate(['(layout)', '(layout)/(home)'])
+      expect('VUE_ROUTER_B0026').toHaveBeenWarnedTimes(1)
+      expect('(layout)/_parent.vue').toHaveBeenWarned()
+    })
+
+    it('warns when a group file and an index child have the same path', () => {
+      generate(['users/(layout)', 'users/(layout)/index'])
+      expect('VUE_ROUTER_B0026').toHaveBeenWarnedTimes(1)
+    })
+
+    it('warns with nested groups', () => {
+      generate(['(layout)', '(layout)/(nested)/(home)'])
+      expect('VUE_ROUTER_B0026').toHaveBeenWarnedTimes(1)
+    })
+
+    it('does not warn with _parent', () => {
+      generate(['(layout)/_parent', '(layout)/(home)', '(layout)/index'])
+      expect('VUE_ROUTER_B0026').not.toHaveBeenWarned()
+    })
+
+    it('does not warn when children have a different path', () => {
+      generate(['(layout)', '(layout)/about', '(layout)/[id]'])
+      expect('VUE_ROUTER_B0026').not.toHaveBeenWarned()
+    })
+  })
+
   describe('route prioritization in resolver', () => {
     function getRouteOrderFromResolver(tree: PrefixTree): string[] {
       const resolver = generateRouteResolver(
@@ -937,6 +976,39 @@ describe('generateRouteResolver', () => {
       const lines = resolver.split('\n').filter(line => line.includes('// /'))
       return lines.map(line => line.split('// ')[1] || '')
     }
+
+    it('orders dot nested segments like folders', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      tree.insert('a/[x]', 'a/[x].vue')
+      tree.insert('a.b', 'a.b.vue')
+      tree.insert('a/[x]/[y]', 'a/[x]/[y].vue')
+      tree.insert('a.[id].c', 'a.[id].c.vue')
+
+      expect(getRouteOrderFromResolver(tree)).toEqual([
+        '/a/b',
+        '/a/:id/c',
+        '/a/:x/:y',
+        '/a/:x',
+      ])
+    })
+
+    it('orders grouped routes as if the group was not there', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      tree.insert('(admin)/[id]', '(admin)/[id].vue')
+      tree.insert('about', 'about.vue')
+      tree.insert(
+        'users/(auth)/(nested)/[id]',
+        'users/(auth)/(nested)/[id].vue'
+      )
+      tree.insert('users/edit', 'users/edit.vue')
+
+      expect(getRouteOrderFromResolver(tree)).toEqual([
+        '/users/edit',
+        '/users/:id',
+        '/about',
+        '/:id',
+      ])
+    })
 
     it('orders records based on specificity of paths', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)

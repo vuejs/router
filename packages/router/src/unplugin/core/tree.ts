@@ -2,7 +2,6 @@ import { type ResolvedOptions } from '../options'
 import {
   CONVENTION_OVERRIDE_NAME,
   createTreeNodeValue,
-  escapeRegex,
   isTreePathParam,
   subSegmentsToRe,
   subSegmentsToScore,
@@ -446,36 +445,30 @@ export class TreeNode {
 
     while (node && !node.isRoot()) {
       const value: TreeNodeValue = node.value
-      const overridePath = value.overrides.path
-      if (overridePath == null) {
-        if (value.pathSegment) {
-          segments.unshift({
-            subSegments: value.subSegments,
-            re: value.isParam() ? value.re : escapeRegex(value.pathSegment),
-            score: value.score,
-          })
-        } else {
-          // groups don't add to the path but keep their score
-          segments.unshift({ subSegments: [], re: '', score: value.score })
-        }
-      } else {
-        const customRegexps = new Map(
-          value.pathParams.map(param => [param.paramName, param.re])
-        )
-        const pathSubSegments = value.pathSubSegments
+      const customRegexps = new Map(
+        value.pathParams.map(param => [param.paramName, param.re])
+      )
+      const pathSubSegments = value.pathSubSegments
+      if (pathSubSegments.length) {
         segments.unshift(
-          ...(pathSubSegments.length
-            ? pathSubSegments.map(subSegments => ({
-                subSegments,
-                re: subSegmentsToRe(subSegments, customRegexps),
-                score: subSegmentsToScore(subSegments),
-              }))
-            : // an empty path is scored like an index file
-              [{ subSegments: [], re: '', score: [300] }])
+          ...pathSubSegments.map(subSegments => ({
+            subSegments,
+            re: subSegmentsToRe(subSegments, customRegexps),
+            score: subSegmentsToScore(subSegments),
+          }))
         )
-        // an absolute path drops everything above it from the url
-        if (overridePath.startsWith('/')) break
+      } else if (
+        node === this ||
+        !value.isGroup() ||
+        value.overrides.path != null
+      ) {
+        // index files, group files (like index files) and empty paths don't
+        // add to the path but are scored. Group folders are not, so they don't
+        // change the order of their children
+        segments.unshift({ subSegments: [], re: '', score: [300] })
       }
+      // an absolute path drops everything above it from the url
+      if (value.overrides.path?.startsWith('/')) break
       node = node.parent
     }
 

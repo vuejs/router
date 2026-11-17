@@ -163,6 +163,14 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       fix: 'Define the param parser or use one of the native parsers.',
     },
 
+    // --- codegen/generateRouteResolver.ts ---
+    VUE_ROUTER_B0026: {
+      why: (p: { path: string; filePath: string; childFilePaths: string }) =>
+        `The group file "${p.filePath}" and its children ${p.childFilePaths} match the same path "${p.path}". The resolver order between them is not defined.`,
+      fix: (p: { group: string }) =>
+        `Rename the group file to "${p.group}/_parent.vue" so only its children are matched.`,
+    },
+
     // --- core/treeNodeValue.ts ---
     VUE_ROUTER_B0022: {
       why: (p: {
