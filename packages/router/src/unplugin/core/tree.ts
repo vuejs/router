@@ -449,16 +449,24 @@ export class TreeNode {
         value.pathParams.map(param => [param.paramName, param.re])
       )
       const pathSubSegments = value.pathSubSegments
-      segments.unshift(
-        ...(pathSubSegments.length
-          ? pathSubSegments.map(subSegments => ({
-              subSegments,
-              re: subSegmentsToRe(subSegments, customRegexps),
-              score: subSegmentsToScore(subSegments),
-            }))
-          : // groups, index files and empty paths don't add to the path
-            [{ subSegments: [], re: '', score: [300] }])
-      )
+      if (pathSubSegments.length) {
+        segments.unshift(
+          ...pathSubSegments.map(subSegments => ({
+            subSegments,
+            re: subSegmentsToRe(subSegments, customRegexps),
+            score: subSegmentsToScore(subSegments),
+          }))
+        )
+      } else if (
+        node === this ||
+        !value.isGroup() ||
+        value.overrides.path != null
+      ) {
+        // index files, group files (like index files) and empty paths don't
+        // add to the path but are scored. Group folders are not, so they don't
+        // change the order of their children
+        segments.unshift({ subSegments: [], re: '', score: [300] })
+      }
       // an absolute path drops everything above it from the url
       if (value.overrides.path?.startsWith('/')) break
       node = node.parent

@@ -992,6 +992,24 @@ describe('generateRouteResolver', () => {
       ])
     })
 
+    it('orders grouped routes as if the group was not there', () => {
+      const tree = new PrefixTree(DEFAULT_OPTIONS)
+      tree.insert('(admin)/[id]', '(admin)/[id].vue')
+      tree.insert('about', 'about.vue')
+      tree.insert(
+        'users/(auth)/(nested)/[id]',
+        'users/(auth)/(nested)/[id].vue'
+      )
+      tree.insert('users/edit', 'users/edit.vue')
+
+      expect(getRouteOrderFromResolver(tree)).toEqual([
+        '/users/edit',
+        '/users/:id',
+        '/about',
+        '/:id',
+      ])
+    })
+
     it('orders records based on specificity of paths', () => {
       const tree = new PrefixTree(DEFAULT_OPTIONS)
       // static at root
