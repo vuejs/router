@@ -1,5 +1,5 @@
 import type { VueLanguagePlugin, CodeInformation } from '@vue/language-core'
-import { replace, toString } from 'muggle-string'
+import { replaceSourceRange, toString } from '../utils/codes'
 
 // inlined from `@vue/language-core` to avoid an implicit dependency
 const allCodeFeatures = {
@@ -61,9 +61,12 @@ const plugin: VueLanguagePlugin = () => {
             contentStr.trim().startsWith('{') &&
             !contentStr.includes('$schema')
           ) {
-            replace(
+            const start = block.content.indexOf('{')
+            replaceSourceRange(
               embeddedCode.content,
-              '{',
+              block.name,
+              start,
+              start + 1,
               '{\n  "$schema": "https://router.vuejs.org/schemas/route.schema.json",'
             )
           }

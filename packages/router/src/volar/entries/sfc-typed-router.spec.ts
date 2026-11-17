@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import ts from 'typescript'
-import { toString, type Segment } from 'muggle-string'
+import type { Code } from '@vue/language-core'
+import { toString } from '../utils/codes'
 import plugin from './sfc-typed-router'
 
 const ROOT_DIR = '/app'
@@ -31,7 +32,7 @@ function transform(
     true,
     ts.ScriptKind.TS
   )
-  const content: Segment[] = [[code, fileName, 0]]
+  const content: Code[] = [[code, fileName, 0, {}]]
   const sfc = { scriptSetup: { ast, name: fileName, lang } }
 
   instance.resolveEmbeddedCode!(
