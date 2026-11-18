@@ -147,12 +147,17 @@ const iife = {
   deps: {
     // left out in prod but not in regular build
     alwaysBundle: ['nostics'],
+    onlyBundle: ['nostics'],
     neverBundle: ['vue', '@vue/devtools-api'],
   },
 } satisfies InlineConfig
 
 const iifeProd = {
   ...iife,
+  deps: {
+    ...iife.deps,
+    onlyBundle: [],
+  },
   target: 'es2015',
   name: 'vue-router iife prod',
   minify: true,
@@ -183,7 +188,9 @@ const unplugin = {
   platform: 'node' as const,
   dts: {
     enabled: true,
-    eager: true,
+    tsc: {
+      eager: true,
+    },
   },
   name: 'unplugin',
   deps: {
