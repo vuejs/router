@@ -80,12 +80,14 @@ export const useUserCommonFriends = defineBasicLoader(
 In the example above we are exporting multiple loaders but we don't need to care about the order in which they are called nor try optimizing them because **they are only called once and share the data**.
 
 ::: danger
-**Caveat**: must call **and await** all nested loaders at the top of the parent loader (see `useUserData()` and `useCurrentUserData()`). You cannot put a different regular `await` in between. If you really need to await **anything that isn't a loader** in between, wrap the promise with `withDataContext()` to ensure the loader context is properly restored:
+**Caveat**: must call **and await** all nested loaders at the top of the parent loader (see `useUserData()` and `useCurrentUserData()`). You cannot put a different regular `await` in between. If you really need to await **anything that isn't a loader** in between, wrap the promise with `withLoaderContext()` to ensure the loader context is properly restored:
 
-```ts{3}
+```ts{5}
+import { withLoaderContext } from 'vue-router/experimental'
+
 export const useUserCommonFriends = defineBasicLoader(async (route) => {
   const user = await useUserData()
-  await withContext(functionThatReturnsAPromise())
+  await withLoaderContext(functionThatReturnsAPromise())
   const me = await useCurrentUserData()
 
   // ...
