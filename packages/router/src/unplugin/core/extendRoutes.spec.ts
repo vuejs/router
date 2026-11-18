@@ -264,6 +264,27 @@ describe('EditableTreeNode', () => {
     ])
   })
 
+  it('keeps param edits after other edits', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+    const root = new EditableTreeNode(tree)
+    const node = tree.insert('[a]/[b]', '[a]/[b].vue')
+    const route = findRoute(root, '/[a]/[b]')
+    const [a, b] = route.params
+
+    a!.parser = 'int'
+    b!.re = '\\d+'
+    route.addToMeta({ x: 1 })
+    // older handles see edits done on newer ones
+    route.params[0]!.paramName = 'renamed'
+
+    expect(a!.paramName).toBe('renamed')
+    expect(route.params).toMatchObject([
+      { paramName: 'renamed', parser: 'int' },
+      { paramName: 'b', re: '\\d+' },
+    ])
+    expect(node.regexp).toBe('/^\\/([^/]+?)\\/(\\d+)$/i')
+  })
+
   describe('param name validation', () => {
     it('strips invalid characters when a param is renamed', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)

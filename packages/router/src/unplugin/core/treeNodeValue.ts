@@ -73,10 +73,10 @@ class _TreeNodeValueBase {
    */
   private _resolved: ResolvedParams | null = null
   /**
-   * Renames of path params done through the resolved params, by the name in
-   * the file or the `path` override. They are kept like other edits.
+   * Edits of path params done through the resolved params, by the name in the
+   * file or the `path` override. They are kept like other edits.
    */
-  private _paramRenames = new Map<string, string>()
+  private _paramEdits = new Map<string, PathParamEdits>()
 
   /**
    * View name (Vue Router feature) mapped to their corresponding file. By default, the view name is `default` unless
@@ -185,14 +185,14 @@ class _TreeNodeValueBase {
       subSegments.map(subSegment => {
         if (typeof subSegment === 'string') return subSegment
         const declared = declaredPathParams?.[subSegment.paramName]
-        // copies keep the file segments unchanged by renames
+        // copies keep the file segments unchanged by edits
         const resolved = ParsedPathParam.resolve(
           subSegment,
           this.rawSegment,
           declared === undefined
             ? {}
             : this._getDeclaredChanges(subSegment, declared),
-          this._paramRenames
+          this._paramEdits
         )
         pathParams.push(resolved)
         return resolved
@@ -213,10 +213,10 @@ class _TreeNodeValueBase {
   private _getDeclaredChanges(
     param: TreePathParam,
     declared: string | null | CustomRouteBlockPathParamOptions
-  ): Partial<TreePathParam> {
+  ): PathParamEdits {
     const { parser, re }: CustomRouteBlockPathParamOptions =
       declared && typeof declared === 'object' ? declared : { parser: declared }
-    const changes: Partial<TreePathParam> = {}
+    const changes: PathParamEdits = {}
 
     if (re != null) {
       if (param.re) {
@@ -1201,10 +1201,14 @@ function validateParamName(paramName: string, segment: string): string {
   return validParamName
 }
 
+type PathParamEdits = Partial<
+  Pick<TreePathParam, 'paramName' | 'parser' | 're'>
+>
+
 /**
- * Path param created by the parsers. `paramName` is an accessor that validates
- * every write, including the ones done in `extendRoutes()`. It lives on the
- * prototype to keep fast properties, so a spread drops it: use
+ * Path param created by the parsers. `paramName`, `parser` and `re` are
+ * accessors so the edits done in `extendRoutes()` are validated and kept. They
+ * live on the prototype to keep fast properties, so a spread drops them: use
  * {@link ParsedPathParam.resolve} instead.
  */
 class ParsedPathParam implements TreePathParam {
@@ -1213,49 +1217,69 @@ class ParsedPathParam implements TreePathParam {
   optional = false
   repeatable = false
   isSplat = false
-  parser: string | null = null
-  re: string | null = null
 
-  #paramName = ''
   #segment: string
+  #values: Required<PathParamEdits> = {
+    paramName: '',
+    parser: null,
+    re: null,
+  }
   /**
-   * Renames of the node, keyed by `#originalName`. Only set on resolved params.
+   * Written by the setters. Shared by every copy resolved from the same param.
    */
-  #renames: Map<string, string> | null = null
-  #originalName = ''
+  #edits: PathParamEdits = this.#values
 
   constructor(segment: string) {
     this.#segment = segment
   }
 
+  #get<K extends keyof PathParamEdits>(key: K): TreePathParam[K] {
+    return (key in this.#edits ? this.#edits : this.#values)[key]!
+  }
+
   get paramName(): string {
-    return this.#paramName
+    return this.#get('paramName')
   }
 
   set paramName(value: string) {
-    this.#paramName = validateParamName(value, this.#segment)
-    this.#renames?.set(this.#originalName, this.#paramName)
+    this.#edits.paramName = validateParamName(value, this.#segment)
+  }
+
+  get parser(): string | null {
+    return this.#get('parser')
+  }
+
+  set parser(value: string | null) {
+    this.#edits.parser = value
+  }
+
+  get re(): string | null {
+    return this.#get('re')
+  }
+
+  set re(value: string | null) {
+    this.#edits.re = value
   }
 
   /**
-   * Copies `param` with `changes` and the rename saved in `renames`. Renames of
-   * the copy are saved in `renames`.
+   * Copies `param` with `changes`. The copy reads and writes its edits in
+   * `edits`, so they apply over `changes` and survive new copies.
    */
   static resolve(
     param: TreePathParam,
     segment: string,
-    changes: Partial<TreePathParam>,
-    renames: Map<string, string>
+    changes: PathParamEdits,
+    edits: Map<string, PathParamEdits>
   ): TreePathParam {
+    const { paramName, parser, re } = param
     const copy = Object.assign(
       new ParsedPathParam(#segment in param ? param.#segment : segment),
-      param,
-      changes
+      param
     )
-    // already validated
-    copy.#paramName = renames.get(param.paramName) ?? param.paramName
-    copy.#originalName = param.paramName
-    copy.#renames = renames
+    copy.#values = { paramName, parser, re, ...changes }
+    let paramEdits = edits.get(paramName)
+    if (!paramEdits) edits.set(paramName, (paramEdits = {}))
+    copy.#edits = paramEdits
     return copy
   }
 }
