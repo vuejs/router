@@ -1,5 +1,9 @@
 import { experimental_parseQuery as parseQuery } from './query'
-import { experimental_parseURL as originalParseURL } from './location'
+import {
+  experimental_parseURL as originalParseURL,
+  experimental_stringifyURL as stringifyURL,
+} from './location'
+import { stringifyQuery } from '../query'
 import { vi, describe, expect, it } from 'vitest'
 
 describe('parseURL', () => {
@@ -73,6 +77,15 @@ describe('parseURL', () => {
       fullPath: '/parent/bar?f=foo',
       path: '/parent/bar',
       hash: '',
+      query: { f: ['foo'] },
+    })
+  })
+
+  it('works with relative query and hash and current location', () => {
+    expect(parseURL('?f=foo#hash', '/parent/bar')).toEqual({
+      fullPath: '/parent/bar?f=foo#hash',
+      path: '/parent/bar',
+      hash: '#hash',
       query: { f: ['foo'] },
     })
   })
@@ -242,6 +255,17 @@ describe('parseURL', () => {
     expect(parseQuery).toHaveBeenCalledWith('é=é&é=a')
   })
 
+  it('uses the parseQuery result as query', () => {
+    const query = { custom: ['value'] }
+    expect(originalParseURL(() => query, '/foo?x').query).toBe(query)
+  })
+
+  it('does not call parseQuery for a ? in the hash', () => {
+    const parseQuery = vi.fn()
+    expect(originalParseURL(parseQuery, '/foo#a?b').query).toEqual({})
+    expect(parseQuery).not.toHaveBeenCalled()
+  })
+
   describe('hash', () => {
     it('keeps the hash as it appears in the URL, like location.hash', () => {
       expect(parseURL('/foo#%22%20%25')).toMatchObject({
@@ -266,5 +290,24 @@ describe('parseURL', () => {
         hash: '#100%',
       })
     })
+  })
+})
+
+describe('stringifyURL', () => {
+  it('joins path, query and hash', () => {
+    expect(stringifyURL(stringifyQuery, '/foo', { a: ['1', '2'] }, '#h')).toBe(
+      '/foo?a=1&a=2#h'
+    )
+  })
+
+  it('omits the ? for an empty query', () => {
+    expect(stringifyURL(stringifyQuery, '/foo', {})).toBe('/foo')
+    expect(stringifyURL(stringifyQuery, '/foo')).toBe('/foo')
+  })
+
+  it('appends the hash as is', () => {
+    expect(stringifyURL(stringifyQuery, '/foo', {}, '#%20 a')).toBe(
+      '/foo#%20 a'
+    )
   })
 })

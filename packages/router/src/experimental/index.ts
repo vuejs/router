@@ -186,3 +186,10 @@ export {
   type RoutePropsForFilePath as _RoutePropsForFilePath,
 } from './runtime'
 export { NavigationResult as _NavigationResult } from './data-loaders/entries/index'
+/**
+ * For official external integrations like Nuxt. Does not follow semver.
+ */
+export {
+  experimental_parseURL as _parseURL,
+  experimental_stringifyURL as _stringifyURL,
+} from './location'
