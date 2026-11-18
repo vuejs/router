@@ -255,6 +255,17 @@ describe('parseURL', () => {
     expect(parseQuery).toHaveBeenCalledWith('é=é&é=a')
   })
 
+  it('uses the parseQuery result as query', () => {
+    const query = { custom: ['value'] }
+    expect(originalParseURL(() => query, '/foo?x').query).toBe(query)
+  })
+
+  it('does not call parseQuery for a ? in the hash', () => {
+    const parseQuery = vi.fn()
+    expect(originalParseURL(parseQuery, '/foo#a?b').query).toEqual({})
+    expect(parseQuery).not.toHaveBeenCalled()
+  })
+
   describe('hash', () => {
     it('keeps the hash as it appears in the URL, like location.hash', () => {
       expect(parseURL('/foo#%22%20%25')).toMatchObject({
