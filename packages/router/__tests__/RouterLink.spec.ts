@@ -792,14 +792,16 @@ describe('RouterLink', () => {
     expect(router.resolve).toHaveBeenCalledWith(locations.basic.string)
   })
 
-  it('calls router.push when clicked', async () => {
+  it('calls router.push and prevents the default action when clicked', async () => {
     const { router, wrapper } = await factory(
       START_LOCATION_NORMALIZED,
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    wrapper.find('a')!.trigger('click')
+    const e = new MouseEvent('click', { cancelable: true })
+    wrapper.find('a')!.element.dispatchEvent(e)
     expect(router.push).toHaveBeenCalledTimes(1)
+    expect(e.defaultPrevented).toBe(true)
   })
 
   it('allows adding more click listeners', async () => {

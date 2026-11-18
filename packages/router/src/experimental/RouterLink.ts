@@ -16,7 +16,7 @@ import { diagnostics } from '../diagnostics'
 import { isRouteLocation } from '../types'
 import { isBrowser, noop } from '../utils'
 import {
-  guardEvent,
+  shouldHandleLinkClick,
   includesParams,
   preferSingleVNode,
   type RouterLinkProps,
@@ -107,9 +107,11 @@ export function useLink(options: UseLinkOptions): UseLinkReturn {
   const isExactActive = computed(() => state.value > 1)
 
   function navigate(
-    e: MouseEvent = {} as MouseEvent
+    e: Partial<MouseEvent> = {}
   ): Promise<void | NavigationFailure> {
-    if (guardEvent(e)) {
+    if (shouldHandleLinkClick(e)) {
+      // navigate() can be called without an event
+      e.preventDefault?.()
       const p = router[toValue(options.replace) ? 'replace' : 'push'](
         toValue(options.to)
       ).catch(noop)
