@@ -86,6 +86,15 @@ describe('parseURL', () => {
     })
   })
 
+  it('works with relative query and hash and current location', () => {
+    expect(parseURL('?f=foo#hash', '/parent/bar')).toEqual({
+      fullPath: '/parent/bar?f=foo#hash',
+      path: '/parent/bar',
+      hash: '#hash',
+      query: { f: 'foo' },
+    })
+  })
+
   it('works with relative hash and current location', () => {
     expect(parseURL('#hash', '/parent/bar')).toEqual({
       fullPath: '/parent/bar#hash',
@@ -258,6 +267,17 @@ describe('parseURL', () => {
     originalParseURL(parseQuery, '/?é=é&é=a')
     expect(parseQuery).toHaveBeenCalledTimes(1)
     expect(parseQuery).toHaveBeenCalledWith('é=é&é=a')
+  })
+
+  it('uses the parseQuery result as query', () => {
+    const query = { custom: 'value' }
+    expect(originalParseURL(() => query, '/foo?x').query).toBe(query)
+  })
+
+  it('does not call parseQuery for a ? in the hash', () => {
+    const parseQuery = vi.fn()
+    expect(originalParseURL(parseQuery, '/foo#a?b').query).toEqual({})
+    expect(parseQuery).not.toHaveBeenCalled()
   })
 })
 

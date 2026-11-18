@@ -45,6 +45,13 @@ export {
 } from './injectionSymbols'
 
 export { START_LOCATION_NORMALIZED as START_LOCATION } from './location'
+/**
+ * Internal helpers for integrations (e.g. Nuxt). No semver guarantee.
+ */
+export {
+  parseURL as _parseURL,
+  stringifyURL as _stringifyURL,
+} from './location'
 export type {
   _RouteLocationBase,
   _RouteRecordBase,

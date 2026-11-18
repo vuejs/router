@@ -6,9 +6,11 @@ import type { LocationQuery, LocationQueryRaw } from './query'
 /**
  * Transforms a URI into a normalized history location. Same behavior as the
  * legacy `parseURL` but uses `Object.create(null)` for the query object so it
- * cannot be exploited via prototype pollution.
+ * cannot be exploited via prototype pollution. Unlike the legacy one, `hash`
+ * is not decoded.
  *
- * @param parseQuery
+ * @internal no semver guarantee
+ * @param parseQuery - receives the search without the leading `?`
  * @param location - URI to normalize
  * @param currentLocation - current absolute location. Allows resolving relative
  * paths. Must start with `/`. Defaults to `/`
@@ -48,18 +50,15 @@ export function experimental_parseURL(
   }
 
   if (hashPos >= 0) {
-    // TODO(major): path ||=
-    path = path || location.slice(0, hashPos)
+    // keep an empty path (`?a#h`) so it resolves to currentLocation
+    path ??= location.slice(0, hashPos)
     // keep the # character
     hash = location.slice(hashPos, location.length)
   }
 
   path = resolveRelativePath(
-    // TODO(major): path ?? location
-    path != null
-      ? path
-      : // empty path means a relative query or hash `?foo=f`, `#thing`
-        location,
+    // empty path means a relative query or hash `?foo=f`, `#thing`
+    path ?? location,
     currentLocation
   )
 
@@ -77,6 +76,7 @@ export function experimental_parseURL(
  * Stringifies a URL from its parts. The `hash` must already be encoded (as
  * returned by `encodeHash` or read from a URL), it is appended as is.
  *
+ * @internal no semver guarantee
  * @param stringifyQuery - function to stringify the query object
  * @param path - path section of the URL
  * @param query - normalized query object
