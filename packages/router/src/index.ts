@@ -162,7 +162,10 @@ export {
   onBeforeRouteUpdate,
 } from './navigationGuards'
 export { RouterLink, useLink } from './RouterLink'
-export { shouldHandleLinkClick as _shouldHandleLinkClick } from './RouterLink'
+export {
+  getLinkActiveState as _getLinkActiveState,
+  shouldHandleLinkClick as _shouldHandleLinkClick,
+} from './RouterLink'
 export type {
   _RouterLinkI,
   RouterLinkProps,

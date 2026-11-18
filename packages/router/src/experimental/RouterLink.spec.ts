@@ -15,6 +15,7 @@ import { PARAM_PARSER_INT } from './route-resolver/matchers/param-parsers'
 import { createMemoryHistory } from '../history/memory'
 import { RouterView } from '../RouterView'
 import { RouterLink, useLink, type UseLinkOptions } from './RouterLink'
+import { _getLinkActiveState } from './index'
 import { mockWarn } from '../tests/vitest-mock-warn'
 
 enableAutoUnmount(afterEach)
@@ -40,6 +41,12 @@ function createTestRouter(options: { linkActiveClass?: string } = {}) {
     path: users.path,
     components: { default: Page },
     parent: users,
+  })
+  // alias of the parent only, without its children
+  const usersAlias = normalizeRouteRecord({
+    ...users,
+    path: new MatcherPatternPathStatic('/members'),
+    aliasOf: users,
   })
   const user = normalizeRouteRecord({
     name: 'user',
@@ -82,6 +89,7 @@ function createTestRouter(options: { linkActiveClass?: string } = {}) {
       home,
       usersIndex,
       users,
+      usersAlias,
       user,
       about,
       aboutAlias,
@@ -110,6 +118,26 @@ async function factory(
   }
   return { router, wrapper, go }
 }
+
+describe('_getLinkActiveState', () => {
+  it('computes the state from resolved experimental locations', () => {
+    const router = createTestRouter()
+    const state = (to: string, current: string) =>
+      _getLinkActiveState(router.resolve(to), router.resolve(current))
+    expect(state('/users', '/users/2')).toEqual({
+      isActive: true,
+      isExactActive: false,
+    })
+    expect(state('/about', '/about-alias')).toEqual({
+      isActive: true,
+      isExactActive: true,
+    })
+    expect(state('/about', '/users/2')).toEqual({
+      isActive: false,
+      isExactActive: false,
+    })
+  })
+})
 
 describe('experimental RouterLink', () => {
   it('renders the href of absolute and named locations', async () => {
@@ -182,6 +210,19 @@ describe('experimental RouterLink', () => {
       await flushPromises()
       expect(router.currentRoute.value.matched).toHaveLength(1)
       expect(wrapper.find('a').classes()).toEqual([])
+    })
+
+    // same result as the classic RouterLink: only the raw path of the
+    // current record is compared with the parent path
+    it('is exact active when an alias of the parent is displayed', async () => {
+      const { wrapper } = await factory(
+        `<RouterLink to="/users">users</RouterLink>`,
+        { initial: '/members' }
+      )
+      expect(wrapper.find('a').classes()).toEqual([
+        'router-link-active',
+        'router-link-exact-active',
+      ])
     })
   })
 
