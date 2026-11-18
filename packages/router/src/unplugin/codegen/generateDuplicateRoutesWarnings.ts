@@ -1,4 +1,5 @@
 import { collectDuplicatedRouteNodes, type PrefixTree } from '../core/tree'
+import { toStringLiteral } from '../utils'
 
 /**
  * Generates runtime warnings for `_parent` conflicts.
@@ -14,7 +15,12 @@ export function generateDuplicatedRoutesWarnings(tree: PrefixTree): string {
   return conflicts
     .flatMap(
       conflicts =>
-        `console.warn('[vue-router] Conflicting files found for route "${conflicts.at(0)!.node.fullPath}":\\n${conflicts.map(({ filePath }) => `- ${filePath}`).join('\\n')}')`
+        `console.warn([${[
+          `[vue-router] Conflicting files found for route "${conflicts.at(0)!.node.fullPath}":`,
+          ...conflicts.map(({ filePath }) => `- ${filePath}`),
+        ]
+          .map(toStringLiteral)
+          .join(', ')}].join('\\n'))`
     )
     .join('\n')
 }
