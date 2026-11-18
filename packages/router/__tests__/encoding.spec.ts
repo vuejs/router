@@ -1,11 +1,13 @@
 import {
+  decode,
   encodeHash,
   encodeParam,
+  encodePath,
   encodeQueryKey,
   encodeQueryValue,
-  // decode,
 } from '../src/encoding'
 import { describe, expect, it } from 'vitest'
+import { mockWarn } from './vitest-mock-warn'
 
 describe('Encoding', () => {
   // all ascii chars with a non ascii char at the beginning
@@ -142,6 +144,33 @@ describe('Encoding', () => {
 
     it('encodes a specific charset', () => {
       expect(encodeHash(toEncode)).toBe(encodedToEncode)
+    })
+  })
+
+  describe('path', () => {
+    it('encodes # ? and % but keeps /', () => {
+      expect(encodePath('/a#b?c/100%')).toBe('/a%23b%3Fc/100%25')
+    })
+
+    it('handles nullish values and numbers', () => {
+      expect(encodePath(null)).toBe('')
+      expect(encodePath(undefined)).toBe('')
+      expect(encodePath(0)).toBe('0')
+    })
+  })
+
+  describe('decode', () => {
+    mockWarn()
+
+    it('decodes percent-encoded text', () => {
+      expect(decode('caf%C3%A9%2F')).toBe('café/')
+      expect(decode(1)).toBe('1')
+      expect(decode(null)).toBe(null)
+    })
+
+    it('returns the original text and warns on malformed input', () => {
+      expect(decode('%E0%A4%A')).toBe('%E0%A4%A')
+      expect('Error decoding "%E0%A4%A"').toHaveBeenWarned()
     })
   })
 })
