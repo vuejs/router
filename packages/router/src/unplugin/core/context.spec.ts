@@ -205,9 +205,12 @@ describe('createRoutesContext', () => {
       ctx.stopWatcher()
 
       await writeFile(join(root, 'src/pages/about.vue'), page('{}'))
+      await rm(join(root, 'src/pages/index.vue'))
       await ctx.scanPages(false)
 
-      expect(ctx.generateRoutes()).toContain(`path: '/about'`)
+      const routes = ctx.generateRoutes()
+      expect(routes).toContain(`path: '/about'`)
+      expect(routes).not.toContain(`path: '/'`)
     })
   })
 })
