@@ -15,6 +15,7 @@ import { PARAM_PARSER_INT } from './route-resolver/matchers/param-parsers'
 import { createMemoryHistory } from '../history/memory'
 import { RouterView } from '../RouterView'
 import { RouterLink, useLink, type UseLinkOptions } from './RouterLink'
+import { _getLinkActiveState } from './index'
 import { mockWarn } from '../tests/vitest-mock-warn'
 
 enableAutoUnmount(afterEach)
@@ -117,6 +118,26 @@ async function factory(
   }
   return { router, wrapper, go }
 }
+
+describe('_getLinkActiveState', () => {
+  it('computes the state from resolved experimental locations', () => {
+    const router = createTestRouter()
+    const state = (to: string, current: string) =>
+      _getLinkActiveState(router.resolve(to), router.resolve(current))
+    expect(state('/users', '/users/2')).toEqual({
+      isActive: true,
+      isExactActive: false,
+    })
+    expect(state('/about', '/about-alias')).toEqual({
+      isActive: true,
+      isExactActive: true,
+    })
+    expect(state('/about', '/users/2')).toEqual({
+      isActive: false,
+      isExactActive: false,
+    })
+  })
+})
 
 describe('experimental RouterLink', () => {
   it('renders the href of absolute and named locations', async () => {

@@ -35,8 +35,6 @@ export type {
   UseLinkReturn,
 }
 
-type LinkActiveLocation = Parameters<typeof getLinkActiveState>[0]
-
 /**
  * Options passed to {@link useLink}.
  */
@@ -67,11 +65,7 @@ export function useLink(options: UseLinkOptions): UseLinkReturn {
   })
 
   const activeState = computed(() =>
-    getLinkActiveState(
-      // records only need `aliasOf` and a comparable `path`
-      route.value as unknown as LinkActiveLocation,
-      currentRoute.value as unknown as LinkActiveLocation
-    )
+    getLinkActiveState(route.value, currentRoute.value)
   )
   const isActive = computed(() => activeState.value.isActive)
   const isExactActive = computed(() => activeState.value.isExactActive)

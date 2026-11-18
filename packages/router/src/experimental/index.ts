@@ -34,6 +34,7 @@ export type {
   UseLinkOptions,
   UseLinkReturn,
 } from './RouterLink'
+export { getLinkActiveState as _getLinkActiveState } from '../RouterLink'
 
 export { onRouteRendered } from './on-route-rendered'
 export type { OnRouteRenderedCallback } from './on-route-rendered'
