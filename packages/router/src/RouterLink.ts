@@ -206,11 +206,11 @@ export function useLink<Name extends keyof RouteMap = keyof RouteMap>(
   )
 
   function navigate(
-    e: MouseEvent = {} as MouseEvent
+    e: Partial<MouseEvent> = {}
   ): Promise<void | NavigationFailure> {
-    if (guardEvent(e)) {
-      // this may be a Weex event which doesn't have this method
-      if (e.preventDefault) e.preventDefault()
+    if (shouldHandleLinkClick(e)) {
+      // navigate() can be called without an event
+      e.preventDefault?.()
       const p = router[unref(props.replace) ? 'replace' : 'push'](
         unref(props.to)
         // avoid uncaught errors are they are logged anyway
@@ -386,6 +386,8 @@ export interface _RouterLinkI {
   useLink: typeof useLink
 }
 
+const BLANK_TARGET_RE = /\b_blank\b/i
+
 /**
  * Checks if a click on a link should trigger a client-side navigation. Does
  * not call `e.preventDefault()`.
@@ -396,24 +398,24 @@ export interface _RouterLinkI {
  *
  * @internal no semver guarantee, can change in any release
  */
-export function guardEvent(
-  e: MouseEvent,
+export function shouldHandleLinkClick(
+  e: Partial<MouseEvent>,
   el: EventTarget | null | undefined = e.currentTarget
 ): boolean {
-  // don't redirect with control keys
-  if (e.metaKey || e.altKey || e.ctrlKey || e.shiftKey) return false
-  // don't redirect when preventDefault called
-  if (e.defaultPrevented) return false
-  // don't redirect on right click
-  if (e.button !== undefined && e.button !== 0) return false
-  // don't redirect if `target="_blank"`
-  // getAttribute can be missing in non DOM envs (e.g. Weex)
-  if (el && (el as Element).getAttribute) {
-    const target = (el as Element).getAttribute('target')
-    if (target && /\b_blank\b/i.test(target)) return false
-  }
-
-  return true
+  return !(
+    // don't redirect with control keys
+    e.metaKey ||
+    e.altKey ||
+    e.ctrlKey ||
+    e.shiftKey ||
+    // don't redirect when preventDefault called
+    e.defaultPrevented ||
+    // don't redirect on right click (undefined when there is no event)
+    e.button ||
+    // don't redirect if `target="_blank"`
+    // currentTarget can be a non-Element EventTarget (e.g. document)
+    BLANK_TARGET_RE.test((el as Element | null)?.getAttribute?.('target') || '')
+  )
 }
 
 /** @internal */
