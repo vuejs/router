@@ -11,6 +11,15 @@ export { createRouterMatcher } from './matcher'
 export type { RouterMatcher } from './matcher'
 
 export { parseQuery, stringifyQuery } from './query'
+// internal: no semver guarantee, used by integrations like Nuxt
+export {
+  encodePath as _encodePath,
+  encodeParam as _encodeParam,
+  encodeQueryKey as _encodeQueryKey,
+  encodeQueryValue as _encodeQueryValue,
+  encodeHash as _encodeHash,
+  decode as _decode,
+} from './encoding'
 export type {
   LocationQuery,
   LocationQueryRaw,

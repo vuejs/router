@@ -78,6 +78,8 @@ export function commonEncode(text: string | number | null | undefined): string {
  *
  * @param text - string to encode
  * @returns encoded string
+ *
+ * @internal Exposed for integrations (e.g. Nuxt). Not covered by semver.
  */
 export function encodeHash(text: string): string {
   return commonEncode(text)
@@ -92,6 +94,8 @@ export function encodeHash(text: string): string {
  *
  * @param text - string to encode
  * @returns encoded string
+ *
+ * @internal Exposed for integrations (e.g. Nuxt). Not covered by semver.
  */
 export function encodeQueryValue(text: string | number): string {
   return (
@@ -112,6 +116,8 @@ export function encodeQueryValue(text: string | number): string {
  * Like `encodeQueryValue` but also encodes the `=` character.
  *
  * @param text - string to encode
+ *
+ * @internal Exposed for integrations (e.g. Nuxt). Not covered by semver.
  */
 export function encodeQueryKey(text: string | number): string {
   return encodeQueryValue(text).replace(EQUAL_RE, '%3D')
@@ -122,6 +128,8 @@ export function encodeQueryKey(text: string | number): string {
  *
  * @param text - string to encode
  * @returns encoded string
+ *
+ * @internal Exposed for integrations (e.g. Nuxt). Not covered by semver.
  */
 export function encodePath(text: string | number | null | undefined): string {
   return commonEncode(text).replace(HASH_RE, '%23').replace(IM_RE, '%3F')
@@ -135,6 +143,8 @@ export function encodePath(text: string | number | null | undefined): string {
  *
  * @param text - string to encode
  * @returns encoded string
+ *
+ * @internal Exposed for integrations (e.g. Nuxt). Not covered by semver.
  */
 export function encodeParam(text: string | number | null | undefined): string {
   return encodePath(text).replace(SLASH_RE, '%2F')
@@ -146,6 +156,8 @@ export function encodeParam(text: string | number | null | undefined): string {
  *
  * @param text - string to decode
  * @returns decoded string
+ *
+ * @internal Exposed for integrations (e.g. Nuxt). Not covered by semver.
  */
 export function decode(text: string | number): string
 export function decode(text: null | undefined): null
