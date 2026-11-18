@@ -4,7 +4,7 @@ import type {
 } from './customBlock'
 import { joinPath, mergeRouteRecordOverride } from './utils'
 import { diagnostics } from '../diagnostics'
-import { encodePath } from '../utils/encoding'
+import { encodePath } from '../../encoding'
 import { isAbsolutePath } from '../utils'
 
 export const enum TreeNodeType {
