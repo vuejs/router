@@ -227,7 +227,7 @@ class _TreeNodeValueBase {
           declaredRe: re,
         })
       }
-      changes.re = this._validateParamRe(param, re)
+      changes.re = validateParamRe(param, re, this.rawSegment)
     }
 
     // an explicit `null` removes the parser declared in the file name
@@ -305,52 +305,6 @@ class _TreeNodeValueBase {
           },
         ]
       : []
-  }
-
-  /**
-   * Returns the regexp source if it can be used to match the param, `null`
-   * otherwise.
-   */
-  private _validateParamRe(param: TreePathParam, re: string): string | null {
-    let reason: string | undefined
-    if (param.isSplat) {
-      reason = 'splat params always match everything'
-    } else {
-      try {
-        // escapes `/` in sources from `<route>` blocks
-        re = new RegExp(re).source
-        // matching the empty alternative gives back one entry per group
-        const groups = new RegExp(re + '|').exec('')!.length - 1
-        if (groups > 0) {
-          reason = 'it contains capturing groups, use `(?:...)` instead'
-        } else if (new RegExp(`^(?:${re})$`).test('')) {
-          reason = 'it matches an empty value'
-        }
-      } catch (err: any) {
-        reason = err.message
-      }
-    }
-
-    if (reason) {
-      diagnostics.VUE_ROUTER_B0023({
-        paramName: param.paramName,
-        segment: this.rawSegment,
-        re,
-        reason,
-      })
-      return null
-    }
-
-    // heuristic: misses regexps that only match `/` between other chars
-    if (param.repeatable && new RegExp(`^(?:${re})$`).test('/')) {
-      diagnostics.VUE_ROUTER_B0024({
-        paramName: param.paramName,
-        segment: this.rawSegment,
-        re,
-      })
-    }
-
-    return re
   }
 
   toString(): string {
@@ -1053,7 +1007,7 @@ function parseRawPathSegment(
   let state: ParseRawPathSegmentState = ParseRawPathSegmentState.static
   const params: TreePathParam[] = []
   const subSegments: PathSubSegment[] = []
-  let currentTreeRouteParam: TreePathParam = new ParsedPathParam(segment)
+  let currentTreeRouteParam = new ParsedPathParam(segment)
   let paramName = ''
 
   // position in segment
@@ -1141,7 +1095,7 @@ function parseRawPathSegment(
         if (buffer === '.*') {
           currentTreeRouteParam.isSplat = true
         } else if (buffer) {
-          currentTreeRouteParam.re = buffer
+          ParsedPathParam.setParsedRe(currentTreeRouteParam, buffer)
         }
         // we don't reset the buffer but it needs to be consumed
         // check if there is a modifier
@@ -1201,6 +1155,56 @@ function validateParamName(paramName: string, segment: string): string {
   return validParamName
 }
 
+/**
+ * Returns the regexp source if it can be used to match the param, `null`
+ * otherwise.
+ */
+function validateParamRe(
+  param: TreePathParam,
+  re: string,
+  segment: string
+): string | null {
+  let reason: string | undefined
+  if (param.isSplat) {
+    reason = 'splat params always match everything'
+  } else {
+    try {
+      // escapes `/` in sources from `<route>` blocks
+      re = new RegExp(re).source
+      // matching the empty alternative gives back one entry per group
+      const groups = new RegExp(re + '|').exec('')!.length - 1
+      if (groups > 0) {
+        reason = 'it contains capturing groups, use `(?:...)` instead'
+      } else if (new RegExp(`^(?:${re})$`).test('')) {
+        reason = 'it matches an empty value'
+      }
+    } catch (err: any) {
+      reason = err.message
+    }
+  }
+
+  if (reason) {
+    diagnostics.VUE_ROUTER_B0023({
+      paramName: param.paramName,
+      segment,
+      re,
+      reason,
+    })
+    return null
+  }
+
+  // heuristic: misses regexps that only match `/` between other chars
+  if (param.repeatable && new RegExp(`^(?:${re})$`).test('/')) {
+    diagnostics.VUE_ROUTER_B0024({
+      paramName: param.paramName,
+      segment,
+      re,
+    })
+  }
+
+  return re
+}
+
 type PathParamEdits = Partial<
   Pick<TreePathParam, 'paramName' | 'parser' | 're'>
 >
@@ -1258,7 +1262,18 @@ class ParsedPathParam implements TreePathParam {
   }
 
   set re(value: string | null) {
-    this.#edits.re = value
+    this.#edits.re =
+      value == null ? value : validateParamRe(this, value, this.#segment)
+  }
+
+  /**
+   * Sets the regexp found by a parser. Inline regexps are kept as written.
+   * Static to keep this unvalidated write off the params given to users.
+   *
+   * @internal
+   */
+  static setParsedRe(param: ParsedPathParam, re: string) {
+    param.#values.re = re
   }
 
   /**

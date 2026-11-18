@@ -285,6 +285,28 @@ describe('EditableTreeNode', () => {
     expect(node.regexp).toBe('/^\\/([^/]+?)\\/(\\d+)$/i')
   })
 
+  it('validates regexps set on a param', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+    const root = new EditableTreeNode(tree)
+    const route = root.insert(':a/:b/:c(\\d+)', 'a.vue')
+    const [a, b, c] = route.params
+
+    a!.re = '(\\d+)'
+    expect('VUE_ROUTER_B0023').toHaveBeenWarnedTimes(1)
+    b!.re = 'x/y'
+    c!.re = null
+    route.addToMeta({ x: 1 })
+
+    expect(route.params).toMatchObject([
+      { re: null },
+      { re: 'x\\/y' },
+      { re: null },
+    ])
+    expect(tree.children.get(':a/:b/:c(\\d+)')!.regexp).toBe(
+      '/^\\/([^/]+?)\\/(x\\/y)\\/([^/]+?)$/i'
+    )
+  })
+
   describe('param name validation', () => {
     it('strips invalid characters when a param is renamed', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
