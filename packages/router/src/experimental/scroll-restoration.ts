@@ -93,7 +93,7 @@ export interface ScrollRestorationPluginOptions extends UseScrollRestorationOpti
   router: EXPERIMENTAL_Router | Router
 
   /**
-   * Prefix used for entries written to `sessionStorage`.
+   * Prefix used for entries written to `sessionStorage`. Cannot be empty.
    *
    * @defaultValue `vue:scroll:`
    */
