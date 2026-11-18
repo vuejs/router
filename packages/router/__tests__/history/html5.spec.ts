@@ -88,6 +88,23 @@ describe('History HTMl5', () => {
     expect(createWebHistory('#other/bar/').base).toBe('#other/bar')
   })
 
+  it('does not write the history entry when created', () => {
+    const spy = vi.spyOn(window.history, 'replaceState')
+    const history = createWebHistory()
+    expect(spy).not.toHaveBeenCalled()
+    expect(window.history.state).toBe(null)
+    expect(history.state).toMatchObject({
+      back: null,
+      current: history.location,
+      forward: null,
+      replaced: true,
+    })
+    history.replace(history.location)
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(window.history.state).toMatchObject({ current: history.location })
+    spy.mockRestore()
+  })
+
   it('keeps // urls on the same origin', () => {
     getWindow().happyDOM.setURL('http://localhost:3000/')
     const history = createWebHistory()
@@ -124,6 +141,7 @@ describe('History HTMl5', () => {
     getWindow().happyDOM.setURL('http://localhost:3000//invalid')
     const history = createWebHistory()
     expect(history.location).toBe('//invalid')
+    history.replace(history.location)
     expect(location.href).toBe('http://localhost:3000//invalid')
   })
 
@@ -131,6 +149,7 @@ describe('History HTMl5', () => {
   it('keeps the userinfo of the url', () => {
     getWindow().happyDOM.setURL('http://user:pass@localhost:3000/')
     const history = createWebHistory()
+    history.replace(history.location)
     expect(location.href).toBe('http://user:pass@localhost:3000/')
     history.push('/foo')
     expect(location.href).toBe('http://user:pass@localhost:3000/foo')
