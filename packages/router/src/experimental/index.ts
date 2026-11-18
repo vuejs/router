@@ -166,15 +166,6 @@ export {
   type ExtractParamParserType as _ExtractParamParserType,
 } from './route-resolver/matchers/param-parsers'
 export { MatchMiss as _MatchMiss } from './route-resolver/matchers/errors'
-// no semver guarantee, used by integrations like Nuxt
-export {
-  encodePath as _encodePath,
-  encodeParam as _encodeParam,
-  encodeQueryKey as _encodeQueryKey,
-  encodeQueryValue as _encodeQueryValue,
-  encodeHash as _encodeHash,
-  decode as _decode,
-} from './encoding'
 export {
   mergeRouteRecord as _mergeRouteRecord,
   mergeRouteRecordViews as _mergeRouteRecordViews,
@@ -186,6 +177,7 @@ export {
   type RoutePropsForFilePath as _RoutePropsForFilePath,
 } from './runtime'
 export { NavigationResult as _NavigationResult } from './data-loaders/entries/index'
+
 /**
  * For official external integrations like Nuxt. Does not follow semver.
  */
@@ -193,3 +185,11 @@ export {
   experimental_parseURL as _parseURL,
   experimental_stringifyURL as _stringifyURL,
 } from './location'
+export {
+  encodePath as _encodePath,
+  encodeParam as _encodeParam,
+  encodeQueryKey as _encodeQueryKey,
+  encodeQueryValue as _encodeQueryValue,
+  encodeHash as _encodeHash,
+  decode as _decode,
+} from './encoding'

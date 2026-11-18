@@ -11,15 +11,6 @@ export { createRouterMatcher } from './matcher'
 export type { RouterMatcher } from './matcher'
 
 export { parseQuery, stringifyQuery } from './query'
-// internal: no semver guarantee, used by integrations like Nuxt
-export {
-  encodePath as _encodePath,
-  encodeParam as _encodeParam,
-  encodeQueryKey as _encodeQueryKey,
-  encodeQueryValue as _encodeQueryValue,
-  encodeHash as _encodeHash,
-  decode as _decode,
-} from './encoding'
 export type {
   LocationQuery,
   LocationQueryRaw,
@@ -45,14 +36,7 @@ export {
 } from './injectionSymbols'
 
 export { START_LOCATION_NORMALIZED as START_LOCATION } from './location'
-/**
- * Internal helpers for integrations (e.g. Nuxt). No semver guarantee.
- */
-export {
-  parseURL as _parseURL,
-  stringifyURL as _stringifyURL,
-} from './location'
-export { stripBase as _stripBase } from './location'
+
 export type {
   _RouteLocationBase,
   _RouteRecordBase,
@@ -162,7 +146,6 @@ export {
   onBeforeRouteUpdate,
 } from './navigationGuards'
 export { RouterLink, useLink } from './RouterLink'
-export { shouldHandleLinkClick as _shouldHandleLinkClick } from './RouterLink'
 export type {
   _RouterLinkI,
   RouterLinkProps,
@@ -174,6 +157,24 @@ export { RouterView } from './RouterView'
 export type { RouterViewProps } from './RouterView'
 
 export * from './useApi'
+
+/**
+ * Internal helpers for official integrations (e.g. Nuxt). No semver guarantee.
+ */
+export {
+  encodePath as _encodePath,
+  encodeParam as _encodeParam,
+  encodeQueryKey as _encodeQueryKey,
+  encodeQueryValue as _encodeQueryValue,
+  encodeHash as _encodeHash,
+  decode as _decode,
+} from './encoding'
+export {
+  parseURL as _parseURL,
+  stripBase as _stripBase,
+  stringifyURL as _stringifyURL,
+} from './location'
+export { shouldHandleLinkClick as _shouldHandleLinkClick } from './RouterLink'
 
 // Global extensions for Vue
 import type { TypesConfig } from './config'
