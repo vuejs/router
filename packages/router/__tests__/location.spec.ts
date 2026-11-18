@@ -86,6 +86,15 @@ describe('parseURL', () => {
     })
   })
 
+  it('works with relative query and hash and current location', () => {
+    expect(parseURL('?f=foo#hash', '/parent/bar')).toEqual({
+      fullPath: '/parent/bar?f=foo#hash',
+      path: '/parent/bar',
+      hash: '#hash',
+      query: { f: 'foo' },
+    })
+  })
+
   it('works with relative hash and current location', () => {
     expect(parseURL('#hash', '/parent/bar')).toEqual({
       fullPath: '/parent/bar#hash',
