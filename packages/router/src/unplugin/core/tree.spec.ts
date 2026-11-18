@@ -751,6 +751,19 @@ describe('Tree', () => {
   })
 
   describe('path override and params extraction', () => {
+    it('does not add parent params to the cached params of a node', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const parent = tree.insert('[a]', '[a].vue')
+      parent.setCustomRouteBlock('[a].vue', { params: { path: { a: 'int' } } })
+      const child = tree.insert('[a]/[b]', '[a]/[b].vue')
+      child.setCustomRouteBlock('[a]/[b].vue', { path: ':b' })
+
+      expect(child.pathParams.map(p => p.paramName)).toEqual(['a', 'b'])
+      // a second read must not add the parent params again
+      expect(child.pathParams.map(p => p.paramName)).toEqual(['a', 'b'])
+      expect(child.value.pathParams.map(p => p.paramName)).toEqual(['b'])
+    })
+
     it('extracts params from a custom path override', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
       const node = tree.insert('users/profile', 'users/profile.vue')
@@ -1850,9 +1863,50 @@ describe('Tree', () => {
         parser: null,
       })
     })
+
+    it('restores the filename parser when the override is removed', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[id=int]', '[id=int].vue')
+      node.setCustomRouteBlock('[id=int].vue', {
+        params: { path: { id: null } },
+      })
+      expect(node.pathParams).toMatchObject([{ parser: null }])
+
+      node.setCustomRouteBlock('[id=int].vue', {})
+      expect(node.pathParams).toMatchObject([{ parser: 'int' }])
+    })
+
+    it('warns again when the overrides change', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[id=int]', '[id=int].vue')
+      node.setCustomRouteBlock('[id=int].vue', {
+        params: { path: { id: 'uuid' } },
+      })
+      expect(node.pathParams).toMatchObject([{ parser: 'uuid' }])
+      expect('VUE_ROUTER_B0021').toHaveBeenWarnedTimes(1)
+
+      node.setCustomRouteBlock('[id=int].vue', {
+        params: { path: { id: 'date' } },
+      })
+      expect(node.pathParams).toMatchObject([{ parser: 'date' }])
+      expect('VUE_ROUTER_B0021').toHaveBeenWarnedTimes(2)
+    })
   })
 
   describe('Path param custom regexp from definePage', () => {
+    it('restores the default regexp when the override is removed', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      const node = tree.insert('[id]', '[id].vue')
+      node.setCustomRouteBlock('[id].vue', {
+        params: { path: { id: { re: '\\d+' } } },
+      })
+      expect(node.regexp).toBe('/^\\/(\\d+)$/i')
+
+      node.setCustomRouteBlock('[id].vue', {})
+      expect(node.pathParams).toMatchObject([{ re: null }])
+      expect(node.regexp).toBe('/^\\/([^/]+?)$/i')
+    })
+
     it('keeps the regexp source in the param', () => {
       const tree = new PrefixTree(RESOLVED_OPTIONS)
       const node = tree.insert('[org]', '[org].vue')
