@@ -113,20 +113,6 @@ export {
   type ErrorDefault,
 } from './data-loaders/entries/index'
 
-// TODO: only keep _NavigationResult in next major
-import { NavigationResult as NavResult } from './data-loaders/entries/index'
-/**
- * @deprecated Use {@link reroute} instead.
- */
-export class NavigationResult extends NavResult {
-  constructor(...args: ConstructorParameters<typeof NavResult>) {
-    super(...args)
-    console.warn(
-      `[vue-router]: new NavigationResult(to) is deprecated. Use reroute(to) instead.`
-    )
-  }
-}
-
 // Basic loader
 export {
   defineBasicLoader,
