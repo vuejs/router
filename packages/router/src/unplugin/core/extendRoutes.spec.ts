@@ -211,17 +211,100 @@ describe('EditableTreeNode', () => {
     const root = new EditableTreeNode(tree)
     tree
       .insert('[a]', 'a.vue')
-      .value.setOverride('a.vue', { params: { path: { a: 'int' } } })
-    tree
-      .insert('[b]', 'b.vue')
-      .value.setOverride('b.vue', { params: { path: { b: { re: '\\d+' } } } })
+      .setCustomRouteBlock('a.vue', { params: { path: { a: 'int' } } })
+    const nodeB = tree.insert('[b]', 'b.vue')
+    nodeB.setCustomRouteBlock('b.vue', {
+      params: { path: { b: { re: '\\d+' } } },
+    })
     const withParser = findRoute(root, '/[a]')
     const withRe = findRoute(root, '/[b]')
 
     withParser.params[0]!.paramName = 'renamedA'
     withRe.params[0]!.paramName = 'renamedB'
-    expect(withParser.params).toMatchObject([{ paramName: 'renamedA' }])
-    expect(withRe.params).toMatchObject([{ paramName: 'renamedB' }])
+    expect(withParser.params).toMatchObject([
+      { paramName: 'renamedA', parser: 'int' },
+    ])
+    // the declared regexp is still applied after the rename
+    expect(withRe.params).toMatchObject([{ paramName: 'renamedB', re: '\\d+' }])
+    expect(nodeB.regexp).toBe('/^\\/(\\d+)$/i')
+  })
+
+  it('keeps param renames after other edits', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+    const root = new EditableTreeNode(tree)
+    const parent = tree.insert('[a]', '[a].vue')
+    parent.setCustomRouteBlock('[a].vue', { params: { path: { a: 'int' } } })
+    const node = tree.insert('[a]/[b]', '[a]/[b].vue')
+    node.setCustomRouteBlock('[a]/[b].vue', { path: ':b(\\d+)' })
+    const route = findRoute(root, '/[a]/[b]')
+
+    route.params[0]!.paramName = 'renamedA'
+    route.params[1]!.paramName = 'renamedB'
+    route.addToMeta({ a: 1 })
+    route.meta = { b: 2 }
+    route.name = 'custom'
+    route.addAlias(['/other'])
+    new EditableTreeNode(parent).addToMeta({ a: 1 })
+    parent.setCustomRouteBlock('[a].vue', { params: { path: { a: 'date' } } })
+    route.path = 'users/:b(\\d+)'
+
+    expect(route.params).toMatchObject([
+      { paramName: 'renamedA', parser: 'date' },
+      { paramName: 'renamedB', re: '\\d+' },
+    ])
+    expect(node.regexp).toBe('/^\\/([^/]+?)\\/users\\/(\\d+)$/i')
+    // the file segments keep the original names
+    expect(parent.value.subSegments).toMatchObject([{ paramName: 'a' }])
+
+    // params added by a path edit keep their own names
+    route.path = ':other'
+    expect(route.params).toMatchObject([
+      { paramName: 'renamedA' },
+      { paramName: 'other' },
+    ])
+  })
+
+  it('keeps param edits after other edits', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+    const root = new EditableTreeNode(tree)
+    const node = tree.insert('[a]/[b]', '[a]/[b].vue')
+    const route = findRoute(root, '/[a]/[b]')
+    const [a, b] = route.params
+
+    a!.parser = 'int'
+    b!.re = '\\d+'
+    route.addToMeta({ x: 1 })
+    // older handles see edits done on newer ones
+    route.params[0]!.paramName = 'renamed'
+
+    expect(a!.paramName).toBe('renamed')
+    expect(route.params).toMatchObject([
+      { paramName: 'renamed', parser: 'int' },
+      { paramName: 'b', re: '\\d+' },
+    ])
+    expect(node.regexp).toBe('/^\\/([^/]+?)\\/(\\d+)$/i')
+  })
+
+  it('validates regexps set on a param', () => {
+    const tree = new PrefixTree(RESOLVED_OPTIONS)
+    const root = new EditableTreeNode(tree)
+    const route = root.insert(':a/:b/:c(\\d+)', 'a.vue')
+    const [a, b, c] = route.params
+
+    a!.re = '(\\d+)'
+    expect('VUE_ROUTER_B0023').toHaveBeenWarnedTimes(1)
+    b!.re = 'x/y'
+    c!.re = null
+    route.addToMeta({ x: 1 })
+
+    expect(route.params).toMatchObject([
+      { re: null },
+      { re: 'x\\/y' },
+      { re: null },
+    ])
+    expect(tree.children.get(':a/:b/:c(\\d+)')!.regexp).toBe(
+      '/^\\/([^/]+?)\\/(x\\/y)\\/([^/]+?)$/i'
+    )
   })
 
   describe('param name validation', () => {

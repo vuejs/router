@@ -29,6 +29,13 @@ export const CONVENTION_OVERRIDE_NAME = '@@convention'
 // internal name used for overrides done by the user at build time
 export const EDITS_OVERRIDE_NAME = '@@edits'
 
+interface ResolvedParams {
+  pathSubSegments: PathSubSegment[][]
+  pathParams: TreePathParam[]
+  queryParams: TreeQueryParam[]
+  hashParams: TreeHashParam[]
+}
+
 class _TreeNodeValueBase {
   /**
    * flag based on the type of the segment
@@ -60,19 +67,16 @@ class _TreeNodeValueBase {
    * Merged result of `_overrides`. Reset by every method that writes to them.
    */
   private _mergedOverrides: RouteRecordOverride | null = null
-
   /**
-   * Params already warned about declaring a parser twice, so the warning is
-   * emitted once per param even though `pathParams` is a getter.
+   * Params and path sub segments resolved from the overrides. Reset with
+   * `_mergedOverrides`.
    */
-  private _warnedParsers = new Set<string>()
-  private _warnedRegexps = new Set<string>()
-  private _warnedDuplicatedRegexps = new Set<string>()
-
+  private _resolved: ResolvedParams | null = null
   /**
-   * Ignored hash params last warned about, for the same reason.
+   * Edits of path params done through the resolved params, by the name in the
+   * file or the `path` override. They are kept like other edits.
    */
-  private _warnedHashParams = ''
+  private _paramEdits = new Map<string, PathParamEdits>()
 
   /**
    * View name (Vue Router feature) mapped to their corresponding file. By default, the view name is `default` unless
@@ -126,11 +130,125 @@ class _TreeNodeValueBase {
    * Gets all the query params for the node. This does not include params from parent nodes.
    */
   get queryParams(): TreeQueryParam[] {
-    const paramsQuery = this.overrides.params?.query
-    if (!paramsQuery) {
-      return []
+    return this._resolveParams().queryParams
+  }
+
+  /**
+   * Gets hash params declared on this node.
+   */
+  get hashParams(): TreeHashParam[] {
+    return this._resolveParams().hashParams
+  }
+
+  /**
+   * Gets path, query, and hash params declared on this node.
+   */
+  get params(): TreeParam[] {
+    return [...this.pathParams, ...this.queryParams, ...this.hashParams]
+  }
+
+  /**
+   * Sub segments of each `/` separated segment of the node path. They come
+   * from the `path` override when there is one, otherwise from the file. Their
+   * params are the ones returned by `pathParams`.
+   */
+  get pathSubSegments(): PathSubSegment[][] {
+    return this._resolveParams().pathSubSegments
+  }
+
+  /**
+   * Gets the path params for the node. They come from the `path` override when
+   * there is one, otherwise from the file based segment. Parsers declared in
+   * `params.path` are applied on top. This does not include params from parent
+   * nodes.
+   */
+  get pathParams(): TreePathParam[] {
+    return this._resolveParams().pathParams
+  }
+
+  private _resolveParams(): ResolvedParams {
+    if (this._resolved) return this._resolved
+
+    const { path: overridePath, params } = this.overrides
+    const declaredPathParams = params?.path
+    const pathParams: TreePathParam[] = []
+    const pathSubSegments = (
+      overridePath == null
+        ? this.pathSegment
+          ? splitSubSegments(this.subSegments)
+          : []
+        : overridePath
+            .split('/')
+            .filter(Boolean)
+            .map(segment => parseRawPathSegment(segment)[2])
+    ).map(subSegments =>
+      subSegments.map(subSegment => {
+        if (typeof subSegment === 'string') return subSegment
+        const declared = declaredPathParams?.[subSegment.paramName]
+        // copies keep the file segments unchanged by edits
+        const resolved = ParsedPathParam.resolve(
+          subSegment,
+          this.rawSegment,
+          declared === undefined
+            ? {}
+            : this._getDeclaredChanges(subSegment, declared),
+          this._paramEdits
+        )
+        pathParams.push(resolved)
+        return resolved
+      })
+    )
+
+    return (this._resolved = {
+      pathSubSegments,
+      pathParams,
+      queryParams: this._resolveQueryParams(params?.query),
+      hashParams: this._resolveHashParams(params?.hash),
+    })
+  }
+
+  /**
+   * Returns the parser and regexp declared in `params.path` for `param`.
+   */
+  private _getDeclaredChanges(
+    param: TreePathParam,
+    declared: string | null | CustomRouteBlockPathParamOptions
+  ): PathParamEdits {
+    const { parser, re }: CustomRouteBlockPathParamOptions =
+      declared && typeof declared === 'object' ? declared : { parser: declared }
+    const changes: PathParamEdits = {}
+
+    if (re != null) {
+      if (param.re) {
+        diagnostics.VUE_ROUTER_B0025({
+          paramName: param.paramName,
+          segment: this.rawSegment,
+          pathRe: param.re,
+          declaredRe: re,
+        })
+      }
+      changes.re = validateParamRe(param, re, this.rawSegment)
     }
 
+    // an explicit `null` removes the parser declared in the file name
+    if (parser !== undefined) {
+      if (parser && param.parser) {
+        diagnostics.VUE_ROUTER_B0021({
+          paramName: param.paramName,
+          segment: this.rawSegment,
+          filenameParser: param.parser,
+          declaredParser: parser,
+        })
+      }
+      changes.parser = parser
+    }
+
+    return changes
+  }
+
+  private _resolveQueryParams(
+    paramsQuery: NonNullable<CustomRouteBlock['params']>['query'] = {}
+  ): TreeQueryParam[] {
     const queryParams: TreeQueryParam[] = []
 
     for (var paramName in paramsQuery) {
@@ -159,24 +277,18 @@ class _TreeNodeValueBase {
     return queryParams
   }
 
-  /**
-   * Gets hash params declared on this node.
-   */
-  get hashParams(): TreeHashParam[] {
-    const hash = this.overrides.params?.hash ?? {}
+  private _resolveHashParams(
+    hash: NonNullable<CustomRouteBlock['params']>['hash'] = {}
+  ): TreeHashParam[] {
     const paramNames = Object.keys(hash)
     // the last one wins, like other overrides
     const paramName = paramNames.at(-1)
     if (paramNames.length > 1) {
-      const ignoredParamNames = paramNames.slice(0, -1).join(', ')
-      if (this._warnedHashParams !== ignoredParamNames) {
-        this._warnedHashParams = ignoredParamNames
-        diagnostics.VUE_ROUTER_B0022({
-          segment: this.rawSegment,
-          usedParamName: paramName!,
-          ignoredParamNames,
-        })
-      }
+      diagnostics.VUE_ROUTER_B0022({
+        segment: this.rawSegment,
+        usedParamName: paramName!,
+        ignoredParamNames: paramNames.slice(0, -1).join(', '),
+      })
     }
 
     let config = paramName ? hash[paramName] : undefined
@@ -193,150 +305,6 @@ class _TreeNodeValueBase {
           },
         ]
       : []
-  }
-
-  /**
-   * Gets path, query, and hash params declared on this node.
-   */
-  get params(): TreeParam[] {
-    return [...this.pathParams, ...this.queryParams, ...this.hashParams]
-  }
-
-  /**
-   * Sub segments of each `/` separated segment of the node path. They come
-   * from the `path` override when there is one, otherwise from the file.
-   */
-  get pathSubSegments(): PathSubSegment[][] {
-    const overridePath = this.overrides.path
-    if (overridePath == null) {
-      return this.pathSegment ? splitSubSegments(this.subSegments) : []
-    }
-    return overridePath
-      .split('/')
-      .filter(Boolean)
-      .map(segment => parseRawPathSegment(segment)[2])
-  }
-
-  /**
-   * Gets the path params for the node. They come from the `path` override when
-   * there is one, otherwise from the file based segment. Parsers declared in
-   * `params.path` are applied on top. This does not include params from parent
-   * nodes.
-   */
-  get pathParams(): TreePathParam[] {
-    const overridePath = this.overrides.path
-    const params: TreePathParam[] = []
-
-    if (overridePath != null) {
-      for (const segment of overridePath.split('/')) {
-        if (!segment) continue
-        const [, segmentParams] = parseRawPathSegment(segment)
-        params.push(...segmentParams)
-      }
-    } else {
-      // the params are the same objects referenced by `subSegments`
-      params.push(...this.subSegments.filter(isTreePathParam))
-    }
-
-    const declaredParsers = this.overrides.params?.path
-    if (!declaredParsers) {
-      return params
-    }
-
-    return params.map(param => {
-      const declared = declaredParsers[param.paramName]
-      if (declared === undefined) return param
-      const { parser, re }: CustomRouteBlockPathParamOptions =
-        declared && typeof declared === 'object'
-          ? declared
-          : { parser: declared }
-      const changes: Partial<TreePathParam> = {}
-
-      if (re != null) {
-        if (param.re && !this._warnedDuplicatedRegexps.has(param.paramName)) {
-          this._warnedDuplicatedRegexps.add(param.paramName)
-          diagnostics.VUE_ROUTER_B0025({
-            paramName: param.paramName,
-            segment: this.rawSegment,
-            pathRe: param.re,
-            declaredRe: re,
-          })
-        }
-        changes.re = this._validateParamRe(param, re)
-      }
-
-      // an explicit `null` removes the parser declared in the file name
-      if (parser !== undefined) {
-        if (
-          parser &&
-          param.parser &&
-          !this._warnedParsers.has(param.paramName)
-        ) {
-          this._warnedParsers.add(param.paramName)
-          diagnostics.VUE_ROUTER_B0021({
-            paramName: param.paramName,
-            segment: this.rawSegment,
-            filenameParser: param.parser,
-            declaredParser: parser,
-          })
-        }
-        changes.parser = parser
-      }
-
-      return copyPathParam(param, changes)
-    })
-  }
-
-  /**
-   * Returns the regexp source if it can be used to match the param, `null`
-   * otherwise.
-   */
-  private _validateParamRe(param: TreePathParam, re: string): string | null {
-    let reason: string | undefined
-    if (param.isSplat) {
-      reason = 'splat params always match everything'
-    } else {
-      try {
-        // escapes `/` in sources from `<route>` blocks
-        re = new RegExp(re).source
-        // matching the empty alternative gives back one entry per group
-        const groups = new RegExp(re + '|').exec('')!.length - 1
-        if (groups > 0) {
-          reason = 'it contains capturing groups, use `(?:...)` instead'
-        } else if (new RegExp(`^(?:${re})$`).test('')) {
-          reason = 'it matches an empty value'
-        }
-      } catch (err: any) {
-        reason = err.message
-      }
-    }
-
-    if (reason) {
-      if (!this._warnedRegexps.has(param.paramName)) {
-        this._warnedRegexps.add(param.paramName)
-        diagnostics.VUE_ROUTER_B0023({
-          paramName: param.paramName,
-          segment: this.rawSegment,
-          re,
-          reason,
-        })
-      }
-      return null
-    }
-
-    if (param.repeatable && !this._warnedRegexps.has(param.paramName)) {
-      // heuristic: misses regexps that only match `/` between other chars
-      if (new RegExp(`^(?:${re})$`).test('/')) {
-        this._warnedRegexps.add(param.paramName)
-        diagnostics.VUE_ROUTER_B0024({
-          paramName: param.paramName,
-          segment: this.rawSegment,
-          re,
-        })
-      }
-    }
-
-    return re
   }
 
   toString(): string {
@@ -385,9 +353,14 @@ class _TreeNodeValueBase {
       }, {} as RouteRecordOverride))
   }
 
+  private _resetOverrides() {
+    this._mergedOverrides = null
+    this._resolved = null
+  }
+
   setOverride(filePath: string, routeBlock: CustomRouteBlock | undefined) {
     this._overrides.set(filePath, routeBlock || {})
-    this._mergedOverrides = null
+    this._resetOverrides()
   }
 
   /**
@@ -399,7 +372,7 @@ class _TreeNodeValueBase {
     for (const [_filePath, routeBlock] of this._overrides) {
       delete routeBlock[key]
     }
-    this._mergedOverrides = null
+    this._resetOverrides()
   }
 
   /**
@@ -414,7 +387,7 @@ class _TreeNodeValueBase {
       filePath,
       mergeRouteRecordOverride(existing, routeBlock)
     )
-    this._mergedOverrides = null
+    this._resetOverrides()
   }
 
   /**
@@ -443,7 +416,7 @@ class _TreeNodeValueBase {
 
     const existing = this._overrides.get(EDITS_OVERRIDE_NAME)!
     existing[key] = value
-    this._mergedOverrides = null
+    this._resetOverrides()
   }
 }
 
@@ -771,12 +744,8 @@ export function subSegmentsToScore(subSegments: PathSubSegment[]): number[] {
  * Generates the regex pattern for a path segment.
  *
  * @param subSegments - sub segments of the path segment
- * @param customRegexps - custom regexp source of each param, by name
  */
-export function subSegmentsToRe(
-  subSegments: PathSubSegment[],
-  customRegexps: Map<string, string | null>
-): string {
+export function subSegmentsToRe(subSegments: PathSubSegment[]): string {
   let regexp = ''
   for (const segment of subSegments) {
     // skip empty sub segments
@@ -785,7 +754,7 @@ export function subSegmentsToRe(
     if (typeof segment === 'string') {
       regexp += escapeRegex(segment)
     } else {
-      var customRe = customRegexps.get(segment.paramName)
+      var customRe = segment.re
       var re = segment.isSplat
         ? '(.*)'
         : customRe
@@ -848,7 +817,7 @@ function parseFileSegment(
   const params: TreePathParam[] = []
   let pathSegment = ''
   const subSegments: PathSubSegment[] = []
-  let currentTreeRouteParam: TreePathParam = createEmptyRouteParam(segment)
+  let currentTreeRouteParam: TreePathParam = new ParsedPathParam(segment)
 
   // position in segment
   let pos = 0
@@ -891,7 +860,7 @@ function parseFileSegment(
       }${currentTreeRouteParam.modifier}`
       params.push(currentTreeRouteParam)
       subSegments.push(currentTreeRouteParam)
-      currentTreeRouteParam = createEmptyRouteParam(segment)
+      currentTreeRouteParam = new ParsedPathParam(segment)
     } else if (state === ParseFileSegmentState.charCode) {
       if (buffer.length !== 2) {
         throw new SyntaxError(
@@ -1038,7 +1007,7 @@ function parseRawPathSegment(
   let state: ParseRawPathSegmentState = ParseRawPathSegmentState.static
   const params: TreePathParam[] = []
   const subSegments: PathSubSegment[] = []
-  let currentTreeRouteParam: TreePathParam = createEmptyRouteParam(segment)
+  let currentTreeRouteParam = new ParsedPathParam(segment)
   let paramName = ''
 
   // position in segment
@@ -1065,7 +1034,7 @@ function parseRawPathSegment(
       // we consume the current param
       subSegments.push(currentTreeRouteParam)
       params.push(currentTreeRouteParam)
-      currentTreeRouteParam = createEmptyRouteParam(segment)
+      currentTreeRouteParam = new ParsedPathParam(segment)
     }
     // no other cases
 
@@ -1126,7 +1095,7 @@ function parseRawPathSegment(
         if (buffer === '.*') {
           currentTreeRouteParam.isSplat = true
         } else if (buffer) {
-          currentTreeRouteParam.re = buffer
+          ParsedPathParam.setParsedRe(currentTreeRouteParam, buffer)
         }
         // we don't reset the buffer but it needs to be consumed
         // check if there is a modifier
@@ -1187,10 +1156,64 @@ function validateParamName(paramName: string, segment: string): string {
 }
 
 /**
- * Path param created by the parsers. `paramName` is an accessor that validates
- * every write, including the ones done in `extendRoutes()`. It lives on the
- * prototype to keep fast properties, so a spread drops it: use
- * {@link copyPathParam} instead.
+ * Returns the regexp source if it can be used to match the param, `null`
+ * otherwise.
+ */
+function validateParamRe(
+  param: TreePathParam,
+  re: string,
+  segment: string
+): string | null {
+  let reason: string | undefined
+  if (param.isSplat) {
+    reason = 'splat params always match everything'
+  } else {
+    try {
+      // escapes `/` in sources from `<route>` blocks
+      re = new RegExp(re).source
+      // matching the empty alternative gives back one entry per group
+      const groups = new RegExp(re + '|').exec('')!.length - 1
+      if (groups > 0) {
+        reason = 'it contains capturing groups, use `(?:...)` instead'
+      } else if (new RegExp(`^(?:${re})$`).test('')) {
+        reason = 'it matches an empty value'
+      }
+    } catch (err: any) {
+      reason = err.message
+    }
+  }
+
+  if (reason) {
+    diagnostics.VUE_ROUTER_B0023({
+      paramName: param.paramName,
+      segment,
+      re,
+      reason,
+    })
+    return null
+  }
+
+  // heuristic: misses regexps that only match `/` between other chars
+  if (param.repeatable && new RegExp(`^(?:${re})$`).test('/')) {
+    diagnostics.VUE_ROUTER_B0024({
+      paramName: param.paramName,
+      segment,
+      re,
+    })
+  }
+
+  return re
+}
+
+type PathParamEdits = Partial<
+  Pick<TreePathParam, 'paramName' | 'parser' | 're'>
+>
+
+/**
+ * Path param created by the parsers. `paramName`, `parser` and `re` are
+ * accessors so the edits done in `extendRoutes()` are validated and kept. They
+ * live on the prototype to keep fast properties, so a spread drops them: use
+ * {@link ParsedPathParam.resolve} instead.
  */
 class ParsedPathParam implements TreePathParam {
   type = 'path' as const
@@ -1198,51 +1221,80 @@ class ParsedPathParam implements TreePathParam {
   optional = false
   repeatable = false
   isSplat = false
-  parser: string | null = null
-  re: string | null = null
 
-  #paramName = ''
   #segment: string
+  #values: Required<PathParamEdits> = {
+    paramName: '',
+    parser: null,
+    re: null,
+  }
   /**
-   * Param that owns `paramName` when this one is a copy.
+   * Written by the setters. Shared by every copy resolved from the same param.
    */
-  #source: TreePathParam | null
+  #edits: PathParamEdits = this.#values
 
-  constructor(segment: string, source: TreePathParam | null = null) {
+  constructor(segment: string) {
     this.#segment = segment
-    this.#source = source
+  }
+
+  #get<K extends keyof PathParamEdits>(key: K): TreePathParam[K] {
+    return (key in this.#edits ? this.#edits : this.#values)[key]!
   }
 
   get paramName(): string {
-    return this.#source ? this.#source.paramName : this.#paramName
+    return this.#get('paramName')
   }
 
   set paramName(value: string) {
-    if (this.#source) {
-      this.#source.paramName = value
-    } else {
-      this.#paramName = validateParamName(value, this.#segment)
-    }
+    this.#edits.paramName = validateParamName(value, this.#segment)
   }
-}
 
-/**
- * Copies `param` with `changes`. `paramName` still reads and writes the
- * original param, so renames are validated and reach the generated code.
- */
-function copyPathParam(
-  param: TreePathParam,
-  changes: Partial<TreePathParam>
-): TreePathParam {
-  return Object.assign(new ParsedPathParam('', param), param, changes)
-}
+  get parser(): string | null {
+    return this.#get('parser')
+  }
 
-/**
- * Helper function to create an empty route param used by the parser.
- *
- * @param segment - segment the param belongs to, used in diagnostics
- * @returns an empty route param
- */
-function createEmptyRouteParam(segment: string): TreePathParam {
-  return new ParsedPathParam(segment)
+  set parser(value: string | null) {
+    this.#edits.parser = value
+  }
+
+  get re(): string | null {
+    return this.#get('re')
+  }
+
+  set re(value: string | null) {
+    this.#edits.re =
+      value == null ? value : validateParamRe(this, value, this.#segment)
+  }
+
+  /**
+   * Sets the regexp found by a parser. Inline regexps are kept as written.
+   * Static to keep this unvalidated write off the params given to users.
+   *
+   * @internal
+   */
+  static setParsedRe(param: ParsedPathParam, re: string) {
+    param.#values.re = re
+  }
+
+  /**
+   * Copies `param` with `changes`. The copy reads and writes its edits in
+   * `edits`, so they apply over `changes` and survive new copies.
+   */
+  static resolve(
+    param: TreePathParam,
+    segment: string,
+    changes: PathParamEdits,
+    edits: Map<string, PathParamEdits>
+  ): TreePathParam {
+    const { paramName, parser, re } = param
+    const copy = Object.assign(
+      new ParsedPathParam(#segment in param ? param.#segment : segment),
+      param
+    )
+    copy.#values = { paramName, parser, re, ...changes }
+    let paramEdits = edits.get(paramName)
+    if (!paramEdits) edits.set(paramName, (paramEdits = {}))
+    copy.#edits = paramEdits
+    return copy
+  }
 }
