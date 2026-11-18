@@ -19,7 +19,7 @@ import {
 import { generateDTS as _generateDTS } from '../codegen/generateDTS'
 import { definePageTransform, extractDefinePageInfo } from './definePage'
 import { EditableTreeNode } from './extendRoutes'
-import { ts } from '../utils'
+import { toStringLiteral, ts } from '../utils'
 import { generateRouteResolver } from '../codegen/generateRouteResolver'
 import { generateDuplicatedRoutesWarnings } from '../codegen/generateDuplicateRoutesWarnings'
 import { generateAliasWarnings } from '../codegen/generateAliasWarnings'
@@ -345,7 +345,7 @@ export function createRoutesContext(options: ResolvedOptions) {
         missingParsers
           .map(
             ({ parser, routePath, filePaths }) =>
-              `console.error('[vue-router] Parameter parser "${parser}" not found for route "${routePath}". File: ${filePaths.join(', ')}')`
+              `console.error(${toStringLiteral(`[vue-router] Parameter parser "${parser}" not found for route "${routePath}". File: ${filePaths.join(', ')}`)})`
           )
           .join('\n') +
         '\n'
