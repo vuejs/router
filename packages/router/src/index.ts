@@ -52,6 +52,7 @@ export {
   parseURL as _parseURL,
   stringifyURL as _stringifyURL,
 } from './location'
+export { stripBase as _stripBase } from './location'
 export type {
   _RouteLocationBase,
   _RouteRecordBase,
