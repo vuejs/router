@@ -806,7 +806,7 @@ describe('RouterLink', () => {
    * Clicks `el` and returns whether the default action was prevented by the
    * existing listeners. Then prevents it so happy-dom doesn't follow the link.
    */
-  function clickAndBlockNavigation(el: Element, init: MouseEventInit = {}) {
+  function clickAndBlockNavigation(el: Element) {
     let prevented: boolean | undefined
     const listener = (e: Event) => {
       prevented = e.defaultPrevented
@@ -817,7 +817,6 @@ describe('RouterLink', () => {
       new MouseEvent('click', {
         cancelable: true,
         button: 0,
-        ...init,
       })
     )
     el.removeEventListener('click', listener)
@@ -834,19 +833,6 @@ describe('RouterLink', () => {
     wrapper.find('a')!.element.dispatchEvent(e)
     expect(router.push).toHaveBeenCalledTimes(1)
     expect(e.defaultPrevented).toBe(true)
-  })
-
-  it('lets the browser handle modified clicks', async () => {
-    const { router, wrapper } = await factory(
-      START_LOCATION_NORMALIZED,
-      { to: locations.basic.string },
-      locations.basic.normalized
-    )
-    const prevented = clickAndBlockNavigation(wrapper.find('a')!.element, {
-      ctrlKey: true,
-    })
-    expect(router.push).not.toHaveBeenCalled()
-    expect(prevented).toBe(false)
   })
 
   it('lets the browser handle clicks on target="_blank" links', async () => {

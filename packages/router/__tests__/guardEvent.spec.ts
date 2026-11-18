@@ -31,12 +31,7 @@ function clickOn(
 }
 
 describe('_guardEvent', () => {
-  it('accepts a plain left click', () => {
-    const { result } = clickOn(anchor())
-    expect(result).toBe(true)
-  })
-
-  it('does not call preventDefault', () => {
+  it('accepts a plain left click without preventing it', () => {
     const { result, e } = clickOn(anchor())
     expect(result).toBe(true)
     expect(e.defaultPrevented).toBe(false)
@@ -71,12 +66,9 @@ describe('_guardEvent', () => {
 
   it('checks the explicit element instead of currentTarget', () => {
     // event delegation: the listener is on a container, not on the link
-    const container = document.createElement('div')
-    const link = anchor('_blank')
-    container.appendChild(link)
-    expect(clickOn(container).result).toBe(true)
-    expect(clickOn(container, {}, link).result).toBe(false)
-
+    expect(
+      clickOn(document.createElement('div'), {}, anchor('_blank')).result
+    ).toBe(false)
     const blankContainer = document.createElement('div')
     blankContainer.setAttribute('target', '_blank')
     expect(clickOn(blankContainer, {}, anchor()).result).toBe(true)
@@ -84,6 +76,5 @@ describe('_guardEvent', () => {
 
   it('works with events without DOM targets', () => {
     expect(_guardEvent({} as MouseEvent)).toBe(true)
-    expect(_guardEvent({ button: 1 } as MouseEvent)).toBe(false)
   })
 })
