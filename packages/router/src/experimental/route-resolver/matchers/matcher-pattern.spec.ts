@@ -407,5 +407,18 @@ describe('MatcherPatternPathDynamic', () => {
       expect(pattern.build({ teamId: null })).toBe('/teams/null')
       expect('VUE_ROUTER_R0122').toHaveBeenWarnedTimes(1)
     })
+
+    it('rejects empty arrays for required repeatable params in sub segments', () => {
+      const pattern = new MatcherPatternPathDynamic(
+        /^\/rep\.(.+?)$/i,
+        {
+          ids: [undefined, true, false],
+        },
+        [['rep.', 1]]
+      )
+
+      expect(() => pattern.build({ ids: [] })).toThrow(MatchMiss)
+      expect('VUE_ROUTER_R0124').toHaveBeenWarnedTimes(1)
+    })
   })
 })
