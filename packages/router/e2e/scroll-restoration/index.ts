@@ -28,6 +28,7 @@ const Anchors = defineComponent({
       <h2>anchors</h2>
       <a id="native-anchor" href="#target">native #target</a>
       <router-link id="router-link-anchor" to="#target">router-link #target</router-link>
+      <router-link id="query-link" :to="{ query: { page: '2' }, hash: '#target' }">?page=2#target</router-link>
       <div style="height:2000px"></div>
       <p id="target">target</p>
     </main>
