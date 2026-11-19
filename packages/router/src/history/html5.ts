@@ -95,7 +95,7 @@ function useHistoryListeners(
     // to be updated before triggering the listeners. Some kind of validation function would also
     // need to be passed to the listeners so the navigation can be accepted
     // call all listeners
-    listeners.forEach(listener => {
+    listeners.slice().forEach(listener => {
       listener(currentLocation.value, from, {
         delta,
         type: NavigationType.pop,

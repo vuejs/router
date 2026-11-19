@@ -202,4 +202,26 @@ describe('Memory history', () => {
     expect(createMemoryHistory('/foo/').base).toBe('/foo')
     expect(createMemoryHistory('/foo').base).toBe('/foo')
   })
+
+  it('calls subsequent listeners when a listener unsubscribes during dispatch', () => {
+    const history = createMemoryHistory()
+    const second = vi.fn()
+    let stopFirst!: () => void
+    const first = vi.fn(() => {
+      stopFirst()
+    })
+    stopFirst = history.listen(first)
+    history.listen(second)
+
+    history.push('/1')
+    history.push('/2')
+    history.go(-1)
+
+    expect(first).toHaveBeenCalledTimes(1)
+    expect(second).toHaveBeenCalledTimes(1)
+
+    history.go(1)
+    expect(first).toHaveBeenCalledTimes(1)
+    expect(second).toHaveBeenCalledTimes(2)
+  })
 })

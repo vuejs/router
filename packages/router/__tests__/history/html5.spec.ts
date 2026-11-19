@@ -240,4 +240,46 @@ describe('History HTMl5', () => {
       expect(location.href).toBe('https://esm.dev/#!/foo')
     })
   })
+
+  it('calls subsequent listeners when a listener unsubscribes during popstate', () => {
+    getWindow().happyDOM.setURL('http://localhost:3000/')
+    const history = createWebHistory()
+    const second = vi.fn()
+    let stopFirst!: () => void
+    const first = vi.fn(() => {
+      stopFirst()
+    })
+    stopFirst = history.listen(first)
+    history.listen(second)
+
+    window.dispatchEvent(
+      new PopStateEvent('popstate', {
+        state: {
+          back: null,
+          current: '/foo',
+          forward: null,
+          position: 1,
+          replaced: false,
+        },
+      })
+    )
+
+    expect(first).toHaveBeenCalledTimes(1)
+    expect(second).toHaveBeenCalledTimes(1)
+
+    window.dispatchEvent(
+      new PopStateEvent('popstate', {
+        state: {
+          back: null,
+          current: '/bar',
+          forward: null,
+          position: 2,
+          replaced: false,
+        },
+      })
+    )
+    expect(first).toHaveBeenCalledTimes(1)
+    expect(second).toHaveBeenCalledTimes(2)
+    history.destroy()
+  })
 })
