@@ -140,6 +140,17 @@ test.describe('scroll-restoration', () => {
     })
   })
 
+  test('keeps the position on a query only push', async ({ page }) => {
+    await page.goto('/scroll-restoration/anchors#target')
+    await expect(page.locator('.anchors')).toBeVisible()
+    await page.evaluate(() => window.scrollTo(0, 1500))
+
+    await click(page.locator('#query-link'))
+    await expect(page).toHaveURL(/\/anchors\?page=2#target$/)
+    await page.waitForTimeout(100)
+    expect(await scrollY(page)).toBe(1500)
+  })
+
   test('ignores scrolling of the leaving page during a transition', async ({
     page,
   }) => {
