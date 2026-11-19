@@ -1,8 +1,10 @@
 import { describe, it, expectTypeOf } from 'vitest'
 import { defineColadaLoader } from './defineColadaLoader'
 import { NavigationResult } from './navigation-guard'
+import { defineQueryOptions } from '@pinia/colada'
+import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
 
-describe('defineBasicLoader', () => {
+describe('defineColadaLoader', () => {
   interface UserData {
     id: string
     name: string
@@ -45,6 +47,69 @@ describe('defineBasicLoader', () => {
 
     return user
   }
+
+  const userQuery = defineQueryOptions((id: string) => ({
+    key: ['users', id],
+    query,
+  }))
+
+  it('infers data and route types from reusable query options', async () => {
+    const useData = defineColadaLoader(to => {
+      expectTypeOf(to).toEqualTypeOf<RouteLocationNormalizedLoaded>()
+      return userQuery(to.params.id as string)
+    })
+    const useNamedData = defineColadaLoader('/users/[id]', to => {
+      expectTypeOf(to).toEqualTypeOf<
+        RouteLocationNormalizedLoaded<'/users/[id]'>
+      >()
+      return userQuery(to.params.id as string)
+    })
+
+    expectTypeOf(useData().data.value).toEqualTypeOf<UserData>()
+    expectTypeOf(useNamedData().data.value).toEqualTypeOf<UserData>()
+    expectTypeOf(await useData()).toEqualTypeOf<UserData>()
+    expectTypeOf(await useNamedData()).toEqualTypeOf<UserData>()
+  })
+
+  it('infers possibly undefined data from reusable query loader options', async () => {
+    const options = () => userQuery('one')
+    expectTypeOf(
+      defineColadaLoader(options, { lazy: true })().data.value
+    ).toEqualTypeOf<UserData | undefined>()
+    expectTypeOf(
+      defineColadaLoader(options, { lazy: () => false })().data.value
+    ).toEqualTypeOf<UserData | undefined>()
+    expectTypeOf(
+      defineColadaLoader(options, { server: false })().data.value
+    ).toEqualTypeOf<UserData | undefined>()
+    expectTypeOf(
+      defineColadaLoader(options, { errors: true })().data.value
+    ).toEqualTypeOf<UserData | undefined>()
+    expectTypeOf(
+      defineColadaLoader('/users/[id]', options, { lazy: true })().data.value
+    ).toEqualTypeOf<UserData | undefined>()
+    expectTypeOf(
+      await defineColadaLoader(options, { lazy: true })()
+    ).toEqualTypeOf<UserData>()
+    expectTypeOf(
+      defineColadaLoader(options, {
+        lazy: false,
+        server: true,
+        errors: false,
+      })().data.value
+    ).toEqualTypeOf<UserData>()
+  })
+
+  it('accepts reusable queries with initial data', () => {
+    const options = defineQueryOptions({
+      key,
+      query,
+      initialData: () => ({ id: 'one', name: 'Edu' }),
+    })
+    expectTypeOf(
+      defineColadaLoader(() => options)().data.value
+    ).toEqualTypeOf<UserData>()
+  })
 
   it('can enforce defined data', () => {
     expectTypeOf(
