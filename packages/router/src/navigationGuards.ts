@@ -18,7 +18,7 @@ import { onUnmounted, onActivated, onDeactivated } from 'vue'
 import { inject, getCurrentInstance } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import type { RouteRecordNormalized } from './matcher/types'
-import { isESModule, isRouteComponent } from './utils'
+import { isBrowser, isESModule, isRouteComponent } from './utils'
 import { diagnostics } from './diagnostics'
 import { isSameRouteRecord } from './location'
 
@@ -36,6 +36,10 @@ function registerGuard(
     }
     return
   }
+
+  // components are never unmounted during SSR, so a guard added here would never be
+  // removed and would stay on records that a shared `matcher` keeps across requests
+  if (!isBrowser) return
 
   // Track the current record the guard is registered with
   let currentRecord = record
