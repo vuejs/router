@@ -224,6 +224,33 @@ const router = experimental_createRouter({
 beforeAll(() => router.push('/'))
 
 describe('regular param parsers', () => {
+  it('round-trips repeatable parsers with optional callback arguments', () => {
+    const integerParser = defineParamParser<number>({
+      get: parseInt,
+      set: (value, radix = 10) => value.toString(radix),
+    })
+    const router = experimental_createRouter({
+      history: createMemoryHistory(),
+      resolver: createFixedResolver([
+        record(
+          'integers',
+          new MatcherPatternPathDynamic(
+            /^\/integers\/(.+?)$/i,
+            { ids: [integerParser, true] },
+            ['integers', 1]
+          )
+        ),
+      ]),
+    })
+
+    expect(router.resolve('/integers/10/20/30').params).toEqual({
+      ids: [10, 20, 30],
+    })
+    expect(
+      router.resolve({ name: 'integers', params: { ids: [10, 20, 30] } }).path
+    ).toBe('/integers/10/20/30')
+  })
+
   it('required (test-num): /required/42 -> { id: 42 }', () => {
     expect(router.resolve('/required/42').params).toEqual({ id: 42 })
     expect(

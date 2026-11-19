@@ -146,13 +146,13 @@ export function defineParamParser<
       value == null
         ? null // transforms undefined to null
         : Array.isArray(value)
-          ? value.filter(v => v != null).map(parser.get)
+          ? value.filter(v => v != null).map(v => parser.get(v))
           : parser.get(value),
     set: value =>
       value == null
         ? (value as null | undefined) // preserves null or undefined
         : Array.isArray(value)
-          ? value.map(parser.set)
+          ? value.map(v => parser.set(v))
           : parser.set(value),
   }
 }

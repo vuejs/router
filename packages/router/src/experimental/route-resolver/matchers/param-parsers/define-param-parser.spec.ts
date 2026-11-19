@@ -56,6 +56,13 @@ describe('defineParamParser', () => {
   })
 
   describe('get() - Array Values', () => {
+    it('does not pass array indexes as parseInt radix arguments', () => {
+      const parser = defineParamParser<number>({ get: parseInt, set: String })
+
+      expect(parser.get('20')).toBe(20)
+      expect(parser.get(['10', null, '20', '30'])).toEqual([10, 20, 30])
+    })
+
     it('returns empty array for empty array without calling inner get', () => {
       const get = vi.fn((v: string) => v.length)
       const set = vi.fn((v: number) => String(v))
@@ -72,9 +79,7 @@ describe('defineParamParser', () => {
 
       expect(parser.get(['a', 'bb', 'ccc'])).toEqual([1, 2, 3])
       expect(get).toHaveBeenCalledTimes(3)
-      // we only care about the first argument of each call, map() also passes the index and whole array
-      // so we can't use toHaveBeenNthCalledWith
-      expect(get.mock.calls.map(args => args[0])).toEqual(['a', 'bb', 'ccc'])
+      expect(get.mock.calls).toEqual([['a'], ['bb'], ['ccc']])
     })
 
     it('filters out null entries before calling inner get', () => {
@@ -84,7 +89,7 @@ describe('defineParamParser', () => {
 
       expect(parser.get(['a', null, 'bb', null])).toEqual([1, 2])
       expect(get).toHaveBeenCalledTimes(2)
-      expect(get.mock.calls.map(args => args[0])).toEqual(['a', 'bb'])
+      expect(get.mock.calls).toEqual([['a'], ['bb']])
     })
 
     it('returns empty array when every entry is null without calling inner get', () => {
@@ -138,6 +143,16 @@ describe('defineParamParser', () => {
   })
 
   describe('set() - Array Values', () => {
+    it('does not pass array indexes as optional setter arguments', () => {
+      const parser = defineParamParser<number>({
+        get: Number,
+        set: (value, radix = 10) => value.toString(radix),
+      })
+
+      expect(parser.set(20)).toBe('20')
+      expect(parser.set([10, 20, 30])).toEqual(['10', '20', '30'])
+    })
+
     it('returns empty array for empty array without calling inner set', () => {
       const get = vi.fn((v: string) => v.length)
       const set = vi.fn((v: number) => String(v))
@@ -154,7 +169,7 @@ describe('defineParamParser', () => {
 
       expect(parser.set([1, 2, 3])).toEqual(['1', '2', '3'])
       expect(set).toHaveBeenCalledTimes(3)
-      expect(set.mock.calls.map(args => args[0])).toEqual([1, 2, 3])
+      expect(set.mock.calls).toEqual([[1], [2], [3]])
     })
   })
 
