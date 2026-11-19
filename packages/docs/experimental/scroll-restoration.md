@@ -97,7 +97,7 @@ By default, the router _captures_ the position **when you leave the page**, and 
 
 ## Capture events
 
-By default, the plugin captures positions after each successful navigation, on `pagehide`, and when the document becomes hidden. Navigation captures use the route you leave.
+By default, the plugin captures positions after each successful navigation, on `pagehide`, and when the document becomes hidden. Navigation captures use the route you leave. When the browser creates the history entry itself (for example with a native `<a href="#target">` link), it already scrolled, so the plugin captures the new route instead.
 
 Use `setupListeners(capture, signal, router)` to replace all default capture triggers, including navigation. The supplied `capture(route?)` saves all active scroll registrations for the given route. If you omit the route, it uses `router.currentRoute.value`.
 
