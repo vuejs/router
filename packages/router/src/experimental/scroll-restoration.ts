@@ -287,9 +287,12 @@ export function SCROLL_RESTORATION_SETUP_LISTENERS_DEFAULT(
   // runs before a native hash link scrolls
   document.addEventListener('click', () => capture(), { capture: true, signal })
   // The DOM still shows `from` until the next render flush.
-  const removeAfterEach = router.afterEach((_to, from, failure) => {
-    if (!failure && !browserScrolled && from !== START_LOCATION_NORMALIZED)
-      capture(from)
+  const removeAfterEach = router.afterEach((to, from, failure) => {
+    if (!failure) {
+      // save the browser position so the restore doesn't use an older one
+      if (browserScrolled) capture(to)
+      else if (from !== START_LOCATION_NORMALIZED) capture(from)
+    }
     browserScrolled = false
   })
   signal.addEventListener('abort', removeAfterEach, { once: true })

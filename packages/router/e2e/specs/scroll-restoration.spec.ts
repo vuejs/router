@@ -124,6 +124,19 @@ test.describe('scroll-restoration', () => {
       await expect.poll(() => scrollY(page)).toBe(300)
     })
 
+    test('scrolls to a visited hash after a native link', async ({ page }) => {
+      await click(page.locator('#native-anchor'))
+      await expect.poll(() => targetTop(page)).toBeLessThan(1)
+      await page.evaluate(() => window.scrollTo(0, 2500))
+      await page.evaluate(() => window.history.back())
+      await expect(page).toHaveURL(/\/anchors$/)
+      await expect.poll(() => scrollY(page)).toBe(300)
+
+      await click(page.locator('#native-anchor'))
+      await expect(page).toHaveURL(/#target$/)
+      await expect.poll(() => targetTop(page)).toBeCloseTo(0, 0)
+    })
+
     test('restores a position set in the same task as a router-link click', async ({
       page,
     }) => {
