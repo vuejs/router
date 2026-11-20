@@ -1,6 +1,7 @@
 import { experimental_parseQuery as parseQuery } from './query'
 import {
   experimental_parseURL as originalParseURL,
+  parseEncodedURL,
   experimental_stringifyURL as stringifyURL,
 } from './location'
 import { stringifyQuery } from '../query'
@@ -248,11 +249,46 @@ describe('parseURL', () => {
     })
   })
 
-  it('calls parseQuery', () => {
-    const parseQuery = vi.fn()
-    originalParseURL(parseQuery, '/?é=é&é=a')
-    expect(parseQuery).toHaveBeenCalledTimes(1)
-    expect(parseQuery).toHaveBeenCalledWith('é=é&é=a')
+  it('parses the encoded query', () => {
+    expect(parseURL('/?é=é&é=a')).toEqual({
+      fullPath: '/?%C3%A9=%C3%A9&%C3%A9=a',
+      path: '/',
+      hash: '',
+      query: { é: ['é', 'a'] },
+    })
+  })
+
+  describe('normalization like new URL()', () => {
+    it('encodes characters like a browser', () => {
+      expect(parseURL('/café b?q=a b#h b')).toEqual({
+        fullPath: '/caf%C3%A9%20b?q=a%20b#h%20b',
+        path: '/caf%C3%A9%20b',
+        hash: '#h%20b',
+        query: { q: ['a b'] },
+      })
+    })
+
+    it('keeps percent encoded sequences and lone %', () => {
+      expect(parseURL('/a%2Fb/%e9/100%?q=%25#%20%')).toMatchObject({
+        fullPath: '/a%2Fb/%e9/100%?q=%25#%20%',
+      })
+    })
+
+    it('resolves dot segments anywhere in the path', () => {
+      expect(parseURL('/a/./b/../c').path).toBe('/a/c')
+      expect(parseURL('/a/%2e%2e/b').path).toBe('/b')
+      expect(parseURL('foo/../bar', '/parent/current').path).toBe('/parent/bar')
+    })
+
+    it('keeps host and scheme like strings as paths', () => {
+      expect(parseURL('//evil.com/x').path).toBe('//evil.com/x')
+      expect(parseURL('http://evil.com/x', '/parent/current').path).toBe(
+        '/parent/http://evil.com/x'
+      )
+      expect(parseURL('javascript:alert(1)', '/parent/current').path).toBe(
+        '/parent/javascript:alert(1)'
+      )
+    })
   })
 
   it('uses the parseQuery result as query', () => {
@@ -289,6 +325,17 @@ describe('parseURL', () => {
         fullPath: '/foo#100%',
         hash: '#100%',
       })
+    })
+  })
+})
+
+describe('parseEncodedURL', () => {
+  it('does not normalize the location', () => {
+    expect(parseEncodedURL(parseQuery, '/a/./café b?q=a b#h b')).toEqual({
+      fullPath: '/a/./café b?q=a b#h b',
+      path: '/a/./café b',
+      hash: '#h b',
+      query: { q: ['a b'] },
     })
   })
 })

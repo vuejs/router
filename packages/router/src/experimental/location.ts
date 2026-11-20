@@ -1,22 +1,26 @@
 import { type LocationNormalized, resolveRelativePath } from '../location'
+import { diagnostics } from '../diagnostics'
+import { isAbsolutePath } from '../utils'
 import type { LocationQuery, LocationQueryRaw } from './query'
 
 // TODO: in next major, merge the two query.ts files and the two location.ts files
 
 /**
- * Transforms a URI into a normalized history location. Same behavior as the
- * legacy `parseURL` but uses `Object.create(null)` for the query object so it
- * cannot be exploited via prototype pollution. Unlike the legacy one, `hash`
- * is not decoded.
+ * Transforms an already encoded URI into a normalized history location. Use it
+ * when the location comes from the browser (e.g. `location.pathname`), it is
+ * faster than {@link experimental_parseURL}. Same behavior as the legacy
+ * `parseURL` but uses `Object.create(null)` for the query object so it cannot
+ * be exploited via prototype pollution. Unlike the legacy one, `hash` is not
+ * decoded.
  *
  * @internal no semver guarantee
  * @param parseQuery - receives the search without the leading `?`
- * @param location - URI to normalize
+ * @param location - encoded URI to normalize
  * @param currentLocation - current absolute location. Allows resolving relative
  * paths. Must start with `/`. Defaults to `/`
  * @returns a normalized history location
  */
-export function experimental_parseURL(
+export function parseEncodedURL(
   parseQuery: (search: string) => LocationQuery,
   location: string,
   currentLocation: string = '/'
@@ -70,6 +74,49 @@ export function experimental_parseURL(
     // the hash is kept as it appears in the URL, like location.hash
     hash,
   }
+}
+
+// any special scheme works, it gives the path, query and hash encoding of browsers
+const ORIGIN = 'http://h'
+
+/**
+ * Transforms a URI into a normalized history location. The URI is normalized
+ * with `new URL()`, like a browser does: characters that need it are percent
+ * encoded, existing percent encoded sequences are kept, and `.` and `..`
+ * segments are resolved. Slower than {@link parseEncodedURL}.
+ *
+ * @internal no semver guarantee
+ * @param parseQuery - receives the search without the leading `?`
+ * @param location - URI to normalize
+ * @param currentLocation - current absolute location. Allows resolving relative
+ * paths. Must start with `/`. Defaults to `/`
+ * @returns a normalized history location
+ */
+export function experimental_parseURL(
+  parseQuery: (search: string) => LocationQuery,
+  location: string,
+  currentLocation: string = '/'
+): LocationNormalized {
+  const isAbsolute = isAbsolutePath(location)
+
+  if (__DEV__ && !isAbsolute && !isAbsolutePath(currentLocation)) {
+    diagnostics.VUE_ROUTER_R0070({ to: location, from: currentLocation })
+    currentLocation = '/'
+  }
+
+  // the `./` prefix keeps `//host`, `\\host` and `scheme:` as paths
+  const url = new URL(
+    isAbsolute
+      ? '.' + location
+      : // `''`, `?query` and `#hash` keep the current path
+        !location || location[0] === '?' || location[0] === '#'
+        ? location
+        : './' + location,
+    ORIGIN + (isAbsolute ? '/' : currentLocation)
+  )
+
+  // href keeps an empty `?` or `#`, url.search and url.hash do not
+  return parseEncodedURL(parseQuery, url.href.slice(ORIGIN.length))
 }
 
 /**
