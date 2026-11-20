@@ -108,6 +108,21 @@ router.push({ name: route.name, params: route.params, query: { page: ['2'] } })
 // /search?page=2
 ```
 
+### Encoding
+
+The router normalizes a string location like a browser does with [`new URL()`](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL), so you do not need to encode it yourself. An object location is not normalized: its `path` must already be encoded. Its `query` values and `params` stay decoded because the router encodes them:
+
+```ts
+router.push('/café?q=a b') // /caf%C3%A9?q=a+b
+router.push({ path: '/caf%C3%A9' }) // [!code ++]
+router.push({ path: '/café' }) // [!code --]
+router.push({ path: '/search', query: { q: 'a&b' } }) // /search?q=a%26b
+router.push({ name: 'user', params: { username: 'eduardo/san martin' } })
+// /user/eduardo%2Fsan%20martin
+```
+
+See [URL Encoding](./encoding.md) for all the rules, including spaces and `+` in the query.
+
 ### Navigation guard redirects
 
 Relative redirects returned by navigation guards use the **target route (`to`)** as their base. This also applies to initial navigation and back/forward navigation:

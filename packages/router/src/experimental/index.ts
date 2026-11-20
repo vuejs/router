@@ -169,6 +169,7 @@ export { NavigationResult as _NavigationResult } from './data-loaders/entries/in
  */
 export {
   experimental_parseURL as _parseURL,
+  parseEncodedURL as _parseEncodedURL,
   experimental_stringifyURL as _stringifyURL,
 } from './location'
 export {

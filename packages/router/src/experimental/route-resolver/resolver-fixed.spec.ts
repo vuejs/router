@@ -176,6 +176,21 @@ describe('fixed resolver', () => {
         })
       })
 
+      it('encodes string locations but not object locations', () => {
+        const resolver = createFixedResolver([
+          { name: 'cafe', path: new MatcherPatternPathStatic('/caf%C3%A9') },
+        ])
+
+        expect(resolver.resolve('/café')).toMatchObject({
+          name: 'cafe',
+          fullPath: '/caf%C3%A9',
+        })
+        expect(resolver.resolve({ path: '/café' })).toMatchObject({
+          ...NO_MATCH_LOCATION,
+          fullPath: '/café',
+        })
+      })
+
       it('resolves string locations with params', () => {
         const resolver = createFixedResolver([
           { name: 'user-detail', path: USER_ID_PATH_PATTERN_MATCHER },

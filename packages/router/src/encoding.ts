@@ -3,7 +3,7 @@ import { diagnostics } from './diagnostics'
 /**
  * Encoding Rules (␣ = Space)
  * - Path: ␣ " < > # ? { }
- * - Query: ␣ " < > # & =
+ * - Query: ␣ " < > # & = ' (`'` like the special-query set of new URL())
  * - Hash: ␣ " < > `
  *
  * On top of that, the RFC3986 (https://tools.ietf.org/html/rfc3986#section-2.2)
@@ -11,9 +11,11 @@ import { diagnostics } from './diagnostics'
  * in encodeURI https://github.com/whatwg/url/issues/369, so it may be safer to
  * also encode `!'()*`. Leaving un-encoded only ASCII alphanumeric(`a-zA-Z0-9`)
  * plus `-._~`. This extra safety should be applied to query by patching the
- * string returned by encodeURIComponent encodeURI also encodes `[\]^`. `\`
- * should be encoded to avoid ambiguity. Browsers (IE, FF, C) transform a `\`
- * into a `/` if directly typed in. The _backtick_ (`````) should also be
+ * string returned by encodeURIComponent encodeURI also encodes `[\]^`.
+ *
+ * `\` is always encoded. In the path, browsers transform a `\` into a `/`.
+ * In the query and hash, `new URL()` keeps it but it is not a valid URL code
+ * point, so `%5C` keeps the URL valid. The _backtick_ (`````) should also be
  * encoded everywhere because some browsers like FF encode it when directly
  * written while others don't. Safari and IE don't encode ``"<>{}``` in hash.
  */
@@ -31,15 +33,14 @@ export const SLASH_RE = /\//g // %2F
 const EQUAL_RE = /=/g // %3D
 const IM_RE = /\?/g // %3F
 export const PLUS_RE = /\+/g // %2B
+const APOSTROPHE_RE = /'/g // %27
+export const BACKSLASH_RE = /\\/g // %5C
 /**
- * NOTE: It's not clear to me if we should encode the + symbol in queries, it
- * seems to be less flexible than not doing so and I can't find out the legacy
- * systems requiring this for regular requests like text/html. In the standard,
- * the encoding of the plus character is only mentioned for
- * application/x-www-form-urlencoded
- * (https://url.spec.whatwg.org/#urlencoded-parsing) and most browsers seems lo
- * leave the plus character as is in queries. To be more flexible, we allow the
- * plus character on the query, but it can also be manually encoded by the user.
+ * NOTE: queries follow application/x-www-form-urlencoded, like
+ * `URLSearchParams`: a space is encoded as `+`, a `+` as `%2B`, and
+ * `parseQuery()` decodes `+` as a space. Search engines (e.g. Chrome's omnibox)
+ * create links with `+` for spaces (#561). Always writing `+` keeps the
+ * encoding consistent and idempotent, even if `new URL()` writes `%20`.
  *
  * Resources:
  * - https://url.spec.whatwg.org/#urlencoded-parsing
@@ -53,7 +54,7 @@ const ENC_BACKTICK_RE = /%60/g // `
 const ENC_CURLY_OPEN_RE = /%7B/g // {
 const ENC_PIPE_RE = /%7C/g // |
 const ENC_CURLY_CLOSE_RE = /%7D/g // }
-const ENC_SPACE_RE = /%20/g // }
+export const ENC_SPACE_RE = /%20/g // space
 
 /**
  * Encode characters that need to be encoded on the path, search and hash
@@ -105,6 +106,7 @@ export function encodeQueryValue(text: string | number): string {
       .replace(ENC_SPACE_RE, '+')
       .replace(HASH_RE, '%23')
       .replace(AMPERSAND_RE, '%26')
+      .replace(APOSTROPHE_RE, '%27')
       .replace(ENC_BACKTICK_RE, '`')
       .replace(ENC_CURLY_OPEN_RE, '{')
       .replace(ENC_CURLY_CLOSE_RE, '}')
