@@ -108,24 +108,20 @@ router.push({ name: route.name, params: route.params, query: { page: ['2'] } })
 // /search?page=2
 ```
 
-### Encoding of string locations
+### Encoding
 
-The router normalizes a string location like a browser does with [`new URL()`](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL). It encodes the characters that need it, keeps percent encoded sequences as they are, and resolves `.` and `..` segments. You do not need to encode a string location yourself:
-
-```ts
-router.push('/café?q=a b') // /caf%C3%A9?q=a%20b
-router.push('/caf%C3%A9?q=a%20b') // same location
-router.push('/docs/./guide/../api') // /docs/api
-```
-
-This normalization is slower than the other forms of locations. An object location, including one with a `path`, is not normalized: it must already be encoded. When possible, use a named location with `params` because it encodes each param for you:
+The router normalizes a string location like a browser does with [`new URL()`](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL), so you do not need to encode it yourself. An object location is not normalized: its `path` must already be encoded. Its `query` values and `params` stay decoded because the router encodes them:
 
 ```ts
+router.push('/café?q=a b') // /caf%C3%A9?q=a+b
 router.push({ path: '/caf%C3%A9' }) // [!code ++]
 router.push({ path: '/café' }) // [!code --]
+router.push({ path: '/search', query: { q: 'a&b' } }) // /search?q=a%26b
 router.push({ name: 'user', params: { username: 'eduardo/san martin' } })
 // /user/eduardo%2Fsan%20martin
 ```
+
+See [URL Encoding](./encoding.md) for all the rules, including spaces and `+` in the query.
 
 ### Navigation guard redirects
 

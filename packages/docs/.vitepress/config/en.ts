@@ -236,6 +236,10 @@ function sidebarFileBasedRouting(): SidebarGroup {
         text: 'Vapor Mode (experimental)',
         link: '/experimental/vapor',
       },
+      {
+        text: 'URL Encoding (experimental)',
+        link: '/experimental/encoding',
+      },
     ],
   }
 }
