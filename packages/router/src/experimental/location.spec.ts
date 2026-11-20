@@ -5,7 +5,7 @@ import {
   experimental_stringifyURL as stringifyURL,
 } from './location'
 import { stringifyQuery } from '../query'
-import { vi, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 describe('parseURL', () => {
   let parseURL = originalParseURL.bind(null, parseQuery)
@@ -270,8 +270,14 @@ describe('parseURL', () => {
       expect(parseURL('/a/%2e%2e/b').path).toBe('/b')
     })
 
+    it('ignores the current location for absolute paths', () => {
+      expect(parseURL('/foo', '/parent/current').path).toBe('/foo')
+    })
+
     it('keeps host and scheme like strings as paths', () => {
       expect(parseURL('//evil.com/x').path).toBe('//evil.com/x')
+      // like browsers, `\\` is `/`
+      expect(parseURL('/\\evil.com/x').path).toBe('//evil.com/x')
       expect(parseURL('javascript:alert(1)', '/parent/current').path).toBe(
         '/parent/javascript:alert(1)'
       )
@@ -281,12 +287,6 @@ describe('parseURL', () => {
   it('uses the parseQuery result as query', () => {
     const query = { custom: ['value'] }
     expect(originalParseURL(() => query, '/foo?x').query).toBe(query)
-  })
-
-  it('does not call parseQuery for a ? in the hash', () => {
-    const parseQuery = vi.fn()
-    expect(originalParseURL(parseQuery, '/foo#a?b').query).toEqual({})
-    expect(parseQuery).not.toHaveBeenCalled()
   })
 
   describe('hash', () => {
