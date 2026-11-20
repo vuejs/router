@@ -61,9 +61,10 @@ describe('Encoding', () => {
   })
 
   describe('query params', () => {
-    const safePerSpec = "!$'*,:;@[]_|?/{}^()`"
-    const toEncodeForKey = '"<>#&='
-    const toEncodeForValue = '"<>#&'
+    const safePerSpec = '!$*,:;@[]_|?/{}^()`'
+    // ' is in the special-query percent-encode set, like new URL()
+    const toEncodeForKey = `"<>#&='`
+    const toEncodeForValue = `"<>#&'`
     const encodedToEncodeForKey = toEncodeForKey
       .split('')
       .map(c => {

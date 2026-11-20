@@ -3,7 +3,7 @@ import { diagnostics } from './diagnostics'
 /**
  * Encoding Rules (␣ = Space)
  * - Path: ␣ " < > # ? { }
- * - Query: ␣ " < > # & =
+ * - Query: ␣ " < > # & = ' (`'` like the special-query set of new URL())
  * - Hash: ␣ " < > `
  *
  * On top of that, the RFC3986 (https://tools.ietf.org/html/rfc3986#section-2.2)
@@ -31,6 +31,7 @@ export const SLASH_RE = /\//g // %2F
 const EQUAL_RE = /=/g // %3D
 const IM_RE = /\?/g // %3F
 export const PLUS_RE = /\+/g // %2B
+const APOSTROPHE_RE = /'/g // %27
 /**
  * NOTE: queries follow application/x-www-form-urlencoded, like
  * `URLSearchParams`: a space is encoded as `+`, a `+` as `%2B`, and
@@ -102,6 +103,7 @@ export function encodeQueryValue(text: string | number): string {
       .replace(ENC_SPACE_RE, '+')
       .replace(HASH_RE, '%23')
       .replace(AMPERSAND_RE, '%26')
+      .replace(APOSTROPHE_RE, '%27')
       .replace(ENC_BACKTICK_RE, '`')
       .replace(ENC_CURLY_OPEN_RE, '{')
       .replace(ENC_CURLY_CLOSE_RE, '}')
