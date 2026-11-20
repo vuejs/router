@@ -32,14 +32,11 @@ const EQUAL_RE = /=/g // %3D
 const IM_RE = /\?/g // %3F
 export const PLUS_RE = /\+/g // %2B
 /**
- * NOTE: It's not clear to me if we should encode the + symbol in queries, it
- * seems to be less flexible than not doing so and I can't find out the legacy
- * systems requiring this for regular requests like text/html. In the standard,
- * the encoding of the plus character is only mentioned for
- * application/x-www-form-urlencoded
- * (https://url.spec.whatwg.org/#urlencoded-parsing) and most browsers seems lo
- * leave the plus character as is in queries. To be more flexible, we allow the
- * plus character on the query, but it can also be manually encoded by the user.
+ * NOTE: queries follow application/x-www-form-urlencoded, like
+ * `URLSearchParams`: a space is encoded as `+`, a `+` as `%2B`, and
+ * `parseQuery()` decodes `+` as a space. Search engines (e.g. Chrome's omnibox)
+ * create links with `+` for spaces (#561). Always writing `+` keeps the
+ * encoding consistent and idempotent, even if `new URL()` writes `%20`.
  *
  * Resources:
  * - https://url.spec.whatwg.org/#urlencoded-parsing
@@ -53,7 +50,7 @@ const ENC_BACKTICK_RE = /%60/g // `
 const ENC_CURLY_OPEN_RE = /%7B/g // {
 const ENC_PIPE_RE = /%7C/g // |
 const ENC_CURLY_CLOSE_RE = /%7D/g // }
-const ENC_SPACE_RE = /%20/g // }
+export const ENC_SPACE_RE = /%20/g // space
 
 /**
  * Encode characters that need to be encoded on the path, search and hash
