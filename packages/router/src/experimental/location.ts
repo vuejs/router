@@ -1,5 +1,6 @@
 import { type LocationNormalized, resolveRelativePath } from '../location'
 import { diagnostics } from '../diagnostics'
+import { ENC_SPACE_RE } from '../encoding'
 import { isAbsolutePath } from '../utils'
 import type { LocationQuery, LocationQueryRaw } from './query'
 
@@ -104,7 +105,7 @@ export function experimental_parseURL(
     currentLocation = '/'
   }
 
-  const url = new URL(
+  const { pathname, search, hash, href } = new URL(
     isAbsolute
       ? // ORIGIN fixes //evil.com
         ORIGIN + location
@@ -116,13 +117,17 @@ export function experimental_parseURL(
     ORIGIN + currentLocation
   )
 
+  // '' | '?' | '?#…' | '#…', href keeps an empty `?` or `#`
+  // 8 is ORIGIN.length
+  const rest = href.slice(8 + pathname.length + search.length)
+
   return {
-    // href keeps an empty `?` or `#`
-    fullPath: url.href.slice(8), // ORIGIN.length
-    path: url.pathname,
-    query: parseQuery(url.search),
-    // url.hash is `''` for a bare `#`, which hash matchers distinguish
-    hash: url.hash || (url.href.endsWith('#') ? '#' : ''),
+    // spaces in the query are `+` like stringifyQuery()
+    fullPath: pathname + search.replace(ENC_SPACE_RE, '+') + rest,
+    path: pathname,
+    query: parseQuery(search),
+    // hash is `''` for a bare `#`, which hash matchers distinguish
+    hash: hash || (href.endsWith('#') ? '#' : ''),
   }
 }
 

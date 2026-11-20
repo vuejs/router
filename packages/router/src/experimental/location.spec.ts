@@ -252,10 +252,18 @@ describe('parseURL', () => {
   describe('normalization like new URL()', () => {
     it('encodes characters like a browser', () => {
       expect(parseURL('/café b?q=a b#h b')).toEqual({
-        fullPath: '/caf%C3%A9%20b?q=a%20b#h%20b',
+        // spaces in the query are `+` like stringifyQuery()
+        fullPath: '/caf%C3%A9%20b?q=a+b#h%20b',
         path: '/caf%C3%A9%20b',
         hash: '#h%20b',
         query: { q: ['a b'] },
+      })
+    })
+
+    it('writes encoded spaces in the query as +', () => {
+      expect(parseURL('/a%20b?q=a%20b&%20=+')).toMatchObject({
+        fullPath: '/a%20b?q=a+b&+=+',
+        query: { q: ['a b'], ' ': [' '] },
       })
     })
 
