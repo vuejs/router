@@ -267,6 +267,14 @@ describe('parseURL', () => {
       })
     })
 
+    it('encodes \\ in the query and hash like stringifyQuery() and encodeHash()', () => {
+      expect(parseURL('/a\\b?q=a\\b#a\\b')).toMatchObject({
+        fullPath: '/a/b?q=a%5Cb#a%5Cb',
+        query: { q: ['a\\b'] },
+        hash: '#a%5Cb',
+      })
+    })
+
     it('keeps percent encoded sequences and lone %', () => {
       expect(parseURL('/a%2Fb/%e9/100%?q=%25#%20%')).toMatchObject({
         fullPath: '/a%2Fb/%e9/100%?q=%25#%20%',
