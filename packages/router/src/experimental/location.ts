@@ -77,7 +77,7 @@ export function parseEncodedURL(
 }
 
 // any special scheme works, it gives the path, query and hash encoding of browsers
-const ORIGIN = 'http://h'
+const ORIGIN = 'http://t'
 
 /**
  * Transforms a URI into a normalized history location. The URI is normalized
@@ -86,7 +86,7 @@ const ORIGIN = 'http://h'
  * segments are resolved. Slower than {@link parseEncodedURL}.
  *
  * @internal no semver guarantee
- * @param parseQuery - receives the search without the leading `?`
+ * @param parseQuery - receives the search with its leading `?` or `''`
  * @param location - URI to normalize
  * @param currentLocation - current absolute location. Allows resolving relative
  * paths. Must start with `/`. Defaults to `/`
@@ -104,19 +104,26 @@ export function experimental_parseURL(
     currentLocation = '/'
   }
 
-  // the `./` prefix keeps `//host`, `\\host` and `scheme:` as paths
   const url = new URL(
     isAbsolute
-      ? '.' + location
-      : // `''`, `?query` and `#hash` keep the current path
+      ? // ORIGIN fixes //evil.com
+        ORIGIN + location
+      : // '', ?query and #hash keep the current path
         !location || location[0] === '?' || location[0] === '#'
         ? location
-        : './' + location,
-    ORIGIN + (isAbsolute ? '/' : currentLocation)
+        : // keeps `scheme:` as a path
+          './' + location,
+    ORIGIN + currentLocation
   )
 
-  // href keeps an empty `?` or `#`, url.search and url.hash do not
-  return parseEncodedURL(parseQuery, url.href.slice(ORIGIN.length))
+  return {
+    // href keeps an empty `?` or `#`
+    fullPath: url.href.slice(8), // ORIGIN.length
+    path: url.pathname,
+    query: parseQuery(url.search),
+    // url.hash is `''` for a bare `#`, which hash matchers distinguish
+    hash: url.hash || (url.href.endsWith('#') ? '#' : ''),
+  }
 }
 
 /**
