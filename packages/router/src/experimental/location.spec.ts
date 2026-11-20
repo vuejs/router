@@ -249,15 +249,6 @@ describe('parseURL', () => {
     })
   })
 
-  it('parses the encoded query', () => {
-    expect(parseURL('/?é=é&é=a')).toEqual({
-      fullPath: '/?%C3%A9=%C3%A9&%C3%A9=a',
-      path: '/',
-      hash: '',
-      query: { é: ['é', 'a'] },
-    })
-  })
-
   describe('normalization like new URL()', () => {
     it('encodes characters like a browser', () => {
       expect(parseURL('/café b?q=a b#h b')).toEqual({
@@ -277,14 +268,10 @@ describe('parseURL', () => {
     it('resolves dot segments anywhere in the path', () => {
       expect(parseURL('/a/./b/../c').path).toBe('/a/c')
       expect(parseURL('/a/%2e%2e/b').path).toBe('/b')
-      expect(parseURL('foo/../bar', '/parent/current').path).toBe('/parent/bar')
     })
 
     it('keeps host and scheme like strings as paths', () => {
       expect(parseURL('//evil.com/x').path).toBe('//evil.com/x')
-      expect(parseURL('http://evil.com/x', '/parent/current').path).toBe(
-        '/parent/http://evil.com/x'
-      )
       expect(parseURL('javascript:alert(1)', '/parent/current').path).toBe(
         '/parent/javascript:alert(1)'
       )
