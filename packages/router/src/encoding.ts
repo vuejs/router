@@ -11,9 +11,11 @@ import { diagnostics } from './diagnostics'
  * in encodeURI https://github.com/whatwg/url/issues/369, so it may be safer to
  * also encode `!'()*`. Leaving un-encoded only ASCII alphanumeric(`a-zA-Z0-9`)
  * plus `-._~`. This extra safety should be applied to query by patching the
- * string returned by encodeURIComponent encodeURI also encodes `[\]^`. `\`
- * should be encoded to avoid ambiguity. Browsers (IE, FF, C) transform a `\`
- * into a `/` if directly typed in. The _backtick_ (`````) should also be
+ * string returned by encodeURIComponent encodeURI also encodes `[\]^`.
+ *
+ * `\` is always encoded. In the path, browsers transform a `\` into a `/`.
+ * In the query and hash, `new URL()` keeps it but it is not a valid URL code
+ * point, so `%5C` keeps the URL valid. The _backtick_ (`````) should also be
  * encoded everywhere because some browsers like FF encode it when directly
  * written while others don't. Safari and IE don't encode ``"<>{}``` in hash.
  */
@@ -32,6 +34,7 @@ const EQUAL_RE = /=/g // %3D
 const IM_RE = /\?/g // %3F
 export const PLUS_RE = /\+/g // %2B
 const APOSTROPHE_RE = /'/g // %27
+export const BACKSLASH_RE = /\\/g // %5C
 /**
  * NOTE: queries follow application/x-www-form-urlencoded, like
  * `URLSearchParams`: a space is encoded as `+`, a `+` as `%2B`, and

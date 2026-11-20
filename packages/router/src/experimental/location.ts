@@ -1,6 +1,6 @@
 import { type LocationNormalized, resolveRelativePath } from '../location'
 import { diagnostics } from '../diagnostics'
-import { ENC_SPACE_RE } from '../encoding'
+import { BACKSLASH_RE, ENC_SPACE_RE } from '../encoding'
 import { isAbsolutePath } from '../utils'
 import type { LocationQuery, LocationQueryRaw } from './query'
 
@@ -122,12 +122,19 @@ export function experimental_parseURL(
   const rest = href.slice(8 + pathname.length + search.length)
 
   return {
-    // spaces in the query are `+` like stringifyQuery()
-    fullPath: pathname + search.replace(ENC_SPACE_RE, '+') + rest,
+    // like stringifyQuery() and encodeHash(): spaces in the query are `+` and
+    // `\` is `%5C`. The path never keeps a `\`
+    fullPath: (pathname + search.replace(ENC_SPACE_RE, '+') + rest).replace(
+      BACKSLASH_RE,
+      '%5C'
+    ),
     path: pathname,
     query: parseQuery(search),
     // hash is `''` for a bare `#`, which hash matchers distinguish
-    hash: hash || (href.endsWith('#') ? '#' : ''),
+    hash: (hash || (href.endsWith('#') ? '#' : '')).replace(
+      BACKSLASH_RE,
+      '%5C'
+    ),
   }
 }
 
