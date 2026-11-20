@@ -370,6 +370,12 @@ describe('stripBase', () => {
     expect(stripBase('/base/', '/base')).toBe('/')
     expect(stripBase('/base/foo', '/base')).toBe('/foo')
   })
+
+  it('does not strip partial segment matches', () => {
+    expect(stripBase('/base-other', '/base')).toBe('/base-other')
+    expect(stripBase('/base-other/foo', '/base')).toBe('/base-other/foo')
+    expect(stripBase('/Base2/foo', '/base')).toBe('/Base2/foo')
+  })
 })
 
 describe('isSameRouteLocationParams', () => {

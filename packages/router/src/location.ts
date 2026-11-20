@@ -136,7 +136,11 @@ export function stringifyURL(
  */
 export function stripBase(pathname: string, base: string): string {
   // no base or base is not found at the beginning
-  if (!base || !pathname.toLowerCase().startsWith(base.toLowerCase()))
+  if (
+    !base ||
+    !pathname.toLowerCase().startsWith(base.toLowerCase()) ||
+    (pathname.length > base.length && pathname[base.length] !== '/')
+  )
     return pathname
   return pathname.slice(base.length) || '/'
 }
