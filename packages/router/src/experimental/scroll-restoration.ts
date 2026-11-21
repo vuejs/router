@@ -10,9 +10,9 @@ import {
   inject,
   onActivated,
   onDeactivated,
+  onMounted,
   onScopeDispose,
   toValue,
-  useId,
 } from 'vue'
 import { diagnostics } from '../diagnostics'
 import { START_LOCATION_NORMALIZED } from '../location'
@@ -311,13 +311,20 @@ export function SCROLL_RESTORATION_SETUP_LISTENERS_DEFAULT(
  */
 type ScrollRestorationRegistration = Required<UseScrollRestorationOptions>
 
+/**
+ * Minimal information to resolve the owner of a registration. vapor doesn't
+ * support getCurrentInstance() so it gets a standalone object instead.
+ *
+ * @internal
+ */
+type ScrollRestorationOwner = Pick<
+  ComponentInternalInstance,
+  'isMounted' | 'parent'
+>
+
 const SCROLL_RESTORATION_REGISTRATIONS: InjectionKey<
   [
-    registrations: Map<
-      ScrollRestorationRegistration,
-      // vapor doesn't support getCurrentInstance()
-      ComponentInternalInstance | string
-    >,
+    registrations: Map<ScrollRestorationRegistration, ScrollRestorationOwner>,
     restore: (
       registration: ScrollRestorationRegistration,
       to?: RouteLocationNormalized
@@ -389,7 +396,7 @@ function ScrollRestorationClient(
   app.provide(SCROLL_RESTORATION_OPTIONS_KEY, optionsWithDefaults)
   const registrations = new Map<
     ScrollRestorationRegistration,
-    ComponentInternalInstance
+    ScrollRestorationOwner
   >()
   history.scrollRestoration = 'manual'
   // WebKit doesn't copy it to entries created by fragment navigations
@@ -516,6 +523,13 @@ function useScrollRestorationSSR(): UseScrollRestorationReturns {
   return { scroll: noop }
 }
 
+// vapor components have no instance but their lifecycle hooks still run
+function createVaporOwner(): ScrollRestorationOwner {
+  const owner: ScrollRestorationOwner = { isMounted: false, parent: null }
+  onMounted(() => (owner.isMounted = true))
+  return owner
+}
+
 function useScrollRestorationClient<
   Name extends keyof RouteMap = keyof RouteMap,
 >(options?: UseScrollRestorationOptions<Name>): UseScrollRestorationReturns {
@@ -529,7 +543,7 @@ function useScrollRestorationClient<
     ...inject(SCROLL_RESTORATION_OPTIONS_KEY)!,
     ...options,
   }
-  const instance = getCurrentInstance() || useId()
+  const instance = getCurrentInstance() || createVaporOwner()
 
   const add = () => registrations.set(optionsWithDefaults, instance)
   const remove = () => registrations.delete(optionsWithDefaults)
