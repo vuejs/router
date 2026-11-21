@@ -103,7 +103,10 @@ export function mergeOptions<T extends object>(
 ): T {
   const options = {} as T
   for (const key in defaults) {
-    options[key] = key in partialOptions ? partialOptions[key]! : defaults[key]
+    options[key] =
+      key in partialOptions && partialOptions[key] !== undefined
+        ? partialOptions[key]!
+        : defaults[key]
   }
 
   return options

@@ -1,4 +1,5 @@
-import { normalizeRouteRecord } from '../../src/matcher'
+import { createRouterMatcher, normalizeRouteRecord } from '../../src/matcher'
+import { START_LOCATION_NORMALIZED } from '../../src/location'
 import { vi, describe, expect, it } from 'vitest'
 
 describe('normalizeRouteRecord', () => {
@@ -86,5 +87,26 @@ describe('normalizeRouteRecord', () => {
       path: '/home',
       props: { one: false },
     })
+  })
+
+  it('keeps default/global matcher options when record options are explicitly undefined', () => {
+    const matcher = createRouterMatcher(
+      [
+        {
+          path: '/Home',
+          name: 'home',
+          component: {},
+          strict: undefined,
+          sensitive: undefined,
+          end: undefined,
+        },
+      ],
+      { strict: true, sensitive: true }
+    )
+
+    expect(matcher.resolve({ path: '/Home' }, START_LOCATION_NORMALIZED).matched).toHaveLength(1)
+    expect(matcher.resolve({ path: '/Home/' }, START_LOCATION_NORMALIZED).matched).toHaveLength(0)
+    expect(matcher.resolve({ path: '/home' }, START_LOCATION_NORMALIZED).matched).toHaveLength(0)
+    expect(matcher.resolve({ path: '/Home/extra' }, START_LOCATION_NORMALIZED).matched).toHaveLength(0)
   })
 })
