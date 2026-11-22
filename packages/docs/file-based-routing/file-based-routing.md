@@ -85,7 +85,7 @@ src/pages/
     └── index.vue
 ```
 
-Here, `users/_parent.vue` is the parent component for the `users` route and must contain a `<RouterView>` to render `users/index.vue`. It provides the same layout nesting as the preceding example with `users.vue`, but keeps the parent component together with its children. A route created by `_parent.vue` is anonymous by default, so only its children appear as navigable typed routes. Like other page components, `_parent.vue` can use [`definePage()`](./extending-routes#definePage-) to configure its route record.
+Here, `users/_parent.vue` is the parent component for the `users` route and must contain a `<RouterView>` to render `users/index.vue`. It provides the same layout nesting as the preceding example with `users.vue`, but keeps the parent component together with its children. A route created by `_parent.vue` is anonymous by default, so only its children appear as navigable typed routes. Like other page components, `_parent.vue` can use [`definePage()`](./extending-routes#definepage) to configure its route record.
 
 Do not define both `users.vue` and `users/_parent.vue` because they represent the same parent component.
 
@@ -255,7 +255,7 @@ VueRouter({
 })
 ```
 
-Note that the provided folders must be separate and one _route folder_ cannot contain another specified _route folder_. If you need further customization, give [definePage()](./extending-routes#definePage-) a try.
+Note that the provided folders must be separate and one _route folder_ cannot contain another specified _route folder_. If you need further customization, give [definePage()](./extending-routes#definepage) a try.
 
 ## Custom extensions
 

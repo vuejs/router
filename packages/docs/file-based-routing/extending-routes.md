@@ -48,7 +48,7 @@ definePage({
 </template>
 ```
 
-If you are using ESLint, you will need [to declare it as a global variable](./eslint#definePage-).
+If you are using ESLint, you will need [to declare it as a global variable](./eslint#definepage).
 
 ::: danger
 
