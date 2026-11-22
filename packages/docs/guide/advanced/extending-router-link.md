@@ -105,6 +105,7 @@ export default {
 If you prefer using a render function or create `computed` properties, you can use the `useLink` from the [Composition API](./composition-api.md):
 
 ```js
+import { computed } from 'vue'
 import { RouterLink, useLink } from 'vue-router'
 
 export default {
@@ -119,6 +120,10 @@ export default {
   setup(props) {
     // `props` contains `to` and any other prop that can be passed to <router-link>
     const { navigate, href, route, isActive, isExactActive } = useLink(props)
+
+    const isExternalLink = computed(
+      () => typeof props.to === 'string' && props.to.startsWith('http')
+    )
 
     // profit!
 
