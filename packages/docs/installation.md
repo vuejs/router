@@ -63,6 +63,10 @@ You'll be prompted with some questions about the kind of project you want to cre
 
 Projects using package managers will typically use ES modules to access Vue Router, e.g. `import { createRouter } from 'vue-router'`.
 
+::: tip
+There is currently no official `create-vue` equivalent for Deno. If you're working with Deno, please refer to the [Deno documentation](https://docs.deno.com/) for guidance on setting up a project.
+:::
+
 ## Direct Download / CDN
 
 If you don't want to use a bundler, you can instead load Vue Router directly into the browser, either via a CDN or by downloading the relevant files and hosting them yourself.
