@@ -31,10 +31,6 @@ pnpm add vue-router
 bun add vue-router
 ```
 
-```bash [deno]
-deno add vue-router
-```
-
 :::
 
 If you're starting a new project, you might find it easier to use the [create-vue](https://github.com/vuejs/create-vue) scaffolding tool, which creates a Vite-based project with the option to include Vue Router:
@@ -62,10 +58,6 @@ bun create vue
 You'll be prompted with some questions about the kind of project you want to create. If you choose to install Vue Router, the example application will also demonstrate some of Vue Router's core features.
 
 Projects using package managers will typically use ES modules to access Vue Router, e.g. `import { createRouter } from 'vue-router'`.
-
-::: tip
-There is currently no official `create-vue` equivalent for Deno. If you're working with Deno, please refer to the [Deno documentation](https://docs.deno.com/) for guidance on setting up a project.
-:::
 
 ## Direct Download / CDN
 
