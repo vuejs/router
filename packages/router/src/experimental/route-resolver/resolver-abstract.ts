@@ -132,7 +132,7 @@ export interface ResolverLocationResolved<TMatched> extends LocationNormalized {
 
   /**
    * Chain of route records that lead to the matched one. The last record is
-   * the the one that matched the location. Each previous record is the parent
+   * the one that matched the location. Each previous record is the parent
    * of the next one.
    */
   matched: TMatched[]
