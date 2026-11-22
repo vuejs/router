@@ -569,7 +569,7 @@ export class TreeNode {
   }
 
   /**
-   * Returns wether this tree node has a name. This allows to coerce the type
+   * Returns whether this tree node has a name. This allows to coerce the type
    * of TreeNode
    */
   isNamed(): this is TreeNodeNamed {
