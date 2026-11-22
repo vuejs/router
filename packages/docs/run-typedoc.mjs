@@ -1,7 +1,8 @@
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { createTypeDocApp } from './typedoc-markdown.mjs'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 createTypeDocApp({
   textContentMappings: {
@@ -17,5 +18,7 @@ createTypeDocApp({
   disableSources: true,
   plugin: ['typedoc-plugin-markdown', 'typedoc-vitepress-theme'],
   useCodeBlocks: true,
-  entryPoints: [path.resolve(__dirname, '../router/src/index.ts')],
+  entryPoints: [
+    path.resolve(__dirname, '../router/src/index.ts').replaceAll('\\', '/'),
+  ],
 }).then(app => app.build())
