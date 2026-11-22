@@ -794,7 +794,7 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
-    it('throws if the named route does not exists', () => {
+    it('throws if the named route does not exist', () => {
       expect(
         assertErrorMatch({ path: '/', components }, { name: 'Home' })
       ).toMatchSnapshot()
