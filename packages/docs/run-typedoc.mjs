@@ -18,7 +18,5 @@ createTypeDocApp({
   disableSources: true,
   plugin: ['typedoc-plugin-markdown', 'typedoc-vitepress-theme'],
   useCodeBlocks: true,
-  entryPoints: [
-    path.resolve(__dirname, '../router/src/index.ts').replaceAll('\\', '/'),
-  ],
+  entryPoints: [path.resolve(__dirname, '../router/src/index.ts')],
 }).then(app => app.build())
