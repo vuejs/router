@@ -13,12 +13,12 @@ import {
   inject,
   provide,
   defineComponent,
-  ref,
   unref,
   getCurrentInstance,
   computed,
   watch,
   nextTick,
+  shallowRef,
 } from 'vue'
 import type {
   RouteLocationNormalized,
@@ -58,17 +58,147 @@ export interface RouterViewDevtoolsContext extends Pick<
   depth: number
 }
 
+/**
+ * Props of the VDOM and Vapor `RouterView`.
+ * @internal
+ */
+export const routerViewProps = {
+  name: {
+    type: String as PropType<string>,
+    default: 'default',
+  },
+  route: Object as PropType<RouteLocationNormalizedLoaded>,
+}
+
+/**
+ * State shared by the VDOM and Vapor `RouterView`.
+ * @internal
+ */
+export function useRouterViewState(props: {
+  name: string
+  route?: RouteLocationNormalizedLoaded
+}) {
+  const injectedRoute = inject(routerViewLocationKey)!
+  const routeToDisplay = computed<RouteLocationNormalizedLoaded>(
+    () => props.route || injectedRoute.value
+  )
+  const injectedDepth = inject(viewDepthKey, 0)
+  // The depth changes based on empty components option, which allows passthrough routes e.g. routes with children
+  // that are used to reuse the `path` property
+  const depth = computed<number>(() => {
+    let initialDepth = unref(injectedDepth)
+    const { matched } = routeToDisplay.value
+    let matchedRoute: RouteLocationMatched | undefined
+    while ((matchedRoute = matched[initialDepth]) && !matchedRoute.components) {
+      initialDepth++
+    }
+    return initialDepth
+  })
+  const matchedRouteRef = computed<RouteLocationMatched | undefined>(
+    () => routeToDisplay.value.matched[depth.value]
+  )
+
+  provide(
+    viewDepthKey,
+    computed(() => depth.value + 1)
+  )
+  provide(matchedRouteKey, matchedRouteRef)
+  provide(routerViewLocationKey, routeToDisplay)
+  // #2673 descendants' useRoute() follows the `route` prop
+  provide(routeLocationKey, createReactiveRoute(routeToDisplay))
+
+  // onRouteRendered() callbacks of descendants without a closer RouterView
+  const onRouteRenderedCallbacks = new Set<OnRouteRenderedCallback>()
+  provide(routerViewOnRouteRenderedKey, onRouteRenderedCallbacks)
+
+  const viewRef = shallowRef<ComponentPublicInstance | null>()
+  let settledRoute = START_LOCATION_NORMALIZED
+
+  // watch at the same time the component instance, the route record we are
+  // rendering, and the name
+  watch(
+    () => [viewRef.value, matchedRouteRef.value, props.name] as const,
+    ([instance, to, name], [oldInstance, from, _oldName]) => {
+      // copy reused instances
+      if (to) {
+        // this will update the instance for new instances as well as reused
+        // instances when navigating to a new route
+        to.instances[name] = instance
+        // the component instance is reused for a different route or name, so
+        // we copy any saved update or leave guards. With async setup, the
+        // mounting component will mount before the matchedRoute changes,
+        // making instance === oldInstance, so we check if guards have been
+        // added before. This works because we remove guards when
+        // unmounting/deactivating components
+        if (from && from !== to && instance && instance === oldInstance) {
+          if (!to.leaveGuards.size) {
+            to.leaveGuards = from.leaveGuards
+          }
+          if (!to.updateGuards.size) {
+            to.updateGuards = from.updateGuards
+          }
+        }
+      }
+
+      // trigger beforeRouteEnter next callbacks
+      if (
+        instance &&
+        to &&
+        // if there is no instance but to and from are the same this might be
+        // the first visit
+        (!from || !isSameRouteRecord(to, from) || !oldInstance)
+      ) {
+        ;(to.enterCallbacks[name] || []).forEach(callback => callback(instance))
+      }
+    },
+    { flush: 'post' }
+  )
+
+  /**
+   * Calls the `onRouteRendered()` callbacks if `route` is displayed. Call it
+   * in a `nextTick()` after the view is in the document: other views and hooks
+   * of the same flush (nested RouterView, onActivated) run before it.
+   *
+   * @param route - route being displayed, read before the `nextTick()`
+   */
+  const settle = (route: RouteLocationNormalizedLoaded) => {
+    if (
+      // not already called: unrelated re-render or failed navigation (the
+      // route didn't change)
+      settledRoute !== route &&
+      // not stale (e.g. the old branch of a pending Suspense). Also skips
+      // views memoized with v-memo (e.g. `[route.path]`): they self-update
+      // with the props of the memoized render, so navigations that keep the
+      // memo key are missed
+      routeToDisplay.value === route
+    ) {
+      const from = settledRoute
+      settledRoute = route
+      for (const callback of onRouteRenderedCallbacks) {
+        callback(route, from)
+      }
+    }
+  }
+
+  // a tuple minifies better than an object. depth is only for devtools
+  return (
+    __DEV__ || __FEATURE_PROD_DEVTOOLS__
+      ? [routeToDisplay, matchedRouteRef, viewRef, settle, depth]
+      : [routeToDisplay, matchedRouteRef, viewRef, settle]
+  ) as [
+    typeof routeToDisplay,
+    typeof matchedRouteRef,
+    typeof viewRef,
+    typeof settle,
+    depth?: typeof depth,
+  ]
+}
+
 export const RouterViewImpl = /*#__PURE__*/ defineComponent({
   name: 'RouterView',
   // #674 we manually inherit them
   inheritAttrs: false,
-  props: {
-    name: {
-      type: String as PropType<string>,
-      default: 'default',
-    },
-    route: Object as PropType<RouteLocationNormalizedLoaded>,
-  },
+  props: routerViewProps,
 
   // Better compat for @vue/compat users
   // https://github.com/vuejs/router/issues/1315
@@ -77,87 +207,9 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
   setup(props, { attrs, slots }) {
     __DEV__ && warnDeprecatedUsage()
 
-    const injectedRoute = inject(routerViewLocationKey)!
-    const routeToDisplay = computed<RouteLocationNormalizedLoaded>(
-      () => props.route || injectedRoute.value
-    )
-    const injectedDepth = inject(viewDepthKey, 0)
-    // The depth changes based on empty components option, which allows passthrough routes e.g. routes with children
-    // that are used to reuse the `path` property
-    const depth = computed<number>(() => {
-      let initialDepth = unref(injectedDepth)
-      const { matched } = routeToDisplay.value
-      let matchedRoute: RouteLocationMatched | undefined
-      while (
-        (matchedRoute = matched[initialDepth]) &&
-        !matchedRoute.components
-      ) {
-        initialDepth++
-      }
-      return initialDepth
-    })
-    const matchedRouteRef = computed<RouteLocationMatched | undefined>(
-      () => routeToDisplay.value.matched[depth.value]
-    )
-
-    provide(
-      viewDepthKey,
-      computed(() => depth.value + 1)
-    )
-    provide(matchedRouteKey, matchedRouteRef)
-    provide(routerViewLocationKey, routeToDisplay)
-    // #2673 descendants' useRoute() follows the `route` prop
-    provide(routeLocationKey, createReactiveRoute(routeToDisplay))
-
-    // onRouteRendered() callbacks of descendants without a closer RouterView
-    const onRouteRenderedCallbacks = new Set<OnRouteRenderedCallback>()
-    provide(routerViewOnRouteRenderedKey, onRouteRenderedCallbacks)
-
-    const viewRef = ref<ComponentPublicInstance>()
-    let settledRoute = START_LOCATION_NORMALIZED
+    const [routeToDisplay, matchedRouteRef, viewRef, settle, depth] =
+      useRouterViewState(props)
     const { app } = getCurrentInstance()!.appContext
-
-    // watch at the same time the component instance, the route record we are
-    // rendering, and the name
-    watch(
-      () => [viewRef.value, matchedRouteRef.value, props.name] as const,
-      ([instance, to, name], [oldInstance, from, _oldName]) => {
-        // copy reused instances
-        if (to) {
-          // this will update the instance for new instances as well as reused
-          // instances when navigating to a new route
-          to.instances[name] = instance
-          // the component instance is reused for a different route or name, so
-          // we copy any saved update or leave guards. With async setup, the
-          // mounting component will mount before the matchedRoute changes,
-          // making instance === oldInstance, so we check if guards have been
-          // added before. This works because we remove guards when
-          // unmounting/deactivating components
-          if (from && from !== to && instance && instance === oldInstance) {
-            if (!to.leaveGuards.size) {
-              to.leaveGuards = from.leaveGuards
-            }
-            if (!to.updateGuards.size) {
-              to.updateGuards = from.updateGuards
-            }
-          }
-        }
-
-        // trigger beforeRouteEnter next callbacks
-        if (
-          instance &&
-          to &&
-          // if there is no instance but to and from are the same this might be
-          // the first visit
-          (!from || !isSameRouteRecord(to, from) || !oldInstance)
-        ) {
-          ;(to.enterCallbacks[name] || []).forEach(callback =>
-            callback(instance)
-          )
-        }
-      },
-      { flush: 'post' }
-    )
 
     return () => {
       const route = routeToDisplay.value
@@ -172,16 +224,6 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
         return normalizeSlot(slots.default, { Component: ViewComponent, route })
       }
 
-      // props from route configuration
-      const routePropsOption = matchedRoute.props[currentName]
-      const routeProps = routePropsOption
-        ? routePropsOption === true
-          ? route.params
-          : typeof routePropsOption === 'function'
-            ? routePropsOption(route)
-            : routePropsOption
-        : null
-
       const onVnodeUnmounted: VNodeProps['onVnodeUnmounted'] = vnode => {
         // remove the instance reference to prevent leak
         if (vnode.component!.isUnmounted) {
@@ -192,35 +234,30 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       // runs after the view's own mounted/updated/activated hooks, after
       // Suspense resolves, and after an out-in Transition enters
       const onVnodeSettled = (vnode: VNode) =>
-        // wait for the end of the render flush: other views and hooks of the
-        // same flush (nested RouterView, onActivated) run after this one, and
-        // the app container isn't set yet during the initial mount
         nextTick(() => {
           // a pending async component root has no el yet, only its
           // placeholder comment does
           while (!vnode.el && vnode.component) vnode = vnode.component.subTree
+          // not in a Suspense hidden container, e.g. KeepAlive activating
+          // inside a pending Suspense, a later hook fires once it is moved.
+          // nextTick: the app container isn't set yet during the initial
+          // mount
           if (
-            // already called: unrelated re-render or failed navigation (the
-            // route didn't change)
-            settledRoute === route ||
-            // stale vnode (e.g. the old branch of a pending Suspense). Also
-            // skips views memoized with v-memo (e.g. `[route.path]`): they
-            // self-update with the props of the memoized render, so
-            // navigations that keep the memo key are missed
-            routeToDisplay.value !== route ||
-            // still in a Suspense hidden container, e.g. KeepAlive activating
-            // inside a pending Suspense, a later hook fires once it is moved
-            (vnode.el as Node | null)?.getRootNode() !==
-              (app._container as Node).getRootNode()
+            (vnode.el as Node | null)?.getRootNode() ===
+            (app._container as Node).getRootNode()
           ) {
-            return
-          }
-          const from = settledRoute
-          settledRoute = route
-          for (const callback of onRouteRenderedCallbacks) {
-            callback(route, from)
+            settle(route)
           }
         })
+
+      const routePropsOption = matchedRoute.props[currentName]
+      const routeProps = routePropsOption
+        ? routePropsOption === true
+          ? route.params
+          : typeof routePropsOption === 'function'
+            ? routePropsOption(route)
+            : routePropsOption
+        : null
 
       const component = h(
         ViewComponent,
@@ -239,7 +276,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       ) {
         // TODO: can display if it's an alias, its props
         const info: RouterViewDevtoolsContext = {
-          depth: depth.value,
+          depth: depth!.value,
           name: matchedRoute.name,
           path: matchedRoute.path,
           meta: matchedRoute.meta,
@@ -250,10 +287,12 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
           : [component.ref.i]
 
         internalInstances.forEach(instance => {
-          // @ts-expect-error
-          // to prevent possible race condition in SSR
-          // https://github.com/vuejs/router/pull/2789
-          if (instance) instance.__vrv_devtools = info
+          if (instance) {
+            // @ts-expect-error
+            // to prevent possible race condition in SSR
+            // https://github.com/vuejs/router/pull/2789
+            instance.__vrv_devtools = info
+          }
         })
       }
 
