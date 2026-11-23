@@ -794,7 +794,7 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
-    it('throws if the named route does not exists', () => {
+    it('throws if the named route does not exist', () => {
       expect(
         assertErrorMatch({ path: '/', components }, { name: 'Home' })
       ).toMatchSnapshot()
@@ -1199,7 +1199,7 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
-    it('throws if the current named route does not exists', () => {
+    it('throws if the current named route does not exist', () => {
       const record = { path: '/', components }
       const start = {
         name: 'home',
