@@ -65,6 +65,7 @@ const esm = {
   entry: {
     ...commonOptions.entry,
     'experimental/index': './src/experimental/index.ts',
+    'experimental/vapor': './src/experimental/vapor/index.ts',
     'experimental/pinia-colada':
       './src/experimental/data-loaders/entries/pinia-colada.ts',
   },
