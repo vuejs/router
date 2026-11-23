@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createApp, createVaporApp, vaporInteropPlugin } from 'vue'
 import './style.css'
 import App from './App.vue'
 import { createPinia } from 'pinia'
@@ -6,8 +6,18 @@ import { PiniaColada } from '@pinia/colada'
 import { router } from './router/resolver'
 import { DataLoaderPlugin } from 'vue-router/experimental'
 import { RouterLink, RouterView } from 'vue-router'
+import {
+  RouterLink as VaporRouterLink,
+  RouterView as VaporRouterView,
+} from 'vue-router/experimental/vapor'
 
-const app = createApp(App)
+// `pnpm dev:vapor` compiles every SFC in Vapor mode
+const app = __VAPOR__ ? createVaporApp(App) : createApp(App)
+if (__VAPOR__) {
+  console.info('⚡️ Vapor mode')
+  // VDOM components (e.g. from libraries) still render
+  app.use(vaporInteropPlugin)
+}
 
 app.use(createPinia())
 app.use(PiniaColada, {})
@@ -15,8 +25,8 @@ app.use(DataLoaderPlugin, {
   // FIXME: should be doable without `as any`
   router: router as any,
 })
-app.component('RouterLink', RouterLink)
-app.component('RouterView', RouterView)
+app.component('RouterLink', __VAPOR__ ? VaporRouterLink : RouterLink)
+app.component('RouterView', __VAPOR__ ? VaporRouterView : RouterView)
 router.afterEach((to, from, failure) => {
   if (failure) {
     console.info('⛔️ Failed navigation', from.fullPath, '->', to.fullPath)

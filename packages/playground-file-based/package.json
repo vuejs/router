@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:vapor": "vite --mode vapor",
     "build": "vite build",
     "types": "vue-tsc --noEmit",
     "preview": "vite preview --port 4173"

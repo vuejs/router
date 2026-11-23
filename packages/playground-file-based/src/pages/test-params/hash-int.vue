@@ -32,5 +32,5 @@ route.params.myHash
     </li>
   </ul>
 
-  <pre>{{ $route.params }}</pre>
+  <pre>{{ route.params }}</pre>
 </template>

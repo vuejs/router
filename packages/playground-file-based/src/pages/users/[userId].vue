@@ -15,7 +15,7 @@ const props = defineProps()
 </script>
 
 <template>
-  <h1>User by id - {{ $route.path }}</h1>
+  <h1>User by id - {{ route.path }}</h1>
   <p>User {{ userId }}</p>
 
   <pre>{{ route.params }}</pre>

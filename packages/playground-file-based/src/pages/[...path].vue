@@ -67,9 +67,9 @@ definePage({
   <main>
     <h1>Not Found</h1>
 
-    <pre>{{ $route.params }}</pre>
-    <pre>{{ $route.query }}</pre>
-    <pre>{{ $route.meta }}</pre>
+    <pre>{{ route.params }}</pre>
+    <pre>{{ route.query }}</pre>
+    <pre>{{ route.meta }}</pre>
   </main>
 </template>
 

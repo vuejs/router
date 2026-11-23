@@ -6,8 +6,9 @@ import AutoScaffold from 'auto-scaffold/vite'
 // import AutoImport from 'unplugin-auto-import/vite'
 import VueDevtools from 'vite-plugin-vue-devtools'
 
-// https://vite.dev/config/
-export default defineConfig({
+// `pnpm dev:vapor` / `vite --mode vapor`: compiles every SFC in Vapor mode and
+// the app uses the Vapor components of vue-router/experimental/vapor
+export default defineConfig(({ mode }) => ({
   plugins: [
     // FIXME: it seems to conflict with the mono repo setup
     // AutoImport({
@@ -29,7 +30,7 @@ export default defineConfig({
         },
       },
     }),
-    Vue(),
+    Vue({ features: { vapor: mode === 'vapor' } }),
     VueDevtools(),
   ],
   resolve: {
@@ -39,6 +40,7 @@ export default defineConfig({
     },
   },
   define: {
+    __VAPOR__: JSON.stringify(mode === 'vapor'),
     __DEV__: JSON.stringify(!process.env.prod),
     __BROWSER__: 'true',
     __FEATURE_PROD_DEVTOOLS__: 'false',
@@ -47,4 +49,4 @@ export default defineConfig({
       NODE_ENV: JSON.stringify(process.env.NODE_ENV),
     },
   },
-})
+}))

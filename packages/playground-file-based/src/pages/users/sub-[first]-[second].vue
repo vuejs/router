@@ -11,7 +11,7 @@ route.params.second satisfies RouteFromType['params']['second']
 </script>
 
 <template>
-  <h1>{{ String($route.name) }} - {{ $route.path }}</h1>
-  <p>{{ $route.params.first satisfies RouteFromType['params']['first'] }}</p>
-  <p>{{ $route.params.second satisfies RouteFromType['params']['second'] }}</p>
+  <h1>{{ String(route.name) }} - {{ route.path }}</h1>
+  <p>{{ route.params.first satisfies RouteFromType['params']['first'] }}</p>
+  <p>{{ route.params.second satisfies RouteFromType['params']['second'] }}</p>
 </template>
