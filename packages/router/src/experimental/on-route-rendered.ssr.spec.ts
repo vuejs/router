@@ -1,5 +1,5 @@
 import { renderToString } from '@vue/server-renderer'
-import { createSSRApp, defineComponent } from 'vue'
+import { createSSRApp, defineComponent, h } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory } from '../history/memory'
 import { RouterView } from '../RouterView'
@@ -13,14 +13,13 @@ describe('onRouteRendered ssr', () => {
       setup() {
         onRouteRendered(callback)
       },
-      template: '<main>SSR page</main>',
+      render: () => h('main', 'SSR page'),
     })
     const Root = defineComponent({
-      components: { RouterView },
       setup() {
         onRouteRendered(callback)
       },
-      template: '<RouterView />',
+      render: () => h(RouterView),
     })
     const router = createRouter({
       history: createMemoryHistory(),
