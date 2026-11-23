@@ -102,34 +102,16 @@ export default {
 
 :::
 
-If you prefer using a render function or create `computed` properties, you can use the `useLink` from the [Composition API](./composition-api.md):
+If you prefer using a render function or script setup, you can use the `useLink()` composable:
 
-```js
-import { computed } from 'vue'
-import { RouterLink, useLink } from 'vue-router'
+```vue
+<script setup lang="ts">
+import { useLink } from 'vue-router'
 
-export default {
-  name: 'AppLink',
+// ... rest of the component above
 
-  props: {
-    // add @ts-ignore if using TypeScript
-    ...RouterLink.props,
-    inactiveClass: String,
-  },
-
-  setup(props) {
-    // `props` contains `to` and any other prop that can be passed to <router-link>
-    const { navigate, href, route, isActive, isExactActive } = useLink(props)
-
-    const isExternalLink = computed(
-      () => typeof props.to === 'string' && props.to.startsWith('http')
-    )
-
-    // profit!
-
-    return { isExternalLink }
-  },
-}
+const { navigate, href, route, isActive, isExactActive } = useLink(props)
+</script>
 ```
 
 <!-- <RuleKitLink /> -->
