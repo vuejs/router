@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import { computed } from 'vue'
 import { inc, type SemVer } from 'semver'
 

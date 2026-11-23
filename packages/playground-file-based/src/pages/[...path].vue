@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" vapor>
 import { useRoute, useRouter } from 'vue-router'
 import doc from '../main.ts?raw'
 

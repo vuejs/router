@@ -1,4 +1,4 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup vapor></script>
 
 <template>
   <h1>Blog Info - Index</h1>
