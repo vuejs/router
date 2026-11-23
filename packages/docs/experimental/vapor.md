@@ -4,7 +4,7 @@
 The Vapor components are experimental. They need Vue 3.6 or later. Their API can change in minor versions.
 :::
 
-[Vapor Mode](https://vuejs.org/guide/extras/vapor-mode) apps need Vapor versions of `<RouterLink>` and `<RouterView>`. Import them from `vue-router/experimental/vapor`:
+Vapor Mode apps need Vapor versions of `<RouterLink>` and `<RouterView>`. Import them from `vue-router/experimental/vapor`:
 
 ```ts
 import { RouterLink, RouterView } from 'vue-router/experimental/vapor'
