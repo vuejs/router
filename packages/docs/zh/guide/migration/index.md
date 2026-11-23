@@ -439,7 +439,7 @@ const routes = [
 
 <!-- TODO: translate chinese API entries -->
 
-给定任何[规范化的路由地址](/zh/api/#RouteLocationNormalized):
+给定任何[规范化的路由地址](/zh/api/interfaces/RouteLocationNormalized.md):
 
 - `path`, `fullPath`中的值不再被解码了。例如，直接在地址栏上写 "<https://example.com/hello> world"，将得到编码后的版本："https://example.com/hello%20world"，而 "path "和 "fullPath "都是"/hello%20world"。
 - `hash` 现在被解码了，这样就可以复制过来。`router.push({ hash: $route.hash })` 可以直接用于 [scrollBehavior](/zh/api/interfaces/RouterOptions.md#Properties-scrollBehavior) 的 `el` 配置中。
