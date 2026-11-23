@@ -9,13 +9,20 @@ import { defineConfig } from 'rollup'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-const entries = ['webRouter', 'webRouter_experimental', 'webRouter_vapor']
+// [input, output, Options API]
+const entries = [
+  ['webRouter', 'webRouter', true],
+  ['webRouter_experimental', 'webRouter_experimental', true],
+  // Vapor apps can drop the Options API
+  ['webRouter_vapor', 'webRouter_vapor', false],
+  ['webRouter_vapor', 'webRouter_vapor_options_api', true],
+]
 
-const configs = entries.map(file => {
+const configs = entries.map(([file, output, optionsApi]) => {
   return defineConfig({
     external: ['vue'],
     output: {
-      file: path.resolve(__dirname, `./dist/${file}.js`),
+      file: path.resolve(__dirname, `./dist/${output}.js`),
       format: 'es',
     },
     input: path.resolve(__dirname, `./${file}.js`),
@@ -34,6 +41,7 @@ const configs = entries.map(file => {
           // is targeting Node (SSR)?
           __NODE_JS__: 'false',
           __VUE_PROD_DEVTOOLS__: 'false',
+          __VUE_OPTIONS_API__: String(optionsApi),
           'process.env.NODE_ENV': JSON.stringify('production'),
         },
       }),

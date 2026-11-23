@@ -287,6 +287,8 @@ You can add the following options to route components:
 - `beforeRouteUpdate`
 - `beforeRouteLeave`
 
+The router does not call these options if you set the [`__VUE_OPTIONS_API__` flag](https://vuejs.org/api/compile-time-flags.html) to `false`. Use the [Composition API guards](#Using-the-Composition-API) instead.
+
 ```vue
 <script>
 export default {

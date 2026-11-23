@@ -15,7 +15,6 @@ import {
   type VaporComponentInstance,
 } from 'vue'
 import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
-import type { RouteLocationMatched } from '../../types'
 import {
   routerViewProps,
   useRouterViewState,
@@ -35,6 +34,30 @@ export const RouterViewImpl = /*#__PURE__*/ defineVaporComponent({
   setup(props, { attrs, slots }) {
     const [routeToDisplay, matchedRouteRef, viewRef, settle, depth] =
       useRouterViewState(props)
+    if (__FEATURE_OPTIONS_API__) {
+      // option guards are only called on VDOM components
+      watch(
+        () => [viewRef.value, matchedRouteRef.value, props.name] as const,
+        ([instance, record, name]) => {
+          // only VDOM instances have `$`, Vapor refs are the exposed values
+          if (
+            record &&
+            instance &&
+            instance.$ &&
+            record.instances[name] !== instance
+          ) {
+            record.instances[name] = instance
+            // remove the instance reference to prevent leak
+            onUnmounted(() => {
+              if (record.instances[name] === instance) {
+                record.instances[name] = null
+              }
+            }, instance.$)
+          }
+        },
+        { flush: 'post' }
+      )
+    }
     const ViewComponent = computed(() => {
       const matchedRoute = matchedRouteRef.value
       return matchedRoute && matchedRoute.components![props.name]
@@ -68,7 +91,6 @@ export const RouterViewImpl = /*#__PURE__*/ defineVaporComponent({
         if (!view || view.type !== Component || view.isMounted) {
           // only read ViewComponent: a new route record with the same
           // component must reuse the view
-          const name = props.name
           view = createComponent(Component, {
             $: [
               () => {
@@ -95,10 +117,9 @@ export const RouterViewImpl = /*#__PURE__*/ defineVaporComponent({
           // not cached by KeepAlive
           else if (!view.isMounted) {
             const instance = view
-            let record: RouteLocationMatched | undefined
             onMounted(() => {
-              record = matchedRouteRef.value
               if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
+                const record = matchedRouteRef.value
                 // @ts-expect-error: internal
                 instance.__vrv_devtools = {
                   depth: depth!.value,
@@ -111,11 +132,6 @@ export const RouterViewImpl = /*#__PURE__*/ defineVaporComponent({
             }, instance)
             // a new function: the hook is wrapped once per function
             onActivated(() => settleView(), instance)
-            // remove the instance reference to prevent leak
-            onUnmounted(
-              () => record && (record.instances[name] = null),
-              instance
-            )
           }
         }
         return view

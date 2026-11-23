@@ -121,9 +121,6 @@ export function useRouterViewState(props: {
     ([instance, to, name], [oldInstance, from, _oldName]) => {
       // copy reused instances
       if (to) {
-        // this will update the instance for new instances as well as reused
-        // instances when navigating to a new route
-        to.instances[name] = instance
         // the component instance is reused for a different route or name, so
         // we copy any saved update or leave guards. With async setup, the
         // mounting component will mount before the matchedRoute changes,
@@ -142,6 +139,7 @@ export function useRouterViewState(props: {
 
       // trigger beforeRouteEnter next callbacks
       if (
+        __FEATURE_OPTIONS_API__ &&
         instance &&
         to &&
         // if there is no instance but to and from are the same this might be
@@ -224,16 +222,13 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
         return normalizeSlot(slots.default, { Component: ViewComponent, route })
       }
 
-      const onVnodeUnmounted: VNodeProps['onVnodeUnmounted'] = vnode => {
-        // remove the instance reference to prevent leak
-        if (vnode.component!.isUnmounted) {
-          matchedRoute.instances[currentName] = null
-        }
-      }
-
       // runs after the view's own mounted/updated/activated hooks, after
       // Suspense resolves, and after an out-in Transition enters
-      const onVnodeSettled = (vnode: VNode) =>
+      const onVnodeSettled = (vnode: VNode) => {
+        // read by option guards, also for reused instances of a new route
+        if (__FEATURE_OPTIONS_API__) {
+          matchedRoute.instances[currentName] = viewRef.value
+        }
         nextTick(() => {
           // a pending async component root has no el yet, only its
           // placeholder comment does
@@ -249,6 +244,7 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
             settle(route)
           }
         })
+      }
 
       const routePropsOption = matchedRoute.props[currentName]
       const routeProps = routePropsOption
@@ -262,7 +258,14 @@ export const RouterViewImpl = /*#__PURE__*/ defineComponent({
       const component = h(
         ViewComponent,
         assign({}, routeProps, attrs, {
-          onVnodeUnmounted,
+          onVnodeUnmounted: __FEATURE_OPTIONS_API__
+            ? (vnode: VNode) => {
+                // remove the instance reference to prevent leak
+                if (vnode.component!.isUnmounted) {
+                  matchedRoute.instances[currentName] = null
+                }
+              }
+            : undefined,
           onVnodeMounted: onVnodeSettled,
           onVnodeUpdated: onVnodeSettled,
           ref: viewRef,

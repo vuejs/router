@@ -11,6 +11,7 @@ export default defineConfig({
     __TEST__: true,
     __BROWSER__: true,
     __FEATURE_PROD_DEVTOOLS__: false,
+    __FEATURE_OPTIONS_API__: true,
     __STRIP_DEVTOOLS__: true,
   },
   // Node's `node` export condition selects the CJS builds of vue, which lack

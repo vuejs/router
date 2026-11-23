@@ -219,7 +219,62 @@ describe('Vapor RouterView', () => {
     expect(events).toEqual(['settled:0:/a dom="A"', 'settled:0:/b dom="B"'])
   })
 
+  it('calls option guards of VDOM route components', async () => {
+    const update = vi.fn()
+    const leave = vi.fn()
+    const User = defineComponent({
+      beforeRouteUpdate: update,
+      beforeRouteLeave: leave,
+      setup: () => ({ msg: 'hi' }),
+      render: () => h('p', 'User'),
+    })
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/u/:id', component: User },
+        { path: '/other', component: () => h('p', 'Other') },
+      ],
+    })
+    app = createVaporApp(
+      defineVaporComponent({ render: compileVapor('<RouterView />') })
+    )
+    app.use(vaporInteropPlugin).use(router)
+    app.component('RouterView', RouterView)
+    app.mount(host)
+    await router.push('/u/1')
+    await nextTick()
+    await router.push('/u/2')
+    await router.push('/other')
+    expect(update).toHaveBeenCalledTimes(1)
+    expect(leave).toHaveBeenCalledTimes(1)
+    expect(leave.mock.contexts[0]).toMatchObject({ msg: 'hi' })
+  })
+
   describe('guards', () => {
+    it('does not call option guards of Vapor route components', async () => {
+      const enter = vi.fn()
+      const update = vi.fn()
+      const leave = vi.fn()
+      const User = defineVaporComponent({
+        beforeRouteEnter: enter,
+        beforeRouteUpdate: update,
+        beforeRouteLeave: leave,
+        setup: () => ({}),
+        render: compileVapor('<p>User</p>'),
+      } as any)
+      const { go } = await setup([
+        { path: '/u/:id', component: User },
+        { path: '/other', component: staticPage('Other') },
+      ])
+      await go('/u/1')
+      await go('/u/2')
+      await go('/other')
+      expect(dom()).toBe('Other')
+      expect(enter).not.toHaveBeenCalled()
+      expect(update).not.toHaveBeenCalled()
+      expect(leave).not.toHaveBeenCalled()
+    })
+
     it('calls in-component leave and update guards', async () => {
       const leave = vi.fn()
       const update = vi.fn()

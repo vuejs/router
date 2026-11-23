@@ -699,7 +699,9 @@ export function createRouter(options: RouterOptions): Router {
           // NOTE: at this point to.matched is normalized and does not contain any () => Promise<Component>
 
           // clear existing enterCallbacks, these are added by extractComponentsGuards
-          to.matched.forEach(record => (record.enterCallbacks = {}))
+          if (__FEATURE_OPTIONS_API__) {
+            to.matched.forEach(record => (record.enterCallbacks = {}))
+          }
 
           // check in-component beforeRouteEnter
           guards = extractComponentsGuards(

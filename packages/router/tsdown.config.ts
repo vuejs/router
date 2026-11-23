@@ -37,6 +37,8 @@ const commonOptions = {
     __BROWSER__: 'true',
     // is replaced by the vite vue plugin
     __FEATURE_PROD_DEVTOOLS__: `__VUE_PROD_DEVTOOLS__`,
+    // is replaced by the vite vue plugin
+    __FEATURE_OPTIONS_API__: `__VUE_OPTIONS_API__`,
     // by default we keep them
     __STRIP_DEVTOOLS__: `false`,
   },
@@ -85,6 +87,8 @@ const esmBrowser = {
     ...commonOptions.define,
     __DEV__: 'true',
     __FEATURE_PROD_DEVTOOLS__: 'true',
+    // no bundler to replace __VUE_OPTIONS_API__
+    __FEATURE_OPTIONS_API__: 'true',
   },
 } satisfies InlineConfig
 
@@ -117,6 +121,8 @@ const cjs = {
     // TODO: what is the right value
     __BROWSER__: 'false',
     __FEATURE_PROD_DEVTOOLS__: `false`,
+    // no bundler to replace __VUE_OPTIONS_API__
+    __FEATURE_OPTIONS_API__: 'true',
   },
 } satisfies InlineConfig
 
@@ -143,6 +149,8 @@ const iife = {
     __DEV__: 'true',
     // the new devtools api does not have iife support and are too heavy
     __FEATURE_PROD_DEVTOOLS__: `false`,
+    // no bundler to replace __VUE_OPTIONS_API__
+    __FEATURE_OPTIONS_API__: 'true',
     __STRIP_DEVTOOLS__: `true`,
   },
   deps: {
