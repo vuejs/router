@@ -37,7 +37,7 @@ function onRouteRenderedClient(callback: OnRouteRenderedCallback): void {
     if (
       // FIXME: support vapor by using useInstanceInfo()
       // https://github.com/vuejs/core/pull/16348
-      getCurrentInstance()?.root.isMounted &&
+      getCurrentInstance()?.root.isMounted === false &&
       router.currentRoute.value !== START_LOCATION_NORMALIZED
     ) {
       onMounted(() => {
