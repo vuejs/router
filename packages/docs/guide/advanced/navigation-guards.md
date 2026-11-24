@@ -27,13 +27,13 @@ Global before guards are called in creation order, whenever a navigation is trig
 
 Every guard function receives two arguments:
 
-- **`to`**: the target route location [in a normalized format](/api/type-aliases/RouteLocationNormalized.md) being navigated to.
-- **`from`**: the current route location [in a normalized format](/api/type-aliases/RouteLocationNormalized.md) being navigated away from.
+- **`to`**: the target route location [in a normalized format](../../api/type-aliases/RouteLocationNormalized.md) being navigated to.
+- **`from`**: the current route location [in a normalized format](../../api/type-aliases/RouteLocationNormalized.md) being navigated away from.
 
 And can optionally return any of the following values:
 
 - `false`: cancel the current navigation. If the browser URL was changed (either manually by the user or via back button), it will be reset to that of the `from` route.
-- A [Route Location](/api/type-aliases/RouteLocationRaw.md): Redirect to a different location by passing a route location as if you were calling `router.push()`, which allows you to pass options like `replace: true` or `name: 'home'`. The current navigation is dropped and a new one is created with the same `from`.
+- A [Route Location](../../api/type-aliases/RouteLocationRaw.md): Redirect to a different location by passing a route location as if you were calling `router.push()`, which allows you to pass options like `replace: true` or `name: 'home'`. The current navigation is dropped and a new one is created with the same `from`.
 
   ```js
   router.beforeEach(async (to, from) => {
