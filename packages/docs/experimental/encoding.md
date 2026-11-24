@@ -122,7 +122,13 @@ router.push({ path: '/docs', hash: '#a%20b' }) // same location
 router.push({ path: '/docs', hash: '#100%' }) // /docs#100%
 ```
 
-Because a `%` is never encoded, you cannot put the literal text `%20` in a hash: it always means a space.
+Because a `%` is never encoded, `#%20` always means a space. To put the literal text `%20` in a hash, encode the `%` yourself as `%25`:
+
+```ts
+router.push({ path: '/docs', hash: '#%2520' }) // /docs#%2520
+// route.hash → '#%2520'
+decodeURIComponent(route.hash) // '#%20'
+```
 
 ::: details Why is `route.hash` not decoded?
 
