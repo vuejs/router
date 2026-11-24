@@ -232,7 +232,7 @@ describe('Vapor RouterView', () => {
       history: createMemoryHistory(),
       routes: [
         { path: '/u/:id', component: User },
-        { path: '/other', component: () => h('p', 'Other') },
+        { path: '/other', component: staticPage('Other') },
       ],
     })
     app = createVaporApp(
