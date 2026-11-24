@@ -34,10 +34,10 @@ function onRouteRenderedClient(callback: OnRouteRenderedCallback): void {
     // components mounted later (e.g. v-if), they wait for the next navigation,
     // like within a RouterView. Null in Vapor components: they wait for the
     // next navigation
-    const instance = getCurrentInstance()
     if (
-      instance &&
-      !instance.root.isMounted &&
+      // FIXME: support vapor by using useInstanceInfo()
+      // https://github.com/vuejs/core/pull/16348
+      getCurrentInstance()?.root.isMounted &&
       router.currentRoute.value !== START_LOCATION_NORMALIZED
     ) {
       onMounted(() => {
