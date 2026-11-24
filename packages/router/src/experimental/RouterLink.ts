@@ -177,6 +177,9 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
   useLink,
 
   setup(props, { slots }) {
+    if (__DEV__ && props.custom) {
+      diagnostics.VUE_ROUTER_D0003()
+    }
     // props are reactive: toValue() reads them lazily
     const { route, isActive, isExactActive, navigate } = useLink(
       props as UseLinkOptions

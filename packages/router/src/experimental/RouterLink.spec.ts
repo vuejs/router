@@ -203,6 +203,7 @@ describe('experimental RouterLink', () => {
     )
     expect(wrapper.find('a').exists()).toBe(false)
     expect(wrapper.html()).toBe('<span>/about true true about</span>')
+    expect('VUE_ROUTER_D0003').toHaveBeenWarned()
   })
 
   it('compares against the route of the closest RouterView', async () => {
