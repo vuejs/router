@@ -50,10 +50,10 @@ export default defineConfig({
   plugins: [Vue()],
 
   test: {
-    // inline every dep so the aliases above apply transitively
+    // inline deps that import vue so the aliases above apply to them too
     server: {
       deps: {
-        inline: [/.*/],
+        inline: [/\/node_modules\/(vue|@vue\/[^/]+|pinia|@pinia\/colada)\//],
       },
     },
     // open: false,
