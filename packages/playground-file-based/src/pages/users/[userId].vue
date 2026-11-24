@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -15,7 +15,7 @@ const props = defineProps()
 </script>
 
 <template>
-  <h1>User by id - {{ $route.path }}</h1>
+  <h1>User by id - {{ route.path }}</h1>
   <p>User {{ userId }}</p>
 
   <pre>{{ route.params }}</pre>

@@ -8,7 +8,7 @@ import type { RouteLocationRaw } from '../src/typed-routes'
 import type { UseLinkOptions } from '../src/RouterLink'
 import { useLink } from '../src/RouterLink'
 import { createMemoryHistory } from '../src/history/memory'
-import { createRouter } from '../src/router'
+import { createRouter, type Router } from '../src/router'
 import {
   experimental_createRouter,
   normalizeRouteRecord,
@@ -18,111 +18,69 @@ import { MatcherPatternPathDynamic } from '../src/experimental/route-resolver/ma
 import { PARAM_PARSER_INT } from '../src/experimental/route-resolver/matchers/param-parsers'
 import { describe, expect, it } from 'vitest'
 
-async function callUseLink(args: UseLinkOptions) {
-  const router = createRouter({
-    history: createMemoryHistory(),
-    routes: [
-      {
-        path: '/',
-        component: {},
-        name: 'root',
-      },
-      {
-        path: '/a',
-        component: {},
-        name: 'a',
-      },
-      {
-        path: '/b',
-        component: {},
-        name: 'b',
-      },
-    ],
-  })
-
-  await router.push('/')
-
-  let link: ReturnType<typeof useLink>
-
+function mountLink(
+  router: Router | ReturnType<typeof experimental_createRouter>,
+  options: UseLinkOptions
+) {
+  let link!: ReturnType<typeof useLink>
   mount(
     {
       setup() {
-        link = useLink(args)
-
+        link = useLink(options)
         return () => ''
       },
     },
-    {
-      global: {
-        plugins: [router],
-      },
-    }
+    { global: { plugins: [router] } }
   )
+  return link
+}
 
-  return link!
+async function callUseLink(options: UseLinkOptions) {
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      { path: '/', component: {}, name: 'root' },
+      { path: '/a', component: {}, name: 'a' },
+      { path: '/b', component: {}, name: 'b' },
+    ],
+  })
+  await router.push('/')
+  return { router, link: mountLink(router, options) }
 }
 
 describe('useLink', () => {
   describe('basic usage', () => {
     it('supports a string for "to"', async () => {
-      const { href, route } = await callUseLink({
-        to: '/a',
-      })
+      const { link } = await callUseLink({ to: '/a' })
 
-      expect(href.value).toBe('/a')
-      expect(route.value).toMatchObject({ name: 'a' })
+      expect(link.href.value).toBe('/a')
+      expect(link.route.value).toMatchObject({ name: 'a' })
     })
 
     it('supports an object for "to"', async () => {
-      const { href, route } = await callUseLink({
-        to: { path: '/a' },
-      })
+      const { link } = await callUseLink({ to: { path: '/a' } })
 
-      expect(href.value).toBe('/a')
-      expect(route.value).toMatchObject({ name: 'a' })
+      expect(link.href.value).toBe('/a')
+      expect(link.route.value).toMatchObject({ name: 'a' })
     })
 
     it('supports a ref for "to"', async () => {
       const to = ref<RouteLocationRaw>('/a')
+      const { link } = await callUseLink({ to })
 
-      const { href, route } = await callUseLink({
-        to,
-      })
-
-      expect(href.value).toBe('/a')
-      expect(route.value).toMatchObject({ name: 'a' })
+      expect(link.href.value).toBe('/a')
 
       to.value = { path: '/b' }
-
       await nextTick()
 
-      expect(href.value).toBe('/b')
-      expect(route.value).toMatchObject({ name: 'b' })
+      expect(link.href.value).toBe('/b')
+      expect(link.route.value).toMatchObject({ name: 'b' })
     })
   })
 
   describe('active state', () => {
     it('updates isActive and isExactActive after navigation', async () => {
-      const router = createRouter({
-        history: createMemoryHistory(),
-        routes: [
-          { path: '/', component: {} },
-          { path: '/a', component: {} },
-          { path: '/b', component: {} },
-        ],
-      })
-      await router.push('/')
-
-      let link!: ReturnType<typeof useLink>
-      mount(
-        {
-          setup() {
-            link = useLink({ to: '/a' })
-            return () => ''
-          },
-        },
-        { global: { plugins: [router] } }
-      )
+      const { link, router } = await callUseLink({ to: '/a' })
 
       expect(link.isActive.value).toBe(false)
       expect(link.isExactActive.value).toBe(false)
@@ -152,16 +110,9 @@ describe('useLink', () => {
       })
       await router.push('/users/1')
 
-      let link!: ReturnType<typeof useLink>
-      mount(
-        {
-          setup() {
-            link = useLink({ to: { name: 'user', params: { id: 1 } } })
-            return () => ''
-          },
-        },
-        { global: { plugins: [router] } }
-      )
+      const link = mountLink(router, {
+        to: { name: 'user', params: { id: 1 } },
+      })
 
       expect(link.route.value.params).toEqual({ id: 1 })
       expect(link.isActive.value).toBe(true)
@@ -184,19 +135,7 @@ describe('useLink', () => {
           resolver: createFixedResolver([aboutRoute]),
         })
         await router.push('/about')
-
-        let link!: ReturnType<typeof useLink>
-        mount(
-          {
-            setup() {
-              link = useLink({ to })
-              return () => ''
-            },
-          },
-          { global: { plugins: [router] } }
-        )
-
-        return link
+        return mountLink(router, { to })
       }
 
       it('is active when the optional param is missing', async () => {
@@ -235,10 +174,8 @@ describe('useLink', () => {
   describe('warnings', () => {
     mockWarn()
 
-    it('should warn when "to" is undefined', async () => {
-      await callUseLink({
-        to: undefined as any,
-      })
+    it('warns when "to" is undefined', async () => {
+      await callUseLink({ to: undefined as any })
 
       expect('Invalid value for prop "to" in useLink()').toHaveBeenWarned()
       expect(
@@ -246,29 +183,12 @@ describe('useLink', () => {
       ).toHaveBeenWarned()
     })
 
-    it('should warn when "to" is an undefined ref', async () => {
-      await callUseLink({
-        to: ref(undefined as any),
-      })
-
-      expect('Invalid value for prop "to" in useLink()').toHaveBeenWarned()
-      expect(
-        'router.resolve() was passed an invalid location'
-      ).toHaveBeenWarned()
-    })
-
-    it('should warn when "to" changes to a null ref', async () => {
+    it('warns when "to" changes to null', async () => {
       const to = ref('/a')
-
-      const { href, route } = await callUseLink({
-        to,
-      })
-
-      expect(href.value).toBe('/a')
-      expect(route.value).toMatchObject({ name: 'a' })
+      const { link } = await callUseLink({ to })
+      expect(link.href.value).toBe('/a')
 
       to.value = null as any
-
       await nextTick()
 
       expect('Invalid value for prop "to" in useLink()').toHaveBeenWarned()

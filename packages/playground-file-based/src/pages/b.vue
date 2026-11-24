@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import { useRoute, useRouter } from 'vue-router'
 
 definePage({

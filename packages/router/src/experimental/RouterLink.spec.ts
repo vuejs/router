@@ -2,20 +2,12 @@
  * @vitest-environment happy-dom
  */
 import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
-import { defineComponent, h, ref } from 'vue'
+import { defineComponent, h, type Component } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { experimental_createRouter, normalizeRouteRecord } from './router'
-import { createFixedResolver } from './route-resolver/resolver-fixed'
-import {
-  MatcherPatternPathDynamic,
-  MatcherPatternPathStatic,
-} from './route-resolver/matchers/matcher-pattern'
-import { MatcherPatternQueryParam } from './route-resolver/matchers/matcher-pattern-query'
-import { PARAM_PARSER_INT } from './route-resolver/matchers/param-parsers'
-import { createMemoryHistory } from '../history/memory'
 import { RouterView } from '../RouterView'
-import { RouterLink, useLink, type UseLinkOptions } from './RouterLink'
+import { RouterLink } from './RouterLink'
 import { mockWarn } from '../tests/vitest-mock-warn'
+import { createLinkTestRouter } from '../tests/link-router'
 
 enableAutoUnmount(afterEach)
 mockWarn()
@@ -23,84 +15,30 @@ mockWarn()
 const Page = defineComponent({ render: () => h('p', 'page') })
 const Layout = defineComponent({ render: () => h(RouterView) })
 
-function createTestRouter(options: { linkActiveClass?: string } = {}) {
-  const home = normalizeRouteRecord({
-    name: 'home',
-    path: new MatcherPatternPathStatic('/'),
-    components: { default: Page },
-  })
-  const users = normalizeRouteRecord({
-    name: 'users',
-    path: new MatcherPatternPathStatic('/users'),
-    components: { default: Layout },
-  })
-  // index child: shares the path matcher of its parent
-  const usersIndex = normalizeRouteRecord({
-    name: 'users-index',
-    path: users.path,
-    components: { default: Page },
-    parent: users,
-  })
-  const user = normalizeRouteRecord({
-    name: 'user',
-    path: new MatcherPatternPathDynamic(
-      /^\/users\/([^/]+?)$/i,
-      { id: [PARAM_PARSER_INT] },
-      ['users', 1]
-    ),
-    components: { default: Page },
-    parent: users,
-  })
-  const about = normalizeRouteRecord({
-    name: 'about',
-    path: new MatcherPatternPathStatic('/about'),
-    components: { default: Page },
-  })
-  const aboutAlias = normalizeRouteRecord({
-    ...about,
-    path: new MatcherPatternPathStatic('/about-alias'),
-    aliasOf: about,
-  })
-  const search = normalizeRouteRecord({
-    name: 'search',
-    path: new MatcherPatternPathStatic('/search'),
-    query: [
-      new MatcherPatternQueryParam(
-        'page',
-        'page',
-        'value',
-        PARAM_PARSER_INT,
-        1
-      ),
-    ],
-    components: { default: Page },
-  })
-
-  return experimental_createRouter({
-    history: createMemoryHistory(),
-    resolver: createFixedResolver([
-      home,
-      usersIndex,
-      users,
-      user,
-      about,
-      aboutAlias,
-      search,
-    ]),
-    ...options,
-  })
-}
+const createTestRouter = (options?: { linkActiveClass?: string }) =>
+  createLinkTestRouter({ Page, Layout }, options)
 
 async function factory(
   template: string,
   {
     initial = '/',
     router = createTestRouter(),
-  }: { initial?: string; router?: ReturnType<typeof createTestRouter> } = {}
+    setup,
+    components = {},
+  }: {
+    initial?: string
+    router?: ReturnType<typeof createTestRouter>
+    setup?: () => Record<string, unknown>
+    components?: Record<string, Component>
+  } = {}
 ) {
   await router.push(initial)
   const wrapper = mount(
-    defineComponent({ components: { RouterLink, RouterView }, template }),
+    defineComponent({
+      components: { RouterLink, RouterView, ...components },
+      setup,
+      template,
+    }),
     { global: { plugins: [router] } }
   )
   await flushPromises()
@@ -108,7 +46,8 @@ async function factory(
     await router.push(to)
     await flushPromises()
   }
-  return { router, wrapper, go }
+  const classes = (selector = 'a') => wrapper.find(selector).classes()
+  return { router, wrapper, go, classes }
 }
 
 describe('experimental RouterLink', () => {
@@ -124,79 +63,77 @@ describe('experimental RouterLink', () => {
   })
 
   it('sets exact active classes and aria-current on the current route', async () => {
-    const { wrapper, go } = await factory(
+    const { wrapper, classes, go } = await factory(
       `<RouterLink to="/about">a</RouterLink>`
     )
-    const a = () => wrapper.find('a')
-    expect(a().classes()).toEqual([])
-    expect(a().attributes('aria-current')).toBeUndefined()
+    expect(classes()).toEqual([])
+    expect(wrapper.find('a').attributes('aria-current')).toBeUndefined()
 
     await go('/about')
-    expect(a().classes()).toEqual([
+    expect(classes()).toEqual([
       'router-link-active',
       'router-link-exact-active',
     ])
-    expect(a().attributes('aria-current')).toBe('page')
+    expect(wrapper.find('a').attributes('aria-current')).toBe('page')
 
     await go('/')
-    expect(a().classes()).toEqual([])
+    expect(classes()).toEqual([])
+    expect(wrapper.find('a').attributes('aria-current')).toBeUndefined()
   })
 
   it('is active but not exact active on a child route', async () => {
-    const { wrapper } = await factory(
+    const { classes } = await factory(
       `<RouterLink :to="{ name: 'users' }">users</RouterLink>`,
       { initial: '/users/2' }
     )
-    expect(wrapper.find('a').classes()).toEqual(['router-link-active'])
+    expect(classes()).toEqual(['router-link-active'])
   })
 
   it('compares params', async () => {
-    const { wrapper, go } = await factory(
+    const { classes, go } = await factory(
       `<RouterLink to="/users/1">1</RouterLink>`,
       { initial: '/users/2' }
     )
-    expect(wrapper.find('a').classes()).toEqual([])
+    expect(classes()).toEqual([])
     await go('/users/1')
-    expect(wrapper.find('a').classes()).toContain('router-link-exact-active')
+    expect(classes()).toContain('router-link-exact-active')
   })
 
   describe('index child', () => {
     it('is active through the parent on a sibling route', async () => {
-      const { wrapper, go } = await factory(
+      const { classes, go } = await factory(
         `<RouterLink to="/users">users</RouterLink>`,
         { initial: '/users/2' }
       )
-      expect(wrapper.find('a').classes()).toEqual(['router-link-active'])
+      expect(classes()).toEqual(['router-link-active'])
       await go('/users')
-      expect(wrapper.find('a').classes()).toEqual([
+      expect(classes()).toEqual([
         'router-link-active',
         'router-link-exact-active',
       ])
     })
 
     it('is not active when the parent itself is displayed', async () => {
-      const { wrapper, router } = await factory(
+      const { classes, router } = await factory(
         `<RouterLink to="/users">users</RouterLink>`
       )
       await router.push({ name: 'users' })
       await flushPromises()
       expect(router.currentRoute.value.matched).toHaveLength(1)
-      expect(wrapper.find('a').classes()).toEqual([])
+      expect(classes()).toEqual([])
     })
   })
 
   it('is exact active on an alias of the target', async () => {
-    const { wrapper } = await factory(
+    const { classes } = await factory(
       `<RouterLink to="/about">a</RouterLink>`,
-      {
-        initial: '/about-alias',
-      }
+      { initial: '/about-alias' }
     )
-    expect(wrapper.find('a').classes()).toContain('router-link-exact-active')
+    expect(classes()).toContain('router-link-exact-active')
   })
 
   it('compares declared query params but ignores other query values', async () => {
-    const { wrapper } = await factory(
+    const { classes } = await factory(
       `
       <RouterLink id="p2" to="/search?page=2">2</RouterLink>
       <RouterLink id="p3" to="/search?page=3">3</RouterLink>
@@ -204,15 +141,13 @@ describe('experimental RouterLink', () => {
     `,
       { initial: '/search?page=3' }
     )
-    expect(wrapper.find('#p2').classes()).toEqual([])
-    expect(wrapper.find('#p3').classes()).toContain('router-link-exact-active')
-    expect(wrapper.find('#other').classes()).toContain(
-      'router-link-exact-active'
-    )
+    expect(classes('#p2')).toEqual([])
+    expect(classes('#p3')).toContain('router-link-exact-active')
+    expect(classes('#other')).toContain('router-link-exact-active')
   })
 
   it('uses the class props, then the router options', async () => {
-    const { wrapper } = await factory(
+    const { classes } = await factory(
       `
       <RouterLink id="a" to="/about">a</RouterLink>
       <RouterLink id="b" to="/about" active-class="on" exact-active-class="exact">b</RouterLink>
@@ -222,11 +157,8 @@ describe('experimental RouterLink', () => {
         router: createTestRouter({ linkActiveClass: 'global-on' }),
       }
     )
-    expect(wrapper.find('#a').classes()).toEqual([
-      'global-on',
-      'router-link-exact-active',
-    ])
-    expect(wrapper.find('#b').classes()).toEqual(['on', 'exact'])
+    expect(classes('#a')).toEqual(['global-on', 'router-link-exact-active'])
+    expect(classes('#b')).toEqual(['on', 'exact'])
   })
 
   it('navigates on click', async () => {
@@ -271,84 +203,36 @@ describe('experimental RouterLink', () => {
     )
     expect(wrapper.find('a').exists()).toBe(false)
     expect(wrapper.html()).toBe('<span>/about true true about</span>')
+    expect('VUE_ROUTER_D0003').toHaveBeenWarned()
   })
 
   it('compares against the route of the closest RouterView', async () => {
     const router = createTestRouter()
-    await router.push('/users/1')
     const shown = router.resolve('/users/2')
     const Child = defineComponent({
       components: { RouterLink },
       template: `<RouterLink to="/users/2">2</RouterLink>`,
     })
-    const wrapper = mount(
-      defineComponent({
-        components: { RouterView, Child },
+    const { classes } = await factory(
+      `<RouterView :route="shown"><Child /></RouterView>`,
+      {
+        router,
+        initial: '/users/1',
         setup: () => ({ shown }),
-        template: `<RouterView :route="shown"><Child /></RouterView>`,
-      }),
-      { global: { plugins: [router] } }
+        components: { Child },
+      }
     )
-    await flushPromises()
-    expect(wrapper.find('a').classes()).toContain('router-link-exact-active')
+    expect(classes()).toContain('router-link-exact-active')
   })
 
   it('warns on an invalid to', async () => {
-    const router = createTestRouter()
-    await router.push('/')
     // throws after the warning, as in production
-    expect(() =>
-      mount(
-        defineComponent({
-          components: { RouterLink },
-          template: `<RouterLink :to="null">a</RouterLink>`,
-        }),
-        { global: { plugins: [router] } }
-      )
-    ).toThrow()
+    await expect(
+      factory(`<RouterLink :to="null">a</RouterLink>`)
+    ).rejects.toThrow()
     expect('VUE_ROUTER_R0050').toHaveBeenWarned()
     expect('Invalid prop').toHaveBeenWarned()
   })
 
   it.todo('resolves relative locations against the current route')
-})
-
-describe('experimental useLink', () => {
-  async function withLink(options: UseLinkOptions, initial = '/') {
-    let link!: ReturnType<typeof useLink>
-    const router = createTestRouter()
-    await router.push(initial)
-    mount(
-      defineComponent({
-        setup() {
-          link = useLink(options)
-          return () => null
-        },
-      }),
-      { global: { plugins: [router] } }
-    )
-    return { link, router }
-  }
-
-  it('follows a ref and a getter', async () => {
-    const id = ref(1)
-    const { link } = await withLink({
-      to: () => ({ name: 'user', params: { id: id.value } }),
-    })
-    expect(link.href.value).toBe('/users/1')
-    id.value = 2
-    expect(link.href.value).toBe('/users/2')
-
-    const to = ref('/about')
-    const { link: other } = await withLink({ to }, '/about')
-    expect(other.isExactActive.value).toBe(true)
-    to.value = '/'
-    expect(other.isActive.value).toBe(false)
-  })
-
-  it('navigates with navigate()', async () => {
-    const { link, router } = await withLink({ to: '/about' })
-    await link.navigate()
-    expect(router.currentRoute.value.path).toBe('/about')
-  })
 })

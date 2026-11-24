@@ -24,6 +24,7 @@ export default defineConfig({
     __DEV__: 'true',
     __BROWSER__: 'true',
     __FEATURE_PROD_DEVTOOLS__: 'false',
+    __FEATURE_OPTIONS_API__: 'true',
     __STRIP_DEVTOOLS__: 'false',
   },
 })

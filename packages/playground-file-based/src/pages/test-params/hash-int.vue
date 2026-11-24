@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import { useRoute } from 'vue-router'
 
 definePage({
@@ -32,5 +32,5 @@ route.params.myHash
     </li>
   </ul>
 
-  <pre>{{ $route.params }}</pre>
+  <pre>{{ route.params }}</pre>
 </template>

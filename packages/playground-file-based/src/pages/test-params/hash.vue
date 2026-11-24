@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script setup lang="ts" vapor>
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 definePage({
   params: {
     hash: {
@@ -33,7 +36,7 @@ definePage({
       <RouterLink to="/test-params/hash-int">Integer hash parser</RouterLink>
     </li>
   </ul>
-  <pre>{{ $route.params }}</pre>
+  <pre>{{ route.params }}</pre>
   <RouterLink to="/test-params">All param parser examples</RouterLink>
   <RouterLink to="/">Hash without a custom parser</RouterLink>
 </template>

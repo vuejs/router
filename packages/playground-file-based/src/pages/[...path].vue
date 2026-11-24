@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" vapor>
 import { useRoute, useRouter } from 'vue-router'
 import doc from '../main.ts?raw'
 
@@ -67,9 +67,9 @@ definePage({
   <main>
     <h1>Not Found</h1>
 
-    <pre>{{ $route.params }}</pre>
-    <pre>{{ $route.query }}</pre>
-    <pre>{{ $route.meta }}</pre>
+    <pre>{{ route.params }}</pre>
+    <pre>{{ route.query }}</pre>
+    <pre>{{ route.meta }}</pre>
   </main>
 </template>
 

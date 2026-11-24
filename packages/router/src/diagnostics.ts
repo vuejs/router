@@ -77,6 +77,12 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       fix: (p: { key: string; value: string }) =>
         `Wrap the value in an array: \`{ ${JSON.stringify(p.key)}: [${p.value}] }\`. Use undefined to remove the key.`,
     },
+    // experimental/RouterLink.ts
+    VUE_ROUTER_D0003: {
+      why: 'The "custom" prop of <RouterLink> is deprecated in the experimental router. It will be removed in the next major version.',
+      fix: 'Use useLink() in your own link component instead.',
+      docs: 'https://router.vuejs.org/guide/advanced/extending-router-link.html',
+    },
 
     // --- router.ts ---
     VUE_ROUTER_R0001: {
@@ -262,6 +268,12 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         return `Invalid value for prop "to" in useLink()\n- to: ${to}`
       },
       fix: 'Pass a valid route location (a string path or an object) to the "to" prop.',
+    },
+    // experimental/vapor/RouterLink.ts
+    VUE_ROUTER_R0051: {
+      why: '<RouterLink custom> is not supported in Vapor mode.',
+      fix: 'Use useLink() in your own link component instead.',
+      docs: 'https://router.vuejs.org/guide/advanced/extending-router-link.html',
     },
 
     // --- RouterView.ts ---

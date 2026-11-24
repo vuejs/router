@@ -1,7 +1,7 @@
 import type {
   App,
-  ComponentInternalInstance,
   FunctionPlugin,
+  GenericComponentInstance,
   InjectionKey,
   MaybeRefOrGetter,
 } from 'vue'
@@ -316,7 +316,7 @@ const SCROLL_RESTORATION_REGISTRATIONS: InjectionKey<
     registrations: Map<
       ScrollRestorationRegistration,
       // vapor doesn't support getCurrentInstance()
-      ComponentInternalInstance | string
+      GenericComponentInstance | string
     >,
     restore: (
       registration: ScrollRestorationRegistration,
@@ -389,7 +389,7 @@ function ScrollRestorationClient(
   app.provide(SCROLL_RESTORATION_OPTIONS_KEY, optionsWithDefaults)
   const registrations = new Map<
     ScrollRestorationRegistration,
-    ComponentInternalInstance
+    GenericComponentInstance
   >()
   history.scrollRestoration = 'manual'
   // WebKit doesn't copy it to entries created by fragment navigations

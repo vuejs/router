@@ -15,7 +15,7 @@ import type { NavigationFailure, NavigationRedirectError } from './errors'
 import { createRouterError, ErrorTypes } from './errors'
 import type { ComponentOptions, ComputedRef } from 'vue'
 import { onUnmounted, onActivated, onDeactivated } from 'vue'
-import { inject, getCurrentInstance } from 'vue'
+import { inject, hasInjectionContext } from 'vue'
 import { matchedRouteKey } from './injectionSymbols'
 import type { RouteRecordNormalized } from './matcher/types'
 import { isESModule, isRouteComponent } from './utils'
@@ -71,7 +71,8 @@ function registerGuard(
  * @param leaveGuard - {@link NavigationGuard}
  */
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
-  if (__DEV__ && !getCurrentInstance()) {
+  // FIXME: Restore getCurrentInstance() once Vapor supports it: https://github.com/vuejs/core/pull/16348
+  if (__DEV__ && !hasInjectionContext()) {
     diagnostics.VUE_ROUTER_R0022({ fn: 'onBeforeRouteLeave' })
     return
   }
@@ -93,7 +94,8 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
  * @param updateGuard - {@link NavigationGuard}
  */
 export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
-  if (__DEV__ && !getCurrentInstance()) {
+  // FIXME: Restore getCurrentInstance() once Vapor supports it: https://github.com/vuejs/core/pull/16348
+  if (__DEV__ && !hasInjectionContext()) {
     diagnostics.VUE_ROUTER_R0022({ fn: 'onBeforeRouteUpdate' })
     return
   }
@@ -130,6 +132,7 @@ export function guardToPromiseFn(
 ): () => Promise<void> {
   // keep a reference to the enterCallbackArray to prevent pushing callbacks if a new navigation took place
   const enterCallbackArray =
+    __FEATURE_OPTIONS_API__ &&
     record &&
     // name is defined if record is because of the function overload
     (record.enterCallbacks[name!] = record.enterCallbacks[name!] || [])
@@ -177,7 +180,9 @@ export function guardToPromiseFn(
       // wrapping with Promise.resolve allows it to work with both async and sync guards
       const guardReturn = runWithContext(() =>
         guard.call(
-          record && record.instances[name!],
+          __FEATURE_OPTIONS_API__ && record
+            ? record.instances[name!]
+            : undefined,
           to,
           from,
           __DEV__
@@ -249,6 +254,22 @@ function canOnlyBeCalledOnce(
 
 type GuardType = 'beforeRouteEnter' | 'beforeRouteUpdate' | 'beforeRouteLeave'
 
+/**
+ * Returns the guard defined in the options of a route component. Vapor
+ * components have no Options API.
+ */
+function getOptionGuard(
+  component: RouteComponent,
+  guardType: GuardType
+): NavigationGuard | undefined {
+  // __vccOpts is added by vue-class-component and contain the regular options
+  return __FEATURE_OPTIONS_API__ && !(component as any).__vapor
+    ? ((component as any).__vccOpts || (component as ComponentOptions))[
+        guardType
+      ]
+    : undefined
+}
+
 export function extractComponentsGuards(
   matched: RouteRecordNormalized[],
   guardType: GuardType,
@@ -300,15 +321,15 @@ export function extractComponentsGuards(
         }
       }
 
-      // TODO: extract the logic relying on instances into an options-api plugin
       // skip update and leave guards if the route component is not mounted
-      if (guardType !== 'beforeRouteEnter' && !record.instances[name]) continue
+      if (
+        guardType !== 'beforeRouteEnter' &&
+        (!__FEATURE_OPTIONS_API__ || !record.instances[name])
+      )
+        continue
 
       if (isRouteComponent(rawComponent)) {
-        // __vccOpts is added by vue-class-component and contain the regular options
-        const options: ComponentOptions =
-          (rawComponent as any).__vccOpts || rawComponent
-        const guard = options[guardType]
+        const guard = getOptionGuard(rawComponent, guardType)
         guard &&
           guards.push(
             guardToPromiseFn(guard, to, from, record, name, runWithContext)
@@ -338,10 +359,7 @@ export function extractComponentsGuards(
             // replace the function with the resolved component
             // cannot be null or undefined because we went into the for loop
             record.components![name] = resolvedComponent
-            // __vccOpts is added by vue-class-component and contain the regular options
-            const options: ComponentOptions =
-              (resolvedComponent as any).__vccOpts || resolvedComponent
-            const guard = options[guardType]
+            const guard = getOptionGuard(resolvedComponent, guardType)
 
             return (
               guard &&

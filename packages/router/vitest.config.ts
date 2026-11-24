@@ -1,5 +1,9 @@
 import { defineConfig } from 'vitest/config'
 import Vue from '@vitejs/plugin-vue'
+import { fileURLToPath } from 'node:url'
+
+const resolveDep = (specifier: string) =>
+  fileURLToPath(import.meta.resolve(specifier))
 
 export default defineConfig({
   define: {
@@ -7,11 +11,51 @@ export default defineConfig({
     __TEST__: true,
     __BROWSER__: true,
     __FEATURE_PROD_DEVTOOLS__: false,
+    __FEATURE_OPTIONS_API__: true,
     __STRIP_DEVTOOLS__: true,
+  },
+  // Node's `node` export condition selects the CJS builds of vue, which lack
+  // the Vapor exports. Alias every @vue/* package (and @vue/test-utils, which
+  // would otherwise `require('vue')` a second copy) to its esm-bundler build so
+  // the whole graph shares one Vue instance. The full `vue.esm-bundler.js` is
+  // needed because tests mount components with string `template:`.
+  resolve: {
+    alias: {
+      vue: resolveDep('vue/dist/vue.esm-bundler.js'),
+      '@vue/runtime-core': resolveDep(
+        '@vue/runtime-core/dist/runtime-core.esm-bundler.js'
+      ),
+      '@vue/runtime-dom': resolveDep(
+        '@vue/runtime-dom/dist/runtime-dom.esm-bundler.js'
+      ),
+      '@vue/runtime-vapor': resolveDep(
+        '@vue/runtime-vapor/dist/runtime-vapor.esm-bundler.js'
+      ),
+      '@vue/reactivity': resolveDep(
+        '@vue/reactivity/dist/reactivity.esm-bundler.js'
+      ),
+      '@vue/shared': resolveDep('@vue/shared/dist/shared.esm-bundler.js'),
+      '@vue/server-renderer': resolveDep(
+        '@vue/server-renderer/dist/server-renderer.esm-bundler.js'
+      ),
+      // not in its `exports`, so `import.meta.resolve` can't reach it
+      '@vue/test-utils': fileURLToPath(
+        new URL(
+          './node_modules/@vue/test-utils/dist/vue-test-utils.esm-bundler.mjs',
+          import.meta.url
+        )
+      ),
+    },
   },
   plugins: [Vue()],
 
   test: {
+    // inline deps that import vue so the aliases above apply to them too
+    server: {
+      deps: {
+        inline: [/\/node_modules\/(vue|@vue\/[^/]+|pinia|@pinia\/colada)\//],
+      },
+    },
     // open: false,
     include: ['__tests__/**/*.spec.ts', 'src/**/*.spec.ts'],
     exclude: [
@@ -29,6 +73,7 @@ export default defineConfig({
         'src/index.ts',
         'src/devtools.ts',
         'src/experimental/index.ts',
+        'src/experimental/vapor/index.ts',
         'src/**/test-utils.ts',
         // Unplugin entry points
         'src/unplugin/index.ts',

@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import SemVerInfo from '@/components/SemVerInfo.vue'
 
 const props = defineProps<{

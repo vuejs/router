@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import { useRoute } from 'vue-router'
 
 definePage({
@@ -15,7 +15,7 @@ route.params.name
 
 <template>
   <h1>Named param</h1>
-  <pre>{{ $route.params }}</pre>
+  <pre>{{ route.params }}</pre>
 
   <RouterView />
 </template>

@@ -1,4 +1,4 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup vapor></script>
 
 <template>
   <h2>This page should never be visible</h2>

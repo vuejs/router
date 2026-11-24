@@ -3,6 +3,8 @@ declare var __DEV__: boolean
 declare var __TEST__: boolean
 // TODO: refactor all these feature flags
 declare var __FEATURE_PROD_DEVTOOLS__: boolean
+// option guards (beforeRouteEnter, etc), replaced by __VUE_OPTIONS_API__
+declare var __FEATURE_OPTIONS_API__: boolean
 // iifee build cannot have v8 devtools because they are too heavy
 declare var __STRIP_DEVTOOLS__: boolean
 declare var __BROWSER__: boolean

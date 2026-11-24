@@ -6,7 +6,6 @@ import AutoScaffold from 'auto-scaffold/vite'
 // import AutoImport from 'unplugin-auto-import/vite'
 import VueDevtools from 'vite-plugin-vue-devtools'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     // FIXME: it seems to conflict with the mono repo setup
@@ -29,7 +28,7 @@ export default defineConfig({
         },
       },
     }),
-    Vue(),
+    Vue({ features: { vapor: true } }),
     VueDevtools(),
   ],
   resolve: {
@@ -42,6 +41,7 @@ export default defineConfig({
     __DEV__: JSON.stringify(!process.env.prod),
     __BROWSER__: 'true',
     __FEATURE_PROD_DEVTOOLS__: 'false',
+    __FEATURE_OPTIONS_API__: 'true',
     __STRIP_DEVTOOLS__: 'false',
     'process.env': {
       NODE_ENV: JSON.stringify(process.env.NODE_ENV),
