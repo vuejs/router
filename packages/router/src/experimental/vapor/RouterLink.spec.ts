@@ -13,7 +13,10 @@ import { RouterView } from './RouterView'
 import { useLink } from '../RouterLink'
 import { compileVapor } from '../../tests/vapor'
 import { mockWarn } from '../../tests/vitest-mock-warn'
-import { createLinkTestRouter } from '../../tests/link-router'
+import {
+  createLinkTestRouter,
+  type LinkTestRouterOptions,
+} from '../../tests/link-router'
 
 // active states and navigation come from useLink(): see ../RouterLink.spec.ts
 
@@ -36,7 +39,7 @@ const Layout = defineVaporComponent({
   render: compileVapor('<RouterView />'),
 })
 
-const createTestRouter = (options?: { linkActiveClass?: string }) =>
+const createTestRouter = (options?: LinkTestRouterOptions) =>
   createLinkTestRouter({ Page, Layout }, options)
 
 async function factory(
@@ -116,10 +119,13 @@ describe('Vapor RouterLink', () => {
     `,
       {
         initial: '/about',
-        router: createTestRouter({ linkActiveClass: 'global-on' }),
+        router: createTestRouter({
+          linkActiveClass: 'global-on',
+          linkExactActiveClass: 'global-exact',
+        }),
       }
     )
-    expect(classes('#a')).toEqual(['global-on', 'router-link-exact-active'])
+    expect(classes('#a')).toEqual(['global-on', 'global-exact'])
     expect(classes('#b')).toEqual(['on', 'exact'])
   })
 

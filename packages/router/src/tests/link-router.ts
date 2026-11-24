@@ -11,6 +11,12 @@ import {
 import { MatcherPatternQueryParam } from '../experimental/route-resolver/matchers/matcher-pattern-query'
 import { PARAM_PARSER_INT } from '../experimental/route-resolver/matchers/param-parsers'
 import { createMemoryHistory } from '../history/memory'
+import type { EXPERIMENTAL_RouterOptions_Base } from '../experimental/router'
+
+export type LinkTestRouterOptions = Pick<
+  EXPERIMENTAL_RouterOptions_Base,
+  'linkActiveClass' | 'linkExactActiveClass'
+>
 
 /**
  * Creates the experimental router used by the RouterLink specs. `Layout` must
@@ -18,7 +24,7 @@ import { createMemoryHistory } from '../history/memory'
  */
 export function createLinkTestRouter(
   { Page, Layout }: { Page: Component; Layout: Component },
-  options: { linkActiveClass?: string } = {}
+  options: LinkTestRouterOptions = {}
 ) {
   const home = normalizeRouteRecord({
     name: 'home',
@@ -46,6 +52,75 @@ export function createLinkTestRouter(
     ),
     components: { default: Page },
     parent: users,
+  })
+  const userPosts = normalizeRouteRecord({
+    name: 'user-posts',
+    path: new MatcherPatternPathDynamic(
+      /^\/users\/([^/]+?)\/posts$/i,
+      { id: [PARAM_PARSER_INT] },
+      ['users', 1, 'posts']
+    ),
+    components: { default: Page },
+    parent: user,
+  })
+  // aliases: /users/list (index child), /users/id/:id (child), /u (parent),
+  // /u/:id and /u/id/:id (child under the parent alias)
+  const usersIndexAlias = normalizeRouteRecord({
+    ...usersIndex,
+    path: new MatcherPatternPathStatic('/users/list'),
+    aliasOf: usersIndex,
+  })
+  const userAlias = normalizeRouteRecord({
+    ...user,
+    path: new MatcherPatternPathDynamic(
+      /^\/users\/id\/([^/]+?)$/i,
+      { id: [PARAM_PARSER_INT] },
+      ['users', 'id', 1]
+    ),
+    aliasOf: user,
+  })
+  const usersAlias = normalizeRouteRecord({
+    ...users,
+    path: new MatcherPatternPathStatic('/u'),
+    aliasOf: users,
+  })
+  const userUnderUsersAlias = normalizeRouteRecord({
+    ...user,
+    path: new MatcherPatternPathDynamic(
+      /^\/u\/([^/]+?)$/i,
+      { id: [PARAM_PARSER_INT] },
+      ['u', 1]
+    ),
+    parent: usersAlias,
+    aliasOf: user,
+  })
+  const userAliasUnderUsersAlias = normalizeRouteRecord({
+    ...user,
+    path: new MatcherPatternPathDynamic(
+      /^\/u\/id\/([^/]+?)$/i,
+      { id: [PARAM_PARSER_INT] },
+      ['u', 'id', 1]
+    ),
+    parent: usersAlias,
+    aliasOf: user,
+  })
+  // repeatable param, a single item becomes a string
+  const files = normalizeRouteRecord({
+    name: 'files',
+    path: new MatcherPatternPathDynamic(
+      /^\/files\/(.+?)$/i,
+      {
+        p: [
+          {
+            get: (v: string[]) => (v.length > 1 ? v : v[0]!),
+            set: (v: string | string[]) => v,
+          },
+          true,
+        ],
+      },
+      ['files', 1]
+    ),
+    components: { default: Page },
   })
   const about = normalizeRouteRecord({
     name: 'about',
@@ -77,11 +152,18 @@ export function createLinkTestRouter(
     resolver: createFixedResolver([
       home,
       usersIndex,
+      usersIndexAlias,
       users,
       user,
+      userPosts,
+      userAlias,
+      usersAlias,
+      userUnderUsersAlias,
+      userAliasUnderUsersAlias,
       about,
       aboutAlias,
       search,
+      files,
     ]),
     ...options,
   })
