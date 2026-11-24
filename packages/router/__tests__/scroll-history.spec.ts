@@ -358,6 +358,35 @@ describe.each([
       expect(top).toBe(2000)
     })
 
+    it('cancels a deferred smooth scroll when the newer navigation requests no position', async () => {
+      vi.useFakeTimers()
+      try {
+        const { scrollBehavior, push } = await setup()
+        scrollBehavior.mockReturnValueOnce({
+          left: 0,
+          top: 500,
+          behavior: 'smooth',
+        })
+        await push('/b')
+        await nextTick()
+
+        scrollBehavior.mockReturnValueOnce(false)
+        await push('/c')
+        await nextTick()
+
+        // the deferred scrollTo for /b must not land on /c
+        vi.runAllTimers()
+        expect(window.scrollTo).not.toHaveBeenCalledWith({
+          left: 0,
+          top: 500,
+          behavior: 'smooth',
+        })
+        expect(top).toBe(0)
+      } finally {
+        vi.useRealTimers()
+      }
+    })
+
     it.each(['aborted', 'duplicated'] as const)(
       'preserves the forward branch on a %s push',
       async failure => {

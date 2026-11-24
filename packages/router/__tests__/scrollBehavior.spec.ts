@@ -1,7 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
-import { scrollToPosition } from '../src/scrollBehavior'
+import { cancelPendingScroll, scrollToPosition } from '../src/scrollBehavior'
 import { mockWarn } from './vitest-mock-warn'
 import type { MockInstance } from 'vitest'
 import {
@@ -247,6 +247,20 @@ describe('scrollBehavior', () => {
         top: 200,
         behavior: 'smooth',
       })
+    })
+
+    it('a request whose element is not found cancels a pending smooth scroll', () => {
+      scrollToPosition({ left: 0, top: 100, behavior: 'smooth' })
+      scrollToPosition({ el: '#not-found' })
+      vi.runAllTimers()
+      expect(scrollTo).not.toHaveBeenCalled()
+    })
+
+    it('cancelPendingScroll cancels a pending smooth scroll', () => {
+      scrollToPosition({ left: 0, top: 100, behavior: 'smooth' })
+      cancelPendingScroll()
+      vi.runAllTimers()
+      expect(scrollTo).not.toHaveBeenCalled()
     })
   })
 })

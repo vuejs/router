@@ -95,6 +95,11 @@ let pendingScrollRequest = 0
 export function scrollToPosition(position: ScrollPosition): void {
   let scrollToOptions: ScrollPositionCoordinates
 
+  // Allocate the request id before any early return, so every newer request,
+  // even one whose element cannot be resolved, invalidates a pending
+  // deferred smooth scroll.
+  const requestId = ++pendingScrollRequest
+
   if ('el' in position) {
     const positionEl = position.el
     const isIdSelector =
@@ -159,7 +164,6 @@ export function scrollToPosition(position: ScrollPosition): void {
       // navigation's history update, so run it one task later (#1411).
       // A newer scroll request cancels a pending one: the last requested
       // position always wins.
-      const requestId = ++pendingScrollRequest
       setTimeout(() => {
         if (requestId === pendingScrollRequest) {
           window.scrollTo(scrollToOptions)
@@ -167,15 +171,22 @@ export function scrollToPosition(position: ScrollPosition): void {
       })
       return
     }
-    pendingScrollRequest++
     window.scrollTo(scrollToOptions)
   } else {
-    pendingScrollRequest++
     window.scrollTo(
       scrollToOptions.left != null ? scrollToOptions.left : window.scrollX,
       scrollToOptions.top != null ? scrollToOptions.top : window.scrollY
     )
   }
+}
+
+/**
+ * Cancels a deferred smooth scroll that has not run yet. Routers call it when
+ * a navigation finalizes, so a scroll requested by an older navigation cannot
+ * land on the new page even when the newer one requests no position.
+ */
+export function cancelPendingScroll(): void {
+  pendingScrollRequest++
 }
 
 /**

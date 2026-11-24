@@ -23,6 +23,7 @@ import type { Router } from '../router'
 import {
   type _ScrollPositionNormalized,
   type RouterScrollBehavior,
+  cancelPendingScroll,
   getSavedScrollPosition,
   saveScrollPosition,
   scrollToPosition,
@@ -1366,6 +1367,10 @@ export function experimental_createRouter(
   Promise<unknown> {
     const { scrollBehavior } = options
     if (!isBrowser || !scrollBehavior) return Promise.resolve()
+
+    // a deferred smooth scroll from an older navigation must not land on
+    // this page, even when scrollBehavior resolves to no position
+    cancelPendingScroll()
 
     return (
       nextTick()
