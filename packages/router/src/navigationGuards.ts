@@ -71,7 +71,7 @@ function registerGuard(
  * @param leaveGuard - {@link NavigationGuard}
  */
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
-  // getCurrentInstance() is null in Vapor components
+  // FIXME: Restore getCurrentInstance() once Vapor supports it: https://github.com/vuejs/core/pull/16348
   if (__DEV__ && !hasInjectionContext()) {
     diagnostics.VUE_ROUTER_R0022({ fn: 'onBeforeRouteLeave' })
     return
@@ -94,7 +94,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
  * @param updateGuard - {@link NavigationGuard}
  */
 export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
-  // getCurrentInstance() is null in Vapor components
+  // FIXME: Restore getCurrentInstance() once Vapor supports it: https://github.com/vuejs/core/pull/16348
   if (__DEV__ && !hasInjectionContext()) {
     diagnostics.VUE_ROUTER_R0022({ fn: 'onBeforeRouteUpdate' })
     return
