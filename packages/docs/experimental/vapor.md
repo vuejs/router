@@ -14,7 +14,7 @@ They have the same props, slots, and behavior as the [experimental `<RouterLink>
 
 ## Registering the components
 
-Register the Vapor components yourself. With `createRouter()`, register them after `app.use(router)`: the router registers the VDOM components, and the last registration wins. Vue logs a development warning about the second registration.
+Register the Vapor components yourself. In Vapor apps (`createVaporApp()` and `createVaporSSRApp()`), `createRouter()` does not register the VDOM components.
 
 ```ts{2,7,8,9}
 import { createVaporApp } from 'vue'

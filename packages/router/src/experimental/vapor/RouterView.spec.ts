@@ -110,6 +110,13 @@ async function setup(
 }
 
 describe('Vapor RouterView', () => {
+  it('createRouter() does not register the VDOM components in Vapor apps', () => {
+    const app = createVaporApp(defineVaporComponent({}))
+    app.use(createRouter({ history: createMemoryHistory(), routes: [] }))
+    expect(app.component('RouterView')).toBeUndefined()
+    expect(app.component('RouterLink')).toBeUndefined()
+  })
+
   it('renders nested views and navigates with links', async () => {
     const Parent = page(
       'Parent',
