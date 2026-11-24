@@ -10,6 +10,7 @@ import {
   expect,
   it,
   beforeEach,
+  afterEach,
   afterAll,
   beforeAll,
 } from 'vitest'
@@ -200,6 +201,51 @@ describe('scrollBehavior', () => {
       it.skip('warns if querySelector throws', () => {
         scrollToPosition({ el: '.container #1' })
         expect(`selector ".container #1" is invalid`).toHaveBeenWarned()
+      })
+    })
+  })
+
+  describe('smooth scrolling', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('defers a smooth scrollTo to the next task (#1411)', () => {
+      scrollToPosition({ left: 0, top: 100, behavior: 'smooth' })
+      expect(scrollTo).not.toHaveBeenCalled()
+      vi.runAllTimers()
+      expect(scrollTo).toHaveBeenCalledWith({
+        left: 0,
+        top: 100,
+        behavior: 'smooth',
+      })
+    })
+
+    it('a newer scroll request cancels a pending smooth scroll', () => {
+      scrollToPosition({ left: 0, top: 100, behavior: 'smooth' })
+      scrollToPosition({ left: 0, top: 200 })
+      vi.runAllTimers()
+      expect(scrollTo).toHaveBeenCalledTimes(1)
+      expect(scrollTo).toHaveBeenCalledWith({
+        left: 0,
+        top: 200,
+        behavior: undefined,
+      })
+    })
+
+    it('a newer smooth scroll cancels a pending smooth scroll', () => {
+      scrollToPosition({ left: 0, top: 100, behavior: 'smooth' })
+      scrollToPosition({ left: 0, top: 200, behavior: 'smooth' })
+      vi.runAllTimers()
+      expect(scrollTo).toHaveBeenCalledTimes(1)
+      expect(scrollTo).toHaveBeenCalledWith({
+        left: 0,
+        top: 200,
+        behavior: 'smooth',
       })
     })
   })

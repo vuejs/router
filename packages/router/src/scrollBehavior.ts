@@ -88,6 +88,10 @@ function getElementPosition(
   }
 }
 
+// Invalidates the pending deferred smooth scroll each time a newer
+// scroll is requested, so the last requested position always wins.
+let pendingScrollRequest = 0
+
 export function scrollToPosition(position: ScrollPosition): void {
   let scrollToOptions: ScrollPositionCoordinates
 
@@ -149,9 +153,24 @@ export function scrollToPosition(position: ScrollPosition): void {
     scrollToOptions = position
   }
 
-  if ('scrollBehavior' in document.documentElement.style)
+  if ('scrollBehavior' in document.documentElement.style) {
+    if (scrollToOptions.behavior === 'smooth') {
+      // Firefox drops a smooth scrollTo issued in the same task as the
+      // navigation's history update, so run it one task later (#1411).
+      // A newer scroll request cancels a pending one: the last requested
+      // position always wins.
+      const requestId = ++pendingScrollRequest
+      setTimeout(() => {
+        if (requestId === pendingScrollRequest) {
+          window.scrollTo(scrollToOptions)
+        }
+      })
+      return
+    }
+    pendingScrollRequest++
     window.scrollTo(scrollToOptions)
-  else {
+  } else {
+    pendingScrollRequest++
     window.scrollTo(
       scrollToOptions.left != null ? scrollToOptions.left : window.scrollX,
       scrollToOptions.top != null ? scrollToOptions.top : window.scrollY
