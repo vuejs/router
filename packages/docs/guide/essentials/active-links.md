@@ -13,7 +13,7 @@ A RouterLink is considered to be **_active_** if:
 
 If you're using [nested routes](./nested-routes), any links to ancestor routes will also be considered active if the relevant `params` match.
 
-Other route properties, such as the [`query`](../../api/interfaces/RouteLocationBase.html#query), are not taken into account.
+Other route properties, such as the [`query`](../../api/interfaces/RouteLocationBase.md#query), are not taken into account.
 
 Note that **the path doesn't necessarily need to be a perfect match**. For example, using an [`alias`](./redirect-and-alias#Alias) would still be considered a match, so long as it resolves to the same route record and `params`.
 
