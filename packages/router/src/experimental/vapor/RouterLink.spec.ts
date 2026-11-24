@@ -151,17 +151,9 @@ describe('Vapor RouterLink', () => {
     )
   })
 
-  it('renders only the slot with custom', async () => {
-    const { find } = await factory(
-      `
-      <RouterLink to="/about" custom v-slot="{ href, isActive, isExactActive, route }">
-        <span>{{ href }} {{ isActive }} {{ isExactActive }} {{ route.name }}</span>
-      </RouterLink>
-    `,
-      { initial: '/about' }
-    )
-    expect(find('a')).toBeNull()
-    expect(find('span').outerHTML).toBe('<span>/about true true about</span>')
+  it('warns on custom', async () => {
+    await factory(`<RouterLink to="/about" custom>a</RouterLink>`)
+    expect('VUE_ROUTER_R0051').toHaveBeenWarned()
   })
 
   it('passes a reactive scope to the slot', async () => {

@@ -263,6 +263,12 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       },
       fix: 'Pass a valid route location (a string path or an object) to the "to" prop.',
     },
+    // experimental/vapor/RouterLink.ts
+    VUE_ROUTER_R0051: {
+      why: '<RouterLink custom> is not supported in Vapor mode.',
+      fix: 'Use useLink() in your own link component instead.',
+      docs: 'https://router.vuejs.org/guide/advanced/extending-router-link.html',
+    },
 
     // --- RouterView.ts ---
     VUE_ROUTER_R0060: {

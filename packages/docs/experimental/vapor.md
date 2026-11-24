@@ -33,5 +33,4 @@ app.mount('#app')
 
 - Vapor Mode has no Options API: `$router` and `$route` are not available in templates, and `beforeRouteEnter`, `beforeRouteUpdate`, and `beforeRouteLeave` component options are not called. Use `useRouter()`, `useRoute()`, `onBeforeRouteUpdate()`, and `onBeforeRouteLeave()` instead.
 - In the `<RouterView>` slot, `Component` is the route component instance. Render it with `<component :is="Component" />`. Props and slots passed to `<component>` are ignored: [pass props from the route](../guide/essentials/passing-props) or use the attributes of `<RouterView>` instead. Template refs, `:key`, `<KeepAlive>`, and `<Transition>` work.
-- `<RouterLink custom>` drops its attributes instead of passing them to the root of the slot.
 - VDOM route components render through `vaporInteropPlugin`. Without it, every route component must be a Vapor component.
