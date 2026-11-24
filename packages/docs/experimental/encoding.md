@@ -20,11 +20,14 @@ The router encodes and decodes URLs for you. The rule to remember: **give decode
 
 ## Named locations and params
 
-The router encodes each param. In a regular path param, a `/` becomes `%2F`, so the param stays one segment:
+The examples below use the default names generated from the page files. The router encodes each param. In a regular path param, a `/` becomes `%2F`, so the param stays one segment:
 
 ```ts
 // user/[username].vue
-router.push({ name: 'user', params: { username: 'eduardo/san martin' } })
+router.push({
+  name: '/user/[username]',
+  params: { username: 'eduardo/san martin' },
+})
 // /user/eduardo%2Fsan%20martin
 // route.params.username === 'eduardo/san martin'
 ```
@@ -33,11 +36,11 @@ Two kinds of path params keep a `/` as a separator:
 
 ```ts
 // repeatable param, articles/[slugs]+.vue: each value is one segment
-router.push({ name: 'articles', params: { slugs: ['a/b', 'c d'] } })
+router.push({ name: '/articles/[slugs]+', params: { slugs: ['a/b', 'c d'] } })
 // /articles/a%2Fb/c%20d
 
 // catch-all param, docs/[...path].vue: the value can span segments
-router.push({ name: 'docs', params: { path: 'guide/intro?' } })
+router.push({ name: '/docs/[...path]', params: { path: 'guide/intro?' } })
 // /docs/guide/intro%3F
 ```
 
@@ -58,7 +61,7 @@ router.push('/docs/./guide/../api') // /docs/api
 A string location often comes from outside the app: a link in some content, a URL that a user wrote, or `route.fullPath`. Normalizing it makes it safe to use as is. `new URL()` is slow compared to the other forms, so the router does not use it for an object `path`. Do not build a `path` from dynamic values. Use a named location and let the router encode the params:
 
 ```ts
-router.push({ name: 'user', params: { username } }) // [!code ++]
+router.push({ name: '/user/[username]', params: { username } }) // [!code ++]
 router.push({ path: `/user/${username}` }) // [!code --]
 ```
 
@@ -69,7 +72,7 @@ router.push({ path: `/user/${username}` }) // [!code --]
 Give decoded query values. The router encodes them, and it decodes them again in `route.query`:
 
 ```ts
-router.push({ path: '/search', query: { q: 'a&b=c' } })
+router.push({ path: '/search', query: { q: ['a&b=c'] } })
 // /search?q=a%26b=c
 // route.query.q → ['a&b=c']
 ```
@@ -77,8 +80,8 @@ router.push({ path: '/search', query: { q: 'a&b=c' } })
 Do not encode query values yourself. The router encodes them a second time:
 
 ```ts
-router.push({ path: '/search', query: { q: 'a b' } }) // [!code ++]
-router.push({ path: '/search', query: { q: 'a%20b' } }) // [!code --]
+router.push({ path: '/search', query: { q: ['a b'] } }) // [!code ++]
+router.push({ path: '/search', query: { q: ['a%20b'] } }) // [!code --]
 // /search?q=a%2520b, route.query.q → ['a%20b']
 ```
 
@@ -87,7 +90,7 @@ router.push({ path: '/search', query: { q: 'a%20b' } }) // [!code --]
 In the query, the router writes a space as `+` and a `+` as `%2B`. When it reads a URL, `+` becomes a space. For spaces, all forms of a location give the same URL:
 
 ```ts
-router.push({ path: '/search', query: { q: 'a b' } }) // /search?q=a+b
+router.push({ path: '/search', query: { q: ['a b'] } }) // /search?q=a+b
 router.push('/search?q=a b') // /search?q=a+b
 router.push('/search?q=a%20b') // /search?q=a+b
 router.push('/search?q=a+b') // /search?q=a+b
@@ -98,7 +101,7 @@ To get a literal `+` from a string location, write `%2B`. In a query object, wri
 
 ```ts
 router.push('/search?q=c%2B%2B') // route.query.q → ['c++']
-router.push({ path: '/search', query: { q: 'c++' } }) // /search?q=c%2B%2B
+router.push({ path: '/search', query: { q: ['c++'] } }) // /search?q=c%2B%2B
 ```
 
 ::: details Why `+` and not `%20`?
