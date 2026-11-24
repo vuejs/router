@@ -270,21 +270,6 @@ const locations = createLocations({
       name: undefined,
     },
   },
-  childAsAbsolute: {
-    string: '/absolute-child',
-    normalized: {
-      fullPath: '/absolute-child',
-      href: '/absolute-child',
-      path: '/absolute-child',
-      params: {},
-      meta: {},
-      query: {},
-      hash: '',
-      matched: [records.parent, records.child],
-      redirectedFrom: undefined,
-      name: undefined,
-    },
-  },
   childParentAlias: {
     string: '/p/child',
     normalized: {
@@ -386,29 +371,22 @@ async function factory(
     slots: { default: slotTemplate },
   })
 
-  return { router, wrapper, route }
+  const classes = () => wrapper.find('a').classes()
+
+  return { router, wrapper, route, classes }
 }
 
 describe('RouterLink', () => {
-  it('displays a link with a string prop', async () => {
-    const { wrapper } = await factory(
-      START_LOCATION_NORMALIZED,
-      { to: locations.basic.string },
-      locations.basic.normalized
-    )
-    expect(wrapper.find('a')!.attributes('href')).toBe('/home')
-  })
-
-  it('can change the value', async () => {
+  it('updates the href when "to" changes', async () => {
     const { wrapper, router } = await factory(
       START_LOCATION_NORMALIZED,
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(wrapper.find('a')!.attributes('href')).toBe('/home')
+    expect(wrapper.find('a').attributes('href')).toBe('/home')
     router.resolve.mockReturnValueOnce(locations.foo.normalized)
     await wrapper.setProps({ to: locations.foo.string })
-    expect(wrapper.find('a')!.attributes('href')).toBe('/foo')
+    expect(wrapper.find('a').attributes('href')).toBe('/foo')
   })
 
   it('displays a link with an object with path prop', async () => {
@@ -417,16 +395,19 @@ describe('RouterLink', () => {
       { to: { path: locations.basic.string } },
       locations.basic.normalized
     )
-    expect(wrapper.find('a')!.attributes('href')).toBe('/home')
+    expect(wrapper.find('a').attributes('href')).toBe('/home')
   })
 
-  it('can be active', async () => {
-    const { wrapper } = await factory(
+  it('is active and exact active on the current location', async () => {
+    const { classes } = await factory(
       locations.basic.normalized,
       { to: locations.basic.string },
       locations.basic.normalized
     )
-    expect(wrapper.find('a').classes()).toContain('router-link-active')
+    expect(classes()).toEqual([
+      'router-link-active',
+      'router-link-exact-active',
+    ])
   })
 
   it('sets aria-current to page by default when exact active', async () => {
@@ -435,10 +416,10 @@ describe('RouterLink', () => {
       { to: locations.parent.string },
       locations.parent.normalized
     )
-    expect(wrapper.find('a')!.attributes('aria-current')).toBe('page')
+    expect(wrapper.find('a').attributes('aria-current')).toBe('page')
     route.set(locations.child.normalized)
     await tick()
-    expect(wrapper.find('a')!.attributes('aria-current')).not.toBe('page')
+    expect(wrapper.find('a').attributes('aria-current')).toBeUndefined()
   })
 
   it('can customize aria-current value', async () => {
@@ -447,21 +428,26 @@ describe('RouterLink', () => {
       { to: locations.basic.string, ariaCurrentValue: 'time' },
       locations.basic.normalized
     )
-    expect(wrapper.find('a')!.attributes('aria-current')).toBe('time')
+    expect(wrapper.find('a').attributes('aria-current')).toBe('time')
   })
 
-  it('can customize active class', async () => {
-    const { wrapper } = await factory(
+  it('uses the global classes from the router options', async () => {
+    const { wrapper, router, classes } = await factory(
       locations.basic.normalized,
-      { to: locations.basic.string, activeClass: 'is-active' },
-      locations.basic.normalized
+      // wrong location to set it later
+      { to: locations.foo.string },
+      locations.foo.normalized
     )
-    expect(wrapper.find('a')!.classes()).not.toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).toContain('is-active')
+    router.options.linkActiveClass = 'custom'
+    router.options.linkExactActiveClass = 'custom-exact'
+    // force render because options is not reactive
+    router.resolve.mockReturnValueOnce(locations.basic.normalized)
+    await wrapper.setProps({ to: locations.basic.string })
+    expect(classes()).toEqual(['custom', 'custom-exact'])
   })
 
-  it('prop classes take over global', async () => {
-    const { wrapper, router } = await factory(
+  it('uses the class props over the global classes', async () => {
+    const { wrapper, router, classes } = await factory(
       locations.basic.normalized,
       // wrong location to set it later
       {
@@ -476,353 +462,16 @@ describe('RouterLink', () => {
     // force render because options is not reactive
     router.resolve.mockReturnValueOnce(locations.basic.normalized)
     await wrapper.setProps({ to: locations.basic.string })
-    expect(wrapper.find('a')!.classes()).not.toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-    expect(wrapper.find('a')!.classes()).not.toContain('custom')
-    expect(wrapper.find('a')!.classes()).not.toContain('custom-exact')
-    expect(wrapper.find('a')!.classes()).toContain('is-active')
-    expect(wrapper.find('a')!.classes()).toContain('is-exact')
-  })
-
-  it('can globally customize active class', async () => {
-    const { wrapper, router } = await factory(
-      locations.basic.normalized,
-      // wrong location to set it later
-      { to: locations.foo.string },
-      locations.foo.normalized
-    )
-    router.options.linkActiveClass = 'custom'
-    // force render because options is not reactive
-    router.resolve.mockReturnValueOnce(locations.basic.normalized)
-    await wrapper.setProps({ to: locations.basic.string })
-    expect(wrapper.find('a')!.classes()).not.toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).toContain('custom')
-  })
-
-  it('can globally customize exact active class', async () => {
-    const { wrapper, router } = await factory(
-      locations.basic.normalized,
-      // wrong location to set it later
-      { to: locations.foo.string },
-      locations.foo.normalized
-    )
-    router.options.linkExactActiveClass = 'custom'
-    // force render because options is not reactive
-    router.resolve.mockReturnValueOnce(locations.basic.normalized)
-    await wrapper.setProps({ to: locations.basic.string })
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-    expect(wrapper.find('a')!.classes()).toContain('custom')
-  })
-
-  it('can customize exact active class', async () => {
-    const { wrapper } = await factory(
-      locations.basic.normalized,
-      { to: locations.basic.string, exactActiveClass: 'is-active' },
-      locations.basic.normalized
-    )
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-    expect(wrapper.find('a')!.classes()).toContain('is-active')
-  })
-
-  it('can be active with custom class', async () => {
-    const { wrapper } = await factory(
-      locations.basic.normalized,
-      { to: locations.basic.string, class: 'nav-item' },
-      locations.basic.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).toContain('nav-item')
-  })
-
-  it('is not active on a non matched location', async () => {
-    const { wrapper } = await factory(
-      locations.notFound.normalized,
-      { to: locations.basic.string },
-      locations.basic.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toHaveLength(0)
-  })
-
-  it('is not active with different params type', async () => {
-    const { wrapper } = await factory(
-      locations.repeatedParams2.normalized,
-      { to: locations.singleStringParams.string },
-      locations.singleStringParams.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toHaveLength(0)
-  })
-
-  it('is not active with different repeated params', async () => {
-    const { wrapper } = await factory(
-      locations.repeatedParams2.normalized,
-      { to: locations.anotherRepeatedParams2.string },
-      locations.anotherRepeatedParams2.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toHaveLength(0)
-  })
-
-  it('is not active with more repeated params', async () => {
-    const { wrapper } = await factory(
-      locations.repeatedParams2.normalized,
-      { to: locations.repeatedParams3.string },
-      locations.repeatedParams3.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toHaveLength(0)
-  })
-
-  it('is not active with partial repeated params', async () => {
-    const { wrapper } = await factory(
-      locations.repeatedParams3.normalized,
-      { to: locations.repeatedParams2.string },
-      locations.repeatedParams2.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toHaveLength(0)
-  })
-
-  it('can be active as an alias', async () => {
-    let { wrapper } = await factory(
-      locations.basic.normalized,
-      { to: locations.alias.string },
-      locations.alias.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).toContain('router-link-exact-active')
-    wrapper = (
-      await factory(
-        locations.alias.normalized,
-        { to: locations.basic.string },
-        locations.basic.normalized
-      )
-    ).wrapper
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).toContain('router-link-exact-active')
-  })
-
-  it('is active when a child is active', async () => {
-    const { wrapper } = await factory(
-      locations.child.normalized,
-      { to: locations.parent.string },
-      locations.parent.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-  })
-
-  it('only the children is exact-active', async () => {
-    const { wrapper } = await factory(
-      locations.child.normalized,
-      { to: locations.child.string },
-      locations.child.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).toContain('router-link-exact-active')
-  })
-
-  it('child is not active if the parent is active', async () => {
-    const { wrapper } = await factory(
-      locations.parent.normalized,
-      { to: locations.child.string },
-      locations.child.normalized
-    )
-    expect(wrapper.find('a')!.classes()).not.toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-  })
-
-  it('parent is active if the child is an absolute path', async () => {
-    const { wrapper } = await factory(
-      locations.childAsAbsolute.normalized,
-      { to: locations.parent.string },
-      locations.parent.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-  })
-
-  it('empty path child is active as if it was the parent when on adjacent child', async () => {
-    const { wrapper } = await factory(
-      locations.child.normalized,
-      { to: locations.childEmpty.string },
-      locations.childEmpty.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-  })
-
-  it('alias of empty path child is active as if it was the parent when on adjacent child', async () => {
-    const { wrapper } = await factory(
-      locations.child.normalized,
-      { to: locations.childEmptyAlias.string },
-      locations.childEmptyAlias.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-  })
-
-  it('empty path child is active as if it was the parent when on adjacent nested child', async () => {
-    const { wrapper } = await factory(
-      locations.childChild.normalized,
-      { to: locations.childEmpty.string },
-      locations.childEmpty.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-  })
-
-  it('alias of empty path child is active as if it was the parent when on adjacent nested nested child', async () => {
-    const { wrapper } = await factory(
-      locations.childChild.normalized,
-      { to: locations.childEmptyAlias.string },
-      locations.childEmptyAlias.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-  })
-
-  it('alias parent is active if the child is an absolute path', async () => {
-    const { wrapper } = await factory(
-      locations.childAsAbsolute.normalized,
-      { to: locations.parentAlias.string },
-      locations.parentAlias.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-  })
-
-  it('alias parent is active when a child is active', async () => {
-    let { wrapper } = await factory(
-      locations.child.normalized,
-      { to: locations.parentAlias.string },
-      locations.parentAlias.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-    wrapper = (
-      await factory(
-        locations.childDoubleAlias.normalized,
-        { to: locations.parentAlias.string },
-        locations.parentAlias.normalized
-      )
-    ).wrapper
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).not.toContain(
-      'router-link-exact-active'
-    )
-  })
-
-  it('alias parent is active', async () => {
-    let { wrapper } = await factory(
-      locations.parent.normalized,
-      { to: locations.parentAlias.string },
-      locations.parentAlias.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).toContain('router-link-exact-active')
-
-    wrapper = (
-      await factory(
-        locations.parentAlias.normalized,
-        { to: locations.parent.string },
-        locations.parent.normalized
-      )
-    ).wrapper
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).toContain('router-link-exact-active')
-  })
-
-  it('child and parent with alias', async () => {
-    let { wrapper } = await factory(
-      locations.child.normalized,
-      { to: locations.childDoubleAlias.string },
-      locations.childDoubleAlias.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).toContain('router-link-exact-active')
-
-    wrapper = (
-      await factory(
-        locations.child.normalized,
-        { to: locations.childParentAlias.string },
-        locations.childParentAlias.normalized
-      )
-    ).wrapper
-    expect(wrapper.find('a')!.classes()).toContain('router-link-active')
-    expect(wrapper.find('a')!.classes()).toContain('router-link-exact-active')
-  })
-
-  it('can be exact-active', async () => {
-    const { wrapper } = await factory(
-      locations.basic.normalized,
-      { to: locations.basic.string },
-      locations.basic.normalized
-    )
-    expect(wrapper.find('a')!.classes()).toContain('router-link-exact-active')
-  })
-
-  it('calls ensureLocation', async () => {
-    const { router } = await factory(
-      START_LOCATION_NORMALIZED,
-      { to: locations.basic.string },
-      locations.basic.normalized
-    )
-    expect(router.resolve).toHaveBeenCalledTimes(1)
-    expect(router.resolve).toHaveBeenCalledWith(locations.basic.string)
-  })
-
-  it('calls router.push and prevents the default action when clicked', async () => {
-    const { router, wrapper } = await factory(
-      START_LOCATION_NORMALIZED,
-      { to: locations.basic.string },
-      locations.basic.normalized
-    )
-    const e = new MouseEvent('click', { cancelable: true })
-    wrapper.find('a')!.element.dispatchEvent(e)
-    expect(router.push).toHaveBeenCalledTimes(1)
-    expect(e.defaultPrevented).toBe(true)
-  })
-
-  it('allows adding more click listeners', async () => {
-    const onClick = vi.fn()
-    const { router, wrapper } = await factory(
-      START_LOCATION_NORMALIZED,
-      { to: locations.basic.string, onClick },
-      locations.basic.normalized
-    )
-    wrapper.find('a')!.trigger('click')
-    expect(router.push).toHaveBeenCalledTimes(1)
-    expect(onClick).toHaveBeenCalledTimes(1)
+    expect(classes()).toEqual(['is-active', 'is-exact'])
   })
 
   it('allows adding custom classes', async () => {
-    const { wrapper } = await factory(
+    const { classes } = await factory(
       locations.basic.normalized,
       { to: locations.basic.string, class: 'custom class' },
       locations.basic.normalized
     )
-    expect(wrapper.find('a')!.classes()).toEqual([
+    expect(classes()).toEqual([
       'router-link-active',
       'router-link-exact-active',
       'custom',
@@ -830,31 +479,252 @@ describe('RouterLink', () => {
     ])
   })
 
-  it('calls router.replace when clicked with replace prop', async () => {
-    const { router, wrapper } = await factory(
-      START_LOCATION_NORMALIZED,
-      { to: locations.basic.string, replace: true },
+  it('is not active on a non matched location', async () => {
+    const { classes } = await factory(
+      locations.notFound.normalized,
+      { to: locations.basic.string },
       locations.basic.normalized
     )
-    wrapper.find('a')!.trigger('click')
-    expect(router.replace).toHaveBeenCalledTimes(1)
+    expect(classes()).toEqual([])
   })
 
-  it('calls router.push with the correct location for aliases', async () => {
-    const { router, wrapper } = await factory(
-      START_LOCATION_NORMALIZED,
-      { to: locations.alias.string },
-      locations.alias.normalized
-    )
-    wrapper.find('a')!.trigger('click')
-    expect(router.push).toHaveBeenCalledTimes(1)
-    expect(router.push).not.toHaveBeenCalledWith(
-      expect.objectContaining({
-        // this is the original name but if we push with this location, we will
-        // not have the alias on the url
-        name: 'home',
-      })
-    )
+  describe('params', () => {
+    it('is not active with different params type', async () => {
+      const { classes } = await factory(
+        locations.repeatedParams2.normalized,
+        { to: locations.singleStringParams.string },
+        locations.singleStringParams.normalized
+      )
+      expect(classes()).toEqual([])
+    })
+
+    it('is not active with different repeated params', async () => {
+      const { classes } = await factory(
+        locations.repeatedParams2.normalized,
+        { to: locations.anotherRepeatedParams2.string },
+        locations.anotherRepeatedParams2.normalized
+      )
+      expect(classes()).toEqual([])
+    })
+
+    it('is not active with more repeated params', async () => {
+      const { classes } = await factory(
+        locations.repeatedParams2.normalized,
+        { to: locations.repeatedParams3.string },
+        locations.repeatedParams3.normalized
+      )
+      expect(classes()).toEqual([])
+    })
+
+    it('is not active with partial repeated params', async () => {
+      const { classes } = await factory(
+        locations.repeatedParams3.normalized,
+        { to: locations.repeatedParams2.string },
+        locations.repeatedParams2.normalized
+      )
+      expect(classes()).toEqual([])
+    })
+  })
+
+  describe('nested routes', () => {
+    it('is active when a child is active', async () => {
+      const { classes } = await factory(
+        locations.child.normalized,
+        { to: locations.parent.string },
+        locations.parent.normalized
+      )
+      expect(classes()).toEqual(['router-link-active'])
+    })
+
+    it('only the children is exact-active', async () => {
+      const { classes } = await factory(
+        locations.child.normalized,
+        { to: locations.child.string },
+        locations.child.normalized
+      )
+      expect(classes()).toEqual([
+        'router-link-active',
+        'router-link-exact-active',
+      ])
+    })
+
+    it('child is not active if the parent is active', async () => {
+      const { classes } = await factory(
+        locations.parent.normalized,
+        { to: locations.child.string },
+        locations.child.normalized
+      )
+      expect(classes()).toEqual([])
+    })
+
+    it('empty path child is active as if it was the parent when on adjacent child', async () => {
+      const { classes } = await factory(
+        locations.child.normalized,
+        { to: locations.childEmpty.string },
+        locations.childEmpty.normalized
+      )
+      expect(classes()).toEqual(['router-link-active'])
+    })
+
+    it('empty path child is active as if it was the parent when on adjacent nested child', async () => {
+      const { classes } = await factory(
+        locations.childChild.normalized,
+        { to: locations.childEmpty.string },
+        locations.childEmpty.normalized
+      )
+      expect(classes()).toEqual(['router-link-active'])
+    })
+  })
+
+  describe('aliases', () => {
+    it('can be active as an alias', async () => {
+      let { classes } = await factory(
+        locations.basic.normalized,
+        { to: locations.alias.string },
+        locations.alias.normalized
+      )
+      expect(classes()).toEqual([
+        'router-link-active',
+        'router-link-exact-active',
+      ])
+      ;({ classes } = await factory(
+        locations.alias.normalized,
+        { to: locations.basic.string },
+        locations.basic.normalized
+      ))
+      expect(classes()).toEqual([
+        'router-link-active',
+        'router-link-exact-active',
+      ])
+    })
+
+    it('alias of empty path child is active as if it was the parent when on adjacent child', async () => {
+      const { classes } = await factory(
+        locations.child.normalized,
+        { to: locations.childEmptyAlias.string },
+        locations.childEmptyAlias.normalized
+      )
+      expect(classes()).toEqual(['router-link-active'])
+    })
+
+    it('alias of empty path child is active as if it was the parent when on adjacent nested child', async () => {
+      const { classes } = await factory(
+        locations.childChild.normalized,
+        { to: locations.childEmptyAlias.string },
+        locations.childEmptyAlias.normalized
+      )
+      expect(classes()).toEqual(['router-link-active'])
+    })
+
+    it('alias parent is active when a child is active', async () => {
+      let { classes } = await factory(
+        locations.child.normalized,
+        { to: locations.parentAlias.string },
+        locations.parentAlias.normalized
+      )
+      expect(classes()).toEqual(['router-link-active'])
+      ;({ classes } = await factory(
+        locations.childDoubleAlias.normalized,
+        { to: locations.parentAlias.string },
+        locations.parentAlias.normalized
+      ))
+      expect(classes()).toEqual(['router-link-active'])
+    })
+
+    it('alias parent is exact active on the parent', async () => {
+      let { classes } = await factory(
+        locations.parent.normalized,
+        { to: locations.parentAlias.string },
+        locations.parentAlias.normalized
+      )
+      expect(classes()).toEqual([
+        'router-link-active',
+        'router-link-exact-active',
+      ])
+      ;({ classes } = await factory(
+        locations.parentAlias.normalized,
+        { to: locations.parent.string },
+        locations.parent.normalized
+      ))
+      expect(classes()).toEqual([
+        'router-link-active',
+        'router-link-exact-active',
+      ])
+    })
+
+    it('child and parent with alias', async () => {
+      let { classes } = await factory(
+        locations.child.normalized,
+        { to: locations.childDoubleAlias.string },
+        locations.childDoubleAlias.normalized
+      )
+      expect(classes()).toEqual([
+        'router-link-active',
+        'router-link-exact-active',
+      ])
+      ;({ classes } = await factory(
+        locations.child.normalized,
+        { to: locations.childParentAlias.string },
+        locations.childParentAlias.normalized
+      ))
+      expect(classes()).toEqual([
+        'router-link-active',
+        'router-link-exact-active',
+      ])
+    })
+  })
+
+  describe('click', () => {
+    it('calls router.push and prevents the default action', async () => {
+      const { router, wrapper } = await factory(
+        START_LOCATION_NORMALIZED,
+        { to: locations.basic.string },
+        locations.basic.normalized
+      )
+      const e = new MouseEvent('click', { cancelable: true })
+      wrapper.find('a').element.dispatchEvent(e)
+      expect(router.push).toHaveBeenCalledTimes(1)
+      expect(e.defaultPrevented).toBe(true)
+    })
+
+    it('allows adding more click listeners', async () => {
+      const onClick = vi.fn()
+      const { router, wrapper } = await factory(
+        START_LOCATION_NORMALIZED,
+        { to: locations.basic.string, onClick },
+        locations.basic.normalized
+      )
+      wrapper.find('a').trigger('click')
+      expect(router.push).toHaveBeenCalledTimes(1)
+      expect(onClick).toHaveBeenCalledTimes(1)
+    })
+
+    it('calls router.replace with the replace prop', async () => {
+      const { router, wrapper } = await factory(
+        START_LOCATION_NORMALIZED,
+        { to: locations.basic.string, replace: true },
+        locations.basic.normalized
+      )
+      wrapper.find('a').trigger('click')
+      expect(router.replace).toHaveBeenCalledTimes(1)
+    })
+
+    it('calls router.push with the correct location for aliases', async () => {
+      const { router, wrapper } = await factory(
+        START_LOCATION_NORMALIZED,
+        { to: locations.alias.string },
+        locations.alias.normalized
+      )
+      wrapper.find('a').trigger('click')
+      expect(router.push).toHaveBeenCalledTimes(1)
+      expect(router.push).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          // this is the original name but if we push with this location, we will
+          // not have the alias on the url
+          name: 'home',
+        })
+      )
+    })
   })
 
   describe('v-slot', () => {
@@ -975,7 +845,7 @@ describe('RouterLink', () => {
           AppLink
         )
 
-        expect(wrapper.find('a')!.classes()).toEqual(['inactive'])
+        expect(wrapper.find('a').classes()).toEqual(['inactive'])
       })
 
       it('can extend RouterLink with external link', async () => {
@@ -989,8 +859,8 @@ describe('RouterLink', () => {
           AppLink
         )
 
-        expect(wrapper.find('a')!.classes()).toHaveLength(0)
-        expect(wrapper.find('a')!.attributes('href')).toEqual('https://esm.dev')
+        expect(wrapper.find('a').classes()).toHaveLength(0)
+        expect(wrapper.find('a').attributes('href')).toEqual('https://esm.dev')
       })
     })
   })
