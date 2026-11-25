@@ -66,7 +66,7 @@ useScrollRestoration({
 
 Installing the plugin sets `history.scrollRestoration` to `manual`. Setting it to `auto` can conflict with scroll restoration, especially for anchor links. Set it back to `auto` if this is not an issue for you. When it is not `manual`, the default `capture` function saves nothing and lets the browser restore the scroll.
 
-## `useScrollRestoration()` {#useScrollRestoration}
+## `useScrollRestoration()` %{#useScrollRestoration}%
 
 `useScrollRestoration()` uses `onRouteRendered()` to restore the scroll after each navigation. Call it in a component inside a `<RouterView>`, like a layout or a page component. The restore then runs when the closest `<RouterView>` shows the new route: after the page mounts or updates, after `<Suspense>` resolves, and after an out-in `<Transition>` enters.
 
@@ -74,7 +74,7 @@ Do not call it in your root `App.vue` or in other components outside of a `<Rout
 
 A layout component lets you call it once for all of its child pages. A page can call it again to use different options, for example `manual: true` to wait for an animation. When a page call and a layout call use the same key, the page call replaces the layout call: only the page captures and restores the position.
 
-## Migrating from `scrollBehavior` {#migrating-from-scrollbehavior}
+## Migrating from `scrollBehavior` %{#migrating-from-scrollbehavior}%
 
 1. Remove `scrollBehavior` from the router options.
 2. Install `ScrollRestoration` before the router, as shown in [Setup](#Setup).

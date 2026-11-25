@@ -212,7 +212,7 @@ VueRouter({
 })
 ```
 
-请注意，提供的文件夹必须是分开的，一个 _路由文件夹_ 不能包含另一个指定的 _路由文件夹_。如果你需要进一步的定制，可以尝试 [definePage()](./extending-routes#definepage)。
+请注意，提供的文件夹必须是分开的，一个 _路由文件夹_ 不能包含另一个指定的 _路由文件夹_。如果你需要进一步的定制，可以尝试 [definePage()](./extending-routes#definePage-)。
 
 ## 自定义扩展
 
