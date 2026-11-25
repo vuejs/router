@@ -84,13 +84,13 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
     go(delta, shouldTrigger = true) {
       const from = this.location
       const direction: NavigationDirection =
-        // the clamped delta below keeps this sign, and when it ends up 0
-        // nothing is reported, so the requested delta is enough here
+        // we are considering delta === 0 going forward, but in abstract mode
+        // using 0 for the delta doesn't make sense like it does in html5 where
+        // it reloads the page
         delta < 0 ? NavigationDirection.back : NavigationDirection.forward
       const previousPosition = position
       position = Math.max(0, Math.min(position + delta, queue.length - 1))
-      // report the clamped delta so the router can revert a cancelled
-      // navigation, and stay silent like browsers when nothing moved
+      // like browsers: report the traveled delta, nothing if it didn't move
       delta = position - previousPosition
       if (shouldTrigger && delta) {
         triggerListeners(this.location, from, {
