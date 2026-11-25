@@ -246,75 +246,49 @@ export class MatcherPatternPathDynamic<
     const path =
       '/' +
       this.pathParts
-        .map(part => {
-          // static part of the path, just return it
-          if (typeof part === 'string') {
-            return part
-            // path param
-          } else if (typeof part === 'number') {
-            paramName = this.paramsKeys[paramIndex++]
-            ;[parser, repeatable, optional] = this.params[paramName]
-            value = (parser?.set || identityFn)(params[paramName])
-
-            if (__DEV__ && optional && Object.hasOwn(params, paramName)) {
-              warnLegacyOptionalParam(
-                String(paramName),
-                params[paramName],
-                value
-              )
-            }
-
-            if (__DEV__ && repeatable && value && !Array.isArray(value)) {
-              diagnostics.VUE_ROUTER_R0106({ name: String(paramName) })
-            }
-
-            // non optional repeatable params cannot be empty
-            if (Array.isArray(value) && !value.length && !optional) {
-              // read the flag here so prod code does not keep it
-              if (__DEV__ && this.params[paramName][1]) {
-                diagnostics.VUE_ROUTER_R0124({ param: String(paramName) })
+        .map(part =>
+          // a whole segment is a sub segment with one part
+          (Array.isArray(part) ? part : [part])
+            .map(subPart => {
+              // static part of the path, just return it
+              if (typeof subPart === 'string') {
+                return subPart
               }
-              miss()
-            }
 
-            return Array.isArray(value)
-              ? value.map(encodeParam).join('/')
-              : // part == 1 means a regular param, 0 means a splat
-                (part ? encodeParam : encodePath)(value)
-            // sub segments
-          } else {
-            return part
-              .map(subPart => {
-                if (typeof subPart === 'string') {
-                  return subPart
+              paramName = this.paramsKeys[paramIndex++]
+              ;[parser, repeatable, optional] = this.params[paramName]
+              value = (parser?.set || identityFn)(params[paramName])
+
+              if (__DEV__ && optional && Object.hasOwn(params, paramName)) {
+                warnLegacyOptionalParam(
+                  String(paramName),
+                  params[paramName],
+                  value
+                )
+              }
+
+              if (__DEV__ && repeatable && value && !Array.isArray(value)) {
+                diagnostics.VUE_ROUTER_R0106({ name: String(paramName) })
+              }
+
+              // non optional repeatable params cannot be empty
+              if (Array.isArray(value) && !value.length && !optional) {
+                // read the flag here so prod code does not keep it
+                if (__DEV__ && this.params[paramName][1]) {
+                  diagnostics.VUE_ROUTER_R0124({ param: String(paramName) })
                 }
+                miss()
+              }
 
-                paramName = this.paramsKeys[paramIndex++]
-                ;[parser, repeatable, optional] = this.params[paramName]
-                value = (parser?.set || identityFn)(params[paramName])
-
-                if (__DEV__ && optional && Object.hasOwn(params, paramName)) {
-                  warnLegacyOptionalParam(
-                    String(paramName),
-                    params[paramName],
+              return Array.isArray(value)
+                ? value.map(encodeParam).join('/')
+                : // 1 means a regular param, 0 means a splat
+                  (subPart || Array.isArray(part) ? encodeParam : encodePath)(
                     value
                   )
-                }
-
-                if (__DEV__ && repeatable && value && !Array.isArray(value)) {
-                  diagnostics.VUE_ROUTER_R0106({ name: String(paramName) })
-                }
-
-                // a repeatable param in a sub segment joins its values with `/`
-                // so file-based routes like `rep.[ids]+` (sub segment
-                // ['rep/', 1]) and `set.[ids]+.other` round-trip correctly
-                return Array.isArray(value)
-                  ? value.map(encodeParam).join('/')
-                  : encodeParam(value as string | null | undefined)
-              })
-              .join('')
-          }
-        })
+            })
+            .join('')
+        )
         .filter(identityFn) // filter out empty values
         .join('/')
 

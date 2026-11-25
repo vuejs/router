@@ -176,11 +176,11 @@ describe('EditableTreeNode', () => {
     const tree = new PrefixTree(RESOLVED_OPTIONS)
     const editable = new EditableTreeNode(tree)
 
-    editable.insert(':foo/:bar+_:o(\\d+)', 'file.vue')
+    editable.insert(':foo/:bar+/:p-:o(\\d+)', 'file.vue')
     expect(tree.children.size).toBe(1)
-    const node = tree.children.get(':foo/:bar+_:o(\\d+)')!
-    expect(node.fullPath).toBe('/:foo/:bar+_:o(\\d+)')
-    expect(node.path).toBe('/:foo/:bar+_:o(\\d+)')
+    const node = tree.children.get(':foo/:bar+/:p-:o(\\d+)')!
+    expect(node.fullPath).toBe('/:foo/:bar+/:p-:o(\\d+)')
+    expect(node.path).toBe('/:foo/:bar+/:p-:o(\\d+)')
     expect(node.params).toMatchObject([
       {
         paramName: 'foo',
@@ -194,6 +194,13 @@ describe('EditableTreeNode', () => {
         modifier: '+',
         optional: false,
         repeatable: true,
+        isSplat: false,
+      },
+      {
+        paramName: 'p',
+        modifier: '',
+        optional: false,
+        repeatable: false,
         isSplat: false,
       },
       {

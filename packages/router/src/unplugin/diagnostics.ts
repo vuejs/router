@@ -127,6 +127,11 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       why: (p: { segment: string }) => `Empty param name in "${p.segment}".`,
       fix: 'Give the param a name with letters (a-z, A-Z), digits (0-9), and "_", e.g. "[id]".',
     },
+    VUE_ROUTER_B0029: {
+      why: (p: { paramName: string; segment: string }) =>
+        `Repeatable param "${p.paramName}" in "${p.segment}" is not a whole path segment. This is not supported.`,
+      fix: 'Put the repeatable param in its own segment, e.g. "users/[ids]+" or "users.[ids]+".',
+    },
 
     // --- core/customBlock.ts ---
     VUE_ROUTER_B0012: {
