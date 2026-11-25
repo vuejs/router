@@ -83,8 +83,18 @@ export function tokenizePath(path: string): Array<Token[]> {
   // custom regexp for a param
   let customRe: string = ''
 
+  function crashRepeatable(param: string) {
+    crash(
+      `A repeatable param (${param}) must be alone in its segment. eg: '/:ids+.`
+    )
+  }
+
   function consumeBuffer() {
     if (!buffer) return
+
+    const lastToken = segment[segment.length - 1]
+    if (lastToken?.type === TokenType.Param && lastToken.repeatable)
+      crashRepeatable(lastToken.value)
 
     if (state === TokenizerState.Static) {
       segment.push({
@@ -96,10 +106,8 @@ export function tokenizePath(path: string): Array<Token[]> {
       state === TokenizerState.ParamRegExp ||
       state === TokenizerState.ParamRegExpEnd
     ) {
-      if (segment.length > 1 && (char === '*' || char === '+'))
-        crash(
-          `A repeatable param (${buffer}) must be alone in its segment. eg: '/:ids+.`
-        )
+      if (segment.length && (char === '*' || char === '+'))
+        crashRepeatable(buffer)
       segment.push({
         type: TokenType.Param,
         value: buffer,

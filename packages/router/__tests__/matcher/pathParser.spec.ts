@@ -18,6 +18,23 @@ describe('Path parser', () => {
       expect(() => tokenizePath('a')).toThrowError(`"a" should be "/a"`)
     })
 
+    it('throws if a repeatable param is not alone in its segment', () => {
+      for (const path of [
+        '/rep-:ids+',
+        '/:ids+-end',
+        '/:ids*-end',
+        '/:ids(\\d+)+-end',
+        '/:a-:ids+',
+        '/:ids+:b',
+        '/a/:ids+\\-',
+      ]) {
+        expect(() => tokenizePath(path), path).toThrowError(
+          'must be alone in its segment'
+        )
+      }
+      expect(() => tokenizePath('/a/:ids+/b/:other*')).not.toThrow()
+    })
+
     it('escapes :', () => {
       expect(tokenizePath('/\\:')).toEqual([
         [{ type: TokenType.Static, value: ':' }],
@@ -1005,11 +1022,6 @@ describe('Path parser', () => {
     it('param with custom re followed by a separator and a param', () => {
       matchParams('/:a(\\d+)-:b', '/x-y', null)
       matchParams('/:a(\\d+)-:b-:c', '/1-2-3', { a: '1', b: '2', c: '3' })
-    })
-
-    it('param repeatable followed by a separator and a param', () => {
-      matchParams('/:a+-:b', '/x-y/z-w', { a: ['x-y', 'z'], b: 'w' })
-      matchParams('/:a+-:b', '/x/y-z', { a: ['x', 'y'], b: 'z' })
     })
 
     it('param followed by a separator and a param with custom re', () => {

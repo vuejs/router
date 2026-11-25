@@ -234,19 +234,9 @@ describe('Path ranking', () => {
     ])
   })
 
-  it('handles repeatable and optional in sub segments', () => {
-    checkPathOrder([
-      '/a/_:b-other',
-      '/a/_:b?-other',
-      '/a/_:b+-other',
-      '/a/_:b*-other',
-    ])
-    checkPathOrder([
-      '/a/_:b(\\d)-other',
-      '/a/_:b(\\d)?-other',
-      '/a/_:b(\\d)+-other',
-      '/a/_:b(\\d)*-other',
-    ])
+  it('handles optional in sub segments', () => {
+    checkPathOrder(['/a/_:b-other', '/a/_:b?-other'])
+    checkPathOrder(['/a/_:b(\\d)-other', '/a/_:b(\\d)?-other'])
   })
 
   it('ending slashes less than params', () => {
