@@ -68,6 +68,7 @@ import {
   routeLocationKey,
   routerKey,
   routerViewLocationKey,
+  appKey,
 } from '../injectionSymbols'
 import type {
   EXPERIMENTAL_ResolverRecord_Base,
@@ -1442,6 +1443,7 @@ export function experimental_createRouter(
       app.provide(routerKey, router)
       app.provide(routeLocationKey, createReactiveRoute(currentRoute))
       app.provide(routerViewLocationKey, currentRoute)
+      app.provide(appKey, app)
 
       installedApps.add(app)
       app.onUnmount(() => {

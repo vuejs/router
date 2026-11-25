@@ -458,6 +458,54 @@ describe('Vapor RouterView', () => {
       expect(events).toEqual(['mounted:A', 'settled:0:/a dom="A /a"'])
     })
 
+    it('calls root callbacks for the initial navigation when mounted after it', async () => {
+      const show = ref(false)
+      const history = createMemoryHistory()
+      history.replace('/a')
+      const router = createRouter({
+        history,
+        routes: [{ path: '/a', component: page('A') }],
+      })
+      app = createVaporApp(
+        defineVaporComponent({
+          setup() {
+            onRouteRendered((to, from) => {
+              events.push(
+                `root:${from.fullPath}->${to.fullPath} dom="${dom()}"`
+              )
+            })
+            return { show }
+          },
+          render: compileVapor('<Late v-if="show" /><RouterView />'),
+        })
+      )
+      app.use(router)
+      app.component('RouterView', RouterView)
+      app.component(
+        'Late',
+        defineVaporComponent({
+          setup() {
+            onRouteRendered(to => events.push(`late:${to.fullPath}`))
+          },
+          render: compileVapor('<i />'),
+        })
+      )
+      await router.isReady()
+      app.mount(host)
+      await nextTick()
+      expect(events).toEqual([
+        'mounted:A',
+        'root:/->/a dom="A /a"',
+        'settled:0:/a dom="A /a"',
+      ])
+
+      // mounted after the initial render: waits for the next navigation
+      events = []
+      show.value = true
+      await nextTick()
+      expect(events).toEqual([])
+    })
+
     it('component not reused', async () => {
       const { go } = await setup([
         { path: '/a', component: page('A') },

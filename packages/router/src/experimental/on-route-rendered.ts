@@ -1,13 +1,6 @@
-import {
-  getCurrentInstance,
-  inject,
-  onActivated,
-  onDeactivated,
-  onMounted,
-  onUnmounted,
-} from 'vue'
+import { inject, onActivated, onDeactivated, onMounted, onUnmounted } from 'vue'
 import type { RouteLocationNormalizedLoaded } from '../typed-routes'
-import { routerViewOnRouteRenderedKey } from '../injectionSymbols'
+import { appKey, routerViewOnRouteRenderedKey } from '../injectionSymbols'
 import { START_LOCATION_NORMALIZED } from '../location'
 import { useRouter } from '../useApi'
 import { noop } from '../utils'
@@ -32,12 +25,9 @@ function onRouteRenderedClient(callback: OnRouteRenderedCallback): void {
     // created by the initial render after the initial navigation (e.g.
     // `app.mount()` after `router.isReady()`): afterEach already ran. Not for
     // components mounted later (e.g. v-if), they wait for the next navigation,
-    // like within a RouterView. Null in Vapor components: they wait for the
-    // next navigation
+    // like within a RouterView. Vue sets `_container` once the app is mounted
     if (
-      // FIXME: support vapor by using useInstanceInfo()
-      // https://github.com/vuejs/core/pull/16348
-      getCurrentInstance()?.root.isMounted === false &&
+      inject(appKey)!._container === null &&
       router.currentRoute.value !== START_LOCATION_NORMALIZED
     ) {
       onMounted(() => {

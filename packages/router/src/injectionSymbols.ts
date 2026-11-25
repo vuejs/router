@@ -1,4 +1,4 @@
-import type { InjectionKey, ComputedRef, Ref } from 'vue'
+import type { App, InjectionKey, ComputedRef, Ref } from 'vue'
 import type { RouteLocationNormalizedLoaded } from './typed-routes'
 import type { RouteRecordNormalized } from './matcher/types'
 import type { Router } from './router'
@@ -62,3 +62,11 @@ export const routerViewLocationKey = Symbol(
 export const routerViewOnRouteRenderedKey = Symbol(
   __DEV__ ? 'router view on route rendered' : ''
 ) as InjectionKey<Set<OnRouteRenderedCallback>>
+
+/**
+ * App the router is installed on. Used by `onRouteRendered()` to know if the
+ * app is mounted, also in Vapor components.
+ *
+ * @internal
+ */
+export const appKey = Symbol(__DEV__ ? 'app' : '') as InjectionKey<App>
