@@ -1,14 +1,34 @@
 import type { NavigationInformation, RouterHistory } from './history/common'
 import { historyPositions } from './history/position'
 import type { RouteLocationNormalized } from './typed-routes'
+import type { LocationQueryValue } from './query'
 
-/** Route fields saved with a scroll restoration navigation, without history state. */
+/**
+ * Route fields saved with a scroll restoration navigation, without history state.
+ * The params/query records and their normalized array values are copied and
+ * frozen, so retained contexts cannot mutate or be changed by the live route.
+ */
 export type ScrollRestorationRoute = Readonly<
-  Pick<
-    RouteLocationNormalized,
-    'path' | 'fullPath' | 'name' | 'hash' | 'params' | 'query'
+  Pick<RouteLocationNormalized, 'path' | 'fullPath' | 'name' | 'hash'>
+> & {
+  readonly params: Readonly<Record<string, string | readonly string[]>>
+  readonly query: Readonly<
+    Record<string, LocationQueryValue | readonly LocationQueryValue[]>
   >
->
+}
+
+// Normalized params/query contain scalar values or arrays of scalar values.
+// Copy only this boundary; never freeze the live route's objects or arrays.
+function snapshotRouteValues<T>(
+  values: Record<string, T | T[]>
+): Readonly<Record<string, T | readonly T[]>> {
+  const copy: Record<string, T | readonly T[]> = { ...values }
+  for (const key of Object.keys(copy)) {
+    const value = copy[key]
+    if (Array.isArray(value)) copy[key] = Object.freeze(value.slice())
+  }
+  return Object.freeze(copy)
+}
 
 export function snapshotScrollRestorationRoute(
   route: RouteLocationNormalized
@@ -18,8 +38,8 @@ export function snapshotScrollRestorationRoute(
     fullPath: route.fullPath,
     name: route.name,
     hash: route.hash,
-    params: { ...route.params },
-    query: { ...route.query },
+    params: snapshotRouteValues(route.params),
+    query: snapshotRouteValues(route.query),
   })
 }
 

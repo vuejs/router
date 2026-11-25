@@ -220,6 +220,26 @@ describe('useScrollRestoration', () => {
         context.type = 'push'
         // @ts-expect-error arbitrary history state is not part of the context
         context.route.state
+        // @ts-expect-error snapshot param records are readonly
+        context.route.params.id = 'changed'
+        // @ts-expect-error snapshot query records are readonly
+        context.from.query.tag = 'changed'
+        const params = context.to.params.segments
+        if (typeof params !== 'string') {
+          expectTypeOf(params).toEqualTypeOf<readonly string[]>()
+          // @ts-expect-error repeatable param arrays are readonly
+          params.push('changed')
+          // @ts-expect-error array elements are readonly
+          params[0] = 'changed'
+        }
+        const query = context.route.query.tag
+        if (typeof query !== 'string' && query !== null) {
+          expectTypeOf(query).toEqualTypeOf<readonly (string | null)[]>()
+          // @ts-expect-error repeated query arrays are readonly
+          query.push(null)
+          // @ts-expect-error array elements are readonly
+          query[0] = 'changed'
+        }
         return null
       },
       restore(_entry, _route, context) {

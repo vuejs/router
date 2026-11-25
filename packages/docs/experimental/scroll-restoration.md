@@ -278,7 +278,9 @@ The callbacks also receive a `ScrollRestorationContext`: `key(route, context)`, 
 | `route`           | The route whose scroll position is being captured or restored.                 |
 | `from`, `to`      | The routes left and entered by this navigation.                                |
 
-The route fields are snapshots containing `path`, `fullPath`, `name`, `hash`, `params`, and `query`. They do not include history state, matched component instances, or navigation options. Failed, cancelled, and duplicated navigations do not replace the last successful context. Redirects describe the final committed operation and destination.
+The route fields are snapshots containing `path`, `fullPath`, `name`, `hash`, `params`, and `query`. The snapshots, their `params`/`query` records, and normalized array values are copied and frozen. Repeatable params and repeated query values (including `null` and their order) remain stable if the live route is later changed, even when you retain a context for delayed or manual restoration. These fields are readonly in TypeScript; attempts to assign to a frozen snapshot or mutate its arrays throw a `TypeError` in strict mode. Copy values into your own array before modifying them. The route passed as the existing `key`/`restore` argument is still the normal route, separate from the context snapshots.
+
+Snapshots do not include history state, matched component instances, or navigation options. Failed, cancelled, and duplicated navigations do not replace the last successful context. Redirects describe the final committed operation and destination.
 
 During navigation capture, `route` and `historyPosition` refer to the **departing** entry, even though `history.state` already belongs to the destination. During restoration, they refer to the **target** entry. Capture outside navigation (for example, on `pagehide` or through a custom listener) uses the current entry and its last successful navigation. The returned `scroll()` also uses the current route's context, so `manual: true` can wait for content to become ready.
 

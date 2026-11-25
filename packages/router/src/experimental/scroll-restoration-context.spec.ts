@@ -10,7 +10,10 @@ import type { RouterHistory } from '../history/common'
 import { RouterView } from '../RouterView'
 import { experimental_createRouter, normalizeRouteRecord } from './router'
 import { createFixedResolver } from './route-resolver/resolver-fixed'
-import { MatcherPatternPathStatic } from './route-resolver/matchers/matcher-pattern'
+import {
+  MatcherPatternPathDynamic,
+  MatcherPatternPathStatic,
+} from './route-resolver/matchers/matcher-pattern'
 import {
   ScrollRestoration,
   useScrollRestoration,
@@ -57,19 +60,31 @@ describe.each(['classic', 'experimental'] as const)(
         kind === 'classic'
           ? createRouter({
               history,
-              routes: paths.map(path => ({ path, component: Page })),
+              routes: [
+                ...paths.map(path => ({ path, component: Page })),
+                { path: '/parts/:segments+', component: Page },
+              ],
             })
           : experimental_createRouter({
               history,
-              resolver: createFixedResolver(
-                paths.map(path =>
+              resolver: createFixedResolver([
+                ...paths.map(path =>
                   normalizeRouteRecord({
                     name: path,
                     path: new MatcherPatternPathStatic(path),
                     components: { default: Page },
                   })
-                )
-              ),
+                ),
+                normalizeRouteRecord({
+                  name: 'parts',
+                  path: new MatcherPatternPathDynamic(
+                    /^\/parts\/(.+)$/,
+                    { segments: [undefined, true] },
+                    ['parts', 1]
+                  ),
+                  components: { default: Page },
+                }),
+              ]),
             })
       history.replace('/')
       if (beforeMount) await router.push('/a')
@@ -188,6 +203,152 @@ describe.each(['classic', 'experimental'] as const)(
         to: { path: '/b' },
       })
       expect(Object.isFrozen(captured)).toBe(true)
+    })
+
+    it('detaches and freezes target params/query arrays without freezing the live route', async () => {
+      const s = await setup()
+      await s.push('/parts/one/two?tag=x&tag&tag=&tag=y')
+      const live = s.router.currentRoute.value
+      const context = s.restores.at(-1)!
+      for (const snapshot of [context.route, context.to]) {
+        expect(snapshot.params.segments).toEqual(['one', 'two'])
+        expect(snapshot.query.tag).toEqual(['x', null, '', 'y'])
+        expect(snapshot.params).not.toBe(live.params)
+        expect(snapshot.query).not.toBe(live.query)
+        expect(snapshot.params.segments).not.toBe(live.params.segments)
+        expect(snapshot.query.tag).not.toBe(live.query.tag)
+        for (const value of [
+          snapshot,
+          snapshot.params,
+          snapshot.query,
+          snapshot.params.segments,
+          snapshot.query.tag,
+        ]) {
+          expect(Object.isFrozen(value)).toBe(true)
+        }
+        expect(() =>
+          (snapshot.params.segments as string[]).push('callback')
+        ).toThrow(TypeError)
+        expect(() =>
+          (snapshot.query.tag as (string | null)[]).push(null)
+        ).toThrow(TypeError)
+        expect(() =>
+          Object.assign(snapshot.params, { segments: ['callback'] })
+        ).toThrow(TypeError)
+        expect(() =>
+          Object.assign(snapshot.query, { tag: 'callback' })
+        ).toThrow(TypeError)
+      }
+      // Rejected callback writes did not reach the real normalized values.
+      expect(live.params.segments).toEqual(['one', 'two'])
+      expect(live.query.tag).toEqual(['x', null, '', 'y'])
+      expect(Object.isFrozen(live.params)).toBe(false)
+      expect(Object.isFrozen(live.query)).toBe(false)
+      expect(Object.isFrozen(live.params.segments)).toBe(false)
+      expect(Object.isFrozen(live.query.tag)).toBe(false)
+      ;(live.params.segments as string[]).push('live')
+      ;(live.query.tag as (string | null)[]).push('live')
+      live.query.extra = 'live'
+      for (const snapshot of [context.route, context.to]) {
+        expect(snapshot.params.segments).toEqual(['one', 'two'])
+        expect(snapshot.query.tag).toEqual(['x', null, '', 'y'])
+        expect(snapshot.query.extra).toBeUndefined()
+      }
+    })
+
+    it('isolates both sides of capture and restore contexts from the departing and target routes', async () => {
+      const s = await setup()
+      await s.push('/parts/a/b?tag=x&tag')
+      const from = s.router.currentRoute.value
+      await s.push('/parts/c/d?tag=z&tag=')
+      const to = s.router.currentRoute.value
+      const captured = s.captures.at(-1)!
+      const restored = s.restores.at(-1)!
+      expect(captured.route).toBe(captured.from)
+      expect(restored.route).toBe(restored.to)
+      for (const context of [captured, restored]) {
+        expect(context.from.params.segments).not.toBe(from.params.segments)
+        expect(context.from.query.tag).not.toBe(from.query.tag)
+        expect(context.to.params.segments).not.toBe(to.params.segments)
+        expect(context.to.query.tag).not.toBe(to.query.tag)
+        expect(() =>
+          (context.from.params.segments as string[]).push('callback')
+        ).toThrow(TypeError)
+        expect(() =>
+          (context.from.query.tag as (string | null)[]).push('callback')
+        ).toThrow(TypeError)
+        expect(() =>
+          (context.to.params.segments as string[]).push('callback')
+        ).toThrow(TypeError)
+        expect(() =>
+          (context.to.query.tag as (string | null)[]).push('callback')
+        ).toThrow(TypeError)
+      }
+      expect(from.params.segments).toEqual(['a', 'b'])
+      expect(from.query.tag).toEqual(['x', null])
+      expect(to.params.segments).toEqual(['c', 'd'])
+      expect(to.query.tag).toEqual(['z', ''])
+      ;(from.params.segments as string[]).reverse()
+      ;(from.query.tag as (string | null)[]).reverse()
+      ;(to.params.segments as string[]).push('live')
+      ;(to.query.tag as (string | null)[]).push('live')
+      await s.push('/a')
+      for (const context of [captured, restored]) {
+        expect(context.from.params.segments).toEqual(['a', 'b'])
+        expect(context.from.query.tag).toEqual(['x', null])
+        expect(context.to.params.segments).toEqual(['c', 'd'])
+        expect(context.to.query.tag).toEqual(['z', ''])
+      }
+    })
+
+    it('keeps retained and delayed manual contexts stable across live changes and later navigations', async () => {
+      const s = await setup({ manual: true })
+      await s.push('/parts/a/b?tag=x&tag')
+      const live = s.router.currentRoute.value
+      ;(live.params.segments as string[]).push('before-ready')
+      ;(live.query.tag as (string | null)[]).push('before-ready')
+      expect(s.restores).toHaveLength(0)
+      s.scroll()
+      const saved = s.restores.at(-1)!
+      expect(saved.to.params.segments).toEqual(['a', 'b'])
+      expect(saved.to.query.tag).toEqual(['x', null])
+      expect(() =>
+        (saved.to.query.tag as (string | null)[]).push('callback')
+      ).toThrow(TypeError)
+      expect(live.query.tag).toEqual(['x', null, 'before-ready'])
+      await s.push('/parts/c/d?tag=y&tag=')
+      s.scroll()
+      const next = s.restores.at(-1)!
+      expect(next.to.params.segments).toEqual(['c', 'd'])
+      expect(next.to.query.tag).toEqual(['y', ''])
+      expect(saved.to.params.segments).toEqual(['a', 'b'])
+      expect(saved.to.query.tag).toEqual(['x', null])
+      expect(saved).not.toBe(next)
+    })
+
+    it('keeps array snapshots independent between simultaneous router instances', async () => {
+      const a = await setup({ manual: true })
+      const b = await setup({ manual: true })
+      await a.push('/parts/a/b?tag=x&tag')
+      await b.push('/parts/a/b?tag=x&tag')
+      a.scroll()
+      b.scroll()
+      const first = a.restores.at(-1)!
+      const second = b.restores.at(-1)!
+      expect(first.to.params.segments).not.toBe(second.to.params.segments)
+      expect(first.to.query.tag).not.toBe(second.to.query.tag)
+      ;(a.router.currentRoute.value.params.segments as string[]).push('a-only')
+      ;(a.router.currentRoute.value.query.tag as (string | null)[]).push(
+        'a-only'
+      )
+      expect(b.router.currentRoute.value.params.segments).toEqual(['a', 'b'])
+      expect(b.router.currentRoute.value.query.tag).toEqual(['x', null])
+      a.wrapper.unmount()
+      await b.push('/b')
+      for (const context of [first, second]) {
+        expect(context.to.params.segments).toEqual(['a', 'b'])
+        expect(context.to.query.tag).toEqual(['x', null])
+      }
     })
 
     it('preserves the departing position on replace and follows redirects', async () => {

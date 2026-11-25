@@ -36,6 +36,7 @@ const router = createRouter({
     { path: '/', redirect: '/a' },
     { path: '/a', component: Page },
     { path: '/b', component: Page },
+    { path: '/parts/:segments+', component: Page },
     { path: '/redirect', redirect: '/b' },
   ],
 })
