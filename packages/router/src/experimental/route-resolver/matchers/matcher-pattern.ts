@@ -283,9 +283,7 @@ export class MatcherPatternPathDynamic<
               return Array.isArray(value)
                 ? value.map(encodeParam).join('/')
                 : // 1 means a regular param, 0 means a splat
-                  (subPart || Array.isArray(part) ? encodeParam : encodePath)(
-                    value
-                  )
+                  (subPart ? encodeParam : encodePath)(value)
             })
             .join('')
         )
