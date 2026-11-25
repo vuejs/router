@@ -265,6 +265,16 @@ describe('generated path matchers', () => {
     expect(pattern.build({ pathMatch: '124/b' })).toBe('/124/b')
   })
 
+  it('splat param in a sub segment keeps slashes', () => {
+    const start = generatePath('prefix-[...path]')
+    expect(start.build({ path: 'a/b' })).toBe('/prefix-a/b')
+    expect(start.match('/prefix-a/b')).toEqual({ path: 'a/b' })
+
+    const end = generatePath('docs/[...path]-end')
+    expect(end.build({ path: 'a/b' })).toBe('/docs/a/b-end')
+    expect(end.match('/docs/a/b-end')).toEqual({ path: 'a/b' })
+  })
+
   it('repeatable optional param', () => {
     const pattern = generatePath('teams/[[teamId]]+/b')
 
