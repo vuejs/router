@@ -161,3 +161,136 @@ for (const mode of ['web', 'hash']) {
     })
   })
 }
+
+for (const kind of ['classic', 'experimental']) {
+  for (const mode of ['web', 'hash']) {
+    const start =
+      '/scroll-restoration-context/' +
+      (mode === 'web' ? 'a?' : '?hash&') +
+      (kind === 'experimental' ? 'experimental' : '') +
+      (mode === 'hash' ? '#/a' : '')
+
+    test(`classifies Back after aborted startup as pop (${kind}/${mode})`, async ({
+      page,
+    }) => {
+      await page.goto(start)
+      await visible(page, '/a')
+      await page.evaluate(() => (window as any).contextRouter.push('/b'))
+      await visible(page, '/b')
+      const position = await page.evaluate(() => history.state.position)
+      await page.evaluate(() =>
+        sessionStorage.setItem('context-abort-initial', 'yes')
+      )
+      await page.reload()
+      await expect
+        .poll(() =>
+          page.evaluate(() => (window as any).contextReadiness.aborted)
+        )
+        .toBe(true)
+      const aborted = await page.evaluate(() => ({
+        ...(window as any).contextReadiness,
+        restores: (window as any).contextTrace.filter(
+          (e: any) => e.phase === 'restore'
+        ).length,
+      }))
+      expect(aborted).toEqual({
+        aborted: true,
+        atStart: true,
+        failureType: 4,
+        restores: 0,
+      })
+      await back(page, '/a')
+      const context = await page.evaluate(() =>
+        (window as any).contextTrace
+          .filter((e: any) => e.phase === 'restore')
+          .at(-1)
+      )
+      expect(context).toMatchObject({
+        type: 'pop',
+        delta: -1,
+        direction: 'back',
+        historyPosition: position - 1,
+        route: { path: '/a' },
+        from: { path: '/' },
+        to: { path: '/a' },
+      })
+      await page.evaluate(() =>
+        sessionStorage.removeItem('context-abort-initial')
+      )
+      await forward(page, '/b')
+      const forwardContext = await page.evaluate(() =>
+        (window as any).contextTrace
+          .filter((e: any) => e.phase === 'restore')
+          .at(-1)
+      )
+      expect(forwardContext).toMatchObject({
+        type: 'pop',
+        delta: 1,
+        direction: 'forward',
+        historyPosition: position,
+      })
+    })
+  }
+}
+
+for (const mode of ['web', 'hash']) {
+  test(`preserves custom parsed numeric params (${mode})`, async ({ page }) => {
+    await page.goto(
+      mode === 'web'
+        ? '/scroll-restoration-context/a?experimental'
+        : '/scroll-restoration-context/?hash&experimental#/a'
+    )
+    await visible(page, '/a')
+    await page.evaluate(() => (window as any).contextRouter.push('/number/43'))
+    await visible(page, '/number/43')
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            (window as any).contextTrace
+              .filter((e: any) => e.phase === 'restore')
+              .at(-1)?.to.path
+        )
+      )
+      .toBe('/number/43')
+    const scalar = await page.evaluate(
+      () =>
+        (window as any).contextTrace
+          .filter((e: any) => e.phase === 'restore')
+          .at(-1).to.params.id
+    )
+    await page.evaluate(() =>
+      (window as any).contextRouter.push('/numbers/41/42?manual')
+    )
+    await visible(page, '/numbers/41/42')
+    const result = await page.evaluate(async () => {
+      const { contextRouter: router, contextTrace: trace } = window as any
+      const live = router.currentRoute.value.params.id
+      live.push(99)
+      window.dispatchEvent(new Event('data-ready'))
+      const context = trace.filter((e: any) => e.phase === 'restore').at(-1)
+      let rejected = false
+      try {
+        context.to.params.id.push(100)
+      } catch (error) {
+        rejected = error instanceof TypeError
+      }
+      await router.push('/a')
+      return {
+        array: context.to.params.id,
+        live,
+        same: context.to.params.id === live,
+        frozen: Object.isFrozen(context.to.params.id),
+        rejected,
+      }
+    })
+    expect({ scalar, ...result }).toEqual({
+      scalar: 43,
+      array: [41, 42],
+      live: [41, 42, 99],
+      same: false,
+      frozen: true,
+      rejected: true,
+    })
+  })
+}

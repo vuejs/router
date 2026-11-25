@@ -1145,13 +1145,14 @@ export function experimental_createRouter(
       routerHistory,
       toLocation,
       from,
-      isFirstNavigation
-        ? 'initial'
-        : isPush
-          ? replace
+      // A traversal can be the first success after an aborted startup.
+      !isPush
+        ? 'pop'
+        : isFirstNavigation
+          ? 'initial'
+          : replace
             ? 'replace'
-            : 'push'
-          : 'pop',
+            : 'push',
       information
     )
 

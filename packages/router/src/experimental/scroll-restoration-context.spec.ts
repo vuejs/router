@@ -5,6 +5,9 @@ import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import { defineComponent } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createRouter } from '../router'
+import { START_LOCATION_NORMALIZED } from '../location'
+import { isNavigationFailure, NavigationFailureType } from '../errors'
+import type { ParamParser } from './route-resolver/matchers/param-parsers/types'
 import { createMemoryHistory } from '../history/memory'
 import type { RouterHistory } from '../history/common'
 import { RouterView } from '../RouterView'
@@ -32,11 +35,13 @@ describe.each(['classic', 'experimental'] as const)(
       history = createMemoryHistory(),
       setupListeners,
       beforeMount = false,
+      abortInitial = false,
     }: {
       manual?: boolean
       history?: RouterHistory
       setupListeners?: ScrollRestorationPluginOptions['setupListeners']
       beforeMount?: boolean
+      abortInitial?: boolean
     } = {}) {
       let top = 0
       let scroll!: () => void
@@ -55,6 +60,18 @@ describe.each(['classic', 'experimental'] as const)(
         },
         template: '<main>{{ $route.path }}</main>',
       })
+      const numberParser: ParamParser<number, string> = {
+        get: Number,
+        set: String,
+      }
+      const numbersParser: ParamParser<number[], string[]> = {
+        get: values => values.map(Number),
+        set: values => values.map(String),
+      }
+      const dateParser: ParamParser<Date, string> = {
+        get: value => new Date(value),
+        set: value => value.toISOString(),
+      }
       const paths = ['/', '/a', '/b', '/c', '/slow', '/blocked', '/redirect']
       const router =
         kind === 'classic'
@@ -68,6 +85,33 @@ describe.each(['classic', 'experimental'] as const)(
           : experimental_createRouter({
               history,
               resolver: createFixedResolver([
+                normalizeRouteRecord({
+                  name: 'number',
+                  path: new MatcherPatternPathDynamic(
+                    /^\/number\/([^/]+)$/,
+                    { id: [numberParser] },
+                    ['number', 1]
+                  ),
+                  components: { default: Page },
+                }),
+                normalizeRouteRecord({
+                  name: 'numbers',
+                  path: new MatcherPatternPathDynamic(
+                    /^\/numbers\/(.+)$/,
+                    { id: [numbersParser, true] },
+                    ['numbers', 1]
+                  ),
+                  components: { default: Page },
+                }),
+                normalizeRouteRecord({
+                  name: 'date',
+                  path: new MatcherPatternPathDynamic(
+                    /^\/date\/([^/]+)$/,
+                    { id: [dateParser] },
+                    ['date', 1]
+                  ),
+                  components: { default: Page },
+                }),
                 ...paths.map(path =>
                   normalizeRouteRecord({
                     name: path,
@@ -87,6 +131,11 @@ describe.each(['classic', 'experimental'] as const)(
               ]),
             })
       history.replace('/')
+      if (abortInitial) {
+        history.push('/a')
+        history.push('/b')
+        router.beforeEach(to => (to.path === '/b' ? false : undefined))
+      }
       if (beforeMount) await router.push('/a')
       const wrapper = mount(
         defineComponent({
@@ -117,7 +166,10 @@ describe.each(['classic', 'experimental'] as const)(
           },
         }
       )
-      await router.isReady()
+      const initialFailure = abortInitial
+        ? await router.isReady().catch(error => error)
+        : await router.isReady()
+      const initialRoute = router.currentRoute.value
       await flushPromises()
       const push = async (path: string) => {
         await router.push(path)
@@ -129,6 +181,8 @@ describe.each(['classic', 'experimental'] as const)(
       }
       return {
         router,
+        initialFailure,
+        initialRoute,
         wrapper,
         push,
         go,
@@ -141,6 +195,33 @@ describe.each(['classic', 'experimental'] as const)(
         },
       }
     }
+
+    it('reports a real memory traversal after aborted startup as pop', async () => {
+      const s = await setup({ abortInitial: true })
+      expect(
+        isNavigationFailure(s.initialFailure, NavigationFailureType.aborted)
+      ).toBe(true)
+      expect(s.initialRoute).toBe(START_LOCATION_NORMALIZED)
+      expect(s.restores).toHaveLength(0)
+      await s.go(-1)
+      expect(s.wrapper.find('main').text()).toBe('/a')
+      expect(s.restores.at(-1)).toMatchObject({
+        type: 'pop',
+        direction: 'back',
+        delta: -1,
+        historyPosition: 1,
+        route: { path: '/a' },
+        from: { path: '/' },
+        to: { path: '/a' },
+      })
+      await s.push('/c')
+      expect(s.restores.at(-1)).toMatchObject({
+        type: 'push',
+        delta: 0,
+        direction: '',
+        historyPosition: 2,
+      })
+    })
 
     it('keeps distinct entries through links, Back, Forward and branch replacement', async () => {
       const s = await setup()
@@ -204,6 +285,42 @@ describe.each(['classic', 'experimental'] as const)(
       })
       expect(Object.isFrozen(captured)).toBe(true)
     })
+
+    if (kind === 'experimental') {
+      it('preserves public custom parser values and detaches numeric arrays', async () => {
+        const s = await setup({ manual: true })
+        await s.push('/number/43')
+        s.scroll()
+        const scalar = s.restores.at(-1)!
+        expect(scalar.to.params.id).toBe(43)
+        expect(scalar.to.params.id).toBe(s.router.currentRoute.value.params.id)
+        await s.push('/numbers/41/42')
+        const live: unknown = s.router.currentRoute.value.params.id
+        s.scroll()
+        const array = s.restores.at(-1)!
+        for (const snapshot of [array.route, array.to]) {
+          expect(snapshot.params.id).toEqual([41, 42])
+          expect(snapshot.params.id).not.toBe(live)
+          expect(Object.isFrozen(snapshot.params.id)).toBe(true)
+          expect(() => (snapshot.params.id as number[]).push(99)).toThrow(
+            TypeError
+          )
+        }
+        expect(Object.isFrozen(live)).toBe(false)
+        ;(live as number[]).push(99)
+        expect(array.to.params.id).toEqual([41, 42])
+        await s.push('/date/2026-01-01')
+        s.scroll()
+        const date = s.router.currentRoute.value.params.id
+        expect(date).toBeInstanceOf(Date)
+        // Opaque parser objects keep their identity. Do not promise a deep
+        // clone/freeze of Date internal slots or user-defined class instances.
+        expect(s.restores.at(-1)!.to.params.id).toBe(date)
+        expect(Object.isFrozen(date)).toBe(false)
+        expect(scalar.to.params.id).toBe(43)
+        expect(array.to.params.id).toEqual([41, 42])
+      })
+    }
 
     it('detaches and freezes target params/query arrays without freezing the live route', async () => {
       const s = await setup()

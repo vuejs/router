@@ -787,13 +787,14 @@ export function createRouter(options: RouterOptions): Router {
       routerHistory,
       toLocation,
       from,
-      isFirstNavigation
-        ? 'initial'
-        : isPush
-          ? replace
+      // A traversal can be the first success after an aborted startup.
+      !isPush
+        ? 'pop'
+        : isFirstNavigation
+          ? 'initial'
+          : replace
             ? 'replace'
-            : 'push'
-          : 'pop',
+            : 'push',
       information
     )
 

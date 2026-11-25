@@ -4,8 +4,17 @@ import {
   createWebHistory,
   createWebHashHistory,
   useRoute,
+  START_LOCATION,
+  RouterView,
+  RouterLink,
 } from 'vue-router'
 import {
+  experimental_createRouter,
+  createFixedResolver,
+  normalizeRouteRecord,
+  MatcherPatternPathStatic,
+  MatcherPatternPathDynamic,
+  type ParamParser,
   ScrollRestoration,
   useScrollRestoration,
   SCROLL_RESTORATION_CAPTURE_DEFAULT,
@@ -28,19 +37,71 @@ const Page = defineComponent({
   },
   template: '<main :data-page="$route.path">{{ $route.path }}</main>',
 })
-const router = createRouter({
-  history: new URLSearchParams(location.search).has('hash')
-    ? createWebHashHistory('/scroll-restoration-context/')
-    : createWebHistory('/scroll-restoration-context/'),
-  routes: [
-    { path: '/', redirect: '/a' },
-    { path: '/a', component: Page },
-    { path: '/b', component: Page },
-    { path: '/parts/:segments+', component: Page },
-    { path: '/redirect', redirect: '/b' },
-  ],
-})
+const config = new URLSearchParams(location.search)
+if (config.has('experimental'))
+  sessionStorage.setItem('context-experimental', 'yes')
+const experimental = sessionStorage.getItem('context-experimental') === 'yes'
+const history = config.has('hash')
+  ? createWebHashHistory('/scroll-restoration-context/')
+  : createWebHistory('/scroll-restoration-context/')
+const numberParser: ParamParser<number, string> = { get: Number, set: String }
+const numbersParser: ParamParser<number[], string[]> = {
+  get: values => values.map(Number),
+  set: values => values.map(String),
+}
+const router = experimental
+  ? experimental_createRouter({
+      history,
+      resolver: createFixedResolver([
+        ...['/a', '/b', '/blocked'].map(path =>
+          normalizeRouteRecord({
+            name: path,
+            path: new MatcherPatternPathStatic(path),
+            components: { default: Page },
+          })
+        ),
+        normalizeRouteRecord({
+          name: 'number',
+          path: new MatcherPatternPathDynamic(
+            /^\/number\/([^/]+)$/,
+            { id: [numberParser] },
+            ['number', 1]
+          ),
+          components: { default: Page },
+        }),
+        normalizeRouteRecord({
+          name: 'numbers',
+          path: new MatcherPatternPathDynamic(
+            /^\/numbers\/(.+)$/,
+            { id: [numbersParser, true] },
+            ['numbers', 1]
+          ),
+          components: { default: Page },
+        }),
+      ]),
+    })
+  : createRouter({
+      history,
+      routes: [
+        { path: '/', redirect: '/a' },
+        { path: '/a', component: Page },
+        { path: '/b', component: Page },
+        { path: '/blocked', component: Page },
+        { path: '/parts/:segments+', component: Page },
+        { path: '/redirect', redirect: '/b' },
+      ],
+    })
+router.beforeEach(to =>
+  to.path === '/blocked' ||
+  (to.path === '/b' &&
+    sessionStorage.getItem('context-abort-initial') === 'yes')
+    ? false
+    : undefined
+)
+const readiness = { aborted: false, atStart: false, failureType: 0 }
+
 const app = createApp({
+  components: { RouterView, RouterLink },
   template: `<nav><router-link to="/a">a</router-link> <router-link to="/b">b</router-link></nav><router-view />`,
 })
 app.use(ScrollRestoration, {
@@ -59,4 +120,13 @@ app.use(ScrollRestoration, {
 })
 app.use(router)
 app.mount('#app')
-Object.assign(window, { contextTrace: trace, contextRouter: router })
+router.isReady().catch(error => {
+  readiness.aborted = true
+  readiness.failureType = error.type
+  readiness.atStart = router.currentRoute.value === START_LOCATION
+})
+Object.assign(window, {
+  contextTrace: trace,
+  contextRouter: router,
+  contextReadiness: readiness,
+})

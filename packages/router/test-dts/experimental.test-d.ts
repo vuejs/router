@@ -225,11 +225,20 @@ describe('useScrollRestoration', () => {
         // @ts-expect-error snapshot query records are readonly
         context.from.query.tag = 'changed'
         const params = context.to.params.segments
+        expectTypeOf(params).toEqualTypeOf<unknown>()
         if (typeof params !== 'string') {
-          expectTypeOf(params).toEqualTypeOf<readonly string[]>()
-          // @ts-expect-error repeatable param arrays are readonly
+          // @ts-expect-error parsers can produce numbers or opaque objects
+          params.join('/')
+          // @ts-expect-error unknown params cannot be mutated
           params.push('changed')
-          // @ts-expect-error array elements are readonly
+          // @ts-expect-error unknown param elements cannot be assigned
+          params[0] = 'changed'
+        }
+        if (isReadonlyArray(params)) {
+          expectTypeOf(params).toEqualTypeOf<readonly unknown[]>()
+          // @ts-expect-error narrowed snapshot arrays remain readonly
+          params.push('changed')
+          // @ts-expect-error narrowed array elements remain readonly
           params[0] = 'changed'
         }
         const query = context.route.query.tag
@@ -443,3 +452,9 @@ describe('definePage props', () => {
     })
   })
 })
+
+// Unlike Array.isArray's mutable any[] predicate, this guard reflects the
+// snapshot contract without assuming the types returned by custom parsers.
+function isReadonlyArray(value: unknown): value is readonly unknown[] {
+  return Array.isArray(value)
+}

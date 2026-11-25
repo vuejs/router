@@ -5,20 +5,26 @@ import type { LocationQueryValue } from './query'
 
 /**
  * Route fields saved with a scroll restoration navigation, without history state.
- * The params/query records and their normalized array values are copied and
- * frozen, so retained contexts cannot mutate or be changed by the live route.
+ * The params/query records and their top-level array values are copied and
+ * frozen. Custom parsed objects (including array elements) keep their identity;
+ * their internals are not copied or frozen.
  */
 export type ScrollRestorationRoute = Readonly<
   Pick<RouteLocationNormalized, 'path' | 'fullPath' | 'name' | 'hash'>
 > & {
-  readonly params: Readonly<Record<string, string | readonly string[]>>
+  /**
+   * Parsed parameter values. Experimental parsers can return any type, so
+   * consumers must narrow values before using them. Top-level arrays are
+   * detached and frozen; other parsed objects are retained by reference.
+   */
+  readonly params: Readonly<Record<string, unknown>>
   readonly query: Readonly<
     Record<string, LocationQueryValue | readonly LocationQueryValue[]>
   >
 }
 
-// Normalized params/query contain scalar values or arrays of scalar values.
-// Copy only this boundary; never freeze the live route's objects or arrays.
+// Copy only the record and top-level array boundary. Custom parser results
+// are opaque: never freeze the live route's objects or array elements.
 function snapshotRouteValues<T>(
   values: Record<string, T | T[]>
 ): Readonly<Record<string, T | readonly T[]>> {
@@ -49,7 +55,10 @@ export function snapshotScrollRestorationRoute(
  * entry during restoration.
  */
 export interface ScrollRestorationContext {
-  /** The committed operation. `initial` includes loading or reloading the app. */
+  /**
+   * The committed operation. `initial` is a successful startup navigation;
+   * history traversal is `pop`, even after an aborted startup.
+   */
   readonly type: 'initial' | 'push' | 'replace' | 'pop'
   /** Traversal direction, or an empty string for other navigations. */
   readonly direction: 'back' | 'forward' | ''
@@ -97,8 +106,8 @@ export function recordScrollRestorationContext(
   const toSnapshot = snapshotScrollRestorationRoute(to)
   const navigation = {
     type,
-    direction: information?.direction || '',
-    delta: information?.delta || 0,
+    direction: type === 'pop' ? information?.direction || '' : '',
+    delta: type === 'pop' ? information?.delta || 0 : 0,
     from: fromSnapshot,
     to: toSnapshot,
   } as const
