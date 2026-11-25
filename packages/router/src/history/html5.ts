@@ -18,6 +18,7 @@ import {
 import { diagnostics } from '../diagnostics'
 import { stripBase } from '../location'
 import { assign } from '../utils'
+import { historyPositions } from './position'
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 
@@ -343,5 +344,11 @@ export function createWebHistory(base?: string): RouterHistory {
     get: () => historyNavigation.state.value,
   })
 
+  historyPositions.set(routerHistory, () => {
+    const position = historyNavigation.state.value.position
+    return typeof position === 'number' && Number.isFinite(position)
+      ? position
+      : undefined
+  })
   return routerHistory
 }

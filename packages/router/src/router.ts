@@ -1,3 +1,5 @@
+import { recordScrollRestorationContext } from './scroll-restoration-context'
+import type { NavigationInformation } from './history/common'
 import type {
   RouteRecordRaw,
   Lazy,
@@ -757,7 +759,8 @@ export function createRouter(options: RouterOptions): Router {
     from: RouteLocationNormalizedLoaded,
     isPush: boolean,
     replace?: boolean,
-    data?: HistoryState
+    data?: HistoryState,
+    information?: NavigationInformation
   ): NavigationFailure | void {
     // a more recent navigation took place
     const error = checkCanceledNavigation(toLocation, from)
@@ -779,6 +782,20 @@ export function createRouter(options: RouterOptions): Router {
         routerHistory.replace(toLocation.fullPath, data)
       else routerHistory.push(toLocation.fullPath, data)
     }
+
+    recordScrollRestorationContext(
+      routerHistory,
+      toLocation,
+      from,
+      isFirstNavigation
+        ? 'initial'
+        : isPush
+          ? replace
+            ? 'replace'
+            : 'push'
+          : 'pop',
+      information
+    )
 
     // accept current navigation
     currentRoute.value = toLocation
@@ -885,7 +902,10 @@ export function createRouter(options: RouterOptions): Router {
               // after navigation, all matched components are resolved
               toLocation as RouteLocationNormalizedLoaded,
               from,
-              false
+              false,
+              undefined,
+              undefined,
+              info
             )
 
           // revert the navigation

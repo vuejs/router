@@ -1,3 +1,5 @@
+import { recordScrollRestorationContext } from '../scroll-restoration-context'
+import type { NavigationInformation } from '../history/common'
 import type { NavigationRedirectError } from '../errors'
 import {
   createRouterError,
@@ -1115,7 +1117,8 @@ export function experimental_createRouter(
     from: RouteLocationNormalizedLoaded,
     isPush: boolean,
     replace?: boolean,
-    data?: HistoryState
+    data?: HistoryState,
+    information?: NavigationInformation
   ): NavigationFailure | void {
     // a more recent navigation took place
     const error = checkCanceledNavigation(toLocation, from)
@@ -1137,6 +1140,20 @@ export function experimental_createRouter(
         routerHistory.replace(toLocation.fullPath, data)
       else routerHistory.push(toLocation.fullPath, data)
     }
+
+    recordScrollRestorationContext(
+      routerHistory,
+      toLocation,
+      from,
+      isFirstNavigation
+        ? 'initial'
+        : isPush
+          ? replace
+            ? 'replace'
+            : 'push'
+          : 'pop',
+      information
+    )
 
     // accept current navigation
     currentRoute.value = toLocation
@@ -1261,7 +1278,10 @@ export function experimental_createRouter(
               // after navigation, all matched components are resolved
               toLocation as RouteLocationNormalizedLoaded,
               from,
-              false
+              false,
+              undefined,
+              undefined,
+              info
             )
 
           // revert the navigation

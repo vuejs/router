@@ -265,6 +265,49 @@ useScrollRestoration({
 
 A nested call with the same key replaces the calls of its parent components, see [`useScrollRestoration()`](#useScrollRestoration). Other components that are active at the same time, like two sibling components, must use different keys, one for each scroll container. With the same key, they all capture and restore, and the last capture replaces the others.
 
+## Navigation and history entries
+
+The callbacks also receive a `ScrollRestorationContext`: `key(route, context)`, `capture(context)`, and `restore(entry, to, context)`. Existing callbacks can continue to omit the extra argument.
+
+| Field             | Meaning                                                                        |
+| ----------------- | ------------------------------------------------------------------------------ |
+| `type`            | The committed operation: `initial`, `push`, `replace`, or `pop`.               |
+| `direction`       | `back` or `forward` for a known traversal direction, otherwise `''`.           |
+| `delta`           | The distance traveled for `pop`, otherwise `0`.                                |
+| `historyPosition` | The router-maintained stack position for the entry being captured or restored. |
+| `route`           | The route whose scroll position is being captured or restored.                 |
+| `from`, `to`      | The routes left and entered by this navigation.                                |
+
+The route fields are snapshots containing `path`, `fullPath`, `name`, `hash`, `params`, and `query`. They do not include history state, matched component instances, or navigation options. Failed, cancelled, and duplicated navigations do not replace the last successful context. Redirects describe the final committed operation and destination.
+
+During navigation capture, `route` and `historyPosition` refer to the **departing** entry, even though `history.state` already belongs to the destination. During restoration, they refer to the **target** entry. Capture outside navigation (for example, on `pagehide` or through a custom listener) uses the current entry and its last successful navigation. The returned `scroll()` also uses the current route's context, so `manual: true` can wait for content to become ready.
+
+For example, opt in to separate positions for history entries and start new links at the top:
+
+```ts
+import {
+  useScrollRestoration,
+  SCROLL_RESTORATION_CAPTURE_DEFAULT,
+  SCROLL_RESTORATION_RESTORE_DEFAULT,
+} from 'vue-router/experimental'
+
+useScrollRestoration({
+  key: (route, context) =>
+    `${route.path}${route.hash}:${context.historyPosition ?? 'custom'}`,
+  capture: SCROLL_RESTORATION_CAPTURE_DEFAULT,
+  restore(entry, to, context) {
+    SCROLL_RESTORATION_RESTORE_DEFAULT(
+      context.type === 'push' || context.type === 'replace' ? null : entry,
+      to
+    )
+  },
+})
+```
+
+Built-in memory, web, and hash histories supply `historyPosition`. Web and hash histories preserve it on reload; memory positions only last for that history instance. Custom histories report `undefined`, so the example falls back to sharing positions by path and hash for them. A position is a stack slot, **not a unique entry ID**: replace preserves it and discarding the forward branch can reuse it. Browser-created entries (such as native fragment navigations) can have an unknown direction and reuse a router-maintained position. Use `type` when deciding whether a new visit should reuse a saved position.
+
+`initial` covers starting the router, including a page reload; it does not distinguish reload from a fresh document load. The default path-based key and restore policy are unchanged. For delayed tables or virtual lists, continue using `manual: true` and call `scroll()` when the application is ready; this context does not add retries or content polling.
+
 ## Manual restore
 
 Set `manual: true` when the content is not ready after navigation, like animations or virtualized lists. Then call `scroll()` when the content is displayed:

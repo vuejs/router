@@ -21,6 +21,15 @@ import type { Router } from '../router'
 import { noop, toValueWithArgs } from '../utils'
 import type { EXPERIMENTAL_Router } from './router'
 import { onRouteRendered } from './on-route-rendered'
+import {
+  getScrollRestorationContext,
+  snapshotScrollRestorationRoute,
+  type ScrollRestorationContext,
+} from '../scroll-restoration-context'
+export type {
+  ScrollRestorationContext,
+  ScrollRestorationRoute,
+} from '../scroll-restoration-context'
 
 /**
  * Saved position for one property of {@link ScrollRestorationSessionEntry}.
@@ -138,26 +147,40 @@ export interface UseScrollRestorationOptions<
    * the nested call captures and restores. Other calls active at the same time
    * should use different keys, one per scroll container: with the same key,
    * each one captures and restores, and the last capture wins.
+   * The second argument describes the navigation and the entry for `to`.
+   * Use `context.historyPosition` to opt in to per-entry keys.
    */
-  key?: string | ((to: RouteLocationNormalized<Name>) => string)
+  key?:
+    | string
+    | ((
+        to: RouteLocationNormalized<Name>,
+        context: ScrollRestorationContext
+      ) => string)
 
   /**
    * Synchronously captures all positions that must be saved for this page.
    * Returning `null` removes the previously saved entry.
+   * During navigation, the context refers to the departing entry, even though
+   * the history has already moved to the destination.
    */
-  capture?: () => ScrollRestorationSessionEntry | null
+  capture?: (
+    context: ScrollRestorationContext
+  ) => ScrollRestorationSessionEntry | null
 
   /**
    * Synchronously restores all positions previously returned by `capture`.
    * The route can be used to handle a hash or other route details.
    * Unless `manual` is enabled, it runs after each navigation, once the new
    * route is displayed.
+   * The third argument describes the committed navigation and target entry.
+   * Manual restoration uses the current route's latest successful navigation.
    *
    * @see {@link onRouteRendered}
    */
   restore?: (
     entry: ScrollRestorationSessionEntry | null | undefined,
-    to: RouteLocationNormalized<Name>
+    to: RouteLocationNormalized<Name>,
+    context: ScrollRestorationContext
   ) => void
 
   /**
@@ -401,6 +424,23 @@ function ScrollRestorationClient(
     { signal: listenersController.signal }
   )
 
+  function contextFor(
+    route: RouteLocationNormalized
+  ): ScrollRestorationContext {
+    return (
+      getScrollRestorationContext(route) ||
+      Object.freeze({
+        type: 'initial',
+        direction: '',
+        delta: 0,
+        route: snapshotScrollRestorationRoute(route),
+        from: snapshotScrollRestorationRoute(START_LOCATION_NORMALIZED),
+        to: snapshotScrollRestorationRoute(route),
+        historyPosition: undefined,
+      })
+    )
+  }
+
   // a nested call with the same key owns it, e.g. a page inside its layout. A
   // pending nested call (async setup) owns the restore but can't capture yet
   function isActive(
@@ -410,12 +450,12 @@ function ScrollRestorationClient(
   ): boolean {
     const instance = registrations.get(registration)
     if (!instance?.isMounted) return false
-    const key = toValueWithArgs(registration.key, route)
+    const key = toValueWithArgs(registration.key, route, contextFor(route))
     // calls of the same component never match: the walk starts at the parent
     for (let [other, parent] of registrations) {
       if (
         (!capturing || parent.isMounted) &&
-        toValueWithArgs(other.key, route) === key
+        toValueWithArgs(other.key, route, contextFor(route)) === key
       ) {
         while ((parent = parent.parent!)) if (parent === instance) return false
       }
@@ -427,15 +467,20 @@ function ScrollRestorationClient(
     { restore, key }: ScrollRestorationRegistration,
     to: RouteLocationNormalized = router.currentRoute.value
   ) {
+    // A delayed render must not restore an entry after a newer navigation.
+    if (to !== router.currentRoute.value) return
+    const context = contextFor(to)
     let entry: ScrollRestorationSessionEntry | null | undefined
     let value: string | undefined | null
     // using the sessionStorage can fail in many ways (security, quota, etc.), so we ignore any errors
     try {
       entry =
-        (value = sessionStorage[storageKeyPrefix + toValueWithArgs(key, to)]) &&
-        JSON.parse(value)
+        (value =
+          sessionStorage[
+            storageKeyPrefix + toValueWithArgs(key, to, context)
+          ]) && JSON.parse(value)
     } catch {}
-    restore(entry, to)
+    restore(entry, to, context)
   }
 
   app.provide(SCROLL_RESTORATION_REGISTRATIONS, [
@@ -451,7 +496,9 @@ function ScrollRestorationClient(
     }
     for (const registration of registrations.keys()) {
       if (!isActive(registration, route, true)) continue
-      const key = storageKeyPrefix + toValueWithArgs(registration.key, route)
+      const key =
+        storageKeyPrefix +
+        toValueWithArgs(registration.key, route, contextFor(route))
       if (__DEV__) {
         const other = devTrackedCapturedOptions!.get(key)
         // same key with the defaults is harmless: same values
@@ -466,7 +513,7 @@ function ScrollRestorationClient(
         }
         devTrackedCapturedOptions!.set(key, registration)
       }
-      const entry = registration.capture()
+      const entry = registration.capture(contextFor(route))
       try {
         if (entry) sessionStorage[key] = JSON.stringify(entry)
         else delete sessionStorage[key]

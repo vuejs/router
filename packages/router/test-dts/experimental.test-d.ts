@@ -2,6 +2,8 @@ import { describe, it, expectTypeOf } from 'vitest'
 import type {
   EXPERIMENTAL_Router,
   EXPERIMENTAL_RouterOptions,
+  ScrollRestorationContext,
+  ScrollRestorationRoute,
 } from 'vue-router/experimental'
 import {
   definePage,
@@ -191,6 +193,40 @@ describe('useScrollRestoration', () => {
   it('accepts reactive manual options', () => {
     useScrollRestoration({ manual: ref(true) })
     useScrollRestoration({ manual: () => true })
+  })
+
+  it('adds typed context without requiring existing callbacks to change', () => {
+    useScrollRestoration({
+      key: route => route.path,
+      capture: () => null,
+      restore: (_entry, route) => {
+        route.path
+      },
+    })
+    useScrollRestoration({
+      key(route, context) {
+        expectTypeOf(context).toEqualTypeOf<ScrollRestorationContext>()
+        expectTypeOf(context.historyPosition).toEqualTypeOf<
+          number | undefined
+        >()
+        expectTypeOf(context.from).toEqualTypeOf<ScrollRestorationRoute>()
+        return `${route.path}:${context.historyPosition}`
+      },
+      capture(context) {
+        expectTypeOf(context.type).toEqualTypeOf<
+          'initial' | 'push' | 'replace' | 'pop'
+        >()
+        // @ts-expect-error navigation snapshots cannot be reassigned
+        context.type = 'push'
+        // @ts-expect-error arbitrary history state is not part of the context
+        context.route.state
+        return null
+      },
+      restore(_entry, _route, context) {
+        expectTypeOf(context.direction).toEqualTypeOf<'back' | 'forward' | ''>()
+        expectTypeOf(context.delta).toEqualTypeOf<number>()
+      },
+    })
   })
 })
 
