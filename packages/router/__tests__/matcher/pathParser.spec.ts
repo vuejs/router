@@ -29,7 +29,7 @@ describe('Path parser', () => {
         '/a/:ids+\\-',
       ]) {
         expect(() => tokenizePath(path), path).toThrowError(
-          'must be alone in its segment'
+          'is not alone in its segment'
         )
       }
       expect(() => tokenizePath('/a/:ids+/b/:other*')).not.toThrow()
