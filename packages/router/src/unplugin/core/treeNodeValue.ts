@@ -184,6 +184,12 @@ class _TreeNodeValueBase {
     ).map(subSegments =>
       subSegments.map(subSegment => {
         if (typeof subSegment === 'string') return subSegment
+        if (subSegment.repeatable && subSegments.length > 1) {
+          diagnostics.VUE_ROUTER_B0029({
+            paramName: subSegment.paramName,
+            segment: this.rawSegment,
+          })
+        }
         const declared = declaredPathParams?.[subSegment.paramName]
         // copies keep the file segments unchanged by edits
         const resolved = ParsedPathParam.resolve(

@@ -2246,6 +2246,17 @@ describe('Tree', () => {
       expect('VUE_ROUTER_B0027').toHaveBeenWarnedTimes(1)
       expect('VUE_ROUTER_B0028').toHaveBeenWarnedTimes(2)
     })
+
+    it('warns about repeatable params that are not a whole segment', () => {
+      const tree = new PrefixTree(RESOLVED_OPTIONS)
+      tree.insert('set.[ids]+.other', 'a.vue').pathParams
+      tree.insert('[[ids]]+', 'b.vue').pathParams
+      expect('VUE_ROUTER_B0029').not.toHaveBeenWarned()
+
+      tree.insert('rep-[ids]+', 'c.vue').pathParams
+      tree.insert('[[ids]]+-end', 'd.vue').pathParams
+      expect('VUE_ROUTER_B0029').toHaveBeenWarnedTimes(2)
+    })
   })
 
   describe('Empty parameter names', () => {
