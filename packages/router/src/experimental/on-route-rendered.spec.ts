@@ -765,32 +765,21 @@ describe('onRouteRendered', () => {
     expect(events).toEqual(['updated:U', 'settled:0:/u/2 dom="U /u/2"'])
   })
 
-  it('calls root and view callbacks for the initial navigation when mounted after it', async () => {
-    const show = ref(false)
-    const Late = defineComponent({
-      setup() {
-        onRouteRendered(to => events.push(`late:${to.fullPath}`))
-      },
-      template: '<i />',
-    })
+  it('calls only view callbacks for the initial navigation when mounted after it', async () => {
     const Root = defineComponent({
-      components: { RouterView, Late },
+      components: { RouterView },
       setup() {
         onRouteRendered((to, from) => {
-          events.push(`root:${from.fullPath}->${to.fullPath} dom="${dom()}"`)
+          events.push(`root:${from.fullPath}->${to.fullPath}`)
         })
-        return { show }
       },
-      template: '<Late v-if="show" /><RouterView />',
+      template: '<RouterView />',
     })
-    const history = createMemoryHistory()
-    history.replace('/__start')
     const router = createRouter({
-      history,
+      history: createMemoryHistory(),
       routes: [
-        { path: '/__start', component: page('START') },
-        { path: '/', component: page('Home') },
         { path: '/a', component: page('A') },
+        { path: '/b', component: page('B') },
       ],
     })
     await router.push('/a')
@@ -798,17 +787,16 @@ describe('onRouteRendered', () => {
 
     mount(Root, { attachTo: document.body, global: { plugins: [router] } })
     await flushPromises()
-    expect(events).toEqual([
-      'mounted:A',
-      'root:/->/a dom="A /a"',
-      'settled:0:/a dom="A /a"',
-    ])
+    expect(events).toEqual(['mounted:A', 'settled:0:/a dom="A /a"'])
 
-    // mounted after the initial render: waits for the next navigation
     events = []
-    show.value = true
+    await router.push('/b')
     await flushPromises()
-    expect(events).toEqual([])
+    expect(events).toEqual([
+      'root:/a->/b',
+      'mounted:B',
+      'settled:0:/b dom="B /b"',
+    ])
   })
 
   it('calls root callbacks once for the initial navigation when mounted before it', async () => {
@@ -838,52 +826,6 @@ describe('onRouteRendered', () => {
       'mounted:A',
       'settled:0:/a dom="A /a"',
     ])
-  })
-
-  it('does not repeat a navigation that finishes before a suspended component mounts', async () => {
-    const { promise: pending, resolve: resolvePending } =
-      Promise.withResolvers<void>()
-    const rendered = vi.fn()
-    const Outside = defineComponent({
-      setup() {
-        onRouteRendered(rendered)
-      },
-      template: '<div>outside</div>',
-    })
-    const Pending = defineComponent({
-      async setup() {
-        await pending
-        return () => h('div')
-      },
-    })
-    const Root = defineComponent({
-      components: { Outside, Pending, RouterView },
-      template:
-        '<div><Suspense><div><Outside /><Pending /></div></Suspense><RouterView /></div>',
-    })
-    const router = createRouter({
-      history: createMemoryHistory(),
-      routes: [
-        { path: '/a', component: page('A') },
-        { path: '/b', component: page('B') },
-      ],
-    })
-    await router.push('/a')
-    await router.isReady()
-
-    const wrapper = mount(Root, { global: { plugins: [router] } })
-    await router.push('/b')
-    await flushPromises()
-    expect(wrapper.text()).toContain('B /b')
-    expect(rendered).toHaveBeenCalledTimes(1)
-
-    resolvePending()
-    await flushPromises()
-    expect(rendered).toHaveBeenCalledTimes(1)
-    expect(rendered).toHaveBeenCalledWith(
-      expect.objectContaining({ fullPath: '/b' }),
-      expect.objectContaining({ fullPath: '/a' })
-    )
   })
 
   it('pauses a cached component outside of RouterView while deactivated', async () => {

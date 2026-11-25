@@ -64,7 +64,6 @@ import {
   routeLocationKey,
   routerKey,
   routerViewLocationKey,
-  appKey,
 } from './injectionSymbols'
 import { addDevtools } from './devtools'
 import { _LiteralUnion } from './types/utils'
@@ -1073,7 +1072,6 @@ export function createRouter(options: RouterOptions): Router {
       app.provide(routerKey, router as Router)
       app.provide(routeLocationKey, createReactiveRoute(currentRoute))
       app.provide(routerViewLocationKey, currentRoute)
-      app.provide(appKey, app)
 
       const unmountApp = app.unmount
       installedApps.add(app)

@@ -72,6 +72,31 @@ Installing the plugin sets `history.scrollRestoration` to `manual`. Setting it t
 
 Do not call it in your root `App.vue` or in other components outside of a `<RouterView>`. There, `onRouteRendered()` runs in `router.afterEach()`, before the new route renders, so the restore runs on the old page.
 
+Outside of a `<RouterView>`, `onRouteRendered()` is also not called for the initial navigation if you mount the app after `router.isReady()`, so the scroll is not restored after a page reload. If such a component must restore its position, for example a sidebar with its own scroll container, call the returned `scroll()` once it is mounted:
+
+```vue [components/AppSidebar.vue]
+<script setup lang="ts">
+import { onMounted, useTemplateRef } from 'vue'
+import { useScrollRestoration } from 'vue-router/experimental'
+
+const sidebar = useTemplateRef('sidebar')
+const { scroll } = useScrollRestoration({
+  key: 'sidebar',
+  capture: () => ({ sidebar: { top: sidebar.value?.scrollTop } }),
+  restore: entry => {
+    sidebar.value?.scrollTo({ top: entry?.sidebar?.top ?? 0 })
+  },
+})
+
+// the initial navigation finished before this component was created
+onMounted(scroll)
+</script>
+
+<template>
+  <nav ref="sidebar">...</nav>
+</template>
+```
+
 A layout component lets you call it once for all of its child pages. A page can call it again to use different options, for example `manual: true` to wait for an animation. When a page call and a layout call use the same key, the page call replaces the layout call: only the page captures and restores the position.
 
 ## Migrating from `scrollBehavior` %{#migrating-from-scrollbehavior}%

@@ -1017,39 +1017,22 @@ describe('useScrollRestoration', () => {
     expect(window.scrollY).toBe(10)
   })
 
-  it.each(['page', 'root'] as const)(
-    'restores the initial navigation with a %s registration',
-    async registration => {
-      const ScrollRoot = defineComponent({
-        components: { RouterView },
-        setup() {
-          useScrollRestoration()
-        },
-        template: '<RouterView />',
-      })
-      const root = registration === 'root' ? ScrollRoot : Root
-      const component = registration === 'page' ? ScrollPage : NeutralPage
-      const routes = [{ path: '/initial', component }]
-      const first = await mountRouter(routes, { root })
-      await first.navigate('/initial')
-      first.setScroll(0, 70)
-      vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
-      document.dispatchEvent(new Event('visibilitychange'))
-      first.wrapper.unmount()
-      vi.restoreAllMocks()
+  it('restores the initial navigation', async () => {
+    const routes = [{ path: '/initial', component: ScrollPage }]
+    const first = await mountRouter(routes)
+    await first.navigate('/initial')
+    first.setScroll(0, 70)
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    document.dispatchEvent(new Event('visibilitychange'))
+    first.wrapper.unmount()
+    vi.restoreAllMocks()
 
-      const { wrapper } = await mountRouter(routes, {
-        root,
-        initialPath: '/initial',
-      })
-      await flushPromises()
+    const { wrapper } = await mountRouter(routes, { initialPath: '/initial' })
+    await flushPromises()
 
-      expect(wrapper.text()).toBe(
-        registration === 'page' ? 'Page' : 'Neutral page'
-      )
-      expect(window.scrollY).toBe(70)
-    }
-  )
+    expect(wrapper.text()).toBe('Page')
+    expect(window.scrollY).toBe(70)
+  })
 
   it('removes the saved entry when capture returns null', async () => {
     let shouldCapture = true
