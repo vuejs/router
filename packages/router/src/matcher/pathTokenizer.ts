@@ -1,4 +1,5 @@
 import { isAbsolutePath } from '../utils'
+import { diagnostics } from '../diagnostics'
 
 export const enum TokenType {
   Static,
@@ -83,18 +84,15 @@ export function tokenizePath(path: string): Array<Token[]> {
   // custom regexp for a param
   let customRe: string = ''
 
-  function crashRepeatable(param: string) {
-    crash(
-      `A repeatable param (${param}) must be alone in its segment. eg: '/:ids+.`
-    )
-  }
-
   function consumeBuffer() {
     if (!buffer) return
 
     const lastToken = segment[segment.length - 1]
-    if (lastToken?.type === TokenType.Param && lastToken.repeatable)
-      crashRepeatable(lastToken.value)
+    if (lastToken?.type === TokenType.Param && lastToken.repeatable) {
+      throw __DEV__
+        ? diagnostics.VUE_ROUTER_R0131({ param: lastToken.value, path })
+        : new SyntaxError(`Invalid path "${path}"`)
+    }
 
     if (state === TokenizerState.Static) {
       segment.push({
@@ -106,8 +104,11 @@ export function tokenizePath(path: string): Array<Token[]> {
       state === TokenizerState.ParamRegExp ||
       state === TokenizerState.ParamRegExpEnd
     ) {
-      if (segment.length && (char === '*' || char === '+'))
-        crashRepeatable(buffer)
+      if (segment.length && (char === '*' || char === '+')) {
+        throw __DEV__
+          ? diagnostics.VUE_ROUTER_R0131({ param: buffer, path })
+          : new SyntaxError(`Invalid path "${path}"`)
+      }
       segment.push({
         type: TokenType.Param,
         value: buffer,

@@ -362,6 +362,14 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `Omit "${p.param}" to keep its current value, or pass a new value.`,
     },
 
+    // --- matcher/pathTokenizer.ts ---
+    VUE_ROUTER_R0131: {
+      why: (p: { param: string; path: string }) =>
+        `The repeatable param "${p.param}" in "${p.path}" is not alone in its segment. This throws a generic SyntaxError in production.`,
+      fix: 'Put the repeatable param in its own segment, e.g. "/users/:ids+".',
+      docs: 'https://router.vuejs.org/guide/essentials/route-matching-syntax.html#Repeatable-params',
+    },
+
     // --- history/hash.ts ---
     VUE_ROUTER_R0110: {
       why: `A hash base must end with a "#"`,
