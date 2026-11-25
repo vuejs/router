@@ -49,7 +49,7 @@ router.beforeEach(async (to, from) => {
 })
 ```
 
-如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](../../api/interfaces/Router.md#onError) 注册过的回调。
+如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](../../api/interfaces/Router.md#Methods-onError) 注册过的回调。
 
 如果什么都没有，`undefined` 或返回 `true`，**则导航是有效的**，并调用下一个导航守卫
 

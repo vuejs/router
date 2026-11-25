@@ -46,7 +46,7 @@ definePage({
 </template>
 ```
 
-如果你使用 ESLint，你需要 [将其声明为全局变量](./eslint#definepage)。
+如果你使用 ESLint，你需要 [将其声明为全局变量](./eslint#definePage-)。
 
 ::: danger
 
