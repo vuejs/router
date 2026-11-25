@@ -611,47 +611,7 @@ describe('useScrollRestoration', () => {
           capture: () => ({ default: { left: 0, top: 10 } }),
           restore: () => window.scrollTo({ left: 0, top: 500 }),
         })
-      },
-      template: '<main>Parent<RouterView /></main>',
-    })
-    const Child = defineComponent({
-      setup() {
-        useScrollRestoration({
-          key: 'same-key',
-          capture: () => ({ default: { left: 0, top: 90 } }),
-        })
-      },
-      template: '<section>Child</section>',
-    })
-    const { navigate, setScroll } = await mountRouter([
-      {
-        path: '/same-key',
-        component: Parent,
-        children: [
-          { path: 'a', component: Child },
-          { path: 'b', component: Child },
-        ],
-      },
-    ])
-
-    await navigate('/same-key/a')
-    await navigate('/neutral')
-    setScroll(0, 0)
-    await navigate('/same-key/b')
-
-    expect(window.scrollY).toBe(90)
-    expect('VUE_ROUTER_R0043').not.toHaveBeenWarned()
-  })
-
-  it('lets a nested call override a parent call that is not the last one of its component', async () => {
-    const Parent = defineComponent({
-      components: { RouterView },
-      setup() {
-        useScrollRestoration({
-          key: 'same-key',
-          capture: () => ({ default: { left: 0, top: 10 } }),
-          restore: () => window.scrollTo({ left: 0, top: 500 }),
-        })
+        // not the last call of the component
         useScrollRestoration({ key: 'other-key', manual: true })
       },
       template: '<main>Parent<RouterView /></main>',

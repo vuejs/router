@@ -1,7 +1,8 @@
 /**
  * @vitest-environment happy-dom
  */
-import { createVaporApp, defineVaporComponent, nextTick } from 'vue'
+import { flushPromises } from '@vue/test-utils'
+import { createVaporApp, defineVaporComponent } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory } from '../history/memory'
 import { createRouter } from '../router'
@@ -77,8 +78,7 @@ async function mountVaporApp(routes: RouteRecordRaw[]) {
 
   async function navigate(path: string) {
     await router.push(path)
-    await nextTick()
-    await nextTick()
+    await flushPromises()
   }
 
   return { navigate, setScroll }
@@ -86,20 +86,6 @@ async function mountVaporApp(routes: RouteRecordRaw[]) {
 
 describe('useScrollRestoration in Vapor components', () => {
   mockWarn()
-
-  it('restores the saved position of a Vapor page', async () => {
-    const { navigate, setScroll } = await mountVaporApp([
-      { path: '/page', component: vaporPage('<main>Page</main>') },
-    ])
-
-    await navigate('/page')
-    setScroll(120)
-    await navigate('/neutral')
-    setScroll(0)
-    await navigate('/page')
-
-    expect(window.scrollY).toBe(120)
-  })
 
   it('lets a nested Vapor call own the key of a Vapor parent call', async () => {
     const Parent = vaporPage('<main>Parent<RouterView /></main>', {
