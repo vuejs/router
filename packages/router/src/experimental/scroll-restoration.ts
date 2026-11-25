@@ -15,6 +15,7 @@ import {
   useId,
 } from 'vue'
 import { diagnostics } from '../diagnostics'
+import { ErrorTypes, isNavigationFailure } from '../errors'
 import { START_LOCATION_NORMALIZED } from '../location'
 import type { RouteLocationNormalized, RouteMap } from '../typed-routes'
 import type { Router } from '../router'
@@ -474,6 +475,20 @@ function ScrollRestorationClient(
       } catch {}
     }
   }
+
+  // a link to the current hash scrolls to it again, like native links
+  const removeAfterEach = router.afterEach((to, _from, failure) => {
+    if (
+      to.hash &&
+      isNavigationFailure(failure, ErrorTypes.NAVIGATION_DUPLICATED)
+    )
+      for (const registration of registrations.keys())
+        if (!toValue(registration.manual) && isActive(registration, to))
+          registration.restore(null, to)
+  })
+  listenersController.signal.addEventListener('abort', removeAfterEach, {
+    once: true,
+  })
 
   optionsWithDefaults.setupListeners(
     capture,
