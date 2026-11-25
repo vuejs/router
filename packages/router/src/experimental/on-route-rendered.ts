@@ -27,6 +27,7 @@ function onRouteRenderedClient(callback: OnRouteRenderedCallback): void {
     // components mounted later (e.g. v-if), they wait for the next navigation,
     // like within a RouterView. Vue sets `_container` once the app is mounted
     if (
+      // FIXME: replace with getCurrentApp() when available in Vue
       inject(appKey)!._container === null &&
       router.currentRoute.value !== START_LOCATION_NORMALIZED
     ) {
