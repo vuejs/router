@@ -167,9 +167,9 @@
     "@types/picomatch": "^4.0.3",
     "@typescript/native-preview": "7.0.0-dev.20260707.2",
     "@vitejs/plugin-vue": "^6.0.10",
-    "@vue/compiler-sfc": "^3.6.0-rc.16",
+    "@vue/compiler-sfc": "https://pkg.pr.new/@vue/compiler-sfc@16435",
     "@vue/language-core": "^3.3.14",
-    "@vue/server-renderer": "^3.6.0-rc.16",
+    "@vue/server-renderer": "https://pkg.pr.new/@vue/server-renderer@16435",
     "@vue/test-utils": "^2.5.1",
     "connect-history-api-fallback": "^2.0.0",
     "faked-promise": "^2.2.2",
@@ -180,7 +180,7 @@
     "tsdown": "^0.23.7",
     "valibot": "^1.5.0",
     "vite": "^8.3.3",
-    "vue": "^3.6.0-rc.16",
+    "vue": "https://pkg.pr.new/vue@16435",
     "zod": "^4.6.7"
   },
   "peerDependencies": {

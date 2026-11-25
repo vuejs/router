@@ -34,4 +34,24 @@ app.mount('#app')
 - Vapor Mode has no Options API: `$router` and `$route` are not available in templates, and `beforeRouteEnter`, `beforeRouteUpdate`, and `beforeRouteLeave` component options are not called. Use `useRouter()`, `useRoute()`, `onBeforeRouteUpdate()`, and `onBeforeRouteLeave()` instead.
 - In the `<RouterView>` slot, `Component` is the route component instance. Render it with `<component :is="Component" />`. Props and slots passed to `<component>` are ignored: [pass props from the route](../guide/essentials/passing-props) or use the attributes of `<RouterView>` instead. Template refs, `:key`, `<KeepAlive>`, and `<Transition>` work.
 - VDOM route components render through `vaporInteropPlugin`. Without it, every route component must be a Vapor component.
-- SSR hydration is not supported yet.
+
+## Server-Side Rendering
+
+Vue has no Vapor runtime on the server: it renders the VDOM components. `createRouter()` registers them in the app created by `createSSRApp()`, so only the client registers the Vapor components, in the app it hydrates with `createVaporSSRApp()`:
+
+```ts
+// entry-client.ts
+import { createVaporSSRApp } from 'vue'
+import { RouterLink, RouterView } from 'vue-router/experimental/vapor'
+import App from './App.vue'
+import { router } from './router'
+
+const app = createVaporSSRApp(App)
+app.use(router)
+app.component('RouterLink', RouterLink)
+app.component('RouterView', RouterView)
+
+router.isReady().then(() => app.mount('#app'))
+```
+
+Use `<RouterLink>` and `<RouterView>` by their registered names. A component that imports the Vapor ones cannot be rendered by the server.
