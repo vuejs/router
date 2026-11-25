@@ -1,14 +1,6 @@
-import {
-  getCurrentInstance,
-  inject,
-  onActivated,
-  onDeactivated,
-  onMounted,
-  onUnmounted,
-} from 'vue'
+import { inject, onActivated, onDeactivated, onUnmounted } from 'vue'
 import type { RouteLocationNormalizedLoaded } from '../typed-routes'
 import { routerViewOnRouteRenderedKey } from '../injectionSymbols'
-import { START_LOCATION_NORMALIZED } from '../location'
 import { useRouter } from '../useApi'
 import { noop } from '../utils'
 
@@ -28,35 +20,11 @@ function onRouteRenderedClient(callback: OnRouteRenderedCallback): void {
     callbacks = new Set()
     // outside of any RouterView: afterEach, before the new route renders
     const router = useRouter()
-    let reportedNavigation = false
-    // created by the initial render after the initial navigation (e.g.
-    // `app.mount()` after `router.isReady()`): afterEach already ran. Not for
-    // components mounted later (e.g. v-if), they wait for the next navigation,
-    // like within a RouterView. Null in Vapor components: they wait for the
-    // next navigation
-    if (
-      // FIXME: support vapor by using useInstanceInfo()
-      // https://github.com/vuejs/core/pull/16348
-      getCurrentInstance()?.root.isMounted === false &&
-      router.currentRoute.value !== START_LOCATION_NORMALIZED
-    ) {
-      onMounted(() => {
-        if (!reportedNavigation) {
-          for (const registeredCallback of callbacks!) {
-            registeredCallback(
-              router.currentRoute.value,
-              START_LOCATION_NORMALIZED
-            )
-          }
-        }
-      })
-    }
     onUnmounted(
       router.afterEach((to, from, failure) => {
         // a failed navigation displays nothing, like within a RouterView
         if (!failure) {
           for (const registeredCallback of callbacks!) {
-            reportedNavigation = true
             registeredCallback(to, from)
           }
         }
@@ -78,8 +46,9 @@ function onRouteRenderedClient(callback: OnRouteRenderedCallback): void {
  * it is called once the closest ancestor `<RouterView>` displays the new
  * route: after the page mounts or updates, after `<Suspense>` resolves, and
  * after an out-in `<Transition>` enters. Outside of any `<RouterView>`, it is
- * called in `router.afterEach()`, before the new route renders, and once
- * mounted if the app is mounted after the initial navigation.
+ * called in `router.afterEach()`, before the new route renders. It is not
+ * called for navigations that finished before it was registered (e.g. the
+ * initial navigation when the app is mounted after `router.isReady()`).
  *
  * Must be called in `setup()`. The callback is removed when the component
  * unmounts and paused while it is deactivated by `<KeepAlive>`. Does nothing
