@@ -23,7 +23,7 @@ export type LocationQueryValueRaw = LocationQueryValue | number | undefined
  *
  * @public
  */
-export type LocationQuery = Record<string, LocationQueryValue[]>
+export type LocationQuery = Record<string, LocationQueryValue[] | undefined>
 
 /**
  * Loose {@link LocationQuery} object that can be passed to functions like

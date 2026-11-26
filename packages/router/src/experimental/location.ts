@@ -1,10 +1,22 @@
-import { type LocationNormalized, resolveRelativePath } from '../location'
+import { resolveRelativePath } from '../location'
 import { diagnostics } from '../diagnostics'
 import { BACKSLASH_RE, ENC_SPACE_RE } from '../encoding'
 import { isAbsolutePath } from '../utils'
 import type { LocationQuery, LocationQueryRaw } from './query'
 
 // TODO: in next major, merge the two query.ts files and the two location.ts files
+
+/**
+ * Normalized location used by the experimental resolver.
+ *
+ * @internal
+ */
+export interface LocationNormalized {
+  path: string
+  fullPath: string
+  hash: string
+  query: LocationQuery
+}
 
 /**
  * Transforms an already encoded URI into a normalized history location. Use it

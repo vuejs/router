@@ -67,6 +67,8 @@ route.query.debug // [null]
 route.query.page // undefined
 ```
 
+When you [register the router on `TypesConfig`](#Opt-in-to-typed-useRouter-useRoute-), `route.query` has this type too: each value is `(string | null)[] | undefined`.
+
 When you navigate, also pass arrays. A non array value still works, but it shows a deprecation warning in development:
 
 ```ts

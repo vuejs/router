@@ -13,12 +13,10 @@ import {
   type HistoryState,
   type RouterHistory,
 } from '../history/common'
-// `parseQuery` and `stringifyQuery` are only read by the classic router, so
-// they are typed after the classic query, whose values can also be scalars
-import {
-  stringifyQuery as originalStringifyQuery,
-  type parseQuery as originalParseQuery,
-} from '../query'
+// `stringifyQuery` is only read by the classic router, so it is typed after
+// the classic query, whose values can also be scalars
+import { stringifyQuery as originalStringifyQuery } from '../query'
+import type { experimental_parseQuery } from './query'
 import type { Router } from '../router'
 import {
   type _ScrollPositionNormalized,
@@ -148,29 +146,6 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
    * [migration guide](https://router.vuejs.org/experimental/scroll-restoration.html#migrating-from-scrollbehavior).
    */
   scrollBehavior?: RouterScrollBehavior
-
-  /**
-   * Custom implementation to parse a query. See its counterpart,
-   * {@link EXPERIMENTAL_RouterOptions_Base.stringifyQuery}.
-   *
-   * @example
-   * Let's say you want to use the [qs package](https://github.com/ljharb/qs)
-   * to parse queries, you can provide both `parseQuery` and `stringifyQuery`:
-   * ```js
-   * import qs from 'qs'
-   *
-   * createRouter({
-   *   // other options...
-   *   parseQuery: qs.parse,
-   *   stringifyQuery: qs.stringify,
-   * })
-   * ```
-   *
-   * @deprecated this option is ignored in favor of using a custom resolver
-   * that handles query parsing and adds a `$query` property to the params. See
-   * the [TODO: migration guide](https://router.vuejs.org/experimental/query-parsing.html#migrating-from-parsequery-and-stringifyquery).
-   */
-  parseQuery?: typeof originalParseQuery
 
   /**
    * Custom implementation to stringify a query object. Should not prepend a leading `?`.
@@ -459,6 +434,15 @@ export interface EXPERIMENTAL_RouterOptions extends EXPERIMENTAL_RouterOptions_B
    * @experimental
    */
   resolver: EXPERIMENTAL_ResolverFixed<EXPERIMENTAL_RouteRecordNormalized_Matchable>
+
+  /**
+   * Custom implementation to parse a query. Every value must be an array.
+   *
+   * @deprecated this option is ignored in favor of using a custom resolver
+   * that handles query parsing and adds a `$query` property to the params. See
+   * the [TODO: migration guide](https://router.vuejs.org/experimental/query-parsing.html#migrating-from-parsequery-and-stringifyquery).
+   */
+  parseQuery?: typeof experimental_parseQuery
 }
 
 // TODO: Make the Router extends the resolver so that it automatically exposes

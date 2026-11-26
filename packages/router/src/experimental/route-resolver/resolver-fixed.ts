@@ -9,7 +9,8 @@ import {
   experimental_stringifyURL as stringifyURL,
 } from '../location'
 import { encodeHash } from '../encoding'
-import { type LocationNormalized, resolveRelativePath } from '../../location'
+import { resolveRelativePath } from '../../location'
+import type { LocationNormalized } from '../location'
 import type {
   MatcherPatternPath,
   MatcherPatternHash,

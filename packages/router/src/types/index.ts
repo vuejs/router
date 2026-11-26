@@ -12,6 +12,8 @@ import type {
 } from '../typed-routes'
 import type { _Awaitable } from './utils'
 import type { UseDataLoader, DataLoaderPlugin } from '../experimental'
+import type { LocationQuery as EXPERIMENTAL_LocationQuery } from '../experimental/query'
+import type { TypesConfig } from '../config'
 import type {
   LOADER_SET_KEY,
   ABORT_CONTROLLER_KEY,
@@ -162,6 +164,19 @@ export interface RouteLocationMatched extends RouteRecordNormalized {
 }
 
 /**
+ * Query of normalized route locations. Uses the experimental query when
+ * `TypesConfig['Router']` is an experimental router (it has no `addRoute()`).
+ *
+ * @internal
+ */
+export type _LocationQueryNormalized =
+  TypesConfig extends Record<'Router', infer R>
+    ? R extends { addRoute: unknown }
+      ? LocationQuery
+      : EXPERIMENTAL_LocationQuery
+    : LocationQuery
+
+/**
  * Base properties for a normalized route location.
  *
  * @internal
@@ -178,7 +193,7 @@ export interface _RouteLocationBase extends Pick<
   /**
    * Object representation of the `search` property of the current location.
    */
-  query: LocationQuery
+  query: _LocationQueryNormalized
   /**
    * Hash of the current location. If present, starts with a `#`.
    */
