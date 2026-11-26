@@ -284,7 +284,9 @@ Parameter values are exposed as `unknown` because experimental parameter parsers
 
 Snapshots do not include history state, matched component instances, or navigation options. Failed, cancelled, and duplicated navigations do not replace the last successful context. Redirects describe the final committed operation and destination.
 
-During navigation capture, `route` and `historyPosition` refer to the **departing** entry, even though `history.state` already belongs to the destination. During restoration, they refer to the **target** entry. Capture outside navigation (for example, on `pagehide` or through a custom listener) uses the current entry and its last successful navigation. The returned `scroll()` also uses the current route's context, so `manual: true` can wait for content to become ready.
+During navigation capture, `route` and `historyPosition` refer to the **departing** entry, even though `history.state` already belongs to the destination. During restoration, they refer to the **target** entry. Capture outside navigation (for example, on `pagehide` or through a custom listener) uses the current entry and its last successful navigation. The returned `scroll()` restores the route displayed by its owning `<RouterView>`, so `manual: true` can wait for content to become ready.
+
+A `<RouterView :route="router.resolve(...)" />` can display a different route object. When its `fullPath` matches the current location, restoration uses the current entry's committed navigation context and position. A separately resolved background location has no associated history entry: `context.route` describes that displayed location, `from`/`to` describe the committed navigation, and `historyPosition` is `undefined`. A route object retained from a real navigation keeps its recorded context. The default path-based key still works for background views. An unchanged displayed route does not trigger another automatic restoration just because the URL changes.
 
 For example, opt in to separate positions for history entries and start new links at the top:
 
@@ -333,3 +335,5 @@ onMounted(async () => {
 ```
 
 With the default `setupListeners`, the router still captures the position automatically.
+
+Calls from an unmounted, deactivated, or still-pending component do nothing. A leaving view also cannot restore a new route before it displays it. If the same component is reused for another route, `scroll()` follows the newly displayed route; cancel outdated application requests when that route changes, and avoid calling `scroll()` for results the user no longer wants.

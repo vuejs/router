@@ -13,9 +13,11 @@ import {
   onScopeDispose,
   toValue,
   useId,
+  watch,
 } from 'vue'
 import { diagnostics } from '../diagnostics'
 import { START_LOCATION_NORMALIZED } from '../location'
+import { matchedRouteKey, routerViewLocationKey } from '../injectionSymbols'
 import type { RouteLocationNormalized, RouteMap } from '../typed-routes'
 import type { Router } from '../router'
 import { noop, toValueWithArgs } from '../utils'
@@ -173,7 +175,7 @@ export interface UseScrollRestorationOptions<
    * Unless `manual` is enabled, it runs after each navigation, once the new
    * route is displayed.
    * The third argument describes the committed navigation and target entry.
-   * Manual restoration uses the current route's latest successful navigation.
+   * Manual restoration uses the route displayed by the owning RouterView.
    *
    * @see {@link onRouteRendered}
    */
@@ -427,18 +429,32 @@ function ScrollRestorationClient(
   function contextFor(
     route: RouteLocationNormalized
   ): ScrollRestorationContext {
-    return (
-      getScrollRestorationContext(route) ||
-      Object.freeze({
-        type: 'initial',
-        direction: '',
-        delta: 0,
-        route: snapshotScrollRestorationRoute(route),
-        from: snapshotScrollRestorationRoute(START_LOCATION_NORMALIZED),
-        to: snapshotScrollRestorationRoute(route),
-        historyPosition: undefined,
-      })
-    )
+    const recorded = getScrollRestorationContext(route)
+    if (recorded) return recorded
+
+    // A RouterView can display a freshly resolved location rather than the
+    // exact object committed by the router. Equivalent locations still refer
+    // to the current entry; a background view has no such entry of its own.
+    const current = router.currentRoute.value
+    const context = getScrollRestorationContext(current)
+    if (context) {
+      return route.fullPath === current.fullPath
+        ? context
+        : Object.freeze({
+            ...context,
+            route: snapshotScrollRestorationRoute(route),
+            historyPosition: undefined,
+          })
+    }
+    return Object.freeze({
+      type: 'initial',
+      direction: '',
+      delta: 0,
+      route: snapshotScrollRestorationRoute(route),
+      from: snapshotScrollRestorationRoute(START_LOCATION_NORMALIZED),
+      to: snapshotScrollRestorationRoute(route),
+      historyPosition: undefined,
+    })
   }
 
   // a nested call with the same key owns it, e.g. a page inside its layout. A
@@ -464,11 +480,13 @@ function ScrollRestorationClient(
   }
 
   function restoreScroll(
-    { restore, key }: ScrollRestorationRegistration,
+    registration: ScrollRestorationRegistration,
     to: RouteLocationNormalized = router.currentRoute.value
   ) {
-    // A delayed render must not restore an entry after a newer navigation.
-    if (to !== router.currentRoute.value) return
+    // Also check manual calls: an async task can finish after its component
+    // was unmounted, deactivated, or replaced as the owner of this key.
+    if (!isActive(registration, to)) return
+    const { restore, key } = registration
     const context = contextFor(to)
     let entry: ScrollRestorationSessionEntry | null | undefined
     let value: string | undefined | null
@@ -569,14 +587,35 @@ function useScrollRestorationClient<
   if (__DEV__ && !inject(SCROLL_RESTORATION_REGISTRATIONS, null)) {
     throw diagnostics.VUE_ROUTER_R0044()
   }
-  const [registrations, restore, isActive] = inject(
-    SCROLL_RESTORATION_REGISTRATIONS
-  )!
+  const [registrations, restore] = inject(SCROLL_RESTORATION_REGISTRATIONS)!
   const optionsWithDefaults = {
     ...inject(SCROLL_RESTORATION_OPTIONS_KEY)!,
     ...options,
   }
-  const instance = getCurrentInstance() || useId()
+  const component = getCurrentInstance()
+  const instance = component || useId()
+  const displayedRoute = inject(routerViewLocationKey)!
+  const matchedRoute = inject(matchedRouteKey, null)
+  let renderedRoute = displayedRoute.value
+  let renderedVNode = routeOwner()?.vnode
+  const { router } = optionsWithDefaults
+  let renderedNavigation = router.currentRoute.value
+  let pendingInitialRestore = false
+  // afterEach runs before view props update. A fixed background route may
+  // remain unchanged, but it can only use the new navigation after that flush.
+  watch(
+    router.currentRoute,
+    route => {
+      renderedNavigation = route
+      // An explicit background view can mount before startup commits. Wait
+      // for a successful navigation instead of inventing its context.
+      if (pendingInitialRestore && renderedRoute === displayedRoute.value) {
+        pendingInitialRestore = false
+        if (!toValue(optionsWithDefaults.manual)) scroll()
+      }
+    },
+    { flush: 'post' }
+  )
 
   const add = () => registrations.set(optionsWithDefaults, instance)
   const remove = () => registrations.delete(optionsWithDefaults)
@@ -589,15 +628,53 @@ function useScrollRestorationClient<
   onScopeDispose(remove)
 
   onRouteRendered(to => {
-    if (
-      !toValue(optionsWithDefaults.manual) &&
-      isActive(optionsWithDefaults, to)
-    ) {
-      restore(optionsWithDefaults, to)
-    }
+    if (to !== displayedRoute.value) return
+    renderedRoute = to
+    renderedVNode = routeOwner()?.vnode
+    renderedNavigation = router.currentRoute.value
+    pendingInitialRestore = renderedNavigation === START_LOCATION_NORMALIZED
+    if (pendingInitialRestore) return
+    if (!toValue(optionsWithDefaults.manual)) scroll()
   })
 
-  return {
-    scroll: () => restore(optionsWithDefaults),
+  function scroll() {
+    // RouterView already rejects stale render callbacks against its own route
+    // prop. Keep a leaving view's deferred manual calls from restoring a new
+    // route before that view has displayed it, too.
+    if (
+      renderedNavigation !== START_LOCATION_NORMALIZED &&
+      renderedNavigation === router.currentRoute.value &&
+      ownsDisplayedRoute()
+    ) {
+      restore(optionsWithDefaults, displayedRoute.value)
+    }
   }
+
+  function ownsDisplayedRoute(): boolean {
+    // A Suspense boundary can keep the previous page mounted while the next
+    // one is pending. A reused page, on the other hand, can restore as soon as
+    // its vnode updates, without waiting for onRouteRendered's next tick.
+    if (renderedRoute === displayedRoute.value) return true
+    const vnode = routeOwner()?.vnode
+    return !!vnode && vnode !== renderedVNode
+  }
+
+  function routeOwner(): GenericComponentInstance | undefined {
+    const components =
+      matchedRoute && Object.values(matchedRoute.value?.components || {})
+    for (
+      let owner: GenericComponentInstance | null = component;
+      owner;
+      owner = owner.parent
+    ) {
+      if (
+        !components ||
+        components.some(component => component === owner!.type)
+      )
+        return owner
+    }
+    return undefined
+  }
+
+  return { scroll }
 }
