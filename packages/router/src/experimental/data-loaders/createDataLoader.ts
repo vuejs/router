@@ -1,4 +1,4 @@
-import { shallowRef, type ShallowRef } from 'vue'
+import { getCurrentInstance, shallowRef, type ShallowRef } from 'vue'
 import type { Router } from '../../router'
 import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
 import { useRoute, useRouter } from '../../useApi'
@@ -65,6 +65,12 @@ export interface DataLoaderImplementation<
  * @param options - resolved loader options
  * @param impl - implementation hooks
  */
+/**
+ * Number of loader functions running synchronously. Outside of them, a
+ * context is a leftover of a loader awaiting something else.
+ */
+let running = 0
+
 export function createDataLoader<
   TData,
   TEntry extends DataLoaderEntryBase<TData, ErrorDefault>,
@@ -101,7 +107,7 @@ export function createDataLoader<
     if (entry.pendingTo === to) return entry.pendingLoad!
 
     const context = getCurrentContext()
-    if (__DEV__ && parent !== context[0]) {
+    if (__DEV__ && parent && parent !== context[0]) {
       diagnostics.VUE_ROUTER_R1001({ key: String(options.key) })
     }
     // nested loaders read their parent from the context
@@ -141,9 +147,11 @@ export function createDataLoader<
       }
     }
 
-    const pendingLoad: Promise<void> = Promise.resolve(
-      fetch(entry, to, router, reload)
-    ).then(
+    // loaders are async: they cannot throw synchronously
+    running++
+    const result = fetch(entry, to, router, reload)
+    running--
+    const pendingLoad: Promise<void> = Promise.resolve(result).then(
       data =>
         settle(() => {
           if (data instanceof NavigationResult) {
@@ -200,7 +208,10 @@ export function createDataLoader<
   }
 
   const useDataLoader = (() => {
-    const context = getCurrentContext()
+    // a component is never nested: in browsers the context is a global that a
+    // suspended lazy loader leaves behind
+    const context: ReturnType<typeof getCurrentContext> =
+      getCurrentInstance() && !running ? [] : getCurrentContext()
     const [parentEntry, _router, _route] = context
     // fallback to the global router and route when used in components
     const router = _router || useRouter()
