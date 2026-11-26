@@ -4,6 +4,8 @@ import { createWebHistory } from '../src/history/html5'
 import { createMemoryHistory } from '../src/history/memory'
 import { parseQuery } from '../src/query'
 import { experimental_parseQuery } from '../src/experimental/query'
+import { experimental_createRouter } from '../src/experimental/router'
+import { createFixedResolver } from '../src/experimental/route-resolver/resolver-fixed'
 import { defineComponent, h } from 'vue'
 
 describe('createRouter', () => {
@@ -71,6 +73,27 @@ describe('createRouter', () => {
         history: createMemoryHistory(),
         routes: [],
         parseQuery: experimental_parseQuery,
+      })
+    })
+  })
+})
+
+describe('experimental_createRouter', () => {
+  describe('parseQuery', () => {
+    it('accepts the experimental parseQuery', () => {
+      experimental_createRouter({
+        history: createMemoryHistory(),
+        resolver: createFixedResolver([]),
+        parseQuery: experimental_parseQuery,
+      })
+    })
+
+    it('rejects the classic parseQuery', () => {
+      experimental_createRouter({
+        history: createMemoryHistory(),
+        resolver: createFixedResolver([]),
+        // @ts-expect-error: values are arrays
+        parseQuery,
       })
     })
   })

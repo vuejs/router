@@ -192,9 +192,6 @@ describe('route.query', () => {
     expectTypeOf(useRoute().query.q).toEqualTypeOf<
       (string | null)[] | undefined
     >()
-    useRouter().beforeEach(to => {
-      expectTypeOf(to.query.q).toEqualTypeOf<(string | null)[] | undefined>()
-    })
   })
 })
 

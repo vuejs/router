@@ -36,7 +36,7 @@ import { createRouterError, ErrorTypes, isNavigationFailure } from './errors'
 import { applyToParams, isBrowser, assign, noop, isArray } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
-import type { LocationQuery } from './query'
+import type { LocationQuery, LocationQueryValue } from './query'
 import {
   normalizeQuery,
   parseQuery as originalParseQuery,
@@ -82,6 +82,28 @@ export interface RouterOptions extends EXPERIMENTAL_RouterOptions_Base {
    * Initial list of routes that should be added to the router.
    */
   routes: Readonly<RouteRecordRaw[]>
+
+  /**
+   * Custom implementation to parse a query. See its counterpart,
+   * {@link EXPERIMENTAL_RouterOptions_Base.stringifyQuery}.
+   *
+   * @example
+   * Let's say you want to use the [qs package](https://github.com/ljharb/qs)
+   * to parse queries, you can provide both `parseQuery` and `stringifyQuery`:
+   * ```js
+   * import qs from 'qs'
+   *
+   * createRouter({
+   *   // other options...
+   *   parseQuery: qs.parse,
+   *   stringifyQuery: qs.stringify,
+   * })
+   * ```
+   */
+  // `undefined` values allow `experimental_parseQuery`
+  parseQuery?: (
+    search: string
+  ) => Record<string, LocationQueryValue | LocationQueryValue[] | undefined>
 
   /**
    * Allows Nuxt and SSR apps to pass a prebuilt matcher created with
