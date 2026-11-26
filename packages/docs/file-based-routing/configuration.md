@@ -56,7 +56,7 @@ VueRouter({
    * match paths case sensitively (experimental resolver only)
    * percent-encoded characters must use uppercase hex (`%C3%A9`)
    */
-  caseSensitive: false,
+  caseSensitive: true,
 
   // modify routes individually
   async extendRoute(route) {
