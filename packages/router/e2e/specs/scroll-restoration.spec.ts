@@ -151,6 +151,17 @@ test.describe('scroll-restoration', () => {
       await expect(page).toHaveURL(/\/anchors$/)
       await expect.poll(() => scrollY(page)).toBe(500)
     })
+
+    test('scrolls again to the current hash with a router-link', async ({
+      page,
+    }) => {
+      await page.goto('/scroll-restoration/anchors#target')
+      await expect(page.locator('.anchors')).toBeVisible()
+      await page.evaluate(() => window.scrollTo(0, 500))
+
+      await click(page.locator('#router-link-anchor'))
+      await expect.poll(() => targetTop(page)).toBeLessThan(1)
+    })
   })
 
   test('keeps the position on a query only push', async ({ page }) => {

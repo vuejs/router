@@ -52,6 +52,8 @@ The default `capture` and `restore` functions do these steps:
 - Else, scroll to the element with the id in the hash, if it exists
 - Else, scroll to the top of the page
 
+When a `<RouterLink>` goes to the current location and it has a hash (e.g. a click on `#comments` while already at `#comments`), the restore ignores the saved position and scrolls to the hash again.
+
 The plugin alone does not capture or restore positions. At least one component must call [`useScrollRestoration()`](#useScrollRestoration).
 
 Note that the `key` determines which pages share a saved position. By default, going from `/search?q=shoes` to `/search?q=shoes&p=2` will not scroll to the top, because both pages share the same key: `/search` and therefore reuse the saved position. You can change this in the search page only. The other pages keep the default behavior:
