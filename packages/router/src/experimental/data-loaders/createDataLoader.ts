@@ -1,20 +1,276 @@
-import { type ShallowRef } from 'vue'
-import type { IS_USE_DATA_LOADER_KEY, STAGED_NO_VALUE } from './meta-extensions'
-import { type _PromiseMerged } from './utils'
-import { type NavigationResult } from './navigation-guard'
-import { type _Awaitable } from '../../types/utils'
-import type { ErrorDefault } from './types-config'
-import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
+import { shallowRef, type ShallowRef } from 'vue'
 import type { Router } from '../../router'
+import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
+import { useRoute, useRouter } from '../../useApi'
+import { assign } from '../../utils'
+import { diagnostics } from '../../diagnostics'
+import { NavigationResult } from './navigation-result'
+import {
+  ABORT_CONTROLLER_KEY,
+  APP_KEY,
+  IS_SSR_KEY,
+  IS_USE_DATA_LOADER_KEY,
+  LOADER_SET_KEY,
+  PENDING_LOCATION_KEY,
+  STAGED_NO_VALUE,
+} from './symbols'
+import {
+  getCurrentContext,
+  setCurrentContext,
+  type _PromiseMerged,
+} from './utils'
+import type { ErrorDefault } from './types-config'
 
 /**
- * Base type for a data loader entry. Each Data Loader has its own entry in the `loaderEntries` (accessible via `[LOADER_ENTRIES_KEY]`) map.
+ * Hooks that differentiate one data loader implementation from another. The
+ * shared lifecycle (entries, staging, commit, nesting) lives in
+ * {@link createDataLoader}.
+ */
+export interface DataLoaderImplementation<
+  TData,
+  TEntry extends DataLoaderEntryBase<TData, ErrorDefault>,
+> {
+  /**
+   * Returns data that is already available (e.g. SSR hydration) to skip the
+   * fetch, or `undefined` to fetch. Called before every fetch.
+   */
+  initial(
+    entry: TEntry,
+    to: RouteLocationNormalizedLoaded,
+    router: Router
+  ): TData | undefined
+
+  /**
+   * Fetches the data for `to`.
+   *
+   * @param reload - force a new fetch even if the implementation has a cache
+   */
+  fetch(
+    entry: TEntry,
+    to: RouteLocationNormalizedLoaded,
+    router: Router,
+    reload?: boolean
+  ): Promise<TData>
+
+  /**
+   * Extra properties added to the object returned by the composable.
+   */
+  extend?(entry: TEntry, router: Router): Record<string, unknown>
+}
+
+/**
+ * Creates a data loader composable from an implementation. Used by
+ * `defineBasicLoader()` and `defineColadaLoader()`.
+ *
+ * @param options - resolved loader options
+ * @param impl - implementation hooks
+ */
+export function createDataLoader<
+  TData,
+  TEntry extends DataLoaderEntryBase<TData, ErrorDefault>,
+>(
+  options: DefineDataLoaderOptionsBase_LaxData & { key?: unknown },
+  { initial, fetch, extend }: DataLoaderImplementation<TData, TEntry>
+): UseDataLoader<TData | undefined, ErrorDefault> {
+  const entries = new WeakMap<Router, TEntry>()
+
+  function load(
+    to: RouteLocationNormalizedLoaded,
+    router: Router,
+    from?: RouteLocationNormalizedLoaded,
+    parent?: DataLoaderEntryBase,
+    reload?: boolean
+  ): Promise<void> {
+    let entry = entries.get(router)!
+    if (!entry) {
+      entries.set(
+        router,
+        (entry = {
+          data: shallowRef(),
+          error: shallowRef(null),
+          isLoading: shallowRef(false),
+          children: new Set(),
+          staged: STAGED_NO_VALUE,
+          stagedError: null,
+          commit,
+        } as TEntry)
+      )
+    }
+
+    // nested loaders and the guard can both ask for the same navigation
+    if (entry.pendingTo === to) return entry.pendingLoad!
+
+    const context = getCurrentContext()
+    if (__DEV__ && parent !== context[0]) {
+      diagnostics.VUE_ROUTER_R1001({ key: String(options.key) })
+    }
+    // nested loaders read their parent from the context
+    setCurrentContext([entry, router, to])
+    entry.pendingTo = to
+
+    const initialData = initial(entry, to, router)
+    if (initialData !== undefined) {
+      entry.data.value = initialData
+      setCurrentContext(context)
+      return (entry.pendingLoad = Promise.resolve())
+    }
+
+    entry.isLoading.value = true
+    entry.staged = STAGED_NO_VALUE
+    // keep the error until new data is committed
+    entry.stagedError = entry.error.value
+
+    // runs after the fetch settles, with the same timing in both branches
+    const settle = (fn: () => void) => {
+      setCurrentContext(context)
+      // a newer load replaced this one: its result is discarded
+      if (entry.pendingLoad === pendingLoad) {
+        try {
+          fn()
+        } finally {
+          entry.isLoading.value = false
+          // loads outside of a navigation (reload, lazy) commit themselves
+          if (
+            !to.meta[ABORT_CONTROLLER_KEY]?.signal.aborted &&
+            (options.commit === 'immediate' ||
+              to !== router[PENDING_LOCATION_KEY])
+          ) {
+            entry.commit(to)
+          }
+        }
+      }
+    }
+
+    const pendingLoad: Promise<void> = Promise.resolve(
+      fetch(entry, to, router, reload)
+    ).then(
+      data =>
+        settle(() => {
+          if (data instanceof NavigationResult) {
+            if (__DEV__) {
+              diagnostics.VUE_ROUTER_R1002()
+              warnNonExposedLoader(to)
+            }
+            throw data
+          }
+          entry.staged = data
+          entry.stagedError = null
+        }),
+      (error: unknown) =>
+        settle(() => {
+          if (error instanceof NavigationResult) {
+            if (__DEV__) warnNonExposedLoader(to)
+            throw error
+          }
+          entry.stagedError = error as ErrorDefault
+          // lazy loaders do not block the navigation, so they keep the error
+          if (!toLazyValue(options.lazy, to, from) || router[IS_SSR_KEY]) {
+            throw error
+          }
+        })
+    )
+
+    // the loader function ran until its first await with the loader context
+    setCurrentContext(context)
+    return (entry.pendingLoad = pendingLoad)
+  }
+
+  function commit(this: TEntry, to: RouteLocationNormalizedLoaded) {
+    // a lazy loader can still be loading when the navigation ends: it commits itself later
+    if (this.pendingTo === to && !this.isLoading.value) {
+      if (this.staged !== STAGED_NO_VALUE) {
+        this.data.value = this.staged
+        this.staged = STAGED_NO_VALUE
+      }
+      this.error.value = this.stagedError
+      // allows a new load for the same location (reload)
+      this.pendingTo = null
+      // the guard only knows about root loaders
+      for (const child of this.children) child.commit(to)
+    }
+  }
+
+  function warnNonExposedLoader(to: RouteLocationNormalizedLoaded) {
+    const loaders = to.meta[LOADER_SET_KEY]
+    if (loaders && !loaders.has(useDataLoader)) {
+      diagnostics.VUE_ROUTER_R1004({
+        key: options.key ? ` (loader key: "${String(options.key)}")` : '',
+      })
+    }
+  }
+
+  const useDataLoader = (() => {
+    const context = getCurrentContext()
+    const [parentEntry, _router, _route] = context
+    // fallback to the global router and route when used in components
+    const router = _router || useRouter()
+    const route = _route || (useRoute() as RouteLocationNormalizedLoaded)
+    let entry = entries.get(router)
+
+    if (
+      !entry ||
+      // nested loader of a new navigation
+      (parentEntry && entry.pendingTo !== route)
+    ) {
+      router[APP_KEY].runWithContext(() =>
+        load(route, router, undefined, parentEntry, !!entry)
+      )
+      entry = entries.get(router)!
+    }
+
+    if (parentEntry) {
+      if (__DEV__ && parentEntry === entry) {
+        diagnostics.VUE_ROUTER_R1005({ key: String(options.key) })
+      }
+      parentEntry.children.add(entry)
+    }
+
+    const { data, error, isLoading } = entry
+    const promise = entry
+      .pendingLoad!.then(
+        // nested loaders need the latest value even if it is not committed yet
+        () => (entry.staged === STAGED_NO_VALUE ? data.value : entry.staged),
+        // only nested loaders handle the rejection, otherwise it would be unhandled
+        e => (parentEntry ? Promise.reject(e) : null)
+      )
+      // restore the caller's context so sequential awaits keep the parent
+      .finally(() => setCurrentContext(context))
+
+    setCurrentContext(context)
+    return assign(
+      promise,
+      {
+        data,
+        error,
+        isLoading,
+        // commits itself because it is not part of the navigation
+        reload: (
+          to: RouteLocationNormalizedLoaded = router.currentRoute.value
+        ) =>
+          router[APP_KEY].runWithContext(() =>
+            load(to, router, undefined, undefined, true)
+          ),
+      },
+      extend && extend(entry, router)
+    )
+  }) as unknown as UseDataLoader<TData | undefined, ErrorDefault>
+
+  useDataLoader[IS_USE_DATA_LOADER_KEY] = true
+  useDataLoader._ = {
+    load,
+    options,
+    getEntry: router => entries.get(router) as any,
+  }
+
+  return useDataLoader
+}
+
+/**
+ * Base type for a data loader entry. Each Data Loader has one entry per router.
  */
 export interface DataLoaderEntryBase<
   TData = unknown,
   TError = unknown,
-  // TODO: technically we could just make loaders pass TData | undefined as the first type parameter
-  // this requires quite some code updates, this version is retro-compatible
   TDataInitial extends TData | undefined = TData | undefined,
 > {
   /**
@@ -28,31 +284,21 @@ export interface DataLoaderEntryBase<
   error: ShallowRef<TError | null>
 
   /**
-   * Location the data was loaded for or `null` if the data is not loaded.
-   */
-  to: RouteLocationNormalizedLoaded | null
-
-  /**
    * Whether there is an ongoing request.
    */
   isLoading: ShallowRef<boolean>
 
-  options: DefineDataLoaderOptionsBase_LaxData
+  /**
+   * The latest load. Allows to verify if a load is still valid when it resolves.
+   */
+  pendingLoad?: Promise<void>
 
   /**
-   * Called by the navigation guard when the navigation is duplicated. Should be used to reset pendingTo and pendingLoad and any other property that should be reset.
+   * Location of the latest load. Used to skip duplicated loads for the same
+   * navigation and to commit only the data of that navigation. Reset to `null`
+   * when the data is committed.
    */
-  resetPending: () => void
-
-  /**
-   * The latest pending load. Allows to verify if the load is still valid when it resolves.
-   */
-  pendingLoad: Promise<void> | null
-
-  /**
-   * The latest pending navigation's `to` route. Used to verify if the navigation is still valid when it resolves.
-   */
-  pendingTo: RouteLocationNormalizedLoaded | null
+  pendingTo?: RouteLocationNormalizedLoaded | null
 
   /**
    * Data that was staged by a loader. This is used to avoid showing the old data while the new data is loading. Calling
@@ -66,29 +312,16 @@ export interface DataLoaderEntryBase<
    */
   stagedError: TError | null
 
-  // entry instance
-
   /**
-   * Other data loaders that depend on this one. This is used to invalidate the data when a dependency is invalidated.
+   * Other data loaders that depend on this one. They are committed with this one.
    */
   children: Set<DataLoaderEntryBase>
 
   /**
    * Commits the pending data to the entry. This is called by the navigation guard when all non-lazy loaders have
-   * finished loading. It should be implemented by the loader. It **must be called** from the entry itself:
-   * `entry.commit(to)`.
+   * finished loading. It **must be called** from the entry itself: `entry.commit(to)`.
    */
   commit(to: RouteLocationNormalizedLoaded): void
-}
-
-export interface CreateDataLoaderOptions<
-  Context extends DataLoaderContextBase,
-> {
-  // TODO: should return a different value than context to know if we should skip the data loader execution
-  // TODO: rename to make more sense e.g. load, preload
-  before: (context: DataLoaderContextBase) => _Awaitable<Context>
-  // TODO: rename to make more sense e.g. ready, postload
-  after: <Data = unknown>(data: Data, context: Context) => unknown
 }
 
 /**
@@ -138,8 +371,6 @@ export interface _DefineDataLoaderOptionsBase_Common {
 export interface DefineDataLoaderOptionsBase_LaxData extends _DefineDataLoaderOptionsBase_Common {
   lazy?:
     | boolean
-    // TODO: allow passing information related to the existing data
-    // This would allow data loaders with a cache to be lazy if there is a cache
     | ((
         to: RouteLocationNormalizedLoaded,
         from?: RouteLocationNormalizedLoaded
@@ -185,20 +416,8 @@ export interface DataLoaderContextBase {
   signal: AbortSignal | undefined
 }
 
-// TODO: remove, not used
-export interface DefineDataLoader<Context extends DataLoaderContextBase> {
-  <Data>(
-    fn: DefineLoaderFn<Data, Context>,
-    options?: DefineDataLoaderOptionsBase_LaxData
-    // TODO: or a generic that allows a more complex UseDataLoader
-  ): UseDataLoader<Data>
-}
-
-// TODO: should be in each data loader. Refactor the base type to accept the needed generics
-
 /**
  * Data Loader composable returned by `defineLoader()`.
- * @see {@link DefineDataLoader}
  */
 export interface UseDataLoader<Data = unknown, TError = unknown> {
   [IS_USE_DATA_LOADER_KEY]: true
@@ -252,12 +471,14 @@ export interface UseDataLoaderInternals<Data = unknown, TError = unknown> {
    * @param router - router instance
    * @param from - route location we are coming from
    * @param parent - parent data loader entry
+   * @param reload - force a new fetch
    */
   load: (
     to: RouteLocationNormalizedLoaded,
     router: Router,
     from?: RouteLocationNormalizedLoaded,
-    parent?: DataLoaderEntryBase
+    parent?: DataLoaderEntryBase,
+    reload?: boolean
   ) => Promise<void>
 
   /**
