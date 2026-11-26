@@ -33,6 +33,12 @@ describe('MatcherPatternPathStatic', () => {
       expect(pattern.match('/tEAm')).toEqual({})
     })
 
+    it('can be case sensitive', () => {
+      const pattern = new MatcherPatternPathStatic('/Team', true)
+      expect(pattern.match('/Team')).toEqual({})
+      expect(pattern.match('/team')).toBe(null)
+    })
+
     it('keeps a trailing slash', () => {
       const pattern = new MatcherPatternPathStatic('/team/')
       expect(pattern.match('/team/')).toEqual({})

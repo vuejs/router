@@ -497,7 +497,7 @@ export class TreeNode {
       re += '\\/?'
     }
 
-    return '/^' + re + '$/i'
+    return '/^' + re + (this.options.caseSensitive ? '$/' : '$/i')
   }
 
   /**

@@ -235,7 +235,7 @@ The regexp is inserted as a group inside the regexp of the whole path, so it mus
 - It must not contain capturing groups, use `(?:...)` instead.
 - It must not match an empty value (e.g. `/a*/`).
 - Do not use anchors like `^` or `$`: they apply to the whole path, not to the param value.
-- Its flags are ignored: paths are always matched case-insensitively.
+- Its flags are ignored: paths are matched case-insensitively unless you set the `caseSensitive` option of the plugin.
 
 For repeatable params, each value must match the regexp, so the regexp should not match `/` (e.g. use `[^/]+` instead of `.+`). Set `re` to `null` to use the default regexp.
 

@@ -496,6 +496,22 @@ describe('generateRouteResolver', () => {
     `)
   })
 
+  it('generates case sensitive matchers with caseSensitive', () => {
+    const options = resolveOptions({ caseSensitive: true })
+    const tree = new PrefixTree(options)
+    tree.insert('a', 'a.vue')
+    tree.insert('[id]', '[id].vue')
+    const resolver = generateRouteResolver(
+      tree,
+      options,
+      new ImportsMap(),
+      new Map()
+    )
+
+    expect(resolver).toContain(`new MatcherPatternPathStatic('/a', true)`)
+    expect(resolver).toContain(`/^\\/([^/]+?)$/,`)
+  })
+
   it('reuses parent path matcher when possible', () => {
     const tree = new PrefixTree(DEFAULT_OPTIONS)
     const importsMap = new ImportsMap()

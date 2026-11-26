@@ -231,6 +231,14 @@ export interface Options {
   pathParser?: ParseSegmentOptions
 
   /**
+   * Match paths case sensitively in the experimental resolver. Without the
+   * experimental resolver, use the `sensitive` option of `createRouter()`.
+   *
+   * @default `false`
+   */
+  caseSensitive?: boolean
+
+  /**
    * Whether to watch the files for changes.
    *
    * Defaults to `true` unless the `CI` environment variable is set.
@@ -316,6 +324,7 @@ export const DEFAULT_OPTIONS = {
     dotNesting: true,
   },
   watch: !process.env.CI,
+  caseSensitive: false,
   experimental: {},
 } satisfies Options
 

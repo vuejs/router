@@ -52,6 +52,9 @@ VueRouter({
   // disabled by default when the `CI` env variable is set
   watch: !process.env.CI,
 
+  // match paths case sensitively (experimental resolver only)
+  caseSensitive: false,
+
   // modify routes individually
   async extendRoute(route) {
     // ...
