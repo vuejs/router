@@ -410,6 +410,31 @@ describe('useScrollRestoration', () => {
     })
   })
 
+  it('scrolls to the hash target again when pushed to the current location', async () => {
+    const Page = defineComponent({
+      setup() {
+        useScrollRestoration()
+      },
+      template: '<main><div id="details">Details</div></main>',
+    })
+    const { navigate, setScroll, wrapper } = await mountRouter(
+      [{ path: '/page', component: Page }],
+      { attachTo: document.body }
+    )
+
+    await navigate('/page#details')
+    vi.spyOn(
+      wrapper.get('#details').element,
+      'getBoundingClientRect'
+    ).mockReturnValue(new DOMRect(0, 180))
+    setScroll(0, 300)
+    window.dispatchEvent(new Event('pagehide'))
+
+    await navigate('/page#details')
+
+    expect(window.scrollY).toBe(180)
+  })
+
   it('shares a scroll position between pages with the same key', async () => {
     const PageA = defineComponent({
       setup() {
