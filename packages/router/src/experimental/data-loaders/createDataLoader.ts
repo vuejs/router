@@ -59,18 +59,18 @@ export interface DataLoaderImplementation<
 }
 
 /**
+ * Number of loader functions running synchronously. Outside of them, a
+ * context is a leftover of a loader awaiting something else.
+ */
+let running = 0
+
+/**
  * Creates a data loader composable from an implementation. Used by
  * `defineBasicLoader()` and `defineColadaLoader()`.
  *
  * @param options - resolved loader options
  * @param impl - implementation hooks
  */
-/**
- * Number of loader functions running synchronously. Outside of them, a
- * context is a leftover of a loader awaiting something else.
- */
-let running = 0
-
 export function createDataLoader<
   TData,
   TEntry extends DataLoaderEntryBase<TData, ErrorDefault>,
