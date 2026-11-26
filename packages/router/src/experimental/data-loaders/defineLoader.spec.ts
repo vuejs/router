@@ -181,6 +181,24 @@ describe(
         expect(spy).toHaveBeenCalledTimes(0)
       })
 
+      it('reloads after using initialData with commit immediate', async () => {
+        const spy = vi
+          .fn<(to: RouteLocationNormalizedLoaded) => Promise<string>>()
+          .mockResolvedValue('fetched')
+        const { router, useData } = singleLoaderOneRoute(
+          defineBasicLoader(spy, { key: 'root', commit: 'immediate' })
+        )
+        router[INITIAL_DATA_KEY] = { root: 'initial' }
+
+        await router.push('/fetch?p=one')
+        const { data, reload } = useData()
+        expect(data.value).toEqual('initial')
+
+        await reload()
+        expect(spy).toHaveBeenCalledTimes(1)
+        expect(data.value).toEqual('fetched')
+      })
+
       it('ignores initialData on subsequent navigations', async () => {
         const spy = vi
           .fn<(to: RouteLocationNormalizedLoaded) => Promise<string>>()
