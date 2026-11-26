@@ -100,7 +100,7 @@ exports[`generateRouteResolver > handles multiple nested groups 1`] = `
 const __route_0 = normalizeRouteRecord({
   /* (removed) name: false */
   path: new MatcherPatternPathDynamic(
-    /^\\/([^/]+?)$/i,
+    /^\\/([^/]+?)$/,
     {
       username: [/* no parser */],
     },
@@ -130,7 +130,7 @@ const __route_2 = normalizeRouteRecord({
 const __route_3 = normalizeRouteRecord({
   name: '/[username]/(user-posts)/posts/(posts-list)',
   path: new MatcherPatternPathDynamic(
-    /^\\/([^/]+?)\\/posts$/i,
+    /^\\/([^/]+?)\\/posts$/,
     {
       username: [/* no parser */],
     },
@@ -153,7 +153,7 @@ const __route_4 = normalizeRouteRecord({
 const __route_5 = normalizeRouteRecord({
   name: '/[username]/(user-settings)/settings',
   path: new MatcherPatternPathDynamic(
-    /^\\/([^/]+?)\\/settings$/i,
+    /^\\/([^/]+?)\\/settings$/,
     {
       username: [/* no parser */],
     },

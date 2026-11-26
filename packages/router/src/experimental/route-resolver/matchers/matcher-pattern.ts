@@ -67,13 +67,13 @@ export interface MatcherPatternPath<
  * ```
  *
  * @param path - path to match
- * @param caseSensitive - match the path case sensitively
+ * @param caseInsensitive - match the path case insensitively
  */
 export class MatcherPatternPathStatic implements MatcherPatternPath<EmptyParams> {
   /**
-   * Normalizes a path before comparing it.
+   * Is the path case insensitive or not.
    */
-  declare private n: (path: string) => string
+  declare private i: boolean | undefined
 
   /**
    * Normalized version of the path to match against.
@@ -82,22 +82,20 @@ export class MatcherPatternPathStatic implements MatcherPatternPath<EmptyParams>
 
   constructor(
     readonly path: string,
-    caseSensitive?: boolean
+    caseInsensitive?: boolean
   ) {
-    this.n = caseSensitive ? identityFn : toLowerCase
-    this._path = this.n(path)
+    this.i = caseInsensitive
+    this._path = caseInsensitive ? path.toLowerCase() : path
   }
 
   match(path: string): EmptyParams | null {
-    return this.n(path) === this._path ? {} : null
+    return (this.i ? path.toLowerCase() : path) === this._path ? {} : null
   }
 
   build(): string {
     return this.path
   }
 }
-
-const toLowerCase = (path: string) => path.toLowerCase()
 
 /**
  * Options for param parsers in {@link MatcherPatternPathDynamic}.

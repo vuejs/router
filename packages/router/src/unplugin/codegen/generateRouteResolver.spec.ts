@@ -496,8 +496,8 @@ describe('generateRouteResolver', () => {
     `)
   })
 
-  it('generates case sensitive matchers with caseSensitive', () => {
-    const options = resolveOptions({ caseSensitive: true })
+  it('generates case insensitive matchers without caseSensitive', () => {
+    const options = resolveOptions({ caseSensitive: false })
     const tree = new PrefixTree(options)
     tree.insert('a', 'a.vue')
     tree.insert('[id]', '[id].vue')
@@ -509,7 +509,7 @@ describe('generateRouteResolver', () => {
     )
 
     expect(resolver).toContain(`new MatcherPatternPathStatic('/a', true)`)
-    expect(resolver).toContain(`/^\\/([^/]+?)$/,`)
+    expect(resolver).toContain(`/^\\/([^/]+?)$/i,`)
   })
 
   it('reuses parent path matcher when possible', () => {
@@ -560,7 +560,7 @@ describe('generateRouteResolver', () => {
       const __route_3 = normalizeRouteRecord({
         name: '/p/[id]',
         path: new MatcherPatternPathDynamic(
-          /^\\/p\\/([^/]+?)$/i,
+          /^\\/p\\/([^/]+?)$/,
           {
             id: [/* no parser */],
           },
@@ -582,7 +582,7 @@ describe('generateRouteResolver', () => {
       const __route_5 = normalizeRouteRecord({
         name: '/p/[id]/details',
         path: new MatcherPatternPathDynamic(
-          /^\\/p\\/([^/]+?)\\/details$/i,
+          /^\\/p\\/([^/]+?)\\/details$/,
           {
             id: [/* no parser */],
           },
@@ -1572,7 +1572,7 @@ describe('generateRouteResolver', () => {
         const __route_0 = normalizeRouteRecord({
           name: '/shop/[id]',
           path: new MatcherPatternPathDynamic(
-            /^\\/store\\/([^/]+?)$/i,
+            /^\\/store\\/([^/]+?)$/,
             {
               slug: [/* no parser */],
             },
@@ -1981,7 +1981,7 @@ describe('path params custom regexp', () => {
       const __route_0 = normalizeRouteRecord({
         name: '/orgs/[org]',
         path: new MatcherPatternPathDynamic(
-          /^\\/orgs\\/(@\\w+)$/i,
+          /^\\/orgs\\/(@\\w+)$/,
           {
             org: [/* no parser */],
           },
@@ -1996,7 +1996,7 @@ describe('path params custom regexp', () => {
       const __route_1 = normalizeRouteRecord({
         name: '/tags/[tags]+',
         path: new MatcherPatternPathDynamic(
-          /^\\/tags\\/((?:[a-z]+)(?:\\/(?:[a-z]+))*)$/i,
+          /^\\/tags\\/((?:[a-z]+)(?:\\/(?:[a-z]+))*)$/,
           {
             tags: [/* no parser */, /* repeatable: */ true],
           },

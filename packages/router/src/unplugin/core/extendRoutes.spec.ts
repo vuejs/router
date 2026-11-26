@@ -233,7 +233,7 @@ describe('EditableTreeNode', () => {
     ])
     // the declared regexp is still applied after the rename
     expect(withRe.params).toMatchObject([{ paramName: 'renamedB', re: '\\d+' }])
-    expect(nodeB.regexp).toBe('/^\\/(\\d+)$/i')
+    expect(nodeB.regexp).toBe('/^\\/(\\d+)$/')
   })
 
   it('keeps param renames after other edits', () => {
@@ -259,7 +259,7 @@ describe('EditableTreeNode', () => {
       { paramName: 'renamedA', parser: 'date' },
       { paramName: 'renamedB', re: '\\d+' },
     ])
-    expect(node.regexp).toBe('/^\\/([^/]+?)\\/users\\/(\\d+)$/i')
+    expect(node.regexp).toBe('/^\\/([^/]+?)\\/users\\/(\\d+)$/')
     // the file segments keep the original names
     expect(parent.value.subSegments).toMatchObject([{ paramName: 'a' }])
 
@@ -289,7 +289,7 @@ describe('EditableTreeNode', () => {
       { paramName: 'renamed', parser: 'int' },
       { paramName: 'b', re: '\\d+' },
     ])
-    expect(node.regexp).toBe('/^\\/([^/]+?)\\/(\\d+)$/i')
+    expect(node.regexp).toBe('/^\\/([^/]+?)\\/(\\d+)$/')
   })
 
   it('validates regexps set on a param', () => {
@@ -310,7 +310,7 @@ describe('EditableTreeNode', () => {
       { re: null },
     ])
     expect(tree.children.get(':a/:b/:c(\\d+)')!.regexp).toBe(
-      '/^\\/([^/]+?)\\/(x\\/y)\\/([^/]+?)$/i'
+      '/^\\/([^/]+?)\\/(x\\/y)\\/([^/]+?)$/'
     )
   })
 

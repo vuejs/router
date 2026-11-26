@@ -26,17 +26,17 @@ describe('MatcherPatternPathStatic', () => {
       expect(pattern.match('/')).toBe(null)
     })
 
-    it('is case insensitive', () => {
+    it('is case sensitive by default', () => {
       const pattern = new MatcherPatternPathStatic('/Team')
+      expect(pattern.match('/Team')).toEqual({})
+      expect(pattern.match('/team')).toBe(null)
+    })
+
+    it('can be case insensitive', () => {
+      const pattern = new MatcherPatternPathStatic('/Team', true)
       expect(pattern.match('/team')).toEqual({})
       expect(pattern.match('/TEAM')).toEqual({})
       expect(pattern.match('/tEAm')).toEqual({})
-    })
-
-    it('can be case sensitive', () => {
-      const pattern = new MatcherPatternPathStatic('/Team', true)
-      expect(pattern.match('/Team')).toEqual({})
-      expect(pattern.match('/team')).toBe(null)
     })
 
     it('keeps a trailing slash', () => {
