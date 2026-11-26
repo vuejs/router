@@ -238,6 +238,28 @@ export const sharedConfig = defineConfig({
       provider: 'local',
       options: {
         locales: { ...zhSearch },
+        miniSearch: {
+          options: {
+            // Chinese has no spaces: index Han runs as character bigrams.
+            // Serialized to the client by source, so it must stay self-contained
+            tokenize: text => {
+              const tokens: string[] = []
+              for (const word of text.split(/[\n\r\p{Z}\p{P}]+/u)) {
+                for (const part of word.split(/(\p{Script=Han}+)/u)) {
+                  if (!part) continue
+                  if (!/\p{Script=Han}/u.test(part) || part.length === 1) {
+                    tokens.push(part)
+                    continue
+                  }
+                  for (let i = 0; i < part.length - 1; i++) {
+                    tokens.push(part.slice(i, i + 2))
+                  }
+                }
+              }
+              return tokens
+            },
+          },
+        },
       },
     },
 
