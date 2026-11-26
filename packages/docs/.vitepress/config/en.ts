@@ -160,7 +160,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
               link: '/guide/advanced/scroll-behavior.html',
             },
             {
-              text: 'Scroll Restoration (experimental)',
+              text: 'Scroll Restoration 🧪',
               link: '/experimental/scroll-restoration',
             },
             {
@@ -225,19 +225,19 @@ function sidebarFileBasedRouting(): SidebarGroup {
       { text: 'HMR', link: '/file-based-routing/hmr' },
       { text: 'ESLint', link: '/file-based-routing/eslint' },
       {
-        text: 'Router Resolver (experimental)',
+        text: 'Router Resolver 🧪',
         link: '/experimental/router-resolver',
       },
       {
-        text: 'Param Parsers (experimental)',
+        text: 'Param Parsers 🧪',
         link: '/experimental/param-parsers',
       },
       {
-        text: 'Vapor Mode (experimental)',
+        text: 'Vapor Mode 🧪',
         link: '/experimental/vapor',
       },
       {
-        text: 'URL Encoding (experimental)',
+        text: 'URL Encoding 🧪',
         link: '/experimental/encoding',
       },
     ],
