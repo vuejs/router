@@ -235,11 +235,8 @@ export const sharedConfig = defineConfig({
     },
 
     search: {
-      provider: 'algolia',
+      provider: 'local',
       options: {
-        appId: 'BTNTW3I1XP',
-        apiKey: '771d10c8c5cc48f7922f15048b4d931c',
-        indexName: 'next_router_vuejs',
         locales: { ...zhSearch },
       },
     },
