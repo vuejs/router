@@ -133,6 +133,29 @@ describe(
       expect(query).toHaveBeenCalledTimes(2)
     })
 
+    it('avoids refetching fresh nested data when the parent reruns', async () => {
+      const nestedQuery = vi.fn().mockResolvedValue('nested')
+      const useNested = defineColadaLoader({
+        query: nestedQuery,
+        key: to => ['nested', to.query.q as string],
+      })
+      const parentQuery = vi.fn(async (to: RouteLocationNormalizedLoaded) => {
+        await useNested()
+        return to.query.v
+      })
+      const { router } = singleLoaderOneRoute(
+        defineColadaLoader({
+          query: parentQuery,
+          key: to => ['parent', to.query.v as string],
+        })
+      )
+
+      await router.push('/fetch?q=1&v=1')
+      await router.push('/fetch?q=1&v=2')
+      expect(parentQuery).toHaveBeenCalledTimes(2)
+      expect(nestedQuery).toHaveBeenCalledTimes(1)
+    })
+
     it('updates data loader data if internal data changes', async () => {
       const query = vi.fn(async () => 'data')
 
