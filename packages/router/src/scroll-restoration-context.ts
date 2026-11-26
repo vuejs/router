@@ -1,5 +1,6 @@
 import type { NavigationInformation, RouterHistory } from './history/common'
 import { historyPositions } from './history/position'
+import { START_LOCATION_NORMALIZED } from './location'
 import type { RouteLocationNormalized } from './typed-routes'
 import type { LocationQueryValue } from './query'
 
@@ -78,27 +79,35 @@ export interface ScrollRestorationContext {
   readonly historyPosition: number | undefined
 }
 
+// The currentRoute ref identifies a router, including routers sharing a
+// history. A route object alone cannot establish ownership: START is shared
+// globally, and an application can pass another router's route to RouterView.
+type ContextOwner = { readonly value: RouteLocationNormalized }
 const contexts = new WeakMap<
-  RouteLocationNormalized,
-  ScrollRestorationContext
+  ContextOwner,
+  WeakMap<RouteLocationNormalized, ScrollRestorationContext>
 >()
 
 export function getScrollRestorationContext(
+  owner: ContextOwner,
   route: RouteLocationNormalized
 ): ScrollRestorationContext | undefined {
-  return contexts.get(route)
+  return contexts.get(owner)?.get(route)
 }
 
 // Called only after a navigation passes its final cancellation check and its
 // history operation succeeds. No shared pending-navigation flags are needed.
 export function recordScrollRestorationContext(
+  owner: ContextOwner,
   history: RouterHistory,
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
   type: ScrollRestorationContext['type'],
   information?: NavigationInformation
 ): void {
-  const fromPosition = contexts.get(from)?.historyPosition
+  let ownedContexts = contexts.get(owner)
+  if (!ownedContexts) contexts.set(owner, (ownedContexts = new WeakMap()))
+  const fromPosition = ownedContexts.get(from)?.historyPosition
   const position = historyPositions.get(history)?.()
   // Do not retain other WeakMap keys through from/to: keeping an old route
   // must not retain every subsequent navigation (or the entire past).
@@ -111,15 +120,19 @@ export function recordScrollRestorationContext(
     from: fromSnapshot,
     to: toSnapshot,
   } as const
-  contexts.set(
-    from,
-    Object.freeze({
-      ...navigation,
-      route: fromSnapshot,
-      historyPosition: fromPosition,
-    })
-  )
-  contexts.set(
+  // START is not a history entry. Keeping it would also expose an old
+  // startup after the same router is unmounted and starts again.
+  if (from !== START_LOCATION_NORMALIZED) {
+    ownedContexts.set(
+      from,
+      Object.freeze({
+        ...navigation,
+        route: fromSnapshot,
+        historyPosition: fromPosition,
+      })
+    )
+  }
+  ownedContexts.set(
     to,
     Object.freeze({
       ...navigation,

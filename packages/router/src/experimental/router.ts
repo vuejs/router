@@ -1142,6 +1142,7 @@ export function experimental_createRouter(
     }
 
     recordScrollRestorationContext(
+      currentRoute,
       routerHistory,
       toLocation,
       from,

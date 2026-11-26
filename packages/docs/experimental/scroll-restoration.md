@@ -68,7 +68,7 @@ Installing the plugin sets `history.scrollRestoration` to `manual`. Setting it t
 
 ## `useScrollRestoration()` %{#useScrollRestoration}%
 
-`useScrollRestoration()` uses `onRouteRendered()` to restore the scroll after each navigation. Call it in a component inside a `<RouterView>`, like a layout or a page component. The restore then runs when the closest `<RouterView>` shows the new route: after the page mounts or updates, after `<Suspense>` resolves, and after an out-in `<Transition>` enters.
+`useScrollRestoration()` uses `onRouteRendered()` to restore the scroll after each navigation. Call it in a component inside a `<RouterView>`, like a layout or a page component. The restore then runs when the closest `<RouterView>` shows the new route: after the page mounts or updates, after a routed async page resolves through `<Suspense>`, and after an out-in `<Transition>` enters.
 
 Do not call it in your root `App.vue` or in other components outside of a `<RouterView>`. There, `onRouteRendered()` runs in `router.afterEach()`, before the new route renders, so the restore runs on the old page.
 
@@ -286,7 +286,7 @@ Snapshots do not include history state, matched component instances, or navigati
 
 During navigation capture, `route` and `historyPosition` refer to the **departing** entry, even though `history.state` already belongs to the destination. During restoration, they refer to the **target** entry. Capture outside navigation (for example, on `pagehide` or through a custom listener) uses the current entry and its last successful navigation. The returned `scroll()` restores the route displayed by its owning `<RouterView>`, so `manual: true` can wait for content to become ready.
 
-A `<RouterView :route="router.resolve(...)" />` can display a different route object. When its `fullPath` matches the current location, restoration uses the current entry's committed navigation context and position. A separately resolved background location has no associated history entry: `context.route` describes that displayed location, `from`/`to` describe the committed navigation, and `historyPosition` is `undefined`. A route object retained from a real navigation keeps its recorded context. The default path-based key still works for background views. An unchanged displayed route does not trigger another automatic restoration just because the URL changes.
+A `<RouterView :route="router.resolve(...)" />` can display a different route object. When its `fullPath` matches the current location, restoration uses the current entry's committed navigation context and position. A separately resolved background location has no associated history entry: `context.route` describes that displayed location, `from`/`to` describe the committed navigation, and `historyPosition` is `undefined`. A route object retained from a real navigation of this router keeps its recorded context. Contexts belong to the router, even when routers share a history or an application passes a route from another router. Before this router has a successful navigation, capturing its current entry describes its own start location, with no history position. The default path-based key still works for background views. An unchanged displayed route does not trigger another automatic restoration just because the URL changes.
 
 For example, opt in to separate positions for history entries and start new links at the top:
 
@@ -336,4 +336,4 @@ onMounted(async () => {
 
 With the default `setupListeners`, the router still captures the position automatically.
 
-Calls from an unmounted, deactivated, or still-pending component do nothing. A leaving view also cannot restore a new route before it displays it. If the same component is reused for another route, `scroll()` follows the newly displayed route; cancel outdated application requests when that route changes, and avoid calling `scroll()` for results the user no longer wants.
+Calls from an unmounted or deactivated component, or a page whose own async setup is still pending, do nothing. An already mounted synchronous page inside an unresolved ancestor `<Suspense>` is not covered by that pending-page check; wait until its content is displayed before calling `scroll()`. A leaving view also cannot restore a new route before it displays it. If the same component is reused for another route, `scroll()` follows the newly displayed route; cancel outdated application requests when that route changes, and avoid calling `scroll()` for results the user no longer wants.

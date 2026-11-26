@@ -784,6 +784,7 @@ export function createRouter(options: RouterOptions): Router {
     }
 
     recordScrollRestorationContext(
+      currentRoute,
       routerHistory,
       toLocation,
       from,

@@ -429,14 +429,14 @@ function ScrollRestorationClient(
   function contextFor(
     route: RouteLocationNormalized
   ): ScrollRestorationContext {
-    const recorded = getScrollRestorationContext(route)
+    const recorded = getScrollRestorationContext(router.currentRoute, route)
     if (recorded) return recorded
 
     // A RouterView can display a freshly resolved location rather than the
     // exact object committed by the router. Equivalent locations still refer
     // to the current entry; a background view has no such entry of its own.
     const current = router.currentRoute.value
-    const context = getScrollRestorationContext(current)
+    const context = getScrollRestorationContext(router.currentRoute, current)
     if (context) {
       return route.fullPath === current.fullPath
         ? context
