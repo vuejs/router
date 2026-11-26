@@ -9,7 +9,7 @@ import {
   useScrollRestoration,
   MatcherPatternPathStatic,
 } from 'vue-router/experimental'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { defineComponent, ref, type FunctionalComponent } from 'vue'
 
 // Structural records allow parsed params beyond the classic string constraint.
@@ -184,6 +184,17 @@ describe('query params', () => {
     router.push({ name: 'list', params: { q: 'a', page: null } })
     // @ts-expect-error: required params without a default cannot be removed
     router.push({ name: 'list', params: { q: undefined } })
+  })
+})
+
+describe('route.query', () => {
+  it('can be undefined for a missing key', () => {
+    expectTypeOf(useRoute().query.q).toEqualTypeOf<
+      (string | null)[] | undefined
+    >()
+    useRouter().beforeEach(to => {
+      expectTypeOf(to.query.q).toEqualTypeOf<(string | null)[] | undefined>()
+    })
   })
 })
 

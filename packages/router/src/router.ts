@@ -161,7 +161,9 @@ export type Router =
 export function createRouter(options: RouterOptions): Router {
   const matcher =
     options.matcher || createRouterMatcher(options.routes, options)
-  const parseQuery = options.parseQuery || originalParseQuery
+  // a missing key is also `undefined`
+  const parseQuery = (options.parseQuery ||
+    originalParseQuery) as typeof originalParseQuery
   const stringifyQuery = options.stringifyQuery || originalStringifyQuery
   const routerHistory = options.history
   if (__DEV__ && !routerHistory)

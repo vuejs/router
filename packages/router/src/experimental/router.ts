@@ -17,7 +17,7 @@ import {
 // they are typed after the classic query, whose values can also be scalars
 import {
   stringifyQuery as originalStringifyQuery,
-  type parseQuery as originalParseQuery,
+  type LocationQueryValue,
 } from '../query'
 import type { Router } from '../router'
 import {
@@ -170,7 +170,10 @@ export interface EXPERIMENTAL_RouterOptions_Base extends PathParserOptions {
    * that handles query parsing and adds a `$query` property to the params. See
    * the [TODO: migration guide](https://router.vuejs.org/experimental/query-parsing.html#migrating-from-parsequery-and-stringifyquery).
    */
-  parseQuery?: typeof originalParseQuery
+  // `undefined` values allow `experimental_parseQuery`
+  parseQuery?: (
+    search: string
+  ) => Record<string, LocationQueryValue | LocationQueryValue[] | undefined>
 
   /**
    * Custom implementation to stringify a query object. Should not prepend a leading `?`.

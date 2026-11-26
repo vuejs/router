@@ -2,7 +2,7 @@ import { type LocationQueryRaw } from '../query'
 import { encodeQueryValue as _encodeQueryValue } from '../encoding'
 import type { MatcherParamsFormatted } from './matchers/matcher-pattern'
 import type { _RouteRecordProps } from '../../typed-routes'
-import type { LocationNormalized } from '../../location'
+import type { LocationNormalized } from '../location'
 
 /**
  * Allowed types for a matcher name.
