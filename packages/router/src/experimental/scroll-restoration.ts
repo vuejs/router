@@ -297,7 +297,7 @@ export function SCROLL_RESTORATION_SETUP_LISTENERS_DEFAULT(
     }
     browserScrolled = false
   })
-  signal.addEventListener('abort', removeAfterEach, { once: true })
+  signal.addEventListener('abort', removeAfterEach)
   window.addEventListener('pagehide', () => capture(), { signal })
   document.addEventListener(
     'visibilitychange',
@@ -498,10 +498,6 @@ function ScrollRestorationClient(
         if (!toValue(registration.manual) && isActive(registration, to))
           registration.restore(null, to)
   })
-  listenersController.signal.addEventListener('abort', removeAfterEach, {
-    once: true,
-  })
-
   optionsWithDefaults.setupListeners(
     capture,
     listenersController.signal,
@@ -510,6 +506,7 @@ function ScrollRestorationClient(
 
   app.onUnmount(() => {
     listenersController.abort()
+    removeAfterEach()
   })
 }
 
