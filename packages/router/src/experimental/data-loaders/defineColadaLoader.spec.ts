@@ -156,6 +156,32 @@ describe(
       expect(nestedQuery).toHaveBeenCalledTimes(1)
     })
 
+    it('refetches when the target key has an ongoing query', async () => {
+      const bPending = Promise.withResolvers<void>()
+      const query = vi.fn(async (to: RouteLocationNormalizedLoaded) => {
+        const { k } = to.query
+        if (k === 'b') await bPending.promise
+        return `${k}:${to.query.x}`
+      })
+      const { router, useData } = singleLoaderOneRoute(
+        defineColadaLoader({ query, key: to => [to.query.k as string] })
+      )
+
+      await router.push('/fetch?k=a&x=1')
+      // leaves the query of b ongoing, x is not read yet
+      router.push('/fetch?k=b&x=1')
+      await vi.advanceTimersByTimeAsync(0)
+      // a different location to avoid a duplicated navigation
+      await router.push('/fetch?k=a&x=1&y=1')
+
+      const nav = router.push('/fetch?k=b&x=2')
+      // let the loader decide before b reads x
+      await vi.advanceTimersByTimeAsync(0)
+      bPending.resolve()
+      await nav
+      expect(useData().data.value).toBe('b:2')
+    })
+
     it('updates data loader data if internal data changes', async () => {
       const query = vi.fn(async () => 'data')
 

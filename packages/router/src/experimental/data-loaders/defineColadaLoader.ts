@@ -139,6 +139,8 @@ export function defineColadaLoader<Data>(
       if (entry.route.value !== to) {
         // refetch only if a tracked property of the route changed
         const tracked = entry.tracked.get(toCacheKey(toValueWithArgs(key, to)))
+        // binds ext to the query of `to`
+        entry.route.value = to
         reload =
           !tracked ||
           // an ongoing query has incomplete tracked reads
@@ -146,7 +148,6 @@ export function defineColadaLoader<Data>(
           !isSubsetOf(tracked.params, to.params) ||
           !isSubsetOf(tracked.query, to.query) ||
           (tracked.hash.v != null && tracked.hash.v !== to.hash)
-        entry.route.value = to
       }
       return ext[reload ? 'refetch' : 'refresh']().then(() => {
         if (ext.error.value) throw ext.error.value
