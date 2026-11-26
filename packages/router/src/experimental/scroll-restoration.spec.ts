@@ -646,6 +646,8 @@ describe('useScrollRestoration', () => {
           capture: () => ({ default: { left: 0, top: 10 } }),
           restore: () => window.scrollTo({ left: 0, top: 500 }),
         })
+        // not the last call of the component
+        useScrollRestoration({ key: 'other-key', manual: true })
       },
       template: '<main>Parent<RouterView /></main>',
     })

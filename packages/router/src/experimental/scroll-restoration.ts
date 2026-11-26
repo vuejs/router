@@ -1,18 +1,19 @@
 import type {
   App,
+  EffectScope,
   FunctionPlugin,
-  GenericComponentInstance,
   InjectionKey,
   MaybeRefOrGetter,
 } from 'vue'
 import {
-  getCurrentInstance,
+  getCurrentScope,
   inject,
   onActivated,
   onDeactivated,
+  onMounted,
   onScopeDispose,
+  provide,
   toValue,
-  useId,
 } from 'vue'
 import { diagnostics } from '../diagnostics'
 import { ErrorTypes, isNavigationFailure } from '../errors'
@@ -312,13 +313,22 @@ export function SCROLL_RESTORATION_SETUP_LISTENERS_DEFAULT(
  */
 type ScrollRestorationRegistration = Required<UseScrollRestorationOptions>
 
+/**
+ * Component of a {@link useScrollRestoration} call, linked to the closest
+ * ancestor component with a call.
+ *
+ * @internal
+ */
+type ScrollRestorationOwner = [
+  isMounted: boolean,
+  // same for all calls of a component
+  scope: EffectScope,
+  parent?: ScrollRestorationOwner,
+]
+
 const SCROLL_RESTORATION_REGISTRATIONS: InjectionKey<
   [
-    registrations: Map<
-      ScrollRestorationRegistration,
-      // vapor doesn't support getCurrentInstance()
-      GenericComponentInstance | string
-    >,
+    registrations: Map<ScrollRestorationRegistration, ScrollRestorationOwner>,
     restore: (
       registration: ScrollRestorationRegistration,
       to?: RouteLocationNormalized
@@ -327,6 +337,8 @@ const SCROLL_RESTORATION_REGISTRATIONS: InjectionKey<
       registration: ScrollRestorationRegistration,
       to: RouteLocationNormalized
     ) => boolean,
+    // provided again by each component with a call
+    owner?: ScrollRestorationOwner,
   ]
 > = Symbol()
 
@@ -390,7 +402,7 @@ function ScrollRestorationClient(
   app.provide(SCROLL_RESTORATION_OPTIONS_KEY, optionsWithDefaults)
   const registrations = new Map<
     ScrollRestorationRegistration,
-    GenericComponentInstance
+    ScrollRestorationOwner
   >()
   history.scrollRestoration = 'manual'
   // WebKit doesn't copy it to entries created by fragment navigations
@@ -409,16 +421,16 @@ function ScrollRestorationClient(
     route: RouteLocationNormalized,
     capturing?: boolean
   ): boolean {
-    const instance = registrations.get(registration)
-    if (!instance?.isMounted) return false
+    const owner = registrations.get(registration)
+    if (!owner?.[0]) return false
     const key = toValueWithArgs(registration.key, route)
     // calls of the same component never match: the walk starts at the parent
     for (let [other, parent] of registrations) {
       if (
-        (!capturing || parent.isMounted) &&
+        (!capturing || parent[0]) &&
         toValueWithArgs(other.key, route) === key
       ) {
-        while ((parent = parent.parent!)) if (parent === instance) return false
+        while ((parent = parent[2]!)) if (parent[1] === owner[1]) return false
       }
     }
     return true
@@ -537,16 +549,23 @@ function useScrollRestorationClient<
   if (__DEV__ && !inject(SCROLL_RESTORATION_REGISTRATIONS, null)) {
     throw diagnostics.VUE_ROUTER_R0044()
   }
-  const [registrations, restore, isActive] = inject(
+  const [registrations, restore, isActive, parent] = inject(
     SCROLL_RESTORATION_REGISTRATIONS
   )!
   const optionsWithDefaults = {
     ...inject(SCROLL_RESTORATION_OPTIONS_KEY)!,
     ...options,
   }
-  const instance = getCurrentInstance() || useId()
+  const owner: ScrollRestorationOwner = [false, getCurrentScope()!, parent]
+  onMounted(() => (owner[0] = true))
+  provide(SCROLL_RESTORATION_REGISTRATIONS, [
+    registrations,
+    restore,
+    isActive,
+    owner,
+  ])
 
-  const add = () => registrations.set(optionsWithDefaults, instance)
+  const add = () => registrations.set(optionsWithDefaults, owner)
   const remove = () => registrations.delete(optionsWithDefaults)
 
   // in setup() so a pending async page owns its key
