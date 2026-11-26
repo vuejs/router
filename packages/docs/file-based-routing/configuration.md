@@ -48,6 +48,9 @@ VueRouter({
     dotNesting: true,
   },
 
+  // trailing slash handling of the experimental resolver: 'always', 'never', or 'ignore'
+  trailingSlash: 'never',
+
   // watch the routes folders for changes during dev
   // disabled by default when the `CI` env variable is set
   watch: !process.env.CI,

@@ -1466,6 +1466,20 @@ describe('Tree', () => {
       expect(node.matcherPatternPathDynamicParts).toEqual([1, 'foo'])
     })
 
+    it('ends with the trailingSlash option', () => {
+      const always = { options: { trailingSlash: 'always' as const } }
+      checkRegexp('[[lang]]', String.raw`/^\/(?:([^/]+?)\/)?$/`, always)
+      checkRegexp(
+        '[[a]]/[[b]]',
+        String.raw`/^(?:\/([^/]+?))?(?:\/([^/]+?))?\/$/`,
+        always
+      )
+      checkRegexp('[[...path]]', String.raw`/^\/(.*)?$/`, always)
+      checkRegexp('a/[[id]]', String.raw`/^\/a(?:\/([^/]+?))?\/?$/`, {
+        options: { trailingSlash: 'ignore' },
+      })
+    })
+
     describe('path override', () => {
       it.each<[string, string, string, TreeNodeValueMatcherPart]>([
         ['[id]', '/foo/:id', String.raw`/^\/foo\/([^/]+?)$/`, ['foo', 1]],

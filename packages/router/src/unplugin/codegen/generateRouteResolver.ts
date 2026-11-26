@@ -1,6 +1,6 @@
 import { getDefinePageImportId } from '../core/moduleConstants'
 import { PrefixTree, type TreeNode } from '../core/tree'
-import type { ImportsMap } from '../core/utils'
+import { joinPath, type ImportsMap } from '../core/utils'
 import { type ResolvedOptions } from '../options'
 import { encodeImportIdentifierPart, toStringLiteral, ts } from '../utils'
 import type { ParamParsersMap } from './generateParamParsers'
@@ -343,15 +343,20 @@ function generatePathCode(
   paramParsersMap: ParamParsersMap
 ): string {
   const params = node.pathParams
-  if (params.length > 0) {
+  const { fullPath } = node
+  const { trailingSlash } = node.options
+  // the static matcher is strict, it cannot ignore the trailing slash
+  if (params.length > 0 || (trailingSlash === 'ignore' && fullPath !== '/')) {
     return `path: new MatcherPatternPathDynamic(
     ${node.regexp},
     ${generatePathParamsOptions(params, importsMap, paramParsersMap)},
     ${JSON.stringify(node.matcherPatternPathDynamicParts)},
-    ${node.endsWithSplat ? 'null,' : '/* trailingSlash */'}
+    ${node.endsWithSplat || trailingSlash === 'ignore' ? 'null,' : trailingSlash === 'always' ? 'true,' : '/* trailingSlash */'}
   ),`
   } else {
-    return `path: new MatcherPatternPathStatic(${toStringLiteral(node.fullPath)}${node.options.caseSensitive ? '' : ', true'}),`
+    return `path: new MatcherPatternPathStatic(${toStringLiteral(
+      trailingSlash === 'always' ? joinPath(fullPath, '/') : fullPath
+    )}${node.options.caseSensitive ? '' : ', true'}),`
   }
 }
 
