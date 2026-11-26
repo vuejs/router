@@ -141,6 +141,17 @@ describe('MatcherPatternPathStar', () => {
 describe('MatcherPatternPathDynamic', () => {
   mockWarn()
 
+  it('is case sensitive without the i flag', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/Teams\/([^/]+?)$/,
+      { teamId: [] },
+      ['Teams', 1]
+    )
+
+    expect(pattern.match('/Teams/A')).toEqual({ teamId: 'A' })
+    expect(pattern.match('/teams/A')).toBe(null)
+  })
+
   it('can have a trailing slash after a single param', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/teams\/([^/]+?)\/$/i,
