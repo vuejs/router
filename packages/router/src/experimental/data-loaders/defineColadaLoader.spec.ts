@@ -549,5 +549,53 @@ describe(
       expect(entry2.deps.size).toBe(0)
       expect(entry2.active).toBe(false)
     })
+
+    it('keeps the data of the current route when a lazy navigation is cancelled', async () => {
+      const bPending = Promise.withResolvers<string>()
+      // ignores the abort signal
+      const useItem = defineColadaLoader({
+        lazy: true,
+        query: async to =>
+          to.params.id === 'b' ? bPending.promise : `item-${to.params.id}`,
+        key: to => ['item', to.params.id as string],
+      })
+
+      const router = getRouter()
+      router.addRoute({
+        path: '/items/:id',
+        meta: { loaders: [useItem] },
+        component: defineComponent({
+          setup() {
+            const { data } = useItem()
+            return { data }
+          },
+          template: `<p id="data">{{ data }}</p>`,
+        }),
+      })
+
+      const wrapper = mount(RouterViewMock, {
+        global: {
+          plugins: [
+            [DataLoaderPlugin, { router }],
+            router,
+            createPinia(),
+            PiniaColada,
+          ],
+        },
+      })
+
+      await router.push('/items/a')
+      await vi.advanceTimersByTimeAsync(0)
+      expect(wrapper.find('#data').text()).toBe('item-a')
+
+      // a later guard cancels the navigation after the lazy loader started
+      router.beforeResolve(to => to.params.id !== 'b')
+      await router.push('/items/b')
+      expect(router.currentRoute.value.path).toBe('/items/a')
+
+      bPending.resolve('item-b')
+      await vi.advanceTimersByTimeAsync(0)
+      expect(wrapper.find('#data').text()).toBe('item-a')
+    })
   }
 )

@@ -139,8 +139,13 @@ export function defineColadaLoader<Data>(
       if (entry.route.value !== to) {
         // refetch only if a tracked property of the route changed
         const tracked = entry.tracked.get(toCacheKey(toValueWithArgs(key, to)))
+        const from = entry.route.value
         // binds ext to the query of `to`
         entry.route.value = to
+        // a failed navigation binds ext back so it does not sync the query of `to`
+        to.meta[ABORT_CONTROLLER_KEY]?.signal.addEventListener('abort', () => {
+          if (entry.route.value === to) entry.route.value = from
+        })
         reload =
           !tracked ||
           // an ongoing query has incomplete tracked reads
