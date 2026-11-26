@@ -15,6 +15,7 @@ const entries = [
   ['webRouter_experimental', 'webRouter_experimental', true],
   ['webRouter_basic_loader', 'webRouter_basic_loader', true],
   ['webRouter_colada_loader', 'webRouter_colada_loader', true],
+  ['webRouter_experimental_dynamic', 'webRouter_experimental_dynamic', true],
   // Vapor apps can drop the Options API
   ['webRouter_vapor', 'webRouter_vapor', false],
   ['webRouter_vapor', 'webRouter_vapor_options_api', true],

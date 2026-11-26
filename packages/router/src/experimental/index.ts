@@ -40,6 +40,12 @@ export type { OnRouteRenderedCallback } from './on-route-rendered'
 
 export { createFixedResolver } from './route-resolver/resolver-fixed'
 export {
+  createDynamicResolver,
+  type EXPERIMENTAL_ResolverDynamic,
+  type EXPERIMENTAL_ResolverDynamicRecordRaw,
+} from './route-resolver/resolver-dynamic'
+export { parseClassicPath } from './route-resolver/matchers/matcher-pattern-path-classic'
+export {
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,
 } from './route-resolver/matchers/matcher-pattern'
