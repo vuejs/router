@@ -351,7 +351,7 @@ function generatePathCode(
     ${node.endsWithSplat ? 'null,' : '/* trailingSlash */'}
   ),`
   } else {
-    return `path: new MatcherPatternPathStatic(${toStringLiteral(node.fullPath)}),`
+    return `path: new MatcherPatternPathStatic(${toStringLiteral(node.fullPath)}${node.options.caseSensitive ? ', true' : ''}),`
   }
 }
 

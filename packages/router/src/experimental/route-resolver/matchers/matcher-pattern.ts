@@ -65,26 +65,39 @@ export interface MatcherPatternPath<
  * matcher.match('/team/123') // null
  * matcher.build() // '/team'
  * ```
+ *
+ * @param path - path to match
+ * @param caseSensitive - match the path case sensitively
  */
 export class MatcherPatternPathStatic implements MatcherPatternPath<EmptyParams> {
   /**
-   * lowercase version of the path to match against.
-   * This is used to make the matching case insensitive.
+   * Normalizes a path before comparing it.
    */
-  private pathi: string
+  declare private n: (path: string) => string
 
-  constructor(readonly path: string) {
-    this.pathi = path.toLowerCase()
+  /**
+   * Normalized version of the path to match against.
+   */
+  declare private _path: string
+
+  constructor(
+    readonly path: string,
+    caseSensitive?: boolean
+  ) {
+    this.n = caseSensitive ? identityFn : toLowerCase
+    this._path = this.n(path)
   }
 
   match(path: string): EmptyParams | null {
-    return path.toLowerCase() === this.pathi ? {} : null
+    return this.n(path) === this._path ? {} : null
   }
 
   build(): string {
     return this.path
   }
 }
+
+const toLowerCase = (path: string) => path.toLowerCase()
 
 /**
  * Options for param parsers in {@link MatcherPatternPathDynamic}.

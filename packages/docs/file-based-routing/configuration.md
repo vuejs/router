@@ -52,6 +52,12 @@ VueRouter({
   // disabled by default when the `CI` env variable is set
   watch: !process.env.CI,
 
+  /*
+   * match paths case sensitively (experimental resolver only)
+   * percent-encoded characters must use uppercase hex (`%C3%A9`)
+   */
+  caseSensitive: false,
+
   // modify routes individually
   async extendRoute(route) {
     // ...
