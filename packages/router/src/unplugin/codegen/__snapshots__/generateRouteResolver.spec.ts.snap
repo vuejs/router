@@ -4,7 +4,7 @@ exports[`generateRouteResolver > does not encode RFC 3986 valid path characters 
 "
 const __route_0 = normalizeRouteRecord({
   name: '/@profile',
-  path: new MatcherPatternPathStatic('/@profile'),
+  path: new MatcherPatternPathStatic('/@profile', true),
   components: {
     'default': () => import('@profile.vue')
   },
@@ -12,7 +12,7 @@ const __route_0 = normalizeRouteRecord({
 
 const __route_1 = normalizeRouteRecord({
   name: '/foo*bar',
-  path: new MatcherPatternPathStatic('/foo*bar'),
+  path: new MatcherPatternPathStatic('/foo*bar', true),
   components: {
     'default': () => import('foo*bar.vue')
   },
@@ -20,7 +20,7 @@ const __route_1 = normalizeRouteRecord({
 
 const __route_2 = normalizeRouteRecord({
   name: '/hello!',
-  path: new MatcherPatternPathStatic('/hello!'),
+  path: new MatcherPatternPathStatic('/hello!', true),
   components: {
     'default': () => import('hello!.vue')
   },
@@ -28,7 +28,7 @@ const __route_2 = normalizeRouteRecord({
 
 const __route_3 = normalizeRouteRecord({
   name: '/it\\'s-fine',
-  path: new MatcherPatternPathStatic('/it\\'s-fine'),
+  path: new MatcherPatternPathStatic('/it\\'s-fine', true),
   components: {
     'default': () => import('it\\'s-fine.vue')
   },
@@ -36,7 +36,7 @@ const __route_3 = normalizeRouteRecord({
 
 const __route_4 = normalizeRouteRecord({
   name: '/item(1)',
-  path: new MatcherPatternPathStatic('/item(1)'),
+  path: new MatcherPatternPathStatic('/item(1)', true),
   components: {
     'default': () => import('item(1).vue')
   },
@@ -44,7 +44,7 @@ const __route_4 = normalizeRouteRecord({
 
 const __route_5 = normalizeRouteRecord({
   name: '/user',
-  path: new MatcherPatternPathStatic('/user'),
+  path: new MatcherPatternPathStatic('/user', true),
   components: {
     'domain': () => import('user@domain.vue')
   },
@@ -65,7 +65,7 @@ exports[`generateRouteResolver > encodes special characters in route resolver pa
 "
 const __route_0 = normalizeRouteRecord({
   name: '/café',
-  path: new MatcherPatternPathStatic('/caf%C3%A9'),
+  path: new MatcherPatternPathStatic('/caf%C3%A9', true),
   components: {
     'default': () => import('café.vue')
   },
@@ -73,7 +73,7 @@ const __route_0 = normalizeRouteRecord({
 
 const __route_1 = normalizeRouteRecord({
   name: '/my page',
-  path: new MatcherPatternPathStatic('/my%20page'),
+  path: new MatcherPatternPathStatic('/my%20page', true),
   components: {
     'default': () => import('my page.vue')
   },
@@ -81,7 +81,7 @@ const __route_1 = normalizeRouteRecord({
 
 const __route_2 = normalizeRouteRecord({
   name: '/users/hello world',
-  path: new MatcherPatternPathStatic('/users/hello%20world'),
+  path: new MatcherPatternPathStatic('/users/hello%20world', true),
   components: {
     'default': () => import('users/hello world.vue')
   },

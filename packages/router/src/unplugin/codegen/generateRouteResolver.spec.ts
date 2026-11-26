@@ -379,7 +379,7 @@ describe('generateRouteRecord', () => {
     ).toMatchInlineSnapshot(`
       "const __route_0 = normalizeRouteRecord({
         name: '/a',
-        path: new MatcherPatternPathStatic('/a'),
+        path: new MatcherPatternPathStatic('/a', true),
         components: {
           'default': () => import('a.vue')
         },
@@ -398,7 +398,7 @@ describe('generateRouteRecord', () => {
     ).toMatchInlineSnapshot(`
       "const __route_1 = normalizeRouteRecord({
         name: '/a/b/c',
-        path: new MatcherPatternPathStatic('/a/b/c'),
+        path: new MatcherPatternPathStatic('/a/b/c', true),
         components: {
           'default': () => import('a/b/c.vue')
         },
@@ -457,7 +457,7 @@ describe('generateRouteResolver', () => {
       "
       const __route_0 = normalizeRouteRecord({
         name: '/a',
-        path: new MatcherPatternPathStatic('/a'),
+        path: new MatcherPatternPathStatic('/a', true),
         components: {
           'default': () => import('a.vue')
         },
@@ -465,14 +465,14 @@ describe('generateRouteResolver', () => {
 
       const __route_1 = normalizeRouteRecord({
         name: '/b/c',
-        path: new MatcherPatternPathStatic('/b/c'),
+        path: new MatcherPatternPathStatic('/b/c', true),
         components: {
           'default': () => import('b/c.vue')
         },
       })
       const __route_2 = normalizeRouteRecord({
         name: '/b/c/d',
-        path: new MatcherPatternPathStatic('/b/c/d'),
+        path: new MatcherPatternPathStatic('/b/c/d', true),
         components: {
           'default': () => import('b/c/d.vue')
         },
@@ -480,7 +480,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_3 = normalizeRouteRecord({
         name: '/b/e/f',
-        path: new MatcherPatternPathStatic('/b/e/f'),
+        path: new MatcherPatternPathStatic('/b/e/f', true),
         components: {
           'default': () => import('b/c/f.vue')
         },
@@ -508,7 +508,7 @@ describe('generateRouteResolver', () => {
       new Map()
     )
 
-    expect(resolver).toContain(`new MatcherPatternPathStatic('/a', true)`)
+    expect(resolver).toContain(`new MatcherPatternPathStatic('/a')`)
     expect(resolver).toContain(`/^\\/([^/]+?)$/,`)
   })
 
@@ -535,7 +535,7 @@ describe('generateRouteResolver', () => {
       "
       const __route_0 = normalizeRouteRecord({
         name: '/a',
-        path: new MatcherPatternPathStatic('/a'),
+        path: new MatcherPatternPathStatic('/a', true),
         components: {
           'default': () => import('a.vue')
         },
@@ -550,7 +550,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_2 = normalizeRouteRecord({
         name: '/a/about',
-        path: new MatcherPatternPathStatic('/a/about'),
+        path: new MatcherPatternPathStatic('/a/about', true),
         components: {
           'default': () => import('a/about.vue')
         },
@@ -634,7 +634,7 @@ describe('generateRouteResolver', () => {
       "
       const __route_0 = normalizeRouteRecord({
         name: '/a',
-        path: new MatcherPatternPathStatic('/a'),
+        path: new MatcherPatternPathStatic('/a', true),
         components: {
           'default': () => import('a.vue')
         },
@@ -649,7 +649,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_2 = normalizeRouteRecord({
         name: '/a/b',
-        path: new MatcherPatternPathStatic('/a/b'),
+        path: new MatcherPatternPathStatic('/a/b', true),
         components: {
           'default': () => import('a/b.vue')
         },
@@ -665,7 +665,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_4 = normalizeRouteRecord({
         name: '/a/b/c',
-        path: new MatcherPatternPathStatic('/a/b/c'),
+        path: new MatcherPatternPathStatic('/a/b/c', true),
         components: {
           'default': () => import('a/b/c.vue')
         },
@@ -673,7 +673,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_5 = normalizeRouteRecord({
         name: '/a/b/e',
-        path: new MatcherPatternPathStatic('/a/b/e'),
+        path: new MatcherPatternPathStatic('/a/b/e', true),
         components: {
           'default': () => import('a/b/e.vue')
         },
@@ -681,7 +681,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_6 = normalizeRouteRecord({
         name: '/a/d',
-        path: new MatcherPatternPathStatic('/a/d'),
+        path: new MatcherPatternPathStatic('/a/d', true),
         components: {
           'default': () => import('a/d.vue')
         },
@@ -722,7 +722,7 @@ describe('generateRouteResolver', () => {
       "
       const __route_0 = normalizeRouteRecord({
         /* (removed) name: false */
-        path: new MatcherPatternPathStatic('/'),
+        path: new MatcherPatternPathStatic('/', true),
         components: {
           'default': () => import('(layout)/_parent.vue')
         },
@@ -737,7 +737,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_2 = normalizeRouteRecord({
         name: '/(layout)/about/(about)',
-        path: new MatcherPatternPathStatic('/about'),
+        path: new MatcherPatternPathStatic('/about', true),
         components: {
           'default': () => import('(layout)/about/(about).vue')
         },
@@ -780,7 +780,7 @@ describe('generateRouteResolver', () => {
       "
       const __route_0 = normalizeRouteRecord({
         /* (removed) name: false */
-        path: new MatcherPatternPathStatic('/'),
+        path: new MatcherPatternPathStatic('/', true),
         components: {
           'default': () => import('(layout)/_parent.vue')
         },
@@ -795,7 +795,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_2 = normalizeRouteRecord({
         name: '/(layout)/(settings)/settings',
-        path: new MatcherPatternPathStatic('/settings'),
+        path: new MatcherPatternPathStatic('/settings', true),
         components: {
           'default': () => import('(layout)/(settings)/settings.vue')
         },
@@ -841,13 +841,13 @@ describe('generateRouteResolver', () => {
 
     // The route should have path '/settings', not '/'
     expect(resolver).toContain(
-      "path: new MatcherPatternPathStatic('/settings')"
+      "path: new MatcherPatternPathStatic('/settings', true)"
     )
     expect(resolver).toMatchInlineSnapshot(`
       "
       const __route_0 = normalizeRouteRecord({
         /* (removed) name: false */
-        path: new MatcherPatternPathStatic('/'),
+        path: new MatcherPatternPathStatic('/', true),
         components: {
           'default': () => import('(layout)/_parent.vue')
         },
@@ -862,7 +862,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_2 = normalizeRouteRecord({
         name: '/(layout)/(settings)/settings/(general-settings)',
-        path: new MatcherPatternPathStatic('/settings'),
+        path: new MatcherPatternPathStatic('/settings', true),
         components: {
           'default': () => import('(layout)/(settings)/settings/(general-settings).vue')
         },
@@ -907,14 +907,14 @@ describe('generateRouteResolver', () => {
       "
       const __route_0 = normalizeRouteRecord({
         name: '/nested-routes',
-        path: new MatcherPatternPathStatic('/nested-routes'),
+        path: new MatcherPatternPathStatic('/nested-routes', true),
         components: {
           'default': () => import('nested-routes.vue')
         },
       })
       const __route_1 = normalizeRouteRecord({
         name: '/nested-routes/(route-groups)/a',
-        path: new MatcherPatternPathStatic('/nested-routes/a'),
+        path: new MatcherPatternPathStatic('/nested-routes/a', true),
         components: {
           'default': () => import('nested-routes/(route-groups)/a.vue')
         },
@@ -922,7 +922,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_2 = normalizeRouteRecord({
         name: '/nested-routes/(route-groups)/b',
-        path: new MatcherPatternPathStatic('/nested-routes/b'),
+        path: new MatcherPatternPathStatic('/nested-routes/b', true),
         components: {
           'default': () => import('nested-routes/(route-groups)/b.vue')
         },
@@ -1124,7 +1124,7 @@ describe('generateRouteResolver', () => {
       "
       const __route_0 = normalizeRouteRecord({
         name: '/a',
-        path: new MatcherPatternPathStatic('/a'),
+        path: new MatcherPatternPathStatic('/a', true),
         components: {
           'default': () => import('a.vue')
         },
@@ -1132,14 +1132,14 @@ describe('generateRouteResolver', () => {
 
       const __route_1 = normalizeRouteRecord({
         name: '/b/c',
-        path: new MatcherPatternPathStatic('/b/c'),
+        path: new MatcherPatternPathStatic('/b/c', true),
         components: {
           'default': () => import('b/c.vue')
         },
       })
       const __route_2 = normalizeRouteRecord({
         name: '/b/c/d',
-        path: new MatcherPatternPathStatic('/b/c/d'),
+        path: new MatcherPatternPathStatic('/b/c/d', true),
         components: {
           'default': () => import('b/c/d.vue')
         },
@@ -1147,7 +1147,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_3 = normalizeRouteRecord({
         name: '/b/e/f',
-        path: new MatcherPatternPathStatic('/b/e/f'),
+        path: new MatcherPatternPathStatic('/b/e/f', true),
         components: {
           'default': () => import('b/c/f.vue')
         },
@@ -1179,7 +1179,7 @@ describe('generateRouteResolver', () => {
       "
       const __route_0 = normalizeRouteRecord({
         /* (removed) name: false */
-        path: new MatcherPatternPathStatic('/a'),
+        path: new MatcherPatternPathStatic('/a', true),
         components: {
           'default': () => import('a.vue')
         },
@@ -1194,7 +1194,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_2 = normalizeRouteRecord({
         name: '/a/b',
-        path: new MatcherPatternPathStatic('/a/b'),
+        path: new MatcherPatternPathStatic('/a/b', true),
         components: {
           'default': () => import('a/b.vue')
         },
@@ -1226,14 +1226,14 @@ describe('generateRouteResolver', () => {
       "
       const __route_0 = normalizeRouteRecord({
         name: '/a',
-        path: new MatcherPatternPathStatic('/a'),
+        path: new MatcherPatternPathStatic('/a', true),
         components: {
           'default': () => import('a.vue')
         },
       })
       const __route_1 = normalizeRouteRecord({
         name: '/a/b/c/e',
-        path: new MatcherPatternPathStatic('/a/b/c/e'),
+        path: new MatcherPatternPathStatic('/a/b/c/e', true),
         components: {
           'default': () => import('a/b/c/e.vue')
         },
@@ -1274,7 +1274,7 @@ describe('generateRouteResolver', () => {
       })
       const __route_1 = normalizeRouteRecord({
         name: '/a/b/c',
-        path: new MatcherPatternPathStatic('/a/b/c'),
+        path: new MatcherPatternPathStatic('/a/b/c', true),
         components: {
           'default': () => import('a/b/c.vue')
         },
@@ -1309,7 +1309,7 @@ describe('generateRouteResolver', () => {
       "
       const __route_0 = normalizeRouteRecord({
         name: '/users',
-        path: new MatcherPatternPathStatic('/users'),
+        path: new MatcherPatternPathStatic('/users', true),
         meta: {
           "requiresAuth": true,
           "title": "Users"
@@ -1349,7 +1349,7 @@ describe('generateRouteResolver', () => {
         _mergeRouteRecordViews(
           {
             name: '/profile',
-            path: new MatcherPatternPathStatic('/profile'),
+            path: new MatcherPatternPathStatic('/profile', true),
             components: {
               'default': () => import('profile.vue')
             },
@@ -1455,7 +1455,7 @@ describe('generateRouteResolver', () => {
       "
       const __route_0 = normalizeRouteRecord({
         name: '/search',
-        path: new MatcherPatternPathStatic('/search'),
+        path: new MatcherPatternPathStatic('/search', true),
         query: [
           new MatcherPatternQueryParam('q', 'q', 'value'),
           new MatcherPatternQueryParam('limit', 'limit', 'value', PARAM_PARSER_INT)
@@ -1635,14 +1635,14 @@ describe('generateRouteResolver', () => {
         "
         const __route_0 = normalizeRouteRecord({
           name: '/users',
-          path: new MatcherPatternPathStatic('/users'),
+          path: new MatcherPatternPathStatic('/users', true),
           components: {
             'default': () => import('users.vue')
           },
         })
         const __route_1 = normalizeRouteRecord({
           ...__route_0,
-          path: new MatcherPatternPathStatic('/people'),
+          path: new MatcherPatternPathStatic('/people', true),
           aliasOf: __route_0,
         })
 
@@ -1710,10 +1710,10 @@ describe('generateRouteResolver', () => {
 
       expect(resolver).toContain('aliasOf: __route_0')
       expect(resolver).toContain(
-        "path: new MatcherPatternPathStatic('/people')"
+        "path: new MatcherPatternPathStatic('/people', true)"
       )
       expect(resolver).toContain(
-        "path: new MatcherPatternPathStatic('/members')"
+        "path: new MatcherPatternPathStatic('/members', true)"
       )
       // original + 2 aliases = 3 route entries in the resolver
       const routeEntries = resolver
@@ -1943,7 +1943,7 @@ describe('generated hash params', () => {
 
       const __route_0 = normalizeRouteRecord({
         name: '/page',
-        path: new MatcherPatternPathStatic('/page'),
+        path: new MatcherPatternPathStatic('/page', true),
         hash: new MatcherPatternHashParam('section', _normalized_PARAM_PARSER__section, undefined, true),
         components: {
           'default': () => import('page.vue')
