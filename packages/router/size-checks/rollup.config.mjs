@@ -13,6 +13,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const entries = [
   ['webRouter', 'webRouter', true],
   ['webRouter_experimental', 'webRouter_experimental', true],
+  ['webRouter_basic_loader', 'webRouter_basic_loader', true],
+  ['webRouter_colada_loader', 'webRouter_colada_loader', true],
   // Vapor apps can drop the Options API
   ['webRouter_vapor', 'webRouter_vapor', false],
   ['webRouter_vapor', 'webRouter_vapor_options_api', true],
@@ -20,7 +22,7 @@ const entries = [
 
 const configs = entries.map(([file, output, optionsApi]) => {
   return defineConfig({
-    external: ['vue'],
+    external: ['vue', 'pinia', '@pinia/colada'],
     output: {
       file: path.resolve(__dirname, `./dist/${output}.js`),
       format: 'es',
