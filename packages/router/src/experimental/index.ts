@@ -107,6 +107,7 @@ export {
   getCurrentContext,
   setCurrentContext,
   withLoaderContext,
+  type LoaderContext,
   trackRoute,
   toLazyValue,
   // Types config

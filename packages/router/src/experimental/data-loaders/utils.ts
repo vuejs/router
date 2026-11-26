@@ -13,9 +13,26 @@ export function isDataLoader(loader: any): loader is UseDataLoader {
   return loader && loader[IS_USE_DATA_LOADER_KEY]
 }
 
-type LoaderContext = readonly [
+/**
+ * Context of the data loader that is currently running. Nested loaders read it
+ * to find their parent loader, the router, and the target route.
+ *
+ * @internal: data loaders authoring only.
+ */
+export type LoaderContext = readonly [
+  /**
+   * Entry of the parent loader.
+   */
   entry: DataLoaderEntryBase,
+
+  /**
+   * Router instance that runs the navigation.
+   */
   router: Router,
+
+  /**
+   * Target route of the navigation.
+   */
   route: RouteLocationNormalizedLoaded,
 ]
 
@@ -37,7 +54,13 @@ const asyncStorage: {
   enterWith(store: LoaderContext | null): void
 } = AsyncStorage && new AsyncStorage()
 
-export function getCurrentContext() {
+/**
+ * Get the context of the loader that is currently running. Returns an empty
+ * array outside of a loader.
+ *
+ * @internal: data loaders authoring only.
+ */
+export function getCurrentContext(): LoaderContext | readonly [] {
   // an empty array allows destructuring without checking if it's undefined
   return (
     (asyncStorage ? asyncStorage.getStore() : currentContext) || ([] as const)
