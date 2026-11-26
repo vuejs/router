@@ -123,10 +123,11 @@ export function defineColadaLoader<Data>(
       const scope = effectScope(true)
       const ext = (entry.ext = scope.run(useDefinedQuery)!)
       scope.pause()
-      const queryEntry = useQueryCache().get(toValueWithArgs(key, to))
+      const queryCache = useQueryCache()
+      const queryEntry = queryCache.get(toValueWithArgs(key, to))
       queryEntry?.deps.forEach(dep => {
-        if ((dep as { owner?: unknown }).owner === scope) {
-          queryEntry.deps.delete(dep)
+        if ('owner' in dep && dep.owner === scope) {
+          queryCache.untrack(queryEntry, dep)
         }
       })
       // hydrated or cached data is used as is

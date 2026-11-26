@@ -184,7 +184,7 @@
     "zod": "^4.6.7"
   },
   "peerDependencies": {
-    "@pinia/colada": ">=0.21.2",
+    "@pinia/colada": "^1.4.9",
     "@vue/compiler-sfc": "^3.5.34 || ^3.6.0-0 || ^4.0.0",
     "pinia": "^3.0.4 || ^4.0.2",
     "vite": "^7.3.0 || ^8.0.0",
