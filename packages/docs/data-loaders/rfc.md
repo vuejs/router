@@ -27,7 +27,6 @@ That is the goal of this RFC, to standardize and improve data fetching with vue-
 - Deduplicate requests
 - Delay data updates until all data loaders are resolved
   - Avoids displaying partially up-to-date data and inconsistent state
-  - Configurable through a `commit` option
 - Optimal data fetching
   - Defaults to parallel fetching
   - Semantic sequential fetching if needed
@@ -294,27 +293,6 @@ const { data: user } = useUserData()
   const { data: bookCollection } = useBookCollection()
   //            ^ can be undefined
   ```
-
-- `commit`: Controls when the async state is reflected in `data` and `error`. You can choose to immediately reflect the state of the loader or
-  delay the update of the data until all loaders are resolved (default). The latter is useful to avoid displaying partially up-to-date data and inconsistent state.
-
-  ```ts twoslash
-  import { defineBasicLoader as defineLoader } from 'vue-router/experimental'
-  interface Book {
-    title: string
-    isbn: string
-    description: string
-  }
-  function fetchBookCollection(): Promise<Book[]> {
-    return {} as any
-  }
-  // ---cut---
-  export const useBookCollection = defineLoader(fetchBookCollection, {
-    commit: 'immediate',
-  })
-  ```
-
-  A lazy loader can use `commit: 'after-load'` but since it's not awaited during the navigation, it might be reflected **after the navigation**.
 
 - `server`: By default, loaders are executed on both, client, and server. Setting this to false will skip its execution on the server. Like `lazy: true`, this also changes the type of the returned `data` to `ShallowRef<T | undefined>`:
 

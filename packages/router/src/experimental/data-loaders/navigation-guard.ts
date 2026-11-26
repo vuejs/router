@@ -134,7 +134,6 @@ export function setupLoaderGuard(
   const removeAfterEach = router.afterEach((to, from, failure) => {
     if (!failure) {
       for (const loader of to.meta[LOADER_SET_KEY]!) {
-        // immediate loaders already committed, except after initial data
         // server: false loaders have no entry on the server
         loader._.getEntry(router)?.commit(to)
       }

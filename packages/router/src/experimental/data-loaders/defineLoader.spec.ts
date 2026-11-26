@@ -181,12 +181,12 @@ describe(
         expect(spy).toHaveBeenCalledTimes(0)
       })
 
-      it('reloads after using initialData with commit immediate', async () => {
+      it('reloads after using initialData', async () => {
         const spy = vi
           .fn<(to: RouteLocationNormalizedLoaded) => Promise<string>>()
           .mockResolvedValue('fetched')
         const { router, useData } = singleLoaderOneRoute(
-          defineBasicLoader(spy, { key: 'root', commit: 'immediate' })
+          defineBasicLoader(spy, { key: 'root' })
         )
         router[INITIAL_DATA_KEY] = { root: 'initial' }
 

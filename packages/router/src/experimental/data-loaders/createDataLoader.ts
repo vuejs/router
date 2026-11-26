@@ -138,8 +138,7 @@ export function createDataLoader<
           // loads outside of a navigation (reload, lazy) commit themselves
           if (
             !to.meta[ABORT_CONTROLLER_KEY]?.signal.aborted &&
-            (options.commit === 'immediate' ||
-              to !== router[PENDING_LOCATION_KEY])
+            to !== router[PENDING_LOCATION_KEY]
           ) {
             entry.commit(to)
           }
@@ -342,16 +341,6 @@ export interface DataLoaderEntryBase<
  */
 export interface _DefineDataLoaderOptionsBase_Common {
   /**
-   * When the data should be committed to the entry. In the case of lazy loaders, the loader will try to commit the data
-   * after all non-lazy loaders have finished loading, but it might not be able to if the lazy loader hasn't been
-   * resolved yet.
-   *
-   * @see {@link DefineDataLoaderCommit}
-   * @defaultValue `'after-load'`
-   */
-  commit?: DefineDataLoaderCommit
-
-  /**
    * Whether the data should be lazy loaded without blocking the client side navigation or not. When set to true, the loader will no longer block the navigation and the returned composable can be called even
    * without having the data ready.
    *
@@ -412,13 +401,6 @@ export const toLazyValue = (
   to: RouteLocationNormalizedLoaded,
   from?: RouteLocationNormalizedLoaded
 ) => (typeof lazy === 'function' ? lazy(to, from) : lazy)
-
-/**
- * When the data should be committed to the entry.
- * - `immediate`: the data is committed as soon as it is loaded.
- * - `after-load`: the data is committed after all non-lazy loaders have finished loading.
- */
-export type DefineDataLoaderCommit = 'immediate' | 'after-load'
 
 export interface DataLoaderContextBase {
   /**

@@ -196,29 +196,11 @@ export const useSearchResults = defineBasicLoader(
 
 This is really useful when you can display the old data while fetching the new one and some of the parts of the page require the route to be updated like search results and pagination buttons. By using a lazy loader only when the route changes, the pagination can be updated immediately while the search results are being fetched, allowing the user to click multiple times on the pagination buttons without waiting for the search results to be fetched.
 
-### Delaying data updates with `commit`
+### Consistent data updates
 
-By default, the data is updated only once all loaders are resolved. This is useful to avoid displaying partially loaded data or worse, incoherent data aggregation.
+`data` and `error` are updated only once all non-lazy loaders of the navigation have resolved. This avoids displaying partially loaded data or an incoherent aggregation of old and new data.
 
-Sometimes you might want to immediately update the data as soon as it's available, even if other loaders are still pending. This can be achieved by changing the `commit` option:
-
-```ts twoslash
-import { defineBasicLoader } from 'vue-router/experimental'
-interface Book {
-  title: string
-  isbn: string
-  description: string
-}
-function fetchBookCollection(): Promise<Book[]> {
-  return {} as any
-}
-// ---cut---
-export const useBookCollection = defineBasicLoader(fetchBookCollection, {
-  commit: 'immediate',
-})
-```
-
-In the case of [lazy loaders](#Non-blocking-loaders-with-lazy), they also default to `commit: 'after-load'`. They will commit after all other non-lazy loaders if they can but since they are not awaited, they might not be able to. In this case, the data will be available when finished loading, which can be much later than the navigation is completed.
+[Lazy loaders](#Non-blocking-loaders-with-lazy) that are still pending when the navigation finishes update their `data` and `error` as soon as they resolve, which can be much later than the navigation.
 
 ### Server optimization with `server`
 
