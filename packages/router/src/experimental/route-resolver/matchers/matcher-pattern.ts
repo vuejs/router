@@ -73,12 +73,12 @@ export class MatcherPatternPathStatic implements MatcherPatternPath<EmptyParams>
   /**
    * Normalizes a path before comparing it.
    */
-  private n: (path: string) => string
+  declare private n: (path: string) => string
 
   /**
    * Normalized version of the path to match against.
    */
-  private _path: string
+  declare private _path: string
 
   constructor(
     readonly path: string,
