@@ -1,3 +1,13 @@
+## [5.5.3](https://github.com/vuejs/router/compare/v5.5.2...v5.5.3) (2026-11-26)
+
+### Bug Fixes
+
+- default **VUE_OPTIONS_API** to true in the Node ESM entry ([#2966](https://github.com/vuejs/router/issues/2966)) ([7d18b23](https://github.com/vuejs/router/commit/7d18b2368e5aead9c9034406011b42edffb25be1))
+
+### Features
+
+- **experimental:** add caseSensitive option ([#2967](https://github.com/vuejs/router/issues/2967)) ([08ab48d](https://github.com/vuejs/router/commit/08ab48d6e2eac0858eb3c4b8a99c53a5444df661))
+
 ## [5.5.2](https://github.com/vuejs/router/compare/v5.5.1...v5.5.2) (2026-11-26)
 
 - refactor(experimental)!: remove old NavigationResult ([1dc10db](https://github.com/vuejs/router/commit/1dc10db72acffa0366934a293050a1114e7f2807))
