@@ -410,30 +410,40 @@ describe('useScrollRestoration', () => {
     })
   })
 
-  it('scrolls to the hash target again when pushed to the current location', async () => {
-    const Page = defineComponent({
-      setup() {
-        useScrollRestoration()
-      },
-      template: '<main><div id="details">Details</div></main>',
-    })
-    const { navigate, setScroll, wrapper } = await mountRouter(
-      [{ path: '/page', component: Page }],
-      { attachTo: document.body }
-    )
+  it.each([
+    { description: 'with no saved position', savedPosition: undefined },
+    { description: 'with a saved position', savedPosition: 240 },
+  ])(
+    'scrolls to the hash target again on a push $description',
+    async ({ savedPosition }) => {
+      const Page = defineComponent({
+        setup() {
+          useScrollRestoration()
+        },
+        template: '<main><div id="details">Details</div></main>',
+      })
+      const { navigate, setScroll, wrapper } = await mountRouter(
+        [{ path: '/page', component: Page }],
+        { attachTo: document.body }
+      )
 
-    await navigate('/page#details')
-    vi.spyOn(
-      wrapper.get('#details').element,
-      'getBoundingClientRect'
-    ).mockReturnValue(new DOMRect(0, 180))
-    setScroll(0, 300)
-    window.dispatchEvent(new Event('pagehide'))
+      await navigate('/page#details')
+      vi.spyOn(
+        wrapper.get('#details').element,
+        'getBoundingClientRect'
+      ).mockReturnValue(new DOMRect(0, 180))
+      if (savedPosition != null) {
+        setScroll(0, savedPosition)
+        // Save this position before moving the viewport again.
+        window.dispatchEvent(new Event('pagehide'))
+      }
+      setScroll(0, 300)
 
-    await navigate('/page#details')
+      await navigate('/page#details')
 
-    expect(window.scrollY).toBe(180)
-  })
+      expect(window.scrollY).toBe(180)
+    }
+  )
 
   it('shares a scroll position between pages with the same key', async () => {
     const PageA = defineComponent({
