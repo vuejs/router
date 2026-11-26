@@ -233,6 +233,8 @@ export interface Options {
   /**
    * Match paths case sensitively in the experimental resolver. Without the
    * experimental resolver, use the `sensitive` option of `createRouter()`.
+   * Percent-encoded characters must use uppercase hex digits (`%C3%A9`, not
+   * `%c3%a9`), as browsers do when they encode URLs.
    *
    * @default `false`
    */
