@@ -12,6 +12,7 @@ import {
   normalizeBase,
   createHref,
 } from './common'
+import { historyPositions } from './position'
 
 /**
  * Creates an in-memory based history. The main purpose of this history is to handle SSR. It starts in a special location that is nowhere.
@@ -123,5 +124,6 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
     }
   }
 
+  historyPositions.set(routerHistory, () => position)
   return routerHistory
 }

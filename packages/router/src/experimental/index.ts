@@ -19,6 +19,8 @@ export {
   useScrollRestoration,
   type ScrollRestorationPluginOptions,
   type ScrollRestorationPosition,
+  type ScrollRestorationContext,
+  type ScrollRestorationRoute,
   type ScrollRestorationSessionEntry,
   type UseScrollRestorationOptions,
   SCROLL_RESTORATION_CAPTURE_DEFAULT,
