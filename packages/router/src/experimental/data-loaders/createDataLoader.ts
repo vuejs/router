@@ -103,8 +103,15 @@ export function createDataLoader<
       )
     }
 
-    // nested loaders and the guard can both ask for the same navigation
-    if (entry.pendingTo === to) return entry.pendingLoad!
+    // nested loaders and the guard can both ask for the same navigation, and
+    // a reload during a navigation would race with its load
+    if (
+      entry.pendingTo &&
+      (entry.pendingTo === to ||
+        entry.pendingTo === router[PENDING_LOCATION_KEY])
+    ) {
+      return entry.pendingLoad!
+    }
 
     const context = getCurrentContext()
     if (__DEV__ && parent && parent !== context[0]) {
@@ -508,9 +515,8 @@ export interface UseDataLoaderResult<TData = unknown, TError = ErrorDefault> {
   error: ShallowRef<TError | null>
 
   /**
-   * Reload the data using the current route location. Returns a promise that resolves when the data is reloaded. This
-   * method should not be called during a navigation as it can conflict with an ongoing load and lead to
-   * inconsistencies.
+   * Reload the data using the current route location. Returns a promise that resolves when the data is reloaded. During
+   * a navigation that loads this loader, the reload is skipped and the promise resolves with the navigation's load.
    */
   reload(): Promise<void>
   /**

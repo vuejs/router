@@ -923,6 +923,30 @@ export function testDefineLoader<Context = void>(
     )
   })
 
+  it('ignores a reload during a navigation', async () => {
+    const l = mockedLoader()
+    const { useData, router } = singleLoaderOneRoute(
+      // reads the query so the colada loader refetches on change
+      loaderFactory({ fn: to => l.spy(to.query.p) })
+    )
+    const nav0 = router.push('/fetch?p=a')
+    await vi.advanceTimersByTimeAsync(0)
+    l.resolve('a')
+    await nav0
+    const { data, isLoading, reload } = useData()
+
+    const nav = router.push('/fetch?p=b')
+    await vi.advanceTimersByTimeAsync(0)
+    const reloadPromise = reload()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(l.spy).toHaveBeenCalledTimes(2)
+    l.resolve('b')
+    await nav
+    await reloadPromise
+    expect(data.value).toBe('b')
+    expect(isLoading.value).toBe(false)
+  })
+
   it('passes a signal to the loader', async () => {
     const spy =
       vi.fn<
