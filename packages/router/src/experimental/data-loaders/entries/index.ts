@@ -34,6 +34,7 @@ export {
   trackRoute,
   withLoaderContext,
   currentContext,
+  type LoaderContext,
 } from '../utils'
 
 // expose all symbols that could be used by loaders

@@ -14,20 +14,57 @@ export function isDataLoader(loader: any): loader is UseDataLoader {
 }
 
 /**
+ * Context of the data loader that is currently running. Nested loaders read it
+ * to find their parent loader, the router, and the target route.
+ *
+ * @internal: data loaders authoring only.
+ */
+export type LoaderContext = readonly [
+  /**
+   * Entry of the parent loader.
+   */
+  entry: DataLoaderEntryBase,
+
+  /**
+   * Router instance that runs the navigation.
+   */
+  router: Router,
+
+  /**
+   * Target route of the navigation.
+   */
+  route: RouteLocationNormalizedLoaded,
+]
+
+/**
+ * Fallback storage when `AsyncLocalStorage` is missing (browsers). Only one
+ * router runs there, so a global is safe.
+ *
  * @internal: data loaders authoring only. Use `getCurrentContext` instead.
  */
-export let currentContext:
-  | readonly [
-      entry: DataLoaderEntryBase,
-      router: Router,
-      route: RouteLocationNormalizedLoaded,
-    ]
-  | undefined
-  | null
+export let currentContext: LoaderContext | undefined | null
 
-export function getCurrentContext() {
+// a global is shared by concurrent SSR requests, so the context must follow
+// the async chain. No static import to keep browser bundles unchanged
+const AsyncStorage = (globalThis as any).process?.getBuiltinModule?.(
+  'node:async_hooks'
+)?.AsyncLocalStorage
+const asyncStorage: {
+  getStore(): LoaderContext | null | undefined
+  enterWith(store: LoaderContext | null): void
+} = AsyncStorage && new AsyncStorage()
+
+/**
+ * Get the context of the loader that is currently running. Returns an empty
+ * array outside of a loader.
+ *
+ * @internal: data loaders authoring only.
+ */
+export function getCurrentContext(): LoaderContext | readonly [] {
   // an empty array allows destructuring without checking if it's undefined
-  return currentContext || ([] as const)
+  return (
+    (asyncStorage ? asyncStorage.getStore() : currentContext) || ([] as const)
+  )
 }
 
 // TODO: rename parentContext
@@ -41,7 +78,9 @@ export function getCurrentContext() {
 export function setCurrentContext(
   context?: typeof currentContext | readonly []
 ) {
-  currentContext = context ? (context.length ? context : null) : null
+  const value = context?.length ? context : null
+  if (asyncStorage) asyncStorage.enterWith(value)
+  else currentContext = value
 }
 
 /**
@@ -49,8 +88,8 @@ export function setCurrentContext(
  * @param promise - promise to wrap
  */
 export function withLoaderContext<P extends Promise<unknown>>(promise: P): P {
-  const context = currentContext
-  return promise.finally(() => (currentContext = context)) as P
+  const context = getCurrentContext()
+  return promise.finally(() => setCurrentContext(context)) as P
 }
 
 /**

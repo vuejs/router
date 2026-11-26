@@ -3,6 +3,7 @@
  */
 import {
   type App,
+  createSSRApp,
   defineComponent,
   h,
   inject,
@@ -1359,6 +1360,63 @@ export function testDefineLoader<Context = void>(
     expect(l1.spy).toHaveBeenCalledTimes(1)
     expect(l2.spy).toHaveBeenCalledTimes(1)
     expect(wrapper.text()).toBe('false|<no>|1,2')
+  })
+
+  it('isolates nested loaders of concurrent SSR requests', async () => {
+    let arrivals = 0
+    let release!: () => void
+    const gate = new Promise<void>(r => (release = r))
+
+    const useFirst = loaderFactory({
+      key: 'first',
+      fn: async to => {
+        // both requests resume in the same tick
+        if (++arrivals === 2) release()
+        await gate
+        return to.params.id
+      },
+    })
+    const useSecond = loaderFactory({
+      key: 'second',
+      fn: async to => `secret-for-${to.params.id}`,
+    })
+    const useParent = loaderFactory({
+      key: 'parent',
+      fn: async () => {
+        const id = await useFirst()
+        const secret = await useSecond()
+        return { id, secret }
+      },
+    })
+
+    async function request(id: string) {
+      const router = createRouter({
+        history: createMemoryHistory(),
+        routes: [
+          { path: '/', component: { render: () => null } },
+          {
+            path: '/u/:id',
+            component: { render: () => null },
+            meta: { loaders: [useParent] },
+          },
+        ],
+      })
+      const app = createSSRApp({ render: () => null })
+      // each request gets its own context (e.g. pinia)
+      for (const plugin of plugins?.((await _beforeEach?.())!) || []) {
+        if (Array.isArray(plugin)) app.use(...plugin)
+        else app.use(plugin)
+      }
+      app.use(DataLoaderPlugin, { router, isSSR: true })
+      app.use(router)
+      await router.push(`/u/${id}`)
+      return useParent._.getEntry(router).data.value
+    }
+
+    const [alice, bob] = await Promise.all([request('alice'), request('bob')])
+
+    expect(alice).toEqual({ id: 'alice', secret: 'secret-for-alice' })
+    expect(bob).toEqual({ id: 'bob', secret: 'secret-for-bob' })
   })
 
   it('fetches once with lazy across components', async () => {
