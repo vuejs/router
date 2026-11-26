@@ -1,3 +1,52 @@
+## [5.5.2](https://github.com/vuejs/router/compare/v5.5.1...v5.5.2) (2026-11-26)
+
+- refactor(experimental)!: remove old NavigationResult ([1dc10db](https://github.com/vuejs/router/commit/1dc10db72acffa0366934a293050a1114e7f2807))
+
+### Bug Fixes
+
+- avoid runtime errors for warnings ([#2925](https://github.com/vuejs/router/issues/2925)) ([d61efff](https://github.com/vuejs/router/commit/d61efff3bb91e47dae97f80da981c1c4f9a152e5))
+- **experimental:** call root onRouteRendered for the initial navigation in vapor ([#2954](https://github.com/vuejs/router/issues/2954)) ([e5959ab](https://github.com/vuejs/router/commit/e5959ab09ae27c31cb67a1d5d363567bcfcac610))
+- **experimental:** capture browser scroll on native hash links ([#2929](https://github.com/vuejs/router/issues/2929)) ([d7f4784](https://github.com/vuejs/router/commit/d7f4784ea9f1a4e442592891015bddebc0ae5158))
+- **experimental:** isolate data loader context between SSR requests ([#2961](https://github.com/vuejs/router/issues/2961)) ([c258a4e](https://github.com/vuejs/router/commit/c258a4e56ffbb3f2fdc39ac9fbaaae8e5ca077a9))
+- **experimental:** keep slashes of splat params in sub segments ([#2951](https://github.com/vuejs/router/issues/2951)) ([b21b2e4](https://github.com/vuejs/router/commit/b21b2e41c0326775ee3f49db0b3fda3bf3ad3462))
+- **experimental:** omit empty arrays from normalized queries ([#2908](https://github.com/vuejs/router/issues/2908)) ([a11c389](https://github.com/vuejs/router/commit/a11c3896056e4c2a9d7d5f8ff1b35df2869c7068))
+- **experimental:** scroll again to the current hash with a router-link ([#2955](https://github.com/vuejs/router/issues/2955)) ([82b93d2](https://github.com/vuejs/router/commit/82b93d204c54052591c6c51f60e5561ae29bb144))
+- **experimental:** support vapor components in scroll restoration ([#2953](https://github.com/vuejs/router/issues/2953)) ([6c77578](https://github.com/vuejs/router/commit/6c775782b3ffaff194b60c1ef3477271adb5b574))
+- **experimental:** type missing query keys as undefined ([#2959](https://github.com/vuejs/router/issues/2959)) ([a13d167](https://github.com/vuejs/router/commit/a13d167d8a00f86573bcddcf93706b087e13263e))
+- **history:** only notify memory history moves with the actual delta ([#2826](https://github.com/vuejs/router/issues/2826)) ([7b2cd86](https://github.com/vuejs/router/commit/7b2cd8644007914b783fab971e4589e935d39af6))
+- **matcher:** keep inherited required param passed as null ([d9ffcf0](https://github.com/vuejs/router/commit/d9ffcf0f4ba21afa34e13b9b8136e165b8a76009))
+- **matcher:** remove descendants of grouping records ([#2904](https://github.com/vuejs/router/issues/2904)) ([1fb1f53](https://github.com/vuejs/router/commit/1fb1f53acf4b2c10c1156f408d52939dbf857541))
+- **matcher:** remove optional params passed as null or undefined ([#2900](https://github.com/vuejs/router/issues/2900)) ([33d9252](https://github.com/vuejs/router/commit/33d9252dd13dfd961528754de4f9876f240a0f38))
+- **matcher:** throw for repeatable params that are not alone in their segment ([bfef54f](https://github.com/vuejs/router/commit/bfef54f68ecb20792dcbfd1a93d9006b63415237))
+- **matcher:** use a diagnostic for repeatable params not alone in their segment ([#2952](https://github.com/vuejs/router/issues/2952)) ([e90f506](https://github.com/vuejs/router/commit/e90f506ce7bb2c192a64f5dd42928f871b2c5b33))
+- optional params as sub-segments ([#2915](https://github.com/vuejs/router/issues/2915)) ([c80eaae](https://github.com/vuejs/router/commit/c80eaae79de593a7f17cf8aca472144edc66b959))
+- **unplugin:** build the matcher from the definePage path override ([#2899](https://github.com/vuejs/router/issues/2899)) ([abd1b76](https://github.com/vuejs/router/commit/abd1b76535b9507f91a10101415aa4f336e568a1))
+- **unplugin:** strip invalid characters from param names ([#2919](https://github.com/vuejs/router/issues/2919)) ([c2fefdf](https://github.com/vuejs/router/commit/c2fefdf09142178fe1be427abec8afd8ac67f9f2))
+
+### Features
+
+- **experimental:** normalize string locations with new URL ([#2932](https://github.com/vuejs/router/issues/2932)) ([d0343fa](https://github.com/vuejs/router/commit/d0343faf3716c6d0c137e0bff4fe05018ca7c029)), closes [#561](https://github.com/vuejs/router/issues/561)
+- expose encoding helpers with _ prefix ([#2910](https://github.com/vuejs/router/issues/2910)) ([7d465db](https://github.com/vuejs/router/commit/7d465db97da3e20f37ec4d588c0a8957b6ba76d2))
+- expose internal _parseURL and _stringifyURL ([#2912](https://github.com/vuejs/router/issues/2912)) ([d293d6d](https://github.com/vuejs/router/commit/d293d6d5260464ea800341b49a705c40031600f6))
+- expose internal _stripBase helper ([#2911](https://github.com/vuejs/router/issues/2911)) ([6d76a8b](https://github.com/vuejs/router/commit/6d76a8b7b4c62538359a6855221cadc2ae89e20b))
+- expose internal RouterLink click guard helper ([#2913](https://github.com/vuejs/router/issues/2913)) ([89b72fb](https://github.com/vuejs/router/commit/89b72fb19ab84e3def83ddd2e00b6dc9ef9cce0f))
+- **types:** export RouterLinkSlotScope type ([#2917](https://github.com/vuejs/router/issues/2917)) ([2c73755](https://github.com/vuejs/router/commit/2c73755d2ad33ee9ef5b93fd182b1763fbaea663))
+- vapor mode ([#2944](https://github.com/vuejs/router/issues/2944)) ([1a73ce0](https://github.com/vuejs/router/commit/1a73ce003f701cb358a1df30af82191234dc8a87))
+- warn against invalid repeatable subsegments ([#2931](https://github.com/vuejs/router/issues/2931)) ([bde7f6a](https://github.com/vuejs/router/commit/bde7f6a551db5c1d51a6ee83b5eee2b545b394e1))
+
+### BREAKING CHANGES
+
+- **experimental:** outside of a `<RouterView>`, `onRouteRendered()` and
+  `useScrollRestoration()` are no longer called for the initial navigation
+  when the app is mounted after `router.isReady()`. Move
+  `useScrollRestoration()` to a layout or page component inside a
+  `<RouterView>`. If a component outside of a `<RouterView>` must handle the
+  initial navigation, call the returned `scroll()` in `onMounted()`, or call
+  your `onRouteRendered()` callback in `onMounted()` with
+  `router.currentRoute.value`.
+- replace usage of `new NavigationResult(to)` with
+  `reroute(to)`
+
 ## [5.5.1](https://github.com/vuejs/router/compare/v5.5.0...v5.5.1) (2026-11-13)
 
 - perf(experimental)!: avoid full stack traces for match misses ([3176a5c](https://github.com/vuejs/router/commit/3176a5c9bf5b19dad48ea77f70528abc37181b9a))
