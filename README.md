@@ -1,4 +1,4 @@
-# vue-router [![nmp version](https://img.shields.io/npm/v/vue-router.svg)](https://npmx.dev/package/vue-router) [![test](https://github.com/vuejs/router/actions/workflows/test.yml/badge.svg)](https://github.com/vuejs/router/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/vuejs/router/graph/badge.svg?token=azNM3FI0d1)](https://codecov.io/gh/vuejs/router)
+# vue-router [![npm version](https://img.shields.io/npm/v/vue-router.svg)](https://npmx.dev/package/vue-router) [![test](https://github.com/vuejs/router/actions/workflows/test.yml/badge.svg)](https://github.com/vuejs/router/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/vuejs/router/graph/badge.svg?token=azNM3FI0d1)](https://codecov.io/gh/vuejs/router)
 
 > To see what versions are currently supported, please refer to the [Security Policy](./packages/router/SECURITY.md).
 
