@@ -7,10 +7,13 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    env:
+      BRANCH: chore/update-sponsors
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -69,17 +72,30 @@ jobs:
       - name: Check for changes
         id: sponsors-after
         run: |
-          if git diff --quiet -- packages/docs/.vitepress/theme/components/sponsors.json README.md; then
+          FILES="packages/docs/.vitepress/theme/components/sponsors.json README.md"
+          if git diff --quiet -- $FILES; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          # skip if the open PR branch already has the same content
+          elif git rev-parse --verify --quiet "origin/$BRANCH" >/dev/null \
+            && git diff --quiet "origin/$BRANCH" -- $FILES; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Commit
+      - name: Open pull request
         if: steps.sponsors-after.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git switch -C "$BRANCH"
           git add packages/docs/.vitepress/theme/components/sponsors.json README.md
           git commit -m "chore: update sponsors" --no-verify
-          git push
+          git push --force origin "$BRANCH"
+          if [ "$(gh pr list --head "$BRANCH" --state open --json number --jq length)" = "0" ]; then
+            gh pr create --base main --head "$BRANCH" \
+              --title "chore: update sponsors" \
+              --body "Automated sponsor update from the \`Update sponsors\` workflow."
+          fi
