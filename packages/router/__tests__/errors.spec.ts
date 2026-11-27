@@ -7,6 +7,7 @@ import {
   isNavigationFailure,
   createRouterError,
   ErrorTypes,
+  stringifyRoute,
 } from '../src/errors'
 import { components, tick } from './utils'
 import type { RouteRecordRaw } from '../src/types'
@@ -452,3 +453,24 @@ async function testHistoryError(
     expect.any(Object)
   )
 }
+
+describe('stringifyRoute', () => {
+  it('keeps the path alone', () => {
+    expect(
+      stringifyRoute({ path: '/a', params: {}, query: {}, hash: '' })
+    ).toBe('/a')
+  })
+
+  it('keeps the query and hash', () => {
+    expect(stringifyRoute({ path: '/a', query: { q: '1' }, hash: '#h' }))
+      .toMatchInlineSnapshot(`
+      "{
+        "path": "/a",
+        "query": {
+          "q": "1"
+        },
+        "hash": "#h"
+      }"
+    `)
+  })
+})

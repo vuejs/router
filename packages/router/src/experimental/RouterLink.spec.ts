@@ -98,7 +98,7 @@ describe('experimental RouterLink', () => {
       { initial: '/nowhere' }
     )
     expect(classes()).toEqual([])
-    expect('No match found').toHaveBeenWarned()
+    expect('VUE_ROUTER_R0004').toHaveBeenWarned()
   })
 
   it('is active but not exact active on a child route', async () => {

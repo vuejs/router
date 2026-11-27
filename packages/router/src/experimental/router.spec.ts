@@ -524,7 +524,7 @@ describe('Experimental Router', () => {
     await router.push('/me-neither')
     expect(router.currentRoute.value).toMatchObject({ matched: [] })
     expect(spy).toHaveBeenCalledTimes(1)
-    expect('No match found').toHaveBeenWarnedTimes(2)
+    expect('VUE_ROUTER_R0004').toHaveBeenWarnedTimes(2)
   })
 
   it('casts number params to string', async () => {
@@ -1013,7 +1013,6 @@ describe('Experimental Router', () => {
       expect('VUE_ROUTER_R0129').toHaveBeenWarnedTimes(1)
       expect('Cannot resolve a relative location').toHaveBeenWarned()
       expect('\nLocation: {\n  "query"').toHaveBeenWarned()
-      expect('No match found').toHaveBeenWarned()
     })
 
     it('does not warn before the initial navigation for absolute locations', () => {
@@ -1037,7 +1036,7 @@ describe('Experimental Router', () => {
       expect(router.resolve({ query: { page: ['2'] } }).matched).toEqual([])
       expect('VUE_ROUTER_R0129').toHaveBeenWarnedTimes(1)
       expect('VUE_ROUTER_R0130').not.toHaveBeenWarned()
-      expect('No match found').toHaveBeenWarned()
+      expect('VUE_ROUTER_R0004').toHaveBeenWarned()
     })
   })
 

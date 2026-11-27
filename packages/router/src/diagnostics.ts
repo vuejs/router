@@ -103,8 +103,8 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       fix: 'Remove the leading slashes from the location or fix the route configuration.',
     },
     VUE_ROUTER_R0004: {
-      why: (p: { path: RouteLocationRaw }) =>
-        `No match found for location with path "${stringifyRoute(p.path)}"`,
+      why: (p: { location: Parameters<typeof stringifyRoute>[0] }) =>
+        `No match found for location "${stringifyRoute(p.location)}"`,
       fix: 'Add a route matching this path or check for typos in the location.',
       docs: 'https://router.vuejs.org/guide/essentials/dynamic-matching.html#Catch-all-404-Not-found-Route',
     },

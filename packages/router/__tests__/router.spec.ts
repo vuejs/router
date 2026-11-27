@@ -319,7 +319,7 @@ describe('Router', () => {
     await router.push('/me-neither')
     expect(router.currentRoute.value).toMatchObject({ matched: [] })
     expect(spy).toHaveBeenCalledTimes(1)
-    expect('No match found').toHaveBeenWarnedTimes(2)
+    expect('VUE_ROUTER_R0004').toHaveBeenWarnedTimes(2)
   })
 
   it('casts number params to string', async () => {
@@ -1265,7 +1265,6 @@ describe('Router', () => {
       const scope = effectScope()
       const route = scope.run(() => computed(() => router.resolve('/late')))!
       expect(route.value.matched).toHaveLength(0)
-      expect('No match found').toHaveBeenWarned()
       const remove = router.addRoute({
         path: '/late',
         name: 'late',
@@ -1289,7 +1288,7 @@ describe('Router', () => {
         name: undefined,
         matched: [],
       })
-      expect('No match found').toHaveBeenWarned()
+      expect('VUE_ROUTER_R0004').toHaveBeenWarned()
       router.addRoute({
         path: '/new-route',
         component: components.Foo,
@@ -1319,7 +1318,7 @@ describe('Router', () => {
         name: undefined,
         matched: [],
       })
-      expect('No match found').toHaveBeenWarned()
+      expect('VUE_ROUTER_R0004').toHaveBeenWarned()
       let removeRoute: (() => void) | undefined
       router.addRoute({
         path: '/dynamic',
@@ -1387,7 +1386,7 @@ describe('Router', () => {
       })
       // navigate again
       await router.replace('/new/child')
-      expect('No match found').toHaveBeenWarned()
+      expect('VUE_ROUTER_R0004').toHaveBeenWarned()
       expect(router.currentRoute.value).toMatchObject({
         name: 'new-child',
       })
@@ -1431,7 +1430,7 @@ describe('Router', () => {
         name: undefined,
         matched: [],
       })
-      expect('No match found').toHaveBeenWarned()
+      expect('VUE_ROUTER_R0004').toHaveBeenWarned()
     })
 
     it('can reroute when removing route', async () => {
