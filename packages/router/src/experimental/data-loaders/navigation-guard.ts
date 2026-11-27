@@ -113,7 +113,8 @@ export function setupLoaderGuard(
         () => {},
         error =>
           error instanceof NavigationResult
-            ? error.value
+            ? // a redirect to the current location skips afterEach for `to`
+              (end(to, error), error.value)
             : // our own abort signal cancels the navigation without an error
               signal.aborted && error === signal.reason
               ? false

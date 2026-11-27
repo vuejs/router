@@ -9,6 +9,7 @@ import type { DataLoaderPluginOptions, UseDataLoader } from './entries/index'
 import {
   DataLoaderPlugin,
   getCurrentContext,
+  reroute,
   setCurrentContext,
 } from './entries/index'
 import { getRouter, testDefineLoader } from '../../tests/data-loaders'
@@ -596,6 +597,33 @@ describe(
       bPending.resolve('item-b')
       await vi.advanceTimersByTimeAsync(0)
       expect(wrapper.find('#data').text()).toBe('item-a')
+    })
+
+    it('syncs external changes after a loader redirects to the current location', async () => {
+      const { router, useData, app } = singleLoaderOneRoute(
+        defineColadaLoader({ query: async () => 'data', key: () => ['id'] })
+      )
+      router.addRoute({
+        path: '/redirect',
+        meta: {
+          loaders: [
+            defineColadaLoader({
+              query: async () => reroute('/fetch'),
+              key: () => ['redirect'],
+            }),
+          ],
+        },
+        component: defineComponent({ template: 'redirect' }),
+      })
+
+      await router.push('/fetch')
+      const { data } = useData()
+      await router.push('/redirect')
+      expect(router.currentRoute.value.path).toBe('/fetch')
+
+      app.runWithContext(() => useQueryCache().setQueryData(['id'], 'new'))
+      await nextTick()
+      expect(data.value).toBe('new')
     })
   }
 )

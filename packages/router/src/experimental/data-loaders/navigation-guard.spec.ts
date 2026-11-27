@@ -27,6 +27,7 @@ import {
   setCurrentContext,
   DataLoaderPlugin,
   NavigationResult,
+  reroute,
   useIsDataLoading,
 } from './entries/index'
 import { mockPromise } from '../../tests/utils'
@@ -440,6 +441,32 @@ describe('navigation-guard', () => {
       expect(router.currentRoute.value.hash).not.toBe('#other')
       expect(signal.aborted).toBe(true)
       expect(signal.reason).toBe(reason)
+    })
+
+    it('aborts the signal if a loader redirects to the current location', async () => {
+      setupApp({ isSSR: false })
+      const router = getRouter()
+      let signal: AbortSignal | undefined
+      const lazy = defineBasicLoader(
+        async (_to, ctx) => {
+          signal = ctx.signal
+          return new Promise(() => {})
+        },
+        { lazy: true }
+      )
+      router.addRoute({
+        path: '/fetch',
+        component,
+        meta: {
+          loaders: [defineBasicLoader(async () => reroute('/')), lazy],
+        },
+      })
+
+      await router.push('/')
+      await router.push('/fetch')
+
+      expect(router.currentRoute.value.path).toBe('/')
+      expect(signal?.aborted).toBe(true)
     })
   })
 
