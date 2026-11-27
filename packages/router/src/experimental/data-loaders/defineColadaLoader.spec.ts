@@ -1,6 +1,8 @@
 /**
  * @vitest-environment happy-dom
  */
+import v8 from 'node:v8'
+import { runInNewContext } from 'node:vm'
 import type { App } from 'vue'
 import { defineComponent, nextTick } from 'vue'
 import { defineColadaLoader } from './defineColadaLoader'
@@ -624,6 +626,22 @@ describe(
       app.runWithContext(() => useQueryCache().setQueryData(['id'], 'new'))
       await nextTick()
       expect(data.value).toBe('new')
+    })
+
+    it('does not retain previous routes', async () => {
+      v8.setFlagsFromString('--expose-gc')
+      const gc = runInNewContext('gc') as () => void
+      const { router } = singleLoaderOneRoute(
+        defineColadaLoader({ query: async () => 'data', key: () => ['id'] })
+      )
+
+      await router.push('/fetch?v=0')
+      const first = new WeakRef(router.currentRoute.value)
+      for (let v = 1; v < 3; v++) await router.push(`/fetch?v=${v}`)
+      await vi.advanceTimersByTimeAsync(0)
+      gc()
+
+      expect(first.deref()).toBeUndefined()
     })
   }
 )

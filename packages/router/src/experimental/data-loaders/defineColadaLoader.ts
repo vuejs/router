@@ -140,12 +140,20 @@ export function defineColadaLoader<Data>(
         // refetch only if a tracked property of the route changed
         const tracked = entry.tracked.get(toCacheKey(toValueWithArgs(key, to)))
         const from = entry.route.value
+        // `from` is settled: drop its listener so routes do not retain each other
+        from.meta[ABORT_CONTROLLER_KEY]?.signal.removeEventListener(
+          'abort',
+          entry.restore!
+        )
         // binds ext to the query of `to`
         entry.route.value = to
         // a failed navigation binds ext back so it does not sync the query of `to`
-        to.meta[ABORT_CONTROLLER_KEY]?.signal.addEventListener('abort', () => {
-          if (entry.route.value === to) entry.route.value = from
-        })
+        to.meta[ABORT_CONTROLLER_KEY]?.signal.addEventListener(
+          'abort',
+          (entry.restore = () => {
+            if (entry.route.value === to) entry.route.value = from
+          })
+        )
         reload =
           !tracked ||
           // an ongoing query has incomplete tracked reads
@@ -370,6 +378,11 @@ export interface DataLoaderColadaEntry<
    * Extended options for pinia colada
    */
   ext: UseQueryReturn<TData, TError, TDataInitial>
+
+  /**
+   * Binds `ext` back to the previous route when the navigation fails.
+   */
+  restore?: () => void
 }
 
 interface TrackedRoute {
