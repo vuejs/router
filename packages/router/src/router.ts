@@ -335,6 +335,7 @@ export function createRouter(options: RouterOptions): Router {
     let matcherLocation: MatcherLocationRaw
 
     // path could be relative in object as well
+    // the name wins over the path (only visible in type errors)
     if (rawLocation.path != null) {
       if (
         __DEV__ &&
