@@ -115,7 +115,7 @@ export const useUserData = defineColadaLoader(
 
 ## Abort signals
 
-The `query` function receives the `signal` of Pinia Colada. Pinia Colada aborts it when the query is not needed anymore. A cancelled navigation does not abort it, so the data is still cached for a later visit.
+The `query` function receives the `signal` of Pinia Colada. Like with `useQuery()`, Pinia Colada aborts it when no component uses the query anymore, e.g. when a cancelled navigation makes the page show the previous query again.
 
 The function that returns the query options receives the navigation context as its second argument. Its `signal` is aborted when the navigation is cancelled. Use it only if the request must stop with the navigation:
 
