@@ -126,9 +126,13 @@ export function setupLoaderGuard(
       })
   })
 
-  function end(to: RouteLocationNormalizedLoaded, failure?: unknown) {
+  function end(
+    to: RouteLocationNormalizedLoaded,
+    failed?: unknown,
+    reason = failed
+  ) {
     // the guards might not have run depending on the failure
-    if (failure) to.meta[ABORT_CONTROLLER_KEY]?.abort(failure)
+    if (failed) to.meta[ABORT_CONTROLLER_KEY]?.abort(reason)
     if (router[PENDING_LOCATION_KEY] === to) router[PENDING_LOCATION_KEY] = null
   }
 
@@ -142,7 +146,7 @@ export function setupLoaderGuard(
     end(to, failure)
   })
 
-  const removeOnError = router.onError((error, to) => end(to, error))
+  const removeOnError = router.onError((error, to) => end(to, true, error))
 
   return () => {
     // @ts-expect-error: must be there in practice

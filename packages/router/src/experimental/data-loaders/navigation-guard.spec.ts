@@ -468,6 +468,31 @@ describe('navigation-guard', () => {
       expect(router.currentRoute.value.path).toBe('/')
       expect(signal?.aborted).toBe(true)
     })
+
+    it('aborts the signal if a loader rejects without a reason', async () => {
+      setupApp({ isSSR: false })
+      const router = getRouter()
+      let signal: AbortSignal | undefined
+      const lazy = defineBasicLoader(
+        async (_to, ctx) => {
+          signal = ctx.signal
+          return new Promise(() => {})
+        },
+        { lazy: true }
+      )
+      router.addRoute({
+        path: '/fetch',
+        component,
+        meta: {
+          loaders: [defineBasicLoader(() => Promise.reject()), lazy],
+        },
+      })
+
+      await router.push('/fetch').catch(() => {})
+
+      expect(router.currentRoute.value.path).not.toBe('/fetch')
+      expect(signal?.aborted).toBe(true)
+    })
   })
 
   it('redirects when a NavigationResult is thrown (via reroute)', async () => {
