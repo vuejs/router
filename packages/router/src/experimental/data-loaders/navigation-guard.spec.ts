@@ -469,6 +469,35 @@ describe('navigation-guard', () => {
       expect(signal?.aborted).toBe(true)
     })
 
+    it('does not leak a redirect to lazy loaders rejecting on abort', async () => {
+      setupApp({ isSSR: false })
+      const router = getRouter()
+      const onUnhandled = vi.fn()
+      process.on('unhandledRejection', onUnhandled)
+      // like fetch(url, { signal })
+      const lazy = defineBasicLoader(
+        (_to, { signal }) =>
+          new Promise((_, reject) =>
+            signal!.addEventListener('abort', () => reject(signal!.reason))
+          ),
+        { lazy: true }
+      )
+      router.addRoute({
+        path: '/fetch',
+        component,
+        meta: {
+          loaders: [defineBasicLoader(async () => reroute('/#ok')), lazy],
+        },
+      })
+
+      await router.push('/fetch')
+      await vi.advanceTimersByTimeAsync(0)
+      process.off('unhandledRejection', onUnhandled)
+
+      expect(router.currentRoute.value.fullPath).toBe('/#ok')
+      expect(onUnhandled).not.toHaveBeenCalled()
+    })
+
     it('aborts the signal if a loader rejects without a reason', async () => {
       setupApp({ isSSR: false })
       const router = getRouter()

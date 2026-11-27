@@ -82,7 +82,7 @@ export function setupLoaderGuard(
       }
     }
 
-    const { signal } = to.meta[ABORT_CONTROLLER_KEY]!
+    const controller = to.meta[ABORT_CONTROLLER_KEY]!
     // all loaders are executed as root loaders
     setCurrentContext([])
     isDataLoading.value = true
@@ -114,9 +114,10 @@ export function setupLoaderGuard(
         error =>
           error instanceof NavigationResult
             ? // a redirect to the current location skips afterEach for `to`
-              (end(to, error), error.value)
+              // the default reason keeps the redirect out of lazy loaders
+              (controller.abort(), end(to), error.value)
             : // our own abort signal cancels the navigation without an error
-              signal.aborted && error === signal.reason
+              controller.signal.aborted && error === controller.signal.reason
               ? false
               : Promise.reject<never>(error)
       )
