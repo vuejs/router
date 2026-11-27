@@ -1,6 +1,8 @@
 /**
  * @vitest-environment happy-dom
  */
+import v8 from 'node:v8'
+import { runInNewContext } from 'node:vm'
 import type { App } from 'vue'
 import { defineComponent, nextTick } from 'vue'
 import { defineColadaLoader } from './defineColadaLoader'
@@ -9,6 +11,7 @@ import type { DataLoaderPluginOptions, UseDataLoader } from './entries/index'
 import {
   DataLoaderPlugin,
   getCurrentContext,
+  reroute,
   setCurrentContext,
 } from './entries/index'
 import { getRouter, testDefineLoader } from '../../tests/data-loaders'
@@ -131,6 +134,55 @@ describe(
       // already fetched
       await router.push('/fetch?q=1&v=4')
       expect(query).toHaveBeenCalledTimes(2)
+    })
+
+    it('avoids refetching fresh nested data when the parent reruns', async () => {
+      const nestedQuery = vi.fn().mockResolvedValue('nested')
+      const useNested = defineColadaLoader({
+        query: nestedQuery,
+        key: to => ['nested', to.query.q as string],
+      })
+      const parentQuery = vi.fn(async (to: RouteLocationNormalizedLoaded) => {
+        await useNested()
+        return to.query.v
+      })
+      const { router } = singleLoaderOneRoute(
+        defineColadaLoader({
+          query: parentQuery,
+          key: to => ['parent', to.query.v as string],
+        })
+      )
+
+      await router.push('/fetch?q=1&v=1')
+      await router.push('/fetch?q=1&v=2')
+      expect(parentQuery).toHaveBeenCalledTimes(2)
+      expect(nestedQuery).toHaveBeenCalledTimes(1)
+    })
+
+    it('refetches when the target key has an ongoing query', async () => {
+      const bPending = Promise.withResolvers<void>()
+      const query = vi.fn(async (to: RouteLocationNormalizedLoaded) => {
+        const { k } = to.query
+        if (k === 'b') await bPending.promise
+        return `${k}:${to.query.x}`
+      })
+      const { router, useData } = singleLoaderOneRoute(
+        defineColadaLoader({ query, key: to => [to.query.k as string] })
+      )
+
+      await router.push('/fetch?k=a&x=1')
+      // leaves the query of b ongoing, x is not read yet
+      router.push('/fetch?k=b&x=1')
+      await vi.advanceTimersByTimeAsync(0)
+      // a different location to avoid a duplicated navigation
+      await router.push('/fetch?k=a&x=1&y=1')
+
+      const nav = router.push('/fetch?k=b&x=2')
+      // let the loader decide before b reads x
+      await vi.advanceTimersByTimeAsync(0)
+      bPending.resolve()
+      await nav
+      expect(useData().data.value).toBe('b:2')
     })
 
     it('updates data loader data if internal data changes', async () => {
@@ -499,6 +551,97 @@ describe(
       expect(entry1.active).toBe(false)
       expect(entry2.deps.size).toBe(0)
       expect(entry2.active).toBe(false)
+    })
+
+    it('keeps the data of the current route when a lazy navigation is cancelled', async () => {
+      const bPending = Promise.withResolvers<string>()
+      // ignores the abort signal
+      const useItem = defineColadaLoader({
+        lazy: true,
+        query: async to =>
+          to.params.id === 'b' ? bPending.promise : `item-${to.params.id}`,
+        key: to => ['item', to.params.id as string],
+      })
+
+      const router = getRouter()
+      router.addRoute({
+        path: '/items/:id',
+        meta: { loaders: [useItem] },
+        component: defineComponent({
+          setup() {
+            const { data } = useItem()
+            return { data }
+          },
+          template: `<p id="data">{{ data }}</p>`,
+        }),
+      })
+
+      const wrapper = mount(RouterViewMock, {
+        global: {
+          plugins: [
+            [DataLoaderPlugin, { router }],
+            router,
+            createPinia(),
+            PiniaColada,
+          ],
+        },
+      })
+
+      await router.push('/items/a')
+      await vi.advanceTimersByTimeAsync(0)
+      expect(wrapper.find('#data').text()).toBe('item-a')
+
+      // a later guard cancels the navigation after the lazy loader started
+      router.beforeResolve(to => to.params.id !== 'b')
+      await router.push('/items/b')
+      expect(router.currentRoute.value.path).toBe('/items/a')
+
+      bPending.resolve('item-b')
+      await vi.advanceTimersByTimeAsync(0)
+      expect(wrapper.find('#data').text()).toBe('item-a')
+    })
+
+    it('syncs external changes after a loader redirects to the current location', async () => {
+      const { router, useData, app } = singleLoaderOneRoute(
+        defineColadaLoader({ query: async () => 'data', key: () => ['id'] })
+      )
+      router.addRoute({
+        path: '/redirect',
+        meta: {
+          loaders: [
+            defineColadaLoader({
+              query: async () => reroute('/fetch'),
+              key: () => ['redirect'],
+            }),
+          ],
+        },
+        component: defineComponent({ template: 'redirect' }),
+      })
+
+      await router.push('/fetch')
+      const { data } = useData()
+      await router.push('/redirect')
+      expect(router.currentRoute.value.path).toBe('/fetch')
+
+      app.runWithContext(() => useQueryCache().setQueryData(['id'], 'new'))
+      await nextTick()
+      expect(data.value).toBe('new')
+    })
+
+    it('does not retain previous routes', async () => {
+      v8.setFlagsFromString('--expose-gc')
+      const gc = runInNewContext('gc') as () => void
+      const { router } = singleLoaderOneRoute(
+        defineColadaLoader({ query: async () => 'data', key: () => ['id'] })
+      )
+
+      await router.push('/fetch?v=0')
+      const first = new WeakRef(router.currentRoute.value)
+      for (let v = 1; v < 3; v++) await router.push(`/fetch?v=${v}`)
+      await vi.advanceTimersByTimeAsync(0)
+      gc()
+
+      expect(first.deref()).toBeUndefined()
     })
   }
 )

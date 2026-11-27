@@ -9,3 +9,7 @@ When reloading data, the navigation is not involved, so not only the navigation 
 ## Errors
 
 Because we are not within a navigation, errors are actually kept in the `error` property of the loader. Similar to lazy loaders. This allows to display any errors that might have occurred during the reload.
+
+## During a navigation
+
+If `reload()` is called while a navigation that runs the same loader is pending, the reload is skipped. The returned promise resolves once the navigation has loaded the data. This avoids showing data for the previous location once the navigation finishes.

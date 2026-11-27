@@ -411,12 +411,6 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
       fix: 'Replace `return new NavigationResult(to)` with `reroute(to)`, which throws internally to reroute.',
       docs: 'https://router.vuejs.org/data-loaders/navigation-aware.html#Controlling-the-navigation-with-reroute-',
     },
-    VUE_ROUTER_R1003: {
-      why: (p: { key: string | undefined }) =>
-        `Loader "${p.key}"'s "commit()" was called but there is no staged data.`,
-      fix: 'Ensure the loader resolved before calling `commit()`.',
-      docs: 'https://router.vuejs.org/data-loaders/defining-loaders.html#Delaying-data-updates-with-commit',
-    },
     VUE_ROUTER_R1004: {
       why: (p: { key: string }) =>
         'A loader returned a NavigationResult but is not registered on the route.' +
@@ -429,12 +423,6 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `Data loader "${p.key}" has itself as parent. This shouldn't be happening.`,
       fix: 'Report a bug with a minimal reproduction at https://github.com/vuejs/router/.',
     },
-    VUE_ROUTER_R1006: {
-      why: (p: { key: string }) =>
-        `A query was defined with the same key as the loader "[${p.key}]".\nSee https://pinia-colada.esm.dev/#TODO`,
-      fix: 'If the key is meant to match, use the data loader directly; otherwise rename the `useQuery()` key so it no longer collides.',
-      docs: 'https://router.vuejs.org/data-loaders/colada.html',
-    },
     VUE_ROUTER_R1007: {
       why: 'Data Loader was setup twice.',
       fix: 'Register `DataLoaderPlugin` a single time via `app.use()`.',
@@ -443,11 +431,6 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
     VUE_ROUTER_R1008: {
       why: 'Data Loader is experimental and subject to breaking changes in the future.',
       docs: 'https://router.vuejs.org/data-loaders.html',
-    },
-    VUE_ROUTER_R1009: {
-      why: 'Returning a NavigationResult from a loader is deprecated.',
-      fix: 'Call `reroute(to)` inside the loader instead of returning `new NavigationResult(to)`; it throws internally to reroute.',
-      docs: 'https://router.vuejs.org/data-loaders/navigation-aware.html#Controlling-the-navigation-with-reroute-',
     },
   },
 })

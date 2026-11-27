@@ -21,5 +21,4 @@ export type {
 //   DefineLoaderFn,
 //   _DataMaybeLazy,
 //   DefineDataLoader,
-//   DefineDataLoaderCommit,
 // } from '../createDataLoader'

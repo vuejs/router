@@ -27,6 +27,7 @@ import {
   setCurrentContext,
   DataLoaderPlugin,
   NavigationResult,
+  reroute,
   useIsDataLoading,
 } from './entries/index'
 import { mockPromise } from '../../tests/utils'
@@ -440,6 +441,86 @@ describe('navigation-guard', () => {
       expect(router.currentRoute.value.hash).not.toBe('#other')
       expect(signal.aborted).toBe(true)
       expect(signal.reason).toBe(reason)
+    })
+
+    it('aborts the signal if a loader redirects to the current location', async () => {
+      setupApp({ isSSR: false })
+      const router = getRouter()
+      let signal: AbortSignal | undefined
+      const lazy = defineBasicLoader(
+        async (_to, ctx) => {
+          signal = ctx.signal
+          return new Promise(() => {})
+        },
+        { lazy: true }
+      )
+      router.addRoute({
+        path: '/fetch',
+        component,
+        meta: {
+          loaders: [defineBasicLoader(async () => reroute('/')), lazy],
+        },
+      })
+
+      await router.push('/')
+      await router.push('/fetch')
+
+      expect(router.currentRoute.value.path).toBe('/')
+      expect(signal?.aborted).toBe(true)
+    })
+
+    it('does not leak a redirect to lazy loaders rejecting on abort', async () => {
+      setupApp({ isSSR: false })
+      const router = getRouter()
+      const onUnhandled = vi.fn()
+      process.on('unhandledRejection', onUnhandled)
+      // like fetch(url, { signal })
+      const lazy = defineBasicLoader(
+        (_to, { signal }) =>
+          new Promise((_, reject) =>
+            signal!.addEventListener('abort', () => reject(signal!.reason))
+          ),
+        { lazy: true }
+      )
+      router.addRoute({
+        path: '/fetch',
+        component,
+        meta: {
+          loaders: [defineBasicLoader(async () => reroute('/#ok')), lazy],
+        },
+      })
+
+      await router.push('/fetch')
+      await vi.advanceTimersByTimeAsync(0)
+      process.off('unhandledRejection', onUnhandled)
+
+      expect(router.currentRoute.value.fullPath).toBe('/#ok')
+      expect(onUnhandled).not.toHaveBeenCalled()
+    })
+
+    it('aborts the signal if a loader rejects without a reason', async () => {
+      setupApp({ isSSR: false })
+      const router = getRouter()
+      let signal: AbortSignal | undefined
+      const lazy = defineBasicLoader(
+        async (_to, ctx) => {
+          signal = ctx.signal
+          return new Promise(() => {})
+        },
+        { lazy: true }
+      )
+      router.addRoute({
+        path: '/fetch',
+        component,
+        meta: {
+          loaders: [defineBasicLoader(() => Promise.reject()), lazy],
+        },
+      })
+
+      await router.push('/fetch').catch(() => {})
+
+      expect(router.currentRoute.value.path).not.toBe('/fetch')
+      expect(signal?.aborted).toBe(true)
     })
   })
 

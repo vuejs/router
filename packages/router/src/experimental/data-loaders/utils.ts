@@ -2,7 +2,7 @@ import type { LocationQuery } from '../../query'
 import type { Router } from '../../router'
 import type { RouteLocationNormalizedLoaded } from '../../typed-routes'
 import type { DataLoaderEntryBase, UseDataLoader } from './createDataLoader'
-import { IS_USE_DATA_LOADER_KEY } from './meta-extensions'
+import { IS_USE_DATA_LOADER_KEY } from './symbols'
 
 /**
  * Check if a value is a `DataLoader`.
@@ -67,7 +67,6 @@ export function getCurrentContext(): LoaderContext | readonly [] {
   )
 }
 
-// TODO: rename parentContext
 /**
  * Sets the current context for data loaders. This allows for nested loaders to be aware of their parent context.
  * INTERNAL ONLY.
@@ -107,7 +106,7 @@ export type _PromiseMerged<PromiseType, RawType = PromiseType> = RawType &
 export function trackRoute(route: RouteLocationNormalizedLoaded) {
   const [params, paramReads] = trackObjectReads(route.params)
   const [query, queryReads] = trackObjectReads(route.query)
-  let hash: { v: string | null } = { v: null }
+  const hash: { v: string | null } = { v: null }
   return [
     {
       ...route,
@@ -134,9 +133,7 @@ function trackObjectReads<T extends Record<string, unknown>>(obj: T) {
   return [
     new Proxy(obj, {
       get(target, p: Extract<keyof T, string>, receiver) {
-        const value = Reflect.get(target, p, receiver)
-        reads[p] = value
-        return value
+        return (reads[p] = Reflect.get(target, p, receiver))
       },
     }),
     reads,
@@ -144,11 +141,12 @@ function trackObjectReads<T extends Record<string, unknown>>(obj: T) {
 }
 
 /**
- * Returns `true` if `inner` is a subset of `outer`. Used to check if a tr
+ * Returns `true` if `inner` is a subset of `outer`. Used to check if the
+ * tracked properties of a route changed.
  *
  * @internal
- * @param outer - the bigger params
  * @param inner - the smaller params
+ * @param outer - the bigger params
  */
 export function isSubsetOf(
   inner: Partial<LocationQuery>,
@@ -157,19 +155,13 @@ export function isSubsetOf(
   for (const key in inner) {
     const innerValue = inner[key]
     const outerValue = outer[key]
-    if (typeof innerValue === 'string') {
-      if (innerValue !== outerValue) return false
-    } else if (!innerValue || !outerValue) {
-      // if one of them is undefined, we need to check if the other is undefined too
-      if (innerValue !== outerValue) return false
-    } else {
-      if (
-        !Array.isArray(outerValue) ||
-        outerValue.length !== innerValue.length ||
-        innerValue.some((value, i) => value !== outerValue[i])
-      )
-        return false
-    }
+    if (
+      Array.isArray(innerValue) && Array.isArray(outerValue)
+        ? innerValue.length !== outerValue.length ||
+          innerValue.some((value, i) => value !== outerValue[i])
+        : innerValue !== outerValue
+    )
+      return false
   }
 
   return true

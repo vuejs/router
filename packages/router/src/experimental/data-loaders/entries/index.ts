@@ -4,13 +4,14 @@ export type {
   UseDataLoaderResult,
   DataLoaderContextBase,
   DataLoaderEntryBase,
+  DataLoaderImplementation,
   DefineDataLoaderOptionsBase_LaxData,
   DefineDataLoaderOptionsBase_DefinedData,
   DefineLoaderFn,
   // deprecated
   DefineDataLoaderOptionsBase,
 } from '../createDataLoader'
-export { toLazyValue } from '../createDataLoader'
+export { createDataLoader, toLazyValue } from '../createDataLoader'
 
 // new data fetching
 export {

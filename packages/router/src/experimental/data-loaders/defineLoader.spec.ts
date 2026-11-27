@@ -7,7 +7,6 @@ import type { DefineDataLoaderOptions_DefinedData } from './defineLoader'
 import {
   type DefineDataLoaderOptions_LaxData,
   INITIAL_DATA_KEY,
-  SERVER_INITIAL_DATA_KEY,
   defineBasicLoader,
 } from './defineLoader'
 import { describe, it, expect, vi, afterEach } from 'vitest'
@@ -60,7 +59,6 @@ describe(
           // reset data used for SSR
           const router = getRouter()
           delete router[INITIAL_DATA_KEY]
-          delete router[SERVER_INITIAL_DATA_KEY]
         },
       }
     )
@@ -162,7 +160,7 @@ describe(
         await router.push('/fetch?p=one')
         expect(spy1).toHaveBeenCalledTimes(1)
         expect(spy2).toHaveBeenCalledTimes(1)
-        expect(router[SERVER_INITIAL_DATA_KEY]).toEqual({
+        expect((router as any)[Symbol()]).toEqual({
           d1: 'f1',
           d2: 'f2',
         })
@@ -181,6 +179,24 @@ describe(
         const { data } = useData()
         expect(data.value).toEqual('initial')
         expect(spy).toHaveBeenCalledTimes(0)
+      })
+
+      it('reloads after using initialData', async () => {
+        const spy = vi
+          .fn<(to: RouteLocationNormalizedLoaded) => Promise<string>>()
+          .mockResolvedValue('fetched')
+        const { router, useData } = singleLoaderOneRoute(
+          defineBasicLoader(spy, { key: 'root' })
+        )
+        router[INITIAL_DATA_KEY] = { root: 'initial' }
+
+        await router.push('/fetch?p=one')
+        const { data, reload } = useData()
+        expect(data.value).toEqual('initial')
+
+        await reload()
+        expect(spy).toHaveBeenCalledTimes(1)
+        expect(data.value).toEqual('fetched')
       })
 
       it('ignores initialData on subsequent navigations', async () => {
