@@ -525,11 +525,16 @@ export class TreeNode {
 
   /**
    * True if the last segment of the path is a splat (catch-all) param e.g.
-   * /some/thing/:path(.*). Useful to compute the trailing slash behavior of
+   * /some/thing/:path(.*). It includes parent segments, so an index child of a
+   * splat also ends with it. Useful to compute the trailing slash behavior of
    * the route.
    */
   get endsWithSplat(): boolean {
-    const lastSegment = this.value.pathSubSegments.at(-1)?.at(-1)
+    const lastSegment = this._pathSegments
+      // find the last non-empty segment
+      .findLast(subSegments => subSegments.length > 0)
+      // and check if it's a splat param
+      ?.at(-1)
     return !!lastSegment && isTreePathParam(lastSegment) && lastSegment.isSplat
   }
 

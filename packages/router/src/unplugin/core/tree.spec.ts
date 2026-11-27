@@ -1475,6 +1475,7 @@ describe('Tree', () => {
         always
       )
       checkRegexp('[[...path]]', String.raw`/^\/(.*)?$/`, always)
+      checkRegexp('[...path]/index', String.raw`/^\/(.*)$/`, always)
       checkRegexp('a/[[id]]', String.raw`/^\/a(?:\/([^/]+?))?\/?$/`, {
         options: { trailingSlash: 'ignore' },
       })
@@ -1642,6 +1643,12 @@ describe('Tree', () => {
 
     it('is false when a param sub segment follows the splat', () => {
       checkEndsWithSplat('[...path]-[id]', false)
+    })
+
+    it('is true for an index or group child of a splat segment', () => {
+      checkEndsWithSplat('[...path]/index', true)
+      checkEndsWithSplat('a/[...path]/(group)', true)
+      checkEndsWithSplat('[...path]/(group)/index', true)
     })
 
     it('is false for a child of a splat segment', () => {
