@@ -192,7 +192,7 @@ export function isNavigationFailure(
   )
 }
 
-const propertiesToLog = ['params', 'query', 'hash'] as const
+const propertiesToLog = ['path', 'params', 'query', 'hash'] as const
 
 /**
  * Stringifies a raw location for display in dev warnings.
@@ -210,12 +210,22 @@ export function stringifyRoute(
       }
 ): string {
   if (!to || typeof to === 'string') return to
-  if (to.path != null) return to.path
   const location = {} as Record<string, unknown>
   for (const key of propertiesToLog) {
-    if (key in to) location[key] = to[key]
+    const value = to[key]
+    // skip the empty values of resolved locations
+    if (
+      value != null &&
+      value !== '' &&
+      (typeof value !== 'object' || Object.keys(value).length)
+    ) {
+      location[key] = value
+    }
   }
-  return JSON.stringify(location, null, 2)
+  const keys = Object.keys(location)
+  return keys.length === 1 && keys[0] === 'path'
+    ? (location.path as string)
+    : JSON.stringify(location, null, 2)
 }
 /**
  * Internal type to define an ErrorHandler

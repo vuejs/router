@@ -746,9 +746,6 @@ export function experimental_createRouter(
           )} resolved to "${href}". A resolved location cannot start with multiple slashes.`
         )
       }
-      if (!matchedRoute.matched.length) {
-        warn(`No match found for location with path "${to}"`)
-      }
     }
 
     // matchedRoute is always a new object
@@ -811,6 +808,9 @@ export function experimental_createRouter(
   ): Promise<NavigationFailure | void | undefined> {
     replace = to.replace ?? replace
     pendingLocation = to
+    if (__DEV__ && !to.matched.length) {
+      diagnostics.VUE_ROUTER_R0004({ location: to })
+    }
     const from = currentRoute.value
     const data: HistoryState | undefined = (to as RouteLocationOptions).state
     const force: boolean | undefined = (to as RouteLocationOptions).force

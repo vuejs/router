@@ -107,7 +107,6 @@ describe('experimental useLink', () => {
         createAboutRouter()
       )
       expect(link.isActive.value).toBe(false)
-      expect('No match found').toHaveBeenWarned()
     })
   })
 })

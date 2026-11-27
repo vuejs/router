@@ -302,9 +302,6 @@ export function createRouter(options: RouterOptions): Router {
       if (__DEV__) {
         if (href.startsWith('//'))
           diagnostics.VUE_ROUTER_R0003({ location: rawLocation, href })
-        else if (!matchedRoute.matched.length) {
-          diagnostics.VUE_ROUTER_R0004({ path: rawLocation })
-        }
       }
 
       // locationNormalized is always a new object
@@ -381,10 +378,6 @@ export function createRouter(options: RouterOptions): Router {
     if (__DEV__) {
       if (href.startsWith('//')) {
         diagnostics.VUE_ROUTER_R0003({ location: rawLocation, href })
-      } else if (!matchedRoute.matched.length) {
-        diagnostics.VUE_ROUTER_R0004({
-          path: rawLocation.path != null ? rawLocation.path : rawLocation,
-        })
       }
     }
 
@@ -493,6 +486,9 @@ export function createRouter(options: RouterOptions): Router {
     redirectedFrom?: RouteLocation
   ): Promise<NavigationFailure | void | undefined> {
     const targetLocation: RouteLocation = (pendingLocation = resolve(to))
+    if (__DEV__ && !targetLocation.matched.length) {
+      diagnostics.VUE_ROUTER_R0004({ location: to })
+    }
     const from = currentRoute.value
     const data: HistoryState | undefined = (to as RouteLocationOptions).state
     const force: boolean | undefined = (to as RouteLocationOptions).force
