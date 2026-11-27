@@ -121,6 +121,8 @@ export function createDataLoader<
     setCurrentContext([entry, router, to])
     entry.pendingTo = to
 
+    // sync throws (e.g. in colada query options) are user bugs: they are not
+    // caught so they stay visible
     const initialData = initial(entry, to, router)
     if (initialData !== undefined) {
       entry.data.value = initialData
@@ -153,7 +155,7 @@ export function createDataLoader<
       }
     }
 
-    // loaders are async: they cannot throw synchronously
+    // loaders are async: a sync throw is a user bug, see initial
     running++
     const result = fetch(entry, to, router, reload)
     running--

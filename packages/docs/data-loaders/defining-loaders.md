@@ -1,6 +1,6 @@
 # Defining Data Loaders
 
-In order to use data loaders, you need to define them first. Data loaders themselves are the composables returned by the different `defineLoader` functions. Each loader definition is specific to the `defineLoader` function used. For example, `defineBasicLoader` expects an async function as the first argument while `defineColadaLoader` expects an object with a `query` function. All loaders should allow to pass an async function that can throw errors, and call `reroute()` to control the navigation.
+In order to use data loaders, you need to define them first. Data loaders themselves are the composables returned by the different `defineLoader` functions. Each loader definition is specific to the `defineLoader` function used. For example, `defineBasicLoader` expects an async function as the first argument while `defineColadaLoader` expects a function that returns Pinia Colada query options. All loaders should allow to pass an async function that can throw errors, and call `reroute()` to control the navigation.
 
 Any composables returned by _any_ `defineLoader` function share the same signature:
 

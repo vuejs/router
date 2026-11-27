@@ -1,42 +1,14 @@
 import { describe, it, expectTypeOf } from 'vitest'
+import { defineQueryOptions } from '@pinia/colada'
 import { defineColadaLoader } from './defineColadaLoader'
 import { NavigationResult } from './navigation-guard'
 
-describe('defineBasicLoader', () => {
+describe('defineColadaLoader', () => {
   interface UserData {
     id: string
     name: string
   }
 
-  // TODO: figure out a way of testing these without polluting the types for src
-  // Skipped: requires typed routes to be configured in RouteMap
-  // it.todo('uses typed routes', () => {
-  //   // @ts-expect-error: '/[name]' is not in RouteMap
-  //   const useDataLoader = defineColadaLoader('/[name]', {
-  //     key: ['id'],
-  //     query: async route => {
-  //       const user = {
-  //         // @ts-expect-error: route params type not available without RouteMap config
-  //         id: route.params.name as string,
-  //         name: 'Edu',
-  //       }
-  //
-  //       return user
-  //     },
-  //   })
-  //
-  //   expectTypeOf<
-  //     | {
-  //         data: Ref<UserData>
-  //         error: Ref<unknown>
-  //         isLoading: Ref<boolean>
-  //         reload: () => Promise<void>
-  //       }
-  //     | PromiseLike<UserData>
-  //   >(useDataLoader())
-  // })
-
-  const key = ['id']
   async function query() {
     const user: UserData = {
       id: 'one',
@@ -45,46 +17,37 @@ describe('defineBasicLoader', () => {
 
     return user
   }
+  const queryOptions = () => ({ key: ['id'], query })
 
   it('can enforce defined data', () => {
     expectTypeOf(
-      defineColadaLoader({ key, query })().data.value
+      defineColadaLoader(queryOptions)().data.value
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      defineColadaLoader({
-        key,
-        query,
+      defineColadaLoader(queryOptions, {
         errors: false,
         lazy: false,
         server: true,
       })().data.value
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      defineColadaLoader({
-        key,
-        query,
+      defineColadaLoader(queryOptions, {
         lazy: false,
         server: true,
       })().data.value
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      defineColadaLoader({
-        key,
-        query,
+      defineColadaLoader(queryOptions, {
         errors: false,
       })().data.value
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      defineColadaLoader({
-        key,
-        query,
+      defineColadaLoader(queryOptions, {
         server: true,
       })().data.value
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      defineColadaLoader({
-        key,
-        query,
+      defineColadaLoader(queryOptions, {
         lazy: false,
       })().data.value
     ).toEqualTypeOf<UserData>()
@@ -92,31 +55,29 @@ describe('defineBasicLoader', () => {
 
   it('makes data possibly undefined when lazy', () => {
     expectTypeOf(
-      defineColadaLoader({ key, query, lazy: true })().data.value
+      defineColadaLoader(queryOptions, { lazy: true })().data.value
     ).toEqualTypeOf<UserData | undefined>()
   })
 
   it('makes data possibly undefined when lazy is a function', () => {
     expectTypeOf(
-      defineColadaLoader({ key, query, lazy: () => false })().data.value
+      defineColadaLoader(queryOptions, { lazy: () => false })().data.value
     ).toEqualTypeOf<UserData | undefined>()
   })
 
   it('makes data possibly undefined when errors is not false', () => {
     expectTypeOf(
-      defineColadaLoader({ key, query, errors: true })().data.value
+      defineColadaLoader(queryOptions, { errors: true })().data.value
     ).toEqualTypeOf<UserData | undefined>()
     expectTypeOf(
-      defineColadaLoader({ key, query, errors: [] })().data.value
+      defineColadaLoader(queryOptions, { errors: [] })().data.value
     ).toEqualTypeOf<UserData | undefined>()
     expectTypeOf(
-      defineColadaLoader({ key, query, errors: e => e instanceof Error })().data
-        .value
+      defineColadaLoader(queryOptions, { errors: e => e instanceof Error })()
+        .data.value
     ).toEqualTypeOf<UserData | undefined>()
     expectTypeOf(
-      defineColadaLoader({
-        key,
-        query,
+      defineColadaLoader(queryOptions, {
         errors: e => typeof e == 'object' && e != null,
       })().data.value
     ).toEqualTypeOf<UserData | undefined>()
@@ -124,63 +85,58 @@ describe('defineBasicLoader', () => {
 
   it('error is typed to Error by default', () => {
     expectTypeOf(
-      defineColadaLoader({
-        key,
-        query,
-      })().error.value
+      defineColadaLoader(queryOptions)().error.value
     ).toEqualTypeOf<Error | null>()
   })
 
   it('makes data possibly undefined when server is not true', () => {
     expectTypeOf(
-      defineColadaLoader({ key, query, server: false })().data.value
+      defineColadaLoader(queryOptions, { server: false })().data.value
     ).toEqualTypeOf<UserData | undefined>()
   })
 
   it('infers the returned type for data', () => {
     expectTypeOf<UserData | undefined>(
-      defineColadaLoader({ key, query, lazy: true })().data.value
+      defineColadaLoader(queryOptions, { lazy: true })().data.value
     )
     expectTypeOf<UserData | undefined>(
-      defineColadaLoader({ key, query, lazy: () => false })().data.value
+      defineColadaLoader(queryOptions, { lazy: () => false })().data.value
     )
   })
 
   it('infers the returned type for the resolved value to always be defined', async () => {
     expectTypeOf(
-      await defineColadaLoader({ key, query })()
+      await defineColadaLoader(queryOptions)()
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      await defineColadaLoader({ key, query, lazy: false })()
+      await defineColadaLoader(queryOptions, { lazy: false })()
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      await defineColadaLoader({ key, query, lazy: true })()
+      await defineColadaLoader(queryOptions, { lazy: true })()
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      await defineColadaLoader({ key, query, server: true })()
+      await defineColadaLoader(queryOptions, { server: true })()
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      await defineColadaLoader({ key, query, server: false })()
+      await defineColadaLoader(queryOptions, { server: false })()
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      await defineColadaLoader({ key, query, errors: false })()
+      await defineColadaLoader(queryOptions, { errors: false })()
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      await defineColadaLoader({ key, query, errors: true })()
+      await defineColadaLoader(queryOptions, { errors: true })()
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      await defineColadaLoader({ key, query, errors: [] })()
+      await defineColadaLoader(queryOptions, { errors: [] })()
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      await defineColadaLoader({ key, query, errors: false, lazy: true })()
+      await defineColadaLoader(queryOptions, { errors: false, lazy: true })()
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      await defineColadaLoader({ key, query, server: false, lazy: true })()
+      await defineColadaLoader(queryOptions, { server: false, lazy: true })()
     ).toEqualTypeOf<UserData>()
     expectTypeOf(
-      await defineColadaLoader({
-        key,
-        query,
+      await defineColadaLoader(queryOptions, {
         errors: false,
         server: false,
         lazy: true,
@@ -190,8 +146,8 @@ describe('defineBasicLoader', () => {
 
   it('allows returning a Navigation Result without a type error', () => {
     expectTypeOf<UserData>(
-      defineColadaLoader({
-        key,
+      defineColadaLoader(() => ({
+        key: ['id'],
         query: async () => {
           if (Math.random()) {
             return query()
@@ -199,11 +155,11 @@ describe('defineBasicLoader', () => {
             return new NavigationResult('/')
           }
         },
-      })().data.value
+      }))().data.value
     )
     expectTypeOf(
-      defineColadaLoader({
-        key,
+      defineColadaLoader(() => ({
+        key: ['id'],
         query: async () => {
           if (Math.random()) {
             return query()
@@ -211,7 +167,41 @@ describe('defineBasicLoader', () => {
             return new NavigationResult('/')
           }
         },
-      })()
+      }))()
     ).resolves.toEqualTypeOf<UserData>()
+  })
+
+  it('accepts query options from defineQueryOptions()', async () => {
+    const userQuery = defineQueryOptions((id: string) => ({
+      key: ['users', id],
+      query: async (): Promise<UserData> => ({ id, name: 'Edu' }),
+    }))
+    expectTypeOf(
+      defineColadaLoader(to => userQuery(to.path))().data.value
+    ).toEqualTypeOf<UserData>()
+    expectTypeOf(
+      await defineColadaLoader(to => userQuery(to.path))()
+    ).toEqualTypeOf<UserData>()
+    expectTypeOf(
+      defineColadaLoader('/users/[id]', to => userQuery(to.path))().data.value
+    ).toEqualTypeOf<UserData>()
+    expectTypeOf(
+      defineColadaLoader('/users/[id]', to => userQuery(to.path), {
+        lazy: true,
+      })().data.value
+    ).toEqualTypeOf<UserData | undefined>()
+  })
+
+  it('passes the navigation and query signals', () => {
+    defineColadaLoader((_to, navigation) => {
+      expectTypeOf(navigation.signal).toEqualTypeOf<AbortSignal | undefined>()
+      return {
+        key: ['id'],
+        query: ({ signal }) => {
+          expectTypeOf(signal).toEqualTypeOf<AbortSignal>()
+          return query()
+        },
+      }
+    })
   })
 })
