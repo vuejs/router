@@ -23,12 +23,6 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
 
 <h4 align="center">Silver Sponsors</h4>
 <p align="center">
-    <a href="https://www.vuemastery.com/" target="_blank" rel="noopener noreferrer">
-    <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/vuemastery-dark.png" media="(prefers-color-scheme: dark)" height="42px" alt="VueMastery" />
-      <img src="https://posva-sponsors.pages.dev/logos/vuemastery-light.svg" height="42px" alt="VueMastery" />
-    </picture>
-  </a>
     <a href="https://www.controla.ai/?utm_source=posva" target="_blank" rel="noopener noreferrer">
     <picture>
       <source srcset="https://posva-sponsors.pages.dev/logos/controla-dark.png" media="(prefers-color-scheme: dark)" height="42px" alt="Controla" />
@@ -49,12 +43,6 @@ Vue Router is part of the Vue Ecosystem and is an MIT-licensed open source proje
     <picture>
       <source srcset="https://avatars.githubusercontent.com/u/8292810" media="(prefers-color-scheme: dark)" height="26px" alt="RTVision" />
       <img src="https://avatars.githubusercontent.com/u/8292810" height="26px" alt="RTVision" />
-    </picture>
-  </a>
-    <a href="https://storyblok.com" target="_blank" rel="noopener noreferrer">
-    <picture>
-      <source srcset="https://posva-sponsors.pages.dev/logos/storyblok.png" media="(prefers-color-scheme: dark)" height="26px" alt="Storyblok" />
-      <img src="https://posva-sponsors.pages.dev/logos/storyblok.png" height="26px" alt="Storyblok" />
     </picture>
   </a>
 </p>
