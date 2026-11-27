@@ -16,7 +16,10 @@ function findRoute(root: EditableTreeNode, name: string): EditableTreeNode {
 describe('EditableTreeNode', () => {
   mockWarn()
 
-  const RESOLVED_OPTIONS = resolveOptions(DEFAULT_OPTIONS)
+  const RESOLVED_OPTIONS = resolveOptions({
+    ...DEFAULT_OPTIONS,
+    caseSensitive: true,
+  })
   it('creates an editable tree node', () => {
     const tree = new PrefixTree(RESOLVED_OPTIONS)
     const editable = new EditableTreeNode(tree)

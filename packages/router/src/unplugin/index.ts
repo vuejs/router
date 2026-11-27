@@ -17,6 +17,7 @@ import { createViteContext } from './core/vite'
 import { join } from 'pathe'
 import { appendExtensionListToPattern } from './core/utils'
 import { createAutoExportPlugin } from '../experimental/data-loaders/auto-exports'
+import { diagnostics } from './diagnostics'
 
 export type {
   Options,
@@ -42,6 +43,7 @@ export type { AutoExportLoadersOptions } from '../experimental/data-loaders/auto
 
 export default createUnplugin<Options | undefined>((opt = {}, meta) => {
   const options = resolveOptions({ ...opt, _framework: meta.framework })
+  if (opt.caseSensitive == null) diagnostics.VUE_ROUTER_B0030()
   const ctx = createRoutesContext(options)
   // watchers only update a dev server, builds close them in `buildEnd()`
   let isDevServer = false

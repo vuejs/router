@@ -231,13 +231,13 @@ export interface Options {
   pathParser?: ParseSegmentOptions
 
   /**
-   * Match paths case sensitively in the experimental resolver. Set it to
-   * `false` to match paths case insensitively. Without the experimental
-   * resolver, use the `sensitive` option of `createRouter()`.
+   * Match paths case sensitively in the experimental resolver. Not setting it
+   * warns because the default will change to `true` in the next major. Without
+   * the experimental resolver, use the `sensitive` option of `createRouter()`.
    * Percent-encoded characters must use uppercase hex digits (`%C3%A9`, not
    * `%c3%a9`), as browsers do when they encode URLs.
    *
-   * @default `true`
+   * @default `false`
    */
   caseSensitive?: boolean
 
@@ -338,7 +338,7 @@ export const DEFAULT_OPTIONS = {
     dotNesting: true,
   },
   watch: !process.env.CI,
-  caseSensitive: true,
+  caseSensitive: false,
   trailingSlash: 'never',
   experimental: {},
 } satisfies Options
