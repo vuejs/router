@@ -1132,6 +1132,18 @@ describe('Experimental Router', () => {
     it.skip('does not navigate to child alias if already on original record', async () => {})
   })
 
+  it('ignores the path when a name is given', async () => {
+    const { router } = await newRouter()
+    expect(
+      router.resolve({
+        ...router.resolve('/foo'),
+        // @ts-expect-error: name and path together are not typed
+        name: 'Param',
+        params: { p: 'a/b' },
+      })
+    ).toMatchObject({ name: 'Param', fullPath: '/p/a%2Fb' })
+  })
+
   it('should be able to resolve a partially updated location', async () => {
     const { router } = await newRouter()
     const resolved = router.resolve({

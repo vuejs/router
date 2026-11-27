@@ -794,6 +794,15 @@ describe('RouterMatcher.resolve', () => {
       )
     })
 
+    it('ignores the path when a name is given', () => {
+      assertRecordMatch(
+        { path: '/home', name: 'Home', components },
+        // @ts-expect-error: name and path together are not typed
+        { name: 'Home', path: '/other' },
+        { name: 'Home', path: '/home' }
+      )
+    })
+
     it('throws if the named route does not exist', () => {
       expect(
         assertErrorMatch({ path: '/', components }, { name: 'Home' })

@@ -659,6 +659,22 @@ describe('fixed resolver', () => {
         })
       })
 
+      it('ignores the path when a name is given', () => {
+        const resolver = createFixedResolver([
+          { name: 'user-edit', path: USERS_ID_OTHER_PATH_MATCHER },
+        ])
+
+        const location = {
+          name: 'user-edit',
+          path: '/other',
+          params: { id: 'posva', other: 'admin' },
+        }
+        expect(
+          // @ts-expect-error: name and path together are not typed
+          resolver.resolve(location)
+        ).toMatchObject({ name: 'user-edit', path: '/users/posva/admin' })
+      })
+
       it('throws if named route does not exist', () => {
         const resolver = createFixedResolver([])
 
