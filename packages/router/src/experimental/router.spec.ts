@@ -1136,9 +1136,9 @@ describe('Experimental Router', () => {
   it('ignores the path when a name is given', async () => {
     const { router } = await newRouter()
     expect(
-      // @ts-expect-error: name and path together are not typed
       router.resolve({
         ...router.resolve('/foo'),
+        // @ts-expect-error: name and path together are not typed
         name: 'Param',
         params: { p: 'a/b' },
       })
