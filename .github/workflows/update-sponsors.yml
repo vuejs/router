@@ -97,5 +97,5 @@ jobs:
           if [ "$(gh pr list --head "$BRANCH" --state open --json number --jq length)" = "0" ]; then
             gh pr create --base main --head "$BRANCH" \
               --title "chore: update sponsors" \
-              --body "Automated sponsor update from the \`Update sponsors\` workflow."
+              --body "Automated sponsor update from the \`Update sponsors\` workflow. cc @posva"
           fi
