@@ -6,14 +6,12 @@ import {
   type ShallowRef,
 } from 'vue'
 import {
-  type EntryKey,
-  type UseQueryOptions,
+  type DefineQueryOptions,
   type UseQueryReturn,
   useQuery,
   defineQuery,
   useQueryCache,
   toCacheKey,
-  _toValueWithArgs as toValueWithArgs,
 } from '@pinia/colada'
 import {
   createDataLoader,
@@ -21,7 +19,6 @@ import {
   type DataLoaderEntryBase,
   type DefineDataLoaderOptionsBase_DefinedData,
   type DefineDataLoaderOptionsBase_LaxData,
-  type DefineLoaderFn,
   type UseDataLoader,
   type UseDataLoaderResult,
 } from './createDataLoader'
@@ -40,76 +37,88 @@ import type { LocationQuery } from '../../query'
  * Creates a Pinia Colada data loader with `data` is always defined.
  *
  * @param name - name of the route to have typed routes
+ * @param queryOptions - function that returns the query options for a route
  * @param options - options to configure the data loader
  */
 export function defineColadaLoader<Name extends keyof RouteMap, Data>(
   name: Name,
-  options: DefineDataColadaLoaderOptions_DefinedData<Name, Data>
+  queryOptions: DefineColadaLoaderQueryOptions<Name, Data>,
+  options?: DefineDataColadaLoaderOptions_DefinedData
 ): UseDataLoaderColada_DefinedData<Data>
 
 /**
  * Creates a Pinia Colada data loader with `data` is possibly `undefined`.
  *
  * @param name - name of the route to have typed routes
+ * @param queryOptions - function that returns the query options for a route
  * @param options - options to configure the data loader
  */
 export function defineColadaLoader<Name extends keyof RouteMap, Data>(
   name: Name,
-  options: DefineDataColadaLoaderOptions_LaxData<Name, Data>
+  queryOptions: DefineColadaLoaderQueryOptions<Name, Data>,
+  options: DefineDataColadaLoaderOptions_LaxData
 ): UseDataLoaderColada_LaxData<Data>
 
 /**
  * Creates a Pinia Colada data loader with `data` is always defined.
+ *
+ * @param queryOptions - function that returns the query options for a route
  * @param options - options to configure the data loader
  */
 export function defineColadaLoader<Data>(
-  options: DefineDataColadaLoaderOptions_DefinedData<keyof RouteMap, Data>
+  queryOptions: DefineColadaLoaderQueryOptions<keyof RouteMap, Data>,
+  options?: DefineDataColadaLoaderOptions_DefinedData
 ): UseDataLoaderColada_DefinedData<Data>
 
 /**
  * Creates a Pinia Colada data loader with `data` is possibly `undefined`.
+ *
+ * @param queryOptions - function that returns the query options for a route
  * @param options - options to configure the data loader
  */
 export function defineColadaLoader<Data>(
-  options: DefineDataColadaLoaderOptions_LaxData<keyof RouteMap, Data>
+  queryOptions: DefineColadaLoaderQueryOptions<keyof RouteMap, Data>,
+  options: DefineDataColadaLoaderOptions_LaxData
 ): UseDataLoaderColada_LaxData<Data>
 
 export function defineColadaLoader<Data>(
-  nameOrOptions:
+  nameOrQueryOptions:
     | keyof RouteMap
-    | DefineDataColadaLoaderOptions_LaxData<keyof RouteMap, Data>,
-  _options?: DefineDataColadaLoaderOptions_LaxData<keyof RouteMap, Data>
+    | DefineColadaLoaderQueryOptions<keyof RouteMap, Data>,
+  queryOptionsOrOptions?:
+    | DefineColadaLoaderQueryOptions<keyof RouteMap, Data>
+    | DefineDataColadaLoaderOptions_LaxData,
+  options: DefineDataColadaLoaderOptions_LaxData = {}
 ): UseDataLoaderColada_LaxData<Data> {
-  const options = (_options ||
-    nameOrOptions) as DefineDataColadaLoaderOptions_LaxData<
+  let queryOptions = queryOptionsOrOptions as DefineColadaLoaderQueryOptions<
     keyof RouteMap,
     Data
   >
-  const { key } = options
+  if (typeof nameOrQueryOptions === 'function') {
+    options = (queryOptionsOrOptions as typeof options) || {}
+    queryOptions = nameOrQueryOptions
+  }
   type Entry = DataLoaderColadaEntry<Data, ErrorDefault>
+
+  const getQueryOptions = (to: RouteLocationNormalizedLoaded) =>
+    queryOptions(to, { signal: to.meta[ABORT_CONTROLLER_KEY]?.signal })
 
   const useDefinedQuery = defineQuery(() => {
     const router = useRouter()
     const entry = useDataLoader._.getEntry(router) as Entry
 
-    return useQuery({
-      ...options,
-      query: () => {
-        const route = entry.route.value
-        const [trackedRoute, params, query, hash] = trackRoute(route)
-        entry.tracked.set(toCacheKey(toValueWithArgs(key, trackedRoute)), {
-          params,
-          query,
-          hash,
-        })
-        // needed for automatic refetching and nested loaders
-        return router[APP_KEY].runWithContext(() =>
-          options.query(trackedRoute, {
-            signal: route.meta[ABORT_CONTROLLER_KEY]?.signal,
-          })
-        )
-      },
-      key: () => toValueWithArgs(key, entry.route.value),
+    return useQuery(() => {
+      const [trackedRoute, params, query, hash] = trackRoute(entry.route.value)
+      const resolved = getQueryOptions(trackedRoute)
+      return {
+        ...resolved,
+        query: context => {
+          // reads in the query function are tracked too
+          entry.tracked.set(toCacheKey(resolved.key), { params, query, hash })
+          // needed for automatic refetching and nested loaders
+          return router[APP_KEY].runWithContext(() => resolved.query(context))
+        },
+      }
     })
   })
 
@@ -124,7 +133,7 @@ export function defineColadaLoader<Data>(
       const ext = (entry.ext = scope.run(useDefinedQuery)!)
       scope.pause()
       const queryCache = useQueryCache()
-      const queryEntry = queryCache.get(toValueWithArgs(key, to))
+      const queryEntry = queryCache.get(getQueryOptions(to).key)
       queryEntry?.deps.forEach(dep => {
         if ('owner' in dep && dep.owner === scope) {
           queryCache.untrack(queryEntry, dep)
@@ -138,7 +147,7 @@ export function defineColadaLoader<Data>(
       const { ext } = entry
       if (entry.route.value !== to) {
         // refetch only if a tracked property of the route changed
-        const tracked = entry.tracked.get(toCacheKey(toValueWithArgs(key, to)))
+        const tracked = entry.tracked.get(toCacheKey(getQueryOptions(to).key))
         const from = entry.route.value
         // `from` is settled: drop its listener so routes do not retain each other
         from.meta[ABORT_CONTROLLER_KEY]?.signal.removeEventListener(
@@ -204,58 +213,29 @@ export function defineColadaLoader<Data>(
 }
 
 /**
- * Base type with docs for the options of `defineColadaLoader`.
- * @internal
+ * Function that returns the query options of a Pinia Colada data loader for a
+ * route, e.g. created with `defineQueryOptions()`.
+ *
+ * @param to - Route to load the data
+ * @param context - Context of the navigation
  */
-export interface _DefineDataColadaLoaderOptions_Common<
+export type DefineColadaLoaderQueryOptions<
   Name extends keyof RouteMap,
   Data,
-> extends Omit<UseQueryOptions<Data, ErrorDefault, Data>, 'query' | 'key'> {
-  /**
-   * Key associated with the data and passed to pinia colada
-   * @param to - Route to load the data
-   */
-  key: EntryKey | ((to: RouteLocationNormalizedLoaded<Name>) => EntryKey)
-
-  /**
-   * Function that returns a promise with the data.
-   */
-  query: DefineLoaderFn<
-    Data,
-    DataColadaLoaderContext,
-    RouteLocationNormalizedLoaded<Name>
-  >
-}
+> = (
+  to: RouteLocationNormalizedLoaded<Name>,
+  context: DataColadaLoaderContext
+) => DefineQueryOptions<Data, ErrorDefault, any>
 
 /**
  * Options for `defineColadaLoader` when the data is possibly `undefined`.
  */
-export interface DefineDataColadaLoaderOptions_LaxData<
-  Name extends keyof RouteMap,
-  Data,
->
-  extends
-    _DefineDataColadaLoaderOptions_Common<Name, Data>,
-    DefineDataLoaderOptionsBase_LaxData {}
+export interface DefineDataColadaLoaderOptions_LaxData extends DefineDataLoaderOptionsBase_LaxData {}
 
 /**
  * Options for `defineColadaLoader` when the data is always defined.
  */
-export interface DefineDataColadaLoaderOptions_DefinedData<
-  Name extends keyof RouteMap,
-  Data,
->
-  extends
-    _DefineDataColadaLoaderOptions_Common<Name, Data>,
-    DefineDataLoaderOptionsBase_DefinedData {}
-
-/**
- * @deprecated Use {@link `DefineDataColadaLoaderOptions_LaxData`} instead.
- */
-export type DefineDataColadaLoaderOptions<
-  Name extends keyof RouteMap,
-  Data,
-> = DefineDataColadaLoaderOptions_LaxData<Name, Data>
+export interface DefineDataColadaLoaderOptions_DefinedData extends DefineDataLoaderOptionsBase_DefinedData {}
 
 /**
  * @internal

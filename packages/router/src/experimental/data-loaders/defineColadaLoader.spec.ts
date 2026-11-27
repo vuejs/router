@@ -32,7 +32,13 @@ describe(
 
     testDefineLoader(
       ({ fn, key, ...options }) =>
-        defineColadaLoader({ ...options, query: fn, key: () => [key ?? 'id'] }),
+        defineColadaLoader(
+          (to, context) => ({
+            key: [key ?? 'id'],
+            query: () => fn(to, context),
+          }),
+          options
+        ),
       {
         beforeEach() {
           const pinia = createPinia()
@@ -115,10 +121,10 @@ describe(
 
     it('avoids refetching fresh data when navigating', async () => {
       const query = vi.fn().mockResolvedValue('data')
-      const useData = defineColadaLoader({
-        query,
-        key: to => [to.query.q as string],
-      })
+      const useData = defineColadaLoader(to => ({
+        key: [to.query.q as string],
+        query: () => query(to),
+      }))
 
       const { router } = singleLoaderOneRoute(useData)
 
@@ -138,19 +144,19 @@ describe(
 
     it('avoids refetching fresh nested data when the parent reruns', async () => {
       const nestedQuery = vi.fn().mockResolvedValue('nested')
-      const useNested = defineColadaLoader({
-        query: nestedQuery,
-        key: to => ['nested', to.query.q as string],
-      })
+      const useNested = defineColadaLoader(to => ({
+        key: ['nested', to.query.q as string],
+        query: () => nestedQuery(to),
+      }))
       const parentQuery = vi.fn(async (to: RouteLocationNormalizedLoaded) => {
         await useNested()
         return to.query.v
       })
       const { router } = singleLoaderOneRoute(
-        defineColadaLoader({
-          query: parentQuery,
-          key: to => ['parent', to.query.v as string],
-        })
+        defineColadaLoader(to => ({
+          key: ['parent', to.query.v as string],
+          query: () => parentQuery(to),
+        }))
       )
 
       await router.push('/fetch?q=1&v=1')
@@ -167,7 +173,10 @@ describe(
         return `${k}:${to.query.x}`
       })
       const { router, useData } = singleLoaderOneRoute(
-        defineColadaLoader({ query, key: to => [to.query.k as string] })
+        defineColadaLoader(to => ({
+          key: [to.query.k as string],
+          query: () => query(to),
+        }))
       )
 
       await router.push('/fetch?k=a&x=1')
@@ -189,10 +198,7 @@ describe(
       const query = vi.fn(async () => 'data')
 
       const { router, useData } = singleLoaderOneRoute(
-        defineColadaLoader({
-          query,
-          key: () => ['id'],
-        })
+        defineColadaLoader(to => ({ key: ['id'], query }))
       )
 
       await router.push('/fetch?v=1')
@@ -225,10 +231,7 @@ describe(
       )
 
       const { router, useData } = singleLoaderOneRoute(
-        defineColadaLoader({
-          query,
-          key: () => ['id'],
-        })
+        defineColadaLoader(to => ({ key: ['id'], query: () => query(to) }))
       )
 
       await router.push('/fetch?v=1')
@@ -245,13 +248,38 @@ describe(
       expect(loaderData.value).toBe('1')
     })
 
+    it('does not store the abort of a cancelled navigation in the cache', async () => {
+      const { router, app } = singleLoaderOneRoute(
+        defineColadaLoader(to => ({
+          key: ['id', to.query.v as string],
+          query: ({ signal }) =>
+            to.query.v !== '2'
+              ? Promise.resolve(to.query.v)
+              : new Promise((_, reject) => {
+                  signal.addEventListener('abort', () => reject(signal.reason))
+                }),
+        }))
+      )
+
+      await router.push('/fetch?v=1')
+      // a new navigation cancels this one while its query is pending
+      router.push('/fetch?v=2')
+      await vi.advanceTimersByTimeAsync(0)
+      await router.push('/fetch?v=3')
+      await vi.advanceTimersByTimeAsync(0)
+
+      const entry = app.runWithContext(() => useQueryCache().get(['id', '2']))
+      expect(entry).toBeDefined()
+      expect(entry!.state.value.error).toBe(null)
+    })
+
     it('hydrates without calling the query on the initial navigation', async () => {
       // setups the loader
       const query = vi.fn().mockResolvedValue('data')
-      const useData = defineColadaLoader({
-        query,
-        key: () => ['id'],
-      })
+      const useData = defineColadaLoader(to => ({
+        key: ['id'],
+        query: () => query(to),
+      }))
 
       // sets up the page
       let useDataResult: ReturnType<typeof useData> | undefined
@@ -307,10 +335,10 @@ describe(
     it('restores the context after using a loader', async () => {
       const query = vi.fn().mockResolvedValue('data')
 
-      const useData = defineColadaLoader({
-        query,
-        key: () => ['id'],
-      })
+      const useData = defineColadaLoader(to => ({
+        key: ['id'],
+        query: () => query(to),
+      }))
 
       let useDataResult: ReturnType<typeof useData> | undefined
       const component = defineComponent({
@@ -361,14 +389,14 @@ describe(
 
     it('can refetch nested loaders on invalidation', async () => {
       const nestedQuery = vi.fn(async () => [{ id: 0 }, { id: 1 }])
-      const useListData = defineColadaLoader({
+      const useListData = defineColadaLoader(() => ({
+        key: ['items'],
         query: nestedQuery,
-        key: () => ['items'],
-      })
+      }))
 
-      const useDetailData = defineColadaLoader({
-        key: to => ['items', { id: to.params.id as string }],
-        async query(to) {
+      const useDetailData = defineColadaLoader(to => ({
+        key: ['items', { id: to.params.id as string }],
+        async query() {
           const list = await useListData()
           const item = list.find(
             item => String(item.id) === (to.params.id as string)
@@ -378,7 +406,7 @@ describe(
           }
           return { ...item, when: Date.now() }
         },
-      })
+      }))
 
       const component = defineComponent({
         setup() {
@@ -419,15 +447,15 @@ describe(
 
     it('marks loader queries as inactive when navigating away from the page', async () => {
       // Create two loaders with different keys
-      const useLoader1 = defineColadaLoader({
-        query: async () => 'data-1',
+      const useLoader1 = defineColadaLoader(() => ({
         key: ['page-1'],
-      })
+        query: async () => 'data-1',
+      }))
 
-      const useLoader2 = defineColadaLoader({
-        query: async () => 'data-2',
+      const useLoader2 = defineColadaLoader(() => ({
         key: ['page-2'],
-      })
+        query: async () => 'data-2',
+      }))
 
       // Create components for each page
       const page1 = defineComponent({
@@ -498,10 +526,10 @@ describe(
     })
 
     it('marks loader queries as inactive when navigating between pages with different parameters', async () => {
-      const useLoaderWithParam = defineColadaLoader({
-        query: async to => `data-${to.params.id as string}`,
-        key: to => ['page-loader', to.params.id as string],
-      })
+      const useLoaderWithParam = defineColadaLoader(to => ({
+        key: ['page-loader', to.params.id as string],
+        query: async () => `data-${to.params.id as string}`,
+      }))
 
       const router = getRouter()
       router.addRoute({
@@ -556,12 +584,14 @@ describe(
     it('keeps the data of the current route when a lazy navigation is cancelled', async () => {
       const bPending = Promise.withResolvers<string>()
       // ignores the abort signal
-      const useItem = defineColadaLoader({
-        lazy: true,
-        query: async to =>
-          to.params.id === 'b' ? bPending.promise : `item-${to.params.id}`,
-        key: to => ['item', to.params.id as string],
-      })
+      const useItem = defineColadaLoader(
+        to => ({
+          key: ['item', to.params.id as string],
+          query: async () =>
+            to.params.id === 'b' ? bPending.promise : `item-${to.params.id}`,
+        }),
+        { lazy: true }
+      )
 
       const router = getRouter()
       router.addRoute({
@@ -603,16 +633,16 @@ describe(
 
     it('syncs external changes after a loader redirects to the current location', async () => {
       const { router, useData, app } = singleLoaderOneRoute(
-        defineColadaLoader({ query: async () => 'data', key: () => ['id'] })
+        defineColadaLoader(() => ({ key: ['id'], query: async () => 'data' }))
       )
       router.addRoute({
         path: '/redirect',
         meta: {
           loaders: [
-            defineColadaLoader({
+            defineColadaLoader(() => ({
+              key: ['redirect'],
               query: async () => reroute('/fetch'),
-              key: () => ['redirect'],
-            }),
+            })),
           ],
         },
         component: defineComponent({ template: 'redirect' }),
@@ -632,7 +662,7 @@ describe(
       v8.setFlagsFromString('--expose-gc')
       const gc = runInNewContext('gc') as () => void
       const { router } = singleLoaderOneRoute(
-        defineColadaLoader({ query: async () => 'data', key: () => ['id'] })
+        defineColadaLoader(() => ({ key: ['id'], query: async () => 'data' }))
       )
 
       await router.push('/fetch?v=0')
