@@ -231,6 +231,35 @@ describe('MatcherPatternPathDynamic', () => {
     expect(pattern.build({ teamId: [] })).toBe('/teams/')
   })
 
+  it('can ignore the trailing slash', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/teams(?:\/([^/]+?))?\/?$/i,
+      { teamId: [undefined, false, true] },
+      ['teams', 1],
+      null
+    )
+
+    expect(pattern.match('/teams/123')).toEqual({ teamId: '123' })
+    expect(pattern.match('/teams/123/')).toEqual({ teamId: '123' })
+    expect(pattern.match('/teams')).toEqual({ teamId: null })
+    expect(pattern.match('/teams/')).toEqual({ teamId: null })
+    expect(pattern.build({ teamId: '123' })).toBe('/teams/123')
+    expect(pattern.build({ teamId: null })).toBe('/teams')
+  })
+
+  it('can ignore the trailing slash of a static path', () => {
+    const pattern = new MatcherPatternPathDynamic(
+      /^\/teams\/?$/i,
+      {},
+      ['teams'],
+      null
+    )
+
+    expect(pattern.match('/teams')).toEqual({})
+    expect(pattern.match('/teams/')).toEqual({})
+    expect(pattern.build({})).toBe('/teams')
+  })
+
   it('builds a path the regexp matches when an optional param is absent', () => {
     const pattern = new MatcherPatternPathDynamic(
       /^\/item(?:\/([^/]+?))?\/foo$/i,

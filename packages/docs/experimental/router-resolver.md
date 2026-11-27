@@ -164,6 +164,28 @@ definePage({
 })
 ```
 
+## Trailing slash
+
+The `trailingSlash` option of the Vue Router plugin sets how the generated resolver handles a trailing slash. Catch-all routes like `[...path]` are not affected:
+
+| Value               | `/users` | `/users/` | Built path |
+| ------------------- | -------- | --------- | ---------- |
+| `'never'` (default) | matches  | no match  | `/users`   |
+| `'always'`          | no match | matches   | `/users/`  |
+| `'ignore'`          | matches  | matches   | `/users`   |
+
+```ts [vite.config.ts]
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import VueRouter from 'vue-router/vite'
+
+export default defineConfig({
+  plugins: [VueRouter({ trailingSlash: 'always' }), vue()],
+})
+```
+
+The router does not redirect a path that does not match. If you need a redirect, add it yourself, for example on your server.
+
 ## Passing params as props
 
 Use `props` in `definePage()` to pass props to the page component. It applies only to the view of the page component. For example, `props` in `index@sidebar.vue` applies to the `sidebar` view:

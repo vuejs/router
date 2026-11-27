@@ -242,6 +242,17 @@ export interface Options {
   caseSensitive?: boolean
 
   /**
+   * How the generated resolver (`vue-router/auto-resolver`) handles trailing
+   * slashes. `'always'` only matches paths with a trailing slash, `'never'`
+   * only matches paths without one, and `'ignore'` matches both. Built paths
+   * have a trailing slash only with `'always'`. Catch-all routes ignore this
+   * option. The router never redirects: do it yourself if needed.
+   *
+   * @default `'never'`
+   */
+  trailingSlash?: 'always' | 'never' | 'ignore'
+
+  /**
    * Whether to watch the files for changes.
    *
    * Defaults to `true` unless the `CI` environment variable is set.
@@ -328,6 +339,7 @@ export const DEFAULT_OPTIONS = {
   },
   watch: !process.env.CI,
   caseSensitive: true,
+  trailingSlash: 'never',
   experimental: {},
 } satisfies Options
 

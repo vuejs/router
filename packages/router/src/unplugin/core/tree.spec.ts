@@ -1466,6 +1466,21 @@ describe('Tree', () => {
       expect(node.matcherPatternPathDynamicParts).toEqual([1, 'foo'])
     })
 
+    it('ends with the trailingSlash option', () => {
+      const always = { options: { trailingSlash: 'always' as const } }
+      checkRegexp('[[lang]]', String.raw`/^\/(?:([^/]+?)\/)?$/`, always)
+      checkRegexp(
+        '[[a]]/[[b]]',
+        String.raw`/^(?:\/([^/]+?))?(?:\/([^/]+?))?\/$/`,
+        always
+      )
+      checkRegexp('[[...path]]', String.raw`/^\/(.*)?$/`, always)
+      checkRegexp('[...path]/index', String.raw`/^\/(.*)$/`, always)
+      checkRegexp('a/[[id]]', String.raw`/^\/a(?:\/([^/]+?))?\/?$/`, {
+        options: { trailingSlash: 'ignore' },
+      })
+    })
+
     describe('path override', () => {
       it.each<[string, string, string, TreeNodeValueMatcherPart]>([
         ['[id]', '/foo/:id', String.raw`/^\/foo\/([^/]+?)$/`, ['foo', 1]],
@@ -1628,6 +1643,12 @@ describe('Tree', () => {
 
     it('is false when a param sub segment follows the splat', () => {
       checkEndsWithSplat('[...path]-[id]', false)
+    })
+
+    it('is true for an index or group child of a splat segment', () => {
+      checkEndsWithSplat('[...path]/index', true)
+      checkEndsWithSplat('a/[...path]/(group)', true)
+      checkEndsWithSplat('[...path]/(group)/index', true)
     })
 
     it('is false for a child of a splat segment', () => {

@@ -2016,3 +2016,138 @@ describe('path params custom regexp', () => {
     `)
   })
 })
+
+describe('trailingSlash', () => {
+  function generate(trailingSlash: 'always' | 'ignore') {
+    const options = resolveOptions({ trailingSlash })
+    const tree = new PrefixTree(options)
+    tree.insert('index', 'index.vue')
+    tree.insert('users', 'users.vue')
+    tree.insert('users/[id]', 'users/[id].vue')
+    tree.insert('[...path]', '[...path].vue')
+    return generateRouteResolver(tree, options, new ImportsMap(), new Map())
+  }
+
+  it('always requires a trailing slash', () => {
+    expect(generate('always')).toMatchInlineSnapshot(`
+      "
+      const __route_0 = normalizeRouteRecord({
+        name: '/',
+        path: new MatcherPatternPathStatic('/'),
+        components: {
+          'default': () => import('index.vue')
+        },
+      })
+
+      const __route_1 = normalizeRouteRecord({
+        name: '/[...path]',
+        path: new MatcherPatternPathDynamic(
+          /^\\/(.*)$/,
+          {
+            path: [/* no parser */],
+          },
+          [0],
+          null,
+        ),
+        components: {
+          'default': () => import('[...path].vue')
+        },
+      })
+
+      const __route_2 = normalizeRouteRecord({
+        name: '/users',
+        path: new MatcherPatternPathStatic('/users/'),
+        components: {
+          'default': () => import('users.vue')
+        },
+      })
+      const __route_3 = normalizeRouteRecord({
+        name: '/users/[id]',
+        path: new MatcherPatternPathDynamic(
+          /^\\/users\\/([^/]+?)\\/$/,
+          {
+            id: [/* no parser */],
+          },
+          ["users",1],
+          true,
+        ),
+        components: {
+          'default': () => import('users/[id].vue')
+        },
+        parent: __route_2,
+      })
+
+      export const resolver = createFixedResolver([
+        __route_3,  // /users/:id
+        __route_2,  // /users
+        __route_0,  // /
+        __route_1,  // /:path(.*)
+      ])
+      "
+    `)
+  })
+
+  it('ignores the trailing slash', () => {
+    expect(generate('ignore')).toMatchInlineSnapshot(`
+      "
+      const __route_0 = normalizeRouteRecord({
+        name: '/',
+        path: new MatcherPatternPathStatic('/'),
+        components: {
+          'default': () => import('index.vue')
+        },
+      })
+
+      const __route_1 = normalizeRouteRecord({
+        name: '/[...path]',
+        path: new MatcherPatternPathDynamic(
+          /^\\/(.*)$/,
+          {
+            path: [/* no parser */],
+          },
+          [0],
+          null,
+        ),
+        components: {
+          'default': () => import('[...path].vue')
+        },
+      })
+
+      const __route_2 = normalizeRouteRecord({
+        name: '/users',
+        path: new MatcherPatternPathDynamic(
+          /^\\/users\\/?$/,
+          {},
+          ["users"],
+          null,
+        ),
+        components: {
+          'default': () => import('users.vue')
+        },
+      })
+      const __route_3 = normalizeRouteRecord({
+        name: '/users/[id]',
+        path: new MatcherPatternPathDynamic(
+          /^\\/users\\/([^/]+?)\\/?$/,
+          {
+            id: [/* no parser */],
+          },
+          ["users",1],
+          null,
+        ),
+        components: {
+          'default': () => import('users/[id].vue')
+        },
+        parent: __route_2,
+      })
+
+      export const resolver = createFixedResolver([
+        __route_3,  // /users/:id
+        __route_2,  // /users
+        __route_0,  // /
+        __route_1,  // /:path(.*)
+      ])
+      "
+    `)
+  })
+})

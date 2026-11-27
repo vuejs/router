@@ -474,7 +474,6 @@ export class TreeNode {
         // if the only part of the segment is an optional (can be repeatable) param
         isOptionalSegment
       ) {
-        // TODO: tweak if trailingSlash
         re += `(?:\\/${
           // we remove the ? at the end because we add it later
           segmentRe.slice(0, -1)
@@ -489,11 +488,25 @@ export class TreeNode {
       // Avoid adding a leading slash if the first segment
       // is an optional segment that already includes it
       (re.startsWith('(?:\\/') ? '' : '\\/') +
-      // TODO: trailingSlash
       re.replace(ESCAPED_TRAILING_SLASH_RE, '')
 
-    if (onlyOptionalParams && re.startsWith('(?:\\/')) {
-      // Match / when all params are absent. The matcher rejects other trailing slashes.
+    // a trailing splat already matches any trailing slash
+    const trailingSlash = !this.endsWithSplat && this.options.trailingSlash
+    if (trailingSlash === 'always') {
+      // the root path already ends with a slash
+      if (re !== '\\/') {
+        re =
+          onlyOptionalParams && !re.startsWith('(?:\\/')
+            ? // a single optional param: match / or /value/
+              `\\/(?:${re.slice(2, -1)}\\/)?`
+            : re + '\\/'
+      }
+    } else if (
+      trailingSlash === 'ignore' ||
+      (onlyOptionalParams && re.startsWith('(?:\\/'))
+    ) {
+      // with only optional params, match / when all params are absent. The
+      // matcher rejects other trailing slashes.
       re += '\\/?'
     }
 
@@ -512,11 +525,16 @@ export class TreeNode {
 
   /**
    * True if the last segment of the path is a splat (catch-all) param e.g.
-   * /some/thing/:path(.*). Useful to compute the trailing slash behavior of
+   * /some/thing/:path(.*). It includes parent segments, so an index child of a
+   * splat also ends with it. Useful to compute the trailing slash behavior of
    * the route.
    */
   get endsWithSplat(): boolean {
-    const lastSegment = this.value.pathSubSegments.at(-1)?.at(-1)
+    const lastSegment = this._pathSegments
+      // find the last non-empty segment
+      .findLast(subSegments => subSegments.length > 0)
+      // and check if it's a splat param
+      ?.at(-1)
     return !!lastSegment && isTreePathParam(lastSegment) && lastSegment.isSplat
   }
 

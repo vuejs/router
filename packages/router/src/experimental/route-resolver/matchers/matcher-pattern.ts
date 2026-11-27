@@ -182,7 +182,7 @@ export class MatcherPatternPathDynamic<
    * @param re - regex to match the path against
    * @param params - object of param parsers as {@link MatcherPatternPathDynamic_ParamOptions}
    * @param pathParts - array of path parts, where strings are static parts, 1 are regular params, and 0 are splat params (not encode slash)
-   * @param trailingSlash - whether the path should end with a trailing slash, null means "do not care" (for trailing splat params)
+   * @param trailingSlash - whether the path should end with a trailing slash, null means "do not care" (e.g. trailing splat params)
    */
   constructor(
     readonly re: RegExp,
@@ -303,12 +303,12 @@ export class MatcherPatternPathDynamic<
 
     /**
      * If the last part of the path is a splat param and its value is empty, it gets
-     * filteretd out, resulting in a path that doesn't end with a `/` and doesn't even match
+     * filtered out, resulting in a path that doesn't end with a `/` and doesn't even match
      * with the original splat path: e.g. /teams/[...pathMatch] does not match /teams, so it makes
      * no sense to build a path it cannot match.
      */
     return this.trailingSlash == null
-      ? path + (!value && path.at(-1) !== '/' ? '/' : '')
+      ? path + (!value && !this.re.test(path) ? '/' : '')
       : path.replace(TRAILING_SLASHES_RE, this.trailingSlash ? '/' : '') || '/'
   }
 }
