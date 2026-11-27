@@ -13,16 +13,41 @@ const BASE_PARAM_PATTERN = '[^/]+?'
 const REGEX_CHARS_RE = /[.+*?^${}()[\]/\\|]/g
 
 /**
+ * Options of {@link parseClassicPath}. They mirror the options of the Vue
+ * Router plugin, so runtime paths behave like the generated ones.
+ */
+export interface ClassicPathOptions {
+  /**
+   * Match paths case sensitively.
+   *
+   * @default `false`
+   */
+  caseSensitive?: boolean
+
+  /**
+   * How to handle trailing slashes. `'always'` only matches paths with a
+   * trailing slash, `'never'` only matches paths without one, and `'ignore'`
+   * matches both. Built paths have a trailing slash only with `'always'`. A
+   * trailing slash in the parsed path is ignored. Paths ending with a splat
+   * param ignore this option.
+   *
+   * @default `'never'`
+   */
+  trailingSlash?: 'always' | 'never' | 'ignore'
+}
+
+/**
  * Parses a path written with the classic route syntax (e.g. `/users/:id(\\d+)`,
  * `/:pathMatch(.*)*`) into a {@link MatcherPatternPathStatic} or a
- * {@link MatcherPatternPathDynamic}. The resulting pattern is strict (a
- * trailing slash must match the path) and case insensitive. A param with a
- * `(.*)` regexp is a splat: its slashes are not encoded.
+ * {@link MatcherPatternPathDynamic}. A param with a `(.*)` regexp is a splat:
+ * its slashes are not encoded.
  *
  * @param path - absolute path with the classic syntax
+ * @param options - case sensitivity and trailing slash handling
  */
 export function parseClassicPath(
-  path: string
+  path: string,
+  { caseSensitive, trailingSlash = 'never' }: ClassicPathOptions = {}
 ):
   | MatcherPatternPathStatic
   | MatcherPatternPathDynamic<
@@ -32,27 +57,19 @@ export function parseClassicPath(
   const params: Record<string, MatcherPatternPathDynamic_ParamOptions> = {}
   const pathParts: Array<string | number | Array<string | number>> = []
   let re = '^'
-  let trailingSlash: boolean | null = false
   let hasParams = false
+  let endsWithSplat = false
   // `/:a?/:b*` must still match `/`
   let allOptional = true
 
-  for (let i = 0; i < segments.length; i++) {
-    const segment = segments[i]
-    const isLastSegment = i === segments.length - 1
+  for (const segment of segments) {
     // a trailing slash creates an empty segment
-    if (!segment.length) {
-      if (isLastSegment && i) {
-        re += '/'
-        trailingSlash = true
-        allOptional = false
-      }
-      continue
-    }
+    if (!segment.length) continue
 
     const parts: Array<string | number> = []
     for (let j = 0; j < segment.length; j++) {
       const token = segment[j]
+      endsWithSplat = false
       if (token.type === TokenType.Static) {
         if (!j) re += '/'
         re += token.value.replace(REGEX_CHARS_RE, '\\$&')
@@ -89,27 +106,40 @@ export function parseClassicPath(
 
         params[value] = [undefined, repeatable, optional]
         parts.push(isSplat ? 0 : 1)
-        // a trailing splat can match a trailing slash
-        if (isSplat && isLastSegment && j === segment.length - 1) {
-          trailingSlash = null
-        }
+        endsWithSplat = isSplat
       }
     }
     pathParts.push(parts.length === 1 ? parts[0] : parts)
   }
 
-  // when all the params are optional, the path can be empty but must match `/`
-  // the matcher still rejects other trailing slashes
-  if (hasParams && allOptional) re += '/?'
+  const ignore = trailingSlash === 'ignore'
+  const always = trailingSlash === 'always'
 
-  return hasParams
-    ? new MatcherPatternPathDynamic(
-        new RegExp(re + '$', 'i'),
-        params,
-        pathParts,
-        trailingSlash
+  if (!hasParams) {
+    const staticPath = '/' + pathParts.join('/')
+    const isRoot = staticPath === '/'
+    // the static matcher is strict, it cannot ignore the trailing slash
+    if (isRoot || !ignore) {
+      return new MatcherPatternPathStatic(
+        staticPath + (always && !isRoot ? '/' : ''),
+        !caseSensitive
       )
-    : new MatcherPatternPathStatic(
-        '/' + pathParts.join('/') + (trailingSlash ? '/' : '')
-      )
+    }
+  }
+
+  // a trailing splat already matches any trailing slash
+  if (always && !endsWithSplat) {
+    // when all the params are optional, `/` must still match
+    re = allOptional ? `^(?:${re.slice(1)})?/` : re + '/'
+  } else if (allOptional || (ignore && !endsWithSplat)) {
+    // with only optional params, the matcher rejects other trailing slashes
+    re += '/?'
+  }
+
+  return new MatcherPatternPathDynamic(
+    new RegExp(re + '$', caseSensitive ? '' : 'i'),
+    params,
+    pathParts,
+    endsWithSplat || ignore ? null : always
+  )
 }

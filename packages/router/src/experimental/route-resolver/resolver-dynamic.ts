@@ -15,7 +15,10 @@ import {
   type MatcherPatternPath,
   type MatcherPatternPathDynamic_ParamOptions,
 } from './matchers/matcher-pattern'
-import { parseClassicPath } from './matchers/matcher-pattern-path-classic'
+import {
+  parseClassicPath,
+  type ClassicPathOptions,
+} from './matchers/matcher-pattern-path-classic'
 import {
   comparePathScore,
   getPathScore,
@@ -107,6 +110,8 @@ export interface EXPERIMENTAL_ResolverDynamic<
  * inherit the path of its parent.
  *
  * @param records - initial records
+ * @param options - how string paths match. Use the same values as the
+ * options of the Vue Router plugin if you also add generated records.
  *
  * @example
  * ```ts
@@ -129,7 +134,8 @@ export interface EXPERIMENTAL_ResolverDynamic<
  * ```
  */
 export function createDynamicResolver(
-  records: EXPERIMENTAL_ResolverDynamicRecordRaw[] = []
+  records: EXPERIMENTAL_ResolverDynamicRecordRaw[] = [],
+  options?: ClassicPathOptions
 ): EXPERIMENTAL_ResolverDynamic {
   type TRecord = EXPERIMENTAL_RouteRecordNormalized_Matchable
   // ordered matchable records, aliases included
@@ -184,7 +190,7 @@ export function createDynamicResolver(
         ? raw
         : normalizeRouteRecord(
             (typeof raw.path === 'string'
-              ? { ...raw, path: parseClassicPath(raw.path) }
+              ? { ...raw, path: parseClassicPath(raw.path, options) }
               : raw) as EXPERIMENTAL_RouteRecord_Matchable
           )
     if (!record.aliasOf) {

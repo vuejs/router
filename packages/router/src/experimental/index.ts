@@ -44,7 +44,10 @@ export {
   type EXPERIMENTAL_ResolverDynamic,
   type EXPERIMENTAL_ResolverDynamicRecordRaw,
 } from './route-resolver/resolver-dynamic'
-export { parseClassicPath } from './route-resolver/matchers/matcher-pattern-path-classic'
+export {
+  parseClassicPath,
+  type ClassicPathOptions,
+} from './route-resolver/matchers/matcher-pattern-path-classic'
 export {
   MatcherPatternPathStatic,
   MatcherPatternPathDynamic,

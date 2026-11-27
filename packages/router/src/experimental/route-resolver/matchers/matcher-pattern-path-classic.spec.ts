@@ -25,16 +25,78 @@ describe('parseClassicPath', () => {
     expect(parseClassicPath('/').build({})).toBe('/')
   })
 
-  it('keeps a trailing slash', () => {
-    const pattern = parseClassicPath('/users/')
-    expect(pattern.match('/users/')).toEqual({})
-    expect(pattern.match('/users')).toBeNull()
-    expect(pattern.build({})).toBe('/users/')
+  it('matches case sensitively with caseSensitive', () => {
+    const options = { caseSensitive: true }
+    expect(parseClassicPath('/users', options).match('/Users')).toBeNull()
+    expect(parseClassicPath('/users/:id', options).match('/Users/1')).toBeNull()
+    expect(parseClassicPath('/users/:id', options).match('/users/1')).toEqual({
+      id: '1',
+    })
+  })
 
-    const dynamic = parseClassicPath('/users/:id/')
-    expect(dynamic.match('/users/1/')).toEqual({ id: '1' })
-    expect(dynamic.match('/users/1')).toBeNull()
-    expect(dynamic.build({ id: '1' })).toBe('/users/1/')
+  it('ignores a trailing slash in the parsed path', () => {
+    expect(parseClassicPath('/users/').match('/users')).toEqual({})
+    expect(parseClassicPath('/users/:id/').match('/users/1')).toEqual({
+      id: '1',
+    })
+  })
+
+  describe('trailingSlash: always', () => {
+    const options = { trailingSlash: 'always' } as const
+
+    it('requires a trailing slash', () => {
+      const pattern = parseClassicPath('/users', options)
+      expect(pattern.match('/users/')).toEqual({})
+      expect(pattern.match('/users')).toBeNull()
+      expect(pattern.build({})).toBe('/users/')
+
+      const dynamic = parseClassicPath('/users/:id', options)
+      expect(dynamic.match('/users/1/')).toEqual({ id: '1' })
+      expect(dynamic.match('/users/1')).toBeNull()
+      expect(dynamic.build({ id: '1' })).toBe('/users/1/')
+    })
+
+    it('matches / when all the params are optional', () => {
+      const pattern = parseClassicPath('/:a?/:b*', options)
+      expect(pattern.match('/')).toEqual({ a: null, b: [] })
+      expect(pattern.match('/1/2/')).toEqual({ a: '1', b: ['2'] })
+      expect(pattern.match('/1')).toBeNull()
+      expect(pattern.build({ a: '1', b: [] })).toBe('/1/')
+    })
+
+    it('keeps the root path', () => {
+      expect(parseClassicPath('/', options).match('/')).toEqual({})
+      expect(parseClassicPath('/', options).build({})).toBe('/')
+    })
+  })
+
+  describe('trailingSlash: ignore', () => {
+    const options = { trailingSlash: 'ignore' } as const
+
+    it('matches with and without a trailing slash', () => {
+      const pattern = parseClassicPath('/users', options)
+      expect(pattern.match('/users')).toEqual({})
+      expect(pattern.match('/users/')).toEqual({})
+      expect(pattern.build({})).toBe('/users')
+
+      const dynamic = parseClassicPath('/users/:id', options)
+      expect(dynamic.match('/users/1')).toEqual({ id: '1' })
+      expect(dynamic.match('/users/1/')).toEqual({ id: '1' })
+      expect(dynamic.build({ id: '1' })).toBe('/users/1')
+    })
+
+    it('keeps the root path', () => {
+      expect(parseClassicPath('/', options).match('/')).toEqual({})
+    })
+  })
+
+  it('lets a trailing splat match any trailing slash', () => {
+    for (const trailingSlash of ['always', 'never', 'ignore'] as const) {
+      const pattern = parseClassicPath('/:pathMatch(.*)', { trailingSlash })
+      expect(pattern.match('/a/')).toEqual({ pathMatch: 'a/' })
+      expect(pattern.match('/a')).toEqual({ pathMatch: 'a' })
+      expect(pattern.build({ pathMatch: 'a' })).toBe('/a')
+    }
   })
 
   it('parses params', () => {

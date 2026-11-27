@@ -66,14 +66,12 @@ describe('createDynamicResolver types', () => {
       components: { default: User },
       props: { default: () => ({ id: 1 }) },
     })
+    // @ts-expect-error: id must be a number
     resolver.addRoute({
       name: 'user',
       path: '/users/:id',
       components: { default: User },
-      props: {
-        // @ts-expect-error: id must be a number
-        default: () => ({ id: 'a' }),
-      },
+      props: { default: () => ({ id: 'a' }) },
     })
   })
 })

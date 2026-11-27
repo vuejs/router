@@ -174,4 +174,16 @@ describe('createDynamicResolver', () => {
       'team',
     ])
   })
+
+  it('parses string paths with the options', () => {
+    const resolver = createDynamicResolver(
+      [{ name: 'user', path: '/users/:id', components }],
+      { caseSensitive: true, trailingSlash: 'always' }
+    )
+    resolver.addRoute({ name: 'about', path: '/about', components })
+    expect(resolver.resolve('/users/1/').name).toBe('user')
+    expect(resolver.resolve('/Users/1/')).toMatchObject(NO_MATCH_LOCATION)
+    expect(resolver.resolve('/about/').name).toBe('about')
+    expect(resolver.resolve('/about')).toMatchObject(NO_MATCH_LOCATION)
+  })
 })
