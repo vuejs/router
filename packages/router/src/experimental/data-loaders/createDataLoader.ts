@@ -411,7 +411,8 @@ export const toLazyValue = (
 
 export interface DataLoaderContextBase {
   /**
-   * Signal associated with the current navigation. It is aborted when the navigation is canceled or an error occurs.
+   * Signal associated with the current navigation, or undefined outside of
+   * one. It is aborted when the navigation is canceled or an error occurs.
    */
   signal: AbortSignal | undefined
 }
