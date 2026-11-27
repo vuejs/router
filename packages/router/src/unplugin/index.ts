@@ -17,6 +17,7 @@ import { createViteContext } from './core/vite'
 import { join } from 'pathe'
 import { appendExtensionListToPattern } from './core/utils'
 import { createAutoExportPlugin } from '../experimental/data-loaders/auto-exports'
+import { diagnostics } from './diagnostics'
 
 export type {
   Options,
@@ -45,6 +46,7 @@ export default createUnplugin<Options | undefined>((opt = {}, meta) => {
   const ctx = createRoutesContext(options)
   // watchers only update a dev server, builds close them in `buildEnd()`
   let isDevServer = false
+  let warnedCaseSensitive = false
 
   function getVirtualId(id: string) {
     if (options._inspect) return id
@@ -146,6 +148,10 @@ export default createUnplugin<Options | undefined>((opt = {}, meta) => {
 
           // vue-router/auto-resolver
           if (resolvedId === MODULE_RESOLVER_PATH) {
+            if (opt.caseSensitive == null && !warnedCaseSensitive) {
+              warnedCaseSensitive = true
+              diagnostics.VUE_ROUTER_B0030()
+            }
             ROUTES_LAST_LOAD_TIME.update()
             return ctx.generateResolver()
           }

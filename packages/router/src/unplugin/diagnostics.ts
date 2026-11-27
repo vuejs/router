@@ -184,6 +184,12 @@ export const diagnostics = /*#__PURE__*/ defineDiagnostics({
         `Rename the group file to "${p.group}/_parent.vue" so only its children are matched.`,
     },
 
+    // --- index.ts ---
+    VUE_ROUTER_B0030: {
+      why: '`caseSensitive` will default to `true` in the next major.',
+      fix: 'Set `caseSensitive` to silence this warning.',
+    },
+
     // --- core/treeNodeValue.ts ---
     VUE_ROUTER_B0022: {
       why: (p: {

@@ -13,7 +13,7 @@ import { generateAliasWarnings } from './generateAliasWarnings'
 import { mockWarn } from '../../tests/vitest-mock-warn'
 import type { CustomRouteBlockHashParamOptions } from '../core/customBlock'
 
-const DEFAULT_OPTIONS = resolveOptions({})
+const DEFAULT_OPTIONS = resolveOptions({ caseSensitive: true })
 let DEFAULT_STATE: Parameters<typeof generateRouteRecord>[0]['state'] = {
   id: 0,
   matchableRecords: [],
@@ -2019,7 +2019,7 @@ describe('path params custom regexp', () => {
 
 describe('trailingSlash', () => {
   function generate(trailingSlash: 'always' | 'ignore') {
-    const options = resolveOptions({ trailingSlash })
+    const options = resolveOptions({ trailingSlash, caseSensitive: true })
     const tree = new PrefixTree(options)
     tree.insert('index', 'index.vue')
     tree.insert('users', 'users.vue')

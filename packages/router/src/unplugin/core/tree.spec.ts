@@ -8,7 +8,10 @@ import { resolve } from 'pathe'
 import { mockWarn } from '../../tests/vitest-mock-warn'
 
 describe('Tree', () => {
-  const RESOLVED_OPTIONS = resolveOptions(DEFAULT_OPTIONS)
+  const RESOLVED_OPTIONS = resolveOptions({
+    ...DEFAULT_OPTIONS,
+    caseSensitive: true,
+  })
   mockWarn()
 
   it('creates an empty tree', () => {
@@ -1208,7 +1211,9 @@ describe('Tree', () => {
       }
     ) {
       const node = new PrefixTree(
-        options ? resolveOptions(options) : RESOLVED_OPTIONS
+        options
+          ? resolveOptions({ caseSensitive: true, ...options })
+          : RESOLVED_OPTIONS
       ).insert(path, path + '.vue')
       expect(node.regexp).toBe(String(expectedRe))
       if (matcherParts) {
