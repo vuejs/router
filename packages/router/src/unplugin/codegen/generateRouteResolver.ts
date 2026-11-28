@@ -12,56 +12,7 @@ import {
 } from './generateParamParsers'
 import { generatePageImport, formatMeta } from './generateRouteRecords'
 import { diagnostics } from '../diagnostics'
-
-/**
- * Compare two score sub-arrays element by element.
- * Ported from pathParserRanker.ts compareScoreArray.
- */
-function compareScoreArray(a: number[], b: number[]): number {
-  let i = 0
-  while (i < a.length && i < b.length) {
-    const diff = b[i] - a[i]
-    if (diff) return diff
-    i++
-  }
-
-  // if the shorter array is a pure static segment, it should sort first
-  // otherwise sort the longer segment first
-  if (a.length < b.length) {
-    return a.length === 1 && a[0] === 300 ? -1 : 1
-  } else if (a.length > b.length) {
-    return b.length === 1 && b[0] === 300 ? 1 : -1
-  }
-
-  return 0
-}
-
-function isLastScoreNegative(score: number[][]): boolean {
-  const last = score[score.length - 1]
-  return score.length > 0 && last[last.length - 1] < 0
-}
-
-/**
- * Compare two score arrays for sorting routes by priority.
- * Ported from pathParserRanker.ts comparePathParserScore.
- */
-function compareRouteScore(a: number[][], b: number[][]): number {
-  let i = 0
-  while (i < a.length && i < b.length) {
-    const comp = compareScoreArray(a[i], b[i])
-    if (comp) return comp
-    i++
-  }
-
-  // handle wildcard (splat) routes
-  if (Math.abs(b.length - a.length) === 1) {
-    if (isLastScoreNegative(a)) return 1
-    if (isLastScoreNegative(b)) return -1
-  }
-
-  // more segments = more specific = sort first
-  return b.length - a.length
-}
+import { comparePathScore } from '../../experimental/route-resolver/matchers/path-score'
 
 interface GenerateRouteResolverState {
   id: number
@@ -117,7 +68,7 @@ export const resolver = createFixedResolver([
 ${state.matchableRecords
   .sort(
     (a, b) =>
-      compareRouteScore(a.score, b.score) ||
+      comparePathScore(a.score, b.score) ||
       // fallback to sorting by path depth to ensure consistent order between routes with the same score
       b.path.split('/').filter(Boolean).length -
         a.path.split('/').filter(Boolean).length
