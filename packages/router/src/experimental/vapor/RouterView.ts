@@ -2,6 +2,7 @@ import {
   computed,
   createComponent,
   createDynamicComponent,
+  createSlot,
   createTemplateRefSetter,
   defineVaporComponent,
   isVaporComponent,
@@ -65,6 +66,10 @@ export const RouterViewImpl = /*#__PURE__*/ defineVaporComponent({
     const setRef = createTemplateRefSetter()
     // last created view, undefined if nothing is displayed
     let view: VaporComponentInstance | undefined
+    // `view` was created by the render that is still running
+    let isFresh = false
+    // views that have their hooks, as KeepAlive returns the ones it cached
+    const tracked = new WeakSet<VaporComponentInstance>()
 
     const settleView = () => {
       const route = routeToDisplay.value
@@ -87,37 +92,48 @@ export const RouterViewImpl = /*#__PURE__*/ defineVaporComponent({
         const Component = ViewComponent.value as VaporComponent | undefined
         if (!Component) return (view = undefined)
         // a view created but not mounted yet is reused, e.g. when read by
-        // `v-if` and `:is`
-        if (!view || view.type !== Component || view.isMounted) {
+        // `v-if` and `:is`. A hydrated view is mounted when it is created,
+        // so it is reused until its render is over.
+        if (!view || view.type !== Component || (view.isMounted && !isFresh)) {
+          isFresh = true
+          nextTick(() => (isFresh = false))
           // only read ViewComponent: a new route record with the same
           // component must reuse the view
-          view = createComponent(Component, {
-            $: [
-              () => {
-                const route = routeToDisplay.value
-                const routePropsOption =
-                  matchedRouteRef.value!.props[props.name]
-                return assign(
-                  {},
-                  routePropsOption
-                    ? routePropsOption === true
-                      ? route.params
-                      : typeof routePropsOption === 'function'
-                        ? routePropsOption(route)
-                        : routePropsOption
-                    : null,
-                  attrs
-                )
-              },
-            ],
-          })
+          view = createComponent(
+            Component,
+            {
+              $: [
+                () => {
+                  const route = routeToDisplay.value
+                  const routePropsOption =
+                    matchedRouteRef.value!.props[props.name]
+                  return assign(
+                    {},
+                    routePropsOption
+                      ? routePropsOption === true
+                        ? route.params
+                        : typeof routePropsOption === 'function'
+                          ? routePropsOption(route)
+                          : routePropsOption
+                      : null,
+                    attrs
+                  )
+                },
+              ],
+            },
+            null,
+            // the only root of this RouterView: with SSR, it hydrates the
+            // nodes the server rendered for the view
+            true
+          )
           setRef(view, viewRef)
           // VDOM component through vaporInteropPlugin
           if (!isVaporComponent(view)) settleView()
           // not cached by KeepAlive
-          else if (!view.isMounted) {
+          else if (!tracked.has(view)) {
+            tracked.add(view)
             const instance = view
-            onMounted(() => {
+            const onViewMounted = () => {
               if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && isBrowser) {
                 const record = matchedRouteRef.value
                 // @ts-expect-error: internal
@@ -129,7 +145,11 @@ export const RouterViewImpl = /*#__PURE__*/ defineVaporComponent({
                 } satisfies RouterViewDevtoolsContext
               }
               settleView()
-            }, instance)
+            }
+            // a hydrated view is already mounted: its hook would not run.
+            // Later, as this getter must not track what the hook reads.
+            if (instance.isMounted) nextTick(onViewMounted)
+            else onMounted(onViewMounted, instance)
             // a new function: the hook is wrapped once per function
             onActivated(() => settleView(), instance)
           }
@@ -141,8 +161,9 @@ export const RouterViewImpl = /*#__PURE__*/ defineVaporComponent({
       },
     }
 
+    // a slot outlet, as the server renders the slot
     return slots.default
-      ? slots.default(slotProps)
+      ? createSlot('default', { $: [() => slotProps] })
       : createDynamicComponent(() => slotProps.Component)
   },
 })

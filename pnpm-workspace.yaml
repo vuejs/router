@@ -3,15 +3,28 @@ packages:
 
 shamefullyHoist: true
 
+# TODO: remove with the pkg.pr.new versions of vue, once it is released. These
+# builds depend on each other by URL, and every one is overridden below so
+# that a single copy of each is installed.
+blockExoticSubdeps: false
+
 overrides:
   '@babel/generator': '^8.1.0'
   '@babel/types': '^8.1.0'
   '@types/node': '^26.6.6'
-  '@vue/compiler-sfc': '^3.6.0-rc.16'
-  '@vue/runtime-dom': '^3.6.0-rc.16'
-  '@vue/server-renderer': '^3.6.0-rc.16'
+  '@vue/compiler-core': 'https://pkg.pr.new/@vue/compiler-core@16435'
+  '@vue/compiler-dom': 'https://pkg.pr.new/@vue/compiler-dom@16435'
+  '@vue/compiler-sfc': 'https://pkg.pr.new/@vue/compiler-sfc@16435'
+  '@vue/compiler-ssr': 'https://pkg.pr.new/@vue/compiler-ssr@16435'
+  '@vue/compiler-vapor': 'https://pkg.pr.new/@vue/compiler-vapor@16435'
+  '@vue/reactivity': 'https://pkg.pr.new/@vue/reactivity@16435'
+  '@vue/runtime-core': 'https://pkg.pr.new/@vue/runtime-core@16435'
+  '@vue/runtime-dom': 'https://pkg.pr.new/@vue/runtime-dom@16435'
+  '@vue/runtime-vapor': 'https://pkg.pr.new/@vue/runtime-vapor@16435'
+  '@vue/server-renderer': 'https://pkg.pr.new/@vue/server-renderer@16435'
+  '@vue/shared': 'https://pkg.pr.new/@vue/shared@16435'
   'vite': '^8.3.7'
-  'vue': '^3.6.0-rc.16'
+  'vue': 'https://pkg.pr.new/vue@16435'
 
 peerDependencyRules:
   ignoreMissing:
